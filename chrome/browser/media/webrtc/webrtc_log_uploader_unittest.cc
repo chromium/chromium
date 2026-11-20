@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/files/file.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -24,8 +25,58 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "components/webrtc_logging/browser/text_log_list.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_POSIX)
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include <optional>
+
+#include "base/test/file_path_reparse_point_win.h"
+#endif
+
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
+namespace {
+
+// Creates a directory symlink on POSIX or an NTFS junction on Windows, keeping
+// the Windows reparse point handle alive for the scope.
+class ScopedDirectoryLink {
+ public:
+  ScopedDirectoryLink() = default;
+  ~ScopedDirectoryLink() = default;
+
+  [[nodiscard]] bool Create(const base::FilePath& link_path,
+                            const base::FilePath& target_dir) {
+#if BUILDFLAG(IS_POSIX)
+    return base::CreateSymbolicLink(target_dir, link_path);
+#elif BUILDFLAG(IS_WIN)
+    if (!base::CreateDirectory(link_path)) {
+      return false;
+    }
+    reparse_point_ =
+        base::test::FilePathReparsePoint::Create(link_path, target_dir);
+    return reparse_point_.has_value();
+#endif
+  }
+
+ private:
+#if BUILDFLAG(IS_WIN)
+  std::optional<base::test::FilePathReparsePoint> reparse_point_;
+#endif
+};
+
+}  // namespace
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
 
 const char kTestTime[] = "time";
 const char kTestReportId[] = "report-id";
@@ -608,3 +659,428 @@ TEST_F(WebRtcLogUploaderTest, RejectsInvalidReportIds) {
   webrtc_log_uploader->Shutdown();
   FlushRunLoop();
 }
+
+#if BUILDFLAG(IS_POSIX)
+TEST_F(WebRtcLogUploaderTest, LeavesUnreadableUploadListFileUntouched) {
+  if (geteuid() == 0) {
+    GTEST_SKIP() << "chmod 000 does not block reads when running as root.";
+  }
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  test_list_path_ = temp_dir.GetPath().AppendASCII("Log List");
+  const std::string initial_contents = "100.1,,existing_local,101.1\n";
+  ASSERT_TRUE(base::WriteFile(test_list_path_, initial_contents));
+  ASSERT_EQ(0, chmod(test_list_path_.value().c_str(), 0000));
+
+  auto webrtc_log_uploader = std::make_unique<WebRtcLogUploader>();
+
+  AddLocallyStoredLogInfoToUploadListFile(webrtc_log_uploader.get(),
+                                          test_list_path_, kTestLocalId);
+  AddUploadedLogInfoToUploadListFile(test_list_path_, "existing_local",
+                                     kTestReportId);
+
+  ASSERT_EQ(0, chmod(test_list_path_.value().c_str(), 0600));
+  std::string actual_contents;
+  ASSERT_TRUE(base::ReadFileToString(test_list_path_, &actual_contents));
+  EXPECT_EQ(initial_contents, actual_contents);
+
+  webrtc_log_uploader->Shutdown();
+  FlushRunLoop();
+}
+
+TEST_F(WebRtcLogUploaderTest, DoesNotFollowSymlinkForUploadListFile) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  test_list_path_ = temp_dir.GetPath().AppendASCII("Log List");
+  const base::FilePath victim_path = temp_dir.GetPath().AppendASCII("victim");
+  const std::string victim_content = "100.1,victim_report,victim_local,101.1\n";
+  ASSERT_TRUE(base::WriteFile(victim_path, victim_content));
+  ASSERT_TRUE(base::CreateSymbolicLink(victim_path, test_list_path_));
+  ASSERT_TRUE(base::IsLink(test_list_path_));
+
+  auto webrtc_log_uploader = std::make_unique<WebRtcLogUploader>();
+
+  AddLocallyStoredLogInfoToUploadListFile(webrtc_log_uploader.get(),
+                                          test_list_path_, kTestLocalId);
+  EXPECT_FALSE(base::IsLink(test_list_path_));
+  ASSERT_TRUE(VerifyNumberOfLines(1));
+  ASSERT_TRUE(VerifyLastLineHasLocalStorageInfoOnly());
+
+  std::string actual_victim_content;
+  ASSERT_TRUE(base::ReadFileToString(victim_path, &actual_victim_content));
+  EXPECT_EQ(victim_content, actual_victim_content);
+
+  // Re-plant the symlink and verify AddUploadedLogInfoToUploadListFile also
+  // replaces the symlink without reading or modifying the victim file.
+  ASSERT_TRUE(base::DeleteFile(test_list_path_));
+  ASSERT_TRUE(base::CreateSymbolicLink(victim_path, test_list_path_));
+  ASSERT_TRUE(base::IsLink(test_list_path_));
+
+  AddUploadedLogInfoToUploadListFile(test_list_path_, kTestLocalId,
+                                     kTestReportId);
+  EXPECT_FALSE(base::IsLink(test_list_path_));
+  ASSERT_TRUE(VerifyNumberOfLines(1));
+  ASSERT_TRUE(VerifyLastLineHasUploadInfoOnly());
+
+  ASSERT_TRUE(base::ReadFileToString(victim_path, &actual_victim_content));
+  EXPECT_EQ(victim_content, actual_victim_content);
+
+  webrtc_log_uploader->Shutdown();
+  FlushRunLoop();
+}
+
+TEST_F(WebRtcLogUploaderTest, DoesNotFollowDanglingSymlinkForUploadListFile) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  test_list_path_ = temp_dir.GetPath().AppendASCII("Log List");
+  const base::FilePath victim_path =
+      temp_dir.GetPath().AppendASCII("nonexistent_victim");
+  ASSERT_TRUE(base::CreateSymbolicLink(victim_path, test_list_path_));
+  ASSERT_TRUE(base::IsLink(test_list_path_));
+
+  auto webrtc_log_uploader = std::make_unique<WebRtcLogUploader>();
+
+  AddLocallyStoredLogInfoToUploadListFile(webrtc_log_uploader.get(),
+                                          test_list_path_, kTestLocalId);
+  EXPECT_FALSE(base::IsLink(test_list_path_));
+  EXPECT_FALSE(base::PathExists(victim_path));
+  ASSERT_TRUE(VerifyNumberOfLines(1));
+  ASSERT_TRUE(VerifyLastLineHasLocalStorageInfoOnly());
+
+  ASSERT_TRUE(base::DeleteFile(test_list_path_));
+  ASSERT_TRUE(base::CreateSymbolicLink(victim_path, test_list_path_));
+  ASSERT_TRUE(base::IsLink(test_list_path_));
+
+  AddUploadedLogInfoToUploadListFile(test_list_path_, kTestLocalId,
+                                     kTestReportId);
+  EXPECT_FALSE(base::IsLink(test_list_path_));
+  EXPECT_FALSE(base::PathExists(victim_path));
+  ASSERT_TRUE(VerifyNumberOfLines(1));
+  ASSERT_TRUE(VerifyLastLineHasUploadInfoOnly());
+
+  webrtc_log_uploader->Shutdown();
+  FlushRunLoop();
+}
+
+TEST_F(WebRtcLogUploaderTest, DoesNotFollowSymlinkInLoggingStoppedDoStore) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath log_dir = temp_dir.GetPath().AppendASCII("log");
+  ASSERT_TRUE(base::CreateDirectory(log_dir));
+
+  const base::FilePath victim_gz = temp_dir.GetPath().AppendASCII("victim_gz");
+  const base::FilePath victim_meta =
+      temp_dir.GetPath().AppendASCII("victim_meta");
+  const std::string initial_victim_content = "untouched victim content\n";
+  ASSERT_TRUE(base::WriteFile(victim_gz, initial_victim_content));
+  ASSERT_TRUE(base::WriteFile(victim_meta, initial_victim_content));
+
+  const base::FilePath gz_link =
+      log_dir.AppendASCII(kTestLocalId).AddExtension(FILE_PATH_LITERAL(".gz"));
+  const base::FilePath meta_link =
+      log_dir.AppendASCII(kTestLocalId)
+          .AddExtension(FILE_PATH_LITERAL(".meta"));
+  ASSERT_TRUE(base::CreateSymbolicLink(victim_gz, gz_link));
+  ASSERT_TRUE(base::CreateSymbolicLink(victim_meta, meta_link));
+
+  auto webrtc_log_uploader = std::make_unique<WebRtcLogUploader>();
+  ASSERT_TRUE(webrtc_log_uploader->ApplyForStartLogging());
+
+  WebRtcLogPaths paths;
+  paths.directory = log_dir;
+  auto log = std::make_unique<WebRtcLogBuffer>();
+  log->SetComplete();
+  auto meta_data = std::make_unique<WebRtcLogMetaDataMap>();
+  (*meta_data)["key"] = "\nssh-ed25519 AAAA attacker\n";
+
+  base::test::TestFuture<bool, const std::string&> store_future;
+  // base::Unretained is safe because |store_future| waits for completion before
+  // |webrtc_log_uploader| goes out of scope.
+  webrtc_log_uploader->background_task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WebRtcLogUploader::LoggingStoppedDoStore,
+                     base::Unretained(webrtc_log_uploader.get()), paths,
+                     kTestLocalId, std::move(log), std::move(meta_data),
+                     store_future.GetCallback()));
+  EXPECT_TRUE(store_future.Get<0>());
+
+  EXPECT_FALSE(base::IsLink(gz_link));
+  EXPECT_FALSE(base::IsLink(meta_link));
+
+  std::string actual_gz_victim;
+  std::string actual_meta_victim;
+  ASSERT_TRUE(base::ReadFileToString(victim_gz, &actual_gz_victim));
+  ASSERT_TRUE(base::ReadFileToString(victim_meta, &actual_meta_victim));
+  EXPECT_EQ(initial_victim_content, actual_gz_victim);
+  EXPECT_EQ(initial_victim_content, actual_meta_victim);
+
+  webrtc_log_uploader->Shutdown();
+  FlushRunLoop();
+}
+
+TEST_F(WebRtcLogUploaderTest,
+       DoesNotFollowDanglingSymlinkInLoggingStoppedDoStore) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath log_dir = temp_dir.GetPath().AppendASCII("log");
+  ASSERT_TRUE(base::CreateDirectory(log_dir));
+
+  const base::FilePath victim_gz = temp_dir.GetPath().AppendASCII("victim_gz");
+  const base::FilePath victim_meta =
+      temp_dir.GetPath().AppendASCII("authorized_keys");
+  ASSERT_FALSE(base::PathExists(victim_gz));
+  ASSERT_FALSE(base::PathExists(victim_meta));
+
+  const base::FilePath gz_link =
+      log_dir.AppendASCII(kTestLocalId).AddExtension(FILE_PATH_LITERAL(".gz"));
+  const base::FilePath meta_link =
+      log_dir.AppendASCII(kTestLocalId)
+          .AddExtension(FILE_PATH_LITERAL(".meta"));
+  ASSERT_TRUE(base::CreateSymbolicLink(victim_gz, gz_link));
+  ASSERT_TRUE(base::CreateSymbolicLink(victim_meta, meta_link));
+
+  auto webrtc_log_uploader = std::make_unique<WebRtcLogUploader>();
+  ASSERT_TRUE(webrtc_log_uploader->ApplyForStartLogging());
+
+  WebRtcLogPaths paths;
+  paths.directory = log_dir;
+  auto log = std::make_unique<WebRtcLogBuffer>();
+  log->SetComplete();
+  auto meta_data = std::make_unique<WebRtcLogMetaDataMap>();
+  (*meta_data)["key"] = "\nssh-ed25519 AAAA attacker\n";
+
+  base::test::TestFuture<bool, const std::string&> store_future;
+  // base::Unretained is safe because |store_future| waits for completion before
+  // |webrtc_log_uploader| goes out of scope.
+  webrtc_log_uploader->background_task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WebRtcLogUploader::LoggingStoppedDoStore,
+                     base::Unretained(webrtc_log_uploader.get()), paths,
+                     kTestLocalId, std::move(log), std::move(meta_data),
+                     store_future.GetCallback()));
+  EXPECT_TRUE(store_future.Get<0>());
+
+  EXPECT_FALSE(base::IsLink(gz_link));
+  EXPECT_FALSE(base::IsLink(meta_link));
+  EXPECT_TRUE(base::PathExists(gz_link));
+  EXPECT_TRUE(base::PathExists(meta_link));
+  EXPECT_FALSE(base::PathExists(victim_gz));
+  EXPECT_FALSE(base::PathExists(victim_meta));
+
+  webrtc_log_uploader->Shutdown();
+  FlushRunLoop();
+}
+#endif  // BUILDFLAG(IS_POSIX)
+
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
+TEST_F(WebRtcLogUploaderTest, DoesNotFollowDirectorySymlinkInOnLoggingStopped) {
+  network::TestURLLoaderFactory test_url_loader_factory;
+  TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+      test_url_loader_factory.GetSafeWeakWrapper());
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath victim_dir =
+      temp_dir.GetPath().AppendASCII("victim_dir");
+  ASSERT_TRUE(base::CreateDirectory(victim_dir));
+  const base::FilePath victim_list_path =
+      webrtc_logging::TextLogList::GetWebRtcLogListFileForDirectory(victim_dir);
+  const std::string initial_victim_list = "100.1,,unrelated_local,101.1\n";
+  ASSERT_TRUE(base::WriteFile(victim_list_path, initial_victim_list));
+
+  const base::FilePath symlink_log_dir =
+      temp_dir.GetPath().AppendASCII("symlink_log_dir");
+  ScopedDirectoryLink dir_link;
+  ASSERT_TRUE(dir_link.Create(symlink_log_dir, victim_dir));
+  ASSERT_TRUE(base::IsLink(symlink_log_dir));
+
+  auto webrtc_log_uploader = std::make_unique<WebRtcLogUploader>();
+  ASSERT_TRUE(webrtc_log_uploader->ApplyForStartLogging());
+
+  base::test::TestFuture<bool, const std::string&, const std::string&>
+      upload_future;
+  WebRtcLogUploader::UploadDoneData upload_done_data;
+  upload_done_data.paths.directory = symlink_log_dir;
+  upload_done_data.callback = upload_future.GetCallback();
+  upload_done_data.web_app_id = 0;
+
+  auto log = std::make_unique<WebRtcLogBuffer>();
+  log->SetComplete();
+
+  base::RunLoop bg_loop;
+  webrtc_log_uploader->background_task_runner()->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&WebRtcLogUploader::OnLoggingStopped,
+                     base::Unretained(webrtc_log_uploader.get()),
+                     WebRtcLogUploadSite::kSameSite, std::move(log),
+                     std::make_unique<WebRtcLogMetaDataMap>(),
+                     std::move(upload_done_data),
+                     /*is_text_log_upload_allowed=*/true),
+      bg_loop.QuitClosure());
+  bg_loop.Run();
+  FlushRunLoop();
+
+  ASSERT_EQ(1, test_url_loader_factory.NumPending());
+  test_url_loader_factory.SimulateResponseForPendingRequest(
+      webrtc_log_uploader->upload_url().spec(), kTestReportId);
+
+  EXPECT_TRUE(upload_future.Get<0>());
+  EXPECT_EQ(kTestReportId, upload_future.Get<1>());
+
+  base::RunLoop flush_bg;
+  webrtc_log_uploader->background_task_runner()->PostTaskAndReply(
+      FROM_HERE, base::DoNothing(), flush_bg.QuitClosure());
+  flush_bg.Run();
+
+  // Verify the victim directory's Log List was not modified and no .gz was
+  // written into victim_dir.
+  std::string actual_victim_list;
+  ASSERT_TRUE(base::ReadFileToString(victim_list_path, &actual_victim_list));
+  EXPECT_EQ(initial_victim_list, actual_victim_list);
+  base::FileEnumerator gz_files(victim_dir, /*recursive=*/false,
+                                base::FileEnumerator::FILES,
+                                FILE_PATH_LITERAL("*.gz"));
+  EXPECT_TRUE(gz_files.Next().empty());
+
+  webrtc_log_uploader->Shutdown();
+  FlushRunLoop();
+}
+
+TEST_F(WebRtcLogUploaderTest,
+       RejectsDirectorySwappedForSymlinkBeforeUploadCompletes) {
+  network::TestURLLoaderFactory test_url_loader_factory;
+  TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+      test_url_loader_factory.GetSafeWeakWrapper());
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath log_dir = temp_dir.GetPath().AppendASCII("log_dir");
+  ASSERT_TRUE(base::CreateDirectory(log_dir));
+
+  const base::FilePath victim_dir =
+      temp_dir.GetPath().AppendASCII("victim_dir");
+  ASSERT_TRUE(base::CreateDirectory(victim_dir));
+  const base::FilePath victim_list_path =
+      webrtc_logging::TextLogList::GetWebRtcLogListFileForDirectory(victim_dir);
+  const std::string initial_victim_list = "100.1,,unrelated_local,101.1\n";
+  ASSERT_TRUE(base::WriteFile(victim_list_path, initial_victim_list));
+
+  // Declared after |temp_dir| so the Windows reparse point handle is closed
+  // before |temp_dir| is deleted.
+  ScopedDirectoryLink dir_link;
+
+  auto webrtc_log_uploader = std::make_unique<WebRtcLogUploader>();
+  ASSERT_TRUE(webrtc_log_uploader->ApplyForStartLogging());
+
+  base::test::TestFuture<bool, const std::string&, const std::string&>
+      upload_future;
+  WebRtcLogUploader::UploadDoneData upload_done_data;
+  upload_done_data.paths.directory = log_dir;
+  upload_done_data.callback = upload_future.GetCallback();
+  upload_done_data.web_app_id = 0;
+
+  auto log = std::make_unique<WebRtcLogBuffer>();
+  log->SetComplete();
+
+  base::RunLoop bg_loop;
+  webrtc_log_uploader->background_task_runner()->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&WebRtcLogUploader::OnLoggingStopped,
+                     base::Unretained(webrtc_log_uploader.get()),
+                     WebRtcLogUploadSite::kSameSite, std::move(log),
+                     std::make_unique<WebRtcLogMetaDataMap>(),
+                     std::move(upload_done_data),
+                     /*is_text_log_upload_allowed=*/true),
+      bg_loop.QuitClosure());
+  bg_loop.Run();
+  FlushRunLoop();
+
+  // Swap log_dir for a link to victim_dir while the upload is in flight.
+  ASSERT_TRUE(base::DeletePathRecursively(log_dir));
+  ASSERT_TRUE(dir_link.Create(log_dir, victim_dir));
+  ASSERT_TRUE(base::IsLink(log_dir));
+
+  ASSERT_EQ(1, test_url_loader_factory.NumPending());
+  test_url_loader_factory.SimulateResponseForPendingRequest(
+      webrtc_log_uploader->upload_url().spec(), kTestReportId);
+
+  EXPECT_TRUE(upload_future.Get<0>());
+
+  base::RunLoop flush_bg;
+  webrtc_log_uploader->background_task_runner()->PostTaskAndReply(
+      FROM_HERE, base::DoNothing(), flush_bg.QuitClosure());
+  flush_bg.Run();
+
+  std::string actual_victim_list;
+  ASSERT_TRUE(base::ReadFileToString(victim_list_path, &actual_victim_list));
+  EXPECT_EQ(initial_victim_list, actual_victim_list);
+
+  webrtc_log_uploader->Shutdown();
+  FlushRunLoop();
+}
+
+TEST_F(WebRtcLogUploaderTest,
+       RejectsSymlinkedLogDirectoryInLoggingStoppedDoStore) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath victim_dir =
+      temp_dir.GetPath().AppendASCII("victim_dir");
+  ASSERT_TRUE(base::CreateDirectory(victim_dir));
+  const base::FilePath symlink_log_dir =
+      temp_dir.GetPath().AppendASCII("symlink_log_dir");
+  ScopedDirectoryLink dir_link;
+  ASSERT_TRUE(dir_link.Create(symlink_log_dir, victim_dir));
+  ASSERT_TRUE(base::IsLink(symlink_log_dir));
+
+  auto webrtc_log_uploader = std::make_unique<WebRtcLogUploader>();
+  // Exhaust all 20 log slots (kLogCountLimit).
+  for (int i = 0; i < 20; ++i) {
+    ASSERT_TRUE(webrtc_log_uploader->ApplyForStartLogging());
+  }
+  EXPECT_FALSE(webrtc_log_uploader->ApplyForStartLogging());
+
+  const base::FilePath victim_incoming_rtp =
+      victim_dir.AppendASCII("incoming_rtp_temp");
+  ASSERT_TRUE(base::WriteFile(victim_incoming_rtp, "rtp in"));
+  const base::FilePath outgoing_rtp =
+      temp_dir.GetPath().AppendASCII("outgoing_rtp_temp");
+  ASSERT_TRUE(base::WriteFile(outgoing_rtp, "rtp out"));
+
+  WebRtcLogPaths symlink_paths;
+  symlink_paths.directory = symlink_log_dir;
+  symlink_paths.incoming_rtp_dump =
+      symlink_log_dir.AppendASCII("incoming_rtp_temp");
+  symlink_paths.outgoing_rtp_dump = outgoing_rtp;
+  auto symlink_log = std::make_unique<WebRtcLogBuffer>();
+  symlink_log->SetComplete();
+  base::test::TestFuture<bool, const std::string&> symlink_store_future;
+  // base::Unretained is safe because |symlink_store_future| waits for
+  // completion before |webrtc_log_uploader| goes out of scope.
+  webrtc_log_uploader->background_task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WebRtcLogUploader::LoggingStoppedDoStore,
+                     base::Unretained(webrtc_log_uploader.get()), symlink_paths,
+                     kTestLocalId, std::move(symlink_log),
+                     std::make_unique<WebRtcLogMetaDataMap>(),
+                     symlink_store_future.GetCallback()));
+  EXPECT_FALSE(symlink_store_future.Get<0>());
+  EXPECT_EQ("Invalid WebRTC log directory.", symlink_store_future.Get<1>());
+  // The dump under the symlinked parent is preserved and nothing else is
+  // written into |victim_dir|, while the non-symlinked dump is deleted.
+  EXPECT_TRUE(base::PathExists(victim_incoming_rtp));
+  ASSERT_TRUE(base::DeleteFile(victim_incoming_rtp));
+  EXPECT_TRUE(base::IsDirectoryEmpty(victim_dir));
+  EXPECT_FALSE(base::PathExists(outgoing_rtp));
+
+  // DecreaseLogCount() is posted before done_callback, so a slot is already
+  // freed when symlink_store_future resolves.
+  EXPECT_TRUE(webrtc_log_uploader->ApplyForStartLogging());
+  for (int i = 0; i < 20; ++i) {  // kLogCountLimit
+    webrtc_log_uploader->LoggingStoppedDontUpload();
+  }
+
+  webrtc_log_uploader->Shutdown();
+  FlushRunLoop();
+}
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)

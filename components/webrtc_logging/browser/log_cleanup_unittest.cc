@@ -10,11 +10,56 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/webrtc_logging/browser/text_log_list.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_POSIX)
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include <optional>
+
+#include "base/test/file_path_reparse_point_win.h"
+#endif
+
 namespace webrtc_logging {
+
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
+namespace {
+
+// Creates a directory symlink on POSIX or an NTFS junction on Windows, keeping
+// the Windows reparse point handle alive for the scope.
+class ScopedDirectoryLink {
+ public:
+  ScopedDirectoryLink() = default;
+  ~ScopedDirectoryLink() = default;
+
+  [[nodiscard]] bool Create(const base::FilePath& link_path,
+                            const base::FilePath& target_dir) {
+#if BUILDFLAG(IS_POSIX)
+    return base::CreateSymbolicLink(target_dir, link_path);
+#elif BUILDFLAG(IS_WIN)
+    if (!base::CreateDirectory(link_path)) {
+      return false;
+    }
+    reparse_point_ =
+        base::test::FilePathReparsePoint::Create(link_path, target_dir);
+    return reparse_point_.has_value();
+#endif
+  }
+
+ private:
+#if BUILDFLAG(IS_WIN)
+  std::optional<base::test::FilePathReparsePoint> reparse_point_;
+#endif
+};
+
+}  // namespace
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
 
 class WebRtcLogCleanupTest : public testing::Test {
  public:
@@ -392,5 +437,86 @@ TEST_F(WebRtcTextLogIndexCleanupTest,
   const std::string expected_contents = "";
   ExpectContents(expected_contents);
 }
+
+#if BUILDFLAG(IS_POSIX)
+TEST_F(WebRtcTextLogIndexCleanupTest, LeavesUnreadableLogListUntouched) {
+  if (geteuid() == 0) {
+    GTEST_SKIP() << "chmod 000 does not block reads when running as root.";
+  }
+
+  const std::string contents = "200.1,report_id_1,local_id_1,201.1\n";
+  CreateLogListFileWithContents(contents);
+  ASSERT_EQ(0, chmod(log_list_path_.value().c_str(), 0000));
+
+  const base::Time delete_begin_time =
+      base::Time::FromSecondsSinceUnixEpoch(150);
+  DeleteOldAndRecentWebRtcLogFiles({dir_.GetPath()}, delete_begin_time);
+
+  ASSERT_EQ(0, chmod(log_list_path_.value().c_str(), 0600));
+  ExpectContents(contents);
+}
+
+TEST_F(WebRtcTextLogIndexCleanupTest, DoesNotFollowSymlinkForLogList) {
+  base::ScopedTempDir victim_dir;
+  ASSERT_TRUE(victim_dir.CreateUniqueTempDir());
+  const base::FilePath victim_file =
+      victim_dir.GetPath().AppendASCII("victim_file");
+  const std::string victim_contents =
+      "100.1,report_id_1,local_id_1,101.1\n"
+      "200.1,report_id_2,local_id_2,201.1\n";
+  ASSERT_TRUE(base::WriteFile(victim_file, victim_contents));
+  ASSERT_TRUE(base::CreateSymbolicLink(victim_file, log_list_path_));
+  ASSERT_TRUE(base::IsLink(log_list_path_));
+
+  const base::Time delete_begin_time =
+      base::Time::FromSecondsSinceUnixEpoch(150);
+  DeleteOldAndRecentWebRtcLogFiles({dir_.GetPath()}, delete_begin_time);
+
+  EXPECT_FALSE(base::IsLink(log_list_path_));
+  ExpectContents("");
+
+  std::string actual_victim_contents;
+  ASSERT_TRUE(base::ReadFileToString(victim_file, &actual_victim_contents));
+  EXPECT_EQ(victim_contents, actual_victim_contents);
+}
+
+TEST_F(WebRtcTextLogIndexCleanupTest, DoesNotFollowDanglingSymlinkForLogList) {
+  base::ScopedTempDir victim_dir;
+  ASSERT_TRUE(victim_dir.CreateUniqueTempDir());
+  const base::FilePath victim_file =
+      victim_dir.GetPath().AppendASCII("nonexistent_victim");
+  ASSERT_TRUE(base::CreateSymbolicLink(victim_file, log_list_path_));
+  ASSERT_TRUE(base::IsLink(log_list_path_));
+
+  DeleteOldWebRtcLogFiles({dir_.GetPath()});
+
+  EXPECT_FALSE(base::IsLink(log_list_path_));
+  EXPECT_FALSE(base::PathExists(victim_file));
+  ExpectContents("");
+}
+#endif  // BUILDFLAG(IS_POSIX)
+
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
+TEST_F(WebRtcTextLogIndexCleanupTest, DoesNotFollowDirectorySymlink) {
+  base::ScopedTempDir victim_dir;
+  ASSERT_TRUE(victim_dir.CreateUniqueTempDir());
+  const base::FilePath old_victim_file =
+      victim_dir.GetPath().AppendASCII("old_file");
+  ASSERT_TRUE(base::WriteFile(old_victim_file, "important data"));
+  const base::Time old_time =
+      base::Time::Now() - kTimeToKeepLogs - base::Days(2);
+  ASSERT_TRUE(base::TouchFile(old_victim_file, old_time, old_time));
+
+  const base::FilePath symlink_log_dir =
+      dir_.GetPath().AppendASCII("symlink_dir");
+  ScopedDirectoryLink dir_link;
+  ASSERT_TRUE(dir_link.Create(symlink_log_dir, victim_dir.GetPath()));
+  ASSERT_TRUE(base::IsLink(symlink_log_dir));
+
+  DeleteOldWebRtcLogFiles({symlink_log_dir});
+
+  EXPECT_TRUE(base::PathExists(old_victim_file));
+}
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
 
 }  // namespace webrtc_logging

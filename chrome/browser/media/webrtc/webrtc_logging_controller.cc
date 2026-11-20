@@ -590,6 +590,22 @@ void WebRtcLoggingController::StoreLogInDirectory(
     return;
   }
 
+  if (directory.empty()) {
+    // StoreLogContinue() already released any pending RTP dumps from
+    // |rtp_dump_handler_|, so nothing else will delete them on failure.
+    if (!log_paths->incoming_rtp_dump.empty() ||
+        !log_paths->outgoing_rtp_dump.empty()) {
+      log_uploader->background_task_runner()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&WebRtcLogUploader::DeleteRtpDumpFiles, *log_paths));
+    }
+    log_uploader->LoggingStoppedDontUpload();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(done_callback), false,
+                                  "Could not create WebRTC log directory."));
+    return;
+  }
+
   log_uploader->background_task_runner()->PostTask(
       FROM_HERE, base::BindOnce(
                      [](WebRtcLogPaths paths, const std::string& log_id,
@@ -725,6 +741,20 @@ void WebRtcLoggingController::CreateRtpDumpHandlerAndStart(
     GenericDoneCallback callback,
     const base::FilePath& dump_dir) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (dump_dir.empty()) {
+    if (stop_rtp_dump_callback_) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(stop_rtp_dump_callback_),
+                         type == RTP_DUMP_INCOMING || type == RTP_DUMP_BOTH,
+                         type == RTP_DUMP_OUTGOING || type == RTP_DUMP_BOTH));
+      stop_rtp_dump_callback_.Reset();
+    }
+    FireGenericDoneCallback(std::move(callback), false,
+                            "Could not create WebRTC log directory.");
+    return;
+  }
 
   // |rtp_dump_handler_| may be non-null if StartRtpDump is called again before
   // GetLogDirectoryAndEnsureExists returns on the FILE thread for a previous
@@ -909,9 +939,17 @@ base::FilePath WebRtcLoggingController::GetLogDirectoryAndEnsureExists(
   base::FilePath log_dir_path =
       webrtc_logging::TextLogList::GetWebRtcLogDirectoryForBrowserContextPath(
           browser_context_directory_path, api_type);
-  base::File::Error error;
+  if (base::IsLink(log_dir_path) && !base::DeleteFile(log_dir_path)) {
+    DVLOG(1) << "Could not remove symlink at WebRTC log directory path.";
+    return base::FilePath();
+  }
+  base::File::Error error = base::File::FILE_OK;
   if (!base::CreateDirectoryAndGetError(log_dir_path, &error)) {
-    DLOG(ERROR) << "Could not create WebRTC log directory, error: " << error;
+    DVLOG(1) << "Could not create WebRTC log directory, error: " << error;
+    return base::FilePath();
+  }
+  if (base::IsLink(log_dir_path)) {
+    DVLOG(1) << "WebRTC log directory path is a symbolic link.";
     return base::FilePath();
   }
   return log_dir_path;

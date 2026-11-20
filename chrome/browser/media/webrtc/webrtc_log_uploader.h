@@ -107,6 +107,12 @@ class WebRtcLogUploader {
   };
 
   static WebRtcLogUploader* GetInstance();
+
+  // Deletes the RTP dump files in |log_paths|, if any. A dump whose parent
+  // directory is a symbolic link is skipped so that nothing is deleted through
+  // the link. Must be called on a sequence that allows blocking.
+  static void DeleteRtpDumpFiles(const WebRtcLogPaths& log_paths);
+
   WebRtcLogUploader();
 
   WebRtcLogUploader(const WebRtcLogUploader&) = delete;

@@ -8,10 +8,14 @@
 
 #include <optional>
 #include <string>
+#include <utility>
 
+#include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/important_file_writer.h"
+#include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -157,8 +161,9 @@ void DeleteOldAndRecentWebRtcLogFiles(const base::FilePath& log_dir,
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  if (!base::PathExists(log_dir)) {
-    // This will happen if no logs have been stored or uploaded.
+  if (!base::PathExists(log_dir) || base::IsLink(log_dir)) {
+    // This will happen if no logs have been stored or uploaded. A symlinked
+    // log directory is never followed.
     DVLOG(3) << "Could not find directory: " << log_dir.value();
     return;
   }
@@ -168,16 +173,35 @@ void DeleteOldAndRecentWebRtcLogFiles(const base::FilePath& log_dir,
   base::FilePath log_list_path =
       TextLogList::GetWebRtcLogListFileForDirectory(log_dir);
   std::string log_list;
-  const bool update_log_list = base::PathExists(log_list_path);
-  if (update_log_list) {
-    constexpr size_t kMaxIndexSizeBytes = 1000000;  // Intentional overshot.
-    const bool read_ok = base::ReadFileToStringWithMaxSize(
-        log_list_path, &log_list, kMaxIndexSizeBytes);
-    if (!read_ok) {
-      // If the maximum size was exceeded, updating it will corrupt it. However,
-      // the size would not be exceeded unless the user edits it manually.
-      LOG(ERROR) << "Couldn't read WebRTC textual logs list (" << log_list_path
+  bool update_log_list = false;
+  // A symlink at the index path is never read; |update_log_list| is set so
+  // that it is atomically replaced with a new index below. FLAG_NO_FOLLOW only
+  // has an effect on POSIX; on Windows (where symlink creation is normally
+  // privileged) the IsLink() pre-check is a best-effort, racy guard. A
+  // non-symlink index that can't be opened is left untouched.
+  if (base::IsLink(log_list_path)) {
+    update_log_list = true;
+  } else {
+    base::File log_list_file(log_list_path, base::File::FLAG_OPEN |
+                                                base::File::FLAG_READ |
+                                                base::File::FLAG_NO_FOLLOW);
+    if (log_list_file.IsValid()) {
+      update_log_list = true;
+      base::ScopedFILE stream(base::FileToFILE(std::move(log_list_file), "rb"));
+      const bool read_ok =
+          stream && base::ReadStreamToStringWithMaxSize(
+                        stream.get(), kMaxLogListFileSizeBytes, &log_list);
+      if (!read_ok) {
+        // If the maximum size was exceeded, updating it will corrupt it.
+        // However, the size would not be exceeded unless the user edits it
+        // manually.
+        DVLOG(1) << "Couldn't read WebRTC textual logs list (" << log_list_path
                  << ").";
+      }
+    } else if (base::IsLink(log_list_path)) {
+      // Replaced by a symlink after the pre-check (POSIX open fails with
+      // ELOOP).
+      update_log_list = true;
     }
   }
 
@@ -214,8 +238,11 @@ void DeleteOldAndRecentWebRtcLogFiles(const base::FilePath& log_dir,
   if (update_log_list) {
     log_list =
         RemoveObsoleteEntriesFromLogIndex(log_list, delete_begin_time, now);
-    bool success = base::WriteFile(log_list_path, log_list);
-    DPCHECK(success);
+    if (!base::ImportantFileWriter::WriteFileAtomically(log_list_path,
+                                                        log_list)) {
+      DVLOG(1) << "Could not write WebRTC textual logs list (" << log_list_path
+               << ").";
+    }
   }
 }
 

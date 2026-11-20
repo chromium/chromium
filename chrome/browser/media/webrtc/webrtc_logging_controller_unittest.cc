@@ -19,8 +19,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/media/webrtc_logging.mojom.h"
 #include "chrome/common/pref_names.h"
@@ -46,6 +48,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
+#endif
+
+#if BUILDFLAG(IS_POSIX)
+#include <unistd.h>
 #endif
 
 namespace webrtc_text_log {
@@ -654,5 +660,200 @@ TEST_F(WebRtcLoggingControllerTest, UploadLog_NoLocalCopyDoesNotTouchLogList) {
   ASSERT_TRUE(base::ReadFileToString(log_list_path, &log_list));
   EXPECT_EQ(kUnrelatedLine, log_list);
 }
+
+TEST_F(WebRtcLoggingControllerTest,
+       LogDirectoryCreationFailure_StoreUploadAndRtpDump) {
+  LoadMainTestProfile(true);
+  WebRtcLogUploader* uploader =
+      TestingBrowserProcess::GetGlobal()->webrtc_log_uploader();
+
+  // Plant a regular file at the WebRTC Logs directory path so
+  // GetLogDirectoryAndEnsureExists() fails and returns an empty FilePath.
+  const base::FilePath log_dir_path =
+      webrtc_logging::TextLogList::GetWebRtcLogDirectoryForBrowserContextPath(
+          browser_context_->GetPath(), webrtc_logging::ApiType::kExtension);
+  ASSERT_TRUE(base::WriteFile(log_dir_path, "blocking file"));
+
+  // 1. StoreLog() fails cleanly when the log directory cannot be created.
+  {
+    base::test::TestFuture<bool, const std::string&> start_future;
+    webrtc_logging_controller_->StartLogging(start_future.GetCallback());
+    ASSERT_TRUE(start_future.Get<0>()) << start_future.Get<1>();
+
+    base::test::TestFuture<bool, const std::string&> stop_future;
+    webrtc_logging_controller_->StopLogging(stop_future.GetCallback());
+    ASSERT_TRUE(stop_future.Get<0>()) << stop_future.Get<1>();
+
+    base::test::TestFuture<bool, const std::string&> store_future;
+    webrtc_logging_controller_->StoreLog("stored_log_id",
+                                         store_future.GetCallback());
+    EXPECT_FALSE(store_future.Get<0>());
+    EXPECT_EQ("Could not create WebRTC log directory.", store_future.Get<1>());
+  }
+
+  // 2. UploadLog() skips local storage and still uploads the in-memory log.
+  {
+    base::test::TestFuture<bool, const std::string&> start_future;
+    webrtc_logging_controller_->StartLogging(start_future.GetCallback());
+    ASSERT_TRUE(start_future.Get<0>()) << start_future.Get<1>();
+
+    base::test::TestFuture<bool, const std::string&> stop_future;
+    webrtc_logging_controller_->StopLogging(stop_future.GetCallback());
+    ASSERT_TRUE(stop_future.Get<0>()) << stop_future.Get<1>();
+
+    base::test::TestFuture<bool, const std::string&, const std::string&>
+        upload_future;
+    webrtc_logging_controller_->UploadLog(upload_future.GetCallback());
+
+    base::RunLoop wait_for_request;
+    test_url_loader_factory_.SetInterceptor(
+        base::BindRepeating([](base::RepeatingClosure quit,
+                               const network::ResourceRequest&) { quit.Run(); },
+                            wait_for_request.QuitClosure()));
+    wait_for_request.Run();
+    test_url_loader_factory_.SetInterceptor(
+        network::TestURLLoaderFactory::Interceptor());
+
+    ASSERT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+        uploader->upload_url().spec(), "valid_report_id"));
+    EXPECT_TRUE(upload_future.Get<0>());
+    EXPECT_EQ("valid_report_id", upload_future.Get<1>());
+    EXPECT_EQ("", upload_future.Get<2>());
+  }
+
+  // 3. StartRtpDump() fails cleanly when dump_dir is empty.
+  {
+    base::test::TestFuture<bool, const std::string&> rtp_future;
+    webrtc_logging_controller_->StartRtpDump(RTP_DUMP_BOTH,
+                                             rtp_future.GetCallback());
+    EXPECT_FALSE(rtp_future.Get<0>());
+    EXPECT_EQ("Could not create WebRTC log directory.", rtp_future.Get<1>());
+  }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // 4. GetLogsDirectory() invokes error callback when the directory cannot be
+  // created.
+  {
+    bool success_called = false;
+    base::test::TestFuture<const std::string&> error_future;
+    webrtc_logging_controller_->GetLogsDirectory(
+        base::BindLambdaForTesting([&](const std::string&, const std::string&) {
+          success_called = true;
+        }),
+        error_future.GetCallback());
+
+    EXPECT_EQ("Logs directory not available", error_future.Get());
+    EXPECT_FALSE(success_called);
+  }
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+}
+
+#if BUILDFLAG(IS_POSIX)
+TEST_F(WebRtcLoggingControllerTest, ReplacesSymlinkedLogDirectoryOnStore) {
+  LoadMainTestProfile(true);
+
+  base::ScopedTempDir victim_dir;
+  ASSERT_TRUE(victim_dir.CreateUniqueTempDir());
+  const base::FilePath log_dir =
+      webrtc_logging::TextLogList::GetWebRtcLogDirectoryForBrowserContextPath(
+          browser_context_->GetPath(), webrtc_logging::ApiType::kExtension);
+  ASSERT_TRUE(base::CreateSymbolicLink(victim_dir.GetPath(), log_dir));
+  ASSERT_TRUE(base::IsLink(log_dir));
+
+  base::test::TestFuture<bool, const std::string&> start_future;
+  webrtc_logging_controller_->StartLogging(start_future.GetCallback());
+  ASSERT_TRUE(start_future.Get<0>()) << start_future.Get<1>();
+
+  base::test::TestFuture<bool, const std::string&> stop_future;
+  webrtc_logging_controller_->StopLogging(stop_future.GetCallback());
+  ASSERT_TRUE(stop_future.Get<0>()) << stop_future.Get<1>();
+
+  base::test::TestFuture<bool, const std::string&> store_future;
+  webrtc_logging_controller_->StoreLog("stored_log_id",
+                                       store_future.GetCallback());
+  EXPECT_TRUE(store_future.Get<0>()) << store_future.Get<1>();
+
+  EXPECT_FALSE(base::IsLink(log_dir));
+  EXPECT_TRUE(base::DirectoryExists(log_dir));
+  EXPECT_TRUE(base::PathExists(log_dir.AppendASCII("stored_log_id.gz")));
+  EXPECT_TRUE(base::IsDirectoryEmpty(victim_dir.GetPath()));
+}
+
+TEST_F(WebRtcLoggingControllerTest,
+       ReplacesDanglingSymlinkLogDirectoryOnStore) {
+  LoadMainTestProfile(true);
+
+  base::ScopedTempDir victim_dir;
+  ASSERT_TRUE(victim_dir.CreateUniqueTempDir());
+  const base::FilePath missing_target =
+      victim_dir.GetPath().AppendASCII("nonexistent");
+  const base::FilePath log_dir =
+      webrtc_logging::TextLogList::GetWebRtcLogDirectoryForBrowserContextPath(
+          browser_context_->GetPath(), webrtc_logging::ApiType::kExtension);
+  ASSERT_TRUE(base::CreateSymbolicLink(missing_target, log_dir));
+  ASSERT_TRUE(base::IsLink(log_dir));
+
+  base::test::TestFuture<bool, const std::string&> start_future;
+  webrtc_logging_controller_->StartLogging(start_future.GetCallback());
+  ASSERT_TRUE(start_future.Get<0>()) << start_future.Get<1>();
+
+  base::test::TestFuture<bool, const std::string&> stop_future;
+  webrtc_logging_controller_->StopLogging(stop_future.GetCallback());
+  ASSERT_TRUE(stop_future.Get<0>()) << stop_future.Get<1>();
+
+  base::test::TestFuture<bool, const std::string&> store_future;
+  webrtc_logging_controller_->StoreLog("stored_log_id",
+                                       store_future.GetCallback());
+  EXPECT_TRUE(store_future.Get<0>()) << store_future.Get<1>();
+
+  EXPECT_FALSE(base::IsLink(log_dir));
+  EXPECT_TRUE(base::DirectoryExists(log_dir));
+  EXPECT_TRUE(base::PathExists(log_dir.AppendASCII("stored_log_id.gz")));
+  EXPECT_FALSE(base::PathExists(missing_target));
+}
+
+TEST_F(WebRtcLoggingControllerTest,
+       FailsStoreWhenSymlinkedLogDirectoryCannotBeRemoved) {
+  if (geteuid() == 0) {
+    GTEST_SKIP() << "chmod 0500 does not block unlink when running as root.";
+  }
+
+  LoadMainTestProfile(true);
+
+  base::ScopedTempDir victim_dir;
+  ASSERT_TRUE(victim_dir.CreateUniqueTempDir());
+  const base::FilePath log_dir =
+      webrtc_logging::TextLogList::GetWebRtcLogDirectoryForBrowserContextPath(
+          browser_context_->GetPath(), webrtc_logging::ApiType::kExtension);
+  ASSERT_TRUE(base::CreateSymbolicLink(victim_dir.GetPath(), log_dir));
+  ASSERT_TRUE(base::IsLink(log_dir));
+
+  base::test::TestFuture<bool, const std::string&> start_future;
+  webrtc_logging_controller_->StartLogging(start_future.GetCallback());
+  ASSERT_TRUE(start_future.Get<0>()) << start_future.Get<1>();
+
+  base::test::TestFuture<bool, const std::string&> stop_future;
+  webrtc_logging_controller_->StopLogging(stop_future.GetCallback());
+  ASSERT_TRUE(stop_future.Get<0>()) << stop_future.Get<1>();
+
+  // Make the profile directory read-only so DeleteFile(log_dir) fails.
+  const base::FilePath profile_dir = browser_context_->GetPath();
+  int original_mode = 0;
+  ASSERT_TRUE(base::GetPosixFilePermissions(profile_dir, &original_mode));
+  ASSERT_TRUE(base::SetPosixFilePermissions(profile_dir, 0500));
+  // Restore write permissions before assertions/teardown even on early exit.
+  base::ScopedClosureRunner restore_permissions(
+      base::BindOnce(base::IgnoreResult(&base::SetPosixFilePermissions),
+                     profile_dir, original_mode));
+
+  base::test::TestFuture<bool, const std::string&> store_future;
+  webrtc_logging_controller_->StoreLog("stored_log_id",
+                                       store_future.GetCallback());
+  EXPECT_FALSE(store_future.Get<0>());
+  EXPECT_EQ("Could not create WebRTC log directory.", store_future.Get<1>());
+  EXPECT_TRUE(base::IsLink(log_dir));
+  EXPECT_TRUE(base::IsDirectoryEmpty(victim_dir.GetPath()));
+}
+#endif  // BUILDFLAG(IS_POSIX)
 
 }  // namespace webrtc_text_log

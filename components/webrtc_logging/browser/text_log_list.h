@@ -5,9 +5,18 @@
 #ifndef COMPONENTS_WEBRTC_LOGGING_BROWSER_TEXT_LOG_LIST_H_
 #define COMPONENTS_WEBRTC_LOGGING_BROWSER_TEXT_LOG_LIST_H_
 
+#include <stddef.h>
+
+#include <vector>
+
 #include "base/files/file_path.h"
 
 namespace webrtc_logging {
+
+// Generous upper bound for the log list file size (intentional overshot).
+// The index is capped at 50 lines (kLogListLimitLines), so anything near this
+// size is corrupt or tampered with.
+inline constexpr size_t kMaxLogListFileSizeBytes = 1000000;
 
 enum class ApiType {
   kExtension,
