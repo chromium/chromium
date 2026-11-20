@@ -19,7 +19,12 @@ public class ProfileKeyUtil {
      *
      * <p>Note: The function name uses the "last used" terminology for consistency with
      * profile_manager.cc which supports multiple regular profiles.
+     *
+     * @deprecated There is no single regular profile once Chrome supports multiple profiles. Use
+     *     {@link Profile#getProfileKey()} when a {@link Profile} is available, or resolve the
+     *     caller's profile token with {@link ProfileResolver#resolveProfileKey} in reduced mode.
      */
+    @Deprecated
     public static ProfileKey getLastUsedRegularProfileKey() {
         assert BrowserStartupController.getInstance().isNativeStarted();
         return ProfileKeyUtilJni.get().getLastUsedRegularProfileKey();

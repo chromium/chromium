@@ -287,11 +287,25 @@ _BANNED_JAVA_FUNCTIONS: Sequence[BanRule] = (
     BanRule(
         'ProfileManager.getLastUsedRegularProfile()',
         (
-            'Prefer passing in the Profile reference instead of relying on the '
-            'static getLastUsedRegularProfile() call. Only top level entry points '
-            '(e.g. Activities) should call this method. Otherwise, the Profile '
-            'should either be passed in explicitly or retrieved from an existing '
-            'entity with a reference to the Profile (e.g. WebContents).',
+            'getLastUsedRegularProfile() is deprecated: there is no single '
+            'regular profile once Chrome supports multiple profiles. Use the '
+            'profile that owns the caller instead: the Activity\'s '
+            'ProfileProvider (getProfileProviderSupplier()), an existing entity '
+            'with a Profile reference (e.g. Tab, WebContents), ProfileKeyedMap '
+            'for per-profile singletons, or ProfileResolver for profile tokens '
+            'in background tasks. See https://crbug.com/545347961.',
+        ),
+        False,
+        excluded_paths=(r'.*Test[A-Z]?.*\.java',),
+    ),
+    BanRule(
+        'ProfileKeyUtil.getLastUsedRegularProfileKey()',
+        (
+            'getLastUsedRegularProfileKey() is deprecated: there is no single '
+            'regular profile once Chrome supports multiple profiles. Use '
+            'Profile#getProfileKey() when a Profile is available, or '
+            'ProfileResolver.resolveProfileKey() for profile tokens in reduced '
+            'mode. See https://crbug.com/545347961.',
         ),
         False,
         excluded_paths=(r'.*Test[A-Z]?.*\.java',),

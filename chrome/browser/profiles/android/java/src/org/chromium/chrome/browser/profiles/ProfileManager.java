@@ -95,7 +95,14 @@ public class ProfileManager {
      *
      * <p>Note: The function name uses the "last used" terminology for consistency with
      * profile_manager.cc which supports multiple regular profiles.
+     *
+     * @deprecated There is no single regular profile once Chrome supports multiple profiles. Use
+     *     the profile that owns the caller instead: Activities use their {@link ProfileProvider}
+     *     ({@code getProfileProviderSupplier()}), per-profile singletons use {@link
+     *     ProfileKeyedMap}, JNI bridges take the {@link Profile} as a parameter and background
+     *     tasks resolve their profile token with {@link ProfileResolver}.
      */
+    @Deprecated
     public static Profile getLastUsedRegularProfile() {
         ThreadUtils.assertOnUiThread();
         if (!sInitialized) {
