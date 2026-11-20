@@ -59,10 +59,10 @@ AwSafeBrowsingUIManager::AwSafeBrowsingUIManager() {
                                        &user_data_dir);
   DCHECK(result);
 
-  network_context_ =
-      std::make_unique<safe_browsing::SafeBrowsingNetworkContext>(
-          user_data_dir, /*trigger_migration=*/false,
-          base::BindRepeating(CreateDefaultNetworkContextParams));
+  network_context_ = safe_browsing::SafeBrowsingNetworkContext::Create(
+      /*is_off_the_record=*/false, user_data_dir,
+      /*trigger_migration=*/false,
+      base::BindRepeating(CreateDefaultNetworkContextParams));
 }
 
 AwSafeBrowsingUIManager::~AwSafeBrowsingUIManager() {}

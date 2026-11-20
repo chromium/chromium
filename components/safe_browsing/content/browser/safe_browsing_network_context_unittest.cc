@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
+#include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -26,14 +28,18 @@ namespace safe_browsing {
 
 namespace {
 
-network::mojom::NetworkContextParamsPtr CreateNetworkContextParams(
-    int* call_count) {
-  ++(*call_count);
+network::mojom::NetworkContextParamsPtr CreateNetworkContextParams() {
   network::mojom::NetworkContextParamsPtr params =
       network::mojom::NetworkContextParams::New();
   params->cert_verifier_params =
       network::FakeTestCertVerifierParamsFactory::GetCertVerifierParams();
   return params;
+}
+
+network::mojom::NetworkContextParamsPtr CreateNetworkContextParamsAndCount(
+    int* call_count) {
+  ++(*call_count);
+  return CreateNetworkContextParams();
 }
 
 void InvokeCreateLoaderAndStartAndClone(
@@ -58,6 +64,41 @@ class SafeBrowsingNetworkContextTest : public testing::Test {
  protected:
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
+  void VerifyNetworkContextCreation(bool is_off_the_record) {
+    std::unique_ptr<SafeBrowsingNetworkContext> sb_network_context =
+        SafeBrowsingNetworkContext::Create(
+            is_off_the_record, temp_dir_.GetPath(),
+            /*trigger_migration=*/true,
+            base::BindRepeating(&CreateNetworkContextParams));
+
+    network::mojom::NetworkContextParamsPtr params =
+        sb_network_context->CreateNetworkContextParamsForTesting();
+    ASSERT_TRUE(params);
+    EXPECT_FALSE(params->http_cache_enabled);
+    if (is_off_the_record) {
+      EXPECT_FALSE(params->file_paths);
+    } else {
+      EXPECT_FALSE(params->enable_encrypted_cookies);
+      ASSERT_TRUE(params->file_paths);
+      EXPECT_EQ(temp_dir_.GetPath().Append(base::FilePath(
+                    base::FilePath::StringType(kSafeBrowsingBaseFilename) +
+                    FILE_PATH_LITERAL(" Network"))),
+                params->file_paths->data_directory.path());
+      EXPECT_EQ(temp_dir_.GetPath(), params->file_paths->unsandboxed_data_path);
+      EXPECT_TRUE(params->file_paths->trigger_migration);
+      EXPECT_EQ(
+          base::FilePath(base::FilePath::StringType(kSafeBrowsingBaseFilename) +
+                         kCookiesFile),
+          params->file_paths->cookie_database_name);
+    }
+
+    // Verify the context can be created in the network service.
+    EXPECT_NE(nullptr, sb_network_context->GetURLLoaderFactory());
+    EXPECT_NE(nullptr, sb_network_context->GetNetworkContext());
+    sb_network_context->FlushForTesting();
+    sb_network_context->ServiceShuttingDown();
+  }
+
   base::ScopedTempDir temp_dir_;
   content::BrowserTaskEnvironment task_environment_;
 };
@@ -65,38 +106,42 @@ class SafeBrowsingNetworkContextTest : public testing::Test {
 TEST_F(SafeBrowsingNetworkContextTest,
        ActiveURLLoaderFactoryCreatesNetworkContext) {
   int params_factory_call_count = 0;
-  SafeBrowsingNetworkContext sb_network_context(
-      temp_dir_.GetPath(), /*trigger_migration=*/true,
-      base::BindRepeating(&CreateNetworkContextParams,
-                          base::Unretained(&params_factory_call_count)));
+  std::unique_ptr<SafeBrowsingNetworkContext> sb_network_context =
+      SafeBrowsingNetworkContext::Create(
+          /*is_off_the_record=*/false, temp_dir_.GetPath(),
+          /*trigger_migration=*/true,
+          base::BindRepeating(&CreateNetworkContextParamsAndCount,
+                              base::Unretained(&params_factory_call_count)));
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      sb_network_context.GetURLLoaderFactory();
+      sb_network_context->GetURLLoaderFactory();
   ASSERT_NE(nullptr, url_loader_factory);
 
   InvokeCreateLoaderAndStartAndClone(url_loader_factory.get());
   EXPECT_EQ(1, params_factory_call_count);
-  sb_network_context.ServiceShuttingDown();
+  sb_network_context->ServiceShuttingDown();
 }
 
 TEST_F(SafeBrowsingNetworkContextTest,
        ServiceShuttingDownPreventsNetworkContextRecreation) {
   int params_factory_call_count = 0;
-  SafeBrowsingNetworkContext sb_network_context(
-      temp_dir_.GetPath(), /*trigger_migration=*/true,
-      base::BindRepeating(&CreateNetworkContextParams,
-                          base::Unretained(&params_factory_call_count)));
+  std::unique_ptr<SafeBrowsingNetworkContext> sb_network_context =
+      SafeBrowsingNetworkContext::Create(
+          /*is_off_the_record=*/false, temp_dir_.GetPath(),
+          /*trigger_migration=*/true,
+          base::BindRepeating(&CreateNetworkContextParamsAndCount,
+                              base::Unretained(&params_factory_call_count)));
 
-  ASSERT_NE(nullptr, sb_network_context.GetNetworkContext());
+  ASSERT_NE(nullptr, sb_network_context->GetNetworkContext());
   EXPECT_EQ(1, params_factory_call_count);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-      sb_network_context.GetURLLoaderFactory();
+      sb_network_context->GetURLLoaderFactory();
   ASSERT_NE(nullptr, url_loader_factory);
 
-  sb_network_context.ServiceShuttingDown();
+  sb_network_context->ServiceShuttingDown();
 
-  EXPECT_EQ(nullptr, sb_network_context.GetNetworkContext());
+  EXPECT_EQ(nullptr, sb_network_context->GetNetworkContext());
   InvokeCreateLoaderAndStartAndClone(url_loader_factory.get());
   EXPECT_EQ(1, params_factory_call_count);
 }
@@ -104,10 +149,12 @@ TEST_F(SafeBrowsingNetworkContextTest,
 TEST_F(SafeBrowsingNetworkContextTest,
        DestructorPreventsParamsFactoryCallbackAfterDestruction) {
   int params_factory_call_count = 0;
-  auto sb_network_context = std::make_unique<SafeBrowsingNetworkContext>(
-      temp_dir_.GetPath(), /*trigger_migration=*/true,
-      base::BindRepeating(&CreateNetworkContextParams,
-                          base::Unretained(&params_factory_call_count)));
+  std::unique_ptr<SafeBrowsingNetworkContext> sb_network_context =
+      SafeBrowsingNetworkContext::Create(
+          /*is_off_the_record=*/false, temp_dir_.GetPath(),
+          /*trigger_migration=*/true,
+          base::BindRepeating(&CreateNetworkContextParamsAndCount,
+                              base::Unretained(&params_factory_call_count)));
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       sb_network_context->GetURLLoaderFactory();
@@ -118,6 +165,15 @@ TEST_F(SafeBrowsingNetworkContextTest,
 
   InvokeCreateLoaderAndStartAndClone(url_loader_factory.get());
   EXPECT_EQ(0, params_factory_call_count);
+}
+
+TEST_F(SafeBrowsingNetworkContextTest, RegularContextConfiguresFilePaths) {
+  VerifyNetworkContextCreation(/*is_off_the_record=*/false);
+}
+
+TEST_F(SafeBrowsingNetworkContextTest,
+       OffTheRecordContextLeavesFilePathsUnset) {
+  VerifyNetworkContextCreation(/*is_off_the_record=*/true);
 }
 
 }  // namespace safe_browsing
