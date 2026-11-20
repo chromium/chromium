@@ -319,6 +319,7 @@ if (safe_browsing_mode != 0) {
       "//mojo/public/mojom/base:protobuf_support",
       "//ui/display",
       "//ui/gfx/codec",
+      "//ui/gfx/geometry",
     ]
 
     if (is_android) {

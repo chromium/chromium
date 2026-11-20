@@ -1819,6 +1819,17 @@ void ClientSideDetectionHostBase::StartIntelligentScan(
     base::UmaHistogramCounts10M(
         "SBClientPhishing.Multimodal.ScreenshotCaptureSize",
         tab_screenshot->size());
+    const int max_screenshot_bytes =
+        kClientSideDetectionServerModelMultimodalMaxScreenshotBytes.Get();
+    const bool exceeds_max_size =
+        max_screenshot_bytes >= 0 &&
+        tab_screenshot->size() > static_cast<size_t>(max_screenshot_bytes);
+    base::UmaHistogramBoolean(
+        "SBClientPhishing.Multimodal.ScreenshotExceedsMaxSize",
+        exceeds_max_size);
+    if (exceeds_max_size) {
+      tab_screenshot.reset();
+    }
   }
   if ((!tab_screenshot.has_value() || tab_screenshot->empty()) &&
       inner_text.size() <= kInnerTextMinThresholdBytes) {

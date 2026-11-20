@@ -1234,8 +1234,9 @@ useful for Chirp alerts (go/crca-alerts). -->
   <owner>skrakowi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Records the size in bytes of the raw PNG viewport screenshot attached to a
-    multimodal intelligent scan request. Logged in
+    Records the size in bytes of the raw PNG viewport screenshot captured for a
+    multimodal intelligent scan request (logged before applying the
+    MaxScreenshotBytes size gate). Logged in
     ClientSideDetectionHostBase::StartIntelligentScan across all platforms
     (Desktop, Android, and iOS) whenever a non-empty screenshot is captured.
   </summary>
@@ -1251,7 +1252,23 @@ useful for Chirp alerts (go/crca-alerts). -->
     intelligent scan across all platforms (Desktop, Android, and iOS). Logged
     once per intelligent scan attempt when
     ClientSideDetectionHostBase::ShouldCaptureScreenshotForIntelligentScan() is
-    true.
+    true (logged before ClientSideDetectionHostBase::StartIntelligentScan
+    applies the MaxScreenshotBytes size gate, so Success is still logged if the
+    screenshot is subsequently dropped; see
+    SBClientPhishing.Multimodal.ScreenshotExceedsMaxSize).
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.Multimodal.ScreenshotExceedsMaxSize"
+    enum="Boolean" expires_after="2027-05-05">
+  <owner>skrakowi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether a captured non-empty PNG viewport screenshot exceeded the
+    MaxScreenshotBytes threshold and was dropped before invoking the multimodal
+    intelligent scan. Logged in
+    ClientSideDetectionHostBase::StartIntelligentScan across all platforms
+    (Desktop, Android, and iOS) whenever a non-empty screenshot is captured.
   </summary>
 </histogram>
 

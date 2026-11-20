@@ -86,7 +86,8 @@ enum class MultimodalScreenshotCaptureStatus {
   kPageContextFailed = 7,
   kSnapshotMissing = 8,
   kBase64DecodeFailed = 9,
-  kMaxValue = kBase64DecodeFailed,
+  kCopyFromSurfaceTimedOut = 10,
+  kMaxValue = kCopyFromSurfaceTimedOut,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/sb_client/enums.xml:SBClientPhishingMultimodalScreenshotCaptureStatus)
 

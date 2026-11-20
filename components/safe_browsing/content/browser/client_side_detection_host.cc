@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
@@ -28,12 +29,14 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "base/task/thread_pool.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected.h"
 #include "base/uuid.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -92,11 +95,14 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "ui/android/view_android.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #endif
 
 using content::BrowserThread;
@@ -108,6 +114,11 @@ namespace {
 
 // How long to wait to run the user report callback.
 const int kUserReportCallbackTimer = 30;
+
+// Extra time the browser waits for `CopyFromSurface()` beyond the viz timeout
+// before giving up on a browser-side page capture.
+constexpr base::TimeDelta kCopyFromSurfaceTimeoutAllowance =
+    base::Milliseconds(500);
 
 bool HasDebugFeatureDirectory() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -727,7 +738,8 @@ ClientSideDetectionHost::ClientSideDetectionHost(
       tab_(tab),
       classification_request_(nullptr),
       delegate_(std::move(delegate)),
-      account_signed_in_callback_(account_signed_in_callback) {
+      account_signed_in_callback_(account_signed_in_callback),
+      visual_capturer_(std::make_unique<VisualCapturer>()) {
   DCHECK(tab);
   DCHECK(pref_service);
   // Note: the CSD service will be nullptr here in testing.
@@ -758,8 +770,37 @@ ClientSideDetectionHost::~ClientSideDetectionHost() {
 void ClientSideDetectionHost::CancelPendingRequests() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   weak_factory_.InvalidateWeakPtrs();
+  multimodal_screenshot_watchdog_timer_.Stop();
+  pending_multimodal_screenshot_callback_.Reset();
   CancelBrowserSideClassification();
   ClientSideDetectionHostBase::CancelPendingRequests();
+}
+
+void ClientSideDetectionHost::SetVisualCapturerForTesting(
+    std::unique_ptr<VisualCapturer> capturer) {
+  visual_capturer_ = std::move(capturer);
+}
+
+void ClientSideDetectionHost::VisualCapturer::CopyFromSurface(
+    content::WebContents* web_contents,
+    base::TimeDelta timeout,
+    CopyCallback callback) {
+  content::RenderWidgetHostView* view = web_contents->GetRenderWidgetHostView();
+  CHECK(view);
+
+  gfx::Rect src_rect;
+#if BUILDFLAG(IS_ANDROID)
+  // The Android surface can extend below the web contents to make room for
+  // the browser controls. Crop to the content area, which starts at the
+  // origin and is specified in physical pixels on Android. See
+  // PageContextFetcher::GetTabScreenshot().
+  src_rect = gfx::Rect(gfx::ScaleToRoundedSize(view->GetViewBounds().size(),
+                                               view->GetDeviceScaleFactor()));
+#endif
+  // The callback is not guaranteed to run on the calling sequence.
+  view->CopyFromSurface(
+      src_rect, gfx::Size(), timeout,
+      base::BindPostTaskToCurrentDefault(std::move(callback)));
 }
 
 void ClientSideDetectionHost::CaptureScreenshot(ScreenshotCallback callback) {
@@ -1605,20 +1646,32 @@ void ClientSideDetectionHost::MaybeCaptureScreenshotAndStartIntelligentScan(
     std::string inner_text) {
   if (ShouldCaptureScreenshotForIntelligentScan() &&
       IsTabVisibleAndOnUrl(GURL(verdict->url()))) {
-    if (content::RenderWidgetHostView* view =
-            web_contents()->GetRenderWidgetHostView()) {
-      gfx::Rect src_rect =
-#if BUILDFLAG(IS_ANDROID)
-          gfx::Rect(view->GetVisibleViewportSize());
-#else
-          gfx::Rect();
-#endif
-      view->CopyFromSurface(
-          src_rect, gfx::Size(), base::TimeDelta(),
+    if (web_contents()->GetRenderWidgetHostView()) {
+      base::TimeDelta timeout =
+          kClientSideDetectionServerModelMultimodalCopyFromSurfaceTimeout.Get();
+      if (!timeout.is_positive()) {
+        timeout = base::TimeDelta();
+      }
+      const int capture_id = ++multimodal_screenshot_capture_id_;
+      pending_multimodal_screenshot_callback_ =
           base::BindOnce(&ClientSideDetectionHost::OnScreenshotTaken,
                          weak_factory_.GetWeakPtr(), std::move(verdict),
                          did_match_high_confidence_allowlist, is_invalid_ip,
-                         std::move(inner_text), tick_clock()->NowTicks()));
+                         std::move(inner_text), tick_clock()->NowTicks());
+      multimodal_screenshot_watchdog_timer_.Stop();
+      if (timeout.is_positive()) {
+        multimodal_screenshot_watchdog_timer_.Start(
+            FROM_HERE, timeout + kCopyFromSurfaceTimeoutAllowance,
+            base::BindOnce(
+                &ClientSideDetectionHost::CompleteMultimodalScreenshotCapture,
+                weak_factory_.GetWeakPtr(), capture_id,
+                base::unexpected(content::CopyFromSurfaceError::kTimeout)));
+      }
+      visual_capturer_->CopyFromSurface(
+          web_contents(), timeout,
+          base::BindOnce(
+              &ClientSideDetectionHost::CompleteMultimodalScreenshotCapture,
+              weak_factory_.GetWeakPtr(), capture_id));
       return;
     } else {
       base::UmaHistogramEnumeration(
@@ -1629,6 +1682,17 @@ void ClientSideDetectionHost::MaybeCaptureScreenshotAndStartIntelligentScan(
   StartIntelligentScan(std::move(verdict), did_match_high_confidence_allowlist,
                        is_invalid_ip, std::move(inner_text),
                        /*tab_screenshot=*/std::nullopt);
+}
+
+void ClientSideDetectionHost::CompleteMultimodalScreenshotCapture(
+    int capture_id,
+    const content::CopyFromSurfaceResult& result) {
+  if (!pending_multimodal_screenshot_callback_ ||
+      capture_id != multimodal_screenshot_capture_id_) {
+    return;
+  }
+  multimodal_screenshot_watchdog_timer_.Stop();
+  std::move(pending_multimodal_screenshot_callback_).Run(result);
 }
 
 void ClientSideDetectionHost::OnScreenshotTaken(
@@ -1647,7 +1711,10 @@ void ClientSideDetectionHost::OnScreenshotTaken(
     failure_status =
         MultimodalScreenshotCaptureStatus::kTabNotVisibleOrUrlChanged;
   } else if (!result.has_value()) {
-    failure_status = MultimodalScreenshotCaptureStatus::kCopyFromSurfaceFailed;
+    failure_status =
+        result.error() == content::CopyFromSurfaceError::kTimeout
+            ? MultimodalScreenshotCaptureStatus::kCopyFromSurfaceTimedOut
+            : MultimodalScreenshotCaptureStatus::kCopyFromSurfaceFailed;
   } else if (result->bitmap.drawsNothing()) {
     failure_status = MultimodalScreenshotCaptureStatus::kEmptyBitmap;
   }

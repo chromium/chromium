@@ -14,6 +14,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/system/sys_info.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -250,6 +251,14 @@ constexpr base::FeatureParam<bool>
     kClientSideDetectionServerModelMultimodalExcludeLowEndDevices{
         &kClientSideDetectionServerModelMultimodal, "ExcludeLowEndDevices",
         /*default_value=*/true};
+constexpr base::FeatureParam<int>
+    kClientSideDetectionServerModelMultimodalMaxScreenshotBytes{
+        &kClientSideDetectionServerModelMultimodal, "MaxScreenshotBytes",
+        /*default_value=*/2 * 1024 * 1024};
+constexpr base::FeatureParam<base::TimeDelta>
+    kClientSideDetectionServerModelMultimodalCopyFromSurfaceTimeout{
+        &kClientSideDetectionServerModelMultimodal, "CopyFromSurfaceTimeout",
+        /*default_value=*/base::Seconds(1)};
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kClientSideDetectionServerModelRolloutAndroid,

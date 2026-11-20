@@ -496,6 +496,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="PageContext extraction failed (iOS)"/>
   <int value="8" label="Snapshot missing from PageContext (iOS)"/>
   <int value="9" label="Base64 decode failed (iOS)"/>
+  <int value="10" label="CopyFromSurface timed out"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/safe_browsing/core/common/client_side_detection_enums.h:MultimodalScreenshotCaptureStatus) -->

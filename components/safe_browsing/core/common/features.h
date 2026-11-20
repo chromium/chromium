@@ -219,6 +219,15 @@ BASE_DECLARE_FEATURE(kClientSideDetectionServerModelMultimodal);
 // multimodal scam detection.
 extern const base::FeatureParam<bool>
     kClientSideDetectionServerModelMultimodalExcludeLowEndDevices;
+// Maximum size in bytes of the captured PNG screenshot to attach to a
+// multimodal intelligent scan request. A negative value disables the size
+// limit.
+extern const base::FeatureParam<int>
+    kClientSideDetectionServerModelMultimodalMaxScreenshotBytes;
+// Timeout for capturing a viewport screenshot for multimodal scam detection
+// via CopyFromSurface. A non-positive value disables the timeout.
+extern const base::FeatureParam<base::TimeDelta>
+    kClientSideDetectionServerModelMultimodalCopyFromSurfaceTimeout;
 
 #if BUILDFLAG(IS_ANDROID)
 // Dedicated long-lived feature flag to control future server model rollout and

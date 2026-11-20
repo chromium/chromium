@@ -12,10 +12,12 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/permissions/permission_request_manager.h"
@@ -154,6 +156,24 @@ class ClientSideDetectionHost
 #endif
   };
 
+  // Thin wrapper around `RenderWidgetHostView::CopyFromSurface` for viewport
+  // screenshot capture, allowing unit tests to replace the compositing surface
+  // call where `TestRenderWidgetHostView` has no surface.
+  class VisualCapturer {
+   public:
+    using CopyCallback =
+        base::OnceCallback<void(const content::CopyFromSurfaceResult&)>;
+
+    virtual ~VisualCapturer() = default;
+
+    // Copies the view's surface at native physical-pixel resolution
+    // (`output_size = gfx::Size()`) and runs `callback` on the calling
+    // sequence.
+    virtual void CopyFromSurface(content::WebContents* web_contents,
+                                 base::TimeDelta timeout,
+                                 CopyCallback callback);
+  };
+
   static const int kMaxHighResScreenshotWidth;
   static const int kMaxHighResScreenshotHeight;
 
@@ -224,6 +244,8 @@ class ClientSideDetectionHost
       const PreclassificationStarted& callback) {
     preclassification_started_cb_for_testing_ = callback;
   }
+
+  void SetVisualCapturerForTesting(std::unique_ptr<VisualCapturer> capturer);
 
  protected:
   explicit ClientSideDetectionHost(
@@ -399,6 +421,12 @@ class ClientSideDetectionHost
   // committed URL matches `url`.
   bool IsTabVisibleAndOnUrl(const GURL& url) const;
 
+  // Stops the multimodal screenshot watchdog timer and forwards `result` to
+  // `pending_multimodal_screenshot_callback_` if `capture_id` is still active.
+  void CompleteMultimodalScreenshotCapture(
+      int capture_id,
+      const content::CopyFromSurfaceResult& result);
+
   // Called when the viewport screenshot capture completes. Validates that the
   // tab is still visible and on the same URL, then posts a background task to
   // encode the bitmap as PNG bytes before starting the intelligent scan.
@@ -567,6 +595,16 @@ class ClientSideDetectionHost
   // The high resolution screenshot of the current tab. Should only be populated
   // when a user reports a site as unsafe.
   std::optional<SkBitmap> screenshot_;
+
+  std::unique_ptr<VisualCapturer> visual_capturer_;
+
+  // The callback for the multimodal screenshot capture.
+  VisualCapturer::CopyCallback pending_multimodal_screenshot_callback_;
+  // Timer to cancel the multimodal screenshot capture if it takes too long.
+  base::OneShotTimer multimodal_screenshot_watchdog_timer_;
+  // The ID of the current multimodal screenshot capture. Used to invalidate
+  // stale callbacks.
+  int multimodal_screenshot_capture_id_ = 0;
 
   base::WeakPtrFactory<ClientSideDetectionHost> weak_factory_{this};
 };
