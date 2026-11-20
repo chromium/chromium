@@ -138,8 +138,10 @@
 #include "components/sessions/core/command_storage_manager.h"
 #include "components/sessions/core/command_storage_manager_test_helper.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
+#include "components/sessions/core/session_command.h"
 #include "components/sessions/core/session_constants.h"
 #include "components/sessions/core/session_id.h"
+#include "components/sessions/core/session_service_commands.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sync/model/data_type_store.h"
@@ -186,6 +188,8 @@
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/first_run/scoped_relaunch_chrome_browser_override.h"
+#include "ui/views/test/widget_test_api.h"
+#include "ui/views/widget/widget.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -1125,6 +1129,129 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, WindowBoundsAreRestored) {
 #endif
   }
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+namespace {
+
+// Returns the bounds that the last window placement save wrote to the
+// profile's prefs, or nullopt if any placement key is missing. These are the
+// same bounds that are sent to the session service.
+std::optional<gfx::Rect> GetSavedWindowPlacementPrefBounds(Profile* profile) {
+  const base::DictValue& placement =
+      profile->GetPrefs()->GetDict(prefs::kBrowserWindowPlacement);
+  const std::optional<int> left = placement.FindInt("left");
+  const std::optional<int> top = placement.FindInt("top");
+  const std::optional<int> right = placement.FindInt("right");
+  const std::optional<int> bottom = placement.FindInt("bottom");
+  if (!left || !top || !right || !bottom) {
+    return std::nullopt;
+  }
+  return gfx::Rect(*left, *top, *right - *left, *bottom - *top);
+}
+
+bool IsSetWindowBoundsCommand(const sessions::SessionCommand& command,
+                              SessionID window_id,
+                              const gfx::Rect& bounds) {
+  for (auto state : {ui::mojom::WindowShowState::kNormal,
+                     ui::mojom::WindowShowState::kInactive}) {
+    std::unique_ptr<sessions::SessionCommand> expected =
+        sessions::CreateSetWindowBoundsCommand(window_id, bounds, state);
+    if (expected->id() == command.id() &&
+        std::ranges::equal(expected->contents(), command.contents())) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
+
+// SessionEnding() (e.g. on SIGTERM at logout) terminates the process without
+// closing windows. Window moves aren't saved as they happen, so the window
+// placement must be saved before termination.
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest, SessionEndingSavesMovedWindow) {
+#if BUILDFLAG(IS_OZONE)
+  if (::ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP() << "Wayland clients cannot set top-level window positions.";
+  }
+#endif
+  // Navigate to trigger SessionService creation, and open a second window.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl1()));
+  Profile* profile = browser()->GetProfile();
+  SessionServiceTestHelper helper(profile);
+
+  chrome::SaveAllWindowPlacementsForTesting();
+  const std::optional<gfx::Rect> first_initial_bounds =
+      GetSavedWindowPlacementPrefBounds(profile);
+  ASSERT_TRUE(first_initial_bounds.has_value());
+
+  BrowserWindowInterface* second_browser = CreateBrowser(profile);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(second_browser, GetUrl1()));
+  views::Widget::GetWidgetForNativeWindow(
+      second_browser->GetWindow()->GetNativeWindow())
+      ->SaveWindowPlacementIfNeeded();
+  const std::optional<gfx::Rect> second_initial_bounds =
+      GetSavedWindowPlacementPrefBounds(profile);
+  ASSERT_TRUE(second_initial_bounds.has_value());
+
+  // Activate before moving: deactivating a window saves its placement, which
+  // would flush the moved bounds before SaveAllWindowPlacementsForTesting().
+  browser()->GetWindow()->Activate();
+  views::DisableActivationChangeHandlingForTests();
+
+  chrome::SaveAllWindowPlacementsForTesting();
+  const std::optional<gfx::Rect> initial_saved_bounds =
+      GetSavedWindowPlacementPrefBounds(profile);
+  ASSERT_TRUE(initial_saved_bounds.has_value());
+  helper.SaveNow();
+  ASSERT_TRUE(helper.command_storage_manager()->pending_commands().empty());
+
+  // Move both windows to distinct positions without resizing them, which
+  // doesn't save their placements.
+  const gfx::Vector2d first_offset(20, 15);
+  const gfx::Rect first_bounds =
+      browser()->GetWindow()->GetBounds() + first_offset;
+  browser()->GetWindow()->SetBounds(first_bounds);
+  const gfx::Vector2d second_offset(40, 30);
+  const gfx::Rect second_bounds =
+      second_browser->GetWindow()->GetBounds() + second_offset;
+  second_browser->GetWindow()->SetBounds(second_bounds);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return browser()->GetWindow()->GetBounds().origin() ==
+               first_bounds.origin() &&
+           second_browser->GetWindow()->GetBounds().origin() ==
+               second_bounds.origin();
+  }));
+  ASSERT_TRUE(helper.command_storage_manager()->pending_commands().empty());
+  EXPECT_EQ(initial_saved_bounds, GetSavedWindowPlacementPrefBounds(profile));
+
+  const gfx::Rect first_expected = *first_initial_bounds + first_offset;
+  const gfx::Rect second_expected = *second_initial_bounds + second_offset;
+  ASSERT_NE(first_expected, second_expected);
+  const bool first_is_active =
+      GetLastActiveBrowserWindowInterfaceWithAnyProfile() == browser();
+  const gfx::Rect& active_expected =
+      first_is_active ? first_expected : second_expected;
+  const gfx::Rect& inactive_expected =
+      first_is_active ? second_expected : first_expected;
+  const SessionID active_id =
+      (first_is_active ? browser() : second_browser)->GetSessionID();
+  const SessionID inactive_id =
+      (first_is_active ? second_browser : browser())->GetSessionID();
+
+  chrome::SaveAllWindowPlacementsForTesting();
+  EXPECT_EQ(active_expected, GetSavedWindowPlacementPrefBounds(profile));
+
+  // SessionService receives SetWindowBounds commands from least to most
+  // recently active.
+  const auto& pending = helper.command_storage_manager()->pending_commands();
+  ASSERT_EQ(2u, pending.size());
+  EXPECT_TRUE(
+      IsSetWindowBoundsCommand(*pending[0], inactive_id, inactive_expected));
+  EXPECT_TRUE(
+      IsSetWindowBoundsCommand(*pending[1], active_id, active_expected));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 

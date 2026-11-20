@@ -5,12 +5,15 @@
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 
 #include <optional>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/callback_list.h"
+#include "base/containers/adapters.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/process/process.h"
 #include "base/threading/hang_watcher.h"
@@ -53,6 +56,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/base_window.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/boot_times_recorder/boot_times_recorder.h"
@@ -410,6 +414,45 @@ void RelaunchIgnoreUnloadHandlers() {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+namespace {
+
+void SaveWindowPlacement(BrowserWindowInterface* browser) {
+  ui::BaseWindow* window = browser->GetWindow();
+  if (!window) {
+    return;
+  }
+  views::Widget* widget =
+      views::Widget::GetWidgetForNativeWindow(window->GetNativeWindow());
+  // A closed widget already saved its placement when it was closed.
+  if (widget && !widget->IsClosed()) {
+    widget->SaveWindowPlacementIfNeeded();
+  }
+}
+
+// Saves the placement of every browser window. Windows are saved from least to
+// most recently active, so that the most recently active window is the one
+// left in the per-profile placement pref used for new windows.
+void SaveAllWindowPlacements() {
+  std::vector<base::WeakPtr<BrowserWindowInterface>> browsers;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&browsers](BrowserWindowInterface* browser) {
+        browsers.push_back(browser->GetWeakPtr());
+        return true;
+      });
+  for (const base::WeakPtr<BrowserWindowInterface>& browser :
+       base::Reversed(browsers)) {
+    if (browser) {
+      SaveWindowPlacement(browser.get());
+    }
+  }
+}
+
+}  // namespace
+
+void SaveAllWindowPlacementsForTesting() {
+  SaveAllWindowPlacements();
+}
+
 void SessionEnding() {
   // This is a time-limited shutdown where we need to write as much to
   // disk as we can as soon as we can, and where we must kill the
@@ -456,6 +499,10 @@ void SessionEnding() {
     shutdown_watcher.emplace();
     shutdown_watcher->Arm(kShutdownHangDelay);
   }
+
+  // Windows aren't closed on this path, so save their placement now. Moves
+  // aren't saved as they happen.
+  SaveAllWindowPlacements();
 
   browser_shutdown::OnShutdownStarting(
       browser_shutdown::ShutdownType::kEndSession);

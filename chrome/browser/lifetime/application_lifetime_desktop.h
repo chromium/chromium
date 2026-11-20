@@ -53,6 +53,10 @@ void ShutdownIfNeeded();
 // Begins shutdown of the application when the desktop session is ending.
 void SessionEnding();
 
+// Saves the bounds and show state of every browser window, as SessionEnding()
+// does before it terminates the process without closing windows.
+void SaveAllWindowPlacementsForTesting();
+
 // Called once the application is exiting.
 void OnAppExiting();
 
