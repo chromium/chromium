@@ -12,7 +12,6 @@
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "components/autofill/core/browser/ui/payments/virtual_card_enroll_bubble_controller.h"
-#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -36,9 +35,6 @@ class AutofillVirtualCardEnrollmentBottomSheetDelegateMobile {
 
   // Text of the learn more link in the description.
   std::u16string GetLearnMoreLinkText() const;
-
-  // Issuer icon for the card. (Deprecated)
-  const gfx::ImageSkia* GetIssuerIcon() const;
 
   // Network icon resource id for the card. This will be used if no issuer
   // icon url has been set or as a fallback if the issuer icon url has not yet

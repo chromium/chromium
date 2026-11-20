@@ -9,7 +9,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
@@ -43,8 +42,6 @@ import org.robolectric.shadows.ShadowActivity;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcher;
 import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
@@ -58,7 +55,6 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.ImageType;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
@@ -74,7 +70,6 @@ import java.util.ArrayList;
 
 /** Unit test for {@link AutofillVcnEnrollBottomSheetBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER})
 public final class AutofillVcnEnrollBottomSheetBridgeTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -154,11 +149,6 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
                 "Message text",
                 "Description text. Learn more",
                 "Learn more",
-                /* issuerIconBitmap= */ Bitmap.createBitmap(
-                        /* colors= */ new int[1],
-                        /* width= */ 1,
-                        /* height= */ 1,
-                        Bitmap.Config.ARGB_8888),
                 /* networkIconResource= */ ISSUER_ICON_RESOURCE_ID,
                 /* issuerIconUrl= */ ISSUER_ICON_URL,
                 "Card label",
@@ -207,19 +197,6 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
     }
 
     @Test
-    @DisableFeatures({AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER})
-    public void testShowBottomSheetWithBitmapIcon() {
-        when(mWebContents.isDestroyed()).thenReturn(false);
-        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
-
-        requestShowContent(mWebContents);
-
-        verify(mBottomSheetController)
-                .requestShowContent(
-                        any(AutofillVcnEnrollBottomSheetContent.class), /* animate= */ eq(true));
-    }
-
-    @Test
     public void testShowBottomSheet() {
         when(mWebContents.isDestroyed()).thenReturn(false);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
@@ -229,27 +206,6 @@ public final class AutofillVcnEnrollBottomSheetBridgeTest {
         verify(mBottomSheetController)
                 .requestShowContent(
                         any(AutofillVcnEnrollBottomSheetContent.class), /* animate= */ eq(true));
-    }
-
-    @Test
-    @DisableFeatures({AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER})
-    public void testInitialBitmapValue() {
-        when(mWebContents.isDestroyed()).thenReturn(false);
-        when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindow);
-
-        requestShowContent(mWebContents);
-
-        assertTrue(
-                mBridge.getCoordinatorForTesting()
-                        .getPropertyModelForTesting()
-                        .get(AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON)
-                        .mBitmap
-                        .sameAs(
-                                Bitmap.createBitmap(
-                                        /* colors= */ new int[1],
-                                        /* width= */ 1,
-                                        /* height= */ 1,
-                                        Bitmap.Config.ARGB_8888)));
     }
 
     @Test

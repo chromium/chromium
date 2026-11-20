@@ -28,7 +28,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.Description;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.IssuerIcon;
@@ -39,7 +38,6 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -47,6 +45,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.RenderTestRule.Component;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -54,7 +53,6 @@ import java.util.List;
 @Batch(Batch.PER_CLASS)
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER})
 public class AutofillVcnEnrollBottomSheetRenderTest {
     /**
      * A function that does nothing and conforms to {@link
@@ -166,7 +164,7 @@ public class AutofillVcnEnrollBottomSheetRenderTest {
                                                 issuerIcon.mIconResource))
                         .with(
                                 AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON,
-                                new IssuerIcon(R.drawable.visa_card, /* iconUrl= */ null))
+                                new IssuerIcon(R.drawable.visa_card, GURL.emptyGURL()))
                         .with(
                                 AutofillVcnEnrollBottomSheetProperties.ISSUER_LEGAL_MESSAGES,
                                 new LegalMessages(

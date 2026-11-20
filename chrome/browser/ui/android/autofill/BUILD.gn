@@ -192,7 +192,6 @@ source_set("unit_tests") {
     "//third_party/blink/public/common:headers",
     "//ui/android",
     "//ui/base",
-    "//ui/gfx:test_support",
     "//url",
   ]
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]

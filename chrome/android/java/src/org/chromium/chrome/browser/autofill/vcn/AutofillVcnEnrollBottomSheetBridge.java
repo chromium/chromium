@@ -8,7 +8,6 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.net.Uri;
 
 import androidx.annotation.DrawableRes;
@@ -27,21 +26,16 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeStringConstants;
-import org.chromium.chrome.browser.autofill.AutofillUiUtils.IconSpecs;
 import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinator;
 import org.chromium.chrome.browser.autofill.anchored_dialog.AnchoredDialogCoordinatorProvider;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.Description;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.IssuerIcon;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.LegalMessages;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutManagerProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
-import org.chromium.components.autofill.AutofillFeatures;
-import org.chromium.components.autofill.ImageSize;
-import org.chromium.components.autofill.ImageType;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -88,13 +82,10 @@ import java.util.List;
      * @param descriptionText A text that describes what a virtual card does, e.g., "A virtual card
      *     hides your actual card..." and so on. This text includes a "learn more" link text.
      * @param learnMoreLinkText The text of the "learn more" link in descriptionText.
-     * @param issuerIconBitmap The icon for the card. For example, could be an American Express
-     *     logo. Not used when
-     *     AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER is enabled.
      * @param networkIconResource The resource-id icon for the card. For example, could be an
      *     American Express logo.
      * @param issuerIconUrl The url for the card icon. For example, could be a custom card art for a
-     *     credit card. This takes precedence over the issuerIconResource.
+     *     credit card. This takes precedence over the networkIconResource.
      * @param cardLabel The label for the card, e.g., "Amex ****1234".
      * @param googleLegalMessages Legal messages from Google Pay.
      * @param issuerLegalMessages Legal messages from the issuer bank.
@@ -111,7 +102,6 @@ import java.util.List;
             @JniType("std::u16string") String messageText,
             @JniType("std::u16string") String descriptionText,
             @JniType("std::u16string") String learnMoreLinkText,
-            Bitmap issuerIconBitmap,
             @DrawableRes int networkIconResource,
             @JniType("GURL") GURL issuerIconUrl,
             @JniType("std::u16string") String cardLabel,
@@ -156,9 +146,6 @@ import java.util.List;
         }
         mNativeAutofillVcnEnrollBottomSheetBridge = nativeAutofillVcnEnrollBottomSheetBridge;
 
-        IconSpecs iconSpecs =
-                IconSpecs.create(mContext, ImageType.CREDIT_CARD_ART_IMAGE, ImageSize.LARGE);
-
         PropertyModel.Builder modelBuilder =
                 new PropertyModel.Builder(AutofillVcnEnrollBottomSheetProperties.ALL_KEYS)
                         .with(AutofillVcnEnrollBottomSheetProperties.MESSAGE_TEXT, messageText)
@@ -174,14 +161,7 @@ import java.util.List;
                                         /* linkOpener= */ this))
                         .with(
                                 AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON,
-                                ChromeFeatureList.isEnabled(
-                                                AutofillFeatures
-                                                        .AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER)
-                                        ? new IssuerIcon(networkIconResource, issuerIconUrl)
-                                        : new IssuerIcon(
-                                                issuerIconBitmap,
-                                                iconSpecs.getWidth(),
-                                                iconSpecs.getHeight()))
+                                new IssuerIcon(networkIconResource, issuerIconUrl))
                         .with(AutofillVcnEnrollBottomSheetProperties.CARD_LABEL, cardLabel)
                         .with(
                                 AutofillVcnEnrollBottomSheetProperties.GOOGLE_LEGAL_MESSAGES,

@@ -4,13 +4,10 @@
 
 package org.chromium.chrome.browser.autofill.vcn;
 
-import static com.google.common.truth.Truth.assertThat;
-
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 
 import android.app.Activity;
@@ -31,14 +28,11 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.Description;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.IssuerIcon;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.LegalMessages;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.LinkOpener;
-import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.autofill.payments.LegalMessageLine.Link;
@@ -56,7 +50,6 @@ import java.util.TreeMap;
 
 /** Tests for {@link AutofillVcnEnrollBottomSheetViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER)
 public final class AutofillVcnEnrollBottomSheetViewBinderUnitTest implements LinkOpener {
     private static final int LOADING_ACCESSIBILITY_STRING_RESOURCE =
             R.string.autofill_virtual_card_enroll_loading_throbber_accessible_name;
@@ -213,21 +206,6 @@ public final class AutofillVcnEnrollBottomSheetViewBinderUnitTest implements Lin
     }
 
     @Test
-    @DisableFeatures(AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER)
-    public void testIssuerIcon() {
-        assertThat(mView.mIssuerIcon.getDrawable(), nullValue());
-
-        bind(
-                mModelBuilder.with(
-                        AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON,
-                        new IssuerIcon(
-                                createBitmap(/* dimensions= */ 10, /* color= */ 0xFFFF0000),
-                                /* width= */ 5,
-                                /* height= */ 5)));
-        assertThat(mView.mIssuerIcon.getDrawable(), notNullValue());
-    }
-
-    @Test
     public void testIssuerIconFromCardArtUrl() {
         assertThat(mView.mIssuerIcon.getDrawable(), nullValue());
         int fakeIconResourceId = 1234;
@@ -274,10 +252,7 @@ public final class AutofillVcnEnrollBottomSheetViewBinderUnitTest implements Lin
                 new TreeMap<>(
                         Comparator.comparingInt((IssuerIcon issuerIcon) -> issuerIcon.mIconResource)
                                 .thenComparing(
-                                        (IssuerIcon issuerIcon) ->
-                                                issuerIcon.mIconUrl != null
-                                                        ? issuerIcon.mIconUrl.toString()
-                                                        : null));
+                                        (IssuerIcon issuerIcon) -> issuerIcon.mIconUrl.toString()));
 
         private void putBitmap(IssuerIcon issuerIcon, Bitmap bitmap) {
             mIconBitmapLookup.put(issuerIcon, bitmap);
@@ -292,9 +267,6 @@ public final class AutofillVcnEnrollBottomSheetViewBinderUnitTest implements Lin
             if (icon == null) {
                 return null;
             }
-            // IssuerIcon#mBitmap must not be set when
-            // AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER is enabled.
-            assertThat(icon.mBitmap).isNull();
             return new BitmapDrawable(mIconBitmapLookup.get(icon));
         }
     }

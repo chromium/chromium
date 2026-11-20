@@ -10,7 +10,6 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
-#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 namespace autofill {
@@ -41,13 +40,6 @@ AutofillVirtualCardEnrollmentBottomSheetDelegateMobile::GetLearnMoreLinkText()
     const {
   return virtual_card_enroll_bubble_controller_->GetUiModel()
       .learn_more_link_text();
-}
-
-const gfx::ImageSkia*
-AutofillVirtualCardEnrollmentBottomSheetDelegateMobile::GetIssuerIcon() const {
-  return virtual_card_enroll_bubble_controller_->GetUiModel()
-      .enrollment_fields()
-      .card_art_image;
 }
 
 int AutofillVirtualCardEnrollmentBottomSheetDelegateMobile::

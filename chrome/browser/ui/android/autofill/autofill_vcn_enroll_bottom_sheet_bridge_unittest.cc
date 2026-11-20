@@ -15,8 +15,6 @@
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/image/image_skia.h"
-#include "ui/gfx/image/image_unittest_util.h"
 
 namespace autofill {
 namespace {
@@ -24,17 +22,12 @@ namespace {
 class AutofillVCNEnrollBottomSheetBridgeTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  AutofillVCNEnrollBottomSheetBridgeTest()
-      : card_art_image_(gfx::test::CreateImage(100, 50).AsImageSkia()) {}
-  ~AutofillVCNEnrollBottomSheetBridgeTest() override = default;
-
   VirtualCardEnrollBubbleControllerImpl* BuildController() {
     VirtualCardEnrollBubbleControllerImpl* controller =
         static_cast<VirtualCardEnrollBubbleControllerImpl*>(
             VirtualCardEnrollBubbleControllerImpl::GetOrCreate(web_contents()));
     VirtualCardEnrollmentFields virtual_card_enrollment_fields;
     virtual_card_enrollment_fields.credit_card = test::GetCreditCard();
-    virtual_card_enrollment_fields.card_art_image = &card_art_image_;
     virtual_card_enrollment_fields.google_legal_message = {
         TestLegalMessageLine("google_test_legal_message")};
     virtual_card_enrollment_fields.issuer_legal_message = {
@@ -46,9 +39,6 @@ class AutofillVCNEnrollBottomSheetBridgeTest
             virtual_card_enrollment_fields));
     return controller;
   }
-
- private:
-  gfx::ImageSkia card_art_image_;
 };
 
 TEST_F(AutofillVCNEnrollBottomSheetBridgeTest,

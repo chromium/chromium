@@ -12,14 +12,11 @@
 #include "components/autofill/android/payments/legal_message_line_android.h"
 #include "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_virtual_card_enrollment_bottom_sheet_delegate_mobile.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/jni_zero/jni_zero.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/android/java_bitmap.h"
-#include "ui/gfx/image/image_skia.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -53,27 +50,16 @@ bool AutofillVCNEnrollBottomSheetBridge::RequestShowContent(
   delegate_ = std::move(delegate);
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jobject> issuer_icon_bitmap = nullptr;
-  int network_icon_resource_id = 0;
-  GURL issuer_icon_url;
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableVirtualCardJavaPaymentsDataManager)) {
-    network_icon_resource_id = ResourceMapper::MapToJavaDrawableId(
-        delegate_->GetNetworkIconResourceId());
-    issuer_icon_url = delegate_->GetIssuerIconUrl();
-  } else {
-    issuer_icon_bitmap =
-        gfx::ConvertToJavaBitmap(*delegate_->GetIssuerIcon()->bitmap());
-  }
 
   return Java_AutofillVcnEnrollBottomSheetBridge_requestShowContent(
       env, java_bridge_, jni_zero::MakeRaw(this), java_web_contents,
       delegate_->GetMessageText(), delegate_->GetDescriptionText(),
-      delegate_->GetLearnMoreLinkText(), issuer_icon_bitmap,
-      network_icon_resource_id, std::move(issuer_icon_url),
-      delegate_->GetCardLabel(), delegate_->GetGoogleLegalMessage(),
-      delegate_->GetIssuerLegalMessage(), delegate_->GetAcceptButtonLabel(),
-      delegate_->GetCancelButtonLabel());
+      delegate_->GetLearnMoreLinkText(),
+      ResourceMapper::MapToJavaDrawableId(
+          delegate_->GetNetworkIconResourceId()),
+      delegate_->GetIssuerIconUrl(), delegate_->GetCardLabel(),
+      delegate_->GetGoogleLegalMessage(), delegate_->GetIssuerLegalMessage(),
+      delegate_->GetAcceptButtonLabel(), delegate_->GetCancelButtonLabel());
 }
 
 void AutofillVCNEnrollBottomSheetBridge::Hide() {

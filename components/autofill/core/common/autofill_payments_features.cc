@@ -254,14 +254,6 @@ BASE_FEATURE(kAutofillEnableVcn3dsAuthentication,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
-// When enabled, the Virtual Card enrollment bottom sheet uses the Java
-// payments data manager and associated image fetcher to retrieve the cached
-// card art images (when available on Android). When not enabled, the native
-// payments data manager and associated image fetcher are used, where the image
-// is not cached.
-BASE_FEATURE(kAutofillEnableVirtualCardJavaPaymentsDataManager,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, certain strings and logos referencing Google Account, Google
 // Payments, and Google Pay will instead reference Google Wallet.
 BASE_FEATURE(kAutofillEnableWalletBranding, base::FEATURE_ENABLED_BY_DEFAULT);
