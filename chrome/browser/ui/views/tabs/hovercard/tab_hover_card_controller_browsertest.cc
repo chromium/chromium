@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 
 #include "base/byte_size.h"
-#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"

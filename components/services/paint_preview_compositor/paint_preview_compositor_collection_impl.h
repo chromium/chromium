@@ -9,7 +9,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"

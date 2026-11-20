@@ -11,7 +11,7 @@
 #define BASE_TRACE_EVENT_MEMORY_PRESSURE_LEVEL_PROTO_H_
 
 #include "base/base_export.h"
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_level.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 
 namespace base {

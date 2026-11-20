@@ -4,7 +4,7 @@
 
 #include "gpu/command_buffer/service/service_utils.h"
 
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_level.h"
 #include "base/memory_coordinator/memory_limit.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/test/scoped_feature_list.h"

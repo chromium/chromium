@@ -8,7 +8,6 @@
 #include <memory>
 #include <set>
 
-#include "base/memory/memory_pressure_listener.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "services/network/devtools_durable_msg_collector.h"

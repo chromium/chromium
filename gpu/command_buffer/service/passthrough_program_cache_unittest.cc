@@ -12,7 +12,9 @@
 
 #include "base/base64.h"
 #include "base/functional/bind.h"
+#include "base/memory/memory_pressure_level.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/memory_limit.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/memory_coordinator/utils.h"
 #include "base/run_loop.h"

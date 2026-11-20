@@ -8,7 +8,6 @@
 #include <mutex>
 
 #include "base/containers/lru_cache.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/async_memory_consumer_registration.h"
 #include "base/memory_coordinator/memory_consumer.h"

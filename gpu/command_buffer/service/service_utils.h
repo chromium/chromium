@@ -8,7 +8,7 @@
 #include <string_view>
 
 #include "base/command_line.h"
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_level.h"
 #include "base/memory_coordinator/memory_limit.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/config/gpu_preferences.h"

@@ -8,7 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_level.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/common/chrome_features.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"

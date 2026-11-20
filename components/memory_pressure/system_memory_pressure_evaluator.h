@@ -8,7 +8,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory/memory_pressure_level.h"
 #include "base/sequence_checker.h"
 #include "components/memory_pressure/memory_pressure_voter.h"
 #include "components/memory_pressure/multi_source_memory_pressure_monitor.h"

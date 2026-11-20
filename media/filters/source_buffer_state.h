@@ -6,7 +6,6 @@
 #define MEDIA_FILTERS_SOURCE_BUFFER_STATE_H_
 
 #include "base/functional/bind.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "media/base/audio_codecs.h"

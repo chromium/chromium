@@ -16,7 +16,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/memory_limit.h"
 #include "base/time/time.h"

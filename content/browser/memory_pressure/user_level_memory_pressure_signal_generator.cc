@@ -17,7 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
-#include "base/memory/memory_pressure_listener_registry.h"
+#include "base/memory/memory_pressure_level.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"

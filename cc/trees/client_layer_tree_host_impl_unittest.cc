@@ -16,8 +16,6 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/memory_pressure_listener.h"
-#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/angle_conversions.h"
 #include "base/task/single_thread_task_runner.h"

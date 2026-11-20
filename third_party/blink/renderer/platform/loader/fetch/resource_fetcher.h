@@ -32,7 +32,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/memory/memory_pressure_listener.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"

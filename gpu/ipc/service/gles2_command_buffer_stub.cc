@@ -11,7 +11,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
 #include "base/json/json_writer.h"
-#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
