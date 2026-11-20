@@ -97,6 +97,28 @@ TEST_F(SchemeRegistryTest, WebUIScheme) {
   EXPECT_FALSE(SchemeRegistry::IsWebUIScheme(kChromeUIScheme));
 }
 
+TEST_F(SchemeRegistryTest, WebUIUntrustedScheme) {
+  const char* kUntrustedScheme = "test-webui-untrusted";
+  EXPECT_FALSE(SchemeRegistry::IsWebUIUntrustedScheme(kTestScheme));
+  EXPECT_FALSE(SchemeRegistry::IsWebUIUntrustedScheme(kUntrustedScheme));
+
+  SchemeRegistry::RegisterURLSchemeAsWebUIUntrusted(kTestScheme);
+
+  EXPECT_TRUE(SchemeRegistry::IsWebUIUntrustedScheme(kTestScheme));
+  EXPECT_FALSE(SchemeRegistry::IsWebUIScheme(kTestScheme));
+  EXPECT_FALSE(SchemeRegistry::IsWebUIUntrustedScheme(kUntrustedScheme));
+
+  SchemeRegistry::RegisterURLSchemeAsWebUIUntrustedForTest(kUntrustedScheme);
+  EXPECT_TRUE(SchemeRegistry::IsWebUIUntrustedScheme(kUntrustedScheme));
+
+  SchemeRegistry::RemoveURLSchemeAsWebUIUntrustedForTest(kTestScheme);
+  EXPECT_FALSE(SchemeRegistry::IsWebUIUntrustedScheme(kTestScheme));
+  EXPECT_TRUE(SchemeRegistry::IsWebUIUntrustedScheme(kUntrustedScheme));
+
+  SchemeRegistry::RemoveURLSchemeAsWebUIUntrustedForTest(kUntrustedScheme);
+  EXPECT_FALSE(SchemeRegistry::IsWebUIUntrustedScheme(kUntrustedScheme));
+}
+
 TEST_F(SchemeRegistryTest, ExtensionScheme) {
   const char* kExtensionScheme = "chrome-extension";
   EXPECT_FALSE(CommonSchemeRegistry::IsExtensionScheme(kTestScheme));

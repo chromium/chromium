@@ -923,6 +923,7 @@ void RenderThreadImpl::RegisterSchemes() {
       chrome_untrusted_scheme);
   WebSecurityPolicy::RegisterURLSchemeAsAllowingWasmEvalCSP(
       chrome_untrusted_scheme);
+  WebSecurityPolicy::RegisterURLSchemeAsWebUIUntrusted(chrome_untrusted_scheme);
 
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();

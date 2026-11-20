@@ -190,6 +190,12 @@ class PLATFORM_EXPORT SchemeRegistry {
   static void RegisterURLSchemeAsWebUIForTest(const String& scheme);
   static void RemoveURLSchemeAsWebUIForTest(const String& scheme);
 
+  // Schemes that represent untrusted browser UI.
+  static void RegisterURLSchemeAsWebUIUntrusted(const String& scheme);
+  static bool IsWebUIUntrustedScheme(const String& scheme);
+  static void RegisterURLSchemeAsWebUIUntrustedForTest(const String& scheme);
+  static void RemoveURLSchemeAsWebUIUntrustedForTest(const String& scheme);
+
   // Schemes which can use code caching but must check in the renderer whether
   // the script content has changed rather than relying on a response time match
   // from the network cache.

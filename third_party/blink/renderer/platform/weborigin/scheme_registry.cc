@@ -110,6 +110,7 @@ class URLSchemesRegistry final {
   URLSchemesSet wasm_eval_csp_schemes;
   URLSchemesSet allowing_shared_array_buffer_schemes;
   URLSchemesSet web_ui_schemes;
+  URLSchemesSet web_ui_untrusted_schemes;
   URLSchemesSet code_cache_with_hashing_schemes;
   URLSchemesSet webui_bundled_bytecode_schemes;
   URLSchemesSet direct_launch_schemes;
@@ -500,6 +501,30 @@ void SchemeRegistry::RegisterURLSchemeAsWebUIForTest(const String& scheme) {
 
 void SchemeRegistry::RemoveURLSchemeAsWebUIForTest(const String& scheme) {
   GetMutableURLSchemesRegistryForTest().web_ui_schemes.erase(scheme);
+}
+
+void SchemeRegistry::RegisterURLSchemeAsWebUIUntrusted(const String& scheme) {
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
+  GetMutableURLSchemesRegistry().web_ui_untrusted_schemes.insert(scheme);
+}
+
+bool SchemeRegistry::IsWebUIUntrustedScheme(const String& scheme) {
+  if (scheme.empty()) {
+    return false;
+  }
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
+  return GetURLSchemesRegistry().web_ui_untrusted_schemes.Contains(scheme);
+}
+
+void SchemeRegistry::RegisterURLSchemeAsWebUIUntrustedForTest(
+    const String& scheme) {
+  DCHECK_EQ(scheme, scheme.ToAsciiLower());
+  GetMutableURLSchemesRegistryForTest().web_ui_untrusted_schemes.insert(scheme);
+}
+
+void SchemeRegistry::RemoveURLSchemeAsWebUIUntrustedForTest(
+    const String& scheme) {
+  GetMutableURLSchemesRegistryForTest().web_ui_untrusted_schemes.erase(scheme);
 }
 
 void SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(
