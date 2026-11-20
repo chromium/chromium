@@ -4,7 +4,12 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_sections.h"
 
+#include <memory>
+#include <utility>
+
 #include "ash/constants/ash_features.h"
+#include "base/check.h"
+#include "base/functional/callback.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/a11y/accessibility_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/about/about_section.h"
@@ -37,6 +42,7 @@ using ::chromeos::settings::mojom::Section;
 OsSettingsSections::OsSettingsSections(
     PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
+    MetricsServiceGetter metrics_service_getter,
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     system::TimeZoneResolverManager* timezone_resolver_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -50,6 +56,7 @@ OsSettingsSections::OsSettingsSections(
     CupsPrintersManager* printers_manager,
     apps::AppServiceProxy* app_service_proxy,
     eche_app::EcheAppManager* eche_app_manager) {
+  CHECK(metrics_service_getter);
   CHECK(url_loader_factory);
 
   auto* prefs = profile->GetPrefs();
@@ -90,6 +97,7 @@ OsSettingsSections::OsSettingsSections(
   AddSection(
       mojom::Section::kPrivacyAndSecurity,
       std::make_unique<PrivacySection>(local_state, application_locale_storage,
+                                       std::move(metrics_service_getter),
                                        profile, search_tag_registry, prefs));
 
   AddSection(

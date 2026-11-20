@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/privacy_section.h"
 
 #include <array>
+#include <memory>
+#include <utility>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -25,7 +27,6 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/privacy_hub/privacy_hub_util.h"
 #include "chrome/browser/ash/system/timezone_util.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/metrics_choice_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/peripheral_data_access_handler.h"
@@ -333,17 +334,20 @@ void AddChromeOsSecureDnsStrings(content::WebUIDataSource* html_source) {
 PrivacySection::PrivacySection(
     PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
+    MetricsServiceGetter metrics_service_getter,
     Profile* profile,
     SearchTagRegistry* search_tag_registry,
     PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
       local_state_(CHECK_DEREF(local_state)),
+      metrics_service_getter_(std::move(metrics_service_getter)),
       sync_subsection_(application_locale_storage,
                        profile,
                        search_tag_registry),
       pref_service_(pref_service),
       auth_performer_(UserDataAuthClient::Get()),
       fp_engine_(&auth_performer_) {
+  CHECK(metrics_service_getter_);
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetPrivacySearchConceptsSharedWithGuestMode());
   const auto& user = CHECK_DEREF(
@@ -398,9 +402,10 @@ void PrivacySection::AddHandlers(content::WebUI* web_ui) {
   web_ui->AddMessageHandler(std::make_unique<PeripheralDataAccessHandler>(
       &local_state_.get(), profile()));
 
+  ::metrics::MetricsService* metrics_service = metrics_service_getter_.Run();
+  CHECK(metrics_service);
   web_ui->AddMessageHandler(std::make_unique<MetricsChoiceHandler>(
-      profile(), g_browser_process->metrics_service(),
-      user_manager::UserManager::Get()));
+      profile(), metrics_service, user_manager::UserManager::Get()));
 
   web_ui->AddMessageHandler(std::make_unique<PrivacyHubHandler>());
 

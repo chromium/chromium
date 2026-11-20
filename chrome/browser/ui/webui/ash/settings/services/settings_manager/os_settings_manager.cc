@@ -52,6 +52,7 @@ OsSettingsManager::OsSettingsManager(
       sections_(
           std::make_unique<OsSettingsSections>(local_state,
                                                application_locale_storage,
+                                               metrics_service_getter,
                                                browser_policy_connector_ash,
                                                timezone_resolver_manager,
                                                std::move(url_loader_factory),

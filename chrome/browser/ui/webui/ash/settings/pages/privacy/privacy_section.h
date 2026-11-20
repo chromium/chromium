@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_PRIVACY_PRIVACY_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_PRIVACY_PRIVACY_SECTION_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/values.h"
@@ -21,6 +22,10 @@ namespace content {
 class WebUIDataSource;
 }  // namespace content
 
+namespace metrics {
+class MetricsService;
+}  // namespace metrics
+
 namespace ash::settings {
 
 class SearchTagRegistry;
@@ -29,10 +34,21 @@ class SearchTagRegistry;
 // search tags are added only for official Google Chrome OS builds.
 class PrivacySection : public OsSettingsSection {
  public:
+  // TODO(crbug.com/558489113): Revisit callback usage once `MetricsService`
+  // lifetime is resolved to inject `raw_ref`/`raw_ptr` directly.
+  // NOTE: The getter-callback pattern should be avoided if possible and is used
+  // here for `MetricsService` only as an exception (destroyed before
+  // `KeyedService`s). Do NOT apply this pattern to other dependencies without
+  // thoroughly investigating their lifetimes and alternatives first.
+  using MetricsServiceGetter =
+      base::RepeatingCallback<::metrics::MetricsService*()>;
+
   // `local_state` and `application_locale_storage` must be non-null and must
   // outlive `this`.
+  // `metrics_service_getter` must be non-null.
   PrivacySection(PrefService* local_state,
                  const ApplicationLocaleStorage* application_locale_storage,
+                 MetricsServiceGetter metrics_service_getter,
                  Profile* profile,
                  SearchTagRegistry* search_tag_registry,
                  PrefService* pref_service);
@@ -54,6 +70,7 @@ class PrivacySection : public OsSettingsSection {
   void UpdateRemoveFingerprintSearchTags();
 
   const raw_ref<PrefService> local_state_;
+  const MetricsServiceGetter metrics_service_getter_;
 
   SyncSection sync_subsection_;
 
