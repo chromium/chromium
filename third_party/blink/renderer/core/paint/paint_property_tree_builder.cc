@@ -4325,17 +4325,31 @@ void FragmentPaintPropertyTreeBuilder::UpdateForObjectLocation(
   }
 
   if (NeedsStickyTranslation(object_)) {
+    const auto& box_model = To<LayoutBoxModelObject>(object_);
     pixel_snap_offset = context_.current.paint_offset;
-    // The sub-pixel remainder left in the paint offset must not depend on
-    // the scroll offset. StickyPositionOffset() is not whole-pixel, but the
-    // StickyTranslation node's value is: UpdateStickyTranslation rounds
-    // paint_offset + StickyPositionOffset(), and cc recomputes the same
-    // rounded value when the sticky element is composited. Whole-pixel
-    // translation changes reuse the existing raster, while a
-    // scroll-dependent remainder would move sticky content inside its layer
-    // and re-raster it on every frame.
-    ResetPaintOffset(pixel_snap_offset -
-                     PhysicalOffset(ToRoundedVector2d(pixel_snap_offset)));
+    auto total_offset =
+        context_.current.paint_offset + box_model.StickyPositionOffset();
+    ResetPaintOffset(total_offset -
+                     PhysicalOffset(ToRoundedVector2d(total_offset)));
+    // The remainder tracks the scroll offset, so it moves composited sticky
+    // content within its layer on every scroll frame. As with a directly
+    // composited PaintOffsetTranslation (see crbug.com/833083), ignore the
+    // sub-pixel movement for paint invalidation to avoid re-rastering the
+    // layer on every frame, at the cost of imperfect pixel snapping until
+    // the content repaints for another reason.
+    if (full_context_.direct_compositing_reasons.Has(
+            CompositingReason::kStickyPosition) &&
+        properties_ && properties_->StickyTranslation() &&
+        properties_->PaintOffsetTranslation()) {
+      DCHECK_EQ(gfx::Point(), ToRoundedPoint(fragment_data_.PaintOffset()));
+      context_.current
+          .directly_composited_container_paint_offset_subpixel_delta =
+          context_.current.paint_offset - fragment_data_.PaintOffset();
+    } else {
+      context_.current
+          .directly_composited_container_paint_offset_subpixel_delta =
+          PhysicalOffset();
+    }
   }
 
   PhysicalOffset paint_offset_delta =

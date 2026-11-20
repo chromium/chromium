@@ -6533,6 +6533,42 @@ TEST_P(PaintPropertyTreeBuilderTest, StickyUnderOverflowHidden) {
             inner_properties->StickyTranslation()->GetStickyConstraint());
 }
 
+TEST_P(PaintPropertyTreeBuilderTest, StickySubpixelPaintOffsetWhenStuck) {
+  // crbug.com/587454999: the sub-pixel remainder left in a sticky element's
+  // paint offset must complete the rounded StickyTranslation to the exact
+  // sticky position, so content inside the sticky element pixel-snaps
+  // against the true position.
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #scroller { overflow: hidden; width: 100px; height: 100px; }
+      #sticky { position: sticky; top: 0; height: 100px; }
+    </style>
+    <div id="scroller">
+      <div style="height: 10.375px"></div>
+      <div id="sticky"></div>
+      <div style="height: 200px"></div>
+    </div>
+  )HTML");
+  GetElementById("scroller")->setScrollTop(20);
+  UpdateAllLifecyclePhasesForTest();
+
+  // Stuck at scroll offset 20: layout offset 10.375 plus sticky offset 9.625
+  // is exactly 20 device pixels, so no sub-pixel remainder should be left in
+  // the paint offset.
+  const auto* properties = PaintPropertiesForElement("sticky");
+  ASSERT_TRUE(properties && properties->StickyTranslation());
+  gfx::Vector2dF translation =
+      properties->StickyTranslation()->Get2dTranslation();
+  if (properties->PaintOffsetTranslation()) {
+    translation += properties->PaintOffsetTranslation()->Get2dTranslation();
+  }
+  EXPECT_EQ(gfx::Vector2dF(0, 20), translation);
+  EXPECT_EQ(
+      PhysicalOffset(),
+      GetLayoutObjectByElementId("sticky")->FirstFragment().PaintOffset());
+}
+
 TEST_P(PaintPropertyTreeBuilderTest, StickyUnderScrollerWithoutOverflow) {
   // This test verifies the property tree builder applies sticky offset
   // correctly when the scroll container doesn't have overflow, and does not
