@@ -3154,8 +3154,13 @@ Chromium is unable to recover your settings.
           Show search with Chromium in Mac menu bar and turn on keyboard shortcut
         </message>
       </if>
-      <if expr="is_win or is_linux or is_chromeos">
-        <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_TOGGLE" desc="Name of the toggle that controls whether Search with Chromium is shown in the system tray (on ChromeOS, Windows and Linux).">
+      <if expr="is_win">
+        <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_TOGGLE" desc="Name of the toggle that controls whether Search with Chromium is shown in the Windows taskbar (on Windows only).">
+          Show search with Chromium in Windows taskbar and turn on keyboard shortcut
+        </message>
+      </if>
+      <if expr="is_linux or is_chromeos">
+        <message name="IDS_SETTINGS_OMNIBOX_EVERYWHERE_TOGGLE" desc="Name of the toggle that controls whether Search with Chromium is shown in the system tray (on ChromeOS and Linux).">
           Show search with Chromium in system tray and turn on keyboard shortcut
         </message>
       </if>
@@ -3175,7 +3180,7 @@ Chromium is unable to recover your settings.
         Search with Chromium from anywhere
       </message>
       <message name="IDS_LOOMNIBOX_FRE_LENS_SECONDARY" desc="Secondary description detailing Google Lens functionality in Loomnibox.">
-        Ask about content outside of Chromium, like other apps or files
+        Share a screenshot of content outside of Chromium, like other apps or files
       </message>
       <message name="IDS_LOOMNIBOX_FRE_TO_SEARCH_OR_CUSTOMIZE" desc="Text in the Stage 2 FRE chin following the shortcut dropdown indicating it searches with Chromium or customizes in settings.">
         to search with Chromium or customize in <ph name="BEGIN_LINK">&lt;a href="#" class="settings-link"&gt;</ph>Settings<ph name="END_LINK">&lt;/a&gt;</ph>

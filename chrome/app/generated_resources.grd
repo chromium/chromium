@@ -7044,7 +7044,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_OMNIBOX_EVERYWHERE_LENS_PROMO_BODY" desc="Body text for the promo highlighting screen sharing and Google Lens search in Omnibox Everywhere.">
         Ask about anything on your screen
       </message>
-      <message name="IDS_OMNIBOX_EVERYWHERE_LENS_PROMO_ACCESSIBLE_TEXT" desc="Accessible text for the promo highlighting screen sharing and Google Lens search in Omnibox Everywhere." translateable="false">
+      <message name="IDS_OMNIBOX_EVERYWHERE_LENS_PROMO_ACCESSIBLE_TEXT" desc="Spoken by screen readers when the promo highlighting screen sharing and Google Lens search in Omnibox Everywhere is shown, but not visually rendered.">
         Ask anything about what's on your screen by sharing your screen.
       </message>
       <message name="IDS_OMNIBOX_EVERYWHERE_CONTEXT_MENU_CLOSE" desc="Label for the close option in the Loomnibox (Omnibox Everywhere) right-click context menu. Closes Loomnibox and removes the taskbar icon while keeping it invokable via hotkeys and notification area.">
@@ -7134,7 +7134,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Search
       </message>
       <message name="IDS_LOOMNIBOX_FRE_LENS_PRIMARY" desc="Primary text explaining how to use Google Lens in the Loomnibox.">
-        Share what’s on your screen with Google Lens
+        Ask about what’s on your screen with Google Lens
       </message>
       <if expr="is_macosx">
         <message name="IDS_LOOMNIBOX_FRE_WHERE_TO_FIND_PRIMARY" desc="Primary text telling macOS users where to find Search with Chrome in their menu bar.">

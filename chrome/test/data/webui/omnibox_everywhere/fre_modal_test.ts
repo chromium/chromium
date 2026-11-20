@@ -17,9 +17,9 @@ suite('FreModalTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.resetForTesting({
       loomniboxFreTitle: 'Search with Chrome from anywhere',
-      loomniboxFreLensPrimary: 'Share what’s on your screen with Google Lens',
+      loomniboxFreLensPrimary: 'Ask about what’s on your screen with Google Lens',
       loomniboxFreLensSecondary:
-          'Ask about content outside of Chrome, like other apps or files',
+          'Share a screenshot of content outside of Chrome, like other apps or files',
       loomniboxFreWhereToFindPrimary: 'Open from the Mac menu bar',
       loomniboxFreCloseButtonAria: 'Close',
       isFuseboxEligible: true,
@@ -49,7 +49,7 @@ suite('FreModalTest', () => {
     const lensPrimary = listItems[0]!.querySelector('.primary-text');
     assertTrue(!!lensPrimary);
     assertEquals(
-        'Share what’s on your screen with Google Lens',
+        'Ask about what’s on your screen with Google Lens',
         lensPrimary.textContent.trim());
 
     const whereToFindPrimary = listItems[1]!.querySelector('.primary-text');
@@ -79,9 +79,9 @@ suite('FreModalTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.resetForTesting({
       loomniboxFreTitle: 'Search with Chrome from anywhere',
-      loomniboxFreLensPrimary: 'Share what’s on your screen with Google Lens',
+      loomniboxFreLensPrimary: 'Ask about what’s on your screen with Google Lens',
       loomniboxFreLensSecondary:
-          'Ask about content outside of Chrome, like other apps or files',
+          'Share a screenshot of content outside of Chrome, like other apps or files',
       loomniboxFreWhereToFindPrimary: 'Open from the Mac menu bar',
       loomniboxFreCloseButtonAria: 'Close',
       isFuseboxEligible: false,
