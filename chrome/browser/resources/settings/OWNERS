@@ -1,13 +1,8 @@
 dpapad@chromium.org
 
 # Metrics browser proxy
-per-file metrics_browser_proxy.ts=rainhard@chromium.org,msramek@chromium.org
-
-# Two-column description style
-per-file settings_columned_section_lit.css=rainhard@chromium.org
-
-# Settings icons
-per-file icons.html=rainhard@chromium.org
+per-file metrics_browser_proxy.ts=msramek@chromium.org
+per-file metrics_browser_proxy.ts=file://chrome/browser/resources/settings/privacy_page/OWNERS
 
 # Privacy settings icons
-per-file privacy_icons.html=rainhard@chromium.org,sideyilmaz@chromium.org
+per-file privacy_icons.html=file://chrome/browser/resources/settings/privacy_page/OWNERS
