@@ -429,16 +429,6 @@ external/wpt/speculation-rules/prerender/restriction-screen-capture.https.html?t
 virtual/prefetch-cancel-unrelated-prefetch/external/wpt/speculation-rules/prerender/restriction-screen-capture.https.html?target_hint=_blank
 virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechSynthesis*
 virtual/third-party-storage-partitioning/external/wpt/service-workers/service-worker/partitioned-matchAll.tentative.https.html
-virtual/threaded/external/wpt/css/css-backgrounds/background-attachment-fixed-inline-002.html
-virtual/threaded/external/wpt/css/css-backgrounds/background-clip/clip-text-*
-virtual/threaded/external/wpt/css/css-backgrounds/background-clip-padding-box-with-border-radius.html
-virtual/threaded/external/wpt/css/css-backgrounds/background-image-centered-with-border-radius.html
-virtual/threaded/external/wpt/css/css-backgrounds/background-image-with-border-radius-fidelity.html
-virtual/threaded/external/wpt/css/css-backgrounds/background-repeat-space-7.html
-virtual/threaded/external/wpt/css/css-backgrounds/background-size-029.html
-virtual/threaded/external/wpt/css/css-backgrounds/background-size/background-size-cover.xht
-virtual/threaded/external/wpt/css/css-backgrounds/border-bottom-left-radius-010.xht
-virtual/threaded/external/wpt/css/css-backgrounds/table-cell-background-local-003.html
 virtual/threaded/external/wpt/css/css-view-transitions/*
 virtual/threaded-composited-iframes/external/wpt/is-input-pending/tentative/*
 virtual/threaded-prefer-compositing/external/wpt/css/cssom-view/range-bounding-client-rect-with-display-contents.html
