@@ -3094,3 +3094,34 @@ TEST_F(PageInfoTest, ContextualTasksSurfacePermissionChangeHistogram) {
       "WebsiteSettings.OriginInfo.PermissionChanged.Blocked.ContextualTasks",
       popups_histogram_value, 1);
 }
+
+// The origin is embargoed in the regular profile, and the permission is then
+// reset from Page Info in an incognito window. The reset should lift the
+// embargo for the incognito profile.
+TEST_F(PageInfoTest, IncognitoResetLiftsInheritedEmbargo) {
+  auto* regular_auto_blocker =
+      PermissionDecisionAutoBlockerFactory::GetForProfile(profile());
+  for (int i = 0; i < 3; ++i) {
+    regular_auto_blocker->RecordDismissAndEmbargo(
+        url(), ContentSettingsType::NOTIFICATIONS, false);
+  }
+  ASSERT_TRUE(regular_auto_blocker->IsEmbargoed(
+      url(), ContentSettingsType::NOTIFICATIONS));
+
+  PageInfo* incognito_info = incognito_page_info();
+  auto* incognito_auto_blocker =
+      PermissionDecisionAutoBlockerFactory::GetForProfile(
+          profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+  ASSERT_NE(regular_auto_blocker, incognito_auto_blocker);
+  // The incognito profile inherits the embargo from the regular profile.
+  ASSERT_TRUE(incognito_auto_blocker->IsEmbargoed(
+      url(), ContentSettingsType::NOTIFICATIONS));
+
+  incognito_info->OnSitePermissionChanged(ContentSettingsType::NOTIFICATIONS,
+                                          /*value=*/std::nullopt,
+                                          /*requesting_origin=*/std::nullopt,
+                                          /*is_one_time=*/false);
+
+  EXPECT_FALSE(incognito_auto_blocker->IsEmbargoed(
+      url(), ContentSettingsType::NOTIFICATIONS));
+}

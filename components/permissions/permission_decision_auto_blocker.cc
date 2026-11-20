@@ -485,6 +485,8 @@ void PermissionDecisionAutoBlocker::RemoveEmbargoAndResetCounts(
     return;
   }
 
+  const bool was_embargoed = IsEmbargoed(url, permission);
+
   base::DictValue dict = GetOriginAutoBlockerData(settings_map_, url);
 
   dict.Remove(GetStringForContentType(permission));
@@ -492,6 +494,12 @@ void PermissionDecisionAutoBlocker::RemoveEmbargoAndResetCounts(
   settings_map_->SetWebsiteSettingDefaultScope(
       url, GURL(), ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA,
       base::Value(std::move(dict)));
+
+  // Only report the removal if the embargo is actually gone, e.g. it may still
+  // apply through data inherited from another profile.
+  if (was_embargoed && !IsEmbargoed(url, permission)) {
+    NotifyEmbargoRemoved(url, permission);
+  }
 }
 
 void PermissionDecisionAutoBlocker::RemoveEmbargoAndResetCounts(
@@ -500,13 +508,44 @@ void PermissionDecisionAutoBlocker::RemoveEmbargoAndResetCounts(
            ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA)) {
     GURL origin(site.primary_pattern.ToString());
 
-    if (origin.is_valid() && filter.Run(origin)) {
-      settings_map_->SetWebsiteSettingDefaultScope(
-          origin, GURL(), ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA,
-          base::Value());
+    if (!origin.is_valid() || !filter.Run(origin)) {
+      continue;
+    }
+
+    // Collect the permissions currently under embargo so observers can be
+    // notified once the data is cleared.
+    std::vector<ContentSettingsType> embargoed_permissions;
+    if (!observers_.empty()) {
+      const base::DictValue dict =
+          GetOriginAutoBlockerData(settings_map_, origin);
+      for (int32_t i = 0;
+           i <= static_cast<int32_t>(ContentSettingsType::kMaxValue); ++i) {
+        const auto permission = static_cast<ContentSettingsType>(i);
+        if (IsEnabledForContentSetting(permission) &&
+            dict.contains(GetStringForContentType(permission)) &&
+            IsEmbargoed(origin, permission)) {
+          embargoed_permissions.push_back(permission);
+        }
+      }
+    }
+
+    settings_map_->SetWebsiteSettingDefaultScope(
+        origin, GURL(), ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA,
+        base::Value());
+
+    // In an off-the-record map, clearing only removes the off-the-record data,
+    // so an embargo inherited from the regular profile may still apply.
+    for (ContentSettingsType permission : embargoed_permissions) {
+      if (!IsEmbargoed(origin, permission)) {
+        NotifyEmbargoRemoved(origin, permission);
+      }
     }
   }
 }
+
+void PermissionDecisionAutoBlocker::Observer::OnEmbargoRemoved(
+    const GURL& origin,
+    ContentSettingsType content_type) {}
 
 void PermissionDecisionAutoBlocker::AddObserver(Observer* obs) {
   observers_.AddObserver(obs);
@@ -546,9 +585,17 @@ void PermissionDecisionAutoBlocker::PlaceUnderEmbargo(
 
 void PermissionDecisionAutoBlocker::NotifyEmbargoStarted(
     const GURL& origin,
-    ContentSettingsType content_setting) {
+    ContentSettingsType content_type) {
   for (Observer& obs : observers_) {
-    obs.OnEmbargoStarted(origin, content_setting);
+    obs.OnEmbargoStarted(origin, content_type);
+  }
+}
+
+void PermissionDecisionAutoBlocker::NotifyEmbargoRemoved(
+    const GURL& origin,
+    ContentSettingsType content_type) {
+  for (Observer& obs : observers_) {
+    obs.OnEmbargoRemoved(origin, content_type);
   }
 }
 

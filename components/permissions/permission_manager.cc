@@ -229,10 +229,10 @@ void PermissionManager::Shutdown() {
 }
 
 void PermissionManager::OnEmbargoStarted(const GURL& origin,
-                                         ContentSettingsType content_setting) {
+                                         ContentSettingsType content_type) {
   auto primary_pattern = ContentSettingsPattern::FromURLNoWildcard(origin);
   OnPermissionChanged(primary_pattern, ContentSettingsPattern::Wildcard(),
-                      ContentSettingsTypeSet(content_setting));
+                      ContentSettingsTypeSet(content_type));
 }
 
 PermissionContextBase* PermissionManager::GetPermissionContextForTesting(

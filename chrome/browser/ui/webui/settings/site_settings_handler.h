@@ -26,6 +26,7 @@
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/permissions/object_permission_context_base.h"
+#include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/prefs/pref_store.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "url/origin.h"
@@ -44,7 +45,8 @@ class SiteSettingsHandler
     : public SettingsPageUIHandler,
       public content_settings::Observer,
       public ProfileObserver,
-      public permissions::ObjectPermissionContextBase::PermissionObserver {
+      public permissions::ObjectPermissionContextBase::PermissionObserver,
+      public permissions::PermissionDecisionAutoBlocker::Observer {
  public:
   // The key used to group origins together in the UI. If two origins map to
   // the same GroupingKey, they should be displayed in the same UI group. For
@@ -122,6 +124,12 @@ class SiteSettingsHandler
   void OnObjectPermissionChanged(
       std::optional<ContentSettingsType> guard_content_settings_type,
       ContentSettingsType data_content_settings_type) override;
+
+  // permissions::PermissionDecisionAutoBlocker::Observer:
+  void OnEmbargoStarted(const GURL& origin,
+                        ContentSettingsType content_type) override;
+  void OnEmbargoRemoved(const GURL& origin,
+                        ContentSettingsType content_type) override;
 
   void OnZoomLevelChanged(const content::HostZoomMap::ZoomLevelChange& change);
 
@@ -355,6 +363,12 @@ class SiteSettingsHandler
       permissions::ObjectPermissionContextBase,
       permissions::ObjectPermissionContextBase::PermissionObserver>
       chooser_observations_{this};
+
+  // Change observer for permission auto-blocker.
+  base::ScopedMultiSourceObservation<
+      permissions::PermissionDecisionAutoBlocker,
+      permissions::PermissionDecisionAutoBlocker::Observer>
+      auto_blocker_observations_{this};
 
   // Change observer for prefs.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

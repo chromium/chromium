@@ -67,7 +67,7 @@ class PermissionManager : public KeyedService,
 
   // PermissionDecisionAutoBlocker::Observer
   void OnEmbargoStarted(const GURL& origin,
-                        ContentSettingsType content_setting) override;
+                        ContentSettingsType content_type) override;
 
   PermissionContextBase* GetPermissionContextForTesting(
       ContentSettingsType type);
