@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
-
 // <if expr="not is_chromeos">
-import {HistorySignInState} from './constants.js';
+import {HistorySignInState} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+
 // </if>
 
 // <if expr="is_android">
@@ -38,20 +38,20 @@ export function getHtml(this: HistorySyncedDeviceManagerElement) {
 <if expr="not is_chromeos">
 ${this.shouldShowHistorySyncOptIn_() ? html`
   <div id="history-sync-optin" class="history-sync-optin">
-    ${this.isSignInState_(HistorySignInState.SIGNED_OUT) ||
-            this.isSignInState_(HistorySignInState.WEB_ONLY_SIGNED_IN) ?
+    ${this.isSignInState_(HistorySignInState.kSignedOut) ||
+            this.isSignInState_(HistorySignInState.kWebOnlySignedIn) ?
         html`
       <div class="image-container">
         <img class="sync-history-illustration" alt="">
       </div>
       <h1 class="sync-history-promo">$i18n{turnOnSyncHistoryPromo}</h1>
-      ${this.isSignInState_(HistorySignInState.SIGNED_OUT) ? html`
+      ${this.isSignInState_(HistorySignInState.kSignedOut) ? html`
         <div id="signed-out-sync-history-promo-desc"
             class="sync-history-promo-desc">
           $i18n{syncHistoryPromoBodySignedOut}
         </div>
       ` : ''}
-      ${this.isSignInState_(HistorySignInState.WEB_ONLY_SIGNED_IN) ? html`
+      ${this.isSignInState_(HistorySignInState.kWebOnlySignedIn) ? html`
         <div id="web-only-signed-in-sync-history-promo-desc"
             class="sync-history-promo-desc">
           $i18n{syncHistoryPromoBodyWebOnlySignedIn}
@@ -59,7 +59,7 @@ ${this.shouldShowHistorySyncOptIn_() ? html`
       ` : ''}
     ` : ''}
 
-    ${this.isSignInState_(HistorySignInState.WEB_ONLY_SIGNED_IN) &&
+    ${this.isSignInState_(HistorySignInState.kWebOnlySignedIn) &&
             this.accountInfo_ ?
         html`
       <div class="profile-row">
@@ -76,7 +76,7 @@ ${this.shouldShowHistorySyncOptIn_() ? html`
       </div>
     ` : ''}
 
-    ${this.isSignInState_(HistorySignInState.SIGN_IN_PENDING) &&
+    ${this.isSignInState_(HistorySignInState.kSignInPending) &&
             this.accountInfo_ ?
         html`
       <div class="image-container">
@@ -101,7 +101,7 @@ ${this.shouldShowHistorySyncOptIn_() ? html`
       ` : ''}
     ` : ''}
 
-    ${this.isSignInState_(HistorySignInState.SIGNED_IN) &&
+    ${this.isSignInState_(HistorySignInState.kSignedIn) &&
             !this.isTabsSyncTurnedOn_() && this.accountInfo_ ?
         html`
       <div class="image-container">
@@ -117,7 +117,7 @@ ${this.shouldShowHistorySyncOptIn_() ? html`
     ` : ''}
 
     <!-- Button -->
-    ${this.isSignInState_(HistorySignInState.SIGN_IN_PENDING) &&
+    ${this.isSignInState_(HistorySignInState.kSignInPending) &&
             this.isTabsSyncTurnedOn_() ?
         html`
       <cr-button id="verify-its-you-button" class="action-button"

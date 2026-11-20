@@ -25,14 +25,13 @@ import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/h
 import {HistoryResultType} from 'chrome://resources/cr_components/history/constants.js';
 import type {ForeignSession, ForeignSessionPageCallbackRouter} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
 import {browserProxyFactory as foreignSessionBrowserProxyFactory} from 'chrome://resources/cr_components/history/foreign_sessions.mojom-webui.js';
-import type {Device, PageCallbackRouter, QueryResult, QueryState, TimePeriodOption} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
-import {TimePeriodOptionId} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+import type {Device, HistoryIdentityState, PageCallbackRouter, QueryResult, QueryState, TimePeriodOption} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+import {HistorySignInState, SyncState, TimePeriodOptionId} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrDrawerElement} from 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import type {CrPageSelectorElement} from 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import {FindShortcutMixinLit} from 'chrome://resources/cr_elements/find_shortcut_mixin_lit.js';
-import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -44,8 +43,7 @@ import {browserProxyFactory as userEducationProxyFactory} from 'chrome://resourc
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
-import type {HistoryIdentityState} from './browser_proxy.js';
-import {HistoryPageViewHistogram, HistorySignInState, SyncState} from './constants.js';
+import {HistoryPageViewHistogram} from './constants.js';
 import type {HistoryListElement} from './history_list.js';
 import type {HistoryToolbarElement} from './history_toolbar.js';
 import {eventToClickModifiers} from './mouse_event_util.js';
@@ -109,8 +107,8 @@ export interface HistoryAppElement {
   };
 }
 
-const HistoryAppElementBase = HelpBubbleMixinLit(
-    FindShortcutMixinLit(WebUiListenerMixinLit(CrLitElement)));
+const HistoryAppElementBase =
+    HelpBubbleMixinLit(FindShortcutMixinLit(CrLitElement));
 
 export class HistoryAppElement extends HistoryAppElementBase {
   static get is() {
@@ -138,8 +136,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
       selectedPage_: {type: String},
       queryResult_: {type: Object},
       sessionList_: {type: Array},
-      // Updated on synced-device-manager attach by chrome.sending
-      // 'otherDevicesInitialized'.
       identityState_: {type: Object},
       pendingDelete_: {type: Boolean},
       queryState_: {type: Object},
@@ -190,9 +186,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
   protected accessor historyClustersVisible_: boolean =
       loadTimeData.getBoolean('isHistoryClustersVisible');
   private accessor identityState_: HistoryIdentityState = {
-    signIn: HistorySignInState.SIGNED_OUT,
-    tabsSync: SyncState.TURNED_OFF,
-    historySync: SyncState.TURNED_OFF,
+    signIn: HistorySignInState.kSignedOut,
+    tabsSync: SyncState.kTurnedOff,
+    historySync: SyncState.kTurnedOff,
   };
   protected accessor lastSelectedTab_: number =
       loadTimeData.getInteger('lastSelectedTab');
@@ -258,6 +254,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
       HistoryPageViewHistogram.END;
   private onForeignSessionsChangedListenerId_: number|null = null;
   private onHasOtherFormsChangedListenerId_: number|null = null;
+  private onIdentityStateChangedListenerId_: number|null = null;
 
   constructor() {
     super();
@@ -292,10 +289,10 @@ export class HistoryAppElement extends HistoryAppElementBase {
     this.eventTracker_.add(
         document, 'record-history-link-click',
         this.onRecordHistoryLinkClick_.bind(this));
-    this.addWebUiListener(
-        'history-identity-state-changed',
-        (identityState: HistoryIdentityState) =>
-            this.onIdentityStateChanged_(identityState));
+    this.onIdentityStateChangedListenerId_ =
+        this.callbackRouter_.onIdentityStateChanged.addListener(
+            (identityState: HistoryIdentityState) =>
+                this.onIdentityStateChanged_(identityState));
     this.onForeignSessionsChangedListenerId_ =
         this.foreignSessionCallbackRouter_.onForeignSessionsChanged.addListener(
             (sessionList: ForeignSession[]) =>
@@ -304,10 +301,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
     foreignSessionBrowserProxyFactory.getInstance()
         .handler.getForeignSessions()
         .then(({sessions}) => this.setForeignSessions_(sessions));
-    BrowserProxyImpl.getInstance().getInitialIdentityState().then(
-        (identityState: HistoryIdentityState) =>
-            this.onIdentityStateChanged_(identityState));
-    BrowserProxyImpl.getInstance().getSyncedDevicesForFiltering().then(
+    BrowserProxyImpl.getInstance().handler.getInitialIdentityState().then(
+        ({identityState}) => this.onIdentityStateChanged_(identityState));
+    BrowserProxyImpl.getInstance().handler.getSyncedDevicesForFiltering().then(
         ({devices}) => {
           this.devices_ = devices;
         });
@@ -343,6 +339,12 @@ export class HistoryAppElement extends HistoryAppElementBase {
       this.callbackRouter_.removeListener(
           this.onHasOtherFormsChangedListenerId_);
       this.onHasOtherFormsChangedListenerId_ = null;
+    }
+
+    if (this.onIdentityStateChangedListenerId_ !== null) {
+      this.callbackRouter_.removeListener(
+          this.onIdentityStateChangedListenerId_);
+      this.onIdentityStateChangedListenerId_ = null;
     }
 
     if (this.onForeignSessionsChangedListenerId_ !== null) {
@@ -741,8 +743,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
         break;
       case Page.SYNCED_TABS:
         histogramValue =
-            this.identityState_.signIn === HistorySignInState.SIGNED_IN &&
-                this.identityState_.tabsSync === SyncState.TURNED_ON ?
+            this.identityState_.signIn === HistorySignInState.kSignedIn &&
+                this.identityState_.tabsSync === SyncState.kTurnedOn ?
             HistoryPageViewHistogram.SYNCED_TABS :
             HistoryPageViewHistogram.SIGNIN_PROMO;
         break;
@@ -788,9 +790,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
   // 4. User is not already signed in and syncing history.
   protected shouldShowHistoryPageHistorySyncPromo_(): boolean {
     return this.unoPhase2FollowUpEnabled_ && this.shouldShowHistorySyncPromo_ &&
-        this.identityState_.historySync !== SyncState.DISABLED &&
-        !(this.identityState_.signIn === HistorySignInState.SIGNED_IN &&
-          this.identityState_.historySync === SyncState.TURNED_ON);
+        this.identityState_.historySync !== SyncState.kDisabled &&
+        !(this.identityState_.signIn === HistorySignInState.kSignedIn &&
+          this.identityState_.historySync === SyncState.kTurnedOn);
   }
 
   private handleShouldShowHistoryPageHistorySyncPromoChanged_(

@@ -12,9 +12,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue
 import {eventToPromise, isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {COLORS_CSS_SELECTOR} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 // <if expr="not is_chromeos">
-import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {AccessPoint, HistorySignInState, SyncState} from 'chrome://history/history.js';
-
 // </if>
 
 import {TestHistoryBrowserProxy} from './test_browser_proxy.js';
@@ -96,11 +94,12 @@ suite('HistoryAppUnoPhase2FollowUpTest', () => {
   });
 
   test('ShowsHistorySyncPromoElementWhenDataIsTrue', async () => {
-    webUIListenerCallback('history-identity-state-changed', {
-      signIn: HistorySignInState.SIGNED_IN,
-      tabsSync: SyncState.TURNED_OFF,
-      historySync: SyncState.TURNED_OFF,
+    browserProxy.pageRemote.onIdentityStateChanged({
+      signIn: HistorySignInState.kSignedIn,
+      tabsSync: SyncState.kTurnedOff,
+      historySync: SyncState.kTurnedOff,
     });
+    await browserProxy.pageRemote.$.flushForTesting();
     await microtasksFinished();
 
     assertTrue(
@@ -123,11 +122,12 @@ suite('HistoryAppUnoPhase2FollowUpTest', () => {
   });
 
   test('HidesHistorySyncPromoElementWhenHistorySyncIsDisabled', async () => {
-    webUIListenerCallback('history-identity-state-changed', {
-      signIn: HistorySignInState.SIGNED_IN,
-      tabsSync: SyncState.TURNED_OFF,
-      historySync: SyncState.DISABLED,
+    browserProxy.pageRemote.onIdentityStateChanged({
+      signIn: HistorySignInState.kSignedIn,
+      tabsSync: SyncState.kTurnedOff,
+      historySync: SyncState.kDisabled,
     });
+    await browserProxy.pageRemote.$.flushForTesting();
     await microtasksFinished();
 
     assertFalse(
@@ -136,11 +136,12 @@ suite('HistoryAppUnoPhase2FollowUpTest', () => {
   });
 
   test('HistorySyncPromoElementSignedIn', async () => {
-    webUIListenerCallback('history-identity-state-changed', {
-      signIn: HistorySignInState.SIGNED_IN,
-      tabsSync: SyncState.TURNED_OFF,
-      historySync: SyncState.TURNED_OFF,
+    browserProxy.pageRemote.onIdentityStateChanged({
+      signIn: HistorySignInState.kSignedIn,
+      tabsSync: SyncState.kTurnedOff,
+      historySync: SyncState.kTurnedOff,
     });
+    await browserProxy.pageRemote.$.flushForTesting();
     await microtasksFinished();
     const historySyncPromo =
         element.shadowRoot.querySelector('history-sync-promo');
@@ -167,11 +168,12 @@ suite('HistoryAppUnoPhase2FollowUpTest', () => {
   });
 
   test('HistorySyncPromoElementPendingSignInWithHistorySyncOn', async () => {
-    webUIListenerCallback('history-identity-state-changed', {
-      signIn: HistorySignInState.SIGN_IN_PENDING,
-      tabsSync: SyncState.TURNED_OFF,
-      historySync: SyncState.TURNED_ON,
+    browserProxy.pageRemote.onIdentityStateChanged({
+      signIn: HistorySignInState.kSignInPending,
+      tabsSync: SyncState.kTurnedOff,
+      historySync: SyncState.kTurnedOn,
     });
+    await browserProxy.pageRemote.$.flushForTesting();
     await microtasksFinished();
     const historySyncPromo =
         element.shadowRoot.querySelector('history-sync-promo');
@@ -182,10 +184,11 @@ suite('HistoryAppUnoPhase2FollowUpTest', () => {
     assertTrue(isChildVisible(
         historySyncPromo, '#sign-in-pending-syncing-history-description'));
     assertTrue(isChildVisible(historySyncPromo, '#verify-its-you-button'));
-    assertEquals(1, browserProxy.getCallCount('recordSigninPendingOffered'));
+    assertEquals(
+        1, browserProxy.handler.getCallCount('recordSigninPendingOffered'));
     assertEquals(
         AccessPoint.kHistoryPage,
-        await browserProxy.whenCalled('recordSigninPendingOffered'));
+        await browserProxy.handler.whenCalled('recordSigninPendingOffered'));
 
     // The other states promo elements should not be visible.
     assertFalse(isChildVisible(historySyncPromo, '#signed-out-description'));
@@ -196,11 +199,12 @@ suite('HistoryAppUnoPhase2FollowUpTest', () => {
   });
 
   test('HistorySyncPromoElementPendingSignInWithHistorySyncOff', async () => {
-    webUIListenerCallback('history-identity-state-changed', {
-      signIn: HistorySignInState.SIGN_IN_PENDING,
-      tabsSync: SyncState.TURNED_OFF,
-      historySync: SyncState.TURNED_OFF,
+    browserProxy.pageRemote.onIdentityStateChanged({
+      signIn: HistorySignInState.kSignInPending,
+      tabsSync: SyncState.kTurnedOff,
+      historySync: SyncState.kTurnedOff,
     });
+    await browserProxy.pageRemote.$.flushForTesting();
     await microtasksFinished();
     const historySyncPromo =
         element.shadowRoot.querySelector('history-sync-promo');
@@ -221,11 +225,12 @@ suite('HistoryAppUnoPhase2FollowUpTest', () => {
   });
 
   test('HistorySyncPromoElementWebOnlySignIn', async () => {
-    webUIListenerCallback('history-identity-state-changed', {
-      signIn: HistorySignInState.WEB_ONLY_SIGNED_IN,
-      tabsSync: SyncState.TURNED_OFF,
-      historySync: SyncState.TURNED_OFF,
+    browserProxy.pageRemote.onIdentityStateChanged({
+      signIn: HistorySignInState.kWebOnlySignedIn,
+      tabsSync: SyncState.kTurnedOff,
+      historySync: SyncState.kTurnedOff,
     });
+    await browserProxy.pageRemote.$.flushForTesting();
     await microtasksFinished();
     const historySyncPromo =
         element.shadowRoot.querySelector('history-sync-promo');
@@ -251,11 +256,12 @@ suite('HistoryAppUnoPhase2FollowUpTest', () => {
   });
 
   test('HistorySyncPromoElementSignedOut', async () => {
-    webUIListenerCallback('history-identity-state-changed', {
-      signIn: HistorySignInState.SIGNED_OUT,
-      tabsSync: SyncState.TURNED_OFF,
-      historySync: SyncState.TURNED_OFF,
+    browserProxy.pageRemote.onIdentityStateChanged({
+      signIn: HistorySignInState.kSignedOut,
+      tabsSync: SyncState.kTurnedOff,
+      historySync: SyncState.kTurnedOff,
     });
+    await browserProxy.pageRemote.$.flushForTesting();
     await microtasksFinished();
     const historySyncPromo =
         element.shadowRoot.querySelector('history-sync-promo');

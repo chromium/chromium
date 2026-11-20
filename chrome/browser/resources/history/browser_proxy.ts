@@ -2,28 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AccessPoint, Device, PageHandlerRemote, TimePeriodOption} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+import type {PageHandlerRemote, TimePeriodOption} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {PageCallbackRouter, PageHandler} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
-import {sendWithPromise} from 'chrome://resources/js/cr.js';
-
-import type {HistorySignInState, SyncState} from './constants.js';
 
 export type RemoveVisitsRequest = Array<{
   url: string,
   timestamps: number[],
 }>;
-
-/**
- * The type of the history identity state object. This definition is based on
- * chrome/browser/ui/webui/history/history_identity_state_watcher.h:
- */
-// LINT.IfChange(HistoryIdentityState)
-export interface HistoryIdentityState {
-  signIn: HistorySignInState;
-  tabsSync: SyncState;
-  historySync: SyncState;
-}
-// LINT.ThenChange(/chrome/browser/ui/webui/history/history_login_handler.cc:GetHistoryIdentityStateDict)
 
 export interface BrowserProxy {
   handler: PageHandlerRemote;
@@ -36,10 +21,6 @@ export interface BrowserProxy {
   recordAction(action: string): void;
   recordTime(histogram: string, time: number): void;
   recordLongTime(histogram: string, time: number): void;
-  recordSigninPendingOffered(accessPoint: AccessPoint): void;
-  otherDevicesInitialized(): void;
-  getInitialIdentityState(): Promise<HistoryIdentityState>;
-  getSyncedDevicesForFiltering(): Promise<{devices: Device[]}>;
   getTimePeriodOptions(): Promise<{options: TimePeriodOption[]}>;
 }
 
@@ -74,22 +55,6 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   recordLongTime(histogram: string, time: number) {
     chrome.metricsPrivate.recordLongTime(histogram, time);
-  }
-
-  recordSigninPendingOffered(accessPoint: AccessPoint) {
-    chrome.send('recordSigninPendingOffered', [accessPoint]);
-  }
-
-  otherDevicesInitialized() {
-    chrome.send('otherDevicesInitialized');
-  }
-
-  getInitialIdentityState(): Promise<HistoryIdentityState> {
-    return sendWithPromise<HistoryIdentityState>('getInitialIdentityState');
-  }
-
-  getSyncedDevicesForFiltering() {
-    return this.handler.getSyncedDevicesForFiltering();
   }
 
   getTimePeriodOptions() {

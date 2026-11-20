@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
+#include "chrome/browser/ui/webui/history/history_identity_state_watcher.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/glic_enums.mojom.h"
@@ -67,6 +68,7 @@
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/query_parser/snippet.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -482,6 +484,12 @@ BrowsingHistoryHandler::BrowsingHistoryHandler(
       device_info_service ? device_info_service->GetDeviceInfoTracker()
                           : nullptr,
       critical_actions::CriticalActionFactory::GetForProfile(profile_));
+  // base::Unretained(this) is safe here because `this` owns the watcher.
+  history_identity_state_watcher_ =
+      std::make_unique<HistoryIdentityStateWatcher>(
+          &identity_manager_.get(), sync_service,
+          base::BindRepeating(&BrowsingHistoryHandler::IdentityStateChanged,
+                              base::Unretained(this)));
 }
 
 BrowsingHistoryHandler::~BrowsingHistoryHandler() {
@@ -723,6 +731,25 @@ void BrowsingHistoryHandler::TurnOnHistorySync(
 #endif
 }
 
+void BrowsingHistoryHandler::RecordSigninPendingOffered(
+    history::mojom::AccessPoint access_point) {
+  switch (access_point) {
+    case history::mojom::AccessPoint::kRecentTabs:
+      signin_metrics::LogSigninPendingOffered(
+          signin_metrics::AccessPoint::kRecentTabs);
+      break;
+    case history::mojom::AccessPoint::kHistoryPage:
+      signin_metrics::LogSigninPendingOffered(
+          signin_metrics::AccessPoint::kHistoryPage);
+      break;
+  }
+}
+
+void BrowsingHistoryHandler::GetInitialIdentityState(
+    GetInitialIdentityStateCallback callback) {
+  std::move(callback).Run(GetHistoryIdentityStateMojo());
+}
+
 void BrowsingHistoryHandler::NavigateToUrl(
     const GURL& url,
     bool open_in_new_tab,
@@ -739,6 +766,24 @@ void BrowsingHistoryHandler::NavigateToUrl(
   web_contents_->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
                              url, disposition, ui::PAGE_TRANSITION_LINK),
                          /*navigation_handle_callback=*/{});
+}
+
+history::mojom::HistoryIdentityStatePtr
+BrowsingHistoryHandler::GetHistoryIdentityStateMojo() const {
+  HistoryIdentityState state =
+      history_identity_state_watcher_->GetHistoryIdentityState();
+  return history::mojom::HistoryIdentityState::New(
+      state.sign_in, state.tab_sync, state.history_sync);
+}
+
+void BrowsingHistoryHandler::IdentityStateChanged() {
+  if (page_) {
+    page_->OnIdentityStateChanged(GetHistoryIdentityStateMojo());
+  } else {
+    deferred_callbacks_.push_back(
+        base::BindOnce(&BrowsingHistoryHandler::IdentityStateChanged,
+                       weak_factory_.GetWeakPtr()));
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID)

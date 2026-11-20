@@ -57,6 +57,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/test/history_service_test_util.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/strings/grit/components_strings.h"
@@ -127,6 +128,10 @@ class MockHistoryPage : public history::mojom::Page {
   MOCK_METHOD(void,
               SendAccountInfo,
               (history::mojom::AccountInfoPtr),
+              (override));
+  MOCK_METHOD(void,
+              OnIdentityStateChanged,
+              (history::mojom::HistoryIdentityStatePtr),
               (override));
 
  private:
@@ -1615,6 +1620,38 @@ TEST_F(BrowsingHistoryHandlerTest,
   EXPECT_EQ(devices[1]->name, "Device 2");
   EXPECT_FALSE(devices[1]->is_local_device);
   EXPECT_EQ(devices[1]->ids, std::vector<std::string>({"id2", "id3"}));
+}
+
+TEST_F(BrowsingHistoryHandlerTest, GetInitialIdentityStateAndUpdates) {
+  base::test::TestFuture<history::mojom::HistoryIdentityStatePtr> future;
+  handler()->GetInitialIdentityState(future.GetCallback());
+  ASSERT_TRUE(future.Get());
+  EXPECT_EQ(future.Get()->sign_in,
+            history::mojom::HistorySignInState::kSignedOut);
+
+  history::mojom::HistoryIdentityStatePtr updated_state;
+  EXPECT_CALL(*mock_page(), OnIdentityStateChanged(_))
+      .WillOnce([&](history::mojom::HistoryIdentityStatePtr state) {
+        updated_state = std::move(state);
+      });
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile());
+  signin::MakePrimaryAccountAvailable(identity_manager, "test@example.com",
+                                      signin::ConsentLevel::kSignin);
+  mock_page()->FlushForTesting();
+  ASSERT_TRUE(updated_state);
+  EXPECT_EQ(updated_state->sign_in,
+            history::mojom::HistorySignInState::kSignedIn);
+}
+
+TEST_F(BrowsingHistoryHandlerTest, RecordSigninPendingOffered) {
+  base::HistogramTester histogram_tester;
+  handler()->RecordSigninPendingOffered(
+      history::mojom::AccessPoint::kHistoryPage);
+  histogram_tester.ExpectUniqueSample("Signin.SigninPending.Offered",
+                                      signin_metrics::AccessPoint::kHistoryPage,
+                                      1);
 }
 
 class BrowsingHistoryHandlerHatsSurveyTest

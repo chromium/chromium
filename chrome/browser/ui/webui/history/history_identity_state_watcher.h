@@ -11,6 +11,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service_observer.h"
+#include "ui/webui/resources/cr_components/history/history.mojom.h"
 
 namespace signin {
 class IdentityManager;
@@ -21,26 +22,8 @@ class SyncService;
 }  // namespace syncer
 
 struct HistoryIdentityState {
-  // LINT.IfChange(HistoryIdentityState.SignIn)
-  enum class SignIn {
-    kSignedOut = 0,
-    // The user is signed in only in web.
-    kWebOnlySignedIn = 1,
-    // The user is signed in.
-    kSignedIn = 2,
-    // The user is pending sign-in.
-    kSignInPending = 3,
-  };
-  // LINT.ThenChange(/chrome/browser/resources/history/constants.ts:HistorySignInState)
-
-  // This enum is used to differentiate all the relevant history-sync states.
-  // LINT.IfChange(HistoryIdentityState.SyncState)
-  enum class SyncState {
-    kTurnedOff = 0,
-    kTurnedOn = 1,
-    kDisabled = 2,
-  };
-  // LINT.ThenChange(/chrome/browser/resources/history/constants.ts:SyncState)
+  using SignIn = history::mojom::HistorySignInState;
+  using SyncState = history::mojom::SyncState;
 
   SignIn sign_in = SignIn::kSignedOut;
   SyncState tab_sync = SyncState::kTurnedOff;

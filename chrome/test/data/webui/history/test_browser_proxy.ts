@@ -4,7 +4,7 @@
 
 import type {BrowserProxy, HistoryIdentityState} from 'chrome://history/history.js';
 import {HistoryPageCallbackRouter, HistoryPageHandlerRemote, HistorySignInState, OpenConversationResult, SyncState} from 'chrome://history/history.js';
-import type {AccessPoint, Device, PageRemote, TimePeriodOption} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
+import type {PageRemote, TimePeriodOption} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
 import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy as BaseTestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -18,17 +18,13 @@ export class TestHistoryBrowserProxy extends BaseTestBrowserProxy implements
   pageRemote: PageRemote;
   histogramMap: {[key: string]: {[key: string]: number}} = {};
   actionMap: {[key: string]: number} = {};
-  private initialIdentityState_: HistoryIdentityState;
 
   constructor() {
     super([
-      'getInitialIdentityState',
-      'otherDevicesInitialized',
       'recordAction',
       'recordBooleanHistogram',
       'recordHistogram',
       'recordLongTime',
-      'recordSigninPendingOffered',
       'recordTime',
     ]);
 
@@ -36,11 +32,11 @@ export class TestHistoryBrowserProxy extends BaseTestBrowserProxy implements
     this.callbackRouter = new HistoryPageCallbackRouter();
     this.pageRemote = this.callbackRouter.$.bindNewPipeAndPassRemote();
 
-    this.initialIdentityState_ = {
-      signIn: HistorySignInState.SIGNED_OUT,
-      tabsSync: SyncState.TURNED_OFF,
-      historySync: SyncState.TURNED_OFF,
-    };
+    this.setInitialIdentityState({
+      signIn: HistorySignInState.kSignedOut,
+      tabsSync: SyncState.kTurnedOff,
+      historySync: SyncState.kTurnedOff,
+    });
 
     this.handler.setResultFor('queryHistory', Promise.resolve({
       results: {
@@ -86,17 +82,9 @@ export class TestHistoryBrowserProxy extends BaseTestBrowserProxy implements
     // </if>
   }
 
-  getInitialIdentityState(): Promise<HistoryIdentityState> {
-    this.methodCalled('getInitialIdentityState');
-    return Promise.resolve(this.initialIdentityState_);
-  }
-
   setInitialIdentityState(identityState: HistoryIdentityState) {
-    this.initialIdentityState_ = identityState;
-  }
-
-  otherDevicesInitialized() {
-    this.methodCalled('otherDevicesInitialized');
+    this.handler.setResultFor(
+        'getInitialIdentityState', Promise.resolve({identityState}));
   }
 
   recordAction(action: string) {
@@ -134,14 +122,6 @@ export class TestHistoryBrowserProxy extends BaseTestBrowserProxy implements
 
   recordLongTime(histogram: string, value: number) {
     this.methodCalled('recordLongTime', histogram, value);
-  }
-
-  recordSigninPendingOffered(accessPoint: AccessPoint) {
-    this.methodCalled('recordSigninPendingOffered', accessPoint);
-  }
-
-  getSyncedDevicesForFiltering(): Promise<{devices: Device[]}> {
-    return this.handler.getSyncedDevicesForFiltering();
   }
 
   getTimePeriodOptions(): Promise<{options: TimePeriodOption[]}> {

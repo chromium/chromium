@@ -273,6 +273,31 @@ struct TimePeriodOption {
   mojo_base.mojom.Time? end_time;
 };
 
+// Differentiates all the relevant sign-in/history-sync states.
+enum HistorySignInState {
+  kSignedOut = 0,
+  // The user is signed in only in web.
+  kWebOnlySignedIn = 1,
+  // The user is signed in.
+  kSignedIn = 2,
+  // The user is pending sign-in.
+  kSignInPending = 3,
+};
+
+// Differentiates all the relevant history-sync states.
+enum SyncState {
+  kTurnedOff = 0,
+  kTurnedOn = 1,
+  kDisabled = 2,
+};
+
+// Represents the user's history identity and sync state.
+struct HistoryIdentityState {
+  HistorySignInState sign_in;
+  SyncState tabs_sync;
+  SyncState history_sync;
+};
+
 // Browser-side handler for requests from WebUI page.
 interface PageHandler {
   // The BrowserProxy singleton calls this when it's first initialized.
@@ -318,6 +343,12 @@ interface PageHandler {
 
   // The user turns on the history sync by clicking the "Sync history" button.
   TurnOnHistorySync(AccessPoint access_point);
+
+  // Records that the sign-in pending promo was offered at `access_point`.
+  RecordSigninPendingOffered(AccessPoint access_point);
+
+  // Requests the initial identity and sync state.
+  GetInitialIdentityState() => (HistoryIdentityState identity_state);
 
   // Requests the browser to navigate to `url` on behalf of the WebUI (e.g., for
   // file:, about:, or external URLs clicked in the history view that the
@@ -371,4 +402,7 @@ interface Page {
 
   // Sends account info updates to the UI.
   SendAccountInfo(AccountInfo account_info);
+
+  // Notifies the page that the user's identity or sync state has changed.
+  OnIdentityStateChanged(HistoryIdentityState identity_state);
 };

@@ -12,13 +12,11 @@ source_set("history") {
     "browsing_history_handler.cc",
     "foreign_session_handler.cc",
     "history_identity_state_watcher.cc",
-    "history_login_handler.cc",
     "history_ui.cc",
   ]
   public = [
     "browsing_history_handler.h",
     "history_identity_state_watcher.h",
-    "history_login_handler.h",
     "history_ui.h",
     "history_ui_platform_handlers.h",
   ]

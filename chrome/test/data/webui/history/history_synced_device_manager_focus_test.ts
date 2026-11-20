@@ -23,9 +23,9 @@ suite('<history-synced-device-manager>', function() {
     testProxy = new TestHistoryBrowserProxy();
     BrowserProxyImpl.setInstance(testProxy);
     testProxy.setInitialIdentityState({
-      signIn: HistorySignInState.SIGNED_IN,
-      tabsSync: SyncState.TURNED_ON,
-      historySync: SyncState.TURNED_OFF,
+      signIn: HistorySignInState.kSignedIn,
+      tabsSync: SyncState.kTurnedOn,
+      historySync: SyncState.kTurnedOff,
     });
     element = document.createElement('history-synced-device-manager');
     element.searchTerm = '';

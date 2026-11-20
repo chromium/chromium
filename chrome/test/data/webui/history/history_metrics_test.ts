@@ -6,7 +6,6 @@ import 'chrome://history/history.js';
 
 import type {HistoryAppElement, HistoryEntry, HistoryItemElement} from 'chrome://history/history.js';
 import {BrowserProxyImpl, foreignSessionBrowserProxyFactory, HistoryPageViewHistogram, HistorySignInState, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram, SyncState, VisitContextMenuAction} from 'chrome://history/history.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -90,13 +89,12 @@ suite('Metrics', function() {
     navigateTo('/syncedTabs', app);
     await microtasksFinished();
     assertEquals(1, histogram[HistoryPageViewHistogram.SIGNIN_PROMO]);
-    await testProxy.whenCalled('otherDevicesInitialized');
 
     testProxy.resetResolver('recordHistogram');
-    webUIListenerCallback('history-identity-state-changed', {
-      signIn: HistorySignInState.SIGNED_IN,
-      tabsSync: SyncState.TURNED_ON,
-      historySync: SyncState.TURNED_OFF,
+    testProxy.pageRemote.onIdentityStateChanged({
+      signIn: HistorySignInState.kSignedIn,
+      tabsSync: SyncState.kTurnedOn,
+      historySync: SyncState.kTurnedOff,
     });
     await testProxy.whenCalled('recordHistogram');
 
@@ -209,11 +207,12 @@ suite('Metrics', function() {
     navigateTo('/syncedTabs', app);
     await microtasksFinished();
 
-    webUIListenerCallback('history-identity-state-changed', {
-      signIn: HistorySignInState.SIGNED_IN,
-      tabsSync: SyncState.TURNED_ON,
-      historySync: SyncState.TURNED_OFF,
+    testProxy.pageRemote.onIdentityStateChanged({
+      signIn: HistorySignInState.kSignedIn,
+      tabsSync: SyncState.kTurnedOn,
+      historySync: SyncState.kTurnedOff,
     });
+    await testProxy.pageRemote.$.flushForTesting();
 
     const histogram = histogramMap[SYNCED_TABS_HISTOGRAM_NAME];
     assertTrue(!!histogram);
@@ -435,8 +434,7 @@ suite('Metrics', function() {
     assertTrue(!!histogram);
     assertEquals(
         1, histogram[VisitContextMenuAction.REVIEW_GEMINI_ACTIVITY_CLICKED]);
-    assertEquals(
-        1, testProxy.actionMap['EntryMenuReviewGeminiActivity']);
+    assertEquals(1, testProxy.actionMap['EntryMenuReviewGeminiActivity']);
   });
 
   test('HistoryPage.TimeToFirstVisibleContent', async () => {

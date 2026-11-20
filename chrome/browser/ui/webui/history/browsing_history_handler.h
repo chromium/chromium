@@ -45,6 +45,8 @@ namespace critical_actions {
 struct CriticalActionEntry;
 }  // namespace critical_actions
 
+class HistoryIdentityStateWatcher;
+
 // The handler for Javascript messages related to the "history" view.
 class BrowsingHistoryHandler : public history::mojom::PageHandler,
                                public ProfileBasedBrowsingHistoryDriver,
@@ -109,6 +111,10 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
   // history::mojom::PageHandler:
   void RequestAccountInfo(RequestAccountInfoCallback callback) override;
   void TurnOnHistorySync(history::mojom::AccessPoint access_point) override;
+  void RecordSigninPendingOffered(
+      history::mojom::AccessPoint access_point) override;
+  void GetInitialIdentityState(
+      GetInitialIdentityStateCallback callback) override;
   void NavigateToUrl(const GURL& url,
                      bool open_in_new_tab,
                      ui::mojom::ClickModifiersPtr modifiers) override;
@@ -184,6 +190,9 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
       OpenCriticalActionConversationCallback callback,
       std::optional<critical_actions::CriticalActionEntry> entry);
 
+  history::mojom::HistoryIdentityStatePtr GetHistoryIdentityStateMojo() const;
+  void IdentityStateChanged();
+
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
   // Interface to send information to the web ui page.
@@ -199,6 +208,8 @@ class BrowsingHistoryHandler : public history::mojom::PageHandler,
   raw_ptr<base::Clock> clock_;
 
   std::unique_ptr<history::BrowsingHistoryService> browsing_history_service_;
+
+  std::unique_ptr<HistoryIdentityStateWatcher> history_identity_state_watcher_;
 
   std::vector<base::OnceClosure> deferred_callbacks_;
 
