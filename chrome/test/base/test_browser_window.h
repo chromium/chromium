@@ -192,7 +192,6 @@ class TestBrowserWindow : public BrowserWindow,
   void ShowIncognitoHistoryDisclaimerDialog() override {}
 #endif
 
-  ExclusiveAccessContext* GetExclusiveAccessContext() override;
   std::string GetWorkspace() const override;
   bool IsVisibleOnAllWorkspaces() const override;
   void ShowEmojiPanel() override {}

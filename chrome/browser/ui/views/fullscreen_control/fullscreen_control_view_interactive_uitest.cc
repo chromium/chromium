@@ -15,7 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/exclusive_access/browser_view_exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -119,9 +119,8 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
   }
 
   ExclusiveAccessBubbleViews* GetExclusiveAccessBubble() {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
-    return browser_view->GetExclusiveAccessBubble();
+    return BrowserViewExclusiveAccessContext::From(browser())
+        ->exclusive_access_bubble();
   }
 
   KeyboardLockController* GetKeyboardLockController() {

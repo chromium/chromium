@@ -2148,7 +2148,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, SplitViewFullscreenLayout) {
   // Verify top_container is parented to overlay after entering fullscreen
   EXPECT_EQ(overlay_view, top_container->parent());
 
-  browser_view()->GetExclusiveAccessContext()->ExitFullscreen();
+  ExclusiveAccessManager::From(browser())->context()->ExitFullscreen();
 
   // Verify top_container is re-parented to browser_view after fullscreen exit
   EXPECT_EQ(browser_view(), top_container->parent());

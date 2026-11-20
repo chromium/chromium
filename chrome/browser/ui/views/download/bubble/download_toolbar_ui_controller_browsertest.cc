@@ -98,6 +98,18 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest, ShowHide) {
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
+                       FullscreenQueriesAfterWindowTeardown) {
+  auto* toolbar_controller = controller(browser());
+  ASSERT_TRUE(toolbar_controller);
+  toolbar_controller->TearDownPreBrowserWindowDestruction();
+
+  EXPECT_FALSE(toolbar_controller->IsFullscreenWithParentViewHidden());
+  EXPECT_FALSE(toolbar_controller->ShouldShowExclusiveAccessBubble());
+
+  CloseBrowserSynchronously(browser());
+}
+
+IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
                        HideDoesNotRemoveButtonIfPinned) {
   EXPECT_FALSE(download_button(browser()).GetVisible());
   PinnedToolbarActionsModel* const actions_model =

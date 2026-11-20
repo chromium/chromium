@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/exclusive_access/browser_view_exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_contents_view.h"
@@ -193,10 +194,9 @@ class DownloadBubbleInteractiveUiTest
   auto IsExclusiveAccessBubbleDisplayed(bool displayed) {
     return base::BindLambdaForTesting([&, displayed = displayed]() {
       ExclusiveAccessBubbleViews* bubble =
-          BrowserView::GetBrowserViewForBrowser(browser())
-              ->GetExclusiveAccessBubble();
-      return displayed ==
-             (bubble ? IsExclusiveAccessBubbleVisible(bubble) : false);
+          BrowserViewExclusiveAccessContext::From(browser())
+              ->exclusive_access_bubble();
+      return displayed == (bubble && IsExclusiveAccessBubbleVisible(bubble));
     });
   }
 
@@ -204,11 +204,11 @@ class DownloadBubbleInteractiveUiTest
   auto IsExclusiveAccessBubbleForDownload(bool for_download) {
     return base::BindLambdaForTesting([&, for_download = for_download]() {
       ExclusiveAccessBubbleViews* bubble =
-          BrowserView::GetBrowserViewForBrowser(browser())
-              ->GetExclusiveAccessBubble();
+          BrowserViewExclusiveAccessContext::From(browser())
+              ->exclusive_access_bubble();
       return for_download ==
-             (bubble ? ExclusiveAccessTest::IsBubbleDownloadNotification(bubble)
-                     : false);
+             (bubble &&
+              ExclusiveAccessTest::IsBubbleDownloadNotification(bubble));
     });
   }
 

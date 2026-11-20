@@ -10,6 +10,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/exclusive_access/browser_view_exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/exclusive_access/pointer_lock_controller.h"
@@ -65,8 +66,7 @@ class ExclusiveAccessBubbleViewsTest : public ExclusiveAccessTest,
   }
 
   ExclusiveAccessBubbleViewsContext* GetContext() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->GetExclusiveAccessBubbleViewsContextForTesting();
+    return BrowserViewExclusiveAccessContext::From(browser());
   }
 
   void ClearSnooze() {
@@ -508,7 +508,8 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest,
 //
 // Excluded on ChromeOS because browser fullscreen uses immersive mode there and
 // suppresses the exit instruction bubble (see
-// `ShouldUseImmersiveFullscreenForUrl()` in `browser_view.cc`).
+// `ShouldUseImmersiveFullscreen()` in
+// `browser_view_exclusive_access_context.cc`).
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest,
                        MenuDuringBrowserFullscreenDoesNotReshowBubble) {

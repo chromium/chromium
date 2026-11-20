@@ -8,16 +8,16 @@
 #include <utility>
 #include <vector>
 
-#include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/exclusive_access/browser_view_exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
@@ -28,8 +28,6 @@
 #include "chrome/browser/ui/exclusive_access/pointer_lock_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/exclusive_access/exclusive_access_bubble_views.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/public/browser/permission_result.h"
@@ -37,17 +35,14 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_permission_controller.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "exclusive_access_controller_base.h"
-#include "exclusive_access_manager.h"
-#include "exclusive_access_test.h"
 #include "extensions/common/extension.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/animation/slide_animation.h"
 
 using content::WebContents;
 
@@ -275,8 +270,11 @@ ExclusiveAccessBubbleType ExclusiveAccessTest::GetExclusiveAccessBubbleType() {
 
 ExclusiveAccessBubbleViews*
 ExclusiveAccessTest::GetExclusiveAccessBubbleView() {
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-  return browser_view ? browser_view->GetExclusiveAccessBubble() : nullptr;
+  auto* context = BrowserViewExclusiveAccessContext::From(browser());
+  if (!context) {
+    return nullptr;
+  }
+  return context->exclusive_access_bubble();
 }
 
 bool ExclusiveAccessTest::IsExclusiveAccessBubbleDisplayed() {
@@ -286,11 +284,11 @@ bool ExclusiveAccessTest::IsExclusiveAccessBubbleDisplayed() {
 }
 
 void ExclusiveAccessTest::FinishExclusiveAccessBubbleAnimation() {
-  if (!GetExclusiveAccessBubbleView()) {
+  auto* bubble = GetExclusiveAccessBubbleView();
+  if (!bubble) {
     return;
   }
-  gfx::AnimationTestApi animation_api(
-      GetExclusiveAccessBubbleView()->animation_for_test());
+  gfx::AnimationTestApi animation_api(bubble->animation_for_test());
   base::TimeTicks far_future = base::TimeTicks::Now() + base::Seconds(1);
   animation_api.Step(far_future);
 }

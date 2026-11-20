@@ -10,6 +10,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/exclusive_access/browser_view_exclusive_access_context.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -209,7 +210,13 @@ BrowserViewLayoutDelegateImpl::GetAnimationController() const {
 
 ExclusiveAccessBubbleViews*
 BrowserViewLayoutDelegateImpl::GetExclusiveAccessBubble() const {
-  return browser_view_->GetExclusiveAccessBubble();
+  // Layout may run before InitPostWindowConstruction() creates the context.
+  auto* context =
+      BrowserViewExclusiveAccessContext::From(browser_view_->browser());
+  if (!context) {
+    return nullptr;
+  }
+  return context->exclusive_access_bubble();
 }
 
 OrganizerPanelLocation

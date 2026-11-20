@@ -25,7 +25,6 @@
 #include "base/i18n/rtl.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -55,7 +54,6 @@
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/headless/headless_mode_util.h"
-#include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -96,10 +94,8 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
+#include "chrome/browser/ui/exclusive_access/browser_view_exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
-#include "chrome/browser/ui/exclusive_access/fullscreen_tab_params.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/focus/browser_focus_controller.h"
 #include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
@@ -155,8 +151,6 @@
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/color_provider_browser_helper.h"
 #include "chrome/browser/ui/views/download/download_in_progress_dialog_view.h"
-#include "chrome/browser/ui/views/exclusive_access/exclusive_access_bubble_views.h"
-#include "chrome/browser/ui/views/exclusive_access/exclusive_access_bubble_views_context.h"
 #include "chrome/browser/ui/views/extensions/extension_keybinding_registry_views.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper.h"
@@ -380,13 +374,11 @@
 #include "ash/wm/window_properties.h"
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"  // nogncheck
-#include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_chromeos.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 #include "chrome/browser/ui/views/frame/top_controls_slide_controller_chromeos.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
-#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
@@ -522,22 +514,6 @@ bool WidgetHasChildModalDialog(views::Widget* parent_widget) {
   return false;
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Returns whether immmersive fullscreen should replace fullscreen. This
-// should only occur for "browser-fullscreen" for tabbed-typed windows (not
-// for tab-fullscreen and not for app/popup type windows).
-bool ShouldUseImmersiveFullscreenForUrl(ExclusiveAccessBubbleType type) {
-  // Kiosk mode needs the whole screen.
-  if (IsRunningInAppMode()) {
-    return false;
-  }
-  // An empty URL signifies browser fullscreen. Immersive is used for browser
-  // fullscreen only.
-  return type ==
-         EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION;
-}
-#endif
-
 // Overlay view that owns TopContainerView in some cases (such as during
 // immersive fullscreen reveal).
 class TopContainerOverlayView : public views::View {
@@ -665,212 +641,6 @@ bool ConvertedHitTest(views::View* src, views::View* dst, gfx::Point* point) {
 
 }  // namespace
 
-// Implements the exclusive access context and bubble context.
-class BrowserView::ExclusiveAccessContextImpl
-    : public ExclusiveAccessContext,
-      public ExclusiveAccessBubbleViewsContext {
- public:
-  explicit ExclusiveAccessContextImpl(BrowserView& browser_view)
-      : browser_view_(browser_view) {}
-  ExclusiveAccessContextImpl(const ExclusiveAccessContextImpl&) = delete;
-  void operator=(const ExclusiveAccessContextImpl&) = delete;
-  ~ExclusiveAccessContextImpl() override = default;
-
-  ExclusiveAccessBubbleViews* exclusive_access_bubble() {
-    return exclusive_access_bubble_.get();
-  }
-
-  bool IsFullscreen() const override { return browser_view_->IsFullscreen(); }
-
-  Profile* GetProfile() override { return browser_view_->GetProfile(); }
-
-  void UpdateUIForTabFullscreen() override {
-    browser_view_->GetFrameView()->UpdateFullscreenTopUI();
-    // Layout can change in vertical tabstrip mode when going from fullscreen
-    // to tab fullscreen and vice-versa.
-    browser_view_->InvalidateLayout();
-  }
-
-  WebContents* GetWebContentsForExclusiveAccess() override {
-    return browser_view_->GetActiveWebContents();
-  }
-
-  bool CanUserEnterFullscreen() const override {
-    return browser_view_->CanFullscreen();
-  }
-
-  bool CanUserExitFullscreen() const override {
-#if BUILDFLAG(IS_CHROMEOS)
-    if (features::IsUseUnifiedLockedStateControllerEnabled()) {
-      return !chromeos::LockedStateController::From(browser_view_->browser())
-                  ->IsLockedFullscreen();
-    }
-    return !platform_util::IsBrowserLockedFullscreen(browser_view_->browser());
-#else
-    return true;
-#endif
-  }
-
-  ExclusiveAccessManager* GetExclusiveAccessManager() override {
-    return ExclusiveAccessManager::From(browser_view_->browser());
-  }
-
-  ui::AcceleratorProvider* GetAcceleratorProvider() override {
-    return &browser_view_.get();
-  }
-
-  gfx::NativeView GetBubbleParentView() const override {
-    return browser_view_->GetWidget()->GetNativeView();
-  }
-
-  gfx::Rect GetClientAreaBoundsInScreen() const override {
-    return browser_view_->GetWidget()->GetClientAreaBoundsInScreen();
-  }
-
-  bool IsImmersiveModeEnabled() const override {
-    return ImmersiveModeController::From(browser_view_->browser())->IsEnabled();
-  }
-
-  gfx::Rect GetTopContainerBoundsInScreen() override {
-    return browser_view_->top_container_->GetBoundsInScreen();
-  }
-
-  void DestroyAnyExclusiveAccessBubble() override {
-    exclusive_access_bubble_.reset();
-    exclusive_access_bubble_destruction_task_id_.reset();
-  }
-
-  void EnterFullscreen(const url::Origin& origin,
-                       ExclusiveAccessBubbleType bubble_type,
-                       FullscreenTabParams fullscreen_tab_params) override {
-    int64_t display_id = fullscreen_tab_params.display_id;
-    if (base::FeatureList::IsEnabled(features::kAsyncFullscreenWindowState)) {
-      browser_view_->RequestFullscreen(true, display_id);
-    } else {
-      auto* screen = display::Screen::Get();
-      auto display =
-          screen->GetDisplayNearestWindow(browser_view_->GetNativeWindow());
-      const bool requesting_another_screen =
-          display_id != display.id() &&
-          display_id != display::kInvalidDisplayId;
-      if (IsFullscreen() && !requesting_another_screen) {
-        // Nothing to do.
-        return;
-      }
-      browser_view_->ProcessFullscreen(true, display_id);
-    }
-  }
-
-  void ExitFullscreen() override {
-    if (BrowserWindowFullscreenController::From(browser_view_->browser())
-            ->IsForceFullscreen()) {
-      return;
-    }
-
-    if (base::FeatureList::IsEnabled(features::kAsyncFullscreenWindowState)) {
-      browser_view_->RequestFullscreen(false, display::kInvalidDisplayId);
-    } else {
-      if (!IsFullscreen()) {
-        return;  // Nothing to do.
-      }
-      browser_view_->ProcessFullscreen(false, display::kInvalidDisplayId);
-    }
-  }
-
-  void UpdateExclusiveAccessBubble(
-      const ExclusiveAccessBubbleParams& params,
-      ExclusiveAccessBubbleHideCallback first_hide_callback) override {
-    // Whether we should remove the bubble if it exists, or not show the bubble.
-    // TODO(jamescook): Figure out what to do with mouse-lock.
-    bool should_close_bubble = false;
-#if BUILDFLAG(IS_CHROMEOS)
-    // Trusted pinned mode does not allow to escape. So do not show the bubble.
-    should_close_bubble = !CanUserExitFullscreen();
-#endif
-    if (!params.has_download) {
-      // ...TYPE_NONE indicates deleting the bubble, except when used with
-      // download.
-      should_close_bubble |= params.type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE;
-#if BUILDFLAG(IS_CHROMEOS)
-      // Immersive mode allows the toolbar to be shown, so do not show the
-      // bubble. However, do show the bubble in a managed guest session (see
-      // crbug.com/741069).
-      // Immersive mode logic for downloads is handled by the download
-      // controller.
-      should_close_bubble |= ShouldUseImmersiveFullscreenForUrl(params.type) &&
-                             !chromeos::IsManagedGuestSession();
-#endif
-    }
-
-    if (should_close_bubble) {
-      if (first_hide_callback) {
-        std::move(first_hide_callback)
-            .Run(ExclusiveAccessBubbleHideReason::kNotShown);
-      }
-
-      // If we intend to close the bubble but it has already been deleted no
-      // action is needed.
-      if (!exclusive_access_bubble_) {
-        return;
-      }
-      // Exit if we've already queued up a task to close the bubble.
-      if (exclusive_access_bubble_destruction_task_id_) {
-        return;
-      }
-      // `HideImmediately()` will trigger a callback for the current bubble with
-      // `ExclusiveAccessBubbleHideReason::kInterrupted` if available.
-      exclusive_access_bubble_->HideImmediately();
-
-      // Perform the destroy async. State updates in the exclusive access bubble
-      // view may call back into this method. This otherwise results in
-      // premature deletion of the bubble view and UAFs. See crbug.com/40063714.
-      exclusive_access_bubble_destruction_task_id_ =
-          exclusive_access_bubble_cancelable_task_tracker_.PostTask(
-              base::SingleThreadTaskRunner::GetCurrentDefault().get(),
-              FROM_HERE,
-              base::BindOnce(
-                  &ExclusiveAccessContextImpl::DestroyAnyExclusiveAccessBubble,
-                  weak_ptr_factory_.GetWeakPtr()));
-      return;
-    }
-
-    if (exclusive_access_bubble_) {
-      if (exclusive_access_bubble_destruction_task_id_) {
-        // We previously posted a destruction task, but now we want to reuse the
-        // bubble. Cancel the destruction task.
-        exclusive_access_bubble_cancelable_task_tracker_.TryCancel(
-            exclusive_access_bubble_destruction_task_id_.value());
-        exclusive_access_bubble_destruction_task_id_.reset();
-      }
-      exclusive_access_bubble_->Update(params, std::move(first_hide_callback));
-      return;
-    }
-
-    exclusive_access_bubble_ = std::make_unique<ExclusiveAccessBubbleViews>(
-        this, params, std::move(first_hide_callback));
-  }
-
-  bool IsExclusiveAccessBubbleDisplayed() const override {
-    return exclusive_access_bubble_ && (exclusive_access_bubble_->IsShowing() ||
-                                        exclusive_access_bubble_->IsVisible());
-  }
-
-  void OnExclusiveAccessUserInput() override {
-    if (exclusive_access_bubble_.get()) {
-      exclusive_access_bubble_->OnUserInput();
-    }
-  }
-
- private:
-  const raw_ref<BrowserView> browser_view_;
-  std::unique_ptr<ExclusiveAccessBubbleViews> exclusive_access_bubble_;
-  // Tracks the task to asynchronously destroy the exclusive access bubble.
-  base::CancelableTaskTracker exclusive_access_bubble_cancelable_task_tracker_;
-  std::optional<base::CancelableTaskTracker::TaskId>
-      exclusive_access_bubble_destruction_task_id_;
-  base::WeakPtrFactory<ExclusiveAccessContextImpl> weak_ptr_factory_{this};
-};
-
 #if BUILDFLAG(IS_WIN)
 class BrowserView::PipExclusionObserverImpl
     : public content::desktop_capture::PipScreenCaptureExclusionObserver {
@@ -901,10 +671,7 @@ class BrowserView::PipExclusionObserverImpl
 // BrowserView, public:
 
 BrowserView::BrowserView(BrowserWindowInterface* browser)
-    : views::ClientView(nullptr, nullptr),
-      exclusive_access_context_(
-          std::make_unique<ExclusiveAccessContextImpl>(*this)),
-      browser_(browser) {
+    : views::ClientView(nullptr, nullptr), browser_(browser) {
   if (auto* manager = InitialWebUIWindowMetricsManager::From(browser_.get())) {
     manager->OnBrowserWindowCreated();
   }
@@ -1386,15 +1153,6 @@ TabSearchBubbleHost* BrowserView::GetTabSearchBubbleHost() {
   return tab_search_bubble_host_.get();
 }
 
-ExclusiveAccessBubbleViews* BrowserView::GetExclusiveAccessBubble() {
-  return exclusive_access_context_->exclusive_access_bubble();
-}
-
-ExclusiveAccessBubbleViewsContext*
-BrowserView::GetExclusiveAccessBubbleViewsContextForTesting() {
-  return exclusive_access_context_.get();
-}
-
 bool BrowserView::GetTabStripVisible() const {
   if (!ShouldDrawTabStrip()) {
     return false;
@@ -1747,7 +1505,10 @@ void BrowserView::SetBounds(const gfx::Rect& bounds) {
   }
 
   auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
-  exclusive_access_context_->ExitFullscreen();
+  // The context is installed after the window has been constructed.
+  if (auto* context = BrowserViewExclusiveAccessContext::From(browser_)) {
+    context->ExitFullscreen();
+  }
   if (!weak_ptr) {
     return;
   }
@@ -5577,11 +5338,10 @@ bool BrowserView::MaybeUpdateSplitView(content::WebContents* contents) {
   const bool current_state = multi_contents_view_->IsInSplitView();
   const tabs::TabInterface* const new_tab =
       contents ? tabs::TabInterface::GetFromContents(contents) : nullptr;
-  const bool updated_state =
-      new_tab && new_tab->IsSplit() &&
-      !exclusive_access_context_->GetExclusiveAccessManager()
-           ->fullscreen_controller()
-           ->IsTabFullscreen();
+  const bool updated_state = new_tab && new_tab->IsSplit() &&
+                             !ExclusiveAccessManager::From(browser_)
+                                  ->fullscreen_controller()
+                                  ->IsTabFullscreen();
 
   if (updated_state) {
     split_tabs::SplitTabData* split_data =
@@ -5710,7 +5470,9 @@ void BrowserView::PrepareFullscreen(bool fullscreen) {
   } else {
     // Hide the fullscreen bubble as soon as possible, since the mode toggle can
     // take enough time for the user to notice.
-    exclusive_access_context_->DestroyAnyExclusiveAccessBubble();
+    if (auto* context = BrowserViewExclusiveAccessContext::From(browser_)) {
+      context->DestroyAnyExclusiveAccessBubble();
+    }
 
     if (auto* const fullscreen_control_host =
             FullscreenControlHost::From(browser_.get())) {
@@ -6106,10 +5868,6 @@ void BrowserView::UpdateWebAppStatusIconsVisiblity() {
   }
 }
 
-ExclusiveAccessContext* BrowserView::GetExclusiveAccessContext() {
-  return exclusive_access_context_.get();
-}
-
 std::string BrowserView::GetWorkspace() const {
   return browser_widget_->GetWorkspace();
 }
@@ -6191,7 +5949,7 @@ bool BrowserView::FindCommandIdForAccelerator(
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// BrowserView, ExclusiveAccessContext implementation:
+// BrowserView, profile access:
 Profile* BrowserView::GetProfile() const {
   return browser_->GetProfile();
 }

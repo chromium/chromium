@@ -11,9 +11,8 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
+#include "chrome/browser/ui/exclusive_access/browser_view_exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
 #include "chrome/browser/ui/views/exclusive_access/exclusive_access_bubble_views.h"
@@ -89,19 +88,16 @@ FullscreenControlHost* FullscreenControlHost::From(
 FullscreenControlHost::FullscreenControlHost(
     BrowserView* browser_view,
     ExclusiveAccessManager* exclusive_access_manager,
+    BrowserViewExclusiveAccessContext& exclusive_access_context,
+    BrowserWindowFullscreenController& fullscreen_controller,
     ui::UnownedUserDataHost& host)
     : scoped_unowned_user_data_(host, *this),
       browser_view_(browser_view),
-      exclusive_access_manager_(CHECK_DEREF(exclusive_access_manager)) {}
+      exclusive_access_manager_(CHECK_DEREF(exclusive_access_manager)),
+      exclusive_access_context_(exclusive_access_context),
+      fullscreen_controller_(fullscreen_controller) {}
 
 FullscreenControlHost::~FullscreenControlHost() = default;
-
-// static
-bool FullscreenControlHost::IsFullscreenExitUIEnabled() {
-  // TODO(joedow): Remove this function and all uses of it. The fullscreen exit
-  // UI is now always enabled because the keyboard lock UI is always enabled.
-  return true;
-}
 
 void FullscreenControlHost::OnEvent(const ui::Event& event) {
   if (event.IsKeyEvent()) {
@@ -199,7 +195,8 @@ void FullscreenControlHost::OnMouseEvent(const ui::MouseEvent& event) {
         // If the exit fullscreen prompt is being shown (say user just pressed
         // F11 with the cursor on the top of the screen) then we suppress the
         // fullscreen control host and just put it in cooldown mode.
-        if (const auto* bubble = browser_view_->GetExclusiveAccessBubble();
+        if (const auto* bubble =
+                exclusive_access_context_->exclusive_access_bubble();
             bubble && bubble->IsShowing()) {
           in_mouse_cooldown_mode_ = true;
         } else {
@@ -256,7 +253,7 @@ void FullscreenControlHost::OnEnterFullscreen() {
     LOG(ERROR) << "FullscreenControlHost: Event monitor already exists";
   }
 
-  if (IsFullscreenExitUIEnabled() && !event_monitor_) {
+  if (!event_monitor_) {
     event_monitor_ = views::EventMonitor::CreateWindowMonitor(
         this, browser_view_->GetNativeWindow(),
         {ui::EventType::kMouseMoved, ui::EventType::kKeyPressed,
@@ -300,7 +297,8 @@ bool FullscreenControlHost::IsAnimating() const {
 void FullscreenControlHost::ShowForInputEntryMethod(
     InputEntryMethod input_entry_method) {
   input_entry_method_ = input_entry_method;
-  if (auto* const bubble = browser_view_->GetExclusiveAccessBubble()) {
+  if (auto* const bubble =
+          exclusive_access_context_->exclusive_access_bubble()) {
     bubble->HideImmediately();
   }
   GetPopup()->Show(browser_view_->GetWidget()->GetClientAreaBoundsInScreen());
@@ -346,9 +344,8 @@ void FullscreenControlHost::OnPopupTimeout(
 
 bool FullscreenControlHost::IsExitUiNeeded() {
   return browser_view_->IsFullscreen() &&
-         browser_view_->GetExclusiveAccessContext()->CanUserExitFullscreen() &&
-         BrowserWindowFullscreenController::From(browser_view_->browser())
-             ->ShouldHideUIForFullscreen();
+         exclusive_access_context_->CanUserExitFullscreen() &&
+         fullscreen_controller_->ShouldHideUIForFullscreen();
 }
 
 bool FullscreenControlHost::IsPointerLocked() {
@@ -377,5 +374,5 @@ float FullscreenControlHost::CalculateCursorBufferHeight() const {
 void FullscreenControlHost::OnExitFullscreenPopupClicked() {
   base::RecordAction(
       base::UserMetricsAction("ExitFullscreen_PopupCloseButton"));
-  browser_view_->GetExclusiveAccessContext()->ExitFullscreen();
+  exclusive_access_context_->ExitFullscreen();
 }

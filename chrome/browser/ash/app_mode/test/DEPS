@@ -23,6 +23,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "new_windows_in_kiosk_allowed_browsertest\\.cc": [
+    "+chrome/browser/ui/exclusive_access/exclusive_access_manager.h",
+  ],
   # Only tests need //chrome/browser/signin.
   ".*_browsertest\\.cc": [
     "+chrome/browser/signin/identity_manager_factory.h",

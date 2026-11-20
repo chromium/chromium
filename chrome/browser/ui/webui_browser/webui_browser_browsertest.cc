@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/browser/ui/webui_browser/bookmark_bar.mojom.h"
 #include "chrome/browser/ui/webui_browser/bookmark_bar_page_handler.h"
+#include "chrome/browser/ui/webui_browser/webui_browser_exclusive_access_context.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_side_panel_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
@@ -145,6 +146,17 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, StartupAndShutdown) {
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIBrowserTest,
+                       ExclusiveAccessManagerUsesWebUIContext) {
+  ASSERT_TRUE(WebUIBrowserWindow::FromBrowser(browser()));
+
+  auto* context = WebUIBrowserExclusiveAccessContext::From(browser());
+  ASSERT_TRUE(context);
+  auto* manager = ExclusiveAccessManager::From(browser());
+  ASSERT_TRUE(manager);
+  EXPECT_EQ(context, manager->context());
 }
 
 // Ensures that WebUIBrowser does not crash when closing tabs (rather than

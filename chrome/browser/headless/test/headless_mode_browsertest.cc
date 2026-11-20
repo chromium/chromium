@@ -36,6 +36,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/exclusive_access/browser_view_exclusive_access_context.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/exclusive_access/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
@@ -178,8 +179,8 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
   // exit bubble, and wait for the fullscreen transition to complete.
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
   ASSERT_TRUE(browser()->GetWindow()->IsFullscreen());
-  ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())
-                  ->GetExclusiveAccessBubble());
+  ASSERT_TRUE(BrowserViewExclusiveAccessContext::From(browser())
+                  ->exclusive_access_bubble());
 
   // Wait well past the 1.5s watchdog interval.
   base::RunLoop run_loop;

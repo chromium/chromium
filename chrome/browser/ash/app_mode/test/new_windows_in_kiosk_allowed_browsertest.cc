@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -195,11 +196,11 @@ IN_PROC_BROWSER_TEST_P(NewWindowsInKioskAllowedTest, AllowsNewPopupWindows) {
   ASSERT_FALSE(DidKioskCloseNewWindow());
   EXPECT_EQ(VisibleBrowserCount(), 2u);
 
-  EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(&initial_browser)
-                   ->GetExclusiveAccessContext()
+  EXPECT_FALSE(ExclusiveAccessManager::From(&initial_browser)
+                   ->context()
                    ->CanUserEnterFullscreen());
-  EXPECT_FALSE(BrowserView::GetBrowserViewForBrowser(&popup)
-                   ->GetExclusiveAccessContext()
+  EXPECT_FALSE(ExclusiveAccessManager::From(&popup)
+                   ->context()
                    ->CanUserEnterFullscreen());
   EXPECT_TRUE(
       BrowserView::GetBrowserViewForBrowser(&initial_browser)->IsFullscreen());

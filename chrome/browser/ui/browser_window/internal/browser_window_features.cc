@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/check_is_test.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
@@ -72,6 +71,8 @@
 #include "chrome/browser/ui/context_highlight/context_highlight_window_feature.h"
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/desktop_to_mobile_promos/ios_promo_controller.h"
+#include "chrome/browser/ui/exclusive_access/browser_view_exclusive_access_context.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/extensions/extension_installed_watcher.h"
 #include "chrome/browser/ui/extensions/extension_side_panel_manager.h"
@@ -788,19 +789,23 @@ void BrowserWindowFeatures::InitPostWindowConstruction(
             *browser, browser_, browser_view->GetContentsContainerViews());
   }
 
-  // Must be before exclusive_access_manager_ (whose construction calls
-  // BrowserWindow::FromBrowser(browser)->GetExclusiveAccessContext(), which
-  // resolves to this WebUI-specific implementation for WebUIBrowserWindow).
-  if (webui_browser_window) {
-    webui_browser_exclusive_access_context_ =
+  // Must be before exclusive_access_manager_, which borrows this context.
+  // TestBrowserWindow has no UI context. Custom windows are restricted to
+  // tests by the Browser constructor.
+  if (browser_view) {
+    exclusive_access_context_ =
+        GetUserDataFactory().CreateInstance<BrowserViewExclusiveAccessContext>(
+            *browser, *browser, *browser_view);
+  } else if (webui_browser_window) {
+    exclusive_access_context_ =
         GetUserDataFactory().CreateInstance<WebUIBrowserExclusiveAccessContext>(
-            *browser, browser->GetProfile(), browser_,
+            *browser, browser->GetProfile(), browser,
             browser->GetTabStripModel(), webui_browser_window->widget(),
             webui_browser_window);
   }
 
   exclusive_access_manager_ = std::make_unique<ExclusiveAccessManager>(
-      browser, BrowserWindow::FromBrowser(browser)->GetExclusiveAccessContext(),
+      browser, exclusive_access_context_.get(),
       browser_command_controller_.get(), bookmark_bar_controller_.get());
 
   // Must be after exclusive_access_manager_,
@@ -848,12 +853,14 @@ void BrowserWindowFeatures::InitPostWindowConstruction(
             *browser, webui_browser_window, browser->GetUnownedUserDataHost());
   }
 
-  // Must be after exclusive_access_manager_.
+  // The host borrows the manager, context, and window fullscreen controller,
+  // which must all outlive it.
   if (browser_view) {
     fullscreen_control_host_ =
         GetUserDataFactory().CreateInstance<FullscreenControlHost>(
             *browser, browser_view, exclusive_access_manager_.get(),
-            browser->GetUnownedUserDataHost());
+            *BrowserViewExclusiveAccessContext::From(browser),
+            *fullscreen_controller_, browser->GetUnownedUserDataHost());
   }
 
   incognito_clear_browsing_data_dialog_coordinator_ =
@@ -1264,9 +1271,8 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
 #endif
   browser_web_contents_delegate_.reset();
   exclusive_access_manager_.reset();
-  // Must be after exclusive_access_manager_ (which holds a reference to this
-  // context for WebUI browser windows).
-  webui_browser_exclusive_access_context_.reset();
+  // Must be after exclusive_access_manager_, which borrows this context.
+  exclusive_access_context_.reset();
   if (devtools_ui_controller_) {
     devtools_ui_controller_->TearDown();
   }

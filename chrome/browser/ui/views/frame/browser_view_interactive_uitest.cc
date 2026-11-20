@@ -78,7 +78,6 @@
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/browser_commands_mac.h"
 #include "chrome/browser/ui/view_ids.h"
-#include "chrome/test/base/interactive_test_utils.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 #endif
@@ -1056,8 +1055,8 @@ IN_PROC_BROWSER_TEST_P(BrowserViewLockedFullscreenTestChromeOS,
               .force_update = true,
           },
           base::NullCallback());
-  EXPECT_TRUE(browser_view()
-                  ->GetExclusiveAccessContext()
+  EXPECT_TRUE(ExclusiveAccessManager::From(browser())
+                  ->context()
                   ->IsExclusiveAccessBubbleDisplayed());
 }
 
@@ -1074,8 +1073,8 @@ IN_PROC_BROWSER_TEST_P(BrowserViewLockedFullscreenTestChromeOS,
                EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION,
            .force_update = true},
           base::NullCallback());
-  EXPECT_FALSE(browser_view()
-                   ->GetExclusiveAccessContext()
+  EXPECT_FALSE(ExclusiveAccessManager::From(browser())
+                   ->context()
                    ->IsExclusiveAccessBubbleDisplayed());
 }
 

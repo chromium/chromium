@@ -364,10 +364,6 @@ TestBrowserWindow::GetWebContentsModalDialogHostFor(
   return nullptr;
 }
 
-ExclusiveAccessContext* TestBrowserWindow::GetExclusiveAccessContext() {
-  return nullptr;
-}
-
 std::string TestBrowserWindow::GetWorkspace() const {
   return workspace_;
 }

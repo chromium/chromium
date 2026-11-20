@@ -107,6 +107,7 @@ source_set("internal") {
       "//chrome/browser/ui/contextual_search",
       "//chrome/browser/ui/desktop_to_mobile_promos:controller",
       "//chrome/browser/ui/exclusive_access",
+      "//chrome/browser/ui/exclusive_access:browser_view_exclusive_access_context",
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/find_bar",
       "//chrome/browser/ui/focus",

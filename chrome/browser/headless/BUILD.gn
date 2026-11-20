@@ -142,6 +142,7 @@ if (!is_android) {
       "//chrome/browser",
       "//chrome/browser/infobars",
       "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui/exclusive_access:browser_view_exclusive_access_context",
       "//chrome/browser/ui/views/exclusive_access",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/common:constants",

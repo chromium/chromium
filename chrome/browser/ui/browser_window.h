@@ -35,7 +35,6 @@
 class BrowserView;
 class BrowserWindowInterface;
 class DownloadBubbleUIController;
-class ExclusiveAccessContext;
 class FindBar;
 class GURL;
 class LocationBar;
@@ -451,9 +450,6 @@ class BrowserWindow : public ui::BaseWindow {
       base::OnceClosure failure_callback,
       const SurveyBitsData& product_specific_bits_data,
       const SurveyStringData& product_specific_string_data) = 0;
-
-  // Returns object implementing ExclusiveAccessContext interface.
-  virtual ExclusiveAccessContext* GetExclusiveAccessContext() = 0;
 
   // Returns the platform-specific ID of the workspace the browser window
   // currently resides in.

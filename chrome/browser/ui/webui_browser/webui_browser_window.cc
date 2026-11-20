@@ -40,7 +40,6 @@
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_extensions_container.h"
 #include "chrome/browser/ui/webui_browser/browser_elements_webui_browser.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_client_view.h"
-#include "chrome/browser/ui/webui_browser/webui_browser_exclusive_access_context.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_modal_dialog_host.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_side_panel_ui.h"
 #include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
@@ -1127,10 +1126,6 @@ void WebUIBrowserWindow::ShowHatsDialog(
     const SurveyBitsData& product_specific_bits_data,
     const SurveyStringData& product_specific_string_data) {
   NOTIMPLEMENTED_LOG_ONCE();
-}
-
-ExclusiveAccessContext* WebUIBrowserWindow::GetExclusiveAccessContext() {
-  return WebUIBrowserExclusiveAccessContext::From(browser_);
 }
 
 std::string WebUIBrowserWindow::GetWorkspace() const {

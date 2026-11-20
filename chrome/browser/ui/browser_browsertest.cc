@@ -2278,9 +2278,7 @@ IN_PROC_BROWSER_TEST_F(KioskModeTest, MAYBE_EnableKioskModeTest) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(KioskModeTest, DoNotExitFullscreen) {
-  BrowserWindow::FromBrowser(browser())
-      ->GetExclusiveAccessContext()
-      ->ExitFullscreen();
+  ExclusiveAccessManager::From(browser())->context()->ExitFullscreen();
   ASSERT_TRUE(browser()->GetWindow()->IsFullscreen());
 }
 

@@ -7,12 +7,16 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/timer/timer.h"
 #include "components/fullscreen_control/fullscreen_control_popup.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/events/event_observer.h"
 
 class BrowserView;
+class BrowserViewExclusiveAccessContext;
+class BrowserWindowFullscreenController;
+class BrowserWindowInterface;
 class ExclusiveAccessManager;
 
 namespace ui {
@@ -32,15 +36,16 @@ class EventMonitor;
 // fullscreen.
 // This UI is also used as a visual progress indicator when keyboard lock
 // requires user to press-and-hold ESC key to exit fullscreen.
-class BrowserWindowInterface;
-
 class FullscreenControlHost : public ui::EventObserver {
  public:
   DECLARE_USER_DATA(FullscreenControlHost);
 
-  FullscreenControlHost(BrowserView* browser_view,
-                        ExclusiveAccessManager* exclusive_access_manager,
-                        ui::UnownedUserDataHost& host);
+  FullscreenControlHost(
+      BrowserView* browser_view,
+      ExclusiveAccessManager* exclusive_access_manager,
+      BrowserViewExclusiveAccessContext& exclusive_access_context,
+      BrowserWindowFullscreenController& fullscreen_controller,
+      ui::UnownedUserDataHost& host);
 
   // Returns the host for `browser`, or null if it does not have one (e.g.
   // no BrowserView).
@@ -50,8 +55,6 @@ class FullscreenControlHost : public ui::EventObserver {
   FullscreenControlHost& operator=(const FullscreenControlHost&) = delete;
 
   ~FullscreenControlHost() override;
-
-  static bool IsFullscreenExitUIEnabled();
 
   // ui::EventObserver:
   void OnEvent(const ui::Event& event) override;
@@ -107,6 +110,8 @@ class FullscreenControlHost : public ui::EventObserver {
 
   const raw_ptr<BrowserView> browser_view_;
   const raw_ref<ExclusiveAccessManager> exclusive_access_manager_;
+  const raw_ref<BrowserViewExclusiveAccessContext> exclusive_access_context_;
+  const raw_ref<BrowserWindowFullscreenController> fullscreen_controller_;
 
   std::unique_ptr<FullscreenControlPopup> fullscreen_control_popup_;
 

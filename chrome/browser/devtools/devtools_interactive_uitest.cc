@@ -12,18 +12,19 @@
 #include "build/build_config.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/protocol/browser_handler.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/base_window.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rect.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/devtools/devtools_window_testing.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
@@ -188,10 +189,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsManagerDelegateTest, ExitFullscreenWindow) {
 #if BUILDFLAG(IS_MAC)
   ui::test::ScopedFakeNSWindowFullscreen faker;
 #endif
-  BrowserWindow::FromBrowser(browser())
-      ->GetExclusiveAccessContext()
-      ->EnterFullscreen(url::Origin(), EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE,
-                        FullscreenTabParams());
+  ExclusiveAccessManager::From(browser())->context()->EnterFullscreen(
+      url::Origin(), EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE, FullscreenTabParams());
   CheckIsFullscreen(true);
   SendCommand("normal");
   CheckIsFullscreen(false);

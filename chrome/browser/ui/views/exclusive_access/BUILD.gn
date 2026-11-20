@@ -54,8 +54,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui:accelerator_utils_headers",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/exclusive_access",
-    "//chrome/browser/ui/views/frame",
-    "//chrome/browser/ui/views/frame:browser_view_header",
+    "//chrome/browser/ui/exclusive_access:browser_view_exclusive_access_context",
     "//chrome/test:test_support",
     "//components/fullscreen_control",
     "//content/test:test_support",
@@ -73,6 +72,7 @@ source_set("interactive_ui_tests") {
   deps = [
     ":exclusive_access",
     "//chrome/browser/ui/exclusive_access",
+    "//chrome/browser/ui/exclusive_access:browser_view_exclusive_access_context",
     "//chrome/browser/ui/exclusive_access:test_support",
     "//chrome/browser/ui/views/frame",
     "//chrome/browser/ui/views/frame:browser_view_header",

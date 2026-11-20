@@ -11,9 +11,9 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/exclusive_access/browser_view_exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/fullscreen_control/subtle_notification_view.h"
 #include "content/public/test/browser_test.h"
@@ -75,8 +75,7 @@ class ExclusiveAccessBubbleViewsTest : public InProcessBrowserTest {
   ExclusiveAccessBubbleViewsTest() = default;
 
   ExclusiveAccessBubbleViewsContext* GetContext() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->GetExclusiveAccessBubbleViewsContextForTesting();
+    return BrowserViewExclusiveAccessContext::From(browser());
   }
 
   void SetUpOnMainThread() override {

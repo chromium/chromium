@@ -160,7 +160,6 @@ class WebUIBrowserWindow : public BrowserWindow,
       base::OnceClosure failure_callback,
       const SurveyBitsData& product_specific_bits_data,
       const SurveyStringData& product_specific_string_data) override;
-  ExclusiveAccessContext* GetExclusiveAccessContext() override;
   std::string GetWorkspace() const override;
   bool IsVisibleOnAllWorkspaces() const override;
   void ShowEmojiPanel() override;
@@ -191,7 +190,7 @@ class WebUIBrowserWindow : public BrowserWindow,
   gfx::Rect GetBounds() const override;
   bool IsMaximized() const override;
   bool IsMinimized() const override;
-  bool IsFullscreen() const override;  // Also in ExclusiveAccessContext.
+  bool IsFullscreen() const override;
   gfx::Rect GetRestoredBounds() const override;
   ui::mojom::WindowShowState GetRestoredState() const override;
   void Maximize() override;

@@ -17,7 +17,7 @@ class WebContents;
 }
 
 // The context for exclusive access, i.e. fullscreen, pointer and keyboard lock.
-// This interface is implemented by WebContents host views, e.g. BrowserView.
+// Implemented by adapters for WebContents hosts, such as BrowserView.
 class ExclusiveAccessContext {
  public:
   virtual ~ExclusiveAccessContext() = default;

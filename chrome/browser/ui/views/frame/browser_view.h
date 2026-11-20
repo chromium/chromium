@@ -15,8 +15,8 @@
 #include "base/containers/enum_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -83,8 +83,6 @@ class ContentsContainerView;
 class ContentsWebView;
 class CustomFloatingCorner;
 struct DropData;
-class ExclusiveAccessBubbleViews;
-class ExclusiveAccessBubbleViewsContext;
 class GlobalErrorService;
 class InfoBarContainerView;
 class LocationBarView;
@@ -329,13 +327,6 @@ class BrowserView : public BrowserWindow,
 
   // Setter for the BrowserView's TabSearchBubbleHost instance.
   void UpdateTabSearchBubbleHost();
-
-  // Accessor for the ExclusiveAccessBubble.
-  ExclusiveAccessBubbleViews* GetExclusiveAccessBubble();
-
-  // Test-specific accessor for the bubble view context.
-  ExclusiveAccessBubbleViewsContext*
-  GetExclusiveAccessBubbleViewsContextForTesting();
 
   // Returns true if the top UI are visible on screen.
   bool GetTabStripVisible() const;
@@ -637,7 +628,6 @@ class BrowserView : public BrowserWindow,
       base::OnceClosure failure_callback,
       const SurveyBitsData& product_specific_bits_data,
       const SurveyStringData& product_specific_string_data) override;
-  ExclusiveAccessContext* GetExclusiveAccessContext() override;
   std::string GetWorkspace() const override;
   bool IsVisibleOnAllWorkspaces() const override;
 
@@ -847,6 +837,8 @@ class BrowserView : public BrowserWindow,
   void DeleteBrowserWindow() final;
 
  private:
+  friend class BrowserViewExclusiveAccessContext;
+
   // Do not friend BrowserViewLayout. Use the BrowserViewLayoutDelegate
   // interface to keep these two classes decoupled and testable.
   friend class BrowserViewLayoutDelegateImpl;
@@ -1100,12 +1092,6 @@ class BrowserView : public BrowserWindow,
   // view is successfully painted onto the screen for the first time.
   // `frame_timing_details` contains the paint timing information of the frame.
   void OnFirstPresentation(const viz::FrameTimingDetails& frame_timing_details);
-
-  // TODO(crbug.com/461955649): Move ExclusiveAccessContextImpl out of
-  // BrowserView and make it shared so BrowserWindowFeatures can own it
-  // directly.
-  class ExclusiveAccessContextImpl;
-  std::unique_ptr<ExclusiveAccessContextImpl> exclusive_access_context_;
 
   // The BrowserWidget that owns this view.
   std::unique_ptr<BrowserWidget> browser_widget_;

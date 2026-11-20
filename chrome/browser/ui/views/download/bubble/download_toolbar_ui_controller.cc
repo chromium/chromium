@@ -35,6 +35,7 @@ DEFINE_USER_DATA(DownloadToolbarUIController);
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_contents_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_bubble_started_animation_views.h"
@@ -255,6 +256,11 @@ void DownloadToolbarUIController::AnnounceAccessibleAlertNow(
 }
 
 bool DownloadToolbarUIController::IsFullscreenWithParentViewHidden() const {
+  // The controller can outlive the window during teardown.
+  if (!browser_view_) {
+    return false;
+  }
+
 #if BUILDFLAG(IS_MAC)
   if (fullscreen_utils::IsInContentFullscreen(browser_view_->browser())) {
     return true;
@@ -264,8 +270,7 @@ bool DownloadToolbarUIController::IsFullscreenWithParentViewHidden() const {
   // If immersive fullscreen, check if top chrome is visible.
   auto* const controller =
       ImmersiveModeController::From(browser_view_->browser());
-  if (browser_view_ && browser_view_->GetLocationBarView() &&
-      controller->IsEnabled()) {
+  if (browser_view_->GetLocationBarView() && controller->IsEnabled()) {
     return !controller->IsRevealed();
   }
 
@@ -279,9 +284,6 @@ bool DownloadToolbarUIController::ShouldShowExclusiveAccessBubble() const {
   if (!IsFullscreenWithParentViewHidden()) {
     return false;
   }
-  if (!browser_view_) {
-    return false;
-  }
 #if BUILDFLAG(IS_MAC)
   // In content fullscreen, we do not show the download bubble and the toolbar
   // is not visible. Therefore, we must show the ExclusiveAccessBubble notice.
@@ -291,7 +293,9 @@ bool DownloadToolbarUIController::ShouldShowExclusiveAccessBubble() const {
 #endif
   return !ImmersiveModeController::From(browser_view_->browser())
               ->IsEnabled() &&
-         browser_view_->GetExclusiveAccessContext()->CanUserExitFullscreen();
+         ExclusiveAccessManager::From(browser_view_->browser())
+             ->context()
+             ->CanUserExitFullscreen();
 }
 
 void DownloadToolbarUIController::OpenSecuritySubpage(
