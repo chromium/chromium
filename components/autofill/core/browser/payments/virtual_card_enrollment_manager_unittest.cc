@@ -226,7 +226,8 @@ TEST_F(VirtualCardEnrollmentManagerTest, OnRiskDataLoadedForVirtualCard) {
       .OnRiskDataLoadedForVirtualCard(kTestRiskData);
 
   EXPECT_EQ(request_details.risk_data, state->risk_data.value_or(""));
-  EXPECT_EQ(request_details.app_locale, payments_data_manager().app_locale());
+  EXPECT_EQ(request_details.app_locale,
+            payments_data_manager().app_locale().tag_string());
   EXPECT_EQ(request_details.instrument_id,
             state->virtual_card_enrollment_fields.credit_card.instrument_id());
   EXPECT_EQ(request_details.billing_customer_number,

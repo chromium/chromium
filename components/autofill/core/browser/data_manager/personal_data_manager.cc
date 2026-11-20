@@ -47,8 +47,7 @@ PersonalDataManager::PersonalDataManager(
   payments_data_manager_ = std::make_unique<PaymentsDataManager>(
       profile_database, account_database, image_fetcher, pref_service,
       sync_service, identity_manager,
-      GeoIpCountryCode(std::move(variations_country_code)),
-      std::string(app_locale.tag_string()),
+      GeoIpCountryCode(std::move(variations_country_code)), app_locale,
       autofill_optimization_guide_decider);
   address_data_manager_observation_.Observe(address_data_manager_.get());
   payments_data_manager_observation_.Observe(payments_data_manager_.get());

@@ -242,9 +242,11 @@ GetSuggestionMainTextAndMinorTextForCard(const CreditCard& credit_card,
 #endif
   }
 
-  return create_text(credit_card.GetInfo(
-      trigger_field_type,
-      client.GetPersonalDataManager().payments_data_manager().app_locale()));
+  return create_text(
+      credit_card.GetInfo(trigger_field_type, client.GetPersonalDataManager()
+                                                  .payments_data_manager()
+                                                  .app_locale()
+                                                  .tag_string()));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -267,8 +269,10 @@ void SetSuggestionLabelsForCard(
     FieldType trigger_field_type,
     autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
     Suggestion& suggestion) {
-  const std::string& app_locale =
-      client.GetPersonalDataManager().payments_data_manager().app_locale();
+  const std::string app_locale(client.GetPersonalDataManager()
+                                   .payments_data_manager()
+                                   .app_locale()
+                                   .tag_string());
 
   if (credit_card.record_type() == CreditCard::RecordType::kVirtualCard &&
       client.ShouldFormatForLargeKeyboardAccessory()) {
@@ -974,7 +978,8 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
               CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, manager.client()
                                                      .GetPersonalDataManager()
                                                      .payments_data_manager()
-                                                     .app_locale()))});
+                                                     .app_locale()
+                                                     .tag_string()))});
     }
     suggestions.push_back(suggestion);
   }
@@ -1257,9 +1262,11 @@ std::vector<CreditCard> GetOrderedCardsToSuggest(
   std::u16string field_contents =
       base::i18n::ToLower(SanitizeCreditCardFieldValue(trigger_field.value()));
   for (const CreditCard* credit_card : available_cards) {
-    std::u16string suggested_value = credit_card->GetInfo(
-        trigger_field_type,
-        client.GetPersonalDataManager().payments_data_manager().app_locale());
+    std::u16string suggested_value =
+        credit_card->GetInfo(trigger_field_type, client.GetPersonalDataManager()
+                                                     .payments_data_manager()
+                                                     .app_locale()
+                                                     .tag_string());
     if (require_non_empty_value_on_trigger_field && suggested_value.empty()) {
       continue;
     }

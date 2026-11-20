@@ -1943,6 +1943,7 @@ static_library("test_support") {
 
   public_deps = [
     ":browser",
+    "//base/i18n:language_tag",
     "//components/autofill/core/common:test_support",
     "//components/one_time_tokens/core/browser",
     "//components/one_time_tokens/core/browser:test_support",

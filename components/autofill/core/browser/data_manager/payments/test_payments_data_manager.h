@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
@@ -29,7 +30,9 @@ class BnplIssuer;
 // See TestPersonalDataManager.
 class TestPaymentsDataManager : public PaymentsDataManager {
  public:
-  explicit TestPaymentsDataManager(const std::string& app_locale = "en-US");
+  explicit TestPaymentsDataManager(
+      const base::i18n::LanguageTag& app_locale =
+          base::i18n::GetKnownLanguageTag("en-US"));
 
   TestPaymentsDataManager(const TestPaymentsDataManager&) = delete;
   TestPaymentsDataManager& operator=(const TestPaymentsDataManager&) = delete;

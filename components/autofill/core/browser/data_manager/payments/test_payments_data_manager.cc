@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
@@ -11,7 +12,8 @@
 
 namespace autofill {
 
-TestPaymentsDataManager::TestPaymentsDataManager(const std::string& app_locale)
+TestPaymentsDataManager::TestPaymentsDataManager(
+    const base::i18n::LanguageTag& app_locale)
     : PaymentsDataManager(/*profile_database=*/nullptr,
                           /*account_database=*/nullptr,
                           /*image_fetcher=*/nullptr,

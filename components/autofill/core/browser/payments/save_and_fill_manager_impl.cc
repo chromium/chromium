@@ -10,6 +10,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -257,8 +258,10 @@ void SaveAndFillManagerImpl::PopulateCreditCardInfo(
     CreditCard& card,
     const UserProvidedCardSaveAndFillDetails&
         user_provided_card_save_and_fill_details) {
-  const std::string app_locale =
-      payments_autofill_client()->GetPaymentsDataManager().app_locale();
+  const std::string_view app_locale = payments_autofill_client()
+                                          ->GetPaymentsDataManager()
+                                          .app_locale()
+                                          .tag_string();
 
   card.SetInfo(CREDIT_CARD_NUMBER,
                user_provided_card_save_and_fill_details.card_number,

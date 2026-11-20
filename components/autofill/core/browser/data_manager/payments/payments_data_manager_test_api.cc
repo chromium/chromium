@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 
+#include <string>
 #include <vector>
 
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
@@ -14,7 +15,8 @@ void PaymentsDataManagerTestApi::AddServerCreditCard(
     const CreditCard& credit_card) {
   CHECK_EQ(CreditCard::RecordType::kMaskedServerCard,
            credit_card.record_type());
-  CHECK(!credit_card.IsEmpty(payments_data_manager_->app_locale_));
+  CHECK(!credit_card.IsEmpty(
+      std::string(payments_data_manager_->app_locale_.tag_string())));
   CHECK(!credit_card.server_id().empty());
   CHECK(payments_data_manager_->GetServerDatabase())
       << "Adding server card without server storage.";

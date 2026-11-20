@@ -15,6 +15,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/function_ref.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -99,7 +100,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
       syncer::SyncService* sync_service,
       signin::IdentityManager* identity_manager,
       GeoIpCountryCode variations_country_code,
-      std::string app_locale,
+      const base::i18n::LanguageTag& app_locale,
       AutofillOptimizationGuideDecider* autofill_optimization_guide_decider);
 
   PaymentsDataManager(const PaymentsDataManager&) = delete;
@@ -505,7 +506,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // when Chrome is restarted.
   const std::string& GetCountryCodeForExperimentGroup() const;
 
-  const std::string& app_locale() const { return app_locale_; }
+  const base::i18n::LanguageTag& app_locale() const { return app_locale_; }
 
   // Returns if there are any pending queries to the web database.
   bool HasPendingPaymentQueries() const;
@@ -841,7 +842,7 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   const GeoIpCountryCode variations_country_code_;
 
   // Stores the |app_locale| supplied on construction.
-  const std::string app_locale_;
+  const base::i18n::LanguageTag app_locale_;
 
   base::ObserverList<Observer> observers_;
 

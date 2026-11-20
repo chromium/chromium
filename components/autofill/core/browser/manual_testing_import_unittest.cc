@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/i18n/language_tag.h"
 #include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/run_until.h"
@@ -911,7 +912,8 @@ TEST_F(ManualTestingImportTest, SetCreditCards_PreservesCardOnGuidMismatch) {
       /*account_database=*/nullptr,
       /*image_fetcher=*/nullptr, prefs.get(),
       /*sync_service=*/nullptr,
-      /*identity_manager=*/nullptr, GeoIpCountryCode("US"), "en-US",
+      /*identity_manager=*/nullptr, GeoIpCountryCode("US"),
+      base::i18n::GetKnownLanguageTag("en-US"),
       /*autofill_optimization_guide_decider=*/nullptr));
   PaymentsDataManager* payments_data_manager =
       personal_data_manager.payments_data_manager();

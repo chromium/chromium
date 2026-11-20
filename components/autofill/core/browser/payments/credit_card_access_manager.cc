@@ -285,7 +285,7 @@ void CreditCardAccessManager::GetUnmaskDetailsIfUserIsVerifiable(
     payments_autofill_client().GetPaymentsNetworkInterface()->GetUnmaskDetails(
         base::BindOnce(&CreditCardAccessManager::OnDidGetUnmaskDetails,
                        GetWeakPtr()),
-        payments_data_manager().app_locale());
+        std::string(payments_data_manager().app_locale().tag_string()));
     autofill_metrics::LogCardUnmaskPreflightCalled(
         GetOrCreateFidoAuthenticator()->IsUserOptedIn());
   }
@@ -499,7 +499,8 @@ void CreditCardAccessManager::RetrieveCreditCardForOpaqueToken(
 
   payments::GetDataForAgentRequestDetails request_details;
   request_details.opaque_token = credit_card_opaque_token;
-  request_details.app_locale = payments_data_manager().app_locale();
+  request_details.app_locale =
+      payments_data_manager().app_locale().tag_string();
   // The token is single use, so a failed request is not retried. The response
   // handler does not depend on `this`, so that `callback` is run even if
   // `this` is destroyed while the request is in flight.

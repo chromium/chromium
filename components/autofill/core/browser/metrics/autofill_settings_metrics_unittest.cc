@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 
+#include "base/i18n/language_tag.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -61,7 +62,8 @@ class AutofillSettingsMetricsTest : public AutofillMetricsBaseTest,
                         /*sync_service=*/nullptr,
                         /*identity_manager=*/nullptr,
                         /*variations_country_code=*/GeoIpCountryCode("US"),
-                        "en-US", /*autofill_optimization_guide=*/nullptr);
+                        base::i18n::GetKnownLanguageTag("en-US"),
+                        /*autofill_optimization_guide_decider=*/nullptr);
   }
 
  protected:

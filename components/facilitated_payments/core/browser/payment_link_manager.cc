@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -422,7 +423,8 @@ void PaymentLinkManager::SendInitiatePaymentRequest() {
       std::move(initiate_payment_request_details_),
       base::BindOnce(&PaymentLinkManager::OnInitiatePaymentResponseReceived,
                      weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
-      client_->GetPaymentsDataManager()->app_locale());
+      std::string(
+          client_->GetPaymentsDataManager()->app_locale().tag_string()));
 }
 
 void PaymentLinkManager::OnInitiatePaymentResponseReceived(

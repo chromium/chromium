@@ -28,7 +28,7 @@ TestPersonalDataManager::TestPersonalDataManager()
           "US",
           /*autofill_optimization_guide_decider=*/nullptr) {
   set_address_data_manager(std::make_unique<TestAddressDataManager>("en-US"));
-  set_payments_data_manager(std::make_unique<TestPaymentsDataManager>("en-US"));
+  set_payments_data_manager(std::make_unique<TestPaymentsDataManager>());
 }
 
 TestPersonalDataManager::~TestPersonalDataManager() = default;

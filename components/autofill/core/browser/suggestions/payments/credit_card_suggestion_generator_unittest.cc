@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <variant>
 #include <vector>
 
@@ -508,7 +509,9 @@ class CreditCardSuggestionGeneratorTest
     return autofill_manager().GetAmountExtractionManager();
   }
 
-  const std::string& app_locale() { return payments_data().app_locale(); }
+  std::string_view app_locale() {
+    return payments_data().app_locale().tag_string();
+  }
 
   void SetCreditCardUploadEnabledForTest(bool credit_card_upload_enabled) {
     autofill_client().set_is_credit_card_upload_enabled(

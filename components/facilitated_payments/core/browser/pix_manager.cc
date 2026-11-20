@@ -5,6 +5,7 @@
 #include "components/facilitated_payments/core/browser/pix_manager.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
@@ -311,7 +312,8 @@ void PixManager::SendInitiatePaymentRequest() {
         std::move(initiate_payment_request_details_),
         base::BindOnce(&PixManager::OnInitiatePaymentResponseReceived,
                        weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
-        client_->GetPaymentsDataManager()->app_locale());
+        std::string(
+            client_->GetPaymentsDataManager()->app_locale().tag_string()));
   }
 }
 

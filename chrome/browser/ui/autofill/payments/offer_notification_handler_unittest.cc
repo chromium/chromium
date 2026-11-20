@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -269,7 +270,7 @@ TEST_F(OfferNotificationHandlerTest, ShowsAutomaticallyOncePerBrowserContext) {
 // eligible for Wallet direct offers.
 TEST_F(OfferNotificationHandlerTest, IneligibleLocale_DismissesNotification) {
   TestPaymentsDataManager ineligible_payments_data_manager(
-      /*app_locale=*/"de-DE");
+      /*app_locale=*/base::i18n::GetKnownLanguageTag("de-DE"));
   ineligible_payments_data_manager.SetAutofillPaymentMethodsEnabled(true);
   ineligible_payments_data_manager.SetAutofillWalletImportEnabled(true);
   ineligible_payments_data_manager.AddAutofillOfferData(

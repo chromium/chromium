@@ -302,6 +302,7 @@ source_set("unit_tests") {
   deps = [
     ":test_support",
     "//base",
+    "//base/i18n:language_tag",
     "//base/test:test_support",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/autofill",

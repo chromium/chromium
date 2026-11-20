@@ -23,6 +23,7 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/timezone.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -271,14 +272,14 @@ PaymentsDataManager::PaymentsDataManager(
     syncer::SyncService* sync_service,
     signin::IdentityManager* identity_manager,
     GeoIpCountryCode variations_country_code,
-    std::string app_locale,
+    const base::i18n::LanguageTag& app_locale,
     AutofillOptimizationGuideDecider* autofill_optimization_guide_decider)
     : image_fetcher_(image_fetcher),
       autofill_optimization_guide_decider_(autofill_optimization_guide_decider),
       sync_service_(sync_service),
       identity_manager_(identity_manager),
       variations_country_code_(std::move(variations_country_code)),
-      app_locale_(std::move(app_locale)) {
+      app_locale_(app_locale) {
   database_helper_ = std::make_unique<PaymentsDatabaseHelper>(
       this, profile_database, account_database);
   SetPrefService(pref_service);
@@ -953,8 +954,9 @@ PaymentsDataManager::GetActiveAutofillPromoCodeOffers() const {
   const bool skip_locale_and_country_check = base::FeatureList::IsEnabled(
       features::kAutofillDisableWalletDirectOffersLocaleCountryCheckForTesting);
   if (!skip_locale_and_country_check &&
-      ((app_locale_ != "en-US" && app_locale_ != "en-CA" &&
-        app_locale_ != "en-GB") ||
+      ((app_locale_ != base::i18n::GetKnownLanguageTag("en-US") &&
+        app_locale_ != base::i18n::GetKnownLanguageTag("en-CA") &&
+        app_locale_ != base::i18n::GetKnownLanguageTag("en-GB")) ||
        GetCountryCodeForExperimentGroup() != "US")) {
     return {};
   }
@@ -1133,7 +1135,8 @@ bool PaymentsDataManager::IsCardEligibleForBenefits(
 bool PaymentsDataManager::ShouldBlockCardBenefitSuggestionLabels() const {
   // Benefits are only supported for app locale set to U.S. English or Great
   // Britain English.
-  return app_locale_ != "en-US" && app_locale_ != "en-GB";
+  return app_locale_ != base::i18n::GetKnownLanguageTag("en-US") &&
+         app_locale_ != base::i18n::GetKnownLanguageTag("en-GB");
 }
 
 bool PaymentsDataManager::IsCardBenefitsPrefEnabled() const {
@@ -1491,7 +1494,7 @@ void PaymentsDataManager::AddCreditCard(const CreditCard& credit_card) {
     return;
   }
 
-  if (credit_card.IsEmpty(app_locale_)) {
+  if (credit_card.IsEmpty(std::string(app_locale_.tag_string()))) {
     return;
   }
 
@@ -1556,7 +1559,7 @@ void PaymentsDataManager::UpdateCreditCard(const CreditCard& credit_card) {
     return;
   }
 
-  if (credit_card.IsEmpty(app_locale_)) {
+  if (credit_card.IsEmpty(std::string(app_locale_.tag_string()))) {
     RemoveByGUID(credit_card.guid());
     return;
   }
@@ -2080,7 +2083,7 @@ const std::string& PaymentsDataManager::GetCountryCodeForExperimentGroup()
   // guess.
   if (experiment_country_code_.empty()) {
     experiment_country_code_ =
-        AutofillCountry::CountryCodeForLocale(app_locale_);
+        AutofillCountry::CountryCodeForLocale(app_locale_.tag_string());
   }
 
   return experiment_country_code_;
@@ -2218,7 +2221,7 @@ bool PaymentsDataManager::AreBnplIssuersSupported() const {
     return true;
   }
 
-  return app_locale_ == "en-US" &&
+  return app_locale_ == base::i18n::GetKnownLanguageTag("en-US") &&
          (GetCountryCodeForExperimentGroup() == "US" ||
           base::FeatureList::IsEnabled(
               features::kAutofillDisableBnplCountryCheckForTesting));
@@ -2292,8 +2295,9 @@ size_t PaymentsDataManager::GetServerCardWithArtImageCount() const {
 std::string PaymentsDataManager::SaveImportedCreditCard(
     const CreditCard& imported_card) {
   // Potentially merge the card with an existing card.
+  const std::string app_locale(app_locale_.tag_string());
   for (std::unique_ptr<CreditCard>& card : local_credit_cards_) {
-    if (card->UpdateFromImportedCard(imported_card, app_locale_)) {
+    if (card->UpdateFromImportedCard(imported_card, app_locale)) {
       GetProfileDatabase()->UpdateCreditCard(*card);
       Refresh();
       return card->guid();

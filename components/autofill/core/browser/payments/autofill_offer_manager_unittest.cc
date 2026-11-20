@@ -8,6 +8,7 @@
 #include <tuple>
 
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -229,7 +230,7 @@ TEST_F(AutofillOfferManagerTest,
 // suggestions.
 TEST_F(AutofillOfferManagerTest, IneligibleLocale_UrlNotEligible) {
   TestPaymentsDataManager ineligible_payments_data_manager(
-      /*app_locale=*/"de-DE");
+      /*app_locale=*/base::i18n::GetKnownLanguageTag("de-DE"));
   ineligible_payments_data_manager.SetAutofillPaymentMethodsEnabled(true);
   ineligible_payments_data_manager.SetAutofillWalletImportEnabled(true);
   ineligible_payments_data_manager.AddAutofillOfferData(

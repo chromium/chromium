@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/containers/to_vector.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -130,7 +131,8 @@ class PaymentsDataManagerHelper : public PaymentsDataManagerTestBase {
   PaymentsDataManagerHelper() = default;
 
   void ResetPaymentsDataManager(bool use_sync_transport_mode = false,
-                                std::string app_locale = "en-US",
+                                const base::i18n::LanguageTag& app_locale =
+                                    base::i18n::GetKnownLanguageTag("en-US"),
                                 std::string country_code = "US") {
     payments_data_manager_.reset();
     MakePrimaryAccountAvailable(use_sync_transport_mode, identity_test_env_,
@@ -1188,7 +1190,8 @@ TEST_P(PaymentsDataManagerServerTest,
        GetActiveAutofillPromoCodeOffers_LocaleAndCountryNotSupported) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableWalletDirectOffers);
-  ResetPaymentsDataManager(UseSyncTransportMode(), "fr-FR", "FR");
+  ResetPaymentsDataManager(UseSyncTransportMode(),
+                           base::i18n::GetKnownLanguageTag("fr-FR"), "FR");
 
   AddOfferDataForTest(test::GetPromoCodeOfferData());
 
@@ -1300,7 +1303,8 @@ TEST_P(PaymentsDataManagerServerTest,
        GetActiveAutofillPromoCodeOffersForOrigin_LocaleAndCountryNotSupported) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableWalletDirectOffers);
-  ResetPaymentsDataManager(UseSyncTransportMode(), "fr-FR", "FR");
+  ResetPaymentsDataManager(UseSyncTransportMode(),
+                           base::i18n::GetKnownLanguageTag("fr-FR"), "FR");
 
   AddOfferDataForTest(test::GetPromoCodeOfferData(
       /*origin=*/GURL("http://www.example.com")));
@@ -3220,8 +3224,8 @@ TEST_F(PaymentsDataManagerTest,
       /*sync_service=*/nullptr,
       /*identity_manager=*/nullptr,
       /*variations_country_code=*/GeoIpCountryCode("US"),
-      /*app-locale=*/"en-US",
-      /*autofill_optimization_guide=*/nullptr);
+      /*app_locale=*/base::i18n::GetKnownLanguageTag("en-US"),
+      /*autofill_optimization_guide_decider=*/nullptr);
 
   histogram_tester.ExpectTotalCount(
       "Autofill.PaymentMethods.CardBenefitsIsEnabled.Startup", 0);
@@ -3466,13 +3470,13 @@ TEST_F(PaymentsDataManagerIsCardEligibleForBenefitsTest,
 class PaymentsDataManagerShouldBlockBenefitsTest
     : public PaymentsDataManagerHelper,
       public testing::Test,
-      public testing::WithParamInterface<std::string> {
+      public testing::WithParamInterface<base::i18n::LanguageTag> {
  public:
   PaymentsDataManagerShouldBlockBenefitsTest() {
     SetUpTest();
     ResetPaymentsDataManager(false, app_locale());
   }
-  const std::string& app_locale() { return GetParam(); }
+  const base::i18n::LanguageTag& app_locale() { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
@@ -3484,14 +3488,16 @@ class PaymentsDataManagerShouldBlockBenefitsTest
 TEST_P(PaymentsDataManagerShouldBlockBenefitsTest, NonSupportedAppLocale) {
   EXPECT_NE(test_api(payments_data_manager())
                 .ShouldBlockCardBenefitSuggestionLabels(),
-            app_locale() == "en-US" || app_locale() == "en-GB");
+            app_locale() == base::i18n::GetKnownLanguageTag("en-US") ||
+                app_locale() == base::i18n::GetKnownLanguageTag("en-GB"));
 }
 
 // Tests that card flat rate benefits should be blocked when benefit suggestions
 // are disabled for the given url.
 TEST_P(PaymentsDataManagerShouldBlockBenefitsTest,
        BlockedUrlForFlateRateBenefit) {
-  if (app_locale() != "en-US" && app_locale() != "en-GB") {
+  if (app_locale() != base::i18n::GetKnownLanguageTag("en-US") &&
+      app_locale() != base::i18n::GetKnownLanguageTag("en-GB")) {
     GTEST_SKIP() << "This test should not run for unsupported app locales.";
   }
 
@@ -3543,7 +3549,8 @@ TEST_P(PaymentsDataManagerShouldBlockBenefitsTest,
 // disabled.
 TEST_P(PaymentsDataManagerShouldBlockBenefitsTest,
        BlockedUrlForFlateRateBenefit_BlocklistDisabled) {
-  if (app_locale() != "en-US" && app_locale() != "en-GB") {
+  if (app_locale() != base::i18n::GetKnownLanguageTag("en-US") &&
+      app_locale() != base::i18n::GetKnownLanguageTag("en-GB")) {
     GTEST_SKIP() << "This test should not run for unsupported app locales.";
   }
 
@@ -3584,7 +3591,8 @@ TEST_P(PaymentsDataManagerShouldBlockBenefitsTest,
 // precedence if both are available.
 TEST_P(PaymentsDataManagerShouldBlockBenefitsTest,
        ApplicableBenefitDescriptionForTravelSubcategoryFallback) {
-  if (app_locale() != "en-US" && app_locale() != "en-GB") {
+  if (app_locale() != base::i18n::GetKnownLanguageTag("en-US") &&
+      app_locale() != base::i18n::GetKnownLanguageTag("en-GB")) {
     GTEST_SKIP() << "This test should not run for unsupported app locales.";
   }
 
@@ -3658,7 +3666,8 @@ TEST_P(PaymentsDataManagerShouldBlockBenefitsTest,
 TEST_P(
     PaymentsDataManagerShouldBlockBenefitsTest,
     ApplicableBenefitDescriptionForTravelSubcategoryFallback_CurinosCategoryBenefitDisabled) {
-  if (app_locale() != "en-US" && app_locale() != "en-GB") {
+  if (app_locale() != base::i18n::GetKnownLanguageTag("en-US") &&
+      app_locale() != base::i18n::GetKnownLanguageTag("en-GB")) {
     GTEST_SKIP() << "This test should not run for unsupported app locales.";
   }
 
@@ -3702,7 +3711,12 @@ TEST_P(
 INSTANTIATE_TEST_SUITE_P(
     ,
     PaymentsDataManagerShouldBlockBenefitsTest,
-    testing::Values("en-US", "en-GB", "en-CA", "en-AU", "fr-CA", "de-DE"));
+    testing::Values(base::i18n::GetKnownLanguageTag("en-US"),
+                    base::i18n::GetKnownLanguageTag("en-GB"),
+                    base::i18n::GetKnownLanguageTag("en-CA"),
+                    base::i18n::GetKnownLanguageTag("en-AU"),
+                    base::i18n::GetKnownLanguageTag("fr-CA"),
+                    base::i18n::GetKnownLanguageTag("de-DE")));
 
 // Ensure that verified credit cards can be saved via
 // OnAcceptedLocalCreditCardSave.
@@ -4724,7 +4738,8 @@ TEST_P(PaymentsDataManagerServerTest,
 
 // Tests that BNPL issuers are supported for "en-US" app locales.
 TEST_P(PaymentsDataManagerServerTest, AreBnplIssuersSupported_LocaleIsEnUS) {
-  ResetPaymentsDataManager(UseSyncTransportMode(), "en-US", "US");
+  ResetPaymentsDataManager(UseSyncTransportMode(),
+                           base::i18n::GetKnownLanguageTag("en-US"), "US");
   EXPECT_TRUE(test_api(payments_data_manager()).AreBnplIssuersSupported());
 }
 
@@ -4739,7 +4754,8 @@ TEST_P(PaymentsDataManagerServerTest,
       /*disabled_features=*/{
           features::kAutofillEnableBnplAffirmInternationalization,
           features::kAutofillEnableBnplKlarnaInternationalization});
-  ResetPaymentsDataManager(UseSyncTransportMode(), "es-US", "US");
+  ResetPaymentsDataManager(UseSyncTransportMode(),
+                           base::i18n::GetKnownLanguageTag("es-US"), "US");
   EXPECT_FALSE(test_api(payments_data_manager()).AreBnplIssuersSupported());
 }
 
@@ -4755,7 +4771,8 @@ TEST_P(
        features::kAutofillEnableBnplAffirmInternationalization,
        features::kAutofillEnableBnplKlarnaInternationalization},
       /*disabled_features=*/{});
-  ResetPaymentsDataManager(UseSyncTransportMode(), "es-US", "CA");
+  ResetPaymentsDataManager(UseSyncTransportMode(),
+                           base::i18n::GetKnownLanguageTag("es-US"), "CA");
   EXPECT_TRUE(test_api(payments_data_manager()).AreBnplIssuersSupported());
 }
 
@@ -4781,7 +4798,8 @@ TEST_P(PaymentsDataManagerServerTest,
   ASSERT_EQ(payments_data_manager().GetUnlinkedBnplIssuers().size(), 1U);
   ASSERT_EQ(payments_data_manager().GetLinkedBnplIssuers().size(), 1U);
 
-  ResetPaymentsDataManager(UseSyncTransportMode(), "en-US", "CA");
+  ResetPaymentsDataManager(UseSyncTransportMode(),
+                           base::i18n::GetKnownLanguageTag("en-US"), "CA");
 
   test_api(payments_data_manager())
       .AddBnplIssuer(test::GetTestLinkedBnplIssuer());
@@ -4802,7 +4820,8 @@ TEST_P(
   base::test::ScopedFeatureList scoped_feature_list{
       features::kAutofillDisableBnplCountryCheckForTesting};
 
-  ResetPaymentsDataManager(UseSyncTransportMode(), "en-US", "CA");
+  ResetPaymentsDataManager(UseSyncTransportMode(),
+                           base::i18n::GetKnownLanguageTag("en-US"), "CA");
 
   test_api(payments_data_manager())
       .AddBnplIssuer(test::GetTestLinkedBnplIssuer());
