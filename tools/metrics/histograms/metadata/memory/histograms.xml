@@ -2673,18 +2673,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.ParkableString.TotalParkingThreadTime.5min" units="ms"
-    expires_after="2025-02-23">
-  <owner>lizeb@chromium.org</owner>
-  <owner>pasko@chromium.org</owner>
-  <summary>
-    Total thread time (on background threads) used by ParkableStrings for
-    compression over the first 5 minutes of a renderer lifetime. Starting time
-    is from the first ParkableString being added. This always happens on
-    background thread, so the reported value is thread time, not wall clock.
-  </summary>
-</histogram>
-
 <histogram name="Memory.ParkableString.TotalUnparkingTime.5min" units="ms"
     expires_after="2025-06-29">
   <owner>lizeb@chromium.org</owner>

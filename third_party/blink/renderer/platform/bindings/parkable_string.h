@@ -263,12 +263,9 @@ class PLATFORM_EXPORT ParkableStringImpl
   // |params| is the same as the one passed to
   // |PostBackgroundCompressionTask()|,
   // |compressed| is the compressed data, nullptr if compression failed.
-  // |parking_thread_time| is the CPU time used by the background compression
-  // task.
   void OnParkingCompleteOnMainThread(
       std::unique_ptr<BackgroundTaskParams> params,
-      std::unique_ptr<Vector<uint8_t>> compressed,
-      base::TimeDelta parking_thread_time);
+      std::unique_ptr<Vector<uint8_t>> compressed);
 
   void PostBackgroundWritingTask(std::unique_ptr<ReservedChunk> reserved_chunk)
       EXCLUSIVE_LOCKS_REQUIRED(metadata_->lock_);

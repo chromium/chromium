@@ -789,9 +789,6 @@ void ParkableStringImpl::CompressInBackground(
   std::string_view data = base::as_string_view(params->data);
   std::unique_ptr<Vector<uint8_t>> compressed;
 
-  // This runs in background, making CPU starvation likely, and not an issue.
-  // Hence, report thread time instead of wall clock time.
-  base::ElapsedThreadTimer thread_timer;
   {
     // Create a temporary buffer for compressed data. After compression the
     // output bytes are _copied_ to a new vector sized according to the newly
@@ -858,28 +855,24 @@ void ParkableStringImpl::CompressInBackground(
           base::as_byte_span(buffer).first(compressed_size));
     }
   }
-  base::TimeDelta thread_elapsed = thread_timer.Elapsed();
 
   auto* task_runner = params->callback_task_runner.get();
   size_t size = data.size();
-  PostCrossThreadTask(
-      *task_runner, FROM_HERE,
-      CrossThreadBindOnce(
-          [](std::unique_ptr<BackgroundTaskParams> params,
-             std::unique_ptr<Vector<uint8_t>> compressed,
-             base::TimeDelta parking_thread_time) {
-            auto* string = params->string.get();
-            string->OnParkingCompleteOnMainThread(
-                std::move(params), std::move(compressed), parking_thread_time);
-          },
-          std::move(params), std::move(compressed), thread_elapsed));
+  PostCrossThreadTask(*task_runner, FROM_HERE,
+                      CrossThreadBindOnce(
+                          [](std::unique_ptr<BackgroundTaskParams> params,
+                             std::unique_ptr<Vector<uint8_t>> compressed) {
+                            auto* string = params->string.get();
+                            string->OnParkingCompleteOnMainThread(
+                                std::move(params), std::move(compressed));
+                          },
+                          std::move(params), std::move(compressed)));
   RecordStatistics(size, timer.Elapsed(), ParkingAction::kParked);
 }
 
 void ParkableStringImpl::OnParkingCompleteOnMainThread(
     std::unique_ptr<BackgroundTaskParams> params,
-    std::unique_ptr<Vector<uint8_t>> compressed,
-    base::TimeDelta parking_thread_time) {
+    std::unique_ptr<Vector<uint8_t>> compressed) {
   DCHECK(metadata_->background_task_in_progress_);
   base::AutoLock locker(metadata_->lock_);
   DCHECK_EQ(State::kUnparked, metadata_->state_);
@@ -909,10 +902,6 @@ void ParkableStringImpl::OnParkingCompleteOnMainThread(
   } else {
     metadata_->state_ = State::kUnparked;
   }
-  // Record the time no matter whether the string was parked or not, as the
-  // parking cost was paid.
-  ParkableStringManager::Instance().RecordParkingThreadTime(
-      parking_thread_time);
 
   if (params->parking_mode == ParkingMode::kCompressThenToDisk &&
       is_parked_no_lock()) {

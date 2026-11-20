@@ -373,8 +373,6 @@ void ParkableStringManager::RecordStatisticsAfter5Minutes() const {
     return;
   }
 
-  base::UmaHistogramTimes("Memory.ParkableString.TotalParkingThreadTime.5min",
-                          total_parking_thread_time_);
   base::UmaHistogramTimes("Memory.ParkableString.TotalUnparkingTime.5min",
                           total_unparking_time_);
 
@@ -565,7 +563,6 @@ void ParkableStringManager::ResetForTesting() {
       kConsumerName, kMemoryConsumerTraits, this,
       base::AsyncMemoryConsumerRegistration::CheckUnregister::kDisabled);
   total_unparking_time_ = base::TimeDelta();
-  total_parking_thread_time_ = base::TimeDelta();
   total_disk_read_time_ = base::TimeDelta();
   total_disk_write_time_ = base::TimeDelta();
   unparked_strings_.clear();

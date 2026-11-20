@@ -1398,9 +1398,6 @@ TEST_P(ParkableStringTest, ReportTotalDiskTime) {
   histogram_tester.ExpectUniqueSample(
       "Memory.ParkableString.TotalUnparkingTime.5min",
       mock_elapsed_time_ms * kNumIterations - 1, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Memory.ParkableString.TotalParkingThreadTime.5min", mock_elapsed_time_ms,
-      1);
 }
 
 TEST_P(ParkableStringTest, EncodingAndDeduplication) {
