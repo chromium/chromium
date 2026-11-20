@@ -90,6 +90,11 @@ class OmniboxController : public AutocompleteController::Observer {
   // Returns whether any popup is currently open.
   bool IsPopupOpen() const;
 
+  // Returns whether the popup is actively showing suggestions (for Full
+  // WebUI popup, the popup widget stays open while focused, so it only counts
+  // as showing suggestions when results are non-empty).
+  bool IsPopupShowingSuggestions() const;
+
   // Sets a callback to validate popup state is in sync with widget visibility.
   // TODO(crbug.com/40251974): Remove this once state manager is proven
   //  reliable.

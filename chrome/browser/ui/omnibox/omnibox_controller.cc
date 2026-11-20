@@ -222,15 +222,19 @@ void OmniboxController::SetRichSuggestionBitmap(int result_index,
   }
 }
 
+bool OmniboxController::IsPopupShowingSuggestions() const {
+  const OmniboxPopupState state = popup_state_manager_->popup_state();
+  return state == OmniboxPopupState::kClassic ||
+         state == OmniboxPopupState::kAim ||
+         (state == OmniboxPopupState::kFull &&
+          !autocomplete_controller_->result().empty());
+}
+
 void OmniboxController::UpdatePopupVisibility() {
   // Read the state directly. `IsPopupOpen()` also checks the popup widgets
   // against it, and this can run inside a popup state callback, before
   // `LocationBarView` has updated those widgets.
-  const OmniboxPopupState state = popup_state_manager_->popup_state();
-  const bool visible = state == OmniboxPopupState::kClassic ||
-                       state == OmniboxPopupState::kAim ||
-                       (state == OmniboxPopupState::kFull &&
-                        !autocomplete_controller_->result().empty());
+  const bool visible = IsPopupShowingSuggestions();
   if (visible == last_reported_popup_visibility_) {
     return;
   }

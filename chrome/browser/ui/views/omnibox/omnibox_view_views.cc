@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
@@ -446,6 +447,19 @@ void OmniboxViewViews::Update() {
     // all is unnecessary since the selection will change on regaining focus.
     if (controller()->edit_model()->has_focus()) {
       SelectAll(true);
+    }
+
+    // In Full WebUI mode while kFull is open, the popup's WebUI input is what
+    // the user sees, and reverting the native view doesn't reach it so also
+    // perform a sync.
+    if (IsFullWebUIOmnibox() &&
+        controller()->popup_state_manager()->popup_state() ==
+            OmniboxPopupState::kFull &&
+        location_bar_view_) {
+      if (auto* popup_view = location_bar_view_->GetOmniboxPopupView()) {
+        popup_view->SyncNativeStateToWebUI(/*query_zps=*/false,
+                                           /*show_full_url=*/false);
+      }
     }
   } else {
     // If the text is unchanged, we still need to re-emphasize the text, as the

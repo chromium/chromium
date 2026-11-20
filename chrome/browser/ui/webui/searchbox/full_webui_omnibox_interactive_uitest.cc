@@ -228,6 +228,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
+#include "url/url_constants.h"
 
 #if defined(USE_AURA)
 #include "chrome/test/base/drag_and_drop_test_utils.h"  // nogncheck
@@ -4070,6 +4071,112 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       InAnyContext(WaitForHide(OmniboxPopupPresenter::kRoundedResultsFrame)),
       // Ensure omnibox is not focused.
       WaitForOmniboxFocus(false));
+}
+
+// Verifies that when a tab the browser opens to about:blank (which focuses the
+// omnibox with no suggestions) navigates, the omnibox keeps focus and shows the
+// new URL, all selected, rather than the stale about:blank text.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       AboutBlankNewTabNavigationShowsNewUrl) {
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  const GURL url = embedded_https_test_server().GetURL("/title2.html");
+  // Steady-state display text strips the https:// scheme.
+  const std::string display_url = url.spec().substr(strlen("https://"));
+
+  RunTestSequence(
+      // Tab 1 is the initial NTP.
+      FocusOmniboxOnInitialNtp(kTab1),
+
+      // A tab the browser opens to about:blank focuses the omnibox in the Full
+      // popup, with no suggestions.
+      UninstrumentWebContents(kPopupWebView), WaitForPopupTransitionLockout(),
+      AddInstrumentedTab(kTab2, GURL(url::kAboutBlankURL)),
+      WaitForWebContentsReady(kTab2),
+      InAnyContext(WaitForShow(OmniboxPopupPresenter::kRoundedResultsFrame)),
+      InAnyContext(
+          InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
+      WaitForOmniboxFocus(true), WaitForPopupState(OmniboxPopupState::kFull),
+      WaitForAutocompleteResultEmpty(),
+
+      // Navigating the tab shows the new URL in the native omnibox and the
+      // WebUI input, all selected, and keeps the omnibox focused.
+      NavigateWebContents(kTab2, url),
+      WaitForOmniboxText(base::UTF8ToUTF16(display_url)),
+      InAnyContext(WaitForWebUIInputValue(display_url)),
+      InAnyContext(CheckWebUIInputSelection(0, display_url.length())),
+      CheckOmniboxFocus(true), CheckPopupState(OmniboxPopupState::kFull));
+}
+
+// Verifies that when the initial NTP (which focuses the omnibox with no
+// suggestions) navigates, the omnibox keeps focus and shows the new URL, all
+// selected, rather than the NTP's empty text.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       InitialNtpNavigationShowsNewUrl) {
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  const GURL url = embedded_https_test_server().GetURL("/title2.html");
+  // Steady-state display text strips the https:// scheme.
+  const std::string display_url = url.spec().substr(strlen("https://"));
+
+  RunTestSequence(
+      // Tab 1 is the initial NTP, which auto-focuses the omnibox in the Full
+      // popup with no suggestions. Unlike `FocusOmniboxOnInitialNtp()`, don't
+      // focus it again, since that queries zero-prefix suggestions.
+      WaitForBrowserActive(), InstrumentTab(kTab1, 0),
+      WaitForWebContentsReady(kTab1), WaitForPopupReady(),
+      WaitForPopupState(OmniboxPopupState::kFull),
+      WaitForAutocompleteResultEmpty(),
+
+      // Navigating the tab shows the new URL in the native omnibox and the
+      // WebUI input, all selected, and keeps the omnibox focused.
+      NavigateWebContents(kTab1, url),
+      WaitForOmniboxText(base::UTF8ToUTF16(display_url)),
+      InAnyContext(WaitForWebUIInputValue(display_url)),
+      InAnyContext(CheckWebUIInputSelection(0, display_url.length())),
+      CheckOmniboxFocus(true), CheckPopupState(OmniboxPopupState::kFull));
+}
+
+// Verifies that a navigation while the omnibox is focused with zero-prefix
+// suggestions showing keeps the old text in the native omnibox and the WebUI
+// input, and keeps the Full popup open, like the Views omnibox, which doesn't
+// replace the text while suggestions show.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       ZeroSuggestNavigationKeepsText) {
+  ASSERT_TRUE(embedded_https_test_server().Start());
+  const GURL old_url = embedded_https_test_server().GetURL("/title1.html");
+  const GURL new_url = embedded_https_test_server().GetURL("/title2.html");
+  // Steady-state display text strips the https:// scheme.
+  const std::string old_display_url = old_url.spec().substr(strlen("https://"));
+  const std::u16string new_display_url =
+      base::UTF8ToUTF16(new_url.spec().substr(strlen("https://")));
+
+  RunTestSequence(
+      // Open a page and click the unfocused omnibox to show zero-prefix
+      // suggestions.
+      WaitForBrowserActive(), AddInstrumentedTab(kTab1, old_url),
+      WaitForWebContentsReady(kTab1), WaitForPopupDismissed(),
+      ClickUnfocusedOmniboxAndWaitForZeroSuggestDropdown(),
+      WaitForWebUIInputValue(old_display_url),
+
+      // Navigate the tab. Once the permanent text is the new URL, the omnibox
+      // has decided whether to revert, so check the text once.
+      NavigateWebContents(kTab1, new_url),
+      PollUntil(
+          [this, new_display_url]() {
+            return GetOmniboxControllerForTest()
+                       ->edit_model()
+                       ->GetPermanentDisplayText() == new_display_url;
+          },
+          "WaitForNewPermanentText"),
+      CheckResult(
+          [this]() {
+            return base::UTF16ToUTF8(BrowserWindow::FromBrowser(browser())
+                                         ->GetLocationBar()
+                                         ->GetOmniboxView()
+                                         ->GetText());
+          },
+          old_display_url, "CheckOmniboxTextKept"),
+      InAnyContext(WaitForWebUIInputValue(old_display_url)),
+      CheckOmniboxFocus(true), CheckPopupState(OmniboxPopupState::kFull));
 }
 
 // Verifies that reloading the page while the Full WebUI Omnibox popup is open

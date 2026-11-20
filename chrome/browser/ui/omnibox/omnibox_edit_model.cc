@@ -433,8 +433,8 @@ bool OmniboxEditModel::ResetDisplayTexts() {
   // URL" (which sounds as if it might be persistent) from seeing just that URL
   // forever afterwards.
   return (GetPermanentDisplayText() != old_display_text) &&
-         (!user_interacting ||
-          (!user_input_in_progress_ && !controller_->IsPopupOpen()));
+         (!user_interacting || (!user_input_in_progress_ &&
+                                !controller_->IsPopupShowingSuggestions()));
 }
 
 std::u16string OmniboxEditModel::GetPermanentDisplayText() const {
