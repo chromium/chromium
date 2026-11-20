@@ -259,7 +259,7 @@ void AnimationHost::RemoveTrigger(scoped_refptr<AnimationTrigger> trigger) {
 
 void AnimationHost::DetachAnimationTimeline(
     scoped_refptr<AnimationTimeline> timeline) {
-  if (InProtectedSequence()) {
+  if (InProtectedSequence() || InWillCommit()) {
     // Defer cleanup until post-commit.
     detached_timeline_map_.Write(*this).insert(
         std::make_pair(timeline->id(), timeline));
@@ -269,7 +269,7 @@ void AnimationHost::DetachAnimationTimeline(
 }
 
 void AnimationHost::DetachTrigger(scoped_refptr<AnimationTrigger> trigger) {
-  if (InProtectedSequence()) {
+  if (InProtectedSequence() || InWillCommit()) {
     // Defer cleanup until post-commit.
     detached_trigger_map_.Write(*this).insert(
         std::make_pair(trigger->id(), trigger));
@@ -462,6 +462,10 @@ void AnimationHost::WaitForProtectedSequenceCompletion() const {
   }
 }
 
+bool AnimationHost::InWillCommit() const {
+  return mutator_host_delegate_ && mutator_host_delegate_->InWillCommit();
+}
+
 void AnimationHost::SetNeedsCommit() {
   DCHECK(mutator_host_delegate());
   DCHECK(IsOwnerThread());
@@ -545,6 +549,7 @@ void AnimationHost::PushPropertiesTo(MutatorHost* mutator_host_impl,
 
 void AnimationHost::RemoveStaleTimelines() {
   DCHECK(!InProtectedSequence());
+  DCHECK(!InWillCommit());
   if (detached_timeline_map_.Read(*this).empty()) {
     return;
   }
@@ -557,6 +562,7 @@ void AnimationHost::RemoveStaleTimelines() {
 
 void AnimationHost::RemoveStaleTriggers() {
   DCHECK(!InProtectedSequence());
+  DCHECK(!InWillCommit());
   if (detached_trigger_map_.Read(*this).empty()) {
     return;
   }

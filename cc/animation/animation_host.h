@@ -81,10 +81,11 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   // we are not in a protected sequence.
   void RemoveTrigger(scoped_refptr<AnimationTrigger> trigger);
 
-  // Lazy removal of an unused timeline.
+  // Lazy removal of an unused timeline. Defers removal if we are in a
+  // protected sequence or WillCommit.
   void DetachAnimationTimeline(scoped_refptr<AnimationTimeline> timeline);
   // Removes an entry from |id_to_trigger_map_|. Defers removal if we are in a
-  // protected sequence.
+  // protected sequence or WillCommit.
   void DetachTrigger(scoped_refptr<AnimationTrigger> trigger);
 
   const AnimationTimeline* GetTimelineById(int timeline_id) const;
@@ -117,6 +118,8 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   bool IsOwnerThread() const override;
   bool InProtectedSequence() const override;
   void WaitForProtectedSequenceCompletion() const override;
+
+  bool InWillCommit() const;
 
   void SetNeedsCommit();
   void SetNeedsPushProperties();
@@ -339,13 +342,12 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   // A list of animation triggers which this host owns.
   ProtectedSequenceReadable<IdToTriggerMap> id_to_trigger_map_;
 
-  // A list of IDs for detached timelines. A timeline may be detached on the
-  // owner thread even during a protected sequence. These timelines are no
-  // longer used and should be cleaned up at the next opportune moment.
+  // Timelines detached during a protected sequence or WillCommit, deferred for
+  // later cleanup.
   ProtectedSequenceForbidden<IdToTimelineMap> detached_timeline_map_;
 
-  // Similar to |detached_timeline_map_|, if detached during a protected
-  // sequence, defer the deletion of a trigger to the next opportunity.
+  // Triggers detached during a protected sequence or WillCommit, deferred for
+  // later cleanup.
   ProtectedSequenceForbidden<IdToTriggerMap> detached_trigger_map_;
 
   // AnimationHosts's ProtectedSequenceSynchronizer implementation is

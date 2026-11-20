@@ -164,6 +164,10 @@ class TestHostDelegate : public MutatorHostDelegate {
       PaintWorkletInput::PropertyValue property_value) override {}
 
   bool RunsOnCurrentThread() const override;
+  bool InWillCommit() const override;
+  void set_in_will_commit(bool in_will_commit) {
+    in_will_commit_ = in_will_commit;
+  }
 
   bool IsOwnerThread() const override;
   bool InProtectedSequence() const override;
@@ -240,6 +244,7 @@ class TestHostDelegate : public MutatorHostDelegate {
 
   bool mutators_need_commit_;
   mutable bool in_protected_sequence_ = false;
+  bool in_will_commit_ = false;
   PropertyTrees property_trees_;
 };
 

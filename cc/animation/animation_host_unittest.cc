@@ -15,6 +15,7 @@
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/animation_timeline.h"
 #include "cc/animation/scroll_timeline.h"
+#include "cc/animation/timeline_trigger.h"
 #include "cc/animation/worklet_animation.h"
 #include "cc/base/features.h"
 #include "cc/paint/deferred_property_key.h"
@@ -918,6 +919,34 @@ TEST_F(AnimationHostTest, PushAndUpdateDeferredValues) {
   EXPECT_TRUE(host_impl_->UpdateDeferredValues(values).empty());
   EXPECT_EQ(DeferredValueMap({{kKey1, SkColors::kWhite}}), values);
   EXPECT_EQ(1, curve->samples());
+}
+
+TEST_F(AnimationHostTest, DetachTimelineAndTriggerDuringWillCommit) {
+  delegate_.RegisterElementId(element_id_, ElementListType::ACTIVE);
+  AttachTimelineAnimationLayer();
+
+  const int trigger_id = 1;
+  scoped_refptr<TimelineTrigger> trigger =
+      TimelineTrigger::Create(trigger_id, AnimationTrigger::State::kIdle,
+                              timeline_, TimelineTrigger::Boundaries{});
+  host_->AddTrigger(trigger);
+  EXPECT_TRUE(host_->GetTimelineById(timeline_id_));
+  EXPECT_TRUE(host_->GetTriggerById(trigger_id));
+
+  // Detaching during WillCommit (e.g. Document::Shutdown from an HTML-in-canvas
+  // paint event handler) must defer removal rather than modifying commit state.
+  delegate_.set_in_will_commit(true);
+  host_->DetachAnimationTimeline(timeline_);
+  host_->DetachTrigger(trigger);
+  const AnimationHost* const_host = host_;
+  EXPECT_TRUE(const_host->GetTimelineById(timeline_id_));
+  EXPECT_TRUE(const_host->GetTriggerById(trigger_id));
+
+  delegate_.set_in_will_commit(false);
+  host_->RemoveStaleTimelines();
+  host_->RemoveStaleTriggers();
+  EXPECT_FALSE(host_->GetTimelineById(timeline_id_));
+  EXPECT_FALSE(host_->GetTriggerById(trigger_id));
 }
 
 }  // namespace

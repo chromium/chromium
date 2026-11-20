@@ -940,6 +940,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostDelegate {
       PaintWorkletInput::PropertyValue property_value) override {}
 
   bool RunsOnCurrentThread() const override;
+  bool InWillCommit() const override;
 
   void ScrollOffsetAnimationFinished(ElementId element_id) override {}
 

@@ -5935,6 +5935,10 @@ bool LayerTreeHostImpl::InProtectedSequence() const {
   return false;
 }
 
+bool LayerTreeHostImpl::InWillCommit() const {
+  return false;
+}
+
 void LayerTreeHostImpl::WaitForProtectedSequenceCompletion() const {}
 
 bool LayerTreeHostImpl::IsElementInPropertyTrees(

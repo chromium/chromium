@@ -79,6 +79,8 @@ class CC_EXPORT MutatorHostDelegate : public ProtectedSequenceSynchronizer {
       PaintWorkletInput::PropertyValue property_value) = 0;
 
   virtual bool RunsOnCurrentThread() const = 0;
+
+  virtual bool InWillCommit() const = 0;
 };
 
 }  // namespace cc

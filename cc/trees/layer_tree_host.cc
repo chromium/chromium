@@ -2139,6 +2139,10 @@ bool LayerTreeHost::RunsOnCurrentThread() const {
   return !task_runner_provider_ || task_runner_provider_->IsMainThread();
 }
 
+bool LayerTreeHost::InWillCommit() const {
+  return in_will_commit();
+}
+
 void LayerTreeHost::QueueImageDecode(const DrawImage& image,
                                      base::OnceCallback<void(bool)> callback,
                                      bool speculative) {

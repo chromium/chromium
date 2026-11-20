@@ -255,7 +255,7 @@ void AnimationTrigger::DestroyCompositorTrigger() {
   compositor_trigger_->SetAnimationTriggerDelegate(nullptr);
 
   if (cc::AnimationHost* host = compositor_trigger_->GetAnimationHost()) {
-    host->RemoveTrigger(compositor_trigger_);
+    host->DetachTrigger(compositor_trigger_);
   }
 
   compositor_trigger_ = nullptr;

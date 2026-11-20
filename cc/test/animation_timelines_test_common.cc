@@ -99,7 +99,11 @@ bool TestHostDelegate::IsOwnerThread() const {
 bool TestHostDelegate::InProtectedSequence() const {
   return in_protected_sequence_;
 }
+bool TestHostDelegate::InWillCommit() const {
+  return in_will_commit_;
+}
 void TestHostDelegate::WaitForProtectedSequenceCompletion() const {
+  CHECK(!in_will_commit_);
   in_protected_sequence_ = false;
 }
 
