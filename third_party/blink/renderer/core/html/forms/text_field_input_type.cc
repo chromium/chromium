@@ -33,6 +33,7 @@
 
 #include "base/feature_list.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_focus_options.h"
 #include "third_party/blink/renderer/core/accessibility/scoped_blink_ax_event_intent.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
@@ -566,8 +567,16 @@ void TextFieldInputType::ListAttributeTargetChanged() {
       rp_container->AppendChild(data_list);
       data_list->InitializeInShadowTree();
       Element& input = GetElement();
-      if (input.GetDocument().FocusedElement() == input)
-        input.UpdateSelectionOnFocus(SelectionBehaviorOnFocus::kRestore);
+      if (input.GetDocument().FocusedElement() == input) {
+        // This can be called synchronously from DOM mutation notifications
+        // (e.g. id changes during insertion/removal of the list target), so
+        // it must not scroll, which would force a synchronous style and
+        // layout update while the DOM is in an intermediate state.
+        FocusOptions* focus_options = FocusOptions::Create();
+        focus_options->setPreventScroll(true);
+        input.UpdateSelectionOnFocus(SelectionBehaviorOnFocus::kRestore,
+                                     focus_options);
+      }
     }
   } else {
     picker->remove(ASSERT_NO_EXCEPTION);
