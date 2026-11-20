@@ -245,6 +245,12 @@ export class
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
+    if (changedProperties.has('inputState') && this.inputState) {
+      this.dispatchEvent(new CustomEvent('input-state-changed', {
+        detail: {inputState: this.inputState},
+      }));
+    }
+
     if (changedProperties.has('inputPlaceholderOverride') ||
         changedProperties.has('enableFileHint')) {
       this.updateInputPlaceholder();
@@ -267,6 +273,9 @@ export class
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
+    if (changedProperties.has('attachedContext')) {
+      this.dispatchEvent(new CustomEvent('on-context-files-changed'));
+    }
     if (changedProperties.has('input') || changedProperties.has('result') ||
         changedProperties.has('showDropdown')) {
       // Fires `show-suggestion-activity-link`; the wrapper owns the link UI.

@@ -632,9 +632,6 @@ export const ComposeboxEmbedderMixin =
                  this.inputState.allowedInputTypes.length > 0);
             this.inToolMode =
                 this.inputState.activeTool !== ToolMode.kUnspecified;
-            this.dispatchEvent(new CustomEvent('input-state-changed', {
-              detail: {inputState: this.inputState},
-            }));
           }
 
           if (changedPrivateProperties.has('attachedContext') ||
@@ -713,9 +710,6 @@ export const ComposeboxEmbedderMixin =
               this.getInputElement().resetHeight();
               this.input = this.lastQueriedInput;
             }
-          }
-          if (changedPrivateProperties.has('attachedContext')) {
-            this.dispatchEvent(new CustomEvent('on-context-files-changed'));
           }
           if (changedPrivateProperties.has('smartComposeInlineHint')) {
             if (this.smartComposeAnnounceTimeout_ !== null) {
