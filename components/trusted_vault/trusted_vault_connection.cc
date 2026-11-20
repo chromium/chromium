@@ -8,22 +8,6 @@
 
 namespace trusted_vault {
 
-TrustedVaultKeyAndVersion::TrustedVaultKeyAndVersion(
-    const std::vector<uint8_t>& key,
-    int version)
-    : key(key), version(version) {}
-
-TrustedVaultKeyAndVersion::TrustedVaultKeyAndVersion(
-    const TrustedVaultKeyAndVersion& other) = default;
-
-TrustedVaultKeyAndVersion& TrustedVaultKeyAndVersion::operator=(
-    const TrustedVaultKeyAndVersion& other) = default;
-
-TrustedVaultKeyAndVersion::~TrustedVaultKeyAndVersion() = default;
-
-bool TrustedVaultKeyAndVersion::operator==(
-    const TrustedVaultKeyAndVersion& other) const = default;
-
 UsableRecoveryPinMetadata::UsableRecoveryPinMetadata(std::string in_wrapped_pin,
                                                      base::Time in_expiry)
     : wrapped_pin(std::move(in_wrapped_pin)), expiry(in_expiry) {}

@@ -34,6 +34,7 @@
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_crypto.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
+#include "components/trusted_vault/trusted_vault_key_and_version.h"
 #include "components/trusted_vault/trusted_vault_request.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -937,18 +938,6 @@ class RotateSharedKeyRequest : public TrustedVaultConnection::Request {
 };
 
 }  // namespace
-
-std::vector<TrustedVaultKeyAndVersion> GetTrustedVaultKeysWithVersions(
-    const std::vector<std::vector<uint8_t>>& trusted_vault_keys,
-    int last_key_version) {
-  const int first_key_version =
-      last_key_version - static_cast<int>(trusted_vault_keys.size()) + 1;
-  std::vector<TrustedVaultKeyAndVersion> result;
-  for (size_t i = 0; i < trusted_vault_keys.size(); ++i) {
-    result.emplace_back(trusted_vault_keys[i], first_key_version + i);
-  }
-  return result;
-}
 
 TrustedVaultConnectionImpl::TrustedVaultConnectionImpl(
     const GURL& trusted_vault_service_url,

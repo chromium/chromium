@@ -15,6 +15,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
+#include "components/trusted_vault/trusted_vault_key_and_version.h"
 
 struct CoreAccountInfo;
 
@@ -280,24 +281,6 @@ using AuthenticationFactorTypeAndRegistrationParams =
                  GpmPinMetadata,
                  ICloudKeychain,
                  GaiaPassword>;
-
-struct TrustedVaultKeyAndVersion {
-  TrustedVaultKeyAndVersion(const std::vector<uint8_t>& key, int version);
-  TrustedVaultKeyAndVersion(const TrustedVaultKeyAndVersion& other);
-  TrustedVaultKeyAndVersion& operator=(const TrustedVaultKeyAndVersion& other);
-  ~TrustedVaultKeyAndVersion();
-
-  bool operator==(const TrustedVaultKeyAndVersion& other) const;
-
-  std::vector<uint8_t> key;
-  int version;
-};
-
-// Returns a vector of `TrustedVaultKeyAndVersion` given a vector of keys and
-// the version of the last key, assuming that the versions are sequential.
-std::vector<TrustedVaultKeyAndVersion> GetTrustedVaultKeysWithVersions(
-    const std::vector<std::vector<uint8_t>>& trusted_vault_keys,
-    int last_key_version);
 
 // A MemberKeysSource provides a method of calculating the values needed to
 // add an authenticator factor.
