@@ -381,6 +381,17 @@ struct ListMarkerContext {
   base::raw_span<const ListLevel> list_levels;
 };
 
+// Result of `IsOrderedListStartConfirmed()` and
+// `ContinuesOrConfirmsOrderedList()`.
+struct OrderedListCheck {
+  // The checked marker, or empty if it doesn't continue or start a list.
+  ListMarkerKind kind;
+  // Lines scanned by `IsOrderedListStartConfirmed()` before the next marker
+  // confirmed the list, or the overflow bucket when it hit the limit. Unset
+  // otherwise.
+  std::optional<size_t> lookahead_lines;
+};
+
 // Returns whether `heading_level` is in bounds, i.e. whether it corresponds to
 // one of <h1> through <h6>.
 bool IsValidHeadingLevel(int heading_level) {
@@ -2014,16 +2025,14 @@ bool StartsIndentedSublist(const TextRunContext& run_context,
   return run_x <= marker_x + max_nest;
 }
 
-// Returns whether the first line after the marker run at `marker_run_index`
+// Checks whether the first line after the marker run at `marker_run_index`
 // that starts with an ordered marker of the same type continues
 // `marker_kind`'s numbering in the same column, within
-// `kMaxOrderedListLookaheadLines` lines. Records the lines scanned when
-// confirmed, or the overflow bucket when the limit is reached.
-bool IsOrderedListStartConfirmed(
+// `kMaxOrderedListLookaheadLines` lines.
+OrderedListCheck IsOrderedListStartConfirmed(
     const ListMarkerContext& context,
     size_t marker_run_index,
-    const ListMarkerKind& marker_kind,
-    std::optional<size_t>& last_recorded_lookahead_run_index) {
+    const ListMarkerKind& marker_kind) {
   CHECK(marker_kind.ordered_marker.has_value());
   const PageLayoutData& layout = *context.layout;
   const HeuristicPageProperties& page_properties = *context.page_properties;
@@ -2037,7 +2046,7 @@ bool IsOrderedListStartConfirmed(
   for (size_t i = first_run_index; i < layout.text_runs.size(); ++i) {
     // A table ends the candidate list.
     if (layout.table_text_run_indices->contains(i)) {
-      return false;
+      return {};
     }
     const chrome_pdf::AccessibilityTextRunInfo& prev_run =
         layout.text_runs[i - 1];
@@ -2059,11 +2068,9 @@ bool IsOrderedListStartConfirmed(
             marker_kind.ordered_marker->type) {
       if (!is_aligned || next_marker_kind.ordered_marker->value !=
                              marker_kind.ordered_marker->value + 1) {
-        return false;
+        return {};
       }
-      RecordOrderedListLookaheadLines(marker_run_index, lines_count,
-                                      last_recorded_lookahead_run_index);
-      return true;
+      return {.kind = marker_kind, .lookahead_lines = lines_count};
     }
     // A paragraph gap right after the marker's line suggests a numbered
     // heading followed by body text (e.g. "1. Introduction").
@@ -2075,21 +2082,57 @@ bool IsOrderedListStartConfirmed(
             GetTextRunContext(layout, i - 1),
             page_properties.paragraph_spacing_threshold) &&
         !StartsIndentedSublist(run_context, next_marker_kind, marker_x)) {
-      return false;
+      return {};
     }
     // A heading-styled line ends the candidate list.
     if (ClassifyHeading(run_context, page_properties) !=
         HeadingClassifier::kNone) {
-      return false;
+      return {};
     }
     if (++lines_count > kMaxOrderedListLookaheadLines) {
-      RecordOrderedListLookaheadLines(marker_run_index,
-                                      kOrderedListLookaheadLinesHistogramMax,
-                                      last_recorded_lookahead_run_index);
-      return false;
+      return {.lookahead_lines = kOrderedListLookaheadLinesHistogramMax};
     }
   }
-  return false;
+  return {};
+}
+
+// Checks whether `ordered_kind`, the ordered marker of the run at `run_index`,
+// is next in sequence in the list it joins, or starts a new list that the next
+// marker confirms.
+OrderedListCheck ContinuesOrConfirmsOrderedList(
+    const ListMarkerContext& context,
+    size_t run_index,
+    const ListMarkerKind& ordered_kind) {
+  CHECK(ordered_kind.ordered_marker.has_value());
+  const PageLayoutData& layout = *context.layout;
+  const HeuristicPageProperties& page_properties = *context.page_properties;
+  const base::span<const ListLevel> list_levels = context.list_levels;
+  const TextRunContext run_context = GetTextRunContext(layout, run_index);
+  const float max_nest = kMaxListNestingIndentEm *
+                         GetListItemFontSize(run_context, ordered_kind.form);
+  const ListPlacement placement =
+      GetListPlacement(list_levels, run_context.run->bounds.x(), max_nest,
+                       ordered_kind.ordered_marker);
+
+  const int value = ordered_kind.ordered_marker->value;
+  if (placement.kind == ListPlacementKind::kExistingLevel) {
+    // Continuing a list requires the next number or letter in sequence.
+    if (list_levels[placement.level_index].last_ordered_marker->value !=
+        value - 1) {
+      return {};
+    }
+    return {.kind = ordered_kind};
+  }
+  // A new list may start at any positive number (e.g. when it resumes on a
+  // new page). "0." is excluded because table decimals such as "0.98" are
+  // often split into "0." and "98" runs. Heading-styled numbering (e.g. a
+  // bold "1. Introduction") cannot start a list, but may continue one, since
+  // a bold list's last item is heading-styled when body text follows.
+  if (value < 1 || ClassifyHeading(run_context, page_properties) !=
+                       HeadingClassifier::kNone) {
+    return {};
+  }
+  return IsOrderedListStartConfirmed(context, run_index, ordered_kind);
 }
 
 // Classifies whether the run at `run_index` is a standalone list marker run or
@@ -2100,7 +2143,6 @@ ListMarkerKind ClassifyListMarker(
     std::optional<size_t>& last_recorded_lookahead_run_index) {
   CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
   const PageLayoutData& layout = *context.layout;
-  const HeuristicPageProperties& page_properties = *context.page_properties;
   const base::span<const ListLevel> list_levels = context.list_levels;
   const TextRunContext run_context = GetTextRunContext(layout, run_index);
   if (!IsLeftToRightRun(*run_context.run)) {
@@ -2152,33 +2194,13 @@ ListMarkerKind ClassifyListMarker(
     return {};
   }
 
-  const float item_font_size =
-      GetListItemFontSize(run_context, ordered_kind.form);
-  const float max_nest = kMaxListNestingIndentEm * item_font_size;
-  const ListPlacement placement = GetListPlacement(list_levels, run_x, max_nest,
-                                                   ordered_kind.ordered_marker);
-
-  const int value = ordered_kind.ordered_marker->value;
-  if (placement.kind == ListPlacementKind::kExistingLevel) {
-    // Continuing a list requires the next number or letter in sequence.
-    if (list_levels[placement.level_index].last_ordered_marker->value !=
-        value - 1) {
-      return {};
-    }
-  } else if (value < 1 ||
-             ClassifyHeading(run_context, page_properties) !=
-                 HeadingClassifier::kNone ||
-             !IsOrderedListStartConfirmed(context, run_index, ordered_kind,
-                                          last_recorded_lookahead_run_index)) {
-    // A new list may start at any positive number (e.g. when it resumes on a
-    // new page). "0." is excluded because table decimals such as "0.98" are
-    // often split into "0." and "98" runs. Heading-styled numbering (e.g. a
-    // bold "1. Introduction") cannot start a list, but may continue one, since
-    // a bold list's last item is heading-styled when body text follows.
-    return {};
+  const OrderedListCheck check =
+      ContinuesOrConfirmsOrderedList(context, run_index, ordered_kind);
+  if (check.lookahead_lines.has_value()) {
+    RecordOrderedListLookaheadLines(run_index, *check.lookahead_lines,
+                                    last_recorded_lookahead_run_index);
   }
-
-  return ordered_kind;
+  return check.kind;
 }
 
 struct ListMarkerPrefix {
