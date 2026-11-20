@@ -12,10 +12,6 @@
 namespace ui {
 
 inline constexpr auto kDrmSharedImageFormats = {
-    viz::SinglePlaneFormat::kR_8,
-    viz::SinglePlaneFormat::kRG_88,
-    viz::SinglePlaneFormat::kR_16,
-    viz::SinglePlaneFormat::kRG_1616,
     viz::SinglePlaneFormat::kBGR_565,
     viz::SinglePlaneFormat::kRGBA_4444,
     viz::SinglePlaneFormat::kRGBA_8888,
