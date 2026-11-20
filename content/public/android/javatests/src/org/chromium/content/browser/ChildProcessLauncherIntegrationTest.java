@@ -55,7 +55,6 @@ public class ChildProcessLauncherIntegrationTest {
                 Context context,
                 ComponentName serviceName,
                 ComponentName fallbackServiceName,
-                boolean bindToCaller,
                 boolean bindAsExternalService,
                 Bundle serviceBundle,
                 String instanceName,
@@ -66,7 +65,6 @@ public class ChildProcessLauncherIntegrationTest {
                     new TestChildProcessConnection(
                             context,
                             serviceName,
-                            bindToCaller,
                             bindAsExternalService,
                             serviceBundle,
                             independentFallback,
@@ -87,7 +85,6 @@ public class ChildProcessLauncherIntegrationTest {
         public TestChildProcessConnection(
                 Context context,
                 ComponentName serviceName,
-                boolean bindToCaller,
                 boolean bindAsExternalService,
                 Bundle childProcessCommonParameters,
                 boolean independentFallback,
@@ -97,7 +94,6 @@ public class ChildProcessLauncherIntegrationTest {
                     context,
                     serviceName,
                     /* fallbackServiceName= */ null,
-                    bindToCaller,
                     bindAsExternalService,
                     childProcessCommonParameters,
                     /* instanceName= */ null,
@@ -275,7 +271,6 @@ public class ChildProcessLauncherIntegrationTest {
         public CrashOnLaunchChildProcessConnection(
                 Context context,
                 ComponentName serviceName,
-                boolean bindToCaller,
                 boolean bindAsExternalService,
                 Bundle childProcessCommonParameters,
                 boolean independentFallback,
@@ -284,7 +279,6 @@ public class ChildProcessLauncherIntegrationTest {
             super(
                     context,
                     serviceName,
-                    bindToCaller,
                     bindAsExternalService,
                     childProcessCommonParameters,
                     independentFallback,
@@ -344,7 +338,6 @@ public class ChildProcessLauncherIntegrationTest {
                 Context context,
                 ComponentName serviceName,
                 ComponentName fallbackServiceName,
-                boolean bindToCaller,
                 boolean bindAsExternalService,
                 Bundle serviceBundle,
                 String instanceName,
@@ -356,7 +349,6 @@ public class ChildProcessLauncherIntegrationTest {
                         new CrashOnLaunchChildProcessConnection(
                                 context,
                                 serviceName,
-                                bindToCaller,
                                 bindAsExternalService,
                                 serviceBundle,
                                 independentFallback,
@@ -368,7 +360,6 @@ public class ChildProcessLauncherIntegrationTest {
                     context,
                     serviceName,
                     fallbackServiceName,
-                    bindToCaller,
                     bindAsExternalService,
                     serviceBundle,
                     instanceName,

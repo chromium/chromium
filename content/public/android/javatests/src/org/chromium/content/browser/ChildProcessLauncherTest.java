@@ -69,13 +69,6 @@ public class ChildProcessLauncherTest {
         }
 
         @Override
-        public void onChildStartFailed(ChildProcessConnection connection) {
-            if (mServiceCallback != null) {
-                mServiceCallback.onChildStartFailed(connection);
-            }
-        }
-
-        @Override
         public void onChildProcessDied(ChildProcessConnection connection) {
             if (mServiceCallback != null) {
                 mServiceCallback.onChildProcessDied(connection);
@@ -112,7 +105,6 @@ public class ChildProcessLauncherTest {
                                         SERVICE_PACKAGE_NAME,
                                         SERVICE_NAME,
                                         SERVICE_COUNT_META_DATA_KEY,
-                                        /* bindToCaller= */ false,
                                         /* bindAsExternalService= */ false,
                                         /* fallbackToNextSlot= */ false,
                                         /* isSandboxedForHistograms= */ false);
@@ -377,7 +369,6 @@ public class ChildProcessLauncherTest {
                                         "org.chromium.wrong_package",
                                         "WrongService",
                                         /* serviceCount= */ 2,
-                                        /* bindToCaller= */ false,
                                         /* bindAsExternalService= */ false,
                                         /* fallbackToNextSlot= */ false,
                                         /* isSandboxedForHistograms= */ false);

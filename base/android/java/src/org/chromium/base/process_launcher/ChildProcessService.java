@@ -9,14 +9,12 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Binder;
 import android.os.Debug;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Process;
 import android.os.RemoteException;
-import android.text.TextUtils;
 import android.util.SparseArray;
 
 import org.jni_zero.JNINamespace;
@@ -80,15 +78,7 @@ public class ChildProcessService {
     private final Service mService;
     private final Context mApplicationContext;
 
-    private final Object mBinderLock = new Object();
     private final Object mLibraryInitializedLock = new Object();
-
-    // PID of the client of this service, set in bindToCaller(), if mBindToCallerCheck is true.
-    @GuardedBy("mBinderLock")
-    private int mBoundCallingPid;
-
-    @GuardedBy("mBinderLock")
-    private @Nullable String mBoundCallingClazz;
 
     // This is the native "Main" thread for the renderer / utility process.
     private Thread mMainThread;
@@ -118,33 +108,6 @@ public class ChildProcessService {
             new IChildProcessService.Stub() {
                 // NOTE: Implement any IChildProcessService methods here.
                 @Override
-                public boolean bindToCaller(String clazz) {
-                    assert mServiceBound;
-                    synchronized (mBinderLock) {
-                        int callingPid = Binder.getCallingPid();
-                        if (mBoundCallingPid == 0 && mBoundCallingClazz == null) {
-                            mBoundCallingPid = callingPid;
-                            mBoundCallingClazz = clazz;
-                        } else if (mBoundCallingPid != callingPid) {
-                            Log.e(
-                                    TAG,
-                                    "Service is already bound by pid %d, cannot bind for pid %d",
-                                    mBoundCallingPid,
-                                    callingPid);
-                            return false;
-                        } else if (!TextUtils.equals(mBoundCallingClazz, clazz)) {
-                            Log.w(
-                                    TAG,
-                                    "Service is already bound by %s, cannot bind for %s",
-                                    mBoundCallingClazz,
-                                    clazz);
-                            return false;
-                        }
-                    }
-                    return true;
-                }
-
-                @Override
                 public String getSourceDir() {
                     return mApplicationContext.getApplicationInfo().sourceDir;
                 }
@@ -156,13 +119,6 @@ public class ChildProcessService {
                         List<IBinder> callbacks)
                         throws RemoteException {
                     assert mServiceBound;
-                    synchronized (mBinderLock) {
-                        if (args.bindToCaller && mBoundCallingPid == 0) {
-                            Log.e(TAG, "Service has not been bound with bindToCaller()");
-                            parentProcess.finishSetupConnection(-1, -1, 0, 0, null);
-                            return;
-                        }
-                    }
 
                     int pid = Process.myPid();
                     int uid = Process.myUid();

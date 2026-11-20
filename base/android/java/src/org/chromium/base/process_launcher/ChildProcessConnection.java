@@ -60,12 +60,6 @@ public class ChildProcessConnection {
         void onChildStarted();
 
         /**
-         * Called when the child process failed to start. This can happen if the process is already
-         * in use by another client. The client will not receive any other callbacks after this one.
-         */
-        void onChildStartFailed(ChildProcessConnection connection);
-
-        /**
          * Called when the service has been disconnected. whether it was stopped by the client or if
          * it stopped unexpectedly (process crash). This is the last callback from this interface
          * that a client will receive for a specific connection.
@@ -180,15 +174,6 @@ public class ChildProcessConnection {
         }
     }
 
-    /** The string passed to bindToCaller to identify this class loader. */
-    @VisibleForTesting
-    public static String getBindToCallerClazz() {
-        // TODO(crbug.com/40677220): Have embedder explicitly set separate different strings since
-        // this could still collide in theory.
-        ClassLoader cl = ChildProcessConnection.class.getClassLoader();
-        return cl.toString() + cl.hashCode();
-    }
-
     // Only accessed on launcher thread.
     // Set when a launching a service with zygote times out, in which case
     // it's assumed the zygote code path is not functional. Make all future
@@ -207,10 +192,6 @@ public class ChildProcessConnection {
     // If the service gets recreated by the framework the intent will be reused, so these parameters
     // should be common to all processes of that type.
     private final Bundle mServiceBundle;
-
-    // Whether bindToCaller should be called on the service after setup to check that only one
-    // process is bound to the service.
-    private final boolean mBindToCaller;
 
     private static class ConnectionParams {
         final IChildProcessArgs mChildProcessArgs;
@@ -308,7 +289,6 @@ public class ChildProcessConnection {
             Context context,
             ComponentName serviceName,
             @Nullable ComponentName fallbackServiceName,
-            boolean bindToCaller,
             boolean bindAsExternalService,
             Bundle serviceBundle,
             @Nullable String instanceName,
@@ -319,7 +299,6 @@ public class ChildProcessConnection {
                 context,
                 serviceName,
                 fallbackServiceName,
-                bindToCaller,
                 bindAsExternalService,
                 serviceBundle,
                 /* connectionFactory= */ null,
@@ -334,7 +313,6 @@ public class ChildProcessConnection {
             final Context context,
             ComponentName serviceName,
             @Nullable ComponentName fallbackServiceName,
-            boolean bindToCaller,
             boolean bindAsExternalService,
             Bundle serviceBundle,
             @Nullable ChildServiceConnectionFactory connectionFactory,
@@ -353,7 +331,6 @@ public class ChildProcessConnection {
         mServiceBundle = serviceBundle != null ? serviceBundle : new Bundle();
         mServiceBundle.putString(
                 ChildProcessConstants.EXTRA_BROWSER_PACKAGE_NAME, ApkInfo.getPackageName());
-        mBindToCaller = bindToCaller;
         mIndependentFallback = independentFallback;
         mIsSandboxedForHistograms = isSandboxedForHistograms;
 
@@ -482,8 +459,8 @@ public class ChildProcessConnection {
      *
      * @param useStrongBinding whether a strong binding should be bound by default. If false, an
      *     initial moderate binding is used.
-     * @param serviceCallback (optional) callbacks invoked when the child process starts or fails to
-     *     start and when the service stops.
+     * @param serviceCallback (optional) callbacks invoked when the child process starts and when
+     *     the service stops.
      */
     public void start(@ChildBindingState int initialBindingState, ServiceCallback serviceCallback) {
         // TODO(https://crbug.com/446030170): Consider taking ChildProcessImportance as a parameter
@@ -566,7 +543,6 @@ public class ChildProcessConnection {
         try (TraceEvent te = TraceEvent.scoped("ChildProcessConnection.setupConnection")) {
             mConnectionCallback = connectionCallback;
             mZygoteInfoCallback = zygoteInfoCallback;
-            childProcessArgs.bindToCaller = mBindToCaller;
             mConnectionParams = new ConnectionParams(childProcessArgs, clientInterfaces);
             // Run the setup if the service is already connected. If not, doConnectionSetup() will
             // be called from onServiceConnected().
@@ -624,23 +600,6 @@ public class ChildProcessConnection {
             TraceEvent.begin("ChildProcessConnection.ChildServiceConnection.onServiceConnected");
             mDidOnServiceConnected = true;
             mService = IChildProcessService.Stub.asInterface(service);
-
-            if (mBindToCaller) {
-                try {
-                    if (!mService.bindToCaller(getBindToCallerClazz())) {
-                        if (mServiceCallback != null) {
-                            mServiceCallback.onChildStartFailed(this);
-                        }
-                        unbind();
-                        return;
-                    }
-                } catch (RemoteException ex) {
-                    // Do not trigger the StartCallback here, since the service is already
-                    // dead and the onChildStopped callback will run from onServiceDisconnected().
-                    Log.e(TAG, "Failed to bind service to connection.", ex);
-                    return;
-                }
-            }
 
             // Validate that the child process is running the same code as the parent process.
             boolean childMatches = true;

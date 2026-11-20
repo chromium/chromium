@@ -13,7 +13,6 @@ import org.chromium.base.library_loader.IRelroLibInfo;
 parcelable IChildProcessArgs {
   IApkInfo apkInfo;
   IAndroidInfo androidInfo;
-  boolean bindToCaller;
   int channel;
   String[] commandLine;
   int cpuCount;

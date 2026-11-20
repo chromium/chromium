@@ -177,27 +177,6 @@ public class ChildProcessLauncher {
                         public void onChildStarted() {}
 
                         @Override
-                        public void onChildStartFailed(ChildProcessConnection connection) {
-                            assert isRunningOnLauncherThread();
-                            assert mConnection == connection;
-                            Log.e(TAG, "ChildProcessConnection.start failed, trying again");
-                            mLauncherHandler.post(
-                                    () -> {
-                                        // The child process may already be bound to another
-                                        // client (this can happen if multi-process WebView is
-                                        // used in more than one process), so try starting the
-                                        // process again.
-                                        // This connection that failed to start has not been
-                                        // freed, so a new bound connection will be allocated.
-                                        mConnection = null;
-                                        start(
-                                                setupConnection,
-                                                queueIfNoFreeConnection,
-                                                initialBindingState);
-                                    });
-                        }
-
-                        @Override
                         public void onChildProcessDied(ChildProcessConnection connection) {
                             assert isRunningOnLauncherThread();
                             assert mConnection == connection;

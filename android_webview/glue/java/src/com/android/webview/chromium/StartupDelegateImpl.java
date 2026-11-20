@@ -149,7 +149,6 @@ class StartupDelegateImpl implements StartupController.Delegate {
                 webViewPackageName,
                 /* isExternalSandboxedService= */ true,
                 LibraryProcessType.PROCESS_WEBVIEW_CHILD,
-                /* bindToCallerCheck= */ true,
                 /* ignoreVisibilityForImportance= */ true,
                 shouldForceNativeSandboxedServices());
         ChildProcessLauncherHelper.initialize();

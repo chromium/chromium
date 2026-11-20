@@ -59,8 +59,6 @@ class ChildProcessService : public BnChildProcessService,
  public:
   ChildProcessService();
   ~ChildProcessService() override;
-  ScopedAStatus bindToCaller(const std::string& in_clazz,
-                             bool* _aidl_return) override;
   ScopedAStatus setupConnection(
       const IChildProcessArgs& args,
       const std::shared_ptr<IParentProcess>& parentProcess,
@@ -78,9 +76,6 @@ class ChildProcessService : public BnChildProcessService,
 
  private:
   std::unique_ptr<base::DelegateSimpleThread> thread_;
-  base::Lock bind_to_caller_lock_;
-  pid_t bound_calling_pid_ GUARDED_BY(bind_to_caller_lock_) = 0;
-  std::string bound_calling_clazz_ GUARDED_BY(bind_to_caller_lock_);
 
   base::ConditionVariable child_process_args_signal_;
   base::Lock child_process_args_lock_;
@@ -194,15 +189,6 @@ ScopedAStatus ChildProcessService::setupConnection(
     const IChildProcessArgs& args,
     const std::shared_ptr<IParentProcess>& parentProcess,
     const std::optional<std::vector<SpAIBinder>>& clientInterfaces) {
-  // Entering locked scope for bound_calling_pid.
-  {
-    base::AutoLock lock(bind_to_caller_lock_);
-    if (args.bindToCaller && bound_calling_pid_ == 0) {
-      LOG(ERROR) << "Service has not been bound with bindToCaller()";
-      parentProcess->finishSetupConnection(-1, -1, 0, 0, std::nullopt);
-      return ScopedAStatus::ok();
-    }
-  }
   {
     base::AutoLock auto_lock(child_process_args_lock_);
     parent_process_ = parentProcess;
@@ -218,26 +204,6 @@ ScopedAStatus ChildProcessService::setupConnection(
   parentProcess->finishSetupConnection(base::GetCurrentProcId(),
                                        static_cast<int32_t>(getuid()), 0, -1,
                                        std::nullopt);
-  return ScopedAStatus::ok();
-}
-
-ScopedAStatus ChildProcessService::bindToCaller(const std::string& in_clazz,
-                                                bool* _aidl_return) {
-  pid_t calling_pid = AIBinder_getCallingPid();
-  base::AutoLock lock(bind_to_caller_lock_);
-  *_aidl_return = true;
-  if (bound_calling_pid_ == 0 && bound_calling_clazz_.empty()) {
-    bound_calling_pid_ = calling_pid;
-    bound_calling_clazz_ = in_clazz;
-  } else if (bound_calling_pid_ != calling_pid) {
-    LOG(ERROR) << "Service is already bound by pid " << bound_calling_pid_
-               << ", cannot bind for pid " << calling_pid;
-    *_aidl_return = false;
-  } else if (bound_calling_clazz_ != in_clazz) {
-    LOG(WARNING) << "Service is already bound by " << bound_calling_clazz_
-                 << ", cannot bind for " << in_clazz;
-    *_aidl_return = false;
-  }
   return ScopedAStatus::ok();
 }
 

@@ -35,7 +35,6 @@ public class ChildProcessCreationParamsImpl {
     private static @Nullable String sPackageNameForSandboxedService;
     private static boolean sIsSandboxedServiceExternal;
     private static int sLibraryProcessType;
-    private static boolean sBindToCallerCheck;
     // Use only the explicit WebContents.setImportance signal, and ignore other implicit
     // signals in content.
     private static boolean sIgnoreVisibilityForImportance;
@@ -51,7 +50,6 @@ public class ChildProcessCreationParamsImpl {
             String sandboxedPackageName,
             boolean isExternalSandboxedService,
             int libraryProcessType,
-            boolean bindToCallerCheck,
             boolean ignoreVisibilityForImportance,
             boolean forceNativeSandboxedService) {
         assert !sInitialized;
@@ -62,7 +60,6 @@ public class ChildProcessCreationParamsImpl {
         sPackageNameForSandboxedService = sandboxedPackageName;
         sIsSandboxedServiceExternal = isExternalSandboxedService;
         sLibraryProcessType = libraryProcessType;
-        sBindToCallerCheck = bindToCallerCheck;
         sIgnoreVisibilityForImportance = ignoreVisibilityForImportance;
         sForceNativeSandboxedService = TriStateUtils.from(forceNativeSandboxedService);
         sInitialized = true;
@@ -90,10 +87,6 @@ public class ChildProcessCreationParamsImpl {
 
     public static boolean getIsSandboxedServiceExternal() {
         return sInitialized && sIsSandboxedServiceExternal;
-    }
-
-    public static boolean getBindToCallerCheck() {
-        return sInitialized && sBindToCallerCheck;
     }
 
     public static boolean getIgnoreVisibilityForImportance() {

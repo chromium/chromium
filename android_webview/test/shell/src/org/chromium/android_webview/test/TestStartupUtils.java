@@ -36,7 +36,6 @@ public class TestStartupUtils {
         @Override
         public void configureChildProcessLauncher() {
             final boolean isExternalService = false;
-            final boolean bindToCaller = false;
             final boolean ignoreVisibilityForImportance = false;
             final boolean isNativeWebViewZygoteEnabled = false;
             ChildProcessCreationParams.set(
@@ -44,7 +43,6 @@ public class TestStartupUtils {
                     ContextUtils.getApplicationContext().getPackageName(),
                     isExternalService,
                     LibraryProcessType.PROCESS_WEBVIEW_CHILD,
-                    bindToCaller,
                     ignoreVisibilityForImportance,
                     isNativeWebViewZygoteEnabled);
             ChildProcessLauncherHelper.initialize();

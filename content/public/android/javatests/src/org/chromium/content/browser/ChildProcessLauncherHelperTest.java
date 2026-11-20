@@ -25,7 +25,6 @@ import org.chromium.base.ChildBindingState;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.base.process_launcher.IFileDescriptorInfo;
 import org.chromium.base.test.util.Criteria;
@@ -78,7 +77,10 @@ public class ChildProcessLauncherHelperTest {
         blockUntilConnected(connection);
     }
 
-    private void testWarmUpImpl() {
+    @Test
+    @MediumTest
+    @Feature({"ProcessManagement"})
+    public void testWarmUp() {
         Context context = InstrumentationRegistry.getTargetContext();
         warmUpOnUiThreadBlocking(context);
 
@@ -96,30 +98,6 @@ public class ChildProcessLauncherHelperTest {
         stopProcess(launcherHelper);
 
         waitForConnectedSandboxedServicesCount(0);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"ProcessManagement"})
-    public void testWarmUp() {
-        // Use the default creation parameters.
-        testWarmUpImpl();
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"ProcessManagement"})
-    public void testWarmUpWithBindToCaller() {
-        Context context = InstrumentationRegistry.getTargetContext();
-        ChildProcessCreationParamsImpl.set(
-                context.getPackageName(),
-                context.getPackageName(),
-                /* isExternalSandboxedService= */ false,
-                LibraryProcessType.PROCESS_CHILD,
-                /* bindToCallerCheck= */ true,
-                /* ignoreVisibilityForImportance= */ false,
-                /* forceNativeSandboxedService= */ false);
-        testWarmUpImpl();
     }
 
     // Tests that the warm-up connection is freed from its allocator if it crashes.

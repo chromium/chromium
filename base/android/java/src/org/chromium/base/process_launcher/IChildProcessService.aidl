@@ -9,12 +9,6 @@ import org.chromium.base.process_launcher.IParentProcess;
 import org.chromium.base.library_loader.IRelroLibInfo;
 
 interface IChildProcessService {
-  // |clazz| identifies the ClassLoader of the caller.
-  // On the first call to this method, the service will record the calling PID
-  // and |clazz| and return true. Subsequent calls will only return true if the
-  // calling PID and |clazz| matches the recorded values.
-  boolean bindToCaller(in String clazz);
-
   // Returns sourceDir for validating that the parent is talking to a "matching"
   // process.
   String getSourceDir();

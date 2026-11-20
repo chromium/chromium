@@ -668,7 +668,6 @@ public final class ChildProcessLauncherHelperImpl {
     static ChildConnectionAllocator getConnectionAllocator(
             Context context, @ServiceType int serviceType) {
         assert LauncherThread.runningOnLauncherThread();
-        boolean bindToCaller = ChildProcessCreationParamsImpl.getBindToCallerCheck();
         boolean bindAsExternalService =
                 serviceType != ServiceType.PRIVILEGED
                         && ChildProcessCreationParamsImpl.getIsSandboxedServiceExternal();
@@ -688,7 +687,6 @@ public final class ChildProcessLauncherHelperImpl {
                                             .getPackageNameForPrivilegedService(),
                                     ChildProcessCreationParamsImpl.getPrivilegedServicesName(),
                                     NUM_PRIVILEGED_SERVICES_KEY,
-                                    bindToCaller,
                                     bindAsExternalService,
                                     fallbackToNextSlot,
                                     /* isSandboxedForHistograms= */ false);
@@ -714,7 +712,6 @@ public final class ChildProcessLauncherHelperImpl {
                                     /* freeSlotCallback= */ null,
                                     packageName,
                                     ChildProcessCreationParamsImpl.getSandboxedGpuServicesName(),
-                                    bindToCaller,
                                     bindAsExternalService,
                                     retryOnTimeout,
                                     /* allowBindFailure= */ true,
@@ -756,7 +753,6 @@ public final class ChildProcessLauncherHelperImpl {
                                         packageName,
                                         serviceName,
                                         sSandboxedServicesCountForTesting,
-                                        bindToCaller,
                                         bindAsExternalService,
                                         /* fallbackToNextSlot= */ false,
                                         /* isSandboxedForHistograms= */ true);
@@ -777,7 +773,6 @@ public final class ChildProcessLauncherHelperImpl {
                                         freeSlotRunnable,
                                         packageName,
                                         ChildProcessCreationParamsImpl.getSandboxedServicesName(),
-                                        bindToCaller,
                                         bindAsExternalService,
                                         /* isSandboxedForHistograms= */ true,
                                         maxIsolatedServices);

@@ -197,17 +197,13 @@ public class ChildProcessConnectionTest {
 
     private ChildProcessConnection createDefaultTestConnection() {
         return createTestConnection(
-                /* bindToCaller= */ false,
                 /* bindAsExternalService= */ false,
                 /* serviceBundle= */ null,
                 /* useFallback= */ false);
     }
 
     private ChildProcessConnection createTestConnection(
-            boolean bindToCaller,
-            boolean bindAsExternalService,
-            Bundle serviceBundle,
-            boolean useFallback) {
+            boolean bindAsExternalService, Bundle serviceBundle, boolean useFallback) {
         String packageName = "org.chromium.test";
         String serviceName = "TestService";
         String fallbackServiceName = "TestFallbackService";
@@ -215,7 +211,6 @@ public class ChildProcessConnectionTest {
                 /* context= */ null,
                 new ComponentName(packageName, serviceName),
                 useFallback ? new ComponentName(packageName, fallbackServiceName) : null,
-                bindToCaller,
                 bindAsExternalService,
                 serviceBundle,
                 mServiceConnectionFactory,
@@ -287,7 +282,6 @@ public class ChildProcessConnectionTest {
 
         ChildProcessConnection connection =
                 createTestConnection(
-                        /* bindToCaller= */ false,
                         /* bindAsExternalService= */ false,
                         serviceBundle,
                         /* useFallback= */ false);
@@ -308,14 +302,12 @@ public class ChildProcessConnectionTest {
         Assert.assertEquals(ChildBindingState.VISIBLE, connection.bindingStateCurrent());
         Assert.assertFalse(connection.didOnServiceConnectedForTesting());
         verify(mServiceCallback, never()).onChildStarted();
-        verify(mServiceCallback, never()).onChildStartFailed(any());
         verify(mServiceCallback, never()).onChildProcessDied(any());
 
         // The service connects.
         mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
         Assert.assertTrue(connection.didOnServiceConnectedForTesting());
         verify(mServiceCallback, times(1)).onChildStarted();
-        verify(mServiceCallback, never()).onChildStartFailed(any());
         verify(mServiceCallback, never()).onChildProcessDied(any());
     }
 
@@ -331,7 +323,6 @@ public class ChildProcessConnectionTest {
         Assert.assertEquals(ChildBindingState.UNBOUND, connection.bindingStateCurrent());
         Assert.assertFalse(connection.didOnServiceConnectedForTesting());
         verify(mServiceCallback, never()).onChildStarted();
-        verify(mServiceCallback, never()).onChildStartFailed(any());
         verify(mServiceCallback, times(1)).onChildProcessDied(connection);
     }
 
@@ -343,7 +334,6 @@ public class ChildProcessConnectionTest {
         mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
         connection.stop();
         verify(mServiceCallback, times(1)).onChildStarted();
-        verify(mServiceCallback, never()).onChildStartFailed(any());
         verify(mServiceCallback, times(1)).onChildProcessDied(connection);
     }
 
@@ -355,66 +345,7 @@ public class ChildProcessConnectionTest {
         mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
         mFirstServiceConnection.notifyServiceDisconnected();
         verify(mServiceCallback, times(1)).onChildStarted();
-        verify(mServiceCallback, never()).onChildStartFailed(any());
         verify(mServiceCallback, times(1)).onChildProcessDied(connection);
-    }
-
-    @Test
-    public void testNotBoundToCaller() throws RemoteException {
-        ChildProcessConnection connection =
-                createTestConnection(
-                        /* bindToCaller= */ false,
-                        /* bindAsExternalService= */ false,
-                        /* serviceBundle= */ null,
-                        /* useFallback= */ false);
-        assertNotNull(mFirstServiceConnection);
-        connection.start(ChildBindingState.VISIBLE, mServiceCallback);
-        mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
-        // Service is started and bindToCallback is not called.
-        verify(mServiceCallback, times(1)).onChildStarted();
-        verify(mServiceCallback, never()).onChildStartFailed(any());
-        verify(mServiceCallback, never()).onChildProcessDied(connection);
-        verify(mIChildProcessService, never()).bindToCaller(any());
-    }
-
-    @Test
-    public void testBoundToCallerSuccess() throws RemoteException {
-        ChildProcessConnection connection =
-                createTestConnection(
-                        /* bindToCaller= */ true,
-                        /* bindAsExternalService= */ false,
-                        /* serviceBundle= */ null,
-                        /* useFallback= */ false);
-        assertNotNull(mFirstServiceConnection);
-        connection.start(ChildBindingState.VISIBLE, mServiceCallback);
-        when(mIChildProcessService.bindToCaller(any())).thenReturn(true);
-        mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
-        // Service is started and bindToCallback is called.
-        verify(mServiceCallback, times(1)).onChildStarted();
-        verify(mServiceCallback, never()).onChildStartFailed(any());
-        verify(mServiceCallback, never()).onChildProcessDied(connection);
-        verify(mIChildProcessService, times(1)).bindToCaller(any());
-    }
-
-    @Test
-    public void testBoundToCallerFailure() throws RemoteException {
-        ChildProcessConnection connection =
-                createTestConnection(
-                        /* bindToCaller= */ true,
-                        /* bindAsExternalService= */ false,
-                        /* serviceBundle= */ null,
-                        /* useFallback= */ false);
-        assertNotNull(mFirstServiceConnection);
-        connection.start(ChildBindingState.VISIBLE, mServiceCallback);
-        // Pretend bindToCaller returns false, i.e. the service is already bound to a different
-        // service.
-        when(mIChildProcessService.bindToCaller(any())).thenReturn(false);
-        mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
-        // Service fails to start.
-        verify(mServiceCallback, never()).onChildStarted();
-        verify(mServiceCallback, times(1)).onChildStartFailed(any());
-        verify(mServiceCallback, never()).onChildProcessDied(connection);
-        verify(mIChildProcessService, times(1)).bindToCaller(any());
     }
 
     @Test
@@ -724,10 +655,9 @@ public class ChildProcessConnectionTest {
     }
 
     @Test
-    public void testUpdateGroupImportanceSmoke() throws RemoteException {
+    public void testUpdateGroupImportanceSmoke() {
         ChildProcessConnection connection = createDefaultTestConnection();
         connection.start(ChildBindingState.VISIBLE, /* serviceCallback= */ null);
-        when(mIChildProcessService.bindToCaller(any())).thenReturn(true);
         mFirstServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
         connection.updateGroupImportance(1, 2);
         assertEquals(1, connection.getGroup());
@@ -773,10 +703,7 @@ public class ChildProcessConnectionTest {
 
         ChildProcessConnection connection =
                 createTestConnection(
-                        /* bindToCaller= */ false,
-                        /* bindAsExternalService= */ false,
-                        serviceBundle,
-                        /* useFallback= */ true);
+                        /* bindAsExternalService= */ false, serviceBundle, /* useFallback= */ true);
         assertNotNull(mFirstServiceConnection);
         connection.start(ChildBindingState.VISIBLE, mServiceCallback);
 
@@ -787,7 +714,6 @@ public class ChildProcessConnectionTest {
         }
         Assert.assertTrue(anyServiceConnectionBound);
         verify(mServiceCallback, never()).onChildStarted();
-        verify(mServiceCallback, never()).onChildStartFailed(any());
         verify(mServiceCallback, never()).onChildProcessDied(any());
         {
             Intent bindIntent = mFirstServiceConnection.getBindIntent();
@@ -805,7 +731,6 @@ public class ChildProcessConnectionTest {
         // Do not call onServiceConnected. Simulate timeout with ShadowLooper.
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mServiceCallback, never()).onChildStarted();
-        verify(mServiceCallback, never()).onChildStartFailed(any());
         verify(mServiceCallback, never()).onChildProcessDied(any());
 
         Assert.assertEquals(8, mMockConnections.size());
@@ -830,7 +755,6 @@ public class ChildProcessConnectionTest {
         // Complete connection.
         boundServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
         verify(mServiceCallback, times(1)).onChildStarted();
-        verify(mServiceCallback, never()).onChildStartFailed(any());
         verify(mServiceCallback, never()).onChildProcessDied(any());
     }
 
@@ -843,17 +767,13 @@ public class ChildProcessConnectionTest {
 
         ChildProcessConnection connection =
                 createTestConnection(
-                        /* bindToCaller= */ false,
-                        /* bindAsExternalService= */ false,
-                        serviceBundle,
-                        /* useFallback= */ true);
+                        /* bindAsExternalService= */ false, serviceBundle, /* useFallback= */ true);
         assertNotNull(mFirstServiceConnection);
         mFirstServiceConnection.setBindResult(false);
 
         connection.start(ChildBindingState.VISIBLE, mServiceCallback);
 
         verify(mServiceCallback, never()).onChildStarted();
-        verify(mServiceCallback, never()).onChildStartFailed(any());
         verify(mServiceCallback, never()).onChildProcessDied(any());
 
         Assert.assertEquals(8, mMockConnections.size());
@@ -882,7 +802,6 @@ public class ChildProcessConnectionTest {
         // Complete connection.
         boundServiceConnection.notifyServiceConnected(mChildProcessServiceBinder);
         verify(mServiceCallback, times(1)).onChildStarted();
-        verify(mServiceCallback, never()).onChildStartFailed(any());
         verify(mServiceCallback, never()).onChildProcessDied(any());
     }
 

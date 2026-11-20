@@ -10,7 +10,6 @@ import android.os.Bundle;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ChildBindingState;
-import org.chromium.base.Log;
 import org.chromium.base.process_launcher.ChildConnectionAllocator;
 import org.chromium.base.process_launcher.ChildProcessConnection;
 import org.chromium.build.annotations.NullMarked;
@@ -22,8 +21,6 @@ import org.chromium.build.annotations.Nullable;
  */
 @NullMarked
 public class SpareChildConnection {
-    private static final String TAG = "SpareChildConn";
-
     // The allocator used to create the connection.
     private final ChildConnectionAllocator mConnectionAllocator;
 
@@ -64,16 +61,6 @@ public class SpareChildConnection {
                         }
                         // If there is no chained callback, that means the spare connection has not
                         // been used yet. It will be cleared when used.
-                    }
-
-                    @Override
-                    public void onChildStartFailed(ChildProcessConnection connection) {
-                        assert LauncherThread.runningOnLauncherThread();
-                        Log.w(TAG, "Failed to warm up the spare sandbox service");
-                        if (mConnectionServiceCallback != null) {
-                            mConnectionServiceCallback.onChildStartFailed(connection);
-                        }
-                        clearConnection();
                     }
 
                     @Override

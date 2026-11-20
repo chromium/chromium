@@ -29,7 +29,6 @@ public class ChildProcessRankingTest {
         TestChildProcessConnection connection =
                 new TestChildProcessConnection(
                         new ComponentName("pkg", "cls"),
-                        /* bindToCaller= */ false,
                         /* bindAsExternalService= */ false,
                         /* serviceBundle= */ null);
         connection.start(ChildBindingState.VISIBLE, /* serviceCallback= */ null);
