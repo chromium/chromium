@@ -36,6 +36,6 @@ bool ShouldSuppressDialogDuringActuation(web::WebState* web_state,
   NOTREACHED();
 }
 
-void RecordDialogSuppressedDuringActuation(IOSActorSuppressedDialog dialog) {
+void RecordDialogSuppressedDuringActuation(IOSDialogDuringActuation dialog) {
   base::UmaHistogramEnumeration(kActorDialogSuppressedHistogram, dialog);
 }

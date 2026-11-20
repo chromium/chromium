@@ -100,26 +100,26 @@ TEST_F(ActorDialogUtilsTest, StoppingActuationRestoresPrompts) {
 // `IOS.Actor.Dialog.Suppressed` histogram.
 TEST_F(ActorDialogUtilsTest, RecordsSuppressedDialogs) {
   RecordDialogSuppressedDuringActuation(
-      IOSActorSuppressedDialog::kCameraPermission);
+      IOSDialogDuringActuation::kCameraPermission);
   RecordDialogSuppressedDuringActuation(
-      IOSActorSuppressedDialog::kMicrophonePermission);
+      IOSDialogDuringActuation::kMicrophonePermission);
   RecordDialogSuppressedDuringActuation(
-      IOSActorSuppressedDialog::kCameraAndMicrophonePermission);
+      IOSDialogDuringActuation::kCameraAndMicrophonePermission);
   RecordDialogSuppressedDuringActuation(
-      IOSActorSuppressedDialog::kGeolocationPermission);
+      IOSDialogDuringActuation::kGeolocationPermission);
 
   histogram_tester_.ExpectBucketCount(
       kActorDialogSuppressedHistogram,
-      IOSActorSuppressedDialog::kCameraPermission, 1);
+      IOSDialogDuringActuation::kCameraPermission, 1);
   histogram_tester_.ExpectBucketCount(
       kActorDialogSuppressedHistogram,
-      IOSActorSuppressedDialog::kMicrophonePermission, 1);
+      IOSDialogDuringActuation::kMicrophonePermission, 1);
   histogram_tester_.ExpectBucketCount(
       kActorDialogSuppressedHistogram,
-      IOSActorSuppressedDialog::kCameraAndMicrophonePermission, 1);
+      IOSDialogDuringActuation::kCameraAndMicrophonePermission, 1);
   histogram_tester_.ExpectBucketCount(
       kActorDialogSuppressedHistogram,
-      IOSActorSuppressedDialog::kGeolocationPermission, 1);
+      IOSDialogDuringActuation::kGeolocationPermission, 1);
   histogram_tester_.ExpectTotalCount(kActorDialogSuppressedHistogram, 4);
 }
 

@@ -186,20 +186,20 @@ std::optional<web::PermissionDecision> DetermineDomainLevelDecision(
 }
 
 // Maps a `web::Permission` array to the corresponding
-// `IOSActorSuppressedDialog` bucket, or `std::nullopt` if none match.
-std::optional<IOSActorSuppressedDialog> SuppressedDialogForPermissions(
+// `IOSDialogDuringActuation` bucket, or `std::nullopt` if none match.
+std::optional<IOSDialogDuringActuation> DialogForPermissions(
     NSArray<NSNumber*>* permissions) {
   const bool has_camera = [permissions containsObject:@(web::PermissionCamera)];
   const bool has_microphone =
       [permissions containsObject:@(web::PermissionMicrophone)];
   if (has_camera && has_microphone) {
-    return IOSActorSuppressedDialog::kCameraAndMicrophonePermission;
+    return IOSDialogDuringActuation::kCameraAndMicrophonePermission;
   }
   if (has_camera) {
-    return IOSActorSuppressedDialog::kCameraPermission;
+    return IOSDialogDuringActuation::kCameraPermission;
   }
   if (has_microphone) {
-    return IOSActorSuppressedDialog::kMicrophonePermission;
+    return IOSDialogDuringActuation::kMicrophonePermission;
   }
   return std::nullopt;
 }
@@ -460,9 +460,9 @@ void WebStateDelegateBrowserAgent::HandlePermissionsDecisionRequest(
           source, ActorSuppressedDialogType::kPermissions)) {
     RecordPermissionRequestResolution(
         permissions, IOSPermissionRequestResolution::kDeniedDuringActuation);
-    if (std::optional<IOSActorSuppressedDialog> suppressed_dialog =
-            SuppressedDialogForPermissions(permissions)) {
-      RecordDialogSuppressedDuringActuation(*suppressed_dialog);
+    if (std::optional<IOSDialogDuringActuation> dialog =
+            DialogForPermissions(permissions)) {
+      RecordDialogSuppressedDuringActuation(*dialog);
     }
     handler(web::PermissionDecisionDeny);
     return;
@@ -514,7 +514,7 @@ void WebStateDelegateBrowserAgent::RequestGeolocationPermission(
   if (ShouldSuppressDialogDuringActuation(
           source, ActorSuppressedDialogType::kPermissions)) {
     RecordDialogSuppressedDuringActuation(
-        IOSActorSuppressedDialog::kGeolocationPermission);
+        IOSDialogDuringActuation::kGeolocationPermission);
     handler(web::PermissionDecisionDeny);
     return;
   }

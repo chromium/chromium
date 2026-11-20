@@ -981,7 +981,7 @@ TEST_F(WebStateDelegateBrowserAgentTest,
       IOSPermissionRequestResolution::kDeniedDuringActuation, 1);
   histogram_tester.ExpectUniqueSample(
       kActorDialogSuppressedHistogram,
-      IOSActorSuppressedDialog::kCameraPermission, 1);
+      IOSDialogDuringActuation::kCameraPermission, 1);
 }
 
 // Tests that `HandlePermissionsDecisionRequest()` records the microphone bucket
@@ -1002,7 +1002,7 @@ TEST_F(WebStateDelegateBrowserAgentTest,
       IOSPermissionRequestResolution::kDeniedDuringActuation, 1);
   histogram_tester.ExpectUniqueSample(
       kActorDialogSuppressedHistogram,
-      IOSActorSuppressedDialog::kMicrophonePermission, 1);
+      IOSDialogDuringActuation::kMicrophonePermission, 1);
 }
 
 // Tests that `HandlePermissionsDecisionRequest()` records the combined camera
@@ -1023,7 +1023,7 @@ TEST_F(WebStateDelegateBrowserAgentTest,
       IOSPermissionRequestResolution::kDeniedDuringActuation, 1);
   histogram_tester.ExpectUniqueSample(
       kActorDialogSuppressedHistogram,
-      IOSActorSuppressedDialog::kCameraAndMicrophonePermission, 1);
+      IOSDialogDuringActuation::kCameraAndMicrophonePermission, 1);
 }
 
 // Tests that `HandlePermissionsDecisionRequest()` does not auto-reject when the
@@ -1151,7 +1151,7 @@ TEST_F(WebStateDelegateBrowserAgentTest,
                   .is_null());
   histogram_tester.ExpectUniqueSample(
       kActorDialogSuppressedHistogram,
-      IOSActorSuppressedDialog::kGeolocationPermission, 1);
+      IOSDialogDuringActuation::kGeolocationPermission, 1);
 }
 
 // Tests that `RequestGeolocationPermission()` does not auto-reject when the

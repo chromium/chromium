@@ -286,17 +286,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/intelligence/actor/metrics/actor_background_task_metrics.h:IOSActorBackgroundTaskIneligibilityReason) -->
 
-<!-- LINT.IfChange(IOSActorSuppressedDialog) -->
-
-<enum name="IOSActorSuppressedDialog">
-  <int value="0" label="Camera permission"/>
-  <int value="1" label="Microphone permission"/>
-  <int value="2" label="Camera and microphone permission"/>
-  <int value="3" label="Geolocation permission"/>
-</enum>
-
-<!-- LINT.ThenChange(//ios/chrome/browser/intelligence/actor/util/actor_dialog_utils.h:IOSActorSuppressedDialog) -->
-
 <enum name="IOSAddressValidationOutcome">
   <int value="0" label="Address is valid for Long Press"/>
   <int value="1" label="Address is valid for One Tap"/>
@@ -675,6 +664,17 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="User confirmed delete all saved credentials"/>
   <int value="1" label="User cancelled delete all saved credentials"/>
 </enum>
+
+<!-- LINT.IfChange(IOSDialogDuringActuation) -->
+
+<enum name="IOSDialogDuringActuation">
+  <int value="0" label="Camera permission"/>
+  <int value="1" label="Microphone permission"/>
+  <int value="2" label="Camera and microphone permission"/>
+  <int value="3" label="Geolocation permission"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/intelligence/actor/util/actor_dialog_utils.h:IOSDialogDuringActuation) -->
 
 <enum name="IOSDockingPromoAction">
   <int value="0" label="Toggle appearance (deprecated)"/>

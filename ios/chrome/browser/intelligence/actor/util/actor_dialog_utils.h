@@ -9,22 +9,22 @@ namespace web {
 class WebState;
 }  // namespace web
 
-// Specific dialogs, prompts, and permission requests suppressed while an
+// Specific dialogs, prompts, and permission requests handled while an
 // `ActorTask` is actuating a tab.
 // Logged to the `IOS.Actor.Dialog.Suppressed` histogram.
 //
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
-// LINT.IfChange(IOSActorSuppressedDialog)
-enum class IOSActorSuppressedDialog {
+// LINT.IfChange(IOSDialogDuringActuation)
+enum class IOSDialogDuringActuation {
   kCameraPermission = 0,
   kMicrophonePermission = 1,
   kCameraAndMicrophonePermission = 2,
   kGeolocationPermission = 3,
   kMaxValue = kGeolocationPermission,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IOSActorSuppressedDialog)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IOSDialogDuringActuation)
 
 // Histogram name for dialogs and prompts suppressed during actuation.
 inline constexpr char kActorDialogSuppressedHistogram[] =
@@ -45,6 +45,6 @@ bool ShouldSuppressDialogDuringActuation(web::WebState* web_state,
                                          ActorSuppressedDialogType type);
 
 // Records that `dialog` was suppressed because the tab was being actuated.
-void RecordDialogSuppressedDuringActuation(IOSActorSuppressedDialog dialog);
+void RecordDialogSuppressedDuringActuation(IOSDialogDuringActuation dialog);
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_UTIL_ACTOR_DIALOG_UTILS_H_

@@ -348,7 +348,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.Actor.Dialog.Suppressed" enum="IOSActorSuppressedDialog"
+<histogram name="IOS.Actor.Dialog.Suppressed" enum="IOSDialogDuringActuation"
     expires_after="2027-05-17">
   <owner>kaklilu@google.com</owner>
   <owner>bling-ai-foundations@google.com</owner>
