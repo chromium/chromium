@@ -126,7 +126,7 @@ ParentPermissionDialogViewTest.*
 *PasswordCrossDomainConfirmationPopupViewBrowsertest.*
 *PasswordChangeToastBrowserTest.InvokeUi_*
 *PasswordChangeUiBrowserTest.*
-*PasswordDialogViewTest.*
+*PasswordDialogViewTest.InvokeUi_*
 *PasswordGenerationPopupViewBrowsertest.*
 *PasswordGenerationPopupViewWithSoftNudgeBrowsertest.*
 *PasswordManagementRevampedBubbleInteractiveUiTest.*
