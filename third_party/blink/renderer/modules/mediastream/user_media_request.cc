@@ -598,11 +598,6 @@ UserMediaRequest* UserMediaRequest::Create(
 
   result->set_suppress_local_audio_playback(
       suppress_local_audio_playback.value_or(false));
-  if (media_type == UserMediaRequestType::kDisplayMedia) {
-    RecordBooleanConstraintUma(
-        suppress_local_audio_playback,
-        "Media.GetDisplayMedia.Constraints.SuppressLocalAudioPlayback");
-  }
   result->set_restrict_own_audio(restrict_own_audio.value_or(false));
   if (RuntimeEnabledFeatures::RestrictOwnAudioEnabled()) {
     if (media_type == UserMediaRequestType::kDisplayMedia) {

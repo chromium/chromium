@@ -5324,17 +5324,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Media.GetDisplayMedia.Constraints.SuppressLocalAudioPlayback"
-    enum="GetDisplayMediaBooleanConstraint" expires_after="2023-05-07">
-  <owner>eladalon@chromium.org</owner>
-  <owner>fbeaufort@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    Records whether getDisplayMedia was called with the
-    suppressLocalAudioPlayback constraint.
-  </summary>
-</histogram>
-
 <histogram name="Media.GetDisplayMedia.Constraints.SystemAudio"
     enum="GetDisplayMediaIncludeExcludeConstraint" expires_after="2027-03-21">
   <owner>eladalon@chromium.org</owner>
