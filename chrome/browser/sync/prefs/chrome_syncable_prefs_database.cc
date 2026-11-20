@@ -8,7 +8,6 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "build/build_config.h"
-#include "chrome/browser/accessibility/tree_fixing/pref_names.h"
 #include "chrome/browser/desktop_to_mobile_promos/promos_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/ui/read_anything/read_anything_prefs.h"
@@ -390,7 +389,7 @@ enum {
   kOfficeMoveConfirmationShownForCloudToDriveSyncable = 100321,
   kOfficeMoveConfirmationShownForCloudToOneDriveSyncable = 100322,
   kPinnedCastMigrationComplete = 100323,
-  kAccessibilityAXTreeFixingEnabled = 100324,
+  // kAccessibilityAXTreeFixingEnabled = 100324, (deprecated)
   // kTabSearchMigrationComplete = 100325, (deprecated)
   kReadAloudPlaybackMode = 100326,
   kPinSplitTabButton = 100327,
@@ -1795,11 +1794,6 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::WriteBehavior::kWriteToBoth}},
     {prefs::kAccessibilityImageLabelsOptInAccepted,
      {syncable_prefs_ids::kAccessibilityImageLabelsOptInAccepted,
-      syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
-      sync_preferences::MergeBehavior::kNone,
-      sync_preferences::WriteBehavior::kWriteToBoth}},
-    {prefs::kAccessibilityAXTreeFixingEnabled,
-     {syncable_prefs_ids::kAccessibilityAXTreeFixingEnabled,
       syncer::PREFERENCES, sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone,
       sync_preferences::WriteBehavior::kWriteToBoth}},

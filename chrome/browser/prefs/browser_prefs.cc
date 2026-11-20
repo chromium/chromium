@@ -1229,6 +1229,12 @@ inline constexpr char
 inline constexpr char kPrivacySandboxRelatedWebsiteSetsEnabled[] =
     "privacy_sandbox.first_party_sets_enabled";
 
+#if !BUILDFLAG(IS_ANDROID)
+// Deprecated 11/2026.
+constexpr char kObsoleteAccessibilityAXTreeFixingEnabled[] =
+    "settings.a11y.enable_ax_tree_fixing";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1772,11 +1778,16 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 11/2026.
   registry->RegisterBooleanPref(kPrefsThemesSearchEnginesAccountStorageEnabled,
                                 false);
-
   // Deprecated 11/2026.
   registry->RegisterBooleanPref(
       kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized, false);
   registry->RegisterBooleanPref(kPrivacySandboxRelatedWebsiteSetsEnabled, true);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Deprecated 11/2026.
+  registry->RegisterBooleanPref(kObsoleteAccessibilityAXTreeFixingEnabled,
+                                false);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace
@@ -3278,6 +3289,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(
       kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized);
   profile_prefs->ClearPref(kPrivacySandboxRelatedWebsiteSetsEnabled);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Added 11/2026.
+  profile_prefs->ClearPref(kObsoleteAccessibilityAXTreeFixingEnabled);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

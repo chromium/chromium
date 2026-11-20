@@ -11203,12 +11203,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"enable-ax-tree-fixing", flag_descriptions::kAXTreeFixingName,
-     flag_descriptions::kAXTreeFixingDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kAXTreeFixing)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
     // The Page Colors control is only rendered in the non-ChromeOS
     // accessibility settings page.

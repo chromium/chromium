@@ -185,7 +185,6 @@ source_set("misc") {
     ]
     deps += [
       "//chrome/browser:chrome_content_browser_client",
-      "//chrome/browser/accessibility/tree_fixing:prefs",
       "//chrome/browser/ui/dialogs:browser_dialogs",
       "//chrome/browser/ui/signin",
     ]
@@ -961,7 +960,6 @@ source_set("profiles_extra_parts_impl") {
   } else {
     deps += [
       "//chrome/browser/accessibility/phrase_segmentation",
-      "//chrome/browser/accessibility/tree_fixing:service",
       "//chrome/browser/apps/app_service",
       "//chrome/browser/autofill",
       "//chrome/browser/badging",

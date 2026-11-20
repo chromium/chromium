@@ -6811,12 +6811,6 @@ inline constexpr char kAllowAllSitesToInitiateMirroringDescription[] =
     "via Presentation API. Requires #cast-media-route-provider to also be "
     "enabled";
 
-inline constexpr char kAXTreeFixingName[] = "AXTree Fixing";
-inline constexpr char kAXTreeFixingDescription[] =
-    "When enabled, allows Chrome to dynamically fix the AXTree of sites. This "
-    "is experimental and may cause breaking changes to users of assistive "
-    "technology.";
-
 inline constexpr char kBrowserInitiatedAutomaticPictureInPictureName[] =
     "Browser initiated automatic picture in picture";
 inline constexpr char kBrowserInitiatedAutomaticPictureInPictureDescription[] =

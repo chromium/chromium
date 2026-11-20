@@ -378,7 +378,6 @@
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
 #include "chrome/browser/accessibility/live_caption/live_translate_controller_factory.h"
 #include "chrome/browser/accessibility/phrase_segmentation/dependency_parser_model_loader_factory.h"
-#include "chrome/browser/accessibility/tree_fixing/ax_tree_fixing_services_router_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/badging/badge_manager_factory.h"
 #include "chrome/browser/device_api/managed_configuration_api_factory.h"
@@ -1548,7 +1547,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   TopSitesFactory::GetInstance();
   translate::TranslateRankerFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
-  tree_fixing::AXTreeFixingServicesRouterFactory::GetInstance();
   TriggeredProfileResetterFactory::GetInstance();
 #endif
   ttc::TtcKeyedServiceFactory::GetInstance();

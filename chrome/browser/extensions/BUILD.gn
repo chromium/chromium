@@ -941,7 +941,6 @@ source_set("extensions") {
       "//chrome/app/vector_icons",
       "//chrome/browser:font_pref",
       "//chrome/browser:primitives",
-      "//chrome/browser/accessibility/tree_fixing:prefs",
       "//chrome/browser/affiliations",
       "//chrome/browser/apps:user_type_filter",
       "//chrome/browser/chooser_controller",

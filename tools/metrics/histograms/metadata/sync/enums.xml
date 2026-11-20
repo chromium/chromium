@@ -774,7 +774,7 @@ chromium-metrics-reviews@google.com.
   <int value="100322"
       label="OfficeMoveConfirmationShownForCloudToOneDriveSyncable"/>
   <int value="100323" label="PinnedCastMigrationComplete"/>
-  <int value="100324" label="AccessibilityAXTreeFixingEnabled"/>
+  <int value="100324" label="(obsolete) AccessibilityAXTreeFixingEnabled"/>
   <int value="100325" label="(obsolete) TabSearchMigrationComplete"/>
   <int value="100326" label="ReadAloudPlaybackMode"/>
   <int value="100327" label="PinSplitTabButton"/>

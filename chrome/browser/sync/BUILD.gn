@@ -228,7 +228,6 @@ source_set("sync") {
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
     ]
     deps += [
-      "//chrome/browser/accessibility/tree_fixing:prefs",
       "//chrome/browser/ui:singleton_tabs",
       "//chrome/browser/ui/read_anything:prefs",
       "//chrome/browser/ui/tabs:tab_strip",
