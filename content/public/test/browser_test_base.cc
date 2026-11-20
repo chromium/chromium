@@ -638,7 +638,6 @@ void BrowserTestBase::SetUp() {
   // follows.
 
   base::MemoryPressureSource memory_pressure_source;
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry;
   BrowserMemoryCoordinatorImpl memory_coordinator;
 
   // Unlike other platforms, android_browsertests can reuse the same process for

@@ -10,8 +10,9 @@
 #include <vector>
 
 #include "base/hash/hash.h"
-#include "base/memory/memory_pressure_listener_registry.h"
+#include "base/memory/memory_pressure_level.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/memory_limit.h"
 #include "base/memory_coordinator/memory_pressure_source.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -73,7 +74,6 @@ class MemoryPressurePolicyTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_;
   base::MemoryPressureSource memory_pressure_source_;
-  base::MemoryPressureListenerRegistry registry_;
   MemoryCoordinatorPolicyManager policy_manager_;
 };
 

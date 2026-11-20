@@ -16,7 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
-#include "base/memory/memory_pressure_listener_registry.h"
+#include "base/memory/memory_pressure_level.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/memory_pressure_source.h"
@@ -1621,14 +1621,13 @@ class SoftwareTextureLayerPurgeMemoryTest : public SoftwareTextureLayerTest {
   }
 
   base::MemoryPressureSource memory_pressure_source_;
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   int step_ = 0;
   int verified_frames_ = 0;
 };
 
 // Run the single thread test only.
-// MemoryPressureListenerRegistry::DoNotifyMemoryPressure() is called in
-// this PurgeMemoryTest. Although the observation is targeted on certain
+// MemoryPressureSource::SetMemoryPressureLevel() is called in this
+// PurgeMemoryTest. Although the observation is targeted on certain
 // configurations and will be dismissed later, it triggers a "CHECK failed:
 // checker.CalledOnValidSequence(&bound_at)" first on the multithreading
 // setting.

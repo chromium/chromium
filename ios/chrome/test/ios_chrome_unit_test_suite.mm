@@ -4,7 +4,6 @@
 
 #import "ios/chrome/test/ios_chrome_unit_test_suite.h"
 
-#import "base/memory/memory_pressure_listener_registry.h"
 #import "base/memory_coordinator/memory_pressure_source.h"
 #import "base/metrics/user_metrics.h"
 #import "base/path_service.h"
@@ -42,8 +41,6 @@ class IOSChromeUnitTestSuiteInitializer
     ios::provider::Initialize();
 
     memory_pressure_source_ = std::make_unique<base::MemoryPressureSource>();
-    memory_pressure_registry_ =
-        std::make_unique<base::MemoryPressureListenerRegistry>();
 
     DCHECK(!GetApplicationContext());
     application_context_ = std::make_unique<TestingApplicationContext>();
@@ -55,15 +52,12 @@ class IOSChromeUnitTestSuiteInitializer
 
     breadcrumbs::BreadcrumbManager::GetInstance().ResetForTesting();
 
-    memory_pressure_registry_.reset();
     memory_pressure_source_.reset();
   }
 
  private:
   std::unique_ptr<ApplicationContext> application_context_;
   std::unique_ptr<base::MemoryPressureSource> memory_pressure_source_;
-  std::unique_ptr<base::MemoryPressureListenerRegistry>
-      memory_pressure_registry_;
 };
 
 }  // namespace

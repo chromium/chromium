@@ -26,7 +26,6 @@ namespace base {
 class CommandLine;
 class SequencedTaskRunner;
 #if !BUILDFLAG(USE_BLINK)
-class MemoryPressureListenerRegistry;
 class MemoryPressureSource;
 #endif
 }  // namespace base
@@ -215,9 +214,6 @@ class ApplicationContextImpl : public ApplicationContext {
 
 #if !BUILDFLAG(USE_BLINK)
   std::unique_ptr<base::MemoryPressureSource> memory_pressure_source_;
-  // Must be created immediately after `memory_pressure_source_`.
-  std::unique_ptr<base::MemoryPressureListenerRegistry>
-      memory_pressure_listener_registry_;
 #endif
 
   std::unique_ptr<OmahaService> omaha_service_;

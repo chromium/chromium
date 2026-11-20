@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/memory_consumer_registry.h"
 #include "base/memory_coordinator/memory_pressure_source.h"
@@ -60,14 +59,6 @@ class ContentMainRunnerImpl : public ContentMainRunner {
 
   // The MemoryPressureSource instantiated in the browser process.
   std::optional<base::MemoryPressureSource> memory_pressure_source_;
-
-  // The MemoryPressureListenerRegistry instantiated in the browser process.
-  // Must be created immediately after `memory_pressure_source_`.
-  // TODO(406578344): Remove `memory_pressure_listener_registry_` when the
-  // base::MemoryPressureListener API is deleted in favor of
-  // base::MemoryConsumer.
-  std::optional<base::MemoryPressureListenerRegistry>
-      memory_pressure_listener_registry_;
 
   std::unique_ptr<BrowserMemoryCoordinatorImpl> browser_memory_coordinator_;
 

@@ -781,11 +781,6 @@ NO_STACK_PROTECTOR int RunOtherNamedProcessTypeMain(
   });
 
   base::MemoryPressureSource memory_pressure_source;
-  // TODO(406578344): Remove `memory_pressure_listener_registry` when the
-  // base::MemoryPressureListener API is deleted in favor of
-  // base::MemoryConsumer. Must be created immediately after
-  // `memory_pressure_source`.
-  base::MemoryPressureListenerRegistry memory_pressure_listener_registry;
   // Create the memory coordinator as early as possible to support
   // MemoryConsumers that register very early in the process lifetime.
   ChildMemoryCoordinator child_memory_coordinator;
@@ -1300,7 +1295,6 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
     }
 
     memory_pressure_source_.emplace();
-    memory_pressure_listener_registry_.emplace();
     browser_memory_coordinator_ =
         std::make_unique<BrowserMemoryCoordinatorImpl>();
 
