@@ -317,7 +317,7 @@ suite('manager tests', function() {
   test(
       'shouldShowEsbPromotion returns true on first dangerous download',
       async () => {
-        document.body.removeChild(manager);
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
         loadTimeData.overrideValues({esbDownloadRowPromo: true});
         handler.setEligbleForEsbPromo(true);
         manager = document.createElement('downloads-manager');
@@ -338,7 +338,7 @@ suite('manager tests', function() {
   test(
       'shouldShowEsbPromotion returns true on most recent dangerous download',
       async () => {
-        document.body.removeChild(manager);
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
         loadTimeData.overrideValues({esbDownloadRowPromo: true});
         handler.setEligbleForEsbPromo(true);
         manager = document.createElement('downloads-manager');
@@ -368,7 +368,7 @@ suite('manager tests', function() {
   test(
       'calls logsEsbPromotionRowViewed when promo row is in first 5 downloads',
       async () => {
-        document.body.removeChild(manager);
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
         loadTimeData.overrideValues({esbDownloadRowPromo: true});
         handler.setEligbleForEsbPromo(true);
         manager = document.createElement('downloads-manager');
