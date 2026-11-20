@@ -99,8 +99,7 @@ class CC_EXPORT EventsMetricsManager {
       const std::vector<ElementId>& applied_scroll_observation_element_ids);
 
   // Stack of active, potentially nested, scoped monitors.
-  std::vector<raw_ptr<ScopedMonitorImpl, VectorExperimental>>
-      active_scoped_monitors_;
+  std::vector<raw_ptr<ScopedMonitorImpl>> active_scoped_monitors_;
 
   // List of event metrics saved for reporting.
   EventMetrics::List saved_events_;

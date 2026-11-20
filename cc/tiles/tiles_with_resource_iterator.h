@@ -70,7 +70,7 @@ class CC_EXPORT TilesWithResourceIterator {
 
   // Set of tiles that have been visited. Used to ensure the same tile isn't
   // visited more than once.
-  std::set<raw_ptr<Tile, SetExperimental>> visited_;
+  std::set<raw_ptr<Tile>> visited_;
 };
 
 }  // namespace cc

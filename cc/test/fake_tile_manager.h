@@ -26,7 +26,7 @@ class FakeTileManager : public TileManager {
   void AssignMemoryToTiles(
       const GlobalStateThatImpactsTilePriority& state);
 
-  std::vector<raw_ptr<Tile, VectorExperimental>> tiles_for_raster;
+  std::vector<raw_ptr<Tile>> tiles_for_raster;
 
  private:
   SoftwareImageDecodeCache image_decode_cache_;

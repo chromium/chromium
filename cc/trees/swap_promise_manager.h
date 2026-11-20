@@ -54,7 +54,7 @@ class CC_EXPORT SwapPromiseManager {
 
  private:
   std::vector<std::unique_ptr<SwapPromise>> swap_promise_list_;
-  std::set<raw_ptr<LatencyInfoSwapPromiseMonitor, SetExperimental>>
+  std::set<raw_ptr<LatencyInfoSwapPromiseMonitor>>
       latency_info_swap_promise_monitors_;
 };
 

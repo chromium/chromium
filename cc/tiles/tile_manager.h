@@ -405,7 +405,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
   bool use_gpu_rasterization_;
   raw_ptr<RasterQueryQueue> pending_raster_queries_ = nullptr;
 
-  absl::flat_hash_map<Tile::Id, raw_ptr<Tile, CtnExperimental>> tiles_;
+  absl::flat_hash_map<Tile::Id, raw_ptr<Tile>> tiles_;
 
   bool all_tiles_that_need_to_be_rasterized_are_scheduled_;
   MemoryHistory::Entry memory_stats_from_last_assign_;
@@ -432,7 +432,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
   uint64_t prepare_tiles_count_;
   uint64_t next_tile_id_;
 
-  absl::flat_hash_set<raw_ptr<Tile, CtnExperimental>> pending_gpu_work_tiles_;
+  absl::flat_hash_set<raw_ptr<Tile>> pending_gpu_work_tiles_;
   uint64_t pending_required_for_activation_callback_id_ = 0;
   uint64_t pending_required_for_draw_callback_id_ = 0;
   // If true, we should re-compute tile requirements in

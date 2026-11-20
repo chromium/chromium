@@ -1190,8 +1190,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostDelegate {
 
   scoped_refptr<HeadsUpDisplayLayer> hud_layer_;
 
-  absl::flat_hash_map<ElementId, raw_ptr<Layer, CtnExperimental>>
-      element_layers_map_;
+  absl::flat_hash_map<ElementId, raw_ptr<Layer>> element_layers_map_;
 
   bool in_paint_layer_contents_ = false;
 

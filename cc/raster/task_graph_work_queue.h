@@ -54,7 +54,7 @@ class CC_EXPORT TaskGraphWorkQueue {
 
   // Helper classes and static methods used by dependent classes.
   struct TaskNamespace {
-    using Vector = std::vector<raw_ptr<TaskNamespace, VectorExperimental>>;
+    using Vector = std::vector<raw_ptr<TaskNamespace>>;
     using ReadyTasks = std::map<uint16_t, PrioritizedTask::Vector>;
 
     TaskNamespace();

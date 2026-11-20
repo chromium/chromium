@@ -1209,8 +1209,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   std::unique_ptr<MutatorHost> mutator_host_;
   std::unique_ptr<MutatorEvents> mutator_events_;
-  std::set<raw_ptr<VideoFrameController, SetExperimental>>
-      video_frame_controllers_;
+  std::set<raw_ptr<VideoFrameController>> video_frame_controllers_;
   const raw_ptr<RasterDarkModeFilter> dark_mode_filter_;
 
   // Map from scroll element ID to scrollbar animation controller.
@@ -1234,7 +1233,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   raw_ptr<TaskGraphRunner> task_graph_runner_;
   int id_;
 
-  std::set<raw_ptr<LatencyInfoSwapPromiseMonitor, SetExperimental>>
+  std::set<raw_ptr<LatencyInfoSwapPromiseMonitor>>
       latency_info_swap_promise_monitor_;
 
   bool requires_high_res_to_draw_ = false;
