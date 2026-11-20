@@ -74,23 +74,11 @@ class VideoCaptureClientTest : public ::testing::Test,
   MOCK_METHOD2(OnFrameReceived,
                void(const gfx::Size&, media::VideoPixelFormat));
   void OnFrameReady(scoped_refptr<media::VideoFrame> video_frame) {
-    last_frame_timestamp_ = video_frame->timestamp();
     client_->ProcessFeedback(kFeedback);
     OnFrameReceived(video_frame->coded_size(), video_frame->format());
   }
 
  protected:
-  VideoCaptureClient* client() { return client_.get(); }
-  FakeVideoCaptureHost* host_impl() { return host_impl_.get(); }
-  base::TimeDelta last_frame_timestamp() const { return last_frame_timestamp_; }
-  void ResetClientAndHost() {
-    client_.reset();
-    if (host_impl_) {
-      EXPECT_CALL(*host_impl_, OnStopped()).Times(::testing::AnyNumber());
-      host_impl_.reset();
-    }
-  }
-
   void StartCapturing() {
     EXPECT_CALL(error_cb_, Run()).Times(0);
     base::RunLoop run_loop;
@@ -143,7 +131,6 @@ class VideoCaptureClientTest : public ::testing::Test,
   base::MockCallback<base::OnceClosure> error_cb_;
   std::unique_ptr<FakeVideoCaptureHost> host_impl_;
   std::unique_ptr<VideoCaptureClient> client_;
-  base::TimeDelta last_frame_timestamp_;
 };
 
 TEST_P(VideoCaptureClientTest, Basic) {
@@ -186,100 +173,6 @@ TEST_P(VideoCaptureClientTest, NV12) {
     OnBufferReady(0, frame_size, media::PIXEL_FORMAT_NV12,
                   media::PIXEL_FORMAT_NV12);
   }
-}
-
-TEST_P(VideoCaptureClientTest, RestartWithParamsPreservesMonotonicTimestamps) {
-  StartCapturing();
-
-  OnNewBuffer(0, 100000);
-  OnBufferReady(0, gfx::Size(128, 64));
-  const base::TimeDelta first_timestamp = last_frame_timestamp();
-
-  media::VideoCaptureParams new_params;
-  new_params.requested_format = media::VideoCaptureFormat(
-      gfx::Size(128, 64), 30.0f, media::PIXEL_FORMAT_I420);
-
-  base::RunLoop restart_loop;
-  EXPECT_CALL(*host_impl(), OnStopped());
-  EXPECT_CALL(*host_impl(), RequestRefreshFrame(_))
-      .WillOnce(InvokeWithoutArgs(&restart_loop, &base::RunLoop::Quit));
-  client()->RestartWithParams(
-      new_params, base::BindRepeating(&VideoCaptureClientTest::OnFrameReady,
-                                      base::Unretained(this)));
-  EXPECT_FALSE(client()->CanResume());
-  restart_loop.Run();
-
-  EXPECT_TRUE(client()->CanResume());
-  EXPECT_EQ(client()->params(), new_params);
-  EXPECT_EQ(host_impl()->GetVideoCaptureParams(), new_params);
-
-  // Even when the restarted capturer resets timestamps to zero, the delivered
-  // frame timestamp must strictly advance past the previous frame.
-  OnNewBuffer(0, 100000);
-  OnBufferReady(0, gfx::Size(128, 64));
-  EXPECT_GT(last_frame_timestamp(), first_timestamp);
-}
-
-TEST_P(VideoCaptureClientTest,
-       SwitchVideoCaptureHostWhilePausedDoesNotCrashOnEnded) {
-  StartCapturing();
-
-  base::RunLoop pause_loop;
-  EXPECT_CALL(*host_impl(), OnPaused())
-      .WillOnce(InvokeWithoutArgs(&pause_loop, &base::RunLoop::Quit));
-  client()->Pause();
-  pause_loop.Run();
-
-  mojo::PendingRemote<media::mojom::VideoCaptureHost> second_host;
-  FakeVideoCaptureHost second_host_impl(
-      second_host.InitWithNewPipeAndPassReceiver());
-  base::MockOnceClosure on_second_started;
-  EXPECT_CALL(on_second_started, Run()).Times(0);
-  second_host_impl.set_on_started_callback(on_second_started.Get());
-  EXPECT_CALL(second_host_impl, OnPaused()).Times(0);
-  EXPECT_CALL(second_host_impl, OnResumed()).Times(0);
-
-  client()->SwitchVideoCaptureHost(std::move(second_host));
-  EXPECT_FALSE(client()->CanResume());
-
-  // The old host ending while capture is paused must not call Start() with a
-  // null callback on the new host.
-  client()->OnStateChanged(media::mojom::VideoCaptureResult::NewState(
-      media::mojom::VideoCaptureState::ENDED));
-  EXPECT_FALSE(client()->CanResume());
-  second_host_impl.FlushForTesting();
-
-  ResetClientAndHost();
-}
-
-TEST_P(VideoCaptureClientTest,
-       PauseDuringSwitchVideoCaptureHostDoesNotAllowResumeOnUnstartedHost) {
-  StartCapturing();
-
-  mojo::PendingRemote<media::mojom::VideoCaptureHost> second_host;
-  FakeVideoCaptureHost second_host_impl(
-      second_host.InitWithNewPipeAndPassReceiver());
-  base::MockOnceClosure on_second_started;
-  EXPECT_CALL(on_second_started, Run()).Times(0);
-  second_host_impl.set_on_started_callback(on_second_started.Get());
-  EXPECT_CALL(second_host_impl, OnPaused()).Times(0);
-  EXPECT_CALL(second_host_impl, OnResumed()).Times(0);
-
-  client()->SwitchVideoCaptureHost(std::move(second_host));
-  client()->Pause();
-  EXPECT_FALSE(client()->CanResume());
-
-  // Resume() must remain a no-op because the new host has not been started yet.
-  client()->Resume(base::BindRepeating(&VideoCaptureClientTest::OnFrameReady,
-                                       base::Unretained(this)));
-  second_host_impl.FlushForTesting();
-
-  client()->OnStateChanged(media::mojom::VideoCaptureResult::NewState(
-      media::mojom::VideoCaptureState::ENDED));
-  EXPECT_FALSE(client()->CanResume());
-  second_host_impl.FlushForTesting();
-
-  ResetClientAndHost();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

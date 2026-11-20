@@ -320,10 +320,7 @@ class OpenscreenSessionHostTest : public mojom::ResourceProvider,
     ASSERT_TRUE(last_sent_offer_);
 
     const Offer& offer = std::get<Offer>(last_sent_offer_->body);
-    openscreen::cast::Answer answer =
-        answer_ ? *answer_ : openscreen::cast::Answer{.udp_port = 1234};
-    answer.send_indexes.clear();
-    answer.ssrcs.clear();
+    openscreen::cast::Answer answer{.udp_port = 1234};
 
     if (!offer.audio_streams.empty()) {
       answer.send_indexes.push_back(offer.audio_streams[0].stream.index);
@@ -972,7 +969,7 @@ TEST_F(OpenscreenSessionHostTest, AnswerWithConstraints) {
   SetAnswer(std::make_unique<openscreen::cast::Answer>(kAnswerWithConstraints));
   media::VideoCaptureParams::SuggestedConstraints expected_constraints = {
       .min_frame_size = gfx::Size(320, 180),
-      .max_frame_size = gfx::Size(1280, 720),
+      .max_frame_size = gfx::Size(1920, 1080),
       .fixed_aspect_ratio = true};
   CreateSession(SessionType::AUDIO_AND_VIDEO);
   StartSession();
@@ -987,7 +984,7 @@ TEST_F(OpenscreenSessionHostTest, AnswerWithConstraintsLetterboxForced) {
   SetAnswer(std::make_unique<openscreen::cast::Answer>(kAnswerWithConstraints));
   media::VideoCaptureParams::SuggestedConstraints expected_constraints = {
       .min_frame_size = gfx::Size(320, 180),
-      .max_frame_size = gfx::Size(1280, 720),
+      .max_frame_size = gfx::Size(1920, 1080),
       .fixed_aspect_ratio = true};
   CreateSession(SessionType::AUDIO_AND_VIDEO);
   StartSession();
@@ -2084,174 +2081,6 @@ TEST_F(OpenscreenSessionHostTest, RemotingNegotiationMismatchedCodec) {
       openscreen::cast::capture_recommendations::Recommendations{});
   task_environment_.RunUntilIdle();
 
-  StopSession();
-}
-
-TEST_F(OpenscreenSessionHostTest,
-       OffersHardwareH264At60FpsWhenProfileReports30Fps) {
-  std::vector<base::test::FeatureRef> enabled_features = {
-      features::kCastStreaming60fps,
-  };
-#if BUILDFLAG(IS_MAC)
-  enabled_features.push_back(media::kCastStreamingMacHardwareH264);
-#elif BUILDFLAG(IS_WIN)
-  enabled_features.push_back(media::kCastStreamingWinHardwareH264);
-#endif
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      enabled_features, {media::kCastStreamingVp8, media::kCastStreamingVp9,
-                         media::kCastStreamingAv1});
-
-  CreateSession(SessionType::AUDIO_AND_VIDEO);
-
-  // VA-API, V4L2, and D3D12 report 30 FPS as a placeholder. Hardware H.264
-  // must still be offered at 60 FPS rather than producing an audio-only offer.
-  SetSupportedProfiles({media::VideoEncodeAccelerator::SupportedProfile(
-      media::VideoCodecProfile::H264PROFILE_MAIN, gfx::Size{1920, 1080},
-      /*max_framerate_numerator=*/30, /*max_framerate_denominator=*/1)});
-
-  base::RunLoop run_loop;
-  EXPECT_CALL(*this, OnOutboundMessage(SenderMessage::Type::kOffer))
-      .WillOnce(InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
-  NegotiateMirroring();
-  run_loop.Run();
-
-  AssertCodecWasOffered(media::VideoCodec::kH264,
-                        /*use_hardware_encoder=*/true);
-
-  const auto& offer = std::get<Offer>(last_sent_offer().body);
-  ASSERT_EQ(offer.video_streams.size(), 1u);
-  const auto& stream = offer.video_streams[0];
-  EXPECT_EQ(stream.max_frame_rate, (openscreen::SimpleFraction{60, 1}));
-#if BUILDFLAG(IS_MAC)
-  EXPECT_EQ(stream.stream.codec_parameter,
-            base::FeatureList::IsEnabled(media::kCastMacForceBaselineProfile)
-                ? "avc1.42002a"
-                : "avc1.4d002a");
-#else
-  EXPECT_EQ(stream.stream.codec_parameter, "avc1.4d002a");
-#endif
-  StopSession();
-}
-
-TEST_F(OpenscreenSessionHostTest,
-       FallsBackTo30FpsHardwareBeforeDenylistingCodec) {
-  base::HistogramTester histogram_tester;
-  std::vector<base::test::FeatureRef> enabled_features = {
-      features::kCastStreaming60fps,
-      media::kCastStreamingVp8,
-  };
-#if BUILDFLAG(IS_MAC)
-  enabled_features.push_back(media::kCastStreamingMacHardwareH264);
-#elif BUILDFLAG(IS_WIN)
-  enabled_features.push_back(media::kCastStreamingWinHardwareH264);
-#endif
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(enabled_features, {});
-
-  openscreen::cast::Answer answer_1080p60 = kAnswerWithConstraints;
-  answer_1080p60.display = openscreen::cast::DisplayDescription{
-      openscreen::cast::Dimensions{1920, 1080, {60, 1}},
-      openscreen::cast::AspectRatio{16, 9},
-      openscreen::cast::AspectRatioConstraint::kFixed,
-  };
-  SetAnswer(std::make_unique<openscreen::cast::Answer>(answer_1080p60));
-  CreateSession(SessionType::AUDIO_AND_VIDEO);
-
-  SetSupportedProfiles({media::VideoEncodeAccelerator::SupportedProfile(
-      media::VideoCodecProfile::H264PROFILE_MAIN, gfx::Size{1920, 1080},
-      /*max_framerate_numerator=*/30, /*max_framerate_denominator=*/1)});
-
-  base::RunLoop initial_offer_loop;
-  EXPECT_CALL(*this, OnOutboundMessage(SenderMessage::Type::kOffer))
-      .WillOnce(InvokeWithoutArgs(&initial_offer_loop, &base::RunLoop::Quit));
-  NegotiateMirroring();
-  initial_offer_loop.Run();
-  AssertCodecWasOffered(media::VideoCodec::kH264,
-                        /*use_hardware_encoder=*/true);
-  StartSession();
-
-  EXPECT_EQ(mirror_settings()->max_frame_rate(), 60.0);
-  ASSERT_TRUE(video_host_);
-  EXPECT_EQ(video_host_->GetVideoCaptureParams().requested_format.frame_rate,
-            60.0f);
-
-  // First hardware failure at 60 FPS must lower to 30 FPS hardware in-place
-  // without sending a new OFFER or restarting audio capture.
-  FrameSenderConfig hw_60fps_config;
-  hw_60fps_config.use_hardware_encoder = true;
-  hw_60fps_config.max_frame_rate = 60.0;
-  hw_60fps_config.video_codec_params =
-      media::cast::VideoCodecParams{media::VideoCodec::kH264};
-
-  base::RunLoop capture_restart_loop;
-  EXPECT_CALL(*this, OnOutboundMessage(SenderMessage::Type::kOffer)).Times(0);
-  EXPECT_CALL(*this, OnGetVideoCaptureHost()).Times(0);
-  EXPECT_CALL(*this, OnCreateAudioStream()).Times(0);
-  EXPECT_CALL(*video_host_, OnStopped());
-  video_host_->set_on_started_callback(capture_restart_loop.QuitClosure());
-  PushVideoEncoderStatus(
-      hw_60fps_config,
-      media::cast::OperationalStatus::STATUS_CODEC_INIT_FAILED);
-  capture_restart_loop.Run();
-  Mock::VerifyAndClearExpectations(this);
-  Mock::VerifyAndClearExpectations(video_host_.get());
-
-  EXPECT_FALSE(media::cast::encoding_support::IsHardwareDenyListed(
-      media::VideoCodec::kH264));
-  EXPECT_EQ(mirror_settings()->max_frame_rate(), 60.0);
-  EXPECT_EQ(video_host_->GetVideoCaptureParams().requested_format.frame_rate,
-            30.0f);
-  EXPECT_CALL(*video_host_, OnPaused());
-  EXPECT_CALL(*video_host_, OnResumed());
-  PauseCapturingVideo();
-  EXPECT_TRUE(TryResumeCapturingVideo());
-  video_host_->FlushForTesting();
-  Mock::VerifyAndClearExpectations(video_host_.get());
-  histogram_tester.ExpectUniqueSample(
-      "MediaRouter.MirroringService.LoweredHardwareFrameRate",
-      media::VideoCodec::kH264, 1);
-  histogram_tester.ExpectTotalCount(
-      "MediaRouter.MirroringService.DisabledHardwareCodecAndRenegotiated", 0);
-
-  // A subsequent hardware failure (still carrying the original bound 60 FPS
-  // config from OnNegotiated) must see the video sender is already at 30 FPS,
-  // denylist H.264, and renegotiate software codecs at 60 FPS.
-  base::RunLoop denylist_loop;
-  EXPECT_CALL(*this, OnOutboundMessage(SenderMessage::Type::kOffer))
-      .WillOnce(InvokeWithoutArgs(&denylist_loop, &base::RunLoop::Quit));
-  PushVideoEncoderStatus(
-      hw_60fps_config,
-      media::cast::OperationalStatus::STATUS_CODEC_INIT_FAILED);
-  denylist_loop.Run();
-
-  EXPECT_TRUE(media::cast::encoding_support::IsHardwareDenyListed(
-      media::VideoCodec::kH264));
-  histogram_tester.ExpectUniqueSample(
-      "MediaRouter.MirroringService.LoweredHardwareFrameRate",
-      media::VideoCodec::kH264, 1);
-  histogram_tester.ExpectUniqueSample(
-      "MediaRouter.MirroringService.DisabledHardwareCodecAndRenegotiated",
-      media::VideoCodec::kH264, 1);
-  AssertCodecWasNotOffered(media::VideoCodec::kH264);
-  AssertCodecWasOffered(media::VideoCodec::kVP8,
-                        /*use_hardware_encoder=*/false);
-  const auto& fallback_offer = std::get<Offer>(last_sent_offer().body);
-  ASSERT_FALSE(fallback_offer.video_streams.empty());
-  for (const auto& stream : fallback_offer.video_streams) {
-    EXPECT_EQ(stream.max_frame_rate, (openscreen::SimpleFraction{60, 1}));
-  }
-
-  base::RunLoop fallback_capture_loop;
-  EXPECT_CALL(*this, OnGetVideoCaptureHost())
-      .WillOnce([this, &fallback_capture_loop]() {
-        video_host_->set_on_started_callback(
-            fallback_capture_loop.QuitClosure());
-      });
-  GenerateAndReplyWithAnswer();
-  fallback_capture_loop.Run();
-  EXPECT_EQ(video_host_->GetVideoCaptureParams().requested_format.frame_rate,
-            60.0f);
   StopSession();
 }
 

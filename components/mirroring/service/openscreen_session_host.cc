@@ -1076,14 +1076,10 @@ void OpenscreenSessionHost::OnVideoEncoderStatus(
     }
 
     default:
-      // If we used a hardware encoder and it failed, try falling back to the
-      // default 30 FPS before denylisting the codec. Hardware encoding at
-      // 30 FPS is preferred over falling back to software at 60 FPS.
+      // If we used a hardware encoder and it failed, denylist it for the rest
+      // of the browsing session and try renegotiating.
       if (config.use_hardware_encoder) {
         CHECK_EQ(state_, State::kMirroring);
-        if (MaybeFallbackHardwareFrameRate(config, status)) {
-          return;
-        }
         MaybeDenylistHardwareCodecAndRenegotiate(config.video_codec());
         return;
       }
@@ -1372,7 +1368,7 @@ void OpenscreenSessionHost::NegotiateMirroring() {
       double frame_rate = config.max_frame_rate;
 
       if (media::cast::encoding_support::IsHardwareEnabled(
-              codec, supported_profiles_, resolution)) {
+              codec, supported_profiles_, resolution, frame_rate)) {
         config.use_hardware_encoder = true;
         config.video_codec_params.value().codec_parameter =
             media::cast::encoding_support::GetCodecParameterString(
@@ -1395,7 +1391,7 @@ void OpenscreenSessionHost::NegotiateMirroring() {
         double frame_rate = config.max_frame_rate;
 
         if (!media::cast::encoding_support::IsHardwareEnabled(
-                codec, supported_profiles_, resolution) &&
+                codec, supported_profiles_, resolution, frame_rate) &&
             media::cast::encoding_support::IsSoftwareEnabled(codec)) {
           config.video_codec_params.value().codec_parameter =
               media::cast::encoding_support::GetCodecParameterString(
@@ -1530,27 +1526,13 @@ void OpenscreenSessionHost::StopCapturingAudio() {
   audio_capturing_callback_.reset();
 }
 
-media::VideoCaptureParams OpenscreenSessionHost::GetVideoCaptureParams() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  media::VideoCaptureParams capture_params =
-      mirror_settings_.GetVideoCaptureParams();
-  if (video_sender_) {
-    const double sender_max_frame_rate = video_sender_->GetMaxFrameRate();
-    if (sender_max_frame_rate > 0.0) {
-      capture_params.requested_format.frame_rate =
-          std::min(capture_params.requested_format.frame_rate,
-                   static_cast<float>(sender_max_frame_rate));
-    }
-  }
-  return capture_params;
-}
-
 void OpenscreenSessionHost::StartCapturingVideo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   mojo::PendingRemote<media::mojom::VideoCaptureHost> video_host;
   resource_provider_->GetVideoCaptureHost(
       video_host.InitWithNewPipeAndPassReceiver());
-  const media::VideoCaptureParams capture_params = GetVideoCaptureParams();
+  const media::VideoCaptureParams& capture_params =
+      mirror_settings_.GetVideoCaptureParams();
   video_capture_client_ = std::make_unique<VideoCaptureClient>(
       capture_params, std::move(video_host));
   logger_.LogInfo(base::StrCat(
@@ -1574,14 +1556,14 @@ void OpenscreenSessionHost::PauseCapturingVideo() {
 
 bool OpenscreenSessionHost::TryResumeCapturingVideo() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!video_capture_client_ || !video_sender_ ||
-      !video_capture_client_->CanResume()) {
+  if (!video_capture_client_ || !video_sender_) {
     return false;
   }
 
   // We may be able to reuse the existing client if it has the exact same
   // capture params.
-  const media::VideoCaptureParams capture_params = GetVideoCaptureParams();
+  const media::VideoCaptureParams& capture_params =
+      mirror_settings_.GetVideoCaptureParams();
   if (video_capture_client_->params() == capture_params) {
     logger_.LogInfo(
         base::StrCat({"Reusing existing VideoCaptureHost with params ",
@@ -1628,38 +1610,6 @@ void OpenscreenSessionHost::SetSenderStatsForTest(
     const openscreen::cast::SenderStats& test_stats) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   stats_client_->OnStatisticsUpdated(test_stats);
-}
-
-bool OpenscreenSessionHost::MaybeFallbackHardwareFrameRate(
-    const FrameSenderConfig& config,
-    OperationalStatus status) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  constexpr double kDefaultMaxFrameRate =
-      static_cast<double>(media::cast::kDefaultMaxFrameRate);
-  if (!video_sender_ ||
-      video_sender_->GetMaxFrameRate() <= kDefaultMaxFrameRate) {
-    return false;
-  }
-
-  const char* error_message = AsErrorMessage(status);
-  CHECK(error_message);
-  logger_.LogInfo(base::StringPrintf(
-      "Hardware %s encoder failed at %.0f FPS (%s). Lowering to %d FPS "
-      "hardware encoding in-place.",
-      media::GetCodecName(config.video_codec()).c_str(),
-      video_sender_->GetMaxFrameRate(), error_message,
-      static_cast<int>(media::cast::kDefaultMaxFrameRate)));
-  video_sender_->SetMaxFrameRate(kDefaultMaxFrameRate);
-  if (video_capture_client_) {
-    video_capture_client_->RestartWithParams(
-        GetVideoCaptureParams(),
-        base::BindRepeating(&OpenscreenSessionHost::InsertVideoFrame,
-                            weak_factory_.GetWeakPtr()));
-  }
-  base::UmaHistogramEnumeration(
-      "MediaRouter.MirroringService.LoweredHardwareFrameRate",
-      config.video_codec());
-  return true;
 }
 
 void OpenscreenSessionHost::MaybeDenylistHardwareCodecAndRenegotiate(

@@ -48,7 +48,6 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
                         base::TimeTicks reference_time,
                         FrameEncodedCallback frame_encoded_callback) final;
   void SetBitRate(uint32_t new_bit_rate) final;
-  void SetMaxFrameRate(double max_frame_rate) final;
   void GenerateKeyFrame() final;
 
   // media::VideoEncoder callbacks.
@@ -202,7 +201,7 @@ class MediaVideoEncoderWrapper final : public media::cast::VideoEncoder {
   // The target frame duration, used for calculating encoder utilization. This
   // is based on the maximum frame rate that the encoder is expected to encode
   // at, instead of the video frame metadata.
-  base::TimeDelta target_frame_duration_;
+  const base::TimeDelta target_frame_duration_;
 
   // Last recorded encoder status. Used to ensure we do not call
   // `status_change_cb_` repeatedly with the same value, since the

@@ -208,13 +208,6 @@ MediaVideoEncoderWrapper::MediaVideoEncoderWrapper(
   encode_options_.key_frame = true;
   options_.bitrate = Bitrate::ConstantBitrate(
       base::checked_cast<uint32_t>(video_config.start_bitrate));
-  // Hardware encoders rely on `options_.framerate` for level selection and
-  // rate control (otherwise VideoEncodeAcceleratorAdapter defaults to 30 FPS).
-  // Leave it unset for software encoders so VpxVideoEncoder continues using
-  // per-frame durations for variable-frame-rate capture.
-  if (is_hardware_encoder_) {
-    options_.framerate = video_config.max_frame_rate;
-  }
 
   // Mirroring captures tabs, windows, and screens, so tune the encoder for
   // screen content. This enables screen content tuning in software encoders
@@ -376,34 +369,6 @@ void MediaVideoEncoderWrapper::SetBitRate(uint32_t new_bit_rate) {
         &CallChangeOptions, std::ref(*encoder_), options_,
         CreateCallback(&MediaVideoEncoderWrapper::OnEncoderStatus,
                        encoder_version_)));
-  }
-}
-
-void MediaVideoEncoderWrapper::SetMaxFrameRate(double max_frame_rate) {
-  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
-  CHECK_GT(max_frame_rate, 0.0);
-
-  target_frame_duration_ = base::Seconds(1) / max_frame_rate;
-  if (!is_hardware_encoder_ || options_.framerate == max_frame_rate) {
-    return;
-  }
-
-  options_.framerate = max_frame_rate;
-  encode_options_.key_frame = true;
-
-  if (resize_debounce_timer_.IsRunning()) {
-    resize_debounce_timer_.Stop();
-    if (target_resize_size_) {
-      options_.frame_size = *target_resize_size_;
-      target_resize_size_.reset();
-    }
-  }
-
-  // If the encoder has already been constructed for a known frame size,
-  // reconstruct it immediately at the new frame rate. Otherwise the first
-  // frame will construct it with the updated `options_.framerate`.
-  if (!options_.frame_size.IsEmpty()) {
-    ConstructEncoder();
   }
 }
 
@@ -602,7 +567,6 @@ void MediaVideoEncoderWrapper::ConstructEncoder() {
   CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
   encoder_version_++;
   encoder_reports_qp_ = false;
-  last_recorded_status_.reset();
 
   // Calls queued for the old encoder must not run, since they reference it.
   // The new encoder is initialized with the current `options_`, and frames

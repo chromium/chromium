@@ -35,7 +35,6 @@
 #include "components/openscreen_platform/task_runner.h"
 #include "gpu/config/gpu_info.h"
 #include "media/capture/video/video_capture_feedback.h"
-#include "media/capture/video_capture_types.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/constants.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
@@ -258,11 +257,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   void StartCapturingAudio();
   void StopCapturingAudio();
 
-  // Returns video capture parameters from `mirror_settings_`, capped to the
-  // active `video_sender_` max frame rate (e.g. after an in-place hardware
-  // frame rate fallback).
-  media::VideoCaptureParams GetVideoCaptureParams() const;
-
   // Manage video capture. Note that while pause and resume are supported,
   // stopping video capture is accomplished by destroying the
   // `video_capture_client_` instance.
@@ -275,14 +269,6 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
 
   // Called to provide Open Screen with access to this host's network proxy.
   network::mojom::SocketFactory* GetSocketFactory();
-
-  // If a hardware encoder fails above the default 30 FPS, lowers the active
-  // video sender, video encoder, and video capture to 30 FPS in-place without
-  // renegotiating or capping `mirror_settings_` for subsequent codecs.
-  // Returns true if fallback occurred.
-  bool MaybeFallbackHardwareFrameRate(
-      const media::cast::FrameSenderConfig& config,
-      media::cast::OperationalStatus status);
 
   // Called to disable the given hardware codec for the remainder of the
   // session, if it has not already been disabled.

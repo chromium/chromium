@@ -56,11 +56,7 @@ void VideoCaptureClient::Start(FrameDeliverCallback deliver_callback,
                                base::OnceClosure error_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << __func__;
-  CHECK(!deliver_callback.is_null());
-  stop_requested_ = false;
-  switching_video_capture_host_ = false;
-  restarting_with_params_ = false;
-  pending_deliver_callback_.Reset();
+  DCHECK(!deliver_callback.is_null());
   frame_deliver_callback_ = std::move(deliver_callback);
   error_callback_ = std::move(error_callback);
 
@@ -71,29 +67,24 @@ void VideoCaptureClient::Start(FrameDeliverCallback deliver_callback,
 void VideoCaptureClient::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << __func__;
-  stop_requested_ = true;
   video_capture_host_->Stop(DeviceId());
 }
 
 void VideoCaptureClient::Pause() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << __func__;
-  pending_deliver_callback_.Reset();
-  restarting_with_params_ = false;
   if (frame_deliver_callback_.is_null()) {
     return;
   }
   frame_deliver_callback_.Reset();
-  if (!switching_video_capture_host_) {
-    video_capture_host_->Pause(DeviceId());
-  }
+  video_capture_host_->Pause(DeviceId());
 }
 
 void VideoCaptureClient::Resume(FrameDeliverCallback deliver_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(2) << __func__;
-  CHECK(!deliver_callback.is_null());
-  if (!frame_deliver_callback_.is_null() || !CanResume()) {
+  DCHECK(!deliver_callback.is_null());
+  if (!frame_deliver_callback_.is_null()) {
     return;
   }
   frame_deliver_callback_ = std::move(deliver_callback);
@@ -115,38 +106,7 @@ void VideoCaptureClient::SwitchVideoCaptureHost(
   switching_video_capture_host_ = true;
   video_capture_host_.reset();
   video_capture_host_.Bind(std::move(host));
-  CHECK(video_capture_host_);
-}
-
-void VideoCaptureClient::RestartWithParams(
-    const media::VideoCaptureParams& params,
-    FrameDeliverCallback deliver_callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(!deliver_callback.is_null());
-  if (params_ == params) {
-    return;
-  }
-  params_ = params;
-  // Drop any in-flight frames captured with the old params until the host
-  // confirms it has stopped and restarts with `params_`.
-  frame_deliver_callback_.Reset();
-  pending_deliver_callback_ = std::move(deliver_callback);
-  if (receiver_.is_bound()) {
-    restarting_with_params_ = true;
-    if (!switching_video_capture_host_ && !stop_requested_) {
-      Stop();
-    }
-  } else {
-    first_frame_ref_time_ = base::TimeTicks();
-    accumulated_time_ = last_timestamp_ + base::Milliseconds(1);
-    Start(std::move(pending_deliver_callback_), std::move(error_callback_));
-  }
-}
-
-bool VideoCaptureClient::CanResume() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return receiver_.is_bound() && !stop_requested_ &&
-         !switching_video_capture_host_ && !restarting_with_params_;
+  DCHECK(video_capture_host_);
 }
 
 void VideoCaptureClient::OnStateChanged(
@@ -167,24 +127,14 @@ void VideoCaptureClient::OnStateChanged(
         client_buffers_.clear();
         weak_factory_.InvalidateWeakPtrs();
         receiver_.reset();
-        const bool should_restart =
-            switching_video_capture_host_ || restarting_with_params_;
-        switching_video_capture_host_ = false;
-        restarting_with_params_ = false;
-        FrameDeliverCallback deliver_cb =
-            pending_deliver_callback_ ? std::move(pending_deliver_callback_)
-                                      : std::move(frame_deliver_callback_);
-        pending_deliver_callback_.Reset();
-        frame_deliver_callback_.Reset();
-        if (should_restart && !deliver_cb.is_null()) {
+        if (switching_video_capture_host_) {
+          switching_video_capture_host_ = false;
           first_frame_ref_time_ = base::TimeTicks();
-          // Advance past `last_timestamp_` so restarted capturers that reset
-          // frame timestamps to zero do not collide with the last enqueued RTP
-          // timestamp.
-          accumulated_time_ = last_timestamp_ + base::Milliseconds(1);
-          Start(std::move(deliver_cb), std::move(error_callback_));
+          accumulated_time_ = last_timestamp_;
+          Start(std::move(frame_deliver_callback_), std::move(error_callback_));
         } else {
           error_callback_.Reset();
+          frame_deliver_callback_.Reset();
         }
         break;
     }

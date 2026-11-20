@@ -101,23 +101,30 @@ bool IsHardwareEncodingEnabled(
     const std::vector<VideoEncodeAccelerator::SupportedProfile>& profiles,
     VideoCodecProfile min_profile,
     VideoCodecProfile max_profile,
-    gfx::Size requested_resolution) {
+    gfx::Size requested_resolution,
+    double requested_frame_rate) {
   return std::ranges::any_of(profiles, [&](const auto& vea_profile) {
     if (vea_profile.profile < min_profile ||
         vea_profile.profile > max_profile) {
       return false;
     }
-    // Do not reject profiles based on `max_framerate_numerator`: several VEA
-    // backends (VA-API, V4L2, D3D12) hardcode 30 FPS regardless of actual
-    // hardware capability, and hardware encoding at 30 FPS is preferred over
-    // falling back to software at 60 FPS. See crbug.com/586527429.
-    return requested_resolution.width() >= vea_profile.min_resolution.width() &&
-           requested_resolution.height() >=
-               vea_profile.min_resolution.height() &&
-           requested_resolution.width() <= vea_profile.max_resolution.width() &&
-           requested_resolution.height() <= vea_profile.max_resolution.height();
+    if (requested_resolution.width() < vea_profile.min_resolution.width() ||
+        requested_resolution.height() < vea_profile.min_resolution.height() ||
+        requested_resolution.width() > vea_profile.max_resolution.width() ||
+        requested_resolution.height() > vea_profile.max_resolution.height()) {
+      return false;
+    }
+    if (vea_profile.max_framerate_denominator == 0 ||
+        vea_profile.max_framerate_numerator == 0) {
+      return true;
+    }
+    const double max_fps =
+        static_cast<double>(vea_profile.max_framerate_numerator) /
+        vea_profile.max_framerate_denominator;
+    return requested_frame_rate <= max_fps;
   });
 }
+
 
 constexpr int k1080pPixels = 1920 * 1080;
 
@@ -210,7 +217,8 @@ bool IsSoftwareEnabled(VideoCodec codec) {
 bool IsHardwareEnabled(
     VideoCodec codec,
     const std::vector<VideoEncodeAccelerator::SupportedProfile>& profiles,
-    gfx::Size requested_resolution) {
+    gfx::Size requested_resolution,
+    double requested_frame_rate) {
   if (IsHardwareDenyListed(codec)) {
     return false;
   }
@@ -238,7 +246,8 @@ bool IsHardwareEnabled(
   }
 
   return IsHardwareEncodingEnabled(profiles, config->min_profile,
-                                   config->max_profile, requested_resolution);
+                                   config->max_profile, requested_resolution,
+                                   requested_frame_rate);
 }
 
 bool IsHardwareDenyListed(VideoCodec codec) {

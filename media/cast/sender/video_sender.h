@@ -66,8 +66,6 @@ class VideoSender : public FrameSender::Client {
 
   void SetTargetPlayoutDelay(base::TimeDelta new_target_playout_delay);
   base::TimeDelta GetTargetPlayoutDelay() const;
-  void SetMaxFrameRate(double max_frame_rate);
-  double GetMaxFrameRate() const;
   virtual uint32_t GetEncoderBitrate() const;
   virtual double GetEncoderUtilization() const;
   virtual double GetLossiness() const;

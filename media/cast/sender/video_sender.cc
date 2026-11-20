@@ -418,17 +418,6 @@ base::TimeDelta VideoSender::GetTargetPlayoutDelay() const {
   return frame_sender_->GetTargetPlayoutDelay();
 }
 
-void VideoSender::SetMaxFrameRate(double max_frame_rate) {
-  CHECK(cast_environment_->CurrentlyOn(CastEnvironment::ThreadId::kMain));
-  CHECK_GT(max_frame_rate, 0.0);
-  frame_sender_->SetMaxFrameRate(max_frame_rate);
-  video_encoder_->SetMaxFrameRate(max_frame_rate);
-}
-
-double VideoSender::GetMaxFrameRate() const {
-  return frame_sender_->MaxFrameRate();
-}
-
 uint32_t VideoSender::GetEncoderBitrate() const {
   return last_bitrate_;
 }
