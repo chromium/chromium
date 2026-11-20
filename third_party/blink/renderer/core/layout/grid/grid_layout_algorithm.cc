@@ -2032,24 +2032,10 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
           max_row_expansion = LayoutUnit();
         }
 
-        LayoutUnit item_expansion;
-        if (result->GetPhysicalFragment().GetBreakToken()) {
-          // This item may have a break, and will want to expand into the next
-          // fragmentainer, (causing the row to expand into the next
-          // fragmentainer). We can't use the size of the fragment, as we don't
-          // know how large the subsequent fragments will be (and how much
-          // they'll expand the row).
-          //
-          // Instead of using the size of the fragment, expand the row to the
-          // rest of the fragmentainer, with an additional epsilon. This epsilon
-          // will ensure that we continue layout for children in this row in
-          // the next fragmentainer. Without it we'd drop those subsequent
-          // fragments.
-          item_expansion =
-              (fragmentainer_space - grid_area.BlockEndOffset()).AddEpsilon();
-        } else {
-          item_expansion = fragment.BlockSize() - grid_area.BlockEndOffset();
-        }
+        const LayoutUnit item_expansion = CalculateRowExpansionForFragmentation(
+            fragmentainer_space, grid_area.BlockEndOffset(),
+            fragment.BlockSize(),
+            !!result->GetPhysicalFragment().GetBreakToken());
         max_row_expansion = std::max(max_row_expansion, item_expansion);
       }
 

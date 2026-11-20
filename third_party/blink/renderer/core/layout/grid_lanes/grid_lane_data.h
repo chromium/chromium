@@ -119,6 +119,9 @@ struct GridLaneData {
   bool has_unfinished_items = false;
   // How far unstarted items (or row tracks) are pushed down by fragmentation.
   LayoutUnit item_offset_adjustment;
+  // Cumulative row growth from fragmentation, persisted across fragments
+  // without modifying shared track geometry.
+  LayoutUnit row_block_size_adjustment;
 
   HeapVector<Member<GridLanesItemData>> item_data;
 };

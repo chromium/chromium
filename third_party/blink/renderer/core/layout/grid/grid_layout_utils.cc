@@ -1638,6 +1638,20 @@ void AccommodateSubgridExtraMargins(const GridSizingSubtree& sizing_subtree,
   }
 }
 
+LayoutUnit CalculateRowExpansionForFragmentation(
+    LayoutUnit fragmentainer_space,
+    LayoutUnit grid_area_block_end,
+    LayoutUnit item_block_end,
+    bool needs_growth_past_fragmentainer) {
+  if (needs_growth_past_fragmentainer) {
+    // We don't know how large subsequent fragments will be. Expand the row
+    // past the fragmentainer boundary so its children continue in the next
+    // fragmentainer instead of dropping those subsequent fragments.
+    return (fragmentainer_space - grid_area_block_end).AddEpsilon();
+  }
+  return item_block_end - grid_area_block_end;
+}
+
 // The following roughly comes from:
 // https://drafts.csswg.org/css-grid-1/#fragmentation-alg
 bool MinBlockSizeShouldEncompassIntrinsicSize(

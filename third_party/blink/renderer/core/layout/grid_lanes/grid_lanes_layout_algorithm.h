@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_node.h"
 #include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_running_positions.h"
 #include "third_party/blink/renderer/core/layout/layout_algorithm.h"
+#include "third_party/blink/renderer/core/layout/layout_result.h"
 
 namespace blink {
 
@@ -54,6 +55,8 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       const GridSizingSubtree& sizing_subtree,
       SizingConstraint sizing_constraint);
   const LayoutResult* Layout();
+  void SetupRelayoutData(const GridLanesLayoutAlgorithm& previous,
+                         RelayoutType relayout_type);
 
   GridLineResolver BuildGridLineResolver(
       const GridArea& subgrid_area,
@@ -125,7 +128,27 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
     kMeasureSubgridStacking,
   };
 
-  const LayoutResult* LayoutInternal();
+  struct RowExpansion {
+    wtf_size_t row_idx;
+    LayoutUnit amount;
+  };
+
+  struct FragmentationState;
+  const LayoutResult* LayoutFragmented(FragmentationState&);
+
+  // Returns the resolved border-box block size of the container across all
+  // fragments, not the block size of the current fragment.
+  LayoutUnit SetFinalFragmentGeometry(const GridLayoutData& layout_data,
+                                      LayoutUnit total_intrinsic_block_size);
+  const LayoutResult* BuildFragment(
+      GridLayoutData& layout_data,
+      GridSizingTree* sizing_tree,
+      const GridLayoutSubtree* grid_layout_subtree,
+      GridLanesDataVector& grid_lanes,
+      LayoutUnit total_intrinsic_block_size,
+      LayoutUnit block_size,
+      HeapVector<Member<LayoutBox>>& oof_children);
+  const LayoutResult* FinishLayout(const LayoutResult*);
 
   // Builds the grid-lanes sizing tree, runs track sizing (including any
   // intrinsic repeat passes), and baseline alignment. Grid items are moved out
@@ -193,9 +216,10 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // `total_intrinsic_block_size` is the intrinsic block size of the complete,
   // unfragmented container; it is updated if items or rows expand as a result
   // of fragmentation.
-  BreakStatus PlaceGridLanesItemsForFragmentation(
+  LayoutResult::EStatus PlaceGridLanesItemsForFragmentation(
       GridLanesDataVector& grid_lanes,
       const GridLayoutSubtree& layout_subtree,
+      wtf_size_t* first_eligible_row_idx,
       LayoutUnit* total_intrinsic_block_size);
 
   // Returns one item's layout result and geometry, and records row break
@@ -210,29 +234,48 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       const GridLayoutSubtree& layout_subtree,
       Vector<EBreakBetween>& row_break_between);
 
+  LayoutUnit CalculateRowExpansion(
+      base::span<const GridLanesFragmentationItem> row_items,
+      LayoutUnit fragmentainer_space) const;
+
   struct Breakpoint {
-    Breakpoint(wtf_size_t row, LayoutUnit row_offset, bool is_forced_break)
-        : row(row), row_offset(row_offset), is_forced_break(is_forced_break) {}
+    Breakpoint(wtf_size_t row,
+               LayoutUnit row_offset,
+               bool is_forced_break,
+               BreakAppeal appeal = kBreakAppealPerfect)
+        : row(row),
+          row_offset(row_offset),
+          is_forced_break(is_forced_break),
+          appeal(appeal) {}
 
     wtf_size_t row;
     LayoutUnit row_offset;
     bool is_forced_break;
+    BreakAppeal appeal;
   };
 
-  // Selects a whole-row break, or no breakpoint if fragmentation is disabled
-  // or all remaining rows can be placed. If an earlier break is needed,
-  // returns no breakpoint and sets `out_early_break` instead.
-  std::optional<Breakpoint> FindRowBreakpoint(
+  struct RowFragmentationDecision {
+    STACK_ALLOCATED();
+
+   public:
+    std::optional<Breakpoint> breakpoint;
+    const EarlyBreak* early_break = nullptr;
+    std::optional<RowExpansion> expansion;
+  };
+
+  // Selects the first break or eligible row growth in this pass.
+  RowFragmentationDecision EvaluateRowsForFragmentation(
       const HeapVector<GridLanesFragmentationItem>& row_items,
       const Vector<EBreakBetween>& row_break_between,
-      const EarlyBreak** out_early_break);
+      wtf_size_t first_eligible_row_idx);
 
   // Commits items before the selected row break and updates the
   // continuation state and intrinsic size of the current fragment.
-  BreakStatus FinishRowFragmentation(
+  LayoutResult::EStatus FinishRowFragmentation(
       const HeapVector<GridLanesFragmentationItem>& row_items,
       const Vector<EBreakBetween>& row_break_between,
       GridLanesDataVector& grid_lanes,
+      wtf_size_t* first_eligible_row_idx,
       LayoutUnit stitched_offset,
       LayoutUnit* total_intrinsic_block_size);
 
@@ -534,6 +577,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   LayoutUnit intrinsic_block_size_;
   LayoutUnit stacking_axis_size_;
   HeapVector<Member<EarlyBreak>> column_early_breaks_;
+  FragmentationState* row_growth_relayout_state_ = nullptr;
 
   LogicalSize grid_lanes_available_size_;
   LogicalSize grid_lanes_min_available_size_;

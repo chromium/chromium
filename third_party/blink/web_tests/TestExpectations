@@ -838,11 +838,9 @@ crbug.com/750992 external/wpt/css/css-overflow/margin-block-end-scroll-area-001.
 # this.
 crbug.com/1076027 external/wpt/css/css-break/grid/grid-lanes/grid-lanes-fragmentation-001.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-break/grid/grid-lanes/grid-lanes-fragmentation-002.html [ Crash Failure ]
-# Grid-lanes fragmentation does not yet honor break rules or apply row expansion.
+# Remaining grid-lanes out-of-flow fragmentation failures.
 crbug.com/343257585 external/wpt/css/css-break/grid/grid-lanes/column-grid-lanes-oof-fragmentation-012.html [ Failure ]
 crbug.com/343257585 external/wpt/css/css-break/grid/grid-lanes/row-grid-lanes-oof-fragmentation-006.html [ Failure ]
-crbug.com/343257585 external/wpt/css/css-break/grid/grid-lanes/row-grid-lanes-oof-fragmentation-010.html [ Failure ]
-crbug.com/343257585 external/wpt/css/css-break/grid/grid-lanes/row-grid-lanes-oof-fragmentation-011.html [ Failure ]
 # Grid Lanes subgrids into a grid container are not yet supported.
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/grid-lanes-subgridded-to-grid/track-sizing/grid-lanes-subgrid.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/subgrid/grid-lanes-subgridded-to-grid/track-sizing/grid-lanes-subgrid-flex.html [ Failure ]

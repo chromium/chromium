@@ -3520,6 +3520,46 @@ TEST_F(GridLanesLayoutAlgorithmTest, ShareExpansionDataAcrossFragments) {
       LayoutUnit(40));
 }
 
+TEST_F(GridLanesLayoutAlgorithmTest, ShareRowExpansionDataAcrossFragments) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="grid-lanes" style="display: grid-lanes; height: 200px;
+        grid-template-rows: auto 0px 10px; align-content: start;">
+      <div style="grid-row: 1; width: 20px;">
+        <div style="height: 20px;"></div>
+        <div style="height: 20px; break-before: column;"></div>
+      </div>
+      <div style="grid-row: 1; width: 20px;"></div>
+      <div style="grid-row: 3; width: 20px;"></div>
+    </div>
+  )HTML");
+
+  const auto grid_lanes = GetFragmentedGridLanesData();
+  const LayoutBox* box = GetLayoutBoxByElementId("grid-lanes");
+  ASSERT_GT(box->PhysicalFragmentCount(), 2u);
+  const auto* first = To<GridLanesBreakTokenData>(
+      box->GetPhysicalFragment(0)->GetBreakToken()->TokenData());
+  const auto* second = To<GridLanesBreakTokenData>(
+      box->GetPhysicalFragment(1)->GetBreakToken()->TokenData());
+
+  ASSERT_EQ(first->grid_lanes.size(), 3u);
+  ASSERT_EQ(second->grid_lanes.size(), 3u);
+  EXPECT_TRUE(first->grid_lanes[1].item_data.empty());
+  EXPECT_TRUE(second->grid_lanes[1].item_data.empty());
+  for (wtf_size_t row : {0u, 2u}) {
+    EXPECT_EQ(first->grid_lanes[row].item_data,
+              second->grid_lanes[row].item_data);
+    EXPECT_EQ(first->grid_lanes[row].item_offset_adjustment, LayoutUnit());
+    EXPECT_EQ(first->grid_lanes[row].row_block_size_adjustment, LayoutUnit());
+  }
+  EXPECT_EQ(second->grid_lanes[0].row_block_size_adjustment, LayoutUnit(10));
+  EXPECT_EQ(second->grid_lanes[2].item_offset_adjustment, LayoutUnit(10));
+  EXPECT_EQ(
+      grid_lanes[0].item_data[0]->grid_lanes_placement_data->total_block_size,
+      LayoutUnit(40));
+  EXPECT_EQ(grid_lanes[2].item_data[0]->PlacementData().offset.block_offset,
+            LayoutUnit(40));
+}
+
 TEST_F(GridLanesLayoutAlgorithmTest, PopulateRowGridLanesBreakTokenData) {
   SetBodyInnerHTML(R"HTML(
     <div id="grid-lanes" style="display: grid-lanes; height: 200px;

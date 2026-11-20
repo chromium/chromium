@@ -548,6 +548,15 @@ void AccommodateSubgridExtraMargins(const GridSizingSubtree& sizing_subtree,
                                     GridSizingTrackCollection& track_collection,
                                     GridTrackSizingDirection track_direction);
 
+// Calculates an eligible item's contribution to row growth. All offsets are
+// relative to the current fragment. Callers determine eligibility and whether
+// the item continues into the next fragmentainer.
+LayoutUnit CalculateRowExpansionForFragmentation(
+    LayoutUnit fragmentainer_space,
+    LayoutUnit grid_area_block_end,
+    LayoutUnit item_block_end,
+    bool needs_growth_past_fragmentainer);
+
 // Determines whether an item *may* grow to encompass content pushed down by
 // fragmentation (lines pushed down by a fragmentation line, etc).
 // `opt_row_track_collection` should be nullptr if there is no row track

@@ -58,6 +58,7 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     kAlgorithmSpecific1 = 8,  // Save bits by using the same value for mutually
                               // exclusive results.
     kNeedsRelayoutWithRowCrossSizeChanges = kAlgorithmSpecific1,
+    kNeedsRelayoutWithGridLanesRowGrowth = kAlgorithmSpecific1,
     kNeedsRelayoutAsLastTableBox = kAlgorithmSpecific1,
     kMarginTrimEndDidNotApply = kAlgorithmSpecific1,
     // When adding new values, make sure the bit size of |Bitfields::status| is

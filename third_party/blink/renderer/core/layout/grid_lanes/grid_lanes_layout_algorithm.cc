@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/core/layout/grid_lanes/grid_lanes_layout_algorithm.h"
 
+#include <algorithm>
+
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_baseline_accumulator.h"
@@ -25,6 +28,31 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
+// Per-item layout state shared by row and column fragmentation. Columns commit
+// results immediately; rows retain them until whole-row break decisions are
+// complete, and reuse this state when relayout is needed for row expansion.
+struct GridLanesFragmentationItem {
+  DISALLOW_NEW();
+
+  GridLanesFragmentationItem(const GridLanesItemData* data,
+                             const BlockBreakToken* token,
+                             wtf_size_t lane_idx)
+      : data(data), token(token), lane_idx(lane_idx) {}
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(data);
+    visitor->Trace(token);
+    visitor->Trace(result);
+  }
+  Member<const GridLanesItemData> data;
+  Member<const BlockBreakToken> token;
+  Member<const LayoutResult> result;
+  LogicalOffset offset;
+  LogicalRect area;
+  wtf_size_t lane_idx;
+  bool min_block_size_should_encompass_intrinsic_size = false;
+};
 
 namespace {
 
@@ -80,6 +108,17 @@ GridSizingTree BuildAndSizeSubgridSizingTree(
   return sizing_tree;
 }
 
+wtf_size_t FindRowGroupEnd(
+    const HeapVector<GridLanesFragmentationItem>& row_items,
+    wtf_size_t begin) {
+  const wtf_size_t row_idx = row_items[begin].lane_idx;
+  wtf_size_t end = begin + 1;
+  while (end < row_items.size() && row_items[end].lane_idx == row_idx) {
+    ++end;
+  }
+  return end;
+}
+
 }  // namespace
 
 GridLanesLayoutAlgorithm::GridLanesLayoutAlgorithm(
@@ -113,6 +152,17 @@ GridLanesLayoutAlgorithm::GridLanesLayoutAlgorithm(
             grid_lanes_max_available_size_.block_size =
                 (block_size - BorderScrollbarPadding().BlockSum())
                     .ClampNegativeToZero();
+  }
+}
+
+void GridLanesLayoutAlgorithm::SetupRelayoutData(
+    const GridLanesLayoutAlgorithm& previous,
+    RelayoutType relayout_type) {
+  LayoutAlgorithm::SetupRelayoutData(previous, relayout_type);
+  if (relayout_type == kRelayoutWithNewRowSizes) {
+    CHECK(previous.row_growth_relayout_state_);
+    row_growth_relayout_state_ = previous.row_growth_relayout_state_;
+    stacking_axis_size_ = previous.stacking_axis_size_;
   }
 }
 
@@ -391,21 +441,46 @@ void GridLanesLayoutAlgorithm::ApplyTrackReverseOverflowShift(
   }
 }
 
-const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
-  const LayoutResult* result = LayoutInternal();
-  if (result->Status() == LayoutResult::kNeedsEarlierBreak) {
+const LayoutResult* GridLanesLayoutAlgorithm::FinishLayout(
+    const LayoutResult* result) {
+  const LayoutResult::EStatus status = result->Status();
+  if (status != LayoutResult::kNeedsEarlierBreak &&
+      status != LayoutResult::kDisableFragmentation) {
+    return result;
+  }
+
+  // Clear only the row-growth bit so the full relayout can start its own
+  // row-growth retries without inheriting the prepared state.
+  relayout_mode_ &= ~kRelayoutWithNewRowSizes;
+  if (status == LayoutResult::kNeedsEarlierBreak) {
     return RelayoutAndBreakEarlier<GridLanesLayoutAlgorithm>(
         *result->GetEarlyBreak(), &column_early_breaks_);
   }
-  if (result->Status() == LayoutResult::kDisableFragmentation) {
-    // This container is clipped, and we reached the block-end. Lay the rest out
-    // as one fragment.
-    return RelayoutWithoutFragmentation<GridLanesLayoutAlgorithm>();
-  }
-  return result;
+
+  // This container is clipped, and we reached the block-end. Lay the rest out
+  // as one fragment.
+  return RelayoutWithoutFragmentation<GridLanesLayoutAlgorithm>();
 }
 
-const LayoutResult* GridLanesLayoutAlgorithm::LayoutInternal() {
+struct GridLanesLayoutAlgorithm::FragmentationState {
+  STACK_ALLOCATED();
+
+ public:
+  GridLanesDataVector& grid_lanes;
+  const GridLayoutSubtree& grid_layout_subtree;
+  GridLayoutData& layout_data;
+  GridSizingTree* sizing_tree;
+  const GridItems* grid_items;
+  LayoutUnit total_intrinsic_block_size;
+  HeapVector<Member<LayoutBox>>& oof_children;
+  wtf_size_t first_eligible_row_idx = 0;
+};
+
+const LayoutResult* GridLanesLayoutAlgorithm::Layout() {
+  if (row_growth_relayout_state_) {
+    return LayoutFragmented(*row_growth_relayout_state_);
+  }
+
   HeapVector<Member<LayoutBox>> oof_children;
   const auto& node = Node();
   const auto& border_scrollbar_padding = BorderScrollbarPadding();
@@ -414,16 +489,11 @@ const LayoutResult* GridLanesLayoutAlgorithm::LayoutInternal() {
   const bool is_for_columns = grid_axis_direction == kForColumns;
 
   LayoutUnit total_intrinsic_block_size;
-  LayoutUnit previously_consumed_block_size;
-  if (GetBreakToken()) {
-    previously_consumed_block_size = GetBreakToken()->ConsumedBlockSize();
-  }
-
   GridLanesDataVector grid_lanes;
   const GridLayoutSubtree* grid_layout_subtree = nullptr;
   GridLayoutData* layout_data = nullptr;
   std::optional<GridLanesGapAccumulator> gap_accumulator;
-  std::optional<GridLanesGapGeometryState> gap_geometry_state;
+  GridLanesGapGeometryState gap_geometry_state;
 
   GridItems* grid_items = nullptr;
   std::optional<GridSizingTree> sizing_tree;
@@ -466,6 +536,8 @@ const LayoutResult* GridLanesLayoutAlgorithm::LayoutInternal() {
         !InvolvedInBlockFragmentation(container_builder_)) {
       gap_accumulator.emplace(style);
       gap_accumulator->BuildMainGaps(track_collection);
+      gap_geometry_state.stacking_gap =
+          StackingAxisGap(style, grid_lanes_available_size_);
     }
     const bool has_main_gap_decorations =
         gap_accumulator && gap_accumulator->HasMainGaps();
@@ -484,11 +556,6 @@ const LayoutResult* GridLanesLayoutAlgorithm::LayoutInternal() {
            gap_accumulator || has_visual_reading_flow)
               ? &grid_lanes
               : nullptr;
-      GridLanesGapGeometryState* out_gap_geometry_state = nullptr;
-      if (gap_accumulator) {
-        out_gap_geometry_state = &gap_geometry_state.emplace();
-      }
-
       // For standalone grid-lanes, `sizing_subtree` remains the single source
       // of truth during placement. A grid-lanes subgrid has no local sizing
       // tree and instead uses finalized geometry inherited through
@@ -501,12 +568,11 @@ const LayoutResult* GridLanesLayoutAlgorithm::LayoutInternal() {
           *grid_items, sizing_subtree ? &sizing_subtree : nullptr,
           grid_layout_subtree, *layout_data, running_positions,
           &total_intrinsic_block_size, SizingConstraint::kLayout,
-          out_grid_lanes, out_gap_geometry_state);
+          out_grid_lanes, gap_accumulator ? &gap_geometry_state : nullptr);
 
-      SetReadingFlowNodes(*grid_items, grid_lanes);
       if (has_main_gap_decorations) {
         gap_accumulator->CaptureEmptyOpenings(running_positions,
-                                              *gap_geometry_state);
+                                              gap_geometry_state);
       }
     }
 
@@ -531,29 +597,108 @@ const LayoutResult* GridLanesLayoutAlgorithm::LayoutInternal() {
           MakeGarbageCollected<GridLayoutSubtree>(sizing_tree->FinalizeTree());
     }
 
-    intrinsic_block_size_ = border_scrollbar_padding.block_start;
-    if (PlaceGridLanesItemsForFragmentation(grid_lanes, *grid_layout_subtree,
-                                            &total_intrinsic_block_size) ==
-        BreakStatus::kNeedsEarlierBreak) {
-      return container_builder_.Abort(LayoutResult::kNeedsEarlierBreak);
+    FragmentationState state{
+        grid_lanes,   *grid_layout_subtree,
+        *layout_data, sizing_tree ? &*sizing_tree : nullptr,
+        grid_items,   total_intrinsic_block_size,
+        oof_children};
+    const LayoutResult* result = LayoutFragmented(state);
+    // Retry from this algorithm each time so every pass gets a fresh builder
+    // without nesting row-growth relayouts.
+    while (result->Status() ==
+           LayoutResult::kNeedsRelayoutWithGridLanesRowGrowth) {
+      row_growth_relayout_state_ = &state;
+      result = Relayout<GridLanesLayoutAlgorithm>(kRelayoutWithNewRowSizes);
+      row_growth_relayout_state_ = nullptr;
     }
-
-    if (grid_lanes.empty() && node.HasLineIfEmpty()) {
-      intrinsic_block_size_ =
-          (total_intrinsic_block_size - border_scrollbar_padding.block_end -
-           previously_consumed_block_size)
-              .ClampNegativeToZero();
-    }
-
-    intrinsic_block_size_ += border_scrollbar_padding.block_end;
-    intrinsic_block_size_ = ClampIntrinsicBlockSize(
-        GetConstraintSpace(), node, GetBreakToken(), border_scrollbar_padding,
-        intrinsic_block_size_);
-  } else {
-    intrinsic_block_size_ = total_intrinsic_block_size;
+    return result;
   }
 
-  const auto block_size = ComputeBlockSizeForFragment(
+  if (grid_items && !grid_items->IsEmpty()) {
+    SetReadingFlowNodes(*grid_items, grid_lanes);
+  }
+  intrinsic_block_size_ = total_intrinsic_block_size;
+  const LayoutUnit block_size =
+      SetFinalFragmentGeometry(*layout_data, total_intrinsic_block_size);
+#if DCHECK_IS_ON()
+  container_builder_.CheckNoBlockFragmentation();
+#endif
+
+  if (gap_accumulator) {
+    // Final stacking-axis content box, now that the block size is resolved.
+    // For row containers the stacking axis is inline and already definite.
+    const LayoutUnit final_stacking_size =
+        is_for_columns ? block_size : container_builder_.InlineSize();
+    const LayoutUnit content_box_start =
+        is_for_columns ? border_scrollbar_padding.block_start
+                       : border_scrollbar_padding.inline_start;
+    const LayoutUnit content_box_end =
+        final_stacking_size - (is_for_columns
+                                   ? border_scrollbar_padding.block_end
+                                   : border_scrollbar_padding.inline_end);
+
+    // `MainGap`s span the final container content box (or the content when it
+    // overflows). Explicit stacking-axis content alignment uses the bounds
+    // captured during placement.
+    LayoutUnit stacking_content_start = content_box_start;
+    LayoutUnit stacking_content_end =
+        std::max(content_box_end, content_box_start + stacking_axis_size_);
+    if (const auto& bounds = gap_geometry_state.explicit_content_bounds) {
+      stacking_content_start = bounds->start;
+      stacking_content_end = bounds->end;
+    }
+
+    container_builder_.SetGapGeometry(gap_accumulator->FinalizeGapGeometry(
+        grid_lanes, gap_geometry_state, stacking_content_start,
+        stacking_content_end, container_builder_));
+  }
+
+  return FinishLayout(BuildFragment(
+      *layout_data, sizing_tree ? &*sizing_tree : nullptr, grid_layout_subtree,
+      grid_lanes, total_intrinsic_block_size, block_size, oof_children));
+}
+
+const LayoutResult* GridLanesLayoutAlgorithm::LayoutFragmented(
+    FragmentationState& state) {
+  const LayoutResult::EStatus pass_result = PlaceGridLanesItemsForFragmentation(
+      state.grid_lanes, state.grid_layout_subtree,
+      &state.first_eligible_row_idx, &state.total_intrinsic_block_size);
+  if (pass_result != LayoutResult::kSuccess) {
+    return FinishLayout(container_builder_.Abort(pass_result));
+  }
+
+  if (state.grid_items && !state.grid_items->IsEmpty()) {
+    SetReadingFlowNodes(*state.grid_items, state.grid_lanes);
+  }
+  const auto& padding = BorderScrollbarPadding();
+  const auto* token = GetBreakToken();
+  if (state.grid_lanes.empty() && Node().HasLineIfEmpty()) {
+    const LayoutUnit consumed =
+        token ? token->ConsumedBlockSize() : LayoutUnit();
+    intrinsic_block_size_ =
+        (state.total_intrinsic_block_size - padding.block_end - consumed)
+            .ClampNegativeToZero();
+  }
+  intrinsic_block_size_ =
+      ClampIntrinsicBlockSize(GetConstraintSpace(), Node(), token, padding,
+                              intrinsic_block_size_ + padding.block_end);
+  const LayoutUnit block_size = SetFinalFragmentGeometry(
+      state.layout_data, state.total_intrinsic_block_size);
+  if (FinishFragmentation(&container_builder_) ==
+      BreakStatus::kDisableFragmentation) {
+    return FinishLayout(
+        container_builder_.Abort(LayoutResult::kDisableFragmentation));
+  }
+  return FinishLayout(BuildFragment(
+      state.layout_data, state.sizing_tree, &state.grid_layout_subtree,
+      state.grid_lanes, state.total_intrinsic_block_size, block_size,
+      state.oof_children));
+}
+
+LayoutUnit GridLanesLayoutAlgorithm::SetFinalFragmentGeometry(
+    const GridLayoutData& layout_data,
+    LayoutUnit total_intrinsic_block_size) {
+  const LayoutUnit block_size = ComputeBlockSizeForFragment(
       GetConstraintSpace(), Node(), BorderPadding(),
       contain_intrinsic_block_size_.value_or(total_intrinsic_block_size),
       container_builder_.InlineSize());
@@ -564,9 +709,11 @@ const LayoutResult* GridLanesLayoutAlgorithm::LayoutInternal() {
   // track area, matching grid's behavior. The grid axis dimension comes from
   // the track sizes, and the stacking axis dimension comes from the placed
   // items.
-  if (node.IsScrollContainer()) {
+  if (Node().IsScrollContainer()) {
+    const bool is_for_columns =
+        Style().GridLanesTrackSizingDirection() == kForColumns;
     const auto& track_collection =
-        is_for_columns ? layout_data->Columns() : layout_data->Rows();
+        is_for_columns ? layout_data.Columns() : layout_data.Rows();
 
     LogicalOffset offset;
     LogicalSize size;
@@ -583,66 +730,24 @@ const LayoutResult* GridLanesLayoutAlgorithm::LayoutInternal() {
     container_builder_.SetInflowBounds(LogicalRect(offset, size));
   }
   container_builder_.SetMayHaveDescendantAboveBlockStart(false);
+  return block_size;
+}
 
-  if (InvolvedInBlockFragmentation(container_builder_)) {
-    BreakStatus status = FinishFragmentation(&container_builder_);
-    if (status == BreakStatus::kDisableFragmentation) {
-      return container_builder_.Abort(LayoutResult::kDisableFragmentation);
-    }
-  } else {
-#if DCHECK_IS_ON()
-    // If we're not participating in a fragmentation context, no block
-    // fragmentation related fields should have been set.
-    container_builder_.CheckNoBlockFragmentation();
-#endif
-
-    if (gap_accumulator) {
-      CHECK_EQ(gap_geometry_state.has_value(), !grid_items->IsEmpty());
-
-      // Final stacking-axis content box, now that the block size is resolved.
-      // For row containers the stacking axis is inline and already definite.
-      const LayoutUnit final_stacking_size =
-          is_for_columns ? block_size : container_builder_.InlineSize();
-      const LayoutUnit content_box_start =
-          is_for_columns ? border_scrollbar_padding.block_start
-                         : border_scrollbar_padding.inline_start;
-      const LayoutUnit content_box_end =
-          final_stacking_size - (is_for_columns
-                                     ? border_scrollbar_padding.block_end
-                                     : border_scrollbar_padding.inline_end);
-
-      // `MainGap`s span the final container content box (or the content when it
-      // overflows). Explicit stacking-axis content alignment uses the bounds
-      // captured during placement.
-      LayoutUnit stacking_content_start = content_box_start;
-      LayoutUnit stacking_content_end =
-          std::max(content_box_end, content_box_start + stacking_axis_size_);
-      GridLanesGapGeometryState state;
-      if (gap_geometry_state) {
-        state = *gap_geometry_state;
-        if (const auto& bounds = state.explicit_content_bounds) {
-          stacking_content_start = bounds->start;
-          stacking_content_end = bounds->end;
-        }
-      } else {
-        // No items means no `CrossGap`s, so only the stacking-axis gutter size
-        // is read from `state`.
-        state.stacking_gap = StackingAxisGap(style, grid_lanes_available_size_);
-      }
-
-      container_builder_.SetGapGeometry(gap_accumulator->FinalizeGapGeometry(
-          grid_lanes, state, stacking_content_start, stacking_content_end,
-          container_builder_));
-    }
-  }
-
+const LayoutResult* GridLanesLayoutAlgorithm::BuildFragment(
+    GridLayoutData& layout_data,
+    GridSizingTree* sizing_tree,
+    const GridLayoutSubtree* grid_layout_subtree,
+    GridLanesDataVector& grid_lanes,
+    LayoutUnit total_intrinsic_block_size,
+    LayoutUnit block_size,
+    HeapVector<Member<LayoutBox>>& oof_children) {
   // Place out-of-flow items after setting the intrinsic block size, since
   // out-of-flow items don't contribute to the intrinsic size of the container.
   if (!oof_children.empty()) {
-    PlaceOutOfFlowItems(*layout_data, block_size, oof_children);
+    PlaceOutOfFlowItems(layout_data, block_size, oof_children);
   }
 
-  container_builder_.SetGridLayoutData(layout_data);
+  container_builder_.SetGridLayoutData(&layout_data);
 
   if (sizing_tree) {
     sizing_tree->ReleaseTrackSizingData();
@@ -1289,30 +1394,6 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
   }
 }
 
-// Per-item layout state shared by row and column fragmentation. Columns commit
-// results immediately; rows retain them until whole-row break decisions are
-// complete, and reuse this state when relayout is needed for row expansion.
-struct GridLanesFragmentationItem {
-  DISALLOW_NEW();
-
-  GridLanesFragmentationItem(const GridLanesItemData* data,
-                             const BlockBreakToken* token,
-                             wtf_size_t lane_idx)
-      : data(data), token(token), lane_idx(lane_idx) {}
-
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(data);
-    visitor->Trace(token);
-    visitor->Trace(result);
-  }
-  Member<const GridLanesItemData> data;
-  Member<const BlockBreakToken> token;
-  Member<const LayoutResult> result;
-  LogicalOffset offset;
-  LogicalRect area;
-  wtf_size_t lane_idx;
-};
-
 GridLanesFragmentationItem GridLanesLayoutAlgorithm::LayoutItemForFragmentation(
     const GridLanesItemData& grid_lanes_item,
     const BlockBreakToken* item_break_token,
@@ -1344,8 +1425,9 @@ GridLanesFragmentationItem GridLanesLayoutAlgorithm::LayoutItemForFragmentation(
     const GridSpan& span = item.Span(kForRows);
     const GridLaneData& start_state = grid_lanes[span.StartLine()];
     const GridLaneData& end_state = grid_lanes[span.EndLine() - 1];
-    area_expansion =
-        end_state.item_offset_adjustment - start_state.item_offset_adjustment;
+    area_expansion = end_state.item_offset_adjustment +
+                     end_state.row_block_size_adjustment -
+                     start_state.item_offset_adjustment;
     item_offset = grid_lanes_item.PlacementData().offset;
     item_offset.block_offset +=
         start_state.item_offset_adjustment - stitched_offset;
@@ -1363,7 +1445,7 @@ GridLanesFragmentationItem GridLanesLayoutAlgorithm::LayoutItemForFragmentation(
     }
   }
 
-  const bool min_block_size_should_encompass_intrinsic_size =
+  item_fragment.min_block_size_should_encompass_intrinsic_size =
       MinBlockSizeShouldEncompassIntrinsicSize(
           item, Style(),
           grid_lanes_item.PlacementData()
@@ -1380,7 +1462,8 @@ GridLanesFragmentationItem GridLanesLayoutAlgorithm::LayoutItemForFragmentation(
   const ConstraintSpace child_space = CreateConstraintSpaceForLayout(
       SubgriddedItemData(item, &layout_data, container_writing_mode),
       /*opt_layout_subtree=*/nullptr, &containing_grid_area,
-      unavailable_block_size, min_block_size_should_encompass_intrinsic_size,
+      unavailable_block_size,
+      item_fragment.min_block_size_should_encompass_intrinsic_size,
       item_offset.block_offset,
       /*opt_fixed_inline_size=*/std::nullopt, fixed_available_size);
   if (!is_columns) {
@@ -1415,13 +1498,16 @@ GridLanesFragmentationItem GridLanesLayoutAlgorithm::LayoutItemForFragmentation(
   return item_fragment;
 }
 
-BreakStatus GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
+LayoutResult::EStatus
+GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
     GridLanesDataVector& grid_lanes,
     const GridLayoutSubtree& layout_subtree,
+    wtf_size_t* first_eligible_row_idx,
     LayoutUnit* total_intrinsic_block_size) {
   DCHECK(InvolvedInBlockFragmentation(container_builder_));
   CHECK(total_intrinsic_block_size);
 
+  intrinsic_block_size_ = BorderScrollbarPadding().block_start;
   const auto grid_axis_direction = Style().GridLanesTrackSizingDirection();
   const bool is_columns = grid_axis_direction == kForColumns;
   const auto& space = GetConstraintSpace();
@@ -1773,7 +1859,7 @@ BreakStatus GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
     for (const EarlyBreak* breakpoint : column_early_breaks_) {
       if (breakpoint) {
         container_builder_.SetEarlyBreak(breakpoint);
-        return BreakStatus::kNeedsEarlierBreak;
+        return LayoutResult::kNeedsEarlierBreak;
       }
     }
     NOTREACHED();
@@ -1791,40 +1877,67 @@ BreakStatus GridLanesLayoutAlgorithm::PlaceGridLanesItemsForFragmentation(
         std::max(*total_intrinsic_block_size,
                  intrinsic_block_size_ + previously_consumed_block_size +
                      BorderScrollbarPadding().block_end);
-    return BreakStatus::kContinue;
+    return LayoutResult::kSuccess;
   }
 
   return FinishRowFragmentation(row_items, row_break_between, grid_lanes,
-                                stitched_offset, total_intrinsic_block_size);
+                                first_eligible_row_idx, stitched_offset,
+                                total_intrinsic_block_size);
 }
 
-std::optional<GridLanesLayoutAlgorithm::Breakpoint>
-GridLanesLayoutAlgorithm::FindRowBreakpoint(
+LayoutUnit GridLanesLayoutAlgorithm::CalculateRowExpansion(
+    base::span<const GridLanesFragmentationItem> row_items,
+    LayoutUnit fragmentainer_space) const {
+  const auto container_writing_direction =
+      GetConstraintSpace().GetWritingDirection();
+  LayoutUnit row_expansion;
+  for (const GridLanesFragmentationItem& entry : row_items) {
+    const LayoutUnit area_block_end = entry.area.BlockEndOffset();
+    if (!entry.min_block_size_should_encompass_intrinsic_size ||
+        entry.area.offset.block_offset >= fragmentainer_space ||
+        area_block_end > fragmentainer_space ||
+        (entry.token && entry.token->IsAtBlockEnd())) {
+      continue;
+    }
+    const auto& physical_fragment =
+        To<PhysicalBoxFragment>(entry.result->GetPhysicalFragment());
+    const auto* token = physical_fragment.GetBreakToken();
+    const LogicalBoxFragment fragment(container_writing_direction,
+                                      physical_fragment);
+    const LayoutUnit item_block_end =
+        entry.offset.block_offset + fragment.BlockSize() +
+        entry.data->grid_lanes_placement_data->margin_block_end;
+    const LayoutUnit item_expansion = CalculateRowExpansionForFragmentation(
+        fragmentainer_space, area_block_end, item_block_end,
+        token && !token->IsAtBlockEnd());
+    row_expansion = std::max(row_expansion, item_expansion);
+  }
+  return row_expansion;
+}
+
+GridLanesLayoutAlgorithm::RowFragmentationDecision
+GridLanesLayoutAlgorithm::EvaluateRowsForFragmentation(
     const HeapVector<GridLanesFragmentationItem>& row_items,
     const Vector<EBreakBetween>& row_break_between,
-    const EarlyBreak** out_early_break) {
+    wtf_size_t first_eligible_row_idx) {
   const auto& space = GetConstraintSpace();
   // Clipped overflow may resume with fragmentation disabled. Commit its
   // remaining items without selecting any more row breaks.
   if (!space.HasBlockFragmentation()) {
-    return std::nullopt;
+    return {};
   }
   const LayoutUnit fragmentainer_space = FragmentainerSpaceLeftForChildren();
   ColumnBreakInfo break_info;
   for (wtf_size_t begin = 0; begin < row_items.size();) {
-    const wtf_size_t row = row_items[begin].lane_idx;
-    wtf_size_t end = begin + 1;
+    const wtf_size_t row_idx = row_items[begin].lane_idx;
     // Group parallel items in this row so they share a break decision.
-    while (end < row_items.size() && row_items[end].lane_idx == row) {
-      ++end;
-    }
+    const wtf_size_t end = FindRowGroupEnd(row_items, begin);
+    const auto items_in_row = base::span(row_items).subspan(begin, end - begin);
+    // If any parallel item is continuing, the row has already started.
+    const bool is_resumed_row = std::ranges::any_of(
+        items_in_row,
+        [](const auto& entry) { return IsBreakInside(entry.token); });
     const LayoutUnit row_offset = row_items[begin].area.offset.block_offset;
-    // If any parallel item is continuing, the row has already started and
-    // cannot be deferred.
-    bool is_resumed_row = false;
-    for (wtf_size_t index = begin; index < end; ++index) {
-      is_resumed_row |= IsBreakInside(row_items[index].token);
-    }
     const bool has_separation =
         !is_resumed_row && row_offset > BorderScrollbarPadding().block_start;
     // Use the row's track position, since negative margins may place its
@@ -1837,14 +1950,16 @@ GridLanesLayoutAlgorithm::FindRowBreakpoint(
     const bool must_keep_row_for_progress =
         !has_separation &&
         FragmentainerOffsetForChildren() + row_offset <= LayoutUnit();
-    const auto break_between = row_break_between[row];
+    const EBreakBetween break_between = row_break_between[row_idx];
     if (early_break_ && early_break_->Type() == EarlyBreak::kLine &&
-        static_cast<wtf_size_t>(early_break_->LineNumber()) == row) {
-      return Breakpoint(row, row_offset, /*is_forced_break=*/false);
+        static_cast<wtf_size_t>(early_break_->LineNumber()) == row_idx) {
+      return {.breakpoint = Breakpoint(row_idx, row_offset,
+                                       /*is_forced_break=*/false)};
     }
     if (has_separation && IsForcedBreakValue(space, break_between)) {
       container_builder_.SetHasForcedBreak();
-      return Breakpoint(row, row_offset, /*is_forced_break=*/true);
+      return {.breakpoint = Breakpoint(row_idx, row_offset,
+                                       /*is_forced_break=*/true)};
     }
 
     // Check this row's parallel items against the same break appeal. The
@@ -1855,8 +1970,7 @@ GridLanesLayoutAlgorithm::FindRowBreakpoint(
         space, LayoutResult::kSuccess, break_between, has_separation,
         /*breakable_at_start_of_container=*/false);
     if (!early_break_) {
-      for (wtf_size_t index = begin; index < end; ++index) {
-        const GridLanesFragmentationItem& entry = row_items[index];
+      for (const GridLanesFragmentationItem& entry : items_in_row) {
         const LayoutUnit fragmentainer_offset =
             FragmentainerOffsetForChildren() + entry.offset.block_offset;
         // Let MovePastBreakpoint record fragmentation bookkeeping even when
@@ -1875,39 +1989,68 @@ GridLanesLayoutAlgorithm::FindRowBreakpoint(
                                &container_builder_);
         if (break_info.early_break &&
             break_info.early_break->GetBreakAppeal() > appeal) {
-          *out_early_break = break_info.early_break;
-          return std::nullopt;
+          return {.early_break = break_info.early_break};
         }
-        return Breakpoint(row, row_offset, /*is_forced_break=*/false);
+        return {.breakpoint = Breakpoint(row_idx, row_offset,
+                                         /*is_forced_break=*/false, appeal)};
+      }
+    }
+    if (row_idx >= first_eligible_row_idx &&
+        fragmentainer_space != kIndefiniteSize) {
+      const LayoutUnit growth =
+          CalculateRowExpansion(items_in_row, fragmentainer_space);
+      if (growth > LayoutUnit()) {
+        return {.expansion = RowExpansion{row_idx, growth}};
       }
     }
     if (has_separation) {
       if (!break_info.early_break ||
           appeal >= break_info.early_break->GetBreakAppeal()) {
         break_info.early_break =
-            MakeGarbageCollected<EarlyBreak>(static_cast<int>(row), appeal);
+            MakeGarbageCollected<EarlyBreak>(static_cast<int>(row_idx), appeal);
       }
     }
     begin = end;
   }
-  return std::nullopt;
+  return {};
 }
 
-BreakStatus GridLanesLayoutAlgorithm::FinishRowFragmentation(
+LayoutResult::EStatus GridLanesLayoutAlgorithm::FinishRowFragmentation(
     const HeapVector<GridLanesFragmentationItem>& row_items,
     const Vector<EBreakBetween>& row_break_between,
     GridLanesDataVector& grid_lanes,
+    wtf_size_t* first_eligible_row_idx,
     LayoutUnit stitched_offset,
     LayoutUnit* total_intrinsic_block_size) {
   const auto& space = GetConstraintSpace();
   const LayoutUnit fragmentainer_space = FragmentainerSpaceLeftForChildren();
   const auto container_writing_direction = space.GetWritingDirection();
-  const EarlyBreak* early_break = nullptr;
-  const std::optional<Breakpoint> breakpoint =
-      FindRowBreakpoint(row_items, row_break_between, &early_break);
+  auto [breakpoint, early_break, expansion] = EvaluateRowsForFragmentation(
+      row_items, row_break_between, *first_eligible_row_idx);
+  // Expand in increasing order, at most once per row in this fragment. The
+  // next pass gets the new size, but none of this pass's break bookkeeping.
+  if (expansion) {
+    auto [row, amount] = *expansion;
+    grid_lanes[row].row_block_size_adjustment += amount;
+    *first_eligible_row_idx = row + 1;
+    for (wtf_size_t later_row = *first_eligible_row_idx;
+         later_row < grid_lanes.size(); ++later_row) {
+      grid_lanes[later_row].item_offset_adjustment += amount;
+    }
+    *total_intrinsic_block_size += amount;
+    return LayoutResult::kNeedsRelayoutWithGridLanesRowGrowth;
+  }
+  if (!early_break_ && breakpoint && !breakpoint->is_forced_break &&
+      breakpoint->row < *first_eligible_row_idx) {
+    // Growth can make a parallel item prefer breaking before the row. Preserve
+    // that breakpoint but relayout so deferred growth doesn't resize spanners
+    // in the current fragment.
+    early_break = MakeGarbageCollected<EarlyBreak>(
+        static_cast<int>(breakpoint->row), breakpoint->appeal);
+  }
   if (early_break) {
     container_builder_.SetEarlyBreak(early_break);
-    return BreakStatus::kNeedsEarlierBreak;
+    return LayoutResult::kNeedsEarlierBreak;
   }
 
   if (breakpoint && fragmentainer_space != kIndefiniteSize) {
@@ -1925,7 +2068,7 @@ BreakStatus GridLanesLayoutAlgorithm::FinishRowFragmentation(
   // Commit rows before the breakpoint and defer every owning item in its row.
   // Any continuing parallel item keeps its lane unfinished.
   Vector<bool> has_continuation(grid_lanes.size(), false);
-  for (const auto& entry : row_items) {
+  for (const GridLanesFragmentationItem& entry : row_items) {
     if (breakpoint) {
       if (entry.lane_idx == breakpoint->row) {
         container_builder_.AddBreakBeforeChild(entry.data->item->node,
@@ -1963,7 +2106,7 @@ BreakStatus GridLanesLayoutAlgorithm::FinishRowFragmentation(
   // Encompass monolithic overflow so resumed children can compensate for the
   // container having consumed more block size than they have.
   intrinsic_block_size_ = std::max(intrinsic_block_size_, max_item_block_end);
-  return BreakStatus::kContinue;
+  return LayoutResult::kSuccess;
 }
 
 void GridLanesLayoutAlgorithm::ApplyStackingAxisAlignment(
@@ -3495,7 +3638,7 @@ GridSizingTree GridLanesLayoutAlgorithm::ComputeGridLanesSizingTree(
           constraint_space, Node(), GetBreakToken(), BorderScrollbarPadding(),
           intrinsic_block_size);
 
-      const auto block_size = ComputeBlockSizeForFragment(
+      const LayoutUnit block_size = ComputeBlockSizeForFragment(
           constraint_space, Node(), BorderPadding(), intrinsic_block_size,
           container_builder_.InlineSize());
 
