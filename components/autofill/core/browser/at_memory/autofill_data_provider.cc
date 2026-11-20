@@ -249,8 +249,8 @@ std::vector<MemorySearchResult> FetchDataFromAddressProfiles(
     MemoryDataType memory_data_type,
     base::optional_ref<const RawValueQuery> query) {
   std::vector<MemorySearchResult> entries;
-  const std::string_view app_locale =
-      personal_data_manager.address_data_manager().app_locale().tag_string();
+  const base::i18n::LanguageTag& app_locale =
+      personal_data_manager.address_data_manager().app_locale();
 
   for (const AutofillProfile* profile :
        personal_data_manager.address_data_manager().GetProfiles()) {
@@ -261,7 +261,7 @@ std::vector<MemorySearchResult> FetchDataFromAddressProfiles(
       if (!profile->HasRawInfo(ADDRESS_HOME_STREET_ADDRESS)) {
         continue;
       }
-      value = GetEnvelopeStyleAddress(*profile, std::string(app_locale),
+      value = GetEnvelopeStyleAddress(*profile, app_locale,
                                       /*include_recipient=*/false,
                                       /*include_country=*/true);
       base::ReplaceChars(
@@ -269,13 +269,13 @@ std::vector<MemorySearchResult> FetchDataFromAddressProfiles(
           l10n_util::GetStringUTF16(IDS_AUTOFILL_ADDRESS_SUMMARY_SEPARATOR),
           &value);
     } else {
-      value = profile->GetInfo(field_type, app_locale);
+      value = profile->GetInfo(field_type, app_locale.tag_string());
     }
     if (!YieldsEntry(memory_data_type, value, query)) {
       continue;
     }
     entries.push_back(CreateResultFromAddressProfile(
-        *profile, std::move(value), memory_data_type, app_locale));
+        *profile, std::move(value), memory_data_type, app_locale.tag_string()));
   }
   return entries;
 }

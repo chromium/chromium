@@ -6,7 +6,9 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
+#include "base/i18n/language_tag.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
@@ -86,11 +88,10 @@ class SaveAddressBubbleControllerTest : public ::testing::Test {
  protected:
   content::WebContents* web_contents() { return web_contents_.get(); }
 
-  std::string app_locale() const {
-    return std::string(g_browser_process->GetFeatures()
-                           ->application_locale_storage()
-                           ->GetTag()
-                           .tag_string());
+  const base::i18n::LanguageTag& app_locale() const {
+    return g_browser_process->GetFeatures()
+        ->application_locale_storage()
+        ->GetTag();
   }
 
  private:
@@ -116,9 +117,10 @@ TEST_F(SaveAddressBubbleControllerTest, SavingNonAccountAddress) {
       GetEnvelopeStyleAddress(profile, app_locale(), /*include_recipient=*/true,
                               /*include_country=*/true));
   EXPECT_EQ(controller->GetProfileEmail(),
-            profile.GetInfo(EMAIL_ADDRESS, app_locale()));
+            profile.GetInfo(EMAIL_ADDRESS, app_locale().tag_string()));
   EXPECT_EQ(controller->GetProfilePhone(),
-            i18n::GetFormattedPhoneNumberForDisplay(profile, app_locale()));
+            i18n::GetFormattedPhoneNumberForDisplay(
+                profile, std::string(app_locale().tag_string())));
   EXPECT_EQ(controller->GetOkButtonLabel(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE));
@@ -146,9 +148,10 @@ TEST_F(SaveAddressBubbleControllerTest, SavingAccountAddress) {
       GetEnvelopeStyleAddress(profile, app_locale(), /*include_recipient=*/true,
                               /*include_country=*/true));
   EXPECT_EQ(controller->GetProfileEmail(),
-            profile.GetInfo(EMAIL_ADDRESS, app_locale()));
+            profile.GetInfo(EMAIL_ADDRESS, app_locale().tag_string()));
   EXPECT_EQ(controller->GetProfilePhone(),
-            i18n::GetFormattedPhoneNumberForDisplay(profile, app_locale()));
+            i18n::GetFormattedPhoneNumberForDisplay(
+                profile, std::string(app_locale().tag_string())));
   EXPECT_EQ(controller->GetOkButtonLabel(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE));
@@ -191,7 +194,7 @@ TEST_F(SaveAddressBubbleControllerTest, CombiningAccountsTypes) {
   const AutofillProfile merged_profile = test::SupersetProfileOf(
       {test::AccountNameEmailProfile(),
        test::OnlyAddressProfile(AutofillProfile::RecordType::kAccountHome)},
-      app_locale(), AutofillProfile::RecordType::kAccount);
+      app_locale().tag_string(), AutofillProfile::RecordType::kAccount);
   std::unique_ptr<SaveAddressBubbleController> controller = CreateController(
       merged_profile,
       AutofillClient::SaveAddressBubbleType::kHomeWorkNameEmailMerge);
@@ -222,7 +225,7 @@ TEST_F(SaveAddressBubbleControllerTest, CombiningAccountsTypes) {
                                     /*include_recipient=*/true,
                                     /*include_country=*/true));
   EXPECT_EQ(controller->GetProfileEmail(),
-            merged_profile.GetInfo(EMAIL_ADDRESS, app_locale()));
+            merged_profile.GetInfo(EMAIL_ADDRESS, app_locale().tag_string()));
 
   EXPECT_EQ(controller->GetCancelCallbackValue(),
             AutofillClient::AddressPromptUserDecision::kDeclined);

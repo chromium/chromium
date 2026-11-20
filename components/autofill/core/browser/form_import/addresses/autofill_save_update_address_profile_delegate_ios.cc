@@ -65,8 +65,7 @@ AutofillSaveUpdateAddressProfileDelegateIOS::FromInfobarDelegate(
 
 std::u16string
 AutofillSaveUpdateAddressProfileDelegateIOS::GetEnvelopeStyleAddress() const {
-  return ::autofill::GetEnvelopeStyleAddress(profile_,
-                                             std::string(locale_.tag_string()),
+  return ::autofill::GetEnvelopeStyleAddress(profile_, locale_,
                                              /*include_recipient=*/true,
                                              /*include_country=*/true);
 }
@@ -95,8 +94,7 @@ std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetEmailAddress()
 
 std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::
     GetProfileDescriptionForMigrationPrompt() const {
-  return GetProfileSummaryForMigrationPrompt(profile_,
-                                             std::string(locale_.tag_string()));
+  return GetProfileSummaryForMigrationPrompt(profile_, locale_);
 }
 
 std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetDescription()
@@ -112,15 +110,14 @@ std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetDescription()
         *user_email_);
   }
   return GetProfileDescription(
-      original_profile_ ? *original_profile_ : profile_,
-      std::string(locale_.tag_string()),
+      original_profile_ ? *original_profile_ : profile_, locale_,
       /*include_address_and_contacts=*/true);
 }
 
 std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetSubtitle() {
   CHECK(original_profile_);
-  std::vector<ProfileValueDifference> differences = GetProfileDifferenceForUi(
-      original_profile_.value(), profile_, std::string(locale_.tag_string()));
+  std::vector<ProfileValueDifference> differences =
+      GetProfileDifferenceForUi(original_profile_.value(), profile_, locale_);
   // TODO(crbug.com/481234059): Convert this to CHECK after investigation.
   // Based of hypothesis in crbug.com/477044258, `GetProfileDifferenceForUi` is
   // returning empty.
@@ -128,7 +125,7 @@ std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetSubtitle() {
   bool address_updated = std::ranges::contains(
       differences, ADDRESS_HOME_ADDRESS, &ProfileValueDifference::type);
   return GetProfileDescription(
-      original_profile_.value(), std::string(locale_.tag_string()),
+      original_profile_.value(), locale_,
       /*include_address_and_contacts=*/!address_updated);
 }
 
@@ -162,7 +159,7 @@ std::u16string AutofillSaveUpdateAddressProfileDelegateIOS::GetProfileInfo(
 std::vector<ProfileValueDifference>
 AutofillSaveUpdateAddressProfileDelegateIOS::GetProfileDiff() const {
   return GetProfileDifferenceForUi(*GetProfile(), *GetOriginalProfile(),
-                                   std::string(locale_.tag_string()));
+                                   locale_);
 }
 
 void AutofillSaveUpdateAddressProfileDelegateIOS::EditAccepted() {

@@ -19,6 +19,7 @@
 #include "base/containers/to_vector.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -26,8 +27,10 @@
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -271,9 +274,11 @@ std::u16string PersonalDataManagerAndroid::GetProfileDescriptionForEditor(
     const std::string& guid) {
   const AutofillProfile* profile =
       address_data_manager().GetProfileByGUID(guid);
-  return profile ? GetProfileDescription(
-                       *profile, g_browser_process->GetApplicationLocale(),
-                       /*include_address_and_contacts=*/true)
+  return profile ? GetProfileDescription(*profile,
+                                         g_browser_process->GetFeatures()
+                                             ->application_locale_storage()
+                                             ->GetTag(),
+                                         /*include_address_and_contacts=*/true)
                  : std::u16string();
 }
 

@@ -139,9 +139,12 @@ source_set("update_address_profile_view") {
   ]
   deps = [
     ":autofill_bubble_utils",
+    "//base/i18n:language_tag",
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
     "//chrome/browser/ui/views:layout_provider",
+    "//components/application_locale_storage",
     "//components/autofill/core/browser",
     "//components/strings:components_strings",
     "//components/vector_icons",

@@ -115,23 +115,24 @@ std::vector<AutofillAddressUIComponent> GetAddressComponents(
 
 // Returns the address stored in `profile` when UI BCP 47 language code is
 // `ui_language_code`. If the format of the country in `profile` isn't known,
-// the US address format is used instead. If `ui_language_code` is not valid,
-// the default format is returned. If `include_recipient` is true, the recipient
-// full name will be included. If `include_country` is true, the country
-// will be appended in a separate line at the end.
-std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
-                                       const std::string& ui_language_code,
-                                       bool include_recipient,
-                                       bool include_country);
+// the US address format is used instead. If `include_recipient` is true, the
+// recipient full name will be included. If `include_country` is true, the
+// country will be appended in a separate line at the end.
+std::u16string GetEnvelopeStyleAddress(
+    const AutofillProfile& profile,
+    const base::i18n::LanguageTag& ui_language_code,
+    bool include_recipient,
+    bool include_country);
 
 // Returns a one-line `profile` description, listing (at max) 2 significant
 // user-visible fields with respect to UI BCP 47 language code in
 // `ui_language_code`. If `include_address_and_contacts` is false, only full
 // name is included, and the returned string can be empty if the name is not
 // present.
-std::u16string GetProfileDescription(const AutofillProfile& profile,
-                                     const std::string& ui_language_code,
-                                     bool include_address_and_contacts);
+std::u16string GetProfileDescription(
+    const AutofillProfile& profile,
+    const base::i18n::LanguageTag& ui_language_code,
+    bool include_address_and_contacts);
 
 // Gets the difference of two profiles in name, address, email and phone number
 // in that order. Differences in name, email and phone number are computed and
@@ -142,13 +143,13 @@ std::u16string GetProfileDescription(const AutofillProfile& profile,
 std::vector<ProfileValueDifference> GetProfileDifferenceForUi(
     const AutofillProfile& first_profile,
     const AutofillProfile& second_profile,
-    const std::string& app_locale);
+    const base::i18n::LanguageTag& app_locale);
 
 // Returns a multi line `profile` description comprising of full name, address,
 // email and phone in separate lines if they are non-empty.
 std::u16string GetProfileSummaryForMigrationPrompt(
     const AutofillProfile& profile,
-    const std::string& app_locale);
+    const base::i18n::LanguageTag& app_locale);
 
 // Returns the appropriate icon for the `field_type`.
 AddressUIComponentIconType GetAddressUIComponentIconTypeForFieldType(

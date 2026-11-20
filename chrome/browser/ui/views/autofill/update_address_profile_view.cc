@@ -7,10 +7,13 @@
 #include <algorithm>
 
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/views/autofill/autofill_bubble_utils.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "components/strings/grit/components_strings.h"
@@ -181,9 +184,11 @@ UpdateAddressProfileView::UpdateAddressProfileView(
       controller_(std::move(controller)) {
   auto* layout_provider = views::LayoutProvider::Get();
 
-  std::vector<ProfileValueDifference> profile_diff = GetProfileDifferenceForUi(
-      controller_->GetProfileToSave(), controller_->GetOriginalProfile(),
-      g_browser_process->GetApplicationLocale());
+  const base::i18n::LanguageTag& app_locale =
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag();
+  std::vector<ProfileValueDifference> profile_diff =
+      GetProfileDifferenceForUi(controller_->GetProfileToSave(),
+                                controller_->GetOriginalProfile(), app_locale);
   // TODO(crbug.com/481234059): Convert this to CHECK after investigation.
   // Based of hypothesis in crbug.com/477044258, `GetProfileDifferenceForUi` is
   // returning empty.
@@ -216,8 +221,7 @@ UpdateAddressProfileView::UpdateAddressProfileView(
                                   0));
 
   std::u16string subtitle = GetProfileDescription(
-      controller_->GetOriginalProfile(),
-      g_browser_process->GetApplicationLocale(),
+      controller_->GetOriginalProfile(), app_locale,
       /*include_address_and_contacts=*/!HasAddressEntry(profile_diff));
   if (!subtitle.empty()) {
     views::Label* subtitle_label = AddChildView(std::make_unique<views::Label>(

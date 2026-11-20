@@ -10,12 +10,12 @@
 #include <array>
 #include <iterator>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check.h"
 #include "base/containers/to_vector.h"
 #include "base/i18n/language_tag.h"
-#include "base/i18n/tag_converters.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -205,19 +205,18 @@ std::vector<AutofillAddressUIComponent> GetAddressComponents(
   NOTREACHED();
 }
 
-std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
-                                       const std::string& ui_language_code,
-                                       bool include_recipient,
-                                       bool include_country) {
+std::u16string GetEnvelopeStyleAddress(
+    const AutofillProfile& profile,
+    const base::i18n::LanguageTag& ui_language_code,
+    bool include_recipient,
+    bool include_country) {
   const std::u16string country_code = profile.GetRawInfo(ADDRESS_HOME_COUNTRY);
 
   std::string not_used;
-  std::vector<AutofillAddressUIComponent> components = GetAddressComponents(
-      base::UTF16ToUTF8(country_code),
-      base::i18n::GetLanguageTagFromString(ui_language_code)
-          .value_or(base::i18n::GetKnownLanguageTag("und")),
-      /*enable_field_labels_localization=*/true,
-      /*include_literals=*/true, not_used);
+  std::vector<AutofillAddressUIComponent> components =
+      GetAddressComponents(base::UTF16ToUTF8(country_code), ui_language_code,
+                           /*enable_field_labels_localization=*/true,
+                           /*include_literals=*/true, not_used);
 
   DCHECK(!components.empty());
   // Remove components that evaluate to an empty string.
@@ -229,7 +228,8 @@ std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
                                component.field == ALTERNATIVE_FULL_NAME)) {
       return true;
     }
-    return profile.GetInfo(component.field, ui_language_code).empty();
+    return profile.GetInfo(component.field, ui_language_code.tag_string())
+        .empty();
   });
 
   // Remove delimiters from the beginning and the end.
@@ -252,14 +252,16 @@ std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
       }
       continue;
     }
-    std::u16string info = profile.GetInfo(component.field, ui_language_code);
+    std::u16string info =
+        profile.GetInfo(component.field, ui_language_code.tag_string());
     pieces.push_back(info);
     last_field_was_non_empty = true;
   }
 
   if (include_country) {
     pieces.push_back(u"\n");
-    pieces.push_back(profile.GetInfo(ADDRESS_HOME_COUNTRY, ui_language_code));
+    pieces.push_back(
+        profile.GetInfo(ADDRESS_HOME_COUNTRY, ui_language_code.tag_string()));
   }
 
   std::string address_utf8 = base::UTF16ToUTF8(base::StrCat(pieces));
@@ -277,9 +279,10 @@ std::u16string GetEnvelopeStyleAddress(const AutofillProfile& profile,
   return base::UTF8ToUTF16(address_utf8);
 }
 
-std::u16string GetProfileDescription(const AutofillProfile& profile,
-                                     const std::string& ui_language_code,
-                                     bool include_address_and_contacts) {
+std::u16string GetProfileDescription(
+    const AutofillProfile& profile,
+    const base::i18n::LanguageTag& ui_language_code,
+    bool include_address_and_contacts) {
   // All user-visible fields.
   static constexpr FieldType kDetailsFields[] = {
       NAME_FULL,
@@ -295,23 +298,24 @@ std::u16string GetProfileDescription(const AutofillProfile& profile,
       ADDRESS_HOME_COUNTRY};
 
   if (!include_address_and_contacts) {
-    return profile.GetInfo(NAME_FULL, ui_language_code);
+    return profile.GetInfo(NAME_FULL, ui_language_code.tag_string());
   }
 
-  return profile.ConstructInferredLabel(
-      kDetailsFields, /*num_fields_to_include=*/2, ui_language_code);
+  return profile.ConstructInferredLabel(kDetailsFields,
+                                        /*num_fields_to_include=*/2,
+                                        ui_language_code.tag_string());
 }
 
 std::vector<ProfileValueDifference> GetProfileDifferenceForUi(
     const AutofillProfile& first_profile,
     const AutofillProfile& second_profile,
-    const std::string& app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   std::vector<ProfileValueDifference> differences_for_ui =
       AutofillProfileComparator::GetProfileDifference(
           first_profile, second_profile,
           {NAME_FULL, ALTERNATIVE_FULL_NAME, EMAIL_ADDRESS,
            PHONE_HOME_WHOLE_NUMBER},
-          app_locale);
+          std::string(app_locale.tag_string()));
 
   // ADDRESS_HOME_ADDRESS is handled separately.
   std::u16string first_address = GetEnvelopeStyleAddress(
@@ -348,14 +352,14 @@ std::vector<ProfileValueDifference> GetProfileDifferenceForUi(
 
 std::u16string GetProfileSummaryForMigrationPrompt(
     const AutofillProfile& profile,
-    const std::string& app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   std::vector<FieldType> fields = {
       FieldType::NAME_FULL, FieldType::ADDRESS_HOME_LINE1,
       FieldType::EMAIL_ADDRESS, FieldType::PHONE_HOME_WHOLE_NUMBER};
   std::vector<std::u16string> values;
   values.reserve(fields.size());
   for (FieldType field : fields) {
-    std::u16string value = profile.GetInfo(field, app_locale);
+    std::u16string value = profile.GetInfo(field, app_locale.tag_string());
     if (!value.empty()) {
       values.push_back(value);
     }

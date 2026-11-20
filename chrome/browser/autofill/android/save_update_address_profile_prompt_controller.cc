@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/i18n/language_tag.h"
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -18,7 +19,9 @@
 #include "chrome/browser/autofill/android/save_update_address_profile_prompt_view.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -53,7 +56,9 @@ SaveUpdateAddressProfilePromptController::
       decision_callback_(std::move(decision_callback)),
       dismissal_callback_(std::move(dismissal_callback)) {
   if (original_profile_) {
-    const std::string& locale = g_browser_process->GetApplicationLocale();
+    const base::i18n::LanguageTag& locale = g_browser_process->GetFeatures()
+                                                ->application_locale_storage()
+                                                ->GetTag();
     differences_for_ui_ =
         GetProfileDifferenceForUi(original_profile_.value(), profile_, locale);
     // TODO(crbug.com/481234059): Convert this to CHECK after investigation.
@@ -209,7 +214,9 @@ std::u16string SaveUpdateAddressProfilePromptController::GetAddress() const {
     return base::StrCat({name, separator, address});
   } else {
     return GetEnvelopeStyleAddress(profile_,
-                                   g_browser_process->GetApplicationLocale(),
+                                   g_browser_process->GetFeatures()
+                                       ->application_locale_storage()
+                                       ->GetTag(),
                                    /*include_recipient=*/true,
                                    /*include_country=*/true);
   }
@@ -228,7 +235,8 @@ std::u16string SaveUpdateAddressProfilePromptController::GetPhoneNumber()
 
 std::u16string SaveUpdateAddressProfilePromptController::GetSubtitle() const {
   CHECK(original_profile_, base::NotFatalUntil::M161);
-  const std::string locale = g_browser_process->GetApplicationLocale();
+  const base::i18n::LanguageTag& locale =
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag();
   bool address_updated = std::ranges::contains(
       differences_for_ui_, ADDRESS_HOME_ADDRESS, &ProfileValueDifference::type);
   return GetProfileDescription(

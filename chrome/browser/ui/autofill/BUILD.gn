@@ -150,6 +150,7 @@ source_set("impl") {
   deps = [
     ":autofill",
     ":autofill_ai_ui_utils_impl",
+    "//base/i18n:language_tag",
     "//chrome/browser:browser_process",
     "//chrome/browser/account_settings",
     "//chrome/browser/actor",
@@ -314,6 +315,7 @@ source_set("unit_tests") {
     ":test_support",
     ":test_support_unit",
     "//base",
+    "//base/i18n:language_tag",
     "//base/test:test_support",
     "//build:branding_buildflags",
     "//chrome/browser:browser_process",

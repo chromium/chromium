@@ -368,16 +368,15 @@ ProfileImportProcess::GetImportCandidates(
         // whitespace and formatting via `GetEnvelopeStyleAddress()`). Require
         // both to detect a difference so that whitespace/formatting-only
         // updates are applied silently.
-        const std::string app_locale_str(app_locale_.tag_string());
         const bool raw_values_differ = AutofillProfileComparator::
             ProfilesHaveDifferentSettingsVisibleValues(
-                *candidate, merged_profile, app_locale_str);
+                *candidate, merged_profile,
+                std::string(app_locale_.tag_string()));
         const bool has_setting_visible_change =
             raw_values_differ &&
             (!base::FeatureList::IsEnabled(
                  features::kAutofillGuardEmptyUpdatePrompts) ||
-             !GetProfileDifferenceForUi(merged_profile, *candidate,
-                                        app_locale_str)
+             !GetProfileDifferenceForUi(merged_profile, *candidate, app_locale_)
                   .empty());
         result.push_back(
             ImportCandidate{.change = has_setting_visible_change

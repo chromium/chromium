@@ -80,6 +80,7 @@ static_library("autofill") {
     "//url",
   ]
   deps = [
+    "//base/i18n:language_tag",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/account_settings",
