@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_INFOBARS_MODEL_OVERLAYS_BROWSER_AGENT_INTERACTION_HANDLERS_TEST_MOCK_AUTOFILL_SAVE_UPDATE_ADDRESS_PROFILE_DELEGATE_IOS_H_
 
 #include <memory>
-#include <string>
 
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
@@ -14,13 +13,17 @@
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 class MockAutofillSaveUpdateAddressProfileDelegateIOS
     : public autofill::AutofillSaveUpdateAddressProfileDelegateIOS {
  public:
   MockAutofillSaveUpdateAddressProfileDelegateIOS(
       const autofill::AutofillProfile& profile,
       const autofill::AutofillProfile* original_profile,
-      const std::string& locale,
+      const base::i18n::LanguageTag& locale,
       autofill::AutofillClient::AddressProfileSavePromptCallback callback);
   ~MockAutofillSaveUpdateAddressProfileDelegateIOS() override;
 

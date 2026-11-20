@@ -45,6 +45,7 @@ source_set("unit_tests") {
 
   deps = [
     ":autofill_address_profile",
+    "//base/i18n:language_tag",
     "//base/test:test_support",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",

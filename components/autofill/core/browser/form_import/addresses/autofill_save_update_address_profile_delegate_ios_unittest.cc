@@ -7,6 +7,7 @@
 #include <memory>
 #include <variant>
 
+#include "base/i18n/language_tag.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_test_api.h"
@@ -47,7 +48,8 @@ class AutofillSaveUpdateAddressProfileDelegateIOSTest : public testing::Test {
     }
     return std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
         *profile_, original_profile, email,
-        /*locale=*/"en-US", is_migration_to_account, callback_.Get());
+        base::i18n::GetKnownLanguageTag("en-US"), is_migration_to_account,
+        callback_.Get());
   }
 
   std::unique_ptr<AutofillProfile> profile_;

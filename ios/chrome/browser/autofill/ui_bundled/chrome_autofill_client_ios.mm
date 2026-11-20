@@ -14,6 +14,7 @@
 #import "base/containers/to_vector.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/i18n/language_tag.h"
 #import "base/memory/ptr_util.h"
 #import "base/notreached.h"
 #import "base/strings/string_util.h"
@@ -552,8 +553,7 @@ void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
   }
 
   auto delegate = std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
-      profile, original_profile, GetUserEmail(),
-      std::string(GetAppLocale().tag_string()),
+      profile, original_profile, GetUserEmail(), GetAppLocale(),
       save_address_bubble_type == SaveAddressBubbleType::kMigrateToAccount,
       std::move(callback));
 

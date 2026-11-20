@@ -17,6 +17,7 @@ source_set("test") {
 
   deps = [
     "//base",
+    "//base/i18n:language_tag",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
     "//components/prefs",

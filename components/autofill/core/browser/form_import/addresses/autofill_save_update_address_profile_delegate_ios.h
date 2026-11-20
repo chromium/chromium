@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/i18n/language_tag.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -27,7 +28,7 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
       const AutofillProfile& profile,
       const AutofillProfile* original_profile,
       std::optional<std::u16string> user_email,
-      const std::string& locale,
+      const base::i18n::LanguageTag& locale,
       bool is_migration_to_account,
       AutofillClient::AddressProfileSavePromptCallback callback);
   AutofillSaveUpdateAddressProfileDelegateIOS(
@@ -124,7 +125,7 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
   void SetUserDecision(AutofillClient::AddressPromptUserDecision user_decision);
 
   // The application locale.
-  std::string locale_;
+  base::i18n::LanguageTag locale_;
 
   // The profile that will be saved if the user accepts.
   AutofillProfile profile_;

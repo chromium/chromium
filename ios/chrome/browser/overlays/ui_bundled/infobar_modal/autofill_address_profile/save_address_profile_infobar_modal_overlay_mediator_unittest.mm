@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
+#import "base/i18n/language_tag.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/form_import/addresses/autofill_save_update_address_profile_delegate_ios.h"
@@ -44,7 +45,7 @@ class SaveAddressProfileInfobarModalOverlayMediatorTest : public PlatformTest {
             autofill::AutofillSaveUpdateAddressProfileDelegateIOS>(
             profile, /*original_profile=*/nullptr,
             /*user_email=*/std::nullopt,
-            /*locale=*/"en-US",
+            base::i18n::GetKnownLanguageTag("en-US"),
             /*is_migration_to_account=*/false, base::DoNothing());
     delegate_ = delegate.get();
     infobar_ = std::make_unique<InfoBarIOS>(

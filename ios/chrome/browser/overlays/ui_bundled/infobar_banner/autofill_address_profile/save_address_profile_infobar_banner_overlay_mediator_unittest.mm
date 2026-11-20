@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
+#import "base/i18n/language_tag.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/uuid.h"
 #import "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
@@ -48,8 +49,7 @@ TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest, SetUpConsumer) {
       passed_delegate = std::make_unique<
           autofill::AutofillSaveUpdateAddressProfileDelegateIOS>(
           profile, /*original_profile=*/nullptr,
-          /*user_email=*/std::nullopt,
-          /*locale=*/"en-US",
+          /*user_email=*/std::nullopt, base::i18n::GetKnownLanguageTag("en-US"),
           /*is_migration_to_account=*/false, base::DoNothing());
   autofill::AutofillSaveUpdateAddressProfileDelegateIOS* delegate =
       passed_delegate.get();
@@ -87,8 +87,7 @@ TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest,
       passed_delegate = std::make_unique<
           autofill::AutofillSaveUpdateAddressProfileDelegateIOS>(
           profile, /*original_profile=*/nullptr,
-          /*user_email=*/std::nullopt,
-          /*locale=*/"en-US",
+          /*user_email=*/std::nullopt, base::i18n::GetKnownLanguageTag("en-US"),
           /*is_migration_to_account=*/false, base::DoNothing());
   InfoBarIOS infobar(InfobarType::kInfobarTypeSaveAutofillAddressProfile,
                      std::move(passed_delegate));
