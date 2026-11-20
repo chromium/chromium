@@ -7,7 +7,6 @@
 #include <string_view>
 
 #include "base/containers/fixed_flat_set.h"
-#include "base/feature_list.h"
 #include "base/i18n/language_tag_list_helper.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/statistics_recorder.h"
@@ -25,7 +24,6 @@
 #include "components/embedder_support/switches.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
-#include "components/language/core/common/language_experiments.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
@@ -33,7 +31,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/origin.h"
 
@@ -72,11 +69,6 @@ static constexpr const char kFirstPartyOriginUrl[] = "https://127.0.0.1:44444";
 class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
  public:
   ReduceAcceptLanguageBrowserTest() = default;
-
-  void SetUp() override {
-    EnabledFeatures();
-    InProcessBrowserTest::SetUp();
-  }
 
   void SetUpOnMainThread() override {
     // We use a URLLoaderInterceptor, we also can use the EmbeddedTestServer.
@@ -160,9 +152,6 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
   }
 
  protected:
-  // Return the feature list for the tests.
-  virtual void EnabledFeatures() = 0;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::set<GURL> intercepted_load_urls_;
 
  private:
@@ -242,23 +231,8 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
 
 // Browser tests verify reduce the total number of Accept-Language.
 class ReduceAcceptLanguageCountBrowserTest
-    : public ReduceAcceptLanguageBrowserTest,
-      public testing::WithParamInterface<bool> {
+    : public ReduceAcceptLanguageBrowserTest {
  protected:
-  void EnabledFeatures() override {
-    // If explicitly set custom count set 5 as max.
-    if (GetParam()) {
-      scoped_feature_list_.InitWithFeaturesAndParameters(
-          /*enabled_features=*/{{language::kReduceAcceptLanguageCount,
-                                 {{language::kMaxAcceptLanguage.name, "5"}}}},
-          /*disabled_features=*/{});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{language::kReduceAcceptLanguageCount},
-          /*disabled_features=*/{});
-    }
-  }
-
   // Samples recorded for kLargeLanguages: 1 during initial profile setup,
   // twice more when SetPrefsAcceptLanguage() syncs the preference to the
   // renderer and network services, and 1 per WebUI omnibox popup or WebUI
@@ -276,11 +250,7 @@ class ReduceAcceptLanguageCountBrowserTest
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(FeatureFlag,
-                         ReduceAcceptLanguageCountBrowserTest,
-                         testing::Values(true, false));
-
-IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageCountBrowserTest, RegularRequest) {
+IN_PROC_BROWSER_TEST_F(ReduceAcceptLanguageCountBrowserTest, RegularRequest) {
   base::HistogramTester histograms;
 
   SetTestOptions({.content_language_in_parent = "en",
@@ -294,12 +264,8 @@ IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageCountBrowserTest, RegularRequest) {
   // network stack.
   NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginRequestUrl(),
                                                std::nullopt);
-  if (GetParam()) {
-    VerifyNavigatorLanguages({"zh", "zh-CN", "en-US", "en", "af"});
-  } else {
-    VerifyNavigatorLanguages(
-        {"zh", "zh-CN", "en-US", "en", "af", "sq", "am", "ar", "an", "hy"});
-  }
+  VerifyNavigatorLanguages(
+      {"zh", "zh-CN", "en-US", "en", "af", "sq", "am", "ar", "an", "hy"});
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   histograms.ExpectBucketCount("LanguageUsage.AcceptLanguage.Count2",
@@ -307,7 +273,7 @@ IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageCountBrowserTest, RegularRequest) {
                                ExpectedAcceptLanguageCountSamples());
 }
 
-IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageCountBrowserTest, Iframe) {
+IN_PROC_BROWSER_TEST_F(ReduceAcceptLanguageCountBrowserTest, Iframe) {
   base::HistogramTester histograms;
 
   SetTestOptions({.content_language_in_parent = "es",
@@ -324,12 +290,8 @@ IN_PROC_BROWSER_TEST_P(ReduceAcceptLanguageCountBrowserTest, Iframe) {
   // network stack.
   NavigateAndVerifyAcceptLanguageOfLastRequest(SameOriginIframeUrl(),
                                                std::nullopt);
-  if (GetParam()) {
-    VerifyNavigatorLanguages({"zh", "zh-CN", "en-US", "en", "af"});
-  } else {
-    VerifyNavigatorLanguages(
-        {"zh", "zh-CN", "en-US", "en", "af", "sq", "am", "ar", "an", "hy"});
-  }
+  VerifyNavigatorLanguages(
+      {"zh", "zh-CN", "en-US", "en", "af", "sq", "am", "ar", "an", "hy"});
   EXPECT_EQ(LastRequestUrl().GetPath(), "/subframe_simple.html");
 
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();

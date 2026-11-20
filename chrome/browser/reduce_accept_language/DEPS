@@ -2,10 +2,3 @@ include_rules = [
   # No inclusion of Blink from the browser.
   "-third_party/blink",
 ]
-
-specific_include_rules = {
-  # Only include Blink for browser tests.
-  "reduce_accept_language_browsertest.cc" : [
-    "+third_party/blink/public/common"
-  ],
-}

@@ -31,6 +31,11 @@ namespace language {
 
 inline constexpr char kFallbackInputMethodLocale[] = "en-US";
 
+// Maximum number of languages to include in the Accept-Language HTTP header and
+// JavaScript navigator.languages getter to enhance privacy. See details in
+// https://datatracker.ietf.org/doc/html/rfc7231#section-9.7.
+inline constexpr size_t kMaxAcceptLanguageCount = 10;
+
 class LanguagePrefs {
  public:
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);

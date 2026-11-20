@@ -21,7 +21,6 @@ if (!is_android) {
       "//components/content_settings/core/common",
       "//components/embedder_support",
       "//components/language/core/browser",
-      "//components/language/core/common",
       "//components/metrics:content",
       "//components/policy:policy_code_generate",
       "//components/prefs",
@@ -29,7 +28,6 @@ if (!is_android) {
       "//content/public/common",
       "//content/test:test_support",
       "//services/network/public/cpp",
-      "//third_party/blink/public/common",
       "//ui/base",
       "//url",
     ]
