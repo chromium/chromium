@@ -567,6 +567,7 @@ cast_source_set("unittests") {
     "//base/test:test_support",
     "//chromecast/app:resources",
     "//chromecast/base",
+    "//chromecast/base:cast_version",
     "//chromecast/base:chromecast_switches",
     "//chromecast/bindings/public/mojom",
     "//chromecast/net:socket_util",

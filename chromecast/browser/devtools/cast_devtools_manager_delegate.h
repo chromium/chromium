@@ -42,6 +42,7 @@ class CastDevToolsManagerDelegate : public content::DevToolsManagerDelegate {
       TargetType target_type) override;
   std::string GetDiscoveryPageHTML() override;
   bool AllowInspectingRenderFrameHost(content::RenderFrameHost* rfh) override;
+  bool AllowInspectingTarget(content::DevToolsAgentHost* agent_host) override;
 
  private:
   std::unordered_set<raw_ptr<content::WebContents, DanglingUntriaged>>

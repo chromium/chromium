@@ -4,10 +4,14 @@
 
 #include "chromecast/browser/devtools/cast_devtools_manager_delegate.h"
 
+#include "base/command_line.h"
 #include "build/build_config.h"
 #include "chromecast/app/grit/shell_resources.h"
+#include "chromecast/base/version.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_switches.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace chromecast {
@@ -73,6 +77,48 @@ std::string CastDevToolsManagerDelegate::GetDiscoveryPageHTML() {
 bool CastDevToolsManagerDelegate::AllowInspectingRenderFrameHost(
     content::RenderFrameHost* rfh) {
   content::WebContents* wc = content::WebContents::FromRenderFrameHost(rfh);
+  return wc && enabled_webcontents_.count(wc) != 0;
+}
+
+bool CastDevToolsManagerDelegate::AllowInspectingTarget(
+    content::DevToolsAgentHost* agent_host) {
+  if (!agent_host) {
+    return false;
+  }
+  if (agent_host->GetType() == content::DevToolsAgentHost::kTypeBrowser) {
+    return CAST_IS_DEBUG_BUILD() ||
+           base::CommandLine::ForCurrentProcess()->HasSwitch(
+               switches::kRemoteDebuggingPort);
+  }
+  content::WebContents* wc = agent_host->GetWebContents();
+  content::DevToolsAgentHost* cur = agent_host;
+  scoped_refptr<content::DevToolsAgentHost> parent;
+  while (!wc && cur) {
+    std::string parent_id = cur->GetParentId();
+    if (parent_id.empty()) {
+      parent_id = cur->GetParentFrameId();
+    }
+    if (parent_id.empty()) {
+      break;
+    }
+    parent = content::DevToolsAgentHost::GetForId(parent_id);
+    if (parent) {
+      wc = parent->GetWebContents();
+      cur = parent.get();
+      continue;
+    }
+    for (content::WebContents* enabled_wc : enabled_webcontents_) {
+      enabled_wc->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
+        if (rfh->GetDevToolsFrameToken().ToString() == parent_id) {
+          wc = enabled_wc;
+        }
+      });
+      if (wc) {
+        break;
+      }
+    }
+    break;
+  }
   return wc && enabled_webcontents_.count(wc) != 0;
 }
 
