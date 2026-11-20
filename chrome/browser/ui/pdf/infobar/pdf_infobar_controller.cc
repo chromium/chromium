@@ -303,6 +303,18 @@ void PdfInfoBarController::MaybeShowInfoBarCallback(
     return;
   }
 
+  // Don't show the infobar if promotions are disabled by policy. This only
+  // needs to be checked if the infobar isn't migrated to the new infobar code
+  // (where registering it as a 'promotional' infobar causes this to be checked
+  // automatically).
+  if (!infobars::IsInfoBarMigrated(
+          infobars::InfoBarDelegate::PDF_INFOBAR_DELEGATE)) {
+    const auto* local_state = g_browser_process->local_state();
+    if (local_state && !local_state->GetBoolean(prefs::kPromotionsEnabled)) {
+      return;
+    }
+  }
+
   // Don't show the infobar if it's already showing.
   if (infobar_scoped_observation_.IsObserving()) {
     return;

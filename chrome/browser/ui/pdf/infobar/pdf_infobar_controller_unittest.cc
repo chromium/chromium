@@ -188,6 +188,14 @@ TEST_F(PdfInfoBarControllerTest, DontShowInfoBarIfDefaultIsPolicyControlled) {
                      shell_integration::DefaultWebClientState::NOT_DEFAULT));
 }
 
+// Don't show the infobar if promotions are disabled by policy.
+TEST_F(PdfInfoBarControllerTest, DontShowInfoBarIfPromotionsDisabledByPolicy) {
+  local_state()->SetManagedPref(prefs::kPromotionsEnabled, base::Value(false));
+  EXPECT_FALSE(
+      DidShowInfoBar(BrowserWindowInterface::Type::TYPE_NORMAL,
+                     shell_integration::DefaultWebClientState::NOT_DEFAULT));
+}
+
 TEST_F(PdfInfoBarControllerTest, DontShowInfoBarIfDefaultBrowserPromptShown) {
   PdfInfoBarController::SetHigherPriorityInfoBarShownForTesting(true);
   EXPECT_FALSE(
