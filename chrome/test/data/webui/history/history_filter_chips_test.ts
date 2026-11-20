@@ -705,30 +705,6 @@ suite('HistoryFilterChipsTest', function() {
       assertFalse(!!element.shadowRoot.querySelector('#clearAllButton'));
     });
 
-    test('ClickingChipClearsDomain', async () => {
-      element.domain = 'example.com';
-      element.showDomainFilter = true;
-      await microtasksFinished();
-
-      const domainChip =
-          element.shadowRoot.querySelector<HTMLElement>('#domainFilterChip');
-      assertTrue(!!domainChip);
-
-      let eventDetail: {domain: string}|undefined;
-      element.addEventListener('filter-changed', ((e: CustomEvent) => {
-                                                   eventDetail = e.detail;
-                                                 }) as EventListener);
-
-      domainChip.click();
-      await microtasksFinished();
-
-      assertTrue(!!eventDetail);
-      assertEquals('', eventDetail.domain);
-      assertEquals('', element.domain);
-      assertFalse(!!element.shadowRoot.querySelector('#domainFilterChip'));
-      assertFalse(!!element.shadowRoot.querySelector('#clearAllButton'));
-    });
-
     test('ClearAllResetsDomain', async () => {
       assertFalse(!!element.shadowRoot.querySelector('#clearAllButton'));
 

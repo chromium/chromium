@@ -154,11 +154,6 @@ export class HistoryFilterChipsElement extends CrLitElement {
     this.fireChange_(this.userVisits, this.actorVisits);
   }
 
-  protected onDomainChipClick_() {
-    this.domain = '';
-    this.fireChange_(this.userVisits, this.actorVisits);
-  }
-
   protected async onClearAllClick_() {
     this.userVisits = true;
     this.actorVisits = true;
