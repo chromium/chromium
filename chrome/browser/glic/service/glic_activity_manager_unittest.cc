@@ -460,7 +460,7 @@ TEST_F(GlicActivityManagerTest, ActorTaskPopulatesActivityItemDetails) {
   EXPECT_EQ(item.subtitle,
             l10n_util::GetStringUTF16(
                 IDS_ACTOR_TASK_LIST_BUBBLE_ROW_ACTING_TASK_SUBTITLE));
-  EXPECT_NE(item.icon, nullptr);
+  EXPECT_EQ(item.icon, GlicActivityIcon::kAutoBrowse);
   EXPECT_TRUE(item.has_tab);
   EXPECT_TRUE(item.is_enabled);
 }
@@ -487,6 +487,7 @@ TEST_F(GlicActivityManagerTest, SeenTaskNotResetOnDuplicateStateUpdate) {
                       base::NumberToString(task_id.value())};
   ASSERT_TRUE(manager()->activities().contains(key));
   EXPECT_FALSE(manager()->activities().at(key).has_been_seen);
+  EXPECT_EQ(manager()->activities().at(key).icon, GlicActivityIcon::kHourglass);
 
   manager()->MarkActivitySeen(task_id);
   EXPECT_TRUE(manager()->activities().at(key).has_been_seen);
@@ -508,6 +509,10 @@ TEST_F(GlicActivityManagerTest, HasActiveActivities) {
   actor_service()->StopTaskForTesting(
       task_id, actor::ActorTask::StoppedReason::kTaskComplete);
   OnActorTaskStateUpdate(task_id);
+  GlicActivityKey key{GlicActivityType::kActorTask,
+                      base::NumberToString(task_id.value())};
+  ASSERT_TRUE(manager()->activities().contains(key));
+  EXPECT_EQ(manager()->activities().at(key).icon, GlicActivityIcon::kTaskSpark);
   manager()->MarkActivitySeen(task_id);
   EXPECT_FALSE(manager()->HasUnseenOrInProgressActivities());
 }
@@ -686,6 +691,8 @@ TEST_F(GlicActivityManagerOsNotificationTest,
                       base::NumberToString(task_id.value())};
   ASSERT_TRUE(manager()->activities().contains(key));
   EXPECT_FALSE(manager()->activities().at(key).has_been_seen);
+  EXPECT_EQ(manager()->activities().at(key).icon,
+            GlicActivityIcon::kAutoBrowse);
 
   display_service_tester()->SimulateClick(
       NotificationHandler::Type::GLIC_ACTOR_TASK, notification_id,
@@ -885,6 +892,9 @@ TEST_F(GlicUnifiedActivityManagerTest, ConversationResponse_TriggersNudge) {
   EXPECT_EQ(manager()->GetNumUnseenActivities(), 1u);
   EXPECT_EQ(manager()->GetCurrentActivityNudgeState().text,
             GlicActivityNudgeState::Text::kResponseReady);
+  GlicActivityKey key{GlicActivityType::kConversationResponse, "conv_1"};
+  ASSERT_TRUE(manager()->activities().contains(key));
+  EXPECT_EQ(manager()->activities().at(key).icon, GlicActivityIcon::kTaskSpark);
 }
 
 TEST_F(GlicUnifiedActivityManagerTest,
@@ -908,6 +918,7 @@ TEST_F(GlicUnifiedActivityManagerTest,
   ASSERT_TRUE(manager()->activities().contains(key));
   EXPECT_TRUE(manager()->activities().at(key).has_been_seen);
   EXPECT_TRUE(manager()->activities().at(key).subtitle.empty());
+  EXPECT_EQ(manager()->activities().at(key).icon, GlicActivityIcon::kChatSpark);
   EXPECT_FALSE(manager()->HasUnseenOrInProgressActivities());
   EXPECT_EQ(manager()->GetNumUnseenActivities(), 0u);
   EXPECT_EQ(manager()->GetCurrentActivityNudgeState().text,
@@ -1031,10 +1042,12 @@ TEST_F(GlicUnifiedActivityManagerTest, DismissalLifecycle_MarkSeen) {
 
   GlicActivityKey key{GlicActivityType::kConversationResponse, "conv_1"};
   EXPECT_EQ(manager()->activities().at(key).subtitle, u"Done");
+  EXPECT_EQ(manager()->activities().at(key).icon, GlicActivityIcon::kTaskSpark);
   manager()->MarkActivitySeen(key);
 
   EXPECT_EQ(manager()->GetNumUnseenActivities(), 0u);
   EXPECT_TRUE(manager()->activities().at(key).subtitle.empty());
+  EXPECT_EQ(manager()->activities().at(key).icon, GlicActivityIcon::kChatSpark);
   EXPECT_EQ(manager()->GetCurrentActivityNudgeState().text,
             GlicActivityNudgeState::Text::kDefault);
 }

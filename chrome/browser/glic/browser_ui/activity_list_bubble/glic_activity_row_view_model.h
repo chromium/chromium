@@ -9,10 +9,8 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "base/memory/raw_ptr.h"
+#include "chrome/browser/glic/public/service/glic_activity_types.h"
 #include "components/actor/core/task_id.h"
-#include "ui/color/color_id.h"
-#include "ui/gfx/vector_icon_types.h"
 
 namespace glic {
 
@@ -35,10 +33,7 @@ struct GlicActivityRowViewModel {
   base::RepeatingClosure on_clicked;
 
   // Primary icon displayed on the left of the row.
-  raw_ptr<const gfx::VectorIcon> icon = nullptr;
-
-  // Color for the primary icon and subtitle text.
-  ui::ColorId icon_and_subtitle_color = ui::ColorId();
+  GlicActivityIcon icon = GlicActivityIcon::kNone;
 
   // Main title text for the row.
   std::u16string title;
@@ -59,8 +54,8 @@ struct GlicActivityRowViewModel {
   // Whether this activity requires user review/attention.
   bool needs_review = false;
 
-  // Whether this activity has already been viewed/seen by the user.
-  bool has_been_seen = false;
+  // Whether the row uses accented highlight styling for its icon and subtitle.
+  bool is_highlighted = false;
 };
 
 }  // namespace glic

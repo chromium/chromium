@@ -6,9 +6,12 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/actor/actor_surface_registry.h"
@@ -17,6 +20,7 @@
 #include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_list_bubble_controller.h"
 #include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_list_bubble_row_button.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
+#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -36,25 +40,47 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace glic {
 
 using ::tabs::MockTabInterface;
+
+namespace {
+
+template <typename T>
+T* FindChildOfType(views::View* parent) {
+  for (views::View* child : parent->children()) {
+    if (auto* typed_child = views::AsViewClass<T>(child)) {
+      return typed_child;
+    }
+  }
+  return nullptr;
+}
+
+}  // namespace
 
 class GlicActivityListBubbleTest : public ChromeViewsTestBase {
  public:
@@ -369,7 +395,6 @@ TEST_F(GlicActivityListBubbleTest,
   GlicActivityRowViewModel model;
   model.title = u"title";
   model.has_tab = true;
-  model.has_been_seen = true;
   model.subtitle = l10n_util::GetStringUTF16(
       IDS_EXPERIMENTAL_TRIGGERING_TASK_LIST_BUBBLE_ROW_COMPLETED_TASK_SUBTITLE);
   auto button = std::make_unique<GlicActivityListBubbleRowButton>(model);
@@ -536,6 +561,86 @@ TEST_F(GlicActivityListBubbleActivityHubTest,
   auto it = activity_manager->activities().find(key);
   ASSERT_TRUE(it != activity_manager->activities().end());
   EXPECT_TRUE(it->second.has_been_seen);
+}
+
+TEST_F(GlicActivityListBubbleTest, RowButtonResolvesSemanticIcons) {
+  {
+    GlicActivityRowViewModel model;
+    model.icon = GlicActivityIcon::kNone;
+    model.title = u"Title";
+    auto button = std::make_unique<GlicActivityListBubbleRowButton>(model);
+    EXPECT_EQ(nullptr, FindChildOfType<views::ImageView>(button.get()));
+  }
+
+  struct TestCase {
+    GlicActivityIcon icon;
+    raw_ptr<const gfx::VectorIcon> expected_vector_icon;
+  };
+  const TestCase kTestCases[] = {
+      {GlicActivityIcon::kCursorSpark, &kCursorSparkIcon},
+      {GlicActivityIcon::kAutoBrowse,
+       &GlicVectorIconManager::GetVectorIcon(IDR_ACTOR_AUTO_BROWSE_ICON)},
+      {GlicActivityIcon::kHourglass,
+       &(features::IsRoundedIconsEnabled() ? kHourglassIcon
+                                           : kHourglassOldIcon)},
+      {GlicActivityIcon::kTaskSpark,
+       &(features::IsRoundedIconsEnabled() ? kTaskSparkIcon
+                                           : kTaskSparkOldIcon)},
+      {GlicActivityIcon::kChatSpark, &vector_icons::kChatSparkIcon},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(std::to_underlying(test_case.icon));
+    GlicActivityRowViewModel model;
+    model.icon = test_case.icon;
+    model.title = u"Title";
+    auto button = std::make_unique<GlicActivityListBubbleRowButton>(model);
+    auto* image_view = FindChildOfType<views::ImageView>(button.get());
+    ASSERT_TRUE(image_view);
+    EXPECT_EQ(test_case.expected_vector_icon.get(),
+              image_view->GetImageModel().GetVectorIcon().vector_icon());
+  }
+}
+
+TEST_F(GlicActivityListBubbleTest, RowButtonAppliesHighlightAndDisabledColors) {
+  struct TestCase {
+    bool is_enabled;
+    bool is_highlighted;
+    ui::ColorId expected_color;
+  };
+  constexpr TestCase kTestCases[] = {
+      {false, true, ui::kColorSysStateDisabled},
+      {true, true, ui::kColorSysPrimary},
+      {true, false, ui::kColorMenuIcon},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(testing::Message()
+                 << "is_enabled=" << test_case.is_enabled
+                 << ", is_highlighted=" << test_case.is_highlighted);
+    GlicActivityRowViewModel model;
+    model.icon = GlicActivityIcon::kCursorSpark;
+    model.title = u"Title";
+    model.subtitle = u"Subtitle";
+    model.is_enabled = test_case.is_enabled;
+    model.is_highlighted = test_case.is_highlighted;
+    auto button = std::make_unique<GlicActivityListBubbleRowButton>(model);
+
+    auto* image_view = FindChildOfType<views::ImageView>(button.get());
+    ASSERT_TRUE(image_view);
+    EXPECT_EQ(ui::ColorVariant(test_case.expected_color),
+              image_view->GetImageModel().GetVectorIcon().color());
+
+    auto* labels_container =
+        FindChildOfType<views::FlexLayoutView>(button.get());
+    ASSERT_TRUE(labels_container);
+    ASSERT_GE(labels_container->children().size(), 2u);
+    auto* subtitle =
+        views::AsViewClass<views::Label>(labels_container->children()[1]);
+    ASSERT_TRUE(subtitle);
+    EXPECT_EQ(ui::ColorVariant(test_case.expected_color),
+              subtitle->GetRequestedEnabledColor());
+  }
 }
 
 }  // namespace glic

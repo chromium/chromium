@@ -18,9 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/actor/actor_task.h"
-#include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/features.h"
@@ -33,13 +31,9 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
-#include "ui/gfx/vector_icon_types.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/notifications/glic_actor_task_notification_handler.h"
 #endif
 
@@ -634,12 +628,10 @@ void GlicActivityManagerImpl::PopulateActivityItemDetails(
     if (item.has_been_seen && item.state != GlicActivityState::kInProgress) {
       item.subtitle.clear();
     }
-    if (!item.has_been_seen && item.state == GlicActivityState::kCompleted) {
-      item.icon = &(features::IsRoundedIconsEnabled() ? kTaskSparkIcon
-                                                      : kTaskSparkOldIcon);
-    } else {
-      item.icon = &vector_icons::kChatSparkIcon;
-    }
+    item.icon =
+        (!item.has_been_seen && item.state == GlicActivityState::kCompleted)
+            ? GlicActivityIcon::kTaskSpark
+            : GlicActivityIcon::kChatSpark;
   }
 }
 
@@ -710,18 +702,11 @@ void GlicActivityManagerImpl::PopulateActorTaskItemDetails(
   }
 
   if (RequiresAttention(*task_state)) {
-    item.icon = &(features::IsRoundedIconsEnabled() ? kHourglassIcon
-                                                    : kHourglassOldIcon);
+    item.icon = GlicActivityIcon::kHourglass;
   } else if (*task_state == TaskState::kFinished) {
-    item.icon = &(features::IsRoundedIconsEnabled() ? kTaskSparkIcon
-                                                    : kTaskSparkOldIcon);
+    item.icon = GlicActivityIcon::kTaskSpark;
   } else {
-#if !BUILDFLAG(IS_ANDROID)
-    item.icon =
-        &GlicVectorIconManager::GetVectorIcon(IDR_ACTOR_AUTO_BROWSE_ICON);
-#else
-    item.icon = &gfx::VectorIcon::EmptyIcon();
-#endif
+    item.icon = GlicActivityIcon::kAutoBrowse;
   }
 }
 

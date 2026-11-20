@@ -6,8 +6,12 @@
 
 #include <utility>
 
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
+#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
+#include "chrome/browser/glic/public/service/glic_activity_types.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/chrome_features.h"
@@ -40,6 +44,34 @@ const int kLabelsContainerTopMargin = 4;
 const int kLayoutInteriorMarginTop = 4;
 const int kLayoutInteriorMarginRight = 8;
 
+const gfx::VectorIcon* ResolveRowVectorIcon(GlicActivityIcon icon) {
+  switch (icon) {
+    case GlicActivityIcon::kNone:
+      return nullptr;
+    case GlicActivityIcon::kCursorSpark:
+      return &kCursorSparkIcon;
+    case GlicActivityIcon::kAutoBrowse:
+      return &GlicVectorIconManager::GetVectorIcon(IDR_ACTOR_AUTO_BROWSE_ICON);
+    case GlicActivityIcon::kHourglass:
+      return &(features::IsRoundedIconsEnabled() ? kHourglassIcon
+                                                 : kHourglassOldIcon);
+    case GlicActivityIcon::kTaskSpark:
+      return &(features::IsRoundedIconsEnabled() ? kTaskSparkIcon
+                                                 : kTaskSparkOldIcon);
+    case GlicActivityIcon::kChatSpark:
+      return &vector_icons::kChatSparkIcon;
+  }
+  NOTREACHED();
+}
+
+ui::ColorId ResolveRowIconAndSubtitleColor(bool is_enabled,
+                                           bool is_highlighted) {
+  if (!is_enabled) {
+    return ui::kColorSysStateDisabled;
+  }
+  return is_highlighted ? ui::kColorSysPrimary : ui::kColorMenuIcon;
+}
+
 }  // namespace
 
 GlicActivityListBubbleRowButton::GlicActivityListBubbleRowButton(
@@ -68,10 +100,13 @@ GlicActivityListBubbleRowButton::GlicActivityListBubbleRowButton(
           insets.top() - kLayoutInteriorMarginTop, insets.left(),
           insets.bottom(), insets.right() - kLayoutInteriorMarginRight));
 
-  if (model.icon) {
+  const ui::ColorId icon_and_subtitle_color =
+      ResolveRowIconAndSubtitleColor(model.is_enabled, model.is_highlighted);
+
+  if (const gfx::VectorIcon* vector_icon = ResolveRowVectorIcon(model.icon)) {
     row_icon_ = AddChildView(
         std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-            *model.icon, model.icon_and_subtitle_color, kBubbleRowIconSize)));
+            *vector_icon, icon_and_subtitle_color, kBubbleRowIconSize)));
     row_icon_->SetProperty(
         views::kMarginsKey,
         gfx::Insets::TLBR(kRowIconTopMargin, horizontal_spacing, 0,
@@ -101,7 +136,7 @@ GlicActivityListBubbleRowButton::GlicActivityListBubbleRowButton(
       std::make_unique<views::Label>(model.subtitle));
   subtitle_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   subtitle_->SetTextStyle(views::style::STYLE_BODY_5);
-  subtitle_->SetEnabledColor(model.icon_and_subtitle_color);
+  subtitle_->SetEnabledColor(icon_and_subtitle_color);
   subtitle_->SetSubpixelRenderingEnabled(false);
   if (model.subtitle.empty()) {
     subtitle_->SetVisible(false);

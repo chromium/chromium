@@ -15,6 +15,7 @@
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_list_bubble.h"
+#include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_row_view_model.h"
 #include "chrome/browser/glic/browser_ui/glic_actor_nudge_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_controller.h"
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
@@ -510,13 +511,21 @@ TEST_F(GlicActivityListBubbleControllerTest,
   EXPECT_EQ(
       id_1,
       rows[0].task_id.value());  // Priority 1: Unprocessed needing attention
+  EXPECT_EQ(GlicActivityIcon::kHourglass, rows[0].icon);
+  EXPECT_TRUE(rows[0].is_highlighted);
   EXPECT_EQ(
       id_2,
       rows[1].task_id.value());  // Priority 2: Processed needing attention
+  EXPECT_EQ(GlicActivityIcon::kHourglass, rows[1].icon);
+  EXPECT_FALSE(rows[1].is_highlighted);
   EXPECT_EQ(
       id_3,
       rows[2].task_id.value());  // Priority 3: Remaining needing processing
+  EXPECT_EQ(GlicActivityIcon::kTaskSpark, rows[2].icon);
+  EXPECT_FALSE(rows[2].is_highlighted);
   EXPECT_EQ(id_4, rows[3].task_id.value());  // Priority 4: All other tasks
+  EXPECT_EQ(GlicActivityIcon::kCursorSpark, rows[3].icon);
+  EXPECT_FALSE(rows[3].is_highlighted);
 }
 
 TEST_F(GlicActivityListBubbleControllerTest,
@@ -548,13 +557,14 @@ TEST_F(GlicActivityListBubbleControllerTest,
   // Tie-break by task_id ascending + verify row contents.
   EXPECT_EQ(id_1, rows[0].task_id.value());
   EXPECT_EQ(u"Test Task", rows[0].title);
-  EXPECT_FALSE(rows[0].has_been_seen);
+  EXPECT_EQ(GlicActivityIcon::kHourglass, rows[0].icon);
   EXPECT_FALSE(rows[0].has_tab);
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ACTOR_TASK_LIST_BUBBLE_ROW_TAB_CLOSED_SUBTITLE),
             rows[0].subtitle);
   EXPECT_TRUE(rows[0].is_enabled);
   EXPECT_TRUE(rows[0].needs_review);
+  EXPECT_TRUE(rows[0].is_highlighted);
 
   // id_2 does not have an associated tab and displays "Tab closed".
   EXPECT_EQ(id_2, rows[1].task_id.value());
@@ -565,6 +575,7 @@ TEST_F(GlicActivityListBubbleControllerTest,
 
   // Experimental triggering overrides has_tab to true.
   EXPECT_EQ(id_exp, rows[2].task_id.value());
+  EXPECT_EQ(GlicActivityIcon::kCursorSpark, rows[2].icon);
   EXPECT_TRUE(rows[2].has_tab);
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_ACTOR_TASK_LIST_BUBBLE_ROW_ACTING_TASK_SUBTITLE),
@@ -658,16 +669,50 @@ TEST_F(GlicActivityListBubbleControllerActivityHubTest,
           "");
   activity_manager->OnTabAddedToTask(id_2);
 
+  actor::TaskId id_3 = fake_actor_service->CreateTaskForTesting();
+  fake_actor_service->StopTaskForTesting(
+      id_3, actor::ActorTask::StoppedReason::kTaskComplete);
+  activity_manager->OnTabAddedToTask(id_3);
+
+  actor::TaskId id_4 = fake_actor_service->CreateTaskForTesting();
+  auto* task_4 = fake_actor_service->GetTask(id_4);
+  task_4->SetState(actor::ActorTask::State::kActing);
+  task_4->SetState(actor::ActorTask::State::kWaitingOnUser);
+  activity_manager->OnTabAddedToTask(id_4);
+
+  actor::TaskId id_5 = fake_actor_service->CreateTaskForTesting();
+  fake_actor_service->StopTaskForTesting(
+      id_5, actor::ActorTask::StoppedReason::kTaskComplete);
+  activity_manager->MarkActivitySeen(id_5);
+
   auto rows = controller_->CreateRowViewModels();
-  ASSERT_EQ(2u, rows.size());
+  ASSERT_EQ(5u, rows.size());
   EXPECT_EQ(id_1, rows[0].task_id);
   EXPECT_EQ(u"Test Task", rows[0].title);
+  EXPECT_EQ(GlicActivityIcon::kHourglass, rows[0].icon);
   EXPECT_TRUE(rows[0].needs_review);
-  EXPECT_FALSE(rows[0].has_been_seen);
-  EXPECT_EQ(id_2, rows[1].task_id);
+  EXPECT_TRUE(rows[0].is_highlighted);
+  EXPECT_EQ(id_4, rows[1].task_id);
+  EXPECT_EQ(GlicActivityIcon::kHourglass, rows[1].icon);
+  EXPECT_TRUE(rows[1].needs_review);
+  EXPECT_TRUE(rows[1].is_highlighted);
+  EXPECT_EQ(id_2, rows[2].task_id);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_UNTITLED_TASK),
-            rows[1].title);
-  EXPECT_FALSE(rows[1].needs_review);
+            rows[2].title);
+  EXPECT_EQ(GlicActivityIcon::kAutoBrowse, rows[2].icon);
+  EXPECT_FALSE(rows[2].needs_review);
+  EXPECT_FALSE(rows[2].is_highlighted);
+  EXPECT_EQ(id_3, rows[3].task_id);
+  EXPECT_EQ(GlicActivityIcon::kTaskSpark, rows[3].icon);
+  EXPECT_FALSE(rows[3].is_highlighted);
+  EXPECT_EQ(id_5, rows[4].task_id);
+  EXPECT_FALSE(rows[4].is_enabled);
+  EXPECT_FALSE(rows[4].has_tab);
+  EXPECT_EQ(GlicActivityIcon::kTaskSpark, rows[4].icon);
+  EXPECT_FALSE(rows[4].is_highlighted);
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_ACTOR_TASK_LIST_BUBBLE_ROW_TAB_CLOSED_SUBTITLE),
+            rows[4].subtitle);
 
   // Clicking the row marks the activity as seen in GlicActivityManager.
   ASSERT_TRUE(rows[0].on_clicked);
@@ -746,39 +791,69 @@ TEST_F(GlicActivityListBubbleControllerActivityHubTest,
                         .title = "My Research Topic",
                         .preview_snippet = "Here is the answer"});
   manager->OnConversationActivityStateChanged(
+      "conv_no_snippet",
+      {.state = GlicActivityState::kCompleted, .title = "No Snippet"});
+  manager->OnConversationActivityStateChanged(
+      "conv_needs_attention", {.state = GlicActivityState::kNeedsAttention,
+                               .title = "Needs Attention"});
+  manager->OnConversationActivityStateChanged(
+      "conv_failed",
+      {.state = GlicActivityState::kFailed, .title = "Failed Chat"});
+  manager->OnConversationActivityStateChanged(
       "conv_working", {.state = GlicActivityState::kInProgress, .title = ""});
 
   auto rows = controller_->CreateRowViewModels();
-  ASSERT_EQ(4u, rows.size());
+  ASSERT_EQ(7u, rows.size());
 
-  // Priority 1: Unseen completed response.
-  EXPECT_EQ("conv_test_123", rows[0].conversation_id);
-  EXPECT_EQ(u"My Research Topic", rows[0].title);
-  EXPECT_EQ(u"Here is the answer", rows[0].subtitle);
-  EXPECT_TRUE(rows[0].is_enabled);
-  EXPECT_FALSE(rows[0].has_been_seen);
-  EXPECT_EQ(ui::kColorSysPrimary, rows[0].icon_and_subtitle_color);
+  // Priority 0: Unseen needs-attention, failed, and completed conversations
+  // (all share ActivityPriority::kUnseenNeedsAttention and tie-break by ID
+  // when timestamps match under mock time).
+  EXPECT_EQ("conv_failed", rows[0].conversation_id);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_ERROR),
+            rows[0].subtitle);
+  EXPECT_EQ(GlicActivityIcon::kChatSpark, rows[0].icon);
+  EXPECT_TRUE(rows[0].is_highlighted);
+
+  EXPECT_EQ("conv_needs_attention", rows[1].conversation_id);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_NEEDS_INPUT),
+            rows[1].subtitle);
+  EXPECT_EQ(GlicActivityIcon::kChatSpark, rows[1].icon);
+  EXPECT_TRUE(rows[1].is_highlighted);
+
+  EXPECT_EQ("conv_no_snippet", rows[2].conversation_id);
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_RESPONSE_READY),
+            rows[2].subtitle);
+  EXPECT_EQ(GlicActivityIcon::kTaskSpark, rows[2].icon);
+  EXPECT_TRUE(rows[2].is_highlighted);
+
+  EXPECT_EQ("conv_test_123", rows[3].conversation_id);
+  EXPECT_EQ(u"My Research Topic", rows[3].title);
+  EXPECT_EQ(u"Here is the answer", rows[3].subtitle);
+  EXPECT_EQ(GlicActivityIcon::kTaskSpark, rows[3].icon);
+  EXPECT_TRUE(rows[3].is_enabled);
+  EXPECT_TRUE(rows[3].is_highlighted);
 
   // Priority 2: Conversation in progress (with New chat placeholder fallback).
-  EXPECT_EQ("conv_working", rows[1].conversation_id);
+  EXPECT_EQ("conv_working", rows[4].conversation_id);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_NEW_CHAT),
-            rows[1].title);
+            rows[4].title);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_WORKING),
-            rows[1].subtitle);
-  EXPECT_FALSE(rows[1].has_been_seen);
+            rows[4].subtitle);
+  EXPECT_EQ(GlicActivityIcon::kChatSpark, rows[4].icon);
+  EXPECT_TRUE(rows[4].is_highlighted);
 
   // Priority 4: Idle and seen conversations (tie-broken by conversation ID).
-  EXPECT_EQ("conv_idle", rows[2].conversation_id);
-  EXPECT_EQ(u"Background Chat", rows[2].title);
-  EXPECT_EQ(u"", rows[2].subtitle);
-  EXPECT_TRUE(rows[2].has_been_seen);
-  EXPECT_EQ(ui::kColorMenuIcon, rows[2].icon_and_subtitle_color);
+  EXPECT_EQ("conv_idle", rows[5].conversation_id);
+  EXPECT_EQ(u"Background Chat", rows[5].title);
+  EXPECT_EQ(u"", rows[5].subtitle);
+  EXPECT_EQ(GlicActivityIcon::kChatSpark, rows[5].icon);
+  EXPECT_FALSE(rows[5].is_highlighted);
 
-  EXPECT_EQ("conv_seen", rows[3].conversation_id);
-  EXPECT_EQ(u"Seen Topic", rows[3].title);
-  EXPECT_EQ(u"", rows[3].subtitle);
-  EXPECT_TRUE(rows[3].has_been_seen);
-  EXPECT_EQ(ui::kColorMenuIcon, rows[3].icon_and_subtitle_color);
+  EXPECT_EQ("conv_seen", rows[6].conversation_id);
+  EXPECT_EQ(u"Seen Topic", rows[6].title);
+  EXPECT_EQ(u"", rows[6].subtitle);
+  EXPECT_EQ(GlicActivityIcon::kChatSpark, rows[6].icon);
+  EXPECT_FALSE(rows[6].is_highlighted);
 
   // Clicking a conversation row marks it as seen, activates the conversation's
   // bound tab/window, and invokes `GlicKeyedService` with
@@ -799,8 +874,8 @@ TEST_F(GlicActivityListBubbleControllerActivityHubTest,
             }
             return nullptr;
           });
-  ASSERT_TRUE(rows[0].on_clicked);
-  rows[0].on_clicked.Run();
+  ASSERT_TRUE(rows[3].on_clicked);
+  rows[3].on_clicked.Run();
 
   GlicActivityKey key{GlicActivityType::kConversationResponse, "conv_test_123"};
   auto it = manager->activities().find(key);

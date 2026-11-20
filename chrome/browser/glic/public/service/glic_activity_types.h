@@ -11,12 +11,27 @@
 #include <string_view>
 #include <utility>
 
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/actor/core/task_id.h"
-#include "ui/gfx/vector_icon_types.h"
 
 namespace glic {
+
+// Semantic icon representing an activity in Activity Hub UI surfaces.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.glic
+enum class GlicActivityIcon {
+  // No icon displayed for the activity row.
+  kNone = 0,
+  // Active or default task icon for legacy actor task list rows (cursor spark).
+  kCursorSpark = 1,
+  // Active or default actor task icon for Activity Hub rows (auto-browse).
+  kAutoBrowse = 2,
+  // Activity requires user attention or review (hourglass).
+  kHourglass = 3,
+  // Automated task or conversation action completed (task spark).
+  kTaskSpark = 4,
+  // Background conversation activity or chat status (chat spark).
+  kChatSpark = 5,
+};
 
 // The type of asynchronous activity occurring in Glic.
 enum class GlicActivityType {
@@ -89,7 +104,7 @@ struct GlicActivityItem {
   GlicActivityState state;
   std::u16string title;
   std::u16string subtitle;
-  raw_ptr<const gfx::VectorIcon> icon = nullptr;
+  GlicActivityIcon icon = GlicActivityIcon::kNone;
   // True if the user has viewed this activity in the Glic panel (e.g. by
   // having the panel open during completion, or by navigating to it from the
   // Activity Hub drawer). When false, the activity is considered unseen and

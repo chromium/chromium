@@ -15,7 +15,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
@@ -36,12 +35,8 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/vector_icons/vector_icons.h"
 #include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/ui_base_features.h"
-#include "ui/color/color_id.h"
-#include "ui/gfx/vector_icon_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
@@ -90,28 +85,14 @@ bool IsProcessedTabClosedRow(actor::ActorTask::State state,
   return !has_tab && !requires_processing;
 }
 
-const gfx::VectorIcon& GetRowIcon(actor::ActorTask::State state) {
+GlicActivityIcon GetRowIcon(actor::ActorTask::State state) {
   if (LegacyGlicActivityManager::RequiresAttention(state)) {
-    return features::IsRoundedIconsEnabled() ? kHourglassIcon
-                                             : kHourglassOldIcon;
+    return GlicActivityIcon::kHourglass;
   }
   if (state == actor::ActorTask::State::kFinished) {
-    return features::IsRoundedIconsEnabled() ? kTaskSparkIcon
-                                             : kTaskSparkOldIcon;
+    return GlicActivityIcon::kTaskSpark;
   }
-  return kCursorSparkIcon;
-}
-
-ui::ColorId GetRowColor(bool is_enabled,
-                        bool requires_processing,
-                        bool needs_review) {
-  if (!is_enabled) {
-    return ui::kColorSysStateDisabled;
-  }
-  if (requires_processing && needs_review) {
-    return ui::kColorSysPrimary;
-  }
-  return ui::kColorMenuIcon;
+  return GlicActivityIcon::kCursorSpark;
 }
 
 std::u16string GetRowSubtitle(
@@ -161,7 +142,6 @@ GlicActivityRowViewModel CreateActorTaskActivityRow(
   model.task_id = item.task_id;
   model.has_tab = item.has_tab;
   model.needs_review = (item.state == GlicActivityState::kNeedsAttention);
-  model.has_been_seen = item.has_been_seen;
   model.is_enabled = item.is_enabled;
   model.icon = item.icon;
 #if BUILDFLAG(IS_ANDROID)
@@ -178,8 +158,8 @@ GlicActivityRowViewModel CreateActorTaskActivityRow(
     }
   }
 #endif
-  model.icon_and_subtitle_color =
-      GetRowColor(item.is_enabled, !item.has_been_seen, model.needs_review);
+  model.is_highlighted =
+      item.is_enabled && !item.has_been_seen && model.needs_review;
   model.title = item.title.empty()
                     ? l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_UNTITLED_TASK)
                     : item.title;
@@ -219,12 +199,12 @@ GlicActivityRowViewModel CreateConversationActivityRow(
   const std::string& conv_id = item.key.id;
   GlicActivityRowViewModel model;
   model.conversation_id = conv_id;
-  model.has_been_seen = item.has_been_seen;
   model.has_tab = true;
   model.is_enabled = true;
-  model.icon = item.icon ? item.icon.get() : &vector_icons::kChatSparkIcon;
-  model.icon_and_subtitle_color =
-      !item.has_been_seen ? ui::kColorSysPrimary : ui::kColorMenuIcon;
+  model.icon = item.icon != GlicActivityIcon::kNone
+                   ? item.icon
+                   : GlicActivityIcon::kChatSpark;
+  model.is_highlighted = !item.has_been_seen;
   model.title = item.title.empty()
                     ? l10n_util::GetStringUTF16(IDS_GLIC_ACTIVITY_NEW_CHAT)
                     : item.title;
@@ -303,10 +283,8 @@ GlicActivityListBubbleController::GetActorTaskRowViewModels(
     model.has_tab = has_tab;
     model.tab_id = tab_id;
     model.needs_review = needs_review;
-    model.has_been_seen = !requires_processing;
-    model.icon = &GetRowIcon(task_state.value());
-    model.icon_and_subtitle_color =
-        GetRowColor(is_enabled, requires_processing, needs_review);
+    model.icon = GetRowIcon(task_state.value());
+    model.is_highlighted = is_enabled && requires_processing && needs_review;
     model.is_enabled = is_enabled;
 
     model.title =
