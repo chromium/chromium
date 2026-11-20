@@ -1587,7 +1587,7 @@ public class PdfCoordinatorUnitTest {
 
         // finishExitingEditMode() should have enabled EDITING_JOURNEY_FORM_FILLING on the flow
         // before calling setEditModeEnabled(false), and onPdfEditsSaved() should have called
-        // downloadAnnotatedPdf() directly rather than calling applyDraftEdits() a second time.
+        // downloadLocalPdf() directly rather than calling applyDraftEdits() a second time.
         assertEquals(
                 new PdfEditMode.Enabled(PdfEditMode.EDITING_JOURNEY_FORM_FILLING),
                 fakeViewModel.mObfuscatedFlowField.getValue());
@@ -3769,7 +3769,7 @@ public class PdfCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
-    public void testDownload_NoAnnotations_LocalPdf_IsNoOp() {
+    public void testDownload_NoChanges_LocalFilePdf_CallsDownloadLocalFile() {
         mPdfCoordinator =
                 new PdfCoordinator(
                         mNativePageHost,
@@ -3782,9 +3782,44 @@ public class PdfCoordinatorUnitTest {
                         mPdfFragmentViewTracker);
         mPdfCoordinator.onDownloadComplete(mFilePath, PDF_TITLE);
 
+        assertFalse(mPdfCoordinator.hasChanges());
+        assertNull(mPdfCoordinator.getDownloadUrl());
         mPdfCoordinator.download();
 
         verify(mNativePageHost, never()).downloadUrl(any());
+        verify(mNativePageHost)
+                .downloadLocalFile(Uri.fromFile(new File(mFilePath)).toString(), PDF_TITLE);
+        assertNull(ShadowToast.getLatestToast());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testDownload_NoChanges_ContentUriPdf_CallsDownloadLocalFile() {
+        createPdfCoordinator(TEST_CONTENT_URI, TEST_CONTENT_URI);
+
+        assertFalse(mPdfCoordinator.hasChanges());
+        assertNull(mPdfCoordinator.getDownloadUrl());
+        assertEquals(Uri.parse(TEST_CONTENT_URI), mPdfCoordinator.getUri());
+        mPdfCoordinator.download();
+
+        verify(mNativePageHost, never()).downloadUrl(any());
+        verify(mNativePageHost).downloadLocalFile(TEST_CONTENT_URI, PDF_TITLE);
+        assertNull(ShadowToast.getLatestToast());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testDownload_NoAnnotations_LocalPdf_CallsDownloadLocalFile() {
+        createPdfCoordinator(mFilePath, TEST_CONTENT_URI);
+        mPdfCoordinator.onEditsApplied();
+
+        // Local PDFs are saved in place, so the on-device file is the only copy even when
+        // annotations are excluded.
+        assertNull(mPdfCoordinator.getDownloadUrl());
+        mPdfCoordinator.download(/* includeAnnotations= */ false);
+
+        verify(mNativePageHost, never()).downloadUrl(any());
+        verify(mNativePageHost).downloadLocalFile(TEST_CONTENT_URI, PDF_TITLE);
         assertNull(ShadowToast.getLatestToast());
     }
 
@@ -3836,7 +3871,7 @@ public class PdfCoordinatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
-    public void testDownload_NoAnnotations_DisallowedScheme_IsNoOp() {
+    public void testDownload_NoAnnotations_DisallowedScheme_FallsBackToLocalFile() {
         String disallowedUrl = "javascript:alert(1)";
         String encodedUrl = PdfUtils.encodePdfPageUrl(disallowedUrl);
         mPdfCoordinator =
@@ -3853,13 +3888,17 @@ public class PdfCoordinatorUnitTest {
 
         mPdfCoordinator.download();
 
+        // Disallowed origin URLs are never passed to downloadUrl(); since mFilePath is populated,
+        // the coordinator falls back to downloading the local file.
         verify(mNativePageHost, never()).downloadUrl(any());
+        verify(mNativePageHost)
+                .downloadLocalFile(Uri.fromFile(new File(mFilePath)).toString(), PDF_TITLE);
         assertNull(ShadowToast.getLatestToast());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
-    public void testDownload_WithAnnotations_LocalPdf_CallsDownloadAnnotatedPdf() {
+    public void testDownload_WithAnnotations_LocalPdf_CallsDownloadLocalFile() {
         mPdfCoordinator =
                 new PdfCoordinator(
                         mNativePageHost,
@@ -3905,6 +3944,19 @@ public class PdfCoordinatorUnitTest {
         mPdfCoordinator.download();
 
         verify(mNativePageHost).downloadUrl(PDF_DOWNLOAD_URL);
+        verify(mNativePageHost, never()).downloadLocalFile(any(), any());
+        assertNull(ShadowToast.getLatestToast());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testDownload_FeatureDisabled_LocalPdf_IsNoOp() {
+        createPdfCoordinator(TEST_CONTENT_URI, TEST_CONTENT_URI);
+        assertNull(mPdfCoordinator.getDownloadUrl());
+
+        mPdfCoordinator.download();
+
+        verify(mNativePageHost, never()).downloadUrl(any());
         verify(mNativePageHost, never()).downloadLocalFile(any(), any());
         assertNull(ShadowToast.getLatestToast());
     }

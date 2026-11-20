@@ -2560,15 +2560,19 @@ public class PdfCoordinator
 
     @Override
     public void download(boolean includeAnnotations) {
-        // Extract the download URL; null for local PDFs (e.g. file:// or content://).
+        // Null for local PDFs (file:// or content://); non-null for web/blob/data PDFs.
         String downloadUrl = getDownloadUrl();
 
         // Re-download the original web/blob/data PDF when there are no changes, when annotations
-        // are excluded, or as a fallback when V2 is disabled. For local PDFs, downloadUrl is null
-        // and this is a no-op since the original file is already on the device.
+        // are excluded, or as a fallback when V2 is disabled.
         if (!includeAnnotations || !PdfUtils.isInlinePdfV2Enabled() || !hasChanges()) {
             if (downloadUrl != null) {
                 mNativePageHost.downloadUrl(downloadUrl);
+            } else if (PdfUtils.isInlinePdfV2Enabled()) {
+                // Local PDFs have no origin URL to re-download and, once edits are saved, the
+                // on-device file is the only copy. Run it through the download manager so the
+                // standard location picker / Download Home flow applies.
+                downloadLocalPdf();
             }
             return;
         }
@@ -2578,8 +2582,8 @@ public class PdfCoordinator
             mDownloadAfterSave = true;
             mChromePdfViewerFragment.applyDraftEdits();
         } else {
-            // Otherwise, download the saved annotated PDF through the download manager.
-            downloadAnnotatedPdf();
+            // Otherwise, download the saved local PDF through the download manager.
+            downloadLocalPdf();
         }
     }
 
@@ -2633,11 +2637,11 @@ public class PdfCoordinator
     }
 
     /**
-     * Downloads the saved (annotated) local PDF through Chrome's download manager so that the
-     * standard download flow (location / duplicate dialogs, download message, Download Home) is
-     * used, exactly like downloading an unmodified PDF.
+     * Downloads the current on-device PDF (annotated or unmodified) through Chrome's download
+     * manager so that the standard download flow (location / duplicate dialogs, download message,
+     * Download Home) is used.
      */
-    private void downloadAnnotatedPdf() {
+    private void downloadLocalPdf() {
         Uri downloadUri = null;
         if (mUri != null) {
             // Drop ChromeFileProvider's cache-busting "reload" query: the download loader and the
@@ -2762,7 +2766,7 @@ public class PdfCoordinator
                     }
                     if (mDownloadAfterSave) {
                         mDownloadAfterSave = false;
-                        downloadAnnotatedPdf();
+                        downloadLocalPdf();
                     }
                 });
     }

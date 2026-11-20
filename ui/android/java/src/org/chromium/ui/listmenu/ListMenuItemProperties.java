@@ -81,8 +81,10 @@ public class ListMenuItemProperties {
     public static final WritableIntPropertyKey END_ICON_ID = new WritableIntPropertyKey();
     public static final WritableIntPropertyKey GROUP_ID = new WritableIntPropertyKey();
     public static final WritableIntPropertyKey MENU_ITEM_ID = new WritableIntPropertyKey();
+    // Skip equality checks so ViewBinders always rebind CLICK_LISTENER when a view is reused
+    // (ListMenuItemAdapter clears the click listener on convertView before binding).
     public static final WritableObjectPropertyKey<View.@Nullable OnClickListener> CLICK_LISTENER =
-            new WritableObjectPropertyKey<>();
+            new WritableObjectPropertyKey<>(/* skipEquality= */ true);
     public static final WritableObjectPropertyKey<View.@Nullable OnHoverListener> HOVER_LISTENER =
             new WritableObjectPropertyKey<>();
     public static final WritableBooleanPropertyKey IS_HIGHLIGHTED =

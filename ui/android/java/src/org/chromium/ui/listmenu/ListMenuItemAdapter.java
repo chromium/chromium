@@ -86,7 +86,8 @@ public class ListMenuItemAdapter extends ModelListAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ListItem item = ((ListItem) getItem(position));
         if (canReuseView(convertView, item.type)) {
-            // If the view is going to be reused, strip existing onClickListeners before binding
+            // If the view is going to be reused, strip existing onClickListeners before binding.
+            // CLICK_LISTENER has skipEquality=true so ViewBinders will always rebind it here.
             convertView.setOnClickListener(null);
         }
 

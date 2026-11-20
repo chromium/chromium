@@ -165,9 +165,7 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
             mDelegate.toggleFitToPage(showFitToPage, Math.max(0, currentPageNumber - 1));
             mModel.set(PdfToolbarProperties.SHOW_FIT_TO_PAGE_ICON, !showFitToPage);
         } else if (actionId == R.id.download_button) {
-            if (mDelegate.hasChanges()
-                    && mDelegate.getDownloadUrl() != null
-                    && view instanceof ListMenuButton) {
+            if (shouldOfferDownloadChoice() && view instanceof ListMenuButton) {
                 ((ListMenuButton) view).showMenu();
             } else {
                 triggerDownload();
@@ -216,6 +214,15 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
         mModel.set(PdfToolbarProperties.TWO_PAGES_PER_ROW_ACTIVE, false);
     }
 
+    /**
+     * Whether to offer a choice between downloading the edited PDF and the original. Only
+     * web/blob/data PDFs keep a re-downloadable original; local PDFs are saved in place, so the
+     * on-device file is the only copy and a plain "Download" is offered instead.
+     */
+    private boolean shouldOfferDownloadChoice() {
+        return mDelegate.hasChanges() && mDelegate.getDownloadUrl() != null;
+    }
+
     private void triggerDownload() {
         recordDownloadAction(mDelegate.hasChanges());
         mDelegate.download();
@@ -258,7 +265,7 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
 
         if (PdfUtils.isInlinePdfV2DownloadEnabled()
                 && !mModel.get(PdfToolbarProperties.DOWNLOAD_BUTTON_VISIBLE)) {
-            if (mDelegate.hasChanges() && mDelegate.getDownloadUrl() != null) {
+            if (shouldOfferDownloadChoice()) {
                 modelList.add(
                         new ListItemBuilder()
                                 .withTitle(context.getString(R.string.pdf_download))
