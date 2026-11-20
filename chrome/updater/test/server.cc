@@ -265,9 +265,6 @@ std::unique_ptr<net::test_server::HttpResponse> ScopedServer::HandleRequest(
   // Runs without holding `lock_`, so the provider may call into this server.
   std::string response_body =
       expectation->response_body_provider.Run(GetProtocolVersion(request));
-  if (request.relative_url.starts_with(proxy_pac_path())) {
-    VLOG(1) << "PAC proxy settings: [ " << response_body << "]";
-  }
   if (gzip_response) {
     std::string compressed_body;
     if (!compression::GzipCompress(response_body, &compressed_body)) {

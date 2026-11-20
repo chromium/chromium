@@ -16,7 +16,6 @@
 #include "base/strings/string_view_util.h"
 #include "base/time/time.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
-#include "chrome/updater/test/unit_test_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "crypto/keypair.h"
 #include "crypto/sign.h"
@@ -156,41 +155,6 @@ std::unique_ptr<DMSigningKey> GetTestKey2() {
                                         kFakeKeyVersion, "example.com");
 }
 
-std::unique_ptr<
-    ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto>
-GetDefaultTestingOmahaPolicyProto() {
-  auto omaha_settings =
-      std::make_unique<::wireless_android_enterprise_devicemanagement::
-                           OmahaSettingsClientProto>();
-
-  omaha_settings->set_auto_update_check_period_minutes(111);
-  omaha_settings->mutable_updates_suppressed()->set_start_hour(9);
-  omaha_settings->mutable_updates_suppressed()->set_start_minute(30);
-  omaha_settings->mutable_updates_suppressed()->set_duration_min(120);
-  omaha_settings->set_download_preference("cacheable");
-  omaha_settings->set_proxy_mode("pac_script");
-  omaha_settings->set_proxy_pac_url("foo.c/proxy.pa");
-  omaha_settings->set_install_default(
-      ::wireless_android_enterprise_devicemanagement::INSTALL_DEFAULT_ENABLED);
-  omaha_settings->set_update_default(
-      ::wireless_android_enterprise_devicemanagement::MANUAL_UPDATES_ONLY);
-
-  ::wireless_android_enterprise_devicemanagement::ApplicationSettings app;
-  app.set_app_guid(test::kChromeAppId);
-  app.set_install(
-      ::wireless_android_enterprise_devicemanagement::INSTALL_DISABLED);
-  app.set_update(
-      ::wireless_android_enterprise_devicemanagement::AUTOMATIC_UPDATES_ONLY);
-  app.set_target_version_prefix("81.");
-  app.set_rollback_to_target_version(
-      ::wireless_android_enterprise_devicemanagement::
-          ROLLBACK_TO_TARGET_VERSION_ENABLED);
-  app.set_target_channel("beta");
-  omaha_settings->mutable_application_settings()->Add(std::move(app));
-
-  return omaha_settings;
-}
-
 std::unique_ptr<::enterprise_management::DeviceManagementResponse>
 GetDMResponseForOmahaPolicy(
     bool first_request,
@@ -205,16 +169,6 @@ GetDMResponseForOmahaPolicy(
              device_id)
       ->BuildDMResponseForPolicies(
           {{"google/machine-level-omaha", omaha_settings.SerializeAsString()}});
-}
-
-std::unique_ptr<::enterprise_management::DeviceManagementResponse>
-GetDefaultTestingPolicyFetchDMResponse(
-    bool first_request,
-    bool rotate_to_new_key,
-    DMPolicyBuilder::SigningOption signing_option) {
-  return GetDMResponseForOmahaPolicy(
-      first_request, rotate_to_new_key, signing_option, "test-dm-token",
-      "test-device-id", *GetDefaultTestingOmahaPolicyProto());
 }
 
 DMSigningKey::DMSigningKey(base::span<const uint8_t> key_data,
@@ -350,16 +304,6 @@ void DMPolicyBuilder::FillPolicyFetchResponseWithPayload(
   }
 }
 
-std::string DMPolicyBuilder::GetResponseBlobForPolicyPayload(
-    const std::string& policy_type,
-    const std::string& policy_payload) const {
-  enterprise_management::PolicyFetchResponse policy_response;
-  FillPolicyFetchResponseWithPayload(&policy_response, policy_type,
-                                     policy_payload,
-                                     /*attach_new_public_key=*/true);
-  return policy_response.SerializeAsString();
-}
-
 std::unique_ptr<::enterprise_management::DeviceManagementResponse>
 DMPolicyBuilder::BuildDMResponseForPolicies(
     const base::flat_map<std::string, std::string>& policies) const {
@@ -372,15 +316,6 @@ DMPolicyBuilder::BuildDMResponseForPolicies(
         policy_data,
         /*attach_new_public_key=*/policy_type == "google/machine-level-omaha");
   }
-  return dm_response;
-}
-
-std::unique_ptr<::enterprise_management::DeviceManagementResponse>
-DMPolicyBuilder::BuildDMResponseWithError(
-    ::enterprise_management::DeviceManagementErrorDetail error) const {
-  auto dm_response =
-      std::make_unique<::enterprise_management::DeviceManagementResponse>();
-  dm_response->add_error_detail(error);
   return dm_response;
 }
 

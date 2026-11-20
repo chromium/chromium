@@ -95,9 +95,13 @@ class DMPolicyBuilder {
       const std::string& dm_token,
       const std::string& device_id);
 
-  // Rotates signing key to the default new signing key.
-  void SetNewSigningKeyToDefault();
+  // Builds a DeviceManagementResponse with given policies.
+  // `policies` is a map from policy type to policy payload string.
+  std::unique_ptr<::enterprise_management::DeviceManagementResponse>
+  BuildDMResponseForPolicies(
+      const base::flat_map<std::string, std::string>& policies) const;
 
+ private:
   // Fills the PolicyFetchResponse with the given policy payload.
   void FillPolicyFetchResponseWithPayload(
       enterprise_management::PolicyFetchResponse* policy_response,
@@ -105,24 +109,6 @@ class DMPolicyBuilder {
       const std::string& policy_payload,
       bool attach_new_public_key) const;
 
-  // Returns serialized PolicyFetchResponse which contains the given
-  // policy payload.
-  std::string GetResponseBlobForPolicyPayload(
-      const std::string& policy_type,
-      const std::string& policy_payload) const;
-
-  // Builds a DeviceManagementResponse with given policies.
-  // `policies` is a map from policy type to policy payload string.
-  std::unique_ptr<::enterprise_management::DeviceManagementResponse>
-  BuildDMResponseForPolicies(
-      const base::flat_map<std::string, std::string>& policies) const;
-
-  // Builds a DeviceManagementResponse with the given error.
-  std::unique_ptr<::enterprise_management::DeviceManagementResponse>
-  BuildDMResponseWithError(
-      ::enterprise_management::DeviceManagementErrorDetail error) const;
-
- private:
   const std::string dm_token_;
   const std::string user_name_;
   const std::string device_id_;
@@ -137,11 +123,6 @@ class DMPolicyBuilder {
   std::unique_ptr<DMSigningKey> new_signing_key_;
 };
 
-// Gets the canned testing Omaha policy protobuf object.
-std::unique_ptr<
-    ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto>
-GetDefaultTestingOmahaPolicyProto();
-
 // Creates a policy response for the given Omaha policies.
 // `first_request`: true if the response is for the first policy fetch request.
 // `rotate_to_new_key`: true if the response should rotate to a new signing key.
@@ -154,15 +135,6 @@ GetDMResponseForOmahaPolicy(
     const std::string& device_id,
     const ::wireless_android_enterprise_devicemanagement::
         OmahaSettingsClientProto& omaha_settings);
-
-// Creates a policy response with default options.
-// `first_request`: true if the response is for the first policy fetch request.
-// `rotate_to_new_key`: true if the response should rotate to a new signing key.
-std::unique_ptr<::enterprise_management::DeviceManagementResponse>
-GetDefaultTestingPolicyFetchDMResponse(
-    bool first_request,
-    bool rotate_to_new_key,
-    DMPolicyBuilder::SigningOption signing_option);
 
 }  // namespace updater::test
 

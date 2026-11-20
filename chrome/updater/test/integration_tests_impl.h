@@ -664,10 +664,6 @@ void ExpectDeviceManagementPolicyFetchRequest(
     bool first_request = true,
     bool rotate_public_key = false,
     std::optional<GURL> target_url = std::nullopt);
-void ExpectDeviceManagementTokenDeletionRequest(ScopedServer& test_server,
-                                                const std::string& dm_token,
-                                                bool invalidate_token);
-void ExpectProxyPacScriptRequest(ScopedServer& test_server);
 
 #if BUILDFLAG(IS_MAC)
 

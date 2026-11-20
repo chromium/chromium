@@ -89,10 +89,6 @@ class ScopedServer {
   ScopedServer(const ScopedServer&) = delete;
   ScopedServer& operator=(const ScopedServer&) = delete;
 
-  std::string host_port_pair() const {
-    return test_server_.host_port_pair().ToString();
-  }
-
   // Registers one expected request. A request matches if every matcher in
   // `matchers` succeeds; the server then replies with `response_status_code`
   // and `response_body`.
@@ -138,9 +134,6 @@ class ScopedServer {
   GURL event_logging_url() const {
     return test_server_.GetURL(event_logging_path());
   }
-
-  std::string proxy_pac_path() const { return "/pac_script.pac"; }
-  GURL proxy_pac_url() const { return test_server_.GetURL(proxy_pac_path()); }
 
   // If `gzip_response` is true, the server gzip-compresses response bodies and
   // fails the test on requests that do not accept gzip.
