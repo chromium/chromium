@@ -919,6 +919,11 @@ BASE_FEATURE_PARAM(int,
                    "autocomplete_label_sensitive_migration_generation",
                    0);
 
+// Kill switch: When enabled, logs character script metrics for stored Autofill
+// profiles on startup.
+BASE_FEATURE(kAutofillLogStoredProfileScriptMetrics,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // If enabled, add autocomplete suggestions for email fields to the currently
 // shown address suggestions if they are valid email addresses.
 // TODO(crbug.com/506033768): Remove when launched.

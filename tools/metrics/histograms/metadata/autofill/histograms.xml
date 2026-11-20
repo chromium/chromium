@@ -9682,6 +9682,17 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="IbanRecordType" variants="IbanRecordType"/>
 </histogram>
 
+<histogram name="Autofill.StoredProfile.CharacterScriptType"
+    enum="AutofillProfileCharacterScriptType" expires_after="2027-11-01">
+  <owner>perkowski@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logged once per stored Autofill address profile at Chrome profile launch
+    time. Categorizes the character script(s) used in the profile's name and
+    address fields.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.StoredProfileCount.{Suffix}" units="Profiles"
     expires_after="2027-12-12">
   <owner>piotrkotynia@google.com</owner>
@@ -9716,6 +9727,30 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     The number of Autofill addresses a user has stored, measured when an
     autofillable form is submitted.
   </summary>
+</histogram>
+
+<histogram name="Autofill.StoredProfileCountByScriptType.{ScriptType}"
+    units="Profiles" expires_after="2027-11-01">
+  <owner>perkowski@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    The number of Autofill addresses a user has stored with {ScriptType},
+    measured at Chrome profile launch time for users with at least one stored
+    profile. Only Latin script variants are tracked here because non-ASCII Latin
+    characters are the primary focus of this project.
+  </summary>
+  <token key="ScriptType">
+    <variant name="AsciiOnly"
+        summary="evaluated name and address fields using only ASCII Latin
+                 characters"/>
+    <variant name="Latin1Supplement"
+        summary="non-ASCII Latin characters entirely within the Latin-1
+                 Supplement block ([a-zA-ZÀ-ÿ])"/>
+    <variant name="LatinExtended"
+        summary="Latin script with at least one character outside the Basic
+                 Latin and Latin-1 Supplement blocks (including profiles that
+                 combine Latin-1 Supplement and Latin Extended characters)"/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.StoredProfileDisusedCount.{Category}"

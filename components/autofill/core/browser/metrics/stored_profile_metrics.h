@@ -44,9 +44,46 @@ void LogStoredProfileDaysSinceLastUse(
 void LogStoredProfileMetrics(
     const std::vector<const AutofillProfile*>& profiles);
 
+// Categorization of the character script(s) used in an Autofill profile's
+// name and address fields.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(AutofillProfileCharacterScriptType)
+enum class AutofillProfileCharacterScriptType {
+  // Empty profile or contains only non-letter / ignored characters (e.g.
+  // digits, punctuation, or fullwidth Latin characters).
+  kUnspecified = 0,
+  kAsciiOnly = 1,
+  // Non-ASCII Latin characters are entirely within the Latin-1 Supplement block
+  // [a-zA-ZÀ-ÿ] (U+00C0-U+00FF, e.g. é, è, ä, ö, ü, ß, ñ, ç, ó).
+  kLatin1Supplement = 2,
+  // Latin script containing at least one character outside the Basic Latin and
+  // Latin-1 Supplement blocks (e.g. Latin Extended characters such as ł, ą, ę,
+  // č, š, ž, even if combined with Latin-1 Supplement characters).
+  kLatinExtended = 3,
+  kCyrillic = 4,
+  kArabic = 5,
+  kCjk = 6,
+  kIndic = 7,
+  kGreek = 8,
+  kHebrew = 9,
+  kThai = 10,
+  kOtherNonLatin = 11,
+  kMixed = 12,
+  kMaxValue = kMixed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillProfileCharacterScriptType)
+
 // Logs the number of profiles that have an alternative name set.
 void LogStoredProfileCountWithAlternativeName(
     base::span<const AutofillProfile* const> profiles);
+
+// Logs `Autofill.StoredProfile.CharacterScriptType` (per profile) and
+// `Autofill.StoredProfileCountByScriptType.*` (per user) for `profiles`.
+// `profiles` must be non-empty. Safe to call on a background thread.
+void LogStoredProfileScriptTypeMetrics(
+    base::span<const AutofillProfile> profiles);
 
 }  // namespace autofill::autofill_metrics
 

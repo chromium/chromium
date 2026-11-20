@@ -135,4 +135,296 @@ TEST_P(StoredProfileMetricsTestByCategory, StoredProfilesWithAlternativeName) {
       "Autofill.StoredProfileCount.WithAlternativeName", 2, 1);
 }
 
+// Tests that email addresses, phone numbers, company names, postal codes,
+// country codes, and phonetic alternative names do not pollute the script
+// classification.
+TEST(StoredProfileMetricsTest, ExcludedFieldsDoNotPolluteClassification) {
+  {
+    AutofillProfile cjk_profile{AddressCountryCode("JP")};
+    test::SetProfileTestValues(&cjk_profile,
+                               {{NAME_FULL, "山田 太郎"},
+                                {ADDRESS_HOME_STREET_ADDRESS, "千代田区1-1-1"},
+                                {ADDRESS_HOME_CITY, "東京都"},
+                                {ADDRESS_HOME_ZIP, "JP-100-0001"},
+                                {EMAIL_ADDRESS, "yamada.taro@example.com"},
+                                {PHONE_HOME_WHOLE_NUMBER, "+81 90-1234-5678"},
+                                {COMPANY_NAME, "Google LLC"}});
+
+    base::HistogramTester histogram_tester;
+    LogStoredProfileScriptTypeMetrics({cjk_profile});
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.StoredProfile.CharacterScriptType",
+        AutofillProfileCharacterScriptType::kCjk, 1);
+  }
+
+  {
+    AutofillProfile jp_ascii_profile{AddressCountryCode("JP")};
+    test::SetProfileTestValues(&jp_ascii_profile,
+                               {{NAME_FULL, "Taro Yamada"},
+                                {ADDRESS_HOME_CITY, "Tokyo"},
+                                {ALTERNATIVE_FULL_NAME, "やまだ たろう"}});
+
+    base::HistogramTester histogram_tester;
+    LogStoredProfileScriptTypeMetrics({jp_ascii_profile});
+    histogram_tester.ExpectUniqueSample(
+        "Autofill.StoredProfile.CharacterScriptType",
+        AutofillProfileCharacterScriptType::kAsciiOnly, 1);
+  }
+}
+
+struct SingleProfileTestCase {
+  std::string test_name;
+  std::string country_code;
+  std::vector<test::ProfileTestData> test_data;
+  AutofillProfileCharacterScriptType expected_script;
+};
+
+// Tests single-profile telemetry logging across all character script types.
+class StoredProfileSingleProfileScriptMetricsTest
+    : public testing::TestWithParam<SingleProfileTestCase> {};
+
+TEST_P(StoredProfileSingleProfileScriptMetricsTest, MetricsRecordedCorrectly) {
+  const SingleProfileTestCase& test_case = GetParam();
+  AutofillProfile profile{AddressCountryCode(test_case.country_code)};
+  test::SetProfileTestValues(&profile, test_case.test_data);
+
+  base::HistogramTester histogram_tester;
+  LogStoredProfileScriptTypeMetrics({profile});
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StoredProfile.CharacterScriptType", test_case.expected_script,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StoredProfileCountByScriptType.AsciiOnly",
+      test_case.expected_script ==
+          AutofillProfileCharacterScriptType::kAsciiOnly,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StoredProfileCountByScriptType.Latin1Supplement",
+      test_case.expected_script ==
+          AutofillProfileCharacterScriptType::kLatin1Supplement,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StoredProfileCountByScriptType.LatinExtended",
+      test_case.expected_script ==
+          AutofillProfileCharacterScriptType::kLatinExtended,
+      1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    StoredProfileSingleProfileScriptMetricsTest,
+    testing::Values(
+        SingleProfileTestCase{
+            "AsciiLatinOnly",
+            "US",
+            {{NAME_FULL, "John Doe"},
+             {ADDRESS_HOME_STREET_ADDRESS, "1600 Amphitheatre Pkwy"},
+             {ADDRESS_HOME_CITY, "Mountain View"},
+             {ADDRESS_HOME_STATE, "CA"},
+             {ADDRESS_HOME_ZIP, "94043"}},
+            AutofillProfileCharacterScriptType::kAsciiOnly},
+        SingleProfileTestCase{
+            "SpanishOrdinalIndicatorsTreatedAsNeutral",
+            "ES",
+            {{NAME_FULL, "Juan Garcia"},
+             {ADDRESS_HOME_STREET_ADDRESS, "Calle Mayor 10, 2º, 1ª"},
+             {ADDRESS_HOME_CITY, "Madrid"},
+             {ADDRESS_HOME_STATE, "Madrid"},
+             {ADDRESS_HOME_ZIP, "28013"}},
+            AutofillProfileCharacterScriptType::kAsciiOnly},
+        SingleProfileTestCase{
+            "RomanNumeralsTreatedAsNeutral",
+            "JP",
+            {{NAME_FULL, "山田 太郎"},
+             {ADDRESS_HOME_STREET_ADDRESS, "六本木 6-10-1 第Ⅰビル"},
+             {ADDRESS_HOME_CITY, "港区"},
+             {ADDRESS_HOME_STATE, "東京都"},
+             {ADDRESS_HOME_ZIP, "106-6108"}},
+            AutofillProfileCharacterScriptType::kCjk},
+        SingleProfileTestCase{
+            "LatinExtended_PolishWithBothLatin1AndExtended",
+            "PL",
+            {{NAME_FULL, "Przemysław Łódź"},
+             {ADDRESS_HOME_STREET_ADDRESS, "ul. Świętokrzyska 12/4"},
+             {ADDRESS_HOME_CITY, "Kraków"},
+             {ADDRESS_HOME_STATE, "Małopolskie"},
+             {ADDRESS_HOME_ZIP, "31-001"}},
+            AutofillProfileCharacterScriptType::kLatinExtended},
+        SingleProfileTestCase{
+            "Latin1Supplement_French",
+            "FR",
+            {{NAME_FULL, "François Müller"},
+             {ADDRESS_HOME_STREET_ADDRESS, "12 Rue de la Paix"},
+             {ADDRESS_HOME_CITY, "Paris"},
+             {ADDRESS_HOME_STATE, "Île-de-France"},
+             {ADDRESS_HOME_ZIP, "75002"}},
+            AutofillProfileCharacterScriptType::kLatin1Supplement},
+        SingleProfileTestCase{"Cyrillic_Russian",
+                              "RU",
+                              {{NAME_FULL, "Иван Иванов"},
+                               {ADDRESS_HOME_STREET_ADDRESS, "ул. Тверская 15"},
+                               {ADDRESS_HOME_CITY, "Москва"},
+                               {ADDRESS_HOME_STATE, "Московская область"},
+                               {ADDRESS_HOME_ZIP, "125009"}},
+                              AutofillProfileCharacterScriptType::kCyrillic},
+        SingleProfileTestCase{"Arabic_Egyptian",
+                              "EG",
+                              {{NAME_FULL, "محمد علي"},
+                               {ADDRESS_HOME_STREET_ADDRESS, "شارع التحرير 25"},
+                               {ADDRESS_HOME_CITY, "القاهرة"},
+                               {ADDRESS_HOME_STATE, "محافظة القاهرة"},
+                               {ADDRESS_HOME_ZIP, "11511"}},
+                              AutofillProfileCharacterScriptType::kArabic},
+        SingleProfileTestCase{"Cjk_Japanese",
+                              "JP",
+                              {{NAME_FULL, "山田 太郎"},
+                               {ADDRESS_HOME_STREET_ADDRESS, "六本木 6-10-1"},
+                               {ADDRESS_HOME_CITY, "港区"},
+                               {ADDRESS_HOME_STATE, "東京都"},
+                               {ADDRESS_HOME_ZIP, "106-6108"}},
+                              AutofillProfileCharacterScriptType::kCjk},
+        SingleProfileTestCase{"Indic_Hindi",
+                              "IN",
+                              {{NAME_FULL, "राजेश शर्मा"},
+                               {ADDRESS_HOME_STREET_ADDRESS, "शान्ति पथ 45"},
+                               {ADDRESS_HOME_CITY, "नई दिल्ली"},
+                               {ADDRESS_HOME_STATE, "दिल्ली"},
+                               {ADDRESS_HOME_ZIP, "110001"}},
+                              AutofillProfileCharacterScriptType::kIndic},
+        SingleProfileTestCase{"Greek",
+                              "GR",
+                              {{NAME_FULL, "Νικόλαος Παπαδόπουλος"},
+                               {ADDRESS_HOME_STREET_ADDRESS, "Ερμού 10"},
+                               {ADDRESS_HOME_CITY, "Αθήνα"},
+                               {ADDRESS_HOME_STATE, "Αττική"},
+                               {ADDRESS_HOME_ZIP, "10563"}},
+                              AutofillProfileCharacterScriptType::kGreek},
+        SingleProfileTestCase{"Hebrew",
+                              "IL",
+                              {{NAME_FULL, "אברהם כהן"},
+                               {ADDRESS_HOME_STREET_ADDRESS, "רחוב דיזנגוף 50"},
+                               {ADDRESS_HOME_CITY, "תל אביב"},
+                               {ADDRESS_HOME_STATE, "מחוז תל אביב"},
+                               {ADDRESS_HOME_ZIP, "64332"}},
+                              AutofillProfileCharacterScriptType::kHebrew},
+        SingleProfileTestCase{
+            "Latin1Supplement_German",
+            "DE",
+            {{NAME_FULL, "Jürgen Groß"},
+             {ADDRESS_HOME_STREET_ADDRESS, "Goethestraße 5"},
+             {ADDRESS_HOME_CITY, "München"}},
+            AutofillProfileCharacterScriptType::kLatin1Supplement},
+        SingleProfileTestCase{
+            "LatinExtended_Czech",
+            "CZ",
+            {{NAME_FULL, "Dvořák Čech"},
+             {ADDRESS_HOME_STREET_ADDRESS, "Náměstí Míru 3"},
+             {ADDRESS_HOME_CITY, "Praha"}},
+            AutofillProfileCharacterScriptType::kLatinExtended},
+        SingleProfileTestCase{
+            "Indic_Tamil",
+            "IN",
+            {{NAME_FULL, "அருண் குமார்"}, {ADDRESS_HOME_CITY, "சென்னை"}},
+            AutofillProfileCharacterScriptType::kIndic},
+        SingleProfileTestCase{"Thai",
+                              "TH",
+                              {{NAME_FULL, "สมชาย สุขใจ"},
+                               {ADDRESS_HOME_STREET_ADDRESS, "ถนนสุขุมวิท 101"},
+                               {ADDRESS_HOME_CITY, "พระโขนง"},
+                               {ADDRESS_HOME_STATE, "กรุงเทพมหานคร"},
+                               {ADDRESS_HOME_ZIP, "10260"}},
+                              AutofillProfileCharacterScriptType::kThai},
+        SingleProfileTestCase{
+            "OtherNonLatin_Georgian",
+            "GE",
+            {{NAME_FULL, "გიორგი ბერიძე"},
+             {ADDRESS_HOME_STREET_ADDRESS, "რუსთაველის გამზირი 12"},
+             {ADDRESS_HOME_CITY, "თბილისი"},
+             {ADDRESS_HOME_STATE, "თბილისი"},
+             {ADDRESS_HOME_ZIP, "0108"}},
+            AutofillProfileCharacterScriptType::kOtherNonLatin},
+        SingleProfileTestCase{
+            "NfdLatin1Supplement",
+            "FR",
+            {{NAME_FULL, "Franc\u0327ois Mu\u0308ller"},
+             {ADDRESS_HOME_CITY, "Cafe\u0301"}},
+            AutofillProfileCharacterScriptType::kLatin1Supplement},
+        SingleProfileTestCase{
+            "NfdLatinExtended",
+            "CZ",
+            {{NAME_FULL, "Dvor\u030Ca\u0301k C\u030Cech"}},
+            AutofillProfileCharacterScriptType::kLatinExtended},
+        SingleProfileTestCase{"NfdCyrillicWithCombiningMarks",
+                              "UA",
+                              {{NAME_FULL, "Іва́н Йосиф"}},
+                              AutofillProfileCharacterScriptType::kCyrillic},
+        SingleProfileTestCase{"NfdGreekWithCombiningMarks",
+                              "GR",
+                              {{NAME_FULL, "Νίκος"}},
+                              AutofillProfileCharacterScriptType::kGreek},
+        SingleProfileTestCase{
+            "FullwidthLatinCharactersInCjkAddressIgnored",
+            "JP",
+            {{NAME_FULL, "山田 太郎"},
+             {ADDRESS_HOME_STREET_ADDRESS, "六本木 6-10-1 Ａ棟"},
+             {ADDRESS_HOME_CITY, "港区"},
+             {ADDRESS_HOME_STATE, "東京都"},
+             {ADDRESS_HOME_ZIP, "106-6108"}},
+            AutofillProfileCharacterScriptType::kCjk},
+        SingleProfileTestCase{"BopomofoCjk",
+                              "TW",
+                              {{NAME_FULL, "ㄅㄆㄇㄈ"}},
+                              AutofillProfileCharacterScriptType::kCjk},
+        SingleProfileTestCase{"EmptyProfile",
+                              "US",
+                              {},
+                              AutofillProfileCharacterScriptType::kUnspecified},
+        SingleProfileTestCase{"MixedScript_AsciiAndCjk",
+                              "JP",
+                              {{NAME_FULL, "John Doe"},
+                               {ADDRESS_HOME_STREET_ADDRESS, "六本木 6-10-1"},
+                               {ADDRESS_HOME_CITY, "港区"},
+                               {ADDRESS_HOME_STATE, "東京都"},
+                               {ADDRESS_HOME_ZIP, "106-6108"}},
+                              AutofillProfileCharacterScriptType::kMixed},
+        SingleProfileTestCase{
+            "Unspecified_DigitsAndSymbolsOnly",
+            "US",
+            {{NAME_FULL, "12345"},
+             {ADDRESS_HOME_STREET_ADDRESS, "#42-10"},
+             {ADDRESS_HOME_CITY, "90210"},
+             {ADDRESS_HOME_STATE, "11"},
+             {ADDRESS_HOME_ZIP, "90210"}},
+            AutofillProfileCharacterScriptType::kUnspecified}),
+    [](const testing::TestParamInfo<SingleProfileTestCase>& info) {
+      return info.param.test_name;
+    });
+
+// Tests emitting stored profile script type count metrics across multiple
+// profiles.
+TEST(StoredProfileMetricsTest, ScriptTypeCountMetrics) {
+  AutofillProfile ascii_profile = test::StandardProfile();
+  AutofillProfile latin1_profile{AddressCountryCode("FR")};
+  test::SetProfileTestValues(&latin1_profile, {{NAME_FULL, "François Müller"},
+                                               {ADDRESS_HOME_CITY, "Paris"}});
+  AutofillProfile latin_extended_profile{AddressCountryCode("PL")};
+  test::SetProfileTestValues(
+      &latin_extended_profile,
+      {{NAME_FULL, "Przemysław Łódź"}, {ADDRESS_HOME_CITY, "Warszawa"}});
+
+  base::HistogramTester histogram_tester;
+  LogStoredProfileScriptTypeMetrics(
+      {ascii_profile, latin1_profile, latin_extended_profile});
+
+  histogram_tester.ExpectTotalCount(
+      "Autofill.StoredProfile.CharacterScriptType", 3);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StoredProfileCountByScriptType.AsciiOnly", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StoredProfileCountByScriptType.Latin1Supplement", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.StoredProfileCountByScriptType.LatinExtended", 1, 1);
+}
+
 }  // namespace autofill::autofill_metrics

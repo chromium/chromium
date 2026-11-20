@@ -21,8 +21,11 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/language_tag.h"
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "build/buildflag.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/account_name_email_store.h"
@@ -788,6 +791,14 @@ void AddressDataManager::LogStoredDataMetrics() const {
   autofill_metrics::LogStoredProfileMetrics(profile_pointers);
   autofill_metrics::LogStoredProfileTokenQualityMetrics(profile_pointers);
   autofill_metrics::LogStoredProfileCountWithAlternativeName(profile_pointers);
+  if (!profiles_.empty() &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillLogStoredProfileScriptMetrics)) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&autofill_metrics::LogStoredProfileScriptTypeMetrics,
+                       profiles_));
+  }
 }
 
 void AddressDataManager::RemoveProfileImpl(

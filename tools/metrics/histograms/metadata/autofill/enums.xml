@@ -4174,6 +4174,26 @@ Called by update_autofill_enums.py.-->
   <int value="5" label="Admin Policy"/>
 </enum>
 
+<!-- LINT.IfChange(AutofillProfileCharacterScriptType) -->
+
+<enum name="AutofillProfileCharacterScriptType">
+  <int value="0" label="Unspecified (empty or ignored characters only)"/>
+  <int value="1" label="ASCII Latin only"/>
+  <int value="2" label="Latin-1 Supplement ([a-zA-ZÀ-ÿ])"/>
+  <int value="3" label="Latin Extended"/>
+  <int value="4" label="Cyrillic"/>
+  <int value="5" label="Arabic"/>
+  <int value="6" label="CJK (Chinese, Japanese, Korean)"/>
+  <int value="7" label="Indic (Devanagari, Bengali, Tamil, etc.)"/>
+  <int value="8" label="Greek"/>
+  <int value="9" label="Hebrew"/>
+  <int value="10" label="Thai"/>
+  <int value="11" label="Other non-Latin script"/>
+  <int value="12" label="Mixed scripts"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/autofill/core/browser/metrics/stored_profile_metrics.h:AutofillProfileCharacterScriptType) -->
+
 <enum name="AutofillProfileImportDecision">
   <int value="0" label="Undefined"/>
   <int value="1" label="UserNotAsked"/>
