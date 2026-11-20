@@ -270,15 +270,6 @@ void HistoryClustersService::UpdateClusters() {
     return;
   }
 
-  // Using custom histogram as this occurs too infrequently to be captured by
-  // the built in histograms. `persist_clusters_in_history_db_period_minutes`
-  // ranges from 1 to 12 hours while the built in timing histograms go up to 1
-  // hr.
-  base::UmaHistogramCustomTimes(
-      "History.Clusters.UpdateClusters.TimeBetweenTasks",
-      update_clusters_timer_.Elapsed(), base::Minutes(60), base::Hours(48),
-      100);
-
   // Reset the timer.
   update_clusters_timer_ = {};
 

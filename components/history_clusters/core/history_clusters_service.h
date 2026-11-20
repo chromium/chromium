@@ -258,8 +258,8 @@ class HistoryClustersService : public base::SupportsUserData,
   // `update_clusters_task_.Done()` will be true if there is no ongoing task.
   std::unique_ptr<HistoryClustersServiceTask> update_clusters_task_;
 
-  // The time of the last `UpdateClusters()` call. Used for logging and to limit
-  // requests when `persist_on_query` is enabled.
+  // The time of the last `UpdateClusters()` call. Used to limit requests when
+  // `persist_on_query` is enabled.
   base::ElapsedTimer update_clusters_timer_;
 
   // Whether a synced visit was received since the last `UpdateClusters()` call.
