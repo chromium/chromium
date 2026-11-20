@@ -9,7 +9,7 @@ This document provides essential instructions and best practices for developing 
     - To build Chromium, you should use: `autoninja -C out/Default chrome`.
     - This is useful for making sure any code changes compile.
 - WPTs (Web Platform Tests)
-    - This is the most common test type for web platform features.
+    - This is the most common and strongly preferred test type for web platform features. Whenever you need to write a new test for web-exposed behavior (including DOM, CSS, layout, rendering, JS APIs, or crash regressions), write a WPT instead of a unit test or web test.
     - These tests are located in `third_party/blink/web_tests/external/wpt`.
     - To run them, you should use: `third_party/blink/tools/run_wpt_tests.py -t Default {testname}` where {testname} is something like `external/wpt/shadow-dom/some-test-name.html`. Do not include the leading `third_party/blink/web_tests/` part of the test path when running tests like this, but *do* include the `external/wpt/`.
 - Web tests, a.k.a Layout tests
@@ -25,6 +25,7 @@ This document provides essential instructions and best practices for developing 
     - These test suites can *also* include an "expectations file", which is a file located either directly next to the test, or within a platform-specific directory within `third_party/blink/web_tests/platform/`. The file will be named `{testname without extension}-expected.txt`. When trying to reproduce flakiness or failures, or fix bugs, it might be important to first delete or at least examine the expectation file. If the test outputs exactly what is contained in the expectation file, the test runner will report that the test ran "as expected".
 - Unit tests
     - These are less common for web platform features. They execute C++ code to test internals for a specific unit of code.
+    - When writing new tests, strongly prefer WPTs over unit tests. Only write unit tests for internal C++ implementation details, data structures, or behaviors that cannot be tested through a WPT (or when explicitly requested).
     - To build the tests, use `autoninja -C out/Default blink_unittests`.
     - To run a unit test, you should use: `out/Default/blink_unittests --gtest_filter="{testname}"` where {testname} is the qualified test name. You can include asterisks to include Param variations. For example, `--gtest_filter="*TestSuiteName.TestPrefixOrName*"`.
 - Browser tests
