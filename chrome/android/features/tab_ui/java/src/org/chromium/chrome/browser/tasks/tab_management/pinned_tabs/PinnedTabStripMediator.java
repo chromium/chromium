@@ -150,7 +150,7 @@ public class PinnedTabStripMediator {
 
                     @Override
                     public void onItemMoved(ListObservable source, int curIndex, int newIndex) {
-                        updatePinnedTabsBar();
+                        onTabGridItemMoved(newIndex);
                     }
                 };
         mTabGridListModel.addObserver(mTabGridListObserver);
@@ -217,7 +217,18 @@ public class PinnedTabStripMediator {
      * the model and visibility updates if necessary.
      */
     private void updatePinnedTabsBar() {
+        applyVisiblePinnedTabs(getVisiblePinnedTabs());
+    }
+
+    private void onTabGridItemMoved(int newGridIndex) {
+        ListItem movedItem = mTabGridListModel.get(newGridIndex);
         List<ListItem> newPinnedTabs = getVisiblePinnedTabs();
+        mPinnedTabsModelList.moveItem(
+                mPinnedTabsModelList.indexOf(movedItem), newPinnedTabs.indexOf(movedItem));
+        applyVisiblePinnedTabs(newPinnedTabs);
+    }
+
+    private void applyVisiblePinnedTabs(List<ListItem> newPinnedTabs) {
         if (PinnedTabStripUtils.areListsOfTabsSame(newPinnedTabs, mPinnedTabsModelList)) {
             return;
         }

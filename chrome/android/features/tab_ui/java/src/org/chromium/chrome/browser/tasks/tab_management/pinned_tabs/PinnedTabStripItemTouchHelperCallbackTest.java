@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -118,24 +117,11 @@ public class PinnedTabStripItemTouchHelperCallbackTest {
 
     @Test
     public void testOnMove() {
-        // Ordering matters: closures are committed, then the strip moves, then the tab moves.
-        doAnswer(
-                        invocation -> {
-                            verify(mTabModel).commitAllTabClosures();
-                            return null;
-                        })
-                .when(mTabListModel)
-                .move(POSITION1, POSITION2);
-        doAnswer(
-                        invocation -> {
-                            verify(mTabListModel).move(POSITION1, POSITION2);
-                            return null;
-                        })
-                .when(mTabModel)
-                .moveTab(TAB_ID1, POSITION2);
-
         assertTrue(mCallback.onMove(null, mMockViewHolder1, mMockViewHolder2));
+
         verify(mTabModel).moveTab(TAB_ID1, POSITION2);
+        verify(mTabListModel, never()).move(anyInt(), anyInt());
+        verify(mTabModel, never()).commitAllTabClosures();
     }
 
     @Test

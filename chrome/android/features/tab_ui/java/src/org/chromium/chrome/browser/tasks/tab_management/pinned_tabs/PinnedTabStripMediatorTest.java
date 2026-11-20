@@ -11,8 +11,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -67,6 +69,7 @@ import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
@@ -107,6 +110,7 @@ public class PinnedTabStripMediatorTest {
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     @Mock private TabActionListener mContextClickListener;
     @Mock private OnLongPressTabItemEventListener mOnLongPress;
+    @Mock private ListObserver<Void> mStripListObserver;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
@@ -440,34 +444,89 @@ public class PinnedTabStripMediatorTest {
     public void testStripDrag_draggedSharedModelZoomsOutOnDrop() {
         ListItem itemA = createTabListItem(1, true);
         ListItem itemB = createTabListItem(2, true);
-        mTabListModel.add(itemA);
-        mTabListModel.add(itemB);
-        mTabListModel.add(createTabListItem(3, false));
-        when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(2);
-        mMediator.onScrolled();
-        // TabModel#moveTab synchronously reorders the grid, which re-syncs the strip.
-        doAnswer(
-                        invocation -> {
-                            mTabListModel.move(0, 1);
-                            return null;
-                        })
-                .when(mTabModel)
-                .moveTab(1, 1);
-        PinnedTabStripItemTouchHelperCallback callback =
-                new PinnedTabStripItemTouchHelperCallback(
-                        mActivity,
-                        mTabModelSupplier,
-                        mPinnedTabsModelList,
-                        () -> null,
-                        mOnLongPress);
+        populatePinnedStrip(itemA, itemB);
+        mPinnedTabsModelList.addObserver(mStripListObserver);
+        stubMoveTab(1, 1, () -> mTabListModel.move(0, 1));
+        PinnedTabStripItemTouchHelperCallback callback = createTouchHelperCallback();
         ViewHolder holderA = createViewHolder(itemA.model, 0);
 
         callback.onSelectedChanged(holderA, ItemTouchHelper.ACTION_STATE_DRAG);
         assertTrue(callback.onMove(null, holderA, createViewHolder(itemB.model, 1)));
         callback.onSelectedChanged(null, ItemTouchHelper.ACTION_STATE_IDLE);
 
+        verify(mStripListObserver).onItemMoved(mPinnedTabsModelList, 0, 1);
+        verify(mStripListObserver, never()).onItemRangeRemoved(any(), anyInt(), anyInt());
+        verify(mStripListObserver, never()).onItemRangeInserted(any(), anyInt(), anyInt());
         assertSame(itemA, mPinnedTabsModelList.get(1));
         assertEquals(SELECTED_CARD_ZOOM_OUT, itemA.model.get(CARD_ANIMATION_STATUS));
+    }
+
+    @Test
+    public void testStripDrag_multiSlotWithPendingClosure_emitsMovesOnly() {
+        ListItem itemA = createTabListItem(1, true);
+        ListItem itemB = createTabListItem(2, true);
+        ListItem itemC = createTabListItem(3, true);
+        populatePinnedStrip(itemA, itemB, itemC);
+        mPinnedTabsModelList.addObserver(mStripListObserver);
+        ViewHolder holderA = createViewHolder(itemA.model, 0);
+        stubMoveTab(
+                1,
+                1,
+                () -> {
+                    mTabModelObserverCaptor.getValue().tabClosureCommitted(mTab1);
+                    mTabListModel.move(0, 1);
+                    when(holderA.getBindingAdapterPosition()).thenReturn(1);
+                });
+        stubMoveTab(1, 2, () -> mTabListModel.move(1, 2));
+        PinnedTabStripItemTouchHelperCallback callback = createTouchHelperCallback();
+
+        callback.onSelectedChanged(holderA, ItemTouchHelper.ACTION_STATE_DRAG);
+        assertTrue(callback.onMove(null, holderA, createViewHolder(itemB.model, 1)));
+        assertTrue(callback.onMove(null, holderA, createViewHolder(itemC.model, 2)));
+        callback.onSelectedChanged(null, ItemTouchHelper.ACTION_STATE_IDLE);
+
+        verify(mStripListObserver).onItemMoved(mPinnedTabsModelList, 0, 1);
+        verify(mStripListObserver).onItemMoved(mPinnedTabsModelList, 1, 2);
+        verify(mStripListObserver, never()).onItemRangeRemoved(any(), anyInt(), anyInt());
+        verify(mStripListObserver, never()).onItemRangeInserted(any(), anyInt(), anyInt());
+        assertSame(itemA, mPinnedTabsModelList.get(2));
+        assertEquals(SELECTED_CARD_ZOOM_OUT, itemA.model.get(CARD_ANIMATION_STATUS));
+    }
+
+    @Test
+    public void testGridMove_intoStripBoundary_reconcilesPinnedStrip() {
+        ListItem itemA = createTabListItem(1, true);
+        ListItem itemB = createTabListItem(2, true);
+        ListItem itemC = createTabListItem(3, true);
+        mTabListModel.add(itemA);
+        mTabListModel.add(itemB);
+        mTabListModel.add(itemC);
+        when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(2);
+        mMediator.onScrolled();
+
+        mTabListModel.move(2, 0);
+
+        assertEquals(2, mPinnedTabsModelList.size());
+        assertSame(itemC, mPinnedTabsModelList.get(0));
+        assertSame(itemA, mPinnedTabsModelList.get(1));
+    }
+
+    @Test
+    public void testGridMove_outOfStripBoundary_reconcilesPinnedStrip() {
+        ListItem itemA = createTabListItem(1, true);
+        ListItem itemB = createTabListItem(2, true);
+        ListItem itemC = createTabListItem(3, true);
+        mTabListModel.add(itemA);
+        mTabListModel.add(itemB);
+        mTabListModel.add(itemC);
+        when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(2);
+        mMediator.onScrolled();
+
+        mTabListModel.move(0, 2);
+
+        assertEquals(2, mPinnedTabsModelList.size());
+        assertSame(itemB, mPinnedTabsModelList.get(0));
+        assertSame(itemC, mPinnedTabsModelList.get(1));
     }
 
     @Test
@@ -591,5 +650,29 @@ public class PinnedTabStripMediatorTest {
         when(holder.getBindingAdapterPosition()).thenReturn(position);
         holder.model = model;
         return holder;
+    }
+
+    private PinnedTabStripItemTouchHelperCallback createTouchHelperCallback() {
+        return new PinnedTabStripItemTouchHelperCallback(
+                mActivity, mTabModelSupplier, mPinnedTabsModelList, () -> null, mOnLongPress);
+    }
+
+    private void populatePinnedStrip(ListItem... pinnedItems) {
+        for (ListItem item : pinnedItems) {
+            mTabListModel.add(item);
+        }
+        mTabListModel.add(createTabListItem(99, false));
+        when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(pinnedItems.length);
+        mMediator.onScrolled();
+    }
+
+    private void stubMoveTab(int tabId, int toIndex, Runnable onMoveTab) {
+        doAnswer(
+                        invocation -> {
+                            onMoveTab.run();
+                            return null;
+                        })
+                .when(mTabModel)
+                .moveTab(tabId, toIndex);
     }
 }
