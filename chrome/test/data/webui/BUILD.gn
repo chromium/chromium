@@ -69,10 +69,14 @@ source_set("browser_tests") {
 
   if (!is_android) {
     deps += [
+      "//chrome/browser/media",
+      "//chrome/browser/renderer_context_menu:test_support",
       "//chrome/browser/ui:browser_tabstrip",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/webui/net_internals:test_support",
+      "//chrome/test/base:ui_test_utils",
+      "//components/policy/core/common:test_support",
     ]
   }
 
@@ -222,6 +226,7 @@ source_set("browser_tests") {
       "intro/intro_browsertest.cc",
       "search_engine_choice/search_engine_choice_browsertest.cc",
     ]
+    deps += [ "//chrome/browser/glic/public:provider_features" ]
   }
 
   if (enable_extensions_core) {
@@ -245,6 +250,14 @@ source_set("browser_tests") {
     deps += [
       "//ash/webui/common:trusted_types_util",
       "//ash/webui/connectivity_diagnostics",
+      "//ash/webui/diagnostics_ui:url_constants",
+      "//ash/webui/firmware_update_ui:url_constants",
+      "//ash/webui/graduation:url_constants",
+      "//ash/webui/os_feedback_ui:url_constants",
+      "//ash/webui/print_management:url_constants",
+      "//ash/webui/scanning:url_constants",
+      "//ash/webui/shortcut_customization_ui:url_constants",
+      "//chrome/browser/ash/login/test:test_support",
       "//chrome/browser/ui/webui/ash/cloud_upload:browser_tests",
     ]
     sources += [
@@ -511,11 +524,17 @@ source_set("interactive_ui_tests") {
     deps += [
       "//chrome/browser/contextual_tasks:user_data",
       "//chrome/browser/resources/contextual_tasks/extension:resources",
+      "//chrome/browser/signin:identity_test_support",
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/views/frame:browser_view_header",
+      "//chrome/browser/ui/views/frame:multi_contents_view",
       "//chrome/browser/ui/views/frame:multi_contents_view_mini_toolbar",
+      "//chrome/browser/ui/views/test:test_support",
       "//chrome/test/data/webui:composebox_pixel_test_support",
       "//components/contextual_search:test_support",
+      "//components/omnibox/browser:test_support",
+      "//components/signin/public/identity_manager:test_support",
+      "//ui/native_theme:test_support",
     ]
   }
 
@@ -549,6 +568,7 @@ source_set("interactive_ui_tests") {
     deps += [
       "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
+      "//components/omnibox/browser:test_support",
       "//components/search",
       "//third_party/omnibox_proto",
     ]

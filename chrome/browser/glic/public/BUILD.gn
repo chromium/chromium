@@ -19,8 +19,19 @@ source_set("features") {
 source_set("provider_features") {
   visibility = [
     "//chrome/browser:core",  # about_flags.cc
+    "//chrome/browser/background/glic:interactive_ui_tests",
+    "//chrome/browser/background/glic:unit_tests",
+    "//chrome/browser/extensions/api/pdf_viewer_private:browser_tests",
+    "//chrome/browser/glic:browser_tests",
     "//chrome/browser/glic:provider_spec_impl",  # glic_provider_spec_impl.cc
+    "//chrome/browser/glic/browser_ui:unit_tests",
+    "//chrome/browser/glic/navigation_capture:browser_tests",
+    "//chrome/browser/glic/selection:browser_tests",
+    "//chrome/browser/glic/selection:interactive_ui_tests",
+    "//chrome/browser/glic/selection:unit_tests",
+    "//chrome/browser/sharing:unit_tests",
     "//chrome/test:test_support",  # testonly = true
+    "//chrome/test/data/webui:browser_tests",
   ]
   sources = [
     "provider_features.cc",
