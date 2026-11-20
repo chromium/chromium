@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.bottombar;
+package org.chromium.chrome.browser.ui.bottombar;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 
 /**
  * Tracks whether the user's bottom bar Settings choice still matches the state the owning
