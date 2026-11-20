@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/chrome_otp_phish_guard_delegate.h"
 
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
 #include "components/safe_browsing/core/browser/db/v5_get_hash_protocol_manager.h"
+#include "components/safe_browsing/core/browser/password_protection/password_protection_request.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #endif
 
@@ -33,6 +35,19 @@ safe_browsing::PasswordProtectionService* GetProtectionService(
   }
   auto* client = ChromePasswordManagerClient::FromWebContents(web_contents);
   return client ? client->GetPasswordProtectionService() : nullptr;
+}
+
+OneTimeTokensPhishGuardVerdict FromOtpPhishingVerdict(
+    safe_browsing::OtpPhishingVerdict verdict) {
+  switch (verdict) {
+    case safe_browsing::OtpPhishingVerdict::kNotPhishing:
+      return OneTimeTokensPhishGuardVerdict::kNotPhishing;
+    case safe_browsing::OtpPhishingVerdict::kPhishing:
+      return OneTimeTokensPhishGuardVerdict::kPhishing;
+    case safe_browsing::OtpPhishingVerdict::kCheckFailed:
+      return OneTimeTokensPhishGuardVerdict::kCheckFailed;
+  }
+  NOTREACHED();
 }
 #endif
 
@@ -144,7 +159,7 @@ void ChromeOtpPhishGuardDelegate::OnSafeBrowsingCheckComplete(
   // PhishGuard requests).
   pps->MaybeStartOtpPhishingRequest(
       &web_contents_.get(), main_frame_url,
-      base::BindOnce(&ToVerdict).Then(std::move(callback)));
+      base::BindOnce(&FromOtpPhishingVerdict).Then(std::move(callback)));
 }
 #endif
 

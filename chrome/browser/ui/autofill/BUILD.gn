@@ -218,7 +218,10 @@ source_set("impl") {
   ]
 
   if (safe_browsing_mode != 0) {
-    deps += [ "//components/safe_browsing/content/browser/password_protection" ]
+    deps += [
+      "//components/safe_browsing/content/browser/password_protection",
+      "//components/safe_browsing/core/browser/password_protection",
+    ]
   }
 
   if (is_android) {
