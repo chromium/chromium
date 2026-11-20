@@ -58,6 +58,7 @@ source_set("impl") {
     "//chrome/browser/search_engines",
     "//components/embedder_support:user_agent",
     "//components/omnibox/browser",
+    "//components/universal_optout",
   ]
 
   if (is_android) {

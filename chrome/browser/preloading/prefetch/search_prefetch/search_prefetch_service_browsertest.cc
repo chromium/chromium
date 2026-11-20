@@ -60,6 +60,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/universal_optout/prefs.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -97,6 +98,10 @@
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "services/network/test/test_url_loader_client.h"
+#include "third_party/blink/public/common/loader/loader_constants.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
@@ -887,6 +892,8 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
   EXPECT_TRUE(headers.contains("User-Agent"));
   ASSERT_TRUE(headers.contains("Upgrade-Insecure-Requests"));
   EXPECT_TRUE(headers["Upgrade-Insecure-Requests"].contains("1"));
+  EXPECT_FALSE(headers.contains(blink::kDoNotTrackHeader));
+  EXPECT_FALSE(headers.contains(blink::kGlobalPrivacyControlHeader));
 
   prefetch_status = search_prefetch_service->GetSearchPrefetchStatusForTesting(
       canonical_search_url);
@@ -924,6 +931,71 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
         << content::test::ActualVsExpectedUkmEntriesToString(
                attempt_ukm_entries, expected_attempt_entries);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
+                       PrefetchSendsSecGpcHeaderWhenEnabled) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_NE(nullptr, search_prefetch_service);
+
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kEnableDoNotTrack,
+                                                  true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
+      universal_optout::prefs::kUniversalOptOutEnabled, true);
+
+  std::string search_terms = "prefetch_gpc_header";
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+  GURL canonical_search_url = GetCanonicalSearchURL(prefetch_url);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url,
+                                                        GetWebContents()));
+  WaitUntilStatusChangesTo(canonical_search_url,
+                           SearchPrefetchStatus::kComplete);
+
+  ASSERT_EQ(1u, search_server_requests().size());
+  const auto& headers = search_server_requests()[0].headers;
+  ASSERT_TRUE(headers.contains(blink::kDoNotTrackHeader));
+  EXPECT_EQ("1", headers.at(blink::kDoNotTrackHeader));
+  ASSERT_TRUE(headers.contains(blink::kGlobalPrivacyControlHeader));
+  EXPECT_EQ("1", headers.at(blink::kGlobalPrivacyControlHeader));
+}
+
+class SearchPrefetchPrivacyHeadersDisabledBrowserTest
+    : public SearchPrefetchServiceEnabledBrowserTest {
+ public:
+  SearchPrefetchPrivacyHeadersDisabledBrowserTest() {
+    feature_list_.InitAndDisableFeature(features::kPrefetchPrivacyHeaders);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SearchPrefetchPrivacyHeadersDisabledBrowserTest,
+                       PrefetchOmitsSecGpcHeaderWhenKillswitchDisabled) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->GetProfile());
+  ASSERT_NE(nullptr, search_prefetch_service);
+
+  browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kEnableDoNotTrack,
+                                                  true);
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
+      universal_optout::prefs::kUniversalOptOutEnabled, true);
+
+  std::string search_terms = "prefetch_gpc_header_disabled";
+  GURL prefetch_url = GetSearchServerQueryURL(search_terms);
+  GURL canonical_search_url = GetCanonicalSearchURL(prefetch_url);
+
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url,
+                                                        GetWebContents()));
+  WaitUntilStatusChangesTo(canonical_search_url,
+                           SearchPrefetchStatus::kComplete);
+
+  ASSERT_EQ(1u, search_server_requests().size());
+  const auto& headers = search_server_requests()[0].headers;
+  EXPECT_FALSE(headers.contains(blink::kDoNotTrackHeader));
+  EXPECT_FALSE(headers.contains(blink::kGlobalPrivacyControlHeader));
 }
 
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceEnabledBrowserTest,
