@@ -81,13 +81,16 @@ void OtpFillingSafeBrowsingCheckerClient::CheckUrlSafety(
 void OtpFillingSafeBrowsingCheckerClient::CheckNextUrl() {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
   if (current_url_index_ >= urls_to_check_.size()) {
-    RunCallback(OneTimeTokensPhishGuardVerdict::kNotPhishing);
+    // Note: This callback is always executed asynchronously relative to
+    // `CheckUrlSafety`, as `CheckNextUrl` is always called asynchronously.
+    RunCallback(/*is_malicious=*/false);
     return;
   }
 
   const GURL& url = urls_to_check_[current_url_index_];
 
-  // Report `kCheckFailed` if this URL's check takes too long.
+  // Start a timer to report the url is malicious/unsafe, if the asynchronous
+  // check takes too long.
   timer_.Start(
       FROM_HERE, safe_browsing_check_delay_,
       base::BindOnce(
@@ -123,7 +126,7 @@ void OtpFillingSafeBrowsingCheckerClient::OnCheckBrowseUrlResult(
 
   if (threat_types_.Has(threat_type)) {
     LogCheckResult(CheckResult::kUnsafe);
-    RunCallback(OneTimeTokensPhishGuardVerdict::kPhishing);
+    RunCallback(/*is_malicious=*/true);
     return;
   }
 
@@ -149,16 +152,16 @@ void OtpFillingSafeBrowsingCheckerClient::OnCheckBlocklistTimeout() {
 
   database_manager_->CancelCheck(this);
   LogCheckResult(CheckResult::kTimeout);
-  RunCallback(OneTimeTokensPhishGuardVerdict::kCheckFailed);
+  RunCallback(/*is_malicious=*/true);
 }
 
-void OtpFillingSafeBrowsingCheckerClient::RunCallback(
-    OneTimeTokensPhishGuardVerdict verdict) {
+void OtpFillingSafeBrowsingCheckerClient::RunCallback(bool is_malicious) {
   urls_to_check_.clear();
   CHECK(callback_);
-  // Post the callback: it may destroy `this`, which callers may still use.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback_), verdict));
+  // Move `callback_` into a local variable before running it, as running the
+  // callback may destroy `this`.
+  auto callback = std::move(callback_);
+  std::move(callback).Run(is_malicious);
 }
 
 void OtpFillingSafeBrowsingCheckerClient::LogCheckResult(CheckResult result) {

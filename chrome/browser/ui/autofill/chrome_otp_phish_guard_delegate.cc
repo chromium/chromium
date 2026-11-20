@@ -67,6 +67,10 @@ bool IsTargetFrameEligible(content::RenderFrameHost* rfh) {
           is_eligible(outermost_main_frame));
 }
 
+OneTimeTokensPhishGuardVerdict ToVerdict(bool is_phishing) {
+  return is_phishing ? OneTimeTokensPhishGuardVerdict::kPhishing
+                     : OneTimeTokensPhishGuardVerdict::kNotPhishing;
+}
 }  // namespace
 
 ChromeOtpPhishGuardDelegate::ChromeOtpPhishGuardDelegate(
@@ -130,23 +134,21 @@ void ChromeOtpPhishGuardDelegate::StartOtpPhishGuardCheck(
   // If Safe Browsing is disabled/unavailable and an actor task is ongoing,
   // do not consider the check successful (report `kPhishing`).
   // Post task to ensure callback is always invoked asynchronously.
-  OneTimeTokensPhishGuardVerdict verdict =
-      is_actor_task_ongoing ? OneTimeTokensPhishGuardVerdict::kPhishing
-                            : OneTimeTokensPhishGuardVerdict::kNotPhishing;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), verdict));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), ToVerdict(is_actor_task_ongoing)));
 }
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 void ChromeOtpPhishGuardDelegate::OnSafeBrowsingCheckComplete(
     const GURL& main_frame_url,
     VerdictCallback callback,
-    OneTimeTokensPhishGuardVerdict verdict) {
+    bool is_malicious) {
   safe_browsing_checker_client_.reset();
 
   auto* pps = GetProtectionService(&web_contents_.get());
-  if (verdict != OneTimeTokensPhishGuardVerdict::kNotPhishing || !pps) {
-    std::move(callback).Run(verdict);
+  if (is_malicious || !pps) {
+    std::move(callback).Run(ToVerdict(is_malicious));
     return;
   }
 
