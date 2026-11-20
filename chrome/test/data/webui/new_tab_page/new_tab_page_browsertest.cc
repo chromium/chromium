@@ -493,7 +493,13 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, EnergyEffectVariant) {
           "runMochaSuite('NewTabPageAppTest EnergyEffectVariant')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, LeftHandSide) {
+// TODO(crbug.com/584766584): Flaky timeout on Linux debug builds.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_LeftHandSide DISABLED_LeftHandSide
+#else
+#define MAYBE_LeftHandSide LeftHandSide
+#endif
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, MAYBE_LeftHandSide) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest LeftHandSide')");
 }
