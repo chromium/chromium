@@ -435,6 +435,41 @@ public class SideUiResizeHandlerTest {
         histogramWatcher.assertExpected();
     }
 
+    @Test
+    public void testInterruptDrag_IgnoresTrailingEvents() {
+        SideUiResizeHandler handler = createHandler(AnchorSide.LEFT);
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder().expectNoRecords(TOUCH_STATE_HISTOGRAM).build();
+        dispatch(handler, MotionEvent.ACTION_DOWN, 100f);
+
+        // Pausing updates mid-gesture interrupts the drag; trailing events after updates resume are
+        // ignored without recording *_WITHOUT_DRAG.
+        when(mSideUiCoordinator.areSideUiUpdatesPaused(SideUiId.VERTICAL_TABS)).thenReturn(true);
+        dispatch(handler, MotionEvent.ACTION_MOVE, 150f);
+        assertNull(mAnchorContainerParent.getPointerIcon());
+
+        when(mSideUiCoordinator.areSideUiUpdatesPaused(SideUiId.VERTICAL_TABS)).thenReturn(false);
+        dispatch(handler, MotionEvent.ACTION_MOVE, 160f);
+        dispatch(handler, MotionEvent.ACTION_UP, 160f);
+        verify(mSideUiContainer, never()).onResizeLive(anyInt());
+        verify(mSideUiContainer, never()).onResizeCommitted(anyInt());
+        histogramWatcher.assertExpected();
+
+        // Ending an interrupted gesture while still paused resets mIsDragInterrupted, so a later
+        // orphan event after updates resume still records *_WITHOUT_DRAG.
+        HistogramWatcher orphanWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(TOUCH_STATE_HISTOGRAM, TouchState.MOVE_WITHOUT_DRAG)
+                        .build();
+        dispatch(handler, MotionEvent.ACTION_DOWN, 100f);
+        when(mSideUiCoordinator.areSideUiUpdatesPaused(SideUiId.VERTICAL_TABS)).thenReturn(true);
+        dispatch(handler, MotionEvent.ACTION_UP, 150f);
+
+        when(mSideUiCoordinator.areSideUiUpdatesPaused(SideUiId.VERTICAL_TABS)).thenReturn(false);
+        dispatch(handler, MotionEvent.ACTION_MOVE, 160f);
+        orphanWatcher.assertExpected();
+    }
+
     private void dispatchWithButtons(
             SideUiResizeHandler handler, int action, float x, int buttonState) {
         MotionEvent.PointerProperties properties = new MotionEvent.PointerProperties();

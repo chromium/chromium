@@ -132,6 +132,13 @@ import java.util.Arrays;
     private boolean mIsResizing;
 
     /**
+     * Whether an in-progress drag was interrupted externally (e.g. because UI updates paused or the
+     * container detached), so trailing events from that gesture are ignored without recording
+     * {@code *_WITHOUT_DRAG}.
+     */
+    private boolean mIsDragInterrupted;
+
+    /**
      * @param context The {@link Context} used to create the handle {@link View}.
      * @param anchorContainer The anchor container that hosts the handle.
      * @param anchorContainerParent The parent of the anchor containers. It covers the web contents,
@@ -197,9 +204,9 @@ import java.util.Arrays;
 
     /** Removes the handle when the bound container's {@link View} is detached. */
     /* package */ void destroyHandleView() {
+        interruptDrag();
         if (mHandleView == null) return;
 
-        clearDragState();
         mAnchorContainer.removeView(mHandleView);
         mHandleView = null;
     }
@@ -215,13 +222,18 @@ import java.util.Arrays;
     // View.OnTouchListener implementation:
     @Override
     public boolean onTouch(View view, MotionEvent event) {
+        int action = event.getActionMasked();
         if (mSideUiCoordinator.areSideUiUpdatesPaused(mContainer.getSideUiId())) {
-            clearDragState();
+            interruptDrag();
+            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+                mIsDragInterrupted = false;
+            }
             return false;
         }
 
-        switch (event.getActionMasked()) {
+        switch (action) {
             case MotionEvent.ACTION_DOWN:
+                mIsDragInterrupted = false;
                 // A stale drag means the previous gesture never delivered its ACTION_UP or
                 // ACTION_CANCEL. startDrag() replaces it, so the new drag is unaffected.
                 if (isDragging()) {
@@ -234,6 +246,7 @@ import java.util.Arrays;
                 }
                 return true;
             case MotionEvent.ACTION_MOVE:
+                if (mIsDragInterrupted) return false;
                 if (!isDragging()) {
                     recordThrottledTouchState(TouchState.MOVE_WITHOUT_DRAG);
                     return false;
@@ -256,7 +269,11 @@ import java.util.Arrays;
                 return true;
             case MotionEvent.ACTION_UP:
             case MotionEvent.ACTION_CANCEL:
-                boolean isUp = event.getActionMasked() == MotionEvent.ACTION_UP;
+                if (mIsDragInterrupted) {
+                    mIsDragInterrupted = false;
+                    return false;
+                }
+                boolean isUp = action == MotionEvent.ACTION_UP;
                 if (!isDragging()) {
                     recordTouchState(
                             isUp ? TouchState.UP_WITHOUT_DRAG : TouchState.CANCEL_WITHOUT_DRAG);
@@ -326,7 +343,14 @@ import java.util.Arrays;
                 SideUiResizeHandleView.getResizePointerIcon(mContext));
     }
 
+    private void interruptDrag() {
+        if (!isDragging()) return;
+        mIsDragInterrupted = true;
+        clearDragState();
+    }
+
     private void clearDragState() {
+        if (!isDragging()) return;
         mDragStartRawX = null;
         mDragStartWidthPx = null;
         mIsResizing = false;
