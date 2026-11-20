@@ -8,7 +8,6 @@
 #include <algorithm>
 
 #include "base/strings/stringprintf.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/clustering_test_utils.h"
 #include "components/history_clusters/core/config.h"
@@ -276,14 +275,9 @@ TEST(HistoryClustersUtilTest, CullVisitsThatShouldBeHidden) {
 
   {
     // Test the zero-query state.
-    base::HistogramTester histogram_tester;
-
     auto clusters = all_clusters;
     CullVisitsThatShouldBeHidden(clusters, /*is_zero_query_state=*/true);
     ASSERT_EQ(clusters.size(), 4u);
-
-    histogram_tester.ExpectTotalCount(
-        "History.Clusters.Backend.NumVisitsBelowFold", 4);
 
     // No visits are hidden as they are all high-scoring.
     EXPECT_EQ(clusters[0].cluster_id, history::ClusterId(0));
@@ -300,24 +294,12 @@ TEST(HistoryClustersUtilTest, CullVisitsThatShouldBeHidden) {
     // No visits that should actually be shown are hidden.
     EXPECT_EQ(clusters[3].cluster_id, history::ClusterId(5));
     EXPECT_EQ(clusters[3].visits.size(), 2u);
-
-    // Clusters index 0, 2, and 3.
-    histogram_tester.ExpectBucketCount(
-        "History.Clusters.Backend.NumVisitsBelowFold", 0, 3);
-
-    // Cluster index 1.
-    histogram_tester.ExpectBucketCount(
-        "History.Clusters.Backend.NumVisitsBelowFold", 1, 1);
   }
 
   {
-    base::HistogramTester histogram_tester;
     // Test the queried state with a higher threshold of required visits.
     auto clusters = all_clusters;
     CullVisitsThatShouldBeHidden(clusters, /*is_zero_query_state=*/false);
-
-    histogram_tester.ExpectTotalCount(
-        "History.Clusters.Backend.NumVisitsBelowFold", 5);
 
     // Cluster id = 3, with 1 visit after filtering should no longer be removed.
     ASSERT_EQ(clusters.size(), 5u);
@@ -326,14 +308,6 @@ TEST(HistoryClustersUtilTest, CullVisitsThatShouldBeHidden) {
     // Cluster id = 5, with a Done visit, should have that Done visit visible.
     EXPECT_EQ(clusters[4].cluster_id, history::ClusterId(5));
     EXPECT_EQ(clusters[4].visits.size(), 3u);
-
-    // Clusters 0, 2, 3, and 4.
-    histogram_tester.ExpectBucketCount(
-        "History.Clusters.Backend.NumVisitsBelowFold", 0, 4);
-
-    // Cluster 1.
-    histogram_tester.ExpectBucketCount(
-        "History.Clusters.Backend.NumVisitsBelowFold", 1, 1);
   }
 }
 
