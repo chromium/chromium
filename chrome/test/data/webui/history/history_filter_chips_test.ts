@@ -692,7 +692,6 @@ suite('HistoryFilterChipsTest', function() {
       const domainChip =
           element.shadowRoot.querySelector<HTMLElement>('#domainFilterChip');
       assertTrue(!!domainChip);
-      assertTrue(domainChip.hasAttribute('selected'));
       assertEquals('example.com', domainChip.textContent.trim());
       const icon = domainChip.querySelector('cr-icon');
       assertTrue(!!icon);

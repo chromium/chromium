@@ -62,6 +62,33 @@
       var(--filter-chip-icon-size) + 4px);
 }
 
+/* The domain filter is not interactive, so it is not a <cr-chip> (a button).
+ * These styles match a selected <cr-chip>. */
+#domainFilterChip {
+  --iron-icon-fill-color: var(--color-chip-icon-selected,
+      var(--cr-fallback-color-on-tonal-container));
+  --iron-icon-height: 16px;
+  --iron-icon-width: 16px;
+  align-items: center;
+  background-color: var(--color-chip-background-selected,
+      var(--cr-fallback-color-tonal-container));
+  border: 1px solid var(--color-chip-background-selected,
+      var(--cr-fallback-color-tonal-container));
+  border-radius: var(--cr-chip-border-radius, 8px);
+  box-sizing: border-box;
+  color: var(--color-chip-foreground-selected,
+      var(--cr-fallback-color-on-tonal-container));
+  cursor: default;
+  display: flex;
+  font-size: var(--cr-chip-font-size, 12px);
+  font-weight: 500;
+  gap: 4px;
+  height: var(--cr-chip-height, 28px);
+  overflow: hidden;
+  padding: 0 8px;
+  white-space: nowrap;
+}
+
 #clearAllButton {
   --cr-button-border: none;
   --cr-button-height: var(--cr-chip-height, 28px);
