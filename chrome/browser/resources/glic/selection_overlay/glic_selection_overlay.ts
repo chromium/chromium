@@ -511,38 +511,24 @@ export class GlicSelectionOverlayElement extends
               };
             };
 
-        const alignStart = {
-          ...(isRtl ? rightAligned(selRight) : leftAligned(selLeft)),
-          alignItems: 'flex-start',
-        };
-        const alignEnd = {
-          ...(isRtl ? leftAligned(selLeft) : rightAligned(selRight)),
-          alignItems: 'flex-end',
-        };
-        const afterSelection = {
-          ...(isRtl ? rightAligned(selLeft - margin) :
-                      leftAligned(selRight + margin)),
-          alignItems: 'flex-start',
-        };
-        const beforeSelection = {
-          ...(isRtl ? leftAligned(selRight + margin) :
-                      rightAligned(selLeft - margin)),
-          alignItems: 'flex-end',
-        };
-        const insideSelection = {
-          ...(isRtl ?
-                  rightAligned(
-                      selRight - margin, Math.max(selLeft + margin, margin)) :
-                  leftAligned(
-                      selLeft + margin,
-                      Math.min(selRight - margin, viewportWidth - margin))),
-          alignItems: 'flex-start',
-        };
-        const windowCorner = {
-          ...(isRtl ? rightAligned(viewportWidth - margin) :
-                      leftAligned(margin)),
-          alignItems: 'flex-start',
-        };
+        // These only place the container. Its content always lines up with
+        // the input box's leading edge, even when the container is aligned
+        // by its trailing edge.
+        const alignStart =
+            isRtl ? rightAligned(selRight) : leftAligned(selLeft);
+        const alignEnd = isRtl ? leftAligned(selLeft) : rightAligned(selRight);
+        const afterSelection = isRtl ? rightAligned(selLeft - margin) :
+                                       leftAligned(selRight + margin);
+        const beforeSelection = isRtl ? leftAligned(selRight + margin) :
+                                        rightAligned(selLeft - margin);
+        const insideSelection = isRtl ?
+            rightAligned(
+                selRight - margin, Math.max(selLeft + margin, margin)) :
+            leftAligned(
+                selLeft + margin,
+                Math.min(selRight - margin, viewportWidth - margin));
+        const windowCorner =
+            isRtl ? rightAligned(viewportWidth - margin) : leftAligned(margin);
 
         const candidates = [
           // 1. Below selected area, with both left edges aligned (right for
@@ -615,7 +601,7 @@ export class GlicSelectionOverlayElement extends
 
         this.promptAboveSelection = chosen.above;
         return `left: ${chosen.left}px; top: ${chosen.top}px; max-width: ${
-            chosen.maxWidth}px; align-items: ${chosen.alignItems};`;
+            chosen.maxWidth}px;`;
       }
 
       this.promptAboveSelection = false;

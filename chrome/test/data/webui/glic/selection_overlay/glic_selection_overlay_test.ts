@@ -991,6 +991,44 @@ suite('GlicSelectionOverlayLayout', () => {
     assertTrue(buttonRect.left >= pillRect.right);
   });
 
+  test('ChipsAlignWithPillWhenPromptIsEndAligned', async () => {
+    await showOverlay({promptBox: true, dogfoodFeedback: true});
+    const chipActions = [chip('Summarize'), chip('Ask Gemini')];
+
+    // Each prompt is placed by its trailing edge, so the dogfood button (not
+    // the pill) sits at the edge. The chips still start where the pill starts.
+    const assertChipsAtPillStart = (message: string) => {
+      const pillRect = query('.searchbox-pill').getBoundingClientRect();
+      for (const chipRect of chips().map(c => c.getBoundingClientRect())) {
+        if (overlay.dir === 'rtl') {
+          assertNear(pillRect.right, chipRect.right, message);
+        } else {
+          assertNear(pillRect.left, chipRect.left, message);
+        }
+      }
+    };
+
+    // 2. Below the selection, right edges aligned.
+    let region = regionFromPx(window.innerWidth - 120, 100, 80, 60);
+    await select(region, chipActions);
+    assertNear(toViewport(region).right, promptRect().right, 'below right');
+    assertChipsAtPillStart('below right');
+
+    // 6. To the left of a tall selection near the right edge.
+    region = regionFromPx(
+        window.innerWidth - 140, 100, 80, window.innerHeight - 200);
+    await select(region, chipActions);
+    assertNear(toViewport(region).left - MARGIN, promptRect().right, 'left of');
+    assertChipsAtPillStart('left of');
+
+    // 2 in RTL: below the selection, left edges aligned.
+    overlay.dir = 'rtl';
+    region = regionFromPx(40, 100, 80, 60);
+    await select(region, chipActions);
+    assertNear(toViewport(region).left, promptRect().left, 'rtl below left');
+    assertChipsAtPillStart('rtl below left');
+  });
+
   test('ChipsRowAtSelectionTopRight', async () => {
     const region = {x: 0.3, y: 0.3, width: 0.1, height: 0.1};
     await showOverlay({prompt: true});
