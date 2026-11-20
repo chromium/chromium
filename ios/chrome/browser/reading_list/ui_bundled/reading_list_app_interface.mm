@@ -4,18 +4,28 @@
 
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_app_interface.h"
 
+#import <string>
+#import <vector>
+
+#import "base/check.h"
 #import "base/location.h"
 #import "base/no_destructor.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "components/reading_list/core/reading_list_model.h"
+#import "components/sync/base/data_type.h"
+#import "components/sync/protocol/reading_list_specifics.pb.h"
+#import "components/sync/protocol/sync_entity.pb.h"
+#import "components/sync/test/fake_server.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
+#import "ios/chrome/test/app/sync_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
 #import "ios/testing/nserror_util.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/network_change_notifier.h"
+#import "url/gurl.h"
 
 namespace {
 // Returns the reading list model.
@@ -126,6 +136,31 @@ class ConnectionTypeOverrider {
     return -1;
   }
   return model->unread_size();
+}
+
++ (BOOL)hasSyncServerEntryWithURL:(NSURL*)url read:(BOOL)read {
+  fake_server::FakeServer* server = chrome_test_util::GetFakeSyncServer();
+  CHECK(server);
+  const std::string expectedURL = net::GURLWithNSURL(url).spec();
+  const std::vector<sync_pb::SyncEntity> entities =
+      server->GetSyncEntitiesByDataType(syncer::READING_LIST);
+  const sync_pb::ReadingListSpecifics* matchedSpecifics = nullptr;
+  for (const sync_pb::SyncEntity& entity : entities) {
+    const sync_pb::ReadingListSpecifics& specifics =
+        entity.specifics().reading_list();
+    if (specifics.url() == expectedURL) {
+      if (matchedSpecifics) {
+        return NO;
+      }
+      matchedSpecifics = &specifics;
+    }
+  }
+  if (!matchedSpecifics) {
+    return NO;
+  }
+  const BOOL entityIsRead =
+      matchedSpecifics->status() == sync_pb::ReadingListSpecifics::READ;
+  return entityIsRead == read;
 }
 
 + (void)forceConnectionToWifi {

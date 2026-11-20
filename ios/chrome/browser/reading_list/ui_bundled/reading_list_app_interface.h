@@ -29,6 +29,10 @@
 // Returns the number of unread entries in the ReadingListModel.
 + (NSInteger)unreadEntriesCount;
 
+// Returns YES if a single Reading List entity with `url` and matching `read`
+// status exists on the fake sync server.
++ (BOOL)hasSyncServerEntryWithURL:(NSURL*)url read:(BOOL)read;
+
 // Simulate that the current connection is WiFI.
 + (void)forceConnectionToWifi;
 

@@ -28,12 +28,12 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "net/base/apple/url_conversions.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
 using chrome_test_util::IdentityCellMatcherForEmail;
 using chrome_test_util::PrimarySignInButton;
-using chrome_test_util::ReadingListMarkAsReadButton;
 using chrome_test_util::SecondarySignInButton;
 using chrome_test_util::SettingsDoneButton;
 using reading_list_test_utils::AddedToLocalReadingListSnackbar;
@@ -52,7 +52,6 @@ NSString* const kPage1Title = @"Page 1 Title";
 const char kPage1URL[] = "/page1";
 NSString* const kPage2Title = @"Page 2 Title";
 const char kPage2URL[] = "/page2";
-constexpr base::TimeDelta kLongPressDuration = base::Seconds(2);
 constexpr base::TimeDelta kSyncActiveTimeout = base::Seconds(5);
 
 id<GREYMatcher> SignedInSnackbar(NSString* email) {
@@ -675,10 +674,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       assertWithMatcher:grey_notNil()];
 }
 
-// Test that after a sign-in with the Reading List sign-in promo, if two unread
-// entries are added, then the first item is marked as unread, the read and
-// unread items sections should be shown correctly and remain so after a
-// sign-out & sign-in with the same account.
+// Tests that after a sign-in with the Reading List sign-in promo, if two
+// unread entries are added and the first item is marked as read, the read and
+// unread items sections are shown correctly and remain so after a sign-out
+// and sign-in with the same account.
 - (void)testMoveItemThenRefreshSignIn {
   // Sign-in with the Reading List Promo.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -711,16 +710,42 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   AddURLToReadingListWithSnackbarDismiss(self.testServer->GetURL(kPage2URL),
                                          fakeIdentity.userEmail);
 
-  // Mark Page 1 as read.
+  NSURL* page1URL = net::NSURLWithGURL(self.testServer->GetURL(kPage1URL));
+  NSURL* page2URL = net::NSURLWithGURL(self.testServer->GetURL(kPage2URL));
+  // Wait for sync to upload both initial unread items before opening the
+  // Reading List so background sync reloads do not race with UI actions.
+  ConditionBlock initialSyncWaitCondition = ^{
+    return [ReadingListAppInterface hasSyncServerEntryWithURL:page1URL
+                                                         read:NO] &&
+           [ReadingListAppInterface hasSyncServerEntryWithURL:page2URL read:NO];
+  };
+  GREYAssertTrue(
+      base::test::ios::WaitUntilConditionOrTimeout(
+          base::test::ios::kWaitForActionTimeout, initialSyncWaitCondition),
+      @"Timed out waiting for initial reading list items to upload to the "
+      @"fake sync server.");
+
+  // Mark Page 1 as read via edit mode to avoid flaky long-press context
+  // menu interactions with table view drag-and-drop on iPad.
   OpenReadingList();
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:VisibleReadingListItem(kPage1Title)];
-  [ChromeEarlGreyUI waitForAppToIdle];
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kReadingListNavigationBarSelectButtonID),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:VisibleReadingListItem(kPage1Title)]
-      performAction:grey_longPressWithDuration(kLongPressDuration)];
+      performAction:grey_tap()];
+  id<GREYMatcher> markButtonMatcher =
+      grey_allOf(grey_accessibilityID(kReadingListToolbarMarkButtonID),
+                 chrome_test_util::ButtonWithAccessibilityLabelId(
+                     IDS_IOS_READING_LIST_MARK_READ_BUTTON),
+                 grey_sufficientlyVisible(), nil);
   [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:ReadingListMarkAsReadButton()];
-  [[EarlGrey selectElementWithMatcher:ReadingListMarkAsReadButton()]
+      waitForSufficientlyVisibleElementWithMatcher:markButtonMatcher];
+  [[EarlGrey selectElementWithMatcher:markButtonMatcher]
       performAction:grey_tap()];
   // Verify that the unread and the read sections headers are visible.
   NSString* readHeaderText =
@@ -750,20 +775,20 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       @"Reading list entries count did not match expected counts (1 read, 1 "
       @"unread).");
 
-  // Wait for sync to upload the reading list items to the fake sync server
-  // before signing out.
-  [ChromeEarlGrey
-      waitForSyncServerEntitiesWithType:syncer::READING_LIST
-                                   name:self.testServer->GetURL(kPage1URL)
-                                            .spec()
-                                  count:1
-                                timeout:kSyncActiveTimeout];
-  [ChromeEarlGrey
-      waitForSyncServerEntitiesWithType:syncer::READING_LIST
-                                   name:self.testServer->GetURL(kPage2URL)
-                                            .spec()
-                                  count:1
-                                timeout:kSyncActiveTimeout];
+  // Wait for sync to commit the updated `READ` status of Page 1 to the fake
+  // sync server before signing out; checking entity count alone succeeds
+  // immediately from the initial unread upload while the `READ` update is
+  // still in flight, and signing out wipes account storage.
+  ConditionBlock syncReadStatusWaitCondition = ^{
+    return [ReadingListAppInterface hasSyncServerEntryWithURL:page1URL
+                                                         read:YES] &&
+           [ReadingListAppInterface hasSyncServerEntryWithURL:page2URL read:NO];
+  };
+  GREYAssertTrue(
+      base::test::ios::WaitUntilConditionOrTimeout(
+          base::test::ios::kWaitForActionTimeout, syncReadStatusWaitCondition),
+      @"Timed out waiting for reading list read status update to commit to "
+      @"the fake sync server.");
 
   // Sign-out and sign-in with the same account.
   [SigninEarlGrey signOut];

@@ -273,11 +273,17 @@ source_set("eg_app_support+eg2") {
     "reading_list_app_interface.mm",
   ]
   deps = [
+    "//base",
     "//base/test:test_support",
     "//components/reading_list/core",
+    "//components/sync:test_support",
+    "//components/sync/base",
+    "//components/sync/protocol",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/test/app:test_support",
     "//ios/testing:nserror_support",
+    "//net",
+    "//url",
   ]
 }
 
