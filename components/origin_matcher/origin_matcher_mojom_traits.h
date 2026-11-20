@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "components/origin_matcher/origin_matcher.h"
 #include "components/origin_matcher/origin_matcher_internal.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
@@ -32,7 +33,7 @@ template <>
 struct StructTraits<origin_matcher::mojom::OriginMatcherDataView,
                     origin_matcher::OriginMatcher> {
  public:
-  static const std::vector<OriginMatcherRuleUniquePtr>& rules(
+  static base::span<const OriginMatcherRuleUniquePtr> rules(
       const origin_matcher::OriginMatcher& r) {
     return r.rules();
   }

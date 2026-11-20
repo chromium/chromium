@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_ORIGIN_MATCHER_ORIGIN_MATCHER_INTERNAL_H_
 #define COMPONENTS_ORIGIN_MATCHER_ORIGIN_MATCHER_INTERNAL_H_
 
+#include <compare>
+#include <memory>
 #include <string>
 
 #include "net/base/scheme_host_port_matcher.h"
@@ -14,7 +16,14 @@
 
 namespace origin_matcher {
 
-enum class OriginMatcherRuleType { kAny, kSubdomain };
+// Ordered so that MatchAllOriginsRule (kAny) sorts first in OriginMatcher's
+// rule set, allowing Matches() to short-circuit immediately when "*" is
+// present.
+enum class OriginMatcherRuleType {
+  kAny = 0,
+  kSubdomain = 1,
+};
+static_assert(OriginMatcherRuleType::kAny < OriginMatcherRuleType::kSubdomain);
 
 // Common superclass that includes the type of matcher.
 class OriginMatcherRule : public net::SchemeHostPortMatcherRule {
@@ -24,8 +33,14 @@ class OriginMatcherRule : public net::SchemeHostPortMatcherRule {
 
   OriginMatcherRuleType type() const { return type_; }
   virtual std::unique_ptr<OriginMatcherRule> Clone() const = 0;
+  bool operator==(const OriginMatcherRule& other) const;
+  std::strong_ordering operator<=>(const OriginMatcherRule& other) const;
 
  private:
+  // Called by operator<=> after verifying that type() == other.type().
+  virtual std::strong_ordering CompareSameType(
+      const OriginMatcherRule& other) const = 0;
+
   const OriginMatcherRuleType type_;
 };
 
@@ -43,6 +58,11 @@ class MatchAllOriginsRule : public OriginMatcherRule {
   // net::SchemeHostPortMatcherRule:
   net::SchemeHostPortMatcherResult Evaluate(const GURL& url) const override;
   std::string ToString() const override;
+
+ private:
+  // OriginMatcherRule:
+  std::strong_ordering CompareSameType(
+      const OriginMatcherRule& other) const override;
 };
 
 // Matches against a specific scheme, optional host (potentially with
@@ -84,10 +104,16 @@ class SubdomainMatchingRule : public OriginMatcherRule {
   std::string ToString() const override;
 
  private:
+  // OriginMatcherRule:
+  std::strong_ordering CompareSameType(
+      const OriginMatcherRule& other) const override;
+
   const std::string scheme_;
   // Empty string means no host provided.
+  // This is the case for all schemes except http and https.
   const std::string optional_host_;
-  // -1 means no port provided.
+  // Port to use for matching.
+  // This is set to -1 for schemes that don't use ports.
   const int optional_port_;
 };
 

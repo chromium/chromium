@@ -415,6 +415,111 @@ TEST_F(OriginMatcherTest, CopyAndAssign) {
   EXPECT_EQ(2u, assigned.rules().size());
   EXPECT_EQ("*", assigned.rules()[0]->ToString());
   EXPECT_EQ("https://*.example.com:443", assigned.rules()[1]->ToString());
+  EXPECT_EQ(matcher, assigned);
+}
+
+TEST_F(OriginMatcherTest, Equality) {
+  OriginMatcher empty1;
+  OriginMatcher empty2;
+  EXPECT_EQ(empty1, empty2);
+
+  OriginMatcher wildcard1;
+  OriginMatcher wildcard2;
+  ASSERT_TRUE(wildcard1.AddRuleFromString("*"));
+  ASSERT_TRUE(wildcard2.AddRuleFromString("*"));
+  EXPECT_EQ(wildcard1, wildcard2);
+  EXPECT_NE(empty1, wildcard1);
+
+  OriginMatcher example1;
+  OriginMatcher example2;
+  ASSERT_TRUE(example1.AddRuleFromString("https://EXAMPLE.COM"));
+  ASSERT_TRUE(example2.AddRuleFromString("https://example.com:443"));
+  EXPECT_EQ(example1, example2);
+  EXPECT_NE(wildcard1, example1);
+
+  OriginMatcher different_scheme;
+  ASSERT_TRUE(different_scheme.AddRuleFromString("http://example.com:443"));
+  EXPECT_NE(example1, different_scheme);
+
+  OriginMatcher different_host;
+  ASSERT_TRUE(different_host.AddRuleFromString("https://*.example.com:443"));
+  EXPECT_NE(example1, different_host);
+
+  OriginMatcher different_port;
+  ASSERT_TRUE(different_port.AddRuleFromString("https://example.com:8443"));
+  EXPECT_NE(example1, different_port);
+}
+
+TEST_F(OriginMatcherTest, EqualityOrderIndependent) {
+  OriginMatcher m1;
+  ASSERT_TRUE(m1.AddRuleFromString("https://a.example.com"));
+  ASSERT_TRUE(m1.AddRuleFromString("http://*.b.example.com:8080"));
+  ASSERT_TRUE(m1.AddRuleFromString("file://"));
+
+  OriginMatcher m2;
+  ASSERT_TRUE(m2.AddRuleFromString("file://"));
+  ASSERT_TRUE(m2.AddRuleFromString("http://*.b.example.com:8080"));
+  ASSERT_TRUE(m2.AddRuleFromString("https://a.example.com:443"));
+
+  EXPECT_EQ(m1, m2);
+
+  OriginMatcher with_wildcard1;
+  ASSERT_TRUE(with_wildcard1.AddRuleFromString("https://a.example.com"));
+  ASSERT_TRUE(with_wildcard1.AddRuleFromString("http://*.b.example.com:8080"));
+  ASSERT_TRUE(with_wildcard1.AddRuleFromString("file://"));
+  ASSERT_TRUE(with_wildcard1.AddRuleFromString("*"));
+
+  OriginMatcher with_wildcard2;
+  ASSERT_TRUE(with_wildcard2.AddRuleFromString("*"));
+  ASSERT_TRUE(with_wildcard2.AddRuleFromString("file://"));
+  ASSERT_TRUE(with_wildcard2.AddRuleFromString("http://*.b.example.com:8080"));
+  ASSERT_TRUE(with_wildcard2.AddRuleFromString("https://a.example.com:443"));
+
+  EXPECT_EQ(with_wildcard1, with_wildcard2);
+  EXPECT_NE(m1, with_wildcard1);
+}
+
+TEST_F(OriginMatcherTest, EqualityDuplicateIndependent) {
+  OriginMatcher single;
+  ASSERT_TRUE(single.AddRuleFromString("https://a.example.com"));
+  ASSERT_TRUE(single.AddRuleFromString("https://b.example.com"));
+
+  OriginMatcher duplicate_a;
+  ASSERT_TRUE(duplicate_a.AddRuleFromString("https://a.example.com"));
+  ASSERT_TRUE(duplicate_a.AddRuleFromString("https://A.EXAMPLE.COM:443"));
+  ASSERT_TRUE(duplicate_a.AddRuleFromString("https://b.example.com"));
+  EXPECT_EQ(2u, duplicate_a.rules().size());
+  EXPECT_EQ(single, duplicate_a);
+
+  OriginMatcher duplicate_b;
+  ASSERT_TRUE(duplicate_b.AddRuleFromString("https://b.example.com"));
+  ASSERT_TRUE(duplicate_b.AddRuleFromString("https://a.example.com"));
+  ASSERT_TRUE(duplicate_b.AddRuleFromString("https://b.example.com:443"));
+  EXPECT_EQ(2u, duplicate_b.rules().size());
+  EXPECT_EQ(duplicate_a, duplicate_b);
+}
+
+TEST_F(OriginMatcherTest, MatchAllRuleSortedFirst) {
+  OriginMatcher matcher;
+  ASSERT_TRUE(matcher.AddRuleFromString("https://z.example.com"));
+  ASSERT_TRUE(matcher.AddRuleFromString("file://"));
+  ASSERT_TRUE(matcher.AddRuleFromString("http://a.example.com"));
+  ASSERT_TRUE(matcher.AddRuleFromString("*"));
+
+  ASSERT_EQ(4u, matcher.rules().size());
+  EXPECT_EQ("*", matcher.rules()[0]->ToString());
+  EXPECT_TRUE(
+      matcher.Matches(CreateOriginFromString("https://other.example.com")));
+
+  OriginMatcher from_rule_list;
+  OriginMatcher::RuleList rules;
+  rules.push_back(
+      std::make_unique<SubdomainMatchingRule>("https", "example.com", 443));
+  rules.push_back(std::make_unique<MatchAllOriginsRule>());
+  from_rule_list.SetRules(std::move(rules));
+
+  ASSERT_EQ(2u, from_rule_list.rules().size());
+  EXPECT_EQ("*", from_rule_list.rules()[0]->ToString());
 }
 
 }  // namespace origin_matcher

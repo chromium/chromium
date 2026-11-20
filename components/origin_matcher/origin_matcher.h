@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -56,8 +58,11 @@ class OriginMatcher {
   OriginMatcher& operator=(const OriginMatcher& rhs);
   OriginMatcher& operator=(OriginMatcher&&);
 
+  bool operator==(const OriginMatcher& rhs) const;
+
   ~OriginMatcher();
 
+  // Set a list of rules. Must not contain nullptr.
   void SetRules(RuleList rules);
 
   // Moves the rules from one origin matcher to another.
@@ -70,14 +75,23 @@ class OriginMatcher {
   // Returns true if the |origin| matches any rule in this matcher.
   bool Matches(const url::Origin& origin) const;
 
-  // Returns the current list of rules.
-  const RuleList& rules() const { return rules_; }
+  // Returns the current sorted, deduplicated set of rules.
+  base::span<const std::unique_ptr<OriginMatcherRule>> rules() const {
+    return rules_;
+  }
 
   // Returns string representation of this origin matcher.
   std::vector<std::string> Serialize() const;
 
  private:
-  RuleList rules_;
+  struct OriginMatcherRuleComparator {
+    bool operator()(const std::unique_ptr<OriginMatcherRule>& lhs,
+                    const std::unique_ptr<OriginMatcherRule>& rhs) const;
+  };
+  using RuleSet = base::flat_set<std::unique_ptr<OriginMatcherRule>,
+                                 OriginMatcherRuleComparator>;
+
+  RuleSet rules_;
 };
 
 #if BUILDFLAG(IS_ANDROID)

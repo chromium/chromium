@@ -4,7 +4,8 @@
 
 #include "components/origin_matcher/origin_matcher.h"
 
-#include <ranges>
+#include <algorithm>
+#include <utility>
 
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
@@ -42,6 +43,14 @@ inline int GetDefaultPortForSchemeIfNoPortInfo(const std::string& scheme,
 
 }  // namespace
 
+bool OriginMatcher::OriginMatcherRuleComparator::operator()(
+    const std::unique_ptr<OriginMatcherRule>& lhs,
+    const std::unique_ptr<OriginMatcherRule>& rhs) const {
+  CHECK(lhs);
+  CHECK(rhs);
+  return *lhs < *rhs;
+}
+
 OriginMatcher::OriginMatcher() = default;
 // Allow copy and assign.
 OriginMatcher::OriginMatcher(OriginMatcher&&) = default;
@@ -54,18 +63,36 @@ OriginMatcher::OriginMatcher(const OriginMatcher& rhs) {
 }
 
 OriginMatcher& OriginMatcher::operator=(const OriginMatcher& rhs) {
-  rules_.clear();
-
-  rules_.reserve(rhs.rules_.size());
-  for (const auto& rule : rhs.rules_) {
-    rules_.push_back(rule->Clone());
+  if (this == &rhs) {
+    return *this;
   }
+
+  RuleList cloned_rules;
+  cloned_rules.reserve(rhs.rules_.size());
+  for (const auto& rule : rhs.rules_) {
+    cloned_rules.push_back(rule->Clone());
+  }
+  rules_ = RuleSet(base::sorted_unique, std::move(cloned_rules));
 
   return *this;
 }
 
+bool OriginMatcher::operator==(const OriginMatcher& rhs) const {
+  return std::ranges::equal(
+      rules_, rhs.rules_,
+      [](const std::unique_ptr<OriginMatcherRule>& lhs_rule,
+         const std::unique_ptr<OriginMatcherRule>& rhs_rule) {
+        CHECK(lhs_rule);
+        CHECK(rhs_rule);
+        return *lhs_rule == *rhs_rule;
+      });
+}
+
 void OriginMatcher::SetRules(RuleList rules) {
-  rules_.swap(rules);
+  for (const auto& rulePtr : rules) {
+    CHECK(rulePtr);
+  }
+  rules_ = RuleSet(std::move(rules));
 }
 
 void OriginMatcher::MoveRules(OriginMatcher& matcher) {
@@ -77,7 +104,7 @@ bool OriginMatcher::AddRuleFromString(const std::string& raw_untrimmed) {
   base::TrimWhitespaceASCII(raw_untrimmed, base::TRIM_ALL, &raw);
 
   if (raw == "*") {
-    rules_.push_back(std::make_unique<MatchAllOriginsRule>());
+    rules_.insert(std::make_unique<MatchAllOriginsRule>());
     return true;
   }
 
@@ -97,7 +124,7 @@ bool OriginMatcher::AddRuleFromString(const std::string& raw_untrimmed) {
     if (!SubdomainMatchingRule::IsValidSchemeAndHost(scheme, std::string())) {
       return false;
     }
-    rules_.push_back(
+    rules_.insert(
         std::make_unique<SubdomainMatchingRule>(scheme, std::string(), -1));
     return true;
   }
@@ -118,21 +145,20 @@ bool OriginMatcher::AddRuleFromString(const std::string& raw_untrimmed) {
     if (ip_address.IsIPv6()) {
       host = '[' + host + ']';
     }
-    rules_.push_back(
-        std::make_unique<SubdomainMatchingRule>(scheme, host, port));
+    rules_.insert(std::make_unique<SubdomainMatchingRule>(scheme, host, port));
     return true;
   }
 
   port = GetDefaultPortForSchemeIfNoPortInfo(scheme, port);
-  rules_.push_back(std::make_unique<SubdomainMatchingRule>(scheme, host, port));
+  rules_.insert(std::make_unique<SubdomainMatchingRule>(scheme, host, port));
   return true;
 }
 
 bool OriginMatcher::Matches(const url::Origin& origin) const {
   GURL origin_url = origin.GetURL();
-  // Since we only do kInclude vs kNoMatch, the order doesn't actually matter.
-  for (const std::unique_ptr<OriginMatcherRule>& rule :
-       std::views::reverse(rules_)) {
+  // Rules are sorted with MatchAllOriginsRule first so wildcard matchers
+  // short-circuit on the first iteration.
+  for (const std::unique_ptr<OriginMatcherRule>& rule : rules_) {
     net::SchemeHostPortMatcherResult result = rule->Evaluate(origin_url);
     if (result == net::SchemeHostPortMatcherResult::kInclude) {
       return true;

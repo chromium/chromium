@@ -5,7 +5,10 @@
 #include "components/origin_matcher/origin_matcher_internal.h"
 
 #include <algorithm>
+#include <compare>
+#include <tuple>
 
+#include "base/check_op.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -44,6 +47,18 @@ OriginMatcherRule::OriginMatcherRule(OriginMatcherRuleType type)
 
 OriginMatcherRule::~OriginMatcherRule() = default;
 
+bool OriginMatcherRule::operator==(const OriginMatcherRule& other) const {
+  return (*this <=> other) == 0;
+}
+
+std::strong_ordering OriginMatcherRule::operator<=>(
+    const OriginMatcherRule& other) const {
+  if (std::strong_ordering cmp = type_ <=> other.type_; cmp != 0) {
+    return cmp;
+  }
+  return CompareSameType(other);
+}
+
 MatchAllOriginsRule::MatchAllOriginsRule()
     : OriginMatcherRule(OriginMatcherRuleType::kAny) {}
 
@@ -60,6 +75,12 @@ net::SchemeHostPortMatcherResult MatchAllOriginsRule::Evaluate(
 
 std::string MatchAllOriginsRule::ToString() const {
   return "*";
+}
+
+std::strong_ordering MatchAllOriginsRule::CompareSameType(
+    const OriginMatcherRule& other) const {
+  CHECK_EQ(type(), other.type());
+  return std::strong_ordering::equal;
 }
 
 SubdomainMatchingRule::SubdomainMatchingRule(const std::string& scheme,
@@ -138,6 +159,15 @@ std::string SubdomainMatchingRule::ToString() const {
     base::StringAppendF(&str, ":%d", optional_port_);
   }
   return str;
+}
+
+std::strong_ordering SubdomainMatchingRule::CompareSameType(
+    const OriginMatcherRule& other) const {
+  CHECK_EQ(type(), other.type());
+  const auto& other_rule = static_cast<const SubdomainMatchingRule&>(other);
+  return std::tie(scheme_, optional_host_, optional_port_) <=>
+         std::tie(other_rule.scheme_, other_rule.optional_host_,
+                  other_rule.optional_port_);
 }
 
 }  // namespace origin_matcher
