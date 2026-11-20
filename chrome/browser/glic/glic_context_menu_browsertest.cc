@@ -1718,6 +1718,30 @@ IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuBrowserTest,
   }));
 }
 
+class GlicSmartSuggestionContextMenuGeicBrowserTest
+    : public GlicSmartSuggestionContextMenuBrowserTest {
+ private:
+  ScopedGlicProviderOverride provider_override_{
+      GlicProvider::kGeminiEnterprise};
+};
+
+// Gemini Enterprise doesn't support the Smart Suggestions context menu item,
+// so it isn't offered for pages or text selections even with the flags on.
+IN_PROC_BROWSER_TEST_F(GlicSmartSuggestionContextMenuGeicBrowserTest,
+                       ItemAbsent) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetSimpleTestUrl()));
+
+  auto page_menu = CreateContextMenu();
+  EXPECT_FALSE(
+      page_menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION));
+
+  content::ContextMenuParams params;
+  params.selection_text = u"valid text";
+  auto selection_menu = CreateContextMenuWithParams(params);
+  EXPECT_FALSE(
+      selection_menu->IsItemPresent(IDC_CONTENT_CONTEXT_GLIC_SMART_SUGGESTION));
+}
+
 class GlicSelectionPromptContextMenuBrowserTest
     : public GlicContextMenuBrowserTestBase {
  public:

@@ -231,6 +231,12 @@ TEST(GlicProviderSpecImplTest,
   }
 }
 
+TEST(GlicProviderSpecImplTest,
+     GeminiSmartSuggestionContextMenuFollowsGlicSuggestionContextMenu) {
+  ExpectGeminiFeatureFollowsFlag(GlicFeature::kSmartSuggestionContextMenu,
+                                 features::kGlicSuggestionContextMenu);
+}
+
 TEST(GlicProviderSpecImplTest, GeminiSkillsFollowsSkillsEnabled) {
 #if BUILDFLAG(IS_ANDROID)
   {
@@ -311,6 +317,7 @@ TEST(GlicProviderSpecImplTest, GeminiEnterpriseSupportsNoFeatures) {
       features::kGlicCaptureRegion,
       features::kGlicTextSelectionContextMenu,
       features::kGlicDrivePicker,
+      features::kGlicSuggestionContextMenu,
       ::features::kSkillsEnabled,
       ::features::kSkillsWebViewV2Enabled,
       features::kIndigoOpenGlic,

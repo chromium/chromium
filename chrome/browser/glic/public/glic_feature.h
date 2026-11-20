@@ -68,8 +68,11 @@ enum class GlicFeature {
   kTextSelectionContextMenu,
   // Chrome's modal Google Drive file picker (`chrome://drive-picker-host`).
   kDrivePicker,
+  // The Smart Suggestions context menu item ("Ask about ..."), which opens the
+  // selection overlay with server-provided suggestions.
+  kSmartSuggestionContextMenu,
 
-  kMaxValue = kDrivePicker,
+  kMaxValue = kSmartSuggestionContextMenu,
 };
 
 }  // namespace glic

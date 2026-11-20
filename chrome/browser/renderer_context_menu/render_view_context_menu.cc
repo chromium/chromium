@@ -68,6 +68,7 @@
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_feature.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -6002,11 +6003,12 @@ void RenderViewContextMenu::MaybeAppendOpenGlicItem(bool add_separator) {
 
 bool RenderViewContextMenu::CanAppendGlicSmartSuggestionItem() const {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(GetProfile());
-  return base::FeatureList::IsEnabled(features::kGlicSuggestionContextMenu) &&
-         IsNormalBrowser() && !IsAnyGlicWebContents(this) &&
+  return IsNormalBrowser() && !IsAnyGlicWebContents(this) &&
          glic::GlicEnabling::IsEnabledForProfile(GetProfile()) &&
          identity_manager &&
          identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+         glic::GetGlicProviderSpec(GetProfile())
+             .SupportsFeature(glic::GlicFeature::kSmartSuggestionContextMenu) &&
          IsPageContextEligible(embedder_web_contents_);
 }
 

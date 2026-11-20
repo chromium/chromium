@@ -252,6 +252,11 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
       case GlicFeature::kTextSelectionContextMenu:
         return base::FeatureList::IsEnabled(
             features::kGlicTextSelectionContextMenu);
+      case GlicFeature::kSmartSuggestionContextMenu:
+        // The flag stays in features.h because it also keys the item's New
+        // Badge, but the menu only checks this spec.
+        return base::FeatureList::IsEnabled(
+            features::kGlicSuggestionContextMenu);
       case GlicFeature::kSkills:
 #if BUILDFLAG(IS_ANDROID)
         // Android only supports the WebView V2 UI, which relies on <webview>
@@ -419,6 +424,7 @@ class GeminiEnterpriseGlicProviderSpec final : public GlicProviderSpec,
       case GlicFeature::kPersonalContext:
       case GlicFeature::kTextSelectionContextMenu:
       case GlicFeature::kDrivePicker:
+      case GlicFeature::kSmartSuggestionContextMenu:
         return false;
     }
     NOTREACHED();
