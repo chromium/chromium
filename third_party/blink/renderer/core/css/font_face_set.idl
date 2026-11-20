@@ -50,7 +50,7 @@ enum FontFaceSetLoadStatus { "loading", "loaded" };
 
     // return whether all fonts in the fontlist are loaded
     // (does not initiate load if not available)
-    [RaisesException] boolean check(DOMString font, optional DOMString text = " ");
+    [Affects=Nothing, RaisesException] boolean check(DOMString font, optional DOMString text = " ");
 
     // async notification that font loading and layout operations are done
     [CallWith=ScriptState] readonly attribute Promise<FontFaceSet> ready;

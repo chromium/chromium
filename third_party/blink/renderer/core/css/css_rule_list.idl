@@ -28,6 +28,6 @@
 [
     Exposed=Window
 ] interface CSSRuleList {
-    [Measure] getter CSSRule? item(unsigned long index);
+    [Affects=Nothing, Measure] getter CSSRule? item(unsigned long index);
     readonly attribute unsigned long length;
 };

@@ -23,7 +23,7 @@
 [
     Exposed=Window
 ] interface StyleSheetList {
-    [Measure] getter StyleSheet? item(unsigned long index);
+    [Affects=Nothing, Measure] getter StyleSheet? item(unsigned long index);
     readonly attribute unsigned long length;
 
     // Non-standard APIs

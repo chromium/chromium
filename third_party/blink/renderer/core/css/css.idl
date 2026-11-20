@@ -33,7 +33,7 @@
     Exposed=Window,
     ImplementedAs=DOMWindowCSS
 ] namespace CSS {
-    [CallWith=ExecutionContext] boolean supports(DOMString property, DOMString value);
-    [CallWith=ExecutionContext] boolean supports(DOMString conditionText);
-    DOMString escape(DOMString ident);
+    [Affects=Nothing, CallWith=ExecutionContext] boolean supports(DOMString property, DOMString value);
+    [Affects=Nothing, CallWith=ExecutionContext] boolean supports(DOMString conditionText);
+    [Affects=Nothing] DOMString escape(DOMString ident);
 };

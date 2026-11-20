@@ -1,0 +1,28 @@
+Tests that CSS queries, Typed OM computedStyleMap, and font checks are side-effect free.
+Expression `CSS.supports('display', 'grid')`
+has side effect: false, expected: false
+Expression `CSS.supports('(display: grid)')`
+has side effect: false, expected: false
+Expression `CSS.escape('foo.bar')`
+has side effect: false, expected: false
+Expression `div.computedStyleMap().get('display')`
+has side effect: false, expected: false
+Expression `div.computedStyleMap().getAll('display')`
+has side effect: false, expected: false
+Expression `div.computedStyleMap().has('display')`
+has side effect: false, expected: false
+Expression `caretPos.getClientRect()`
+has side effect: false, expected: false
+Expression `document.fonts.check('12px serif')`
+has side effect: false, expected: false
+Expression `document.fonts.load('12px serif')`
+has side effect: true, expected: true
+Expression `document.styleSheets.item(0)`
+has side effect: false, expected: false
+Expression `document.styleSheets.item(0).cssRules.item(0)`
+has side effect: false, expected: false
+Expression `document.styleSheets.item(0).cssRules.item(0).media.item(0)`
+has side effect: false, expected: false
+Expression `document.styleSheets.item(0).cssRules.item(0).media.appendMedium('print')`
+has side effect: true, expected: true
+

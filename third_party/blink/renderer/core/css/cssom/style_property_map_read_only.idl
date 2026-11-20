@@ -7,8 +7,8 @@
     Exposed=(Window,LayoutWorklet,PaintWorklet)
 ] interface StylePropertyMapReadOnly {
     iterable<CSSOMString, sequence<CSSStyleValue>>;
-    [RaisesException, CallWith=ExecutionContext] (undefined or CSSStyleValue) get(CSSOMString property);
-    [RaisesException, CallWith=ExecutionContext] sequence<CSSStyleValue> getAll(CSSOMString property);
-    [RaisesException, CallWith=ExecutionContext] boolean has(CSSOMString property);
+    [Affects=Nothing, RaisesException, CallWith=ExecutionContext] (undefined or CSSStyleValue) get(CSSOMString property);
+    [Affects=Nothing, RaisesException, CallWith=ExecutionContext] sequence<CSSStyleValue> getAll(CSSOMString property);
+    [Affects=Nothing, RaisesException, CallWith=ExecutionContext] boolean has(CSSOMString property);
     readonly attribute unsigned long size;
 };
