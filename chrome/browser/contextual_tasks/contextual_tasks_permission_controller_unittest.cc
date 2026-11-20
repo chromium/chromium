@@ -6,6 +6,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
@@ -22,6 +23,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_constants.h"
@@ -43,10 +45,18 @@ namespace contextual_tasks {
 class ContextualTasksPermissionControllerTest
     : public ChromeRenderViewHostTestHarness {
  public:
-  ContextualTasksPermissionControllerTest()
+  explicit ContextualTasksPermissionControllerTest(
+      bool enable_rearchitecture = true)
       : ChromeRenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    if (enable_rearchitecture) {
+      feature_list_.InitAndEnableFeature(
+          kContextualTasksSidePanelRearchitecture);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          kContextualTasksSidePanelRearchitecture);
+    }
+  }
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
@@ -73,6 +83,7 @@ class ContextualTasksPermissionControllerTest
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   ui::UnownedUserDataHost unowned_user_data_host_;
   testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_;
   std::unique_ptr<ContextualTasksPermissionController> controller_;
@@ -936,6 +947,58 @@ TEST_F(ContextualTasksPermissionControllerTest,
   EXPECT_EQ(quiet_delegate.prompt_shown_count(), 0);
   EXPECT_TRUE(chip_controller->is_collapse_timer_running_for_testing());
   chip_controller->ResetPermissionPromptChip();
+}
+
+class ContextualTasksPermissionControllerRearchitectureDisabledTest
+    : public ContextualTasksPermissionControllerTest {
+ public:
+  ContextualTasksPermissionControllerRearchitectureDisabledTest()
+      : ContextualTasksPermissionControllerTest(
+            /*enable_rearchitecture=*/false) {}
+};
+
+TEST_F(ContextualTasksPermissionControllerRearchitectureDisabledTest,
+       DoesNotCreateLocationBarOrOverrideData) {
+  EXPECT_EQ(controller()->GetLocationBarForTesting(), nullptr);
+  EXPECT_EQ(
+      location_bar::LocationBarOverrideData::FromWebContents(web_contents()),
+      nullptr);
+  EXPECT_EQ(location_bar::GetLocationBarForWebContents(web_contents()),
+            nullptr);
+
+  base::HistogramTester histogram_tester;
+  const GURL url("https://example.com");
+  NavigateAndCommit(url);
+  content_settings::PageSpecificContentSettings::CreateForWebContents(
+      web_contents(),
+      std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
+  content_settings::PageSpecificContentSettings* pscs =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(pscs);
+  pscs->OnMediaStreamPermissionSet(
+      url, {content_settings::PageSpecificContentSettings::kMicrophoneAccessed,
+            content_settings::PageSpecificContentSettings::kMicrophoneBlocked});
+
+  EXPECT_FALSE(pscs->IsIndicatorVisible(ContentSettingsType::MEDIASTREAM_MIC));
+  histogram_tester.ExpectTotalCount(
+      "Permissions.ActivityIndicator.LHS.AudioCapture.Show", 0);
+
+  controller()->Update(nullptr);
+  controller()->Update(web_contents());
+  task_environment()->RunUntilIdle();
+
+  controller()->OnChipClicked(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest,
+      /*is_mouse_interaction=*/true, /*state_token=*/0);
+  histogram_tester.ExpectTotalCount("ContextualTasks.PermissionChip.Impression",
+                                    0);
+  histogram_tester.ExpectTotalCount("ContextualTasks.PermissionChip.Click", 0);
+
+  controller()->UnregisterWebContents(web_contents());
+  EXPECT_EQ(
+      location_bar::LocationBarOverrideData::FromWebContents(web_contents()),
+      nullptr);
 }
 
 }  // namespace contextual_tasks

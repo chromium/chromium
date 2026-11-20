@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/location_bar/location_bar_override_data.h"
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_chip.h"
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_dashboard.h"
+#include "components/contextual_tasks/public/features.h"
 #endif
 
 namespace contextual_tasks {
@@ -65,7 +66,7 @@ ContextualTasksPermissionChipType GetChipType(
 ContextualTasksPermissionController::ContextualTasksPermissionController(
     BrowserWindowInterface* browser_window) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (browser_window) {
+  if (browser_window && IsContextualTasksSidePanelRearchitectureEnabled()) {
     // Connect dashboard and single location bar for contextual tasks side
     // panel.
     location_bar_ = std::make_unique<ContextualTasksLocationBar>(
