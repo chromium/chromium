@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -406,6 +407,47 @@ TEST_F(ScriptPromiseResolverBaseDeathTest,
 
   EXPECT_CHECK_DEATH_WITH(ExceptionState::AssertNoPendingException(isolate),
                           "TestInterface:testMethod");
+}
+
+TEST_F(ScriptPromiseResolverBaseTest,
+       CrossWorldRejectDetachingContextDoesNotCrash) {
+  auto target_page = std::make_unique<DummyPageHolder>();
+  ScriptState* main_state = ToScriptStateForMainWorld(&target_page->GetFrame());
+  v8::Isolate* isolate = main_state->GetIsolate();
+  ScriptState* isolated_state =
+      ToScriptState(&target_page->GetFrame(),
+                    *DOMWrapperWorld::EnsureIsolatedWorld(isolate, 1));
+
+  std::optional<ScriptValue> reason_value;
+  {
+    ScriptState::Scope main_scope(main_state);
+    v8::Local<v8::Context> main_ctx = main_state->GetContext();
+    v8::Local<v8::Function> getter =
+        v8::FunctionTemplate::New(
+            isolate,
+            [](const v8::FunctionCallbackInfo<v8::Value>& info) {
+              static_cast<std::unique_ptr<DummyPageHolder>*>(
+                  info.Data().As<v8::External>()->Value(
+                      v8::kExternalPointerTypeTagDefault))
+                  ->reset();
+              info.GetReturnValue().Set(1);
+            },
+            v8::External::New(isolate, &target_page,
+                              v8::kExternalPointerTypeTagDefault))
+            ->GetFunction(main_ctx)
+            .ToLocalChecked();
+    v8::Local<v8::Object> obj = v8::Object::New(isolate);
+    obj->SetAccessorProperty(V8String(isolate, "detachSelf"), getter, {},
+                             v8::None);
+    reason_value.emplace(isolate, obj);
+  }
+
+  ScriptState::Scope isolated_scope(isolated_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(isolated_state);
+  resolver->Reject(std::move(*reason_value));
+  EXPECT_FALSE(target_page);
+  EXPECT_FALSE(isolated_state->ContextIsValid());
 }
 
 }  // namespace

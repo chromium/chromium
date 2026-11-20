@@ -147,7 +147,16 @@ void ScriptPromiseResolverBase::Detach() {
 }
 
 void ScriptPromiseResolverBase::NotifyResolveOrReject() {
-  if (GetExecutionContext()->IsContextPaused()) {
+  ExecutionContext* execution_context = GetExecutionContext();
+  if (!execution_context) {
+    // Cross-world serialization when setting `value_` in `ResolveOrReject`
+    // may invoke getters that synchronously detach the context. Keep
+    // `resolver_` intact so `Promise()` still works.
+    state_ = kDone;
+    value_.Reset();
+    return;
+  }
+  if (execution_context->IsContextPaused()) {
     ScheduleResolveOrReject();
     return;
   }
