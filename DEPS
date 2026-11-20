@@ -1368,6 +1368,17 @@ deps = {
       'dep_type': 'cipd',
   },
 
+  'src/android_webview/pinlist/arm64': {
+      'packages': [
+          {
+              'package': 'chromium/android_webview/tools/pinlist/arm64',
+              'version_file': 'android_webview/build/android-webview-arm64.pinlist.txt',
+          },
+      ],
+      'condition': 'checkout_android and non_git_source',
+      'dep_type': 'cipd',
+  },
+
   'src/chrome/browser/resources/preinstalled_web_apps/internal': {
     'url': Var('chrome_git') + '/chrome/components/default_apps.git' + '@' + 'fbc0f36186884f936537d5f74758550dd772b980',
     'condition': 'checkout_src_internal',
