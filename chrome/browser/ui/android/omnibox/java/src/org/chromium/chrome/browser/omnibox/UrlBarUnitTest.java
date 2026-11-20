@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
@@ -440,10 +441,6 @@ public class UrlBarUnitTest {
         mUrlBar.setSelected(true);
         mUrlBar.setCursorVisible(true);
         assertTrue(mUrlBar.isCursorVisible());
-    }
-
-    private static String sampledPrefixOfSuperLongUrl() {
-        return SUPER_LONG_URL.substring(0, UrlBar.MAX_URL_LENGTH_FOR_MEASUREMENT);
     }
 
     @Test
@@ -2774,24 +2771,28 @@ public class UrlBarUnitTest {
     }
 
     @Test
-    public void testTextWidth_shapesOnlyTheSampledPrefixOfLongText() {
+    public void testTextWidth_doesNotShapeTextLongerThanMeasurementLimit() {
         mUrlBar.setText(SUPER_LONG_URL);
 
         mUrlBar.getTextWidth();
 
-        verify(mPaint, never()).measureText(SUPER_LONG_URL);
-        verify(mPaint).measureText(sampledPrefixOfSuperLongUrl());
+        verify(mPaint, never()).measureText(anyString());
     }
 
     @Test
-    public void testTextWidth_extrapolatesSampledPrefixToFullLength() {
-        mUrlBar.setText(SUPER_LONG_URL);
-        String prefix = sampledPrefixOfSuperLongUrl();
-        double sampledWidth = mUrlBar.getPaint().measureText(prefix);
+    public void testTextWidth_measuresTextAtMeasurementLimitExactly() {
+        String text = "a".repeat(UrlBar.MAX_URL_LENGTH_FOR_MEASUREMENT);
+        mUrlBar.setText(text);
 
-        int expectedWidth =
-                (int) Math.ceil(sampledWidth * SUPER_LONG_URL.length() / prefix.length());
-        assertEquals(expectedWidth, mUrlBar.getTextWidth());
+        // The stubbed paint reports 10px per character.
+        assertEquals(text.length() * 10, mUrlBar.getTextWidth());
+    }
+
+    @Test
+    public void testTextWidth_reportsCeilingForTextLongerThanMeasurementLimit() {
+        mUrlBar.setText("a".repeat(UrlBar.MAX_URL_LENGTH_FOR_MEASUREMENT + 1));
+
+        assertEquals(UrlBar.MAX_REPORTED_TEXT_WIDTH_PX, mUrlBar.getTextWidth());
     }
 
     @Test
@@ -2805,28 +2806,6 @@ public class UrlBarUnitTest {
         int newWidth = mUrlBar.getTextWidth();
         assertTrue(newWidth > initialWidth);
         verify(mPaint).measureText("https://chromium.org/subpath");
-    }
-
-    @Test
-    public void testTextWidth_doesNotSampleHalfOfASurrogatePair() {
-        String prefix = "a".repeat(UrlBar.MAX_URL_LENGTH_FOR_MEASUREMENT - 1);
-        // The emoji straddles the sampling boundary, so only the preceding text may be measured.
-        mUrlBar.setText(prefix + GRINNING_FACE_EMOJI + "trailing");
-
-        mUrlBar.getTextWidth();
-
-        verify(mPaint).measureText(prefix);
-    }
-
-    @Test
-    // Android 14+ truncates TextView content to a few thousand characters, which is far too short
-    // to extrapolate past the ceiling, so pin this to a platform version that keeps the full text.
-    @Config(sdk = Build.VERSION_CODES.Q)
-    public void testTextWidth_clampsExtrapolatedWidthOfEnormousText() {
-        // The stubbed paint reports 10px per character, so this extrapolates past the ceiling.
-        mUrlBar.setText("a".repeat(UrlBar.MAX_REPORTED_TEXT_WIDTH_PX / 5));
-
-        assertEquals(UrlBar.MAX_REPORTED_TEXT_WIDTH_PX, mUrlBar.getTextWidth());
     }
 
     @Test

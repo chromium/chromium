@@ -99,15 +99,15 @@ public class UrlBar extends AutocompleteEditText {
     // check for text equality, instead of worrying about partial equality with truncated text.
     private static final int MIN_LENGTH_FOR_TRUNCATION = 100;
 
-    // Longest prefix handed to the text shaper by getTextWidth(). Shaping arbitrarily long URLs on
-    // the UI thread stalls layout and triggers HarfBuzz sanitization ANRs, so longer text is
-    // measured by sampling this prefix and scaling the result up to the full length.
+    // Longest text handed to the text shaper by getTextWidth(). Shaping arbitrarily long URLs on
+    // the UI thread stalls layout and triggers HarfBuzz sanitization ANRs, so longer text is not
+    // measured at all and is reported as MAX_REPORTED_TEXT_WIDTH_PX wide.
     @VisibleForTesting /* package */ static final int MAX_URL_LENGTH_FOR_MEASUREMENT = 150;
 
-    // Ceiling for the width getTextWidth() reports. Extrapolating a sampled prefix over a
-    // multi-megabyte data: URI can approach Integer.MAX_VALUE, and callers add padding to the
-    // result, which would wrap to a negative width. Any value far beyond the widest conceivable
-    // display signals overflow just as well, so the exact ceiling is unimportant.
+    // Ceiling for the width getTextWidth() reports, and the width it reports for text it does not
+    // measure. Callers add padding to the result, so it must stay well clear of Integer.MAX_VALUE.
+    // Any value far beyond the widest conceivable display signals overflow just as well, so the
+    // exact ceiling is unimportant.
     @VisibleForTesting /* package */ static final int MAX_REPORTED_TEXT_WIDTH_PX = 1_000_000;
 
     @VisibleForTesting static final int MULTILINE_EDIT_MAX_LINES = 5;
@@ -2011,11 +2011,13 @@ public class UrlBar extends AutocompleteEditText {
      * Returns the measured width of the displayed text in pixels, caching the result across
      * repeated measurement passes to avoid UI thread layout stalls.
      *
-     * <p>At most {@link #MAX_URL_LENGTH_FOR_MEASUREMENT} characters are handed to the text shaper;
-     * longer text is measured by sampling that prefix and scaling the result up to the full length,
-     * clamped to {@link #MAX_REPORTED_TEXT_WIDTH_PX}. The approximation is safe because callers
-     * only use the value to decide whether the text overflows the available width, and then clamp
-     * it to that width.
+     * <p>Text of up to {@link #MAX_URL_LENGTH_FOR_MEASUREMENT} characters is measured exactly.
+     * Longer text is not handed to the text shaper and is reported as {@link
+     * #MAX_REPORTED_TEXT_WIDTH_PX} wide. Callers only use the value to decide whether the text
+     * overflows the available width, and then clamp it to that width, so the only requirement is
+     * that the width is never under-reported: text reported as fitting is laid out without
+     * scrolling. A width estimated from part of the text cannot meet that requirement, because the
+     * advance of a character says nothing about the advance of the characters after it.
      */
     /* package */ @Px
     int getTextWidth() {
@@ -2047,10 +2049,13 @@ public class UrlBar extends AutocompleteEditText {
             return mLastMeasuredTextWidth;
         }
 
+        // The prefix of unmeasured text is still recorded: it keys the cache and is the sample
+        // applyBoundsEllipsis() works with.
         String measuredSubstr = textToMeasure.subSequence(0, lengthToMeasure).toString();
-        double sampledWidth = getPaint().measureText(measuredSubstr);
-        double extrapolatedWidth = sampledWidth * totalLength / lengthToMeasure;
-        int width = (int) Math.min(MAX_REPORTED_TEXT_WIDTH_PX, Math.ceil(extrapolatedWidth));
+        int width = MAX_REPORTED_TEXT_WIDTH_PX;
+        if (lengthToMeasure == totalLength) {
+            width = (int) Math.min(width, Math.ceil(getPaint().measureText(measuredSubstr)));
+        }
         mLastMeasuredText = measuredSubstr;
         mLastMeasuredTextSize = textSize;
         mLastMeasuredTextLength = totalLength;

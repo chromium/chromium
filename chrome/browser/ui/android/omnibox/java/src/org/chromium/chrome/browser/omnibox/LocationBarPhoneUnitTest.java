@@ -193,6 +193,17 @@ public class LocationBarPhoneUnitTest {
     }
 
     @Test
+    public void urlBarIsNotCentered_whenUrlIsTooLongToMeasure() {
+        // Narrow enough to be centered if only its measurable part were taken into account.
+        showUrl("i".repeat(UrlBar.MAX_URL_LENGTH_FOR_MEASUREMENT));
+        assertFalse(mUrlBar.isHorizontallyScrollable());
+
+        showUrl("i".repeat(UrlBar.MAX_URL_LENGTH_FOR_MEASUREMENT + 1));
+
+        assertTrue(mUrlBar.isHorizontallyScrollable());
+    }
+
+    @Test
     public void urlBarShifts_whenStatusViewHidden() {
         showUrl(SHORT_URL);
         int leftWithStatusView = mUrlBar.getLeft();
