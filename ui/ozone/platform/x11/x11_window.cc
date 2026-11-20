@@ -46,6 +46,7 @@
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/geometry_cache.h"
 #include "ui/gfx/x/visual_manager.h"
+#include "ui/gfx/x/window_cache.h"
 #include "ui/gfx/x/window_event_manager.h"
 #include "ui/gfx/x/wm_sync.h"
 #include "ui/gfx/x/x11_path.h"
@@ -546,6 +547,9 @@ void X11Window::Hide() {
   CancelResize();
 
   connection_->WithdrawWindow(xwindow_);
+  if (auto* window_cache = x11::WindowCache::instance()) {
+    window_cache->OnWindowUnmappedLocally(xwindow_);
+  }
   window_mapped_in_client_ = false;
   map_pending_ = false;
 }
@@ -2170,6 +2174,9 @@ void X11Window::CloseXWindow() {
 
   geometry_cache_.reset();
   connection_->DestroyWindow({xwindow_});
+  if (auto* window_cache = x11::WindowCache::instance()) {
+    window_cache->OnWindowUnmappedLocally(xwindow_);
+  }
   xwindow_ = x11::Window::None;
 
   if (update_counter_ != x11::Sync::Counter{}) {

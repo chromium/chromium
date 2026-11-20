@@ -107,6 +107,12 @@ void WindowCache::WaitUntilReady() {
   }
 }
 
+void WindowCache::OnWindowUnmappedLocally(Window window) {
+  if (auto* info = GetInfo(window)) {
+    info->mapped = false;
+  }
+}
+
 void WindowCache::BeginDestroyTimer(std::unique_ptr<WindowCache> self) {
   CHECK_EQ(this, self.get());
   delete_when_destroy_timer_fires_ = false;

@@ -200,6 +200,26 @@ TEST_F(WindowCacheTest, MapAndUnmapNotify) {
   EXPECT_FALSE(info.mapped);
 }
 
+TEST_F(WindowCacheTest, UnmappedLocally) {
+  connection()->MapWindow(root());
+  Window window = CreateWindow(root());
+  connection()->MapWindow(window);
+  connection()->SetStringProperty(window, Atom::WM_NAME, Atom::STRING, "a");
+  cache()->SyncForTest();
+  EXPECT_EQ(cache()->GetWindowAtPoint({100, 100}, root()), window);
+
+  // The window is no longer hit without waiting for the UnmapNotify.
+  cache()->OnWindowUnmappedLocally(window);
+  EXPECT_FALSE(cache()->windows().at(window).mapped);
+  EXPECT_EQ(cache()->GetWindowAtPoint({100, 100}, root()), Window::None);
+
+  // A later MapNotify updates the state as usual.
+  connection()->UnmapWindow(window);
+  connection()->MapWindow(window);
+  cache()->SyncForTest();
+  EXPECT_EQ(cache()->GetWindowAtPoint({100, 100}, root()), window);
+}
+
 TEST_F(WindowCacheTest, ReparentNotify) {
   Window r = root();
   Window a = CreateWindow(r);

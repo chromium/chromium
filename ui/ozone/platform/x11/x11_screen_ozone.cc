@@ -21,6 +21,7 @@
 #include "ui/gfx/x/window_cache.h"
 #include "ui/ozone/platform/x11/x11_window.h"
 #include "ui/ozone/platform/x11/x11_window_manager.h"
+#include "ui/platform_window/platform_window_delegate.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/linux/linux_ui.h"
@@ -157,20 +158,31 @@ gfx::AcceleratedWidget X11ScreenOzone::GetAcceleratedWidgetAtScreenPoint(
 gfx::AcceleratedWidget X11ScreenOzone::GetLocalProcessWidgetAtPoint(
     const gfx::Point& point,
     const std::set<gfx::AcceleratedWidget>& ignore) const {
-  gfx::AcceleratedWidget widget{};
-  if (ignore.empty()) {
-    widget = GetAcceleratedWidgetAtScreenPoint(point);
-  } else {
-    gfx::Point point_in_pixels =
-        gfx::ToFlooredPoint(PointDipToPx(GetAllDisplays(), point));
-    auto ignore_windows = base::MakeFlatSet<x11::Window>(
-        ignore, /*comp=*/{}, [&](auto ignore_widget) {
-          return static_cast<x11::Window>(ignore_widget);
-        });
-    widget = static_cast<gfx::AcceleratedWidget>(
+  gfx::Point point_in_pixels =
+      gfx::ToFlooredPoint(PointDipToPx(GetAllDisplays(), point));
+  auto ignore_windows = base::MakeFlatSet<x11::Window>(
+      ignore, /*comp=*/{}, [&](auto ignore_widget) {
+        return static_cast<x11::Window>(ignore_widget);
+      });
+  while (true) {
+    auto widget = static_cast<gfx::AcceleratedWidget>(
         x11::GetWindowAtPoint(point_in_pixels, &ignore_windows));
+    X11Window* window = window_manager_->GetWindow(widget);
+    if (!window) {
+      return gfx::kNullAcceleratedWidget;
+    }
+    // Skip windows that are hidden (unmapped) or have _NET_WM_STATE_HIDDEN.
+    // The latter is set on minimized windows, and also on windows that are
+    // mapped but not shown, like the background tabs of a tabbed or stacked
+    // container in i3. Chrome hides the content of such windows, so they can
+    // neither be seen nor take capture (e.g. when a dragged tab attaches to
+    // them).
+    if (window->IsVisible() &&
+        window->GetPlatformWindowState() != PlatformWindowState::kMinimized) {
+      return widget;
+    }
+    ignore_windows.insert(static_cast<x11::Window>(widget));
   }
-  return window_manager_->GetWindow(widget) ? widget : gfx::AcceleratedWidget{};
 }
 
 display::Display X11ScreenOzone::GetDisplayNearestPoint(
