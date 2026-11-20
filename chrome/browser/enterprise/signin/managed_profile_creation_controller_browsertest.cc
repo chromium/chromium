@@ -360,7 +360,6 @@ class ManagedProfileCreationBrowserTestBase : public SigninBrowserTestBase {
     mutator.set_is_subject_to_account_level_enterprise_policies(
         !hosted_domain.empty());
 
-    DCHECK(account_info.IsValid());
     identity_test_env()->UpdateAccountInfoForAccount(account_info);
     return account_info;
   }

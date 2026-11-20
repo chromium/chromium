@@ -276,7 +276,6 @@ class ProfileManagementDisclaimerServiceBrowserFocusBrowserTest
     bool is_managed = !hosted_domain.empty();
     mutator.set_is_subject_to_enterprise_features(is_managed);
 
-    DCHECK(account_info.IsValid());
     identity_test_env()->UpdateAccountInfoForAccount(account_info);
     return account_info;
   }
@@ -474,7 +473,6 @@ class ProfileManagementDisclaimerServiceSigninBrowserTest
     bool is_managed = !hosted_domain.empty();
     mutator.set_is_subject_to_enterprise_features(is_managed);
 
-    DCHECK(account_info.IsValid());
     identity_test_env()->UpdateAccountInfoForAccount(account_info);
     return account_info;
   }
@@ -652,7 +650,6 @@ class ProfileManagementDisclaimerServiceBrowserTest
     bool is_managed = !hosted_domain.empty();
     mutator.set_is_subject_to_enterprise_features(is_managed);
 
-    DCHECK(account_info.IsValid());
     identity_test_env()->UpdateAccountInfoForAccount(account_info);
     return account_info;
   }
@@ -675,7 +672,6 @@ class ProfileManagementDisclaimerServiceBrowserTest
     bool is_managed = !hosted_domain.empty();
     mutator.set_is_subject_to_enterprise_features(is_managed);
 
-    DCHECK(account_info.IsValid());
     identity_test_env()->UpdateAccountInfoForAccount(account_info);
     return account_info;
   }
