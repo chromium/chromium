@@ -12,6 +12,11 @@ These builders must pass before a CL may land that affects files outside of
 //docs and //infra/config.
 
 ### chrome
+* [vuln-scan-dispatcher](https://ci.chromium.org/p/chrome/builders/try.security/vuln-scan-dispatcher) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""vuln-scan-dispatcher""))
+
+  This builder is only run when the CL owner is in the group:
+  * [`mdb/potassium-katabolism-team`](https://chrome-infra-auth.appspot.com/auth/lookup?p=mdb/potassium-katabolism-team)
+
 * [chromeos-betty-chrome-gtest](https://ci.chromium.org/p/chrome/builders/try/chromeos-betty-chrome-gtest) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""chromeos-betty-chrome-gtest""))
 
     * Replaced with builder: [chromeos-betty-chrome-gtest-and-cqtast](https://ci.chromium.org/p/chrome/builders/try/chromeos-betty-chrome-gtest-and-cqtast) when CL owner is in group [google/chromeos-pa@google.com](https://chrome-infra-auth.appspot.com/auth/lookup?p=google/chromeos-pa@google.com)
@@ -1101,8 +1106,8 @@ by CQ. These are often used to test new configurations before they are added
 as required builders.
 
 ### chrome
-* [vuln-scan-dispatcher](https://ci.chromium.org/p/chrome/builders/try.security/vuln-scan-dispatcher) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""vuln-scan-dispatcher""))
-  * Experiment percentage: 25.0
+* [vuln-scan-dispatcher-exp](https://ci.chromium.org/p/chrome/builders/try.security/vuln-scan-dispatcher-exp) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""vuln-scan-dispatcher-exp""))
+  * Experiment percentage: 10.0
 
 * [linux-perf-trigger](https://ci.chromium.org/p/chrome/builders/try/linux-perf-trigger) ([definition](https://source.corp.google.com/search?q=+file:/try/.*\.star$+""linux-perf-trigger""))
   * Experiment percentage: 100.0

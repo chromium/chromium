@@ -165,6 +165,12 @@ luci.cq_group(
         ),
     ],
     tree_status_host = "chromium-status.appspot.com" if settings.is_main else None,
+    tryjob_experiments = [
+        cq.tryjob_experiment(
+            name = "chromium.vuln_scan.mandatory_org",
+            owner_group_allowlist = ["mdb/potassium-katabolism-team"],
+        ),
+    ],
     user_limit_default = cq.user_limit(
         name = "default-limit",
         run = cq.run_limits(max_active = 10),

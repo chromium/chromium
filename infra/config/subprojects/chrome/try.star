@@ -95,6 +95,25 @@ chrome_internal_verifier(
     ),
 )
 
+chrome_internal_verifier(
+    bucket = "try.security",
+    builder = "vuln-scan-dispatcher",
+    cq_settings = try_.cq_settings(
+        on_default_cq = True,
+    ),
+    owner_whitelist = ["mdb/potassium-katabolism-team"],
+)
+
+chrome_internal_verifier(
+    bucket = "try.security",
+    builder = "vuln-scan-dispatcher-exp",
+    cq_settings = try_.cq_settings(
+        experiment_percentage = 10,
+        on_default_cq = True,
+    ),
+    owner_whitelist = ["googlers"],
+)
+
 ### Optional builders ###
 
 chrome_internal_verifier(
@@ -508,16 +527,6 @@ chrome_internal_verifier(
 
 chrome_internal_verifier(
     builder = "test-tablet",
-)
-
-chrome_internal_verifier(
-    bucket = "try.security",
-    builder = "vuln-scan-dispatcher",
-    cq_settings = try_.cq_settings(
-        experiment_percentage = 25,
-        on_default_cq = True,
-    ),
-    owner_whitelist = ["googlers"],
 )
 
 chrome_internal_verifier(
