@@ -773,24 +773,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContentSuggestions.Feed.{PlayType}Video.InitializationError"
-    enum="FeedVideoInitializationError" expires_after="2023-07-23">
-  <owner>jianli@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: records errors occurred during the video player initialization. The
-    embedded video player needs to be initialized before it can be used to play
-    a video in {PlayType} mode. In autoplay muted mode, the initialization may
-    kick off even before the video view is scrolled to become visible. In normal
-    unmuted mode, this happens when the user taps the video to launch the video
-    in fullscreen playing mode.
-  </summary>
-  <token key="PlayType">
-    <variant name="AutoplayMuted"/>
-    <variant name="NormalUnmuted"/>
-  </token>
-</histogram>
-
 <histogram name="ContentSuggestions.{FeedType}.Activity"
     enum="FeedActivityBucket" expires_after="2025-09-28">
   <owner>guiperez@google.com</owner>
