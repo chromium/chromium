@@ -20,6 +20,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/addresses/test_address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
@@ -266,6 +267,38 @@ TEST_F(AddressSuggestionGeneratorTest,
                                      u"Sundar pichai"),
                     EqualsSuggestion(SuggestionType::kSeparator),
                     EqualsSuggestion(SuggestionType::kManageAddress)));
+  }
+}
+
+// Tests that `SuggestionType::kAddressEntryOnTyping` suggestions are suppressed
+// on fields with an unrecognized `autocomplete` attribute on desktop, but
+// remain offered on mobile (Android).
+TEST_F(AddressSuggestionGeneratorTest,
+       GetSuggestionsOnTypingForProfile_AutocompleteUnrecognized) {
+  AddProfileWithValues({{NAME_FULL, u"Sundar pichai"}}, /*use_count=*/1);
+
+  FormData form = test::GetFormData(
+      {.fields = {
+           {.value = u"Sund", .autocomplete_attribute = "unrecognized"}}});
+
+  for (const bool ignore_autocomplete_off : {false, true}) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatureState(
+        features::kAutofillOnTypingIgnoresAutocompleteOff,
+        ignore_autocomplete_off);
+#if BUILDFLAG(IS_ANDROID)
+    EXPECT_THAT(
+        GetSuggestionsForProfiles(form, form.fields()[0].global_id(),
+                                  {UNKNOWN_TYPE}),
+        ElementsAre(EqualsSuggestion(SuggestionType::kAddressEntryOnTyping,
+                                     u"Sundar pichai"),
+                    EqualsSuggestion(SuggestionType::kSeparator),
+                    EqualsSuggestion(SuggestionType::kManageAddress)));
+#else
+    EXPECT_THAT(GetSuggestionsForProfiles(form, form.fields()[0].global_id(),
+                                          {UNKNOWN_TYPE}),
+                IsEmpty());
+#endif
   }
 }
 

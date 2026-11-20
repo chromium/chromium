@@ -647,7 +647,7 @@ SuggestionType GetSuggestionType(FormFieldData trigger_field) {
 // available for filling or the filling conditions were not met.
 std::vector<AddressOnTypingSuggestionData>
 MaybeFetchAddressOnTypingSuggestionData(
-    const AddressDataManager& address_data_manager,
+    AutofillClient& client,
     const FormFieldData& trigger_field,
     const AutofillField* trigger_autofill_field) {
   if constexpr (BUILDFLAG(IS_IOS)) {
@@ -660,6 +660,11 @@ MaybeFetchAddressOnTypingSuggestionData(
           features::kAutofillAddressSuggestionsOnTyping)) {
     return {};
   }
+  if (trigger_autofill_field &&
+      SuppressSuggestionsForAutocompleteUnrecognizedField(
+          *trigger_autofill_field, GetAcUnrecognizedBehavior(client))) {
+    return {};
+  }
 
   const bool is_classified =
       trigger_autofill_field &&
@@ -670,6 +675,8 @@ MaybeFetchAddressOnTypingSuggestionData(
   }
 
   // Get the profiles to suggest, which are already sorted by relevance.
+  const AddressDataManager& address_data_manager =
+      client.GetPersonalDataManager().address_data_manager();
   std::vector<const AutofillProfile*> profiles =
       address_data_manager.GetProfilesToSuggest();
   if (profiles.empty()) {
@@ -1081,9 +1088,8 @@ void AddressSuggestionGenerator::GenerateSuggestions(
   }
 
   if (std::vector<AddressOnTypingSuggestionData> addresses_to_suggest =
-          MaybeFetchAddressOnTypingSuggestionData(
-              client.GetPersonalDataManager().address_data_manager(),
-              trigger_field, trigger_autofill_field);
+          MaybeFetchAddressOnTypingSuggestionData(client, trigger_field,
+                                                  trigger_autofill_field);
       !addresses_to_suggest.empty()) {
     callback({SuggestionDataSource::kAddressOnTyping,
               GenerateAddressOnTypingSuggestions(addresses_to_suggest)});
