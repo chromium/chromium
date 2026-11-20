@@ -238,6 +238,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
     return client_.is_bound() ? client_.get() : nullptr;
   }
 
+  mojom::URLLoaderNetworkServiceObserver*
+  default_url_loader_network_observer() {
+    return default_url_loader_network_observer_.is_bound()
+               ? default_url_loader_network_observer_.get()
+               : nullptr;
+  }
+
   ResourceScheduler* resource_scheduler() { return resource_scheduler_.get(); }
 
   CookieManager* cookie_manager() { return cookie_manager_.get(); }
@@ -1308,6 +1315,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   // supported.
   cors::NonWildcardRequestHeadersSupport
       cors_non_wildcard_request_headers_support_;
+
+  mojo::Remote<mojom::URLLoaderNetworkServiceObserver>
+      default_url_loader_network_observer_;
 
   // CorsURLLoaderFactory assumes that fields owned by the NetworkContext always
   // live longer than the factory.  Therefore we want the factories to be

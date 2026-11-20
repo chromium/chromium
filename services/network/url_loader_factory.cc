@@ -435,6 +435,9 @@ URLLoaderFactory::GetURLLoaderNetworkServiceObserver() const {
   if (cors_url_loader_factory_->url_loader_network_service_observer()) {
     return cors_url_loader_factory_->url_loader_network_service_observer();
   }
+  if (context_->default_url_loader_network_observer()) {
+    return context_->default_url_loader_network_observer();
+  }
   if (!context_->network_service()) {
     return nullptr;
   }

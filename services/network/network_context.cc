@@ -814,6 +814,10 @@ NetworkContext::NetworkContext(
   if (features::ShouldBindNetworkContextDirectReceiver()) {
     receiver_.emplace<DirectReceiver>(mojo::DirectReceiverKey{}, this);
   }
+  if (params_->default_url_loader_network_observer) {
+    default_url_loader_network_observer_.Bind(
+        std::move(params_->default_url_loader_network_observer));
+  }
   std::visit(
       [&](auto& receiver_to_bind) {
         receiver_to_bind.Bind(std::move(receiver));

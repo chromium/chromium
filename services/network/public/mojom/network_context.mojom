@@ -659,6 +659,22 @@ struct NetworkContextParams {
   // do not have an associated `URLLoaderFactory`.
   pending_remote<URLLoaderNetworkServiceObserver>?
       device_bound_sessions_network_observer;
+
+  // Optional default observer used for URLLoaders created by this
+  // NetworkContext's URLLoaderFactories when the factory (and individual
+  // ResourceRequest) does not specify its own
+  // `URLLoaderNetworkServiceObserver`, before falling back to the global
+  // `NetworkService` default observer. Receives all
+  // URLLoaderNetworkServiceObserver calls for such loaders instead of the
+  // NetworkService default; implementations must respond to every callback and
+  // must outlive the NetworkContext.
+  //
+  // Note: This also applies to internal factories created by `NetworkContext`
+  // itself (e.g. `CertNetFetcherURLLoader`, prefetch), so callers should not
+  // attach an auto-approving observer to a context that also serves
+  // less-trusted factories.
+  pending_remote<URLLoaderNetworkServiceObserver>?
+      default_url_loader_network_observer;
 };
 
 struct NetworkConditions {

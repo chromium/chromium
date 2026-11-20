@@ -613,8 +613,16 @@ std::unique_ptr<NetworkService> NetworkService::Create(
 
 // static
 std::unique_ptr<NetworkService> NetworkService::CreateForTesting() {
-  auto network_service =
-      std::make_unique<NetworkService>(nullptr /* binder_registry */);
+  return CreateForTesting(mojom::NetworkServiceParams::New());
+}
+
+// static
+std::unique_ptr<NetworkService> NetworkService::CreateForTesting(
+    mojom::NetworkServiceParamsPtr params) {
+  auto network_service = std::make_unique<NetworkService>(
+      /*registry=*/nullptr, /*receiver=*/mojo::NullReceiver(),
+      /*delay_initialization_until_set_client=*/true);
+  network_service->Initialize(std::move(params));
   network_service->InitMockNetworkChangeNotifierForTesting();  // IN-TEST
   return network_service;
 }

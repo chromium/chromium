@@ -141,6 +141,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // Service pipe. This instance must be driven by direct calls onto the
   // NetworkService object.
   static std::unique_ptr<NetworkService> CreateForTesting();
+  static std::unique_ptr<NetworkService> CreateForTesting(
+      mojom::NetworkServiceParamsPtr params);
 
   // These are called by NetworkContexts as they are being created and
   // destroyed.

@@ -141,6 +141,11 @@ class NetworkServiceTest : public testing::Test {
 
   void DestroyService() { service_.reset(); }
 
+  void RecreateService(mojom::NetworkServiceParamsPtr params) {
+    service_.reset();
+    service_ = NetworkService::CreateForTesting(std::move(params));
+  }
+
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<NetworkService> service_;
@@ -2242,6 +2247,57 @@ TEST_F(NetworkServiceNetworkDelegateTest, ClearSiteDataObserver) {
   LoadURL(url, mojom::kURLLoadOptionNone, clear_site_observer.Bind());
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
   EXPECT_EQ(1, clear_site_observer.on_clear_site_data_counter());
+}
+
+// Verifies the observer precedence:
+// per-URLLoaderFactory > per-NetworkContext > per-NetworkService.
+TEST_F(NetworkServiceNetworkDelegateTest,
+       DefaultURLLoaderNetworkObserverPrecedence) {
+  const char kClearCookiesHeader[] = "Clear-Site-Data: \"cookies\"";
+  ClearSiteDataAuthCertObserver service_observer;
+  mojom::NetworkServiceParamsPtr service_params =
+      mojom::NetworkServiceParams::New();
+  service_params->default_observer = service_observer.Bind();
+  RecreateService(std::move(service_params));
+
+  // 1. When NetworkContext and URLLoaderFactory do not specify an observer,
+  // the NetworkService default observer is used.
+  CreateNetworkContext();
+  GURL url = AddQuery(https_server()->GetURL("/service"), "header",
+                      kClearCookiesHeader);
+  LoadURL(url);
+  EXPECT_EQ(net::OK, client()->completion_status().error_code);
+  EXPECT_EQ(1, service_observer.on_clear_site_data_counter());
+  service_observer.ClearOnClearSiteDataCounter();
+
+  // 2. When NetworkContext specifies `default_url_loader_network_observer` and
+  // URLLoaderFactory does not specify an observer, the NetworkContext default
+  // observer is used instead of the NetworkService default observer.
+  network_context_.reset();
+  ClearSiteDataAuthCertObserver context_observer;
+  mojom::NetworkContextParamsPtr context_params =
+      mojom::NetworkContextParams::New();
+  context_params->default_url_loader_network_observer = context_observer.Bind();
+  CreateNetworkContext(std::move(context_params));
+
+  url = AddQuery(https_server()->GetURL("/context"), "header",
+                 kClearCookiesHeader);
+  LoadURL(url);
+  EXPECT_EQ(net::OK, client()->completion_status().error_code);
+  EXPECT_EQ(1, context_observer.on_clear_site_data_counter());
+  EXPECT_EQ(0, service_observer.on_clear_site_data_counter());
+  context_observer.ClearOnClearSiteDataCounter();
+
+  // 3. When URLLoaderFactory also specifies `url_loader_network_observer`, the
+  // per-factory observer takes precedence over both defaults.
+  ClearSiteDataAuthCertObserver factory_observer;
+  url = AddQuery(https_server()->GetURL("/factory"), "header",
+                 kClearCookiesHeader);
+  LoadURL(url, mojom::kURLLoadOptionNone, factory_observer.Bind());
+  EXPECT_EQ(net::OK, client()->completion_status().error_code);
+  EXPECT_EQ(1, factory_observer.on_clear_site_data_counter());
+  EXPECT_EQ(0, context_observer.on_clear_site_data_counter());
+  EXPECT_EQ(0, service_observer.on_clear_site_data_counter());
 }
 
 // Check that headers are handled and passed to the client correctly.
