@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/text/mathml_operator_dictionary.h"
 
+#include <algorithm>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -140,8 +142,7 @@ static const UChar32 category_m[]{
 
 template <typename T, size_t kSize>
 bool IsInCategory(const T (&table)[kSize], UChar32 character) {
-  return std::binary_search(table, UNSAFE_TODO(table + std::size(table)),
-                            character);
+  return std::ranges::binary_search(table, character);
 }
 
 String FromUChar32(UChar32 c) {
