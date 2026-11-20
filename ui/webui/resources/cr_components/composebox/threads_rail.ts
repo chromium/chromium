@@ -34,7 +34,7 @@ export enum ThreadsRailAction {
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:NTPThreadsRailAction)
 
-function recordThreadsRailAction(action: ThreadsRailAction) {
+export function recordThreadsRailAction(action: ThreadsRailAction) {
   recordEnumerationValue(
       'NewTabPage.ThreadsRail.Action', action, ThreadsRailAction.MAX_VALUE + 1);
 }

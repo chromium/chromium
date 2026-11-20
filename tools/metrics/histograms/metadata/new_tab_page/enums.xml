@@ -682,14 +682,15 @@ chromium-metrics-reviews@google.com.
 
 <enum name="NTPThreadsRailExpandedAction">
   <summary>
-    User actions on the expanded threads rail forwarded to Chrome.
+    User actions on the expanded threads rail handled in Chrome.
   </summary>
   <int value="0" label="Close clicked"/>
   <int value="1" label="New thread clicked"/>
   <int value="2" label="Navigate clicked"/>
+  <int value="3" label="Logo clicked"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/resources/new_tab_page/left_hand_side.ts:NTPThreadsRailExpandedAction) -->
+<!-- LINT.ThenChange(//chrome/browser/resources/new_tab_page/metrics_utils.ts:NTPThreadsRailExpandedAction) -->
 
 <enum name="NTPTileTitleSource">
   <summary>

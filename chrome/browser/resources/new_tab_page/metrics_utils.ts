@@ -194,3 +194,26 @@ export function recordVoiceAction(action: VoiceAction) {
   recordEnumeration(
       'NewTabPage.VoiceActions', action, VoiceAction.MAX_VALUE + 1);
 }
+
+// LINT.IfChange(NTPThreadsRailExpandedAction)
+/**
+ * User actions within the expanded threads rail handled in Chrome. This enum
+ * must match the numbering for NTPThreadsRailExpandedAction in enums.xml. These
+ * values are persisted to logs. Entries should not be renumbered, removed or
+ * reused.
+ */
+export enum ThreadsRailExpandedAction {
+  CLOSE_CLICKED = 0,
+  NEW_THREAD_CLICKED = 1,
+  NAVIGATE_CLICKED = 2,
+  LOGO_CLICKED = 3,
+  MAX_VALUE = LOGO_CLICKED,
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:NTPThreadsRailExpandedAction)
+
+export function recordThreadsRailExpandedAction(
+    action: ThreadsRailExpandedAction) {
+  recordEnumeration(
+      'NewTabPage.ThreadsRail.ExpandedAction', action,
+      ThreadsRailExpandedAction.MAX_VALUE + 1);
+}

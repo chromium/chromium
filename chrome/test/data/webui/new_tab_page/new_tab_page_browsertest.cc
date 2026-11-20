@@ -204,6 +204,10 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, LeftHandSide) {
   RunTest("new_tab_page/left_hand_side_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, LhsBrandmark) {
+  RunTest("new_tab_page/lhs_brandmark_test.js", "mocha.run()");
+}
+
 using NewTabPageNtpPromoTest = NewTabPageBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(NewTabPageNtpPromoTest, IndividualPromosTest) {

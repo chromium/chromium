@@ -17,31 +17,10 @@ import {loadTimeData} from './i18n_setup.js';
 import type {IframeElement} from './iframe.js';
 import {getCss} from './left_hand_side.css.js';
 import {getHtml} from './left_hand_side.html.js';
-import {recordBoolean, recordDuration, recordEnumeration} from './metrics_utils.js';
+import {recordBoolean, recordDuration, recordThreadsRailExpandedAction, ThreadsRailExpandedAction} from './metrics_utils.js';
 import {WindowProxy} from './window_proxy.js';
 
 const DEFAULT_EXPANDED_LHS_WIDTH_PX = 261;
-
-// LINT.IfChange(NTPThreadsRailExpandedAction)
-/**
- * User actions within the expanded threads rail forwarded to Chrome. This enum
- * must match the numbering for NTPThreadsRailExpandedAction in enums.xml. These
- * values are persisted to logs. Entries should not be renumbered, removed or
- * reused.
- */
-export enum ThreadsRailExpandedAction {
-  CLOSE_CLICKED = 0,
-  NEW_THREAD_CLICKED = 1,
-  NAVIGATE_CLICKED = 2,
-  MAX_VALUE = NAVIGATE_CLICKED,
-}
-// LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:NTPThreadsRailExpandedAction)
-
-function recordThreadsRailExpandedAction(action: ThreadsRailExpandedAction) {
-  recordEnumeration(
-      'NewTabPage.ThreadsRail.ExpandedAction', action,
-      ThreadsRailExpandedAction.MAX_VALUE + 1);
-}
 
 type NtpLhsThemeKey = keyof NtpLhsThemePalette;
 

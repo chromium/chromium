@@ -1,0 +1,226 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #css_wrapper_metadata_end */
+
+/* "Search:" blocks are copied from Search (paths relative to
+ * google3/java/com/google/gws/plugins/magi/jslayout/ghosttaco/ unless noted).
+ * "NTP:" marks NTP-specific code. Mapping doc: go/ntp-lhs-brandmark. */
+
+:host {
+  /* Search: gws.sds.tokens.sys.Motion */
+  --brandmark-accelerate-easing: cubic-bezier(0.3, 0.0, 0.8, 0.15);
+  --brandmark-standard-easing: cubic-bezier(0.2, 0.0, 0, 1.0);
+  /* Search: aim_header_brandmark.html .lhs-brandmark-superg and
+   * .lhs-brandmark-wordmark path */
+  --brandmark-spring-easing: cubic-bezier(0.4, 1.38, 0.22, 0.96);
+  /* NTP: collapse stagger constants (5 * 6ms + 80ms = 110ms) from
+   * aim_header_brandmark.html .lhs-brandmark-wordmark. */
+  --brandmark-collapse-letter-duration: 80ms;
+  --brandmark-collapse-letter-step-delay: 6ms;
+  --brandmark-last-letter-index: 5;
+  --brandmark-super-g-url: url(
+      chrome://resources/cr_components/searchbox/icons/google_g_gradient.svg);
+  /* NTP: zero inline-size keeps the 92px wordmark from widening
+   * <cr-left-hand-side>'s initial fit-content width while #container paints
+   * above #folded and #expanded. */
+  align-self: start;
+  display: block;
+  inline-size: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+/* Search: aim_header_brandmark.html .lhs-brandmark */
+#container {
+  display: grid;
+  pointer-events: none;
+  /* NTP: Search uses position: fixed; inline-size: 100%; z-index: 1001. */
+  inline-size: 0;
+  overflow: visible;
+  position: relative;
+  z-index: 1;
+}
+
+/* Search: aim_header_brandmark.html .lhs-brandmark-superg and .superg-logo
+ * (26px Super G at top: 37px, left: 18.5px). */
+#logoButton {
+  align-self: start;
+  grid-area: 1 / 1;
+  justify-self: start;
+  opacity: 1;
+  transform: scale(1);
+  visibility: visible;
+  /* NTP: 40px <cr-icon-button> matching cr_components/composebox/
+   * threads_rail.css #logoButton (30px top / 12px inline-start margin places
+   * the centered 26px glyph at top: 37px, inline-start: 19px). */
+  --cr-icon-button-fill-color: transparent;
+  --cr-icon-button-focus-outline-color: var(
+      --threads-rail-focus-outline-color, var(--cr-focus-outline-color));
+  --cr-icon-button-hover-background-color:
+      var(--color-new-tab-page-threads-rail-hover-background);
+  --cr-icon-button-icon-size: 26px;
+  --cr-icon-button-size: 40px;
+  align-items: center;
+  background-image: var(--brandmark-super-g-url);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 26px;
+  border-radius: 12px;
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  margin-block-start: 30px;
+  margin-inline-start: 12px;
+  pointer-events: var(--lhs-folded-pointer-events, auto);
+}
+
+/* NTP: matches cr_components/composebox/threads_rail.css #logoButton. */
+@media (forced-colors: active) {
+  #logoButton {
+    --cr-icon-image: var(--brandmark-super-g-url);
+  }
+}
+
+/* Search: aim_header_brandmark.html .lhs-brandmark[data-lhsx]
+ * .lhs-brandmark-superg */
+:host([expanded]) #logoButton {
+  opacity: 0;
+  pointer-events: none;
+  /* 16.6px / 26px ~= 0.64 aligns the 26px Super G with the 92x30 wordmark's
+   * cap-height at the handoff point. */
+  transform: scale(0.64);
+  visibility: hidden;
+}
+
+/* Search: aim_header_brandmark.html .lhs-brandmark-wordmark */
+#wordmark {
+  align-items: center;
+  align-self: start;
+  block-size: 44px;
+  display: flex;
+  grid-area: 1 / 1;
+  justify-self: start;
+  margin-inline-start: 20px;
+  pointer-events: none;
+  visibility: hidden;
+  /* NTP: Search uses position: sticky; top: 32px. */
+  border-radius: 4px;
+  margin-block-start: 32px;
+  text-decoration: none;
+}
+
+/* NTP: matches the folded rail's focus ring. */
+#wordmark:focus-visible {
+  outline: 2px solid
+      var(--threads-rail-focus-outline-color, var(--cr-focus-outline-color));
+  outline-offset: 2px;
+}
+
+/* NTP: overflow: visible keeps spring-tilted glyphs unclipped. */
+#wordmark svg {
+  display: block;
+  forced-color-adjust: none;
+  overflow: visible;
+}
+
+/* Search: aim_header_brandmark.html .lhs-brandmark-wordmark path */
+#wordmark path {
+  opacity: 0;
+  transform: translate(-8px, 6px) scale(0.76) rotate(-6deg);
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+/* Search: aim_header_brandmark.html .lhs-brandmark-wordmark
+ * .gws-output-pages-elements-search_form_logo__letter-1 */
+#wordmark path:first-child {
+  transform: translateY(4px) scale(0.84) rotate(-4deg);
+}
+
+/* Search: aim_header_brandmark.html .lhs-brandmark[data-lhsx]
+ * .lhs-brandmark-wordmark */
+:host([expanded]) #wordmark {
+  pointer-events: auto;
+  visibility: visible;
+}
+
+/* Search: aim_header_brandmark.html .lhs-brandmark[data-lhsx]
+ * .lhs-brandmark-wordmark path */
+:host([expanded]) #wordmark path {
+  opacity: 1;
+  transform: none;
+}
+
+/* Search: aim_header_brandmark.html .lhs-brandmark[data-lhsx]
+ * .lhs-brandmark-wordmark path (sds_color.constant_on_dark = #fff).
+ * NTP: uses the themed dark-rail brand foreground token. */
+:host([expanded][is-dark]) #wordmark path {
+  fill: var(--color-new-tab-page-threads-rail-brand-primary-font, #fff);
+}
+
+/* cr_shared_vars.css only defines --cr-animations-disabled: 1 under
+ * prefers-reduced-motion: reduce (leaving it unset otherwise), so animate
+ * whenever it is not 1. */
+@container not style(--cr-animations-disabled: 1) {
+  /* Search: aim_header_brandmark.html .lhs-brandmark-superg (non-hover-toggle
+   * branch). */
+  #logoButton {
+    transition: opacity 65ms linear 28ms,
+        transform 260ms var(--brandmark-spring-easing) 28ms,
+        visibility 0s;
+  }
+
+  /* Search: aim_header_brandmark.html .lhs-brandmark[data-lhsx]
+   * .lhs-brandmark-superg */
+  :host([expanded]) #logoButton {
+    transition: opacity 50ms linear 34ms,
+        transform 140ms var(--brandmark-spring-easing),
+        visibility 0s linear 140ms;
+  }
+
+  /* Search: aim_header_brandmark.html .lhs-brandmark-wordmark (delays hiding
+   * until letter 0 finishes its 5 * 6ms delay + 80ms transform = 110ms). */
+  #wordmark {
+    transition: visibility 0s linear calc(
+        var(--brandmark-last-letter-index) *
+            var(--brandmark-collapse-letter-step-delay) +
+        var(--brandmark-collapse-letter-duration));
+  }
+
+  /* Search: aim_header_brandmark.html .lhs-brandmark-wordmark path and
+   * .gws-output-pages-elements-search_form_logo__letter-1..6. step-end holds
+   * the expanded dark-mode fill past the 55ms opacity fade-out so letters do
+   * not flash back to brand colors while collapsing. */
+  #wordmark path {
+    transition:
+        transform var(--brandmark-collapse-letter-duration)
+            var(--brandmark-accelerate-easing),
+        opacity 55ms linear,
+        fill var(--brandmark-collapse-letter-duration) step-end;
+    transition-delay: calc(
+        (var(--brandmark-last-letter-index) - var(--i)) *
+        var(--brandmark-collapse-letter-step-delay));
+  }
+
+  /* Search: aim_header_brandmark.html .lhs-brandmark[data-lhsx]
+   * .lhs-brandmark-wordmark */
+  :host([expanded]) #wordmark {
+    transition: visibility 0s;
+  }
+
+  /* Search: aim_header_brandmark.html .lhs-brandmark[data-lhsx]
+   * .lhs-brandmark-wordmark path and
+   * .gws-output-pages-elements-search_form_logo__letter-1..6. */
+  :host([expanded]) #wordmark path {
+    transition: transform 420ms var(--brandmark-spring-easing),
+        opacity 95ms linear,
+        fill 280ms var(--brandmark-standard-easing);
+    transition-delay: calc(40ms + var(--i) * 22ms),
+        calc(40ms + var(--i) * 22ms),
+        calc(120ms + var(--i) * 30ms);
+  }
+}

@@ -2578,9 +2578,9 @@ chromium-metrics-reviews@google.com.
   <owner>bofengchen@google.com</owner>
   <owner>chrome-desktop-ntp@google.com</owner>
   <summary>
-    Logs count of each type of user click action forwarded from the expanded
-    threads rail iframe to Chrome (close rail, start new thread in composebox,
-    and navigate). Only logged on the 1P NTP. Note that Incognito and Guest mode
+    Logs count of each type of user click action on the expanded threads rail
+    handled in Chrome (close rail, start new thread in composebox, navigate, and
+    logo click). Only logged on the 1P NTP. Note that Incognito and Guest mode
     NTPs are not considered 1P and don't log this histogram.
   </summary>
 </histogram>
