@@ -244,6 +244,17 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveResponse(
       ForwardResponseToClient(std::move(head), std::move(body),
                               std::move(cached_metadata));
       break;
+    case DataConsumePolicy::kForwardToOwner:
+      CHECK(!is_main_resource_);
+      CHECK_EQ(owner_->commit_responsibility(),
+               FetchResponseFrom::kWithoutServiceWorker);
+      head_ = std::move(head);
+      head_->load_timing.request_start = request_start_;
+      TransitionState(State::kResponseCommitted);
+      owner_->RecordFetchResponseFrom();
+      owner_->CommitResponseBody(head_, std::move(body),
+                                 std::move(cached_metadata));
+      break;
   }
 }
 
@@ -317,6 +328,25 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnReceiveRedirect(
       // This happens when the fetch handler is faster and the result is
       // fallback. In this case in-flight RaceNetworkRequest will be used as a
       // fallback request.
+      if (!is_main_resource_) {
+        const bool can_forward_to_fetch_handler =
+            forwarding_client_ && !connection_to_fetch_handler_closed_;
+        if (owner_->PrepareSubresourceRedirectWithoutServiceWorker()) {
+          data_consume_policy_ = DataConsumePolicy::kForwardToOwner;
+          head_ = std::move(head);
+          forwarding_client_.reset();
+          write_buffer_manager_for_race_network_request_.Abort();
+          write_buffer_manager_for_fetch_handler_.Abort();
+          HandleRedirect(redirect_info, head_);
+          return;
+        }
+        if (can_forward_to_fetch_handler) {
+          SanitizeResponseHeadForFetchHandler(head);
+          forwarding_client_->OnReceiveRedirect(forwarding_redirect_info,
+                                                std::move(head));
+        }
+        return;
+      }
       HandleRedirect(redirect_info, head);
       return;
     case FetchResponseFrom::kAutoPreloadHandlingFallback:
@@ -347,6 +377,17 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::OnComplete(
       break;
     case DataConsumePolicy::kForwardingOnly:
       forwarding_client_->OnComplete(status);
+      if (!is_main_resource_) {
+        MaybeRunCloneCompletedForFetchHandlerCallback();
+      }
+      break;
+    case DataConsumePolicy::kForwardToOwner:
+      CHECK(!is_main_resource_);
+      CHECK_EQ(owner_->commit_responsibility(),
+               FetchResponseFrom::kWithoutServiceWorker);
+      TransitionState(State::kCompleted);
+      owner_->CommitCompleted(status.error_code,
+                              "RaceNetworkRequest has completed.");
       break;
   }
 }
@@ -922,7 +963,9 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::TransitionState(
       break;
     case State::kResponseCommitted:
       CHECK(state_ == State::kDataTransferStarted ||
-            state_ == State::kDataTransferFinished)
+            state_ == State::kDataTransferFinished ||
+            (data_consume_policy_ == DataConsumePolicy::kForwardToOwner &&
+             state_ == State::kResponseReceived))
           << "state_:" << static_cast<int>(state_);
       break;
     case State::kDataTransferFinished:
@@ -931,7 +974,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::TransitionState(
           << "state_:" << static_cast<int>(state_);
       break;
     case State::kCompleted:
-      CHECK(state_ == State::kWaitForBody ||
+      CHECK(state_ == State::kWaitForBody || state_ == State::kRedirect ||
             state_ == State::kResponseReceived ||
             state_ == State::kDataTransferStarted ||
             state_ == State::kResponseCommitted ||

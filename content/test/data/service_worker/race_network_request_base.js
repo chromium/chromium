@@ -17,6 +17,7 @@ const composeCustomResponse = () => {
 };
 
 const errors = [];
+const requests = [];
 
 self.addEventListener('activate', e => {
   e.waitUntil(clients.claim());
@@ -24,6 +25,7 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   const {request} = e;
+  requests.push(request.url);
   const url = new URL(request.url);
 
   // Force slow response
@@ -179,5 +181,10 @@ self.addEventListener('fetch', e => {
 self.addEventListener('message', e => {
   if (e.data == 'errors') {
     e.source.postMessage(errors);
+  } else if (e.data == 'requests') {
+    e.source.postMessage(requests);
+  } else if (e.data == 'clear_requests') {
+    requests.length = 0;
+    e.source.postMessage('cleared');
   }
 });

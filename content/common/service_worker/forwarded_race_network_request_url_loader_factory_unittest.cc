@@ -173,4 +173,46 @@ TEST_F(ForwardedRaceNetworkRequestURLLoaderFactoryTest,
 
   EXPECT_TRUE(mock_loader.called_follow_redirect());
 }
+
+// Test Case 4: Verify that TakeURLLoader() reclaims the underlying URLLoader
+// remote when not yet fused, and a subsequent CreateLoaderAndStart() falls back
+// to `fallback_factory_`.
+TEST_F(ForwardedRaceNetworkRequestURLLoaderFactoryTest,
+       TakeURLLoaderBeforeCreateLoaderAndStart) {
+  mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote;
+  auto client_receiver = client_remote.InitWithNewPipeAndPassReceiver();
+
+  ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory factory(
+      std::move(client_receiver), test_url_loader_factory_.GetSafeWeakWrapper(),
+      /*is_main_resource=*/false);
+
+  auto loader_receiver = factory.InitURLLoaderNewPipeAndPassReceiver();
+  MockURLLoader mock_loader(std::move(loader_receiver));
+
+  mojo::Remote<network::mojom::URLLoader> taken_loader(factory.TakeURLLoader());
+  ASSERT_TRUE(taken_loader.is_bound());
+  taken_loader->FollowRedirect(/*headers_update_params=*/{},
+                               /*new_url=*/std::nullopt);
+  taken_loader.FlushForTesting();
+  EXPECT_TRUE(mock_loader.called_follow_redirect());
+
+  // A subsequent CreateLoaderAndStart() (e.g. from waitUntil) delegates to
+  // `fallback_factory_`.
+  mojo::Remote<network::mojom::URLLoaderFactory> factory_remote;
+  factory.Clone(factory_remote.BindNewPipeAndPassReceiver());
+
+  network::ResourceRequest request;
+  request.url = GURL("https://example.com/subresource");
+
+  mojo::Remote<network::mojom::URLLoader> fallback_loader;
+  mojo::PendingRemote<network::mojom::URLLoaderClient> fallback_client;
+  auto fallback_client_receiver =
+      fallback_client.InitWithNewPipeAndPassReceiver();
+
+  factory_remote->CreateLoaderAndStart(
+      fallback_loader.BindNewPipeAndPassReceiver(), 0, 0, request,
+      std::move(fallback_client), net::MutableNetworkTrafficAnnotationTag());
+  factory_remote.FlushForTesting();
+  EXPECT_EQ(1, test_url_loader_factory_.NumPending());
+}
 }  // namespace content

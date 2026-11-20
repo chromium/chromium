@@ -123,6 +123,12 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
       std::optional<network::DataElementChunkedDataPipe> request_body,
       blink::mojom::ServiceWorkerFetchEventTimingPtr timing,
       blink::mojom::ServiceWorkerFetchHandlerErrorsPtr errors) override;
+  // Hands the request off to `fallback_factory_`. Deletes `this` immediately if
+  // `delete_this` is true, or defers deletion until in-flight
+  // RaceNetworkRequest forwarding completes when `delete_this` is false.
+  void FallbackToNetwork(
+      std::optional<network::DataElementChunkedDataPipe> request_body,
+      bool delete_this);
 
   void UpdateResponseTiming(
       blink::mojom::ServiceWorkerFetchEventTimingPtr timing);
@@ -170,6 +176,7 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   void HandleRedirect(
       const net::RedirectInfo& redirect_info,
       const network::mojom::URLResponseHeadPtr& response_head) override;
+  bool PrepareSubresourceRedirectWithoutServiceWorker() override;
 
   bool IsMainResourceLoader() override;
 
@@ -218,6 +225,9 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   // Returns false if fails to start race network request.
   // A caller should handle the case.
   bool StartRaceNetworkRequest();
+  // Deletes `this` once in-flight RaceNetworkRequest forwarding to the fetch
+  // handler completes or disconnects after a deferred `FallbackToNetwork()`.
+  void OnRaceNetworkRequestForwardingCompleted();
 
   std::optional<ServiceWorkerRouterEvaluator::Result> EvaluateRouterConditions()
       const;
@@ -296,6 +306,9 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
       forwarded_race_network_request_url_loader_factory_;
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
       remote_forwarded_race_network_request_url_loader_factory_;
+  // Holds the in-flight raced network URLLoader when a subresource redirect is
+  // followed without the service worker after fallback.
+  mojo::Remote<network::mojom::URLLoader> redirected_race_network_url_loader_;
 
   // OnReceivedResponse() can be called at most once. This check is added to
   // debug crbug.com/463388771.

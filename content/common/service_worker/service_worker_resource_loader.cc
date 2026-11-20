@@ -161,6 +161,11 @@ bool ServiceWorkerResourceLoader::IsValidStaticRouterResponse(
 ServiceWorkerResourceLoader::ServiceWorkerResourceLoader() = default;
 ServiceWorkerResourceLoader::~ServiceWorkerResourceLoader() = default;
 
+bool ServiceWorkerResourceLoader::
+    PrepareSubresourceRedirectWithoutServiceWorker() {
+  return false;
+}
+
 void ServiceWorkerResourceLoader::SetCommitResponsibility(
     FetchResponseFrom fetch_response_from) {
   TRACE_EVENT(

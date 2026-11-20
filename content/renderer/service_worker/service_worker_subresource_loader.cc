@@ -318,7 +318,10 @@ bool ServiceWorkerSubresourceLoader::StartRaceNetworkRequest() {
   // from the network.
   race_network_request_loader_client_.emplace(
       resource_request_.url, weak_factory_.GetWeakPtr(),
-      std::move(forwarding_client), base::DoNothing());
+      std::move(forwarding_client),
+      base::BindOnce(&ServiceWorkerSubresourceLoader::
+                         OnRaceNetworkRequestForwardingCompleted,
+                     weak_factory_.GetWeakPtr()));
 
   // If the initial state is not kWaitForBody, that means creating data pipes
   // failed. Do not start RaceNetworkRequest this case.
@@ -699,6 +702,12 @@ void ServiceWorkerSubresourceLoader::OnConnectionClosed() {
                      weak_factory_.GetWeakPtr()));
 }
 
+void ServiceWorkerSubresourceLoader::OnRaceNetworkRequestForwardingCompleted() {
+  if (!url_loader_receiver_.is_bound()) {
+    MaybeDeleteThis();
+  }
+}
+
 void ServiceWorkerSubresourceLoader::SettleFetchEventDispatch(
     std::optional<blink::ServiceWorkerStatusCode> status) {
   if (!controller_connector_observation_.IsObserving()) {
@@ -826,6 +835,12 @@ void ServiceWorkerSubresourceLoader::OnFallback(
       NOTREACHED();
   }
 
+  FallbackToNetwork(std::move(request_body), /*delete_this=*/true);
+}
+
+void ServiceWorkerSubresourceLoader::FallbackToNetwork(
+    std::optional<network::DataElementChunkedDataPipe> request_body,
+    bool delete_this) {
   // Hand over to the network loader.
   mojo::PendingRemote<network::mojom::URLLoaderClient> client;
   std::optional<network::mojom::ServiceWorkerRouterInfo> router_info;
@@ -865,7 +880,9 @@ void ServiceWorkerSubresourceLoader::OnFallback(
   // the request is dead so the request is moot.
   TransitionToStatus(Status::kCompleted);
   RecordTimingMetricsForNetworkFallbackCase();
-  delete this;
+  if (delete_this) {
+    MaybeDeleteThis();
+  }
 }
 
 bool ServiceWorkerSubresourceLoader::
@@ -1163,6 +1180,35 @@ void ServiceWorkerSubresourceLoader::HandleRedirect(
   TransitionToStatus(Status::kSentRedirect);
 }
 
+bool ServiceWorkerSubresourceLoader::
+    PrepareSubresourceRedirectWithoutServiceWorker() {
+  // Chained redirects after Hop 1 already reclaimed the raced network loader.
+  if (redirected_race_network_url_loader_.is_bound()) {
+    return true;
+  }
+  // Chained redirects on the service worker's fetch() pipe after Hop 1 already
+  // handed the page's request to `fallback_factory_`.
+  if (!url_loader_receiver_.is_bound()) {
+    return false;
+  }
+  if (forwarded_race_network_request_url_loader_factory_) {
+    if (mojo::PendingRemote<network::mojom::URLLoader> url_loader =
+            forwarded_race_network_request_url_loader_factory_
+                ->TakeURLLoader()) {
+      redirected_race_network_url_loader_.Bind(std::move(url_loader));
+      return true;
+    }
+  }
+  // The raced URLLoader was already fused to the service worker's fetch() call.
+  // Hand the page's request to a fresh fallback network loader while keeping
+  // `this` alive until forwarding to the service worker completes.
+  const bool delete_this =
+      race_network_request_loader_client_
+          ->clone_response_for_fetch_handler_completed_or_connection_closed();
+  FallbackToNetwork(/*request_body=*/std::nullopt, delete_this);
+  return false;
+}
+
 void ServiceWorkerSubresourceLoader::
     RecordTimingMetricsForFetchHandlerHandledCase() {
   if (!InitRecordTimingMetricsIfEligible(response_head_->load_timing)) {
@@ -1334,6 +1380,19 @@ void ServiceWorkerSubresourceLoader::FollowRedirect(
   }
 
   DCHECK_EQ(status_, Status::kSentRedirect);
+
+  if (commit_responsibility() == FetchResponseFrom::kWithoutServiceWorker) {
+    // Per Fetch spec (HTTP fetch, Step 4.2), redirects coming from the network
+    // after fallback must not be exposed to the service worker. Continue the
+    // redirect directly on the in-flight raced network loader.
+    CHECK(redirected_race_network_url_loader_.is_bound());
+    TransitionToStatus(Status::kNotStarted);
+    redirect_info_.reset();
+    TransitionToStatus(Status::kStarted);
+    redirected_race_network_url_loader_->FollowRedirect(
+        std::move(headers_update_params), new_url);
+    return;
+  }
 
   // TODO(arthursonzogni, juncai): This seems to be correctly implemented, but
   // not used so far. Add tests and remove this DCHECK to support this feature

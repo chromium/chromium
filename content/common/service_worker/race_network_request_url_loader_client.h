@@ -49,8 +49,8 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
   enum class State {
     // The initial state.
     kWaitForBody,
-    // Transferred from |kWaitForBody|. The state indicates a redirect response
-    // is received.
+    // Transferred from |kWaitForBody| or |kRedirect|. The state indicates a
+    // redirect response is received.
     kRedirect,
     // Transferred from |kWaitForBody| or |kRedirect|. The state indicates data
     // has been received.
@@ -59,9 +59,10 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
     // from the original data pipe is read and start transferring the response
     // to new data pipes.
     kDataTransferStarted,
-    // Transferred from |kDataTransferStarted| or |kDataTransferFinished|. Once
-    // data is available, the consumer handle will be committed to the original
-    // client based on |owner_|'s commit responsibility.
+    // Transferred from |kDataTransferStarted|, |kDataTransferFinished|, or
+    // |kResponseReceived| (when `DataConsumePolicy::kForwardToOwner` is used).
+    // Once data is available, the consumer handle will be committed to the
+    // original client based on |owner_|'s commit responsibility.
     //
     // The response commit timing may be slower than the data transfer
     // completion depending on the timing and bufferd data size.
@@ -83,6 +84,9 @@ class CONTENT_EXPORT ServiceWorkerRaceNetworkRequestURLLoaderClient
     // Just forward data to the data pipe for the fetch handler. This value
     // doesn't invoke |ReadAndWrite()|.
     kForwardingOnly,
+    // Forward redirected subresource responses and completion directly to
+    // |owner_| when the fetch handler fell back (`kWithoutServiceWorker`).
+    kForwardToOwner,
   };
 
   // These values are persisted to logs. Entries should not be renumbered and

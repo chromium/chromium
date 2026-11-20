@@ -85,6 +85,17 @@ void ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory::
                     "MultipleCalls"}),
       is_data_pipe_fused_);
   if (!is_data_pipe_fused_) {
+    is_data_pipe_fused_ = true;
+    if (!loader_.is_valid()) {
+      // The subresource loader has already reclaimed `loader_` to continue
+      // handling the network request after fetch handler fallback. Dispatch
+      // this request via `fallback_factory_`.
+      CHECK(!is_main_resource_);
+      fallback_factory_->CreateLoaderAndStart(
+          std::move(receiver), request_id, options, resource_request,
+          std::move(client), traffic_annotation);
+      return;
+    }
     // We fuse the URLLoaderClient pipes directly. The URLLoaderClient is a data
     // delivery channel (outgoing from the network process to the renderer) and
     // does not expose any control methods that the renderer can use to drive
@@ -111,7 +122,6 @@ void ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory::
       result = mojo::FusePipes(std::move(receiver), std::move(loader_));
       CHECK(result) << resource_request.url;
     }
-    is_data_pipe_fused_ = true;
   } else {
     SCOPED_CRASH_KEY_STRING1024("ServiceWorker", "race_req_url",
                                 resource_request.url.spec());
@@ -144,5 +154,11 @@ mojo::PendingReceiver<network::mojom::URLLoader>
 ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory::
     InitURLLoaderNewPipeAndPassReceiver() {
   return loader_.InitWithNewPipeAndPassReceiver();
+}
+
+mojo::PendingRemote<network::mojom::URLLoader>
+ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory::TakeURLLoader() {
+  CHECK(!is_main_resource_);
+  return std::move(loader_);
 }
 }  // namespace content

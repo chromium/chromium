@@ -169,6 +169,13 @@ class CONTENT_EXPORT ServiceWorkerResourceLoader {
       const net::RedirectInfo& redirect_info,
       const network::mojom::URLResponseHeadPtr& response_head) = 0;
 
+  // Prepares a subresource loader to follow a network redirect directly on the
+  // in-flight raced URLLoader without re-dispatching to the service worker.
+  // Returns false (after handing the page's request to a fresh fallback
+  // network loader) if the raced URLLoader was already fused to the service
+  // worker's fetch() call.
+  virtual bool PrepareSubresourceRedirectWithoutServiceWorker();
+
   // Determine if the fetch start should be recorded, by checking the matched
   // source type of ServiceWorker static routing API. If no source is matched,
   // or the source is matched to `race` or `fetch-event`, we should record fetch

@@ -26,6 +26,7 @@
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -114,6 +115,7 @@
 #include "media/media_buildflags.h"
 #include "net/base/features.h"
 #include "net/base/test_completion_callback.h"
+#include "net/base/url_util.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/filter/filter_source_stream_test_util.h"
@@ -6432,6 +6434,7 @@ class ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest
  protected:
   void SetUpOnMainThread() override {
     ServiceWorkerBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
     https_server()->ServeFilesFromSourceDirectory("content/test/data");
     RegisterRequestMonitorForRequestCount(embedded_test_server());
     RegisterRequestMonitorForRequestCount(https_server());
@@ -6471,6 +6474,21 @@ class ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest
               is_slow ? std::make_unique<net::test_server::DelayedHttpResponse>(
                             base::Seconds(2))
                       : std::make_unique<net::test_server::BasicHttpResponse>();
+
+          if (request.GetURL().GetQuery().contains("server_allow_cors")) {
+            http_response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+            http_response->AddCustomHeader("Access-Control-Expose-Headers",
+                                           "X-Response-From");
+            http_response->AddCustomHeader("X-Response-From", "network");
+          }
+
+          std::string redirect_location;
+          if (net::GetValueForKeyInQuery(request.GetURL(), "redirect_location",
+                                         &redirect_location)) {
+            http_response->set_code(net::HTTP_FOUND);
+            http_response->AddCustomHeader("Location", redirect_location);
+            return http_response;
+          }
 
           const char kQueryForRedirect[] = "server_redirect";
           if (request.GetURL().GetQuery().contains(kQueryForRedirect)) {
@@ -7377,8 +7395,92 @@ IN_PROC_BROWSER_TEST_P(
   // The first request is deduped.
   EXPECT_EQ(1, GetRequestCount(path));
   // The second request is sent as a fallback, the RaceNetworkRequest is reused
-  // for the fallback.
+  // for the fallback without dispatching a second fetch event.
   EXPECT_EQ(1, GetRequestCount(path_after_redirect));
+  EXPECT_EQ(false, EvalJs(GetPrimaryMainFrame(), R"(
+    new Promise(resolve => {
+      navigator.serviceWorker.addEventListener(
+          'message',
+          e => resolve(e.data.some(u => u.includes('?&server_slow'))),
+          {once: true});
+      navigator.serviceWorker.controller.postMessage('requests');
+    })
+  )"));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
+    Subresource_FetchHandler_Wins_Fallback_CrossOriginRedirect) {
+  SetupAndRegisterServiceWorker();
+  WorkerRunningStatusObserver observer(public_context());
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  observer.WaitUntilRunning();
+
+  auto post_to_sw = [&](std::string_view message) {
+    return EvalJs(GetPrimaryMainFrame(),
+                  JsReplace("new Promise(r => {"
+                            "  navigator.serviceWorker.addEventListener("
+                            "      'message', e => r(e.data), {once: true});"
+                            "  navigator.serviceWorker.controller.postMessage("
+                            "      $1);"
+                            "})",
+                            message));
+  };
+
+  // Case 1: Cross-origin CORS request that falls back in the fetch handler and
+  // receives a 302 redirect to another origin with query, fragment, and
+  // `sw_respond`. Per Fetch spec, network redirects after fallback must not be
+  // exposed to the ServiceWorker and must preserve CORS headers.
+  ASSERT_EQ("cleared", post_to_sw("clear_requests"));
+  const std::string cors_target_path =
+      "/service_worker/mock_response?sw_respond&server_allow_cors&token="
+      "sample_data";
+  const GURL cors_target_url = embedded_test_server()->GetURL(
+      "b.test", cors_target_path + "#section=sample_fragment");
+  const std::string cors_initial_path =
+      "/service_worker/mock_response?server_slow&sw_fallback&server_allow_cors&"
+      "redirect_location=" +
+      base::EscapeQueryParamValue(cors_target_url.spec(), /*use_plus=*/false);
+  const GURL cors_initial_url =
+      embedded_test_server()->GetURL("a.test", cors_initial_path);
+
+  EXPECT_EQ(
+      "network:[ServiceWorkerRaceNetworkRequest] Response from the network",
+      EvalJs(GetPrimaryMainFrame(),
+             JsReplace("fetch($1).then(async r => "
+                       "r.headers.get('X-Response-From') + ':' + await "
+                       "r.text())",
+                       cors_initial_url)));
+  EXPECT_EQ(1, GetRequestCount(cors_initial_path));
+  EXPECT_EQ(1, GetRequestCount(cors_target_path));
+  EXPECT_EQ(base::Value(base::ListValue().Append(cors_initial_url.spec())),
+            post_to_sw("requests"));
+
+  // Case 2: Cross-origin credentialed no-cors request that redirects back to
+  // the page's own origin. The ServiceWorker must not observe the redirect URL,
+  // and the response must remain tainted ("opaque") rather than "basic".
+  ASSERT_EQ("cleared", post_to_sw("clear_requests"));
+  const std::string same_origin_target_path =
+      "/service_worker/no_race?sw_respond&token=same_origin_target";
+  const GURL same_origin_target_url = embedded_test_server()->GetURL(
+      same_origin_target_path + "#section=same_origin_fragment");
+  const std::string second_initial_path =
+      "/service_worker/"
+      "mock_response?server_slow&sw_fallback&redirect_location=" +
+      base::EscapeQueryParamValue(same_origin_target_url.spec(),
+                                  /*use_plus=*/false);
+  const GURL second_initial_url =
+      embedded_test_server()->GetURL("a.test", second_initial_path);
+
+  EXPECT_EQ("opaque",
+            EvalJs(GetPrimaryMainFrame(),
+                   JsReplace("fetch($1, {mode: 'no-cors', credentials: "
+                             "'include'}).then(r => r.type)",
+                             second_initial_url)));
+  EXPECT_EQ(1, GetRequestCount(second_initial_path));
+  EXPECT_EQ(1, GetRequestCount(same_origin_target_path));
+  EXPECT_EQ(base::Value(base::ListValue().Append(second_initial_url.spec())),
+            post_to_sw("requests"));
 }
 
 IN_PROC_BROWSER_TEST_P(

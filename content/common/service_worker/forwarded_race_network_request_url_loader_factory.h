@@ -7,6 +7,7 @@
 
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -56,6 +57,12 @@ class CONTENT_EXPORT ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory
 
   mojo::PendingReceiver<network::mojom::URLLoader>
   InitURLLoaderNewPipeAndPassReceiver();
+
+  // Reclaims the underlying network `URLLoader` remote when a subresource
+  // loader continues network redirects directly after a fetch handler fallback.
+  // Returns an invalid `PendingRemote` if `CreateLoaderAndStart()` has already
+  // fused the pipe.
+  mojo::PendingRemote<network::mojom::URLLoader> TakeURLLoader();
 
  private:
   mojo::Receiver<network::mojom::URLLoaderFactory> receiver_{this};
