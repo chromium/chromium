@@ -401,7 +401,7 @@ class FailLoadsAfterLoginObserver : public LoadObserver::Observer {
   void OnDidStopLoading(WebContents* web_contents) override;
 
  private:
-  typedef std::set<raw_ptr<WebContents, SetExperimental>> TabSet;
+  typedef std::set<raw_ptr<WebContents>> TabSet;
 
   // The set of tabs that need to be navigated.  This is the set of loading
   // tabs when the observer is created.

@@ -32,8 +32,7 @@ class TestExtensionActionDispatcherObserver
   TestExtensionActionDispatcherObserver(
       content::BrowserContext* context,
       const ExtensionId& extension_id,
-      const std::set<raw_ptr<content::WebContents, SetExperimental>>&
-          contents_to_observe);
+      const std::set<raw_ptr<content::WebContents>>& contents_to_observe);
 
   TestExtensionActionDispatcherObserver(
       const TestExtensionActionDispatcherObserver&) = delete;
@@ -68,7 +67,7 @@ class TestExtensionActionDispatcherObserver
       scoped_observation_{this};
 
   // An optional set of web contents to observe for extension action updates.
-  std::set<raw_ptr<content::WebContents, SetExperimental>> contents_to_observe_;
+  std::set<raw_ptr<content::WebContents>> contents_to_observe_;
 };
 
 }  // namespace extensions

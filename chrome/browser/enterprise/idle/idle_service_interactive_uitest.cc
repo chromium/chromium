@@ -88,8 +88,7 @@ class MockIdleTimeProvider : public ui::IdleTimeProvider {
 class BrowserCloseWaiter {
  public:
   explicit BrowserCloseWaiter(
-      std::set<raw_ptr<BrowserWindowInterface, SetExperimental>>
-          browser_window_interfaces) {
+      std::set<raw_ptr<BrowserWindowInterface>> browser_window_interfaces) {
     for (BrowserWindowInterface* browser_window_interface :
          browser_window_interfaces) {
       waiting_browsers_.insert(browser_window_interface);
@@ -111,7 +110,7 @@ class BrowserCloseWaiter {
   }
 
   base::RunLoop run_loop_;
-  std::set<raw_ptr<BrowserWindowInterface, SetExperimental>> waiting_browsers_;
+  std::set<raw_ptr<BrowserWindowInterface>> waiting_browsers_;
   absl::flat_hash_map<raw_ptr<BrowserWindowInterface>,
                       base::CallbackListSubscription>
       browser_close_subscriptions_;

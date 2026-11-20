@@ -46,8 +46,7 @@ class InsecureDownloadDialogBridge : public download::DownloadItem::Observer {
  private:
   // Download items that are requesting the dialog. Could get deleted while
   // the dialog is showing.
-  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>
-      download_items_;
+  std::vector<raw_ptr<download::DownloadItem>> download_items_;
 
   // Validator for all JNI callbacks.
   DownloadCallbackValidator validator_;

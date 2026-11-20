@@ -204,8 +204,7 @@ class NavigationCompletedObserver : public content::WebContentsObserver {
                .size() == 0;
   }
 
-  std::set<raw_ptr<content::RenderFrameHost, SetExperimental>>
-      live_original_frames_;
+  std::set<raw_ptr<content::RenderFrameHost>> live_original_frames_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
 };
 

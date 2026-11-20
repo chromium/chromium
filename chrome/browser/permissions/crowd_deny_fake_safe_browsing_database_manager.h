@@ -48,7 +48,7 @@ class CrowdDenyFakeSafeBrowsingDatabaseManager
  private:
   bool GetSimulatedVerdictOrSafe(const GURL& url);
 
-  std::set<raw_ptr<Client, SetExperimental>> pending_clients_;
+  std::set<raw_ptr<Client>> pending_clients_;
   std::map<GURL, bool> url_to_simulated_verdict_;
   bool simulate_timeout_ = false;
   bool simulate_synchronous_result_ = false;

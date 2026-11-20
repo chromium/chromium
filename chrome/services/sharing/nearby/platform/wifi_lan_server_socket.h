@@ -112,7 +112,7 @@ class WifiLanServerSocket : public api::WifiLanServerSocket {
   mojo::SharedRemote<::sharing::mojom::FirewallHole> firewall_hole_;
 
   // Track all pending accept tasks in case Close() is called while waiting.
-  base::flat_set<raw_ptr<base::WaitableEvent, CtnExperimental>>
+  base::flat_set<raw_ptr<base::WaitableEvent, DanglingUntriaged>>
       pending_accept_waitable_events_;
 };
 

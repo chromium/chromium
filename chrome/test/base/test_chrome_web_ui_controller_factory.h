@@ -35,8 +35,7 @@ class TestChromeWebUIControllerFactory : public ChromeWebUIControllerFactory {
     virtual ~WebUIProvider();
   };
 
-  using FactoryOverridesMap =
-      std::map<std::string, raw_ptr<WebUIProvider, CtnExperimental>>;
+  using FactoryOverridesMap = std::map<std::string, raw_ptr<WebUIProvider>>;
 
   TestChromeWebUIControllerFactory();
   TestChromeWebUIControllerFactory(const TestChromeWebUIControllerFactory&) =

@@ -165,7 +165,7 @@ class SyncTest : public PlatformBrowserTest,
 
   // Returns a list of all profiles. Callee owns the objects and manages
   // their lifetime.
-  std::vector<raw_ptr<Profile, VectorExperimental>> GetAllProfiles();
+  std::vector<raw_ptr<Profile>> GetAllProfiles();
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Enable using primary user profile for the sync test.
@@ -196,8 +196,7 @@ class SyncTest : public PlatformBrowserTest,
   syncer::SyncServiceImpl* GetSyncService(int index) const;
 
   // Returns the set of SyncServiceImpls.
-  std::vector<raw_ptr<syncer::SyncServiceImpl, VectorExperimental>>
-  GetSyncServices();
+  std::vector<raw_ptr<syncer::SyncServiceImpl>> GetSyncServices();
 
   // Returns the set of registered UserSelectableTypes.  This is retrieved from
   // the SyncServiceImpl at the given |index|.

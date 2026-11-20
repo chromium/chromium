@@ -1647,8 +1647,7 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
   // If `allow_overwrite` is true, revoke existing destination grants using
   // case-insensitive path matching, except the source grant on case-only moves.
   static void UpdateGrantPath(
-      std::map<base::FilePath, raw_ptr<PermissionGrantImpl, CtnExperimental>>&
-          grants,
+      std::map<base::FilePath, raw_ptr<PermissionGrantImpl>>& grants,
       const content::PathInfo& old_path,
       const content::PathInfo& new_path,
       bool allow_overwrite) {
@@ -1982,10 +1981,8 @@ struct ChromeFileSystemAccessPermissionContext::OriginState {
   // Raw pointers, owned collectively by all the handles that reference this
   // grant. When last reference goes away this state is cleared as well by
   // PermissionGrantDestroyed().
-  std::map<base::FilePath, raw_ptr<PermissionGrantImpl, CtnExperimental>>
-      read_grants;
-  std::map<base::FilePath, raw_ptr<PermissionGrantImpl, CtnExperimental>>
-      write_grants;
+  std::map<base::FilePath, raw_ptr<PermissionGrantImpl>> read_grants;
+  std::map<base::FilePath, raw_ptr<PermissionGrantImpl>> write_grants;
 
   // Stores paths whose read grants have been downgraded to ASK after a
   // remove() call and are eligible for restoration.

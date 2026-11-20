@@ -63,7 +63,7 @@ class DevToolsFileWatcher::SharedFileWatcher
   void DirectoryChanged(const base::FilePath& path, bool error);
   void DispatchNotifications();
 
-  std::vector<raw_ptr<DevToolsFileWatcher, VectorExperimental>> listeners_;
+  std::vector<raw_ptr<DevToolsFileWatcher>> listeners_;
   std::map<base::FilePath, std::unique_ptr<base::FilePathWatcher>> watchers_;
   std::map<base::FilePath, FilePathTimesMap> file_path_times_;
   std::set<base::FilePath> pending_paths_;

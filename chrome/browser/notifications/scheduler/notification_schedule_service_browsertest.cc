@@ -222,7 +222,7 @@ class NotificationScheduleServiceTest : public InProcessBrowserTest {
   base::ScopedTempDir tmp_dir_;
   std::unique_ptr<KeyedService> service_;
   raw_ptr<TestBackgroundTaskScheduler> task_scheduler_;
-  std::map<SchedulerClientType, raw_ptr<TestClient, CtnExperimental>> clients_;
+  std::map<SchedulerClientType, raw_ptr<TestClient>> clients_;
 };
 
 // Test to schedule a notification.

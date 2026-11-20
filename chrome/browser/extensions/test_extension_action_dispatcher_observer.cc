@@ -22,8 +22,7 @@ TestExtensionActionDispatcherObserver::TestExtensionActionDispatcherObserver(
 TestExtensionActionDispatcherObserver::TestExtensionActionDispatcherObserver(
     content::BrowserContext* context,
     const ExtensionId& extension_id,
-    const std::set<raw_ptr<content::WebContents, SetExperimental>>&
-        contents_to_observe)
+    const std::set<raw_ptr<content::WebContents>>& contents_to_observe)
     : TestExtensionActionDispatcherObserver(context, extension_id) {
   contents_to_observe_ = contents_to_observe;
 }

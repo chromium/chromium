@@ -78,7 +78,7 @@ class MediaFileSystemRegistryShutdownNotifierFactory
 };
 
 struct InvalidatedGalleriesInfo {
-  std::set<raw_ptr<ExtensionGalleriesHost, SetExperimental>> extension_hosts;
+  std::set<raw_ptr<ExtensionGalleriesHost, DanglingUntriaged>> extension_hosts;
   std::set<MediaGalleryPrefId> pref_ids;
 };
 

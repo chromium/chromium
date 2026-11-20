@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 
 MultiClientStatusChangeChecker::MultiClientStatusChangeChecker(
-    std::vector<raw_ptr<syncer::SyncServiceImpl, VectorExperimental>> services)
+    std::vector<raw_ptr<syncer::SyncServiceImpl>> services)
     : services_(std::move(services)) {
   CHECK(!services_.empty());
   for (syncer::SyncServiceImpl* service : services_) {

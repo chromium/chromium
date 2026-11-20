@@ -24,7 +24,7 @@ struct BrowsingInstanceInfo {
   BrowsingInstanceInfo(const BrowsingInstanceInfo& other);
   ~BrowsingInstanceInfo();
 
-  std::set<raw_ptr<content::SiteInstance, SetExperimental>> site_instances;
+  std::set<raw_ptr<content::SiteInstance>> site_instances;
   int proxy_count = 0;
 };
 using BrowsingInstanceMap =

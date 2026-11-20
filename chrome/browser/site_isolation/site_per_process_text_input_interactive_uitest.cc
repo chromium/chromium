@@ -251,8 +251,7 @@ class RecordActiveViewsObserver {
   RecordActiveViewsObserver& operator=(const RecordActiveViewsObserver&) =
       delete;
 
-  const std::vector<
-      raw_ptr<const content::RenderWidgetHostView, VectorExperimental>>*
+  const std::vector<raw_ptr<const content::RenderWidgetHostView>>*
   active_views() const {
     return &active_views_;
   }
@@ -265,8 +264,7 @@ class RecordActiveViewsObserver {
   }
 
   std::unique_ptr<content::TextInputManagerTester> tester_;
-  std::vector<raw_ptr<const content::RenderWidgetHostView, VectorExperimental>>
-      active_views_;
+  std::vector<raw_ptr<const content::RenderWidgetHostView>> active_views_;
 };
 
 }  // namespace

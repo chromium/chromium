@@ -42,8 +42,7 @@ std::string CreateFakeAppName(int index) {
   return "fakeapp" + base::NumberToString(index);
 }
 
-void FlushPendingOperations(
-    std::vector<raw_ptr<Profile, VectorExperimental>> profiles) {
+void FlushPendingOperations(std::vector<raw_ptr<Profile>> profiles) {
   for (Profile* profile : profiles) {
     web_app::WebAppProvider::GetForTest(profile)
         ->command_manager()
@@ -91,8 +90,7 @@ bool HasSameApps(Profile* profile1, Profile* profile2) {
 }
 
 bool AllProfilesHaveSameApps() {
-  const std::vector<raw_ptr<Profile, VectorExperimental>>& profiles =
-      test()->GetAllProfiles();
+  const std::vector<raw_ptr<Profile>>& profiles = test()->GetAllProfiles();
   for (Profile* profile : profiles) {
     if (profile != profiles.front() &&
         !HasSameApps(profiles.front(), profile)) {
@@ -192,8 +190,7 @@ void FixNTPOrdinalCollisions(Profile* profile) {
   SyncAppHelper::GetInstance()->FixNTPOrdinalCollisions(profile);
 }
 
-bool AwaitWebAppQuiescence(
-    std::vector<raw_ptr<Profile, VectorExperimental>> profiles) {
+bool AwaitWebAppQuiescence(std::vector<raw_ptr<Profile>> profiles) {
   FlushPendingOperations(profiles);
 
   if (sync_datatype_helper::test()) {

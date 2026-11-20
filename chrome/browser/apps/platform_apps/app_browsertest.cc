@@ -148,14 +148,14 @@ class TabsAddedObserver : public TabStripModelObserver {
 
   void Wait() { run_loop_.Run(); }
 
-  const std::vector<raw_ptr<content::WebContents, VectorExperimental>>& tabs() {
+  const std::vector<raw_ptr<content::WebContents>>& tabs() {
     return observed_tabs_;
   }
 
  private:
   base::RunLoop run_loop_;
   size_t observations_;
-  std::vector<raw_ptr<content::WebContents, VectorExperimental>> observed_tabs_;
+  std::vector<raw_ptr<content::WebContents>> observed_tabs_;
 };
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_WIN)

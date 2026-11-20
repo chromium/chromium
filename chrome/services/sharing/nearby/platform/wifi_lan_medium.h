@@ -209,9 +209,9 @@ class WifiLanMedium : public api::WifiLanMedium,
 
   // Track all pending connect/listen tasks in case Close() is called while
   // waiting.
-  base::flat_set<raw_ptr<base::WaitableEvent, CtnExperimental>>
+  base::flat_set<raw_ptr<base::WaitableEvent, DanglingUntriaged>>
       pending_connect_waitable_events_;
-  base::flat_set<raw_ptr<base::WaitableEvent, CtnExperimental>>
+  base::flat_set<raw_ptr<base::WaitableEvent, DanglingUntriaged>>
       pending_listen_waitable_events_;
 };
 

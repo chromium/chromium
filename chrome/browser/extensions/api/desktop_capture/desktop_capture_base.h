@@ -128,9 +128,9 @@ class DesktopCaptureRequestsRegistry {
     int request_id;
   };
 
-  using RequestsMap = std::map<
-      RequestId,
-      raw_ptr<DesktopCaptureChooseDesktopMediaFunctionBase, CtnExperimental>>;
+  using RequestsMap =
+      std::map<RequestId,
+               raw_ptr<DesktopCaptureChooseDesktopMediaFunctionBase>>;
 
   RequestsMap requests_;
 };

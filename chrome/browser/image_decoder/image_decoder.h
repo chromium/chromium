@@ -120,7 +120,7 @@ class ImageDecoder {
 
  private:
   friend base::NoDestructor<ImageDecoder>;
-  using RequestMap = std::map<int, raw_ptr<ImageRequest, CtnExperimental>>;
+  using RequestMap = std::map<int, raw_ptr<ImageRequest>>;
 
   ImageDecoder();
   ~ImageDecoder() = delete;

@@ -63,7 +63,7 @@ class MediaRequests {
  private:
   // Web contents which are accessing the cemera or microphone.
   using WebContents =
-      std::set<raw_ptr<const content::WebContents, SetExperimental>>;
+      std::set<raw_ptr<const content::WebContents, DanglingUntriaged>>;
 
   // Maps one app id to a set of web contents.
   using AppIdToWebContents = std::map<std::string, WebContents>;

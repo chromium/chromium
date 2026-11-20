@@ -1605,34 +1605,32 @@ void ExtensionTelemetryService::SetUpSignalProcessorsAndSubscribersForESB() {
 
   // Create subscriber lists for each telemetry signal type.
   // Map the signal processors to the signals that they consume.
-  std::vector<raw_ptr<ExtensionSignalProcessor, VectorExperimental>>
-      subscribers_for_cookies_get = {
-          signal_processors_[ExtensionSignalType::kCookiesGet].get()};
-  std::vector<raw_ptr<ExtensionSignalProcessor, VectorExperimental>>
+  std::vector<raw_ptr<ExtensionSignalProcessor>> subscribers_for_cookies_get = {
+      signal_processors_[ExtensionSignalType::kCookiesGet].get()};
+  std::vector<raw_ptr<ExtensionSignalProcessor>>
       subscribers_for_cookies_get_all = {
           signal_processors_[ExtensionSignalType::kCookiesGetAll].get()};
-  std::vector<raw_ptr<ExtensionSignalProcessor, VectorExperimental>>
+  std::vector<raw_ptr<ExtensionSignalProcessor>>
       subscribers_for_declarative_net_request_action = {
           signal_processors_[ExtensionSignalType::kDeclarativeNetRequestAction]
               .get()};
-  std::vector<raw_ptr<ExtensionSignalProcessor, VectorExperimental>>
+  std::vector<raw_ptr<ExtensionSignalProcessor>>
       subscribers_for_declarative_net_request = {
           signal_processors_[ExtensionSignalType::kDeclarativeNetRequest]
               .get()};
-  std::vector<raw_ptr<ExtensionSignalProcessor, VectorExperimental>>
+  std::vector<raw_ptr<ExtensionSignalProcessor>>
       subscribers_for_password_reuse = {
           signal_processors_[ExtensionSignalType::kPotentialPasswordTheft]
               .get()};
-  std::vector<raw_ptr<ExtensionSignalProcessor, VectorExperimental>>
+  std::vector<raw_ptr<ExtensionSignalProcessor>>
       subscribers_for_remote_host_contacted = {
           signal_processors_[ExtensionSignalType::kRemoteHostContacted].get(),
           signal_processors_[ExtensionSignalType::kPotentialPasswordTheft]
               .get()};
 
-  std::vector<raw_ptr<ExtensionSignalProcessor, VectorExperimental>>
-      subscribers_for_tabs_api = {
-          signal_processors_[ExtensionSignalType::kTabsApi].get()};
-  std::vector<raw_ptr<ExtensionSignalProcessor, VectorExperimental>>
+  std::vector<raw_ptr<ExtensionSignalProcessor>> subscribers_for_tabs_api = {
+      signal_processors_[ExtensionSignalType::kTabsApi].get()};
+  std::vector<raw_ptr<ExtensionSignalProcessor>>
       subscribers_for_tabs_execute_script = {
           signal_processors_[ExtensionSignalType::kTabsExecuteScript].get()};
 
@@ -1681,26 +1679,26 @@ void ExtensionTelemetryService::
 
   // Create subscriber lists for each telemetry signal type.
   // Map the signal processors to the signals that they consume.
-  std::vector<raw_ptr<ExtensionSignalProcessor, VectorExperimental>>
+  std::vector<raw_ptr<ExtensionSignalProcessor>>
       enterprise_subscribers_for_cookies_get = {
           enterprise_signal_processors_[ExtensionSignalType::kCookiesGet]
               .get()};
-  std::vector<raw_ptr<ExtensionSignalProcessor, VectorExperimental>>
+  std::vector<raw_ptr<ExtensionSignalProcessor>>
       enterprise_subscribers_for_cookies_get_all = {
           enterprise_signal_processors_[ExtensionSignalType::kCookiesGetAll]
               .get()};
-  std::vector<raw_ptr<ExtensionSignalProcessor, VectorExperimental>>
+  std::vector<raw_ptr<ExtensionSignalProcessor>>
       enterprise_subscribers_for_remote_host_contacted = {
           enterprise_signal_processors_
               [ExtensionSignalType::kRemoteHostContacted]
                   .get()};
-  std::vector<raw_ptr<ExtensionSignalProcessor, VectorExperimental>>
+  std::vector<raw_ptr<ExtensionSignalProcessor>>
       enterprise_subscribers_for_tabs_api = {
           enterprise_signal_processors_[ExtensionSignalType::kTabsApi].get()};
-  std::vector<raw_ptr<ExtensionSignalProcessor, VectorExperimental>>
+  std::vector<raw_ptr<ExtensionSignalProcessor>>
       enterprise_subscribers_for_dom_access = {
           enterprise_signal_processors_[ExtensionSignalType::kDOMAccess].get()};
-  std::vector<raw_ptr<ExtensionSignalProcessor, VectorExperimental>>
+  std::vector<raw_ptr<ExtensionSignalProcessor>>
       enterprise_subscribers_for_script_injection = {
           enterprise_signal_processors_[ExtensionSignalType::kScriptInjection]
               .get()};

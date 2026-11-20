@@ -417,7 +417,7 @@ class SelectControlWaiter : public aura::WindowObserver,
 
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
-  std::set<raw_ptr<aura::Window, SetExperimental>> observed_windows_;
+  std::set<raw_ptr<aura::Window>> observed_windows_;
   bool wait_for_widget_shown_ = false;
 };
 

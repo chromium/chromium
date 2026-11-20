@@ -242,8 +242,7 @@ class BackgroundTabLoadingPolicy
   // The set of PageNodes that BackgroundTabLoadingPolicy has initiated loading,
   // and for which we are waiting for the loading to actually start. This signal
   // will be received from |OnIsLoadingChanged|.
-  std::vector<raw_ptr<const PageNode, VectorExperimental>>
-      page_nodes_load_initiated_;
+  std::vector<raw_ptr<const PageNode>> page_nodes_load_initiated_;
 
   // PageNodes that are currently loading, mapped to a boolean indicating
   // whether this policy was responsible for scheduling the load.

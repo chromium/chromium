@@ -20,8 +20,7 @@ class DownloadDialogUtils {
   // Helper method to find a download from a list of downloads based on its
   // GUID, and remove it from the list.
   static download::DownloadItem* FindAndRemoveDownload(
-      std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>*
-          downloads,
+      std::vector<raw_ptr<download::DownloadItem>>* downloads,
       const std::string& download_guid);
 
   // Called when a new file was created and inform |callback| about

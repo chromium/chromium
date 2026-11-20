@@ -48,8 +48,7 @@ class CrashReportingContext
   CrashReportingContext();
 
   base::RepeatingTimer repeating_crash_report_;
-  std::unordered_map<BrowserCrashEventRouter*,
-                     raw_ptr<Profile, CtnExperimental>>
+  std::unordered_map<BrowserCrashEventRouter*, raw_ptr<Profile>>
       active_profiles_;
 #endif
 };

@@ -66,7 +66,7 @@ class SharingHandlerRegistryImpl : public SharingHandlerRegistry {
  private:
   std::vector<std::unique_ptr<SharingMessageHandler>> handlers_;
   std::map<components_sharing_message::SharingMessage::PayloadCase,
-           raw_ptr<SharingMessageHandler, CtnExperimental>>
+           raw_ptr<SharingMessageHandler>>
       handler_map_;
   std::map<components_sharing_message::SharingMessage::PayloadCase,
            std::unique_ptr<SharingMessageHandler>>

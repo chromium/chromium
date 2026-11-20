@@ -118,8 +118,7 @@ class UnitTestNoStatePrefetchManager : public NoStatePrefetchManager {
   // Maintain a map from route pairs to NoStatePrefetchContents for
   // GetNoStatePrefetchContentsForRoute.
   using NoStatePrefetchContentsMap =
-      std::map<std::pair<int, int>,
-               raw_ptr<NoStatePrefetchContents, CtnExperimental>>;
+      std::map<std::pair<int, int>, raw_ptr<NoStatePrefetchContents>>;
   NoStatePrefetchContentsMap no_state_prefetch_contents_map_;
 
   std::unique_ptr<NoStatePrefetchContents> next_no_state_prefetch_contents_;

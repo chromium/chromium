@@ -64,7 +64,7 @@ class VR_UI_EXPORT UiScene {
   typedef std::vector<const UiElement*> Elements;
   typedef std::vector<UiElement*> MutableElements;
 
-  std::vector<raw_ptr<UiElement, VectorExperimental>>& GetAllElements();
+  std::vector<raw_ptr<UiElement>>& GetAllElements();
   Elements GetElementsToDraw();
   bool HasWebXrOverlayElementsToDraw();
   Elements GetWebVrOverlayElementsToDraw();
@@ -101,7 +101,7 @@ class VR_UI_EXPORT UiScene {
   // This is used to advance animations to completion on the first frame.
   bool first_frame_ = true;
 
-  std::vector<raw_ptr<UiElement, VectorExperimental>> all_elements_;
+  std::vector<raw_ptr<UiElement>> all_elements_;
 
   std::vector<PerFrameCallback> per_frame_callback_;
 };

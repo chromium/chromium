@@ -38,8 +38,7 @@ class OpenDownloadDialogBridgeDelegate
  private:
   // Download items that are requesting the dialog. Could get deleted while
   // the dialog is showing.
-  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>
-      download_items_;
+  std::vector<raw_ptr<download::DownloadItem>> download_items_;
 
   std::unique_ptr<OpenDownloadDialogBridge> open_download_dialog_bridge_;
 };

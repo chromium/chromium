@@ -169,9 +169,9 @@ class ExtensionTelemetryService : public KeyedService {
   using SignalProcessors =
       base::flat_map<ExtensionSignalType,
                      std::unique_ptr<ExtensionSignalProcessor>>;
-  using SignalSubscribers = base::flat_map<
-      ExtensionSignalType,
-      std::vector<raw_ptr<ExtensionSignalProcessor, VectorExperimental>>>;
+  using SignalSubscribers =
+      base::flat_map<ExtensionSignalType,
+                     std::vector<raw_ptr<ExtensionSignalProcessor>>>;
   // Maps extension id to extension data.
   using ExtensionStore = base::flat_map<
       extensions::ExtensionId,

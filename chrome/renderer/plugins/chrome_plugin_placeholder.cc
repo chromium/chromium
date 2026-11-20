@@ -79,14 +79,14 @@ class PlaceholderSet : public base::SupportsUserData::Data {
     return set;
   }
 
-  std::set<raw_ptr<ChromePluginPlaceholder, SetExperimental>>& placeholders() {
+  std::set<raw_ptr<ChromePluginPlaceholder>>& placeholders() {
     return placeholders_;
   }
 
  private:
   PlaceholderSet() = default;
 
-  std::set<raw_ptr<ChromePluginPlaceholder, SetExperimental>> placeholders_;
+  std::set<raw_ptr<ChromePluginPlaceholder>> placeholders_;
 };
 
 }  // namespace

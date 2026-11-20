@@ -16,7 +16,7 @@
 
 // static
 download::DownloadItem* DownloadDialogUtils::FindAndRemoveDownload(
-    std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>* downloads,
+    std::vector<raw_ptr<download::DownloadItem>>* downloads,
     const std::string& download_guid) {
   auto iter = std::ranges::find(*downloads, download_guid,
                                 &download::DownloadItem::GetGuid);

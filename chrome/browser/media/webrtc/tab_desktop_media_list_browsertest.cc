@@ -296,8 +296,7 @@ class TabDesktopMediaListTest : public InProcessBrowserTest,
   // Must be listed before |list_|, so it's destroyed last.
   DesktopMediaListMockObserver observer_;
   std::unique_ptr<TabDesktopMediaList> list_;
-  std::vector<raw_ptr<content::WebContents, VectorExperimental>>
-      manually_added_web_contents_;
+  std::vector<raw_ptr<content::WebContents>> manually_added_web_contents_;
   std::vector<std::unique_ptr<TestAppWindow>> manually_added_app_windows_;
 
   scoped_refptr<const extensions::Extension> extension_;

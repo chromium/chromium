@@ -64,8 +64,7 @@ class MTPDeviceDelegateImpl : public MTPDeviceAsyncDelegate {
   class MTPFileNode;
 
   // Maps file ids to file nodes.
-  using MTPFileNodesById =
-      std::map<uint32_t, raw_ptr<MTPFileNode, CtnExperimental>>;
+  using MTPFileNodesById = std::map<uint32_t, raw_ptr<MTPFileNode>>;
 
   // Maps file paths to file info.
   typedef std::map<base::FilePath, MTPDeviceTaskHelper::MTPEntry> FileInfoCache;

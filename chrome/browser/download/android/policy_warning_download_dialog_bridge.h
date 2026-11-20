@@ -45,8 +45,7 @@ class PolicyWarningDownloadDialogBridge
  private:
   // Download items that are requesting the dialog. Could get deleted while
   // the dialog is showing.
-  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>
-      download_items_;
+  std::vector<raw_ptr<download::DownloadItem>> download_items_;
 
   // The corresponding java object.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;

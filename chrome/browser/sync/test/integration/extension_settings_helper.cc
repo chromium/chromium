@@ -76,9 +76,8 @@ void SetSettingsOnBackendSequence(const base::DictValue* settings,
   signal->Signal();
 }
 
-bool AllExtensionSettingsSame(
-    const std::vector<raw_ptr<Profile, VectorExperimental>>& profiles,
-    std::ostream* os) {
+bool AllExtensionSettingsSame(const std::vector<raw_ptr<Profile>>& profiles,
+                              std::ostream* os) {
   CHECK_GT(profiles.size(), 1u) << "At least two profiles are required.";
 
   bool all_profiles_same = true;
@@ -115,19 +114,17 @@ void SetExtensionSettings(Profile* profile,
   signal.Wait();
 }
 
-void SetExtensionSettings(
-    const std::vector<raw_ptr<Profile, VectorExperimental>>& profiles,
-    const std::string& id,
-    const base::DictValue& settings) {
+void SetExtensionSettings(const std::vector<raw_ptr<Profile>>& profiles,
+                          const std::string& id,
+                          const base::DictValue& settings) {
   for (Profile* profile : profiles) {
     SetExtensionSettings(profile, id, settings);
   }
 }
 
 AllExtensionSettingsSameChecker::AllExtensionSettingsSameChecker(
-    const std::vector<raw_ptr<syncer::SyncServiceImpl, VectorExperimental>>&
-        services,
-    const std::vector<raw_ptr<Profile, VectorExperimental>>& profiles)
+    const std::vector<raw_ptr<syncer::SyncServiceImpl>>& services,
+    const std::vector<raw_ptr<Profile>>& profiles)
     : MultiClientStatusChangeChecker(services), profiles_(profiles) {}
 
 AllExtensionSettingsSameChecker::~AllExtensionSettingsSameChecker() = default;

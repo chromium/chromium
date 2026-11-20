@@ -100,8 +100,7 @@ class TranslateManagerRenderViewHostAndroidTest
  private:
   // The infobars that have been removed.
   // WARNING: the pointers point to deleted objects, use only for comparison.
-  std::set<raw_ptr<infobars::InfoBarDelegate, SetExperimental>>
-      removed_infobars_;
+  std::set<raw_ptr<infobars::InfoBarDelegate>> removed_infobars_;
 
   FakeTranslateAgent fake_agent_;
 };

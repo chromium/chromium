@@ -127,8 +127,7 @@ class PolicyValueAndStatusAggregator : public PolicyValueProvider::Observer,
   // Contains the pointers to PolicyValueProvider which also implement
   // PolicyStatusProvider. The ownership of the instances will be in
   // `status_providers_`.
-  std::vector<raw_ptr<PolicyValueProvider, VectorExperimental>>
-      value_providers_unowned_;
+  std::vector<raw_ptr<PolicyValueProvider>> value_providers_unowned_;
   base::ObserverList<Observer> observers_;
   base::ScopedMultiSourceObservation<PolicyValueProvider,
                                      PolicyValueProvider::Observer>

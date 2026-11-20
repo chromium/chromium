@@ -117,8 +117,7 @@ void ChromeContentRulesRegistry::MonitorWebContentsForRuleEvaluation(
     content::WebContents* contents) {
   // We rely on active_rules_ to have a key-value pair for |contents| to know
   // which WebContents we are working with.
-  active_rules_[contents] =
-      std::set<raw_ptr<const ContentRule, SetExperimental>>();
+  active_rules_[contents] = std::set<raw_ptr<const ContentRule>>();
 
   EvaluationScope evaluation_scope(this);
   for (const std::unique_ptr<ContentPredicateEvaluator>& evaluator :
@@ -225,11 +224,10 @@ bool ChromeContentRulesRegistry::EvaluateConditionForTab(
   return true;
 }
 
-std::set<
-    raw_ptr<const ChromeContentRulesRegistry::ContentRule, SetExperimental>>
+std::set<raw_ptr<const ChromeContentRulesRegistry::ContentRule>>
 ChromeContentRulesRegistry::GetMatchingRules(content::WebContents* tab) const {
   const bool is_incognito_tab = tab->GetBrowserContext()->IsOffTheRecord();
-  std::set<raw_ptr<const ContentRule, SetExperimental>> matching_rules;
+  std::set<raw_ptr<const ContentRule>> matching_rules;
   for (const RulesMap::value_type& rule_id_rule_pair : content_rules_) {
     const ContentRule* rule = rule_id_rule_pair.second.get();
     if (is_incognito_tab &&
@@ -417,13 +415,12 @@ std::string ChromeContentRulesRegistry::RemoveAllRulesImpl(
 
 void ChromeContentRulesRegistry::EvaluateConditionsForTab(
     content::WebContents* tab) {
-  std::set<raw_ptr<const ContentRule, SetExperimental>> matching_rules =
-      GetMatchingRules(tab);
+  std::set<raw_ptr<const ContentRule>> matching_rules = GetMatchingRules(tab);
   if (matching_rules.empty() && !active_rules_.contains(tab)) {
     return;
   }
 
-  std::set<raw_ptr<const ContentRule, SetExperimental>>& prev_matching_rules =
+  std::set<raw_ptr<const ContentRule>>& prev_matching_rules =
       active_rules_[tab];
   for (const ContentRule* rule : matching_rules) {
     ContentAction::ApplyInfo apply_info =

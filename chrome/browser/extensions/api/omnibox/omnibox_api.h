@@ -146,7 +146,8 @@ class OmniboxAPI : public BrowserContextKeyedAPI,
  private:
   friend class BrowserContextKeyedAPIFactory<OmniboxAPI>;
 
-  typedef std::set<raw_ptr<const Extension, SetExperimental>> PendingExtensions;
+  typedef std::set<raw_ptr<const Extension, DanglingUntriaged>>
+      PendingExtensions;
 
   void OnTemplateURLsLoaded();
 

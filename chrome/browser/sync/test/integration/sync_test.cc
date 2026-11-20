@@ -540,8 +540,8 @@ Profile* SyncTest::GetProfile(int index) const {
   return profile;
 }
 
-std::vector<raw_ptr<Profile, VectorExperimental>> SyncTest::GetAllProfiles() {
-  std::vector<raw_ptr<Profile, VectorExperimental>> profiles;
+std::vector<raw_ptr<Profile>> SyncTest::GetAllProfiles() {
+  std::vector<raw_ptr<Profile>> profiles;
   for (const SyncClientState& client : clients_) {
     // Profile can be null if it was destroyed earlier (e.g. in
     // OnProfileWillBeDestroyed).
@@ -646,9 +646,8 @@ GURL SyncTest::GetInitialURL() const {
   return GURL(url::kAboutBlankURL);
 }
 
-std::vector<raw_ptr<SyncServiceImpl, VectorExperimental>>
-SyncTest::GetSyncServices() {
-  std::vector<raw_ptr<SyncServiceImpl, VectorExperimental>> services;
+std::vector<raw_ptr<SyncServiceImpl>> SyncTest::GetSyncServices() {
+  std::vector<raw_ptr<SyncServiceImpl>> services;
   for (int i = 0; i < num_clients(); ++i) {
     services.push_back(GetSyncService(i));
   }

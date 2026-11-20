@@ -50,9 +50,8 @@ UiScene::MutableElements GetVisibleElementsWithPredicateMutable(UiElement* root,
   return result;
 }
 
-void GetAllElementsRecursive(
-    std::vector<raw_ptr<UiElement, VectorExperimental>>* elements,
-    UiElement* e) {
+void GetAllElementsRecursive(std::vector<raw_ptr<UiElement>>* elements,
+                             UiElement* e) {
   e->set_descendants_updated(false);
   elements->push_back(e);
   for (auto& child : e->children())
@@ -213,7 +212,7 @@ UiElement* UiScene::GetUiElementByName(UiElementName name) const {
           name));
 }
 
-std::vector<raw_ptr<UiElement, VectorExperimental>>& UiScene::GetAllElements() {
+std::vector<raw_ptr<UiElement>>& UiScene::GetAllElements() {
   if (root_element_->descendants_updated()) {
     all_elements_.clear();
     GetAllElementsRecursive(&all_elements_, root_element_.get());

@@ -117,7 +117,7 @@ class MediaEngagementService : public KeyedService,
   bool ShouldRecordEngagement(const url::Origin& origin) const;
 
   base::flat_map<content::WebContents*,
-                 raw_ptr<MediaEngagementContentsObserver, CtnExperimental>>
+                 raw_ptr<MediaEngagementContentsObserver>>
       contents_observers_;
 
   raw_ptr<Profile, DanglingUntriaged> profile_;

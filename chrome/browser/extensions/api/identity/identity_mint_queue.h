@@ -63,7 +63,8 @@ class IdentityMintRequestQueue {
              const ExtensionTokenKey& key);
 
  private:
-  typedef std::list<raw_ptr<IdentityMintRequestQueue::Request, CtnExperimental>>
+  typedef std::list<
+      raw_ptr<IdentityMintRequestQueue::Request, DanglingUntriaged>>
       RequestQueue;
   typedef std::map<const ExtensionTokenKey, RequestQueue> RequestQueueMap;
 

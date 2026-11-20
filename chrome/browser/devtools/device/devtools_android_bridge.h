@@ -172,18 +172,15 @@ class DevToolsAndroidBridge : public KeyedService {
       std::map<std::string, scoped_refptr<AndroidDeviceManager::Device> >;
   DeviceMap device_map_;
 
-  using DeviceListListeners =
-      std::vector<raw_ptr<DeviceListListener, VectorExperimental>>;
+  using DeviceListListeners = std::vector<raw_ptr<DeviceListListener>>;
   DeviceListListeners device_list_listeners_;
 
-  using DeviceCountListeners =
-      std::vector<raw_ptr<DeviceCountListener, VectorExperimental>>;
+  using DeviceCountListeners = std::vector<raw_ptr<DeviceCountListener>>;
   DeviceCountListeners device_count_listeners_;
   base::CancelableRepeatingCallback<void(int)> device_count_callback_;
   base::RepeatingCallback<void(base::OnceClosure)> task_scheduler_;
 
-  using PortForwardingListeners =
-      std::vector<raw_ptr<PortForwardingListener, VectorExperimental>>;
+  using PortForwardingListeners = std::vector<raw_ptr<PortForwardingListener>>;
   PortForwardingListeners port_forwarding_listeners_;
   std::unique_ptr<PortForwardingController> port_forwarding_controller_;
 

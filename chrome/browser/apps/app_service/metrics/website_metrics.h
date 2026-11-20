@@ -283,12 +283,12 @@ class WebsiteMetrics : public BrowserCollectionObserver,
   BrowserTabStripTracker browser_tab_strip_tracker_;
 
   // The map from the window to the active tab contents.
-  base::flat_map<aura::Window*, raw_ptr<content::WebContents, CtnExperimental>>
+  base::flat_map<aura::Window*, raw_ptr<content::WebContents>>
       window_to_web_contents_;
 
   // The map from the root window's activation client to windows.
   std::map<wm::ActivationClient*,
-           std::set<raw_ptr<aura::Window, SetExperimental>>>
+           std::set<raw_ptr<aura::Window, DanglingUntriaged>>>
       activation_client_to_windows_;
 
   std::map<content::WebContents*, std::unique_ptr<ActiveTabWebContentsObserver>>

@@ -51,8 +51,7 @@ class FullBrowserTransitionManager {
   FullBrowserTransitionManager();
   ~FullBrowserTransitionManager();
 
-  std::map<SimpleFactoryKey*, raw_ptr<Profile, CtnExperimental>>
-      simple_key_to_profile_;
+  std::map<SimpleFactoryKey*, raw_ptr<Profile>> simple_key_to_profile_;
   std::map<SimpleFactoryKey*, std::vector<OnProfileCreationCallback>>
       on_profile_creation_callbacks_;
   SEQUENCE_CHECKER(sequence_checker_);

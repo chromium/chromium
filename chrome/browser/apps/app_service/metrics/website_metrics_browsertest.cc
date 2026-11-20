@@ -245,7 +245,7 @@ class WebsiteMetricsBrowserTest : public MixinBasedInProcessBrowserTest {
     ASSERT_EQ(1, count);
   }
 
-  base::flat_map<aura::Window*, raw_ptr<content::WebContents, CtnExperimental>>&
+  base::flat_map<aura::Window*, raw_ptr<content::WebContents>>&
   window_to_web_contents() {
     return website_metrics()->window_to_web_contents_;
   }

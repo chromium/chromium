@@ -86,8 +86,7 @@ class WebContentVisibilityManager {
   void SetTickClockForTesting(const base::TickClock* tick_clock);
 
  private:
-  std::unordered_set<raw_ptr<content::WebContents, CtnExperimental>>
-      visible_web_contents_;
+  std::unordered_set<raw_ptr<content::WebContents>> visible_web_contents_;
 
   base::TimeTicks last_web_contents_state_change_time_;
 

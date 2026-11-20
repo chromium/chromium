@@ -193,7 +193,7 @@ class ManagedConfigurationAPI
   // be loaded).
   std::set<url::Origin> managed_origins_;
 
-  std::set<raw_ptr<Observer, SetExperimental>> unmanaged_observers_;
+  std::set<raw_ptr<Observer>> unmanaged_observers_;
 
   // Observes changes to ManagedConfigurationPerOrigin.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

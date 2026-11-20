@@ -105,7 +105,7 @@ class FakeDownloadFeedbackFactory : public DownloadFeedbackFactory {
   size_t num_feedbacks() const { return feedbacks_.size(); }
 
  private:
-  std::vector<raw_ptr<FakeDownloadFeedback, VectorExperimental>> feedbacks_;
+  std::vector<raw_ptr<FakeDownloadFeedback>> feedbacks_;
 };
 
 class FakeDownloadProtectionService : public DownloadProtectionService {

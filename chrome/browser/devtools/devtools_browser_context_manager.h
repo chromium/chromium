@@ -75,7 +75,7 @@ class DevToolsBrowserContextManager : public BrowserCollectionObserver,
       profile_observation_{this};
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
-  base::flat_map<std::string, raw_ptr<Profile, CtnExperimental>> otr_profiles_;
+  base::flat_map<std::string, raw_ptr<Profile>> otr_profiles_;
 #if BUILDFLAG(IS_ANDROID)
   base::flat_map<std::string, base::android::ScopedJavaGlobalRef<jobject>>
       otr_tab_models_;

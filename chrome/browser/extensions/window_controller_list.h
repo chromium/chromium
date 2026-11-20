@@ -24,8 +24,7 @@ class WindowControllerListObserver;
 // Class to maintain a list of WindowControllers.
 class WindowControllerList {
  public:
-  using ControllerVector =
-      std::vector<raw_ptr<WindowController, CtnExperimental>>;
+  using ControllerVector = std::vector<raw_ptr<WindowController>>;
   using const_iterator = ControllerVector::const_iterator;
 
   WindowControllerList();

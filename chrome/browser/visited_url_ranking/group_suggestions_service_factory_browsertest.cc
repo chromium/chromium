@@ -81,7 +81,7 @@ class GroupSuggestionsServiceFactoryTest : public AndroidBrowserTest {
 
   void AddTab(const GURL& url) {
 #if BUILDFLAG(IS_ANDROID)
-    std::vector<raw_ptr<TabAndroid, VectorExperimental>> tab_vec;
+    std::vector<raw_ptr<TabAndroid>> tab_vec;
     TabAndroid* tab_android = TabAndroid::FromWebContents(web_contents());
     tab_vec.push_back(tab_android);
 

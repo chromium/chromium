@@ -414,7 +414,7 @@ bool SyncServiceImplHarness::AwaitQuiescence(
   CHECK(!sync_integration_test_util::IsCurrentTestAllowlistedForE2EMode())
       << "AwaitQuiescence is not supported for E2E tests.";
 
-  std::vector<raw_ptr<SyncServiceImpl, VectorExperimental>> services;
+  std::vector<raw_ptr<SyncServiceImpl>> services;
   for (SyncServiceImplHarness* harness : clients) {
     services.push_back(harness->service());
   }

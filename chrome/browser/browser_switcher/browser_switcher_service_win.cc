@@ -48,8 +48,8 @@ const int kCurrentFileVersion = 1;
 // policies). This stores the rules as raw-pointers rather than unique-pointers,
 // to avoid copying/moving them from their original source.
 struct MergedRuleSet {
-  std::vector<raw_ptr<Rule, VectorExperimental>> sitelist;
-  std::vector<raw_ptr<Rule, VectorExperimental>> greylist;
+  std::vector<raw_ptr<Rule>> sitelist;
+  std::vector<raw_ptr<Rule>> greylist;
 };
 
 // Creates a RuleSet that is the concatenation of all 3 sources.

@@ -127,7 +127,7 @@ class WebContentsTaskProvider::WebContentsEntry
   // only as per FindLocalRoot()), and its RendererTask. The number of tracked
   // items is small, thus flat_map and flat_set.
   struct SiteInstanceInfo {
-    base::flat_set<raw_ptr<RenderFrameHost, CtnExperimental>> frames;
+    base::flat_set<raw_ptr<RenderFrameHost>> frames;
     std::unique_ptr<RendererTask> renderer_task;
   };
   base::flat_map<SiteInstance*, SiteInstanceInfo> site_instance_infos_;

@@ -40,7 +40,7 @@ class AutofillProfilesEqualChecker
       public autofill::AddressDataManager::Observer {
  public:
   explicit AutofillProfilesEqualChecker(
-      std::vector<raw_ptr<Profile, VectorExperimental>> profiles) {
+      std::vector<raw_ptr<Profile>> profiles) {
     for (Profile* profile : profiles) {
       pdms_.push_back(contact_info_helper::GetPersonalDataManager(profile));
       pdms_.back()->address_data_manager().AddObserver(this);
@@ -79,7 +79,7 @@ class AutofillProfilesEqualChecker
   void OnAddressDataChanged() override { CheckExitCondition(); }
 
  private:
-  std::vector<raw_ptr<PersonalDataManager, VectorExperimental>> pdms_;
+  std::vector<raw_ptr<PersonalDataManager>> pdms_;
 };
 
 class TwoClientContactInfoSyncTest

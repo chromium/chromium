@@ -105,8 +105,7 @@ void FixNTPOrdinalCollisions(Profile* profile);
 
 // Flushes pending changes and verifies that the profiles have no pending
 // installs or uninstalls afterwards.
-bool AwaitWebAppQuiescence(
-    std::vector<raw_ptr<Profile, VectorExperimental>> profiles);
+bool AwaitWebAppQuiescence(std::vector<raw_ptr<Profile>> profiles);
 }  // namespace apps_helper
 
 // An app specific version of StatusChangeChecker which checks the exit
@@ -155,7 +154,7 @@ class AppsStatusChangeChecker : public StatusChangeChecker,
                        const std::optional<std::string>& extension_id) override;
 
  protected:
-  std::vector<raw_ptr<Profile, VectorExperimental>> profiles_;
+  std::vector<raw_ptr<Profile>> profiles_;
 
  private:
   void InstallSyncedApps(Profile* profile);

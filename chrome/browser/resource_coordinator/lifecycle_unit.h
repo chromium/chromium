@@ -110,10 +110,8 @@ class LifecycleUnit {
   virtual void RemoveObserver(LifecycleUnitObserver* observer) = 0;
 };
 
-using LifecycleUnitSet =
-    base::flat_set<raw_ptr<LifecycleUnit, CtnExperimental>>;
-using LifecycleUnitVector =
-    std::vector<raw_ptr<LifecycleUnit, VectorExperimental>>;
+using LifecycleUnitSet = base::flat_set<raw_ptr<LifecycleUnit>>;
+using LifecycleUnitVector = std::vector<raw_ptr<LifecycleUnit>>;
 
 }  // namespace resource_coordinator
 

@@ -86,8 +86,7 @@ bool SyncAppListHelper::AppListMatch(Profile* profile1, Profile* profile2) {
 }
 
 bool SyncAppListHelper::AllProfilesHaveSameAppList(size_t* size_out) {
-  const std::vector<raw_ptr<Profile, VectorExperimental>>& profiles =
-      test_->GetAllProfiles();
+  const std::vector<raw_ptr<Profile>>& profiles = test_->GetAllProfiles();
   for (Profile* profile : profiles) {
     if (profile != profiles.front() &&
         !AppListMatch(profiles.front(), profile)) {

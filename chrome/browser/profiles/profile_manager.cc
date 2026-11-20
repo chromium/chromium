@@ -2099,7 +2099,7 @@ void ProfileManager::SaveActiveProfiles() {
   // same GetBaseName(). In that case, we cannot restore both profiles. Include
   // each base name only once in the last active profile list.
   std::set<base::FilePath> profile_paths;
-  std::vector<raw_ptr<Profile, VectorExperimental>>::const_iterator it;
+  std::vector<raw_ptr<Profile>>::const_iterator it;
   for (it = active_profiles_.begin(); it != active_profiles_.end(); ++it) {
     // crbug.com/41377418 -> CHECK that the profiles aren't guest or incognito,
     // causing a crash during session restore.

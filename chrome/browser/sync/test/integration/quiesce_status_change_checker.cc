@@ -214,7 +214,7 @@ class QuiesceStatusChangeChecker::NestedUpdatedProgressMarkerChecker
 };
 
 QuiesceStatusChangeChecker::QuiesceStatusChangeChecker(
-    std::vector<raw_ptr<syncer::SyncServiceImpl, VectorExperimental>> services,
+    std::vector<raw_ptr<syncer::SyncServiceImpl>> services,
     fake_server::FakeServer* fake_server)
     : MultiClientStatusChangeChecker(services) {
   CHECK_LE(1U, services.size());

@@ -30,10 +30,9 @@ void SetExtensionSettings(Profile* profile,
                           const base::DictValue& settings);
 
 // Calls Set() with `settings` for all profiles the extension with ID `id`.
-void SetExtensionSettings(
-    const std::vector<raw_ptr<Profile, VectorExperimental>>& profiles,
-    const std::string& id,
-    const base::DictValue& settings);
+void SetExtensionSettings(const std::vector<raw_ptr<Profile>>& profiles,
+                          const std::string& id,
+                          const base::DictValue& settings);
 
 // A checker that waits for the extension settings to be the same across all
 // profiles.
@@ -42,15 +41,14 @@ class AllExtensionSettingsSameChecker : public MultiClientStatusChangeChecker {
   // TODO(crbug.com/461744384): use ExtensionRegistry observer instead of
   // MultiClientStatusChangeChecker.
   AllExtensionSettingsSameChecker(
-      const std::vector<raw_ptr<syncer::SyncServiceImpl, VectorExperimental>>&
-          services,
-      const std::vector<raw_ptr<Profile, VectorExperimental>>& profiles);
+      const std::vector<raw_ptr<syncer::SyncServiceImpl>>& services,
+      const std::vector<raw_ptr<Profile>>& profiles);
   ~AllExtensionSettingsSameChecker() override;
 
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
-  const std::vector<raw_ptr<Profile, VectorExperimental>> profiles_;
+  const std::vector<raw_ptr<Profile>> profiles_;
 };
 
 }  // namespace extension_settings_helper

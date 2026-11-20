@@ -29,8 +29,7 @@ class QuiesceStatusChangeChecker : public MultiClientStatusChangeChecker {
  public:
   // `fake_server` must not be null and must outlive this object.
   QuiesceStatusChangeChecker(
-      std::vector<raw_ptr<syncer::SyncServiceImpl, VectorExperimental>>
-          services,
+      std::vector<raw_ptr<syncer::SyncServiceImpl>> services,
       fake_server::FakeServer* fake_server);
 
   QuiesceStatusChangeChecker(const QuiesceStatusChangeChecker&) = delete;

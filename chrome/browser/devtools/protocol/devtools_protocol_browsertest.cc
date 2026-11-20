@@ -2054,7 +2054,7 @@ class WebContentsBarrier {
   WebContentsBarrier(std::initializer_list<Predicate> predicates)
       : predicates_(predicates) {}
 
-  std::vector<raw_ptr<content::WebContents, VectorExperimental>> Await() {
+  std::vector<raw_ptr<content::WebContents>> Await() {
     if (!IsReady()) {
       base::RunLoop run_loop;
       ready_callback_ = run_loop.QuitClosure();
@@ -2106,8 +2106,8 @@ class WebContentsBarrier {
 
   const std::vector<Predicate> predicates_;
 
-  std::vector<raw_ptr<content::WebContents, VectorExperimental>>
-      ready_web_contents_{predicates_.size(), nullptr};
+  std::vector<raw_ptr<content::WebContents>> ready_web_contents_{
+      predicates_.size(), nullptr};
   size_t pending_contents_count_{predicates_.size()};
   base::CallbackListSubscription creation_subscription_{
       content::RegisterWebContentsCreationCallback(
@@ -2151,8 +2151,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionProtocolTestWithGuestViewInnerWebContents,
 
   LaunchApp(extension->id());
 
-  std::vector<raw_ptr<content::WebContents, VectorExperimental>> wcs =
-      barrier.Await();
+  std::vector<raw_ptr<content::WebContents>> wcs = barrier.Await();
   ASSERT_THAT(wcs, testing::SizeIs(2));
   EXPECT_NE(wcs[0], wcs[1]);
   // Assure host and view have different DevTools hosts.
@@ -2211,8 +2210,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionProtocolTestWithGuestViewMPArch,
     return base::EndsWith(url.GetPath(), "host.html");
   }});
   LaunchApp(extension->id());
-  std::vector<raw_ptr<content::WebContents, VectorExperimental>> wcs =
-      barrier.Await();
+  std::vector<raw_ptr<content::WebContents>> wcs = barrier.Await();
   ASSERT_THAT(wcs, testing::SizeIs(1));
 
   auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
@@ -2252,8 +2250,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionProtocolTestWithGuestViewMPArch,
     return base::EndsWith(url.GetPath(), "host.html");
   }});
   LaunchApp(extension->id());
-  std::vector<raw_ptr<content::WebContents, VectorExperimental>> wcs =
-      barrier.Await();
+  std::vector<raw_ptr<content::WebContents>> wcs = barrier.Await();
   ASSERT_EQ(wcs.size(), 1u);
 
   auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();
@@ -2294,8 +2291,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionProtocolTestWithGuestViewMPArch,
     return base::EndsWith(url.GetPath(), "host.html");
   }});
   LaunchApp(extension->id());
-  std::vector<raw_ptr<content::WebContents, VectorExperimental>> wcs =
-      barrier.Await();
+  std::vector<raw_ptr<content::WebContents>> wcs = barrier.Await();
   ASSERT_EQ(wcs.size(), 1u);
 
   auto* guest_view = GetGuestViewManager()->WaitForSingleGuestViewCreated();

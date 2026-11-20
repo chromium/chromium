@@ -118,8 +118,7 @@ bool SyncArcPackageHelper::HasOnlyTestPackages(Profile* profile,
 }
 
 bool SyncArcPackageHelper::AllProfilesHaveSamePackages() {
-  const std::vector<raw_ptr<Profile, VectorExperimental>>& profiles =
-      test_->GetAllProfiles();
+  const std::vector<raw_ptr<Profile>>& profiles = test_->GetAllProfiles();
   for (Profile* profile : profiles) {
     if (profile != profiles.front() &&
         !ArcPackagesMatch(profiles.front(), profile)) {
@@ -136,8 +135,7 @@ bool SyncArcPackageHelper::AllProfilesHaveSamePackageDetails() {
     return false;
   }
 
-  const std::vector<raw_ptr<Profile, VectorExperimental>>& profiles =
-      test_->GetAllProfiles();
+  const std::vector<raw_ptr<Profile>>& profiles = test_->GetAllProfiles();
   for (Profile* profile : profiles) {
     if (profile != profiles.front() &&
         !ArcPackageDetailsMatch(profiles.front(), profile)) {
