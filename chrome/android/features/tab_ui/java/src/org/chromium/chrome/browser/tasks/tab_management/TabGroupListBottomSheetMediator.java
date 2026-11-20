@@ -30,10 +30,8 @@ import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Mediator class for the Tab Group List Bottom Sheet. This mediator contains the logic for bottom
@@ -161,7 +159,7 @@ public class TabGroupListBottomSheetMediator {
     private void populateList(List<Tab> tabs) {
         mModelList.clear();
         @Nullable Token groupToNotBeIncluded = findSingleTabGroupIfPresent(tabs);
-        if (shouldShowNewGroupRow(tabs, groupToNotBeIncluded)) {
+        if (mShowNewGroup) {
             insertNewGroupRow(tabs);
         }
 
@@ -210,36 +208,5 @@ public class TabGroupListBottomSheetMediator {
         builder.with(TabGroupRowProperties.ROW_CLICK_RUNNABLE, onClickRunnable);
         PropertyModel propertyModel = builder.build();
         mModelList.add(new MVCListAdapter.ListItem(RowType.NEW_GROUP, propertyModel));
-    }
-
-    /**
-     * Whether to show the new group row.
-     *
-     * <p>Returns true if {@code mShowNewGroup} is true and if:
-     *
-     * <ul>
-     *   <li>None of the tabs are grouped.
-     *   <li>There is a single tab to be moved and it is not already in a group or said tab is being
-     *       filtered.
-     *   <li>The tabs are members of multiple groups.
-     * </ul>
-     *
-     * @param tabs The tabs to be added to a tab group.
-     * @param groupToNotBeIncluded The group to not be included in the final tab group list.
-     */
-    private boolean shouldShowNewGroupRow(List<Tab> tabs, @Nullable Token groupToNotBeIncluded) {
-        Set<Token> groupIds = new HashSet<>();
-        for (Tab tab : tabs) {
-            if (tab.getTabGroupId() != null) {
-                groupIds.add(tab.getTabGroupId());
-            }
-        }
-
-        int numGroups = groupIds.size();
-        boolean isSingleTabToBeMoved = tabs.size() == 1;
-        boolean singleGroupPredicate =
-                numGroups == 1 && (isSingleTabToBeMoved || groupToNotBeIncluded != null);
-
-        return (numGroups == 0 || singleGroupPredicate || numGroups > 1) && mShowNewGroup;
     }
 }

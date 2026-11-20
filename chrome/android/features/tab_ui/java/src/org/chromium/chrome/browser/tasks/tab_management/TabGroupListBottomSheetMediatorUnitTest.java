@@ -594,4 +594,15 @@ public class TabGroupListBottomSheetMediatorUnitTest {
         assertEquals(3, mModelList.size());
         assertEquals(RowType.NEW_GROUP, mModelList.get(0).type);
     }
+
+    @Test
+    public void testPopulateList_showNewGroupRow_mixedGroupedAndUngrouped() {
+        when(mDelegate.requestShowContent()).thenReturn(true);
+        when(mTab1.getTabGroupId()).thenReturn(mToken1);
+        when(mTab2.getTabGroupId()).thenReturn(null);
+
+        mMediator.requestShowContent(Arrays.asList(mTab1, mTab2));
+        assertEquals(3, mModelList.size());
+        assertEquals(RowType.NEW_GROUP, mModelList.get(0).type);
+    }
 }

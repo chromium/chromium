@@ -41,7 +41,6 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_PROVIDER;
 import static org.chromium.ui.listmenu.ListSectionDividerProperties.COLOR_ID;
 
-import android.annotation.StringRes;
 import android.app.Activity;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
@@ -54,6 +53,7 @@ import android.view.View.OnClickListener;
 import android.widget.ListView;
 
 import androidx.annotation.PluralsRes;
+import androidx.annotation.StringRes;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
 import org.jni_zero.JniUniquePtr;
@@ -116,6 +116,8 @@ import org.chromium.chrome.browser.share.send_tab_to_self.ShareEntryPoint;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
@@ -332,6 +334,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Mock private ExtensionTabContextMenuBridge.Native mExtensionTabContextMenuBridgeJniMock;
     @Mock private KeyboardShortcuts.Natives mKeyboardShortcutsJniMock;
     @Mock private MenuModelBridge mMenuModelBridge;
+    @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJni;
     @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
     @Mock private TabGroupListBottomSheetCoordinator mBottomSheetCoordinator;
@@ -371,6 +374,7 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mSendTabToSelfAndroidBridgeNatives.getEntryPointDisplayReason(any(), any()))
                 .thenReturn(EntryPointDisplayReason.OFFER_FEATURE);
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
+        TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJni);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
         MultiInstanceOrchestratorFactory.setInstanceForTesting(mMultiInstanceOrchestrator);
         when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);

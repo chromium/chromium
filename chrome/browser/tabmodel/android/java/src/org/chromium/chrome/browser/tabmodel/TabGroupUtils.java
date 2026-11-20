@@ -272,15 +272,19 @@ public class TabGroupUtils {
      * @return The tab group id if they are, null otherwise.
      */
     public static @Nullable Token findSingleTabGroupIfPresent(List<Tab> tabs) {
-        @Nullable Token tabGroupId = null;
-        for (Tab tab : tabs) {
-            if (tabGroupId == null) {
-                tabGroupId = tab.getTabGroupId();
-            } else if (!Objects.equals(tabGroupId, tab.getTabGroupId())) {
+        if (tabs.isEmpty()) {
+            return null;
+        }
+        Token firstGroupId = tabs.get(0).getTabGroupId();
+        if (firstGroupId == null) {
+            return null;
+        }
+        for (int i = 1; i < tabs.size(); i++) {
+            if (!Objects.equals(firstGroupId, tabs.get(i).getTabGroupId())) {
                 return null;
             }
         }
-        return tabGroupId;
+        return firstGroupId;
     }
 
     /** Creates a new group containing {@code tabs} ({@code tabs} must be non-empty). */
@@ -290,16 +294,20 @@ public class TabGroupUtils {
             @Nullable TabMovedCallback tabMovedCallback,
             @Nullable TabGroupCreationCallback tabGroupCreationCallback) {
         assert !tabs.isEmpty();
-        Tab tab = tabs.get(0);
-
-        if (tabs.size() == 1 && tab.getTabGroupId() == null) {
-            tabModel.createSingleTabGroup(tab);
-        } else if (tabs.size() == 1 && tab.getTabGroupId() != null) {
+        List<Tab> groupedTabs = getGroupedTabs(tabs);
+        if (!groupedTabs.isEmpty()) {
+            if (areAnyTabsPartOfSharedGroup(tabModel, groupedTabs, /* destGroupId= */ null)) {
+                return;
+            }
             tabModel.getTabUngrouper()
-                    .ungroupTabs(tabs, /* trailing= */ false, /* allowDialog= */ false);
+                    .ungroupTabs(groupedTabs, /* trailing= */ false, /* allowDialog= */ false);
             if (tabMovedCallback != null) {
                 tabMovedCallback.onTabMoved();
             }
+        }
+
+        Tab tab = tabs.get(0);
+        if (tabs.size() == 1) {
             tabModel.createSingleTabGroup(tab);
         } else {
             tabModel.mergeListOfTabsToGroup(

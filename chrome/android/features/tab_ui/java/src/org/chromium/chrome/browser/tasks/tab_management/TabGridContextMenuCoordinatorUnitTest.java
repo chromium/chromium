@@ -51,6 +51,8 @@ import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBr
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridgeJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
@@ -105,6 +107,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
     @Mock private ViewRectProvider mViewRectProvider;
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     @Mock private SendTabToSelfAndroidBridge.Natives mSendTabToSelfAndroidBridgeNatives;
+    @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJni;
 
     private TabGridContextMenuCoordinator mCoordinator;
     private ModelList mMenuItemList;
@@ -169,6 +172,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
         SendTabToSelfAndroidBridgeJni.setInstanceForTesting(mSendTabToSelfAndroidBridgeNatives);
         when(mSendTabToSelfAndroidBridgeNatives.getEntryPointDisplayReason(any(), any()))
                 .thenReturn(null);
+        TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJni);
     }
 
     @Test

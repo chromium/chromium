@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
@@ -121,6 +122,7 @@ public class TabGroupMenuActionHandlerUnitTest {
         DataSharingServiceFactory.setForTesting(mock());
         TrackerFactory.setTrackerForTests(mock());
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
+        TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
