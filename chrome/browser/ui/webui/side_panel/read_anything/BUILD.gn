@@ -108,7 +108,6 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//mojo/public/cpp/bindings",
     "//net",
-    "//pdf:features",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/accessibility",

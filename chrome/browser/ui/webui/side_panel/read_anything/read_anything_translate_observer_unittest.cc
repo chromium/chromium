@@ -25,14 +25,9 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/network_change_notifier.h"
-#include "pdf/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(ENABLE_PDF)
-#include "pdf/pdf_features.h"
-#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace {
 
@@ -205,7 +200,6 @@ TEST_F(ReadAnythingTranslateObserverTest,
                     translate::TranslateErrors::TRANSLATION_ERROR);
 }
 
-#if BUILDFLAG(ENABLE_PDF)
 TEST_F(ReadAnythingTranslateObserverTest,
        Observe_DisplayedContentsDiffersFromTab_ObservesTabLanguage) {
   std::unique_ptr<content::WebContents> contents_without_client =
@@ -215,43 +209,6 @@ TEST_F(ReadAnythingTranslateObserverTest,
   EXPECT_CALL(language_callback_, Run("fr"));
   observer_.Observe(*web_contents(), *contents_without_client);
 }
-
-// TODO(crbug.com/340272378): Remove when the GuestView PDF viewer is removed.
-class ReadAnythingTranslateObserverGuestViewPdfTest
-    : public ReadAnythingTranslateObserverTest {
- public:
-  ReadAnythingTranslateObserverGuestViewPdfTest() {
-    feature_list_.InitAndDisableFeature(chrome_pdf::features::kPdfOopif);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(ReadAnythingTranslateObserverGuestViewPdfTest,
-       Observe_DisplayedContentsDiffersFromTab_ObservesDisplayedLanguage) {
-  // Like the inner contents of a PDF in the GuestView PDF viewer.
-  std::unique_ptr<content::WebContents> pdf_contents =
-      CreateContentsWithTranslateClient();
-  SetSourceLanguage(*web_contents(), "fr");
-  SetSourceLanguage(*pdf_contents, "de");
-
-  EXPECT_CALL(language_callback_, Run("de"));
-  observer_.Observe(*web_contents(), *pdf_contents);
-}
-
-TEST_F(ReadAnythingTranslateObserverGuestViewPdfTest,
-       Observe_ContentsWithoutTranslateClient_StopsObservingPreviousContents) {
-  // Like the inner contents of a PDF in the GuestView PDF viewer.
-  std::unique_ptr<content::WebContents> contents_without_client =
-      CreateTestWebContents();
-  observer_.Observe(*web_contents(), *web_contents());
-  observer_.Observe(*web_contents(), *contents_without_client);
-
-  EXPECT_CALL(language_callback_, Run(_)).Times(0);
-  DetermineLanguage(*web_contents(), "es");
-}
-#endif  // BUILDFLAG(ENABLE_PDF)
 
 class ReadAnythingTranslateObserverTranslationStateTest
     : public ReadAnythingTranslateObserverTest {

@@ -332,11 +332,8 @@ class MimeHandlerPermissionEmbeddingBrowserTest
     ASSERT_TRUE(StartEmbeddedTestServer());
     // The "embeddable" variant declares `can_embed: true` so an
     // iframe-embedded PDF in `OuterFrameRequesterDoesNotInheritExtensionOrigin`
-    // is intercepted by this generic handler (always OOPIF) rather than
-    // falling back to the built-in PDF viewer, whose dispatch is gated
-    // on `chrome_pdf::features::kPdfOopif`. Without this variant the
-    // outer-frame test would only exercise the OOPIF path on builds
-    // where that feature is enabled by default.
+    // is intercepted by this generic handler rather than falling back to the
+    // built-in PDF viewer.
     const extensions::Extension* extension =
         LoadExtension(test_data_dir_.AppendASCII("generic_mime_handler")
                           .AppendASCII("embeddable"));
