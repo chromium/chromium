@@ -38,8 +38,7 @@ static void JNI_MemoryPressureListener_OnPreFreeze(JNIEnv* env) {
 
 static bool JNI_MemoryPressureListener_IsTrimMemoryBackgroundCritical(
     JNIEnv* env) {
-  return base::android::PreFreezeBackgroundMemoryTrimmer::
-      IsTrimMemoryBackgroundCritical();
+  return base::android::PreFreezeBackgroundMemoryTrimmer::SupportsModernTrim();
 }
 
 namespace base::android {

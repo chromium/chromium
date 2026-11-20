@@ -125,9 +125,10 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   // possible immediately, before we are frozen.
   static void OnPreFreeze() LOCKS_EXCLUDED(lock());
 
+  // Returns true if PreFreeze is supported, i.e. on Android U and above. When
+  // supported, delayed background tasks may be run early when the process is
+  // about to be frozen, and PreFreeze metrics are recorded.
   static bool SupportsModernTrim();
-  static bool ShouldUseModernTrim();
-  static bool IsTrimMemoryBackgroundCritical();
 
   class Delegate {
    public:
@@ -223,11 +224,6 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
 
   static void RegisterPrivateMemoryFootprintMetric() LOCKS_EXCLUDED(lock());
 
-  void PostDelayedBackgroundTaskInternal(
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      const base::Location& from_here,
-      OnceCallback<void(MemoryReductionTaskContext)> task,
-      base::TimeDelta delay) LOCKS_EXCLUDED(lock());
   void PostDelayedBackgroundTaskModern(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       const base::Location& from_here,
@@ -246,7 +242,6 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   void OnPreFreezeInternal() LOCKS_EXCLUDED(lock());
   void RunPreFreezeTasks() EXCLUSIVE_LOCKS_REQUIRED(lock());
 
-  void PostMetricsTasksIfModern() EXCLUSIVE_LOCKS_REQUIRED(lock());
   void PostMetricsTask() EXCLUSIVE_LOCKS_REQUIRED(lock());
   void RecordMetrics() LOCKS_EXCLUDED(lock());
 

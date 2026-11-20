@@ -150,7 +150,7 @@ class OneShotDelayedBackgroundTimer::TaskImpl final
 
 OneShotDelayedBackgroundTimer::OneShotDelayedBackgroundTimer() {
 #if BUILDFLAG(IS_ANDROID)
-  if (android::PreFreezeBackgroundMemoryTrimmer::ShouldUseModernTrim()) {
+  if (android::PreFreezeBackgroundMemoryTrimmer::SupportsModernTrim()) {
     impl_ = std::make_unique<TaskImpl>();
   } else {
     impl_ = std::make_unique<TimerImpl>();

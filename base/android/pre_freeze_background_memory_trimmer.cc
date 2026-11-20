@@ -222,21 +222,10 @@ void PreFreezeBackgroundMemoryTrimmer::PostDelayedBackgroundTask(
     return;
   }
 
-  Instance().PostDelayedBackgroundTaskInternal(task_runner, from_here,
-                                               std::move(task), delay);
-}
-
-void PreFreezeBackgroundMemoryTrimmer::PostDelayedBackgroundTaskInternal(
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
-    const base::Location& from_here,
-    OnceCallback<void(MemoryReductionTaskContext)> task,
-    base::TimeDelta delay) {
-  DCHECK(SupportsModernTrim());
-
   RegisterPrivateMemoryFootprintMetric();
 
-  PostDelayedBackgroundTaskModern(task_runner, from_here, std::move(task),
-                                  delay);
+  Instance().PostDelayedBackgroundTaskModern(std::move(task_runner), from_here,
+                                             std::move(task), delay);
 }
 
 void PreFreezeBackgroundMemoryTrimmer::PostDelayedBackgroundTaskModern(
@@ -388,20 +377,13 @@ void PreFreezeBackgroundMemoryTrimmer::OnPreFreezeInternal() {
   base::AutoLock locker(lock());
   is_pre_frozen_ = true;
   pre_freeze_generation_++;
-  PostMetricsTasksIfModern();
+  PostMetricsTask();
 
-  if (!ShouldUseModernTrim()) {
+  if (!SupportsModernTrim()) {
     return;
   }
 
   RunPreFreezeTasks();
-}
-
-void PreFreezeBackgroundMemoryTrimmer::PostMetricsTasksIfModern() {
-  if (!SupportsModernTrim()) {
-    return;
-  }
-  PostMetricsTask();
 }
 
 // static
@@ -429,16 +411,6 @@ void PreFreezeBackgroundMemoryTrimmer::RegisterPrivateMemoryFootprintMetric() {
 // static
 bool PreFreezeBackgroundMemoryTrimmer::SupportsModernTrim() {
   return Instance().supports_modern_trim_;
-}
-
-// static
-bool PreFreezeBackgroundMemoryTrimmer::ShouldUseModernTrim() {
-  return SupportsModernTrim();
-}
-
-// static
-bool PreFreezeBackgroundMemoryTrimmer::IsTrimMemoryBackgroundCritical() {
-  return SupportsModernTrim();
 }
 
 // static
