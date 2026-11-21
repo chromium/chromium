@@ -451,6 +451,18 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
+     * Returns whether an Incognito Activity shares the primary OTR profile with Chrome's Incognito
+     * tabs, instead of using its own unique OTR profile. Such an Activity is registered as an
+     * {@code IncognitoTabHost} so that the primary OTR profile outlives it.
+     */
+    public boolean usesPrimaryOtrProfile() {
+        // Incognito popups opened by Chrome share the primary OTR profile with their opener.
+        return getCustomTabMode() == CustomTabProfileType.INCOGNITO
+                && getUiType() == CustomTabsUiType.POPUP
+                && isOpenedByChrome();
+    }
+
+    /**
      * @return Whether the Activity should attempt to display a Trusted Web Activity.
      */
     public final boolean isTrustedWebActivity() {

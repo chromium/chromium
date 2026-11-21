@@ -1428,11 +1428,28 @@ DevToolsBlockReason GetProfileBlockReason(Profile* profile) {
 
   return DevToolsBlockReason::kNotBlocked;
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Only the primary OTR profile is supported among OTR profiles. Non-primary OTR
+// profiles (e.g. Incognito or Ephemeral Custom Tabs) are owned by and destroyed
+// with their hosting activity, which the DevTools activity could outlive.
+bool IsNonPrimaryOtrProfile(Profile* profile) {
+  return profile && profile->IsOffTheRecord() &&
+         !profile->IsPrimaryOTRProfile();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 }  // namespace
 
 // static
 bool DevToolsWindow::AllowDevToolsFor(Profile* profile,
                                       content::WebContents* web_contents) {
+#if BUILDFLAG(IS_ANDROID)
+  if (IsNonPrimaryOtrProfile(profile) ||
+      (web_contents && IsNonPrimaryOtrProfile(Profile::FromBrowserContext(
+                           web_contents->GetBrowserContext())))) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   return GetBlockReasonFor(profile, web_contents) ==
          DevToolsBlockReason::kNotBlocked;
 }
@@ -1440,6 +1457,14 @@ bool DevToolsWindow::AllowDevToolsFor(Profile* profile,
 // static
 bool DevToolsWindow::AllowDevToolsFor(Profile* profile,
                                       content::DevToolsAgentHost* agent_host) {
+#if BUILDFLAG(IS_ANDROID)
+  if (IsNonPrimaryOtrProfile(profile) ||
+      (agent_host && agent_host->GetBrowserContext() &&
+       IsNonPrimaryOtrProfile(
+           Profile::FromBrowserContext(agent_host->GetBrowserContext())))) {
+    return false;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   return GetProfileBlockReason(profile) == DevToolsBlockReason::kNotBlocked &&
          IsInspectionAllowed(profile, agent_host);
 }

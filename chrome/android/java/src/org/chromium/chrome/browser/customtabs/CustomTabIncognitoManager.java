@@ -4,15 +4,12 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import static org.chromium.chrome.browser.flags.CustomTabProfileType.INCOGNITO;
-
 import android.app.Activity;
 
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
@@ -50,11 +47,9 @@ public class CustomTabIncognitoManager implements DestroyObserver {
 
         lifecycleDispatcher.register(this);
 
-        // Only incognito popups opened by Chrome share the primary OTR profile; hold it from
-        // creation rather than from native init.
-        if (mIntentDataProvider.getCustomTabMode() == INCOGNITO
-                && mIntentDataProvider.getUiType() == CustomTabsUiType.POPUP
-                && mIntentDataProvider.isOpenedByChrome()) {
+        // Only Activities sharing the primary OTR profile (e.g. incognito popups opened by Chrome)
+        // are hosts of incognito tabs; hold it from creation rather than from native init.
+        if (mIntentDataProvider.usesPrimaryOtrProfile()) {
             mIncognitoTabHost = new IncognitoCustomTabHost();
             IncognitoTabHostRegistry.getInstance().register(mIncognitoTabHost);
         }
@@ -84,8 +79,9 @@ public class CustomTabIncognitoManager implements DestroyObserver {
     }
 
     /**
-     * This class registers itself with {@link IncognitoTabHostRegistry} only if the Incognito
-     * custom tab was opened by Chrome as a popup.
+     * This class registers itself with {@link IncognitoTabHostRegistry} only if the Activity shares
+     * the primary OTR profile (see {@link
+     * BrowserServicesIntentDataProvider#usesPrimaryOtrProfile()}).
      */
     private class IncognitoCustomTabHost implements IncognitoTabHost {
         @Override

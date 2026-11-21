@@ -12,15 +12,18 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.CustomTabProfileType;
 
 /** BrowserServicesIntentDataProvider implementation for DevTools. */
 @NullMarked
 public class DevToolsIntentDataProvider extends BrowserServicesIntentDataProvider {
     private final Intent mIntent;
+    private final boolean mIsIncognito;
     private final ColorProvider mColorProvider;
 
-    DevToolsIntentDataProvider(Intent intent) {
+    DevToolsIntentDataProvider(Intent intent, boolean isIncognito) {
         mIntent = intent;
+        mIsIncognito = isIncognito;
         mColorProvider =
                 new ColorProvider() {
                     @Override
@@ -58,6 +61,17 @@ public class DevToolsIntentDataProvider extends BrowserServicesIntentDataProvide
     @Override
     public @ActivityType int getActivityType() {
         return ActivityType.DEV_TOOLS;
+    }
+
+    @Override
+    public @CustomTabProfileType int getCustomTabMode() {
+        return mIsIncognito ? CustomTabProfileType.INCOGNITO : CustomTabProfileType.REGULAR;
+    }
+
+    @Override
+    public boolean usesPrimaryOtrProfile() {
+        // DevTools for an Incognito tab is hosted in the primary OTR profile.
+        return mIsIncognito;
     }
 
     @Override

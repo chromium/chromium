@@ -553,16 +553,15 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
                 assumeNonNull(mIntentDataProvider);
                 switch (mIntentDataProvider.getCustomTabMode()) {
                     case CustomTabProfileType.INCOGNITO:
-                        // If an incognito popup is being created by Chrome, this should use
-                        // the same primary OTR profile associated with the requester's profile.
-                        if (mIntentDataProvider.getUiType() == CustomTabsUiType.POPUP) {
-                            if (!mIntentDataProvider.isOpenedByChrome()) {
-                                throw new IllegalStateException(
-                                        "Incognito CCTs should have unique OTR profiles unless"
-                                                + " Chrome opened them as a popup window.");
-                            }
-                            return null;
+                        if (mIntentDataProvider.getUiType() == CustomTabsUiType.POPUP
+                                && !mIntentDataProvider.isOpenedByChrome()) {
+                            throw new IllegalStateException(
+                                    "Incognito CCTs should have unique OTR profiles unless"
+                                            + " Chrome opened them as a popup window.");
                         }
+                        // Some Activities created by Chrome (e.g. incognito popups) use the same
+                        // primary OTR profile associated with the requester's profile.
+                        if (mIntentDataProvider.usesPrimaryOtrProfile()) return null;
                         mOtrProfileId = OtrProfileId.createUniqueIncognitoCctId();
                         return mOtrProfileId;
                     case CustomTabProfileType.EPHEMERAL:
