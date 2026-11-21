@@ -12,15 +12,19 @@
 #include "gpu/command_buffer/service/shared_image/gl_ozone_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/ozone_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/ozone_image_gl_textures_holder.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_test_base.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_utils.h"
+#include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/gl_factory.h"
+#include "ui/gl/scoped_binders.h"
 #include "ui/ozone/public/ozone_platform.h"
 
 namespace gpu {
@@ -724,6 +728,212 @@ TEST_F(OzoneImageBackingFactoryTest, UploadAndReadback) {
 
   EXPECT_TRUE(cc::MatchesBitmap(readback_bitmaps[0], upload_bitmaps[0],
                                 cc::ExactPixelComparator()));
+}
+
+TEST_F(OzoneImageBackingFactoryTest, UploadAndReadbackWithoutContextCurrent) {
+  ASSERT_TRUE(context_state_->MakeCurrent(context_state_->surface(),
+                                          /*needs_gl=*/true));
+
+  const Mailbox mailbox = Mailbox::Generate();
+  const auto format = viz::SinglePlaneFormat::kRGBA_8888;
+  const gfx::Size size(16, 16);
+  const auto color_space = gfx::ColorSpace::CreateSRGB();
+  const auto surface_origin = kTopLeft_GrSurfaceOrigin;
+  const auto alpha_type = kPremul_SkAlphaType;
+  const SharedImageUsageSet usage =
+      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE;
+  const SharedImageInfo si_info(format, size, color_space, surface_origin,
+                                alpha_type, usage, "TestLabel");
+
+  std::unique_ptr<SharedImageBacking> backing;
+  if (IsEglImageSupported()) {
+    backing = backing_factory_->CreateSharedImage(
+        mailbox, si_info, gpu::kNullSurfaceHandle, /*is_thread_safe=*/false);
+  }
+  if (!backing) {
+    // Environments without GBM / EGLImage support (such as SwANGLE) cannot
+    // import a NativePixmap into GL; seed a real GL texture on
+    // `context_state_->context()` so UploadFromMemory(), ReadbackToMemory(),
+    // and DestroyTexturesOnContext() still run end-to-end.
+    GLFormatDesc format_desc =
+        context_state_->GetGLFormatCaps().ToGLFormatDesc(format,
+                                                         /*plane_index=*/0);
+    gl::GLApi* api = gl::g_current_gl_context;
+    GLuint service_id = 0;
+    api->glGenTexturesFn(1, &service_id);
+    {
+      gl::ScopedTextureBinder binder(format_desc.target, service_id);
+      api->glTexParameteriFn(format_desc.target, GL_TEXTURE_MIN_FILTER,
+                             GL_LINEAR);
+      api->glTexParameteriFn(format_desc.target, GL_TEXTURE_MAG_FILTER,
+                             GL_LINEAR);
+      api->glTexParameteriFn(format_desc.target, GL_TEXTURE_WRAP_S,
+                             GL_CLAMP_TO_EDGE);
+      api->glTexParameteriFn(format_desc.target, GL_TEXTURE_WRAP_T,
+                             GL_CLAMP_TO_EDGE);
+      if (gl::g_current_gl_driver->ext.b_GL_EXT_texture_storage ||
+          gl::g_current_gl_version->is_es3) {
+        api->glTexStorage2DEXTFn(format_desc.target, /*levels=*/1,
+                                 format_desc.storage_internal_format,
+                                 size.width(), size.height());
+      } else {
+        api->glTexImage2DFn(format_desc.target, /*level=*/0,
+                            format_desc.image_internal_format, size.width(),
+                            size.height(), /*border=*/0,
+                            format_desc.data_format, format_desc.data_type,
+                            /*pixels=*/nullptr);
+      }
+    }
+    context_state_->PessimisticallyResetGrContext();
+
+    auto passthrough_texture = base::MakeRefCounted<gles2::TexturePassthrough>(
+        service_id, format_desc.target);
+    auto ozone_backing = std::make_unique<OzoneImageBacking>(
+        mailbox, si_info, context_state_, /*pixmap=*/nullptr, gpu_workarounds_);
+    auto holder = OzoneImageGLTexturesHolder::CreateForTesting(
+        {std::move(passthrough_texture)});
+    holder->OnAddedToCache();
+    context_state_->context()->AddObserver(ozone_backing.get());
+    ozone_backing->per_context_cached_textures_holders_.emplace(
+        context_state_->context(), std::move(holder));
+    backing = std::move(ozone_backing);
+  }
+  ASSERT_TRUE(backing);
+  auto* backing_ptr = static_cast<OzoneImageBacking*>(backing.get());
+
+  auto make_pattern_bitmap = [&](uint8_t seed) {
+    SkBitmap bitmap;
+    bitmap.allocPixels(SkImageInfo::Make(size.width(), size.height(),
+                                         viz::ToClosestSkColorType(format, 0),
+                                         alpha_type));
+    for (int y = 0; y < size.height(); ++y) {
+      for (int x = 0; x < size.width(); ++x) {
+        const uint8_t r = static_cast<uint8_t>((x * 17 + y * 31 + seed) & 0xFF);
+        const uint8_t g = static_cast<uint8_t>((x * 29 + y * 13 + seed) & 0xFF);
+        const uint8_t b = static_cast<uint8_t>((x * 7 + y * 43 + seed) & 0xFF);
+        bitmap.erase(SkColorSetARGB(0xFF, r, g, b),
+                     SkIRect::MakeXYWH(x, y, 1, 1));
+      }
+    }
+    return bitmap;
+  };
+
+  auto verify_upload_and_readback = [&](uint8_t seed) {
+    std::vector<SkBitmap> upload_bitmaps = {make_pattern_bitmap(seed)};
+    std::vector<SkPixmap> upload_pixmaps = GetSkPixmaps(upload_bitmaps);
+    ASSERT_TRUE(backing->UploadFromMemory(upload_pixmaps));
+
+    std::vector<SkBitmap> readback_bitmaps(1);
+    readback_bitmaps[0].allocPixels(
+        SkImageInfo::Make(size.width(), size.height(),
+                          viz::ToClosestSkColorType(format, 0), alpha_type));
+    std::vector<SkPixmap> readback_pixmaps = GetSkPixmaps(readback_bitmaps);
+    ASSERT_TRUE(backing->ReadbackToMemory(readback_pixmaps));
+    EXPECT_TRUE(cc::MatchesBitmap(readback_bitmaps[0], upload_bitmaps[0],
+                                  cc::ExactPixelComparator()));
+  };
+
+  // 1. Upload/readback when `context_state_` is already current still marks
+  // GL state dirty on `context_state_`.
+  context_state_->set_need_context_state_reset(false);
+  ASSERT_NO_FATAL_FAILURE(verify_upload_and_readback(/*seed=*/5));
+  EXPECT_TRUE(context_state_->IsCurrent(nullptr));
+  EXPECT_TRUE(context_state_->need_context_state_reset());
+
+  // 2. Upload/readback with no GL context current on the calling thread.
+  context_state_->ReleaseCurrent(context_state_->surface());
+  if (gl::GLContext* current = gl::GLContext::GetCurrent()) {
+    current->ReleaseCurrent(gl::GLSurface::GetCurrent());
+  }
+  ASSERT_EQ(gl::GLContext::GetCurrent(), nullptr);
+
+  context_state_->set_need_context_state_reset(false);
+  ASSERT_NO_FATAL_FAILURE(verify_upload_and_readback(/*seed=*/11));
+  EXPECT_EQ(gl::GLContext::GetCurrent(), nullptr);
+  EXPECT_TRUE(context_state_->need_context_state_reset());
+
+  // 3. Upload/readback while a foreign non-shared GLContext is current with
+  // non-default pixel-store unpack/pack state.
+  scoped_refptr<gl::GLSurface> other_surface =
+      gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplayEGL(),
+                                         gfx::Size());
+  ASSERT_TRUE(other_surface);
+  scoped_refptr<gl::GLContext> other_context = gl::init::CreateGLContext(
+      /*share_group=*/nullptr, other_surface.get(), gl::GLContextAttribs());
+  ASSERT_TRUE(other_context);
+  ASSERT_TRUE(other_context->MakeCurrent(other_surface.get()));
+
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 8);
+  glPixelStorei(GL_PACK_ALIGNMENT, 8);
+  const bool is_es3 = gl::g_current_gl_version->IsAtLeastGLES(3, 0);
+  if (is_es3) {
+    glPixelStorei(GL_UNPACK_ROW_LENGTH, 64);
+    glPixelStorei(GL_UNPACK_SKIP_PIXELS, 4);
+    glPixelStorei(GL_UNPACK_SKIP_ROWS, 4);
+    glPixelStorei(GL_PACK_ROW_LENGTH, 64);
+    glPixelStorei(GL_PACK_SKIP_PIXELS, 4);
+    glPixelStorei(GL_PACK_SKIP_ROWS, 4);
+  }
+
+  context_state_->set_need_context_state_reset(false);
+  ASSERT_NO_FATAL_FAILURE(verify_upload_and_readback(/*seed=*/73));
+  EXPECT_TRUE(context_state_->need_context_state_reset());
+  EXPECT_TRUE(other_context->IsCurrent(other_surface.get()));
+  EXPECT_EQ(gl::GLContext::GetCurrent(), other_context.get());
+  EXPECT_EQ(gl::GLSurface::GetCurrent(), other_surface.get());
+  EXPECT_EQ(backing_ptr->per_context_cached_textures_holders_.size(), 1u);
+  EXPECT_TRUE(backing_ptr->per_context_cached_textures_holders_.contains(
+      context_state_->context()));
+
+  GLint unpack_alignment = 0;
+  glGetIntegerv(GL_UNPACK_ALIGNMENT, &unpack_alignment);
+  EXPECT_EQ(unpack_alignment, 8);
+  if (is_es3) {
+    GLint unpack_skip_rows = 0;
+    glGetIntegerv(GL_UNPACK_SKIP_ROWS, &unpack_skip_rows);
+    EXPECT_EQ(unpack_skip_rows, 4);
+    GLint pack_skip_rows = 0;
+    glGetIntegerv(GL_PACK_SKIP_ROWS, &pack_skip_rows);
+    EXPECT_EQ(pack_skip_rows, 4);
+  }
+
+  // 4. Upload/readback, OnGLContextWillDestroy(), and backing teardown while a
+  // surfaceless onscreen GLContext (`default_surface() == nullptr`) is current.
+  GLuint other_service_id = 0;
+  glGenTextures(1, &other_service_id);
+  auto other_holder = OzoneImageGLTexturesHolder::CreateForTesting(
+      {base::MakeRefCounted<gles2::TexturePassthrough>(other_service_id,
+                                                       GL_TEXTURE_2D)});
+  other_holder->OnAddedToCache();
+  other_context->AddObserver(backing_ptr);
+  backing_ptr->per_context_cached_textures_holders_.emplace(
+      other_context.get(), std::move(other_holder));
+
+  scoped_refptr<gl::GLSurface> fake_onscreen_surface =
+      base::MakeRefCounted<FakeOnScreenSurface>(gl::GetDefaultDisplayEGL(),
+                                                gfx::Size(100, 100));
+  ASSERT_FALSE(fake_onscreen_surface->IsOffscreen());
+  scoped_refptr<gl::GLContext> onscreen_context = gl::init::CreateGLContext(
+      /*share_group=*/nullptr, fake_onscreen_surface.get(),
+      gl::GLContextAttribs());
+  ASSERT_TRUE(onscreen_context);
+  ASSERT_FALSE(onscreen_context->default_surface());
+  ASSERT_TRUE(onscreen_context->MakeCurrent(fake_onscreen_surface.get()));
+
+  // Destroying `other_context` invokes `OnGLContextWillDestroy()` ->
+  // `DestroyTexturesOnContext()` from inside `~GLContextEGL()`.
+  other_context.reset();
+  EXPECT_TRUE(onscreen_context->IsCurrent(fake_onscreen_surface.get()));
+  EXPECT_EQ(gl::GLSurface::GetCurrent(), fake_onscreen_surface.get());
+  EXPECT_EQ(backing_ptr->per_context_cached_textures_holders_.size(), 1u);
+
+  ASSERT_NO_FATAL_FAILURE(verify_upload_and_readback(/*seed=*/139));
+  EXPECT_TRUE(onscreen_context->IsCurrent(fake_onscreen_surface.get()));
+  EXPECT_EQ(gl::GLSurface::GetCurrent(), fake_onscreen_surface.get());
+
+  backing.reset();
+  EXPECT_TRUE(onscreen_context->IsCurrent(fake_onscreen_surface.get()));
+  EXPECT_EQ(gl::GLSurface::GetCurrent(), fake_onscreen_surface.get());
 }
 
 }  // namespace gpu
