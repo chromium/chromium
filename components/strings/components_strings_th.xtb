@@ -373,6 +373,7 @@
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> นำแท็บออกแล้ว</translation>
 <translation id="1620510694547887537">กล้องถ่ายรูป</translation>
 <translation id="1623104350909869708">ป้องกันหน้าเว็บนี้จากการสร้างการโต้ตอบเพิ่มเติม</translation>
+<translation id="1624535934412288769">คอลัมน์</translation>
 <translation id="1629390138158333592">ค้นหาเว็บ</translation>
 <translation id="1633137413609266904">{0,plural, =1{นโยบายของผู้ดูแลระบบบล็อกการเปิดไฟล์นี้}other{นโยบายของผู้ดูแลระบบบล็อกการเปิดไฟล์ # รายการ}}</translation>
 <translation id="1634828734222219955">รวม</translation>
@@ -1082,6 +1083,7 @@
 <translation id="2803320044666896137">ไม่สนใจค่านโยบายนี้ เนื่องจากผู้ใช้ไม่ได้เป็นผู้ใช้ที่เชื่อมโยง</translation>
 <translation id="2807052079800581569">ตำแหน่งรูปภาพตามแกน Y</translation>
 <translation id="2808278141522721006">คุณเปิดหรือปิด Windows Hello ได้ใน<ph name="SETTINGS" /></translation>
+<translation id="2820159698793041599">พร็อกซีเซิร์ฟเวอร์สร้างการเชื่อมต่อที่ปลอดภัยไม่ได้</translation>
 <translation id="2820957248982571256">กำลังสแกน...</translation>
 <translation id="282457273878278063">จัดการข้อมูลติดต่อ</translation>
 <translation id="2824775600643448204">ที่อยู่และแถบค้นหา</translation>
@@ -1263,6 +1265,7 @@
 <translation id="3120807611504813890">ซอง (น้ำหนักเบา)</translation>
 <translation id="3121994479408824897">ไปที่ <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">ป้าย (ถาวร)</translation>
+<translation id="3128081114752791872">ใบรับรองความปลอดภัยของพร็อกซีเซิร์ฟเวอร์ไม่ถูกต้อง</translation>
 <translation id="3131746543143948171">เว็บไซต์นี้ดูคล้ายกับเว็บไซต์อื่นๆ ที่เกี่ยวข้องกับฟิชชิง มัลแวร์ และสแกม <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">บันทึกเลขประจำตัวผู้ที่อยู่ในกลุ่มเสี่ยง</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> เป็นเครื่องมือค้นหาเริ่มต้นของคุณแล้วตอนนี้</translation>
@@ -1680,7 +1683,6 @@
 <translation id="3800436529451849929">จาก <ph name="SITE" /></translation>
 <translation id="3801297763951514916">คุณเข้าชมบ่อย</translation>
 <translation id="380329542618494757">ชื่อ</translation>
-<translation id="3803481123869276674">เมื่อทำการซื้อใน Chrome คุณจะเห็นอีวอลเล็ตเป็นตัวเลือก</translation>
 <translation id="3803801106042434208">เครื่องมือค้นหาเหล่านี้ได้รับความนิยมในภูมิภาคของคุณ</translation>
 <translation id="3804112825000113857">ดูการตั้งค่าการป้อนข้อความอัตโนมัติ</translation>
 <translation id="380666903981445943">บันทึกวิธีการชำระเงินในบัญชี Google เพื่อป้อนข้อมูลดังกล่าวโดยอัตโนมัติสำหรับการซื้อใน Chrome</translation>
@@ -2163,6 +2165,7 @@
 <translation id="4612631413844865947">เกิดข้อผิดพลาดในการประมวลผลคำสั่งซื้อของคุณที่ <ph name="MERCHANT_ORIGIN" /> ผ่าน <ph name="PAYMENT_APP_ORIGIN" /></translation>
 <translation id="4612904677925722054">เว็บไซต์นี้อาจมีเนื้อหาสำหรับผู้ใหญ่ พ่อแม่หรือผู้ปกครองต้องระบุว่าคุณเข้าชมเว็บไซต์นี้ได้</translation>
 <translation id="4613873770449493819">URL ต้องนำไปยังโดเมน <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /></translation>
+<translation id="4615154194248230658">ดูเหมือนว่ารูปแบบนี้ไม่ตรงกับโดเมนอีเมลที่ถูกต้อง ผู้ใช้อาจลงชื่อเข้าใช้ไม่ได้หรือระบบอาจนำโปรไฟล์ที่มีอยู่ออก</translation>
 <translation id="4619564267100705184">ยืนยันว่าเป็นคุณ</translation>
 <translation id="4619669610757527494">บันทึกใบขับขี่ไว้ใน Google Wallet</translation>
 <translation id="4622292761762557753">โอนต่อไป</translation>
@@ -2681,7 +2684,6 @@
 <translation id="5447235695608032700">อนุญาตให้ <ph name="SITE" /> ใช้ข้อมูลเกี่ยวกับคุณที่บันทึกไว้</translation>
 <translation id="5447973833955560753">รหัสผ่านสำหรับการกู้คืน</translation>
 <translation id="5452270690849572955">ไม่พบหน้า <ph name="HOST_NAME" /> นี้</translation>
-<translation id="5452923259299906094">ชำระเงินด้วยอีวอลเล็ตและ Pix</translation>
 <translation id="5455374756549232013">เวลาบันทึกของนโยบายไม่เหมาะสม</translation>
 <translation id="5456428544444655325">ไม่ต้องแสดง</translation>
 <translation id="5457082343331641453">เพิ่มไปยังการค้นหาของคุณ</translation>
@@ -3897,7 +3899,6 @@
 <translation id="7489919936111034362">พื้นที่เก็บข้อมูล Google ไดรฟ์เต็มแล้ว</translation>
 <translation id="7490622939531327327">ทำความเข้าใจแบบฟอร์มได้ดียิ่งขึ้น</translation>
 <translation id="7495528107193238112">เนื้อหานี้ถูกบล็อก โปรดติดต่อเจ้าของเว็บไซต์เพื่อให้แก้ปัญหา</translation>
-<translation id="7499188644237027195">เมื่อทำการซื้อใน Chrome คุณจะเห็นอีวอลเล็ตและ Pix เป็นตัวเลือก</translation>
 <translation id="7499684925421947861">อนุญาตให้ <ph name="ACTOR_NAME" /> ลงชื่อเข้าใช้ <ph name="DOMAIN" /> แทนคุณไหม</translation>
 <translation id="7501663406926337752">เว็บไซต์ที่กำลังจะเข้าชมนั้นองค์กรของคุณได้ติดธงไว้ว่าไม่เหมาะสม</translation>
 <translation id="7502044688973049724">จัดการข้อมูลของคุณ</translation>
@@ -4022,7 +4023,6 @@
 <translation id="7676840398262504532">องค์กรของคุณตรวจสอบการคัดลอก</translation>
 <translation id="767806704757698045">ใช้ได้เฉพาะในเว็บไซต์ที่รองรับ</translation>
 <translation id="7678730592635586336">ถ่ายวิดีโอใหม่</translation>
-<translation id="7679287273775285018">ชำระเงินด้วยอีวอลเล็ต</translation>
 <translation id="7679367271685653708">ดูและจัดการประวัติการท่องเว็บในการตั้งค่า Chrome</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, หมดอายุ <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">จัดส่ง</translation>
@@ -4097,7 +4097,6 @@
 <translation id="7791543448312431591">เพิ่ม</translation>
 <translation id="7798389633136518089">เพิกเฉยเพราะแหล่งที่มาในระบบคลาวด์ไม่ได้ตั้งค่านโยบายไว้</translation>
 <translation id="7800304661137206267">การเชื่อมต่อถูกเข้ารหัสโดยใช้ <ph name="CIPHER" /> โดยใช้ <ph name="MAC" /> สำหรับตรวจสอบสิทธิ์ข้อความและ <ph name="KX" /> เป็นกลไลการแลกเปลี่ยนกุญแจ</translation>
-<translation id="780228007282527248">เพิ่มแท็บหรือรูปภาพเพื่อปรับปรุงการค้นหา</translation>
 <translation id="7802523362929240268">ไซต์ถูกต้อง</translation>
 <translation id="7802989406998618639">ป้อนรหัสความปลอดภัย <ph name="NUMBER_OF_DIGITS" /> หลักบน<ph name="SIDE_OF_CARD" />เพื่อให้ธนาคารยืนยันว่าเป็นคุณ</translation>
 <translation id="780301667611848630">ไม่เป็นไร</translation>
@@ -4163,6 +4162,7 @@
 <translation id="7916162853251942238">เฟล็กโซเบส</translation>
 <translation id="7916802424606434188">เปิดหน้าต่างที่ <ph name="WINDOW_INDEX" /> (<ph name="NUM_TABS" /> แท็บ) ในหน้าต่างใหม่</translation>
 <translation id="791698251820376781">องค์กรของคุณไม่อนุญาตให้ลงชื่อเข้าใช้</translation>
+<translation id="7918936720558783139">ข้อเสนอที่คุณบันทึกไว้จะพร้อมใช้งานเมื่อชำระเงิน โดยระบบจะป้อนข้อความให้อัตโนมัติ <ph name="BEGIN_LINK" />จัดการข้อเสนอ<ph name="END_LINK" /></translation>
 <translation id="7927046851848613453">บันทึกตั๋ว กิจกรรม และข้อมูลอื่นๆ จากหน้าเว็บที่คุณดู ไม่ใช่แค่แบบฟอร์มที่คุณกรอก แล้วเข้าถึงบัตรผ่านต่างๆ ได้อย่างรวดเร็ว เช่น ตั๋วเข้างานและบัตรสะสมคะแนน ข้อมูลที่บันทึกไว้จะปรากฏในอุปกรณ์ของคุณและในผลิตภัณฑ์ต่างๆ ของ Google</translation>
 <translation id="7930282586031445870">หน้าจอข้อกำหนดในการให้บริการของ "ซื้อก่อน จ่ายทีหลัง" ปิดอยู่</translation>
 <translation id="7932035970207573919">ที่อยู่ที่ทำงาน <ph name="ADDRESS" /></translation>
@@ -4232,6 +4232,7 @@
 <translation id="8029829038322015001">แดง 1</translation>
 <translation id="8032546467100845887">โปร่งใส</translation>
 <translation id="8035152190676905274">ปากกา</translation>
+<translation id="803703704549420287">ล้างตัวกรอง</translation>
 <translation id="8037117624646282037">ผู้ที่ใช้อุปกรณ์เมื่อเร็วๆ นี้</translation>
 <translation id="803771048473350947">ไฟล์</translation>
 <translation id="8038182528865038593">แดง 2</translation>
@@ -4420,6 +4421,7 @@
 <translation id="8363502534493474904">ปิดโหมดบนเครื่องบิน</translation>
 <translation id="8363929499301563123">คุกกี้ของเว็บไซต์ (สถานะที่ลงชื่อเข้าใช้บนเว็บไซต์ที่คุณเข้าชมล่าสุดจะได้รับการเก็บไว้)</translation>
 <translation id="8364627913115013041">ไม่ได้ตั้งค่า</translation>
+<translation id="8364664414979300296">เพิ่มแท็บ รูปภาพ และอื่นๆ เพื่อปรับปรุงการค้นหา</translation>
 <translation id="836616551641291797">ดูข้อมูลเพิ่มเติมว่าเบราว์เซอร์ของคุณได้รับการจัดการอย่างไร</translation>
 <translation id="8367705492654390392">ถามอะไรก็ได้</translation>
 <translation id="8368001212524806591">ติดตามราคา</translation>

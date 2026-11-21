@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">启用主题背景</translation>
+<translation id="1085064499066015002">在所有网站上始终允许</translation>
 <translation id="1135328998467923690">程序包无效：“<ph name="ERROR_CODE" />”。</translation>
 <translation id="1140871961407805696">后置</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" />添加了一个扩展程序，可能会改变 Chromium 的工作方式。
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">预期版本是“<ph name="EXPECTED_VERSION" />”，但实际版本是“<ph name="NEW_ID" />”</translation>
 <translation id="471800408830181311">无法输出私有密钥。</translation>
 <translation id="4811956658694082538">某个实用程序进程崩溃了，因此软件包无法安装。请重新启动 Chrome，然后重试。</translation>
+<translation id="4883436287898674711">所有<ph name="WEBSITE_1" />网站</translation>
 <translation id="4988792151665380515">无法导出公共密钥。</translation>
 <translation id="501057610015570208">具有“kiosk_only”这项清单属性的应用必须在 ChromeOS Flex 自助服务终端模式下进行安装</translation>
 <translation id="5026754133087629784">网页视图：<ph name="WEBVIEW_TAG_NAME" /></translation>

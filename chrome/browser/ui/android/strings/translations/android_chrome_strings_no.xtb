@@ -530,6 +530,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Få hjelp<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Sporer prisen</translation>
 <translation id="3037517125981011456">Viser beskjeder om å logge på Chrome</translation>
+<translation id="3038505649933066250">Filtrer etter dato</translation>
 <translation id="3044436568790455247">«Velg en enhet» er åpnet i full høyde.</translation>
 <translation id="3057938290530993634">Trykk og hold for å feste de mest besøkte nettstedene dine, slik at du enkelt kan finne dem neste gang</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bokmerke}other{<ph name="BOOKMARKS_COUNT_MANY" /> bokmerker}}</translation>
@@ -576,6 +577,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3243650379537999343">Tegn</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">Hvis du også deler Chrome-bruksrapporter, inneholder disse rapportene nettadressene du besøker</translation>
+<translation id="3248185426436836442">Venter</translation>
 <translation id="3250563604907490871">Bildebeskrivelser gjenopptas når du kobler til wifi</translation>
 <translation id="3254409185687681395">Legg til bokmerke for denne siden</translation>
 <translation id="3265093782546847662">Alle sider på <ph name="DOMAIN" /></translation>
@@ -1124,7 +1126,6 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, festet inkognitofane for deling</translation>
 <translation id="5375374982898812658">Du mister umiddelbart tilgangen til fanegruppen «<ph name="GROUP_NAME" />», og den blir slettet fra alle enhetene dine</translation>
 <translation id="537865165090710757">Lagre og del</translation>
-<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> vil bruke personopplysninger fra den digitale lommeboken din. Fortsett bare hvis du stoler på dette nettstedet. Farlige nettsteder kan lure deg til å oppgi ting som juridisk navn eller ID-nummer.</translation>
 <translation id="5395376160638294582">Sørg for at du alltid kan bruke Chrome-dataene i Google-kontoen din</translation>
 <translation id="5397794290049113714">Deg</translation>
 <translation id="539881862970320163">Et sterkt passord er foreslått. Tastaturet er skjult.</translation>
@@ -1136,6 +1137,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5415871492522952905">Du får loggen din og fanene dine på alle enhetene dine, slik at du kan fortsette med det du holdt på med</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) mister umiddelbart tilgangen til fanegruppen «<ph name="GROUP_NAME" />»</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB er tilgjengelig</translation>
+<translation id="5430861625274552852">Spør om innholdet på en side, eller sammenlign mellom faner</translation>
 <translation id="543271133149552180"><ph name="TAB_TITLE" />, flervalgt inkognito bilde-i-bilde-fane</translation>
 <translation id="5436928407363358055">Synkroniser loggen og fanene dine for å fortsette enkelt der du slapp</translation>
 <translation id="5438292632479953702">Last ned på nytt</translation>
@@ -1172,6 +1174,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="557018954714092179">Opprett en ny mappe</translation>
 <translation id="5578795271662203820">Søk etter dette bildet i <ph name="SEARCH_ENGINE" /></translation>
 <translation id="558563010977877295">Åpne en bestemt side eller et sett med sider</translation>
+<translation id="5594132774273121146">Bruker og konto</translation>
 <translation id="5596627076506792578">Flere alternativer</translation>
 <translation id="5599455543593328020">Inkognitomodus</translation>
 <translation id="5601180634394228718">For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen din, gå til <ph name="BEGIN_LINK" />Google-tjenester<ph name="END_LINK" />.</translation>
@@ -1229,6 +1232,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="583281660410589416">Ukjent</translation>
 <translation id="5833984609253377421">Del en link</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5839059463554891940">Sikkerhet og beskyttelse</translation>
 <translation id="5841444063256914865">Vil du laste ned «<ph name="FILE_NAME" />» likevel?</translation>
 <translation id="5847265694842662173">Chrome har stoppet varsler fra misbrukende og ubrukte nettsteder</translation>
 <translation id="5848257610304005265">Vil du åpne PDF-filen med <ph name="APP_NAME" />?</translation>
@@ -1345,7 +1349,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6259107733340311168">Feltet nederst for ansvarsfraskrivelsen for Enterprise-signaler er åpnet i full høyde</translation>
 <translation id="6260260490042862943">Nettstedskontroller</translation>
 <translation id="6264376385120300461">Last ned likevel</translation>
-<translation id="6264485186158353794">Tilbake til trygg grunn</translation>
 <translation id="6267106249090587268">Varsler <ph name="SEPARATOR" /> Chrome har fjernet disse tillatelsene på grunn av søppelpost eller villedende innhold</translation>
 <translation id="6276708887952587684">Se sidekilden</translation>
 <translation id="62768169905160414">Kopier videorammen</translation>
@@ -1464,7 +1467,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6659594942844771486">Fane</translation>
 <translation id="666731172850799929">Åpne i <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Varsle meg</translation>
-<translation id="6670742294143102726">Velg én eller flere faner du vil legge til i søket</translation>
 <translation id="6671495933530132209">Kopiér bildet</translation>
 <translation id="6672697278890207089">Angi passordfrasen din</translation>
 <translation id="6675622031235530028">Hold inne Ctrl+Q for å avslutte</translation>
@@ -1730,6 +1732,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standardfane}other{<ph name="TABS_COUNT_MANY" /> standardfaner}}</translation>
 <translation id="7603168929588204083">Datoen er ugyldig</translation>
 <translation id="7605594153474022051">Synkronisering fungerer ikke</translation>
+<translation id="7607002721634913082">Satt på pause</translation>
 <translation id="7608245556672190037">Samtykket for Chrome Finds er åpnet i full høyde</translation>
 <translation id="7612619742409846846">Logget på Google som</translation>
 <translation id="7612989789287281429">Logger på …</translation>
@@ -1838,6 +1841,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="800155843932969169">Opprett og lagre passordene dine på en sikker måte, logg på raskere, og identifiser sikkerhetsproblemer med passord for å holde deg trygg</translation>
 <translation id="8004582292198964060">Nettleser</translation>
 <translation id="8006630792898017994">Mellomrom eller Tab</translation>
+<translation id="802154636333426148">Nedlastingen mislyktes</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, flere valgte festede inkognitofaner for deling</translation>
 <translation id="8025972204417227828">Legg til ny</translation>
 <translation id="8027863900915310177">Velg hvor du vil laste ned til</translation>
@@ -1845,6 +1849,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8032569120109842252">Følger</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, valgt inkognitofane med dempet lyd</translation>
 <translation id="8036587585440959897">Noen utvidelser kan legge til søkemotorer i Chrome.</translation>
+<translation id="803703704549420287">Fjern filtrene</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> dager igjen</translation>
 <translation id="8037801708772278989">Sjekket nettopp</translation>
 <translation id="804335162455518893">Finner ikke SD-kort</translation>

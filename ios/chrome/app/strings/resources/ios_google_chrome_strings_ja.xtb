@@ -83,6 +83,8 @@
 <translation id="2574249610672786438">どのデバイスからでも Chrome で自分のタブにアクセスするには、すべてのデバイスでログインしてください</translation>
 <translation id="2576431527583832481">Chrome のアップデートが見つかりました。新しいバージョンが利用可能です。</translation>
 <translation id="257708665678654955">次回から Google Chrome でこのサイトの <ph name="LANGUAGE_NAME" /> ページの翻訳を表示しますか？</translation>
+<translation id="2599258827968143948">Google のお気に入りのサービスが Chrome でさらに便利に</translation>
+<translation id="260980777626165320">デフォルトで Chrome を使用して外部リンクを開きます。</translation>
 <translation id="2668242166988961773">Chrome で音声検索します。</translation>
 <translation id="2703746758996815929">Chrome を使いこなすヒントを受け取るには、iOS の設定で通知をオンにしてください。</translation>
 <translation id="2728851697704606655">Google レンズを使用して翻訳</translation>
@@ -111,6 +113,7 @@
 <translation id="314782365035065913">ホーム画面ドックから Chrome にすばやくアクセス</translation>
 <translation id="3167189358072330585">このアカウントは Google Chrome では使用できません。ドメイン管理者に問い合わせるか、通常の Google アカウントでログインしてください。</translation>
 <translation id="322254490661677575">Google アカウントで Chrome のデータを使用して保存するには、パスフレーズを入力してください。</translation>
+<translation id="3253082773078342494">Chrome でリンクを直接開くことができます。</translation>
 <translation id="3303503998967553377">iOS で Chrome アクションを使用する</translation>
 <translation id="3348862487678490430">Chrome にリーディング リストの項目を追加する</translation>
 <translation id="3350281376951945723">Chrome をデフォルトに設定すると、リンクをすばやく開けます</translation>
@@ -160,6 +163,7 @@
 <translation id="4693084815234024320">Chrome のシークレット モードです</translation>
 <translation id="4713740144985377441">Chrome に戻ってファイルをアップロードします</translation>
 <translation id="4724297637870447613">Chrome をどこでも使用</translation>
+<translation id="4733290155432110050">Chrome で直接表示</translation>
 <translation id="4738647308035481133">Google Chrome ページ</translation>
 <translation id="4742795653798179840">Chrome データを削除しました</translation>
 <translation id="4761869838909035636">Chrome の安全チェックを実行</translation>
@@ -267,6 +271,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="7038674195294813388">iOS で [デフォルトのアプリ] の設定を開き、[ブラウザアプリ] をタップして [Chrome] を選択します。</translation>
 <translation id="7056826488869329999">Chrome で安全チェックを開いて実行します。</translation>
 <translation id="7061455974939528301">Chrome アイコンを長押しして、[ホーム画面を編集] をクリックします</translation>
+<translation id="7067302528015227615">Chrome を既定のブラウザに設定すると、アプリの切り替えがより速く簡単になります。</translation>
 <translation id="7095110968493193530"><ph name="EMAIL" /> の Google パスワード マネージャーに移動</translation>
 <translation id="7124339256045485976">Chrome を最新の状態に維持します</translation>
 <translation id="7135936755418321901">ウェブサイトと位置情報を共有するには、[設定] をタップして位置情報の使用を Chrome に許可してください。</translation>
@@ -278,6 +283,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="7200524487407690471">Chrome では、データ侵害や安全でないウェブサイトなどからユーザーを保護するため、1 日 1 回、安全チェックを自動的に実行します。安全チェックの詳細は [設定] で確認できます。</translation>
 <translation id="7214019116829172458">Chrome でシークレット タブを開く</translation>
 <translation id="722167379782941918">Chrome は保護強化機能を推奨しています</translation>
+<translation id="722921700949937243">すべてのリンクが常に Chrome で開くように設定できます。</translation>
 <translation id="723787869754590019">自動入力に Chrome を使用する</translation>
 <translation id="7261678641327190792">Chrome でパスワードを確認できません</translation>
 <translation id="7272091023280308138">次回からは、URL をコピーしなくても、Chrome でリンクを直接開くことができます。</translation>

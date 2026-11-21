@@ -373,6 +373,7 @@
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> օգտատերը ներդիր է հեռացրել</translation>
 <translation id="1620510694547887537">Տեսախցիկ</translation>
 <translation id="1623104350909869708">Թույլ չտալ այս էջին ստեղծել լրացուցիչ երկխոսություններ</translation>
+<translation id="1624535934412288769">Սյունակներ</translation>
 <translation id="1629390138158333592">Որոնել համացանցում</translation>
 <translation id="1633137413609266904">{0,plural, =1{Ադմինիստրատորն արգելել է բացել այս ֆայլը}one{Ադմինիստրատորն արգելել է բացել # ֆայլ}other{Ադմինիստրատորն արգելել է բացել # ֆայլ}}</translation>
 <translation id="1634828734222219955">Ընդհանուր</translation>
@@ -1082,6 +1083,7 @@
 <translation id="2803320044666896137">Այս կանոնի արժեքն անտեսվում է, քանի որ օգտատերը փոխկապակցված անձ չէ։</translation>
 <translation id="2807052079800581569">Պատկերի դիրքը Y առանցքով</translation>
 <translation id="2808278141522721006">Windows Hello-ն միացնելու կամ անջատելու համար անցեք <ph name="SETTINGS" /></translation>
+<translation id="2820159698793041599">Պրոքսի սերվերին չհաջողվեց ապահով կապ հաստատել։</translation>
 <translation id="2820957248982571256">Որոնում…</translation>
 <translation id="282457273878278063">Կառավարել կոնտակտային տվյալները</translation>
 <translation id="2824775600643448204">Հասցեագոտի և որոնման գոտի</translation>
@@ -1263,6 +1265,7 @@
 <translation id="3120807611504813890">Ծրար (ցածր խտությամբ)</translation>
 <translation id="3121994479408824897">Անցնել <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Պիտակներ (պերմանենտ)</translation>
+<translation id="3128081114752791872">Պրոքսի սերվերի անվտանգության հավաստագիրն անվավեր է։</translation>
 <translation id="3131746543143948171">Այս կայքը նման է ֆիշինգի, վնասագրերի և խարդախությունների հետ կապված այլ կայքերի։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">Պահել Redress Number-ը</translation>
 <translation id="3133565499688974786">Ձեր կանխադրված որոնողական համակարգը՝ <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -1681,7 +1684,6 @@
 <translation id="3800436529451849929"><ph name="SITE" /> կայքից</translation>
 <translation id="3801297763951514916">Հաճախ եք այցելում</translation>
 <translation id="380329542618494757">Անուն</translation>
-<translation id="3803481123869276674">Chrome-ում գնումներ կատարելիս որպես տարբերակ դիտարկեք էլեկտրոնային դրամապանակը որպես վճարման եղանակ</translation>
 <translation id="3803801106042434208">Այս որոնողական համակարգերը տարածված են ձեր տարածաշրջանում</translation>
 <translation id="3804112825000113857">Դիտել ինքնալրացման կարգավորումները</translation>
 <translation id="380666903981445943">Ձեր Google հաշվում պահեք վճարման եղանակ՝ Chrome-ում արվող գնումների ժամանակ այն ավտոմատ լրացնելու համար</translation>
@@ -2162,6 +2164,7 @@
 <translation id="4612631413844865947"><ph name="MERCHANT_ORIGIN" /> կայքում <ph name="PAYMENT_APP_ORIGIN" />-ի միջոցով ձեր պատվերը մշակելիս սխալ առաջացավ։</translation>
 <translation id="4612904677925722054">Այս կայքը, հնարավոր է, մեծահասակների համար նախատեսված բովանդակություն է պարունակում։ Այս կայք այցելելու համար ձեզ հարկավոր է ծնողի կամ խնամակալի թույլտվությունը։</translation>
 <translation id="4613873770449493819">URL-ը պետք է ուղղորդի դեպի <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> տիրույթ։</translation>
+<translation id="4615154194248230658">Այս ձևանմուշը չի համապատասխանում էլ․ հասցեի վավեր տիրույթի։ Օգտատերերը չեն կարող մուտք գործել հաշիվ, իսկ առկա պրոֆիլները կարող են հեռացվել։</translation>
 <translation id="4619564267100705184">Հաստատեք ձեր ինքնությունը</translation>
 <translation id="4619669610757527494">Պահեք վարորդական վկայականը Google Wallet-ում</translation>
 <translation id="4622292761762557753">Միևնույն է տեղափոխել</translation>
@@ -2681,7 +2684,6 @@
 <translation id="5447235695608032700">Թույլատրեք <ph name="SITE" /> կայքին օգտագործել ձեր մասին պահված տեղեկությունները</translation>
 <translation id="5447973833955560753">Վերականգնման գաղտնաբառ</translation>
 <translation id="5452270690849572955">Այս <ph name="HOST_NAME" /> էջը չհաջողվեց գտնել</translation>
-<translation id="5452923259299906094">Վճարեք էլեկտրոնային դրամապանակով և Pix-ով</translation>
 <translation id="5455374756549232013">Կանոնի սխալ ժամադրոշմ</translation>
 <translation id="5456428544444655325">Երբեք ցույց չտալ</translation>
 <translation id="5457082343331641453">Ավելացրեք մանրամասներ</translation>
@@ -3896,7 +3898,6 @@
 <translation id="7489919936111034362">Google Drive-ում ազատ տարածք չկա</translation>
 <translation id="7490622939531327327">Ձևերի ավելի խելացի ընկալում</translation>
 <translation id="7495528107193238112">Այս բովանդակությունն արգելափակված է։ Խնդիրը վերացնելու համար դիմեք կայքի սեփականատիրոջը։</translation>
-<translation id="7499188644237027195">Chrome-ում գնումներ կատարելիս որպես տարբերակ դիտարկեք էլեկտրոնային դրամապանակն ու Pix-ը որպես վճարման եղանակ</translation>
 <translation id="7499684925421947861">Թույլատրե՞լ <ph name="ACTOR_NAME" />-ին մուտք գործել <ph name="DOMAIN" /> ձեր փոխարեն</translation>
 <translation id="7501663406926337752">Այս կայքը ձեր կազմակերպության կողմից նշվել է որպես կանոններին չհամապատասխանող կայք</translation>
 <translation id="7502044688973049724">կառավարել ձեր տեղեկությունները</translation>
@@ -4021,7 +4022,6 @@
 <translation id="7676840398262504532">Ձեր կազմակերպությունը հետևում է պատճենումներին</translation>
 <translation id="767806704757698045">Աշխատում է միայն աջակցվող կայքերում</translation>
 <translation id="7678730592635586336">Նորից տեսագրել</translation>
-<translation id="7679287273775285018">Վճարել էլեկտրոնային դրամապանակով</translation>
 <translation id="7679367271685653708">Դիտել և կառավարել այցելությունների պատմությունը Chrome-ի կարգավորումներում</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, վավերականության ժամկետը՝ <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Առաքում</translation>
@@ -4096,7 +4096,6 @@
 <translation id="7791543448312431591">Ավելացնել</translation>
 <translation id="7798389633136518089">Անտեսվում է, քանի որ կանոնը չի սահմանվել ամպային աղբյուրի կողմից։</translation>
 <translation id="7800304661137206267">Հաղորդագրությունների իսկորոշման համար օգտագործվում է <ph name="CIPHER" />՝ <ph name="MAC" />-ով, բանալիների փոխանակման համար օգտագործվում է <ph name="KX" />:</translation>
-<translation id="780228007282527248">Ավելացրեք ներդիր կամ պատկեր՝ ձեր որոնումը բարելավելու համար</translation>
 <translation id="7802523362929240268">Կայքը անվտանգ է</translation>
 <translation id="7802989406998618639">Մուտքագրեք <ph name="SIDE_OF_CARD" /> գտնվող <ph name="NUMBER_OF_DIGITS" />-թվանշանից բաղկացած անվտանգության կոդը, որպեսզի բանկը կարողանա հաստատել ձեր ինքնությունը</translation>
 <translation id="780301667611848630">Ոչ</translation>
@@ -4162,6 +4161,7 @@
 <translation id="7916162853251942238">Ֆլեքսոգրաֆիկ հիմք</translation>
 <translation id="7916802424606434188">Բացել պատուհան <ph name="WINDOW_INDEX" />-ը (<ph name="NUM_TABS" /> ներդիր) նոր պատուհանում</translation>
 <translation id="791698251820376781">Ձեր կազմակերպությունը թույլ չի տալիս ձեզ մուտք գործել</translation>
+<translation id="7918936720558783139">Ձեր պահված առաջարկը հասանելի կլինի վճարման ժամանակ՝ ինքնալրացման միջոցով։ <ph name="BEGIN_LINK" />Կառավարել առաջարկները<ph name="END_LINK" /></translation>
 <translation id="7927046851848613453">Պահեք տոմսեր, միջոցառումների մասին տեղեկություններ և այլ տվյալներ ոչ միայն ձեր լրացրած ձևերից, այլ նաև ձեր դիտած էջերից։ Այնուհետև արագ բացեք ձեր անցաքարտերը, օրինակ՝ միջոցառման տոմսերը և մշտական հաճախորդի քարտերը։ Պահված տեղեկությունները կարող են հայտնվել ձեր սարքերում և Google-ի պրոդուկտներում։</translation>
 <translation id="7930282586031445870">Ապառիկ գնման պայմանների էկրանը փակված է։</translation>
 <translation id="7932035970207573919">Աշխատավայրի հասցե՝ <ph name="ADDRESS" /></translation>
@@ -4231,6 +4231,7 @@
 <translation id="8029829038322015001">Կարմիր 1</translation>
 <translation id="8032546467100845887">Թափանցիկություն</translation>
 <translation id="8035152190676905274">Գրիչ</translation>
+<translation id="803703704549420287">Մաքրել զտիչները</translation>
 <translation id="8037117624646282037">Ով է վերջերս օգտագործել սարքը</translation>
 <translation id="803771048473350947">Ֆայլ</translation>
 <translation id="8038182528865038593">Կարմիր 2</translation>
@@ -4419,6 +4420,7 @@
 <translation id="8363502534493474904">Անջատել Ավիառեժիմը</translation>
 <translation id="8363929499301563123">Կայքի քուքիներ (վերջերս այցելած կայքերում հաշիվ մտնելու տվյալները կպահվեն)</translation>
 <translation id="8364627913115013041">Կարգավորված չէ:</translation>
+<translation id="8364664414979300296">Ավելացրեք ներդիրներ, լուսանկարներ և ավելին՝ ձեր որոնումը բարելավելու համար</translation>
 <translation id="836616551641291797">Իմանալ ավելին այն մասին, թե ինչպես է ձեր դիտարկիչը կառավարվում</translation>
 <translation id="8367705492654390392">Հարցրեք որևէ բան</translation>
 <translation id="8368001212524806591">Հետևել գներին</translation>

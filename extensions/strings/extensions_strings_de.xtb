@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Design aktivieren</translation>
+<translation id="1085064499066015002">Immer auf allen Websites</translation>
 <translation id="1135328998467923690">Paket ist ungültig: "<ph name="ERROR_CODE" />".</translation>
 <translation id="1140871961407805696">Rückkamera</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> hat eine Erweiterung hinzugefügt, die sich möglicherweise auf die Funktionsweise von Chromium auswirkt.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">Erwartete Version: "<ph name="EXPECTED_VERSION" />", tatsächliche Version "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">Privater Schlüssel konnte nicht ausgegeben werden.</translation>
 <translation id="4811956658694082538">Das Paket konnte nicht installiert werden, da der Prozess eines Dienstprogramms abgestürzt ist. Starte Chrome neu und versuche es noch einmal.</translation>
+<translation id="4883436287898674711">Alle <ph name="WEBSITE_1" />-Websites</translation>
 <translation id="4988792151665380515">Öffentlicher Schlüssel konnte nicht exportiert werden.</translation>
 <translation id="501057610015570208">App mit Manifest-Attribut „kiosk_only“ muss im Chrome OS Flex-Kioskmodus installiert werden</translation>
 <translation id="5026754133087629784">Web-Ansicht: <ph name="WEBVIEW_TAG_NAME" /></translation>

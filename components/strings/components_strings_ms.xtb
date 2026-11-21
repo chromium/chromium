@@ -373,6 +373,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> mengalih keluar tab</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623104350909869708">Halang halaman ini daripada mencipta dialog tambahan</translation>
+<translation id="1624535934412288769">Lajur</translation>
 <translation id="1629390138158333592">Cari di web</translation>
 <translation id="1633137413609266904">{0,plural, =1{Pembukaan fail ini disekat oleh dasar pentadbir}other{Pembukaan # fail disekat oleh dasar pentadbir}}</translation>
 <translation id="1634828734222219955">Jumlah</translation>
@@ -1082,6 +1083,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2803320044666896137">Nilai dasar ini diabaikan kerana pengguna bukan ahli gabungan.</translation>
 <translation id="2807052079800581569">Kedudukan Y imej</translation>
 <translation id="2808278141522721006">Anda boleh menghidupkan atau mematikan Windows Hello dalam <ph name="SETTINGS" /></translation>
+<translation id="2820159698793041599">Pelayan proksi tidak dapat mewujudkan sambungan yang selamat.</translation>
 <translation id="2820957248982571256">Mengimbas…</translation>
 <translation id="282457273878278063">Urus maklumat hubungan</translation>
 <translation id="2824775600643448204">Bar alamat dan carian</translation>
@@ -1263,6 +1265,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3120807611504813890">Sampul (Nipis)</translation>
 <translation id="3121994479408824897">Pergi ke <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Label (Kekal)</translation>
+<translation id="3128081114752791872">Sijil keselamatan pelayan proksi tidak sah.</translation>
 <translation id="3131746543143948171">Laman ini kelihatan serupa dengan laman lain yang dikaitkan dengan pancingan data, perisian hasad dan komplot. <ph name="BEGIN_LEARN_MORE_LINK" />Ketahui lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">Simpan nombor tebus rugi</translation>
 <translation id="3133565499688974786">Kini <ph name="SEARCH_ENGINE_NAME" /> ialah enjin carian lalai anda</translation>
@@ -1682,7 +1685,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="3800436529451849929">Daripada <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Sering anda lawati</translation>
 <translation id="380329542618494757">Nama</translation>
-<translation id="3803481123869276674">Apabila anda membuat pembelian dalam Chrome, lihat e-Dompet sebagai pilihan</translation>
 <translation id="3803801106042434208">Enjin carian ini popular di rantau anda</translation>
 <translation id="3804112825000113857">Lihat tetapan autolengkap</translation>
 <translation id="380666903981445943">Simpan kaedah pembayaran dalam Google Account anda supaya ciri autolengkap dapat digunakan untuk kaedah tersebut bagi pembelian yang dibuat dalam Chrome</translation>
@@ -2165,6 +2167,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4612631413844865947">Terdapat ralat semasa memproses pesanan anda pada <ph name="MERCHANT_ORIGIN" /> melalui <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="4612904677925722054">Laman ini mungkin mengandungi kandungan matang. Ibu/bapa atau penjaga perlu menyatakan bahawa anda boleh melawati laman web ini.</translation>
 <translation id="4613873770449493819">URL mestilah menghala kepada domain <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
+<translation id="4615154194248230658">Corak ini nampaknya tidak sepadan dengan domain alamat e-mel yang sah. Pengguna mungkin tidak dapat log masuk atau profil sedia ada mungkin dialih keluar.</translation>
 <translation id="4619564267100705184">Sahkan orang itu ialah anda</translation>
 <translation id="4619669610757527494">Simpan lesen memandu dalam Google Wallet</translation>
 <translation id="4622292761762557753">Pindahkan juga</translation>
@@ -2683,7 +2686,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="5447235695608032700">Benarkan <ph name="SITE" /> menggunakan maklumat yang disimpan tentang anda</translation>
 <translation id="5447973833955560753">Kata laluan pemulihan</translation>
 <translation id="5452270690849572955">Halaman <ph name="HOST_NAME" /> ini tidak ditemui</translation>
-<translation id="5452923259299906094">Bayar dengan e-Dompet dan Pix</translation>
 <translation id="5455374756549232013">Cap waktu dasar tidak elok</translation>
 <translation id="5456428544444655325">Jangan sekali-kali tunjukkan</translation>
 <translation id="5457082343331641453">Tambahkan pada carian anda</translation>
@@ -3334,6 +3336,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> menyertai kumpulan tab "<ph name="GROUP_NAME" />"</translation>
 <translation id="6521745193039995384">Tidak aktif</translation>
 <translation id="6524830701589638230">Urus butang tetapan kebolehaksesan, aktifkan untuk memeribadikan alatan kebolehaksesan anda dalam tetapan Chrome</translation>
+<translation id="652643331002043144">Laman ini kelihatan serupa dengan laman lain yang dikaitkan dengan pancingan data, perisian hasad dan komplot.</translation>
 <translation id="6529173248185917884">Gulungan Ketujuh</translation>
 <translation id="6529602333819889595">&amp;Buat Semula Pemadaman</translation>
 <translation id="6532101170117367231">Simpan ke Google Drive</translation>
@@ -3899,7 +3902,6 @@ Butiran tambahan:
 <translation id="7489919936111034362">Storan Google Drive anda sudah penuh</translation>
 <translation id="7490622939531327327">Pemahaman borang yang lebih pintar</translation>
 <translation id="7495528107193238112">Kandungan ini disekat. Hubungi pemilik tapak untuk menyelesaikan isu ini.</translation>
-<translation id="7499188644237027195">Apabila anda membuat pembelian dalam Chrome, lihat e-Dompet dan Pix sebagai pilihan</translation>
 <translation id="7499684925421947861">Benarkan <ph name="ACTOR_NAME" /> log masuk ke <ph name="DOMAIN" /> bagi pihak anda?</translation>
 <translation id="7501663406926337752">Laman berikutnya dibenderakan oleh organisasi anda</translation>
 <translation id="7502044688973049724">mengurus maklumat anda</translation>
@@ -4024,7 +4026,6 @@ Butiran tambahan:
 <translation id="7676840398262504532">Organisasi anda memantau tindakan penyalinan</translation>
 <translation id="767806704757698045">Hanya berfungsi pada laman yang disokong</translation>
 <translation id="7678730592635586336">Rakam semula video</translation>
-<translation id="7679287273775285018">Bayar dengan e-Dompet</translation>
 <translation id="7679367271685653708">Lihat dan urus sejarah penyemakan imbas anda dalam tetapan Chrome</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, tamat tempoh <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Penghantaran</translation>
@@ -4099,7 +4100,6 @@ Butiran tambahan:
 <translation id="7791543448312431591">Tambah</translation>
 <translation id="7798389633136518089">Diabaikan kerana dasar itu tidak ditetapkan oleh sumber awan.</translation>
 <translation id="7800304661137206267">Sambungan disulitkan menggunakan <ph name="CIPHER" />, dengan <ph name="MAC" /> untuk pengesahan mesej dan <ph name="KX" /> sebagai mekanisme pertukaran kunci.</translation>
-<translation id="780228007282527248">Tambahkan tab atau imej untuk meningkatkan carian anda</translation>
 <translation id="7802523362929240268">Tapak ini sah</translation>
 <translation id="7802989406998618639">Masukkan kod keselamatan <ph name="NUMBER_OF_DIGITS" /> digit pada <ph name="SIDE_OF_CARD" /> supaya bank anda boleh mengesahkan itu anda</translation>
 <translation id="780301667611848630">Tidak, terima kasih</translation>
@@ -4235,6 +4235,7 @@ Butiran tambahan:
 <translation id="8029829038322015001">Merah 1</translation>
 <translation id="8032546467100845887">Kelutsinaran</translation>
 <translation id="8035152190676905274">Pen</translation>
+<translation id="803703704549420287">Kosongkan penapis</translation>
 <translation id="8037117624646282037">Orang yang menggunakan peranti ini baru-baru ini</translation>
 <translation id="803771048473350947">Fail</translation>
 <translation id="8038182528865038593">Merah 2</translation>
@@ -4423,6 +4424,7 @@ Butiran tambahan:
 <translation id="8363502534493474904">Matikan mod pesawat</translation>
 <translation id="8363929499301563123">Kuki laman web (keadaan log masuk pada laman web yang dilawati baru-baru ini akan dikekalkan)</translation>
 <translation id="8364627913115013041">Tidak ditetapkan.</translation>
+<translation id="8364664414979300296">Tambahkan tab, foto dan pelbagai lagi untuk meningkatkan carian anda</translation>
 <translation id="836616551641291797">Ketahui lebih lanjut tentang cara penyemak imbas anda diurus</translation>
 <translation id="8367705492654390392">Tanya apa-apa sahaja</translation>
 <translation id="8368001212524806591">Jejak harga</translation>

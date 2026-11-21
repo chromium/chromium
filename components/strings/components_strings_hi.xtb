@@ -373,6 +373,7 @@
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> ने एक टैब हटा दिया है</translation>
 <translation id="1620510694547887537">कैमरा</translation>
 <translation id="1623104350909869708">इस पेज को अतिरिक्त डॉयलॉग बनाने से रोकें</translation>
+<translation id="1624535934412288769">कॉलम</translation>
 <translation id="1629390138158333592">वेब पर खोजें</translation>
 <translation id="1633137413609266904">{0,plural, =1{एडमिन नीति के तहत, इस फ़ाइल को खोलने की अनुमति नहीं है}one{एडमिन नीति के तहत, # फ़ाइल को खोलने की अनुमति नहीं है}other{एडमिन नीति के तहत, # फ़ाइलों को खोलने की अनुमति नहीं है}}</translation>
 <translation id="1634828734222219955">कुल</translation>
@@ -1083,6 +1084,7 @@
 <translation id="2803320044666896137">उपयोगकर्ता का खाता संगठन के डोमेन से नहीं जुड़ा है. इसलिए, इस नीति की वैल्यू को अनदेखा कर दिया गया है.</translation>
 <translation id="2807052079800581569">इमेज Y की स्थिति</translation>
 <translation id="2808278141522721006"><ph name="SETTINGS" /> में, Windows Hello को चालू या बंद किया जा सकता है</translation>
+<translation id="2820159698793041599">प्रॉक्सी सर्वर सुरक्षित कनेक्शन नहीं बना सका.</translation>
 <translation id="2820957248982571256">स्कैन हो रहा है...</translation>
 <translation id="282457273878278063">संपर्क जानकारी मैनेज करें</translation>
 <translation id="2824775600643448204">पता और सर्च बार</translation>
@@ -1264,6 +1266,7 @@
 <translation id="3120807611504813890">एन्वेलप (लाइटवेट)</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" /> पर जाएं</translation>
 <translation id="3126023634486644099">लेबल (पर्मानेंट)</translation>
+<translation id="3128081114752791872">प्रॉक्सी सर्वर का सिक्योरिटी सर्टिफ़िकेट अमान्य है.</translation>
 <translation id="3131746543143948171">यह साइट, फ़िशिंग, मैलवेयर, और धोखाधड़ी से जुड़ी अन्य साइटों से मिलती-जुलती है. <ph name="BEGIN_LEARN_MORE_LINK" />ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">रिड्रेस नंबर सेव करें</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> अब आपका डिफ़ॉल्ट सर्च इंजन है</translation>
@@ -1681,7 +1684,6 @@
 <translation id="3800436529451849929"><ph name="SITE" /> से</translation>
 <translation id="3801297763951514916">आपके डिवाइस पर अक्सर खोला जाने वाला टैब</translation>
 <translation id="380329542618494757">नाम</translation>
-<translation id="3803481123869276674">Chrome पर खरीदारी करते समय, विकल्प के तौर पर इलेक्ट्रॉनिक वॉलेट को जोड़ें</translation>
 <translation id="3803801106042434208">ये सर्च इंजन आपके देश/इलाके में लोकप्रिय हैं</translation>
 <translation id="3804112825000113857">ऑटोमैटिक तरीके से जानकारी भरने की सेटिंग देखें</translation>
 <translation id="380666903981445943">अपने Google खाते में पेमेंट का कोई तरीका सेव करें, ताकि Chrome में खरीदारी करते समय जानकारी अपने-आप भर जाए</translation>
@@ -2164,6 +2166,7 @@
 <translation id="4612631413844865947"><ph name="PAYMENT_APP_ORIGIN" /> के ज़रिए <ph name="MERCHANT_ORIGIN" /> पर आपका ऑर्डर प्रोसेस करने में कोई गड़बड़ी हुई.</translation>
 <translation id="4612904677925722054">इस साइट में, वयस्कों के लिए बना कॉन्टेंट शामिल हो सकता है. इस वेबसाइट पर जाने के लिए, आपके पास अपने माता-पिता या अभिभावक की अनुमति होनी चाहिए.</translation>
 <translation id="4613873770449493819">यूआरएल, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> डोमेन पर ले जाना चाहिए.</translation>
+<translation id="4615154194248230658">ऐसा लगता है कि यह पैटर्न, किसी मान्य ईमेल पते के डोमेन से मेल नहीं खाता. ऐसा हो सकता है कि उपयोगकर्ता साइन इन न कर पाएं या उनकी मौजूदा प्रोफ़ाइलें हट सकती हैं.</translation>
 <translation id="4619564267100705184">अपनी पहचान की पुष्टि करें</translation>
 <translation id="4619669610757527494">Google Wallet में ड्राइविंग लाइसेंस की जानकारी सेव करें</translation>
 <translation id="4622292761762557753">फिर भी ट्रांसफ़र करें</translation>
@@ -2682,7 +2685,6 @@
 <translation id="5447235695608032700"><ph name="SITE" /> को आपकी सेव की गई जानकारी का इस्तेमाल करने की अनुमति दें</translation>
 <translation id="5447973833955560753">रिकवरी पासवर्ड</translation>
 <translation id="5452270690849572955">यह <ph name="HOST_NAME" /> पेज नहीं पाया जा सकता</translation>
-<translation id="5452923259299906094">इलेक्ट्रॉनिक वॉलेट और Pix से पेमेंट करें</translation>
 <translation id="5455374756549232013">खराब नीति टाइमस्टैम्प</translation>
 <translation id="5456428544444655325">कभी न दिखाएं</translation>
 <translation id="5457082343331641453">अपनी खोज में शामिल करें</translation>
@@ -3898,7 +3900,6 @@
 <translation id="7489919936111034362">आपका Google Drive स्टोरेज भर चुका है</translation>
 <translation id="7490622939531327327">फ़ॉर्म को समझने की बेहतर सुविधा</translation>
 <translation id="7495528107193238112">इस कॉन्टेंट को ब्लॉक कर दिया गया है. समस्या को ठीक करने के लिए, साइट के मालिक से संपर्क करें.</translation>
-<translation id="7499188644237027195">Chrome पर खरीदारी करते समय, विकल्पों के तौर पर इलेक्ट्रॉनिक वॉलेट और Pix को जोड़ें</translation>
 <translation id="7499684925421947861">क्या आपको <ph name="ACTOR_NAME" /> को आपकी ओर से <ph name="DOMAIN" /> में साइन इन करने की अनुमति देनी है?</translation>
 <translation id="7501663406926337752">आपको जिस साइट पर जाना है उसे आपके संगठन ने फ़्लैग किया है</translation>
 <translation id="7502044688973049724">अपनी जानकारी मैनेज करें</translation>
@@ -4023,7 +4024,6 @@
 <translation id="7676840398262504532">आपका संगठन, कॉपी किए जाने वाले कॉन्टेंट की निगरानी करता है</translation>
 <translation id="767806704757698045">यह सुविधा सिर्फ़ उन साइटों के साथ काम करती है जिन पर यह उपलब्ध है</translation>
 <translation id="7678730592635586336">वीडियो फिर से बनाएं</translation>
-<translation id="7679287273775285018">इलेक्ट्रॉनिक वॉलेट से पेमेंट करें</translation>
 <translation id="7679367271685653708">Chrome की सेटिंग में अपने ब्राउज़िंग इतिहास को देखें और मैनेज करें</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, समयसीमा खत्म होने की तारीख <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">शिपिंग</translation>
@@ -4098,7 +4098,6 @@
 <translation id="7791543448312431591">जोड़ें</translation>
 <translation id="7798389633136518089">नीति को किसी क्लाउड स्रोत के ज़रिए सेट नहीं किया गया है। इसलिए, इसे स्वीकार नहीं किया गया.</translation>
 <translation id="7800304661137206267">कनेक्शन को <ph name="MAC" /> का इस्तेमाल करके मैसेज की पुष्टि के लिए <ph name="KX" /> के साथ सुरक्षित किया गया है और यह मुख्य एक्सचेंज तकनीक के तौर पर <ph name="CIPHER" /> का इस्तेमाल करता है.</translation>
-<translation id="780228007282527248">अपनी खोज को बेहतर बनाने के लिए, कोई टैब या इमेज जोड़ें</translation>
 <translation id="7802523362929240268">साइट वैध है</translation>
 <translation id="7802989406998618639"><ph name="SIDE_OF_CARD" /> पर <ph name="NUMBER_OF_DIGITS" /> अंकों का सुरक्षा कोड डालें, ताकि बैंक आपकी पहचान की पुष्टि कर सके</translation>
 <translation id="780301667611848630">नहीं, रहने दें</translation>
@@ -4164,6 +4163,7 @@
 <translation id="7916162853251942238">फ़्लेक्सो बेस</translation>
 <translation id="7916802424606434188">विंडो <ph name="WINDOW_INDEX" /> (<ph name="NUM_TABS" /> टैब) नई विंडो में खोलें</translation>
 <translation id="791698251820376781">आपका संगठन आपको साइन इन करने की अनुमति नहीं देता है</translation>
+<translation id="7918936720558783139">जानकारी ऑटोमैटिक तरीके से भरने की सुविधा की मदद से, आपका सेव किया गया ऑफ़र चेकआउट के समय अपने-आप उपलब्ध हो जाएगा. <ph name="BEGIN_LINK" />ऑफ़र मैनेज करें<ph name="END_LINK" /></translation>
 <translation id="7927046851848613453">देखे गए पेजों से, भरे गए फ़ॉर्म की जानकारी के अलावा टिकट, इवेंट, और अन्य जानकारी भी सेव करें. इसके बाद, इवेंट के टिकट और लॉयल्टी कार्ड जैसे पास तुरंत ऐक्सेस करें. सेव की गई जानकारी, आपके डिवाइसों और Google के सभी प्रॉडक्ट पर दिख सकती है.</translation>
 <translation id="7930282586031445870">'अभी खरीदें, बाद में पेमेंट करें' सुविधा की सेवा की शर्तों वाला पेज खुला हुआ नहीं है.</translation>
 <translation id="7932035970207573919">ऑफ़िस का पता, <ph name="ADDRESS" /></translation>
@@ -4233,6 +4233,7 @@
 <translation id="8029829038322015001">रेड 1</translation>
 <translation id="8032546467100845887">ट्रांसपेरेंसी</translation>
 <translation id="8035152190676905274">पेन</translation>
+<translation id="803703704549420287">फ़िल्टर हटाएं</translation>
 <translation id="8037117624646282037">हाल ही में डिवाइस किसने इस्तेमाल किया है</translation>
 <translation id="803771048473350947">फ़ाइल</translation>
 <translation id="8038182528865038593">रेड 2</translation>
@@ -4421,6 +4422,7 @@
 <translation id="8363502534493474904">हवाई जहाज़ मोड बंद करें</translation>
 <translation id="8363929499301563123">वेबसाइट की कुकी (हाल ही में विज़िट की गई वेबसाइटों पर साइन-इन करने की स्थिति सेव रहेगी)</translation>
 <translation id="8364627913115013041">सेट नहीं है.</translation>
+<translation id="8364664414979300296">अपनी खोज को और बेहतर बनाने के लिए टैब, फ़ोटो वगैरह जोड़ें</translation>
 <translation id="836616551641291797">आपका ब्राउज़र कैसे मैनेज किया जाता है, इस बारे में ज़्यादा जानें</translation>
 <translation id="8367705492654390392">किसी भी विषय के बारे में पूछें</translation>
 <translation id="8368001212524806591">कीमत ट्रैक करें</translation>

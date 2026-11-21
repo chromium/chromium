@@ -10,6 +10,7 @@
 <translation id="1097658378307015415">Sebelum masuk, masuklah sebagai Tamu untuk mengaktifkan jaringan <ph name="NETWORK_ID" /></translation>
 <translation id="1111932478203988717">Anak Anda dapat menggunakan PIN ini untuk login ke perangkatnya</translation>
 <translation id="1122587596907914265">Tentukan gaya wallpaper yang unik</translation>
+<translation id="1122913801042512795">Detail login akun Anda sudah tidak berlaku. Harap logout lalu login lagi.</translation>
 <translation id="1131201598497838573">PIN anak Anda telah diperbarui</translation>
 <translation id="1147322039136785890">Sekarang saatnya <ph name="SUPERVISED_USER_NAME" /> yang menggunakan perangkat</translation>
 <translation id="1148669835763563782">Anda mendapatkan update software terbaru untuk keamanan yang ditingkatkan dan fitur Chromebook terbaru. Update ini mencakup pengalaman penyiapan yang ditingkatkan untuk membantu Anda memulai Chromebook dengan lancar.</translation>
@@ -26,6 +27,7 @@
 <translation id="1256588359404100567">Setelan disinkronkan dari perangkat Anda sebelumnya.</translation>
 <translation id="1272978324304772054">Akun pengguna ini tidak berada di domain tempat perangkat mendaftar.  Jika Anda ingin mendaftar ke domain lain, Anda perlu melakukan pemulihan perangkat terlebih dulu.</translation>
 <translation id="1293556467332435079">File</translation>
+<translation id="1302523850133262269">Harap tunggu selagi Chrome memasang pembaruan sistem terkini.</translation>
 <translation id="1307559529304613120">Ups! Sistem gagal menyimpan token akses API jangka panjang untuk perangkat ini.</translation>
 <translation id="1335929031622236846">Daftarkan perangkat Anda</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Fitur Proses Debug<ph name="END_H3" />
@@ -49,6 +51,7 @@
 <translation id="1347625331607114917">Verifikasi kode di ponsel Android</translation>
 <translation id="1347975661240122359">Update akan dimulai jika baterai mencapai <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">Untuk menggunakan kontrol orang tua seperti persetujuan aplikasi dan batas waktu pemakaian perangkat, anak harus memiliki Akun Google yang dikelola oleh orang tua. Akun sekolah dapat ditambahkan nanti untuk alat seperti Google Classroom.</translation>
+<translation id="1363996462118479832">ChromeOS tidak dapat menyinkronkan data Anda karena terjadi error saat login.</translation>
 <translation id="1375557162880614858">Ingin mengaktifkan ChromeVox, pembaca layar bawaan untuk ChromeOS Flex?</translation>
 <translation id="1377600615067678409">Lewati untuk saat ini</translation>
 <translation id="1399261165075500043">Tidak dapat memuat Persyaratan Layanan Google Play</translation>
@@ -73,6 +76,7 @@
 <translation id="1642494467033190216">Anda perlu menghapus perlindungan rootfs dan memulai ulang perangkat sebelum mengaktifkan fitur debug lainnya.</translation>
 <translation id="1646045728251578877">Update software tersedia</translation>
 <translation id="1650801028905250434">File Anda di Drive Saya akan otomatis disinkronkan ke Chromebook sehingga Anda dapat mengaksesnya tanpa koneksi internet. Anda dapat mengubahnya kapan saja di Setelan &gt; File.</translation>
+<translation id="16620462294541761">Maaf, sandi Anda tidak dapat diverifikasi. Harap coba lagi.</translation>
 <translation id="1668435968811469751">Daftar secara manual</translation>
 <translation id="1678919064276516737">Email dan PIN yang Anda masukkan tidak cocok</translation>
 <translation id="1692115862433274081">Gunakan akun lain</translation>
@@ -94,6 +98,7 @@
 <translation id="1868617395637139709">Gunakan lokasi untuk aplikasi dan layanan Android.</translation>
 <translation id="1877377730633446520">Tindakan ini akan menggunakan sekitar <ph name="REQUIRED_SPACE" />. Saat ini Anda memiliki <ph name="FREE_SPACE" /> yang tersedia.</translation>
 <translation id="1878155070920054810">Sepertinya daya baterai Chromebook akan habis sebelum update selesai. Pastikan daya Chromebook diisi dengan benar untuk mencegah terhentinya proses.</translation>
+<translation id="1887442540531652736">Terjadi error saat login</translation>
 <translation id="189035593835762169">Persyaratan dan ketentuan</translation>
 <translation id="189358972401248634">Bahasa lain</translation>
 <translation id="1915734383465415025">Nomor Toko</translation>
@@ -122,6 +127,7 @@
 <translation id="2210462644007531147">Tidak dapat menyelesaikan penginstalan</translation>
 <translation id="221872881068107022">Scroll terbalik</translation>
 <translation id="2219081237089444028">Setel sandi <ph name="DEVICE_TYPE" /> untuk memudahkan proses login</translation>
+<translation id="2220529011494928058">Laporkan masalah</translation>
 <translation id="222115440608612541">Beralih tema saat matahari terbit dan terbenam</translation>
 <translation id="2229161054156947610">Lebih dari 1 jam lagi</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> Anda akan otomatis diupdate di latar belakang untuk memberi Anda fitur dan peningkatan keamanan terbaru. Anda dapat meninjau preferensi update di Setelan.</translation>
@@ -132,6 +138,7 @@
 <translation id="2328137272841210255">Reset PIN</translation>
 <translation id="2342180549977909852">Anak Anda dapat menggunakan nomor (PIN) sebagai ganti sandi untuk membuka kunci perangkat ini. Untuk menyetel PIN nanti, buka Setelan.</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
+<translation id="2384373936468275798">ChromiumOS tidak dapat menyinkronkan data karena detail login akun Anda belum diperbarui.</translation>
 <translation id="2387052489799050037">Ke Layar Utama</translation>
 <translation id="2395616325548404795"><ph name="DEVICE_TYPE" /> berhasil didaftarkan untuk pengelolaan perusahaan, namun gagal mengirimkan informasi lokasi dan asetnya. Masukkan informasi ini secara manual dari Konsol Admin untuk perangkat ini.</translation>
 <translation id="2408955596600435184">Masukkan PIN</translation>
@@ -158,6 +165,7 @@
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Layanan lokasi Google menggunakan sumber seperti Wi-Fi, jaringan seluler, dan sensor untuk membantu memperkirakan lokasi perangkat ini.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Anda dapat menonaktifkan lokasi Android di perangkat ini kapan saja dengan membuka Setelan &gt; Aplikasi &gt; Google Play Store &gt; Kelola preferensi Android &gt; Keamanan &amp; lokasi &gt; Lokasi. Anda juga dapat menonaktifkan penggunaan Wi-Fi, jaringan seluler, dan sensor untuk lokasi Android dengan menonaktifkan “Akurasi Lokasi Google” di menu yang sama.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2663302507110284145">Bahasa</translation>
+<translation id="2674238339205910678">ChromeOS Flex tidak dapat menyimpan data Chrome di Akun Google Anda karena detail login akun Anda sudah tidak berlaku</translation>
 <translation id="2687407218262674387">Persyaratan layanan Google</translation>
 <translation id="2688196195245426394">Terjadi error saat mendaftarkan perangkat dengan server: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Ini adalah perangkat yang dipaketkan dan tidak dapat didaftarkan dengan Signage &amp; Kiosk Upgrade.</translation>
@@ -252,6 +260,7 @@
 <translation id="3740945083753997630">Perkecil ukuran layar dan teks</translation>
 <translation id="376841534249795524">Apa tujuan Anda menggunakan <ph name="DEVICE_TYPE" />?</translation>
 <translation id="3772046291955677288">Saya telah membaca dan menyetujui <ph name="BEGIN_LINK1" />Persyaratan Layanan Google<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />Persyaratan Layanan Tambahan Chrome and ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="3785324443014631273">ChromeOS Flex tidak dapat menyinkronkan data Anda karena terjadi error saat login.</translation>
 <translation id="3789841737615482174">Instal</translation>
 <translation id="3800828618615365228">Persyaratan Tambahan Google Chrome dan ChromeOS</translation>
 <translation id="3828953470056652895">Saya telah membaca dan menyetujui <ph name="BEGIN_LINK1" />Persyaratan Layanan Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Persyaratan Layanan Tambahan Chrome dan ChromeOS<ph name="END_LINK2" />, dan <ph name="BEGIN_LINK3" />Persyaratan Layanan Play<ph name="END_LINK3" />.</translation>
@@ -332,6 +341,7 @@
         <ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Untuk mendapatkan bantuan lebih lanjut, buka: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Siapa yang ingin Anda tambahkan ke <ph name="DEVICE_TYPE" /> ini?</translation>
+<translation id="4543778593405494224">Pengelola sertifikat</translation>
 <translation id="4566170377336116390">Jika ingin beralih setelah pendaftaran, Anda perlu mereset perangkat (powerwash) ke setelan pabrik.</translation>
 <translation id="4567512141633030272">Opsi login salah?</translation>
 <translation id="4567533462991917415">Anda dapat menambahkan lebih banyak pengguna kapan saja setelah penyiapan selesai. Setiap pengguna dapat mempersonalisasi akunnya dan menjaga privasi datanya.</translation>
@@ -349,6 +359,7 @@
 <translation id="4814327014588285482">Lewati dan ingatkan saya nanti</translation>
 <translation id="4830502475412647084">Menginstal update OS</translation>
 <translation id="4837926214103741331">Anda tidak diizinkan untuk menggunakan perangkat ini. Untuk izin masuk, hubungi pemilik perangkat.</translation>
+<translation id="4842397268809523050">ChromeOS Flex tidak dapat menyinkronkan data Anda karena Sinkronisasi tidak tersedia untuk domain Anda.</translation>
 <translation id="4844333629810439236">Keyboard lain</translation>
 <translation id="484462545196658690">Otomatis</translation>
 <translation id="4864369630010738180">Login...</translation>
@@ -360,6 +371,7 @@
 <translation id="4944310289250773232">Layanan autentikasi ini dihosting oleh <ph name="SAML_DOMAIN" /></translation>
 <translation id="4955710816792587366">Pilih PIN Anda</translation>
 <translation id="4965808351167763748">Yakin ingin menyiapkan perangkat ini untuk menjalankan Hangouts Meet?</translation>
+<translation id="4969674060580488087">ChromeOS Flex tidak dapat menyinkronkan data Anda karena detail login akun Anda belum diperbarui.</translation>
 <translation id="4987944280765486504">Chromebook akan dimulai ulang setelah download selesai dan Anda dapat melanjutkan penyiapan.</translation>
 <translation id="5029287942302939687">Sandi Anda telah disetel</translation>
 <translation id="503155457707535043">Aplikasi sedang didownload</translation>
@@ -401,6 +413,8 @@
 <translation id="528208740344463258">Untuk mendownload dan menggunakan aplikasi Android, Anda harus menginstal update yang diperlukan terlebih dahulu. Saat <ph name="DEVICE_TYPE" /> sedang diupdate, Anda tidak dapat menggunakannya. Setelah penginstalan selesai, <ph name="DEVICE_TYPE" /> akan dimulai ulang.</translation>
 <translation id="5283677936944177147">Ups! Sistem gagal menentukan model perangkat atau nomor seri.</translation>
 <translation id="5333896723098573627">Untuk menghapus aplikasi, buka Setelan &gt; Aplikasi &gt; Google Play Store &gt; Kelola preferensi Android &gt; Aplikasi atau Pengelola aplikasi. Kemudian, ketuk aplikasi yang ingin di-uninstal (Anda mungkin perlu menggeser ke kanan atau ke kiri untuk menemukan aplikasi). Setelah itu, ketuk Uninstal atau Nonaktifkan.</translation>
+<translation id="5334309298019785904">ChromeOS tidak dapat menyinkronkan data Anda karena Sinkronisasi tidak tersedia untuk domain Anda.</translation>
+<translation id="535243042947607642">ChromiumOS tidak dapat menyimpan data Chromium di Akun Google Anda karena detail login akun Anda sudah tidak berlaku</translation>
 <translation id="5355501370336370394">Daftarkan perangkat perusahaan</translation>
 <translation id="5372529912055771682">Mode pendaftaran yang disediakan tidak didukung oleh versi sistem operasi ini.  Pastikan Anda menjalankan versi terbaru dan coba lagi.</translation>
 <translation id="5397378439569041789">Daftarkan perangkat kios atau reklame</translation>
@@ -412,6 +426,7 @@
 <translation id="5448293924669608770">Ups, ada yang tidak beres dengan proses masuk</translation>
 <translation id="5453829744223920473">Anak Anda dapat menggunakan semua aplikasi, bookmark, dan materi sekolahnya seperti halnya di kelas. Sekolah menetapkan aturan dasar.</translation>
 <translation id="5473099001878321374">Dengan melanjutkan, Anda setuju bahwa perangkat ini juga dapat otomatis mendownload serta menginstal update dan aplikasi dari Google, operator anak Anda, dan produsen perangkat ini, yang kemungkinan menggunakan data seluler. Beberapa aplikasi ini mungkin menawarkan pembelian dalam aplikasi.</translation>
+<translation id="549669000822060376">Harap tunggu selagi Chromium memasang pembaruan sistem terkini.</translation>
 <translation id="5502915260472117187">Anak</translation>
 <translation id="5511823366942919280">Yakin ingin menyiapkan perangkat ini sebagai "Shark"?</translation>
 <translation id="5513807280330619196">Kalkulator</translation>
@@ -515,6 +530,7 @@
 <translation id="6495266441917713704">Tidak dapat mentransfer Wi-Fi</translation>
 <translation id="6515620015470298987">Login gagal karena masalah pemeriksaan konfigurasi perangkat. Lakukan powerwash pada <ph name="DEVICE_TYPE" /> Anda dan coba lagi.</translation>
 <translation id="6519689855001245063">Memeriksa kelayakan</translation>
+<translation id="6520608191273161151">ChromeOS Flex tidak dapat menyimpan data Chrome di Akun Google Anda karena terjadi error saat login</translation>
 <translation id="6532527800157340614">Login gagal karena token akses Anda tidak dapat diambil. Periksa koneksi jaringan Anda dan coba lagi.</translation>
 <translation id="653920215766444089">Menelusuri perangkat penunjuk</translation>
 <translation id="65513682072153627">Anda akan melihat ikon Terkelola ini saat setelan atau fitur dikelola oleh administrator.</translation>
@@ -526,8 +542,10 @@
 <translation id="6675665718701918026">Perangkat penunjuk telah terhubung</translation>
 <translation id="667752334740867460">Menerima info Wi-Fi...</translation>
 <translation id="6680442031740878064">Tersedia: <ph name="AVAILABLE_SPACE" /></translation>
+<translation id="668175097507315160">ChromiumOS tidak dapat menyinkronkan data Anda karena terjadi error saat login.</translation>
 <translation id="6684827949542560880">Mendownload update terbaru</translation>
 <translation id="6722744767592605627">Anda dapat memulihkan <ph name="EMAIL" />, tetapi data lokal akan dihapus.</translation>
+<translation id="6735387454586646204">Sistem ChromeOS Flex</translation>
 <translation id="6748980958975836188">Saya telah membaca dan menyetujui <ph name="BEGIN_LINK1" />Persyaratan Layanan Google<ph name="END_LINK1" /> serta <ph name="BEGIN_LINK2" />Persyaratan Layanan Tambahan Chrome dan ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="6749473226660745022">Foto</translation>
 <translation id="6754918760968695779">Penyisipan Cepat</translation>
@@ -552,6 +570,7 @@
 <translation id="6918733588290914545">Penyiapan cepat dengan ponsel Android</translation>
 <translation id="6920473853105515518">Pastikan <ph name="DEVICE_TYPE" /> Anda terhubung ke internet dan coba lagi. Anda juga dapat membuka play.google/play-terms di perangkat lain.</translation>
 <translation id="6929126689972602640">Kontrol orang tua tidak didukung untuk akun sekolah. Untuk menambahkan akun sekolah guna mengakses Google Classroom dan situs lain untuk tugas sekolah di rumah, login dengan akun pribadi anak terlebih dahulu. Anda dapat menambahkan akun sekolah nanti di setelan.</translation>
+<translation id="6933858244219479645">Sistem ChromeOS</translation>
 <translation id="6935031746833428401">Pelajari lebih lanjut Pengelolaan Perangkat</translation>
 <translation id="6950351336108213154">Memperbarui periferal perangkat</translation>
 <translation id="6955698182324067397">Anda mengaktifkan fitur proses debug ChromeOS yang akan menyiapkan daemon sshd dan memungkinkan booting dari drive USB.</translation>
@@ -647,6 +666,7 @@
 <translation id="7870730066603611552">Tinjau opsi sinkronisasi setelah penyiapan</translation>
 <translation id="7883792253546618164">Anda dapat berhenti berlangganan kapan saja.</translation>
 <translation id="7887864092952184874">Mouse Bluetooth disandingkan</translation>
+<translation id="7905880575591690197">ChromeOS tidak dapat menyimpan data Chrome di Akun Google Anda karena terjadi error saat login</translation>
 <translation id="7906440585529721295">Data lokal akan dihapus</translation>
 <translation id="7910725946105920830">Gunakan Akun Google pribadi</translation>
 <translation id="7918257978052780342">Daftarkan</translation>
@@ -673,6 +693,7 @@
 <translation id="8098616321286360457">Perlu koneksi jaringan</translation>
 <translation id="8129265306888404830">Untuk menggunakan alamat email dari organisasi Anda (<ph name="EMAIL_DOMAIN" />), Anda perlu menggunakan pendaftaran perusahaan. Jika perangkat ini digunakan untuk keperluan pribadi Anda, login dengan Akun Google pribadi Anda.</translation>
 <translation id="8131740175452115882">Konfirmasi</translation>
+<translation id="8133124826068723441">ChromiumOS tidak dapat menyinkronkan data Anda karena Sinkronisasi tidak tersedia untuk domain Anda.</translation>
 <translation id="8146177459103116374">Jika Anda telah terdaftar di perangkat ini, Anda dapat <ph name="LINK2_START" />login sebagai pengguna yang ada<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Proses masuk gagal. Hubungi administrator Anda atau coba lagi.</translation>
 <translation id="8147346945017130012">Bantu tingkatkan fitur dan performa Chrome dan ChromeOS dengan mengirimkan laporan kerusakan serta diagnostik dan data penggunaan secara otomatis ke Google.</translation>
@@ -691,6 +712,7 @@
 <translation id="8271379370373330993">Bapak/Ibu, beberapa langkah selanjutnya adalah untuk Anda. Anda dapat menyerahkan <ph name="DEVICE_TYPE" /> kembali ke anak setelah penyiapan akun selesai.</translation>
 <translation id="8274924778568117936">Jangan menonaktifkan atau menutup <ph name="DEVICE_TYPE" /> Anda sampai proses update selesai. <ph name="DEVICE_TYPE" /> Anda akan dimulai ulang setelah proses instal selesai.</translation>
 <translation id="8281886186245836920">Lewati</translation>
+<translation id="8286036467436129157">Login</translation>
 <translation id="8289509909262565712">Selamat datang di <ph name="DEVICE_OS" /></translation>
 <translation id="8291942417224950075">Untuk penggunaan pribadi</translation>
 <translation id="8304383784961451596">Anda tidak diizinkan menggunakan perangkat ini. Hubungi administrator untuk mendapatkan izin login atau login dengan Akun Google yang diawasi oleh Family Link.</translation>
@@ -702,6 +724,7 @@
 <translation id="8401432541486058167">Masukkan PIN yang terkait dengan kartu smart Anda.</translation>
 <translation id="8408270600235826886">Anda dapat mengontrol jenis data yang dibagikan ke Google. Anda dapat mengubahnya kapan saja di Setelan. Data akan digunakan sesuai dengan <ph name="BEGIN_LINK" />Kebijakan Privasi<ph name="END_LINK" /> Google.</translation>
 <translation id="8413956290606243087">Ingin mengaktifkan ChromeVox, pembaca layar bawaan untuk ChromeOS?</translation>
+<translation id="8418845734693287262">ChromeOS tidak dapat menyinkronkan data Anda karena detail login akun Anda belum diperbarui.</translation>
 <translation id="8425768983279799676">Anda dapat menggunakan PIN untuk membuka kunci perangkat.</translation>
 <translation id="8428213095426709021">Setelan</translation>
 <translation id="843173223122814223">Buat latar belakang dengan AI</translation>
@@ -741,10 +764,12 @@
 <translation id="8794548468611058947">Anda dapat membuat PIN untuk <ph name="DEVICE_TYPE" /> ini, bukan memasukkan sandi Akun Google Anda untuk login</translation>
 <translation id="8830779999439981481">Memulai ulang untuk menerapkan update</translation>
 <translation id="8830796635868321089">Gagal melakukan pemeriksaan pembaruan menggunakan setelan proxy. Sesuaikan <ph name="PROXY_SETTINGS_LINK_START" />setelan proxy<ph name="PROXY_SETTINGS_LINK_END" /> Anda.</translation>
+<translation id="8833697763442816810">Sistem ChromiumOS</translation>
 <translation id="8855977033756560989">Perangkat Chromebook Enterprise ini dilengkapi dengan Chrome Enterprise Upgrade. Untuk memanfaatkan kemampuan perusahaan, daftarkan perangkat ini dengan akun Google Admin.</translation>
 <translation id="885746075120788020">Preferensi dan aktivitas yang Anda simpan akan siap di perangkat ChromeOS mana pun saat login dengan Akun Google Anda. Anda dapat memilih konten apa yang akan disinkronkan di Setelan.</translation>
 <translation id="8868333925931032127">Memulai Mode Demo</translation>
 <translation id="8875221558267407626">Meringkas konten, menyederhanakan bahasa yang kompleks, atau mengajukan pertanyaan</translation>
+<translation id="8890569919834781711">ChromiumOS tidak dapat menyimpan data Chromium di Akun Google Anda karena terjadi error saat login</translation>
 <translation id="8907701755790961703">Pilih negara</translation>
 <translation id="8913163265790894442">Siapkan <ph name="DEVICE_TYPE" /> dengan mudah menggunakan ponsel Anda. Anda dapat menambahkan Wi-Fi dan Akun Google tanpa memasukkan sandi secara manual.
         <ph name="BR" />
@@ -780,5 +805,6 @@
 <translation id="951991426597076286">Tolak</translation>
 <translation id="954749761428814584">Bahasa dan metode input</translation>
 <translation id="960987915827980018">Sekitar 1 jam lagi</translation>
+<translation id="973195869036269770">ChromeOS tidak dapat menyimpan data Chrome di Akun Google Anda karena detail login akun Anda sudah tidak berlaku</translation>
 <translation id="995420352808264005">Pilih jenis pendaftaran perangkat</translation>
 </translationbundle>

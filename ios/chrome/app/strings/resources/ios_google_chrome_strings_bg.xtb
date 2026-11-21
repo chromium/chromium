@@ -83,6 +83,8 @@
 <translation id="2574249610672786438">Влезте в профила си на всичките си устройства, за да виждате разделите си навсякъде, където използвате Chrome</translation>
 <translation id="2576431527583832481">Chrome току-що се подобри! Налице е нова версия.</translation>
 <translation id="257708665678654955">Искате ли следващия път Google Chrome да предложи да преведе от <ph name="LANGUAGE_NAME" /> страниците от този сайт?</translation>
+<translation id="2599258827968143948">Любимите ви услуги на Google са по-добри с Chrome</translation>
+<translation id="260980777626165320">Отваряйте външните връзки в Chrome по подразбиране.</translation>
 <translation id="2668242166988961773">Търсене с глас в Chrome.</translation>
 <translation id="2703746758996815929">За да получавате полезни съвети за Chrome, включете известията от настройките на iOS.</translation>
 <translation id="2728851697704606655">Превод посредством Google Обектив</translation>
@@ -111,6 +113,7 @@
 <translation id="314782365035065913">Осъществявайте по-бърз достъп до Chrome от лентата Dock на началния екран</translation>
 <translation id="3167189358072330585">Профилът ви не е съвместим с Google Chrome. Моля, свържете се с администратора на домейна си или влезте с обикновен профил в Google.</translation>
 <translation id="322254490661677575">Въведете пропуска си, за да използвате и запазвате данните от Chrome в профила си в Google.</translation>
+<translation id="3253082773078342494">Отваряйте връзките директно в Chrome.</translation>
 <translation id="3303503998967553377">Използване на „Действия от Chrome“ под iOS</translation>
 <translation id="3348862487678490430">Добавяне на елемент към списъка за четене в Chrome</translation>
 <translation id="3350281376951945723">Отваряйте връзките по-бързо, като зададете Chrome като браузър по подразбиране</translation>
@@ -160,6 +163,7 @@
 <translation id="4693084815234024320">Вие сте в режим „инкогнито“ в Chrome</translation>
 <translation id="4713740144985377441">Върнете се в Chrome, за да качите файла си</translation>
 <translation id="4724297637870447613">Използвайте Chrome навсякъде</translation>
+<translation id="4733290155432110050">Преминаване директно към Chrome</translation>
 <translation id="4738647308035481133">Страница на Google Chrome</translation>
 <translation id="4742795653798179840">Данните в Chrome бяха изтрити</translation>
 <translation id="4761869838909035636">Стартиране на проверка на безопасността в Chrome</translation>
@@ -267,6 +271,7 @@
 <translation id="7038674195294813388">На устройство с iOS отворете настройката Default Apps, след което докоснете Browser App и изберете Chrome.</translation>
 <translation id="7056826488869329999">Отваря и стартира проверка на безопасността в Chrome.</translation>
 <translation id="7061455974939528301">Натиснете и задръжте иконата на Chrome и кликнете върху „Редактиране на началния екран“</translation>
+<translation id="7067302528015227615">Задайте Chrome като браузър по подразбиране, за да преминавате между приложенията по-бързо и лесно.</translation>
 <translation id="7095110968493193530">Към Google Мениджър на пароли за <ph name="EMAIL" /></translation>
 <translation id="7124339256045485976">Поддържане на браузъра Chrome актуален</translation>
 <translation id="7135936755418321901">За да споделяте местоположението си с уебсайтовете, докоснете „Настройки“ и разрешете на Chrome да го използва.</translation>
@@ -278,6 +283,7 @@
 <translation id="7200524487407690471">Chrome автоматично изпълнява проверка на безопасността всеки ден, за да ви защитава от нарушения на сигурността на данните, опасни уебсайтове и др. Можете да намерите повече информация за това в настройките.</translation>
 <translation id="7214019116829172458">Отваряне на раздел в режим „инкогнито“ в Chrome</translation>
 <translation id="722167379782941918">Chrome препоръчва подобрената защита</translation>
+<translation id="722921700949937243">Задайте всички връзки да се отварят в Chrome.</translation>
 <translation id="723787869754590019">Използване на Chrome за автоматично попълване</translation>
 <translation id="7261678641327190792">Chrome не може да провери паролите ви</translation>
 <translation id="7272091023280308138">Следващия път отваряйте връзките директно в Chrome, без първо да копирате URL адресите.</translation>

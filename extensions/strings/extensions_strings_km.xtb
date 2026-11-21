@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">បើក​រចនាប័ទ្ម</translation>
+<translation id="1085064499066015002">នៅលើគេហទំព័រទាំងអស់ជានិច្ច</translation>
 <translation id="1135328998467923690">កញ្ចប់គ្មានសុពលភាព៖ '<ph name="ERROR_CODE" />'។</translation>
 <translation id="1140871961407805696">បែរទៅបរិស្ថាន</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> បាន​បញ្ចូល​កម្មវិធីបន្ថែម​ដែលអាច​ប្ដូររបៀប​ដែល Chromium ដំណើរការ។
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">កំណែ​ដែល​បានរំពឹង​ទុកគឺ "<ph name="EXPECTED_VERSION" />" ប៉ុន្តែ​​កំណែជាក់ស្ដែង "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">បានបរាជ័យក្នុងការបង្កើតសោឯកជន។</translation>
 <translation id="4811956658694082538">មិនអាចតំឡើងកញ្ចប់ទេ ពីព្រោះដំណើរការឧបករណ៍ប្រើប្រាស់បានគាំង។ សាកល្បងចាប់ផ្តើមដំណើរការ Chrome ឡើងវិញ ហើយព្យាយាមម្តងទៀត។</translation>
+<translation id="4883436287898674711">គេហទំព័រ <ph name="WEBSITE_1" /> ទាំងអស់</translation>
 <translation id="4988792151665380515">បានបរាជ័យក្នុងការនាំចេញសោសាធារណៈ។</translation>
 <translation id="501057610015570208">កម្មវិធី​ដែល​មាន​លក្ខណៈ​មេនីហ្វេសថ៍ 'kiosk_only' ត្រូវតែ​ដំឡើង​នៅក្នុង​មុខងារបញ្ជរ ChromeOS Flex</translation>
 <translation id="5026754133087629784">មើលគេហទំព័រ៖ <ph name="WEBVIEW_TAG_NAME" /></translation>

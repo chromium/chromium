@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Thema aanzetten</translation>
+<translation id="1085064499066015002">Altijd op alle sites</translation>
 <translation id="1135328998467923690">Pakket is ongeldig: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">Camera aan achterzijde</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> heeft een extensie toegevoegd die de manier kan wijzigen waarop Chromium werkt.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">Verwachte versie '<ph name="EXPECTED_VERSION" />', maar versie is '<ph name="NEW_ID" />'</translation>
 <translation id="471800408830181311">Uitvoer van persoonlijke sleutel is mislukt.</translation>
 <translation id="4811956658694082538">Kan pakket niet installeren, omdat het proces van een hulpprogramma is gecrasht. Start Chrome opnieuw en probeer het nogmaals.</translation>
+<translation id="4883436287898674711">Alle sites op <ph name="WEBSITE_1" /></translation>
 <translation id="4988792151665380515">Exporteren van openbare sleutel is mislukt.</translation>
 <translation id="501057610015570208">Een app met het manifestkenmerk 'kiosk_only' moet worden geïnstalleerd in de Chrome OS Flex-kioskmodus.</translation>
 <translation id="5026754133087629784">Webweergave: <ph name="WEBVIEW_TAG_NAME" /></translation>

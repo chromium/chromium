@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Омогући тему</translation>
+<translation id="1085064499066015002">Увек на свим сајтовима</translation>
 <translation id="1135328998467923690">Пакет је неважећи: „<ph name="ERROR_CODE" />“.</translation>
 <translation id="1140871961407805696">Задња</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> је додао додатак који може да промени начин на који Chromium функционише.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">Очекивала се верзија „<ph name="EXPECTED_VERSION" />“, али је верзија била „<ph name="NEW_ID" />“</translation>
 <translation id="471800408830181311">Формирање излазних резултата приватног кључа није успело.</translation>
 <translation id="4811956658694082538">Инсталирање пакета није успело зато што је услужни процес отказао. Пробајте да поново покренете Chrome и покушајте поново.</translation>
+<translation id="4883436287898674711">Сви <ph name="WEBSITE_1" /> сајтови</translation>
 <translation id="4988792151665380515">Извоз јавног кључа није успео.</translation>
 <translation id="501057610015570208">Апликација са атрибутом манифеста „kiosk_only“ мора да се инсталира у режиму киоска у Chrome OS Flex-у</translation>
 <translation id="5026754133087629784">Веб-приказ: <ph name="WEBVIEW_TAG_NAME" /></translation>

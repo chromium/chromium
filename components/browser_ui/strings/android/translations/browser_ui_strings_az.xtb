@@ -62,7 +62,6 @@
 <translation id="1615755956145364867">Saytlar qorunan məzmunu göstərmək üçün icazə istəyə bilər</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1621729191093924223">Mikrofon tələb edən xüsusiyyətlər işləməyəcək</translation>
-<translation id="1633720957382884102">Əlaqəli saytlar</translation>
 <translation id="1644574205037202324">Tarixçə</translation>
 <translation id="1652197001188145583">Aktiv ediləndə saytlar NFC cihazlarından istifadə etmək üçün icazə istəyə bilər. Deaktiv ediləndə saytlar NFC cihazlarından istifadə edə bilməz.</translation>
 <translation id="1660204651932907780">Saytlara səs oxutmaq icazəsi verin (məsləhətli)</translation>
@@ -76,6 +75,7 @@
 <translation id="1717996979683942279">Bu funksiya aktiv olduqda saytlar bütün displeylərdəki pəncərələri idarə etməyə icazə istəyə bilər. Bu funksiya deaktiv edildikdə saytlar bütün displeylərdəki pəncərələri idarə edə bilməz.</translation>
 <translation id="1738912554587725807">Yeni tab səhifəsinin görünüş teması kolleksiyalarına aid aşağıdakı vərəq</translation>
 <translation id="1743802530341753419">Saytlar cihaza qoşulmadan öncə icazə tələb edilsin (məsləhətlidir)</translation>
+<translation id="1766455884659449403">Chrome ipucuları üzrə bildiriş əldə edin</translation>
 <translation id="1777815584158991902">Lentin aşağıdakı vərəqini kəşf edin</translation>
 <translation id="1779089405699405702">Təsvir dekodlaşdırıcısı</translation>
 <translation id="1781533683087883868">Oxu rejimi keçidlərini deaktiv edin</translation>
@@ -184,6 +184,7 @@
 <translation id="2750481671343847896">Saytlar kimlik xidmətlərindən daxil olma sorğularını göstərə bilər.</translation>
 <translation id="2789132527330338807">Saytlar ətrafın 3D xəritəsini yaratmaq və ya kameranın mövqeyini izləmək istəyə bilər</translation>
 <translation id="2790501146643349491">Aktiv ediləndə son qapadılan saytlar data göndərilməsi və qəbulunu tamamlaya bilər. Deaktiv ediləndə son qapadılan saytlar data göndərilməsi və ya qəbulunu tamamlaya bilməz.</translation>
+<translation id="2794551654724114396">Chrome-dan maksimum yararlanmağınıza kömək edəcək faydalı ipucular üçün bildirişləri aktiv edin</translation>
 <translation id="2795716239552913152">Saytlar adətən yerli xəbərlər və ya yaxınlıqdakı mağazalar kimi müvafiq xüsusiyyətlər və məlumatlar üçün məkanınızdan istifadə edir</translation>
 <translation id="2800760947029405028">Təsvir yükləyin</translation>
 <translation id="2802908157808345702">Saytlara popap bildirişlər göndərmək və yönləndirmələrdən istifadə etmək icazəsi verməyin</translation>
@@ -231,7 +232,6 @@
 <translation id="3232293466644486101">Baxış datasını silin…</translation>
 <translation id="3242646949159196181">Aktiv ediləndə saytlar səs oxuda bilər. Aktiv ediləndə saytlar səs oxuda bilməz.</translation>
 <translation id="3273479183583863618">Tablarda qiymətin enməsi</translation>
-<translation id="3285500645985761267">Əlaqədar saytlara qrupdakı fəaliyyətinizi görməyə icazə verin</translation>
 <translation id="3295019059349372795">Fəsil 11: Məftunedici Zümrüd Şəhəri Oz</translation>
 <translation id="3295602654194328831">Məlumatı gizlədin</translation>
 <translation id="3333961966071413176">Bütün kontaktar</translation>
@@ -249,7 +249,6 @@
 <translation id="3523447078673133727">Saytlara əllərinizi izləmək icazəsi verməyin</translation>
 <translation id="3536227077203206203">Bu dəfə üçün icazə verilib</translation>
 <translation id="3538390592868664640">Saytların ətrafınızdakı sahələrin 3D xəritəsini yaratmasına və ya kamera mövqeyini izləməsinə qarşı blok qoyun</translation>
-<translation id="3544058026430919413">Şirkət qrupda fəaliyyətinizi paylaşmaq üçün kukilərdən istifadə edə biləcək saytlar qrupu təyin edə bilər. Bu, Anonim rejimdə deaktivdir.</translation>
 <translation id="3551268116566418498">Anonim rejimdən çıxılsın?</translation>
 <translation id="3586500876634962664">Kamera və mikrofondan istifadə</translation>
 <translation id="358794129225322306">Sayta çoxsaylı faylları avtomatik endirmək icazəsi verin.</translation>
@@ -262,7 +261,6 @@
 <translation id="363748948745453283">Təxmini məkandan istifadə edilir</translation>
 <translation id="3641456520301071208">Saytlar məkanınızı tələb edə bilər</translation>
 <translation id="3658847490588580244">Defolt brauzerin aşağıdakı vərəqi</translation>
-<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sayt qrupdakı fəaliyyətinizi görə bilən <ph name="RWS_OWNER" /> adlı şəxsin saytlar qrupundadır}other{<ph name="RWS_MEMBERS_COUNT" /> sayt qrupdakı fəaliyyətinizi görə bilən <ph name="RWS_OWNER" /> adlı şəxsin saytlar qrupundadır}}</translation>
 <translation id="3676777756440746804">Saytların haqqınızda yadda saxlanılan məlumatdan istifadə üçün icazə istəməsi bloklanıb</translation>
 <translation id="3677897809642449131">Saytlar hərəkət sensorlarından istifadə etmək istəyə bilər</translation>
 <translation id="3678318839615834650">Yeni tab səhifəsi kartları üzrə aşağıdakı vərəq tam hündürlükdə açıldı</translation>
@@ -538,16 +536,15 @@
 <translation id="656065428026159829">Daha çoxuna baxın</translation>
 <translation id="6561560012278703671">Səssiz mesajlaşmadan istifadə edin (bildirişlər sizi narahat etməyəcək)</translation>
 <translation id="6593061639179217415">Masaüstü saytı</translation>
-<translation id="659938948789980540">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> saytı üçün kukilərə icazə verilir}other{<ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> saytı üçün kukilərə icazə verilir}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Qorunan kontent</translation>
 <translation id="6619015782482868078">Dəniz mavisi tema</translation>
 <translation id="662080504995468778">Qalın</translation>
 <translation id="6630443592285535486">Hex kodunu bura daxil edin</translation>
 <translation id="6635327442719709864">Aktiv olduqda saytlar silsilə portlardan istifadə etmək istəyə bilər. Deaktiv olduqda saytlar silsilə portlardan istifadə edə bilməz.</translation>
+<translation id="6669390930482049506">Mənə bildirin</translation>
 <translation id="6678072580827808850">Təhlükəsizlik yoxlanışını nəzərdən keçirin</translation>
 <translation id="6682057173375416470">Yeni Tab səhifəsində təklif olunan məqalələri əldə edin</translation>
-<translation id="6683865262523156564">Bu sayt fəaliyyətinizi görə bilən qrupdadır. Qrup <ph name="RWS_OWNER" /> tərəfindən təyin edilib</translation>
 <translation id="6689172468748959065">Profil fotoları</translation>
 <translation id="6697925417670533197">Aktiv endirmələr</translation>
 <translation id="6709432001666529933">Saytlara əllərinizi izləməyə icazə verməzdən əvvəl soruşulsun (tövsiyə olunur)</translation>

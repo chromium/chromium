@@ -82,7 +82,6 @@
 <translation id="188102464690227119">工具栏上的“在侧边栏中搜索”按钮有了新图标。点击此图标，即可在浏览时通过“在侧边栏中搜索”提问。</translation>
 <translation id="1896836275755235458">Chromium 会通过限制后台活动和视觉效果（例如流畅滚动和视频帧速率）来节省电池电量。<ph name="BEGIN_LINK" />详细了解节能模式<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium 更新程序服务</translation>
-<translation id="1911763535808217981">关闭此功能后，您无需登录 Chromium 即可登录 Gmail 等 Google 网站</translation>
 <translation id="1929939181775079593">Chromium 未响应。要立即重新启动吗？</translation>
 <translation id="1933341829955786215">您的组织 (<ph name="MANAGER" />) 要求您登录 Chromium</translation>
 <translation id="193439633299369377">需要重新启动 Chromium 操作系统以应用更新。</translation>
@@ -129,7 +128,6 @@
 <translation id="2361918034042471035">扩展程序“<ph name="EXTENSION_NAME" />”需要您登录 Chromium</translation>
 <translation id="236943522426971115">为应用停用 Chromium 后台运行功能</translation>
 <translation id="2374216753258219393">如要以 <ph name="USER_EMAIL_ADDRESS" /> 的身份使用此扩展程序，请登录 Chromium。</translation>
-<translation id="2384373936468275798">由于您的账号登录详细信息已过期，Chromium 操作系统无法同步您的数据。</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{一个或多个 Chromium 扩展程序访问过 1 部 HID 设备}=1{一个或多个 Chromium 扩展程序正在访问 1 部 HID 设备}other{一个或多个 Chromium 扩展程序正在访问 # 部 HID 设备}}</translation>
 <translation id="2401032172288869980">Chromium 需要为此网站授予摄像头权限和麦克风权限</translation>
 <translation id="2403703063067034158">启动错误：另一个设置实例目前正在运行，请稍后重试。</translation>
@@ -171,7 +169,6 @@
 <translation id="2819844767470613567">警告：Chromium 无法阻止扩展程序记录您的浏览记录。若要在隔离模式下停用该扩展程序，请取消选择此选项。</translation>
 <translation id="2841525013647267359">源语言</translation>
 <translation id="2846251086934905009">安装时出错：安装程序进程未完成。已中止安装。</translation>
-<translation id="2847479871509788944">从Chromium中移除…</translation>
 <translation id="2850691299438350830">保护您在 Chromium 中免受安全威胁，登录状态下还可让您更安全地使用其他 Google 应用</translation>
 <translation id="2885378588091291677">任务管理器</translation>
 <translation id="2898830646167954300">切换回非受管的 Gemini 助理</translation>
@@ -383,7 +380,6 @@
 <translation id="5346389065299425353">添加多个标签页、文件和工具，让搜索更深入、更精准</translation>
 <translation id="5352264705793813212">Chromium 找到了一些供您审查的安全建议</translation>
 <translation id="5352361688875342522">其他 Chromium 个人资料</translation>
-<translation id="535243042947607642">由于您的账号登录详细信息已过期，ChromiumOS 无法将 Chromium 数据保存到您的 Google 账号</translation>
 <translation id="5368118228313795342">额外代码：<ph name="EXTRA_CODE" />。</translation>
 <translation id="5377622451696208284">若要获得个性化体验，请在“网络与应用活动记录”中包含 Chromium</translation>
 <translation id="5382964351116519680">使用 Chromium 打开搜索功能</translation>
@@ -398,7 +394,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium 建议您暂停导致浏览器运行缓慢的标签页}other{Chromium 建议您暂停导致浏览器运行缓慢的标签页}}</translation>
 <translation id="5473971139929175403">Chromium 可能无法正常运行，因为它不再支持此 Linux 发行版</translation>
 <translation id="5475924890392386523">Chromium 阻止了此项下载操作，因为该文件可能会危害您的个人和社交网络账号</translation>
-<translation id="549669000822060376">Chromium正在安装最新的系统更新，请稍候。</translation>
 <translation id="5496810170689441661">Chromium 正在尝试修改密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="5524890928877629608">搜索区域的左上角：左侧 <ph name="LEFT" />%，顶部 <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">在 Chromium 中打开 PDF 文件</translation>
@@ -493,7 +488,6 @@
 <translation id="6390800440335263989">如需继续操作，请以 <ph name="EMAIL" /> 的身份登录 Chromium。这样可以确保应用所属组织的政策。</translation>
 <translation id="6400112897226594999">计算机屏幕中的 Chromium 徽标。</translation>
 <translation id="6403826409255603130">Chromium 是一款可高速运行网页和应用的网络浏览器。它快捷、稳定且易于使用。Chromium 内置的防护恶意软件和网上诱骗的功能可让您更安全地浏览网页。</translation>
-<translation id="6414624068245092115">为了确保您可以一直通过 Google 账号使用和保存 Chromium 数据，请验证是您本人在操作</translation>
 <translation id="642132557830635295">Chromium 的运行速度会更快，并且使用 JavaScript 的功能应该能按预期运行</translation>
 <translation id="6434631832954028336">重新打开“搜索”面板</translation>
 <translation id="6436260184216827876">图片搜索功能不可用，请稍后再试。</translation>
@@ -524,7 +518,6 @@
 <translation id="665732753414869868">Chromium 需要获得摄像头权限才能为您的周边环境创建 3D 地图</translation>
 <translation id="6669284030132180248">如果您还将书签保存在 Google 账号中，则可在 Chromium 中跟踪商品价格，并在降价时收到通知</translation>
 <translation id="6676384891291319759">访问互联网</translation>
-<translation id="668175097507315160">由于登录时发生错误，Chromium 操作系统无法同步您的数据。</translation>
 <translation id="6691132793308828750">从 Chromium 中移除此应用的数据</translation>
 <translation id="6709350901466051922">Chromium 需要为此网站授予麦克风权限</translation>
 <translation id="6712881677154121168">下载时出错：<ph name="DOWNLOAD_ERROR" />。</translation>
@@ -682,7 +675,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8107060931443639922">下次在 <ph name="DEVICE_TYPE" /> 上打开 Chromium 时，系统会提示您启用价格跟踪提醒。</translation>
 <translation id="8118331347066725040">发送有关智能镜头搜索的反馈</translation>
 <translation id="8130609355518033382">打造您的专属 Chromium</translation>
-<translation id="8133124826068723441">由于您的网域不支持同步，Chromium 操作系统无法同步您的数据。</translation>
 <translation id="813913629614996137">正在初始化…</translation>
 <translation id="8158143604667288086">您可以固定“在 Chrome 中搜索”，以便在浏览时随时提问</translation>
 <translation id="8161503455832158203">使用键盘快捷键打开 Chromium 中的 Gemini。</translation>
@@ -749,11 +741,9 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8816416449795340678">与 Chromium 中的 Gemini 分享此文档，快速了解概要并追问相关问题</translation>
 <translation id="8818550178040858407">登录 Chromium？</translation>
 <translation id="8826492472752484139">点击“密码管理工具”</translation>
-<translation id="8833697763442816810">Chromium 操作系统</translation>
 <translation id="8852026904190808918">使用此语言显示 Chromium 中的菜单、设置、提醒和其他文字</translation>
 <translation id="8862326446509486874">您的权限不足，无法进行系统级安装。请尝试以管理员身份再次运行安装程序。</translation>
 <translation id="8876044221123442390">添加 Chromium 个人资料</translation>
-<translation id="8890569919834781711">由于登录时发生错误，ChromiumOS 无法将 Chromium 数据保存到您的 Google 账号</translation>
 <translation id="8891709362986793894">您的组织要求您登录 Chromium</translation>
 <translation id="8906384069222226849">Chromium 仅支持 Windows 10 版本 1809 或更高版本的操作系统。</translation>
 <translation id="8907580949721785412">Chromium正在尝试显示密码，请输入您的Windows密码以允许此操作。</translation>

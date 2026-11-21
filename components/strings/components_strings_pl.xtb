@@ -107,7 +107,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1177863135347784049">Niestandardowe</translation>
 <translation id="1178581264944972037">Wstrzymaj</translation>
 <translation id="1178821169867863726">12 x 16 cali</translation>
-<translation id="1181037720776840403">Usuń</translation>
+<translation id="1181037720776840403">Cofnij</translation>
 <translation id="1185331130467528132"><ph name="URL" /> chce uzyskać dostęp do innych urządzeń w sieci lokalnej</translation>
 <translation id="1186201132766001848">Sprawdź hasła</translation>
 <translation id="1188817995162638216">Anulować zapisywanie pliku?</translation>
@@ -373,6 +373,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> usunął(-ęła) kartę</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623104350909869708">Zapobiegaj wyświetlaniu dodatkowych okien dialogowych na tej stronie</translation>
+<translation id="1624535934412288769">Kolumny</translation>
 <translation id="1629390138158333592">Szukaj w internecie</translation>
 <translation id="1633137413609266904">{0,plural, =1{Otwieranie tego pliku jest zablokowane przez zasady administratora}few{Otwieranie # plików jest zablokowane przez zasady administratora}many{Otwieranie # plików jest zablokowane przez zasady administratora}other{Otwieranie # pliku jest zablokowane przez zasady administratora}}</translation>
 <translation id="1634828734222219955">Suma</translation>
@@ -1082,6 +1083,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2803320044666896137">Ta wartość zasady jest ignorowana, ponieważ użytkownik nie jest powiązany.</translation>
 <translation id="2807052079800581569">Pozycja Y obrazu</translation>
 <translation id="2808278141522721006">Jeśli chcesz włączyć lub wyłączyć Windows Hello, otwórz <ph name="SETTINGS" /></translation>
+<translation id="2820159698793041599">Serwer proxy nie mógł nawiązać bezpiecznego połączenia.</translation>
 <translation id="2820957248982571256">Skanuję…</translation>
 <translation id="282457273878278063">Zarządzaj informacjami kontaktowymi</translation>
 <translation id="2824775600643448204">Pasek adresu i wyszukiwania</translation>
@@ -1263,6 +1265,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3120807611504813890">Koperta (lekka)</translation>
 <translation id="3121994479408824897">Wejdź na <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Etykiety (trwałe)</translation>
+<translation id="3128081114752791872">Certyfikat bezpieczeństwa serwera proxy jest nieprawidłowy.</translation>
 <translation id="3131746543143948171">Ta witryna wydaje się podobna do innych witryn powiązanych z wyłudzaniem informacji, złośliwym oprogramowaniem i oszustwami. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">Zapisz numer Redress</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> jest teraz Twoją domyślną wyszukiwarką</translation>
@@ -1681,7 +1684,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3800436529451849929">Ze strony <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Często odwiedzasz</translation>
 <translation id="380329542618494757">Imię i nazwisko</translation>
-<translation id="3803481123869276674">Podczas zakupów w Chrome wyświetlaj e-portfel jako opcję</translation>
 <translation id="3803801106042434208">Te wyszukiwarki są popularne w Twoim regionie</translation>
 <translation id="3804112825000113857">Wyświetl ustawienia autouzupełniania</translation>
 <translation id="380666903981445943">Zapisz formę płatności na swoim koncie Google, aby automatycznie ją uzupełniać podczas zakupów w Chrome</translation>
@@ -2164,6 +2166,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4612631413844865947">Podczas przetwarzania Twojego zamówienia w usłudze <ph name="MERCHANT_ORIGIN" /> za pomocą <ph name="PAYMENT_APP_ORIGIN" /> wystąpił błąd.</translation>
 <translation id="4612904677925722054">Ta strona może zawierać treści dla dorosłych. Jeśli chcesz na nią wejść, musisz mieć zgodę rodzica lub opiekuna.</translation>
 <translation id="4613873770449493819">Adres URL musi wskazywać domenę <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
+<translation id="4615154194248230658">Wygląda na to, że ten wzorzec nie pasuje do prawidłowej domeny adresu e-mail. Użytkownicy mogą nie być w stanie się zalogować, a istniejące profile mogą zostać usunięte.</translation>
 <translation id="4619564267100705184">Potwierdź, że to Ty</translation>
 <translation id="4619669610757527494">Zapisz prawo jazdy w Portfelu Google</translation>
 <translation id="4622292761762557753">Przenieś mimo to</translation>
@@ -2682,7 +2685,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5447235695608032700">Zezwól witrynie <ph name="SITE" /> na korzystanie z zapisanych informacji o Tobie</translation>
 <translation id="5447973833955560753">Hasło zapasowe</translation>
 <translation id="5452270690849572955">Nie można znaleźć tej strony na <ph name="HOST_NAME" /></translation>
-<translation id="5452923259299906094">Płać przez e-portfel i Pix</translation>
 <translation id="5455374756549232013">Nieprawidłowy czas zasady</translation>
 <translation id="5456428544444655325">Nigdy nie pokazuj</translation>
 <translation id="5457082343331641453">Dodaj do wyszukiwania</translation>
@@ -3333,6 +3335,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> dołączył(a) do grupy kart „<ph name="GROUP_NAME" />”</translation>
 <translation id="6521745193039995384">Nieaktywna</translation>
 <translation id="6524830701589638230">Przycisk Zarządzaj ustawieniami ułatwień dostępu; aktywuj, aby spersonalizować narzędzia ułatwień dostępu w ustawieniach Chrome</translation>
+<translation id="652643331002043144">Ta witryna wydaje się podobna do innych witryn powiązanych z wyłudzaniem informacji, złośliwym oprogramowaniem i oszustwami.</translation>
 <translation id="6529173248185917884">Rolka 7</translation>
 <translation id="6529602333819889595">&amp;Ponów usunięcie</translation>
 <translation id="6532101170117367231">Zapisz na Dysku Google</translation>
@@ -3898,7 +3901,6 @@ Dodatkowe informacje:
 <translation id="7489919936111034362">Brak wolnego miejsca na Dysku Google</translation>
 <translation id="7490622939531327327">Inteligentniejsze rozpoznawanie formularzy</translation>
 <translation id="7495528107193238112">Ta zawartość jest zablokowana. Aby rozwiązać problem, skontaktuj się z właścicielem witryny.</translation>
-<translation id="7499188644237027195">Podczas zakupów w Chrome wyświetlaj eWallet i Pix jako opcje</translation>
 <translation id="7499684925421947861">Zezwolić <ph name="ACTOR_NAME" /> na logowanie Cię na stronie <ph name="DOMAIN" />?</translation>
 <translation id="7501663406926337752">Strona, którą chcesz otworzyć, została oznaczona przez Twoją organizację</translation>
 <translation id="7502044688973049724">zarządzać swoimi informacjami</translation>
@@ -4023,7 +4025,6 @@ Dodatkowe informacje:
 <translation id="7676840398262504532">Twoja organizacja monitoruje kopiowanie treści</translation>
 <translation id="767806704757698045">Działa tylko w obsługiwanych witrynach</translation>
 <translation id="7678730592635586336">Nagraj film jeszcze raz</translation>
-<translation id="7679287273775285018">Zapłać przez e-portfel</translation>
 <translation id="7679367271685653708">Wyświetl historię przeglądania i zarządzaj nią w ustawieniach Chrome</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, wygasa <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Adres wysyłkowy</translation>
@@ -4098,7 +4099,6 @@ Dodatkowe informacje:
 <translation id="7791543448312431591">Dodaj</translation>
 <translation id="7798389633136518089">Zignorowano, ponieważ zasada nie została ustawiona przez źródło w chmurze.</translation>
 <translation id="7800304661137206267">Przesyłane dane są szyfrowane za pomocą algorytmu <ph name="CIPHER" />. Metoda uwierzytelniania komunikatów to <ph name="MAC" />, a mechanizm wymiany kluczy to <ph name="KX" />.</translation>
-<translation id="780228007282527248">Dodaj kartę lub obraz, aby ulepszyć wyszukiwanie</translation>
 <translation id="7802523362929240268">Strona spełnia wymagania prawne</translation>
 <translation id="7802989406998618639">Wpisz <ph name="NUMBER_OF_DIGITS" />-cyfrowy kod zabezpieczający, który znajduje się <ph name="SIDE_OF_CARD" />, aby Twój bank mógł się upewnić, że to Ty</translation>
 <translation id="780301667611848630">Nie, dziękuję</translation>
@@ -4164,6 +4164,7 @@ Dodatkowe informacje:
 <translation id="7916162853251942238">Podstawa fleksograficzna</translation>
 <translation id="7916802424606434188">Otwórz okno <ph name="WINDOW_INDEX" /> (liczba kart: <ph name="NUM_TABS" />) w nowym oknie</translation>
 <translation id="791698251820376781">Twoja organizacja nie zezwala na logowanie się</translation>
+<translation id="7918936720558783139">Zapisana oferta będzie dostępna w momencie płatności dzięki autouzupełnianiu. <ph name="BEGIN_LINK" />Zarządzaj ofertami<ph name="END_LINK" /></translation>
 <translation id="7927046851848613453">Zapisuj bilety, wydarzenia i inne informacje z wyświetlanych stron, a nie tylko z formularzy, które wypełniasz. Dzięki temu masz szybki dostęp do swoich dokumentów, takich jak bilety na wydarzenia i karty lojalnościowe. Z zapisanych informacji możesz korzystać na swoich urządzeniach i w usługach Google.</translation>
 <translation id="7930282586031445870">Ekran warunków korzystania z opcji „Kup teraz, zapłać później” został zamknięty.</translation>
 <translation id="7932035970207573919">Adres służbowy, <ph name="ADDRESS" /></translation>
@@ -4233,6 +4234,7 @@ Dodatkowe informacje:
 <translation id="8029829038322015001">Czerwony 1</translation>
 <translation id="8032546467100845887">Diapozytyw</translation>
 <translation id="8035152190676905274">Pióro</translation>
+<translation id="803703704549420287">Wyczyść filtry</translation>
 <translation id="8037117624646282037">Kto ostatnio używał urządzenia</translation>
 <translation id="803771048473350947">Plik</translation>
 <translation id="8038182528865038593">Czerwony 2</translation>
@@ -4421,6 +4423,7 @@ Dodatkowe informacje:
 <translation id="8363502534493474904">Wyłącz tryb samolotowy</translation>
 <translation id="8363929499301563123">Pliki cookie witryn (stan zalogowania na ostatnio odwiedzanych stronach zostanie zachowany)</translation>
 <translation id="8364627913115013041">Nie ustawiono.</translation>
+<translation id="8364664414979300296">Dodaj karty, zdjęcia i inne elementy, aby ulepszyć wyszukiwanie</translation>
 <translation id="836616551641291797">Dowiedz się więcej o sposobie zarządzania przeglądarką</translation>
 <translation id="8367705492654390392">Zapytaj, o co chcesz</translation>
 <translation id="8368001212524806591">Monitorowanie cen</translation>

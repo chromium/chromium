@@ -530,6 +530,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Lortu laguntza<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Prezioaren jarraipena egiten ari zara</translation>
 <translation id="3037517125981011456">Chrome-n saioa hasteko onarpen-mezuak erakusten ditu</translation>
+<translation id="3038505649933066250">Iragazi dataren arabera</translation>
 <translation id="3044436568790455247">"Aukeratu gailu bat" altuera osoan irekita dago.</translation>
 <translation id="3057938290530993634">Eduki sakatuta gehien bisitatzen dituzun webguneak ainguratzeko, hurrengoan erraz atzitu ahal izateko</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> laster-marka}other{<ph name="BOOKMARKS_COUNT_MANY" /> laster-marka}}</translation>
@@ -576,6 +577,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3243650379537999343">Atera</translation>
 <translation id="3244271242291266297">HH</translation>
 <translation id="3245429137663807393">Chrome-ren erabilera-txostenak ere partekatzen badituzu, bisitatzen dituzun URLak agertuko dira txosten horietan</translation>
+<translation id="3248185426436836442">Zain</translation>
 <translation id="3250563604907490871">Wifi-sarera konektatzen zarenean kargatuko dira berriz ere irudien azalpenak</translation>
 <translation id="3254409185687681395">Ezarri laster-marka orriari</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" /> domeinuko orri guztiak</translation>
@@ -1124,7 +1126,6 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="5370504953185181057"><ph name="TAB_TITLE" /> fitxa, ezkutuko modukoa, ainguratuta, partekatzen</translation>
 <translation id="5375374982898812658">Berehala galduko duzu "<ph name="GROUP_NAME" />" fitxa talderako sarbidea, eta zure gailu guztietatik ezabatuko da</translation>
 <translation id="537865165090710757">Gorde eta partekatu</translation>
-<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> webguneak diru-zorro digitaleko informazio pertsonala erabili nahi du. Jarraitu webguneaz fidatzen bazara bakarrik. Webgune arriskutsuek engainatu egin zaitzakete zure legezko izena edo NAN zenbakia ezagutaratu dezazun.</translation>
 <translation id="5395376160638294582">Izan beti Google-ko kontuko Chrome-ren datuak erabiltzeko aukera</translation>
 <translation id="5397794290049113714">Zu</translation>
 <translation id="539881862970320163">Pasahitz konplexu bat iradoki da. Teklatua ezkutatuta dago.</translation>
@@ -1136,6 +1137,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="5415871492522952905">Zure historia eta fitxak gailu guztietan edukiko dituzu, egiten ari zinenari berrekiteko</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) erabiltzaileak berehala galduko du "<ph name="GROUP_NAME" />" fitxa talderako sarbidea</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB daude erabilgarri</translation>
+<translation id="5430861625274552852">Egin orri baten edukiari buruzko galderak edo alderatu fitxak</translation>
 <translation id="543271133149552180"><ph name="TAB_TITLE" />, pantaila txiki gainjarrian dauden ezkutuko moduko fitxa bat baino gehiago hautatuta</translation>
 <translation id="5436928407363358055">Utzi zenuen tokitik erraz jarraitzeko, sinkronizatu historia eta fitxak</translation>
 <translation id="5438292632479953702">Deskargatu berriro</translation>
@@ -1172,6 +1174,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="557018954714092179">Sortu karpeta bat</translation>
 <translation id="5578795271662203820">Bilatu irudia <ph name="SEARCH_ENGINE" /> bilatzailean</translation>
 <translation id="558563010977877295">Ireki orri edo orri multzo zehatz bat</translation>
+<translation id="5594132774273121146">Erabiltzailea eta kontua</translation>
 <translation id="5596627076506792578">Aukera gehiago</translation>
 <translation id="5599455543593328020">Ezkutuko modua</translation>
 <translation id="5601180634394228718">Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikusteko, joan <ph name="BEGIN_LINK" />Google-ren zerbitzuak<ph name="END_LINK" /> atalera.</translation>
@@ -1229,6 +1232,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="583281660410589416">Ezezaguna</translation>
 <translation id="5833984609253377421">Partekatu esteka</translation>
 <translation id="5839058148541733625">Chrome-ko Dino</translation>
+<translation id="5839059463554891940">Segurtasuna eta babesa</translation>
 <translation id="5841444063256914865">"<ph name="FILE_NAME" />" deskargatu egin nahi duzu hala ere?</translation>
 <translation id="5847265694842662173">Chrome-k gehiegikeriak egiten dituzten eta erabiltzen ez diren webguneei jakinarazpenak bidaltzea galarazi die</translation>
 <translation id="5848257610304005265">PDFa <ph name="APP_NAME" /> bidez ireki nahi duzu?</translation>
@@ -1345,7 +1349,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6259107733340311168">Enpresaren seinaleei buruzko erantzukizun-ukatzearen pantailaren behealdean ainguratutako orria altuera osoan irekita dago</translation>
 <translation id="6260260490042862943">Webgunearen ezarpenak</translation>
 <translation id="6264376385120300461">Deskargatu halere</translation>
-<translation id="6264485186158353794">Itzuli segurtasunera</translation>
 <translation id="6267106249090587268">Jakinarazpenak <ph name="SEPARATOR" /> Spama edo eduki engainakorra duelako kendu ditu baimenak Chrome-k</translation>
 <translation id="6276708887952587684">Ikusi orriaren iturburua</translation>
 <translation id="62768169905160414">Kopiatu bideo-fotograma</translation>
@@ -1464,7 +1467,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6659594942844771486">Fitxa</translation>
 <translation id="666731172850799929">Ireki <ph name="APP_NAME" /> aplikazioan</translation>
 <translation id="6669390930482049506">Jaso jakinarazpenak</translation>
-<translation id="6670742294143102726">Hautatu fitxa bat edo gehiago bilaketan gehitzeko</translation>
 <translation id="6671495933530132209">Kopiatu irudia</translation>
 <translation id="6672697278890207089">Idatzi pasaesaldia</translation>
 <translation id="6675622031235530028">Irteteko, eduki sakatuta Ktrl + Q</translation>
@@ -1730,6 +1732,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{Fitxa estandar <ph name="TABS_COUNT_ONE" />}other{<ph name="TABS_COUNT_MANY" /> fitxa estandar}}</translation>
 <translation id="7603168929588204083">Datak ez du balio</translation>
 <translation id="7605594153474022051">Sinkronizazioa ez dabil.</translation>
+<translation id="7607002721634913082">Pausatuta</translation>
 <translation id="7608245556672190037">Chrome-ren aurkikuntzak erabiltzea aukeratzeko orria altuera osoan irekita dago</translation>
 <translation id="7612619742409846846">Kontu honekin hasi duzu saioa Google-n:</translation>
 <translation id="7612989789287281429">Saioa hasten…</translation>
@@ -1838,6 +1841,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="800155843932969169">Sortu eta gorde pasahitzak modu seguruan, hasi saioa bizkorrago eta identifikatu pasahitzen segurtasun-arazoak babestuta egoteko</translation>
 <translation id="8004582292198964060">Arakatzailea</translation>
 <translation id="8006630792898017994">Zuriune-barra edo tabuladorea</translation>
+<translation id="802154636333426148">Ezin izan da deskargatu</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" /> fitxa, beste batzuekin batera hautatuta, ezkutuko modukoa, ainguratuta, partekatzen</translation>
 <translation id="8025972204417227828">Gehitu beste bat</translation>
 <translation id="8027863900915310177">Aukeratu nora deskargatu nahi duzun</translation>
@@ -1845,6 +1849,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="8032569120109842252">Jarraitzen</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" /> fitxa, hautatuta, ezkutuko modukoa, audioa desaktibatuta</translation>
 <translation id="8036587585440959897">Luzapen batzuek bilatzaileak gehitzen dituzte Chrome-n.</translation>
+<translation id="803703704549420287">Garbitu iragazkiak</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> egun gelditzen dira</translation>
 <translation id="8037801708772278989">Oraintxe bertan egiaztatu da</translation>
 <translation id="804335162455518893">Ez da aurkitu SD txartela</translation>

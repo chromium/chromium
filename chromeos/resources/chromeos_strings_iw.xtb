@@ -13,6 +13,7 @@
 <translation id="1047095725494118091">לא ניתן להוריד. צריך לנסות שוב או להפעיל מחדש את <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304">‏<ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> שרשורים, GHz‏ <ph name="CPU_MAX_CLOCK_SPEED" />)</translation>
 <translation id="1047773237499189053">יש תכונה חדשה. למידע נוסף יש להקיש על מקש החץ למעלה.</translation>
+<translation id="1049324577536766607">{COUNT,plural, =1{מתקבל <ph name="ATTACHMENTS" /> מ-<ph name="DEVICE_NAME" />}one{מתקבלים <ph name="ATTACHMENTS" /> מ-<ph name="DEVICE_NAME" />}two{מתקבלים <ph name="ATTACHMENTS" /> מ-<ph name="DEVICE_NAME" />}other{מתקבלים <ph name="ATTACHMENTS" /> מ-<ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049663189809099096">בצבע צהוב פסטל</translation>
 <translation id="1053371972724535586">ההקלטות שלי</translation>
 <translation id="1056898198331236512">אזהרה</translation>
@@ -64,6 +65,7 @@
 <translation id="1223498995510244364">סיכום</translation>
 <translation id="123124571410524056">פורטל חשוד</translation>
 <translation id="1232610416724362657">מפל</translation>
+<translation id="1235924639474699896">{COUNT,plural, =1{טקסט}one{# קטעי טקסט}two{# קטעי טקסט}other{# קטעי טקסט}}</translation>
 <translation id="1238163879850290856">צריך לאפס את ההגדרות כדי למנוע מאחרים לגשת לנתונים. חשוב להשתמש רק בשיטות קלט מהימנות.</translation>
 <translation id="1238612778414822719">‏זמן אחזור HTTPS</translation>
 <translation id="1252766349417594414">ג'ויסטיק</translation>
@@ -71,6 +73,7 @@
 <translation id="1270369111467284986">יש חשד לפורטל שבוי</translation>
 <translation id="1274654146705270731">תפוזים</translation>
 <translation id="1275718070701477396">נבחר</translation>
+<translation id="127946606521051357">מכשיר בסביבה מנסה לבצע שיתוף</translation>
 <translation id="1290331692326790741">אות חלש</translation>
 <translation id="1292474106138697109">מסך כלי העזר להוראה</translation>
 <translation id="1300115153046603471">‏ה-APN הוא מסוג ברירת מחדל ו<ph name="ATTACH" />.</translation>
@@ -92,6 +95,7 @@
 <translation id="1350909945461913813">חשוב לשמור את העבודה</translation>
 <translation id="1367951781824006909">בחירת קובץ</translation>
 <translation id="1371650399987522809">‏משוב לגבי טפט שמבוסס על AI מבית Google</translation>
+<translation id="1373176046406139583">הרשאות הגישה של המכשיר קובעות מי יכול לשתף איתך כשהמסך לא נעול. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="1374385338586507108">הגדרה</translation>
 <translation id="1376064675713230088">טי-רקס</translation>
 <translation id="1383876407941801731">חיפוש</translation>
@@ -118,6 +122,7 @@
 <translation id="145402479967797468">‏רכיבי UI להפעלה</translation>
 <translation id="1459693405370120464">מזג אוויר</translation>
 <translation id="1463084054301832672">קוטג'</translation>
+<translation id="1464597059227482327">‏אם משתפים עם Chromebook שלא רשום באנשי הקשר, צריך לוודא שהמצב 'גישה בסביבה' פועל ב-Chromebook. כדי להפעיל את מצב 'גישה בסביבה', בוחרים בפינה השמאלית התחתונה ואז באפשרות 'גישה בסביבה'. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="1468664791493211953">מבצעים</translation>
 <translation id="1476467821656042872">הניהול של המכשיר הזה נעשה מהדומיין <ph name="MANAGER" /> וייתכן שאפשר יהיה לעקוב ממנו אחר הפעילות שלך.</translation>
 <translation id="1478594628797167447">סורק</translation>
@@ -145,6 +150,7 @@
 <translation id="1555130319947370107">כחול</translation>
 <translation id="155865706765934889">לוח מגע</translation>
 <translation id="1561927818299383735">צבע התאורה האחורית</translation>
+<translation id="1562119309884184621">לאחר שאיש הקשר הזה יתווסף, המערכת תזכור אותו לפעם הבאה שיתבצע שיתוף</translation>
 <translation id="1564356849266217610">אורגנזה</translation>
 <translation id="1565038567006703504">לא ניתן לעדכן את <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">אלבומים</translation>
@@ -166,6 +172,7 @@
 <translation id="1641857168437328880">הכנסת מסמכים (צד אחד)</translation>
 <translation id="1642396894598555413">אופניים</translation>
 <translation id="1643449475550628585">החלפה של תמונת הטפט מדי יום</translation>
+<translation id="1643921258693943800">‏כדי להשתמש באפשרות 'שיתוף מהיר', יש להפעיל את Bluetooth ו-Wi-Fi</translation>
 <translation id="1644574205037202324">היסטוריה</translation>
 <translation id="1651925268237749928">בחרת אלבום משותף. אנשים אחרים יכולים להוסיף או לשנות תמונות. יכול להיות שתמונות שלא נמצאות כרגע באלבום יוגדרו כטפט שלך.</translation>
 <translation id="1661512400125589646">השהיה</translation>
@@ -182,6 +189,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">‏מקודד DNS נוכח</translation>
 <translation id="1708602061922134366">‏כחול Google</translation>
+<translation id="1709972045049031556">השיתוף נכשל</translation>
 <translation id="1710499924611012470">אפשרויות נגישות לניווט</translation>
 <translation id="1715359911173058521">‏יש בעיה בתקשורת עם הסורק. יש לבדוק את הרשת או את חיבור ה-USB ולנסות שוב.</translation>
 <translation id="1717874160321062422">מנוהל על ידי <ph name="FIRST_MANAGER" /> ועל ידי <ph name="SECOND_MANAGER" /></translation>
@@ -191,6 +199,7 @@
 <translation id="1731082422893354635">‏לוח מגע של Bluetooth</translation>
 <translation id="1738949837603788263">אזור <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">לא ניתן היה לטעון את התמונות. כדאי לבדוק את החיבור לרשת או לנסות לטעון את התמונות שוב.</translation>
+<translation id="1745732479023874451">ניהול אנשי קשר</translation>
 <translation id="1751249301761991853">התאמה אישית</translation>
 <translation id="1751335846119670066">עזרה בקריאה</translation>
 <translation id="1753496554272155572">יציאה מהתצוגה המקדימה של הטפט</translation>
@@ -206,6 +215,7 @@
 <translation id="1768959921651994223">סוג אימות</translation>
 <translation id="1776228893584526149">גוון הטפט</translation>
 <translation id="1777913922912475695">גשר</translation>
+<translation id="178092663238929451">הגדרת 'שיתוף מהיר' מאפשרת לך לשתף קבצים עם אנשים אחרים בסביבה ולקבל מהם קבצים</translation>
 <translation id="1788485524395674731">האפליקציה הזו מנוהלת על-ידי האדמין</translation>
 <translation id="1792647875738159689">הסריקה מתבטלת</translation>
 <translation id="1801418420130173017">השבתת העיצוב הכהה</translation>
@@ -231,10 +241,13 @@
 <translation id="1858620243986915808">צירוף של צילום מסך</translation>
 <translation id="1860654594958086756">אפקט תלת-ממד</translation>
 <translation id="1871413952174074704">‏ה-APN לא יכול להכיל יותר מ-<ph name="CHAR_LIMIT" /> תווים</translation>
+<translation id="187145082678092583">פחות אפליקציות</translation>
 <translation id="1871569928317311284">השבתת העיצוב הכהה</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">פרפרים</translation>
 <translation id="188114911237521550">השבתת המצב הכהה</translation>
+<translation id="1881577802939775675">{COUNT,plural, =1{פריט}one{# פריטים}two{# פריטים}other{# פריטים}}</translation>
+<translation id="1884340228047885921">הגדרת הרשאת הגישה הנוכחית היא 'חלק מאנשי הקשר'</translation>
 <translation id="1884794756658039602">מידע נוסף על התוויות לזיהוי דוברים</translation>
 <translation id="1885577615937958993">הרצת המדיה קדימה</translation>
 <translation id="1887850431809612466">שכתוב חומרה</translation>
@@ -245,8 +258,10 @@
 <translation id="1908394185991500139">חץ שמאלה</translation>
 <translation id="1914144885717544695">ביום שישי</translation>
 <translation id="1915960750806557358">נשמח לקבל ממך משוב או תיאור של הבעיה. חשוב להקפיד שלא לכלול מידע אישי, רגיש או סודי.</translation>
+<translation id="1920390473494685033">אנשי קשר</translation>
 <translation id="1923388006036088459">צבעים משניים</translation>
 <translation id="1926611810597212636">חד-קרן</translation>
+<translation id="1929774028758671973">אנשי קשר יכולים לשתף איתך כשהם נמצאים בסביבה. תוצג לך בקשה לאשר את הבקשות האלה. אין צורך לאשר את השיתוף בין מכשירים שבוצעה בהם כניסה לחשבון <ph name="USER_EMAIL" />.</translation>
 <translation id="1944321879609775960">כדי ליצור סיכום, צריך להפעיל מחדש את ה-<ph name="DEVICE_TYPE" /></translation>
 <translation id="1945403655450283000">רשמקול</translation>
 <translation id="1947737735496445907">הודפסה</translation>
@@ -266,6 +281,7 @@
 <translation id="2008685064673031089">חיפוש מספרים ראשוניים</translation>
 <translation id="2016697457005847575">להוראות לפתרון בעיות</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2037486735086318591">הגדרה של <ph name="FEATURE_NAME" /> מאפשרת לך לשתף קבצים עם אנשים אחרים בסביבה ולקבל מהם קבצים</translation>
 <translation id="2045814230297767491">סכו"ם</translation>
 <translation id="2047316797244836561">כדי לצפות בשומר המסך, מתחברים לרשת וטוענים מחדש את הדף.</translation>
 <translation id="2056550196601855911">‏IPv4/‏IPv6</translation>
@@ -274,9 +290,11 @@
 <translation id="2080070583977670716">הגדרות נוספות</translation>
 <translation id="2082932131694554252">מקש המקלדת שהוקצה</translation>
 <translation id="2085089206770112532">הפחתת הבהירות של התצוגה</translation>
+<translation id="208586643495776849">יש לנסות שוב</translation>
 <translation id="2086091080968010660">יכול להיות ששינויים שמבוססים על זמן לא יהיו מדויקים. צריך להפעיל את הגישה למיקום בהגדרות המערכת.</translation>
 <translation id="2102231663024125441">עריכת טקסט</translation>
 <translation id="2105810540595158374">המכשיר הוא שלט לגיימינג.</translation>
+<translation id="2108349519800154983">{COUNT,plural, =1{מספר טלפון}one{# מספרי טלפון}two{# מספרי טלפון}other{# מספרי טלפון}}</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, גרסה <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">האפשרות הזו זמינה כרגע רק באנגלית (ארה"ב)</translation>
 <translation id="2126937207024182736">‏הנפח הזמין: GB<ph name="AVAILABLE_MEMORY" /> מתוך GB<ph name="TOTAL_MEMORY" /></translation>
@@ -287,6 +305,7 @@
 <translation id="215206000155329774"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> תמונות</translation>
 <translation id="2154460308960858308">ניקוי החיפוש</translation>
+<translation id="2155473371917268529">הרשאות הגישה הנוכחיות מוגדרות למכשירים שלך</translation>
 <translation id="2157660087437850958">בוחר אמוג'י</translation>
 <translation id="2157959690810728433">נמצאת בתור</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ניסיון נוסף</translation>
@@ -329,9 +348,11 @@
 <translation id="2286454467119466181">פשוט</translation>
 <translation id="2287186687001756809">אין תמונה זמינה. כדי להוסיף תמונה, צריך לעבור אל <ph name="LINK" /></translation>
 <translation id="2294577623958216786">לוח הזמנים הנוכחי מוגדר ל-<ph name="SUNRISE" />-<ph name="SUNSET" />. כדי לעדכן באופן אוטומטי את לוחות הזמנים של השקיעה והזריחה, צריך להפעיל את הגישה למיקום בהגדרות המערכת.</translation>
+<translation id="229477815107578534">כדאי לבדוק את ההגדרות</translation>
 <translation id="2305172810646967500">שחור</translation>
 <translation id="2307344026739914387">שימוש בזוג המפתחות הנוכחי</translation>
 <translation id="2308243864813041101">‏כדי להמשיך בתהליך העדכון, צריך לנתק את כבל ה-USB של <ph name="DEVICE_NAME" /></translation>
+<translation id="2314165183524574721">הגדרת הרשאות הגישה הנוכחית מוסתרת</translation>
 <translation id="2320295602967756579">הפעלת העיצוב הבהיר</translation>
 <translation id="2323506179655536734">לא בוצעה בדיקה</translation>
 <translation id="2324354238778375592">מצב צף</translation>
@@ -352,6 +373,7 @@
 <translation id="2418150275289244458">פתיחה בהגדרות</translation>
 <translation id="2421798028054665193">תמונה <ph name="CURRENT_PAGE" /> מתוך <ph name="TOTAL_PAGES" /></translation>
 <translation id="242825218556404975">לא זוהה דיבור</translation>
+<translation id="2434758125294431199">אנשי קשר לבחירתך שיוכלו לשתף איתך</translation>
 <translation id="2438248248625638801">יצירת שמות להקלטות</translation>
 <translation id="2446553403094072641">‏רמת הדיוק של נקודה צפה (floating-point)</translation>
 <translation id="2448312741937722512">סוג</translation>
@@ -386,14 +408,17 @@
 <translation id="2584559707064218956">כדי להגדיר את הרשת, צריך לעבור להגדרות</translation>
 <translation id="2586146417912237930">כחול ואינדיגו</translation>
 <translation id="2589921777872778654">תפריט עריכה ומחיקה</translation>
+<translation id="2597073208962000830">‏התכונה 'שיתוף מהיר' מחפשת מכשירים קרובים באמצעות Bluetooth.</translation>
 <translation id="2597774443162333062">‏הקבצים יישלחו אל Google לניפוי באגים</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{הסריקה הושלמה. נסרק עמוד אחד}one{הסריקה הושלמה. נסרקו {NUMBER_OF_PAGES} עמודים}two{הסריקה הושלמה. נסרקו {NUMBER_OF_PAGES} עמודים}other{הסריקה הושלמה. נסרקו {NUMBER_OF_PAGES} עמודים}}</translation>
 <translation id="261322795497077164">זיהוי הדובר</translation>
 <translation id="2617397783536231890">כותנה</translation>
 <translation id="2618015542787108131">דיונה</translation>
+<translation id="2618797463720777311">הגדרת 'שיתוף מהיר'</translation>
 <translation id="2619761439309613843">רענון יומי</translation>
 <translation id="2620436844016719705">מערכת</translation>
 <translation id="2626848494898563581">‏אין גישה לשירותי Google</translation>
+<translation id="2627424346328942291">השיתוף נכשל</translation>
 <translation id="2637303424821734920">מושבת – כדי להציג את מזג האוויר המקומי צריך <ph name="BEGIN_LINK" />להפעיל את הגישה למיקום בהגדרות המערכת<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">תמונת המשתמש</translation>
 <translation id="2640549051766135490">האלבום <ph name="TITLE" /> <ph name="DESC" /> נבחר</translation>
@@ -406,6 +431,7 @@
 <translation id="267442004702508783">רענון</translation>
 <translation id="2675392311492541028">תמלול וסיכום</translation>
 <translation id="268270014981824665">עמעום במקלדת</translation>
+<translation id="2704606927547763573">הועתק</translation>
 <translation id="2712812801627182647">‏מפתח האימות של TLS (אבטחת שכבת התעבורה)</translation>
 <translation id="2713444072780614174">לבן</translation>
 <translation id="2715723665057727940">נהר</translation>
@@ -414,6 +440,7 @@
 <translation id="2728460467788544679">ניקוי כל היסטוריית ההדפסה</translation>
 <translation id="2731700343119398978">יש להמתין...</translation>
 <translation id="2740531572673183784">אישור</translation>
+<translation id="2743387203779672305">העתקה ללוח</translation>
 <translation id="2744221223678373668">משותף</translation>
 <translation id="2749164457515831917">ההצעות מוצגות בסדר אקראי</translation>
 <translation id="2751739896257479635">‏אימות שלב 2 של EAP</translation>
@@ -423,7 +450,9 @@
 <translation id="2786429550992142861">פשתן</translation>
 <translation id="2787237339470862294">השפה הזו לא נתמכת כרגע</translation>
 <translation id="2787435249130282949">איך להגביר את בהירות המקלדת</translation>
+<translation id="2803313416453193357">פתיחת התיקייה</translation>
 <translation id="2805756323405976993">אפליקציות</translation>
+<translation id="2806372837663997957">המכשיר שעמו ניסית לשתף לא אישר</translation>
 <translation id="28232023175184696">לא ניתן להתחבר לאינטרנט. יש ללחוץ כדי לנסות שוב.</translation>
 <translation id="2855718259207180827">צמר</translation>
 <translation id="2856429654176718363">‏ספינת חלל ענקית מרחפת מעל העיר, שמוארת באורות רבים. הסצנה כולה מוצגת בסגנון של ציור שמן בגוונים כהים. היא יוצרת אווירה מסתורית עם אלמנטים עתידניים בסגנון מדע בדיוני. הפוסטר הזה נוצר באמצעות תוכנת C4D וכלי OC לעיבוד כדי להדגיש את הרזולוציה הגבוהה והפרטים המדויקים. היו גם כמה בניינים עירוניים בטווח קרוב, שיצרו אפקט של עומק שדה. הסצנה מוצגת בסגנון של ציור שמן, עם גוונים כהים שיוצרים אווירה מסתורית עם אלמנטים עתידניים בסגנון מדע בדיוני.</translation>
@@ -438,7 +467,6 @@
 <translation id="2878387241690264070">בוצעה פריקה של <ph name="RATE" /> ב-<ph name="NUM_SECONDS" /> שניות.</translation>
 <translation id="2880569433548999039">שומר המסך של תנועת העננים</translation>
 <translation id="2882230315487799269">‏התאמה אישית של הפרומפט ל-AI</translation>
-<translation id="2888298276507578975">אפשר לתת פרומפט כמו "אני רוצה לכתוב מכתב תודה"</translation>
 <translation id="2890557891229184386">אי טרופי</translation>
 <translation id="2895772081848316509">כהה</translation>
 <translation id="2915996080311180594">הפעלה מחדש מאוחר יותר</translation>
@@ -448,6 +476,7 @@
 <translation id="2941112035454246133">נמוכה</translation>
 <translation id="2956070106555335453">סיכום</translation>
 <translation id="2968959705684615497">נמר לבן סוריאליסטי עם עיני זהב ופסי זהב יושב על דיונת חול לבנה</translation>
+<translation id="2970766364519518369">אנשי קשר שייבחרו יכולים לשתף איתך כשהם בסביבה. תוצג לך בקשה לאשר את הבקשות האלה. אין צורך לאשר את השיתוף בין מכשירים שבוצעה בהם כניסה לחשבון <ph name="USER_EMAIL" />.</translation>
 <translation id="299385721391037602">ורוד וצהוב</translation>
 <translation id="3008341117444806826">רענון</translation>
 <translation id="3009958530611748826">בחירת תיקייה לשמירה</translation>
@@ -469,6 +498,8 @@
 <translation id="3091839911843451378">נכשלה – משימת ההדפסה הופסקה</translation>
 <translation id="3102119246920354026">מטמון</translation>
 <translation id="3103783611481501187">סוריאליזם</translation>
+<translation id="3108931485517391283">לא ניתן לקבל את הקובץ</translation>
+<translation id="3117791853215125017">{COUNT,plural, =1{לא ניתן היה לשלוח <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}one{לא ניתן היה לשלוח <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}two{לא ניתן היה לשלוח <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}other{לא ניתן היה לשלוח <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3119672627216736407">יש תרגום זמין</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">בריכות</translation>
@@ -488,7 +519,6 @@
 <translation id="3170673040743561620">צריך להניח את המסמך על הסורק</translation>
 <translation id="3174321110679064523">הטפט: מעלות השחר עד לרדת החושך</translation>
 <translation id="3178532070248519384">אוונגרד</translation>
-<translation id="3182676044300231689">אפשר לתת פרומפט כמו "אני רוצה שזה יישמע עם יותר ביטחון עצמי"</translation>
 <translation id="3188257591659621405">הקבצים שלי</translation>
 <translation id="319101249942218879">תמונת הדמות שונתה</translation>
 <translation id="3192947282887913208">קובצי אודיו</translation>
@@ -504,7 +534,9 @@
 <translation id="324961752321393509">אין אישור מהאדמין שלך לסגור את האפליקציה הזו</translation>
 <translation id="3263941347294171263">כדי להמשיך בתהליך העדכון, צריך לנתק את <ph name="DEVICE_NAME" /> ולחבר אותו מחדש</translation>
 <translation id="3268178239013324452">נכשלה – דלת המדפסת פתוחה</translation>
+<translation id="3269689705184377744">{COUNT,plural, =1{קובץ}one{# קבצים}two{# קבצים}other{# קבצים}}</translation>
 <translation id="3275729367986477355">תמונת הדמות</translation>
+<translation id="3279092821516760512">אנשי הקשר שנבחרו יוכלו לשתף איתך כשהם יהיו בסביבה. תהליך ההעברה לא יתחיל לפני שיתקבל ממך אישור.</translation>
 <translation id="3283504360622356314">{0,plural, =1{עריכת הקובץ}one{עריכת הקבצים}two{עריכת הקבצים}other{עריכת הקבצים}}</translation>
 <translation id="3286515922899063534">GHz <ph name="CURRENT" /></translation>
 <translation id="3286538390144397061">הפעל מחדש כעת</translation>
@@ -517,11 +549,13 @@
 <translation id="3327613592010997943">אפשר יהיה להשתמש שוב במכשיר הזה <ph name="DAY" /> בשעה <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">הבדיקה מתבצעת</translation>
 <translation id="3332683265015995419">ספינת חלל בסגנון סטימפאנק טסה בסופת חול</translation>
+<translation id="3333961966071413176">כל אנשי הקשר</translation>
 <translation id="3340011300870565703">רמת הטעינה של האוזנייה הימנית במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="3340978935015468852">הגדרות</translation>
 <translation id="3347558044552027859">מודרני</translation>
 <translation id="3359218928534347896">הפעלה או כיבוי של השתקת המיקרופון</translation>
 <translation id="3360306038446926262">חלונות</translation>
+<translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> משתף איתך <ph name="ATTACHMENTS" />.}one{<ph name="DEVICE_NAME" /> משתף איתך <ph name="ATTACHMENTS" />.}two{<ph name="DEVICE_NAME" /> משתף איתך <ph name="ATTACHMENTS" />.}other{<ph name="DEVICE_NAME" /> משתף איתך <ph name="ATTACHMENTS" />.}}</translation>
 <translation id="3361618936611118375">סושי</translation>
 <translation id="3368922792935385530">מחובר</translation>
 <translation id="3369013195428705271">לנקות את כל היסטוריית ההדפסות? משימות ההדפסה הנוכחיות לא יימחקו.</translation>
@@ -539,6 +573,7 @@
 <translation id="3434988468785284438">השתקפויות</translation>
 <translation id="3435738964857648380">אבטחה</translation>
 <translation id="3435896845095436175">הפעלה</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> דק'</translation>
 <translation id="345256797477978759">קיבוע החלון בחלק הגדול יותר בצד <ph name="DIRECTION" /> של המסך</translation>
 <translation id="3456078764689556234">הודפס עמוד <ph name="PRINTED_PAGES" /> מתוך <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">מתבצעת סריקה של עמוד <ph name="PAGE_NUM" />. החלק שהושלם: <ph name="PERCENTAGE_VALUE" />%.</translation>
@@ -561,8 +596,10 @@
 <translation id="3552832331940389362">איור אנימציה יפני של חתול יושב על אדן החלון וצופה בגשם בשעות הצהריים</translation>
 <translation id="3557205324756024651">זהות מקומית (אופציונלי)</translation>
 <translation id="3565064564551103223">‏כתובות IP מורשות</translation>
+<translation id="3567284462585300767">המכשיר שלך צריך להיות גלוי כדי לשתף קבצים עם אנשים אחרים בסביבה ולקבל מהם קבצים</translation>
 <translation id="3569407787324516067">שומר מסך</translation>
 <translation id="3571184524500629183">סגירת החיפוש</translation>
+<translation id="3571734092741541777">הגדרה</translation>
 <translation id="3577473026931028326">משהו השתבש. יש לנסות שוב.</translation>
 <translation id="357889014807611375">‏Wi-Fi עם חיוב לפי שימוש בנתונים</translation>
 <translation id="3583278742022654445">‏עוצמת האות חלשה. כדאי להתקרב למקור של אות ה-Wi-Fi.</translation>
@@ -579,11 +616,13 @@
 <translation id="3614639364827854748">העברת התפריט הזה שמאלה</translation>
 <translation id="361575905210396100">תודה על המשוב</translation>
 <translation id="3621072146987826699">פילים</translation>
+<translation id="362266093274784978">{COUNT,plural, =1{אפליקציה}one{# אפליקציות}two{# אפליקציות}other{# אפליקציות}}</translation>
 <translation id="3628462041319107639">מתבצעת הורדה של מודל התמלול…</translation>
 <translation id="3632040286124154621">הצעה טובה</translation>
 <translation id="3632579075709132555">כפתור להחלפת מצב של מסך הפרטיות</translation>
 <translation id="3634941468757842845">בחירת עיצוב</translation>
 <translation id="3644695927181369554">הצעה לא טובה</translation>
+<translation id="3647998456578545569">{COUNT,plural, =1{<ph name="ATTACHMENTS" /> התקבל מהמכשיר <ph name="DEVICE_NAME" />}one{<ph name="ATTACHMENTS" /> התקבלו מהמכשיר <ph name="DEVICE_NAME" />}two{<ph name="ATTACHMENTS" /> התקבלו מהמכשיר <ph name="DEVICE_NAME" />}other{<ph name="ATTACHMENTS" /> התקבלו מהמכשיר <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3651050199673793219">בחירת יחידת מידה לטמפרטורה</translation>
 <translation id="3662461537616691585">בורדו וחום ערמוני</translation>
 <translation id="3664755900672940272">פרומפטים לדוגמה מוצגים באופן אקראי</translation>
@@ -601,6 +640,7 @@
 <translation id="3748026146096797577">לא מחובר</translation>
 <translation id="3749289110408117711">שם קובץ</translation>
 <translation id="3763034084412196440">שינוי עוצמת הקול</translation>
+<translation id="3764974059056958214">{COUNT,plural, =1{המערכת שולחת <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}one{המערכת שולחת <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}two{המערכת שולחת <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}other{המערכת שולחת <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3767737419527918477">חיפוש קובצי הקלטה</translation>
 <translation id="3771294271822695279">קובצי וידאו</translation>
 <translation id="3771694256347217732">‏תנאים והגבלות של Google</translation>
@@ -633,6 +673,7 @@
 <translation id="3885327323343477505">החלפת שומר המסך</translation>
 <translation id="3889954687526985291">אופנוע עתידני עשוי נייר שחור עם רקע כהה ואורות נאון</translation>
 <translation id="3897092660631435901">תפריט</translation>
+<translation id="3897298432557662720">{COUNT,plural, =1{תמונה}one{# תמונות}two{# תמונות}other{# תמונות}}</translation>
 <translation id="3902271751020176019">שפת התמליל</translation>
 <translation id="390890062090528082">שמיים מלאי כוכבים</translation>
 <translation id="391412459402535266">לא ניתן לבדוק את המכשיר. צריך לעבור למצב מחשב נייד כדי לבצע את הבדיקה.</translation>
@@ -640,6 +681,7 @@
 <translation id="392943705803418306">הסשן שלך ב"כלי העזר להוראה" הסתיים</translation>
 <translation id="3932043219784172185">אין מכשיר מחובר</translation>
 <translation id="3934185438132762746">‫<ph name="CONTROL_TYPE" /> לא הוקצה</translation>
+<translation id="3936260554100916852">‏המכשיר <ph name="DEVICE_NAME" /> משתף איתך רשת Wi-Fi</translation>
 <translation id="3941014780699102620">לא ניתן היה להתאים את נתוני המארח</translation>
 <translation id="3942420633017001071">אבחון</translation>
 <translation id="3954678691475912818">סוג המכשיר לא ידוע.</translation>
@@ -648,6 +690,7 @@
 <translation id="3967822245660637423">ההורדה הושלמה</translation>
 <translation id="3969602104473960991">‏הסיסמה של ChromeOS עודכנה</translation>
 <translation id="397105322502079400">מתבצע חישוב...</translation>
+<translation id="3981058120448670012">המכשיר גלוי למכשירים קרובים בתור <ph name="DEVICE_NAME" /> למשך <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981099166243641873">בצבע ירוק בהיר</translation>
 <translation id="39823212440917567">משימות הדפסה בנות יותר מ-<ph name="NUMBER_OF_DAYS" /> ימים יוסרו</translation>
 <translation id="3993704782688964914">עכשיו המכשיר <ph name="DEVICE_NAME" /> מעודכן</translation>
@@ -663,6 +706,7 @@
 <translation id="4046123991198612571">הרצועה הבאה</translation>
 <translation id="404928562651467259">אזהרה</translation>
 <translation id="4050208988451295487">יש כמה אפשרויות:</translation>
+<translation id="4050534976465737778">‏יש לוודא ששני המכשירים אינם נעולים, שהם קרובים זה לזה ושבשניהם מופעל Bluetooth. אם השיתוף נעשה עם Chromebook שאינו רשום באנשי הקשר שלך, יש לוודא שהופעלו הרשאות הגישה למכשירים בסביבה (יש לפתוח את אזור הסטטוס ואז להפעיל את הרשאות הגישה למכשירים בסביבה). <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="405181879009056822">‏הגדרות ChromeOS</translation>
 <translation id="4054683689023980771">התמונה בתהליך הורדה</translation>
 <translation id="4059839844193047929">יציאה מהדף הזה תסיים את ההקלטה הנוכחית</translation>
@@ -698,6 +742,7 @@
 <translation id="4171077696775491955">הפחתת הבהירות</translation>
 <translation id="4176463684765177261">מושבת</translation>
 <translation id="4176659219503619100">לוח הבקרה</translation>
+<translation id="4191892134568599822">לקבל דרך <ph name="FEATURE_NAME" />?</translation>
 <translation id="4192913637640303603">לא ניתן ליצור שמות להקלטות</translation>
 <translation id="4193496492959950834">הגדרות "רשמקול"</translation>
 <translation id="4198398257084619072">פנדות</translation>
@@ -737,6 +782,7 @@
 <translation id="4297501883039923494">הפסיקה – שגיאה לא ידועה</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> תמונות</translation>
 <translation id="4300272766492248925">פתיחת האפליקציה</translation>
+<translation id="4301697210743228350">{COUNT,plural, =1{‏איש קשר אחד לא זמין. כדי להשתמש ב‘<ph name="FEATURE_NAME" />' עם איש הקשר הזה, צריך להוסיף לאנשי הקשר שלך את כתובת האימייל שמשויכת לחשבון Google שלו.}one{‏# אנשי קשר לא זמינים. כדי להשתמש ב‘<ph name="FEATURE_NAME" />' עם אנשי הקשר האלה, צריך להוסיף לאנשי הקשר שלך את כתובות האימייל שמשויכות לחשבונות Google שלהם.}two{‏# אנשי קשר לא זמינים. כדי להשתמש ב‘<ph name="FEATURE_NAME" />' עם אנשי הקשר האלה, צריך להוסיף לאנשי הקשר שלך את כתובות האימייל שמשויכות לחשבונות Google שלהם.}other{‏# אנשי קשר לא זמינים. כדי להשתמש ב‘<ph name="FEATURE_NAME" />' עם אנשי הקשר האלה, צריך להוסיף לאנשי הקשר שלך את כתובות האימייל שמשויכות לחשבונות Google שלהם.}}</translation>
 <translation id="430786093962686457">בד שיפון</translation>
 <translation id="4309762678330556039">אפשר ליצור תמלילים באופן אוטומטי ולחפש אודיו. אפשר ליצור הקלטות גם כשאין חיבור לאינטרנט.</translation>
 <translation id="4310735698903592804">‏הטפטים האחרונים שנוצרו על ידי AI מבית Google</translation>
@@ -793,7 +839,6 @@
 <translation id="4522570452068850558">פרטים</translation>
 <translation id="4536864596629708641">‏תצורת IP</translation>
 <translation id="4546131424594385779">יצירה של סרטון שחוזר על עצמו</translation>
-<translation id="4548483925627140043">לא אותר אות</translation>
 <translation id="4556753742174065117">הקושחה מעודכנת במלואה</translation>
 <translation id="455835558791489930">סוללה בהספק של <ph name="CHARGE_VALUE" /> מיליאמפר לשעה</translation>
 <translation id="456077979087158257">נוף עירוני</translation>
@@ -802,6 +847,8 @@
 <translation id="4570558255126759859">‏להוריד את מודל Gemini כדי לסכם הקלטות?</translation>
 <translation id="4573777384450697571">נכשל – פג תוקף האישור</translation>
 <translation id="4575450106703099687">אפשרויות נגישות</translation>
+<translation id="4575614183318795561">הגדרה של <ph name="FEATURE_NAME" /></translation>
+<translation id="4580389561674319558">במצב גלוי לכל אנשי הקשר</translation>
 <translation id="458794348635939462">לא ניתן היה להתאים את הנתונים של כל המארחים</translation>
 <translation id="4593212453765072419">‏יש צורך באימות שרת ה-proxy</translation>
 <translation id="4594021849294327751">יצירת תמליל</translation>
@@ -809,17 +856,21 @@
 <translation id="4600301862817165514">מכונית דלוריאן עם אורות נאון נוסעת בגלקסיה עם כוכבים שחולפים לידה</translation>
 <translation id="4609350030397390689">הפחתת הבהירות של המקלדת</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> מתוך <ph name="TOTAL_PAGE_NUMBER" />. ניתן להקיש על Enter כדי לבטל את משימת ההדפסה.</translation>
+<translation id="4637252186848840278">{COUNT,plural, =1{טקסט}one{# קטעי טקסט}two{# קטעי טקסט}other{# קטעי טקסט}}</translation>
 <translation id="463791356324567266">הסריקה מתבטלת...</translation>
 <translation id="4644611440022666152">הפעלה והורדה</translation>
 <translation id="4646949265910132906">‏חיבור Wi-Fi מאובטח</translation>
 <translation id="4650608062294027130">‏shift ימני</translation>
+<translation id="4654236001025007561">‏שיתוף קבצים עם מכשירי Chromebook ו-Android בסביבה</translation>
 <translation id="4654549501020883054">שינוי מדי יום</translation>
 <translation id="4655868084888499342">התמונה מוגדרת כטפט</translation>
+<translation id="4660465405448977105">{COUNT,plural, =1{תמונה}one{# תמונות}two{# תמונות}other{# תמונות}}</translation>
 <translation id="4660989616054030633">בינה מלאכותית גנרטיבית עלולה לטעות, גם לגבי אנשים, אז כדאי לבדוק היטב את התשובות</translation>
 <translation id="4661249927038176904">סוריאליסטי</translation>
 <translation id="4661392828086261436">‏העדכון הזה סופק על ידי יצרן המכשיר והוא לא אומת על ידי Google</translation>
 <translation id="4664651912255946953">פרווה</translation>
 <translation id="4665014895760275686">יצרן</translation>
+<translation id="4666911709726371538">עוד אפליקציות</translation>
 <translation id="467510802200863975">הסיסמאות אינן תואמות</translation>
 <translation id="467715984478005772">חומת אש חשודה</translation>
 <translation id="4678534708181186163">לא ניתן לסכם. צריך לנסות תמליל קצר יותר.</translation>
@@ -867,24 +918,29 @@
 <translation id="4868181314237714900">פליז</translation>
 <translation id="4873827928179867585">האלגוריתם לאימות</translation>
 <translation id="4880328057631981605">‏שם נקודת גישה (APN)</translation>
+<translation id="4881695831933465202">פתיחה</translation>
 <translation id="488307179443832524">נעשה שימוש במקש הקיצור הזה עבור '<ph name="CONFLICT_ACCEL_NAME" />'. אפשר להקיש על קיצור דרך חדש.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">יש לבחור מיד סיסמה חדשה</translation>
 <translation id="4891842000192098784">בדיקת עומסים</translation>
+<translation id="4894055916816649664">רק למשך 10 דקות</translation>
 <translation id="4897058166682006107">רמת הטעינה של האוזנייה השמאלית במכשיר: %<ph name="BATTERY_PERCENTAGE" />.</translation>
 <translation id="4905998861748258752">צריך להפעיל את התכונה כדי לבחור אפשרויות לשומר המסך</translation>
 <translation id="4910858703033903787">‏סוגי APN</translation>
 <translation id="4917385247580444890">חזק</translation>
 <translation id="4917889632206600977">הפסיקה – הנייר נגמר</translation>
 <translation id="491791267030419270">טיפים לכתיבת משוב</translation>
+<translation id="4918086044614829423">אישור</translation>
 <translation id="4921665434385737356">התבצעה טעינה של <ph name="RATE" /> ב-<ph name="NUM_SECONDS" /> שניות.</translation>
 <translation id="4930320165497208503">כדי להגדיר או לעדכן חיבור, צריך לעבור ל<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">תאריך</translation>
 <translation id="493637535592633700">הארה ביולוגית</translation>
+<translation id="4937676329899947885">‏מתקבלת רשת Wi-Fi</translation>
 <translation id="494102685638938793">‫<ph name="LINK_TEXT" />, פתיחה בכרטיסייה חדשה</translation>
 <translation id="4946927805998996217">הסיכום בשלבי יצירה</translation>
 <translation id="4950314376641394653">הקושחה במכשיר <ph name="DEVICE_NAME" /> עודכנה לגרסה <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">מנהרת עצים</translation>
+<translation id="495164417696120157">{COUNT,plural, =1{קובץ}one{# קבצים}two{# קבצים}other{# קבצים}}</translation>
 <translation id="4964806321337443935">4k</translation>
 <translation id="4965661459364092269">האיפוס של הגדרות האבטחה הושלם</translation>
 <translation id="4965703485264574128">כדי לקבל תוצאה מקורבת, צריך להכפיל את הערך של <ph name="CATEGORY_TEXT" /> ב-<ph name="CONVERSION_RATE" /></translation>
@@ -920,7 +976,9 @@
 <translation id="5095761549884461003">‏כדי להמשיך בתהליך העדכון, צריך לנתק את כבל ה-USB של <ph name="DEVICE_NAME" /> ולהכניס אותו שוב</translation>
 <translation id="5099354524039520280">למעלה</translation>
 <translation id="5107243100836678918">מקשי קיצור בלי המקש <ph name="META_KEY" /> עלולים להיות חופפים למקשי הקיצור באפליקציה כלשהי. כדי להשתמש במקשי הקיצור האלה בכל זאת, צריך להקיש עליהם שוב. אחרת, צריך להקיש על מקשי קיצור חדשים שכוללים את המקש <ph name="KEY" />. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
+<translation id="5127620150973591153">מזהה חיבור בטוח: <ph name="TOKEN" /></translation>
 <translation id="5130848777448318809">סוסי פוני</translation>
+<translation id="5136343472380336530">‏יש לוודא ששני המכשירים אינם נעולים, שהם קרובים זה לזה ושבשניהם מופעל Bluetooth. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="5137451382116112100">מסך מלא</translation>
 <translation id="5139813694804168398">נא לא להפריע</translation>
 <translation id="5140788690559353412">‏אם הגישה לחשבון הבית ספרי שלך תאבד, לא תהיה לך יותר גישה לאימייל ולקבצים ב-Google Drive שמשויכים לחשבון, כמו Gmail, ‏Docs, ‏Slides ועוד.</translation>
@@ -942,6 +1000,7 @@
 <translation id="5222676887888702881">יציאה</translation>
 <translation id="522307662484862935">ללא כתובת אימייל</translation>
 <translation id="5223226274641517059">בזמן ההקלטה יוצגו תמלילים בזמן אמת. אפשר להשבית את התכונה הזו ב'הגדרות' בכל שלב.</translation>
+<translation id="52254442782792731">הרשאות הגישה הנוכחיות עוד לא הוגדרו</translation>
 <translation id="5226879510707344687">ייצוא התמליל</translation>
 <translation id="5227902338748591677">תזמון העיצוב הכהה</translation>
 <translation id="5229104491259541281">המרה של '<ph name="QUERY" />'</translation>
@@ -973,6 +1032,7 @@
 <translation id="5317780077021120954">שמירה</translation>
 <translation id="5318334351163689047">‏בקשות TCP נכשלו</translation>
 <translation id="53196409393069519">להפעיל את התמלול?</translation>
+<translation id="5324300749339591280">רשימת האפליקציות</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">יש לבחור סיסמה חדשה עכשיו</translation>
 <translation id="5333530671332546086">מצב הפורטל לא ידוע</translation>
@@ -981,11 +1041,15 @@
 <translation id="5346687412805619883">רשת מקומית</translation>
 <translation id="5358174242040570474">משהו השתבש. כדאי לנסות לבחור טפט מחדש או לפתוח מחדש את האפליקציה.</translation>
 <translation id="5368228070728130240">אי אפשר להוריד את המודל ליצירת סיכום ושם. צריך לנסות שוב או להפעיל מחדש את <ph name="DEVICE_TYPE" />.</translation>
+<translation id="5368246151595623328">הרשת '<ph name="NETWORK_NAME" />' נשמרה דרך <ph name="DEVICE_NAME" /></translation>
 <translation id="5372659122375744710">‏רשת ה-Wi-Fi לא מאובטחת</translation>
+<translation id="5375318608039113175">‏כדי להשתמש ב'שיתוף מהיר' עם אנשי הקשר האלה, יש להוסיף להם את כתובת האימייל שמשויכת לחשבון Google שלהם.</translation>
 <translation id="5376354385557966694">מצב בהיר אוטומטי</translation>
 <translation id="5378184552853359930">‏סוג IP</translation>
+<translation id="5384401776498845256">מי יכול לשתף איתך</translation>
 <translation id="5389159777326897627">טפט וסגנון</translation>
 <translation id="5389224261615877010">קשת</translation>
+<translation id="5393761864111565424">{COUNT,plural, =1{קישור}one{# קישורים}two{# קישורים}other{# קישורים}}</translation>
 <translation id="5400907029458559844">המכשיר בתהליך התחברות.</translation>
 <translation id="5401938042319910061">הרצה של כל התרחישים</translation>
 <translation id="5410755018770633464">נקניקיות</translation>
@@ -1001,6 +1065,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">לא ניתן היה להשלים את הסריקה</translation>
 <translation id="5499762266711462226">צבע המקלדת מבוסס על הטפט</translation>
+<translation id="5501809658163361512">{COUNT,plural, =1{לא ניתן היה לקבל <ph name="ATTACHMENTS" /> מהמכשיר <ph name="DEVICE_NAME" />}one{לא ניתן היה לקבל <ph name="ATTACHMENTS" /> מהמכשיר <ph name="DEVICE_NAME" />}two{לא ניתן היה לקבל <ph name="ATTACHMENTS" /> מהמכשיר <ph name="DEVICE_NAME" />}other{לא ניתן היה לקבל <ph name="ATTACHMENTS" /> מהמכשיר <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502931783115429516">‏מערכת Android לא פועלת</translation>
 <translation id="550600468576850160">אחו</translation>
 <translation id="5507504956167780539">תמונה מקצועית מינימלית של דיונות חול שחורות נוצצות עם צללים דרמטיים</translation>
@@ -1047,6 +1112,7 @@
 <translation id="5703716265115423771">הפחתת עוצמת הקול</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> מתוך <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">כפתור לעריכת מקש הקיצור <ph name="SHORTCUT_DESCRIPTION" />.</translation>
+<translation id="5740328398383587084">שיתוף מהיר</translation>
 <translation id="574392208103952083">בינוני</translation>
 <translation id="5744175046705638478">תרגום של '<ph name="QUERY" />'</translation>
 <translation id="5757187557809630523">הטראק הבא</translation>
@@ -1056,6 +1122,7 @@
 <translation id="5779818640587041940">השארת המסך פועל בזמן ההקלטה</translation>
 <translation id="57838592816432529">השתקה</translation>
 <translation id="5784136236926853061">‏משך זמן ההמתנה ל-HTTP ארוך</translation>
+<translation id="5787420647064736989">שם המכשיר</translation>
 <translation id="5790391387506209808">לפיס לזולי</translation>
 <translation id="5816802250591013230">לא הוקצה קיצור דרך</translation>
 <translation id="5826644637650799838">מידע על יצירת האומנות</translation>
@@ -1093,6 +1160,7 @@
 <translation id="5931523347251946569">הקובץ לא נמצא</translation>
 <translation id="5939518447894949180">איפוס</translation>
 <translation id="5942727615796467094">האדמין של <ph name="MANAGER" /> קבע מתי אפשר להשתמש ב-<ph name="DEVICE_TYPE" /> הזה</translation>
+<translation id="5942779427914696408">הרשאות גישה למכשיר</translation>
 <translation id="594552776027197022">יצירת זוג מפתחות רנדומלי</translation>
 <translation id="5946538341867151940">‏אין עדיין חיבור. אם לפי הספק הסלולרי מומלץ להשתמש ב-APN בהתאמה אישית, צריך להזין את פרטי ה-APN. לשם כך בוחרים באפשרות '+ APN חדש'.</translation>
 <translation id="5948460390109837040">כלבים</translation>
@@ -1103,6 +1171,8 @@
 <translation id="5982621672636444458">אפשרויות מיון</translation>
 <translation id="5984145644188835034">הטפט המוגדר כברירת מחדל</translation>
 <translation id="5996832681196460718">משי</translation>
+<translation id="6002122790816966947">המכשירים שלך</translation>
+<translation id="6016462059150340136">כל מי שבקרבת מקום</translation>
 <translation id="6016750809509395299">השמות שנוצרו:</translation>
 <translation id="6017514345406065928">ירוק</translation>
 <translation id="6019566113895157499">מקשי הקיצור</translation>
@@ -1134,6 +1204,7 @@
 <translation id="6120815036186828722">בהמתנה שמישהו ידבר…</translation>
 <translation id="6122191549521593678">אונליין</translation>
 <translation id="6122277663991249694">‏שירות שיטת הקלט של ChromeOS</translation>
+<translation id="6122600716821516697">לשתף עם המכשיר הזה?</translation>
 <translation id="6127426868813166163">בצבע לבן</translation>
 <translation id="6136285399872347291">מחיקת תו אחד</translation>
 <translation id="6137614725462089991">סייברפאנק</translation>
@@ -1142,6 +1213,7 @@
 <translation id="6146993107019042706">כדי לסיים, יש להזין את הסיסמה החדשה</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6149015141270619212">לא ניתן להתחבר לאינטרנט</translation>
+<translation id="6150278227694566734">חלק מאנשי הקשר</translation>
 <translation id="6156030503438652198">ורוד וחום ערמוני</translation>
 <translation id="6163318050265152852">לא ניתן ליצור את השמות. צריך לנסות תמליל קצר יותר.</translation>
 <translation id="6165508094623778733">למידע נוסף</translation>
@@ -1156,7 +1228,6 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">אין סורקים זמינים</translation>
 <translation id="6232017090690406397">סוללה</translation>
-<translation id="6234024205316847054">הצגה בקווים כלליים</translation>
 <translation id="6243280677745499710">מוגדר עכשיו</translation>
 <translation id="6250316632541035980">בייקון וביצים</translation>
 <translation id="6262413940100821797">נמען לא ידוע</translation>
@@ -1167,7 +1238,9 @@
 <translation id="6283581480003247988">כחול וסגול</translation>
 <translation id="6284632978374966585">הפעלת העיצוב הכהה</translation>
 <translation id="6285260286443238386">ייצוא ההקלטה</translation>
+<translation id="6285770818046456882">ההעברה בוטלה במכשיר שמשתף איתך</translation>
 <translation id="628726841779494414">ניתן לנהל את המדפסות בהגדרות המדפסת</translation>
+<translation id="6290613030083731160">אין מכשירים זמינים שמשתפים בסביבה. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="6292095526077353682">בזמן הטעינה יוצג שומר מסך של</translation>
 <translation id="629550705077076970">עמעום התאורה במקלדת</translation>
 <translation id="6302401976930124515">בדיקת ה<ph name="TEST_NAME" /> בוטלה</translation>
@@ -1181,13 +1254,16 @@
 <translation id="6327262166342360252">‏הטפט הזה נוצר על ידי AI לפי הטקסט הבא: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">עיצוב כהה אוטומטי</translation>
 <translation id="6340526405444716530">התאמה אישית</translation>
+<translation id="634792071306410644">אף אחד לא יוכל לשתף איתך קבצים כל עוד המכשיר לא גלוי</translation>
 <translation id="6348252528297699679">אפשר להשבית את שיתוף המיקום ב'הגדרות' &gt; 'פרטיות ואבטחה' &gt; 'אמצעי בקרה על פרטיות' &gt; 'גישה למיקום'. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">שם משתמש וסיסמה</translation>
 <translation id="6352210854422428614">כוכב לכת אחר</translation>
 <translation id="6359706544163531585">השבתת העיצוב הבהיר</translation>
 <translation id="6359919876285606596">המחיקה היא סופית ואי אפשר לבטל אותה.</translation>
+<translation id="6367985768157257101">האם לקבל באמצעות 'שיתוף מהיר'?</translation>
 <translation id="636850387210749493">‏הרשמה ל-Enterprise</translation>
 <translation id="6373461326814131011">אגם קטן</translation>
+<translation id="6378392501584240055">‏פתיחה ברשתות ה-Wi-Fi</translation>
 <translation id="6379086450106841622">מסך מגע</translation>
 <translation id="6381741036071372448">בדיקת המקלדת</translation>
 <translation id="6382182670717268353">תצוגה מקדימה של שומר המסך</translation>
@@ -1208,9 +1284,11 @@
 <translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">חלש (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">מעבר אל הגדרות החשבון</translation>
+<translation id="6452181791372256707">דחייה</translation>
 <translation id="6462978824459367242">‏הכפתור 'הוספת ה-APN' מופעל עכשיו</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{לסרוק את הדף מחדש?}=1{לסרוק מחדש את דף {PAGE_NUMBER}?}one{לסרוק מחדש את דף {PAGE_NUMBER}?}two{לסרוק מחדש את דף {PAGE_NUMBER}?}other{לסרוק מחדש את דף {PAGE_NUMBER}?}}</translation>
 <translation id="6468146470109254228">‫3 התוצאות והפרומפטים האחרונים שלך. אפשר לגשת אליהם רק כשמשתמשים ב'טפט וסגנון'.</translation>
+<translation id="6468773105221177474"><ph name="FILE_COUNT" /> קבצים</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">סירות</translation>
 <translation id="64778964625672495">בצבע אדום כהה</translation>
@@ -1228,6 +1306,7 @@
 <translation id="6517239166834772319">‏מה חדש ב-Chromebook</translation>
 <translation id="6526200165918397681">התאמת הטפט</translation>
 <translation id="6527081081771465939">‏פרוטוקול אבטחת Wi-Fi לא מזוהה</translation>
+<translation id="6527303717912515753">שיתוף</translation>
 <translation id="6531528791584205545">הוספה מהירה</translation>
 <translation id="6535178685492749208">אין לך חיבור לאינטרנט. המשוב יישלח מאוחר יותר.</translation>
 <translation id="6543412779435705598">טאקו</translation>
@@ -1252,6 +1331,7 @@
 <translation id="6618744767048954150">הבדיקה מתבצעת עכשיו</translation>
 <translation id="6620487321149975369">משימות הדפסה יופיעו תחת היסטוריה אלא אם הן הוסרו ידנית</translation>
 <translation id="6624819909909965616">‏אי אפשר להעלות קובץ שגדול מ-10MB</translation>
+<translation id="6635362468090274700">אף אחד לא יכול לשתף איתך אם המכשיר לא יוגדר כגלוי.<ph name="BR" /><ph name="BR" />כדי שהמכשיר יהיה גלוי באופן זמני, יש לפתוח את אזור הסטטוס ואז להפעיל את הרשאות הגישה למכשירים בסביבה.</translation>
 <translation id="6643016212128521049">ניקוי</translation>
 <translation id="6647510110698214773">האלגוריתם להצפנה</translation>
 <translation id="6648412990074186169">מינימלי</translation>
@@ -1260,10 +1340,12 @@
 <translation id="6657585470893396449">סיסמה</translation>
 <translation id="66621959568103627">ורוד קורל</translation>
 <translation id="6669485505082792176">לא ניתן ליצור תמונות של מה שביקשת כרגע. כדאי לנסח את התיאור בצורה שונה. חשוב לזכור שלא ניתן ליצור תמונות של אנשים, תוכן מזיק או תוכן בוטה. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="6671320560732140690">{COUNT,plural, =1{כתובת}one{# כתובות}two{# כתובות}other{# כתובות}}</translation>
 <translation id="6673898378497337661">הגברת הבהירות של המקלדת</translation>
 <translation id="6692996468359469499">קבלת מידע בקשר לבחירה שלך</translation>
 <translation id="6694534975463174713">מנעול</translation>
 <translation id="6700703207451721535">אין הרשאה לגשת לקישור הזה. אם דרושה לך גישה, עליך לפנות למורה שלך.</translation>
+<translation id="6702859741546259407">‏כדי להשתמש ב<ph name="FEATURE_NAME" />, צריך להפעיל את ה-Wi-Fi וה-Bluetooth.</translation>
 <translation id="6703179086771097594">מה לא עבד טוב?</translation>
 <translation id="6704062477274546131">‏פענוח DNS</translation>
 <translation id="6712933881624804031">עמק</translation>
@@ -1292,23 +1374,28 @@
 <translation id="6791471867139427246">צבע התאורה של המקלדת</translation>
 <translation id="6796229976413584781">מקש הקיצור נמחק</translation>
 <translation id="6798678288485555829">ניווט בטקסט</translation>
+<translation id="6806781719264274042">‏רק אנשי קשר עם חשבון Google. <ph name="LINK_BEGIN" />אל אנשי הקשר<ph name="LINK_END" /></translation>
 <translation id="680983167891198932">מקש</translation>
 <translation id="6816797338148849397">יש מידע בקשר לבחירה שלך. כדי לגשת אליו, יש להקיש על מקש החץ למעלה.</translation>
 <translation id="6831043979455480757">תרגום</translation>
+<translation id="6842135459748401207">רק מכשירים שמחוברים אל <ph name="USER_EMAIL" /></translation>
 <translation id="6846843854964504403">איפוס הגדרות האבטחה</translation>
 <translation id="6853312040151791195">שיעור הפריקה</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> שניות</translation>
 <translation id="6862228900689076919">התכונה הזו מנוהלת על-ידי האדמין</translation>
 <translation id="6862416241246624313">המשוב נשלח</translation>
 <translation id="6866732840889595464">חיננית</translation>
 <translation id="6871256179359663621">בצבע סגול בהיר</translation>
 <translation id="6887967050249348172">התוספים מושבתים כדי למנוע שינויים בהגדרות. חשוב להפעיל רק תוספים מהימנים.</translation>
 <translation id="6889786074662672253">במהלך ההפעלה מחדש אין לנתק את המכשיר החיצוני הזה או לכבות את המחשב. אפשר למזער את החלון הזה. הפעולה עשויה להימשך כמה דקות ויכול להיות שהמכשיר החיצוני לא יפעל בזמן הזה.</translation>
+<translation id="6896758677409633944">העתקה</translation>
 <translation id="6899460405678814458">הצגת הסיכום</translation>
 <translation id="6900701049656042631">אין תמונות באלבום הזה. כדי להוסיף תמונה, צריך לעבור אל <ph name="LINK" /></translation>
 <translation id="6902359863093437070">‏יצירת רקע באמצעות AI</translation>
 <translation id="6905163627763043954">נסה זאת</translation>
 <translation id="6905275015682612674">‏תמונה בחשיפה ארוכה של חוף עם אוֹרוּת ביולוגית עם שקיעה וכוכבים בשמיים, צבעי פסטל יפים, 4K</translation>
 <translation id="6905724422583748843">חזרה אל <ph name="PAGE_NAME" /></translation>
+<translation id="6909422577741440844">לקבל שיתוף מהמכשיר הזה?</translation>
 <translation id="6910312834584889076">המכסה של הסורק פתוח. יש לסגור אותו ולנסות שוב.</translation>
 <translation id="6910845598686542904">לחשב מודלים של הקולות שזוהו בהקלטה</translation>
 <translation id="6911383237894364323">לא ניתן להתחבר לשרתי מדיה</translation>
@@ -1335,6 +1422,7 @@
 <translation id="6978396562261420054">‏תמונה שנוצרה באמצעות AI</translation>
 <translation id="6981982820502123353">נגישות</translation>
 <translation id="6982462588253070448">דיונות חול</translation>
+<translation id="7003454175711353260">{COUNT,plural, =1{קובץ אחד ({COUNT})}one{{COUNT} קבצים}two{{COUNT} קבצים}other{{COUNT} קבצים}}</translation>
 <translation id="7005833343836210400">המכשיר במצב אופליין</translation>
 <translation id="7028979494427204405">הניהול של המכשיר הזה מתבצע מהדומיין <ph name="MANAGER" /> ואפשר לגשת ממנו אל כל המידע על הפעילות של המשתמשים, כולל דפי אינטרנט שנכנסת אליהם, סיסמאות ואימייל.</translation>
 <translation id="7035168792582749309">תפוחי אדמה</translation>
@@ -1361,6 +1449,7 @@
 <translation id="7103793063702494489">השפה שבחרת</translation>
 <translation id="7107255225945990211">בחירת יצירות אומנות בלעדיות ב-<ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">הזנת מפתח</translation>
+<translation id="7115361495406486998">אין אנשי קשר זמינים</translation>
 <translation id="7117228822971127758">אפשר לנסות שוב מאוחר יותר</translation>
 <translation id="7118522231018231199">‏חשוב לבחור נקודות APN שסופקו על ידי ספק הסלולר או האדמין. בחירת ה-APN תשבית את כל נקודות ה-APN בהתאמה אישית. נקודות APN לא תקינות עלולות לשבש את החיבור לרשת הסלולרית.</translation>
 <translation id="7119389851461848805">הפעלה</translation>
@@ -1393,6 +1482,8 @@
 <translation id="7223952304612664117">האישור מאפשר לשירותי המערכת להשתמש בהגדרה 'קביעת מיקום יותר מדויקת' כדי לקבוע את המיקום שלך. ההגדרה 'קביעת מיקום יותר מדויקת' משתמשת במידע על אותות אלחוטיים וחיישנים כדי לקבוע את המיקום של המכשיר.</translation>
 <translation id="7233782086689993269">מקש הקיצור שוחזר</translation>
 <translation id="723419678599947502">‏יצירת שם באמצעות AI מבית Google</translation>
+<translation id="7239108166256782787">ההעברה בוטלה על ידי <ph name="DEVICE_NAME" /></translation>
+<translation id="7250616558727237648">המכשיר שעמו מתבצע השיתוף לא הגיב. אפשר לנסות שוב.</translation>
 <translation id="725133483556299729">בחירת אימייל</translation>
 <translation id="7255187042098209569">ורוד וסגול</translation>
 <translation id="7267918995585557751">צריך לאפס את ההגדרות כדי לוודא שדף הפתיחה שמוגדר כברירת מחדל הוא לא אתר פישינג. מומלץ להשתמש רק באתרים מהימנים.</translation>
@@ -1415,17 +1506,21 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">ירוק וכחול-ירקרק</translation>
 <translation id="7328475450575141167">ציפור גן-עדן</translation>
+<translation id="7330533963640151632">ההגדרות של <ph name="FEATURE_NAME" /> למכשיר של <ph name="USER_NAME" />. השיתוף מתבצע בחשבון <ph name="USER_EMAIL" />.</translation>
 <translation id="7343649194310845056">מכשירים ברשת</translation>
 <translation id="7344788170842919262">אדמה</translation>
 <translation id="7346768383111016081">הקצאת אמצעי בקרה לפעולה במשחק כדי לשחק באמצעות המקלדת</translation>
 <translation id="7352651011704765696">משהו השתבש</translation>
+<translation id="7353261921908507769">אנשי הקשר יוכלו לשתף איתך כשהם בסביבה. תהליך ההעברה לא יתחיל לפני שיתקבל ממך אישור.</translation>
 <translation id="7353413232959255829">‏תוצאת חיפוש <ph name="LIST_POSITION" /> מתוך <ph name="LIST_SIZE" />:‏ <ph name="SEARCH_RESULT_TEXT" />. צריך להקיש על Enter כדי לנווט לקיצור הדרך.</translation>
 <translation id="7359657277149375382">סוג קובץ</translation>
 <translation id="73631062356239394">שיתוף נתוני הניתוח</translation>
+<translation id="7366316827772164604">מתבצעת סריקה לאיתור מכשירים קרובים…</translation>
 <translation id="7369648056634183167">תמונת תקריב מורכבת של שושן צחור, מכוסה טיפות טל בגשם. המיקוד הוא על עלי הכותרת הדקיקים ועל טיפות המים שמשקפות את האור, תוך שימוש בצבעים עדינים של פסטל על רקע כחול. צילום בגובה העיניים באור טבעי</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378170410161264436">‏"רשמקול" יכול ליצור תמלילים של הקלטות שכוללות דיבור.
 כדי ליצור תמלילים כאלה, צריך להוריד את מודל התמלול (עד 100MB).</translation>
+<translation id="7380622428988553498">שם המכשיר מכיל תווים לא חוקיים</translation>
 <translation id="7384004438856720753">ארמון</translation>
 <translation id="7388345524791662148">אפשרויות נוספות של <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">לוח מגע מובנה</translation>
@@ -1438,6 +1533,8 @@
 <translation id="7425832472614771259">‏התקדמות ההורדה של מודל התמלול ב<ph name="LANGUAGE_NAME" />: ‎<ph name="PROGRESS_PERCENTAGE" />%‎</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">‏לא ניתן להשבית או להסיר את ה-APN הזה. צריך להשבית או להסיר את פריטי ה-APN שהופעלו מסוג '<ph name="ATTACH" />'.</translation>
+<translation id="7439519621174723623">יש להוסיף את שם המכשיר כדי להמשיך</translation>
+<translation id="7457831169406914076">{COUNT,plural, =1{קישור}one{# קישורים}two{# קישורים}other{# קישורים}}</translation>
 <translation id="7458970041932198923">כדי לראות ולהגדיר אווטארים, צריך להתחבר לרשת ולטעון מחדש את הדף.</translation>
 <translation id="7469648432129124067">זוהה פורטל</translation>
 <translation id="7481312909269577407">קדימה</translation>
@@ -1470,11 +1567,14 @@
 <translation id="7590883480672980941">הגדרות קלט</translation>
 <translation id="7595982850646262331">הזמן שנותר: <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">האדמין של <ph name="MANAGER" /> קבע מתי אפשר להשתמש ב-<ph name="DEVICE_TYPE" /> הזה.</translation>
+<translation id="7610337976012700501">‏כדי להשתמש ב<ph name="FEATURE_NAME" /> עם אנשי הקשר האלה, עליך להוסיף להם את כתובת האימייל שמשויכת לחשבון Google שלהם.</translation>
 <translation id="7618216277886673749">בחירת <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">ניטרלי</translation>
 <translation id="7620771111601174153">מידע נוסף במרכז העזרה</translation>
 <translation id="7623327321610992184">OnTask Pod</translation>
 <translation id="7633068090678117093">תמונת הרקע</translation>
+<translation id="7634566076839829401">משהו השתבש. יש לנסות שוב.</translation>
+<translation id="7637593984496473097">אין מספיק נפח אחסון בדיסק</translation>
 <translation id="763873111564339966">אינדיגו</translation>
 <translation id="7648838807254605802">‏זמן רב של אחזור HTTPS</translation>
 <translation id="7656388927906093505">המכשיר הוא עכבר.</translation>
@@ -1489,15 +1589,18 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
 <translation id="7718231387947923843">תאורה במקלדת</translation>
+<translation id="7719588063158526969">שם המכשיר ארוך מדי</translation>
 <translation id="7730077286107534951">‏פרטים מסוימים על החשבון והמערכת עשויים להישלח ל-Google. אנחנו משתמשים בפרטים האלה כדי לפתור בעיות טכניות ולשפר את השירותים שלנו, בכפוף ל<ph name="BEGIN_LINK2" />מדיניות הפרטיות<ph name="END_LINK2" /> ו<ph name="BEGIN_LINK3" />לתנאים ולהגבלות<ph name="END_LINK3" /> שלנו. כדי לבקש שינויים בתוכן, צריך לעבור אל <ph name="BEGIN_LINK1" />העזרה המשפטית<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">מספר המחזורים</translation>
 <translation id="7746357909584236306">ניתנת לעריכה</translation>
 <translation id="7747039790905080783">מפתח משותף מראש</translation>
 <translation id="7752963721013053477">מעלות השחר עד לרדת החושך – בלעדי</translation>
+<translation id="7757739382819740102">אנשי קשר שנמצאים בסביבה יוכלו לשתף איתך. יהיה עליך לאשר את השיתוף.</translation>
 <translation id="7760571082554155847">הגדרות דף הבית</translation>
 <translation id="7762130827864645708">שינוי הסיסמה הסתיים בהצלחה. עליך להשתמש בסיסמה החדשה מעתה ואילך.</translation>
 <translation id="7763470514545477072">התאמה של סיומות אתרים</translation>
 <translation id="7764171263909999400">תאורה מרוכזת</translation>
+<translation id="7765507180157272835">‏נדרשים Bluetooth ו-Wi-Fi</translation>
 <translation id="7769672763586021400">מזהה דגם</translation>
 <translation id="7774759755755950354">חזרה</translation>
 <translation id="7778717409420828014">‏המשוב שלך ייבדק על ידי הצוות שלנו ויעזור בשיפור חוויית השימוש ב-Chromebook. אנחנו מקבלים הרבה דיווחים, ולכן לא נוכל לשלוח תשובה.</translation>
@@ -1505,6 +1608,7 @@
 <translation id="7784116172884276937">‏לא הוגדרו שרתי DNS</translation>
 <translation id="7791543448312431591">הוספה</translation>
 <translation id="779591286616261875">שליחת דוח חדש</translation>
+<translation id="7799650166313181433">רק מכשירים שבוצעה בהם כניסה לחשבון <ph name="USER_EMAIL" /> יכולים לשתף עם המכשיר הזה. אין צורך לאשר את השיתוף בין המכשירים שלך.</translation>
 <translation id="7799817062559422778">מצב בהיר</translation>
 <translation id="7802764839223122985">המקש חסר. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">לא תודה</translation>
@@ -1513,6 +1617,8 @@
 <translation id="7819857487979277519">‏PSK ‏(WPA או RSN)</translation>
 <translation id="7824219488248240180">פוסט-אימפרסיוניסטי</translation>
 <translation id="7828503206075800057">בית קפה מסוג <ph name="CAFE_TYPE" /> בסגנון <ph name="CAFE_STYLE" /></translation>
+<translation id="7838838951812478896">לא ניתן היה לשמור את '<ph name="NETWORK_NAME" />' דרך <ph name="DEVICE_NAME" /></translation>
+<translation id="7838971600045234625">{COUNT,plural, =1{בוצעה שליחה של <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}one{בוצעה שליחה של <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}two{בוצעה שליחה של <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}other{בוצעה שליחה של <ph name="ATTACHMENTS" /> אל <ph name="DEVICE_NAME" />}}</translation>
 <translation id="7841134249932030522">הפעלת המצב הכהה</translation>
 <translation id="7846634333498149051">מקלדת</translation>
 <translation id="7847923465436619066">הכלי לבחירת שפת התמלול</translation>
@@ -1529,6 +1635,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">סוג ספק</translation>
 <translation id="7882501334836096755">מפתח ציבורי</translation>
+<translation id="7886279613512920452">{COUNT,plural, =1{פריט}one{# פריטים}two{# פריטים}other{# פריטים}}</translation>
 <translation id="7889966925761734854">חפש</translation>
 <translation id="78957024357676568">שמאל</translation>
 <translation id="7897043345768902965">טיילת</translation>
@@ -1548,6 +1655,7 @@
 <translation id="7955587717700691983">‏מקלדת Bluetooth</translation>
 <translation id="7960831585769876809">טמפרטורה</translation>
 <translation id="7971535376154084247">אמצעי בקרה כלליים</translation>
+<translation id="797394244396603170">יש לבחור את המכשיר שאיתו ברצונך לשתף קבצים</translation>
 <translation id="7977800524392185497">כדי להצטרף לרשת <ph name="NETWORK_NAME" />, צריך לעבור להגדרות</translation>
 <translation id="7978412674231730200">מפתח פרטי</translation>
 <translation id="7979468455552394856">התלמידים מחוברים לכלי העזר להוראה</translation>
@@ -1561,6 +1669,7 @@
 <translation id="8027467664787098346">מידע נוסף על הטפט שנבחר</translation>
 <translation id="8028993641010258682">גודל</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="8033958968890501070">הזמן שהוקצב תם</translation>
 <translation id="80398733265834479">הפעלה של מצב צבע אוטומטי</translation>
 <translation id="8041089156583427627"> שליחת משוב</translation>
 <translation id="8045012663542226664">השתקת המיקרופון</translation>
@@ -1581,18 +1690,21 @@
 <translation id="8094062939584182041">‏מתן הרשאה ל-Google לשלוח לך אימייל בנוגע לבעיה הזו</translation>
 <translation id="8104083085214006426">הרשת שאליה התחברת פתוחה ואינה מאובטחת</translation>
 <translation id="8108879170356113798">בעוד <ph name="NUM_SECONDS" /> שניות תהיה לך אפשרות להשתמש רק בכלי העזר להוראה</translation>
+<translation id="8110489095782891123">מתבצעת הורדה של רשימת אנשי קשר…</translation>
 <translation id="811820734797650957">‏אפשר לבדוק אם יש חיבור לשער באמצעות פינג (Android)</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />‎°‎ C</translation>
 <translation id="8131740175452115882">אישור</translation>
 <translation id="8135609423982943441">‏ה-Chromebook שלך אופס להגדרות ברירת מחדל בטוחות. אפשר לשנות זאת בכל שלב ב'הגדרות'.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">יצירת עיצוב משלך</translation>
+<translation id="814204052173971714">{COUNT,plural, =1{סרטון}one{# סרטונים}two{# סרטונים}other{# סרטונים}}</translation>
 <translation id="8142182840415860496">‏צילום תקריב של כמה פרחים לבנים וצהובים, צילום סטילס מתוך סרט אנימציה, פרח עדין בצבע ורוד בהיר עם עלי כותרת ארוכים וגבעול ירוק שמונח בין שני צבעונים צהובים גדולים על רקע שמיים כחולים ללא עלים או עלווה בצבעים פסטליים, צילום סטילס קולנועי ברזולוציה גבוהה עם פרטים מורכבים ומפורטים מאוד, עיבוד של Octane Render עם תאורה יפה, תאורה נפחית ותאורה דרמטית.</translation>
 <translation id="8143951647992294073">בחירת <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">כלים למפתחים</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />,‏ <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">קסום</translation>
 <translation id="8162776280680283326">שועלים</translation>
+<translation id="816704878106051517">{COUNT,plural, =1{מספר טלפון}one{# מספרי טלפון}two{# מספרי טלפון}other{# מספרי טלפון}}</translation>
 <translation id="8167413449582155132">‏הרקע מבוסס על AI מבית Google</translation>
 <translation id="8171020708598805594">‏אפשר ליצור תמלילים באופן אוטומטי, לקבל סיכומי הקלטות באמצעות AI מבית Google ולחפש אודיו. ניתן ליצור הקלטות גם כשאין חיבור לאינטרנט.</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1617,12 +1729,14 @@
 <translation id="8291967909914612644">המדינה של הספק הביתי</translation>
 <translation id="8294431847097064396">מקור</translation>
 <translation id="8302368968391049045">‏חומת אש מסוג HTTPS</translation>
+<translation id="8303616404642252802">{COUNT,plural, =1{כתובת}one{# כתובות}two{# כתובות}other{# כתובות}}</translation>
 <translation id="8308787307410010965">הגדרות תוכן האתר</translation>
 <translation id="8312330582793120272">הפעלת המדיה</translation>
 <translation id="8318753676953949627">אין תמונות</translation>
 <translation id="8319809980370328428">סיכום ההקלטה ויצירת שם</translation>
 <translation id="8320910311642849813">יער</translation>
 <translation id="8329018942023753850">אפליקציית המחשבון</translation>
+<translation id="8330689128072902965">אנשי קשר בסביבה יכולים לשתף איתך. אפשר ללחוץ כדי לשנות.</translation>
 <translation id="8336739000755212683">שינוי תמונת החשבון במכשיר</translation>
 <translation id="8339024191194156249">מידע נוסף על הפעלה אוטומטית</translation>
 <translation id="8346937114125330423">קלאסי</translation>
@@ -1649,7 +1763,6 @@
 <translation id="8424039430705546751">למטה</translation>
 <translation id="8427213022735114808">‏הכתבה שולחת הקלטה של הקול שלך אל Google כדי לאפשר הקלדה קולית בתיבת טקסט כלשהי.</translation>
 <translation id="8428213095426709021">הגדרות</translation>
-<translation id="8431300646573772016">‏מה חדש ב-ChromeOS</translation>
 <translation id="8433186206711564395">הגדרות רשת</translation>
 <translation id="843568408673868420">חיבור לאינטרנט</translation>
 <translation id="844521431886043384">‏לא הוגדר DNS</translation>
@@ -1683,6 +1796,8 @@
 <translation id="8576249514688522074">לא מאותחלת</translation>
 <translation id="8584654835905316966">נדרשת הפעלה מחדש כדי להשלים את התקנת הקושחה של <ph name="DEVICE_NAME" /> לגרסה <ph name="VERSION" />. יכול להיות שייראה כאילו המחשב מופעל מחדש כמה פעמים. זו התנהגות רגילה.</translation>
 <translation id="8593058461203131755">השהיית המדיה</translation>
+<translation id="8616441548384109662">הוספת <ph name="CONTACT_NAME" /> לאנשי הקשר שלך</translation>
+<translation id="8617748779076050570">מזהה חיבור בטוח: <ph name="CONNECTION_ID" /></translation>
 <translation id="8620617069779373398">סטטוס נדידה</translation>
 <translation id="8624524972189162859">האדמין של <ph name="DOMAIN_NAME" /> השבית את המכשיר שלך ויכול לגשת למיקום שלו.</translation>
 <translation id="8626489604350149811">עוד פעולות לגבי <ph name="APN_NAME" /></translation>
@@ -1696,6 +1811,7 @@
 <translation id="8669187096858652220">אפשר ללחוץ כדי להציג את הכרטיסיות</translation>
 <translation id="8670574982334489519">ימין</translation>
 <translation id="8675354002693747642">מפתח משותף מראש</translation>
+<translation id="8676152597179121671">{COUNT,plural, =1{סרטון}one{# סרטונים}two{# סרטונים}other{# סרטונים}}</translation>
 <translation id="8677859815076891398">‏אין אלבומים. ניתן ליצור אלבום ב<ph name="LINK_BEGIN" />תמונות Google<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">ראמן</translation>
 <translation id="8689520252402395106">‏כדי להמשיך בתהליך העדכון, צריך לחבר שוב את כבל ה-USB של <ph name="DEVICE_NAME" /></translation>
@@ -1716,6 +1832,7 @@
 <translation id="876280838467039397">הורדה ובחירה של מודל התמלול ב<ph name="LANGUAGE_NAME" /></translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">‏אלבום של Google Photos</translation>
+<translation id="8768049274922835860">כולם</translation>
 <translation id="8775713578693478175">‏ה-APN של המודם</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">יכול להיות שברשת הזאת יש פורטל שבוי</translation>
@@ -1730,6 +1847,7 @@
 <translation id="8833620912470026819">יער קקטוסים</translation>
 <translation id="8834539327799336565">מחובר עכשיו</translation>
 <translation id="8845001906332463065">קבלת עזרה</translation>
+<translation id="8849001918648564819">מוסתר</translation>
 <translation id="8849799913685544685">מגדלור</translation>
 <translation id="8851859208664803097">המשימה הופסקה – אין גישה למדפסת</translation>
 <translation id="8855781559874488009">‏לא ניתן להתחבר עם חומת אש לאתרי HTTP</translation>
@@ -1737,7 +1855,10 @@
 <translation id="885704831271383379">איך להכהות את המקלדת</translation>
 <translation id="8863170912498892583">הפעלת העיצוב הכהה</translation>
 <translation id="8864415976656252616">אין הצעות לתוכן. להצגת תוכן עזרה מוביל.</translation>
+<translation id="8875736897340638404">בחירת הרשאות הגישה שלך</translation>
 <translation id="8876270629542503161">המכשיר הוא טאבלט.</translation>
+<translation id="8876965259056847565">‏ב<ph name="FEATURE_NAME" /> מתבצע חיפוש של מכשירים קרובים באמצעות Bluetooth.</translation>
+<translation id="8880054210564666174">לא ניתן להוריד את רשימת אנשי הקשר. יש לבדוק את החיבור לרשת, או <ph name="LINK_BEGIN" />לנסות שוב<ph name="LINK_END" />.</translation>
 <translation id="8881098542468797602">הבדיקה הושלמה בהצלחה</translation>
 <translation id="8882789155418924367">ינשופים</translation>
 <translation id="8885038613856655272">חיבור מיקרופון</translation>
@@ -1764,6 +1885,7 @@
 <translation id="8957423540740801332">ימין</translation>
 <translation id="8960969673307890087">אבטיחים</translation>
 <translation id="8961025972867871808">פינגווינים</translation>
+<translation id="8962051932294470566">אפשר לשתף רק קובץ אחד בכל פעם. יש לנסות שוב כאשר ההעברה הנוכחית תסתיים.</translation>
 <translation id="8968751544471797276">שיעור הטעינה</translation>
 <translation id="8970109610781093811">הפעל שוב</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -1791,16 +1913,16 @@
 <translation id="9062831201344759865">‏זמן האחזור של רזולוציית ה-DNS ארוך</translation>
 <translation id="9065203028668620118">עריכה</translation>
 <translation id="9068296451330120661">צבעי מים</translation>
+<translation id="9068878141610261315">סוג הקובץ לא נתמך</translation>
 <translation id="9073281213608662541">PAP</translation>
-<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">שימוש בסרטון הזה</translation>
 <translation id="9088306295921699330">שימוש נוכחי</translation>
 <translation id="9088994563996376283">פישוט</translation>
+<translation id="9090044809052745245">כך אחרים יראו את המכשיר שלך</translation>
 <translation id="9100765901046053179">הגדרות מתקדמות</translation>
 <translation id="910415269708673980">רענון הכרטיס עבור <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">מתבצעת סריקה של עמוד <ph name="PAGE_NUMBER" /></translation>
 <translation id="9108856746036501072">‏"רשמקול" יכול ליצור תמלילים של הקלטות שכוללות דיבור. בשלב הבא, צריך לבחור את שפת התמלול ולהוריד את המודל (עד 100MB).</translation>
-<translation id="9111102763498581341">ביטול נעילה</translation>
 <translation id="9122492456897874028">סיכום של תוכן, קבלת הגדרות ועוד</translation>
 <translation id="9122602430962285795">כדי להתחבר מחדש, צריך לעבור להגדרות</translation>
 <translation id="9122865513525855321">זן</translation>
@@ -1812,9 +1934,11 @@
 <translation id="9159524746324788320">המבורגרים</translation>
 <translation id="9161276708550942948">מקש רווח</translation>
 <translation id="9169345239923038539">‏אין עדיין חיבור. אם לפי ספק הסלולר מומלץ להשתמש ב-APN בהתאמה אישית, <ph name="BEGIN_LINK" />צריך להזין את פרטי ה-APN<ph name="END_LINK" />.</translation>
+<translation id="9170061643796692986">הגדרת הרשאות הגישה הנוכחית היא 'כל אנשי הקשר'</translation>
 <translation id="9173638680043580060">נותרה פחות מדקה</translation>
 <translation id="9174334653006917325">הצבע של ממשק המשתמש</translation>
 <translation id="917720651393141712">בדיקה</translation>
+<translation id="918352324374649435">{COUNT,plural, =1{אפליקציה}one{# אפליקציות}two{# אפליקציות}other{# אפליקציות}}</translation>
 <translation id="9188992814426075118">אפשר להגדיר התאמה אוטומטית של המקלדת לטפט</translation>
 <translation id="9189000703457422362">‏לא ניתן להתחבר לרשת הזו באמצעות פריטי APN שזוהו באופן אוטומטי. למידע נוסף, צריך ליצור קשר עם ספק הסלולר.</translation>
 <translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
@@ -1828,6 +1952,7 @@
 <translation id="945522503751344254"> שליחת משוב</translation>
 <translation id="950520315903467048">חסר מקש עבור <ph name="DIRECTION" />. ‫<ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">להשוות בין הקולות במשך ההקלטה כך שהתמליל ישקף את מה שכל אחד הדוברים אמר ומתי</translation>
+<translation id="951991426597076286">דחייה</translation>
 <translation id="952992212772159698">לא פעיל</translation>
 <translation id="95718197892796296">חימר</translation>
 <translation id="959792926760890141">‏איפוס הגדרות האבטחה משבית את התוספים של דפדפן Chrome ומאפס את הרשת והגדרות אחרות לברירות מחדל בטוחות.

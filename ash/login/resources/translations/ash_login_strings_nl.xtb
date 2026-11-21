@@ -10,6 +10,7 @@
 <translation id="1097658378307015415">Voordat je inlogt, log je eerst in als gast om het netwerk <ph name="NETWORK_ID" /> te activeren.</translation>
 <translation id="1111932478203988717">Je kind kan deze pincode gebruiken om in te loggen op hun apparaat</translation>
 <translation id="1122587596907914265">Unieke achtergronden opmaken</translation>
+<translation id="1122913801042512795">De inloggegevens van je account zijn verouderd. Log uit en weer in.</translation>
 <translation id="1131201598497838573">De pincode van je kind is geüpdatet</translation>
 <translation id="1147322039136785890">Nu is <ph name="SUPERVISED_USER_NAME" /> aan de beurt</translation>
 <translation id="1148669835763563782">Je krijgt de nieuwste software-update voor verbeterde beveiliging en de nieuwste Chromebook-functies. Deze update bevat een verbeterde instelprocedure zodat je probleemloos aan de slag kunt met je Chromebook.</translation>
@@ -26,6 +27,7 @@
 <translation id="1256588359404100567">Instelling gesynchroniseerd vanaf je vorige apparaat.</translation>
 <translation id="1272978324304772054">Dit gebruikersaccount hoort niet bij het domein waarbij het apparaat is geregistreerd. Als je het apparaat wilt registreren bij een ander domein, moet je eerst apparaatherstel uitvoeren.</translation>
 <translation id="1293556467332435079">Bestanden</translation>
+<translation id="1302523850133262269">Wacht terwijl Chrome de nieuwste systeemupdates installeert.</translation>
 <translation id="1307559529304613120">Het opslaan van de langdurige API-toegangstoken voor dit apparaat is mislukt.</translation>
 <translation id="1335929031622236846">Je apparaat inschrijven</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Functies voor foutopsporing<ph name="END_H3" />
@@ -49,6 +51,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="1347625331607114917">Laat de code verifiëren op je Android-telefoon</translation>
 <translation id="1347975661240122359">De update wordt gestart wanneer de batterij voor <ph name="BATTERY_LEVEL" />% vol is.</translation>
 <translation id="1353275871123211385">Als je opties voor ouderlijk toezicht, zoals app-goedkeuring en schermtijdlimieten, wilt gebruiken, moet je kind een Google-account hebben dat wordt beheerd door een ouder. Je kunt later een schoolaccount toevoegen voor tools zoals Google Classroom.</translation>
+<translation id="1363996462118479832">Chrome OS kan je gegevens niet synchroniseren vanwege een fout tijdens het inloggen.</translation>
 <translation id="1375557162880614858">Wil je ChromeVox, de ingebouwde schermlezer voor Chrome OS Flex, activeren?</translation>
 <translation id="1377600615067678409">Nu overslaan</translation>
 <translation id="1399261165075500043">Kan de Servicevoorwaarden voor Google Play niet laden</translation>
@@ -73,6 +76,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="1642494467033190216">Je moet rootfs-beveiliging verwijderen en opnieuw opstarten voordat je andere foutopsporingsfuncties kunt aanzetten.</translation>
 <translation id="1646045728251578877">Software-update beschikbaar</translation>
 <translation id="1650801028905250434">Je bestanden in Mijn Drive worden automatisch gesynchroniseerd met je Chromebook, zodat je ze zonder internetverbinding kunt openen. Je kunt dit altijd wijzigen via Instellingen &gt; Bestanden.</translation>
+<translation id="16620462294541761">Je wachtwoord kan niet worden geverifieerd. Probeer het opnieuw.</translation>
 <translation id="1668435968811469751">Handmatig inschrijven</translation>
 <translation id="1678919064276516737">Het ingevoerde e-mailadres en wachtwoord komen niet overeen</translation>
 <translation id="1692115862433274081">Een ander account gebruiken</translation>
@@ -94,6 +98,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="1868617395637139709">Gebruik locatie voor Android-apps en -services.</translation>
 <translation id="1877377730633446520">Hiervoor wordt ongeveer <ph name="REQUIRED_SPACE" /> gebruikt. Je hebt op dit moment <ph name="FREE_SPACE" /> beschikbaar.</translation>
 <translation id="1878155070920054810">Zo te zien komt je Chromebook zonder stroom te zitten voordat de update is voltooid. Check of je Chromebook correct wordt opgeladen om onderbrekingen te voorkomen.</translation>
+<translation id="1887442540531652736">Fout bij inloggen</translation>
 <translation id="189035593835762169">Algemene voorwaarden</translation>
 <translation id="189358972401248634">Andere talen</translation>
 <translation id="1915734383465415025">Winkelnummer</translation>
@@ -122,6 +127,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2210462644007531147">Kan de installatie niet afronden</translation>
 <translation id="221872881068107022">Omgekeerd scrollen</translation>
 <translation id="2219081237089444028">Stel een <ph name="DEVICE_TYPE" />-wachtwoord in om makkelijker in te loggen</translation>
+<translation id="2220529011494928058">Een probleem melden</translation>
 <translation id="222115440608612541">Wijzig het thema bij zonsopgang en zonsondergang</translation>
 <translation id="2229161054156947610">Meer dan 1 uur resterend</translation>
 <translation id="2246129643805925002">Je <ph name="DEVICE_TYPE" /> wordt automatisch op de achtergrond geüpdatet zodat je over de nieuwste functies en beveiligingsverbeteringen beschikt. Je kunt de updatevoorkeuren bekijken via Instellingen.</translation>
@@ -132,6 +138,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2328137272841210255">Je pincode resetten</translation>
 <translation id="2342180549977909852">Je kind kan een nummer (pincode) in plaats van een wachtwoord gebruiken om dit apparaat te ontgrendelen. Als je later een pincode wilt instellen, ga je naar Instellingen.</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
+<translation id="2384373936468275798">Chromium OS kan je gegevens niet synchroniseren, omdat de inloggegevens voor je account zijn verouderd.</translation>
 <translation id="2387052489799050037">Naar het startscherm</translation>
 <translation id="2395616325548404795">Je <ph name="DEVICE_TYPE" /> is aangemeld voor bedrijfsbeheer, maar kan de item- en locatiegegevens niet verzenden. Voer deze gegevens handmatig in via je Beheerdersconsole voor dit apparaat.</translation>
 <translation id="2408955596600435184">Je pincode invoeren</translation>
@@ -158,6 +165,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />De locatieservice van Google maakt gebruik van bronnen zoals wifi, mobiele netwerken en sensoren om de locatie van dit apparaat te schatten.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Je kunt de Android-locatie op dit apparaat op elk gewenst moment uitzetten door naar Instellingen &gt; Apps &gt; Google Play Store &gt; Android-voorkeuren beheren &gt; Beveiliging en locatie &gt; Locatie te gaan. Je kunt het gebruik van wifi, mobiele netwerken en sensoren voor Android-locatie ook uitzetten door Google-locatienauwkeurigheid in hetzelfde menu uit te zetten.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2663302507110284145">Taal</translation>
+<translation id="2674238339205910678">ChromeOS Flex kan Chrome-gegevens niet opslaan in je Google-account omdat de inloggegevens voor je account zijn verouderd</translation>
 <translation id="2687407218262674387">Servicevoorwaarden van Google</translation>
 <translation id="2688196195245426394">Fout bij het registreren van het apparaat bij de server: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Dit is een gebundeld apparaat dat niet kan worden ingeschreven bij de Kiosk &amp; Signage Upgrade.</translation>
@@ -252,6 +260,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3740945083753997630">Weergave- en tekstgrootte verkleinen</translation>
 <translation id="376841534249795524">Waarvoor wil je je <ph name="DEVICE_TYPE" /> gebruiken?</translation>
 <translation id="3772046291955677288">Ik heb de <ph name="BEGIN_LINK1" />Servicevoorwaarden van Google<ph name="END_LINK1" /> en de <ph name="BEGIN_LINK2" />Aanvullende servicevoorwaarden van Chrome en Chrome OS<ph name="END_LINK2" /> gelezen en ga ermee akkoord.</translation>
+<translation id="3785324443014631273">Chrome OS Flex kan je gegevens niet synchroniseren door een fout tijdens het inloggen.</translation>
 <translation id="3789841737615482174">Installeren</translation>
 <translation id="3800828618615365228">Aanvullende voorwaarden van Google Chrome en Chrome OS</translation>
 <translation id="3828953470056652895">Ik heb de <ph name="BEGIN_LINK1" />Servicevoorwaarden van Google<ph name="END_LINK1" />, de <ph name="BEGIN_LINK2" />Aanvullende servicevoorwaarden van Chrome en Chrome OS<ph name="END_LINK2" /> en de <ph name="BEGIN_LINK3" />Servicevoorwaarden van Play<ph name="END_LINK3" /> gelezen en ga ermee akkoord.</translation>
@@ -332,6 +341,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <ph name="END_PARAGRAPH1" />
 <ph name="BEGIN_PARAGRAPH2" />Ga voor meer hulp naar g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Wie wil je toevoegen aan dit <ph name="DEVICE_TYPE" />?</translation>
+<translation id="4543778593405494224">Certificaatbeheer</translation>
 <translation id="4566170377336116390">Als je na het inschrijven wilt wisselen, moet je de fabrieksinstellingen terugzetten (powerwash) op je apparaat.</translation>
 <translation id="4567512141633030272">Verkeerde inlogoptie?</translation>
 <translation id="4567533462991917415">Je kunt na het instellen altijd meer mensen toevoegen. Elke persoon kan zijn of haar account personaliseren en gegevens privé houden.</translation>
@@ -349,6 +359,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4814327014588285482">Overslaan en later herinneren</translation>
 <translation id="4830502475412647084">OS-update installeren</translation>
 <translation id="4837926214103741331">Je beschikt niet over de rechten om dit apparaat te gebruiken. Neem contact op met de eigenaar van het apparaat voor toestemming om in te loggen.</translation>
+<translation id="4842397268809523050">Chrome OS Flex kan je gegevens niet synchroniseren omdat synchronisatie niet beschikbaar is voor je domein.</translation>
 <translation id="4844333629810439236">Andere toetsenborden</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4864369630010738180">Inloggen...</translation>
@@ -360,6 +371,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4944310289250773232">Deze verificatieservice wordt gehost door <ph name="SAML_DOMAIN" /></translation>
 <translation id="4955710816792587366">Je pincode kiezen</translation>
 <translation id="4965808351167763748">Weet je zeker dat je dit apparaat wilt instellen voor Hangouts Meet?</translation>
+<translation id="4969674060580488087">Chrome OS Flex kan je gegevens niet synchroniseren omdat de inloggegevens voor je account zijn verouderd.</translation>
 <translation id="4987944280765486504">Je Chromebook wordt opnieuw opgestart nadat de download is afgerond. Daarna kun je doorgaan met instellen.</translation>
 <translation id="5029287942302939687">Je wachtwoord is ingesteld</translation>
 <translation id="503155457707535043">Apps downloaden</translation>
@@ -401,6 +413,8 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="528208740344463258">Als je Android-apps wilt downloaden en gebruiken, moet je eerst deze vereiste update installeren. Je kunt je <ph name="DEVICE_TYPE" /> tijdens het updaten niet gebruiken. Je <ph name="DEVICE_TYPE" /> wordt opnieuw opgestart nadat de installatie is voltooid.</translation>
 <translation id="5283677936944177147">Het systeem kan het model of serienummer van het apparaat niet bepalen.</translation>
 <translation id="5333896723098573627">Als je apps wilt verwijderen, ga je naar Instellingen &gt; Apps &gt; Google Play Store &gt; Android-voorkeuren beheren &gt; Apps of App-beheer. Tik op de app die je wilt verwijderen (je moet misschien naar rechts of links swipen om de app te vinden). Tik dan op Verwijderen of Uitzetten.</translation>
+<translation id="5334309298019785904">Chrome OS kan je gegevens niet synchroniseren, omdat synchronisatie niet beschikbaar is voor je domein.</translation>
+<translation id="535243042947607642">ChromiumOS kan Chromium-gegevens niet opslaan in je Google-account omdat de inloggegevens voor je account zijn verouderd</translation>
 <translation id="5355501370336370394">Zakelijk apparaat inschrijven</translation>
 <translation id="5372529912055771682">De geleverde inschrijvingsmodus wordt niet ondersteund door deze versie van het besturingssysteem. Zorg ervoor dat je de nieuwste versie gebruikt en probeer het opnieuw.</translation>
 <translation id="5397378439569041789">Kiosk of digitaal bord inschrijven</translation>
@@ -412,6 +426,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5448293924669608770">Er is een fout opgetreden tijdens het inloggen</translation>
 <translation id="5453829744223920473">Je kind kan alle school-apps, -bookmarks en -bronnen gebruiken net zoals in de klas. De school bepaalt de basisregels.</translation>
 <translation id="5473099001878321374">Als je verdergaat, ga je ermee akkoord dat dit apparaat ook automatisch updates en apps van Google, de provider van je kind en de fabrikant van dit apparaat kan downloaden en installeren. Hierbij worden mogelijk mobiele data gebruikt. Sommige van deze apps kunnen in-app aankopen aanbieden.</translation>
+<translation id="549669000822060376">Wacht terwijl Chromium de nieuwste systeemupdates installeert.</translation>
 <translation id="5502915260472117187">Een kind</translation>
 <translation id="5511823366942919280">Weet je zeker dat je dit apparaat wilt instellen als een 'Shark'?</translation>
 <translation id="5513807280330619196">Rekenmachine</translation>
@@ -515,6 +530,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6495266441917713704">Kan wifi niet overzetten</translation>
 <translation id="6515620015470298987">Inloggen is mislukt vanwege een probleem met de controle van de apparaatconfiguratie. Voer een Powerwash uit op je <ph name="DEVICE_TYPE" /> en probeer het opnieuw.</translation>
 <translation id="6519689855001245063">Geschiktheid controleren</translation>
+<translation id="6520608191273161151">ChromeOS Flex kan Chrome-gegevens niet opslaan in je Google-account vanwege een fout tijdens het inloggen</translation>
 <translation id="6532527800157340614">Inloggen mislukt omdat je toegangstoken niet kan worden opgehaald. Controleer de netwerkverbinding en probeer het opnieuw.</translation>
 <translation id="653920215766444089">Zoeken naar aanwijsapparaat</translation>
 <translation id="65513682072153627">Je ziet dit Beheerd-icoon als een instelling of functie wordt beheerd door je beheerder.</translation>
@@ -526,8 +542,10 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6675665718701918026">Aanwijsapparaat verbonden</translation>
 <translation id="667752334740867460">Wifi-gegevens ontvangen...</translation>
 <translation id="6680442031740878064">Beschikbaar: <ph name="AVAILABLE_SPACE" /></translation>
+<translation id="668175097507315160">Chromium OS kan je gegevens niet synchroniseren vanwege een fout tijdens het inloggen.</translation>
 <translation id="6684827949542560880">De nieuwste update downloaden</translation>
 <translation id="6722744767592605627">Je kunt <ph name="EMAIL" /> herstellen, maar lokale gegevens worden verwijderd.</translation>
+<translation id="6735387454586646204">Chrome OS Flex-systeem</translation>
 <translation id="6748980958975836188">Ik heb de <ph name="BEGIN_LINK1" />Servicevoorwaarden van Google<ph name="END_LINK1" /> en de <ph name="BEGIN_LINK2" />Aanvullende servicevoorwaarden van Chrome en Chrome OS<ph name="END_LINK2" /> gelezen en ga ermee akkoord.</translation>
 <translation id="6749473226660745022">Foto's</translation>
 <translation id="6754918760968695779">Snel invoegen</translation>
@@ -552,6 +570,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6918733588290914545">Snel instellen met Android-telefoon</translation>
 <translation id="6920473853105515518">Zorg dat je <ph name="DEVICE_TYPE" /> verbinding heeft met internet en probeer het opnieuw. Je kunt ook op een ander apparaat naar play.google/play-terms gaan.</translation>
 <translation id="6929126689972602640">Ouderlijk toezicht wordt niet ondersteund voor schoolaccounts. Log in met het persoonlijke account van je kind als je een schoolaccount wilt toevoegen voor toegang tot Google Classroom en andere websites waarop je thuis schoolwerk kunt doen. Je kunt het schoolaccount later toevoegen in de instellingen.</translation>
+<translation id="6933858244219479645">ChromeOS-systeem</translation>
 <translation id="6935031746833428401">Meer informatie over apparaatbeheer</translation>
 <translation id="6950351336108213154">Randapparaten van apparaat updaten</translation>
 <translation id="6955698182324067397">Je zet foutopsporingsfuncties aan voor Chrome OS, waarmee de sshd daemon wordt ingesteld en opstarten vanaf USB-stations mogelijk wordt.</translation>
@@ -645,6 +664,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7870730066603611552">Synchronisatieopties bekijken na de installatie</translation>
 <translation id="7883792253546618164">Je kunt je afmelden wanneer je maar wilt.</translation>
 <translation id="7887864092952184874">Bluetooth-muis gekoppeld</translation>
+<translation id="7905880575591690197">ChromeOS kan Chrome-gegevens niet opslaan in je Google-account vanwege een fout tijdens het inloggen</translation>
 <translation id="7906440585529721295">Lokale gegevens worden verwijderd</translation>
 <translation id="7910725946105920830">Je persoonlijke Google-account gebruiken</translation>
 <translation id="7918257978052780342">Aanmelden</translation>
@@ -671,6 +691,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8098616321286360457">Netwerkverbinding vereist</translation>
 <translation id="8129265306888404830">Als je het e-mailadres van je organisatie (<ph name="EMAIL_DOMAIN" />) wilt gebruiken, moet je zakelijke inschrijving gebruiken. Als dit apparaat bedoeld is voor persoonlijk gebruik, log je in met je persoonlijke Google-account.</translation>
 <translation id="8131740175452115882">Bevestigen</translation>
+<translation id="8133124826068723441">Chromium OS kan je gegevens niet synchroniseren, omdat synchronisatie niet beschikbaar is voor je domein.</translation>
 <translation id="8146177459103116374">Als je al bent geregistreerd op dit apparaat, kun je <ph name="LINK2_START" />inloggen als een bestaande gebruiker<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Inloggen mislukt. Neem contact op met je beheerder of probeer het opnieuw.</translation>
 <translation id="8147346945017130012">Help de functies en prestaties van Chrome en Chrome OS te verbeteren door automatisch crashrapporten en diagnostische en gebruiksgegevens naar Google te sturen.</translation>
@@ -689,6 +710,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8271379370373330993">De volgende stappen zijn bedoeld voor ouders. Als het account is ingesteld, kun je de <ph name="DEVICE_TYPE" /> teruggeven aan je kind.</translation>
 <translation id="8274924778568117936">Je mag je <ph name="DEVICE_TYPE" /> niet uitzetten of sluiten totdat de update is voltooid. Je <ph name="DEVICE_TYPE" /> wordt opnieuw opgestart nadat de installatie is voltooid.</translation>
 <translation id="8281886186245836920">Overslaan</translation>
+<translation id="8286036467436129157">Inloggen</translation>
 <translation id="8289509909262565712">Welkom bij <ph name="DEVICE_OS" /></translation>
 <translation id="8291942417224950075">Voor persoonlijk gebruik</translation>
 <translation id="8304383784961451596">Je hebt geen rechten om dit apparaat te gebruiken. Neem contact op met de beheerder voor toestemming om in te loggen of log in met een Google-account dat onder toezicht staat via Family Link.</translation>
@@ -700,6 +722,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8401432541486058167">Geef de pincode op die hoort bij je smartkaart.</translation>
 <translation id="8408270600235826886">Je kunt zelf bepalen welke gegevens met Google worden gedeeld. Je kunt dit op elk moment wijzigen in Instellingen. Gegevens worden gebruikt in overeenstemming met het <ph name="BEGIN_LINK" />Privacybeleid<ph name="END_LINK" /> van Google.</translation>
 <translation id="8413956290606243087">Wil je ChromeVox aanzetten, de ingebouwde schermlezer voor Chrome OS?</translation>
+<translation id="8418845734693287262">Chrome OS kan je gegevens niet synchroniseren, omdat de inloggegevens voor je account zijn verouderd.</translation>
 <translation id="8425768983279799676">Je kunt je pincode gebruiken om je apparaat te ontgrendelen.</translation>
 <translation id="8428213095426709021">Instellingen</translation>
 <translation id="843173223122814223">Achtergronden maken met AI</translation>
@@ -739,10 +762,12 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="8794548468611058947">Je kunt een pincode instellen voor deze <ph name="DEVICE_TYPE" /> zodat je niet hoeft in te loggen met je Google-accountwachtwoord</translation>
 <translation id="8830779999439981481">Opnieuw opstarten om updates toe te passen</translation>
 <translation id="8830796635868321089">Het controleren op updates met de huidige proxyinstellingen is mislukt. Pas je <ph name="PROXY_SETTINGS_LINK_START" />proxyinstellingen<ph name="PROXY_SETTINGS_LINK_END" /> aan.</translation>
+<translation id="8833697763442816810">Chromium OS-systeem</translation>
 <translation id="8855977033756560989">Dit Chromebook Enterprise-apparaat wordt geleverd met de Chrome Enterprise Upgrade. Schrijf dit apparaat in met een Google-beheerdersaccount om gebruik te maken van alle zakelijke mogelijkheden.</translation>
 <translation id="885746075120788020">Je opgeslagen voorkeuren en activiteit zijn klaar voor gebruik op elk Chrome OS-apparaat als je inlogt met je Google-account. Je kunt in de instellingen bepalen wat je wilt synchroniseren.</translation>
 <translation id="8868333925931032127">Demomodus starten</translation>
 <translation id="8875221558267407626">Content samenvatten, complexe taal vereenvoudigen of vragen stellen</translation>
+<translation id="8890569919834781711">ChromiumOS kan Chromium-gegevens niet opslaan in je Google-account vanwege een fout tijdens het inloggen</translation>
 <translation id="8907701755790961703">Selecteer een land</translation>
 <translation id="8913163265790894442">Je kunt je <ph name="DEVICE_TYPE" /> makkelijk instellen met je telefoon. Je kunt je wifi- en Google-account toevoegen zonder je wachtwoorden handmatig in te voeren.
         <ph name="BR" />
@@ -778,5 +803,6 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="951991426597076286">Afwijzen</translation>
 <translation id="954749761428814584">Taal en invoermethode</translation>
 <translation id="960987915827980018">Ongeveer 1 uur resterend</translation>
+<translation id="973195869036269770">ChromeOS kan Chrome-gegevens niet opslaan in je Google-account omdat de inloggegevens voor je account zijn verouderd</translation>
 <translation id="995420352808264005">Type apparaatinschrijving kiezen</translation>
 </translationbundle>

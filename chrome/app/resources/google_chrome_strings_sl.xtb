@@ -32,13 +32,11 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1278833599417554002">Znova zaženite, če želite posodobiti &amp;Chrome</translation>
 <translation id="1289911795790071537">Odpiranje iskanja s Chromom</translation>
 <translation id="1290883685122687410">Napaka pri nastavitvi: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1302523850133262269">Počakajte, da Chrome namesti najnovejše sistemske posodobitve.</translation>
 <translation id="1330562121671411446">Zaznaj jezik</translation>
 <translation id="1333654552732143316">Zaženi Chrome</translation>
 <translation id="1341711321000856656">Če si želite ogledati gesla v drugem profilu za Chromium, lahko preklopite</translation>
 <translation id="1343830902827845050">Prijava v Chrome</translation>
 <translation id="1361351916482714918">Z Googlom Lens brskajte pametneje</translation>
-<translation id="1363996462118479832">Chrome OS ni mogel sinhronizirati podatkov zaradi napake pri prijavi.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1383876407941801731">Išči</translation>
 <translation id="1399397803214730675">V tem računalniku je že nameščena novejša različica Google Chroma. Če programska oprema ne deluje, odstranite Google Chrome in poskusite znova.</translation>
@@ -89,7 +87,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="177180974022074201">Preizkusite z Geminijem v Chromu</translation>
 <translation id="1786003790898721085">Preverite, ali ste v napravi <ph name="TARGET_DEVICE_NAME" /> prijavljeni v Chrome, nato poskusite znova poslati.</translation>
 <translation id="1786044937610313874">Bližnjice, odprte v Chromu</translation>
-<translation id="1812689907177901597">Če to izklopite, se lahko prijavite na Googlovih spletnih mestih, kot je Gmail, ne da bi se morali prijaviti v Chrome</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome priporoča, da začasno zaustavite zavihek, ki upočasnjuje brskalnik}one{Chrome priporoča, da začasno zaustavite zavihke, ki upočasnjujejo brskalnik}two{Chrome priporoča, da začasno zaustavite zavihke, ki upočasnjujejo brskalnik}few{Chrome priporoča, da začasno zaustavite zavihke, ki upočasnjujejo brskalnik}other{Chrome priporoča, da začasno zaustavite zavihke, ki upočasnjujejo brskalnik}}</translation>
 <translation id="1832046143430087831">S Chromovim mehanizmom V8 pospešite delovanje spletnih mest, vendar je Chrome zato nekoliko manj odporen proti napadom. Ta nastavitev je izklopljena.</translation>
 <translation id="1838374766361614909">Čiščenje iskanja</translation>
@@ -176,7 +173,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2661616016316841783">Če želite dostopati do razširitev in drugega v napravi <ph name="DEVICE" />, se prijavite v Chrome</translation>
 <translation id="2665296953892887393">Pomagajte izboljšati Chrome – Googlu pošiljajte poročila o zrušitvah in ta dokument: <ph name="UMA_LINK" />.</translation>
 <translation id="2668094785979141847">Kliknite, če želite zapreti Google Lens</translation>
-<translation id="2674238339205910678">ChromeOS Flex ni mogel shraniti podatkov Chroma v račun Google, ker so podatki za prijavo v račun zastareli</translation>
 <translation id="2681444469812712297">Odprite <ph name="URL" /> na novem zavihku v Google Chromu.</translation>
 <translation id="2699790011615497488">Odpiranje Geminija v Chromu beta</translation>
 <translation id="2738871930057338499">Internetne povezave ni mogoče vzpostaviti. Koda napake HTTP je »403 Forbidden«. Preverite konfiguracijo strežnika proxy configuration.</translation>
@@ -287,7 +283,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3756724684201900923">Preberite več o namestitvi Chroma</translation>
 <translation id="3772152698251011058">Prijava tega spletnega mesta Googlu</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
-<translation id="3785324443014631273">ChromeOS Flex ni mogel sinhronizirati podatkov zaradi napake pri prijavi.</translation>
 <translation id="3810973564298564668">Upravljaj</translation>
 <translation id="383455301564000773">Ali boste nadgradili na Windows 11? Prenesite Chrome v OneDrive, da boste pripravljeni že od začetka.</translation>
 <translation id="383928141529488001">Google Chrome potrebuje dostop do Bluetootha za raziskovanje 
@@ -378,7 +373,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4803313124144656665">Zapiranje Iskanja Google v Chromu</translation>
 <translation id="4828579605166583682">Google Chrome poskuša zamenjati obstoječa gesla. Če želite to omogočiti, vnesite geslo za Windows.</translation>
 <translation id="4836321460899997044">Profil v Chromu</translation>
-<translation id="4842397268809523050">ChromeOS Flex ni mogel sinhronizirati podatkov, ker sinhronizacija ni na voljo za vašo domeno.</translation>
 <translation id="4851866215237571846">Uporabnik <ph name="EXISTING_USER" /> je že prijavljen.  Če želite ločiti brskanje, se v Chromu prijavite v svoj profil kot <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Če želite deliti zaslon, v sistemskih nastavitvah omogočite snemanje zaslona za Chrome.</translation>
 <translation id="4873783916118289636">Oglejte si ključne kontrolnike zasebnosti in varnosti v Chromu.</translation>
@@ -392,7 +386,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="492720062778050435">Chrome priporoča, da pregledate to razširitev</translation>
 <translation id="4953650215774548573">Nastavitev Google Chroma za privzeti brskalnik</translation>
 <translation id="495931528404527476">V Chromu</translation>
-<translation id="4969674060580488087">ChromeOS Flex ni mogel sinhronizirati podatkov, ker so podatki za prijavo v račun zastareli.</translation>
 <translation id="4970761609246024540">Pozdravljeni v profilih v Chromu</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Kliknite »Googlov upravitelj gesel«</translation>
@@ -426,7 +419,6 @@ Nekatere funkcije morda ne bodo na voljo. Navedite drug imenik profila ali upora
 <translation id="5271833978500241046">Uporabljajte jih skupaj z drugimi funkcijami Geminija v Chromu</translation>
 <translation id="5320351714793324716">Če omogočite piškotke, jih bo Chrome morda uporabil za vnaprejšnje nalaganje</translation>
 <translation id="5321325624576443340">Google Lens ni na voljo. Poskusite pozneje.</translation>
-<translation id="5334309298019785904">Chrome OS ni mogel sinhronizirati podatkov, ker sinhronizacija ni na voljo za vašo domeno.</translation>
 <translation id="5336664042114176802">Preklopite lahko na pomočnika Gemini, ki je bil prvotno povezan z vašim računom Google in ga ne upravlja domena <ph name="DOMAIN" />. Odgovori ne bodo več temeljili na datotekah ali storitvah, ki jih upravlja domena <ph name="DOMAIN" />, zgodovina klepeta pa se ne bo prenesla. Morda ni primeren za uporabo pri delu. Za preklop je treba znova zagnati Chrome.</translation>
 <translation id="5346389065299425353">Poglobite iskanje tako, da dodate več zavihkov, datotek in orodij</translation>
 <translation id="5353252989841766347">Izvoz gesel iz Chroma</translation>
@@ -556,7 +548,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6497147134301593682">Chrome je bil samodejno zaprt</translation>
 <translation id="6506909944137591434">Chrome potrebuje dovoljenje za dostop do fotoaparata zaradi ustvarjanja tridimenzionalnega zemljevida okolice.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> različica Google Chroma za razvijalce</translation>
-<translation id="6520608191273161151">ChromeOS Flex ni mogel shraniti podatkov Chroma v račun Google zaradi napake pri prijavi</translation>
 <translation id="6520670145826811516">Če želite uporabljati lokacijo, omogočite Chromu dostop v <ph name="BEGIN_LINK" />sistemskih nastavitvah<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Zgodovina v Chromu</translation>
 <translation id="6532945796722480006">Odpiranje Geminija v Chromu Canary</translation>
@@ -578,7 +569,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6712881677154121168">Napaka pri prenosu: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Pospešite Chrome</translation>
 <translation id="6734827584173583205">Nedavno niste obiskali tega mesta. Chrome je odstranil ta dovoljenja: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="COUNT" />.</translation>
-<translation id="6735387454586646204">Sistem ChromeOS Flex</translation>
 <translation id="674891594898436429">Opustitev aktivnega iskanja na tem zavihku</translation>
 <translation id="6750954913813541382">Chrome zaradi odpravljanja napak pri črkovanju Googlu pošlje besedilo, ki ga vnesete v brskalnik</translation>
 <translation id="6760235774835597023">S Chromovim mehanizmom V8 pospešite delovanje spletnih mest, vendar je Chrome zato nekoliko manj odporen proti napadom. Ta nastavitev je vklopljena.</translation>
@@ -599,7 +589,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6908182077349113099">Poskrbite, da so gesla, zaznamki in zgodovina popolnoma sinhronizirani v vseh napravah. Posodobite privzeti brskalnik na Chrome in preprosto dostopajte do funkcij, ki jih poznate in so vam všeč.</translation>
 <translation id="6926772305569367352">Gumb »Iskanje Google v Chromu« v orodni vrstici ima novo ikono. Kliknite ga, če želite med brskanjem z Iskanjem Google v Chromu postavljati vprašanja.</translation>
 <translation id="6930294499209825">Poskrbi, da je Googlova programska oprema posodobljena. Če je ta storitev onemogočena ali ustavljena, Googlova programska oprema ne bo posodobljena, kar pomeni, da varnostnih ranljivosti, ki se lahko pojavijo, ni mogoče odpraviti in funkcije morda ne delujejo. Ta storitev se samodejno odstrani, če ni Googlove programske opreme, ki bi jo uporabljala.</translation>
-<translation id="6933858244219479645">Sistem ChromeOS</translation>
 <translation id="6938166777909186039">Če želite prejemati prihodnje posodobitve Google Chroma, potrebujete Windows 10 ali novejšega. V tem računalniku je nameščen Windows 8.1.</translation>
 <translation id="6962628299694876291">Uporabnik <ph name="EXISTING_USER" /> je že prijavljen. Če želite ločiti brskanje, se v Chromu prijavite v svoj profil kot <ph name="USER_EMAIL_ADDRESS" />. V vseh svojih napravah boste imeli na voljo tudi gesla in drugo.</translation>
 <translation id="6965382102122355670">V redu</translation>
@@ -690,7 +679,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="7801699035218095297">Google Chrome poskuša kopirati gesla. Če želite to omogočiti, vnesite geslo za Windows.</translation>
 <translation id="7804364787702057554">Vaš račun v Chromu</translation>
 <translation id="7804947029129221742">Iskalnik je bil spremenjen zunaj Chroma. Chrome ga je ponastavil na prvotno privzeto vrednost zaradi vaše zaščite. <ph name="LEARN_MORE_LINK" /></translation>
-<translation id="7808348361785373670">Odstranitev iz Chroma ...</translation>
 <translation id="7827099906024714326">Chrome mora preveriti vašo identiteto, preden bo mogoče nekatere podatke shraniti v račun Google in jih uporabiti v vseh vaših napravah. Če se odjavite zdaj, bodo ti podatki izbrisani.</translation>
 <translation id="7829850924999627855">Če želite dostopati do shranjenih informacij in drugega v napravi <ph name="DEVICE" />, se prijavite v Chrome</translation>
 <translation id="7832314606810669113">Če želite dostopati do zaznamkov in drugega v vseh napravah, se prijavite v Chrome. Ta zaznamek bo po prijavi shranjen v računu Google.</translation>
@@ -703,7 +691,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="7896673875602241923">Nekdo se je prijavil v Chrome v tem računalniku kot <ph name="ACCOUNT_EMAIL_LAST" />. Ustvarite nov uporabniški profil za Chrome, če želite, da bodo vaši podatki ločeni.</translation>
 <translation id="7904213866086517086">Vnovično odpiranje Iskanja Google v stranskem podoknu</translation>
 <translation id="7904985524660297937">Preizkusite Geminija v Googlu Chrome</translation>
-<translation id="7905880575591690197">ChromeOS ni mogel shraniti podatkov v Chromu v račun Google zaradi napake pri prijavi</translation>
 <translation id="7936702483636872823">Chrome je blokiral ta prenos, ker je datoteka zavajajoča in v napravi morda izvaja nepričakovane spremembe</translation>
 <translation id="7951272445806340501">Za uveljavitev posodobitve je treba znova zagnati ChromeOS Flex.</translation>
 <translation id="7959172989483770734">Upravljanje profilov v Chromu</translation>
@@ -764,7 +751,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="8402881611069691789">{COUNT,plural, =1{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli. Odprto je anonimno ali izolirano okno. Po vnovičnem zagonu se ne bo znova odprlo.}one{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli. V profilih je odprto # anonimno in izolirano okno. Po vnovičnem zagonu se ne bodo znova odprla.}two{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli. V profilih sta odprti # anonimni in izolirani okni. Po vnovičnem zagonu se ne bosta znova odprli.}few{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli. V profilih so odprta # anonimna in izolirana okna. Po vnovičnem zagonu se ne bodo znova odprla.}other{Chrome je posodobljen. Najnovejšo različico lahko uporabite takoj po vnovičnem zagonu. Nato se bodo trenutni zavihki znova odprli. V profilih je odprtih # anonimnih in izoliranih oken. Po vnovičnem zagonu se ne bodo znova odprla.}}</translation>
 <translation id="8403038600646341038">Chromov logotip na zaslonu računalnika.</translation>
 <translation id="8406687098231754303">Z gumbom »Iskanje Google v stranskem podoknu« v orodni vrstici lahko znova odprete Iskanje Google v stranskem podoknu in med brskanjem postavljate vprašanja</translation>
-<translation id="8418845734693287262">Chrome OS ni mogel sinhronizirati podatkov, ker so podatki za prijavo v račun zastareli.</translation>
 <translation id="842386925677997438">Varnostna orodja v Chromu</translation>
 <translation id="8425765582779547329">Zaradi večje varnosti v spletu s starševimi izbirami se prijavi v Chrome</translation>
 <translation id="842852285618875960">Dosegli ste omejitev Google Chroma za toliko zaznamkov: <ph name="BOOKMARK_LIMIT" />, zato nekateri zaznamki še niso bili shranjeni v računu Google.
@@ -793,7 +779,6 @@ Novih zaznamkov ni mogoče shraniti v račun, dokler nekaterih ne izbrišete. Č
 <translation id="8624541899164515475">Nastavitve, odpre se na novem zavihku.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome se bo znova zagnal čez eno minuto}one{Chrome se bo znova zagnal čez # minuto}two{Chrome se bo znova zagnal čez # minuti}few{Chrome se bo znova zagnal čez # minute}other{Chrome se bo znova zagnal čez # minut}}</translation>
 <translation id="8637932705841171563">Če želite deliti okno, v sistemskih nastavitvah omogočite snemanje zaslona za Chrome.</translation>
-<translation id="8642497536370021917">Če želite poskrbeti, da boste v računu Google vedno lahko uporabljali in shranjevali podatke Chroma, potrdite, da ste to vi</translation>
 <translation id="8656634243791296665">Odpiranje Geminija v Chromu Dev</translation>
 <translation id="8669527147644353129">Pomočnik za Google Chrome</translation>
 <translation id="8679801911857917785">Določa tudi, katera stran je prikazana, ko zaženete Chrome.</translation>
@@ -855,7 +840,6 @@ Novih zaznamkov ni mogoče shraniti v račun, dokler nekaterih ne izbrišete. Č
 <translation id="922152298093051471">Prilagajanje Chroma</translation>
 <translation id="93760716455950538">Znova zaženite ChromeOS Flex</translation>
 <translation id="945522503751344254">Pošiljanje povratnih informacij</translation>
-<translation id="973195869036269770">ChromeOS ni mogel shraniti podatkov v Chromu v račun Google, ker so podatki za prijavo v račun zastareli</translation>
 <translation id="983803489796659991">Namestitev ni uspela, ker strežnik za posodobitve nima podatkov o zgoščeni vrednosti za aplikacijo.</translation>
 <translation id="989816563149873169">Bližnjica <ph name="SHORTCUT" /> omogoča preklop med profili v Chromu</translation>
 </translationbundle>

@@ -62,7 +62,6 @@
 <translation id="1615755956145364867">Webbplatser får begära tillstånd att spela upp skyddat innehåll</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1621729191093924223">Funktioner som kräver en mikrofon slutar fungera</translation>
-<translation id="1633720957382884102">Relaterade webbplatser</translation>
 <translation id="1644574205037202324">Historik</translation>
 <translation id="1652197001188145583">När detta är aktiverat kan webbplatser be om att få använda NFC-enheter. När detta är inaktiverat får webbplatser inte använda NFC-enheter.</translation>
 <translation id="1660204651932907780">Tillåt att ljud spelas upp på webbplatser (rekommenderas)</translation>
@@ -76,6 +75,7 @@
 <translation id="1717996979683942279">När detta är aktiverat kan webbplatser begära att hantera fönster på alla skärmar. När detta är inaktiverat kan inte webbplatser hantera fönster på alla skärmar.</translation>
 <translation id="1738912554587725807">Ark på nedre delen av skärmen för temasamlingar för utseende på sidan Ny flik</translation>
 <translation id="1743802530341753419">Fråga innan webbplatser tillåts ansluta till en enhet (rekommenderas)</translation>
+<translation id="1766455884659449403">Få aviseringar om Chrome-tips</translation>
 <translation id="1777815584158991902">Arket på nedre delen av skärmen för flödet Upptäck</translation>
 <translation id="1779089405699405702">Bildavkodare</translation>
 <translation id="1781533683087883868">Inaktivera länkar i läsläget</translation>
@@ -184,6 +184,7 @@
 <translation id="2750481671343847896">Webbplatser får visa inloggningsmeddelanden från identitetstjänster.</translation>
 <translation id="2789132527330338807">Webbplatser får begära tillstånd att skapa en 3D-karta över dina omgivningar eller registrera kamerans position</translation>
 <translation id="2790501146643349491">När detta är aktiverat kan nyligen stängda webbplatser fortsätta att skicka och ta emot data. När detta är inaktiverat får webbplatser som nyligen stängts inte skicka eller ta emot data.</translation>
+<translation id="2794551654724114396">Aktivera aviseringar om användbara tips som hjälper dig att få ut mesta möjliga av Chrome</translation>
 <translation id="2795716239552913152">Åtkomst till enhetens plats brukar kunna behövas för relevanta funktioner eller information som lokala nyheter eller affärer i närheten</translation>
 <translation id="2800760947029405028">Ladda upp en bild</translation>
 <translation id="2802908157808345702">Tillåt inte att webbplatser skickar popup-fönster eller omdirigerar dig</translation>
@@ -231,7 +232,6 @@
 <translation id="3232293466644486101">Radera webbinformation …</translation>
 <translation id="3242646949159196181">När detta är aktiverat kan webbplatser spela upp ljud. När detta är inaktiverat får webbplatser inte spela upp ljud.</translation>
 <translation id="3273479183583863618">Sänkta priser på flikar</translation>
-<translation id="3285500645985761267">Tillåt att relaterade webbplatser ser din aktivitet i gruppen</translation>
 <translation id="3295019059349372795">Kapitel 11: Den underbara Smaragdstaden</translation>
 <translation id="3295602654194328831">Dölj info</translation>
 <translation id="3333961966071413176">Alla kontakter</translation>
@@ -249,7 +249,6 @@
 <translation id="3523447078673133727">Tillåt inte att webbplatser spårar dina händer</translation>
 <translation id="3536227077203206203">Tillåts den här gången</translation>
 <translation id="3538390592868664640">Blockera webbplatser från att skapa en 3D-karta över dina omgivningar eller registrera kamerans position</translation>
-<translation id="3544058026430919413">Ett företag kan definiera en grupp av webbplatser som kan använda cookies för att dela din aktivitet i gruppen. Detta är inaktiverat i inkognitoläge.</translation>
 <translation id="3551268116566418498">Vill du avsluta inkognitoläget?</translation>
 <translation id="3586500876634962664">Kamera- och mikrofonanvändning</translation>
 <translation id="358794129225322306">Tillåt att en webbplats laddar ned flera filer automatiskt.</translation>
@@ -262,7 +261,6 @@
 <translation id="363748948745453283">Använder ungefärlig plats</translation>
 <translation id="3641456520301071208">Webbplatser får fråga efter din plats</translation>
 <translation id="3658847490588580244">Ark på nedre delen av standardwebbläsaren</translation>
-<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> webbplats i gruppen med webbplatser som tillhör <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}other{<ph name="RWS_MEMBERS_COUNT" /> webbplatser i gruppen med webbplatser som tillhör <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}}</translation>
 <translation id="3676777756440746804">Webbplatser hindras från att be dig använda uppgifter som de har sparat om dig</translation>
 <translation id="3677897809642449131">Webbplatser får begära åtkomst till rörelsesensorer</translation>
 <translation id="3678318839615834650">Arket på nedre delen av skärmen för kort på sidan Ny flik har öppnats över hela skärmen</translation>
@@ -538,16 +536,15 @@
 <translation id="656065428026159829">Visa fler</translation>
 <translation id="6561560012278703671">Få mer diskreta meddelanden (blockera störande aviseringar)</translation>
 <translation id="6593061639179217415">Datoranpassad webbplats</translation>
-<translation id="659938948789980540">{COUNT,plural, =1{Cookies tillåts för <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" />-webbplats}other{Cookies tillåts för <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" />-webbplatser}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Skyddat innehåll</translation>
 <translation id="6619015782482868078">Turkost tema</translation>
 <translation id="662080504995468778">Stanna kvar</translation>
 <translation id="6630443592285535486">Skriv hexadecimalt värde här</translation>
 <translation id="6635327442719709864">När detta är aktiverat kan webbplatser be om att få använda serieportar. När detta är inaktiverat kan inte webbplatser använda serieportar.</translation>
+<translation id="6669390930482049506">Meddela mig</translation>
 <translation id="6678072580827808850">Granska säkerhetskontrollen</translation>
 <translation id="6682057173375416470">Få föreslagna artiklar på sidan Ny flik</translation>
-<translation id="6683865262523156564">Den här webbplatsen ingår i en grupp som kan se din aktivitet. Gruppen har definierats av <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Profilfoton</translation>
 <translation id="6697925417670533197">Pågående nedladdningar</translation>
 <translation id="6709432001666529933">Fråga innan webbplatser tillåts att spåra dina händer (rekommenderas)</translation>

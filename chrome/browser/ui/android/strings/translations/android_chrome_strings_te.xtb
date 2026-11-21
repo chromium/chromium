@@ -530,6 +530,7 @@
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />సహాయం పొందండి<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">ధరను ట్రాక్ చేయడం</translation>
 <translation id="3037517125981011456">Chromeకు సైన్ ఇన్ చేయడానికి ప్రాంప్ట్‌లను చూపిస్తుంది</translation>
+<translation id="3038505649933066250">తేదీ ఆధారంగా ఫిల్టర్ చేయండి</translation>
 <translation id="3044436568790455247">"డివైజ్‌ను ఎంచుకోండి" అనే షీట్ పూర్తి స్క్రీన్‌లో తెరుచుకుంది.</translation>
 <translation id="3057938290530993634">తర్వాతిసారి సులభంగా యాక్సెస్ చేయడానికి, మీరు ఎక్కువగా సందర్శించే వెబ్‌సైట్‌లను పిన్ చేయడానికి ట్యాప్ చేసి ఉంచండి</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> బుక్‌మార్క్}other{<ph name="BOOKMARKS_COUNT_MANY" /> బుక్‌మార్క్‌లు}}</translation>
@@ -576,6 +577,7 @@
 <translation id="3243650379537999343">డ్రా</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">మీరు Chrome వినియోగ రిపోర్ట్‌లను కూడా షేర్ చేస్తున్నట్లయితే, ఆ రిపోర్ట్‌లలో మీరు సందర్శించే URLలు ఉంటాయి</translation>
+<translation id="3248185426436836442">పెండింగ్‌లో ఉంది</translation>
 <translation id="3250563604907490871">మీరు Wi-Fiకి కనెక్ట్ అయిన తర్వాత ఇమేజ్ వివరణలు కొనసాగించబడతాయి</translation>
 <translation id="3254409185687681395">ఈ పేజీని బుక్‌మార్క్ చేయండి</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" />‌లోని అన్ని పేజీలు</translation>
@@ -1124,7 +1126,6 @@
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, అజ్ఞాత మోడ్‌లో కంటెంట్‌ను షేర్ చేసే పిన్ చేసిన ట్యాబ్</translation>
 <translation id="5375374982898812658">మీరు వెంటనే "<ph name="GROUP_NAME" />" ట్యాబ్ గ్రూప్‌నకు యాక్సెస్‌ను కోల్పోతారు, అది మీ అన్ని పరికరాల నుండి తొలగించబడుతుంది</translation>
 <translation id="537865165090710757">సేవ్ చేసి, షేర్ చేయండి</translation>
-<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> మీ డిజిటల్ వాలెట్ నుండి వ్యక్తిగత సమాచారాన్ని ఉపయోగించాలనుకుంటోంది. మీరు ఈ సైట్‌ను విశ్వసిస్తేనే మాత్రమే కొనసాగించండి. ప్రమాదకరమైన సైట్‌లు మీ చట్టపరమైన పేరు లేదా ID నంబర్ వంటి విషయాలను బహిర్గతం చేసేలా మిమ్మల్ని మోసం చేయవచ్చు.</translation>
 <translation id="5395376160638294582">మీరు మీ Google ఖాతాలోని Chrome డేటాను ఎల్లప్పుడూ ఉపయోగించగలరని నిర్ధారించుకోండి</translation>
 <translation id="5397794290049113714">మీరు</translation>
 <translation id="539881862970320163">శక్తివంతమైన పాస్‌వర్డ్‌ను సూచించడం జరిగింది. కీబోర్డ్ దాచబడింది.</translation>
@@ -1136,6 +1137,7 @@
 <translation id="5415871492522952905">మీరు మీ అన్ని పరికరాలలో మీ హిస్టరీ, ట్యాబ్‌లను కలిగి ఉంటారు కాబట్టి మీరు చేస్తున్న పనిని కొనసాగించవచ్చు</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) వెంటనే "<ph name="GROUP_NAME" />" ట్యాబ్ గ్రూప్‌నకు యాక్సెస్‌ను కోల్పోతారు</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB అందుబాటులో ఉంది</translation>
+<translation id="5430861625274552852">పేజీ కంటెంట్ గురించి అడగండి లేదా ట్యాబ్‌లలో కంపేర్ చేయండి</translation>
 <translation id="543271133149552180"><ph name="TAB_TITLE" />, మల్టీసెలెక్ట్ అయిన పిక్చర్-ఇన్-పిక్చర్ అజ్ఞాత ట్యాబ్</translation>
 <translation id="5436928407363358055">మీరు ఆపివేసిన చోటు నుండి మిమ్మల్ని సులభంగా పికప్ చేయడానికి, మీ హిస్టరీని, ట్యాబ్‌లను సింక్ చేయండి</translation>
 <translation id="5438292632479953702">మళ్లీ డౌన్‌లోడ్ చేయండి</translation>
@@ -1172,6 +1174,7 @@
 <translation id="557018954714092179">కొత్త ఫోల్డర్ సృష్టించు</translation>
 <translation id="5578795271662203820">ఈ చిత్రం కోసం <ph name="SEARCH_ENGINE" />లో వెతకండి</translation>
 <translation id="558563010977877295">ఒక నిర్దిష్ట పేజీని లేదా పేజీల సెట్‌ను తెరవండి</translation>
+<translation id="5594132774273121146">యూజర్ &amp; ఖాతా</translation>
 <translation id="5596627076506792578">మరిన్ని ఆప్షన్‌లు</translation>
 <translation id="5599455543593328020">అజ్ఞాత మోడ్</translation>
 <translation id="5601180634394228718">మీ Chrome ఎక్స్‌పీరియన్స్‌ను మెరుగుపరచడానికి డేటాను ఉపయోగించే మరిన్ని సెట్టింగ్‌ల కోసం <ph name="BEGIN_LINK" />Google సర్వీస్‌ల<ph name="END_LINK" />కు వెళ్లండి.</translation>
@@ -1229,6 +1232,7 @@
 <translation id="583281660410589416">తెలియని</translation>
 <translation id="5833984609253377421">లింక్‌ను షేర్ చేయండి</translation>
 <translation id="5839058148541733625">Chrome డినో</translation>
+<translation id="5839059463554891940">భద్రత &amp; రక్షణ</translation>
 <translation id="5841444063256914865">అయినా సరే మీరు "<ph name="FILE_NAME" />"ను డౌన్‌లోడ్ చేసుకోవాలనుకుంటున్నారా?</translation>
 <translation id="5847265694842662173">దుర్వినియోగ సైట్‌లు, ఉపయోగించని సైట్‌లు నోటిఫికేషన్‌లను పంపకుండా Chrome అడ్డుకుంది</translation>
 <translation id="5848257610304005265"><ph name="APP_NAME" />‌తో PDFను తెరవాలా?</translation>
@@ -1343,7 +1347,6 @@
 <translation id="6259107733340311168">ఎంటర్‌ప్రైజ్ సిగ్నల్స్ నిరాకరణకు సంబంధించిన దిగువున ఉన్న షీట్ పూర్తి స్క్రీన్‌లో తెరుచుకుంది</translation>
 <translation id="6260260490042862943">సైట్ కంట్రోల్స్</translation>
 <translation id="6264376385120300461">ఏదేమైనా డౌన్‌లోడ్ చేయండి</translation>
-<translation id="6264485186158353794">భద్రతకు తిరిగి వెళ్ళు</translation>
 <translation id="6267106249090587268">నోటిఫికేషన్‌లు <ph name="SEPARATOR" /> స్పామ్ లేదా మోసపూరిత కంటెంట్‌ల కారణంగా Chrome ఈ అనుమతులను తీసివేసింది</translation>
 <translation id="6276708887952587684">పేజీ సోర్స్ కోడ్‌ను చూడండి</translation>
 <translation id="62768169905160414">వీడియో ఫ్రేమ్‌ను కాపీ చేయండి</translation>
@@ -1462,7 +1465,6 @@
 <translation id="6659594942844771486">Tab</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />లో తెరువు</translation>
 <translation id="6669390930482049506">నాకు తెలియజేయి</translation>
-<translation id="6670742294143102726">మీ సెర్చ్‌కు జోడించడానికి ఒకటి లేదా అంతకంటే ఎక్కువ ట్యాబ్‌లను ఎంచుకోండి</translation>
 <translation id="6671495933530132209">ఇమేజ్‌ను కాపీ చేయండి</translation>
 <translation id="6672697278890207089">మీ పాస్‌ఫ్రేజ్‌ని ఎంటర్ చేయండి</translation>
 <translation id="6675622031235530028">నిష్క్రమించడానికి Ctrl+Qను నొక్కి పట్టుకోండి</translation>
@@ -1728,6 +1730,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> స్టాండర్డ్ ట్యాబ్}other{<ph name="TABS_COUNT_MANY" /> స్టాండర్డ్ ట్యాబ్‌లు}}</translation>
 <translation id="7603168929588204083">చెల్లని తేదీ</translation>
 <translation id="7605594153474022051">సింక్‌ పని చేయడం లేదు</translation>
+<translation id="7607002721634913082">పాజ్ చేయబడింది</translation>
 <translation id="7608245556672190037">Chrome ఫైండ్స్ సమ్మతి ఫుల్ స్క్రీన్‌లో తెరుచుకుంది</translation>
 <translation id="7612619742409846846">Googleకు ఇలా సైన్ ఇన్ చేశారు</translation>
 <translation id="7612989789287281429">మిమ్మల్ని సైన్ ఇన్ చేస్తోంది…</translation>
@@ -1836,6 +1839,7 @@
 <translation id="800155843932969169">మీ పాస్‌వర్డ్‌లను సురక్షితంగా క్రియేట్ చేయండి, స్టోర్ చేయండి, వేగంగా సైన్ ఇన్ చేయండి, మిమ్మల్ని సురక్షితంగా ఉంచడానికి పాస్‌వర్డ్ సెక్యూరిటీ సమస్యలను గుర్తించండి</translation>
 <translation id="8004582292198964060">బ్రౌజర్</translation>
 <translation id="8006630792898017994">Space లేదా Tab</translation>
+<translation id="802154636333426148">డౌన్‌లోడ్ విఫలమైంది</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, అజ్ఞాత మోడ్‌లో కంటెంట్‌ను షేర్ చేసే మల్టీసెలెక్టెడ్ పిన్ చేసిన ట్యాబ్</translation>
 <translation id="8025972204417227828">కొత్తది యాడ్ చేయండి</translation>
 <translation id="8027863900915310177">ఎక్కడ డౌన్‌లోడ్ చేయాలో ఎంచుకోండి</translation>
@@ -1843,6 +1847,7 @@
 <translation id="8032569120109842252">ఫాలో చేస్తున్నారు</translation>
 <translation id="8035522026858423976">ఎంచుకున్న <ph name="TAB_TITLE" /> ట్యాబ్, అజ్ఞాత మోడ్‌లో మ్యూట్ చేసి ఉంది</translation>
 <translation id="8036587585440959897">కొన్ని ఎక్స్‌టెన్షన్‌లు, సెర్చ్ ఇంజిన్‌లను Chromeకు జోడించగలవు.</translation>
+<translation id="803703704549420287">ఫిల్టర్‌లను క్లియర్ చేయండి</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> రోజులు మిగిలి ఉంది</translation>
 <translation id="8037801708772278989">ఇప్పుడే చెక్ చేసింది</translation>
 <translation id="804335162455518893">SD కార్డ్ కనుగొనబడలేదు</translation>

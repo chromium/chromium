@@ -83,7 +83,6 @@
 <translation id="188102464690227119">Butonul Caută în panoul lateral din bara de instrumente are o pictogramă nouă. Dă clic pe acesta pentru a pune întrebări în timp ce navighezi cu Căutarea în panoul lateral.</translation>
 <translation id="1896836275755235458">Chromium economisește energia bateriei limitând activitatea de fundal și efectele vizuale, cum ar fi derularea lină și ratele de cadre video. <ph name="BEGIN_LINK" />Află mai multe despre Economisirea energiei<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium Updater Service</translation>
-<translation id="1911763535808217981">Dacă dezactivezi, te poți conecta la site-uri Google ca Gmail fără a te conecta la Chromium</translation>
 <translation id="1929939181775079593">Chromium nu mai răspunde. Îl reporniți acum?</translation>
 <translation id="1933341829955786215">Organizația ta, <ph name="MANAGER" />, îți solicită să te conectezi la Chromium</translation>
 <translation id="193439633299369377">Pentru a se aplica actualizarea, sistemul de operare Chromium trebuie să fie repornit.</translation>
@@ -130,7 +129,6 @@
 <translation id="2361918034042471035">Extensia <ph name="EXTENSION_NAME" /> solicită să te conectezi la Chromium</translation>
 <translation id="236943522426971115">Dezactivează rularea Chromium în fundal pentru aplicații</translation>
 <translation id="2374216753258219393">Pentru a folosi această extensie ca <ph name="USER_EMAIL_ADDRESS" />, conectează-te la Chromium.</translation>
-<translation id="2384373936468275798">Sistemul de operare Chromium nu a putut sincroniza datele, deoarece detaliile de conectare pentru contul tău nu sunt actualizate.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Un dispozitiv HID a fost accesat de una sau mai multe extensii Chromium}=1{Un dispozitiv HID este accesat de una sau mai multe extensii Chromium}few{# dispozitive HID sunt accesate de una sau mai multe extensii Chromium}other{# de dispozitive HID sunt accesate de una sau mai multe extensii Chromium}}</translation>
 <translation id="2401032172288869980">Chromium are nevoie de acces la cameră și microfon pentru acest site</translation>
 <translation id="2403703063067034158">Eroare la pornire: se execută o altă instanță de configurare. Încearcă din nou mai târziu.</translation>
@@ -172,7 +170,6 @@
 <translation id="2819844767470613567">Avertisment: Chromium nu poate împiedica extensiile să înregistreze istoricul de navigare. Pentru a dezactiva această extensie în modul izolat, debifează această opțiune.</translation>
 <translation id="2841525013647267359">Tradu din</translation>
 <translation id="2846251086934905009">Eroare la instalare: programul de instalare nu a finalizat procesul. Instalarea a fost anulată.</translation>
-<translation id="2847479871509788944">Elimină din Chromium...</translation>
 <translation id="2850691299438350830">Te protejează în Chromium și poate fi folosită pentru a spori securitatea în alte aplicații Google dacă te-ai conectat.</translation>
 <translation id="2885378588091291677">Manager de activități</translation>
 <translation id="2898830646167954300">Revino la asistentul Gemini negestionat</translation>
@@ -383,7 +380,6 @@
 <translation id="5346389065299425353">Aprofundează căutarea adăugând mai multe file, fișiere și instrumente</translation>
 <translation id="5352264705793813212">Chromium a găsit câteva recomandări privind siguranța pe care să le examinezi</translation>
 <translation id="5352361688875342522">Alte profiluri Chromium</translation>
-<translation id="535243042947607642">ChromiumOS nu a putut salva datele Chromium în Contul Google, deoarece detaliile de conectare pentru cont nu sunt actualizate</translation>
 <translation id="5368118228313795342">Cod suplimentar: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Pentru a beneficia de personalizare, include Chromium în Activitatea de pe web și din aplicații</translation>
 <translation id="5382964351116519680">Deschide căutarea cu Chromium</translation>
@@ -398,7 +394,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium recomandă să întrerupi fila care încetinește browserul}few{Chromium recomandă să întrerupi filele care încetinesc browserul}other{Chromium recomandă să întrerupi filele care încetinesc browserul}}</translation>
 <translation id="5473971139929175403">Este posibil ca Chromium să nu funcționeze corespunzător, deoarece nu mai este acceptat pe această versiune Linux</translation>
 <translation id="5475924890392386523">Chromium a blocat descărcarea deoarece fișierul poate dăuna conturilor tale personale și din rețelele sociale</translation>
-<translation id="549669000822060376">Așteaptă până când Chromium instalează cele mai recente actualizări de sistem.</translation>
 <translation id="5496810170689441661">Chromium încearcă să modifice parolele. Pentru a permite acest lucru, introdu parola pentru Windows.</translation>
 <translation id="5524890928877629608">colțul din stânga sus al zonei de căutare: stânga <ph name="LEFT" /> %, sus <ph name="TOP" /> %</translation>
 <translation id="5527463683072221100">Deschide fișierele PDF în Chromium</translation>
@@ -493,7 +488,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6390800440335263989">Pentru a continua, conectează-te la Chromium ca <ph name="EMAIL" />. Astfel, te asiguri că ai politicile organizației.</translation>
 <translation id="6400112897226594999">Sigla Chromium pe un ecran de computer.</translation>
 <translation id="6403826409255603130">Chromium este un browser web care rulează pagini web și aplicații cu viteza fulgerului. Este rapid, stabil și ușor de utilizat. Navigați pe web în condiții de mai multă siguranță, beneficiind de o protecție sporită, încorporată în Chromium, împotriva programelor malware și a tentativelor de phishing.</translation>
-<translation id="6414624068245092115">Pentru a te asigura că poți folosi și salva oricând datele Chromium în Contul Google, confirmă-ți identitatea</translation>
 <translation id="642132557830635295">Chromium rulează mai rapid și funcțiile care folosesc JavaScript ar trebui să ruleze corespunzător</translation>
 <translation id="6434631832954028336">Redeschide panoul de căutare</translation>
 <translation id="6436260184216827876">Căutarea de imagini nu este disponibilă. Încearcă din nou mai târziu.</translation>
@@ -524,7 +518,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="665732753414869868">Chromium are nevoie de acces la cameră pentru a crea o hartă 3D a lucrurilor din jurul tău</translation>
 <translation id="6669284030132180248">Dacă salvezi marcajele și în Contul Google, poți să urmărești prețurile produselor în Chromium și să primești notificări când scad</translation>
 <translation id="6676384891291319759">Accesează internetul</translation>
-<translation id="668175097507315160">Sistemul de operare Chromium nu a putut sincroniza datele din cauza unei erori la conectare.</translation>
 <translation id="6691132793308828750">Elimină datele aplicației din Chromium</translation>
 <translation id="6709350901466051922">Chromium are nevoie de acces la microfon pentru acest site</translation>
 <translation id="6712881677154121168">Eroare la descărcare: <ph name="DOWNLOAD_ERROR" />.</translation>
@@ -682,7 +675,6 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8107060931443639922">Când vei deschide din nou Chromium pe <ph name="DEVICE_TYPE" />, vei vedea o solicitare de a activa alertele de urmărire a prețurilor.</translation>
 <translation id="8118331347066725040">Trimite feedback pentru căutare cu Lens</translation>
 <translation id="8130609355518033382">Personalizează Chromium</translation>
-<translation id="8133124826068723441">Sistemul de operare Chromium nu a putut sincroniza datele, deoarece sincronizarea nu este disponibilă pentru domeniu.</translation>
 <translation id="813913629614996137">Se inițializează...</translation>
 <translation id="8158143604667288086">Poți să fixezi Căutarea în Chrome pentru a pune întrebări în timp ce navighezi</translation>
 <translation id="8161503455832158203">Deschide Gemini în Chromium cu o comandă rapidă de la tastatură.</translation>
@@ -749,11 +741,9 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8816416449795340678">Trimite acest document la Gemini în Chromium pentru a obține o prezentare generală rapidă și a pune întrebări suplimentare</translation>
 <translation id="8818550178040858407">Te conectezi la Chromium?</translation>
 <translation id="8826492472752484139">Dă clic pe Manager de parole</translation>
-<translation id="8833697763442816810">Sistemul de operare Chromium</translation>
 <translation id="8852026904190808918">Această limbă se folosește pentru a afișa meniuri, setări, alerte și alte texte în Chromium</translation>
 <translation id="8862326446509486874">Nu ai drepturile adecvate pentru instalarea la nivel de sistem. Încearcă să rulezi din nou programul de instalare ca Administrator.</translation>
 <translation id="8876044221123442390">Adaugă un profil Chromium</translation>
-<translation id="8890569919834781711">ChromiumOS nu a putut salva datele Chromium în Contul Google din cauza unei erori la conectare</translation>
 <translation id="8891709362986793894">Organizația îți solicită să te conectezi la Chromium</translation>
 <translation id="8906384069222226849">Chromium necesită Windows 10 versiunea 1809 sau o versiune ulterioară.</translation>
 <translation id="8907580949721785412">Chromium încearcă să afișeze parolele. Pentru a permite acest lucru, introduceți parola pentru Windows.</translation>

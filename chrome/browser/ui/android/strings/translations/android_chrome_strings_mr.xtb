@@ -386,6 +386,7 @@
 <translation id="2496180316473517155">ब्राउझिंग इतिहास</translation>
 <translation id="250020030759455918">तुम्हाला Chrome मध्ये तुमची <ph name="SITE_NAME" /> साइन-इन स्थिती, ब्राउझिंग डेटा आणि साइट डेटा दिसेल</translation>
 <translation id="2501278716633472235">परत जा</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{# डाउनलोड प्रगतीपथावर आहे}other{# डाउनलोड प्रगतीपथावर आहेत}}</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> इंस्टॉल करत आहे…</translation>
 <translation id="2512234228327349533">खरेदी करण्याचे पर्याय शोधा</translation>
 <translation id="2513403576141822879">गोपनीयता, सुरक्षितता आणि डेटा संकलनाशी संबंधित अधिक सेटिंग्जसाठी, <ph name="BEGIN_LINK" />सिंक आणि Google सेवा<ph name="END_LINK" /> पहा</translation>
@@ -577,6 +578,7 @@
 <translation id="3243650379537999343">ड्रॉ करा</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">तुम्ही Chrome वापर अहवालदेखील शेअर केल्यास, त्या अहवालांमध्ये तुम्ही भेट दिलेल्या URLs चा समावेश होतो</translation>
+<translation id="3248185426436836442">प्रलंबित</translation>
 <translation id="3250563604907490871">तुम्ही वाय-फायशी कनेक्ट करता तेव्हा इमेजची वर्णने पुन्हा सुरू होतील</translation>
 <translation id="3254409185687681395">या पृष्ठास बुकमार्क करा</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" /> ची सर्व पेज</translation>
@@ -696,6 +698,7 @@
 <translation id="3740290940447881599">या साइटवर तुमचा विश्वास असल्याची खात्री करा</translation>
 <translation id="3740525748616366977">या डिव्हाइसवर व्हॉइस शोध उपलब्ध नाही</translation>
 <translation id="3749289110408117711">फाइल नाव</translation>
+<translation id="3751708358601675711">किमतीचा माग ठेवणे संपादित करा</translation>
 <translation id="3756823472711156529">गट रिस्टोअर करा</translation>
 <translation id="3759306015475526475">वापर आणि क्रॅश डेटा सेटिंग्ज व्यवस्थापित करा</translation>
 <translation id="3763110477555836428">तुमच्या वास्तविक तपशिलांचे संरक्षण करण्यासाठी तुम्ही हे कार्ड वापरून चेक आउट कराल, तेव्हा व्हर्चुअल कार्ड नंबर भरला जाईल. Google Wallet मध्ये व्यवस्थापित करा. <ph name="BEGIN_LINK1" />व्हर्चुअल कार्डबद्दल अधिक जाणून घ्या<ph name="END_LINK1" /></translation>
@@ -1125,7 +1128,6 @@
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, पिन केलेला शेअर करत असलेला गुप्त टॅब</translation>
 <translation id="5375374982898812658">तुम्ही लगेच “<ph name="GROUP_NAME" />” या टॅब गटाचा ॲक्सेस गमवाल आणि तो तुमच्या सर्व डिव्हाइसवरून हटवला जाईल</translation>
 <translation id="537865165090710757">सेव्ह करा आणि शेअर करा</translation>
-<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> ला तुमच्या डिजिटल वॉलेटमधून वैयक्तिक माहिती वापरायची आहे. या साइटवर विश्वास असले तरच पुढे सुरू ठेवा. धोकादायक साइट तुमचे कायदेशीर नाव किंवा आयडी नंबर यांसारख्या गोष्टी उघड करण्यासाठी तुम्हाला फसवण्याचा प्रयत्न करू शकतात.</translation>
 <translation id="5395376160638294582">तुम्ही तुमच्या Google खाते मधील Chrome डेटा कधीही वापरू शकता याची खात्री करा</translation>
 <translation id="5397794290049113714">तुम्ही</translation>
 <translation id="539881862970320163">क्लिष्ट पासवर्ड सुचवला. कीबोर्ड लपवलेला आहे.</translation>
@@ -1137,6 +1139,7 @@
 <translation id="5415871492522952905">तुमच्याकडे तुमच्या सर्व डिव्हाइसवर तुमचा इतिहास आणि टॅब असतील, त्यामुळे तुम्ही काय करत होतात ते तुम्ही पुढे सुरू ठेवू शकता</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) लगेच “<ph name="GROUP_NAME" />” या टॅब गटाचा ॲक्सेस गमवतील</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB उपलब्ध आहे</translation>
+<translation id="5430861625274552852">पेजच्या आशयाबद्दल विचारा किंवा सर्व टॅबमध्ये तुलना करा</translation>
 <translation id="543271133149552180"><ph name="TAB_TITLE" />, मल्टीसिलेक्ट केलेला चित्रात-चित्र गुप्त टॅब</translation>
 <translation id="5436928407363358055">तुम्ही जिथे सोडले आहे तिथून सहजपणे सुरू करण्यासाठी, तुमचे टॅब आणि इतिहास सिंक करा</translation>
 <translation id="5438292632479953702">पुन्हा डाउनलोड करा</translation>
@@ -1173,6 +1176,7 @@
 <translation id="557018954714092179">नवीन फोल्डर तयार करा</translation>
 <translation id="5578795271662203820">या इमेजसाठी <ph name="SEARCH_ENGINE" /> शोधा</translation>
 <translation id="558563010977877295">एक विशिष्‍ट पेज किंवा अन्य पेजवर उघडा</translation>
+<translation id="5594132774273121146">वापरकर्ता आणि खाते</translation>
 <translation id="5596627076506792578">अधिक पर्याय</translation>
 <translation id="5599455543593328020">गुप्त मोड</translation>
 <translation id="5601180634394228718">तुमच्या Chrome अनुभवामध्ये सुधारणा करण्यासाठी डेटा वापरणाऱ्या आणखी सेटिंग्जकरिता, <ph name="BEGIN_LINK" />Google सेवा<ph name="END_LINK" /> यावर जा.</translation>
@@ -1230,6 +1234,7 @@
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5833984609253377421">लिंक शेअर करा</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5839059463554891940">सुरक्षितता आणि संरक्षण</translation>
 <translation id="5841444063256914865">तुम्हाला तरीही "<ph name="FILE_NAME" />" डाउनलोड करायची आहे का?</translation>
 <translation id="5847265694842662173">Chrome ने गैरवापर करणाऱ्या आणि न वापरलेल्या साइटना नोटिफिकेशन पाठवण्यापासून थांबवले आहे</translation>
 <translation id="5848257610304005265"><ph name="APP_NAME" /> वापरून PDF उघडायची आहे का?</translation>
@@ -1346,7 +1351,6 @@
 <translation id="6259107733340311168">एंटरप्राइझ सिग्नल डिस्क्लेमर तळाशी असलेली शीट पूर्ण उंचीवर उघडली आहे</translation>
 <translation id="6260260490042862943">साइट नियंत्रणे</translation>
 <translation id="6264376385120300461">तरीही डाउनलोड करा</translation>
-<translation id="6264485186158353794">सुरक्षिततेकडे परत</translation>
 <translation id="6267106249090587268">नोटिफिकेशन <ph name="SEPARATOR" /> स्पॅम किंवा फसव्या आशयामुळे Chrome ने या परवानग्या काढून टाकल्या आहेत</translation>
 <translation id="6276708887952587684">पेज स्रोत पहा</translation>
 <translation id="62768169905160414">व्हिडिओ फ्रेम कॉपी करा</translation>
@@ -1465,7 +1469,6 @@
 <translation id="6659594942844771486">टॅब</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> मध्ये उघडा</translation>
 <translation id="6669390930482049506">मला सूचित करा</translation>
-<translation id="6670742294143102726">तुमच्या शोधामध्ये जोडण्यासाठी एक किंवा अधिक टॅब निवडा</translation>
 <translation id="6671495933530132209">इमेज कॉपी करा</translation>
 <translation id="6672697278890207089">तुमचा सांकेतिक वाक्यांश एंटर करा</translation>
 <translation id="6675622031235530028">बाहेर पडण्यासाठी Ctrl+Q धरून ठेवा</translation>
@@ -1731,6 +1734,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> साधारण टॅब}other{<ph name="TABS_COUNT_MANY" /> साधारण टॅब}}</translation>
 <translation id="7603168929588204083">चुकीची तारीख</translation>
 <translation id="7605594153474022051">सिंक कार्य करत नाही</translation>
+<translation id="7607002721634913082">विराम द्या</translation>
 <translation id="7608245556672190037">Chrome Finds ची निवड पूर्ण उंचीवर उघडली आहे</translation>
 <translation id="7612619742409846846">Google मध्ये हे म्हणून साइन इन केले</translation>
 <translation id="7612989789287281429">तुम्हाला साइन इन करत आहे…</translation>
@@ -1839,6 +1843,7 @@
 <translation id="800155843932969169">तुम्हाला सुरक्षित ठेवण्यासाठी तुमचे पासवर्ड सुरक्षितपणे तयार आणि स्टोअर करा, आणखी जलद साइन इन करा व पासवर्डच्या सुरक्षेसंबंधित समस्या ओळखा</translation>
 <translation id="8004582292198964060">ब्राउझर</translation>
 <translation id="8006630792898017994">स्पेस किंवा टॅब</translation>
+<translation id="802154636333426148">डाउनलोड अयशस्वी झाले</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, मल्टीसिलेक्ट केलेला पिन केलेला शेअर करत असलेला गुप्त टॅब</translation>
 <translation id="8025972204417227828">नवीन जोडा</translation>
 <translation id="8027863900915310177">कुठे डाउनलोड करायची आहे ते निवडा</translation>
@@ -1846,6 +1851,7 @@
 <translation id="8032569120109842252">फॉलो करत आहे</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, निवडलेला म्यूट केलेला गुप्त टॅब</translation>
 <translation id="8036587585440959897">काही एक्स्टेंशन Chrome मध्ये सर्च इंजीन जोडू शकतात.</translation>
+<translation id="803703704549420287">फिल्टर साफ करा</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> दिवस शिल्लक</translation>
 <translation id="8037801708772278989">नुकतेच तपासले</translation>
 <translation id="804335162455518893">SD कार्ड आढळले नाही</translation>

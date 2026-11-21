@@ -83,6 +83,8 @@ De reținut:
 <translation id="2574249610672786438">Conectează-te pe toate dispozitivele ca să vezi toate filele tale deschise în Chrome</translation>
 <translation id="2576431527583832481">Chrome a devenit și mai bun! Este disponibilă o nouă versiune.</translation>
 <translation id="257708665678654955">Dorești ca data viitoare Google Chrome să propună traducerea paginilor în limba <ph name="LANGUAGE_NAME" /> de pe acest site?</translation>
+<translation id="2599258827968143948">Preferatele tale de la Google sunt mai bune cu Chrome</translation>
+<translation id="260980777626165320">Deschide linkurile externe în Chrome în mod prestabilit.</translation>
 <translation id="2668242166988961773">Folosește Căutarea vocală în Chrome.</translation>
 <translation id="2703746758996815929">Pentru a primi sfaturi utile privind Chrome, activează notificările din setările iOS.</translation>
 <translation id="2728851697704606655">Tradu cu Google Lens</translation>
@@ -111,6 +113,7 @@ Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te de
 <translation id="314782365035065913">Accesează Chrome mai rapid din bara de andocare de pe ecranul de pornire</translation>
 <translation id="3167189358072330585">Contul nu funcționează pe Google Chrome. Contactează administratorul domeniului sau folosește un Cont Google obișnuit pentru a te conecta.</translation>
 <translation id="322254490661677575">Pentru a folosi și a salva datele Chrome în Contul Google, introdu expresia de acces.</translation>
+<translation id="3253082773078342494">Deschide linkurile direct în Chrome.</translation>
 <translation id="3303503998967553377">Folosește Acțiuni în Chrome pe iOS</translation>
 <translation id="3348862487678490430">Adaugă un element din Lista de lecturi în Chrome</translation>
 <translation id="3350281376951945723">Deschide linkurile mai rapid când setezi Chrome ca prestabilit</translation>
@@ -160,6 +163,7 @@ Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te de
 <translation id="4693084815234024320">Ești în modul incognito în Chrome</translation>
 <translation id="4713740144985377441">Revino la Chrome pentru a încărca fișierul</translation>
 <translation id="4724297637870447613">Folosește Chrome oriunde</translation>
+<translation id="4733290155432110050">Accesează direct Chrome</translation>
 <translation id="4738647308035481133">Pagină Google Chrome</translation>
 <translation id="4742795653798179840">Datele Chrome au fost șterse</translation>
 <translation id="4761869838909035636">Rulează verificarea de siguranță pentru Chrome</translation>
@@ -267,6 +271,7 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="7038674195294813388">Deschide setările Aplicații prestabilite în iOS, apoi atinge Aplicația browser și selectează Chrome.</translation>
 <translation id="7056826488869329999">Deschide și rulează Verificarea de siguranță în Chrome.</translation>
 <translation id="7061455974939528301">Apasă lung pictograma Chrome și dă clic pe Editează ecranul de pornire</translation>
+<translation id="7067302528015227615">Setează Chrome ca prestabilit pentru ca tranzițiile între aplicații să fie mai rapide și mai ușoare.</translation>
 <translation id="7095110968493193530">În Manager de parole Google pentru <ph name="EMAIL" /></translation>
 <translation id="7124339256045485976">Menține browserul Chrome actualizat</translation>
 <translation id="7135936755418321901">Pentru a permite accesul site-urilor la locația ta, atinge Setări pentru a permite browserului Chrome să-ți folosească locația.</translation>
@@ -278,6 +283,7 @@ Pentru mai multe setări care folosesc date pentru a-ți îmbunătăți experien
 <translation id="7200524487407690471">Chrome rulează automat Verificarea de siguranță în fiecare zi pentru a te proteja împotriva încălcării securității datelor, a site-urilor nesigure și nu numai. Poți afla mai multe despre Verificarea de siguranță în Setări.</translation>
 <translation id="7214019116829172458">Deschide o filă incognito în Chrome</translation>
 <translation id="722167379782941918">Chrome recomandă protecția îmbunătățită</translation>
+<translation id="722921700949937243">Asigură-te că toate linkurile se deschid întotdeauna în Chrome.</translation>
 <translation id="723787869754590019">Folosește Chrome pentru completare automată</translation>
 <translation id="7261678641327190792">Chrome nu îți poate verifica parolele</translation>
 <translation id="7272091023280308138">Deschide linkurile direct în Chrome data viitoare, fără să copiezi mai întâi adresele URL.</translation>

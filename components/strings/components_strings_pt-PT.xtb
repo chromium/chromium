@@ -373,6 +373,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> removeu um separador</translation>
 <translation id="1620510694547887537">Câmara</translation>
 <translation id="1623104350909869708">Evitar que esta página crie caixas de diálogo adicionais</translation>
+<translation id="1624535934412288769">Colunas</translation>
 <translation id="1629390138158333592">Pesquisar na Web</translation>
 <translation id="1633137413609266904">{0,plural, =1{A abertura deste ficheiro foi bloqueada pela política do administrador}other{A abertura de # ficheiros foi bloqueada pela política do administrador}}</translation>
 <translation id="1634828734222219955">Total</translation>
@@ -1082,6 +1083,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2803320044666896137">Este valor da política é ignorado porque o utilizador não está afiliado.</translation>
 <translation id="2807052079800581569">Posição Y da imagem</translation>
 <translation id="2808278141522721006">Pode ativar ou desativar o Windows Hello em <ph name="SETTINGS" /></translation>
+<translation id="2820159698793041599">O servidor proxy não conseguiu estabelecer uma ligação segura.</translation>
 <translation id="2820957248982571256">A analisar...</translation>
 <translation id="282457273878278063">Gerir informações de contacto</translation>
 <translation id="2824775600643448204">Barra de pesquisa e endereço</translation>
@@ -1263,6 +1265,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3120807611504813890">Envelope (leve)</translation>
 <translation id="3121994479408824897">Ir para <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Etiquetas (permanente)</translation>
+<translation id="3128081114752791872">O certificado de segurança do servidor proxy é inválido.</translation>
 <translation id="3131746543143948171">Este site parece semelhante a outros sites associados a phishing, malware e fraudes. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">Guarde o número de correção</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> é agora o seu motor de pesquisa predefinido</translation>
@@ -1681,7 +1684,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="3800436529451849929">A partir de <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Visita frequentemente</translation>
 <translation id="380329542618494757">Nome</translation>
-<translation id="3803481123869276674">Quando fizer compras no Chrome, veja a carteira eletrónica como opção</translation>
 <translation id="3803801106042434208">Estes motores de pesquisa são populares na sua região</translation>
 <translation id="3804112825000113857">Veja as definições de preenchimento automático</translation>
 <translation id="380666903981445943">Guarde um método de pagamento na sua Conta Google para o preencher automaticamente em compras feitas no Chrome</translation>
@@ -2164,6 +2166,7 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="4612631413844865947">Ocorreu um erro ao processar a sua encomenda em <ph name="MERCHANT_ORIGIN" /> através de <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="4612904677925722054">Este site pode ter conteúdo não apropriado para menores. Os teus pais ou tutor têm de indicar que podes visitar este Website.</translation>
 <translation id="4613873770449493819">O URL tem de apontar para um domínio do <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
+<translation id="4615154194248230658">Este padrão não parece corresponder a um domínio de endereço de email válido. Os utilizadores podem não conseguir iniciar sessão ou os perfis existentes podem ser removidos.</translation>
 <translation id="4619564267100705184">Validar identidade</translation>
 <translation id="4619669610757527494">Guarde a carta de condução na Carteira do Google</translation>
 <translation id="4622292761762557753">Transferir mesmo assim</translation>
@@ -2682,7 +2685,6 @@ Para ocultar as opções para pagar depois, aceda às <ph name="BEGIN_LINK" />de
 <translation id="5447235695608032700">Permita que o site <ph name="SITE" /> use as informações que guardou sobre si</translation>
 <translation id="5447973833955560753">Palavra-passe de recuperação</translation>
 <translation id="5452270690849572955">Não é possível encontrar esta página de <ph name="HOST_NAME" /></translation>
-<translation id="5452923259299906094">Pague com a carteira eletrónica e o Pix</translation>
 <translation id="5455374756549232013">Carimbo de data/hora da política incorreto</translation>
 <translation id="5456428544444655325">Nunca mostrar</translation>
 <translation id="5457082343331641453">Adicione à sua pesquisa</translation>
@@ -3897,7 +3899,6 @@ Detalhes adicionais:
 <translation id="7489919936111034362">O seu armazenamento do Google Drive está cheio</translation>
 <translation id="7490622939531327327">Compreensão de formulários mais inteligente</translation>
 <translation id="7495528107193238112">Este conteúdo está bloqueado. Contacte o proprietário do site para corrigir o problema.</translation>
-<translation id="7499188644237027195">Quando fizer compras no Chrome, veja a carteira eletrónica e o Pix como opções</translation>
 <translation id="7499684925421947861">Permitir que o <ph name="ACTOR_NAME" /> inicie sessão em <ph name="DOMAIN" /> por si?</translation>
 <translation id="7501663406926337752">O site seguinte foi denunciado pela sua organização</translation>
 <translation id="7502044688973049724">gerir as suas informações</translation>
@@ -4022,7 +4023,6 @@ Detalhes adicionais:
 <translation id="7676840398262504532">A sua organização monitoriza a cópia</translation>
 <translation id="767806704757698045">Só funciona em sites compatíveis</translation>
 <translation id="7678730592635586336">Repetir vídeo</translation>
-<translation id="7679287273775285018">Pague com a carteira eletrónica</translation>
 <translation id="7679367271685653708">Veja e faça a gestão do histórico de navegação nas definições do Chrome</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, expira a <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Envio</translation>
@@ -4097,7 +4097,6 @@ Detalhes adicionais:
 <translation id="7791543448312431591">Adicionar</translation>
 <translation id="7798389633136518089">Ignorado porque a política não está definida por uma origem na nuvem.</translation>
 <translation id="7800304661137206267">A ligação é encriptada utilizando <ph name="CIPHER" />, com <ph name="MAC" /> para autenticação de mensagens e <ph name="KX" /> como mecanismo de troca de chaves.</translation>
-<translation id="780228007282527248">Adicione um separador ou uma imagem para melhorar a sua pesquisa</translation>
 <translation id="7802523362929240268">O site é legítimo</translation>
 <translation id="7802989406998618639">Introduza o código de segurança de <ph name="NUMBER_OF_DIGITS" /> dígitos <ph name="SIDE_OF_CARD" /> para que o banco possa validar a sua identidade</translation>
 <translation id="780301667611848630">Não, obrigado</translation>
@@ -4233,6 +4232,7 @@ Detalhes adicionais:
 <translation id="8029829038322015001">Vermelho 1</translation>
 <translation id="8032546467100845887">Transparência</translation>
 <translation id="8035152190676905274">Caneta</translation>
+<translation id="803703704549420287">Limpar filtros</translation>
 <translation id="8037117624646282037">Quem utilizou o dispositivo recentemente</translation>
 <translation id="803771048473350947">Ficheiro</translation>
 <translation id="8038182528865038593">Vermelho 2</translation>
@@ -4421,6 +4421,7 @@ Detalhes adicionais:
 <translation id="8363502534493474904">Desativar o modo de avião</translation>
 <translation id="8363929499301563123">Cookies de Websites (o estado de sessão iniciada nos Websites visitados recentemente vai ser preservado)</translation>
 <translation id="8364627913115013041">Não definida.</translation>
+<translation id="8364664414979300296">Adicione separadores, fotos e muito mais para melhorar a sua pesquisa</translation>
 <translation id="836616551641291797">Saiba como o navegador é gerido</translation>
 <translation id="8367705492654390392">Pergunte o que quiser</translation>
 <translation id="8368001212524806591">Monitorizar preço</translation>

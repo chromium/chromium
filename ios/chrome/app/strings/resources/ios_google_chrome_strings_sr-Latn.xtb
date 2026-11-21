@@ -83,6 +83,8 @@
 <translation id="2574249610672786438">Da biste videli kartice na bilo kojem uređaju na kom koristite Chrome, prijavite se na svim uređajima</translation>
 <translation id="2576431527583832481">Chrome je upravo postao bolji! Dostupna je nova verzija.</translation>
 <translation id="257708665678654955">Želite li da Google Chrome sledeći put ponudi da prevede stranice sa ovog sajta čiji je jezik <ph name="LANGUAGE_NAME" />?</translation>
+<translation id="2599258827968143948">Omiljeni Google sadržaji bolji su uz Chrome</translation>
+<translation id="260980777626165320">Podrazumevano otvarajte spoljne linkove u Chrome-u.</translation>
 <translation id="2668242166988961773">Pretražujte glasom u Chrome-u.</translation>
 <translation id="2703746758996815929">Da biste dobijali korisne savete za Chrome, uključite obaveštenja u podešavanjima iOS-a.</translation>
 <translation id="2728851697704606655">Prevodite pomoću Google objektiva</translation>
@@ -111,6 +113,7 @@ Ne možete da sačuvate nove obeleživače na nalogu dok neke ne izbrišete. Ako
 <translation id="314782365035065913">Brže pristupajte Chrome-u sa trake s aplikacijama na početnom ekranu</translation>
 <translation id="3167189358072330585">Nalog ne funkcioniše na Google Chrome-u. Kontaktirajte administratora domena ili se prijavite pomoću običnog Google naloga.</translation>
 <translation id="322254490661677575">Da biste koristili i čuvali Chrome podatke na Google nalogu, unesite pristupnu frazu.</translation>
+<translation id="3253082773078342494">Otvarajte linkove direktno u Chrome-u.</translation>
 <translation id="3303503998967553377">Koristite Chrome radnje na iOS-u</translation>
 <translation id="3348862487678490430">Dodavanje stavke liste za čitanje u Chrome</translation>
 <translation id="3350281376951945723">Brže otvarajte linkove kada podesite Chrome kao podrazumevani pregledač</translation>
@@ -160,6 +163,7 @@ Ne možete da sačuvate nove obeleživače na nalogu dok neke ne izbrišete. Ako
 <translation id="4693084815234024320">Koristite Chrome režim bez arhiviranja</translation>
 <translation id="4713740144985377441">Vratite se u Chrome da biste otpremili fajl</translation>
 <translation id="4724297637870447613">Koristite Chrome svuda</translation>
+<translation id="4733290155432110050">Pređite direktno na Chrome</translation>
 <translation id="4738647308035481133">Google Chrome stranica</translation>
 <translation id="4742795653798179840">Izbrisani Chrome podaci</translation>
 <translation id="4761869838909035636">Pokrenite Chrome bezbednosnu proveru</translation>
@@ -267,6 +271,7 @@ Još podešavanja koja koriste podatke za poboljšanje doživljaja Chrome-a potr
 <translation id="7038674195294813388">Otvorite podešavanja podrazumevanih aplikacija u iOS-u, pa dodirnite Browser App (Aplikacija pregledača) i izaberite Chrome.</translation>
 <translation id="7056826488869329999">Otvara i pokreće Proveru bezbednosti u Chrome-u.</translation>
 <translation id="7061455974939528301">Pritisnite i zadržite ikonu Chrome-a, pa kliknite na Izmenite početni ekran</translation>
+<translation id="7067302528015227615">Podesite Chrome kao podrazumevani pregledač da biste ubrzali i olakšali prelaske između aplikacija.</translation>
 <translation id="7095110968493193530">U Google menadžeru lozinki za <ph name="EMAIL" /></translation>
 <translation id="7124339256045485976">Redovno ažuriraju Chrome</translation>
 <translation id="7135936755418321901">Da biste delili lokaciju sa veb-sajtovima, dodirnite Podešavanja i omogućite Chrome-u da koristi lokaciju.</translation>
@@ -278,6 +283,7 @@ Još podešavanja koja koriste podatke za poboljšanje doživljaja Chrome-a potr
 <translation id="7200524487407690471">Chrome automatski pokreće Proveru bezbednosti svakog dana da bi vas zaštitio od povrede podataka, nebezbednih veb-sajtova i drugog. Više o Proveri bezbednosti možete da pronađete u Podešavanjima.</translation>
 <translation id="7214019116829172458">Otvaranje Chrome kartice bez arhiviranja</translation>
 <translation id="722167379782941918">Chrome preporučuje poboljšanu zaštitu</translation>
+<translation id="722921700949937243">Otvarajte sve linkove u Chrome-u.</translation>
 <translation id="723787869754590019">Koristite Chrome za automatsko popunjavanje</translation>
 <translation id="7261678641327190792">Chrome ne može da vam proverava lozinke</translation>
 <translation id="7272091023280308138">Sledeći put otvorite linkove direktno u Chrome-u bez prethodnog kopiranja URL-ova.</translation>

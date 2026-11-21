@@ -10,6 +10,7 @@
 <translation id="1097658378307015415">Saioa hasi aurretik, sartu gonbidatu gisa <ph name="NETWORK_ID" /> sarea aktibatzeko</translation>
 <translation id="1111932478203988717">Haurrak gailuan saioa hasteko erabil dezake PIN hau</translation>
 <translation id="1122587596907914265">Atondu horma-paper esklusiboak</translation>
+<translation id="1122913801042512795">Kontuan saioa hasteko xehetasunak zaharkituta daude. Amaitu saioa eta has ezazu berriro.</translation>
 <translation id="1131201598497838573">Eguneratu da haurraren PINa</translation>
 <translation id="1147322039136785890"><ph name="SUPERVISED_USER_NAME" /> erabiltzailearen txanda da orain</translation>
 <translation id="1148669835763563782">Chromebook-aren eginbiderik berrienak eta segurtasun hobetua lortzeko jaso duzu azken software-eguneratzea. Eguneratze honek konfigurazio-prozesu hobetu bat dauka, Chromebook-a arazorik gabe erabiltzen hasteko.</translation>
@@ -26,6 +27,7 @@
 <translation id="1256588359404100567">Aurreko gailuko ezarpena sinkronizatu da.</translation>
 <translation id="1272978324304772054">Erabiltzaile-kontu hau ez da gailua erregistratu den domeinukoa. Beste domeinu batean erregistratu ahal izateko, gailua berreskuratu behar duzu.</translation>
 <translation id="1293556467332435079">Fitxategiak</translation>
+<translation id="1302523850133262269">Itxaron Chrome-k sistemaren azken eguneratzeak instalatu arte.</translation>
 <translation id="1307559529304613120">Sistemak ezin izan du biltegiratu gailu honi dagokion APIaren epe luzerako sarbide-tokena.</translation>
 <translation id="1335929031622236846">Erregistratu gailua</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Arazketa-eginbideak<ph name="END_H3" />
@@ -49,6 +51,7 @@
 <translation id="1347625331607114917">Egiaztatu kodea Android-eko telefonoarekin</translation>
 <translation id="1347975661240122359">Bateriaren gutxienez % <ph name="BATTERY_LEVEL" /> duzunean hasiko da eguneratzen.</translation>
 <translation id="1353275871123211385">Guraso-murriztapenak erabiltzeko (adibidez, aplikazioak onartzeko aukera eta erabilera-ordutegia), guraso batek kudeatu behar du haurraren Google-ko kontua. Ikastetxeko kontu bat gehi daiteke gero, Google Classroom-en eta antzeko tresnetan erabiltzeko.</translation>
+<translation id="1363996462118479832">Saioa hastean gertatu den errore bat dela eta, Chrome OS-k ezin izan ditu sinkronizatu zure datuak.</translation>
 <translation id="1375557162880614858">ChromeVox (ChromeOS Flex-en pantaila-irakurgailu integratua) aktibatu nahi duzu?</translation>
 <translation id="1377600615067678409">Saltatu, momentuz</translation>
 <translation id="1399261165075500043">Ezin dira kargatu Google Play-ren Zerbitzu-baldintzak</translation>
@@ -73,6 +76,7 @@
 <translation id="1642494467033190216">rootfs bidezko babesa kendu eta gailua berriro abiarazi behar duzu beste arazketa-eginbide batzuk gaitzeko.</translation>
 <translation id="1646045728251578877">Software-eguneratze bat erabilgarri</translation>
 <translation id="1650801028905250434">Nire unitatea ataleko fitxategiak Chromebook-arekin automatikoki sinkronizatuko dira, Interneteko konexiorik gabe atzitu ahal izan ditzazun. Hori aldatzeko, joan Ezarpenak &gt; Fitxategiak atalera.</translation>
+<translation id="16620462294541761">Ezin izan da pasahitza egiaztatu. Saiatu berriro.</translation>
 <translation id="1668435968811469751">Erregistratu eskuz</translation>
 <translation id="1678919064276516737">Idatzitako helbide elektronikoa eta PINa ez datoz bat</translation>
 <translation id="1692115862433274081">Erabili beste kontu bat</translation>
@@ -94,6 +98,7 @@
 <translation id="1868617395637139709">Erabili kokapena Android-erako aplikazio eta zerbitzuetan.</translation>
 <translation id="1877377730633446520"><ph name="REQUIRED_SPACE" /> erabiliko dira gutxi gorabehera. Une honetan, <ph name="FREE_SPACE" /> daude libre.</translation>
 <translation id="1878155070920054810">Chromebook-aren bateria agortu egingo da eguneratzea amaitu aurretik. Ziurtatu behar bezala kargatzen ari dela, etenik gerta ez dadin.</translation>
+<translation id="1887442540531652736">Errore bat gertatu da saioa hastean</translation>
 <translation id="189035593835762169">Zehaztapenak eta baldintzak</translation>
 <translation id="189358972401248634">Beste hizkuntzak</translation>
 <translation id="1915734383465415025">Denda-zenbakia</translation>
@@ -122,6 +127,7 @@
 <translation id="2210462644007531147">Ezin izan da osatu instalazioa</translation>
 <translation id="221872881068107022">Gora edo behera alderantziz egitea</translation>
 <translation id="2219081237089444028">Ezarri <ph name="DEVICE_TYPE" /> gailuko pasahitz bat, saioa hastea errazteko</translation>
+<translation id="2220529011494928058">Eman arazo baten berri</translation>
 <translation id="222115440608612541">Aldatu gaiak egunsentian eta ilunabarrean</translation>
 <translation id="2229161054156947610">Ordu bat baino gehiago geratzen da</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> gailua automatikoki eguneratuko da atzeko planoan. Horrela, azken eginbideak eta segurtasun-hobekuntzak izango dituzu. Ezarpenak atalean berrikus ditzakezu softwarea eguneratzeko aukeraren inguruko hobespenak.</translation>
@@ -132,6 +138,7 @@
 <translation id="2328137272841210255">Berrezarri PINa</translation>
 <translation id="2342180549977909852">Pasahitz baten ordez, haurrak zenbaki (PIN) bat erabil dezake gailua desblokeatzeko. PINa geroago ezartzeko, joan Ezarpenak atalera.</translation>
 <translation id="2359808026110333948">Egin aurrera</translation>
+<translation id="2384373936468275798">Chromium OS-k ezin izan ditu sinkronizatu zure datuak, kontuan saioa hasteko xehetasunak zaharkituta daudelako.</translation>
 <translation id="2387052489799050037">Joan orri nagusira</translation>
 <translation id="2395616325548404795">Erregistratu da <ph name="DEVICE_TYPE" /> enpresak kudeatzeko, baina ez da bidali haren baliabideen eta kokapenaren gaineko informazioa. Eskuratu informazio hori gailuaren administrazio-kontsolatik eta idatz ezazu eskuz.</translation>
 <translation id="2408955596600435184">Idatzi PINa</translation>
@@ -158,6 +165,7 @@
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Gailu honen kokapena estimatzeko, wifi-sareak, sare mugikorrak eta sentsoreak erabiltzen ditu Google-ren kokapen-zerbitzuak.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Gailu honetan Android-en kokapena desaktibatzeko, joan Ezarpenak &gt; Aplikazioak &gt; Google Play Store &gt; Kudeatu Android-eko hobespenak &gt; Segurtasuna eta kokapena &gt; Kokapena atalera. Halaber, Android-en kokapena zehazteko wifi-sareak, sare mugikorrak eta sentsoreak erabiltzeko aukera desaktiba dezakezu. Horretarako, desaktibatu "Google-ren Kokapen-zehaztasuna" ezarpena menu berean.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2663302507110284145">Hizkuntza</translation>
+<translation id="2674238339205910678">Kontuan saioa hasteko xehetasunak zaharkituta daudela eta, ChromeOS Flex-ek ezin izan ditu gorde Chrome-ko datuak Google-ko kontuan</translation>
 <translation id="2687407218262674387">Google-ren Zerbitzu-baldintzak</translation>
 <translation id="2688196195245426394">Errore bat gertatu da gailua zerbitzariarekin erregistratzean: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Sorta batean dagoen gailu bat da hau eta ezin da erregistratu kiosko eta seinaleztatze moduaren bertsio berrian.</translation>
@@ -252,6 +260,7 @@
 <translation id="3740945083753997630">Txikitu pantailaren eta testuaren tamaina</translation>
 <translation id="376841534249795524">Zertarako erabiliko duzu <ph name="DEVICE_TYPE" />?</translation>
 <translation id="3772046291955677288">Irakurri ditut eta onartzen ditut <ph name="BEGIN_LINK1" />Google-ren Zerbitzu-baldintzak<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />Chrome-ren eta ChromeOS-ren Zerbitzu-baldintza gehigarriak<ph name="END_LINK2" />.</translation>
+<translation id="3785324443014631273">Saioa hastean gertatu den errore bat dela eta, ChromeOS Flex-ek ezin izan ditu sinkronizatu zure datuak.</translation>
 <translation id="3789841737615482174">Instalatu</translation>
 <translation id="3800828618615365228">Chrome-ren eta ChromeOS-ren baldintza gehigarriak</translation>
 <translation id="3828953470056652895">Irakurri ditut eta onartzen ditut <ph name="BEGIN_LINK1" />Google-ren Zerbitzu-baldintzak<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome-ren eta ChromeOS-ren Zerbitzu-baldintza gehigarriak<ph name="END_LINK2" /> eta <ph name="BEGIN_LINK3" />Google Play-ren Zerbitzu-baldintzak<ph name="END_LINK3" />.</translation>
@@ -332,6 +341,7 @@
         <ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Informazio gehiago lortzeko, joan g.co/flex/InstallErrors helbidera.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Nor gehitu nahi duzu <ph name="DEVICE_TYPE" /> gailuan?</translation>
+<translation id="4543778593405494224">Ziurtagiri-kudeatzailea</translation>
 <translation id="4566170377336116390">Erregistroa amaitu ondoren moduz aldatu nahi baduzu, gailuaren jatorrizko datuak berrezarri beharko dituzu (Powerwash bidez).</translation>
 <translation id="4567512141633030272">Saioa hasteko okerreko modua hautatu duzu?</translation>
 <translation id="4567533462991917415">Konfiguratzen amaitu ondoren jende gehiago gehi dezakezu. Bakoitzak bere kontua pertsonaliza dezake, eta datuak pribatu mantendu.</translation>
@@ -349,6 +359,7 @@
 <translation id="4814327014588285482">Saltatu eta gogorarazi geroago</translation>
 <translation id="4830502475412647084">Sistema eragilearen eguneratzea instalatzen</translation>
 <translation id="4837926214103741331">Ez duzu gailua erabiltzeko baimenik. Saioa hasteko baimena lortzeko, jarri gailuaren jabearekin harremanetan.</translation>
+<translation id="4842397268809523050">ChromeOS Flex-ek ezin izan ditu sinkronizatu zure datuak, sinkronizazioa ez dagoelako erabilgarri zure domeinuan.</translation>
 <translation id="4844333629810439236">Bestelako teklatuak</translation>
 <translation id="484462545196658690">Automatikoa</translation>
 <translation id="4864369630010738180">Saioa hasten…</translation>
@@ -360,6 +371,7 @@
 <translation id="4944310289250773232"><ph name="SAML_DOMAIN" /> da autentifikazio-zerbitzuaren ostalaria</translation>
 <translation id="4955710816792587366">Aukeratu PIN bat</translation>
 <translation id="4965808351167763748">Ziur gailu hau Hangouts Meet zerbitzuarekin erabiltzeko konfiguratu nahi duzula?</translation>
+<translation id="4969674060580488087">ChromeOS Flex-ek ezin izan ditu sinkronizatu zure datuak, kontuan saioa hasteko xehetasunak iraungi egin direlako.</translation>
 <translation id="4987944280765486504">Deskarga osatzean, Chromebook-a berrabiaraziko da, eta konfiguratzen jarraitu ahal izango duzu.</translation>
 <translation id="5029287942302939687">Ezarri da pasahitza</translation>
 <translation id="503155457707535043">Deskargatzen ari dira aplikazioak</translation>
@@ -401,6 +413,8 @@
 <translation id="528208740344463258">Android-erako aplikazioak deskargatu eta erabiltzeko, beharrezko eguneratze hau instalatu behar duzu lehendabizi. Ezingo duzu erabili <ph name="DEVICE_TYPE" /> gailua eguneratzea instalatu bitartean. Instalatzen amaitutakoan, berrabiarazi egingo da <ph name="DEVICE_TYPE" /> gailua.</translation>
 <translation id="5283677936944177147">Sistemak ezin izan du zehaztu gailuaren modeloa edo serie-zenbakia.</translation>
 <translation id="5333896723098573627">Aplikazioak kentzeko, joan Ezarpenak &gt; Aplikazioak &gt; Google Play Store &gt; Kudeatu Android-eko hobespenak &gt; Aplikazioak edo Aplikazioen kudeatzailea atalera. Sakatu desinstalatu nahi duzun aplikazioa (baliteke hatza eskuinera edo ezkerrera pasatu behar izatea hura aurkitzeko). Ondoren, sakatu Desinstalatu edo Desgaitu.</translation>
+<translation id="5334309298019785904">Chrome OS-k ezin izan ditu sinkronizatu zure datuak, sinkronizazioa ez dagoelako erabilgarri zure domeinuan.</translation>
+<translation id="535243042947607642">Kontuan saioa hasteko xehetasunak zaharkituta daudela eta, Chromium OS-ek ezin izan ditu gorde Chromium-eko datuak zure Google-ko kontuan</translation>
 <translation id="5355501370336370394">Erregistratu enpresa-gailu bat</translation>
 <translation id="5372529912055771682">Sistema eragilearen bertsio honek ez du onartzen erregistratzeko adierazitako modua. Egiaztatu bertsiorik berriena erabiltzen ari zarela eta saiatu berriro.</translation>
 <translation id="5397378439569041789">Erregistratu kiosko moduan edo seinaleztatze moduan funtzionatzen duen gailu bat</translation>
@@ -412,6 +426,7 @@
 <translation id="5448293924669608770">Arazo bat izan da saioa hastean</translation>
 <translation id="5453829744223920473">Haurrak ikastetxean darabiltzan aplikazio, laster-marka eta baliabide guztiak erabil ditzake, ikasgelan bezalaxe. Ikastetxeak ezartzen ditu oinarrizko arauak.</translation>
 <translation id="5473099001878321374">Aurrera eginez gero, onartu egingo duzu litekeena dela gailuak automatikoki deskargatu eta instalatzea Google-ren, haurraren operadorearen eta fabrikatzailearen eguneratzeak eta aplikazioak, beharbada datu-konexioa erabilita. Baliteke aplikazio horietako batzuetan erosketak egin ahal izatea.</translation>
+<translation id="549669000822060376">Itxaron Chromium-ek sistemaren azken eguneratzeak instalatu arte.</translation>
 <translation id="5502915260472117187">Haur bat</translation>
 <translation id="5511823366942919280">Ziur gailua "Shark" gailu gisa ezarri nahi duzula?</translation>
 <translation id="5513807280330619196">Kalkulagailua</translation>
@@ -515,6 +530,7 @@
 <translation id="6495266441917713704">Ezin da transferitu wifia</translation>
 <translation id="6515620015470298987">Ezin izan da hasi saioa, gailuaren konfigurazioaren egiaztapen-arazo batengatik. Leheneratu <ph name="DEVICE_TYPE" /> Powerwash bidez eta saiatu berriro.</translation>
 <translation id="6519689855001245063">Egokitasuna egiaztatzen</translation>
+<translation id="6520608191273161151">Saioa hastean gertatu den errore bat dela eta, ChromeOS Flex-ek ezin izan ditu gorde Chrome-ko datuak Google-ko kontuan</translation>
 <translation id="6532527800157340614">Ezin izan da hasi saioa, ezin izan delako eskuratu sarbide-tokena. Egiaztatu sarera konektatuta zaudela eta saiatu berriro.</translation>
 <translation id="653920215766444089">Gailu erakuslea bilatzen</translation>
 <translation id="65513682072153627">Ezarpen edo eginbide bat administratzaileak kudeatzen badu agertuko da "Kudeatua" dela dioen ikonoa.</translation>
@@ -526,8 +542,10 @@
 <translation id="6675665718701918026">Konektatu da gailu erakuslea</translation>
 <translation id="667752334740867460">Wifiari buruzko informazioa jasotzen…</translation>
 <translation id="6680442031740878064">Libre: <ph name="AVAILABLE_SPACE" /></translation>
+<translation id="668175097507315160">Saioa hastean gertatu den errore bat dela-eta, Chromium OS-k ezin izan ditu sinkronizatu zure datuak.</translation>
 <translation id="6684827949542560880">Azken eguneratzea deskargatzen</translation>
 <translation id="6722744767592605627"><ph name="EMAIL" /> berreskura dezakezu, baina gailuko datuak ezabatuko dira.</translation>
+<translation id="6735387454586646204">ChromeOS Flex sistema</translation>
 <translation id="6748980958975836188">Irakurri ditut eta onartzen ditut <ph name="BEGIN_LINK1" />Google-ren Zerbitzu-baldintzak<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />Chrome-ren eta ChromeOS-ren Zerbitzu-baldintza gehigarriak<ph name="END_LINK2" />.</translation>
 <translation id="6749473226660745022">Argazkiak</translation>
 <translation id="6754918760968695779">Txertatze bizkorra</translation>
@@ -552,6 +570,7 @@
 <translation id="6918733588290914545">Konfiguratu bizkor Android-eko telefonoarekin</translation>
 <translation id="6920473853105515518">Ziurtatu <ph name="DEVICE_TYPE" /> Internetera konektatuta dagoela eta saiatu berriro. Bestela, play.google/play-terms beste gailu batean ireki dezakezu.</translation>
 <translation id="6929126689972602640">Ez dira onartzen guraso-murriztapenak ikastetxeko kontuetan. Ikastetxeko kontu bat gehitu nahi izanez gero Google Classroom-en eta antzeko webguneetan etxerako lanak egin ahal izateko, lehendabizi hasi saioa haurraren kontu pertsonalean. Geroago, konfigurazioan gehitu ahalko duzu ikastetxeko kontua.</translation>
+<translation id="6933858244219479645">ChromeOS sistema</translation>
 <translation id="6935031746833428401">Lortu informazio gehiago gailu-kudeatzaileari buruz</translation>
 <translation id="6950351336108213154">Gailuaren periferikoak eguneratzen</translation>
 <translation id="6955698182324067397">Chrome OS-ren arazketa-eginbideak gaitzera zoaz. Eginbide horiek sshd daemon konfiguratuko dute, eta USB bidezko unitateetatik abiarazteko aukera gaituko.</translation>
@@ -648,6 +667,7 @@
 <translation id="7870730066603611552">Berrikusi sinkronizazio-aukerak konfigurazioaren ondoren</translation>
 <translation id="7883792253546618164">Edonoiz ken dezakezu harpidetza.</translation>
 <translation id="7887864092952184874">Bluetooth sagua parekatuta dago</translation>
+<translation id="7905880575591690197">Saioa hastean gertatu den errore bat dela eta, ChromeOS-ek ezin izan ditu gorde Chrome-ko datuak Google-ko kontuan</translation>
 <translation id="7906440585529721295">Gailuko datuak ezabatuko dira</translation>
 <translation id="7910725946105920830">Erabili Google-ko kontu pertsonala</translation>
 <translation id="7918257978052780342">Erregistratu</translation>
@@ -674,6 +694,7 @@
 <translation id="8098616321286360457">Sarera konektatuta egon behar duzu</translation>
 <translation id="8129265306888404830">Zure erakundeko helbide elektronikoa erabiltzeko (<ph name="EMAIL_DOMAIN" />), enpresan erregistratu behar zara. Gailua erabilera pertsonalerako behar baduzu, hasi saioa Google-ko kontuarekin.</translation>
 <translation id="8131740175452115882">Berretsi</translation>
+<translation id="8133124826068723441">Chromium OS-k ezin izan ditu sinkronizatu zure datuak sinkronizazioa ez dagoelako erabilgarri zure domeinuan.</translation>
 <translation id="8146177459103116374">Dagoeneko gailu honetan erregistratu bazara, <ph name="LINK2_START" />lehendik zegoen erabiltzaile gisa has dezakezu saioa<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Ezin izan da hasi saioa. Jarri harremanetan administratzailearekin edo saiatu berriro.</translation>
 <translation id="8147346945017130012">Lagundu Chrome eta ChromeOS-ren eginbideak eta funtzionamendua hobetzen Google-ri hutsegite-txostenak, diagnostiko- eta erabilera-datuak automatikoki bidalita.</translation>
@@ -692,6 +713,7 @@
 <translation id="8271379370373330993">Hurrengo pausoak gurasoek egin behar dituzte. Kontua konfiguratzen amaitutakoan itzuli ahalko diozu <ph name="DEVICE_TYPE" /> gailua haurrari.</translation>
 <translation id="8274924778568117936">Eguneratzen amaitu arte, ez itzali edo itxi <ph name="DEVICE_TYPE" /> gailua. Instalatzen amaitutakoan, berrabiarazi egingo da <ph name="DEVICE_TYPE" />-a.</translation>
 <translation id="8281886186245836920">Saltatu</translation>
+<translation id="8286036467436129157">Hasi saioa</translation>
 <translation id="8289509909262565712">Ongi etorri <ph name="DEVICE_OS" /> sistemara</translation>
 <translation id="8291942417224950075">Erabilera pertsonalerako</translation>
 <translation id="8304383784961451596">Ez duzu baimenik gailu hau erabiltzeko. Jarri harremanetan administratzailearekin saioa hasteko baimena lortzeko, edo hasi saioa Family Link-ek gainbegiratutako Google-ko kontu batean.</translation>
@@ -703,6 +725,7 @@
 <translation id="8401432541486058167">Eman txartel adimendunarekin lotutako PINa.</translation>
 <translation id="8408270600235826886">Google-rekin zer datu partekatzen diren kontrola dezakezu. Ezarpenetan alda dezakezu aukera hori. Google-ren <ph name="BEGIN_LINK" />Pribatutasun-gidalerroen<ph name="END_LINK" /> arabera erabiliko dira datuak.</translation>
 <translation id="8413956290606243087">ChromeVox (Chrome OS-ren pantaila-irakurgailu integratua) aktibatu nahi duzu?</translation>
+<translation id="8418845734693287262">Chrome OS-k ezin izan ditu sinkronizatu zure datuak, kontuan saioa hasteko xehetasunak zaharkituta daudelako.</translation>
 <translation id="8425768983279799676">Gailua desblokeatzeko erabil dezakezu PINa.</translation>
 <translation id="8428213095426709021">Ezarpenak</translation>
 <translation id="843173223122814223">Sortu atzeko planoak AA bidez</translation>
@@ -742,10 +765,12 @@
 <translation id="8794548468611058947">Saioa hasteko Google-ko kontuko pasahitza idatzi ordez, <ph name="DEVICE_TYPE" /> honetarako PIN bat sor dezakezu</translation>
 <translation id="8830779999439981481">Gailua berrabiarazten, eguneratzeak aplikatzeko</translation>
 <translation id="8830796635868321089">Ezin izan da egiaztatu eguneratzerik dagoen oraingo proxy-ezarpenak erabilita. Doitu <ph name="PROXY_SETTINGS_LINK_START" />proxy-ezarpenak<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
+<translation id="8833697763442816810">Chromium OS sistema</translation>
 <translation id="8855977033756560989">Chromebook Enterprise-ko gailuak Chrome Enterprise Upgrade dakar. Enpresaren eginbideak erabiltzeko, erregistratu gailua Google-ren administratzaile-kontu batekin.</translation>
 <translation id="885746075120788020">Gordetako hobespenak eta jarduerak prest egongo dira Chrome OS-ko gailuetan Google-ko kontuarekin saioa hasten duzunean. Zer sinkronizatu nahi duzun aukeratzeko, joan Ezarpenak atalera.</translation>
 <translation id="8868333925931032127">Demo modua abiarazten</translation>
 <translation id="8875221558267407626">Laburbildu edukia, sinplifikatu hizkera konplexua edo egin galderak</translation>
+<translation id="8890569919834781711">Saioa hastean gertatu den errore bat dela eta, Chromium OS-ek ezin izan ditu gorde Chromium-eko datuak zure Google-ko kontuan</translation>
 <translation id="8907701755790961703">Hautatu herrialde bat</translation>
 <translation id="8913163265790894442">Konfiguratu <ph name="DEVICE_TYPE" /> erraz telefonoarekin. Wifia eta Google-ko kontua pasahitzak eskuz idatzi gabe gehi ditzakezu.
         <ph name="BR" />
@@ -781,5 +806,6 @@
 <translation id="951991426597076286">Baztertu</translation>
 <translation id="954749761428814584">Hizkuntza eta idazketa-metodoa</translation>
 <translation id="960987915827980018">Gutxi gorabehera, ordubete falta da</translation>
+<translation id="973195869036269770">Kontuan saioa hasteko xehetasunak zaharkituta daudela eta, ChromeOS-ek ezin izan ditu gorde Chrome-ko datuak Google-ko kontuan</translation>
 <translation id="995420352808264005">Aukeratu gailua erregistratzeko mota</translation>
 </translationbundle>

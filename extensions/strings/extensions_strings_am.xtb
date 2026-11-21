@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">ገጽታን አንቃ</translation>
+<translation id="1085064499066015002">ሁሉም ጣቢያዎችን ሁሌም አብራ</translation>
 <translation id="1135328998467923690">ጥቅል ልክ የሆነ አይደለም፦ «<ph name="ERROR_CODE" />»።</translation>
 <translation id="1140871961407805696">አካባቢውን የሚመለከት</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> Chromium የሚሠራበትን መንገድ ሊለውጥ የሚችል ቅጥያ አክሏል።
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">የተጠበቀው ስሪት «<ph name="EXPECTED_VERSION" />» ነበር፣ ግን ስሪቱ «<ph name="NEW_ID" />» ነበር</translation>
 <translation id="471800408830181311">የግላዊ ቁልፍን ውጤት ማውጣት አልተሳካም።</translation>
 <translation id="4811956658694082538">የመገልገያ ሂደት ስለተጨናገፈ ጥቅሉን መጫን አልተቻለም። Chromeን እንደገና አስጀምረው እንደገና ይሞክሩት።</translation>
+<translation id="4883436287898674711">ሁሉም የ<ph name="WEBSITE_1" /> ጣቢያዎች</translation>
 <translation id="4988792151665380515">ህዝባዊ ቁልፍን መላክ አልተሳካም።</translation>
 <translation id="501057610015570208">የ«kiosk_only» አንጸባራቂ አይነታ ያለው መተግበሪያ በChromeOS Flex ኪዮስክ ሁነታ ላይ መጫን አለበት</translation>
 <translation id="5026754133087629784">የድር ዕይታ፦ <ph name="WEBVIEW_TAG_NAME" /></translation>

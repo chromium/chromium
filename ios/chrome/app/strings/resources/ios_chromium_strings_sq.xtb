@@ -58,6 +58,7 @@ Faqeshënuesit e rinj nuk mund të ruhen në llogarinë tënde derisa të fshish
 <translation id="2027881372245801507">Çaktivizimi i sugjerimeve nuk kontrollon përpunimin e titujve të faqeve dhe URL-ve nga Chromium për veçori të tjera. Mund ta menaxhosh qasjen te këto të dhëna te <ph name="BEGIN_LINK" />cilësimet e sinkronizimit<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Identifikohu në këtë sajt dhe në Chromium për të marrë fjalëkalimet etj. në të gjitha pajisjet e tua</translation>
 <translation id="2042889939382983733">Shiko historikun tënd të Chromium</translation>
+<translation id="2054352566231434723">Hapi lidhjet e jashtme në Chromium si parazgjedhje.</translation>
 <translation id="2059365270911640413">Përfundo konfigurimin e Chromium</translation>
 <translation id="2168108852149185974">Disa përbërës shtesë shkaktojnë ndërprerje aksidentale të Chromium. Çinstalo:</translation>
 <translation id="2168593389981132306">Përmirëso Chromium</translation>
@@ -85,6 +86,7 @@ Faqeshënuesit e rinj nuk mund të ruhen në llogarinë tënde derisa të fshish
 <translation id="2485774047568879945">Cakto Chromium si shfletuesin tënd të parazgjedhur për të ndarë dhe hapur me lehtësi lidhjet</translation>
 <translation id="2512597191798760956">Shtyp dhe mbaj shtypur ikonën e Chromium dhe kliko te "Modifiko ekranin bazë"</translation>
 <translation id="2517624234762908348">Sinkronizo të dhënat e Chromium</translation>
+<translation id="2519012503779379646">Cakto Chromium si parazgjedhje për t'i bërë kalimet mes aplikacioneve më të shpejta dhe më të lehta.</translation>
 <translation id="2592940277904433508">Vazhdo të përdorësh Chromium</translation>
 <translation id="2601766165676560303">Tema e Chromium për iPhone dhe iPad</translation>
 <translation id="2607609479243848905">Nëse ke harruar frazën tënde të kalimit apo dëshiron ta ndryshosh këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Chromium në llogarinë tënde<ph name="END_LINK" />.</translation>
@@ -189,6 +191,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="4985291216379576555">Offline. Chromium nuk mund të kontrollojë për përditësime</translation>
 <translation id="4996471330284142407">Bëj më shumë me një Chromium të thjeshtë, të sigurt dhe më të shpejtë se kurrë.</translation>
 <translation id="4999538639245140991">Duke qenë se po del nga një llogari e menaxhuar nga <ph name="SIGNOUT_MANAGED_DOMAIN" />, të dhënat e tua të Chromium do të fshihen nga kjo pajisje. Të dhënat e tua do të mbeten në "Llogarinë tënde të Google".</translation>
+<translation id="5004986813285860899">Kalo direkt në Chromium</translation>
 <translation id="5042011327527167688">Trokit te "Shiko me Google Maps në Chromium".</translation>
 <translation id="5044871537677053278">Chromium zbulon adresat dhe përdor Google Maps për të të dhënë udhëzime dhe informacione lokale.</translation>
 <translation id="5048140766121299007">Nga cilësimet e "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />", aktivizo "Chromium"</translation>
@@ -202,6 +205,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="5224391634244552924">Nuk ka asnjë fjalëkalim të ruajtur. Chromium mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato.</translation>
 <translation id="5259423875997548710">Kërko pamje në Chromium.</translation>
 <translation id="5284913972719948193">Importo të dhënat e tua për të përdorur fjalëkalimet, historikun, faqeshënuesit dhe kartat e kreditit në Chromium</translation>
+<translation id="5299421317003704533">Hapi lidhjet drejtpërdrejt në Chromium.</translation>
 <translation id="5308226104666789935">Chromium nuk mund të kontrollojë për përditësime</translation>
 <translation id="5311557153294205270">Shton URL-të e futura te faqeshënuesit në Chromium.</translation>
 <translation id="5383251701169024761">Për t'i marrë me lehtësi fjalëkalimet e tua të ruajtura në aplikacionet e tjera, zgjidh Chromium për "Plotësimin automatik".</translation>
@@ -267,6 +271,7 @@ Gjëra për të pasur parasysh:
 <translation id="6387994184698195448">Qëndro i informuar me këshilla të dobishme për Chromium dhe më shumë.</translation>
 <translation id="6424492062988593837">Chromium sapo është përmirësuar! Ofrohet një version i ri.</translation>
 <translation id="6433172051771630690">Këshilla për të përfituar sa më shumë nga Chromium.</translation>
+<translation id="6458110851735461646">Të preferuarat e tua të Google funksionojnë më mirë me Chromium</translation>
 <translation id="65045991564554105">Shiko faqeshënuesit e Chromium</translation>
 <translation id="6519797228806907665">Qasu më shpejt në Chromium nga ekrani bazë i telefonit tënd iPhone.</translation>
 <translation id="6538713818758208754">Hap faqen e cilësimit të mënyrave të pagesës në Chromium.</translation>
@@ -356,6 +361,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="8602103377623855616">Faqe e Chromium</translation>
 <translation id="865600487977764604">Të mban të sigurt në Chrome dhe mund të përdoret për të përmirësuar sigurinë tënde në aplikacionet e tjera të Google kur je i identifikuar.</translation>
 <translation id="8663480472502753423">Mbaje Chromium të përditësuar</translation>
+<translation id="8671588626059602995">Sigurohu që të gjitha lidhjet të hapen gjithmonë në Chromium.</translation>
 <translation id="8685813584220679697">Identifikohu në këtë sajt dhe në Chromium.</translation>
 <translation id="8697693743327341604">Nëse zgjedh ose shpërfill një sugjerim, Chromium do të përshtatet për të të ndihmuar të shikosh sugjerime më të përshtatshme në të ardhmen.</translation>
 <translation id="869832267508702259">Bëje Chromium shfletuesin tënd të parazgjedhur për të marrë statistikat e Gemini kudo ku shfleton</translation>

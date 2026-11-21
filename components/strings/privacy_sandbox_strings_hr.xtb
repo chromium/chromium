@@ -12,7 +12,6 @@
 <translation id="3045333309254072201">Kad ste u anonimnom načinu, web-lokacije ne mogu upotrebljavati kolačiće trećih strana. Ako web-lokacija koja se oslanja na te kolačiće ne funkcionira, možete <ph name="START_LINK" />joj pokušati dati privremeni pristup kolačićima treće strane<ph name="END_LINK" />.</translation>
 <translation id="3425311689852411591">Web-lokacije koje se oslanjaju na kolačiće trećih strana trebale bi funkcionirati u skladu s očekivanjima</translation>
 <translation id="3624583033347146597">Odabir preferencija za kolačiće trećih strana</translation>
-<translation id="3918378745482005425">Neke značajke možda neće funkcionirati. Povezane web-lokacije i dalje mogu upotrebljavati kolačiće trećih strana.</translation>
 <translation id="4278390842282768270">Dopušteno</translation>
 <translation id="4412992751769744546">Dopusti kolačiće trećih strana</translation>
 <translation id="4711259472133554310">Iznimke možete izraditi u postavkama da biste određenim web-lokacijama uvijek dopustili upotrebu kolačića trećih strana</translation>

@@ -62,7 +62,6 @@
 <translation id="1615755956145364867">Os sites podem pedir para reproduzir conteúdo protegido</translation>
 <translation id="1620510694547887537">Câmera</translation>
 <translation id="1621729191093924223">Recursos que precisam de microfone não funcionarão</translation>
-<translation id="1633720957382884102">Sites relacionados</translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1652197001188145583">Quando essa configuração está ativada, os sites podem pedir para usar dispositivos NFC. Quando está desativada, os sites não podem usar dispositivos NFC.</translation>
 <translation id="1660204651932907780">Permitir o áudio dos sites (recomendado)</translation>
@@ -76,6 +75,7 @@
 <translation id="1717996979683942279">Quando essa opção está ativada, os sites podem pedir para gerenciar janelas em todas as telas. Quando está desativada, os sites não podem gerenciar janelas em todas as telas.</translation>
 <translation id="1738912554587725807">Página inferior de coleções de temas para a página "Nova guia"</translation>
 <translation id="1743802530341753419">Perguntar antes de permitir que sites se conectem ao dispositivo (recomendado)</translation>
+<translation id="1766455884659449403">Ative as notificações das dicas do Chrome</translation>
 <translation id="1777815584158991902">Página inferior do feed do Discover</translation>
 <translation id="1779089405699405702">Decodificador de imagem</translation>
 <translation id="1781533683087883868">Desativar links no Modo de Leitura</translation>
@@ -184,6 +184,7 @@
 <translation id="2750481671343847896">Sites podem exibir solicitações de login de serviços de identificação.</translation>
 <translation id="2789132527330338807">Os sites podem pedir para criar um mapa 3D do ambiente ao seu redor ou acompanhar a posição da câmera</translation>
 <translation id="2790501146643349491">Quando essa configuração está ativada, os sites fechados recentemente podem terminar de enviar e receber dados. Quando está desativada, os sites fechados recentemente não conseguem terminar de enviar ou receber dados.</translation>
+<translation id="2794551654724114396">Ative as notificações para receber dicas úteis e aproveitar o Chrome ao máximo</translation>
 <translation id="2795716239552913152">Os sites geralmente usam sua localização para recursos ou informações relevantes, como notícias locais ou lojas por perto</translation>
 <translation id="2800760947029405028">Fazer upload de uma imagem</translation>
 <translation id="2802908157808345702">Não permitir que os sites exibam pop-ups e usem redirecionamentos</translation>
@@ -231,7 +232,6 @@
 <translation id="3232293466644486101">Excluir dados de navegação…</translation>
 <translation id="3242646949159196181">Quando essa configuração está ativada, os sites podem tocar sons. Quando está desativada, os sites não podem tocar sons.</translation>
 <translation id="3273479183583863618">Guias mostrando reduções no preço</translation>
-<translation id="3285500645985761267">Permitir que sites relacionados vejam sua atividade no grupo</translation>
 <translation id="3295019059349372795">Capítulo 11: A maravilhosa Cidade das Esmeraldas de Oz</translation>
 <translation id="3295602654194328831">Ocultar informações</translation>
 <translation id="3333961966071413176">Todos os contatos</translation>
@@ -249,7 +249,6 @@
 <translation id="3523447078673133727">Não permitir que sites acompanhem suas mãos</translation>
 <translation id="3536227077203206203">Permitido apenas desta vez</translation>
 <translation id="3538390592868664640">Impedir sites de criar um mapa 3D do ambiente a sua volta ou acompanhar a posição da câmera</translation>
-<translation id="3544058026430919413">Uma empresa pode definir um grupo de sites que podem usar cookies para compartilhar sua atividade no grupo. Essa opção fica desativada na navegação anônima.</translation>
 <translation id="3551268116566418498">Sair do modo de navegação anônima?</translation>
 <translation id="3586500876634962664">Uso de câmera e microfone</translation>
 <translation id="358794129225322306">Permite que um site faça o download de vários arquivos automaticamente.</translation>
@@ -262,7 +261,6 @@
 <translation id="363748948745453283">Usando o local aproximado</translation>
 <translation id="3641456520301071208">Os sites podem solicitar sua localização</translation>
 <translation id="3658847490588580244">Página inferior de navegador padrão</translation>
-<translation id="3669841141196828854">{COUNT,plural, =1{Há <ph name="RWS_MEMBERS_COUNT" /> site que pode ver sua atividade no grupo <ph name="RWS_OWNER" />}one{Há <ph name="RWS_MEMBERS_COUNT" /> site que pode ver sua atividade no grupo <ph name="RWS_OWNER" />}other{Há <ph name="RWS_MEMBERS_COUNT" /> sites que podem ver sua atividade no grupo <ph name="RWS_OWNER" />}}</translation>
 <translation id="3676777756440746804">Os sites não podem pedir para usar as informações que salvaram sobre você</translation>
 <translation id="3677897809642449131">Os sites podem pedir para usar sensores de movimento</translation>
 <translation id="3678318839615834650">A página inferior de cards da página "Nova guia" está aberta no tamanho máximo</translation>
@@ -325,7 +323,7 @@
 <translation id="4227965147357783918">A página inferior da mensagem promocional "Personalize sua página inicial" está aberta a meia-altura na tela</translation>
 <translation id="4259722352634471385">A Navegação GPS está bloqueada: <ph name="URL" /></translation>
 <translation id="4274673989874969668">Depois que você sai de um site, ele pode continuar a sincronização para finalizar tarefas, como o upload de fotos ou o envio de uma mensagem de chat</translation>
-<translation id="4278390842282768270">Permitido</translation>
+<translation id="4278390842282768270">Permitida</translation>
 <translation id="4290791284969893584">Após fechar uma página, as tarefas iniciadas talvez não sejam encerradas</translation>
 <translation id="429312253194641664">Um site está com mídia aberta</translation>
 <translation id="42981349822642051">Expandir</translation>
@@ -538,16 +536,15 @@
 <translation id="656065428026159829">Ver mais</translation>
 <translation id="6561560012278703671">Usar mensagens mais silenciosas (bloqueia notificações que interrompem você)</translation>
 <translation id="6593061639179217415">Site para computador</translation>
-<translation id="659938948789980540">{COUNT,plural, =1{Cookies permitidos para <ph name="RWS_MEMBERS_COUNT" /> site de <ph name="RWS_OWNER" />}one{Cookies permitidos para <ph name="RWS_MEMBERS_COUNT" /> site de <ph name="RWS_OWNER" />}other{Cookies permitidos para <ph name="RWS_MEMBERS_COUNT" /> sites de <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Conteúdo protegido</translation>
 <translation id="6619015782482868078">Tema aqua</translation>
 <translation id="662080504995468778">Ficar</translation>
 <translation id="6630443592285535486">Digite o hexadecimal aqui</translation>
 <translation id="6635327442719709864">Quando ativada, os sites podem pedir para usar portas seriais. Quando desativada, os sites não podem usar portas seriais.</translation>
+<translation id="6669390930482049506">Receber notificações</translation>
 <translation id="6678072580827808850">Analisar Confirmação de segurança</translation>
 <translation id="6682057173375416470">Receba sugestões de artigos na página Nova guia</translation>
-<translation id="6683865262523156564">Este site está em um grupo que pode ver sua atividade. O grupo é definido por <ph name="RWS_OWNER" />.</translation>
 <translation id="6689172468748959065">Fotos do perfil</translation>
 <translation id="6697925417670533197">Downloads ativos</translation>
 <translation id="6709432001666529933">Perguntar antes de permitir que sites acompanhem suas mãos (recomendado)</translation>

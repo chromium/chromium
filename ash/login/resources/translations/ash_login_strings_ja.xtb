@@ -10,6 +10,7 @@
 <translation id="1097658378307015415">ログインする前に、ゲスト セッションを開始して <ph name="NETWORK_ID" /> ネットワークを有効にしてください</translation>
 <translation id="1111932478203988717">お子様はにこの PIN を使用してデバイスのログインできます</translation>
 <translation id="1122587596907914265">ユニークな壁紙にカスタマイズ</translation>
+<translation id="1122913801042512795">アカウントのログイン情報が古くなっています。いったんログアウトしてからもう一度ログインしてください。</translation>
 <translation id="1131201598497838573">お子様の PIN を更新しました</translation>
 <translation id="1147322039136785890">お待たせしました、<ph name="SUPERVISED_USER_NAME" /> さん</translation>
 <translation id="1148669835763563782">セキュリティが強化され、Chromebook の最新機能を利用できるソフトウェア アップデートをダウンロードしています。このアップデートでは、Chromebook をスムーズに開始できるようセットアップ プロセスが改善されています。</translation>
@@ -26,6 +27,7 @@
 <translation id="1256588359404100567">以前のデバイスから設定を同期しました。</translation>
 <translation id="1272978324304772054">このユーザー アカウントは、デバイスが登録されているドメインに属していません。別のドメインに登録する場合は、まず、デバイス リカバリ操作を行う必要があります。</translation>
 <translation id="1293556467332435079">ファイル</translation>
+<translation id="1302523850133262269">Chrome は最新のシステム アップデートをインストールしています。しばらくお待ちください。</translation>
 <translation id="1307559529304613120">このデバイスの長期 API アクセス トークンを保存できませんでした。</translation>
 <translation id="1335929031622236846">デバイスを登録する</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />デバッグ機能<ph name="END_H3" />
@@ -49,6 +51,7 @@
 <translation id="1347625331607114917">Android スマートフォンでコードを確認する</translation>
 <translation id="1347975661240122359">更新は、<ph name="BATTERY_LEVEL" />% まで充電されたときに開始されます。</translation>
 <translation id="1353275871123211385">アプリの許可や利用時間の上限など、保護者による使用制限を設定するには、保護者が管理するお子様用の Google アカウントが必要です。Google Classroom などのツールを使用するための学校用アカウントは、後で追加できます。</translation>
+<translation id="1363996462118479832">ログイン時にエラーが発生したため、ChromeOS はデータを同期できませんでした。</translation>
 <translation id="1375557162880614858">ChromeVox を有効にしますか？ChromeVox は ChromeOS Flex に組み込まれているスクリーンリーダーです。</translation>
 <translation id="1377600615067678409">今回はスキップ</translation>
 <translation id="1399261165075500043">Google Play 利用規約を読み込めません</translation>
@@ -73,6 +76,7 @@
 <translation id="1642494467033190216">他のデバッグ機能を有効にするには、その前に rootfs の保護を削除して再起動する必要があります。</translation>
 <translation id="1646045728251578877">ソフトウェア アップデートがあります</translation>
 <translation id="1650801028905250434">マイドライブ内のファイルは Chromebook に自動的に同期されるので、インターネット接続がなくてもアクセスできます。これは [設定] &gt; [ファイル] でいつでも変更できます。</translation>
+<translation id="16620462294541761">パスワードを確認できませんでした。もう一度お試しください。</translation>
 <translation id="1668435968811469751">手動で登録</translation>
 <translation id="1678919064276516737">入力したメールアドレスと PIN が一致しません</translation>
 <translation id="1692115862433274081">別のアカウントを使用</translation>
@@ -94,6 +98,7 @@
 <translation id="1868617395637139709">位置情報を Android のアプリとサービスで使用します。</translation>
 <translation id="1877377730633446520">この操作で約 <ph name="REQUIRED_SPACE" /> が使用されます。現在の空き容量は <ph name="FREE_SPACE" /> です。</translation>
 <translation id="1878155070920054810">アップデートが完了する前に Chromebook の電源が切れる可能性があります。処理が中断しないよう、電源に正しく接続されているか確認してください。</translation>
+<translation id="1887442540531652736">ログインエラー</translation>
 <translation id="189035593835762169">利用規約</translation>
 <translation id="189358972401248634">その他の言語</translation>
 <translation id="1915734383465415025">販売店の番号</translation>
@@ -122,6 +127,7 @@
 <translation id="2210462644007531147">インストールを完了できませんでした</translation>
 <translation id="221872881068107022">逆スクロール</translation>
 <translation id="2219081237089444028"><ph name="DEVICE_TYPE" /> のパスワードを設定して簡単にログイン</translation>
+<translation id="2220529011494928058">問題を報告</translation>
 <translation id="222115440608612541">日の出と日の入りに合わせてテーマを切り替えます</translation>
 <translation id="2229161054156947610">あと 1 時間以上</translation>
 <translation id="2246129643805925002">お使いの <ph name="DEVICE_TYPE" /> はバックグラウンドで自動的に更新され、新機能やセキュリティ更新が適用されます。更新の設定は [設定] で確認できます。</translation>
@@ -132,6 +138,7 @@
 <translation id="2328137272841210255">PIN をリセット</translation>
 <translation id="2342180549977909852">お子様はパスワードではなく数字（PIN）を使用してデバイスのロックを解除することができます。後で PIN を設定する場合は、[設定] に移動してください。</translation>
 <translation id="2359808026110333948">続行</translation>
+<translation id="2384373936468275798">アカウントのログイン情報が最新でないため、Chromium OS はデータを同期できませんでした。</translation>
 <translation id="2387052489799050037">ホームに移動</translation>
 <translation id="2395616325548404795">この <ph name="DEVICE_TYPE" /> は組織の管理対象として登録されましたが、アセットと位置情報を送信できませんでした。このデバイスの管理コンソールで、この情報を手動で入力してください。</translation>
 <translation id="2408955596600435184">PIN を入力してください</translation>
@@ -158,6 +165,7 @@
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Google の位置情報サービスでは、このデバイスの現在地を推定するために、Wi-Fi、モバイル ネットワーク、センサーなどの情報源が使用されます。<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />[設定] &gt; [アプリ] &gt; [Google Play ストア] &gt; [Android 設定を管理] &gt; [セキュリティと現在地情報] &gt; [現在地情報] から随時、このデバイスの Android 位置情報機能をオフにできます。また、同じメニューで [Google 位置情報の精度] をオフにすると、Android の位置情報機能に対して Wi-Fi、モバイル ネットワーク、センサーの使用をオフにすることもできます。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2663302507110284145">言語</translation>
+<translation id="2674238339205910678">アカウントのログイン情報が最新でないため、ChromeOS Flex は Google アカウントに Chrome データを保存できませんでした</translation>
 <translation id="2687407218262674387">Google 利用規約</translation>
 <translation id="2688196195245426394">デバイスをサーバーに登録するときにエラーが発生しました: <ph name="CLIENT_ERROR" />。</translation>
 <translation id="2698147581454716013">これはバンドルされたデバイスです。Kiosk &amp; Signage Upgrade に登録することはできません。</translation>
@@ -252,6 +260,7 @@
 <translation id="3740945083753997630">表示と文字サイズを縮小する</translation>
 <translation id="376841534249795524"><ph name="DEVICE_TYPE" /> はどんな用途でお使いですか？</translation>
 <translation id="3772046291955677288"><ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />、<ph name="BEGIN_LINK2" />Chrome および ChromeOS 追加利用規約<ph name="END_LINK2" />を確認し、内容に同意します。</translation>
+<translation id="3785324443014631273">ログイン時にエラーが発生したため、ChromeOS Flex はデータを同期できませんでした。</translation>
 <translation id="3789841737615482174">インストール</translation>
 <translation id="3800828618615365228">Google Chrome および ChromeOS 追加利用規約</translation>
 <translation id="3828953470056652895"><ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />、<ph name="BEGIN_LINK2" />Chrome および ChromeOS 追加利用規約<ph name="END_LINK2" />、<ph name="BEGIN_LINK3" />Play 利用規約<ph name="END_LINK3" />を確認し、内容に同意します。</translation>
@@ -332,6 +341,7 @@
         <ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />詳しくは、g.co/flex/InstallErrors をご覧ください。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">この <ph name="DEVICE_TYPE" /> にどのユーザーを追加しますか？</translation>
+<translation id="4543778593405494224">証明書マネージャー</translation>
 <translation id="4566170377336116390">登録後に変更する場合は、デバイスを出荷時の設定にリセットする（Powerwash）必要があります。</translation>
 <translation id="4567512141633030272">ログイン オプションが間違っている場合</translation>
 <translation id="4567533462991917415">セットアップが完了したら、いつでもユーザーを追加できます。ユーザーごとにアカウントをカスタマイズして、データのプライバシーを確保できます。</translation>
@@ -349,6 +359,7 @@
 <translation id="4814327014588285482">スキップして後で通知</translation>
 <translation id="4830502475412647084">OS アップデートのインストール中</translation>
 <translation id="4837926214103741331">このデバイスを使用する権限がありません。ログイン権限については、デバイスの所有者にお問い合わせください。</translation>
+<translation id="4842397268809523050">お使いのドメインでは同期が利用できないため、ChromeOS Flex はデータを同期できませんでした。</translation>
 <translation id="4844333629810439236">他のキーボード</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="4864369630010738180">ログインしています...</translation>
@@ -360,6 +371,7 @@
 <translation id="4944310289250773232">この認証サービスは <ph name="SAML_DOMAIN" /> でホストされています</translation>
 <translation id="4955710816792587366">PIN の選択</translation>
 <translation id="4965808351167763748">このデバイスでハングアウト Meet を実行するように設定してもよろしいですか？</translation>
+<translation id="4969674060580488087">アカウントのログイン情報が最新ではないため、ChromeOS Flex はデータを同期できませんでした。</translation>
 <translation id="4987944280765486504">ダウンロードが完了すると Chromebook が再起動し、セットアップを続行できます。</translation>
 <translation id="5029287942302939687">パスワードを設定しました</translation>
 <translation id="503155457707535043">アプリをダウンロード中</translation>
@@ -401,6 +413,8 @@
 <translation id="528208740344463258">Android アプリをダウンロードして使用するには、まずこの必須のアップデートをインストールする必要があります。<ph name="DEVICE_TYPE" /> の更新中、ご利用いただくことはできません。インストールが完了すると、<ph name="DEVICE_TYPE" /> は再起動されます。</translation>
 <translation id="5283677936944177147">デバイスの機種またはシリアル番号を特定できませんでした。</translation>
 <translation id="5333896723098573627">アプリを削除するには、まず [設定] &gt; [アプリ] &gt; [Google Play ストア] &gt; [Android 設定を管理] &gt; [アプリ] または [アプリケーション管理] に移動して、アンインストールするアプリをタップします（必要であれば左右にスワイプしてアプリを見つけます）。次に、[アンインストール] または [無効にする] をタップします。</translation>
+<translation id="5334309298019785904">ご使用のドメインでは同期を利用できないため、ChromeOS はデータを同期できませんでした。</translation>
+<translation id="535243042947607642">アカウントのログイン情報が最新でないため、ChromiumOS は Google アカウントに Chromium データを保存できませんでした</translation>
 <translation id="5355501370336370394">企業のデバイスを登録</translation>
 <translation id="5372529912055771682">指定の登録モードは、このバージョンのオペレーティング システムではサポートされていません。最新バージョンであることを確認してから、もう一度お試しください。</translation>
 <translation id="5397378439569041789">キオスクまたはサイネージ デバイスを登録</translation>
@@ -412,6 +426,7 @@
 <translation id="5448293924669608770">ログイン エラーが発生しました</translation>
 <translation id="5453829744223920473">お子様は、学校のすべてのアプリ、ブックマーク、リソースを授業と同じように利用できます。基本ルールは学校が設定します。</translation>
 <translation id="5473099001878321374">続行すると、Google、お子様がご利用の携帯通信会社、デバイス メーカーからアップデートやアプリをこのデバイスが自動的に（場合によってはモバイルデータ接続を使用して）ダウンロードし、インストールする場合があることに同意したことになります。一部のアプリでは、アプリ内購入をご利用いただけます。</translation>
+<translation id="549669000822060376">Chromium は最新のシステム アップデートをインストールしています。しばらくお待ちください。</translation>
 <translation id="5502915260472117187">お子様</translation>
 <translation id="5511823366942919280">このデバイスを「Shark」として設定してもよろしいですか？</translation>
 <translation id="5513807280330619196">電卓</translation>
@@ -515,6 +530,7 @@
 <translation id="6495266441917713704">Wi-Fi で転送できません</translation>
 <translation id="6515620015470298987">デバイス設定チェックの問題により、ログインできませんでした。<ph name="DEVICE_TYPE" /> で Powerwash を実行して、もう一度お試しください。</translation>
 <translation id="6519689855001245063">利用資格を確認しています</translation>
+<translation id="6520608191273161151">ログイン時にエラーが発生したため、ChromeOS Flex は Google アカウントに Chrome データを保存できませんでした</translation>
 <translation id="6532527800157340614">アクセス トークンを取得できなかったため、ログインできませんでした。ネットワーク接続を確認してからもう一度お試しください。</translation>
 <translation id="653920215766444089">ポインティング デバイスを探しています</translation>
 <translation id="65513682072153627">設定や機能が管理者に管理されていると、この管理対象アイコンが表示されます。</translation>
@@ -526,8 +542,10 @@
 <translation id="6675665718701918026">ポインティング デバイスが接続されました</translation>
 <translation id="667752334740867460">Wi-Fi 情報を受信しています...</translation>
 <translation id="6680442031740878064">空き容量: <ph name="AVAILABLE_SPACE" /></translation>
+<translation id="668175097507315160">ログイン時にエラーが発生したため、Chromium OS はデータを同期できませんでした。</translation>
 <translation id="6684827949542560880">最新のアップデートをダウンロードしています</translation>
 <translation id="6722744767592605627"><ph name="EMAIL" /> を復元できますが、ローカルデータは削除されます。</translation>
+<translation id="6735387454586646204">ChromeOS Flex システム</translation>
 <translation id="6748980958975836188"><ph name="BEGIN_LINK1" />Google 利用規約<ph name="END_LINK1" />、<ph name="BEGIN_LINK2" />Chrome および ChromeOS 追加利用規約<ph name="END_LINK2" />を確認し、内容に同意します。</translation>
 <translation id="6749473226660745022">写真</translation>
 <translation id="6754918760968695779">クイック インサート</translation>
@@ -552,6 +570,7 @@
 <translation id="6918733588290914545">Android スマートフォンで簡単セットアップ</translation>
 <translation id="6920473853105515518">お使いの <ph name="DEVICE_TYPE" /> がインターネットに接続されていることを確認してから、もう一度お試しください。別のデバイスで play.google/play-terms にアクセスすることもできます。</translation>
 <translation id="6929126689972602640">保護者による使用制限は学校用アカウントではサポートされていません。学校用アカウントを追加し、Google Classroom や他のウェブサイトにアクセスして自宅で学習できるようにするには、まずお子様の個人アカウントでログインしてください。学校用アカウントは設定の後半で追加できます。</translation>
+<translation id="6933858244219479645">ChromeOS システム</translation>
 <translation id="6935031746833428401">デバイス管理の詳細</translation>
 <translation id="6950351336108213154">デバイスの周辺機器を更新しています</translation>
 <translation id="6955698182324067397">ChromeOS のデバッグ機能を有効にしています。この機能を有効にすると、sshd デーモンが設定され、USB デバイスからの起動が可能になります。</translation>
@@ -647,6 +666,7 @@
 <translation id="7870730066603611552">設定後に同期オプションを確認する</translation>
 <translation id="7883792253546618164">登録はいつでも解除できます。</translation>
 <translation id="7887864092952184874">Bluetooth マウスがペア設定されました</translation>
+<translation id="7905880575591690197">ログイン時にエラーが発生したため、ChromeOS は Google アカウントに Chrome データを保存できませんでした</translation>
 <translation id="7906440585529721295">ローカルデータは削除されます</translation>
 <translation id="7910725946105920830">個人の Google アカウントを使用します</translation>
 <translation id="7918257978052780342">登録</translation>
@@ -673,6 +693,7 @@
 <translation id="8098616321286360457">ネットワーク接続が必要です</translation>
 <translation id="8129265306888404830">組織（<ph name="EMAIL_DOMAIN" />）のメールアドレスを使用するには、企業登録を使用する必要があります。このデバイスを個人で使用している場合は、個人の Google アカウントでログインしてください。</translation>
 <translation id="8131740175452115882">確認</translation>
+<translation id="8133124826068723441">ご使用のドメインでは同期を利用できないため、Chromium OS はデータを同期できませんでした。</translation>
 <translation id="8146177459103116374">このデバイスでの登録が済んでいる場合は<ph name="LINK2_START" />既存のユーザー<ph name="LINK2_END" />としてログインできます。</translation>
 <translation id="8146793085009540321">ログインできませんでした。管理者にお問い合わせいただくか、もう一度お試しください。</translation>
 <translation id="8147346945017130012">Chrome および ChromeOS の機能とパフォーマンスを改善できるよう、クラッシュ レポートと診断データ、使用状況データの自動送信にご協力ください。</translation>
@@ -691,6 +712,7 @@
 <translation id="8271379370373330993">この後、保護者の方用の手順がいくつか続きます。お子様に <ph name="DEVICE_TYPE" /> を渡す前に、アカウント設定を終えてください。</translation>
 <translation id="8274924778568117936">アップデートが完了するまでは、<ph name="DEVICE_TYPE" /> の電源を切ったり蓋を閉じたりしないでください。インストールが完了すると、<ph name="DEVICE_TYPE" /> は再起動します。</translation>
 <translation id="8281886186245836920">スキップ</translation>
+<translation id="8286036467436129157">ログイン</translation>
 <translation id="8289509909262565712"><ph name="DEVICE_OS" /> へようこそ</translation>
 <translation id="8291942417224950075">個人でのご利用</translation>
 <translation id="8304383784961451596">このデバイスを使用する権限がありません。ログイン権限についてデバイスの管理者に問い合わせるか、ファミリー リンクで管理されている Google アカウントでログインしてください。</translation>
@@ -702,6 +724,7 @@
 <translation id="8401432541486058167">スマートカードに関連付けられている PIN を入力してください。</translation>
 <translation id="8408270600235826886">各ユーザーは Google と共有するデータを設定できるようになっています。これは [設定] でいつでも変更できます。データは Google の<ph name="BEGIN_LINK" />プライバシー ポリシー<ph name="END_LINK" />に従って使用されます。</translation>
 <translation id="8413956290606243087">ChromeVox を有効にしますか？ChromeVox は ChromeOS 用の組み込みのスクリーン リーダーです。</translation>
+<translation id="8418845734693287262">アカウントのログイン情報が最新でないため、ChromeOS はデータを同期できませんでした。</translation>
 <translation id="8425768983279799676">PIN を使用してデバイスのロックを解除できます。</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="843173223122814223">AI で背景を作成</translation>
@@ -741,10 +764,12 @@
 <translation id="8794548468611058947">Google アカウントのパスワードを入力してログインする代わりに、この <ph name="DEVICE_TYPE" /> の PIN を作成できます</translation>
 <translation id="8830779999439981481">更新を適用するため再起動しています</translation>
 <translation id="8830796635868321089">現在のプロキシ設定を使用してアップデートをチェックできませんでした。<ph name="PROXY_SETTINGS_LINK_START" />プロキシ設定<ph name="PROXY_SETTINGS_LINK_END" />を調整してください。</translation>
+<translation id="8833697763442816810">Chromium OS システム</translation>
 <translation id="8855977033756560989">この Chromebook Enterprise デバイスには Chrome Enterprise Upgrade が付属しています。エンタープライズ向け機能を活用するには、Google 管理コンソール アカウントを使用してこのデバイスを登録してください。</translation>
 <translation id="885746075120788020">保存した設定とアクティビティは、Google アカウントでログインする他の ChromeOS デバイスで使用できるようになります。同期する項目は [設定] で選択できます。</translation>
 <translation id="8868333925931032127">デモモードを開始します</translation>
 <translation id="8875221558267407626">コンテンツを要約したり、複雑な表現をわかりやすくしたり、質問したりできます</translation>
+<translation id="8890569919834781711">ログイン時にエラーが発生したため、ChromiumOS は Google アカウントに Chromium データを保存できませんでした</translation>
 <translation id="8907701755790961703">国を選択してください</translation>
 <translation id="8913163265790894442">スマートフォンで <ph name="DEVICE_TYPE" /> を簡単に設定できます。パスワードを手動で入力しなくても、Wi-Fi や Google アカウントを追加できます。
         <ph name="BR" />
@@ -780,5 +805,6 @@
 <translation id="951991426597076286">同意しない</translation>
 <translation id="954749761428814584">言語と入力方法</translation>
 <translation id="960987915827980018">あと約 1 時間</translation>
+<translation id="973195869036269770">アカウントのログイン情報が最新でないため、ChromeOS は Google アカウントに Chrome データを保存できませんでした</translation>
 <translation id="995420352808264005">デバイスの登録タイプを選択してください</translation>
 </translationbundle>

@@ -530,6 +530,7 @@
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Побарајте помош<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Цената се следи</translation>
 <translation id="3037517125981011456">Прикажува prompt за најава на Chrome</translation>
+<translation id="3038505649933066250">Филтрирај според датум</translation>
 <translation id="3044436568790455247">„Изберете уред“ е отворен на целосна висина.</translation>
 <translation id="3057938290530993634">Допрете и задржете за да ги закачите најпосетуваните вебсајтови за лесен пристап следниот пат</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> обележувач}one{<ph name="BOOKMARKS_COUNT_MANY" /> обележувач}other{<ph name="BOOKMARKS_COUNT_MANY" /> обележувачи}}</translation>
@@ -576,6 +577,7 @@
 <translation id="3243650379537999343">Цртај</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">Ако ги споделувате и извештаите за користењето на Chrome, тие ги содржат URL-адресите што ги посетувате</translation>
+<translation id="3248185426436836442">Чека на ред</translation>
 <translation id="3250563604907490871">Описите на сликите ќе продолжат кога ќе се поврзете на Wi-Fi</translation>
 <translation id="3254409185687681395">Обележи ја страницата</translation>
 <translation id="3265093782546847662">Сите страници од <ph name="DOMAIN" /></translation>
@@ -1124,7 +1126,6 @@
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, прикачена картичка „Инкогнито“ за споделување</translation>
 <translation id="5375374982898812658">Веднаш ќе го изгубите пристапот до групата картички „<ph name="GROUP_NAME" />“, а групата картички ќе се избрише од сите ваши уреди</translation>
 <translation id="537865165090710757">Зачувајте и споделете</translation>
-<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> сака да користи лични податоци од вашиот дигитален паричник. Продолжете само ако му верувате на сајтов. Опасните сајтови може да ве измамат да откриете работи како полното име и презиме или бројот на документот за идентификација.</translation>
 <translation id="5395376160638294582">Уверете се дека секогаш ќе може да ги користите податоците на Chrome во вашата сметка на Google</translation>
 <translation id="5397794290049113714">Вие</translation>
 <translation id="539881862970320163">Предложена е силна лозинка. Тастатурата е скриена.</translation>
@@ -1136,6 +1137,7 @@
 <translation id="5415871492522952905">Ќе ги имате вашите картички и историја на сите ваши уреди, па ќе може да продолжувате со тоа што сте го правеле</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) веднаш ќе го изгуби пристапот до групата картички „<ph name="GROUP_NAME" />“</translation>
 <translation id="5424588387303617268">Достапни се <ph name="GIGABYTES" /> GB</translation>
+<translation id="5430861625274552852">Прашајте за содржините на некоја страница или споредете ги картичките</translation>
 <translation id="543271133149552180"><ph name="TAB_TITLE" />, повеќекратно избрана картичка „Инкогнито“ со слика во слика</translation>
 <translation id="5436928407363358055">За да продолжувате лесно таму каде што сте застанале, синхронизирајте ги историјата и картичките</translation>
 <translation id="5438292632479953702">Преземи повторно</translation>
@@ -1172,6 +1174,7 @@
 <translation id="557018954714092179">Создавање нова папка</translation>
 <translation id="5578795271662203820">Пребарај во <ph name="SEARCH_ENGINE" /> за сликава</translation>
 <translation id="558563010977877295">Отвори одредена страница или група страници</translation>
+<translation id="5594132774273121146">Корисник и сметка</translation>
 <translation id="5596627076506792578">Повеќе опции</translation>
 <translation id="5599455543593328020">Режим инкогнито</translation>
 <translation id="5601180634394228718">За повеќе поставки што ги користат податоците за подобрување на вашето доживување на Chrome, одете на <ph name="BEGIN_LINK" />Услуги на Google<ph name="END_LINK" />.</translation>
@@ -1229,6 +1232,7 @@
 <translation id="583281660410589416">Непознат</translation>
 <translation id="5833984609253377421">Сподели го линкот</translation>
 <translation id="5839058148541733625">Диносаурус на Chrome</translation>
+<translation id="5839059463554891940">Безбедност и заштита</translation>
 <translation id="5841444063256914865">Дали сепак сакате да ја преземете датотеката „<ph name="FILE_NAME" />“?</translation>
 <translation id="5847265694842662173">Chrome ги спречи сајтовите што злоупотребуваат и сајтовите што не се користат да испраќаат известувања</translation>
 <translation id="5848257610304005265">Да се отвори PDF-датотеката со <ph name="APP_NAME" />?</translation>
@@ -1345,7 +1349,6 @@
 <translation id="6259107733340311168">Долниот лист со оградување за сигналите на претпријатието е отворен на целосна висина</translation>
 <translation id="6260260490042862943">Контроли за сајтот</translation>
 <translation id="6264376385120300461">Сепак преземи</translation>
-<translation id="6264485186158353794">Назад во безбедност</translation>
 <translation id="6267106249090587268">Известувања <ph name="SEPARATOR" /> Chrome ги отстрани дозволиве заради спам или измамнички содржини</translation>
 <translation id="6276708887952587684">Прегледајте го изворот на страницата</translation>
 <translation id="62768169905160414">Копирај го видеокадарот</translation>
@@ -1464,7 +1467,6 @@
 <translation id="6659594942844771486">Картичка</translation>
 <translation id="666731172850799929">Отвори во <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Известувај ме</translation>
-<translation id="6670742294143102726">Изберете една или повеќе картички за да ги додадете во пребарувањето</translation>
 <translation id="6671495933530132209">Копирај слика</translation>
 <translation id="6672697278890207089">Внесете ја вашата лозинка</translation>
 <translation id="6675622031235530028">Задржете Ctrl + Q за да излезете</translation>
@@ -1730,6 +1732,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандардна картичка}one{<ph name="TABS_COUNT_MANY" /> стандардна картичка}other{<ph name="TABS_COUNT_MANY" /> стандардни картички}}</translation>
 <translation id="7603168929588204083">Погрешен датум</translation>
 <translation id="7605594153474022051">Синхронизацијата не функционира</translation>
+<translation id="7607002721634913082">Паузирано</translation>
 <translation id="7608245556672190037">Долниот лист за прифаќање на препораките што ги наоѓа Chrome е отворен на цел екран</translation>
 <translation id="7612619742409846846">Најавени на Google како</translation>
 <translation id="7612989789287281429">Ве најавуваме…</translation>
@@ -1838,6 +1841,7 @@
 <translation id="800155843932969169">Безбедно создавајте ги и складирајте ги вашите лозинки, најавувајте се побрзо и идентификувајте ги безбедносните проблеми со лозинките за да се заштитите</translation>
 <translation id="8004582292198964060">Прелистувач</translation>
 <translation id="8006630792898017994">Празно место или Tab</translation>
+<translation id="802154636333426148">Неуспешно преземање</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, повеќекратно избрана прикачена картичка „Инкогнито“ за споделување</translation>
 <translation id="8025972204417227828">Додајте нова</translation>
 <translation id="8027863900915310177">Изберете каде да се преземе</translation>
@@ -1845,6 +1849,7 @@
 <translation id="8032569120109842252">Се следи</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, избрана картичка „Инкогнито“ со исклучен звук</translation>
 <translation id="8036587585440959897">Некои екстензии може да додаваат пребарувачи во Chrome.</translation>
+<translation id="803703704549420287">Избриши ги филтрите</translation>
 <translation id="8037750541064988519">Останаа <ph name="DAYS" /> дена</translation>
 <translation id="8037801708772278989">Тукушто проверено</translation>
 <translation id="804335162455518893">SD-картичката не е најдена</translation>

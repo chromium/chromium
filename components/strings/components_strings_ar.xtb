@@ -373,6 +373,7 @@
 <translation id="1619648179761984213">تمت إزالة علامة تبويب من قِبل "<ph name="USER_DISPLAY_NAME" />"</translation>
 <translation id="1620510694547887537">الكاميرا</translation>
 <translation id="1623104350909869708">منع هذه الصفحة من إنشاء مربعات حوار إضافية.</translation>
+<translation id="1624535934412288769">الأعمدة</translation>
 <translation id="1629390138158333592">بحث في الويب</translation>
 <translation id="1633137413609266904">{0,plural, =1{تحظر سياسة المشرف إمكانية فتح هذا الملف.}zero{تحظر سياسة المشرف إمكانية فتح # ملف.}two{تحظر سياسة المشرف إمكانية فتح ملفَّين.}few{تحظر سياسة المشرف إمكانية فتح # ملفات.}many{تحظر سياسة المشرف إمكانية فتح # ملفًا.}other{تحظر سياسة المشرف إمكانية فتح # ملف.}}</translation>
 <translation id="1634828734222219955">الإجمالي</translation>
@@ -1082,6 +1083,7 @@
 <translation id="2803320044666896137">يتم تجاهل قيمة هذه السياسة لأنّ المستخدِم ليس تابعًا للمؤسسة.</translation>
 <translation id="2807052079800581569">الإحداثي الصادي للصورة</translation>
 <translation id="2808278141522721006">‏يمكنك تفعيل ميزة Windows Hello أو إيقافها في <ph name="SETTINGS" />.</translation>
+<translation id="2820159698793041599">تعذّر على الخادم الوكيل إنشاء اتصال آمن.</translation>
 <translation id="2820957248982571256">جارٍ الفحص...</translation>
 <translation id="282457273878278063">إدارة معلومات الاتصال</translation>
 <translation id="2824775600643448204">شريط العناوين والبحث</translation>
@@ -1263,6 +1265,7 @@
 <translation id="3120807611504813890">ظرف (خفيف الوزن)</translation>
 <translation id="3121994479408824897">الانتقال إلى <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">تصنيفات (دائمة)</translation>
+<translation id="3128081114752791872">شهادة أمان الخادم الوكيل غير صالحة.</translation>
 <translation id="3131746543143948171">يبدو أنّ هذا الموقع الإلكتروني مشابه لمواقع إلكترونية أخرى مرتبطة بالتصيّد الاحتيالي والبرامج الضارة وعمليات الخداع. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">حفظ رقم التعويض</translation>
 <translation id="3133565499688974786">تم ضبط <ph name="SEARCH_ENGINE_NAME" /> على أنّه محرك البحث التلقائي.</translation>
@@ -1681,7 +1684,6 @@
 <translation id="3800436529451849929">من <ph name="SITE" /></translation>
 <translation id="3801297763951514916">تزور هذا الموقع الإلكتروني كثيرًا</translation>
 <translation id="380329542618494757">الاسم</translation>
-<translation id="3803481123869276674">‏عند إجراء عمليات شراء على Chrome، يمكنك استخدام المحفظة الإلكترونية كخيار للدفع</translation>
 <translation id="3803801106042434208">محركات البحث هذه رائجة في منطقتك</translation>
 <translation id="3804112825000113857">عرض إعدادات ميزة "الملء التلقائي"</translation>
 <translation id="380666903981445943">‏يمكنك حفظ طريقة دفع في حسابك على Google لملء بيانات البطاقة تلقائيًا عند إجراء عمليات شراء في Chrome</translation>
@@ -2104,7 +2106,7 @@
 <translation id="4489023393592172404">‏ظرف Kaku 4</translation>
 <translation id="4489977488133295402">إثبات هويتك لملء بيانات طرق الدفع تلقائيًا</translation>
 <translation id="4490717597759821841">A7</translation>
-<translation id="449126573531210296">‏ترميز كلمات المرور التي تمت مزامنتها باستخدام حسابك على Google</translation>
+<translation id="449126573531210296">‏تشفير كلمات المرور المتزامنة باستخدام حسابك على Google</translation>
 <translation id="4493480324863638523">‏عنوان URL غير صحيح. يجب أن يحتوي عنوان URL على نظام عادي، مثل http://example.com أو https://example.com.</translation>
 <translation id="4497843134750481377">إدارة العروض</translation>
 <translation id="4500587658229086076">المحتوى غير الآمن</translation>
@@ -2164,6 +2166,7 @@
 <translation id="4612631413844865947">حدث خطأ أثناء معالجة طلبك على <ph name="MERCHANT_ORIGIN" /> من خلال <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="4612904677925722054">قد يتضمّن هذا الموقع الإلكتروني محتوى للكبار. يجب أن يوافق وصيّك أو أحد والدَيك على طلبك بزيارة هذا الموقع الإلكتروني.</translation>
 <translation id="4613873770449493819">‏يجب أن يشير عنوان URL إلى نطاق في <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
+<translation id="4615154194248230658">يبدو أنّ هذا النمط لا يتطابق مع نطاق عنوان بريد إلكتروني صالح. لذا، قد يتعذَّر على المستخدمين تسجيل الدخول أو تتم إزالة الملفات الشخصية الحالية.</translation>
 <translation id="4619564267100705184">إثبات هويّتك</translation>
 <translation id="4619669610757527494">‏حفظ رخصة القيادة في "محفظة Google"</translation>
 <translation id="4622292761762557753">النقل على أي حال</translation>
@@ -2682,7 +2685,6 @@
 <translation id="5447235695608032700">السماح للموقع الإلكتروني <ph name="SITE" /> باستخدام معلوماتك المحفوظة عليه</translation>
 <translation id="5447973833955560753">كلمة مرور الاسترداد</translation>
 <translation id="5452270690849572955">لا يمكن العثور على صفحة <ph name="HOST_NAME" /> هذه.</translation>
-<translation id="5452923259299906094">‏الدفع باستخدام المحفظة الإلكترونية وPix</translation>
 <translation id="5455374756549232013">الطابع الزمني للسياسة سيئ</translation>
 <translation id="5456428544444655325">عدم الإظهار مطلقًا</translation>
 <translation id="5457082343331641453">إضافة نص إلى طلب البحث</translation>
@@ -3898,7 +3900,6 @@
 <translation id="7489919936111034362">‏مساحة التخزين في Google Drive ممتلئة</translation>
 <translation id="7490622939531327327">فهم النماذج بشكل أفضل</translation>
 <translation id="7495528107193238112">هذا المحتوى محظور. يمكنك التواصل مع مالك الموقع الإلكتروني لحلّ المشكلة.</translation>
-<translation id="7499188644237027195">‏عند إجراء عمليات شراء على Chrome، يمكنك استخدام المحفظة الإلكترونية وPix كخيارين للدفع</translation>
 <translation id="7499684925421947861">هل المطلوب السماح لـ "<ph name="ACTOR_NAME" />" بتسجيل الدخول إلى "<ph name="DOMAIN" />" نيابةً عنك؟</translation>
 <translation id="7501663406926337752">أبلغت مؤسستك عن الموقع الإلكتروني الذي تحاول زيارته</translation>
 <translation id="7502044688973049724">إدارة معلوماتك</translation>
@@ -4023,7 +4024,6 @@
 <translation id="7676840398262504532">تراقب مؤسستك عملية النسخ</translation>
 <translation id="767806704757698045">تعمل هذه الميزة على المواقع الإلكترونية المتوافقة فقط</translation>
 <translation id="7678730592635586336">إعادة تسجيل الفيديو</translation>
-<translation id="7679287273775285018">الدفع باستخدام المحفظة الإلكترونية</translation>
 <translation id="7679367271685653708">‏عرض سجلّ التصفُّح وإدارته في إعدادات Chrome</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />، <ph name="CARD_LAST_FOUR_DIGITS" />، تاريخ انتهاء الصلاحية <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">الشحن</translation>
@@ -4098,7 +4098,6 @@
 <translation id="7791543448312431591">إضافة</translation>
 <translation id="7798389633136518089">تم التجاهل لعدم إعداد السياسة من خلال أحد مصادر السحابة الإلكترونية.</translation>
 <translation id="7800304661137206267">تم ترميز الاتصال باستخدام <ph name="CIPHER" />، مع <ph name="MAC" /> لمصادقة الرسالة و<ph name="KX" /> كآلية التبادل الرئيسية.</translation>
-<translation id="780228007282527248">يمكنك إضافة علامة تبويب أو صورة لتحسين بحثك</translation>
 <translation id="7802523362929240268">الموقع الإلكتروني مشروع</translation>
 <translation id="7802989406998618639">يُرجى إدخال رمز الأمان المكوّن من ‏<ph name="NUMBER_OF_DIGITS" /> أرقام المكتوب على <ph name="SIDE_OF_CARD" /> ليتمكّن المصرف من إثبات هويتك.</translation>
 <translation id="780301667611848630">لا، شكرًا</translation>
@@ -4164,6 +4163,7 @@
 <translation id="7916162853251942238">قاعدة الطباعة الفلكسغرافية</translation>
 <translation id="7916802424606434188">فتح النافذة <ph name="WINDOW_INDEX" /> (<ph name="NUM_TABS" /> علامة تبويب) في نافذة جديدة</translation>
 <translation id="791698251820376781">لا تسمح لك مؤسستك بتسجيل الدخول</translation>
+<translation id="7918936720558783139">سيتوفّر العرض المحفوظ عند الدفع باستخدام ميزة "الملء التلقائي". <ph name="BEGIN_LINK" />إدارة العروض<ph name="END_LINK" /></translation>
 <translation id="7927046851848613453">‏للوصول بسرعة إلى تذاكرك وبياناتك، مثل تذاكِر الفعاليات وبطاقات الولاء، يمكنك حفظها هي وغير ذلك من الفعاليات والمعلومات من الصفحات التي تتم زيارتها، وليس فقط من النماذج التي يتم ملؤها. ويمكن أن تظهر معلوماتك المحفوظة على أجهزتك وفي منتجات Google.</translation>
 <translation id="7930282586031445870">‏تم إغلاق شاشة بنود خدمة "الدفع الآجل" (BNPL).</translation>
 <translation id="7932035970207573919">عنوان العمل: <ph name="ADDRESS" /></translation>
@@ -4233,6 +4233,7 @@
 <translation id="8029829038322015001">أحمر 1</translation>
 <translation id="8032546467100845887">شفافية</translation>
 <translation id="8035152190676905274">قلم</translation>
+<translation id="803703704549420287">محو الفلاتر</translation>
 <translation id="8037117624646282037">الأشخاص الذين استخدموا الجهاز مؤخرًا</translation>
 <translation id="803771048473350947">ملف</translation>
 <translation id="8038182528865038593">أحمر 2</translation>
@@ -4423,6 +4424,7 @@
 <translation id="8363929499301563123">ملفات تعريف الارتباط الخاصة بالمواقع الإلكترونية (سيتم الاحتفاظ بحالة تسجيل الدخول على المواقع الإلكترونية التي تمت زيارتها مؤخرًا)</translation>
 <translation id="8364627913115013041">لم يتم ضبطها.
 </translation>
+<translation id="8364664414979300296">يمكنك إضافة علامات تبويب وصور والمزيد لتحسين بحثك</translation>
 <translation id="836616551641291797">مزيد من المعلومات حول كيفية إدارة المتصفِّح</translation>
 <translation id="8367705492654390392">يمكنك طرح أي سؤال</translation>
 <translation id="8368001212524806591">تتبُّع السعر</translation>

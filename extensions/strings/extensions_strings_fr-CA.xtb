@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Activer le thème</translation>
+<translation id="1085064499066015002">Toujours sur tous les sites</translation>
 <translation id="1135328998467923690">Le paquet est non valide : « <ph name="ERROR_CODE" /> ».</translation>
 <translation id="1140871961407805696">Orienté vers l'environnement</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> a ajouté une extension qui pourrait modifier le fonctionnement de Chromium.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">Version « <ph name="NEW_ID" /> » reçue au lieu de la version « <ph name="EXPECTED_VERSION" /> » attendue</translation>
 <translation id="471800408830181311">Échec de création de la clé privée</translation>
 <translation id="4811956658694082538">Échec de l'installation du paquet causé par le plantage d'un processus de service. Veuillez redémarrer Chrome, puis réessayer.</translation>
+<translation id="4883436287898674711">Tous les sites <ph name="WEBSITE_1" /></translation>
 <translation id="4988792151665380515">Échec d'exportation de la clé publique</translation>
 <translation id="501057610015570208">L'application dont le fichier de configuration comporte un attribut « kiosk_only » doit être installée en mode Kiosque pour Chrome OS Flex</translation>
 <translation id="5026754133087629784">Affichage Web : <ph name="WEBVIEW_TAG_NAME" /></translation>

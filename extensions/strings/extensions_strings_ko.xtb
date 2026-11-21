@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">테마 사용</translation>
+<translation id="1085064499066015002">항상 모든 사이트에서 사용</translation>
 <translation id="1135328998467923690">패키지가 잘못되었습니다. '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">후면</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" />에서 Chromium 작동에 영향을 줄 수 있는 확장 프로그램을 추가했습니다.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">'<ph name="EXPECTED_VERSION" />' 버전을 예상했으나 '<ph name="NEW_ID" />' 버전이 표시되었습니다</translation>
 <translation id="471800408830181311">비공개 키를 출력하지 못했습니다.</translation>
 <translation id="4811956658694082538">유틸리티 프로세스가 충돌하여 패키지를 설정하지 못했습니다. Chrome을 다시 시작하고 다시 설치해 보세요.</translation>
+<translation id="4883436287898674711">모든 <ph name="WEBSITE_1" /> 사이트</translation>
 <translation id="4988792151665380515">공개 키를 내보내지 못했습니다.</translation>
 <translation id="501057610015570208">'kiosk_only' 매니페스트 속성을 사용하는 앱은 ChromeOS Flex 키오스크 모드에 설치되어야 합니다.</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>

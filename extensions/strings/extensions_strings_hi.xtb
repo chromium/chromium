@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">थीम चालू करें</translation>
+<translation id="1085064499066015002">हमेशा सभी साइटों के लिए अनुमति दें</translation>
 <translation id="1135328998467923690">पैकेज अमान्य है: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">पीछे वाला कैमरा</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> ने एक ऐसा एक्सटेंशन जोड़ा है जो Chromium के काम करने के तरीके को बदल सकता है.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">अपेक्षित वर्शन "<ph name="EXPECTED_VERSION" />" है, लेकिन वर्शन "<ph name="NEW_ID" />" था</translation>
 <translation id="471800408830181311">निजी कुंजी आउटपुट करने में विफल.</translation>
 <translation id="4811956658694082538">उपयोगिता प्रक्रिया क्रैश होने के कारण पैकेज इंस्‍टॉल नहीं किया जा सका. Chrome को फिर से प्रारंभ करके और फिर से प्रयास करके देखें.</translation>
+<translation id="4883436287898674711">सभी <ph name="WEBSITE_1" /> साइटें</translation>
 <translation id="4988792151665380515">सार्वजनिक कुंजी निर्यात करने में विफल.</translation>
 <translation id="501057610015570208">'kiosk_only' मेनिफ़ेस्ट एट्रिब्यूट वाले ऐप्लिकेशन को ChromeOS Flex के कीऑस्क मोड में इंस्टॉल किया जाना चाहिए</translation>
 <translation id="5026754133087629784">वेबदृश्य: <ph name="WEBVIEW_TAG_NAME" /></translation>

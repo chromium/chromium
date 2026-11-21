@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">തീം പ്രവർത്തനക്ഷമമാക്കുക</translation>
+<translation id="1085064499066015002">എപ്പോഴും എല്ലാ സൈറ്റിലും</translation>
 <translation id="1135328998467923690">പാക്കേജ് അസാധുവാണ്: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">പുറകുവശത്തുള്ള ക്യാമറ</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" />, Chromium പ്രവർത്തിക്കുന്ന രീതി മാറ്റിയേക്കാവുന്ന ഒരു വിപുലീകരണം ചേർത്തു.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">പ്രതീക്ഷിച്ച പതിപ്പ് "<ph name="EXPECTED_VERSION" />" ആണ്, എന്നാൽ ലഭിച്ച പതിപ്പ് "<ph name="NEW_ID" />" ആയിരുന്നു</translation>
 <translation id="471800408830181311">സ്വകാര്യ കീ ഔട്ട്‌പുട്ട് ചെയ്യുന്നതിന് പരാജയപ്പെട്ടു.</translation>
 <translation id="4811956658694082538">യൂട്ടിലിറ്റി പ്രോസസ്സ് ക്രാഷായതിനാൽ പാക്കേജ് ഇൻസ്റ്റാൾ ചെയ്യാനായില്ല. Chrome റീസ്റ്റാർട്ട് ചെയ്‍ത് വീണ്ടും ശ്രമിക്കുന്നത് പരീക്ഷിക്കുക.</translation>
+<translation id="4883436287898674711">എല്ലാ <ph name="WEBSITE_1" /> സൈറ്റുകളും</translation>
 <translation id="4988792151665380515">പൊതു കീ കയറ്റുമതി ചെയ്യുന്നതിന് പരാജയപ്പെട്ടു.</translation>
 <translation id="501057610015570208">ChromeOS Flex കിയോസ്‌ക് മോഡിൽ, 'kiosk_only' മാനിഫെസ്റ്റ് ആട്രിബ്യൂട്ട് ഉള്ള ആപ്പ് ഇൻസ്റ്റാൾ ചെയ്യണം</translation>
 <translation id="5026754133087629784">വെബ് കാഴ്‌ച: <ph name="WEBVIEW_TAG_NAME" /></translation>

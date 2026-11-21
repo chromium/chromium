@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">થીમ ચાલુ કરો</translation>
+<translation id="1085064499066015002">હંમેશાં બધી સાઇટ માટે પરવાનગી આપો</translation>
 <translation id="1135328998467923690">પૅકેજ અમાન્ય છે : '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">પાછળનો કૅમેરો</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> દ્વારા કોઈ એક્સ્ટેન્શન ઉમેરવામાં આવ્યું છે, જેને કારણે Chromiumની કામ કરવાની રીતમાં ફેરફાર થઈ શકે છે.
@@ -79,6 +80,7 @@
 <translation id="4660476621274971848">અપેક્ષિત વર્ઝન "<ph name="EXPECTED_VERSION" />" છે, પરંતુ વર્ઝન "<ph name="NEW_ID" />" હતું.</translation>
 <translation id="471800408830181311">ખાનગી કી બનાવવામાં નિષ્ફળ.</translation>
 <translation id="4811956658694082538">એક ઉપયોગિતા પ્રક્રિયા ક્રેશ થઈ હોવાને કારણે પૅકેજ ઇન્સ્ટોલ કરી શકાયું નથી. Chrome પુનઃપ્રારંભ કરી અને ફરીથી પ્રયાસ કરવાનો પ્રયાસ કરો.</translation>
+<translation id="4883436287898674711">બધી <ph name="WEBSITE_1" /> સાઇટ</translation>
 <translation id="4988792151665380515">ખાનગી કી નિકાસ કરવામાં નિષ્ફળ.</translation>
 <translation id="501057610015570208">'kiosk_only' મેનિફેસ્ટ વિશેષતા ધરાવતી ઍપને ChromeOS Flexના કિઓસ્ક મોડમાં ઇન્સ્ટૉલ કરવી જરૂરી છે</translation>
 <translation id="5026754133087629784">વેબવ્યુ: <ph name="WEBVIEW_TAG_NAME" /></translation>

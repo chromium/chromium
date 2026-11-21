@@ -577,6 +577,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3243650379537999343">Teken</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">As jy ook Chrome-gebruiksverslae deel, sluit daardie verslae die URL'e in wat jy besoek</translation>
+<translation id="3248185426436836442">Hangend</translation>
 <translation id="3250563604907490871">Prentbeskrywings sal hervat wanneer jy aan wi-fi koppel</translation>
 <translation id="3254409185687681395">Boekmerk hierdie bladsy</translation>
 <translation id="3265093782546847662">Alle bladsye van <ph name="DOMAIN" /></translation>
@@ -1125,7 +1126,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, vasgespelde Incognito-oortjie wat gedeel word</translation>
 <translation id="5375374982898812658">Jy sal onmiddellik toegang tot die “<ph name="GROUP_NAME" />”-oortjiegroep verloor, en dit sal van al jou toestelle af uitgevee word</translation>
 <translation id="537865165090710757">Stoor en deel</translation>
-<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> wil persoonlike inligting gebruik wat in jou digitale beursie is. Gaan net voort as jy hierdie werf vertrou. Gevaarlike werwe kan jou dalk mislei om dinge soos jou wetlike naam of ID-nommer bekend te maak.</translation>
 <translation id="5395376160638294582">Maak seker dat jy altyd die Chrome-data in jou Google-rekening kan gebruik</translation>
 <translation id="5397794290049113714">Jy</translation>
 <translation id="539881862970320163">Sterk wagwoord word voorgestel. Sleutelbord is versteek.</translation>
@@ -1137,6 +1137,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5415871492522952905">Jy sal jou geskiedenis en oortjies op al jou toestelle hê sodat jy kan voortgaan waarmee jy besig was</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) sal onmiddellik toegang tot die “<ph name="GROUP_NAME" />”-oortjiegroep verloor</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB is beskikbaar</translation>
+<translation id="5430861625274552852">Vra oor ’n bladsy se inhoud of vergelyk oor oortjies heen</translation>
 <translation id="543271133149552180"><ph name="TAB_TITLE" />, multigekose Incognito-oortjie met prent-in-prent</translation>
 <translation id="5436928407363358055">Sinkroniseer jou geskiedenis en oortjies om maklik aan te gaan waar jy opgehou het</translation>
 <translation id="5438292632479953702">Laai weer af</translation>
@@ -1173,6 +1174,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="557018954714092179">Skep nuwe vouer</translation>
 <translation id="5578795271662203820">Deursoek <ph name="SEARCH_ENGINE" /> vir hierdie prent</translation>
 <translation id="558563010977877295">Maak 'n spesifieke bladsy of 'n stel bladsye oop</translation>
+<translation id="5594132774273121146">Gebruiker en rekening</translation>
 <translation id="5596627076506792578">Meer opsies</translation>
 <translation id="5599455543593328020">Incognitomodus</translation>
 <translation id="5601180634394228718">Gaan na <ph name="BEGIN_LINK" />Google-dienste<ph name="END_LINK" /> vir meer instellings wat data gebruik om jou Chrome-ervaring te verbeter.</translation>
@@ -1230,6 +1232,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="583281660410589416">Onbekend</translation>
 <translation id="5833984609253377421">Deel skakel</translation>
 <translation id="5839058148541733625">Chrome-dinosourusspeletjie</translation>
+<translation id="5839059463554891940">Veiligheid en beskerming</translation>
 <translation id="5841444063256914865">Wil jy in elk geval “<ph name="FILE_NAME" />” aflaai?</translation>
 <translation id="5847265694842662173">Chrome het misbruikende en ongebruikte werwe gekeer om kennisgewings te stuur</translation>
 <translation id="5848257610304005265">Maak PDF oop met <ph name="APP_NAME" />?</translation>
@@ -1346,7 +1349,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6259107733340311168">Enterprise-seinevrywaring se onderste blad is teen volle hoogte oopgemaak</translation>
 <translation id="6260260490042862943">Werfkontroles</translation>
 <translation id="6264376385120300461">Laai in elk geval af</translation>
-<translation id="6264485186158353794">Terug na veiligheid</translation>
 <translation id="6267106249090587268">Kennisgewings <ph name="SEPARATOR" /> Chrome het hierdie toestemmings verwyder weens strooipos of misleidende inhoud</translation>
 <translation id="6276708887952587684">Bekyk bladsybron</translation>
 <translation id="62768169905160414">Kopieer videoraam</translation>
@@ -1465,7 +1467,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6659594942844771486">Oortjie</translation>
 <translation id="666731172850799929">Maak oop in <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Stel my in kennis</translation>
-<translation id="6670742294143102726">Kies een of meer oortjies om by jou soektog te voeg</translation>
 <translation id="6671495933530132209">Kopieer prent</translation>
 <translation id="6672697278890207089">Voer jou wagfrase in</translation>
 <translation id="6675622031235530028">Hou Ctrl+Q om te verlaat</translation>
@@ -1731,6 +1732,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standaardoortjie}other{<ph name="TABS_COUNT_MANY" /> standaardoortjies}}</translation>
 <translation id="7603168929588204083">Ongeldige datum</translation>
 <translation id="7605594153474022051">Sinkronisering werk nie</translation>
+<translation id="7607002721634913082">Laat wag</translation>
 <translation id="7608245556672190037">Chrome Finds-intekening is teen volle hoogte oopgemaak</translation>
 <translation id="7612619742409846846">By Google aangemeld as</translation>
 <translation id="7612989789287281429">Meld jou tans aan …</translation>
@@ -1839,6 +1841,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="800155843932969169">Skep en stoor jou wagwoorde veilig, meld vinniger aan en identifiseer wagwoordsekuriteitkwessies om jou veilig te hou</translation>
 <translation id="8004582292198964060">Blaaier</translation>
 <translation id="8006630792898017994">Spasie of Tab-spasie</translation>
+<translation id="802154636333426148">Kon nie aflaai nie</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, multigekose vasgespelde Incognito-oortjie wat gedeel word</translation>
 <translation id="8025972204417227828">Voeg nuwe een by</translation>
 <translation id="8027863900915310177">Kies waarheen om af te laai</translation>
@@ -1846,6 +1849,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8032569120109842252">Volg tans</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, gekose gedempte Incognito-oortjie</translation>
 <translation id="8036587585440959897">Sommige uitbreidings kan soekenjins by Chrome voeg.</translation>
+<translation id="803703704549420287">Maak filters skoon</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> dae oor</translation>
 <translation id="8037801708772278989">Sopas nagegaan</translation>
 <translation id="804335162455518893">Kon nie SD-kaart kry nie</translation>

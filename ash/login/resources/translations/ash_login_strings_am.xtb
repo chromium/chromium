@@ -10,6 +10,7 @@
 <translation id="1097658378307015415">ከመግባትዎ በፊት አውታረ መረብ <ph name="NETWORK_ID" />ን ለማንቃት እባክዎ እንደ እንግዳ ይግቡ</translation>
 <translation id="1111932478203988717">ልጅዎ ወደ መሣሪያቸው በመለያ ለመግባት ይህን ፒን መጠቀም ይችላሉ</translation>
 <translation id="1122587596907914265">ልዩ ልጣፎችን ቅጥ ያድርጉ</translation>
+<translation id="1122913801042512795">የእርስዎ መለያ በመለያ መግቢያ ዝርዝሮች ጊዜ ያለፈባቸው ናቸው። እባክዎ ዘግተው ይውጡ እና እንደገና በመለያ ይግቡ።</translation>
 <translation id="1131201598497838573">የልጅዎ ፒን ተዘምኗል</translation>
 <translation id="1147322039136785890">አሁን የ<ph name="SUPERVISED_USER_NAME" /> ተራ ነው</translation>
 <translation id="1148669835763563782">ለተሻሻለ የደህንነት እና ለአዲሱ የChromebook ባህሪያት የቅርብ ጊዜውን የሶፍትዌር ዝማኔ እያገኙ ነው። ይህ ዝማኔ በእርስዎ Chromebook ላይ ያለ ችግር ለመጀመር እንዲያግዝ የተሻሻለውን የማዋቀር ተሞክሮ ያካትታል።</translation>
@@ -26,6 +27,7 @@
 <translation id="1256588359404100567">ቅንብር ከእርስዎ የቀድሞ መሣሪያ ሰምሯል።</translation>
 <translation id="1272978324304772054">ይህ የተጠቃሚ መለያ መሣሪያው የተመዘገበበት ጎራ አካል አይደለም።  ወደተለየ ጎራ መመዝገብ ከፈለጉ መጀመሪያ የመሣሪያ ዳግም ማግኛን ማከናወን አለብዎት።</translation>
 <translation id="1293556467332435079">ፋይሎች</translation>
+<translation id="1302523850133262269">እባክዎ Chrome የቅርብ ጊዜዎቹን ዝማኔዎች እስኪጭን ድረስ ይጠብቁ።</translation>
 <translation id="1307559529304613120">ውይ!  ስርዓቱ የዚህ መሣሪያ የረጅም ጊዜ ኤ ፒ አይ መዳረሻ ማስመሰያ ማከማቸት አልቻለም።</translation>
 <translation id="1335929031622236846">መሣሪያዎን ያስመዝግቡ</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />የስህተት ማረሚያ ባህሪያት<ph name="END_H3" />
@@ -49,6 +51,7 @@
 <translation id="1347625331607114917">ይህን ኮድ በAndroid ስልክዎ ያረጋግጡ</translation>
 <translation id="1347975661240122359">ባትሪው <ph name="BATTERY_LEVEL" />% ሲደርስ ዝማኔ ይጀምራል።</translation>
 <translation id="1353275871123211385">እንደ የመተግበሪያ ማጽደቅ እና የማያ ገፅ ጊዜ ገደቦች ያሉ የወላጅ መቆጣጠሪያዎችን ለመጠቀም አንድ ልጅ በወላጅ የሚተዳደር የGoogle መለያ ሊኖረው ይገባል። የትምህርት ቤት መለያ በኋላ ላይ እንደ Google Classroom ላሉ መሣሪያዎች ሊታከል ይችላል።</translation>
+<translation id="1363996462118479832">ChromeOS እየተገባ ሳለ በተፈጠረ አንድ ስህተት ምክንያት ውሂብዎን ማስመር አልቻለም።</translation>
 <translation id="1375557162880614858">የChromeOS Flex አብሮገነብ የማያ ገፅ አንባቢ የሆነውን ChromeVox ማግበር ይፈልጋሉ?</translation>
 <translation id="1377600615067678409">ለአሁን ዝለለው</translation>
 <translation id="1399261165075500043">የGoogle Play ውሎችን መጫን አልተቻለም</translation>
@@ -73,6 +76,7 @@
 <translation id="1642494467033190216">ሌሎች የማረሚያ ባህሪያት ከመንቃታቸው በፊት የrootfs ጥበቃ መወገድ እና ዳግም መጀመር ያስፈልጋል።</translation>
 <translation id="1646045728251578877">የሶፍትዌር ዝማኔ ይገኛል</translation>
 <translation id="1650801028905250434">በእኔ Drive ውስጥ ያሉ ፋይሎችዎን ያለ የበይነመረብ ግንኙነት መድረስ እንዲችሉ በራስ-ሰር ወደ እርስዎ Chromebook ይሰምራሉ። ይህን በማንኛውም ጊዜ በቅንብሮች &gt; ፋይሎች ውስጥ መለወጥ ይችላሉ።</translation>
+<translation id="16620462294541761">ይቅርታ፣ የይለፍ ቃልዎ ሊረጋገጥ አልቻለም። እባክዎ እንደገና ይሞክሩ።</translation>
 <translation id="1668435968811469751">ራስዎ ያስመዝግቡ</translation>
 <translation id="1678919064276516737">ያስገቧቸው ኢሜይል እና ፒን አይዛመዱም</translation>
 <translation id="1692115862433274081">ሌላ መለያ ተጠቀም</translation>
@@ -94,6 +98,7 @@
 <translation id="1868617395637139709">አካባቢን ለAndroid መተግበሪያዎች እና አገልግሎቶች ይጠቀሙ።</translation>
 <translation id="1877377730633446520">ይህ እስከ <ph name="REQUIRED_SPACE" /> ድረስ ይጠቀማል። እርስዎ በአሁኑ ጊዜ <ph name="FREE_SPACE" /> ያገኛሉ።</translation>
 <translation id="1878155070920054810">ዝማኔው ከመጠናቀቁ በፊት የእርስዎ Chromebook ኃይሉ ያልቅበታል። መቋረጥን ለመከላከል በትክክል ኃይል እየሞሉ መሆኑን ያረጋግጡ።</translation>
+<translation id="1887442540531652736">የመግባት ስህተት</translation>
 <translation id="189035593835762169">የአገልግሎት ውል</translation>
 <translation id="189358972401248634">ሌሎች ቋንቋዎች</translation>
 <translation id="1915734383465415025">የመደብር ቁጥር</translation>
@@ -122,6 +127,7 @@
 <translation id="2210462644007531147">መጫንን ማጠናቀቅ አልተቻለም</translation>
 <translation id="221872881068107022">በተቃራኒው ሸብልል</translation>
 <translation id="2219081237089444028">መግባትን ለማቅለል የ<ph name="DEVICE_TYPE" /> የይለፍ ቃል ያቀናብሩ</translation>
+<translation id="2220529011494928058">ችግር ሪፖርት አድርግ</translation>
 <translation id="222115440608612541">ፀሐይ ስትወጣና ስትገባ ገጽታዎችን ይቀያይሩ</translation>
 <translation id="2229161054156947610">ከ1 ሰዓት በላይ ይቀራል</translation>
 <translation id="2246129643805925002">የቅርብ ጊዜዎቹን ባህሪዎች እና የደህንነት ማሻሻያዎች ለእርስዎ መስጠት እንዲቻል የእርስዎ የ<ph name="DEVICE_TYPE" /> ዝማኔዎች በራስ-ሰር በበስተጀርባ ይከናወናሉ። የዝማኔ ምርጫዎችን በቅንብሮች ውስጥ መገምገም ይችላሉ።</translation>
@@ -132,6 +138,7 @@
 <translation id="2328137272841210255">የእርስዎን ፒን ዳግም ያስጀምሩ</translation>
 <translation id="2342180549977909852">ልጅዎ ይህንን መሣሪያ ለመክፈት በይለፍ ቃል ይልቅ ቁጥር (ፒን) መጠቀም ይችላል። ፒን በኋላ ላይ ለማቀናበር ወደ ቅንብሮች ይሂዱ።</translation>
 <translation id="2359808026110333948">ቀጥል</translation>
+<translation id="2384373936468275798">የመለያ መግቢያ ዝርዝሮችዎ ጊዜ ያለፈባቸው ስለሆኑ ChromiumOS ውሂብዎን ማስመር አልቻለም።</translation>
 <translation id="2387052489799050037">ወደ መነሻ ሂድ</translation>
 <translation id="2395616325548404795">የእርስዎ <ph name="DEVICE_TYPE" /> በተሳካ ሁኔታ ለድርጅት አስተዳደር ተመዝግቧል፣ ነገር ግን የእሴት እና የአካባቢ መረጃውን መላክ አልተሳካም። እባክዎ ለዚህ መሣሪያ ይህን መረጃ ከእርስዎ መሥሪያዎ ላይ ራስዎ ያስገቡ።</translation>
 <translation id="2408955596600435184">የእርስዎን ፒን ያስገቡ</translation>
@@ -158,6 +165,7 @@
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />የGoogle አካባቢ አገልግሎት የዚህን መሣሪያ አካባቢ ለመገመት እንደ Wi-Fi፣ የተንቀሳቃሽ ስልክ አውታረ መረቦች እና ዳሳሾች ያሉ ምንጮችን ይጠቀማል።<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />በዚህ መሣሪያ ላይ በማንኛውም ጊዜ ወደ ቅንብሮች &gt; መተግበሪያዎች &gt; የGoogle Play መደብር &gt; የAndroid ምርጫዎችን አቀናብር &gt; ደኅንነት እና አካባቢ &gt; አካባቢ በመሄድ የAndroid አካባቢን ማጥፋት ይችላሉ። እንዲሁም በተመሳሳዩ ምናሌ ውስጥ «የGoogle አካባቢ ትክክለኝነት»ን በማጥፋት Wi-Fiን፣ የሞባይል አውታረ መረቦችን እና የAndroid አካባቢ ዳሳሾችን ማጥፋት ይችላሉ።<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2663302507110284145">ቋንቋ</translation>
+<translation id="2674238339205910678">የመለያ መግቢያ ዝርዝሮችዎ ጊዜ ያለፈባቸው ስለሆኑ ChromeOS Flex የChrome ውሂብን በGoogle መለያዎ ውስጥ ማስቀመጥ አልቻለም</translation>
 <translation id="2687407218262674387">የGoogle አገልግሎት ውል</translation>
 <translation id="2688196195245426394">መሣሪያውን በዚህ አገልጋይ ላይ በመመዝገብ ላይ ሳለ ስህተት፦ <ph name="CLIENT_ERROR" />።</translation>
 <translation id="2698147581454716013">ይህ የተቀረቀበ መሣሪያ ነው እና በኪዮስክ እና በምልክት ማሻሻያ መመዝገብ አይችልም።</translation>
@@ -252,6 +260,7 @@
 <translation id="3740945083753997630">ማሳያ እና የጽሑፍ መጠን ይቀንሱ</translation>
 <translation id="376841534249795524">የእርስዎን <ph name="DEVICE_TYPE" /> ለምን ይጠቀሙበታል?</translation>
 <translation id="3772046291955677288"><ph name="BEGIN_LINK1" />የGoogle አገልግሎት ውል<ph name="END_LINK1" />ን እና <ph name="BEGIN_LINK2" />የChrome እና ChromeOS ተጨማሪ አገልግሎት ውል<ph name="END_LINK2" />ን አንብቤ ተስማምቼባቸዋለሁ።</translation>
+<translation id="3785324443014631273">ሲገቡ በነበረ ስህተት ምክንያት ChromeOS Flex ውሂብዎን ማስመር አልቻለም።</translation>
 <translation id="3789841737615482174">ጫን  </translation>
 <translation id="3800828618615365228">የGoogle Chrome እና የChromeOS ተጨማሪ ደንቦች</translation>
 <translation id="3828953470056652895"><ph name="BEGIN_LINK1" />የGoogle አገልግሎት ውሉን<ph name="END_LINK1" />፣ <ph name="BEGIN_LINK2" />የChrome እና የChromeOS ተጨማሪ አገልግሎት ውሉን<ph name="END_LINK2" /> እና <ph name="BEGIN_LINK3" />የPlay አገልግሎት ውሉን<ph name="END_LINK3" /> አንብቤ ተስማምቼባቸዋለሁ።</translation>
@@ -332,6 +341,7 @@
         <ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />ለተጨማሪ እገዛ የሚከተለውን ይጎብኙ፦ g.co/flex/InstallErrors።<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">ማንን ወደዚህ <ph name="DEVICE_TYPE" /> ማከል ይፈልጋል?</translation>
+<translation id="4543778593405494224">የእውቅና ማረጋገጫ አቀናባሪ</translation>
 <translation id="4566170377336116390">ከተመዘገቡ በኋላ መቀየር ከፈለጉ መሳሪያዎን በፋብሪካ ዳግም ማስጀመር (powerwash) ይኖርብዎታል።</translation>
 <translation id="4567512141633030272">የተሳሳተ የመለያ መግቢያ አማራጭ?</translation>
 <translation id="4567533462991917415">ከቅንብር በኋላ ሁልጊዜ ተጨማሪ ሰዎችን ማከል ይችላሉ። እያንዳንዱ ሰው መለያቸውን ግላዊ ማድረግ እና ውሂብን የግል አድርገው ማቆየት ይችላሉ።</translation>
@@ -349,6 +359,7 @@
 <translation id="4814327014588285482">ዝለል እና በኋላ አስታውሰኝ</translation>
 <translation id="4830502475412647084">የስርዓተ ክወና ዝማኔን በመጫን ላይ</translation>
 <translation id="4837926214103741331">ይህን መሣሪያ ለመጠቀም ስልጣን አልተሰጠዎትም። የመግባት ፍቃድ ለማግኘት የመሣሪያውን ባለቤት ያነጋግሩ።</translation>
+<translation id="4842397268809523050">ስምረት ለጎራዎ ስለማይገኝ ChromeOS Flex ውሂብዎን ማስመር አልቻለም።</translation>
 <translation id="4844333629810439236">ሌሎች የቁልፍ ሰሌዳዎች</translation>
 <translation id="484462545196658690">ራስ-ሰር</translation>
 <translation id="4864369630010738180">በመግባት ላይ...</translation>
@@ -360,6 +371,7 @@
 <translation id="4944310289250773232">ይህ ማረጋገጫ አገልግሎት የሚስተናገደው በ <ph name="SAML_DOMAIN" /> ነው</translation>
 <translation id="4955710816792587366">የእርስዎን ፒን ይምረጡ</translation>
 <translation id="4965808351167763748">እርግጠኛ ነዎት ይህን መሣሪያ Hangouts Meetን እንዲያሄድ ማዋቀር ይፈልጋሉ?</translation>
+<translation id="4969674060580488087">የመለያ መግቢያ ዝርዝሮችዎ ጊዜ ያለፈባቸው ስለሆኑ ChromeOS Flex ውሂብዎን ማስመር አልቻለም።</translation>
 <translation id="4987944280765486504">አንዴ ማውረዱ ከተጠናቀቀ የእርስዎ Chromebook እንደገና ይጀምራል እና ማዋቀር መቀጠል ይችላሉ።</translation>
 <translation id="5029287942302939687">የይለፍ ቃልዎ ተቀናብሯል</translation>
 <translation id="503155457707535043">መተግበሪያዎች በመውረድ ላይ</translation>
@@ -401,6 +413,8 @@
 <translation id="528208740344463258">የAndroid መተግበሪያዎችን ለማውረድ እና ለመጠቀም በመጀመሪያ ይህን የሚያስፈልግ ዝማኔ መጫን አለብዎት። የእርስዎ <ph name="DEVICE_TYPE" /> እያዘመነ ሳለ ሊጠቀሙበት አይችሉም። መጫን ከተጠናቀቀ በኋላ የእርስዎ <ph name="DEVICE_TYPE" /> ዳግም ይነሳል።</translation>
 <translation id="5283677936944177147">ውይ!  ስርዓቱ የመሣሪያ ሞዴሉን እና ወይም ተከታታይ ቁጥሩን ማወቅ አልቻለም።</translation>
 <translation id="5333896723098573627">መተግበሪያዎችን ለማስወገድ ወደ ቅንብሮች &gt; መተግበሪያዎች &gt; የGoogle Play መደብር &gt; የAndroid ምርጫዎችን ያስተዳድሩ &gt;መተግበሪያዎች ወይም የመተግበሪያ አስተዳዳሪ ይሂዱ። ከዚያ ለማራገፍ የሚፈልጉትን መተግበሪያ መታ ያድርጉ (መተግበሪያውን ለማግኘት ወደ ቀኝ ወይም ወደ ግራ ማንሸራተት ሊኖርብዎት ይችላል)። ከዚያ አራግፍ ወይም አሰናክል የሚለውን መታ ያድርጉ።</translation>
+<translation id="5334309298019785904">ማስመር ለጎራዎ ስለማይገኝ ChromeOS ውሂብዎን ማስመር አልቻለም።</translation>
+<translation id="535243042947607642">የመለያ መግቢያ ዝርዝሮችዎ ጊዜ ያለፈባቸው ስለሆኑ ChromiumOS የChromium ውሂብን በGoogle መለያዎ ውስጥ ማስቀመጥ አልቻለም</translation>
 <translation id="5355501370336370394">የድርጅት መሣሪያ ይመዝገቡ</translation>
 <translation id="5372529912055771682">የተሰጠው የምዝገባ ሁነታ በዚህ የስርዓተ ክወና ስሪት አይደገፍም። አዲሱን ስሪት እያሂዱ መሆንዎን ያረጋግጡና እንደገና ይሞክሩ።</translation>
 <translation id="5397378439569041789">ለኪዮስክ ወይም ለምልክት ቁንቋ መሣሪያ ይመዝገቡ</translation>
@@ -412,6 +426,7 @@
 <translation id="5448293924669608770">ውይ፣ መግባት ላይ የሆነ ችግር ተፈጥሯል</translation>
 <translation id="5453829744223920473">ልጅዎ ልክ ክፍል ውስጥ እንደሚያደርጉት ሁሉንም የእነሱን የትምህርት ቤት መተግበሪያዎች፣ እልባቶች እና ግብዓቶች መጠቀም ይችላሉ። ትምህርት ቤቱ የመመሪያ ሕጎቹን ያወጣል።</translation>
 <translation id="5473099001878321374">በመቀጠልዎ ይህ መሣሪያ እንዲሁም ዝማኔዎችን እና መተግበሪያዎችን ከGoogle፣ ከልጅዎ አገልግሎት አቅራቢ እና ከዚህ መሣሪያ አምራች፣ ምናልባት የተንቀሳቃሽ ውሂብን በመጠቀም፣ በራስ-ሰር ሊያወርድ እና ሊጭን እንደሚችል መስማማትዎን ያረጋግጣሉ። አንዳንድ መተግበሪያዎች የውስጠ-መተግበሪያ ግዢዎችን ሊያቀርቡ ይችላሉ።</translation>
+<translation id="549669000822060376">Chromium የቅርብ ጊዜዎቹ የስርዓቱ ዝማኔዎችን እስኪጭን ድረስ እባክዎ ይጠብቁ።</translation>
 <translation id="5502915260472117187">ልጅ</translation>
 <translation id="5511823366942919280">እርግጠኛ ነዎት ይህንን እንደ «Shark» አድርገው ማዋቀር ይፈልጋሉ?</translation>
 <translation id="5513807280330619196">ሒሳብ ማስያ</translation>
@@ -515,6 +530,7 @@
 <translation id="6495266441917713704">Wi-Fiን ማስተላለፍ አልተቻለም</translation>
 <translation id="6515620015470298987">በመሣሪያ ውቅረት ፍተሻ ችግር ምክንያት መግባት አልተሳካም። እባክዎ የእርስዎን <ph name="DEVICE_TYPE" /> በደንብ ያጽዱ እና እንደገና ይሞክሩ።</translation>
 <translation id="6519689855001245063">ብቁነትን በመፈተሽ ላይ</translation>
+<translation id="6520608191273161151">በመለያ በመግባት ላይ ባለ ስሕተት ምክንያት ChromeOS Flex የChrome ውሂብን በGoogle መለያዎ ውስጥ ማስቀመጥ አልቻለም</translation>
 <translation id="6532527800157340614">የእርስዎ የመዳረሻ ማስመሰያ ተሰርስሮ ሊወጣ አልቻለም። እባክዎ የአውታረ መረብ ግንኙነትዎን ይፈትሹትና እንደገና ይሞክሩ።</translation>
 <translation id="653920215766444089">ጠቋሚ መሣሪያን በመፈለግ ላይ</translation>
 <translation id="65513682072153627">አንድ ቅንብር ወይም ባህሪ በአስተዳዳሪዎ ሲቀናበር ይህን የሚተዳደር አዶ ያያሉ።</translation>
@@ -526,8 +542,10 @@
 <translation id="6675665718701918026">መጠቆሚያ መሣሪያ ተገናኝቷል</translation>
 <translation id="667752334740867460">የWi-Fi መረጃን በመቀበል ላይ...</translation>
 <translation id="6680442031740878064">ይገኛል፦ <ph name="AVAILABLE_SPACE" /></translation>
+<translation id="668175097507315160">በመለያ ሲገባ በነበረ ስህተት ምክንያት &amp;ChromiumOS ውሂብዎን ማስመር አልቻለም።</translation>
 <translation id="6684827949542560880">የቅርብ ጊዜውን ዝማኔ በማውረድ ላይ</translation>
 <translation id="6722744767592605627"><ph name="EMAIL" />ን መልሰው ማግኘት ይችላሉ ነገር ግን አካባቢያዊ ውሂብ ይሰረዛል።</translation>
+<translation id="6735387454586646204">የChromeOS Flex ስርዓት</translation>
 <translation id="6748980958975836188"><ph name="BEGIN_LINK1" />የGoogle የአገልግሎት ውሉን<ph name="END_LINK1" /> እና <ph name="BEGIN_LINK2" />የChrome እና ChromeOS ተጨማሪ የአገልግሎት ውሉን<ph name="END_LINK2" /> አንብቤ ተስማምቻለሁ።</translation>
 <translation id="6749473226660745022">ፎቶዎች</translation>
 <translation id="6754918760968695779">ፈጣን ማስገቢያ</translation>
@@ -552,6 +570,7 @@
 <translation id="6918733588290914545">በAndroid ስልክ በፈጥነት ማዋቀር</translation>
 <translation id="6920473853105515518">የእርስዎ <ph name="DEVICE_TYPE" /> ከበይነመረቡ ጋር መገናኘቱን ያረጋግጡና እንደገና ይሞክሩ። እንዲሁም በሌላ መሣሪያ ላይ play.google/play-terms የሚለውን መጎብኘትም ይችላሉ።</translation>
 <translation id="6929126689972602640">ለትምህርት ቤት መለያዎች የወላጅ መቆጣጠሪያዎች አይደገፉም። የGoogle የትምህርት ክፍል እና ሌሎች ድር ጣቢያዎችን በቤት ውስጥ ለትምህርት ቤት ሥራ ለመድረስ የትምህርት ቤት መለያ ለማከል፣ በመጀመሪያ በልጁ የግል መለያ ይግቡ። በኋላ ላይ በማዋቀር ውስጥ የትምህርት ቤቱን መለያ ማከል ይችላሉ።</translation>
+<translation id="6933858244219479645">የChromeOS ስርዓት</translation>
 <translation id="6935031746833428401">ስለመሣሪያ አስተዳዳር የበለጠ ይወቁ</translation>
 <translation id="6950351336108213154">የመሣሪያ ተቀጥላዎችን በማዘመን ላይ</translation>
 <translation id="6955698182324067397">የsshd ስውር አገልጋይን የሚያዋቅሩ እና ከዩኤስቢ አንጻፊዎች ማስነሳትን የሚያነቁ የChromeOS ማረሚያ ባህሪያትን እያነቁ ነው።</translation>
@@ -647,6 +666,7 @@
 <translation id="7870730066603611552">ቅንብርን የሚከተሉትን የማስመር አማራጮች ይገምግሙ</translation>
 <translation id="7883792253546618164">በማንኛውም ጊዜ ከደንበኝነት ምዝገባ ይውጡ።</translation>
 <translation id="7887864092952184874">የብሉቱዝ መዳፊት ተጣምሯል</translation>
+<translation id="7905880575591690197">በመለያ በመግባት ላይ ባለ ስሕተት ምክንያት ChromeOS የChrome ውሂብን በGoogle መለያዎ ውስጥ ማስቀመጥ አልቻለም</translation>
 <translation id="7906440585529721295">አካባቢያዊ ውሂብ የሚሰረዝ ይሆናል</translation>
 <translation id="7910725946105920830">የእርስዎ የግል Google መለያ ይጠቀሙ</translation>
 <translation id="7918257978052780342">ተመዝገብ</translation>
@@ -673,6 +693,7 @@
 <translation id="8098616321286360457">የአውታረ መረብ ግንኙነት ያስፈልጋል</translation>
 <translation id="8129265306888404830">ከድርጅትዎ የሆነውን የእርስዎ የኢሜይል አድራሻ ለመጠቀም (<ph name="EMAIL_DOMAIN" />) የድርጅት ምዝገባን መጠቀም ይኖርብዎታል። ይህ መሣሪያ ለእርስዎ ግላዊ አጠቃቀም የሚውል ከሆነ በግላዊ Google መለያዎ ይግቡ።</translation>
 <translation id="8131740175452115882">አረጋግጥ</translation>
+<translation id="8133124826068723441">ማስመር ለጎራዎ ስለማይገኝ ChromiumOS ውሂብዎን ማስመር አይችልም።</translation>
 <translation id="8146177459103116374">አስቀድመው በዚህ መሣሪያ ላይ ከተመዘገቡ <ph name="LINK2_START" />እንደ ነባር ተጠቃሚ መግባት ይችላሉ<ph name="LINK2_END" />።</translation>
 <translation id="8146793085009540321">መግባት አልተሳካም። እባክዎ አስተዳዳሪዎን ያነጋግሩ ወይም እንደገና ይሞክሩ።</translation>
 <translation id="8147346945017130012">የስንክል ሪፖርቶችንና እንዲሁም የምርመራ እና የአጠቃቀም ውሂብን በራስ-ሰር ወደ Google በመላክ የChromeOS ባህሪያትን እና አፈጻጸምን እንዲሻሻል ያግዙ።</translation>
@@ -691,6 +712,7 @@
 <translation id="8271379370373330993">ወላጆች፣ የሚቀጥሉት ጥቂት እርምጃዎች ለእርስዎ ናቸው። ከመለያ ማዋቀር በኋላ <ph name="DEVICE_TYPE" /> ለልጁ መስጠት ይችላሉ።</translation>
 <translation id="8274924778568117936">ዝማኔው እስኪጨርስ ድረስ የእርስዎን <ph name="DEVICE_TYPE" /> አያጥፉት ወይም አይዝጉት። መጫኑ ከተጠናቀቀ በኋላ የእርስዎ <ph name="DEVICE_TYPE" /> ዳግም ይነሳል።</translation>
 <translation id="8281886186245836920">ዝለል</translation>
+<translation id="8286036467436129157">ግባ</translation>
 <translation id="8289509909262565712">እንኳን ወደ <ph name="DEVICE_OS" /> በደህና መጡ</translation>
 <translation id="8291942417224950075">ለግል ጥቅም</translation>
 <translation id="8304383784961451596">ይህንን መሣሪያ ለመጠቀም ፈቃድ አልተሰጠዎትም። በመለያ የመግባት ፈቃድ ለማግኘት እባክዎ አስተዳዳሪውን ያነጋግሩ ወይም በFamily Link ክትትል የሚደረግበትን በGoogle መለያ ይግቡ።</translation>
@@ -702,6 +724,7 @@
 <translation id="8401432541486058167">ከእርስዎ ዘመናዊ ካርድ ጋር የተቆራኘውን ፒን ይስጡ።</translation>
 <translation id="8408270600235826886">ምን ውሂብ ለGoogle እንደሚጋራ መቆጣጠር ይችላሉ። ይህን በማንኛውም ጊዜ በቅንብሮች ውስጥ መቀየር ይችላሉ። ውሂብ በGoogle <ph name="BEGIN_LINK" />የግላዊነት መመሪያ<ph name="END_LINK" /> መሠረት ሥራ ላይ ይውላል።</translation>
 <translation id="8413956290606243087">የChromeOS አብሮገነብ የማያ ገፅ አንባቢ የሆነውን ChromeVox ማግበር ይፈልጋሉ?</translation>
+<translation id="8418845734693287262">የመለያዎ መግቢያ ዝርዝሮች ጊዜያቸው ያለፈባቸው ስለሆኑ ChromeOS ውሂብዎን ማስመር አልቻለም።</translation>
 <translation id="8425768983279799676">መሣሪያዎን ለመክፈት የእርስዎን ፒን መጠቀም ይችላሉ።</translation>
 <translation id="8428213095426709021">ቅንብሮች</translation>
 <translation id="843173223122814223">ዳራዎችን በAI ይፍጠሩ</translation>
@@ -741,10 +764,12 @@
 <translation id="8794548468611058947">ለመግባት የGoogle መለያ የይለፍ ቃል ከማስገባት ይልቅ ለዚህ <ph name="DEVICE_TYPE" /> ፒን መፍጠር ይችላሉ</translation>
 <translation id="8830779999439981481">ዝማኔዎችን ለመተግበር ዳግም በማስነሳት ላይ</translation>
 <translation id="8830796635868321089">የአሁኑ ተኪ ቅንብሮችን ተጠቅሞ የዝማኔ ፍተሻ አልተሳካም። እባክዎ <ph name="PROXY_SETTINGS_LINK_START" />የተኪ ቅንብሮችዎ<ph name="PROXY_SETTINGS_LINK_END" />ን ያስተካክሉ።</translation>
+<translation id="8833697763442816810">የChromiumOS ስርዓት</translation>
 <translation id="8855977033756560989">ይህ Chromebook Enterprise መሣሪያ ከChrome Enterprise Upgrade ጋር አብሮ ተቀርቅቦ የሚመጣ ነው። በድርጅት ችሎታዎች ይበልጥ ተጠቃሚ ለመሆን፣ ይህን መሣሪያ በGoogle አስተዳዳሪ መለያ ያስመዝግቡት።</translation>
 <translation id="885746075120788020">በGoogle መለያዎ ሲገቡ የተቀመጡ ምርጫዎችዎ እና እንቅስቃሴ በማንኛውም የChromeOS መሣሪያ ላይ ዝግጁ ይሆናሉ። በቅንብሮች ውስጥ ምን እንደሚያስምሩ መምረጥ ይችላሉ።</translation>
 <translation id="8868333925931032127">የማሳያ ሁነታን በመጀመር ላይ</translation>
 <translation id="8875221558267407626">ይዘትን ያጠቃልሉ፣ ውስብስብ ቋንቋን ያቅልሉ ወይም ጥያቄዎችን ይጠይቁ</translation>
+<translation id="8890569919834781711">በመለያ በመግባት ላይ ባለ ስሕተት ምክንያት ChromiumOS የChromium ውሂብን በGoogle መለያዎ ውስጥ ማስቀመጥ አልቻለም</translation>
 <translation id="8907701755790961703">እባክዎ አንድ አገር ይምረጡ</translation>
 <translation id="8913163265790894442">የእርስዎን <ph name="DEVICE_TYPE" /> በቀላሉ በስልክዎ ያቀናብሩ። የይለፍ ቃላትዎን ሳያስገቡ የእርስዎን Wi-Fi እና የGoogle መለያ ማከል ይችላሉ።
         <ph name="BR" />
@@ -780,5 +805,6 @@
 <translation id="951991426597076286">አትቀበል</translation>
 <translation id="954749761428814584">ቋንቋ እና የግቤት ስልት</translation>
 <translation id="960987915827980018">1 ሰዓት አካባቢ ቀርቷል</translation>
+<translation id="973195869036269770">የመለያ መግቢያ ዝርዝሮችዎ ጊዜ ያለፈባቸው ስለሆኑ ChromeOS የChrome ውሂብን በGoogle መለያዎ ውስጥ ማስቀመጥ አልቻለም</translation>
 <translation id="995420352808264005">የመሣሪያ ምዝገባ ዓይነት ይምረጡ</translation>
 </translationbundle>

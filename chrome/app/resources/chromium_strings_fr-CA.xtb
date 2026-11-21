@@ -84,7 +84,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="188102464690227119">Le bouton « Recherche dans le panneau latéral » de la barre d'outils a une nouvelle icône. Cliquez dessus pour poser des questions pendant que vous naviguez avec Recherche dans le panneau latéral.</translation>
 <translation id="1896836275755235458">Chromium économise l'énergie de la pile en limitant l'activité en arrière-plan et les effets visuels, comme le défilement fluide et les fréquences d'images vidéo. <ph name="BEGIN_LINK" />En savoir plus sur l'Économiseur d'énergie<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Service de mise à jour Chromium</translation>
-<translation id="1911763535808217981">En désactivant cette option, vous pouvez vous connecter aux sites Google tels que Gmail sans vous connecter à Chromium</translation>
 <translation id="1929939181775079593">Chromium ne répond pas. Voulez-vous le relancer maintenant?</translation>
 <translation id="1933341829955786215">Votre organisation, <ph name="MANAGER" />, vous demande de vous connecter à Chromium</translation>
 <translation id="193439633299369377">Chromium OS doit être redémarré pour appliquer la mise à jour.</translation>
@@ -131,7 +130,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2361918034042471035">L'extension « <ph name="EXTENSION_NAME" /> » souhaite que vous vous connectiez à Chromium</translation>
 <translation id="236943522426971115">Désactiver l'exécution de Chromium en arrière-plan pour les applis</translation>
 <translation id="2374216753258219393">Pour utiliser cette extension en tant que <ph name="USER_EMAIL_ADDRESS" />, connectez-vous à Chromium.</translation>
-<translation id="2384373936468275798">Chromium OS n'a pas pu synchroniser vos données, car vos renseignements de connexion ne sont plus à jour.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Une ou plusieurs extensions Chromium ont accédé à 1 appareil HID}=1{Une ou plusieurs extensions Chromium ont accédé à 1 appareil HID}one{Une ou plusieurs extensions Chromium ont accédé à # appareil HID}other{Une ou plusieurs extensions Chromium ont accédé à # appareils HID}}</translation>
 <translation id="2401032172288869980">Chromium requiert l'autorisation d'accéder au microphone et à l'appareil photo pour ce site</translation>
 <translation id="2403703063067034158">Erreur de démarrage : une autre instance de configuration est actuellement en cours d'exécution, veuillez réessayer plus tard.</translation>
@@ -173,7 +171,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2819844767470613567">Avertissement : Chromium ne peut pas empêcher les extensions d'enregistrer votre historique de navigation. Pour désactiver cette extension en mode Isolé, désélectionnez cette option.</translation>
 <translation id="2841525013647267359">Traduire à partir de la langue suivante :</translation>
 <translation id="2846251086934905009">Erreur d'installation : le programme d'installation n'a pas été terminé. L'installation a été annulée.</translation>
-<translation id="2847479871509788944">Supprimer de Chromium...</translation>
 <translation id="2850691299438350830">Il vous protège dans Chromium et peut être utilisé pour améliorer votre sécurité dans d'autres applications Google lorsque vous êtes connecté à votre compte</translation>
 <translation id="2885378588091291677">Moniteur d'activité</translation>
 <translation id="2898830646167954300">Revenir à votre assistant Gemini non géré</translation>
@@ -384,7 +381,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="5346389065299425353">Approfondissez votre recherche en ajoutant plusieurs onglets, fichiers et outils</translation>
 <translation id="5352264705793813212">Chromium a trouvé des recommandations de sécurité que vous pouvez examiner</translation>
 <translation id="5352361688875342522">Autres profils Chromium</translation>
-<translation id="535243042947607642">ChromiumOS n'a pas pu enregistrer les données Chromium dans votre compte Google parce que les informations de connexion de votre compte ne sont plus à jour</translation>
 <translation id="5368118228313795342">Code supplémentaire : <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Pour bénéficier de la personnalisation, incluez Chromium dans l'activité sur le Web et dans les applications</translation>
 <translation id="5382964351116519680">Ouvrir la recherche avec Chromium</translation>
@@ -399,7 +395,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium recommande de suspendre l'onglet qui ralentit votre navigateur}one{Chromium recommande de suspendre l'onglet qui ralentit votre navigateur}other{Chromium recommande de suspendre les onglets qui ralentissent votre navigateur}}</translation>
 <translation id="5473971139929175403">Chromium peut ne pas fonctionner correctement parce qu'il n'est plus pris en charge sur cette distribution Linux</translation>
 <translation id="5475924890392386523">Chromium a bloqué ce téléchargement, car le fichier peut endommager vos comptes personnels et de réseaux sociaux</translation>
-<translation id="549669000822060376">Veuillez patienter pendant que Chromium installe les dernières mises à jour système.</translation>
 <translation id="5496810170689441661">Chromium essaie de modifier des mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>
 <translation id="5524890928877629608">Coin supérieur gauche de la zone de recherche : gauche <ph name="LEFT" /> %, haut <ph name="TOP" /> %</translation>
 <translation id="5527463683072221100">Ouvrir les PDF dans Chromium</translation>
@@ -494,7 +489,6 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="6390800440335263989">Pour continuer, connectez-vous à Chromium en tant que <ph name="EMAIL" />. Cela garantit que vous avez les politiques de votre organisation.</translation>
 <translation id="6400112897226594999">Logo de Chromium à l'intérieur d'un écran d'ordinateur.</translation>
 <translation id="6403826409255603130">Chromium est un navigateur Web qui exécute les pages Web et les applications à une vitesse fulgurante. Il est rapide, stable et simple d'utilisation. Naviguez sur Internet en toute sécurité, en bénéficiant de la protection offerte par Chromium contre les logiciels malveillants et l'hameçonnage.</translation>
-<translation id="6414624068245092115">Pour vous assurer de toujours pouvoir utiliser et enregistrer les données Chromium dans votre compte Google, confirmez qu'il s'agit bien de vous</translation>
 <translation id="642132557830635295">Chromium s'exécute plus rapidement, et les fonctionnalités qui utilisent JavaScript devraient fonctionner comme prévu</translation>
 <translation id="6434631832954028336">Rouvrir le panneau Recherche</translation>
 <translation id="6436260184216827876">La recherche d'images n'est pas accessible. Réessayez plus tard.</translation>
@@ -525,7 +519,6 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="665732753414869868">Chromium requiert l'autorisation d'accéder à l'appareil photo pour créer une carte 3D de votre environnement</translation>
 <translation id="6669284030132180248">Si vous enregistrez également vos favoris dans votre compte Google, vous pouvez suivre les prix des produits dans Chromium et être informé lors d'une baisse de prix</translation>
 <translation id="6676384891291319759">Accéder à Internet</translation>
-<translation id="668175097507315160">Chromium OS ne peut pas synchroniser vos données, car une erreur s'est produite lors de la connexion.</translation>
 <translation id="6691132793308828750">Retirer les données de cette appli de Chromium</translation>
 <translation id="6709350901466051922">Chromium requiert l'autorisation d'accéder au microphone pour ce site</translation>
 <translation id="6712881677154121168">Erreur de téléchargement : <ph name="DOWNLOAD_ERROR" />.</translation>
@@ -683,7 +676,6 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8107060931443639922">La prochaine fois que vous ouvrirez Chromium sur votre <ph name="DEVICE_TYPE" />, une invite vous proposera d'activer les alertes de suivi des prix.</translation>
 <translation id="8118331347066725040">Envoyer des commentaires sur la recherche avec Lentille</translation>
 <translation id="8130609355518033382">Personnalisez Chromium</translation>
-<translation id="8133124826068723441">Chromium OS n'a pas pu synchroniser vos données, car la synchronisation n'est pas offerte pour votre domaine.</translation>
 <translation id="813913629614996137">Initialisation en cours...</translation>
 <translation id="8158143604667288086">Vous pouvez épingler Recherche dans Chrome pour poser des questions pendant votre navigation</translation>
 <translation id="8161503455832158203">Ouvrez Gemini dans Chromium avec un raccourci-clavier.</translation>
@@ -750,11 +742,9 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="8816416449795340678">Partagez ce document avec Gemini dans Chromium pour obtenir un aperçu rapide et poser des questions de suivi</translation>
 <translation id="8818550178040858407">Vous connecter à Chromium?</translation>
 <translation id="8826492472752484139">Cliquez sur « Gestionnaire de mots de passe »</translation>
-<translation id="8833697763442816810">Système Chromium OS</translation>
 <translation id="8852026904190808918">Cette langue est utilisée pour afficher les menus, les paramètres, les alertes et d'autres textes dans Chromium</translation>
 <translation id="8862326446509486874">Vous ne disposez pas des droits requis pour faire une installation sur le système. Relancez l'installation une fois que vous serez connecté comme administrateur.</translation>
 <translation id="8876044221123442390">Ajouter un profil Chromium</translation>
-<translation id="8890569919834781711">ChromiumOS n'a pas pu enregistrer les données Chromium dans votre compte Google en raison d'une erreur de connexion</translation>
 <translation id="8891709362986793894">Votre organisation vous demande de vous connecter à Chromium</translation>
 <translation id="8906384069222226849">Chromium requiert Windows 10 version 1809 ou une version ultérieure.</translation>
 <translation id="8907580949721785412">Chromium essaie d'afficher les mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>

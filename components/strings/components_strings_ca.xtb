@@ -1681,7 +1681,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="3800436529451849929">Del lloc web <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Hi accedeixes sovint</translation>
 <translation id="380329542618494757">Nom</translation>
-<translation id="3803481123869276674">Quan facis compres a Chrome, veuràs la cartera electrònica com a opció</translation>
 <translation id="3803801106042434208">Aquests motors de cerca són populars a la teva regió</translation>
 <translation id="3804112825000113857">Mostra la configuració d'emplenament automàtic</translation>
 <translation id="380666903981445943">Desa una forma de pagament al Compte de Google perquè s'empleni automàticament a les compres fetes a Chrome</translation>
@@ -2164,6 +2163,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="4612631413844865947">Hi ha hagut un error en processar la comanda a <ph name="MERCHANT_ORIGIN" /> a través de <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="4612904677925722054">És possible que aquest lloc web inclogui contingut no apte per a menors. El teu pare, mare o tutor ha de dir si pots visitar-lo.</translation>
 <translation id="4613873770449493819">L'URL ha de dirigir a un domini de <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
+<translation id="4615154194248230658">Sembla que aquest patró no coincideix amb un domini d'adreça electrònica vàlid. És possible que els usuaris no puguin iniciar la sessió o que se suprimeixin els perfils existents.</translation>
 <translation id="4619564267100705184">Verifica la teva identitat</translation>
 <translation id="4619669610757527494">Desa el permís de conduir a Google Wallet</translation>
 <translation id="4622292761762557753">Transfereix igualment</translation>
@@ -2682,7 +2682,6 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="5447235695608032700">Permet que <ph name="SITE" /> utilitzi la informació que ha desat sobre tu</translation>
 <translation id="5447973833955560753">Contrasenya de recuperació</translation>
 <translation id="5452270690849572955">No s'ha trobat aquesta pàgina de <ph name="HOST_NAME" /></translation>
-<translation id="5452923259299906094">Paga amb la cartera electrònica i Pix</translation>
 <translation id="5455374756549232013">Marca de temps de la política incorrecta</translation>
 <translation id="5456428544444655325">No ho mostris mai</translation>
 <translation id="5457082343331641453">Afegeix a la cerca</translation>
@@ -3898,7 +3897,6 @@ Detalls addicionals:
 <translation id="7489919936111034362">El teu emmagatzematge de Google Drive és ple</translation>
 <translation id="7490622939531327327">Comprensió més intel·ligent dels formularis</translation>
 <translation id="7495528107193238112">Aquest contingut està bloquejat. Contacta amb el propietari del lloc web per resoldre el problema.</translation>
-<translation id="7499188644237027195">Quan facis compres a Chrome, veuràs la cartera electrònica i Pix com a opcions</translation>
 <translation id="7499684925421947861">Vols permetre que <ph name="ACTOR_NAME" /> iniciï la sessió a <ph name="DOMAIN" /> per tu?</translation>
 <translation id="7501663406926337752">La teva organització ha marcat aquest lloc web</translation>
 <translation id="7502044688973049724">gestionar la teva informació</translation>
@@ -4023,7 +4021,6 @@ Detalls addicionals:
 <translation id="7676840398262504532">La teva organització supervisa la còpia</translation>
 <translation id="767806704757698045">Només funciona en llocs web admesos</translation>
 <translation id="7678730592635586336">Torna a fer el vídeo</translation>
-<translation id="7679287273775285018">Paga amb la cartera electrònica</translation>
 <translation id="7679367271685653708">Consulta i gestiona l'historial de navegació a la configuració de Chrome</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />; data de caducitat: <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Enviament</translation>
@@ -4098,7 +4095,6 @@ Detalls addicionals:
 <translation id="7791543448312431591">Afegeix</translation>
 <translation id="7798389633136518089">S'ha ignorat perquè la política no s'ha establert al núvol.</translation>
 <translation id="7800304661137206267">La connexió està encriptada mitjançant <ph name="CIPHER" />, amb <ph name="MAC" /> per a l'autenticació de missatges i amb <ph name="KX" /> com a mecanisme d'intercanvi clau.</translation>
-<translation id="780228007282527248">Afegeix una pestanya o una imatge per millorar la cerca</translation>
 <translation id="7802523362929240268">El lloc web és legítim</translation>
 <translation id="7802989406998618639">Introdueix el codi de seguretat de <ph name="NUMBER_OF_DIGITS" /> dígits que es troba <ph name="SIDE_OF_CARD" /> perquè el banc pugui verificar la teva identitat</translation>
 <translation id="780301667611848630">No, gràcies</translation>
@@ -4164,6 +4160,7 @@ Detalls addicionals:
 <translation id="7916162853251942238">Base flexogràfica</translation>
 <translation id="7916802424606434188">Obre la finestra <ph name="WINDOW_INDEX" /> (<ph name="NUM_TABS" /> pestanyes) en una finestra nova</translation>
 <translation id="791698251820376781">La teva organització no et permet iniciar la sessió</translation>
+<translation id="7918936720558783139">L'oferta desada estarà disponible en tramitar la compra mitjançant l'emplenament automàtic. <ph name="BEGIN_LINK" />Gestiona les ofertes<ph name="END_LINK" /></translation>
 <translation id="7927046851848613453">Desa entrades, esdeveniments i altra informació de les pàgines que consultes, no només dels formularis que emplenes. Després, accedeix ràpidament als teus passis, com ara entrades per a esdeveniments i targetes de fidelització. La informació desada es pot mostrar als teus dispositius i en tots els productes de Google.</translation>
 <translation id="7930282586031445870">La pantalla de les condicions del servei de Compra ara, paga més tard està tancada.</translation>
 <translation id="7932035970207573919">Adreça de la feina: <ph name="ADDRESS" /></translation>
@@ -4233,6 +4230,7 @@ Detalls addicionals:
 <translation id="8029829038322015001">Vermell 1</translation>
 <translation id="8032546467100845887">Transparència</translation>
 <translation id="8035152190676905274">Bolígraf</translation>
+<translation id="803703704549420287">Esborra els filtres</translation>
 <translation id="8037117624646282037">Qui ha utilitzat el dispositiu recentment</translation>
 <translation id="803771048473350947">Fitxer</translation>
 <translation id="8038182528865038593">Vermell 2</translation>

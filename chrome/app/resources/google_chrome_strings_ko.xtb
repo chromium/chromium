@@ -32,13 +32,11 @@
 <translation id="1278833599417554002">다시 실행하여 Chrome 업데이트</translation>
 <translation id="1289911795790071537">Chrome으로 검색 열기</translation>
 <translation id="1290883685122687410">설정 오류: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1302523850133262269">Chrome에서 최신 시스템 업데이트를 설치하는 동안 잠시 기다려 주세요.</translation>
 <translation id="1330562121671411446">언어 감지</translation>
 <translation id="1333654552732143316">크롬 시작</translation>
 <translation id="1341711321000856656">다른 Chrome 프로필의 비밀번호를 보도록 전환할 수 있습니다.</translation>
 <translation id="1343830902827845050">Chrome에 로그인하세요</translation>
 <translation id="1361351916482714918">Google 렌즈로 더 스마트하게 탐색하세요</translation>
-<translation id="1363996462118479832">로그인 중 오류가 발생하여 ChromeOS에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="137466361146087520">Chrome 베타</translation>
 <translation id="1383876407941801731">검색</translation>
 <translation id="1399397803214730675">컴퓨터에 Chrome 최신 버전이 설치되어 있습니다. 실행되지 않는 경우 제거한 후 다시 시도하세요.</translation>
@@ -89,7 +87,6 @@
 <translation id="177180974022074201">Chrome의 Gemini로 사용해 보기</translation>
 <translation id="1786003790898721085"><ph name="TARGET_DEVICE_NAME" />에서 Chrome에 로그인되어 있는지 확인한 다음 다시 전송해 보세요.</translation>
 <translation id="1786044937610313874">Chrome에서 바로가기 열기</translation>
-<translation id="1812689907177901597">이 기능을 사용 중지하면 Chrome에 로그인하지 않고도 Gmail 등의 Google 사이트에 로그인할 수 있습니다.</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{브라우저 속도를 저하시키는 탭을 일시중지하는 것이 좋습니다}other{브라우저 속도를 저하시키는 탭을 일시중지하는 것이 좋습니다}}</translation>
 <translation id="1832046143430087831">Chrome의 V8 엔진으로 사이트 속도를 높이지만 Chrome이 공격에 약간 더 취약해집니다. 설정이 사용 중지되어 있습니다.</translation>
 <translation id="1838374766361614909">검색어 지우기</translation>
@@ -176,7 +173,6 @@
 <translation id="2661616016316841783"><ph name="DEVICE" />에서 확장 프로그램 등을 사용하려면 Chrome에 로그인하세요</translation>
 <translation id="2665296953892887393">비정상 종료 보고서와 <ph name="UMA_LINK" />을(를) Google로 전송하여 Chrome 개선에 참여합니다.</translation>
 <translation id="2668094785979141847">클릭하여 Google 렌즈 종료</translation>
-<translation id="2674238339205910678">Google 계정의 로그인 정보가 오래되어 ChromeOS Flex에서 Google 계정에 Chrome 데이터를 저장할 수 없습니다</translation>
 <translation id="2681444469812712297">Chrome의 새 탭에서 <ph name="URL" /> 주소를 엽니다.</translation>
 <translation id="2699790011615497488">Chrome 베타의 Gemini 열기</translation>
 <translation id="2738871930057338499">인터넷에 연결할 수 없습니다(HTTP 403 Forbidden). 프록시 설정을 확인하시기 바랍니다.</translation>
@@ -287,7 +283,6 @@
 <translation id="3756724684201900923">Chrome 설치에 관해 자세히 알아보기</translation>
 <translation id="3772152698251011058">이 사이트를 Google에 신고</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
-<translation id="3785324443014631273">로그인 중 오류가 발생하여 ChromeOS Flex에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="3810973564298564668">관리</translation>
 <translation id="383455301564000773">Windows 11로 업그레이드하시나요? 첫날부터 바로 사용할 수 있도록 Chrome을 OneDrive에 다운로드하세요.</translation>
 <translation id="383928141529488001">블루투스 기기를 탐색하려면 Chrome에 블루투스 액세스 권한이 필요합니다. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -377,7 +372,6 @@
 <translation id="4803313124144656665">Chrome에서 Google 검색 닫기</translation>
 <translation id="4828579605166583682">Chrome에서 기존 비밀번호를 교체하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="4836321460899997044">Chrome 프로필</translation>
-<translation id="4842397268809523050">도메인에 대한 동기화가 허용되지 않아 ChromeOS Flex에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> 계정은 이미 로그인되어 있습니다.  방문 기록을 별도로 보관하려면 내 프로필에서 <ph name="USER_EMAIL_ADDRESS" /> 주소로 Chrome에 로그인하세요.</translation>
 <translation id="4855026984605187434">화면을 공유하려면 시스템 설정에서 Chrome의 화면 녹화를 허용하세요.</translation>
 <translation id="4873783916118289636">Chrome의 주요 개인 정보 보호 및 보안 제어 기능을 검토합니다.</translation>
@@ -391,7 +385,6 @@
 <translation id="492720062778050435">Chrome에서는 이 확장 프로그램을 검토할 것을 권장합니다.</translation>
 <translation id="4953650215774548573">Chrome을 기본 브라우저로 설정</translation>
 <translation id="495931528404527476">Chrome</translation>
-<translation id="4969674060580488087">계정의 로그인 세부정보가 오래되어 ChromeOS Flex에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="4970761609246024540">Chrome 프로필에 오신 것을 환영합니다</translation>
 <translation id="4990567037958725628">Chrome Canary</translation>
 <translation id="5003967926796347400">'Google 비밀번호 관리자'를 클릭합니다</translation>
@@ -425,7 +418,6 @@
 <translation id="5271833978500241046">Chrome에서 다른 Gemini 기능과 함께 사용하세요</translation>
 <translation id="5320351714793324716">사용자가 쿠키를 허용하면 Chrome에서 미리 로드할 때 쿠키를 사용할 수 있습니다.</translation>
 <translation id="5321325624576443340">Google 렌즈를 사용할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
-<translation id="5334309298019785904">내 도메인에서 동기화를 사용할 수 없으므로 ChromeOS에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="5336664042114176802">원래 Google 계정과 연결되어 있으며 <ph name="DOMAIN" />에서 관리하지 않는 Gemini 어시스턴트로 전환할 수 있습니다. 대답은 더 이상 <ph name="DOMAIN" />에서 관리하는 파일 또는 서비스를 기반으로 제공되지 않으며 채팅 기록도 이전되지 않습니다. 업무용으로 사용하기에 적합하지 않을 수 있습니다. 전환하려면 Chrome을 다시 실행해야 합니다.</translation>
 <translation id="5346389065299425353">여러 탭, 파일, 도구를 추가하여 심층적으로 검색하세요.</translation>
 <translation id="5353252989841766347">Chrome에서 비밀번호 내보내기</translation>
@@ -555,7 +547,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6497147134301593682">Chrome이 자동으로 종료되었습니다</translation>
 <translation id="6506909944137591434">Chrome에서 주변의 3D 지도를 만들려면 카메라 권한이 필요합니다.</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - 개발자용 Chrome</translation>
-<translation id="6520608191273161151">로그인 중에 오류가 발생하여 ChromeOS Flex에서 Google 계정에 Chrome 데이터를 저장할 수 없습니다</translation>
 <translation id="6520670145826811516">위치를 사용하려면 <ph name="BEGIN_LINK" />시스템 설정<ph name="END_LINK" />에서 Chrome에 액세스 권한을 부여하세요.</translation>
 <translation id="652948702951888897">Chrome 방문 기록</translation>
 <translation id="6532945796722480006">Chrome Canary의 Gemini 열기</translation>
@@ -577,7 +568,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6712881677154121168">다운로드 오류(<ph name="DOWNLOAD_ERROR" />)가 발생했습니다.</translation>
 <translation id="6718739135284199302">Chrome의 속도를 높여보세요</translation>
 <translation id="6734827584173583205">최근에 사이트를 방문하지 않았습니다. Chrome에서 <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 권한 <ph name="COUNT" />개를 삭제했습니다.</translation>
-<translation id="6735387454586646204">ChromeOS Flex 시스템</translation>
 <translation id="674891594898436429">이 탭에서 활성 검색 닫기</translation>
 <translation id="6750954913813541382">맞춤법 오류를 바로잡기 위해 Chrome에서 브라우저에 입력된 텍스트를 Google로 전송합니다.</translation>
 <translation id="6760235774835597023">Chrome의 V8 엔진으로 사이트 속도를 높이지만 Chrome이 공격에 약간 더 취약해집니다. 설정이 사용 설정되어 있습니다.</translation>
@@ -598,7 +588,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6908182077349113099">비밀번호, 북마크, 방문 기록을 기기 전반에서 완벽하게 동기화하세요. 기본 브라우저를 Chrome으로 업데이트하면 즐겨 사용하는 기능을 간편하게 이용할 수 있습니다.</translation>
 <translation id="6926772305569367352">툴바에 있는 'Chrome에서 Google 검색' 버튼이 새 아이콘으로 단장했습니다. 이 아이콘을 클릭하면 Chrome에서 Google 검색을 사용해 탐색 중에도 질문할 수 있습니다.</translation>
 <translation id="6930294499209825">Google 소프트웨어를 항상 최신 상태로 유지합니다. 이 서비스를 사용 중지하거나 중단하면 Google 소프트웨어가 최신 상태로 유지되지 않습니다. 즉, 발생할 수 있는 보안 취약점이 수정되지 않고 기능이 작동하지 않을 수 있습니다. 이 서비스를 사용하는 Google 소프트웨어가 없으면 이 서비스는 자동으로 제거됩니다.</translation>
-<translation id="6933858244219479645">ChromeOS 시스템</translation>
 <translation id="6938166777909186039">향후 Chrome 업데이트를 받으려면 Windows 10 이상이 필요합니다. 이 컴퓨터에서는 Windows 8.1을 사용 중입니다.</translation>
 <translation id="6962628299694876291"><ph name="EXISTING_USER" /> 계정은 이미 로그인되어 있습니다. 방문 기록을 별도로 보관하려면 내 프로필에서 <ph name="USER_EMAIL_ADDRESS" /> 주소로 Chrome에 로그인하세요. 이렇게 하면 모든 기기에서 비밀번호 등을 사용할 수 있습니다.</translation>
 <translation id="6965382102122355670">확인</translation>
@@ -689,7 +678,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7801699035218095297">Chrome에서 비밀번호를 복사하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="7804364787702057554">Chrome의 내 계정</translation>
 <translation id="7804947029129221742">Chrome 외부에서 검색엔진이 변경되었습니다. 사용자를 보호하기 위해 Chrome에서 검색엔진을 기본값으로 재설정했습니다. <ph name="LEARN_MORE_LINK" /></translation>
-<translation id="7808348361785373670">Chrome에서 삭제...</translation>
 <translation id="7827099906024714326">일부 데이터를 Google 계정에 저장하고 모든 기기에서 사용하려면 Chrome에서 본인 인증을 거쳐야 합니다. 지금 로그아웃하면 이 데이터가 삭제됩니다.</translation>
 <translation id="7829850924999627855"><ph name="DEVICE" />에서 저장된 정보 등을 사용하려면 Chrome에 로그인하세요</translation>
 <translation id="7832314606810669113">모든 기기에서 북마크 등을 사용하려면 Chrome에 로그인하세요. 로그인하면 이 북마크가 Google 계정에 저장됩니다.</translation>
@@ -702,7 +690,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7896673875602241923">다른 사용자가 이전에 이 컴퓨터에서 <ph name="ACCOUNT_EMAIL_LAST" />(으)로 Chrome에 로그인했습니다. 새 Chrome 사용자를 만들어 정보를 별도로 관리하세요.</translation>
 <translation id="7904213866086517086">측면 패널에서 Google 검색 다시 열기</translation>
 <translation id="7904985524660297937">Chrome의 Gemini 사용해 보기</translation>
-<translation id="7905880575591690197">로그인 중에 오류가 발생하여 ChromeOS에서 Google 계정에 Chrome 데이터를 저장할 수 없습니다</translation>
 <translation id="7936702483636872823">사기성 파일이며 기기에 예기치 않은 변경사항이 발생할 수 있기 때문에 Chrome에서 이 다운로드를 차단했습니다.</translation>
 <translation id="7951272445806340501">업데이트를 적용하려면 ChromeOS Flex를 다시 시작해야 합니다.</translation>
 <translation id="7959172989483770734">Chrome 프로필 관리</translation>
@@ -763,7 +750,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8402881611069691789">{COUNT,plural, =1{Chrome 업데이트가 완료되었습니다. 다시 실행하면 바로 최신 버전을 사용할 수 있습니다. 이후에 현재 탭이 다시 열립니다. 시크릿 창 또는 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}other{Chrome 업데이트가 완료되었습니다. 다시 실행하면 바로 최신 버전을 사용할 수 있습니다. 이후에 현재 탭이 다시 열립니다. 프로필 전반에 #개의 시크릿 창 및 보안 시크릿 창이 열려 있습니다. 다시 실행하면 해당 창은 다시 열리지 않습니다.}}</translation>
 <translation id="8403038600646341038">컴퓨터 화면에 표시된 Chrome 로고입니다.</translation>
 <translation id="8406687098231754303">툴바에 있는 '측면 패널의 Google 검색' 버튼을 통해 측면 패널에서 Google 검색을 다시 열어 탐색 중에 질문할 수 있습니다.</translation>
-<translation id="8418845734693287262">계정의 로그인 세부정보가 오래되어 ChromeOS에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="842386925677997438">Chrome의 안전 도구</translation>
 <translation id="8425765582779547329">부모님의 선택을 통해 온라인에서 더 안전하게 보호받으려면 Chromium에 로그인하세요</translation>
 <translation id="842852285618875960">Google Chrome의 북마크 한도인 <ph name="BOOKMARK_LIMIT" />개에 도달하여 북마크 중 일부가 아직 Google 계정에 저장되지 않았습니다.
@@ -792,7 +778,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8624541899164515475">설정, 새 탭에서 열립니다.</translation>
 <translation id="8625237574518804553">{0,plural, =1{1분 후 Chrome이 다시 시작됩니다}other{#분 후 Chrome이 다시 시작됩니다}}</translation>
 <translation id="8637932705841171563">창을 공유하려면 시스템 설정에서 Chrome의 화면 녹화를 허용하세요.</translation>
-<translation id="8642497536370021917">언제든지 Chrome 데이터를 사용하고 Google 계정에 저장할 수 있도록 본인 인증을 진행하세요</translation>
 <translation id="8656634243791296665">Chrome 개발자의 Gemini 열기</translation>
 <translation id="8669527147644353129">Chrome 도우미</translation>
 <translation id="8679801911857917785">또한 Chrome을 시작할 때 표시되는 페이지를 설정합니다.</translation>
@@ -854,7 +839,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="922152298093051471">Chrome 맞춤설정</translation>
 <translation id="93760716455950538">ChromeOS Flex 다시 시작</translation>
 <translation id="945522503751344254">의견 보내기</translation>
-<translation id="973195869036269770">Google 계정의 로그인 정보가 오래되어 ChromeOS에서 Google 계정에 Chrome 데이터를 저장할 수 없습니다</translation>
 <translation id="983803489796659991">업데이트 서버에 애플리케이션에 대한 해시 데이터가 없어 설치할 수 없습니다.</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> 바로가기를 사용하여 Chrome 프로필 간에 전환하세요</translation>
 </translationbundle>

@@ -706,11 +706,6 @@ Chrome 政策的优先级高于此政策，例如：如果某个扩展程序已�
 对于 155 及更低版本，此政策仅在设备级别有效。</translation>
 <translation id="1486021504508098388">报告背光信息</translation>
 <translation id="1487722536912664411">允许用户使用 <ph name="PRODUCT_NAME" /></translation>
-<translation id="1487916040416013623">通过设置此政策，您可以指定应允许哪些服务器进行集成身份验证。仅当收到由此许可名单中的代理服务器或服务器发出的身份验证请求时，<ph name="PRODUCT_NAME" /> 才会启用集成式身份验证机制。
-
-      如果您不设置此政策，<ph name="PRODUCT_NAME" /> 将会尝试检测某台服务器是否在内网上，确认在内网后才会响应它发出的 IWA 请求。如果检测到某台服务器是在互联网上，<ph name="PRODUCT_NAME" /> 将会忽略这台服务器发出的 IWA 请求。
-
-      注意：若要指定多个服务器名称，请用英文逗号分隔。允许使用通配符 <ph name="WILDCARD_VALUE" />。</translation>
 <translation id="1488008594883876680">启用 <ph name="ARC_VM" /> 映像预加载</translation>
 <translation id="1488724823347505879">允许将 Android 应用中的内容分享给 Web 应用</translation>
 <translation id="1490962807364514840">CPU 运行时计数器遥测数据收集时间间隔（以毫秒为单位）。</translation>
@@ -1630,6 +1625,7 @@ ChromeOS M184 将是最后一个支持 Chrome 应用的 ChromeOS 里程碑版本
       如果您设置了此政策，用户便无法更改相关设置。如果您不设置此政策，系统最初会显示搜索建议，但用户可随时停用此功能。</translation>
 <translation id="2000937390924915996">不在登录期间运行“自动清理磁盘”功能</translation>
 <translation id="2004382785802837840">不允许关闭密码泄露警示</translation>
+<translation id="2004512344164086061">在隔离模式下，用户安装的扩展程序默认启用，但可自行停用</translation>
 <translation id="2005506794355327448">当设备的盖子合上后应执行的操作</translation>
 <translation id="2006530844219044261">电源管理</translation>
 <translation id="2006954055163088863">视频播放时将用户视为空闲</translation>
@@ -1778,6 +1774,14 @@ ChromeOS M184 将是最后一个支持 Chrome 应用的 ChromeOS 里程碑版本
 如果此政策设为 1，则表示标签页分组无法共享。</translation>
 <translation id="2116169546538119304"> 此政策已被弃用，请改为配置 Kerberos 政策以重复使用登录密码。</translation>
 <translation id="2117990069872855599">可供下载相应头像图片的网址。</translation>
+<translation id="2121809456184087198">允许管理员自定义数据泄露防护 (DLP) 规则应用的水印外观，包括设置填充/轮廓不透明度、定义字号以及设置时间戳时区。目前，iOS 设备不支持时间戳时区。
+如果未设置此政策或某些值，Chrome 将使用其默认水印行为。
+桌面设备上的默认值如下：填充不透明度为 4，轮廓不透明度为 6，字号为 24。在 iOS 设备上，默认值如下：填充不透明度为 10，轮廓不透明度为 15，字号为 16。在所有平台上，时间戳时区默认为“user_device”（用户设备的本地时区）。
+
+“填充不透明度”是介于 0（完全透明）到 100（完全不透明）之间的百分比。
+“轮廓不透明度”是介于 0（完全透明）到 100（完全不透明）之间的百分比。
+“字号”以磅为单位。
+“时间戳时区”指定了用于设置水印时间戳格式的 IANA 时区标识符（例如“America/Toronto”，自 Chrome 152 起支持），该标识符遵循 IANA 时区数据库 (https://www.iana.org/time-zones) 中的名称。目前，iOS 设备尚不支持此功能。</translation>
 <translation id="2124881675920287921">我们在 M82 中停用了此政策，并在 M85 中移除了它。请改用 <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />。停用 <ph name="SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED_POLICY_NAME" /> 等同于停用 <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />。启用或不设置 <ph name="SAFE_BROWSING_EXTENDED_REPORTING_OPT_IN_ALLOWED_POLICY_NAME" /> 等同于不设置 <ph name="SAFE_BROWSING_EXTENDED_REPORTING_ENABLED_POLICY_NAME" />。
 
       如果此政策设为 false，用户将无法选择向 Google 服务器发送一些系统信息和网页内容。如果此设置设为 true 或未配置，用户将能够向“安全浏览”功能发送一些系统信息和网页内容，以帮助检测危险应用和网站。
@@ -2168,13 +2172,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
 注意：在浏览器运行期间，只有新启动的渲染程序进程才会反映对此政策的更改。</translation>
 <translation id="2354439478396602136">在 <ph name="PRODUCT_OS_NAME" /> 启动器中显示推荐的应用</translation>
-<translation id="2355126045573728327">设置此政策后，系统会指定一个 <ph name="ANDROID_NAME" /> 应用软件包名称列表（例如 <ph name="EXAMPLE_PACKAGE_NAME" />），其中的应用会在用户登录 <ph name="PRODUCT_OS_NAME" /> 时自动启动。
-
-这些应用还必须通过 <ph name="ARC_POLICY_NAME" /> 配置为强制安装。安装完成后，这些应用会自动启动。
-
-目前，系统只会启动列表中的第一个应用。
-
-如果此政策未设置或为空，则系统不会在用户登录时自动启动任何 <ph name="ANDROID_NAME" /> 应用。</translation>
 <translation id="2355876547176311490">禁止远程访问主机使用中继服务器</translation>
 <translation id="2358176879566587521">此政策已被移除。它与这个版本的 <ph name="PRODUCT_NAME" /> 不兼容。如需了解详情，请访问 https://support.google.com/chrome/a/answer/7643500</translation>
 <translation id="235987002603620567">NewBaseUrlInheritanceBehavior 是 <ph name="PRODUCT_NAME" /> 的一项功能，可让 <ph name="ABOUT_BLANK_PAGE" /> 和 <ph name="ABOUT_SRCDOC_PAGE" /> 框架通过其启动器的基准网址快照一致地沿用其基准网址值。有关详情，请参阅 https://chromestatus.com/feature/5161101671530496。
@@ -2291,6 +2288,7 @@ Web Worker 可通过包含 Worker 脚本的数据网址创建。以前，这些 
 
 此政策只是暂时性措施，将在里程碑 157 中移除。</translation>
 <translation id="2452225615952836461">始终大写请求方法</translation>
+<translation id="2453512475686299774">停用“从桌面搜索”功能</translation>
 <translation id="2454228136871844693">针对稳定性进行优化。</translation>
 <translation id="2455033019778127130">使用默认浏览器行为，显示《服务条款》并等待用户接受。</translation>
 <translation id="2460127623195247744">此政策已被弃用，请改用“<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />”政策。
@@ -2729,6 +2727,7 @@ PAC 样式的字符串：
 <translation id="2672012807430078509">控制是否允许将 NTLM 作为 SMB 装载功能的身份验证协议</translation>
 <translation id="2673363037046384711">最终用户可以启用或停用高效模式。</translation>
 <translation id="2673968385134502798">游戏</translation>
+<translation id="2675678512339436287">用于设置水印时间戳格式的 IANA 时区标识符（例如“America/Toronto”，自 Chrome 152 起支持，但 iOS 设备尚不支持）。默认值为“user_device”。</translation>
 <translation id="2678503605767349615">必需的设备级客户端证书</translation>
 <translation id="268025561734472010">此政策会控制 Google 开发者计划与 <ph name="CHROME_DEVTOOLS_NAME" />的集成。用户的 Google 开发者计划资料会显示在 <ph name="CHROME_DEVTOOLS_NAME" />中，并且用户在 <ph name="CHROME_DEVTOOLS_NAME" />中执行特定操作后会获得徽章。
 
@@ -3491,6 +3490,9 @@ PAC 样式的字符串：
 
       如果此政策未设置，默认情况下，受管用户将无法使用这项功能。</translation>
 <translation id="3136550518935590587">自动授权这些网站在登录界面上连接到具有给定供应商 ID 和产品 ID 的 HID 设备。</translation>
+<translation id="3137578631182402304">如果 <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> 已开启，您便可通过设置 <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> 来指定关键字或快捷方式，以用于在地址栏中触发针对此提供商的搜索。
+
+      未设置 <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> 时，将使用搜索网址指定的主机名作为关键字。</translation>
 <translation id="3138514192363246220">停用页面加载元数据提取功能和用以提升浏览体验的机器学习模型</translation>
 <translation id="3142410959002029864">通过设置此政策，您可以替换默认双面打印模式。如果这种模式不适用，系统会忽略此政策。</translation>
 <translation id="3143203373436771188">找到由<ph name="BASIC_EDITOR_NAME" />处理的 Office 文档后，在<ph name="BASIC_EDITOR_NAME" />中打开它们</translation>
@@ -3731,6 +3733,17 @@ Microsoft Outlook 卡片需要由管理员进行额外配置。如需详细了�
       如果您不设置此政策，用户可以选择要在桌面和登录屏幕背景中显示的图片。</translation>
 <translation id="3313395530427546108">不使用临时代码签名。</translation>
 <translation id="3315324240256767419">启用“ghost 窗口”功能。</translation>
+<translation id="3319692863291981022">控制是否可在 <ph name="MS_WIN_NAME" /> 和 <ph name="MAC_OS_NAME" /> 的 <ph name="PRODUCT_NAME" /> 中使用“从桌面搜索”功能。
+
+<ph name="PRODUCT_NAME" /> 提供“从桌面搜索”设置，允许用户通过全局键盘快捷键、系统任务栏或菜单栏图标，或者在 <ph name="MS_WIN_NAME" /> 上通过“开始”菜单和任务栏快捷方式，从计算机任意位置打开浮动的桌面搜索框。
+
+将此政策设为“启用”会打开“从桌面搜索”，并禁止用户在 <ph name="PRODUCT_NAME" /> 的设置中将其关闭。用户仍可自定义其本地键盘快捷键。首次使用“从桌面搜索”后，<ph name="PRODUCT_NAME" /> 会继续在后台运行，以便在没有打开任何浏览器窗口时键盘快捷键也可用；在 <ph name="MS_WIN_NAME" /> 上，它还会在用户登录时启动。
+
+将此政策设为“停用”会关闭“从桌面搜索”，关闭所有打开的桌面搜索窗口，取消注册全局键盘快捷键，移除系统任务栏或菜单栏图标，并禁止用户在 <ph name="PRODUCT_NAME" /> 的设置中开启此功能。此后，“从桌面搜索”将不再使 <ph name="PRODUCT_NAME" /> 在后台运行，也不会在用户登录 <ph name="MS_WIN_NAME" /> 时启动该功能。在 <ph name="MS_WIN_NAME" /> 上，“开始”菜单或任务栏中现有的“从桌面搜索”快捷方式不会被移除，但它们会像正常启动一样，在浏览器窗口或个人资料选择器中打开 <ph name="PRODUCT_NAME" />。如果未设置此政策，系统会开启“从桌面搜索”，用户可在 <ph name="PRODUCT_NAME" /> 的设置中将其关闭。
+
+启用“从桌面搜索”后，<ph name="GOOGLE_AI_MODE_PRODUCT_NAME" /> 的可用性以及桌面搜索框内的屏幕或文件内容共享将继续遵循 <ph name="AI_MODE_SETTINGS_POLICY_NAME" /> 和 <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" />。
+
+对于不具有“从桌面搜索”设置的 <ph name="PRODUCT_NAME" /> 版本，或不具有该设置的个人资料（例如 Google 不是默认搜索引擎时），此策略不会产生任何影响。</translation>
 <translation id="3321099611644751329"><ph name="PRODUCT_NAME" /> 在验证服务器身份时应信任的 TLS 证书（有限制条件）</translation>
 <translation id="3323819750604111729">允许在首次运行时导入书签</translation>
 <translation id="332771718998993005">将广告中宣传的名称确定为 <ph name="PRODUCT_NAME" /> 目标名称。
@@ -3797,6 +3810,7 @@ Microsoft Outlook 卡片需要由管理员进行额外配置。如需详细了�
 <translation id="3360531283145674884">允许用户使用 PluginVm</translation>
 <translation id="3362584244602846824">使用快速切换功能（如果无线接入点支持该功能的话）</translation>
 <translation id="3363360928811201045">针对受管理的账号添加限制</translation>
+<translation id="3364342108825317805">允许用户选择</translation>
 <translation id="3364400740222114778">账号恢复</translation>
 <translation id="3366156659815091184">使用服务进程执行平台打印任务。</translation>
 <translation id="3367361756115023251">允许此用户拥有 Crostini 容器的 root 权限。
@@ -4116,9 +4130,6 @@ Microsoft Outlook 卡片需要由管理员进行额外配置。如需详细了�
 <translation id="3579976772194405786">Bruschetta</translation>
 <translation id="3580414086211696382">控制 File System API 在读取方面的使用</translation>
 <translation id="3584194414857209694">启用实验性政策</translation>
-<translation id="3584722841530002134">通过设置此政策，您可以指定 <ph name="PRODUCT_NAME" /> 可将用户凭据委派给哪台/哪些服务器。若要指定多个服务器名称，请用英文逗号分隔。允许使用通配符 <ph name="WILDCARD_VALUE" />。
-
-      如果您不设置此政策，那么即使检测到某台服务器在内网上，<ph name="PRODUCT_NAME" /> 也不会将用户凭据委派给它。</translation>
 <translation id="3585177699591644295">启用无障碍功能“随选朗读”。
 
           如果将此政策设为 true，“随选朗读”将始终处于启用状态。
@@ -5110,6 +5121,7 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 
 此政策用于在 iOS 设备上停用混合内容自动升级功能。此政策现已弃用，不再受支持。</translation>
 <translation id="4252522848899331223">允许用户绕过安全浏览警告</translation>
+<translation id="4256907317578690291">控制用户安装的扩展程序在隔离模式下的行为</translation>
 <translation id="4261641564041253502">自动为 <ph name="PRODUCT_NAME" /> 安全信号报告选择与过滤条件匹配的客户端证书。</translation>
 <translation id="4261820385751181068">设备登录屏幕语言区域</translation>
 <translation id="4263788921751326798">停用设备崩溃报告信息报告功能</translation>
@@ -5155,6 +5167,7 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 仅当 <ph name="CHROME_OS_RELEASE_CHANNEL_DELEGATED_POLICY_NAME" /> 设为 False 时，设置 <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> 才会产生影响。</translation>
 <translation id="4297774573405304484">指向特定图片的网址，该图片将用作受管浏览器的企业标记。此网址必须指向图片。建议使用网站图标（例如 https://www.google.com/favicon.ico）或不小于 48 x 48 像素的图标。请注意，此政策仅适用于受管浏览器，对使用非受管浏览器的受管用户没有影响。在 <ph name="MS_WIN_NAME" /> 上，此政策仅适用于已加入 <ph name="MS_AD_NAME" /> 网域的实例、已加入 <ph name="MS_AAD_NAME" /> 的实例，或已注册 <ph name="CHROME_ENTERPRISE_CORE_NAME" />的实例。在 <ph name="MAC_OS_NAME" /> 上，此政策仅适用于通过 MDM 进行管理的实例、已通过 MCX 加入网域的实例或已在 <ph name="CHROME_ENTERPRISE_CORE_NAME" />中注册的实例。</translation>
 <translation id="4297918983070495117">不使用缓存加密。</translation>
+<translation id="4301274356429819881">启用“从桌面搜索”功能</translation>
 <translation id="4301478455179579340">在安装渐进式 Web 应用期间对原生应用进行签名</translation>
 <translation id="4303167373847512281">允许使用开发者模式</translation>
 <translation id="4307116964468610577">此政策允许系统电池每天只充满 1 次，以延长它的使用寿命。除了用来将电池充满的时间，在当天的其余时间内，电池始终都不会充到 100%，即使系统已接通电源也是如此，这样更利于储电。
@@ -5502,11 +5515,6 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 
 请注意，强制执行的限制会受到 <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" /> 的影响。</translation>
 <translation id="4528981768990874684">停用 <ph name="IP_PROTECTION_NAME" />功能。</translation>
-<translation id="4529292353296224032">启用此政策会禁止使用键盘快捷键或扩展程序 API 截屏。停用或不设置此政策则会允许截屏。
-
-在 <ph name="PRODUCT_NAME" /> 版本 155 至 158 中，启用此政策还会阻止扩展程序通过“chrome.debugger.attach()”附加调试程序，例如当 <ph name="CHROME_VARIATIONS_POLICY_NAME" /> 政策停用所有变体版本时。
-
-请注意，在 <ph name="MS_WIN_NAME" />、<ph name="MAC_OS_NAME" /> 和 <ph name="LINUX_OS_NAME" /> 上，此政策不会阻止用户通过操作系统或第三方应用截屏。</translation>
 <translation id="453031441196755904">此政策已被弃用。</translation>
 <translation id="4531088355818260318">此政策支持定义一系列规则，以便将自定义 HTTP 标头注入与特定网址格式匹配的 Web 请求中。此政策设置的标头优先于请求中最初存在的标头，以及用户或扩展程序尝试进行的修改。
 
@@ -5828,6 +5836,21 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 如果此政策设为 <ph name="BR_UNDER_USER_CONTROL" />，系统会通过提示询问用户是否要使用 Google 位置信息服务。如果用户开启了该服务，Android 应用会利用该服务搜索设备位置信息，并向 Google 发送匿名位置数据。
 
 完成初始设置后，用户可以开启或关闭 Google 位置信息服务。</translation>
+<translation id="4669742017587504409">指定用户安装的扩展程序在隔离模式下的行为。这适用于所有未通过政策强制安装的扩展程序，包括通过政策安装但可由用户停用的扩展程序。
+
+若将此政策设为 0 或未设置，则在隔离模式下，用户安装的扩展程序默认启用，但用户可自行停用。
+
+若将此政策设为 1，则在隔离模式下，用户安装的扩展程序默认停用，但用户可自行启用。
+
+若将此政策设为 2，则在隔离模式下，系统会屏蔽用户安装的扩展程序，且用户无法自行启用。
+
+此政策设为 0 或 1 时，如果用户已在隔离模式下明确启用或停用某个扩展程序，则用户的选择优先于政策默认设置。
+
+无论此政策如何设置，在清单中将 <ph name="INCOGNITO_MANIFEST_KEY" /> 设为 <ph name="INCOGNITO_NOT_ALLOWED_VALUE" /> 的扩展程序都无法在隔离模式下运行。
+
+此政策仅在 <ph name="ISOLATED_MODE_SETTINGS_POLICY_NAME" /> 启用时才会生效。
+
+此政策需要 <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" /> 许可才能生效。</translation>
 <translation id="4670865688564083639">下限：</translation>
 <translation id="467236746355332046">支持的功能：</translation>
 <translation id="4672774129073185053">启用 IPv6 可达性检查覆盖</translation>
@@ -6794,6 +6817,13 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 <translation id="528302483493794684">虚拟机配置。用于指明用户可以安装的虚拟机的类型（将与该配置的 ID 永久关联），以及对此类虚拟机适用的控件。</translation>
 <translation id="5283151872467063045">为数据存储设置数据区域偏好设置</translation>
 <translation id="5283457834853986457">停用插件查找器（已弃用）</translation>
+<translation id="5284489543069820292">设置此政策后，系统会指定一个 <ph name="ANDROID_NAME" /> 应用软件包名称列表（例如 <ph name="EXAMPLE_PACKAGE_NAME" />），其中的应用会在用户登录 <ph name="PRODUCT_OS_NAME" /> 时自动启动。
+
+如果设备上安装了所列应用，系统会启动这些应用。若应用在用户登录时尚未安装，则会在安装完成后自动启动。为确保这些应用可用，应通过 <ph name="ARC_POLICY_NAME" /> 强制安装它们。
+
+目前，系统只会启动列表中的第一个应用。
+
+如果此政策未设置或为空，则系统不会在用户登录时自动启动任何 <ph name="ANDROID_NAME" /> 应用。</translation>
 <translation id="5285812323239047712">让您能够以列表形式指定要应用于 <ph name="ON_PRINT_ENTERPRISE_CONNECTOR" /> 企业版接口的 <ph name="PRODUCT_NAME" /> 企业版接口服务设置，以供系统在有人通过 <ph name="PRODUCT_NAME" /> 打印网页或文件时调用。
 
       <ph name="ENTERPRISE_CONNECTOR_URL_LIST_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_TAGS_FIELD" />、<ph name="ENTERPRISE_CONNECTOR_ENABLE_FIELD" /> 和 <ph name="ENTERPRISE_CONNECTOR_DISABLE_FIELD" /> 字段用于确定当用户在特定网页中触发打印操作时，该接口是否应将数据发送给系统进行分析，以及要将哪些标记添加到分析请求中。如果该接口向分析请求中添加了至少 1 个标记，系统便会启动分析。
@@ -6859,6 +6889,7 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
 <translation id="5313663675323027439">控制扩展程序 DOM 活动日志记录</translation>
 <translation id="5316856058059940708">停用大号光标</translation>
 <translation id="5318185076587284965">允许远程访问主机使用中继服务器</translation>
+<translation id="5319829127867277548">使用系统标题栏和边框</translation>
 <translation id="5321624917465764266">如果此政策已启用或未设置，系统将可以删除 Chrome 中的浏览器历史记录和下载记录，并且用户无法更改此设置。
 
 如果此政策已停用，系统将无法删除浏览器历史记录和下载记录。即使此政策停用，浏览和下载记录也不一定会保留。用户可能能够直接修改或删除历史记录数据库文件，而且浏览器本身也可能会随时将任意或所有历史记录项设为失效或进行归档。</translation>
@@ -7342,6 +7373,15 @@ Microsoft SharePoint 和 OneDrive 卡片需要由管理员进行额外配置。�
 
 如果此政策未设置或设为空列表，则系统会在调用 <ph name="GET_SCANNER_LIST_FUNCTION" /> 或 <ph name="START_SCAN_FUNCTION" /> 时向用户显示扫描确认对话框。</translation>
 <translation id="5599461642204007579"><ph name="MS_AD_NAME" /> 管理设置</translation>
+<translation id="5600069914972001816">控制 <ph name="PRODUCT_NAME" /> 中的常规浏览器窗口在 <ph name="LINUX_OS_NAME" /> 上是否使用系统标题栏和边框。此政策不会影响 Web 应用、浮动窗口或弹窗。
+
+如果您启用此政策，普通浏览器窗口会在受支持时使用窗口管理器提供的标题栏和边框。否则，<ph name="PRODUCT_NAME" /> 会继续绘制窗口装饰。
+
+如果您停用此政策，<ph name="PRODUCT_NAME" /> 会为普通浏览器窗口绘制标题栏和边框，而不是由窗口管理器绘制。
+
+如果您设置了此政策，用户便无法更改此设置。
+
+如果未设置此政策（且窗口管理器支持），用户可以在“设置”&gt;“外观”或窗口标题栏的上下文菜单中选择是否使用系统标题栏和边框。</translation>
 <translation id="5601503069213153581">PIN 码</translation>
 <translation id="5605676983184673391">允许 Chrome 应用在自助服务终端会话中运行。</translation>
 <translation id="5606477661985737162">自动下载设置</translation>
@@ -7536,6 +7576,7 @@ Microsoft SharePoint 和 OneDrive 卡片需要由管理员进行额外配置。�
 <translation id="5746149754419996562">允许在 <ph name="PRODUCT_OS_NAME" /> 上显示 Glanceables widget。具体来说就是，可通过任务栏上的条状日期标签访问这些 widget。
 如果此政策已启用，系统会在 <ph name="PRODUCT_OS_NAME" /> 上启用 Glanceables。
 如果此政策已停用或未设置，系统不会在 <ph name="PRODUCT_OS_NAME" /> 上启用 Glanceables。</translation>
+<translation id="5748390678919882160">在隔离模式下，用户安装的扩展程序默认停用，但可自行启用</translation>
 <translation id="5749396052108288586">此政策已被弃用。请改用 <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />。</translation>
 <translation id="574983287620584622">在登录屏幕上启用无障碍功能快捷方式</translation>
 <translation id="5755002458331714762"> Web Components v0 API（Shadow DOM v0、Custom Elements v0 和 HTML Imports）已于 2018 年被弃用，并且从 M80 起就已默认处于停用状态。此政策允许有选择地重新启用这些功能直至 M84。
@@ -8134,13 +8175,6 @@ IP 地址空间覆盖有两种形式：
 <translation id="6155350825868160236">允许用户选择是否使用 Google 网络服务来修正拼写错误</translation>
 <translation id="6155936611791017817">设置登录屏幕上大号光标的默认状态</translation>
 <translation id="6157537876488211233">代理绕过规则的逗号分隔列表</translation>
-<translation id="615770784601443240">通过设置此政策，您可以罗列一些网址格式，从而指定哪些网站可以请求用户授权其访问 USB 设备。
-
-      未设置此政策时，如果已设置 <ph name="DEFAULT_WEB_USB_GUARD_SETTING_POLICY_NAME" />，则系统会将其应用于所有网站，否则应用用户的个人设置。
-
-      网址格式不得与 <ph name="WEB_USB_ASK_FOR_URLS_POLICY_NAME" /> 冲突。如果某个网址与这两项政策都相符，系统将不会优先应用任一项政策。
-
-      如需详细了解有效的 <ph name="URL_LABEL" /> 格式，请访问 https://chromeenterprise.google/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="6158324314836466367">企业网上应用店名称（已弃用）</translation>
 <translation id="6162385223000257668">将本地文件迁移到 Google 云端硬盘并隐藏本地文件夹</translation>
 <translation id="6164441518097008843">仅允许列表中的用户登录</translation>
@@ -8626,9 +8660,6 @@ Related Website Set 中的所有网站都必须是采用 HTTPS 协议的可注�
 
 随着 Related Website Set 的弃用，自 <ph name="PRODUCT_NAME" /> 144 版起，此政策已被弃用。</translation>
 <translation id="6419001911253110938">允许在用户登录流程中显示会话内 AI 功能的介绍界面</translation>
-<translation id="6421254653839955267">如果此政策已启用，系统便会跳过 CNAME 查找步骤。当生成 Kerberos SPN 时，系统会使用输入的服务器名称。
-
-如果此政策已停用或未设置，当生成 Kerberos SPN 时，服务器的规范名称将由 CNAME 查找来决定。</translation>
 <translation id="6424485010103067949"><ph name="OMA_URI" />：</translation>
 <translation id="6424486395812679373">对所有下载的文件执行安全浏览检查</translation>
 <translation id="6426899507714989471">停用图形加速功能</translation>
@@ -10352,6 +10383,7 @@ Related Website Set 中的所有网站都必须是采用 HTTPS 协议的可注�
 
       注意：此设置仅适用于在 <ph name="PRODUCT_OS_NAME" /> 设备中添加的新账号。
       </translation>
+<translation id="7491451949545325621">在 Linux 上使用系统标题栏和边框</translation>
 <translation id="7491720878670299691">轮询网络数据并检查是否发生事件的时间间隔。所允许的最低时间间隔为 1 分钟。
 
       如果此政策未设置，系统会应用默认时间间隔（1 分钟）。</translation>
@@ -10749,11 +10781,6 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
       注意：在 iOS 上，如果此政策在会话期间发生更改，相应更改要等到浏览器重新启动时才会生效。</translation>
 <translation id="7753678409577376761">启用浏览器实验性功能工具栏入口点</translation>
 <translation id="7754704193130578113">下载前询问每个文件的保存位置</translation>
-<translation id="7754893969683595513">通过设置此政策，您可以指定向设备管理服务查询用户政策信息的周期（以毫秒为单位）。有效值范围为 1800000（30 分钟）至 86400000（1 天）。此范围之外的值均会被相应地向上/向下舍入为邻近的限值。
-
-      如果您未设置此政策，系统会使用默认值（3 小时）。
-
-      注意：当此政策有变时，政策通知会强制进行刷新，因此您不必频繁刷新。如果平台支持此类通知，刷新延迟时间将为 24 小时（忽略默认值和此政策的值）。</translation>
 <translation id="775822241671489040">控制“使用启动器键/搜索键更改功能键的行为”设置</translation>
 <translation id="7758378441185523981">为个人资料类型启用静默身份验证。</translation>
 <translation id="776110834126722255">已弃用</translation>
@@ -10897,6 +10924,7 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 
       如果此政策设为 False 或未设置，网页可以使用 WebGL API，但浏览器的默认设置可能仍然要求在使用这些 API 前先传递命令行参数。</translation>
 <translation id="7848641140449742406">操作系统设置</translation>
+<translation id="7849432126770032310">使用 <ph name="PRODUCT_NAME" /> 窗口装饰</translation>
 <translation id="7850091451640294457">已停用 PDF XFA 表单支持</translation>
 <translation id="7850846808758624237">如果此政策已启用，当首次运行浏览器时，系统将会从先前的默认浏览器导入主页。如果此政策已停用或未设置，当首次运行浏览器时，系统不会导入主页。
 
@@ -11596,6 +11624,15 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
           如果此政策未设置，系统将使用“BlockKeygen”，并且用户可以更改此设置。</translation>
 <translation id="8314214821702356835">允许用户在设备锁定时播放媒体</translation>
 <translation id="8316940611391250886">禁止使用缺少 subjectAlternativeName 扩展项的证书</translation>
+<translation id="8317862469025200834">此政策用于控制是否允许安全浏览功能通过 Oblivious HTTP 代理将网址的部分哈希值发送给 Google，以确定这些网址是否可以安全访问。
+
+该代理允许浏览器将网址的部分哈希值上传到 Google，而不会将这些哈希值与用户的 IP 地址关联。此政策还允许浏览器以更高的频率上传网址的部分哈希值，从而增强安全浏览功能的保护效果。
+
+如果安全浏览功能已停用，系统会忽略此政策。
+
+如果此政策已启用或未设置，系统将允许以更高保护级别通过代理进行查询。
+
+如果此政策已停用，系统将禁止以更高保护级别通过代理进行查询。网址的部分哈希值被直接上传到 Google 的频率会大大降低，这会削弱保护效果。</translation>
 <translation id="8319678975002906774">为特定来源的网站设定受管理配置值</translation>
 <translation id="8320149248919453401">电池充电模式</translation>
 <translation id="8320576119308783142">在适当的时候显示屏幕键盘。</translation>
@@ -12597,6 +12634,7 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 如果此政策已启用或未设置，在 <ph name="CONTEXTUAL_GOOGLE_INTEGRATIONS_CONFIGURATION" /> 中选择的集成会启用。
 
 如果此政策已停用，所有集成都会停用。</translation>
+<translation id="8990909333443674504">在隔离模式下，用户安装的扩展程序会被屏蔽</translation>
 <translation id="8992176907758534924">不允许任何网站显示图片</translation>
 <translation id="8994850249590725417">不显示隐私权通知</translation>
 <translation id="8994954504552592260">借助此政策，您可允许将 <ph name="MS_AD_NAME" /> 管理的设备迁移到云管理服务。此政策允许从远程启动对公司中多部设备的无接触式迁移，还会尽可能提供充足的信息以便最终用户随时掌握迁移进度。

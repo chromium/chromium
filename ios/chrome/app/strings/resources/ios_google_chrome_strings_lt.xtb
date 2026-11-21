@@ -83,6 +83,8 @@
 <translation id="2574249610672786438">Kad matytumėte skirtukus iš visų įrenginių, kuriuose naudojate „Chrome“, prisijunkite visuose įrenginiuose</translation>
 <translation id="2576431527583832481">„Chrome“ patobulėjo! Galima nauja versija.</translation>
 <translation id="257708665678654955">Ar norėtumėte, kad kitą kartą „Google Chrome“ būtų siūloma išversti šios svetainės puslapius <ph name="LANGUAGE_NAME" /> k.?</translation>
+<translation id="2599258827968143948">Mėgstamiausi „Google“ produktai geriau veikia naudojant „Chrome“</translation>
+<translation id="260980777626165320">Atidarykite išorines nuorodas naršyklėje „Chrome“ pagal numatytuosius nustatymus.</translation>
 <translation id="2668242166988961773">Paieška balsu naršyklėje „Chrome“.</translation>
 <translation id="2703746758996815929">Jei norite gauti naudingų „Chrome“ patarimų, įjunkite pranešimus „iOS“ nustatymuose.</translation>
 <translation id="2728851697704606655">Vertimas naudojant „Google Lens“</translation>
@@ -111,6 +113,7 @@ Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes.
 <translation id="314782365035065913">Greičiau pasiekite „Chrome“ naudodami pagrindinio ekrano doką</translation>
 <translation id="3167189358072330585">Paskyra neveikia sistemoje „Google Chrome“. Susisiekite su domeno administratoriumi arba prisijungdami naudokite įprastą „Google“ paskyrą.</translation>
 <translation id="322254490661677575">Jei norite naudoti ir išsaugoti „Chrome“ duomenis „Google“ paskyroje, įveskite slaptafrazę.</translation>
+<translation id="3253082773078342494">Atidarykite nuorodas tiesiogiai naršyklėje „Chrome“.</translation>
 <translation id="3303503998967553377">„Chrome“ veiksmų naudojimas „iOS“ įrenginyje</translation>
 <translation id="3348862487678490430">Pridėti skaitymo sąrašo elementą prie „Chrome“</translation>
 <translation id="3350281376951945723">Greičiau atidarykite nuorodas nustatę „Chrome“ kaip numatytąją naršyklę</translation>
@@ -160,6 +163,7 @@ Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes.
 <translation id="4693084815234024320">Naudojate „Chrome“ inkognito režimą</translation>
 <translation id="4713740144985377441">Grįžkite į „Chrome“, kad įkeltumėte failą</translation>
 <translation id="4724297637870447613">„Chrome“ naudojimas visuose įrenginiuose</translation>
+<translation id="4733290155432110050">Pereikite tiesiai į „Chrome“</translation>
 <translation id="4738647308035481133">„Google Chrome“ puslapis</translation>
 <translation id="4742795653798179840">Ištrinti „Chrome“ duomenys</translation>
 <translation id="4761869838909035636">Paleisti „Chrome“ Saugos patikrą</translation>
@@ -267,6 +271,7 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ fun
 <translation id="7038674195294813388">Atidarykite numatytųjų programų nustatymus sistemoje „iOS“, tada palieskite „Naršyklės programa“ ir pasirinkite „Chrome“.</translation>
 <translation id="7056826488869329999">Atidaroma ir vykdoma saugos patikra naršyklėje „Chrome“.</translation>
 <translation id="7061455974939528301">Paspauskite ir palaikykite „Chrome“ piktogramą ir spustelėkite „Redaguoti pagrindinį ekraną“</translation>
+<translation id="7067302528015227615">Nustatykite „Chrome“ kaip numatytąją naršyklę, kad perėjimas iš vienos programos į kitą vyktų sparčiau ir paprasčiau.</translation>
 <translation id="7095110968493193530">„Google“ slaptažodžių tvarkytuvė, naudotojas <ph name="EMAIL" /></translation>
 <translation id="7124339256045485976">Atnaujinkite „Chrome“</translation>
 <translation id="7135936755418321901">Jei norite bendrinti vietovės informaciją su svetainėmis, palieskite „Nustatymai“ ir leiskite „Chrome“ naudoti vietovės informaciją.</translation>
@@ -278,6 +283,7 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ fun
 <translation id="7200524487407690471">„Chrome“ kasdien automatiškai vykdo saugos patikrą, kad būtumėte apsaugoti nuo duomenų saugos pažeidimų, nesaugių svetainių ir kt. Daugiau apie saugos patikrą rasite skiltyje „Nustatymai“.</translation>
 <translation id="7214019116829172458">„Chrome“ inkognito skirtuko atidarymas</translation>
 <translation id="722167379782941918">„Chrome“ rekomenduoja naudoti sustiprintą apsaugą</translation>
+<translation id="722921700949937243">Užtikrinkite, kad visos nuorodos visada būtų atidaromos naršyklėje „Chrome“.</translation>
 <translation id="723787869754590019">„Chrome“ naudojimas automatinio pildymo funkcijai</translation>
 <translation id="7261678641327190792">„Chrome“ negali patikrinti jūsų slaptažodžių</translation>
 <translation id="7272091023280308138">Kitą kartą atidarykite nuorodas tiesiogiai naršyklėje „Chrome“ nekopijuodami URL.</translation>

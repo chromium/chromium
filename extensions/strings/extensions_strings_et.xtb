@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Luba teema</translation>
+<translation id="1085064499066015002">Alati kõigil saitidel</translation>
 <translation id="1135328998467923690">Vale pakett: „<ph name="ERROR_CODE" />”.</translation>
 <translation id="1140871961407805696">Keskkonna poole suunatud</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> lisas laienduse, mis võib muuta Chromiumi tööpõhimõtteid.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">Eeldatav versioon oli „<ph name="EXPECTED_VERSION" />”, kuid versioon oli „<ph name="NEW_ID" />”</translation>
 <translation id="471800408830181311">Privaatvõtit ei õnnestunud väljastada.</translation>
 <translation id="4811956658694082538">Paketti ei õnnestunud installida, sest utiliidiprotsess jooksis kokku. Taaskäivitage Chrome ja proovige uuesti.</translation>
+<translation id="4883436287898674711">Kõik domeeni <ph name="WEBSITE_1" /> saidid</translation>
 <translation id="4988792151665380515">Avalikku võtit ei õnnestunud eksportida.</translation>
 <translation id="501057610015570208">Rakendus manifesti atribuudiga „kiosk_only” tuleb installida Chrome OS Flexi kioskirežiimis</translation>
 <translation id="5026754133087629784">Veebivaade: <ph name="WEBVIEW_TAG_NAME" /></translation>

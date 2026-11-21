@@ -83,6 +83,8 @@
 <translation id="2574249610672786438">Ak chcete vidieť svoje karty vo všetkých zariadeniach, v ktorých používate Chrome, prihláste sa v nich</translation>
 <translation id="2576431527583832481">Prehliadač Chrome bol práve vylepšený. K dispozícii je nová verzia.</translation>
 <translation id="257708665678654955">Chcete, aby prehliadač Google Chrome nabudúce ponúkol možnosť prekladu stránok tohto webu v jazyku <ph name="LANGUAGE_NAME" />?</translation>
+<translation id="2599258827968143948">Vaše obľúbené služby Googlu fungujú lepšie v Chrome</translation>
+<translation id="260980777626165320">Otvárajte externé odkazy predvolene v Chrome.</translation>
 <translation id="2668242166988961773">Vyhľadávanie hlasom v Chrome.</translation>
 <translation id="2703746758996815929">Ak chcete dostávať užitočné tipy pre Chrome, zapnite upozornenia v nastaveniach systému iOS.</translation>
 <translation id="2728851697704606655">Prekladajte pomocou funkcie Google Lens</translation>
@@ -111,6 +113,7 @@ Nové záložky sa nebudú môcť ukladať do vášho účtu, kým niektoré neo
 <translation id="314782365035065913">Získavajte prístup k Chromu rýchlejšie z Docku na ploche</translation>
 <translation id="3167189358072330585">Váš účet nefunguje v prehliadači Google Chrome. Kontaktujte správcu domény alebo sa prihláste pomocou bežného účtu Google.</translation>
 <translation id="322254490661677575">Ak chcete vo svojom účte Google používať a ukladať údaje Chromu, zadajte prístupovú frázu.</translation>
+<translation id="3253082773078342494">Otvárajte odkazy priamo v Chrome.</translation>
 <translation id="3303503998967553377">Používajte akcie v Chrome v systéme iOS</translation>
 <translation id="3348862487678490430">Pridanie položky čitateľského zoznamu do Chromu</translation>
 <translation id="3350281376951945723">Nastavte si Chrome ako predvolený prehliadač a otvárajte tak odkazy rýchlejšie</translation>
@@ -160,6 +163,7 @@ Nové záložky sa nebudú môcť ukladať do vášho účtu, kým niektoré neo
 <translation id="4693084815234024320">Ste v režime inkognito Chromu</translation>
 <translation id="4713740144985377441">Ak chcete nahrať súbor, vráťte sa do Chromu</translation>
 <translation id="4724297637870447613">Používajte Chrome kdekoľvek</translation>
+<translation id="4733290155432110050">Prejdite priamo do Chromu</translation>
 <translation id="4738647308035481133">Stránka prehliadača Google Chrome</translation>
 <translation id="4742795653798179840">Dáta Chromu boli odstránené</translation>
 <translation id="4761869838909035636">Spustiť kontrolu bezpečnosti Chromu</translation>
@@ -267,6 +271,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7038674195294813388">V zariadení so systémom iOS otvorte nastavenia predvolených aplikácií, klepnite na položku Aplikácia prehliadača a vyberte Chrome.</translation>
 <translation id="7056826488869329999">Otvorí a spustí kontrolu bezpečnosti v Chrome.</translation>
 <translation id="7061455974939528301">Pridržte ikonu Chromu a kliknite na Úprava plochy</translation>
+<translation id="7067302528015227615">Nastavte si Chrome ako predvolený prehliadač, aby boli prechody medzi aplikáciami rýchlejšie a jednoduchšie.</translation>
 <translation id="7095110968493193530">Do Správcu hesiel Google pre účet <ph name="EMAIL" /></translation>
 <translation id="7124339256045485976">Udržuje Chrome aktuálny</translation>
 <translation id="7135936755418321901">Ak chcete zdieľať svoju polohu s webmi, klepnite na Nastavenia a povoľte Chromu používať vašu polohu.</translation>
@@ -278,6 +283,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7200524487407690471">Chrome každý deň automaticky spúšťa kontrolu bezpečnosti, aby vás chránil pred porušeniami ochrany údajov, nebezpečnými webmi a ďalšími hrozbami. Viac o kontrole bezpečnosti sa dozviete v Nastaveniach.</translation>
 <translation id="7214019116829172458">Otvorenie karty inkognito v Chrome</translation>
 <translation id="722167379782941918">Chrome odporúča rozšírenú ochranu</translation>
+<translation id="722921700949937243">Zaistite, aby sa všetky odkazy vždy otvárali v Chrome.</translation>
 <translation id="723787869754590019">Používajte Chrome na automatické dopĺňanie</translation>
 <translation id="7261678641327190792">Chrome nemôže skontrolovať heslá</translation>
 <translation id="7272091023280308138">Nabudúce otvárajte odkazy priamo v Chrome bez toho, aby ste museli najprv kopírovať webové adresy.</translation>

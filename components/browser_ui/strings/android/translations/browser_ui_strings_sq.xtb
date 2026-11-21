@@ -62,7 +62,6 @@
 <translation id="1615755956145364867">Sajtet mund të kërkojnë të luajnë përmbajtje të mbrojtura</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1621729191093924223">Veçoritë që kanë nevojë për një mikrofon nuk do të funksionojnë</translation>
-<translation id="1633720957382884102">Sajtet e lidhura</translation>
 <translation id="1644574205037202324">Historiku</translation>
 <translation id="1652197001188145583">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të përdorin pajisjet me NFC. Kur cilësimi është joaktiv, sajtet nuk mund të përdorin pajisjet me NFC.</translation>
 <translation id="1660204651932907780">Lejo që sajtet të luajnë tinguj (rekomandohet)</translation>
@@ -76,6 +75,7 @@
 <translation id="1717996979683942279">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të menaxhojnë dritaret në të gjitha ekranet e tua. Kur cilësimi është joaktiv, sajtet nuk mund të menaxhojnë dritaret në të gjitha ekranet e tua.</translation>
 <translation id="1738912554587725807">Fleta e poshtme e koleksioneve të temave për pamjen e faqeve të skedave të reja</translation>
 <translation id="1743802530341753419">Pyet përpara se sajtet të lejohen të lidhen me një pajisje (rekomandohet)</translation>
+<translation id="1766455884659449403">Merr njoftime për "Këshillat për Chrome"</translation>
 <translation id="1777815584158991902">Fleta e poshtme e furnizimit të "Zbulo"</translation>
 <translation id="1779089405699405702">Dekoduesi i imazheve</translation>
 <translation id="1781533683087883868">Çaktivizo lidhjet e "Modalitetit të leximit"</translation>
@@ -184,6 +184,7 @@
 <translation id="2750481671343847896">Sajtet mund të shfaqin kërkesat për identifikim nga shërbimet e identitetit.</translation>
 <translation id="2789132527330338807">Sajtet mund të kërkojnë të krijojnë një hartë 3D të ambientit tënd rrethues ose të monitorojnë pozicionin e kamerës</translation>
 <translation id="2790501146643349491">Kur cilësimi është aktiv, sajtet e mbyllura së fundi mund të përfundojnë dërgimin dhe marrjen e të dhënave. Kur cilësimi është joaktiv, sajtet e mbyllura së fundi nuk mund të përfundojnë dërgimin ose marrjen e të dhënave.</translation>
+<translation id="2794551654724114396">Aktivizo njoftimet për këshilla të dobishme për të të ndihmuar të përfitosh sa më shumë nga Chrome</translation>
 <translation id="2795716239552913152">Sajtet përdorin zakonisht vendndodhjen tënde për veçori ose informacione përkatëse, si p.sh. lajmet lokale ose dyqanet në afërsi</translation>
 <translation id="2800760947029405028">Ngarko imazh</translation>
 <translation id="2802908157808345702">Mos lejo që sajtet të dërgojnë dritare kërcyese apo të përdorin ridrejtimet</translation>
@@ -231,7 +232,6 @@
 <translation id="3232293466644486101">Fshi të dhënat e shfletimit…</translation>
 <translation id="3242646949159196181">Kur cilësimi është aktiv, sajtet mund të luajnë tinguj. Kur cilësimi është joaktiv, sajtet nuk mund të luajnë tinguj.</translation>
 <translation id="3273479183583863618">Uljet e çmimeve në skeda</translation>
-<translation id="3285500645985761267">Lejo që sajtet e lidhura të shikojnë aktivitetin tënd te grupi</translation>
 <translation id="3295019059349372795">Kapitulli 11: Qyteti i mrekullueshëm i smeraldtë i Ozit</translation>
 <translation id="3295602654194328831">Fshih informacionin</translation>
 <translation id="3333961966071413176">Të gjitha kontaktet</translation>
@@ -249,7 +249,6 @@
 <translation id="3523447078673133727">Mos lejo që sajtet të gjurmojnë duart e tua</translation>
 <translation id="3536227077203206203">Lejohet këtë herë</translation>
 <translation id="3538390592868664640">Blloko krijimin nga sajtet të një harte 3D të ambientit tënd rrethues ose gjurmimin prej tyre të pozicionit të kamerës</translation>
-<translation id="3544058026430919413">Një kompani mund të përcaktojë një grup sajtesh që mund të përdorin kukit për ta ndarë aktivitetin tënd te grupi. Kjo është joaktive në modalitetin "e fshehtë".</translation>
 <translation id="3551268116566418498">Të dilet nga modaliteti "i fshehtë"?</translation>
 <translation id="3586500876634962664">Përdorimi i kamerës/mikrofonit</translation>
 <translation id="358794129225322306">Lejo një sajt të shkarkojë shumë skedarë automatikisht.</translation>
@@ -262,7 +261,6 @@
 <translation id="363748948745453283">Po përdoret vendndodhja e përafërt</translation>
 <translation id="3641456520301071208">Sajtet mund të pyesin për vendndodhjen tënde</translation>
 <translation id="3658847490588580244">Fleta e poshtme e shfletuesit të parazgjedhur</translation>
-<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sajt në grupin e sajteve të <ph name="RWS_OWNER" /> që mund ta shikojnë aktivitetin tënd në grup}other{<ph name="RWS_MEMBERS_COUNT" /> sajte në grupin e sajteve të <ph name="RWS_OWNER" /> që mund ta shikojnë aktivitetin tënd në këtë grup}}</translation>
 <translation id="3676777756440746804">Sajtet janë bllokuar që të mos të kërkojnë të përdorin informacionet që kanë ruajtur në lidhje me ty</translation>
 <translation id="3677897809642449131">Sajtet mund të kërkojnë të përdorin sensorët e lëvizjes</translation>
 <translation id="3678318839615834650">Fleta e poshtme e kartave të faqeve të skedave të reja u hap në lartësi të plotë</translation>
@@ -538,16 +536,15 @@
 <translation id="656065428026159829">Shiko më shumë</translation>
 <translation id="6561560012278703671">Përdor mesazhe më të qeta (bllokon kërkesat e njoftimeve që mos të të ndërpresin)</translation>
 <translation id="6593061639179217415">Sajti për desktop</translation>
-<translation id="659938948789980540">{COUNT,plural, =1{Kukit lejohen për <ph name="RWS_MEMBERS_COUNT" /> sajt të <ph name="RWS_OWNER" />}other{Kukit lejohen për <ph name="RWS_MEMBERS_COUNT" /> sajte të <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Përmbajtje e mbrojtur</translation>
 <translation id="6619015782482868078">Tema Akuamarinë</translation>
 <translation id="662080504995468778">Qëndro</translation>
 <translation id="6630443592285535486">Shkruaj kodin hekzadecimal këtu</translation>
 <translation id="6635327442719709864">Kur cilësimi është aktiv, sajtet mund të kërkojnë të përdorin portat seriale. Kur cilësimi është joaktiv, sajtet nuk mund t'i përdorin portat seriale.</translation>
+<translation id="6669390930482049506">Më njofto</translation>
 <translation id="6678072580827808850">Rishiko "Kontrollin e sigurisë"</translation>
 <translation id="6682057173375416470">Merr artikuj të sugjeruar në faqen "Skedë e re"</translation>
-<translation id="6683865262523156564">Ky sajt është në një grup që mund ta shikojë aktivitetin tënd. Grupi përcaktohet nga <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Fotografitë e profilit</translation>
 <translation id="6697925417670533197">Shkarkimet aktive</translation>
 <translation id="6709432001666529933">Pyet përpara se të lejosh sajtet të gjurmojnë duart e tua (rekomandohet)</translation>

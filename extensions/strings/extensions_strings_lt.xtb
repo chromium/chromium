@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Įgalinti temą</translation>
+<translation id="1085064499066015002">Visada visose svetainėse</translation>
 <translation id="1135328998467923690">Paketas netinkamas: „<ph name="ERROR_CODE" />“.</translation>
 <translation id="1140871961407805696">Nukreiptas į aplinką</translation>
 <translation id="1171831736360285680">„<ph name="PARTNER_NAME" />“ pridėjo plėtinį, kuris gali pakeisti, kaip veikia „Chromium“.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">Versija turėjo būti <ph name="EXPECTED_VERSION" />, o buvo pateikta <ph name="NEW_ID" /></translation>
 <translation id="471800408830181311">Privačiojo rakto išvestis nepavyko.</translation>
 <translation id="4811956658694082538">Nepavyko įdiegti paketo, nes užstrigo priemonės procesas. Bandykite iš naujo paleisti „Chrome“ ir bandykite dar kartą.</translation>
+<translation id="4883436287898674711">Visos <ph name="WEBSITE_1" /> svetainės</translation>
 <translation id="4988792151665380515">Nepavyko eksportuoti viešojo rakto.</translation>
 <translation id="501057610015570208">Programa su aprašo atributu „kiosk_only“ turi būti įdiegta „ChromeOS Flex“ viešojo terminalo režimu</translation>
 <translation id="5026754133087629784">Žiniatinklio rodinys: <ph name="WEBVIEW_TAG_NAME" /></translation>

@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">থীম সক্ষম কৰক</translation>
+<translation id="1085064499066015002">সদায় আটাইবোৰ ছাইটত</translation>
 <translation id="1135328998467923690">পেকেজটো অমান্য: '<ph name="ERROR_CODE" />'।</translation>
 <translation id="1140871961407805696">পশ্চাৎ কেমেৰা</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" />এ এটা এক্সটেনশ্বন যোগ দিছে, যিটোৱে Chromiumৰ কাৰ্যপ্ৰণালী সলনি কৰিব পাৰে।
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">"<ph name="EXPECTED_VERSION" />" সংস্কৰণৰ অনুমান কৰা হৈছিল কিন্তু সংস্কৰণটো "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">ব্যক্তিগত কী আউটপুট কৰিব পৰা নগ'ল।</translation>
 <translation id="4811956658694082538">ইউটিলিটি প্ৰক্ৰিয়া ক্রেশ্ব হোৱাৰ বাবে পেকেজ ইনষ্টল কৰিব পৰা নগ’ল। Chrome ৰিষ্টার্ট কৰি পুনৰ চেষ্টা কৰক।</translation>
+<translation id="4883436287898674711">সকলো <ph name="WEBSITE_1" /> ছাইট</translation>
 <translation id="4988792151665380515">ৰাজহুৱা চাবিটো ৰপ্তানি কৰিব পৰা নগ‘ল।</translation>
 <translation id="501057610015570208">'kiosk_only' মেনিফেষ্টৰ বৈশিষ্ট্য থকা এপক ChromeOS Flex কিঅ’স্ক ম’ডতেই ইনষ্টল কৰিব লাগে</translation>
 <translation id="5026754133087629784">ৱেবভিউ: <ph name="WEBVIEW_TAG_NAME" /></translation>

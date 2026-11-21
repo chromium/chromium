@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">ଥିମ୍ ସକ୍ଷମ କରନ୍ତୁ</translation>
+<translation id="1085064499066015002">ସମସ୍ତ ସାଇଟରେ ସର୍ବଦା</translation>
 <translation id="1135328998467923690">ପ୍ୟାକେଜ୍ ଅବୈଧ ଅଟେ: '<ph name="ERROR_CODE" />'।</translation>
 <translation id="1140871961407805696">ପଛପଟ କ୍ୟାମେରା</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> ଏକ ଏକ୍ସଟେନସନ ଯୋଗ କରିଛନ୍ତି ଯାହା Chromium କାର୍ଯ୍ୟ କରିବାର ଉପାୟକୁ ପରିବର୍ତ୍ତନ କରିପାରେ।
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">ଆଶା କରାଯାଉଥିବା ସଂସ୍କରଣ "<ph name="EXPECTED_VERSION" />" ଅଛି, କିନ୍ତୁ ସଂସ୍କରଣ "<ph name="NEW_ID" />" ଥିଲା</translation>
 <translation id="471800408830181311">ବ୍ୟକ୍ତିଗତ କୀ ଆଉଟ୍‍ପୁଟ୍ କରିବାରେ ବିଫଳ ହେଲା।</translation>
 <translation id="4811956658694082538">ଉପଯୋଗିତା ପ୍ରକ୍ରିୟା କ୍ରାସ୍ ହୋଇଯାଇଥିବା ଯୋଗୁଁ ପ୍ୟାକେଜ୍ ଇନ୍‌ଷ୍ଟଲ୍ କରିହେଲା ନାହିଁ। Chromeକୁ ରିଷ୍ଟାର୍ଟ କରିବାକୁ ଚେଷ୍ଟା କରି ପୁନର୍ବାର ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
+<translation id="4883436287898674711">ସମସ୍ତ <ph name="WEBSITE_1" /> ସାଇଟ୍</translation>
 <translation id="4988792151665380515">ସାର୍ବଜନିକ କୀ'କୁ ଏକ୍ସପୋର୍ଟ କରିବାରେ ବିଫଳ ହେଲା।</translation>
 <translation id="501057610015570208">'kiosk_only' ମାନିଫେଷ୍ଟ ଆଟ୍ରିବ୍ୟୁଟ ଥିବା ଆପ ChromeOS Flex କିଓସ୍କ ମୋଡରେ ଇନଷ୍ଟଲ କରାଯିବା ଉଚିତ</translation>
 <translation id="5026754133087629784">ୱେବ୍‌ଭ୍ୟୁ: <ph name="WEBVIEW_TAG_NAME" /></translation>

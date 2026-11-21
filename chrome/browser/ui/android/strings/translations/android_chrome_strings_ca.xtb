@@ -530,6 +530,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Obteniu ajuda<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Estàs fent un seguiment del preu</translation>
 <translation id="3037517125981011456">Mostra sol·licituds per iniciar la sessió a Chrome</translation>
+<translation id="3038505649933066250">Filtra per data</translation>
 <translation id="3044436568790455247">Tria un dispositiu s'ha obert a alçada completa.</translation>
 <translation id="3057938290530993634">Mantén premuts els llocs web que més visites per fixar-los i accedir-hi fàcilment la propera vegada</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> adreça d'interès}other{<ph name="BOOKMARKS_COUNT_MANY" /> adreces d'interès}}</translation>
@@ -576,6 +577,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3243650379537999343">Dibuixa</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">Si també comparteixes els informes d'ús de Chrome, aquests informes inclouen els URL que visites</translation>
+<translation id="3248185426436836442">Pendent</translation>
 <translation id="3250563604907490871">Les descripcions de les imatges es reprendran quan et connectis a la Wi-Fi</translation>
 <translation id="3254409185687681395">Afegeix aquesta pàgina a les adreces d'interès</translation>
 <translation id="3265093782546847662">Totes les pàgines de <ph name="DOMAIN" /></translation>
@@ -1124,7 +1126,6 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, pestanya d'incògnit de compartició fixada</translation>
 <translation id="5375374982898812658">Perdràs immediatament l'accés al grup de pestanyes "<ph name="GROUP_NAME" />" i se suprimirà de tots els teus dispositius</translation>
 <translation id="537865165090710757">Desa i comparteix</translation>
-<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> vol utilitzar informació personal de la teva cartera digital. Continua només si hi confies. Els llocs web perillosos poden enganyar-te perquè revelis dades com ara el teu nom legal o el número del document d'identitat.</translation>
 <translation id="5395376160638294582">Assegura't de poder utilitzar sempre les dades de Chrome al teu Compte de Google</translation>
 <translation id="5397794290049113714">Usuari</translation>
 <translation id="539881862970320163">S'ha suggerit una contrasenya segura. El teclat està amagat.</translation>
@@ -1172,6 +1173,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="557018954714092179">Crea una carpeta</translation>
 <translation id="5578795271662203820">Cerca aquesta imatge a <ph name="SEARCH_ENGINE" /></translation>
 <translation id="558563010977877295">Obre una pàgina o un conjunt de pàgines determinats</translation>
+<translation id="5594132774273121146">Usuari i compte</translation>
 <translation id="5596627076506792578">Més opcions</translation>
 <translation id="5599455543593328020">Mode d'incògnit</translation>
 <translation id="5601180634394228718">Per veure més opcions de configuració que utilitzin dades per millorar la teva experiència de Chrome, ves a <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" />.</translation>
@@ -1229,6 +1231,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="583281660410589416">Desconegut</translation>
 <translation id="5833984609253377421">Comparteix l'enllaç</translation>
 <translation id="5839058148541733625">El dinosaure de Chrome</translation>
+<translation id="5839059463554891940">Seguretat i protecció</translation>
 <translation id="5841444063256914865">Vols baixar "<ph name="FILE_NAME" />" igualment?</translation>
 <translation id="5847265694842662173">Chrome ha impedit que els llocs web abusius i els que no s'utilitzen enviïn notificacions</translation>
 <translation id="5848257610304005265">Vols obrir el PDF amb <ph name="APP_NAME" />?</translation>
@@ -1345,7 +1348,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6259107733340311168">El full inferior de l'avís d'exempció de responsabilitat dels senyals d'Enterprise s'ha obert a alçada completa</translation>
 <translation id="6260260490042862943">Controls del lloc web</translation>
 <translation id="6264376385120300461">Baixa igualment</translation>
-<translation id="6264485186158353794">Torna a una pàgina segura</translation>
 <translation id="6267106249090587268">Notificacions <ph name="SEPARATOR" /> Chrome ha suprimit aquests permisos perquè el lloc web conté contingut brossa o enganyós</translation>
 <translation id="6276708887952587684">Mostra el codi font de la pàgina</translation>
 <translation id="62768169905160414">Copia el fotograma</translation>
@@ -1464,7 +1466,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6659594942844771486">Tab</translation>
 <translation id="666731172850799929">Obre a <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Notifica-m'ho</translation>
-<translation id="6670742294143102726">Selecciona una o més pestanyes per afegir-les a la cerca</translation>
 <translation id="6671495933530132209">Copia la imatge</translation>
 <translation id="6672697278890207089">Introduïu la vostra contrasenya</translation>
 <translation id="6675622031235530028">Mantén premut Ctrl+Q per sortir</translation>
@@ -1730,6 +1731,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> pestanya estàndard}other{<ph name="TABS_COUNT_MANY" /> pestanyes estàndard}}</translation>
 <translation id="7603168929588204083">La data no és vàlida</translation>
 <translation id="7605594153474022051">La sincronització no funciona</translation>
+<translation id="7607002721634913082">En pausa</translation>
 <translation id="7608245556672190037">El full d'activació de les troballes de Chrome s'ha obert a alçada completa</translation>
 <translation id="7612619742409846846">Has iniciat la sessió a Google com a</translation>
 <translation id="7612989789287281429">S'està iniciant la sessió…</translation>
@@ -1838,6 +1840,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="800155843932969169">Crea i emmagatzema les teves contrasenyes de manera segura, inicia la sessió més ràpidament i identifica els problemes de seguretat de les contrasenyes per protegir-te</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8006630792898017994">Espai o Tab</translation>
+<translation id="802154636333426148">Error de baixada</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, pestanya d'incògnit de compartició fixada multiseleccionada</translation>
 <translation id="8025972204417227828">Afegeix</translation>
 <translation id="8027863900915310177">Tria on vols fer la baixada</translation>
@@ -1845,6 +1848,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8032569120109842252">Seguint</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, pestanya d'incògnit silenciada seleccionada</translation>
 <translation id="8036587585440959897">Algunes extensions poden afegir motors de cerca a Chrome.</translation>
+<translation id="803703704549420287">Esborra els filtres</translation>
 <translation id="8037750541064988519">Queden <ph name="DAYS" /> dies</translation>
 <translation id="8037801708772278989">Comprovat ara mateix</translation>
 <translation id="804335162455518893">La targeta SD no s'ha trobat</translation>

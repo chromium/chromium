@@ -58,6 +58,7 @@ Nové záložky sa nebudú môcť ukladať do vášho účtu, kým niektoré neo
 <translation id="2027881372245801507">Vypnutie návrhov nemá vplyv na to, ako Chromium spracúva názvy a webové adresy stránok pri iných funkciách. Prístup k týmto údajom môžete spravovať v <ph name="BEGIN_LINK" />nastaveniach synchronizácie<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Prihláste sa na tomto webe a v prehliadači Chromium, aby ste mali svoje heslá a ďalšie položky vo všetkých svojich zariadeniach</translation>
 <translation id="2042889939382983733">Zobraziť históriu prehliadača Chromium</translation>
+<translation id="2054352566231434723">Otvárajte externé odkazy predvolene v prehliadači Chromium.</translation>
 <translation id="2059365270911640413">Dokončite nastavovanie prehliadača Chromium</translation>
 <translation id="2168108852149185974">Niektoré doplnky spôsobujú zlyhanie prehliadača Chromium. Odinštalujte ich.</translation>
 <translation id="2168593389981132306">Zlepšujte Chromium</translation>
@@ -85,6 +86,7 @@ Nové záložky sa nebudú môcť ukladať do vášho účtu, kým niektoré neo
 <translation id="2485774047568879945">Nastavte si Chromium ako predvolený prehliadač, aby ste mohli jednoducho zdieľať a otvárať odkazy</translation>
 <translation id="2512597191798760956">Pridržte ikonu prehliadača Chromium a kliknite na Úprava plochy</translation>
 <translation id="2517624234762908348">Synchronizovať údaje prehliadača Chromium</translation>
+<translation id="2519012503779379646">Nastavte si Chromium ako predvolený prehliadač, aby boli prechody medzi aplikáciami rýchlejšie a jednoduchšie.</translation>
 <translation id="2592940277904433508">Pokračovať v používaní prehliadača Chromium</translation>
 <translation id="2601766165676560303">Motív prehliadača Chromium pre iPhone a iPad</translation>
 <translation id="2607609479243848905">Ak ste zabudli prístupovú frázu alebo chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje prehliadača Chromium vo svojom účte<ph name="END_LINK" />.</translation>
@@ -189,6 +191,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje pr
 <translation id="4985291216379576555">Offline, Chromium nemôže skontrolovať dostupnosť aktualizácií</translation>
 <translation id="4996471330284142407">Zvýšte svoju výkonnosť pomocou jednoduchého a zabezpečeného prehliadača Chromium, ktorý je rýchlejší než kedykoľvek predtým.</translation>
 <translation id="4999538639245140991">Odhlasujete sa z účtu spravovaného doménou <ph name="SIGNOUT_MANAGED_DOMAIN" />, takže údaje prehliadača Chromium budú z tohto zariadenia odstránené. Vaše údaje zostanú vo vašom účte Google.</translation>
+<translation id="5004986813285860899">Prejdite priamo do prehliadača Chromium</translation>
 <translation id="5042011327527167688">Klepnite na Zobraziť v Mapách Google v prehliadači Chromium.</translation>
 <translation id="5044871537677053278">Chromium rozpoznáva adresy a pomocou Máp Google vám poskytuje trasy aj miestne informácie.</translation>
 <translation id="5048140766121299007">V nastaveniach v sekcii <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> zapnite Chromium</translation>
@@ -202,6 +205,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje pr
 <translation id="5224391634244552924">Žiadne uložené heslá. Chromium môže skontrolovať heslá, keď ich uložíte.</translation>
 <translation id="5259423875997548710">Vyhľadajte vizuálne prvky v prehliadači Chromium.</translation>
 <translation id="5284913972719948193">Importujte svoje údaje, aby ste mohli používať heslá, históriu, záložky a kreditné karty v prehliadači Chromium</translation>
+<translation id="5299421317003704533">Otvárajte odkazy priamo v prehliadači Chromium.</translation>
 <translation id="5308226104666789935">Chromium nemôže skontrolovať dostupnosť aktualizácií</translation>
 <translation id="5311557153294205270">Pridá vložené webové adresy do vašich záložiek v prehliadači Chromium.</translation>
 <translation id="5383251701169024761">Ak chcete ľahko získať svoje uložené heslá v iných aplikáciách, vyberte automatické dopĺňanie v prehliadači Chromium.</translation>
@@ -268,6 +272,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje pr
 <translation id="6387994184698195448">Majte prehľad o užitočných tipoch pre Chromium a ďalšom obsahu.</translation>
 <translation id="6424492062988593837">Systém Chromium bol práve vylepšený. K dispozícii je nová verzia.</translation>
 <translation id="6433172051771630690">Tipy, ako využívať Chromium naplno</translation>
+<translation id="6458110851735461646">Vaše obľúbené služby Googlu fungujú lepšie v prehliadači Chromium</translation>
 <translation id="65045991564554105">Zobrazenie záložiek v prehliadači Chromium</translation>
 <translation id="6519797228806907665">Získavajte prístup k prehliadaču Chromium rýchlejšie z plochy iPhonu.</translation>
 <translation id="6538713818758208754">Otvorí stránku nastavení spôsobov platby v prehliadači Chromium.</translation>
@@ -357,6 +362,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje pr
 <translation id="8602103377623855616">Stránka prehliadača Chromium</translation>
 <translation id="865600487977764604">Chráni vás v prehliadači Chromium a môže zlepšiť zabezpečenie v ďalších aplikáciách Googlu, keď sa prihlásite.</translation>
 <translation id="8663480472502753423">Udržujte prehliadač Chromium aktuálny</translation>
+<translation id="8671588626059602995">Zaistite, aby sa všetky odkazy vždy otvárali v prehliadači Chromium.</translation>
 <translation id="8685813584220679697">Prihláste sa na tomto webe a v prehliadači Chromium.</translation>
 <translation id="8697693743327341604">Ak určitý návrh vyberiete alebo odignorujete, Chromium sa prispôsobí, aby sa vám v budúcnosti zobrazovali relevantnejšie návrhy.</translation>
 <translation id="869832267508702259">Nastavte si Chromium ako predvolený prehliadač a získavajte štatistiky od Gemini, nech prehliadate kdekoľvek</translation>

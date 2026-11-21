@@ -62,7 +62,6 @@
 <translation id="1615755956145364867">Websites kan anmode om tilladelse til at afspille beskyttet indhold</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1621729191093924223">Funktioner, der skal bruge en mikrofon, fungerer ikke</translation>
-<translation id="1633720957382884102">Relaterede websites</translation>
 <translation id="1644574205037202324">Historik</translation>
 <translation id="1652197001188145583">Når dette er slået til, kan websites anmode om tilladelse til at bruge NFC-enheder. Når dette er slået fra, kan websites ikke bruge NFC-enheder.</translation>
 <translation id="1660204651932907780">Tillad, at websites afspiller lyd (anbefales)</translation>
@@ -76,6 +75,7 @@
 <translation id="1717996979683942279">Når denne indstilling er aktiveret, kan websites anmode om tilladelse til at administrere vinduer på alle dine skærme. Når denne indstilling er deaktiveret, kan websites ikke administrere vinduer på alle dine skærme.</translation>
 <translation id="1738912554587725807">Feltet i bunden med temasamlinger til udseendet af siden Ny fane</translation>
 <translation id="1743802530341753419">Spørg, før websites opretter forbindelse til en enhed (anbefales)</translation>
+<translation id="1766455884659449403">Få notifikationer med tips til Chrome</translation>
 <translation id="1777815584158991902">Felt i bunden med Discover-feedet</translation>
 <translation id="1779089405699405702">Værktøj til afkodning af billeder</translation>
 <translation id="1781533683087883868">Deaktiver links i Læsetilstand</translation>
@@ -184,6 +184,7 @@
 <translation id="2750481671343847896">Websites kan vise loginmeddelelser fra identitetstjenester.</translation>
 <translation id="2789132527330338807">Websites kan anmode om at oprette et 3D-kort over dine omgivelser eller registrere kamerapositionen</translation>
 <translation id="2790501146643349491">Når dette er slået til, kan nyligt lukkede websites gennemføre afsendelse og modtagelse af data. Når dette er slået fra, kan nyligt lukkede websites ikke sende eller modtage data.</translation>
+<translation id="2794551654724114396">Aktivér notifikationer for at få nyttige tips, der hjælper dig med at få mest muligt ud af Chrome</translation>
 <translation id="2795716239552913152">Websites bruger normalt din lokation til relevante formål eller oplysninger om lokale nyheder eller butikker i nærheden</translation>
 <translation id="2800760947029405028">Upload et billede</translation>
 <translation id="2802908157808345702">Tillad ikke, at websites sender pop op-vinduer og anvender omdirigeringer</translation>
@@ -231,7 +232,6 @@
 <translation id="3232293466644486101">Slet browserdata…</translation>
 <translation id="3242646949159196181">Når dette er slået til, kan websites afspille lyd. Når dette er slået fra, kan websites ikke afspille lyd.</translation>
 <translation id="3273479183583863618">Prisfald på faner</translation>
-<translation id="3285500645985761267">Giv relaterede websites tilladelse til at se din aktivitet i gruppen</translation>
 <translation id="3295019059349372795">Kapitel 11: Den vidunderlige smaragdby i Oz</translation>
 <translation id="3295602654194328831">Skjul oplysninger</translation>
 <translation id="3333961966071413176">Alle kontakter</translation>
@@ -249,7 +249,6 @@
 <translation id="3523447078673133727">Tillad ikke, at websites registrerer dine hænder</translation>
 <translation id="3536227077203206203">Der er givet adgang denne gang</translation>
 <translation id="3538390592868664640">Bloker oprettelsen af 3D-kort over dine omgivelser eller registrering af kamerapositionen for websites</translation>
-<translation id="3544058026430919413">En virksomhed kan definere en gruppe af websites, der kan bruge cookies til at dele din aktivitet i gruppen. Dette er deaktiveret i inkognitotilstand.</translation>
 <translation id="3551268116566418498">Forlad inkognitotilstand?</translation>
 <translation id="3586500876634962664">Brug af kamera og mikrofon</translation>
 <translation id="358794129225322306">Tillad, at et website kan downloade flere filer automatisk.</translation>
@@ -262,7 +261,6 @@
 <translation id="363748948745453283">Bruger omtrentlig lokation</translation>
 <translation id="3641456520301071208">Websites kan anmode om adgang til din lokation</translation>
 <translation id="3658847490588580244">Felt i bunden med standardbrowser</translation>
-<translation id="3669841141196828854">{COUNT,plural, =1{Der er <ph name="RWS_MEMBERS_COUNT" /> website i gruppen af websites, der tilhører <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}one{Der er <ph name="RWS_MEMBERS_COUNT" /> website i gruppen af websites, der tilhører <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}other{Der er <ph name="RWS_MEMBERS_COUNT" /> websites i gruppen af websites, der tilhører <ph name="RWS_OWNER" />, som kan se din aktivitet i gruppen}}</translation>
 <translation id="3676777756440746804">Websites kan ikke anmode om at bruge oplysninger, de har gemt om dig</translation>
 <translation id="3677897809642449131">Websites kan anmode om tilladelse til at bruge bevægelsessensorer</translation>
 <translation id="3678318839615834650">Feltet i bunden med kort på siden Ny fane er åbnet i fuld højde</translation>
@@ -538,16 +536,15 @@
 <translation id="656065428026159829">Se mere</translation>
 <translation id="6561560012278703671">Få lydløse meddelelser (dette sørger for, at dine notifikationer ikke forstyrrer dig)</translation>
 <translation id="6593061639179217415">Standardwebsite</translation>
-<translation id="659938948789980540">{COUNT,plural, =1{Cookies er tilladt for <ph name="RWS_MEMBERS_COUNT" /> website tilhørende <ph name="RWS_OWNER" />}one{Cookies er tilladt for <ph name="RWS_MEMBERS_COUNT" /> website tilhørende <ph name="RWS_OWNER" />}other{Cookies er tilladt for <ph name="RWS_MEMBERS_COUNT" /> websites tilhørende <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Beskyttet indhold</translation>
 <translation id="6619015782482868078">Turkis tema</translation>
 <translation id="662080504995468778">Bliv her</translation>
 <translation id="6630443592285535486">Angiv hex-kode her</translation>
 <translation id="6635327442719709864">Når denne indstilling er aktiveret, kan websites anmode om at anvende serieporte. Når denne indstilling er deaktiveret, kan websites ikke anvende serieporte.</translation>
+<translation id="6669390930482049506">Send mig notifikationer</translation>
 <translation id="6678072580827808850">Gennemgå sikkerhedstjek</translation>
 <translation id="6682057173375416470">Få forslag til artikler på siden Ny fane</translation>
-<translation id="6683865262523156564">Dette website er i en gruppe, der kan se din aktivitet. Gruppen er defineret af <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Profilbilleder</translation>
 <translation id="6697925417670533197">Aktive downloads</translation>
 <translation id="6709432001666529933">Spørg, om websites må registrere dine hænder (anbefales)</translation>

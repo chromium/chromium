@@ -12,7 +12,6 @@
 <translation id="3045333309254072201">シークレット モードでは、サイトはサードパーティ Cookie を使用できません。これらの Cookie を使用するサイトが動作しない場合は、<ph name="START_LINK" />サイトにサードパーティ Cookie へのアクセスを一時的に許可できます<ph name="END_LINK" />。</translation>
 <translation id="3425311689852411591">サードパーティ Cookie を使用するサイトは想定どおりに動作します</translation>
 <translation id="3624583033347146597">サードパーティ Cookie の設定を選択してください</translation>
-<translation id="3918378745482005425">一部の機能が動作しない可能性があります。関連サイトでは引き続きサードパーティ Cookie を使用できます。</translation>
 <translation id="4278390842282768270">許可</translation>
 <translation id="4412992751769744546">サードパーティ Cookie を許可する</translation>
 <translation id="4711259472133554310">設定で例外を作成して、特定のサイトに対してサードパーティ Cookie の使用を常に許可することができます</translation>

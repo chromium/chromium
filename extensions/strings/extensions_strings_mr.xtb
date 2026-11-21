@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">थीम सुरू करा</translation>
+<translation id="1085064499066015002">सर्व साइटसाठी नेहमी सुरू</translation>
 <translation id="1135328998467923690">हे पॅकेज चुकीचे आहे: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">पर्यावरण-समोरील</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> ने असे एक्स्टेंशन जोडले आहे, ज्यामुळे Chromium ची काम करण्याची पद्धत बदलू शकते.
@@ -79,6 +80,7 @@
 <translation id="4660476621274971848">अपेक्षित आवृत्ती "<ph name="EXPECTED_VERSION" />", परंतु आवृत्ती "<ph name="NEW_ID" />" होती</translation>
 <translation id="471800408830181311">खासगी की आउटपुट करण्यात अयशस्वी.</translation>
 <translation id="4811956658694082538">उपयुक्तता प्रक्रिया क्रॅश झाल्यामुळे पॅकेज इंस्टॉल करू शकलो नाही. Chrome रीस्टार्ट करून पहा आणि पुन्हा प्रयत्न करून पहा.</translation>
+<translation id="4883436287898674711">सर्व <ph name="WEBSITE_1" /> साइट</translation>
 <translation id="4988792151665380515">सार्वजनिक की एक्सपोर्ट करण्यात अयशस्वी.</translation>
 <translation id="501057610015570208">'kiosk_only' मॅनिफेस्ट ॲट्रिब्यूट असलेले अ‍ॅप हे ChromeOS Flex कियोस्क मोडमध्ये इंस्टॉल केले जाणे आवश्यक आहे</translation>
 <translation id="5026754133087629784">वेबदृश्य: <ph name="WEBVIEW_TAG_NAME" /></translation>

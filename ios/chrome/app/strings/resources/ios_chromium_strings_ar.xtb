@@ -58,6 +58,7 @@
 <translation id="2027881372245801507">‏لا يؤدي إيقاف الاقتراحات إلى التحكّم في معالجة Chromium لعناوين الصفحات وعناوين URL للميزات الأخرى. يمكنك إدارة إذن الوصول إلى هذه البيانات في <ph name="BEGIN_LINK" />إعدادات المزامنة<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">‏يمكنك تسجيل الدخول إلى هذا الموقع الإلكتروني وإلى Chromium للوصول إلى كلمات المرور وغيرها على جميع أجهزتك</translation>
 <translation id="2042889939382983733">‏عرض سجلّ Chromium</translation>
+<translation id="2054352566231434723">‏يمكنك فتح الروابط الخارجية في Chromium تلقائيًا.</translation>
 <translation id="2059365270911640413">‏إنهاء عملية إعداد Chromium</translation>
 <translation id="2168108852149185974">‏تتسبب بعض الإضافات في تعطل Chromium. يُرجى إلغاء تثبيتها:</translation>
 <translation id="2168593389981132306">‏تحسين أداء متصفِّح Chromium</translation>
@@ -85,6 +86,7 @@
 <translation id="2485774047568879945">‏ننصحك بضبط Chromium كمتصفّح تلقائي لمشاركة الروابط وفتحها بسهولة</translation>
 <translation id="2512597191798760956">‏اضغط مع الاستمرار على رمز Chromium وانقر على "تعديل الشاشة الرئيسية" (Edit home screen)</translation>
 <translation id="2517624234762908348">‏مزامنة بيانات Chromium</translation>
+<translation id="2519012503779379646">‏يُرجى ضبط Chromium كمتصفِّح تلقائي لتسهيل التنقّل بين التطبيقات وتسريعه.</translation>
 <translation id="2592940277904433508">‏مواصلة استخدام Chromium</translation>
 <translation id="2601766165676560303">‏مظهر Chromium على أجهزة iPhone وiPad</translation>
 <translation id="2607609479243848905">‏في حال نسيت عبارة المرور أو أردت تغيير هذه الإعدادات، يمكنك <ph name="BEGIN_LINK" />حذف بيانات Chromium في حسابك<ph name="END_LINK" />.</translation>
@@ -189,6 +191,7 @@
 <translation id="4985291216379576555">‏بلا اتصال بالإنترنت، يتعذّر على Chromium البحث عن تحديثات.</translation>
 <translation id="4996471330284142407">‏يمكنك إنجاز المزيد من المهام باستخدام متصفِّح Chromium السهل الاستخدام والآمن والأسرع من ذي قبل.</translation>
 <translation id="4999538639245140991">‏نظرًا لتسجيل خروجك من حساب يديره <ph name="SIGNOUT_MANAGED_DOMAIN" />، ستُحذَف بيانات Chromium من هذا الجهاز، ولكن ستظل البيانات محفوظة في حسابك على Google.</translation>
+<translation id="5004986813285860899">‏الانتقال مباشرةً إلى Chromium</translation>
 <translation id="5042011327527167688">‏انقر على "العرض على Chromium باستخدام خرائط Google".</translation>
 <translation id="5044871537677053278">‏يرصد Chromium العناوين ويستخدم "خرائط Google" لإعلامك بالاتجاهات مع معلومات محلية.</translation>
 <translation id="5048140766121299007">‏في إعدادات "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />"، يُرجى تفعيل Chromium</translation>
@@ -202,6 +205,7 @@
 <translation id="5224391634244552924">‏ما مِن كلمات مرور محفوظة. لا يستطيع Chromium التحقُّق من كلمات المرور إلا عند حفظها.</translation>
 <translation id="5259423875997548710">‏يؤدي هذا الاختصار إلى البحث عن العناصر المرئية في Chromium.</translation>
 <translation id="5284913972719948193">‏يمكنك استيراد بياناتك لاستخدام كلمات المرور والسجلّ والإشارات المرجعية وبطاقات الائتمان على Chromium</translation>
+<translation id="5299421317003704533">‏يمكنك فتح الروابط مباشرةً في Chromium.</translation>
 <translation id="5308226104666789935">‏يتعذّر على Chromium البحث عن تحديثات.</translation>
 <translation id="5311557153294205270">‏يُضيف هذا الاختصار عناوين URL التي تم إدخالها إلى الإشارات المرجعية في Chromium.</translation>
 <translation id="5383251701169024761">‏للوصول بسهولة إلى كلمات المرور المحفوظة واستخدامها في التطبيقات الأخرى، ما عليك سوى استخدام ميزة "الملء التلقائي" في Chromium.</translation>
@@ -268,6 +272,7 @@
 <translation id="6387994184698195448">‏يمكنك متابعة نصائح Chromium المفيدة وغيرها.</translation>
 <translation id="6424492062988593837">‏لقد أصبح Chromium أفضل من ذي قبل! يتوفر إصدار جديد.</translation>
 <translation id="6433172051771630690">‏نصائح حول الاستفادة إلى أقصى حدّ من Chromium</translation>
+<translation id="6458110851735461646">‏أداء أفضل لخدمات Google المفضّلة لديك مع Chromium</translation>
 <translation id="65045991564554105">‏الاطّلاع على الإشارات المرجعية في Chromium</translation>
 <translation id="6519797228806907665">‏يمكنك الوصول إلى Chromium بشكل أسرع من خلال الشاشة الرئيسية على هاتف iPhone.</translation>
 <translation id="6538713818758208754">‏يؤدي هذا الاختصار إلى فتح صفحة إعدادات "طرق الدفع" في Chromium.</translation>
@@ -357,6 +362,7 @@
 <translation id="8602103377623855616">‏صفحة Chromium</translation>
 <translation id="865600487977764604">‏يوفّر لك هذا الوضع حماية في Chromium، ويمكن استخدامه لتحسين مستوى أمانك في تطبيقات Google الأخرى عندما تكون مسجِّلاً دخولك.</translation>
 <translation id="8663480472502753423">‏تحديث متصفِّح Chromium باستمرار</translation>
+<translation id="8671588626059602995">‏يُرجى فتح جميع الروابط دائمًا في Chromium.</translation>
 <translation id="8685813584220679697">‏يُرجى تسجيل الدخول إلى هذا الموقع الإلكتروني وإلى Chromium.</translation>
 <translation id="8697693743327341604">‏إذا اخترت أحد الاقتراحات أو تجاهلته، فسيعرض لك Chromium اقتراحات أكثر صلة في المستقبل بناءً عليه.</translation>
 <translation id="869832267508702259">‏يمكنك ضبط Chromium كمتصفّح تلقائي للحصول على معلومات Gemini أينما تصفّحت</translation>

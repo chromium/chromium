@@ -58,6 +58,7 @@
 <translation id="2027881372245801507">提案をオフにしても、他の機能での Chromium によるページのタイトルと URL の処理は制御されません。このデータへのアクセスは、<ph name="BEGIN_LINK" />同期設定<ph name="END_LINK" />で管理できます。</translation>
 <translation id="2036929290919363111">このサイトと Chromium にログインすると、すべてのデバイスで同じパスワードなどを使用できます</translation>
 <translation id="2042889939382983733">Chromium 履歴を表示する</translation>
+<translation id="2054352566231434723">デフォルトで Chromium を使用して外部リンクを開きます。</translation>
 <translation id="2059365270911640413">Chromium の設定を完了しましょう</translation>
 <translation id="2168108852149185974">アドオンが原因で Chromium がクラッシュしました。次をアンインストールしてください:</translation>
 <translation id="2168593389981132306">Chromium の品質を向上</translation>
@@ -85,6 +86,7 @@
 <translation id="2485774047568879945">Chromium を既定のブラウザに設定すると、リンクを簡単に共有したり開いたりできます</translation>
 <translation id="2512597191798760956">Chromium アイコンを長押しして、[ホーム画面を編集] をクリックします</translation>
 <translation id="2517624234762908348">Chromium のデータを同期</translation>
+<translation id="2519012503779379646">Chromium を既定に設定すると、アプリの切り替えがより速く簡単になります。</translation>
 <translation id="2592940277904433508">Chromium を引き続き使用</translation>
 <translation id="2601766165676560303">iPhone と iPad 向けの Chromium テーマ</translation>
 <translation id="2607609479243848905">パスフレーズを忘れた場合や、この設定を変更する場合は、<ph name="BEGIN_LINK" />アカウントの Chromium データを削除<ph name="END_LINK" />してください。</translation>
@@ -189,6 +191,7 @@ Chromium を使いやすくするためにデータを使用するその他の�
 <translation id="4985291216379576555">オフラインのため Chromium でアップデートを確認できません</translation>
 <translation id="4996471330284142407">シンプル、安全で、さらに高速になった Chromium をご活用ください。</translation>
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" /> で管理されているアカウントからログアウトするにあたり、Chromium データはこのデバイスから削除されます（ただし Google アカウントには残ります）。</translation>
+<translation id="5004986813285860899">Chromium で直接表示</translation>
 <translation id="5042011327527167688">[Chromium で Google マップを使用して表示] をタップします。</translation>
 <translation id="5044871537677053278">Chromium では、住所を検出し、Google マップを使用して経路やローカル情報を表示しています。</translation>
 <translation id="5048140766121299007">[<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />] 設定で [Chromium] をオンに切り替えます</translation>
@@ -202,6 +205,7 @@ Chromium を使いやすくするためにデータを使用するその他の�
 <translation id="5224391634244552924">保存されているパスワードがありません。パスワードを保存すると、Chromium で確認できるようになります。</translation>
 <translation id="5259423875997548710">Chromium で画像を検索します。</translation>
 <translation id="5284913972719948193">データをインポートすると、Chromium でパスワード、履歴、ブックマーク、クレジット カードを使用できます</translation>
+<translation id="5299421317003704533">Chromium でリンクを直接開くことができます。</translation>
 <translation id="5308226104666789935">Chromium でアップデートを確認できません</translation>
 <translation id="5311557153294205270">入力した URL を Chromium のブックマークに追加します。</translation>
 <translation id="5383251701169024761">保存したパスワードを他のアプリで簡単に使用できるようするには、Chromium の自動入力を選択します。</translation>
@@ -268,6 +272,7 @@ Chromium を使いやすくするためにデータを使用するその他の�
 <translation id="6387994184698195448">Chromium の役立つヒントなどをチェックできます。</translation>
 <translation id="6424492062988593837">Chromium のアップデートが見つかりました。新しいバージョンが利用可能です。</translation>
 <translation id="6433172051771630690">Chromium を最大限に活用するためのヒント。</translation>
+<translation id="6458110851735461646">Google のお気に入りのサービスが Chromium でさらに便利に</translation>
 <translation id="65045991564554105">Chromium ブックマークを表示する</translation>
 <translation id="6519797228806907665">iPhone のホーム画面から Chromium にすばやくアクセスできます。</translation>
 <translation id="6538713818758208754">Chromium でお支払い方法の設定ページを開きます。</translation>
@@ -357,6 +362,7 @@ Chromium を使いやすくするためにデータを使用するその他の�
 <translation id="8602103377623855616">Chromium ページ</translation>
 <translation id="865600487977764604">ログイン時に、Chromium を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります。</translation>
 <translation id="8663480472502753423">Chromium を最新の状態に維持します</translation>
+<translation id="8671588626059602995">すべてのリンクが常に Chromium で開くようにします。</translation>
 <translation id="8685813584220679697">このサイトと Chromium にログインしてください。</translation>
 <translation id="8697693743327341604">提案を選択または無視すると、Chromium で今後より関連性の高い提案が表示されるように調整します。</translation>
 <translation id="869832267508702259">Chromium を既定のブラウザに設定すると、どこでブラウジングしていても Gemini の分析情報を利用できます</translation>

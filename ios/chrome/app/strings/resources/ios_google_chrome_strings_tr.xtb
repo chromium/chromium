@@ -83,6 +83,8 @@ Dikkate alınması gereken noktalar:
 <translation id="2574249610672786438">Chrome kullandığınız her yerde sekmelerinizi görmek için tüm cihazlarınızda oturum açın.</translation>
 <translation id="2576431527583832481">Chrome daha da iyi hale geldi! Yeni bir sürüm var.</translation>
 <translation id="257708665678654955">Google Chrome'un bir dahaki sefere bu siteden <ph name="LANGUAGE_NAME" /> dilindeki sayfaları çevirmeyi önermesini ister misiniz?</translation>
+<translation id="2599258827968143948">Google'ın en sevdiğiniz uygulama ve hizmetleri Chrome ile daha iyi</translation>
+<translation id="260980777626165320">Harici bağlantıları varsayılan olarak Chrome'da açın.</translation>
 <translation id="2668242166988961773">Chrome'da sesle arama yap.</translation>
 <translation id="2703746758996815929">Faydalı Chrome ipuçları almak için iOS ayarlarınızdan bildirimleri açın.</translation>
 <translation id="2728851697704606655">Google Lens ile Çevirin</translation>
@@ -111,6 +113,7 @@ Bazı yer işaretlerini silene kadar hesabınıza yeni yer işaretleri kaydedile
 <translation id="314782365035065913">Ana ekran yuvanızdan Chrome'a daha hızlı erişin</translation>
 <translation id="3167189358072330585">Hesabınız Google Chrome'da kullanılamıyor. Lütfen alan adı yöneticinizle iletişim kurun veya oturum açmak için normal bir Google Hesabı kullanın.</translation>
 <translation id="322254490661677575">Chrome verilerini kullanmak ve Google Hesabınıza kaydetmek için parolanızı girin.</translation>
+<translation id="3253082773078342494">Bağlantıları doğrudan Chrome'da açın.</translation>
 <translation id="3303503998967553377">iOS'te Chrome işlemler özelliğini kullanın</translation>
 <translation id="3348862487678490430">Okuma listesi öğesini Chrome'a ekle</translation>
 <translation id="3350281376951945723">Chrome'u varsayılan tarayıcı olarak ayarlayarak bağlantıları daha hızlı açın</translation>
@@ -160,6 +163,7 @@ Bazı yer işaretlerini silene kadar hesabınıza yeni yer işaretleri kaydedile
 <translation id="4693084815234024320">Chrome'un Gizli modundasınız</translation>
 <translation id="4713740144985377441">Dosyanızı yüklemek için Chrome'a dönün</translation>
 <translation id="4724297637870447613">Chrome'u her yerde kullanın</translation>
+<translation id="4733290155432110050">Doğrudan Chrome'a geçin</translation>
 <translation id="4738647308035481133">Google Chrome sayfası</translation>
 <translation id="4742795653798179840">Chrome verileri silindi</translation>
 <translation id="4761869838909035636">Chrome Güvenlik Kontrolü Yürüt</translation>
@@ -267,7 +271,8 @@ Veri kullanarak Chrome deneyiminizi iyileştiren daha fazla ayar görmek için <
 <translation id="7038674195294813388">iOS'te Varsayılan Uygulamalar ayarlarını açtıktan sonra "Tarayıcı Uygulaması"na dokunup Chrome'u seçin.</translation>
 <translation id="7056826488869329999">Chrome'da Güvenlik Kontrolü'nü açar ve yürütür.</translation>
 <translation id="7061455974939528301">Chrome simgesini basılı tutup "Ana ekranı düzenle"yi tıklayın</translation>
-<translation id="7095110968493193530"><ph name="EMAIL" /> için Google Şifre Yöneticisi'ne</translation>
+<translation id="7067302528015227615">Uygulamalar arasında daha hızlı ve kolay geçiş yapmak için Chrome'u varsayılan tarayıcı olarak ayarlayın.</translation>
+<translation id="7095110968493193530">Şifre, <ph name="EMAIL" /> için Google Şifre Yöneticisi'ne kaydedilecek</translation>
 <translation id="7124339256045485976">Chrome'u güncel tutun</translation>
 <translation id="7135936755418321901">Konumunuzu web siteleriyle paylaşmak için Ayarlar'a dokunup Chrome'un konumunuzu kullanmasına izin verin.</translation>
 <translation id="7145599899567697473">Chrome'da şifreleri kaydedip otomatik olarak doldurun</translation>
@@ -278,6 +283,7 @@ Veri kullanarak Chrome deneyiminizi iyileştiren daha fazla ayar görmek için <
 <translation id="7200524487407690471">Chrome; veri ihlalleri, güvenli olmayan web siteleri ve diğer risklere karşı güvenliğinizi sağlamak için Güvenlik Kontrolü'nü her gün otomatik olarak çalıştırır. Güvenlik Kontrolü hakkında daha fazla bilgiyi Ayarlar'da bulabilirsiniz.</translation>
 <translation id="7214019116829172458">Chrome gizli sekmesini aç</translation>
 <translation id="722167379782941918">Chrome, gelişmiş korumayı önerir</translation>
+<translation id="722921700949937243">Tüm bağlantıları her zaman Chrome'da açın.</translation>
 <translation id="723787869754590019">Otomatik Doldurma için Chrome'u kullanın</translation>
 <translation id="7261678641327190792">Chrome, şifrelerinizi kontrol edemiyor</translation>
 <translation id="7272091023280308138">Bir dahaki sefer önce URL'leri kopyalamadan bağlantıları doğrudan Chrome'da açın.</translation>

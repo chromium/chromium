@@ -62,7 +62,6 @@
 <translation id="1615755956145364867">Websites dürfen nachfragen, ob geschützte Inhalte wiedergegeben werden sollen</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1621729191093924223">Funktionen, die ein Mikrofon benötigen, funktionieren dann nicht</translation>
-<translation id="1633720957382884102">Ähnliche Websites</translation>
 <translation id="1644574205037202324">Verlauf</translation>
 <translation id="1652197001188145583">Wenn dieser Schalter aktiviert ist, können Websites anfragen, ob sie NFC-Geräte verwenden dürfen. Wenn er deaktiviert ist, können Websites keine NFC-Geräte verwenden.</translation>
 <translation id="1660204651932907780">Wiedergabe von Ton auf Websites zulassen (empfohlen)</translation>
@@ -76,6 +75,7 @@
 <translation id="1717996979683942279">Wenn diese Option aktiviert ist, können Websites anfragen, ob sie Fenster auf allen deinen Bildschirmen verwalten dürfen. Falls die Option deaktiviert ist, können Websites keine Fenster auf deinen Bildschirmen verwalten.</translation>
 <translation id="1738912554587725807">Ansicht am unteren Rand mit Designsammlungen für die Seite „Neuer Tab“</translation>
 <translation id="1743802530341753419">Nachfragen, bevor Websites eine Verbindung zu einem Gerät herstellen (empfohlen)</translation>
+<translation id="1766455884659449403">Benachrichtigungen mit Chrome-Tipps erhalten</translation>
 <translation id="1777815584158991902">Ansicht des Discover-Feeds am unteren Rand</translation>
 <translation id="1779089405699405702">Bild-Decodierer</translation>
 <translation id="1781533683087883868">Links im Lesemodus deaktivieren</translation>
@@ -184,6 +184,7 @@
 <translation id="2750481671343847896">Websites dürfen Anmeldungsaufforderungen von Identitätsdiensten anzeigen.</translation>
 <translation id="2789132527330338807">Websites dürfen nachfragen, ob sie eine 3D-Karte meiner Umgebung erstellen oder die Kameraposition erfassen können</translation>
 <translation id="2790501146643349491">Wenn dieser Schalter aktiviert ist, können vor Kurzem geschlossene Websites das Senden und Empfangen von Daten abschließen. Wenn er deaktiviert ist, können vor Kurzem geschlossene Websites das Senden oder Empfangen von Daten nicht abschließen.</translation>
+<translation id="2794551654724114396">Aktiviere Benachrichtigungen für Tipps zur optimalen Nutzung von Chrome</translation>
 <translation id="2795716239552913152">Websites verwenden deinen Standort normalerweise für relevante Funktionen oder Informationen, wie etwa Lokalnachrichten oder Geschäfte in deiner Nähe</translation>
 <translation id="2800760947029405028">Bild hochladen</translation>
 <translation id="2802908157808345702">Websites dürfen weder Pop-up-Fenster senden noch Weiterleitungen verwenden</translation>
@@ -231,7 +232,6 @@
 <translation id="3232293466644486101">Browserdaten löschen…</translation>
 <translation id="3242646949159196181">Wenn dieser Schalter aktiviert ist, können Websites Ton wiedergeben. Wenn er deaktiviert ist, können Websites keinen Ton wiedergeben.</translation>
 <translation id="3273479183583863618">Preissenkungen auf Tabs</translation>
-<translation id="3285500645985761267">Ähnliche Websites dürfen meine Aktivitäten in der Gruppe sehen</translation>
 <translation id="3295019059349372795">Kapitel 11: Die wundervolle Smaragdstadt von Oz</translation>
 <translation id="3295602654194328831">Informationen ausblenden</translation>
 <translation id="3333961966071413176">Alle Kontakte</translation>
@@ -249,7 +249,6 @@
 <translation id="3523447078673133727">Websites nicht erlauben, meine Handbewegungen zu verfolgen</translation>
 <translation id="3536227077203206203">Einmal gewährt</translation>
 <translation id="3538390592868664640">Websites daran hindern, eine 3D-Karte meiner Umgebung zu erstellen oder die Kameraposition zu verfolgen</translation>
-<translation id="3544058026430919413">Ein Unternehmen kann eine Gruppe von Websites festlegen, die deine Aktivitäten in der Gruppe mithilfe von Cookies teilen. Im Inkognitomodus ist diese Funktion deaktiviert.</translation>
 <translation id="3551268116566418498">Inkognitomodus deaktivieren?</translation>
 <translation id="3586500876634962664">Kamera- und Mikrofonnutzung</translation>
 <translation id="358794129225322306">Einer Website erlauben, automatisch mehrere Dateien herunterzuladen.</translation>
@@ -262,7 +261,6 @@
 <translation id="363748948745453283">Ungefährer Standort wird verwendet</translation>
 <translation id="3641456520301071208">Websites dürfen nach meinem Standort fragen</translation>
 <translation id="3658847490588580244">Ansicht am unteren Rand des Standardbrowsers</translation>
-<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> Website in der Gruppe von <ph name="RWS_OWNER" />, die deine Aktivitäten in der Gruppe sehen kann}other{<ph name="RWS_MEMBERS_COUNT" /> Websites in der Gruppe von <ph name="RWS_OWNER" />, die deine Aktivitäten in der Gruppe sehen können}}</translation>
 <translation id="3676777756440746804">Websites dürfen nicht darum bitten, Informationen verwenden zu dürfen, die sie zu deiner Person gespeichert haben</translation>
 <translation id="3677897809642449131">Websites können die Berechtigung anfordern, Bewegungssensoren zu verwenden</translation>
 <translation id="3678318839615834650">Ansicht mit Karten auf der Seite „Neuer Tab“ am unteren Rand ist vollständig geöffnet</translation>
@@ -538,16 +536,15 @@
 <translation id="656065428026159829">Mehr anzeigen</translation>
 <translation id="6561560012278703671">Unaufdringlichere Benachrichtigungen verwenden (störende Aufforderungen zum Annehmen von Benachrichtigungen werden blockiert)</translation>
 <translation id="6593061639179217415">Desktopwebsite</translation>
-<translation id="659938948789980540">{COUNT,plural, =1{Cookies zugelassen für <ph name="RWS_MEMBERS_COUNT" /> Website von <ph name="RWS_OWNER" />}other{Cookies zugelassen für <ph name="RWS_MEMBERS_COUNT" /> Websites von <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Geschützte Inhalte</translation>
 <translation id="6619015782482868078">Aquamarinfarbenes Design</translation>
 <translation id="662080504995468778">Bleiben</translation>
 <translation id="6630443592285535486">Hex-Code eingeben</translation>
 <translation id="6635327442719709864">Wenn diese Funktion aktiviert ist, können Websites anfragen, ob sie serielle Ports verwenden dürfen. Ist sie deaktiviert, können Websites keine seriellen Ports verwenden.</translation>
+<translation id="6669390930482049506">Benachrichtigen</translation>
 <translation id="6678072580827808850">Sicherheitscheck aufrufen</translation>
 <translation id="6682057173375416470">Vorgeschlagene Artikel auf der Seite „Neuer Tab“ abrufen</translation>
-<translation id="6683865262523156564">Diese Website ist einer Gruppe zugeordnet, die deine Aktivitäten sehen kann. Die Gruppe wird durch <ph name="RWS_OWNER" /> definiert.</translation>
 <translation id="6689172468748959065">Profilfotos</translation>
 <translation id="6697925417670533197">Aktive Downloads</translation>
 <translation id="6709432001666529933">Nachfragen, bevor Websites erlaubt wird, deine Handbewegungen zu verfolgen (empfohlen)</translation>

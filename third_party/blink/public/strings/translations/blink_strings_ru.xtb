@@ -55,7 +55,6 @@
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> ПБ</translation>
 <translation id="5307600278924710095">Введите часть адреса до символа "<ph name="ATSIGN" />". Адрес "<ph name="INVALIDADDRESS" />" неполный.</translation>
-<translation id="5334352251556557839">Не удалось воспроизвести медиафайл.</translation>
 <translation id="537648784377940524">Минимальная дата (<ph name="MIN_DATE_OR_TIME" />) должна быть раньше максимальной даты (<ph name="MAX_DATE_OR_TIME" />)</translation>
 <translation id="5466621249238537318">Выберите один или несколько файлов.</translation>
 <translation id="5514612371225420585">Файл на устройстве</translation>

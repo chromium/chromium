@@ -373,6 +373,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> hat einen Tab entfernt</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623104350909869708">Keine weiteren Dialogfelder auf dieser Seite zulassen</translation>
+<translation id="1624535934412288769">Spalten</translation>
 <translation id="1629390138158333592">Im Internet suchen</translation>
 <translation id="1633137413609266904">{0,plural, =1{Die Administratorrichtlinie blockiert das Öffnen dieser Datei}other{Die Administratorrichtlinie blockiert das Öffnen von # Dateien}}</translation>
 <translation id="1634828734222219955">Gesamt</translation>
@@ -1081,6 +1082,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2803320044666896137">Dieser Richtlinienwert wird ignoriert, da der Nutzer nicht mit einer Organisation verknüpft ist.</translation>
 <translation id="2807052079800581569">Y-Position des Bilds</translation>
 <translation id="2808278141522721006">Du kannst Windows Hello in den <ph name="SETTINGS" /> aktivieren oder deaktivieren</translation>
+<translation id="2820159698793041599">Der Proxyserver konnte keine verschlüsselte Verbindung herstellen.</translation>
 <translation id="2820957248982571256">Wird gescannt...</translation>
 <translation id="282457273878278063">Kontaktdaten verwalten</translation>
 <translation id="2824775600643448204">Adress- und Suchleiste</translation>
@@ -1261,6 +1263,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3120807611504813890">Umschlag (leicht)</translation>
 <translation id="3121994479408824897">Zu <ph name="DOMAIN" /> wechseln</translation>
 <translation id="3126023634486644099">Etiketten (permanent)</translation>
+<translation id="3128081114752791872">Das Sicherheitszertifikat des Proxyservers ist ungültig.</translation>
 <translation id="3131746543143948171">Diese Website ähnelt anderen Websites, die mit Phishing, Malware und Betrug in Verbindung stehen. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">Redress-Nummer speichern</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> ist jetzt deine Standardsuchmaschine</translation>
@@ -1304,6 +1307,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3196374699162453920">Buchungscode</translation>
 <translation id="3196902089458890316">Relevante Tabs immer teilen, um bessere Antworten zu erhalten?</translation>
 <translation id="3197136577151645743">Darf nachfragen, wenn sie Informationen zu meiner aktiven Nutzung dieses Geräts abrufen möchte</translation>
+<translation id="3201749168732432347">Angebote und Kundenkarten</translation>
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um in den Chrome-Einstellungen zu verwalten, welche Informationen synchronisiert werden</translation>
 <translation id="3203025201812691413">URL darf nicht leer sein</translation>
 <translation id="320323717674993345">Zahlung abbrechen</translation>
@@ -1676,7 +1680,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3800436529451849929">Von <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Diese Seite besuchst du häufig</translation>
 <translation id="380329542618494757">Name</translation>
-<translation id="3803481123869276674">Wenn du in Chrome einkaufst, wird die Option für das E‑Wallet angezeigt</translation>
 <translation id="3803801106042434208">Diese Suchmaschinen sind in deiner Region beliebt</translation>
 <translation id="3804112825000113857">Autofill-Einstellungen aufrufen</translation>
 <translation id="380666903981445943">Du kannst eine Zahlungsmethode in deinem Google-Konto speichern, um sie bei Käufen in Chrome automatisch ausfüllen zu lassen</translation>
@@ -2159,6 +2162,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4612631413844865947">Bei der Verarbeitung deiner Bestellung bei <ph name="MERCHANT_ORIGIN" /> über <ph name="PAYMENT_APP_ORIGIN" /> ist ein Fehler aufgetreten.</translation>
 <translation id="4612904677925722054">Diese Website enthält möglicherweise nicht jugendfreie Inhalte. Ein Elternteil oder Erziehungsberechtigter muss dir erlauben, diese Website zu besuchen.</translation>
 <translation id="4613873770449493819">Die URL muss auf eine <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-Domain verweisen.</translation>
+<translation id="4615154194248230658">Dieses Muster entspricht anscheinend keiner gültigen Domain einer E-Mail-Adresse. Nutzer können sich möglicherweise nicht anmelden oder vorhandene Profile werden entfernt.</translation>
 <translation id="4619564267100705184">Identität bestätigen</translation>
 <translation id="4619669610757527494">Führerschein in Google Wallet speichern</translation>
 <translation id="4622292761762557753">Trotzdem übertragen</translation>
@@ -2305,6 +2309,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4850886885716139402">Anzeigen</translation>
 <translation id="4854853140771946034">Schnell eine neue Notiz in Google Notizen erstellen</translation>
 <translation id="4855395119669662878">Dein Administrator beginnt um <ph name="DATE_TIME" /> damit, deine Dateien in <ph name="CLOUD_PROVIDER" /> hochzuladen. Lass dein Gerät verbunden, bis der Dateiupload abgeschlossen ist. Während des Uploads kannst du nur lokale Dateien lesen.</translation>
+<translation id="4856655096879441213">Wenn du deine Daten in <ph name="GOOGLE_WALLET_TITLE" /> speicherst, lassen sich viele Dinge schneller erledigen, z. B. das Ausfüllen von Formularen in Google-Produkten. Du kannst in den Einstellungen für persönliche Ausweise für <ph name="ACCOUNT" /> verwalten, <ph name="HOW_INFO_IS_USED_LINK" />.</translation>
 <translation id="485902285759009870">Code wird geprüft...</translation>
 <translation id="4860260582253463350">Bevor du YouTube aufrufen kannst, müssen wir zuerst überprüfen, ob du es bist. Es werden die Einstellungen angewendet, die dein Elternteil oder Erziehungsberechtigter in Family Link festgelegt hat.</translation>
 <translation id="4861514638281352187">Redress Number sicher hinzufügen</translation>
@@ -2676,7 +2681,6 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5447235695608032700"><ph name="SITE" /> erlauben, Informationen, die zu deiner Person gespeichert wurden, zu verwenden</translation>
 <translation id="5447973833955560753">Wiederherstellungspasswort</translation>
 <translation id="5452270690849572955">Diese <ph name="HOST_NAME" />-Seite wurde nicht gefunden</translation>
-<translation id="5452923259299906094">Mit E‑Wallet und Pix bezahlen</translation>
 <translation id="5455374756549232013">Zeitstempel der Richtlinie ist fehlerhaft.</translation>
 <translation id="5456428544444655325">Nie anzeigen</translation>
 <translation id="5457082343331641453">Suchanfrage ergänzen</translation>
@@ -2843,7 +2847,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5720705177508910913">Aktueller Nutzer</translation>
 <translation id="5721367770070844253">{count,plural, =1{{website_1}}=2{{website_1}, {website_2}}=3{{website_1}, {website_2} und 1 weitere}other{{website_1}, {website_2} und {more_count} weitere}}</translation>
 <translation id="5722778418591961221">Erstelle einen Trainingsplan für zu Hause, mit dem ich meine Ziele erreichen kann</translation>
-<translation id="572328651809341494">Zuletzt geöffnete Tabs</translation>
+<translation id="572328651809341494">Letzte Tabs</translation>
 <translation id="5723873695528696965">MIDI-Geräte steuern und neu programmieren</translation>
 <translation id="5725297205162868298">Kürzel darf nicht mit dem @-Zeichen beginnen: „<ph name="SHORTCUT_NAME" />“</translation>
 <translation id="5725797473946373607">Dieses Dialogfeld beim nächsten Mal nicht anzeigen</translation>
@@ -3892,7 +3896,6 @@ Weitere Details:
 <translation id="7489919936111034362">Dein Google Drive-Speicherplatz ist voll</translation>
 <translation id="7490622939531327327">Optimierte Formularbearbeitung</translation>
 <translation id="7495528107193238112">Dieser Inhalt ist blockiert. Setze dich mit dem Websiteinhaber in Verbindung, um das Problem zu beheben.</translation>
-<translation id="7499188644237027195">Wenn du in Chrome einkaufst, werden die Optionen für das E‑Wallet und Pix angezeigt</translation>
 <translation id="7499684925421947861"><ph name="ACTOR_NAME" /> erlauben, dich bei <ph name="DOMAIN" /> anzumelden?</translation>
 <translation id="7501663406926337752">Die angeforderte Website wurde von deiner Organisation gemeldet</translation>
 <translation id="7502044688973049724">deine Daten verwalten</translation>
@@ -4017,7 +4020,6 @@ Weitere Details:
 <translation id="7676840398262504532">Deine Organisation überwacht das Kopieren</translation>
 <translation id="767806704757698045">Funktioniert nur auf unterstützten Websites</translation>
 <translation id="7678730592635586336">Video neu aufnehmen</translation>
-<translation id="7679287273775285018">Mit E‑Wallet bezahlen</translation>
 <translation id="7679367271685653708">Browserverlauf in den Chrome-Einstellungen anzeigen und verwalten</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, gültig bis: <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Versand</translation>
@@ -4092,7 +4094,6 @@ Weitere Details:
 <translation id="7791543448312431591">Hinzufügen</translation>
 <translation id="7798389633136518089">Ignoriert, weil die Richtlinie nicht von einer cloudbasierten Quelle konfiguriert wurde.</translation>
 <translation id="7800304661137206267">Die Verbindung ist mit <ph name="CIPHER" /> verschlüsselt; für die Nachrichtenauthentifizierung wird <ph name="MAC" /> verwendet und als Mechanismus für den Schlüsselaustausch <ph name="KX" />.</translation>
-<translation id="780228007282527248">Tab oder Bild hinzufügen, um die Suche zu optimieren</translation>
 <translation id="7802523362929240268">Website ist vertrauenswürdig</translation>
 <translation id="7802989406998618639">Gib den <ph name="NUMBER_OF_DIGITS" />-stelligen Sicherheitscode auf der <ph name="SIDE_OF_CARD" /> ein, damit deine Bank deine Identität bestätigen kann</translation>
 <translation id="780301667611848630">Nein, danke</translation>
@@ -4227,6 +4228,7 @@ Weitere Details:
 <translation id="8029829038322015001">Rot 1</translation>
 <translation id="8032546467100845887">Transparenz</translation>
 <translation id="8035152190676905274">Stift</translation>
+<translation id="803703704549420287">Filter entfernen</translation>
 <translation id="8037117624646282037">Nutzer, die das Gerät vor Kurzem verwendet haben</translation>
 <translation id="803771048473350947">Datei</translation>
 <translation id="8038182528865038593">Rot 2</translation>
@@ -4415,6 +4417,7 @@ Weitere Details:
 <translation id="8363502534493474904">Flugmodus ausschalten</translation>
 <translation id="8363929499301563123">Website-Cookies (angemeldeter Status auf zuletzt besuchten Websites wird beibehalten)</translation>
 <translation id="8364627913115013041">Nicht eingerichtet</translation>
+<translation id="8364664414979300296">Tabs, Fotos und mehr hinzufügen, um die Suche zu optimieren</translation>
 <translation id="836616551641291797">Weitere Informationen zur Verwaltung deines Browsers</translation>
 <translation id="8367705492654390392">Frage stellen</translation>
 <translation id="8368001212524806591">Preis beobachten</translation>

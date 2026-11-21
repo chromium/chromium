@@ -13,6 +13,7 @@
 <translation id="1047095725494118091">ഡൗൺലോഡ് ചെയ്യാനാകുന്നില്ല. വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> റീസ്റ്റാർട്ട് ചെയ്യുക.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> ത്രെഡുകൾ, <ph name="CPU_MAX_CLOCK_SPEED" />GHz)</translation>
 <translation id="1047773237499189053">പുതിയ ഫീച്ചർ ലഭ്യമാണ്, കൂടുതലറിയാൻ മുകളിലേയ്ക്കുള്ള അമ്പടയാളം കീ ഉപയോഗിക്കുക.</translation>
+<translation id="1049324577536766607">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ഉപകരണത്തിൽ നിന്ന് <ph name="ATTACHMENTS" /> സ്വീകരിക്കുന്നു}other{<ph name="DEVICE_NAME" /> ഉപകരണത്തിൽ നിന്ന് <ph name="ATTACHMENTS" /> സ്വീകരിക്കുന്നു}}</translation>
 <translation id="1049663189809099096">പാസ്‌റ്റൽ മഞ്ഞ</translation>
 <translation id="1053371972724535586">എന്റെ റെക്കോർഡിംഗുകൾ</translation>
 <translation id="1056898198331236512">മുന്നറിയിപ്പ്</translation>
@@ -64,6 +65,7 @@
 <translation id="1223498995510244364">സംഗ്രഹിക്കുക</translation>
 <translation id="123124571410524056">പോർട്ടൽ ഉണ്ടെന്ന് സംശയിക്കുന്നു</translation>
 <translation id="1232610416724362657">വെള്ളച്ചാട്ടം</translation>
+<translation id="1235924639474699896">{COUNT,plural, =1{ടെക്‌സ്റ്റ്}other{# ടെക്‌സ്റ്റുകൾ}}</translation>
 <translation id="1238163879850290856">മറ്റുള്ളവർ ഡാറ്റ ആക്സസ് ചെയ്യുന്നത് തടയാനായി റീസെറ്റ് ചെയ്യുക. നിങ്ങൾ വിശ്വസിക്കുന്ന ഇൻപുട്ട് രീതികൾ മാത്രം ഉപയോഗിക്കുക.</translation>
 <translation id="1238612778414822719">HTTPS പ്രതികരണ സമയം</translation>
 <translation id="1252766349417594414">ജോയ്‌സ്റ്റിക്ക്</translation>
@@ -71,6 +73,7 @@
 <translation id="1270369111467284986">ക്യാപ്റ്റീവ് പോർട്ടൽ ആണെന്ന് സംശയിക്കുന്നു</translation>
 <translation id="1274654146705270731">ഓറഞ്ചുകൾ</translation>
 <translation id="1275718070701477396">തിരഞ്ഞെടുത്തു</translation>
+<translation id="127946606521051357">സമീപത്തുള്ള ഉപകരണം പങ്കിടുന്നു</translation>
 <translation id="1290331692326790741">ദുർബലമായ സിഗ്നൽ</translation>
 <translation id="1292474106138697109">ക്ലാസ് ടൂളുകൾ ഡിസ്പ്ലേ</translation>
 <translation id="1300115153046603471">APN തരം ഡിഫോൾട്ടും <ph name="ATTACH" />-ഉം ആണ്.</translation>
@@ -92,6 +95,7 @@
 <translation id="1350909945461913813">എല്ലാ പ്രവർത്തനവും സംരക്ഷിക്കുന്നുവെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="1367951781824006909">ഒരു ഫയല്‍ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1371650399987522809">Google AI കൊണ്ട് പ്രവർത്തിക്കുന്ന, വാൾപേപ്പറിനെ സംബന്ധിച്ച ഫീഡ്‌ബാക്ക്</translation>
+<translation id="1373176046406139583">സ്ക്രീൻ അൺലോക്കായിരിക്കുമ്പോൾ ആർക്കൊക്കെ നിങ്ങളുമായി പങ്കിടാനാകുമെന്നത് നിങ്ങളുടെ ഉപകരണത്തിന്റെ ദൃശ്യപരത നിയന്ത്രിക്കുന്നു. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="1374385338586507108">നിർവചിക്കുക</translation>
 <translation id="1376064675713230088">ടി-റെക്‌സ്</translation>
 <translation id="1383876407941801731">തിരയുക</translation>
@@ -118,6 +122,7 @@
 <translation id="145402479967797468">പ്ലേബാക്ക് നിയന്ത്രണങ്ങൾ</translation>
 <translation id="1459693405370120464">കാലാവസ്ഥ</translation>
 <translation id="1463084054301832672">കോട്ടേജ്</translation>
+<translation id="1464597059227482327">നിങ്ങളുടെ കോൺടാക്റ്റുകളിൽ ഇല്ലാത്ത ഒരു Chromebook-മായാണ് നിങ്ങൾ പങ്കിടുന്നതെങ്കിൽ, Chromebook-ൽ "സമീപമുള്ള ദൃശ്യപരത" ഓണാക്കിയിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക. “സമീപമുള്ള ദൃശ്യപരത” ഓണാക്കാൻ, താഴെ വലതുവശത്തേക്ക് പോയി “സമീപമുള്ള ദൃശ്യപരത” ഓണാക്കാൻ തിരഞ്ഞെടുക്കുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="1468664791493211953">ഓഫറുകൾ</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> ഈ ഉപകരണം മാനേജ് ചെയ്യുന്നു, ഒപ്പം നിങ്ങളുടെ ആക്‌റ്റിവിറ്റികൾ നിരീക്ഷിക്കാനുമായേക്കും.</translation>
 <translation id="1478594628797167447">സ്‌കാനർ</translation>
@@ -145,6 +150,7 @@
 <translation id="1555130319947370107">നീല</translation>
 <translation id="155865706765934889">ടച്ച്‌പാഡ്</translation>
 <translation id="1561927818299383735">ബാക്ക്‌ലൈറ്റിന്റെ നിറം</translation>
+<translation id="1562119309884184621">ഈ കോൺടാക്‌റ്റ് ചേർക്കുന്നത്, അടുത്ത തവണ അവർ പങ്കിടുമ്പോൾ ഓർമ്മിക്കും</translation>
 <translation id="1564356849266217610">ഒർഗാൻസ</translation>
 <translation id="1565038567006703504"><ph name="DEVICE_NAME" /> അപ്ഡേറ്റ് ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="1567064801249837505">ആൽബങ്ങൾ</translation>
@@ -166,6 +172,7 @@
 <translation id="1641857168437328880">ഡോക്യുമെന്റ് ഫീഡർ (ഒരു വശമുള്ളത്)</translation>
 <translation id="1642396894598555413">സൈക്കിളുകൾ</translation>
 <translation id="1643449475550628585">വാൾപേപ്പർ ചിത്രം ദിവസേന മാറ്റുക</translation>
+<translation id="1643921258693943800">സമീപമുള്ള പങ്കിടൽ ഉപയോഗിക്കാൻ Bluetooth-ഉം വൈഫൈയും ഓണാക്കുക</translation>
 <translation id="1644574205037202324">ചരിത്രം</translation>
 <translation id="1651925268237749928">നിങ്ങളൊരു പങ്കിട്ട ആൽബം തിരഞ്ഞെടുത്തു. മറ്റ് ആളുകൾക്ക് ഫോട്ടോകൾ ചേർക്കാനോ മാറ്റം വരുത്താനോ കഴിയും. നിങ്ങളുടെ വാൾപേപ്പർ നിലവിൽ ഈ ആൽബത്തിൽ ഇല്ലാത്ത ഫോട്ടോകൾ ഉപയോഗിച്ചേക്കാം.</translation>
 <translation id="1661512400125589646">താൽക്കാലികമായി നിർത്തുക</translation>
@@ -182,6 +189,7 @@
 <translation id="1703835215927279855">ലെറ്റർ</translation>
 <translation id="1706391837335750954">DNS റിസോൾവർ അവതരണം</translation>
 <translation id="1708602061922134366">Google നീല</translation>
+<translation id="1709972045049031556">പങ്കിടാനാകുന്നില്ല</translation>
 <translation id="1710499924611012470">ഉപയോഗസഹായി നാവിഗേഷൻ</translation>
 <translation id="1715359911173058521">സ്‌കാനറുമായി ബന്ധപ്പെടുന്നതിൽ പ്രശ്‌നമുണ്ട്. നെറ്റ്‌വർക്കോ USB കണക്ഷനോ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="1717874160321062422"><ph name="FIRST_MANAGER" />, <ph name="SECOND_MANAGER" /> എന്നിവ മാനേജ് ചെയ്യുന്നത്</translation>
@@ -191,6 +199,7 @@
 <translation id="1731082422893354635">Bluetooth ടച്ച്പാഡ്</translation>
 <translation id="1738949837603788263">മേഖല <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">ചിത്രങ്ങൾ ലോഡ് ചെയ്യാനാകുന്നില്ല. നിങ്ങളുടെ നെറ്റ്‌വർക്ക് കണക്ഷൻ പരിശോധിക്കുകയോ ചിത്രങ്ങൾ വീണ്ടും ലോഡ് ചെയ്യാൻ ശ്രമിക്കുകയോ ചെയ്യുക.</translation>
+<translation id="1745732479023874451">കോൺടാക്‌റ്റുകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="1751249301761991853">വ്യക്തിപരമാക്കൽ</translation>
 <translation id="1751335846119670066">എന്നെ വായിക്കാൻ സഹായിക്കൂ</translation>
 <translation id="1753496554272155572">വാൾപേപ്പർ പ്രിവ്യൂവിൽ നിന്ന് പുറത്ത് കടക്കുക</translation>
@@ -206,6 +215,7 @@
 <translation id="1768959921651994223">പരിശോധിച്ചുറപ്പിക്കൽ തരം</translation>
 <translation id="1776228893584526149">വാൾപേപ്പർ ടോൺ</translation>
 <translation id="1777913922912475695">പാലം</translation>
+<translation id="178092663238929451">നിങ്ങൾക്ക് ചുറ്റുമുള്ള ആളുകളിൽ നിന്ന് ഫയലുകൾ സ്വീകരിക്കാനും അവർക്ക് അയയ്ക്കാനും സമീപമുള്ള പങ്കിടൽ സജീകരിക്കുക</translation>
 <translation id="1788485524395674731">ഈ ആപ്പ് മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ അഡ്‌മിനാണ്</translation>
 <translation id="1792647875738159689">സ്കാൻ ചെയ്യൽ റദ്ദാക്കുന്നു</translation>
 <translation id="1801418420130173017">ഡാർക്ക് തീം പ്രവർത്തനരഹിതമാക്കുക</translation>
@@ -231,10 +241,13 @@
 <translation id="1858620243986915808">സ്ക്രീന്‍ഷോട്ട് അറ്റാച്ച് ചെയ്യുക</translation>
 <translation id="1860654594958086756">3D റെൻഡർ</translation>
 <translation id="1871413952174074704">APN-ന് <ph name="CHAR_LIMIT" /> പ്രതീകങ്ങളിൽ കൂടുതൽ ഉണ്ടാകരുത്</translation>
+<translation id="187145082678092583">കുറച്ച് ആപ്പുകൾ</translation>
 <translation id="1871569928317311284">ഡാർക്ക് തീം ഓഫാക്കുക</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">ചിത്രശലഭങ്ങൾ</translation>
 <translation id="188114911237521550">ഡാർക്ക് മോഡ് ഓഫാക്കുക</translation>
+<translation id="1881577802939775675">{COUNT,plural, =1{ഇനം}other{# ഇനങ്ങൾ}}</translation>
+<translation id="1884340228047885921">നിലവിലെ ദൃശ്യപരതാ ക്രമീകരണം ചില കോൺടാക്റ്റുകളാണ്</translation>
 <translation id="1884794756658039602">സ്‌പീക്കർ ലേബലുകളെ കുറിച്ച് കൂടുതലറിയുക.</translation>
 <translation id="1885577615937958993">മീഡിയ ഫാസ്റ്റ് ഫോർവേഡ് ചെയ്യുക</translation>
 <translation id="1887850431809612466">ഹാർഡ്‌വെയർ അവലോകനം</translation>
@@ -245,8 +258,10 @@
 <translation id="1908394185991500139">ഇടത്തേക്കുള്ള അമ്പടയാളം</translation>
 <translation id="1914144885717544695">വെള്ളിയാഴ്ച</translation>
 <translation id="1915960750806557358">നിങ്ങളുടെ ഫീഡ്ബാക്ക് പങ്കിടുക അല്ലെങ്കിൽ പ്രശ്നം വിവരിക്കുക. വ്യക്തിപരമോ സൂക്ഷ്‌മമായി കൈകാര്യം ചെയ്യേണ്ടതോ രഹസ്യാത്മകമോ ആയ കാര്യങ്ങളൊന്നും ഉൾപ്പെടുത്തുന്നില്ലെന്ന് ഉറപ്പാക്കുക.</translation>
+<translation id="1920390473494685033">കോണ്‍ടാക്റ്റുകള്‍</translation>
 <translation id="1923388006036088459">ആക്സന്റ് നിറങ്ങൾ</translation>
 <translation id="1926611810597212636">യൂണികോൺ</translation>
+<translation id="1929774028758671973">നിങ്ങളുടെ സമീപമുള്ളപ്പോൾ കോൺടാക്റ്റുകൾക്ക് നിങ്ങളുമായി പങ്കിടാം. ഈ അഭ്യർത്ഥനകൾക്ക് നിങ്ങളുടെ അനുമതി ആവശ്യപ്പെടും. <ph name="USER_EMAIL" /> എന്നതിൽ സൈൻ ഇൻ ചെയ്തിരിക്കുന്ന ഉപകരണങ്ങൾ തമ്മിലുള്ള പങ്കിടലിന് നിങ്ങൾ അനുമതി നൽകേണ്ടതില്ല.</translation>
 <translation id="1944321879609775960">സംഗ്രഹം സൃഷ്ടിക്കാൻ നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> റീസ്റ്റാർട്ട് ചെയ്യുക</translation>
 <translation id="1945403655450283000">Recorder</translation>
 <translation id="1947737735496445907">പ്രിന്റ് ചെയ്‌തു</translation>
@@ -266,6 +281,7 @@
 <translation id="2008685064673031089">പ്രധാന തിരയൽ</translation>
 <translation id="2016697457005847575">ട്രബിള്‍ഷൂട്ടിംഗ് ഘട്ടങ്ങൾ പരീക്ഷിക്കുക</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2037486735086318591">നിങ്ങൾക്ക് ചുറ്റുമുള്ള ആളുകളിൽ നിന്ന് ഫയലുകൾ സ്വീകരിക്കാനും അവർക്ക് അയയ്‌ക്കാനും <ph name="FEATURE_NAME" /> സജ്ജീകരിക്കുക</translation>
 <translation id="2045814230297767491">കട്ട്ലറി</translation>
 <translation id="2047316797244836561">സ്ക്രീൻ സേവർ കാണാൻ ഒരു നെറ്റ്‌വർക്കിലേക്ക് കണക്റ്റ് ചെയ്‌ത് പേജ് റീലോഡ് ചെയ്യുക.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -274,9 +290,11 @@
 <translation id="2080070583977670716">കൂടുതൽ ക്രമീകരണങ്ങൾ</translation>
 <translation id="2082932131694554252">അസൈൻ ചെയ്ത കീബോർഡ് കീ</translation>
 <translation id="2085089206770112532">ഡിസ്‌പ്ലേ തെളിച്ചം കുറയ്‌ക്കുക</translation>
+<translation id="208586643495776849">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="2086091080968010660">സമയം അടിസ്ഥാനമാക്കിയുള്ള മാറ്റങ്ങൾ കൃത്യമാകാനിടയില്ല. ക്രമീകരണത്തിൽ സിസ്റ്റം ലൊക്കേഷൻ ആക്‌സസ് ഓണാക്കുക.</translation>
 <translation id="2102231663024125441">ടെക്‌സ്റ്റ് തിരുത്തൽ</translation>
 <translation id="2105810540595158374">ഉപകരണം ഒരു ഗെയിം കൺട്രോളറാണ്.</translation>
+<translation id="2108349519800154983">{COUNT,plural, =1{ഫോൺ നമ്പർ}other{# ഫോൺ നമ്പറുകൾ}}</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, പതിപ്പ് <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">നിലവിൽ ഇംഗ്ലീഷിൽ (യുഎസ്) മാത്രം ലഭ്യം</translation>
 <translation id="2126937207024182736"><ph name="TOTAL_MEMORY" /> GB-യിൽ <ph name="AVAILABLE_MEMORY" /> GB ലഭ്യം</translation>
@@ -287,6 +305,7 @@
 <translation id="215206000155329774"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ഫോട്ടോകൾ</translation>
 <translation id="2154460308960858308">തിരയൽ മായ്ക്കുക</translation>
+<translation id="2155473371917268529">നിങ്ങളുടെ ഉപകരണങ്ങളാണ് നിലവിലെ ദൃശ്യപരതാ ക്രമീകരണം</translation>
 <translation id="2157660087437850958">ഇമോജി പിക്കർ</translation>
 <translation id="2157959690810728433">ക്യൂവിലാണ്</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: വീണ്ടും ശ്രമിക്കുക</translation>
@@ -329,9 +348,11 @@
 <translation id="2286454467119466181">ലളിതം</translation>
 <translation id="2287186687001756809">ചിത്രമൊന്നും ലഭ്യമല്ല. ഫോട്ടോകൾ ചേർക്കാൻ <ph name="LINK" /> -ലേക്ക് പോകുക</translation>
 <translation id="2294577623958216786">നിലവിലെ ഷെഡ്യൂൾ <ph name="SUNRISE" />-<ph name="SUNSET" /> എന്ന് സജ്ജീകരിച്ചിരിക്കുന്നു. ഉദയാസ്‌തമയ ഷെഡ്യൂൾ സ്വയമേവ അപ്ഡേറ്റ് ചെയ്യാൻ, സിസ്റ്റം ലൊക്കേഷൻ ആക്‌സസ് ഓണാക്കുക.</translation>
+<translation id="229477815107578534">നിങ്ങളുടെ ക്രമീകരണം അവലോകനം ചെയ്യുക</translation>
 <translation id="2305172810646967500">കറുപ്പ്</translation>
 <translation id="2307344026739914387">നിലവിലെ കീ ജോടി ഉപയോഗിക്കുക</translation>
 <translation id="2308243864813041101">അപ്‌ഡേറ്റ് പ്രക്രിയ തുടരുന്നതിന് <ph name="DEVICE_NAME" /> എന്നതിന്റെ USB കേബിൾ അൺപ്ലഗ് ചെയ്യുക</translation>
+<translation id="2314165183524574721">നിലവിലെ ദൃശ്യപരതാ ക്രമീകരണം മറച്ചിരിക്കുന്നു</translation>
 <translation id="2320295602967756579">ലൈറ്റ് തീം പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="2323506179655536734">ഒഴിവാക്കി</translation>
 <translation id="2324354238778375592">ഫ്ലോട്ട്</translation>
@@ -352,6 +373,7 @@
 <translation id="2418150275289244458">ക്രമീകരണത്തിൽ തുറക്കുക</translation>
 <translation id="2421798028054665193"><ph name="TOTAL_PAGES" />-ൽ <ph name="CURRENT_PAGE" />-ാമത്തെ ചിത്രം</translation>
 <translation id="242825218556404975">സംഭാഷണമൊന്നും കണ്ടെത്തിയില്ല</translation>
+<translation id="2434758125294431199">നിങ്ങളുമായി പങ്കിടാൻ ആർക്കെല്ലാം കഴിയുമെന്നത് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="2438248248625638801">റെക്കോർഡിംഗിന്റെ പേരുകൾ സൃഷ്ടിക്കുന്നു</translation>
 <translation id="2446553403094072641">ഫ്ലോട്ടിംഗ് പോയിന്റ് കൃത്യത</translation>
 <translation id="2448312741937722512">തരം</translation>
@@ -386,14 +408,17 @@
 <translation id="2584559707064218956">സജ്ജീകരിക്കാൻ ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="2586146417912237930">നീലയും ഇൻഡിഗോയും</translation>
 <translation id="2589921777872778654">മെനു എഡിറ്റ് ചെയ്യുക, ഇല്ലാതാക്കുക</translation>
+<translation id="2597073208962000830">സമീപമുള്ള ഉപകരണങ്ങൾ കണ്ടെത്താൻ, 'സമീപമുള്ള പങ്കിടൽ' Bluetooth സ്‌കാൻ ചെയ്യൽ ഉപയോഗിക്കുന്നു.</translation>
 <translation id="2597774443162333062">ഡീബഗ് ചെയ്യുന്നതിന് ഫയലുകൾ Google-ലേക്ക് അയയ്‌ക്കും</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{സ്‌കാനിംഗ് പൂർത്തിയായി. 1 പേജ് സ്കാൻ ചെയ്‌തു}other{സ്‌കാനിംഗ് പൂർത്തിയായി. {NUMBER_OF_PAGES} പേജുകൾ സ്കാൻ ചെയ്‌തു}}</translation>
 <translation id="261322795497077164">സ്‌പീക്കർ തിരിച്ചറിയൽ</translation>
 <translation id="2617397783536231890">കോട്ടൺ</translation>
 <translation id="2618015542787108131">മണൽക്കൂന</translation>
+<translation id="2618797463720777311">സമീപമുള്ള പങ്കിടൽ സജ്ജീകരിക്കുക</translation>
 <translation id="2619761439309613843">പ്രതിദിന റീഫ്രഷ് ചെയ്യൽ</translation>
 <translation id="2620436844016719705">സിസ്റ്റം</translation>
 <translation id="2626848494898563581">Google സേവനങ്ങൾ ആക്‌സസ് ചെയ്യാനാകുന്നില്ല</translation>
+<translation id="2627424346328942291">പങ്കിടാനായില്ല</translation>
 <translation id="2637303424821734920">ഓഫാണ് - പ്രാദേശിക കാലാവസ്ഥ പ്രദർശിപ്പിക്കാൻ <ph name="BEGIN_LINK" />സിസ്റ്റം ലൊക്കേഷൻ ആക്സസ് ഓണാക്കുക<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">സൈൻ ഇൻ ചിത്രം</translation>
 <translation id="2640549051766135490"><ph name="TITLE" /> <ph name="DESC" /> ആൽബം തിരഞ്ഞെടുത്തു</translation>
@@ -406,6 +431,7 @@
 <translation id="267442004702508783">റീഫ്രഷ് ചെയ്യുക</translation>
 <translation id="2675392311492541028">ട്രാൻസ്‌ക്രിപ്ഷനും സംഗ്രഹവും</translation>
 <translation id="268270014981824665">കീബോർഡ് മങ്ങിക്കുക</translation>
+<translation id="2704606927547763573">പകർത്തി</translation>
 <translation id="2712812801627182647">TLS പരിശോധിച്ചുറപ്പിക്കൽ കീ</translation>
 <translation id="2713444072780614174">വെള്ള</translation>
 <translation id="2715723665057727940">നദി</translation>
@@ -414,6 +440,7 @@
 <translation id="2728460467788544679">പ്രിന്റ് ചരിത്രം മുഴുവനായും മായ്‌ക്കുക</translation>
 <translation id="2731700343119398978">കാത്തിരിക്കുക...</translation>
 <translation id="2740531572673183784">ശരി</translation>
+<translation id="2743387203779672305">ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തുക</translation>
 <translation id="2744221223678373668">പങ്കിട്ടു</translation>
 <translation id="2749164457515831917">നിർദ്ദേശങ്ങൾ ഇടകലർത്തി</translation>
 <translation id="2751739896257479635">രണ്ടാം ഘട്ട EAP പരിശോധിച്ചുറപ്പിക്കൽ</translation>
@@ -423,7 +450,9 @@
 <translation id="2786429550992142861">ലിനൻ</translation>
 <translation id="2787237339470862294">ഈ ഭാഷ ഇപ്പോൾ പിന്തുണയ്ക്കുന്നില്ല</translation>
 <translation id="2787435249130282949">തെളിച്ചമുള്ള കീബോർഡ്</translation>
+<translation id="2803313416453193357">ഫോൾഡർ തുറക്കുക</translation>
 <translation id="2805756323405976993">ആപ്പുകൾ</translation>
+<translation id="2806372837663997957">നിങ്ങൾ ഫയൽ പങ്കിടാൻ ശ്രമിച്ച ഉപകരണം അത് സ്വീകരിച്ചില്ല</translation>
 <translation id="28232023175184696">ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്യാനാകുന്നില്ല. വീണ്ടും ശ്രമിക്കാൻ ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="2855718259207180827">കമ്പിളി</translation>
 <translation id="2856429654176718363">ലൈറ്റുകൾ മിന്നിത്തിളങ്ങുന്ന നഗരത്തിന് മുകളിലൂടെ വലിയൊരു സ്പേസ്ഷിപ്പ് ഒഴുകിനീങ്ങുന്നു. രംഗം പൂർണ്ണമായും ഓയിൽ പെയിന്റിംഗ് സ്റ്റൈലിൽ ഇരുണ്ട ടോണുകളിൽ അവതരിപ്പിച്ചിരിക്കുന്നു. അത് അത്യന്താധുനിക സൈ-ഫൈ ഘടകങ്ങൾ അടങ്ങിയ ഒരു നിഗൂഢ അന്തരീക്ഷം സൃഷ്ടിക്കുന്നു. ഉയർന്ന റെസല്യൂഷനും കൂടുതൽ വിശദാംശങ്ങളും ഹൈലൈറ്റ് ചെയ്യാനായി C4D സോഫ്റ്റ്‌വെയറും OC റെൻഡററും ഉപയോഗിച്ചാണ് ഈ കലാസൃഷ്ടി സൃഷ്ടിച്ചിരിക്കുന്നത്. അൽപം ദൂരെയാണെങ്കിലും അടുത്തായി തോന്നുന്ന തരത്തിൽ, നാഗരത്തിലെ ഏതാനും കെട്ടിടങ്ങൾ കൂടി കാണാം. ഓയിൽ പെയിന്റിംഗിന്റെ സ്റ്റൈലിലാണ് രംഗം റെൻഡർ ചെയ്തിരിക്കുന്നത്, ഇരുണ്ട ടോണുകൾ അവതരിപ്പിക്കുകുകയും അത്യന്താധുനിക സൈ-ഫൈ ഘടകങ്ങളുള്ള നിഗൂഢമായ ഒരു അന്തരീക്ഷം സൃഷ്ടിക്കുകയും ചെയ്യുന്നു.</translation>
@@ -438,7 +467,6 @@
 <translation id="2878387241690264070"><ph name="NUM_SECONDS" /> സെക്കൻഡിൽ <ph name="RATE" /> ഡിസ്ചാർജ് ചെയ്തു.</translation>
 <translation id="2880569433548999039">ക്ലൗഡ് ഫ്ലോ സ്ക്രീൻ സേവർ</translation>
 <translation id="2882230315487799269">AI പ്രോംപ്റ്റ് ഇഷ്ടാനുസൃതമാക്കുക</translation>
-<translation id="2888298276507578975">"നന്ദി അറിയിച്ച് ഒരു കുറിപ്പ് എഴുതൂ" എന്നത് പോലുള്ള ഒരു പ്രോംപ്റ്റ് നൽകുക</translation>
 <translation id="2890557891229184386">ട്രോപ്പിക്കൽ ദ്വീപ്</translation>
 <translation id="2895772081848316509">ഡാർക്ക്</translation>
 <translation id="2915996080311180594">പിന്നീട് റീസ്‌റ്റാർട്ട് ചെയ്യുക</translation>
@@ -448,6 +476,7 @@
 <translation id="2941112035454246133">താഴ്ന്ന</translation>
 <translation id="2956070106555335453">സംഗ്രഹം</translation>
 <translation id="2968959705684615497">സ്വർണ്ണ കണ്ണുകളും സ്വർണ്ണ നിറത്തിലുള്ള വരകളുമുള്ള സ്വപ്‌നതുല്യമായ ഒരു വെളുത്ത കടുവ വെള്ള മണൽക്കുന്നിൽ ഇരിക്കുന്നു</translation>
+<translation id="2970766364519518369">നിങ്ങളുടെ സമീപമുള്ളപ്പോൾ തിരഞ്ഞെടുത്ത കോൺടാക്റ്റുകൾക്ക് നിങ്ങളുമായി പങ്കിടാം. ഈ അഭ്യർത്ഥനകൾക്ക് നിങ്ങളുടെ അനുമതി ആവശ്യപ്പെടും. <ph name="USER_EMAIL" /> എന്നതിൽ സൈൻ ഇൻ ചെയ്തിരിക്കുന്ന ഉപകരണങ്ങൾ തമ്മിലുള്ള പങ്കിടലിന് നിങ്ങൾ അനുമതി നൽകേണ്ടതില്ല.</translation>
 <translation id="299385721391037602">പിങ്കും മഞ്ഞയും</translation>
 <translation id="3008341117444806826">റീഫ്രഷ് ചെയ്യുക</translation>
 <translation id="3009958530611748826">സംരക്ഷിക്കാൻ ഒരു ഫോൾഡർ തിരഞ്ഞെടുക്കുക</translation>
@@ -469,6 +498,8 @@
 <translation id="3091839911843451378">പ്രിന്റ് ചെയ്യാനായില്ല - പ്രവർത്തനം നിർത്തി</translation>
 <translation id="3102119246920354026">കാഷെ</translation>
 <translation id="3103783611481501187">സർറിയൽ</translation>
+<translation id="3108931485517391283">സ്വീകരിക്കാനാകുന്നില്ല</translation>
+<translation id="3117791853215125017">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ഉപകരണത്തിലേക്ക് <ph name="ATTACHMENTS" /> അയയ്‌ക്കാനായില്ല}other{<ph name="DEVICE_NAME" /> ഉപകരണത്തിലേക്ക് <ph name="ATTACHMENTS" /> അയയ്‌ക്കാനായില്ല}}</translation>
 <translation id="3119672627216736407">വിവർത്തനം ലഭ്യമാണ്</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">പൂളുകൾ</translation>
@@ -488,7 +519,6 @@
 <translation id="3170673040743561620">നിങ്ങളുടെ ഡോക്യുമെന്റ് സ്‌കാനറിൽ വയ്ക്കുക</translation>
 <translation id="3174321110679064523">'ഉദയം മുതൽ അസ്തമയം വരെ' വാൾപേപ്പർ</translation>
 <translation id="3178532070248519384">അവന്റ്-ഗാർഡ്</translation>
-<translation id="3182676044300231689">"കൂടുതൽ ആത്മവിശ്വാസമുള്ളതാക്കൂ" എന്നത് പോലുള്ള പ്രോംപ്റ്റ് നൽകുക</translation>
 <translation id="3188257591659621405">എൻ്റെ ഫയലുകൾ</translation>
 <translation id="319101249942218879">അവതാർ ചിത്രം മാറ്റി</translation>
 <translation id="3192947282887913208">ഓഡിയോ ഫയലുകള്‍</translation>
@@ -504,7 +534,9 @@
 <translation id="324961752321393509">ഈ ആപ്പ് അടയ്‌ക്കാൻ നിങ്ങളുടെ അഡ്‌മിൻ അനുവദിക്കുന്നില്ല</translation>
 <translation id="3263941347294171263">അപ്‌ഡേറ്റ് പ്രക്രിയ തുടരുന്നതിന് <ph name="DEVICE_NAME" /> അൺപ്ലഗ് ചെയ്ത ശേഷം വീണ്ടും പ്ലഗ് ചെയ്യുക</translation>
 <translation id="3268178239013324452">പ്രിന്റ് ചെയ്യാനായില്ല - വാതിൽ തുറന്നിരിക്കുന്നു</translation>
+<translation id="3269689705184377744">{COUNT,plural, =1{ഫയൽ}other{# ഫയലുകൾ}}</translation>
 <translation id="3275729367986477355">അവതാർ ചിത്രം</translation>
+<translation id="3279092821516760512">നിങ്ങളുടെ സമീപത്തുള്ളപ്പോൾ തിരഞ്ഞെടുത്ത കോൺടാക്‌റ്റുകൾക്ക് നിങ്ങളുമായി പങ്കിടാം. നിങ്ങൾ അത് സ്വീകരിക്കുന്നത് വരെ കൈമാറ്റം ആരംഭിക്കില്ല.</translation>
 <translation id="3283504360622356314">{0,plural, =1{ഫയൽ എഡിറ്റ് ചെയ്യുക}other{ഫയലുകൾ എഡിറ്റ് ചെയ്യുക}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" />GHz</translation>
 <translation id="3286538390144397061">ഇപ്പോള്‍ പുനരാരംഭിക്കുക</translation>
@@ -517,11 +549,13 @@
 <translation id="3327613592010997943"><ph name="DAY" /> <ph name="TIME" />-ന് നിങ്ങൾക്ക് ഈ ഉപകരണം വീണ്ടും ഉപയോഗിക്കാനാകും.</translation>
 <translation id="3328783797891415197">ടെസ്‌റ്റ് റൺ ചെയ്യുന്നു</translation>
 <translation id="3332683265015995419">മണൽക്കാറ്റിനിടയിലൂടെ പറക്കുന്ന സ്റ്റീംപങ്ക് സ്പേസ്ഷിപ്പ്</translation>
+<translation id="3333961966071413176">എല്ലാ കോൺടാക്റ്റുകളും</translation>
 <translation id="3340011300870565703">ഉപകരണത്തിന്റെ വലത് ബഡിൽ <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററിയുണ്ട്.</translation>
 <translation id="3340978935015468852">ക്രമീകരണങ്ങൾ</translation>
 <translation id="3347558044552027859">മോഡേൺ</translation>
 <translation id="3359218928534347896">മൈക്രോഫോൺ മ്യൂട്ട് ചെയ്യൽ ടോഗിൾ ചെയ്യുക</translation>
 <translation id="3360306038446926262">Windows</translation>
+<translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> നിങ്ങളുമായി <ph name="ATTACHMENTS" /> പങ്കിടുന്നു.}other{<ph name="DEVICE_NAME" /> നിങ്ങളുമായി <ph name="ATTACHMENTS" /> പങ്കിടുന്നു.}}</translation>
 <translation id="3361618936611118375">സുഷി</translation>
 <translation id="3368922792935385530">കണക്റ്റുചെയ്തു</translation>
 <translation id="3369013195428705271">എല്ലാ പ്രിന്റ് ചരിത്രവും മായ്‌ക്കണമെന്ന് തീർച്ചയാണോ? നിങ്ങളുടെ പുരോഗതിയിലുള്ള പ്രിന്റ് ജോലികൾ മായ്ക്കില്ല.</translation>
@@ -539,6 +573,7 @@
 <translation id="3434988468785284438">റിഫ്ലക്ഷനുകൾ</translation>
 <translation id="3435738964857648380">സുരക്ഷ</translation>
 <translation id="3435896845095436175">തയ്യാറാക്കുക</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> മി.</translation>
 <translation id="345256797477978759">സ്ക്രീനിന്റെ <ph name="DIRECTION" /> ഭാഗത്തെ വലിയ വശത്ത് വിൻഡോ ഡോക്ക് ചെയ്യുക</translation>
 <translation id="3456078764689556234"><ph name="TOTAL_PAGES" />-ൽ <ph name="PRINTED_PAGES" /> പേജ് പ്രിന്റ് ചെയ്‌തു.</translation>
 <translation id="345898999683440380"><ph name="PAGE_NUM" />-ാമത്തെ പേജ് സ്‌കാൻ ചെയ്യുന്നു. <ph name="PERCENTAGE_VALUE" />% പൂർത്തിയായി.</translation>
@@ -561,8 +596,10 @@
 <translation id="3552832331940389362">ഉച്ച നേരത്ത് മഴ കണ്ടുകൊണ്ട് ജനൽപ്പടിയിലിരിക്കുന്ന പൂച്ചയുടെ ജാപ്പനീസ് ആനിമേഷൻ ചിത്രീകരണം</translation>
 <translation id="3557205324756024651">ലോക്കൽ ഐഡന്റിറ്റി (ഓപ്‌ഷണൽ)</translation>
 <translation id="3565064564551103223">അനുവദനീയമായ IP-കൾ</translation>
+<translation id="3567284462585300767">നിങ്ങൾക്ക് ചുറ്റുമുള്ള ആളുകളിൽ നിന്ന് ഫയലുകൾ സ്വീകരിക്കാനും അംഗീകരിക്കാനും നിങ്ങളുടെ ഉപകരണം ദൃശ്യമാക്കുക</translation>
 <translation id="3569407787324516067">സ്ക്രീൻ സേവർ</translation>
 <translation id="3571184524500629183">തിരയൽ അടയ്ക്കുക</translation>
+<translation id="3571734092741541777">സജ്ജീകരിക്കുക</translation>
 <translation id="3577473026931028326">എന്തോ കുഴപ്പമുണ്ടായി. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="357889014807611375">മീറ്റർ ചെയ്‌ത വൈഫൈ</translation>
 <translation id="3583278742022654445">സിഗ്‌നൽ ശക്തി ദുർബലമാണ്. വൈഫൈ സിഗ്നൽ ഉറവിടത്തിന് കൂടുതൽ അടുത്തേക്ക് നീക്കി ശ്രമിക്കുക.</translation>
@@ -579,11 +616,13 @@
 <translation id="3614639364827854748">ഈ മെനു ഇടത്തേക്ക് നീക്കുക</translation>
 <translation id="361575905210396100">നിങ്ങളുടെ ഫീഡ്ബാക്കിന് നന്ദി</translation>
 <translation id="3621072146987826699">ആനകൾ</translation>
+<translation id="362266093274784978">{COUNT,plural, =1{ഒരു ആപ്പ്}other{# ആപ്പുകൾ}}</translation>
 <translation id="3628462041319107639">ട്രാൻസ്‌ക്രിപ്ഷൻ മോഡൽ ഡൗൺലോഡ് ചെയ്യുന്നു…</translation>
 <translation id="3632040286124154621">നല്ല നിർദ്ദേശം</translation>
 <translation id="3632579075709132555">സ്വകാര്യതാ സ്‌ക്രീൻ ടോഗിൾ</translation>
 <translation id="3634941468757842845">ഒരു തീം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3644695927181369554">മോശം നിർദ്ദേശം</translation>
+<translation id="3647998456578545569">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ഉപകരണത്തിൽ നിന്ന് <ph name="ATTACHMENTS" /> സ്വീകരിച്ചു}other{<ph name="DEVICE_NAME" /> ഉപകരണത്തിൽ നിന്ന് <ph name="ATTACHMENTS" /> സ്വീകരിച്ചു}}</translation>
 <translation id="3651050199673793219">താപനിലാ യൂണിറ്റ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3662461537616691585">ബർഗണ്ടിയും മെറൂണും</translation>
 <translation id="3664755900672940272">സാമ്പിൾ പ്രോംപ്റ്റുകൾ ഇടകലർത്തി</translation>
@@ -601,6 +640,7 @@
 <translation id="3748026146096797577">കണക്റ്റുചെയ്‌തിട്ടില്ല</translation>
 <translation id="3749289110408117711">ഫയല്‍ നാമം</translation>
 <translation id="3763034084412196440">വോളിയം ക്രമീകരിക്കുക</translation>
+<translation id="3764974059056958214">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ഉപകരണത്തിലേക്ക് <ph name="ATTACHMENTS" /> അയയ്‌ക്കുന്നു}other{<ph name="DEVICE_NAME" /> ഉപകരണത്തിലേക്ക് <ph name="ATTACHMENTS" /> അയയ്‌ക്കുന്നു}}</translation>
 <translation id="3767737419527918477">റെക്കോർഡിംഗ് ഫയലുകൾ തിരയുക</translation>
 <translation id="3771294271822695279">വീഡിയോ ഫയലുകള്‍</translation>
 <translation id="3771694256347217732">Google സേവന നിബന്ധനകൾ</translation>
@@ -633,6 +673,7 @@
 <translation id="3885327323343477505">സ്ക്രീൻ സേവർ മാറ്റുക</translation>
 <translation id="3889954687526985291">നിയോൺ ലൈറ്റുകളുള്ള ഇരുണ്ട പശ്ചാത്തലത്തിൽ, കറുത്ത പേപ്പർ കൊണ്ട് നിർമ്മിച്ച ഒരു അത്യന്താധുനിക മോട്ടോർ സൈക്കിൾ</translation>
 <translation id="3897092660631435901">മെനു</translation>
+<translation id="3897298432557662720">{COUNT,plural, =1{ഒരു ചിത്രം}other{# ചിത്രങ്ങൾ}}</translation>
 <translation id="3902271751020176019">ട്രാൻസ്‌ക്രിപ്ഷൻ ഭാഷ</translation>
 <translation id="390890062090528082">നക്ഷത്രങ്ങൾ നിറഞ്ഞ ആകാശം</translation>
 <translation id="391412459402535266">ഉപകരണം പരീക്ഷിച്ച് നോക്കാനാകുന്നില്ല. പരീക്ഷിച്ച് നോക്കാൻ ലാപ്‌ടോപ്പ് മോഡിലേക്ക് മാറുക.</translation>
@@ -640,6 +681,7 @@
 <translation id="392943705803418306">നിങ്ങൾക്കുള്ള Class Tools സെഷൻ അവസാനിച്ചു</translation>
 <translation id="3932043219784172185">ഉപകരണമൊന്നും കണക്റ്റ് ചെയ്‌തിട്ടില്ല</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> അസൈൻ ചെയ്തിട്ടില്ല</translation>
+<translation id="3936260554100916852">നിങ്ങളുമായി <ph name="DEVICE_NAME" /> ഒരു വൈഫൈ നെറ്റ്‌വർക്ക് പങ്കിടുന്നു</translation>
 <translation id="3941014780699102620">ഹോസ്‌റ്റ് പരിഹരിക്കാനായില്ല</translation>
 <translation id="3942420633017001071">പ്രശ്‌നനിർണ്ണയം</translation>
 <translation id="3954678691475912818">ഉപകരണ തരം അജ്ഞാതമാണ്.</translation>
@@ -648,6 +690,7 @@
 <translation id="3967822245660637423">ഡൗൺലോഡ് പൂർത്തിയായി</translation>
 <translation id="3969602104473960991">ChromeOS പാസ്‌വേഡ് അപ്ഡേറ്റ് ചെയ്തു</translation>
 <translation id="397105322502079400">കണക്കാക്കുന്നു...</translation>
+<translation id="3981058120448670012"><ph name="REMAINING_TIME" /> നേരത്തേക്ക് <ph name="DEVICE_NAME" /> എന്ന പേരിൽ സമീപത്തുള്ള ഉപകരണങ്ങൾക്ക് ദൃശ്യമാകുന്നു...</translation>
 <translation id="3981099166243641873">ഇളം പച്ച</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> ദിവസം മുമ്പുള്ള പ്രിന്റ് ജോലികൾ നീക്കം ചെയ്യും</translation>
 <translation id="3993704782688964914">നിങ്ങളുടെ <ph name="DEVICE_NAME" /> ഇപ്പോൾ അപ് ടു ഡേറ്റ് ആണ്</translation>
@@ -663,6 +706,7 @@
 <translation id="4046123991198612571">അടുത്ത ട്രാക്ക്</translation>
 <translation id="404928562651467259">മുന്നറിയിപ്പ്</translation>
 <translation id="4050208988451295487">ഏതാനും ഓപ്ഷനുകൾ:</translation>
+<translation id="4050534976465737778">രണ്ട് ഉപകരണങ്ങളും അൺലോക്ക് ചെയ്‌തിട്ടുണ്ടെന്നും അടുത്തടുത്താണ് ഉള്ളതെന്നും Bluetooth ഓണാക്കിയിട്ടുണ്ടെന്നും ഉറപ്പാക്കുക. നിങ്ങളുടെ കോൺടാക്റ്റുകളിൽ ഇല്ലാത്ത Chromebook-മായാണ് നിങ്ങൾ പങ്കിടുന്നതെങ്കിൽ അതിൽ സമീപമുള്ള ദൃശ്യപരത ഓണാക്കിയിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക (സ്റ്റാറ്റസ് ഏരിയ തുറന്ന് സമീപമുള്ള ദൃശ്യപരത തിരഞ്ഞെടുക്കുക). <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="405181879009056822">ChromeOS ക്രമീകരണം</translation>
 <translation id="4054683689023980771">ചിത്രം ഡൗൺലോഡ് ചെയ്യുന്നു</translation>
 <translation id="4059839844193047929">ഈ പേജിൽ നിന്ന് പുറത്തുകടന്നാൽ നിലവിലുള്ള റെക്കോർഡിംഗ് അവസാനിപ്പിക്കും</translation>
@@ -698,6 +742,7 @@
 <translation id="4171077696775491955">തെളിച്ചം കുറയ്‌ക്കുക</translation>
 <translation id="4176463684765177261">അപ്രാപ്തമാക്കി</translation>
 <translation id="4176659219503619100">നിയന്ത്രണ പാനൽ</translation>
+<translation id="4191892134568599822"><ph name="FEATURE_NAME" /> ഉപയോഗിച്ച് സ്വീകരിക്കണോ?</translation>
 <translation id="4192913637640303603">റെക്കോർഡിംഗിന്റെ പേരുകൾ സൃഷ്ടിക്കാനാകില്ല</translation>
 <translation id="4193496492959950834">Recorder ക്രമീകരണം</translation>
 <translation id="4198398257084619072">പാണ്ടകൾ</translation>
@@ -737,6 +782,7 @@
 <translation id="4297501883039923494">പ്രിന്റ് ജോലി നിർത്തി - അജ്ഞാതമായ പിശക്</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> ചിത്രങ്ങൾ</translation>
 <translation id="4300272766492248925">ആപ്പ് തുറക്കുക</translation>
+<translation id="4301697210743228350">{COUNT,plural, =1{# കോൺടാക്റ്റ് ലഭ്യമല്ല. കോൺടാക്റ്റുകൾക്കൊപ്പം <ph name="FEATURE_NAME" /> ഉപയോഗിക്കുന്നതിന് അവരുടെ Google Account-മായി ബന്ധപ്പെട്ട ഇമെയിൽ വിലാസം നിങ്ങളുടെ കോൺടാക്റ്റുകളിൽ ചേർക്കുക.}other{# കോൺടാക്റ്റുകൾ ലഭ്യമല്ല. കോൺടാക്റ്റുകൾക്കൊപ്പം <ph name="FEATURE_NAME" /> ഉപയോഗിക്കുന്നതിന് അവരുടെ Google Account-കളുമായി ബന്ധപ്പെട്ട ഇമെയിൽ വിലാസങ്ങൾ നിങ്ങളുടെ കോൺടാക്റ്റുകളിൽ ചേർക്കുക.}}</translation>
 <translation id="430786093962686457">ഷിഫോൺ</translation>
 <translation id="4309762678330556039">ട്രാൻസ്ക്രിപ്ഷനുകൾ സ്വയമേവ സൃഷ്ടിച്ച് ഓഡിയോ തിരയുക. ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്യാത്തപ്പോൾ പോലും നിങ്ങൾക്ക് റെക്കോർഡിംഗുകൾ സൃഷ്ടിക്കാം.</translation>
 <translation id="4310735698903592804">Google AI കൊണ്ട് പ്രവർത്തിക്കുന്ന, അടുത്തിടെയുള്ള വാൾപേപ്പറുകൾ</translation>
@@ -793,7 +839,6 @@
 <translation id="4522570452068850558">വിശദാംശങ്ങൾ‌</translation>
 <translation id="4536864596629708641">IP കോൺഫിഗറേഷൻ</translation>
 <translation id="4546131424594385779">ലൂപ്പിംഗ് വീഡിയോ സൃഷ്ടിക്കുക</translation>
-<translation id="4548483925627140043">സിഗ്‌നൽ കണ്ടെത്തിയില്ല</translation>
 <translation id="4556753742174065117">എല്ലാ ഫേംവെയറും അപ് ടു ഡേറ്റാണ്</translation>
 <translation id="455835558791489930"><ph name="CHARGE_VALUE" />mAh ബാറ്ററി</translation>
 <translation id="456077979087158257">സിറ്റിസ്കേപ്പ്</translation>
@@ -802,6 +847,8 @@
 <translation id="4570558255126759859">റെക്കോർഡിംഗുകൾ സംഗ്രഹിക്കാൻ Gemini മോഡൽ ഡൗൺലോഡ് ചെയ്യണോ?</translation>
 <translation id="4573777384450697571">പരാജയപ്പെട്ടു - സർട്ടിഫിക്കറ്റ് കാലഹരണപ്പെട്ടു</translation>
 <translation id="4575450106703099687">ഉപയോഗസഹായി ഓപ്ഷനുകൾ</translation>
+<translation id="4575614183318795561"><ph name="FEATURE_NAME" /> സജ്ജീകരിക്കുക</translation>
+<translation id="4580389561674319558">എല്ലാ കോൺടാക്റ്റുകൾക്കും ദൃശ്യമാകും</translation>
 <translation id="458794348635939462">എല്ലാ ഹോസ്‌റ്റുകളും പരിഹരിക്കാനായില്ല</translation>
 <translation id="4593212453765072419">പ്രോക്‌സി പ്രാമാണീകരണം ആവശ്യമാണ്</translation>
 <translation id="4594021849294327751">ട്രാൻസ്‌ക്രിപ്റ്റ് സൃഷ്ടിക്കുക</translation>
@@ -809,17 +856,21 @@
 <translation id="4600301862817165514">നക്ഷത്രങ്ങൾ അതിവേഗം നീങ്ങുന്ന ഗാലക്‌സിയിലൂടെ നിയോൺ ലൈറ്റുകളുള്ള ഒരു ഡെലോറിയൻ ഡ്രൈവ് ചെയ്ത് പോകുന്നു</translation>
 <translation id="4609350030397390689">കീബോർഡ് തെളിച്ചം കുറയ്‌ക്കുക</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, ആകെയുള്ള <ph name="TOTAL_PAGE_NUMBER" /> എണ്ണത്തിൽ <ph name="PRINTED_PAGE_NUMBER" /> എണ്ണം. പ്രിന്റ് ജോലി റദ്ദാക്കാൻ എന്റർ അമർത്തുക.</translation>
+<translation id="4637252186848840278">{COUNT,plural, =1{ടെക്‌സ്റ്റ്}other{# ടെക്‌സ്റ്റുകൾ}}</translation>
 <translation id="463791356324567266">സ്‌കാൻ ചെയ്യൽ റദ്ദാക്കുന്നു...</translation>
 <translation id="4644611440022666152">ഓണാക്കി ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="4646949265910132906">സുരക്ഷിതമായ വൈഫൈ കണക്ഷൻ</translation>
 <translation id="4650608062294027130">വലത് Shift കീ</translation>
+<translation id="4654236001025007561">നിങ്ങൾക്ക് ചുറ്റുമുള്ള Chromebook-കളുമായും Android ഉപകരണങ്ങളുമായും ഫയലുകൾ പങ്കിടുക</translation>
 <translation id="4654549501020883054">ദിവസേന മാറ്റുക</translation>
 <translation id="4655868084888499342">വാൾപേപ്പറായി ചിത്രം സജ്ജീകരിച്ചു</translation>
+<translation id="4660465405448977105">{COUNT,plural, =1{ചിത്രം}other{# ചിത്രങ്ങൾ}}</translation>
 <translation id="4660989616054030633">ആളുകളെ കുറിച്ച് ഉൾപ്പെടെ, ജനറേറ്റീവ് AI-യ്ക്ക് തെറ്റുകൾ സംഭവിക്കാം, അതിനാൽ ഇത് വീണ്ടും പരിശോധിക്കുക</translation>
 <translation id="4661249927038176904">സർറിയൽ</translation>
 <translation id="4661392828086261436">ഈ അപ്‌ഡേറ്റ് നൽകുന്നത് ഉപകരണ നിർമ്മാതാവാണ്, ഇത് Google പരിശോധിച്ചുറപ്പിച്ചിട്ടില്ല</translation>
 <translation id="4664651912255946953">രോമം</translation>
 <translation id="4665014895760275686">നിര്‍മ്മാതാവ്</translation>
+<translation id="4666911709726371538">കൂടുതൽ ആപ്പുകൾ</translation>
 <translation id="467510802200863975">പാസ്‌വേഡുകൾ പൊരുത്തപ്പെടുന്നില്ല</translation>
 <translation id="467715984478005772">ഫയർവാൾ ഉണ്ടെന്ന് സംശയിക്കുന്നു</translation>
 <translation id="4678534708181186163">സംഗ്രഹിക്കാനാകില്ല. ഹ്രസ്വമായ ട്രാൻസ്‌ക്രിപ്റ്റ് പരീക്ഷിക്കുക.</translation>
@@ -867,24 +918,29 @@
 <translation id="4868181314237714900">ഫ്ലീസ്</translation>
 <translation id="4873827928179867585">പരിശോധിച്ചുറപ്പിക്കൽ അൽഗോരിതം</translation>
 <translation id="4880328057631981605">ആ‌ക്‌സസ് പോയിന്‍റിന്‍റെ പേര്</translation>
+<translation id="4881695831933465202">തുറക്കുക</translation>
 <translation id="488307179443832524">കുറുക്കുവഴി "<ph name="CONFLICT_ACCEL_NAME" />" എന്നതിനായി നിലവിൽ ഉപയോഗിക്കുന്നു. പുതിയൊരു കുറുക്കുവഴി അമർത്തുക.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">പുതിയ പാസ്‌വേഡ് പെട്ടെന്ന് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4891842000192098784">സമ്മർദ്ദം</translation>
+<translation id="4894055916816649664">10 മിനിറ്റ് മാത്രം</translation>
 <translation id="4897058166682006107">ഉപകരണത്തിന്റെ ഇടത് ബഡിൽ <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററിയുണ്ട്.</translation>
 <translation id="4905998861748258752">സ്ക്രീൻ സേവർ ഓപ്ഷനുകൾ തിരഞ്ഞെടുക്കാൻ ഫീച്ചർ ഓണാക്കുക</translation>
 <translation id="4910858703033903787">APN തരങ്ങൾ</translation>
 <translation id="4917385247580444890">ശക്തം</translation>
 <translation id="4917889632206600977">പ്രിന്റ് ജോലി നിർത്തി - പേപ്പറില്ല</translation>
 <translation id="491791267030419270">ഫീഡ്ബാക്ക് എഴുതുന്നതിനുള്ള നുറുങ്ങുകൾ</translation>
+<translation id="4918086044614829423">സ്വീകരിക്കുക</translation>
 <translation id="4921665434385737356"><ph name="NUM_SECONDS" /> സെക്കന്റിൽ <ph name="RATE" /> ചാർജ് ചെയ്‌തു.</translation>
 <translation id="4930320165497208503">കണക്ഷൻ സജ്ജീകരിക്കാനോ അപ്ഡേറ്റ് ചെയ്യാനോ <ph name="BEGIN_LINK" />ക്രമീകരണത്തിലേക്ക്<ph name="END_LINK" /> പോകുക.</translation>
 <translation id="4932733599132424254">തീയതി</translation>
 <translation id="493637535592633700">ബയോലുമിനസന്റ്</translation>
+<translation id="4937676329899947885">വൈഫൈ നെറ്റ്‌വർക്ക് സ്വീകരിക്കുന്നു</translation>
 <translation id="494102685638938793"><ph name="LINK_TEXT" />, പുതിയൊരു ടാബിൽ തുറക്കുന്നു</translation>
 <translation id="4946927805998996217">സംഗ്രഹം ജനറേറ്റ് ചെയ്യുന്നു</translation>
 <translation id="4950314376641394653"><ph name="VERSION" /> എന്ന പതിപ്പിലേക്ക് ഫേംവെയര്‍ <ph name="DEVICE_NAME" /> അപ്ഡേറ്റ് ചെയ്തു</translation>
 <translation id="4950893758552030541">മരങ്ങൾ സൃഷ്ടിക്കുന്ന ടണൽ</translation>
+<translation id="495164417696120157">{COUNT,plural, =1{ഒരു ഫയൽ}other{# ഫയലുകൾ}}</translation>
 <translation id="4964806321337443935">4k</translation>
 <translation id="4965661459364092269">'സുരക്ഷാ റീസെറ്റ്' പൂർത്തിയായി</translation>
 <translation id="4965703485264574128">ഒരു ഏകദേശ ഫലത്തിനായി, <ph name="CONVERSION_RATE" /> കൊണ്ട് <ph name="CATEGORY_TEXT" /> എന്ന മൂല്യത്തെ ഗുണിക്കുക</translation>
@@ -920,7 +976,9 @@
 <translation id="5095761549884461003">അപ്‌ഡേറ്റ് പ്രക്രിയ തുടരാൻ <ph name="DEVICE_NAME" /> എന്നതിന്റെ USB കേബിൾ അൺപ്ലഗ് ചെയ്‌ത ശേഷം വീണ്ടും ഇൻസേർട്ട് ചെയ്യുക</translation>
 <translation id="5099354524039520280">മുകളിലേക്ക്</translation>
 <translation id="5107243100836678918"><ph name="META_KEY" /> കീ ഇല്ലാത്ത കുറുക്കുവഴിയും മറ്റേതെങ്കിലും ആപ്പിന്റെ കുറുക്കുവഴികളും തമ്മിൽ മാറിപ്പോകാൻ ഇടയുണ്ട്. തുടർന്നും ഉപയോഗിക്കാൻ ഈ കുറുക്കുവഴിയിൽ അമർത്തുക, അല്ലെങ്കിൽ <ph name="KEY" /> കീ ഉപയോഗിക്കുന്ന പുതിയൊരു കുറുക്കുവഴിയിൽ അമർത്തുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
+<translation id="5127620150973591153">സുരക്ഷിത കണക്ഷൻ ഐഡി: <ph name="TOKEN" /></translation>
 <translation id="5130848777448318809">പോണികൾ</translation>
+<translation id="5136343472380336530">രണ്ട് ഉപകരണങ്ങളും അൺലോക്ക് ചെയ്‌തിട്ടുണ്ടെന്നും അടുത്തടുത്താണ് ഉള്ളതെന്നും Bluetooth ഓണാക്കിയിട്ടുണ്ടെന്നും ഉറപ്പാക്കുക. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="5137451382116112100">പൂർണ്ണ സ്ക്രീൻ</translation>
 <translation id="5139813694804168398">ശല്യപ്പെടുത്തരുത്</translation>
 <translation id="5140788690559353412">സ്‌കൂൾ അക്കൗണ്ടിലേക്കുള്ള ആക്‌സസ് നഷ്ടപ്പെടുമ്പോൾ, അനുബന്ധ ഇമെയിലിലേക്കും Gmail, Docs, Slides, എന്നിവയും മറ്റും പോലുള്ള Google Drive ഫയലുകളിലേക്കും നിങ്ങൾക്ക് ഇനി ആക്‌സസ് ഉണ്ടായിരിക്കില്ല.</translation>
@@ -942,6 +1000,7 @@
 <translation id="5222676887888702881">സൈൻ ഔട്ട് ചെയ്യുക</translation>
 <translation id="522307662484862935">ഇമെയില്‍ വിലാസം ഉൾപ്പെടുത്തരുത്</translation>
 <translation id="5223226274641517059">നിങ്ങൾ റെക്കോർഡ് ചെയ്യുമ്പോൾ തത്സമയ ട്രാൻസ്ക്രിപ്റ്റുകൾ കാണിക്കും. ക്രമീകരണത്തിൽ ഏതുസമയത്തും നിങ്ങൾക്ക് ഇത് ഓഫാക്കാം.</translation>
+<translation id="52254442782792731">നിലവിലെ ദൃശ്യപരതാ ക്രമീകരണം ഇതുവരെ സജ്ജീകരിച്ചിട്ടില്ല</translation>
 <translation id="5226879510707344687">ട്രാൻസ്‌ക്രിപ്റ്റ് എക്സ്പോർട്ട് ചെയ്യുക</translation>
 <translation id="5227902338748591677">ഡാർക്ക് തീം ഷെഡ്യൂൾ ചെയ്യൽ</translation>
 <translation id="5229104491259541281">"<ph name="QUERY" />" പരിവർത്തനം ചെയ്യുക</translation>
@@ -973,6 +1032,7 @@
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
 <translation id="5318334351163689047">പരാജയപ്പെട്ട TCP അഭ്യർത്ഥനകൾ</translation>
 <translation id="53196409393069519">ട്രാൻസ്‌ക്രിപ്‌ഷൻ ഓണാക്കണോ?</translation>
+<translation id="5324300749339591280">ആപ്പുകളുടെ ലിസ്‌റ്റ്</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">പുതിയ പാസ്‌വേഡ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="5333530671332546086">അജ്ഞാത പോര്‍ട്ടല്‍ നില</translation>
@@ -981,11 +1041,15 @@
 <translation id="5346687412805619883">ലോക്കൽ നെറ്റ്‌വർക്ക്</translation>
 <translation id="5358174242040570474">എന്തോ കുഴപ്പമുണ്ടായി. വാൾപേപ്പർ വീണ്ടും തിരഞ്ഞെടുത്ത് നോക്കുക അല്ലെങ്കിൽ ആപ്പ് വീണ്ടും തുറക്കുക.</translation>
 <translation id="5368228070728130240">'സംഗ്രഹവും പേരും സൃഷ്ടിക്കൽ' മോഡൽ ഡൗൺലോഡ് ചെയ്യാനാകുന്നില്ല. വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> റീസ്റ്റാർട്ട് ചെയ്യുക.</translation>
+<translation id="5368246151595623328"><ph name="DEVICE_NAME" /> എന്നതിൽ നിന്ന് '<ph name="NETWORK_NAME" />' സംരക്ഷിച്ചു</translation>
 <translation id="5372659122375744710">വെെഫെെ നെറ്റ്‌വർക്ക് സുരക്ഷിതമല്ല</translation>
+<translation id="5375318608039113175">ഈ കോൺടാക്‌റ്റുകൾക്കൊപ്പം സമീപമുള്ള പങ്കിടൽ ഉപയോഗിക്കാൻ, Google അക്കൗണ്ടുമായി ലിങ്ക് ചെയ്‌ത ഇമെയിൽ വിലാസം കോൺടാക്‌റ്റുകളിലേക്ക് ചേർക്കുക.</translation>
 <translation id="5376354385557966694">സ്വയമേവയുള്ള ലൈറ്റ് മോഡ്</translation>
 <translation id="5378184552853359930">IP തരം</translation>
+<translation id="5384401776498845256">ആർക്കൊക്കെ നിങ്ങളുമായി പങ്കിടാനാകും</translation>
 <translation id="5389159777326897627">വാൾപേപ്പറും സ്റ്റൈലും</translation>
 <translation id="5389224261615877010">റെയിൻബോ</translation>
+<translation id="5393761864111565424">{COUNT,plural, =1{ലിങ്ക്}other{# ലിങ്കുകൾ}}</translation>
 <translation id="5400907029458559844">ഉപകരണം കണക്റ്റ് ചെയ്യുന്നു.</translation>
 <translation id="5401938042319910061">എല്ലാ ദിനചര്യകളും റൺ ചെയ്യുക</translation>
 <translation id="5410755018770633464">ഹോട്ട്‌ഡോഗുകൾ</translation>
@@ -1001,6 +1065,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">സ്‌കാൻ പൂർത്തിയാക്കാനായില്ല</translation>
 <translation id="5499762266711462226">കീബോർഡിന്റെ നിറം വാൾപേപ്പറിനെ അടിസ്ഥാനമാക്കിയുള്ളതാണ്</translation>
+<translation id="5501809658163361512">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> ഉപകരണത്തിൽ നിന്ന് <ph name="ATTACHMENTS" /> സ്വീകരിക്കാനായില്ല}other{<ph name="DEVICE_NAME" /> ഉപകരണത്തിൽ നിന്ന് <ph name="ATTACHMENTS" /> സ്വീകരിക്കാനായില്ല}}</translation>
 <translation id="5502931783115429516">Android റൺ ചെയ്യുന്നില്ല</translation>
 <translation id="550600468576850160">പുൽത്തകിടി</translation>
 <translation id="5507504956167780539">തിളങ്ങുന്ന കരിമണൽ നിറഞ്ഞതും നാടകീയമായ നിഴലുകളുള്ളതുമായ മണൽക്കുന്നുകളുടെ ലളിതവും പ്രൊഫഷണലുമായ ഫോട്ടോ</translation>
@@ -1047,6 +1112,7 @@
 <translation id="5703716265115423771">വോളിയം കുറയ്‌ക്കുക</translation>
 <translation id="5707900041990977207"><ph name="TOTAL_PAGES" />-ൽ <ph name="CURRENT_PAGE" /></translation>
 <translation id="572854785834323605"><ph name="SHORTCUT_DESCRIPTION" /> എന്നതിനുള്ള 'എഡിറ്റ് ചെയ്യുക' ബട്ടൺ.</translation>
+<translation id="5740328398383587084">സമീപമുള്ള പങ്കിടൽ</translation>
 <translation id="574392208103952083">ഇടത്തരം</translation>
 <translation id="5744175046705638478">"<ph name="QUERY" />" വിവർത്തനം ചെയ്യുക</translation>
 <translation id="5757187557809630523">അടുത്ത ട്രാക്ക്</translation>
@@ -1056,6 +1122,7 @@
 <translation id="5779818640587041940">റെക്കോർഡ് ചെയ്യുമ്പോൾ സ്ക്രീൻ ഓണാക്കി വയ്‌ക്കുക</translation>
 <translation id="57838592816432529">മ്യൂട്ട് ചെയ്യുക</translation>
 <translation id="5784136236926853061">ഉയർന്ന HTTP പ്രതികരണ സമയം</translation>
+<translation id="5787420647064736989">ഉപകരണത്തിന്റെ പേര്</translation>
 <translation id="5790391387506209808">ലാപിസ് ലസുലി</translation>
 <translation id="5816802250591013230">കുറുക്കുവഴിയൊന്നും സജ്ജീകരിച്ചിട്ടില്ല</translation>
 <translation id="5826644637650799838">ആർട്ടിനെ കുറിച്ച്</translation>
@@ -1093,6 +1160,7 @@
 <translation id="5931523347251946569">ഫയൽ കണ്ടെത്തിയില്ല</translation>
 <translation id="5939518447894949180">റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="5942727615796467094">ഈ <ph name="DEVICE_TYPE" /> ഉപയോഗിക്കാനാകുന്ന സമയം <ph name="MANAGER" /> അഡ്മിൻ സജ്ജീകരിച്ചു</translation>
+<translation id="5942779427914696408">ഉപകരണ ദൃശ്യപരത</translation>
 <translation id="594552776027197022">ക്രമരഹിതമായ കീ ജോടി സൃഷ്‌ടിക്കുക</translation>
 <translation id="5946538341867151940">നിങ്ങൾ ഇതുവരെ കണക്റ്റ് ചെയ്‌തിട്ടില്ല. നിങ്ങളുടെ മൊബൈൽ സേവനദാതാവ് ഒരു ഇഷ്‌ടാനുസൃത APN നിർദ്ദേശിക്കുന്നുവെങ്കിൽ, "+ പുതിയ APN" തിരഞ്ഞെടുത്ത് APN വിവരങ്ങൾ നൽകുക</translation>
 <translation id="5948460390109837040">നായകൾ</translation>
@@ -1103,6 +1171,8 @@
 <translation id="5982621672636444458">അടുക്കൽ ഓപ്‌ഷനുകൾ</translation>
 <translation id="5984145644188835034">ഡിഫോൾട്ട് വാൾപേപ്പർ</translation>
 <translation id="5996832681196460718">പട്ട്</translation>
+<translation id="6002122790816966947">നിങ്ങളുടെ ഉപകരണങ്ങൾ</translation>
+<translation id="6016462059150340136">സമീപമുള്ള ആർക്കും</translation>
 <translation id="6016750809509395299">ജനറേറ്റ് ചെയ്ത പേരുകൾ:</translation>
 <translation id="6017514345406065928">പച്ച</translation>
 <translation id="6019566113895157499">Key Shortcuts</translation>
@@ -1134,6 +1204,7 @@
 <translation id="6120815036186828722">സംഭാഷണം കേൾക്കുന്നു…</translation>
 <translation id="6122191549521593678">ഓൺലൈൻ</translation>
 <translation id="6122277663991249694">ChromeOS ഇൻപുട്ട് രീതി ലഭ്യമാക്കുന്ന സേവനം</translation>
+<translation id="6122600716821516697">ഈ ഉപകരണവുമായി പങ്കിടണോ?</translation>
 <translation id="6127426868813166163">വെള്ള</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">സൈബർപങ്ക്</translation>
@@ -1142,6 +1213,7 @@
 <translation id="6146993107019042706">പൂർത്തിയാക്കാൻ നിങ്ങളുടെ പുതിയ പാസ്‌വേഡ് നൽകുക</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6149015141270619212">ഇന്റർനെറ്റ് കണ‌ക്‌റ്റ് ചെയ്യാനാവുന്നില്ല</translation>
+<translation id="6150278227694566734">ചില കോൺടാക്‌റ്റുകൾ</translation>
 <translation id="6156030503438652198">മെറൂണും പിങ്കും</translation>
 <translation id="6163318050265152852">പേരുകൾ സൃഷ്ടിക്കാനാകില്ല. ഹ്രസ്വമായ ട്രാൻസ്‌ക്രിപ്റ്റ് പരീക്ഷിക്കുക.</translation>
 <translation id="6165508094623778733">കൂടുതലറിയുക</translation>
@@ -1156,7 +1228,6 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">സ്‌കാനറുകളൊന്നും ലഭ്യമല്ല</translation>
 <translation id="6232017090690406397">ബാറ്ററി</translation>
-<translation id="6234024205316847054">ഔട്ട്ലൈനുകൾ കാണിക്കുക</translation>
 <translation id="6243280677745499710">നിലവിൽ സജ്ജീകരിച്ചിരിക്കുന്നത്</translation>
 <translation id="6250316632541035980">ബേക്കണും മുട്ടയും</translation>
 <translation id="6262413940100821797">അജ്ഞാത സ്വീകർത്താവ്</translation>
@@ -1167,7 +1238,9 @@
 <translation id="6283581480003247988">നീലയും പർപ്പിളും</translation>
 <translation id="6284632978374966585">ഡാർക്ക് തീം ഓണാക്കുക</translation>
 <translation id="6285260286443238386">റെക്കോർഡിംഗ് എക്സ്പോർട്ട് ചെയ്യുക</translation>
+<translation id="6285770818046456882">നിങ്ങളുമായി പങ്കിടുന്ന ഉപകരണം, കൈമാറ്റം റദ്ദാക്കി</translation>
 <translation id="628726841779494414">പ്രിന്റർ ക്രമീകരണത്തിൽ നിങ്ങളുടെ പ്രിന്ററുകൾ മാനേജ് ചെയ്യുക</translation>
+<translation id="6290613030083731160">പങ്കിടുന്ന ഉപകരണങ്ങളൊന്നും സമീപത്ത് ലഭ്യമല്ല. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="6292095526077353682">ചാർജ് ചെയ്യുമ്പോൾ സ്‌ക്രീൻ സേവർ കാണിക്കേണ്ട സമയ ദൈർഘ്യം:</translation>
 <translation id="629550705077076970">കീബോർഡ് മങ്ങിക്കൽ</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> പരിശോധന റദ്ദാക്കി</translation>
@@ -1181,13 +1254,16 @@
 <translation id="6327262166342360252">ഇനിപ്പറയുന്ന ടെക്‌സ്റ്റ് ഉൾപ്പെടുത്തി, AI ഉപയോഗിച്ചാണ് ഈ വാൾപേപ്പർ സൃഷ്‌ടിച്ചത്: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">സ്വയമേവയുള്ള ഡാർക്ക് തീം</translation>
 <translation id="6340526405444716530">വ്യക്തിപരമാക്കൽ</translation>
+<translation id="634792071306410644">നിങ്ങൾ ദൃശ്യപരത ഓണാക്കുന്നത് വരെ ആർക്കും നിങ്ങളുമായി പങ്കിടാനാകില്ല</translation>
 <translation id="6348252528297699679">ക്രമീകരണം &gt; സ്വകാര്യതയും സുരക്ഷയും &gt; സ്വകാര്യതാ നിയന്ത്രണങ്ങൾ &gt; ലൊക്കേഷൻ ആക്‌സസ് എന്നിങ്ങനെ പോയി നിങ്ങൾക്ക് ലൊക്കേഷൻ ഓഫാക്കാം. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">ഉപയോക്തൃനാമവും പാസ്‍വേഡും</translation>
 <translation id="6352210854422428614">മറ്റൊരു ഗ്രഹം</translation>
 <translation id="6359706544163531585">ലൈറ്റ് തീം പ്രവർത്തനരഹിതമാക്കുക</translation>
 <translation id="6359919876285606596">ഈ പ്രവർത്തനം ശാശ്വതമാണ്, പഴയപടിയാക്കാനാകില്ല</translation>
+<translation id="6367985768157257101">സമീപമുള്ള പങ്കിടൽ ഉപയോഗിച്ച് സ്വീകരിക്കണോ?</translation>
 <translation id="636850387210749493">സംരംഭ വിവരപ്പട്ടിക</translation>
 <translation id="6373461326814131011">കുളം</translation>
+<translation id="6378392501584240055">വൈഫൈ നെറ്റ്‌വർക്കുകളിൽ തുറക്കുക</translation>
 <translation id="6379086450106841622">ടച്ച്സ്ക്രീൻ</translation>
 <translation id="6381741036071372448">നിങ്ങളുടെ കീബോർഡ് പരീക്ഷിക്കുക</translation>
 <translation id="6382182670717268353">സ്ക്രീൻ സേവർ പ്രിവ്യൂ</translation>
@@ -1208,9 +1284,11 @@
 <translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">ദുർബലം (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">അക്കൗണ്ട് ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
+<translation id="6452181791372256707">നിരസിക്കുക</translation>
 <translation id="6462978824459367242">APN ചേർക്കുക ബട്ടൺ ഇപ്പോൾ പ്രവർത്തനക്ഷമമാക്കി</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{പേജ് വീണ്ടും സ്‌കാൻ ചെയ്യണോ?}=1{{PAGE_NUMBER}-ാം പേജ് വീണ്ടും സ്‌കാൻ ചെയ്യണോ?}other{{PAGE_NUMBER}-ാം പേജ് വീണ്ടും സ്‌കാൻ ചെയ്യണോ?}}</translation>
 <translation id="6468146470109254228">നിങ്ങളുടെ ഏറ്റവും അടുത്തിടെയുള്ള 3 പ്രോംപ്റ്റുകളും ഔട്ട്പുട്ടുകളും. വാൾപേപ്പറും സ്റ്റൈലും ഉപയോഗിക്കുമ്പോൾ മാത്രമേ നിങ്ങൾക്ക് ഇവ ആക്‌സസ് ചെയ്യാനാകൂ.</translation>
+<translation id="6468773105221177474"><ph name="FILE_COUNT" /> ഫയലുകൾ</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">ബോട്ടുകൾ</translation>
 <translation id="64778964625672495">കടും ചുവപ്പ്</translation>
@@ -1228,6 +1306,7 @@
 <translation id="6517239166834772319">അടുത്തറിയുക</translation>
 <translation id="6526200165918397681">വാൾപേപ്പർ പൊരുത്തപ്പെടുത്തുക</translation>
 <translation id="6527081081771465939">അജ്ഞാതമായ വെെഫെെ സുരക്ഷാ പ്രോട്ടോക്കോൾ</translation>
+<translation id="6527303717912515753">പങ്കിടുക</translation>
 <translation id="6531528791584205545">ക്വിക്ക് ഇൻസേർട്ട്</translation>
 <translation id="6535178685492749208">നിങ്ങൾ ഓഫ്‌ലൈനാണ്. ഫീഡ്‌ബാക്ക് പിന്നീട് അയയ്ക്കും.</translation>
 <translation id="6543412779435705598">ടാകോസ്</translation>
@@ -1252,6 +1331,7 @@
 <translation id="6618744767048954150">റൺ ചെയ്യുന്നു</translation>
 <translation id="6620487321149975369">നേരിട്ട് നീക്കം ചെയ്തില്ലെങ്കിൽ പ്രിന്റ് ജോലികൾ ചരിത്രത്തിൽ ദൃശ്യമാകും</translation>
 <translation id="6624819909909965616">10 MB-യിൽ കൂടുതലുള്ള ഫയൽ അപ്‌ലോഡ് ചെയ്യാനാകില്ല</translation>
+<translation id="6635362468090274700">നിങ്ങൾ ദൃശ്യപരതാ ക്രമീകരണം ഓണാക്കുന്നത് വരെ ആർക്കും നിങ്ങളുമായി പങ്കിടാനാകില്ല.<ph name="BR" /><ph name="BR" />താൽക്കാലികമായി നിങ്ങളുടെ ഉപകരണം ദൃശ്യമാക്കാൻ, സ്‌റ്റാറ്റസ് ഏരിയ തുറന്ന് സമീപമുള്ള ദൃശ്യപരത ഓണാക്കുക.</translation>
 <translation id="6643016212128521049">മായ്‌ക്കുക</translation>
 <translation id="6647510110698214773">എൻക്രിപ്ഷൻ അൽഗോരിതം</translation>
 <translation id="6648412990074186169">മിനിമൽ</translation>
@@ -1260,10 +1340,12 @@
 <translation id="6657585470893396449">പാസ്‌വേഡ്</translation>
 <translation id="66621959568103627">കോറൽ പിങ്ക്</translation>
 <translation id="6669485505082792176">ഇപ്പോൾ ഇതിന്റെ ചിത്രങ്ങൾ സൃഷ്ടിക്കാനാകില്ല. നിങ്ങളുടെ വിവരണം മറ്റൊരു തരത്തിൽ നൽകി വീണ്ടും ശ്രമിക്കുക. നിങ്ങൾക്ക് ആളുകളുടെ ചിത്രങ്ങളും ഹാനികരമോ പ്രായപൂർത്തിയായവർക്കുള്ളതോ ആയ ഉള്ളടക്കമോ സൃഷ്ടിക്കാനാകില്ല എന്ന കാര്യം ഓർമ്മിക്കുക. <ph name="BEGIN_LINK_LEARN_MORE" />കൂടുതലറിയുക<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="6671320560732140690">{COUNT,plural, =1{ഒരു വിലാസം}other{# വിലാസങ്ങൾ}}</translation>
 <translation id="6673898378497337661">കീബോർഡിന്റെ തെളിച്ചം കൂട്ടുക</translation>
 <translation id="6692996468359469499">നിങ്ങളുടെ തിരഞ്ഞെടുക്കലുമായി ബന്ധപ്പെട്ട വിവരങ്ങൾ നേടുക</translation>
 <translation id="6694534975463174713">ലോക്ക്</translation>
 <translation id="6700703207451721535">ഈ ലിങ്കിന് ആക്‌സസ് അനുവദനീയമല്ല. ആക്‌സസ് ആവശ്യമാണെങ്കിൽ നിങ്ങളുടെ അധ്യാപകരെ ബന്ധപ്പെട്ട് പരിശോധിക്കുക.</translation>
+<translation id="6702859741546259407"><ph name="FEATURE_NAME" /> ഉപയോഗിക്കാൻ, Bluetooth-ഉം വൈഫൈയും ഓണാക്കുക</translation>
 <translation id="6703179086771097594">മികച്ചതല്ല എന്ന് തോന്നിയ കാര്യങ്ങൾ എന്തൊക്കെയാണ്?</translation>
 <translation id="6704062477274546131">DNS റെസല്യൂഷൻ</translation>
 <translation id="6712933881624804031">താഴ്വര</translation>
@@ -1292,23 +1374,28 @@
 <translation id="6791471867139427246">കീബോർഡ് ലൈറ്റിന്റെ നിറം</translation>
 <translation id="6796229976413584781">കുറുക്കുവഴി ഇല്ലാതാക്കി</translation>
 <translation id="6798678288485555829">ടെക്സ്റ്റ് നാവിഗേഷൻ</translation>
+<translation id="6806781719264274042">Google Account ഉള്ള നിങ്ങളുടെ കോൺടാക്റ്റുകൾ മാത്രം. <ph name="LINK_BEGIN" />കോൺടാക്റ്റുകൾ കാണുക<ph name="LINK_END" /></translation>
 <translation id="680983167891198932">കീ</translation>
 <translation id="6816797338148849397">നിങ്ങളുടെ തിരഞ്ഞെടുപ്പുമായി ബന്ധപ്പെട്ട വിവരങ്ങൾ ലഭ്യമാണ്. ആക്‌സസ് ചെയ്യാൻ മുകളിലേയ്ക്കുള്ള അമ്പടയാളം കീ ഉപയോഗിക്കുക.</translation>
 <translation id="6831043979455480757">വിവർത്തനം ചെയ്യുക</translation>
+<translation id="6842135459748401207"><ph name="USER_EMAIL" /> എന്നതിലേക്ക് സൈൻ ഇൻ ചെയ്‌ത ഉപകരണങ്ങൾ മാത്രം</translation>
 <translation id="6846843854964504403">സുരക്ഷാ റീസെറ്റ്</translation>
 <translation id="6853312040151791195">ഡിസ്‌ചാർജ് ചെയ്യൽ റേറ്റ്</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
 <translation id="6862228900689076919">ഈ ആപ്പ് മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ അഡ്‌മിൻ ആണ്</translation>
 <translation id="6862416241246624313">ഫീഡ്‌ബാക്ക് സമർപ്പിച്ചു</translation>
 <translation id="6866732840889595464">ഡെയ്‌സി</translation>
 <translation id="6871256179359663621">ഇളം പർപ്പിൾ നിറം</translation>
 <translation id="6887967050249348172">ക്രമീകരണത്തിൽ മാറ്റങ്ങൾ വരുത്തുന്നത് തടയാൻ വിപുലീകരണങ്ങൾ പ്രവർത്തനരഹിതമാക്കി. നിങ്ങൾ വിശ്വസിക്കുന്ന വിപുലീകരണങ്ങൾ മാത്രം ഓണാക്കുക.</translation>
 <translation id="6889786074662672253">റീസ്റ്റാർട്ട് ചെയ്തുകൊണ്ടിരിക്കുമ്പോൾ, ഈ ബാഹ്യ ഉപകരണം അൺപ്ലഗ് ചെയ്യാനോ നിങ്ങളുടെ കമ്പ്യൂട്ടർ ഷട്ട് ഡൗൺ ചെയ്യാനോ പാടില്ല. നിങ്ങൾക്ക് ഈ വിൻഡോ ചെറുതാക്കാം. ഇത് പൂർത്തിയാകാൻ ഏതാനും മിനിറ്റുകൾ എടുത്തേക്കാം, അതുവരെ നിങ്ങളുടെ ബാഹ്യ ഉപകരണം പ്രവർത്തിക്കില്ല.</translation>
+<translation id="6896758677409633944">പകര്‍ത്തുക</translation>
 <translation id="6899460405678814458">സംഗ്രഹം കാണിക്കുക</translation>
 <translation id="6900701049656042631">ഈ ആൽബത്തിൽ ഫോട്ടോകളൊന്നുമില്ല. ഫോട്ടോകൾ ചേർക്കാൻ, <ph name="LINK" /> -ലേക്ക് പോകുക</translation>
 <translation id="6902359863093437070">AI ഉപയോഗിച്ച് പശ്ചാത്തലം സൃഷ്ടിക്കുക</translation>
 <translation id="6905163627763043954">പരീക്ഷിക്കുക</translation>
 <translation id="6905275015682612674">നക്ഷത്രങ്ങൾ നിറഞ്ഞ ആകാശത്തോട് കൂടിയ ജൈവദീപ്‌തി ദൃശ്യമായ കടൽത്തീരത്തിന്റെ ലോങ് എക്സ്പോഷർ ഫോട്ടോ, മനോഹരമായ പേസ്റ്റൽ നിറങ്ങൾ, 4k-യിൽ</translation>
 <translation id="6905724422583748843"><ph name="PAGE_NAME" /> എന്ന പേജിലേക്ക് മടങ്ങുക</translation>
+<translation id="6909422577741440844">ഈ ഉപകരണത്തിൽ നിന്ന് സ്വീകരിക്കണോ?</translation>
 <translation id="6910312834584889076">സ്‌കാനറിന്റെ കവർ തുറന്നിരിക്കുന്നു. കവർ അടച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="6910845598686542904">റെക്കോർഡിംഗിലെ തിരിച്ചറിഞ്ഞ ശബ്‌ദങ്ങളുടെ മാതൃകകൾ കണക്കാക്കുന്നു</translation>
 <translation id="6911383237894364323">മീഡിയ സെർവറുകളിലേക്ക് കണക്റ്റ് ചെയ്യാനാകുന്നില്ല</translation>
@@ -1335,6 +1422,7 @@
 <translation id="6978396562261420054">ജനറേറ്റ് ചെയ്ത ചിത്രം</translation>
 <translation id="6981982820502123353">ഉപയോഗസഹായി</translation>
 <translation id="6982462588253070448">മണൽക്കൂനകൾ</translation>
+<translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} ഫയൽ}other{{COUNT} ഫയലുകൾ}}</translation>
 <translation id="7005833343836210400">ഉപകരണം ഓഫ്‌ലൈനാണ്</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ഈ ഉപകരണം മാനേജ് ചെയ്യുന്നു, സന്ദർശിച്ച വെബ്‌പേജുകൾ, പാസ്‌വേഡുകൾ, ഇമെയിൽ എന്നിവയുൾപ്പെടെ ഉപയോക്താവിന്റെ എല്ലാ ആക്‌റ്റിവിറ്റികളിലേക്കും ആക്‌സസും ഉണ്ടായിരിക്കും.</translation>
 <translation id="7035168792582749309">ഉരുളക്കിഴങ്ങുകൾ</translation>
@@ -1361,6 +1449,7 @@
 <translation id="7103793063702494489">തിരഞ്ഞെടുത്ത ഭാഷ</translation>
 <translation id="7107255225945990211"><ph name="PRODUCT_NAME" /> എക്‌സ്‌ക്ലൂസീവ് ആർട്ട്‌വർക്ക് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7108668606237948702">നല്‍കുക</translation>
+<translation id="7115361495406486998">ബന്ധപ്പെടാവുന്ന കോൺടാക്‌റ്റുകളൊന്നുമില്ല</translation>
 <translation id="7117228822971127758">പിന്നീട് വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="7118522231018231199">നിങ്ങളുടെ മൊബൈൽ ദാതാവോ അഡ്‌മിനോ നൽകിയ APN-കൾ തിരഞ്ഞെടുക്കുന്നുവെന്ന് ഉറപ്പാക്കുക. ഒരു APN തിരഞ്ഞെടുക്കുന്നത് എല്ലാ ഇഷ്‌ടാനുസൃത APN-കളും പ്രവർത്തനരഹിതമാക്കും. അസാധുവായ APN-കൾ നിങ്ങളുടെ മൊബൈൽ കണക്ഷനെ തടസ്സപ്പെടുത്തിയേക്കാം.</translation>
 <translation id="7119389851461848805">പവർ</translation>
@@ -1393,6 +1482,8 @@
 <translation id="7223952304612664117">നിങ്ങളുടെ ലൊക്കേഷൻ നിർണയിക്കുന്നതിന് ലൊക്കേഷൻ കൃത്യത ഉപയോഗിക്കാൻ ഇത് സിസ്റ്റം സർവീസുകളെ അനുവദിക്കുന്നു. ഉപകരണ ലൊക്കേഷൻ കണക്കാക്കാൻ, വയർലെസ് സിഗ്നലുകളെ കുറിച്ചുള്ള വിവരങ്ങളും സെൻസറുകളും 'ലൊക്കേഷൻ കൃത്യത' ഉപയോഗിക്കുന്നു.</translation>
 <translation id="7233782086689993269">കുറുക്കുവഴി പുനഃസ്ഥാപിച്ചു</translation>
 <translation id="723419678599947502">Google AI ഉപയോഗിച്ച് പേര് സൃഷ്ടിക്കുക</translation>
+<translation id="7239108166256782787"><ph name="DEVICE_NAME" /> കൈമാറ്റം റദ്ദാക്കി</translation>
+<translation id="7250616558727237648">നിങ്ങൾ ഫയൽ പങ്കിടാൻ ശ്രമിച്ച ഉപകരണം പ്രതികരിക്കുന്നില്ല. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="725133483556299729">ഇമെയിൽ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7255187042098209569">പിങ്കും പർപ്പിളും</translation>
 <translation id="7267918995585557751">ഡിഫോൾട്ട് ആരംഭ പേജ് ഒരു ഫിഷിംഗ് വെബ്‌സൈറ്റ് അല്ലെന്ന് ഉറപ്പാക്കാനായി റീസെറ്റ് ചെയ്യുക. നിങ്ങൾക്ക് വിശ്വാസമുള്ള വെബ്‌സൈറ്റുകൾ മാത്രം ഉപയോഗിക്കുക.</translation>
@@ -1415,17 +1506,21 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">പച്ചയും ടീലും</translation>
 <translation id="7328475450575141167">ബേഡ് ഓഫ് പാരഡെെസ്</translation>
+<translation id="7330533963640151632"><ph name="USER_NAME" /> എന്നയാളുടെ ഉപകരണത്തിന്റെ <ph name="FEATURE_NAME" /> ക്രമീകരണം <ph name="USER_EMAIL" /> എന്ന അക്കൗണ്ടിന് കീഴിൽ പങ്കിടുന്നു.</translation>
 <translation id="7343649194310845056">നെറ്റ്‌വർക്ക് ഉപകരണങ്ങൾ</translation>
 <translation id="7344788170842919262">എർത്തി</translation>
 <translation id="7346768383111016081">നിങ്ങളുടെ കീബോർഡ് ഉപയോഗിച്ച് കളിക്കാൻ ഗെയിം പ്രവർത്തനത്തിൽ നിയന്ത്രണം സജ്ജീകരിക്കുക</translation>
 <translation id="7352651011704765696">എന്തോ കുഴപ്പം സംഭവിച്ചു</translation>
+<translation id="7353261921908507769">നിങ്ങളുടെ സമീപത്തുള്ളപ്പോൾ കോൺടാക്റ്റുകൾക്ക് നിങ്ങളുമായി പങ്കിടാം. നിങ്ങൾ അത് സ്വീകരിക്കുന്നത് വരെ കൈമാറ്റം ആരംഭിക്കില്ല.</translation>
 <translation id="7353413232959255829"><ph name="LIST_SIZE" /> തിരയൽ ഫലങ്ങളിൽ <ph name="LIST_POSITION" />-ാമത്തേത്: <ph name="SEARCH_RESULT_TEXT" />. കുറുക്കുവഴിയിലേക്ക് നാവിഗേറ്റ് ചെയ്യാൻ Enter അമർത്തുക.</translation>
 <translation id="7359657277149375382">ഫയല്‍ തരം</translation>
 <translation id="73631062356239394">പ്രശ്നനിർണ്ണയ ഡാറ്റ പങ്കിടുക</translation>
+<translation id="7366316827772164604">സമീപ ഉപകരണങ്ങൾക്ക് സ്‌കാൻ ചെയ്യുന്നു…</translation>
 <translation id="7369648056634183167">സങ്കീർണ്ണമായ ഘടനയുള്ളതും മഞ്ഞ് മൂടിക്കിടക്കുന്നതുമായ ആമ്പൽപ്പൂ മഴയത്ത് നിൽക്കുന്നതിന്റെ ക്ലോസപ്പ്. മൃദുലമായ ഇതളുകളിലും വെളിച്ചം പ്രതിഫലിക്കുന്ന വെള്ളത്തുള്ളികളിലുമാണ് ഫോക്കസ്, അവയുടെ ഊഷ്‌മളമായ പേസ്റ്റൽ നിറങ്ങൾ നീല പശ്ചാത്തലത്തിൽ ക്യാപ്‌ച്വർ ചെയ്യുന്നു. സ്വാഭാവിക വെളിച്ചത്തിൽ, കണ്ണിന്റെ ലെവലിൽ എടുത്തത്</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378170410161264436">Recorder-ന് സംഭാഷണത്തിനൊപ്പം ട്രാൻസ്‌ക്രിപ്റ്റുകൾ സൃഷ്ടിക്കാൻ കഴിയും.
 ഈ ട്രാൻസ്‌ക്രിപ്റ്റുകൾ നേടാൻ ട്രാൻസ്‌ക്രിപ്ഷൻ മോഡൽ (100MB വരെ) ഡൗൺലോഡ് ചെയ്യുക.</translation>
+<translation id="7380622428988553498">ഉപകരണ നാമത്തിൽ അസാധുവായ പ്രതീകങ്ങൾ അടങ്ങിയിരിക്കുന്നു</translation>
 <translation id="7384004438856720753">കൊട്ടാരം</translation>
 <translation id="7388345524791662148"><ph name="RECORDING_NAME" /> എന്നതിനുള്ള കൂടുതൽ ഓപ്‌ഷനുകൾ</translation>
 <translation id="7388959671917308825">ബിൽറ്റ് ഇൻ ടച്ച്‌പാഡ്</translation>
@@ -1438,6 +1533,8 @@
 <translation id="7425832472614771259"><ph name="LANGUAGE_NAME" /> ട്രാൻസ്‌ക്രിപ്ഷൻ മോഡൽ <ph name="PROGRESS_PERCENTAGE" />% ഡൗൺലോഡ് ചെയ്തു</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">ഈ APN പ്രവർത്തനരഹിതമാക്കാനോ നീക്കം ചെയ്യാനോ കഴിയില്ല. പ്രവർത്തനക്ഷമമാക്കിയ <ph name="ATTACH" /> APN-കൾ പ്രവർത്തനരഹിതമാക്കുകയോ നീക്കം ചെയ്യുകയോ ചെയ്തിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക.</translation>
+<translation id="7439519621174723623">തുടരുന്നതിന് ഒരു ഉപകരണ നാമം ചേർക്കുക</translation>
+<translation id="7457831169406914076">{COUNT,plural, =1{ഒരു ലിങ്ക്}other{# ലിങ്കുകൾ}}</translation>
 <translation id="7458970041932198923">അവതാറുകൾ കാണാനും സജ്ജീകരിക്കാനും ഒരു നെറ്റ്‌വർക്കിലേക്ക് കണക്റ്റുചെയ്‌ത് പേജ് റീലോഡ് ചെയ്യുക.</translation>
 <translation id="7469648432129124067">പോര്‍ട്ടല്‍ തിരിച്ചറിഞ്ഞു</translation>
 <translation id="7481312909269577407">മുന്നോട്ട്</translation>
@@ -1470,11 +1567,14 @@
 <translation id="7590883480672980941">ഇൻപുട്ട് ക്രമീകരണം</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> ശേഷിക്കുന്നു</translation>
 <translation id="7600430297804876776">ഈ <ph name="DEVICE_TYPE" /> ഉപയോഗിക്കാനാകുന്ന സമയം <ph name="MANAGER" /> അഡ്മിൻ സജ്ജീകരിച്ചു.</translation>
+<translation id="7610337976012700501">ഈ കോൺടാക്റ്റുകൾക്കൊപ്പം <ph name="FEATURE_NAME" /> ഉപയോഗിക്കാൻ, അവരുടെ Google Account-മായി ലിങ്ക് ചെയ്തിരിക്കുന്ന ഇമെയിൽ വിലാസം നിങ്ങളുടെ കോൺടാക്റ്റുകളിലേക്ക് ചേർക്കുക.</translation>
 <translation id="7618216277886673749"><ph name="LANGUAGE_NAME" /> തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7618774594543487847">ന്യൂട്രൽ</translation>
 <translation id="7620771111601174153">സഹായകേന്ദ്രത്തിൽ കൂടുതലറിയുക</translation>
 <translation id="7623327321610992184">OnTask പോഡ്</translation>
 <translation id="7633068090678117093">പശ്ചാത്തല ചിത്രം</translation>
+<translation id="7634566076839829401">എന്തോ കുഴപ്പം സംഭവിച്ചു, വീണ്ടും ശ്രമിക്കുക.</translation>
+<translation id="7637593984496473097">മതിയായ ഡിസ്‌ക് ഇടം ഇല്ല</translation>
 <translation id="763873111564339966">ഇൻഡിഗോ</translation>
 <translation id="7648838807254605802">ഉയർന്ന HTTPS പ്രതികരണ സമയം</translation>
 <translation id="7656388927906093505">ഉപകരണം ഒരു മൗസാണ്.</translation>
@@ -1489,15 +1589,18 @@
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
 <translation id="7718231387947923843">കീബോർഡ് ലെെറ്റ്</translation>
+<translation id="7719588063158526969">ഉപകരണത്തിന്റെ പേര് ദെെർഘ്യമേറിയതാണ്</translation>
 <translation id="7730077286107534951">അക്കൗണ്ടും സിസ്‌റ്റവുമായി ബന്ധപ്പെട്ട ചില വിവരങ്ങൾ Google-ന് അയച്ചേക്കാം. ഞങ്ങളുടെ <ph name="BEGIN_LINK2" />സ്വകാര്യതാ നയത്തിനും<ph name="END_LINK2" /> <ph name="BEGIN_LINK3" />സേവന നിബന്ധനകൾക്കും<ph name="END_LINK3" /> വിധേയമായി, സാങ്കേതിക പ്രശ്നങ്ങൾ പരിഹരിക്കാനും സേവനങ്ങൾ മെച്ചപ്പെടുത്താനും സഹായിക്കുന്നതിന് ഞങ്ങൾ ഈ വിവരങ്ങൾ ഉപയോഗിക്കുന്നു. ഉള്ളടക്ക മാറ്റങ്ങൾ അഭ്യർത്ഥിക്കാൻ <ph name="BEGIN_LINK1" />നിയമ സഹായം<ph name="END_LINK1" /> എന്നതിലേക്ക് പോകുക.</translation>
 <translation id="773153675489693198">സൈക്കിളിന്റെ എണ്ണം</translation>
 <translation id="7746357909584236306">എഡിറ്റ് ചെയ്യാവുന്നത്</translation>
 <translation id="7747039790905080783">മുമ്പ് പങ്കിട്ട കീ</translation>
 <translation id="7752963721013053477">ഉദയം മുതൽ അസ്തമയം വരെ - എക്‌സ്‌ക്ലൂസീവ്</translation>
+<translation id="7757739382819740102">സമീപത്തുള്ള കോൺടാക്റ്റുകൾക്ക് നിങ്ങളുമായി പങ്കിടാം. അനുമതി ആവശ്യമാണ്.</translation>
 <translation id="7760571082554155847">ഹോംപേജ് ക്രമീകരണം</translation>
 <translation id="7762130827864645708">നിങ്ങൾ പാസ്‌വേഡ് മാറ്റി. ഇപ്പോൾ മുതൽ പുതിയ പാസ്‌വേഡ് ഉപയോഗിക്കുക.</translation>
 <translation id="7763470514545477072">ഡൊമെയ്ന്‍ സഫിക്സ് പൊരുത്തം</translation>
 <translation id="7764171263909999400">വോള്യുമെട്രിക് ലൈറ്റ്</translation>
+<translation id="7765507180157272835">Bluetooth-ഉം വൈഫൈയും ആവശ്യമാണ്</translation>
 <translation id="7769672763586021400">മോഡൽ ഐഡി</translation>
 <translation id="7774759755755950354">മടങ്ങുക</translation>
 <translation id="7778717409420828014">നിങ്ങളുടെ ഫീഡ്ബാക്ക് Chromebook അനുഭവം മെച്ചപ്പെടുത്താൻ ഞങ്ങളെ സഹായിക്കും, അത് ഞങ്ങളുടെ ടീം അവലോകനവും ചെയ്യും. നിരവധി റിപ്പോർട്ടുകൾ ലഭിക്കുന്നതിനാൽ ഞങ്ങൾക്ക് മറുപടി അയയ്‌ക്കാനാകില്ല.</translation>
@@ -1505,6 +1608,7 @@
 <translation id="7784116172884276937">DNS സെർവറുകളൊന്നും സജ്ജീകരിച്ചിട്ടില്ല</translation>
 <translation id="7791543448312431591">ചേര്‍ക്കൂ</translation>
 <translation id="779591286616261875">പുതിയ റിപ്പോർട്ട് അയയ്ക്കുക</translation>
+<translation id="7799650166313181433"><ph name="USER_EMAIL" /> എന്ന അക്കൗണ്ടിൽ സൈൻ ഇൻ ചെയ്തിരിക്കുന്ന ഉപകരണങ്ങൾക്ക് മാത്രമേ ഈ ഉപകരണവുമായി പങ്കിടാനാകൂ. നിങ്ങളുടെ ഉപകരണങ്ങൾ തമ്മിലുള്ള പങ്കിടലിന് നിങ്ങൾ അനുമതി നൽകേണ്ടതില്ല.</translation>
 <translation id="7799817062559422778">ലൈറ്റ് മോഡ്</translation>
 <translation id="7802764839223122985">കീ നൽകിയിട്ടില്ല. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">വേണ്ട</translation>
@@ -1513,6 +1617,8 @@
 <translation id="7819857487979277519">PSK (WPA അല്ലെങ്കിൽ RSN)</translation>
 <translation id="7824219488248240180">പോസ്റ്റ് ഇംപ്രഷിനിസ്റ്റ്</translation>
 <translation id="7828503206075800057"><ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /> കഫേ</translation>
+<translation id="7838838951812478896"><ph name="DEVICE_NAME" /> എന്നതിൽ നിന്ന് '<ph name="NETWORK_NAME" />' സംരക്ഷിക്കാനായില്ല</translation>
+<translation id="7838971600045234625">{COUNT,plural, =1{<ph name="ATTACHMENTS" />, <ph name="DEVICE_NAME" /> ഉപകരണത്തിലേക്ക് അയച്ചു}other{<ph name="ATTACHMENTS" />, <ph name="DEVICE_NAME" /> ഉപകരണത്തിലേക്ക് അയച്ചു}}</translation>
 <translation id="7841134249932030522">ഡാർക്ക് മോഡ് പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="7846634333498149051">കീബോർഡ്</translation>
 <translation id="7847923465436619066">ട്രാൻസ്‌ക്രിപ്ഷൻ ഭാഷാ പിക്കർ</translation>
@@ -1529,6 +1635,7 @@
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">പ്രൊവൈഡര്‍ തരം:</translation>
 <translation id="7882501334836096755">എല്ലാവർക്കുമായുള്ള കീ</translation>
+<translation id="7886279613512920452">{COUNT,plural, =1{ഒരു ഇനം}other{# ഇനങ്ങൾ}}</translation>
 <translation id="7889966925761734854">സീക്ക്</translation>
 <translation id="78957024357676568">ഇടത്തേക്ക്</translation>
 <translation id="7897043345768902965">നടപ്പാത</translation>
@@ -1548,6 +1655,7 @@
 <translation id="7955587717700691983">Bluetooth കീബോർഡ്</translation>
 <translation id="7960831585769876809">താപനില</translation>
 <translation id="7971535376154084247">പൊതുവായ നിയന്ത്രണങ്ങൾ</translation>
+<translation id="797394244396603170">ഫയലുകൾ പങ്കിടാൻ ആഗ്രഹിക്കുന്ന ഉപകരണം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7977800524392185497"><ph name="NETWORK_NAME" /> നെറ്റ്‌വർക്കിൽ ചേരാൻ, ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="7978412674231730200">സ്വകാര്യ കീ</translation>
 <translation id="7979468455552394856">ക്ലാസ് ടൂളുകൾ, വിദ്യാർത്ഥികളുമായി ബന്ധിപ്പിച്ചിരിക്കുന്നു</translation>
@@ -1561,6 +1669,7 @@
 <translation id="8027467664787098346">തിരഞ്ഞെടുത്ത വാൾപേപ്പറിനെ കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="8028993641010258682">വലുപ്പം</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="8033958968890501070">കാലഹരണപ്പെട്ടു</translation>
 <translation id="80398733265834479">സ്വയം നിറം ക്രമീകരിക്കൽ മോഡ് പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="8041089156583427627">ഫീഡ്ബാക്ക് അയയ്ക്കുക</translation>
 <translation id="8045012663542226664">മൈക്രോഫോൺ മ്യൂട്ട് ചെയ്യൽ</translation>
@@ -1581,18 +1690,21 @@
 <translation id="8094062939584182041">ഈ പ്രശ്‌നത്തെ കുറിച്ച് നിങ്ങൾക്ക് ഇമെയിൽ അയയ്ക്കാൻ Google-നെ അനുവദിക്കുക</translation>
 <translation id="8104083085214006426">ഓപ്പണും സുരക്ഷിതമല്ലാത്തതുമായ നെറ്റ്‌വർക്ക് ആണ് നിങ്ങൾ ഉപയോഗിക്കുന്നത്</translation>
 <translation id="8108879170356113798"><ph name="NUM_SECONDS" /> സെക്കൻഡ് കഴിഞ്ഞാൽ മാത്രമേ നിങ്ങൾക്ക് ക്ലാസ് ടൂളുകൾ ഉപയോഗിക്കാനാകൂ</translation>
+<translation id="8110489095782891123">കോൺടാക്‌റ്റ് ലിസ്‌റ്റ് ഡൗൺലോഡ് ചെയ്യുന്നു...</translation>
 <translation id="811820734797650957">(Android) ഗേറ്റ്‌വേ പിംഗ് ചെയ്യാനാകും</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8131740175452115882">സ്ഥിരീകരിക്കുക</translation>
 <translation id="8135609423982943441">നിങ്ങളുടെ Chromebook സുരക്ഷിത ഡിഫോൾട്ടുകളിലേക്ക് റീസെറ്റ് ചെയ്തു. ക്രമീകരണത്തിൽ ഏതുസമയത്തും നിങ്ങൾക്ക് ഈ മാറ്റങ്ങൾ ക്രമീകരിക്കാം.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">നിങ്ങളുടേത് സൃഷ്‌ടിക്കുക</translation>
+<translation id="814204052173971714">{COUNT,plural, =1{ഒരു വീഡിയോ}other{# വീഡിയോകൾ}}</translation>
 <translation id="8142182840415860496">വെള്ളയും മഞ്ഞയും നിറത്തിലുള്ള നിരവധി പൂക്കളുടെ ക്ലോസപ്പ്, ഒരു ആനിമേറ്റഡ് സിനിമയിൽ നിന്നുള്ള സ്റ്റിൽ ഷോട്ട്, പേസ്റ്റൽ നിറങ്ങളിൽ നീലാകാശത്തിന്റെ പശ്ചാത്തലത്തിൽ രണ്ട് വലിയ ടുലിപ് പൂക്കളുടെ ഇടയിൽ വലിയ ഇതളുകളും പച്ച നിറത്തിലുള്ള തണ്ടുമുള്ള ഇലകളോ വള്ളികളോ ഇല്ലാത്ത മൃദുലമായ ഇളം പിങ്ക് നിറത്തിലുള്ള പൂവ്, വോള്യുമെട്രിക് ലൈറ്റിലും മൂഡി ലൈറ്റിലും മനോഹരമായ ലൈറ്റിംഗോട് കൂടിയ ഉയർന്ന റെസല്യൂഷനിൽ ഷൂട്ട് ചെയ്തതും വളരെ സൂക്ഷ്‌മമായ വിശദാംശങ്ങൾ അടങ്ങിയതുമായ ഒക്ടേൻ റെൻഡർ ചെയ്ത സിനിമാറ്റിക് സ്റ്റിൽ ഷോട്ട്.</translation>
 <translation id="8143951647992294073"><ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /> തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8151185429379586178">ഡെവലപ്പര്‍ ടൂളുകൾ</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">മാജിക്കൽ</translation>
 <translation id="8162776280680283326">കുറുക്കന്മാർ</translation>
+<translation id="816704878106051517">{COUNT,plural, =1{ഒരു ഫോൺ നമ്പർ}other{# ഫോൺ നമ്പറുകൾ}}</translation>
 <translation id="8167413449582155132">പശ്ചാത്തലത്തിൽ Google AI കൊണ്ട് പ്രവർത്തിക്കുന്നത്</translation>
 <translation id="8171020708598805594">Google AI ഉപയോഗിച്ച് സ്വയമേവ ട്രാൻസ്‌ക്രിപ്ഷനുകൾ സൃഷ്ടിക്കൂ, സംഗ്രഹങ്ങൾ റെക്കോർഡ് ചെയ്യൂ, ഓഡിയോ തിരയൂ. ഇന്റർനെറ്റിലേക്ക് കണക്റ്റ് ചെയ്യാത്തപ്പോൾ പോലും റെക്കോർഡിംഗുകൾ സൃഷ്ടിക്കൂ.</translation>
 <translation id="8179976553408161302">Enter</translation>
@@ -1617,12 +1729,14 @@
 <translation id="8291967909914612644">ഹോം പ്രൊവൈഡറിന്റെ രാജ്യം</translation>
 <translation id="8294431847097064396">ഉറവിടം</translation>
 <translation id="8302368968391049045">HTTPS ഫയര്‍വാള്‍</translation>
+<translation id="8303616404642252802">{COUNT,plural, =1{വിലാസം}other{# വിലാസങ്ങൾ}}</translation>
 <translation id="8308787307410010965">സൈറ്റ് ഉള്ളടക്ക ക്രമീകരണം</translation>
 <translation id="8312330582793120272">മീഡിയ പ്ലേ ചെയ്യുക</translation>
 <translation id="8318753676953949627">ഇമേജുകളൊന്നുമില്ല</translation>
 <translation id="8319809980370328428">റെക്കോർഡിംഗിന്റെ സംഗ്രഹവും പേരും സൃഷ്ടിക്കൽ</translation>
 <translation id="8320910311642849813">വനം</translation>
 <translation id="8329018942023753850">Calculator ആപ്പ്</translation>
+<translation id="8330689128072902965">സമീപമുള്ള കോൺടാക്റ്റുകൾക്ക് നിങ്ങളുമായി പങ്കിടാം. മാറ്റാൻ ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="8336739000755212683">ഉപകരണ അക്കൗണ്ട് ചിത്രം മാറ്റുക</translation>
 <translation id="8339024191194156249">സ്വയമേവയുള്ള ലോഞ്ചിനെ കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="8346937114125330423">ക്ലാസിക്</translation>
@@ -1649,7 +1763,6 @@
 <translation id="8424039430705546751">താഴേക്കുള്ള കീ</translation>
 <translation id="8427213022735114808">ഏതെങ്കിലും ടെക്‌സ്‌റ്റ് ഫീൽഡിൽ വോയ്‌സ് ടൈപ്പിംഗ് അനുവദിക്കുന്നതിന്, 'കേട്ടെഴുതൽ' നിങ്ങളുടെ വോയ്‌സ് Google-ലേക്ക് അയയ്ക്കുന്നു.</translation>
 <translation id="8428213095426709021">ക്രമീകരണം</translation>
-<translation id="8431300646573772016">ChromeOS-ൽ പുതിയത്</translation>
 <translation id="8433186206711564395">നെറ്റ്‍വര്‍ക്ക് ക്രമീകരണങ്ങള്‍</translation>
 <translation id="843568408673868420">ഇന്റർനെറ്റ് കണക്റ്റിവിറ്റി</translation>
 <translation id="844521431886043384">DNS സജ്ജീകരിച്ചിട്ടില്ല</translation>
@@ -1683,6 +1796,8 @@
 <translation id="8576249514688522074">പ്രവർത്തനമാരംഭിച്ചിട്ടില്ല</translation>
 <translation id="8584654835905316966"><ph name="DEVICE_NAME" /> എന്നതിനുള്ള ഫേംവെയർ <ph name="VERSION" /> പതിപ്പിലേക്ക് ഇൻസ്റ്റാൾ ചെയ്യുന്നത് പൂർത്തിയാക്കാൻ റീസ്റ്റാർട്ട് ചെയ്യേണ്ടതുണ്ട്. നിങ്ങളുടെ കമ്പ്യൂട്ടർ പല തവണ റീബൂട്ട് ചെയ്യുന്നതായി ദൃശ്യമായേക്കാം. ഈ പ്രവർത്തനം പ്രതീക്ഷിച്ചതാണ്.</translation>
 <translation id="8593058461203131755">മീഡിയ തൽക്കാലികമായി നിർത്തുക</translation>
+<translation id="8616441548384109662"><ph name="CONTACT_NAME" /> എന്നയാളെ കോൺടാക്‌റ്റുകളിലേക്ക് ചേർക്കുക</translation>
+<translation id="8617748779076050570">സുരക്ഷിത കണക്ഷൻ ഐഡി: <ph name="CONNECTION_ID" /></translation>
 <translation id="8620617069779373398">റോമിംഗ് നില</translation>
 <translation id="8624524972189162859">നിങ്ങളുടെ <ph name="DOMAIN_NAME" /> അഡ്‌മിൻ നിങ്ങളുടെ ഉപകരണം പ്രവർത്തനരഹിതമാക്കി, അവർക്ക് അതിന്റെ ലൊക്കേഷൻ ആക്‌സസ് ചെയ്യാനാകും.</translation>
 <translation id="8626489604350149811"><ph name="APN_NAME" /> എന്നതിനുള്ള കൂടുതൽ പ്രവർത്തനങ്ങൾ</translation>
@@ -1696,6 +1811,7 @@
 <translation id="8669187096858652220">ടാബുകൾ കാണിക്കാൻ ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="8670574982334489519">വലതുവശം</translation>
 <translation id="8675354002693747642">മുമ്പേ പങ്കിട്ട കീ</translation>
+<translation id="8676152597179121671">{COUNT,plural, =1{വീഡിയോ}other{# വീഡിയോകൾ}}</translation>
 <translation id="8677859815076891398">ആൽബങ്ങളൊന്നുമില്ല. <ph name="LINK_BEGIN" />Google Photos-ൽ<ph name="LINK_END" /> ആൽബം സൃഷ്‌ടിക്കുക.</translation>
 <translation id="8682949824227998083">രാമെൻ</translation>
 <translation id="8689520252402395106">അപ്‌ഡേറ്റ് പ്രക്രിയ തുടരുന്നതിന് <ph name="DEVICE_NAME" /> എന്നതിന്റെ USB കേബിൾ വീണ്ടും ഇൻസേർട്ട് ചെയ്യുക</translation>
@@ -1716,6 +1832,7 @@
 <translation id="876280838467039397"><ph name="LANGUAGE_NAME" /> ട്രാൻസ്‌ക്രിപ്ഷൻ മോഡൽ ഡൗൺലോഡ് ചെയ്ത് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos ആൽബം</translation>
+<translation id="8768049274922835860">എല്ലാവർക്കും</translation>
 <translation id="8775713578693478175">മോഡം APN</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">ഈ നെറ്റ്‌വർക്കിന് ക്യാപ്റ്റീവ് പോർട്ടൽ ഉണ്ടായിരിക്കാം</translation>
@@ -1730,6 +1847,7 @@
 <translation id="8833620912470026819">കള്ളിമുൾച്ചെടികളുള്ള വനം</translation>
 <translation id="8834539327799336565">നിലവിൽ കണക്റ്റ് ചെയ്‌തവ</translation>
 <translation id="8845001906332463065">സഹായം നേടുക</translation>
+<translation id="8849001918648564819">മറച്ചിരിക്കുന്നു</translation>
 <translation id="8849799913685544685">ലൈറ്റ് ഹൗസ്</translation>
 <translation id="8851859208664803097">നിർത്തി - പ്രിന്റർ ലഭ്യമല്ല</translation>
 <translation id="8855781559874488009">HTTP വെബ്സൈറ്റുകളിലേക്ക് ഫയര്‍വാള്‍ മുഖേന കണക്റ്റ് ചെയ്യാനാകുന്നില്ല</translation>
@@ -1737,7 +1855,10 @@
 <translation id="885704831271383379">ഇരുണ്ട കീബോർഡ്</translation>
 <translation id="8863170912498892583">ഡാർക്ക് തീം പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="8864415976656252616">നിർദ്ദേശിക്കുന്ന ഉള്ളടക്കമൊന്നും ഇല്ല. മികച്ച സഹായ ഉള്ളടക്കം കാണുക.</translation>
+<translation id="8875736897340638404">നിങ്ങളുടെ ദൃശ്യപരത തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8876270629542503161">ഉപകരണം ഒരു ടാബ്‌ലെറ്റാണ്.</translation>
+<translation id="8876965259056847565">സമീപമുള്ള ഉപകരണങ്ങൾ കണ്ടെത്താൻ <ph name="FEATURE_NAME" />, Bluetooth സ്‌കാനിംഗ് ഉപയോഗിക്കുന്നു.</translation>
+<translation id="8880054210564666174">കോൺടാക്റ്റ് ലിസ്‌റ്റ് ഡൗൺലോഡ് ചെയ്യാനാകുന്നില്ല. നിങ്ങളുടെ നെറ്റ്‌വർക്ക് കണക്ഷൻ പരിശോധിക്കുക അല്ലെങ്കിൽ <ph name="LINK_BEGIN" />വീണ്ടും ശ്രമിക്കുക<ph name="LINK_END" />.</translation>
 <translation id="8881098542468797602">ടെസ്റ്റ് പൂർത്തിയായി</translation>
 <translation id="8882789155418924367">മൂങ്ങകൾ</translation>
 <translation id="8885038613856655272">ഒരു മെെക്ക് കണക്റ്റ് ചെയ്യുക</translation>
@@ -1764,6 +1885,7 @@
 <translation id="8957423540740801332">വലത്തേക്ക്</translation>
 <translation id="8960969673307890087">തണ്ണിമത്തനുകൾ</translation>
 <translation id="8961025972867871808">പെൻഗ്വിനുകൾ</translation>
+<translation id="8962051932294470566">നിങ്ങൾക്ക് ഒരു സമയത്ത് ഒരു ഫയൽ മാത്രമേ പങ്കിടാൻ കഴിയൂ. നിലവിലെ കൈമാറ്റം പൂർത്തിയാക്കുമ്പോൾ വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="8968751544471797276">ചാർജ് ചെയ്യൽ റേറ്റ്</translation>
 <translation id="8970109610781093811">വീണ്ടും പ്രവർത്തിപ്പിക്കുക</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -1791,16 +1913,16 @@
 <translation id="9062831201344759865">DNS റെസല്യൂഷൻ പ്രതികരിക്കാൻ കൂടുതൽ സമയമെടുക്കുന്നു</translation>
 <translation id="9065203028668620118">എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="9068296451330120661">ജലഛായം</translation>
+<translation id="9068878141610261315">പിന്തുണയ്ക്കാത്ത ഫയൽ തരം</translation>
 <translation id="9073281213608662541">PAP</translation>
-<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">ഈ വീഡിയോ ഉപയോഗിക്കുക</translation>
 <translation id="9088306295921699330">നിലവിലെ ഉപയോഗം</translation>
 <translation id="9088994563996376283">ലളിതമാക്കുക</translation>
+<translation id="9090044809052745245">നിങ്ങളുടെ ഉപകരണം മറ്റുള്ളവർക്ക് എങ്ങനെ ദൃശ്യമാകുന്നു</translation>
 <translation id="9100765901046053179">വിപുലമായ ക്രമീകരണം</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> എന്നതിനുള്ള ടിക്കറ്റ് റീഫ്രഷ് ചെയ്യുക</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-ാമത്തെ പേജ് സ്‌കാൻ ചെയ്യുന്നു</translation>
 <translation id="9108856746036501072">Recorder-ന് സംഭാഷണത്തിനൊപ്പം റെക്കോർഡിംഗുകൾക്കുള്ള ട്രാൻസ്‌ക്രിപ്റ്റുകൾ സൃഷ്ടിക്കാൻ കഴിയും. അടുത്ത ഘട്ടത്തിൽ, നിങ്ങൾ ട്രാൻസ്‌ക്രിപ്ഷൻ ഭാഷ തിരഞ്ഞെടുത്ത് മോഡൽ ഡൗൺലോഡ് ചെയ്യേണ്ടതുണ്ട് (പരമാവധി 100MB).</translation>
-<translation id="9111102763498581341">അണ്‍ലോക്ക് ചെയ്യുക</translation>
 <translation id="9122492456897874028">ഉള്ളടക്കം സംഗ്രഹിക്കുകയും നിർവചനങ്ങൾ നേടുകയും മറ്റും ചെയ്യൂ</translation>
 <translation id="9122602430962285795">വീണ്ടും കണക്റ്റ് ചെയ്യാൻ, ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="9122865513525855321">സെൻ</translation>
@@ -1812,9 +1934,11 @@
 <translation id="9159524746324788320">ഹാംബർഗറുകൾ</translation>
 <translation id="9161276708550942948">space</translation>
 <translation id="9169345239923038539">നിങ്ങൾ ഇതുവരെ കണക്റ്റ് ചെയ്‌തിട്ടില്ല. നിങ്ങളുടെ മൊബൈൽ സേവനദാതാവ് ഒരു ഇഷ്‌ടാനുസൃത APN നിർദ്ദേശിക്കുന്നുവെങ്കിൽ, <ph name="BEGIN_LINK" />APN വിവരങ്ങൾ നൽകുക.<ph name="END_LINK" /></translation>
+<translation id="9170061643796692986">നിലവിലെ ദൃശ്യപരതാ ക്രമീകരണം എല്ലാ കോൺടാക്റ്റുകളുമാണ്</translation>
 <translation id="9173638680043580060">ഒരു മിനിറ്റിലും താഴെ ശേഷിക്കുന്നു</translation>
 <translation id="9174334653006917325">UI നിറം</translation>
 <translation id="917720651393141712">ടെസ്‌റ്റ്</translation>
+<translation id="918352324374649435">{COUNT,plural, =1{ആപ്പ്}other{# ആപ്പുകൾ}}</translation>
 <translation id="9188992814426075118">നിങ്ങളുടെ കീബോർഡിന് വാൾപേപ്പറുമായി സ്വയമേവ പൊരുത്തപ്പെടാനാകും</translation>
 <translation id="9189000703457422362">സ്വയമേവ കണ്ടെത്തിയ APN-കൾ ഉപയോഗിച്ച് ഈ നെറ്റ്‌വർക്കിലേക്ക് കണക്‌റ്റ് ചെയ്യാനാകുന്നില്ല. കൂടുതൽ വിവരങ്ങൾക്ക് നിങ്ങളുടെ മൊബൈൽ സേവനദാതാവിനെ ബന്ധപ്പെടുക.</translation>
 <translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
@@ -1828,6 +1952,7 @@
 <translation id="945522503751344254">ഫീഡ്‌ബാക്ക് അയയ്‌ക്കുക</translation>
 <translation id="950520315903467048"><ph name="DIRECTION" /> എന്നതിനുള്ള കീ നൽകിയിട്ടില്ല. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">റെക്കോർഡിംഗിലുടനീളമുള്ള ശബ്ദങ്ങൾ താരതമ്യം ചെയ്യുക, അതുവഴി ട്രാൻസ്ക്രിപ്റ്റ് ഓരോ സ്പീക്കറും എന്ത് പറഞ്ഞുവെന്നതും എപ്പോൾ പറഞ്ഞുവെന്നതും പ്രതിഫലിപ്പിക്കുന്നു</translation>
+<translation id="951991426597076286">നിരസിക്കുക</translation>
 <translation id="952992212772159698">സജീവമാക്കിയില്ല</translation>
 <translation id="95718197892796296">കളിമണ്ണ്</translation>
 <translation id="959792926760890141">'സുരക്ഷാ റീസെറ്റ്' Chrome ബ്രൗസർ വിപുലീകരണങ്ങൾ ഓഫാക്കുന്നു, കൂടാതെ നെറ്റ്‌വർക്കും മറ്റ് ക്രമീകരണവും സുരക്ഷിത ഡിഫോൾട്ടുകളിലേക്ക് റീസെറ്റ് ചെയ്യുന്നു.

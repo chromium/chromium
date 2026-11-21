@@ -942,7 +942,7 @@
 <translation id="813913629614996137">Đang khởi chạy...</translation>
 <translation id="8147028810663464959">Độ rộng ký tự là Đầy đủ</translation>
 <translation id="8151638057146502721">Định cấu hình</translation>
-<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 lỗi.}other{# lỗi.}}</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 lỗi.}one{# errors.}other{# lỗi.}}</translation>
 <translation id="8154842056504218462">Đã chọn tất cả các mục.</translation>
 <translation id="8175731104491895765">Tiếng Pháp (Bỉ)</translation>
 <translation id="8175799081768705361">Đang đồng bộ hoá <ph name="NUMBER_OF_FILES_SYNCING" /> tệp trên Drive</translation>
@@ -1033,7 +1033,7 @@
 <translation id="8787254343425541995">Cho phép các proxy đối với mạng chia sẻ</translation>
 <translation id="8790981080411996443">Người tưới cây</translation>
 <translation id="8798099450830957504">Mặc định</translation>
-<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 cảnh báo.}other{# cảnh báo.}}</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 cảnh báo.}one{# warnings.}other{# cảnh báo.}}</translation>
 <translation id="8808686172382650546">Mèo</translation>
 <translation id="8810671769985673465">Không nén được, mục tồn tại: "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Tiếng Tây Ban Nha (Tây Ban Nha)</translation>

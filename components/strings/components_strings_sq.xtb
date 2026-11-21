@@ -373,6 +373,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> hoqi një skedë</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623104350909869708">Parandalo krijimin e dialogëve shtesë nga kjo faqe</translation>
+<translation id="1624535934412288769">Kolonat</translation>
 <translation id="1629390138158333592">Kërko në ueb</translation>
 <translation id="1633137413609266904">{0,plural, =1{Hapja e këtij skedari është bllokuar nga politika e administratorit}other{Hapja e # skedarëve është bllokuar nga politika e administratorit}}</translation>
 <translation id="1634828734222219955">Totali</translation>
@@ -1082,6 +1083,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2803320044666896137">Kjo vlerë e politikës shpërfillet sepse përdoruesi nuk është i lidhur.</translation>
 <translation id="2807052079800581569">Pozicioni i imazhit në boshtin Y</translation>
 <translation id="2808278141522721006">Mund ta aktivizosh ose çaktivizosh Windows Hello te "<ph name="SETTINGS" />"</translation>
+<translation id="2820159698793041599">Serveri proxy nuk mund të krijonte një lidhje të sigurt.</translation>
 <translation id="2820957248982571256">Po skanon...</translation>
 <translation id="282457273878278063">Menaxho informacionet e kontaktit</translation>
 <translation id="2824775600643448204">Shiriti i adresës dhe i kërkimit</translation>
@@ -1263,6 +1265,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3120807611504813890">Zarf (i lehtë)</translation>
 <translation id="3121994479408824897">Shko te <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Etiketa (të përhershme)</translation>
+<translation id="3128081114752791872">Certifikata e sigurisë së serverit proxy është e pavlefshme.</translation>
 <translation id="3131746543143948171">Ky sajt duket i ngjashëm me sajte të tjera të lidhura me mashtrimet, softuerët keqdashës dhe skemat mashtruese. <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">Ruaj numrin e zhdëmtimit</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> tani është motori yt i parazgjedhur i kërkimit</translation>
@@ -1681,7 +1684,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3800436529451849929">Nga <ph name="SITE" /></translation>
 <translation id="3801297763951514916">E viziton shpesh</translation>
 <translation id="380329542618494757">Emri</translation>
-<translation id="3803481123869276674">Kur bën blerje në Chrome, shiko "Portofolin elektronik" si opsion</translation>
 <translation id="3803801106042434208">Këta motorë kërkimi janë të njohur në rajonin tënd</translation>
 <translation id="3804112825000113857">Shiko cilësimet e plotësimit automatik</translation>
 <translation id="380666903981445943">Ruaj një mënyrë pagese në "Llogarinë tënde të Google" për ta plotësuar automatikisht për blerjet e bëra në Chrome</translation>
@@ -2164,6 +2166,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4612631413844865947">Ndodhi një gabim gjatë përpunimit të porosisë sate në <ph name="MERCHANT_ORIGIN" /> nëpërmjet <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="4612904677925722054">Ky sajt mund të ketë përmbajtje për të rritur. Një prind ose kujdestar duhet të pranojë që ta vizitosh këtë uebsajt.</translation>
 <translation id="4613873770449493819">URL-ja duhet të drejtojë te një domen i <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
+<translation id="4615154194248230658">Me sa duket ky motiv nuk përputhet me një domen të vlefshëm të adresës së email-it. Përdoruesit mund të mos jenë në gjendje të identifikohen ose profilet ekzistuese mund të hiqen.</translation>
 <translation id="4619564267100705184">Verifiko që je ti</translation>
 <translation id="4619669610757527494">Ruaj lejen e drejtimit te "Portofoli i Google"</translation>
 <translation id="4622292761762557753">Transfero gjithsesi</translation>
@@ -2682,7 +2685,6 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5447235695608032700">Lejo që <ph name="SITE" /> të përdorë informacionet e ruajtura për ty</translation>
 <translation id="5447973833955560753">Fjalëkalimi i rikuperimit</translation>
 <translation id="5452270690849572955">Kjo faqe e <ph name="HOST_NAME" /> nuk mund të gjendet</translation>
-<translation id="5452923259299906094">Paguaj me "Portofolin elektronik" dhe Pix</translation>
 <translation id="5455374756549232013">Vulë kohore politike e gabuar</translation>
 <translation id="5456428544444655325">Mos shfaq asnjëherë</translation>
 <translation id="5457082343331641453">Shto në kërkimin tënd</translation>
@@ -3896,7 +3898,6 @@ Detaje shtesë:
 <translation id="7489919936111034362">Hapësira ruajtëse e "Diskut të Google" është plot</translation>
 <translation id="7490622939531327327">Kuptim më inteligjent i formularit</translation>
 <translation id="7495528107193238112">Kjo përmbajtje është bllokuar. Kontakto me zotëruesin e sajtit për të rregulluar problemin.</translation>
-<translation id="7499188644237027195">Kur bën blerje në Chrome, shiko "Portofolin elektronik" dhe Pix si opsione</translation>
 <translation id="7499684925421947861">Të lejohet që <ph name="ACTOR_NAME" /> të identifikohet në <ph name="DOMAIN" /> për ty?</translation>
 <translation id="7501663406926337752">Sajti ku je drejtuar është raportuar nga organizata jote</translation>
 <translation id="7502044688973049724">menaxhosh informacionet e tua</translation>
@@ -4021,7 +4022,6 @@ Detaje shtesë:
 <translation id="7676840398262504532">Organizata jote monitoron kopjimin</translation>
 <translation id="767806704757698045">Funksionon vetëm në sajtet e mbështetura</translation>
 <translation id="7678730592635586336">Bëje përsëri videon</translation>
-<translation id="7679287273775285018">Paguaj me "Portofolin elektronik"</translation>
 <translation id="7679367271685653708">Shiko dhe menaxho historikun e shfletimit te cilësimet e Chrome</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, skadon më <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Transporti</translation>
@@ -4096,7 +4096,6 @@ Detaje shtesë:
 <translation id="7791543448312431591">Shtoje</translation>
 <translation id="7798389633136518089">U shpërfill sepse politika nuk është caktuar nga një burim në renë kompjuterike.</translation>
 <translation id="7800304661137206267">Lidhja është e enkriptuar me <ph name="CIPHER" />, me <ph name="MAC" /> për vërtetimin e mesazhit dhe <ph name="KX" /> si mekanizmi i shkëmbimit të çelësit.</translation>
-<translation id="780228007282527248">Shto një skedë ose imazh për të përmirësuar kërkimin tënd</translation>
 <translation id="7802523362929240268">Sajti është i ligjshëm</translation>
 <translation id="7802989406998618639">Fut kodin e sigurisë me <ph name="NUMBER_OF_DIGITS" /> shifra në <ph name="SIDE_OF_CARD" /> që banka të mund të verifikojë që je ti</translation>
 <translation id="780301667611848630">Jo, faleminderit</translation>
@@ -4162,6 +4161,7 @@ Detaje shtesë:
 <translation id="7916162853251942238">Baza fleksografike</translation>
 <translation id="7916802424606434188">Hape dritaren <ph name="WINDOW_INDEX" /> (<ph name="NUM_TABS" /> skeda) në një dritare të re</translation>
 <translation id="791698251820376781">Organizata jote nuk lejon që të identifikohesh</translation>
+<translation id="7918936720558783139">Oferta jote e ruajtur do të ofrohet në përfundim të blerjes duke përdorur plotësimin automatik. <ph name="BEGIN_LINK" />Menaxho ofertat<ph name="END_LINK" /></translation>
 <translation id="7927046851848613453">Ruaj biletat, ngjarjet dhe informacione të tjera nga faqet që shikon - jo vetëm formularët që plotëson. Më pas qasu me shpejtësi te dokumentet e tua dixhitale, si p.sh. biletat e ngjarjeve dhe kartat e besnikërisë. Informacionet e tua të ruajtura mund të shfaqen në pajisjet e tua dhe nëpër produktet e Google.</translation>
 <translation id="7930282586031445870">Ekrani i kushteve të shërbimit për metodën "Bli tani, paguaj më vonë" u mbyll.</translation>
 <translation id="7932035970207573919">Adresa e punës, <ph name="ADDRESS" /></translation>
@@ -4231,6 +4231,7 @@ Detaje shtesë:
 <translation id="8029829038322015001">E kuqe 1</translation>
 <translation id="8032546467100845887">Fletë transparente</translation>
 <translation id="8035152190676905274">Pena</translation>
+<translation id="803703704549420287">Pastro filtrat</translation>
 <translation id="8037117624646282037">Kush e ka përdorur pajisjen së fundi</translation>
 <translation id="803771048473350947">Skedar</translation>
 <translation id="8038182528865038593">E kuqe 2</translation>
@@ -4419,6 +4420,7 @@ Detaje shtesë:
 <translation id="8363502534493474904">Të çaktivizosh modalitetin e aeroplanit</translation>
 <translation id="8363929499301563123">Kukit e uebsajteve (gjendja si i identifikuar për uebsajtet e vizituara së fundi do të ruhet)</translation>
 <translation id="8364627913115013041">Nuk është caktuar.</translation>
+<translation id="8364664414979300296">Shto skeda, fotografi etj. për të përmirësuar kërkimin tënd</translation>
 <translation id="836616551641291797">Mëso më shumë se si menaxhohet shfletuesi yt</translation>
 <translation id="8367705492654390392">Pyet për çdo gjë</translation>
 <translation id="8368001212524806591">Monitoro çmimin</translation>

@@ -83,7 +83,6 @@
 <translation id="188102464690227119">El botó "Cerca al tauler lateral" de la barra d'eines té una icona nova. Fes-hi clic per fer preguntes mentre navegues amb la Cerca al tauler lateral.</translation>
 <translation id="1896836275755235458">Chromium estalvia bateria limitant l'activitat en segon pla i els efectes visuals, com ara el desplaçament suau i els fotogrames per segon dels vídeos. <ph name="BEGIN_LINK" />Obtén més informació sobre la funció Estalvi d'energia<ph name="END_LINK" />.</translation>
 <translation id="1900969832270057921">Servei de l'actualitzador de Chromium</translation>
-<translation id="1911763535808217981">En desactivar aquesta opció, pots iniciar la sessió en llocs web de Google, com ara Gmail, sense iniciar la sessió a Chromium</translation>
 <translation id="1929939181775079593">Chromium no respon. Voleu tornar-lo a iniciar ara?</translation>
 <translation id="1933341829955786215">La teva organització, <ph name="MANAGER" />, requereix que iniciïs la sessió a Chromium</translation>
 <translation id="193439633299369377">Cal reiniciar Chromium OS per aplicar l'actualització.</translation>
@@ -130,7 +129,6 @@
 <translation id="2361918034042471035">L'extensió "<ph name="EXTENSION_NAME" />" vol que iniciïs la sessió a Chromium</translation>
 <translation id="236943522426971115">Desactiva l'execució de Chromium en segon pla per a les aplicacions</translation>
 <translation id="2374216753258219393">Per utilitzar aquesta extensió com a <ph name="USER_EMAIL_ADDRESS" />, inicia la sessió a Chromium.</translation>
-<translation id="2384373936468275798">Chromium OS no ha pogut sincronitzar les teves dades perquè la informació d'inici de sessió del teu compte no està actualitzada.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Una o més extensions de Chromium estaven accedint a 1 dispositiu d'interfície humana}=1{Una o més extensions de Chromium estan accedint a 1 dispositiu d'interfície humana}other{Una o més extensions de Chromium estan accedint a # dispositius d'interfície humana}}</translation>
 <translation id="2401032172288869980">Chromium necessita permís d'accés a la càmera i al micròfon per a aquest lloc web</translation>
 <translation id="2403703063067034158">Error d'inici: s'està executant una altra instància de la configuració. Torna-ho a provar més tard.</translation>
@@ -172,7 +170,6 @@
 <translation id="2819844767470613567">Advertiment: Chromium no pot impedir que les extensions registrin l'historial de navegació. Per desactivar aquesta extensió en mode Aïllat, desselecciona aquesta opció.</translation>
 <translation id="2841525013647267359">Tradueix de</translation>
 <translation id="2846251086934905009">Error d'instal·lació: l'instal·lador no ha completat el procés. La instal·lació s'ha anul·lat.</translation>
-<translation id="2847479871509788944">Suprimeix de Chromium...</translation>
 <translation id="2850691299438350830">Et protegeix a Chromium i és possible que s'utilitzi per millorar la teva seguretat en altres aplicacions de Google quan tinguis la sessió iniciada</translation>
 <translation id="2885378588091291677">Gestor de tasques</translation>
 <translation id="2898830646167954300">Torna a l'assistent de Gemini no gestionat</translation>
@@ -383,7 +380,6 @@
 <translation id="5346389065299425353">Aprofundeix en la cerca afegint diverses pestanyes, fitxers i eines</translation>
 <translation id="5352264705793813212">Chromium ha trobat algunes recomanacions de seguretat que hauries de revisar</translation>
 <translation id="5352361688875342522">Altres perfils de Chromium</translation>
-<translation id="535243042947607642">ChromiumOS no ha pogut desar les dades de Chromium al teu Compte de Google perquè els detalls d'inici de sessió del compte no estan actualitzats</translation>
 <translation id="5368118228313795342">Codi addicional: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Per obtenir personalització, inclou Chromium a Activitat al web i en aplicacions</translation>
 <translation id="5382964351116519680">Obre la cerca amb Chromium</translation>
@@ -398,7 +394,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium recomana posar en pausa la pestanya que està alentint el navegador}other{Chromium recomana posar en pausa les pestanyes que estan alentint el navegador}}</translation>
 <translation id="5473971139929175403">Pot ser que Chromium no funcioni correctament perquè ja no és compatible amb aquesta distribució de Linux</translation>
 <translation id="5475924890392386523">Chromium ha bloquejat aquesta baixada perquè el fitxer pot malmetre els teus comptes personals i de xarxes socials</translation>
-<translation id="549669000822060376">Espereu mentre Chromium instal·la les darreres actualitzacions del sistema.</translation>
 <translation id="5496810170689441661">Chromium està provant d'editar les contrasenyes. Escriu la teva contrasenya de Windows per permetre-ho.</translation>
 <translation id="5524890928877629608">extrem superior esquerre de l'àrea de cerca: <ph name="LEFT" /> % per l'esquerra i <ph name="TOP" /> % per dalt</translation>
 <translation id="5527463683072221100">Obre els fitxers PDF a Chromium</translation>
@@ -493,7 +488,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="6390800440335263989">Per continuar, inicia la sessió a Chromium com a <ph name="EMAIL" />. D'aquesta manera, podem garantir que s'apliquen les polítiques de la teva organització.</translation>
 <translation id="6400112897226594999">Logotip de Chromium a l'interior d'una pantalla d'ordinador.</translation>
 <translation id="6403826409255603130">Chromium és un navegador web que executa les pàgines web i les aplicacions a gran velocitat. És ràpid, estable i fàcil d'utilitzar. Navegueu per Internet amb més seguretat amb protecció inserida a Chromium contra el programari maliciós i contra la pesca de credencials.</translation>
-<translation id="6414624068245092115">Per assegurar-te que puguis fer servir i desar sempre les dades de Chromium al teu Compte de Google, verifica la teva identitat</translation>
 <translation id="642132557830635295">Chromium s'executa més ràpidament i les funcions que utilitzen JavaScript haurien de funcionar tal com es van dissenyar</translation>
 <translation id="6434631832954028336">Torna a obrir el tauler de la Cerca</translation>
 <translation id="6436260184216827876">La cerca d'imatges no està disponible. Torna-ho a provar més tard.</translation>
@@ -524,7 +518,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="665732753414869868">Chromium necessita permís d'accés a la càmera per poder crear un mapa en 3D del teu entorn</translation>
 <translation id="6669284030132180248">Si també deses les teves adreces d'interès al teu Compte de Google, pots fer un seguiment dels preus dels productes a Chromium i rebre una notificació quan baixi el preu</translation>
 <translation id="6676384891291319759">Accedeix a Internet</translation>
-<translation id="668175097507315160">Chromium OS no ha pogut sincronitzar les teves dades a causa d'un error en iniciar la sessió.</translation>
 <translation id="6691132793308828750">Suprimeix les dades d'aquesta aplicació de Chromium</translation>
 <translation id="6709350901466051922">Chromium necessita permís d'accés al micròfon per a aquest lloc web</translation>
 <translation id="6712881677154121168">Error de baixada: <ph name="DOWNLOAD_ERROR" />.</translation>
@@ -682,7 +675,6 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8107060931443639922">La propera vegada que obris Chromium al teu <ph name="DEVICE_TYPE" />, veuràs una indicació per activar les alertes de seguiment de preus.</translation>
 <translation id="8118331347066725040">Envia comentaris per a la cerca amb Lens</translation>
 <translation id="8130609355518033382">Personalitza Chromium</translation>
-<translation id="8133124826068723441">Chromium OS no ha pogut sincronitzar les teves dades perquè la sincronització no està disponible per al teu domini.</translation>
 <translation id="813913629614996137">S'està inicialitzant…</translation>
 <translation id="8158143604667288086">Pots fixar la funció Cerca a Chrome per fer preguntes mentre navegues</translation>
 <translation id="8161503455832158203">Obre Gemini a Chromium amb una drecera de teclat.</translation>
@@ -749,11 +741,9 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8816416449795340678">Comparteix aquest document amb Gemini a Chromium per obtenir-ne una visió general ràpida i fer preguntes de seguiment</translation>
 <translation id="8818550178040858407">Vols iniciar la sessió a Chromium?</translation>
 <translation id="8826492472752484139">Fes clic a Gestor de contrasenyes</translation>
-<translation id="8833697763442816810">Sistema Chromium OS</translation>
 <translation id="8852026904190808918">Aquest idioma s'utilitza per mostrar menús, opcions de configuració, alertes i altres textos a Chromium</translation>
 <translation id="8862326446509486874">No disposeu dels drets necessaris per instal·lar aplicacions al sistema. Proveu de tornar a executar l'instal·lador com a administrador.</translation>
 <translation id="8876044221123442390">Afegeix un perfil de Chromium</translation>
-<translation id="8890569919834781711">ChromiumOS no ha pogut desar les dades de Chromium al teu Compte de Google a causa d'un error en iniciar la sessió</translation>
 <translation id="8891709362986793894">La teva organització requereix que iniciïs la sessió a Chromium</translation>
 <translation id="8906384069222226849">Chromium requereix Windows 10 (versió 1809) o una versió posterior.</translation>
 <translation id="8907580949721785412">Chromium està provant de mostrar contrasenyes. Escriviu la vostra contrasenya de Windows per permetre-ho.</translation>

@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">啟用主題背景</translation>
+<translation id="1085064499066015002">一律在所有網站上執行</translation>
 <translation id="1135328998467923690">套件無效：<ph name="ERROR_CODE" />。</translation>
 <translation id="1140871961407805696">後置相機</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> 所新增的擴充程式可能會變更 Chromium 的運作方式。
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">預期版本為 <ph name="EXPECTED_VERSION" />，但實際為 <ph name="NEW_ID" /></translation>
 <translation id="471800408830181311">匯出私密金鑰失敗。</translation>
 <translation id="4811956658694082538">公用程式處理程序當機，因此無法安裝套件。請重新啟動 Chrome，然後再試一次。</translation>
+<translation id="4883436287898674711">所有 <ph name="WEBSITE_1" /> 網站</translation>
 <translation id="4988792151665380515">匯出公開金鑰失敗。</translation>
 <translation id="501057610015570208">含有「kiosk_only」資訊清單屬性的應用程式只能在 ChromeOS Flex Kiosk 模式中安裝</translation>
 <translation id="5026754133087629784">Webview：<ph name="WEBVIEW_TAG_NAME" /></translation>

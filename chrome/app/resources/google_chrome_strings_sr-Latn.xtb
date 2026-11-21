@@ -32,13 +32,11 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="1278833599417554002">Ponovo pokreni da bi se &amp;Chrome ažurirao</translation>
 <translation id="1289911795790071537">Otvori pretragu pomoću Chrome-a</translation>
 <translation id="1290883685122687410">Greška pri podešavanju: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1302523850133262269">Sačekajte da Chrome instalira najnovija ažuriranja sistema.</translation>
 <translation id="1330562121671411446">Otkriveni jezik</translation>
 <translation id="1333654552732143316">Pokreni Chrome</translation>
 <translation id="1341711321000856656">Možete da se prebacite da biste videli lozinke sa drugog Chrome profila</translation>
 <translation id="1343830902827845050">Prijavite se u Chrome</translation>
 <translation id="1361351916482714918">Pametnije pregledajte uz Google objektiv</translation>
-<translation id="1363996462118479832">Chrome OS ne može da sinhronizuje podatke zbog greške pri prijavljivanju.</translation>
 <translation id="137466361146087520">Google Chrome beta</translation>
 <translation id="1383876407941801731">Pretraži</translation>
 <translation id="1399397803214730675">Ovaj računar već ima noviju verziju Google Chrome pregledača. Ako softver ne funkcioniše, deinstalirajte Google Chrome i pokušajte ponovo.</translation>
@@ -89,7 +87,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="177180974022074201">Isprobajte sa Gemini-jem u Chrome-u</translation>
 <translation id="1786003790898721085">Uverite se da ste prijavljeni u Chrome na uređaju <ph name="TARGET_DEVICE_NAME" /> i probajte da pošaljete ponovo.</translation>
 <translation id="1786044937610313874">Prečice se otvaraju u Chrome-u</translation>
-<translation id="1812689907177901597">Kada to uključite, možete da se prijavljujete na Google sajtove, kao što je Gmail, ali se ne prijavljujete u Chrome</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome preporučuje da pauzirate karticu koja usporava pregledač}one{Chrome preporučuje da pauzirate kartice koje usporavaju pregledač}few{Chrome preporučuje da pauzirate kartice koje usporavaju pregledač}other{Chrome preporučuje da pauzirate kartice koje usporavaju pregledač}}</translation>
 <translation id="1832046143430087831">Ubrzava sajtove uz Chrome mehanizam V8, ali čini Chrome malo manje otpornim na napade. Ovo podešavanje je isključeno.</translation>
 <translation id="1838374766361614909">Obrišite pretragu</translation>
@@ -176,7 +173,6 @@ Ako ova stranica ne radi na očekivani način, dozvolite optimizaciju.</translat
 <translation id="2661616016316841783">Prijavite se u Chrome da biste preuzeli dodatke i drugo sa uređaja <ph name="DEVICE" /></translation>
 <translation id="2665296953892887393">Pomozite nam da poboljšamo Google Chrome tako što ćete Google-u slati izveštaje o otkazivanju i <ph name="UMA_LINK" /></translation>
 <translation id="2668094785979141847">Kliknite da biste izašli iz Google objektiva</translation>
-<translation id="2674238339205910678">ChromeOS Flex nije uspeo da sačuva Chrome podatke na Google nalogu zato što su podaci za prijavljivanje na nalog zastareli</translation>
 <translation id="2681444469812712297">Otvorite <ph name="URL" /> na novoj kartici u Google Chrome-u.</translation>
 <translation id="2699790011615497488">Otvorite Gemini u Chrome beta verziji</translation>
 <translation id="2738871930057338499">Povezivanje sa internetom nije uspelo. Zabranjen je pristup (HTTP 403). Proverite konfiguraciju proksija.</translation>
@@ -287,7 +283,6 @@ Ako ova stranica ne radi na očekivani način, dozvolite optimizaciju.</translat
 <translation id="3756724684201900923">Saznajte više o instaliranju Chrome-a</translation>
 <translation id="3772152698251011058">Prijavite ovaj sajt Google-u</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
-<translation id="3785324443014631273">Chrome OS Flex nije uspeo da sinhronizuje podatke zbog greške pri prijavljivanju.</translation>
 <translation id="3810973564298564668">Upravljaj</translation>
 <translation id="383455301564000773">Nadograđujete na Windows 11? Preuzmite Chrome na OneDrive da biste bili spremni od prvog dana.</translation>
 <translation id="383928141529488001">Google Chrome zahteva pristup Bluetooth-u da bi istraživao 
@@ -378,7 +373,6 @@ Ako ova stranica ne radi na očekivani način, dozvolite optimizaciju.</translat
 <translation id="4803313124144656665">Zatvori Google pretragu u Chrome-u</translation>
 <translation id="4828579605166583682">Google Chrome pokušava da zameni postojeće lozinke. Unesite lozinku za Windows da biste to omogućili.</translation>
 <translation id="4836321460899997044">Chrome profil</translation>
-<translation id="4842397268809523050">Chrome OS Flex ne može da sinhronizuje podatke jer sinhronizacija nije dostupna za domen.</translation>
 <translation id="4851866215237571846">Korisnik <ph name="EXISTING_USER" /> je već prijavljen.  Da bi vam pregledanje bilo razdvojeno, prijavite se u Chrome preko svog profila kao <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Da biste delili ekran, dozvolite snimanje ekrana za Chrome u podešavanjima sistema</translation>
 <translation id="4873783916118289636">Pregledajte ključne kontrole privatnosti i bezbednosti u Chrome-u</translation>
@@ -392,7 +386,6 @@ Ako ova stranica ne radi na očekivani način, dozvolite optimizaciju.</translat
 <translation id="492720062778050435">Chrome vam preporučuje da pregledate ovaj dodatak</translation>
 <translation id="4953650215774548573">Podesi Google Chrome kao podrazumevani pregledač</translation>
 <translation id="495931528404527476">U Chrome-u</translation>
-<translation id="4969674060580488087">Chrome OS Flex ne može da sinhronizuje podatke zato što su podaci za prijavljivanje na nalog zastareli.</translation>
 <translation id="4970761609246024540">Dobro došli u Chrome profile</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Kliknite na Google menadžer lozinki</translation>
@@ -426,7 +419,6 @@ Neke funkcije su možda nedostupne. Navedite drugi direktorijum profila ili kori
 <translation id="5271833978500241046">Koristite ih sa drugim Gemini funkcijama u Chrome-u</translation>
 <translation id="5320351714793324716">Ako dozvolite kolačiće, Chrome može da ih koristi kada predučitava stranice</translation>
 <translation id="5321325624576443340">Google objektiv nije dostupan. Probajte ponovo kasnije.</translation>
-<translation id="5334309298019785904">Chrome OS ne može da sinhronizuje podatke jer Sinhronizacija nije dostupna za domen.</translation>
 <translation id="5336664042114176802">Možete da pređete na Gemini pomoćnika koji je prvobitno povezan sa vašim Google nalogom i kojim ne upravlja <ph name="DOMAIN" />. Odgovori više neće biti zasnovani na fajlovima ili uslugama kojima upravlja <ph name="DOMAIN" /> i istorija četa se neće preneti. Možda nije prikladan za poslovnu upotrebu. Prelazak zahteva da ponovo pokrenete Chrome.</translation>
 <translation id="5346389065299425353">Produbite pretragu dodavanjem više kartica, fajlova i alatki</translation>
 <translation id="5353252989841766347">Izvezite lozinke iz Chrome-a</translation>
@@ -556,7 +548,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="6497147134301593682">Chrome je automatski zatvoren</translation>
 <translation id="6506909944137591434">Chrome-u treba dozvola za kameru da bi napravio 3D mapu okruženja</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Programerska verzija Google Chrome-a</translation>
-<translation id="6520608191273161151">ChromeOS Flex nije uspeo da sačuva Chrome podatke na Google nalogu zbog greške pri prijavljivanju</translation>
 <translation id="6520670145826811516">Da biste koristili lokaciju, odobrite Chrome-u pristup u <ph name="BEGIN_LINK" />podešavanjima sistema<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Istorija Chrome-a</translation>
 <translation id="6532945796722480006">Otvorite Gemini u Chrome Canary-ju</translation>
@@ -578,7 +569,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="6712881677154121168">Greška pri preuzimanju: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Ubrzajte Chrome</translation>
 <translation id="6734827584173583205">Niste skoro posećivali sajt. Chrome je uklonio dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="COUNT" />.</translation>
-<translation id="6735387454586646204">Chrome OS Flex sistem</translation>
 <translation id="674891594898436429">Odbaci aktivnu pretragu na ovoj kartici</translation>
 <translation id="6750954913813541382">Da bi ispravio pravopisne greške, Chrome Google-u šalje tekst koji unosite u pregledač</translation>
 <translation id="6760235774835597023">Ubrzava sajtove uz Chrome mehanizam V8, ali čini Chrome malo manje otpornim na napade. Ovo podešavanje je uključeno.</translation>
@@ -599,7 +589,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="6908182077349113099">Sinhronizujte lozinke, obeleživače i istoriju na svim uređajima. Ažurirajte podrazumevani pregledač na Chrome da biste lako pristupali funkcijama koje znate i volite.</translation>
 <translation id="6926772305569367352">Dugme Google pretraga u Chrome-u na traci s alatkama ima novu ikonu. Kliknite na nju da biste postavljali pitanja dok pregledate pomoću Google pretrage u Chrome-u.</translation>
 <translation id="6930294499209825">Ažurira Google softver. Ako je ova usluga onemogućena ili zaustavljena, Google softver neće biti ažuriran, što znači da neće biti moguće otkloniti bezbednosne propuste koji mogu da nastanu i da funkcije možda neće raditi. Ova usluga se deinstalira kada je ne koristi nijedan Google softver.</translation>
-<translation id="6933858244219479645">Sistem ChromeOS</translation>
 <translation id="6938166777909186039">Da biste dobijali buduća Google Chrome ažuriranja, treba vam Windows 10 ili novija verzija. Ovaj računar koristi Windows 8.1.</translation>
 <translation id="6962628299694876291">Korisnik <ph name="EXISTING_USER" /> je već prijavljen. Da bi vam pregledanje bilo razdvojeno, prijavite se u Chrome preko svog profila kao <ph name="USER_EMAIL_ADDRESS" />. Moći ćete da pristupate i svojim lozinkama i drugom sadržaju na svim uređajima.</translation>
 <translation id="6965382102122355670">Potvrdi</translation>
@@ -690,7 +679,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="7801699035218095297">Google Chrome pokušava da kopira lozinke. Unesite lozinku za Windows da biste to omogućili.</translation>
 <translation id="7804364787702057554">Vaš nalog u Chrome-u</translation>
 <translation id="7804947029129221742">Pretraživač je promenjen izvan Chrome-a. Chrome ga je resetovao na prvobitno podrazumevano podešavanje radi vaše zaštite. <ph name="LEARN_MORE_LINK" /></translation>
-<translation id="7808348361785373670">Ukloni iz Chrome-a...</translation>
 <translation id="7827099906024714326">Chrome mora da verifikuje da ste to vi da bi neki podaci mogli da se čuvaju na Google nalogu i koriste na svim uređajima. Ako se odjavite odmah, ovi podaci će biti izbrisani.</translation>
 <translation id="7829850924999627855">Prijavite se u Chrome da biste pristupali sačuvanim informacijama i drugom sa uređaja <ph name="DEVICE" /></translation>
 <translation id="7832314606810669113">Da bi vam obeleživači i drugi sadržaj bili dostupni na svim uređajima, prijavite se u Chrome. Ovaj obeleživač će biti sačuvan na Google nalogu kada se prijavite.</translation>
@@ -703,7 +691,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="7896673875602241923">Neko se prethodno prijavio na Chrome na ovom računaru kao <ph name="ACCOUNT_EMAIL_LAST" />. Napravite novog korisnika Chrome-a da bi informacije bile razdvojene.</translation>
 <translation id="7904213866086517086">Ponovo otvori Google pretragu na bočnoj tabli</translation>
 <translation id="7904985524660297937">Isprobajte Gemini u Google Chrome-u</translation>
-<translation id="7905880575591690197">ChromeOS nije uspeo da sačuva Chrome podatke na Google nalogu zbog greške pri prijavljivanju</translation>
 <translation id="7936702483636872823">Chrome je blokirao ovo preuzimanje jer je ovaj fajl obmanjujući i može da izvrši neočekivane promene na uređaj</translation>
 <translation id="7951272445806340501">Treba da restartujete Chrome OS Flex da biste primenili ažuriranje.</translation>
 <translation id="7959172989483770734">Upravljaj Chrome profilima</translation>
@@ -764,7 +751,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="8402881611069691789">{COUNT,plural, =1{Ažuriranje Chrome-a je završeno. Možete da koristite najnoviju verziju čim ga ponovo pokrenete. Aktuelne kartice će se posle toga ponovo otvoriti. Otvoren je prozor bez arhiviranja ili izolovani prozor. Neće se ponovo otvoriti pri ponovnom pokretanju.}one{Ažuriranje Chrome-a je završeno. Možete da koristite najnoviju verziju čim ga ponovo pokrenete. Aktuelne kartice će se posle toga ponovo otvoriti. Otvoren je # prozor bez arhiviranja i izolovani prozor na različitim profilima. Neće se ponovo otvoriti pri ponovnom pokretanju.}few{Ažuriranje Chrome-a je završeno. Možete da koristite najnoviju verziju čim ga ponovo pokrenete. Aktuelne kartice će se posle toga ponovo otvoriti. Otvorena su # prozora bez arhiviranja i izolovana prozora na različitim profilima. Neće se ponovo otvoriti pri ponovnom pokretanju.}other{Ažuriranje Chrome-a je završeno. Možete da koristite najnoviju verziju čim ga ponovo pokrenete. Aktuelne kartice će se posle toga ponovo otvoriti. Otvoreno je # prozora bez arhiviranja i izolovanih prozora na različitim profilima. Neće se ponovo otvoriti pri ponovnom pokretanju.}}</translation>
 <translation id="8403038600646341038">Chrome logotip na ekranu računara.</translation>
 <translation id="8406687098231754303">Pomoću dugmeta Google pretraga na bočnoj tabli na traci s alatkama možete ponovo da otvorite Google pretragu na bočnoj tabli da biste postavljali pitanja tokom pregledanja</translation>
-<translation id="8418845734693287262">Chrome OS ne može da sinhronizuje podatke zato što su podaci za prijavljivanje na nalog zastareli.</translation>
 <translation id="842386925677997438">Chrome alatke za bezbednost</translation>
 <translation id="8425765582779547329">Ako želiš veću bezbednost onlajn uz izbore roditelja, prijavi se u Chrome</translation>
 <translation id="842852285618875960">Dostigli ste ograničenje Google Chrome-a za obeleživače (<ph name="BOOKMARK_LIMIT" />), pa neki obeleživači još uvek nisu sačuvani na Google nalogu.
@@ -793,7 +779,6 @@ Ne možete da sačuvate nove obeleživače na nalogu dok ne izbrišete neke. Ako
 <translation id="8624541899164515475">Podešavanja, otvaraju se na novoj kartici.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Ponovo ćemo pokrenuti Chrome za 1 minut}one{Ponovo ćemo pokrenuti Chrome za # minut}few{Ponovo ćemo pokrenuti Chrome za # minuta}other{Ponovo ćemo pokrenuti Chrome za # minuta}}</translation>
 <translation id="8637932705841171563">Da biste delili prozor, dozvolite snimanje ekrana za Chrome u podešavanjima sistema</translation>
-<translation id="8642497536370021917">Da biste bili sigurni da uvek možete da koristite i čuvate Chrome podatke na Google nalogu, potvrdite svoj identitet</translation>
 <translation id="8656634243791296665">Otvorite Gemini u Chrome Dev-u</translation>
 <translation id="8669527147644353129">Google Chrome pomoćnik</translation>
 <translation id="8679801911857917785">Kontroliše i stranicu koja se prikazuje kada pokrenete Chrome.</translation>
@@ -855,7 +840,6 @@ Ne možete da sačuvate nove obeleživače na nalogu dok ne izbrišete neke. Ako
 <translation id="922152298093051471">Prilagodite Chrome</translation>
 <translation id="93760716455950538">Restartujte Chrome OS Flex</translation>
 <translation id="945522503751344254">Pošalji povratne informacije</translation>
-<translation id="973195869036269770">ChromeOS ne može da sačuva Chrome podatke na Google nalogu zato što su podaci za prijavljivanje na nalog zastareli</translation>
 <translation id="983803489796659991">Instalacija nije uspela zato što server za ažuriranje nema nikakve heširane podatke za aplikaciju.</translation>
 <translation id="989816563149873169">Pomoću prečice <ph name="SHORTCUT" /> možete da prelazite sa jednog Chrome profila na drugi</translation>
 </translationbundle>

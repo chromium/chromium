@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Virkja þema</translation>
+<translation id="1085064499066015002">Alltaf á öllum vefsvæðum</translation>
 <translation id="1135328998467923690">Pakkinn er ógildur: „<ph name="ERROR_CODE" />“.</translation>
 <translation id="1140871961407805696">Snýr að umhverfi</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> bætti við viðbót sem gæti breytt því hvernig Chromium virkar.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">Búist var við útgáfunni „<ph name="EXPECTED_VERSION" />“ en útgáfan er „<ph name="NEW_ID" />“</translation>
 <translation id="471800408830181311">Mistókst að skila einkalykli.</translation>
 <translation id="4811956658694082538">Ekki tókst að setja pakkann upp vegna þess að hjálparforritsferli hrundi. Prófaðu að endurræsa Chrome og reyna aftur.</translation>
+<translation id="4883436287898674711">Öll vefsvæði <ph name="WEBSITE_1" /></translation>
 <translation id="4988792151665380515">Mistókst að flytja út opinberan lykil.</translation>
 <translation id="501057610015570208">Forrit með upplýsingaskráreigindina „kiosk_only“ verður að vera uppsett í sjálfsalastillingu ChromeOS Flex</translation>
 <translation id="5026754133087629784">Vefgluggi: <ph name="WEBVIEW_TAG_NAME" /></translation>

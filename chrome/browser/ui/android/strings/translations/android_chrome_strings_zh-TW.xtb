@@ -530,6 +530,7 @@
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />取得說明<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">追蹤價格</translation>
 <translation id="3037517125981011456">顯示登入 Chrome 的提示</translation>
+<translation id="3038505649933066250">依日期篩選</translation>
 <translation id="3044436568790455247">「選擇裝置」顯示在整個畫面。</translation>
 <translation id="3057938290530993634">按住即可釘選最常造訪的網站，方便下次存取</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 個書籤}other{<ph name="BOOKMARKS_COUNT_MANY" /> 個書籤}}</translation>
@@ -576,6 +577,7 @@
 <translation id="3243650379537999343">繪圖</translation>
 <translation id="3244271242291266297">月</translation>
 <translation id="3245429137663807393">如果你一併提供 Chrome 使用報告，這些報告中會包含你造訪的網址</translation>
+<translation id="3248185426436836442">待處理</translation>
 <translation id="3250563604907490871">圖片說明功能將在你連線至 Wi-Fi 後恢復運作</translation>
 <translation id="3254409185687681395">把此頁加入書籤</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" /> 的所有頁面</translation>
@@ -1124,7 +1126,6 @@
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />，固定的無痕分頁，正在分享內容</translation>
 <translation id="5375374982898812658">你將立即無法存取「<ph name="GROUP_NAME" />」分頁群組，且該群組會從你的所有裝置中刪除</translation>
 <translation id="537865165090710757">儲存並分享</translation>
-<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> 想要使用你在數位錢包中的個人資訊。除非你信任這個網站，否則請勿繼續操作。危險網站可能會誘騙你提供法定姓名或身分證字號等資料。</translation>
 <translation id="5395376160638294582">確保你隨時可以使用 Google 帳戶中的 Chrome 資料</translation>
 <translation id="5397794290049113714">你</translation>
 <translation id="539881862970320163">建議使用高強度密碼。鍵盤已隱藏。</translation>
@@ -1136,6 +1137,7 @@
 <translation id="5415871492522952905">所有已同步的裝置上都會有你的歷史記錄和分頁，方便你繼續執行先前的工作</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) 將立即無法存取「<ph name="GROUP_NAME" />」分頁群組</translation>
 <translation id="5424588387303617268">可用空間：<ph name="GIGABYTES" /> GB</translation>
+<translation id="5430861625274552852">詢問網頁內容或比較不同分頁</translation>
 <translation id="543271133149552180"><ph name="TAB_TITLE" />，多選的子母畫面無痕分頁</translation>
 <translation id="5436928407363358055">如要輕鬆接續瀏覽，請同步處理歷史記錄和分頁</translation>
 <translation id="5438292632479953702">再次下載</translation>
@@ -1172,6 +1174,7 @@
 <translation id="557018954714092179">建立新資料夾</translation>
 <translation id="5578795271662203820">透過 <ph name="SEARCH_ENGINE" /> 搜尋這張圖片</translation>
 <translation id="558563010977877295">開啟某個特定網頁或一組網頁</translation>
+<translation id="5594132774273121146">使用者與帳戶</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5599455543593328020">無痕模式</translation>
 <translation id="5601180634394228718">如需其他會運用資料提升 Chrome 使用體驗的設定，請前往 <ph name="BEGIN_LINK" />Google 服務<ph name="END_LINK" />。</translation>
@@ -1229,6 +1232,7 @@
 <translation id="583281660410589416">未知</translation>
 <translation id="5833984609253377421">分享連結</translation>
 <translation id="5839058148541733625">Chrome 恐龍</translation>
+<translation id="5839059463554891940">安全防護</translation>
 <translation id="5841444063256914865">仍要下載「<ph name="FILE_NAME" />」嗎？</translation>
 <translation id="5847265694842662173">部分網站有濫用行為或你不常使用，Chrome 已停止顯示這類網站的通知</translation>
 <translation id="5848257610304005265">要使用「<ph name="APP_NAME" />」開啟 PDF 嗎？</translation>
@@ -1345,7 +1349,6 @@
 <translation id="6259107733340311168">企業信號免責事項底部功能表已展開至完整高度</translation>
 <translation id="6260260490042862943">網站控制選項</translation>
 <translation id="6264376385120300461">仍要下載</translation>
-<translation id="6264485186158353794">返回安全網頁</translation>
 <translation id="6267106249090587268">通知 <ph name="SEPARATOR" /> 這個網站含有垃圾或欺詐內容，因此 Chrome 已移除這些權限</translation>
 <translation id="6276708887952587684">查看網頁原始碼</translation>
 <translation id="62768169905160414">複製影片影格</translation>
@@ -1464,7 +1467,6 @@
 <translation id="6659594942844771486">分頁</translation>
 <translation id="666731172850799929">在「<ph name="APP_NAME" />」中開啟</translation>
 <translation id="6669390930482049506">通知我</translation>
-<translation id="6670742294143102726">選取一或多個要加入搜尋的分頁</translation>
 <translation id="6671495933530132209">複製圖片</translation>
 <translation id="6672697278890207089">請輸入通關密語</translation>
 <translation id="6675622031235530028">按住 Ctrl + Q 鍵即可退出</translation>
@@ -1730,6 +1732,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> 個標準分頁}other{<ph name="TABS_COUNT_MANY" /> 個標準分頁}}</translation>
 <translation id="7603168929588204083">日期無效</translation>
 <translation id="7605594153474022051">同步處理功能無法正常運作</translation>
+<translation id="7607002721634913082">已暫停</translation>
 <translation id="7608245556672190037">Chrome 推薦功能啟用面板完整顯示</translation>
 <translation id="7612619742409846846">已使用下列帳戶登入 Google：</translation>
 <translation id="7612989789287281429">正在登入…</translation>
@@ -1838,6 +1841,7 @@
 <translation id="800155843932969169">安全建立及儲存密碼、快速登入並偵測密碼風險，守護你的安全</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
 <translation id="8006630792898017994">空格鍵或 Tab 鍵</translation>
+<translation id="802154636333426148">下載失敗</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />，多選的固定無痕分頁，正在分享內容</translation>
 <translation id="8025972204417227828">新增</translation>
 <translation id="8027863900915310177">選擇下載位置</translation>
@@ -1845,6 +1849,7 @@
 <translation id="8032569120109842252">追蹤中</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />，選取的無痕分頁，已設為靜音</translation>
 <translation id="8036587585440959897">部分擴充功能可以將搜尋引擎新增到 Chrome</translation>
+<translation id="803703704549420287">清除篩選條件</translation>
 <translation id="8037750541064988519">還剩 <ph name="DAYS" /> 天</translation>
 <translation id="8037801708772278989">剛剛檢查</translation>
 <translation id="804335162455518893">找不到 SD 卡</translation>

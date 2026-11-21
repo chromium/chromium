@@ -374,6 +374,7 @@
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> បានដក​ផ្ទាំងចេញ</translation>
 <translation id="1620510694547887537">កាមេរ៉ា</translation>
 <translation id="1623104350909869708">បង្ការទំព័រនេះពីការបង្កើតប្រអប់បន្ថែម។</translation>
+<translation id="1624535934412288769">ជួរឈរ</translation>
 <translation id="1629390138158333592">ស្វែងរក​លើ​បណ្ដាញ</translation>
 <translation id="1633137413609266904">{0,plural, =1{ការបើក​ឯកសារ​នេះ​ត្រូវបាន​ទប់ស្កាត់​ដោយ​គោលការណ៍​របស់​អ្នក​គ្រប់គ្រង}other{ការបើក​ឯកសារ # ត្រូវបាន​ទប់ស្កាត់​ដោយ​គោលការណ៍​របស់​អ្នក​គ្រប់គ្រង}}</translation>
 <translation id="1634828734222219955">សរុប</translation>
@@ -1085,6 +1086,7 @@
 <translation id="2803320044666896137">តម្លៃ​គោលការណ៍នេះ​មិនត្រូវបាន​អើពើទេ ដោយសារ​អ្នកប្រើប្រាស់​មិនពាក់ព័ន្ធ។</translation>
 <translation id="2807052079800581569">ទីតាំង​រូបភាព Y</translation>
 <translation id="2808278141522721006">អ្នកអាច​បិទ ឬ​បើក Windows Hello នៅ​ក្នុង<ph name="SETTINGS" /></translation>
+<translation id="2820159698793041599">ម៉ាស៊ីនមេប្រូកស៊ី​មិនអាច​បង្កើត​ការតភ្ជាប់​ដែលមាន​សុវត្ថិភាព​បានទេ។</translation>
 <translation id="2820957248982571256">កំពុងស្កេន...</translation>
 <translation id="282457273878278063">គ្រប់គ្រង​ព័ត៌មាន​ទំនាក់ទំនង</translation>
 <translation id="2824775600643448204">អាសយដ្ឋាន និងរបាស្វែងរក</translation>
@@ -1266,6 +1268,7 @@
 <translation id="3120807611504813890">ស្រោមសំបុត្រ (ស្ដើង)</translation>
 <translation id="3121994479408824897">ចូលទៅ​ <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">ស្លាក (អចិន្ត្រៃយ៍)</translation>
+<translation id="3128081114752791872">វិញ្ញាបនបត្រ​សុវត្ថិភាព​របស់​ម៉ាស៊ីនមេប្រូកស៊ីមិនត្រឹមត្រូវទេ។</translation>
 <translation id="3131746543143948171">គេហទំព័រនេះហាក់ដូចជាស្រដៀងនឹងគេហទំព័រផ្សេងទៀតដែលពាក់ព័ន្ធនឹងការដាក់នុយ កម្មវិធីគ្រោះថ្នាក់ និងការឆបោក។ <ph name="BEGIN_LEARN_MORE_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">រក្សាទុក​លេខកែតម្រូវ</translation>
 <translation id="3133565499688974786">ឥឡូវនេះ <ph name="SEARCH_ENGINE_NAME" /> គឺជាម៉ាស៊ីន​ស្វែងរកលំនាំដើមរបស់អ្នក</translation>
@@ -1684,7 +1687,6 @@
 <translation id="3800436529451849929">ពី <ph name="SITE" /></translation>
 <translation id="3801297763951514916">អ្នកចូលមើលញឹកញាប់</translation>
 <translation id="380329542618494757">ឈ្មោះ</translation>
-<translation id="3803481123869276674">នៅពេល​អ្នកទិញ​នៅក្នុង Chrome សូមមើល​កាបូប​អេឡិចត្រូនិក​ជាជម្រើស</translation>
 <translation id="3803801106042434208">ម៉ាស៊ីន​ស្វែងរក​ទាំងនេះ​មានភាព​ពេញនិយម​នៅក្នុង​តំបន់​របស់អ្នក</translation>
 <translation id="3804112825000113857">មើលការកំណត់ការបំពេញស្វ័យប្រវត្តិ</translation>
 <translation id="380666903981445943">រក្សាទុក​វិធីបង់ប្រាក់​នៅក្នុង​គណនី Google របស់អ្នក ដើម្បី​បំពេញវា​ដោយ​ស្វ័យប្រវត្តិ​សម្រាប់​ការទិញ​ដែលបានធ្វើឡើង​នៅក្នុង Chrome</translation>
@@ -2168,6 +2170,7 @@
 <translation id="4612631413844865947">មានបញ្ហាក្នុងការដំណើរការការបញ្ជាទិញរបស់អ្នកនៅលើ <ph name="MERCHANT_ORIGIN" /> តាមរយៈ <ph name="PAYMENT_APP_ORIGIN" />។</translation>
 <translation id="4612904677925722054">គេហទំព័រនេះ​អាចមាន​ខ្លឹមសារ​សម្រាប់​មនុស្ស​ពេញវ័យ។ មាតាបិតា ឬ​អាណាព្យាបាល​ចាំបាច់ត្រូវយល់ព្រមឱ្យអ្នក​ចូលទៅកាន់​គេហទំព័រ​នេះ។</translation>
 <translation id="4613873770449493819">URL ត្រូវតែ​ចង្អុលទៅ​ដូមែន <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />។</translation>
+<translation id="4615154194248230658">ទម្រង់​គំរូនេះ​ហាក់ដូចជា​មិនត្រូវគ្នា​នឹង​ដូមែន​អាសយដ្ឋាន​អ៊ីមែល​ដែលត្រឹមត្រូវ​ទេ។ អ្នកប្រើប្រាស់​ប្រហែលជា​មិនអាច​ចូលគណនី​បានទេ ឬ​កម្រងព័ត៌មាន​ដែលមាន​ស្រាប់​អាចត្រូវបាន​ដកចេញ។</translation>
 <translation id="4619564267100705184">ផ្ទៀងផ្ទាត់ថា​ជាអ្នក</translation>
 <translation id="4619669610757527494">រក្សាទុក​បណ្ណ​បើកបរ​នៅក្នុង Google Wallet</translation>
 <translation id="4622292761762557753">មិន​អី​ទេ ផ្ទេរ​ចុះ</translation>
@@ -2686,7 +2689,6 @@
 <translation id="5447235695608032700">អនុញ្ញាត​ឱ្យ <ph name="SITE" /> ប្រើ​ព័ត៌មាន​ដែល​ពួកគេ​បាន​រក្សាទុក​អំពី​អ្នក</translation>
 <translation id="5447973833955560753">ពាក្យ​សម្ងាត់​សម្រាប់​ការស្ដារ​ឡើងវិញ</translation>
 <translation id="5452270690849572955">រកមិនឃើញទំព័រ <ph name="HOST_NAME" /> នេះទេ</translation>
-<translation id="5452923259299906094">បង់ប្រាក់​តាម​កាបូប​អេឡិចត្រូនិក និង Pix</translation>
 <translation id="5455374756549232013">តែមពេលវេលាគោលការណ៍មិនល្អ</translation>
 <translation id="5456428544444655325">កុំ​បង្ហាញឱ្យសោះ</translation>
 <translation id="5457082343331641453">បញ្ចូលទៅការស្វែងរករបស់អ្នក</translation>
@@ -3901,7 +3903,6 @@
 <translation id="7489919936111034362">ទំហំ​ផ្ទុក Google ថាស​របស់អ្នក​ពេញហើយ</translation>
 <translation id="7490622939531327327">ការយល់ដឹងអំពីទម្រង់បែបបទកាន់តែឆ្លាតវៃ</translation>
 <translation id="7495528107193238112">ខ្លឹមសារ​នេះ​ត្រូវបាន​ទប់ស្កាត់​។ សូមទាក់ទង​ម្ចាស់​គេហទំព័រ ដើម្បី​ដោះស្រាយ​បញ្ហានេះ​។</translation>
-<translation id="7499188644237027195">នៅពេល​អ្នកទិញ​នៅក្នុង Chrome សូមមើល​កាបូប​អេឡិចត្រូនិក និង Pix ជាជម្រើស</translation>
 <translation id="7499684925421947861">អនុញ្ញាតឱ្យ <ph name="ACTOR_NAME" /> ចូលគណនី <ph name="DOMAIN" /> ជំនួសអ្នកឬ?</translation>
 <translation id="7501663406926337752">គេហទំព័រ​ដែលទៅកាន់ ត្រូវបានសម្គាល់ដោយស្ថាប័នរបស់អ្នក</translation>
 <translation id="7502044688973049724">គ្រប់គ្រងព័ត៌មានរបស់អ្នក</translation>
@@ -4027,7 +4028,6 @@
 <translation id="7676840398262504532">ស្ថាប័នរបស់អ្នកតាមដានការចម្លង</translation>
 <translation id="767806704757698045">ដំណើរការ​តែនៅលើ​គេហទំព័រ​ដែលអាច​ប្រើបាន​ប៉ុណ្ណោះ</translation>
 <translation id="7678730592635586336">ថត​វីដេអូ​ឡើងវិញ</translation>
-<translation id="7679287273775285018">បង់ប្រាក់តាម​កាបូប​អេឡិចត្រូនិក</translation>
 <translation id="7679367271685653708">មើល និងគ្រប់គ្រង​ប្រវត្តិរុករកតាម​អ៊ីនធឺណិត​របស់អ្នកនៅក្នុង​ការកំណត់ Chrome</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, ផុតកំណត់នៅខែ <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">ការដឹកជញ្ជូន</translation>
@@ -4102,7 +4102,6 @@
 <translation id="7791543448312431591">បន្ថែម</translation>
 <translation id="7798389633136518089">មិនអើពើ ដោយសារ​គោលការណ៍មិនត្រូវបានកំណត់ដោយ​ប្រភព​ពពកទេ។</translation>
 <translation id="7800304661137206267">ការភ្ជាប់ត្រូវបានអ៊ីនគ្រីប ដោយប្រើ <ph name="CIPHER" /> ជាមួយ <ph name="MAC" /> សម្រាប់ការសម្គាល់អត្តសញ្ញាណសារ និង <ph name="KX" /> ជាយន្តការផ្តោះប្តូរសោ។</translation>
-<translation id="780228007282527248">បញ្ចូល​ផ្ទាំង ឬ​រូបភាព ដើម្បី​កែលម្អ​ការស្វែងរក​របស់អ្នក</translation>
 <translation id="7802523362929240268">ទំព័រ​ស្របច្បាប់</translation>
 <translation id="7802989406998618639">បញ្ចូល​លេខកូដសុវត្ថិភាព <ph name="NUMBER_OF_DIGITS" /> ខ្ទង់នៅលើ<ph name="SIDE_OF_CARD" /> ដើម្បីឱ្យធនាគារ​របស់អ្នក​អាច​ផ្ទៀងផ្ទាត់​ថា​ជាអ្នក</translation>
 <translation id="780301667611848630">ទេ អរគុណ</translation>
@@ -4239,6 +4238,7 @@
 <translation id="8029829038322015001">ក្រហមទី 1</translation>
 <translation id="8032546467100845887">ភាពថ្លា</translation>
 <translation id="8035152190676905274">ប៊ិក</translation>
+<translation id="803703704549420287">សម្អាត​តម្រង</translation>
 <translation id="8037117624646282037">អ្នកដែលបានប្រើ​ឧបករណ៍​នាពេលថ្មីៗនេះ</translation>
 <translation id="803771048473350947">ឯកសារ</translation>
 <translation id="8038182528865038593">ក្រហមទី 2</translation>
@@ -4427,6 +4427,7 @@
 <translation id="8363502534493474904">សូមបិទរបៀបលើយន្តហោះ</translation>
 <translation id="8363929499301563123">ខូគី​គេហទំព័រ (ស្ថានភាព​ដែលបាន​ចូល​គណនី​នៅលើ​គេហទំព័រ​ដែល​បានចូលមើល​ថ្មីៗ​នឹងត្រូវបាន​រក្សាទុក)</translation>
 <translation id="8364627913115013041">មិនបានកំណត់។</translation>
+<translation id="8364664414979300296">បញ្ចូល​ផ្ទាំង រូបថត និង​អ្វីៗជា​ច្រើនទៀត ដើម្បី​កែលម្អ​ការស្វែងរក​របស់អ្នក</translation>
 <translation id="836616551641291797">ស្វែងយល់​បន្ថែម​អំពី​របៀបដែល​កម្មវិធីរុករកតាមអ៊ីនធឺណិត​របស់​អ្នក​ត្រូវ​បាន​គ្រប់គ្រង</translation>
 <translation id="8367705492654390392">សួរ​អ្វីម្យ៉ាង</translation>
 <translation id="8368001212524806591">តាម​ដាន​តម្លៃ​</translation>

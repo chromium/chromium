@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">ಥೀಮ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
+<translation id="1085064499066015002">ಎಲ್ಲಾ ಸೈಟ್‌ಗಳಲ್ಲಿ ಯಾವಾಗಲೂ ಅನುಮತಿಸಿ</translation>
 <translation id="1135328998467923690">ಪ್ಯಾಕೇಜ್ ಅಮಾನ್ಯವಾಗಿದೆ: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">ಪರಿಸರಕ್ಕೆ ಮುಖಮಾಡಿದೆ</translation>
 <translation id="1171831736360285680">Chromium ಕಾರ್ಯನಿರ್ವಹಿಸುವ ವಿಧಾನವನ್ನು ಬದಲಿಸಬಹುದಾದ ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಒಂದನ್ನು <ph name="PARTNER_NAME" /> ಸೇರಿಸಿದೆ.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">ನಿರೀಕ್ಷಿತ ಆವೃತ್ತಿ "<ph name="EXPECTED_VERSION" />", ಆದರೆ ಆವೃತ್ತಿಯು "<ph name="NEW_ID" />" ಆಗಿದೆ</translation>
 <translation id="471800408830181311">ಖಾಸಗಿ ಕೀಲಿಯನ್ನು ಔಟ್‌ಪುಟ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="4811956658694082538">ಉಪಯುಕ್ತತೆಯ ಪ್ರಕ್ರಿಯೆಯು ಹಾಳಾಗಿರುವ ಕಾರಣ ಪ್ಯಾಕೇಜ್ ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ. Chrome ಮರುಪ್ರಾರಂಭಿಸಲು ಪ್ರಯತ್ನಿಸಿ ಹಾಗೂ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="4883436287898674711">ಎಲ್ಲಾ <ph name="WEBSITE_1" /> ಸೈಟ್‌ಗಳು</translation>
 <translation id="4988792151665380515">ಸಾರ್ವಜನಿಕ ಕೀಲಿಯನ್ನು ರಫ್ತು ಮಾಡಲು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="501057610015570208">ChromeOS Flex ಕಿಯೋಸ್ಕ್ ಮೋಡ್‌ನಲ್ಲಿ 'kiosk_only' ಮ್ಯಾನಿಫೆಸ್ಟ್‌ ಲಕ್ಷಣದ ಜೊತೆಗಿನ ಆ್ಯಪ್ ಸ್ಥಾಪಿಸಿರಬೇಕು</translation>
 <translation id="5026754133087629784">ವೆಬ್‌ವೀಕ್ಷಣೆ: <ph name="WEBVIEW_TAG_NAME" /></translation>

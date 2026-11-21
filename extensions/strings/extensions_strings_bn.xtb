@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">থিম সক্ষম করুন</translation>
+<translation id="1085064499066015002">সব সাইটে সবসময় অ্যাক্সেস পাবে</translation>
 <translation id="1135328998467923690">এই প্যাকেজটি ভুল: '<ph name="ERROR_CODE" />'৷</translation>
 <translation id="1140871961407805696">পেছন দিকে মুখ করা</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> এমন একটি এক্সটেনশন যোগ করেছে যেটি Chromium কাজ করার পদ্ধতি পরিবর্তন করতে পারে।
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">"<ph name="EXPECTED_VERSION" />" ভার্সনটি হওয়া উচিত ছিল, কিন্তু ভার্সনটি হল "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">ব্যক্তিগত কী আউটপুট করতে ব্যর্থ৷</translation>
 <translation id="4811956658694082538">একটি ইউটিলিটি প্রক্রিয়া ক্র্যাশ করার কারণে প্যাকেজটি ইনস্টল করা যায়নি। Chrome-কে পুনরায় চালু করে আবার চেষ্টা করুন।</translation>
+<translation id="4883436287898674711">সব <ph name="WEBSITE_1" /> সাইট</translation>
 <translation id="4988792151665380515">ব্যক্তিগত কী-টি রপ্তানি করতে ব্যর্থ৷</translation>
 <translation id="501057610015570208">'Kiosk_only' ম্যানিফেস্ট অ্যাট্রিবিউটের সাথে অ্যাপকে অবশ্যই ChromeOS Flex কিয়স্ক মোডে ইনস্টল করতে হবে</translation>
 <translation id="5026754133087629784">ওয়েবদর্শন: <ph name="WEBVIEW_TAG_NAME" /></translation>

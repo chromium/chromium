@@ -530,6 +530,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Få hjälp<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Bevakar pris</translation>
 <translation id="3037517125981011456">Visar meddelanden om att logga in i Chrome</translation>
+<translation id="3038505649933066250">Filtrera efter datum</translation>
 <translation id="3044436568790455247">Välj en enhet har öppnats över hela skärmen.</translation>
 <translation id="3057938290530993634">Tryck länge för att fästa dina mest besökta webbplatser så att du kommer åt dem snabbt nästa gång</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bokmärke}other{<ph name="BOOKMARKS_COUNT_MANY" /> bokmärken}}</translation>
@@ -576,6 +577,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3243650379537999343">Rita</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">Om du även delar Chrome-användningsrapporter ingår webbadresserna du besöker i dessa rapporter</translation>
+<translation id="3248185426436836442">Väntar</translation>
 <translation id="3250563604907490871">Hämtningen av bildbeskrivningar fortsätter när enheten är ansluten till wifi</translation>
 <translation id="3254409185687681395">Bokmärk sidan</translation>
 <translation id="3265093782546847662">Alla sidor på <ph name="DOMAIN" /></translation>
@@ -1125,7 +1127,6 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, fäst inkognitoflik som delas</translation>
 <translation id="5375374982898812658">Du förlorar omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /> och den raderas från alla dina enheter</translation>
 <translation id="537865165090710757">Spara och dela</translation>
-<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> vill använda personliga uppgifter från din digitala plånbok. Fortsätt bara om du litar på den här webbplatsen. Farliga webbplatser kan lura dig att avslöja sådant som ditt officiella namn eller personnummer.</translation>
 <translation id="5395376160638294582">Se till att du alltid kan använda Chrome-data i Google-kontot</translation>
 <translation id="5397794290049113714">Du</translation>
 <translation id="539881862970320163">Ett starkt lösenord har föreslagits. Tangentbordet är dolt.</translation>
@@ -1137,6 +1138,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5415871492522952905">Din historik och dina fikar finns på alla enheter, så att du kan fortsätta där du slutade</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) förlorar omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /></translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB tillgängligt</translation>
+<translation id="5430861625274552852">Fråga om innehållet på en sida eller jämför mellan flikar</translation>
 <translation id="543271133149552180"><ph name="TAB_TITLE" />, inkognitoflik med bild-i-bild som har valts tillsammans med andra</translation>
 <translation id="5436928407363358055">Synkronisera din historik och dina flikar för att enkelt fortsätta där du slutade</translation>
 <translation id="5438292632479953702">Ladda ned igen</translation>
@@ -1173,6 +1175,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="557018954714092179">Skapa ny mapp</translation>
 <translation id="5578795271662203820">Sök på <ph name="SEARCH_ENGINE" /> efter denna bild</translation>
 <translation id="558563010977877295">Öppna en viss sida eller en grupp med sidor</translation>
+<translation id="5594132774273121146">Användare och konto</translation>
 <translation id="5596627076506792578">Fler alternativ</translation>
 <translation id="5599455543593328020">Inkognitoläge</translation>
 <translation id="5601180634394228718">Du hittar fler inställningar som använder data för att förbättra Chrome-upplevelsen under <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" />.</translation>
@@ -1230,6 +1233,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="583281660410589416">Okänd</translation>
 <translation id="5833984609253377421">Dela länk</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5839059463554891940">Skydd och säkerhet</translation>
 <translation id="5841444063256914865">Vill du ladda ned <ph name="FILE_NAME" /> ändå?</translation>
 <translation id="5847265694842662173">Chrome har stoppat aviseringar från webbplatser med otillåten användning och webbplatser som inte används</translation>
 <translation id="5848257610304005265">Vill du öppna PDF-filen med <ph name="APP_NAME" />?</translation>
@@ -1346,7 +1350,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6259107733340311168">Arket för ansvarsfriskrivning för företagssignaler på nedre delen av skärmen har öppnats över hela skärmen</translation>
 <translation id="6260260490042862943">Webbplatskontroller</translation>
 <translation id="6264376385120300461">Ladda ned ändå</translation>
-<translation id="6264485186158353794">Tillbaka till säker webbplats</translation>
 <translation id="6267106249090587268">Aviseringar <ph name="SEPARATOR" /> Chrome har tagit bort dessa behörigheter på grund av spam eller vilseledande innehåll</translation>
 <translation id="6276708887952587684">Visa sidkälla</translation>
 <translation id="62768169905160414">Kopiera videobildruta</translation>
@@ -1465,7 +1468,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6659594942844771486">Tabb</translation>
 <translation id="666731172850799929">Öppna i <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Meddela mig</translation>
-<translation id="6670742294143102726">Välj en eller flera flikar att lägga till i sökningen</translation>
 <translation id="6671495933530132209">Kopiera bild</translation>
 <translation id="6672697278890207089">Ange din lösenfras</translation>
 <translation id="6675622031235530028">Håll ned Ctrl + Q för att avsluta</translation>
@@ -1731,6 +1733,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standardflik}other{<ph name="TABS_COUNT_MANY" /> standardflikar}}</translation>
 <translation id="7603168929588204083">Ogiltigt datum</translation>
 <translation id="7605594153474022051">Det går inte att synkronisera</translation>
+<translation id="7607002721634913082">Pausad</translation>
 <translation id="7608245556672190037">Arket på nedre delen av skärmen för att välja att använda Chrome Finds har öppnats över hela skärmen</translation>
 <translation id="7612619742409846846">Inloggad i Google som</translation>
 <translation id="7612989789287281429">Du loggas in …</translation>
@@ -1839,6 +1842,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="800155843932969169">Skapa och lagra dina lösenord på ett säkert sätt, logga in snabbare och identifiera säkerhetsproblem med lösenord för att skydda ditt konto</translation>
 <translation id="8004582292198964060">Webbläsare</translation>
 <translation id="8006630792898017994">Blanksteg eller tabb</translation>
+<translation id="802154636333426148">Nedladdningen misslyckades</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, fäst inkognitoflik som delas och som har valts tillsammans med andra</translation>
 <translation id="8025972204417227828">Lägg till ny</translation>
 <translation id="8027863900915310177">Välj plats för nedladdningen</translation>
@@ -1846,6 +1850,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8032569120109842252">Följer</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, vald inkognitoflik med ljud av</translation>
 <translation id="8036587585440959897">Vissa tillägg kan lägga till sökmotorer i Chrome.</translation>
+<translation id="803703704549420287">Rensa filter</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> dagar kvar</translation>
 <translation id="8037801708772278989">Genomsöktes alldeles nyss</translation>
 <translation id="804335162455518893">Det gick inte att hitta SD-kortet</translation>

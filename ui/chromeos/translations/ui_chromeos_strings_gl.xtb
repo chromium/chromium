@@ -942,7 +942,7 @@
 <translation id="813913629614996137">Iniciando...</translation>
 <translation id="8147028810663464959">A largura do carácter é completa</translation>
 <translation id="8151638057146502721">Configurar</translation>
-<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 erro.}other{# erros.}}</translation>
+<translation id="8154666764013920974">{NUM_ERROR,plural, =1{1 erro.}many{# errors.}other{# erros.}}</translation>
 <translation id="8154842056504218462">Seleccionáronse todas as entradas.</translation>
 <translation id="8175731104491895765">Francés (Bélxica)</translation>
 <translation id="8175799081768705361">Sincronizando <ph name="NUMBER_OF_FILES_SYNCING" /> ficheiros de Drive</translation>
@@ -1033,7 +1033,7 @@
 <translation id="8787254343425541995">Permitir servidores proxy para redes compartidas</translation>
 <translation id="8790981080411996443">Persoa regando plantas</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
-<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 advertencia.}other{# advertencias.}}</translation>
+<translation id="8806832560029769670">{NUM_WARNING,plural, =1{1 advertencia.}many{# warnings.}other{# advertencias.}}</translation>
 <translation id="8808686172382650546">Gato</translation>
 <translation id="8810671769985673465">Produciuse un erro na compresión. Xa existe o elemento "<ph name="FILE_NAME" />"</translation>
 <translation id="8813284582615685103">Español (España)</translation>

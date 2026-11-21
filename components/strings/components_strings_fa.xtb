@@ -241,7 +241,7 @@
 <translation id="1405567553485452995">سبز روشن</translation>
 <translation id="1406370515365284486">روش‌های پرداختتان همچنان ذخیره خواهند ماند</translation>
 <translation id="1406500794671479665">در حال تأیید...</translation>
-<translation id="1406812885827747674">این دفعه اجازه دادن</translation>
+<translation id="1406812885827747674">این بار اجازه دادن</translation>
 <translation id="14070772729708640">فایل‌ها باموفقیت در پوشه <ph name="FOLDER_NAME" /> در <ph name="CLOUD_PROVIDER" /> بارگذاری شد</translation>
 <translation id="1407135791313364759">باز کردن همه</translation>
 <translation id="1408696301184924537">‏برای اینکه این IBAN دفعه بعد به‌طور خودکار تکمیل شود، آن را در «حساب Google» خود ذخیره کنید</translation>
@@ -373,6 +373,7 @@
 <translation id="1619648179761984213">‫<ph name="USER_DISPLAY_NAME" /> زبانه‌ای را برداشت</translation>
 <translation id="1620510694547887537">دوربین</translation>
 <translation id="1623104350909869708">جلوگیری از ایجاد پنجره‌های اضافی توسط این صفحه</translation>
+<translation id="1624535934412288769">ستون‌ها</translation>
 <translation id="1629390138158333592">جستجوی وب</translation>
 <translation id="1633137413609266904">{0,plural, =1{خط‌مشی سرپرست باز کردن این فایل را مسدود کرده است}one{خط‌مشی سرپرست باز کردن # فایل را مسدود کرده است}other{خط‌مشی سرپرست باز کردن # فایل را مسدود کرده است}}</translation>
 <translation id="1634828734222219955">مجموع</translation>
@@ -1083,6 +1084,7 @@
 <translation id="2803320044666896137">این مقدار خط‌مشی نادیده گرفته می‌شود زیرا کاربر وابسته نیست.</translation>
 <translation id="2807052079800581569">‏موقعیت Y تصویر</translation>
 <translation id="2808278141522721006">‏می‌توانید Windows Hello را در <ph name="SETTINGS" /> روشن یا خاموش کنید</translation>
+<translation id="2820159698793041599">پراکسی سرور نتوانست اتصال امنی برقرار کند.</translation>
 <translation id="2820957248982571256">درحال اسکن کردن…</translation>
 <translation id="282457273878278063">مدیریت اطلاعات تماس</translation>
 <translation id="2824775600643448204">نوار جستجو و آدرس</translation>
@@ -1264,6 +1266,7 @@
 <translation id="3120807611504813890">پاکت (سبک)</translation>
 <translation id="3121994479408824897">رفتن به <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">برچسب (دائمی)</translation>
+<translation id="3128081114752791872">گواهینامه امنیتی پراکسی سرور نامعتبر است.</translation>
 <translation id="3131746543143948171">این سایت شبیه به سایت‌های دیگری است که با طعمه‌گذاری، بدافزار، و فریبکاری مرتبط هستند. <ph name="BEGIN_LEARN_MORE_LINK" />بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">ذخیره کردن شناسه جبران خطای تطبیق</translation>
 <translation id="3133565499688974786">اکنون <ph name="SEARCH_ENGINE_NAME" /> موتور جستجوی پیش‌فرض شما است</translation>
@@ -1682,7 +1685,6 @@
 <translation id="3800436529451849929">از <ph name="SITE" /></translation>
 <translation id="3801297763951514916">اغلب بازدید می‌کنید</translation>
 <translation id="380329542618494757">نام</translation>
-<translation id="3803481123869276674">‏هنگام خرید کردن در Chrome، «کیف پول الکترونیکی» را به‌عنوان یکی از گزینه‌های پرداخت می‌بینید</translation>
 <translation id="3803801106042434208">این موتورهای جستجو در منطقه شما پرطرفدار هستند</translation>
 <translation id="3804112825000113857">مشاهده تنظیمات «تکمیل خودکار»</translation>
 <translation id="380666903981445943">‏روش پرداختی در «حساب Google» خود ذخیره کنید تا برای خریدهای انجام‌شده در Chrome به‌طور خودکار تکمیل شود</translation>
@@ -2165,6 +2167,7 @@
 <translation id="4612631413844865947">هنگام پردازش سفارشتان در <ph name="MERCHANT_ORIGIN" /> ازطریق <ph name="PAYMENT_APP_ORIGIN" /> خطایی روی داد.</translation>
 <translation id="4612904677925722054">این سایت ممکن است محتوای مناسب بزرگسالان داشته باشد. ولی یا سرپرست باید بازدید شما از این وب‌سایت را تأیید کند.</translation>
 <translation id="4613873770449493819">نشانی وب باید به دامنه <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> اشاره کند.</translation>
+<translation id="4615154194248230658">به‌نظر نمی‌رسد این الگو با دامنه نشانی ایمیل معتبری مطابقت داشته باشد. ممکن است کاربران نتوانند به سیستم وارد شوند یا نمایه‌های موجود برداشته شود.</translation>
 <translation id="4619564267100705184">درستی‌سنجی کردن هویت</translation>
 <translation id="4619669610757527494">‏ذخیره کردن گواهینامه رانندگی در «کیف پول Google»</translation>
 <translation id="4622292761762557753">درهرصورت منتقل شود</translation>
@@ -2683,7 +2686,6 @@
 <translation id="5447235695608032700">اجازه دادن به <ph name="SITE" /> برای استفاده از اطلاعاتی که درباره شما ذخیره کرده‌اند</translation>
 <translation id="5447973833955560753">گذرواژه بازیابی</translation>
 <translation id="5452270690849572955">صفحه <ph name="HOST_NAME" /> پیدا نمی‌شود</translation>
-<translation id="5452923259299906094">‏پرداخت با «کیف پول الکترونیکی» و Pix</translation>
 <translation id="5455374756549232013">مهر زمان خط‌مشی نادرست است</translation>
 <translation id="5456428544444655325">هرگز نشان داده نشود</translation>
 <translation id="5457082343331641453">افزودن به جستجو</translation>
@@ -3899,7 +3901,6 @@
 <translation id="7489919936111034362">‏فضای ذخیره‌سازی‌تان در Google Drive پر شده است</translation>
 <translation id="7490622939531327327">درک هوشمندتر فرم</translation>
 <translation id="7495528107193238112">این محتوا مسدود شده است. برای برطرف کردن مشکل با مالک سایت تماس بگیرید.</translation>
-<translation id="7499188644237027195">‏هنگام خرید کردن در Chrome، «کیف پول الکترونیکی» و Pix را به‌عنوان گزینه‌های پرداخت می‌بینید</translation>
 <translation id="7499684925421947861">به <ph name="ACTOR_NAME" /> اجازه می‌دهید ازطرف شما به سیستم <ph name="DOMAIN" /> وارد شود؟</translation>
 <translation id="7501663406926337752">سازمان شما سایت پیش‌رو را پرچم‌گذاری کرده است</translation>
 <translation id="7502044688973049724">اطلاعات خود را مدیریت کنید</translation>
@@ -4024,7 +4025,6 @@
 <translation id="7676840398262504532">سازمان‌تان کپی کردن را پایش می‌کند</translation>
 <translation id="767806704757698045">فقط در سایت‌های پشتیبانی‌شده کار می‌کند</translation>
 <translation id="7678730592635586336">فیلم‌برداری مجدد</translation>
-<translation id="7679287273775285018">پرداخت با «کیف پول الکترونیکی»</translation>
 <translation id="7679367271685653708">‏مشاهده و مدیریت سابقه مرور در تنظیمات Chrome</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />،‏ <ph name="CARD_LAST_FOUR_DIGITS" />، در تاریخ <ph name="CARD_EXPIRATION" /> منقضی می‌شود</translation>
 <translation id="7682287625158474539">ارسال</translation>
@@ -4099,7 +4099,6 @@
 <translation id="7791543448312431591">افزودن</translation>
 <translation id="7798389633136518089">نادیده گرفته شد چون خط‌مشی توسط منبع ابری تنظیم نشده است.</translation>
 <translation id="7800304661137206267">اتصال با استفاده از <ph name="CIPHER" /> و با <ph name="MAC" /> برای راستی‌آزمایی پیام و <ph name="KX" /> به‌عنوان مکانیسم تبدیل کلید رمزگذاری می‌شود.</translation>
-<translation id="780228007282527248">برای بهبود جستجو، زبانه یا تصویر اضافه کنید</translation>
 <translation id="7802523362929240268">سایت مجاز است</translation>
 <translation id="7802989406998618639">کد امنیتی <ph name="NUMBER_OF_DIGITS" /> رقمی <ph name="SIDE_OF_CARD" /> را وارد کنید تا بانکتان بتواند هویت شما را تأیید کند</translation>
 <translation id="780301667611848630">نه متشکرم</translation>
@@ -4165,6 +4164,7 @@
 <translation id="7916162853251942238">پایه فلکسو</translation>
 <translation id="7916802424606434188">باز کردن پنجره <ph name="WINDOW_INDEX" />‏ (<ph name="NUM_TABS" /> زبانه) در پنجره جدید</translation>
 <translation id="791698251820376781">سازمانتان به شما اجازه نمی‌دهد به سیستم وارد شوید</translation>
+<translation id="7918936720558783139">پیشنهاد ویژه ذخیره‌شده شما هنگام تسویه‌حساب با استفاده از تکمیل خودکار دردسترس خواهد بود. <ph name="BEGIN_LINK" />مدیریت پیشنهادها<ph name="END_LINK" /></translation>
 <translation id="7927046851848613453">‏بلیت‌ها، رویدادها، و سایر اطلاعات از صفحه‌هایی که بازدید می‌کنید — نه فقط اطلاعات فرم‌هایی که پر می‌کنید — را ذخیره کنید. سپس می‌توانید به مجوزهایتان، مثل بلیت‌های رویداد و کارت‌های وفاداری، دسترسی سریع داشته باشید. اطلاعات ذخیره‌شده شما می‌توانند در دستگاه‌هایتان و در همه محصولات Google نشان داده شود.</translation>
 <translation id="7930282586031445870">صفحه شرایط خدمات «الآن خریدن، پراخت بعداً» بسته شد.</translation>
 <translation id="7932035970207573919">نشانی محل کار، <ph name="ADDRESS" /></translation>
@@ -4234,6 +4234,7 @@
 <translation id="8029829038322015001">قرمز ۱</translation>
 <translation id="8032546467100845887">شفاف</translation>
 <translation id="8035152190676905274">قلم</translation>
+<translation id="803703704549420287">پاک کردن فیلترها</translation>
 <translation id="8037117624646282037">افرادی که اخیراً از دستگاه استفاده کرده‌اند</translation>
 <translation id="803771048473350947">فایل</translation>
 <translation id="8038182528865038593">قرمز ۲</translation>
@@ -4422,6 +4423,7 @@
 <translation id="8363502534493474904">خاموش کردن حالت هواپیما</translation>
 <translation id="8363929499301563123">کوکی‌های وب‌سایت (وضعیت ورود به سیستم در وب‌سایت‌های اخیراً بازدیدشده حفظ خواهد شد)</translation>
 <translation id="8364627913115013041">تنظیم نشده.</translation>
+<translation id="8364664414979300296">برای بهبود جستجو، زبانه، عکس، و سایر موارد اضافه کنید</translation>
 <translation id="836616551641291797">درباره نحوه مدیریت مرورگرتان بیشتر بدانید</translation>
 <translation id="8367705492654390392">هرچه می‌خواهید بپرسید</translation>
 <translation id="8368001212524806591">پیگیری قیمت</translation>

@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">เปิดใช้ธีม</translation>
+<translation id="1085064499066015002">ตลอดเวลาในทุกเว็บไซต์</translation>
 <translation id="1135328998467923690">แพ็กเกจไม่ถูกต้อง: "<ph name="ERROR_CODE" />"</translation>
 <translation id="1140871961407805696">กล้องหลัง</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> ได้เพิ่มส่วนขยายที่อาจเปลี่ยนวิธีการทำงานของ Chromium
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">เวอร์ชันที่คาดการณ์ "<ph name="EXPECTED_VERSION" />" แต่เวอร์ชันที่แจ้งคือ "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">ไม่สามารถส่งค่าคีย์ส่วนตัว</translation>
 <translation id="4811956658694082538">ไม่สามารถติดตั้งแพ็กเกจเนื่องจากกระบวนการอรรถประโยชน์ขัดข้อง ลองรีสตาร์ท Chrome และลองใหม่อีกครั้ง</translation>
+<translation id="4883436287898674711">ไซต์ <ph name="WEBSITE_1" /> ทั้งหมด</translation>
 <translation id="4988792151665380515">ไม่สามารถส่งออกคีย์สาธารณะ</translation>
 <translation id="501057610015570208">ต้องติดตั้งแอปที่มีแอตทริบิวต์ไฟล์ Manifest "kiosk_only" ในโหมดคีออสก์ของ Chrome OS Flex</translation>
 <translation id="5026754133087629784">มุมมองเว็บ: <ph name="WEBVIEW_TAG_NAME" /></translation>

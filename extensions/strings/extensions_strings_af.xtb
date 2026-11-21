@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Aktiveer tema</translation>
+<translation id="1085064499066015002">Altyd op alle werwe</translation>
 <translation id="1135328998467923690">Pakket is ongeldig: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">Wys na omgewing (agterste kamera)</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> het ’n uitbreiding bygevoeg wat dalk kan verander hoe Chromium werk.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">Het weergawe "<ph name="EXPECTED_VERSION" />" verwag, maar weergawe was "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">Kon nie private sleutel uitvoer nie.</translation>
 <translation id="4811956658694082538">Kon nie pakket installeer nie omdat 'n nutsproses omgeval het. Probeer om Chrome te herbegin en probeer weer.</translation>
+<translation id="4883436287898674711">Alle <ph name="WEBSITE_1" />-werwe</translation>
 <translation id="4988792151665380515">Kon nie publieke sleutel uitvoer nie.</translation>
 <translation id="501057610015570208">App met "kiosk_only"-manifeskenmerk moet in Chrome OS Flex se kioskmodus geïnstalleer word</translation>
 <translation id="5026754133087629784">Webaansig: <ph name="WEBVIEW_TAG_NAME" /></translation>

@@ -373,6 +373,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> tog bort en flik</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623104350909869708">Hindra sidan från att skapa fler dialogrutor</translation>
+<translation id="1624535934412288769">Kolumner</translation>
 <translation id="1629390138158333592">Sök på webben</translation>
 <translation id="1633137413609266904">{0,plural, =1{Möjligheten att öppna den här filen blockeras av administratörspolicyn}other{Möjligheten att öppna # filer blockeras av administratörspolicyn}}</translation>
 <translation id="1634828734222219955">Totalt</translation>
@@ -1082,6 +1083,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2803320044666896137">Det här principvärdet ignoreras eftersom användaren inte är kopplad.</translation>
 <translation id="2807052079800581569">Bild Y – position</translation>
 <translation id="2808278141522721006">Du kan aktivera eller inaktivera Windows Hello i <ph name="SETTINGS" /></translation>
+<translation id="2820159698793041599">Det gick inte att upprätta en säker anslutning till proxyservern.</translation>
 <translation id="2820957248982571256">Söker …</translation>
 <translation id="282457273878278063">Hantera kontaktuppgifter</translation>
 <translation id="2824775600643448204">Adress- och sökfält</translation>
@@ -1263,6 +1265,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3120807611504813890">Kuvert (lättvikt)</translation>
 <translation id="3121994479408824897">Besök <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Etiketter (permanenta)</translation>
+<translation id="3128081114752791872">Proxyserverns säkerhetscertifikat är ogiltigt.</translation>
 <translation id="3131746543143948171">Den här webbplatsen verkar likna andra webbplatser som är kopplade till nätfiske, skadlig kod och bedrägerier. <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">Spara ditt Redress Number</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> är nu din standardsökmotor</translation>
@@ -1681,7 +1684,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="3800436529451849929">Från <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Du besöker ofta</translation>
 <translation id="380329542618494757">Namn</translation>
-<translation id="3803481123869276674">Visa eWallet som alternativ när du gör köp i Chrome</translation>
 <translation id="3803801106042434208">Dessa sökmotorer är populära i din region</translation>
 <translation id="3804112825000113857">Visa inställningar för autofyll</translation>
 <translation id="380666903981445943">Spara en betalningsmetod i Google-kontot för att fylla i den automatiskt vid köp i Chrome</translation>
@@ -2164,6 +2166,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4612631413844865947">Det gick inte att behandla beställningen på <ph name="MERCHANT_ORIGIN" /> via <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="4612904677925722054">Den här webbplatsen kan ha innehåll för vuxna. En förälder eller vårdnadshavare måste godkänna att du besöker webbplatsen.</translation>
 <translation id="4613873770449493819">Webbadressen måste hänvisa till en <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-domän.</translation>
+<translation id="4615154194248230658">Det här mönstret verkar inte matcha en giltig e-postadressdomän. Användarna kanske inte kan logga in eller så kan befintliga profiler tas bort.</translation>
 <translation id="4619564267100705184">Verifiera din identitet</translation>
 <translation id="4619669610757527494">Spara körkortet i Google Wallet</translation>
 <translation id="4622292761762557753">Överför ändå</translation>
@@ -2682,7 +2685,6 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5447235695608032700">Tillåt att <ph name="SITE" /> använder uppgifter som webbplatsen har sparat om dig</translation>
 <translation id="5447973833955560753">Återställningslösenord</translation>
 <translation id="5452270690849572955">Sidan på <ph name="HOST_NAME" /> kan inte hittas</translation>
-<translation id="5452923259299906094">Betala med eWallet och Pix</translation>
 <translation id="5455374756549232013">Felaktig tidsstämpel för policy</translation>
 <translation id="5456428544444655325">Visa aldrig</translation>
 <translation id="5457082343331641453">Lägg till i sökningen</translation>
@@ -3898,7 +3900,6 @@ Mer information.
 <translation id="7489919936111034362">Lagringsutrymmet på Google Drive är fullt</translation>
 <translation id="7490622939531327327">Smartare formulärförståelse</translation>
 <translation id="7495528107193238112">Det här innehållet har blockerats. Kontakta webbplatsägaren om du vill åtgärda problemet.</translation>
-<translation id="7499188644237027195">Visa eWallet och Pix som alternativ när du gör köp i Chrome</translation>
 <translation id="7499684925421947861">Vill du tillåta att <ph name="ACTOR_NAME" /> loggar in dig på <ph name="DOMAIN" />?</translation>
 <translation id="7501663406926337752">Webbplatsen har flaggats av din organisation</translation>
 <translation id="7502044688973049724">hantera dina uppgifter</translation>
@@ -4023,7 +4024,6 @@ Mer information.
 <translation id="7676840398262504532">Organisationen övervakar kopiering</translation>
 <translation id="767806704757698045">Fungerar bara på webbplatser som stöds</translation>
 <translation id="7678730592635586336">Ta om videon</translation>
-<translation id="7679287273775285018">Betala med eWallet</translation>
 <translation id="7679367271685653708">Öppna och hantera webbhistoriken i Chrome-inställningarna</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, löper ut <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Frakt</translation>
@@ -4098,7 +4098,6 @@ Mer information.
 <translation id="7791543448312431591">Lägg till</translation>
 <translation id="7798389633136518089">Ignoreras på grund av att principen inte är inställd via en molnkälla.</translation>
 <translation id="7800304661137206267">Anslutningen är krypterad med <ph name="CIPHER" />, med <ph name="MAC" /> för meddelandeautentisering och <ph name="KX" /> som mekanism för nyckelutbyte.</translation>
-<translation id="780228007282527248">Lägg till en flik eller bild för att förbättra sökningen</translation>
 <translation id="7802523362929240268">Legitim webbplats</translation>
 <translation id="7802989406998618639">Ange den <ph name="NUMBER_OF_DIGITS" />-siffriga säkerhetskoden på <ph name="SIDE_OF_CARD" /> så att banken kan verifiera din identitet</translation>
 <translation id="780301667611848630">Nej tack</translation>
@@ -4164,6 +4163,7 @@ Mer information.
 <translation id="7916162853251942238">Flexo-base</translation>
 <translation id="7916802424606434188">Öppna fönstret <ph name="WINDOW_INDEX" /> (<ph name="NUM_TABS" /> flikar) i ett nytt fönster</translation>
 <translation id="791698251820376781">Organisationen tillåter inte att du loggar in</translation>
+<translation id="7918936720558783139">Ditt sparade erbjudande blir tillgängligt i kassan med autofyll. <ph name="BEGIN_LINK" />Hantera erbjudanden<ph name="END_LINK" /></translation>
 <translation id="7927046851848613453">Spara biljetter, händelser och annan information från sidor du besöker – inte bara formulär du fyller i. Kom sedan snabbt åt dina värdehandlingar, till exempel evenemangsbiljetter och stamkundskort. Din sparade information kan visas på dina enheter och i Googles produkter.</translation>
 <translation id="7930282586031445870">Användarvillkorsskärmen för Köp nu, betala senare har stängts.</translation>
 <translation id="7932035970207573919">Jobbadress, <ph name="ADDRESS" /></translation>
@@ -4233,6 +4233,7 @@ Mer information.
 <translation id="8029829038322015001">Röd 1</translation>
 <translation id="8032546467100845887">Transparens</translation>
 <translation id="8035152190676905274">Penna</translation>
+<translation id="803703704549420287">Rensa filter</translation>
 <translation id="8037117624646282037">Vem har använt enheten nyligen</translation>
 <translation id="803771048473350947">Arkiv</translation>
 <translation id="8038182528865038593">Röd 2</translation>
@@ -4421,6 +4422,7 @@ Mer information.
 <translation id="8363502534493474904">inaktivera flygplansläget</translation>
 <translation id="8363929499301563123">Webbplatscookies (inloggningsstatus på webbplatser som du har besökt nyligen bevaras)</translation>
 <translation id="8364627913115013041">Inte angiven.</translation>
+<translation id="8364664414979300296">Lägg till flikar, foton med mera för att förbättra sökningen</translation>
 <translation id="836616551641291797">Läs mer om hur webbläsaren hanteras</translation>
 <translation id="8367705492654390392">Fråga vad som helst</translation>
 <translation id="8368001212524806591">Bevaka pris</translation>

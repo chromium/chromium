@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Gaitu gaia</translation>
+<translation id="1085064499066015002">Webgune guztietan beti</translation>
 <translation id="1135328998467923690">Paketeak ez du balio: "<ph name="ERROR_CODE" />".</translation>
 <translation id="1140871961407805696">Atzeko kamera</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> bazkideak Chromium-en funtzionamenduari agian eragingo dion luzapen bat gehitu du.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">"<ph name="EXPECTED_VERSION" />" bertsioa espero zen, baina "<ph name="NEW_ID" />" da bertsioa</translation>
 <translation id="471800408830181311">Ezin izan da gako pribatua eman.</translation>
 <translation id="4811956658694082538">Ezin izan da paketea instalatu zerbitzu-aplikazioaren prozesuak huts egin duelako. Berrabiarazi Chrome eta saiatu berriro.</translation>
+<translation id="4883436287898674711"><ph name="WEBSITE_1" /> webguneak.</translation>
 <translation id="4988792151665380515">Ezin izan da gako publikoa esportatu.</translation>
 <translation id="501057610015570208">"kiosk_only" manifestu-atributua duen aplikazio bat instalatu behar da ChromeOS Flex sistemaren kiosko moduan</translation>
 <translation id="5026754133087629784">Web-ikuspegia: <ph name="WEBVIEW_TAG_NAME" /></translation>

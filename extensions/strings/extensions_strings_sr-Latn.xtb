@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Omogući temu</translation>
+<translation id="1085064499066015002">Uvek na svim sajtovima</translation>
 <translation id="1135328998467923690">Paket je nevažeći: „<ph name="ERROR_CODE" />“.</translation>
 <translation id="1140871961407805696">Zadnja</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> je dodao dodatak koji može da promeni način na koji Chromium funkcioniše.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">Očekivala se verzija „<ph name="EXPECTED_VERSION" />“, ali je verzija bila „<ph name="NEW_ID" />“</translation>
 <translation id="471800408830181311">Formiranje izlaznih rezultata privatnog ključa nije uspelo.</translation>
 <translation id="4811956658694082538">Instaliranje paketa nije uspelo zato što je uslužni proces otkazao. Probajte da ponovo pokrenete Chrome i pokušajte ponovo.</translation>
+<translation id="4883436287898674711">Svi <ph name="WEBSITE_1" /> sajtovi</translation>
 <translation id="4988792151665380515">Izvoz javnog ključa nije uspeo.</translation>
 <translation id="501057610015570208">Aplikacija sa atributom manifesta „kiosk_only“ mora da se instalira u režimu kioska u Chrome OS Flex-u</translation>
 <translation id="5026754133087629784">Veb-prikaz: <ph name="WEBVIEW_TAG_NAME" /></translation>

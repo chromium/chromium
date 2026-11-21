@@ -83,6 +83,8 @@ Svarīga informācija
 <translation id="2574249610672786438">Lai skatītu cilnes no ierīcēm, kurās lietojat pārlūku Chrome, pierakstieties visās savās ierīcēs.</translation>
 <translation id="2576431527583832481">Pārlūkprogramma Chrome ir uzlabota! Ir pieejama jauna versija.</translation>
 <translation id="257708665678654955">Vai vēlaties, lai Google Chrome nākamreiz piedāvātu tulkot šīs vietnes lapas, kuru saturs ir šādā valodā: <ph name="LANGUAGE_NAME" />?</translation>
+<translation id="2599258827968143948">Jūsu iecienītās Google lietotnes un pakalpojumi darbojas labāk pārlūkā Chrome</translation>
+<translation id="260980777626165320">Atveriet ārējās saites pārlūkā Chrome pēc noklusējuma.</translation>
 <translation id="2668242166988961773">Meklējiet ar balsi pārlūkā Chrome.</translation>
 <translation id="2703746758996815929">Lai saņemtu noderīgus Chrome padomus, ieslēdziet paziņojumus iOS iestatījumos.</translation>
 <translation id="2728851697704606655">Tulkošana, izmantojot Google Lens</translation>
@@ -111,6 +113,7 @@ Jaunas grāmatzīmes nevarēs saglabāt jūsu kontā, kamēr neizdzēsīsiet da�
 <translation id="314782365035065913">Ātrāka piekļūšana pārlūkam Chrome no sākuma ekrāna lietotņu doka</translation>
 <translation id="3167189358072330585">Jūsu konts nedarbojas pārlūkā Google Chrome. Sazinieties ar savu domēna administratoru vai pierakstieties, izmantojot parastu Google kontu.</translation>
 <translation id="322254490661677575">Lai izmantotu un saglabātu Chrome datus savā Google kontā, ievadiet ieejas frāzi.</translation>
+<translation id="3253082773078342494">Atveriet saites tieši pārlūkā Chrome.</translation>
 <translation id="3303503998967553377">Chrome darbību izmantošana iOS ierīcē</translation>
 <translation id="3348862487678490430">Lasīšanas saraksta vienuma pievienošana pārlūkam Chrome</translation>
 <translation id="3350281376951945723">Ātrāk atveriet saites, iestatot Chrome kā noklusējuma pārlūku.</translation>
@@ -160,6 +163,7 @@ Jaunas grāmatzīmes nevarēs saglabāt jūsu kontā, kamēr neizdzēsīsiet da�
 <translation id="4693084815234024320">Jūs izmantojat Chrome inkognito režīmu</translation>
 <translation id="4713740144985377441">Atgriezieties pārlūkā Chrome, lai augšupielādētu failu.</translation>
 <translation id="4724297637870447613">Chrome izmantošana visur</translation>
+<translation id="4733290155432110050">Pārejiet tieši uz pārlūku Chrome</translation>
 <translation id="4738647308035481133">Pārlūka Google Chrome lapa</translation>
 <translation id="4742795653798179840">Chrome dati ir izdzēsti</translation>
 <translation id="4761869838909035636">Veikt Chrome drošības pārbaudi</translation>
@@ -267,6 +271,7 @@ Lai skatītu citus iestatījumus, kuros dati tiek izmantoti Chrome lietošanas i
 <translation id="7038674195294813388">Atveriet noklusējuma lietotņu iestatījumus iOS ierīcē, pēc tam pieskarieties vienumam “Browser App” (Pārlūka lietotne) un atlasiet Chrome.</translation>
 <translation id="7056826488869329999">Tiek atvērta un veikta drošības pārbaude pārlūkā Chrome.</translation>
 <translation id="7061455974939528301">Nospiediet un turiet Chrome ikonu un noklikšķiniet uz vienuma “Rediģēt sākuma ekrānu”</translation>
+<translation id="7067302528015227615">Iestatiet Chrome kā noklusējuma pārlūku, lai pāreja starp lietotnēm būtu ātrāka un ērtāka.</translation>
 <translation id="7095110968493193530">Konta <ph name="EMAIL" /> Google paroļu pārvaldniekā</translation>
 <translation id="7124339256045485976">Jaunākās Chrome iespējas</translation>
 <translation id="7135936755418321901">Lai kopīgotu savu atrašanās vietu ar vietnēm, pieskarieties vienumam Iestatījumi un ļaujiet pārlūkam Chrome izmantot jūsu atrašanās vietu.</translation>
@@ -278,6 +283,7 @@ Lai skatītu citus iestatījumus, kuros dati tiek izmantoti Chrome lietošanas i
 <translation id="7200524487407690471">Pārlūkā Chrome katru dienu tiek automātiski veikta drošības pārbaude, lai pasargātu jūs no datu aizsardzības pārkāpumiem, nedrošām vietnēm un citiem apdraudējumiem. Plašāka informācija par drošības pārbaudi ir pieejama sadaļā Iestatījumi.</translation>
 <translation id="7214019116829172458">Atvērt Chrome inkognito cilni</translation>
 <translation id="722167379782941918">Chrome iesaka uzlabotu aizsardzību</translation>
+<translation id="722921700949937243">Nodrošiniet, lai visas saites vienmēr tiktu atvērtas pārlūkā Chrome.</translation>
 <translation id="723787869754590019">Pārlūka Chrome izmantošana automātiskajai aizpildei</translation>
 <translation id="7261678641327190792">Pārlūkprogrammā Chrome nevar pārbaudīt jūsu paroles.</translation>
 <translation id="7272091023280308138">Nākamreiz atveriet saites tieši pārlūkā Chrome, nevis vispirms kopējiet URL adreses.</translation>

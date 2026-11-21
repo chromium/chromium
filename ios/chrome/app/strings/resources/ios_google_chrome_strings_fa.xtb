@@ -83,6 +83,8 @@
 <translation id="2574249610672786438">‏در همه دستگاه‌هایی که در آن‌ها از Chrome استفاده می‌کنید، به سیستم وارد شوید تا بتوانید برگه‌هایتان را ببینید</translation>
 <translation id="2576431527583832481">‏‫Chrome بهتر شده است! نسخه جدید آن در دسترس است.</translation>
 <translation id="257708665678654955">‏می‌خواهید دفعه بعد Google Chrome ترجمه صفحات <ph name="LANGUAGE_NAME" /> این سایت را به شما پیشنهاد دهد؟</translation>
+<translation id="2599258827968143948">‏موارد دلخواه Google شما با Chrome بهتر است</translation>
+<translation id="260980777626165320">‏پیوندهای خارجی را به‌طور پیش‌فرض در Chrome باز کنید.</translation>
 <translation id="2668242166988961773">‏جستجو کردن با صدا در Chrome.</translation>
 <translation id="2703746758996815929">‏برای دریافت نکته‌های مفید درباره Chrome، اعلان‌ها را در تنظیمات iOS روشن کنید.</translation>
 <translation id="2728851697704606655">‏ترجمه کردن با «لنز Google»</translation>
@@ -111,6 +113,7 @@
 <translation id="314782365035065913">‏از جایگاه صفحه اصلی سریع‌تر به Chrome دسترسی داشته باشید</translation>
 <translation id="3167189358072330585">‏حساب شما در Google Chrome کار نمی‌کند. لطفاً با سرپرست دامنه‌تان تماس بگیرید یا از یک حساب Google معمولی برای ثبت ورود استفاده کنید.</translation>
 <translation id="322254490661677575">‏برای استفاده از داده‌های Chrome و ذخیره کردن این داده‌ها در «حساب Google»، گذرعبارت خود را وارد کنید.</translation>
+<translation id="3253082773078342494">‏پیوندها را مستقیماً در Chrome باز کنید.</translation>
 <translation id="3303503998967553377">‏استفاده از کنش‌های Chrome در iOS</translation>
 <translation id="3348862487678490430">‏افزودن مورد «فهرست خواندن» به Chrome</translation>
 <translation id="3350281376951945723">‏با تنظیم کردن Chrome به‌عنوان مرورگر پیش‌فرض، پیوندها را سریع‌تر باز کنید</translation>
@@ -160,6 +163,7 @@
 <translation id="4693084815234024320">‏در حالت «ناشناس» Chrome هستید</translation>
 <translation id="4713740144985377441">‏برای بارگذاری فایلتان به Chrome برگردید</translation>
 <translation id="4724297637870447613">‏استفاده از Chrome در همه‌جا</translation>
+<translation id="4733290155432110050">‏مستقیماً به Chrome بروید</translation>
 <translation id="4738647308035481133">‏صفحه Google Chrome</translation>
 <translation id="4742795653798179840">‏داده‌های Chrome حذف شد</translation>
 <translation id="4761869838909035636">‏راندن «بررسی ایمنی» در Chrome</translation>
@@ -267,6 +271,7 @@
 <translation id="7038674195294813388">‏تنظیمات Default Apps (برنامه‌های پیش‌فرض) را در iOS باز کنید، سپس روی «Browser App» (برنامه مرورگر) تک‌ضرب بزنید و Chrome را انتخاب کنید.</translation>
 <translation id="7056826488869329999">‏«کنترل ایمنی» را در Chrome باز و اجرا می‌کند.</translation>
 <translation id="7061455974939528301">‏نماد Chrome را فشار دهید و نگه دارید و روی «ویرایش کردن صفحه اصلی» کلیک کنید</translation>
+<translation id="7067302528015227615">‏‫Chrome را به‌عنوان پیش‌فرض تنظیم کنید تا جابه‌جایی بین برنامه‌ها سریع‌تر و آسان‌تر شود.</translation>
 <translation id="7095110968493193530">‏در «مدیر گذرواژه Google» برای <ph name="EMAIL" /></translation>
 <translation id="7124339256045485976">‏به‌روز نگه داشتن Chrome</translation>
 <translation id="7135936755418321901">‏برای هم‌رسانی مکانتان با وب‌سایت‌ها، روی «تنظیمات» بزنید تا به Chrome اجازه دسترسی به مکان داده شود.</translation>
@@ -278,6 +283,7 @@
 <translation id="7200524487407690471">‏‫Chrome هر روز به‌طور خودکار «کنترل ایمنی» را اجرا می‌کند تا از شما دربرابر سرقت اطلاعات شبکه، وب‌سایت‌های ناامن، و تهدیدهای دیگر محافظت کند. در «تنظیمات» می‌توانید اطلاعات بیشتری درباره «کنترل ایمنی» پیدا کنید.</translation>
 <translation id="7214019116829172458">‏باز کردن زبانه «ناشناس» Chrome</translation>
 <translation id="722167379782941918">‏‫Chrome محافظت بهبودیافته را توصیه می‌کند</translation>
+<translation id="722921700949937243">‏مطمئن شوید همه پیوندها همیشه در Chrome باز می‌شوند.</translation>
 <translation id="723787869754590019">‏استفاده از Chrome برای «تکمیل خودکار»</translation>
 <translation id="7261678641327190792">‏Chrome نمی‌تواند گذرواژه‌هایتان را بررسی کند</translation>
 <translation id="7272091023280308138">‏دفعه بعد پیوندها را مستقیماً در Chrome باز کنید و ابتدا نشانی‌های وب را کپی نکنید.</translation>

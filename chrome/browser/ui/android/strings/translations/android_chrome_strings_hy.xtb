@@ -530,6 +530,7 @@
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Ստացեք օգնություն<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Դուք հետևում եք այս ապրանքի գնին</translation>
 <translation id="3037517125981011456">Ցույց է տալիս հաղորդագրություն Chrome-ում մուտք գործելու համար</translation>
+<translation id="3038505649933066250">Զտել ըստ ամսաթվի</translation>
 <translation id="3044436568790455247">«Ընտրեք սարք» պատուհանը բացված է ամբողջությամբ։</translation>
 <translation id="3057938290530993634">Հպեք և պահեք՝ ձեր ամենաշատ այցելած կայքերն ամրացնելու համար, որպեսզի հաջորդ անգամ հեշտությամբ բացեք դրանք</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> էջանիշ}one{<ph name="BOOKMARKS_COUNT_MANY" /> էջանիշ}other{<ph name="BOOKMARKS_COUNT_MANY" /> էջանիշ}}</translation>
@@ -576,6 +577,7 @@
 <translation id="3243650379537999343">Նկարել</translation>
 <translation id="3244271242291266297">ամիս</translation>
 <translation id="3245429137663807393">Եթե դուք նաև ուղարկում եք Chrome-ի օգտագործման զեկույցներ, դրանցում կներառվեն ձեր այցելած URL-ները</translation>
+<translation id="3248185426436836442">Ընթացքում է</translation>
 <translation id="3250563604907490871">Պատկերի նկարագրությունները կցուցադրվեն, երբ միանաք Wi-Fi-ին</translation>
 <translation id="3254409185687681395">Էջանշել այս էջը</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" /> տիրույթի բոլոր էջերը</translation>
@@ -1124,7 +1126,6 @@
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, ամրացված ինկոգնիտո ներդիր, որը հասանելի է այլ օգտատերերի</translation>
 <translation id="5375374982898812658">Ձեզ անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը, և այն կջնջվի ձեր բոլոր սարքերից</translation>
 <translation id="537865165090710757">Պահել և կիսվել</translation>
-<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" />-ը ցանկանում է օգտագործել ձեր թվային դրամապանակի անձնական տեղեկությունները։ Շարունակեք միայն, եթե վստահում եք այս կայքին։ Վտանգավոր կայքերը կարող են ձեզ խաբել՝ բացահայտելու ձեր լրիվ անունը կամ անձը հաստատող փաստաթղթի համարը։</translation>
 <translation id="5395376160638294582">Համոզվեք, որ միշտ կարող եք օգտվել Chrome-ի տվյալներից ձեր Google հաշվում</translation>
 <translation id="5397794290049113714">Դուք</translation>
 <translation id="539881862970320163">Հուսալի գաղտնաբառ է առաջարկվում։ Ստեղնաշարը թաքցված է։</translation>
@@ -1136,6 +1137,7 @@
 <translation id="5415871492522952905">Պատմությունը և ներդիրները հասանելի կլինեն ձեր բոլոր սարքերում, այնպես որ դուք կկարողանաք սկսել օգտվել դիտարկիչից մեկ սարքում և շարունակել մյուսում</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" />-ին (<ph name="EMAIL" />) անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը</translation>
 <translation id="5424588387303617268">Ազատ տարածքը՝ <ph name="GIGABYTES" /> ԳԲ</translation>
+<translation id="5430861625274552852">Հարցրեք էջի բովանդակության մասին կամ համեմատեք ներդիրները</translation>
 <translation id="543271133149552180"><ph name="TAB_TITLE" />, ընտրված մի քանի ինկոգնիտո ներդիրներից մեկը, որում նկարը նկարի մեջ է</translation>
 <translation id="5436928407363358055">Հեշտությամբ շարունակելու համար համաժամեցրեք ձեր պատմությունը և ներդիրները</translation>
 <translation id="5438292632479953702">Ներբեռնել նորից</translation>
@@ -1172,6 +1174,7 @@
 <translation id="557018954714092179">Ստեղծել նոր պանակ</translation>
 <translation id="5578795271662203820">Որոնել այս պատկերը <ph name="SEARCH_ENGINE" />-ում</translation>
 <translation id="558563010977877295">Բացել հետևյալ էջերը՝</translation>
+<translation id="5594132774273121146">Օգտատեր և հաշիվ</translation>
 <translation id="5596627076506792578">Լրացուցիչ ընտրանքներ</translation>
 <translation id="5599455543593328020">Ինկոգնիտո ռեժիմ</translation>
 <translation id="5601180634394228718">Որպեսզի իմանաք ավելին կարգավորումների մասին, որոնք Chrome-ի բարելավման նպատակով օգտագործում են տվյալներ, անցեք <ph name="BEGIN_LINK" />Google-ի ծառայություններ<ph name="END_LINK" />։</translation>
@@ -1229,6 +1232,7 @@
 <translation id="583281660410589416">Անհայտ</translation>
 <translation id="5833984609253377421">Կիսվել հղումով</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5839059463554891940">Անվտանգություն և պաշտպանություն</translation>
 <translation id="5841444063256914865">Ներբեռնե՞լ «<ph name="FILE_NAME" />» ֆայլը</translation>
 <translation id="5847265694842662173">Chrome-ը կանգնեցրել է ծանուցումների ուղարկումը ոչ վստահելի և վաղուց չայցելված կայքերից</translation>
 <translation id="5848257610304005265">Բացե՞լ PDF ֆայլը <ph name="APP_NAME" /> հավելվածի միջոցով</translation>
@@ -1345,7 +1349,6 @@
 <translation id="6259107733340311168">Enterprise ազդանշանների վերաբերյալ հրաժարագրով ներքևի էկրանը բացված է ամբողջությամբ</translation>
 <translation id="6260260490042862943">Կայքի կառավարման տարրեր</translation>
 <translation id="6264376385120300461">Ներբեռնել</translation>
-<translation id="6264485186158353794">Վերադառնալ անվտանգության</translation>
 <translation id="6267106249090587268">Ծանուցումներ <ph name="SEPARATOR" /> Chrome-ը հեռացրել է այս թույլտվությունները սպամի կամ մոլորեցնող բովանդակության պատճառով</translation>
 <translation id="6276708887952587684">Դիտել էջի կոդը</translation>
 <translation id="62768169905160414">Պատճենել տեսանյութի կադրը</translation>
@@ -1464,7 +1467,6 @@
 <translation id="6659594942844771486">Ներդիր</translation>
 <translation id="666731172850799929">Բացել <ph name="APP_NAME" /> հավելվածում</translation>
 <translation id="6669390930482049506">Ծանուցել ինձ</translation>
-<translation id="6670742294143102726">Ընտրեք մեկ կամ մի քանի ներդիր՝ որոնման մեջ ավելացնելու համար</translation>
 <translation id="6671495933530132209">Պատճենել պատկերը</translation>
 <translation id="6672697278890207089">Մուտքագրեք ձեր անցաբառը</translation>
 <translation id="6675622031235530028">Դուրս գալու համար սեղմած պահեք Ctrl+Q ստեղները</translation>
@@ -1730,6 +1732,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ստանդարտ ներդիր}one{<ph name="TABS_COUNT_MANY" /> ստանդարտ ներդիր}other{<ph name="TABS_COUNT_MANY" /> ստանդարտ ներդիր}}</translation>
 <translation id="7603168929588204083">Անվավեր ամսաթիվ</translation>
 <translation id="7605594153474022051">Համաժամացումը չի աշխատում</translation>
+<translation id="7607002721634913082">Դադարեցված է</translation>
 <translation id="7608245556672190037">Chrome Finds-ը միացնելու առաջարկով ներքևի էկրանը բացված է ամբողջությամբ</translation>
 <translation id="7612619742409846846">Մուտք եք գործել Google որպես՝</translation>
 <translation id="7612989789287281429">Մուտք…</translation>
@@ -1838,6 +1841,7 @@
 <translation id="800155843932969169">Ապահով կերպով ստեղծեք և պահեք ձեր գաղտնաբառերը, ավելի արագ մուտք գործեք և հայտնաբերեք գաղտնաբառերի անվտանգության հետ կապված խնդիրները՝ ձեր պաշտպանությունն ապահովելու համար</translation>
 <translation id="8004582292198964060">Դիտարկիչ</translation>
 <translation id="8006630792898017994">Բացատ կամ TAB</translation>
+<translation id="802154636333426148">Ներբեռնումը ձախողվեց</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, ընտրված մի քանի ինկոգնիտո ներդիրներից մեկը, որն ամրացված է և հասանելի է այլ օգտատերերի</translation>
 <translation id="8025972204417227828">Ավելացնել նորը</translation>
 <translation id="8027863900915310177">Ընտրեք, թե որտեղ է պետք ներբեռնել</translation>
@@ -1845,6 +1849,7 @@
 <translation id="8032569120109842252">Հետևում եք</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, ընտրված ինկոգնիտո ներդիր, որի ձայնն անջատված է</translation>
 <translation id="8036587585440959897">Որոշ ընդլայնումներ կարող են Chrome-ում որոնողական համակարգեր ավելացնել։</translation>
+<translation id="803703704549420287">Մաքրել զտիչները</translation>
 <translation id="8037750541064988519">Մնացել է <ph name="DAYS" /> օր</translation>
 <translation id="8037801708772278989">Ստուգվել է հենց նոր</translation>
 <translation id="804335162455518893">SD քարտը չհաջողվեց գտնել</translation>

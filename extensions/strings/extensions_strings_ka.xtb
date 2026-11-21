@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">თემის ჩართვა</translation>
+<translation id="1085064499066015002">ყოველთვის ყველა საიტზე</translation>
 <translation id="1135328998467923690">პაკეტი არასწორია: „<ph name="ERROR_CODE" />“.</translation>
 <translation id="1140871961407805696">უკანა</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" />-მა დაამატა გაფართოება, რომელმაც შეიძლება შეცვალოს Chromium-ის მუშაობის პრინციპი.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">მოსალოდნელი ვერსია: „<ph name="EXPECTED_VERSION" />“, მიღებული ვერსია: „<ph name="NEW_ID" />“</translation>
 <translation id="471800408830181311">პირადი კოდის მიღება ვერ მოხერხდა.</translation>
 <translation id="4811956658694082538">არ ხერხდება პაკეტის დაყენება, რადგან უტილიტი პროცესი შეწყდა. Chrome-ი გადატვირთეთ და კიდევ ერთხელ სცადეთ.</translation>
+<translation id="4883436287898674711">ყველა <ph name="WEBSITE_1" /> ვებგვერდები</translation>
 <translation id="4988792151665380515">საჯარო გასაღების ექსპორტი ვერ განხორციელდა.</translation>
 <translation id="501057610015570208">პროგრამა „მხოლოდ_კიოსკი“ მანიფესტის ატრიბუტით უნდა დაინსტალირდეს ChromeOS Flex კიოსკის რეჟიმში</translation>
 <translation id="5026754133087629784">ვებგვერდის ხედი: <ph name="WEBVIEW_TAG_NAME" /></translation>

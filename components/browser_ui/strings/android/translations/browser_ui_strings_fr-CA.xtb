@@ -62,7 +62,6 @@
 <translation id="1615755956145364867">Les sites peuvent demander à lire du contenu protégé</translation>
 <translation id="1620510694547887537">Caméra</translation>
 <translation id="1621729191093924223">Les fonctionnalités qui nécessitent l'accès au micro ne seront pas accessibles</translation>
-<translation id="1633720957382884102">Sites connexes</translation>
 <translation id="1644574205037202324">Historique</translation>
 <translation id="1652197001188145583">Lorsque cette option est activée, les sites peuvent demander à utiliser des appareils CCP. Lorsqu'elle est désactivée, les sites ne peuvent pas utiliser les appareils CCP.</translation>
 <translation id="1660204651932907780">Autoriser les sites à faire jouer du son (recommandé)</translation>
@@ -76,6 +75,7 @@
 <translation id="1717996979683942279">Lorsque cette option est activée, les sites peuvent demander à gérer les fenêtres sur tous vos écrans. Lorsqu'elle est désactivée, les sites ne peuvent pas gérer les fenêtres sur tous vos écrans.</translation>
 <translation id="1738912554587725807">Zone de contenu dans le bas de l'écran concernant les collections de thèmes de l'apparence de la page Nouvel onglet</translation>
 <translation id="1743802530341753419">Demander avant d'autoriser des sites à se connecter à un appareil (recommandé)</translation>
+<translation id="1766455884659449403">Recevez des notifications de conseils Chrome</translation>
 <translation id="1777815584158991902">Zone de contenu dans le bas de l'écran concernant le flux Découvertes</translation>
 <translation id="1779089405699405702">Décodeur d’image</translation>
 <translation id="1781533683087883868">Désactiver les liens du mode Lecture</translation>
@@ -184,6 +184,7 @@
 <translation id="2750481671343847896">Les sites peuvent afficher des invites de connexion provenant de services de vérification d'identité.</translation>
 <translation id="2789132527330338807">Les sites peuvent demander de créer une carte 3D de votre environnement ou de suivre la position de la caméra</translation>
 <translation id="2790501146643349491">Lorsque cette option est activée, les sites récemment fermés peuvent terminer l'envoi et la réception de données. Lorsqu'elle est désactivée, les sites récemment fermés ne peuvent pas terminer l'envoi ni la réception de données.</translation>
+<translation id="2794551654724114396">Activez les notifications pour recevoir des conseils utiles qui vous aideront à tirer le plein potentiel de Chrome</translation>
 <translation id="2795716239552913152">Les sites utilisent généralement votre position pour proposer des fonctionnalités ou de l'information pertinente, comme la météo locale ou des magasins à proximité</translation>
 <translation id="2800760947029405028">Téléverser une image</translation>
 <translation id="2802908157808345702">Ne pas autoriser les sites à envoyer des fenêtres contextuelles ni à utiliser des redirections</translation>
@@ -231,7 +232,6 @@
 <translation id="3232293466644486101">Supprimer les données de navigation…</translation>
 <translation id="3242646949159196181">Lorsque cette option est activée, les sites peuvent faire jouer du son. Lorsqu'elle est désactivée, les sites ne peuvent pas faire jouer de son.</translation>
 <translation id="3273479183583863618">Baisse de prix sur les onglets</translation>
-<translation id="3285500645985761267">Autoriser les sites connexes à voir votre activité dans le groupe</translation>
 <translation id="3295019059349372795">Chapitre 11 : La merveilleuse cité d'émeraude d'Oz</translation>
 <translation id="3295602654194328831">Masquer les renseignements</translation>
 <translation id="3333961966071413176">Tous les contacts</translation>
@@ -249,7 +249,6 @@
 <translation id="3523447078673133727">Ne pas permettre aux sites de suivre vos mains</translation>
 <translation id="3536227077203206203">Autorisé cette fois</translation>
 <translation id="3538390592868664640">Empêcher les sites de créer une carte 3D de votre environnement et de faire le suivi de la position de l'appareil photo</translation>
-<translation id="3544058026430919413">Une entreprise peut définir un groupe de sites qui peuvent utiliser des témoins pour partager votre activité dans le groupe. Ce paramètre est désactivé en mode de navigation privée.</translation>
 <translation id="3551268116566418498">Désactiver mode navig. privée?</translation>
 <translation id="3586500876634962664">Util. de la caméra et du micro</translation>
 <translation id="358794129225322306">Permet au site de télécharger plusieurs fichiers automatiquement.</translation>
@@ -262,7 +261,6 @@
 <translation id="363748948745453283">Utilisation de la position approximative</translation>
 <translation id="3641456520301071208">Les sites peuvent vous demander votre position</translation>
 <translation id="3658847490588580244">Zone de contenu dans le bas de l'écran du navigateur par défaut</translation>
-<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site du groupe de sites de <ph name="RWS_OWNER" /> peut voir votre activité dans le groupe}one{<ph name="RWS_MEMBERS_COUNT" /> site du groupe de sites de <ph name="RWS_OWNER" /> peut voir votre activité dans le groupe}other{<ph name="RWS_MEMBERS_COUNT" /> sites du groupe de sites de <ph name="RWS_OWNER" /> peut voir votre activité dans le groupe}}</translation>
 <translation id="3676777756440746804">Les sites ne sont pas autorisés à vous demander d'utiliser les informations qu'ils ont enregistrées à votre sujet</translation>
 <translation id="3677897809642449131">Les sites peuvent demander à utiliser les capteurs de mouvement</translation>
 <translation id="3678318839615834650">Zone de contenu dans le bas de l'écran concernant les cartes de la page Nouvel onglet ouverte à pleine hauteur</translation>
@@ -538,16 +536,15 @@
 <translation id="656065428026159829">En voir plus</translation>
 <translation id="6561560012278703671">Activer l'affichage discret des messages (permet d'empêcher les notifications de vous interrompre)</translation>
 <translation id="6593061639179217415">Version ordinateur</translation>
-<translation id="659938948789980540">{COUNT,plural, =1{Témoins autorisés pour <ph name="RWS_MEMBERS_COUNT" /> site de <ph name="RWS_OWNER" />}one{Témoins autorisés pour <ph name="RWS_MEMBERS_COUNT" /> site de <ph name="RWS_OWNER" />}other{Témoins autorisés pour <ph name="RWS_MEMBERS_COUNT" /> sites de <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> Go</translation>
 <translation id="6612358246767739896">Contenu protégé</translation>
 <translation id="6619015782482868078">Thème aqua</translation>
 <translation id="662080504995468778">Rester</translation>
 <translation id="6630443592285535486">Tapez le code hexadécimal ici</translation>
 <translation id="6635327442719709864">Lorsque cette option est activée, les sites peuvent demander à utiliser des ports série. Lorsque cette option est désactivée, les sites ne peuvent pas utiliser les ports série.</translation>
+<translation id="6669390930482049506">Me prévenir</translation>
 <translation id="6678072580827808850">Examiner la vérification de sécurité</translation>
 <translation id="6682057173375416470">Obtenir des articles suggérés sur la page Nouvel onglet</translation>
-<translation id="6683865262523156564">Ce site fait partie d'un groupe qui peut voir votre activité. Le groupe est défini par <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Photos de profils</translation>
 <translation id="6697925417670533197">Téléchargements actifs</translation>
 <translation id="6709432001666529933">Demander une autorisation avant de permettre aux sites de suivre vos mains (recommandé)</translation>

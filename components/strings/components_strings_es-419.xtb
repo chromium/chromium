@@ -373,6 +373,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> quitó una pestaña</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="1623104350909869708">Evitar que esta página cree cuadros de diálogo adicionales</translation>
+<translation id="1624535934412288769">Columnas</translation>
 <translation id="1629390138158333592">Buscar en la Web</translation>
 <translation id="1633137413609266904">{0,plural, =1{La política del administrador no permite abrir este archivo}other{La política del administrador no permite abrir # archivos}}</translation>
 <translation id="1634828734222219955">Total</translation>
@@ -1082,6 +1083,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2803320044666896137">Se ignora este valor de política porque el usuario no está afiliado.</translation>
 <translation id="2807052079800581569">Posición de la imagen en el eje Y</translation>
 <translation id="2808278141522721006">Puedes activar o desactivar Windows Hello en <ph name="SETTINGS" /></translation>
+<translation id="2820159698793041599">El servidor proxy no pudo establecer una conexión segura.</translation>
 <translation id="2820957248982571256">Buscando…</translation>
 <translation id="282457273878278063">Administrar información de contacto</translation>
 <translation id="2824775600643448204">Barra de direcciones y de búsqueda</translation>
@@ -1263,6 +1265,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="3120807611504813890">Sobre (bajo gramaje)</translation>
 <translation id="3121994479408824897">Ir a <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Etiquetas (permanentes)</translation>
+<translation id="3128081114752791872">El certificado de seguridad del servidor proxy no es válido.</translation>
 <translation id="3131746543143948171">Este sitio parece similar a otros que están asociados con phishing, malware y estafas. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">Guardar el número de rectificación</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> ahora es tu motor de búsqueda predeterminado</translation>
@@ -1682,7 +1685,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="3800436529451849929">De <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Visitas con frecuencia</translation>
 <translation id="380329542618494757">Nombre</translation>
-<translation id="3803481123869276674">Cuando realices compras en Chrome, verás la billetera electrónica como opción</translation>
 <translation id="3803801106042434208">Estos motores de búsqueda son populares en tu región</translation>
 <translation id="3804112825000113857">Ver la configuración de Autocompletar</translation>
 <translation id="380666903981445943">Guarda una forma de pago en tu Cuenta de Google para autocompletarla cuando realices compras en Chrome</translation>
@@ -2165,6 +2167,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="4612631413844865947">Se produjo un error al procesar tu pedido en <ph name="MERCHANT_ORIGIN" /> a través de <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="4612904677925722054">Es posible que este sitio incluya contenido para mayores de edad. Debes contar con el permiso de tu madre, padre o tutor para poder visitar este sitio web.</translation>
 <translation id="4613873770449493819">La URL debe dirigir a un dominio de <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
+<translation id="4615154194248230658">Parece que este patrón no coincide con un dominio de dirección de correo electrónico válido. Es posible que los usuarios no puedan acceder o que se quiten los perfiles existentes.</translation>
 <translation id="4619564267100705184">Verificar tu identidad</translation>
 <translation id="4619669610757527494">Guardar la licencia de conducir en la Billetera de Google</translation>
 <translation id="4622292761762557753">Transferir de todos modos</translation>
@@ -2683,7 +2686,6 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5447235695608032700">Permitir que <ph name="SITE" /> use la información que guardó sobre ti</translation>
 <translation id="5447973833955560753">Contraseña de recuperación</translation>
 <translation id="5452270690849572955">No se encuentra esta página <ph name="HOST_NAME" /></translation>
-<translation id="5452923259299906094">Paga con la billetera electrónica y Pix</translation>
 <translation id="5455374756549232013">Marca de tiempo de política incorrecta</translation>
 <translation id="5456428544444655325">No mostrar nunca</translation>
 <translation id="5457082343331641453">Agregar a la búsqueda</translation>
@@ -3334,6 +3336,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> se unió al grupo de pestañas "<ph name="GROUP_NAME" />"</translation>
 <translation id="6521745193039995384">Inactiva</translation>
 <translation id="6524830701589638230">Botón Administrar la configuración de accesibilidad: actívalo para personalizar tus herramientas de accesibilidad en la configuración de Chrome</translation>
+<translation id="652643331002043144">Este sitio parece similar a otros que están asociados con phishing, malware y estafas.</translation>
 <translation id="6529173248185917884">Séptimo rollo</translation>
 <translation id="6529602333819889595">&amp;Rehacer Eliminar</translation>
 <translation id="6532101170117367231">Guardar en Google Drive</translation>
@@ -3899,7 +3902,6 @@ Detalles adicionales:
 <translation id="7489919936111034362">Tu almacenamiento en Google Drive está lleno</translation>
 <translation id="7490622939531327327">Comprensión más inteligente de formularios</translation>
 <translation id="7495528107193238112">Este contenido está bloqueado. Comunícate con el propietario del sitio para solucionar el problema.</translation>
-<translation id="7499188644237027195">Cuando realices compras en Chrome, verás la billetera electrónica y Pix como opciones</translation>
 <translation id="7499684925421947861">¿Quieres permitir que <ph name="ACTOR_NAME" /> acceda a <ph name="DOMAIN" /> por ti?</translation>
 <translation id="7501663406926337752">Tu organización marcó el sitio que intentas abrir</translation>
 <translation id="7502044688973049724">administrar tu información</translation>
@@ -4024,7 +4026,6 @@ Detalles adicionales:
 <translation id="7676840398262504532">Tu organización supervisa la copia de contenido</translation>
 <translation id="767806704757698045">Solo funciona en sitios compatibles.</translation>
 <translation id="7678730592635586336">Volver a grabar video</translation>
-<translation id="7679287273775285018">Pago con billetera electrónica</translation>
 <translation id="7679367271685653708">Ver y administrar tu historial de navegación en la configuración de Chrome</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, caduca el <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Envío</translation>
@@ -4099,7 +4100,6 @@ Detalles adicionales:
 <translation id="7791543448312431591">Agregar</translation>
 <translation id="7798389633136518089">Se ignoró porque la política no se estableció desde un origen de la nube.</translation>
 <translation id="7800304661137206267">La conexión está encriptada mediante <ph name="CIPHER" />, con <ph name="MAC" /> para la autenticación de mensajes y <ph name="KX" /> como mecanismo de intercambio clave.</translation>
-<translation id="780228007282527248">Agrega una pestaña o una imagen para mejorar tu búsqueda</translation>
 <translation id="7802523362929240268">El sitio es legítimo</translation>
 <translation id="7802989406998618639">Ingresa el código de seguridad de <ph name="NUMBER_OF_DIGITS" /> dígitos en el <ph name="SIDE_OF_CARD" /> para que el banco pueda verificar tu identidad</translation>
 <translation id="780301667611848630">No, gracias</translation>
@@ -4165,6 +4165,7 @@ Detalles adicionales:
 <translation id="7916162853251942238">Base para flexografía</translation>
 <translation id="7916802424606434188">Abrir la ventana <ph name="WINDOW_INDEX" /> (<ph name="NUM_TABS" /> pestañas) en una ventana nueva</translation>
 <translation id="791698251820376781">Tu organización no te permite acceder</translation>
+<translation id="7918936720558783139">La oferta guardada estará disponible en la confirmación de la compra con la función de autocompletar. <ph name="BEGIN_LINK" />Administrar ofertas<ph name="END_LINK" /></translation>
 <translation id="7927046851848613453">Guarda entradas, eventos y otra información de las páginas que ves, no solo de los formularios que completas. Luego, accede rápidamente a tus boletos, como entradas para eventos y tarjetas de lealtad. La información guardada puede aparecer en tus dispositivos y en los productos de Google.</translation>
 <translation id="7930282586031445870">Se cerró la pantalla de las condiciones del servicio de Compra ahora y paga después.</translation>
 <translation id="7932035970207573919">Dirección de trabajo: <ph name="ADDRESS" /></translation>
@@ -4234,6 +4235,7 @@ Detalles adicionales:
 <translation id="8029829038322015001">Rojo 1</translation>
 <translation id="8032546467100845887">Transparencia</translation>
 <translation id="8035152190676905274">Lápiz</translation>
+<translation id="803703704549420287">Borrar filtros</translation>
 <translation id="8037117624646282037">Quién usó el dispositivo recientemente</translation>
 <translation id="803771048473350947">Archivo</translation>
 <translation id="8038182528865038593">Rojo 2</translation>
@@ -4422,6 +4424,7 @@ Detalles adicionales:
 <translation id="8363502534493474904">Desactivar el modo avión</translation>
 <translation id="8363929499301563123">Cookies de sitios web (se conservará el estado de acceso en los sitios web visitados recientemente)</translation>
 <translation id="8364627913115013041">Sin establecer</translation>
+<translation id="8364664414979300296">Agrega pestañas, fotos y mucho más para mejorar tu búsqueda</translation>
 <translation id="836616551641291797">Más información sobre cómo se administra tu navegador</translation>
 <translation id="8367705492654390392">Haz una pregunta</translation>
 <translation id="8368001212524806591">Seguir precio</translation>

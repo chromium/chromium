@@ -373,6 +373,7 @@
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> a retiré un onglet</translation>
 <translation id="1620510694547887537">Caméra</translation>
 <translation id="1623104350909869708">Empêcher cette page de générer des boîtes de dialogue supplémentaires</translation>
+<translation id="1624535934412288769">Colonnes</translation>
 <translation id="1629390138158333592">Rechercher sur le Web</translation>
 <translation id="1633137413609266904">{0,plural, =1{La politique de l'administrateur bloque l'ouverture de ce fichier}one{La politique de l'administrateur bloque l'ouverture de # fichier}other{La politique de l'administrateur bloque l'ouverture de # fichiers}}</translation>
 <translation id="1634828734222219955">Total</translation>
@@ -1082,6 +1083,7 @@
 <translation id="2803320044666896137">Cette valeur de politique est ignorée, car l'utilisateur n'est pas affilié.</translation>
 <translation id="2807052079800581569">Position Y de l'image</translation>
 <translation id="2808278141522721006">Vous pouvez activer ou désactiver Windows Hello dans <ph name="SETTINGS" /></translation>
+<translation id="2820159698793041599">Le serveur mandataire n'a pas pu établir de connexion sécurisée.</translation>
 <translation id="2820957248982571256">Recherche en cours…</translation>
 <translation id="282457273878278063">Gérer les coordonnées</translation>
 <translation id="2824775600643448204">Barre d'adresse et de recherche</translation>
@@ -1263,6 +1265,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3120807611504813890">Enveloppe (légère)</translation>
 <translation id="3121994479408824897">Accéder à <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Étiquettes (permanentes)</translation>
+<translation id="3128081114752791872">Le certificat de sécurité du serveur mandataire est incorrect.</translation>
 <translation id="3131746543143948171">Ce site semble semblable à d'autres sites associés à l'hameçonnage, aux logiciels malveillants et aux escroqueries. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">Enregistrez le numéro de recours</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> est désormais votre moteur de recherche par défaut</translation>
@@ -1681,7 +1684,6 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3800436529451849929">À partir de <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Vous visitez souvent cette page</translation>
 <translation id="380329542618494757">Nom</translation>
-<translation id="3803481123869276674">Lorsque vous effectuez des achats sur Chrome, vous verrez le portefeuille électronique comme option</translation>
 <translation id="3803801106042434208">Ces moteurs de recherche sont populaires dans votre région</translation>
 <translation id="3804112825000113857">Afficher les paramètres de remplissage automatique</translation>
 <translation id="380666903981445943">Enregistrez un mode de paiement dans votre compte Google afin de le remplir automatiquement pour les achats effectués dans Chrome</translation>
@@ -2164,6 +2166,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="4612631413844865947">Une erreur s'est produite lors du traitement de votre commande sur <ph name="MERCHANT_ORIGIN" /> par le biais de <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="4612904677925722054">Ce site peut comporter un contenu pour adultes. Un parent ou un tuteur doit indiquer que tu es autorisé à visiter ce site Web.</translation>
 <translation id="4613873770449493819">L'URL doit pointer vers un domaine <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
+<translation id="4615154194248230658">Ce format ne semble pas correspondre à un domaine d'adresse courriel valide. Les utilisateurs pourraient ne pas être en mesure de se connecter, ou les profils existants pourraient être retirés.</translation>
 <translation id="4619564267100705184">Confirmer votre identité</translation>
 <translation id="4619669610757527494">Enregistrer le permis de conduire dans Google Portefeuille</translation>
 <translation id="4622292761762557753">Transférer quand même</translation>
@@ -2682,7 +2685,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5447235695608032700">Autoriser <ph name="SITE" /> à utiliser les informations qu'il a enregistrées à votre sujet</translation>
 <translation id="5447973833955560753">Mot de passe de récupération</translation>
 <translation id="5452270690849572955">Cette page <ph name="HOST_NAME" /> est introuvable</translation>
-<translation id="5452923259299906094">Payer avec le portefeuille électronique et Pix</translation>
 <translation id="5455374756549232013">Horodatage de la règle incorrect.</translation>
 <translation id="5456428544444655325">Ne jamais afficher</translation>
 <translation id="5457082343331641453">Ajouter à votre recherche</translation>
@@ -3897,7 +3899,6 @@ Détails supplémentaires :
 <translation id="7489919936111034362">Votre espace de stockage Google Disque est plein</translation>
 <translation id="7490622939531327327">Compréhension plus intelligente des formulaires</translation>
 <translation id="7495528107193238112">Ce contenu est bloqué. Communiquez avec le propriétaire du site pour corriger le problème.</translation>
-<translation id="7499188644237027195">Lorsque vous effectuez des achats sur Chrome, vous verrez le portefeuille électronique et Pix comme options</translation>
 <translation id="7499684925421947861">Autorisez-vous <ph name="ACTOR_NAME" /> à se connecter à <ph name="DOMAIN" /> pour vous?</translation>
 <translation id="7501663406926337752">Le site que vous essayez d'ouvrir est signalé par votre organisation</translation>
 <translation id="7502044688973049724">gérer vos informations</translation>
@@ -4022,7 +4023,6 @@ Détails supplémentaires :
 <translation id="7676840398262504532">Votre organisation surveille les copies</translation>
 <translation id="767806704757698045">Fonctionne uniquement sur les sites pris en charge</translation>
 <translation id="7678730592635586336">Reprendre la vidéo</translation>
-<translation id="7679287273775285018">Payer avec le portefeuille électronique</translation>
 <translation id="7679367271685653708">Affichez et gérez votre historique de navigation dans les paramètres de Chrome</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, expire le <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Livraison</translation>
@@ -4097,7 +4097,6 @@ Détails supplémentaires :
 <translation id="7791543448312431591">Ajouter</translation>
 <translation id="7798389633136518089">Cette politique est ignorée parce qu'elle n'est pas définie par une source infonuagique.</translation>
 <translation id="7800304661137206267">La connexion est chiffrée au moyen de <ph name="CIPHER" />, avec <ph name="MAC" /> pour l'authentification des messages et <ph name="KX" /> pour la méthode d'échange de clés.</translation>
-<translation id="780228007282527248">Ajoutez un onglet ou une image pour améliorer votre recherche</translation>
 <translation id="7802523362929240268">Site officiel</translation>
 <translation id="7802989406998618639">Saisissez le code de sécurité à <ph name="NUMBER_OF_DIGITS" /> chiffres sur le <ph name="SIDE_OF_CARD" /> afin que votre banque puisse vérifier qu'il s'agit bien de vous</translation>
 <translation id="780301667611848630">Non merci</translation>
@@ -4163,6 +4162,7 @@ Détails supplémentaires :
 <translation id="7916162853251942238">Flexo Base</translation>
 <translation id="7916802424606434188">Ouvrir la fenêtre <ph name="WINDOW_INDEX" /> (<ph name="NUM_TABS" /> onglets) dans une nouvelle fenêtre</translation>
 <translation id="791698251820376781">Votre organisation ne vous autorise pas à vous connecter</translation>
+<translation id="7918936720558783139">Votre offre enregistrée sera accessible lors du paiement à l'aide du remplissage automatique. <ph name="BEGIN_LINK" />Gérer les offres<ph name="END_LINK" /></translation>
 <translation id="7927046851848613453">Enregistrez les billets, les événements et d'autres renseignements provenant des pages que vous consultez, et pas seulement des formulaires que vous remplissez. Ensuite, accédez rapidement à vos cartes, comme les billets d'événement et les cartes de fidélité. Vos renseignements enregistrés peuvent s'afficher sur vos appareils et dans les produits Google.</translation>
 <translation id="7930282586031445870">L'écran des conditions d'utilisation d'Acheter maintenant, payer plus tard est fermé.</translation>
 <translation id="7932035970207573919">Adresse professionnelle, <ph name="ADDRESS" /></translation>
@@ -4232,6 +4232,7 @@ Détails supplémentaires :
 <translation id="8029829038322015001">Rouge 1</translation>
 <translation id="8032546467100845887">Transparence</translation>
 <translation id="8035152190676905274">Stylo</translation>
+<translation id="803703704549420287">Supprimer les filtres</translation>
 <translation id="8037117624646282037">Qui a utilisé cet appareil récemment</translation>
 <translation id="803771048473350947">Fichier</translation>
 <translation id="8038182528865038593">Rouge 2</translation>
@@ -4420,6 +4421,7 @@ Détails supplémentaires :
 <translation id="8363502534493474904">De désactiver le mode Avion</translation>
 <translation id="8363929499301563123">Témoins de sites Web (l'état de connexion sur les sites Web récemment visités sera conservé)</translation>
 <translation id="8364627913115013041">Non configurée.</translation>
+<translation id="8364664414979300296">Ajoutez des onglets, des photos et plus encore pour améliorer votre recherche</translation>
 <translation id="836616551641291797">En savoir plus sur la gestion de votre navigateur</translation>
 <translation id="8367705492654390392">Posez une question</translation>
 <translation id="8368001212524806591">Suivre le prix</translation>

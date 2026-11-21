@@ -62,7 +62,6 @@
 <translation id="1615755956145364867">Web-lokacije mogu tražiti dopuštenje za reprodukciju zaštićenog sadržaja</translation>
 <translation id="1620510694547887537">Fotoaparat</translation>
 <translation id="1621729191093924223">Značajke kojima je potreban mikrofon neće raditi</translation>
-<translation id="1633720957382884102">Povezane web-lokacije</translation>
 <translation id="1644574205037202324">Povijest</translation>
 <translation id="1652197001188145583">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu NFC uređaja. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati NFC uređaje.</translation>
 <translation id="1660204651932907780">Web-lokacije mogu reproducirati zvuk (preporučeno)</translation>
@@ -76,6 +75,7 @@
 <translation id="1717996979683942279">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upravljanje prozorima na svim zaslonima. Kad je isključena, web-lokacije ne mogu upravljati prozorima na svim vašim zaslonima.</translation>
 <translation id="1738912554587725807">Donja tablica zbirki tema izgleda stranice Nova kartica</translation>
 <translation id="1743802530341753419">Web-lokacije moraju tražiti dopuštenje za povezivanje s uređajem (preporučeno)</translation>
+<translation id="1766455884659449403">Primajte obavijesti sa savjetima za Chrome</translation>
 <translation id="1777815584158991902">Donja tablica feeda Discovera</translation>
 <translation id="1779089405699405702">Dekodiranje slika</translation>
 <translation id="1781533683087883868">Isključite veze prozora za čitanje</translation>
@@ -184,6 +184,7 @@
 <translation id="2750481671343847896">Web-lokacije mogu prikazivati upite za prijavu s usluga za provjeru identiteta.</translation>
 <translation id="2789132527330338807">Web-lokacije mogu tražiti dopuštenje za izradu 3D karte vašeg okruženja ili praćenje položaja kamere</translation>
 <translation id="2790501146643349491">Kad je ta postavka uključena, nedavno zatvorene web-lokacije mogu dovršiti slanje i primanje podataka. Kad je ta postavka isključena, nedavno zatvorene web-lokacije ne mogu dovršiti slanje ili primanje podataka.</translation>
+<translation id="2794551654724114396">Uključite obavijesti za korisne savjete koji će vam pomoći da iskoristite sve prednosti Chromea</translation>
 <translation id="2795716239552913152">Web-lokacije upotrebljavaju vašu lokaciju za relevantne značajke ili informacije poput lokalnih vijesti ili trgovina u blizini</translation>
 <translation id="2800760947029405028">Prenesite sliku</translation>
 <translation id="2802908157808345702">Ne dopustite web-lokacijama da šalju skočne prozore ili koriste preusmjeravanja</translation>
@@ -231,7 +232,6 @@
 <translation id="3232293466644486101">Brisanje podataka o pregledavanju…</translation>
 <translation id="3242646949159196181">Kad je ta postavka uključena, web-lokacije mogu reproducirati zvuk. Kad je ta postavka isključena, web-lokacije ne mogu reproducirati zvuk.</translation>
 <translation id="3273479183583863618">Sniženja cijena na karticama</translation>
-<translation id="3285500645985761267">Dopusti povezanim web-lokacijama da vide moje aktivnosti u grupi</translation>
 <translation id="3295019059349372795">11. poglavlje: Čudesni Smaragdni Grad čarobnjaka Oza</translation>
 <translation id="3295602654194328831">Sakrij informacije</translation>
 <translation id="3333961966071413176">Svi kontakti</translation>
@@ -249,7 +249,6 @@
 <translation id="3523447078673133727">Ne dopuštaj web-lokacijama praćenje ruku</translation>
 <translation id="3536227077203206203">Dopušteno ovaj put</translation>
 <translation id="3538390592868664640">Blokirajte web-lokacije da izrađuju 3D kartu vašeg okruženja ili prate položaj kamere</translation>
-<translation id="3544058026430919413">Tvrtka može definirati grupu web-lokacija koje mogu upotrebljavati kolačiće za dijeljenje vaših aktivnosti u grupi. To je isključeno u anonimnom načinu.</translation>
 <translation id="3551268116566418498">Napustiti anonimni način?</translation>
 <translation id="3586500876634962664">Upotreba kamere i mikrofona</translation>
 <translation id="358794129225322306">Dopusti web-lokaciji automatsko preuzimanje više datoteka.</translation>
@@ -262,7 +261,6 @@
 <translation id="363748948745453283">Upotreba približne lokacije</translation>
 <translation id="3641456520301071208">Web-lokacije mogu zatražiti vašu lokaciju</translation>
 <translation id="3658847490588580244">Donja tablica zadanog preglednika</translation>
-<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> web-lokacija u grupi web-lokacija vlasnika <ph name="RWS_OWNER" /> koja može vidjeti vaše aktivnosti u grupi}one{<ph name="RWS_MEMBERS_COUNT" /> web-lokacija u grupi web-lokacija vlasnika <ph name="RWS_OWNER" /> koja može vidjeti vaše aktivnosti u grupi}few{<ph name="RWS_MEMBERS_COUNT" /> web-lokacije u grupi web-lokacija vlasnika <ph name="RWS_OWNER" /> koje mogu vidjeti vaše aktivnosti u grupi}other{<ph name="RWS_MEMBERS_COUNT" /> web-lokacija u grupi web-lokacija vlasnika <ph name="RWS_OWNER" /> koje mogu vidjeti vaše aktivnosti u grupi}}</translation>
 <translation id="3676777756440746804">Web-lokacije od vas ne smiju tražiti da odobrite korištenje podataka koje su spremile o vama</translation>
 <translation id="3677897809642449131">Web-lokacije mogu tražiti dopuštenje za upotrebu senzora kretanja</translation>
 <translation id="3678318839615834650">Donja tablica kartica na stranici nove kartice otvorena u punoj visini</translation>
@@ -538,16 +536,15 @@
 <translation id="656065428026159829">Prikaži više</translation>
 <translation id="6561560012278703671">Koristi tiše poruke (onemogućuje upitima za obavijesti da vas ometaju)</translation>
 <translation id="6593061639179217415">Klasični prikaz</translation>
-<translation id="659938948789980540">{COUNT,plural, =1{Kolačići dopušteni za <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> web-lokaciju}one{Kolačići dopušteni za <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> web-lokaciju}few{Kolačići dopušteni za <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> web-lokacije}other{Kolačići dopušteni za <ph name="RWS_MEMBERS_COUNT" /> <ph name="RWS_OWNER" /> web-lokacija}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Zaštićeni sadržaj</translation>
 <translation id="6619015782482868078">Akvamarin tema</translation>
 <translation id="662080504995468778">Ostani</translation>
 <translation id="6630443592285535486">Ovdje upišite heksadecimalni kôd</translation>
 <translation id="6635327442719709864">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za upotrebu serijskih priključaka. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati serijske priključke.</translation>
+<translation id="6669390930482049506">Obavijesti me</translation>
 <translation id="6678072580827808850">Pregledajte sigurnosnu provjeru</translation>
 <translation id="6682057173375416470">Predloženi članci će vam se prikazivati na stranici Nova kartica</translation>
-<translation id="6683865262523156564">Ova je web-lokacija u grupi koja može vidjeti vaše aktivnosti. Grupu je definirao <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Fotografije profila</translation>
 <translation id="6697925417670533197">Aktivna preuzimanja</translation>
 <translation id="6709432001666529933">Pitaj prije omogućavanja web-lokacijama praćenje ruku (preporučeno)</translation>

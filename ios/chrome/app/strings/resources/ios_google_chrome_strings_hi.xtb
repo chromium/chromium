@@ -83,6 +83,8 @@
 <translation id="2574249610672786438">जिन डिवाइसों पर Chrome का इस्तेमाल किया जाता है उन सभी पर खोले गए टैब देखने के लिए, अपने सभी डिवाइस पर साइन इन करें</translation>
 <translation id="2576431527583832481">Chrome अब बेहतर हो गया है! एक नया वर्शन उपलब्ध है.</translation>
 <translation id="257708665678654955">क्या आप चाहते हैं कि Google Chrome अगली बार इस साइट के <ph name="LANGUAGE_NAME" /> पेजों का अनुवाद करने का ऑफ़र दे?</translation>
+<translation id="2599258827968143948">Chrome के साथ, Google की अपनी पसंदीदा सेवाओं और ऐप्लिकेशन का बेहतर अनुभव पाएं</translation>
+<translation id="260980777626165320">दूसरी वेबसाइट पर ले जाने वाले लिंक को डिफ़ॉल्ट रूप से Chrome में खोलें.</translation>
 <translation id="2668242166988961773">Chrome में बोलकर खोजें.</translation>
 <translation id="2703746758996815929">Chrome से जुड़ी मददगार सलाह पाने के लिए, iOS की सेटिंग में जाकर सूचनाएं पाने की सुविधा चालू करें.</translation>
 <translation id="2728851697704606655">Google Lens की मदद से अनुवाद करें</translation>
@@ -111,6 +113,7 @@
 <translation id="314782365035065913">अपने होम स्क्रीन डॉक से Chrome को तेज़ी से ऐक्सेस करें</translation>
 <translation id="3167189358072330585">आपका खाता Google Chrome पर काम नहीं करता. कृपया साइन इन करने के लिए अपने डोमेन एडमिन से संपर्क करें या नियमित Google खाते का इस्तेमाल करें.</translation>
 <translation id="322254490661677575">अपने Google खाते में Chrome डेटा का इस्तेमाल करने और सेव करने के लिए, अपना लंबा पासवर्ड डालें.</translation>
+<translation id="3253082773078342494">लिंक सीधे Chrome में खोलें.</translation>
 <translation id="3303503998967553377">iOS पर 'Chrome ऐक्शन' का इस्तेमाल करें</translation>
 <translation id="3348862487678490430">Chrome की रीडिंग लिस्ट में आइटम जोड़ें</translation>
 <translation id="3350281376951945723">Chrome को डिफ़ॉल्ट ब्राउज़र के तौर पर सेट करके, लिंक तेज़ी से खोलें</translation>
@@ -160,6 +163,7 @@
 <translation id="4693084815234024320">Chrome का गुप्त मोड खुला है</translation>
 <translation id="4713740144985377441">फ़ाइल अपलोड करने के लिए, Chrome पर वापस जाएं</translation>
 <translation id="4724297637870447613">Chrome का सभी जगह इस्तेमाल करें</translation>
+<translation id="4733290155432110050">सीधे Chrome पर जाएं</translation>
 <translation id="4738647308035481133">Google Chrome पेज</translation>
 <translation id="4742795653798179840">Chrome का डेटा मिटाया गया</translation>
 <translation id="4761869838909035636">Chrome की सुरक्षा जांच करें</translation>
@@ -267,6 +271,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="7038674195294813388">iOS में डिफ़ॉल्ट ऐप्लिकेशन वाली सेटिंग खोलें. इसके बाद, "Browser App" पर टैप करें और Chrome को चुनें.</translation>
 <translation id="7056826488869329999">इससे Chrome में सुरक्षा जांच की सुविधा खुलती है और चालू होती है.</translation>
 <translation id="7061455974939528301">Chrome आइकॉन को दबाकर रखें और "Edit home screen" पर क्लिक करें</translation>
+<translation id="7067302528015227615">ऐप्लिकेशन के बीच तेज़ी और आसानी से स्विच करने के लिए, Chrome को डिफ़ॉल्ट ब्राउज़र के तौर पर सेट करें.</translation>
 <translation id="7095110968493193530"><ph name="EMAIL" /> का पासवर्ड Google Password Manager में सेव करें</translation>
 <translation id="7124339256045485976">Chrome को अप-टू-डेट रखें</translation>
 <translation id="7135936755418321901">वेबसाइटों के साथ अपनी जगह की जानकारी शेयर करने के लिए, सेटिंग पर टैप करें और Chrome को अपने डिवाइस की जगह की जानकारी इस्तेमाल करने की अनुमति दें.</translation>
@@ -278,6 +283,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="7200524487407690471">Chrome हर दिन अपने-आप सुरक्षा जांच करता है, ताकि आपको डेटा के गलत इस्तेमाल, नुकसान पहुंचाने वाली वेबसाइटों वगैरह से सुरक्षित रखा जा सके. 'सेटिंग' में जाकर, सुरक्षा जांच के बारे में ज़्यादा जानें.</translation>
 <translation id="7214019116829172458">Chrome का गुप्त टैब खोलें</translation>
 <translation id="722167379782941918">Chrome का सुझाव है कि बेहतर सुरक्षा मोड का इस्तेमाल करें</translation>
+<translation id="722921700949937243">यह पक्का करें कि सभी लिंक हमेशा Chrome में ही खुलें.</translation>
 <translation id="723787869754590019">ऑटोमैटिक भरने की सुविधा के लिए, Chrome का इस्तेमाल करें</translation>
 <translation id="7261678641327190792">Chrome आपके पासवर्ड की जांच नहीं कर सकता</translation>
 <translation id="7272091023280308138">अगली बार, यूआरएल कॉपी किए बिना लिंक सीधे Chrome में खोलें.</translation>

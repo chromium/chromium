@@ -82,7 +82,6 @@
 <translation id="188102464690227119">ツールバーの [サイドパネルで検索] ボタンのアイコンが新しくなりました。クリックすると、ブラウジング中にサイドパネルで検索を使用して質問できます。</translation>
 <translation id="1896836275755235458">バックグラウンド アクティビティと視覚効果（スムーズ スクロールや動画フレームレートなど）を制限することで、バッテリーを節約します。<ph name="BEGIN_LINK" />省エネモードの詳細<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium Updater サービス</translation>
-<translation id="1911763535808217981">この設定を無効にすると、Chromium にログインすることなく Gmail などの Google サイトにログインできます</translation>
 <translation id="1929939181775079593">Chromium が応答しません。今すぐ再起動しますか？</translation>
 <translation id="1933341829955786215">組織（<ph name="MANAGER" />）が Chromium にログインするよう求めています</translation>
 <translation id="193439633299369377">更新を適用するには、Chromium OS を再起動する必要があります。</translation>
@@ -129,7 +128,6 @@
 <translation id="2361918034042471035">拡張機能「<ph name="EXTENSION_NAME" />」が Chromium へのログインを求めています</translation>
 <translation id="236943522426971115">Chromium のアプリ向けのバックグラウンドでの実行を無効にする</translation>
 <translation id="2374216753258219393">この拡張機能を <ph name="USER_EMAIL_ADDRESS" /> として使用するには、Chromium にログインしてください。</translation>
-<translation id="2384373936468275798">アカウントのログイン情報が最新でないため、Chromium OS はデータを同期できませんでした。</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 つ以上の Chromium 拡張機能が 1 台の HID デバイスにアクセスしていました}=1{1 つ以上の Chromium 拡張機能が 1 台の HID デバイスにアクセスしています}other{1 つ以上の Chromium 拡張機能が # 台の HID デバイスにアクセスしています}}</translation>
 <translation id="2401032172288869980">このサイトを利用するには、Chromium でカメラとマイクの使用を許可する必要があります</translation>
 <translation id="2403703063067034158">起動エラー: 現在、別のインスタンスのセットアップが実行中です。しばらくしてからもう一度お試しください。</translation>
@@ -171,7 +169,6 @@
 <translation id="2819844767470613567">警告: 拡張機能による閲覧履歴の記録を Chromium で停止することはできません。アイソレート モードでこの拡張機能を無効にするには、このオプションの選択を解除してください。</translation>
 <translation id="2841525013647267359">原文の言語</translation>
 <translation id="2846251086934905009">インストール エラー: インストーラが完了しませんでした。インストールは中止されました。</translation>
-<translation id="2847479871509788944">Chromium から削除...</translation>
 <translation id="2850691299438350830">ログイン時に、Chromium を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります。</translation>
 <translation id="2885378588091291677">タスク マネージャ</translation>
 <translation id="2898830646167954300">管理対象外の Gemini アシスタントに戻す</translation>
@@ -382,7 +379,6 @@
 <translation id="5346389065299425353">複数のタブ、ファイル、ツールを追加し、対象を掘り下げて検索します</translation>
 <translation id="5352264705793813212">安全に関する推奨事項をご確認ください</translation>
 <translation id="5352361688875342522">その他の Chromium プロフィール</translation>
-<translation id="535243042947607642">アカウントのログイン情報が最新でないため、ChromiumOS は Google アカウントに Chromium データを保存できませんでした</translation>
 <translation id="5368118228313795342">他のコード: <ph name="EXTRA_CODE" />。</translation>
 <translation id="5377622451696208284">パーソナライズするには、Chromium をウェブとアプリのアクティビティに追加します</translation>
 <translation id="5382964351116519680">「Chromium で検索」を開く</translation>
@@ -397,7 +393,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{ブラウザの動作を遅くしているタブを一時停止することをおすすめします}other{ブラウザの動作を遅くしているタブを一時停止することをおすすめします}}</translation>
 <translation id="5473971139929175403">この Linux ディストリビューションはサポートされなくなったため、Chromium は正常に機能しない可能性があります</translation>
 <translation id="5475924890392386523">このダウンロードは Chromium でブロックされました。ファイルが個人アカウントやソーシャル ネットワークのアカウントに危害を及ぼす可能性があります</translation>
-<translation id="549669000822060376">Chromium は最新のシステム アップデートをインストールしています。しばらくお待ちください。</translation>
 <translation id="5496810170689441661">Chromium でパスワードを編集しようとしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="5524890928877629608">検索範囲の左上隅: 左 <ph name="LEFT" />%、上 <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Chromium で PDF を開く</translation>
@@ -490,7 +485,6 @@
 <translation id="6390800440335263989">続行するには、<ph name="EMAIL" /> として Chromium にログインしてください。これにより、組織のポリシーが適用されます。</translation>
 <translation id="6400112897226594999">パソコンの画面に表示された Chromium のロゴ。</translation>
 <translation id="6403826409255603130">Chromium は、ウェブページやアプリケーションを高速に実行できるスピードと、高い安定性を兼ね備えた非常に使いやすいウェブブラウザです。不正なソフトウェアやフィッシングに対する保護機能が組み込まれており、ウェブを安全にブラウジングできます。</translation>
-<translation id="6414624068245092115">Google アカウントで Chromium のデータを使用、保存できるようにするには、本人確認を行ってください</translation>
 <translation id="642132557830635295">Chromium の動作が速くなり、JavaScript を使用する機能が設計どおりに動作します</translation>
 <translation id="6434631832954028336">検索パネルを再度開く</translation>
 <translation id="6436260184216827876">画像検索は使用できません。しばらくしてからもう一度お試しください。</translation>
@@ -521,7 +515,6 @@
 <translation id="665732753414869868">周囲の 3D マップを作成するには、Chromium にカメラの使用を許可する必要があります</translation>
 <translation id="6669284030132180248">ブックマークを Google アカウントにも保存している場合は、Chromium で商品価格をトラッキングして、値下げがあったときに通知を受け取ることができます</translation>
 <translation id="6676384891291319759">インターネットにアクセス</translation>
-<translation id="668175097507315160">ログイン時にエラーが発生したため、Chromium OS はデータを同期できませんでした。</translation>
 <translation id="6691132793308828750">Chromium からこのアプリのデータを削除する</translation>
 <translation id="6709350901466051922">このサイトを利用するには、Chromium でマイクの使用を許可する必要があります</translation>
 <translation id="6712881677154121168">ダウンロード エラー: <ph name="DOWNLOAD_ERROR" />。</translation>
@@ -679,7 +672,6 @@
 <translation id="8107060931443639922">次回 <ph name="DEVICE_TYPE" /> で Chromium を開いたときに、価格トラッキングのアラートを有効にするよう促すメッセージが表示されます。</translation>
 <translation id="8118331347066725040">Google レンズでの検索に関するフィードバックを送信する</translation>
 <translation id="8130609355518033382">Chromium を自分好みに</translation>
-<translation id="8133124826068723441">ご使用のドメインでは同期を利用できないため、Chromium OS はデータを同期できませんでした。</translation>
 <translation id="813913629614996137">初期化しています...</translation>
 <translation id="8158143604667288086">「Chrome で検索」を固定して、ブラウジング中に質問できます</translation>
 <translation id="8161503455832158203">Gemini in Chromium を開くときに、キーボード ショートカットを使用します。</translation>
@@ -746,11 +738,9 @@
 <translation id="8816416449795340678">このドキュメントを Gemini in Chromium と共有すると、概要の確認や追加の質問ができます</translation>
 <translation id="8818550178040858407">Chromium にログインしますか？</translation>
 <translation id="8826492472752484139">[パスワード マネージャー] をクリックする</translation>
-<translation id="8833697763442816810">Chromium OS システム</translation>
 <translation id="8852026904190808918">この言語が Chromium のメニュー、設定、アラートなどのテキストの表示に使用されます</translation>
 <translation id="8862326446509486874">権限が不十分なためシステムレベルのインストールができません。管理者権限でインストールしてください。</translation>
 <translation id="8876044221123442390">Chromium プロフィールを追加</translation>
-<translation id="8890569919834781711">ログイン時にエラーが発生したため、ChromiumOS は Google アカウントに Chromium データを保存できませんでした</translation>
 <translation id="8891709362986793894">組織が Chromium にログインするよう求めています</translation>
 <translation id="8906384069222226849">Chromium のご利用には Windows 10 バージョン 1809 以上が必要です。</translation>
 <translation id="8907580949721785412">Chromium でパスワードを表示しようとしています。続行するには、Windows のパスワードを入力してください。</translation>

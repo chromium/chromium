@@ -22,6 +22,7 @@
 <translation id="1056775291175587022">Nessuna rete</translation>
 <translation id="1056898198331236512">Avviso</translation>
 <translation id="1058009965971887428">Invia feedback</translation>
+<translation id="1058262162121953039">PUK</translation>
 <translation id="1059120031266247284">Condivisi con te</translation>
 <translation id="1060570945511946595">Gestisci richieste</translation>
 <translation id="1060847216467038176"><ph name="ITEM_LABEL" /> con pulsante Rimuovi</translation>
@@ -33,6 +34,7 @@
         <ph name="BEGIN_PARAGRAPH4" />I dati di backup non incidono sulla tua quota di spazio di archiviazione di Drive.<ph name="END_PARAGRAPH4" />
         <ph name="BEGIN_PARAGRAPH5" />Puoi disattivare questo servizio nelle Impostazioni.<ph name="END_PARAGRAPH5" /></translation>
 <translation id="106814709658156573">Per configurare l'impronta, chiedi a tuo figlio di toccare il sensore di impronte digitali nell'angolo in basso a sinistra della tastiera. I dati relativi all'impronta di tuo figlio vengono memorizzati in modo sicuro e non possono essere trasferiti in alcun modo da questo <ph name="DEVICE_TYPE" />.</translation>
+<translation id="1072700771426194907">È stato rilevato un dispositivo USB</translation>
 <translation id="1073899992769346247">Sostituisci o ricarica la batteria</translation>
 <translation id="1081015718268701546">Le app Linux non sono al momento supportate. Le altre app verranno salvate.</translation>
 <translation id="108486256082349153">Cellulare: <ph name="ADDRESS" /></translation>
@@ -60,6 +62,7 @@
 <translation id="1145593918056169051">La stampante si è interrotta</translation>
 <translation id="1147991416141538220">Per richiedere l'accesso, contatta l'amministratore del dispositivo.</translation>
 <translation id="1148499908455722006">Apri la finestra di dialogo delle informazioni per <ph name="USER_NAME" /></translation>
+<translation id="1149725087019908252">Scansione di <ph name="FILE_NAME" /></translation>
 <translation id="1150989369772528668">Calendario</translation>
 <translation id="1152346050262092795">Inserisci di nuovo la password per verificare il tuo account.</translation>
 <translation id="1153918444040990015">Impossibile connettersi ai suoni della modalità Niente distrazioni</translation>
@@ -67,6 +70,7 @@
 <translation id="1157514002898505378">L'AI generativa è sperimentale e i contenuti potrebbero essere imprecisi, fuorvianti oppure offensivi. Contatta l'amministratore per segnalare un problema. <ph name="LINK_TO_SERVICE_TERMS" /></translation>
 <translation id="1160215328209699296">attiva e in uso</translation>
 <translation id="1163437384438183174">Rimuovi Phone Hub dalla barra delle app</translation>
+<translation id="1166596238782048887"><ph name="TAB_TITLE" /> appartiene alla scrivania <ph name="DESK_TITLE" /></translation>
 <translation id="1170753161936175256"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="1171742223880403396">Il cavo USB-C potrebbe non collegarsi correttamente ai display</translation>
 <translation id="1173268871892601910">Il Gestore delle password di ChromeOS vorrebbe confermare la tua identità</translation>
@@ -94,7 +98,9 @@
 <translation id="121097972571826261">Avanti per parola</translation>
 <translation id="1217483152325416304">I tuoi dati locali verranno eliminati a breve</translation>
 <translation id="1218444235442067213"><ph name="APP_NAME" />, app Play Store</translation>
+<translation id="1225177025209879837">Elaborazione della richiesta in corso...</translation>
 <translation id="1225748608451425081">Il Chromebook è bloccato a causa di un problema noto. Potrai accedere dopo: <ph name="TIME_LEFT" />.</translation>
+<translation id="1227107020813934021">Trova scanner di documenti</translation>
 <translation id="1229194443904279055">Interrompi la selezione</translation>
 <translation id="1235458158152011030">Reti note</translation>
 <translation id="1239161794459865856">La funzionalità <ph name="FEATURE_NAME" /> è connessa.</translation>
@@ -139,6 +145,7 @@
 <translation id="1301513122398173424">Premi <ph name="LAUNCHER_KEY_NAME" /> + g in qualsiasi momento</translation>
 <translation id="130491383855577612">App e file Linux sostituiti</translation>
 <translation id="1306606229401759371">Modifica impostazioni</translation>
+<translation id="130744661532298792">Verifica la tua identità per assicurarti di poter usare sempre le password nel tuo Account Google</translation>
 <translation id="1310396869741602366">Modifica tono</translation>
 <translation id="1312604459020188865">Intensità del segnale <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1314113845887519729">Handle del bordo superiore selezionato, utilizza i tasti freccia per spostarlo</translation>
@@ -154,6 +161,7 @@
 <translation id="1346403631707626730">Invia dati su utilizzo e diagnostica. Contribuisci a migliorare l'esperienza Android di tuo figlio tramite l'invio automatico a Google di dati diagnostici e sull'utilizzo delle app e del dispositivo. Non verranno utilizzati per identificare tuo figlio e contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche per app e partner di Google, ad esempio gli sviluppatori Android. Se l'impostazione Attività web e app aggiuntiva è attiva per tuo figlio, queste informazioni potrebbero essere salvate nel suo Account Google. <ph name="BEGIN_LINK1" />Scopri di più sulle metriche<ph name="BEGIN_LINK1_END" />Scopri di più<ph name="END_LINK1" /></translation>
 <translation id="1346748346194534595">Destra</translation>
 <translation id="1350494136075914725">In corso · Passa alla scheda</translation>
+<translation id="1350962700620017446">"<ph name="EXTENSION_NAME" />" vuole trovare gli scanner di documenti e accedervi.</translation>
 <translation id="1355088139103479645">Vuoi eliminare tutti i dati?</translation>
 <translation id="1360220746312242196">Durante la ricerca di una pagina, vai alla corrispondenza precedente della ricerca</translation>
 <translation id="1360788414852622716">È in corso la disattivazione del profilo. Questa operazione può richiedere alcuni minuti.</translation>
@@ -178,6 +186,7 @@
 <translation id="1414271762428216854"><ph name="APP_NAME" />, app installata</translation>
 <translation id="1414919006379339073">Chiudi la finestra in uso</translation>
 <translation id="1415846719612499304">Mostra l'elenco di reti. <ph name="STATE_TEXT" />.</translation>
+<translation id="1415990189994829608">L'estensione <ph name="EXTENSION_NAME" /> (ID estensione "<ph name="EXTENSION_ID" />") non è consentita in questo tipo di sessione.</translation>
 <translation id="1418559532423038045">Consente di rimuovere <ph name="VM_NAME" /> da <ph name="DEVICE_TYPE" />. Verranno eliminati tutti i dati e le app nella macchina virtuale.</translation>
 <translation id="1419738280318246476">Sblocca il dispositivo per eseguire l'azione di notifica</translation>
 <translation id="1420408895951708260">Attiva/disattiva luminosità notturna. <ph name="STATE_TEXT" /></translation>
@@ -230,6 +239,7 @@
 <translation id="1546492247443594934">Scrivania 2</translation>
 <translation id="1546930421365146760">Chiedi all'amministratore di configurare questo dispositivo nella Console di amministrazione Google</translation>
 <translation id="1549721333775633305">Mostra impostazioni di Quick Share. Quick Share disattivato</translation>
+<translation id="1549788673239553762"><ph name="APP_NAME" /> vorrebbe accedere a <ph name="VOLUME_NAME" />. Potrebbe modificare o eliminare i tuoi file.</translation>
 <translation id="1550406609415860283">Dispositivi disponibili</translation>
 <translation id="1550523713251050646">Fai clic per visualizzare altre opzioni</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /> su Microsoft 365 su Chromebook.</translation>
@@ -261,9 +271,11 @@
 <translation id="1612679292338846734">Quando attivi queste funzionalità, il testo di input, i contenuti del documento e l'URL della pagina web potrebbero essere inviati ai server di Google AI. Queste informazioni vengono utilizzate per generare suggerimenti di bozza e riassunti, rispondere a domande e migliorare il prodotto, in conformità ai <ph name="LINK_TO_SERVICE_TERMS" />. Non includere informazioni personali, sensibili o riservate.</translation>
 <translation id="1614511179807650956">Potresti aver esaurito la tua quota di dati mobili. Visita il portale di attivazione <ph name="NAME" /> per acquistare altri dati.</translation>
 <translation id="1619879934359211038">Impossibile connettersi a Google Play. Controlla la connessione di rete e riprova. Codice di errore: <ph name="ERROR_CODE" />.</translation>
+<translation id="1620307519959413822">Password errata. Riprova o fai clic su Password dimenticata per reimpostarla.</translation>
 <translation id="1620510694547887537">Videocamera</translation>
 <translation id="1621831347985899379">I dati del <ph name="DEVICE_TYPE" /> verranno eliminati</translation>
 <translation id="1623768535032616219">Comprimi Google Classroom</translation>
+<translation id="1628948239858170093">Vuoi analizzare il file prima di aprirlo?</translation>
 <translation id="163032029566320584">La funzionalità <ph name="UNAVAILABLE_DLC" /> non è disponibile.</translation>
 <translation id="1632985212731562677">È possibile disattivare Switch Access in Impostazioni &gt; Accessibilità.</translation>
 <translation id="1634224622052500893">Rete Wi-Fi trovata</translation>
@@ -271,6 +283,9 @@
 <translation id="1639239467298939599">Caricamento</translation>
 <translation id="1647986356840967552">Pagina precedente</translation>
 <translation id="1651914502370159744">Apri la pagina Cronologia</translation>
+<translation id="1657937299377480641">Per eseguire di nuovo l'accesso per accedere a risorse didattiche, chiedi l'autorizzazione a uno dei tuoi genitori</translation>
+<translation id="1660405268563702784">Aggiornamento disponibile per <ph name="APP_NAME" /></translation>
+<translation id="1664497218584335032">Il sito web vuole aprire questo link in un'app.</translation>
 <translation id="1668469839109562275">VPN integrata</translation>
 <translation id="1668979692599483141">Ulteriori informazioni sui suggerimenti</translation>
 <translation id="1673232940951031776">Termina la modalità Niente distrazioni. Mancano <ph name="REMAINING_TIME" />.</translation>
@@ -314,6 +329,7 @@
 <translation id="1757132445735080748">Per completare la configurazione di Linux, aggiorna ChromeOS Flex e riprova.</translation>
 <translation id="1757857692711134412">Funzionalità disattivata fino al tramonto</translation>
 <translation id="1763084151787818322">Altre azioni</translation>
+<translation id="1766575458646819543">Modalità a schermo intero disattivata</translation>
 <translation id="1767043563165955993">Usa con app per Android</translation>
 <translation id="1768138163688567246">Chiudi la ricerca sullo schermo</translation>
 <translation id="1768366657309696705">La scorciatoia da tastiera <ph name="LAUNCHER_KEY_NAME" /> + Punto è cambiata. Per usare il tasto Ins, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Maiusc + Backspace.</translation>
@@ -338,6 +354,7 @@
 <translation id="1830308660060964064"><ph name="ITEM_TITLE" /> è stato staccato</translation>
 <translation id="1831565490995294689">Seleziona per aprire <ph name="APP_TO_OPEN" />.</translation>
 <translation id="1832511806131704864">Cambio di telefono aggiornato</translation>
+<translation id="1832848789136765277">Per assicurarti di poter accedere ai tuoi dati di sincronizzazione in qualsiasi momento, verifica la tua identità</translation>
 <translation id="1837441256780906162">Microsoft OneDrive ha rifiutato la richiesta. Riprova più tardi.</translation>
 <translation id="1838011306813517425">Impostazioni della modalità Non disturbare</translation>
 <translation id="1838895407229022812">Luminosità notturna non attiva.</translation>
@@ -345,10 +362,12 @@
 <translation id="1841616161104323629">Record del dispositivo mancante.</translation>
 <translation id="184273675144259287">Sostituisci app e file Linux con un backup precedente</translation>
 <translation id="1854180393107901205">Interrompi trasmissione</translation>
+<translation id="1856715684130786728">Aggiungi posizione...</translation>
 <translation id="1862077610023398675">Nascondi controlli</translation>
 <translation id="1862380676329487333">Aggiorna e disconnetti</translation>
 <translation id="1864454756846565995">Dispositivo USB-C (porta posteriore)</translation>
 <translation id="186594096341696655">Riduci frequenza</translation>
+<translation id="186612162884103683">L'estensione "<ph name="EXTENSION" />" può leggere e scrivere file di immagini, video e audio nelle posizioni selezionate.</translation>
 <translation id="1867566089293859645">Le modifiche verranno applicate al prossimo accesso. Aggiorna in qualsiasi momento in Impostazioni &gt; Preferenze di sistema &gt; Avvio.</translation>
 <translation id="1871023081802165724">Riproduci i contenuti multimediali</translation>
 <translation id="1871915835366697861">Non disponibile per questo gioco</translation>
@@ -358,6 +377,7 @@
 <translation id="1884705339276589024">Ridimensiona disco Linux</translation>
 <translation id="1885785240814121742">Sblocca con l'impronta digitale</translation>
 <translation id="1891362123137972260">Lo spazio sul disco sta per esaurirsi. Libera spazio.</translation>
+<translation id="1892341345406963517">Ciao <ph name="PARENT_NAME" /></translation>
 <translation id="1894024878080591367">Configura per giocare con la tastiera</translation>
 <translation id="1896043844785689584">Per configurare l'impronta, chiedi a tuo figlio di toccare il sensore di impronte digitali nell'angolo in basso a destra della tastiera. I dati relativi all'impronta di tuo figlio vengono memorizzati in modo sicuro e non possono essere trasferiti in alcun modo da questo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1896383923047738322">Personalizza la tastiera</translation>
@@ -408,6 +428,7 @@
 <translation id="2017998995161831444">Apri "Guida" nell'app Esplora</translation>
 <translation id="2021864487439853900">Fai clic per sbloccare</translation>
 <translation id="2023167225947895179">Il PIN potrebbe essere facile da indovinare</translation>
+<translation id="2024959665595762054">Verifica la tua identità per usare e salvare i dati di Chrome nel tuo Account Google</translation>
 <translation id="2034346955588403444">Aggiungi un'altra rete Wi-Fi</translation>
 <translation id="2034971124472263449">Salva comunque</translation>
 <translation id="2037445849770872822">La supervisione è configurata per questo Account Google. Per configurare altre funzioni di Controllo genitori, seleziona Continua.
@@ -433,6 +454,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2086334242442703436">Aprire il selettore di emoji</translation>
 <translation id="2089550919269323883">La possibilità di installare <ph name="VM_NAME" /> è bloccata dalla policy aziendale. Contatta l'amministratore di sistema per ricevere assistenza. Il codice di errore è <ph name="ERROR" />.</translation>
 <translation id="209965399369889474">Nessuna connessione alla rete</translation>
+<translation id="2102495993840063010">App Android</translation>
 <translation id="2107581415810719320">Pulsante Altro <ph name="BUTTON_NUMBER" /></translation>
 <translation id="2107914222138020205">Il cavo USB-C non supporta Thunderbolt. Le prestazioni del dispositivo potrebbero essere limitate.</translation>
 <translation id="2108303511227308752">La scorciatoia da tastiera Alt + Backspace è cambiata. Per usare il tasto Canc, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Backspace.</translation>
@@ -452,7 +474,10 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2159568970844941445">Nessuna immagine in File</translation>
 <translation id="2160985496866145279">Arresta Bruschetta</translation>
 <translation id="2161132820593978283">Prova Zoom automatico per essere al centro dello schermo durante le videochiamate. Attiva la funzionalità nelle Impostazioni rapide.</translation>
+<translation id="2163089732491971196">Per usare e salvare i dati di Chrome nel tuo Account Google, inserisci la tua passphrase</translation>
 <translation id="216955976692983107">Allinea a destra finestra ridimensionata a riquadro</translation>
+<translation id="2173302385160625112">Controlla la connessione a internet</translation>
+<translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2185166372312820725">Passa alla scheda precedente</translation>
 <translation id="2185444992308415167">Scorri le schede da 1 a 8</translation>
 <translation id="2192232475740621500">Usa densità bassa</translation>
@@ -494,6 +519,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2303600792989757991">Attiva/disattiva panoramica finestra</translation>
 <translation id="2304702218354340897">Disattivare i controlli con il volto?</translation>
 <translation id="2305738328104302723">Elenco Google Tasks: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
+<translation id="2308798336967462263">I seguenti tasti non sono supportati: Tab, Maiusc, Ctrl, Esc, Bloc maiusc, Volume</translation>
 <translation id="2315005022200073389"><ph name="HOLDING_SPACE_TITLE" />: acquisizioni schermo recenti, download e file fissati</translation>
 <translation id="2316433409811863464">Streaming di app</translation>
 <translation id="2318576281648121272">Oggi, <ph name="TODAY_DATE" /></translation>
@@ -508,6 +534,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2339073806695260576">Tocca il pulsante dello stilo nella barra delle app per creare note, acquisire screenshot, usare il puntatore laser o la lente d'ingrandimento.</translation>
 <translation id="2341729377289034582">Bloccata in verticale</translation>
 <translation id="2344032937402519675">Impossibile connettersi al server. Controlla la connessione di rete e riprova. Se continui ad avere problemi, prova a riavviare Chromebook.</translation>
+<translation id="2348176352564285430">App: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="2349785431103945039">Mostra i dettagli relativi all'hotspot. Connettiti alla rete mobile per usare l'hotspot.</translation>
 <translation id="2350182423316644347">Inizializzazione dell'applicazione in corso...</translation>
 <translation id="2350794187831162545">La lingua <ph name="LANGUAGE" /> adesso viene elaborata localmente e funziona offline. Puoi modificare la lingua di dettatura in Impostazioni &gt; Accessibilità.</translation>
@@ -527,6 +554,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2381461748765773292">Questa operazione potrebbe causare la disconnessione della rete mobile per alcuni minuti</translation>
 <translation id="2383521554963939360">Gruppi di schede e app</translation>
 <translation id="2386292613071805067">Seleziona tutto sulla pagina</translation>
+<translation id="2387602571959163792"><ph name="DESK_NAME" /> (attuale)</translation>
 <translation id="2389423187722941333">Attiva/disattiva Gemini</translation>
 <translation id="2390347491606624519">Impossibile connettersi al proxy, accedi di nuovo</translation>
 <translation id="2390782873446084770">Sync Wi-Fi</translation>
@@ -558,6 +586,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2454524890947537054">Vuoi approvare la richiesta web?</translation>
 <translation id="2455994958736234930">Aggiungi www. e .com alla barra degli indirizzi, quindi apri il sito web</translation>
 <translation id="2456008742792828469">Calendario, <ph name="CURRENT_MONTH_YEAR" /></translation>
+<translation id="2457246892030921239"><ph name="APP_NAME" /> vorrebbe copiare file da <ph name="VOLUME_NAME" />.</translation>
 <translation id="2458591546854598341">Token di gestione del dispositivo non valido.</translation>
 <translation id="2459703812219683497">Codice di attivazione rilevato</translation>
 <translation id="246052086404491029">Visualizza in dettaglio</translation>
@@ -567,6 +596,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2475783092753560388">Inserisci <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="2475982808118771221">Si è verificato un errore</translation>
 <translation id="2478076885740497414">Installa app</translation>
+<translation id="2478176599153288112">Autorizzazioni file multimediali per "<ph name="EXTENSION" />"</translation>
 <translation id="2479148705183875116">Vai a Impostazioni</translation>
 <translation id="2484513351006226581">Premi <ph name="KEYBOARD_SHORTCUT" /> per cambiare il layout della tastiera.</translation>
 <translation id="2484574361686148760">Aggiorna informazioni clienti WiFi Direct</translation>
@@ -623,18 +653,21 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2612072250312279703">monitoraggio dell'attività</translation>
 <translation id="261210853165551493">Copia con formattazione</translation>
 <translation id="2612614436418177118">Sposta l'icona di un'app all'interno della griglia delle app</translation>
+<translation id="2615159404909536465">{FILE_COUNT,plural, =1{Apri e modifica <ph name="FILE1" /> in questa estensione}other{Apri e modifica <ph name="FILE1" />, … in questa app}}</translation>
 <translation id="2619052155095999743">Inserisci</translation>
 <translation id="2619326010008283367">Passaggio <ph name="STEP" /> di <ph name="TOTAL_STEPS" /> del tour. Puoi trovare le impostazioni del tuo dispositivo in Avvio app. Prova a personalizzare il tuo <ph name="PRODUCT_NAME" /> nelle Impostazioni, ad esempio cambiando lo sfondo o impostando un salvaschermo.</translation>
 <translation id="2620016719323068571">Cerca <ph name="CATEGORY" />, file, app e altro ancora…</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2621713457727696555">Protetta</translation>
 <translation id="2624588537172718173">Microfono e audio del dispositivo</translation>
+<translation id="2626799779920242286">Riprova più tardi.</translation>
 <translation id="263399434338050016">"Seleziona tutto"</translation>
 <translation id="264083724974021997">Collegati al telefono - Finestra di dialogo</translation>
 <translation id="2644422758626431000">Blocca la finestra a sinistra</translation>
 <translation id="2645380101799517405">Controlli</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2653659639078652383">Invia</translation>
+<translation id="2654553774144920065">Richiesta di stampa</translation>
 <translation id="265748523151262387">Rimani connesso con il tuo telefono</translation>
 <translation id="2658778018866295321">Fai clic e trascina</translation>
 <translation id="2660115748527982021">Suggerimento: molte app per Android sono disponibili sul web. Controlla la disponibilità sull'app o sul sito web dello sviluppatore.</translation>
@@ -682,6 +715,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2750932254614666392">"Elimina"</translation>
 <translation id="2750941250130734256">Finestra attiva sganciata.</translation>
 <translation id="2755349111255270002">Reimposta questo dispositivo <ph name="DEVICE_TYPE" /></translation>
+<translation id="275662540872599901">schermo spento</translation>
 <translation id="2761723519669354964">Apri l'elemento evidenziato dalla barra delle app</translation>
 <translation id="2762000892062317888">in questo istante</translation>
 <translation id="2765100602267695013">Contatta il tuo operatore di telefonia mobile</translation>
@@ -695,6 +729,7 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="2782591952652094792">Esci dalla modalità di acquisizione</translation>
 <translation id="2785499565474703580">1 dispositivo connesso</translation>
 <translation id="2791421900609674576">Vedrai consigli per poter continuare dal punto in cui avevi interrotto. Puoi toccare i consigli e tenere premuto per rimuoverli.</translation>
+<translation id="2792697226874849938">Immagine di limitazione</translation>
 <translation id="2798702144670138229">La modalità tablet è attiva. Il Pannello di gioco non è disponibile.</translation>
 <translation id="2801954693771979815">Dimensioni schermo</translation>
 <translation id="2802938996245446490"><ph name="BUTTON_LABEL" />, selezionato</translation>
@@ -717,6 +752,7 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="2843560154284403323">Per completare la configurazione di Linux, aggiorna ChromeOS e riprova.</translation>
 <translation id="2844169650293029770">Dispositivo USB-C (porta anteriore sinistra)</translation>
 <translation id="2844350028562914727">dettagli</translation>
+<translation id="2847479871509788944">Rimuovi da Chromium...</translation>
 <translation id="2847759467426165163">Trasmetti a</translation>
 <translation id="2848120746144143659">Premi invio per acquisire uno screenshot a schermo intero</translation>
 <translation id="2849936225196189499">Critica</translation>
@@ -745,6 +781,7 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="2902312830803030883">Altre azioni</translation>
 <translation id="2907798539022650680">Connessione a "<ph name="NAME" />" non riuscita: <ph name="DETAILS" />
     Messaggio del server: <ph name="SERVER_MSG" /></translation>
+<translation id="2908162660801918428">Aggiungi Galleria Media per directory</translation>
 <translation id="2909506265808101667">Impossibile connettersi ai servizi Google. Controlla la connessione di rete e riprova. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910718431259223434">Si è verificato un problema. Riprova oppure contatta l'amministratore o il proprietario del dispositivo. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="2914580577416829331">Schermate acquisite</translation>
@@ -758,6 +795,7 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="2941232201846070406">Controlla la connessione a internet e riprova</translation>
 <translation id="2942350706960889382">Lente d'ingrandimento ancorata</translation>
 <translation id="2942516765047364088">Posizione barra delle app</translation>
+<translation id="2942560570858569904">In attesa…</translation>
 <translation id="2942707801577151363">Apre, modifica e salva file Word, Excel e PowerPoint. Per alcune funzionalità potrebbe essere necessario un abbonamento.</translation>
 <translation id="2946119680249604491">Aggiungi connessione</translation>
 <translation id="2947835478872237115">Livello attuale della batteria: <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> alla ricarica completa</translation>
@@ -776,6 +814,8 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="2984727013951557074">Il file è ancora in fase di sincronizzazione con Drive.</translation>
 <translation id="2985148236010982088">Mostra tutte le app</translation>
 <translation id="2989177286941477290">{NUM_OF_FILES,plural, =1{Libera spazio in <ph name="CLOUD_PROVIDER" /> per spostare questo file}other{Libera spazio in <ph name="CLOUD_PROVIDER" /> per spostare questi file}}</translation>
+<translation id="2989474696604907455">non collegato</translation>
+<translation id="2990313168615879645">Aggiungi Account Google</translation>
 <translation id="2992272421330787632">Nascondi tutti i suggerimenti multimediali</translation>
 <translation id="2992327365391326550">Il pulsante del microfono del dispositivo è disattivato.</translation>
 <translation id="2993956882370897557">Stai cercando di usare Fine? Usa</translation>
@@ -783,6 +823,7 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="3000461861112256445">Audio in formato mono</translation>
 <translation id="3001391739687111021">Modifica dimensioni schermo</translation>
 <translation id="3001835006423291524">Tocca il sensore di impronte digitali nell'angolo in basso a destra della tastiera. I dati relativi alla tua impronta vengono memorizzati in modo sicuro e non possono essere trasferiti in alcun modo da <ph name="DEVICE_TYPE" />.</translation>
+<translation id="3007555010975143508">Queste app verranno utilizzate per registrare lo schermo:</translation>
 <translation id="3009178788565917040">Uscita</translation>
 <translation id="3009958530611748826">Seleziona una cartella in cui salvare i file</translation>
 <translation id="301282384882049174">Condiviso dall'amministratore</translation>
@@ -832,6 +873,7 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3130528281680948470">Il dispositivo verrà ripristinato e tutti gli account utente e i dati locali verranno rimossi. L'operazione non può essere annullata.</translation>
 <translation id="3130793786899299931">Modifica lunghezza</translation>
+<translation id="313205617302240621">Hai dimenticato la password?</translation>
 <translation id="3134486240968249588">Alcuni aspetti da tenere presente</translation>
 <translation id="3139188263101386725">Usa la scorciatoia aggiornata</translation>
 <translation id="3139942575505304791">Scrivania 1</translation>
@@ -858,6 +900,8 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="3212221635583599601">Connettiti a internet per saperne di più</translation>
 <translation id="3213571860604332401">Salva link come preferito</translation>
 <translation id="3217205077783620295">Il volume è attivo. Selezionalo per disattivarlo.</translation>
+<translation id="3220943972464248773">Per sincronizzare le tue password devi verificare la tua identità</translation>
+<translation id="3222779980972075989">Connetti a <ph name="USB_VM_NAME" /></translation>
 <translation id="3226991577105957773">+ altre <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Microfono</translation>
 <translation id="3233611303007751344">Risparmio energetico disattivato</translation>
@@ -933,6 +977,7 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="3431517721463707585">Scrivania 14</translation>
 <translation id="3433507769937235446">Blocca quando ti allontani</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" richiede il tuo codice <ph name="CODE_TYPE" /></translation>
 <translation id="343578350365773421">Carta esaurita</translation>
 <translation id="3435967511775410570">Impronta riconosciuta</translation>
 <translation id="3437677362970530951">Giochi sul Play Store e su altre piattaforme di gioco</translation>
@@ -966,11 +1011,13 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="3484869148456018791">Richiedi nuovo certificato</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Barra delle app nascosta in automatico</translation>
+<translation id="3489457144969823485">Le app di Chrome non sono più disponibili sui dispositivi ChromeOS da luglio 2025. Prova un'app alternativa.</translation>
 <translation id="3500417806337761827">Errore durante il montaggio della condivisione. Sono già montate troppe condivisioni SMB.</translation>
 <translation id="3505066820268455558">Batteria in carica</translation>
 <translation id="3509391053705095206">Impossibile trovare il telefono. Assicurati che il Bluetooth del telefono sia attivo.</translation>
 <translation id="3510164367642747937">Evidenzia il puntatore del mouse</translation>
 <translation id="3513798432020909783">Account gestito da <ph name="MANAGER_EMAIL" /></translation>
+<translation id="3515783508789430906">È disponibile una nuova versione (<ph name="VERSION" />). Riavvia l'app per applicare l'aggiornamento. I dati non salvati potrebbero andare persi.</translation>
 <translation id="3516000762115478502">Allinea in alto finestra ridimensionata a riquadro</translation>
 <translation id="3517037892157925473">Ultimo aggiornamento attività: <ph name="TIME" />, <ph name="DATE" />.</translation>
 <translation id="352245152354538528">{0,plural, =1{Aggiorna il dispositivo entro 1 minuto}other{Aggiorna il dispositivo entro # minuti}}</translation>
@@ -1024,6 +1071,8 @@ In caso contrario, il touchpad integrato verrà riattivato dopo <ph name="TIMEOU
 <translation id="3604801046548457007">Scrivania <ph name="DESK_TITILE" /> creata</translation>
 <translation id="3606978283550408104">Display Braille collegato.</translation>
 <translation id="3612634595000403645">Preferenze effetti aspetto</translation>
+<translation id="3615579745882581859">È in corso la scansione di <ph name="FILE_NAME" />.</translation>
+<translation id="3615596877979647433">Tasto mancante. Premi un tasto della tastiera per personalizzarlo</translation>
 <translation id="3615926715408477684">Se attivi i dati mobili verrà attivato anche il Bluetooth</translation>
 <translation id="3616113530831147358">Audio</translation>
 <translation id="3616883743181209306">Menu spostato nell'angolo in alto a destra dello schermo.</translation>
@@ -1080,6 +1129,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3744484896879440075">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> richiede di effettuare il backup dei dati e di restituire questo <ph name="DEVICE_TYPE" /> oggi stesso.}other{<ph name="MANAGER" /> richiede di effettuare il backup dei dati e di restituire questo <ph name="DEVICE_TYPE" /> prima della scadenza.}}</translation>
 <translation id="3750403286520637847">Nascondi suggerimento meteo</translation>
 <translation id="3752253558646317685">Chiedi a tuo figlio di continuare a sollevare il dito per salvare l'impronta</translation>
+<translation id="3753585830134123417">Finestre ridimensionate a sinistra</translation>
 <translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />Per dati dell'app si intende qualsiasi dato salvato da un'app (in base alle impostazioni dello sviluppatore), inclusi dati come contatti, messaggi e foto.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />I dati di backup non incidono sulla quota di spazio di archiviazione di Drive di tuo figlio.<ph name="END_PARAGRAPH2" />
         <ph name="BEGIN_PARAGRAPH3" />Puoi disattivare questo servizio nelle Impostazioni.<ph name="END_PARAGRAPH3" /></translation>
@@ -1103,6 +1153,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3799080171973636491">Hai premuto la scorciatoia da tastiera per la lente d'ingrandimento a schermo intero. Vuoi attivarla?</translation>
 <translation id="380408572480438692">Se attivi la raccolta dei dati sul rendimento, consenti a Google di migliorare il sistema nel tempo. I dati vengono inviati soltanto quando presenti un rapporto di feedback (Alt+Maiusc+I) e includi dati sul rendimento. Puoi tornare in qualsiasi momento in questa schermata per disattivare la raccolta.</translation>
 <translation id="3804737937830804242">Comprimi fotocamera</translation>
+<translation id="3807249107536149332">L'estensione <ph name="EXTENSION_NAME" /> (ID estensione "<ph name="EXTENSION_ID" />") non è consentita in una schermata di accesso.</translation>
 <translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Nessun altro risultato.}other{# emoji. Nessun altro risultato.}}</translation>
 <translation id="381202950560906753">Aggiungine un'altra</translation>
 <translation id="3819257035322786455">Backup</translation>
@@ -1131,6 +1182,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3871350334636688135">Dopo 24 ore, il tuo amministratore eseguirà un aggiornamento una tantum che eliminerà i tuoi dati locali al riavvio del dispositivo. Salva i dati locali che ti servono nello spazio di archiviazione sul cloud entro 24 ore.</translation>
 <translation id="3872991219937722530">Libera spazio sul disco, altrimenti il dispositivo non risponderà più ai comandi.</translation>
 <translation id="3873915545594852654">Si è verificato un problema con ARC++.</translation>
+<translation id="3876219572815410515">Finestre ridimensionate in alto</translation>
 <translation id="3879748587602334249">Gestione dei download</translation>
 <translation id="3884007280698606545">Limite USB raggiunto</translation>
 <translation id="3892148308691398805">Copia testo</translation>
@@ -1156,6 +1208,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="3945867833895287237">Connessione all'hotspot in corso…</translation>
 <translation id="3950820424414687140">Accedi</translation>
 <translation id="3953130726459169782">Ancora nessun compito completato.</translation>
+<translation id="3954354850384043518">In corso</translation>
 <translation id="3957844511978444971">Tocca "Accetta" per confermare la selezione delle impostazioni di questi servizi di Google.</translation>
 <translation id="3958714870339660776">Tutto il giorno</translation>
 <translation id="3960566196862329469">ONC</translation>
@@ -1177,10 +1230,12 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4000360130639414007">Non potrai utilizzare le app per Android o il Google Play Store</translation>
 <translation id="4002066346123236978">Titolo</translation>
 <translation id="4002347779798688515">Il profilo scaricato potrebbe non essere utilizzabile se l'operatore di rete mobile è bloccato. Contatta il tuo provider per ricevere assistenza.</translation>
+<translation id="4003617970184602156">Verifica la tua identità per usare e salvare le password nel tuo Account Google</translation>
 <translation id="40062176907008878">Scrittura a mano libera</translation>
 <translation id="4011112806063830608">Modalità Non disturbare attiva.</translation>
 <translation id="4017989525502048489">Puntatore laser</translation>
 <translation id="401993194061514265">Indicatore non disponibile. Riapri Registra schermo.</translation>
+<translation id="4020701737692625681">L'amministratore può registrare il tuo schermo</translation>
 <translation id="4021716437419160885">Scorri verso il basso</translation>
 <translation id="4022497978915111141">Blocca il dispositivo</translation>
 <translation id="4023048917751563912"><ph name="APP_NAME" /> sta stampando <ph name="PAGE_NUMBER" /> pagine su <ph name="PRINTER_NAME" /></translation>
@@ -1196,6 +1251,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4049230407053723315">Impostazioni rapide</translation>
 <translation id="4050225813016893843">Metodo di autenticazione</translation>
 <translation id="4054070260844648638">Visibile a tutti</translation>
+<translation id="4056908315660577142">Hai raggiunto il tempo massimo impostato dal genitore per l'app di Chrome <ph name="APP_NAME" />. Domani potrai utilizzare l'app per <ph name="TIME_LIMIT" />.</translation>
 <translation id="4057003836560082631">Scheda del browser <ph name="INDEX" /> di <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4059696795118403455">Per vedere suggerimenti personalizzati su cosa fare dopo, premi il tasto Panoramica</translation>
 <translation id="4067635609339702874">Le Impostazioni di ChromeOS vorrebbero confermare la tua identità</translation>
@@ -1234,6 +1290,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="4141710407113804517"><ph name="LAUNCHER_KEY_NAME" /> + Freccia destra</translation>
 <translation id="4146671046252289537">Sposta alla fine della parola successiva</translation>
 <translation id="4147911968024186208">Riprova. Se ricevi ancora questo messaggio di errore, contatta il tuo rappresentante dell'assistenza.</translation>
+<translation id="4148957013307229264">Installazione...</translation>
 <translation id="4150201353443180367">Display</translation>
 <translation id="4151054805501931758">Ritocco del ritratto</translation>
 <translation id="4156293514828496577">Batteria rimanente: <ph name="PERCENTAGE" />% (circa <ph name="TIME_LEFT" />).
@@ -1281,6 +1338,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4264977415328155183">, compresso</translation>
 <translation id="4265259722091164182">Iniziali Maiuscole</translation>
 <translation id="4265301768135164545">Puoi anche configurare un profilo eSIM <ph name="BEGIN_LINK" />manualmente<ph name="END_LINK" />.</translation>
+<translation id="4267924571297947682">Richiedi l'autorizzazione di un genitore</translation>
 <translation id="4269883910223712419">L'amministratore di questo dispositivo ha la possibilità di:</translation>
 <translation id="4271841440229266861">Mostra tutti i contenuti di File</translation>
 <translation id="4274537685965975248">La scorciatoia da tastiera Ctrl + Alt + Freccia giù è cambiata. Per usare il tasto Fine, premi il tasto <ph name="LAUNCHER_KEY_NAME" /> + Freccia destra.</translation>
@@ -1331,7 +1389,9 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4375482231364171368">Cerca nella barra degli indirizzi</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, intensità segnale: <ph name="SIGNAL_STRENGTH" /> percento</translation>
 <translation id="4378551569595875038">Connessione...</translation>
+<translation id="4379281552162875326">Vuoi disinstallare "<ph name="APP_NAME" />"?</translation>
 <translation id="4379531060876907730">Ecco gli strumenti per il tuo stilo</translation>
+<translation id="4380648069038809855">Modalità a schermo intero attivata</translation>
 <translation id="4381031910344220229">Consente l'accesso al microfono per <ph name="APP_NAME" /> e tutti i siti web e le app che hanno l'autorizzazione di accesso al microfono</translation>
 <translation id="4382340674111381977">Torna alla pagina precedente</translation>
 <translation id="4389184120735010762">Hai premuto la scorciatoia da tastiera per la lente d'ingrandimento ancorata. Vuoi attivarla?</translation>
@@ -1340,7 +1400,9 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="439598569299422042">In pausa, <ph name="SIZE_INFO" /></translation>
 <translation id="439817266247065935">Il dispositivo non è stato spento correttamente. Riavvia Linux per usare le relative app.</translation>
 <translation id="440113666232554208">Impossibile salvare lo screencast</translation>
+<translation id="4404843640767531781">L'app <ph name="APP_NAME" /> è stata bloccata da un genitore. Chiedi al tuo genitore l'autorizzazione per poterla usare.</translation>
 <translation id="4406883609789734330">Sottotitoli in tempo reale</translation>
+<translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" />. Riceverai una notifica all'inizio della registrazione.}=2{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" /> e <ph name="APP1_NAME" />. Riceverai una notifica all'inizio della registrazione.}=3{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e un'altra app. Riceverai una notifica all'inizio della registrazione.}other{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e altre # app. Riceverai una notifica all'inizio della registrazione.}}</translation>
 <translation id="4412698727486357573">Centro assistenza</translation>
 <translation id="4412944820643904175">La funzionalità <ph name="FEATURE_NAME" /> è disattivata.</translation>
 <translation id="4414242853388122273">Errore durante la rimozione di <ph name="VM_NAME" />. Riprova.</translation>
@@ -1364,6 +1426,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="445923051607553918">Connetti a rete Wi-Fi</translation>
 <translation id="4465236939126352372">Limite di tempo di <ph name="TIME" /> impostato per <ph name="APP_NAME" /></translation>
 <translation id="4467373268340082204">PIN errato</translation>
+<translation id="4470974262661801543">Per usare e salvare i dati di Chromium nel tuo Account Google, inserisci la passphrase</translation>
 <translation id="4471354919263203780">Download dei file di riconoscimento vocale… <ph name="PERCENT" />%</translation>
 <translation id="4471432286288241507">{0,plural, =0{Aggiorna ora il dispositivo}=1{Aggiorna il dispositivo entro 1 secondo}other{Aggiorna il dispositivo entro # secondi}}</translation>
 <translation id="4472575034687746823">Come iniziare</translation>
@@ -1376,11 +1439,13 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4491109536499578614">Immagine</translation>
 <translation id="4493468155686877504">Consigliato (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="450099669180426158">Icona punto esclamativo</translation>
+<translation id="4501530680793980440">Conferma rimozione</translation>
 <translation id="450584155212756404">Canale Dev</translation>
 <translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4518096944902121253">Nessun'altra azione per questa lingua</translation>
 <translation id="4518404433291145981">Per sbloccare Chromebook, sblocca prima il telefono</translation>
+<translation id="4522570452068850558">Dettagli</translation>
 <translation id="4524832533047962394">La modalità di registrazione specificata non è supportata da questa versione del sistema operativo. Assicurati che sia installata l'ultima versione.</translation>
 <translation id="4527045527269911712">Il dispositivo Bluetooth "<ph name="DEVICE_NAME" />" chiede l'autorizzazione per essere accoppiato.</translation>
 <translation id="4531536770443562276">Solo schermo intero disponibile</translation>
@@ -1423,6 +1488,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4611114513649582138">Connessione dati disponibile</translation>
 <translation id="4611292653554630842">Accedi</translation>
 <translation id="4613144866899789710">Annullamento dell'installazione di Linux…</translation>
+<translation id="4619564267100705184">Verifica la tua identità</translation>
 <translation id="462160925400706389">Connessione di <ph name="NAME" /> attiva</translation>
 <translation id="4623167406982293031">Verifica account</translation>
 <translation id="4623189117674524348">Il sistema non è riuscito ad autorizzare l'accesso all'API per questo dispositivo.</translation>
@@ -1439,6 +1505,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4648249871170053485"><ph name="APP_NAME" />, consiglio applicazione</translation>
 <translation id="4649019912155580914">Modificato da te</translation>
 <translation id="4651484272688821107">Impossibile caricare il componente online con le risorse della modalità demo.</translation>
+<translation id="4651921906638302153">Impossibile accedere con questo account</translation>
 <translation id="465686131535918331">Puoi personalizzare le impostazioni per <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="4657775630156561295">Il seguente suggerimento verrà rimosso in modo permanente dalla cronologia dei suggerimenti del tuo account:
 
@@ -1456,6 +1523,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="467809019005607715">Presentazioni Google</translation>
 <translation id="468019262817532242">Nessuno può condividere contenuti con te</translation>
 <translation id="468293128311738995">App dal telefono</translation>
+<translation id="4690091457710545971">&lt;Quattro file generati dal firmware Intel Wi-Fi: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon. I primi tre sono file binari che contengono dump di registro e che, secondo quanto dichiarato da Intel, non contengono informazioni personali o di identificazione del dispositivo. L'ultimo file è una traccia di esecuzione dal firmware Intel, privato di ogni informazione personale o di identificazione del dispositivo, ma troppo grande per essere mostrato qui. Questi file sono stati generati in risposta ai recenti problemi del tuo dispositivo con la rete Wi-Fi e verranno condivisi con Intel per agevolare la risoluzione di tali problemi.&gt;</translation>
 <translation id="4690510401873698237">Barra delle app in basso</translation>
 <translation id="4696813013609194136">Sblocca con codice genitore</translation>
 <translation id="4697357603686181098">Impossibile eseguire questa operazione. Prova con un'altra richiesta.</translation>
@@ -1465,6 +1533,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4708065238214351979">Aumenta la luminosità della tastiera</translation>
 <translation id="4708185346211948049"><ph name="DAY_OF_WEEK" /> della prossima settimana</translation>
 <translation id="4717575069099566988">Il cavo USB-C non supporta USB4. Le prestazioni del dispositivo potrebbero essere limitate.</translation>
+<translation id="4723140812774948886">Scambia con elemento successivo</translation>
 <translation id="4731197594811674831">Home</translation>
 <translation id="4731797938093519117">Accesso genitore</translation>
 <translation id="4733161265940833579"><ph name="BATTERY_PERCENTAGE" />% (sinistro)</translation>
@@ -1476,6 +1545,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4744571849207727284">Excel</translation>
 <translation id="4746798685375253449">{0,plural, =1{Esegui il rollback del dispositivo alla versione precedente entro 1 giorno}other{Esegui il rollback del dispositivo alla versione precedente entro # giorni}}</translation>
 <translation id="4747410141429390146">Sblocca per visualizzare le notifiche</translation>
+<translation id="4750394297954878236">Suggerimenti</translation>
 <translation id="4752784485658729358">Sono consentite solo 6 scrivanie salvate. Rimuovi una scrivania per salvarne una nuova.</translation>
 <translation id="4753084533826742808">Deve contenere almeno 1 carattere</translation>
 <translation id="4759238208242260848">Download</translation>
@@ -1521,12 +1591,14 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4860284199500934869">Controlla la tua connessione a Internet per scaricare il file <ph name="FILENAME" /></translation>
 <translation id="4864369630010738180">Accesso in corso...</translation>
 <translation id="4864648187878336334">Scrivania 15</translation>
+<translation id="4864805589453749318">Seleziona il genitore che sta concedendo l'autorizzazione per aggiungere un account della scuola.</translation>
 <translation id="4868492592575313542">attivato</translation>
 <translation id="4871905435473761992">Mostra i dettagli relativi all'hotspot. La tua rete mobile non supporta l'hotspot.</translation>
 <translation id="4872724534194216608">Cerca per calcolare</translation>
 <translation id="4872852897273142380">Consente di evidenziare o impostare lo stato attivo nella barra dei preferiti (se visibile)</translation>
 <translation id="4876935764454575645">Selezione audio</translation>
 <translation id="4881323000405981760">Gli effetti non sono supportati sulle app Linux</translation>
+<translation id="4881685975363383806">Non visualizzare più il promemoria</translation>
 <translation id="4881695831933465202">Apri</translation>
 <translation id="4890408602550914571">Assicurati che il tuo telefono sia nelle vicinanze e che il Bluetooth sia attivo.</translation>
 <translation id="4892981359753171125">Controllo del volto</translation>
@@ -1562,6 +1634,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4966431234408005599">Alza il volume</translation>
 <translation id="496742804571665842">Disattiva profili eSIM</translation>
 <translation id="496999337731226334">Passaggio <ph name="STEP" /> di <ph name="TOTAL_STEPS" /> del tour. I controlli usati di frequente, come Wi-Fi, Bluetooth e volume, sono disponibili nelle Impostazioni rapide. Qui puoi anche acquisire screenshot. Premi Alt + Maiusc + S per aprire le Impostazioni rapide.</translation>
+<translation id="4971412780836297815">Apri al termine</translation>
 <translation id="4972164225939028131">Password errata</translation>
 <translation id="4974836474136150508">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> richiede il download di un aggiornamento oggi stesso. L'aggiornamento verrà scaricato automaticamente quando ti connetterai a internet.}other{<ph name="MANAGER" /> richiede il download di un aggiornamento prima della scadenza. L'aggiornamento verrà scaricato automaticamente quando ti connetterai a internet.}}</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
@@ -1584,6 +1657,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="5016558321564993266">Attiva/disattiva evidenziatore. <ph name="STATE_TEXT" /></translation>
 <translation id="5020360656995955353">Cerca nelle categorie</translation>
 <translation id="5025389392398927910">Cerca per modificare il testo</translation>
+<translation id="5026492829171796515">Accedi per aggiungere un Account Google</translation>
 <translation id="5030659775136592441">Consente di mostrare Gestione preferiti</translation>
 <translation id="5030687792513154421">Tempo scaduto</translation>
 <translation id="5033299697334913360">Fai clic su un punto qualsiasi per acquisire l'intera schermata</translation>
@@ -1628,9 +1702,11 @@ Puoi anche utilizzare la scorciatoia da tastiera. Evidenzia il testo, quindi pre
 <translation id="5121628974188116412">Passa alla parte inferiore della pagina</translation>
 <translation id="5122517996953421795">Anteprima di <ph name="DESK_NAME" />. Scrivania non attiva.</translation>
 <translation id="5127986747308934633">L'amministratore ha assunto il controllo del tuo dispositivo</translation>
+<translation id="512903556749061217">collegato</translation>
 <translation id="5136175204352732067">Tastiera diversa collegata</translation>
 <translation id="5137349216872139332">Connessione all'hotspot istantaneo non riuscita</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, ricerca in <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
+<translation id="5143612243342258355">Questo file è pericoloso</translation>
 <translation id="5144005092084035179">Vuoi cambiare il dispositivo di input audio?</translation>
 <translation id="5145464978649806571">Se ti allontani dal dispositivo, lo schermo si blocca automaticamente. Quando invece sei di fronte al dispositivo, lo schermo rimane attivo più a lungo. Se la schermata di blocco non è attiva, il dispositivo non verrà bloccato ma verrà attivata la modalità di sospensione.</translation>
 <translation id="5147567197700016471">Sbloccato</translation>
@@ -1649,6 +1725,7 @@ Puoi anche utilizzare la scorciatoia da tastiera. Evidenzia il testo, quindi pre
 <translation id="5168753792967365150">Modifica in Google Tasks</translation>
 <translation id="5170568018924773124">Mostra nella cartella</translation>
 <translation id="5176318573511391780">Registra schermo parziale</translation>
+<translation id="5185500136143151980">Nessuna connessione a internet</translation>
 <translation id="5187627942836026988">Mostra i dettagli relativi all'hotspot. L'hotspot è stato bloccato dall'amministratore.</translation>
 <translation id="5188648870018555788">Utilizza la posizione. Consenti alle app, ai siti web e ai servizi ChromeOS e per Android che dispongono dell'autorizzazione di accesso alla posizione di usare la posizione del tuo dispositivo. La precisione della posizione fornisce una posizione più precisa per app e servizi. A questo scopo, Google tratta periodicamente informazioni relative a sensori dei dispositivi e segnali wireless provenienti dal tuo dispositivo per raccogliere le posizioni dei segnali wireless mediante crowdsourcing. Queste vengono usate senza identificarti per migliorare la precisione della posizione e i servizi basati sulla posizione geografica, nonché per migliorare, fornire e mantenere i servizi di Google basati sugli interessi legittimi di Google e di terze parti al fine di soddisfare le esigenze degli utenti. <ph name="BEGIN_LINK1" />Scopri di più sull'utilizzo della posizione<ph name="END_LINK1" /></translation>
 <translation id="519224799121965725">{NUM_WEEKS,plural, =1{Restituisci questo <ph name="DEVICE_TYPE" /> entro {NUM_WEEKS} settimana}other{Restituisci questo <ph name="DEVICE_TYPE" /> entro {NUM_WEEKS} settimane}}</translation>
@@ -1665,6 +1742,7 @@ Puoi anche utilizzare la scorciatoia da tastiera. Evidenzia il testo, quindi pre
 <translation id="5213481667492808996">Il tuo servizio dati "<ph name="NAME" />" è pronto all'uso</translation>
 <translation id="5215450412607891876">Attiva gli aggiornamenti della sicurezza estesi</translation>
 <translation id="5216991270656129561">Funzionalità disattivata fino alle ore <ph name="TIME" /></translation>
+<translation id="5222403284441421673">Download non sicuro bloccato</translation>
 <translation id="5222676887888702881">Esci</translation>
 <translation id="5228195526683428788">Strumento per schermo diviso</translation>
 <translation id="5229343007215035173">Attiva/disattiva la Schermata privata</translation>
@@ -1741,6 +1819,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5377367976106153749">Attivare l'accesso alla fotocamera?</translation>
 <translation id="5378450298115733949">Altro</translation>
 <translation id="5379115545237091094">Troppi tentativi</translation>
+<translation id="5382591305415226340">Gestisci i link supportati</translation>
 <translation id="5383434787520761436">Nessun file di Google Drive</translation>
 <translation id="5390112241331447203">Includi il file system_logs.txt inviato nei rapporti di feedback.</translation>
 <translation id="5391307769715781764">Vuoi sostituire la scrivania salvata?</translation>
@@ -1749,6 +1828,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5394529681046491727">WiFi Direct</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> sopra <ph name="IN_PLACE_APP" />, rilascia per creare una cartella.</translation>
 <translation id="540338817371815859">Orizzontale</translation>
+<translation id="540495485885201800">Scambia con elemento precedente</translation>
 <translation id="540713187982329711">Attiva/disattiva l'hotspot. L'hotspot è attivo, nessun dispositivo connesso.</translation>
 <translation id="5409208741270395213">Contrassegna l'attività come completata</translation>
 <translation id="54118879136097217">Installa l'app su <ph name="DEVICE_TYPE" /></translation>
@@ -1775,6 +1855,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5486261815000869482">Conferma password</translation>
 <translation id="5486748931874756433">Questa modifica verrà applicata quando riceverai il prossimo aggiornamento e riavvierai <ph name="DEVICE_TYPE" />. Tieni presente che non può essere annullata e che si applica a tutti gli utenti di questo dispositivo.</translation>
 <translation id="5491186829646618080">Aggiornamenti firmware disponibili</translation>
+<translation id="5493792505296048976">schermo attivo</translation>
 <translation id="549602578321198708">Parola</translation>
 <translation id="5503884284981862082">Apri/chiudi l'Assistente Google</translation>
 <translation id="550391772491508736">Riprendi la trasmissione</translation>
@@ -1785,8 +1866,11 @@ Nessun dispositivo connesso.</translation>
 <translation id="5517304475148761050">L'app richiede l'accesso al Play Store</translation>
 <translation id="5519005148254860683">Espandi Google Tasks</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5519766046604311137">Apri sempre i link <ph name="PROTOCOL_SCHEME" /> in questa app</translation>
 <translation id="5520229639206813572">L'amministratore ha rimosso tutti i profili eSIM. Per ulteriori informazioni al riguardo rivolgiti all’amministratore.</translation>
+<translation id="5523203511530504754">Apri i link <ph name="PROTOCOL_SCHEME" /> in <ph name="APP_NAME" /></translation>
 <translation id="5523434445161341166">La funzionalità <ph name="FEATURE_NAME" /> sta cercando di connettersi.</translation>
+<translation id="5527597176701279474"><ph name="APP_NAME" />, installazione in corso…</translation>
 <translation id="5529587891732734495">Metti in pausa la trasmissione</translation>
 <translation id="5532994612895037630">Tocca un punto qualsiasi per registrare l'intera schermata</translation>
 <translation id="5536723544185013515">App recenti: usa i tasti Freccia destra o Freccia sinistra per accedere a tutte le app recenti</translation>
@@ -1863,6 +1947,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5733630091161562207">Notifica di benvenuto</translation>
 <translation id="573413375004481890">Questo dispositivo non può supportare tutti i tuoi display, pertanto uno è stato scollegato</translation>
 <translation id="5734697361979786483">Aggiungi condivisione file</translation>
+<translation id="5739017626473506901">Accedi per aiutare <ph name="USER_NAME" /> ad aggiungere un account della scuola</translation>
 <translation id="5739548907438839901">Spazio su disco liberato: <ph name="SIZE" />.</translation>
 <translation id="574392208103952083">Medio</translation>
 <translation id="5745612484876805746">La funzione Luminosità notturna viene attivata automaticamente al tramonto</translation>
@@ -1871,6 +1956,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5751345516399502412">Controlla disponibilità del tethering</translation>
 <translation id="5758114525425072423">Avvia la modalità Niente distrazioni. Timer impostato su <ph name="FOCUS_DURATION" />.</translation>
 <translation id="5759522586053040964">Ascolta come ti sentiranno gli altri. Per interrompere, fai clic sull'icona del test o chiudi il riquadro della videochiamata.</translation>
+<translation id="5760318332127300368">Elimina anche i dati di navigazione (<ph name="URL" />) che potrebbero farti uscire dall'account su Google.com. <ph name="LEARN_MORE" /></translation>
 <translation id="5760866832697883462">Connetti <ph name="NAME" /></translation>
 <translation id="5762420912707163638">Attiva/disattiva evidenziatore. <ph name="STATE_TEXT" /> Usa il trackpad, il touchscreen o lo stilo per disegnare sullo schermo.</translation>
 <translation id="576341972084747908">Download di <ph name="FILENAME" /> (pericoloso) in corso…</translation>
@@ -1883,6 +1969,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5774295353725270860">Apri l'applicazione File</translation>
 <translation id="5775936059231769503">Attiva/disattiva l'hotspot. L'hotspot è disattivato.</translation>
 <translation id="5777841717266010279">Interrompere la condivisione dello schermo?</translation>
+<translation id="5778491106820461378">Puoi gestire gli Account Google a cui hai eseguito l'accesso dalle <ph name="LINK_BEGIN" />Impostazioni<ph name="LINK_END" />. Le autorizzazioni concesse ai siti web e alle app potrebbero essere applicate a tutti gli account. Se non vuoi consentire a siti o app di accedere ai dati del tuo account, puoi accedere al tuo dispositivo <ph name="DEVICE_TYPE" /> come ospite.</translation>
 <translation id="5779721926447984944">File fissati</translation>
 <translation id="5780940414249100901">Invia dati su utilizzo e diagnostica. Attualmente, questo dispositivo invia a Google dati diagnostici e sull'utilizzo delle app e del dispositivo. Non verranno utilizzati per identificare tuo figlio e contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche per app e partner di Google, ad esempio gli sviluppatori Android. Questa <ph name="BEGIN_LINK1" />impostazione<ph name="END_LINK1" /> è applicata dal proprietario. Se l'impostazione Attività web e app aggiuntiva è attiva per tuo figlio, questi dati potrebbero essere salvati nel suo Account Google. <ph name="BEGIN_LINK2" />Scopri di più sulle metriche<ph name="BEGIN_LINK2_END" />Scopri di più<ph name="END_LINK2" /></translation>
 <translation id="5787431783058088906">Ricevi vantaggio</translation>
@@ -1891,8 +1978,10 @@ Nessun dispositivo connesso.</translation>
 <translation id="5790085346892983794">Completato</translation>
 <translation id="5791926618942305301">In Cattura schermo, imposta su <ph name="SOURCE" /> <ph name="TYPE" />. Premi Tab per scegliere il tipo di acquisizione. Premi Invio per acquisire la schermata. Per selezionare l'area di acquisizione, imposta l'acquisizione di screenshot parziali. Se l'area di acquisizione non è già attiva, premi la barra spaziatrice per selezionarla.</translation>
 <translation id="5792728279623964091">Tocca il tasto di accensione</translation>
+<translation id="5794034487966529952">Nella scrivania <ph name="DESK_TITLE" /> ci sono <ph name="NUM_BROWSERS" /> finestre del browser aperte</translation>
 <translation id="579415080077680903">Silenzioso</translation>
 <translation id="5798086737841799234">Inserisci il codice di conferma</translation>
+<translation id="5799508265798272974">Macchina virtuale Linux: <ph name="LINUX_VM_NAME" /></translation>
 <translation id="5802516411616338943">Apri le Impostazioni rapide</translation>
 <translation id="5804241973901381774">Autorizzazioni</translation>
 <translation id="5804651031882187592">Disattiva l'impostazione "Blocca SIM"</translation>
@@ -1906,6 +1995,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5830180081891717894">Altre <ph name="WINDOWS" /></translation>
 <translation id="5830205393314753525">Impossibile aprire <ph name="APP_NAME" /></translation>
 <translation id="583281660410589416">Sconosciuto</translation>
+<translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> sta accedendo ai dispositivi HID}=2{Estensioni che accedono ai dispositivi: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{Estensioni che accedono ai dispositivi: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> e altre {3}}}</translation>
 <translation id="5840658767386246331">Cerca con Google</translation>
 <translation id="5841296711770970362">Vai alla traccia successiva</translation>
 <translation id="5842553299352339114">Hotspot di <ph name="DEVICE_NAME" /> attivo, nessun dispositivo connesso</translation>
@@ -1922,6 +2012,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5867217927013474703">Raccolta delle informazioni della rete in corso…</translation>
 <translation id="5876666360658629066">Inserisci codice genitore</translation>
 <translation id="588258955323874662">Schermo intero</translation>
+<translation id="5885470467814103868">Avvia scansione</translation>
 <translation id="5886009770935151472">Impronta 1</translation>
 <translation id="5887954372087850114">Finestra <ph name="WINDOW_TITLE" /> assegnata a <ph name="DESK_TITLE" />; assegnazione della finestra a tutte le altre scrivanie annullata</translation>
 <translation id="588817334757907802">Apri un file nel browser Chrome</translation>
@@ -1931,6 +2022,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5900243355162006650">Configurazione tethering:</translation>
 <translation id="5901494423252125310">Sportello della stampante aperto</translation>
 <translation id="5901630391730855834">Giallo</translation>
+<translation id="5906732635754427568">I dati associati a questa app verranno rimossi dal dispositivo.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">Nuova notifica, <ph name="NOTIFICATION_COUNT" /> in totale</translation>
 <translation id="5916664084637901428">On</translation>
@@ -1941,6 +2033,7 @@ Nessun dispositivo connesso.</translation>
         <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Scopri di più sulla precisione della localizzazione<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="5928083197428724029">Aggiornamento richiesto da <ph name="MANAGER" /></translation>
 <translation id="5932209916647644605"><ph name="MANAGER" /> richiede l'immediato aggiornamento di <ph name="DEVICE_TYPE" />.</translation>
+<translation id="59324397759951282">Dispositivo USB da <ph name="MANUFACTURER_NAME" /></translation>
 <translation id="5933522550144185133"><ph name="APP_NAME" /> sta usando la videocamera e il microfono</translation>
 <translation id="5937977334791924341">Logo <ph name="APP" /></translation>
 <translation id="5938002010494270685">Upgrade di sicurezza disponibile</translation>
@@ -1949,6 +2042,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5946788582095584774">La funzionalità <ph name="FEATURE_NAME" /> è attiva.</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5955809630138889698">Questo dispositivo potrebbe essere idoneo soltanto per la modalità demo online. Per ulteriori informazioni, contatta il tuo rappresentante dell'assistenza.</translation>
+<translation id="59561895884837262">Riceverai una notifica all'inizio della registrazione.</translation>
 <translation id="5958529069007801266">Utente supervis.</translation>
 <translation id="5959471481388474538">Rete non disponibile</translation>
 <translation id="596035801491797438">Disattiva i controlli con il volto</translation>
@@ -2021,6 +2115,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="6095425951508823973">Aggiungi una connessione con <ph name="PROVIDER" /></translation>
 <translation id="6095541101974653012">Account disconnesso.</translation>
 <translation id="6103838137565245112">sistema</translation>
+<translation id="610395411842312282">Raggruppa due finestre affiancate</translation>
 <translation id="6108952804512516814">Crea con l'AI</translation>
 <translation id="6114505516289286752">File di contenuti vocali scaricati per questa la lingua: <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
@@ -2037,6 +2132,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="6143578372829139382">Condividi su YouTube</translation>
 <translation id="6144938890088808325">Aiutaci a migliorare i Chromebook</translation>
 <translation id="6147182561428020853">Ora puoi bloccare le app installate su questo <ph name="DEVICE_TYPE" /></translation>
+<translation id="6149015141270619212">Impossibile connettersi a Internet</translation>
 <translation id="6153745728877356366">Cerca per aprire</translation>
 <translation id="6154006699632741460">Periferica non supportata</translation>
 <translation id="6154739047827675957">Configurazione di OneDrive non riuscita</translation>
@@ -2085,12 +2181,14 @@ Nessun dispositivo connesso.</translation>
 <translation id="6240821072888636753">Chiedi ogni volta</translation>
 <translation id="6244245036423700521">Importa file ONC</translation>
 <translation id="6247728804802644171">Apri le notifiche</translation>
+<translation id="6247802389331535091">Sistema: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="6249795363855770621">Impossibile contrassegnare come completata. Riprova quando sei online.</translation>
 <translation id="625369703868467034">Integrità rete</translation>
 <translation id="6254629735336163724">Bloccata in orizzontale</translation>
 <translation id="6259776178973198997">Aggiorna informazioni proprietari WiFi Direct</translation>
 <translation id="6260038345397266744"><ph name="TITLE" />. <ph name="DESCRIPTION" /></translation>
 <translation id="6267036997247669271"><ph name="NAME" />: attivazione in corso...</translation>
+<translation id="6268252012308737255">Apri con <ph name="APP" /></translation>
 <translation id="6274202259872570803">Screencast</translation>
 <translation id="6274422179279280249">Inserisci link, emoji e altro ancora. Puoi anche ricevere aiuto con la scrittura con Google AI. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="6276210637549544171">Il proxy <ph name="PROXY_SERVER" /> richiede un nome utente e una password.</translation>
@@ -2117,8 +2215,10 @@ Nessun dispositivo connesso.</translation>
 <translation id="6322370287306604163">Sblocco più veloce con l'impronta</translation>
 <translation id="6324334979701518365">Impossibile avviare l'app di Chrome non supportata. Segnala questo problema all'amministratore.</translation>
 <translation id="6324916366299863871">Modifica scorciatoia</translation>
+<translation id="632524945411480350">Finestre ridimensionate in basso</translation>
 <translation id="6325525973963619867">Non riuscito</translation>
 <translation id="6330012934079202188">Dalla visualizzazione delle finestre di tutte le scrivanie, premi il tasto Freccia su per mostrare le finestre della scrivania corrente</translation>
+<translation id="6333170995003625229">Impossibile verificare l'indirizzo email o la password. Prova ad accedere nuovamente.</translation>
 <translation id="6336038146639916978"><ph name="MANAGER" /> ha disattivato il debug ADB. Tra 24 ore il tuo dispositivo <ph name="DEVICE_TYPE" /> verrà reimpostato. Effettua il backup di tutti i file che vuoi mantenere.</translation>
 <translation id="6337159624125741244">Ingrandimento a schermo intero attivato</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> è una sessione gestita da <ph name="MANAGER" /></translation>
@@ -2129,7 +2229,9 @@ Nessun dispositivo connesso.</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> quindi <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> o <ph name="KEY_THREE" /></translation>
 <translation id="6352082849089527770">Reti sconosciute</translation>
 <translation id="6359587239691116345">Ottieni le funzionalità e i miglioramenti della sicurezza più recenti. Se rifiuti questo aggiornamento, il tuo dispositivo potrebbe non funzionare più correttamente e potresti riscontrare problemi di prestazioni e sicurezza.</translation>
+<translation id="6363990818884053551">Per avviare la sincronizzazione devi verificare la tua identità</translation>
 <translation id="6364386432014869981">Il touchpad integrato è attivato</translation>
+<translation id="6372413553057593904">Scheda non attiva in "<ph name="WINDOW_TITLE" />"</translation>
 <translation id="6376931439017688372">Bluetooth attivo.</translation>
 <translation id="6378515133128829137">Blocca la finestra a destra</translation>
 <translation id="6380143666419481200">Accetta e continua</translation>
@@ -2142,9 +2244,11 @@ Nessun dispositivo connesso.</translation>
 <translation id="6407887725738521027"><ph name="BEGIN_PARAGRAPH1" />Il servizio basato sulla posizione di Google utilizza fonti quali le reti Wi-Fi e mobile e i sensori per stabilire la posizione approssimativa del dispositivo.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Puoi disabilitare la posizione disattivando l'impostazione di localizzazione principale sul tuo dispositivo. Puoi anche disattivare l'uso di reti Wi-Fi e mobile e di sensori per la localizzazione nelle impostazioni di localizzazione.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6414618057231176439">Seleziona la versione di <ph name="VM_NAME" /> da installare.</translation>
+<translation id="6414624068245092115">Per assicurarti di poter usare e salvare sempre i dati di Chromium nel tuo Account Google, verifica la tua identità</translation>
 <translation id="641469293210305670">Installa aggiornamenti e app</translation>
 <translation id="6418160186546245112">Ripristino della versione precedente installata di <ph name="IDS_SHORT_PRODUCT_NAME" /></translation>
 <translation id="641817663353603351">pagina su</translation>
+<translation id="6418481728190846787">Rimuovi definitivamente accesso per tutte le app</translation>
 <translation id="6418511932144861495">Installa aggiornamento critico</translation>
 <translation id="641867537956679916">L'amministratore ha eseguito l'accesso per esaminare un problema. Potrai continuare a usare il dispositivo una volta che l'amministratore ti avrà restituito il controllo.</translation>
 <translation id="6424520630891723617"><ph name="SECURITY_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" /></translation>
@@ -2162,6 +2266,8 @@ Nessun dispositivo connesso.</translation>
 <translation id="6452181791372256707">Rifiuto</translation>
 <translation id="6453179446719226835">La lingua è stata modificata</translation>
 <translation id="6456096448804832585">Solo orientamento verticale disponibile</translation>
+<translation id="6457572529564180082">Impossibile avviare <ph name="APP_NAME" /></translation>
+<translation id="6459799433792303855">Finestra attiva spostata in un altro schermo.</translation>
 <translation id="6464094930452079790">immagini</translation>
 <translation id="6467290994038932560">Attivati per <ph name="GAME_APP_NAME" /></translation>
 <translation id="6468406072297048412">{0,plural, =1{Esegui il rollback del dispositivo alla versione precedente entro 1 minuto}other{Esegui il rollback del dispositivo alla versione precedente entro # minuti}}</translation>
@@ -2197,6 +2303,8 @@ Nessun dispositivo connesso.</translation>
 <translation id="6543942526104794893">Disattivare le espressioni facciali?</translation>
 <translation id="6545382064335350438">Ancora impossibile verificare il PIN. Riprova.</translation>
 <translation id="6546062506073634094">Ricerca immagini per contenuti e anteprime di immagini</translation>
+<translation id="6550675742724504774">Opzioni</translation>
+<translation id="6551508934388063976">Comando non disponibile. Premi Ctrl+N per aprire una nuova finestra.</translation>
 <translation id="6555373427270923730">Digita un indirizzo web nella barra degli indirizzi, quindi premi <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nuova installazione</translation>
@@ -2209,6 +2317,7 @@ Nuova installazione</translation>
 <translation id="6571006437522772306">Cerca in File</translation>
 <translation id="6574587113394758819">Le notifiche di <ph name="APP_TITLE" /> sono nascoste perché è attiva la visualizzazione protetta</translation>
 <translation id="6574622320167699133">Sbloccato dal tuo telefono. Tocca o fai clic per accedere.</translation>
+<translation id="6577777689940373106">Un'app, in attesa</translation>
 <translation id="6578407462441924264">Senza nome</translation>
 <translation id="657866106756413002">Istantanea sull'integrità della rete</translation>
 <translation id="6582012689384648647">Per playlist personalizzate per la concentrazione, consenti l'accesso a YouTube Music</translation>
@@ -2234,6 +2343,7 @@ Nuova installazione</translation>
 <translation id="6624493541160101248">Scrivania corrente: <ph name="DESK_NAME" />. Scrivania <ph name="DESK_INDEX" /> di <ph name="DESK_COUNT" />.</translation>
 <translation id="6625718907317144388">Le notifiche di <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> e altre app sono nascoste perché è attiva la visualizzazione protetta</translation>
 <translation id="662830937908749204">Sposta lo stato attivo sul riquadro successivo</translation>
+<translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> desidera un accesso permanente a un certificato per eseguire l'autenticazione a tuo nome.</translation>
 <translation id="6635674640674343739">Impossibile stabilire una connessione di rete. Controlla la connessione di rete e riprova.</translation>
 <translation id="6637729079642709226">Modifica tempo</translation>
 <translation id="6641720045729354415">Attiva o disattiva Sottotitoli in tempo reale. <ph name="STATE_TEXT" /></translation>
@@ -2257,6 +2367,7 @@ Nuova installazione</translation>
 <translation id="6671495933530132209">Copia immagine</translation>
 <translation id="6671661918848783005">Impossibile sbloccare Chromebook</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
+<translation id="6674571176963658787">Per avviare la sincronizzazione devi inserire la tua passphrase</translation>
 <translation id="6676552993057022464">Usa le frecce su e giù per ridimensionare lo schermo diviso</translation>
 <translation id="6682029141988159141">Incolla i contenuti dagli appunti</translation>
 <translation id="6683022854667115063">Cuffie</translation>
@@ -2276,7 +2387,9 @@ Nuova installazione</translation>
 <translation id="6727969043791803658">Dispositivo connesso. Livello batteria: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="6732087373923685049">fotocamera</translation>
 <translation id="6737983188036277605">Videocamera e microfono in uso</translation>
+<translation id="6738430949033571771">Verifica dell'account in corso…</translation>
 <translation id="6739144137573853180">VAI A IMPOSTAZIONI</translation>
+<translation id="6740234557573873150"><ph name="FILE_NAME" /> in pausa</translation>
 <translation id="6745592621698551453">Aggiorna ora</translation>
 <translation id="6747985245839783873">Livello batteria: <ph name="PERCENTAGE" />%. Risparmio energetico attivo.</translation>
 <translation id="6751052314767925245">Applicata dall'amministratore</translation>
@@ -2291,11 +2404,13 @@ Nuova installazione</translation>
 <translation id="6761209758867628753">Strumento: Aiutami a scrivere</translation>
 <translation id="6768043681523654438">spazio di archiviazione</translation>
 <translation id="6769195697113506406">Immagine inserita</translation>
+<translation id="6772974422346500939">Apri e modifica</translation>
 <translation id="6777216307882431711">Alimentazione dei dispositivi USB-C collegati</translation>
 <translation id="6781002679438061620">Scrivania 9</translation>
 <translation id="6782182743534150858">Scrivania 13</translation>
 <translation id="6782919488259222803">Cerca nella pagina corrente</translation>
 <translation id="6783348167101855071">Handle inferiore destro selezionato, utilizza i tasti freccia per spostarlo</translation>
+<translation id="6785739405821760313">Sono visualizzate le scrivanie salvate. Premi Tab per navigare.</translation>
 <translation id="6786750046913594791">Chiudi cartella</translation>
 <translation id="6792351896138862473">Impossibile avviare l'app kiosk non supportata. Segnala questo problema all'amministratore.</translation>
 <translation id="679368458793552943">Aumenta lo zoom quando la lente d'ingrandimento è attiva</translation>
@@ -2303,11 +2418,13 @@ Nuova installazione</translation>
 <translation id="6796509790850723820">Rendering</translation>
 <translation id="6797493596609571643">Spiacenti, qualcosa è andato storto.</translation>
 <translation id="6797745268063125932">Mantieni attivata</translation>
+<translation id="6798780071646309401">bloc maiusc attivo</translation>
 <translation id="6802687695197837794">Consente l'accesso per <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e tutti i siti web e tutte le app che dispongono delle autorizzazioni di accesso al microfono e alla fotocamera</translation>
 <translation id="6803622936009808957">Impossibile duplicare i display perché non sono state trovate risoluzioni supportate. È stato attivato il desktop esteso.</translation>
 <translation id="6809556495807506746">Controlli non disponibili</translation>
 <translation id="6811332638216701903">Nome host DHCP</translation>
 <translation id="6812232930908427253">Impossibile salvare la scrivania. Troppe finestre o schede.</translation>
+<translation id="681360534161436378">{NUM_APPS,plural,offset:2 =1{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" />.}=2{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" /> e <ph name="APP1_NAME" />.}=3{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e un'altra app.}other{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e altre # app.}}</translation>
 <translation id="6814754908910736855">Informazioni clienti WiFi Direct:</translation>
 <translation id="6816443526270499804">Ricerca di profili eSIM disponibili in corso…</translation>
 <translation id="6818242057446442178">Indietro per parola</translation>
@@ -2318,7 +2435,10 @@ Nuova installazione</translation>
 <translation id="682971198310367122">Norme sulla privacy di Google</translation>
 <translation id="6836499262298959512">File pericoloso</translation>
 <translation id="6837621009301897464">Per fare uno screenshot, premi</translation>
+<translation id="6841076158433142214">Non riceverai una notifica quando queste app vengono utilizzate per registrare lo schermo:</translation>
+<translation id="6842136130964845393">Per assicurarti di poter accedere alle tue password salvate in qualsiasi momento, verifica la tua identità</translation>
 <translation id="6843264316370513305">Debug rete</translation>
+<translation id="6846178040388691741">L'estensione "<ph name="EXTENSION_NAME" />" vuole stampare il file <ph name="FILE_NAME" /> con la stampante <ph name="PRINTER_NAME" />.</translation>
 <translation id="6848716236260083778">Per configurare l'impronta, chiedi a tuo figlio di toccare il sensore di impronte digitali. I dati relativi all'impronta di tuo figlio vengono memorizzati in modo sicuro e non possono essere trasferiti in alcun modo da questo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6852052252232534364">Fai clic per attivare</translation>
 <translation id="6852628153543175788">Aggiungi 10 minuti</translation>
@@ -2392,6 +2512,7 @@ Nuova installazione</translation>
 <translation id="7032161822340700104">Solo 6 modelli consentiti. Rimuovi un modello per salvarne uno nuovo.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> vuole usare <ph name="DEVICE_NAME" />. Attiva l'interruttore fisico (<ph name="DEVICE_NAME" />) del dispositivo.</translation>
 <translation id="7036706669646341689">Sono consigliati <ph name="DISK_SIZE" /> di spazio libero per Linux. Per aumentare lo spazio disponibile, elimina i file dal dispositivo.</translation>
+<translation id="7038710352229712897">Aggiungi un altro Account Google per <ph name="USER_NAME" /></translation>
 <translation id="7042322267639375032">Comprimi area di stato</translation>
 <translation id="7042593542151411225">Le app non possono accedere alla fotocamera</translation>
 <translation id="7045033600005038336">Vuoi sostituire il modello?</translation>
@@ -2403,6 +2524,7 @@ Nuova installazione</translation>
 <translation id="706626672220389329">Errore durante il montaggio della condivisione. La condivisione specificata è già montata.</translation>
 <translation id="7066646422045619941">Questa rete è stata disattivata dall'amministratore.</translation>
 <translation id="7067196344162293536">Ruota in modo automatico</translation>
+<translation id="7068591156533195518"><ph name="APP_NAME" /> e altre app sono bloccate sul tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="7076293881109082629">Accesso</translation>
 <translation id="7076878155205969899">Disattiva audio</translation>
 <translation id="7083848064787091821">Niente distrazioni</translation>
@@ -2423,12 +2545,15 @@ Nuova installazione</translation>
 <translation id="7108933416628942903">Blocca ora</translation>
 <translation id="7116554090938189816">Il certificato SSL della stampante è scaduto. Riavvia la stampante e riprova.</translation>
 <translation id="7116969082764510092">Scrivania 11</translation>
+<translation id="7117228822971127758">Riprova più tardi</translation>
 <translation id="7118268675952955085">screenshot</translation>
 <translation id="7118597077555700347">Apri <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="7119327711295338600">Consente di selezionare la parola o la lettera successiva</translation>
 <translation id="7124556000457919678">Quando l'impostazione è attiva, metti in pausa e riprendi i tasti mouse</translation>
 <translation id="7131634465328662194">Verrai disconnesso automaticamente.</translation>
+<translation id="7131896909366247105"><ph name="APP_NAME" />, in attesa</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> sta utilizzando il microfono</translation>
+<translation id="7140785920919278717">Programma di installazione dell'applicazione</translation>
 <translation id="7143207342074048698">Connessione</translation>
 <translation id="7144878232160441200">Riprova</translation>
 <translation id="7144942256906679589">Stato della batteria</translation>
@@ -2437,8 +2562,10 @@ Nuova installazione</translation>
 <translation id="7147587499155271409">Nessuna cronologia di navigazione</translation>
 <translation id="7147657298465433425">Per accedere ai tasti F, premi il tasto Fn + i tasti della fila superiore</translation>
 <translation id="7149149900052329230">Gestisci i tuoi file locali e i tuoi file di Google Drive, tutto nell'app File.</translation>
+<translation id="716640248772308851">L'estensione "<ph name="EXTENSION" />" può leggere file di immagini, video e audio nelle posizioni selezionate.</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
+<translation id="716810439572026343">Download di <ph name="FILE_NAME" /> in corso</translation>
 <translation id="7170202025028120564">Le impostazioni di visualizzazione dell'applicazione verranno applicate dopo il prossimo riavvio.</translation>
 <translation id="7173114856073700355">Apri Impostazioni</translation>
 <translation id="7180611975245234373">Aggiorna</translation>
@@ -2459,6 +2586,7 @@ Nuova installazione</translation>
 <translation id="7244725679040769470">Batteria rimanente: <ph name="PERCENTAGE" />%. Collega il dispositivo all'alimentazione.</translation>
 <translation id="7246071203293827765"><ph name="UPDATE_TEXT" />. È richiesto il riavvio del Chromebook per installare un aggiornamento. L'operazione può richiedere fino a 1 minuto.</translation>
 <translation id="7248100343060254997">Cerca sullo schermo</translation>
+<translation id="7255935316994522020">Applica</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Microfono posteriore</translation>
 <translation id="7258225044283673131">L'applicazione non risponde. Seleziona "Termina" per chiudere l'app.</translation>
@@ -2466,17 +2594,22 @@ Nuova installazione</translation>
 <translation id="726276584504105859">Trascina qui per utilizzare la modalità Schermo diviso</translation>
 <translation id="7264788308526527464">Riduci di <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="7267875682732693301">Solleva ripetutamente il dito per aggiungere le varie parti dell'impronta</translation>
+<translation id="7273110280511444812">Ultimo collegamento in data <ph name="DATE" /></translation>
 <translation id="7278787617901301220"><ph name="LAUNCHER_KEY_NAME" /> + backspace</translation>
+<translation id="7280877790564589615">Richiesta di autorizzazione</translation>
+<translation id="7292147651179697920">Chiedi a uno dei tuoi genitori di consentire l'accesso alle Impostazioni</translation>
 <translation id="7301826272005790482">Chiudi suggerimenti finestre</translation>
 <translation id="7302889331339392448">La funzionalità Sottotitoli in tempo reale è disattivata.</translation>
 <translation id="7303281435234579599">Spiacenti. Si è verificato un problema durante la configurazione della modalità demo.</translation>
 <translation id="7305123176580523628">Stampante USB collegata</translation>
 <translation id="7305884605064981971">EDGE</translation>
+<translation id="7306521477691455105">Apri le Impostazioni per collegare <ph name="USB_DEVICE_NAME" /> a <ph name="USB_VM_NAME" /></translation>
 <translation id="7311244614769792472">Nessun risultato trovato</translation>
 <translation id="7312040805247765153">Impossibile installare l'app</translation>
 <translation id="7312210124139670355">Il tuo amministratore sta reimpostando l'eSIM. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="7312761820869643657">Esegui il rollback del dispositivo alla versione precedente</translation>
 <translation id="7313193732017069507">Espandi fotocamera</translation>
+<translation id="7314865262803554456">Non riceverai una notifica all'inizio della registrazione.</translation>
 <translation id="7325209047678309347">Carta inceppata</translation>
 <translation id="7327989755579928735"><ph name="MANAGER" /> ha disattivato il debug ADB. Dopo il riavvio del dispositivo <ph name="DEVICE_TYPE" /> non potrai installare app tramite sideload.</translation>
 <translation id="73289266812733869">Deselezionato</translation>
@@ -2495,6 +2628,7 @@ Nuova installazione</translation>
 <translation id="7356908624372060336">Log di rete</translation>
 <translation id="735745346212279324">VPN scollegata</translation>
 <translation id="7360036564632145207">La modifica della protezione dell'accesso ai dati per l'impostazione delle periferiche può ottimizzare le prestazioni</translation>
+<translation id="7360257054721917104">Sono visualizzati modelli e scrivanie salvati. Premi Tab per navigare.</translation>
 <translation id="736045644501761622">Imposta sfondo e stile</translation>
 <translation id="7361914392989692067">Tocca il tasto di accensione con un dito. I dati relativi alla tua impronta vengono memorizzati in modo sicuro e non possono essere trasferiti in alcun modo da <ph name="DEVICE_TYPE" />.</translation>
 <translation id="7368041336688136012">Devi avere almeno 18 anni per poter usare Aiutami a leggere, Aiutami a scrivere e creare immagini con l'AI.</translation>
@@ -2512,6 +2646,8 @@ Nuova installazione</translation>
 <translation id="7384804382450832142">Collegati a Microsoft OneDrive</translation>
 <translation id="7385490373498027129">Tutti i file e i dati locali di tutti gli utenti su questo <ph name="DEVICE_TYPE" /> verranno eliminati in modo permanente.</translation>
 <translation id="7386767620098596324">Attiva/disattiva la connessione di rete. <ph name="STATE_TEXT" />.</translation>
+<translation id="7395163818609347230">Finestre ridimensionate a destra</translation>
+<translation id="7398756591282764096">Fissa finestra</translation>
 <translation id="7400839060291901923">Configura la connessione sul tuo <ph name="PHONE_NAME" /></translation>
 <translation id="7401222354741467707">Acquisisci registrazione dello schermo o screenshot completi</translation>
 <translation id="7401559588859088661">Sposta e apri</translation>
@@ -2547,6 +2683,7 @@ Nuova installazione</translation>
 <translation id="7490360161041035804">Puoi bloccare i file importanti, inclusi i file di Google Drive. Per bloccare l'elemento, passa il mouse sopra un elemento o apri File e fai clic con il tasto destro del mouse su un elemento.</translation>
 <translation id="7491962110804786152">Tab</translation>
 <translation id="7497767806359279797">Scegli la lingua e la tastiera</translation>
+<translation id="7501957181231305652">oppure</translation>
 <translation id="7507162824403726948">Completa la verifica dell'identità</translation>
 <translation id="7509246181739783082">Verifica la tua identità</translation>
 <translation id="7512509370370076552">La scorciatoia per il clic con il tasto destro del mouse Alt + clic viene aggiornata a tasto <ph name="LAUNCHER_KEY_NAME" /> + clic</translation>
@@ -2555,8 +2692,10 @@ Nuova installazione</translation>
 <translation id="7513622367902644023">Modalità screenshot selezionata</translation>
 <translation id="7513922695575567867">Calendario, settimana del <ph name="DATE" />, è attualmente selezionata la data <ph name="SELECTED_DATE" />.</translation>
 <translation id="7514365320538308">Scarica</translation>
+<translation id="751523031290522286">L'amministratore ha bloccato <ph name="APP_NAME" />. Chiedi all'amministratore l'autorizzazione per poter usare l'app.</translation>
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516641972665276706">pagina giù</translation>
+<translation id="7516981202574715431"><ph name="APP_NAME" /> in sospeso</translation>
 <translation id="7519206258459640379">Zoom automatico attivato.</translation>
 <translation id="7519649142417630956">Dopo l'arresto del dispositivo, l'amministratore uscirà dall'account e non potrà controllare il dispositivo.
 
@@ -2575,6 +2714,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7544977292347272434">Chiedi a uno dei tuoi genitori di consentire un'estensione</translation>
 <translation id="7545466883021407599">Impossibile connettersi al server. Controlla la connessione di rete e riprova. Se continui ad avere problemi, prova a riavviare Chromebook. Codice di errore: <ph name="ERROR_CODE" />.</translation>
 <translation id="7548434653388805669">È ora di andare a letto</translation>
+<translation id="7551059576287086432">Download di <ph name="FILE_NAME" /> non riuscito</translation>
 <translation id="7551643184018910560">Blocca sulla barra delle app</translation>
 <translation id="7553012839257224005">Controllo del container Linux</translation>
 <translation id="7553242001898162573">Inserisci la password</translation>
@@ -2583,6 +2723,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7559719679815339381">Attendi... L'app kiosk è in fase di aggiornamento. Non rimuovere la chiavetta USB.</translation>
 <translation id="7561982940498449837">Chiudi menu</translation>
 <translation id="7564874036684306347">Lo spostamento delle finestre su un altro desktop potrebbe causare comportamenti imprevisti. Le finestre, le notifiche e le finestre di dialogo successive potrebbero essere divise tra i desktop.</translation>
+<translation id="756503097602602175">Puoi gestire gli Account Google a cui hai eseguito l'accesso dalle <ph name="LINK_BEGIN" />Impostazioni<ph name="LINK_END" />. Le autorizzazioni concesse ai siti web e alle app potrebbero essere applicate a tutti gli account. Se non vuoi consentire a siti o app di accedere alle informazioni del tuo account, puoi accedere a <ph name="DEVICE_TYPE" /> come ospite oppure navigare sul web in una <ph name="LINK_2_BEGIN" />finestra Incognito<ph name="LINK_2_END" />.</translation>
 <translation id="7568154670718626683">Stai cercando di usare Elimina? Usa</translation>
 <translation id="7568790562536448087">Aggiornamento</translation>
 <translation id="7569509451529460200">Braille e ChromeVox attivati</translation>
@@ -2593,6 +2734,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7576976045740938453">Si è verificato un problema con l'account della modalità demo.</translation>
 <translation id="7578692661782707876">Inserisci il codice di conferma.</translation>
 <translation id="7579778809502851308">Cattura schermo</translation>
+<translation id="7585952961050741338">Stacca finestra</translation>
 <translation id="7588317312481506627">Copiata negli appunti.</translation>
 <translation id="7594725637786616550">Esegui il Powerwash per reimpostare il tuo dispositivo <ph name="DEVICE_TYPE" /> e farlo tornare come nuovo.</translation>
 <translation id="7595453277607160340">Per usare app Android e assicurarti che il tuo dispositivo <ph name="DEVICE_TYPE" /> continui a funzionare correttamente, accedi di nuovo ed esegui l'aggiornamento.</translation>
@@ -2601,16 +2743,19 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7600218158048761260">Google Drive è disattivato per questo tipo di account.</translation>
 <translation id="7601417191446344542">Vuoi attivare l'avviso di microfono spento?</translation>
 <translation id="7602187221150705972">Cerca emoji, GIF e altro</translation>
+<translation id="7605594153474022051">La sincronizzazione non funziona</translation>
 <translation id="7606560865764296217">Metti in pausa l'animazione</translation>
 <translation id="7607002721634913082">In pausa</translation>
 <translation id="7609951632080598826">Visualizzazione Calendario, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Fotocamera riconnessa.</translation>
 <translation id="7613620083300976559">Attiva i controlli di gioco</translation>
 <translation id="761530003705945209">Effettua il backup su Google Drive. Ripristina facilmente i tuoi dati o cambia dispositivo in qualsiasi momento. La copia di backup include i dati delle app. Le copie di backup vengono caricate su Google e criptate usando la password del tuo Account Google.</translation>
+<translation id="7615365294369022248">Si è verificato un errore durante l'aggiunta di un account</translation>
 <translation id="761736749114493194">Attiva/disattiva Zoom automatico. <ph name="STATE_TEXT" /></translation>
 <translation id="7621008024906456933">Impostazioni di Quick Share</translation>
 <translation id="7621382409404463535">Il sistema non è riuscito a salvare la configurazione del dispositivo.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
+<translation id="7624337243375417909">bloc maiusc non attivo</translation>
 <translation id="7626072681686626474"><ph name="MANAGER" /> richiede di leggere e accettare i seguenti Termini di servizio prima di utilizzare il dispositivo. Questi termini non ampliano, modificano né limitano i Termini di Google ChromeOS.</translation>
 <translation id="7627303771480696593">Fai una domanda</translation>
 <translation id="7629858978065675960">Risultato sconosciuto.</translation>
@@ -2624,6 +2769,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7642647758716480637">Apri le impostazioni relative a <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (proprietario)</translation>
 <translation id="7645681574855902035">Annullamento del backup di Linux</translation>
+<translation id="7646772052135772216">La sincronizzazione delle password non funziona</translation>
 <translation id="7649070708921625228">Guida</translation>
 <translation id="7650178491875594325">Ripristina i dati locali</translation>
 <translation id="7654687942625752712">Tieni premuti entrambi i tasti del volume per cinque secondi per disattivare la funzione di lettura vocale.</translation>
@@ -2634,7 +2780,10 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7661451191293163002">Impossibile ottenere un certificato di registrazione.</translation>
 <translation id="7661694115779363471">Handle inferiore sinistro selezionato, utilizza i tasti freccia per spostarlo</translation>
 <translation id="7662283695561029522">Tocca per configurare</translation>
+<translation id="7663719505383602579">Ricevitore: <ph name="ARC_PROCESS_NAME" /></translation>
+<translation id="7664822217939981459">Scegli un'app per aprire il link <ph name="PROTOCOL_SCHEME" /></translation>
 <translation id="7670953955701272011">Apri questa data in Google Calendar</translation>
+<translation id="7671472752213333268">"<ph name="EXTENSION_NAME" />" vuole scansionare da "<ph name="SCANNER_NAME" />".</translation>
 <translation id="7671610481353807627">Le app sono ordinate per colore</translation>
 <translation id="7672095158465655885">Connessione a <ph name="NAME" /> stabilita, <ph name="SUBTEXT" /></translation>
 <translation id="7682351277038250258">Incolla i contenuti dagli appunti come testo normale</translation>
@@ -2669,6 +2818,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7753735457098489144">Installazione non riuscita per spazio di archiviazione insufficiente. Per liberare spazio, elimina i file dallo spazio di archiviazione del dispositivo.</translation>
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7762664108390426952">I Termini di servizio e le Norme sulla privacy di Google</translation>
+<translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> da <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7768784765476638775">Seleziona per ascoltare</translation>
 <translation id="7769299611924763557">La tua GIF sarà pronta a breve</translation>
 <translation id="77747521138552256">Troppi tentativi di inserimento del PIN. Attendi <ph name="TIME_LEFT" /> e riprova con il PIN oppure inserisci la password per accedere subito.</translation>
@@ -2684,10 +2834,13 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7796735576426975947">Nuova notifica nascosta</translation>
 <translation id="7798302898096527229">Premi il tasto per la ricerca o MAIUSC per annullare.</translation>
 <translation id="780301667611848630">No, grazie</translation>
+<translation id="7806722269368320106">Un'app, in fase di installazione</translation>
 <translation id="7807067443225230855">Ricerca e assistente</translation>
+<translation id="7808348361785373670">Rimuovi da Chrome...</translation>
 <translation id="7810367892333449285">Il formato dell'elemento dovrebbe essere <ph name="LPA_0" />$<ph name="LPA_1" />indirizzo SM-DP+<ph name="LPA_2" />$<ph name="LPA_3" />ID corrispondenza facoltativo<ph name="LPA_4" /></translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
+<translation id="7815680994978050279">Download pericoloso bloccato</translation>
 <translation id="7817361223956157679">La tastiera sullo schermo non funziona ancora nelle app Linux</translation>
 <translation id="7824864914877854148">Impossibile completare il backup a causa di un errore.</translation>
 <translation id="7825412704590278437">Di un evento nel calendario in programma</translation>
@@ -2705,6 +2858,8 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7851039877802112575">Sposta lo stato attivo su finestre di dialogo e popup</translation>
 <translation id="7851768487828137624">Canary</translation>
 <translation id="78526636422538552">L'aggiunta di altri Account Google è disattivata</translation>
+<translation id="7859486605922206511">Riavvia app</translation>
+<translation id="786073089922909430">Servizio: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7866482334467279021">on</translation>
 <translation id="7870790288828963061">Nessuna app kiosk con versione più recente trovata. Non c'è nulla da aggiornare. Rimuovi la chiavetta USB.</translation>
 <translation id="7872786842639831132">Off</translation>
@@ -2748,6 +2903,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7942330802915522974">Passaggio <ph name="STEP" /> di <ph name="TOTAL_STEPS" /> del tour. Puoi trovare l'app File in Avvio app. Gestisci i tuoi file locali e i tuoi file di Google Drive, tutto nell'app File.</translation>
 <translation id="7942349550061667556">Rosso</translation>
 <translation id="7944023924886109030">Visualizza tutti gli eventi di oggi</translation>
+<translation id="7944772052836377867">La sincronizzazione deve verificare la tua identità</translation>
 <translation id="7944847494038629732">Scollega il cavo USB dello scanner e ricollegalo per riprovare</translation>
 <translation id="7945357288295809525">Mostra impostazioni di accessibilità, funzionalità "<ph name="ENABLED_FEATURES" />" attivata.</translation>
 <translation id="7946681191253332687">Aggiornamenti della sicurezza estesi disponibili</translation>
@@ -2792,6 +2948,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8030852056903932865">Approva</translation>
 <translation id="8036504271468642248">Frase precedente</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Copia di 1 file in <ph name="CLOUD_PROVIDER" /> in corso…}other{Copia di {NUM_OF_FILES} file in <ph name="CLOUD_PROVIDER" /> in corso…}}</translation>
+<translation id="8039525676147630657">Questa app di Chrome smetterà di funzionare dopo l'aggiornamento della versione di ChromeOS. Salva i dati dell'app che vuoi conservare. Per scoprire di più sulle opzioni a tua disposizione, contatta lo sviluppatore dell'app o il team di assistenza IT.</translation>
 <translation id="8042893070933512245">Apri il menu Impostazioni di accessibilità</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> non risponde.</translation>
 <translation id="8044457332620420407">La retroilluminazione della tastiera non è attiva</translation>
@@ -2805,6 +2962,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8063363226185507157">Impostazioni di accessibilità sincronizzate</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8076492880354921740">Schede</translation>
+<translation id="8077749280021225629">Elimina anche i dati di navigazione (<ph name="URL" />) che ti faranno uscire dall'account su <ph name="DOMAIN" />. <ph name="LEARN_MORE" /></translation>
 <translation id="8079538659226626406">Condivisione schermo</translation>
 <translation id="8083540854303889870">Elementi salvati per dopo</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
@@ -2846,6 +3004,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8172370561760918656">Handle superiore sinistro selezionato, utilizza i tasti freccia per spostarlo</translation>
 <translation id="8177196903785554304">Dettagli di rete</translation>
 <translation id="8179976553408161302">Invio</translation>
+<translation id="8180786512391440389">L'estensione "<ph name="EXTENSION" />" può leggere ed eliminare file di immagini, video e audio nelle posizioni selezionate.</translation>
 <translation id="81817143961839203">Inserimento immagine non riuscito</translation>
 <translation id="8182105986296479640">L'applicazione non risponde.</translation>
 <translation id="8182412589359523143">Per eliminare tutti i dati da questo <ph name="DEVICE_TYPE" />, <ph name="BEGIN_LINK" />fai clic qui<ph name="END_LINK" />.</translation>
@@ -2886,6 +3045,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8261506727792406068">Elimina</translation>
 <translation id="8261625296061301062">Software dello scanner installato</translation>
 <translation id="8262312463845990408">Attiva/disattiva riproduzione</translation>
+<translation id="826511437356419340">Modalità panoramica finestre attivata. Scorri per spostarti oppure premi Tab se usi una tastiera.</translation>
 <translation id="8266751606569906450">Deve contenere almeno <ph name="MINIMUM" /> caratteri</translation>
 <translation id="8268302343625273732">Visualizza tutti i compiti in Google Classroom</translation>
 <translation id="8270320981823560179">Drive</translation>
@@ -2901,6 +3061,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8301242268274839723">Tocca il sensore di impronte digitali nell'angolo in basso a sinistra della tastiera. I dati relativi alla tua impronta vengono memorizzati in modo sicuro e non possono essere trasferiti in alcun modo da <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8308637677604853869">Menu precedente</translation>
 <translation id="830868413617744215">Beta</translation>
+<translation id="8313308349366087671">Opzioni applicazione</translation>
 <translation id="8314772463905284467">Bloc maiusc è attivo</translation>
 <translation id="8315514906653279104">Attivazione in corso…</translation>
 <translation id="8324158725704657629">Non chiedermelo più</translation>
@@ -2936,9 +3097,11 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8412677897383510995">Mostra impostazioni di visualizzazione</translation>
 <translation id="8413272770729657668">Avvio registrazione tra 3, 2, 1</translation>
 <translation id="8416730306157376817"><ph name="BATTERY_PERCENTAGE" />% (custodia)</translation>
+<translation id="8417548266957501132">Password genitore</translation>
 <translation id="8420205633584771378">Rimuovere questo suggerimento?</translation>
 <translation id="8421270167862077762"><ph name="UNAVAILABLE_APPS" /> non è disponibile su questo dispositivo.</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
+<translation id="8428271547607112339">Aggiungi account della scuola</translation>
 <translation id="8428810263141909179"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="DELIMITER" /> da <ph name="KEY_ONE" /> a <ph name="KEY_TWO" /></translation>
 <translation id="8429547770382807369">Salva gruppo per dopo</translation>
 <translation id="84297032718407999">Verrai disconnesso tra <ph name="LOGOUT_TIME_LEFT" />.</translation>
@@ -2958,6 +3121,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8463001014623882202">Autorizzazione negata</translation>
 <translation id="8466665972451889002">Mostra elementi in <ph name="GROUP_NAME" /></translation>
 <translation id="8468806060683421065">Scadenza: <ph name="DUE_DATE_AND_TIME" /></translation>
+<translation id="8471947159125090285">Per usare e salvare i dati di Chromium nel tuo Account Google, verifica la tua identità</translation>
 <translation id="8473301994082929012"><ph name="ORGANIZATION_NAME" /> ha <ph name="FEATURE_STATE" /> <ph name="FEATURE_NAME" />.</translation>
 <translation id="8477270416194247200">Premi ALT + tasto per la ricerca o MAIUSC per annullare.</translation>
 <translation id="8479176401914456949">Codice non valido. Riprova.</translation>
@@ -2987,6 +3151,8 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8541078764854166027">Zoom automat.</translation>
 <translation id="8542053257095774575">Nessuna scrivania o nessun modello salvati</translation>
 <translation id="8546059259582788728">Annullamento dell'ordinamento completato</translation>
+<translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> è gestito da <ph name="MANAGER" />. Non puoi aggiungere questo indirizzo email come account aggiuntivo.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Per poter usare <ph name="USER_EMAIL" />, devi prima uscire dall'account su <ph name="DEVICE_TYPE" />. Dopodiché, nella parte inferiore della schermata di accesso, seleziona Aggiungi persona.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8551588720239073785">Impostazioni di data e ora</translation>
 <translation id="8551647092888540776">Impossibile aprire <ph name="FILE_NAMES" /> quando offline</translation>
 <translation id="8553395910833293175">Finestra già assegnata a tutte le scrivanie.</translation>
@@ -2998,6 +3164,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="857201607579416096">Menu spostato nell'angolo in basso a destra dello schermo.</translation>
 <translation id="8581946341807941670">Premi <ph name="MODIFIER_1" /><ph name="MODIFIER_2" /> e fai clic su un link</translation>
 <translation id="8593450223647418235">Non potrai aprire i file in Microsoft 365 finché la configurazione non sarà stata completata.</translation>
+<translation id="8593686980889923154">L'app <ph name="APP_NAME" /> è bloccata sul tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="8597845839771543242">Formato proprietà:</translation>
 <translation id="8598235756057743477">Ordina le app per nome o colore</translation>
 <translation id="8599864823732014237">Vuoi saltare la registrazione aziendale?</translation>
@@ -3012,6 +3179,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="862543346640737572">Emoji e GIF</translation>
 <translation id="8627191004499078455">Connesso a <ph name="DEVICE_NAME" /></translation>
 <translation id="862727964348362408">Sospeso</translation>
+<translation id="862907440446514309">L'amministratore sta registrando il tuo schermo con <ph name="APP0_NAME" />.</translation>
 <translation id="8631727435199967028">Impostazioni di accessibilità</translation>
 <translation id="8634326941504371857">I tuoi file su questo dispositivo e su Google Drive</translation>
 <translation id="8636284842992792762">Inizializzazione delle estensioni in corso…</translation>
@@ -3020,6 +3188,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8639760480004882931"><ph name="PERCENTAGE" /> rimanente</translation>
 <translation id="8640470573049727749">Nascondi tutti i suggerimenti sul gruppo</translation>
 <translation id="8641510901370802679">Sono mostrate informazioni su: <ph name="ANSWER_TYPE" /></translation>
+<translation id="8642497536370021917">Verifica la tua identità per assicurarti di poter usare e salvare sempre i dati di Chrome nel tuo Account Google</translation>
 <translation id="8647931990447795414">Per aggiungere una persona, inserisci il codice accesso genitori di Family Link</translation>
 <translation id="8649597172973390955">Barra delle app sempre visualizzata</translation>
 <translation id="8657066291275741003">lettere minuscole</translation>
@@ -3076,6 +3245,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8760172428247796445">Il tuo dispositivo <ph name="DEVICE_TYPE" /> verrà bloccato adesso.
         <ph name="DOMAIN" /> richiede di reinserire la tua smartcard.</translation>
 <translation id="8763883995157866248">Attiva la modalità di sospensione sul dispositivo</translation>
+<translation id="8763927697961133303">Dispositivo USB</translation>
 <translation id="8774379074441005279">Conferma il ripristino</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, app installata, bloccata</translation>
 <translation id="8782565991310229362">Avvio dell'applicazione kiosk annullato.</translation>
@@ -3125,6 +3295,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8888253246822647887">L'app verrà aperta al termine dell'upgrade. Gli upgrade possono richiedere qualche minuto.</translation>
 <translation id="888982883502837004">Sono disponibili degli aggiornamenti del firmware per il tuo dispositivo. Fai clic per esaminarli ed eseguire gli aggiornamenti.</translation>
 <translation id="8892168913673237979">Finito.</translation>
+<translation id="8896431007199904654">Dati di ChromeOS non più sincronizzati</translation>
 <translation id="8896630965521842259">Il modello <ph name="DESK_TEMPLATE_NAME" /> verrà eliminato definitivamente</translation>
 <translation id="889790758758811533">Batteria rimanente: <ph name="PERCENTAGE" />% (circa <ph name="TIME_LEFT" />). Collega il dispositivo all'alimentazione.</translation>
 <translation id="88986195241502842">Pagina giù</translation>
@@ -3140,6 +3311,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8929623844713377237">Contatto creato</translation>
 <translation id="8933709832356869375">1 app installata verrà rimossa</translation>
 <translation id="8934418770423095813">Crea documento Google</translation>
+<translation id="8934585454328207858">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" /> sta accedendo ai dispositivi USB}=2{Estensioni che accedono ai dispositivi: <ph name="EXTENSION1" />, <ph name="EXTENSION2" />}other{Estensioni che accedono ai dispositivi: <ph name="EXTENSION1" />, <ph name="EXTENSION2" /> e altre {3}}}</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 file}other{# file}}</translation>
 <translation id="8936501819958976551">disattivato</translation>
 <translation id="8938800817013097409">Dispositivo USB-C (porta posteriore destra)</translation>
@@ -3177,6 +3349,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="90033698482696970">Cercare automaticamente i profili eSIM disponibili?</translation>
 <translation id="9003374957546315126">Emoji e altro</translation>
 <translation id="9005984960510803406">Consente di aprire la finestra Crosh</translation>
+<translation id="9008133509889712539"><ph name="ORIGIN" /> vuole aprire questo link in un'app.</translation>
 <translation id="9013037634206938463">Sono necessari <ph name="INSTALL_SIZE" /> di spazio libero per installare Linux. Per aumentare lo spazio disponibile, elimina i file dal dispositivo.</translation>
 <translation id="901668144954885282">Backup su Google Drive</translation>
 <translation id="9017320285115481645">Inserisci il codice accesso genitori di Family Link.</translation>
@@ -3189,6 +3362,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="9030515284705930323">La tua organizzazione non ha attivato Google Play Store per il tuo account. Contatta l'amministratore per avere ulteriori informazioni.</translation>
 <translation id="9030665205623277906">Istantanea di utilizzo della CPU: <ph name="CPU_USEAGE" />%</translation>
 <translation id="9034924485347205037">File Linux</translation>
+<translation id="9035157477209989051">Riceverai una notifica quando queste app vengono utilizzate per registrare lo schermo:</translation>
 <translation id="9037818663270399707">La connessione non è privata per tutto il traffico di rete</translation>
 <translation id="9042827002460091668">Controlla la connessione a Internet e riprova</translation>
 <translation id="9044646465488564462">Connessione alla rete non riuscita: <ph name="DETAILS" /></translation>
@@ -3222,18 +3396,27 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="9110739391922513676">Configura Microsoft 365 per aprire i file</translation>
 <translation id="9126339866969410112">Annulla ultima azione</translation>
 <translation id="9127938699607518293">{MINUTES,plural, =1{Tra 1 min}other{Tra # min}}</translation>
+<translation id="9128359984587418908">Per avere app, impostazioni e reti Wi-Fi su tutti i tuoi dispositivi, attiva la sincronizzazione nelle impostazioni di ChromeOS</translation>
 <translation id="9129245940793250979">Pulsante posteriore</translation>
 <translation id="9133335900048457298">Impossibile registrare contenuti protetti</translation>
 <translation id="9139720510312328767">Elimina la lettera successiva</translation>
 <translation id="9148126808321036104">Esegui di nuovo l'accesso</translation>
 <translation id="9151906066336345901">fine</translation>
 <translation id="9159421884295554245">Cerca negli Appunti</translation>
+<translation id="9159643062839240276">Prova a:
+    <ph name="BEGIN_LIST" />
+      <ph name="LIST_ITEM" />Controllare i cavi di rete, il modem e il router
+      <ph name="LIST_ITEM" />Ricollegarti alla rete Wi-Fi
+      <ph name="LIST_ITEM" />Eseguire lo strumento Diagnostica della connettività Chrome
+    <ph name="END_LIST" /></translation>
 <translation id="9168436347345867845">Più tardi</translation>
+<translation id="917350715406657904">Hai raggiunto il tempo massimo impostato dal genitore per <ph name="APP_NAME" />. Domani potrai utilizzare l'app per <ph name="TIME_LIMIT" />.</translation>
 <translation id="9178475906033259337">Visualizzazione di un risultato per <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Questa funzione consente di accedere rapidamente a qualsiasi utente che abbia effettuato l'accesso, senza bisogno di una password. Utilizza questa funzione solo con gli account che consideri attendibili.</translation>
 <translation id="9180281769944411366">Questa procedura potrebbe richiedere alcuni minuti. Avvio del container Linux in corso.</translation>
 <translation id="9183302530794969518">Documenti Google</translation>
 <translation id="9183456764293710005">Ingrandimento a schermo intero</translation>
+<translation id="9186743636216815027">{NUM_APPS,plural,offset:2 =1{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" />. Non riceverai una notifica all'inizio della registrazione.}=2{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" /> e <ph name="APP1_NAME" />. Non riceverai una notifica all'inizio della registrazione.}=3{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e un'altra app. Non riceverai una notifica all'inizio della registrazione.}other{L'amministratore può registrare il tuo schermo con <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> e altre # app. Non riceverai una notifica all'inizio della registrazione.}}</translation>
 <translation id="9192133205265227850">Usa "<ph name="DEVICE_NAME" />"</translation>
 <translation id="9193626018745640770">Trasmissione a un ricevitore sconosciuto</translation>
 <translation id="9194617393863864469">Accedi con un altro account utente...</translation>

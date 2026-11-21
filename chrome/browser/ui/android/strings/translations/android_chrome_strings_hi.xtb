@@ -530,6 +530,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />सहायता पाएं<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">कीमत ट्रैक की जा रही है</translation>
 <translation id="3037517125981011456">Chrome में साइन इन करने के निर्देश दिखाता है</translation>
+<translation id="3038505649933066250">तारीख के हिसाब से फ़िल्टर करें</translation>
 <translation id="3044436568790455247">"कोई डिवाइस चुनें" पैनल, पूरी स्क्रीन पर खुला है.</translation>
 <translation id="3057938290530993634">अपनी सबसे ज़्यादा देखी गई वेबसाइटों को पिन करने के लिए उन पर टैप करके रखें, ताकि उनको आसानी से ऐक्सेस किया जा सके</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> बुकमार्क}one{<ph name="BOOKMARKS_COUNT_MANY" /> बुकमार्क}other{<ph name="BOOKMARKS_COUNT_MANY" /> बुकमार्क}}</translation>
@@ -576,6 +577,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="3243650379537999343">ड्रॉ</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">अगर Chrome के इस्तेमाल से जुड़ी जानकारी देने वाली रिपोर्ट भी शेयर की जाती हैं, तो याद रखें कि आपके देखे गए पेजों के यूआरएल उनमें शामिल होते हैं</translation>
+<translation id="3248185426436836442">रुका हुआ है</translation>
 <translation id="3250563604907490871">वाई-फ़ाई से कनेक्ट करने पर, इमेज की जानकारी जोड़ने की सुविधा फिर से शुरू हो जाएगी</translation>
 <translation id="3254409185687681395">इस पेज को बुकमार्क करें</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" /> के सभी पेज</translation>
@@ -1124,7 +1126,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, पिन किया गया ऐसा गुप्त टैब जिसका कॉन्टेंट शेयर किया जा रहा है</translation>
 <translation id="5375374982898812658">आपके लिए “<ph name="GROUP_NAME" />” टैब ग्रुप का ऐक्सेस तुरंत हटा दिया जाएगा. साथ ही, इसे आपके सभी डिवाइसों से मिटा दिया जाएगा</translation>
 <translation id="537865165090710757">सेव करें और शेयर करें</translation>
-<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> को आपके डिजिटल वॉलेट से निजी जानकारी का इस्तेमाल करना है. इसलिए, तब ही जारी करें जब आपको इस साइट पर भरोसा हो. खतरनाक साइटें, धोखे से आपसे आपका कानूनी नाम या आईडी नंबर जैसी जानकारी ज़ाहिर करवा सकती हैं.</translation>
 <translation id="5395376160638294582">यह पक्का करें कि आप जब चाहें, अपने Google खाते में Chrome के डेटा का इस्तेमाल कर सकें</translation>
 <translation id="5397794290049113714">आप</translation>
 <translation id="539881862970320163">मज़बूत पासवर्ड बनाने का सुझाव दिया जाता है. कीबोर्ड छिपा हुआ है.</translation>
@@ -1136,6 +1137,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="5415871492522952905">आपके सभी डिवाइसों पर टैब और ब्राउज़िंग इतिहास सेव रहेगा, ताकि आप अपने पिछले काम जारी रख सकें</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) के लिए “<ph name="GROUP_NAME" />” टैब ग्रुप का ऐक्सेस तुरंत हटा दिया जाएगा</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> जीबी उपलब्ध है</translation>
+<translation id="5430861625274552852">किसी पेज के कॉन्टेंट के बारे में सवाल पूछें या अलग-अलग टैब में मौजूद कॉन्टेंट की तुलना करें</translation>
 <translation id="543271133149552180"><ph name="TAB_TITLE" />, चुने गए टैब में से एक ऐसा गुप्त टैब जो पिक्चर में पिक्चर मोड में खुला है</translation>
 <translation id="5436928407363358055">अपने ब्राउज़िंग इतिहास और सभी टैब को सिंक करें, ताकि आप दूसरे डिवाइसों पर आसानी से अपना काम जारी रख पाएं</translation>
 <translation id="5438292632479953702">फिर से डाउनलोड करें</translation>
@@ -1172,6 +1174,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="557018954714092179">नया फ़ोल्डर बनाएं</translation>
 <translation id="5578795271662203820">इस इमेज के लिए <ph name="SEARCH_ENGINE" /> पर खोजें</translation>
 <translation id="558563010977877295">कोई खास पेज या पेजों का समूह खोलें</translation>
+<translation id="5594132774273121146">उपयोगकर्ता और खाता</translation>
 <translation id="5596627076506792578">ज़्यादा विकल्प</translation>
 <translation id="5599455543593328020">गुप्त मोड</translation>
 <translation id="5601180634394228718">Chrome के अनुभव को बेहतर बनाने के लिए, डेटा का इस्तेमाल करने वाली अन्य सेटिंग के लिए, <ph name="BEGIN_LINK" />Google की सेवाएं<ph name="END_LINK" /> पर जाएं.</translation>
@@ -1229,6 +1232,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="583281660410589416">अज्ञात</translation>
 <translation id="5833984609253377421">लिंक शेयर करें</translation>
 <translation id="5839058148541733625">Chrome डायनो</translation>
+<translation id="5839059463554891940">सुरक्षा और बचाव</translation>
 <translation id="5841444063256914865">क्या आपको फिर भी "<ph name="FILE_NAME" />" को डाउनलोड करना है?</translation>
 <translation id="5847265694842662173">Chrome ने नुकसान पहुंचाने वाली और इस्तेमाल नहीं की गई साइटों को सूचनाएं भेजने से रोक दिया है</translation>
 <translation id="5848257610304005265">क्या आपको <ph name="APP_NAME" /> में PDF फ़ाइल खोलनी है?</translation>
@@ -1345,7 +1349,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="6259107733340311168">एंटरप्राइज़ सिग्नल के डिसक्लेमर वाली बॉटम शीट, पूरी स्क्रीन पर खोली गई</translation>
 <translation id="6260260490042862943">साइट कंट्रोल</translation>
 <translation id="6264376385120300461">फिर भी डाउनलोड करें</translation>
-<translation id="6264485186158353794">वापस सुरक्षित पेज पर जाएं</translation>
 <translation id="6267106249090587268">सूचनाएं <ph name="SEPARATOR" /> Chrome ने इस साइट के लिए ये अनुमतियां हटा दी हैं, क्योंकि इनमें स्पैम या धोखाधड़ी वाला कॉन्टेंट मौजूद है</translation>
 <translation id="6276708887952587684">पेज का स्रोत देखें</translation>
 <translation id="62768169905160414">वीडियो फ़्रेम कॉपी करें</translation>
@@ -1464,7 +1467,6 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="6659594942844771486">टैब</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> में खोलें</translation>
 <translation id="6669390930482049506">मुझे सूचना दें</translation>
-<translation id="6670742294143102726">अपनी खोज में जोड़ने के लिए, एक या उससे ज़्यादा टैब चुनें</translation>
 <translation id="6671495933530132209">इमेज की कॉपी बनाएं</translation>
 <translation id="6672697278890207089">अपना पासफ़्रेज दर्ज करें</translation>
 <translation id="6675622031235530028">Chrome बंद करने के लिए, Ctrl+Q दबाकर रखें</translation>
@@ -1730,6 +1732,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> स्टैंडर्ड टैब}one{<ph name="TABS_COUNT_MANY" /> स्टैंडर्ड टैब}other{<ph name="TABS_COUNT_MANY" /> स्टैंडर्ड टैब}}</translation>
 <translation id="7603168929588204083">अमान्य तारीख</translation>
 <translation id="7605594153474022051">समन्वयन काम नहीं कर रहा है</translation>
+<translation id="7607002721634913082">रोका गया</translation>
 <translation id="7608245556672190037">Chrome Finds को चालू करने का विकल्प, पूरी स्क्रीन पर खुला है</translation>
 <translation id="7612619742409846846">आपने Google में इस ईमेल पते से साइन इन किया है</translation>
 <translation id="7612989789287281429">साइन इन किया जा रहा है…</translation>
@@ -1838,6 +1841,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="800155843932969169">सुरक्षित तरीके से पासवर्ड बनाएं और सेव करें. साथ ही, तेज़ी से साइन इन करें और पासवर्ड की सुरक्षा से जुड़ी समस्याओं का पता लगाएं, ताकि आपका खाता सुरक्षित रहे</translation>
 <translation id="8004582292198964060">ब्राउज़र</translation>
 <translation id="8006630792898017994">Space या Tab</translation>
+<translation id="802154636333426148">डाउनलोड विफल रहा</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, चुने गए टैब में से एक ऐसा गुप्त टैब जिसे पिन किया गया है और जिसका कॉन्टेंट शेयर किया जा रहा है</translation>
 <translation id="8025972204417227828">नया शॉर्टकट जोड़ें</translation>
 <translation id="8027863900915310177">डाउनलोड की जाने वाली फ़ाइल को सेव करने की जगह चुनें</translation>
@@ -1845,6 +1849,7 @@ Chrome के अनुभव को बेहतर बनाने के ल�
 <translation id="8032569120109842252">फ़ॉलो कर रहे हैं</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, चुना गया ऐसा गुप्त टैब जिसे म्यूट किया गया है</translation>
 <translation id="8036587585440959897">कुछ एक्सटेंशन Chrome में सर्च इंजन जोड़ सकते हैं.</translation>
+<translation id="803703704549420287">फ़िल्टर हटाएं</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> दिन शेष</translation>
 <translation id="8037801708772278989">अभी-अभी जांच की गई</translation>
 <translation id="804335162455518893">SD कार्ड नहीं मिला</translation>

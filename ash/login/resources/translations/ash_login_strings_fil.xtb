@@ -10,6 +10,7 @@
 <translation id="1097658378307015415">Bago mag-sign in, mangyaring pumasok bilang Bisita upang i-activate ang network <ph name="NETWORK_ID" /></translation>
 <translation id="1111932478203988717">Puwedeng gamitin ng iyong anak ang PIN na ito para mag-sign in sa kanyang device</translation>
 <translation id="1122587596907914265">Magdisenyo ng mga natatanging wallpaper</translation>
+<translation id="1122913801042512795">Hindi napapanahon ang mga detalye sa pag-sign in ng iyong account. Mag-sign out at mag-sign in ulit.</translation>
 <translation id="1131201598497838573">Na-update na ang PIN ng iyong anak</translation>
 <translation id="1147322039136785890">Si <ph name="SUPERVISED_USER_NAME" /> naman</translation>
 <translation id="1148669835763563782">Makukuha mo ang pinakabagong update sa software para sa pinaigting na seguridad at mga pinakabagong feature ng Chromebook. Kasama sa update na ito ang pinahusay na experience sa setup na makakatulong sa iyong makapagsimula nang maayos sa Chromebook mo.</translation>
@@ -26,6 +27,7 @@
 <translation id="1256588359404100567">Na-sync ang setting mula sa dati mong device.</translation>
 <translation id="1272978324304772054">Ang user account na ito ay hindi pagmamay-ari ng domain kung saan nakatala ang device.  Kung nais mong magpatala sa ibang domain, kailangan mo munang sumailalim sa pagbawi ng device.</translation>
 <translation id="1293556467332435079">Mga File</translation>
+<translation id="1302523850133262269">Mangyaring maghintay habang ini-install ng Chrome ang mga pinakabagong update sa system.</translation>
 <translation id="1307559529304613120">Oops!  Nabigo ang system na i-imbak ang pangmatagalang token sa pag-access sa API para sa device na ito.</translation>
 <translation id="1335929031622236846">Ipa-enroll ang iyong device</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Mga Feature ng Pag-debug<ph name="END_H3" />
@@ -49,6 +51,7 @@
 <translation id="1347625331607114917">I-verify ang code sa iyong Android phone</translation>
 <translation id="1347975661240122359">Magsisimula ang pag-update kapag umabot na ang baterya sa <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">Para gumamit ng parental controls gaya ng pag-apruba ng app at mga limitasyon sa tagal ng paggamit, dapat ay mayroong Google Account ang bata na pinapamahalaan ng magulang. Puwedeng magdagdag ng pampaaralang account sa ibang pagkakataon para sa mga tool gaya ng Google Classroom.</translation>
+<translation id="1363996462118479832">Hindi ma-sync ng ChromeOS ang iyong data dahil sa isang error sa pag-sign in.</translation>
 <translation id="1375557162880614858">Gusto mo bang i-activate ang ChromeVox, ang built-in na screen reader para sa ChromeOS Flex?</translation>
 <translation id="1377600615067678409">Lumaktaw muna ngayon</translation>
 <translation id="1399261165075500043">Hindi ma-load ang Mga Tuntunin ng Serbisyo ng Google Play</translation>
@@ -73,6 +76,7 @@
 <translation id="1642494467033190216">Kinakailangang alisin ang proteksyon ng rootfs at mag-restart bago ma-enable ang iba pang mga feature para sa pagde-debug.</translation>
 <translation id="1646045728251578877">May available na update ng software</translation>
 <translation id="1650801028905250434">Awtomatikong masi-sync sa Chromebook mo ang iyong mga file sa Aking Drive para ma-access mo ang mga ito nang walang koneksyon sa internet. Puwede mo itong baguhin sa anumang oras sa Mga Setting &gt; Mga File.</translation>
+<translation id="16620462294541761">Paumanhin, hindi ma-verify ang iyong password. Pakisubukang muli.</translation>
 <translation id="1668435968811469751">Magpa-enroll nang manual</translation>
 <translation id="1678919064276516737">Hindi magkatugma ang inilagay mong email at PIN.</translation>
 <translation id="1692115862433274081">Gumamit ng ibang account</translation>
@@ -94,6 +98,7 @@
 <translation id="1868617395637139709">Gamitin ang lokasyon para sa mga Android app at serbisyo sa Android.</translation>
 <translation id="1877377730633446520">Gagamit ito ng humigit-kumulang <ph name="REQUIRED_SPACE" />. May available kang <ph name="FREE_SPACE" /> sa kasalukuyan.</translation>
 <translation id="1878155070920054810">Mukhang mauubusan na ng power ang iyong Chromebook bago pa matapos ang pag-update. Tiyaking nagcha-charge ito nang tama para maiwasan ang pagkaantala.</translation>
+<translation id="1887442540531652736">Error sa pag-sign in</translation>
 <translation id="189035593835762169">Mga tuntunin at kundisyon</translation>
 <translation id="189358972401248634">Iba pang mga wika</translation>
 <translation id="1915734383465415025">Numero ng Store</translation>
@@ -122,6 +127,7 @@
 <translation id="2210462644007531147">Hindi matapos ang pag-install</translation>
 <translation id="221872881068107022">Reverse na pag-scroll</translation>
 <translation id="2219081237089444028">Magtakda ng password sa <ph name="DEVICE_TYPE" /> para mas maging madali ang pag-sign in</translation>
+<translation id="2220529011494928058">Mag-ulat ng isyu</translation>
 <translation id="222115440608612541">Magpalit ng tema sa pagsikat at paglubog ng araw</translation>
 <translation id="2229161054156947610">Mahigit sa 1 oras ang natitira</translation>
 <translation id="2246129643805925002">Awtomatikong nag-a-update ang iyong <ph name="DEVICE_TYPE" /> sa background para mabigyan ka ng mga pinakabagong feature at pagpapahusay sa seguridad. Puwede mong suriin ang mga kagustuhan sa update sa Mga Setting.</translation>
@@ -132,6 +138,7 @@
 <translation id="2328137272841210255">I-reset ang iyong PIN</translation>
 <translation id="2342180549977909852">Puwedeng gumamit ang iyong anak ng numero (PIN) sa halip na password para i-unlock ang device na ito. Para magtakda ng PIN sa ibang pagkakataon, pumunta sa Mga Setting.</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
+<translation id="2384373936468275798">Hindi ma-sync ng ChromiumOS ang iyong data dahil hindi napapanahon ang mga detalye sa pag-sign in sa iyong account.</translation>
 <translation id="2387052489799050037">Pumunta sa Home</translation>
 <translation id="2395616325548404795">Matagumpay na na-enroll ang iyong <ph name="DEVICE_TYPE" /> para sa pamamahala ng enterprise, ngunit hindi naipadala ang impormasyon ng asset at lokasyon nito. Pakilagay nang manual ang impormasyong ito na mula sa iyong Admin console para sa device na ito.</translation>
 <translation id="2408955596600435184">Ilagay ang iyong PIN</translation>
@@ -158,6 +165,7 @@
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Ang serbisyo sa lokasyon ng Google ay gumagamit ng mga source tulad ng Wi-Fi, mga mobile network, at mga sensor para makatulong na tantyahin ang lokasyon ng device na ito.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Puwede mong i-off ang lokasyon ng Android sa device na ito anumang oras sa pamamagitan ng pagpunta sa Mga Setting &gt; Mga App &gt; Google Play Store &gt; Pamahalaan ang mga kagustuhan sa Android &gt; Seguridad at lokasyon &gt; Lokasyon. Puwede mo ring i-off ang paggamit ng Wi-Fi, mga mobile network, at mga sensor para sa lokasyon ng Android sa pamamagitan ng pag-off sa “Katumpakan ng Lokasyon ng Google” sa parehong menu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2663302507110284145">Wika</translation>
+<translation id="2674238339205910678">Hindi ma-save ng ChromeOS Flex ang data ng Chrome sa iyong Google Account dahil luma na ang mga detalye sa pag-sign in sa account mo</translation>
 <translation id="2687407218262674387">Mga tuntunin ng serbisyo ng Google</translation>
 <translation id="2688196195245426394">Error kapag inirerehistro ang device sa server: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Isa itong naka-bundle na device at hindi ito puwedeng i-enroll sa Upgrade para sa Kiosk at Signage.</translation>
@@ -252,6 +260,7 @@
 <translation id="3740945083753997630">Paliitin ang display at laki ng text</translation>
 <translation id="376841534249795524">Para saan mo gagamitin ang iyong <ph name="DEVICE_TYPE" />?</translation>
 <translation id="3772046291955677288">Nabasa at sinasang-ayunan ko ang <ph name="BEGIN_LINK1" />Mga Tuntunin ng Serbisyo ng Google<ph name="END_LINK1" /> at <ph name="BEGIN_LINK2" />Mga Karagdagang Tuntunin ng Serbisyo ng Chrome at ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="3785324443014631273">Hindi ma-sync ng ChromeOS Flex ang iyong data dahil sa error sa pag-sign in.</translation>
 <translation id="3789841737615482174">Mag-install</translation>
 <translation id="3800828618615365228">Mga Karagdagang Tuntunin ng Google Chrome at ChromeOS</translation>
 <translation id="3828953470056652895">Nabasa at sinasang-ayunan ko ang <ph name="BEGIN_LINK1" />Mga Tuntunin ng Serbisyo ng Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Mga Karagdagang Tuntunin ng Serbisyo ng Chrome at ChromeOS<ph name="END_LINK2" /> at <ph name="BEGIN_LINK3" />Mga Tuntunin ng Serbisyo ng Play<ph name="END_LINK3" />.</translation>
@@ -332,6 +341,7 @@
         <ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Para sa higit pang tulong, bisitahin ang: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Sino ang gusto mong idagdag sa <ph name="DEVICE_TYPE" /> na ito?</translation>
+<translation id="4543778593405494224">Tagapamahala ng certificate</translation>
 <translation id="4566170377336116390">Kung gusto mong lumipat pagkatapos ng pag-enroll, kailangan mong i-factory reset (powerwash) ang iyong device.</translation>
 <translation id="4567512141633030272">Maling opsyon sa pag-sign in?</translation>
 <translation id="4567533462991917415">Puwede kang magdagdag ng higit pang tao anumang oras pagkatapos mag-set up. Puwedeng i-personalize ng bawat tao ang kanyang account at panatilihing pribado ang data.</translation>
@@ -349,6 +359,7 @@
 <translation id="4814327014588285482">Laktawan at paalalahanan ako sa ibang pagkakataon</translation>
 <translation id="4830502475412647084">Ini-install ang update sa OS</translation>
 <translation id="4837926214103741331">Wala kang pahintulot na gamitin ang device na ito. Mangyaring makipag-ugnayan sa may-ari ng device upang makakuha ng pahintulot sa pag-sign in.</translation>
+<translation id="4842397268809523050">Hindi ma-sync ng ChromeOS Flex ang iyong data dahil hindi available ang Pag-sync para sa iyong domain.</translation>
 <translation id="4844333629810439236">Iba pang mga keyboard</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4864369630010738180">Nagsa-sign in...</translation>
@@ -360,6 +371,7 @@
 <translation id="4944310289250773232">Hino-host ng <ph name="SAML_DOMAIN" /> ang serbisyo sa pag-authenticate na ito</translation>
 <translation id="4955710816792587366">Piliin ang iyong PIN</translation>
 <translation id="4965808351167763748">Sigurado ka bang gusto mong i-set up ang device na ito upang patakbuhin ang Hangouts Meet?</translation>
+<translation id="4969674060580488087">Hindi ma-sync ng ChromeOS Flex ang iyong data dahil hindi napapanahon ang mga detalye sa pag-sign in sa iyong account.</translation>
 <translation id="4987944280765486504">Magre-restart ang iyong Chromebook kapag nakumpleto na ang download at puwede ka nang magpatuloy sa pag-set up.</translation>
 <translation id="5029287942302939687">Nakatakda na ang iyong password</translation>
 <translation id="503155457707535043">Dina-download ang mga app</translation>
@@ -401,6 +413,8 @@
 <translation id="528208740344463258">Para mag-download at gumamit ng mga Android app, kailangan mo munang i-install ang kinakailangang update na ito. Habang nag-a-update ang iyong <ph name="DEVICE_TYPE" />, hindi mo ito magagamit. Kapag nakumpleto na ang pag-install, magre-restart ang iyong <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5283677936944177147">Oops!  Hindi natukoy ng system ang modelo o serial number ng device.</translation>
 <translation id="5333896723098573627">Para mag-alis ng mga app, pumunta sa Mga Setting &gt; Mga App &gt; Google Play Store &gt; Pamahalaan ang mga kagustuhan sa Android &gt; Mga App o Application manager. Pagkatapos ay i-tap ang app na gusto mong i-uninstall (posibleng kailanganin mong mag-swipe pakanan o pakaliwa para mahanap ang app). Pagkatapos, i-tap ang I-uninstall o I-disable.</translation>
+<translation id="5334309298019785904">Hindi ma-sync ng ChromeOS ang iyong data dahil hindi available ang Pag-sync para sa iyong domain.</translation>
+<translation id="535243042947607642">Hindi ma-save ng ChromiumOS ang data ng Chromium sa iyong Google Account dahil luma na ang mga detalye sa pag-sign in sa account mo</translation>
 <translation id="5355501370336370394">I-enroll ang enterprise device</translation>
 <translation id="5372529912055771682">Hindi sinusuportahan ng bersyong ito ng operating system ang ibinigay na mode ng pagpapatala.  Pakitiyak na pinapatakbo mo ang pinakabagong bersyon at subukan ulit.</translation>
 <translation id="5397378439569041789">I-enroll ang kiosk o signage device</translation>
@@ -412,6 +426,7 @@
 <translation id="5448293924669608770">Oops, nagkaproblema sa pag-sign in</translation>
 <translation id="5453829744223920473">Puwedeng gamitin ng iyong anak ang lahat ng kanyang mga pampaaralang app, bookmark, at resource tulad ng ginagawa niya sa klase. Ang paaralan ang nagtatakda ng mga panuntunan.</translation>
 <translation id="5473099001878321374">Sa pamamagitan ng pagpapatuloy, sumasang-ayon kang ang device na ito ay posible ring awtomatikong mag-download at mag-install ng mga update at app mula sa Google, carrier ng iyong anak, at manufacturer ng device na ito, na posibleng gamit ang cellular data. Posibleng mag-alok ang ilan sa mga app na ito ng mga in-app na pagbili.</translation>
+<translation id="549669000822060376">Mangyaring maghintay habang ini-install ng Chromium ang mga pinakabagong update sa system.</translation>
 <translation id="5502915260472117187">Bata</translation>
 <translation id="5511823366942919280">Sigurado ka bang gusto mong i-set up ang device na ito bilang "Shark"?</translation>
 <translation id="5513807280330619196">Calculator</translation>
@@ -515,6 +530,7 @@
 <translation id="6495266441917713704">Hindi mailipat ang Wi-Fi</translation>
 <translation id="6515620015470298987">Hindi nakapag-sign in dahil sa isyu sa pagsusuri sa configuration ng device. Paki-powerwash ang iyong <ph name="DEVICE_TYPE" /> at subukan ulit.</translation>
 <translation id="6519689855001245063">Sinusuri ang pagiging kwalipikado</translation>
+<translation id="6520608191273161151">Hindi ma-save ng ChromeOS Flex ang data ng Chrome sa iyong Google Account dahil sa isang error sa pag-sign in</translation>
 <translation id="6532527800157340614">Hindi nakapag-sign in dahil hindi makuha ang iyong token ng access. Pakisuri ang iyong koneksyon ng network at subukan ulit.</translation>
 <translation id="653920215766444089">Naghahanap ng device na panturo</translation>
 <translation id="65513682072153627">Makikita mo ang icon ng Pinapamahalaan na ito kapag pinapamahalaan ng iyong administrator ang isang setting o feature.</translation>
@@ -526,8 +542,10 @@
 <translation id="6675665718701918026">May nakakonektang pointing device</translation>
 <translation id="667752334740867460">Tinatanggap ang impormasyon ng Wi-Fi...</translation>
 <translation id="6680442031740878064">Available: <ph name="AVAILABLE_SPACE" /></translation>
+<translation id="668175097507315160">Hindi ma-sync ng ChromiumOS ang iyong data dahil sa isang error sa pag-sign in.</translation>
 <translation id="6684827949542560880">Dina-download ang pinakabagong update</translation>
 <translation id="6722744767592605627">Puwede mong i-recover ang <ph name="EMAIL" />, pero made-delete ang lokal na data.</translation>
+<translation id="6735387454586646204">System ng ChromeOS Flex</translation>
 <translation id="6748980958975836188">Nabasa at sinasang-ayunan ko ang <ph name="BEGIN_LINK1" />Mga Tuntunin ng Serbisyo ng Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Mga Karagdagang Tuntunin ng Serbisyo ng Chrome at ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="6749473226660745022">Mga Larawan</translation>
 <translation id="6754918760968695779">Quick Insert</translation>
@@ -552,6 +570,7 @@
 <translation id="6918733588290914545">Mabilis na pag-set up gamit ang Android phone</translation>
 <translation id="6920473853105515518">Tiyaking nakakonekta ang iyong <ph name="DEVICE_TYPE" /> sa internet at subukan ulit. Puwede mo ring bisitahin ang play.google/play-terms sa ibang device.</translation>
 <translation id="6929126689972602640">Hindi sinusuportahan ang parental controls para sa mga pampaaralang account. Para magdagdag ng pampaaralang account para ma-access ang Google Classroom at iba pang website para sa gawain sa paaralan sa bahay, mag-sign in muna gamit ang personal na account ng bata. Puwede mong idagdag ang pampaaralang account sa ibang pagkakataon sa pag-set up.</translation>
+<translation id="6933858244219479645">ChromeOS System</translation>
 <translation id="6935031746833428401">Matuto pa tungkol sa Pamamahala ng Device</translation>
 <translation id="6950351336108213154">Ina-update ang mga peripheral ng device</translation>
 <translation id="6955698182324067397">Ie-enable mo ang mga feature ng pag-debug ng ChromeOS na magse-set up ng sshd daemon at mag-e-enable ng pag-boot mula sa mga USB drive.</translation>
@@ -648,6 +667,7 @@
 <translation id="7870730066603611552">Suriin ang mga opsyon sa pag-sync pagkatapos ng pag-set up</translation>
 <translation id="7883792253546618164">Mag-unsubscribe anumang oras.</translation>
 <translation id="7887864092952184874">Naipares ang bluetooth mouse</translation>
+<translation id="7905880575591690197">Hindi ma-save ng ChromeOS ang data ng Chrome sa iyong Google Account dahil sa isang error sa pag-sign in</translation>
 <translation id="7906440585529721295">Made-delete ang lokal na data</translation>
 <translation id="7910725946105920830">Gamitin ang iyong personal na Google Account</translation>
 <translation id="7918257978052780342">Magpatala</translation>
@@ -674,6 +694,7 @@
 <translation id="8098616321286360457">Kailangan ng koneksyon sa network</translation>
 <translation id="8129265306888404830">Para magamit ang email address mo mula sa iyong organisasyon (<ph name="EMAIL_DOMAIN" />), kailangan mong gumamit ng pag-enroll sa enterprise. Kung ang device na ito ay para sa iyong personal na paggamit, mag-sign in gamit ang personal na Google Account mo.</translation>
 <translation id="8131740175452115882">Kumpirmahin</translation>
+<translation id="8133124826068723441">Hindi ma-sync ng ChromiumOS ang iyong data dahil hindi available ang Pag-sync para sa domain mo.</translation>
 <translation id="8146177459103116374">Kung nakarehistro ka na sa device na ito, maaari kang <ph name="LINK2_START" />mag-sign in bilang isang umiiral nang user<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Hindi nakapag-sign in. Mangyaring makipag-ugnayan sa iyong administrator o subukan ulit.</translation>
 <translation id="8147346945017130012">Tumulong na pahusayin ang mga feature at performance ng Chrome at ChromeOS sa pamamagitan ng awtomatikong pagpapadala sa Google ng mga ulat ng pag-crash pati na rin ng data ng diagnostic at paggamit.</translation>
@@ -692,6 +713,7 @@
 <translation id="8271379370373330993">Mga magulang, para sa inyo ang ilang susunod na hakbang. Puwede ninyong ibalik ang <ph name="DEVICE_TYPE" /> sa bata pagkatapos ng pag-setup ng account.</translation>
 <translation id="8274924778568117936">Huwag i-off o isara ang iyong <ph name="DEVICE_TYPE" /> hanggang sa matapos ang pag-update. Magre-restart ang <ph name="DEVICE_TYPE" /> mo pagkatapos ng pag-install.</translation>
 <translation id="8281886186245836920">Laktawan</translation>
+<translation id="8286036467436129157">Mag-sign In</translation>
 <translation id="8289509909262565712">Welcome sa <ph name="DEVICE_OS" /></translation>
 <translation id="8291942417224950075">Para sa personal na paggamit</translation>
 <translation id="8304383784961451596">Hindi ka pinapahintulutang gamitin ang device na ito. Makipag-ugnayan sa administrator para sa pahintulot sa pag-sign-in o mag-sign gamit ang isang Google account na sinusubaybayan ng Family Link.</translation>
@@ -703,6 +725,7 @@
 <translation id="8401432541486058167">Ibigay ang PIN na nauugnay sa iyong smart card.</translation>
 <translation id="8408270600235826886">Makokontrol mo kung anong data ang ibinabahagi sa Google. Puwede mo itong baguhin anumang oras sa Mga Setting. Gagamitin ang data alinsunod sa <ph name="BEGIN_LINK" />Patakaran sa Privacy<ph name="END_LINK" /> ng Google.</translation>
 <translation id="8413956290606243087">Gusto mo bang i-activate ang ChromeVox, ang built-in na screen reader para sa ChromeOS?</translation>
+<translation id="8418845734693287262">Hindi ma-sync ng ChromeOS ang iyong data dahil hindi napapanahon ang mga detalye sa pag-sign in sa iyong account.</translation>
 <translation id="8425768983279799676">Maaari mong gamitin ang iyong PIN para i-unlock ang iyong device.</translation>
 <translation id="8428213095426709021">Mga Setting</translation>
 <translation id="843173223122814223">Gumawa ng mga background gamit ang AI</translation>
@@ -742,10 +765,12 @@
 <translation id="8794548468611058947">Sa halip na ilagay ang iyong password sa Google Account para mag-sign in, puwede kang gumawa ng PIN para sa <ph name="DEVICE_TYPE" /> na ito</translation>
 <translation id="8830779999439981481">Nire-restart para ilapat ang mga update</translation>
 <translation id="8830796635868321089">Nabigo ang pagsusuri sa update gamit ang mga kasalukuyang setting ng proxy. Mangyaring isaayos ang iyong <ph name="PROXY_SETTINGS_LINK_START" />mga setting ng proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
+<translation id="8833697763442816810">ChromiumOS System</translation>
 <translation id="8855977033756560989">Naka-bundle ang Chromebook Enterprise device na ito sa Chrome Enterprise Upgrade. Para masulit ang mga kakayahan ng enterprise, ipa-enroll ang device na ito gamit ang isang Google admin account.</translation>
 <translation id="885746075120788020">Magagamit ang iyong mga naka-save na kagustuhan at aktibidad sa anumang ChromeOS device kapag magsa-sign in ka gamit ang Google Account mo. Mapipili mo kung ano ang isi-sync sa Mga Setting.</translation>
 <translation id="8868333925931032127">Sinisimulan ang Demo Mode</translation>
 <translation id="8875221558267407626">Magbuod ng content, pasimplehin ang mga pahayag na hindi madaling maunawaan, o magtanong</translation>
+<translation id="8890569919834781711">Hindi ma-save ng ChromiumOS ang data ng Chromium sa iyong Google Account dahil sa isang error sa pag-sign in</translation>
 <translation id="8907701755790961703">Mangyaring pumili ng bansa</translation>
 <translation id="8913163265790894442">Madaling i-set up ang iyong <ph name="DEVICE_TYPE" /> gamit ang telepono mo. Puwede mong idagdag ang iyong Wi-Fi at Google Account nang hindi manual na inilalagay ang mga password mo.
         <ph name="BR" />
@@ -781,5 +806,6 @@
 <translation id="951991426597076286">Tanggihan</translation>
 <translation id="954749761428814584">Wika at pamamaraan ng pag-input</translation>
 <translation id="960987915827980018">Mga 1 oras ang natitira</translation>
+<translation id="973195869036269770">Hindi ma-save ng ChromeOS ang data ng Chrome sa iyong Google Account dahil luma na ang mga detalye sa pag-sign in sa account mo</translation>
 <translation id="995420352808264005">Pumili ng uri ng pag-enroll ng device</translation>
 </translationbundle>

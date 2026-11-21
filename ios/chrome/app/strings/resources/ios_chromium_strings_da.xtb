@@ -58,6 +58,7 @@ Der kan ikke gemmes nye bogmærker på din konto, før du sletter nogle. Hvis du
 <translation id="2027881372245801507">Deaktivering af forslag styrer ikke Chromiums behandling af sidetitler og webadresser for andre funktioner. Du kan administrere adgangen til disse data i dine <ph name="BEGIN_LINK" />synkroniseringsindstillinger<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Log ind på dette website og i Chromium for at få adgang til dine adgangskoder og meget mere på alle dine enheder</translation>
 <translation id="2042889939382983733">Se din Chromium-historik</translation>
+<translation id="2054352566231434723">Åbn eksterne links i Chromium som standard.</translation>
 <translation id="2059365270911640413">Afslut konfigurationen af Chromium</translation>
 <translation id="2168108852149185974">Nogle tilføjelser får Chromium til at gå ned. Prøv at afinstallere:</translation>
 <translation id="2168593389981132306">Gør Chromium bedre</translation>
@@ -85,6 +86,7 @@ Der kan ikke gemmes nye bogmærker på din konto, før du sletter nogle. Hvis du
 <translation id="2485774047568879945">Angiv Chromium som din standardbrowser, så du nemt kan dele og åbne links</translation>
 <translation id="2512597191798760956">Hold fingeren på Chromium-ikonet, og klik på "Rediger hjemmeskærm"</translation>
 <translation id="2517624234762908348">Synkroniser dine Chromium-data</translation>
+<translation id="2519012503779379646">Angiv Chromium som standard for at gøre appovergange hurtigere og nemmere.</translation>
 <translation id="2592940277904433508">Fortsæt med at bruge Chromium</translation>
 <translation id="2601766165676560303">Chromium-tema til iPhone og iPad</translation>
 <translation id="2607609479243848905">Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />slette Chromium-dataene på din konto<ph name="END_LINK" />.</translation>
@@ -189,6 +191,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chromium-d
 <translation id="4985291216379576555">Offline – Chromium kan ikke søge efter opdateringer</translation>
 <translation id="4996471330284142407">Få mere fra hånden med Chromium, der er enkelt, sikkert og hurtigere end nogensinde.</translation>
 <translation id="4999538639245140991">Da du er ved at logge ud af en konto, der administreres af <ph name="SIGNOUT_MANAGED_DOMAIN" />, slettes dine Chromium-data på denne enhed. Dine data forbliver på din Google-konto.</translation>
+<translation id="5004986813285860899">Gå direkte til Chromium</translation>
 <translation id="5042011327527167688">Tryk på "Se med Google Maps i Chromium".</translation>
 <translation id="5044871537677053278">Chromium registrerer adresser og bruger Google Maps til at give dig rutevejledninger og lokale oplysninger.</translation>
 <translation id="5048140766121299007">Aktivér "Chromium" i indstillingerne for "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />"</translation>
@@ -202,6 +205,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chromium-d
 <translation id="5224391634244552924">Der er ingen gemte adgangskoder. Chromium kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="5259423875997548710">Søg efter visuelle elementer i Chromium.</translation>
 <translation id="5284913972719948193">Importér dine data for at bruge dine adgangskoder, din historik, dine bogmærker og dine kreditkort i Chromium</translation>
+<translation id="5299421317003704533">Åbn links direkte i Chromium.</translation>
 <translation id="5308226104666789935">Chromium kan ikke søge efter opdateringer</translation>
 <translation id="5311557153294205270">Føjer de angivne webadresser til dine bogmærker i Chromium.</translation>
 <translation id="5383251701169024761">Hvis du nemt vil have adgang til dine gemte adgangskoder i andre apps, skal du vælge Autofyld i Chromium.</translation>
@@ -268,6 +272,7 @@ Vær opmærksom på følgende:
 <translation id="6387994184698195448">Få nyttige Chromium-tips og meget mere.</translation>
 <translation id="6424492062988593837">Chromium er lige blevet bedre! Der er en ny tilgængelig version.</translation>
 <translation id="6433172051771630690">Tips til at få mest muligt ud af Chromium.</translation>
+<translation id="6458110851735461646">Dine Google-favoritter fungerer bedre sammen med Chromium</translation>
 <translation id="65045991564554105">Se Chromium-bogmærker</translation>
 <translation id="6519797228806907665">Få hurtigere adgang til Chromium via din iPhones startskærm.</translation>
 <translation id="6538713818758208754">Åbner siden med indstillinger for betalingsmetoder i Chromium.</translation>
@@ -357,6 +362,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="8602103377623855616">Chromium-side</translation>
 <translation id="865600487977764604">Beskytter dig i Chromium og kan bruges til at forbedre din sikkerhed i andre Google-apps, når du er logget ind.</translation>
 <translation id="8663480472502753423">Sørger for, at Chromium er opdateret</translation>
+<translation id="8671588626059602995">Sørg for, at alle links altid åbnes i Chromium.</translation>
 <translation id="8685813584220679697">Log ind på dette website og Chromium.</translation>
 <translation id="8697693743327341604">Hvis du vælger eller ignorerer et forslag, tilpasses Chromium, så du får vist mere relevante forslag fremover.</translation>
 <translation id="869832267508702259">Gør Chromium til din standardbrowser, så du kan få Gemini-indsigt, uanset hvor du browser</translation>

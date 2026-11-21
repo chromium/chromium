@@ -83,6 +83,8 @@ Wichtige Hinweise:
 <translation id="2574249610672786438">Melde dich auf allen deinen Geräten an, um deine Tabs überall dort aufzurufen, wo du Chrome verwendest</translation>
 <translation id="2576431527583832481">Chrome ist jetzt noch besser! Es ist eine neue Version verfügbar.</translation>
 <translation id="257708665678654955">Soll Google Chrome beim nächsten Mal eine Übersetzung von Seiten dieser Website anbieten, die auf <ph name="LANGUAGE_NAME" /> sind?</translation>
+<translation id="2599258827968143948">Google-Apps und -Dienste funktionieren besser mit Chrome</translation>
+<translation id="260980777626165320">Öffne externe Links standardmäßig in Chrome.</translation>
 <translation id="2668242166988961773">Sprachsuche in Chrome.</translation>
 <translation id="2703746758996815929">Wenn du hilfreiche Tipps zu Chrome erhalten möchtest, aktiviere die Benachrichtigungen in den iOS-Einstellungen.</translation>
 <translation id="2728851697704606655">Mit Google Lens übersetzen</translation>
@@ -111,6 +113,7 @@ Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelös
 <translation id="314782365035065913">Über das Startbildschirm-Dock schneller auf Chrome zugreifen</translation>
 <translation id="3167189358072330585">Dieses Konto funktioniert in Google Chrome nicht. Wende dich an deinen Domainadministrator oder melde dich mit einem Google-Standardkonto an.</translation>
 <translation id="322254490661677575">Gib deine Passphrase ein, um Chrome-Daten in deinem Google-Konto zu verwenden und zu speichern.</translation>
+<translation id="3253082773078342494">Öffne Links direkt in Chrome.</translation>
 <translation id="3303503998967553377">Chrome Aktionen unter iOS verwenden</translation>
 <translation id="3348862487678490430">Leselisteneintrag zu Chrome hinzufügen</translation>
 <translation id="3350281376951945723">Wenn du Chrome als Standardbrowser festlegst, werden Links schneller geöffnet</translation>
@@ -160,6 +163,7 @@ Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelös
 <translation id="4693084815234024320">Chrome befindet sich im Inkognitomodus</translation>
 <translation id="4713740144985377441">Kehre zu Chrome zurück, um die Datei hochzuladen</translation>
 <translation id="4724297637870447613">Chrome überall nutzen</translation>
+<translation id="4733290155432110050">Direkt zu Chrome wechseln</translation>
 <translation id="4738647308035481133">Google Chrome-Seite</translation>
 <translation id="4742795653798179840">Chrome-Daten gelöscht</translation>
 <translation id="4761869838909035636">Chrome-Sicherheitscheck ausführen</translation>
@@ -267,6 +271,7 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet wer
 <translation id="7038674195294813388">Öffne unter iOS die Einstellungen für Standard-Apps, tippe auf „Browser-App“ und wähle „Chrome“ aus.</translation>
 <translation id="7056826488869329999">Dadurch wird der Sicherheitscheck in Chrome geöffnet und ausgeführt.</translation>
 <translation id="7061455974939528301">Halte das Chrome-Symbol gedrückt und klicke auf „Startbildschirm bearbeiten“</translation>
+<translation id="7067302528015227615">Lege Chrome als Standardbrowser fest, um schneller und einfacher zwischen Apps zu wechseln.</translation>
 <translation id="7095110968493193530">Im Google Passwortmanager für <ph name="EMAIL" /></translation>
 <translation id="7124339256045485976">Chrome auf dem neuesten Stand halten</translation>
 <translation id="7135936755418321901">Wenn du deinen Standort mit Websites teilen möchtest, tippe auf die Einstellungen und erlaube Chrome, deinen Standort zu verwenden.</translation>
@@ -278,6 +283,7 @@ Weitere Einstellungen, bei denen Daten zur Verbesserung von Chrome verwendet wer
 <translation id="7200524487407690471">Chrome führt jeden Tag automatisch einen Sicherheitscheck durch, um dich unter anderem vor Datenpannen und unsicheren Websites zu schützen. Weitere Informationen zum Sicherheitscheck findest du in den Einstellungen.</translation>
 <translation id="7214019116829172458">Chrome-Inkognitotab öffnen</translation>
 <translation id="722167379782941918">Chrome empfiehlt den erweiterten Schutz</translation>
+<translation id="722921700949937243">Sorge dafür, dass alle Links immer in Chrome geöffnet werden.</translation>
 <translation id="723787869754590019">Chrome für Autofill verwenden</translation>
 <translation id="7261678641327190792">Chrome kann deine Passwörter nicht prüfen</translation>
 <translation id="7272091023280308138">Du kannst Links beim nächsten Mal direkt in Chrome öffnen, ohne zuerst die URLs zu kopieren.</translation>

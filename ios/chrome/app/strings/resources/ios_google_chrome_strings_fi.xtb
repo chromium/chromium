@@ -83,6 +83,8 @@ Huomioitavaa:
 <translation id="2574249610672786438">Kirjaudu sisään kaikilla laitteillasi, jotta voit nähdä Chrome-välilehtesi missä tahansa</translation>
 <translation id="2576431527583832481">Chromesta tuli juuri entistä parempi! Uusi versio on saatavilla.</translation>
 <translation id="257708665678654955">Haluatko Google Chromen ehdottavan sivuston kielellä <ph name="LANGUAGE_NAME" /> kirjoitettujen sivujen kääntämistä seuraavalla kerralla?</translation>
+<translation id="2599258827968143948">Tutut Google-sovellukset toimivat paremmin Chromella</translation>
+<translation id="260980777626165320">Avaa ulkoiset linkit oletuksena Chromessa.</translation>
 <translation id="2668242166988961773">Hae puhumalla Chromesta.</translation>
 <translation id="2703746758996815929">Jos haluat hyödyllisiä Chrome-vinkkejä, laita ilmoitukset päälle iOS-asetuksista.</translation>
 <translation id="2728851697704606655">Käännä Google Lensilla</translation>
@@ -111,6 +113,7 @@ Uusia kirjanmerkkejä ei voi tallentaa tilillesi, ennen kuin poistat joitakin. J
 <translation id="314782365035065913">Käytä Chromea nopeammin aloitusnäytön alapalkista</translation>
 <translation id="3167189358072330585">Tilisi ei toimi Google Chromen kanssa. Ota yhteyttä verkkotunnuksesi järjestelmänvalvojaan tai kirjaudu sisään tavallisella Google-tilillä.</translation>
 <translation id="322254490661677575">Chrome-datan käyttö ja tallennus Google-tilillä edellyttää, että lisäät tunnuslauseesi.</translation>
+<translation id="3253082773078342494">Avaa linkit suoraan Chromessa.</translation>
 <translation id="3303503998967553377">Käytä Chrome-pikavalintoja iOS:ssä</translation>
 <translation id="3348862487678490430">Lukulistakohteen lisääminen Chromeen</translation>
 <translation id="3350281376951945723">Avaa linkit nopeammin asettamalla Chrome oletusselaimeksi</translation>
@@ -160,6 +163,7 @@ Uusia kirjanmerkkejä ei voi tallentaa tilillesi, ennen kuin poistat joitakin. J
 <translation id="4693084815234024320">Olet Chromen incognito-tilassa</translation>
 <translation id="4713740144985377441">Palaa Chromeen ja lataa tiedosto</translation>
 <translation id="4724297637870447613">Käytä Chromea missä tahansa</translation>
+<translation id="4733290155432110050">Siirry suoraan Chromeen</translation>
 <translation id="4738647308035481133">Google Chrome ‑sivu</translation>
 <translation id="4742795653798179840">Chrome-data poistettu</translation>
 <translation id="4761869838909035636">Tee Chromen turvatarkistus</translation>
@@ -267,6 +271,7 @@ Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, jos ha
 <translation id="7038674195294813388">Avaa Oletussovellukset-asetukset iOS:llä, napauta sitten "Selainsovellus" ja valitse Chrome.</translation>
 <translation id="7056826488869329999">Avaa ja suorittaa turvatarkistuksen Chromessa.</translation>
 <translation id="7061455974939528301">Paina Chrome-kuvaketta pitkään ja klikkaa "Muokkaa aloitusnäyttöä"</translation>
+<translation id="7067302528015227615">Valitse Chrome oletusselaimeksi, niin sovellusten välillä siirtyminen on nopeampaa ja helpompaa.</translation>
 <translation id="7095110968493193530">Googlen Salasanojen ylläpitoon: <ph name="EMAIL" /></translation>
 <translation id="7124339256045485976">Pidä Chrome ajan tasalla</translation>
 <translation id="7135936755418321901">Jos haluat jakaa sijaintisi verkkosivustoille, valitse Asetukset ja anna Chromelle lupa käyttää sijaintiasi.</translation>
@@ -278,6 +283,7 @@ Siirry <ph name="BEGIN_LINK" />Googlen palveluihin<ph name="END_LINK" />, jos ha
 <translation id="7200524487407690471">Chrome tekee turvatarkistuksen automaattisesti joka päivä suojatakseen sinua esimerkiksi tietosuojaloukkauksilta ja riskialttiilta verkkosivustoilta. Asetuksista löytyy lisätietoa turvatarkistuksesta.</translation>
 <translation id="7214019116829172458">Avaa Chromen incognito-välilehti</translation>
 <translation id="722167379782941918">Chrome suosittelee parannettua suojausta</translation>
+<translation id="722921700949937243">Varmista, että kaikki linkit avautuvat aina Chromessa.</translation>
 <translation id="723787869754590019">Käytä Chromea automaattisessa täytössä</translation>
 <translation id="7261678641327190792">Chrome ei voi tarkistaa salasanojasi</translation>
 <translation id="7272091023280308138">Avaa linkit suoraan Chromessa seuraavalla kerralla kopioimatta URL-osoitteita ensin.</translation>

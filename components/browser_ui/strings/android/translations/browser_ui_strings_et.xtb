@@ -62,7 +62,6 @@
 <translation id="1615755956145364867">Saidid saavad paluda esitada kaitstud sisu</translation>
 <translation id="1620510694547887537">Kaamera</translation>
 <translation id="1621729191093924223">Mikrofoni vajavad funktsioonid ei tööta</translation>
-<translation id="1633720957382884102">Seotud saidid</translation>
 <translation id="1644574205037202324">Ajalugu</translation>
 <translation id="1652197001188145583">Kui see on sisse lülitatud, võivad saidid küsida luba NFC-seadmete kasutamiseks. Kui see on välja lülitatud, ei saa saidid NFC-seadmeid kasutada.</translation>
 <translation id="1660204651932907780">Saitidel lubatakse esitada heli (soovitatav)</translation>
@@ -76,6 +75,7 @@
 <translation id="1717996979683942279">Kui see on sisse lülitatud, saavad saidid küsida luba akende haldamiseks kõikidel teie ekraanidel. Kui see on välja lülitatud, ei saa saidid kõikidel teie ekraanidel aknaid hallata.</translation>
 <translation id="1738912554587725807">Uue vahelehe välimuse teema kogude alumine leht</translation>
 <translation id="1743802530341753419">Küsi luba, kui saidid üritavad seadmega ühendust luua (soovitatav)</translation>
+<translation id="1766455884659449403">Hankige Chrome'i nõuandemärguanded</translation>
 <translation id="1777815584158991902">Avastamisvoo alumine leht</translation>
 <translation id="1779089405699405702">Pildi dekooder</translation>
 <translation id="1781533683087883868">Lugemisrežiimi linkide väljalülitamine</translation>
@@ -184,6 +184,7 @@
 <translation id="2750481671343847896">Saidid saavad kuvada identiteedihaldusteenuste sisselogimisviipasid.</translation>
 <translation id="2789132527330338807">Lubage saitidel küsida luba luua teie ümbrusest 3D-kaarti või jälgida kaamera asendit</translation>
 <translation id="2790501146643349491">Kui see on sisse lülitatud, saavad hiljuti suletud saidid andmete saatmise ja vastuvõtmise lõpetada. Kui see on välja lülitatud, ei saa hiljuti suletud saidid andmete saatmist ega vastuvõtmist lõpetada.</translation>
+<translation id="2794551654724114396">Lülitage sisse märguanded, et saada kasulikke nõuandeid Chrome’i parimal moel kasutamiseks.</translation>
 <translation id="2795716239552913152">Saidid kasutavad teie asukohateavet tavaliselt asjakohaste funktsioonide või teabe (nt kohalikud uudised või läheduses asuvad kauplused) pakkumiseks</translation>
 <translation id="2800760947029405028">Laadige üles pilt</translation>
 <translation id="2802908157808345702">Ärge lubage saitidel saata hüpikaknaid ega kasutada ümbersuunamisi</translation>
@@ -231,7 +232,6 @@
 <translation id="3232293466644486101">Sirvimisandmete kustutamine …</translation>
 <translation id="3242646949159196181">Kui see on sisse lülitatud, saavad saidid heli esitada. Kui see on välja lülitatud, ei saa saidid heli esitada.</translation>
 <translation id="3273479183583863618">Hinnaalandused vahelehtedel</translation>
-<translation id="3285500645985761267">Luba seotud saitidel näha minu tegevusi grupis</translation>
 <translation id="3295019059349372795">11. peatükk: Ozi imeline smaragdlinn</translation>
 <translation id="3295602654194328831">Peida teave</translation>
 <translation id="3333961966071413176">Kõik kontaktid</translation>
@@ -249,7 +249,6 @@
 <translation id="3523447078673133727">Saitidel keelatakse teie käeliigutusi jälgida</translation>
 <translation id="3536227077203206203">Seekord lubatud</translation>
 <translation id="3538390592868664640">Saitide jaoks blokeeritakse teid ümbritsevast 3D-kaardi loomine või kaamera asendi jälgimine</translation>
-<translation id="3544058026430919413">Ettevõte saab määratleda saitide grupi, mis saavad kasutada küpsisefaile, et teie tegevusi grupis jagada. See on inkognito režiimis välja lülitatud.</translation>
 <translation id="3551268116566418498">Kas lahkuda inkognito režiimist?</translation>
 <translation id="3586500876634962664">Kaamera ja mikrofoni kasutamine</translation>
 <translation id="358794129225322306">Lubab saidil automaatselt mitut faili alla laadida.</translation>
@@ -262,7 +261,6 @@
 <translation id="363748948745453283">Kasutatakse ligikaudset asukohta</translation>
 <translation id="3641456520301071208">Saidid saavad küsida teie asukohta</translation>
 <translation id="3658847490588580244">Vaikebrauseri alumine leht</translation>
-<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> sait domeeni <ph name="RWS_OWNER" /> saidigrupis, mis näeb teie tegevusi grupis}other{<ph name="RWS_MEMBERS_COUNT" /> saiti domeeni <ph name="RWS_OWNER" /> saidigrupis, mis näevad teie tegevusi grupis}}</translation>
 <translation id="3676777756440746804">Saidid on blokeeritud küsimast luba kasutada teie kohta salvestatud teavet</translation>
 <translation id="3677897809642449131">Saidid saavad küsida luba liikumisandurite kasutamiseks</translation>
 <translation id="3678318839615834650">Uue vahelehe kaartide alumine leht on avatud täiskõrguseni</translation>
@@ -538,16 +536,15 @@
 <translation id="656065428026159829">Kuva rohkem</translation>
 <translation id="6561560012278703671">Kasuta vaiksemat sõnumsidet (märguandeviibad blokeeritakse)</translation>
 <translation id="6593061639179217415">Arvutisait</translation>
-<translation id="659938948789980540">{COUNT,plural, =1{Küpsisefailid on lubatud domeeni <ph name="RWS_OWNER" /> <ph name="RWS_MEMBERS_COUNT" /> saidi puhul}other{Küpsisefailid on lubatud domeeni <ph name="RWS_OWNER" /> <ph name="RWS_MEMBERS_COUNT" /> saidi puhul}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Kaitstud sisu</translation>
 <translation id="6619015782482868078">Rohekassinine teema</translation>
 <translation id="662080504995468778">Jää siia</translation>
 <translation id="6630443592285535486">Sisestage kuueteistkümnendkood siia</translation>
 <translation id="6635327442719709864">Kui see on sisse lülitatud, saavad saidid küsida jadaportide kasutamist. Kui see on välja lülitatud, ei saa saidid jadaporte kasutada.</translation>
+<translation id="6669390930482049506">Teavita mind</translation>
 <translation id="6678072580827808850">Ohutuskontrolli ülevaatamine</translation>
 <translation id="6682057173375416470">Soovitatud artiklite kuvamine lehel Uus vaheleht</translation>
-<translation id="6683865262523156564">See sait on grupis, mis näeb teie tegevusi. Grupi on määratlenud <ph name="RWS_OWNER" />.</translation>
 <translation id="6689172468748959065">Profiilifotod</translation>
 <translation id="6697925417670533197">Aktiivsed allalaadimised</translation>
 <translation id="6709432001666529933">Teilt küsitakse luba, enne kui saidid saavad teie käeliigutusi jälgida (soovitatav)</translation>

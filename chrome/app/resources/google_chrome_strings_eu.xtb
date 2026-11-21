@@ -32,13 +32,11 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1278833599417554002">Exekuta ezazu berriro &amp;Chrome eguneratzeko</translation>
 <translation id="1289911795790071537">Ireki bilaketa Chrome-rekin</translation>
 <translation id="1290883685122687410">Konfigurazio-errorea: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1302523850133262269">Itxaron Chrome-k sistemaren azken eguneratzeak instalatu arte.</translation>
 <translation id="1330562121671411446">Hauteman hizkuntza</translation>
 <translation id="1333654552732143316">Abiarazi Chrome</translation>
 <translation id="1341711321000856656">Chrome-ko beste profil bateko pasahitzak ikustera joan zaitezke</translation>
 <translation id="1343830902827845050">Hasi saioa Chrome-n</translation>
 <translation id="1361351916482714918">Arakatu modu adimentsuagoan Google Lens-ekin</translation>
-<translation id="1363996462118479832">Saioa hastean gertatu den errore bat dela eta, Chrome OS-k ezin izan ditu sinkronizatu zure datuak.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1383876407941801731">Bilaketa</translation>
 <translation id="1399397803214730675">Ordenagailuak Google Chrome arakatzailearen bertsio berriagoa du. Softwareak ez badu funtzionatzean, desinstalatu Google Chrome eta saiatu berriro.</translation>
@@ -89,7 +87,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="177180974022074201">Probatu Chrome-ko Gemini-rekin</translation>
 <translation id="1786003790898721085">Ziurtatu Chrome-ko saioa hasita daukazula <ph name="TARGET_DEVICE_NAME" /> gailuan eta saiatu berriro bidaltzen.</translation>
 <translation id="1786044937610313874">Lasterbideak Chrome-n irekitzen dira</translation>
-<translation id="1812689907177901597">Aukera hau desaktibatzen baduzu, Google-ren webguneetan saioa hasi ahalko duzu (adibidez, Gmail-en) Chrome-n saioa hasi beharrik gabe</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Arakatzailea mantsotzen duen fitxa pausatzea gomendatzen du Chrome-k}other{Arakatzailea mantsotzen duten fitxak pausatzea gomendatzen du Chrome-k}}</translation>
 <translation id="1832046143430087831">Webguneen abiadura handitzen du Chrome-ren V8 motorrarekin, baina erasoen aurrean Chrome apur bat ahultzen du. Desaktibatuta dago ezarpena.</translation>
 <translation id="1838374766361614909">Garbitu bilaketa</translation>
@@ -176,7 +173,6 @@ Orri honek espero bezala funtzionatzen ez badu, eman optimizatzeko baimena.</tra
 <translation id="2661616016316841783"><ph name="DEVICE" /> gailuko luzapenak eta bestelako datuak eskuratzeko, hasi saioa Chrome-n</translation>
 <translation id="2665296953892887393">Lagundu Google Chrome hobetzen hutsegite-txostenak eta <ph name="UMA_LINK" /> Google-ri bidalita</translation>
 <translation id="2668094785979141847">Google Lens-etik irteteko, sakatu hau</translation>
-<translation id="2674238339205910678">Kontuan saioa hasteko xehetasunak zaharkituta daudela eta, ChromeOS Flex-ek ezin izan ditu gorde Chrome-ko datuak Google-ko kontuan</translation>
 <translation id="2681444469812712297">Ireki <ph name="URL" /> Google Chrome-ko fitxa berri batean.</translation>
 <translation id="2699790011615497488">Ireki Chrome Beta-ko Gemini</translation>
 <translation id="2738871930057338499">Ezin da konektatu Internetera. HTTP 403 (debekatuta). Egiaztatu proxyaren konfigurazioa.</translation>
@@ -287,7 +283,6 @@ Orri honek espero bezala funtzionatzen ez badu, eman optimizatzeko baimena.</tra
 <translation id="3756724684201900923">Lortu Chrome instalatzeari buruzko informazio gehiago</translation>
 <translation id="3772152698251011058">Salatu webgunea Google-ri</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
-<translation id="3785324443014631273">Saioa hastean gertatu den errore bat dela eta, ChromeOS Flex-ek ezin izan ditu sinkronizatu zure datuak.</translation>
 <translation id="3810973564298564668">Kudeatu</translation>
 <translation id="383455301564000773">Windows 11ra bertsio-berritzen ari zara? Deskargatu Chrome OneDrive-n lehen egunetik prest egoteko.</translation>
 <translation id="383928141529488001">Bluetooth bidezko gailuak arakatzeko, Bluetootha erabiltzeko baimena behar du Google Chrome-k. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -377,7 +372,6 @@ Orri honek espero bezala funtzionatzen ez badu, eman optimizatzeko baimena.</tra
 <translation id="4803313124144656665">Itxi Chrome-ko Google Bilaketa</translation>
 <translation id="4828579605166583682">Lehendik dauden pasahitzak ordezten saiatzen ari da Google Chrome. Horretarako baimena emateko, idatzi Windows-eko pasahitza.</translation>
 <translation id="4836321460899997044">Chrome-ko profila</translation>
-<translation id="4842397268809523050">ChromeOS Flex-ek ezin izan ditu sinkronizatu zure datuak, sinkronizazioa ez dagoelako erabilgarri zure domeinuan.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> erabiltzaileak hasita dauka saioa jada.  Arakatze-jarduerak bereizita edukitzeko, hasi saioa Chrome-n zeure profilarekin (<ph name="USER_EMAIL_ADDRESS" />).</translation>
 <translation id="4855026984605187434">Pantaila partekatzeko, eman pantaila grabatzeko baimena Chrome-ri sistemaren ezarpenetan</translation>
 <translation id="4873783916118289636">Berrikusi pribatutasuna eta segurtasuna kontrolatzeko aukera garrantzitsuenak Chrome-n</translation>
@@ -391,7 +385,6 @@ Orri honek espero bezala funtzionatzen ez badu, eman optimizatzeko baimena.</tra
 <translation id="492720062778050435">Luzapen hau berrikustea gomendatzen dizu Chrome-k</translation>
 <translation id="4953650215774548573">Ezarri Google Chrome arakatzaile lehenetsi gisa</translation>
 <translation id="495931528404527476">Chrome-n</translation>
-<translation id="4969674060580488087">ChromeOS Flex-ek ezin izan ditu sinkronizatu zure datuak, kontuan saioa hasteko xehetasunak iraungi egin direlako.</translation>
 <translation id="4970761609246024540">Ongi etorri Chrome-ko profiletara</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Sakatu Google-ren Pasahitz-kudeatzailea</translation>
@@ -425,7 +418,6 @@ Agian eginbide batzuk ez dira erabilgarri egongo. Zehaztu profilaren beste direk
 <translation id="5271833978500241046">Erabili Chrome-ko Gemini-ren beste eginbide batzuekin batera</translation>
 <translation id="5320351714793324716">Cookieak onartzen badituzu, baliteke Chrome-k haiek erabiltzea orriak aurrez kargatzeko</translation>
 <translation id="5321325624576443340">Google Lens ez dago erabilgarri. Saiatu berriro geroago.</translation>
-<translation id="5334309298019785904">Chrome OS-k ezin izan ditu sinkronizatu zure datuak, sinkronizazioa ez dagoelako erabilgarri zure domeinuan.</translation>
 <translation id="5336664042114176802"><ph name="DOMAIN" /> erakundeak kudeatzen ez duen eta aurrez zure Google-ko kontuarekin lotuta zegoen Gemini laguntzailera alda zaitezke. Aurrerantzean, erantzunak ez dira oinarrituko <ph name="DOMAIN" /> enpresak kudeatutako fitxategi edo zerbitzuetan, eta ez da mantenduko elkarrizketa-historia. Baliteke lanerako egokia ez izatea. Aldatzeko, Chrome berriro exekutatu behar da.</translation>
 <translation id="5346389065299425353">Sakondu bilaketan fitxa, fitxategi eta tresna bat baino gehiago gehituta</translation>
 <translation id="5353252989841766347">Esportatu pasahitzak Chrome-tik</translation>
@@ -555,7 +547,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6497147134301593682">Chrome automatikoki itxi da</translation>
 <translation id="6506909944137591434">Chrome-k kamera erabiltzeko baimena behar du zure inguruaren 3D-ko mapa bat sortzeko</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
-<translation id="6520608191273161151">Saioa hastean gertatu den errore bat dela eta, ChromeOS Flex-ek ezin izan ditu gorde Chrome-ko datuak Google-ko kontuan</translation>
 <translation id="6520670145826811516">Kokapena erabiltzeko, eman baimena Chrome-ri <ph name="BEGIN_LINK" />sistemaren ezarpenetan<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Chrome-ko historia</translation>
 <translation id="6532945796722480006">Ireki Chrome Canary-ko Gemini</translation>
@@ -577,7 +568,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6712881677154121168">Deskarga-errorea: <ph name="DOWNLOAD_ERROR" /></translation>
 <translation id="6718739135284199302">Bizkortu Chrome</translation>
 <translation id="6734827584173583205">Azkenaldian ez duzu bisitatu webgune hau. Chrome-k <ph name="PERMISSION_1" /> eta <ph name="PERMISSION_2" /> erabiltzeko baimenak eta beste <ph name="COUNT" /> baimen kendu dizkio.</translation>
-<translation id="6735387454586646204">ChromeOS Flex sistema</translation>
 <translation id="674891594898436429">Baztertu fitxa honetako bilaketa aktiboa</translation>
 <translation id="6750954913813541382">Ortografia-akatsak konpontzeko, Chrome-k Google-ri bidaltzen dio arakatzailean idazten duzun testua</translation>
 <translation id="6760235774835597023">Webguneen abiadura handitzen du Chrome-ren V8 motorrarekin, baina erasoen aurrean Chrome apur bat ahultzen du. Aktibatuta dago ezarpena.</translation>
@@ -598,7 +588,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6908182077349113099">Mantendu pasahitzak, laster-markak eta historia gailuen artean ezin hobeto sinkronizatuta. Atzitu erraz eginbide ezagun eta gogokoak Chrome arakatzaile lehenetsi bihurtuta.</translation>
 <translation id="6926772305569367352">Tresna-barrako "Chrome-ko Google Bilaketa" botoiak ikono berri bat du. Saka ezazu arakatu bitartean Chrome-ko Google Bilaketa zerbitzuarekin galderak egiteko.</translation>
 <translation id="6930294499209825">Google-ren softwarea eguneratuta mantentzen du. Zerbitzu hau desgaitzen edo gelditzen bada, Google-ren softwarea ez da eguneratuta mantenduko; beraz, agertzen diren segurtasun-ahultasunak ezin izango dira konpondu eta eginbideek agian ez dute funtzionatuko. Zerbitzu hau erabiltzen duen Google-ren softwarerik ez badago, automatikoki desinstalatuko da.</translation>
-<translation id="6933858244219479645">ChromeOS sistema</translation>
 <translation id="6938166777909186039">Etorkizunean Google Chrome-ren eguneratzeak eskuratzeko, Windows 10 edo berriago bat beharko duzu. Ordenagailu hau Windows 8.1 erabiltzen ari da.</translation>
 <translation id="6962628299694876291"><ph name="EXISTING_USER" /> erabiltzaileak hasita dauka saioa jada. Arakatze-jarduerak bereizita edukitzeko, hasi saioa Chrome-n zeure profilarekin (<ph name="USER_EMAIL_ADDRESS" />). Gainera, pasahitzak eta bestelako datuak gailu guztietan izango dituzu.</translation>
 <translation id="6965382102122355670">Ados</translation>
@@ -689,7 +678,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="7801699035218095297">Pasahitzak kopiatzen saiatzen ari da Google Chrome. Hori baimentzeko, idatzi Windows-eko pasahitza.</translation>
 <translation id="7804364787702057554">Zure kontua Chrome-n</translation>
 <translation id="7804947029129221742">Bilatzailea Chrome-tik kanpo aldatu da. Zu babesteko, Chrome-k jatorrizko balio lehenetsira berrezarri du. <ph name="LEARN_MORE_LINK" /></translation>
-<translation id="7808348361785373670">Kendu Chrome-tik…</translation>
 <translation id="7827099906024714326">Chrome-k zeu zarela egiaztatu behar du datu batzuk zure Google-ko kontuan gorde eta gailu guztietan erabili baino lehen. Orain amaitzen baduzu saioa, ezabatu egingo dira datuak.</translation>
 <translation id="7829850924999627855"><ph name="DEVICE" /> gailuan gordetako informazioa eta bestelako datuak eskuratzeko, hasi saioa Chrome-n</translation>
 <translation id="7832314606810669113">Laster-markak eta bestelako datuak zure gailu guztietan erabili ahal izateko, hasi saioa Chrome-n. Saioa hasi ondoren, laster-marka hau zure Google-ko kontuan gordeko da.</translation>
@@ -702,7 +690,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="7896673875602241923">Norbaitek <ph name="ACCOUNT_EMAIL_LAST" /> gisa hasi du saioa Chrome-n ordenagailu hau erabilita. Zure informazioa bereizita izateko, sortu beste Chrome erabiltzaile bat.</translation>
 <translation id="7904213866086517086">Ireki berriro Google Bilaketa alboko panelean</translation>
 <translation id="7904985524660297937">Probatu Google Chrome-ko Gemini</translation>
-<translation id="7905880575591690197">Saioa hastean gertatu den errore bat dela eta, ChromeOS-ek ezin izan ditu gorde Chrome-ko datuak Google-ko kontuan</translation>
 <translation id="7936702483636872823">Chrome-k deskarga hau blokeatu du, fitxategia engainagarria delako eta agian espero ez dituzun aldaketak egingo dituelako gailuan</translation>
 <translation id="7951272445806340501">Eguneratzea aplikatzeko, berrabiarazi egin behar da ChromeOS Flex.</translation>
 <translation id="7959172989483770734">Kudeatu Chrome-ko profilak</translation>
@@ -763,7 +750,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="8402881611069691789">{COUNT,plural, =1{Chrome eguneratzen amaitu da. Berriro exekutatzen duzunean, bertsio berria erabili ahalko duzu. Ondoren, oraingo fitxak berriro irekiko dira. Ezkutuko moduko edo modu isolatuko leiho bat dago irekita. Ez da berriro irekiko berriro exekutatu ondoren.}other{Chrome eguneratzen amaitu da. Berriro exekutatzen duzunean, bertsio berria erabili ahalko duzu. Ondoren, oraingo fitxak berriro irekiko dira. Ezkutuko moduko eta modu isolatuko # leiho daude irekita profiletan. Ez dira berriro irekiko berriro exekutatu ondoren.}}</translation>
 <translation id="8403038600646341038">Chrome-ren logotipoa ordenagailu baten pantailan.</translation>
 <translation id="8406687098231754303">Tresna-barran dagoen "Alboko paneleko Google Bilaketa" botoiaren bidez, Google Bilaketa alboko panelean berriro ireki dezakezu, arakatu bitartean galderak egiteko</translation>
-<translation id="8418845734693287262">Chrome OS-k ezin izan ditu sinkronizatu zure datuak, kontuan saioa hasteko xehetasunak zaharkituta daudelako.</translation>
 <translation id="842386925677997438">Chrome-ren segurtasun-tresnak</translation>
 <translation id="8425765582779547329">Gurasoen aukerekin sarean seguruago egoteko, hasi saioa Chrome-n</translation>
 <translation id="842852285618875960">Google Chrome-k onartzen dituen laster-marken mugara iritsi zara (<ph name="BOOKMARK_LIMIT" />). Beraz, laster-marka batzuk ez dira gorde Google-ko kontuan oraindik.
@@ -792,7 +778,6 @@ Laster-marka batzuk ezabatu arte, ezingo da beste laster-markarik gorde kontuan.
 <translation id="8624541899164515475">Ezarpenak, beste fitxa batean irekitzen da.</translation>
 <translation id="8625237574518804553">{0,plural, =1{1 minutu barru exekutatuko da Chrome berriro}other{# minutu barru exekutatuko da Chrome berriro}}</translation>
 <translation id="8637932705841171563">Leihoa partekatzeko, eman pantaila grabatzeko baimena Chrome-ri sistemaren ezarpenetan</translation>
-<translation id="8642497536370021917">Chrome-ko datuak Google-ko kontuan beti gorde eta erabili ahal izango dituzula ziurtatzeko, egiaztatu zeu zarela</translation>
 <translation id="8656634243791296665">Ireki Chrome Dev-eko Gemini</translation>
 <translation id="8669527147644353129">Google Chrome laguntzailea</translation>
 <translation id="8679801911857917785">Chrome abiarazten duzunean erakusten den orria ere kontrolatzen du.</translation>
@@ -854,7 +839,6 @@ Laster-marka batzuk ezabatu arte, ezingo da beste laster-markarik gorde kontuan.
 <translation id="922152298093051471">Pertsonalizatu Chrome</translation>
 <translation id="93760716455950538">Berrabiarazi ChromeOS Flex</translation>
 <translation id="945522503751344254">Bidali oharrak</translation>
-<translation id="973195869036269770">Kontuan saioa hasteko xehetasunak zaharkituta daudela eta, ChromeOS-ek ezin izan ditu gorde Chrome-ko datuak Google-ko kontuan</translation>
 <translation id="983803489796659991">Instalazioak huts egin du, eguneratze-zerbitzariak aplikaziorako hash-daturik ez duelako.</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> da Chrome-ko profil batetik bestera aldatzeko lasterbidea</translation>
 </translationbundle>

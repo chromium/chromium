@@ -83,7 +83,6 @@
 <translation id="188102464690227119">O botão "Pesquisa no painel lateral" na barra de ferramentas tem um novo ícone. Clique no ícone para fazer perguntas enquanto navega com a Pesquisa no painel lateral.</translation>
 <translation id="1896836275755235458">O Chromium poupa a energia da bateria limitando a atividade em segundo plano e os efeitos visuais, como o deslocamento suave e as velocidades de frames do vídeo. <ph name="BEGIN_LINK" />Saiba mais sobre a Poupança de energia<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Serviço do atualizador do Chromium</translation>
-<translation id="1911763535808217981">Ao desativar esta opção, pode iniciar sessão nos sites da Google como o Gmail sem iniciar sessão no Chromium.</translation>
 <translation id="1929939181775079593">O Chromium não responde. Reiniciar agora?</translation>
 <translation id="1933341829955786215">A sua organização, <ph name="MANAGER" />, requer que inicie sessão no Chromium</translation>
 <translation id="193439633299369377">O ChromiumOS tem de ser reiniciado para aplicar a atualização.</translation>
@@ -130,7 +129,6 @@
 <translation id="2361918034042471035">A extensão "<ph name="EXTENSION_NAME" />" quer que inicie sessão no Chromium</translation>
 <translation id="236943522426971115">Desativar a execução do Chromium em segundo plano para apps</translation>
 <translation id="2374216753258219393">Para usar esta extensão como <ph name="USER_EMAIL_ADDRESS" />, inicie sessão no Chromium.</translation>
-<translation id="2384373936468275798">O ChromiumOS não conseguiu sincronizar os dados porque os detalhes de início de sessão da sua conta estão desatualizados.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Uma ou mais extensões do Chromium estavam a aceder a 1 dispositivo HID}=1{Uma ou mais extensões do Chromium estão a aceder a 1 dispositivo HID}other{Uma ou mais extensões do Chromium estão a aceder a # dispositivos HID}}</translation>
 <translation id="2401032172288869980">O Chromium necessita de autorizações da câmara e do microfone para este site</translation>
 <translation id="2403703063067034158">Erro de arranque: está a ser executada outra instância da configuração. Tente mais tarde.</translation>
@@ -172,7 +170,6 @@
 <translation id="2819844767470613567">Aviso: o Chromium não consegue impedir que as extensões gravem o seu histórico de navegação. Para desativar esta extensão no Modo isolado, desmarque esta opção.</translation>
 <translation id="2841525013647267359">Traduzir do</translation>
 <translation id="2846251086934905009">Erro de instalação: o instalador não foi concluído. A instalação foi interrompida.</translation>
-<translation id="2847479871509788944">Remover do Chromium...</translation>
 <translation id="2850691299438350830">Mantém a sua segurança no Chromium e pode ser usada para melhorar a sua segurança noutras apps Google quando tem sessão iniciada</translation>
 <translation id="2885378588091291677">Gestor de tarefas</translation>
 <translation id="2898830646167954300">Volte ao seu assistente Gemini não gerido</translation>
@@ -383,7 +380,6 @@
 <translation id="5346389065299425353">Aprofunde a sua pesquisa adicionando vários separadores, ficheiros e ferramentas</translation>
 <translation id="5352264705793813212">O Chromium encontrou algumas recomendações de segurança para sua revisão</translation>
 <translation id="5352361688875342522">Outros perfis do Chromium</translation>
-<translation id="535243042947607642">O ChromiumOS não conseguiu guardar os dados do Chromium na sua Conta Google porque os detalhes de início de sessão da sua conta estão desatualizados</translation>
 <translation id="5368118228313795342">Código adicional: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Para usar a personalização, inclua o Chromium na Atividade da Web e de apps</translation>
 <translation id="5382964351116519680">Abrir pesquisa com o Chromium</translation>
@@ -398,7 +394,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{O Chromium recomenda pausar o separador que está a abrandar o navegador}other{O Chromium recomenda pausar os separadores que estão a abrandar o navegador}}</translation>
 <translation id="5473971139929175403">O Chromium pode não funcionar corretamente, uma vez que já não é suportado nesta distribuição do Linux</translation>
 <translation id="5475924890392386523">O Chromium bloqueou esta transferência porque o ficheiro pode prejudicar as suas contas pessoais e de redes sociais</translation>
-<translation id="549669000822060376">Aguarde até que o Chromium instale as atualizações do sistema mais recentes.</translation>
 <translation id="5496810170689441661">O Chromium está a tentar editar palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="5524890928877629608">canto superior esquerdo da área de pesquisa: esquerda <ph name="LEFT" />%, parte superior <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Abrir PDFs no Chromium</translation>
@@ -493,7 +488,6 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="6390800440335263989">Para continuar, inicie sessão no Chromium como <ph name="EMAIL" />. Isto garante que tem as políticas da sua organização.</translation>
 <translation id="6400112897226594999">Logótipo do Chromium num ecrã de computador.</translation>
 <translation id="6403826409255603130">O Chromium é um navegador de internet que executa páginas Web e aplicações à velocidade da luz. É rápido, estável e fácil de utilizar. Navegue na Web com mais segurança, com proteção contra programas maliciosos e phishing integrada no Chromium.</translation>
-<translation id="6414624068245092115">Para se certificar de que pode sempre usar e guardar dados do Chromium na sua Conta Google, valide a sua identidade</translation>
 <translation id="642132557830635295">O Chromium é executado mais rapidamente e as funcionalidades que usam o JavaScript devem funcionar conforme previsto</translation>
 <translation id="6434631832954028336">Reabra o painel da Pesquisa</translation>
 <translation id="6436260184216827876">A pesquisa de imagens não está disponível. Tente mais tarde.</translation>
@@ -524,7 +518,6 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="665732753414869868">O Chromium necessita da autorização da câmara para criar um mapa 3D do ambiente à sua volta</translation>
 <translation id="6669284030132180248">Se também guardar os marcadores na sua Conta Google, pode monitorizar os preços dos produtos no Chromium e receber uma notificação quando o preço descer.</translation>
 <translation id="6676384891291319759">Aceder à Internet</translation>
-<translation id="668175097507315160">O ChromiumOS não conseguiu sincronizar os dados devido a um erro no início de sessão.</translation>
 <translation id="6691132793308828750">Remover os dados desta app do Chromium</translation>
 <translation id="6709350901466051922">O Chromium necessita da autorização do microfone para este site</translation>
 <translation id="6712881677154121168">Erro de transferência: <ph name="DOWNLOAD_ERROR" />.</translation>
@@ -682,7 +675,6 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8107060931443639922">Da próxima vez que abrir o Chromium no seu <ph name="DEVICE_TYPE" />, é apresentada uma indicação para ativar os alertas de acompanhamento de preços.</translation>
 <translation id="8118331347066725040">Envie feedback para a pesquisa com o Lens</translation>
 <translation id="8130609355518033382">Personalize o Chromium</translation>
-<translation id="8133124826068723441">O ChromiumOS não conseguiu sincronizar os dados porque a sincronização não está disponível para o seu domínio.</translation>
 <translation id="813913629614996137">A inicializar...</translation>
 <translation id="8158143604667288086">Pode afixar a Pesquisa no Chrome para fazer perguntas enquanto navega</translation>
 <translation id="8161503455832158203">Abra o Gemini no Chromium com um atalho de teclado.</translation>
@@ -749,11 +741,9 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8816416449795340678">Partilhe este documento com o Gemini no Chromium para obter uma vista geral rápida e fazer perguntas de seguimento</translation>
 <translation id="8818550178040858407">Iniciar sessão no Chromium?</translation>
 <translation id="8826492472752484139">Clique em "Gestor de Palavras-passe"</translation>
-<translation id="8833697763442816810">Sistema ChromiumOS</translation>
 <translation id="8852026904190808918">Este idioma é usado para apresentar menus, definições, alertas e outro texto no Chromium</translation>
 <translation id="8862326446509486874">Não tem os direitos adequados para uma instalação ao nível do sistema. Tente executar o programa de instalação novamente como Administrador.</translation>
 <translation id="8876044221123442390">Adicionar perfil do Chromium</translation>
-<translation id="8890569919834781711">O ChromiumOS não conseguiu guardar os dados do Chromium na sua Conta Google devido a um erro ao iniciar sessão</translation>
 <translation id="8891709362986793894">A sua organização requer que inicie sessão no Chromium</translation>
 <translation id="8906384069222226849">O Chromium requer o Windows 10 versão 1809 ou superior.</translation>
 <translation id="8907580949721785412">O Chromium está a tentar mostrar palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>

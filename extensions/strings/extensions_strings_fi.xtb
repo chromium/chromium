@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Ota teema käyttöön</translation>
+<translation id="1085064499066015002">Aina kaikilla sivustoilla</translation>
 <translation id="1135328998467923690">Paketti on virheellinen: <ph name="ERROR_CODE" />.</translation>
 <translation id="1140871961407805696">Ympäristöä kuvaava</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> on lisännyt laajennuksen, joka voi muuttaa Chromiumin toimintaa.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">Versiota <ph name="EXPECTED_VERSION" /> odotettiin, mutta versio oli <ph name="NEW_ID" />.</translation>
 <translation id="471800408830181311">Yksityisen avaimen tulostus ei onnistunut.</translation>
 <translation id="4811956658694082538">Pakettia ei voi asentaa, koska apuohjelmaprosessi kaatui. Käynnistä Chrome uudelleen ja yritä uudelleen.</translation>
+<translation id="4883436287898674711">Kaikki verkkotunnuksen <ph name="WEBSITE_1" /> sivustot</translation>
 <translation id="4988792151665380515">Julkisen avaimen vienti epäonnistui.</translation>
 <translation id="501057610015570208">Sovellukset, joilla on luetteloattribuutti kiosk_only, täytyy asentaa ChromeOS Flexin kioskitilassa.</translation>
 <translation id="5026754133087629784">Verkkonäkymä: <ph name="WEBVIEW_TAG_NAME" /></translation>

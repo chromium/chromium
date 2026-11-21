@@ -10,6 +10,7 @@
 <translation id="1097658378307015415">Before signing in, please enter as Guest to activate the network <ph name="NETWORK_ID" /></translation>
 <translation id="1111932478203988717">Your child can use this PIN to sign in to their device</translation>
 <translation id="1122587596907914265">Style unique wallpapers</translation>
+<translation id="1122913801042512795">Your account sign-in details are out of date. Please sign out and sign in again.</translation>
 <translation id="1131201598497838573">Your child’s PIN has been updated</translation>
 <translation id="1147322039136785890">Now it's <ph name="SUPERVISED_USER_NAME" />'s turn</translation>
 <translation id="1148669835763563782">You’re getting the latest software update for enhanced security and the newest Chromebook features. This update includes an improved setup experience to help you get off to a smooth start on your Chromebook.</translation>
@@ -26,6 +27,7 @@
 <translation id="1256588359404100567">Setting synced from your previous device.</translation>
 <translation id="1272978324304772054">This user account does not belong to the domain that the device is enrolled to.  If you want to enrol to a different domain you need to go through device recovery first.</translation>
 <translation id="1293556467332435079">Files</translation>
+<translation id="1302523850133262269">Please wait while Chrome installs the latest system updates.</translation>
 <translation id="1307559529304613120">Oops!  The system failed to store the long-term API access token for this device.</translation>
 <translation id="1335929031622236846">Enrol your device</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Debugging features<ph name="END_H3" />
@@ -49,6 +51,7 @@
 <translation id="1347625331607114917">Verify the code on your Android phone</translation>
 <translation id="1347975661240122359">Update will begin when battery reaches <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">To use parental controls like app approval and screen time limits, a child must have a Google Account managed by a parent. A school account can be added later for tools like Google Classroom.</translation>
+<translation id="1363996462118479832">Chrome OS could not sync your data due to an error signing in.</translation>
 <translation id="1375557162880614858">Do you want to activate ChromeVox, the built-in screen reader for Chrome OS Flex?</translation>
 <translation id="1377600615067678409">Skip for now</translation>
 <translation id="1399261165075500043">Can't load Google Play Terms of Service</translation>
@@ -73,6 +76,7 @@
 <translation id="1642494467033190216">A removal of rootfs protection and restart is required before enabling other debugging features.</translation>
 <translation id="1646045728251578877">Software update available</translation>
 <translation id="1650801028905250434">Your files in My Drive will sync to your Chromebook automatically, so you can access them without an Internet connection. You can change this at any time in Settings &gt; Files.</translation>
+<translation id="16620462294541761">Sorry, your password could not be verified. Please try again.</translation>
 <translation id="1668435968811469751">Enrol manually</translation>
 <translation id="1678919064276516737">The email and PIN that you entered don't match</translation>
 <translation id="1692115862433274081">Use another account</translation>
@@ -94,6 +98,7 @@
 <translation id="1868617395637139709">Use location for Android apps and services.</translation>
 <translation id="1877377730633446520">This will use about <ph name="REQUIRED_SPACE" />. You currently have <ph name="FREE_SPACE" /> available.</translation>
 <translation id="1878155070920054810">Looks like your Chromebook will run out of power before the update is complete. Make sure that it's charging correctly to avoid interruption.</translation>
+<translation id="1887442540531652736">Sign-in error</translation>
 <translation id="189035593835762169">Terms and Conditions</translation>
 <translation id="189358972401248634">Other languages</translation>
 <translation id="1915734383465415025">Shop number</translation>
@@ -122,6 +127,7 @@
 <translation id="2210462644007531147">Couldn’t complete installation</translation>
 <translation id="221872881068107022">Reverse scrolling</translation>
 <translation id="2219081237089444028">Set a <ph name="DEVICE_TYPE" /> password to make it easier to sign in</translation>
+<translation id="2220529011494928058">Report an issue</translation>
 <translation id="222115440608612541">Switch themes at sunrise and sunset</translation>
 <translation id="2229161054156947610">More than 1 hour left</translation>
 <translation id="2246129643805925002">Your <ph name="DEVICE_TYPE" /> updates automatically in the background to give you the latest features and security improvements. You can review update preferences in Settings.</translation>
@@ -132,6 +138,7 @@
 <translation id="2328137272841210255">Reset your PIN</translation>
 <translation id="2342180549977909852">Your child can use a number (PIN) instead of a password to unlock this device. To set a PIN later, go to Settings.</translation>
 <translation id="2359808026110333948">Continue</translation>
+<translation id="2384373936468275798">Chromium OS could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="2387052489799050037">Go home</translation>
 <translation id="2395616325548404795">Your <ph name="DEVICE_TYPE" /> has successfully been enrolled for enterprise management, but failed to send its asset and location information. Please manually enter this information from your Admin console for this device.</translation>
 <translation id="2408955596600435184">Enter your PIN</translation>
@@ -158,6 +165,7 @@
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Google's location service uses sources like Wi-Fi, mobile networks and sensors to help estimate this device's location.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />You can turn off Android location on this device at any time by going to Settings &gt; Apps &gt; Google Play Store &gt; Manage Android preferences &gt; Security and location &gt; Location. You can also turn off the use of Wi-Fi, mobile networks and sensors for Android location by turning off 'Google Location Accuracy' in the same menu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2663302507110284145">Language</translation>
+<translation id="2674238339205910678">ChromeOS Flex could not save Chrome data in your Google Account because your account sign-in details are out of date</translation>
 <translation id="2687407218262674387">Google Terms of Service</translation>
 <translation id="2688196195245426394">Error when registering the device with the server: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">This is a bundled device and cannot be enrolled with Kiosk and signage upgrade.</translation>
@@ -252,6 +260,7 @@
 <translation id="3740945083753997630">Decrease display and text size</translation>
 <translation id="376841534249795524">What will you use your <ph name="DEVICE_TYPE" /> for?</translation>
 <translation id="3772046291955677288">I have read and agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />Chrome and Chrome OS additional Terms of Service<ph name="END_LINK2" />.</translation>
+<translation id="3785324443014631273">Chrome OS Flex could not sync your data due to an error signing in.</translation>
 <translation id="3789841737615482174">Install</translation>
 <translation id="3800828618615365228">Google Chrome and Chrome OS additional terms</translation>
 <translation id="3828953470056652895">I have read and agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome and Chrome OS additional Terms of Service<ph name="END_LINK2" /> and <ph name="BEGIN_LINK3" />Play Terms of Service<ph name="END_LINK3" />.</translation>
@@ -332,6 +341,7 @@
         <ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />For more help, visit: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Who would you like to add to this <ph name="DEVICE_TYPE" />?</translation>
+<translation id="4543778593405494224">Certificate manager</translation>
 <translation id="4566170377336116390">If you want to switch after enrolment, you will need to factory reset (powerwash) your device.</translation>
 <translation id="4567512141633030272">Wrong sign-in option?</translation>
 <translation id="4567533462991917415">You can always add more people after setup. Each person can personalise their account and keep data private.</translation>
@@ -349,6 +359,7 @@
 <translation id="4814327014588285482">Skip and remind me later</translation>
 <translation id="4830502475412647084">Installing OS update</translation>
 <translation id="4837926214103741331">You are not authorised to use this device. Please contact the device owner for sign-in permission.</translation>
+<translation id="4842397268809523050">Chrome OS Flex could not sync your data because sync is not available for your domain.</translation>
 <translation id="4844333629810439236">Other keyboards</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4864369630010738180">Signing in...</translation>
@@ -360,6 +371,7 @@
 <translation id="4944310289250773232">This authentication service is hosted by <ph name="SAML_DOMAIN" /></translation>
 <translation id="4955710816792587366">Choose your PIN</translation>
 <translation id="4965808351167763748">Are you sure that you want to set up this device to run Hangouts Meet?</translation>
+<translation id="4969674060580488087">Chrome OS Flex could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="4987944280765486504">Your Chromebook will restart once the download is complete and you can continue setup.</translation>
 <translation id="5029287942302939687">Your password is set</translation>
 <translation id="503155457707535043">Apps downloading</translation>
@@ -401,6 +413,8 @@
 <translation id="528208740344463258">To download and use Android apps, first you need to install this required update. While your <ph name="DEVICE_TYPE" /> is updating, you can’t use it. After installation is complete, your <ph name="DEVICE_TYPE" /> will restart.</translation>
 <translation id="5283677936944177147">Oops!  The system failed to determine device model or serial number.</translation>
 <translation id="5333896723098573627">To remove apps, go to Settings &gt; Apps &gt; Google Play Store &gt; Manage Android preferences &gt; Apps or Application manager. Then tap the app that you want to uninstall (you may need to swipe right or left to find the app). Then tap Uninstall or Disable.</translation>
+<translation id="5334309298019785904">Chrome OS could not sync your data because sync is not available for your domain.</translation>
+<translation id="535243042947607642">ChromiumOS could not save Chromium data in your Google Account because your account sign-in details are out of date</translation>
 <translation id="5355501370336370394">Enrol enterprise device</translation>
 <translation id="5372529912055771682">The supplied enrolment mode is not supported by this version of the operating system. Please make sure you are running the newest version and try again.</translation>
 <translation id="5397378439569041789">Enrol kiosk or signage device</translation>
@@ -412,6 +426,7 @@
 <translation id="5448293924669608770">Oops, something went wrong with signing in</translation>
 <translation id="5453829744223920473">Your child can use all of their school apps, bookmarks and resources just like they do in class. The school sets the ground rules.</translation>
 <translation id="5473099001878321374">By continuing, you agree that this device may also automatically download and install updates and apps from Google, your child's operator and this device's manufacturer, possibly using mobile data. Some of these apps may offer in-app purchases.</translation>
+<translation id="549669000822060376">Please wait while Chromium installs the latest system updates.</translation>
 <translation id="5502915260472117187">A child</translation>
 <translation id="5511823366942919280">Are you sure that you want to set up this device as a "Shark"?</translation>
 <translation id="5513807280330619196">Calculator</translation>
@@ -515,6 +530,7 @@
 <translation id="6495266441917713704">Can't transfer Wi-Fi</translation>
 <translation id="6515620015470298987">Sign-in failed due to a device configuration check issue. Please powerwash your <ph name="DEVICE_TYPE" /> and try again.</translation>
 <translation id="6519689855001245063">Checking eligibility</translation>
+<translation id="6520608191273161151">ChromeOS Flex could not save Chrome data in your Google Account due to an error signing in</translation>
 <translation id="6532527800157340614">Sign-in failed because your access token could not be retrieved. Please check your network connection and try again.</translation>
 <translation id="653920215766444089">Searching for pointing device</translation>
 <translation id="65513682072153627">You will see this managed icon when a setting or feature is managed by your administrator.</translation>
@@ -526,8 +542,10 @@
 <translation id="6675665718701918026">Pointing device connected</translation>
 <translation id="667752334740867460">Receiving Wi-Fi info…</translation>
 <translation id="6680442031740878064">Available: <ph name="AVAILABLE_SPACE" /></translation>
+<translation id="668175097507315160">Chromium OS could not sync your data due to an error signing in.</translation>
 <translation id="6684827949542560880">Downloading the latest update</translation>
 <translation id="6722744767592605627">You can recover <ph name="EMAIL" />, but local data will be deleted.</translation>
+<translation id="6735387454586646204">Chrome OS Flex system</translation>
 <translation id="6748980958975836188">I have read and agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome and Chrome OS additional Terms of Service<ph name="END_LINK2" />.</translation>
 <translation id="6749473226660745022">Photos</translation>
 <translation id="6754918760968695779">Quick Insert</translation>
@@ -552,6 +570,7 @@
 <translation id="6918733588290914545">Quick setup with Android phone</translation>
 <translation id="6920473853105515518">Make sure that your <ph name="DEVICE_TYPE" /> is connected to the Internet and try again. You can also visit play.google/play-terms on another device.</translation>
 <translation id="6929126689972602640">Parental controls are not supported for school accounts. To add a school account to access Google Classroom and other websites for schoolwork at home, sign in with the child's personal account first. You can add the school account later in setup.</translation>
+<translation id="6933858244219479645">ChromeOS system</translation>
 <translation id="6935031746833428401">Learn more about device management</translation>
 <translation id="6950351336108213154">Updating device peripherals</translation>
 <translation id="6955698182324067397">You are enabling Chrome OS debugging features, which will set up sshd daemon and enable booting from USB drives.</translation>
@@ -648,6 +667,7 @@
 <translation id="7870730066603611552">Review sync options following setup</translation>
 <translation id="7883792253546618164">Unsubscribe at any time.</translation>
 <translation id="7887864092952184874">Bluetooth mouse paired</translation>
+<translation id="7905880575591690197">ChromeOS could not save Chrome data in your Google Account due to an error signing in</translation>
 <translation id="7906440585529721295">Local data will be deleted</translation>
 <translation id="7910725946105920830">Use your personal Google Account</translation>
 <translation id="7918257978052780342">Enrol</translation>
@@ -674,6 +694,7 @@
 <translation id="8098616321286360457">Network connection required</translation>
 <translation id="8129265306888404830">To use your email address from your organisation (<ph name="EMAIL_DOMAIN" />), you need to use enterprise enrolment. If this device is for your personal use, sign in with your personal Google Account.</translation>
 <translation id="8131740175452115882">Confirm</translation>
+<translation id="8133124826068723441">Chromium OS could not sync your data because sync is not available for your domain.</translation>
 <translation id="8146177459103116374">If you've already registered on this device, you can <ph name="LINK2_START" />sign in as an existing user<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Sign-in failed. Please contact your administrator or try again.</translation>
 <translation id="8147346945017130012">Help improve Chrome and Chrome OS features and performance by automatically sending crash reports as well as diagnostic and usage data to Google.</translation>
@@ -692,6 +713,7 @@
 <translation id="8271379370373330993">Parents, the next few steps are for you. You can hand the <ph name="DEVICE_TYPE" /> back to the child after account setup.</translation>
 <translation id="8274924778568117936">Don’t turn off or close your <ph name="DEVICE_TYPE" /> until the update finishes. Your <ph name="DEVICE_TYPE" /> will restart after installation completes.</translation>
 <translation id="8281886186245836920">Skip</translation>
+<translation id="8286036467436129157">Sign In</translation>
 <translation id="8289509909262565712">Welcome to <ph name="DEVICE_OS" /></translation>
 <translation id="8291942417224950075">For personal use</translation>
 <translation id="8304383784961451596">You are not authorised to use this device. Please contact the administrator for sign-in permission or sign in with a Google Account supervised by Family Link.</translation>
@@ -703,6 +725,7 @@
 <translation id="8401432541486058167">Provide the PIN that’s associated with your smart card.</translation>
 <translation id="8408270600235826886">You can control what data is shared with Google. You can change this at any time in Settings. Data will be used according to Google's <ph name="BEGIN_LINK" />Privacy Policy<ph name="END_LINK" />.</translation>
 <translation id="8413956290606243087">Do you want to activate ChromeVox, the built-in screen reader for Chrome OS?</translation>
+<translation id="8418845734693287262">Chrome OS could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="8425768983279799676">You can use your PIN to unlock your device.</translation>
 <translation id="8428213095426709021">Settings</translation>
 <translation id="843173223122814223">Create backgrounds with AI</translation>
@@ -742,10 +765,12 @@
 <translation id="8794548468611058947">Instead of entering your Google Account password to sign in, you can create a PIN for this <ph name="DEVICE_TYPE" /></translation>
 <translation id="8830779999439981481">Restarting to apply updates</translation>
 <translation id="8830796635868321089">The update check failed using the current proxy settings. Please adjust your <ph name="PROXY_SETTINGS_LINK_START" />proxy settings<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
+<translation id="8833697763442816810">Chromium OS system</translation>
 <translation id="8855977033756560989">This Chromebook Enterprise device comes bundled with the Chrome Enterprise upgrade. To take advantage of the enterprise capabilities, enrol this device with a Google Admin account.</translation>
 <translation id="885746075120788020">Your saved preferences and activity will be ready on any Chrome OS device when you sign in with your Google Account. You can choose what to sync in Settings.</translation>
 <translation id="8868333925931032127">Starting demo mode</translation>
 <translation id="8875221558267407626">Summarise content, simplify complex language or ask questions</translation>
+<translation id="8890569919834781711">ChromiumOS could not save Chromium data in your Google Account due to an error signing in</translation>
 <translation id="8907701755790961703">Please select a country</translation>
 <translation id="8913163265790894442">Easily set up your <ph name="DEVICE_TYPE" /> with your phone. You can add your Wi-Fi and Google Account without manually entering your passwords.
         <ph name="BR" />
@@ -781,5 +806,6 @@
 <translation id="951991426597076286">Decline</translation>
 <translation id="954749761428814584">Language and input method</translation>
 <translation id="960987915827980018">About 1 hour left</translation>
+<translation id="973195869036269770">ChromeOS could not save Chrome data in your Google Account because your account sign-in details are out of date</translation>
 <translation id="995420352808264005">Choose device enrolment type</translation>
 </translationbundle>

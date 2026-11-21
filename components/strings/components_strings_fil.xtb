@@ -373,6 +373,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1619648179761984213">Nag-alis ng tab si <ph name="USER_DISPLAY_NAME" /></translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1623104350909869708">Pigilan ang pahinang ito sa paggawa ng mga karagdagang dialog</translation>
+<translation id="1624535934412288769">Mga column</translation>
 <translation id="1629390138158333592">Maghanap sa Web</translation>
 <translation id="1633137413609266904">{0,plural, =1{Na-block ng patakaran ng administrator ang pagbubukas ng file na ito}one{Na-block ng patakaran ng administrator ang pagbubukas ng # file}other{Na-block ng patakaran ng administrator ang pagbubukas ng # na file}}</translation>
 <translation id="1634828734222219955">Kabuuan</translation>
@@ -1082,6 +1083,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2803320044666896137">Binabalewala ang value ng patakarang ito dahil hindi affiliated ang user.</translation>
 <translation id="2807052079800581569">Posisyon ng larawan Y</translation>
 <translation id="2808278141522721006">Puwede mong i-on o i-off ang Windows Hello sa <ph name="SETTINGS" /></translation>
+<translation id="2820159698793041599">Hindi makapagtatag ng secure na koneksyon ang proxy server.</translation>
 <translation id="2820957248982571256">Nagsa-scan...</translation>
 <translation id="282457273878278063">Pamahalaan ang impormasyon sa pakikipag-ugnayan</translation>
 <translation id="2824775600643448204">Address bar at bar sa paghahanap</translation>
@@ -1263,6 +1265,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3120807611504813890">Envelope (Lightweight)</translation>
 <translation id="3121994479408824897">Pumunta sa <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Mga Label (Permanente)</translation>
+<translation id="3128081114752791872">Invalid ang certificate ng seguridad ng proxy server.</translation>
 <translation id="3131746543143948171">Mukhang katulad ng ibang site na nauugnay sa phishing, malware, at mga scam ang site na ito. <ph name="BEGIN_LEARN_MORE_LINK" />Matuto pa<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">I-save ang numero ng pag-redress</translation>
 <translation id="3133565499688974786">Ang <ph name="SEARCH_ENGINE_NAME" /> na ang iyong default na search engine</translation>
@@ -1681,7 +1684,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="3800436529451849929">Mula sa <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Madalas mong bisitahin</translation>
 <translation id="380329542618494757">Pangalan</translation>
-<translation id="3803481123869276674">Kapag bumili ka sa Chrome, tingnan ang eWallet bilang opsyon</translation>
 <translation id="3803801106042434208">Sikat ang mga search engine na ito sa iyong rehiyon</translation>
 <translation id="3804112825000113857">Tingnan ang mga setting ng autofill</translation>
 <translation id="380666903981445943">Mag-save ng paraan ng pagbabayad sa iyong Google Account para i-autofill ito para sa mga pagbiling gagawin sa Chrome</translation>
@@ -2164,6 +2166,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4612631413844865947">Nagka-error sa pagpoproseso ng iyong order sa <ph name="MERCHANT_ORIGIN" /> sa pamamagitan ng <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="4612904677925722054">Posibleng may pang-mature na content ang site na ito. Kailangang sabihin ng magulang o tagapag-alaga na OK na bisitahin mo ang website na ito.</translation>
 <translation id="4613873770449493819">Dapat tumuro ang URL sa isang domain ng <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
+<translation id="4615154194248230658">Mukhang hindi tumutugma ang pattern na ito sa isang valid na domain ng email address. Posibleng hindi makapag-sign in ang mga user o posibleng maalis ang mga kasalukuyang profile.</translation>
 <translation id="4619564267100705184">I-verify na ikaw ito</translation>
 <translation id="4619669610757527494">I-save ang lisensya sa pagmamaneho sa Google Wallet</translation>
 <translation id="4622292761762557753">Ilipat pa rin</translation>
@@ -2682,7 +2685,6 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="5447235695608032700">Payagan ang <ph name="SITE" /> na gumamit ng impormasyong na-save nito tungkol sa iyo</translation>
 <translation id="5447973833955560753">Password sa pag-recover</translation>
 <translation id="5452270690849572955">Hindi makita ang <ph name="HOST_NAME" /> page na ito</translation>
-<translation id="5452923259299906094">Magbayad gamit ang eWallet at Pix</translation>
 <translation id="5455374756549232013">Maling timestamp ng patakaran</translation>
 <translation id="5456428544444655325">Huwag kailanman ipakita</translation>
 <translation id="5457082343331641453">Idagdag sa paghahanap mo</translation>
@@ -3898,7 +3900,6 @@ Mga karagdagang detalye:
 <translation id="7489919936111034362">Puno na ang storage ng Google Drive mo</translation>
 <translation id="7490622939531327327">Mas matalinong pag-unawa sa form</translation>
 <translation id="7495528107193238112">Naka-block ang content na ito. Makipag-ugnayan sa may-ari ng site para maayos ang isyu.</translation>
-<translation id="7499188644237027195">Kapag bumili ka sa Chrome, tingnan ang eWallet at Pix bilang mga opsyon</translation>
 <translation id="7499684925421947861">Payagan ang <ph name="ACTOR_NAME" /> na mag-sign in sa <ph name="DOMAIN" /> para sa iyo?</translation>
 <translation id="7501663406926337752">Na-flag ng iyong organisasyon ang pupuntahang site</translation>
 <translation id="7502044688973049724">pamahalaan ang iyong impormasyon</translation>
@@ -4023,7 +4024,6 @@ Mga karagdagang detalye:
 <translation id="7676840398262504532">Sinusubaybayan ng iyong organisasyon ang pagkopya</translation>
 <translation id="767806704757698045">Gumagana lang sa mga sinusuportahang site</translation>
 <translation id="7678730592635586336">Kunan ulit ng video</translation>
-<translation id="7679287273775285018">Magbayad gamit ang eWallet</translation>
 <translation id="7679367271685653708">Tingnan at pamahalaan ang iyong history ng pag-browse sa mga setting ng Chrome</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, mag-e-expire sa <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Pagpapadala</translation>
@@ -4098,7 +4098,6 @@ Mga karagdagang detalye:
 <translation id="7791543448312431591">Idagdag</translation>
 <translation id="7798389633136518089">Binalewala dahil hindi itinakda ng isang cloud source ang patakaran.</translation>
 <translation id="7800304661137206267">Na-encrypt ang koneksyon gamit ang <ph name="CIPHER" />, kasama ang <ph name="MAC" /> para sa pagpapatunay ng mensahe at <ph name="KX" /> bilang mekanismo ng pangunahing pagpapalit.</translation>
-<translation id="780228007282527248">Magdagdag ng tab o larawan para mapahusay ang iyong paghahanap</translation>
 <translation id="7802523362929240268">Lehitimo ang site</translation>
 <translation id="7802989406998618639">Ilagay ang <ph name="NUMBER_OF_DIGITS" /> (na) digit na panseguridad na code sa <ph name="SIDE_OF_CARD" /> para ma-verify ng iyong bangko na ikaw ito</translation>
 <translation id="780301667611848630">Hindi salamat</translation>
@@ -4164,6 +4163,7 @@ Mga karagdagang detalye:
 <translation id="7916162853251942238">Flexo Base</translation>
 <translation id="7916802424606434188">Buksan ang Window <ph name="WINDOW_INDEX" /> (<ph name="NUM_TABS" /> tab) sa bagong window</translation>
 <translation id="791698251820376781">Hindi ka pinapayagan ng iyong organisasyon na mag-sign in</translation>
+<translation id="7918936720558783139">Magiging available ang iyong naka-save na alok sa pag-checkout gamit ang autofill. <ph name="BEGIN_LINK" />Pamahalaan ang mga alok<ph name="END_LINK" /></translation>
 <translation id="7927046851848613453">Mag-save ng mga ticket, event, at iba pang impormasyon mula sa mga page na tinitingnan mo — hindi lang mga form na pinupunan mo. Pagkatapos ay mabilis na i-access ang iyong mga pass, tulad ng mga ticket ng event at loyalty card. Puwedeng lumabas ang iyong naka-save na impormasyon sa mga device mo at sa mga produkto ng Google.</translation>
 <translation id="7930282586031445870">Nakasara ang screen ng mga tuntunin ng serbisyo ng Buy-Now-Pay-Later.</translation>
 <translation id="7932035970207573919">Address ng trabaho, <ph name="ADDRESS" /></translation>
@@ -4233,6 +4233,7 @@ Mga karagdagang detalye:
 <translation id="8029829038322015001">Pula 1</translation>
 <translation id="8032546467100845887">Transparency</translation>
 <translation id="8035152190676905274">Pen</translation>
+<translation id="803703704549420287">I-clear ang mga filter</translation>
 <translation id="8037117624646282037">Sino ang gumamit ng device na ito kamakailan</translation>
 <translation id="803771048473350947">File</translation>
 <translation id="8038182528865038593">Pula 2</translation>
@@ -4421,6 +4422,7 @@ Mga karagdagang detalye:
 <translation id="8363502534493474904">I-off ang airplane mode</translation>
 <translation id="8363929499301563123">Cookies ng website (papanatilihin ang status na naka-sign in sa mga kamakailang binisitang website)</translation>
 <translation id="8364627913115013041">Hindi nakatakda.</translation>
+<translation id="8364664414979300296">Magdagdag ng mga tab, larawan, at higit pa para mapahusay ang iyong paghahanap</translation>
 <translation id="836616551641291797">Matuto pa tungkol sa kung paano pinapamahalaan ang iyong browser</translation>
 <translation id="8367705492654390392">Magtanong ng kahit na ano</translation>
 <translation id="8368001212524806591">Subaybayan ang presyo</translation>

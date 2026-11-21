@@ -30,13 +30,11 @@
 <translation id="1278833599417554002">‏הפעלה מחדש לצורך עדכון &amp;Chrome</translation>
 <translation id="1289911795790071537">‏פתיחת החיפוש באמצעות Chrome</translation>
 <translation id="1290883685122687410">שגיאה בהגדרה: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1302523850133262269">‏יש להמתין בזמן ש-Chrome מתקין את עדכוני המערכת האחרונים.</translation>
 <translation id="1330562121671411446">זיהוי שפה אוטומטי</translation>
 <translation id="1333654552732143316">‏התחל את Chrome</translation>
 <translation id="1341711321000856656">‏אפשר לעבור כדי לראות סיסמאות מפרופיל Chrome אחר</translation>
 <translation id="1343830902827845050">‏כניסה ל-Chrome</translation>
 <translation id="1361351916482714918">‏הגלישה חכמה יותר עם Google Lens</translation>
-<translation id="1363996462118479832">‏לא בוצע סנכרון של הנתונים ב-ChromeOS בגלל שגיאה בתהליך הכניסה.</translation>
 <translation id="137466361146087520">‏גרסת הבטא של Google Chrome</translation>
 <translation id="1383876407941801731">חיפוש</translation>
 <translation id="1399397803214730675">‏במחשב זה מותקנת כבר גרסה עדכנית יותר של Google Chrome. אם התוכנה אינה פועלת, יש להסיר את ההתקנה של Google Chrome ולנסות שוב.</translation>
@@ -85,7 +83,6 @@
 <translation id="177180974022074201">‏אפשר לנסות אותה עם Gemini ב-Chrome</translation>
 <translation id="1786003790898721085">‏יש לוודא שנכנסת ל-Chrome ב-<ph name="TARGET_DEVICE_NAME" /> ולשלוח שוב.</translation>
 <translation id="1786044937610313874">‏קיצורי דרך ייפתחו ב-Chrome</translation>
-<translation id="1812689907177901597">‏כיבוי הגדרה זו יאפשר לך להיכנס לאתרי Google, כמו Gmail, בלי להיכנס אל Chrome</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{‏ההמלצה של Chrome היא להשהות את הכרטיסייה שמאטה את הדפדפן}one{‏ההמלצה של Chrome היא להשהות את הכרטיסיות שמאטות את הדפדפן}two{‏ההמלצה של Chrome היא להשהות את הכרטיסיות שמאטות את הדפדפן}other{‏ההמלצה של Chrome היא להשהות את הכרטיסיות שמאטות את הדפדפן}}</translation>
 <translation id="1832046143430087831">‏אפשר להאיץ ביצועים של אתרים באמצעות מנוע V8 של Chrome, אבל Chrome יהיה קצת פחות עמיד בפני מתקפות. ההגדרה הזו מושבתת.</translation>
 <translation id="1838374766361614909">ניקוי חיפוש</translation>
@@ -170,7 +167,6 @@
 <translation id="2661616016316841783">‏כדי לקבל גישה לתוספים ולנתונים נוספים מתוך <ph name="DEVICE" />, צריך להתחבר ל-Chrome</translation>
 <translation id="2665296953892887393">‏שיפור Google Chrome על ידי שליחת <ph name="UMA_LINK" /> ודוחות קריסה אל Google</translation>
 <translation id="2668094785979141847">‏צריך ללחוץ כדי לצאת מ-Google Lens</translation>
-<translation id="2674238339205910678">‏הנתונים מ-Chrome לא נשמרו בחשבון Google שלך ב-ChromeOS Flex כי פרטי הכניסה לחשבון לא מעודכנים</translation>
 <translation id="2681444469812712297">‏פתיחה של <ph name="URL" /> בכרטיסייה חדשה ב-Google Chrome.</translation>
 <translation id="2699790011615497488">‏פתיחת Gemini ב-Chrome בטא</translation>
 <translation id="2738871930057338499">‏לא ניתן להתחבר לאינטרנט. HTTP 403: קוד איסור. צריך לבדוק את ההגדרה של שרת ה-proxy.</translation>
@@ -279,7 +275,6 @@
 <translation id="3756724684201900923">‏מידע נוסף על התקנת Chrome</translation>
 <translation id="3772152698251011058">‏דיווח על האתר הזה ל-Google</translation>
 <translation id="3780814664026482060">‏Chrome - ‏<ph name="PAGE_TITLE" /></translation>
-<translation id="3785324443014631273">‏לא ניתן היה לסנכרן את הנתונים ב-ChromeOS Flex בגלל שגיאה בכניסה.</translation>
 <translation id="3810973564298564668">ניהול</translation>
 <translation id="383455301564000773">‏משדרגים ל-Windows 11? כדאי להוריד את Chrome ל-OneDrive כדי להיות מוכנים מהיום הראשון.</translation>
 <translation id="383928141529488001">‏ל-Google Chrome נדרשת גישה ל-Bluetooth כדי למצוא 
@@ -369,7 +364,6 @@
 <translation id="4803313124144656665">‏סגירת חיפוש Google ב-Chrome</translation>
 <translation id="4828579605166583682">‏Google Chrome מנסה להחליף סיסמאות קיימות. כדי לאפשר זאת, יש להזין את הסיסמה שלך ל-Windows.</translation>
 <translation id="4836321460899997044">‏פרופיל Chrome</translation>
-<translation id="4842397268809523050">‏לא ניתן היה לסנכרן את הנתונים שלך ב-ChromeOS Flex כי הסנכרון לא זמין בדומיין שלך.</translation>
 <translation id="4851866215237571846">‏כבר בוצעה כניסה לחשבון על ידי <ph name="EXISTING_USER" />.  כדי להפריד בין פעילויות הגלישה, עליך להיכנס ל-Chrome בפרופיל שלך עם האימייל <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">‏כדי לשתף את המסך, צריך לאפשר הקלטת מסך ב-Chrome בקטע "הגדרות המערכת"</translation>
 <translation id="4873783916118289636">‏בדיקה של אמצעי הבקרה החשובים ביותר על פרטיות ואבטחה ב-Chrome</translation>
@@ -383,7 +377,6 @@
 <translation id="492720062778050435">‏לפי המלצת Chrome, כדאי לבדוק את התוסף הזה</translation>
 <translation id="4953650215774548573">‏הגדרת Google Chrome כדפדפן ברירת המחדל</translation>
 <translation id="495931528404527476">‏ב-Chrome</translation>
-<translation id="4969674060580488087">‏לא ניתן לסנכרן את הנתונים שלך ב-ChromeOS Flex כי פרטי הכניסה של החשבון שלך לא מעודכנים.</translation>
 <translation id="4970761609246024540">‏ברוך בואך לפרופילים של Chrome</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">‏לוחצים על 'מנהל הסיסמאות של Google'</translation>
@@ -415,7 +408,6 @@
 <translation id="5271833978500241046">‏משתמשים בהן עם פיצ'רים אחרים של Gemini ב-Chrome</translation>
 <translation id="5320351714793324716">‏אם מאפשרים שימוש בקובצי cookie, יכול להיות שמערכת Chrome תשתמש בהם במהלך טעינה מראש.</translation>
 <translation id="5321325624576443340">‏טכנולוגיית Google Lens לא זמינה. יש לנסות שוב מאוחר יותר.</translation>
-<translation id="5334309298019785904">‏לא בוצע סנכרון של הנתונים ב-ChromeOS כי הסנכרון לא זמין לדומיין שלך.</translation>
 <translation id="5346389065299425353">כדי להעמיק את החיפוש, אפשר להוסיף כמה כרטיסיות, קבצים וכלים</translation>
 <translation id="5353252989841766347">‏ייצוא סיסמאות מ-Chrome</translation>
 <translation id="5368118228313795342">קוד נוסף: <ph name="EXTRA_CODE" />.</translation>
@@ -540,7 +532,6 @@
 <translation id="6497147134301593682">‏Chrome נסגר באופן אוטומטי</translation>
 <translation id="6506909944137591434">‏נדרשת הרשאת גישה למצלמה ב-Chrome כדי ליצור מפה תלת-ממדית של הסביבה שלך</translation>
 <translation id="6515495397637126556">‏<ph name="PAGE_TITLE" /> - Google Chrome בגרסת פיתוח</translation>
-<translation id="6520608191273161151">‏הנתונים מ-Chrome לא נשמרו בחשבון Google שלך ב-ChromeOS Flex בגלל שגיאה בתהליך הכניסה</translation>
 <translation id="6520670145826811516">‏כדי להשתמש בשירותי המיקום, צריך להיכנס אל <ph name="BEGIN_LINK" />הגדרות המערכת<ph name="END_LINK" /> ולתת ל-Chrome גישה</translation>
 <translation id="652948702951888897">‏היסטוריה של Chrome</translation>
 <translation id="6532945796722480006">‏פתיחת Gemini ב-Chrome Canary</translation>
@@ -562,7 +553,6 @@
 <translation id="6712881677154121168">שגיאה בהורדה: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">‏שיפור המהירות ב-Chrome</translation>
 <translation id="6734827584173583205">‏לא נכנסת לאתר הזה בזמן האחרון. ההרשאות "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" ועוד <ph name="COUNT" /> הרשאות הוסרו על ידי Chrome</translation>
-<translation id="6735387454586646204">‏מערכת ChromeOS Flex</translation>
 <translation id="674891594898436429">סגירת החיפוש הפעיל בכרטיסייה הזו</translation>
 <translation id="6750954913813541382">‏כדי לתקן שגיאות כתיב, הטקסט שהוקלד על ידך בדפדפן נשלח אל Google על ידי Chrome</translation>
 <translation id="6760235774835597023">‏אפשר להאיץ ביצועים של אתרים באמצעות מנוע V8 של Chrome, אבל Chrome יהיה קצת פחות עמיד בפני מתקפות. ההגדרה הזו פועלת.</translation>
@@ -583,7 +573,6 @@
 <translation id="6908182077349113099">‏רוצה לסנכרן את הסיסמאות, הסימניות וההיסטוריה שלך באופן מושלם בין המכשירים? כדי להשתמש בקלות בתכונות המוכרות והאהובות, צריך לעדכן את דפדפן ברירת המחדל ל-Chrome.</translation>
 <translation id="6926772305569367352">‏לכפתור "חיפוש Google ב-Chrome" בסרגל הכלים יש סמל חדש. כדי לשאול שאלות במהלך הגלישה בחיפוש Google ב-Chrome, צריך ללחוץ עליו.</translation>
 <translation id="6930294499209825">‏השירות שומר על תוכנות Google מעודכנות. אם השירות יושבת או יופסק, תוכנות Google שמותקנות אצלך לא יתעדכנו יותר באופן קבוע. המשמעות היא שלא ניתן יהיה לתקן פרצות אבטחה שעשויות להיווצר ושתכונות מסוימות לא יפעלו. השירות הזה יוסר באופן אוטומטי אם אין תוכנה של Google שמשתמשת בו.</translation>
-<translation id="6933858244219479645">‏מערכת ChromeOS</translation>
 <translation id="6938166777909186039">‏כדי לקבל עדכונים של Google Chrome בעתיד, צריך להשתמש ב-Windows מגרסה 10 ואילך. במחשב הזה פועלת מערכת Windows 8.1.</translation>
 <translation id="6962628299694876291">‏הדפדפן כבר מחובר לחשבון של <ph name="EXISTING_USER" />. כדי להפריד בין נתוני הגלישה של החשבונות, עליך להיכנס לפרופיל שלך ב-Chromium בתור <ph name="USER_EMAIL_ADDRESS" />. הסיסמאות ופריטים נוספים יופיעו בכל המכשירים שלך.</translation>
 <translation id="6965382102122355670">אישור</translation>
@@ -674,7 +663,6 @@
 <translation id="7801699035218095297">‏Google Chrome מנסה להעתיק את הסיסמאות. כדי לאפשר את הפעולה הזו, יש להקליד את הסיסמה שלך ל-Windows.</translation>
 <translation id="7804364787702057554">‏החשבון שלך ב-Chrome</translation>
 <translation id="7804947029129221742">‏בוצע שינוי מחוץ ל-Chrome במנוע החיפוש שמוגדר כברירת המחדל. כדי להגן עליך, Chrome איפס את ההגדרה לערך ברירת המחדל המקורי. <ph name="LEARN_MORE_LINK" /></translation>
-<translation id="7808348361785373670">‏הסרה מ-Chrome...</translation>
 <translation id="7827099906024714326">‏‫Chrome צריך לאמת את הזהות שלך לפני שאפשר יהיה לשמור חלק מהנתונים בחשבון Google ולהשתמש בהם בכל המכשירים שלך. אם תתבצע יציאה מהחשבון, הנתונים האלה יימחקו.</translation>
 <translation id="7829850924999627855">‏כדי לקבל גישה למידע השמור ולנתונים נוספים מתוך <ph name="DEVICE" />, צריך להתחבר ל-Chrome</translation>
 <translation id="7832314606810669113">‏כדי לקבל גישה לסימניות ולנתונים נוספים בכל המכשירים, צריך להיכנס ל-Chrome. לאחר הכניסה, הסימנייה הזו תישמר בחשבון Google.</translation>
@@ -687,7 +675,6 @@
 <translation id="7896673875602241923">‏מישהו נכנס בעבר ל-Chrome מהמחשב הזה כ-<ph name="ACCOUNT_EMAIL_LAST" />. יש ליצור משתמש חדש ל-Chrome כדי לשמור על הפרדת המידע שלך.</translation>
 <translation id="7904213866086517086">‏פתיחה מחדש של חיפוש Google בחלונית הצד</translation>
 <translation id="7904985524660297937">‏רוצה לנסות את Gemini ב-Google Chrome?</translation>
-<translation id="7905880575591690197">‏הנתונים מ-Chrome לא נשמרו בחשבון Google שלך ב-ChromeOS בגלל שגיאה בתהליך הכניסה</translation>
 <translation id="7936702483636872823">‏Chrome חסם את ההורדה הזאת כי הקובץ מטעה ועשוי לבצע שינויים לא צפויים במכשיר שלך</translation>
 <translation id="7951272445806340501">‏צריך להפעיל מחדש את ChromeOS Flex כדי להחיל את העדכון.</translation>
 <translation id="7959172989483770734">‏ניהול הפרופילים ב-Chrome</translation>
@@ -747,7 +734,6 @@
 <translation id="8402881611069691789">{COUNT,plural, =1{‏העדכון של Chrome הסתיים. יהיה אפשר להשתמש בגרסה העדכנית אחרי שהדפדפן יופעל מחדש. הכרטיסיות הנוכחיות ייפתחו מחדש. יש חלון פרטי או חלון מבודד פתוח. הוא לא ייפתח שוב אחרי שהדפדפן יופעל מחדש.}one{‏העדכון של Chrome הסתיים. יהיה אפשר להשתמש בגרסה העדכנית אחרי שהדפדפן יופעל מחדש. הכרטיסיות הנוכחיות ייפתחו מחדש. יש # חלונות פרטיים וחלונות מבודדים פתוחים בפרופילים שונים. הם לא ייפתחו שוב אחרי שהדפדפן יופעל מחדש.}two{‏העדכון של Chrome הסתיים. יהיה אפשר להשתמש בגרסה העדכנית אחרי שהדפדפן יופעל מחדש. הכרטיסיות הנוכחיות ייפתחו מחדש. יש # חלונות פרטיים וחלונות מבודדים פתוחים בפרופילים שונים. הם לא ייפתחו שוב אחרי שהדפדפן יופעל מחדש.}other{‏העדכון של Chrome הסתיים. יהיה אפשר להשתמש בגרסה העדכנית אחרי שהדפדפן יופעל מחדש. הכרטיסיות הנוכחיות ייפתחו מחדש. יש # חלונות פרטיים וחלונות מבודדים פתוחים בפרופילים שונים. הם לא ייפתחו שוב אחרי שהדפדפן יופעל מחדש.}}</translation>
 <translation id="8403038600646341038">‏הלוגו של Chromium בתוך מסך מחשב.</translation>
 <translation id="8406687098231754303">‏כדי לשאול שאלות בזמן הגלישה, אפשר ללחוץ על הכפתור "חיפוש Google בחלונית הצד" שבסרגל הכלים ולפתוח את החלונית מחדש</translation>
-<translation id="8418845734693287262">‏לא בוצע סנכרון של הנתונים ב-ChromeOS כי פרטי הכניסה לחשבון לא מעודכנים.</translation>
 <translation id="842386925677997438">‏הכלים לבטיחות של Chrome</translation>
 <translation id="8425765582779547329">‏ההורה שלך עושה הכול כדי לשמור על הבטיחות שלך באונליין. כדי שהביטחון שלך יישמר, עליך להיכנס ל-Chrome</translation>
 <translation id="842852285618875960">‏הגעת למגבלה של <ph name="BOOKMARK_LIMIT" /> סימניות ב-Google Chrome, ולכן חלק מהסימניות עדיין לא נשמרו בחשבון Google.
@@ -776,7 +762,6 @@
 <translation id="8624541899164515475">הגדרות, ייפתחו בכרטיסייה חדשה.</translation>
 <translation id="8625237574518804553">{0,plural, =1{‏Chrome יופעל מחדש בעוד דקה}one{‏Chrome יופעל מחדש בעוד # דקות}two{‏Chrome יופעל מחדש בעוד # דקות}other{‏Chrome יופעל מחדש בעוד # דקות}}</translation>
 <translation id="8637932705841171563">‏כדי לשתף את החלון, צריך לאפשר הקלטת מסך ב-Chrome בקטע "הגדרות המערכת"</translation>
-<translation id="8642497536370021917">‏כדי שתמיד תהיה לך אפשרות להשתמש בנתוני Chrome ולשמור אותם בחשבון שלך ב-Google, עליך לאמת את הזהות שלך</translation>
 <translation id="8656634243791296665">‏פתיחת Gemini ב-Chrome פיתוח</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">‏הגדרה זו גם קובעת איזה דף מוצג כשמפעילים את Chrome.</translation>
@@ -838,7 +823,6 @@
 <translation id="922152298093051471">‏התאמה אישית של Chrome</translation>
 <translation id="93760716455950538">‏הפעלה מחדש של ChromeOS Flex</translation>
 <translation id="945522503751344254"> שליחת משוב</translation>
-<translation id="973195869036269770">‏הנתונים מ-Chrome לא נשמרו בחשבון Google שלך ב-ChromeOS כי פרטי הכניסה לחשבון לא מעודכנים</translation>
 <translation id="983803489796659991">‏ההתקנה נכשלה כי שרת העדכון לא מכיל נתוני גיבוב (hash) של האפליקציה.</translation>
 <translation id="989816563149873169">‏ניתן לעבור בין פרופילים של Chrome באמצעות <ph name="SHORTCUT" /></translation>
 </translationbundle>

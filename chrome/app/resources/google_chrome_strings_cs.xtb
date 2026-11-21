@@ -32,13 +32,11 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1278833599417554002">Znovu spustit a aktualizovat &amp;Chrome</translation>
 <translation id="1289911795790071537">Otevřít vyhledávání v Chromu</translation>
 <translation id="1290883685122687410">Chyba nastavení: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1302523850133262269">Počkejte prosím, než Chrome nainstaluje nejnovější aktualizace systému.</translation>
 <translation id="1330562121671411446">Rozpoznat jazyk</translation>
 <translation id="1333654552732143316">Spustit Chrome</translation>
 <translation id="1341711321000856656">Přepnutím můžete zobrazit hesla z jiného profilu Chrome</translation>
 <translation id="1343830902827845050">Přihlášení do Chromu</translation>
 <translation id="1361351916482714918">Procházejte internet chytřeji s Google Lens</translation>
-<translation id="1363996462118479832">ChromeOS vaše data nemohl synchronizovat z důvodu chyby při přihlášení.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1383876407941801731">Vyhledávání</translation>
 <translation id="1399397803214730675">V tomto počítači je již nainstalována novější verze prohlížeče Google Chrome. Jestliže software nefunguje, odinstalujte prosím prohlížeč Google Chrome a zkuste to znovu.</translation>
@@ -89,7 +87,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="177180974022074201">Vyzkoušet s Gemini v Chromu</translation>
 <translation id="1786003790898721085">Zkontrolujte, zda jste v zařízení <ph name="TARGET_DEVICE_NAME" /> přihlášeni do Chromu, a potom zkuste číslo odeslat znovu.</translation>
 <translation id="1786044937610313874">Zástupci se otevírají v Chromu</translation>
-<translation id="1812689907177901597">Pokud tuto možnost vypnete, budete se moci přihlásit k většině webů Google, jako je Gmail, aniž byste se přihlásili do Chromu</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome doporučuje pozastavit kartu, která ho zpomaluje}few{Chrome doporučuje pozastavit karty, které ho zpomalují}many{Chrome doporučuje pozastavit karty, které ho zpomalují}other{Chrome doporučuje pozastavit karty, které ho zpomalují}}</translation>
 <translation id="1832046143430087831">Zrychluje weby pomocí modulu V8 prohlížeče Chrome, ale trochu snižuje odolnost Chromu vůči útokům. Toto nastavení je vypnuté.</translation>
 <translation id="1838374766361614909">Vymazat vyhledávání</translation>
@@ -176,7 +173,6 @@ Pokud tato stránka nefunguje správně, zkuste optimalizaci povolit.</translati
 <translation id="2661616016316841783">Pokud chcete mít k dispozici svá rozšíření a další položky ze zařízení <ph name="DEVICE" />, přihlaste se do Chromu</translation>
 <translation id="2665296953892887393">Pomozte aplikaci Google Chrome zlepšovat tím, že budete společnosti Google zasílat zprávy o selhání a <ph name="UMA_LINK" />.</translation>
 <translation id="2668094785979141847">Kliknutím ukončíte Google Lens</translation>
-<translation id="2674238339205910678">ChromeOS Flex nemohl uložit data Chromu do vašeho účtu Google, protože vaše přihlašovací údaje k účtu jsou zastaralé</translation>
 <translation id="2681444469812712297">Otevřít adresu <ph name="URL" /> na nové kartě prohlížeče Google Chrome.</translation>
 <translation id="2699790011615497488">Otevřít Gemini v Chromu Beta</translation>
 <translation id="2738871930057338499">Nelze se připojit k internetu. HTTP 403 (Zakázáno). Zkontrolujte konfiguraci proxy.</translation>
@@ -287,7 +283,6 @@ Pokud tato stránka nefunguje správně, zkuste optimalizaci povolit.</translati
 <translation id="3756724684201900923">Další informace o instalaci Chromu</translation>
 <translation id="3772152698251011058">Nahlásit tento web Googlu</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
-<translation id="3785324443014631273">Systém ChromeOS Flex nemůže synchronizovat data kvůli chybě při přihlašování.</translation>
 <translation id="3810973564298564668">Spravovat</translation>
 <translation id="383455301564000773">Upgradujete na Windows 11? Stáhněte si Chrome do úložiště OneDrive, ať máte hned první den všechno připravené.</translation>
 <translation id="383928141529488001">K prozkoumání zařízení Bluetooth potřebuje Google Chrome přístup k rozhraní Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -377,7 +372,6 @@ Pokud tato stránka nefunguje správně, zkuste optimalizaci povolit.</translati
 <translation id="4803313124144656665">Zavřít Vyhledávání Google v Chromu</translation>
 <translation id="4828579605166583682">Google Chrome se pokouší nahradit stávající hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
 <translation id="4836321460899997044">Profil Chromu</translation>
-<translation id="4842397268809523050">Systém ChromeOS Flex nemůže synchronizovat data, protože ve vaší doméně není k dispozici Synchronizace.</translation>
 <translation id="4851866215237571846">Už je přihlášen uživatel <ph name="EXISTING_USER" />.  Pokud své procházení chcete oddělit, přihlaste se do Chromu ve svém vlastním profilu jako <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Pokud chcete sdílet obrazovku, v Nastavení systému povolte pro Chrome nahrávání obrazovky</translation>
 <translation id="4873783916118289636">Zkontrolujte klíčové ovládací prvky ochrany soukromí a zabezpečení v Chromu</translation>
@@ -391,7 +385,6 @@ Pokud tato stránka nefunguje správně, zkuste optimalizaci povolit.</translati
 <translation id="492720062778050435">Chrome doporučuje toto rozšíření zkontrolovat</translation>
 <translation id="4953650215774548573">Nastavit Google Chrome jako výchozí prohlížeč</translation>
 <translation id="495931528404527476">V Chromu</translation>
-<translation id="4969674060580488087">Systém ChromeOS Flex nemůže synchronizovat data, protože vaše přihlašovací údaje k účtu jsou zastaralé.</translation>
 <translation id="4970761609246024540">Vítejte v profilech Chrome</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Klikněte na Správce hesel Google</translation>
@@ -425,7 +418,6 @@ Některé funkce mohou být nedostupné. Zadejte prosím jiný adresář profilu
 <translation id="5271833978500241046">Dovednosti můžete používat společně s dalšími funkcemi Gemini v Chromu</translation>
 <translation id="5320351714793324716">Pokud máte povolené soubory cookie, může je Chrome při předběžném načítání použít</translation>
 <translation id="5321325624576443340">Google Lens není k dispozici. Zkuste to později.</translation>
-<translation id="5334309298019785904">ChromeOS nemohl synchronizovat vaše data, protože Synchronizace ve vaší doméně není k dispozici.</translation>
 <translation id="5336664042114176802">Můžete přepnout na asistenta Gemini, který byl původně přidružen k vašemu účtu Google a není spravován organizací <ph name="DOMAIN" />. Odpovědi už nebudou vycházet ze souborů nebo služeb spravovaných organizací <ph name="DOMAIN" /> a historie chatů se nepřenese. Tento asistent nemusí být vhodný k použití pro práci. Přepnutí vyžaduje opětovné spuštění Chromu.</translation>
 <translation id="5346389065299425353">Prohlubte své vyhledávání přidáním karet, souborů a nástrojů</translation>
 <translation id="5353252989841766347">Export hesel z Chromu</translation>
@@ -555,7 +547,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6497147134301593682">Chrome byl automaticky ukončen</translation>
 <translation id="6506909944137591434">K vytvoření 3D mapy vašeho okolí potřebuje Chrome přístup k fotoaparátu</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
-<translation id="6520608191273161151">ChromeOS Flex nemohl uložit data Chromu do vašeho účtu Google, protože při přihlašování došlo k chybě</translation>
 <translation id="6520670145826811516">Pokud chcete používat polohu, udělte Chromu přístup v <ph name="BEGIN_LINK" />nastavení systému<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Historie Chromu</translation>
 <translation id="6532945796722480006">Otevřít Gemini v Chromu Canary</translation>
@@ -577,7 +568,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6712881677154121168">Chyba stahování: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Zrychlete svůj prohlížeč Chrome</translation>
 <translation id="6734827584173583205">V poslední době jste nenavštívili. Chrome odebral tato oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a ještě <ph name="COUNT" />.</translation>
-<translation id="6735387454586646204">Systém ChromeOS Flex</translation>
 <translation id="674891594898436429">Zavřít aktivní vyhledávání na této kartě</translation>
 <translation id="6750954913813541382">Text zadaný v prohlížeči odesílá Chrome kvůli opravě pravopisných chyb do Googlu</translation>
 <translation id="6760235774835597023">Zrychluje weby pomocí modulu V8 prohlížeče Chrome, ale trochu snižuje odolnost Chromu vůči útokům. Toto nastavení je zapnuté.</translation>
@@ -598,7 +588,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6908182077349113099">Mějte hesla, záložky a historii dokonale synchronizované mezi zařízeními. Aktualizujte svůj výchozí prohlížeč na Chrome. Budete tak mít snadno přístup k funkcím, které znáte a máte rádi.</translation>
 <translation id="6926772305569367352">Tlačítko Vyhledávání Google v Chromu na liště má novou ikonu. Kliknutím na něj můžete při procházení v Chromu pokládat otázky pomocí Vyhledávání Google.</translation>
 <translation id="6930294499209825">Udržuje software Google aktualizovaný. V případě zakázání nebo zastavení té služby se software Google nebude aktualizovat, což znamená, že nebude možné opravit případné chyby zabezpečení a funkce nemusí fungovat. Pokud tuto službu žádný software Google nepoužívá, sama se odinstaluje.</translation>
-<translation id="6933858244219479645">Systém ChromeOS</translation>
 <translation id="6938166777909186039">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Google Chrome, budete potřebovat systém Windows 10 nebo novější. Tento počítač používá Windows 8.1.</translation>
 <translation id="6962628299694876291">Už je přihlášen uživatel <ph name="EXISTING_USER" />. Pokud své procházení chcete oddělit, přihlaste se do Chromu ve svém vlastním profilu jako <ph name="USER_EMAIL_ADDRESS" />. Navíc budete mít svá hesla a další informace k dispozici na všech svých zařízeních.</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -689,7 +678,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="7801699035218095297">Google Chrome se pokouší zkopírovat hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
 <translation id="7804364787702057554">Váš účet v Chromu</translation>
 <translation id="7804947029129221742">Mimo Chrome byl změněn váš vyhledávač. Chrome ho kvůli vaší ochraně resetoval na původní výchozí nastavení. <ph name="LEARN_MORE_LINK" /></translation>
-<translation id="7808348361785373670">Odstranit z Chromu...</translation>
 <translation id="7827099906024714326">Před uložením některých dat do vašeho účtu Google k použití na všech vašich zařízeních potřebuje Chrome ověřit, že jste to vy. Pokud se teď odhlásíte, tato data budou smazána.</translation>
 <translation id="7829850924999627855">Pokud chcete mít k dispozici své uložené informace a další položky ze zařízení <ph name="DEVICE" />, přihlaste se do Chromu</translation>
 <translation id="7832314606810669113">Pokud své záložky a další položky chcete mít na všech svých zařízeních, přihlaste se do Chromu. Tato záložka se po přihlášení uloží do vašeho účtu Google.</translation>
@@ -702,7 +690,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="7896673875602241923">Prohlížeč Chrome v tomto počítači je již přihlášen k účtu <ph name="ACCOUNT_EMAIL_LAST" />. Chcete-li své informace uchovat odděleně, vytvořte nového uživatele Chromu.</translation>
 <translation id="7904213866086517086">Znovu otevřít Vyhledávání Google na bočním panelu</translation>
 <translation id="7904985524660297937">Vyzkoušejte Gemini v Google Chrome</translation>
-<translation id="7905880575591690197">ChromeOS nemohl uložit data Chromu do vašeho účtu Google, protože při přihlašování došlo k chybě</translation>
 <translation id="7936702483636872823">Chrome toto stahování zablokoval, protože soubor je klamavý a může ve vašem zařízení provést neočekávané změny</translation>
 <translation id="7951272445806340501">Aktualizace se použije po restartování systému ChromeOS Flex.</translation>
 <translation id="7959172989483770734">Spravovat profily Chrome</translation>
@@ -763,7 +750,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="8402881611069691789">{COUNT,plural, =1{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moct používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. Je otevřeno anonymní nebo izolované okno. Po opětovném spuštění se znovu neotevře.}few{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moct používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. V různých profilech jsou otevřená # anonymní a izolovaná okna. Po opětovném spuštění se znovu neotevřou.}many{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moct používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. V různých profilech je otevřeno # anonymních a izolovaných oken. Po opětovném spuštění se znovu neotevřou.}other{Aktualizace Chromu je dokončena. Po opětovném spuštění budete moct používat nejnovější verzi. Vaše aktuální karty se znovu otevřou. V různých profilech je otevřeno # anonymních a izolovaných oken. Po opětovném spuštění se znovu neotevřou.}}</translation>
 <translation id="8403038600646341038">Logo Chrome na obrazovce počítače.</translation>
 <translation id="8406687098231754303">Pomocí tlačítka Vyhledávání Google na bočním panelu na liště můžete tuto funkci znovu otevřít a pokládat otázky při prohlížení</translation>
-<translation id="8418845734693287262">ChromeOS vaše data nemohl synchronizovat, protože vaše přihlašovací údaje nejsou aktuální.</translation>
 <translation id="842386925677997438">Bezpečnostní nástroje prohlížeče Chrome</translation>
 <translation id="8425765582779547329">Pokud na internetu chceš být víc v bezpečí s nastavením od rodičů, přihlas se do Chromu</translation>
 <translation id="842852285618875960">V Google Chrome jste dosáhli limitu <ph name="BOOKMARK_LIMIT" /> záložek. Některé záložky se vám proto zatím neuložily do účtu Google.
@@ -792,7 +778,6 @@ Nové záložky nebude možné do účtu uložit, dokud některé nesmažete. Po
 <translation id="8624541899164515475">Nastavení, otevře se na nové kartě.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome se za 1 minutu restartuje}few{Chrome se za # minut restartuje}many{Chrome se za # minuty restartuje}other{Chrome se za # minut restartuje}}</translation>
 <translation id="8637932705841171563">Pokud chcete sdílet okno, v Nastavení systému povolte pro Chrome nahrávání obrazovky</translation>
-<translation id="8642497536370021917">Pokud chcete mít vždy možnost používat a ukládat data Chromu ve svém účtu Google, ověřte svou totožnost</translation>
 <translation id="8656634243791296665">Otevřít Gemini v Chromu Dev</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Také řídí, která stránka se zobrazí při spuštění Chromu.</translation>
@@ -854,7 +839,6 @@ Nové záložky nebude možné do účtu uložit, dokud některé nesmažete. Po
 <translation id="922152298093051471">Přizpůsobit Chrome</translation>
 <translation id="93760716455950538">Restartovat systém ChromeOS Flex</translation>
 <translation id="945522503751344254">Odeslat zpětnou vazbu</translation>
-<translation id="973195869036269770">ChromeOS nemohl uložit data Chromu do vašeho účtu Google, protože vaše přihlašovací údaje k účtu jsou zastaralé</translation>
 <translation id="983803489796659991">Instalace se nezdařila, protože server s aktualizací nemá hashovací data pro aplikaci.</translation>
 <translation id="989816563149873169">Zkratkou <ph name="SHORTCUT" /> lze přepínat mezi profily Chrome</translation>
 </translationbundle>

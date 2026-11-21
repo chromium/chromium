@@ -6,6 +6,7 @@
 
 I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Nika amandla itimu</translation>
+<translation id="1085064499066015002">Njalo kuwo wonke amasayithi</translation>
 <translation id="1135328998467923690">Iphakheji alivumelekile: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">Ukubhekana nemvelo</translation>
 <translation id="1171831736360285680">U-<ph name="PARTNER_NAME" /> wengeze isandiso esingaguqula indlela iChromium esebenza ngayo.
@@ -80,6 +81,7 @@ I-<ph name="EXTENSION_NAME" /></translation>
 <translation id="4660476621274971848">Inguqulo elindelwe ngu-"<ph name="EXPECTED_VERSION" />", kodwa inguqulo ibikade ingu-"<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">Yehlulekile ukukhipha ukhiye oyimfihlo.</translation>
 <translation id="4811956658694082538">Ayikwazanga ukufaka iphakheji ngoba inqubo yensiza isaphazekile. Zama ukuqala kabusha i-Chrome bese uyazama futhi.</translation>
+<translation id="4883436287898674711">Wonke amasayithi we-<ph name="WEBSITE_1" /></translation>
 <translation id="4988792151665380515">Yehlulekile ukuthumela ukhiye osesidlangalaleni.</translation>
 <translation id="501057610015570208">I-app enesibaluli se-manifest ye-'kiosk_only' kumele ifakwe kumodi ye-kiosk ye-ChromeOS Flex.</translation>
 <translation id="5026754133087629784">Ukubuka iwebhu: <ph name="WEBVIEW_TAG_NAME" /></translation>

@@ -55,7 +55,6 @@
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> PB</translation>
 <translation id="5307600278924710095">โปรดป้อนส่วนหนึ่งโดยตามด้วย "<ph name="ATSIGN" />" "<ph name="INVALIDADDRESS" />" นั้นไม่สมบูรณ์</translation>
-<translation id="5334352251556557839">เล่นสื่อไม่ได้</translation>
 <translation id="537648784377940524">วันที่น้อยสุด (<ph name="MIN_DATE_OR_TIME" />) ต้องมาก่อนวันที่มากสุด (<ph name="MAX_DATE_OR_TIME" />)</translation>
 <translation id="5466621249238537318">โปรดเลือกอย่างน้อยหนึ่งไฟล์</translation>
 <translation id="5514612371225420585">ไฟล์ในอุปกรณ์</translation>

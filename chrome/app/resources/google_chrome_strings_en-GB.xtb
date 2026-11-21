@@ -32,13 +32,11 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1278833599417554002">Relaunch to update &amp;Chrome</translation>
 <translation id="1289911795790071537">Open search with Chrome</translation>
 <translation id="1290883685122687410">Setup error: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1302523850133262269">Please wait while Chrome installs the latest system updates.</translation>
 <translation id="1330562121671411446">Detect language</translation>
 <translation id="1333654552732143316">Start Chrome</translation>
 <translation id="1341711321000856656">You can switch to see passwords from another Chrome profile</translation>
 <translation id="1343830902827845050">Sign in to Chrome</translation>
 <translation id="1361351916482714918">Browse smarter with Google Lens</translation>
-<translation id="1363996462118479832">Chrome OS could not sync your data due to an error signing in.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1399397803214730675">This computer already has a more recent version of Google Chrome. If the software is not working, please uninstall Google Chrome and try again.</translation>
@@ -89,7 +87,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="177180974022074201">Try with Gemini in Chrome</translation>
 <translation id="1786003790898721085">Make sure that you are signed in to Chrome on your <ph name="TARGET_DEVICE_NAME" /> and then try sending again.</translation>
 <translation id="1786044937610313874">Shortcuts open in Chrome</translation>
-<translation id="1812689907177901597">By turning this off, you can sign in to Google sites such as Gmail, without signing in to Chrome</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome recommends pausing the tab that's slowing your browser}other{Chrome recommends pausing the tabs that are slowing your browser}}</translation>
 <translation id="1832046143430087831">Speeds up sites with Chrome's V8 engine but makes Chrome slightly less resistant to attacks. This setting is off.</translation>
 <translation id="1838374766361614909">Clear search</translation>
@@ -176,7 +173,6 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="2661616016316841783">To get your extensions and more from <ph name="DEVICE" />, sign in to Chrome</translation>
 <translation id="2665296953892887393">Help make Google Chrome better by sending crash reports and <ph name="UMA_LINK" /> to Google</translation>
 <translation id="2668094785979141847">Click to exit Google Lens</translation>
-<translation id="2674238339205910678">ChromeOS Flex could not save Chrome data in your Google Account because your account sign-in details are out of date</translation>
 <translation id="2681444469812712297">Open <ph name="URL" /> in a new tab in Google Chrome.</translation>
 <translation id="2699790011615497488">Open Gemini in Chrome Beta</translation>
 <translation id="2738871930057338499">Unable to connect to the Internet. HTTP 403 Forbidden. Please check your proxy configuration.</translation>
@@ -287,7 +283,6 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="3756724684201900923">Learn more about installing Chrome</translation>
 <translation id="3772152698251011058">Report this site to Google</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
-<translation id="3785324443014631273">Chrome OS Flex could not sync your data due to an error signing in.</translation>
 <translation id="3810973564298564668">Manage</translation>
 <translation id="383455301564000773">Upgrading to Windows 11? Download Chrome to OneDrive so that you're ready from day one.</translation>
 <translation id="383928141529488001">Google Chrome needs Bluetooth access to explore 
@@ -378,7 +373,6 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="4803313124144656665">Close Google Search in Chrome</translation>
 <translation id="4828579605166583682">Google Chrome is trying to replace existing passwords. Type in your Windows password to allow this.</translation>
 <translation id="4836321460899997044">Chrome profile</translation>
-<translation id="4842397268809523050">Chrome OS Flex could not sync your data because sync is not available for your domain.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> is already signed in.  To keep your browsing separate, sign in to Chrome in your own profile as <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">To share your screen, allow screen recording for Chrome in System Settings</translation>
 <translation id="4873783916118289636">Review key privacy and security controls in Chrome</translation>
@@ -392,7 +386,6 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="492720062778050435">Chrome recommends you review this extension</translation>
 <translation id="4953650215774548573">Set Google Chrome as your default browser</translation>
 <translation id="495931528404527476">In Chrome</translation>
-<translation id="4969674060580488087">Chrome OS Flex could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="4970761609246024540">Welcome to Chrome profiles</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Click 'Google Password Manager'</translation>
@@ -426,7 +419,6 @@ Some features may be unavailable. Please specify a different profile directory o
 <translation id="5271833978500241046">Use them alongside other Gemini features in Chrome</translation>
 <translation id="5320351714793324716">If you allow cookies, Chrome may use them when preloading.</translation>
 <translation id="5321325624576443340">Google Lens is not available. Please try again later.</translation>
-<translation id="5334309298019785904">Chrome OS could not sync your data because sync is not available for your domain.</translation>
 <translation id="5336664042114176802">You can switch to the Gemini assistant originally associated with your Google Account and not managed by <ph name="DOMAIN" />. Answers will no longer be grounded in files or services managed by <ph name="DOMAIN" /> and your chat history won't carry over. It may not be suitable to use for work. Switching requires relaunching Chrome.</translation>
 <translation id="5346389065299425353">Deepen your search by adding multiple tabs, files and tools</translation>
 <translation id="5353252989841766347">Export Passwords From Chrome</translation>
@@ -556,7 +548,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6497147134301593682">Chrome was automatically closed</translation>
 <translation id="6506909944137591434">Chrome needs camera permission to create a 3D map of your surroundings</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
-<translation id="6520608191273161151">ChromeOS Flex could not save Chrome data in your Google Account due to an error signing in</translation>
 <translation id="6520670145826811516">To use your location, give Chrome access in <ph name="BEGIN_LINK" />system settings<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Chrome history</translation>
 <translation id="6532945796722480006">Open Gemini in Chrome Canary</translation>
@@ -578,7 +569,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6712881677154121168">Download error: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Make Chrome faster</translation>
 <translation id="6734827584173583205">You haven't visited recently. Chrome removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> and <ph name="COUNT" /> more.</translation>
-<translation id="6735387454586646204">Chrome OS Flex system</translation>
 <translation id="674891594898436429">Dismiss active search in this tab</translation>
 <translation id="6750954913813541382">To fix spelling errors, Chrome sends the text that you type in the browser to Google</translation>
 <translation id="6760235774835597023">Speeds up sites with Chrome's V8 engine but makes Chrome slightly less resistant to attacks. This setting is on.</translation>
@@ -599,7 +589,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6908182077349113099">Keep your passwords, bookmarks and history perfectly synced across devices. Easily access the features that you know and love by updating your default browser to Chrome.</translation>
 <translation id="6926772305569367352">The 'Google Search in Chrome' button on the toolbar has a new icon. Click it to ask questions as you browse with Google Search in Chrome.</translation>
 <translation id="6930294499209825">Keeps your Google software up to date. If this service is disabled or stopped, your Google software will not be kept up to date, meaning security vulnerabilities that may arise cannot be fixed and features may not work. This service uninstalls itself when there is no Google software using it.</translation>
-<translation id="6933858244219479645">ChromeOS system</translation>
 <translation id="6938166777909186039">To get future Google Chrome updates, you'll need Windows 10 or later. This computer is using Windows 8.1.</translation>
 <translation id="6962628299694876291"><ph name="EXISTING_USER" /> is already signed in. To keep your browsing separate, sign in to Chrome in your own profile as <ph name="USER_EMAIL_ADDRESS" />. You'll also get your passwords and more on all your devices.</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -690,7 +679,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7801699035218095297">Google Chrome is trying to copy passwords. Type your Windows password to allow this.</translation>
 <translation id="7804364787702057554">Your account in Chrome</translation>
 <translation id="7804947029129221742">Your search engine was changed from outside of Chrome. To protect you, Chrome reset it to its original default. <ph name="LEARN_MORE_LINK" /></translation>
-<translation id="7808348361785373670">Remove from Chrome...</translation>
 <translation id="7827099906024714326">Chrome needs to verify that it's you before some data can be saved in your Google Account and used on all your devices. If you sign out now, this data will be deleted.</translation>
 <translation id="7829850924999627855">To get your saved info and more from <ph name="DEVICE" />, sign in to Chrome</translation>
 <translation id="7832314606810669113">To get your bookmarks and more on all your devices, sign in to Chrome. This bookmark will be saved in your Google Account after you sign in.</translation>
@@ -703,7 +691,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7896673875602241923">Someone previously signed in to Chrome on this computer as <ph name="ACCOUNT_EMAIL_LAST" />. Please create a new Chrome user to keep your information separate.</translation>
 <translation id="7904213866086517086">Reopen Google Search in side panel</translation>
 <translation id="7904985524660297937">Try Gemini in Google Chrome</translation>
-<translation id="7905880575591690197">ChromeOS could not save Chrome data in your Google Account due to an error signing in</translation>
 <translation id="7936702483636872823">Chrome blocked this download because the file is deceptive and may make unexpected changes to your device</translation>
 <translation id="7951272445806340501">Chrome OS Flex needs to be restarted to apply the update.</translation>
 <translation id="7959172989483770734">Manage Chrome profiles</translation>
@@ -764,7 +751,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8402881611069691789">{COUNT,plural, =1{Chrome is done updating. You can use the latest version as soon as you relaunch. Your current tabs will then reopen. There is an Incognito or Isolated Window open. It won't reopen after you relaunch.}other{Chrome is done updating. You can use the latest version as soon as you relaunch. Your current tabs will then reopen. There are # Incognito and Isolated Windows open across profiles. They won't reopen after you relaunch.}}</translation>
 <translation id="8403038600646341038">Chrome logo inside a computer screen.</translation>
 <translation id="8406687098231754303">From the 'Google Search in side panel' button on the toolbar, you can reopen Google Search in side panel to ask questions while you browse</translation>
-<translation id="8418845734693287262">Chrome OS could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="842386925677997438">Chrome’s safety tools</translation>
 <translation id="8425765582779547329">To stay safer online with your parent's choices, sign in to Chrome</translation>
 <translation id="842852285618875960">You reached Google Chrome's limit of <ph name="BOOKMARK_LIMIT" /> bookmarks, so some of your bookmarks haven't been saved in your Google Account yet.
@@ -793,7 +779,6 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="8624541899164515475">Settings, opens in new tab.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome will relaunch in 1 minute}other{Chrome will relaunch in # minutes}}</translation>
 <translation id="8637932705841171563">To share your window, allow screen recording for Chrome in System Settings</translation>
-<translation id="8642497536370021917">To make sure that you can always use and save Chrome data in your Google Account, verify that it's you</translation>
 <translation id="8656634243791296665">Open Gemini in Chrome Dev</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">It also controls what page is shown when you start Chrome.</translation>
@@ -855,7 +840,6 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="922152298093051471">Customise Chrome</translation>
 <translation id="93760716455950538">Restart Chrome OS Flex</translation>
 <translation id="945522503751344254">Send feedback</translation>
-<translation id="973195869036269770">ChromeOS could not save Chrome data in your Google Account because your account sign-in details are out of date</translation>
 <translation id="983803489796659991">Installation failed because the update server does not have any hash data for the application.</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> can switch between Chrome profiles</translation>
 </translationbundle>

@@ -13,6 +13,7 @@
 <translation id="1047095725494118091">Impossibile scaricare. Riprova o riavvia <ph name="DEVICE_TYPE" />.</translation>
 <translation id="1047458377670401304"><ph name="CPU_NAME" /> (<ph name="THREAD_COUNT" /> thread, <ph name="CPU_MAX_CLOCK_SPEED" /> GHz)</translation>
 <translation id="1047773237499189053">Sono disponibili nuove funzionalità: utilizza il tasto Freccia su per saperne di più.</translation>
+<translation id="1049324577536766607">{COUNT,plural, =1{Ricezione di <ph name="ATTACHMENTS" /> dal dispositivo <ph name="DEVICE_NAME" />}other{Ricezione di <ph name="ATTACHMENTS" /> dal dispositivo <ph name="DEVICE_NAME" />}}</translation>
 <translation id="1049663189809099096">giallo pastello</translation>
 <translation id="1053371972724535586">Le mie registrazioni</translation>
 <translation id="1056898198331236512">Avviso</translation>
@@ -64,6 +65,7 @@
 <translation id="1223498995510244364">Riassumi</translation>
 <translation id="123124571410524056">Portale sospetto</translation>
 <translation id="1232610416724362657">una cascata</translation>
+<translation id="1235924639474699896">{COUNT,plural, =1{testo}other{# segmenti di testo}}</translation>
 <translation id="1238163879850290856">Reimposta per impedire ad altre persone di accedere ai tuoi dati. Utilizza solo metodi di immissione che ritieni affidabili.</translation>
 <translation id="1238612778414822719">Latenza HTTPS</translation>
 <translation id="1252766349417594414">Joystick</translation>
@@ -71,6 +73,7 @@
 <translation id="1270369111467284986">Il sistema sospetta la presenza di un captive portal</translation>
 <translation id="1274654146705270731">arance</translation>
 <translation id="1275718070701477396">Selezionato</translation>
+<translation id="127946606521051357">Dispositivo nelle vicinanze con condivisione attiva</translation>
 <translation id="1290331692326790741">Segnale debole</translation>
 <translation id="1292474106138697109">Display Strumenti del corso</translation>
 <translation id="1300115153046603471">APN è di tipo predefinito e <ph name="ATTACH" />.</translation>
@@ -92,6 +95,7 @@
 <translation id="1350909945461913813">Assicurati di salvare il tuo lavoro</translation>
 <translation id="1367951781824006909">Scegli un file</translation>
 <translation id="1371650399987522809">Feedback per lo sfondo con IA di Google integrata</translation>
+<translation id="1373176046406139583">L'impostazione Visibilità del dispositivo ti consente di stabilire chi può condividere file con te mentre il tuo schermo è sbloccato. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="1374385338586507108">Definisci</translation>
 <translation id="1376064675713230088">t-rex</translation>
 <translation id="1383876407941801731">Cerca</translation>
@@ -118,6 +122,7 @@
 <translation id="145402479967797468">Controlli di riproduzione</translation>
 <translation id="1459693405370120464">Meteo</translation>
 <translation id="1463084054301832672">cottage</translation>
+<translation id="1464597059227482327">Se vuoi attivare la condivisione con un Chromebook non presente nei tuoi contatti, assicurati che sul dispositivo in questione sia attiva l'opzione "Visibilità nelle vicinanze". Per attivare l'opzione "Visibilità nelle vicinanze", seleziona l'angolo in basso a destra, quindi attiva l'opzione. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="1468664791493211953">Offerte</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gestisce questo dispositivo e potrebbe essere in grado di monitorare le tue attività.</translation>
 <translation id="1478594628797167447">Scanner</translation>
@@ -145,6 +150,7 @@
 <translation id="1555130319947370107">Blu</translation>
 <translation id="155865706765934889">Touchpad</translation>
 <translation id="1561927818299383735">colore retroilluminato</translation>
+<translation id="1562119309884184621">Se aggiungi questo contatto, verrà memorizzato e riconosciuto la volta successiva che condividerà file</translation>
 <translation id="1564356849266217610">organza</translation>
 <translation id="1565038567006703504">Impossibile aggiornare <ph name="DEVICE_NAME" /></translation>
 <translation id="1567064801249837505">Album</translation>
@@ -166,6 +172,7 @@
 <translation id="1641857168437328880">Alimentatore di documenti (solo fronte)</translation>
 <translation id="1642396894598555413">biciclette</translation>
 <translation id="1643449475550628585">Cambia l'immagine di sfondo ogni giorno</translation>
+<translation id="1643921258693943800">Per utilizzare Condivisione nelle vicinanze, attiva il Bluetooth e il Wi-Fi</translation>
 <translation id="1644574205037202324">Cronologia</translation>
 <translation id="1651925268237749928">Hai selezionato un album condiviso. Altre persone possono aggiungere o modificare foto. È possibile che per lo sfondo vengano usate foto che non sono attualmente incluse in questo album.</translation>
 <translation id="1661512400125589646">Metti in pausa</translation>
@@ -182,6 +189,7 @@
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Resolver DNS presente</translation>
 <translation id="1708602061922134366">Blu Google</translation>
+<translation id="1709972045049031556">Impossibile condividere</translation>
 <translation id="1710499924611012470">Navigazione in Accessibilità</translation>
 <translation id="1715359911173058521">Si è verificato un problema di collegamento con lo scanner. Controlla la rete o la connessione USB e riprova.</translation>
 <translation id="1717874160321062422">Dispositivo gestito da <ph name="FIRST_MANAGER" /> e <ph name="SECOND_MANAGER" /></translation>
@@ -191,6 +199,7 @@
 <translation id="1731082422893354635">Touchpad Bluetooth</translation>
 <translation id="1738949837603788263">Zona <ph name="ZONE_NUMBER" /></translation>
 <translation id="1745577949879301685">Impossibile caricare le immagini. Controlla la connessione di rete o riprova a caricare le immagini.</translation>
+<translation id="1745732479023874451">Gestisci contatti</translation>
 <translation id="1751249301761991853">Personali</translation>
 <translation id="1751335846119670066">Aiutami a leggere</translation>
 <translation id="1753496554272155572">Esci dall'anteprima dello sfondo</translation>
@@ -206,6 +215,7 @@
 <translation id="1768959921651994223">Tipo di autenticazione</translation>
 <translation id="1776228893584526149">Tonalità sfondo</translation>
 <translation id="1777913922912475695">ponte</translation>
+<translation id="178092663238929451">Configura Condivisione nelle vicinanze per ricevere e inviare file con le persone intorno a te</translation>
 <translation id="1788485524395674731">Questa app è gestita dall'amministratore.</translation>
 <translation id="1792647875738159689">Annullamento scansione…</translation>
 <translation id="1801418420130173017">Disabilita il tema scuro</translation>
@@ -231,10 +241,13 @@
 <translation id="1858620243986915808">Allega screenshot</translation>
 <translation id="1860654594958086756">rendering 3D</translation>
 <translation id="1871413952174074704">L'APN non può contenere più di <ph name="CHAR_LIMIT" /> caratteri</translation>
+<translation id="187145082678092583">Meno app</translation>
 <translation id="1871569928317311284">Disattiva il tema scuro</translation>
 <translation id="1874612839560830905">MTU</translation>
 <translation id="1876997008435570708">farfalle</translation>
 <translation id="188114911237521550">Disattiva la modalità Buio</translation>
+<translation id="1881577802939775675">{COUNT,plural, =1{Elemento}other{# elementi}}</translation>
+<translation id="1884340228047885921">L'attuale impostazione di visibilità è Alcuni contatti</translation>
 <translation id="1884794756658039602">Scopri di più sulle etichette di chi parla.</translation>
 <translation id="1885577615937958993">manda avanti velocemente i contenuti multimediali</translation>
 <translation id="1887850431809612466">Revisione hardware</translation>
@@ -245,8 +258,10 @@
 <translation id="1908394185991500139">Freccia sinistra</translation>
 <translation id="1914144885717544695">venerdì</translation>
 <translation id="1915960750806557358">Condividi il tuo feedback o descrivi il problema. Assicurati di non includere informazioni personali, sensibili o riservate.</translation>
+<translation id="1920390473494685033">Contatti</translation>
 <translation id="1923388006036088459">Colori intensi</translation>
 <translation id="1926611810597212636">unicorno</translation>
+<translation id="1929774028758671973">I contatti possono condividere contenuti con te quando si trovano nelle vicinanze. Ti verrà chiesto di approvare queste richieste. Non dovrai approvare la condivisione tra i dispositivi su cui è stato eseguito l'accesso a <ph name="USER_EMAIL" />.</translation>
 <translation id="1944321879609775960">Per creare un riepilogo, riavvia il tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="1945403655450283000">Registratore</translation>
 <translation id="1947737735496445907">Stampato</translation>
@@ -266,6 +281,7 @@
 <translation id="2008685064673031089">Prime search</translation>
 <translation id="2016697457005847575">Prova i passaggi per la risoluzione dei problemi</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2037486735086318591">Configura la funzionalità <ph name="FEATURE_NAME" /> per ricevere e inviare file con le persone nelle vicinanze</translation>
 <translation id="2045814230297767491">posate</translation>
 <translation id="2047316797244836561">Connettiti a una rete e ricarica la pagina per visualizzare il salvaschermo.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -274,9 +290,11 @@
 <translation id="2080070583977670716">Altre impostazioni</translation>
 <translation id="2082932131694554252">Tasto della tastiera assegnato</translation>
 <translation id="2085089206770112532">Riduci la luminosità del display</translation>
+<translation id="208586643495776849">Riprova</translation>
 <translation id="2086091080968010660">Le modifiche basate sul tempo potrebbero non essere accurate. Attiva l'accesso alla posizione del sistema nelle impostazioni.</translation>
 <translation id="2102231663024125441">Modifica del testo</translation>
 <translation id="2105810540595158374">Il dispositivo è un controller.</translation>
+<translation id="2108349519800154983">{COUNT,plural, =1{Numero di telefono}other{# numeri di telefono}}</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versione <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Attualmente disponibile solo in inglese (Stati Uniti)</translation>
 <translation id="2126937207024182736"><ph name="AVAILABLE_MEMORY" /> GB disponibili su <ph name="TOTAL_MEMORY" /></translation>
@@ -287,6 +305,7 @@
 <translation id="215206000155329774"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto</translation>
 <translation id="2154460308960858308">Cancella la ricerca</translation>
+<translation id="2155473371917268529">L'impostazione di visibilità attuale è quella dei tuoi dispositivi</translation>
 <translation id="2157660087437850958">selettore di emoji</translation>
 <translation id="2157959690810728433">IN CODA</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Riprova</translation>
@@ -329,9 +348,11 @@
 <translation id="2286454467119466181">Simple</translation>
 <translation id="2287186687001756809">Nessuna immagine disponibile. Per aggiungere foto, visita la pagina <ph name="LINK" />.</translation>
 <translation id="2294577623958216786">La programmazione corrente è impostata su <ph name="SUNRISE" />-<ph name="SUNSET" />. Per aggiornare automaticamente la programmazione del tramonto e dell'alba, attiva l'accesso alla posizione del sistema.</translation>
+<translation id="229477815107578534">Esamina le tue impostazioni</translation>
 <translation id="2305172810646967500">nero</translation>
 <translation id="2307344026739914387">Utilizza coppia di chiavi corrente</translation>
 <translation id="2308243864813041101">Scollega il cavo USB di <ph name="DEVICE_NAME" /> per continuare il processo di aggiornamento</translation>
+<translation id="2314165183524574721">L'attuale impostazione di visibilità è Nascosto</translation>
 <translation id="2320295602967756579">Abilita il tema chiaro</translation>
 <translation id="2323506179655536734">SALTATO</translation>
 <translation id="2324354238778375592">Mobile</translation>
@@ -352,6 +373,7 @@
 <translation id="2418150275289244458">Apri nelle impostazioni</translation>
 <translation id="2421798028054665193">Immagine <ph name="CURRENT_PAGE" /> di <ph name="TOTAL_PAGES" /></translation>
 <translation id="242825218556404975">Nessun discorso rilevato</translation>
+<translation id="2434758125294431199">Seleziona chi può condividere file con te</translation>
 <translation id="2438248248625638801">Creazione dei titoli delle registrazioni in corso…</translation>
 <translation id="2446553403094072641">Precisione rappresentazione in virgola mobile</translation>
 <translation id="2448312741937722512">Tipo</translation>
@@ -386,14 +408,17 @@
 <translation id="2584559707064218956">Vai alle Impostazioni per la configurazione</translation>
 <translation id="2586146417912237930">blu e indaco</translation>
 <translation id="2589921777872778654">Menu per modificare o eliminare</translation>
+<translation id="2597073208962000830">La funzionalità Condivisione nelle vicinanze usa la scansione Bluetooth per trovare dispositivi nelle vicinanze.</translation>
 <translation id="2597774443162333062">I file verranno inviati a Google per il debug</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Scansione completata. 1 pagina scansionata}other{Scansione completata. {NUMBER_OF_PAGES} pagine scansionate}}</translation>
 <translation id="261322795497077164">Identificazione dei relatori</translation>
 <translation id="2617397783536231890">cotone</translation>
 <translation id="2618015542787108131">una duna di sabbia</translation>
+<translation id="2618797463720777311">Configura Condivisione nelle vicinanze</translation>
 <translation id="2619761439309613843">Aggiornam. quotidiano</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2626848494898563581">Impossibile raggiungere i servizi Google</translation>
+<translation id="2627424346328942291">Impossibile condividere</translation>
 <translation id="2637303424821734920">OFF - Per visualizzare il meteo locale, <ph name="BEGIN_LINK" />attiva l'accesso alla posizione del sistema<ph name="END_LINK" /></translation>
 <translation id="2638662041295312666">Immagine accesso</translation>
 <translation id="2640549051766135490">Album <ph name="TITLE" /> <ph name="DESC" /> selezionato</translation>
@@ -406,6 +431,7 @@
 <translation id="267442004702508783">aggiorna</translation>
 <translation id="2675392311492541028">Trascrizione e riepilogo</translation>
 <translation id="268270014981824665">Attenuazione tastiera</translation>
+<translation id="2704606927547763573">Copiata</translation>
 <translation id="2712812801627182647">Chiave di autenticazione TLS</translation>
 <translation id="2713444072780614174">Bianco</translation>
 <translation id="2715723665057727940">un fiume</translation>
@@ -414,6 +440,7 @@
 <translation id="2728460467788544679">Cancella l'intera cronologia di stampa</translation>
 <translation id="2731700343119398978">Attendi...</translation>
 <translation id="2740531572673183784">OK</translation>
+<translation id="2743387203779672305">Copia negli appunti</translation>
 <translation id="2744221223678373668">Condivise</translation>
 <translation id="2749164457515831917">Suggerimenti in ordine casuale</translation>
 <translation id="2751739896257479635">Autenticazione fase 2 di tipo EAP</translation>
@@ -423,7 +450,9 @@
 <translation id="2786429550992142861">lino</translation>
 <translation id="2787237339470862294">Al momento questa lingua non è supportata</translation>
 <translation id="2787435249130282949">Tastiera più luminosa</translation>
+<translation id="2803313416453193357">Apri cartella</translation>
 <translation id="2805756323405976993">App</translation>
+<translation id="2806372837663997957">Il dispositivo con cui stai tentando di condividere il file non ha accettato</translation>
 <translation id="28232023175184696">Impossibile connettersi a Internet. Fai clic per riprovare.</translation>
 <translation id="2855718259207180827">lana</translation>
 <translation id="2856429654176718363">Un'enorme astronave fluttua sopra la città, illuminata da molte luci. L'intera scena ha uno stile di un dipinto a olio e presenta toni scuri. Crea un'atmosfera misteriosa con elementi futuristici di fantascienza. Questa illustrazione è stata creata utilizzando il software C4D e il renderer OC per mettere in evidenza l'alta risoluzione e l'elevato livello di dettagli. C'erano anche alcuni edifici urbani a breve distanza, che hanno aggiunto un effetto di profondità di campo. La scena è resa nello stile di un dipinto a olio, con toni scuri e un'atmosfera misteriosa con elementi futuristici di fantascienza.</translation>
@@ -438,7 +467,6 @@
 <translation id="2878387241690264070">Riduzione della carica: <ph name="RATE" /> in <ph name="NUM_SECONDS" /> secondi.</translation>
 <translation id="2880569433548999039">Salvaschermo Flusso di nuvole</translation>
 <translation id="2882230315487799269">Personalizza prompt IA</translation>
-<translation id="2888298276507578975">Inserisci una richiesta come "scrivi un biglietto di ringraziamento"</translation>
 <translation id="2890557891229184386">un'isola tropicale</translation>
 <translation id="2895772081848316509">scuro</translation>
 <translation id="2915996080311180594">Riavvia in seguito</translation>
@@ -448,6 +476,7 @@
 <translation id="2941112035454246133">Bassa</translation>
 <translation id="2956070106555335453">Riepilogo</translation>
 <translation id="2968959705684615497">Una tigre bianca surreale con occhi e strisce dorate, seduta su una duna di sabbia bianca.</translation>
+<translation id="2970766364519518369">I contatti selezionati possono condividere contenuti con te quando si trovano nelle vicinanze. Ti verrà chiesto di approvare queste richieste. Non dovrai approvare la condivisione tra i dispositivi su cui è stato eseguito l'accesso a <ph name="USER_EMAIL" />.</translation>
 <translation id="299385721391037602">rosa e giallo</translation>
 <translation id="3008341117444806826">AGGIORNA</translation>
 <translation id="3009958530611748826">Seleziona una cartella in cui salvare i file</translation>
@@ -469,6 +498,8 @@
 <translation id="3091839911843451378">Operazione non riuscita - Interruzione</translation>
 <translation id="3102119246920354026">Cache</translation>
 <translation id="3103783611481501187">surreale</translation>
+<translation id="3108931485517391283">Impossibile ricevere</translation>
+<translation id="3117791853215125017">{COUNT,plural, =1{Impossibile inviare <ph name="ATTACHMENTS" /> al dispositivo <ph name="DEVICE_NAME" />}other{Impossibile inviare <ph name="ATTACHMENTS" /> al dispositivo <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3119672627216736407">Traduzione disponibile</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">piscine</translation>
@@ -488,7 +519,6 @@
 <translation id="3170673040743561620">Posiziona il documento sullo scanner</translation>
 <translation id="3174321110679064523">Sfondo Dall'alba al tramonto</translation>
 <translation id="3178532070248519384">avant-garde</translation>
-<translation id="3182676044300231689">Inserisci un prompt come "fa' in modo che mostri maggiore sicurezza"</translation>
 <translation id="3188257591659621405">I miei file</translation>
 <translation id="319101249942218879">Immagine dell'avatar cambiata</translation>
 <translation id="3192947282887913208">File audio</translation>
@@ -504,7 +534,9 @@
 <translation id="324961752321393509">L'amministratore non consente di chiudere questa app</translation>
 <translation id="3263941347294171263">Scollega e ricollega <ph name="DEVICE_NAME" /> per continuare il processo di aggiornamento</translation>
 <translation id="3268178239013324452">Operazione non riuscita - Sportello aperto</translation>
+<translation id="3269689705184377744">{COUNT,plural, =1{File}other{# file}}</translation>
 <translation id="3275729367986477355">Immagine avatar</translation>
+<translation id="3279092821516760512">I contatti selezionati possono condividere contenuti con te quando sono nelle vicinanze. I trasferimenti non inizieranno finché non accetti.</translation>
 <translation id="3283504360622356314">{0,plural, =1{Modifica file}other{Modifica file}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3286538390144397061">Riavvia adesso</translation>
@@ -517,11 +549,13 @@
 <translation id="3327613592010997943">Potrai usare di nuovo questo dispositivo <ph name="DAY" /> alle ore <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Test in esecuzione</translation>
 <translation id="3332683265015995419">Un'astronave steampunk che vola in una tempesta di sabbia.</translation>
+<translation id="3333961966071413176">Tutti i contatti</translation>
 <translation id="3340011300870565703">Percentuale di batteria dell'auricolare destro del dispositivo a <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="3340978935015468852">impostazioni</translation>
 <translation id="3347558044552027859">moderno</translation>
 <translation id="3359218928534347896">attiva/disattiva audio del microfono</translation>
 <translation id="3360306038446926262">Finestre</translation>
+<translation id="3361421571228286637">{COUNT,plural, =1{Il dispositivo <ph name="DEVICE_NAME" /> sta cercando di condividere <ph name="ATTACHMENTS" /> con te.}other{Il dispositivo <ph name="DEVICE_NAME" /> sta cercando di condividere <ph name="ATTACHMENTS" /> con te.}}</translation>
 <translation id="3361618936611118375">sushi</translation>
 <translation id="3368922792935385530">Connesso</translation>
 <translation id="3369013195428705271">Vuoi cancellare l'intera cronologia di stampa? I processi di stampa in corso non verranno cancellati.</translation>
@@ -539,6 +573,7 @@
 <translation id="3434988468785284438">riflessi</translation>
 <translation id="3435738964857648380">Sicurezza</translation>
 <translation id="3435896845095436175">Abilita</translation>
+<translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="345256797477978759">Aggancia la finestra alla parte più grande <ph name="DIRECTION" /> dello schermo</translation>
 <translation id="3456078764689556234"><ph name="PRINTED_PAGES" /> pagina stampata su <ph name="TOTAL_PAGES" />.</translation>
 <translation id="345898999683440380">Scansione della pagina <ph name="PAGE_NUM" /> in corso. Completamento: <ph name="PERCENTAGE_VALUE" />%.</translation>
@@ -561,8 +596,10 @@
 <translation id="3552832331940389362">Un'illustrazione di animazione giapponese di un gatto seduto su un davanzale a guardare la pioggia pomeridiana.</translation>
 <translation id="3557205324756024651">Identità locale (facoltativa)</translation>
 <translation id="3565064564551103223">IP consentiti</translation>
+<translation id="3567284462585300767">Per ricevere e accettare i file con le persone intorno a te, renditi visibile</translation>
 <translation id="3569407787324516067">Salvaschermo</translation>
 <translation id="3571184524500629183">Chiudi ricerca</translation>
+<translation id="3571734092741541777">Configura</translation>
 <translation id="3577473026931028326">Si è verificato un errore. Riprova.</translation>
 <translation id="357889014807611375">Wi-Fi a consumo</translation>
 <translation id="3583278742022654445">Intensità segnale debole. Prova ad avvicinarti alla fonte del segnale Wi-Fi.</translation>
@@ -579,11 +616,13 @@
 <translation id="3614639364827854748">Sposta questo menu a sinistra</translation>
 <translation id="361575905210396100">Grazie per il tuo feedback</translation>
 <translation id="3621072146987826699">elefanti</translation>
+<translation id="362266093274784978">{COUNT,plural, =1{un'app}other{# app}}</translation>
 <translation id="3628462041319107639">Download del modello di trascrizione in corso…</translation>
 <translation id="3632040286124154621">Suggerimento utile</translation>
 <translation id="3632579075709132555">Attivazione/disattivazione della Schermata privata</translation>
 <translation id="3634941468757842845">Scegli un tema</translation>
 <translation id="3644695927181369554">Suggerimento sbagliato</translation>
+<translation id="3647998456578545569">{COUNT,plural, =1{Ricezione di <ph name="ATTACHMENTS" /> dal dispositivo <ph name="DEVICE_NAME" /> completata}other{Ricezione di <ph name="ATTACHMENTS" /> dal dispositivo <ph name="DEVICE_NAME" /> completata}}</translation>
 <translation id="3651050199673793219">Seleziona un'unità di temperatura</translation>
 <translation id="3662461537616691585">bordeaux e granata</translation>
 <translation id="3664755900672940272">Prompt di esempio in ordine casuale</translation>
@@ -601,6 +640,7 @@
 <translation id="3748026146096797577">Non connesso</translation>
 <translation id="3749289110408117711">Nome file</translation>
 <translation id="3763034084412196440">Regola il volume</translation>
+<translation id="3764974059056958214">{COUNT,plural, =1{Invio di <ph name="ATTACHMENTS" /> al dispositivo <ph name="DEVICE_NAME" />}other{Invio di <ph name="ATTACHMENTS" /> al dispositivo <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3767737419527918477">Cerca file di registrazione</translation>
 <translation id="3771294271822695279">File video</translation>
 <translation id="3771694256347217732">Termini di servizio di Google</translation>
@@ -633,6 +673,7 @@
 <translation id="3885327323343477505">Cambia salvaschermo</translation>
 <translation id="3889954687526985291">Una motocicletta futuristica fatta di carta nera con luci al neon su sfondo scuro.</translation>
 <translation id="3897092660631435901">Menu</translation>
+<translation id="3897298432557662720">{COUNT,plural, =1{un'immagine}other{# immagini}}</translation>
 <translation id="3902271751020176019">Lingua trascrizione</translation>
 <translation id="390890062090528082">cielo stellato</translation>
 <translation id="391412459402535266">Impossibile testare il dispositivo. Passa alla modalità laptop per testarlo.</translation>
@@ -640,6 +681,7 @@
 <translation id="392943705803418306">La sessione di Strumenti del corso è terminata per te</translation>
 <translation id="3932043219784172185">Nessun dispositivo connesso</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> non assegnato</translation>
+<translation id="3936260554100916852"><ph name="DEVICE_NAME" /> sta condividendo una rete Wi-Fi con te</translation>
 <translation id="3941014780699102620">impossibile risolvere l'host</translation>
 <translation id="3942420633017001071">Diagnostica</translation>
 <translation id="3954678691475912818">Tipo di dispositivo sconosciuto.</translation>
@@ -648,6 +690,7 @@
 <translation id="3967822245660637423">Download completato</translation>
 <translation id="3969602104473960991">Password di ChromeOS aggiornata</translation>
 <translation id="397105322502079400">Calcolo in corso...</translation>
+<translation id="3981058120448670012">Visibile ai dispositivi nelle vicinanze con il nome <ph name="DEVICE_NAME" /> per <ph name="REMAINING_TIME" />…</translation>
 <translation id="3981099166243641873">verde chiaro</translation>
 <translation id="39823212440917567">I processi di stampa risalenti a oltre <ph name="NUMBER_OF_DAYS" /> giorni fa verranno rimossi</translation>
 <translation id="3993704782688964914">Dispositivo (<ph name="DEVICE_NAME" />) aggiornato</translation>
@@ -663,6 +706,7 @@
 <translation id="4046123991198612571">Traccia successiva</translation>
 <translation id="404928562651467259">AVVISO</translation>
 <translation id="4050208988451295487">Ecco alcune opzioni:</translation>
+<translation id="4050534976465737778">Assicurati che entrambi i dispositivi siano sbloccati e vicini, nonché che il Bluetooth sia attivo. Se vuoi attivare la condivisione con un dispositivo Chromebook non presente nei tuoi contatti, assicurati che su tale dispositivo sia attiva la funzionalità Visibilità nelle vicinanze (apri l'area di stato e attiva l'opzione Visibilità nelle vicinanze). <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="405181879009056822">Impostazioni di ChromeOS</translation>
 <translation id="4054683689023980771">Download dell'immagine in corso…</translation>
 <translation id="4059839844193047929">Se esci da questa pagina, la registrazione in corso verrà interrotta</translation>
@@ -698,6 +742,7 @@
 <translation id="4171077696775491955">diminuisci luminosità</translation>
 <translation id="4176463684765177261">Disattivato</translation>
 <translation id="4176659219503619100">Pannello di controllo</translation>
+<translation id="4191892134568599822">Vuoi ricevere tramite la funzionalità <ph name="FEATURE_NAME" />?</translation>
 <translation id="4192913637640303603">Impossibile creare i titoli delle registrazioni</translation>
 <translation id="4193496492959950834">Impostazioni di Registratore</translation>
 <translation id="4198398257084619072">panda</translation>
@@ -737,6 +782,7 @@
 <translation id="4297501883039923494">Operazione interrotta - Errore sconosciuto</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> immagini</translation>
 <translation id="4300272766492248925">Apri app</translation>
+<translation id="4301697210743228350">{COUNT,plural, =1{# contatto non disponibile. Per usare <ph name="FEATURE_NAME" /> con questa persona, aggiungi ai tuoi contatti l'indirizzo email associato al suo Account Google.}other{# contatti non disponibili. Per usare <ph name="FEATURE_NAME" /> con queste persone, aggiungi ai tuoi contatti gli indirizzi email associati ai loro Account Google.}}</translation>
 <translation id="430786093962686457">chiffon</translation>
 <translation id="4309762678330556039">Crea automaticamente trascrizioni e cerca l'audio. Puoi creare registrazioni anche quando non disponi di una connessione a internet.</translation>
 <translation id="4310735698903592804">Sfondi recenti IA di Google integrata</translation>
@@ -793,7 +839,6 @@
 <translation id="4522570452068850558">Dettagli</translation>
 <translation id="4536864596629708641">Configurazione IP</translation>
 <translation id="4546131424594385779">Crea un video in loop</translation>
-<translation id="4548483925627140043">segnale non trovato</translation>
 <translation id="4556753742174065117">Tutto il firmware è aggiornato</translation>
 <translation id="455835558791489930">Batteria da <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="456077979087158257">un panorama cittadino</translation>
@@ -802,6 +847,8 @@
 <translation id="4570558255126759859">Scaricare il modello Gemini per riepilogare le registrazioni?</translation>
 <translation id="4573777384450697571">Non riuscito - Certificato scaduto</translation>
 <translation id="4575450106703099687">opzioni di accessibilità</translation>
+<translation id="4575614183318795561">Configura la funzionalità <ph name="FEATURE_NAME" /></translation>
+<translation id="4580389561674319558">Visibile a tutti i contatti</translation>
 <translation id="458794348635939462">impossibile risolvere tutti gli host</translation>
 <translation id="4593212453765072419">Autenticazione proxy richiesta</translation>
 <translation id="4594021849294327751">Crea trascrizione</translation>
@@ -809,17 +856,21 @@
 <translation id="4600301862817165514">Una Delorean con luci al neon che attraversa la galassia con stelle che sfrecciano accanto.</translation>
 <translation id="4609350030397390689">Riduci la luminosità della tastiera</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> di <ph name="TOTAL_PAGE_NUMBER" />. Premi Invio per annullare il processo di stampa.</translation>
+<translation id="4637252186848840278">{COUNT,plural, =1{Testo}other{# segmenti di testo}}</translation>
 <translation id="463791356324567266">Annullamento scansione in corso…</translation>
 <translation id="4644611440022666152">Attiva e scarica</translation>
 <translation id="4646949265910132906">Connessione Wi-Fi protetta</translation>
 <translation id="4650608062294027130">Maiusc destro</translation>
+<translation id="4654236001025007561">Condividi file con Chromebook e dispositivi Android nelle vicinanze</translation>
 <translation id="4654549501020883054">Cambia ogni giorno</translation>
 <translation id="4655868084888499342">Immagine impostata come sfondo</translation>
+<translation id="4660465405448977105">{COUNT,plural, =1{Immagine}other{# immagini}}</translation>
 <translation id="4660989616054030633">L'AI generativa può fare errori, anche riguardo a persone, quindi verifica le sue risposte</translation>
 <translation id="4661249927038176904">Surreale</translation>
 <translation id="4661392828086261436">Questo aggiornamento è fornito dal produttore del dispositivo e non è stato verificato da Google</translation>
 <translation id="4664651912255946953">pelliccia</translation>
 <translation id="4665014895760275686">Produttore</translation>
+<translation id="4666911709726371538">Altre app</translation>
 <translation id="467510802200863975">Le password non corrispondono</translation>
 <translation id="467715984478005772">Il sistema sospetta la presenza di un firewall</translation>
 <translation id="4678534708181186163">Impossibile creare un riepilogo. Prova con una trascrizione più breve.</translation>
@@ -867,24 +918,29 @@
 <translation id="4868181314237714900">pile</translation>
 <translation id="4873827928179867585">Algoritmo di autenticazione</translation>
 <translation id="4880328057631981605">Nome punto di accesso</translation>
+<translation id="4881695831933465202">Apri</translation>
 <translation id="488307179443832524">Scorciatoia utilizzata per "<ph name="CONFLICT_ACCEL_NAME" />". Premi una nuova scorciatoia.</translation>
 <translation id="4885705234041587624">MSCHAPv2</translation>
 <translation id="4890353053343094602">Scegline subito una nuova</translation>
 <translation id="4891842000192098784">Stress</translation>
+<translation id="4894055916816649664">Solo per 10 minuti</translation>
 <translation id="4897058166682006107">Percentuale di batteria dell'auricolare sinistro del dispositivo a <ph name="BATTERY_PERCENTAGE" />%.</translation>
 <translation id="4905998861748258752">Attiva la funzionalità per selezionare le opzioni per il salvaschermo</translation>
 <translation id="4910858703033903787">Tipi di APN</translation>
 <translation id="4917385247580444890">Forte</translation>
 <translation id="4917889632206600977">Operazione interrotta - Carta esaurita</translation>
 <translation id="491791267030419270">Suggerimenti sulla scrittura di un feedback</translation>
+<translation id="4918086044614829423">Accetto</translation>
 <translation id="4921665434385737356">Ricarica del <ph name="RATE" /> in <ph name="NUM_SECONDS" /> secondi.</translation>
 <translation id="4930320165497208503">Per configurare o aggiornare una connessione, vai alle <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" />.</translation>
 <translation id="4932733599132424254">Data</translation>
 <translation id="493637535592633700">bioluminescente</translation>
+<translation id="4937676329899947885">Ricezione della rete Wi-Fi in corso…</translation>
 <translation id="494102685638938793"><ph name="LINK_TEXT" />, si apre in una nuova scheda</translation>
 <translation id="4946927805998996217">Generazione del riepilogo in corso…</translation>
 <translation id="4950314376641394653">Il firmware di <ph name="DEVICE_NAME" /> è stato aggiornato alla versione <ph name="VERSION" /></translation>
 <translation id="4950893758552030541">tunnel di alberi</translation>
+<translation id="495164417696120157">{COUNT,plural, =1{un file}other{# file}}</translation>
 <translation id="4964806321337443935">4K</translation>
 <translation id="4965661459364092269">La reimpostazione di sicurezza è stata completata</translation>
 <translation id="4965703485264574128">Per un risultato approssimativo, moltiplica il valore <ph name="CATEGORY_TEXT" /> per <ph name="CONVERSION_RATE" /></translation>
@@ -920,7 +976,9 @@
 <translation id="5095761549884461003">Scollega il cavo USB di <ph name="DEVICE_NAME" /> e reinseriscilo per continuare il processo di aggiornamento</translation>
 <translation id="5099354524039520280">su</translation>
 <translation id="5107243100836678918">La scorciatoia senza tasto <ph name="META_KEY" /> potrebbe essere in conflitto con la scorciatoia di alcune app. Premi di nuovo questa scorciatoia per continuare a utilizzarla oppure premine una nuova usando il tasto <ph name="KEY" />. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
+<translation id="5127620150973591153">ID connessione sicura: <ph name="TOKEN" /></translation>
 <translation id="5130848777448318809">pony</translation>
+<translation id="5136343472380336530">Assicurati che entrambi i dispositivi siano sbloccati e vicini, nonché che il Bluetooth sia attivo. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="5137451382116112100">Schermo intero</translation>
 <translation id="5139813694804168398">Non disturbare</translation>
 <translation id="5140788690559353412">Se perdi l'accesso al tuo account della scuola, non potrai più accedere all'email associata e ai file di Google Drive, come quelli salvati in Gmail, Documenti, Presentazioni e altri ancora.</translation>
@@ -942,6 +1000,7 @@
 <translation id="5222676887888702881">Esci</translation>
 <translation id="522307662484862935">Non includere l'indirizzo email</translation>
 <translation id="5223226274641517059">Le trascrizioni istantanee verranno mostrate durante la registrazione. Puoi disattivare questa funzionalità in qualsiasi momento nelle Impostazioni.</translation>
+<translation id="52254442782792731">L'attuale impostazione di visibilità non è ancora stata impostata</translation>
 <translation id="5226879510707344687">Esporta trascrizione</translation>
 <translation id="5227902338748591677">Programmazione tema scuro</translation>
 <translation id="5229104491259541281">Converti "<ph name="QUERY" />"</translation>
@@ -973,6 +1032,7 @@
 <translation id="5317780077021120954">Salva</translation>
 <translation id="5318334351163689047">Errori delle richieste TCP</translation>
 <translation id="53196409393069519">Attivare la trascrizione?</translation>
+<translation id="5324300749339591280">Elenco di app</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
 <translation id="5332948983412042822">Scegline ora una nuova</translation>
 <translation id="5333530671332546086">Stato del portale sconosciuto</translation>
@@ -981,11 +1041,15 @@
 <translation id="5346687412805619883">Rete locale</translation>
 <translation id="5358174242040570474">Si è verificato un errore. Prova a scegliere nuovamente uno sfondo o a riaprire l'app.</translation>
 <translation id="5368228070728130240">Impossibile scaricare il modello di riepilogo e creazione del titolo. Riprova o riavvia <ph name="DEVICE_TYPE" />.</translation>
+<translation id="5368246151595623328">Rete "<ph name="NETWORK_NAME" />" salvata da <ph name="DEVICE_NAME" /></translation>
 <translation id="5372659122375744710">la rete Wi-Fi non è sicura</translation>
+<translation id="5375318608039113175">Per usare la funzionalità Condivisione nelle vicinanze con questi contatti, aggiungi ai contatti l'indirizzo email collegato al loro Account Google.</translation>
 <translation id="5376354385557966694">Modalità Luce automatica</translation>
 <translation id="5378184552853359930">Tipo di IP</translation>
+<translation id="5384401776498845256">Chi può condividere con te</translation>
 <translation id="5389159777326897627">Sfondo e stile</translation>
 <translation id="5389224261615877010">Arcobaleno</translation>
+<translation id="5393761864111565424">{COUNT,plural, =1{Link}other{# link}}</translation>
 <translation id="5400907029458559844">Il dispositivo si sta collegando.</translation>
 <translation id="5401938042319910061">Avvia tutte le routine</translation>
 <translation id="5410755018770633464">hot dog</translation>
@@ -1001,6 +1065,7 @@
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Impossibile completare la scansione</translation>
 <translation id="5499762266711462226">Il colore della tastiera si basa sullo sfondo</translation>
+<translation id="5501809658163361512">{COUNT,plural, =1{Impossibile ricevere <ph name="ATTACHMENTS" /> dal dispositivo <ph name="DEVICE_NAME" />}other{Impossibile ricevere <ph name="ATTACHMENTS" /> dal dispositivo <ph name="DEVICE_NAME" />}}</translation>
 <translation id="5502931783115429516">Android non funziona</translation>
 <translation id="550600468576850160">un prato</translation>
 <translation id="5507504956167780539">Una foto professionale minimal di dune di sabbia nera scintillante con ombre drammatiche.</translation>
@@ -1047,6 +1112,7 @@
 <translation id="5703716265115423771">abbassa volume</translation>
 <translation id="5707900041990977207"><ph name="CURRENT_PAGE" /> di <ph name="TOTAL_PAGES" /></translation>
 <translation id="572854785834323605">Pulsante Modifica per <ph name="SHORTCUT_DESCRIPTION" />.</translation>
+<translation id="5740328398383587084">Condivisione nelle vicinanze</translation>
 <translation id="574392208103952083">Medio</translation>
 <translation id="5744175046705638478">Traduci "<ph name="QUERY" />"</translation>
 <translation id="5757187557809630523">traccia successiva</translation>
@@ -1056,6 +1122,7 @@
 <translation id="5779818640587041940">Mantieni lo schermo attivo durante la registrazione</translation>
 <translation id="57838592816432529">Disattiva audio</translation>
 <translation id="5784136236926853061">Latenza HTTP elevata</translation>
+<translation id="5787420647064736989">Nome dispositivo</translation>
 <translation id="5790391387506209808">lapislazzuli</translation>
 <translation id="5816802250591013230">Nessuna scorciatoia assegnata</translation>
 <translation id="5826644637650799838">Informazioni sullo sfondo</translation>
@@ -1093,6 +1160,7 @@
 <translation id="5931523347251946569">File non trovato</translation>
 <translation id="5939518447894949180">Reimposta</translation>
 <translation id="5942727615796467094">L'amministratore di <ph name="MANAGER" /> ha impostato il periodo di utilizzo di <ph name="DEVICE_TYPE" /></translation>
+<translation id="5942779427914696408">Visibilità del dispositivo</translation>
 <translation id="594552776027197022">Genera coppia di chiavi casuale</translation>
 <translation id="5946538341867151940">La connessione non è stata ancora stabilita. Se il tuo operatore di telefonia mobile consiglia un APN personalizzato, inserisci le relative informazioni selezionando "+ Nuovo APN"</translation>
 <translation id="5948460390109837040">cani</translation>
@@ -1103,6 +1171,8 @@
 <translation id="5982621672636444458">Opzioni ordinamento</translation>
 <translation id="5984145644188835034">Sfondo predefinito</translation>
 <translation id="5996832681196460718">seta</translation>
+<translation id="6002122790816966947">I tuoi dispositivi</translation>
+<translation id="6016462059150340136">Chiunque nelle vicinanze</translation>
 <translation id="6016750809509395299">Titoli generati:</translation>
 <translation id="6017514345406065928">Verde</translation>
 <translation id="6019566113895157499">Scorciatoie da tastiera</translation>
@@ -1134,6 +1204,7 @@
 <translation id="6120815036186828722">Ascolto del parlato in corso…</translation>
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Servizio metodo di immissione di ChromeOS</translation>
+<translation id="6122600716821516697">Vuoi attivare la condivisione con questo dispositivo?</translation>
 <translation id="6127426868813166163">bianco</translation>
 <translation id="6136285399872347291">backspace</translation>
 <translation id="6137614725462089991">cyberpunk</translation>
@@ -1142,6 +1213,7 @@
 <translation id="6146993107019042706">Per terminare, inserisci la nuova password</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6149015141270619212">Impossibile connettersi a Internet</translation>
+<translation id="6150278227694566734">Alcuni contatti</translation>
 <translation id="6156030503438652198">granata e rosa</translation>
 <translation id="6163318050265152852">Impossibile creare titoli. Prova con una trascrizione più breve.</translation>
 <translation id="6165508094623778733">Scopri di più</translation>
@@ -1156,7 +1228,6 @@
 <translation id="6213737986933151570">CDMA1XRTT</translation>
 <translation id="6223752125779001553">Nessuno scanner disponibile</translation>
 <translation id="6232017090690406397">Batteria</translation>
-<translation id="6234024205316847054">Mostra contorni</translation>
 <translation id="6243280677745499710">Attualmente impostato</translation>
 <translation id="6250316632541035980">uova e pancetta</translation>
 <translation id="6262413940100821797">un destinatario sconosciuto</translation>
@@ -1167,7 +1238,9 @@
 <translation id="6283581480003247988">blu e viola</translation>
 <translation id="6284632978374966585">Attiva il tema scuro</translation>
 <translation id="6285260286443238386">Esporta registrazione</translation>
+<translation id="6285770818046456882">Il dispositivo che stava condividendo dei contenuti ha annullato il trasferimento</translation>
 <translation id="628726841779494414">Gestisci le stampanti nelle impostazioni delle stampanti</translation>
+<translation id="6290613030083731160">Non sono disponibili dispositivi per condividere contenuti nelle vicinanze. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="6292095526077353682">Durante la ricarica, mostra il salvaschermo per</translation>
 <translation id="629550705077076970">Oscuramento della tastiera</translation>
 <translation id="6302401976930124515">Il test <ph name="TEST_NAME" /> è stato annullato</translation>
@@ -1181,13 +1254,16 @@
 <translation id="6327262166342360252">Questo sfondo è stato creato con l'IA utilizzando il seguente testo: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Tema scuro automatico</translation>
 <translation id="6340526405444716530">Personalizzazione</translation>
+<translation id="634792071306410644">Nessuno può condividere contenuti con te finché non ti rendi visibile</translation>
 <translation id="6348252528297699679">Puoi disattivare la posizione in Impostazioni &gt; Privacy e sicurezza &gt; Controlli per la privacy &gt; Accesso alla posizione. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Nome utente e password</translation>
 <translation id="6352210854422428614">un altro pianeta</translation>
 <translation id="6359706544163531585">Disabilita il tema chiaro</translation>
 <translation id="6359919876285606596">Questa azione è definitiva e non può essere annullata</translation>
+<translation id="6367985768157257101">Ricevere con Condivisione nelle vicinanze?</translation>
 <translation id="636850387210749493">Registrazione aziendale</translation>
 <translation id="6373461326814131011">stagno</translation>
+<translation id="6378392501584240055">Apri nelle reti Wi-Fi</translation>
 <translation id="6379086450106841622">Touchscreen</translation>
 <translation id="6381741036071372448">Testare la tastiera</translation>
 <translation id="6382182670717268353">Anteprima salvaschermo</translation>
@@ -1208,9 +1284,11 @@
 <translation id="6437513277380808188">TXT</translation>
 <translation id="6439505561246192797">Debole (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Vai alle impostazioni dell'account</translation>
+<translation id="6452181791372256707">Rifiuto</translation>
 <translation id="6462978824459367242">Il pulsante Aggiungi APN è ora attivo</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Scansionare di nuovo la pagina?}=1{Scansionare di nuovo pagina {PAGE_NUMBER}?}other{Scansionare di nuovo pagina {PAGE_NUMBER}?}}</translation>
 <translation id="6468146470109254228">I tuoi 3 prompt e output più recenti. Puoi accedervi solo quando usi Sfondo e stile.</translation>
+<translation id="6468773105221177474"><ph name="FILE_COUNT" /> file</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">barche</translation>
 <translation id="64778964625672495">rosso scuro</translation>
@@ -1228,6 +1306,7 @@
 <translation id="6517239166834772319">Esplora</translation>
 <translation id="6526200165918397681">Seleziona colore estratto dallo sfondo</translation>
 <translation id="6527081081771465939">protocollo di sicurezza Wi-Fi sconosciuto</translation>
+<translation id="6527303717912515753">Condividi</translation>
 <translation id="6531528791584205545">inserimento rapido</translation>
 <translation id="6535178685492749208">Sei offline. Il feedback verrà inviato in un secondo momento.</translation>
 <translation id="6543412779435705598">tacos</translation>
@@ -1252,6 +1331,7 @@
 <translation id="6618744767048954150">In corso</translation>
 <translation id="6620487321149975369">I processi di stampa verranno mostrati nella cronologia a meno che non vengano rimossi manualmente</translation>
 <translation id="6624819909909965616">Impossibile caricare file di dimensioni superiori a 10 MB</translation>
+<translation id="6635362468090274700">Nessuno può condividere contenuti con te finché non ti rendi visibile.<ph name="BR" /><ph name="BR" />Per renderti visibile temporaneamente, apri l'area di stato e attiva la funzionalità Visibilità nelle vicinanze.</translation>
 <translation id="6643016212128521049">Cancella</translation>
 <translation id="6647510110698214773">Algoritmo di crittografia</translation>
 <translation id="6648412990074186169">minimal</translation>
@@ -1260,10 +1340,12 @@
 <translation id="6657585470893396449">Password</translation>
 <translation id="66621959568103627">rosa corallo</translation>
 <translation id="6669485505082792176">Impossibile creare immagini di questo tipo al momento. Prova a riformulare la descrizione. Tieni presente che non puoi creare immagini di persone, contenuti dannosi o espliciti. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più<ph name="END_LINK_LEARN_MORE" /></translation>
+<translation id="6671320560732140690">{COUNT,plural, =1{un indirizzo}other{# indirizzi}}</translation>
 <translation id="6673898378497337661">aumenta la luminosità della tastiera</translation>
 <translation id="6692996468359469499">Ricevi informazioni correlate alla tua selezione</translation>
 <translation id="6694534975463174713">serratura</translation>
 <translation id="6700703207451721535">L'accesso a questo link non è consentito. Verifica con l'insegnante se hai bisogno dell'accesso.</translation>
+<translation id="6702859741546259407">Per usare la funzionalità <ph name="FEATURE_NAME" />, attiva il Bluetooth e il Wi-Fi</translation>
 <translation id="6703179086771097594">Che cosa non ha funzionato?</translation>
 <translation id="6704062477274546131">Risoluzione DNS</translation>
 <translation id="6712933881624804031">una valle</translation>
@@ -1292,23 +1374,28 @@
 <translation id="6791471867139427246">colore della luce della tastiera</translation>
 <translation id="6796229976413584781">Scorciatoia eliminata</translation>
 <translation id="6798678288485555829">Navigazione nel testo</translation>
+<translation id="6806781719264274042">Solo i tuoi contatti con un Account Google. <ph name="LINK_BEGIN" />Visualizza contatti<ph name="LINK_END" /></translation>
 <translation id="680983167891198932">Chiave</translation>
 <translation id="6816797338148849397">Sono disponibili informazioni relative al testo selezionato. Per accedere, utilizza il tasto Freccia su.</translation>
 <translation id="6831043979455480757">Traduci</translation>
+<translation id="6842135459748401207">Solo i dispositivi che hanno effettuato l'accesso a <ph name="USER_EMAIL" /></translation>
 <translation id="6846843854964504403">Reimpostazione di sicurezza</translation>
 <translation id="6853312040151791195">Velocità di riduzione della carica</translation>
+<translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
 <translation id="6862228900689076919">Questa funzionalità è gestita dal tuo amministratore</translation>
 <translation id="6862416241246624313">Feedback inviato</translation>
 <translation id="6866732840889595464">margherite</translation>
 <translation id="6871256179359663621">viola chiaro</translation>
 <translation id="6887967050249348172">Estensioni disattivate per impedire modifiche alle impostazioni. Attiva solo le estensioni che ritieni affidabili.</translation>
 <translation id="6889786074662672253">Durante il riavvio, non scollegare questo dispositivo esterno o non arrestare il computer. Puoi ridurre a icona questa finestra. Questa operazione potrebbe richiedere qualche minuto e nel frattempo il dispositivo esterno potrebbe non funzionare.</translation>
+<translation id="6896758677409633944">Copia</translation>
 <translation id="6899460405678814458">Mostra riepilogo</translation>
 <translation id="6900701049656042631">Questo album non contiene foto. Per aggiungere foto, visita la pagina <ph name="LINK" />.</translation>
 <translation id="6902359863093437070">Crea sfondo con l'AI</translation>
 <translation id="6905163627763043954">Prova</translation>
 <translation id="6905275015682612674">Una foto con esposizione lunga di una spiaggia bioluminescente al tramonto con stelle nel cielo, bellissimi colori pastello, 4K.</translation>
 <translation id="6905724422583748843">Torna a <ph name="PAGE_NAME" /></translation>
+<translation id="6909422577741440844">Vuoi attivare la ricezione da questo dispositivo?</translation>
 <translation id="6910312834584889076">Il coperchio dello scanner è aperto. Chiudilo e riprova.</translation>
 <translation id="6910845598686542904">Calcola i modelli delle voci rilevate nella registrazione</translation>
 <translation id="6911383237894364323">Impossibile connettersi ai server multimediali</translation>
@@ -1335,6 +1422,7 @@
 <translation id="6978396562261420054">Immagine generata</translation>
 <translation id="6981982820502123353">Accessibilità</translation>
 <translation id="6982462588253070448">dune di sabbia</translation>
+<translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} file}other{{COUNT} file}}</translation>
 <translation id="7005833343836210400">Il dispositivo è offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestisce questo dispositivo e ha accesso a tutta l'attività utente, tra cui le pagine web visitate, le password e le email.</translation>
 <translation id="7035168792582749309">patate</translation>
@@ -1361,6 +1449,7 @@
 <translation id="7103793063702494489">Lingua selezionata</translation>
 <translation id="7107255225945990211">Scegli artwork esclusive di <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">invio</translation>
+<translation id="7115361495406486998">Nessun contatto raggiungibile</translation>
 <translation id="7117228822971127758">Riprova più tardi</translation>
 <translation id="7118522231018231199">Assicurati di impostare solo gli APN forniti dal tuo operatore mobile o dall'amministratore. La selezione di un APN disattiverà gli APN personalizzati. Gli APN non validi potrebbero interrompere la connessione mobile.</translation>
 <translation id="7119389851461848805">accensione</translation>
@@ -1393,6 +1482,8 @@
 <translation id="7223952304612664117">Questo consente ai servizi di sistema di utilizzare la precisione della localizzazione per determinare la tua posizione. La precisione della localizzazione utilizza informazioni su segnali wireless e sensori per stimare la posizione del dispositivo.</translation>
 <translation id="7233782086689993269">Scorciatoia ripristinata</translation>
 <translation id="723419678599947502">Crea un titolo con Google AI</translation>
+<translation id="7239108166256782787"><ph name="DEVICE_NAME" /> ha annullato il trasferimento</translation>
+<translation id="7250616558727237648">Il dispositivo con cui hai tentato di condividere il file non ha risposto. Riprova.</translation>
 <translation id="725133483556299729">Seleziona email</translation>
 <translation id="7255187042098209569">rosa e viola</translation>
 <translation id="7267918995585557751">Reimposta per assicurarti che la pagina iniziale predefinita non sia un sito web di phishing. Utilizza solo siti web che ritieni affidabili.</translation>
@@ -1415,17 +1506,21 @@
 <translation id="7319430975418800333">A3</translation>
 <translation id="7321055305895875150">verde e verde acqua</translation>
 <translation id="7328475450575141167">strelitzia nicolai</translation>
+<translation id="7330533963640151632">Impostazioni di <ph name="FEATURE_NAME" /> per il dispositivo di <ph name="USER_NAME" />, condivisione con l'account <ph name="USER_EMAIL" />.</translation>
 <translation id="7343649194310845056">Dispositivi di rete</translation>
 <translation id="7344788170842919262">naturale</translation>
 <translation id="7346768383111016081">Definisci il controllo per un'azione di gioco per giocare con la tastiera</translation>
 <translation id="7352651011704765696">Si è verificato un problema</translation>
+<translation id="7353261921908507769">I tuoi contatti possono condividere dei contenuti con te quando si trovano nelle vicinanze. I trasferimenti non inizieranno finché non accetti.</translation>
 <translation id="7353413232959255829">Risultato di ricerca <ph name="LIST_POSITION" /> di <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Premi Invio per navigare alla scorciatoia.</translation>
 <translation id="7359657277149375382">Tipo di file</translation>
 <translation id="73631062356239394">Condividi dati diagnostici</translation>
+<translation id="7366316827772164604">Ricerca di dispositivi nelle vicinanze…</translation>
 <translation id="7369648056634183167">Un primo piano di un'elaborata ninfea coperta di rugiada sotto la pioggia. L'attenzione è rivolta ai delicati petali e alle gocce d'acqua che riflettono la luce, catturando i loro tenui colori pastello su uno sfondo blu. Inquadratura all'altezza degli occhi con luce naturale.</translation>
 <translation id="7375053625150546623">EAP</translation>
 <translation id="7378170410161264436">Registratore può creare trascrizioni per le registrazioni con parlato.
 Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizioni.</translation>
+<translation id="7380622428988553498">Il nome del dispositivo contiene caratteri non validi</translation>
 <translation id="7384004438856720753">palazzo</translation>
 <translation id="7388345524791662148">Altre opzioni per <ph name="RECORDING_NAME" /></translation>
 <translation id="7388959671917308825">Touchpad integrato</translation>
@@ -1438,6 +1533,8 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="7425832472614771259">Avanzamento download modello di trascrizione <ph name="LANGUAGE_NAME" />: <ph name="PROGRESS_PERCENTAGE" />%</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Impossibile disattivare o rimuovere questo APN. Assicurati che gli APN <ph name="ATTACH" /> abilitati siano disattivati o rimossi.</translation>
+<translation id="7439519621174723623">Per continuare, aggiungi un nome per il dispositivo</translation>
+<translation id="7457831169406914076">{COUNT,plural, =1{un link}other{# link}}</translation>
 <translation id="7458970041932198923">Connettiti a una rete e ricarica la pagina per visualizzare e impostare gli avatar.</translation>
 <translation id="7469648432129124067">Portale rilevato</translation>
 <translation id="7481312909269577407">Avanti</translation>
@@ -1470,11 +1567,14 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="7590883480672980941">Impostazioni di immissione</translation>
 <translation id="7595982850646262331">Tempo rimanente: <ph name="TIME_VALUE" /></translation>
 <translation id="7600430297804876776">L'amministratore di <ph name="MANAGER" /> ha impostato il periodo di utilizzo di <ph name="DEVICE_TYPE" />.</translation>
+<translation id="7610337976012700501">Per usare la funzionalità <ph name="FEATURE_NAME" /> con questi contatti, aggiungi ai tuoi contatti l'indirizzo email collegato al loro Account Google.</translation>
 <translation id="7618216277886673749">Seleziona <ph name="LANGUAGE_NAME" /></translation>
 <translation id="7618774594543487847">Neutra</translation>
 <translation id="7620771111601174153">Scopri di più nel Centro assistenza</translation>
 <translation id="7623327321610992184">Pod OnTask</translation>
 <translation id="7633068090678117093">Immagine di sfondo</translation>
+<translation id="7634566076839829401">Si è verificato un errore. Riprova.</translation>
+<translation id="7637593984496473097">Spazio su disco insufficiente</translation>
 <translation id="763873111564339966">indaco</translation>
 <translation id="7648838807254605802">Latenza HTTPS elevata</translation>
 <translation id="7656388927906093505">Il dispositivo è un mouse.</translation>
@@ -1489,15 +1589,18 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="7705524343798198388">VPN</translation>
 <translation id="7716280709122323042">WPA3</translation>
 <translation id="7718231387947923843">Luce della tastiera</translation>
+<translation id="7719588063158526969">Nome del dispositivo troppo lungo</translation>
 <translation id="7730077286107534951">Alcune informazioni sull'account e sul sistema potrebbero essere inviate a Google. Usiamo queste informazioni per risolvere problemi tecnici e migliorare i nostri servizi, in conformità con le nostre <ph name="BEGIN_LINK2" />Norme sulla privacy<ph name="END_LINK2" /> e i nostri <ph name="BEGIN_LINK3" />Termini di servizio<ph name="END_LINK3" />. Per richiedere modifiche ai contenuti, visita la <ph name="BEGIN_LINK1" />Guida di approfondimento legale<ph name="END_LINK1" />.</translation>
 <translation id="773153675489693198">Conteggio dei cicli</translation>
 <translation id="7746357909584236306">modificabile</translation>
 <translation id="7747039790905080783">Chiave precondivisa</translation>
 <translation id="7752963721013053477">Dall'alba al tramonto - Esclusiva</translation>
+<translation id="7757739382819740102">I contatti nelle vicinanze possono condividere contenuti con te. Sarà richiesta l'approvazione.</translation>
 <translation id="7760571082554155847">Impostazioni home page</translation>
 <translation id="7762130827864645708">La password è stata modificata. Usa la nuova password d'ora in poi.</translation>
 <translation id="7763470514545477072">Corrispondenza suffisso di dominio</translation>
 <translation id="7764171263909999400">luce volumetrica</translation>
+<translation id="7765507180157272835">Bluetooth e Wi-Fi necessari</translation>
 <translation id="7769672763586021400">ID modello</translation>
 <translation id="7774759755755950354">Indietro</translation>
 <translation id="7778717409420828014">Il tuo feedback ci aiuta a migliorare l'esperienza con Chromebook e verrà esaminato dal nostro team. A causa dell'elevato numero di segnalazioni non potremo risponderti.</translation>
@@ -1505,6 +1608,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="7784116172884276937">Nessun server DNS configurato</translation>
 <translation id="7791543448312431591">Aggiungi</translation>
 <translation id="779591286616261875">Invia nuova segnalazione</translation>
+<translation id="7799650166313181433">Soltanto i dispositivi su cui è stato eseguito l'accesso a <ph name="USER_EMAIL" /> possono condividere contenuti con questo dispositivo. Non dovrai approvare la condivisione tra i tuoi dispositivi.</translation>
 <translation id="7799817062559422778">Modalità Luce</translation>
 <translation id="7802764839223122985">Tasto mancante. <ph name="REASSIGN_INSTRUCTION" /></translation>
 <translation id="780301667611848630">No, grazie</translation>
@@ -1513,6 +1617,8 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="7819857487979277519">PSK (WPA o RSN)</translation>
 <translation id="7824219488248240180">postimpressionista</translation>
 <translation id="7828503206075800057">Un bar <ph name="CAFE_STYLE" /> <ph name="CAFE_TYPE" /></translation>
+<translation id="7838838951812478896">Impossibile salvare la rete "<ph name="NETWORK_NAME" />" da <ph name="DEVICE_NAME" /></translation>
+<translation id="7838971600045234625">{COUNT,plural, =1{Effettuato invio di <ph name="ATTACHMENTS" /> elemento a <ph name="DEVICE_NAME" />}other{Effettuato invio di <ph name="ATTACHMENTS" /> elementi a <ph name="DEVICE_NAME" />}}</translation>
 <translation id="7841134249932030522">Abilita la modalità Buio</translation>
 <translation id="7846634333498149051">Tastiera</translation>
 <translation id="7847923465436619066">Selettore lingua della trascrizione</translation>
@@ -1529,6 +1635,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo di provider</translation>
 <translation id="7882501334836096755">Chiave pubblica</translation>
+<translation id="7886279613512920452">{COUNT,plural, =1{un elemento}other{# elementi}}</translation>
 <translation id="7889966925761734854">Cerca</translation>
 <translation id="78957024357676568">sinistra</translation>
 <translation id="7897043345768902965">passaggio pedonale</translation>
@@ -1548,6 +1655,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="7955587717700691983">Tastiera Bluetooth</translation>
 <translation id="7960831585769876809">Temperatura</translation>
 <translation id="7971535376154084247">Controlli generali</translation>
+<translation id="797394244396603170">Seleziona il dispositivo con cui vuoi condividere file</translation>
 <translation id="7977800524392185497">Per collegarti alla rete <ph name="NETWORK_NAME" />, vai alle Impostazioni</translation>
 <translation id="7978412674231730200">Chiave privata</translation>
 <translation id="7979468455552394856">Gli Strumenti del corso sono collegati agli studenti</translation>
@@ -1561,6 +1669,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8027467664787098346">Scopri di più sulla schermata di blocco selezionata</translation>
 <translation id="8028993641010258682">Dimensioni</translation>
 <translation id="8031884997696620457">HSPAPlus</translation>
+<translation id="8033958968890501070">Timeout</translation>
 <translation id="80398733265834479">Attiva la modalità Colore automatico</translation>
 <translation id="8041089156583427627">Invia feedback</translation>
 <translation id="8045012663542226664">Disattivazione dell'audio del microfono</translation>
@@ -1581,18 +1690,21 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8094062939584182041">Consenti a Google di inviarti email relative a questo problema</translation>
 <translation id="8104083085214006426">Stai usando una rete aperta e non protetta</translation>
 <translation id="8108879170356113798">Potrai utilizzare Strumenti del corso solo tra <ph name="NUM_SECONDS" /> secondi</translation>
+<translation id="8110489095782891123">Download dell'elenco contatti…</translation>
 <translation id="811820734797650957">(Android) È possibile inviare un ping al gateway</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Conferma</translation>
 <translation id="8135609423982943441">Su Chromebook sono state ripristinate le impostazioni predefinite sicure. Puoi intervenire su queste modifiche in qualsiasi momento nelle Impostazioni.</translation>
 <translation id="8138405288920084977">LTEAdvanced</translation>
 <translation id="8140591278915222789">Crea il tuo</translation>
+<translation id="814204052173971714">{COUNT,plural, =1{un video}other{# video}}</translation>
 <translation id="8142182840415860496">Un primo piano di diversi fiori bianchi e gialli, un fermoimmagine da un film d'animazione, un delicato fiore rosa pallido con petali lunghi e uno stelo verde posizionato tra due grandi tulipani gialli davanti a un cielo blu senza foglie o vegetazione dai colori pastello, un fermoimmagine cinematografico ad alta risoluzione con dettagli intricati molto dettagliati, un rendering ottano con meravigliosa illuminazione, luce volumetrica e atmosfera.</translation>
 <translation id="8143951647992294073">Seleziona <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Strumenti per sviluppatori</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="8156233298086717232">magico</translation>
 <translation id="8162776280680283326">volpi</translation>
+<translation id="816704878106051517">{COUNT,plural, =1{un numero di telefono}other{# numeri di telefono}}</translation>
 <translation id="8167413449582155132">Sfondo con Google AI integrata</translation>
 <translation id="8171020708598805594">Crea automaticamente trascrizioni, ottieni i riassunti delle registrazioni utilizzando Google AI e cerca l'audio. Crea registrazioni anche quando non disponi di una connessione a internet.</translation>
 <translation id="8179976553408161302">Invio</translation>
@@ -1617,12 +1729,14 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8291967909914612644">Paese del provider principale</translation>
 <translation id="8294431847097064396">Origine</translation>
 <translation id="8302368968391049045">Firewall HTTPS</translation>
+<translation id="8303616404642252802">{COUNT,plural, =1{Indirizzo}other{# indirizzi}}</translation>
 <translation id="8308787307410010965">Impostazioni dei contenuti del sito</translation>
 <translation id="8312330582793120272">riproduci i contenuti multimediali</translation>
 <translation id="8318753676953949627">Nessuna immagine</translation>
 <translation id="8319809980370328428">Riepilogo della registrazione e creazione del titolo</translation>
 <translation id="8320910311642849813">una foresta</translation>
 <translation id="8329018942023753850">app calcolatrice</translation>
+<translation id="8330689128072902965">I contatti nelle vicinanze possono condividere contenuti con te. Fai clic per modificare.</translation>
 <translation id="8336739000755212683">Modifica l'immagine dell'account del dispositivo</translation>
 <translation id="8339024191194156249">Scopri di più sull'avvio automatico</translation>
 <translation id="8346937114125330423">classico</translation>
@@ -1649,7 +1763,6 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8424039430705546751">giù</translation>
 <translation id="8427213022735114808">La dettatura invia i tuoi dati audio a Google per consentire la digitazione vocale in tutti i campi di testo.</translation>
 <translation id="8428213095426709021">Impostazioni</translation>
-<translation id="8431300646573772016">Novità di ChromeOS</translation>
 <translation id="8433186206711564395">Impostazioni di rete</translation>
 <translation id="843568408673868420">Connessione a Internet</translation>
 <translation id="844521431886043384">DNS non configurato</translation>
@@ -1683,6 +1796,8 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8576249514688522074">Non inizializzato</translation>
 <translation id="8584654835905316966">Per completare l'installazione del firmware per <ph name="DEVICE_NAME" /> alla versione <ph name="VERSION" /> è necessario eseguire il riavvio. Potrebbe sembrare che il computer si riavvii più volte. Si tratta di un comportamento normale.</translation>
 <translation id="8593058461203131755">metti in pausa i contenuti multimediali</translation>
+<translation id="8616441548384109662">Aggiungi <ph name="CONTACT_NAME" /> ai tuoi contatti</translation>
+<translation id="8617748779076050570">ID connessione sicura: <ph name="CONNECTION_ID" /></translation>
 <translation id="8620617069779373398">Stato roaming</translation>
 <translation id="8624524972189162859">L'amministratore di <ph name="DOMAIN_NAME" /> ha disattivato il tuo dispositivo e può accedere alla sua posizione.</translation>
 <translation id="8626489604350149811">Altre azioni per <ph name="APN_NAME" /></translation>
@@ -1696,6 +1811,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8669187096858652220">Fai clic per mostrare le schede</translation>
 <translation id="8670574982334489519">a destra</translation>
 <translation id="8675354002693747642">Chiave precondivisa</translation>
+<translation id="8676152597179121671">{COUNT,plural, =1{Video}other{# video}}</translation>
 <translation id="8677859815076891398">Nessun album. Crea un album in<ph name="LINK_BEGIN" />Google Foto<ph name="LINK_END" />.</translation>
 <translation id="8682949824227998083">ramen</translation>
 <translation id="8689520252402395106">Reinserisci il cavo USB di <ph name="DEVICE_NAME" /> per continuare il processo di aggiornamento</translation>
@@ -1716,6 +1832,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="876280838467039397">Scarica e seleziona il modello di trascrizione <ph name="LANGUAGE_NAME" /></translation>
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album di Google Foto</translation>
+<translation id="8768049274922835860">Tutti</translation>
 <translation id="8775713578693478175">APN modem</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Questa rete potrebbe avere un captive portal</translation>
@@ -1730,6 +1847,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8833620912470026819">foresta di cactus</translation>
 <translation id="8834539327799336565">Attualmente connesso</translation>
 <translation id="8845001906332463065">Richiedi assistenza</translation>
+<translation id="8849001918648564819">Nascosto</translation>
 <translation id="8849799913685544685">faro</translation>
 <translation id="8851859208664803097">Operazione interrotta: stampante non raggiungibile</translation>
 <translation id="8855781559874488009">Impossibile collegarti tramite il firewall ai siti web HTTP</translation>
@@ -1737,7 +1855,10 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="885704831271383379">Tastiera più scura</translation>
 <translation id="8863170912498892583">Attiva tema scuro</translation>
 <translation id="8864415976656252616">Nessun contenuto suggerito. Visualizza i contenuti Help principali.</translation>
+<translation id="8875736897340638404">Scegli la visibilità</translation>
 <translation id="8876270629542503161">Il dispositivo è un tablet.</translation>
+<translation id="8876965259056847565">La funzionalità <ph name="FEATURE_NAME" /> usa la scansione Bluetooth per trovare dispositivi nelle vicinanze.</translation>
+<translation id="8880054210564666174">Impossibile scaricare l'elenco contatti. Controlla la connessione di rete o <ph name="LINK_BEGIN" />riprova<ph name="LINK_END" />.</translation>
 <translation id="8881098542468797602">Test effettuato correttamente</translation>
 <translation id="8882789155418924367">gufi</translation>
 <translation id="8885038613856655272">Collega un microfono</translation>
@@ -1764,6 +1885,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8957423540740801332">destra</translation>
 <translation id="8960969673307890087">angurie</translation>
 <translation id="8961025972867871808">pinguini</translation>
+<translation id="8962051932294470566">Puoi condividere un solo file alla volta. Riprova al termine dell'attuale trasferimento.</translation>
 <translation id="8968751544471797276">Velocità di ricarica</translation>
 <translation id="8970109610781093811">Esegui di nuovo</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -1791,16 +1913,16 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="9062831201344759865">La risoluzione DNS ha una latenza elevata</translation>
 <translation id="9065203028668620118">Modifica</translation>
 <translation id="9068296451330120661">acquerello</translation>
+<translation id="9068878141610261315">Tipo di file non supportato</translation>
 <translation id="9073281213608662541">PAP</translation>
-<translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9082718469794970195">Utilizza questo video</translation>
 <translation id="9088306295921699330">Spazio utilizzato</translation>
 <translation id="9088994563996376283">Semplifica</translation>
+<translation id="9090044809052745245">Nome del dispositivo visibile agli altri utenti</translation>
 <translation id="9100765901046053179">Impostazioni avanzate</translation>
 <translation id="910415269708673980">Aggiorna la richiesta per <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scansione pagina <ph name="PAGE_NUMBER" />…</translation>
 <translation id="9108856746036501072">Registratore può creare trascrizioni per le registrazioni con parlato. Nel passaggio successivo, devi selezionare la lingua della trascrizione e scaricare il modello (fino a 100 MB).</translation>
-<translation id="9111102763498581341">Sblocca</translation>
 <translation id="9122492456897874028">Riassumi i contenuti, ottieni definizioni e altro ancora</translation>
 <translation id="9122602430962285795">Per riconnetterti, vai alle Impostazioni</translation>
 <translation id="9122865513525855321">zen</translation>
@@ -1812,9 +1934,11 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="9159524746324788320">hamburger</translation>
 <translation id="9161276708550942948">spazio</translation>
 <translation id="9169345239923038539">La connessione non è stata ancora stabilita. Se il tuo operatore di telefonia mobile consiglia un APN personalizzato, <ph name="BEGIN_LINK" />inserisci le relative informazioni<ph name="END_LINK" />.</translation>
+<translation id="9170061643796692986">L'attuale impostazione di visibilità è Tutti i contatti</translation>
 <translation id="9173638680043580060">Manca meno di un minuto</translation>
 <translation id="9174334653006917325">Colore UI</translation>
 <translation id="917720651393141712">Test</translation>
+<translation id="918352324374649435">{COUNT,plural, =1{App}other{# app}}</translation>
 <translation id="9188992814426075118">Il colore della retroilluminazione della tastiera può essere impostato in automatico su quello dello sfondo</translation>
 <translation id="9189000703457422362">Impossibile connettersi a questa rete tramite APN rilevati automaticamente. Per ulteriori informazioni, contatta il tuo operatore di telefonia mobile.</translation>
 <translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
@@ -1828,6 +1952,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="945522503751344254">Invia feedback</translation>
 <translation id="950520315903467048">Tasto mancante per <ph name="DIRECTION" />. <ph name="ASSIGN_INSTRUCTION" /></translation>
 <translation id="951780398843003443">Confronta le voci dell'intera registrazione in modo che la trascrizione riporti correttamente ciò che ha detto ogni persona e quando</translation>
+<translation id="951991426597076286">Rifiuta</translation>
 <translation id="952992212772159698">Non attivo</translation>
 <translation id="95718197892796296">argilla</translation>
 <translation id="959792926760890141">La reimpostazione di sicurezza disattiva le estensioni del browser Chrome e ripristina le impostazioni di rete e di altro tipo sicure.

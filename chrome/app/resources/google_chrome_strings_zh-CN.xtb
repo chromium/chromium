@@ -30,13 +30,11 @@
 <translation id="1278833599417554002">重新启动以更新 Chrome(&amp;C)</translation>
 <translation id="1289911795790071537">使用 Chrome 打开搜索功能</translation>
 <translation id="1290883685122687410">设置错误：<ph name="METAINSTALLER_EXIT_CODE" />。<ph name="WINDOWS_ERROR" /></translation>
-<translation id="1302523850133262269">Chrome正在安装最新的系统更新，请稍候。</translation>
 <translation id="1330562121671411446">检测语言</translation>
 <translation id="1333654552732143316">启动 Chrome</translation>
 <translation id="1341711321000856656">您可切换到另一份 Chrome 个人资料以查看其中的密码</translation>
 <translation id="1343830902827845050">登录 Chrome</translation>
 <translation id="1361351916482714918">Google 智能镜头：开启智能浏览新体验</translation>
-<translation id="1363996462118479832">由于登录时发生错误，Chrome 操作系统无法同步您的数据。</translation>
 <translation id="137466361146087520">Google Chrome 测试版</translation>
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1399397803214730675">该计算机已安装了更高版本的 Google Chrome 浏览器。如果该软件无法正常运行，请卸载 Google Chrome 浏览器，然后重试。</translation>
@@ -85,7 +83,6 @@
 <translation id="177180974022074201">通过 Chrome 中的 Gemini 进行试用</translation>
 <translation id="1786003790898721085">请确保您已在“<ph name="TARGET_DEVICE_NAME" />”上登录 Chrome，然后再次尝试发送。</translation>
 <translation id="1786044937610313874">快捷方式会在 Chrome 中打开</translation>
-<translation id="1812689907177901597">关闭此设置后，您可以仅登录 Gmail 等 Google 网站，而不同时登录 Chrome</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome 建议您暂停导致浏览器运行缓慢的标签页}other{Chrome 建议您暂停导致浏览器运行缓慢的标签页}}</translation>
 <translation id="1832046143430087831">使用 Chrome 的 V8 引擎加速网站，但 Chrome 的防攻击能力会略微降低。此设置已关闭。</translation>
 <translation id="1838374766361614909">清除搜索字词</translation>
@@ -172,7 +169,6 @@
 <translation id="2661616016316841783">如需获取<ph name="DEVICE" />中的扩展程序等内容，请登录 Chrome</translation>
 <translation id="2665296953892887393">将崩溃报告和<ph name="UMA_LINK" />发送给Google，帮助我们完善Google Chrome。</translation>
 <translation id="2668094785979141847">点击即可退出 Google 智能镜头</translation>
-<translation id="2674238339205910678">由于您的账号登录详细信息已过期，ChromeOS Flex 无法将 Chrome 数据保存到您的 Google 账号</translation>
 <translation id="2681444469812712297">在 Google Chrome 的新标签页中打开 <ph name="URL" />。</translation>
 <translation id="2699790011615497488">打开 Chrome Beta 版中的 Gemini</translation>
 <translation id="2738871930057338499">无法连接到互联网。发生 HTTP 403 Forbidden 错误，请检查您的代理配置。</translation>
@@ -283,7 +279,6 @@
 <translation id="3756724684201900923">详细了解如何安装 Chrome</translation>
 <translation id="3772152698251011058">向 Google 举报此网站</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
-<translation id="3785324443014631273">登录时发生错误，ChromeOS Flex 无法同步您的数据。</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="383455301564000773">要升级到 Windows 11？将 Chrome 下载到 OneDrive，从第一天起就准备就绪。</translation>
 <translation id="383928141529488001">Google Chrome 需获得蓝牙使用权限，才能浏览蓝牙设备。<ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -374,7 +369,6 @@
 <translation id="4803313124144656665">关闭 Chrome 中的 Google 搜索</translation>
 <translation id="4828579605166583682">Google Chrome 正在尝试替换现有密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="4836321460899997044">Chrome 个人资料</translation>
-<translation id="4842397268809523050">ChromeOS Flex 无法同步您的数据，因为您的网域不支持同步。</translation>
 <translation id="4851866215237571846">目前登录的账号是：<ph name="EXISTING_USER" />。若要单独存储您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chrome。</translation>
 <translation id="4855026984605187434">若要共享屏幕，请在“系统设置”中为 Chrome 启用屏幕录制功能</translation>
 <translation id="4873783916118289636">检查 Chrome 中重要的隐私控制设置和安全控件</translation>
@@ -388,7 +382,6 @@
 <translation id="492720062778050435">Chrome 建议您检查此扩展程序</translation>
 <translation id="4953650215774548573">将 Google Chrome 设为默认浏览器</translation>
 <translation id="495931528404527476">在 Chrome 中</translation>
-<translation id="4969674060580488087">您的账号登录详细信息已过期，ChromeOS Flex 无法同步您的数据。</translation>
 <translation id="4970761609246024540">欢迎使用 Chrome 个人资料</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">点击“Google 密码管理工具”</translation>
@@ -420,7 +413,6 @@
 <translation id="5271833978500241046">在 Chrome 中与其他 Gemini 功能搭配使用</translation>
 <translation id="5320351714793324716">如果您允许使用 Cookie，Chrome 便可能会使用 Cookie 进行预加载</translation>
 <translation id="5321325624576443340">Google 智能镜头不可用。请稍后再试。</translation>
-<translation id="5334309298019785904">由于您的网域不支持同步，Chrome 操作系统无法同步您的数据。</translation>
 <translation id="5336664042114176802">您可以切换到最初与您的 Google 账号关联且不受 <ph name="DOMAIN" /> 管理的 Gemini 助理。回答将不再基于由 <ph name="DOMAIN" /> 管理的文件或服务，并且您的对话记录不会继续保留。它可能不适合供工作使用。切换需要重新启动 Chrome。</translation>
 <translation id="5346389065299425353">添加多个标签页、文件和工具，让搜索更深入、更精准</translation>
 <translation id="5353252989841766347">从 Chrome 中导出密码</translation>
@@ -548,7 +540,6 @@
 <translation id="6497147134301593682">Chrome 已自动关闭</translation>
 <translation id="6506909944137591434">Chrome 需要获得摄像头权限才能为您的周边环境创建 3D 地图</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome 开发者版</translation>
-<translation id="6520608191273161151">由于登录时发生错误，ChromeOS Flex 无法将 Chrome 数据保存到您的 Google 账号</translation>
 <translation id="6520670145826811516">如需使用位置信息，请在<ph name="BEGIN_LINK" />系统设置<ph name="END_LINK" />中授予 Chrome 访问权限</translation>
 <translation id="652948702951888897">Chrome 历史记录</translation>
 <translation id="6532945796722480006">打开 Chrome Canary 版中的 Gemini</translation>
@@ -570,7 +561,6 @@
 <translation id="6712881677154121168">下载时出错：<ph name="DOWNLOAD_ERROR" />。</translation>
 <translation id="6718739135284199302">提高 Chrome 的运行速度</translation>
 <translation id="6734827584173583205">您近期未访问过该网站，因此 Chrome 撤消了该网站的<ph name="PERMISSION_1" />权限、<ph name="PERMISSION_2" />权限和另外 <ph name="COUNT" /> 项权限。</translation>
-<translation id="6735387454586646204">ChromeOS Flex 系统</translation>
 <translation id="674891594898436429">关闭此标签页中的当前搜索</translation>
 <translation id="6750954913813541382">为了修正拼写错误，Chrome 会将您在浏览器中输入的文字发送给 Google</translation>
 <translation id="6760235774835597023">使用 Chrome 的 V8 引擎加速网站，但 Chrome 的防攻击能力会略微降低。此设置已开启。</translation>
@@ -591,7 +581,6 @@
 <translation id="6908182077349113099">让您的密码、书签和历史记录在所有设备上完美同步。将默认浏览器更新为 Chrome，即可轻松使用您熟悉和喜爱的功能。</translation>
 <translation id="6926772305569367352">工具栏上的“Chrome 中的 Google 搜索”按钮有了新图标。点击此图标，即可在浏览时使用 Chrome 中的 Google 搜索提问。</translation>
 <translation id="6930294499209825">使您的 Google 软件保持为最新状态。如果此服务已停用或已停止运行，您的 Google 软件将无法保持最新状态，这意味着可能出现的安全漏洞无法得到修复，并且某些功能可能无法正常运行。当没有 Google 软件使用此服务时，此服务会自行卸载。</translation>
-<translation id="6933858244219479645">ChromeOS 系统</translation>
 <translation id="6938166777909186039">若要接收后续 Google Chrome 更新，您需使用 Windows 10 或更高版本。该计算机目前使用的是 Windows 8.1。</translation>
 <translation id="6962628299694876291"><ph name="EXISTING_USER" />已登录。若要区分您的浏览数据，请使用您自己的个人资料 (<ph name="USER_EMAIL_ADDRESS" />) 登录 Chrome。登录后，您还可在自己的所有设备上获取密码等信息。</translation>
 <translation id="6965382102122355670">确定</translation>
@@ -682,7 +671,6 @@
 <translation id="7801699035218095297">Google Chrome 正在尝试复制密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="7804364787702057554">您在 Chrome 中的账号</translation>
 <translation id="7804947029129221742">搜索引擎已被 Chrome 之外的其他应用更改。为保护您的安全，Chrome 已将其重置为原始默认设置。<ph name="LEARN_MORE_LINK" /></translation>
-<translation id="7808348361785373670">从Chrome中移除…</translation>
 <translation id="7827099906024714326">Chrome 需要先验证您的身份，然后才能将某些数据保存到您的 Google 账号中，供您在所有设备上使用。如果现在就退出账号，这些数据将被删除。</translation>
 <translation id="7829850924999627855">如需获取<ph name="DEVICE" />中保存的信息等内容，请登录 Chrome</translation>
 <translation id="7832314606810669113">如需在您的所有设备上获取书签等信息，请登录 Chrome。登录后，此书签将保存到您的 Google 账号。</translation>
@@ -695,7 +683,6 @@
 <translation id="7896673875602241923">之前已有人在此计算机上以 <ph name="ACCOUNT_EMAIL_LAST" /> 的身份登录了 Chrome。请新建一个 Chrome 用户来单独保存您的信息。</translation>
 <translation id="7904213866086517086">重新打开侧边栏中的 Google 搜索</translation>
 <translation id="7904985524660297937">试用 Google Chrome 中的 Gemini</translation>
-<translation id="7905880575591690197">由于登录时发生错误，ChromeOS 无法将 Chrome 数据保存到您的 Google 账号</translation>
 <translation id="7936702483636872823">Chrome 阻止了此项下载操作，因为该文件具有欺骗性，可能会意外更改您的设备</translation>
 <translation id="7951272445806340501">需要重启 ChromeOS Flex 以应用更新。</translation>
 <translation id="7959172989483770734">管理 Chrome 个人资料</translation>
@@ -756,7 +743,6 @@
 <translation id="8402881611069691789">{COUNT,plural, =1{Chrome 已完成更新。重新启动即可使用最新版本。重启后，Chrome 会自动重新打开您的所有当前标签页。有无痕式窗口或隔离窗口处于打开状态。重新启动后，这个窗口将不会重新打开。}other{Chrome 已完成更新。重新启动即可使用最新版本。重启后，Chrome 会自动重新打开您的所有当前标签页。有 # 个无痕式窗口和隔离窗口在多份个人资料中打开。重新启动后，这些窗口将不会重新打开。}}</translation>
 <translation id="8403038600646341038">计算机屏幕中的 Chrome 徽标。</translation>
 <translation id="8406687098231754303">点击工具栏上的“侧边栏中的 Google 搜索”按钮，即可重新打开侧边栏中的 Google 搜索，以便在浏览时提问</translation>
-<translation id="8418845734693287262">由于您的账号登录详细信息已过期，Chrome 操作系统无法同步您的数据。</translation>
 <translation id="842386925677997438">Chrome 的安全工具</translation>
 <translation id="8425765582779547329">若要使用家长选择的设置更安全地上网，请登录 Chrome</translation>
 <translation id="842852285618875960">您已达到 Google Chrome 的书签数量上限（<ph name="BOOKMARK_LIMIT" /> 个），因此部分书签尚未保存到您的 Google 账号中。
@@ -785,7 +771,6 @@
 <translation id="8624541899164515475">“设置”页面，在新标签页中打开。</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 将在 1 分钟后重新启动}other{Chrome 将在 # 分钟后重新启动}}</translation>
 <translation id="8637932705841171563">若要共享窗口，请在“系统设置”中为 Chrome 启用屏幕录制功能</translation>
-<translation id="8642497536370021917">为了确保您可以一直通过 Google 账号使用和保存 Chrome 数据，请验证是您本人在操作</translation>
 <translation id="8656634243791296665">打开 Chrome 开发者版中的 Gemini</translation>
 <translation id="8669527147644353129">Google Chrome 浏览器帮助程序</translation>
 <translation id="8679801911857917785">它还能够控制Chrome启动后显示的页面。</translation>
@@ -847,7 +832,6 @@
 <translation id="922152298093051471">自定义 Chrome</translation>
 <translation id="93760716455950538">重启 ChromeOS Flex</translation>
 <translation id="945522503751344254">发送反馈</translation>
-<translation id="973195869036269770">由于您的账号登录详细信息已过期，ChromeOS 无法将 Chrome 数据保存到您的 Google 账号</translation>
 <translation id="983803489796659991">更新服务器没有应用的任何哈希数据，因此安装失败。</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> 可用于切换 Chrome 个人资料</translation>
 </translationbundle>

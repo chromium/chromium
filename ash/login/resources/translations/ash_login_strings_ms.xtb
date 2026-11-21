@@ -10,6 +10,7 @@
 <translation id="1097658378307015415">Sebelum log masuk, sila masuk sebagai Tetamu untuk mengaktifkan rangkaian <ph name="NETWORK_ID" /></translation>
 <translation id="1111932478203988717">Anak anda boleh menggunakan PIN ini untuk log masuk ke peranti mereka</translation>
 <translation id="1122587596907914265">Gayakan hiasan latar unik</translation>
+<translation id="1122913801042512795">Butiran log masuk akaun anda sudah lapuk. Sila log keluar dan log masuk sekali lagi.</translation>
 <translation id="1131201598497838573">PIN anak anda telah dikemaskinikan</translation>
 <translation id="1147322039136785890">Kini giliran <ph name="SUPERVISED_USER_NAME" /> pula</translation>
 <translation id="1148669835763563782">Anda menerima kemaskinian perisian terkini untuk meningkatkan keselamatan dan ciri Chromebook terbaharu. Kemaskinian ini merangkumi peningkatan pengalaman penyediaan untuk membantu anda mendapatkan permulaan Chromebook yang lancar.</translation>
@@ -26,6 +27,7 @@
 <translation id="1256588359404100567">Tetapan disegerakkan daripada peranti terdahulu anda.</translation>
 <translation id="1272978324304772054">Akaun pengguna ini tidak tergolong dalam domain tempat peranti anda didaftarkan. Jika anda ingin mendaftar untuk domain yang berbeza, anda perlu melalui pemulihan peranti terlebih dahulu.</translation>
 <translation id="1293556467332435079">Fail</translation>
+<translation id="1302523850133262269">Sila tunggu sementara Chrome memasang kemas kini sistem terkini.</translation>
 <translation id="1307559529304613120">Op!  Sistem gagal menyimpan token akses API jangka panjang untuk peranti ini.</translation>
 <translation id="1335929031622236846">Daftarkan peranti anda</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Ciri Penyahpepijatan<ph name="END_H3" />
@@ -49,6 +51,7 @@
 <translation id="1347625331607114917">Sahkan kod pada telefon Android anda</translation>
 <translation id="1347975661240122359">Kemas kini akan bermula apabila bateri mencapai <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">Untuk menggunakan kawalan ibu bapa seperti kelulusan apl dan had masa skrin, kanak-kanak mesti mempunyai Google Account yang diurus oleh ibu/bapa. Akaun sekolah boleh ditambah kemudian untuk alatan seperti Google Classroom.</translation>
+<translation id="1363996462118479832">Chrome OS tidak dapat menyegerakkan data anda disebabkan oleh ralat melog masuk.</translation>
 <translation id="1375557162880614858">Adakah anda mahu mengaktifkan ChromeVox, pembaca skrin terbina dalam untuk Chrome OS Flex?</translation>
 <translation id="1377600615067678409">Langkau pada masa ini</translation>
 <translation id="1399261165075500043">Tidak dapat memuatkan Syarat Perkhidmatan Google Play</translation>
@@ -73,6 +76,7 @@
 <translation id="1642494467033190216">Pengalihan keluar perlindungan rootfs dan pemulaan semula diperlukan sebelum mendayakan ciri penyahpepijatan lain.</translation>
 <translation id="1646045728251578877">Kemaskinian perisian tersedia</translation>
 <translation id="1650801028905250434">Fail anda dalam Drive Saya akan disegerakkan dengan Chromebook anda secara automatik supaya anda boleh mengakses fail tersebut tanpa sambungan Internet. Anda boleh menukar tetapan ini pada bila-bila masa dalam Tetapan &gt; Fail.</translation>
+<translation id="16620462294541761">Maaf, kata laluan anda tidak dapat disahkan. Sila cuba semula.</translation>
 <translation id="1668435968811469751">Daftar secara manual</translation>
 <translation id="1678919064276516737">E-mel dan PIN yang anda masukkan tidak sepadan</translation>
 <translation id="1692115862433274081">Gunakan akaun lain</translation>
@@ -94,6 +98,7 @@
 <translation id="1868617395637139709">Gunakan lokasi untuk apl dan perkhidmatan Android.</translation>
 <translation id="1877377730633446520">Tindakan ini akan menggunakan anggaran <ph name="REQUIRED_SPACE" />. Pada masa ini anda mempunyai <ph name="FREE_SPACE" />.</translation>
 <translation id="1878155070920054810">Nampaknya Chromebook anda akan kehabisan kuasa sebelum kemaskinian selesai. Pastikan Chromebook dicas dengan betul untuk mengelakkan gangguan.</translation>
+<translation id="1887442540531652736">Ralat log masuk</translation>
 <translation id="189035593835762169">Terma dan syarat</translation>
 <translation id="189358972401248634">Bahasa lain</translation>
 <translation id="1915734383465415025">Nombor Kedai</translation>
@@ -122,6 +127,7 @@
 <translation id="2210462644007531147">Tidak dapat menyelesaikan pemasangan</translation>
 <translation id="221872881068107022">Penatalan songsang</translation>
 <translation id="2219081237089444028">Tetapkan kata laluan <ph name="DEVICE_TYPE" /> untuk lebih memudahkan log masuk</translation>
+<translation id="2220529011494928058">Laporkan isu</translation>
 <translation id="222115440608612541">Tukar tema pada waktu matahari terbit dan terbenam</translation>
 <translation id="2229161054156947610">Tinggal lebih 1 jam</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> anda mengemas kini secara automatik di latar untuk memberi anda ciri terkini dan peningkatan keselamatan. Anda boleh menyemak pilihan kemaskinian dalam Tetapan.</translation>
@@ -132,6 +138,7 @@
 <translation id="2328137272841210255">Tetapkan semula PIN anda</translation>
 <translation id="2342180549977909852">Anak anda boleh menggunakan nombor (PIN) dan bukannya kata laluan untuk membuka kunci peranti ini. Untuk menetapkan PIN kemudian, pergi ke Tetapan.</translation>
 <translation id="2359808026110333948">Teruskan</translation>
+<translation id="2384373936468275798">Chromium OS tidak dapat menyegerakkan data anda kerana butiran log masuk akaun anda sudah lapuk.</translation>
 <translation id="2387052489799050037">Pergi ke Skrin Utama</translation>
 <translation id="2395616325548404795"><ph name="DEVICE_TYPE" /> anda berjaya didaftarkan untuk pengurusan perusahaan, tetapi gagal menghantar maklumat aset dan lokasinya. Sila masukkan maklumat ini secara manual daripada Admin console anda untuk peranti ini.</translation>
 <translation id="2408955596600435184">Masukkan PIN anda</translation>
@@ -158,6 +165,7 @@
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Perkhidmatan lokasi Google menggunakan sumber seperti Wi-Fi, rangkaian mudah alih dan penderia untuk menganggarkan lokasi peranti ini.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Anda boleh mematikan lokasi Android pada peranti ini pada bila-bila masa dengan mengakses Tetapan &gt; Apl &gt; Google Play Store &gt; Urus pilihan Android &gt; Keselamatan &amp; lokasi &gt; Lokasi. Anda juga boleh mematikan penggunaan Wi-Fi, rangkaian mudah alih dan penderia untuk lokasi Android dengan mematikan “Ketepatan Lokasi Google” dalam menu yang sama.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2663302507110284145">Bahasa</translation>
+<translation id="2674238339205910678">ChromeOS Flex tidak dapat menyimpan data Chrome dalam Google Account anda kerana butiran log masuk akaun anda sudah lapuk</translation>
 <translation id="2687407218262674387">Syarat perkhidmatan Google</translation>
 <translation id="2688196195245426394">Ralat semasa mendaftarkan peranti dengan pelayan: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Ini ialah peranti yang dihimpunkan dan tidak boleh didaftarkan dengan Peningkatan Kios dan Papan Tanda.</translation>
@@ -252,6 +260,7 @@
 <translation id="3740945083753997630">Kurangkan saiz paparan dan teks</translation>
 <translation id="376841534249795524">Apakah kegunaan <ph name="DEVICE_TYPE" /> anda?</translation>
 <translation id="3772046291955677288">Saya telah membaca dan bersetuju menerima <ph name="BEGIN_LINK1" />Syarat Perkhidmatan Google<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />Syarat Perkhidmatan Tambahan Chrome dan OS Chrome<ph name="END_LINK2" />.</translation>
+<translation id="3785324443014631273">Chrome OS Flex tidak dapat menyegerakkan data anda disebabkan ralat melog masuk.</translation>
 <translation id="3789841737615482174">Pasang</translation>
 <translation id="3800828618615365228">Syarat Tambahan Google Chrome dan OS Chrome</translation>
 <translation id="3828953470056652895">Saya telah membaca dan bersetuju menerima <ph name="BEGIN_LINK1" />Syarat Perkhidmatan Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Syarat Perkhidmatan Tambahan Chrome dan OS Chrome<ph name="END_LINK2" /> dan <ph name="BEGIN_LINK3" />Syarat Perkhidmatan Play<ph name="END_LINK3" />.</translation>
@@ -332,6 +341,7 @@
         <ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Untuk mendapatkan bantuan lanjut, lawati: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Siapakah yang ingin anda tambahkan pada <ph name="DEVICE_TYPE" /> ini?</translation>
+<translation id="4543778593405494224">Pengurus sijil</translation>
 <translation id="4566170377336116390">Jika anda ingin menukar selepas pendaftaran, anda perlu membuat tetapan semula kilang (powerwash) peranti anda.</translation>
 <translation id="4567512141633030272">Pilihan log masuk yang salah?</translation>
 <translation id="4567533462991917415">Anda boleh menambahkan lagi orang pada bila-bila masa selepas persediaan. Setiap orang boleh memperibadikan akaun mereka dan merahsiakan data.</translation>
@@ -349,6 +359,7 @@
 <translation id="4814327014588285482">Langkau dan ingatkan saya kemudian</translation>
 <translation id="4830502475412647084">Memasang kemas kini OS</translation>
 <translation id="4837926214103741331">Anda tiada kebenaran untuk menggunakan peranti ini. Sila hubungi pemilik peranti untuk mendapatkan kebenaran log masuk.</translation>
+<translation id="4842397268809523050">Chrome OS Flex tidak dapat menyegerakkan data anda kerana Segerak tidak tersedia untuk domain anda.</translation>
 <translation id="4844333629810439236">Papan kekunci lain</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4864369630010738180">Sedang log masuk...</translation>
@@ -360,6 +371,7 @@
 <translation id="4944310289250773232">Perkhidmatan pengesahan ini dihoskan oleh <ph name="SAML_DOMAIN" /></translation>
 <translation id="4955710816792587366">Pilih PIN anda</translation>
 <translation id="4965808351167763748">Adakah anda pasti ingin menyediakan peranti ini untuk menjalankan Hangout Meet?</translation>
+<translation id="4969674060580488087">Chrome OS Flex tidak dapat menyegerakkan data anda kerana butiran log masuk akaun anda sudah lapuk.</translation>
 <translation id="4987944280765486504">Chromebook anda akan dimulakan semula setelah muat turun selesai dan anda boleh meneruskan penyediaan.</translation>
 <translation id="5029287942302939687">Kata laluan anda telah ditetapkan</translation>
 <translation id="503155457707535043">Apl sedang dimuat turun</translation>
@@ -401,6 +413,8 @@
 <translation id="528208740344463258">Untuk memuat turun dan menggunakan apl Android, anda perlu memasang kemas kini yang diperlukan ini dahulu. Semasa <ph name="DEVICE_TYPE" /> anda sedang dikemas kini, anda tidak boleh menggunakannya. <ph name="DEVICE_TYPE" /> anda akan dimulakan semula selepas pemasangan selesai.</translation>
 <translation id="5283677936944177147">Op! Sistem gagal menentukan model atau nombor siri peranti.</translation>
 <translation id="5333896723098573627">Untuk mengalih keluar apl, pergi ke Tetapan &gt; Google Play Store &gt; Urus pilihan Android &gt; Apl atau Pengurus aplikasi. Kemudian, ketik apl yang ingin dinyahpasang (anda mungkin perlu meleret ke kanan atau ke kiri untuk mencari apl). Kemudian, ketik Nyahpasang atau Lumpuhkan.</translation>
+<translation id="5334309298019785904">Chrome OS tidak dapat menyegerakkan data anda kerana Segerak tidak tersedia untuk domain anda.</translation>
+<translation id="535243042947607642">ChromiumOS tidak dapat menyimpan data Chromium dalam Google Account anda kerana butiran log masuk akaun anda sudah lapuk</translation>
 <translation id="5355501370336370394">Daftarkan peranti perusahaan</translation>
 <translation id="5372529912055771682">Mod pendaftaran yang diberikan tidak disokong oleh versi sistem pengendalian ini. Sila pastikan anda menjalankan versi terbaharu dan cuba lagi.</translation>
 <translation id="5397378439569041789">Daftarkan peranti kiosk atau papan tanda</translation>
@@ -412,6 +426,7 @@
 <translation id="5448293924669608770">Op, sesuatu telah berlaku dengan log masuk</translation>
 <translation id="5453829744223920473">Anak anda boleh menggunakan semua apl sekolah, penanda halaman dan sumber mereka seperti yang mereka lakukan di dalam kelas. Sekolah menetapkan peraturan asas.</translation>
 <translation id="5473099001878321374">Dengan meneruskan penggunaan, anda bersetuju bahawa peranti ini juga mungkin memuat turun dan memasang kemas kini dan apl daripada Google, pembawa anak anda dan pengeluar peranti ini secara automatik dan mungkin menggunakan data selular. Sesetengah apl ini mungkin menawarkan pembelian dalam apl.</translation>
+<translation id="549669000822060376">Sila tunggu sementara Chromium memasang kemas kini sistem terkini.</translation>
 <translation id="5502915260472117187">Anak</translation>
 <translation id="5511823366942919280">Adakah anda pasti ingin menyediakan peranti ini sebagai "Shark"?</translation>
 <translation id="5513807280330619196">Kalkulator</translation>
@@ -515,6 +530,7 @@
 <translation id="6495266441917713704">Tidak dapat memindahkan Wi-Fi</translation>
 <translation id="6515620015470298987">Log masuk gagal disebabkan oleh masalah semakan konfigurasi peranti. Sila jalankan powerwash pada <ph name="DEVICE_TYPE" /> anda dan cuba lagi.</translation>
 <translation id="6519689855001245063">Menyemak kelayakan</translation>
+<translation id="6520608191273161151">ChromeOS Flex tidak dapat menyimpan data Chrome dalam Google Account anda disebabkan oleh ralat log masuk</translation>
 <translation id="6532527800157340614">Log masuk gagal kerana token akses anda tidak boleh didapatkan kembali. Sila semak sambungan rangkaian dan cuba lagi.</translation>
 <translation id="653920215766444089">Mencari peranti penuding</translation>
 <translation id="65513682072153627">Anda akan melihat ikon Terurus ini apabila tetapan atau ciri diurus oleh pentadbir anda.</translation>
@@ -526,8 +542,10 @@
 <translation id="6675665718701918026">Peranti penuding disambung</translation>
 <translation id="667752334740867460">Menerima maklumat Wi-Fi...</translation>
 <translation id="6680442031740878064">Tersedia: <ph name="AVAILABLE_SPACE" /></translation>
+<translation id="668175097507315160">Chromium OS tidak dapat menyegerakkan data anda disebabkan oleh ralat melog masuk.</translation>
 <translation id="6684827949542560880">Memuat turun kemaskinian terkini</translation>
 <translation id="6722744767592605627">Anda boleh memulihkan <ph name="EMAIL" /> tetapi data setempat akan dipadamkan.</translation>
+<translation id="6735387454586646204">Sistem Chrome OS Flex</translation>
 <translation id="6748980958975836188">Saya telah membaca dan bersetuju menerima <ph name="BEGIN_LINK1" />Syarat Perkhidmatan Google<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />Syarat Perkhidmatan Tambahan Chrome dan OS Chrome<ph name="END_LINK2" />.</translation>
 <translation id="6749473226660745022">Foto</translation>
 <translation id="6754918760968695779">Sisipan Pantas</translation>
@@ -552,6 +570,7 @@
 <translation id="6918733588290914545">Persediaan pantas dengan telefon Android</translation>
 <translation id="6920473853105515518">Pastikan <ph name="DEVICE_TYPE" /> anda disambungkan kepada Internet dan cuba lagi. Anda boleh melawati play.google/play-terms pada peranti lain.</translation>
 <translation id="6929126689972602640">Kawalan ibu bapa tidak disokong untuk akaun institusi pengajian. Untuk menambah akaun institusi pengajian bagi mengakses Google Classroom dan laman web lain untuk membuat kerja sekolah di rumah, log masuk menggunakan akaun peribadi kanak-kanak itu dahulu. Anda boleh menambah akaun institusi pengajian dalam persediaan kemudian.</translation>
+<translation id="6933858244219479645">Sistem ChromeOS</translation>
 <translation id="6935031746833428401">Ketahui lebih lanjut tentang Pengurusan Peranti</translation>
 <translation id="6950351336108213154">Mengemaskinikan persisian peranti</translation>
 <translation id="6955698182324067397">Anda mendayakan ciri penyahpepijatan Chrome OS yang akan menetapkan daemon sshd dan mendayakan pengebutan dari pemacu USB.</translation>
@@ -648,6 +667,7 @@
 <translation id="7870730066603611552">Semak pilihan penyegerakan selepas persediaan</translation>
 <translation id="7883792253546618164">Hentikan langganan pada bila-bila masa.</translation>
 <translation id="7887864092952184874">Tetikus Bluetooth digandingkan</translation>
+<translation id="7905880575591690197">ChromeOS tidak dapat menyimpan data Chrome dalam Google Account anda disebabkan oleh ralat log masuk</translation>
 <translation id="7906440585529721295">Data setempat akan dipadamkan</translation>
 <translation id="7910725946105920830">Gunakan Google Account peribadi anda</translation>
 <translation id="7918257978052780342">Daftar</translation>
@@ -674,6 +694,7 @@
 <translation id="8098616321286360457">Sambungan rangkaian diperlukan</translation>
 <translation id="8129265306888404830">Untuk menggunakan alamat e-mel anda daripada organisasi anda (<ph name="EMAIL_DOMAIN" />), anda perlu menggunakan pendaftaran perusahaan. Jika peranti ini adalah untuk penggunaan peribadi anda, log masuk dengan Google Account peribadi anda.</translation>
 <translation id="8131740175452115882">Sahkan</translation>
+<translation id="8133124826068723441">Chromium OS tidak dapat menyegerakkan data anda kerana Segerak tidak tersedia untuk domain anda.</translation>
 <translation id="8146177459103116374">Jika anda telah mendaftar pada peranti ini, anda boleh <ph name="LINK2_START" />log masuk sebagai pengguna sedia ada<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Log masuk gagal. Sila hubungi pentadbir anda atau cuba lagi.</translation>
 <translation id="8147346945017130012">Bantu kami meningkatkan ciri dan prestasi Chrome dan OS Chrome dengan menghantar laporan ranap sistem serta data diagnostik dan penggunaan kepada Google secara automatik.</translation>
@@ -692,6 +713,7 @@
 <translation id="8271379370373330993">Ibu bapa, beberapa langkah yang seterusnya adalah untuk anda. Anda boleh menyerahkan <ph name="DEVICE_TYPE" /> ini semula kepada anak anda selepas persediaan akaun selesai.</translation>
 <translation id="8274924778568117936">Jangan matikan atau menutup <ph name="DEVICE_TYPE" /> anda sehingga kemas kini selesai. <ph name="DEVICE_TYPE" /> anda akan dimulakan semula selepas pemasangan selesai.</translation>
 <translation id="8281886186245836920">Langkau</translation>
+<translation id="8286036467436129157">Log Masuk</translation>
 <translation id="8289509909262565712">Selamat datang ke <ph name="DEVICE_OS" /></translation>
 <translation id="8291942417224950075">Untuk kegunaan peribadi</translation>
 <translation id="8304383784961451596">Anda tidak akan dibenarkan untuk menggunakan peranti ini. Sila hubungi pentadbir untuk mendapatkan kebenaran log masuk atau log masuk menggunakan Google Account yang diawasi oleh Family Link.</translation>
@@ -703,6 +725,7 @@
 <translation id="8401432541486058167">Sediakan PIN yang dikaitkan dengan kad pintar anda.</translation>
 <translation id="8408270600235826886">Anda boleh mengawal data yang dikongsi dengan Google. Anda boleh menukar pilihan ini pada bila-bila masa dalam Tetapan. Data akan digunakan menurut <ph name="BEGIN_LINK" />Dasar Privasi<ph name="END_LINK" /> Google.</translation>
 <translation id="8413956290606243087">Adakah anda mahu mengaktifkan ChromeVox, pembaca skrin terbina dalam untuk Chrome OS?</translation>
+<translation id="8418845734693287262">Chrome OS tidak dapat menyegerakkan data anda kerana butiran log masuk akaun anda sudah lapuk.</translation>
 <translation id="8425768983279799676">Anda boleh menggunakan PIN anda untuk membuka kunci peranti anda.</translation>
 <translation id="8428213095426709021">Tetapan</translation>
 <translation id="843173223122814223">Buat latar dengan AI</translation>
@@ -742,10 +765,12 @@
 <translation id="8794548468611058947">Anda boleh membuat PIN untuk <ph name="DEVICE_TYPE" /> ini dan bukannya memasukkan kata laluan Google Account anda untuk log masuk</translation>
 <translation id="8830779999439981481">Mulakan semula untuk menggunakan kemas kini</translation>
 <translation id="8830796635868321089">Semakan kemas kini yang menggunakan tetapan proksi semasa gagal. Sila laraskan <ph name="PROXY_SETTINGS_LINK_START" />tetapan proksi<ph name="PROXY_SETTINGS_LINK_END" /> anda.</translation>
+<translation id="8833697763442816810">Sistem Chromium OS</translation>
 <translation id="8855977033756560989">Peranti Chromebook Enterprise ini disertakan sekali dengan Peningkatan Chrome Enterprise. Untuk memanfaatkan keupayaan perusahaan, daftarkan peranti ini dengan akaun pentadbir Google.</translation>
 <translation id="885746075120788020">Pilihan dan aktiviti anda yang disimpan akan sedia pada mana-mana peranti Chrome OS apabila anda log masuk dengan Google Account anda. Anda boleh memilih item yang hendak disegerakkan dalam Tetapan.</translation>
 <translation id="8868333925931032127">Memulakan Mod Tunjuk Cara</translation>
 <translation id="8875221558267407626">Ringkaskan kandungan, permudahkan bahasa yang kompleks atau tanya soalan</translation>
+<translation id="8890569919834781711">ChromiumOS tidak dapat menyimpan data Chromium dalam Google Account anda disebabkan oleh ralat log masuk</translation>
 <translation id="8907701755790961703">Sila pilih negara</translation>
 <translation id="8913163265790894442">Sediakan <ph name="DEVICE_TYPE" /> anda dengan mudah dengan telefon anda. Anda boleh menambahkan Wi-Fi dan Google Account anda tanpa memasukkan kata laluan anda secara manual.
         <ph name="BR" />
@@ -781,5 +806,6 @@
 <translation id="951991426597076286">Tolak</translation>
 <translation id="954749761428814584">Bahasa dan kaedah input</translation>
 <translation id="960987915827980018">Tinggal kira-kira 1jam</translation>
+<translation id="973195869036269770">ChromeOS tidak dapat menyimpan data Chrome dalam Google Account anda kerana butiran log masuk akaun anda sudah lapuk</translation>
 <translation id="995420352808264005">Pilih jenis pendaftaran peranti</translation>
 </translationbundle>

@@ -58,6 +58,7 @@
 <translation id="2027881372245801507">ପରାମର୍ଶଗୁଡ଼ିକୁ ବନ୍ଦ କରିବା ଫଳରେ ଏହା ଅନ୍ୟ ଫିଚରଗୁଡ଼ିକ ପାଇଁ Chromiumର ପୃଷ୍ଠା ଟାଇଟେଲ ଏବଂ URLଗୁଡ଼ିକର ପ୍ରକ୍ରିୟାକରଣକୁ ନିୟନ୍ତ୍ରଣ କରେ ନାହିଁ। ଆପଣ ଆପଣଙ୍କ <ph name="BEGIN_LINK" />ସିଙ୍କ ସେଟିଂସ<ph name="END_LINK" />ରେ ଏହି ଡାଟାକୁ ଆକ୍ସେସ ପରିଚାଳନା କରିପାରିବେ।</translation>
 <translation id="2036929290919363111">ଆପଣଙ୍କ ସମସ୍ତ ଡିଭାଇସରେ ଆପଣଙ୍କର ପାସୱାର୍ଡ ଏବଂ ଆହୁରି ଅନେକ କିଛି ପାଇବା ପାଇଁ ଏହି ସାଇଟ ଏବଂ Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ</translation>
 <translation id="2042889939382983733">ଆପଣଙ୍କ Chromium ଇତିହାସ ଭ୍ୟୁ କରନ୍ତୁ</translation>
+<translation id="2054352566231434723">ଡିଫଲ୍ଟ ଭାବେ Chromiumରେ ଏକ୍ସଟର୍ନାଲ ଲିଙ୍କଗୁଡ଼ିକୁ ଖୋଲନ୍ତୁ।</translation>
 <translation id="2059365270911640413">Chromium ସେଟ ଅପ କରିବା ସମ୍ପୂର୍ଣ୍ଣ କରନ୍ତୁ</translation>
 <translation id="2168108852149185974">କିଛି ଆଡ୍-ଅନ୍, Chromium କ୍ରାସ୍ ହେବାର କାରଣ ହୋଇପାରେ। ଦୟାକରି ଅନ୍‌ଇନ୍‌ଷ୍ଟଲ୍ କରନ୍ତୁ:</translation>
 <translation id="2168593389981132306">Chromiumକୁ ଆହୁରି ଉନ୍ନତ କରନ୍ତୁ</translation>
@@ -85,6 +86,7 @@
 <translation id="2485774047568879945">ସହଜରେ ସେୟର ଏବଂ ଲିଙ୍କ ଖୋଲିବାକୁ Chromiumକୁ ଆପଣଙ୍କର ଡିଫଲ୍ଟ ବ୍ରାଉଜର ଭାବରେ ସେଟ କରନ୍ତୁ</translation>
 <translation id="2512597191798760956">Chromium ଆଇକନକୁ ଦବାଇ ଧରି "ହୋମ ସ୍କ୍ରିନକୁ ଏଡିଟ କରନ୍ତୁ"ରେ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="2517624234762908348">ଆପଣଙ୍କର Chromium ଡାଟା ସିଙ୍କ୍ କରନ୍ତୁ</translation>
+<translation id="2519012503779379646">ଆପ ଟ୍ରାଞ୍ଜିସନକୁ ଦ୍ରୁତ ଏବଂ ସହଜ କରିବା ପାଇଁ Chromiumକୁ ଡିଫଲ୍ଟ ଭାବେ ସେଟ କରନ୍ତୁ।</translation>
 <translation id="2592940277904433508">Chromium ବ୍ୟବହାର କରିବା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="2601766165676560303">iPhone ଏବଂ iPad ପାଇଁ Chromium ଥିମ</translation>
 <translation id="2607609479243848905">ଯଦି ଆପଣଙ୍କ ପାସଫ୍ରେଜକୁ ଆପଣ ଭୁଲି ଯାଇଛନ୍ତି କିମ୍ବା ଏହି ସେଟିଂକୁ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ଚାହାଁନ୍ତି, ତେବେ <ph name="BEGIN_LINK" />ଆପଣଙ୍କ ଆକାଉଣ୍ଟରେ ଥିବା Chromium ଡାଟାକୁ ଡିଲିଟ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
@@ -189,6 +191,7 @@
 <translation id="4985291216379576555">ଅଫଲାଇନ୍, ଅପଡେଟଗୁଡ଼ିକ ଅଛି କି ନାହିଁ ତାହା Chromium ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ</translation>
 <translation id="4996471330284142407">ସରଳ, ସୁରକ୍ଷିତ ଏବଂ ପୂର୍ବ-ଅପେକ୍ଷା-ଅଧିକ-ଦ୍ରୁତ Chromium ସହ ଅଧିକ କାର୍ଯ୍ୟ କରନ୍ତୁ।</translation>
 <translation id="4999538639245140991"><ph name="SIGNOUT_MANAGED_DOMAIN" /> ଦ୍ବାରା ପରିଚାଳିତ ଏକ ଆକାଉଣ୍ଟରୁ ଆପଣ ସାଇନ୍ ଆଉଟ୍ କରିଥିବାରୁ, ଏହି ଡିଭାଇସ୍‌ରୁ ଆପଣଙ୍କର Chromium ଡାଟା ଡିଲିଟ୍ କରାଯିବ। ଆପଣଙ୍କ ଡାଟା ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ରହିବ।</translation>
+<translation id="5004986813285860899">ସିଧାସଳଖ Chromiumକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="5042011327527167688">“Chromiumରେ Google Maps ମାଧ୍ୟମରେ ଭ୍ୟୁ କରନ୍ତୁ”ରେ ଟାପ କରନ୍ତୁ।</translation>
 <translation id="5044871537677053278">Chromium ଆପଣଙ୍କୁ ଦିଗନିର୍ଦ୍ଦେଶ ଏବଂ ସ୍ଥାନୀୟ ସୂଚନା ଦେବା ପାଇଁ ଠିକଣାଗୁଡ଼ିକୁ ଚିହ୍ନଟ କରେ ଏବଂ Google Maps ବ୍ୟବହାର କରେ।</translation>
 <translation id="5048140766121299007">"<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />" ସେଟିଂସରୁ, "Chromium" ଚାଲୁ ଅଛିରେ ଟୋଗଲ କରନ୍ତୁ</translation>
@@ -202,6 +205,7 @@
 <translation id="5224391634244552924">ସେଭ୍ କରାଯାଇଥିବା କୌଣସି ପାସୱାର୍ଡ ନାହିଁ। ଆପଣ ପାସୱାର୍ଡଗୁଡ଼ିକ ସେଭ୍ କଲେ Chromium ସେଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ।</translation>
 <translation id="5259423875997548710">Chromiumରେ ଭିଜୁଆଲଗୁଡ଼ିକୁ ସର୍ଚ୍ଚ କରନ୍ତୁ।</translation>
 <translation id="5284913972719948193">Chromiumରେ ଆପଣଙ୍କର ପାସୱାର୍ଡ, ଇତିହାସ, ବୁକମାର୍କ ଏବଂ କ୍ରେଡିଟ କାର୍ଡଗୁଡ଼ିକ ବ୍ୟବହାର କରିବା ପାଇଁ ଆପଣଙ୍କ ଡାଟା ଇମ୍ପୋର୍ଟ କରନ୍ତୁ</translation>
+<translation id="5299421317003704533">Chromiumରେ ସିଧାସଳଖ ଲିଙ୍କଗୁଡ଼ିକୁ ଖୋଲନ୍ତୁ।</translation>
 <translation id="5308226104666789935">ଅପଡେଟଗୁଡ଼ିକ ଅଛି କି ନାହିଁ ତାହା Chromium ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ</translation>
 <translation id="5311557153294205270">Chromiumରେ ଆପଣଙ୍କ ବୁକମାର୍କଗୁଡ଼ିକରେ ଇନପୁଟ ହୋଇଥିବା URLଗୁଡ଼ିକ ଯୋଗ କରେ।</translation>
 <translation id="5383251701169024761">ଅନ୍ୟ ଆପ୍ସରେ ଆପଣଙ୍କ ସେଭ ହୋଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକ ସହଜରେ ପାଇବାକୁ ଅଟୋଫିଲ ପାଇଁ Chromiumକୁ ବାଛନ୍ତୁ।</translation>
@@ -268,6 +272,7 @@
 <translation id="6387994184698195448">ଉପଯୋଗୀ Chromium ଟିପ୍ସ ଏବଂ ଆହୁରି ଅନେକ କିଛି ବିଷୟରେ ଜାଣନ୍ତୁ।</translation>
 <translation id="6424492062988593837">Chromium ବର୍ତ୍ତମାନ ଆହୁରି ଉନ୍ନତ ହୋଇଛି! ଗୋଟିଏ ନୂଆ ସଂସ୍କରଣ ଉପଲବ୍ଧ ଅଛି।</translation>
 <translation id="6433172051771630690">Chromiumରୁ ସବୁଠୁ ଅଧିକ ସୁବିଧା ପାଇବା ବିଷୟରେ ଟିପ୍ସ।</translation>
+<translation id="6458110851735461646">Chromium ସହ ଆପଣଙ୍କର ପସନ୍ଦର Google ଆପ୍ସ ଆହୁରି ଭଲ କାମ କରେ</translation>
 <translation id="65045991564554105">Chromium ବୁକମାର୍କଗୁଡ଼ିକ ଦେଖନ୍ତୁ</translation>
 <translation id="6519797228806907665">ଆପଣଙ୍କ iPhoneର ହୋମ ସ୍କ୍ରିନରୁ Chromiumକୁ ଶୀଘ୍ର ଆକ୍ସେସ କରନ୍ତୁ।</translation>
 <translation id="6538713818758208754">Chromiumରେ ପେମେଣ୍ଟ ପଦ୍ଧତିର ସେଟିଂ ପୃଷ୍ଠା ଖୋଲେ।</translation>
@@ -357,6 +362,7 @@
 <translation id="8602103377623855616">Chromium ପୃଷ୍ଠା</translation>
 <translation id="865600487977764604">ଯେତେବେଳେ ଆପଣ ସାଇନ ଇନ କରନ୍ତି ଏହା ଆପଣଙ୍କୁ Chromiumରେ ସୁରକ୍ଷିତ ରଖେ ଏବଂ ଅନ୍ୟ Google ଆପଗୁଡ଼ିକରେ ଆପଣଙ୍କ ସୁରକ୍ଷାକୁ ଉନ୍ନତ କରିବା ପାଇଁ ବ୍ୟବହାର କରାଯାଇପାରେ।</translation>
 <translation id="8663480472502753423">Chromiumକୁ ଅପ୍ ଟୁ ଡେଟ୍ ରଖନ୍ତୁ</translation>
+<translation id="8671588626059602995">ସମସ୍ତ ଲିଙ୍କ ସର୍ବଦା Chromiumରେ ଖୋଲୁଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="8685813584220679697">ଏହି ସାଇଟ ଏବଂ Chromiumରେ ସାଇନ ଇନ କରନ୍ତୁ।</translation>
 <translation id="8697693743327341604">ଯଦି ଆପଣ ଏକ ପରାମର୍ଶକୁ ଚୟନ କରନ୍ତି କିମ୍ବା ଅଣଦେଖା କରନ୍ତି, ତେବେ ଭବିଷ୍ୟତରେ ଆପଣଙ୍କୁ ଅଧିକ ପ୍ରାସଙ୍ଗିକ ପରାମର୍ଶ ଦେଖାଇବାରେ ସାହାଯ୍ୟ କରିବାକୁ Chromium ଅନୁକୂଳ ହେବ।</translation>
 <translation id="869832267508702259">ଆପଣ ଯେଉଁଠାରେ ବି ବ୍ରାଉଜ କରନ୍ତୁ ସେଠାରେ Gemini ଇନସାଇଟଗୁଡ଼ିକ ପାଇବାକୁ Chromiumକୁ ଆପଣଙ୍କର ଡିଫଲ୍ଟ ବ୍ରାଉଜର କରନ୍ତୁ</translation>

@@ -373,6 +373,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> menghapus tab</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623104350909869708">Cegah dialog lain dari halaman ini.</translation>
+<translation id="1624535934412288769">Kolom</translation>
 <translation id="1629390138158333592">Telusuri web</translation>
 <translation id="1633137413609266904">{0,plural, =1{Pembukaan file ini diblokir oleh kebijakan administrator}other{Pembukaan # file diblokir oleh kebijakan administrator}}</translation>
 <translation id="1634828734222219955">Total</translation>
@@ -1083,6 +1084,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2803320044666896137">Nilai kebijakan ini diabaikan karena pengguna tidak terafiliasi.</translation>
 <translation id="2807052079800581569">Posisi image Y</translation>
 <translation id="2808278141522721006">Anda dapat mengaktifkan atau menonaktifkan Windows Hello di <ph name="SETTINGS" /></translation>
+<translation id="2820159698793041599">Server proxy tidak dapat membuat koneksi aman.</translation>
 <translation id="2820957248982571256">Memindai...</translation>
 <translation id="282457273878278063">Kelola info kontak</translation>
 <translation id="2824775600643448204">Bilah penelusuran dan alamat</translation>
@@ -1264,6 +1266,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3120807611504813890">Amplop (Ringan)</translation>
 <translation id="3121994479408824897">Buka <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Label (Permanen)</translation>
+<translation id="3128081114752791872">Sertifikat keamanan server proxy tidak valid.</translation>
 <translation id="3131746543143948171">Situs ini tampaknya mirip dengan situs lain yang terkait dengan phishing, malware, dan scam. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">Simpan redress number</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> kini menjadi mesin telusur default Anda</translation>
@@ -1681,7 +1684,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3800436529451849929">Dari <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Sering Anda buka</translation>
 <translation id="380329542618494757">Nama</translation>
-<translation id="3803481123869276674">Saat Anda melakukan pembelian di Chrome, lihat eWallet sebagai opsi</translation>
 <translation id="3803801106042434208">Mesin telusur ini populer di wilayah Anda</translation>
 <translation id="3804112825000113857">Lihat setelan isi otomatis</translation>
 <translation id="380666903981445943">Simpan metode pembayaran di Akun Google Anda untuk otomatis mengisikannya pada pembelian yang dilakukan di Chrome</translation>
@@ -2164,6 +2166,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4612631413844865947">Terjadi error saat memproses pesanan Anda di <ph name="MERCHANT_ORIGIN" /> melalui <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="4612904677925722054">Situs ini mungkin berisi konten dewasa. Orang tua atau wali harus menyatakan bahwa kamu boleh membuka situs ini.</translation>
 <translation id="4613873770449493819">URL harus mengarah ke domain <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
+<translation id="4615154194248230658">Pola ini sepertinya tidak sesuai dengan domain alamat email yang valid. Pengguna mungkin tidak dapat login atau profil yang ada mungkin dihapus.</translation>
 <translation id="4619564267100705184">Verifikasi diri Anda</translation>
 <translation id="4619669610757527494">Simpan surat izin mengemudi di Google Wallet</translation>
 <translation id="4622292761762557753">Tetap transfer</translation>
@@ -2682,7 +2685,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5447235695608032700">Izinkan <ph name="SITE" /> untuk menggunakan info tentang Anda yang telah disimpan situs</translation>
 <translation id="5447973833955560753">Sandi pemulihan</translation>
 <translation id="5452270690849572955">Halaman <ph name="HOST_NAME" /> ini tidak dapat ditemukan</translation>
-<translation id="5452923259299906094">Bayar dengan eWallet dan Pix</translation>
 <translation id="5455374756549232013">Stempel waktu kebijakan salah</translation>
 <translation id="5456428544444655325">Jangan tampilkan</translation>
 <translation id="5457082343331641453">Tambahkan ke penelusuran</translation>
@@ -3896,7 +3898,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7489919936111034362">Penyimpanan Google Drive Anda sudah penuh</translation>
 <translation id="7490622939531327327">Pemahaman formulir yang lebih cerdas</translation>
 <translation id="7495528107193238112">Konten ini diblokir. Hubungi pemilik situs untuk memperbaiki masalah.</translation>
-<translation id="7499188644237027195">Saat Anda melakukan pembelian di Chrome, lihat eWallet dan Pix sebagai opsi</translation>
 <translation id="7499684925421947861">Izinkan <ph name="ACTOR_NAME" /> membantu Anda login ke <ph name="DOMAIN" />?</translation>
 <translation id="7501663406926337752">Situs yang akan dibuka ditandai oleh organisasi Anda</translation>
 <translation id="7502044688973049724">mengelola info Anda</translation>
@@ -4021,7 +4022,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7676840398262504532">Organisasi Anda memantau penyalinan</translation>
 <translation id="767806704757698045">Hanya berfungsi di situs yang didukung</translation>
 <translation id="7678730592635586336">Rekam lagi video</translation>
-<translation id="7679287273775285018">Bayar dengan eWallet</translation>
 <translation id="7679367271685653708">Lihat dan kelola histori penjelajahan Anda di setelan Chrome</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, berlaku sampai <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Pengiriman</translation>
@@ -4096,7 +4096,6 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7791543448312431591">Tambahkan</translation>
 <translation id="7798389633136518089">Diabaikan karena kebijakan ini tidak ditetapkan oleh sumber cloud.</translation>
 <translation id="7800304661137206267">Sambungan dienkripsi menggunakan <ph name="CIPHER" />, dengan <ph name="MAC" /> untuk autentikasi pesan dan <ph name="KX" /> sebagai mekanisme pertukaran kunci.</translation>
-<translation id="780228007282527248">Tambahkan tab atau gambar untuk meningkatkan penelusuran Anda</translation>
 <translation id="7802523362929240268">Situs ini sah</translation>
 <translation id="7802989406998618639">Masukkan kode keamanan <ph name="NUMBER_OF_DIGITS" /> digit pada <ph name="SIDE_OF_CARD" /> agar bank dapat memverifikasi diri Anda</translation>
 <translation id="780301667611848630">Lain kali</translation>
@@ -4162,6 +4161,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7916162853251942238">Flexo Base</translation>
 <translation id="7916802424606434188">Buka Jendela <ph name="WINDOW_INDEX" /> (<ph name="NUM_TABS" /> tab) di jendela baru</translation>
 <translation id="791698251820376781">Organisasi Anda tidak mengizinkan Anda login</translation>
+<translation id="7918936720558783139">Penawaran tersimpan Anda akan tersedia saat checkout menggunakan isi otomatis. <ph name="BEGIN_LINK" />Kelola penawaran<ph name="END_LINK" /></translation>
 <translation id="7927046851848613453">Simpan tiket, acara, dan info lainnya dari halaman yang Anda lihat—bukan hanya formulir yang Anda isi. Lalu, akses kartu pas Anda dengan cepat, seperti tiket acara dan kartu loyalitas. Info tersimpan Anda dapat muncul di perangkat Anda dan di seluruh produk Google.</translation>
 <translation id="7930282586031445870">Layar persyaratan layanan Beli Sekarang, Bayar Nanti ditutup.</translation>
 <translation id="7932035970207573919">Alamat kantor, <ph name="ADDRESS" /></translation>
@@ -4231,6 +4231,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8029829038322015001">Merah 1</translation>
 <translation id="8032546467100845887">Transparansi</translation>
 <translation id="8035152190676905274">Pena</translation>
+<translation id="803703704549420287">Hapus filter</translation>
 <translation id="8037117624646282037">Siapa yang baru saja menggunakan perangkat</translation>
 <translation id="803771048473350947">File</translation>
 <translation id="8038182528865038593">Merah 2</translation>
@@ -4419,6 +4420,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8363502534493474904">Nonaktifkan mode pesawat</translation>
 <translation id="8363929499301563123">Cookie situs (status login di situs yang baru-baru ini dikunjungi akan disimpan)</translation>
 <translation id="8364627913115013041">Tidak disetel.</translation>
+<translation id="8364664414979300296">Tambahkan tab, foto, dan lainnya untuk meningkatkan pengalaman penelusuran Anda</translation>
 <translation id="836616551641291797">Pelajari lebih lanjut cara browser Anda dikelola</translation>
 <translation id="8367705492654390392">Tanyakan apa saja</translation>
 <translation id="8368001212524806591">Pantau harga</translation>

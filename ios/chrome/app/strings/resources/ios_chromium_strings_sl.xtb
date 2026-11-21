@@ -58,6 +58,7 @@ Novih zaznamkov ni mogoče shraniti v račun, dokler nekaterih ne izbrišete. Č
 <translation id="2027881372245801507">Če izklopite predloge, to ne vpliva na Chromiumovo obdelavo naslovov strani in URL-jev za druge funkcije. Dostop do teh podatkov lahko upravljate v <ph name="BEGIN_LINK" />nastavitvah sinhronizacije<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Prijavite se na tem spletnem mestu in v Chromiumu, če želite dostopati do gesel in drugega v vseh napravah</translation>
 <translation id="2042889939382983733">Ogled zgodovine v Chromiumu</translation>
+<translation id="2054352566231434723">Zunanje povezave privzeto odpirajte v Chromiumu.</translation>
 <translation id="2059365270911640413">Dokončajte nastavitev Chromiuma</translation>
 <translation id="2168108852149185974">Nekateri dodatki povzročajo zrušitve Chromiuma. Odstranite jih:</translation>
 <translation id="2168593389981132306">Izboljšajte Chromium</translation>
@@ -85,6 +86,7 @@ Novih zaznamkov ni mogoče shraniti v račun, dokler nekaterih ne izbrišete. Č
 <translation id="2485774047568879945">Nastavite Chromium kot privzeti brskalnik, če želite preprosto deliti in odpirati povezave</translation>
 <translation id="2512597191798760956">Pridržite ikono Chromiuma in kliknite »Uredi začetni zaslon«</translation>
 <translation id="2517624234762908348">Sinhroniziranje podatkov v Chromiumu</translation>
+<translation id="2519012503779379646">Nastavite Chromium kot privzeti brskalnik, da bodo prehodi med aplikacijami hitrejši in preprostejši.</translation>
 <translation id="2592940277904433508">Še naprej uporabljaj Chromium</translation>
 <translation id="2601766165676560303">Tema za Chromium za iPhone in iPad</translation>
 <translation id="2607609479243848905">Če ste pozabili geslo ali želite to nastavitev spremeniti, <ph name="BEGIN_LINK" />izbrišite podatke iz Chromiuma v računu<ph name="END_LINK" />.</translation>
@@ -189,6 +191,7 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chromi
 <translation id="4985291216379576555">Chromium brez povezave ne more preveriti, ali so na voljo posodobitve</translation>
 <translation id="4996471330284142407">Opravite več s preprostim in varnim Chromiumom, ki je hitrejši kot kdaj prej.</translation>
 <translation id="4999538639245140991">Ker se boste odjavili iz računa, ki ga upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, boste iz te naprave izbrisali podatke v Chromiumu. Vaši podatki bodo še vedno na voljo v Google Računu.</translation>
+<translation id="5004986813285860899">Skočite naravnost v Chromium</translation>
 <translation id="5042011327527167688">Dotaknite se možnosti »View with Google Maps on Chromium« (Ogled z Google Zemljevidi v Chromiumu).</translation>
 <translation id="5044871537677053278">Chromium zaznava naslove ter z uporabo Google Zemljevidov prikazuje navodila za pot in lokalne informacije.</translation>
 <translation id="5048140766121299007">V nastavitvah »<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />« vklopite »Chromium«</translation>
@@ -202,6 +205,7 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chromi
 <translation id="5224391634244552924">Ni shranjenih gesel. Chromium lahko preveri gesla, če jih shranite.</translation>
 <translation id="5259423875997548710">Slikovno iskanje v Chromiumu.</translation>
 <translation id="5284913972719948193">Uvozite podatke, če želite v Chromiumu uporabljati gesla, zgodovino, zaznamke in kreditne kartice</translation>
+<translation id="5299421317003704533">Odpirajte povezave neposredno v Chromiumu.</translation>
 <translation id="5308226104666789935">Chromium ne more preveriti, ali so na voljo posodobitve</translation>
 <translation id="5311557153294205270">Vnesene URL-je doda med zaznamke v Chromiumu.</translation>
 <translation id="5383251701169024761">Če želite preprosto do shranjenih gesel v drugih aplikacijah, uporabite Chromium za samodejno izpolnjevanje.</translation>
@@ -268,6 +272,7 @@ Kaj je treba upoštevati:
 <translation id="6387994184698195448">Bodite na tekočem s koristnimi nasveti za Chromium in drugim.</translation>
 <translation id="6424492062988593837">Chromium je izboljšan! Na voljo je nova različica.</translation>
 <translation id="6433172051771630690">Nasveti, kako najbolje izkoristiti Chromium.</translation>
+<translation id="6458110851735461646">Vaše priljubljene Googlove aplikacije delujejo bolje s Chromiumom</translation>
 <translation id="65045991564554105">Ogled zaznamkov v Chromiumu</translation>
 <translation id="6519797228806907665">Hitreje dostopajte do Chromiuma na začetnem zaslonu iPhona.</translation>
 <translation id="6538713818758208754">V Chromiumu odpre stran z nastavitvijo plačilnih sredstev.</translation>
@@ -357,6 +362,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="8602103377623855616">Stran Chromiuma</translation>
 <translation id="865600487977764604">Skrbi za vašo varnost v Chromiumu in ga je mogoče uporabiti za okrepitev varnosti v drugih Googlovih aplikacijah, ko ste prijavljeni.</translation>
 <translation id="8663480472502753423">Posodobitev Chromiuma</translation>
+<translation id="8671588626059602995">Poskrbite, da se bodo vse povezave vedno odpirale v Chromiumu.</translation>
 <translation id="8685813584220679697">Prijavite se na tem spletnem mestu in v Chromium.</translation>
 <translation id="8697693743327341604">Če izberete ali prezrete predlog, se bo Chromium prilagodil, da vam bo v prihodnje prikazoval ustreznejše predloge.</translation>
 <translation id="869832267508702259">Nastavite Chromium kot privzeti brskalnik, da boste pridobili vpoglede Geminija, kjer koli brskate</translation>

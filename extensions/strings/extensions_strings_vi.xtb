@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Bật chủ đề</translation>
+<translation id="1085064499066015002">Cho phép trên tất cả trang web</translation>
 <translation id="1135328998467923690">Gói không hợp lệ: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">Máy ảnh mặt sau</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> đã thêm một tiện ích có thể thay đổi cách Chromium hoạt động.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">Phiên bản mong muốn là "<ph name="EXPECTED_VERSION" />", nhưng phiên bản phát hiện là "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">Không thể đăng nhập khóa cá nhân đầu ra.</translation>
 <translation id="4811956658694082538">Không thể cài đặt gói vì một quá trình tiện ích bị lỗi. Thử khởi động lại Chrome rồi thử lại.</translation>
+<translation id="4883436287898674711">Tất cả trang web <ph name="WEBSITE_1" /></translation>
 <translation id="4988792151665380515">Không thể xuất khóa công cộng.</translation>
 <translation id="501057610015570208">Ứng dụng có thuộc tính tệp kê khai "'kiosk_only" phải được cài đặt ở chế độ kiosk ChromeOS Flex</translation>
 <translation id="5026754133087629784">Chế độ xem web: <ph name="WEBVIEW_TAG_NAME" /></translation>

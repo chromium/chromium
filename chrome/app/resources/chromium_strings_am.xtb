@@ -85,7 +85,6 @@
 <translation id="188102464690227119">በመሣሪያ አሞሌው ላይ ያለው «በጎን ፓነል ውስጥ ፍለጋ» አዝራር አዲስ አዶ አለው። በጎን ፓነል ውስጥ በፍለጋ እያሰሱ ሳለ ጥያቄዎችን ለመጠየቅ ጠቅ ያድርጉት።</translation>
 <translation id="1896836275755235458">Chromium የዳራ እንቅስቃሴን እና እንደ ለስላሳ ሽብለላ እና የቪድዮ ፍሬም ፍጥነቶች ያሉ ምስላዊ ተጽዕኖዎችን በመገደብ የባትሪ ኃይልን ይቆጥባል። <ph name="BEGIN_LINK" />ስለ ኃይል ቆጣቢ የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">የChromium ማዘመኛ አገልግሎት</translation>
-<translation id="1911763535808217981">ይህንን በማጥፋት፣ እንደ Gmail ወደ መሰሉ የGoogle ጣቢያዎች ወደ Chromium በመለያ ሳይገቡ መግባት ይችላሉ</translation>
 <translation id="1929939181775079593">Chromium መልስ አይሰጥም። አሁን ዳግም ይጀምር?</translation>
 <translation id="1933341829955786215">ድርጅትዎ፣ <ph name="MANAGER" /> ወደ Chromium እንዲገቡ ይጠይቃል</translation>
 <translation id="193439633299369377">ChromiumOS ዝማኔውን ለመተግበር ዳግም መጀመር አለበት።</translation>
@@ -132,7 +131,6 @@
 <translation id="2361918034042471035">ቅጥያው «<ph name="EXTENSION_NAME" />» ወደ በመለያ Chromium እንዲገቡ ይፈልጋል</translation>
 <translation id="236943522426971115">Chromium ለመተግበሪያዎች በዳራ ውስጥ እንዳያሄድ አሰናክል</translation>
 <translation id="2374216753258219393">እንደ <ph name="USER_EMAIL_ADDRESS" /> ሆነው ይህን ቅጥያ ለመጠቀም በመለያ ወደ Chromium ይግቡ።</translation>
-<translation id="2384373936468275798">የመለያ መግቢያ ዝርዝሮችዎ ጊዜ ያለፈባቸው ስለሆኑ ChromiumOS ውሂብዎን ማስመር አልቻለም።</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 የኤችአይዲ መሣሪያ በአንድ ወይም ከዚያ በላይ በሆኑ የChromium ቅጥያዎች እየተደረሰበት ነበር}=1{1 የኤችአይዲ መሣሪያ በአንድ ወይም ከዚያ በላይ በሆኑ የChromium ቅጥያዎች እየተደረሰበት ነው}one{# የኤችአይዲ መሣሪያ በአንድ ወይም ከዚያ በላይ በሆኑ የChromium ቅጥያዎች እየተደረሰበት ነው}other{# የኤችአይዲ መሣሪያዎች በአንድ ወይም ከዚያ በላይ በሆኑ የChromium ቅጥያዎች እየተደረሰባቸው ነው}}</translation>
 <translation id="2401032172288869980">Chromium ለዚህ ጣቢያ የካሜራ እና የማይክሮፎን ፈቃዶች ያስፈልጉታል</translation>
 <translation id="2403703063067034158">የማስነሻ ስህተት፦ ሌላ የማዋቀር አብነት አሁን እያሄደ ነው፣ እባክዎ በኋላ እንደገና ይሞክሩ።</translation>
@@ -174,7 +172,6 @@
 <translation id="2819844767470613567">ማስጠንቀቂያ፦ Chromium ቅጥያዎች የአሰሳ ታሪክዎን እንዳይመዘግቡ መከልከል አይችልም። ይህን ቅጥያ በተገለለ ሁነታ ላይ ለማሰናከል ይህን አማራጭ አይምረጡ።</translation>
 <translation id="2841525013647267359">ተርጉም ከ</translation>
 <translation id="2846251086934905009">የጭነት ስህተት፦ ጫኚው አልተጠናቀቀም። ጭነቱ ተቋርጧል።</translation>
-<translation id="2847479871509788944">ከChromium አስወግድ...</translation>
 <translation id="2850691299438350830">በChromium ላይ ደህንነትዎን ይጠብቃል እና በመለያ በገቡባቸው ሌሎች የGoogle መተግበሪያዎች ላይ ደህንነትዎን ለማሻሻል ሥራ ላይ ሊውል ይችላል።</translation>
 <translation id="2885378588091291677">ተግባር መሪ</translation>
 <translation id="2898830646167954300">ወደ እርስዎ የማይተዳደር የGemini ረዳት መልሰው ይቀይሩ</translation>
@@ -385,7 +382,6 @@
 <translation id="5346389065299425353">ብዙ ትሮች፣ ፋይሎች እና መሣሪያዎችን በማከል ፍለጋዎን ያሳድጉ</translation>
 <translation id="5352264705793813212">Chromium ለግምገማዎ አንዳንድ የደህንነት ምክሮችን አግኝቷል</translation>
 <translation id="5352361688875342522">ሌሎች የChromium መገለጫዎች</translation>
-<translation id="535243042947607642">የመለያ መግቢያ ዝርዝሮችዎ ጊዜ ያለፈባቸው ስለሆኑ ChromiumOS የChromium ውሂብን በGoogle መለያዎ ውስጥ ማስቀመጥ አልቻለም</translation>
 <translation id="5368118228313795342">ተጨማሪ ኮድ፦ <ph name="EXTRA_CODE" />።</translation>
 <translation id="5377622451696208284">ግላዊነት ለማላበስ Chromiumን በድር እና በመተግበሪያ እንቅስቃሴ ውስጥ ያካትቱ</translation>
 <translation id="5382964351116519680">ፍለጋን በChromium ክፈት</translation>
@@ -400,7 +396,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium አሳሽዎን እያዘገየ ያለውን ትር ባለበት እንዲያቆሙ ይመክራል}one{Chromium አሳሽዎን እያዘገየ ያለውን ትር ባለበት እንዲያቆሙ ይመክራል}other{Chromium አሳሽዎን እያዘገዩ ያሉትን ትሮች ባሉበት እንዲያቆሙ ይመክራል}}</translation>
 <translation id="5473971139929175403">በዚህ የLinux ስርጭት ላይ ከእንግዲህ ስለማይደገፍ Chromium በአግባቡ ላይሰራ ይችላል።</translation>
 <translation id="5475924890392386523">ፋይሉ የእርስዎን የግል እና የማህበራዊ አውታረ መረብ መለያዎች ሊጎዳ ስለሚችል Chromium ይህን ውርድ አግዶታል</translation>
-<translation id="549669000822060376">Chromium የቅርብ ጊዜዎቹ የስርዓቱ ዝማኔዎችን እስኪጭን ድረስ እባክዎ ይጠብቁ።</translation>
 <translation id="5496810170689441661">Chromium የይለፍ ቃላትን ለማርትዕ እየሞከረ ነው። ይህንን ለመፍቀድ የWindows የይለፍ ቃልዎን ይተይቡ።</translation>
 <translation id="5524890928877629608">የፍለጋው አካባቢ ከላይ በስተግራ ጥግ፦ ግራ <ph name="LEFT" />%፣ ከላይ <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">PDFዎችን በChromium ውስጥ ክፈት</translation>
@@ -495,7 +490,6 @@
 <translation id="6390800440335263989">ለመቀጠል እንደ <ph name="EMAIL" /> ወደ Chromium ይግቡ። ይህ የድርጅትዎ መመሪያዎች እንዳሉዎት ያረጋግጣል።</translation>
 <translation id="6400112897226594999">በኮምፒውተር ማያ ገፅ ውስጥ የChromium ዓርማ።</translation>
 <translation id="6403826409255603130">Chromium ድረ-ገጾችን እና መተግበሪያዎችን እጅግ በጣም ፈጣን በሆነ ፍጥነት የሚያሄድ ድር አሳሽ ነው። ፈጣን፣ የረጋ እና ለመጠቀም ቀላል ነው። Chromium ውስጥ አብሮ በተሰራላቸው የተንኮል-አዘል ሶፍትዌር እና የማስገሪያ መከላከያዎች አማካኝነት ደህንነትዎ ይበልጥ በተጠበቀ ሁኔታ ድሩን ያስሱ።</translation>
-<translation id="6414624068245092115">በGoogle መለያዎ ውስጥ የChromium ውሂብን ሁልጊዜ መጠቀም እና ማስቀመጥ መቻልዎን ለማረጋገጥ እርስዎ መሆንዎን ያረጋግጡ</translation>
 <translation id="642132557830635295">Chromium ይበልጥ በፍጥነት ያሄዳል እና ጃቫስክሪፕት የሚጠቀሙ ባህሪያት እንደተነደፉት መስራት አለባቸው</translation>
 <translation id="6434631832954028336">የፍለጋ ፓነልን እንደገና ክፈት</translation>
 <translation id="6436260184216827876">የምስል ፍለጋ አይገኝም። ቆይተው እንደገና ይሞክሩ።</translation>
@@ -526,7 +520,6 @@
 <translation id="665732753414869868">Chromium የዙሪያዎን የ3ል ካርታ ለመፍጠር የካሜራ ፈቃድ ያስፈልገዋል</translation>
 <translation id="6669284030132180248">እንዲሁም ዕልባቶችዎን በእርስዎ Google መለያ ውስጥ ካስቀመጡ Chromium ውስጥ የምርት ዋጋዎችን መከታተል እና ዋጋው ሲቀንስ ማሳወቂያ ማግኘት ይችላሉ</translation>
 <translation id="6676384891291319759">በይነመረብን ተዳረስ</translation>
-<translation id="668175097507315160">በመለያ ሲገባ በነበረ ስህተት ምክንያት &amp;ChromiumOS ውሂብዎን ማስመር አልቻለም።</translation>
 <translation id="6691132793308828750">የዚህን መተግበሪያ ውሂብ ከChromium ላይ ያስወግዱ</translation>
 <translation id="6709350901466051922">Chromium ለዚህ ጣቢያ የማይክሮፎን ፈቃድ ያስፈልገዋል</translation>
 <translation id="6712881677154121168">የማውረድ ስህተት፦ <ph name="DOWNLOAD_ERROR" />.</translation>
@@ -684,7 +677,6 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="8107060931443639922">በሚቀጥለው ጊዜ Chromiumን በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ሲከፍቱ፣ የዋጋ ክትትል ማንቂያዎችን ለማንቃት ጥያቄ ያያሉ።</translation>
 <translation id="8118331347066725040">በሌንስ ለፍለጋ ግብረ መልስ ይላኩ</translation>
 <translation id="8130609355518033382">Chromiumን የእርስዎ ያድርጉ</translation>
-<translation id="8133124826068723441">ማስመር ለጎራዎ ስለማይገኝ ChromiumOS ውሂብዎን ማስመር አይችልም።</translation>
 <translation id="813913629614996137">በማስጀመር ላይ…</translation>
 <translation id="8158143604667288086">በሚያስሱበት ጊዜ ጥያቄዎችን ለመጠየቅ Chrome ውስጥ ፍለጋን መሰካት ይችላሉ</translation>
 <translation id="8161503455832158203">Gemini በChromium ውስጥ በቁልፍ ሰሌዳ አቋራጭ ይክፈቱ።</translation>
@@ -751,11 +743,9 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="8816416449795340678">ፈጣን አጠቃላይ ዕይታ ለማግኘት እና ተከታይ ጥያቄዎችን ለመጠየቅ ይህን ሰነድ በChromium ውስጥ ካለው Gemini ጋር ያጋሩ</translation>
 <translation id="8818550178040858407">ወደ Chromium ይግቡ?</translation>
 <translation id="8826492472752484139">«የሚስጥር ቁልፍ አስተዳዳሪ» ላይ ጠቅ ያድርጉ</translation>
-<translation id="8833697763442816810">የChromiumOS ስርዓት</translation>
 <translation id="8852026904190808918">ይህ ቋንቋ Chromium ውስጥ ምናሌዎች፣ ቅንብሮች፣ ማንቂያዎች እና ሌላ ጽሁፍ ለማሳየት ጥቅም ላይ ይውላል</translation>
 <translation id="8862326446509486874">ለስርዓተ-ደረጃ ጭነት ተገቢ መብቶች የሉዎትም። ጫኚውን እንደ አስተዳዳሪ በማሄድ እንደገና ይሞክሩ።</translation>
 <translation id="8876044221123442390">የChromium መገለጫ ያክሉ</translation>
-<translation id="8890569919834781711">በመለያ በመግባት ላይ ባለ ስሕተት ምክንያት ChromiumOS የChromium ውሂብን በGoogle መለያዎ ውስጥ ማስቀመጥ አልቻለም</translation>
 <translation id="8891709362986793894">ድርጅትዎ ወደ Chromium እንዲገቡ ይጠይቃል</translation>
 <translation id="8906384069222226849">Chromium የWindows 10 ሥሪት 1809 ወይም ከዚያ በላይ ያስፈልገዋል።</translation>
 <translation id="8907580949721785412">Chromium የይለፍ ቃሎችን ለማሳየት እየሞከረ ነው። ይህንን ለመፍቀድ የWindows የይለፍ ቃልዎን ይተይቡ።</translation>

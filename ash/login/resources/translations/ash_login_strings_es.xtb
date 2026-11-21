@@ -10,6 +10,7 @@
 <translation id="1097658378307015415">Antes de iniciar sesión, entra como invitado para activar la red <ph name="NETWORK_ID" />.</translation>
 <translation id="1111932478203988717">Tu hijo/a puede usar este PIN para iniciar sesión en su dispositivo</translation>
 <translation id="1122587596907914265">Diseña fondos de pantalla únicos</translation>
+<translation id="1122913801042512795">La información de inicio de sesión de tu cuenta no está actualizada. Cierra la sesión y vuelve a iniciarla.</translation>
 <translation id="1131201598497838573">El PIN de tu hijo/a se ha actualizado</translation>
 <translation id="1147322039136785890">Ahora le toca a <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1148669835763563782">Estás descargando la actualización de software más reciente, que te permitirá disfrutar de una seguridad reforzada y de las funciones más nuevas de Chromebook. Esta actualización incluye una experiencia de configuración mejorada para que los primeros pasos con tu Chromebook vayan como la seda.</translation>
@@ -26,6 +27,7 @@
 <translation id="1256588359404100567">Ajuste sincronizado desde tu dispositivo anterior.</translation>
 <translation id="1272978324304772054">Esta cuenta de usuario no pertenece al dominio en el que se ha registrado el dispositivo. Si quieres registrarlo en un dominio diferente, primero debes llevar a cabo el proceso de recuperación de dispositivo.</translation>
 <translation id="1293556467332435079">Archivos</translation>
+<translation id="1302523850133262269">Espera mientras Chrome instala las últimas actualizaciones del sistema.</translation>
 <translation id="1307559529304613120">¡Vaya! El sistema no ha podido almacenar el token de acceso a la API a largo plazo para este dispositivo.</translation>
 <translation id="1335929031622236846">Registra el dispositivo</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Funciones de depuración<ph name="END_H3" />
@@ -49,6 +51,7 @@
 <translation id="1347625331607114917">Verifica el código en tu teléfono Android</translation>
 <translation id="1347975661240122359">La actualización comenzará cuando tengas un <ph name="BATTERY_LEVEL" />% de batería.</translation>
 <translation id="1353275871123211385">Para usar controles parentales, como la aprobación de aplicaciones y los límites de tiempo de pantalla, el niño debe tener una cuenta de Google gestionada por su padre o madre. Además, se puede añadir una cuenta de centro educativo para usarla en herramientas como Google Classroom.</translation>
+<translation id="1363996462118479832">ChromeOS no ha podido sincronizar tus datos debido a un error de inicio de sesión.</translation>
 <translation id="1375557162880614858">¿Quieres activar ChromeVox, el lector de pantalla integrado de ChromeOS Flex?</translation>
 <translation id="1377600615067678409">Saltarpor ahora</translation>
 <translation id="1399261165075500043">No se pueden cargar los Términos del Servicio de Google Play</translation>
@@ -73,6 +76,7 @@
 <translation id="1642494467033190216">Para poder habilitar otras funciones de depuración, es necesario eliminar la protección de rootfs y reiniciar.</translation>
 <translation id="1646045728251578877">Actualización de software disponible</translation>
 <translation id="1650801028905250434">Tus archivos de Mi unidad se sincronizarán automáticamente con tu Chromebook para que puedas acceder a ellos sin conexión a Internet. Puedes cambiar esta opción en cualquier momento en Ajustes &gt; Archivos.</translation>
+<translation id="16620462294541761">La contraseña no se ha podido verificar. Vuelve a intentarlo.</translation>
 <translation id="1668435968811469751">Registrar manualmente</translation>
 <translation id="1678919064276516737">La dirección de correo y el PIN que has introducido no coinciden</translation>
 <translation id="1692115862433274081">Usar otra cuenta</translation>
@@ -94,6 +98,7 @@
 <translation id="1868617395637139709">Usa la ubicación para las aplicaciones y los servicios de Android.</translation>
 <translation id="1877377730633446520">Se requiere un espacio disponible de <ph name="REQUIRED_SPACE" />. Actualmente tienes <ph name="FREE_SPACE" /> de espacio disponible.</translation>
 <translation id="1878155070920054810">Parece que tu Chromebook se quedará sin batería antes de que finalice la actualización. Para evitar interrupciones, comprueba que se esté cargando correctamente.</translation>
+<translation id="1887442540531652736">No se ha podido iniciar sesión</translation>
 <translation id="189035593835762169">Términos y condiciones</translation>
 <translation id="189358972401248634">Otros idiomas</translation>
 <translation id="1915734383465415025">Número de la tienda</translation>
@@ -122,6 +127,7 @@
 <translation id="2210462644007531147">No se ha podido completar la instalación</translation>
 <translation id="221872881068107022">Invertir desplazamiento</translation>
 <translation id="2219081237089444028">Configura una contraseña de <ph name="DEVICE_TYPE" /> para que sea más fácil iniciar sesión</translation>
+<translation id="2220529011494928058">Notificar un problema</translation>
 <translation id="222115440608612541">Cambia de tema al amanecer y al atardecer</translation>
 <translation id="2229161054156947610">Más de 1 hora</translation>
 <translation id="2246129643805925002">Tu <ph name="DEVICE_TYPE" /> se actualiza automáticamente en segundo plano para que disfrutes de las últimas funciones y mejoras de seguridad. Puedes revisar tus preferencias de actualización en Configuración.</translation>
@@ -132,6 +138,7 @@
 <translation id="2328137272841210255">Restablece tu PIN</translation>
 <translation id="2342180549977909852">Tu hijo/a puede usar un PIN en lugar de una contraseña para desbloquear este dispositivo. Para establecer un PIN más adelante, ve a Configuración.</translation>
 <translation id="2359808026110333948">Continuar</translation>
+<translation id="2384373936468275798">ChromiumOS no ha podido sincronizar tus datos porque la información de inicio de sesión de tu cuenta está obsoleta.</translation>
 <translation id="2387052489799050037">Ir a la pantalla de inicio</translation>
 <translation id="2395616325548404795">El dispositivo <ph name="DEVICE_TYPE" /> se ha registrado correctamente para ser administrado por la empresa, pero no ha podido enviar la información de la ubicación ni del recurso. Introduce manualmente esta información en la consola de administración de este dispositivo.</translation>
 <translation id="2408955596600435184">Introduce tu PIN</translation>
@@ -158,6 +165,7 @@
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />El servicio de ubicación de Google usa fuentes como redes Wi-Fi o móviles y sensores para determinar la ubicación de este dispositivo.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Puedes desactivar la ubicación de Android en este dispositivo cuando quieras si vas a Ajustes &gt; Aplicaciones &gt; Google Play Store &gt; Gestionar preferencias de Android &gt; Seguridad y ubicación &gt; Ubicación. También puedes desactivar el uso de redes Wi-Fi o móviles y sensores para determinar la ubicación de Android si desactivas Precisión de la ubicación de Google en el mismo menú.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2663302507110284145">Idioma</translation>
+<translation id="2674238339205910678">ChromeOS Flex no ha podido guardar los datos de Chrome en tu cuenta de Google porque la información de inicio de sesión de tu cuenta no está actualizada</translation>
 <translation id="2687407218262674387">Términos del Servicio de Google</translation>
 <translation id="2688196195245426394">Error al registrar el dispositivo en el servidor (<ph name="CLIENT_ERROR" />)</translation>
 <translation id="2698147581454716013">Este dispositivo forma parte de un paquete y no se puede registrar con la Licencia de Kiosk y Signage</translation>
@@ -252,6 +260,7 @@
 <translation id="3740945083753997630">Reducir el tamaño de la pantalla y del texto</translation>
 <translation id="376841534249795524">¿Para qué vas a usar tu <ph name="DEVICE_TYPE" />?</translation>
 <translation id="3772046291955677288">He leído y acepto los <ph name="BEGIN_LINK1" />Términos del Servicio de Google<ph name="END_LINK1" /> y los <ph name="BEGIN_LINK2" />Términos del Servicio Adicionales de Chrome y Chrome OS<ph name="END_LINK2" />.</translation>
+<translation id="3785324443014631273">ChromeOS Flex no ha podido sincronizar tus datos debido a un error de inicio de sesión.</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="3800828618615365228">Términos Adicionales de Google Chrome y Chrome OS</translation>
 <translation id="3828953470056652895">He leído y acepto los <ph name="BEGIN_LINK1" />Términos del Servicio de Google<ph name="END_LINK1" />, los <ph name="BEGIN_LINK2" />Términos del Servicio Adicionales de Chrome y Chrome OS<ph name="END_LINK2" /> y los <ph name="BEGIN_LINK3" />Términos del Servicio de Play<ph name="END_LINK3" />.</translation>
@@ -332,6 +341,7 @@
         <ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Para obtener más ayuda, visita g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">¿A quién quieres añadir a este <ph name="DEVICE_TYPE" />?</translation>
+<translation id="4543778593405494224">Administrador de certificados</translation>
 <translation id="4566170377336116390">Si quieres cambiarlo después de registrarte, tendrás que restablecer el estado de fábrica (Powerwash) de tu dispositivo.</translation>
 <translation id="4567512141633030272">¿Opción de inicio de sesión incorrecta?</translation>
 <translation id="4567533462991917415">Puedes añadir más perfiles en cualquier momento después de la configuración. Cada perfil puede personalizar su cuenta y mantener la privacidad de sus datos.</translation>
@@ -349,6 +359,7 @@
 <translation id="4814327014588285482">Saltar y recordármelo más tarde</translation>
 <translation id="4830502475412647084">Instalando actualización del SO</translation>
 <translation id="4837926214103741331">No tienes autorización para utilizar este dispositivo. Ponte en contacto con su propietario para obtener permiso de inicio de sesión.</translation>
+<translation id="4842397268809523050">ChromeOS Flex no ha podido sincronizar tus datos porque la función de sincronización no está disponible para tu dominio.</translation>
 <translation id="4844333629810439236">Otros teclados</translation>
 <translation id="484462545196658690">Automático</translation>
 <translation id="4864369630010738180">Iniciando sesión...</translation>
@@ -360,6 +371,7 @@
 <translation id="4944310289250773232">Este servicio de autenticación está alojado por <ph name="SAML_DOMAIN" /></translation>
 <translation id="4955710816792587366">Elige un PIN</translation>
 <translation id="4965808351167763748">¿Seguro que quieres configurar este dispositivo para que utilice Hangouts Meet?</translation>
+<translation id="4969674060580488087">ChromeOS Flex no ha podido sincronizar tus datos porque la información de inicio de sesión de tu cuenta está obsoleta.</translation>
 <translation id="4987944280765486504">Una vez completada la descarga, tu Chromebook se reiniciará y podrás continuar con la configuración.</translation>
 <translation id="5029287942302939687">Tu contraseña se ha establecido</translation>
 <translation id="503155457707535043">Se están descargando las aplicaciones</translation>
@@ -401,6 +413,8 @@
 <translation id="528208740344463258">Para descargar y utilizar aplicaciones de Android, primero debes instalar esta actualización. Mientras se actualiza tu <ph name="DEVICE_TYPE" />, no podrás usarlo. Tu <ph name="DEVICE_TYPE" /> se reiniciará cuando se complete la instalación.</translation>
 <translation id="5283677936944177147">¡Vaya! El sistema no ha podido determinar el número de serie o el modelo del dispositivo.</translation>
 <translation id="5333896723098573627">Para desinstalar aplicaciones, ve a Ajustes &gt; Aplicaciones &gt; Google Play Store &gt; Gestionar preferencias de Android &gt; Aplicaciones o Administrador de aplicaciones. A continuación, toca la aplicación que quieras desinstalar (es posible que tengas que deslizar el dedo hacia la derecha o la izquierda para encontrar la aplicación) y, después, Desinstalar o Inhabilitar.</translation>
+<translation id="5334309298019785904">ChromeOS no ha podido sincronizar tus datos porque la función de sincronización no está disponible para tu dominio.</translation>
+<translation id="535243042947607642">ChromiumOS no ha podido guardar los datos de Chromium en tu cuenta de Google porque la información de inicio de sesión de tu cuenta no está actualizada</translation>
 <translation id="5355501370336370394">Registrar dispositivo de empresa</translation>
 <translation id="5372529912055771682">El modo de registro proporcionado no es compatible con esta versión del sistema operativo. Comprueba que estés utilizando la última versión y vuelve a intentarlo.</translation>
 <translation id="5397378439569041789">Registrar dispositivo de kiosco o señalización</translation>
@@ -412,6 +426,7 @@
 <translation id="5448293924669608770">¡Vaya! Se ha producido un error al iniciar sesión</translation>
 <translation id="5453829744223920473">Tu hijo/a puede usar todas sus aplicaciones, marcadores y recursos de su centro educativo del mismo modo que cuando está en clase. El centro educativo establece las normas básicas.</translation>
 <translation id="5473099001878321374">Si continúas, aceptas que este dispositivo pueda descargar e instalar actualizaciones y aplicaciones de Google, del operador de tu hijo/a y del fabricante de este dispositivo de forma automática, y que incluso pueda usar datos móviles para ello. Es posible que algunas de estas aplicaciones ofrezcan compras en la aplicación.</translation>
+<translation id="549669000822060376">Espera mientras Chromium instala las últimas actualizaciones del sistema.</translation>
 <translation id="5502915260472117187">Un niño/a</translation>
 <translation id="5511823366942919280">¿Seguro que quieres configurar este dispositivo como un "Shark"?</translation>
 <translation id="5513807280330619196">Calculadora</translation>
@@ -515,6 +530,7 @@
 <translation id="6495266441917713704">No se puede transferir la red Wi-Fi</translation>
 <translation id="6515620015470298987">No se ha podido iniciar sesión debido a un problema con la comprobación de la configuración del dispositivo. Haz un Powerwash en tu <ph name="DEVICE_TYPE" /> e inténtalo de nuevo.</translation>
 <translation id="6519689855001245063">Comprobando si cumple los requisitos</translation>
+<translation id="6520608191273161151">ChromeOS Flex no ha podido guardar los datos de Chrome en tu cuenta de Google debido a un error de inicio de sesión</translation>
 <translation id="6532527800157340614">Se ha producido un error al iniciar sesión porque no se ha podido recuperar tu token de acceso. Revisa tu conexión de red y vuelve a intentarlo.</translation>
 <translation id="653920215766444089">Buscando dispositivo señalador</translation>
 <translation id="65513682072153627">Se mostrará este icono de elemento gestionado cuando un ajuste o una función estén gestionados por tu administrador.</translation>
@@ -526,8 +542,10 @@
 <translation id="6675665718701918026">Dispositivo señalador conectado</translation>
 <translation id="667752334740867460">Recibiendo información de la red Wi-Fi...</translation>
 <translation id="6680442031740878064">Disponible: <ph name="AVAILABLE_SPACE" /></translation>
+<translation id="668175097507315160">ChromiumOS no ha podido sincronizar tus datos debido a un error de inicio de sesión.</translation>
 <translation id="6684827949542560880">Descargando la última actualización</translation>
 <translation id="6722744767592605627">Puedes recuperar <ph name="EMAIL" />, pero se eliminarán los datos locales.</translation>
+<translation id="6735387454586646204">Sistema ChromeOS Flex</translation>
 <translation id="6748980958975836188">He leído y acepto los <ph name="BEGIN_LINK1" />Términos del Servicio de Google<ph name="END_LINK1" /> y los <ph name="BEGIN_LINK2" />Términos del Servicio Adicionales de Chrome y Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6749473226660745022">Fotos</translation>
 <translation id="6754918760968695779">Insertar rápido</translation>
@@ -552,6 +570,7 @@
 <translation id="6918733588290914545">Configuración rápida con un teléfono Android</translation>
 <translation id="6920473853105515518">Comprueba que tu <ph name="DEVICE_TYPE" /> esté conectado a Internet y vuelve a intentarlo. También puedes acceder a la página play.google/play-terms desde otro dispositivo.</translation>
 <translation id="6929126689972602640">El control parental no está disponible para las cuentas de centro educativo. Para añadir una cuenta de centro educativo y acceder a Google Classroom y a otros sitios web para hacer deberes en casa, primero inicia sesión con la cuenta personal del niño/a. Puedes añadir la cuenta de centro educativo más adelante en los ajustes.</translation>
+<translation id="6933858244219479645">Sistema ChromeOS</translation>
 <translation id="6935031746833428401">Más información sobre la gestión de dispositivos</translation>
 <translation id="6950351336108213154">Actualizando periféricos del dispositivo</translation>
 <translation id="6955698182324067397">Vas a habilitar las funciones de depuración de ChromeOS, que configurarán el daemon sshd y habilitarán el inicio desde unidades USB.</translation>
@@ -645,6 +664,7 @@
 <translation id="7870730066603611552">Revisar opciones de sincronización después de la configuración</translation>
 <translation id="7883792253546618164">Anula la suscripción cuando quieras.</translation>
 <translation id="7887864092952184874">Ratón Bluetooth vinculado</translation>
+<translation id="7905880575591690197">ChromeOS no ha podido guardar los datos de Chrome en tu cuenta de Google debido a un error de inicio de sesión</translation>
 <translation id="7906440585529721295">Los datos locales se eliminarán</translation>
 <translation id="7910725946105920830">Usa tu cuenta de Google personal</translation>
 <translation id="7918257978052780342">Registrar</translation>
@@ -671,6 +691,7 @@
 <translation id="8098616321286360457">Se necesita una conexión de red</translation>
 <translation id="8129265306888404830">Para usar tu dirección de correo de tu organización (<ph name="EMAIL_DOMAIN" />), usa el registro de empresa. Si este dispositivo es para tu uso personal, inicia sesión con tu cuenta de Google personal.</translation>
 <translation id="8131740175452115882">Confirmar</translation>
+<translation id="8133124826068723441">ChromiumOS no ha podido sincronizar tus datos porque la función de sincronización no está disponible para tu dominio.</translation>
 <translation id="8146177459103116374">Si ya te has registrado en este dispositivo, puedes <ph name="LINK2_START" />iniciar sesión con tu nombre de usuario<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Se ha producido un error al iniciar sesión. Ponte en contacto con el administrador o vuelve a intentarlo.</translation>
 <translation id="8147346945017130012">Ayuda a mejorar las funciones y el rendimiento de Chrome y Chrome OS enviando automáticamente a Google informes sobre fallos, así como datos de uso y diagnóstico.</translation>
@@ -689,6 +710,7 @@
 <translation id="8271379370373330993">Los pasos siguientes son para los padres. Puedes devolverle el <ph name="DEVICE_TYPE" /> al niño/a después de configurar la cuenta.</translation>
 <translation id="8274924778568117936">No apagues ni cierres tu <ph name="DEVICE_TYPE" /> hasta que termine de actualizarse. Tu <ph name="DEVICE_TYPE" /> se reiniciará cuando se complete la instalación.</translation>
 <translation id="8281886186245836920">Saltar</translation>
+<translation id="8286036467436129157">Iniciar sesión</translation>
 <translation id="8289509909262565712">Te damos la bienvenida a <ph name="DEVICE_OS" /></translation>
 <translation id="8291942417224950075">Para uso personal</translation>
 <translation id="8304383784961451596">No tienes autorización para usar este dispositivo. Ponte en contacto con el administrador para obtener permiso para iniciar sesión, o inicia sesión con una cuenta de Google supervisada con Family Link.</translation>
@@ -700,6 +722,7 @@
 <translation id="8401432541486058167">Introduce el PIN asociado a tu tarjeta inteligente.</translation>
 <translation id="8408270600235826886">Puedes controlar qué datos se comparten con Google. Puedes cambiar esta opción en cualquier momento en Ajustes. Los datos se usan de acuerdo con la <ph name="BEGIN_LINK" />Política de Privacidad<ph name="END_LINK" /> de Google.</translation>
 <translation id="8413956290606243087">¿Quieres activar ChromeVox, el lector de pantalla integrado de ChromeOS?</translation>
+<translation id="8418845734693287262">ChromeOS no ha podido sincronizar tus datos porque la información de inicio de sesión de tu cuenta está obsoleta.</translation>
 <translation id="8425768983279799676">Puedes usar el PIN para desbloquear tu dispositivo.</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="843173223122814223">Crea fondos con IA</translation>
@@ -739,10 +762,12 @@
 <translation id="8794548468611058947">En lugar de introducir la contraseña de tu cuenta de Google para iniciar sesión, puedes crear un PIN para este <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8830779999439981481">Reiniciando para aplicar actualizaciones</translation>
 <translation id="8830796635868321089">La búsqueda de actualizaciones no ha podido utilizar la configuración de proxy actual. Ajusta la <ph name="PROXY_SETTINGS_LINK_START" />configuración de proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
+<translation id="8833697763442816810">Sistema ChromiumOS</translation>
 <translation id="8855977033756560989">Este dispositivo Chromebook Enterprise incluye Chrome Enterprise Upgrade. Para aprovechar las funciones empresariales, registra este dispositivo con una cuenta de administrador de Google.</translation>
 <translation id="885746075120788020">Encontrarás tus preferencias y tu actividad guardadas en cualquier dispositivo ChromeOS cuando inicies sesión con tu cuenta de Google. Puedes elegir qué contenido quieres sincronizar en Configuración.</translation>
 <translation id="8868333925931032127">Iniciando modo Demo</translation>
 <translation id="8875221558267407626">Resume contenido, simplifica lenguaje complejo o haz preguntas</translation>
+<translation id="8890569919834781711">ChromiumOS no ha podido guardar los datos de Chromium en tu cuenta de Google debido a un error de inicio de sesión</translation>
 <translation id="8907701755790961703">Selecciona un país</translation>
 <translation id="8913163265790894442">Configura tu <ph name="DEVICE_TYPE" /> fácilmente con tu teléfono. Puedes añadir tu red Wi-Fi y tu cuenta de Google sin tener que introducir tus contraseñas manualmente.
         <ph name="BR" />
@@ -778,5 +803,6 @@
 <translation id="951991426597076286">Rechazar</translation>
 <translation id="954749761428814584">Idioma y método de introducción de texto</translation>
 <translation id="960987915827980018">Aproximadamente 1 hora</translation>
+<translation id="973195869036269770">ChromeOS no ha podido guardar los datos de Chrome en tu cuenta de Google porque la información de inicio de sesión de tu cuenta no está actualizada</translation>
 <translation id="995420352808264005">Elegir tipo de registro de dispositivos</translation>
 </translationbundle>

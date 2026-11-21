@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Włącz motyw</translation>
+<translation id="1085064499066015002">Zawsze na wszystkich stronach</translation>
 <translation id="1135328998467923690">Pakiet jest nieprawidłowy: „<ph name="ERROR_CODE" />”.</translation>
 <translation id="1140871961407805696">Tylny</translation>
 <translation id="1171831736360285680">Rozszerzenie dodane przez: <ph name="PARTNER_NAME" /> może zmieniać sposób działania Chromium.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">To jest wersja „<ph name="NEW_ID" />”, a oczekiwano wersji „<ph name="EXPECTED_VERSION" />”</translation>
 <translation id="471800408830181311">Nie można przekazać klucza prywatnego.</translation>
 <translation id="4811956658694082538">Nie udało się zainstalować pakietu, ponieważ nastąpiła awaria procesu narzędzia. Uruchom ponownie Chrome i spróbuj jeszcze raz.</translation>
+<translation id="4883436287898674711">Wszystkie strony <ph name="WEBSITE_1" /></translation>
 <translation id="4988792151665380515">Nie można wyeksportować klucza publicznego.</translation>
 <translation id="501057610015570208">Aplikacja z atrybutem „kiosk_only” w pliku manifestu musi być zainstalowana w trybie kiosku ChromeOS Flex.</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>

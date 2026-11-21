@@ -58,6 +58,7 @@ Je kunt pas nieuwe bookmarks opslaan in je account als je er een paar hebt verwi
 <translation id="2027881372245801507">Als je suggesties uitzet, heeft dit geen invloed op de verwerking van paginatitels en URL's door Chromium voor andere functies. Je kunt de toegang tot deze gegevens beheren in je <ph name="BEGIN_LINK" />synchronisatie-instellingen<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Log in op deze site en bij Chromium om onder andere je wachtwoorden op al je apparaten te gebruiken</translation>
 <translation id="2042889939382983733">Je Chromium-geschiedenis bekijken</translation>
+<translation id="2054352566231434723">Open externe links standaard in Chromium.</translation>
 <translation id="2059365270911640413">Chromium instellen afronden</translation>
 <translation id="2168108852149185974">Sommige add-ons kunnen ervoor zorgen dat Chromium crasht. Verwijder de volgende add-ons:</translation>
 <translation id="2168593389981132306">Chromium verbeteren</translation>
@@ -85,6 +86,7 @@ Je kunt pas nieuwe bookmarks opslaan in je account als je er een paar hebt verwi
 <translation id="2485774047568879945">Stel Chromium in als je standaardbrowser om links makkelijk te delen en te openen</translation>
 <translation id="2512597191798760956">Houd je vinger op het Chromium-icoon en klik op Startscherm bewerken</translation>
 <translation id="2517624234762908348">Je Chromium-gegevens synchroniseren</translation>
+<translation id="2519012503779379646">Stel Chromium in als standaardbrowser om app-overgangen sneller en makkelijker te maken.</translation>
 <translation id="2592940277904433508">Chromium blijven gebruiken</translation>
 <translation id="2601766165676560303">Chromium-thema voor iPhone en iPad</translation>
 <translation id="2607609479243848905">Als je je wachtwoordzin bent vergeten of deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Chromium-gegevens in je account<ph name="END_LINK" />.</translation>
@@ -189,6 +191,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="4985291216379576555">Offline. Chromium kan niet checken op updates</translation>
 <translation id="4996471330284142407">Krijg meer gedaan met Chromium. Nu nog makkelijker, veiliger en sneller dan ooit.</translation>
 <translation id="4999538639245140991">Omdat je uitlogt van een account dat wordt beheerd door <ph name="SIGNOUT_MANAGED_DOMAIN" />, worden je Chromium-gegevens van dit apparaat verwijderd. Je gegevens blijven echter wel in je Google-account staan.</translation>
+<translation id="5004986813285860899">Ga rechtstreeks naar Chromium</translation>
 <translation id="5042011327527167688">Tik op 'Bekijken met Google Maps in Chromium'.</translation>
 <translation id="5044871537677053278">Chromium neemt adressen waar en gebruikt Google Maps om je routes en lokale informatie te geven.</translation>
 <translation id="5048140766121299007">Zet Chromium aan in de instellingen van <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /></translation>
@@ -202,6 +205,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="5224391634244552924">Geen opgeslagen wachtwoorden. Chromium kan je wachtwoorden checken als je deze hebt opgeslagen.</translation>
 <translation id="5259423875997548710">Zoek visuele elementen in Chromium.</translation>
 <translation id="5284913972719948193">Importeer je gegevens om je wachtwoorden, geschiedenis, bookmarks en creditcards te gebruiken in Chromium</translation>
+<translation id="5299421317003704533">Open links rechtstreeks in Chromium.</translation>
 <translation id="5308226104666789935">Chromium kan niet checken op updates</translation>
 <translation id="5311557153294205270">Voegt de ingevoerde URL's toe aan je bookmarks in Chromium.</translation>
 <translation id="5383251701169024761">Kies Chromium voor automatisch invullen om je opgeslagen wachtwoorden makkelijk in andere apps te gebruiken.</translation>
@@ -268,6 +272,7 @@ Aandachtspunten:
 <translation id="6387994184698195448">Blijf op de hoogte van nuttige Chromium-tips en meer.</translation>
 <translation id="6424492062988593837">Chromium is nu nog beter! Er is een nieuwe versie beschikbaar.</translation>
 <translation id="6433172051771630690">Tips om het maximale uit Chromium te halen.</translation>
+<translation id="6458110851735461646">Je Google-favorieten zijn beter met Chromium</translation>
 <translation id="65045991564554105">Chromium-bookmarks bekijken</translation>
 <translation id="6519797228806907665">Open Chromium sneller via het startscherm van je iPhone.</translation>
 <translation id="6538713818758208754">Opent de pagina met instellingen voor betaalmethoden in Chromium.</translation>
@@ -357,6 +362,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="8602103377623855616">Chromium-pagina</translation>
 <translation id="865600487977764604">Beschermt je op Chromium en kan worden gebruikt om de beveiliging in andere Google-apps te verbeteren als je bent ingelogd.</translation>
 <translation id="8663480472502753423">Houd Chromium up-to-date</translation>
+<translation id="8671588626059602995">Zorg dat alle links altijd worden geopend in Chromium.</translation>
 <translation id="8685813584220679697">Log in bij deze site en Chromium.</translation>
 <translation id="8697693743327341604">Als je een suggestie selecteert of negeert, past Chromium zich aan om je in de toekomst relevantere suggesties te tonen.</translation>
 <translation id="869832267508702259">Stel Chromium in als je standaardbrowser om Gemini-inzichten te krijgen, waar je ook browst</translation>

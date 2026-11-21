@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">I-enable ang Tema</translation>
+<translation id="1085064499066015002">Palagi sa lahat ng site</translation>
 <translation id="1135328998467923690">Di-wasto ang package: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">Nakaharap sa paligid</translation>
 <translation id="1171831736360285680">Nagdagdag ang <ph name="PARTNER_NAME" /> ng extension na posibleng bumago sa paraan ng paggana ng Chromium.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">"<ph name="EXPECTED_VERSION" />" ang inaasahang bersyon, ngunit "<ph name="NEW_ID" />" ang bersyon</translation>
 <translation id="471800408830181311">Nabigong ilabas ang pribadong key.</translation>
 <translation id="4811956658694082538">Hindi na-install ang package dahil nag-crash ang isang proseso ng utility. Subukang i-restart ang Chrome at subukan ulit.</translation>
+<translation id="4883436287898674711">Lahat ng site ng <ph name="WEBSITE_1" /></translation>
 <translation id="4988792151665380515">Nabigong i-export ang pampublikong key.</translation>
 <translation id="501057610015570208">Naka-install dapat sa kiosk mode ng ChromeOS Flex ang app na may 'kiosk_only' na manifest attribute</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>

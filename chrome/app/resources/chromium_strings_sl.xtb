@@ -85,7 +85,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="188102464690227119">Gumb »Iskanje v stranskem podoknu« v orodni vrstici ima novo ikono. Kliknite ga, če želite med brskanjem z Iskanjem v stranskem podoknu postavljati vprašanja.</translation>
 <translation id="1896836275755235458">Chromium varčuje z energijo baterije tako, da omeji dejavnost v ozadju in vizualne učinke, kot sta tekoče pomikanje in število sličic v sekundi pri videoposnetkih. <ph name="BEGIN_LINK" />Preberite več o varčevanju z energijo<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromiumova storitev za posodabljanje</translation>
-<translation id="1911763535808217981">Če to izklopite, se lahko prijavite na Googlovih spletnih mestih, kot je Gmail, ne da bi se morali prijaviti v Chromium</translation>
 <translation id="1929939181775079593">Chromium se ne odziva. Ga želite znova zagnati?</translation>
 <translation id="1933341829955786215">Vaša organizacija (<ph name="MANAGER" />) zahteva, da se prijavite v Chromium</translation>
 <translation id="193439633299369377">Če želite uveljaviti posodobitev, morate znova zagnati Chromium OS.</translation>
@@ -132,7 +131,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2361918034042471035">Razširitev »<ph name="EXTENSION_NAME" />« želi, da se prijavite v Chromium</translation>
 <translation id="236943522426971115">Onemogoči Chromium, ki se izvaja v ozadju za aplikacije</translation>
 <translation id="2374216753258219393">Če želite to razširitev uporabljati kot <ph name="USER_EMAIL_ADDRESS" />, se prijavite v Chromium.</translation>
-<translation id="2384373936468275798">Chromium OS ni mogel sinhronizirati podatkov, ker so podatki za prijavo v račun zastareli.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Najmanj ena razširitev za Chromium je dostopala do 1 naprave HID}=1{Najmanj ena razširitev za Chromium dostopa do 1 naprave HID}one{Najmanj ena razširitev za Chromium dostopa do # naprave HID}two{Najmanj ena razširitev za Chromium dostopa do # naprav HID}few{Najmanj ena razširitev za Chromium dostopa do # naprav HID}other{Najmanj ena razširitev za Chromium dostopa do # naprav HID}}</translation>
 <translation id="2401032172288869980">Chromium potrebuje dovoljenje za fotoaparat in mikrofon za to spletno mesto.</translation>
 <translation id="2403703063067034158">Napaka pri zagonu: Trenutno se izvaja še en primer nastavitve. Poskusite znova pozneje.</translation>
@@ -174,7 +172,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2819844767470613567">Opozorilo: Chromium razširitvam ne more preprečiti beleženja zgodovine brskanja. Če želite onemogočiti to razširitev v izoliranem načinu, počistite to možnost.</translation>
 <translation id="2841525013647267359">Prevedi iz jezika</translation>
 <translation id="2846251086934905009">Napaka pri namestitvi: Namestitveni program se ni dokončal. Namestitev je bila prekinjena.</translation>
-<translation id="2847479871509788944">Odstranitev iz Chromiuma ...</translation>
 <translation id="2850691299438350830">Skrbi za vašo varnost v Chromiumu in ga je mogoče uporabiti za okrepitev varnosti v drugih Googlovih aplikacijah, ko ste prijavljeni.</translation>
 <translation id="2885378588091291677">Upravitelj opravil</translation>
 <translation id="2898830646167954300">Preklopite nazaj na neupravljanega pomočnika Gemini</translation>
@@ -385,7 +382,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="5346389065299425353">Poglobite iskanje tako, da dodate več zavihkov, datotek in orodij</translation>
 <translation id="5352264705793813212">Chromium je za vaš pregled našel nekaj varnostnih priporočil</translation>
 <translation id="5352361688875342522">Drugi profili v Chromiumu</translation>
-<translation id="535243042947607642">ChromiumOS ni mogel shraniti podatkov v Chromiumu v račun Google, ker so podatki za prijavo v račun zastareli</translation>
 <translation id="5368118228313795342">Dodatna koda: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Če želite omogočiti osebno prilagajanje, vključite Chromium v dejavnost v spletu in aplikacijah</translation>
 <translation id="5382964351116519680">Odpiranje iskanja s Chromiumom</translation>
@@ -400,7 +396,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium priporoča, da začasno zaustavite zavihek, ki upočasnjuje brskalnik}one{Chromium priporoča, da začasno zaustavite zavihke, ki upočasnjujejo brskalnik}two{Chromium priporoča, da začasno zaustavite zavihke, ki upočasnjujejo brskalnik}few{Chromium priporoča, da začasno zaustavite zavihke, ki upočasnjujejo brskalnik}other{Chromium priporoča, da začasno zaustavite zavihke, ki upočasnjujejo brskalnik}}</translation>
 <translation id="5473971139929175403">Chromium morda ne bo deloval pravilno, ker ni več podprt v tej distribuciji Linuxa.</translation>
 <translation id="5475924890392386523">Chromium je blokiral ta prenos, ker lahko datoteka škoduje vašim osebnim računom in računom v družbenih omrežjih</translation>
-<translation id="549669000822060376">Počakajte, da Chromium namesti najnovejše sistemske posodobitve.</translation>
 <translation id="5496810170689441661">Chromium poskuša urejati gesla. Če želite to omogočiti, vnesite geslo za Windows.</translation>
 <translation id="5524890928877629608">zgornji levi kot območja za iskanje: levo <ph name="LEFT" /> %, zgoraj <ph name="TOP" /> %</translation>
 <translation id="5527463683072221100">Odpri datoteke PDF v Chromiumu</translation>
@@ -495,7 +490,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="6390800440335263989">Če želite nadaljevati, se prijavite v Chromium kot <ph name="EMAIL" />. S tem zagotovite, da imate pravilnike organizacije.</translation>
 <translation id="6400112897226594999">Chromiumov logotip na zaslonu računalnika.</translation>
 <translation id="6403826409255603130">Chromium je spletni brskalnik, ki bliskovito odpira spletne strani in izvaja aplikacije. Je hiter, stabilen in preprost za uporabo. Z vgrajeno zaščito pred zlonamerno programsko opremo in lažnim predstavljanjem je brskanje po spletu varno.</translation>
-<translation id="6414624068245092115">Če želite poskrbeti, da boste v računu Google vedno lahko uporabljali in shranjevali podatke Chromiuma, potrdite, da ste to vi</translation>
 <translation id="642132557830635295">Chromium se izvaja hitreje, funkcije, ki uporabljajo JavaScript, pa bi morale delovati, kot je predvideno</translation>
 <translation id="6434631832954028336">Znova odpri podokno Iskanja</translation>
 <translation id="6436260184216827876">Slikovno iskanje ni na voljo. Poskusite znova pozneje.</translation>
@@ -526,7 +520,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="665732753414869868">Chromium potrebuje dovoljenje za dostop do fotoaparata zaradi ustvarjanja tridimenzionalnega zemljevida okolice.</translation>
 <translation id="6669284030132180248">Če v računu Google shranite tudi zaznamke, lahko v Chromiumu spremljate cene izdelkov in prejmete obvestilo, ko se cena zniža</translation>
 <translation id="6676384891291319759">Dostop do interneta</translation>
-<translation id="668175097507315160">Chromium OS ni mogel sinhronizirati podatkov zaradi napake pri prijavi.</translation>
 <translation id="6691132793308828750">Odstrani podatke te aplikacije iz Chromiuma</translation>
 <translation id="6709350901466051922">Chromium potrebuje dovoljenje za mikrofon za to spletno mesto.</translation>
 <translation id="6712881677154121168">Napaka pri prenosu: <ph name="DOWNLOAD_ERROR" />.</translation>
@@ -684,7 +677,6 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="8107060931443639922">Ko boste naslednjič odprli Chromium v napravi <ph name="DEVICE_TYPE" />, bo prikazan poziv za omogočanje opozoril o spremljanju cen.</translation>
 <translation id="8118331347066725040">Pošiljanje povratnih informacij za iskanje z Googlom Lens</translation>
 <translation id="8130609355518033382">Prilagodite Chromium</translation>
-<translation id="8133124826068723441">Chromium OS ni mogel sinhronizirati podatkov, ker sinhronizacija ni na voljo za vašo domeno.</translation>
 <translation id="813913629614996137">Inicializiranje ...</translation>
 <translation id="8158143604667288086">Iskanje lahko pripnete v Chromu in postavljate vprašanja med brskanjem</translation>
 <translation id="8161503455832158203">Odprite Geminija v Chromiumu z bližnjično tipko.</translation>
@@ -751,11 +743,9 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="8816416449795340678">Delite ta dokument z Geminijem v Chromiumu, če želite hiter pregled in zastaviti dodatna vprašanja</translation>
 <translation id="8818550178040858407">Ali se želite prijaviti v Chromium?</translation>
 <translation id="8826492472752484139">Kliknite »Upravitelj gesel«</translation>
-<translation id="8833697763442816810">Sistem Chromium OS</translation>
 <translation id="8852026904190808918">Ta jezik se uporablja za prikaz menijev, nastavitev, opozoril in drugega besedila v Chromiumu</translation>
 <translation id="8862326446509486874">Nimate ustreznih pravic za namestitev na ravni sistema. Poskusite znova zagnati namestitveni program kot skrbnik.</translation>
 <translation id="8876044221123442390">Dodaj profil v Chromiumu</translation>
-<translation id="8890569919834781711">ChromiumOS ni mogel shraniti podatkov v Chromiumu v račun Google zaradi napake pri prijavi</translation>
 <translation id="8891709362986793894">Vaša organizacija zahteva, da se prijavite v Chromium</translation>
 <translation id="8906384069222226849">Chromium zahteva Windows 10 različice 1809 ali novejšo.</translation>
 <translation id="8907580949721785412">Chromium poskuša prikazati gesla. Če želite omogočiti to, vnesite geslo za Windows.</translation>

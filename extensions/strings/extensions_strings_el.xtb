@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Ενεργοποίηση θέματος</translation>
+<translation id="1085064499066015002">Πάντα σε όλους τους ιστοτόπους</translation>
 <translation id="1135328998467923690">Μη έγκυρο πακέτο: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">Πίσω κάμερα</translation>
 <translation id="1171831736360285680">Ο συνεργάτης <ph name="PARTNER_NAME" /> πρόσθεσε μια επέκταση που ενδέχεται να αλλάξει τον τρόπο λειτουργίας του Chromium.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">Αναμενόταν η έκδοση "<ph name="EXPECTED_VERSION" />", ωστόσο η έκδοση ήταν η "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">Αποτυχία εξόδου ιδιωτικού κλειδιού.</translation>
 <translation id="4811956658694082538">Δεν ήταν δυνατή η εγκατάσταση του πακέτου, επειδή μια διεργασία βοηθητικού προγράμματος παρουσίασε σφάλμα. Επανεκκινήστε το Chrome και προσπαθήστε ξανά.</translation>
+<translation id="4883436287898674711">Όλοι οι ιστότοποι <ph name="WEBSITE_1" /></translation>
 <translation id="4988792151665380515">Αποτυχία εξαγωγής δημόσιου κλειδιού.</translation>
 <translation id="501057610015570208">Θα πρέπει να εγκατασταθεί μια εφαρμογή με χαρακτηριστικό μανιφέστου kiosk_only στη λειτουργία kiosk του ChromeOS Flex.</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>

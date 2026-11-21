@@ -10,6 +10,7 @@
 <translation id="1097658378307015415">Prije nego se prijavite, pristupite kao gost da aktivirate mrežu <ph name="NETWORK_ID" /></translation>
 <translation id="1111932478203988717">Dijete možete koristiti ovaj PIN da se prijavi na svoj uređaj</translation>
 <translation id="1122587596907914265">Stilizirajte jedinstvene pozadinske slike</translation>
+<translation id="1122913801042512795">Detalji za prijavu na račun su zastarjeli. Odjavite se i ponovo prijavite.</translation>
 <translation id="1131201598497838573">Djetetov PIN je ažuriran</translation>
 <translation id="1147322039136785890">Sada je na redu <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1148669835763563782">Dobijate najnovije ažuriranje softvera za poboljšanu sigurnost i najnovije funkcije Chromebooka. Ovo ažuriranje uključuje poboljšano iskustvo postavljanja koje će vam pomoći da nesmetano započnete raditi sa svojim Chromebookom.</translation>
@@ -26,6 +27,7 @@
 <translation id="1256588359404100567">Postavka je sinhronizirana s prethodnog uređaja.</translation>
 <translation id="1272978324304772054">Ovaj korisnički račun ne pripada domeni u koju je uređaj prijavljen.  Ako se želite prijaviti u drugu domenu, morate prvo proći kroz oporavak uređaja.</translation>
 <translation id="1293556467332435079">Fajlovi</translation>
+<translation id="1302523850133262269">Sačekajte dok Chrome instalira najnovija sistemska ažuriranja.</translation>
 <translation id="1307559529304613120">Ups!  Sistem nije uspio pohraniti token za dugoročni pristup API-ju za ovaj uređaj.</translation>
 <translation id="1335929031622236846">Registrirajte uređaj</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Funkcije za otklanjanje grešaka<ph name="END_H3" />
@@ -49,6 +51,7 @@
 <translation id="1347625331607114917">Potvrdite kôd na Android telefonu</translation>
 <translation id="1347975661240122359">Ažuriranje će početi kada baterija dosegne <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">Da koristite kontrole roditeljskog nadzora, kao što su odobrenja za aplikacije i ograničenja vremena korištenja uređaja, dijete mora imati Google račun kojim upravlja roditelj. Školski račun se može dodati kasnije za korištenje s alatima kao što je Google Učionica.</translation>
+<translation id="1363996462118479832">ChromeOS nije sinhronizirao vaše podatke zbog greške prilikom prijave.</translation>
 <translation id="1375557162880614858">Želite li aktivirati ChromeVox, ugrađeni čitač ekrana za ChromeOS Flex?</translation>
 <translation id="1377600615067678409">Preskoči za sada</translation>
 <translation id="1399261165075500043">Nije moguće učitati Uslove korištenja usluge Google Play</translation>
@@ -73,6 +76,7 @@
 <translation id="1642494467033190216">Prije nego omogućite ostale funkcije otklanjanja grešaka trebate ukloniti rootfs zaštitu i ponovo pokrenuti uređaj.</translation>
 <translation id="1646045728251578877">Ažuriranje softvera je dostupno</translation>
 <translation id="1650801028905250434">Fajlovi na usluzi Moj disk će se automatski sinhronizirati s Chromebookom da im možete pristupati bez internetske veze. Možete promijeniti ovo bilo kada u Postavkama &gt; Fajlovi.</translation>
+<translation id="16620462294541761">Nažalost, vaša lozinka nije potvrđena. Pokušajte ponovo.</translation>
 <translation id="1668435968811469751">Prijavi se ručno</translation>
 <translation id="1678919064276516737">Adresa e-pošte i PIN koje ste unijeli se ne podudaraju</translation>
 <translation id="1692115862433274081">Koristi drugi račun</translation>
@@ -94,6 +98,7 @@
 <translation id="1868617395637139709">Koristite lokaciju za Android aplikacije i usluge.</translation>
 <translation id="1877377730633446520">Time će se iskoristiti oko <ph name="REQUIRED_SPACE" />. Trenutno je dostupno <ph name="FREE_SPACE" />.</translation>
 <translation id="1878155070920054810">Izgleda da će se baterija Chromebooka istrošiti prije završetka ažuriranja. Provjerite puni li se ispravno da izbjegnete prekide.</translation>
+<translation id="1887442540531652736">Greška pri prijavljivanju</translation>
 <translation id="189035593835762169">Uslovi i odredbe</translation>
 <translation id="189358972401248634">Drugi jezici</translation>
 <translation id="1915734383465415025">Broj trgovine</translation>
@@ -122,6 +127,7 @@
 <translation id="2210462644007531147">Završavanje instalacije nije uspjelo</translation>
 <translation id="221872881068107022">Klizanje unazad</translation>
 <translation id="2219081237089444028">Postavite lozinku za uređaj <ph name="DEVICE_TYPE" /> radi lakše prijave</translation>
+<translation id="2220529011494928058">Prijavite problem</translation>
 <translation id="222115440608612541">Mijenjajte teme u svitanje i sumrak</translation>
 <translation id="2229161054156947610">Preostalo je više od 1 sata</translation>
 <translation id="2246129643805925002">Vaš uređaj <ph name="DEVICE_TYPE" /> se automatski ažurira u pozadini da vam donese najnovije funkcije i sigurnosna poboljšanja. Postavke ažuriranja možete pregledati u Postavkama.</translation>
@@ -132,6 +138,7 @@
 <translation id="2328137272841210255">Poništite PIN</translation>
 <translation id="2342180549977909852">Vaše dijete može koristiti broj (PIN) umjesto lozinke da otključa ovaj uređaj. Idite u Postavke da postavite PIN kasnije.</translation>
 <translation id="2359808026110333948">Nastavi</translation>
+<translation id="2384373936468275798">ChromiumOS nije mogao sinhronizirati vaše podatke je su detalji za prijavu na vaš račun zastarjeli.</translation>
 <translation id="2387052489799050037">Odlazak na početnu stranicu</translation>
 <translation id="2395616325548404795">Vaš uređaj <ph name="DEVICE_TYPE" /> je uspješno prijavljen za upravljanje preduzećem, ali slanje podataka o uređaju i lokaciji nije uspjelo. Unesite te podatke ručno za ovaj uređaj putem konzole administratora.</translation>
 <translation id="2408955596600435184">Unesite PIN</translation>
@@ -158,6 +165,7 @@
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Googleova usluga lokacije koristi izvore poput WiFi-ja, mobilnih mreža i senzora radi lakše procjene lokacije ovog uređaja.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Možete isključiti lokaciju Androida na ovom uređaju bilo kada u Postavkama &gt; Aplikacije &gt; Google Play trgovina &gt; Upravljajte postavkama Androida &gt; Sigurnost i lokacija &gt; Lokacija. Također možete isključiti korištenje WiFi-ja, mobilnih mreža i senzora za lokaciju Androida isključivanjem "Googleove preciznosti lokacije" u istom meniju.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2663302507110284145">Jezik</translation>
+<translation id="2674238339205910678">ChromeOS Flex nije mogao sačuvati podatke Chromea na Google računu jer su podaci za prijavu na račun zastarjeli</translation>
 <translation id="2687407218262674387">Googleovi uslovi korištenja usluge</translation>
 <translation id="2688196195245426394">Greška prilikom registracije uređaja na serveru: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Ovo je uređaj u paketu i nije se moguće prijaviti pomoću Kioska i Nadogradnje potpisivanja.</translation>
@@ -252,6 +260,7 @@
 <translation id="3740945083753997630">Smanjivanje veličine prikaza i teksta</translation>
 <translation id="376841534249795524">U koje svrhe ćete koristiti <ph name="DEVICE_TYPE" />?</translation>
 <translation id="3772046291955677288">Pročitao/la sam i pristajem na <ph name="BEGIN_LINK1" />Googleove Uslove korištenja usluge<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />dodatne Uslove korištenja usluge Chrome i ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="3785324443014631273">ChromeOS Flex nije sinhronizirao vaše podatke zbog greške prilikom prijave.</translation>
 <translation id="3789841737615482174">Instaliraj</translation>
 <translation id="3800828618615365228">Dodatni uslovi za Google Chrome i ChromeOS</translation>
 <translation id="3828953470056652895">Pročitao/la sam i pristajem na <ph name="BEGIN_LINK1" />Googleove Uslove korištenja usluge<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />dodatne Uslove korištenja usluge Chrome i ChromeOS<ph name="END_LINK2" /> i <ph name="BEGIN_LINK3" />Uslove korištenja usluge Play<ph name="END_LINK3" />.</translation>
@@ -332,6 +341,7 @@
         <ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Da dobijete dodatnu pomoć, posjetite: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Koga želite dodati na ovaj uređaj <ph name="DEVICE_TYPE" />?</translation>
+<translation id="4543778593405494224">Upravitelj potvrdama</translation>
 <translation id="4566170377336116390">Ako nakon prijave želite prebaciti, morat ćete vratiti uređaj na fabričke postavke (powerwash).</translation>
 <translation id="4567512141633030272">Pogrešan način prijave?</translation>
 <translation id="4567533462991917415">Uvijek možete dodati još osoba nakon postavljanja. Svaka osoba može personalizirati svoj račun i čuvati privatnost podataka.</translation>
@@ -349,6 +359,7 @@
 <translation id="4814327014588285482">Preskoči i podsjeti me kasnije</translation>
 <translation id="4830502475412647084">Instaliranje ažuriranja operativnog sistema</translation>
 <translation id="4837926214103741331">Nemate odobrenje za korištenje ovog uređaja. Kontaktirajte vlasnika uređaja zbog odobrenja za prijavu.</translation>
+<translation id="4842397268809523050">ChromeOS Flex nije mogao sinhronizirati vaše podatke jer sinhronizacija nije dostupna za vašu domenu.</translation>
 <translation id="4844333629810439236">Ostale tastature</translation>
 <translation id="484462545196658690">Automatski</translation>
 <translation id="4864369630010738180">Prijavljivanje…</translation>
@@ -360,6 +371,7 @@
 <translation id="4944310289250773232">Ovu uslugu autentifikacije hostira <ph name="SAML_DOMAIN" /></translation>
 <translation id="4955710816792587366">Odaberite PIN</translation>
 <translation id="4965808351167763748">Jeste li sigurni da želite postaviti ovaj uređaj da pokreće Hangouts Meet?</translation>
+<translation id="4969674060580488087">ChromeOS Flex nije mogao sinhronizirati vaše podatke jer su detalji za prijavu na vaš račun zastarjeli.</translation>
 <translation id="4987944280765486504">Vaš Chromebook će se ponovo pokrenuti kada se preuzimanje završi i možete nastaviti postavljanje.</translation>
 <translation id="5029287942302939687">Lozinka je postavljena</translation>
 <translation id="503155457707535043">Preuzimanje aplikacija</translation>
@@ -401,6 +413,8 @@
 <translation id="528208740344463258">Za preuzimanje i korištenje Android aplikacija, prvo trebate instalirati potrebno ažuriranje. Dok se vaš uređaj <ph name="DEVICE_TYPE" /> ažurira, ne možete ga koristiti. Nakon što se završi instalacija, vaš uređaj <ph name="DEVICE_TYPE" /> će se ponovo pokrenuti.</translation>
 <translation id="5283677936944177147">Ups!  Sistem nije uspio odrediti model ili serijski broj uređaja.</translation>
 <translation id="5333896723098573627">Da uklonite aplikacije, idite u Postavke &gt; Aplikacije &gt; Google Play trgovina &gt; Upravljajte postavkama Androida &gt; Aplikacije ili Upravitelj aplikacija. Zatim dodirnite aplikaciju koju želite deinstalirati (možda ćete morati prevući udesno ili ulijevo da pronađete aplikaciju). Onda dodirnite Deinstaliraj ili Onemogući.</translation>
+<translation id="5334309298019785904">ChromeOS nije sinhronizirao vaše podatke jer sinhronizacija nije dostupna za vašu domenu.</translation>
+<translation id="535243042947607642">ChromiumOS nije mogao sačuvati podatke Chromiuma na Google računu jer su podaci za prijavu na račun zastarjeli</translation>
 <translation id="5355501370336370394">Prijavi korporativni uređaj</translation>
 <translation id="5372529912055771682">Ova verzija operativnog sistema ne podržava ponuđeni način prijave.  Provjerite radite li na najnovijoj verziji i pokušajte ponovo.</translation>
 <translation id="5397378439569041789">Prijavi kiosk ili uređaj za prijavu</translation>
@@ -412,6 +426,7 @@
 <translation id="5448293924669608770">Ups, došlo je do greške prilikom prijave</translation>
 <translation id="5453829744223920473">Vaše dijete može koristiti sve školske aplikacije, oznake i izvore baš kao što to čini u razredu. Škola postavlja osnovna pravila.</translation>
 <translation id="5473099001878321374">Ako nastavite, slažete se da ovaj uređaj može također automatski preuzimati i instalirati ažuriranja i aplikacije od Googlea, mobilnog operatera vašeg djeteta i proizvođača ovog uređaja, uz mogući prijenos podataka na mobilnoj mreži. Moguće je da neke od tih aplikacija nude kupovinu unutar aplikacija.</translation>
+<translation id="549669000822060376">Sačekajte dok Chromium instalira najnovija ažuriranja sistema.</translation>
 <translation id="5502915260472117187">Dijete</translation>
 <translation id="5511823366942919280">Jeste li sigurni da želite postaviti ovaj uređaj kao "Ajkulu"?</translation>
 <translation id="5513807280330619196">Kalkulator</translation>
@@ -515,6 +530,7 @@
 <translation id="6495266441917713704">Nije moguće prenijeti WiFi</translation>
 <translation id="6515620015470298987">Prijava nije uspjela zbog problema s provjerom konfiguracije uređaja. Izvršite Powerwash uređaja <ph name="DEVICE_TYPE" /> i pokušajte ponovo.</translation>
 <translation id="6519689855001245063">Provjeravanje ispunjenosti uslova</translation>
+<translation id="6520608191273161151">ChromeOS Flex nije mogao sačuvati podatke Chromea na Google računu zbog greške prilikom prijave</translation>
 <translation id="6532527800157340614">Prijava nije uspjela jer preuzimanje tokena za pristup nije uspjelo. Provjerite mrežnu vezu i pokušajte ponovo.</translation>
 <translation id="653920215766444089">Traženje uređaja za pokazivanje</translation>
 <translation id="65513682072153627">Ova ikona upravljanja će se prikazati kada postavkom ili funkcijom upravlja vaš administrator.</translation>
@@ -526,8 +542,10 @@
 <translation id="6675665718701918026">Uređaj za pokazivanje je povezan</translation>
 <translation id="667752334740867460">Primanje informacija o WiFi-ju…</translation>
 <translation id="6680442031740878064">Dostupno: <ph name="AVAILABLE_SPACE" /></translation>
+<translation id="668175097507315160">ChromiumOS nije sinhronizirao vaše podatke zbog greške prilikom prijave.</translation>
 <translation id="6684827949542560880">Preuzimanje najnovijeg ažuriranja</translation>
 <translation id="6722744767592605627">Možete oporaviti račun <ph name="EMAIL" />, ali će se izbrisati lokalni podaci.</translation>
+<translation id="6735387454586646204">Sistem ChromeOS Flex</translation>
 <translation id="6748980958975836188">Pročitao/la sam i pristajem na <ph name="BEGIN_LINK1" />Googleove Uslove korištenja usluge<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />dodatne Uslove korištenja usluge Chrome i ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="6749473226660745022">Fotografije</translation>
 <translation id="6754918760968695779">Brzo umetanje</translation>
@@ -552,6 +570,7 @@
 <translation id="6918733588290914545">Brzo postavite putem Android telefona</translation>
 <translation id="6920473853105515518">Provjerite je li uređaj <ph name="DEVICE_TYPE" /> povezan s internetom i pokušajte ponovo. Također možete posjetiti play.google/play-terms na drugom uređaju.</translation>
 <translation id="6929126689972602640">Školski računi ne podržavaju roditeljski nadzor. Da dodate školski račun kako biste mogli pristupiti Google Učionici i drugim web lokacijama sa školskim gradivom za rad od kuće, prvo se prijavite s djetetovim ličnim računom. Školski račun možete dodati kasnije u postavkama.</translation>
+<translation id="6933858244219479645">Sistem ChromeOS</translation>
 <translation id="6935031746833428401">Više informacija o upravljanju uređajem</translation>
 <translation id="6950351336108213154">Ažuriranje perifernih uređaja</translation>
 <translation id="6955698182324067397">Omogućujete funkcije za otklanjanje grešaka na ChromeOS-u kojim će se postaviti sshd daemon i omogućiti pokretanje sistema s USB diskova.</translation>
@@ -648,6 +667,7 @@ server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="7870730066603611552">Pregledajte opcije sinhroniziranja nakon postavljanja</translation>
 <translation id="7883792253546618164">Otkažite pretplatu bilo kada.</translation>
 <translation id="7887864092952184874">Bluetooth miš je uparen</translation>
+<translation id="7905880575591690197">ChromeOS nije mogao sačuvati podatke Chromea na Google računu zbog greške prilikom prijave</translation>
 <translation id="7906440585529721295">Lokalni podaci će se izbrisati</translation>
 <translation id="7910725946105920830">Koristite lični Google račun</translation>
 <translation id="7918257978052780342">Prijava</translation>
@@ -674,6 +694,7 @@ server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="8098616321286360457">Potrebna je mrežna veza</translation>
 <translation id="8129265306888404830">Da koristite adresu e-pošte vaše organizacije (<ph name="EMAIL_DOMAIN" />), morate koristiti prijavu preduzeća. Ako je ovaj uređaj za vašu ličnu upotrebu, prijavite se s ličnim Google računom.</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
+<translation id="8133124826068723441">ChromiumOS nije mogao sinhronizirati podatke zato što sinhronizacija nije dostupna za vašu domenu.</translation>
 <translation id="8146177459103116374">Ako ste već registrirani na ovom uređaju, možete se <ph name="LINK2_START" />prijaviti kao postojeći korisnik<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Prijava nije uspjela. Kontaktirajte administratora ili pokušajte ponovo.</translation>
 <translation id="8147346945017130012">Pomozite nam da poboljšamo funkcije i performanse Chromea i ChromeOS-a automatskim slanjem izvještaja o padovima aplikacije te podataka o dijagnostici i korištenju Googleu.</translation>
@@ -692,6 +713,7 @@ server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="8271379370373330993">Roditelji, sljedećih nekoliko koraka je za vas. Uređaj <ph name="DEVICE_TYPE" /> možete vratiti djetetu nakon što postavite račun.</translation>
 <translation id="8274924778568117936">Nemojte gasiti ili zatvarati uređaj <ph name="DEVICE_TYPE" /> prije završetka ažuriranja. Uređaj <ph name="DEVICE_TYPE" /> će se ponovno pokrenuti nakon završetka instalacije.</translation>
 <translation id="8281886186245836920">Preskoči</translation>
+<translation id="8286036467436129157">Prijava</translation>
 <translation id="8289509909262565712">Dobro došli u <ph name="DEVICE_OS" /></translation>
 <translation id="8291942417224950075">Za ličnu upotrebu</translation>
 <translation id="8304383784961451596">Nemate odobrenje za korištenje ovog uređaja. Kontaktirajte administratora zbog odobrenja za prijavu ili se prijavite s Google računom kojeg nadzire Family Link.</translation>
@@ -703,6 +725,7 @@ server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="8401432541486058167">Unesite PIN koji je povezan s vašom pametnom karticom.</translation>
 <translation id="8408270600235826886">Možete kontrolirati koji podaci se dijele s Googleom. Ovo možete promijeniti bilo kada u Postavkama. Podaci će se koristiti u skladu s Googleovim <ph name="BEGIN_LINK" />Pravilima privatnosti<ph name="END_LINK" />.</translation>
 <translation id="8413956290606243087">Želite li aktivirati ChromeVox, ugrađeni čitač ekrana za ChromeOS?</translation>
+<translation id="8418845734693287262">ChromeOS nije mogao sinhronizirati vaše podatke jer su podaci o prijavi računa zastarjeli.</translation>
 <translation id="8425768983279799676">Možete koristiti PIN da otključate uređaj.</translation>
 <translation id="8428213095426709021">Postavke</translation>
 <translation id="843173223122814223">Kreirajte pozadine pomoću AI-ja</translation>
@@ -742,10 +765,12 @@ server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="8794548468611058947">Umjesto unosa lozinke za Google račun da se prijavite, možete kreirati PIN za uređaj <ph name="DEVICE_TYPE" /></translation>
 <translation id="8830779999439981481">Ponovno pokretanje radi primjene ažuriranja</translation>
 <translation id="8830796635868321089">Provjera ažuriranja nije uspjela koristeći trenutne postavke proksi servera. Podesite <ph name="PROXY_SETTINGS_LINK_START" />postavke proksi servera<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
+<translation id="8833697763442816810">Sistem ChromiumOS</translation>
 <translation id="8855977033756560989">Ovaj Chromebook poslovni uređaj se isporučuje u paketu s nadogradnjom na poslovnu verziju Chromea. Da iskoristite prednosti poslovnih mogućnosti, prijavite uređaj pomoću računa Google administratora.</translation>
 <translation id="885746075120788020">Sačuvane postavke i aktivnosti će biti spremne na svakom ChromeOS uređaju kada se prijavite pomoću Google računa. U Postavkama možete odabrati šta želite sinhronizirati.</translation>
 <translation id="8868333925931032127">Pokretanje načina rada za demonstraciju</translation>
 <translation id="8875221558267407626">Sažimajte sadržaje, pojednostavljujte složene tekstove ili postavljajte pitanja</translation>
+<translation id="8890569919834781711">ChromiumOS nije mogao sačuvati podatke Chromiuma na Google računu zbog greške prilikom prijave</translation>
 <translation id="8907701755790961703">Odaberite zemlju</translation>
 <translation id="8913163265790894442">Lako postavite uređaj <ph name="DEVICE_TYPE" /> putem telefona. Možete dodati WiFi i Google račun bez ručnog unosa lozinki.
         <ph name="BR" />
@@ -781,5 +806,6 @@ server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="951991426597076286">Odbij</translation>
 <translation id="954749761428814584">Jezik i način unosa</translation>
 <translation id="960987915827980018">Preostao je još otprilike 1 sat</translation>
+<translation id="973195869036269770">ChromeOS nije mogao sačuvati podatke Chromea na Google računu jer su podaci za prijavu na račun zastarjeli</translation>
 <translation id="995420352808264005">Odaberite vrstu registracije uređaja</translation>
 </translationbundle>

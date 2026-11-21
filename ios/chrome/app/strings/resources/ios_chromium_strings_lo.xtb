@@ -58,6 +58,7 @@
 <translation id="2027881372245801507">ການປິດການແນະນຳບໍ່ໄດ້ຄວບຄຸມການປະມວນຜົນຊື່ໜ້າ ແລະ URL ຂອງ Chromium ສຳລັບຄຸນສົມບັດອື່ນໆ. ທ່ານສາມາດຈັດການສິດເຂົ້າເຖິງຂໍ້ມູນນີ້ໄດ້ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າການຊິ້ງ<ph name="END_LINK" /> ຂອງທ່ານ.</translation>
 <translation id="2036929290919363111">ເຂົ້າສູ່ລະບົບເວັບໄຊນີ້ ແລະ Chromium ເພື່ອຮັບລະຫັດຜ່ານຂອງທ່ານ ແລະ ອື່ນໆຢູ່ອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ</translation>
 <translation id="2042889939382983733">ເບິ່ງປະຫວັດ Chromium ຂອງທ່ານ</translation>
+<translation id="2054352566231434723">ເປີດລິ້ງພາຍນອກໃນ Chromium ຕາມຄ່າເລີ່ມຕົ້ນ.</translation>
 <translation id="2059365270911640413">ຕັ້ງຄ່າ Chromium ໃຫ້ສຳເລັດ</translation>
 <translation id="2168108852149185974">ບາງສ່ວນເສີມເຮັດໃຫ້ Chromium ຂັດຂ້ອງ. ກະລຸນາຖອນການຕິດຕັ້ງ:</translation>
 <translation id="2168593389981132306">ປັບປຸງ Chromium ໃຫ້ດີຂຶ້ນ</translation>
@@ -85,6 +86,7 @@
 <translation id="2485774047568879945">ຕັ້ງຄ່າ Chromium ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານເພື່ອແບ່ງປັນ ແລະ ເປີດລິ້ງໄດ້ຢ່າງງ່າຍດາຍ</translation>
 <translation id="2512597191798760956">ກົດໄອຄອນ Chromium ຄ້າງໄວ້ ແລ້ວຄລິກ "ແກ້ໄຂໂຮມສະກຣີນ"</translation>
 <translation id="2517624234762908348">ຊິ້ງຂໍ້ມູນ Chromium ຂອງທ່ານ</translation>
+<translation id="2519012503779379646">ຕັ້ງ Chromium ເປັນຄ່າເລີ່ມຕົ້ນເພື່ອເຮັດໃຫ້ການປ່ຽນແປງແອັບໄວຂຶ້ນ ແລະ ງ່າຍຂຶ້ນ.</translation>
 <translation id="2592940277904433508">ສືບຕໍ່ນຳໃຊ້ Chromium</translation>
 <translation id="2601766165676560303">ຮູບແບບສີສັນ Chromium ສຳລັບ iPhone ແລະ iPad</translation>
 <translation id="2607609479243848905">ຫາກທ່ານລືມລະຫັດຜ່ານຂອງທ່ານ ຫຼື ຕ້ອງການປ່ຽນການຕັ້ງຄ່ານີ້, ໃຫ້ <ph name="BEGIN_LINK" />ລຶບຂໍ້ມູນ Chromium ໃນບັນຊີຂອງທ່ານ<ph name="END_LINK" />.</translation>
@@ -189,6 +191,7 @@
 <translation id="4985291216379576555">ອອບລາຍຢູ່, Chromium ບໍ່ສາມາດກວດຫາການອັບເດດໄດ້</translation>
 <translation id="4996471330284142407">ເຮັດສິ່ງຕ່າງໆໃຫ້ແລ້ວຫຼາຍຂຶ້ນດ້ວຍ Chromium ທີ່ງ່າຍ, ປອດໄພ ແລະ ໄວກວ່າທີ່ເຄີຍ.</translation>
 <translation id="4999538639245140991">ເພາະວ່າທ່ານກຳລັງອອກຈາກລະບົບບັນຊີທີ່ຈັດການໂດຍ <ph name="SIGNOUT_MANAGED_DOMAIN" />, ຂໍ້ມູນ Chromium ຂອງທ່ານຈະຖືກລຶບອອກຈາກອຸປະກອນນີ້. ຂໍ້ມູນຂອງທ່ານຈະຍັງຄົງຢູ່ໃນບັນຊີ Google ຂອງທ່ານ.</translation>
+<translation id="5004986813285860899">ເຂົ້າໄປ Chromium ໄດ້ທັນທີ</translation>
 <translation id="5042011327527167688">ແຕະ “ເບິ່ງດ້ວຍ Google ແຜນທີ່ຢູ່ Chromium.”</translation>
 <translation id="5044871537677053278">Chromium ກວດຫາທີ່ຢູ່ ແລະ ໃຊ້ Google ແຜນທີ່ເພື່ອສະແດງເສັ້ນທາງ ແລະ ຂໍ້ມູນທ້ອງຖິ່ນໃຫ້ທ່ານ.</translation>
 <translation id="5048140766121299007">ຈາກການຕັ້ງຄ່າ "<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />", ໃຫ້ເປີດ "Chromium"</translation>
@@ -202,6 +205,7 @@
 <translation id="5224391634244552924">ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້. Chromium ສາມາດກວດເບິ່ງລະຫັດຜ່ານຂອງທ່ານເມື່ອທ່ານບັນທຶກພວກມັນໄວ້.</translation>
 <translation id="5259423875997548710">ຊອກຫາພາບໃນ Chromium.</translation>
 <translation id="5284913972719948193">ນຳເຂົ້າຂໍ້ມູນຂອງທ່ານເພື່ອໃຊ້ລະຫັດຜ່ານ, ປະຫວັດ, ບຸກມາກ ແລະ ບັດເຄຣດິດຂອງທ່ານໃນ Chromium</translation>
+<translation id="5299421317003704533">ເປີດລິ້ງໃນ Chromium ໂດຍກົງ.</translation>
 <translation id="5308226104666789935">Chromium ບໍ່ສາມາດກວດຫາການອັບເດດໄດ້</translation>
 <translation id="5311557153294205270">ເພີ່ມ URL ທີ່ປ້ອນເຂົ້າໃສ່ບຸກມາກຂອງທ່ານໃນ Chromium.</translation>
 <translation id="5383251701169024761">ເພື່ອເບິ່ງລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ຂອງທ່ານໃນແອັບອື່ນໆໄດ້ຢ່າງງ່າຍດາຍ, ໃຫ້ເລືອກ Chromium ສຳລັບການຕື່ມຂໍ້ມູນອັດຕະໂນມັດ.</translation>
@@ -268,6 +272,7 @@
 <translation id="6387994184698195448">ຕິດຕາມເຄັດລັບ Chromium ທີ່ມີປະໂຫຍດ ແລະ ອື່ນໆອີກຫຼາກຫຼາຍ.</translation>
 <translation id="6424492062988593837">Chromium ​ດີກ​ວ່າເກົ່າແລ້ວ​! ມີລຸ້ນ​ໃຫມ່​ໃຫ້​​ໃຊ້​.</translation>
 <translation id="6433172051771630690">ເຄັດລັບໃນການໃຊ້ປະໂຫຍດສູງສຸດຈາກ Chromium.</translation>
+<translation id="6458110851735461646">Google ທີ່ທ່ານມັກຈະດີຂຶ້ນເມື່ອໃຊ້ Chromium</translation>
 <translation id="65045991564554105">ເບິ່ງບຸກມາກ Chromium</translation>
 <translation id="6519797228806907665">ເຂົ້າເຖິງ Chromium ໄດ້ໄວຂຶ້ນຈາກໂຮມສະກຣີນຂອງ iPhone ຂອງທ່ານ.</translation>
 <translation id="6538713818758208754">ເປີດໜ້າການຕັ້ງຄ່າວິທີການຈ່າຍເງິນໃນ Chromium.</translation>
@@ -357,6 +362,7 @@
 <translation id="8602103377623855616">ໜ້າ Chromium</translation>
 <translation id="865600487977764604">ຮັກສາຄວາມປອດໄພຂອງທ່ານຢູ່ Chromium ແລະ ອາດຖືກໃຊ້ເພື່ອປັບປຸງຄວາມປອດໄພຂອງທ່ານໃນແອັບ Google ອື່ນໆເມື່ອທ່ານເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="8663480472502753423">ຮັກສາໃຫ້ Chromium ໃໝ່ຫຼ້າສຸດ</translation>
+<translation id="8671588626059602995">ກວດສອບວ່າລິ້ງທັງໝົດຈະເປີດໃນ Chromium ສະເໝີ.</translation>
 <translation id="8685813584220679697">ເຂົ້າສູ່ລະບົບຫາເວັບໄຊນີ້ ແລະ Chromium.</translation>
 <translation id="8697693743327341604">ຫາກທ່ານເລືອກ ຫຼື ບໍ່ສົນໃຈການແນະນຳ, Chromium ຈະປັບປ່ຽນເພື່ອຊ່ວຍສະແດງການແນະນຳທີ່ກ່ຽວຂ້ອງຫຼາຍຂຶ້ນໃຫ້ທ່ານໃນອະນາຄົດ.</translation>
 <translation id="869832267508702259">ຕັ້ງ Chromium ເປັນໂປຣແກຣມເລີ່ມຕົ້ນຂອງທ່ານເພື່ອຮັບຂໍ້ມູນເຈາະເລິກຂອງ Gemini ໄດ້ທຸກບ່ອນທີ່ທ່ານທ່ອງເວັບ</translation>

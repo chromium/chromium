@@ -58,6 +58,7 @@
 <translation id="2027881372245801507">Искључивање предлога не утиче на то како Chromium обрађује наслове страница и URL-ове за друге функције. Приступом тим подацима можете да управљате у <ph name="BEGIN_LINK" />подешавањима синхронизације<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Пријавите се на овај сајт и у Chromium да би вам лозинке и други садржај били доступни на свим уређајима</translation>
 <translation id="2042889939382983733">Прегледајте Chromium историју</translation>
+<translation id="2054352566231434723">Подразумевано отварајте спољне линкове у Chromium-у.</translation>
 <translation id="2059365270911640413">Довршите подешавање Chromium-а</translation>
 <translation id="2168108852149185974">Неки програмски додаци изазивају отказивање Chromium-а. Деинсталирајте:</translation>
 <translation id="2168593389981132306">Побољшајте Chromium</translation>
@@ -85,6 +86,7 @@
 <translation id="2485774047568879945">Подесите Chromium као подразумевани прегледач да бисте лако делили и отварали линкове</translation>
 <translation id="2512597191798760956">Притисните и задржите икону Chromium-а, па кликните на Измените почетни екран</translation>
 <translation id="2517624234762908348">Синхронизуј Chromium податке</translation>
+<translation id="2519012503779379646">Подесите Chromium као подразумевани прегледач да бисте убрзали и олакшали преласке између апликација.</translation>
 <translation id="2592940277904433508">Настави са коришћењем Chromium-а</translation>
 <translation id="2601766165676560303">Chromium тема за iPhone и iPad</translation>
 <translation id="2607609479243848905">Ако сте заборавили приступну фразу или желите да промените ово подешавање, <ph name="BEGIN_LINK" />избришите Chromium податке на налогу<ph name="END_LINK" />.</translation>
@@ -189,6 +191,7 @@
 <translation id="4985291216379576555">Офлајн сте. Chromium не може да тражи ажурирања.</translation>
 <translation id="4996471330284142407">Урадите више помоћу још једноставнијег, безбеднијег и бржег Chromium-а.</translation>
 <translation id="4999538639245140991">Одјављујете се са налога којим управља <ph name="SIGNOUT_MANAGED_DOMAIN" />, што ће избрисати Chromium податке са овог уређаја. Подаци ће остати на Google налогу.</translation>
+<translation id="5004986813285860899">Пређите директно на Chromium</translation>
 <translation id="5042011327527167688">Додирните Прикажи помоћу Google мапа у Chromium-у.</translation>
 <translation id="5044871537677053278">Chromium открива адресе и користи Google мапе да би вам пружао упутства и локалне информације.</translation>
 <translation id="5048140766121299007">У подешавањима <ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" /> укључите Chromium</translation>
@@ -202,6 +205,7 @@
 <translation id="5224391634244552924">Нема сачуваних лозинки. Chromium може да проверава лозинке када их сачувате.</translation>
 <translation id="5259423875997548710">Претражите визуелни материјал у Chromium-у.</translation>
 <translation id="5284913972719948193">Увезите податке да бисте користили лозинке, историју, обележиваче и кредитне картице у Chromium-у</translation>
+<translation id="5299421317003704533">Отварајте линкове директно у Chromium-у.</translation>
 <translation id="5308226104666789935">Chromium не може да тражи ажурирања</translation>
 <translation id="5311557153294205270">Додаје унете URL-ове у обележиваче у Chromium-у.</translation>
 <translation id="5383251701169024761">Да бисте лако приступали сачуваним лозинкама у другим апликацијама, одаберите Chromium за аутоматско попуњавање.</translation>
@@ -268,6 +272,7 @@
 <translation id="6387994184698195448">Будите у току са корисним саветима за Chromium и другим садржајем.</translation>
 <translation id="6424492062988593837">Chromium је управо постао бољи! Доступна је нова верзија.</translation>
 <translation id="6433172051771630690">Савети како да на најбољи начин користите Chromium.</translation>
+<translation id="6458110851735461646">Омиљени Google садржаји бољи су уз Chromium</translation>
 <translation id="65045991564554105">Преглед Chromium обележивача</translation>
 <translation id="6519797228806907665">Брже приступајте Chromium-у са почетног екрана iPhone-а.</translation>
 <translation id="6538713818758208754">Отвара страницу за подешавање начина плаћања у Chromium-у.</translation>
@@ -357,6 +362,7 @@
 <translation id="8602103377623855616">Chromium страница</translation>
 <translation id="865600487977764604">Штити вас у Chrome-у и може да се користи за побољшање безбедности у другим Google апликацијама када сте пријављени.</translation>
 <translation id="8663480472502753423">Редовно ажурирају Chromium</translation>
+<translation id="8671588626059602995">Уверите се да се сви линкови увек отварају у Chromium-у.</translation>
 <translation id="8685813584220679697">Пријавите се на овај сајт и у Chromium.</translation>
 <translation id="8697693743327341604">Ако изаберете или занемарите предлог, Chromium ће се прилагодити тако да вам убудуће приказује релевантније предлоге.</translation>
 <translation id="869832267508702259">Подесите Chromium као подразумевани прегледач да бисте добијали Gemini увиде где год да прегледате</translation>

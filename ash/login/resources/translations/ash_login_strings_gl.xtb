@@ -10,6 +10,7 @@
 <translation id="1097658378307015415">Antes de iniciar sesión, accede como convidado para activar a rede <ph name="NETWORK_ID" /></translation>
 <translation id="1111932478203988717">O teu fillo ou filla pode usar este PIN para iniciar sesión no dispositivo</translation>
 <translation id="1122587596907914265">Deseña fondos de pantalla únicos</translation>
+<translation id="1122913801042512795">Os datos do inicio de sesión da túa conta non están actualizados. Pecha sesión e iníciaa de novo.</translation>
 <translation id="1131201598497838573">Actualizouse o PIN do teu fillo ou filla</translation>
 <translation id="1147322039136785890">Agora é a quenda de <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1148669835763563782">Estás descargando a actualización de software máis recente para desfrutar da seguranza mellorada e das funcións máis novas de Chromebook. Nesta actualización mellorouse o proceso de configuración para que os primeiros pasos co teu Chromebook vaian como unha seda.</translation>
@@ -26,6 +27,7 @@
 <translation id="1256588359404100567">Opción de configuración sincronizada desde o dispositivo anterior.</translation>
 <translation id="1272978324304772054">Esta conta de usuario non pertence ao dominio no que se rexistrou o dispositivo. Se queres rexistralo nun dominio diferente, primeiro debes levar a cabo o proceso de recuperación do dispositivo.</translation>
 <translation id="1293556467332435079">Ficheiros</translation>
+<translation id="1302523850133262269">Espera a que Chrome instale as actualizacións do sistema máis recentes.</translation>
 <translation id="1307559529304613120">O sistema non puido almacenar o token de acceso á API de longo prazo para este dispositivo.</translation>
 <translation id="1335929031622236846">Inscribir o teu dispositivo</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Funcións de depuración<ph name="END_H3" />
@@ -49,6 +51,7 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="1347625331607114917">Verifica o código no teu teléfono Android</translation>
 <translation id="1347975661240122359">A actualización comezará cando a batería alcance o <ph name="BATTERY_LEVEL" /> %.</translation>
 <translation id="1353275871123211385">Para poder usar controis parentais, como os límites do tempo diante da pantalla e a aprobación de aplicacións, o neno ou nena debe ter unha Conta de Google xestionada por seu pai ou súa nai. Máis tarde pódese engadir unha conta de centro educativo para usala con ferramentas como Google Classroom.</translation>
+<translation id="1363996462118479832">Chrome OS non puido sincronizar os teus datos porque se produciu un erro ao iniciar sesión.</translation>
 <translation id="1375557162880614858">Queres activar ChromeVox, o lector de pantalla integrado en Chrome OS Flex?</translation>
 <translation id="1377600615067678409">Omitir polo momento</translation>
 <translation id="1399261165075500043">Non se puideron cargar as Condicións de servizo de Google Play</translation>
@@ -73,6 +76,7 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="1642494467033190216">Necesítase a eliminación e o reinicio da protección rootfs antes de activar outras funcións de depuración.</translation>
 <translation id="1646045728251578877">Actualización de software dispoñible</translation>
 <translation id="1650801028905250434">Os ficheiros de A miña unidade sincronizaranse co teu Chromebook automaticamente para que poidas acceder a eles sen conexión a Internet. Podes cambiar esta opción en calquera momento en Configuración &gt; Ficheiros.</translation>
+<translation id="16620462294541761">Non se puido verificar o teu contrasinal. Téntao de novo.</translation>
 <translation id="1668435968811469751">Inscrición manual</translation>
 <translation id="1678919064276516737">O correo electrónico e o PIN indicados non se corresponden</translation>
 <translation id="1692115862433274081">Utilizar outra conta</translation>
@@ -94,6 +98,7 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="1868617395637139709">Utilizar a localización para as aplicacións e os servizos de Android.</translation>
 <translation id="1877377730633446520">Con esta acción usaranse aproximadamente <ph name="REQUIRED_SPACE" />. Actualmente tes <ph name="FREE_SPACE" /> de espazo dispoñible.</translation>
 <translation id="1878155070920054810">Parece que a batería do Chromebook se esgotará antes de completar a actualización. Asegúrate de que cargue correctamente para que non se interrompa a operación.</translation>
+<translation id="1887442540531652736">Produciuse un erro ao iniciar sesión</translation>
 <translation id="189035593835762169">Termos e condicións</translation>
 <translation id="189358972401248634">Outros idiomas</translation>
 <translation id="1915734383465415025">Número da tenda</translation>
@@ -122,6 +127,7 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="2210462644007531147">Non puido completarse a instalación</translation>
 <translation id="221872881068107022">Inverter desprazamento</translation>
 <translation id="2219081237089444028">Define un contrasinal de <ph name="DEVICE_TYPE" /> para que sexa máis fácil iniciar sesión</translation>
+<translation id="2220529011494928058">Informar dun problema</translation>
 <translation id="222115440608612541">Cambia de tema ao amencer e ao solpor</translation>
 <translation id="2229161054156947610">Queda máis de 1 hora</translation>
 <translation id="2246129643805925002">O teu dispositivo (<ph name="DEVICE_TYPE" />) actualízase automaticamente en segundo plano para ofrecerche as últimas funcións e melloras de seguranza. Podes revisar as túas preferencias de actualización en Configuración.</translation>
@@ -132,6 +138,7 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="2328137272841210255">Restablece o teu PIN</translation>
 <translation id="2342180549977909852">O teu fillo ou filla pode usar un número (PIN) en lugar dun contrasinal para desbloquear este dispositivo. Para definir o PIN máis tarde, vai a Configuración.</translation>
 <translation id="2359808026110333948">Continuar</translation>
+<translation id="2384373936468275798">Chromium OS non puido sincronizar os teus datos porque a información de inicio de sesión da túa conta está desactualizada.</translation>
 <translation id="2387052489799050037">Ir á páxina de inicio</translation>
 <translation id="2395616325548404795">O teu <ph name="DEVICE_TYPE" /> inscribiuse correctamente para a xestión de empresas, pero non enviou a súa información de recursos e localización. Introduce manualmente esta información desde a consola de administración para este dispositivo.</translation>
 <translation id="2408955596600435184">Introduce o PIN</translation>
@@ -158,6 +165,7 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />O servizo de localización de Google utiliza fontes como a wifi, as redes de telefonía móbil e os sensores para axudar a calcular onde se encontra este dispositivo.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Podes desactivar a localización de Android no aparello cando queiras en Configuración &gt; Aplicacións &gt; Google Play Store &gt; Manage Android preferences (Xestionar preferencias de Android) &gt; Seguranza e localización &gt; Localización. Tamén podes desactivar a opción Precisión da localización de Google, nese mesmo menú, para que non se utilicen a wifi, as redes móbiles nin os sensores a fin de calcular a localización de Android.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2663302507110284145">Idioma</translation>
+<translation id="2674238339205910678">ChromeOS Flex non puido gardar os datos de Chrome na túa Conta de Google porque tes a información de inicio de sesión desactualizada</translation>
 <translation id="2687407218262674387">Condicións de servizo de Google</translation>
 <translation id="2688196195245426394">Produciuse un erro ao rexistrar o dispositivo co servidor: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Este é un dispositivo dun lote e non se pode inscribir con Kiosk e Signage Upgrade.</translation>
@@ -252,6 +260,7 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="3740945083753997630">Reducir o tamaño do texto e da pantalla</translation>
 <translation id="376841534249795524">Para que vas usar o teu dispositivo (<ph name="DEVICE_TYPE" />)?</translation>
 <translation id="3772046291955677288">Lin e acepto as <ph name="BEGIN_LINK1" />Condicións de servizo de Google<ph name="END_LINK1" /> e as <ph name="BEGIN_LINK2" />Condicións de servizo adicionais de Chrome e ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="3785324443014631273">Chrome OS Flex non puido sincronizar os teus datos por mor dun erro durante o inicio de sesión.</translation>
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="3800828618615365228">Condicións adicionais de Google Chrome e ChromeOS</translation>
 <translation id="3828953470056652895">Lin e acepto as <ph name="BEGIN_LINK1" />Condicións de servizo de Google<ph name="END_LINK1" />, as <ph name="BEGIN_LINK2" />Condicións de servizo adicionais de Chrome e ChromeOS<ph name="END_LINK2" /> e as <ph name="BEGIN_LINK3" />Condicións de servizo de Play<ph name="END_LINK3" />.</translation>
@@ -332,6 +341,7 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
         <ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Se precisas máis axuda, visita g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Queres engadir estas persoas ao <ph name="DEVICE_TYPE" />?</translation>
+<translation id="4543778593405494224">Xestor de certificados</translation>
 <translation id="4566170377336116390">Se, despois de inscribir o dispositivo, queres cambiar, deberás restablecer a súa configuración de fábrica (función Powerwash).</translation>
 <translation id="4567512141633030272">A opción de inicio de sesión é incorrecta?</translation>
 <translation id="4567533462991917415">Poderás engadir máis persoas despois da configuración. Cada unha delas pode personalizar a súa conta e protexer a privacidade dos seus datos.</translation>
@@ -349,6 +359,7 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="4814327014588285482">Omitir e recordar máis adiante</translation>
 <translation id="4830502475412647084">Instalando actualización do SO</translation>
 <translation id="4837926214103741331">Non estás autorizado a usar este dispositivo. Para obter permiso para iniciar sesión, ponte en contacto co propietario do dispositivo.</translation>
+<translation id="4842397268809523050">Chrome OS Flex non puido sincronizar os teus datos porque esta función non está dispoñible para o teu dominio.</translation>
 <translation id="4844333629810439236">Outros teclados</translation>
 <translation id="484462545196658690">Automático</translation>
 <translation id="4864369630010738180">Iniciando sesión...</translation>
@@ -360,6 +371,7 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="4944310289250773232">Este servizo de autenticación está aloxado por <ph name="SAML_DOMAIN" /></translation>
 <translation id="4955710816792587366">Escolle o PIN</translation>
 <translation id="4965808351167763748">Seguro que queres configurar este dispositivo para que execute Hangouts Meet?</translation>
+<translation id="4969674060580488087">Chrome OS Flex non puido sincronizar os teus datos porque a información de inicio de sesión da túa conta está desactualizada.</translation>
 <translation id="4987944280765486504">O teu Chromebook reiniciarase cando se complete a descarga. Nese momento, poderás continuar coa configuración.</translation>
 <translation id="5029287942302939687">Definiuse o contrasinal</translation>
 <translation id="503155457707535043">Descargando aplicacións</translation>
@@ -401,6 +413,8 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="528208740344463258">Para descargar e utilizar aplicacións para Android, primeiro debes instalar esta actualización obrigatoria. Non podes utilizar o dispositivo <ph name="DEVICE_TYPE" /> mentres se está actualizando. O <ph name="DEVICE_TYPE" /> reiniciarase tras finalizar a instalación.</translation>
 <translation id="5283677936944177147">Vaia, produciuse un erro no sistema e non puido determinar o modelo do dispositivo ou o número de serie.</translation>
 <translation id="5333896723098573627">Para quitar aplicacións, accede a Configuración &gt; Aplicacións &gt; Google Play Store &gt; Xestionar preferencias de Android &gt; Xestor de aplicacións e, logo, toca a aplicación que queiras desinstalar (é posible que debas pasar o dedo cara á dereita ou á esquerda para atopala). Despois, toca Desinstalar ou Desactivar.</translation>
+<translation id="5334309298019785904">Chrome OS non puido sincronizar os teus datos porque a función de sincronización non está dispoñible para o teu dominio.</translation>
+<translation id="535243042947607642">ChromiumOS non puido gardar os datos de Chromium na túa Conta de Google porque tes a información de inicio de sesión desactualizada</translation>
 <translation id="5355501370336370394">Inscribir dispositivo de empresa</translation>
 <translation id="5372529912055771682">O modo de inscrición fornecido non é compatible con esta versión do sistema operativo. Asegúrate de dispoñer da versión máis recente e téntao de novo.</translation>
 <translation id="5397378439569041789">Inscribir dispositivo co modo de quiosco ou de sinalización</translation>
@@ -412,6 +426,7 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="5448293924669608770">Produciuse un erro ao iniciar sesión</translation>
 <translation id="5453829744223920473">O teu fillo ou filla pode usar todas as aplicacións escolares, marcadores e recursos, tal e como o fai en clase. A escola define as normas básicas.</translation>
 <translation id="5473099001878321374">Ao continuar, aceptas que este dispositivo tamén poida descargar e instalar automaticamente actualizacións e aplicacións de Google, do operador do teu fillo ou filla, e do fabricante deste dispositivo, posiblemente mediante datos móbiles. Algunhas destas aplicacións poden ofrecer compras integradas nelas.</translation>
+<translation id="549669000822060376">Espera a que Chromium instale as actualizacións do sistema máis recentes.</translation>
 <translation id="5502915260472117187">Un neno ou nena</translation>
 <translation id="5511823366942919280">Seguro que queres configurar este dispositivo como "Shark"?</translation>
 <translation id="5513807280330619196">Calculadora</translation>
@@ -515,6 +530,7 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="6495266441917713704">Non se puido transferir a wifi</translation>
 <translation id="6515620015470298987">Produciuse un erro ao iniciar sesión debido a un problema ao comprobar a configuración do dispositivo. Fai Powerwash no dispositivo (<ph name="DEVICE_TYPE" />) e téntao de novo.</translation>
 <translation id="6519689855001245063">Comprobando se se reúnen os requisitos necesarios</translation>
+<translation id="6520608191273161151">ChromeOS Flex non puido gardar os datos de Chrome na túa Conta de Google porque se produciu un erro ao iniciar sesión</translation>
 <translation id="6532527800157340614">Produciuse un erro ao iniciar sesión porque non se puido obter o teu token de acceso. Comproba a conexión de rede e téntao de novo.</translation>
 <translation id="653920215766444089">Buscando dispositivo apuntador</translation>
 <translation id="65513682072153627">Verás esta icona (Xestionada) cando haxa unha opción de configuración ou unha función xestionada polo teu administrador.</translation>
@@ -526,8 +542,10 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="6675665718701918026">Conectouse o dispositivo apuntador</translation>
 <translation id="667752334740867460">Recibindo información da wifi...</translation>
 <translation id="6680442031740878064">Espazo dispoñible: <ph name="AVAILABLE_SPACE" /></translation>
+<translation id="668175097507315160">Chromium OS non puido sincronizar os teus datos porque se produciu un erro ao iniciar sesión.</translation>
 <translation id="6684827949542560880">Descargando última actualización</translation>
 <translation id="6722744767592605627">Podes recuperar <ph name="EMAIL" />, pero os datos locais eliminaranse.</translation>
+<translation id="6735387454586646204">Sistema Chrome OS Flex</translation>
 <translation id="6748980958975836188">Lin e acepto as <ph name="BEGIN_LINK1" />Condicións de servizo de Google<ph name="END_LINK1" /> e as <ph name="BEGIN_LINK2" />Condicións de servizo adicionais de Chrome e ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="6749473226660745022">Fotos</translation>
 <translation id="6754918760968695779">Inserción rápida</translation>
@@ -552,6 +570,7 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="6918733588290914545">Configuración rápida cun teléfono Android</translation>
 <translation id="6920473853105515518">Asegúrate de que o teu dispositivo (<ph name="DEVICE_TYPE" />) estea conectado a Internet e téntao de novo Tamén podes acceder a play.google/play-terms desde outro dispositivo.</translation>
 <translation id="6929126689972602640">As contas de centro educativo non admiten controis parentais. Para engadir unha conta de centro educativo co fin de acceder a Google Classroom e outros sitios web para realizar tarefas escolares na casa, primeiro inicia sesión coa conta persoal do neno ou nena. Podes engadir a conta do centro educativo máis tarde na configuración.</translation>
+<translation id="6933858244219479645">Sistema ChromeOS</translation>
 <translation id="6935031746833428401">Máis información acerca da xestión de dispositivos</translation>
 <translation id="6950351336108213154">Actualizando periféricos do dispositivo</translation>
 <translation id="6955698182324067397">Vas activar as funcións de depuración de Chrome OS que configurarán o daemon sshd e activarán o inicio desde unidades USB.</translation>
@@ -647,6 +666,7 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="7870730066603611552">Revisar opcións de sincronización despois da configuración</translation>
 <translation id="7883792253546618164">Podes cancelar a subscrición en calquera momento.</translation>
 <translation id="7887864092952184874">Rato Bluetooth sincronizado</translation>
+<translation id="7905880575591690197">ChromeOS non puido gardar os datos de Chrome na túa Conta de Google porque se produciu un erro ao iniciar sesión</translation>
 <translation id="7906440585529721295">Eliminaranse os datos locais</translation>
 <translation id="7910725946105920830">Usar a túa conta persoal de Google</translation>
 <translation id="7918257978052780342">Inscribir</translation>
@@ -673,6 +693,7 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="8098616321286360457">Necesítase conexión de rede</translation>
 <translation id="8129265306888404830">Para usar o enderezo de correo electrónico da túa organización (<ph name="EMAIL_DOMAIN" />), debes empregar o rexistro de empresa. Se este dispositivo é para o teu uso persoal, inicia sesión coa túa Conta de Google persoal.</translation>
 <translation id="8131740175452115882">Confirmar</translation>
+<translation id="8133124826068723441">Chromium OS non puido sincronizar os teus datos porque a sincronización non está dispoñible para o teu dominio.</translation>
 <translation id="8146177459103116374">Se xa te rexistraches neste dispositivo, podes <ph name="LINK2_START" />iniciar sesión como usuario existente<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Produciuse un erro no inicio de sesión. Ponte en contacto co administrador ou téntao de novo.</translation>
 <translation id="8147346945017130012">Se queres axudar a mellorar as funcións e o rendemento de Chrome e de ChromeOS, permite que se lle envíen a Google de forma automática os informes de fallos, así como os datos de uso e de diagnóstico.</translation>
@@ -691,6 +712,7 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="8271379370373330993">Se es o pai ou a nai, os seguintes pasos están pensados para ti. Podes devolverlle o dispositivo (<ph name="DEVICE_TYPE" />) ao neno ou nena despois de configurar a conta.</translation>
 <translation id="8274924778568117936">Non apagues nin peches o dispositivo <ph name="DEVICE_TYPE" /> ata que a actualización finalice. O <ph name="DEVICE_TYPE" /> reiniciarase tras finalizar a instalación.</translation>
 <translation id="8281886186245836920">Omitir</translation>
+<translation id="8286036467436129157">Iniciar sesión</translation>
 <translation id="8289509909262565712">Dámosche a benvida a <ph name="DEVICE_OS" /></translation>
 <translation id="8291942417224950075">Para uso persoal</translation>
 <translation id="8304383784961451596">Non tes autorización para usar este dispositivo. Se queres obter permiso para iniciar sesión, ponte en contacto co administrador. Tamén podes iniciar sesión cunha conta de Google supervisada por Family Link.</translation>
@@ -702,6 +724,7 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="8401432541486058167">Introduce o PIN asociado á túa tarxeta intelixente.</translation>
 <translation id="8408270600235826886">Podes controlar os datos que se comparten con Google. Podes cambiar esta opción en calquera momento en Configuración. Os datos utilizaranse de acordo coa <ph name="BEGIN_LINK" />Política de privacidade<ph name="END_LINK" /> de Google.</translation>
 <translation id="8413956290606243087">Queres activar ChromeVox, o lector de pantalla integrado en Chrome OS?</translation>
+<translation id="8418845734693287262">Chrome OS non puido sincronizar os teus datos porque a información de inicio de sesión da túa conta está desactualizada.</translation>
 <translation id="8425768983279799676">Podes utilizar o teu PIN para desbloquear o dispositivo.</translation>
 <translation id="8428213095426709021">Configuración</translation>
 <translation id="843173223122814223">Crea fondos con IA</translation>
@@ -741,10 +764,12 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="8794548468611058947">En lugar de poñer o contrasinal da túa Conta de Google para iniciar sesión, podes crear un PIN para este dispositivo (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="8830779999439981481">Reiniciando para aplicar as actualizacións</translation>
 <translation id="8830796635868321089">A busca de actualizacións non puido utilizar a configuración do proxy actual. Axusta a <ph name="PROXY_SETTINGS_LINK_START" />configuración do proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
+<translation id="8833697763442816810">Sistema Chromium OS</translation>
 <translation id="8855977033756560989">Este dispositivo Chromebook Enterprise inclúe a actualización de Chrome Enterprise. Para aproveitar as funcionalidades de Enterprise, inscribe este dispositivo cunha conta de administrador de Google.</translation>
 <translation id="885746075120788020">As túas preferencias e actividade estarán dispoñibles en calquera dispositivo Chrome OS no que inicies sesión coa túa Conta de Google. En Configuración podes escoller o contido que queres sincronizar.</translation>
 <translation id="8868333925931032127">Iniciando modo de demostración</translation>
 <translation id="8875221558267407626">Resume contido, simplifica linguaxe complexa ou fai preguntas</translation>
+<translation id="8890569919834781711">ChromiumOS non puido gardar os datos de Chromium na túa Conta de Google porque se produciu un erro ao iniciar sesión</translation>
 <translation id="8907701755790961703">Selecciona un país</translation>
 <translation id="8913163265790894442">Configura facilmente o teu dispositivo <ph name="DEVICE_TYPE" /> co teléfono. Podes engadir a túa wifi e a túa Conta de Google sen meter manualmente os contrasinais.
         <ph name="BR" />
@@ -780,5 +805,6 @@ Unha vez activadas estas funcións de depuración, a maioría delas permanecen h
 <translation id="951991426597076286">Rexeitar</translation>
 <translation id="954749761428814584">Idioma e método de introdución de texto</translation>
 <translation id="960987915827980018">Queda aproximadamente 1 hora</translation>
+<translation id="973195869036269770">ChromeOS non puido gardar os datos de Chrome na túa Conta de Google porque tes a información de inicio de sesión desactualizada</translation>
 <translation id="995420352808264005">Escoller o tipo de inscrición do dispositivo</translation>
 </translationbundle>

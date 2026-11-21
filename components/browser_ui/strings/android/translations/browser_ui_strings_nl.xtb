@@ -29,7 +29,7 @@
 <translation id="131112695174432497">Gegevens die van invloed zijn op advertentiepersonalisatie, worden verwijderd</translation>
 <translation id="1317194122196776028">Deze site vergeten</translation>
 <translation id="1321110954513621549">Toegestaan • Geschat</translation>
-<translation id="1323433172918577554">Meer bekijken</translation>
+<translation id="1323433172918577554">Meer tonen</translation>
 <translation id="1333965224356556482">Niet toestaan dat sites je locatie zien</translation>
 <translation id="1369915414381695676">Site <ph name="SITE_NAME" /> toegevoegd</translation>
 <translation id="1371239764779356792">Toestaan dat een site gegevens op je apparaat opslaat</translation>
@@ -62,7 +62,6 @@
 <translation id="1615755956145364867">Sites kunnen vragen of ze beschermde content mogen afspelen</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="1621729191093924223">Functies waarvoor een microfoon nodig is, werken niet</translation>
-<translation id="1633720957382884102">Gerelateerde sites</translation>
 <translation id="1644574205037202324">Geschiedenis</translation>
 <translation id="1652197001188145583">Als deze optie aanstaat, kunnen sites vragen of ze NFC-apparaten mogen gebruiken. Staat de optie uit, dan kunnen sites geen NFC-apparaten gebruiken.</translation>
 <translation id="1660204651932907780">Toestaan dat sites geluid afspelen (aanbevolen)</translation>
@@ -76,6 +75,7 @@
 <translation id="1717996979683942279">Als deze optie aanstaat, kunnen sites vragen of ze vensters mogen beheren op al je schermen. Staat de optie uit, dan kunnen sites geen vensters beheren op al je schermen.</translation>
 <translation id="1738912554587725807">Blad onderaan voor themacollecties voor het uiterlijk van de pagina Nieuw tabblad</translation>
 <translation id="1743802530341753419">Vragen of sites verbinding mogen maken met een apparaat (aanbevolen)</translation>
+<translation id="1766455884659449403">Meldingen van Chrome-tips krijgen</translation>
 <translation id="1777815584158991902">Blad onderaan voor Discover-feed</translation>
 <translation id="1779089405699405702">Image Decoder</translation>
 <translation id="1781533683087883868">Links voor de leesmodus uitzetten</translation>
@@ -184,6 +184,7 @@
 <translation id="2750481671343847896">Sites kunnen inlogprompts van identiteitsservices tonen.</translation>
 <translation id="2789132527330338807">Sites kunnen vragen of ze een 3D-kaart van je omgeving mogen maken of de camerapositie mogen volgen</translation>
 <translation id="2790501146643349491">Als deze optie aanstaat, kunnen recent gesloten sites het sturen en ontvangen van gegevens afronden. Staat de optie uit, dan kunnen recent gesloten sites het sturen of ontvangen van gegevens niet afronden.</translation>
+<translation id="2794551654724114396">Zet meldingen aan voor nuttige tips om het beste uit Chrome te halen</translation>
 <translation id="2795716239552913152">Sites gebruiken je locatie meestal voor relevante functies of informatie, zoals lokaal nieuws of winkels in de buurt</translation>
 <translation id="2800760947029405028">Een afbeelding uploaden</translation>
 <translation id="2802908157808345702">Niet toestaan dat sites pop-ups sturen en omleidingen gebruiken</translation>
@@ -231,7 +232,6 @@
 <translation id="3232293466644486101">Browsegegevens verwijderen…</translation>
 <translation id="3242646949159196181">Als deze optie aanstaat, kunnen sites geluid afspelen. Staat de optie uit, dan kunnen sites geen geluid afspelen.</translation>
 <translation id="3273479183583863618">Prijsdalingen op tabbladen</translation>
-<translation id="3285500645985761267">Toestaan dat gerelateerde sites je activiteit in de groep zien</translation>
 <translation id="3295019059349372795">Hoofdstuk 11: De prachtige Smaragden Stad van Oz</translation>
 <translation id="3295602654194328831">Informatie verbergen</translation>
 <translation id="3333961966071413176">Alle contacten</translation>
@@ -249,7 +249,6 @@
 <translation id="3523447078673133727">Niet toestaan dat sites je handen volgen</translation>
 <translation id="3536227077203206203">Deze keer toegestaan</translation>
 <translation id="3538390592868664640">Voorkomen dat sites een 3D-kaart van je omgeving maken of de camerapositie volgen</translation>
-<translation id="3544058026430919413">Een bedrijf kan een groep sites definiëren die cookies kunnen gebruiken om je activiteit in de groep te delen. Dit staat uit in de incognitomodus.</translation>
 <translation id="3551268116566418498">Incognitomodus verlaten?</translation>
 <translation id="3586500876634962664">Camera- en microfoongebruik</translation>
 <translation id="358794129225322306">Een site toestaan automatisch meerdere bestanden te downloaden.</translation>
@@ -262,7 +261,6 @@
 <translation id="363748948745453283">Geschatte locatie gebruiken</translation>
 <translation id="3641456520301071208">Sites kunnen om je locatie vragen</translation>
 <translation id="3658847490588580244">Blad onderaan voor standaardbrowser</translation>
-<translation id="3669841141196828854">{COUNT,plural, =1{<ph name="RWS_MEMBERS_COUNT" /> site in de groep sites van <ph name="RWS_OWNER" /> die je activiteit in de groep kunnen bekijken}other{<ph name="RWS_MEMBERS_COUNT" /> sites in de groep sites van <ph name="RWS_OWNER" /> die je activiteit in de groep kunnen bekijken}}</translation>
 <translation id="3676777756440746804">Sites kunnen je niet vragen om informatie te gebruiken die ze over jou hebben opgeslagen</translation>
 <translation id="3677897809642449131">Sites kunnen vragen of ze bewegingssensoren mogen gebruiken</translation>
 <translation id="3678318839615834650">Blad onderaan voor kaarten op de pagina Nieuw tabblad is op volledige hoogte geopend</translation>
@@ -538,16 +536,15 @@
 <translation id="656065428026159829">Meer bekijken</translation>
 <translation id="6561560012278703671">Stillere berichten gebruiken (zorgt ervoor dat je niet wordt gestoord door meldingprompts)</translation>
 <translation id="6593061639179217415">Desktopsite</translation>
-<translation id="659938948789980540">{COUNT,plural, =1{Cookies toegestaan voor <ph name="RWS_MEMBERS_COUNT" /> site van <ph name="RWS_OWNER" />}other{Cookies toegestaan voor <ph name="RWS_MEMBERS_COUNT" /> sites van <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Beschermde content</translation>
 <translation id="6619015782482868078">Aquablauw thema</translation>
 <translation id="662080504995468778">Blijven</translation>
 <translation id="6630443592285535486">Typ hier de hexadecimale code</translation>
 <translation id="6635327442719709864">Als deze optie aanstaat, kunnen sites vragen of ze seriële poorten mogen gebruiken. Staat de optie uit, dan kunnen sites geen seriële poorten gebruiken.</translation>
+<translation id="6669390930482049506">Melding sturen</translation>
 <translation id="6678072580827808850">Veiligheidscheck controleren</translation>
 <translation id="6682057173375416470">Voorgestelde artikelen krijgen op de pagina Nieuw tabblad</translation>
-<translation id="6683865262523156564">Deze site zit in een groep die je activiteit kan bekijken. De groep wordt gedefinieerd door <ph name="RWS_OWNER" /></translation>
 <translation id="6689172468748959065">Profielfoto's</translation>
 <translation id="6697925417670533197">Actieve downloads</translation>
 <translation id="6709432001666529933">Vragen voordat sites je handen mogen volgen (aanbevolen)</translation>

@@ -10,6 +10,7 @@
 <translation id="1097658378307015415">Para se të identifikohesh, hyr si vizitor për të aktivizuar rrjetin <ph name="NETWORK_ID" /></translation>
 <translation id="1111932478203988717">Fëmija yt mund ta përdorë këtë kod PIN për t'u identifikuar në pajisjen e vet</translation>
 <translation id="1122587596907914265">Dizajno imazhe unike sfondi</translation>
+<translation id="1122913801042512795">Detajet e identifikimit të llogarisë sate nuk janë të përditësuara. Dil dhe identifikohu sërish.</translation>
 <translation id="1131201598497838573">Kodi PIN i fëmijës tënd është përditësuar</translation>
 <translation id="1147322039136785890">Tani është radha e <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1148669835763563782">Po merr përditësimin më të fundit të softuerit për një siguri të përmirësuar dhe veçoritë më të reja të Chromebook. Ky përditësim përfshin një përvojë të përmirësuar me konfigurimin për të të ndihmuar të fillosh pa probleme në Chromebook.</translation>
@@ -26,6 +27,7 @@
 <translation id="1256588359404100567">Cilësimi u sinkronizua nga pajisja jote e mëparshme.</translation>
 <translation id="1272978324304772054">Kjo llogari përdoruesi nuk i përket domenit me të cilin është regjistruar kjo pajisje. Nëse do të regjistrohesh në një domen tjetër, së pari duhet të kontrollosh rikuperimin e pajisjes.</translation>
 <translation id="1293556467332435079">Skedarët</translation>
+<translation id="1302523850133262269">Prit ndërsa Chrome instalon përditësimet më të fundit të sistemit.</translation>
 <translation id="1307559529304613120">Mos! Sistemi nuk arriti të ruante kodin afatgjatë të qasjes së API-së për këtë pajisje.</translation>
 <translation id="1335929031622236846">Regjistro pajisjen tënde</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Veçoritë e korrigjimit<ph name="END_H3" />
@@ -49,6 +51,7 @@
 <translation id="1347625331607114917">Verifiko kodin në telefonin tënd Android</translation>
 <translation id="1347975661240122359">Përditësimi do të fillojë kur bateria të arrijë në <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">Për të përdorur kontrolle prindërore si miratimin e aplikacioneve dhe kufijtë e kohës para ekranit, një fëmijë duhet të ketë një "Llogari të Google" të menaxhuar nga një prind. Mund të shtohet më vonë një llogari shkolle për vegla si Google Classroom.</translation>
+<translation id="1363996462118479832">ChromeOS nuk mund t'i sinkronizonte të dhënat e tua për shkak të një gabimi gjatë identifikimit.</translation>
 <translation id="1375557162880614858">Dëshiron të aktivizosh ChromeVox, lexuesin e integruar të ekranit për Chrome OS Flex?</translation>
 <translation id="1377600615067678409">Kapërceje tani</translation>
 <translation id="1399261165075500043">"Kushtet e shërbimit" të Google Play nuk mund të ngarkohen</translation>
@@ -73,6 +76,7 @@
 <translation id="1642494467033190216">Kërkohet heqja e mbrojtjes së rrënjës dhe rifillimi para aktivizimit të funksioneve të tjera të korrigjimit të gabimeve.</translation>
 <translation id="1646045728251578877">Ofrohet një përditësim i softuerit</translation>
 <translation id="1650801028905250434">Skedarët e tu te "Disku im" do të sinkronizohen automatikisht te Chromebook, kështu që mund të qasesh tek ata pa një lidhje interneti. Këtë mund ta ndryshosh në çdo kohë te Cilësimet &gt; Skedarët.</translation>
+<translation id="16620462294541761">Na vjen keq, fjalëkalimi nuk mund të verifikohej. Provo sërish.</translation>
 <translation id="1668435968811469751">Regjistrohu manualisht</translation>
 <translation id="1678919064276516737">Email-i dhe kodi PIN që ke futur nuk përputhen</translation>
 <translation id="1692115862433274081">Përdor një llogari tjetër</translation>
@@ -94,6 +98,7 @@
 <translation id="1868617395637139709">Përdor vendndodhjen për aplikacionet dhe shërbimet e Android.</translation>
 <translation id="1877377730633446520">Kjo do të përdorë rreth <ph name="REQUIRED_SPACE" />. Aktualisht ke <ph name="FREE_SPACE" /> në dispozicion.</translation>
 <translation id="1878155070920054810">Me sa duket pajisjes sate Chromebook do t'i mbarojë energjia përpara se të përfundojë përditësimi. Sigurohu që të karikohet siç duhet për të shmangur ndërprerjen.</translation>
+<translation id="1887442540531652736">Gabim në identifikim</translation>
 <translation id="189035593835762169">Kushtet e përgjithshme</translation>
 <translation id="189358972401248634">Gjuhë të tjera</translation>
 <translation id="1915734383465415025">Numri i dyqanit</translation>
@@ -122,6 +127,7 @@
 <translation id="2210462644007531147">Instalimi nuk mund të përfundohej</translation>
 <translation id="221872881068107022">Lëvizje e kundërt</translation>
 <translation id="2219081237089444028">Cakto një fjalëkalim për <ph name="DEVICE_TYPE" /> për ta bërë më të lehtë që të identifikohesh</translation>
+<translation id="2220529011494928058">Raporto një problem</translation>
 <translation id="222115440608612541">Ndërroji temat në agim dhe në perëndim të diellit</translation>
 <translation id="2229161054156947610">Më shumë se 1 orë më parë</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> përditësohet automatikisht në sfond për të të dhënë përmirësimet më të fundit të veçorive dhe sigurisë. Mund t'i shqyrtosh preferencat e përditësimeve te "Cilësimet".</translation>
@@ -132,6 +138,7 @@
 <translation id="2328137272841210255">Rivendos kodin PIN</translation>
 <translation id="2342180549977909852">Fëmija yt mund të përdorë një numër (PIN) në vend të një fjalëkalimi për të shkyçur këtë pajisje. Për të caktuar një PIN më vonë, shko te "Cilësimet".</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
+<translation id="2384373936468275798">ChromiumOS nuk mund t'i sinkronizonte të dhënat e tua sepse detajet e identifikimit të llogarisë janë të papërditësuara.</translation>
 <translation id="2387052489799050037">Shko tek ekrani bazë</translation>
 <translation id="2395616325548404795">Pajisja jote <ph name="DEVICE_TYPE" /> është regjistruar me sukses për menaxhimin e sipërmarrjes, por dështoi në dërgimin e burimit të saj dhe informacionit të vendndodhjes. Fute manualisht këtë informacion nga paneli i Administratorit tënd në këtë pajisje.</translation>
 <translation id="2408955596600435184">Fut kodin PIN</translation>
@@ -158,6 +165,7 @@
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Shërbimi i vendndodhjes i Google përdor burime të tilla si Wi-Fi, rrjetet celulare dhe sensorët për të ndihmuar në përllogaritjen e vendndodhjes së kësaj pajisjeje.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Mund ta çaktivizosh vendndodhjen e Android në këtë pajisje në çdo kohë duke shkuar te "Cilësimet" &gt; "Aplikacionet" &gt; "Dyqani i Google Play" &gt; "Menaxho preferencat e Android" &gt; "Siguria dhe vendndodhja" &gt; "Vendndodhja". Mund të çaktivizosh gjithashtu përdorimin e Wi-Fi, rrjeteve celulare dhe sensorëve për vendndodhjen e Android duke çaktivizuar "Saktësinë e vendndodhjes të Google" në të njëjtën meny.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2663302507110284145">Gjuha</translation>
+<translation id="2674238339205910678">ChromeOS Flex nuk mund t'i ruante të dhënat e Chrome në "Llogarinë tënde të Google" sepse detajet e identifikimit të llogarisë janë të papërditësuara</translation>
 <translation id="2687407218262674387">Kushtet e shërbimit të Google</translation>
 <translation id="2688196195245426394">Gabim gjatë regjistrimit të pajisjes në server: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Kjo është një pajisje pjesë e një pakete dhe nuk mund të regjistrohet me përmirësimin e kioskës dhe sinjalizimit.</translation>
@@ -252,6 +260,7 @@
 <translation id="3740945083753997630">Zvogëlo madhësinë e ekranit dhe të tekstit</translation>
 <translation id="376841534249795524">Për çfarë do ta përdorësh <ph name="DEVICE_TYPE" />?</translation>
 <translation id="3772046291955677288">Kam lexuar dhe pranoj <ph name="BEGIN_LINK1" />"Kushtet e shërbimit" të Google<ph name="END_LINK1" /> dhe <ph name="BEGIN_LINK2" />"Kushtet shtesë të shërbimit" të Chrome dhe ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="3785324443014631273">Chrome OS Flex nuk mund t'i sinkronizonte të dhënat e tua për shkak të një gabimi në identifikim.</translation>
 <translation id="3789841737615482174">Instalo</translation>
 <translation id="3800828618615365228">Kushtet shtesë të Google Chrome dhe ChromeOS</translation>
 <translation id="3828953470056652895">Kam lexuar dhe pranoj <ph name="BEGIN_LINK1" />"Kushtet e shërbimit" të Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />"Kushtet shtesë të shërbimit" të Chrome dhe ChromeOS<ph name="END_LINK2" /> dhe <ph name="BEGIN_LINK3" />"Kushtet e shërbimit" të Play<ph name="END_LINK3" />.</translation>
@@ -332,6 +341,7 @@
         <ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Për më shumë ndihmë, vizito: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Kë dëshiron të shtosh te kjo pajisje <ph name="DEVICE_TYPE" />?</translation>
+<translation id="4543778593405494224">Menaxheri i certifikatave</translation>
 <translation id="4566170377336116390">Nëse dëshiron ta ndryshosh pas regjistrimit, do të të duhet ta rivendosësh pajisjen tënde në gjendje fabrike (Powerwash).</translation>
 <translation id="4567512141633030272">Opsioni i gabuar i identifikimit?</translation>
 <translation id="4567533462991917415">Mund të shtosh gjithmonë persona të tjerë pas konfigurimit. Çdo person mund ta personalizojë llogarinë e vet dhe t'i mbajë të dhënat private.</translation>
@@ -349,6 +359,7 @@
 <translation id="4814327014588285482">Kapërceje dhe më kujto më vonë</translation>
 <translation id="4830502475412647084">Po instalon përditësimin e sistemit operativ</translation>
 <translation id="4837926214103741331">Nuk je i autorizuar të përdorësh këtë pajisje. Kontakto me zotëruesin e pajisjes për të marrë leje për identifikim.</translation>
+<translation id="4842397268809523050">Chrome OS Flex nuk mund t'i sinkronizonte të dhënat e tua sepse "Sinkronizimi" nuk ofrohet për domenin tënd.</translation>
 <translation id="4844333629810439236">Tastiera të tjera</translation>
 <translation id="484462545196658690">Automatike</translation>
 <translation id="4864369630010738180">Po identifikohet...</translation>
@@ -360,6 +371,7 @@
 <translation id="4944310289250773232">Ky shërbim vërtetimi strehohet nga <ph name="SAML_DOMAIN" /></translation>
 <translation id="4955710816792587366">Zgjidh kodin PIN</translation>
 <translation id="4965808351167763748">Je i sigurt që dëshiron ta konfigurosh këtë pajisje për të ekzekutuar Hangouts Meet?</translation>
+<translation id="4969674060580488087">Chrome OS Flex nuk mund t'i sinkronizonte të dhënat e tua sepse detajet e identifikimit të llogarisë tënde janë të papërditësuara.</translation>
 <translation id="4987944280765486504">Pajisja jote Chromebook do të riniset kur të përfundojë shkarkimi dhe mund të vazhdosh me konfigurimin.</translation>
 <translation id="5029287942302939687">Fjalëkalimi yt është caktuar</translation>
 <translation id="503155457707535043">Po shkarkon aplikacionet</translation>
@@ -401,6 +413,8 @@
 <translation id="528208740344463258">Për të shkarkuar dhe për të përdorur aplikacionet e Android, në fillim duhet të instalosh këtë përditësim të kërkuar. Kur pajisja jote <ph name="DEVICE_TYPE" /> është duke u përditësuar, nuk mund ta përdorësh atë. Pajisja <ph name="DEVICE_TYPE" /> do të riniset pas përfundimit të instalimit.</translation>
 <translation id="5283677936944177147">Mos! Sistemi nuk arriti të përcaktonte modelin e pajisjes ose numrin e serisë.</translation>
 <translation id="5333896723098573627">Për të hequr aplikacionet, shko te "Cilësimet" &gt; "Aplikacionet" &gt; "Dyqani i Google Play" &gt; "Menaxho preferencat e Android" &gt; "Aplikacionet" ose "Menaxheri i aplikacioneve". Më pas trokit aplikacionin që dëshiron të çinstalosh (mund të duhet të rrëshqasësh shpejt djathtas ose majtas për të gjetur aplikacionin). Më pas trokit "Çinstalo" ose "Çaktivizo".</translation>
+<translation id="5334309298019785904">ChromeOS nuk mund t'i sinkronizonte të dhënat e tua sepse "Sinkronizimi" nuk ofrohet për domenin tënd.</translation>
+<translation id="535243042947607642">ChromiumOS nuk mund t'i ruante të dhënat e Chromium në "Llogarinë tënde të Google" sepse detajet e identifikimit të llogarisë janë të papërditësuara</translation>
 <translation id="5355501370336370394">Regjistro pajisjen e ndërmarrjes</translation>
 <translation id="5372529912055771682">Modaliteti i dhënë i regjistrimit nuk mbështetet nga ky version i sistemit operativ. Sigurohu që po përdor versionin më të fundit dhe provo sërish.</translation>
 <translation id="5397378439569041789">Regjistro kioskën ose pajisjen sinjalizuese</translation>
@@ -412,6 +426,7 @@
 <translation id="5448293924669608770">Mos! Ndodhi një gabim me identifikimin</translation>
 <translation id="5453829744223920473">Fëmija yt mund të përdorë të gjitha aplikacionet, faqeshënuesit dhe burimet e veta të shkollës ashtu si vepron në klasë. Shkolla vendos rregullat bazë.</translation>
 <translation id="5473099001878321374">Duke vazhduar, ti pranon që kjo pajisje mund të shkarkojë dhe të instalojë po ashtu automatikisht përditësime dhe aplikacione nga Google, operatori celular i fëmijës dhe nga prodhuesi i kësaj pajisjeje, mundësisht duke përdorur të dhënat celulare. Disa prej këtyre aplikacioneve mund të ofrojnë blerje përmes aplikacionit.</translation>
+<translation id="549669000822060376">Prit ndërsa Chromium instalon përditësimet më të fundit të sistemit.</translation>
 <translation id="5502915260472117187">Një fëmijë</translation>
 <translation id="5511823366942919280">Je i sigurt që dëshiron ta konfigurosh këtë pajisje si një "Peshkaqen"?</translation>
 <translation id="5513807280330619196">Makina llogaritëse</translation>
@@ -515,6 +530,7 @@
 <translation id="6495266441917713704">Wi-Fi nuk mund të transferohet</translation>
 <translation id="6515620015470298987">Identifikimi dështoi për shkak të një problemi me kontrollin e konfigurimit të pajisjes. Kryej Powerwash për <ph name="DEVICE_TYPE" /> dhe provo përsëri.</translation>
 <translation id="6519689855001245063">Po kontrollon përshtatshmërinë</translation>
+<translation id="6520608191273161151">ChromeOS Flex nuk mund t'i ruante të dhënat e Chrome në "Llogarinë tënde të Google" për shkak të një gabimi gjatë identifikimit</translation>
 <translation id="6532527800157340614">Identifikimi dështoi sepse kodi i qasjes nuk mund të merrej. Kontrollo lidhjen e rrjetit dhe provo përsëri.</translation>
 <translation id="653920215766444089">Po kërkon për pajisjen treguese</translation>
 <translation id="65513682072153627">Do të shohësh ikonën "Menaxhuar" kur një cilësim ose veçori menaxhohet nga administratori yt.</translation>
@@ -526,8 +542,10 @@
 <translation id="6675665718701918026">Është lidhur pajisja treguese</translation>
 <translation id="667752334740867460">Informacionet e Wi-Fi po merren...</translation>
 <translation id="6680442031740878064">Në dispozicion: <ph name="AVAILABLE_SPACE" /></translation>
+<translation id="668175097507315160">ChromiumOS nuk mund t'i sinkronizonte të dhënat e tua për shkak të një gabimi gjatë identifikimit.</translation>
 <translation id="6684827949542560880">Po shkarkon përditësimin më të fundit</translation>
 <translation id="6722744767592605627">Mund ta rikuperosh <ph name="EMAIL" />, por të dhënat lokale do të fshihen.</translation>
+<translation id="6735387454586646204">Sistemi Chrome OS Flex</translation>
 <translation id="6748980958975836188">Kam lexuar dhe pranoj <ph name="BEGIN_LINK1" />"Kushtet e shërbimit" të Google<ph name="END_LINK1" /> dhe <ph name="BEGIN_LINK2" />"Kushtet shtesë të shërbimit" të Google Chrome dhe të ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="6749473226660745022">Fotografitë</translation>
 <translation id="6754918760968695779">Fut shpejt</translation>
@@ -552,6 +570,7 @@
 <translation id="6918733588290914545">Konfiguro shpejt me telefonin Android</translation>
 <translation id="6920473853105515518">Sigurohu që pajisja jote <ph name="DEVICE_TYPE" /> është e lidhur me internetin dhe provo përsëri. Mund të vizitosh gjithashtu play.google/play-terms në një pajisje tjetër.</translation>
 <translation id="6929126689972602640">Kontrollet prindërore nuk mbështeten për llogaritë e shkollës. Për të shtuar një llogari shkolle për t'u qasur te "Klasa e Google" dhe sajte të tjera të uebit për detyrat e shkollës në shtëpi, në fillim identifikohu me llogarinë personale të fëmijës. Mund ta shtosh llogarinë e shkollës më vonë te konfigurimi.</translation>
+<translation id="6933858244219479645">Sistemi i ChromeOS</translation>
 <translation id="6935031746833428401">Mëso më shumë për menaxhimin e pajisjes</translation>
 <translation id="6950351336108213154">Pajisjet periferike të pajisjes po përditësohen</translation>
 <translation id="6955698182324067397">Po aktivizon veçoritë e korrigjimit në pajisjet me ChromeOS që do të konfigurojnë sshd daemon dhe do të aktivizojnë ndezjen nga njësitë USB.</translation>
@@ -648,6 +667,7 @@
 <translation id="7870730066603611552">Rishiko opsionet e sinkronizimit pas konfigurimit</translation>
 <translation id="7883792253546618164">Çregjistrohu në çdo kohë.</translation>
 <translation id="7887864092952184874">Miu me Bluetooth u çiftua</translation>
+<translation id="7905880575591690197">ChromeOS nuk mund t'i ruante të dhënat e Chrome në "Llogarinë tënde të Google" për shkak të një gabimi gjatë identifikimit</translation>
 <translation id="7906440585529721295">Të dhënat lokale do të fshihen</translation>
 <translation id="7910725946105920830">Përdor "Llogarinë tënde personale të Google"</translation>
 <translation id="7918257978052780342">Regjistroje</translation>
@@ -674,6 +694,7 @@
 <translation id="8098616321286360457">Nevojitet lidhje me rrjetin</translation>
 <translation id="8129265306888404830">Për të përdorur adresën e email-it nga organizata jote (<ph name="EMAIL_DOMAIN" />), duhet të përdorësh regjistrimin e ndërmarrjes. Nëse kjo pajisje është për përdorim personal, identifikohu me "Llogarinë tënde personale të Google".</translation>
 <translation id="8131740175452115882">Konfirmo</translation>
+<translation id="8133124826068723441">ChromiumOS nuk mund t'i sinkronizonte të dhënat e tua sepse "Sinkronizimi" nuk ofrohet për domenin tënd.</translation>
 <translation id="8146177459103116374">Nëse je i regjistruar tashmë në këtë pajisje, mund <ph name="LINK2_START" />të identifikohesh si përdorues ekzistues<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Identifikimi dështoi. Kontakto me administratorin ose provo përsëri.</translation>
 <translation id="8147346945017130012">Ndihmo në përmirësimin e veçorive dhe performancës së Chrome dhe ChromeOS duke dërguar automatikisht te Google raporte të ndërprerjeve aksidentale, si dhe të dhëna përdorimi dhe diagnostikuese.</translation>
@@ -692,6 +713,7 @@
 <translation id="8271379370373330993">Prindër, këta hapa në vijim janë për ju. Mund t'ia jepni pajisjen <ph name="DEVICE_TYPE" /> përsëri fëmijës pas konfigurimit të llogarisë.</translation>
 <translation id="8274924778568117936">Mos e fik dhe mos e mbyll pajisjen tënde <ph name="DEVICE_TYPE" /> deri sa të përfundojë përditësimi. Pajisja <ph name="DEVICE_TYPE" /> do të riniset pas përfundimit të instalimit.</translation>
 <translation id="8281886186245836920">Anashkalo</translation>
+<translation id="8286036467436129157">Identifikohu</translation>
 <translation id="8289509909262565712">Mirë se vjen në <ph name="DEVICE_OS" /></translation>
 <translation id="8291942417224950075">Për përdorim personal</translation>
 <translation id="8304383784961451596">Nuk je i autorizuar ta përdorësh këtë pajisje. Kontakto me administratorin për lejen e identifikimit ose identifikohu me një "Llogari të Google" të mbikëqyrur nga Family Link.</translation>
@@ -703,6 +725,7 @@
 <translation id="8401432541486058167">Jep kodin PIN të lidhur me kartën tënde smart.</translation>
 <translation id="8408270600235826886">Mund të kontrollosh se çfarë të dhënash ndahen me Google. Këtë mund ta ndryshosh në çdo kohë te "Cilësimet". Të dhënat do të përdoren sipas <ph name="BEGIN_LINK" />Politikës së privatësisë<ph name="END_LINK" /> të Google.</translation>
 <translation id="8413956290606243087">Dëshiron ta aktivizosh ChromeVox, lexuesin e integruar të ekranit për ChromeOS?</translation>
+<translation id="8418845734693287262">ChromeOS nuk mund t'i sinkronizonte të dhënat e tua sepse detajet e identifikimit të llogarisë nuk janë të përditësuara.</translation>
 <translation id="8425768983279799676">Mund të përdorësh kodin tënd PIN për të shkyçur pajisjen tënde.</translation>
 <translation id="8428213095426709021">Cilësimet</translation>
 <translation id="843173223122814223">Krijo sfonde me inteligjencën artificiale</translation>
@@ -742,10 +765,12 @@
 <translation id="8794548468611058947">Në vend që të futësh fjalëkalimin e "Llogarisë sate të Google" për t'u identifikuar, mund të krijosh një kod PIN për këtë pajisje <ph name="DEVICE_TYPE" /></translation>
 <translation id="8830779999439981481">Po riniset për të zbatuar përditësimet</translation>
 <translation id="8830796635868321089">Kontrolli i përditësimit dështoi gjatë përdorimit të cilësimeve të përfaqësuesit aktual. Rregullo <ph name="PROXY_SETTINGS_LINK_START" />cilësimet e përfaqësuesit<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
+<translation id="8833697763442816810">Sistemi ChromiumOS</translation>
 <translation id="8855977033756560989">Kjo pajisje Chromebook Enterprise vjen si pjesë e paketës me Chrome Enterprise Upgrade. Për të përfituar nga kapacitetet për ndërmarrjet, regjistroje këtë pajisje me një llogari administratori të Google.</translation>
 <translation id="885746075120788020">Preferencat dhe aktiviteti i ruajtur do të jenë gati në çdo pajisje me ChromeOS kur identifikohesh me "Llogarinë tënde të Google". Mund të zgjedhësh çfarë të sinkronizosh te "Cilësimet".</translation>
 <translation id="8868333925931032127">Po niset modaliteti i demonstrimit</translation>
 <translation id="8875221558267407626">Përmblidh përmbajtjet, thjeshtëso gjuhën e ndërlikuar ose bëj pyetje</translation>
+<translation id="8890569919834781711">ChromiumOS nuk mund t'i ruante të dhënat e Chromium në "Llogarinë tënde të Google" për shkak të një gabimi gjatë identifikimit</translation>
 <translation id="8907701755790961703">Zgjidh një shtet</translation>
 <translation id="8913163265790894442">Konfiguro me lehtësi pajisjen tënde <ph name="DEVICE_TYPE" /> me telefonin tënd. Mund të shtosh rrjetin Wi-Fi dhe "Llogarinë tënde të Google" pa futur fjalëkalimet e tua në mënyrë manuale.
         <ph name="BR" />
@@ -781,5 +806,6 @@
 <translation id="951991426597076286">Refuzo</translation>
 <translation id="954749761428814584">Gjuha dhe metoda e hyrjes</translation>
 <translation id="960987915827980018">Rreth 1 orë e mbetur</translation>
+<translation id="973195869036269770">ChromeOS nuk mund t'i ruante të dhënat e Chrome në "Llogarinë tënde të Google" sepse detajet e identifikimit të llogarisë janë të papërditësuara</translation>
 <translation id="995420352808264005">Zgjidh llojin e regjistrimit të pajisjes</translation>
 </translationbundle>

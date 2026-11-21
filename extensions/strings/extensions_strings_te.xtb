@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">థీమ్‌ను ప్రారంభించండి</translation>
+<translation id="1085064499066015002">ఎల్లప్పుడూ అన్ని సైట్‌లలో అనుమతించండి</translation>
 <translation id="1135328998467923690">ప్యాకేజీ చెల్లదు: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">పర్యావరణం వైపుగా</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> ఎక్స్‌టెన్షన్ కారణంగా Chromium పని చేసే విధానం మారవచ్చు.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">ఆశించిన వెర్షన్ "<ph name="EXPECTED_VERSION" />", కానీ ఉన్న వెర్షన్ "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">ప్రైవేట్ కీని అవుట్‌పుట్ చేయడంలో విఫలమైంది.</translation>
 <translation id="4811956658694082538">వినియోగ ప్రాసెస్ క్రాష్ అయినందున ప్యాకేజీని ఇన్‌స్టాల్ చేయలేకపోయింది. Chromeను పునఃప్రారంభించి, మళ్లీ ట్రై చేయండి.</translation>
+<translation id="4883436287898674711">అన్ని <ph name="WEBSITE_1" /> వెబ్‌సైట్‌లు</translation>
 <translation id="4988792151665380515">పబ్లిక్ కీని ఎగుమతి చేయడానికి విఫలమైంది.</translation>
 <translation id="501057610015570208">'kiosk_only' మ్యానిఫెస్ట్ లక్షణం గల యాప్‌ను తప్పనిసరిగా ChromeOS Flex కియోస్క్ మోడ్‌లో ఇన్‌స్టాల్ చేయాలి</translation>
 <translation id="5026754133087629784">వెబ్ వీక్షణ: <ph name="WEBVIEW_TAG_NAME" /></translation>

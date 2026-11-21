@@ -32,13 +32,11 @@
 <translation id="1278833599417554002">ເລີ່ມເປີດໃຊ້ໃໝ່ເພື່ອອັບເດດ &amp;Chrome</translation>
 <translation id="1289911795790071537">ເປີດການຊອກຫາດ້ວຍ Chrome</translation>
 <translation id="1290883685122687410">ຂໍ້ຜິດພາດໃນການຕັ້ງຄ່າ: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1302523850133262269">ກະ​ລຸ​ນາ​ລໍ​ຖ້າ​ໃນ​ຂະ​ນະ​ທີ່ Chrome ​ຕິດ​ຕັ້ງ​ການອັບເດດລະບົບຫລ້າ​ສຸດ.</translation>
 <translation id="1330562121671411446">ກວດຫາພາສາ</translation>
 <translation id="1333654552732143316">ເລີ່ມ Chrome</translation>
 <translation id="1341711321000856656">ທ່ານສາມາດສະຫຼັບເພື່ອເບິ່ງລະຫັດຜ່ານຈາກໂປຣໄຟລ໌ Chrome ອື່ນໄດ້</translation>
 <translation id="1343830902827845050">ເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="1361351916482714918">ທ່ອງເວັບຢ່າງອັດສະລິຍະຂຶ້ນດ້ວຍ Google Lens</translation>
-<translation id="1363996462118479832">ChromeOS ບໍ່ສາມາດຊິ້ງຂໍ້ມູນຂອງທ່ານໄດ້ເນື່ອງຈາກການເຂົ້າສູ່ລະບົບຜິດພາດ.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1383876407941801731">ຊອກຫາ</translation>
 <translation id="1399397803214730675">ຄອມພິວເຕີນີ້ມີ Google Chrome ລຸ້ນໃໝ່ກ່ວາຢູ່ຮຽບຮ້ອຍແລ້ວ. ຖ້າຊອບແວບໍ່ເຮັດວຽກ, ກະລຸນາຖອນຕິດຕັ້ງ Google Chrome ແລະລອງໃໝ່ອີກ.</translation>
@@ -89,7 +87,6 @@
 <translation id="177180974022074201">ລອງໃຊ້ Gemini ໃນ Chrome</translation>
 <translation id="1786003790898721085">ກວດໃຫ້ແນ່ໃຈວ່າທ່ານໄດ້ເຂົ້າສູ່ລະບົບ Chrome ໃນ <ph name="TARGET_DEVICE_NAME" /> ຂອງທ່ານແລ້ວລອງສົ່ງໃໝ່.</translation>
 <translation id="1786044937610313874">ທາງລັດທີ່ເປີດໃນ Chrome</translation>
-<translation id="1812689907177901597">ໂດຍການປິດສິ່ງນີ້, ທ່ານສາມາດເຂົ້າສູ່ລະບົບເວັບໄຊຂອງ Google ເຊັ່ນ: Gmail ໄດ້ໂດຍບໍ່ຕ້ອງເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome ແນະນຳໃຫ້ຢຸດແຖບທີ່ເຮັດໃຫ້ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານເຮັດວຽກຊ້າລົງຊົ່ວຄາວ}other{Chrome ແນະນຳໃຫ້ຢຸດແຖບທີ່ເຮັດໃຫ້ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານເຮັດວຽກຊ້າລົງຊົ່ວຄາວ}}</translation>
 <translation id="1832046143430087831">ເພີ່ມຄວາມໄວເວັບໄຊດ້ວຍເຄື່ອງຈັກ V8 ຂອງ Chrome ແຕ່ເຮັດໃຫ້ Chrome ມີຄວາມທົນທານຕໍ່ການໂຈມຕີໜ້ອຍລົງເລັກນ້ອຍ. ການຕັ້ງຄ່ານີ້ປິດຢູ່.</translation>
 <translation id="1838374766361614909">ລຶບ​ການ​ຊອກ​ຫາ</translation>
@@ -176,7 +173,6 @@
 <translation id="2661616016316841783">ເພື່ອເຂົ້າເຖິງສ່ວນຂະຫຍາຍ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານຈາກ <ph name="DEVICE" />, ໃຫ້ເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="2665296953892887393">ຊ່ວຍເຮັດໃຫ້ Google Chrome ດີຂຶ້ນໂດຍການສົ່ງລາຍງານການ​ຂັດຂ້ອງ ແລະ  <ph name="UMA_LINK" />  ຫາ Google.</translation>
 <translation id="2668094785979141847">ຄລິກເພື່ອອອກຈາກ Google Lens</translation>
-<translation id="2674238339205910678">ChromeOS Flex ບໍ່ສາມາດບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີ Google ຂອງທ່ານໄດ້ເນື່ອງຈາກລາຍລະອຽດການເຂົ້າສູ່ລະບົບບັນຊີຂອງທ່ານເກົ່າແລ້ວ</translation>
 <translation id="2681444469812712297">ເປີດ <ph name="URL" /> ໃນແຖບໃໝ່ໃນ Google Chrome.</translation>
 <translation id="2699790011615497488">ເປີດ Gemini ໃນ Chrome Beta</translation>
 <translation id="2738871930057338499">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບອິນເຕີເນັດໄດ້. HTTP 403 ຖືກຫ້າມ. ກະລຸນາກວດສອບການຕັ້ງຄ່າພຣັອກຊີຂອງທ່ານ.</translation>
@@ -287,7 +283,6 @@
 <translation id="3756724684201900923">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການຕິດຕັ້ງ Chrome</translation>
 <translation id="3772152698251011058">ລາຍງານເວັບໄຊນີ້ໄປຫາ Google</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
-<translation id="3785324443014631273">ChromeOS Flex ບໍ່ສາມາດຊິ້ງຂໍ້ມູນຂອງທ່ານໄດ້ເນື່ອງຈາກເກີດຄວາມຜິດພາດໃນການເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="3810973564298564668">ຈັດການ</translation>
 <translation id="383455301564000773">ກຳລັງອັບເກຣດເປັນ Windows 11 ບໍ? ດາວໂຫຼດ Chrome ໃສ່ໃນ OneDrive ເພື່ອໃຫ້ທ່ານພ້ອມນຳໃຊ້ຕັ້ງແຕ່ມື້ທຳອິດ.</translation>
 <translation id="383928141529488001">Google Chrome ຕ້ອງການສິດເຂົ້າເຖິງ Bluetooth ເພື່ອສຳຫຼວດ 
@@ -378,7 +373,6 @@
 <translation id="4803313124144656665">ປິດ Google ຊອກຫາໃນ Chrome</translation>
 <translation id="4828579605166583682">Google Chrome ກຳລັງພະຍາຍາມປ່ຽນແທນລະຫັດຜ່ານທີ່ມີຢູ່. ພິມລະຫັດຜ່ານ Windows ຂອງທ່ານໃສ່ເພື່ອອະນຸຍາດສິ່ງນີ້.</translation>
 <translation id="4836321460899997044">ໂປຣໄຟລ໌ Chrome</translation>
-<translation id="4842397268809523050">ChromeOS Flex ບໍ່ສາມາດຊິ້ງຂໍ້ມູນຂອງທ່ານໄດ້ເນື່ອງຈາກບໍ່ສາມາດໃຊ້ການຊິ້ງຂໍ້ມູນສຳລັບໂດເມນຂອງທ່ານ.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> ເຂົ້າສູ່ລະບົບຢູ່ແລ້ວ.  ເພື່ອແຍກການທ່ອງເວັບຂອງທ່ານໄວ້ຕ່າງຫາກ, ໃຫ້ເຂົ້າສູ່ລະບົບ Chrome ໃນໂປຣໄຟລ໌ຂອງທ່ານເອງໃນຖານະ <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">ເພື່ອແບ່ງປັນໜ້າຈໍຂອງທ່ານ, ໃຫ້ອະນຸຍາດການບັນທຶກໜ້າຈໍສຳລັບ Chrome ໃນການຕັ້ງຄ່າລະບົບ</translation>
 <translation id="4873783916118289636">ກວດສອບການຄວບຄຸມຄວາມເປັນສ່ວນຕົວ ແລະ ຄວາມປອດໄພຫຼັກໃນ Chrome</translation>
@@ -392,7 +386,6 @@
 <translation id="492720062778050435">Chrome ແນະນຳໃຫ້ທ່ານກວດສອບສ່ວນຂະຫຍາຍນີ້</translation>
 <translation id="4953650215774548573">ຕັ້ງ Google Chrome ເປັນບຣາວ​ເຊີມາດຕະຖານຂອງທ່ານ</translation>
 <translation id="495931528404527476">ຢູ່ໃນ Chrome</translation>
-<translation id="4969674060580488087">ChromeOS Flex ບໍ່ສາມາດຊິ້ງຂໍ້ມູນຂອງທ່ານໄດ້ເນື່ອງຈາກລາຍລະອຽດການເຂົ້າສູ່ລະບົບບັນຊີຂອງທ່ານເກົ່າແລ້ວ.</translation>
 <translation id="4970761609246024540">ຍິນດີຕ້ອນຮັບສູ່ໂປຣໄຟລ໌ Chrome</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">ຄລິກ “ຕົວຈັດການລະຫັດຜ່ານ Google”</translation>
@@ -426,7 +419,6 @@
 <translation id="5271833978500241046">ໃຊ້ພ້ອມກັບຄຸນສົມບັດອື່ນໆຂອງ Gemini ໃນ Chrome</translation>
 <translation id="5320351714793324716">ຫາກທ່ານອະນຸຍາດໃຫ້ໃຊ້ຄຸກກີ້ໄດ້, Chrome ອາດໃຊ້ພວກມັນເມື່ອໂຫຼດກ່ອນລ່ວງໜ້າ</translation>
 <translation id="5321325624576443340">Google Lens ບໍ່ມີໃຫ້ໃຊ້. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ.</translation>
-<translation id="5334309298019785904">ChromeOS ບໍ່ສາມາດຊິ້ງຂໍ້ມູນຂອງທ່ານໄດ້ເນື່ອງຈາກບໍ່ມີການຊິ້ງຂໍ້ມູນສຳລັບໂດເມນຂອງທ່ານ.</translation>
 <translation id="5336664042114176802">ທ່ານສາມາດປ່ຽນໄປໃຊ້ຜູ້ຊ່ວຍ Gemini ທີ່ເຊື່ອມໂຍງກັບບັນຊີ Google ຂອງທ່ານຕັ້ງແຕ່ທຳອິດ ແລະ ບໍ່ໄດ້ຈັດການໂດຍ <ph name="DOMAIN" />. ຄຳຕອບຈະບໍ່ມີແຫຼ່ງຂໍ້ມູນຮອງຮັບຈາກໄຟລ໌ ຫຼື ບໍລິການທີ່ <ph name="DOMAIN" /> ຈັດການອີກຕໍ່ໄປ ແລະ ລະບົບຈະບໍ່ຍ້າຍປະຫວັດການສົນທະນາຂອງທ່ານ. ເຊິ່ງອາດບໍ່ເໝາະກັບການໃຊ້ເພື່ອການເຮັດວຽກ. ການສະຫຼັບຈະຕ້ອງເລີ່ມເປີດໃຊ້ Chrome ໃໝ່.</translation>
 <translation id="5346389065299425353">ເຈາະເລິກການຊອກຫາຂອງທ່ານໂດຍການເພີ່ມແຖບ, ໄຟລ໌ ແລະ ເຄື່ອງມືຫຼາຍລາຍການ</translation>
 <translation id="5353252989841766347">ສົ່ງອອກລະຫັດຜ່ານຈາກ Chrome</translation>
@@ -556,7 +548,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6497147134301593682">Chrome ຖືກປິດໂດຍອັດຕະໂນມັດ</translation>
 <translation id="6506909944137591434">Chrome ຕ້ອງການການອະນຸຍາດກ້ອງຖ່າຍຮູບເພື່ອສ້າງແຜນທີ່ 3 ມິຕິຂອງສິ່ງອ້ອມຕົວທ່ານ</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
-<translation id="6520608191273161151">ChromeOS Flex ບໍ່ສາມາດບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີ Google ຂອງທ່ານໄດ້ເນື່ອງຈາກເກີດຂໍ້ຜິດພາດໃນການເຂົ້າສູ່ລະບົບ</translation>
 <translation id="6520670145826811516">ເພື່ອໃຊ້ສະຖານທີ່ຂອງທ່ານ, ກະລຸນາມອບສິດເຂົ້າເຖິງໃຫ້ Chrome ໃນ <ph name="BEGIN_LINK" />ການຕັ້ງຄ່າລະບົບ<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">ປະຫວັດ Chrome</translation>
 <translation id="6532945796722480006">ເປີດ Gemini ໃນ Chrome Canary</translation>
@@ -578,7 +569,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6712881677154121168">ດາວໂຫຼດຜິດພາດ: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">ເຮັດໃຫ້ Chrome ໄວຂຶ້ນ</translation>
 <translation id="6734827584173583205">ທ່ານບໍ່ໄດ້ເຂົ້າເບິ່ງເມື່ອບໍ່ດົນມານີ້. Chrome ໄດ້ລຶບ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ແລະ ອີກ <ph name="COUNT" /> ລາຍການອອກແລ້ວ.</translation>
-<translation id="6735387454586646204">ລະບົບ ChromeOS Flex</translation>
 <translation id="674891594898436429">ປິດການຊອກຫາທີ່ນຳໃຊ້ຢູ່ໃນແຖບນີ້</translation>
 <translation id="6750954913813541382">ເພື່ອແກ້ໄຂຂໍ້ຜິດພາດກ່ຽວກັບການສະກົດຄຳ, Chrome ສົ່ງຂໍ້ຄວາມທີ່ທ່ານພິມໃນໂປຣແກຣມທ່ອງເວັບໃຫ້ Google</translation>
 <translation id="6760235774835597023">ເພີ່ມຄວາມໄວເວັບໄຊດ້ວຍເຄື່ອງຈັກ V8 ຂອງ Chrome ແຕ່ເຮັດໃຫ້ Chrome ມີຄວາມທົນທານຕໍ່ການໂຈມຕີໜ້ອຍລົງເລັກນ້ອຍ. ການຕັ້ງຄ່ານີ້ເປີດຢູ່.</translation>
@@ -599,7 +589,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6908182077349113099">ຊິ້ງລະຫັດຜ່ານ, ບຸກມາກ ແລະ ປະຫວັດຂອງທ່ານໃນອຸປະກອນຕ່າງໆໄດ້ຢ່າງສົມບູນແບບ. ເຂົ້າເຖິງຄຸນສົມບັດທີ່ທ່ານຮູ້ຈັກ ແລະ ມັກໄດ້ຢ່າງງ່າຍດາຍໂດຍອັບເດດໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານເປັນ Chrome.</translation>
 <translation id="6926772305569367352">ປຸ່ມ "Google ຊອກຫາໃນ Chrome" ຢູ່ແຖບເຄື່ອງມືມີໄອຄອນໃໝ່. ຄລິກມັນເພື່ອຖາມຄຳຖາມໃນຂະນະທີ່ທ່ານເລືອກເບິ່ງດ້ວຍ Google ຊອກຫາໃນ Chrome.</translation>
 <translation id="6930294499209825">ກະລຸນາອັບເດດຊອບແວ Google ໃຫ້ເປັນເວີຊັນຫຼ້າສຸດຢູ່ສະເໝີ. ຫາກປິດການນຳໃຊ້ ຫຼື ຢຸດບໍລິການນີ້, ຊອບແວ Google ຂອງທ່ານຈະບໍ່ໄດ້ຮັບການອັບເດດ, ເຊິ່ງໝາຍຄວາມວ່າຊ່ອງຫວ່າງດ້ານຄວາມປອດໄພທີ່ອາດເກີດຂຶ້ນຈະບໍ່ສາມາດແກ້ໄຂໄດ້ ແລະ ຄຸນສົມບັດອາດບໍ່ເຮັດວຽກ. ບໍລິການນີ້ຈະຖອນການຕິດຕັ້ງຕົວເອງເມື່ອບໍ່ມີຊອບແວ Google ນຳໃຊ້ຢູ່.</translation>
-<translation id="6933858244219479645">ລະບົບ ChromeOS</translation>
 <translation id="6938166777909186039">ເພື່ອຮັບການອັບເດດ Google Chrome ໃນອະນາຄົດ, ທ່ານຈະຕ້ອງໃຊ້ Windows 10 ຫຼື ໃໝ່ກວ່າ. ຄອມພິວເຕີນີ້ກຳລັງນຳໃຊ້ Windows 8.1.</translation>
 <translation id="6962628299694876291"><ph name="EXISTING_USER" /> ເຂົ້າສູ່ລະບົບຢູ່ແລ້ວ. ເພື່ອແຍກການທ່ອງເວັບຂອງທ່ານໄວ້ຕ່າງຫາກ, ໃຫ້ເຂົ້າສູ່ລະບົບ Chrome ໃນໂປຣໄຟລ໌ຂອງທ່ານເອງໃນຖານະ <ph name="USER_EMAIL_ADDRESS" />. ນອກຈາກນີ້, ທ່ານຍັງຈະຮັບລະຫັດຜ່ານ ແລະ ຂໍ້ມູນອື່ນໆໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານໄດ້ນຳ.</translation>
 <translation id="6965382102122355670">ຕົກລົງ</translation>
@@ -690,7 +679,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="7801699035218095297">Google Chrome ກໍາລັງພະຍາຍາມສຳເນົາລະຫັດຜ່ານ. ພິມລະຫັດຜ່ານ Windows ຂອງທ່ານ ເພື່ອອະນຸຍາດອັນນີ້.</translation>
 <translation id="7804364787702057554">ບັນຊີຂອງທ່ານໃນ Chrome</translation>
 <translation id="7804947029129221742">ມີການປ່ຽນໂປຣແກຣມຊອກຫາຂອງທ່ານຈາກພາຍນອກ Chrome. ເພື່ອປົກປ້ອງທ່ານ, Chrome ໄດ້ຣີເຊັດໂປຣແກຣມດັ່ງກ່າວເປັນຄ່າເລີ່ມຕົ້ນເກົ່າ. <ph name="LEARN_MORE_LINK" /></translation>
-<translation id="7808348361785373670">ເອົາ​ອອກ​ໄປຈາກ Chrome...</translation>
 <translation id="7827099906024714326">Chrome ຕ້ອງການຢັ້ງຢືນວ່າແມ່ນທ່ານກ່ອນຈະບັນທຶກຂໍ້ມູນບາງຢ່າງໃນບັນຊີ Google ຂອງທ່ານ ແລະ ໃຊ້ຢູ່ອຸປະກອນຂອງທ່ານທັງໝົດ. ຫາກທ່ານອອກຈາກລະບົບຕອນນີ້, ຂໍ້ມູນນີ້ຈະຖືກລຶບ.</translation>
 <translation id="7829850924999627855">ເພື່ອເຂົ້າເຖິງຂໍ້ມູນທີ່ບັນທຶກໄວ້ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານຈາກ <ph name="DEVICE" />, ໃຫ້ເຂົ້າສູ່ລະບົບ Chrome</translation>
 <translation id="7832314606810669113">ເພື່ອເຂົ້າເຖິງບຸກມາກ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ, ໃຫ້ເຂົ້າສູ່ລະບົບ Chrome. ລະບົບຈະບັນທຶກບຸກມາກນີ້ໄວ້ໃນບັນຊີ Google ຂອງທ່ານຫຼັງຈາກທີ່ທ່ານເຂົ້າສູ່ລະບົບ.</translation>
@@ -703,7 +691,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="7896673875602241923">ຄົນອື່ນເຄີຍເຂົ້າສູ່ລະບົບ Chrome ໃນຄອມພິວເຕີນີ້ເປັນ <ph name="ACCOUNT_EMAIL_LAST" /> ມາກ່ອນແລ້ວ. ກະລຸນາສ້າງຜູ້ໃຊ້ Chrome ໃໝ່ເພື່ອເກັບຂໍ້ມູນຂອງທ່ານໃຫ້ແຍກກັນຕ່າງຫາກ.</translation>
 <translation id="7904213866086517086">ເປີດ Google ຊອກຫາໃນແຜງຄວບຄຸມດ້ານຂ້າງຄືນໃໝ່</translation>
 <translation id="7904985524660297937">ລອງໃຊ້ Gemini ໃນ Google Chrome</translation>
-<translation id="7905880575591690197">ChromeOS ບໍ່ສາມາດບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີ Google ຂອງທ່ານໄດ້ເນື່ອງຈາກເກີດຂໍ້ຜິດພາດໃນການເຂົ້າສູ່ລະບົບ</translation>
 <translation id="7936702483636872823">Chrome ບລັອກການດາວໂຫຼດນີ້ ເນື່ອງຈາກໄຟລ໌ມີການຫຼອກລວງ ແລະ ອາດເຮັດການປ່ຽນແປງທີ່ບໍ່ຄາດຄິດກັບອຸປະກອນຂອງທ່ານ</translation>
 <translation id="7951272445806340501">ຈຳເປັນຕ້ອງຣີສະຕາດ ChromeOS Flex ເພື່ອນຳໃຊ້ອັບເດດ.</translation>
 <translation id="7959172989483770734">ຈັດການໂປຣໄຟລ໌ Chrome</translation>
@@ -764,7 +751,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8402881611069691789">{COUNT,plural, =1{ສຳເລັດການອັບເດດ Chrome ແລ້ວ. ທ່ານສາມາດໃຊ້ເວີຊັນຫຼ້າສຸດໄດ້ທັນທີທີ່ທ່ານເລີ່ມເປີດໃຊ້ໃໝ່. ຫຼັງຈາກນັ້ນ, ແຖບປັດຈຸບັນຂອງທ່ານຈະເປີດຄືນໃໝ່. ມີໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ ຫຼື ໜ້າຈໍແຍກເປີດຢູ່. ມັນຈະບໍ່ເປີດຄືນໃໝ່ຫຼັງຈາກທ່ານເລີ່ມເປີດໃຊ້ໃໝ່.}other{ສຳເລັດການອັບເດດ Chrome ແລ້ວ. ທ່ານສາມາດໃຊ້ເວີຊັນຫຼ້າສຸດໄດ້ທັນທີທີ່ທ່ານເລີ່ມເປີດໃຊ້ໃໝ່. ຫຼັງຈາກນັ້ນ, ແຖບປັດຈຸບັນຂອງທ່ານຈະເປີດຄືນໃໝ່. ມີໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ ແລະ ໜ້າຈໍແຍກ # ລາຍການເປີດຢູ່ໃນໂປຣໄຟລ໌ຕ່າງໆ. ພວກມັນຈະບໍ່ເປີດຄືນໃໝ່ຫຼັງຈາກທີ່ທ່ານເລີ່ມເປີດໃຊ້ໃໝ່.}}</translation>
 <translation id="8403038600646341038">ໂລໂກ້ Chrome ໃນໜ້າຈໍຄອມພິວເຕີ.</translation>
 <translation id="8406687098231754303">ຈາກປຸ່ມ "Google ຊອກຫາໃນແຜງຄວບຄຸມດ້ານຂ້າງ" ຢູ່ແຖບເຄື່ອງມື, ທ່ານສາມາດເປີດ Google ຊອກຫາໃນແຜງຄວບຄຸມດ້ານຂ້າງຄືນໃໝ່ເພື່ອຖາມຄຳຖາມໃນລະຫວ່າງທີ່ທ່ານທ່ອງເວັບໄດ້</translation>
-<translation id="8418845734693287262">ChromeOS ບໍ່ສາມາດຊິ້ງຂໍ້ມູນຂອງທ່ານໄດ້ເນື່ອງຈາກລາຍລະອຽດການເຂົ້າສູ່ລະບົບບັນຊີຂອງທ່ານເກົ່າແລ້ວ.</translation>
 <translation id="842386925677997438">ເຄື່ອງມືຄວາມປອດໄພຂອງ Chrome</translation>
 <translation id="8425765582779547329">ເພື່ອທ່ອງໂລກອອນລາຍຢ່າງປອດໄພຍິ່ງຂຶ້ນດ້ວຍຕົວເລືອກຂອງຜູ້ປົກຄອງຂອງທ່ານ, ໃຫ້ເຂົ້າສູ່ລະບົບໃນ Chrome</translation>
 <translation id="842852285618875960">ທ່ານບັນທຶກບຸກມາກຂອງ Google Chrome ຮອດຂີດຈຳກັດ <ph name="BOOKMARK_LIMIT" /> ລາຍການແລ້ວ, ດັ່ງນັ້ນລະບົບຈຶ່ງຍັງບໍ່ໄດ້ບັນທຶກບຸກມາກບາງລາຍການຂອງທ່ານໃສ່ໃນບັນຊີ Google ຂອງທ່ານເທື່ອ.
@@ -793,7 +779,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8624541899164515475">ການຕັ້ງຄ່າ, ເປີດໃນແຖບໃໝ່.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome ຈະເປີດຄືນໃໝ່ໃນ 1 ນາທີ}other{Chrome ຈະເປີດຄືນໃໝ່ໃນ # ນາທີ}}</translation>
 <translation id="8637932705841171563">ເພື່ອແບ່ງປັນໜ້າຈໍຂອງທ່ານ, ໃຫ້ອະນຸຍາດການບັນທຶກໜ້າຈໍສຳລັບ Chrome ໃນການຕັ້ງຄ່າລະບົບ</translation>
-<translation id="8642497536370021917">ເພື່ອກວດສອບໃຫ້ແນ່ໃຈວ່າທ່ານສາມາດໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີ Google ຂອງທ່ານໄດ້ສະເໝີ, ກະລຸນາຢັ້ງຢືນວ່າແມ່ນທ່ານ</translation>
 <translation id="8656634243791296665">ເປີດ Gemini ໃນ Chrome Dev</translation>
 <translation id="8669527147644353129">ຕົວຊ່ວຍ Google Chrome</translation>
 <translation id="8679801911857917785">ມັນຍັງຄວບຄຸມວ່າຈະໃຫ້ສະແດງໜ້າໃດຂຶ້ນ ເມື່ອທ່ານເລີ່ມຕົ້ນເປີດ Chrome.</translation>
@@ -855,7 +840,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="922152298093051471">ປັບແຕ່ງ Chrome</translation>
 <translation id="93760716455950538">ຣີສະຕາດ ChromeOS Flex</translation>
 <translation id="945522503751344254">ສົ່ງ​ຄໍາ​ຄິດ​​ເຫັນ</translation>
-<translation id="973195869036269770">ChromeOS ບໍ່ສາມາດບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີ Google ຂອງທ່ານໄດ້ເນື່ອງຈາກລາຍລະອຽດການເຂົ້າສູ່ລະບົບບັນຊີຂອງທ່ານບໍ່ເປັນປັດຈຸບັນ</translation>
 <translation id="983803489796659991">ການຕິດຕັ້ງບໍ່ສຳເລັດເນື່ອງຈາກເຊີບເວີອັບເດດບໍ່ມີຂໍ້ມູນ hash ໃດໆສຳລັບແອັບພລິເຄຊັນ.</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> ສາມາດສະຫຼັບລະຫວ່າງໂປຣໄຟລ໌ Chrome ໄດ້</translation>
 </translationbundle>

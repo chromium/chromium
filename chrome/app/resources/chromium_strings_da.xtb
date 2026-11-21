@@ -83,7 +83,6 @@
 <translation id="188102464690227119">Knappen "Søgning i sidepanel" på værktøjslinjen har fået et nyt ikon. Klik på den for at stille spørgsmål, mens du browser, med Søgning i sidepanelet.</translation>
 <translation id="1896836275755235458">Chromium sparer på batteriet ved at begrænse aktivitet i baggrunden og visuelle effekter, f.eks. smooth scrolling og videobilledfrekvenser. <ph name="BEGIN_LINK" />Få flere oplysninger om Energisparefunktion<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium Updater Service</translation>
-<translation id="1911763535808217981">Når du deaktiverer denne indstilling, kan du logge ind på Google-websites som f.eks. Gmail uden at logge ind i Chromium</translation>
 <translation id="1929939181775079593">Chromium svarer ikke. Vil du genstarte nu?</translation>
 <translation id="1933341829955786215">Din organisation, <ph name="MANAGER" />, kræver, at du logger ind i Chromium</translation>
 <translation id="193439633299369377">Chromium OS skal genstartes, før opdateringen kan anvendes.</translation>
@@ -130,7 +129,6 @@
 <translation id="2361918034042471035">Udvidelsen "<ph name="EXTENSION_NAME" />" vil have dig til at logge ind i Chromium</translation>
 <translation id="236943522426971115">Deaktiver, at Chromium-apps kører i baggrunden</translation>
 <translation id="2374216753258219393">Log ind i Chromium for at bruge denne udvidelse som <ph name="USER_EMAIL_ADDRESS" />.</translation>
-<translation id="2384373936468275798">Chromium OS kunne ikke synkronisere dine data, fordi loginoplysningerne til din konto er forældede.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{En eller flere Chromium-udvidelser havde adgang til 1 HID-enhed}=1{En eller flere Chromium-udvidelser har adgang til 1 HID-enhed}one{En eller flere Chromium-udvidelser har adgang til # HID-enhed}other{En eller flere Chromium-udvidelser har adgang til # HID-enheder}}</translation>
 <translation id="2401032172288869980">Chromium skal have adgangstilladelse til kamera og mikrofon for at bruge dette website</translation>
 <translation id="2403703063067034158">Opstartsfejl: En anden konfigurationsinstans kører i øjeblikket. Prøv igen senere.</translation>
@@ -172,7 +170,6 @@
 <translation id="2819844767470613567">Advarsel! Chromium kan ikke forhindre udvidelser i at registrere din browserhistorik. Fjern markeringen af denne valgmulighed for at deaktivere denne udvidelse i isoleret tilstand.</translation>
 <translation id="2841525013647267359">Oversæt fra</translation>
 <translation id="2846251086934905009">Installationsfejl: Installationen blev ikke gennemført. Installationen er blevet annulleret.</translation>
-<translation id="2847479871509788944">Fjern fra Chromium...</translation>
 <translation id="2850691299438350830">Beskytter dig i Chromium og kan bruges til at forbedre din sikkerhed i andre Google-apps, når du er logget ind.</translation>
 <translation id="2885378588091291677">Jobliste</translation>
 <translation id="2898830646167954300">Skift tilbage til din ikke-administrerede Gemini-assistent</translation>
@@ -383,7 +380,6 @@
 <translation id="5346389065299425353">Gør din søgning mere dybdegående ved at tilføje flere faner, filer og værktøjer</translation>
 <translation id="5352264705793813212">Chromium har fundet nogle sikkerhedsanbefalinger, du kan gennemgå</translation>
 <translation id="5352361688875342522">Andre Chromium-profiler</translation>
-<translation id="535243042947607642">ChromiumOS kunne ikke gemme Chromium-data på din Google-konto, fordi loginoplysningerne til din konto er forældede</translation>
 <translation id="5368118228313795342">Ekstra kode: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Medtag Chromium i Web- og appaktivitet for at få personlig tilpasning</translation>
 <translation id="5382964351116519680">Åbn søgning med Chromium</translation>
@@ -398,7 +394,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium anbefaler, at du sætter den fane, der gør din browser langsom, på pause}one{Chromium anbefaler, at du sætter den fane, der gør din browser langsom, på pause}other{Chromium anbefaler, at du sætter de faner, der gør din browser langsom, på pause}}</translation>
 <translation id="5473971139929175403">Chromium fungerer muligvis ikke korrekt, da det ikke længere understøttes af denne Linux-distribution</translation>
 <translation id="5475924890392386523">Chromium har blokeret denne download, fordi filen kan skade dine personlige konti og dine konti på sociale netværk</translation>
-<translation id="549669000822060376">Vent, mens Chromium installerer de nyeste systemopdateringer.</translation>
 <translation id="5496810170689441661">Chromium forsøger at redigere adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="5524890928877629608">øverste venstre hjørne af søgeområdet: venstre <ph name="LEFT" /> %, øverste <ph name="TOP" /> %</translation>
 <translation id="5527463683072221100">Åbn PDF-filer i Chromium</translation>
@@ -493,7 +488,6 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="6390800440335263989">Log ind i Chromium som <ph name="EMAIL" /> for at fortsætte. Dette sikrer, at du har din organisations politikker.</translation>
 <translation id="6400112897226594999">Chromium-logo på en computerskærm.</translation>
 <translation id="6403826409255603130">Chromium er en webbrowser, der kører websider og apps med lynets hast. Den er hurtig, stabil og brugervenlig. Beskyttelse mod malware og phishing er indbygget i Chromium, så du kan søge mere sikkert på internettet.</translation>
-<translation id="6414624068245092115">Verificer din identitet for at sikre, at du altid kan bruge og gemme Chromium-data på din Google-konto</translation>
 <translation id="642132557830635295">Chromium kører hurtigere, og funktioner, der bruger JavaScript, bør fungere som forventet</translation>
 <translation id="6434631832954028336">Genåbn Søgning-panelet</translation>
 <translation id="6436260184216827876">Billedsøgning er ikke tilgængelig. Prøv igen senere.</translation>
@@ -524,7 +518,6 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="665732753414869868">Chromium skal have kameratilladelse for at oprette et 3D-kort over dine omgivelser</translation>
 <translation id="6669284030132180248">Hvis du også gemmer dine bogmærker på din Google-konto, kan du holde øje med produktpriser i Chromium og få besked, når prisen falder</translation>
 <translation id="6676384891291319759">Få adgang til internettet</translation>
-<translation id="668175097507315160">Chromium OS kunne ikke synkronisere dine data på grund af en loginfejl.</translation>
 <translation id="6691132793308828750">Fjern denne apps data fra Chromium</translation>
 <translation id="6709350901466051922">Chromium skal have adgangstilladelse til mikrofon for at bruge dette website</translation>
 <translation id="6712881677154121168">Downloadfejl: <ph name="DOWNLOAD_ERROR" />.</translation>
@@ -682,7 +675,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8107060931443639922">Næste gang du åbner Chromium på din <ph name="DEVICE_TYPE" />, får du en meddelelse om at aktivere underretninger om prissporing.</translation>
 <translation id="8118331347066725040">Send feedback om søgning via Lens</translation>
 <translation id="8130609355518033382">Tilpas Chromium</translation>
-<translation id="8133124826068723441">Chromium OS kunne ikke synkronisere dine data, fordi synkronisering ikke er tilgængeligt på dit domæne.</translation>
 <translation id="813913629614996137">Initialiserer...</translation>
 <translation id="8158143604667288086">Du kan fastgøre Søgning i Chrome for at stille spørgsmål, mens du browser</translation>
 <translation id="8161503455832158203">Åbn Gemini i Chromium med en tastaturgenvej.</translation>
@@ -749,11 +741,9 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8816416449795340678">Del dette dokument med Gemini i Chromium for at få en hurtig oversigt og stille opfølgende spørgsmål</translation>
 <translation id="8818550178040858407">Vil du logge ind i Chromium?</translation>
 <translation id="8826492472752484139">Klik på "Adgangs­kode­admin­istrator"</translation>
-<translation id="8833697763442816810">Chromium OS-system</translation>
 <translation id="8852026904190808918">Dette sprog bruges i menuer, indstillinger, underretninger og anden tekst i Chromium</translation>
 <translation id="8862326446509486874">Du har ikke de nødvendige rettigheder til en installation på systemniveau. Prøv at køre installationsprogrammet igen som administrator.</translation>
 <translation id="8876044221123442390">Tilføj Chromium-profil</translation>
-<translation id="8890569919834781711">ChromiumOS kunne ikke gemme Chromium-data på din Google-konto på grund af en loginfejl</translation>
 <translation id="8891709362986793894">Din organisation kræver, at du logger ind i Chromium</translation>
 <translation id="8906384069222226849">Chromium kræver Windows 10 version 1809 eller nyere.</translation>
 <translation id="8907580949721785412">Chromium forsøger at vise adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>

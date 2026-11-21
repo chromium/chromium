@@ -83,6 +83,8 @@ Kaj je treba upoštevati:
 <translation id="2574249610672786438">Če si želite ogledati zavihke iz naprav, v katerih uporabljate Chrome, se prijavite v vseh napravah</translation>
 <translation id="2576431527583832481">Chrome je izboljšan! Na voljo je nova različica.</translation>
 <translation id="257708665678654955">Želite, da Google Chrome naslednjič ponudi prevod strani v jeziku <ph name="LANGUAGE_NAME" /> s tega spletnega mesta?</translation>
+<translation id="2599258827968143948">Vaše priljubljene Googlove aplikacije delujejo bolje s Chromom</translation>
+<translation id="260980777626165320">Zunanje povezave privzeto odpirajte v Chromu.</translation>
 <translation id="2668242166988961773">Iskanje z govorom v Chromu.</translation>
 <translation id="2703746758996815929">Če želite prejemati uporabne nasvete za Chrome, v nastavitvah sistema iOS vklopite obvestila.</translation>
 <translation id="2728851697704606655">Prevajanje z Googlom Lens</translation>
@@ -111,6 +113,7 @@ Novih zaznamkov ni mogoče shraniti v račun, dokler nekaterih ne izbrišete. Č
 <translation id="314782365035065913">Hitrejši dostop do Chroma iz vrstice Dock na začetnem zaslonu</translation>
 <translation id="3167189358072330585">Vaš račun ne deluje v Google Chromu. Obrnite se na skrbnika domene ali za prijavo uporabite običajen Google Račun.</translation>
 <translation id="322254490661677575">Če želite v računu Google uporabljati in shranjevati podatke iz Chroma, vnesite geslo.</translation>
+<translation id="3253082773078342494">Povezave odpirajte neposredno v Chromu.</translation>
 <translation id="3303503998967553377">Uporaba dejanj v Chromu za iOS</translation>
 <translation id="3348862487678490430">Dodajanje elementa bralnega seznama v Chromu</translation>
 <translation id="3350281376951945723">Hitreje odpirajte povezave, ko nastavite Chrome kot privzeti brskalnik</translation>
@@ -160,6 +163,7 @@ Novih zaznamkov ni mogoče shraniti v račun, dokler nekaterih ne izbrišete. Č
 <translation id="4693084815234024320">Ste v anonimnem načinu v Chromu</translation>
 <translation id="4713740144985377441">Vrnite se v Chrome, če želite naložiti datoteko</translation>
 <translation id="4724297637870447613">Uporabljajte Chrome kjer koli</translation>
+<translation id="4733290155432110050">Skočite naravnost v Chrome</translation>
 <translation id="4738647308035481133">Stran Google Chroma</translation>
 <translation id="4742795653798179840">Izbrisani podatki v Chromu</translation>
 <translation id="4761869838909035636">Zaženi varnostno opravljanje v Chromu</translation>
@@ -267,6 +271,7 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma
 <translation id="7038674195294813388">V sistemu iOS odprite nastavitve privzetih aplikacij, dotaknite se »Browser App« (brskalnik) in nato izberite Chrome.</translation>
 <translation id="7056826488869329999">Odpre in izvede varnostno preverjanje v Chromu.</translation>
 <translation id="7061455974939528301">Pridržite ikono Chroma in kliknite »Uredi začetni zaslon«</translation>
+<translation id="7067302528015227615">Nastavite Chrome kot privzeti brskalnik, da bodo prehodi med aplikacijami hitrejši in preprostejši.</translation>
 <translation id="7095110968493193530">V Googlov upravitelj gesel za <ph name="EMAIL" /></translation>
 <translation id="7124339256045485976">Posodobitev Chroma</translation>
 <translation id="7135936755418321901">Če želite lokacijo deliti s spletnimi mesti, se dotaknite aplikacije Nastavitve in dovolite, da Chrome uporablja vašo lokacijo.</translation>
@@ -278,6 +283,7 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chroma
 <translation id="7200524487407690471">Chrome vsak dan samodejno zažene varnostno preverjanje, da vas varuje pred podatkovnimi kršitvami, spletnimi mesti, ki niso varna, in drugim. Več o varnostnem preverjanju lahko preberete v nastavitvah.</translation>
 <translation id="7214019116829172458">Odpiranje anonimnega zavihka v Chromu</translation>
 <translation id="722167379782941918">Chrome priporoča izboljšano zaščito</translation>
+<translation id="722921700949937243">Poskrbite, da se bodo vse povezave vedno odpirale v Chromu.</translation>
 <translation id="723787869754590019">Uporaba Chroma za samodejno izpolnjevanje</translation>
 <translation id="7261678641327190792">Chrome ne more preveriti vaših gesel</translation>
 <translation id="7272091023280308138">Naslednjič odprite povezave neposredno v Chromu, ne da bi najprej kopirali URL-je.</translation>

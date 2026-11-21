@@ -83,6 +83,8 @@ Kontuan hartu beharrekoak:
 <translation id="2574249610672786438">Chrome erabiltzen duzun gailu guztietan zure fitxak eskura izateko, hasi saioa gailu guztietan</translation>
 <translation id="2576431527583832481">Chrome hobetu egin dugu! Bertsio berria duzu erabilgarri.</translation>
 <translation id="257708665678654955">Webgune honetara zatozen hurrengo aldian Google Chrome-k <ph name="LANGUAGE_NAME" /> hizkuntzan dauden orriak itzultzea eskaintzea nahi duzu?</translation>
+<translation id="2599258827968143948">Gogoko dituzun Google-ren aplikazioek eta zerbitzuek hobeto funtzionatzen dute Chrome-rekin</translation>
+<translation id="260980777626165320">Ireki kanpoko estekak Chrome-n modu lehenetsian.</translation>
 <translation id="2668242166988961773">Bilatu ahotsarekin Chrome-n.</translation>
 <translation id="2703746758996815929">Chrome-ri buruzko aholku lagungarriak jasotzeko, aktibatu jakinarazpenak iOS-en ezarpenetan.</translation>
 <translation id="2728851697704606655">Itzuli Google Lens-ekin</translation>
@@ -111,6 +113,7 @@ Laster-marka batzuk ezabatu arte, ezingo da beste laster-markarik gorde kontuan.
 <translation id="314782365035065913">Sartu Chrome-n bizkorrago orri nagusiko zintaren bidez</translation>
 <translation id="3167189358072330585">Kontua ez dabil Google Chrome-n. Jarri harremanetan domeinuaren administratzailearekin edo erabili ohiko Google-ko kontu bat saioa hasteko.</translation>
 <translation id="322254490661677575">Chrome-ko datuak Google-ko kontuan gordetzeko eta erabiltzeko, idatzi pasaesaldia.</translation>
+<translation id="3253082773078342494">Ireki estekak zuzenean Chrome-n.</translation>
 <translation id="3303503998967553377">Erabili Chrome-ren Ekintzak iOS-en</translation>
 <translation id="3348862487678490430">Gehitu irakurketa-zerrendako elementu bat Chrome-n</translation>
 <translation id="3350281376951945723">Ireki estekak bizkorrago Chrome arakatzaile lehenetsi gisa ezarrita</translation>
@@ -160,6 +163,7 @@ Laster-marka batzuk ezabatu arte, ezingo da beste laster-markarik gorde kontuan.
 <translation id="4693084815234024320">Chrome-ren ezkutuko moduan zaude</translation>
 <translation id="4713740144985377441">Itzuli Chrome-ra fitxategia kargatzeko</translation>
 <translation id="4724297637870447613">Erabili Chrome edonon</translation>
+<translation id="4733290155432110050">Joan zuzenean Chrome-ra</translation>
 <translation id="4738647308035481133">Google Chrome-ko orri bat</translation>
 <translation id="4742795653798179840">Ezabatu Chrome-ko datuak</translation>
 <translation id="4761869838909035636">Egin Chrome-ren segurtasun-egiaztapena</translation>
@@ -267,6 +271,7 @@ Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikuste
 <translation id="7038674195294813388">Ireki "Default Apps" (aplikazio lehenetsiak) ataleko ezarpenak iOS-en, sakatu "Browser App" (arakatzaile-aplikazioa) eta hautatu Chrome.</translation>
 <translation id="7056826488869329999">Chrome-ren segurtasun-egiaztapena irekitzen eta exekutatzen du.</translation>
 <translation id="7061455974939528301">Eduki sakatuta Chrome-ren ikonoa eta sakatu "Editatu orri nagusia"</translation>
+<translation id="7067302528015227615">Ezarri Chrome arakatzaile lehenetsi gisa, aplikazio batetik bestera azkarrago eta errazago igarotzeko.</translation>
 <translation id="7095110968493193530">Google-ren Pasahitz-kudeatzailea zerbitzuan (<ph name="EMAIL" /> kontuan)</translation>
 <translation id="7124339256045485976">Mantendu Chrome eguneratuta</translation>
 <translation id="7135936755418321901">Zure kokapena webguneekin partekatzeko, sakatu Ezarpenak eta eman kokapena erabiltzeko baimena Chrome-ri.</translation>
@@ -278,6 +283,7 @@ Chrome-ren erabilera hobetzeko datuak erabiltzen dituzten ezarpen gehiago ikuste
 <translation id="7200524487407690471">Egunero, Chrome-k segurtasun-egiaztapena exekutatzen du automatikoki, datuen isilpekotasunaren urratzeen, seguruak ez diren webguneen eta abarren aurka babestuta egon zaitezen. Segurtasun-egiaztapenari buruzko informazio gehiago lortzeko, joan ezarpenetara.</translation>
 <translation id="7214019116829172458">Ireki Chrome-ko ezkutuko moduko fitxa bat</translation>
 <translation id="722167379782941918">Chrome-k babes hobetua gomendatzen du</translation>
+<translation id="722921700949937243">Ziurtatu esteka guztiak Chrome-n irekitzen direla beti.</translation>
 <translation id="723787869754590019">Erabili Chrome betetze automatikorako</translation>
 <translation id="7261678641327190792">Chrome-k ezin ditu egiaztatu pasahitzak</translation>
 <translation id="7272091023280308138">Hurrengoan, ireki estekak zuzenean Chrome-n, URLak kopiatu gabe.</translation>

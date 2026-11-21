@@ -530,6 +530,7 @@
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Довідка<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Ціна відстежується</translation>
 <translation id="3037517125981011456">Показувати сповіщення для входу в Chrome</translation>
+<translation id="3038505649933066250">Фільтрувати за датою</translation>
 <translation id="3044436568790455247">Вікно "Виберіть пристрій" відкрито на всю висоту.</translation>
 <translation id="3057938290530993634">Натисніть і утримуйте, щоб закріпити вебсайти, які найчастіше відвідуєте, для швидкого доступу</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> закладка}one{<ph name="BOOKMARKS_COUNT_MANY" /> закладка}few{<ph name="BOOKMARKS_COUNT_MANY" /> закладки}many{<ph name="BOOKMARKS_COUNT_MANY" /> закладок}other{<ph name="BOOKMARKS_COUNT_MANY" /> закладки}}</translation>
@@ -576,6 +577,7 @@
 <translation id="3243650379537999343">Малювати</translation>
 <translation id="3244271242291266297">ММ</translation>
 <translation id="3245429137663807393">Якщо ви також будете надсилати звіти про використання Chrome, у них буде включено дані про відвідані URL-адреси</translation>
+<translation id="3248185426436836442">Очікування</translation>
 <translation id="3250563604907490871">Описи зображень з'являться знову, коли пристрій підключиться до мережі Wi-Fi</translation>
 <translation id="3254409185687681395">Додати цю сторінку до закладок</translation>
 <translation id="3265093782546847662">Усі сторінки в домені <ph name="DOMAIN" /></translation>
@@ -1124,7 +1126,6 @@
 <translation id="5370504953185181057"><ph name="TAB_TITLE" /> (закріплена анонімна вкладка, до якої надано доступ іншим користувачам)</translation>
 <translation id="5375374982898812658">Ви відразу втратите доступ до групи вкладок "<ph name="GROUP_NAME" />", і її буде видалено з усіх ваших пристроїв</translation>
 <translation id="537865165090710757">Зберегти й поділитися</translation>
-<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> хоче використовувати особисту інформацію з вашого цифрового гаманця. Продовжуйте, лише якщо довіряєте цьому сайту. На небезпечних сайтах вас можуть обманом змусити розкрити своє ім’я або номер офіційного посвідчення особи.</translation>
 <translation id="5395376160638294582">Подбайте про те, щоб завжди мати змогу використовувати дані Chrome в обліковому записі Google</translation>
 <translation id="5397794290049113714">Ви</translation>
 <translation id="539881862970320163">Запропоновано надійний пароль. Клавіатуру сховано.</translation>
@@ -1136,6 +1137,7 @@
 <translation id="5415871492522952905">Історія і вкладки зберігатимуться на всіх ваших пристроях, щоб ви могли продовжувати роботу з того місця, на якому зупинилися</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) відразу втратить доступ до групи вкладок "<ph name="GROUP_NAME" />"</translation>
 <translation id="5424588387303617268">Доступно <ph name="GIGABYTES" /> ГБ</translation>
+<translation id="5430861625274552852">Запитайте про контент сторінки або порівняйте дані на різних вкладках</translation>
 <translation id="543271133149552180"><ph name="TAB_TITLE" /> (вибрана анонімна вкладка в режимі "картинка в картинці")</translation>
 <translation id="5436928407363358055">Увімкніть синхронізацію вкладок і історії, щоб легко продовжувати роботу з місця, де зупинилися</translation>
 <translation id="5438292632479953702">Завантажити знову</translation>
@@ -1172,6 +1174,7 @@
 <translation id="557018954714092179">Створити папку</translation>
 <translation id="5578795271662203820">Шукати зображення в <ph name="SEARCH_ENGINE" /></translation>
 <translation id="558563010977877295">Відкривати певну сторінку чи набір сторінок</translation>
+<translation id="5594132774273121146">Користувач і обліковий запис</translation>
 <translation id="5596627076506792578">Інші опції</translation>
 <translation id="5599455543593328020">Режим анонімного перегляду</translation>
 <translation id="5601180634394228718">Щоб дізнатися про інші налаштування, які використовують дані для покращення роботи Chrome, перейдіть на <ph name="BEGIN_LINK" />сторінку сервісів Google<ph name="END_LINK" />.</translation>
@@ -1229,6 +1232,7 @@
 <translation id="583281660410589416">Невідомий</translation>
 <translation id="5833984609253377421">Поділитися посиланням</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5839059463554891940">Безпека й захист</translation>
 <translation id="5841444063256914865">Усе одно завантажити файл <ph name="FILE_NAME" />?</translation>
 <translation id="5847265694842662173">Вебпереглядач Chrome заблокував надсилання сповіщень із сайтів, які порушують правила або які ви останнім часом не відвідували</translation>
 <translation id="5848257610304005265">Відкрити файл PDF у додатку <ph name="APP_NAME" />?</translation>
@@ -1345,7 +1349,6 @@
 <translation id="6259107733340311168">Нижню панель із застереженням щодо корпоративних сигналів відкрито на всю висоту</translation>
 <translation id="6260260490042862943">Налаштування сайтів</translation>
 <translation id="6264376385120300461">Усе одно завантажити</translation>
-<translation id="6264485186158353794">Назад на безпечну сторінку</translation>
 <translation id="6267106249090587268">Сповіщення <ph name="SEPARATOR" /> Chrome скасував ці дозволи через спам або оманливий контент</translation>
 <translation id="6276708887952587684">Переглянути джерело сторінки</translation>
 <translation id="62768169905160414">Копіювати кадр відео</translation>
@@ -1464,7 +1467,6 @@
 <translation id="6659594942844771486">Вкладка</translation>
 <translation id="666731172850799929">Відкрити в програмі <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Сповіщати мене</translation>
-<translation id="6670742294143102726">Виберіть принаймні одну вкладку, яку потрібно додати в пошуковий запит</translation>
 <translation id="6671495933530132209">Копіювати зображення</translation>
 <translation id="6672697278890207089">Введіть парольну фразу</translation>
 <translation id="6675622031235530028">Щоб вийти, утримуйте Ctrl + Q</translation>
@@ -1730,6 +1732,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандартна вкладка}one{<ph name="TABS_COUNT_MANY" /> стандартна вкладка}few{<ph name="TABS_COUNT_MANY" /> стандартні вкладки}many{<ph name="TABS_COUNT_MANY" /> стандартних вкладок}other{<ph name="TABS_COUNT_MANY" /> стандартної вкладки}}</translation>
 <translation id="7603168929588204083">Недійсна дата</translation>
 <translation id="7605594153474022051">Синхронізація не працює</translation>
+<translation id="7607002721634913082">Призупинено</translation>
 <translation id="7608245556672190037">Екран "Увімкнути Знахідки в Chrome" відкрито на всю висоту</translation>
 <translation id="7612619742409846846">Ви ввійшли в обліковий запис Google як</translation>
 <translation id="7612989789287281429">Виконується вхід…</translation>
@@ -1838,6 +1841,7 @@
 <translation id="800155843932969169">Безпечно створюйте й зберігайте паролі та виявляйте проблеми з ними, а також швидше входьте в облікові записи, щоб захистити себе в Інтернеті</translation>
 <translation id="8004582292198964060">Переглядач</translation>
 <translation id="8006630792898017994">Пробіл або Tab</translation>
+<translation id="802154636333426148">Не вдалося завантажити</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" /> (одна з вибраних анонімних вкладок, яку закріплено й до якої надано доступ іншим користувачам)</translation>
 <translation id="8025972204417227828">Додати</translation>
 <translation id="8027863900915310177">Виберіть, куди завантажити файл</translation>
@@ -1845,6 +1849,7 @@
 <translation id="8032569120109842252">У підписках</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" /> (вибрана анонімна вкладка, на якій вимкнено звук)</translation>
 <translation id="8036587585440959897">Деякі розширення можуть додавати пошукові системи в Chrome.</translation>
+<translation id="803703704549420287">Очистити фільтри</translation>
 <translation id="8037750541064988519">Залишилося <ph name="DAYS" /> дн.</translation>
 <translation id="8037801708772278989">Щойно перевірено</translation>
 <translation id="804335162455518893">Карту SD не знайдено</translation>

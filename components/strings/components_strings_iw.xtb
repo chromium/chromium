@@ -279,7 +279,7 @@
 <translation id="1449251255954293933">‏שמירת מספר ה-Redress ב-Google Wallet</translation>
 <translation id="1455413310270022028">כלי מחיקה</translation>
 <translation id="1456749217800922313">קוד אימות</translation>
-<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{אין ביקורות להצגה}=1{הצגת ביקורת אחת}one{הצגת כל # הביקורות}two{הצגת כל # הביקורות}other{הצגת כל # הביקורות}}</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{אין ביקורות}=1{צפייה בביקורת אחת}one{צפייה בכל # הביקורות}two{צפייה בכל # הביקורות}other{צפייה בכל # הביקורות}}</translation>
 <translation id="1460317464907341501">לאמת את האימייל הזה באופן אוטומטי?</translation>
 <translation id="1461041542809785877">ביצועים</translation>
 <translation id="1462245070427461050">JIS B9</translation>
@@ -1679,7 +1679,6 @@
 <translation id="3800436529451849929">מהאתר <ph name="SITE" /></translation>
 <translation id="3801297763951514916">ביקרת לעיתים קרובות</translation>
 <translation id="380329542618494757">שם</translation>
-<translation id="3803481123869276674">‏כשמבצעים רכישות ב-Chrome, הארנק האלקטרוני יופיע כאפשרות</translation>
 <translation id="3803801106042434208">מנועי החיפוש האלה פופולריים באזור שלך</translation>
 <translation id="3804112825000113857">להגדרות המילוי האוטומטי</translation>
 <translation id="380666903981445943">‏שמירת אמצעי תשלום בחשבון Google כדי למלא את הפרטים שלו אוטומטית ברכישות שמבוצעות ב-Chrome</translation>
@@ -2162,6 +2161,7 @@
 <translation id="4612631413844865947">הייתה שגיאה בעיבוד ההזמנה שלך באתר <ph name="MERCHANT_ORIGIN" /> דרך <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="4612904677925722054">יכול להיות שהאתר הזה מכיל תוכן למבוגרים בלבד. כדי לבקר באתר הזה, עליך לקבל אישור מהורה או מאפוטרופוס.</translation>
 <translation id="4613873770449493819">‏כתובת ה-URL חייבת להפנות לדומיין של <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
+<translation id="4615154194248230658">נראה שהתבנית הזו לא תואמת לדומיין תקין של כתובת אימייל. יכול להיות שהמשתמשים לא יוכלו להיכנס לחשבון או שפרופילים קיימים יוסרו.</translation>
 <translation id="4619564267100705184">אימות הזהות שלך</translation>
 <translation id="4619669610757527494">‏שמירת פרטי רישיון הנהיגה ב-Google Wallet</translation>
 <translation id="4622292761762557753">אעביר בכל זאת</translation>
@@ -2684,7 +2684,6 @@ Del</translation>
 <translation id="5447235695608032700">מתן הרשאה לאתר <ph name="SITE" /> להשתמש במידע עליך שנשמר בו</translation>
 <translation id="5447973833955560753">סיסמה לשחזור</translation>
 <translation id="5452270690849572955">לא ניתן למצוא את הדף של <ph name="HOST_NAME" /></translation>
-<translation id="5452923259299906094">‏תשלום באמצעות ארנק אלקטרוני ו-Pix</translation>
 <translation id="5455374756549232013">חותמת הזמן של המדיניות שגויה</translation>
 <translation id="5456428544444655325">אל תציג לעולם</translation>
 <translation id="5457082343331641453">הוספה טקסט לחיפוש</translation>
@@ -3901,7 +3900,6 @@ Del</translation>
 <translation id="7489919936111034362">‏האחסון ב-Google Drive מלא</translation>
 <translation id="7490622939531327327">הבנה חכמה יותר של טפסים</translation>
 <translation id="7495528107193238112">התוכן הזה חסום. יש לפנות אל הבעלים של האתר כדי לפתור את הבעיה.</translation>
-<translation id="7499188644237027195">‏כשמבצעים רכישות ב-Chrome, הארנק האלקטרוני ו-Pix יופיעו כאפשרויות</translation>
 <translation id="7499684925421947861">לאפשר ל-<ph name="ACTOR_NAME" /> להתחבר אל <ph name="DOMAIN" /> בשבילך?</translation>
 <translation id="7501663406926337752">האתר שבכתובת הזו סומן על ידי הארגון שלך</translation>
 <translation id="7502044688973049724">ניהול המידע</translation>
@@ -4026,7 +4024,6 @@ Del</translation>
 <translation id="7676840398262504532">הארגון שלך עוקב אחרי פעולות ההעתקה</translation>
 <translation id="767806704757698045">התכונה פועלת רק באתרים נתמכים</translation>
 <translation id="7678730592635586336">צילום מחדש של הסרטון</translation>
-<translation id="7679287273775285018">תשלום באמצעות הארנק האלקטרוני</translation>
 <translation id="7679367271685653708">‏הצגה וניהול של היסטוריית הגלישה בהגדרות Chrome</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, בתוקף עד <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">משלוח</translation>
@@ -4101,7 +4098,6 @@ Del</translation>
 <translation id="7791543448312431591">הוספה</translation>
 <translation id="7798389633136518089">המדיניות לא הובאה בחשבון מפני שלא הוגדרה על-ידי מקור בענן.</translation>
 <translation id="7800304661137206267">החיבור מוצפן באמצעות <ph name="CIPHER" /> עם <ph name="MAC" /> לאימות הודעות ועם <ph name="KX" /> בתור מנגנון להחלפת מפתחות.</translation>
-<translation id="780228007282527248">כדי לשפר את החיפוש, אפשר להוסיף כרטיסייה או תמונה</translation>
 <translation id="7802523362929240268">האתר חוקי</translation>
 <translation id="7802989406998618639">יש להזין את קוד האבטחה בן <ph name="NUMBER_OF_DIGITS" /> הספרות שמופיע על <ph name="SIDE_OF_CARD" /> כדי שהבנק יוכל לאמת את זהותך</translation>
 <translation id="780301667611848630">לא תודה</translation>
@@ -4167,6 +4163,7 @@ Del</translation>
 <translation id="7916162853251942238">Flexo Base</translation>
 <translation id="7916802424606434188">פתיחת חלון <ph name="WINDOW_INDEX" />‏ (<ph name="NUM_TABS" /> כרטיסיות) בחלון חדש</translation>
 <translation id="791698251820376781">הארגון שלך לא מאפשר לך להיכנס</translation>
+<translation id="7918936720558783139">אפשר לממש את המבצע השמור באמצעות מילוי אוטומטי בקופה. <ph name="BEGIN_LINK" />ניהול מבצעים<ph name="END_LINK" /></translation>
 <translation id="7927046851848613453">‏אפשר לשמור כרטיסים, אירועים ומידע אחר מדפים שצופים בהם – ולא רק מטפסים שממלאים. כך ניתן לגשת במהירות לכרטיסים, כמו כרטיסים לאירועים וכרטיסי מועדון לקוחות. הפרטים השמורים יכולים להופיע במכשירים שלך ובמוצרים שונים של Google.</translation>
 <translation id="7930282586031445870">‏מסך התנאים וההגבלות של "קונים עכשיו, משלמים אחר כך (BNPL)" סגור.</translation>
 <translation id="7932035970207573919">כתובת בעבודה, <ph name="ADDRESS" /></translation>
@@ -4236,6 +4233,7 @@ Del</translation>
 <translation id="8029829038322015001">אדום 1</translation>
 <translation id="8032546467100845887">Transparency</translation>
 <translation id="8035152190676905274">עט</translation>
+<translation id="803703704549420287">מחיקת המסננים</translation>
 <translation id="8037117624646282037">מי השתמש במכשיר לאחרונה</translation>
 <translation id="803771048473350947">קובץ</translation>
 <translation id="8038182528865038593">אדום 2</translation>

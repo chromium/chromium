@@ -83,6 +83,8 @@
 <translation id="2574249610672786438">ลงชื่อเข้าใช้ในอุปกรณ์ทุกเครื่องเพื่อดูแท็บที่เปิดไว้จากอุปกรณ์ที่คุณใช้ Chrome</translation>
 <translation id="2576431527583832481">Chrome พัฒนาใหม่! มีรุ่นใหม่ให้ใช้งานแล้ว</translation>
 <translation id="257708665678654955">คุณต้องการให้ Google Chrome เสนอการแปลหน้าภาษา<ph name="LANGUAGE_NAME" />จากเว็บไซต์นี้ในครั้งถัดไปไหม</translation>
+<translation id="2599258827968143948">แอป Google โปรดของคุณจะทำงานได้ดีขึ้นเมื่อใช้ Chrome</translation>
+<translation id="260980777626165320">เปิดลิงก์ภายนอกใน Chrome โดยค่าเริ่มต้น</translation>
 <translation id="2668242166988961773">ค้นหาด้วยเสียงใน Chrome</translation>
 <translation id="2703746758996815929">หากต้องการรับเคล็ดลับที่มีประโยชน์เกี่ยวกับ Chrome ให้เปิดการแจ้งเตือนในการตั้งค่า iOS</translation>
 <translation id="2728851697704606655">แปลด้วย Google Lens</translation>
@@ -111,6 +113,7 @@
 <translation id="314782365035065913">เข้าถึง Chrome ได้เร็วขึ้นจากแถบแอปในหน้าจอหลัก</translation>
 <translation id="3167189358072330585">บัญชีของคุณใช้งานไม่ได้บน Google Chrome โปรดติดต่อผู้ดูแลระบบโดเมนหรือใช้บัญชี Google ปกติเพื่อลงชื่อเข้าใช้</translation>
 <translation id="322254490661677575">โปรดป้อนพาสเฟรสเพื่อใช้และบันทึกข้อมูล Chrome ในบัญชี Google</translation>
+<translation id="3253082773078342494">เปิดลิงก์ใน Chrome โดยตรง</translation>
 <translation id="3303503998967553377">ใช้การดำเนินการใน Chrome บน iOS</translation>
 <translation id="3348862487678490430">เพิ่มรายการเรื่องรออ่านใน Chrome</translation>
 <translation id="3350281376951945723">เปิดลิงก์ได้เร็วขึ้นเมื่อตั้ง Chrome เป็นเบราว์เซอร์เริ่มต้น</translation>
@@ -160,6 +163,7 @@
 <translation id="4693084815234024320">คุณอยู่ในโหมดไม่ระบุตัวตนของ Chrome</translation>
 <translation id="4713740144985377441">กลับไปที่ Chrome เพื่ออัปโหลดไฟล์</translation>
 <translation id="4724297637870447613">ใช้ Chrome ได้ทุกที่</translation>
+<translation id="4733290155432110050">ข้ามไปที่ Chrome เลย</translation>
 <translation id="4738647308035481133">หน้า Google Chrome</translation>
 <translation id="4742795653798179840">ลบข้อมูลใน Chrome แล้ว</translation>
 <translation id="4761869838909035636">เรียกใช้การตรวจสอบความปลอดภัยของ Chrome</translation>
@@ -267,6 +271,7 @@
 <translation id="7038674195294813388">เปิดการตั้งค่าแอปเริ่มต้นใน iOS จากนั้นแตะ "แอปเบราว์เซอร์" แล้วเลือก Chrome</translation>
 <translation id="7056826488869329999">เปิดและเรียกใช้การตรวจสอบความปลอดภัยใน Chrome</translation>
 <translation id="7061455974939528301">กดไอคอน Chrome ค้างไว้แล้วคลิก "แก้ไขหน้าจอหลัก"</translation>
+<translation id="7067302528015227615">ตั้ง Chrome เป็นเบราว์เซอร์เริ่มต้นเพื่อให้การเปลี่ยนแอปเร็วและง่ายขึ้น</translation>
 <translation id="7095110968493193530">ที่เครื่องมือจัดการรหัสผ่านบน Google สำหรับ <ph name="EMAIL" /></translation>
 <translation id="7124339256045485976">อัปเดต Chrome อยู่เสมอ</translation>
 <translation id="7135936755418321901">หากต้องการแชร์ตำแหน่งกับเว็บไซต์ ให้แตะ "การตั้งค่า" เพื่ออนุญาตให้ Chrome ใช้ตำแหน่งของคุณ</translation>
@@ -278,6 +283,7 @@
 <translation id="7200524487407690471">Chrome เรียกใช้การตรวจสอบความปลอดภัยโดยอัตโนมัติทุกวันเพื่อช่วยให้คุณปลอดภัยจากการละเมิดข้อมูล เว็บไซต์ที่เป็นอันตราย และอื่นๆ ดูข้อมูลเพิ่มเติมเกี่ยวกับการตรวจสอบความปลอดภัยได้ในการตั้งค่า</translation>
 <translation id="7214019116829172458">เปิดแท็บที่ไม่ระบุตัวตนใน Chrome</translation>
 <translation id="722167379782941918">Chrome ขอแนะนำการปกป้องที่ดียิ่งขึ้น</translation>
+<translation id="722921700949937243">ตรวจสอบว่าลิงก์ทั้งหมดเปิดใน Chrome เสมอ</translation>
 <translation id="723787869754590019">ใช้ Chrome สำหรับการป้อนข้อความอัตโนมัติ</translation>
 <translation id="7261678641327190792">Chrome ตรวจสอบรหัสผ่านของคุณไม่ได้</translation>
 <translation id="7272091023280308138">เปิดลิงก์ใน Chrome โดยตรงในครั้งถัดไปโดยไม่ต้องคัดลอก URL ก่อน</translation>

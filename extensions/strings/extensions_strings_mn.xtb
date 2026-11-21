@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Загварыг идэвхжүүлэх</translation>
+<translation id="1085064499066015002">Бүх сайт дээр үргэлж</translation>
 <translation id="1135328998467923690">Багц хүчин төгөлдөр бус байна: ' <ph name="ERROR_CODE" /> . '</translation>
 <translation id="1140871961407805696">Хүрээлэн буй орчин руу харсан</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> Chromium-н ажиллах зарчмыг өөрчилж болох өргөтгөл нэмсэн.
@@ -79,6 +80,7 @@
 <translation id="4660476621274971848">"<ph name="EXPECTED_VERSION" />" хувилбарыг шаардсан хэдий ч "<ph name="NEW_ID" />" хувилбар байсан</translation>
 <translation id="471800408830181311">Хувийн түлхүүрийг тооцоолох ажиллагаа бүтэлгүйтэв.</translation>
 <translation id="4811956658694082538">Ашиглалтын явцад гэмтэл гарсан тул багцыг суулгаж чадсангүй. Chrome-ийг дахин эхлүүлээд, оролдоод үзээрэй.</translation>
+<translation id="4883436287898674711">Бүх <ph name="WEBSITE_1" /> сайтууд</translation>
 <translation id="4988792151665380515">Нийтийн түлхүүрийг экспортлох ажиллагаа амжилтгүй боллоо</translation>
 <translation id="501057610015570208">'Kiosk_only' тодорхойлогч атрибуттай аппыг ChromeOS Flex-н kiosk горимд суулгах ёстой</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>

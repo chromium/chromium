@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Téma engedélyezése</translation>
+<translation id="1085064499066015002">Mindig, minden webhelyen</translation>
 <translation id="1135328998467923690">A következő csomag érvénytelen: "<ph name="ERROR_CODE" />".</translation>
 <translation id="1140871961407805696">Hátlapi</translation>
 <translation id="1171831736360285680">A(z) <ph name="PARTNER_NAME" /> olyan bővítményt adott hozzá, amely módosíthatja a Chromium működését.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">A várt verzió „<ph name="EXPECTED_VERSION" />”, de a kapott verzió „<ph name="NEW_ID" />”</translation>
 <translation id="471800408830181311">Nem sikerült a privát kulcs kiírása.</translation>
 <translation id="4811956658694082538">Nem lehetett telepíteni a csomagot, mert egy segédprogram-folyamat összeomlott. Indítsa újra a Chrome-ot, majd próbálja újra.</translation>
+<translation id="4883436287898674711">Minden <ph name="WEBSITE_1" /> webhelyen</translation>
 <translation id="4988792151665380515">Nem sikerült a nyilvános kulcs exportálása.</translation>
 <translation id="501057610015570208">A „kiosk_only” jegyzékattribútummal rendelkező alkalmazást kioszk módban kell telepíteni a ChromeOS Flex rendszeren.</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>

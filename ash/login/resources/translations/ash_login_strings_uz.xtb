@@ -10,6 +10,7 @@
 <translation id="1097658378307015415"><ph name="NETWORK_ID" /> tarmog‘ini faollashtirish uchun avval mehmon sifatida kiring.</translation>
 <translation id="1111932478203988717">Bu PIN kod bilan farzandingizni qurilmadagi hisobiga kirishi mumkin</translation>
 <translation id="1122587596907914265">Unikal uslubdagi fon rasmlari</translation>
+<translation id="1122913801042512795">Hisobingiz haqidagi maʼlumotlar eskirgan. Tizimdan chiqib, qaytadan kiring.</translation>
 <translation id="1131201598497838573">Farzandingiz PIN kodi yangilandi</translation>
 <translation id="1147322039136785890">Qurilmani farzandingizga (<ph name="SUPERVISED_USER_NAME" />) bering</translation>
 <translation id="1148669835763563782">Kengaytirilgan himoya va eng yangi Chomebook funksiyalaridan foydalanishingiz uchun dasturning oxirgi versiyasi olinmoqda Bu yangilanishda Chromebookdan foydalanishni oson boshlash uchun sozlash jarayoni yaxshilandi.</translation>
@@ -26,6 +27,7 @@
 <translation id="1256588359404100567">Parametr oldingi qurilmadan sinxronlangan.</translation>
 <translation id="1272978324304772054">Bu hisob qurilma ro‘yxatdan o‘tkazilgan domenga tegishli emas. Boshqa domen ro‘yxatidan o‘tkazish uchun qurilmani zavod sozlamalariga qaytaring.</translation>
 <translation id="1293556467332435079">Fayllar</translation>
+<translation id="1302523850133262269">Chrome so‘nggi tizim yangilanishlarini o‘rnatguncha kutib turing.</translation>
 <translation id="1307559529304613120">Tizim bu qurilmada API uchun ruxsat tokenini saqlay olmadi.</translation>
 <translation id="1335929031622236846">Qurilmangizni qayd qiling</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Nosozliklarni aniqlash funksiyalari<ph name="END_H3" />
@@ -49,6 +51,7 @@
 <translation id="1347625331607114917">Android telefoningizda kodni tasdiqlang</translation>
 <translation id="1347975661240122359">Yangilanish batayeraning <ph name="BATTERY_LEVEL" />% quvvatida boshlanadi.</translation>
 <translation id="1353275871123211385">Ilovadan foydalanishga ruxsat va ekran vaqtini cheklash kabi ota-ona nazorati funksiyalari uchun farzand Google hisobi ota-ona boshqaruvida boʻlishi zarur. Google Classroom kabi vositalardan foydalanish uchun maktab hisobini keyinroq kiritish mumkin.</translation>
+<translation id="1363996462118479832">Hisobga kirishdagi xatolik sababli ChromeOS maʼlumotlarni sinxronlay olmadi.</translation>
 <translation id="1375557162880614858">ChromeOS Flex tizimidagi ichiga oʻrnatilgan skrin rider – ChromeVox faollashtirilsinmi?</translation>
 <translation id="1377600615067678409">Tashlab ketish</translation>
 <translation id="1399261165075500043">Google Play xizmat shartlari yuklanmadi</translation>
@@ -73,6 +76,7 @@
 <translation id="1642494467033190216">Boshqa nosozliklarni ko‘rib chiqish funksiyalarini yoqishdan avval tub fayllar tizimi himoyasini o‘chirib qo‘ying va qurilmani qayta ishga tushiring.</translation>
 <translation id="1646045728251578877">Dasturiy yangilanishlar chiqdi</translation>
 <translation id="1650801028905250434">My Drive jildidagi fayllar Chromebook qurilmangizga avtomatik sinxronlanadi va ularni internetsiz ham ochish mumkin. Buni istalgan vaqtda Sozlamalar &gt; Fayllar orqali oʻzgartirish mumkin.</translation>
+<translation id="16620462294541761">Afsuski, parolni tekshirib bo‘lmadi. Qayta urinib ko‘ring.</translation>
 <translation id="1668435968811469751">Mustaqil qayd qilish</translation>
 <translation id="1678919064276516737">Siz kiritgan email va PIN kod mos kelmadi</translation>
 <translation id="1692115862433274081">Boshqa hisobdan foydalanish</translation>
@@ -94,6 +98,7 @@
 <translation id="1868617395637139709">Android ilova va xizmatlari uchun geolokatsiyadan foydalanish.</translation>
 <translation id="1877377730633446520">Bu taxminan <ph name="REQUIRED_SPACE" /> joy oladi. Sizda hozir <ph name="FREE_SPACE" /> boʻsh.</translation>
 <translation id="1878155070920054810">Chromebook oxirigacha yangilanmasdan turib uning quvvati tugab qolishi mumkin. Uzilishlarning oldini olish uchun uning xatosiz quvvatlanayotganini tekshiring.</translation>
+<translation id="1887442540531652736">Kirishda xatolik yuz berdi</translation>
 <translation id="189035593835762169">Foydalanish shartlari</translation>
 <translation id="189358972401248634">Boshqa tillar</translation>
 <translation id="1915734383465415025">Doʻkon raqami</translation>
@@ -122,6 +127,7 @@
 <translation id="2210462644007531147">Oʻrnatish yakunlanmadi</translation>
 <translation id="221872881068107022">Teskari aylantirish</translation>
 <translation id="2219081237089444028"><ph name="DEVICE_TYPE" /> qurilmasiga kirishni osonlashtirish uchun parol oʻrnating</translation>
+<translation id="2220529011494928058">Muammo haqida xabar yuborish</translation>
 <translation id="222115440608612541">Mavzularni quyosh chiqishi va botishida almashtirish</translation>
 <translation id="2229161054156947610">1 soatdan ko‘p vaqt qoldi</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> qurilmangiz eng oxirgi funksiyalar va xavfsizlikka oid tuzatishlarni olish uchun fonda avtomatik yangilanadi. Yangilanish parametrlarini Sozlamalar orqali tekshirish mumkin.</translation>
@@ -132,6 +138,7 @@
 <translation id="2328137272841210255">PIN kodni tiklang</translation>
 <translation id="2342180549977909852">Farzandingiz bu qurilma qulfini parol oʻrniga raqamli kod (PIN) bilan ochishi mumkin. PIN kodni Sozlamalar orqali keyinroq sozlash mumkin.</translation>
 <translation id="2359808026110333948">Davom etish</translation>
+<translation id="2384373936468275798">ChromiumOS maʼlumotlaringizni sinxronlay olmadi, chunki hisobingiz haqidagi ma’lumotlar eskirgan.</translation>
 <translation id="2387052489799050037">Boshiga</translation>
 <translation id="2395616325548404795"><ph name="DEVICE_TYPE" /> qurilmangiz korporativ domen ro‘yxatidan o‘tkazildi, lekin obyekt va uning joylashuvi ma’lumotlarini uzatishda xatolik yuz berdi. Bu ma’lumotni administrator paneli orqali o‘zingiz kiriting.</translation>
 <translation id="2408955596600435184">PIN kodni kiriting</translation>
@@ -158,6 +165,7 @@
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Google joylashuvni aniqlash xizmati bu qurilmaning joylashuvini bilish uchun Wi-Fi, mobil tarmoqlar va sensorlar kabi manbalardan foydalanadi.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Bu qurilmada istalgan vaqtda Andorid joylashuvini ulashishni Sozlamalar &gt; Ilovalar &gt; Google Play Market &gt; Android sozlamalarini boshqarish &gt; Xavfsizlik va joylashuv &gt; Joylashuv menyusi orqali oʻzgartirishingiz mumkin. Shuningdek, ayni shu menyu orqali joylashuv axboroti uchun Wi-Fi va mobil tarmoqlardan foydalanish, sensorlarni ham faolsizlantirish mumkin.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2663302507110284145">Til</translation>
+<translation id="2674238339205910678">Hisobga kirish maʼlumotlaringiz eskirgani sababli ChromeOS Flex tizimi Chrome maʼlumotlarini Google hisobingizga saqlay olmadi</translation>
 <translation id="2687407218262674387">Google xizmat shartlari</translation>
 <translation id="2688196195245426394">Qurilmani server ro‘yxatidan o‘tkazishda xatolik: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Bu majmuadagi qurilma. Kiosk va Signage Upgrade bilan roʻyxatdan oʻtib boʻlmaydi.</translation>
@@ -252,6 +260,7 @@
 <translation id="3740945083753997630">Rasm va matn hajmini kichraytirish</translation>
 <translation id="376841534249795524"><ph name="DEVICE_TYPE" /> qanday maqsadlarda ishlatiladi?</translation>
 <translation id="3772046291955677288">Men <ph name="BEGIN_LINK1" />Google xizmat shartlari<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome va ChromeOS qoʻshimcha xizmat shartlari<ph name="END_LINK2" /> bilan tanishdim va ularga roziman.</translation>
+<translation id="3785324443014631273">Hisobga kirishdagi xatolik sababli ChromeOS Flex maʼlumotlarni sinxronlay olmadi.</translation>
 <translation id="3789841737615482174">O‘rnatish</translation>
 <translation id="3800828618615365228">Google Chrome va ChromeOS qoʻshimcha shartlari</translation>
 <translation id="3828953470056652895"><ph name="BEGIN_LINK1" />Google xizmat shartlari<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome va ChromeOS qoʻshimcha xizmat shartlari<ph name="END_LINK2" />, <ph name="BEGIN_LINK3" />Play xizmat shartlari<ph name="END_LINK3" />bilan tanishdim va roziman.</translation>
@@ -332,6 +341,7 @@
         <ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Yordam uchun quyidagi sahifaga tashrif buyuring: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Bu <ph name="DEVICE_TYPE" /> qurilmasiga kimni qoʻshmoqchisiz?</translation>
+<translation id="4543778593405494224">Sertifikatlar menejeri</translation>
 <translation id="4566170377336116390">Qayd qilinganidan keyin eski rejimga qaytarish uchun qurilmani zavod sozlamalariga qaytarish (powerwash) lozim.</translation>
 <translation id="4567512141633030272">Boshqa hisobdan kirish yoqilsinmi?</translation>
 <translation id="4567533462991917415">Sozlashdan keyin istalgan vaqtda yana odam kiritish mumkin. Har bir odamning hisobi alohida moslashtiriladi va ularning maʼlumotlari xavfsiz saqlanadi.</translation>
@@ -349,6 +359,7 @@
 <translation id="4814327014588285482">Tashlab ketish va keyinroq eslatish</translation>
 <translation id="4830502475412647084">OS yangilanishi o‘rnatilmoqda</translation>
 <translation id="4837926214103741331">Ushbu qurilmaga ruxsatingiz yo‘q. Qurilma egasi bilan bog‘laning.</translation>
+<translation id="4842397268809523050">Domeningizda Sinxronlash xizmati mavjud emasligi sababli ChromeOS Flex maʼlumotlaringizni sinxronlay olmadi.</translation>
 <translation id="4844333629810439236">Boshqa klaviaturalar</translation>
 <translation id="484462545196658690">Avto</translation>
 <translation id="4864369630010738180">Kirilmoqda…</translation>
@@ -360,6 +371,7 @@
 <translation id="4944310289250773232">Bu autentifikatsiya xizmati <ph name="SAML_DOMAIN" /> domenida joylashgan.</translation>
 <translation id="4955710816792587366">PIN kod tanlang</translation>
 <translation id="4965808351167763748">Hangouts Meet ishlashi uchun bu qurilmani sozlashni xohlaysizmi?</translation>
+<translation id="4969674060580488087">Hisobga kirish maʼlumotlaringiz eskirgani sababli ChromeOS Flex maʼlumotlaringizni sinxronlay olmadi.</translation>
 <translation id="4987944280765486504">Yuklab olinganidan keyin Chromebook bir marta qayta ishga tushadi va sozlashda davom etish mumkin.</translation>
 <translation id="5029287942302939687">Parol sozlandi</translation>
 <translation id="503155457707535043">Ilovalar yuklab olinishi</translation>
@@ -401,6 +413,8 @@
 <translation id="528208740344463258">Android ilovalarni yuklab olish va ishlatish uchun avval kerakli yangilanish o‘rnatilishi lozim. <ph name="DEVICE_TYPE" /> qurilmasi yangilanayotganda undan foydalana olmaysiz. O‘rnatish tugagandan keyin <ph name="DEVICE_TYPE" /> qurilmasi qayta ishga tushadi.</translation>
 <translation id="5283677936944177147">Qurilma modeli yoki seriya raqamini aniqlab bo‘lmadi.</translation>
 <translation id="5333896723098573627">Ilovalarni olib tashlash uchun Sozlamalar &gt; Ilovalar &gt; Google Play Market &gt; Android sozlamalari boshqaruvi &gt; Ilovalar yoki Ilovalar menejeri menyusiga kiring. Kerakli ilovani tanlab (ilovani topish uchun ekranni oʻng yoki chapga suring), “Olib tashlash” yoki “Faolsizlantirish” parametrini bosing.</translation>
+<translation id="5334309298019785904">Domeningizda Sinxronlash xizmati mavjud emasligi sababli ChromeOS maʼlumotlaringizni sinxronlay olmadi.</translation>
+<translation id="535243042947607642">Hisobga kirish maʼlumotlar eskirgani sababli ChromiumOS tizimi Chromium maʼlumotlarini Google hisobingizga saqlay olmadi</translation>
 <translation id="5355501370336370394">Korporativ qurilmani qayd qilish</translation>
 <translation id="5372529912055771682">Taqdim etilgan ro‘yxatdan o‘tish rejimi joriy operatsion tizim versiyasida qo‘llab-quvvatlanmaydi. OT versiyasini yangilab, qayta urinib ko‘ring.</translation>
 <translation id="5397378439569041789">Kiosk yoki reklama qurilmalarini qayd qilish</translation>
@@ -412,6 +426,7 @@
 <translation id="5448293924669608770">Kirishda xatolik yuz berdi</translation>
 <translation id="5453829744223920473">Farzandingiz oʻzining barcha maktab ilovalari, bukmarklari va resurslaridan xuddi sinfdagi kabi foydalanishi mumkin. Maktab asosiy qoidalarni belgilaydi.</translation>
 <translation id="5473099001878321374">Davom etish orqali siz bu qurilma Google, aloqa operatoringiz va qurilma ishlab chiqaruvchisidan dasturiy yangilanish va ilovalarni mobil internet orqali ham avtomatik ravishda yuklab olishi va oʻrnatishiga rozilik bildirgan hisoblanasiz. Ayrim ilovalar ichki xaridlarni ham taklif etishi mumkin.</translation>
+<translation id="549669000822060376">Chromium tizimning oxirgi yangilanishlarini o‘rnatib olgunicha kutib turing.</translation>
 <translation id="5502915260472117187">Bola</translation>
 <translation id="5511823366942919280">Haqiqatan ham bu qurilmani "Shark" sifatida sozlamoqchimisiz?</translation>
 <translation id="5513807280330619196">Kalkulyator</translation>
@@ -515,6 +530,7 @@
 <translation id="6495266441917713704">Wi-Fi tarmoq uzatilmadi</translation>
 <translation id="6515620015470298987">Qurilma konfiguratsiyasini tekshirish muammosi tufayli hisobga kirilmadi. <ph name="DEVICE_TYPE" /> qurilmangizda powerwash bajarib, qaytadan urining.</translation>
 <translation id="6519689855001245063">Moslik tekshirilmoqda</translation>
+<translation id="6520608191273161151">Hisobga kirishdagi xatolik sababli ChromeOS Flex tizimi Chrome maʼlumotlarini Google hisobingizga saqlay olmadi</translation>
 <translation id="6532527800157340614">Hisobga kirishda xatolik yuz berdi: ruxsat tokeni berilmadi. Tarmoq sozlamalarini tekshiring va qaytadan urining.</translation>
 <translation id="653920215766444089">Ishora qurilmasi qidirilmoqda</translation>
 <translation id="65513682072153627">Agar siz ushbu belgini koʻrsangiz, sozlama yoki funksiya administrator tomonidan boshqarilmoqda.</translation>
@@ -526,8 +542,10 @@
 <translation id="6675665718701918026">Qo‘shimcha qurilma ulandi</translation>
 <translation id="667752334740867460">Wi-Fi axboroti qabul qilinmoqda...</translation>
 <translation id="6680442031740878064">Bo‘sh: <ph name="AVAILABLE_SPACE" /></translation>
+<translation id="668175097507315160">Hisobga kirishdagi xatolik sababli ChromiumOS maʼlumotlarni sinxronlay olmadi.</translation>
 <translation id="6684827949542560880">Eng oxirgi yangilanish yuklab olinmoqda</translation>
 <translation id="6722744767592605627"><ph name="EMAIL" /> tiklanishi mumkin, lekin kompyuterdagi maʼlumotlar oʻchiriladi</translation>
+<translation id="6735387454586646204">ChromeOS Flex tizimi</translation>
 <translation id="6748980958975836188">Men <ph name="BEGIN_LINK1" />Google xizmat shartlari<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome va ChromeOS qoʻshimcha xizmat shartlari<ph name="END_LINK2" /> bilan tanishdim va roziman.</translation>
 <translation id="6749473226660745022">Suratlar</translation>
 <translation id="6754918760968695779">Tezkor joylash</translation>
@@ -552,6 +570,7 @@
 <translation id="6918733588290914545">Android telefoni orqali tezkor sozlash</translation>
 <translation id="6920473853105515518"><ph name="DEVICE_TYPE" /> internetga ulanganini tekshiring va qayta urining. Yoki boshqa qurilma orqali play.google/play-terms sahifasini oching.</translation>
 <translation id="6929126689972602640">Ota-ona nazoratida maktab hisoblaridan foydalanish mumkin emas. Google Classroom va boshqa saytlarga uy vazifalarini bajarish uchun kirish maqsadida maktab hisobini kiritmoqchi boʻlsangiz, farzandingizning shaxsiy hisobi bilan kiring. Maktab hisobini keyinroq sozlash orqali kiritish mumkin.</translation>
+<translation id="6933858244219479645">ChromeOS tizimi</translation>
 <translation id="6935031746833428401">Qurilmalar boshqaruvi haqida batafsil</translation>
 <translation id="6950351336108213154">Tashqi qurilmalar uchun DT yangilanmoqda</translation>
 <translation id="6955698182324067397">Siz ChromeOS tuzatish xususiyatlarini ishga tushirmoqdasiz, ular sshd xizmatini o‘rnatib, USB disklardan yuklanishni xususiyatini yoqadi.</translation>
@@ -645,6 +664,7 @@
 <translation id="7870730066603611552">Sinxronizatsiya sozlamalari seans boshlangandan keyin tekshirilsin</translation>
 <translation id="7883792253546618164">Istalgan vaqt obunani bekor qilish mumkin.</translation>
 <translation id="7887864092952184874">Bluetooth sichqonchasi ulandi</translation>
+<translation id="7905880575591690197">Hisobga kirishdagi xatolik sababli ChromeOS tizimi Chrome maʼlumotlarini Google hisobingizga saqlay olmadi</translation>
 <translation id="7906440585529721295">Qurilmadagi axborotlar oʻchib ketadi</translation>
 <translation id="7910725946105920830">Shaxsiy Google hisobingizdan foydalaning</translation>
 <translation id="7918257978052780342">Ro‘yhatdan o‘tish</translation>
@@ -671,6 +691,7 @@
 <translation id="8098616321286360457">Internet aloqasi kerak</translation>
 <translation id="8129265306888404830">Tashkilotingiz email manzilidan (<ph name="EMAIL_DOMAIN" />) foydalanish uchun korporativ sifatida qayd qilishingiz kerak. Agar bu qurilmadan shaxsiy maqsadda foydalanmoqchi boʻlsangiz, shaxsiy Google hisobingiz bilan kiring.</translation>
 <translation id="8131740175452115882">Tasdiqlash</translation>
+<translation id="8133124826068723441">Domeningizda Sinxronlash xizmati mavjud emasligi sababli ChromiumOS maʼlumotlaringizni sinxronlay olmadi.</translation>
 <translation id="8146177459103116374">Bu qurilmada ro‘yxatdan o‘tgan bo‘lsangiz, <ph name="LINK2_START" />mavjud foydalanuvchi sifatida tizimga kirishingiz<ph name="LINK2_END" /> mumkin.</translation>
 <translation id="8146793085009540321">Hisobga kirib bo‘lmadi. Administrator bilan bog‘laning yoki qaytadan urinib ko‘ring.</translation>
 <translation id="8147346945017130012">Google serverlariga xatoliklar hisoboti, shuningdek, diagnostika va foydalanish statistikasi maʼlumotlarini yuborish orqali ChromeOS tizimini takomillashtirishga yordam bering.</translation>
@@ -689,6 +710,7 @@
 <translation id="8271379370373330993">Ota-onalar, keyingi bosqichlar siz uchun. Hisobni sozlaganingizdan keyin <ph name="DEVICE_TYPE" /> qurilmasini farzandingizga berishingiz mumkin.</translation>
 <translation id="8274924778568117936">Yangilanish tugamasdan oldin <ph name="DEVICE_TYPE" /> qurilmasini o‘chirmang va yopmang. Yangilanish o‘rnatilishi bilan <ph name="DEVICE_TYPE" /> qayta ishga tushiriladi.</translation>
 <translation id="8281886186245836920">Tashlab ketish</translation>
+<translation id="8286036467436129157">Kirish</translation>
 <translation id="8289509909262565712"><ph name="DEVICE_OS" /> xizmatiga xush kelibsiz!</translation>
 <translation id="8291942417224950075">Shaxsiy foydalanish uchun</translation>
 <translation id="8304383784961451596">Bu qurilmadan foydalanish uchun sizga ruxsat berilmagan. Kirish ruxsatini olish uchun administratorga murojaat qiling yoki Family Link orqali nazorat qilinadigan Google hisobi bilan kiring.</translation>
@@ -700,6 +722,7 @@
 <translation id="8401432541486058167">Smart kartangiz PIN kodini kiriting.</translation>
 <translation id="8408270600235826886">Qaysi maʼlumotlarni Googlega ulashishni tanlay olasiz. Buni istalgan vaqtda sozlamalardan oʻzgartirish mumkin. Maʼlumotlardan Google <ph name="BEGIN_LINK" />maxfiylik siyosatiga<ph name="END_LINK" /> muvofiq foydalaniladi.</translation>
 <translation id="8413956290606243087">ChromeOS tizimidagi ichki oʻrnatilgan ekrandan oʻqish vositasi – ChromeVox faollashtirilsinmi?</translation>
+<translation id="8418845734693287262">Hisobga kirish maʼlumotlaringiz eskirgani sababli ChromeOS maʼlumotlaringizni sinxronlay olmadi.</translation>
 <translation id="8425768983279799676">Qurilmani ochish uchun PIN koddan foydalanishingiz mumkin.</translation>
 <translation id="8428213095426709021">Sozlamalar</translation>
 <translation id="843173223122814223">AI yordamida fon rasmlarini yaratish</translation>
@@ -739,10 +762,12 @@
 <translation id="8794548468611058947"><ph name="DEVICE_TYPE" /> uchun PIN kod yarating va undan tizimga kirganingizda Google hisobingiz paroli oʻrniga foydalaning</translation>
 <translation id="8830779999439981481">Yangilanishlarni qoʻllash uchun qayta ishga tushirilmoqda</translation>
 <translation id="8830796635868321089">Yangilanishlar tekshiruvini bajarib bo‘lmadi. <ph name="PROXY_SETTINGS_LINK_START" />Proksi-server sozlamalarini<ph name="PROXY_SETTINGS_LINK_END" /> tekshiring.</translation>
+<translation id="8833697763442816810">ChromiumOS tizimi</translation>
 <translation id="8855977033756560989">Chromebook Enterprise qurilmasiga Chrome Enterprise litsenziyasi beriladi. Barcha korporativ funksiyalardan foydalanish uchun qurilmangizni Google administratori hisobi orqali qayd qiling.</translation>
 <translation id="885746075120788020">Google hisobingizga kirganingizda saqlangan sozlamalar va harakatlaringiz barcha ChromeOS qurilmalaringizda sinxronlanadi. Nimani sinxronlashni Sozlamalar orqali tanlash mumkin.</translation>
 <translation id="8868333925931032127">Demo rejimi ishga tushirilmoqda</translation>
 <translation id="8875221558267407626">Kontentni xulosalang, murakkab tillarni soddalashtiring yoki savollar bering</translation>
+<translation id="8890569919834781711">Hisobga kirishdagi xatolik sababli ChromiumOS tizimi Chromium maʼlumotlarini Google hisobingizga saqlay olmadi.</translation>
 <translation id="8907701755790961703">Mamlakatni tanlang</translation>
 <translation id="8913163265790894442"><ph name="DEVICE_TYPE" /> qurilmangizni telefoningiz bilan osongina sozlang. Wi-Fi va Google hisobini parol kiritmasdan qoʻshish mumkin.
         <ph name="BR" />
@@ -778,5 +803,6 @@
 <translation id="951991426597076286">Rad etish</translation>
 <translation id="954749761428814584">Til va matn kiritish uslubi</translation>
 <translation id="960987915827980018">1 soatcha qoldi</translation>
+<translation id="973195869036269770">Hisobga kirish maʼlumotlaringiz eskirgani sababli ChromeOS tizimi Chrome maʼlumotlarini Google hisobingizga saqlay olmadi</translation>
 <translation id="995420352808264005">Qurilmani qayd qilish turini tanlang</translation>
 </translationbundle>

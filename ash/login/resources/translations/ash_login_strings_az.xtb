@@ -10,6 +10,7 @@
 <translation id="1097658378307015415">Hesaba girmədən öncə <ph name="NETWORK_ID" /> şəbəkəsini aktivləşdirmək üçün Qonaq olaraq daxil olun.</translation>
 <translation id="1111932478203988717">Övladınız cihazına daxil olmaq üçün bu PIN-dən istifadə edə bilər</translation>
 <translation id="1122587596907914265">Unikal divar kağızlarına üslub verin</translation>
+<translation id="1122913801042512795">Hesabınızın giriş detallarının vaxtı keçib. Hesabdan çıxın və yenidən daxil olun.</translation>
 <translation id="1131201598497838573">Övladınızın PIN-i güncəlləndi</translation>
 <translation id="1147322039136785890">İndi <ph name="SUPERVISED_USER_NAME" /> adlı istifadəçinin növbəsidir</translation>
 <translation id="1148669835763563782">Təkmil təhlükəsizlik və yeni Chromebook funksiyaları üçün son proqram təminatı güncəllənməsi əldə edirsiniz. Bu güncəllənməyə Chromebook-da işə başlamağı asanlaşdıran təkmil ayarlama daxildir.</translation>
@@ -26,6 +27,7 @@
 <translation id="1256588359404100567">Ayar əvvəlki cihazdan sinxronlaşdırıldı.</translation>
 <translation id="1272978324304772054">Bu hesab cihazın qeyd olduğu domenə aid deyil. Başqa domenə qeyd etmək istəyirsinizsə, ilk öncə cihazı bərpa etməlisiniz.</translation>
 <translation id="1293556467332435079">Fayllar</translation>
+<translation id="1302523850133262269">Chrome'un ən son sistem güncəlləşmələrini quraşdırmasını gözləyin.</translation>
 <translation id="1307559529304613120">Sistem bu cihaz üçün uzunmüddətli API girişini saxlaya bilmədi.</translation>
 <translation id="1335929031622236846">Cihazınızı qeydiyyatdan keçirin</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Debaq funksiyaları<ph name="END_H3" />
@@ -49,6 +51,7 @@
 <translation id="1347625331607114917">Kodu Android telefonunuzda doğrulayın</translation>
 <translation id="1347975661240122359">Batareya <ph name="BATTERY_LEVEL" />% olduqda güncəlləmə başlayacaq.</translation>
 <translation id="1353275871123211385">Tətbiq təsdiqi və ekran vaxtı limitləri kimi valideyn nəzarətlərindən istifadə etmək üçün uşağın valideyn tərəfindən idarə edilən Google Hesabı olmalıdır. Google Classroom kimi alətlər üçün daha sonra bir məktəb hesabı əlavə edilə bilər.</translation>
+<translation id="1363996462118479832">Hesaba giriş xətası üzündən ChromeOS datanızı sinxronlaşdıra bilmədi.</translation>
 <translation id="1375557162880614858">ChromeOS Flex üçün daxili ekran oxuyucusu olan ChromeVox'u aktiv etmək istəyirsiniz?</translation>
 <translation id="1377600615067678409">İndilik keçin</translation>
 <translation id="1399261165075500043">Google Play Xidmət Şərtlərini yükləmək olmur</translation>
@@ -73,6 +76,7 @@
 <translation id="1642494467033190216">Digər debaq funksiyalarını aktiv etmədən öncə kök qorunmasının silinməsi və yenidən başlanma tələb olunur.</translation>
 <translation id="1646045728251578877">Proqram təminatı güncəllənməsi əlçatandır</translation>
 <translation id="1650801028905250434">İnternetsiz giriş üçün Mənim diskim bölməsindəki fayllar Chromebook-a avtomatik sinxronlaşdırılacaq. Ayarlar &gt; Fayllar bölməsində dəyişə bilərsiniz.</translation>
+<translation id="16620462294541761">Parolunuz doğrulanmadı. Yenidən cəhd edin.</translation>
 <translation id="1668435968811469751">Əl ilə qeydiyyatdan keçirin</translation>
 <translation id="1678919064276516737">Daxil etdiyiniz e-poçt və PIN uyğun gəlmir</translation>
 <translation id="1692115862433274081">Başqa hesab istifadə edin</translation>
@@ -94,6 +98,7 @@
 <translation id="1868617395637139709">Android tətbiqləri və xidmətləri üçün məkandan istifadə edin.</translation>
 <translation id="1877377730633446520">Bunun üçün təxminən <ph name="REQUIRED_SPACE" /> istifadə ediləcək. Hazırda <ph name="FREE_SPACE" /> əlçatandır.</translation>
 <translation id="1878155070920054810">Görünür, güncəlləmə tamamlanana kimi Chromebook'un enerjisi bitəcək. Fasilə olmaması üçün onun düzgün şarj edildiyinə əmin olun.</translation>
+<translation id="1887442540531652736">Giriş xətası</translation>
 <translation id="189035593835762169">Şərtlər və qaydalar</translation>
 <translation id="189358972401248634">Digər dillərdə</translation>
 <translation id="1915734383465415025">Mağaza Nömrəsi</translation>
@@ -122,6 +127,7 @@
 <translation id="2210462644007531147">Quraşdırmanı tamamlamaq alınmadı</translation>
 <translation id="221872881068107022">Tərs skrolinq</translation>
 <translation id="2219081237089444028">Asan giriş üçün <ph name="DEVICE_TYPE" /> parolu təyin edin</translation>
+<translation id="2220529011494928058">Problemi xəbər verin</translation>
 <translation id="222115440608612541">Gün çıxanda və batanda mövzuları dəyişdirin</translation>
 <translation id="2229161054156947610">1 saatdan çox qalıb</translation>
 <translation id="2246129643805925002">Ən son funksiyaları və təhlükəsizlik təkmilləşdirmələrini təmin etmək üçün <ph name="DEVICE_TYPE" /> avtomatik olaraq arxa fonda güncəllənəcək. Güncəlləmə tərcihlərini Ayarlarda nəzərdən keçirə bilərsiniz.</translation>
@@ -132,6 +138,7 @@
 <translation id="2328137272841210255">PIN-i sıfırlayın</translation>
 <translation id="2342180549977909852">Övladınız bu cihazı kiliddən çıxarmaq üçün parol əvəzinə nömrədən (PİN) istifadə edə bilər. Sonra PİN ayarlamaq üçün Ayarlara keçin.</translation>
 <translation id="2359808026110333948">Davam edin</translation>
+<translation id="2384373936468275798">ChromiumOS datanızı sinxronizasiya edə bilmir, çünki hesaba giriş məlumatlarınız köhnədir.</translation>
 <translation id="2387052489799050037">Əsas səhifəyə keçin</translation>
 <translation id="2395616325548404795"><ph name="DEVICE_TYPE" /> cihazınız müəssisə idarəetməsi üçün uğurla qeydiyyatdan keçdi, amma aktiv və məkan məlumatlarını göndərmək uğursuz oldu. Bu məlumatı cihaz üçün Admin konsolunuzdan əl ilə daxil edin.</translation>
 <translation id="2408955596600435184">PİN kodunuzu daxil edin</translation>
@@ -158,6 +165,7 @@
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Google-un məkan xidməti bu cihazın məkanını təxmin etmək üçün Wi-Fi, mobil şəbəkə və sensorlar kimi mənbələrdən istifadə edir.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />İstənilən vaxt bu cihazda Ayarlar &gt; Tətbiqlər &gt; Google Play Market &gt; Android tərcihlərini idarə edin &gt; Güvənlik və məkan &gt; Məkan bölməsinə keçərək Android məkanını deaktiv edə bilərsiniz. Eyni menyuda "Google Məkan Dəqiqliyini" deaktiv edərək Android məkanı üçün Wi-Fi, mobil şəbəkələr və sensorlardan istifadəni də deaktiv edə bilərsiniz.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2663302507110284145">Dil</translation>
+<translation id="2674238339205910678">ChromeOS Flex hesaba giriş məlumatlarınız köhnə olduğu üçün Chrome datasını Google Hesabınızda yadda saxlaya bilmədi</translation>
 <translation id="2687407218262674387">Google xidmət şərtləri</translation>
 <translation id="2688196195245426394">Cihazı server ilə qeydiyyat edərkən xəta: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Bu paketə bağlı cihazdır və Kiosk və Signage Upgrade'də qeydiyyatdan keçə bilməz.</translation>
@@ -252,6 +260,7 @@
 <translation id="3740945083753997630">Displey və mətn ölçüsünü kiçildin</translation>
 <translation id="376841534249795524"><ph name="DEVICE_TYPE" /> cihazını nə üçün istifadə edəcəksiniz?</translation>
 <translation id="3772046291955677288"><ph name="BEGIN_LINK1" />Google Xidmət Şərtləri<ph name="END_LINK1" /> və <ph name="BEGIN_LINK2" />Chrome və ChromeOS Əlavə Xidmət Şərtlərini<ph name="END_LINK2" /> oxudum və qəbul edirəm.</translation>
+<translation id="3785324443014631273">Giriş xətası səbəbindən ChromeOS Flex datanızı sinxronizasiya edə bilmədi.</translation>
 <translation id="3789841737615482174">Quraşdırın</translation>
 <translation id="3800828618615365228">Google Chrome və ChromeOS üzrə Əlavə Şərtlər</translation>
 <translation id="3828953470056652895"><ph name="BEGIN_LINK1" />Google Xidmət Şərtləri<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome və ChromeOS Əlavə Xidmət Şərtləri<ph name="END_LINK2" /> və <ph name="BEGIN_LINK3" />Play Xidmət Şərtlərini<ph name="END_LINK3" /> oxudum və qəbul edirəm.</translation>
@@ -332,6 +341,7 @@
         <ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Yardım üçün bu ünvana daxil olun: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Bu <ph name="DEVICE_TYPE" /> cihazına kimi əlavə etmək istərdiniz?</translation>
+<translation id="4543778593405494224">Sertifikat meneceri</translation>
 <translation id="4566170377336116390">Qeydiyyatdan sonra dəyişmək istəyirsinizsə, cihazınızda zavod sıfırlaması (formatlama) etməlisiniz.</translation>
 <translation id="4567512141633030272">Giriş seçimi yanlışdır?</translation>
 <translation id="4567533462991917415">Ayarlamadan sonra həmişə daha çoxunu əlavə edə bilərsiniz. Hər bir şəxs öz hesabını fərdiləşdirə və datanı məxfi saxlaya bilər.</translation>
@@ -349,6 +359,7 @@
 <translation id="4814327014588285482">Ötürün və sonra xatırladın</translation>
 <translation id="4830502475412647084">OS güncəlləməsi quraşdırılır</translation>
 <translation id="4837926214103741331">Bu cihazı istifadə etmək icazəniz yoxdur. Giriş icazəsi üçün cihaz sahibi ilə əlaqə saxlayın.</translation>
+<translation id="4842397268809523050">ChromeOS Flex datanızı sinxronizasiya edə bilmədi, çünki sinxronizasiya domeniniz üçün əlçatan deyil.</translation>
 <translation id="4844333629810439236">Digər klaviaturalar</translation>
 <translation id="484462545196658690">Avtomatik</translation>
 <translation id="4864369630010738180">Daxil olunur...</translation>
@@ -360,6 +371,7 @@
 <translation id="4944310289250773232">Bu doğrulama xidməti <ph name="SAML_DOMAIN" /> tərəfindən təmin edilir</translation>
 <translation id="4955710816792587366">PIN seçin</translation>
 <translation id="4965808351167763748">Hangouts Görüş istifadə etmək üçün bu cihazı quraşdırmaq istədiyinizə əminsiniz?</translation>
+<translation id="4969674060580488087">ChromeOS Flex datanızı sinxronizasiya edə bilmir, çünki hesaba giriş məlumatlarınız köhnədir.</translation>
 <translation id="4987944280765486504">Endirmə tamamlandıqda Chromebook yenidən başladılacaq və ayarlamaya davam edə biləcəksiniz.</translation>
 <translation id="5029287942302939687">Parol ayarlanıb</translation>
 <translation id="503155457707535043">Tətbiqlər endirilir</translation>
@@ -401,6 +413,8 @@
 <translation id="528208740344463258">Android tətbiqləri endirmək və istifadə etmək üçün əvvəlcə bu lazımlı güncəlləməni quraşdırın. <ph name="DEVICE_TYPE" /> güncəllənərkən ondan istifadə edə bilməzsiniz. Quraşdırma tamamlandıqdan sonra <ph name="DEVICE_TYPE" /> işə düşəcək.</translation>
 <translation id="5283677936944177147">Ups!  Sistem bu cihaz üçün cihaz modelini və seriya nömrəsini aşkarlaya bilmədi.</translation>
 <translation id="5333896723098573627">Tətbiqləri silmək üçün Ayarlar &gt; Tətbiqlər &gt; Google Play Market &gt; Android tərcihlərini idarə edin &gt; Tətbiqlər və ya Tətbiq meneceri bölməsinə daxil olun. Sonra quraşdırılmasını ləğv etmək istədiyiniz tətbiqə klikləyin (tətbiqi tapmaq üçün sağa və ya sola sürüşdürməlisiniz). Quraşdırılmanı Ləğv Edin və ya Deaktiv Edin seçiminə klikləyin.</translation>
+<translation id="5334309298019785904">ChromeOS datanızı sinxronizasiya edə bilmədi, çünki sinxronizasiya domeniniz üçün əlçatan deyil.</translation>
+<translation id="535243042947607642">ChromiumOS hesaba giriş məlumatlarınız köhnə olduğu üçün Chromium datasını Google Hesabınızda yadda saxlaya bilmədi</translation>
 <translation id="5355501370336370394">Müəssisə cihazını qeydiyyatdan keçirin</translation>
 <translation id="5372529912055771682">Təchiz olunmuş qeydiyyat rejimi əməliyyat sisteminin bu versiyası tərəfindən dəstəklənmir. Lütfən, ən yeni versiyanı istifadə etdiyinizə əmin olun və yenidən cəhd edin.</translation>
 <translation id="5397378439569041789">Köşk və ya işarə cihazını qeydiyyatdan keçirin</translation>
@@ -412,6 +426,7 @@
 <translation id="5448293924669608770">Hesaba girən zaman xəta oldu</translation>
 <translation id="5453829744223920473">Uşaq məktəbə aid tətbiq, əlfəcin və resurslardan sinifdəki kimi istifadə edə bilər. Əsas qaydaları məktəb təyin edir.</translation>
 <translation id="5473099001878321374">Davam etməklə, bu cihazın mobil data istifadə edərək Google'dan, övladınızın operatorundan və bu cihazın istehsalçısından avtomatik yeniliklər və tətbiqlər endirməsi və quraşdırması ilə razılaşırsınız. Bu tətbiqlərdən bəziləri tətbiqdaxili satınalmalar təklif edə bilər.</translation>
+<translation id="549669000822060376">Chromium'um ən son sistem güncəlləşmələrini quraşdırmasını gözləyin.</translation>
 <translation id="5502915260472117187">Uşaq</translation>
 <translation id="5511823366942919280">Bu cihazı "Köpəkbalığı" olaraq quraşdırmaq istəyirsiniz?</translation>
 <translation id="5513807280330619196">Kalkulyator</translation>
@@ -515,6 +530,7 @@
 <translation id="6495266441917713704">Wi-Fi-ı ötürmək olmur</translation>
 <translation id="6515620015470298987">Cihaz konfiqurasiyasının yoxlanılması zamanı yaranan problemə görə giriş alınmadı. <ph name="DEVICE_TYPE" /> cihazınızı sıfırlayın və yenidən cəhd edin.</translation>
 <translation id="6519689855001245063">Uyğunluq yoxlanılır</translation>
+<translation id="6520608191273161151">ChromeOS Flex hesaba giriş xətası səbəbindən Chrome datasını Google Hesabınızda yadda saxlaya bilmədi</translation>
 <translation id="6532527800157340614">Giriş jetonunuzu əldə etmək mümkün olmadığı üçün giriş alınmadı. Şəbəkə bağlantınızı yoxlayın və yenidən cəhd edin.</translation>
 <translation id="653920215766444089">Göstərici cihaz axtarılır</translation>
 <translation id="65513682072153627">Ayar və ya funksiya administratorunuz tərəfindən idarə edildikdə bu "İdarə olunur" ikonasını görəcəksiniz.</translation>
@@ -526,8 +542,10 @@
 <translation id="6675665718701918026">Cihazın qoşulu olduğu göstərilir</translation>
 <translation id="667752334740867460">Wi-Fi məlumatı qəbul edilir...</translation>
 <translation id="6680442031740878064">Əlçatandır: <ph name="AVAILABLE_SPACE" /></translation>
+<translation id="668175097507315160">Giriş xətası səbəbindən ChromiumOS datanızı sinxronizasiya edə bilmədi.</translation>
 <translation id="6684827949542560880">Ən son güncəlləmə endirilir</translation>
 <translation id="6722744767592605627"><ph name="EMAIL" /> bərpa edilə bilər, amma lokal data silinəcək.</translation>
+<translation id="6735387454586646204">ChromeOS Flex Sistemi</translation>
 <translation id="6748980958975836188"><ph name="BEGIN_LINK1" />Google Xidmət Şərtləri<ph name="END_LINK1" /> və <ph name="BEGIN_LINK2" />Chrome və ChromeOS Əlavə Xidmət Şərtlərini<ph name="END_LINK2" /> oxudum və qəbul edirəm.</translation>
 <translation id="6749473226660745022">Foto</translation>
 <translation id="6754918760968695779">Cəld giriş</translation>
@@ -552,6 +570,7 @@
 <translation id="6918733588290914545">Android telefonu ilə cəld ayarlama</translation>
 <translation id="6920473853105515518"><ph name="DEVICE_TYPE" /> cihazının internetə qoşulduğuna əmin olub, yenidən cəhd edin. Başqa cihazda play.google/play-terms ünvanına da keçə bilərsiniz.</translation>
 <translation id="6929126689972602640">Məktəb hesabları üçün valideyn nəzarətləri dəstəklənmir. Evdə məktəb tapşırığını yerinə yetirmək üçün Google Classroom və digər veb saytlara daxil olmaq məqsədilə məktəb hesabı əlavə etmək üçün əvvəlcə uşağın şəxsi hesabı ilə daxil olun. Daha sonra ayarlama bölməsində məktəb hesabı əlavə edə bilərsiniz.</translation>
+<translation id="6933858244219479645">ChromeOS sistemi</translation>
 <translation id="6935031746833428401">Cihaz idarəetməsi haqqında ətraflı</translation>
 <translation id="6950351336108213154">Cihazın periferiya qurğuları güncəllənir</translation>
 <translation id="6955698182324067397">ChromeOS baq ləğvini aktivləşdirirsiniz ki, sshd daemon quraşdırır və USB cihazlarından yüklənməyə imkan verir.</translation>
@@ -648,6 +667,7 @@
 <translation id="7870730066603611552">Quraşdırmadan sonra sinxronizasiya seçimlərinə nəzər salın</translation>
 <translation id="7883792253546618164">İstədiyiniz vaxt abunəlikdən çıxın.</translation>
 <translation id="7887864092952184874">Bluetooth mausu cütləndi</translation>
+<translation id="7905880575591690197">ChromeOS hesaba giriş xətası səbəbindən Chrome datasını Google Hesabınızda yadda saxlaya bilmədi</translation>
 <translation id="7906440585529721295">Lokal data silinəcək</translation>
 <translation id="7910725946105920830">Şəxsi Google Hesabından istifadə edin</translation>
 <translation id="7918257978052780342">Qeydiyyatdan keçin</translation>
@@ -674,6 +694,7 @@
 <translation id="8098616321286360457">Şəbəkə bağlantısı tələb olunur</translation>
 <translation id="8129265306888404830">Təşkilatın təmin etdiyi e-poçt ünvanı (<ph name="EMAIL_DOMAIN" />) üçün müəssisə qeydiyyatından istifadə etməlisiniz. Bu cihaz şəxsi istifadə üçündürsə, şəxsi Google Hesabı ilə daxil olun.</translation>
 <translation id="8131740175452115882">Təsdiq edin</translation>
+<translation id="8133124826068723441">ChromiumOS datanızı sinxronizasiya edə bilmədi, çünki sinxronizasiya domeniniz üçün əlçatan deyil.</translation>
 <translation id="8146177459103116374">Bu cihazda artıq qeydiyyatdan keçmisinizsə, <ph name="LINK2_START" />mövcud istifadəçi olaraq hesaba girə bilərsiniz<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Hesaba giriş alınmadı. Administratorunuzla əlaqə saxlayın və ya yenidən cəhd edin.</translation>
 <translation id="8147346945017130012">Xəta hesabatları, eləcə də diaqnostika və istifadə datasını avtomatik Google'a göndərməklə Chrome və ChromeOS funksiyalarını və performansını təkmilləşdirməyə yardım edin.</translation>
@@ -692,6 +713,7 @@
 <translation id="8271379370373330993">Valideynlər, növbəti bir neçə addım sizin üçündür. Hesab ayarlandıqdan sonra <ph name="DEVICE_TYPE" /> cihazını uşağa qaytara bilərsiniz.</translation>
 <translation id="8274924778568117936">Yeniləmə tamamlanana qədər <ph name="DEVICE_TYPE" /> cihazını deaktiv etməyin və ya bağlamayın. <ph name="DEVICE_TYPE" /> quraşdırmadan sonra yenidən başlayacaq.</translation>
 <translation id="8281886186245836920">Keçin</translation>
+<translation id="8286036467436129157">Giriş</translation>
 <translation id="8289509909262565712"><ph name="DEVICE_OS" /> cihazına xoş gəlmisiniz</translation>
 <translation id="8291942417224950075">Şəxsi istifadə üçün</translation>
 <translation id="8304383784961451596">Bu cihazdan istifadə etmək icazəniz yoxdur. Giriş icazəsi üçün administrator ilə əlaqə saxlayın, yaxud Family Link ilə nəzarət edilən Google hesabı vasitəsilə daxil olun.</translation>
@@ -703,6 +725,7 @@
 <translation id="8401432541486058167">Smart kartınızla əlaqəli PIN daxil edin.</translation>
 <translation id="8408270600235826886">Google ilə hansı məlumatların paylaşılmasına nəzarət edə bilərsiniz. Bunu istənilən zaman Ayarlarda dəyişə bilərsiniz. Data Google'un <ph name="BEGIN_LINK" />Məxfilik Siyasətinə<ph name="END_LINK" /> uyğun istifadə ediləcək.</translation>
 <translation id="8413956290606243087">ChromeOS üçün daxili ekran oxuyucusu olan ChromeVox'u aktiv etmək istəyirsiniz?</translation>
+<translation id="8418845734693287262">ChromeOS datanızı sinxronizasiya edə bilmir, çünki hesaba giriş məlumatlarınız köhnədir.</translation>
 <translation id="8425768983279799676">Cihazı kiliddən çıxarmaq üçün PIN istifadə edin.</translation>
 <translation id="8428213095426709021">Ayarlar</translation>
 <translation id="843173223122814223">Sİ ilə arxa fon yaradın</translation>
@@ -742,10 +765,12 @@
 <translation id="8794548468611058947">Giriş üçün Google Hesabı parolunu yazmaq lazım deyil. Bu <ph name="DEVICE_TYPE" /> cihazı üçün PIN yarada bilərsiniz</translation>
 <translation id="8830779999439981481">Güncəlləmələri tətbiq etmək üçün yenidən başladılır</translation>
 <translation id="8830796635868321089">Yeni güncəllənməni axtarmaq olmur. <ph name="PROXY_SETTINGS_LINK_START" />Proksi ayarlarını<ph name="PROXY_SETTINGS_LINK_END" /> tənzimləyin.</translation>
+<translation id="8833697763442816810">ChromiumOS sistemi</translation>
 <translation id="8855977033756560989">Bu Chromebook Enterprise cihazı Chrome Enterprise Upgrade ilə bir paket şəklində təqdim edilir. Müəssisə imkanlarından yararlanmaq üçün bu cihazı Google admin hesabı ilə qeydiyyatdan keçirin.</translation>
 <translation id="885746075120788020">Google Hesabınızla daxil olduğunuz zaman yadda saxlanılan tərcihləriniz və fəaliyyətiniz istənilən ChromeOS cihazında hazır olacaq. Ayarlarda nələri sinxronlaşdıracağınızı seçə bilərsiniz.</translation>
 <translation id="8868333925931032127">Demo Rejimi başladılır</translation>
 <translation id="8875221558267407626">Kontenti icmallaşdırın, mürəkkəb dili sadələşdrin və ya suallar verin</translation>
+<translation id="8890569919834781711">ChromiumOS giriş xətası səbəbindən Chromium datasını Google Hesabınızda yadda saxlaya bilmədi</translation>
 <translation id="8907701755790961703">Ölkə seçin</translation>
 <translation id="8913163265790894442">Telefon ilə <ph name="DEVICE_TYPE" /> cihazını asanlıqla ayarlayın. Parolları manual qaydada daxil etmədən Wi-Fi bağlantısı və Google Hesabınızı əlavə edə bilərsiniz.
         <ph name="BR" />
@@ -781,5 +806,6 @@
 <translation id="951991426597076286">Kənarlaşdırın</translation>
 <translation id="954749761428814584">Dil və daxiletmə metodu</translation>
 <translation id="960987915827980018">Təxminən 1 saat qalıb</translation>
+<translation id="973195869036269770">ChromeOS hesaba giriş məlumatlarınız köhnə olduğu üçün Chrome datasını Google Hesabınızda yadda saxlaya bilmədi</translation>
 <translation id="995420352808264005">Cihazın qeydiyyat növünü seçin</translation>
 </translationbundle>

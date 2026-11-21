@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">הפעלת עיצוב</translation>
+<translation id="1085064499066015002">פועל כל הזמן בכל האתרים</translation>
 <translation id="1135328998467923690">החבילה לא חוקית: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">מצלמה אחורית</translation>
 <translation id="1171831736360285680">‏התוסף התווסף על ידי <ph name="PARTNER_NAME" /> ויכול לשנות את אופן הפעולה של Chromium.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">הגרסה הצפויה היא "<ph name="EXPECTED_VERSION" />", אבל הגרסה הייתה "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">נכשל בפלט מפתח פרטי.</translation>
 <translation id="4811956658694082538">‏לא ניתן היה להתקין את החבילה מפני שתהליך כלי השירות קרס. יש לאתחל את Chrome ולנסות שוב.</translation>
+<translation id="4883436287898674711">כל אתרי <ph name="WEBSITE_1" /></translation>
 <translation id="4988792151665380515">נכשל ייצוא מפתח ציבורי.</translation>
 <translation id="501057610015570208">‏במצב קיוסק של ChromeOS Flex, יש להתקין אפליקציות עם מאפיין המניפסט 'kiosk_only'</translation>
 <translation id="5026754133087629784">צפיות באתר: <ph name="WEBVIEW_TAG_NAME" /></translation>

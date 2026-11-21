@@ -83,6 +83,8 @@ Aspetos a considerar:
 <translation id="2574249610672786438">Para ver os seus separadores onde quer que esteja a utilizar o Chrome, inicie sessão em todos os seus dispositivos.</translation>
 <translation id="2576431527583832481">O Chrome ficou ainda melhor! Está disponível uma nova versão.</translation>
 <translation id="257708665678654955">Quer que o Google Chrome se ofereça para traduzir as páginas em <ph name="LANGUAGE_NAME" /> deste site da próxima vez?</translation>
+<translation id="2599258827968143948">Os seus favoritos da Google são melhores com o Chrome</translation>
+<translation id="260980777626165320">Abra links externos no Chrome por predefinição.</translation>
 <translation id="2668242166988961773">Pesquise com a voz no Chrome.</translation>
 <translation id="2703746758996815929">Para receber sugestões úteis do Chrome, ative as notificações nas definições do iOS.</translation>
 <translation id="2728851697704606655">Traduza com o Google Lens</translation>
@@ -111,6 +113,7 @@ Não é possível guardar novos marcadores na sua conta até eliminar alguns. Se
 <translation id="314782365035065913">Aceda ao Chrome mais rapidamente a partir da dock do ecrã principal</translation>
 <translation id="3167189358072330585">A sua conta não funciona no Google Chrome. Contacte o gestor do domínio ou utilize uma Conta Google normal para iniciar sessão.</translation>
 <translation id="322254490661677575">Para usar e guardar dados do Chrome na sua Conta Google, introduza a frase de acesso.</translation>
+<translation id="3253082773078342494">Abra links diretamente no Chrome.</translation>
 <translation id="3303503998967553377">Use as ações do Chrome no iOS</translation>
 <translation id="3348862487678490430">Adicione o item da Lista de leitura ao Chrome</translation>
 <translation id="3350281376951945723">Abra links mais rapidamente escolhendo o Chromium como predefinição</translation>
@@ -160,6 +163,7 @@ Não é possível guardar novos marcadores na sua conta até eliminar alguns. Se
 <translation id="4693084815234024320">Está na Navegação anónima do Chrome</translation>
 <translation id="4713740144985377441">Volte ao Chrome para carregar o ficheiro</translation>
 <translation id="4724297637870447613">Use o Chrome em todas as plataformas</translation>
+<translation id="4733290155432110050">Aceda diretamente ao Chrome</translation>
 <translation id="4738647308035481133">Página do Google Chrome</translation>
 <translation id="4742795653798179840">Dados do Chrome eliminados</translation>
 <translation id="4761869838909035636">Executar verificação de segurança do Chrome</translation>
@@ -267,6 +271,7 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="7038674195294813388">Abra as definições de Apps predefinidas no iOS, toque em "App do navegador" e selecione o Chrome.</translation>
 <translation id="7056826488869329999">Abre e executa a verificação de segurança no Chrome.</translation>
 <translation id="7061455974939528301">Prima sem soltar o ícone do Chrome e clique em "Editar ecrã principal"</translation>
+<translation id="7067302528015227615">Predefina o Chrome para transições entre apps mais rápidas e fáceis.</translation>
 <translation id="7095110968493193530">Para o Gestor de Palavras-passe da Google da conta <ph name="EMAIL" /></translation>
 <translation id="7124339256045485976">Mantenha o Chrome atualizado.</translation>
 <translation id="7135936755418321901">Para partilhar a sua localização com Websites, toque em Definições para permitir que o Chrome use a sua localização.</translation>
@@ -278,6 +283,7 @@ Para ver mais definições que usam dados para melhorar a sua experiência do Ch
 <translation id="7200524487407690471">O Chrome executa automaticamente a verificação de segurança todos os dias para lhe oferecer proteção contra violações de dados, Websites inseguros e muito mais. Pode encontrar mais informações sobre a verificação de segurança nas Definições.</translation>
 <translation id="7214019116829172458">Abra um separador de navegação anónima no Chrome</translation>
 <translation id="722167379782941918">O Chrome recomenda a Proteção melhorada</translation>
+<translation id="722921700949937243">Certifique-se que todos os links são sempre abertos no Chrome.</translation>
 <translation id="723787869754590019">Use o Chrome para o preenchimento automático</translation>
 <translation id="7261678641327190792">O Chrome não consegue verificar as suas palavras-passe.</translation>
 <translation id="7272091023280308138">Da próxima vez, abra os links diretamente no Chrome sem copiar os URLs primeiro.</translation>

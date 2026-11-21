@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">ਥੀਮ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
+<translation id="1085064499066015002">ਸਾਰੀਆਂ ਸਾਈਟਾਂ 'ਤੇ ਹਮੇਸ਼ਾਂ ਚਾਲੂ</translation>
 <translation id="1135328998467923690">ਪੈਕੇਜ ਅਵੈਧ ਹੈ: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">ਪਿਛਲਾ</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> ਨੇ ਇੱਕ ਅਜਿਹੀ ਐਕਸਟੈਂਸ਼ਨ ਸ਼ਾਮਲ ਕੀਤੀ ਹੈ ਜੋ Chromium ਦੇ ਕੰਮ ਕਰਨ ਦੇ ਤਰੀਕੇ ਨੂੰ ਬਦਲ ਸਕਦੀ ਹੈ।
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">ਸੰਭਾਵਿਤ ਵਰਜਨ "<ph name="EXPECTED_VERSION" />" ਹੈ, ਪਰ ਵਰਜਨ "<ph name="NEW_ID" />" ਸੀ</translation>
 <translation id="471800408830181311">ਨਿੱਜੀ ਕੁੰਜੀ ਨੂੰ ਆਉਟਪੁਟ ਕਰਨ ਵਿੱਚ ਅਸਫਲ।</translation>
 <translation id="4811956658694082538">ਪੈਕੇਜ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ ਕਿਉਂਕਿ ਇੱਕ ਵਰਤੋਂਕਾਰ ਪ੍ਰਕਿਰਿਆ ਕ੍ਰੈਸ਼ ਹੋ ਗਈ ਸੀ। Chrome ਨੂੰ ਮੁੜ ਸ਼ੁਰੂ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
+<translation id="4883436287898674711">ਸਾਰੀਆਂ <ph name="WEBSITE_1" /> ਸਾਈਟਾਂ</translation>
 <translation id="4988792151665380515">ਜਨਤਕ ਕੁੰਜੀ ਨਿਰਯਾਤ ਕਰਨ ਵਿੱਚ ਅਸਫਲ।</translation>
 <translation id="501057610015570208">'kiosk_only' ਮੈਨੀਫ਼ੈਸਟ ਵਿਸ਼ੇਸ਼ਤਾ ਵਾਲੀ ਐਪ ਨੂੰ ChromeOS Flex ਕਿਓਸਕ ਮੋਡ ਵਿੱਚ ਸਥਾਪਤ ਕਰਨਾ ਲਾਜ਼ਮੀ ਹੈ</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>

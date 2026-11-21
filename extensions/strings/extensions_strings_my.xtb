@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">အပြင်အဆင်များကို အသုံးပြုရန်</translation>
+<translation id="1085064499066015002">ဝဘ်ဆိုက်အားလုံးတွင် အမြဲဖွင့်ထားရန်</translation>
 <translation id="1135328998467923690">အထုပ်မှာ မမှန်ပါ: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">ကျောဘက်ရှိ ကင်မရာ</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> သည် Chromium အလုပ်လုပ်ပုံကို ပြောင်းလဲနိုင်သည့် နောက်ဆက်တွဲ ထည့်လိုက်ပါသည်။
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">ဗားရှင်း "<ph name="EXPECTED_VERSION" />" ကို မျှော်မှန်းထားသော်လည်း ဗားရှင်းမှာ "<ph name="NEW_ID" />" ဖြစ်နေသည်</translation>
 <translation id="471800408830181311">ကိုယ်ပိုင် သော့ကို ထုတ်ပေးမှု မအောင်မြင်ခဲ့ပါ။</translation>
 <translation id="4811956658694082538">ဝန်ဆောင်မှုဖြစ်စဉ် ပျက်သွားသောကြောင့် ပက်ကေ့ထုပ်အား မတပ်ဆင်နိုင်ပါ။ Chrome ကို  အစမှပြန်ဖွင့်ပြီး ထပ်မံကြိုးစားကြည့်ပါ။</translation>
+<translation id="4883436287898674711">ဆိုက်များ <ph name="WEBSITE_1" />အားလုံး</translation>
 <translation id="4988792151665380515">အများပြည်သူ သော့ကို တင်ပို့ မရခဲ့ပါ။</translation>
 <translation id="501057610015570208">‘kiosk_only’ မန်နီးဖက်စ် (manifest) ရည်ညွှန်းချက်ပါသည့် အက်ပ်ကို ChromeOS Flex kiosk မုဒ်တွင် ထည့်သွင်းရမည်</translation>
 <translation id="5026754133087629784">ဝက်ဘ်မြင်ကွင်း: <ph name="WEBVIEW_TAG_NAME" /></translation>

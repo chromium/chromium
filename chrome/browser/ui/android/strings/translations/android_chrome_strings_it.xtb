@@ -530,6 +530,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Richiedi assistenza<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">Monitoraggio del prezzo</translation>
 <translation id="3037517125981011456">Mostra le richieste di accesso a Chrome</translation>
+<translation id="3038505649933066250">Filtra per data</translation>
 <translation id="3044436568790455247">"Scegli un dispositivo" aperta a schermo intero.</translation>
 <translation id="3057938290530993634">Tocca e tieni premuto per fissare i siti web più visitati e accedervi facilmente la prossima volta</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> preferito}other{<ph name="BOOKMARKS_COUNT_MANY" /> preferiti}}</translation>
@@ -576,6 +577,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3243650379537999343">Traccia</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">Se condividi anche report sull'utilizzo di Chrome, tali report includono gli URL visitati</translation>
+<translation id="3248185426436836442">In attesa</translation>
 <translation id="3250563604907490871">Le descrizioni delle immagini verranno ripristinate quando avrai effettuato la connessione alla rete Wi-Fi</translation>
 <translation id="3254409185687681395">Aggiungi ai Preferiti</translation>
 <translation id="3265093782546847662">Tutte le pagine di <ph name="DOMAIN" /></translation>
@@ -1124,7 +1126,6 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, scheda Incognito condivisa fissata</translation>
 <translation id="5375374982898812658">Perderai immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />", che verrà eliminato da tutti i tuoi dispositivi</translation>
 <translation id="537865165090710757">Salva e condividi</translation>
-<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> vuole usare le informazioni personali del tuo portafoglio digitale. Continua soltanto se ritieni attendibile questo sito. Siti pericolosi potrebbero indurti con l'inganno a rivelare dati come il tuo nome legale o il numero del tuo documento di identità.</translation>
 <translation id="5395376160638294582">Assicurati di poter usare sempre i dati di Chrome nel tuo Account Google</translation>
 <translation id="5397794290049113714">Tu</translation>
 <translation id="539881862970320163">È stata suggerita una password efficace. Tastiera nascosta.</translation>
@@ -1136,6 +1137,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="5415871492522952905">La cronologia e le schede saranno disponibili su tutti i tuoi dispositivi, così potrai continuare ciò che stavi facendo</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perderà immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />"</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB disponibili</translation>
+<translation id="5430861625274552852">Chiedi informazioni sui contenuti di una pagina o confronta più schede</translation>
 <translation id="543271133149552180"><ph name="TAB_TITLE" />, schede Incognito Picture in picture selezionate</translation>
 <translation id="5436928407363358055">Per riprendere facilmente da dove avevi interrotto, sincronizza la cronologia e le schede</translation>
 <translation id="5438292632479953702">Scarica di nuovo</translation>
@@ -1172,6 +1174,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="557018954714092179">Crea nuova cartella</translation>
 <translation id="5578795271662203820">Cerca questa immagine su <ph name="SEARCH_ENGINE" /></translation>
 <translation id="558563010977877295">Apri una pagina o un insieme di pagine specifiche</translation>
+<translation id="5594132774273121146">Utente e account</translation>
 <translation id="5596627076506792578">Altre opzioni</translation>
 <translation id="5599455543593328020">Modalità Incognito</translation>
 <translation id="5601180634394228718">Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza con Chrome, vai alle impostazioni dei <ph name="BEGIN_LINK" />servizi Google<ph name="END_LINK" />.</translation>
@@ -1229,6 +1232,7 @@ Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, a
 <translation id="583281660410589416">Sconosciuto</translation>
 <translation id="5833984609253377421">Condividi link</translation>
 <translation id="5839058148541733625">Dino di Chrome</translation>
+<translation id="5839059463554891940">Sicurezza e protezione</translation>
 <translation id="5841444063256914865">Scaricare comunque "<ph name="FILE_NAME" />"?</translation>
 <translation id="5847265694842662173">Chrome ha impedito a siti illeciti e inutilizzati di inviare notifiche</translation>
 <translation id="5848257610304005265">Aprire il PDF con <ph name="APP_NAME" />?</translation>
@@ -1345,7 +1349,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6259107733340311168">Riquadro inferiore della limitazione di responsabilità per gli indicatori di Enterprise aperto a schermo intero</translation>
 <translation id="6260260490042862943">Impostazioni del sito</translation>
 <translation id="6264376385120300461">Scarica comunque</translation>
-<translation id="6264485186158353794">Torna nell'area protetta</translation>
 <translation id="6267106249090587268">Notifiche <ph name="SEPARATOR" /> Chrome ha rimosso queste autorizzazioni a causa di spam o contenuti ingannevoli</translation>
 <translation id="6276708887952587684">Visualizza il codice sorgente della pagina</translation>
 <translation id="62768169905160414">Copia frame</translation>
@@ -1464,7 +1467,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6659594942844771486">Scheda</translation>
 <translation id="666731172850799929">Apri in <ph name="APP_NAME" /></translation>
 <translation id="6669390930482049506">Avvisami</translation>
-<translation id="6670742294143102726">Seleziona una o più schede da aggiungere alla ricerca</translation>
 <translation id="6671495933530132209">Copia immagine</translation>
 <translation id="6672697278890207089">Inserisci la passphrase</translation>
 <translation id="6675622031235530028">Tieni premuto Ctrl+Q per uscire</translation>
@@ -1730,6 +1732,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> scheda standard}other{<ph name="TABS_COUNT_MANY" /> schede standard}}</translation>
 <translation id="7603168929588204083">Data non valida</translation>
 <translation id="7605594153474022051">La sincronizzazione non funziona</translation>
+<translation id="7607002721634913082">In pausa</translation>
 <translation id="7608245556672190037">Attivazione di Chrome Finds aperta a schermo intero</translation>
 <translation id="7612619742409846846">Accesso effettuato a Google come</translation>
 <translation id="7612989789287281429">Accesso in corso…</translation>
@@ -1838,6 +1841,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="800155843932969169">Crea e memorizza le password in modo sicuro, accedi più rapidamente e individua i problemi di sicurezza delle password per proteggerti</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8006630792898017994">Spazio o Tab</translation>
+<translation id="802154636333426148">Download non riuscito</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, schede Incognito condivise fissate selezionate</translation>
 <translation id="8025972204417227828">Aggiungi nuova</translation>
 <translation id="8027863900915310177">Scegli dove effettuare il download</translation>
@@ -1845,6 +1849,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8032569120109842252">Stai seguendo</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, scheda Incognito con audio disattivato selezionata</translation>
 <translation id="8036587585440959897">Alcune estensioni possono aggiungere motori di ricerca a Chrome.</translation>
+<translation id="803703704549420287">Cancella filtri</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> giorni rimanenti</translation>
 <translation id="8037801708772278989">Controllo appena eseguito</translation>
 <translation id="804335162455518893">Scheda SD non trovata</translation>

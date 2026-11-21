@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Temayı Etkinleştir</translation>
+<translation id="1085064499066015002">Tüm sitelerde her zaman</translation>
 <translation id="1135328998467923690">Paket geçersiz: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">Arka kamera</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" />, Chromium'un çalışma şeklini değiştirebilecek bir uzantı ekledi.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">Beklenen sürüm "<ph name="EXPECTED_VERSION" />" idi, ancak "<ph name="NEW_ID" />" sürümü belirlendi</translation>
 <translation id="471800408830181311">Özel anahtar oluşturulamadı.</translation>
 <translation id="4811956658694082538">Bir yardımcı program kilitlendiği için paket yüklenemedi. Chrome'u yeniden başlatın ve tekrar deneyin.</translation>
+<translation id="4883436287898674711">Tüm <ph name="WEBSITE_1" /> siteleri</translation>
 <translation id="4988792151665380515">Ortak anahtar dışa aktarılamadı.</translation>
 <translation id="501057610015570208">"kiosk_only" manifest özelliğine sahip uygulama ChromeOS Flex kiosk modunda yüklenmelidir.</translation>
 <translation id="5026754133087629784">Web görünümü: <ph name="WEBVIEW_TAG_NAME" /></translation>

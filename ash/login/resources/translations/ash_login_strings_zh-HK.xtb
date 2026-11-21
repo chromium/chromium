@@ -10,6 +10,7 @@
 <translation id="1097658378307015415">請在登入前以訪客身分進入，啟用網絡 <ph name="NETWORK_ID" /></translation>
 <translation id="1111932478203988717">子女可使用此 PIN 來登入裝置</translation>
 <translation id="1122587596907914265">創作獨特桌布</translation>
+<translation id="1122913801042512795">您的帳戶登入資料已過時。請先登出，然後再重新登入。</translation>
 <translation id="1131201598497838573">子女的 PIN 已更新</translation>
 <translation id="1147322039136785890">現在可交由<ph name="SUPERVISED_USER_NAME" />使用</translation>
 <translation id="1148669835763563782">你正在接收最新的軟件更新版本，享有加強安全保障和最新的 Chromebook 功能。此更新提升了設定體驗，有助順利開始使用 Chromebook。</translation>
@@ -26,6 +27,7 @@
 <translation id="1256588359404100567">已經喺舊裝置度同步設定。</translation>
 <translation id="1272978324304772054">裝置註冊的網域中沒有這個使用者帳戶。如果您要使用其他網域進行註冊，必須先完成裝置修復操作。</translation>
 <translation id="1293556467332435079">檔案</translation>
+<translation id="1302523850133262269">請稍候，Chrome 正在安裝最新的系統更新。</translation>
 <translation id="1307559529304613120">糟糕！系統無法為這部裝置儲存長期 API 存取憑證。</translation>
 <translation id="1335929031622236846">註冊您的裝置</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />偵錯功能<ph name="END_H3" />
@@ -49,6 +51,7 @@
 <translation id="1347625331607114917">驗證 Android 手機上的 QR 碼</translation>
 <translation id="1347975661240122359">在電量達到 <ph name="BATTERY_LEVEL" />% 後便會開始更新。</translation>
 <translation id="1353275871123211385">如要使用應用程式核准設定、裝置使用時間限制等家長監控設定，就必須讓子女使用由家長管理的 Google 帳戶。如果子女需要透過學校帳戶使用 Google Classroom 之類的工具，可以之後再新增帳戶。</translation>
+<translation id="1363996462118479832">登入時發生錯誤，因此 Chrome OS 無法同步處理您的資料。</translation>
 <translation id="1375557162880614858">要啟用 ChromeOS Flex 內置的螢幕閱讀器 ChromeVox 嗎？</translation>
 <translation id="1377600615067678409">暫時略過</translation>
 <translation id="1399261165075500043">無法載入《Google Play 服務條款》</translation>
@@ -73,6 +76,7 @@
 <translation id="1642494467033190216">如要啟用其他偵錯功能，您必須先移除 rootfs 保護並重新啟動。</translation>
 <translation id="1646045728251578877">有可用的軟件更新</translation>
 <translation id="1650801028905250434">「我的雲端硬碟」中的檔案會自動同步至 Chromebook，這樣你便可在離線的情況下存取檔案。你你可隨時在「設定」&gt;「檔案」中變更此設定。</translation>
+<translation id="16620462294541761">很抱歉，系統無法驗證您的密碼，請再試一次。</translation>
 <translation id="1668435968811469751">手動註冊</translation>
 <translation id="1678919064276516737">你輸入的電郵和 PIN 不符</translation>
 <translation id="1692115862433274081">使用其他帳戶</translation>
@@ -94,6 +98,7 @@
 <translation id="1868617395637139709">為 Android 應用程式和服務使用位置資訊</translation>
 <translation id="1877377730633446520">這會使用大約 <ph name="REQUIRED_SPACE" /> 的空間。您目前的可用空間為 <ph name="FREE_SPACE" />。</translation>
 <translation id="1878155070920054810">Chromebook 似乎會在更新完成前沒電。請確認 Chromebook 已正確充電，避免更新中斷。</translation>
+<translation id="1887442540531652736">登入錯誤</translation>
 <translation id="189035593835762169">條款及細則</translation>
 <translation id="189358972401248634">其他語言</translation>
 <translation id="1915734383465415025">商店編號</translation>
@@ -122,6 +127,7 @@
 <translation id="2210462644007531147">無法完成安裝</translation>
 <translation id="221872881068107022">反向捲動</translation>
 <translation id="2219081237089444028">設定 <ph name="DEVICE_TYPE" /> 密碼可簡化登入程序</translation>
+<translation id="2220529011494928058">報告問題</translation>
 <translation id="222115440608612541">在日出和日落時切換主題</translation>
 <translation id="2229161054156947610">還有 1 個多小時</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> 會在背景中自動更新，為您提供最新功能並改善安全性。您可在「設定」中查看更新偏好設定。</translation>
@@ -132,6 +138,7 @@
 <translation id="2328137272841210255">重設你的 PIN</translation>
 <translation id="2342180549977909852">子女可使用數字 (PIN) 代替密碼來為此裝置解鎖。如要稍後設定 PIN，請前往「設定」。</translation>
 <translation id="2359808026110333948">繼續</translation>
+<translation id="2384373936468275798">您的帳戶登入詳情已過時，因此 Chromium 作業系統無法同步處理您的資料。</translation>
 <translation id="2387052489799050037">前往主畫面</translation>
 <translation id="2395616325548404795">您的 <ph name="DEVICE_TYPE" /> 已成功註冊使用企業管理服務，但無法傳送資產和位置資料。請透過管理控制台為此裝置手動輸入這些資料。</translation>
 <translation id="2408955596600435184">請輸入您的 PIN</translation>
@@ -158,6 +165,7 @@
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Google 的定位服務會透過 Wi-Fi、流動網絡及感應器等來源協助估計此裝置的位置。<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />你可隨時前往 [設定] &gt; [應用程式] &gt; [Google Play 商店] &gt; [管理 Android 偏好設定] &gt; [安全性和位置] &gt; [位置]，以在此裝置上關閉 Android 定位服務。你亦可在同一選單中關閉「Google 定位精確度」，禁止 Android 定位服務使用 Wi-Fi、流動網絡和感應器。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2663302507110284145">語言</translation>
+<translation id="2674238339205910678">你的帳戶登入詳細資料尚未更新，因此 ChromeOS Flex 無法將 Chrome 資料儲存至 Google 帳戶</translation>
 <translation id="2687407218262674387">Google 服務條款</translation>
 <translation id="2688196195245426394">向伺服器註冊裝置時發生錯誤：<ph name="CLIENT_ERROR" />。</translation>
 <translation id="2698147581454716013">這是隨附裝置，因此無法註冊 Kiosk &amp; Signage 升級版。</translation>
@@ -252,6 +260,7 @@
 <translation id="3740945083753997630">縮小顯示同文字大小</translation>
 <translation id="376841534249795524">此 <ph name="DEVICE_TYPE" /> 的用途是什麼？</translation>
 <translation id="3772046291955677288">我已閱讀並同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》和《<ph name="BEGIN_LINK2" />Chrome 和 Chrome OS 附加服務條款<ph name="END_LINK2" />》。</translation>
+<translation id="3785324443014631273">登入時發生錯誤，因此 ChromeOS Flex 無法同步您的資料。</translation>
 <translation id="3789841737615482174">安裝</translation>
 <translation id="3800828618615365228">Google Chrome 和 Chrome OS 的《附加條款》</translation>
 <translation id="3828953470056652895">我已閱讀並同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》、《<ph name="BEGIN_LINK2" />Chrome 和 Chrome OS 附加服務條款<ph name="END_LINK2" />》和《<ph name="BEGIN_LINK3" />Play 服務條款<ph name="END_LINK3" />》。</translation>
@@ -332,6 +341,7 @@
         <ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />如需詳細說明，請前往：g.co/flex/InstallErrors。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">您想將誰加入此 <ph name="DEVICE_TYPE" />？</translation>
+<translation id="4543778593405494224">憑證管理員</translation>
 <translation id="4566170377336116390">如果要在完成註冊後切換裝置，您需要將裝置回復原廠設定 (Powerwash)。</translation>
 <translation id="4567512141633030272">登入選項有錯嗎？</translation>
 <translation id="4567533462991917415">您可在設定後隨時新增更多使用者。每位使用者都可將帳戶個人化，以確保資料私隱。</translation>
@@ -349,6 +359,7 @@
 <translation id="4814327014588285482">略過並稍後提醒我</translation>
 <translation id="4830502475412647084">正在安裝作業系統更新</translation>
 <translation id="4837926214103741331">您無權使用這部裝置。如需登入權限，請與裝置擁有者聯絡。</translation>
+<translation id="4842397268809523050">您的網域無法使用同步功能，因此 ChromeOS Flex 無法同步處理您的資料。</translation>
 <translation id="4844333629810439236">其他鍵盤</translation>
 <translation id="484462545196658690">自動</translation>
 <translation id="4864369630010738180">正在登入…</translation>
@@ -360,6 +371,7 @@
 <translation id="4944310289250773232">此驗證服務由 <ph name="SAML_DOMAIN" /> 代管</translation>
 <translation id="4955710816792587366">選擇 PIN</translation>
 <translation id="4965808351167763748">您確定要設定此裝置以執行 Hangouts Meet 嗎？</translation>
+<translation id="4969674060580488087">您的帳戶登入詳情已過時，因此 ChromeOS Flex 無法同步處理您的資料。</translation>
 <translation id="4987944280765486504">下載完成後，Chromebook 就會重新啟動，方便你繼續設定。</translation>
 <translation id="5029287942302939687">已設定密碼</translation>
 <translation id="503155457707535043">正在下載應用程式</translation>
@@ -401,6 +413,8 @@
 <translation id="528208740344463258">如要下載並使用 Android 應用程式，請先安裝此必要更新。<ph name="DEVICE_TYPE" /> 更新時，您將無法使用裝置。安裝完成後，<ph name="DEVICE_TYPE" /> 將會重新啟動。</translation>
 <translation id="5283677936944177147">糟糕！系統無法識別裝置型號或序號。</translation>
 <translation id="5333896723098573627">如要移除應用程式，請前往 [設定] &gt; [應用程式] &gt; [Google Play 商店] &gt; [管理 Android 偏好設定] &gt; [應用程式] 或 [應用程式管理員]，然後輕按您想解除安裝的應用程式 (您可能需要向右或向左滑動，才能找到應用程式)，再輕按 [解除安裝] 或 [停用]。</translation>
+<translation id="5334309298019785904">您的網域無法使用「同步功能」，因此 Chrome OS 無法同步處理您的資料。</translation>
+<translation id="535243042947607642">你的帳戶登入詳細資料未更新，因此 ChromiumOS 無法將 Chromium 資料儲存至 Google 帳戶</translation>
 <translation id="5355501370336370394">註冊企業裝置</translation>
 <translation id="5372529912055771682">這個版本的作業系統不支援提供註冊模式。請確保您使用的是最新版本，然後再試一次。</translation>
 <translation id="5397378439569041789">註冊 Kiosk 或標牌裝置</translation>
@@ -412,6 +426,7 @@
 <translation id="5448293924669608770">糟糕，登入帳戶時發生錯誤</translation>
 <translation id="5453829744223920473">你的子女可以像在課堂般使用所有學校應用程式、書籤和資源。學校將設定基本規則。</translation>
 <translation id="5473099001878321374">如繼續操作，即表示您亦允許此裝置自動下載和安裝來自 Google、您子女的流動網絡供應商和裝置製造商的更新內容和應用程式，當中可能會使用流動數據，部分應用程式可能會提供應用程式內購買。</translation>
+<translation id="549669000822060376">請稍候，Chromium 正在安裝最新的系統更新。</translation>
 <translation id="5502915260472117187">兒童</translation>
 <translation id="5511823366942919280">您確定要將這部裝置設為 "Shark" 嗎？</translation>
 <translation id="5513807280330619196">計算機</translation>
@@ -515,6 +530,7 @@
 <translation id="6495266441917713704">無法轉移 Wi-Fi</translation>
 <translation id="6515620015470298987">由於裝置設定檢查問題，因此無法登入。請將 <ph name="DEVICE_TYPE" /> 回復原廠設定，然後再試一次。</translation>
 <translation id="6519689855001245063">正在檢查資格</translation>
+<translation id="6520608191273161151">登入時發生錯誤，因此 ChromeOS Flex 無法將 Chrome 資料儲存至 Google 帳戶</translation>
 <translation id="6532527800157340614">無法擷取您的存取憑證，因此無法登入。請檢查您的網絡連線，然後再試一次。</translation>
 <translation id="653920215766444089">正在搜尋指標裝置</translation>
 <translation id="65513682072153627">當某項設定或功能是由管理員管理時，系統會顯示這個「受管理」圖示。</translation>
@@ -526,8 +542,10 @@
 <translation id="6675665718701918026">已連接指標裝置</translation>
 <translation id="667752334740867460">正在接收 Wi-Fi 資料…</translation>
 <translation id="6680442031740878064">可用空間：<ph name="AVAILABLE_SPACE" /></translation>
+<translation id="668175097507315160">登入時發生錯誤，因此 Chromium 作業系統無法同步處理您的資料。</translation>
 <translation id="6684827949542560880">正在下載最新的更新</translation>
 <translation id="6722744767592605627">您可以復原 <ph name="EMAIL" />，但系統將刪除本機資料。</translation>
+<translation id="6735387454586646204">ChromeOS Flex 系統</translation>
 <translation id="6748980958975836188">我已閱讀並同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》、《<ph name="BEGIN_LINK2" />Chrome 和 Chrome OS 附加服務條款<ph name="END_LINK2" />》。</translation>
 <translation id="6749473226660745022">相片</translation>
 <translation id="6754918760968695779">快速插入</translation>
@@ -552,6 +570,7 @@
 <translation id="6918733588290914545">透過 Android 手機快速設定</translation>
 <translation id="6920473853105515518">請確定你的 <ph name="DEVICE_TYPE" /> 已連線到互聯網，然後再試一次。你亦可使用其他裝置瀏覽 play.google/play-terms。</translation>
 <translation id="6929126689972602640">學校帳戶不支援家長監控設定。如要新增學校帳戶，以便在家中存取 Google Classroom 和其他學校作業用的網站，請先使用子女的個人帳戶登入。您稍後可在設定新增學校帳戶。</translation>
+<translation id="6933858244219479645">ChromeOS 系統</translation>
 <translation id="6935031746833428401">進一步了解裝置管理</translation>
 <translation id="6950351336108213154">正在更新周邊裝置</translation>
 <translation id="6955698182324067397">您即將啟用 Chrome OS 偵錯功能；啟用後，系統會設定 sshd 協助程式，並啟用 USB 磁碟開機功能。</translation>
@@ -645,6 +664,7 @@
 <translation id="7870730066603611552">設定後查看同步選項</translation>
 <translation id="7883792253546618164">您可隨時取消訂閱。</translation>
 <translation id="7887864092952184874">已配對藍牙滑鼠</translation>
+<translation id="7905880575591690197">登入時發生錯誤，因此 ChromeOS 無法將 Chrome 資料儲存至 Google 帳戶</translation>
 <translation id="7906440585529721295">本機資料將被刪除</translation>
 <translation id="7910725946105920830">使用個人 Google 帳戶</translation>
 <translation id="7918257978052780342">註冊</translation>
@@ -671,6 +691,7 @@
 <translation id="8098616321286360457">需要網絡連線</translation>
 <translation id="8129265306888404830">如要使用機構的電郵地址 (<ph name="EMAIL_DOMAIN" />)，您需要進行企業註冊程序。如果此裝置是作私人用途，請登入個人 Google 帳戶。</translation>
 <translation id="8131740175452115882">確定</translation>
+<translation id="8133124826068723441">您的網域無法使用「同步功能」，因此 Chromium 作業系統無法同步處理您的資料。</translation>
 <translation id="8146177459103116374">如果您已在這部裝置上註冊，您可以<ph name="LINK2_START" />用現有的使用者身分登入<ph name="LINK2_END" />。</translation>
 <translation id="8146793085009540321">登入失敗，請與您的管理員聯絡或再試一次。</translation>
 <translation id="8147346945017130012">將當機報告、診斷和使用情況資料自動傳送給 Google，協助改善 Chrome 和 Chrome OS 的功能和效能。</translation>
@@ -689,6 +710,7 @@
 <translation id="8271379370373330993">後續幾個步驟須由家長完成。您可在帳戶設定後將 <ph name="DEVICE_TYPE" /> 交還給子女。</translation>
 <translation id="8274924778568117936">在更新完成前，請勿關閉 <ph name="DEVICE_TYPE" />。您的 <ph name="DEVICE_TYPE" /> 將會在安裝完成後重新啟動。</translation>
 <translation id="8281886186245836920">略過</translation>
+<translation id="8286036467436129157">登入</translation>
 <translation id="8289509909262565712">歡迎使用 <ph name="DEVICE_OS" /></translation>
 <translation id="8291942417224950075">個人用途</translation>
 <translation id="8304383784961451596">您無權使用此裝置。請與管理員聯絡，要求對方授予登入權限，或使用 Family Link 監管的 Google 帳戶登入。</translation>
@@ -700,6 +722,7 @@
 <translation id="8401432541486058167">請輸入與智能資訊卡相關聯的 PIN。</translation>
 <translation id="8408270600235826886">您可控制要與 Google 分享哪些資料。您隨時可在「設定」中變更此設定。我們會根據 Google 的《<ph name="BEGIN_LINK" />私隱權政策<ph name="END_LINK" />》使用相關資料。</translation>
 <translation id="8413956290606243087">要啟用 Chrome OS 內置的螢幕閱讀器 ChromeVox 嗎？</translation>
+<translation id="8418845734693287262">您的帳戶登入詳情尚未更新，因此 Chrome OS 無法同步處理您的資料。</translation>
 <translation id="8425768983279799676">您可以使用 PIN 解鎖裝置。</translation>
 <translation id="8428213095426709021">設定</translation>
 <translation id="843173223122814223">以 AI 製作背景</translation>
@@ -739,10 +762,12 @@
 <translation id="8794548468611058947">你可為此 <ph name="DEVICE_TYPE" /> 建立 PIN，不必輸入 Google 帳戶密碼登入</translation>
 <translation id="8830779999439981481">正在重新啟動以套用更新</translation>
 <translation id="8830796635868321089">無法以目前的 Proxy 設定啟動更新檢查，請調整<ph name="PROXY_SETTINGS_LINK_START" />Proxy 設定<ph name="PROXY_SETTINGS_LINK_END" />。</translation>
+<translation id="8833697763442816810">Chromium 作業系統</translation>
 <translation id="8855977033756560989">此 Chromebook Enterprise 裝置附隨 Chrome Enterprise Upgrade。如要善用企業功能，請使用 Google 管理員帳戶註冊此裝置。</translation>
 <translation id="885746075120788020">使用 Google 帳戶登入後，就能將已儲存的偏好設定和活動同步至任何 Chrome OS 裝置。您可在「設定」中選擇要同步處理的資料。</translation>
 <translation id="8868333925931032127">正在開始示範模式</translation>
 <translation id="8875221558267407626">撮要內容、簡化複雜用語或提問</translation>
+<translation id="8890569919834781711">登入時發生錯誤，因此 ChromiumOS 無法將 Chromium 資料儲存至 Google 帳戶</translation>
 <translation id="8907701755790961703">請選取國家/地區</translation>
 <translation id="8913163265790894442">使用手機輕鬆設定 <ph name="DEVICE_TYPE" />。你可新增 Wi-Fi 和 Google 帳戶，無需手動輸入密碼。
         <ph name="BR" />
@@ -778,5 +803,6 @@
 <translation id="951991426597076286">拒絕</translation>
 <translation id="954749761428814584">語言和輸入方法</translation>
 <translation id="960987915827980018">還有約 1 個小時</translation>
+<translation id="973195869036269770">你的帳戶登入詳細資料尚未更新，因此 ChromeOS 無法將 Chrome 資料儲存至 Google 帳戶</translation>
 <translation id="995420352808264005">選擇裝置註冊類型</translation>
 </translationbundle>

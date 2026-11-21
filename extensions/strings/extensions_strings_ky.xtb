@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Теманы иштетүү</translation>
+<translation id="1085064499066015002">Бардык сайттарда ар дайым күйүк</translation>
 <translation id="1135328998467923690">Топтом жараксыз: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">Арткы камера</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> Chromium'дун ишин өзгөртө турган кеңейтүүнү кошту.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">Күтүлүп жаткан версия – "<ph name="EXPECTED_VERSION" />" болчу, бирок "<ph name="NEW_ID" />" версиясы алынып калды</translation>
 <translation id="471800408830181311">Жеке ачкычты чыгара албай койду.</translation>
 <translation id="4811956658694082538">Тейлөө процесси кыйрап калгандыктан, топтом орнотулбай калды. Сhrome'ду өчүрүп күйгүзүп туруп, кайра аракет кылып көрүңүз.</translation>
+<translation id="4883436287898674711">Бардык <ph name="WEBSITE_1" /> сайттар</translation>
 <translation id="4988792151665380515">Коомдук ачкыч экспорттолбой калды.</translation>
 <translation id="501057610015570208">"Киоск_гана" деген манифести бар колдонмо ChromeOS Flex киоск режиминде орнотулушу керек</translation>
 <translation id="5026754133087629784">Желе көрүнүшү: <ph name="WEBVIEW_TAG_NAME" /></translation>

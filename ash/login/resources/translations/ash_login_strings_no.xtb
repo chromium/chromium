@@ -10,6 +10,7 @@
 <translation id="1097658378307015415">Gå inn som gjest for å aktivere nettverket <ph name="NETWORK_ID" /> før du logger deg på.</translation>
 <translation id="1111932478203988717">Barnet kan bruke denne PIN-koden til å logge på enheten sin</translation>
 <translation id="1122587596907914265">Lag bakgrunner med unik stil</translation>
+<translation id="1122913801042512795">Påloggingsinformasjonen for kontoen din er utdatert. Logg av og på igjen.</translation>
 <translation id="1131201598497838573">Barnets PIN-kode er oppdatert</translation>
 <translation id="1147322039136785890">Nå kan du gi enheten til <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1148669835763563782">Du får den nyeste programvareoppdateringen, som øker sikkerheten og inneholder de nyeste Chromebook-funksjonene. Med denne oppdateringen får du en enda bedre konfigureringsopplevelse, slik at du får en knirkefri start med Chromebooken.</translation>
@@ -26,6 +27,7 @@
 <translation id="1256588359404100567">Innstillingen er synkronisert fra den forrige enheten din.</translation>
 <translation id="1272978324304772054">Denne brukerkontoen tilhører ikke domenet som enheten er registrert for. Hvis du vil registrere deg for et annet domene, må du først gå gjennom enhetsgjenoppretting.</translation>
 <translation id="1293556467332435079">Filer</translation>
+<translation id="1302523850133262269">Vent mens Chrome installerer de nyeste systemoppdateringene.</translation>
 <translation id="1307559529304613120">Beklager. Systemet kunne ikke lagre noe langvarig API-tilgangstoken for denne enheten.</translation>
 <translation id="1335929031622236846">Registrer enheten din</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Feilsøkingsfunksjoner<ph name="END_H3" />
@@ -49,6 +51,7 @@
 <translation id="1347625331607114917">Bekreft koden på Android-telefonen</translation>
 <translation id="1347975661240122359">Oppdateringen starter når batteriet når <ph name="BATTERY_LEVEL" /> %.</translation>
 <translation id="1353275871123211385">Hvis du vil bruke foreldrekontroller som appgodkjenning og grenser for skjermtid, må barnet ha en Google-konto som administreres av en forelder. Senere kan det legges til en skolekonto for verktøy som Google Classroom.</translation>
+<translation id="1363996462118479832">ChromeOS kunne ikke synkronisere dataene dine på grunn av en feil under pålogging.</translation>
 <translation id="1375557162880614858">Vil du slå på ChromeVox, den innebygde skjermleseren for ChromeOS Flex?</translation>
 <translation id="1377600615067678409">Hopp over</translation>
 <translation id="1399261165075500043">Kan ikke laste inn vilkårene for bruk av Google Play</translation>
@@ -73,6 +76,7 @@
 <translation id="1642494467033190216">Fjerning av rootfs-beskyttelse og omstart er nødvendig før du slår på andre feilsøkingsfunksjoner.</translation>
 <translation id="1646045728251578877">En programvareoppdatering er tilgjengelig</translation>
 <translation id="1650801028905250434">Filene dine i Min disk synkroniseres automatisk med Chromebooken, slik at du har tilgang til dem uten internettilkobling. Du kan når som helst endre dette i Innstillinger &gt; Filer.</translation>
+<translation id="16620462294541761">Beklager, passordet kan ikke verifiseres. Prøv på nytt.</translation>
 <translation id="1668435968811469751">Registrer manuelt</translation>
 <translation id="1678919064276516737">E-postadressen og PIN-koden du skrev inn, stemmer ikke overens</translation>
 <translation id="1692115862433274081">Bruk en annen konto</translation>
@@ -94,6 +98,7 @@
 <translation id="1868617395637139709">Bruk posisjon i Android-apper og -tjenester.</translation>
 <translation id="1877377730633446520">Dette bruker omtrent <ph name="REQUIRED_SPACE" />. Du har <ph name="FREE_SPACE" /> ledig.</translation>
 <translation id="1878155070920054810">Det ser ut til at Chromebooken din kommer til å gå tom for strøm før oppdateringen er ferdig. Sørg for at den lades ordentlig, for å unngå avbrudd.</translation>
+<translation id="1887442540531652736">Påloggingsfeil</translation>
 <translation id="189035593835762169">Vilkår</translation>
 <translation id="189358972401248634">Andre språk</translation>
 <translation id="1915734383465415025">Butikknummer</translation>
@@ -122,6 +127,7 @@
 <translation id="2210462644007531147">Kunne ikke fullføre installasjonen</translation>
 <translation id="221872881068107022">Omvendt rulling</translation>
 <translation id="2219081237089444028">Angi et <ph name="DEVICE_TYPE" />-passord for å gjøre det enklere å logge på</translation>
+<translation id="2220529011494928058">Rapporter et problem</translation>
 <translation id="222115440608612541">Bytt tema ved soloppgang og solnedgang</translation>
 <translation id="2229161054156947610">Mer enn én time igjen</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> oppdateres automatisk i bakgrunnen for å gi deg de nyeste funksjonene og sikkerhetsforbedringene. Du kan gå gjennom preferansene dine for oppdateringer i innstillingene.</translation>
@@ -132,6 +138,7 @@
 <translation id="2328137272841210255">Tilbakestill PIN-koden</translation>
 <translation id="2342180549977909852">Barnet ditt kan låse opp denne enheten med et nummer (en PIN-kode) i stedet for et passord. For å angi en PIN-kode senere, gå til Innstillinger.</translation>
 <translation id="2359808026110333948">Fortsett</translation>
+<translation id="2384373936468275798">ChromiumOS kunne ikke synkronisere dataene dine, ettersom påloggingsopplysningene for kontoen din er utdaterte.</translation>
 <translation id="2387052489799050037">Gå til startsiden</translation>
 <translation id="2395616325548404795"><ph name="DEVICE_TYPE" />-enheten din er nå registrert for bedriftsadministrering. Den sendte imidlertid ikke ressurs- og plasseringsinformasjon. Denne informasjonen må legges inn manuelt i administrasjonskonsollen for denne enheten.</translation>
 <translation id="2408955596600435184">Skriv inn PIN-koden din</translation>
@@ -158,6 +165,7 @@
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Googles posisjonstjeneste bruker kilder som wifi, mobilnettverk og sensorer til å estimere enhetens posisjon.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Du kan når som helst slå av posisjonen på denne Android-enheten ved å gå til Innstillinger &gt; Apper &gt; Google Play Butikk &gt; Administrer Android-innstillinger &gt; Sikkerhet og posisjon &gt; Posisjon. Du kan også slå av bruken av wifi, mobilnettverk og sensorer for Android-posisjonen ved å slå av «Google Posisjonsnøyaktighet» på den samme menyen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2663302507110284145">Språk</translation>
+<translation id="2674238339205910678">ChromeOS Flex kunne ikke lagre Chrome-data i Google-kontoen din, fordi påloggingsopplysningene dine er utdaterte</translation>
 <translation id="2687407218262674387">Googles vilkår for bruk</translation>
 <translation id="2688196195245426394">Feil under registreringen av enheten hos tjeneren: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Dette er en pakkeenhet og kan ikke registreres med Kiosk og skilt-oppgradering.</translation>
@@ -252,6 +260,7 @@
 <translation id="3740945083753997630">Senk visnings- og tekststørrelsen</translation>
 <translation id="376841534249795524">Hva skal du bruke <ph name="DEVICE_TYPE" /> til?</translation>
 <translation id="3772046291955677288">Jeg har lest og samtykker i <ph name="BEGIN_LINK1" />Googles vilkår for bruk<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />tilleggsvilkårene for bruk av Chrome og ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="3785324443014631273">ChromeOS Flex kunne ikke synkronisere dataene dine på grunn av en påloggingsfeil.</translation>
 <translation id="3789841737615482174">Installer</translation>
 <translation id="3800828618615365228">Tilleggsvilkår for Google Chrome og ChromeOS</translation>
 <translation id="3828953470056652895">Jeg har lest og samtykker i <ph name="BEGIN_LINK1" />Googles vilkår for bruk<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />tilleggsvilkårene for bruk av Chrome og ChromeOS<ph name="END_LINK2" /> og <ph name="BEGIN_LINK3" />vilkårene for bruk av Play<ph name="END_LINK3" />.</translation>
@@ -332,6 +341,7 @@
         <ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Du finner mer hjelp på g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Hvem vil du legge til på denne <ph name="DEVICE_TYPE" />-enheten?</translation>
+<translation id="4543778593405494224">Sertifikatadministrator</translation>
 <translation id="4566170377336116390">Hvis du vil endre dette etter registreringen, må du tilbakestille enheten til fabrikkstandard (utføre en powerwash).</translation>
 <translation id="4567512141633030272">Feil påloggingsalternativ?</translation>
 <translation id="4567533462991917415">Du kan alltid legge til flere personer etter at konfigureringen er fullført. Hver person kan gi kontoen sin personlig preg og holde dataene sine private.</translation>
@@ -349,6 +359,7 @@
 <translation id="4814327014588285482">Hopp over og minn meg på dette senere</translation>
 <translation id="4830502475412647084">Installerer OS-oppdateringen</translation>
 <translation id="4837926214103741331">Du er ikke autorisert til å bruke denne enheten. Ta kontakt med eieren av enheten for å få tillatelse til å logge på.</translation>
+<translation id="4842397268809523050">ChromeOS Flex kunne ikke synkronisere dataene dine. Dette skyldes at synkronisering ikke er tilgjengelig for domenet ditt.</translation>
 <translation id="4844333629810439236">Andre tastaturer</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4864369630010738180">Logger på ...</translation>
@@ -360,6 +371,7 @@
 <translation id="4944310289250773232">Verten for denne autentiseringstjenesten er <ph name="SAML_DOMAIN" />.</translation>
 <translation id="4955710816792587366">Velg PIN-koden din</translation>
 <translation id="4965808351167763748">Er du sikker på at du vil konfigurere Hangouts Meet på denne enheten?</translation>
+<translation id="4969674060580488087">ChromeOS Flex kunne ikke synkronisere dataene dine. Dette skyldes at påloggingsopplysningene for kontoen din er utdaterte.</translation>
 <translation id="4987944280765486504">Chromebooken startes på nytt når nedlastingen er fullført og du kan fortsette konfigureringen.</translation>
 <translation id="5029287942302939687">Passordet ditt er angitt</translation>
 <translation id="503155457707535043">Apper lastes ned</translation>
@@ -401,6 +413,8 @@
 <translation id="528208740344463258">Du må installere en oppdatering før du kan laste ned og bruke Android-apper. Du kan ikke bruke <ph name="DEVICE_TYPE" /> mens den oppdateres. <ph name="DEVICE_TYPE" /> starter på nytt når installasjonen er ferdig.</translation>
 <translation id="5283677936944177147">Beklager. Systemet kunne ikke fastslå enhetens modell eller serienummer.</translation>
 <translation id="5333896723098573627">For å fjerne apper, gå til Innstillinger &gt; Apper &gt; Google Play Butikk &gt; Administrer Android-innstillinger &gt; Apper eller Appstyring. Trykk på appen du vil avinstallere (du må kanskje sveipe til høyre eller venstre for å finne den). Trykk deretter på Avinstaller eller Slå av.</translation>
+<translation id="5334309298019785904">ChromeOS kunne ikke synkronisere dataene dine, ettersom synkronisering ikke er tilgjengelig for domenet ditt.</translation>
+<translation id="535243042947607642">ChromiumOS kunne ikke lagre Chromium-data i Google-kontoen din, fordi påloggingsopplysningene for kontoen din er utdaterte</translation>
 <translation id="5355501370336370394">Registrer bedriftsenhet</translation>
 <translation id="5372529912055771682">Denne versjonen av operativsystemet støtter ikke registreringsmodusen som ble angitt. Kontroller at du kjører den nyeste versjonen, og prøv på nytt.</translation>
 <translation id="5397378439569041789">Registrer kiosk- eller skiltenhet</translation>
@@ -412,6 +426,7 @@
 <translation id="5448293924669608770">Noe gikk galt under påloggingen</translation>
 <translation id="5453829744223920473">Barnet ditt kan bruke alle skoleappene, bokmerkene og ressursene sine på samme måte som i klasserommet. Skolen fastsetter grunnreglene.</translation>
 <translation id="5473099001878321374">Hvis du fortsetter, godtar du at apper og oppdateringer fra Google, barnets operatør og enhetsprodusenten også kan lastes ned og installeres på enheten automatisk – muligens via mobildata. Noen av disse appene kan tilby kjøp i appen.</translation>
+<translation id="549669000822060376">Vent mens Chromium installerer de nyeste systemoppdateringene.</translation>
 <translation id="5502915260472117187">Et barn</translation>
 <translation id="5511823366942919280">Er du sikker på at du ønsker å konfigurere denne enheten som en «hai» («shark»)?</translation>
 <translation id="5513807280330619196">Kalkulator</translation>
@@ -515,6 +530,7 @@
 <translation id="6495266441917713704">Kan ikke overføre wifi</translation>
 <translation id="6515620015470298987">Påloggingen mislyktes på grunn av et problem med enhetskonfigurasjonssjekken. Utfør en powerwash på <ph name="DEVICE_TYPE" />, og prøv på nytt.</translation>
 <translation id="6519689855001245063">Kontrollerer kvalifikasjoner</translation>
+<translation id="6520608191273161151">ChromeOS Flex kunne ikke lagre Chrome-data i Google-kontoen din på grunn av en påloggingsfeil</translation>
 <translation id="6532527800157340614">Påloggingen mislyktes fordi tilgangstokenet ditt ikke kunne hentes. Sjekk nettverkstilkoblingen din, og prøv på nytt.</translation>
 <translation id="653920215766444089">Søker etter pekeenhet</translation>
 <translation id="65513682072153627">Du ser dette Administrert-ikonet når innstillinger og funksjoner administreres av administratoren din.</translation>
@@ -526,8 +542,10 @@
 <translation id="6675665718701918026">En pekeenhet er koblet til</translation>
 <translation id="667752334740867460">Mottar wifi-informasjon …</translation>
 <translation id="6680442031740878064">Tilgjengelig: <ph name="AVAILABLE_SPACE" /></translation>
+<translation id="668175097507315160">ChromiumOS kunne ikke synkronisere dataene dine på grunn av en feil under pålogging.</translation>
 <translation id="6684827949542560880">Laster ned den nyeste oppdateringen</translation>
 <translation id="6722744767592605627">Du kan gjenopprette <ph name="EMAIL" />, men lokale data slettes.</translation>
+<translation id="6735387454586646204">ChromeOS Flex-system</translation>
 <translation id="6748980958975836188">Jeg har lest og samtykker i <ph name="BEGIN_LINK1" />Googles vilkår for bruk<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />tilleggsvilkårene for bruk av Chrome og ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="6749473226660745022">Bilder</translation>
 <translation id="6754918760968695779">Hurtiginnsetting</translation>
@@ -552,6 +570,7 @@
 <translation id="6918733588290914545">Rask konfigurering med Android-telefon</translation>
 <translation id="6920473853105515518">Sørg for at <ph name="DEVICE_TYPE" /> er koblet til internett, og prøv på nytt. Du kan også gå til play.google/play-terms på en annen enhet.</translation>
 <translation id="6929126689972602640">Foreldrekontroll støttes ikke for skolekontoer. For å legge til en skolekonto for å få tilgang til Google Classroom og andre nettsteder for skolearbeid hjemme, logg på med barnets personlige konto først. Du kan legge til skolekontoen senere i konfigureringen.</translation>
+<translation id="6933858244219479645">ChromeOS-systemet</translation>
 <translation id="6935031746833428401">Finn ut mer om administrering av enheter</translation>
 <translation id="6950351336108213154">Oppdaterer eksterne enheter</translation>
 <translation id="6955698182324067397">Du er i ferd med å slå på ChromeOS-feilsøkingsfunksjoner som kommer til å konfigurere sshd daemon og muliggjøre oppstart fra USB-stasjoner.</translation>
@@ -648,6 +667,7 @@
 <translation id="7870730066603611552">Gå gjennom alternativene for synkronisering etter konfigureringen</translation>
 <translation id="7883792253546618164">Du kan avslutte abonnementet når som helst.</translation>
 <translation id="7887864092952184874">En Bluetooth-mus er tilkoblet</translation>
+<translation id="7905880575591690197">ChromeOS kunne ikke lagre Chrome-data i Google-kontoen din på grunn av en påloggingsfeil</translation>
 <translation id="7906440585529721295">Lokale data blir slettet</translation>
 <translation id="7910725946105920830">Bruk den personlige Google-kontoen din</translation>
 <translation id="7918257978052780342">Registrer deg</translation>
@@ -674,6 +694,7 @@
 <translation id="8098616321286360457">Nettverkstilkobling kreves</translation>
 <translation id="8129265306888404830">For å bruke e-postadressen fra organisasjonen din (<ph name="EMAIL_DOMAIN" />) må du bruke bedriftsregistrering. Hvis denne enheten er til personlig bruk, logger du på med den personlige Google-kontoen din.</translation>
 <translation id="8131740175452115882">Bekreft</translation>
+<translation id="8133124826068723441">ChromiumOS kunne ikke synkronisere dataene dine, ettersom synkronisering ikke er tilgjengelig for domenet ditt.</translation>
 <translation id="8146177459103116374">Hvis du allerede er registrert på denne enheten, kan du <ph name="LINK2_START" />logge deg på som en eksisterende bruker<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Påloggingen mislyktes. Kontakt administratoren din, eller prøv på nytt.</translation>
 <translation id="8147346945017130012">Bidra til å gjøre funksjonene og ytelsen til Chrome og ChromeOS bedre ved å sende programstopprapporter, diagnostikk og bruksdata automatisk til Google.</translation>
@@ -692,6 +713,7 @@
 <translation id="8271379370373330993">Foreldre, dere må utføre de neste trinnene. Dere kan gi <ph name="DEVICE_TYPE" /> tilbake til barnet etter kontokonfigureringen.</translation>
 <translation id="8274924778568117936">Du må ikke slå av eller lukke <ph name="DEVICE_TYPE" />-enheten din før oppdateringen er ferdig. <ph name="DEVICE_TYPE" />-enheten starter på nytt når installasjonen er ferdig.</translation>
 <translation id="8281886186245836920">Hopp over</translation>
+<translation id="8286036467436129157">Logg på</translation>
 <translation id="8289509909262565712">Velkommen til <ph name="DEVICE_OS" /></translation>
 <translation id="8291942417224950075">For personlig bruk</translation>
 <translation id="8304383784961451596">Du er ikke autorisert til å bruke denne enheten. Kontakt administratoren for å få tillatelse til å logge på, eller logg på med en Google-konto som er under tilsyn av Family Link.</translation>
@@ -703,6 +725,7 @@
 <translation id="8401432541486058167">Oppgi PIN-koden som er tilknyttet smartkortet ditt.</translation>
 <translation id="8408270600235826886">Du kan kontrollere hvilke data som deles med Google. Du kan når som helst endre dette i innstillingene. Dataene brukes i henhold til Googles <ph name="BEGIN_LINK" />personvernregler<ph name="END_LINK" />.</translation>
 <translation id="8413956290606243087">Vil du slå på ChromeVox, den innebygde skjermleseren for ChromeOS?</translation>
+<translation id="8418845734693287262">ChromeOS kunne ikke synkronisere dataene dine, ettersom påloggingsopplysningene for kontoen din er utdaterte.</translation>
 <translation id="8425768983279799676">Du kan bruke PIN-koden til å låse opp enheten.</translation>
 <translation id="8428213095426709021">Innstillinger</translation>
 <translation id="843173223122814223">Lag bakgrunner med AI</translation>
@@ -742,10 +765,12 @@
 <translation id="8794548468611058947">I stedet for å skrive inn passordet for Google-kontoen din for å logge på, kan du opprette en PIN-kode for <ph name="DEVICE_TYPE" /></translation>
 <translation id="8830779999439981481">Starter på nytt for å ta i bruk oppdateringer</translation>
 <translation id="8830796635868321089">Oppdateringssjekken mislyktes med de gjeldende mellomtjenerinnstillingene. Du må endre <ph name="PROXY_SETTINGS_LINK_START" />mellomtjenerinnstillingene<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
+<translation id="8833697763442816810">ChromiumOS-systemet</translation>
 <translation id="8855977033756560989">Denne Chromebook Enterprise-enheten leveres med Chrome Enterprise-oppgraderingen. For å dra nytte av bedriftsfunksjonene, registrer denne enheten med en Google-administratorkonto.</translation>
 <translation id="885746075120788020">Du får tilgang til de lagrede preferansene dine og den lagrede aktiviteten din på alle ChromeOS-enheter når du logger på med Google-kontoen din. Du kan velge hva du vil synkronisere, i Innstillinger.</translation>
 <translation id="8868333925931032127">Starter demomodus</translation>
 <translation id="8875221558267407626">Oppsummer innhold, forenkle komplisert språk eller still spørsmål</translation>
+<translation id="8890569919834781711">ChromiumOS kunne ikke lagre Chromium-data i Google-kontoen din på grunn av en påloggingsfeil</translation>
 <translation id="8907701755790961703">Velg et land</translation>
 <translation id="8913163265790894442">Konfigurer <ph name="DEVICE_TYPE" /> enkelt med telefonen. Du kan legge til wifi-nettverket ditt og Google-kontoen din uten å skrive inn passordene manuelt.
         <ph name="BR" />
@@ -781,5 +806,6 @@
 <translation id="951991426597076286">Avvis</translation>
 <translation id="954749761428814584">Språk og inndatametode</translation>
 <translation id="960987915827980018">Omtrent én time igjen</translation>
+<translation id="973195869036269770">ChromeOS kunne ikke lagre Chrome-data i Google-kontoen din, fordi påloggingsopplysningene dine er utdaterte</translation>
 <translation id="995420352808264005">Velg type enhetsregistrering</translation>
 </translationbundle>

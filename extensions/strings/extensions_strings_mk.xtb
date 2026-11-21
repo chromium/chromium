@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Овозможи тема</translation>
+<translation id="1085064499066015002">Секогаш на сите сајтови</translation>
 <translation id="1135328998467923690">Пакетот не е важечки: „<ph name="ERROR_CODE" />“.</translation>
 <translation id="1140871961407805696">Задна камера</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> додаде екстензија што може да го промени начинот на функционирање на Chromium.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">Очекувана верзија „<ph name="EXPECTED_VERSION" />“, но верзијата беше „<ph name="NEW_ID" />“</translation>
 <translation id="471800408830181311">Не успеа да издаде јавен клуч.</translation>
 <translation id="4811956658694082538">Пакетот не може да се инсталира бидејќи падна процесот на услужната програма. Престартувајте го Chrome и обидете се повторно.</translation>
+<translation id="4883436287898674711">Сите локации на <ph name="WEBSITE_1" /></translation>
 <translation id="4988792151665380515">Не успеа да извезе јавен клуч.</translation>
 <translation id="501057610015570208">Апликацијата што пројавува карактеристики на „kiosk_only“ мора да се инсталира во режим на Киоск на ChromeOS Flex</translation>
 <translation id="5026754133087629784">Веб-приказ: <ph name="WEBVIEW_TAG_NAME" /></translation>

@@ -58,6 +58,7 @@ Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes.
 <translation id="2027881372245801507">Išjungus pasiūlymus, „Chromium“ puslapių pavadinimų ir URL apdorojimas kitoms funkcijoms nevaldomas. Prieigą prie šių duomenų galite tvarkyti <ph name="BEGIN_LINK" />sinchronizavimo nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Prisijunkite prie šios svetainės ir „Chromium“, kad gautumėte slaptažodžius ir kt. visuose savo įrenginiuose</translation>
 <translation id="2042889939382983733">„Chromium“ istorijos peržiūra</translation>
+<translation id="2054352566231434723">Atidarykite išorines nuorodas naršyklėje „Chromium“ pagal numatytuosius nustatymus.</translation>
 <translation id="2059365270911640413">Užbaikite „Chromium“ sąranką</translation>
 <translation id="2168108852149185974">Naudojant kai kuriuos priedus „Chromium“ užstringa. Pašalinkite:</translation>
 <translation id="2168593389981132306">„Chromium“ tobulinimas</translation>
@@ -85,6 +86,7 @@ Naujų žymių negalima išsaugoti paskyroje, kol ištrinsite kai kurias žymes.
 <translation id="2485774047568879945">Nustatykite „Chromium“ kaip numatytąją naršyklę, kad galėtumėte lengvai bendrinti ir atidaryti nuorodas</translation>
 <translation id="2512597191798760956">Paspauskite ir palaikykite „Chromium“ piktogramą ir spustelėkite „Redaguoti pagrindinį ekraną“</translation>
 <translation id="2517624234762908348">Sinchronizuoti „Chromium“ duomenis</translation>
+<translation id="2519012503779379646">Nustatykite „Chromium“ kaip numatytąją naršyklę, kad perėjimas iš vienos programos į kitą vyktų sparčiau ir paprasčiau.</translation>
 <translation id="2592940277904433508">Toliau naudoti „Chromium“</translation>
 <translation id="2601766165676560303">„Chromium“ tema, skirta „iPhone“ ir „iPad“</translation>
 <translation id="2607609479243848905">Jei pamiršote slaptafrazę ar norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chromium“ duomenis paskyroje<ph name="END_LINK" />.</translation>
@@ -189,6 +191,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="4985291216379576555">Neprisijungta, todėl „Chromium“ nepavyko patikrinti, ar yra naujinių</translation>
 <translation id="4996471330284142407">Nuveikite daugiau naudodami paprastą, saugią ir spartesnę nei bet kada anksčiau „Chromium“.</translation>
 <translation id="4999538639245140991">Atsijungiate nuo paskyros, kurią valdo <ph name="SIGNOUT_MANAGED_DOMAIN" />, todėl „Chromium“ duomenys bus ištrinti iš šio įrenginio. Duomenys išliks jūsų „Google“ paskyroje.</translation>
+<translation id="5004986813285860899">Pereikite tiesiai į „Chromium“</translation>
 <translation id="5042011327527167688">Palieskite „Peržiūrėti naudojant „Google“ žemėlapius naršyklėje „Chromium“.</translation>
 <translation id="5044871537677053278">„Chromium“ aptinka adresus ir naudoja „Google“ žemėlapius, kad pateiktų jums nuorodų ir vietinės informacijos.</translation>
 <translation id="5048140766121299007">„<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />“ nustatymuose įjunkite „Chromium“</translation>
@@ -202,6 +205,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="5224391634244552924">Nėra išsaugotų slaptažodžių. „Chromium“ gali tikrinti jūsų slaptažodžius, kai juos išsaugote.</translation>
 <translation id="5259423875997548710">Ieškokite vaizdo medžiagos naršyklėje „Chromium“.</translation>
 <translation id="5284913972719948193">Importuokite duomenis, kad galėtumėte naudoti slaptažodžius, istoriją, žymes ir kredito korteles naudodami „Chromium“</translation>
+<translation id="5299421317003704533">Atidarykite nuorodas tiesiogiai naršyklėje „Chromium“.</translation>
 <translation id="5308226104666789935">„Chromium“ nepavyko patikrinti, ar yra naujinių.</translation>
 <translation id="5311557153294205270">Pridedami įvesti URL prie žymių naršyklėje „Chromium“.</translation>
 <translation id="5383251701169024761">Lengvai gaukite išsaugotus slaptažodžius kitose programose; pasirinkite „Chromium“, jei norite naudoti automatinio pildymo funkciją.</translation>
@@ -268,6 +272,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="6387994184698195448">Nepraleiskite naudingų „Chromium“ patarimų ir kt.</translation>
 <translation id="6424492062988593837">„Chromium“ patobulėjo! Galima nauja versija.</translation>
 <translation id="6433172051771630690">Patarimai, kaip išnaudoti visas „Chromium“ galimybes.</translation>
+<translation id="6458110851735461646">Mėgstamiausi „Google“ produktai geriau veikia naudojant „Chromium“</translation>
 <translation id="65045991564554105">Žr. „Chromium“ žymes</translation>
 <translation id="6519797228806907665">Greičiau pasiekite „Chromium“ naudodami „iPhone“ pagrindinį ekraną.</translation>
 <translation id="6538713818758208754">Atidaromas „Chromium“ mokėjimo metodų nustatymo puslapis.</translation>
@@ -357,6 +362,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="8602103377623855616">„Chromium“ puslapis</translation>
 <translation id="865600487977764604">Apsaugo jus naršyklėje „Chromium“ ir gali būti naudojama apsaugai kitose „Google“ programose pagerinti, kai esate prisijungę.</translation>
 <translation id="8663480472502753423">Atnaujinkite „Chromium“</translation>
+<translation id="8671588626059602995">Užtikrinkite, kad visos nuorodos visada būtų atidaromos naršyklėje „Chromium“.</translation>
 <translation id="8685813584220679697">Prisijunkite prie šios svetainės ir „Chromium“.</translation>
 <translation id="8697693743327341604">Jei pasirinksite pasiūlymą arba jo nepaisysite, „Chromium“ prisitaikys, kad ateityje galėtų rodyti daugiau jums aktualių pasiūlymų.</translation>
 <translation id="869832267508702259">Nustatykite „Chromium“ kaip numatytąją naršyklę, kad gautumėte „Gemini“ įžvalgų naršydami bet kur</translation>

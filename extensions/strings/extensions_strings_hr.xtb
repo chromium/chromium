@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Omogući temu</translation>
+<translation id="1085064499066015002">Uvijek na svim web-lokacijama</translation>
 <translation id="1135328998467923690">Paket je nevažeći: "<ph name="ERROR_CODE" />".</translation>
 <translation id="1140871961407805696">Prema okruženju</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> dodao je proširenje koje može promijeniti Chromiumov način rada.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">Očekivana je verzija "<ph name="EXPECTED_VERSION" />", no verzija je bila "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">Izvoz osobnog ključa nije uspio.</translation>
 <translation id="4811956658694082538">Nije bilo moguće instalirati paket jer se uslužni proces srušio. Ponovo pokrenite Chrome i pokušajte opet.</translation>
+<translation id="4883436287898674711">Sve web-lokacije <ph name="WEBSITE_1" /></translation>
 <translation id="4988792151665380515">Izvoz javnog ključa nije uspio.</translation>
 <translation id="501057610015570208">Aplikaciju s atributom manifesta "kiosk_only" potrebno je instalirati u načinu kioska ChromeOS Flex.</translation>
 <translation id="5026754133087629784">Prikaz web-lokacije: <ph name="WEBVIEW_TAG_NAME" /></translation>

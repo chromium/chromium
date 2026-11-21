@@ -30,13 +30,11 @@
 <translation id="1278833599417554002">Relansează pentru a actualiza &amp;Chrome</translation>
 <translation id="1289911795790071537">Deschide căutarea cu Chrome</translation>
 <translation id="1290883685122687410">Eroare de configurare: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1302523850133262269">Așteaptă până când Chrome instalează cele mai recente actualizări de sistem.</translation>
 <translation id="1330562121671411446">Identifică limba</translation>
 <translation id="1333654552732143316">Porniți Chrome</translation>
 <translation id="1341711321000856656">Poți comuta ca să vezi parolele din alt profil Chrome</translation>
 <translation id="1343830902827845050">Conectează-te la Chrome</translation>
 <translation id="1361351916482714918">Navighează mai inteligent cu Google Lens</translation>
-<translation id="1363996462118479832">ChromeOS nu a putut sincroniza datele din cauza unei erori la conectare.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1383876407941801731">Caută</translation>
 <translation id="1399397803214730675">Acest computer are deja o versiune mai recentă de Google Chrome. Dacă software-ul nu funcționează, dezinstalați Google Chrome și încercați din nou.</translation>
@@ -85,7 +83,6 @@
 <translation id="177180974022074201">Încearcă cu Gemini în Chrome</translation>
 <translation id="1786003790898721085">Asigură-te că te-ai conectat la Chrome pe <ph name="TARGET_DEVICE_NAME" /> și încearcă din nou să trimiți.</translation>
 <translation id="1786044937610313874">Comenzile rapide se deschid în Chrome</translation>
-<translation id="1812689907177901597">Dacă dezactivezi, te poți conecta la site-uri Google ca Gmail fără a te conecta la Chrome</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome recomandă să întrerupi fila care încetinește browserul}few{Chrome recomandă să întrerupi filele care încetinesc browserul}other{Chrome recomandă să întrerupi filele care încetinesc browserul}}</translation>
 <translation id="1832046143430087831">Accelerează site-urile cu motorul V8 din Chrome, dar reduce ușor rezistența Chrome la atacuri. Setarea este dezactivată.</translation>
 <translation id="1838374766361614909">Șterge căutarea</translation>
@@ -172,7 +169,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="2661616016316841783">Pentru a accesa extensiile și alte date de pe <ph name="DEVICE" />, conectează-te la Chrome</translation>
 <translation id="2665296953892887393">Contribuie la îmbunătățirea browserului Google Chrome trimițând rapoarte de blocare și <ph name="UMA_LINK" /> la Google</translation>
 <translation id="2668094785979141847">Dă clic pentru a ieși din Google Lens</translation>
-<translation id="2674238339205910678">ChromeOS Flex nu a putut salva datele Chrome în Contul Google deoarece detaliile de conectare pentru cont nu sunt actualizate</translation>
 <translation id="2681444469812712297">Deschide <ph name="URL" /> într-o filă nouă în Google Chrome.</translation>
 <translation id="2699790011615497488">Deschide Gemini în Chrome Beta</translation>
 <translation id="2738871930057338499">Nu se poate realiza conexiunea la internet. HTTP Eroare 403 – Acces interzis. Verifică-ți configurația de proxy.</translation>
@@ -283,7 +279,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="3756724684201900923">Află mai multe despre instalarea Chrome</translation>
 <translation id="3772152698251011058">Raportează acest site la Google</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
-<translation id="3785324443014631273">ChromeOS Flex nu a putut sincroniza datele din cauza unei erori la conectare.</translation>
 <translation id="3810973564298564668">Gestionează</translation>
 <translation id="383455301564000773">Faci upgrade la Windows 11? Descarcă Chrome în OneDrive ca să fii gata încă din prima zi.</translation>
 <translation id="383928141529488001">Google Chrome are nevoie de acces la Bluetooth pentru a explora 
@@ -374,7 +369,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="4803313124144656665">Închide Căutarea Google în Chrome</translation>
 <translation id="4828579605166583682">Google Chrome încearcă să înlocuiască parolele existente. Introdu parola Windows pentru a permite acest lucru.</translation>
 <translation id="4836321460899997044">Profil Chrome</translation>
-<translation id="4842397268809523050">ChromeOS Flex nu a putut sincroniza datele, deoarece sincronizarea nu este disponibilă pentru domeniu.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> s-a conectat deja.  Pentru a separa navigarea, conectează-te la Chrome în propriul profil ca <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Pentru a permite accesul la ecran, permite înregistrarea ecranului pentru Chrome din Setări de sistem</translation>
 <translation id="4873783916118289636">Examinează cele mai importante opțiuni de confidențialitate și de securitate din Chrome</translation>
@@ -388,7 +382,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="492720062778050435">Chrome îți recomandă să examinezi extensia</translation>
 <translation id="4953650215774548573">Setați Google Chrome ca browser prestabilit</translation>
 <translation id="495931528404527476">În Chrome</translation>
-<translation id="4969674060580488087">ChromeOS Flex nu a putut sincroniza datele, deoarece detaliile de conectare pentru cont nu sunt actualizate.</translation>
 <translation id="4970761609246024540">Bun venit la profilurile Chrome</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Dă clic pe Managerul de parole Google</translation>
@@ -420,7 +413,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="5271833978500241046">Folosește-le împreună cu alte funcții Gemini în Chrome</translation>
 <translation id="5320351714793324716">Dacă permiți cookie-uri, Chrome le poate folosi pentru preîncărcare</translation>
 <translation id="5321325624576443340">Aplicația Google Lens nu este disponibilă. Încearcă din nou mai târziu.</translation>
-<translation id="5334309298019785904">ChromeOS nu a putut sincroniza datele, deoarece sincronizarea nu este disponibilă pentru domeniu.</translation>
 <translation id="5336664042114176802">Poți să treci la asistentul Gemini asociat inițial Contului tău Google și care nu este gestionat de <ph name="DOMAIN" />. Răspunsurile nu se vor mai baza pe fișierele sau serviciile gestionate de <ph name="DOMAIN" />, iar istoricul chaturilor nu se va transfera. S-ar putea să nu fie adecvat pentru lucru. Pentru a comuta, trebuie să relansezi Chrome.</translation>
 <translation id="5346389065299425353">Aprofundează căutarea adăugând mai multe file, fișiere și instrumente</translation>
 <translation id="5353252989841766347">Exportă parolele din Chrome</translation>
@@ -548,7 +540,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6497147134301593682">Chrome s-a închis automat</translation>
 <translation id="6506909944137591434">Chrome are nevoie de acces la cameră pentru a crea o hartă 3D a lucrurilor din jurul tău</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
-<translation id="6520608191273161151">ChromeOS Flex nu a putut salva datele Chrome în Contul Google din cauza unei erori la conectare</translation>
 <translation id="6520670145826811516">Pentru a folosi locația, permite accesul browserului Chrome în <ph name="BEGIN_LINK" />setările de sistem<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Istoricul Chrome</translation>
 <translation id="6532945796722480006">Deschide Gemini în Chrome Canary</translation>
@@ -570,7 +561,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6712881677154121168">Eroare la descărcare: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Crește eficiența în Chrome</translation>
 <translation id="6734827584173583205">Nu ai accesat recent site-ul. Chrome a eliminat <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> și încă <ph name="COUNT" />.</translation>
-<translation id="6735387454586646204">ChromeOS Flex</translation>
 <translation id="674891594898436429">Închide căutarea activă în această filă</translation>
 <translation id="6750954913813541382">Pentru a corecta erorile de scriere, Chrome trimite la Google textul pe care îl introduci în browser</translation>
 <translation id="6760235774835597023">Accelerează site-urile cu motorul V8 din Chrome, dar reduce ușor rezistența Chrome la atacuri. Setarea este activată.</translation>
@@ -591,7 +581,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6908182077349113099">Păstrează parolele, marcajele și istoricul perfect sincronizate pe toate dispozitivele. Accesează cu ușurință funcțiile pe care le cunoști și apreciezi actualizând browserul prestabilit la Chrome.</translation>
 <translation id="6926772305569367352">Butonul Căutare Google în Chrome din bara de instrumente are o pictogramă nouă. Dă clic pe el pentru a pune întrebări în timp ce navighezi cu Căutarea Google în Chrome.</translation>
 <translation id="6930294499209825">Menține software-ul Google actualizat. Dacă serviciul este dezactivat sau oprit, software-ul Google nu va fi actualizat, ceea ce înseamnă că vulnerabilitățile de securitate care pot apărea nu pot fi remediate și este posibil ca unele funcții să nu fie disponibile. Serviciul se dezinstalează singur când nu este folosit de software-ul Google.</translation>
-<translation id="6933858244219479645">ChromeOS</translation>
 <translation id="6938166777909186039">Pentru a primi actualizările Google Chrome viitoare, vei avea nevoie de Windows 10 sau o versiune ulterioară. Acest computer folosește Windows 8.1.</translation>
 <translation id="6962628299694876291"><ph name="EXISTING_USER" /> s-a conectat deja. Pentru a separa navigarea, conectează-te la Chrome în propriul profil ca <ph name="USER_EMAIL_ADDRESS" />. În plus, vei putea accesa parolele și alte date pe toate dispozitivele.</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -682,7 +671,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="7801699035218095297">Google Chrome încearcă să copieze parolele. Pentru a permite acest lucru, introdu parola pentru Windows.</translation>
 <translation id="7804364787702057554">Contul tău în Chrome</translation>
 <translation id="7804947029129221742">Motorul de căutare a fost schimbat din afara browserului Chrome. Pentru a te proteja, Chrome l-a resetat la opțiunea prestabilită inițială. <ph name="LEARN_MORE_LINK" /></translation>
-<translation id="7808348361785373670">Elimină din Chrome...</translation>
 <translation id="7827099906024714326">Chrome trebuie să-ți confirme identitatea pentru ca unele date să poată fi salvate în Contul Google și folosite pe toate dispozitivele. Dacă te deconectezi acum, aceste date vor fi șterse.</translation>
 <translation id="7829850924999627855">Pentru a accesa informațiile salvate și altele de pe <ph name="DEVICE" />, conectează-te la Chrome</translation>
 <translation id="7832314606810669113">Pentru a accesa marcajele și alte date pe toate dispozitivele, conectează-te la Chrome. Marcajul se va salva în Contul Google după ce te conectezi.</translation>
@@ -695,7 +683,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="7896673875602241923">Un alt utilizator s-a conectat anterior la Chrome pe acest computer ca <ph name="ACCOUNT_EMAIL_LAST" />. Creează un nou utilizator Chrome pentru a-ți păstra separat informațiile.</translation>
 <translation id="7904213866086517086">Redeschide Căutarea Google în panoul lateral</translation>
 <translation id="7904985524660297937">Încearcă Gemini în Google Chrome</translation>
-<translation id="7905880575591690197">ChromeOS nu a putut salva datele Chrome în Contul Google din cauza unei erori la conectare</translation>
 <translation id="7936702483636872823">Chrome a blocat descărcarea, deoarece fișierul este înșelător și poate face modificări neașteptate pe dispozitiv</translation>
 <translation id="7951272445806340501">Pentru a se aplica actualizarea, sistemul de operare Chrome Flex trebuie să fie repornit.</translation>
 <translation id="7959172989483770734">Gestionează profilurile Chrome</translation>
@@ -756,7 +743,6 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="8402881611069691789">{COUNT,plural, =1{Chrome s-a actualizat. Poți folosi cea mai recentă versiune după ce relansezi browserul. Apoi, filele actuale se vor redeschide. Există o fereastră incognito sau izolată deschisă. Nu se va redeschide după relansare.}few{Chrome s-a actualizat. Poți folosi cea mai recentă versiune după ce relansezi browserul. Apoi, filele actuale se vor redeschide. Există # ferestre incognito și izolate deschise în toate profilurile. Nu se vor redeschide după relansare.}other{Chrome s-a actualizat. Poți folosi cea mai recentă versiune după ce relansezi browserul. Apoi, filele actuale se vor redeschide. Există # de ferestre incognito și izolate deschise în toate profilurile. Nu se vor redeschide după relansare.}}</translation>
 <translation id="8403038600646341038">Sigla Chrome pe un ecran de computer.</translation>
 <translation id="8406687098231754303">Cu butonul Căutare Google în panoul lateral din bara de instrumente, poți să redeschizi Căutarea Google în panoul lateral pentru a pune întrebări în timp ce navighezi</translation>
-<translation id="8418845734693287262">ChromeOS nu a putut sincroniza datele, deoarece detaliile de conectare pentru cont nu sunt actualizate.</translation>
 <translation id="842386925677997438">Instrumentele de siguranță din Chrome</translation>
 <translation id="8425765582779547329">Pentru a fi mai în siguranță online cu alegerile părintelui, conectează-te la Chrome</translation>
 <translation id="842852285618875960">Ai atins limita de <ph name="BOOKMARK_LIMIT" /> marcaje pentru Google Chrome, așadar unele dintre marcaje nu au fost salvate încă în Contul Google.
@@ -785,7 +771,6 @@ Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te de
 <translation id="8624541899164515475">Setări, se deschide într-o filă nouă.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome se va relansa într-un minut}few{Chrome se va relansa în # minute}other{Chrome se va relansa în # de minute}}</translation>
 <translation id="8637932705841171563">Pentru a permite accesul la fereastră, permite înregistrarea ecranului pentru Chrome din Setări de sistem</translation>
-<translation id="8642497536370021917">Pentru a te asigura că poți folosi și salva oricând datele Chrome în Contul Google, confirmă-ți identitatea</translation>
 <translation id="8656634243791296665">Deschide Gemini în Chrome Dev</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Stabilește și ce pagină se afișează când porniți Chrome.</translation>
@@ -847,7 +832,6 @@ Nu poți salva marcaje noi în cont până când nu ștergi câteva. Dacă te de
 <translation id="922152298093051471">Personalizează Chrome</translation>
 <translation id="93760716455950538">Repornește sistemul de operare Chrome Flex</translation>
 <translation id="945522503751344254">Trimite feedback</translation>
-<translation id="973195869036269770">ChromeOS nu a putut salva datele Chrome în Contul Google, deoarece detaliile de conectare pentru cont nu sunt actualizate</translation>
 <translation id="983803489796659991">Nu s-a instalat deoarece serverul de actualizare nu are date hash pentru aplicație.</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> poate comuta între profilurile Chrome</translation>
 </translationbundle>

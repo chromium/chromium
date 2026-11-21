@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">தீமினை இயக்கு</translation>
+<translation id="1085064499066015002">அனைத்துத் தளங்களிலும் எப்போதும் அனுமதி</translation>
 <translation id="1135328998467923690">தொகுப்பு செல்லாதது: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">பின்புறக் கேமரா</translation>
 <translation id="1171831736360285680">Chromium வேலை செய்யும் விதத்தை மாற்றக்கூடிய நீட்டிப்பை <ph name="PARTNER_NAME" /> சேர்த்துள்ளார்.
@@ -81,6 +82,7 @@
 <translation id="4660476621274971848">எதிர்பார்க்கப்பட்ட பதிப்பு "<ph name="EXPECTED_VERSION" />", ஆனால் இருப்பது "<ph name="NEW_ID" />" பதிப்பு ஆகும்</translation>
 <translation id="471800408830181311">தனிப்பட்ட விசையை வெளியனுப்புவதில் தோல்வியடைந்தது.</translation>
 <translation id="4811956658694082538">பயனமைப்பு செயல்முறைச் சிதைவுக்குட்பட்டதால், தொகுப்பை நிறுவ முடியவில்லை. Chromeமை மீண்டும் துவங்கி, முயற்சிக்கவும்.</translation>
+<translation id="4883436287898674711">எல்லா <ph name="WEBSITE_1" /> தளங்களும்</translation>
 <translation id="4988792151665380515">பொது விசையை ஏற்றுமதி செய்வதில் தோல்வியடைந்தது.</translation>
 <translation id="501057610015570208">'kiosk_only' மெனிஃபெஸ்ட் பண்புக்கூறைக் கொண்ட ஆப்ஸை ChromeOS Flex கியோஸ்க் பயன்முறையில் நிறுவ வேண்டும்</translation>
 <translation id="5026754133087629784">இணையப்பார்வை: <ph name="WEBVIEW_TAG_NAME" /></translation>

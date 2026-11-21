@@ -83,6 +83,8 @@ Pamiętaj, że:
 <translation id="2574249610672786438">Aby widzieć swoje karty zawsze, kiedy korzystasz z Chrome, zaloguj się na wszystkich urządzeniach</translation>
 <translation id="2576431527583832481">Chrome jest teraz jeszcze lepszy! Dostępna jest nowa wersja.</translation>
 <translation id="257708665678654955">Czy następnym razem Google Chrome ma zaproponować Ci tłumaczenie stron tej witryny, których język to <ph name="LANGUAGE_NAME" />?</translation>
+<translation id="2599258827968143948">Twoje ulubione usługi Google działają lepiej w Chrome</translation>
+<translation id="260980777626165320">Otwieraj linki zewnętrzne domyślnie w Chrome.</translation>
 <translation id="2668242166988961773">Wyszukaj głosowo w Chrome.</translation>
 <translation id="2703746758996815929">Aby otrzymywać przydatne wskazówki dotyczące Chrome, włącz powiadomienia w ustawieniach iOS.</translation>
 <translation id="2728851697704606655">Przetłumacz za pomocą Obiektywu Google</translation>
@@ -111,6 +113,7 @@ Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych
 <translation id="314782365035065913">Szybszy dostęp do Chrome z Docka na ekranie głównym</translation>
 <translation id="3167189358072330585">Twoje konto nie działa w Google Chrome. Skontaktuj się z administratorem domeny lub zaloguj się przy użyciu zwykłego konta Google.</translation>
 <translation id="322254490661677575">Aby móc zapisywać dane z Chrome na koncie Google i ich używać, wpisz hasło wielowyrazowe.</translation>
+<translation id="3253082773078342494">Otwieraj linki bezpośrednio w Chrome.</translation>
 <translation id="3303503998967553377">Korzystaj z Działań w Chrome na iOS</translation>
 <translation id="3348862487678490430">Dodaj element listy Do przeczytania do Chrome</translation>
 <translation id="3350281376951945723">Ustaw Chrome jako przeglądarkę domyślną i otwieraj linki szybciej</translation>
@@ -160,6 +163,7 @@ Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych
 <translation id="4693084815234024320">Jesteś w trybie incognito w Chrome</translation>
 <translation id="4713740144985377441">Wróć do Chrome, aby przesłać plik</translation>
 <translation id="4724297637870447613">Korzystaj z Chrome w dowolnym miejscu</translation>
+<translation id="4733290155432110050">Przejdź bezpośrednio do Chrome</translation>
 <translation id="4738647308035481133">Strona Google Chrome</translation>
 <translation id="4742795653798179840">Usunięte dane Chrome</translation>
 <translation id="4761869838909035636">Uruchom kontrolę zabezpieczeń Chrome</translation>
@@ -267,6 +271,7 @@ W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz wi�
 <translation id="7038674195294813388">Otwórz ustawienia aplikacji domyślnych na iOS, kliknij „Przeglądarka” i wybierz Chrome.</translation>
 <translation id="7056826488869329999">Otwiera i uruchamia kontrolę zabezpieczeń w Chrome.</translation>
 <translation id="7061455974939528301">Naciśnij i przytrzymaj ikonę Chrome i kliknij „Edytuj ekran główny”</translation>
+<translation id="7067302528015227615">Ustaw Chrome jako domyślną przeglądarkę, aby szybciej i łatwiej przechodzić między aplikacjami.</translation>
 <translation id="7095110968493193530">W Menedżerze haseł Google w przypadku konta <ph name="EMAIL" /></translation>
 <translation id="7124339256045485976">Zawsze używaj aktualnej wersji Chrome</translation>
 <translation id="7135936755418321901">Aby udostępniać swoją lokalizację witrynom, kliknij Ustawienia i pozwól Chrome na używanie Twojej lokalizacji.</translation>
@@ -278,6 +283,7 @@ W <ph name="BEGIN_LINK" />usługach Google<ph name="END_LINK" /> znajdziesz wi�
 <translation id="7200524487407690471">Chrome codziennie automatycznie uruchamia kontrolę zabezpieczeń, aby chronić Cię przed naruszeniami bezpieczeństwa danych, niebezpiecznymi stronami i innymi zagrożeniami. Więcej informacji o kontroli zabezpieczeń znajdziesz w Ustawieniach.</translation>
 <translation id="7214019116829172458">Otwórz kartę incognito w Chrome</translation>
 <translation id="722167379782941918">Chrome zaleca silniejszą ochronę</translation>
+<translation id="722921700949937243">Otwieraj wszystkie linki w Chrome.</translation>
 <translation id="723787869754590019">Używaj autouzupełniania w Chrome</translation>
 <translation id="7261678641327190792">Chrome nie może sprawdzić Twoich haseł</translation>
 <translation id="7272091023280308138">Następnym razem otwieraj linki bezpośrednio w Chrome bez kopiowania adresów URL.</translation>

@@ -58,6 +58,7 @@ Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych
 <translation id="2027881372245801507">Wyłączenie sugestii nie ma wpływu na przetwarzanie przez Chromium tytułów stron i adresów URL na potrzeby innych funkcji. Możesz zarządzać dostępem do tych danych w <ph name="BEGIN_LINK" />ustawieniach synchronizacji<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Zaloguj się na tej stronie i w Chromium, aby mieć dostęp do haseł oraz innych danych na wszystkich swoich urządzeniach</translation>
 <translation id="2042889939382983733">Wyświetl historię Chromium</translation>
+<translation id="2054352566231434723">Otwieraj linki zewnętrzne domyślnie w Chromium.</translation>
 <translation id="2059365270911640413">Dokończ konfigurowanie Chromium</translation>
 <translation id="2168108852149185974">Niektóre dodatki mogą powodować awarie Chromium. Odinstaluj je.</translation>
 <translation id="2168593389981132306">Ulepszaj Chromium</translation>
@@ -85,6 +86,7 @@ Dopóki nie usuniesz niektórych zakładek, nie będzie można zapisywać nowych
 <translation id="2485774047568879945">Ustaw Chromium jako przeglądarkę domyślną, aby łatwo udostępniać i otwierać linki</translation>
 <translation id="2512597191798760956">Naciśnij i przytrzymaj ikonę Chromium i kliknij „Edytuj ekran główny”</translation>
 <translation id="2517624234762908348">Synchronizuj dane Chromium</translation>
+<translation id="2519012503779379646">Ustaw Chromium jako domyślną przeglądarkę, aby przyspieszyć i ułatwić przechodzenie między aplikacjami.</translation>
 <translation id="2592940277904433508">Nadal korzystaj z Chromium</translation>
 <translation id="2601766165676560303">Motyw Chromium na iPhone'a i iPada</translation>
 <translation id="2607609479243848905">Jeśli zapomnisz hasło lub zechcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chromium na swoim koncie<ph name="END_LINK" />.</translation>
@@ -189,6 +191,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chromium na swoim
 <translation id="4985291216379576555">Tryb offline. Chromium nie może sprawdzić dostępności aktualizacji.</translation>
 <translation id="4996471330284142407">Zwiększ produktywność, korzystając z prostej, bezpiecznej i wyjątkowo szybkiej przeglądarki Chromium.</translation>
 <translation id="4999538639245140991">Wylogowujesz się z konta, którym zarządza <ph name="SIGNOUT_MANAGED_DOMAIN" />. Spowoduje to usunięcie danych Chromium z tego urządzenia, ale pozostaną one na koncie Google.</translation>
+<translation id="5004986813285860899">Przejdź bezpośrednio do Chromium</translation>
 <translation id="5042011327527167688">Kliknij „Zobacz w Mapach Google w Chromium”.</translation>
 <translation id="5044871537677053278">Chromium wykrywa adresy i wykorzystuje Mapy Google, aby wyświetlać Ci wskazówki dojazdu i informacje lokalne.</translation>
 <translation id="5048140766121299007">W ustawieniach „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” włącz „Chromium”</translation>
@@ -202,6 +205,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chromium na swoim
 <translation id="5224391634244552924">Brak zapisanych haseł. Chromium może sprawdzać Twoje hasła, gdy je zapiszesz.</translation>
 <translation id="5259423875997548710">Wyszukaj elementy wizualne w Chromium.</translation>
 <translation id="5284913972719948193">Zaimportuj dane, aby używać haseł, historii, zakładek i kart kredytowych w Chromium</translation>
+<translation id="5299421317003704533">Otwieraj linki bezpośrednio w Chromium.</translation>
 <translation id="5308226104666789935">Chromium nie może sprawdzić dostępności aktualizacji</translation>
 <translation id="5311557153294205270">Dodaje wpisane adresy URL do zakładek w Chromium.</translation>
 <translation id="5383251701169024761">Aby mieć łatwy dostęp do zapisanych haseł w innych aplikacjach, użyj autouzupełniania w Chromium.</translation>
@@ -268,6 +272,7 @@ Pamiętaj, że:
 <translation id="6387994184698195448">Otrzymuj przydatne wskazówki dotyczące Chromium i inne informacje.</translation>
 <translation id="6424492062988593837">Chromium jest teraz jeszcze lepsze! Dostępna jest nowa wersja.</translation>
 <translation id="6433172051771630690">Wskazówki na temat pełnego wykorzystania możliwości Chromium.</translation>
+<translation id="6458110851735461646">Twoje ulubione usługi Google działają lepiej w Chromium</translation>
 <translation id="65045991564554105">Zobacz zakładki Chromium</translation>
 <translation id="6519797228806907665">Uruchamiaj Chromium szybciej na ekranie głównym iPhone'a.</translation>
 <translation id="6538713818758208754">Otwiera stronę ustawień form płatności w Chromium.</translation>
@@ -357,6 +362,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="8602103377623855616">Strona Chromium</translation>
 <translation id="865600487977764604">Dba o Twoje bezpieczeństwo w Chromium i może też je poprawiać w innych aplikacjach Google, gdy się w nich zalogujesz.</translation>
 <translation id="8663480472502753423">Zawsze używaj aktualnej wersji Chromium</translation>
+<translation id="8671588626059602995">Otwieraj wszystkie linki w Chromium.</translation>
 <translation id="8685813584220679697">Zaloguj się w na tej stronie i w Chromium.</translation>
 <translation id="8697693743327341604">Jeśli wybierzesz lub zignorujesz sugestię, Chromium dostosuje się tak, aby w przyszłości wyświetlać trafniejsze sugestie.</translation>
 <translation id="869832267508702259">Ustaw Chromium jako przeglądarkę domyślną, aby otrzymywać statystyki Gemini podczas przeglądania internetu</translation>

@@ -30,13 +30,11 @@
 <translation id="1278833599417554002">&amp;Chrome को अपडेट करने के लिए फिर से लॉन्च करें</translation>
 <translation id="1289911795790071537">'Chrome की मदद से खोजें' सुविधा खोलें</translation>
 <translation id="1290883685122687410">सेटअप करने में गड़बड़ी हुई: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1302523850133262269">कृपया Chrome के द्वारा नवीनतम सिस्टम अपडेट इंस्टॉल करने के दौरान इंतज़ार करें.</translation>
 <translation id="1330562121671411446">भाषा का पता लगाएं</translation>
 <translation id="1333654552732143316">क्रोम आरंभ करें</translation>
 <translation id="1341711321000856656">पासवर्ड देखने के लिए, Chrome की किसी दूसरी प्रोफ़ाइल पर स्विच करें</translation>
 <translation id="1343830902827845050">Chrome में साइन इन करें</translation>
 <translation id="1361351916482714918">Google Lens की मदद से बेहतर तरीके से ब्राउज़ करें</translation>
-<translation id="1363996462118479832">साइन इन करने के दौरान हुई किसी गड़बड़ी की वजह से, ChromeOS आपके डेटा को सिंक नहीं कर सका.</translation>
 <translation id="137466361146087520">Google Chrome बीटा</translation>
 <translation id="1383876407941801731">खोजें</translation>
 <translation id="1399397803214730675">इस कंप्यूटर में Google Chrome का ज़्यादा नवीन वर्शन पहले से मौजूद है. अगर सॉफ्टवेयर काम नहीं कर रहा है, तो कृपया Google Chrome अनइंस्‍टॉल करें और फिर से प्रयास करें.</translation>
@@ -85,7 +83,6 @@
 <translation id="177180974022074201">Chrome में Gemini को आज़माएं</translation>
 <translation id="1786003790898721085">पक्का करें कि आपने <ph name="TARGET_DEVICE_NAME" /> पर Chrome में साइन इन किया है. इसके बाद, फिर से भेजने की कोशिश करें.</translation>
 <translation id="1786044937610313874">शॉर्टकट, Chrome में खुलते हैं</translation>
-<translation id="1812689907177901597">इसे बंद करने पर, Chrome में साइन इन किए बिना Gmail जैसी Google साइटों में साइन इन किया जा सकता है</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome का सुझाव है कि आप उस टैब को रोक दें जो आपके ब्राउज़र की स्पीड को धीमा कर रहा है}one{Chrome का सुझाव है कि आप उस टैब को रोक दें जो आपके ब्राउज़र की स्पीड को धीमा कर रहा है}other{Chrome का सुझाव है कि आप उन टैब को रोक दें जो आपके ब्राउज़र की स्पीड को धीमा कर रहे हैं}}</translation>
 <translation id="1832046143430087831">Chrome के V8 इंजन की मदद से, साइटों के काम करने की स्पीड तेज़ करें. हालांकि, इससे सुरक्षा से जुड़े खतरों की संभावना बढ़ जाती है. यह सेटिंग बंद है.</translation>
 <translation id="1838374766361614909">खोज साफ़ करें</translation>
@@ -172,7 +169,6 @@
 <translation id="2661616016316841783"><ph name="DEVICE" /> में मौजूद अपने एक्सटेंशन वगैरह ऐक्सेस करने के लिए, Chrome में साइन इन करें</translation>
 <translation id="2665296953892887393">Google को क्रैश रिपोर्ट और <ph name="UMA_LINK" /> भेजकर Google Chrome को बेहतर बनाने में मदद करें</translation>
 <translation id="2668094785979141847">Google Lens से बाहर निकलने के लिए क्लिक करें</translation>
-<translation id="2674238339205910678">ChromeOS Flex आपके Google खाते में Chrome का डेटा सेव नहीं कर सका, क्योंकि आपके खाते में साइन-इन करने से जुड़ी जानकारी पुरानी हो चुकी है</translation>
 <translation id="2681444469812712297"><ph name="URL" /> को Google Chrome के नए टैब में खोलें.</translation>
 <translation id="2699790011615497488">Chrome बीटा में Gemini खोलें</translation>
 <translation id="2738871930057338499">इंटरनेट से कनेक्ट नहीं किया जा सका. एचटीटीपी 403 फॉरबिडन रिस्पॉन्स दिख रहा है. कृपया अपने प्रॉक्सी कॉन्फ़िगरेशन की जांच करें.</translation>
@@ -283,7 +279,6 @@
 <translation id="3756724684201900923">Chrome इंस्टॉल करने के बारे में ज़्यादा जानें</translation>
 <translation id="3772152698251011058">इस साइट की शिकायत Google से करें</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
-<translation id="3785324443014631273">ChromeOS Flex आपके डेटा को सिंक नहीं कर सका, क्योंकि साइन इन करने के दौरान कोई गड़बड़ी हुई है.</translation>
 <translation id="3810973564298564668">मैनेज करें</translation>
 <translation id="383455301564000773">क्या आपको Windows 11 पर अपग्रेड करना है? Chrome को OneDrive में डाउनलोड करें, ताकि आप पहले दिन से ही तैयार रहें.</translation>
 <translation id="383928141529488001">Google Chrome को ब्लूटूथ का ऐक्सेस चाहिए, ताकि वह ब्लूटूथ डिवाइस ढूंढ पाए. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -373,7 +368,6 @@
 <translation id="4803313124144656665">'Chrome में Google Search' को बंद करें</translation>
 <translation id="4828579605166583682">Google Chrome, मौजूदा पासवर्ड बदलने की कोशिश कर रहा है. इसकी अनुमति देने के लिए, Windows का पासवर्ड डालें.</translation>
 <translation id="4836321460899997044">Chrome प्रोफ़ाइल</translation>
-<translation id="4842397268809523050">ChromeOS Flex आपके डेटा को सिंक नहीं कर सका, क्योंकि आपके डोमेन पर सिंक करने की सुविधा उपलब्ध नहीं है.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> ने पहले से साइन इन किया हुआ है. अलग ब्राउज़र का इस्तेमाल करने के लिए, Chrome में अपनी प्रोफ़ाइल में <ph name="USER_EMAIL_ADDRESS" /> से साइन इन करें.</translation>
 <translation id="4855026984605187434">स्क्रीन शेयर करने के लिए, 'सिस्टम सेटिंग' में जाकर Chrome के लिए स्क्रीन रिकॉर्ड करने की अनुमति दें</translation>
 <translation id="4873783916118289636">Chrome के निजता और सुरक्षा से जुड़े मुख्य कंट्रोल देखें</translation>
@@ -387,7 +381,6 @@
 <translation id="492720062778050435">Chrome आपको इस एक्सटेंशन की जांच करने का सुझाव देता है</translation>
 <translation id="4953650215774548573">Google Chrome को अपने डिफ़ॉल्ट ब्राउज़र के रूप में सेट करना</translation>
 <translation id="495931528404527476">Chrome में</translation>
-<translation id="4969674060580488087">ChromeOS Flex आपके डेटा को सिंक नहीं कर सका, क्योंकि आपके खाते में साइन इन करने से जुड़ी जानकारी पुरानी हो चुकी है.</translation>
 <translation id="4970761609246024540">Chrome प्रोफ़ाइलों में आपका स्वागत है</translation>
 <translation id="4990567037958725628">Google Chrome कैनरी</translation>
 <translation id="5003967926796347400">“Google Password Manager” पर क्लिक करें</translation>
@@ -421,7 +414,6 @@
 <translation id="5271833978500241046">Chrome में, Gemini की अन्य सुविधाओं के साथ इनका इस्तेमाल करें</translation>
 <translation id="5320351714793324716">कुकी को अनुमति देने पर, Chrome उनका इस्तेमाल पेजों को पहले से लोड करते समय कर सकता है</translation>
 <translation id="5321325624576443340">Google Lens उपलब्ध नहीं है. कुछ देर बाद कोशिश करें.</translation>
-<translation id="5334309298019785904">ChromeOS आपके डेटा को सिंक नहीं कर सका, क्योंकि आपके डोमेन पर सिंक करने की सुविधा उपलब्ध नहीं है.</translation>
 <translation id="5336664042114176802">Gemini असिस्टेंट के उस वर्शन पर स्विच किया जा सकता है जो आपके Google खाते से जुड़ा है और जिसे <ph name="DOMAIN" /> मैनेज नहीं करता. जवाबों के लिए, <ph name="DOMAIN" /> की मैनेज की जा रही फ़ाइलों या सेवाओं का इस्तेमाल नहीं किया जाएगा. साथ ही, आपकी चैट का इतिहास ट्रांसफ़र नहीं किया जाएगा. ऐसा हो सकता है कि यह ऑफ़िस के काम के लिए सही न हो. स्विच करने के लिए, Chrome को फिर से लॉन्च करना होगा.</translation>
 <translation id="5346389065299425353">एक से ज़्यादा टैब, फ़ाइलें, और टूल जोड़कर अपनी खोज को बेहतर बनाएं</translation>
 <translation id="5353252989841766347">Chrome से पासवर्ड निर्यात करें</translation>
@@ -551,7 +543,6 @@ Google Chrome आपकी सेटिंग बहाल नहीं कर �
 <translation id="6497147134301593682">Chrome अपने-आप बंद हो गया था</translation>
 <translation id="6506909944137591434">आपके आस-पास की जगहों का 3D मैप बनाने के लिए, Chrome को कैमरा ऐक्सेस करने की अनुमति चाहिए</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome डेवलपर</translation>
-<translation id="6520608191273161151">साइन इन करने के दौरान हुई किसी गड़बड़ी की वजह से, ChromeOS Flex आपके Google खाते में Chrome का डेटा सेव नहीं कर सका</translation>
 <translation id="6520670145826811516">जगह की जानकारी इस्तेमाल करने के लिए, <ph name="BEGIN_LINK" />सिस्टम सेटिंग<ph name="END_LINK" /> में जाकर Chrome को इसे ऐक्सेस करने की अनुमति दें</translation>
 <translation id="652948702951888897">Chrome इतिहास</translation>
 <translation id="6532945796722480006">Chrome कैनरी में Gemini खोलें</translation>
@@ -573,7 +564,6 @@ Google Chrome आपकी सेटिंग बहाल नहीं कर �
 <translation id="6712881677154121168">डाउनलोड करने में गड़बड़ी: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chrome को ज़्यादा तेज़ बनाएं</translation>
 <translation id="6734827584173583205">आपने हाल ही में इस वेबसाइट का इस्तेमाल नहीं किया है. Chrome ने <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, और <ph name="COUNT" /> अन्य अनुमतियां हटा दी हैं.</translation>
-<translation id="6735387454586646204">ChromeOS Flex सिस्टम</translation>
 <translation id="674891594898436429">इस टैब में मौजूदा खोज को खारिज करें</translation>
 <translation id="6750954913813541382">स्पेलिंग की गलती को ठीक करने के लिए, ब्राउज़र में जो कुछ भी लिखा जाता है, Chrome उसे Google को भेज देता है</translation>
 <translation id="6760235774835597023">Chrome के V8 इंजन की मदद से, साइटों के काम करने की स्पीड तेज़ करें. हालांकि, इससे सुरक्षा से जुड़े खतरों की संभावना बढ़ जाती है. यह सेटिंग चालू है.</translation>
@@ -594,7 +584,6 @@ Google Chrome आपकी सेटिंग बहाल नहीं कर �
 <translation id="6908182077349113099">अपने पासवर्ड, बुकमार्क, और इतिहास को सभी डिवाइसों पर सिंक रखें. अपने डिफ़ॉल्ट ब्राउज़र को Chrome पर अपडेट करके, अपनी पसंदीदा सुविधाओं को आसानी से ऐक्सेस करें.</translation>
 <translation id="6926772305569367352">टूलबार में मौजूद "Chrome में Google Search" बटन का आइकॉन बदल दिया गया है. ब्राउज़ करते समय इस शॉर्टकट की मदद से सवाल पूछने के लिए, इस बटन पर क्लिक करें.</translation>
 <translation id="6930294499209825">इससे आपका Google सॉफ़्टवेयर अप-टू-डेट रहता है. अगर इस सेवा को हमेशा या कुछ समय के लिए बंद किया जाता है, तो आपका Google सॉफ़्टवेयर अप-टू-डेट नहीं होगा. इसका मतलब है कि सुरक्षा से जुड़े जोखिम हो सकते हैं. साथ ही. उन्हें ठीक नहीं किया जा सकता और ऐसा भी हो सकता है कि ये सुविधाएं काम न करें. अगर कोई Google सॉफ़्टवेयर इसका इस्तेमाल नहीं करता है, तो यह सेवा अपने-आप अनइंस्टॉल हो जाती है.</translation>
-<translation id="6933858244219479645">ChromeOS सिस्टम</translation>
 <translation id="6938166777909186039">आगे भी Google Chrome के अपडेट पाते रहने के लिए, आपके कंप्यूटर में Windows 10 या उसके बाद वाला वर्शन होना चाहिए. इस कंप्यूटर में Windows 8.1 का इस्तेमाल किया जा रहा है.</translation>
 <translation id="6962628299694876291"><ph name="EXISTING_USER" /> ने पहले से साइन इन किया हुआ है. अपने ब्राउज़िंग डेटा को अलग से मैनेज करने के लिए, Chrome में अपनी प्रोफ़ाइल में <ph name="USER_EMAIL_ADDRESS" /> से साइन इन करें. इससे आपको अपने सभी डिवाइसों पर पासवर्ड वगैरह का ऐक्सेस भी मिलेगा.</translation>
 <translation id="6965382102122355670">ठीक है</translation>
@@ -685,7 +674,6 @@ Google Chrome आपकी सेटिंग बहाल नहीं कर �
 <translation id="7801699035218095297">Google Chrome, पासवर्ड कॉपी करने की कोशिश कर रहा है. इसकी अनुमति देने के लिए Windows का पासवर्ड डालें.</translation>
 <translation id="7804364787702057554">Chrome में आपका खाता</translation>
 <translation id="7804947029129221742">आपके सर्च इंजन को Chrome के बाहर से बदला गया था. आपकी सुरक्षा के लिए, Chrome ने इसे वापस डिफ़ॉल्ट पर सेट कर दिया है. <ph name="LEARN_MORE_LINK" /></translation>
-<translation id="7808348361785373670">Chrome से नि‍कालें...</translation>
 <translation id="7827099906024714326">आपके Google खाते में डेटा सेव करने और सभी डिवाइसों पर उसका इस्तेमाल करने से पहले, Chrome को आपकी पहचान की पुष्टि करनी होगी. अभी साइन आउट करने पर यह डेटा मिट जाएगा.</translation>
 <translation id="7829850924999627855"><ph name="DEVICE" /> में सेव की गई जानकारी वगैरह ऐक्सेस करने के लिए, Chrome में साइन इन करें</translation>
 <translation id="7832314606810669113">अपने सभी डिवाइसों पर बुकमार्क वगैरह ऐक्सेस करने के लिए, Chrome में साइन इन करें. साइन इन करने के बाद, यह बुकमार्क आपके Google खाते में सेव हो जाएगा.</translation>
@@ -698,7 +686,6 @@ Google Chrome आपकी सेटिंग बहाल नहीं कर �
 <translation id="7896673875602241923">इस कंप्यूटर पर पहले किसी और ने <ph name="ACCOUNT_EMAIL_LAST" /> के रूप में Chrome में साइन इन किया है. अपनी जानकारी अलग रखने के लिए कृपया नया 'Chrome उपयोगकर्ता' बनाएं.</translation>
 <translation id="7904213866086517086">'साइड पैनल में Google Search' को फिर से खोलें</translation>
 <translation id="7904985524660297937">Google Chrome में Gemini आज़माएं</translation>
-<translation id="7905880575591690197">साइन इन करने के दौरान हुई किसी गड़बड़ी की वजह से, ChromeOS आपके Google खाते में Chrome का डेटा सेव नहीं कर सका</translation>
 <translation id="7936702483636872823">Chrome ने इस डाउनलोड को ब्लॉक कर दिया है, क्योंकि यह धोखाधड़ी वाली फ़ाइल है और यह आपके डिवाइस में अनचाहे बदलाव कर सकती है</translation>
 <translation id="7951272445806340501">अपडेट लागू करने के लिए, ChromeOS Flex को रीस्टार्ट करना होगा.</translation>
 <translation id="7959172989483770734">Chrome की प्रोफ़ाइलें मैनेज करें</translation>
@@ -759,7 +746,6 @@ Google Chrome आपकी सेटिंग बहाल नहीं कर �
 <translation id="8402881611069691789">{COUNT,plural, =1{Chrome अपडेट हो गया है. इसे फिर से लॉन्च करते ही नए वर्शन का इस्तेमाल किया जा सकता है. इसके लॉन्च होने के बाद, मौजूदा टैब फिर से खुल जाएंगे. आपकी गुप्त या आइसोलेटेड विंडो खुली है. Chrome को फिर से लॉन्च करने पर, यह विंडो दोबारा नहीं खुलेगी.}one{Chrome अपडेट हो गया है. इसे फिर से लॉन्च करते ही नए वर्शन का इस्तेमाल किया जा सकता है. इसके लॉन्च होने के बाद, मौजूदा टैब फिर से खुल जाएंगे. आपकी # गुप्त या आइसोलेटेड विंडो खुली है. Chrome को फिर से लॉन्च करने पर, यह विंडो दोबारा नहीं खुलेगी.}other{Chrome अपडेट हो गया है. इसे फिर से लॉन्च करते ही नए वर्शन का इस्तेमाल किया जा सकता है. इसके लॉन्च होने के बाद, मौजूदा टैब फिर से खुल जाएंगे. आपकी # गुप्त या आइसोलेटेड विंडो खुली हैं. Chrome को फिर से लॉन्च करने पर, ये विंडो दोबारा नहीं खुलेंगी.}}</translation>
 <translation id="8403038600646341038">कंप्यूटर की स्क्रीन में Chrome का लोगो.</translation>
 <translation id="8406687098231754303">ब्राउज़ करते समय सवाल पूछने के लिए, टूलबार पर मौजूद "साइड पैनल में Google Search" बटन पर क्लिक करके, साइड पैनल में Google Search को फिर से खोला जा सकता है</translation>
-<translation id="8418845734693287262">ChromeOS आपका डेटा सिंक नहीं कर सका, क्योंकि आपके खाते में साइन इन करने से जुड़ी जानकारी पुरानी हो चुकी है.</translation>
 <translation id="842386925677997438">Chrome के सुरक्षा टूल</translation>
 <translation id="8425765582779547329">अपने माता-पिता के चुने गए विकल्पों के साथ, ऑनलाइन सुरक्षित रहने के लिए, Chrome में साइन इन करें</translation>
 <translation id="842852285618875960">आपने Google Chrome में <ph name="BOOKMARK_LIMIT" /> बुकमार्क सेव करने की सीमा पूरी कर ली है. इसलिए, आपके कुछ बुकमार्क अब तक आपके Google खाते में सेव नहीं किए गए हैं.
@@ -788,7 +774,6 @@ Google Chrome आपकी सेटिंग बहाल नहीं कर �
 <translation id="8624541899164515475">सेटिंग पेज नए टैब में खुलता है.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 1 मिनट में फिर से लॉन्च होगा}one{Chrome # मिनट में फिर से लॉन्च होगा}other{Chrome # मिनट में फिर से लॉन्च होगा}}</translation>
 <translation id="8637932705841171563">विंडो शेयर करने के लिए, 'सिस्टम सेटिंग' में जाकर Chrome के लिए स्क्रीन रिकॉर्ड करने की अनुमति दें</translation>
-<translation id="8642497536370021917">यह पक्का करने के लिए कि आप अपने Google खाते में Chrome के डेटा को हमेशा इस्तेमाल और उसे सेव कर सकें, अपनी पहचान की पुष्टि करें</translation>
 <translation id="8656634243791296665">Chrome Dev में Gemini खोलें</translation>
 <translation id="8669527147644353129">Google Chrome सहायक</translation>
 <translation id="8679801911857917785">इससे यह भी नियंत्रित होता है कि जब आप Chrome प्रारंभ करते हैं तब कौन सा पेज दिखाया जाए.</translation>
@@ -850,7 +835,6 @@ Google Chrome आपकी सेटिंग बहाल नहीं कर �
 <translation id="922152298093051471">Chrome को पसंद के मुताबिक बनाएं</translation>
 <translation id="93760716455950538">ChromeOS Flex रीस्टार्ट करें</translation>
 <translation id="945522503751344254">फ़ीडबैक भेजें</translation>
-<translation id="973195869036269770">ChromeOS आपके Google खाते में Chrome का डेटा सेव नहीं कर सका, क्योंकि आपके खाते में साइन-इन करने से जुड़ी जानकारी पुरानी हो चुकी है</translation>
 <translation id="983803489796659991">अपडेट सर्वर में ऐप्लिकेशन के लिए हैश डेटा मौजूद नहीं होने की वजह से इंस्टॉल नहीं हो सका.</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> दबाकर Chrome प्रोफ़ाइलों के बीच स्विच किया जा सकता है</translation>
 </translationbundle>

@@ -30,13 +30,11 @@
 <translation id="1278833599417554002">&amp;Chrome'u güncellemek için yeniden başlat</translation>
 <translation id="1289911795790071537">Chrome ile aramayı aç</translation>
 <translation id="1290883685122687410">Kurulum hatası: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1302523850133262269">Chrome en son sistem güncellemelerini yüklerken lütfen bekleyin.</translation>
 <translation id="1330562121671411446">Dili algıla</translation>
 <translation id="1333654552732143316">Chrome'u Başlat</translation>
 <translation id="1341711321000856656">Başka bir Chrome profilindeki şifreleri görmek için profil değiştirebilirsiniz</translation>
 <translation id="1343830902827845050">Chrome'da oturum açın</translation>
 <translation id="1361351916482714918">Google Lens ile daha akıllıca göz atın</translation>
-<translation id="1363996462118479832">Oturum açmadaki bir hata nedeniyle ChromeOS, verilerinizi senkronize edemedi.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1383876407941801731">Ara</translation>
 <translation id="1399397803214730675">Bu bilgisayarda Google Chrome'un daha yeni bir sürümü zaten var. Yazılım çalışmıyorsa, lütfen Google Chrome'un yüklemesini kaldırın ve tekrar deneyin.</translation>
@@ -85,7 +83,6 @@
 <translation id="177180974022074201">Chrome'da Gemini ile dene</translation>
 <translation id="1786003790898721085"><ph name="TARGET_DEVICE_NAME" /> cihazınızdan Chrome'da oturum açtığınızdan emin olup tekrar göndermeyi deneyin.</translation>
 <translation id="1786044937610313874">Kısayollar Chrome'da açılır</translation>
-<translation id="1812689907177901597">Bu özelliği kapatarak Chrome'da oturum açmadan Gmail gibi Google sitelerinde oturum açabilirsiniz</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome, tarayıcınızı yavaşlatan sekmeyi duraklatmanızı öneriyor}other{Chrome, tarayıcınızı yavaşlatan sekmeleri duraklatmanızı öneriyor}}</translation>
 <translation id="1832046143430087831">Chrome'un V8 motoruyla siteleri hızlandırır ancak bu durumda Chrome, saldırılara karşı biraz daha dirençsiz hale gelir. Bu ayar kapalı.</translation>
 <translation id="1838374766361614909">Aramayı temizle</translation>
@@ -172,7 +169,6 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="2661616016316841783"><ph name="DEVICE" /> cihazınızdaki uzantılarınıza ve diğer öğelerinize erişmek için Chrome'da oturum açın</translation>
 <translation id="2665296953892887393">Kilitlenme raporlarını ve <ph name="UMA_LINK" /> bilgilerini Google'a göndererek Google Chrome'u daha iyi hale getirmeye yardımcı olun</translation>
 <translation id="2668094785979141847">Google Lens'ten çıkmak için tıklayın</translation>
-<translation id="2674238339205910678">Hesap oturum açma bilgileriniz güncel olmadığı için ChromeOS Flex, Chrome verilerini Google Hesabınıza kaydedemedi</translation>
 <translation id="2681444469812712297">Google Chrome'da yeni bir sekmede <ph name="URL" /> adresini açın.</translation>
 <translation id="2699790011615497488">Chrome Beta'da Gemini'ı aç</translation>
 <translation id="2738871930057338499">İnternet'e bağlanılamadı. HTTP 403 Yasak. Lütfen proxy yapılandırmanızı kontrol edin.</translation>
@@ -283,7 +279,6 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="3756724684201900923">Chrome'u yükleme hakkında daha fazla bilgi</translation>
 <translation id="3772152698251011058">Bu siteyi Google'a bildirin</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
-<translation id="3785324443014631273">ChromeOS Flex, oturum açma hatası nedeniyle verilerinizi senkronize edemedi.</translation>
 <translation id="3810973564298564668">Yönet</translation>
 <translation id="383455301564000773">Windows 11'e mi geçiyorsunuz? Chrome'u OneDrive'a indirerek ilk günden hazır olun.</translation>
 <translation id="383928141529488001">Google Chrome'un Bluetooth cihazları keşfedebilmesi için Bluetooth'a erişmesi gerekiyor. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -373,7 +368,6 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="4803313124144656665">Chrome'da Google Arama'yı kapat</translation>
 <translation id="4828579605166583682">Google Chrome mevcut şifreleri değiştirmeye çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="4836321460899997044">Chrome profili</translation>
-<translation id="4842397268809523050">Alanınızda senkronizasyon kullanılamadığı için ChromeOS Flex, verilerinizi senkronize edemedi.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> zaten oturum açmış durumda.  Göz atma işlemlerinizi ayrı tutmak için Chrome'da kendi profilinizde <ph name="USER_EMAIL_ADDRESS" /> olarak oturum açın.</translation>
 <translation id="4855026984605187434">Ekranınızı paylaşmak için Sistem Ayarları'nda Chrome'un ekranı kaydetmesine izin verin.</translation>
 <translation id="4873783916118289636">Chrome'daki önemli gizlilik ve güvenlik kontrollerini inceleyin</translation>
@@ -387,7 +381,6 @@ Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</
 <translation id="492720062778050435">Chrome bu uzantıyı incelemenizi öneriyor</translation>
 <translation id="4953650215774548573">Google Chrome'u varsayılan tarayıcınız olarak ayarlayın</translation>
 <translation id="495931528404527476">Chrome'da</translation>
-<translation id="4969674060580488087">Hesap oturum açma bilgileriniz güncel olmadığı için ChromeOS Flex, verilerinizi senkronize edemedi.</translation>
 <translation id="4970761609246024540">Chrome profillerine hoş geldiniz</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">"Google Şifre Yöneticisi"ni tıklayın</translation>
@@ -421,7 +414,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="5271833978500241046">Bu becerileri Chrome'da diğer Gemini özellikleriyle birlikte kullanabilirsiniz</translation>
 <translation id="5320351714793324716">Çerezlere izin verirseniz Chrome bunları önceden yükleme işlemi için kullanabilir.</translation>
 <translation id="5321325624576443340">Google Lens kullanılamıyor. Daha sonra tekrar deneyin.</translation>
-<translation id="5334309298019785904">Senkronizasyon, alan adınızda kullanılamadığından ChromeOS, verilerinizi senkronize edemedi.</translation>
 <translation id="5336664042114176802">Başlangıçta Google Hesabınızla ilişkilendirilmiş olan ve <ph name="DOMAIN" /> tarafından yönetilmeyen Gemini asistanına geçebilirsiniz. Yanıtlar artık <ph name="DOMAIN" /> tarafından yönetilen dosyalara veya hizmetlere dayalı olmayacak ve sohbet geçmişiniz aktarılmayacak. İş amaçlı kullanıma uygun olmayabilir. Geçiş yapmak için Chrome'un yeniden başlatılması gerekir.</translation>
 <translation id="5346389065299425353">Birden fazla sekme, dosya ve araç ekleyerek aramanızı derinleştirin</translation>
 <translation id="5353252989841766347">Şifreleri Chrome'dan Aktar</translation>
@@ -549,7 +541,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6497147134301593682">Chrome otomatik olarak kapatıldı</translation>
 <translation id="6506909944137591434">Çevrenizin 3D haritasını oluşturmak için Chrome'un kamera iznine ihtiyacı var</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
-<translation id="6520608191273161151">ChromeOS Flex, oturum açma hatası nedeniyle Chrome verilerini Google Hesabınıza kaydedemedi</translation>
 <translation id="6520670145826811516">Konumunuzu kullanması için <ph name="BEGIN_LINK" />sistem ayarlarında<ph name="END_LINK" /> Chrome'a erişim izni verin</translation>
 <translation id="652948702951888897">Chrome geçmişi</translation>
 <translation id="6532945796722480006">Chrome Canary'de Gemini'ı aç</translation>
@@ -571,7 +562,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6712881677154121168">İndirme hatası: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chrome'u daha hızlı hale getirin</translation>
 <translation id="6734827584173583205">Son zamanlarda ziyaret etmediniz. Chrome; <ph name="PERMISSION_1" /> ve <ph name="PERMISSION_2" /> izni ile birlikte <ph name="COUNT" /> izni daha kaldırdı.</translation>
-<translation id="6735387454586646204">ChromeOS Flex Sistemi</translation>
 <translation id="674891594898436429">Bu sekmede etkin aramayı kapat</translation>
 <translation id="6750954913813541382">Yazım hatalarını düzeltmek için Chrome, tarayıcıda yazdığınız metni Google'a gönderir</translation>
 <translation id="6760235774835597023">Chrome'un V8 motoruyla siteleri hızlandırır ancak bu durumda Chrome, saldırılara karşı biraz daha dirençsiz hale gelir. Bu ayar açık.</translation>
@@ -592,7 +582,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6908182077349113099">Şifreleriniz, yer işaretleriniz ve geçmişinizi cihazlar arasında mükemmel şekilde senkronize edin. Varsayılan tarayıcınızı Chrome'a güncelleyerek sevdiğiniz ve bildiğiniz özelliklere kolayca erişin.</translation>
 <translation id="6926772305569367352">Araç çubuğundaki "Chrome'da Google Arama" düğmesinin yeni bir simgesi var. Chrome'da Google Arama ile göz atarken soru sormak için tıklayın.</translation>
 <translation id="6930294499209825">Google yazılımlarınızı güncel tutar. Bu hizmet devre dışı bırakılırsa veya durdurulursa, Google yazılımlarınız güncel tutulmayacaktır; bu da onarılamayacak güvenlik açıkları meydana gelebileceği ve özelliklerin çalışmayabileceği anlamına gelir. Bu hizmet, kendisini kullanan herhangi bir Google yazılımı olmadığında kendi kendini kaldırır.</translation>
-<translation id="6933858244219479645">ChromeOS Sistemi</translation>
 <translation id="6938166777909186039">Gelecekteki Google Chrome güncellemelerini almak için Windows 10 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar Windows 8.1 kullanıyor.</translation>
 <translation id="6962628299694876291"><ph name="EXISTING_USER" /> zaten oturum açmış durumda. Göz atma işlemlerinizi ayrı tutmak için Chrome'da kendi profilinizde <ph name="USER_EMAIL_ADDRESS" /> olarak oturum açın. Ayrıca, şifrelerinize ve diğer öğelerinize tüm cihazlarınızdan erişebilirsiniz.</translation>
 <translation id="6965382102122355670">Tamam</translation>
@@ -683,7 +672,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="7801699035218095297">Google Chrome şifreleri kopyalamaya çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="7804364787702057554">Chrome'daki hesabınız</translation>
 <translation id="7804947029129221742">Arama motorunuz Chrome dışından değiştirildi. Chrome, sizi korumak için bu işlemi geri alarak orijinal varsayılan ayara getirdi. <ph name="LEARN_MORE_LINK" /></translation>
-<translation id="7808348361785373670">Chrome'dan kaldır...</translation>
 <translation id="7827099906024714326">Bazı verilerin Google Hesabınıza kaydedilip tüm cihazlarınızda kullanılabilmesi için Chrome'un kimliğinizi doğrulaması gerekir. Oturumu şimdi kapatırsanız bu veriler silinir.</translation>
 <translation id="7829850924999627855"><ph name="DEVICE" /> cihazınızdaki kayıtlı bilgilerinize ve diğer öğelerinize erişmek için Chrome'da oturum açın</translation>
 <translation id="7832314606810669113">Yer işaretlerinizi ve diğer öğelerinizi tüm cihazlarınızda kullanmak için Chrome'da oturum açın. Bu şifre, oturum açtıktan sonra Google Hesabınıza kaydedilir.</translation>
@@ -696,7 +684,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="7896673875602241923">Birisi daha önce bu bilgisayarda <ph name="ACCOUNT_EMAIL_LAST" /> olarak Chrome oturumu açmış. Bilgilerinizi ayrı tutmak için yeni bir Chrome kullanıcısı oluşturun.</translation>
 <translation id="7904213866086517086">Google Arama'yı yan panelde yeniden aç</translation>
 <translation id="7904985524660297937">Google Chrome'da Gemini'ı deneyin</translation>
-<translation id="7905880575591690197">ChromeOS, oturum açma sırasında yaşanan bir hata nedeniyle Chrome verilerini Google Hesabınıza kaydedemedi</translation>
 <translation id="7936702483636872823">Dosya yanıltıcı olduğu ve cihazınızda beklenmeyen değişiklikler yapabileceği için Chrome bu indirme işlemini engelledi</translation>
 <translation id="7951272445806340501">Güncellemenin uygulanması için ChromeOS Flex yeniden başlatılmalıdır.</translation>
 <translation id="7959172989483770734">Chrome Profillerini Yönetin</translation>
@@ -757,7 +744,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="8402881611069691789">{COUNT,plural, =1{Chrome güncellemesi tamamlandı. Yeniden başlattığınızda son sürümü kullanabilirsiniz. Sonrasında mevcut sekmeleriniz yeniden açılır. Gizli veya yalıtılmış pencere açık. Yeniden başlattığınızda bu pencere tekrar açılmaz.}other{Chrome güncellemesi tamamlandı. Yeniden başlattığınızda son sürümü kullanabilirsiniz. Sonrasında mevcut sekmeleriniz yeniden açılır. Profiller genelinde # gizli ve yalıtılmış pencere açık. Yeniden başlattığınızda bu pencereler tekrar açılmaz.}}</translation>
 <translation id="8403038600646341038">Bilgisayar ekranındaki Chrome logosu.</translation>
 <translation id="8406687098231754303">Araç çubuğundaki "Yan panelde Google Arama" düğmesini kullanarak yan panelde Google Arama'yı yeniden açabilir ve internette gezinirken soru sorabilirsiniz</translation>
-<translation id="8418845734693287262">Hesap oturum açma ayrıntılarınız güncel olmadığından ChromeOS, verilerinizi senkronize edemedi.</translation>
 <translation id="842386925677997438">Chrome'un güvenlik araçları</translation>
 <translation id="8425765582779547329">Anne veya babanızın seçimleriyle internette daha güvende olmak için Chrome'da oturum açın</translation>
 <translation id="842852285618875960">Google Chrome'un <ph name="BOOKMARK_LIMIT" /> yer işareti sınırına ulaştınız. Bu nedenle, yer işaretlerinizden bazıları henüz Google Hesabınıza kaydedilmedi.
@@ -786,7 +772,6 @@ Bazı yer işaretlerini silene kadar hesabınıza yeni yer işaretleri kaydedile
 <translation id="8624541899164515475">Ayarlar, yeni sekmede açılır.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 1 dakika içinde yeniden başlatılacak}other{Chrome # dakika içinde yeniden başlatılacak}}</translation>
 <translation id="8637932705841171563">Pencerenizi paylaşmak için Sistem Ayarları'nda Chrome'un ekranı kaydetmesine izin verin.</translation>
-<translation id="8642497536370021917">Google Hesabınızdaki Chrome verilerini her zaman kullanabildiğinizden ve kaydedebildiğinizden emin olmak için kimliğinizi doğrulayın</translation>
 <translation id="8656634243791296665">Chrome Dev'de Gemini'ı aç</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Ayrıca Chrome'u başlattığınızda gösterilecek sayfayı da denetler.</translation>
@@ -848,7 +833,6 @@ Bazı yer işaretlerini silene kadar hesabınıza yeni yer işaretleri kaydedile
 <translation id="922152298093051471">Chrome'u özelleştir</translation>
 <translation id="93760716455950538">ChromeOS Flex'i yeniden başlatın</translation>
 <translation id="945522503751344254">Geri bildirim gönder</translation>
-<translation id="973195869036269770">ChromeOS, hesap oturum açma bilgileriniz güncel olmadığı için Chrome verilerini Google Hesabınıza kaydedemedi</translation>
 <translation id="983803489796659991">Güncelleme sunucusunda uygulamanın karma verisi bulunmadığından yükleme işlemi başarısız oldu.</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" />, Chrome profilleri arasında geçiş yapabilir</translation>
 </translationbundle>

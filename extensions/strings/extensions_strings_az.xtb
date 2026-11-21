@@ -4,6 +4,7 @@
 <translation id="10146536653536065">"<ph name="EXTENSION_NAME" />" quraşdırın</translation>
 <translation id="1070377999570795893">Kompüterinizdə başqa bir proqram Chrome'un necə işlədiyini dəyişdirən artırma əlavə etdi. <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Temanı Aktiv Edin</translation>
+<translation id="1085064499066015002">Həmişə bütün saytlarda</translation>
 <translation id="1135328998467923690">Paket yanlışdır: " <ph name="ERROR_CODE" /> '.</translation>
 <translation id="1140871961407805696">Arxa kamera</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> Chromium-un iş prinsipini dəyişdirə biləcək artırma əlavə etdi.
@@ -76,6 +77,7 @@
 <translation id="4660476621274971848">Gözlənilən versiya "<ph name="EXPECTED_VERSION" />" olsa da, versiya "<ph name="NEW_ID" />" idi.</translation>
 <translation id="471800408830181311">Gizli açar çıxışı uğursuz oldu.</translation>
 <translation id="4811956658694082538">Utilit prosesi qəzaya uğradığı üçün paketi quraşdırmaq olmur.</translation>
+<translation id="4883436287898674711">Bütün <ph name="WEBSITE_1" /> saytları</translation>
 <translation id="4988792151665380515">İctimai açarı eksport etmək alınmadı.</translation>
 <translation id="501057610015570208">"Yalnız_köşk" funksiyası olan tətbiqlər ChromeOS Flex köşk rejimində quraşdırılmalıdır</translation>
 <translation id="5026754133087629784">Veb baxış: <ph name="WEBVIEW_TAG_NAME" /></translation>

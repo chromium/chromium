@@ -530,6 +530,7 @@
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />സഹായം തേടുക<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">നിരക്ക് ട്രാക്ക് ചെയ്യുന്നു</translation>
 <translation id="3037517125981011456">Chrome-ൽ സൈൻ ഇൻ ചെയ്യാനുള്ള നിർദ്ദേശങ്ങൾ കാണിക്കുന്നു</translation>
+<translation id="3038505649933066250">തീയതി അനുസരിച്ച് ഫിൽട്ടർ ചെയ്യുക</translation>
 <translation id="3044436568790455247">"ഉപകരണം തിരഞ്ഞെടുക്കുക" മുഴുവൻ ഉയരത്തിൽ തുറന്നു.</translation>
 <translation id="3057938290530993634">അടുത്ത തവണ എളുപ്പത്തിൽ ആക്‌സസ് ചെയ്യാൻ, നിങ്ങൾ ഏറ്റവും കൂടുതൽ സന്ദർശിച്ച വെബ്‌സൈറ്റുകൾ പിൻ ചെയ്യാൻ ടാപ്പ് ചെയ്‌ത് പിടിക്കുക</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ബുക്ക്‌മാർക്ക്}other{<ph name="BOOKMARKS_COUNT_MANY" /> ബുക്ക്‌മാർക്കുകൾ}}</translation>
@@ -576,6 +577,7 @@
 <translation id="3243650379537999343">വരയ്‌ക്കുക</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">നിങ്ങൾ Chrome ഉപയോഗ റിപ്പോർട്ടുകളും പങ്കിടുന്നുവെങ്കിൽ ആ റിപ്പോർട്ടുകളിൽ നിങ്ങൾ സന്ദർശിക്കുന്ന URL-കളും ഉൾപ്പെടും</translation>
+<translation id="3248185426436836442">തീര്‍‌ച്ചപ്പെടുത്തിയിട്ടില്ല</translation>
 <translation id="3250563604907490871">നിങ്ങൾ വൈഫൈയിലേക്ക് കണക്റ്റ് ചെയ്യുമ്പോൾ ചിത്രത്തിന്റെ വിവരണങ്ങൾ പുനരാരംഭിക്കും</translation>
 <translation id="3254409185687681395">ഈ പേജ് ബുക്‌മാര്‍ക്ക് ചെയ്യുക</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" /> എന്നതിന്റെ എല്ലാ പേജുകളും</translation>
@@ -1124,7 +1126,6 @@
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, പിൻ ചെയ്ത, ഉള്ളടക്കം പങ്കിടുന്ന അദൃശ്യ ടാബ്</translation>
 <translation id="5375374982898812658">നിങ്ങൾക്ക് ഉടൻ തന്നെ “<ph name="GROUP_NAME" />” ടാബ് ഗ്രൂപ്പിലേക്ക് ആക്‌സസ് നഷ്ടപ്പെടും, അത് നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിൽ നിന്നും ഇല്ലാതാക്കുകയും ചെയ്യും</translation>
 <translation id="537865165090710757">സംരക്ഷിക്കുക, പങ്കിടുക</translation>
-<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> എന്നതിന് നിങ്ങളുടെ ഡിജിറ്റൽ വാലറ്റിൽ നിന്ന് വ്യക്തിപരമായ വിവരങ്ങൾ ഉപയോഗിക്കണമെന്നുണ്ട്. നിങ്ങൾ ഈ സൈറ്റിനെ വിശ്വസിക്കുന്നുണ്ടെങ്കിൽ മാത്രം തുടരുക. അപകടകരമായ സൈറ്റുകൾ നിങ്ങളുടെ നിയമപരമായ പേര് അല്ലെങ്കിൽ ഐഡി നമ്പർ പോലുള്ള വിവരങ്ങൾ നൽകുന്നതിന് നിങ്ങളെ കബളിപ്പിച്ചേക്കാം.</translation>
 <translation id="5395376160638294582">നിങ്ങളുടെ Google അക്കൗണ്ടിലെ Chrome ഡാറ്റ എല്ലായ്‌പ്പോഴും ഉപയോഗിക്കാനാകുമെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="5397794290049113714">നിങ്ങള്‍</translation>
 <translation id="539881862970320163">ശക്തമായ പാസ്‌വേഡ് നിർദ്ദേശിച്ചു. കീബോർഡ് മറച്ചിരിക്കുന്നു.</translation>
@@ -1136,6 +1137,7 @@
 <translation id="5415871492522952905">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും നിങ്ങളുടെ ചരിത്രവും ടാബുകളും ഉണ്ടായിരിക്കും, അതിനാൽ നിങ്ങൾ ചെയ്തുകൊണ്ടിരുന്നത് തുടരാവുന്നതാണ്</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) എന്നയാൾക്ക് “<ph name="GROUP_NAME" />” ടാബ് ഗ്രൂപ്പിലേക്കുള്ള ആക്‌സസ് ഉടൻ നഷ്ടപ്പെടും</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB ലഭ്യമാണ്</translation>
+<translation id="5430861625274552852">ഒരു പേജിന്റെ ഉള്ളടക്കത്തെ കുറിച്ച് ചോദിക്കുക അല്ലെങ്കിൽ ടാബുകളിലുടനീളം താരതമ്യം ചെയ്യുക</translation>
 <translation id="543271133149552180"><ph name="TAB_TITLE" />, മൾട്ടിസെലക്റ്റ് ചെയ്ത 'ചിത്രത്തിനുള്ളിൽ ചിത്രം' അദൃശ്യ ടാബ്</translation>
 <translation id="5436928407363358055">നിങ്ങൾ നിർത്തിയ സ്ഥലത്ത് നിന്ന് എളുപ്പത്തിൽ ആരംഭിക്കാൻ, നിങ്ങളുടെ ചരിത്രവും ടാബുകളും സമന്വയിപ്പിക്കുക</translation>
 <translation id="5438292632479953702">വീണ്ടും ഡൗൺലോഡ് ചെയ്യുക</translation>
@@ -1172,6 +1174,7 @@
 <translation id="557018954714092179">പുതിയ ഫോൾഡർ സൃഷ്‌ടിക്കുക</translation>
 <translation id="5578795271662203820">ഈ ചിത്രത്തിനായി <ph name="SEARCH_ENGINE" />-ൽ തിരയുക</translation>
 <translation id="558563010977877295">ഒരു നിർദ്ദിഷ്‌ട പേജോ ഒരു കൂട്ടം പേജുകളോ തുറക്കുക</translation>
+<translation id="5594132774273121146">ഉപയോക്താവും അക്കൗണ്ടും</translation>
 <translation id="5596627076506792578">കൂടുതൽ‍ ഓപ്‌ഷനുകൾ</translation>
 <translation id="5599455543593328020">അദൃശ്യ മോഡ്</translation>
 <translation id="5601180634394228718">നിങ്ങളുടെ Chrome അനുഭവം മെച്ചപ്പെടുത്താനായി ഡാറ്റ ഉപയോഗിക്കുന്ന കൂടുതൽ ക്രമീകരണത്തിന് <ph name="BEGIN_LINK" />Google സേവനങ്ങളിലേക്ക്<ph name="END_LINK" /> പോകുക.</translation>
@@ -1229,6 +1232,7 @@
 <translation id="583281660410589416">അജ്ഞാതം</translation>
 <translation id="5833984609253377421">ലിങ്ക് പങ്കിടുക</translation>
 <translation id="5839058148541733625">Chrome ദിനോസർ</translation>
+<translation id="5839059463554891940">സുരക്ഷയും പരിരക്ഷയും</translation>
 <translation id="5841444063256914865">നിങ്ങൾക്ക് "<ph name="FILE_NAME" />" എന്തായാലും ഡൗൺലോഡ് ചെയ്യണോ?</translation>
 <translation id="5847265694842662173">ദുരുപയോഗം ചെയ്യുന്നതും ഉപയോഗിക്കാത്തതുമായ സൈറ്റുകൾ അറിയിപ്പുകൾ അയയ്ക്കുന്നത് Chrome തടഞ്ഞു</translation>
 <translation id="5848257610304005265"><ph name="APP_NAME" /> ഉപയോഗിച്ച് PDF തുറക്കണോ?</translation>
@@ -1345,7 +1349,6 @@
 <translation id="6259107733340311168">എന്റർപ്രൈസ് സിഗ്നലുകൾ സംബന്ധിച്ച നിഷേധക്കുറിപ്പ് ബോട്ടം ഷീറ്റ് മുഴുവൻ ഉയരത്തിൽ തുറന്നു</translation>
 <translation id="6260260490042862943">സൈറ്റ് നിയന്ത്രണങ്ങൾ</translation>
 <translation id="6264376385120300461">എന്തായാലും ഡൗൺലോഡ് ചെയ്യുക</translation>
-<translation id="6264485186158353794">തിരികെ സുരക്ഷയിലേക്ക്</translation>
 <translation id="6267106249090587268">അറിയിപ്പുകൾ <ph name="SEPARATOR" /> സ്‌പാം അല്ലെങ്കിൽ വഞ്ചനാപരമായ ഉള്ളടക്കങ്ങൾ കാരണം Chrome ഈ അനുമതികൾ നീക്കം ചെയ്‌തു</translation>
 <translation id="6276708887952587684">പേജ് ഉറവിടം കാണുക</translation>
 <translation id="62768169905160414">വീഡിയോ ഫ്രെയിം പകർത്തുക</translation>
@@ -1464,7 +1467,6 @@
 <translation id="6659594942844771486">ടാബ്</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />-ൽ തുറക്കുക</translation>
 <translation id="6669390930482049506">എന്നെ അറിയിക്കുക</translation>
-<translation id="6670742294143102726">നിങ്ങളുടെ തിരയലിലേക്ക് ചേർക്കാൻ ഒന്നോ അതിലധികമോ ടാബുകൾ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6671495933530132209">ചിത്രം പകർത്തുക</translation>
 <translation id="6672697278890207089">നിങ്ങളുടെ പാസ്ഫ്രെയ്സ് നല്‍കുക</translation>
 <translation id="6675622031235530028">പുറത്തുകടക്കാൻ Ctrl+Q അമർത്തിപ്പിടിക്കുക</translation>
@@ -1730,6 +1732,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> സ്റ്റാൻഡേർഡ് ടാബ്}other{<ph name="TABS_COUNT_MANY" /> സ്റ്റാൻഡേർഡ് ടാബുകൾ}}</translation>
 <translation id="7603168929588204083">അസാധുവായ തീയതി</translation>
 <translation id="7605594153474022051">സമന്വയിപ്പിക്കൽ പ്രവർത്തിക്കുന്നില്ല</translation>
+<translation id="7607002721634913082">അല്പംനിര്‍ത്തി</translation>
 <translation id="7608245556672190037">ഓപ്റ്റ് ഇൻ പൂർണ്ണ ഉയരത്തിൽ തുറന്നതായി Chrome കണ്ടെത്തി</translation>
 <translation id="7612619742409846846">ഇനി പറയുന്നതിൽ നിന്നും Google-ലേക്ക് സൈൻ ഇൻ ചെയ്‌തു</translation>
 <translation id="7612989789287281429">നിങ്ങളെ സൈൻ ഇൻ ചെയ്യിക്കുന്നു…</translation>
@@ -1838,6 +1841,7 @@
 <translation id="800155843932969169">നിങ്ങളുടെ പാസ്‌വേഡുകൾ സുരക്ഷിതമായി സൃഷ്‌ടിക്കുകയും സംഭരിക്കുകയും ചെയ്യുക, വേഗത്തിൽ സൈൻ ഇൻ ചെയ്യുക, നിങ്ങളെ സുരക്ഷിതമായി നിലനിർത്താൻ പാസ്‌വേഡുകളുമായി ബന്ധപ്പെട്ട സുരക്ഷാ പ്രശ്‌നങ്ങൾ തിരിച്ചറിയുക</translation>
 <translation id="8004582292198964060">ബ്രൗസര്‍</translation>
 <translation id="8006630792898017994">Space അല്ലെങ്കിൽ Tab</translation>
+<translation id="802154636333426148">ഡൗൺലോഡ് പരാജയപ്പെട്ടു</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, മൾട്ടിസെലക്റ്റ് ചെയ്ത, പിൻ ചെയ്ത, ഉള്ളടക്കം പങ്കിടുന്ന അദൃശ്യ ടാബ്</translation>
 <translation id="8025972204417227828">പുതിയത് ചേർക്കുക</translation>
 <translation id="8027863900915310177">ഡൗൺലോഡ് എവിടെ സംരക്ഷിക്കണമെന്ന് തിരഞ്ഞെടുക്കുക</translation>
@@ -1845,6 +1849,7 @@
 <translation id="8032569120109842252">ഫോളോയിംഗ്</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, തിരഞ്ഞെടുത്ത, മ്യൂട്ട് ചെയ്ത അദൃശ്യ ടാബ്</translation>
 <translation id="8036587585440959897">ചില വിപുലീകരണങ്ങൾക്ക് Chrome-ലേക്ക് തിരയൽ യന്ത്രങ്ങൾ ചേർക്കാനാകും.</translation>
+<translation id="803703704549420287">ഫിൽട്ടറുകൾ മായ്‌ക്കുക</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> ദിവസം ശേഷിക്കുന്നു</translation>
 <translation id="8037801708772278989">തൊട്ടുമുമ്പ് പരിശോധിച്ചു</translation>
 <translation id="804335162455518893">SD കാർഡ് കണ്ടെത്തിയില്ല</translation>

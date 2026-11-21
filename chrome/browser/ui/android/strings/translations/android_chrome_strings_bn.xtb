@@ -530,6 +530,7 @@
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />সহায়তা পান<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">দাম ট্র্যাক করা হচ্ছে</translation>
 <translation id="3037517125981011456">Chrome-এ সাইন-ইন করার প্রম্পট দেখাবে</translation>
+<translation id="3038505649933066250">তারিখ অনুযায়ী ফিল্টার করুন</translation>
 <translation id="3044436568790455247">"ডিভাইস বেছে নিন" বিকল্প সম্পূর্ণ স্ক্রিন জুড়ে খোলা হয়েছে।</translation>
 <translation id="3057938290530993634">পরেরবার সহজে অ্যাক্সেস করার জন্য আপনার সবচেয়ে বেশি দেখা ওয়েবসাইট পিন করতে, ট্যাপ করে ধরে থাকুন</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" />টি বুকমার্ক}one{<ph name="BOOKMARKS_COUNT_MANY" />টি বুকমার্ক}other{<ph name="BOOKMARKS_COUNT_MANY" />টি বুকমার্ক}}</translation>
@@ -576,6 +577,7 @@
 <translation id="3243650379537999343">ড্র করুন</translation>
 <translation id="3244271242291266297">মিমি</translation>
 <translation id="3245429137663807393">আপনি Chrome ব্যবহারের রিপোর্ট শেয়ার করলেও, আপনার দেখা URL তার মধ্যে অন্তর্ভুক্ত থাকে</translation>
+<translation id="3248185426436836442">বাকি আছে</translation>
 <translation id="3250563604907490871">আপনি ওয়াই-ফাইতে কানেক্ট করলে, ছবির বিবরণ আবার দেখা যাবে</translation>
 <translation id="3254409185687681395">এই পৃষ্ঠাটি বুকমার্ক করুন</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" />-এর সব পৃষ্ঠা</translation>
@@ -1124,7 +1126,6 @@
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, পিন করা শেয়ারিং ছদ্মবেশী ট্যাব</translation>
 <translation id="5375374982898812658">আপনি অবিলম্বে “<ph name="GROUP_NAME" />” ট্যাব গ্রুপের অ্যাক্সেস হারাবেন এবং আপনার সব ডিভাইস থেকে এটি মুছে দেওয়া হবে</translation>
 <translation id="537865165090710757">সেভ করে শেয়ার করুন</translation>
-<translation id="5390367025924544771">আপনার ডিজিটাল ওয়ালেট থেকে <ph name="WEBSITE_ORIGIN" /> ব্যক্তিগত তথ্য ব্যবহার করতে চায়। শুধুমাত্র এই সাইটটি বিশ্বাস করলে তবেই চালিয়ে যান। বিপজ্জনক সাইট, প্রতারণার মাধ্যমে আপনাকে দিয়ে আপনার আইনি নাম বা আইডির নম্বরের মতো বিষয় প্রকাশ করিয়ে নিতে পারে।</translation>
 <translation id="5395376160638294582">আপনার Google অ্যাকাউন্টে সবসময় Chrome ডেটা ব্যবহার করতে পারবেন তা কনফার্ম করুন</translation>
 <translation id="5397794290049113714">আপনি</translation>
 <translation id="539881862970320163">শক্তিশালী পাসওয়ার্ড সাজেস্ট করা হয়েছে। কীবোর্ড লুকানো রয়েছে।</translation>
@@ -1136,6 +1137,7 @@
 <translation id="5415871492522952905">ট্যাব এবং ইতিহাস আপনার ডিভাইস জুড়ে সেভ করা হবে, যাতে আপনি আগের কাজ চালিয়ে যেতে পারেন</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) সঙ্গে সঙ্গে “<ph name="GROUP_NAME" />” ট্যাব গ্রুপের অ্যাক্সেস হারাবেন</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> জিবি উপলব্ধ</translation>
+<translation id="5430861625274552852">কোনও পৃষ্ঠার কন্টেন্ট সম্পর্কে জিজ্ঞাসা করুন অথবা বিভিন্ন ট্যাবের মধ্যে তুলনা করুন</translation>
 <translation id="543271133149552180"><ph name="TAB_TITLE" />, একাধিক বেছে নেওয়া ছবির-মধ্যে-ছবি ছদ্মবেশী ট্যাব</translation>
 <translation id="5436928407363358055">যেখানে ছেড়েছেন সেখান থেকে সহজেই পিক আপ করতে, আপনার ইতিহাস ও ট্যাব সিঙ্ক করুন</translation>
 <translation id="5438292632479953702">আবার ডাউনলোড করুন</translation>
@@ -1172,6 +1174,7 @@
 <translation id="557018954714092179">নতুন ফোল্ডার তৈরি করুন</translation>
 <translation id="5578795271662203820">এই ইমেজটির জন্য <ph name="SEARCH_ENGINE" /> খুঁজুন</translation>
 <translation id="558563010977877295">একটি সুনির্দিষ্ট পৃষ্ঠা বা পৃষ্ঠাগুলির একটি সেট খুলুন</translation>
+<translation id="5594132774273121146">ব্যবহারকারী ও অ্যাকাউন্ট</translation>
 <translation id="5596627076506792578">আরও বিকল্পগুলি</translation>
 <translation id="5599455543593328020">ছদ্মবেশী মোড</translation>
 <translation id="5601180634394228718">আপনার Chrome ব্যবহার করার অভিজ্ঞতা উন্নত করতে ডেটা ব্যবহার করে, এমন আরও বেশি সেটিংসের জন্য <ph name="BEGIN_LINK" />Google পরিষেবা<ph name="END_LINK" /> লিঙ্কে যান।</translation>
@@ -1229,6 +1232,7 @@
 <translation id="583281660410589416">অজানা</translation>
 <translation id="5833984609253377421">লিঙ্ক শেয়ার করুন</translation>
 <translation id="5839058148541733625">Chrome ডাইনো গেম</translation>
+<translation id="5839059463554891940">নিরাপত্তা ও সুরক্ষা</translation>
 <translation id="5841444063256914865">আপনি কি তবুও "<ph name="FILE_NAME" />" ডাউনলোড করতে চান?</translation>
 <translation id="5847265694842662173">Chrome অপব্যবহার করা ও অব্যবহৃত সাইটকে বিজ্ঞপ্তি পাঠানো থেকে আটকায়</translation>
 <translation id="5848257610304005265"><ph name="APP_NAME" /> অ্যাপের সাহায্যে পিডিএফ ফাইল খুলতে চান?</translation>
@@ -1345,7 +1349,6 @@
 <translation id="6259107733340311168">স্ক্রিনের নিচে অ্যাটাচ করা এন্টারপ্রাইজ সিগন্যাল সংক্রান্ত ডিসক্লেমার শিট সম্পূর্ণ স্ক্রিন জুড়ে খুলেছে</translation>
 <translation id="6260260490042862943">সাইট কন্ট্রোল</translation>
 <translation id="6264376385120300461">তবুও ডাউনলোড করুন</translation>
-<translation id="6264485186158353794">সুরক্ষাতে ফিরুন</translation>
 <translation id="6267106249090587268">বিজ্ঞপ্তি <ph name="SEPARATOR" /> স্প্যাম বা প্রতারণামূলক কন্টেন্ট থাকায়, Chrome এইসব অনুমতি সরিয়ে দিয়েছে</translation>
 <translation id="6276708887952587684">পৃষ্ঠার সূত্র দেখুন</translation>
 <translation id="62768169905160414">ভিডিও ফ্রেম কপি করুন</translation>
@@ -1464,7 +1467,6 @@
 <translation id="6659594942844771486">ট্যাব</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> এ খুলুন</translation>
 <translation id="6669390930482049506">আমাকে জানান</translation>
-<translation id="6670742294143102726">আপনার সার্চে যোগ করার জন্য এক বা একাধিক ট্যাব বেছে নিন</translation>
 <translation id="6671495933530132209">ছবি কপি করুন</translation>
 <translation id="6672697278890207089">আপনার পাসফ্রেজটি প্রবেশ করান</translation>
 <translation id="6675622031235530028">বেরিয়ে আসতে Ctrl+Q প্রেস করে ধরে থাকুন</translation>
@@ -1730,6 +1732,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" />টি স্ট্যান্ডার্ড ট্যাব}one{<ph name="TABS_COUNT_MANY" />টি স্ট্যান্ডার্ড ট্যাব}other{<ph name="TABS_COUNT_MANY" />টি স্ট্যান্ডার্ড ট্যাব}}</translation>
 <translation id="7603168929588204083">ভুল তারিখ</translation>
 <translation id="7605594153474022051">সিঙ্ক কাজ করছে না</translation>
+<translation id="7607002721634913082">বিরত রয়েছে</translation>
 <translation id="7608245556672190037">Chrome Finds অপ্ট-ইন সম্পূর্ণ স্ক্রিন জুড়ে খোলা হয়েছে</translation>
 <translation id="7612619742409846846">এই হিসেবে Google-এ সাইন-ইন করেছেন</translation>
 <translation id="7612989789287281429">আপনাকে সাইন-ইন করানো হচ্ছে…</translation>
@@ -1838,6 +1841,7 @@
 <translation id="800155843932969169">নিরাপদে আপনার পাসওয়ার্ড তৈরি ও স্টোর করুন, আরও দ্রুত সাইন-ইন করুন এবং আপনাকে সুরক্ষিত রাখতে পাসওয়ার্ডের নিরাপত্তা সংক্রান্ত সমস্যা শনাক্ত করুন</translation>
 <translation id="8004582292198964060">ব্রাউজার</translation>
 <translation id="8006630792898017994">স্পেস বা ট্যাব</translation>
+<translation id="802154636333426148">ডাউনলোড করা যায়নি</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, একাধিক বেছে নেওয়া পিন করা শেয়ারিং ছদ্মবেশী ট্যাব</translation>
 <translation id="8025972204417227828">নতুন কাস্টম লিঙ্ক এডিট শর্টকাট যোগ করুন</translation>
 <translation id="8027863900915310177">ডাউনলোড করা ফাইল কোথায় সেভ করে রাখবেন, তা ঠিক করে নিন</translation>
@@ -1845,6 +1849,7 @@
 <translation id="8032569120109842252">ফলো করছেন</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, বেছে নেওয়া মিউট করা ছদ্মবেশী ট্যাব</translation>
 <translation id="8036587585440959897">কিছু এক্সটেনশন Chrome-এ সার্চ ইঞ্জিন যোগ করতে পারে।</translation>
+<translation id="803703704549420287">ফিল্টার সরান</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> দিন বাকি আছে</translation>
 <translation id="8037801708772278989">এখনই চেক করা হয়েছে</translation>
 <translation id="804335162455518893">এসডি কার্ড পাওয়া যায়নি</translation>

@@ -82,7 +82,6 @@
 <translation id="188102464690227119">ปุ่ม "Search ในแผงด้านข้าง" บนแถบเครื่องมือมีไอคอนใหม่ คลิกเพื่อถามคำถามขณะท่องเว็บด้วย Search ในแผงด้านข้าง</translation>
 <translation id="1896836275755235458">Chromium จะช่วยสงวนพลังงานแบตเตอรี่โดยการจำกัดกิจกรรมในเบื้องหลังและเอฟเฟกต์ภาพ เช่น การเลื่อนอย่างราบรื่นและอัตราเฟรมวิดีโอ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับโหมดประหยัดพลังงาน<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">บริการ Chromium Updater</translation>
-<translation id="1911763535808217981">เมื่อปิดการตั้งค่านี้ คุณจะลงชื่อเข้าใช้เว็บไซต์ของ Google อย่างเช่น Gmail ได้โดยไม่ต้องลงชื่อเข้าใช้ Chromium</translation>
 <translation id="1929939181775079593">Chromium ไม่ตอบสนอง เปิดใหม่เลยหรือไม่</translation>
 <translation id="1933341829955786215">องค์กร <ph name="MANAGER" /> กำหนดให้คุณต้องลงชื่อเข้าใช้ Chromium</translation>
 <translation id="193439633299369377">ต้องรีสตาร์ท Chromium OS เพื่อใช้การอัปเดต</translation>
@@ -129,7 +128,6 @@
 <translation id="2361918034042471035">ส่วนขยาย "<ph name="EXTENSION_NAME" />" ต้องการให้คุณลงชื่อเข้าใช้ Chromium</translation>
 <translation id="236943522426971115">ปิดใช้ Chromium ที่ทำงานในเบื้องหลังสำหรับแอป</translation>
 <translation id="2374216753258219393">หากต้องการใช้ส่วนขยายนี้ด้วย <ph name="USER_EMAIL_ADDRESS" /> ให้ลงชื่อเข้าใช้ Chromium</translation>
-<translation id="2384373936468275798">Chromium OS ซิงค์ข้อมูลไม่ได้เนื่องจากรายละเอียดการลงชื่อเข้าใช้บัญชีไม่ใช่ข้อมูลปัจจุบัน</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{มีส่วนขยาย Chromium อย่างน้อย 1 รายการกำลังเข้าถึงอุปกรณ์ HID 1 เครื่อง}=1{มีส่วนขยาย Chromium อย่างน้อย 1 รายการกำลังเข้าถึงอุปกรณ์ HID 1 เครื่อง}other{มีส่วนขยาย Chromium อย่างน้อย 1 รายการกำลังเข้าถึงอุปกรณ์ HID # เครื่อง}}</translation>
 <translation id="2401032172288869980">Chromium ต้องการสิทธิ์เข้าถึงกล้องและไมโครโฟนสำหรับเว็บไซต์นี้</translation>
 <translation id="2403703063067034158">ข้อผิดพลาดในการเริ่มต้น: อินสแตนซ์อื่นของการตั้งค่ากำลังทำงานอยู่ โปรดลองอีกครั้งในภายหลัง</translation>
@@ -171,7 +169,6 @@
 <translation id="2819844767470613567">คำเตือน: Chromium ไม่สามารถป้องกันไม่ให้ส่วนขยายบันทึกประวัติการท่องเว็บได้ หากต้องการปิดใช้ส่วนขยายนี้ในโหมดแยก ให้ยกเลิกการเลือกตัวเลือกนี้</translation>
 <translation id="2841525013647267359">แปลจากภาษา</translation>
 <translation id="2846251086934905009">ข้อผิดพลาดในการติดตั้ง: โปรแกรมติดตั้งทำงานไม่สมบูรณ์ ล้มเลิกการติดตั้งแล้ว</translation>
-<translation id="2847479871509788944">นำออกจาก Chromium...</translation>
 <translation id="2850691299438350830">รักษาความปลอดภัยของคุณใน Chromium และอาจใช้เพื่อปรับปรุงความปลอดภัยในแอปอื่นๆ ของ Google เมื่อลงชื่อเข้าใช้</translation>
 <translation id="2885378588091291677">ตัวจัดการงาน</translation>
 <translation id="2898830646167954300">เปลี่ยนกลับไปใช้ผู้ช่วย Gemini ที่ไม่มีการจัดการ</translation>
@@ -382,7 +379,6 @@
 <translation id="5346389065299425353">เจาะลึกการค้นหาด้วยการเพิ่มแท็บ ไฟล์ และเครื่องมือหลายรายการ</translation>
 <translation id="5352264705793813212">Chromium พบคำแนะนำด้านความปลอดภัยบางอย่างที่คุณควรตรวจสอบ</translation>
 <translation id="5352361688875342522">โปรไฟล์ Chromium อื่นๆ</translation>
-<translation id="535243042947607642">Chromium OS บันทึกข้อมูล Chromium ในบัญชี Google ไม่ได้เนื่องจากรายละเอียดการลงชื่อเข้าใช้บัญชีของคุณไม่ใช่ข้อมูลปัจจุบัน</translation>
 <translation id="5368118228313795342">รหัสเพิ่มเติม: <ph name="EXTRA_CODE" /></translation>
 <translation id="5377622451696208284">รวม Chromium ไว้ในกิจกรรมบนเว็บและแอปเพื่อรับการปรับเปลี่ยนในแบบของคุณ</translation>
 <translation id="5382964351116519680">เปิดการค้นหาด้วย Chromium</translation>
@@ -397,7 +393,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium แนะนำให้หยุดแท็บที่ทำให้เบราว์เซอร์ทำงานช้าลงชั่วคราว}other{Chromium แนะนำให้หยุดแท็บที่ทําให้เบราว์เซอร์ทำงานช้าลงชั่วคราว}}</translation>
 <translation id="5473971139929175403">Chromium อาจทำงานไม่ถูกต้องเพราะไม่รองรับใน Linux Distribution นี้แล้ว</translation>
 <translation id="5475924890392386523">Chromium บล็อกการดาวน์โหลดนี้เนื่องจากไฟล์อาจเป็นอันตรายต่อบัญชีส่วนตัวและบัญชีโซเชียลเน็ตเวิร์กของคุณ</translation>
-<translation id="549669000822060376">โปรดรอขณะที่ Chromium ติดตั้งการอัปเดตระบบล่าสุด</translation>
 <translation id="5496810170689441661">Chromium กำลังพยายามแก้ไขรหัสผ่าน โปรดพิมพ์รหัสผ่าน Windows ของคุณเพื่ออนุญาต</translation>
 <translation id="5524890928877629608">มุมซ้ายบนของพื้นที่การค้นหา: ซ้าย <ph name="LEFT" />% บน <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">เปิด PDF ใน Chromium</translation>
@@ -492,7 +487,6 @@
 <translation id="6390800440335263989">หากต้องการดำเนินการต่อ โปรดลงชื่อเข้าใช้ Chromium ด้วย <ph name="EMAIL" /> การดำเนินการดังกล่าวจะตรวจสอบว่าคุณมีนโยบายขององค์กรแล้ว</translation>
 <translation id="6400112897226594999">โลโก้ Chromium ในหน้าจอคอมพิวเตอร์</translation>
 <translation id="6403826409255603130">Chromium เป็นเว็บเบราว์เซอร์ที่เรียกใช้หน้าเว็บและแอปพลิเคชันด้วยความเร็วสูง มีความรวดเร็ว เสถียร และง่ายในการใช้งาน เรียกดูเว็บได้อย่างปลอดภัยมากขึ้นด้วยการป้องกันมัลแวร์และฟิชชิงที่สร้างอยู่ภายใน Chromium</translation>
-<translation id="6414624068245092115">โปรดยืนยันว่าเป็นคุณเพื่อให้ใช้และบันทึกข้อมูล Chromium ในบัญชี Google ได้เสมอ</translation>
 <translation id="642132557830635295">Chromium ทำงานได้เร็วขึ้นและฟีเจอร์ที่ใช้ JavaScript ควรทำงานตามที่ออกแบบไว้</translation>
 <translation id="6434631832954028336">เปิดแผง Search อีกครั้ง</translation>
 <translation id="6436260184216827876">การค้นหารูปภาพไม่พร้อมใช้งาน โปรดลองอีกครั้งในภายหลัง</translation>
@@ -523,7 +517,6 @@
 <translation id="665732753414869868">Chromium ต้องการสิทธิ์เข้าถึงกล้องเพื่อสร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณ</translation>
 <translation id="6669284030132180248">หากบันทึกบุ๊กมาร์กไว้ในบัญชี Google ด้วย คุณก็จะติดตามราคาผลิตภัณฑ์ใน Chromium และรับการแจ้งเตือนเมื่อราคาต่ำลงได้</translation>
 <translation id="6676384891291319759">เข้าถึงอินเทอร์เน็ต</translation>
-<translation id="668175097507315160">Chromium OS ซิงค์ข้อมูลไม่ได้เนื่องจากเกิดข้อผิดพลาดในการลงชื่อเข้าใช้</translation>
 <translation id="6691132793308828750">นำข้อมูลแอปนี้ออกจาก Chromium</translation>
 <translation id="6709350901466051922">Chromium ต้องการสิทธิ์เข้าถึงไมโครโฟนสำหรับเว็บไซต์นี้</translation>
 <translation id="6712881677154121168">ข้อผิดพลาดในการดาวน์โหลด: <ph name="DOWNLOAD_ERROR" /></translation>
@@ -681,7 +674,6 @@ Chromium ไม่สามารถกู้คืนการตั้งค�
 <translation id="8107060931443639922">ครั้งถัดไปที่เปิด Chromium ใน <ph name="DEVICE_TYPE" /> คุณจะเห็นข้อความแจ้งให้เปิดใช้การแจ้งเตือนการติดตามราคา</translation>
 <translation id="8118331347066725040">ส่งความคิดเห็นเกี่ยวกับการค้นหาด้วย Lens</translation>
 <translation id="8130609355518033382">ปรับเปลี่ยน Chromium ในแบบของคุณ</translation>
-<translation id="8133124826068723441">Chromium OS ซิงค์ข้อมูลไม่ได้เนื่องจากการซิงค์ไม่พร้อมใช้งานสำหรับโดเมนของคุณ</translation>
 <translation id="813913629614996137">กำลังเริ่มดำเนินการ...</translation>
 <translation id="8158143604667288086">คุณสามารถปักหมุด Search ใน Chrome เพื่อถามคำถามขณะท่องเว็บได้</translation>
 <translation id="8161503455832158203">เปิด Gemini ใน Chromium ด้วยแป้นพิมพ์ลัด</translation>
@@ -748,11 +740,9 @@ Chromium ไม่สามารถกู้คืนการตั้งค�
 <translation id="8816416449795340678">แชร์เอกสารนี้กับ Gemini ใน Chromium เพื่อดูภาพรวมคร่าวๆ และถามคำถามต่อเนื่อง</translation>
 <translation id="8818550178040858407">ลงชื่อเข้าใช้ Chromium ไหม</translation>
 <translation id="8826492472752484139">คลิก "เครื่องมือจัดการรหัสผ่าน"</translation>
-<translation id="8833697763442816810">ระบบ Chromium OS</translation>
 <translation id="8852026904190808918">ระบบจะใช้ภาษานี้เพื่อแสดงเมนู การตั้งค่า การแจ้งเตือน และข้อความอื่นๆ ใน Chromium</translation>
 <translation id="8862326446509486874">คุณไม่มีสิทธิ์ในการติดตั้งระดับระบบ ทดลองใช้งานโปรแกรมติดตั้งอีกครั้งโดยกำหนดให้เป็นผู้ดูแลระบบ</translation>
 <translation id="8876044221123442390">เพิ่มโปรไฟล์ Chromium</translation>
-<translation id="8890569919834781711">Chromium OS บันทึกข้อมูล Chromium ในบัญชี Google ไม่ได้เนื่องจากเกิดข้อผิดพลาดในการลงชื่อเข้าใช้</translation>
 <translation id="8891709362986793894">องค์กรกำหนดให้คุณต้องลงชื่อเข้าใช้ Chromium</translation>
 <translation id="8906384069222226849">Chromium ต้องใช้ Windows 10 เวอร์ชัน 1809 ขึ้นไป</translation>
 <translation id="8907580949721785412">Chromium กำลังพยายามแสดงรหัสผ่าน พิมพ์รหัสผ่าน Windows ของคุณเพื่อแสดงรหัสผ่าน</translation>

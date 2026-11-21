@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Увімкнути тему</translation>
+<translation id="1085064499066015002">Завжди на всіх сайтах</translation>
 <translation id="1135328998467923690">Пакет недійсний: "<ph name="ERROR_CODE" />".</translation>
 <translation id="1140871961407805696">Задня камера</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> додає розширення, яке може вплинути на роботу Chromium.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">Очікувалася версія <ph name="EXPECTED_VERSION" />, але отримано <ph name="NEW_ID" /></translation>
 <translation id="471800408830181311">Не вдалося вивести секретний ключ.</translation>
 <translation id="4811956658694082538">Не вдалося встановити пакет, оскільки відбувся збій процесу службової програми. Перезапустіть Chrome і повторіть спробу.</translation>
+<translation id="4883436287898674711">Усі сайти <ph name="WEBSITE_1" /></translation>
 <translation id="4988792151665380515">Не вдалося експортувати відкритий ключ.</translation>
 <translation id="501057610015570208">Додаток з атрибутом маніфесту kiosk_only потрібно встановлювати в режимі термінала ОС Chrome Flex</translation>
 <translation id="5026754133087629784">Веб-перегляд: <ph name="WEBVIEW_TAG_NAME" /></translation>

@@ -83,6 +83,8 @@ Du bør tenke på følgende:
 <translation id="2574249610672786438">For å se fanene dine overalt hvor du bruker Chrome, logg på alle enhetene dine</translation>
 <translation id="2576431527583832481">Chrome har blitt enda bedre. En ny versjon er nå tilgjengelig.</translation>
 <translation id="257708665678654955">Vil du at Google Chrome skal tilby å oversette sider på <ph name="LANGUAGE_NAME" /> på dette nettstedet neste gang?</translation>
+<translation id="2599258827968143948">Google-favorittene dine er bedre med Chrome</translation>
+<translation id="260980777626165320">Åpne eksterne linker i Chrome som standard.</translation>
 <translation id="2668242166988961773">Søk med stemmen i Chrome.</translation>
 <translation id="2703746758996815929">For å få nyttige Chrome-tips, slå på varsler i iOS-innstillingene.</translation>
 <translation id="2728851697704606655">Oversett med Google Lens</translation>
@@ -111,6 +113,7 @@ Du kan ikke lagre nye bokmerker i kontoen din før du sletter noen. Hvis du logg
 <translation id="314782365035065913">Få raskere tilgang til Chrome fra dokken på Hjem-skjermen</translation>
 <translation id="3167189358072330585">Kontoen din fungerer ikke i Google Chrome. Kontakt domeneadministratoren din, eller logg på med en vanlig Google-konto.</translation>
 <translation id="322254490661677575">For å bruke og lagre Chrome-data i Google-kontoen din, skriv inn passordfrasen din.</translation>
+<translation id="3253082773078342494">Åpne linker direkte i Chrome.</translation>
 <translation id="3303503998967553377">Bruk Chrome-handlinger i iOS</translation>
 <translation id="3348862487678490430">Legg til elementet på leselisten i Chrome</translation>
 <translation id="3350281376951945723">Åpne linker raskere når du angir Chrome som standard</translation>
@@ -160,6 +163,7 @@ Du kan ikke lagre nye bokmerker i kontoen din før du sletter noen. Hvis du logg
 <translation id="4693084815234024320">Du er i Chrome Inkognito</translation>
 <translation id="4713740144985377441">Gå tilbake til Chrome for å laste opp filen</translation>
 <translation id="4724297637870447613">Bruk Chrome overalt</translation>
+<translation id="4733290155432110050">Gå rett til Chrome</translation>
 <translation id="4738647308035481133">Google Chrome-side</translation>
 <translation id="4742795653798179840">Slettede Chrome-data</translation>
 <translation id="4761869838909035636">Kjør Chrome-sikkerhetssjekk</translation>
@@ -267,6 +271,7 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="7038674195294813388">Åpne innstillingene for standardapper i iOS, trykk på «Nettleserapp», og velg Chrome.</translation>
 <translation id="7056826488869329999">Åpner og kjører sikkerhetssjekken i Chrome.</translation>
 <translation id="7061455974939528301">Trykk og hold på Chrome-ikonet, og klikk på «Endre Hjem-skjermen»</translation>
+<translation id="7067302528015227615">Angi Chrome som standard for å gjøre appoverganger raskere og enklere.</translation>
 <translation id="7095110968493193530">I Google Passordlagring for <ph name="EMAIL" /></translation>
 <translation id="7124339256045485976">Hold Chrome oppdatert</translation>
 <translation id="7135936755418321901">For å dele posisjonen med nettsteder, trykk på Innstillinger for å la Chrome bruke posisjonen din.</translation>
@@ -278,6 +283,7 @@ For å se flere innstillinger som bruker data for å forbedre Chrome-opplevelsen
 <translation id="7200524487407690471">Chrome kjører sikkerhetssjekken automatisk hver dag for å beskytte deg mot databrudd, utrygge nettsteder med mer. Du kan finne ut mer om sikkerhetssjekken i innstillingene.</translation>
 <translation id="7214019116829172458">Åpne en inkognitofane i Chrome</translation>
 <translation id="722167379782941918">Chrome anbefaler økt beskyttelse</translation>
+<translation id="722921700949937243">Påse at alle linker alltid åpnes i Chrome.</translation>
 <translation id="723787869754590019">Bruk Chrome for autofyll</translation>
 <translation id="7261678641327190792">Chrome kan ikke sjekke passordene dine</translation>
 <translation id="7272091023280308138">Åpne linker direkte i Chrome neste gang uten å kopiere nettadresser først.</translation>

@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Enable Theme</translation>
+<translation id="1085064499066015002">Always on all sites</translation>
 <translation id="1135328998467923690">Package is invalid: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">Environment-facing</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> has added an extension that may change the way that Chromium works.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">Expected version '<ph name="EXPECTED_VERSION" />', but version was '<ph name="NEW_ID" />'</translation>
 <translation id="471800408830181311">Failed to output private key.</translation>
 <translation id="4811956658694082538">Could not install package because a utility process crashed. Try restarting Chrome and trying again.</translation>
+<translation id="4883436287898674711">All <ph name="WEBSITE_1" /> sites</translation>
 <translation id="4988792151665380515">Failed to export public key.</translation>
 <translation id="501057610015570208">App with 'kiosk_only' manifest attribute must be installed in Chrome OS Flex kiosk mode</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>

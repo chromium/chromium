@@ -373,6 +373,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> removeu uma guia</translation>
 <translation id="1620510694547887537">Câmera</translation>
 <translation id="1623104350909869708">Impedir que esta página crie caixas de diálogo adicionais</translation>
+<translation id="1624535934412288769">Colunas</translation>
 <translation id="1629390138158333592">Pesquisar na web</translation>
 <translation id="1633137413609266904">{0,plural, =1{A abertura desse arquivo está bloqueada pela política do administrador}one{A abertura de # arquivo está bloqueada pela política do administrador}other{A abertura de # arquivos está bloqueada pela política do administrador}}</translation>
 <translation id="1634828734222219955">Total</translation>
@@ -1082,6 +1083,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2803320044666896137">Este valor de política é ignorado porque o usuário não é afiliado.</translation>
 <translation id="2807052079800581569">Posição da imagem Y</translation>
 <translation id="2808278141522721006">Você pode ativar ou desativar o Windows Hello nas <ph name="SETTINGS" /></translation>
+<translation id="2820159698793041599">O servidor proxy não conseguiu estabelecer uma conexão segura.</translation>
 <translation id="2820957248982571256">Verificando...</translation>
 <translation id="282457273878278063">Gerenciar dados de contato</translation>
 <translation id="2824775600643448204">Barra de endereço e de pesquisa</translation>
@@ -1263,6 +1265,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3120807611504813890">Envelope (fino)</translation>
 <translation id="3121994479408824897">Ir para <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Rótulos (permanentes)</translation>
+<translation id="3128081114752791872">O certificado de segurança do servidor proxy é inválido.</translation>
 <translation id="3131746543143948171">Este site parece ser semelhante a outros associados a phishing, malware e golpes. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">Salvar número de retificação</translation>
 <translation id="3133565499688974786">Agora <ph name="SEARCH_ENGINE_NAME" /> é seu mecanismo de pesquisa padrão</translation>
@@ -1681,7 +1684,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3800436529451849929">De <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Você visita com frequência</translation>
 <translation id="380329542618494757">Nome</translation>
-<translation id="3803481123869276674">Mostrar a carteira digital como opção para pagamento ao fazer compras no Chrome</translation>
 <translation id="3803801106042434208">Estes mecanismos são famosos na sua região</translation>
 <translation id="3804112825000113857">Veja as configurações do preenchimento automático</translation>
 <translation id="380666903981445943">Salve uma forma de pagamento na sua Conta do Google para que ela seja preenchida automaticamente em compras feitas no Chrome</translation>
@@ -1983,7 +1985,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4277529130885813215">Usar outro dispositivo</translation>
 <translation id="4277937682389409325">Endereço local</translation>
 <translation id="4278090321534187713">Os cartões não aceitos por esta loja estão desativados</translation>
-<translation id="4278390842282768270">Permitido</translation>
+<translation id="4278390842282768270">Permitida</translation>
 <translation id="4281245629646759298">Amarelo-claro</translation>
 <translation id="4281998142035485137">{0,plural, =1{Abrir arquivo confidencial?}one{Abrir arquivo confidencial?}other{Abrir arquivos confidenciais?}}</translation>
 <translation id="4284885181066817063">Bloqueado por <ph name="DOMAIN" /></translation>
@@ -2164,6 +2166,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4612631413844865947">Ocorreu um erro ao processar seu pedido em <ph name="MERCHANT_ORIGIN" /> usando <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="4612904677925722054">Este site pode ter conteúdo para maiores. Um familiar ou responsável precisa autorizar seu acesso.</translation>
 <translation id="4613873770449493819">O URL precisa levar a um domínio do <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
+<translation id="4615154194248230658">Parece que este padrão não corresponde a nenhum domínio válido de endereço de e-mail. Talvez os usuários não consigam fazer login, ou os perfis atuais sejam removidos.</translation>
 <translation id="4619564267100705184">Confirme sua identidade</translation>
 <translation id="4619669610757527494">Salvar carteira de habilitação na Carteira do Google</translation>
 <translation id="4622292761762557753">Transferir mesmo assim</translation>
@@ -2682,7 +2685,6 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5447235695608032700">Permitir que <ph name="SITE" /> use as informações salvas sobre você</translation>
 <translation id="5447973833955560753">Senha de recuperação</translation>
 <translation id="5452270690849572955">Não foi possível encontrar a página deste <ph name="HOST_NAME" /></translation>
-<translation id="5452923259299906094">Pague com a carteira digital e o Pix</translation>
 <translation id="5455374756549232013">Carimbo de data/hora da política inválido</translation>
 <translation id="5456428544444655325">Nunca mostrar</translation>
 <translation id="5457082343331641453">Adicionar à pesquisa</translation>
@@ -3218,7 +3220,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6338645927051849741">Senha • Gerenciador de senhas do Google</translation>
 <translation id="6340739886198108203">A política do administrador não recomenda fazer capturas de tela ou gravações quando há conteúdo confidencial visível:</translation>
 <translation id="6341434961864773665">{0,plural, =1{A política do administrador não recomenda fazer upload do arquivo para este local: <ph name="DESTINATION_NAME" />}one{A política do administrador não recomenda fazer upload do arquivo para este local: <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda fazer upload dos arquivos para este local: <ph name="DESTINATION_NAME" />}}</translation>
-<translation id="6342069812937806050">Neste instante</translation>
+<translation id="6342069812937806050">Agora</translation>
 <translation id="6342171901363060580">Enviamos este alerta porque o site não é compatível com HTTPS e você está no modo de navegação anônima. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Rotas</translation>
 <translation id="6345664705388712774">Adicionar imagens à sua pesquisa</translation>
@@ -3898,7 +3900,6 @@ Mais detalhes:
 <translation id="7489919936111034362">Seu armazenamento no Google Drive está cheio</translation>
 <translation id="7490622939531327327">Preenchimento inteligente de formulários</translation>
 <translation id="7495528107193238112">Este conteúdo está bloqueado. Entre em contato com o proprietário do site para corrigir o problema.</translation>
-<translation id="7499188644237027195">Ao fazer compras no Chrome, veja a carteira digital e o Pix como opções</translation>
 <translation id="7499684925421947861">Permitir que <ph name="ACTOR_NAME" /> faça login por você neste serviço: <ph name="DOMAIN" />?</translation>
 <translation id="7501663406926337752">O site a seguir foi sinalizado pela sua organização</translation>
 <translation id="7502044688973049724">gerenciar as informações</translation>
@@ -4023,7 +4024,6 @@ Mais detalhes:
 <translation id="7676840398262504532">Sua organização monitora a cópia</translation>
 <translation id="767806704757698045">Só funciona em sites compatíveis</translation>
 <translation id="7678730592635586336">Refazer vídeo</translation>
-<translation id="7679287273775285018">Pagar com a carteira digital</translation>
 <translation id="7679367271685653708">Ver e gerenciar seu histórico de navegação nas configurações do Chrome</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, expira em <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Entrega</translation>
@@ -4098,7 +4098,6 @@ Mais detalhes:
 <translation id="7791543448312431591">Adicionar</translation>
 <translation id="7798389633136518089">Ignorado porque a política não foi definida por uma origem na nuvem.</translation>
 <translation id="7800304661137206267">A conexão foi criptografada utilizando <ph name="CIPHER" />, com <ph name="MAC" /> para mensagem de autenticação e <ph name="KX" /> como o mecanismo de troca de chaves.</translation>
-<translation id="780228007282527248">Adicione uma guia ou imagem para melhorar sua pesquisa</translation>
 <translation id="7802523362929240268">O site é legítimo</translation>
 <translation id="7802989406998618639">Insira o código de segurança de <ph name="NUMBER_OF_DIGITS" /> dígitos que fica na <ph name="SIDE_OF_CARD" /> para o banco confirmar sua identidade.</translation>
 <translation id="780301667611848630">Agora não</translation>
@@ -4164,6 +4163,7 @@ Mais detalhes:
 <translation id="7916162853251942238">Flexográfica</translation>
 <translation id="7916802424606434188">Abrir a janela <ph name="WINDOW_INDEX" /> (<ph name="NUM_TABS" /> guias) em uma nova janela</translation>
 <translation id="791698251820376781">Sua organização não permite que você faça login</translation>
+<translation id="7918936720558783139">A oferta salva vai estar disponível na finalização da compra usando o preenchimento automático. <ph name="BEGIN_LINK" />Gerenciar ofertas<ph name="END_LINK" /></translation>
 <translation id="7927046851848613453">Salve ingressos, eventos e outras informações de páginas que você acessa, não apenas formulários preenchidos. Depois, acesse rapidamente seus cartões, como ingressos de eventos e cartões fidelidade. As informações salvas podem aparecer nos seus dispositivos e em todos os produtos do Google.</translation>
 <translation id="7930282586031445870">A tela dos Termos de Serviço da opção Compre Agora, Pague Depois está fechada.</translation>
 <translation id="7932035970207573919">Endereço de trabalho, <ph name="ADDRESS" /></translation>
@@ -4233,6 +4233,7 @@ Mais detalhes:
 <translation id="8029829038322015001">Vermelho 1</translation>
 <translation id="8032546467100845887">Transparência</translation>
 <translation id="8035152190676905274">Caneta</translation>
+<translation id="803703704549420287">Limpar filtros</translation>
 <translation id="8037117624646282037">Quem usou o dispositivo recentemente</translation>
 <translation id="803771048473350947">Arquivo</translation>
 <translation id="8038182528865038593">Vermelho 2</translation>
@@ -4421,6 +4422,7 @@ Mais detalhes:
 <translation id="8363502534493474904">Desativar o modo avião</translation>
 <translation id="8363929499301563123">Cookies de sites (o estado de conta conectada nos sites visitados recentemente será preservado)</translation>
 <translation id="8364627913115013041">Não definida.</translation>
+<translation id="8364664414979300296">Adicione guias, fotos e muito mais para melhorar sua pesquisa</translation>
 <translation id="836616551641291797">Saiba mais sobre como seu navegador é gerenciado</translation>
 <translation id="8367705492654390392">Pergunte o que quiser</translation>
 <translation id="8368001212524806591">Monitorar preço</translation>

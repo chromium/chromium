@@ -577,6 +577,7 @@
 <translation id="3243650379537999343">Зурах</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">Хэрэв та мөн Chrome-н ашиглалтын тайланг хуваалцвал тэдгээр тайланд таны зочилсон URL багтана</translation>
+<translation id="3248185426436836442">Хүлээгдэж буй</translation>
 <translation id="3250563604907490871">Таныг Wi-Fi-д холбогдох үед зургийн тайлбарыг үргэлжлүүлнэ</translation>
 <translation id="3254409185687681395">Энэ хуудсыг хадгал</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" />-н бүх хуудас</translation>
@@ -1125,7 +1126,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, Бэхлэгдэж, хуваалцаж буй нууцлалтай таб</translation>
 <translation id="5375374982898812658">Та “<ph name="GROUP_NAME" />” табын бүлэгт хандах эрхээ тэр даруй алдах ба уг бүлгийг таны бүх төхөөрөмжөөс устгана</translation>
 <translation id="537865165090710757">Хадгалж, хуваалцах</translation>
-<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> таны дижитал түрийвчээс хувийн мэдээллийг ашиглахыг хүсэж байна. Та зөвхөн энэ сайтад итгэдэг бол үргэлжлүүлнэ үү. Аюултай сайт таныг хууль ёсны нэр, ID дугаараа ил болгох үйлдэл хийлгэхээр хуурч болзошгүй.</translation>
 <translation id="5395376160638294582">Та Google Бүртгэлдээ Chrome-н өгөгдлийг үргэлж ашиглах боломжтой болохоо баталгаажуулна уу</translation>
 <translation id="5397794290049113714">Та</translation>
 <translation id="539881862970320163">Сайн нууц үг санал болгосон. Гарыг нуусан.</translation>
@@ -1137,6 +1137,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5415871492522952905">Таны түүх, табууд бүх төхөөрөмж дээр тань байх бөгөөд ингэснээр та хийж байсан зүйлээ үргэлжлүүлэх боломжтой</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) “<ph name="GROUP_NAME" />” табын бүлэгт хандах эрхээ тэр даруй алдана</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> ГБ боломжтой</translation>
+<translation id="5430861625274552852">Хуудасны контентын талаар асуух эсвэл табууд дээр харьцуулна уу</translation>
 <translation id="543271133149552180"><ph name="TAB_TITLE" />, Олноор нь сонгосон Дэлгэц доторх дэлгэц нууцлалтай таб</translation>
 <translation id="5436928407363358055">Орхисон газраасаа хялбархан үргэлжлүүлэхийн тулд түүх, табаа синк хийнэ үү</translation>
 <translation id="5438292632479953702">Дахин татах</translation>
@@ -1173,6 +1174,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="557018954714092179">Шинэ фолдер үүсгэх</translation>
 <translation id="5578795271662203820">Энэ зургийг <ph name="SEARCH_ENGINE" />-ээс хайна уу</translation>
 <translation id="558563010977877295">Тодорхой нэг хуудас, эсвэл бүлэг хуудас нээх</translation>
+<translation id="5594132774273121146">Хэрэглэгч, бүртгэл</translation>
 <translation id="5596627076506792578">Бусад сонголт</translation>
 <translation id="5599455543593328020">нууцлалын горим</translation>
 <translation id="5601180634394228718">Таны Chrome-н хэрэглээг сайжруулахын тулд өгөгдөл ашигладаг бусад тохиргоог авах бол <ph name="BEGIN_LINK" />Google-н үйлчилгээнүүд<ph name="END_LINK" /> рүү очно уу.</translation>
@@ -1230,6 +1232,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="583281660410589416">Үл мэдэгдэх</translation>
 <translation id="5833984609253377421">Холбоосыг хуваалцах</translation>
 <translation id="5839058148541733625">Chrome-н Дино</translation>
+<translation id="5839059463554891940">Аюулгүй байдал, хамгаалалт</translation>
 <translation id="5841444063256914865">Та ямартай ч "<ph name="FILE_NAME" />"-г татмаар байна уу?</translation>
 <translation id="5847265694842662173">Chrome зохисгүй болон ашиглаагүй сайтуудыг мэдэгдэл илгээхийг нь зогсоосон</translation>
 <translation id="5848257610304005265">PDF-г <ph name="APP_NAME" />-р нээх үү?</translation>
@@ -1346,7 +1349,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6259107733340311168">Байгууллагын дохионы татгалзлын доод хүснэгтийг бүтэн өндрөөр нээсэн</translation>
 <translation id="6260260490042862943">Сайтын тохиргоо</translation>
 <translation id="6264376385120300461">Ямартай ч татах</translation>
-<translation id="6264485186158353794">Аюулгүй байдалд буцах</translation>
 <translation id="6267106249090587268">Мэдэгдэл <ph name="SEPARATOR" /> Спам, хууран мэхэлсэн контентын улмаас Chrome эдгээр зөвшөөрлийг хассан</translation>
 <translation id="6276708887952587684">Хуудасны эх сурвалжийг харуулах</translation>
 <translation id="62768169905160414">Видеоны фреймийг хуулах</translation>
@@ -1465,7 +1467,6 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="6659594942844771486">Таб</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> дотор нээ</translation>
 <translation id="6669390930482049506">Надад мэдэгд</translation>
-<translation id="6670742294143102726">Хайлтдаа нэмэх нэг эсвэл түүнээс олон таб сонгоно уу</translation>
 <translation id="6671495933530132209">Зургийг хуулах</translation>
 <translation id="6672697278890207089">Нэвтрэх үгээ оруулна уу</translation>
 <translation id="6675622031235530028">Гарахын тулд Ctrl+Q дээр удаан дарна уу</translation>
@@ -1731,6 +1732,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандарт таб}other{<ph name="TABS_COUNT_MANY" /> стандарт таб}}</translation>
 <translation id="7603168929588204083">Буруу огноо</translation>
 <translation id="7605594153474022051">Синк ажиллахгүй байна</translation>
+<translation id="7607002721634913082">зогссон</translation>
 <translation id="7608245556672190037">Chrome-р зөвлөмж олуулахад нэгдэх сонголтыг бүтэн өндрөөр нээсэн</translation>
 <translation id="7612619742409846846">Google-д дараахаар нэвтэрсэн</translation>
 <translation id="7612989789287281429">Та нэвтэрч байна…</translation>
@@ -1839,6 +1841,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="800155843932969169">Аюулгүй байдлаа хадгалахын тулд нууц үгнүүдээ аюулгүй үүсгэж, хадгалж, илүү хурдан нэвтэрч, нууц үгний аюулгүй байдлын асуудлыг тодорхойлоорой</translation>
 <translation id="8004582292198964060">Хөтөч</translation>
 <translation id="8006630792898017994">Зай авах товч эсвэл Tab</translation>
+<translation id="802154636333426148">Татаж чадсангүй</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, Олноороо сонгогдож, бэхлэгдсэн хуваалцаж буй нууцлалтай таб</translation>
 <translation id="8025972204417227828">Шинийг нэмэх</translation>
 <translation id="8027863900915310177">Хаана татаж авахыг сонгох</translation>
@@ -1846,6 +1849,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8032569120109842252">Дагаж буй</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, Сонгогдож, дууг нь хаасан нууцлалтай таб</translation>
 <translation id="8036587585440959897">Зарим өргөтгөл Chrome-д хайлтын систем нэмэх боломжтой.</translation>
+<translation id="803703704549420287">Шүүлтүүр арилгах</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> өдөр үлдсэн</translation>
 <translation id="8037801708772278989">Дөнгөж сая шалгасан</translation>
 <translation id="804335162455518893">SD карт олдсонгүй</translation>

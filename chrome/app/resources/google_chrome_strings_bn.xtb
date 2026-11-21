@@ -30,13 +30,11 @@
 <translation id="1278833599417554002">&amp;Chrome আপডেট করতে আবার লঞ্চ করুন</translation>
 <translation id="1289911795790071537">Chrome-এর মাধ্যমে সার্চ খুলুন</translation>
 <translation id="1290883685122687410">সেট-আপ সংক্রান্ত সমস্যা: <ph name="METAINSTALLER_EXIT_CODE" />। <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1302523850133262269">Chrome যখন সাম্প্রতিক সিস্টেম আপডেটগুলিকে ইনস্টল করে তখন দয়া করে অপেক্ষা করুন৷</translation>
 <translation id="1330562121671411446">ভাষা শনাক্ত করুন</translation>
 <translation id="1333654552732143316">Chrome চালু করুন</translation>
 <translation id="1341711321000856656">অন্য Chrome প্রোফাইল থেকে পাসওয়ার্ড দেখতে, আপনি প্রোফাইল পরিবর্তন করতে পারবেন</translation>
 <translation id="1343830902827845050">Chrome-এ সাইন-ইন করুন</translation>
 <translation id="1361351916482714918">Google Lens ব্যবহার করে আরও স্মার্ট ব্রাউজিং করুন</translation>
-<translation id="1363996462118479832">সাইন-ইনে সমস্যা থাকার জন্য ChromeOS আপনার ডেটা সিঙ্ক করতে পারেনি।</translation>
 <translation id="137466361146087520">Google Chrome বিটা</translation>
 <translation id="1383876407941801731">খুঁজুন</translation>
 <translation id="1399397803214730675">এই কম্পিউটারটিতে ইতিমধ্যে Google Chrome-এর অতি সাম্প্রতিক ভার্সন রয়েছে৷ যদি সফ্টওয়্যারটি কাজ না করে তবে দয়া করে Google Chrome আনইনস্টল করুন এবং এটি আবার ডাউনলোড করুন৷</translation>
@@ -87,7 +85,6 @@
 <translation id="177180974022074201">Chrome-এ Gemini-র মাধ্যমে ব্যবহার করে দেখুন</translation>
 <translation id="1786003790898721085">আপনার <ph name="TARGET_DEVICE_NAME" />-এর Chrome-এ সাইন-ইন করেছেন কিনা তা দেখে নিন এবং তারপরে আবার পাঠানোর চেষ্টা করুন।</translation>
 <translation id="1786044937610313874">Chrome-এ শর্টকাট খুলবে</translation>
-<translation id="1812689907177901597">এটি বন্ধ করার মানে হল, আপনি Chrome-এ সাইন-ইন না করে Gmail এর মতো Google সাইটগুলিতে সাইন-ইন করতে পারেন</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{আপনার ব্রাউজারের গতি কমিয়ে দেয় এমন ট্যাব পজ করার জন্য Chrome সাজেস্ট করে}one{আপনার ব্রাউজারের গতি কমিয়ে দেয় এমন ট্যাব পজ করার জন্য Chrome সাজেস্ট করে}other{আপনার ব্রাউজারের গতি কমিয়ে দেয় এমন ট্যাবগুলি পজ করার জন্য Chrome সাজেস্ট করে}}</translation>
 <translation id="1832046143430087831">Chrome-এর ভি৮ ইঞ্জিন সাইটের স্পিড বাড়িয়ে দেয় কিন্তু Chrome-এর অ্যাটাক আটকানোর ক্ষমতা সামান্য কমে যায়। এই সেটিংসটি বন্ধ করা আছে।</translation>
 <translation id="1838374766361614909">সার্চ সাফ করুন</translation>
@@ -174,7 +171,6 @@
 <translation id="2661616016316841783"><ph name="DEVICE" /> থেকে আপনার এক্সটেনশন ও আরও অনেক কিছু পেতে, Chrome-এ সাইন-ইন করুন</translation>
 <translation id="2665296953892887393">Google-এ <ph name="UMA_LINK" /> এবং ক্র্যাশ রিপোর্ট পাঠিয়ে Google Chrome-কে আরও ভাল করতে সাহায্য করুন৷</translation>
 <translation id="2668094785979141847">Google Lens ছেড়ে বেরিয়ে আসতে ক্লিক করুন</translation>
-<translation id="2674238339205910678">আপনার অ্যাকাউন্টের সাইন-ইন করার বিবরণ পুরানো হয়ে যাওয়ার কারণে ChromeOS Flex আপনার Google অ্যাকাউন্টে Chrome ডেটা সেভ করতে পারেনি</translation>
 <translation id="2681444469812712297">Google Chrome-এর নতুন একটি ট্যাবে <ph name="URL" /> খুলুন।</translation>
 <translation id="2699790011615497488">Chrome Beta-তে Gemini খুলুন</translation>
 <translation id="2738871930057338499">ইন্টারনেটের সাথে কানেক্ট করা যায়নি। HTTP 403 নিষিদ্ধ। আপনার প্রক্সি কনফিগারেশন চেক করুন।</translation>
@@ -285,7 +281,6 @@
 <translation id="3756724684201900923">Chrome ইনস্টল করার ব্যাপারে আরও জানুন</translation>
 <translation id="3772152698251011058">Google-এ এই সাইটটি রিপোর্ট করুন</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
-<translation id="3785324443014631273">সাইন-ইনে সমস্যা থাকার জন্য ChromeOS Flex আপনার ডেটা সিঙ্ক করতে পারেনি।</translation>
 <translation id="3810973564298564668">পরিচালনা করুন</translation>
 <translation id="383455301564000773">Windows 11-এ আপগ্রেড করছেন? OneDrive-এ Chrome ডাউনলোড করুন যাতে আপনি প্রথম দিন থেকেই তৈরি থাকতে পারেন।</translation>
 <translation id="383928141529488001">ব্লুটুথ ডিভাইসগুলি এক্সপ্লোর করতে 
@@ -376,7 +371,6 @@
 <translation id="4803313124144656665">Chrome-এ Google Search বন্ধ করুন</translation>
 <translation id="4828579605166583682">Google Chrome, বর্তমানে থাকা পাসওয়ার্ড পরিবর্তনের চেষ্টা করছে। এটি করার অনুমতি দিতে, আপনার Windows-এর পাসওয়ার্ড টাইপ করুন।</translation>
 <translation id="4836321460899997044">Chrome প্রোফাইল</translation>
-<translation id="4842397268809523050">আপনার ডোমেনে সিঙ্ক করার সুবিধা উপলভ্য না থাকার জন্য ChromeOS Flex আপনার ডেটা সিঙ্ক পারেনি।</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> আগেই সাইন-ইন করেছেন।  আপনি আলাদাভাবে ব্রাউজ করতে চাইলে, নিজের Chrome প্রোফাইলে <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করুন।</translation>
 <translation id="4855026984605187434">আপনার স্ক্রিন শেয়ার করতে, সিস্টেম সেটিংস থেকে Chrome-এর জন্য স্ক্রিন রেকর্ডিংয়ের অনুমতি দিন</translation>
 <translation id="4873783916118289636">Chrome-এ মূল গোপনীয়তা এবং নিরাপত্তা নিয়ন্ত্রণ পর্যালোচনা করুন</translation>
@@ -390,7 +384,6 @@
 <translation id="492720062778050435">এই এক্সটেনশন পর্যালোচনা করার জন্য Chrome সাজেস্ট করে</translation>
 <translation id="4953650215774548573">আপনার ডিফল্ট ব্রাউজার হিসাবে Google Chrome-কে সেট করুন</translation>
 <translation id="495931528404527476">Chrome-এ</translation>
-<translation id="4969674060580488087">আপনার অ্যাকাউন্টের সাইন-ইনের বিবরণ পুরানো হয়ে যাওয়ার কারণে ChromeOS Flex আপনার ডেটা সিঙ্ক করতে পারেনি।</translation>
 <translation id="4970761609246024540">Chrome প্রোফাইলে স্বাগতম</translation>
 <translation id="4990567037958725628">Google Chrome  ক্যানারি</translation>
 <translation id="5003967926796347400">“Google Password Manager”-এ ক্লিক করুন</translation>
@@ -424,7 +417,6 @@
 <translation id="5271833978500241046">Chrome-এ অন্যান্য Gemini ফিচারের পাশাপাশি সেগুলি ব্যবহার করুন</translation>
 <translation id="5320351714793324716">আপনি কুকি ব্যবহার করার অনুমতি দিলে, প্রিলোড করার জন্য Chrome তা ব্যবহার করতে পারে</translation>
 <translation id="5321325624576443340">Google Lens উপলভ্য নেই। পরে আবার চেষ্টা করুন।</translation>
-<translation id="5334309298019785904">আপনার ডোমেনে সিঙ্ক করার সুবিধা উপলভ্য না থাকার জন্য ChromeOS আপনার ডেটা সিঙ্ক পারেনি।</translation>
 <translation id="5336664042114176802">আপনি Gemini অ্যাসিস্ট্যান্টে পরিবর্তন করতে পারবেন যা মূলত আপনার Google অ্যাকাউন্টের সাথে যুক্ত এবং <ph name="DOMAIN" /> ম্যানেজ করে না। <ph name="DOMAIN" />-এর ম্যানেজ করা ফাইল বা পরিষেবা থেকে আর উত্তর দেওয়া হবে না এবং আপনার চ্যাট ইতিহাসও আর থাকবে না। এটি অফিসের কাজে ব্যবহারের জন্য উপযুক্ত নাও হতে পারে। পরিবর্তন করতে Chrome আবার চালু করতে হবে।</translation>
 <translation id="5346389065299425353">একাধিক ট্যাব, ফাইল ও টুল যোগ করে আরও গভীরে গিয়ে সার্চ করুন</translation>
 <translation id="5353252989841766347">Chrome থেকে পাসওয়ার্ড রপ্তানি করুন</translation>
@@ -552,7 +544,6 @@
 <translation id="6497147134301593682">Chrome অটোমেটিক বন্ধ হয়ে গেছে</translation>
 <translation id="6506909944137591434">আপনার আশেপাশের জায়গার একটি 3D ম্যাপ তৈরি করার জন্য Chrome-এর ক্যামেরা অ্যাক্সেসের অনুমতি প্রয়োজন</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
-<translation id="6520608191273161151">সাইন-ইন করার সময় কোনও সমস্যা হওয়ার কারণে ChromeOS Flex আপনার Google অ্যাকাউন্টে Chrome ডেটা সেভ করতে পারেনি</translation>
 <translation id="6520670145826811516">আপনার লোকেশন ব্যবহার করতে, Chrome-কে <ph name="BEGIN_LINK" />সিস্টেম সেটিংস<ph name="END_LINK" /> অ্যাক্সেস করতে দিন</translation>
 <translation id="652948702951888897">Chrome ইতিহাস</translation>
 <translation id="6532945796722480006">Chrome Canary-তে Gemini খুলুন</translation>
@@ -574,7 +565,6 @@
 <translation id="6712881677154121168">ডাউনলোড করার সমস্যা হয়েছে: <ph name="DOWNLOAD_ERROR" />।</translation>
 <translation id="6718739135284199302">Chrome ব্যবহারের স্পিড বাড়ান</translation>
 <translation id="6734827584173583205">আপনি সম্প্রতি ভিজিট করেননি। Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> এবং আরও <ph name="COUNT" />টি অনুমতি সরিয়ে দিয়েছে।</translation>
-<translation id="6735387454586646204">ChromeOS Flex সিস্টেম</translation>
 <translation id="674891594898436429">এই ট্যাবে অ্যাক্টিভ সার্চ বাতিল করুন</translation>
 <translation id="6750954913813541382">বানান ভুল ঠিক করতে, আপনি ব্রাউজারে যে টেক্সট লেখেন Chrome সেটি Google-এ পাঠায়</translation>
 <translation id="6760235774835597023">Chrome-এর ভি৮ ইঞ্জিন সাইটের স্পিড বাড়িয়ে দেয় কিন্তু Chrome-এর অ্যাটাক আটকানোর ক্ষমতা সামান্য কমে যায়। এই সেটিংসটি চালু করা আছে।</translation>
@@ -595,7 +585,6 @@
 <translation id="6908182077349113099">আপনার সব ডিভাইস জুড়ে পাসওয়ার্ড, বুকমার্ক ও ইতিহাস সিঙ্ক করে রাখুন। আপনার ডিফল্ট ব্রাউজার Chrome-এ আপডেট করে, আপনার পরিচিত ও পছন্দের ফিচারগুলি সহজেই অ্যাক্সেস করুন।</translation>
 <translation id="6926772305569367352">টুলবারে "Chrome-এ Google Search" বোতামটির নতুন আইকন হয়েছে। Chrome-এ Google Search-এর সাহায্যে ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে এটিতে ক্লিক করুন।</translation>
 <translation id="6930294499209825">আপনার Google সফ্টওয়্যারকে আপ-টু-ডেট রাখে। এই পরিষেবা যদি অ্যাক্টিভ না থাকে বা বন্ধ থাকে তাহলে Google সফ্টওয়্যার আপ-টু-ডেট থাকবে না যার মানে নিরাপত্তার ঝুঁকি থাকতে পারে যা সমাধান করা যাবে না এবং ফিচার কাজ নাও করতে পারে। কোনও Google সফ্টওয়্যার এই পরিষেবাকে ব্যবহার না করলে এটি নিজে থেকেই আনইনস্টল হয়।</translation>
-<translation id="6933858244219479645">ChromeOS সিস্টেম</translation>
 <translation id="6938166777909186039">ভবিষ্যতে Google Chrome আপডেট পেতে হলে, আপনার কম্পিউটারে Windows 10 বা এর পরবর্তী যেকোনও ভার্সন থাকতে হবে। এই কম্পিউটারে Windows 8.1 ভার্সন ব্যবহার করা হচ্ছে।</translation>
 <translation id="6962628299694876291"><ph name="EXISTING_USER" /> আগেই সাইন-ইন করেছেন। আপনি আলাদাভাবে ব্রাউজ করতে চাইলে, নিজের Chrome প্রোফাইলে <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করুন। এছাড়াও, আপনার সব ডিভাইসের পাসওয়ার্ড ও আরও অনেক কিছু পাবেন।</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
@@ -686,7 +675,6 @@
 <translation id="7801699035218095297">Google Chrome পাসওয়ার্ড কপি করার চেষ্টা করছে। এর অনুমতি দিতে আপনার Windows পাসওয়ার্ড টাইপ করুন।</translation>
 <translation id="7804364787702057554">Chrome-এ আপনার অ্যাকাউন্ট</translation>
 <translation id="7804947029129221742">Chrome-এর বাইরে থেকে আপনার সার্চ ইঞ্জিন পরিবর্তন করা হয়েছে। আপনাকে সুরক্ষিত রাখতে, Chrome এটি আসল ডিফল্টে রিসেট করেছে। <ph name="LEARN_MORE_LINK" /></translation>
-<translation id="7808348361785373670">Chrome থেকে সরান...</translation>
 <translation id="7827099906024714326">Chrome আপনার পরিচয় যাচাই করে নেওয়ার পর আপনি Google অ্যাকাউন্টে কিছু ডেটা সেভ করতে ও সবকটি ডিভাইসে তা ব্যবহার করতে পারবেন। আপনি এখনই সাইন-আউট করলে, এই ডেটা মুছে যাবে।</translation>
 <translation id="7829850924999627855"><ph name="DEVICE" /> থেকে আপনার সেভ করা তথ্য ও আরও অনেক কিছু পেতে, Chrome-এ সাইন-ইন করুন</translation>
 <translation id="7832314606810669113">আপনার সব ডিভাইসে বুকমার্কে ও আরও অনেক কিছু পেতে, Chrome-এ সাইন-ইন করুন। সাইন-ইন করার পরে, আপনার Google অ্যাকাউন্টে এই বুকমার্ক সেভ করা হবে।</translation>
@@ -699,7 +687,6 @@
 <translation id="7896673875602241923">আগে কোনো একজন এই কম্পিউটারে <ph name="ACCOUNT_EMAIL_LAST" /> হিসাবে Chrome-এ সাইন-ইন করেছেন। আপনার তথ্য আলাদা রাখার জন্য অনুগ্রহ করে একটি নতুন Chrome ব্যবহারকারী তৈরি করুন।</translation>
 <translation id="7904213866086517086">সাইড প্যানেলে Google Search আবার খুলুন</translation>
 <translation id="7904985524660297937">Google Chrome-এ Gemini ব্যবহার করে দেখুন</translation>
-<translation id="7905880575591690197">সাইন-ইন করার সময় কোনও সমস্যা হওয়ার কারণে ChromeOS আপনার Google অ্যাকাউন্টে Chrome ডেটা সেভ করতে পারেনি</translation>
 <translation id="7936702483636872823">এই ফাইলটি প্রতারণামূলক এবং এটি ডিভাইসে অপ্রত্যাশিত পরিবর্তন করে দিতে পারে, তাই Chrome এই ডাউনলোডটি ব্লক করে দিয়েছে</translation>
 <translation id="7951272445806340501">আপডেটটি প্রয়োগ করতে ChromeOS Flex আবার চালু করা প্রয়োজন।</translation>
 <translation id="7959172989483770734">Chrome প্রোফাইল ম্যানেজ করুন</translation>
@@ -759,7 +746,6 @@
 <translation id="8402881611069691789">{COUNT,plural, =1{Chrome আপডেট করা হয়ে গেছে। আবার চালু করা মাত্রই আপনি লেটেস্ট ভার্সন ব্যবহার করতে পারেন। এরপরে, আপনার বর্তমান ট্যাবগুলি আবার খুলবে। ছদ্মবেশী বা আইসোলেটেড উইন্ডো খোলা আছে। আপনি আবার চালু করলে এটি আবার খুলবে না।}one{Chrome আপডেট করা হয়ে গেছে। আবার চালু করা মাত্রই আপনি লেটেস্ট ভার্সন ব্যবহার করতে পারেন। এরপরে, আপনার বর্তমান ট্যাবগুলি আবার খুলবে। প্রোফাইল জুড়ে #টি ছদ্মবেশী ও আইসোলেটেড উইন্ডো খোলা আছে। আপনি আবার চালু করলে এটি আবার খুলবে না।}other{Chrome আপডেট করা হয়ে গেছে। আবার চালু করা মাত্রই আপনি লেটেস্ট ভার্সন ব্যবহার করতে পারেন। এরপরে, আপনার বর্তমান ট্যাবগুলি আবার খুলবে। প্রোফাইল জুড়ে #টি ছদ্মবেশী ও আইসোলেটেড উইন্ডো খোলা আছে। আপনি আবার চালু করলে এগুলি আবার খুলবে না।}}</translation>
 <translation id="8403038600646341038">কম্পিউটার স্ক্রিনের মধ্যে Chrome লোগো।</translation>
 <translation id="8406687098231754303">টুলবারে থাকা "সাইড প্যানেলে Google Search" বোতাম থেকে, ব্রাউজ করার সময় প্রশ্ন জিজ্ঞাসা করতে আপনি সাইড প্যানেলে Google Search আবার খুলতে পারবেন</translation>
-<translation id="8418845734693287262">আপনার অ্যাকাউন্টের সাইন-ইনের বিবরণ পুরানো হয়ে যাওয়ার কারণে ChromeOS আপনার ডেটা সিঙ্ক করতে পারেনি।</translation>
 <translation id="842386925677997438">Chrome-এর নিরাপত্তা টুল</translation>
 <translation id="8425765582779547329">তোমার অভিভাবকের পছন্দ মেনে অনলাইনে আরও নিরাপদ থাকতে, Chrome-এ সাইন-ইন করো</translation>
 <translation id="842852285618875960">আপনি Google Chrome-এর <ph name="BOOKMARK_LIMIT" />টি বুকমার্কের সীমায় পৌঁছে গেছেন, তাই আপনার কিছু বুকমার্ক এখনও Google অ্যাকাউন্টে সেভ করা হয়নি।
@@ -788,7 +774,6 @@
 <translation id="8624541899164515475">সেটিংস, নতুন ট্যাবে খোলে।</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome ১ মিনিটের মধ্যে আবার লঞ্চ হবে}one{Chrome # মিনিটের মধ্যে আবার লঞ্চ হবে}other{Chrome # মিনিটের মধ্যে আবার লঞ্চ হবে}}</translation>
 <translation id="8637932705841171563">আপনার উইন্ডো শেয়ার করতে, সিস্টেম সেটিংস থেকে Chrome-এর জন্য স্ক্রিন রেকর্ডিংয়ের অনুমতি দিন</translation>
-<translation id="8642497536370021917">আপনার Google অ্যাকাউন্টে সবসময় Chrome ডেটা ব্যবহার ও সেভ করতে পারবেন, তা নিশ্চিত করার জন্য, নিজের পরিচয় যাচাই করে নিন</translation>
 <translation id="8656634243791296665">Chrome Dev-এ Gemini খুলুন</translation>
 <translation id="8669527147644353129">Google Chrome সহায়তাকারী</translation>
 <translation id="8679801911857917785">আপনি Chrome শুরু করলে কোন পৃষ্ঠাটি দেখানো হবে তাও এটি নিয়ন্ত্রণ করে।</translation>
@@ -850,7 +835,6 @@
 <translation id="922152298093051471">Chrome কাস্টমাইজ করুন</translation>
 <translation id="93760716455950538">ChromeOS Flex রিস্টার্ট করুন</translation>
 <translation id="945522503751344254">মতামত জানান</translation>
-<translation id="973195869036269770">আপনার অ্যাকাউন্টের সাইন-ইন করার বিবরণ পুরনো হয়ে যাওয়ার কারণে ChromeOS আপনার Google অ্যাকাউন্টে Chrome ডেটা সেভ করতে পারেনি</translation>
 <translation id="983803489796659991">ইনস্টলেশন করা যায়নি, কারণ আপডেট সার্ভারের অ্যাপ্লিকেশনের জন্য কোনও হ্যাশ ডেটা নেই।</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> ব্যবহার করে একটি Chrome প্রোফাইল থেকে আরেকটিতে পাল্টানো যায়</translation>
 </translationbundle>

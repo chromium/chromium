@@ -530,6 +530,7 @@
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />સહાય મેળવો<ph name="END_LINK" /></translation>
 <translation id="3037177537145227281">કિંમત ટ્રૅક કરી રહ્યાં છીએ</translation>
 <translation id="3037517125981011456">Chromeમાં સાઇન ઇન કરવા માટે સંકેતો બતાવે છે</translation>
+<translation id="3038505649933066250">તારીખ મુજબ ફિલ્ટર કરો</translation>
 <translation id="3044436568790455247">"કોઈ ડિવાઇસ પસંદ કરો" સંપૂર્ણ ઊંચાઈએ ખોલવામાં આવ્યું.</translation>
 <translation id="3057938290530993634">આગલી વખતે સરળ ઍક્સેસ માટે, તમારી સૌથી વધુ મુલાકાત લેવાયેલી વેબસાઇટને પિન કરવા ટૅપ કરીને દબાવી રાખો</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> બુકમાર્ક}one{<ph name="BOOKMARKS_COUNT_MANY" /> બુકમાર્ક}other{<ph name="BOOKMARKS_COUNT_MANY" /> બુકમાર્ક}}</translation>
@@ -576,6 +577,7 @@
 <translation id="3243650379537999343">ડ્રો</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">જો તમે Chromeના વપરાશના રિપોર્ટ પણ શેર કરતા હો, તો તે રિપોર્ટમાં તમે મુલાકાત લો છો તે URLs શામેલ હોય છે</translation>
+<translation id="3248185426436836442">બાકી</translation>
 <translation id="3250563604907490871">તમે વાઇ-ફાઇથી કનેક્ટ થશો ત્યારે છબીના વર્ણનોની સુવિધા ફરીથી કાર્ય કરશે</translation>
 <translation id="3254409185687681395">આ પેજને બુકમાર્ક કરો</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" />ના બધા પેજ</translation>
@@ -1124,7 +1126,6 @@
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, પિન કરેલું શેર કરતું છૂપું ટૅબ</translation>
 <translation id="5375374982898812658">તમે તરત જ “<ph name="GROUP_NAME" />” ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશો અને તમારા બધા ડિવાઇસમાંથી તે ડિલીટ કરવામાં આવશે</translation>
 <translation id="537865165090710757">સાચવો અને શેર કરો</translation>
-<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> તમારા ડિજિટલ વૉલેટમાંથી વ્યક્તિગત માહિતીનો ઉપયોગ કરવા માગે છે. જો તમને આ સાઇટ પર વિશ્વાસ હોય, તો જ ચાલુ રાખો. જોખમી સાઇટ તમને તમારા કાનૂની નામ અથવા ID નંબર જેવી બાબતો જણાવવા છેતરી શકે છે.</translation>
 <translation id="5395376160638294582">ખાતરી કરો કે તમે હંમેશાં તમારા Google એકાઉન્ટમાં Chromeના ડેટાનો ઉપયોગ કરી શકો</translation>
 <translation id="5397794290049113714">તમે</translation>
 <translation id="539881862970320163">સશક્ત પાસવર્ડ સૂચવવામાં આવ્યો છે. કીબોર્ડ છુપાવેલું છે.</translation>
@@ -1136,6 +1137,7 @@
 <translation id="5415871492522952905">તમારી પાસે તમારા બધા ડિવાઇસ પર તમારો ઇતિહાસ અને ટૅબ હશે, જેથી તમે જે કરી રહ્યાં હતા તે આગળ વધારી શકો</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) તરત જ “<ph name="GROUP_NAME" />” ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશે</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB ઉપલબ્ધ</translation>
+<translation id="5430861625274552852">પેજના કન્ટેન્ટ વિશે પૂછો અથવા ટૅબમાં સરખામણી કરો</translation>
 <translation id="543271133149552180"><ph name="TAB_TITLE" />, એકથી વધુ પસંદ કરેલું ચિત્ર-માં-ચિત્રનું છૂપું ટૅબ</translation>
 <translation id="5436928407363358055">તમે જ્યાંથી છોડ્યું હતું ત્યાંથી સરળતાથી શરૂ કરવા માટે, તમારો ઇતિહાસ અને ટૅબ સિંક કરો</translation>
 <translation id="5438292632479953702">ફરીથી ડાઉનલોડ કરો</translation>
@@ -1172,6 +1174,7 @@
 <translation id="557018954714092179">નવું ફોલ્ડર બનાવો</translation>
 <translation id="5578795271662203820">આ છબી માટે <ph name="SEARCH_ENGINE" /> માં શોધો</translation>
 <translation id="558563010977877295">કોઈ ચોક્કસ પેજ અથવા પેજનો સેટ ખોલો</translation>
+<translation id="5594132774273121146">વપરાશકર્તા અને એકાઉન્ટ</translation>
 <translation id="5596627076506792578">વધુ વિકલ્પો</translation>
 <translation id="5599455543593328020">છૂપો મોડ</translation>
 <translation id="5601180634394228718">તમારા Chromeના અનુભવને બહેતર બનાવવા માટે ડેટાનો ઉપયોગ કરતા વધુ સેટિંગ માટે, <ph name="BEGIN_LINK" />Googleની સેવાઓ<ph name="END_LINK" /> પર જાઓ.</translation>
@@ -1229,6 +1232,7 @@
 <translation id="583281660410589416">અજ્ઞાત</translation>
 <translation id="5833984609253377421">લિંક શેર કરો</translation>
 <translation id="5839058148541733625">Chrome Dino</translation>
+<translation id="5839059463554891940">સલામતી અને સુરક્ષા</translation>
 <translation id="5841444063256914865">શું તેમ છતાં તમે "<ph name="FILE_NAME" />" ડાઉનલોડ કરવા માગો છો?</translation>
 <translation id="5847265694842662173">Chrome દ્વારા દુરુપયોગ કરનારી અને ઉપયોગમાં ન લેવાતી સાઇટને નોટિફિકેશન મોકલવાથી રોકવામાં આવી છે</translation>
 <translation id="5848257610304005265"><ph name="APP_NAME" /> વડે PDF ખોલીએ?</translation>
@@ -1345,7 +1349,6 @@
 <translation id="6259107733340311168">એન્ટરપ્રાઇઝ સિગ્નલ સંબંધિત અસ્વીકાર બોટમ શીટ સંપૂર્ણ ઊંચાઈએ ખોલી</translation>
 <translation id="6260260490042862943">સાઇટના નિયંત્રણો</translation>
 <translation id="6264376385120300461">તેમ છતાં ડાઉનલોડ કરો</translation>
-<translation id="6264485186158353794">સુરક્ષા પર પાછા</translation>
 <translation id="6267106249090587268">નોટિફિકેશન <ph name="SEPARATOR" /> સ્પામ અથવા છેતરામણા કન્ટેન્ટને કારણે Chrome દ્વારા આ પરવાનગીઓ કાઢી નાખવામાં આવી છે</translation>
 <translation id="6276708887952587684">પેજનો સૉર્સ જુઓ</translation>
 <translation id="62768169905160414">વીડિયો ફ્રેમ કૉપિ કરો</translation>
@@ -1464,7 +1467,6 @@
 <translation id="6659594942844771486">ટૅબ</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" /> માં ખોલો</translation>
 <translation id="6669390930482049506">મને સૂચિત કરો</translation>
-<translation id="6670742294143102726">તમારી શોધમાં ઉમેરવા માટે એક કે તેથી વધુ ટૅબ પસંદ કરો</translation>
 <translation id="6671495933530132209">છબી કૉપિ કરો</translation>
 <translation id="6672697278890207089">તમારો પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="6675622031235530028">છોડવા માટે Ctrl+Q દબાવી રાખો</translation>
@@ -1730,6 +1732,7 @@
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> સ્ટૅન્ડર્ડ ટૅબ}one{<ph name="TABS_COUNT_MANY" /> સ્ટૅન્ડર્ડ ટૅબ}other{<ph name="TABS_COUNT_MANY" /> સ્ટૅન્ડર્ડ ટૅબ}}</translation>
 <translation id="7603168929588204083">અમાન્ય તારીખ</translation>
 <translation id="7605594153474022051">સમન્વયન કામ કરતું નથી</translation>
+<translation id="7607002721634913082">થોભાવેલું</translation>
 <translation id="7608245556672190037">Chrome Finds સુવિધા પસંદ કરવાનો વિકલ્પ સંપૂર્ણ ઊંચાઈએ ખોલ્યો</translation>
 <translation id="7612619742409846846">Google પર આ તરીકે સાઇન ઇન કરો</translation>
 <translation id="7612989789287281429">તમને સાઇન ઇન કરી રહ્યાં છીએ…</translation>
@@ -1838,6 +1841,7 @@
 <translation id="800155843932969169">તમારા પાસવર્ડ સુરક્ષિત રીતે બનાવો અને સ્ટોર કરો, વધુ ઝડપથી સાઇન ઇન કરો અને તમને સુરક્ષિત રાખવા માટે પાસવર્ડની સુરક્ષા સંબંધિત સમસ્યાઓની ઓળખ કરો</translation>
 <translation id="8004582292198964060">બ્રાઉઝર</translation>
 <translation id="8006630792898017994">Space કી અથવા Tab કી</translation>
+<translation id="802154636333426148">ડાઉનલોડ નિષ્ફળ થયું</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, એકથી વધુ પસંદ કરેલું પિન કરેલું શેર કરતું છૂપું ટૅબ</translation>
 <translation id="8025972204417227828">નવું ઉમેરો</translation>
 <translation id="8027863900915310177">ડાઉનલોડ કરવાની જગ્યા પસંદ કરો</translation>
@@ -1845,6 +1849,7 @@
 <translation id="8032569120109842252">ફૉલો કરી રહ્યાં છો</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, પસંદ કરેલું, મ્યૂટ કરેલું છૂપું ટૅબ</translation>
 <translation id="8036587585440959897">કેટલાક એક્સ્ટેન્શન Chromeમાં શોધ એન્જિન ઉમેરી શકે છે.</translation>
+<translation id="803703704549420287">ફિલ્ટર સાફ કરો</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> દિવસ બાકી</translation>
 <translation id="8037801708772278989">હમણાં જ ચેક કર્યું</translation>
 <translation id="804335162455518893">SD કાર્ડ મળ્યું નથી</translation>

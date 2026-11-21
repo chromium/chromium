@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Включить тему</translation>
+<translation id="1085064499066015002">Разрешить на всех сайтах</translation>
 <translation id="1135328998467923690">Пакет недействителен: "<ph name="ERROR_CODE" />".</translation>
 <translation id="1140871961407805696">Основная</translation>
 <translation id="1171831736360285680">Партнер "<ph name="PARTNER_NAME" />" установил расширение, которое может влиять на работу Chromium.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">Ожидаемая версия: <ph name="EXPECTED_VERSION" />, полученная версия: <ph name="NEW_ID" /></translation>
 <translation id="471800408830181311">Не удалось выгрузить закрытый ключ.</translation>
 <translation id="4811956658694082538">Не удалось установить пакет из-за сбоя. Перезагрузите браузер и повторите попытку.</translation>
+<translation id="4883436287898674711">Все сайты <ph name="WEBSITE_1" /></translation>
 <translation id="4988792151665380515">Не удалось экспортировать закрытый ключ.</translation>
 <translation id="501057610015570208">Приложения, у которых в манифесте есть атрибут kiosk_only, можно устанавливать только в режиме киоска Chrome OS Flex.</translation>
 <translation id="5026754133087629784">WebView: <ph name="WEBVIEW_TAG_NAME" /></translation>

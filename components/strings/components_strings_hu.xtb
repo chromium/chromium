@@ -373,6 +373,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> eltávolított egy lapot</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623104350909869708">Akadályozza meg, hogy ez az oldal további párbeszédablakokat hozzon létre.</translation>
+<translation id="1624535934412288769">Oszlopok</translation>
 <translation id="1629390138158333592">Keresés az interneten</translation>
 <translation id="1633137413609266904">{0,plural, =1{A fájl megnyitását rendszergazdai házirend tiltja}other{# fájl megnyitását rendszergazdai házirend tiltja}}</translation>
 <translation id="1634828734222219955">Végösszeg</translation>
@@ -1082,6 +1083,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2803320044666896137">A rendszer figyelmen kívül hagyja ezt a házirendértéket, mert a felhasználó nem köthető a szervezethez.</translation>
 <translation id="2807052079800581569">Kép Y-pozíciója</translation>
 <translation id="2808278141522721006">A Windows Hello funkciót itt kapcsolhatja be vagy ki: <ph name="SETTINGS" /></translation>
+<translation id="2820159698793041599">A proxyszerver nem tudott biztonságos kapcsolatot létesíteni.</translation>
 <translation id="2820957248982571256">Keresés…</translation>
 <translation id="282457273878278063">Kapcsolatfelvételi adatok kezelése</translation>
 <translation id="2824775600643448204">Cím- és keresősáv</translation>
@@ -1263,6 +1265,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3120807611504813890">Boríték (könnyűsúlyú)</translation>
 <translation id="3121994479408824897">Ugrás ide: <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Címkék (állandó)</translation>
+<translation id="3128081114752791872">A proxyszerver biztonsági tanúsítványa érvénytelen.</translation>
 <translation id="3131746543143948171">Úgy tűnik, ez a webhely adathalászattal, rosszindulatú programokkal és átverésekkel kapcsolatos más webhelyekre hasonlít. <ph name="BEGIN_LEARN_MORE_LINK" />További információ<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3132345256151444894">Helyesbítési ügy számának mentése</translation>
 <translation id="3133565499688974786">Mostantól a(z) <ph name="SEARCH_ENGINE_NAME" /> az alapértelmezett keresőmotor</translation>
@@ -1679,7 +1682,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3800436529451849929">A(z) <ph name="SITE" /> webhelyről</translation>
 <translation id="3801297763951514916">Ön által gyakran felkeresett</translation>
 <translation id="380329542618494757">Név</translation>
-<translation id="3803481123869276674">Amikor a Chrome-ban vásárol, megjelenik lehetőségként az elektronikus pénztárca</translation>
 <translation id="3803801106042434208">Ezek a keresőmotorok népszerűek az Ön régiójában</translation>
 <translation id="3804112825000113857">Automatikus kitöltési beállítások megtekintése</translation>
 <translation id="380666903981445943">Mentsen el egy fizetési módot a Google-fiókjába, így a böngésző automatikusan ki tudja tölteni a Chrome-ban végzett vásárlásoknál</translation>
@@ -2161,6 +2163,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4612631413844865947">Hiba történt a megrendelés feldolgozása során a(z) <ph name="MERCHANT_ORIGIN" /> webhelyen a következőn keresztül: <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="4612904677925722054">Ez a webhely felnőtteknek szóló tartalommal rendelkezhet. A szülődnek vagy a gondviselődnek jóvá kell hagynia a webhely felkeresését.</translation>
 <translation id="4613873770449493819">Az URL-nek egy <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-domainre kell mutatnia.</translation>
+<translation id="4615154194248230658">Úgy tűnik, ez a minta nem egyezik érvényes e-mail-domainnel. Előfordulhat, hogy a felhasználók nem tudnak bejelentkezni, vagy a meglévő profilok eltávolításra kerülnek.</translation>
 <translation id="4619564267100705184">Igazolja személyazonosságát</translation>
 <translation id="4619669610757527494">Vezetői engedély mentése a Google Walletbe</translation>
 <translation id="4622292761762557753">Átvitel mégis</translation>
@@ -2679,7 +2682,6 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5447235695608032700">A(z) <ph name="SITE" /> felhasználhatja az Önről mentett adatait</translation>
 <translation id="5447973833955560753">Helyreállítási jelszó</translation>
 <translation id="5452270690849572955">Ez a(z) <ph name="HOST_NAME" /> oldal nem található</translation>
-<translation id="5452923259299906094">Fizetés elektronikus pénztárca és Pix használatával</translation>
 <translation id="5455374756549232013">Hibás az irányelv időbélyege</translation>
 <translation id="5456428544444655325">Soha nem látszik</translation>
 <translation id="5457082343331641453">Hozzáadás a kereséshez</translation>
@@ -3895,7 +3897,6 @@ További részletek:
 <translation id="7489919936111034362">Megtelt a Google Drive-tárhelye</translation>
 <translation id="7490622939531327327">Az űrlapok okosabb értelmezése</translation>
 <translation id="7495528107193238112">Ez a tartalom le van tiltva. Vegye fel a kapcsolatot a webhely tulajdonosával a probléma elhárításához.</translation>
-<translation id="7499188644237027195">Amikor a Chrome-ban vásárol, megjelennek lehetőségként az elektronikus pénztárca és a Pix</translation>
 <translation id="7499684925421947861">Engedélyezi a(z) <ph name="ACTOR_NAME" /> számára, hogy bejelentkezzen az Ön nevében a(z) <ph name="DOMAIN" /> szolgáltatásba?</translation>
 <translation id="7501663406926337752">A megnyitni kívánt webhelyet megjelölte az Ön szervezete</translation>
 <translation id="7502044688973049724">Kezelheti az adatait</translation>
@@ -4020,7 +4021,6 @@ További részletek:
 <translation id="7676840398262504532">A szervezete figyeli a másolást</translation>
 <translation id="767806704757698045">Csak a támogatott webhelyeken működik</translation>
 <translation id="7678730592635586336">Videó újrafelvétele</translation>
-<translation id="7679287273775285018">Fizetés elektronikus pénztárca használatával</translation>
 <translation id="7679367271685653708">Megtekintheti és kezelheti böngészési előzményeit a Chrome beállításaiban.</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, lejárat dátuma: <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Szállítási cím</translation>
@@ -4095,7 +4095,6 @@ További részletek:
 <translation id="7791543448312431591">Hozzáadás</translation>
 <translation id="7798389633136518089">Figyelmen kívül hagyva, mert a házirendet nem felhőbeli forrás állította be.</translation>
 <translation id="7800304661137206267">A kapcsolat a(z) <ph name="CIPHER" /> használatával lett kódolva, <ph name="MAC" /> algoritmussal az üzenethitelesítéshez és <ph name="KX" /> algoritmussal a kulcscserélő folyamathoz.</translation>
-<translation id="780228007282527248">Lap vagy kép hozzáadása a keresés javításához</translation>
 <translation id="7802523362929240268">A webhely valódi</translation>
 <translation id="7802989406998618639">Adja meg <ph name="SIDE_OF_CARD" /> található, <ph name="NUMBER_OF_DIGITS" /> számjegyből álló biztonsági kódot, hogy a bank ellenőrizni tudja a személyazonosságát</translation>
 <translation id="780301667611848630">Köszönöm, nem</translation>
@@ -4161,6 +4160,7 @@ További részletek:
 <translation id="7916162853251942238">Flexo alap</translation>
 <translation id="7916802424606434188">A(z) <ph name="WINDOW_INDEX" />. ablak (<ph name="NUM_TABS" /> lap) megnyitása új ablakban</translation>
 <translation id="791698251820376781">Szervezete nem engedélyezi a bejelentkezést</translation>
+<translation id="7918936720558783139">A mentett ajánlat az automatikus kitöltés használatával áll rendelkezésre a fizetéskor. <ph name="BEGIN_LINK" />Ajánlatok kezelése<ph name="END_LINK" /></translation>
 <translation id="7927046851848613453">A megtekintett oldalakról is menthet jegyeket, eseményeket és egyéb információkat – nem csak a kitöltött űrlapokról. A mentést követően gyorsan hozzáférhet a kártyáihoz, például a belépőjegyekhez és a hűségkártyákhoz. A mentett adatai megjelenhetnek az eszközein és a Google-termékekben.</translation>
 <translation id="7930282586031445870">A Késleltetett fizetés Általános Szerződési Feltételek képernyője be van zárva.</translation>
 <translation id="7932035970207573919">Munkahelyi cím, <ph name="ADDRESS" /></translation>
@@ -4230,6 +4230,7 @@ További részletek:
 <translation id="8029829038322015001">Piros 1</translation>
 <translation id="8032546467100845887">Átláthatóság</translation>
 <translation id="8035152190676905274">Toll</translation>
+<translation id="803703704549420287">Szűrők törlése</translation>
 <translation id="8037117624646282037">Ki használta az eszközt a közelmúltban?</translation>
 <translation id="803771048473350947">Fájl</translation>
 <translation id="8038182528865038593">Piros 2</translation>
@@ -4418,6 +4419,7 @@ További részletek:
 <translation id="8363502534493474904">Repülős üzemmód kikapcsolása</translation>
 <translation id="8363929499301563123">Webhelycookie-k (a nemrégiben felkeresett webhelyeken való bejelentkezett állapot megmarad)</translation>
 <translation id="8364627913115013041">Nincs beállítva.</translation>
+<translation id="8364664414979300296">Lapok, fotók és egyebek hozzáadása a keresés javításához</translation>
 <translation id="836616551641291797">További információ a felügyelt böngészőkről</translation>
 <translation id="8367705492654390392">Kérdezzen bármit</translation>
 <translation id="8368001212524806591">Ár nyomon követése</translation>

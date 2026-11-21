@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Միացնել թեման</translation>
+<translation id="1085064499066015002">Միշտ բոլոր կայքերում</translation>
 <translation id="1135328998467923690">Փաթեթն անվավեր է` «<ph name="ERROR_CODE" />»:</translation>
 <translation id="1140871961407805696">Հիմնական</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" />-ն ավելացրել է ընդլայնում, որը կարող է ազդել Chromium-ի աշխատանքի վրա։
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">Սպասված տարբերակը՝ «<ph name="EXPECTED_VERSION" />», ստացված տարբերակը՝ «<ph name="NEW_ID" />»</translation>
 <translation id="471800408830181311">Չհաջողվեց արտածել մասնավոր բանալին:</translation>
 <translation id="4811956658694082538">Հնարավոր չէ տեղադրել փաթեթը՝ օժանդակ գործընթացի ձախողման պատճառով: Վերագործարկեք Chrome-ը, ապա կրկին փորձեք:</translation>
+<translation id="4883436287898674711">Բոլոր <ph name="WEBSITE_1" /> կայքերը</translation>
 <translation id="4988792151665380515">Չհաջողվեց արտահանել հանրային բանալին:</translation>
 <translation id="501057610015570208">«Kiosk_only» մանիֆեստի հատկանիշով հավելվածը պետք է տեղադրվի ChromeOS Flex-ի կրպակի ռեժիմում</translation>
 <translation id="5026754133087629784">WebView՝ <ph name="WEBVIEW_TAG_NAME" /></translation>

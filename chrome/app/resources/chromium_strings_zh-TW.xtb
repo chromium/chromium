@@ -82,7 +82,6 @@
 <translation id="188102464690227119">工具列上的「在側邊面板中搜尋」按鈕已換上新圖示。點選即可在瀏覽網頁時，使用側邊面板的搜尋功能提問。</translation>
 <translation id="1896836275755235458">Chromium 會限制背景活動和視覺效果 (例如順暢捲動和視訊畫面更新率)，以節省電池電力。<ph name="BEGIN_LINK" />進一步瞭解節能模式<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium 更新工具服務</translation>
-<translation id="1911763535808217981">關閉這項功能後，就會單獨登入 Google 網站 (如 Gmail)，不會同時登入 Chromium</translation>
 <translation id="1929939181775079593">Chromium 沒有回應，要立即重新啟動嗎？</translation>
 <translation id="1933341829955786215">貴機構 (<ph name="MANAGER" />) 要求你登入 Chromium</translation>
 <translation id="193439633299369377">Chromium OS 必須重新啟動，才能套用更新。</translation>
@@ -129,7 +128,6 @@
 <translation id="2361918034042471035">擴充功能「<ph name="EXTENSION_NAME" />」要求你登入 Chromium</translation>
 <translation id="236943522426971115">停用 Chromium 在應用程式背景執行的功能</translation>
 <translation id="2374216753258219393">如要以 <ph name="USER_EMAIL_ADDRESS" /> 的身分使用這個擴充功能，請登入 Chromium。</translation>
-<translation id="2384373936468275798">你的帳戶登入詳細資料尚未更新，因此 Chromium OS 無法同步處理你的資料。</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{至少有 1 個 Chromium 擴充功能當時正在存取 1 部 HID 裝置}=1{至少有 1 個 Chromium 擴充功能正在存取 1 部 HID 裝置}other{至少有 1 個 Chromium 擴充功能正在存取 # 部 HID 裝置}}</translation>
 <translation id="2401032172288869980">Chromium 需要相機權限和麥克風權限，才能執行這個網站要求的功能</translation>
 <translation id="2403703063067034158">啟動時發生錯誤：目前正在執行其他設定作業，請稍後再試。</translation>
@@ -171,7 +169,6 @@
 <translation id="2819844767470613567">警告：Chromium 無法禁止擴充功能記錄你的瀏覽記錄。如要在隔離模式中停用這個擴充功能，請取消選取這個選項。</translation>
 <translation id="2841525013647267359">原文語言</translation>
 <translation id="2846251086934905009">安裝錯誤：安裝程式未完整執行。安裝作業已取消。</translation>
-<translation id="2847479871509788944">從 Chromium 中移除...</translation>
 <translation id="2850691299438350830">在已登入帳戶的狀態下，能確保你持續享有安全無虞的 Chromium 使用體驗，也有助於提升其他 Google 應用程式的安全機制</translation>
 <translation id="2885378588091291677">工作管理員</translation>
 <translation id="2898830646167954300">切換回非受管的 Gemini 助理</translation>
@@ -382,7 +379,6 @@
 <translation id="5346389065299425353">新增多個分頁、檔案和工具，進一步搜尋所需資訊</translation>
 <translation id="5352264705793813212">Chromium 發現一些安全性建議需要你檢查</translation>
 <translation id="5352361688875342522">其他 Chromium 設定檔</translation>
-<translation id="535243042947607642">你的帳戶登入詳細資料未更新，因此 ChromiumOS 無法將 Chromium 資料儲存到 Google 帳戶</translation>
 <translation id="5368118228313795342">額外代碼：<ph name="EXTRA_CODE" />。</translation>
 <translation id="5377622451696208284">如要享有個人化服務，請在「網路和應用程式活動」中納入 Chromium</translation>
 <translation id="5382964351116519680">開啟「使用 Chromium 搜尋」</translation>
@@ -397,7 +393,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium 建議暫停導致瀏覽器運作緩慢的分頁}other{Chromium 建議暫停導致瀏覽器運作緩慢的分頁}}</translation>
 <translation id="5473971139929175403">Chromium 已不再支援這個 Linux 發行版本，因此可能無法正常運作</translation>
 <translation id="5475924890392386523">這個檔案可能會危害個人和社群網路帳戶，因此 Chromium 已禁止下載</translation>
-<translation id="549669000822060376">請稍候，Chromium 正在安裝最新的系統更新。</translation>
 <translation id="5496810170689441661">Chromium 正在嘗試編輯密碼。如果你同意這項作業，請輸入你的 Windows 密碼。</translation>
 <translation id="5524890928877629608">搜尋區域的左上角：左側 <ph name="LEFT" />%，頂端 <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">在 Chromium 中開啟 PDF</translation>
@@ -490,7 +485,6 @@
 <translation id="6390800440335263989">如要繼續操作，請用 <ph name="EMAIL" /> 登入 Chromium，確保貴機構的政策會套用到 Chromium 上。</translation>
 <translation id="6400112897226594999">電腦螢幕畫面中的 Chromium 標誌。</translation>
 <translation id="6403826409255603130">Chromium 網路瀏覽器開啟網頁和執行應用程式的速度十分迅速。除了迅速、穩定且易於使用之外，Chromium 的內建惡意軟體與網路釣魚防護功能，可讓你安心悠遊網路。</translation>
-<translation id="6414624068245092115">請驗證身分，確保你隨時可以將 Chromium 資料儲存到 Google 帳戶，或使用帳戶中的 Chromium 資料</translation>
 <translation id="642132557830635295">提高 Chromium 執行速度，讓使用 JavaScript 的功能正常運作</translation>
 <translation id="6434631832954028336">重新開啟「搜尋」面板</translation>
 <translation id="6436260184216827876">「圖片搜尋」無法使用，請稍後再試。</translation>
@@ -521,7 +515,6 @@
 <translation id="665732753414869868">Chromium 需要相機權限，才能根據你的周遭環境製作 3D 地圖</translation>
 <translation id="6669284030132180248">如果一併將書籤儲存在 Google 帳戶中，就可以在 Chromium 中追蹤產品價格，並在降價時收到通知</translation>
 <translation id="6676384891291319759">連線到網際網路</translation>
-<translation id="668175097507315160">登入時發生錯誤，因此 Chromium OS 無法同步處理你的資料。</translation>
 <translation id="6691132793308828750">從 Chromium 移除這個應用程式的資料</translation>
 <translation id="6709350901466051922">Chromium 需要麥克風權限，才能執行這個網站要求的功能</translation>
 <translation id="6712881677154121168">下載錯誤：<ph name="DOWNLOAD_ERROR" />。</translation>
@@ -679,7 +672,6 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8107060931443639922">下次在 <ph name="DEVICE_TYPE" /> 上開啟 Chromium 時，系統會提示你啟用價格追蹤通知。</translation>
 <translation id="8118331347066725040">提供你對智慧鏡頭搜尋功能的意見</translation>
 <translation id="8130609355518033382">打造專屬 Chromium</translation>
-<translation id="8133124826068723441">你的網域無法使用同步功能，因此 Chromium OS 無法同步處理你的資料。</translation>
 <translation id="813913629614996137">正在初始化...</translation>
 <translation id="8158143604667288086">你可以固定「在 Chrome 中搜尋」，方便在瀏覽網頁時提問</translation>
 <translation id="8161503455832158203">使用鍵盤快速鍵開啟 Chromium 內建 Gemini。</translation>
@@ -746,11 +738,9 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8816416449795340678">與 Chromium 內建 Gemini 分享這份文件，就能快速取得摘要並提出後續問題</translation>
 <translation id="8818550178040858407">要登入 Chromium 嗎？</translation>
 <translation id="8826492472752484139">按一下「密碼管理工具」</translation>
-<translation id="8833697763442816810">Chromium OS 系統</translation>
 <translation id="8852026904190808918">這個語言會用於顯示 Chromium 中的選單、設定、快訊和其他文字</translation>
 <translation id="8862326446509486874">你沒有在系統層級進行安裝的權限，請以管理員的身分執行安裝檔。</translation>
 <translation id="8876044221123442390">新增 Chromium 設定檔</translation>
-<translation id="8890569919834781711">登入時發生錯誤，因此 ChromiumOS 無法將 Chromium 資料儲存到你的 Google 帳戶</translation>
 <translation id="8891709362986793894">貴機構要求你登入 Chromium</translation>
 <translation id="8906384069222226849">Chromium 僅支援 Windows 10 1809 以上版本。</translation>
 <translation id="8907580949721785412">Chromium 現在會嘗試顯示密碼。如果你同意的話，請輸入你的 Windows 密碼。</translation>

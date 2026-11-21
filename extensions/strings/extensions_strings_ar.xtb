@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">تفعيل المظهر</translation>
+<translation id="1085064499066015002">تفعيل الإضافة دائمًا على جميع المواقع الإلكترونية</translation>
 <translation id="1135328998467923690">الحزمة غير صالحة: "<ph name="ERROR_CODE" />".</translation>
 <translation id="1140871961407805696">الكاميرا الخلفية المواجهة للبيئة</translation>
 <translation id="1171831736360285680">‏ثبَّت الشريك <ph name="PARTNER_NAME" /> إضافة جديدة قد تؤدي إلى تغيير طريقة عمل Chromium.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">الإصدار المتوقع "<ph name="EXPECTED_VERSION" />"، ولكن الإصدار كان "<ph name="NEW_ID" />".</translation>
 <translation id="471800408830181311">تعذّر إخراج المفتاح الخاص.</translation>
 <translation id="4811956658694082538">‏تعذر تثبيت الحزمة بسبب تعطل معالجة الأداة المساعدة. جرّب إعادة تشغيل Chrome وحاول مرة أخرى.</translation>
+<translation id="4883436287898674711">جميع مواقع <ph name="WEBSITE_1" /></translation>
 <translation id="4988792151665380515">تعذّر تصدير المفتاح العام.</translation>
 <translation id="501057610015570208">‏يجب أن يتم تثبيت التطبيق الذي يحمل سمة البيان "kiosk_only" في وضع الكشك على نظام التشغيل ChromeOS Flex.</translation>
 <translation id="5026754133087629784">عرض الويب: <ph name="WEBVIEW_TAG_NAME" /></translation>

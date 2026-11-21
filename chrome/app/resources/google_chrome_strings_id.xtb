@@ -30,13 +30,11 @@
 <translation id="1278833599417554002">Luncurkan kembali untuk mengupdate &amp;Chrome</translation>
 <translation id="1289911795790071537">Buka penelusuran dengan Chrome</translation>
 <translation id="1290883685122687410">Kesalahan saat penyiapan: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1302523850133262269">Harap tunggu selagi Chrome memasang pembaruan sistem terkini.</translation>
 <translation id="1330562121671411446">Deteksi bahasa</translation>
 <translation id="1333654552732143316">Jalankan Chrome</translation>
 <translation id="1341711321000856656">Anda dapat beralih untuk melihat sandi dari profil Chrome lainnya</translation>
 <translation id="1343830902827845050">Login ke Chrome</translation>
 <translation id="1361351916482714918">Menjelajah lebih cerdas dengan Google Lens</translation>
-<translation id="1363996462118479832">ChromeOS tidak dapat menyinkronkan data Anda karena terjadi error saat login.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1383876407941801731">Telusuri</translation>
 <translation id="1399397803214730675">Komputer ini telah memiliki versi Google Chrome yang lebih anyar. Jika software tidak bekerja, uninstal Google Chrome dan coba lagi.</translation>
@@ -85,7 +83,6 @@
 <translation id="177180974022074201">Coba dengan Gemini di Chrome</translation>
 <translation id="1786003790898721085">Pastikan Anda login ke Chrome di <ph name="TARGET_DEVICE_NAME" /> Anda, lalu coba kirimkan lagi.</translation>
 <translation id="1786044937610313874">Pintasan terbuka di Chrome</translation>
-<translation id="1812689907177901597">Dengan menonaktifkan ini, Anda dapat login ke situs Google seperti Gmail tanpa harus login ke Chrome</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome merekomendasikan untuk menjeda tab yang memperlambat browser Anda}other{Chrome merekomendasikan untuk menjeda tab yang memperlambat browser Anda}}</translation>
 <translation id="1832046143430087831">Mempercepat situs dengan mesin V8 Chrome, tetapi membuat Chrome sedikit lebih rentan terhadap serangan. Setelan ini nonaktif.</translation>
 <translation id="1838374766361614909">Hapus penelusuran</translation>
@@ -172,7 +169,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="2661616016316841783">Untuk mendapatkan ekstensi dan data lainnya dari <ph name="DEVICE" />, login ke Chrome</translation>
 <translation id="2665296953892887393">Bantu Google Chrome jadi lebih baik dengan mengirim laporan kerusakan dan <ph name="UMA_LINK" /> ke Google</translation>
 <translation id="2668094785979141847">Klik untuk keluar dari Google Lens</translation>
-<translation id="2674238339205910678">ChromeOS Flex tidak dapat menyimpan data Chrome di Akun Google Anda karena detail login akun Anda sudah tidak berlaku</translation>
 <translation id="2681444469812712297">Buka <ph name="URL" /> di tab baru di Google Chrome.</translation>
 <translation id="2699790011615497488">Buka Gemini di Chrome Beta</translation>
 <translation id="2738871930057338499">Tidak dapat terhubung ke internet. HTTP 403 Terlarang. Periksa konfigurasi proxy Anda.</translation>
@@ -283,7 +279,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="3756724684201900923">Pelajari lebih lanjut cara menginstal Chrome</translation>
 <translation id="3772152698251011058">Laporkan situs ini kepada Google</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
-<translation id="3785324443014631273">ChromeOS Flex tidak dapat menyinkronkan data Anda karena terjadi error saat login.</translation>
 <translation id="3810973564298564668">Kelola</translation>
 <translation id="383455301564000773">Ingin mengupgrade ke Windows 11? Download Chrome ke OneDrive agar Anda siap sejak hari pertama.</translation>
 <translation id="383928141529488001">Google Chrome memerlukan akses Bluetooth untuk menjelajah 
@@ -374,7 +369,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="4803313124144656665">Tutup Google Penelusuran di Chrome</translation>
 <translation id="4828579605166583682">Google Chrome mencoba mengganti sandi yang ada. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
 <translation id="4836321460899997044">Profil Chrome</translation>
-<translation id="4842397268809523050">ChromeOS Flex tidak dapat menyinkronkan data Anda karena Sinkronisasi tidak tersedia untuk domain Anda.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> sudah login.  Agar penjelajahan Anda tetap terpisah, login ke Chrome di profil Anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Untuk membagikan layar Anda, izinkan perekaman layar untuk Chrome di Setelan Sistem</translation>
 <translation id="4873783916118289636">Meninjau kontrol privasi dan keamanan utama di Chrome</translation>
@@ -388,7 +382,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="492720062778050435">Chrome merekomendasikan Anda untuk meninjau ekstensi ini</translation>
 <translation id="4953650215774548573">Setel Google Chrome sebagai browser default Anda</translation>
 <translation id="495931528404527476">Di Chrome</translation>
-<translation id="4969674060580488087">ChromeOS Flex tidak dapat menyinkronkan data Anda karena detail login akun Anda belum diperbarui.</translation>
 <translation id="4970761609246024540">Selamat datang di profil Chrome</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Klik “Pengelola Sandi Google”</translation>
@@ -420,7 +413,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="5271833978500241046">Gunakan bersama fitur Gemini lainnya di Chrome</translation>
 <translation id="5320351714793324716">Jika Anda mengizinkan cookie, Chrome dapat menggunakannya saat melakukan pramuat</translation>
 <translation id="5321325624576443340">Google Lens tidak tersedia. Coba lagi nanti.</translation>
-<translation id="5334309298019785904">ChromeOS tidak dapat menyinkronkan data Anda karena Sinkronisasi tidak tersedia untuk domain Anda.</translation>
 <translation id="5336664042114176802">Anda dapat beralih ke asisten Gemini yang awalnya dikaitkan dengan Akun Google Anda dan tidak dikelola oleh <ph name="DOMAIN" />. Jawaban tidak akan lagi didasarkan pada file atau layanan yang dikelola oleh <ph name="DOMAIN" /> dan histori percakapan Anda tidak akan dipindahkan. Asisten ini mungkin tidak cocok digunakan untuk keperluan pekerjaan. Beralih memerlukan peluncuran kembali Chrome.</translation>
 <translation id="5346389065299425353">Perdalam penelusuran Anda dengan menambahkan beberapa tab, file, dan alat</translation>
 <translation id="5353252989841766347">Ekspor Sandi dari Chrome</translation>
@@ -548,7 +540,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="6497147134301593682">Chrome otomatis ditutup</translation>
 <translation id="6506909944137591434">Chrome memerlukan izin kamera untuk membuat peta 3D area sekitar Anda</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
-<translation id="6520608191273161151">ChromeOS Flex tidak dapat menyimpan data Chrome di Akun Google Anda karena terjadi error saat login</translation>
 <translation id="6520670145826811516">Untuk menggunakan lokasi, beri Chrome akses di <ph name="BEGIN_LINK" />setelan sistem<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Histori Chrome</translation>
 <translation id="6532945796722480006">Buka Gemini di Chrome Canary</translation>
@@ -570,7 +561,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="6712881677154121168">Error download: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Buat Chrome lebih cepat</translation>
 <translation id="6734827584173583205">Anda tidak membuka situs ini baru-baru ini. Chrome menghapus izin <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, dan <ph name="COUNT" /> lainnya.</translation>
-<translation id="6735387454586646204">Sistem ChromeOS Flex</translation>
 <translation id="674891594898436429">Tutup penelusuran aktif di tab ini</translation>
 <translation id="6750954913813541382">Untuk memperbaiki kesalahan ejaan, Chrome mengirim teks yang Anda ketikkan di browser ke Google</translation>
 <translation id="6760235774835597023">Mempercepat situs dengan mesin V8 Chrome, tetapi membuat Chrome sedikit lebih rentan terhadap serangan. Setelan ini aktif.</translation>
@@ -591,7 +581,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="6908182077349113099">Selalu sinkronkan sandi, bookmark, dan histori lintas perangkat. Update browser default ke Chrome agar dapat mengakses fitur yang Anda kenal dan suka dengan mudah.</translation>
 <translation id="6926772305569367352">Tombol "Google Penelusuran di Chrome" di toolbar kini memiliki ikon baru. Klik untuk mengajukan pertanyaan saat Anda menjelajah dengan Google Penelusuran di Chrome.</translation>
 <translation id="6930294499209825">Menjaga software Google Anda tetap update. Jika layanan ini dinonaktifkan atau dihentikan, software Google tidak akan terus diupdate, yang berarti kerentanan keamanan yang mungkin terjadi tidak dapat diperbaiki dan fitur mungkin tidak berfungsi. Layanan ini akan otomatis di-uninstal jika tidak ada software Chromium yang menggunakannya.</translation>
-<translation id="6933858244219479645">Sistem ChromeOS</translation>
 <translation id="6938166777909186039">Untuk mendapatkan update Google Chrome berikutnya, Anda perlu Windows 10 atau yang lebih baru. Komputer ini menggunakan Windows 8.1.</translation>
 <translation id="6962628299694876291"><ph name="EXISTING_USER" /> sudah login. Agar penjelajahan Anda tetap terpisah, login ke Chrome di profil Anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />. Anda juga akan mendapatkan sandi dan data lainnya semua perangkat Anda.</translation>
 <translation id="6965382102122355670">Oke</translation>
@@ -682,7 +671,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="7801699035218095297">Google Chrome mencoba menyalin sandi. Ketik sandi Windows Anda untuk mengizinkannya.</translation>
 <translation id="7804364787702057554">Akun Anda di Chrome</translation>
 <translation id="7804947029129221742">Mesin telusur Anda diubah dari luar Chrome. Untuk melindungi Anda, Chrome meresetnya ke setelan default aslinya. <ph name="LEARN_MORE_LINK" /></translation>
-<translation id="7808348361785373670">Hapus dari Chrome...</translation>
 <translation id="7827099906024714326">Chrome perlu memverifikasi diri Anda sebelum beberapa data dapat disimpan di Akun Google Anda dan digunakan di semua perangkat Anda. Jika Anda logout sekarang, data ini akan dihapus.</translation>
 <translation id="7829850924999627855">Untuk mendapatkan info tersimpan dan data lainnya dari <ph name="DEVICE" />, login ke Chrome</translation>
 <translation id="7832314606810669113">Untuk mendapatkan bookmark dan info Anda yang lain di semua perangkat Anda, login ke Chrome. Bookmark ini akan disimpan di Akun Google Anda setelah Anda login.</translation>
@@ -695,7 +683,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="7896673875602241923">Seseorang telah masuk ke Chrome pada komputer ini sebagai <ph name="ACCOUNT_EMAIL_LAST" />. Harap buat pengguna Chrome baru untuk memisahkan informasi Anda.</translation>
 <translation id="7904213866086517086">Buka kembali Google Penelusuran di panel samping</translation>
 <translation id="7904985524660297937">Coba Gemini di Google Chrome</translation>
-<translation id="7905880575591690197">ChromeOS tidak dapat menyimpan data Chrome di Akun Google Anda karena terjadi error saat login</translation>
 <translation id="7936702483636872823">Chrome memblokir download ini karena file tersebut tidak jujur dan dapat menyebabkan perubahan tak terduga di perangkat Anda</translation>
 <translation id="7951272445806340501">ChromeOS Flex perlu dimulai ulang untuk menerapkan update.</translation>
 <translation id="7959172989483770734">Kelola Profil Chrome</translation>
@@ -754,7 +741,6 @@ Jika halaman ini tidak berfungsi sebagaimana mestinya, coba izinkan pengoptimala
 <translation id="8402881611069691789">{COUNT,plural, =1{Chrome selesai diupdate. Anda dapat menggunakan versi terbaru segera setelah browser diluncurkan kembali. Setelah itu, tab saat ini akan dibuka lagi. Ada jendela Samaran atau Terisolasi yang terbuka. Jendela tersebut tidak akan dibuka lagi setelah browser diluncurkan kembali.}other{Chrome selesai diupdate. Anda dapat menggunakan versi terbaru segera setelah browser diluncurkan kembali. Setelah itu, tab saat ini akan dibuka lagi. Ada # jendela Samaran dan Terisolasi yang terbuka di seluruh profil. Jendela tersebut tidak akan dibuka lagi setelah browser diluncurkan kembali.}}</translation>
 <translation id="8403038600646341038">Logo Chrome di dalam layar komputer.</translation>
 <translation id="8406687098231754303">Dari tombol "Google Penelusuran di panel samping" di toolbar, Anda dapat membuka kembali Google Penelusuran di panel samping untuk mengajukan pertanyaan saat menjelajah</translation>
-<translation id="8418845734693287262">ChromeOS tidak dapat menyinkronkan data Anda karena detail login akun Anda belum diperbarui.</translation>
 <translation id="842386925677997438">Alat keamanan Chrome</translation>
 <translation id="8425765582779547329">Agar tetap aman saat online dengan pilihan orang tuamu, login ke Chrome</translation>
 <translation id="842852285618875960">Anda telah mencapai batas <ph name="BOOKMARK_LIMIT" /> bookmark Google Chrome, sehingga beberapa bookmark belum disimpan di Akun Google Anda.
@@ -783,7 +769,6 @@ Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookma
 <translation id="8624541899164515475">Setelan, terbuka di tab baru.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome akan diluncurkan ulang dalam 1 menit}other{Chrome akan diluncurkan ulang dalam # menit}}</translation>
 <translation id="8637932705841171563">Untuk membagikan jendela Anda, izinkan perekaman layar untuk Chrome di Setelan Sistem</translation>
-<translation id="8642497536370021917">Untuk memastikan Anda selalu dapat menggunakan dan menyimpan data Chrome di Akun Google Anda, verifikasi diri Anda</translation>
 <translation id="8656634243791296665">Buka Gemini di Chrome Dev</translation>
 <translation id="8669527147644353129">Pembantu Google Chrome</translation>
 <translation id="8679801911857917785">Juga mengontrol halaman apa yang ditampilkan saat Anda memulai Chrome.</translation>
@@ -845,7 +830,6 @@ Bookmark baru tidak dapat disimpan di akun hingga Anda menghapus beberapa bookma
 <translation id="922152298093051471">Sesuaikan Chrome</translation>
 <translation id="93760716455950538">Mulai ulang ChromeOS Flex</translation>
 <translation id="945522503751344254">Kirim masukan</translation>
-<translation id="973195869036269770">ChromeOS tidak dapat menyimpan data Chrome di Akun Google Anda karena detail login akun Anda sudah tidak berlaku</translation>
 <translation id="983803489796659991">Penginstalan gagal karena server update tidak memiliki data hash apa pun untuk aplikasi.</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> dapat membuat berpindah-pindah profil Chrome</translation>
 </translationbundle>

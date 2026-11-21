@@ -10,6 +10,7 @@
 <translation id="1097658378307015415">Ak chcete aktivovať sieť <ph name="NETWORK_ID" />, vstúpte pred prihlásením ako hosť</translation>
 <translation id="1111932478203988717">Vaše dieťa sa môže týmto kódom PIN prihlásiť do svojho zariadenia</translation>
 <translation id="1122587596907914265">Vytvorte si jedinečné štýlové tapety</translation>
+<translation id="1122913801042512795">Prihlasovacie údaje vášho účtu sú zastarané. Odhláste sa a znova sa prihláste.</translation>
 <translation id="1131201598497838573">Kód PIN vášho dieťaťa bol aktualizovaný</translation>
 <translation id="1147322039136785890">Na rade je <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1148669835763563782">Dostávate najnovšiu aktualizáciu softvéru prinášajúcu lepšie zabezpečenie a najnovšie funkcie Chromebooku. Táto aktualizácia zahŕňa zlepšené nastavovanie, ktorá vám pomôže bez problémov začať s Chromebookom.</translation>
@@ -26,6 +27,7 @@
 <translation id="1256588359404100567">Nastavenie bolo synchronizované z vášho predchádzajúceho zariadenia.</translation>
 <translation id="1272978324304772054">Tento používateľský účet nepatrí do domény, do ktorej je zaregistrované toto zariadenie. Ak sa chcete zaregistrovať do inej domény, musíte najprv zariadenie obnoviť.</translation>
 <translation id="1293556467332435079">Súbory</translation>
+<translation id="1302523850133262269">Počkajte, kým Chrome nainštaluje najnovšie aktualizácie systému.</translation>
 <translation id="1307559529304613120">Ojoj! Systému sa nepodarilo uložiť dlhodobý prístupový token rozhrania API pre toto zariadenie.</translation>
 <translation id="1335929031622236846">Registrácia vášho zariadenia</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Funkcie ladenia<ph name="END_H3" />
@@ -49,6 +51,7 @@
 <translation id="1347625331607114917">Overte kód v telefóne s Androidom</translation>
 <translation id="1347975661240122359">Aktualizácia sa začne, keď sa batéria dobije na <ph name="BATTERY_LEVEL" /> %.</translation>
 <translation id="1353275871123211385">Ak chcete používať rodičovskú kontrolu, napríklad schvaľovať aplikácie a limity času používania, musí mať dieťa účet Google spravovaný rodičom. Školský účet, ktorý sa bude dať používať s nástrojmi, ako je Učebňa Google, môžete pridať neskôr.</translation>
+<translation id="1363996462118479832">Systému Chrome OS sa nepodarilo synchronizovať vaše údaje, pretože sa pri prihlasovaní vyskytla chyba.</translation>
 <translation id="1375557162880614858">Chcete aktivovať vstavanú čítačku obrazovky ChromeVox pre Chrome OS Flex?</translation>
 <translation id="1377600615067678409">Zatiaľ preskočiť</translation>
 <translation id="1399261165075500043">Zmluvné podmienky služby Google Play sa nedajú načítať</translation>
@@ -73,6 +76,7 @@
 <translation id="1642494467033190216">Pred aktiváciou ďalších funkcií ladenia je potrebné odstrániť ochranu rootfs a reštartovať zariadenie.</translation>
 <translation id="1646045728251578877">K dispozícii je aktualizácia softvéru</translation>
 <translation id="1650801028905250434">Súbory v sekcii Môj disk sa budú automaticky synchronizovať s Chromebookom, aby ste k nim mali prístup aj bez internetového pripojenia. Túto možnosť môžete kedykoľvek zmeniť v sekcii Nastavenia &gt; Súbory.</translation>
+<translation id="16620462294541761">Vaše heslo sa nepodarilo overiť. Skúste to znova.</translation>
 <translation id="1668435968811469751">Registrovať ručne</translation>
 <translation id="1678919064276516737">Zadaný e‑mail a PIN si nezodpovedajú</translation>
 <translation id="1692115862433274081">Použiť iný účet</translation>
@@ -94,6 +98,7 @@
 <translation id="1868617395637139709">Používajte polohu pre aplikácie a služby pre Android.</translation>
 <translation id="1877377730633446520">Vyžaduje to približne <ph name="REQUIRED_SPACE" />. Momentálne máte k dispozícii <ph name="FREE_SPACE" />.</translation>
 <translation id="1878155070920054810">Zdá sa, že batéria Chromebooku sa vybije pred dokončením aktualizácie. Ak chcete predísť prerušeniu, skontrolujte, či sa nabíja správne.</translation>
+<translation id="1887442540531652736">Chyba prihlásenia.</translation>
 <translation id="189035593835762169">Zmluvné podmienky</translation>
 <translation id="189358972401248634">Ďalšie jazyky</translation>
 <translation id="1915734383465415025">Číslo predajne</translation>
@@ -122,6 +127,7 @@
 <translation id="2210462644007531147">Inštaláciu sa nepodarilo dokončiť</translation>
 <translation id="221872881068107022">Obrátené posúvanie</translation>
 <translation id="2219081237089444028">Nastavte si heslo pre zariadenie <ph name="DEVICE_TYPE" />, aby ste sa mohli ľahšie prihlasovať</translation>
+<translation id="2220529011494928058">Nahlásiť problém</translation>
 <translation id="222115440608612541">Prepínajte motívy pri východe a západe slnka</translation>
 <translation id="2229161054156947610">Zostáva viac ako 1 hodina</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> sa bude automaticky aktualizovať na pozadí. Budete tak získavať najnovšie funkcie a zlepšenia zabezpečenia. Predvoľby aktualizácie môžete skontrolovať v Nastaveniach.</translation>
@@ -132,6 +138,7 @@
 <translation id="2328137272841210255">Obnoviť kód PIN</translation>
 <translation id="2342180549977909852">Dieťa môže toto zariadenie odomykať číslom (PIN) a nie heslom. PIN môžete nastaviť neskôr v Nastaveniach.</translation>
 <translation id="2359808026110333948">Pokračovať</translation>
+<translation id="2384373936468275798">Systému Chromium OS sa nepodarilo synchronizovať vaše údaje, pretože vaše prihlasovacie údaje účtu sú zastarané.</translation>
 <translation id="2387052489799050037">Prechod na domovskú obrazovku</translation>
 <translation id="2395616325548404795">Zariadenie <ph name="DEVICE_TYPE" /> bolo úspešne zaregistrované na podnikovú správu. Nepodarilo sa však odoslať informácie o obsahu a polohe. Zadajte tieto informácie ručne v Správcovskej konzole pre toto zariadenie.</translation>
 <translation id="2408955596600435184">Zadajte kód PIN</translation>
@@ -158,6 +165,7 @@
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Služba určovania polohy od Googlu odhaduje polohu tohto zariadenia pomocou zdrojov, ako sú Wi‑Fi, mobilné siete a senzory.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Polohu Androidu v tomto zariadení môžete kedykoľvek vypnúť v sekcii Nastavenia &gt; Aplikácie &gt; Obchod Google Play &gt; Spravovať predvoľby Androidu &gt; Zabezpečenie a poloha &gt; Poloha. Môžete vypnúť aj určovanie polohy Androidu pomocou Wi‑Fi, mobilných sietí a senzorov tak, že v rovnakej ponuke vypnete Presnosť určovania polohy Google.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2663302507110284145">Jazyk</translation>
+<translation id="2674238339205910678">Systému ChromeOS Flex sa nepodarilo uložiť údaje Chromu vo vašom účte Google, pretože vaše prihlasovacie údaje účtu sú zastarané</translation>
 <translation id="2687407218262674387">Zmluvné podmienky spoločnosti Google</translation>
 <translation id="2688196195245426394">Pri registrácii zariadenia na serveri <ph name="CLIENT_ERROR" /> sa vyskytla chyba.</translation>
 <translation id="2698147581454716013">Toto zariadenie je súčasťou balíka a nedá sa zaregistrovať pomocou povýšenia Kiosk &amp; Signage.</translation>
@@ -252,6 +260,7 @@
 <translation id="3740945083753997630">Zmenšiť veľkosť zobrazenia a textu</translation>
 <translation id="376841534249795524">Na čo budete <ph name="DEVICE_TYPE" /> používať?</translation>
 <translation id="3772046291955677288">Prečítal(a) som si <ph name="BEGIN_LINK1" />zmluvné podmienky spoločnosti Google<ph name="END_LINK1" /> aj <ph name="BEGIN_LINK2" />dodatočné zmluvné podmienky prehliadača Chrome a systému Chrome OS<ph name="END_LINK2" /> a súhlasím s nimi.</translation>
+<translation id="3785324443014631273">Systému Chrome OS Flex sa nepodarilo synchronizovať vaše údaje, pretože sa pri prihlasovaní vyskytla chyba.</translation>
 <translation id="3789841737615482174">Inštalovať</translation>
 <translation id="3800828618615365228">Dodatočné zmluvné podmienky prehliadača Google Chrome a systému Chrome OS</translation>
 <translation id="3828953470056652895">Prečítal(a) som si <ph name="BEGIN_LINK1" />zmluvné podmienky spoločnosti Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />dodatočné zmluvné podmienky prehliadača Chrome a systému Chrome OS<ph name="END_LINK2" /> aj <ph name="BEGIN_LINK3" />zmluvné podmienky služby Play<ph name="END_LINK3" /> a súhlasím s nimi.</translation>
@@ -332,6 +341,7 @@
         <ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Ďalšiu pomoc získate na g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Koho chcete pridať do tohto zariadenia <ph name="DEVICE_TYPE" />?</translation>
+<translation id="4543778593405494224">Správca certifikátov</translation>
 <translation id="4566170377336116390">Ak budete chcieť po registrácii prejsť na iný spôsob, musíte obnoviť výrobné nastavenia zariadenia (funkcia Powerwash).</translation>
 <translation id="4567512141633030272">Nesprávna možnosť prihlásenia?</translation>
 <translation id="4567533462991917415">Po nastavení môžete kedykoľvek pridať ďalších ľudí. Každá osoba si môže prispôsobiť účet a uchovať údaje v súkromí.</translation>
@@ -349,6 +359,7 @@
 <translation id="4814327014588285482">Preskočiť a pripomenúť neskôr</translation>
 <translation id="4830502475412647084">Inštaluje sa aktualizácia operačného systému</translation>
 <translation id="4837926214103741331">Nemáte oprávnenie používať toto zariadenie. Ak chcete získať povolenie na prihlásenie, kontaktujte majiteľa zariadenia.</translation>
+<translation id="4842397268809523050">Systému Chrome OS Flex sa nepodarilo synchronizovať vaše údaje, pretože možnosť synchronizácie nie je pre vašu doménu k dispozícii.</translation>
 <translation id="4844333629810439236">Ďalšie klávesnice</translation>
 <translation id="484462545196658690">Automaticky</translation>
 <translation id="4864369630010738180">Prebieha prihlasovanie...</translation>
@@ -360,6 +371,7 @@
 <translation id="4944310289250773232">Túto overovaciu službu hostí <ph name="SAML_DOMAIN" />.</translation>
 <translation id="4955710816792587366">Vyberte si PIN</translation>
 <translation id="4965808351167763748">Naozaj chcete v tomto zariadení nastaviť službu Hangouts Meet?</translation>
+<translation id="4969674060580488087">Systému Chrome OS Flex sa nepodarilo synchronizovať vaše údaje, pretože vaše prihlasovacie údaje účtu sú zastarané.</translation>
 <translation id="4987944280765486504">Po dokončení sťahovania sa Chromebook reštartuje a budete môcť pokračovať v nastavovaní.</translation>
 <translation id="5029287942302939687">Vaše heslo je nastavené</translation>
 <translation id="503155457707535043">Sťahujú sa aplikácie</translation>
@@ -401,6 +413,8 @@
 <translation id="528208740344463258">Ak chcete stiahnuť a používať aplikácie pre Android, najprv musíte nainštalovať požadovanú aktualizáciu. Počas aktualizácie nemôžete <ph name="DEVICE_TYPE" /> používať. Po jej dokončení sa <ph name="DEVICE_TYPE" /> reštartuje.</translation>
 <translation id="5283677936944177147">Ojoj! Systém nedokázal rozpoznať model zariadenia alebo sériové číslo.</translation>
 <translation id="5333896723098573627">Ak chcete odstrániť aplikácie, prejdite do sekcie Nastavenia &gt; Aplikácie &gt; Obchod Google Play &gt; Spravovať predvoľby Androidu &gt; Aplikácie alebo Správca aplikácií. Potom klepnite na aplikáciu, ktorú chcete odinštalovať (možno budete musieť aplikáciu nájsť potiahnutím doľava alebo doprava). Potom klepnite na Odinštalovať alebo Deaktivovať.</translation>
+<translation id="5334309298019785904">Systému Chrome OS sa nepodarilo synchronizovať vaše údaje, pretože možnosť synchronizácie nie je pre vašu doménu k dispozícii.</translation>
+<translation id="535243042947607642">Systému Chromium OS sa nepodarilo uložiť údaje prehliadača Chromium vo vašom účte Google, pretože vaše prihlasovacie údaje účtu sú zastarané.</translation>
 <translation id="5355501370336370394">Registrovať podnikové zariadenie</translation>
 <translation id="5372529912055771682">Poskytnutý režim registrácie v tejto verzii operačného systému už nie je podporovaný. Uistite sa, že používate najnovšiu verziu a skúste to znova.</translation>
 <translation id="5397378439569041789">Registrovať zariadenie v režime verejného terminálu alebo zariadenie so softvérom digital signage</translation>
@@ -412,6 +426,7 @@
 <translation id="5448293924669608770">Hops, pri prihlásení sa niečo pokazilo</translation>
 <translation id="5453829744223920473">Vaše dieťa môže používať všetky svoje školské aplikácie, záložky a zdroje rovnako ako v triede. Základné pravidlá určuje škola.</translation>
 <translation id="5473099001878321374">Pokračovaním vyjadrujete súhlas s tým, že toto zariadenie môže tiež automaticky sťahovať a inštalovať aktualizácie a aplikácie od Googlu, operátora vášho dieťaťa a výrobcu tohto zariadenia a v prípade potreby pritom môže používať mobilné dáta. Niektoré tieto aplikácie môžu ponúkať nákupy v aplikácii.</translation>
+<translation id="549669000822060376">Počkajte, kým Chromium nainštaluje najnovšie aktualizácie systému.</translation>
 <translation id="5502915260472117187">Dieťa</translation>
 <translation id="5511823366942919280">Naozaj chcete toto zariadenie nastaviť ako zariadenie Shark?</translation>
 <translation id="5513807280330619196">Kalkulačka</translation>
@@ -515,6 +530,7 @@
 <translation id="6495266441917713704">Wi‐Fi sa nedá preniesť</translation>
 <translation id="6515620015470298987">Nepodarilo sa prihlásiť pre problém s kontrolou konfigurácie zariadenia. Vykonajte v zariadení <ph name="DEVICE_TYPE" /> Powerwash a skúste to znova.</translation>
 <translation id="6519689855001245063">Kontroluje sa oprávnenosť</translation>
+<translation id="6520608191273161151">Systému ChromeOS Flex sa nepodarilo uložiť údaje Chromu vo vašom účte Google, pretože sa pri prihlasovaní vyskytla chyba</translation>
 <translation id="6532527800157340614">Prihlásenie zlyhalo, pretože sa nepodarilo načítať prístupový token. Skontrolujte pripojenie k sieti a skúste to znova.</translation>
 <translation id="653920215766444089">Vyhľadáva sa polohovacie zariadenie</translation>
 <translation id="65513682072153627">Túto ikonu Spravované uvidíte pri nastavení alebo funkcií ovládanej vaším správcom.</translation>
@@ -526,8 +542,10 @@
 <translation id="6675665718701918026">Bolo pripojené ukazovacie zariadenie</translation>
 <translation id="667752334740867460">Prijímajú sa informácie o sieti Wi‐Fi…</translation>
 <translation id="6680442031740878064">K dispozícii: <ph name="AVAILABLE_SPACE" /></translation>
+<translation id="668175097507315160">Systému Chromium OS sa nepodarilo synchronizovať vaše údaje, pretože sa pri prihlasovaní vyskytla chyba.</translation>
 <translation id="6684827949542560880">Sťahuje sa najnovšia aktualizácia</translation>
 <translation id="6722744767592605627"><ph name="EMAIL" /> môžete obnoviť, ale miestne údaje budú odstránené.</translation>
+<translation id="6735387454586646204">Systém Chrome OS Flex</translation>
 <translation id="6748980958975836188">Prečítal(a) som si <ph name="BEGIN_LINK1" />zmluvné podmienky spoločnosti Google<ph name="END_LINK1" /> aj <ph name="BEGIN_LINK2" />dodatočné zmluvné podmienky prehliadača Chrome a systému Chrome OS<ph name="END_LINK2" /> a súhlasím s nimi.</translation>
 <translation id="6749473226660745022">Fotky</translation>
 <translation id="6754918760968695779">Rýchlo vložiť</translation>
@@ -552,6 +570,7 @@
 <translation id="6918733588290914545">Rýchle nastavenie pomocou telefónu s Androidom</translation>
 <translation id="6920473853105515518">Skontrolujte, či je zariadenie <ph name="DEVICE_TYPE" /> pripojené k internetu, a skúste to znova. Na play.google/play-terms môžete prejsť aj v inom zariadení.</translation>
 <translation id="6929126689972602640">Rodičovská kontrola nie je podporovaná v prípade školských účtov. Ak chcete pridať školský účet, aby ste mali doma prístup k Učebni Google a ďalším webom s domácimi úlohami, prihláste sa najprv osobným účtom dieťaťa. Školský účet môžete pridať neskôr v nastaveniach.</translation>
+<translation id="6933858244219479645">Systém ChromeOS</translation>
 <translation id="6935031746833428401">Ďalšie informácie o správe zariadení</translation>
 <translation id="6950351336108213154">Aktualizujú sa periférne zariadenia</translation>
 <translation id="6955698182324067397">Aktivujete funkcie ladenia systému Chrome OS, ktoré nastavia program sshd deamon a umožnia spúšťanie z kľúčov USB.</translation>
@@ -648,6 +667,7 @@
 <translation id="7870730066603611552">Po nastavení prezrieť možnosti synchronizácie</translation>
 <translation id="7883792253546618164">Odber môžete kedykoľvek zrušiť.</translation>
 <translation id="7887864092952184874">Myš Bluetooth bola spárovaná</translation>
+<translation id="7905880575591690197">Systému ChromeOS sa nepodarilo uložiť údaje Chromu vo vašom účte Google, pretože sa pri prihlasovaní vyskytla chyba</translation>
 <translation id="7906440585529721295">Miestne údaje budú odstránené</translation>
 <translation id="7910725946105920830">Použiť osobný účet Google</translation>
 <translation id="7918257978052780342">Zaregistrovať</translation>
@@ -674,6 +694,7 @@
 <translation id="8098616321286360457">Vyžaduje sa pripojenie k sieti</translation>
 <translation id="8129265306888404830">Použitie e‑mailovej adresy organizácie (<ph name="EMAIL_DOMAIN" />) je podmienené podnikovou registráciou. Ak je toto zariadenie určené na osobné použitie, prihláste sa pomocou osobného účtu Google.</translation>
 <translation id="8131740175452115882">Potvrdiť</translation>
+<translation id="8133124826068723441">Systému Chromium OS sa nepodarilo synchronizovať vaše údaje, pretože možnosť synchronizácie nie je pre vašu doménu k dispozícii.</translation>
 <translation id="8146177459103116374">Ak ste sa na tomto zariadení už zaregistrovali, môžete sa <ph name="LINK2_START" />prihlásiť ako existujúci používateľ<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Prihlásenie zlyhalo. Kontaktujte svojho správcu alebo to skúste znova.</translation>
 <translation id="8147346945017130012">Pomôžte zlepšovať funkcie a výkonnosť Chromu aj systému Chrome OS automatickým odosielaním prehľadov pádov, ako aj diagnostík a údajov o používaní do Googlu.</translation>
@@ -692,6 +713,7 @@
 <translation id="8271379370373330993">Nasledujúce kroky sú určené pre rodičov. Po založení účtu môžete zariadenie <ph name="DEVICE_TYPE" /> vrátiť dieťaťu.</translation>
 <translation id="8274924778568117936">V priebehu aktualizácie zariadenie <ph name="DEVICE_TYPE" /> nevypínajte ani nezatvárajte. Po dokončení inštalácie sa <ph name="DEVICE_TYPE" /> reštartuje.</translation>
 <translation id="8281886186245836920">Preskočiť</translation>
+<translation id="8286036467436129157">Prihlásenie</translation>
 <translation id="8289509909262565712">Víta vás <ph name="DEVICE_OS" /></translation>
 <translation id="8291942417224950075">Na osobné použitie</translation>
 <translation id="8304383784961451596">Nemáte oprávnenie používať toto zariadenie. Požiadajte správcu o povolenie na prihlásenie alebo sa prihláste účtom Google pod dohľadom aplikácie Family Link.</translation>
@@ -703,6 +725,7 @@
 <translation id="8401432541486058167">Zadajte PIN spojený s vašou inteligentnou kartou.</translation>
 <translation id="8408270600235826886">Vy ovládate, ktoré informácie sa budú zdieľať s Googlom. Môžete to kedykoľvek zmeniť v Nastaveniach. Údaje budú používané v súlade s <ph name="BEGIN_LINK" />pravidlami ochrany súkromia<ph name="END_LINK" /> spoločnosti Google.</translation>
 <translation id="8413956290606243087">Chcete aktivovať vstavanú čítačku obrazovky ChromeVox pre Chrome OS?</translation>
+<translation id="8418845734693287262">Systému Chrome OS sa nepodarilo synchronizovať vaše údaje, pretože vaše prihlasovacie údaje účtu sú zastarané.</translation>
 <translation id="8425768983279799676">Kódom PIN môžete odomknúť zariadenie.</translation>
 <translation id="8428213095426709021">Nastavenia</translation>
 <translation id="843173223122814223">Vytvárajte pozadia pomocou umelej inteligencie</translation>
@@ -742,10 +765,12 @@
 <translation id="8794548468611058947">Pre zariadenie <ph name="DEVICE_TYPE" /> môžete vytvoriť PIN a nebudete musieť pri prihlasovaní zadávať heslo svojho účtu Google</translation>
 <translation id="8830779999439981481">Reštartuje sa a inštalujú sa aktualizácie</translation>
 <translation id="8830796635868321089">Kontrola aktualizácie pomocou aktuálneho nastavenia servera proxy zlyhala. Upravte svoje <ph name="PROXY_SETTINGS_LINK_START" />nastavenia servera proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
+<translation id="8833697763442816810">Systém Chromium OS</translation>
 <translation id="8855977033756560989">Súprava tohto zariadenia Chromebook Enterprise obsahuje aj povýšenie Chrome Enterprise. Využite možnosti pre podniky a zaregistrujte si toto zariadenie pomocou účtu správcu Google.</translation>
 <translation id="885746075120788020">Vaše uložené predvoľby a aktivita budú k dispozícii v ľubovoľnom zariadení so systémom Chrome OS, keď sa prihlásite účtom Google. Položky, ktoré chcete synchronizovať, môžete vybrať v Nastaveniach.</translation>
 <translation id="8868333925931032127">Spustenie ukážkového režimu</translation>
 <translation id="8875221558267407626">Vytvorte zhrnutie obsahu, zjednodušte zložité výrazy alebo položte otázky</translation>
+<translation id="8890569919834781711">Systému Chromium OS sa nepodarilo uložiť údaje prehliadača Chromium vo vašom účte Google, pretože sa pri prihlasovaní vyskytla chyba</translation>
 <translation id="8907701755790961703">Vyberte krajinu</translation>
 <translation id="8913163265790894442">Ľahko nastavte zariadenie <ph name="DEVICE_TYPE" /> pomocou svojho telefónu. Wi‑Fi a účet Google môžete pridať bez manuálneho zadávania hesiel.
         <ph name="BR" />
@@ -781,5 +806,6 @@
 <translation id="951991426597076286">Odmietnuť</translation>
 <translation id="954749761428814584">Jazyk a metóda vstupu</translation>
 <translation id="960987915827980018">Zostáva približne 1 hodina</translation>
+<translation id="973195869036269770">Systému ChromeOS sa nepodarilo uložiť údaje Chromu vo vašom účte Google, pretože vaše prihlasovacie údaje účtu sú zastarané</translation>
 <translation id="995420352808264005">Vyberte typ registrácie zariadenia</translation>
 </translationbundle>

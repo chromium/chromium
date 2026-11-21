@@ -10,6 +10,7 @@
 <translation id="1097658378307015415">לפני הכניסה לחשבון, יש להיכנס כאורח כדי להפעיל את הרשת <ph name="NETWORK_ID" /></translation>
 <translation id="1111932478203988717">לילד או לילדה שלך יש אפשרות להשתמש בקוד האימות הזה כדי להיכנס למכשיר שלהם</translation>
 <translation id="1122587596907914265">עיצוב טפטים ייחודיים</translation>
+<translation id="1122913801042512795">פרטי הכניסה של החשבון שלך לא מעודכנים. עליך לצאת מהחשבון ולהיכנס מחדש.</translation>
 <translation id="1131201598497838573">קוד האימות של הילד או הילדה עודכן</translation>
 <translation id="1147322039136785890">עכשיו התור של <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1148669835763563782">‏אנחנו מספקים לך עכשיו את עדכון התוכנה האחרון לאבטחה משופרת ואת התכונות החדשות ביותר של Chromebook. העדכון הזה כולל חוויית הגדרה משופרת כדי שיהיה לך קל להתחיל לעבוד בצורה חלקה ב-Chromebook.</translation>
@@ -26,6 +27,7 @@
 <translation id="1256588359404100567">ההגדרה סונכרנה מהמכשיר הקודם שלך.</translation>
 <translation id="1272978324304772054">חשבון משתמש זה אינו שייך לדומיין שאליו רשום המכשיר. אם ברצונך להירשם לדומיין אחר, ראשית עליך לבצע שחזור מכשיר.</translation>
 <translation id="1293556467332435079">קבצים</translation>
+<translation id="1302523850133262269">‏יש להמתין בזמן ש-Chrome מתקין את עדכוני המערכת האחרונים.</translation>
 <translation id="1307559529304613120">‏אופס! המערכת לא הצליחה לאחסן את טוקן הגישה לטווח ארוך אל ממשק ה-API עבור המכשיר הזה.</translation>
 <translation id="1335929031622236846">רישום המכשיר שלך</translation>
 <translation id="1346669614038013595">‏<ph name="BEGIN_H3" />תכונות לניפוי באגים<ph name="END_H3" />
@@ -49,6 +51,7 @@
 <translation id="1347625331607114917">‏אימות הקוד בטלפון Android</translation>
 <translation id="1347975661240122359">העדכון יתחיל כשהסוללה תיטען ל-%<ph name="BATTERY_LEVEL" />.</translation>
 <translation id="1353275871123211385">‏כדי להגדיר אמצעי בקרת הורים כמו אישור אפליקציות או מגבלות זמן מסך, לילד או לילדה צריך להיות חשבון Google שמנוהל על ידי הורה. אפשר להוסיף חשבון בית ספרי במועד מאוחר יותר, לשימוש בכלים כמו Google Classroom.</translation>
+<translation id="1363996462118479832">‏לא בוצע סנכרון של הנתונים ב-ChromeOS בגלל שגיאה בתהליך הכניסה.</translation>
 <translation id="1375557162880614858">‏רוצה להפעיל את ChromeVox, קורא המסך המובנה של ChromeOS Flex?</translation>
 <translation id="1377600615067678409">דילוג לעת עתה</translation>
 <translation id="1399261165075500043">‏לא ניתן לטעון את התנאים וההגבלות של Google Play</translation>
@@ -73,6 +76,7 @@
 <translation id="1642494467033190216">‏הסרה של הגנת rootfs והפעלה מחדש נדרשות לפני שמפעילים תכונות אחרות של ניפוי באגים.</translation>
 <translation id="1646045728251578877">יש עדכון תוכנה</translation>
 <translation id="1650801028905250434">‏הקבצים בתיקייה 'האחסון שלי' יסונכרנו באופן אוטומטי ב-Chromebook כדי שאפשר יהיה לגשת אליהם ללא חיבור לאינטרנט. תמיד אפשר לשנות זאת דרך 'הגדרות' &gt; 'קבצים'.</translation>
+<translation id="16620462294541761">מצטערים, לא ניתן לאמת את הסיסמה שלך. יש לנסות שוב.</translation>
 <translation id="1668435968811469751">הרשמה ידנית</translation>
 <translation id="1678919064276516737">כתובת האימייל וקוד האימות שהזנת לא תואמים</translation>
 <translation id="1692115862433274081">חשבון אחר</translation>
@@ -94,6 +98,7 @@
 <translation id="1868617395637139709">‏שימוש במיקום באפליקציות ובשירותים של Android.</translation>
 <translation id="1877377730633446520">זה ישתמש בנפח של <ph name="REQUIRED_SPACE" /> בערך. עכשיו יש מקום פנוי בנפח <ph name="FREE_SPACE" />.</translation>
 <translation id="1878155070920054810">‏נראה שסוללת ה-Chromebook שלך תתרוקן לפני שהעדכון יושלם. כדי למנוע הפרעה, יש לוודא שהיא נטענת כראוי.</translation>
+<translation id="1887442540531652736">שגיאת כניסה</translation>
 <translation id="189035593835762169">תנאים והגבלות</translation>
 <translation id="189358972401248634">שפות אחרות</translation>
 <translation id="1915734383465415025">מספר החנות</translation>
@@ -122,6 +127,7 @@
 <translation id="2210462644007531147">אי אפשר להשלים את ההתקנה</translation>
 <translation id="221872881068107022">גלילה לאחור</translation>
 <translation id="2219081237089444028">מגדירים סיסמה ל-<ph name="DEVICE_TYPE" /> ונכנסים לחשבון בקלות</translation>
+<translation id="2220529011494928058">דיווח על בעיה</translation>
 <translation id="222115440608612541">החלפת העיצוב בזריחה ובשקיעה</translation>
 <translation id="2229161054156947610">נותרה יותר משעה אחת</translation>
 <translation id="2246129643805925002">העדכונים של <ph name="DEVICE_TYPE" /> יתבצעו באופן אוטומטי ברקע, כדי שניתן יהיה ליהנות מהתכונות ומשיפורי האבטחה האחרונים. אפשר לנהל את ההעדפות לגבי עדכונים בהגדרות.</translation>
@@ -132,6 +138,7 @@
 <translation id="2328137272841210255">איפוס קוד האימות שלך</translation>
 <translation id="2342180549977909852">לילד או לילדה שלך יש אפשרות להשתמש במספר (קוד אימות) במקום בסיסמה כדי לבטל את נעילת המכשיר הזה. ניתן להגדיר את הקוד מאוחר יותר ב'הגדרות'.</translation>
 <translation id="2359808026110333948">המשך</translation>
+<translation id="2384373936468275798">‏לא בוצע סנכרון של הנתונים שלך ב-ChromiumOS כי פרטי הכניסה לחשבון לא מעודכנים.</translation>
 <translation id="2387052489799050037">מעבר לדף הבית</translation>
 <translation id="2395616325548404795">רישום המכשיר שלך <ph name="DEVICE_TYPE" /> לניהול ארגוני הסתיים בהצלחה, אך השליחה של פרטי הנכס והמיקום שלו נכשלה. יש להזין את המידע הזה ידנית במסוף הניהול של המכשיר.</translation>
 <translation id="2408955596600435184">יש להזין את קוד האימות</translation>
@@ -158,6 +165,7 @@
 <translation id="2619007277744171543">‏<ph name="BEGIN_PARAGRAPH1" />כדי לזהות את המיקום של המכשיר הזה, שירותי המיקום של Google מסתמכים על מקורות כמו Wi-Fi, רשתות סלולריות וחיישנים.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />תמיד אפשר להשבית את תכונת המיקום של מכשיר ה-Android‏: עוברים אל "הגדרות" &gt; "אפליקציות" &gt; "חנות Google Play" &gt; "ניהול העדפות ל-Android" &gt; "אבטחה ומיקום" &gt; "מיקום". אפשר להשבית גם את האפשרות להסתמך על Wi-Fi, רשתות סלולריות וחיישנים כדי לזהות את המיקום של מכשיר ה-Android. כדי לעשות את זה, משביתים את האפשרות "זיהוי מיקום משופר של Google" באותו תפריט.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2663302507110284145">שפה</translation>
+<translation id="2674238339205910678">‏הנתונים מ-Chrome לא נשמרו בחשבון Google שלך ב-ChromeOS Flex כי פרטי הכניסה לחשבון לא מעודכנים</translation>
 <translation id="2687407218262674387">‏תנאים והגבלות של Google</translation>
 <translation id="2688196195245426394">אירעה שגיאה בעת רישום המכשיר בשרת: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">‏זהו מכשיר שמגיע בחבילה ולא ניתן לרשום אותו לשדרוג של מכשירים לחתימה דיגיטלית ושל Kiosk.</translation>
@@ -252,6 +260,7 @@
 <translation id="3740945083753997630">הקטנה של התצוגה והטקסט</translation>
 <translation id="376841534249795524">למה ישמש אותך ה-<ph name="DEVICE_TYPE" />?</translation>
 <translation id="3772046291955677288">‏קראתי את <ph name="BEGIN_LINK1" />התנאים וההגבלות של Google‎<ph name="END_LINK1" />‏ ואת <ph name="BEGIN_LINK2" />התנאים וההגבלות הנוספים של Chrome ושל ChromeOS<ph name="END_LINK2" /> ואני מאשר/ת אותם.</translation>
+<translation id="3785324443014631273">‏לא ניתן היה לסנכרן את הנתונים ב-ChromeOS Flex בגלל שגיאה בכניסה.</translation>
 <translation id="3789841737615482174">התקנה</translation>
 <translation id="3800828618615365228">‏תנאים נוספים של Google Chrome ו-ChromeOS</translation>
 <translation id="3828953470056652895">‏קראתי את <ph name="BEGIN_LINK1" />התנאים וההגבלות של Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />התנאים וההגבלות הנוספים של Chrome ושל ChromeOS<ph name="END_LINK2" /> ו<ph name="BEGIN_LINK3" />התנאים וההגבלות של Google Play<ph name="END_LINK3" /> ואני מאשר/ת אותם.</translation>
@@ -332,6 +341,7 @@
     <ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />בכתובת g.co/flex/InstallErrors אפשר לקבל עזרה נוספת.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">את מי ברצונך להוסיף אל <ph name="DEVICE_TYPE" /> זה?</translation>
+<translation id="4543778593405494224">מנהל האישורים</translation>
 <translation id="4566170377336116390">‏אם רוצים להחליף אחרי הרישום, צריך לבצע איפוס להגדרות המקוריות (Powerwash) במכשיר.</translation>
 <translation id="4567512141633030272">אפשרות הכניסה שגויה?</translation>
 <translation id="4567533462991917415">תמיד אפשר להוסיף עוד אנשים לאחר ההגדרה. כל משתמש יכול להתאים אישית את החשבון שלו ולהגן על פרטיות הנתונים.</translation>
@@ -349,6 +359,7 @@
 <translation id="4814327014588285482">אני רוצה לדלג ולקבל תזכורת מאוחר יותר</translation>
 <translation id="4830502475412647084">‏מתקין עדכון OS</translation>
 <translation id="4837926214103741331">אין לך אישור להשתמש במכשיר הזה. יש ליצור קשר עם בעל המכשיר כדי לקבל הרשאת כניסה.</translation>
+<translation id="4842397268809523050">‏לא ניתן היה לסנכרן את הנתונים שלך ב-ChromeOS Flex כי הסנכרון לא זמין בדומיין שלך.</translation>
 <translation id="4844333629810439236">מקלדות אחרות</translation>
 <translation id="484462545196658690">אוטומטי</translation>
 <translation id="4864369630010738180">מתבצעת כניסה...</translation>
@@ -360,6 +371,7 @@
 <translation id="4944310289250773232">שירות האימות הזה מתארח בדומיין <ph name="SAML_DOMAIN" /></translation>
 <translation id="4955710816792587366">בחירת קוד</translation>
 <translation id="4965808351167763748">‏בחרת להגדיר שהמכשיר הזה יפעיל את Hangouts Meet. להמשיך?</translation>
+<translation id="4969674060580488087">‏לא ניתן לסנכרן את הנתונים שלך ב-ChromeOS Flex כי פרטי הכניסה של החשבון שלך לא מעודכנים.</translation>
 <translation id="4987944280765486504">‏ה-Chromebook יופעל מחדש כשההורדה תסתיים, וניתן יהיה להמשיך בהגדרה.</translation>
 <translation id="5029287942302939687">הסיסמה הוגדרה</translation>
 <translation id="503155457707535043">הורדת האפליקציות מתבצעת</translation>
@@ -401,6 +413,8 @@
 <translation id="528208740344463258">‏צריך להתקין את העדכון הנדרש הזה כדי להוריד אפליקציות Android ולהשתמש בהן. לא יתאפשר לך להשתמש ב-<ph name="DEVICE_TYPE" /> בזמן העדכון. כשההתקנה תסתיים, ה-<ph name="DEVICE_TYPE" /> יופעל מחדש.</translation>
 <translation id="5283677936944177147">אופס! המערכת לא הצליחה לזהות את דגם המכשיר או את המספר הסידורי.</translation>
 <translation id="5333896723098573627">‏כדי להסיר אפליקציות, צריך לעבור אל 'הגדרות' &gt; 'חנות Google Play' &gt; 'ניהול העדפות Android' &gt;'אפליקציות' או 'מנהל האפליקציות'. לאחר מכן לוחצים על האפליקציה שרוצים להסיר את ההתקנה שלה (יכול להיות שצריך יהיה להחליק ימינה או שמאלה כדי למצוא את האפליקציה). לבסוף, לוחצים על 'הסרת התקנה' או 'השבתה'.</translation>
+<translation id="5334309298019785904">‏לא בוצע סנכרון של הנתונים ב-ChromeOS כי הסנכרון לא זמין לדומיין שלך.</translation>
+<translation id="535243042947607642">‏הנתונים מ-Chromium לא נשמרו בחשבון Google שלך ב-ChromiumOS כי פרטי הכניסה לחשבון לא מעודכנים</translation>
 <translation id="5355501370336370394">רישום של מכשיר ארגוני</translation>
 <translation id="5372529912055771682">מצב ההרשמה שסופק אינו נתמך על ידי גרסה זו של מערכת ההפעלה. יש לוודא שפועלת הגרסה החדשה ביותר ולנסות שוב.</translation>
 <translation id="5397378439569041789">רישום של מכשיר שילוט או קיוסק</translation>
@@ -412,6 +426,7 @@
 <translation id="5448293924669608770">אופס. משהו השתבש בכניסה לחשבון</translation>
 <translation id="5453829744223920473">הילד או הילדה יכולים להשתמש בכל האפליקציות, הסימניות והמשאבים של בית הספר, בדיוק כמו שהם משתמשים בכיתה. בית הספר קובע את הכללים המנחים.</translation>
 <translation id="5473099001878321374">‏המשך הפעולה מבטא את הסכמתך לכך שהמכשיר הזה יוכל גם להוריד ולהתקין עדכונים ואפליקציות באופן אוטומטי מ-Google, מהספק של הילד או הילדה שלך ומיצרן המכשיר, גם אם ייעשה לשם כך שימוש בחבילת הגלישה. חלק מהאפליקציות האלו עשויות להציע רכישות מתוך האפליקציה.</translation>
+<translation id="549669000822060376">‏יש להמתין בזמן ש-Chromium מתקין את עדכוני המערכת האחרונים.</translation>
 <translation id="5502915260472117187">ילד או ילדה</translation>
 <translation id="5511823366942919280">בטוח שברצונך להגדיר מכשיר זה כ'כריש'?</translation>
 <translation id="5513807280330619196">מחשבון</translation>
@@ -515,6 +530,7 @@
 <translation id="6495266441917713704">‏לא ניתן להעביר Wi-Fi</translation>
 <translation id="6515620015470298987">‏הכניסה נכשלה בגלל בעיה בבדיקת תצורת המכשיר. כדאי לבצע Powerwash במכשיר <ph name="DEVICE_TYPE" /> ולנסות שוב.</translation>
 <translation id="6519689855001245063">בדיקת זכאות</translation>
+<translation id="6520608191273161151">‏הנתונים מ-Chrome לא נשמרו בחשבון Google שלך ב-ChromeOS Flex בגלל שגיאה בתהליך הכניסה</translation>
 <translation id="6532527800157340614">הכניסה נכשלה כי לא ניתן היה לאחזר את טוקן הגישה שלך. יש לבדוק את החיבור לרשת ולנסות שוב.</translation>
 <translation id="653920215766444089">המערכת מחפשת אמצעי הצבעה</translation>
 <translation id="65513682072153627">סמל הניהול מוצג כשהגדרה או תכונה כלשהי מנוהלת על ידי האדמין.</translation>
@@ -526,8 +542,10 @@
 <translation id="6675665718701918026">התקן הצבעה מחובר</translation>
 <translation id="667752334740867460">‏מתקבלים פרטי Wi-Fi…</translation>
 <translation id="6680442031740878064">השטח הזמין: <ph name="AVAILABLE_SPACE" /></translation>
+<translation id="668175097507315160">‏לא בוצע סנכרון של הנתונים ב-ChromiumOS בגלל שגיאה בתהליך הכניסה.</translation>
 <translation id="6684827949542560880">המערכת מורידה את העדכון האחרון</translation>
 <translation id="6722744767592605627">יש לך אפשרות לשחזר את <ph name="EMAIL" />, אבל הנתונים המקומיים יימחקו.</translation>
+<translation id="6735387454586646204">‏מערכת ChromeOS Flex</translation>
 <translation id="6748980958975836188">‏קראתי את <ph name="BEGIN_LINK1" />התנאים וההגבלות של Google‎<ph name="END_LINK1" />‏ ואת <ph name="BEGIN_LINK2" />התנאים וההגבלות הנוספים של Chrome ושל ChromeOS<ph name="END_LINK2" /> ואני מאשר/ת אותם.</translation>
 <translation id="6749473226660745022">תמונות</translation>
 <translation id="6754918760968695779">הוספה מהירה</translation>
@@ -552,6 +570,7 @@
 <translation id="6918733588290914545">‏הגדרה מהירה בעזרת טלפון Android</translation>
 <translation id="6920473853105515518">‏כדאי לוודא שמכשיר <ph name="DEVICE_TYPE" /> מחובר לאינטרנט ולנסות שוב. אפשר גם לעבור לכתובת play.google/play-terms במכשיר אחר.</translation>
 <translation id="6929126689972602640">‏בחשבונות בית ספריים, אין תמיכה באמצעי בקרת הורים. כדי להוסיף חשבון בית ספרי לצורך גישה אל Google Classroom ואתרים אחרים למטלות לימודיות, תחילה יש להיכנס באמצעות החשבון האישי של הילד או הילדה. ניתן להוסיף את החשבון הבית ספרי בשלב מאוחר יותר בהגדרה.</translation>
+<translation id="6933858244219479645">‏מערכת ChromeOS</translation>
 <translation id="6935031746833428401">מידע נוסף על ניהול מכשירים</translation>
 <translation id="6950351336108213154">הציוד ההיקפי של המכשיר מתעדכן</translation>
 <translation id="6955698182324067397">‏הפעולה הזו מאפשרת את פעילות התכונות לניפוי באגים ב-ChromeOS שיגדירו sshd daemon ויאפשרו אתחול מכונני USB.</translation>
@@ -648,6 +667,7 @@
 <translation id="7870730066603611552">בדיקת אפשרויות הסינכרון אחרי ההגדרה</translation>
 <translation id="7883792253546618164">בכל שלב ניתן לבטל את ההרשמה.</translation>
 <translation id="7887864092952184874">‏עכבר Bluetooth מחובר</translation>
+<translation id="7905880575591690197">‏הנתונים מ-Chrome לא נשמרו בחשבון Google שלך ב-ChromeOS בגלל שגיאה בתהליך הכניסה</translation>
 <translation id="7906440585529721295">הנתונים המקומיים יימחקו</translation>
 <translation id="7910725946105920830">‏לשימוש בחשבון Google האישי שלך</translation>
 <translation id="7918257978052780342">הרשמה</translation>
@@ -674,6 +694,7 @@
 <translation id="8098616321286360457">נדרש חיבור לאינטרנט</translation>
 <translation id="8129265306888404830">‏כדי להשתמש בכתובת האימייל של הארגון שלך (<ph name="EMAIL_DOMAIN" />), עליך להירשם לארגון. אם המכשיר הזה מיועד לשימוש אישי, עליך להיכנס באמצעות חשבון Google האישי.</translation>
 <translation id="8131740175452115882">אישור</translation>
+<translation id="8133124826068723441">‏לא בוצע סנכרון של הנתונים ב-ChromiumOS כי אפשרות הסנכרון לא זמינה עבור הדומיין שלך.</translation>
 <translation id="8146177459103116374">אם נרשמת כבר במכשיר זה, יהיה באפשרותך <ph name="LINK2_START" />להתחבר כמשתמש קיים<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">הכניסה נכשלה. יש ליצור קשר עם מנהל המערכת או לנסות שוב.</translation>
 <translation id="8147346945017130012">‏שליחה אוטומטית של דוחות קריסה ושל נתוני אבחון ונתוני שימוש במכשיר אל Google תעזור לשפר את התכונות ואת הביצועים של Chrome ושל ChromeOS.</translation>
@@ -692,6 +713,7 @@
 <translation id="8271379370373330993">עכשיו יש כמה שלבים שהורים צריכים להשלים. אפשר יהיה להחזיר את ה-<ph name="DEVICE_TYPE" /> לילד/ה לאחר הגדרת החשבון.</translation>
 <translation id="8274924778568117936">אין לכבות או לסגור את ה-<ph name="DEVICE_TYPE" /> לפני סיום העדכון. ה-<ph name="DEVICE_TYPE" /> יופעל מחדש באופן אוטומטי בסיום ההתקנה.</translation>
 <translation id="8281886186245836920">דילוג</translation>
+<translation id="8286036467436129157">כניסה</translation>
 <translation id="8289509909262565712">ברוך בואך אל <ph name="DEVICE_OS" /></translation>
 <translation id="8291942417224950075">לשימוש אישי</translation>
 <translation id="8304383784961451596">‏אין לך הרשאה להשתמש במכשיר הזה. עליך לפנות למנהל המערכת לקבלת הרשאת כניסה או להיכנס באמצעות חשבון Google בפיקוח של Family Link.</translation>
@@ -703,6 +725,7 @@
 <translation id="8401432541486058167">עליך לציין את קוד האימות המשויך לכרטיס החכם שלך.</translation>
 <translation id="8408270600235826886">‏יש לך אפשרות להחליט איזה מידע ישותף עם Google. תמיד אפשר לשנות זאת ב'הגדרות'. הנתונים ישמשו בהתאם ל<ph name="BEGIN_LINK" />מדיניות הפרטיות<ph name="END_LINK" /> של Google.</translation>
 <translation id="8413956290606243087">‏רוצה להפעיל את ChromeVox, קורא המסך המובנה של ChromeOS?</translation>
+<translation id="8418845734693287262">‏לא בוצע סנכרון של הנתונים ב-ChromeOS כי פרטי הכניסה לחשבון לא מעודכנים.</translation>
 <translation id="8425768983279799676">קוד האימות מאפשר לבטל את נעילת המכשיר.</translation>
 <translation id="8428213095426709021">הגדרות</translation>
 <translation id="843173223122814223">‏יצירת רקעים באמצעות AI</translation>
@@ -742,10 +765,12 @@
 <translation id="8794548468611058947">‏במקום להזין את הסיסמה לחשבון Google כדי להיכנס, אפשר ליצור קוד אימות למכשיר <ph name="DEVICE_TYPE" /> הזה</translation>
 <translation id="8830779999439981481">מתבצעת הפעלה מחדש להחלת העדכונים</translation>
 <translation id="8830796635868321089">‏בדיקת העדכון נכשלה עם ההגדרות הנוכחיות של שרת ה-proxy‏. יש להתאים את <ph name="PROXY_SETTINGS_LINK_START" />הגדרות שרת ה-proxy שלך<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
+<translation id="8833697763442816810">‏מערכת ChromiumOS</translation>
 <translation id="8855977033756560989">‏מכשיר Chromebook Enterprise הזה מגיע עם שדרוג ל-Chrome Enterprise כחלק מהחבילה. כדי ליהנות מהיכולות הארגוניות של המכשיר, מומלץ לרשום אותו עם חשבון אדמין של Google.</translation>
 <translation id="885746075120788020">‏הפעילות וההעדפות השמורות שלך יהיו מוכנות בכל מכשיר ChromeOS לאחר הכניסה באמצעות חשבון Google. יש לך אפשרות לבחור מה לסנכרן בהגדרות.</translation>
 <translation id="8868333925931032127">מתבצעת הפעלה של מצב הדגמה</translation>
 <translation id="8875221558267407626">מסכמים תכנים, מפשטים שפה מורכבת או שואלים שאלות</translation>
+<translation id="8890569919834781711">‏הנתונים מ-Chromium לא נשמרו בחשבון Google שלך ב-ChromiumOS בגלל שגיאה בתהליך הכניסה</translation>
 <translation id="8907701755790961703">בחר ארץ</translation>
 <translation id="8913163265790894442">‏קל להגדיר את ה-<ph name="DEVICE_TYPE" /> באמצעות הטלפון. אפשר להוסיף את ה-Wi-Fi ואת החשבון שלך ב-Google, גם בלי להקליד את הסיסמאות.
         <ph name="BR" />
@@ -781,5 +806,6 @@
 <translation id="951991426597076286">דחייה</translation>
 <translation id="954749761428814584">השפה ושיטת הקלט</translation>
 <translation id="960987915827980018">נותרה בערך שעה אחת</translation>
+<translation id="973195869036269770">‏הנתונים מ-Chrome לא נשמרו בחשבון Google שלך ב-ChromeOS כי פרטי הכניסה לחשבון לא מעודכנים</translation>
 <translation id="995420352808264005">בחירת סוג שיוך המכשיר לארגון</translation>
 </translationbundle>

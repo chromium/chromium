@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Galluogi Thema</translation>
+<translation id="1085064499066015002">Bob amser ar bob gwefan</translation>
 <translation id="1135328998467923690">Mae'r pecyn yn annilys: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">Yn wynebu'r amgylchedd</translation>
 <translation id="1171831736360285680">Mae <ph name="PARTNER_NAME" /> wedi ychwanegu estyniad a allai newid y ffordd y mae Chromium yn gweithio.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">Disgwylir y fersiwn "<ph name="EXPECTED_VERSION" />", ond y fersiwn oedd "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">Wedi methu ag allbynnu'r allwedd breifat.</translation>
 <translation id="4811956658694082538">Methu â gosod y pecyn oherwydd bod proses cyfleustodau wedi torri. Ailgychwynnwch Chrome a rhowch gynnig arall arni.</translation>
+<translation id="4883436287898674711">Pob un o'r <ph name="WEBSITE_1" /> o wefannau</translation>
 <translation id="4988792151665380515">Wedi methu allforio ag allwedd gyhoeddus.</translation>
 <translation id="501057610015570208">Rhaid gosod ap gyda'r briodwedd maniffest 'kiosk_only' yn y modd Kiosk ChromeOS Flex</translation>
 <translation id="5026754133087629784">Gwedd we: <ph name="WEBVIEW_TAG_NAME" /></translation>

@@ -30,13 +30,11 @@
 <translation id="1278833599417554002">Перезапустити, щоб оновити &amp;Chrome</translation>
 <translation id="1289911795790071537">Відкрити пошук у Chrome</translation>
 <translation id="1290883685122687410">Помилка налаштування: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1302523850133262269">Зачекайте, доки Chrome установить найновіші оновлення системи.</translation>
 <translation id="1330562121671411446">Визначити мову</translation>
 <translation id="1333654552732143316">Запустити Chrome</translation>
 <translation id="1341711321000856656">Щоб переглянути паролі з іншого профілю Chrome, перейдіть у нього</translation>
 <translation id="1343830902827845050">Увійдіть у Chrome</translation>
 <translation id="1361351916482714918">Використовуйте Google Об’єктив під час вебперегляду</translation>
-<translation id="1363996462118479832">ОС Chrome не вдалося синхронізувати ваші дані через помилку входу.</translation>
 <translation id="137466361146087520">Бета-версія Google Chrome</translation>
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1399397803214730675">На комп’ютері вже встановлено новішу версію Google Chrome. Якщо програмне забезпечення не працює, видаліть Google Chrome і повторіть спробу.</translation>
@@ -85,7 +83,6 @@
 <translation id="177180974022074201">Спробувати з Gemini у Chrome</translation>
 <translation id="1786003790898721085">Переконайтеся, що ви ввійшли в Chrome на пристрої <ph name="TARGET_DEVICE_NAME" />, і повторіть спробу.</translation>
 <translation id="1786044937610313874">Ярлики відкриваються в Chrome</translation>
-<translation id="1812689907177901597">Якщо вимкнути цей параметр, ви зможете входити на сайти Google, як-от Gmail, без входу в Chrome</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Рекомендуємо призупинити вкладку, яка вповільнює роботу Chrome}one{Рекомендуємо призупинити вкладки, які вповільнюють роботу Chrome}few{Рекомендуємо призупинити вкладки, які вповільнюють роботу Chrome}many{Рекомендуємо призупинити вкладки, які вповільнюють роботу Chrome}other{Рекомендуємо призупинити вкладки, які вповільнюють роботу Chrome}}</translation>
 <translation id="1832046143430087831">Прискорює роботу сайтів за допомогою системи V8 для Chrome, проте робить вебпереглядач трохи менш стійким до атак. Це налаштування вимкнено.</translation>
 <translation id="1838374766361614909">Очистити поле пошуку</translation>
@@ -172,7 +169,6 @@
 <translation id="2661616016316841783">Щоб отримати доступ до розширень і інших даних із пристрою "<ph name="DEVICE" />", увійдіть у Chrome</translation>
 <translation id="2665296953892887393">Допоможіть покращити Google Chrome, надсилаючи звіти про аварійне завершення роботи та <ph name="UMA_LINK" /> в Google</translation>
 <translation id="2668094785979141847">Натисніть, щоб вийти з Google Об’єктива</translation>
-<translation id="2674238339205910678">ChromeOS Flex не вдалося зберегти дані Chrome в обліковому записі Google, оскільки облікові дані застаріли</translation>
 <translation id="2681444469812712297">Відкрити сторінку <ph name="URL" /> у новій вкладці в Google Chrome.</translation>
 <translation id="2699790011615497488">Відкрити Gemini у бета-версії Chrome</translation>
 <translation id="2738871930057338499">Не вдалося підключитися до Інтернету. Помилка "HTTP 403 заборонено". Перевірте конфігурацію свого проксі-сервера.</translation>
@@ -283,7 +279,6 @@
 <translation id="3756724684201900923">Докладніше про встановлення Chrome</translation>
 <translation id="3772152698251011058">Повідомте Google про цей сайт</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
-<translation id="3785324443014631273">ОС Chrome Flex не змогла синхронізувати ваші дані через помилку входу в систему.</translation>
 <translation id="3810973564298564668">Керувати</translation>
 <translation id="383455301564000773">Плануєте перейти на Windows 11? Завантажте Chrome у OneDrive, щоб швидко почати роботу.</translation>
 <translation id="383928141529488001">Для пошуку пристроїв із Bluetooth вебпереглядачу
@@ -374,7 +369,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="4803313124144656665">Закрити Пошук Google у Chrome</translation>
 <translation id="4828579605166583682">Google Chrome намагається замінити наявні паролі. Щоб дозволити це, введіть пароль Windows.</translation>
 <translation id="4836321460899997044">Профіль Chrome</translation>
-<translation id="4842397268809523050">ОС Chrome Flex не змогла синхронізувати дані, оскільки ця функція недоступна для вашого домену.</translation>
 <translation id="4851866215237571846">Ви вже ввійшли в обліковий запис <ph name="EXISTING_USER" />.  Щоб переглядати вебсторінки окремо, увійдіть у свій профіль у Chrome як <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Щоб показувати свій екран, у системних параметрах дозвольте Chrome записувати відео з екрана</translation>
 <translation id="4873783916118289636">Перевірте основні елементи керування конфіденційністю та безпекою в Chrome</translation>
@@ -388,7 +382,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="492720062778050435">Chrome радить перевірити це розширення</translation>
 <translation id="4953650215774548573">Зробити Google Chrome веб-переглядачем за умовчанням</translation>
 <translation id="495931528404527476">У Chrome</translation>
-<translation id="4969674060580488087">ОС Chrome Flex не змогла синхронізувати вашу інформацію, оскільки облікові дані застаріли.</translation>
 <translation id="4970761609246024540">Представляємо профілі Chrome</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Натисніть "Google Менеджер паролів"</translation>
@@ -420,7 +413,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="5271833978500241046">Використовуйте їх разом з іншими функціями Gemini у Chrome</translation>
 <translation id="5320351714793324716">Якщо ви дозволите файли cookie, Chrome може використовувати їх під час попереднього завантаження</translation>
 <translation id="5321325624576443340">Google Об’єктив недоступний. Повторіть спробу пізніше.</translation>
-<translation id="5334309298019785904">ОС Chrome не вдалося синхронізувати ваші дані, оскільки синхронізація для вашого домену недоступна.</translation>
 <translation id="5336664042114176802">Ви можете перейти на помічника Gemini, який спочатку був пов’язаний із вашим обліковим записом Google і не керується адміністратором <ph name="DOMAIN" />. Після переходу відповіді більше не ґрунтуватимуться на файлах або сервісах, якими керує адміністратор <ph name="DOMAIN" />. Крім того, історію чату не буде перенесено. Цей помічник Gemini може не підходити для роботи. Щоб перейти на цього помічника Gemini, потрібно перезапустити Chrome.</translation>
 <translation id="5346389065299425353">Розширте пошук, додавши кілька вкладок, файлів і інструментів</translation>
 <translation id="5353252989841766347">Експортувати паролі з Chrome</translation>
@@ -548,7 +540,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="6497147134301593682">Chrome закрито автоматично</translation>
 <translation id="6506909944137591434">Веб-переглядачу Chrome потрібен доступ до камери, щоб створити 3D-карту вашого оточення</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Версія Google Chrome для розробників</translation>
-<translation id="6520608191273161151">ChromeOS Flex не вдалося зберегти дані Chrome в обліковому записі Google через помилку входу</translation>
 <translation id="6520670145826811516">Щоб використовувати геодані, надайте Chrome відповідний доступ у <ph name="BEGIN_LINK" />системних налаштуваннях<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">Історія Chrome</translation>
 <translation id="6532945796722480006">Відкрити Gemini у Chrome Canary</translation>
@@ -570,7 +561,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="6712881677154121168">Помилка завантаження: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Пришвидшіть роботу Chrome</translation>
 <translation id="6734827584173583205">Останнім часом ви не відвідували цей сайт. Вебпереглядач Chrome скасував такі дозволи: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="COUNT" />.</translation>
-<translation id="6735387454586646204">Операційна система Chrome Flex</translation>
 <translation id="674891594898436429">Відхилити активний пошук на цій вкладці</translation>
 <translation id="6750954913813541382">Щоб виправляти орфографічні помилки, Chrome надсилає в Google текст, який ви вводите у веб-переглядачі</translation>
 <translation id="6760235774835597023">Прискорює роботу сайтів за допомогою системи V8 для Chrome, проте робить вебпереглядач трохи менш стійким до атак. Це налаштування ввімкнено.</translation>
@@ -591,7 +581,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="6908182077349113099">Паролі, закладки й історія завжди синхронізуються на всіх пристроях. Зробіть Chrome вебпереглядачем за умовчанням, щоб легко користуватись улюбленими функціями.</translation>
 <translation id="6926772305569367352">Кнопка "Пошук Google у Chrome" на панелі інструментів має новий значок. Натисніть його, щоб ставити запитання під час вебперегляду за допомогою Пошуку Google у Chrome.</translation>
 <translation id="6930294499209825">Забезпечує актуальність програмного забезпечення Google. Якщо вимкнути або зупинити цей сервіс, програмне забезпечення Google не оновлюватиметься. Це означає, що можливі вразливості системи безпеки не виправлятимуться й функції можуть не працювати. Якщо сервіс не використовується програмним забезпеченням Google, він видаляється.</translation>
-<translation id="6933858244219479645">ChromeOS</translation>
 <translation id="6938166777909186039">Щоб отримувати майбутні оновлення Google Chrome, потрібна операційна система Windows 10 або новішої версії. На цьому комп’ютері встановлено Windows 8.1.</translation>
 <translation id="6962628299694876291">Ви вже ввійшли в обліковий запис <ph name="EXISTING_USER" />. Щоб переглядати вебсторінки окремо, увійдіть у свій профіль у Chrome як <ph name="USER_EMAIL_ADDRESS" />. Крім того, ви отримаєте доступ до паролів і інших даних на всіх своїх пристроях.</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -682,7 +671,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="7801699035218095297">Google Chrome намагається скопіювати паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
 <translation id="7804364787702057554">Ваш обліковий запис у Chrome</translation>
 <translation id="7804947029129221742">Пошукову систему змінено за межами Chrome. Щоб захистити вас, вебпереглядач Chrome скинув її до початкового значення за умовчанням. <ph name="LEARN_MORE_LINK" /></translation>
-<translation id="7808348361785373670">Видалити з Chrome…</translation>
 <translation id="7827099906024714326">Chrome має підтвердити вашу особу, перш ніж деякі дані можна буде зберігати в обліковому записі Google і використовувати на всіх ваших пристроях. Якщо вийти зараз, ці дані буде видалено.</translation>
 <translation id="7829850924999627855">Щоб отримати доступ до збереженої інформації і інших даних із пристрою "<ph name="DEVICE" />", увійдіть у Chrome</translation>
 <translation id="7832314606810669113">Щоб отримати доступ до закладок і інших даних на всіх своїх пристроях, увійдіть у Chrome. Після входу цю закладку буде збережено в обліковому записі Google.</translation>
@@ -695,7 +683,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="7896673875602241923">Хтось раніше входив у Chrome на цьому комп’ютері як <ph name="ACCOUNT_EMAIL_LAST" />. Створіть нового користувача Chrome, щоб зберігати свою інформацію окремо.</translation>
 <translation id="7904213866086517086">Повторно відкрити Пошук Google на бічній панелі</translation>
 <translation id="7904985524660297937">Спробуйте Gemini у Google Chrome</translation>
-<translation id="7905880575591690197">ChromeOS не вдалося зберегти дані Chrome в обліковому записі Google через помилку входу</translation>
 <translation id="7936702483636872823">Веб-переглядач Chrome заблокував завантаження, оскільки цей файл оманливий і може внести неочікувані зміни на вашому пристрої</translation>
 <translation id="7951272445806340501">Щоб застосувати це оновлення, потрібно перезапустити ОС Chrome Flex.</translation>
 <translation id="7959172989483770734">Керувати профілями Chrome</translation>
@@ -756,7 +743,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8402881611069691789">{COUNT,plural, =1{Версію Chrome оновлено. Щоб почати користуватись останньою версією, перезапустіть вебпереглядач. Після цього поточні вкладки відкриються знову. Відкрите анонімне або ізольоване вікно не відновиться після перезапуску.}one{Версію Chrome оновлено. Щоб почати користуватись останньою версією, перезапустіть вебпереглядач. Після цього поточні вкладки відкриються знову. У профілях відкрито # анонімне й ізольоване вікно. Вони не відновляться після перезапуску.}few{Версію Chrome оновлено. Щоб почати користуватись останньою версією, перезапустіть вебпереглядач. Після цього поточні вкладки відкриються знову. У профілях відкрито # анонімні й ізольовані вікна. Вони не відновляться після перезапуску.}many{Версію Chrome оновлено. Щоб почати користуватись останньою версією, перезапустіть вебпереглядач. Після цього поточні вкладки відкриються знову. У профілях відкрито # анонімних і ізольованих вікон. Вони не відновляться після перезапуску.}other{Версію Chrome оновлено. Щоб почати користуватись останньою версією, перезапустіть вебпереглядач. Після цього поточні вкладки відкриються знову. У профілях відкрито # анонімного й ізольованого вікна. Вони не відновляться після перезапуску.}}</translation>
 <translation id="8403038600646341038">Логотип Chrome на екрані комп’ютера.</translation>
 <translation id="8406687098231754303">Натиснувши кнопку "Пошук Google на бічній панелі" на панелі інструментів, ви можете повторно відкрити цю функцію, щоб ставити запитання під час вебперегляду</translation>
-<translation id="8418845734693287262">ОС Chrome не вдалося синхронізувати ваші дані, оскільки дані для входу в обліковий запис застаріли.</translation>
 <translation id="842386925677997438">Інструменти безпеки Chrome</translation>
 <translation id="8425765582779547329">Щоб користуватися безпечнішими налаштуваннями, які вибрали твої батьки, увійди в Chrome</translation>
 <translation id="842852285618875960">Ви додали максимальну кількість закладок у Google Chrome (<ph name="BOOKMARK_LIMIT" />), тому деякі з них іще не збережено у вашому обліковому записі Google.
@@ -785,7 +771,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8624541899164515475">Налаштування (відкриється в новій вкладці).</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome перезапуститься через 1 хвилину}one{Chrome перезапуститься через # хвилину}few{Chrome перезапуститься через # хвилини}many{Chrome перезапуститься через # хвилин}other{Chrome перезапуститься через # хвилини}}</translation>
 <translation id="8637932705841171563">Щоб показувати своє вікно, у системних параметрах дозвольте Chrome записувати відео з екрана</translation>
-<translation id="8642497536370021917">Щоб завжди мати змогу використовувати й зберігати дані Chrome в обліковому записі Google, підтвердьте свою особу</translation>
 <translation id="8656634243791296665">Відкрити Gemini у Chrome для розробників</translation>
 <translation id="8669527147644353129">Помічник Google Chrome</translation>
 <translation id="8679801911857917785">Розширення також змінило сторінку, яка відкривається під час запуску Chrome.</translation>
@@ -847,7 +832,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="922152298093051471">Налаштувати Chrome</translation>
 <translation id="93760716455950538">Перезапустіть ОС Chrome Flex</translation>
 <translation id="945522503751344254">Надіслати відгук</translation>
-<translation id="973195869036269770">ChromeOS не вдалося зберегти дані Chrome в обліковому записі Google, оскільки облікові дані застаріли</translation>
 <translation id="983803489796659991">Не вдалося встановити, оскільки сервер оновлень не має хешованих даних для додатка.</translation>
 <translation id="989816563149873169">Комбінація клавіш <ph name="SHORTCUT" /> перемикає профілі Chrome</translation>
 </translationbundle>

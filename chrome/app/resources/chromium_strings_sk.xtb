@@ -84,7 +84,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="188102464690227119">Tlačidlo pre Vyhľadávanie Google na bočnom paneli má novú ikonu. Kliknutím naň môžete pri prehliadaní pomocou Vyhľadávania na bočnom paneli klásť otázky.</translation>
 <translation id="1896836275755235458">Chromium šetrí batériu tým, že obmedzí aktivitu na pozadí a vizuálne efekty, napríklad plynulé posúvanie a snímkové frekvencie videa. <ph name="BEGIN_LINK" />Ďalšie informácie o šetriči energie<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Služba Chromium Updater</translation>
-<translation id="1911763535808217981">Po vypnutí tejto možnosti sa budete môcť prihlásiť do webov Googlu (napríklad do Gmailu) bez prihlásenia do prehliadača Chromium</translation>
 <translation id="1929939181775079593">Chromium nereaguje. Chcete ho spustiť znova?</translation>
 <translation id="1933341829955786215">Vaša organizácia (<ph name="MANAGER" />) vyžaduje, aby ste sa prihlásili do prehliadača Chromium</translation>
 <translation id="193439633299369377">Aktualizácia sa použije po reštartovaní systému Chromium OS.</translation>
@@ -131,7 +130,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2361918034042471035">Rozšírenie <ph name="EXTENSION_NAME" /> žiada, aby ste sa prihlásili do prehliadača Chromium</translation>
 <translation id="236943522426971115">Deaktivovať spustenie prehliadača Chromium na pozadí pre aplikácie</translation>
 <translation id="2374216753258219393">Ak chcete používať toto rozšírenie ako <ph name="USER_EMAIL_ADDRESS" />, prihláste sa do prehliadača Chromium.</translation>
-<translation id="2384373936468275798">Systému Chromium OS sa nepodarilo synchronizovať vaše údaje, pretože vaše prihlasovacie údaje účtu sú zastarané.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{K 1 zariadeniu s ľudským rozhraním malo prístup jedno alebo viac rozšírení pre prehliadač Chromium}=1{K 1 zariadeniu s ľudským rozhraním má prístup jedno alebo viac rozšírení pre prehliadač Chromium}few{K # zariadeniam s ľudským rozhraním má prístup jedno alebo viac rozšírení pre prehliadač Chromium}many{# HID devices are being accessed by one or more Chromium extensions}other{K # zariadeniam s ľudským rozhraním má prístup jedno alebo viac rozšírení pre prehliadač Chromium}}</translation>
 <translation id="2401032172288869980">Chromium vyžaduje pre tento web povolený prístup ku kamere aj mikrofónu</translation>
 <translation id="2403703063067034158">Chyba pri spustení: momentálne je spustená iná inštancia nastavenia. Skúste to neskôr.</translation>
@@ -173,7 +171,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="2819844767470613567">Upozornenie: Chromium nemôže zabrániť rozšíreniam v zaznamenávaní vašej histórie prehliadania. Ak chcete rozšírenie v izolovanom režime zakázať, zrušte výber tejto možnosti.</translation>
 <translation id="2841525013647267359">Preložiť z jazyka</translation>
 <translation id="2846251086934905009">Chyba inštalácie: inštalátor nebol dokončený. Inštalácia bola prerušená.</translation>
-<translation id="2847479871509788944">Odstrániť z prehliadača Chromium...</translation>
 <translation id="2850691299438350830">Chráni vás v prehliadači Chromium a môže zlepšiť zabezpečenie v ďalších aplikáciách Googlu, keď sa prihlásite.</translation>
 <translation id="2885378588091291677">Správca úloh</translation>
 <translation id="2898830646167954300">Prepnite späť na svojho nespravovaného asistenta Gemini</translation>
@@ -384,7 +381,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="5346389065299425353">Pridajte viac kariet, súborov a nástrojov a spresnite si tak vyhľadávanie</translation>
 <translation id="5352264705793813212">Prehliadač Chromium našiel niekoľko bezpečnostných odporúčaní, ktoré by ste si mali pozrieť</translation>
 <translation id="5352361688875342522">Ďalšie profily prehliadača Chromium</translation>
-<translation id="535243042947607642">Systému Chromium OS sa nepodarilo uložiť údaje prehliadača Chromium vo vašom účte Google, pretože vaše prihlasovacie údaje účtu sú zastarané.</translation>
 <translation id="5368118228313795342">Ďalší kód: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Ak chcete mať k dispozícii prispôsobenie, zahrňte Chromium do aktivity na internete a v aplikáciách</translation>
 <translation id="5382964351116519680">Otvoriť vyhľadávanie v prehliadači Chromium</translation>
@@ -399,7 +395,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium odporúča pozastaviť kartu, ktorá spomaľuje váš prehliadač}few{Chromium odporúča pozastaviť karty, ktoré spomaľujú váš prehliadač}many{Chromium Recommends Pausing the Tabs Slowing Your Browser}other{Chromium odporúča pozastaviť karty, ktoré spomaľujú váš prehliadač}}</translation>
 <translation id="5473971139929175403">Chromium nemusí fungovať správne, pretože v tejto verzii systému Linux už nie je podporovaný</translation>
 <translation id="5475924890392386523">Prehliadač Chromium toto sťahovanie zablokoval, pretože daný súbor môže poškodiť vaše osobné účty aj účty sociálnych sietí</translation>
-<translation id="549669000822060376">Počkajte, kým Chromium nainštaluje najnovšie aktualizácie systému.</translation>
 <translation id="5496810170689441661">Chromium sa pokúša upraviť heslá. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>
 <translation id="5524890928877629608">ľavý horný roh oblasti vyhľadávania: vľavo <ph name="LEFT" /> %, hore <ph name="TOP" /> %</translation>
 <translation id="5527463683072221100">Otvoriť súbory PDF v prehliadači Chromium</translation>
@@ -494,7 +489,6 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="6390800440335263989">Ak chcete pokračovať, prihláste sa do prehliadača Chromium účtom <ph name="EMAIL" />. Potvrdíte tým, že sa na vás vzťahujú pravidlá vašej organizácie.</translation>
 <translation id="6400112897226594999">Logo prehliadača Chromium na obrazovke počítača.</translation>
 <translation id="6403826409255603130">Chromium je webový prehliadač, ktorý spúšťa webové stránky a aplikácie rýchlosťou svetla. Je rýchly, stabilný a ľahko sa používa. S ochranou proti škodlivému softvéru a phishingu, ktorá je zabudovaná do prehliadača Chromium, môžete prehliadať web bezpečnejšie.</translation>
-<translation id="6414624068245092115">Ak sa chcete uistiť, že vo svojom účte Google môžete kedykoľvek používať a ukladať údaje prehliadača Chromium, overte svoju totožnosť</translation>
 <translation id="642132557830635295">Prehliadač Chromium je rýchlejší a funkcie využívajúce JavaScript by mali pracovať podľa očakávaní</translation>
 <translation id="6434631832954028336">Znova otvoriť panel Vyhľadávania</translation>
 <translation id="6436260184216827876">Vyhľadávanie podľa obrázkov nie je k dispozícii. Skúste to neskôr.</translation>
@@ -525,7 +519,6 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="665732753414869868">Chromium vyžaduje na vytvorenie 3D mapy vášho okolia povolený prístup ku kamere</translation>
 <translation id="6669284030132180248">Ak vo svojom účte Google ukladáte aj záložky, môžete sledovať ceny produktov v prehliadači Chromium a dostávať upozornenia na poklesy ceny</translation>
 <translation id="6676384891291319759">Prístup do siete Internet</translation>
-<translation id="668175097507315160">Systému Chromium OS sa nepodarilo synchronizovať vaše údaje, pretože sa pri prihlasovaní vyskytla chyba.</translation>
 <translation id="6691132793308828750">Odstrániť dáta tejto aplikácie z prehliadača Chromium</translation>
 <translation id="6709350901466051922">Chromium vyžaduje pre tento web povolený prístup k mikrofónu</translation>
 <translation id="6712881677154121168">Chyba sťahovania: <ph name="DOWNLOAD_ERROR" />.</translation>
@@ -683,7 +676,6 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8107060931443639922">Pri ďalšom otvorení prehliadača Chromium v zariadení <ph name="DEVICE_TYPE" /> sa vám zobrazí výzva na zapnutie upozornení na sledovanie cien.</translation>
 <translation id="8118331347066725040">Odošlite spätnú väzbu k vyhľadávaniu pomocou funkcie Lens</translation>
 <translation id="8130609355518033382">Prispôsobte si Chromium</translation>
-<translation id="8133124826068723441">Systému Chromium OS sa nepodarilo synchronizovať vaše údaje, pretože možnosť synchronizácie nie je pre vašu doménu k dispozícii.</translation>
 <translation id="813913629614996137">Prebieha inicializácia...</translation>
 <translation id="8158143604667288086">Vyhľadávanie si môžete v Chrome pripnúť, aby ste mohli pri prehliadaní klásť otázky</translation>
 <translation id="8161503455832158203">Gemini v prehliadači Chromium môžete otvárať klávesovou skratkou.</translation>
@@ -750,11 +742,9 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8816416449795340678">Zdieľajte tento dokument s Gemini v prehliadači Chromium, získajte rýchly prehľad a klaďte doplňujúce otázky</translation>
 <translation id="8818550178040858407">Chcete sa prihlásiť do prehliadača Chromium?</translation>
 <translation id="8826492472752484139">Kliknite na položku Správca hesiel</translation>
-<translation id="8833697763442816810">Systém Chromium OS</translation>
 <translation id="8852026904190808918">V tomto jazyku sa zobrazujú ponuky, nastavenia, upozornenia a ďalší text v prehliadači Chromium</translation>
 <translation id="8862326446509486874">Nemáte potrebné práva na inštaláciu na úrovni systému. Skúste inštalátor spustiť znova ako správca.</translation>
 <translation id="8876044221123442390">Pridať profil prehliadača Chromium</translation>
-<translation id="8890569919834781711">Systému Chromium OS sa nepodarilo uložiť údaje prehliadača Chromium vo vašom účte Google, pretože sa pri prihlasovaní vyskytla chyba</translation>
 <translation id="8891709362986793894">Vaša organizácia vyžaduje, aby ste sa prihlásili do prehliadača Chromium</translation>
 <translation id="8906384069222226849">Chromium vyžaduje Windows 10 verzie 1809 alebo novšej.</translation>
 <translation id="8907580949721785412">Prehliadač Chromium sa pokúša zobraziť heslá. Ak to chcete povoliť, zadajte svoje heslo systému Windows.</translation>

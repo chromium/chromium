@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Activar tema</translation>
+<translation id="1085064499066015002">Activar sempre en todos os sitios</translation>
 <translation id="1135328998467923690">O paquete non é válido: "<ph name="ERROR_CODE" />".</translation>
 <translation id="1140871961407805696">Cámara traseira</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> engadiu unha extensión que pode cambiar o funcionamento de Chromium.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">A versión esperada era "<ph name="EXPECTED_VERSION" />", pero a obtida foi "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">Erro ao emitir a clave privada.</translation>
 <translation id="4811956658694082538">Non se puido instalar o paquete porque se produciu un fallo no proceso de execución dunha utilidade. Proba a reiniciar Chrome e téntao de novo.</translation>
+<translation id="4883436287898674711">Todos os sitios de <ph name="WEBSITE_1" /></translation>
 <translation id="4988792151665380515">Erro ao exportar a clave pública.</translation>
 <translation id="501057610015570208">É necesario instalar a aplicación co atributo de manifesto "kiosk_only" no modo de quiosco de Chrome OS Flex</translation>
 <translation id="5026754133087629784">Vista web: <ph name="WEBVIEW_TAG_NAME" /></translation>

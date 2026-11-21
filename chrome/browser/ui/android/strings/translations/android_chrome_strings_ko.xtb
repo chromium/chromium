@@ -577,6 +577,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3243650379537999343">그리기</translation>
 <translation id="3244271242291266297">MM</translation>
 <translation id="3245429137663807393">Chrome 사용 보고서를 공유하면, 내가 방문한 URL이 이 보고서에 포함됩니다.</translation>
+<translation id="3248185426436836442">대기 중</translation>
 <translation id="3250563604907490871">이미지 설명은 Wi-Fi에 연결되면 재개됩니다.</translation>
 <translation id="3254409185687681395">현재 페이지를 북마크에 추가</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" />의 모든 페이지</translation>
@@ -1125,7 +1126,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, 고정되고 공유 중인 시크릿 탭</translation>
 <translation id="5375374982898812658">'<ph name="GROUP_NAME" />' 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며 탭 그룹이 모든 기기에서 삭제됩니다.</translation>
 <translation id="537865165090710757">저장 및 공유</translation>
-<translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" />에서 디지털 지갑의 개인 정보를 사용하려고 합니다. 이 사이트를 신뢰하는 경우에만 계속 진행하세요. 위험한 사이트는 사용자를 속여 법적 이름이나 신분증 번호 등을 공개하도록 유도할 수 있습니다.</translation>
 <translation id="5395376160638294582">Google 계정의 Chrome 데이터를 언제든지 사용할 수 있도록 설정하세요.</translation>
 <translation id="5397794290049113714">나</translation>
 <translation id="539881862970320163">안전한 비밀번호가 제안되었습니다. 키보드가 숨겨졌습니다.</translation>
@@ -1137,6 +1137,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5415871492522952905">모든 기기에 방문 기록과 탭이 유지되므로 이전에 하던 작업을 이어서 할 수 있습니다.</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" />(<ph name="EMAIL" />)님이 '<ph name="GROUP_NAME" />' 탭 그룹에 대한 액세스 권한을 즉시 잃게 됩니다.</translation>
 <translation id="5424588387303617268"><ph name="GIGABYTES" /> GB 사용 가능</translation>
+<translation id="5430861625274552852">페이지 콘텐츠에 관해 질문하거나 여러 탭간의 내용을 비교해 보세요.</translation>
 <translation id="543271133149552180"><ph name="TAB_TITLE" />, 다중 선택된 PIP 모드 시크릿 탭</translation>
 <translation id="5436928407363358055">중단한 부분부터 손쉽게 이어 가려면 방문 기록과 탭을 동기화하세요.</translation>
 <translation id="5438292632479953702">다시 다운로드</translation>
@@ -1173,6 +1174,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="557018954714092179">새 폴더 만들기</translation>
 <translation id="5578795271662203820"><ph name="SEARCH_ENGINE" />에서 이 이미지 검색</translation>
 <translation id="558563010977877295">특정 페이지 또는 페이지 모음 열기</translation>
+<translation id="5594132774273121146">사용자 및 계정</translation>
 <translation id="5596627076506792578">옵션 더보기</translation>
 <translation id="5599455543593328020">시크릿 모드</translation>
 <translation id="5601180634394228718">Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려면 <ph name="BEGIN_LINK" />Google 서비스<ph name="END_LINK" />로 이동하세요.</translation>
@@ -1230,6 +1232,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="583281660410589416">알 수 없음</translation>
 <translation id="5833984609253377421">링크 공유</translation>
 <translation id="5839058148541733625">Chrome 공룡 게임</translation>
+<translation id="5839059463554891940">안전 및 보호</translation>
 <translation id="5841444063256914865">그래도 "<ph name="FILE_NAME" />" 파일을 다운로드하시겠습니까?</translation>
 <translation id="5847265694842662173">Chrome에서 악성 및 사용하지 않는 사이트가 알림을 전송하는 것을 차단했습니다.</translation>
 <translation id="5848257610304005265"><ph name="APP_NAME" /> 앱으로 PDF를 여시겠습니까?</translation>
@@ -1346,7 +1349,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6259107733340311168">엔터프라이즈 신호 면책 조항 하단 시트가 전체 높이로 열림</translation>
 <translation id="6260260490042862943">사이트 제어</translation>
 <translation id="6264376385120300461">무시하고 다운로드</translation>
-<translation id="6264485186158353794">안전한 페이지로 돌아가기</translation>
 <translation id="6267106249090587268">알림 <ph name="SEPARATOR" /> 스팸 또는 사기성 콘텐츠로 인해 Chrome에서 이러한 권한을 삭제했습니다.</translation>
 <translation id="6276708887952587684">페이지 소스 보기</translation>
 <translation id="62768169905160414">동영상 프레임 복사</translation>
@@ -1465,7 +1467,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6659594942844771486">탭</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />에서 열기</translation>
 <translation id="6669390930482049506">알림 받기</translation>
-<translation id="6670742294143102726">검색에 추가할 탭을 하나 이상 선택하세요.</translation>
 <translation id="6671495933530132209">이미지 복사</translation>
 <translation id="6672697278890207089">암호 입력</translation>
 <translation id="6675622031235530028">종료하려면 Ctrl+Q를 길게 누르세요</translation>
@@ -1731,6 +1732,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7597601275223325603">{NUMBER_OF_TABS,plural, =1{일반 탭 <ph name="TABS_COUNT_ONE" />개}other{일반 탭 <ph name="TABS_COUNT_MANY" />개}}</translation>
 <translation id="7603168929588204083">날짜가 잘못되었습니다.</translation>
 <translation id="7605594153474022051">동기화가 작동하지 않음</translation>
+<translation id="7607002721634913082">일시중지됨</translation>
 <translation id="7608245556672190037">Chrome Finds 선택이 전체 높이로 열림</translation>
 <translation id="7612619742409846846">다음 계정으로 Google에 로그인함:</translation>
 <translation id="7612989789287281429">로그인하는 중…</translation>
@@ -1839,6 +1841,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="800155843932969169">비밀번호를 안전하게 생성 및 저장하고, 더 빠르게 로그인하고, 비밀번호 보안 문제를 파악하여 안전하게 보호하세요</translation>
 <translation id="8004582292198964060">브라우저</translation>
 <translation id="8006630792898017994">스페이스바 또는 Tab</translation>
+<translation id="802154636333426148">다운로드 실패</translation>
 <translation id="8023190977980579548"><ph name="TAB_TITLE" />, 여러 개 선택되고 고정되고 공유 중인 시크릿 탭</translation>
 <translation id="8025972204417227828">새로 추가</translation>
 <translation id="8027863900915310177">다운로드 위치 선택</translation>
@@ -1846,6 +1849,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8032569120109842252">팔로우 중</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, 선택되고 음소거된 시크릿 탭</translation>
 <translation id="8036587585440959897">일부 확장 프로그램은 Chrome에 검색엔진을 추가할 수 있습니다.</translation>
+<translation id="803703704549420287">필터 지우기</translation>
 <translation id="8037750541064988519"><ph name="DAYS" />일 남음</translation>
 <translation id="8037801708772278989">조금 전에 확인됨</translation>
 <translation id="804335162455518893">SD 카드가 없음</translation>

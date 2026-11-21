@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Aktivizo temën</translation>
+<translation id="1085064499066015002">Gjithmonë në të gjitha sajtet</translation>
 <translation id="1135328998467923690">Paketa është e pavlefshme: "<ph name="ERROR_CODE" />".</translation>
 <translation id="1140871961407805696">Drejtuar drejt mjedisit</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> ka shtuar një shtesë që mund të ndryshojë mënyrën se si funksionon Chromium.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">Versioni i pritur ishte "<ph name="EXPECTED_VERSION" />", por versioni rezultoi "<ph name="NEW_ID" />".</translation>
 <translation id="471800408830181311">Dështoi të nxjerrë çelësin privat.</translation>
 <translation id="4811956658694082538">Nuk mundi të instalonte paketën sepse një vegël pësoi ndërprerje aksidentale. Provo rifillimin e Chrome dhe provo sërish.</translation>
+<translation id="4883436287898674711">Të gjitha sajtet <ph name="WEBSITE_1" /></translation>
 <translation id="4988792151665380515">Eksportimi i çelësit publik dështoi.</translation>
 <translation id="501057610015570208">Aplikacioni me atributin e manifestimit "kiosk_only" duhet të instalohet në modalitetin "kioskë" të Chrome OS Flex</translation>
 <translation id="5026754133087629784">Pamja e uebit: <ph name="WEBVIEW_TAG_NAME" /></translation>

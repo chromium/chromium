@@ -83,6 +83,8 @@ Tänk på detta:
 <translation id="2574249610672786438">Logga in på alla dina enheter om du vill ha samma flikar tillgängliga på alla enheter där du använder Chrome</translation>
 <translation id="2576431527583832481">Chrome har blivit ännu bättre! En ny version finns tillgänglig.</translation>
 <translation id="257708665678654955">Vill du att Google Chrome ska översätta sidor skrivna på <ph name="LANGUAGE_NAME" /> på den här webbplatsen nästa gång?</translation>
+<translation id="2599258827968143948">Dina favoriter från Google fungerar bättre med Chrome</translation>
+<translation id="260980777626165320">Öppna externa länkar i Chrome som standard.</translation>
 <translation id="2668242166988961773">Sök med rösten i Chrome.</translation>
 <translation id="2703746758996815929">Om du vill få användbara tips om Chrome kan du aktivera aviseringar i iOS-inställningarna.</translation>
 <translation id="2728851697704606655">Översätt med Google Lens</translation>
@@ -111,6 +113,7 @@ Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om d
 <translation id="314782365035065913">Kom åt Chrome snabbare från hemskärmens docka</translation>
 <translation id="3167189358072330585">Kontot fungerar inte på Google Chrome. Kontakta domänadministratören eller logga in med ett vanligt Google-konto.</translation>
 <translation id="322254490661677575">Ange lösenfrasen om du vill använda och spara Chrome-data i ditt Google-konto.</translation>
+<translation id="3253082773078342494">Öppna länkar direkt i Chrome.</translation>
 <translation id="3303503998967553377">Använda Chrome-åtgärder på iOS</translation>
 <translation id="3348862487678490430">Lägg till ett objekt från läslistan i Chrome</translation>
 <translation id="3350281376951945723">Öppna länkar snabbare när du ställer in Chrome som standard</translation>
@@ -160,6 +163,7 @@ Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om d
 <translation id="4693084815234024320">Du använder Chromes inkognitoläge</translation>
 <translation id="4713740144985377441">Återgå till Chrome för att ladda upp filen</translation>
 <translation id="4724297637870447613">Använd Chrome överallt</translation>
+<translation id="4733290155432110050">Öppna Chrome direkt</translation>
 <translation id="4738647308035481133">Google Chrome-sida</translation>
 <translation id="4742795653798179840">Data i Chrome har raderats</translation>
 <translation id="4761869838909035636">Kör säkerhetskontroll i Chrome</translation>
@@ -267,6 +271,7 @@ Du hittar fler inställningar som använder data för att förbättra Chrome-upp
 <translation id="7038674195294813388">Öppna inställningarna för standardappar i iOS, tryck på Webbläsarapp och välj Chrome.</translation>
 <translation id="7056826488869329999">Öppnar och kör en säkerhetskontroll i Chrome.</translation>
 <translation id="7061455974939528301">Håll nere Chrome-ikonen och klicka på Ändra hemskärmen</translation>
+<translation id="7067302528015227615">Ställ in Chrome som standard för att byta snabbare och enklare mellan appar.</translation>
 <translation id="7095110968493193530">I Google Lösenordshantering för <ph name="EMAIL" /></translation>
 <translation id="7124339256045485976">Håll Chrome uppdaterad</translation>
 <translation id="7135936755418321901">Om du vill dela din plats med webbplatser trycker du på Inställningar och ger Chrome tillåtelse att använda din plats.</translation>
@@ -278,6 +283,7 @@ Du hittar fler inställningar som använder data för att förbättra Chrome-upp
 <translation id="7200524487407690471">Chrome kör automatiskt en säkerhetskontroll varje dag för att skydda dig från dataintrång, osäkra webbplatser med mera. Du hittar mer information om säkerhetskontrollen i inställningarna.</translation>
 <translation id="7214019116829172458">Öppna en inkognitoflik i Chrome</translation>
 <translation id="722167379782941918">Chrome rekommenderar utökat skydd</translation>
+<translation id="722921700949937243">Se till att alla länkar alltid öppnas i Chrome.</translation>
 <translation id="723787869754590019">Använd Chrome för autofyll</translation>
 <translation id="7261678641327190792">Chrome kan inte kontrollera dina lösenord</translation>
 <translation id="7272091023280308138">Nästa gång kan du öppna en länk direkt i Chrome utan att kopiera webbadressen först.</translation>

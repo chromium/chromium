@@ -10,6 +10,7 @@
 <translation id="1097658378307015415">Pirms pierakstāties, uzsāciet viesa sesiju, lai aktivizētu tīklu <ph name="NETWORK_ID" />.</translation>
 <translation id="1111932478203988717">Bērns var izmantot šo PIN, lai pierakstītos savā ierīcē</translation>
 <translation id="1122587596907914265">Izvēlieties unikālu fona tapešu stilu.</translation>
+<translation id="1122913801042512795">Jūsu konta pierakstīšanās informācija ir novecojusi. Lūdzu, izrakstieties un pierakstieties vēlreiz.</translation>
 <translation id="1131201598497838573">Bērna PIN ir atjaunināts</translation>
 <translation id="1147322039136785890">Tagad <ph name="SUPERVISED_USER_NAME" /> var izmantot ierīci</translation>
 <translation id="1148669835763563782">Jūs saņemat visjaunāko programmatūras atjauninājumu, kas ietver uzlabotu drošību un jaunākās Chromebook funkcijas. Šajā atjauninājumā ir ietvertas uzlabotas iestatīšanas iespējas sekmīgākai darba uzsākšanai jūsu Chromebook datorā.</translation>
@@ -26,6 +27,7 @@
 <translation id="1256588359404100567">Iestatījums ir sinhronizēts no jūsu iepriekšējās ierīces.</translation>
 <translation id="1272978324304772054">Šis lietotāja konts nepieder domēnam, kurā ierīce ir reģistrēta. Ja vēlaties ierīci reģistrēt citā domēnā, vispirms ir jāveic ierīces atkopšana.</translation>
 <translation id="1293556467332435079">Faili</translation>
+<translation id="1302523850133262269">Lūdzu, uzgaidiet, kamēr Chrome instalē jaunākos sistēmas atjauninājumus.</translation>
 <translation id="1307559529304613120">Hmm... Sistēmai neizdevās saglabāt šīs ierīces ilgtermiņa API piekļuves pilnvaru.</translation>
 <translation id="1335929031622236846">Ierīces reģistrēšana</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Atkļūdošanas funkcijas<ph name="END_H3" />
@@ -49,6 +51,7 @@
 <translation id="1347625331607114917">Koda verificēšana Android tālrunī</translation>
 <translation id="1347975661240122359">Atjaunināšana tiks sākta, kad akumulatora uzlādes līmenis būs <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">Lai varētu izmantot vecāku kontroli, piemēram, lietotņu apstiprināšanu un izmantošanas ilguma ierobežojumus, bērnam ir nepieciešams Google konts, ko pārvalda vecāki. Vēlāk var pievienot mācību iestādes kontu izmantošanai ar tādiem rīkiem kā Google Classroom.</translation>
+<translation id="1363996462118479832">Chrome OS nevarēja sinhronizēt jūsu datus pierakstīšanās kļūdas dēļ.</translation>
 <translation id="1375557162880614858">Vai vēlaties aktivizēt operētājsistēmā Chrome OS Flex iebūvēto ekrāna lasītāju ChromeVox?</translation>
 <translation id="1377600615067678409">Pašlaik izlaist</translation>
 <translation id="1399261165075500043">Nevar ielādēt Google Play pakalpojumu sniegšanas noteikumus</translation>
@@ -73,6 +76,7 @@
 <translation id="1642494467033190216">Lai varētu iespējot citas atkļūdošanas funkcijas, ir jānoņem rootfs aizsardzība un jāveic restartēšana.</translation>
 <translation id="1646045728251578877">Ir pieejams programmatūras atjauninājums</translation>
 <translation id="1650801028905250434">Mapē “Mans disks” esošie faili tiks automātiski sinhronizēti ar Chromebook datoru, lai jūs varētu tiem piekļūt bez interneta savienojuma. Šo opciju jebkurā brīdī varat mainīt sadaļā Iestatījumi &gt; Faili.</translation>
+<translation id="16620462294541761">Diemžēl jūsu paroli nevarēja verificēt. Lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="1668435968811469751">Reģistrēties manuāli</translation>
 <translation id="1678919064276516737">Ievadītā e-pasta adrese un PIN neatbilst.</translation>
 <translation id="1692115862433274081">Izmantot citu kontu</translation>
@@ -94,6 +98,7 @@
 <translation id="1868617395637139709">Atrašanās vietas datu izmantošana Android lietotnēm un pakalpojumiem</translation>
 <translation id="1877377730633446520">Nepieciešamā vieta: apm. <ph name="REQUIRED_SPACE" />. Pašlaik pieejamā vieta: <ph name="FREE_SPACE" />.</translation>
 <translation id="1878155070920054810">Šķiet, Chromebook datora akumulators izlādēsies, pirms atjaunināšana būs pabeigta. Lai nebūtu jāpārtrauc darbs, nodrošiniet pareizu uzlādi.</translation>
+<translation id="1887442540531652736">Pierakstīšanās kļūda</translation>
 <translation id="189035593835762169">Pakalpojumu sniegšanas noteikumi</translation>
 <translation id="189358972401248634">Citas valodas</translation>
 <translation id="1915734383465415025">Veikala numurs</translation>
@@ -122,6 +127,7 @@
 <translation id="2210462644007531147">Instalēšanu nevarēja pabeigt</translation>
 <translation id="221872881068107022">Ritināšana pretējā virzienā</translation>
 <translation id="2219081237089444028">Lai pierakstīšanās būtu ērtāka, iestatiet paroli šai ierīcei: <ph name="DEVICE_TYPE" /></translation>
+<translation id="2220529011494928058">Ziņot par problēmu</translation>
 <translation id="222115440608612541">Motīvu maiņa līdz ar saullēktu un saulrietu</translation>
 <translation id="2229161054156947610">Atlikusi vairāk nekā 1 stunda</translation>
 <translation id="2246129643805925002">Jūsu ierīce (<ph name="DEVICE_TYPE" />) tiek automātiski atjaunināta fonā, lai nodrošinātu jums jaunākās funkcijas un drošības uzlabojumus. Iestatījumos varat pārskatīt atjaunināšanas preferences.</translation>
@@ -132,6 +138,7 @@
 <translation id="2328137272841210255">Atiestatiet PIN</translation>
 <translation id="2342180549977909852">Jūsu bērns var izmantot kodu (PIN), nevis paroli, lai atbloķētu šo ierīci. Lai iestatītu PIN vēlāk, pārejiet uz iestatījumiem.</translation>
 <translation id="2359808026110333948">Turpināt</translation>
+<translation id="2384373936468275798">Chromium OS nevarēja sinhronizēt jūsu datus, jo jūsu konta pierakstīšanās informācija ir novecojusi.</translation>
 <translation id="2387052489799050037">Pāriešana uz sākuma ekrānu</translation>
 <translation id="2395616325548404795"><ph name="DEVICE_TYPE" /> ierīce ir sekmīgi reģistrēta uzņēmuma pārvaldībai, taču neizdevās nosūtīt tās līdzekļu un atrašanās vietas informāciju. Lūdzu, manuāli ievadiet šo informāciju, izmantojot šīs ierīces administratora konsoli.</translation>
 <translation id="2408955596600435184">Ievadiet PIN kodu</translation>
@@ -158,6 +165,7 @@
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Google vietsaistītajā pakalpojumā tiek izmantoti tādi avoti kā Wi-Fi, mobilais tīkls un sensori, lai palīdzētu noteikt šīs ierīces atrašanās vietu.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Jūs jebkurā brīdī varat izslēgt Android atrašanās vietu pakalpojumus šajā ierīcē, pārejot uz sadaļu Iestatījumi &gt; Lietotnes &gt; Google Play veikals &gt; Pārvaldīt Android preferences &gt; Drošība un atrašanas vieta &gt; Atrašanās vieta. Varat arī izslēgt Wi‑Fi, mobilo tīklu un sensoru izmantošanu Android ierīces atrašanās vietas noteikšanai, izslēdzot opciju “Google atrašanās vietas precizitāte” tajā pašā izvēlnē.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2663302507110284145">Valoda</translation>
+<translation id="2674238339205910678">ChromeOS Flex nevarēja saglabāt Chrome datus jūsu Google kontā, jo jūsu konta pierakstīšanās informācija ir novecojusi.</translation>
 <translation id="2687407218262674387">Google pakalpojumu sniegšanas noteikumi</translation>
 <translation id="2688196195245426394">Reģistrējot ierīci serverī, radās kļūda: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Šī ierīce ir daļa no komplekta, un to nevar reģistrēt licencei Kiosk &amp; Signage Upgrade.</translation>
@@ -252,6 +260,7 @@
 <translation id="3740945083753997630">Samazināt attēlojuma un teksta lielumu</translation>
 <translation id="376841534249795524">Kādam nolūkam būs paredzēts jūsu <ph name="DEVICE_TYPE" />?</translation>
 <translation id="3772046291955677288">Es izlasīju <ph name="BEGIN_LINK1" />Google pakalpojumu sniegšanas noteikumus<ph name="END_LINK1" /> un <ph name="BEGIN_LINK2" />Chrome un Chrome OS pakalpojumu sniegšanas papildu noteikumus<ph name="END_LINK2" /> un piekrītu tiem.</translation>
+<translation id="3785324443014631273">Chrome OS Flex nevarēja sinhronizēt jūsu datus pierakstīšanās kļūdas dēļ.</translation>
 <translation id="3789841737615482174">Instalēt</translation>
 <translation id="3800828618615365228">Google Chrome un Chrome OS papildu noteikumi</translation>
 <translation id="3828953470056652895">Es izlasīju <ph name="BEGIN_LINK1" />Google pakalpojumu sniegšanas noteikumus<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome un Chrome OS pakalpojumu sniegšanas papildu noteikumus<ph name="END_LINK2" /> un <ph name="BEGIN_LINK3" />Play pakalpojumu sniegšanas noteikumus<ph name="END_LINK3" /> un piekrītu tiem.</translation>
@@ -332,6 +341,7 @@
         <ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Lai saņemtu papildu palīdzību, apmeklējiet vietni g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Kuru lietotāju vēlaties pievienot šai <ph name="DEVICE_TYPE" /> ierīcei?</translation>
+<translation id="4543778593405494224">Sertifikātu pārvaldnieks</translation>
 <translation id="4566170377336116390">Lai pārslēgtos pēc reģistrācijas, jums būs jāveic rūpnīcas datu atiestatīšana (jāizmanto funkcija Powerwash) savā ierīcē.</translation>
 <translation id="4567512141633030272">Vai nepareiza pierakstīšanās opcija?</translation>
 <translation id="4567533462991917415">Pēc iestatīšanas jebkurā laikā varēsiet pievienot citas personas. Katra persona var personalizēt savu kontu, un katras personas dati ir konfidenciāli.</translation>
@@ -349,6 +359,7 @@
 <translation id="4814327014588285482">Izlaist un atgādināt vēlāk</translation>
 <translation id="4830502475412647084">OS atjauninājuma instalēšana</translation>
 <translation id="4837926214103741331">Jums nav atļaujas izmantot šo ierīci. Lūdzu, sazinieties ar ierīces īpašnieku, lai saņemtu pierakstīšanās atļauju.</translation>
+<translation id="4842397268809523050">Chrome OS Flex nevarēja sinhronizēt jūsu datus, jo jūsu domēnam nav pieejama sinhronizācija.</translation>
 <translation id="4844333629810439236">Citas tastatūras</translation>
 <translation id="484462545196658690">Autom.</translation>
 <translation id="4864369630010738180">Pierakstīšanās...</translation>
@@ -360,6 +371,7 @@
 <translation id="4944310289250773232">Šo autentifikācijas pakalpojumu mitina <ph name="SAML_DOMAIN" /></translation>
 <translation id="4955710816792587366">Izvēlieties PIN</translation>
 <translation id="4965808351167763748">Vai tiešām vēlaties iestatīt šo ierīci darbam ar Hangouts Meet?</translation>
+<translation id="4969674060580488087">Chrome OS Flex nevarēja sinhronizēt jūsu datus, jo jūsu konta pierakstīšanās informācija ir novecojusi.</translation>
 <translation id="4987944280765486504">Kad lejupielāde būs pabeigta, Chromebook dators tiks restartēts, un pēc tam varēsiet turpināt iestatīšanu.</translation>
 <translation id="5029287942302939687">Parole ir iestatīta</translation>
 <translation id="503155457707535043">Pašlaik lejupielādētās lietotnes</translation>
@@ -401,6 +413,8 @@
 <translation id="528208740344463258">Lai lejupielādētu un izmantotu Android lietotnes, vispirms instalējiet nepieciešamo atjauninājumu. Kamēr <ph name="DEVICE_TYPE" /> ierīce tiek atjaunināta, to nevar izmantot. Pēc instalēšanas pabeigšanas <ph name="DEVICE_TYPE" /> ierīce tiks restartēta.</translation>
 <translation id="5283677936944177147">Diemžēl sistēmai neizdevās noteikt ierīces modeli un sērijas numuru.</translation>
 <translation id="5333896723098573627">Lai noņemtu lietotnes, pārejiet uz sadaļu Iestatījumi &gt; Lietotnes &gt; Google Play veikals &gt; Pārvaldīt Android preferences &gt; Lietotnes vai Lietojumprogrammu pārvaldnieks. Pēc tam pieskarieties lietotnei, kuru vēlaties atinstalēt (iespējams, būs jāvelk pa labi vai pa kreisi, lai atrastu lietotni). Visbeidzot pieskarieties vienumam Atinstalēt vai Atspējot.</translation>
+<translation id="5334309298019785904">Chrome OS nevarēja sinhronizēt jūsu datus, jo sinhronizācija jūsu domēnā nav pieejama.</translation>
+<translation id="535243042947607642">ChromiumOS nevarēja saglabāt Chromium datus jūsu Google kontā, jo jūsu konta pierakstīšanās informācija ir novecojusi.</translation>
 <translation id="5355501370336370394">Reģistrēt uzņēmuma ierīci</translation>
 <translation id="5372529912055771682">Nodrošinātais reģistrācijas režīms netiek atbalstīts šajā operētājsistēmas versijā. Noteikti lietojiet jaunāko versiju un mēģiniet vēlreiz.</translation>
 <translation id="5397378439569041789">Reģistrēt kioska vai digitālā ceļrāža ierīci</translation>
@@ -412,6 +426,7 @@
 <translation id="5448293924669608770">Diemžēl pierakstīšanās neizdevās</translation>
 <translation id="5453829744223920473">Bērns var izmantot visas savas mācību iestādes lietotnes, grāmatzīmes un resursus tieši tāpat, kā to var darīt klasē. Mācību iestāde nosaka pamatnoteikumus.</translation>
 <translation id="5473099001878321374">Turpinot jūs piekrītat, ka šajā ierīcē drīkst arī automātiski lejupielādēt un instalēt atjauninājumus un lietotnes no Google, jūsu bērna mobilo sakaru operatora un šīs ierīces ražotāja, iespējams, izmantojot mobilos datus. Dažās lietotnēs var tikt piedāvāti pirkumi.</translation>
+<translation id="549669000822060376">Lūdzu, uzgaidiet, kamēr Chromium instalē jaunākos sistēmas atjauninājumus.</translation>
 <translation id="5502915260472117187">Bērns</translation>
 <translation id="5511823366942919280">Vai tiešām vēlaties iestatīt šai ierīcei nosaukumu “Shark”?</translation>
 <translation id="5513807280330619196">Kalkulators</translation>
@@ -515,6 +530,7 @@
 <translation id="6495266441917713704">Nevar pārsūtīt Wi-Fi</translation>
 <translation id="6515620015470298987">Pierakstīšanās neizdevās ierīces konfigurācijas pārbaudes problēmas dēļ. Lūdzu, ierīcei (<ph name="DEVICE_TYPE" />) izmantojiet funkciju Powerwash un mēģiniet vēlreiz.</translation>
 <translation id="6519689855001245063">Notiek piemērotības pārbaude</translation>
+<translation id="6520608191273161151">ChromeOS Flex nevarēja saglabāt Chrome datus jūsu Google kontā pierakstīšanās kļūdas dēļ.</translation>
 <translation id="6532527800157340614">Neizdevās pierakstīties, jo nevarēja izgūt piekļuves pilnvaru. Lūdzu, pārbaudiet tīkla savienojumu un mēģiniet vēlreiz.</translation>
 <translation id="653920215766444089">Notiek rādītājierīces meklēšana…</translation>
 <translation id="65513682072153627">Būs redzama ikona “Pārvaldīts”, ja iestatījumu vai funkciju pārvalda jūsu administrators.</translation>
@@ -526,8 +542,10 @@
 <translation id="6675665718701918026">Rādītājierīce ir pievienota.</translation>
 <translation id="667752334740867460">Notiek Wi-Fi informācijas saņemšana…</translation>
 <translation id="6680442031740878064">Pieejamā vieta: <ph name="AVAILABLE_SPACE" /></translation>
+<translation id="668175097507315160">Chromium OS nevarēja sinhronizēt jūsu datus pierakstīšanās kļūdas dēļ.</translation>
 <translation id="6684827949542560880">Notiek jaunākā atjauninājuma lejupielāde</translation>
 <translation id="6722744767592605627">Varat atkopt kontu <ph name="EMAIL" />, taču lokālie dati tiks dzēsti.</translation>
+<translation id="6735387454586646204">Chrome OS Flex sistēma</translation>
 <translation id="6748980958975836188">Es izlasīju <ph name="BEGIN_LINK1" />Google pakalpojumu sniegšanas noteikumus<ph name="END_LINK1" />, kā arī <ph name="BEGIN_LINK2" />Chrome un Chrome OS pakalpojumu sniegšanas papildu noteikumus<ph name="END_LINK2" /> un piekrītu tiem.</translation>
 <translation id="6749473226660745022">Fotoattēli</translation>
 <translation id="6754918760968695779">Ātrā ievietošana</translation>
@@ -552,6 +570,7 @@
 <translation id="6918733588290914545">Veikt ātro iestatīšanu ar Android tālruni</translation>
 <translation id="6920473853105515518">Pārbaudiet, vai jūsu ierīce (<ph name="DEVICE_TYPE" />) ir savienota ar internetu, un mēģiniet vēlreiz. Varat arī apmeklēt vietni play.google/play-terms citā ierīcē.</translation>
 <translation id="6929126689972602640">Vecāku kontrole netiek atbalstīta mācību iestāžu kontos. Lai pievienotu mācību iestādes kontu un piekļūtu pakalpojumam Google Classroom un citām attālināto mācību vietnēm, vispirms pierakstieties bērna personīgajā kontā. Vēlāk varēsiet pievienot mācību iestādes kontu.</translation>
+<translation id="6933858244219479645">ChromeOS sistēma</translation>
 <translation id="6935031746833428401">Uzzināt vairāk par ierīču pārvaldību</translation>
 <translation id="6950351336108213154">Notiek perifērijas ierīču atjaunināšana</translation>
 <translation id="6955698182324067397">Jūs iespējojat Chrome OS atkļūdošanas funkcijas, kas iestatīs sshd dēmonu un iespējos palaišanu no USB diskiem.</translation>
@@ -648,6 +667,7 @@
 <translation id="7870730066603611552">Sinhronizācijas opciju pārskatīšana pēc iestatīšanas</translation>
 <translation id="7883792253546618164">Varat jebkurā brīdī anulēt abonementu.</translation>
 <translation id="7887864092952184874">Bluetooth pele ir savienota pārī.</translation>
+<translation id="7905880575591690197">ChromeOS nevarēja saglabāt Chrome datus jūsu Google kontā pierakstīšanās kļūdas dēļ.</translation>
 <translation id="7906440585529721295">Lokālie dati tiks dzēsti</translation>
 <translation id="7910725946105920830">Izmantot personīgo Google kontu</translation>
 <translation id="7918257978052780342">Reģistrēties</translation>
@@ -674,6 +694,7 @@
 <translation id="8098616321286360457">Nepieciešams tīkla savienojums</translation>
 <translation id="8129265306888404830">Lai varētu izmantot savas organizācijas e-pasta adresi (<ph name="EMAIL_DOMAIN" />), jums ir nepieciešama uzņēmuma reģistrācija. Ja šī ierīce ir paredzēta personiskām vajadzībām, pierakstieties savā personīgajā Google kontā.</translation>
 <translation id="8131740175452115882">Apstiprināt</translation>
+<translation id="8133124826068723441">Chromium OS nevarēja sinhronizēt jūsu datus, jo jūsu domēnā nav pieejama sinhronizācija.</translation>
 <translation id="8146177459103116374">Ja esat jau reģistrējies šajā ierīcē, varat <ph name="LINK2_START" />pierakstīties kā esošs lietotājs<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Neizdevās pierakstīties. Lūdzu, sazinieties ar administratoru vai mēģiniet vēlreiz.</translation>
 <translation id="8147346945017130012">Palīdziet uzlabot Chrome un Chrome OS funkcijas un veiktspēju, automātiski nosūtot Google serveriem avāriju pārskatus, kā arī diagnostikas un lietojuma datus.</translation>
@@ -692,6 +713,7 @@
 <translation id="8271379370373330993">Vecāki, nākamās darbības ir jāveic jums. Kad būsiet iestatījis kontu, varēsiet <ph name="DEVICE_TYPE" /> ierīci atdot bērnam.</translation>
 <translation id="8274924778568117936">Neizslēdziet un neaizveriet savu <ph name="DEVICE_TYPE" /> ierīci, kamēr notiek atjaunināšana. Pēc instalēšanas pabeigšanas jūsu <ph name="DEVICE_TYPE" /> ierīce tiks restartēta.</translation>
 <translation id="8281886186245836920">Izlaist</translation>
+<translation id="8286036467436129157">Pierakstīties</translation>
 <translation id="8289509909262565712">Laipni lūdzam operētājsistēmā <ph name="DEVICE_OS" />!</translation>
 <translation id="8291942417224950075">Personiskai lietošanai</translation>
 <translation id="8304383784961451596">Jums nav atļaujas izmantot šo ierīci. Sazinieties ar administratoru, lai saņemtu pierakstīšanās atļauju, vai pierakstieties Google kontā, kas tiek pārraudzīts pakalpojumā Family Link.</translation>
@@ -703,6 +725,7 @@
 <translation id="8401432541486058167">Norādiet PIN, kas ir saistīts ar jūsu viedkarti.</translation>
 <translation id="8408270600235826886">Jūs nosakāt, kādi dati tiek kopīgoti ar Google. Iestatījumos varat jebkurā laikā to mainīt. Dati tiks izmantoti saskaņā ar Google <ph name="BEGIN_LINK" />konfidencialitātes politiku<ph name="END_LINK" />.</translation>
 <translation id="8413956290606243087">Vai vēlaties aktivizēt Chrome OS ierīcēs iebūvēto ekrāna lasītāju ChromeVox?</translation>
+<translation id="8418845734693287262">Chrome OS nevarēja sinhronizēt jūsu datus, jo jūsu konta pierakstīšanās informācija ir novecojusi.</translation>
 <translation id="8425768983279799676">Varat izmantot PIN kodu, lai atbloķētu savu ierīci.</translation>
 <translation id="8428213095426709021">Iestatījumi</translation>
 <translation id="843173223122814223">Fonu izveide, izmantojot MI</translation>
@@ -742,10 +765,12 @@
 <translation id="8794548468611058947">Lai pierakstoties nebūtu jāievada Google konta parole, varat izveidot PIN šai ierīcei (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="8830779999439981481">Notiek restartēšana, lai lietotu atjauninājumus</translation>
 <translation id="8830796635868321089">Atjauninājumu pārbaude, izmantojot esošos starpniekservera iestatījumus, neizdevās. Lūdzu, pielāgojiet <ph name="PROXY_SETTINGS_LINK_START" />starpniekservera iestatījumus<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
+<translation id="8833697763442816810">Chromium OS sistēma</translation>
 <translation id="8855977033756560989">Šīs Chromebook uzņēmuma ierīces komplektācijā ir iekļauts Chrome uzņēmuma versijas jauninājums. Lai izmantotu uzņēmuma iespējas, reģistrējiet šo ierīci, izmantojot Google administratora kontu.</translation>
 <translation id="885746075120788020">Jūsu saglabātās preferences un darbības būs pieejamas jebkurā Chrome OS ierīcē, kad pierakstīsieties savā Google kontā. Iestatījumos varat izvēlēties, ko sinhronizēt.</translation>
 <translation id="8868333925931032127">Notiek demonstrācijas režīma palaišana</translation>
 <translation id="8875221558267407626">Iegūstiet satura apkopojumu, vienkāršojiet sarežģītu tekstu vai uzdodiet jautājumus</translation>
+<translation id="8890569919834781711">ChromiumOS nevarēja saglabāt Chromium datus jūsu Google kontā pierakstīšanās kļūdas dēļ.</translation>
 <translation id="8907701755790961703">Lūdzu, atlasiet valsti</translation>
 <translation id="8913163265790894442">Ērti iestatiet savu ierīci (<ph name="DEVICE_TYPE" />), izmantojot tālruni. Varat pievienot Wi-Fi tīklu un Google kontu, manuāli neievadot paroles.
         <ph name="BR" />
@@ -781,5 +806,6 @@
 <translation id="951991426597076286">Noraidīt</translation>
 <translation id="954749761428814584">Valoda un ievades metode</translation>
 <translation id="960987915827980018">Atlikusi apmēram 1 stunda</translation>
+<translation id="973195869036269770">ChromeOS nevarēja saglabāt Chrome datus jūsu Google kontā, jo jūsu konta pierakstīšanās informācija ir novecojusi.</translation>
 <translation id="995420352808264005">Ierīces reģistrācijas veida izvēle</translation>
 </translationbundle>

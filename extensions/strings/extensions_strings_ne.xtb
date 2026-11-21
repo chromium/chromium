@@ -4,6 +4,7 @@
 <translation id="10146536653536065">"<ph name="EXTENSION_NAME" />" इन्स्टल गर्नुहोस्</translation>
 <translation id="1070377999570795893">तपाईँको कम्प्युटरमा अर्को प्रोग्रामले एउटा विस्तार थप्यो जसले Chrome को कार्य गर्ने तरिकालाई बदल्न सक्छ। <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">विषयवस्तुलाई सक्षम पार्नुहोस्</translation>
+<translation id="1085064499066015002">सधैँ सबै साइटमा</translation>
 <translation id="1135328998467923690">प्याकेज अवैध छ: '<ph name="ERROR_CODE" />'।</translation>
 <translation id="1140871961407805696">वातावरणतिर फार्काइएको</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> ले Chromium ले काम गर्ने तरिका परिवर्तन गर्न सक्ने एक्स्टेन्सन हालेको छ।
@@ -76,6 +77,7 @@
 <translation id="4660476621274971848">अपेक्षित संस्करण "<ph name="EXPECTED_VERSION" />" हो, तर भएको संस्करण भने "<ph name="NEW_ID" />" छ</translation>
 <translation id="471800408830181311">निजी कुञ्जी निर्यात गर्न असफल।</translation>
 <translation id="4811956658694082538">स्थापना प्याकेज स्थापना गर्न सकिएन किनकि एक उपयोगिता प्रक्रिया क्र्याश भयो।  Chrome लाई रिस्टार्ट गर्ने प्रयास गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="4883436287898674711">सबै <ph name="WEBSITE_1" /> साइटहरू</translation>
 <translation id="4988792151665380515">सार्वजनिक कुञ्जी निर्यात गर्न असफल भयो।</translation>
 <translation id="501057610015570208">'kiosk_only' म्यानिफेस्ट विशेषता भएको एप अनिवार्य रूपमा ChromeOS Flex को किअस्क मोडमा इन्स्टल गर्नु पर्छ</translation>
 <translation id="5026754133087629784">वेबदृश्य: <ph name="WEBVIEW_TAG_NAME" /></translation>

@@ -373,6 +373,7 @@
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> نے ایک ٹیب کو ہٹا دیا</translation>
 <translation id="1620510694547887537">کیمرا</translation>
 <translation id="1623104350909869708">اس صفحہ کو اضافی ڈائیلاگز بنانے سے روکیں</translation>
+<translation id="1624535934412288769">کالمز</translation>
 <translation id="1629390138158333592">ویب پر تلاش کریں</translation>
 <translation id="1633137413609266904">{0,plural, =1{منتظم کی پالیسی کے تحت اس فائل کا کھولنا مسدود ہے}other{منتظم کی پالیسی کے تحت # فائلز کا کھولنا مسدود ہے}}</translation>
 <translation id="1634828734222219955">کُل</translation>
@@ -1082,6 +1083,7 @@
 <translation id="2803320044666896137">اس پالیسی کی قدر کو نظر انداز کر دیا گیا ہے کیونکہ صارف الحاق یافتہ نہیں ہے۔</translation>
 <translation id="2807052079800581569">‏تصویر کی Y پوزیشن</translation>
 <translation id="2808278141522721006">‏آپ <ph name="SETTINGS" /> میں Windows Hello کو آن یا آف کر سکتے ہیں</translation>
+<translation id="2820159698793041599">پراکسی سرور ایک محفوظ کنکشن قائم نہیں کر سکا۔</translation>
 <translation id="2820957248982571256">اسکین ہو رہا ہے…</translation>
 <translation id="282457273878278063">رابطہ کی معلومات کا نظم کریں</translation>
 <translation id="2824775600643448204">پتہ اور تلاش بار</translation>
@@ -1263,6 +1265,7 @@
 <translation id="3120807611504813890">لفافہ (لائٹ ویٹ)</translation>
 <translation id="3121994479408824897"><ph name="DOMAIN" /> پر جائیں</translation>
 <translation id="3126023634486644099">لیبلز (مستقل)</translation>
+<translation id="3128081114752791872">پراکسی سرور کا سیکیورٹی سرٹیفکیٹ غلط ہے۔</translation>
 <translation id="3131746543143948171">یہ سائٹ فریب دہی، میلوئیر اور اسکیموں سے وابستہ دیگر سائٹس سے ملتی جلتی معلوم ہوتی ہے۔ <ph name="BEGIN_LEARN_MORE_LINK" />مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">ریڈریس نمبر محفوظ کریں</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> اب آپ کا ڈیفالٹ سرچ انجن ہے</translation>
@@ -1682,7 +1685,6 @@
 <translation id="3800436529451849929"><ph name="SITE" /> سے</translation>
 <translation id="3801297763951514916">آپ اکثر ملاحظہ کرتے ہیں</translation>
 <translation id="380329542618494757">نام</translation>
-<translation id="3803481123869276674">‏جب آپ Chrome میں خریداری کرتے ہیں، تو eWallet کو اختیار کے طور پر دیکھیں</translation>
 <translation id="3803801106042434208">یہ سرچ انجنز آپ کے علاقے میں مقبول ہیں</translation>
 <translation id="3804112825000113857">آٹو فل کی ترتیبات دیکھیں</translation>
 <translation id="380666903981445943">‏اپنے Google اکاؤنٹ میں ادائیگی کا طریقہ محفوظ کریں تاکہ اسے Chrome میں کی جانے والی خریداریوں کے لیے آٹو فل کریں</translation>
@@ -2165,6 +2167,7 @@
 <translation id="4612631413844865947"><ph name="PAYMENT_APP_ORIGIN" /> کے ذریعے <ph name="MERCHANT_ORIGIN" /> پر آپ کے آرڈر پر کارروائی کرنے میں ایک خرابی پیش آ گئی۔</translation>
 <translation id="4612904677925722054">اس سائٹ پر بالغانہ مواد ہو سکتا ہے۔ والدین یا سرپرست کو یہ کہنا ہوگا کہ آپ کیلئے یہ ویب سائٹ دیکھنا ٹھیک ہے۔</translation>
 <translation id="4613873770449493819">‏‫URL کو <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ڈومین کی طرف پوائنٹ کرنا چاہیے۔</translation>
+<translation id="4615154194248230658">ایسا لگتا ہے کہ یہ پیٹرن کسی درست ای میل پتہ ڈومین سے مماثل نہیں ہے۔ ہو سکتا ہے کہ صارفین سائن ان نہ کر سکیں یا موجودہ پروفائلز کو ہٹا دیا جائے۔</translation>
 <translation id="4619564267100705184">توثیق کریں کہ یہ آپ ہیں</translation>
 <translation id="4619669610757527494">‏‫Google والٹ میں ڈرائیونگ لائسنس محفوظ کریں</translation>
 <translation id="4622292761762557753">بہر حال منتقل کریں</translation>
@@ -2683,7 +2686,6 @@
 <translation id="5447235695608032700"><ph name="SITE" /> کو ان معلومات کو استعمال کرنے کی اجازت دیں جو انہوں نے آپ کے بارے میں محفوظ کی ہیں</translation>
 <translation id="5447973833955560753">بازیابی پاس ورڈ</translation>
 <translation id="5452270690849572955">یہ <ph name="HOST_NAME" /> صفحہ تلاش نہیں کیا جا سکتا ہے</translation>
-<translation id="5452923259299906094">‏‫eWallet اور Pix سے ادائیگی کریں</translation>
 <translation id="5455374756549232013">غلط پالیسی ٹائم اسٹامپ</translation>
 <translation id="5456428544444655325">کبھی نہ دکھائیں</translation>
 <translation id="5457082343331641453">اپنی تلاش میں شامل کریں</translation>
@@ -3899,7 +3901,6 @@
 <translation id="7489919936111034362">‏آپ کی Google Drive اسٹوریج بھر گئی ہے</translation>
 <translation id="7490622939531327327">فارم کی بہتر تفہیم</translation>
 <translation id="7495528107193238112">یہ مواد مسدود ہے۔ مسئلے کو حل کرنے کے لیے سائٹ کے مالک سے رابطہ کریں۔</translation>
-<translation id="7499188644237027195">‏جب آپ Chrome میں خريداری کرتے ہيں تو eWallet اور Pix کو اختيارات کے طور پر ديکھيں</translation>
 <translation id="7499684925421947861">‫<ph name="ACTOR_NAME" /> کو آپ کیلئے <ph name="DOMAIN" /> میں سائن ان کرنے کی اجازت دیں؟</translation>
 <translation id="7501663406926337752">آگے کی سائٹ کو آپ کی تنظیم نے پرچم لگا دیا ہے</translation>
 <translation id="7502044688973049724">اپنی معلومات کا نظم کریں</translation>
@@ -4024,7 +4025,6 @@
 <translation id="7676840398262504532">آپ کی تنظیم مواد کاپی کرنے کی نگرانی کرتی ہے</translation>
 <translation id="767806704757698045">صرف تعاون یافتہ سائٹس پر کام کرتا ہے</translation>
 <translation id="7678730592635586336">ویڈیو دوبارہ لیں</translation>
-<translation id="7679287273775285018">‏‫eWallet کے ساتھ ادائیگی کریں</translation>
 <translation id="7679367271685653708">‏Chrome کی ترتیبات میں اپنی براؤزنگ کی سرگزشت دیکھیں اور اس کا نظم کریں</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />، <ph name="CARD_LAST_FOUR_DIGITS" />، اختتامی تاریخ <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">ترسیل</translation>
@@ -4099,7 +4099,6 @@
 <translation id="7791543448312431591">شامل کریں</translation>
 <translation id="7798389633136518089">نظر انداز کی گئی کیونکہ پالیسی کلاؤڈ سورس کے ذریعے سیٹ نہیں کی گئی ہے۔</translation>
 <translation id="7800304661137206267">یہ کنکشن پیغام کی توثیق کیلئے <ph name="MAC" /> اور کلید کے تبادلے کے میکانزم کے بطور <ph name="KX" /> کے ساتھ، <ph name="CIPHER" /> کا استعمال کرتے ہوئے مرموز کیا گیا ہے۔</translation>
-<translation id="780228007282527248">اپنی تلاش کو بہتر بنانے کے لیے ایک ٹیب یا تصویر شامل کریں</translation>
 <translation id="7802523362929240268">سائٹ جائز ہے</translation>
 <translation id="7802989406998618639"><ph name="SIDE_OF_CARD" /> پر موجود <ph name="NUMBER_OF_DIGITS" /> ہندسے والا سیکیورٹی کوڈ درج کریں تاکہ آپ کا بینک توثیق کر سکے کہ یہ آپ ہی ہیں</translation>
 <translation id="780301667611848630">نہیں شکریہ</translation>
@@ -4165,6 +4164,7 @@
 <translation id="7916162853251942238">فلیکسو بیس</translation>
 <translation id="7916802424606434188">ونڈو <ph name="WINDOW_INDEX" /> (<ph name="NUM_TABS" /> ٹیبز) کو ایک نئی ونڈو میں کھولیں</translation>
 <translation id="791698251820376781">آپ کی تنظیم آپ کو سائن ان کرنے کی اجازت نہیں دیتی ہے</translation>
+<translation id="7918936720558783139">آپ کی محفوظ کردہ پیشکش چیک آؤٹ کے دوران آٹو فل کے ذریعے دستیاب ہوگی۔ <ph name="BEGIN_LINK" />پیشکشوں کا نظم کریں<ph name="END_LINK" /></translation>
 <translation id="7927046851848613453">‏آپ جو صفحات دیکھتے ہیں ان سے ٹکٹس، ایونٹس اور دیگر معلومات محفوظ کریں — نہ صرف وہ فارمز جو آپ پُر کرتے ہیں۔ پھر اپنے پاسز تک فوری رسائی حاصل کریں، جیسے ایونٹ کے ٹکٹس اور لائلٹی کارڈز۔ آپ کی محفوظ کردہ معلومات آپ کے آلات اور Google پروڈکٹس پر ظاہر ہو سکتی ہے۔</translation>
 <translation id="7930282586031445870">ابھی خریدیں، ادائیگی بعد میں کریں کی سروس کی شرائط کی اسکرین بند ہے۔</translation>
 <translation id="7932035970207573919">دفتر کا پتہ، <ph name="ADDRESS" /></translation>
@@ -4234,6 +4234,7 @@
 <translation id="8029829038322015001">سرخ 1</translation>
 <translation id="8032546467100845887">شفافیت</translation>
 <translation id="8035152190676905274">قلم</translation>
+<translation id="803703704549420287">فلٹرز کو صاف کریں</translation>
 <translation id="8037117624646282037">حال ہی میں آلہ کس نے استعمال کیا ہے</translation>
 <translation id="803771048473350947">فائل</translation>
 <translation id="8038182528865038593">سرخ 2</translation>
@@ -4422,6 +4423,7 @@
 <translation id="8363502534493474904">ہوائی جہاز وض‏ع کو آف کیا جا رہا ہے</translation>
 <translation id="8363929499301563123">ویب سائٹ کوکیز (حال ہی میں ملاحظہ کردہ ویب سائٹس پر سائن ان کی حالت کو محفوظ رکھا جائے گا)</translation>
 <translation id="8364627913115013041">سیٹ نہیں ہے۔</translation>
+<translation id="8364664414979300296">اپنی تلاش کو بہتر بنانے کے لیے ٹیبز، تصاویر اور مزید شامل کریں</translation>
 <translation id="836616551641291797">آپ کا براؤزر کیسے نظم کیا جاتا ہے اس کے بارے میں مزید جانیں</translation>
 <translation id="8367705492654390392">کچھ بھی پوچھیں</translation>
 <translation id="8368001212524806591">قیمت ٹریک کریں</translation>

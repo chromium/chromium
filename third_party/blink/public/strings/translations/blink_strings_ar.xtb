@@ -55,7 +55,6 @@
 <translation id="5196716972587102051">2</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> بيتابايت</translation>
 <translation id="5307600278924710095">يُرجى إدخال جزء متبوع بعلامة "<ph name="ATSIGN" />"، حيث إن "<ph name="INVALIDADDRESS" />" غير مكتمل.</translation>
-<translation id="5334352251556557839">تعذّر تشغيل الوسائط</translation>
 <translation id="537648784377940524">يجب أن يكون الحد الأدنى للتاريخ (<ph name="MIN_DATE_OR_TIME" />
 ) قبل الحد الأقصى للتاريخ (<ph name="MAX_DATE_OR_TIME" />).</translation>
 <translation id="5466621249238537318">يُرجى اختيار ملف واحد أو أكثر.</translation>

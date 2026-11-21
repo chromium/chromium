@@ -32,13 +32,11 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1278833599417554002">Starta om för att uppdatera &amp;Chrome</translation>
 <translation id="1289911795790071537">Öppna sökning med Chrome</translation>
 <translation id="1290883685122687410">Konfigureringsfel: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1302523850133262269">Vänta medan de senaste systemuppdateringarna installeras av Chrome.</translation>
 <translation id="1330562121671411446">Identifiera språk</translation>
 <translation id="1333654552732143316">Starta Chrome</translation>
 <translation id="1341711321000856656">Du kan byta för att se lösenord från en annan Chrome-profil</translation>
 <translation id="1343830902827845050">Logga in i Chrome</translation>
 <translation id="1361351916482714918">Surfa smartare med Google Lens</translation>
-<translation id="1363996462118479832">Det gick inte att synkronisera data med ChromeOS på grund av ett inloggningsfel.</translation>
 <translation id="137466361146087520">Google Chrome beta</translation>
 <translation id="1383876407941801731">Sök</translation>
 <translation id="1399397803214730675">Det finns redan en senare version av Google Chrome på den här datorn. Om programmet inte fungerar avinstallerar du Google Chrome och försöker igen.</translation>
@@ -89,7 +87,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="177180974022074201">Testa med Gemini i Chrome</translation>
 <translation id="1786003790898721085">Se till att du är inloggad i Chrome på <ph name="TARGET_DEVICE_NAME" /> och försök skicka igen.</translation>
 <translation id="1786044937610313874">Genvägar öppnas i Chrome</translation>
-<translation id="1812689907177901597">Om du inaktiverar detta kan du logga in på Googles webbplatser, till exempel Gmail, utan att logga in i Chrome</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome rekommenderar att du pausar fliken som saktar ned webbläsaren}other{Chrome rekommenderar att du pausar flikarna som saktar ned webbläsaren}}</translation>
 <translation id="1832046143430087831">Detta gör webbplatser snabbare med Chromes V8-motor men Chrome blir något mindre motståndskraftigt mot attacker. Inställningen är inaktiverad.</translation>
 <translation id="1838374766361614909">Rensa sökning</translation>
@@ -176,7 +173,6 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="2661616016316841783">Logga in i Chrome om du vill få tillgång till dina tillägg med mera från <ph name="DEVICE" /></translation>
 <translation id="2665296953892887393">Hjälp oss att göra Google Chrome bättre genom att skicka felrapporter och <ph name="UMA_LINK" /> till Google.</translation>
 <translation id="2668094785979141847">Klicka för att avsluta Google Lens</translation>
-<translation id="2674238339205910678">Det gick inte att spara Chrome-data i Google-kontot med ChromeOS Flex eftersom inloggningsuppgifterna för kontot är inaktuella</translation>
 <translation id="2681444469812712297">Öppna <ph name="URL" /> på en ny flik i Google Chrome.</translation>
 <translation id="2699790011615497488">Öppna Gemini i Chrome Beta</translation>
 <translation id="2738871930057338499">Det går inte att ansluta till internet. HTTP 403 Förbjuden. Kontrollera proxykonfigurationen.</translation>
@@ -287,7 +283,6 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="3756724684201900923">Läs mer om hur du installerar Chrome</translation>
 <translation id="3772152698251011058">Rapportera den här webbplatsen till Google</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
-<translation id="3785324443014631273">Det gick inte att synkronisera data med ChromeOS Flex på grund av ett inloggningsfel.</translation>
 <translation id="3810973564298564668">Hantera</translation>
 <translation id="383455301564000773">Uppgraderar du till Windows 11? Ladda ned Chrome till OneDrive så är du redo från dag ett.</translation>
 <translation id="383928141529488001">Google Chrome behöver åtkomst till Bluetooth för att utforska 
@@ -378,7 +373,6 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="4803313124144656665">Stäng Google Sök i Chrome</translation>
 <translation id="4828579605166583682">Google Chrome försöker ersätta befintliga lösenord. Skriv ditt Windows-lösenord om du vill tillåta detta.</translation>
 <translation id="4836321460899997044">Chrome-profil</translation>
-<translation id="4842397268809523050">Det gick inte att synkronisera data med ChromeOS Flex eftersom synkronisering inte är tillgängligt för din domän.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> är redan inloggad.  Om du vill hålla isär webbinformationen loggar du in i Chrome i din egen profil med <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">För att dela skärmen tillåter du skärminspelning för Chrome i systeminställningarna</translation>
 <translation id="4873783916118289636">Granska viktiga integritets- och säkerhetskontroller i Chrome</translation>
@@ -392,7 +386,6 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="492720062778050435">Du rekommenderas av Chrome att granska detta tillägg</translation>
 <translation id="4953650215774548573">Ange Google Chrome som standardwebbläsare</translation>
 <translation id="495931528404527476">I Chrome</translation>
-<translation id="4969674060580488087">Det gick inte att synkronisera data med ChromeOS Flex eftersom inloggningsuppgifterna för kontot är inaktuella.</translation>
 <translation id="4970761609246024540">Välkommen till Chrome-profiler</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Klicka på Google Lösenordshantering</translation>
@@ -426,7 +419,6 @@ Vissa funktioner är kanske inte tillgängliga. Ange en annan profilkatalog om d
 <translation id="5271833978500241046">Använd dem tillsammans med andra Gemini-funktioner i Chrome</translation>
 <translation id="5320351714793324716">Om du tillåter cookies kan Chrome använda dem när innehåll läses in i förväg</translation>
 <translation id="5321325624576443340">Google Lens är inte tillgängligt. Försök igen senare.</translation>
-<translation id="5334309298019785904">Det gick inte att synkronisera data med ChromeOS eftersom synkronisering inte är tillgängligt för din domän.</translation>
 <translation id="5336664042114176802">Du kan byta till Gemini-assistenten som ursprungligen var kopplad till ditt Google-konto och som inte hanteras av <ph name="DOMAIN" />. Svaren kommer inte längre att baseras på filer eller tjänster som hanteras av <ph name="DOMAIN" /> och din chatthistorik överförs inte. Den kanske inte är lämplig att använda i arbetet. Du måste starta om Chrome för att byta.</translation>
 <translation id="5346389065299425353">Fördjupa sökningen genom att lägga till flera flikar, filer och verktyg</translation>
 <translation id="5353252989841766347">Exportera lösenord från Chrome</translation>
@@ -556,7 +548,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6497147134301593682">Chrome avslutades automatiskt</translation>
 <translation id="6506909944137591434">Du behöver ge Chrome kamerabehörighet om du vill skapa en 3D-karta över dina omgivningar</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
-<translation id="6520608191273161151">Det gick inte att spara Chrome-data i Google-kontot med ChromeOS Flex på grund av ett inloggningsfel</translation>
 <translation id="6520670145826811516">Ge Chrome åtkomst i <ph name="BEGIN_LINK" />systeminställningarna<ph name="END_LINK" /> om du vill använda platsen</translation>
 <translation id="652948702951888897">Chrome-historik</translation>
 <translation id="6532945796722480006">Öppna Gemini i Chrome Canary</translation>
@@ -578,7 +569,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6712881677154121168">Nedladdningsfel: <ph name="DOWNLOAD_ERROR" /></translation>
 <translation id="6718739135284199302">Gör Chrome snabbare</translation>
 <translation id="6734827584173583205">Du har inte besökt webbplatsen på sistone. Chrome har tagit bort <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="COUNT" /> till.</translation>
-<translation id="6735387454586646204">ChromeOS Flex-system</translation>
 <translation id="674891594898436429">Stäng aktiv sökning på den här fliken</translation>
 <translation id="6750954913813541382">Text som du skriver i webbläsaren Chrome skickas till Google för att kontrollera stavningen</translation>
 <translation id="6760235774835597023">Detta gör webbplatser snabbare med Chromes V8-motor men Chrome blir något mindre motståndskraftigt mot attacker. Inställningen är aktiverad.</translation>
@@ -599,7 +589,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6908182077349113099">Håll dina lösenord, bokmärken och din historik perfekt synkroniserade på alla enheter. Få enkel åtkomst till funktionerna du känner till och gillar genom att uppdatera standardwebbläsaren till Chrome.</translation>
 <translation id="6926772305569367352">Knappen Google Sök i Chrome i verktygsfältet har en ny ikon. Klicka på den för att ställa frågor medan du surfar med Google Sök i Chrome.</translation>
 <translation id="6930294499209825">Ser till att Google-mjukvaran är uppdaterad. Om denna tjänst inaktiveras eller stoppas uppdateras inte Google-mjukvaran. Det innebär att vissa funktioner kanske inte fungerar och att eventuella säkerhetsrisker inte kan åtgärdas. Tjänsten avinstalleras automatiskt om den inte används av Google-mjukvara.</translation>
-<translation id="6933858244219479645">ChromeOS-system</translation>
 <translation id="6938166777909186039">Du behöver Windows 10 eller senare för att få kommande uppdateringar av Google Chrome. På den här datorn används Windows 8.1.</translation>
 <translation id="6962628299694876291"><ph name="EXISTING_USER" /> är redan inloggad. Om du vill hålla isär webbinformationen loggar du in i Chrome i din egen profil med <ph name="USER_EMAIL_ADDRESS" />. Du får även dina lösenord med mera på alla dina enheter.</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -690,7 +679,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7801699035218095297">Skriv ditt Windows-lösenord om du tillåter att lösenorden i Google Chrome kopieras.</translation>
 <translation id="7804364787702057554">Ditt konto i Chrome</translation>
 <translation id="7804947029129221742">Din sökmotor har ändrats utanför Chrome. Chrome har återställt den till standardinställningen för att skydda dig. <ph name="LEARN_MORE_LINK" /></translation>
-<translation id="7808348361785373670">Ta bort från Chrome …</translation>
 <translation id="7827099906024714326">Chrome måste verifiera din identitet innan viss data kan sparas i Google-kontot och användas på alla dina enheter. Om du loggar ut nu raderas denna data.</translation>
 <translation id="7829850924999627855">Logga in i Chrome om du vill få tillgång till din sparade information med mera från <ph name="DEVICE" /></translation>
 <translation id="7832314606810669113">Logga in i Chrome om du vill få tillgång till dina bokmärken med mera på alla dina enheter. Bokmärket sparas i ditt Google-konto när du har loggat in.</translation>
@@ -703,7 +691,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7896673875602241923">Någon har tidigare loggat in i Chrome som <ph name="ACCOUNT_EMAIL_LAST" /> på den här datorn. Skapa en ny Chrome-användare så att dina uppgifter hålls separat.</translation>
 <translation id="7904213866086517086">Öppna Google Sök i sidopanelen</translation>
 <translation id="7904985524660297937">Testa Gemini i Google Chrome</translation>
-<translation id="7905880575591690197">Det gick inte att spara Chrome-data i Google-kontot med ChromeOS på grund av ett inloggningsfel</translation>
 <translation id="7936702483636872823">Den här nedladdningen blockerades av Chrome eftersom filen är bedräglig och kan göra oväntade ändringar på enheten</translation>
 <translation id="7951272445806340501">ChromeOS Flex måste startas om för att uppdateringen ska börja gälla.</translation>
 <translation id="7959172989483770734">Hantera Chrome-profiler</translation>
@@ -764,7 +751,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="8402881611069691789">{COUNT,plural, =1{Chrome har uppdaterats. Du kan använda den senaste versionen så snart du har startat om. Dina aktuella flikar öppnas igen. Det finns ett öppet inkognitofönster eller isolerat fönster. Det öppnas inte på nytt när programmet startas om.}other{Chrome har uppdaterats. Du kan använda den senaste versionen så snart du har startat om. Dina aktuella flikar öppnas igen. Det finns # inkognitofönster och isolerade fönster öppna i olika profiler. De öppnas inte på nytt när programmet startas om.}}</translation>
 <translation id="8403038600646341038">Chrome-logotyp på en datorskärm.</translation>
 <translation id="8406687098231754303">Med knappen Google Sök i sidopanelen i verktygsfältet kan du öppna Google Sök i sidopanelen för att ställa frågor medan du surfar</translation>
-<translation id="8418845734693287262">Det gick inte att synkronisera data med ChromeOS eftersom inloggningsuppgifterna för kontot är inaktuella.</translation>
 <translation id="842386925677997438">Säkerhetsverktyg i Chrome</translation>
 <translation id="8425765582779547329">Du kan skydda dig online med dina föräldrars val genom att logga in i Chrome</translation>
 <translation id="842852285618875960">Du har nått gränsen på <ph name="BOOKMARK_LIMIT" /> bokmärken i Google Chrome, så vissa av dina bokmärken har inte sparats i Google-kontot ännu.
@@ -793,7 +779,6 @@ Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om d
 <translation id="8624541899164515475">Inställningar, öppnas på en ny flik.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Om en minut startas Chrome om}other{Om # minuter startas Chrome om}}</translation>
 <translation id="8637932705841171563">För att dela fönstret tillåter du skärminspelning för Chrome i systeminställningarna</translation>
-<translation id="8642497536370021917">Verifiera din identitet för att se till att du alltid kan använda och spara Chrome-data i Google-kontot</translation>
 <translation id="8656634243791296665">Öppna Gemini i Chrome Dev</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Det styr också vilken sida som visas när du startar Chrome.</translation>
@@ -855,7 +840,6 @@ Nya bokmärken kan inte sparas i ditt konto förrän du har raderat några. Om d
 <translation id="922152298093051471">Anpassa Chrome</translation>
 <translation id="93760716455950538">Starta om ChromeOS Flex</translation>
 <translation id="945522503751344254">Skicka feedback</translation>
-<translation id="973195869036269770">Det gick inte att spara Chrome-data i Google-kontot med ChromeOS eftersom inloggningsuppgifterna för kontot är inaktuella</translation>
 <translation id="983803489796659991">Installationen misslyckades eftersom uppdateringsservern inte har någon hashdata för appen.</translation>
 <translation id="989816563149873169">Du kan använda <ph name="SHORTCUT" /> för att byta mellan Chrome-profiler</translation>
 </translationbundle>

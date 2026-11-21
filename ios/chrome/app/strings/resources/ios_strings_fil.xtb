@@ -27,6 +27,7 @@
 <translation id="1062138828266376352">Hindi napalitan ang iyong PIN. Tingnan ang iyong koneksyon sa internet at subukan ulit</translation>
 <translation id="1063070031224282617">Piliin kung saan ise-save ang "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" (<ph name="FILE_SIZE" />)</translation>
 <translation id="1063300264396686489">Awtomatikong buksan ang mga grupo ng tab mula sa iba pang device</translation>
+<translation id="1064922761238321287">Buksan ang mga link dito</translation>
 <translation id="1072476005125066234">Mga review batay sa iyong mga interes</translation>
 <translation id="1072679792409426431">Na-disable ng iyong administrator</translation>
 <translation id="1074827084851510304">Ide-delete mo ang {password_count} (na) password at ang listahan ng mga site at app na pinili mong hinding-hindi magse-save ng impormasyon sa pag-sign in. Hindi made-delete ang anumang account na ginawa mo para sa mga site at app.</translation>
@@ -383,6 +384,7 @@
 <translation id="2089180529062519164">I-on ang Mikropono</translation>
 <translation id="2096239473850415494">Hindi ma-download</translation>
 <translation id="2096716221239095980">I-delete ang lahat ng data</translation>
+<translation id="2097502812000646256">Mare-reset sa naka-off ang mga pahintulot sa <ph name="SITE_DOMAIN" /> kapag umalis ka sa site na ito</translation>
 <translation id="2102396546234652240">Huwag payagan ang mga site na gamitin ang iyong mikropono</translation>
 <translation id="2104436223719117661">Mga trending na paghahanap</translation>
 <translation id="21133533946938348">Pin Tab</translation>
@@ -648,6 +650,7 @@
 <translation id="2941680850471407949">Tingnan ang mga source</translation>
 <translation id="2952278131021475699">Paghahanap Gamit ang Camera ng Lens</translation>
 <translation id="2953821385349876107">Pumili ng ibang Google Account</translation>
+<translation id="2957817184363338604">Ise-save ang mga chat mo sa iyong History sa Gemini. Kasama sa history ang iyong audio, mga video at screenshare sa Gemini Live, kung ano ang sine-share mo sa Gemini (tulad ng mga prompt, <ph name="BEGIN_LINK" />attachment<ph name="END_LINK" />, at <ph name="BEGIN_LINK" />screen<ph name="END_LINK" />), mga sagot ng Gemini, mga gawain at pag-call ng tool, feedback, impormasyon mula sa mga website na binibisita mo gamit ang Gemini, data ng paggamit ng produkto, general na lokasyon ng iyong device, IP address, at mga address ng Tirahan o Trabaho sa Google Account mo. Puwede rin itong magsama ng data mula sa mga app na ikokonekta mo sa Gemini.</translation>
 <translation id="2962516096219646456">Tingnan ang lahat ng data ng autofill</translation>
 <translation id="2965594942405840553">Hindi maa-undo ang aksyong ito</translation>
 <translation id="2969979262385602596">Hindi nakapag-sign in. Pakisubukang muli mamaya.</translation>
@@ -822,6 +825,7 @@
 <translation id="3533436815740441613">Bagong Tab</translation>
 <translation id="3534738261102690620">Mag-ask sa Gemini</translation>
 <translation id="3540141921715814660">Idagdag sa Mga Bookmark</translation>
+<translation id="3543157674386493176">Pinapayagan ang <ph name="SITE_DOMAIN" /> na gamitin ang iyong mikropono sa tuwing bibisita ka sa site na ito</translation>
 <translation id="3546122170015471515">Mga Preview ng Maps sa Google.com</translation>
 <translation id="3547356470684043247">Magbasa ng mga pagsusuri ng customer sa mga produkto, serbisyo, o experience para makatulong na mapagbatayan mo ng iyong mga desisyon ang mga review</translation>
 <translation id="3547933853190131743">Maghanap gamit ang AI Mode</translation>
@@ -1245,6 +1249,7 @@
 <translation id="4869146460927742717">Posisyon ng address bar</translation>
 <translation id="4870911314065352661">Isara ang lahat ng tab?</translation>
 <translation id="4872664437015695612">Buksan sa mga download</translation>
+<translation id="4875498861824207343">Sumagot ka</translation>
 <translation id="4876237378696925987">Magsimula</translation>
 <translation id="4876305945144899064">Walang username</translation>
 <translation id="4876665338492917862">Binuksan noong <ph name="LAST_OPENING_DATE" /></translation>
@@ -1255,6 +1260,7 @@
 <translation id="4884937942297374058">Naka-off ang pinaigting na proteksyon</translation>
 <translation id="4887391901725877182">Closed Captioning</translation>
 <translation id="488785315393301722">Ipakita ang Mga Detalye</translation>
+<translation id="488838826386625696">Ang gusto mong destinasyon ng link</translation>
 <translation id="4889521386764567563">Kasalukuyang profile</translation>
 <translation id="4893713555726946316">I-hide ang Hanapin sa Page</translation>
 <translation id="4894963374040315706">Binibigyang-daan ka nitong makapaghanap gamit ang iyong boses</translation>
@@ -1301,6 +1307,7 @@
 <translation id="5020732097997376541">I-tap ang "icon ng Lens"</translation>
 <translation id="5021500396464456616">Makipag-ugnayan sa taong nagpadala ng link na ito</translation>
 <translation id="503173149952522259">Pindutin nang matagal para i-pin ang tab na ito</translation>
+<translation id="5032446794387264213">Hindi pinapayagan ang <ph name="SITE_DOMAIN" /> na i-access ang iyong mikropono</translation>
 <translation id="5039804452771397117">Payagan</translation>
 <translation id="5050042263972837708">Pangalan ng grupo</translation>
 <translation id="5050810143224996149">I-share ang Password</translation>
@@ -1518,6 +1525,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="570209299585559496">Puwede mong baguhin ang default na view ng site sa desktop sa mga setting at pagkatapos ay mga setting ng content</translation>
 <translation id="5702108177581350218">Kapag nag-share ka ng kopya ng iyong username at password, puwedeng ilagay ng miyembro ng pamilya mo ang mga ito gamit ang Google Password Manager.</translation>
 <translation id="5704908597376970822">Hindi makapag-sign in.</translation>
+<translation id="5705806772157965834">Natapos na ang gawain</translation>
 <translation id="5709005673595820640">{count,plural, =1{Mayroon kang {count} password na ginamit ulit na puwedeng maglagay ng iyong seguridad sa panganib. Ayusin ito ngayon para manatiling ligtas.}one{Mayroon kang {count} password na ginamit ulit na puwedeng maglagay ng iyong seguridad sa panganib. Ayusin ang mga ito ngayon para manatiling ligtas.}other{Mayroon kang {count} na password na ginamit ulit na puwedeng maglagay ng iyong seguridad sa panganib. Ayusin ang mga ito ngayon para manatiling ligtas.}}</translation>
 <translation id="57094364128775171">Magmungkahi ng malakas na password...</translation>
 <translation id="5718049162805123412">Dapat mong palitan ang mga ito ngayon mismo</translation>
@@ -1763,6 +1771,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6436318499800111867">Na-share sa akin noong <ph name="SHARED_WITH_ME_DATE" /></translation>
 <translation id="6442327260099531031"><ph name="BEGIN_LINK" />Igalang ang privacy ng iba<ph name="END_LINK" /> at humingi ng pahintulot bago sila i-record o isama sa isang Live chat.</translation>
 <translation id="6442697326824312960">I-unpin ang Tab</translation>
+<translation id="6442784376230121293">“<ph name="RESPONSE" />”</translation>
 <translation id="6443118737398455446">Di-wastong expiration date</translation>
 <translation id="6444435711855078002">Higit Pang Opsyon</translation>
 <translation id="6445051938772793705">Bansa</translation>
@@ -1800,6 +1809,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6538776393003671043">Mag-aalok ang Chrome na i-save ito sa Google Wallet sa susunod na pagkakataong gamitin mo ito</translation>
 <translation id="6543899060872618437">Mas mabilis na mag-check out gamit ang autofill sa iyong mga device</translation>
+<translation id="6545387723662397265">Awtomatikong buksan ang mga link dito.</translation>
 <translation id="6550675742724504774">Mga Pagpipilian</translation>
 <translation id="6550891580932862748">Hindi ka poprotektahan laban sa mga mapanganib na website, download, at extension. Hindi maaapektuhan ang mga setting ng Ligtas na Pag-browse mo sa iba pang produkto ng Google.</translation>
 <translation id="6556501700899673703">Lexend</translation>
@@ -2001,8 +2011,10 @@ Para magpatuloy mula sa iyong computer, lumipat sa <ph name="OTHER_EMAIL" />. Ma
 <translation id="7149893636342594995">Nakalipas na 24 na oras</translation>
 <translation id="7151361008641622036">{count,plural, =1{Nag-organize ka ng 1 tab}one{Nag-ayos ka ng # tab}other{Nag-ayos ka ng # na tab}}</translation>
 <translation id="7154417656353909837">Alisin ang mga address</translation>
+<translation id="715826717368497238">Better together</translation>
 <translation id="7161230316646448869">I-sync ang iyong mga bookmark, history, at higit pa sa lahat ng device</translation>
 <translation id="7165323152084385463">VIN</translation>
+<translation id="7171738306460065883">Pinapayagan ang <ph name="SITE_DOMAIN" /> na gamitin ang iyong camera sa tuwing bibisita ka sa site na ito</translation>
 <translation id="7173114856073700355">Buksan ang Mga Setting</translation>
 <translation id="7173721738069475737">{count,plural, =1{Na-save ang bookmark}one{Na-save ang {count} bookmark}other{Na-save ang {count} na bookmark}}</translation>
 <translation id="7176183551031110427">Mag-zoom out</translation>
@@ -2048,7 +2060,6 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="7313347584264171202">Makikita mo rito ang iyong mga tab na Incognito</translation>
 <translation id="7318555235645532245">Tapos na ang "Mag-incognito"!</translation>
 <translation id="7322186060879266048">{count,plural, =1{{count} opsyon sa autofill ang available sa itaas ng iyong keyboard.}one{{count} opsyon sa autofill ang available sa itaas ng iyong keyboard.}other{{count} na opsyon sa autofill ang available sa itaas ng iyong keyboard.}}</translation>
-<translation id="7328162502911382168">(<ph name="COUNT" />)</translation>
 <translation id="7336264872878993241"><ph name="PERCENT" /> (na) porsyento ang na-download na</translation>
 <translation id="7345061034321640811">Hindi pinapayagan ang pag-import</translation>
 <translation id="7346922058131593019">Ano ang gusto mong gawin, <ph name="USER_FIRST_NAME" />?</translation>
@@ -2084,7 +2095,6 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="7435356471928173109">Na-off ng iyong administrator</translation>
 <translation id="7437712592381799950">Puwede kang mag-swipe pataas para makakita pa ng content na iniangkop sa iyo.</translation>
 <translation id="7438473148803748807">Mawawalan kaagad ng access ang lahat sa grupo ng tab na “<ph name="GROUP_NAME" />," at mao-off ang lahat ng link ng imbitasyon</translation>
-<translation id="7445682342344043969">Naka-block ang mga pop-up</translation>
 <translation id="7450486349221991286">I-update ang sasakyan</translation>
 <translation id="7451023311965289370">{count,plural, =1{Na-save ang bookmark sa "{title}"}one{Na-save ang mga bookmark sa "{title}"}other{Na-save ang mga bookmark sa "{title}"}}</translation>
 <translation id="7451404862887877229">I-tap ang "Privacy at Seguridad" at pagkatapos ay "Ligtas na Pag-browse"</translation>
@@ -2093,6 +2103,7 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="7458706065921255639">Pag-personalize at pag-link</translation>
 <translation id="745899714366929493">Buong araw</translation>
 <translation id="7460698861522306757">Mag-request ng Pang-mobile na Site</translation>
+<translation id="746106463537553249">Ang pinakamahusay sa Google, na binuo para sa iPad</translation>
 <translation id="7464143666517313304">Dine-delete nito ang mga address na naka-save sa device na ito.</translation>
 <translation id="7468373585447318060">Maging updated sa mga pagbaba ng presyo sa lahat ng produktong sinusubaybayan mo.</translation>
 <translation id="746872191028309255">Bilhin ang nakikita mo sa iyong camera o gallery ng larawan.</translation>
@@ -2196,6 +2207,7 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="7758789811447313947">Violet na tema</translation>
 <translation id="7759809451544302770">Opsyonal</translation>
 <translation id="7765158879357617694">Ilipat</translation>
+<translation id="7767218770008406619">Mas mabilis na cross-app na pag-browse</translation>
 <translation id="7768507955883790804">Awtomatikong susundin ng mga site ang setting na ito kapag bumisita ka sa mga ito</translation>
 <translation id="7772032839648071052">Kumpirmahin ang passphrase</translation>
 <translation id="7772948288262733182">Maligayang pagbabalik</translation>
@@ -2385,6 +2397,7 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="8299417921174340354">Para gumamit ng mga password, dapat ka munang magtakda ng passcode sa iyong device.</translation>
 <translation id="8307481894409578819">Hindi ma-upload ang file na ito</translation>
 <translation id="8311561577623915832"><ph name="EMAIL" />. <ph name="MANAGED_STATUS" />. <ph name="AI_TIER" />.</translation>
+<translation id="8317979391645758996">Mabilis na magbukas ng mga link sa YouTube, Maps, at higit pa</translation>
 <translation id="8319076807703933069">Bagong Paghahanap</translation>
 <translation id="8319282042900445670">Nakatakda ang paalala para sa <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Kamakailang Aktibidad</translation>
@@ -2482,7 +2495,6 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="8609743333007776886">Idagdag ang ${url} sa mga bookmark</translation>
 <translation id="8611922158252451755">Mae-edit ng sinumang may link ang lahat ng tab, kaya mag-ingat sa pag-share. Mag-e-expire ang link sa loob ng 48 oras.</translation>
 <translation id="8614671330774943747">Pumunta sa Tab Switcher</translation>
-<translation id="862367213447108001">Palaging magpakita ng mga pop-up sa site na ito</translation>
 <translation id="8625706492572042370">I-edit ang Home Screen</translation>
 <translation id="8626461470051201604">OCSP</translation>
 <translation id="8631370184731241854">Mga naka-lock na tab na Incognito</translation>
@@ -2517,6 +2529,7 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="8706806585855470492">Magagawa mong mag-share ng, sumali sa, at makipag-collaborate sa mga grupo ng tab</translation>
 <translation id="8709409604518538305">Isinara ang mga tab</translation>
 <translation id="8712637175834984815">Nakuha ko</translation>
+<translation id="8717444419717043666">Madaling mag-save sa Drive at Photos</translation>
 <translation id="8717519179050551968">Bawasan ang pag-paste, dagdagan ang pag-browse</translation>
 <translation id="8717864919010420084">Kopyahin ang Link</translation>
 <translation id="8722229818691036192">Mga account sa device na ito</translation>
@@ -2528,6 +2541,7 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="8730621377337864115">Tapos na</translation>
 <translation id="8731268612289859741">Panseguridad na code</translation>
 <translation id="87371078663613140">I-explore ang mga opsyon sa menu bar</translation>
+<translation id="8737778096770727055">Ang pinakamahusay sa Google, na binuo para sa iPhone</translation>
 <translation id="8739546376441802490">May ganito nang naka-pin na site</translation>
 <translation id="8741627442233023406">{count,plural, =1{Suriin ang tab…}one{Suriin ang lahat ng tab…}other{Suriin ang lahat ng tab…}}</translation>
 <translation id="8741995161408053644">Maaaring may iba pang mga uri ng history ng pag-browse ang iyong Google Account sa <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
@@ -2562,6 +2576,7 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="882557203579758546">Hanapin sa Page…</translation>
 <translation id="8829809207373502270">Hindi na gumagana ang passkey na ito. Na-delete ito sa <ph name="WEBSITE" /> at malapit na itong i-delete dito. <ph name="BEGIN_LINK" />Tungkol sa mga passkey<ph name="END_LINK" /></translation>
 <translation id="8831208860914609320">Isara ang lahat ng hindi aktibo</translation>
+<translation id="8834584302364387913">Hindi pinapayagan ang <ph name="SITE_DOMAIN" /> na i-access ang iyong camera</translation>
 <translation id="8837654851594567190">Pagbukud-bukurin ayon sa publisher</translation>
 <translation id="884351711508006491">Sine-save sa iyong device ang impormasyon mo.</translation>
 <translation id="8844136307393039959">Pagbaba ng presyo sa iyong tracked product</translation>
@@ -2676,6 +2691,7 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="9186762474139509529">Simulan ang pag-log</translation>
 <translation id="9191031968346938109">Idagdag sa…</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> (na) araw na ang nakalipas</translation>
+<translation id="9203093465376646297">Nagpatuloy ang gawain</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">Ilipat ang iyong address bar sa ibaba mula sa itaas para sa naka-customize na experience sa pag-browse.</translation>
 <translation id="9205189991633470489">Pag-lock sa Incognito</translation>

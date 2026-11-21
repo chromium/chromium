@@ -30,13 +30,11 @@
 <translation id="1278833599417554002">เปิดอีกครั้งเพื่ออัปเดต Chrome</translation>
 <translation id="1289911795790071537">เปิดการค้นหาด้วย Chrome</translation>
 <translation id="1290883685122687410">ข้อผิดพลาดในการตั้งค่า: <ph name="METAINSTALLER_EXIT_CODE" /> <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1302523850133262269">โปรดรอขณะที่ Chrome ติดตั้งการอัปเดตระบบล่าสุด</translation>
 <translation id="1330562121671411446">ตรวจหาภาษา</translation>
 <translation id="1333654552732143316">เริ่มต้นใช้งาน Chrome</translation>
 <translation id="1341711321000856656">คุณสามารถสลับเพื่อดูรหัสผ่านจากโปรไฟล์ Chrome อื่นได้</translation>
 <translation id="1343830902827845050">ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="1361351916482714918">ท่องเว็บชาญฉลาดยิ่งขึ้นด้วย Google Lens</translation>
-<translation id="1363996462118479832">Chrome OS ซิงค์ข้อมูลไม่ได้เนื่องจากเกิดข้อผิดพลาดในการลงชื่อเข้าใช้</translation>
 <translation id="137466361146087520">Google Chrome เบต้า</translation>
 <translation id="1383876407941801731">ค้นหา</translation>
 <translation id="1399397803214730675">คอมพิวเตอร์เครื่องนี้มี Google Chrome รุ่นใหม่กว่าแล้ว หากซอฟต์แวร์ไม่ทำงาน โปรดถอนการติดตั้ง Google Chrome แล้วลองใหม่อีกครั้ง</translation>
@@ -85,7 +83,6 @@
 <translation id="177180974022074201">ลองใช้ Gemini ใน Chrome</translation>
 <translation id="1786003790898721085">ตรวจสอบว่าคุณลงชื่อเข้าใช้ Chrome ใน <ph name="TARGET_DEVICE_NAME" /> แล้วลองส่งอีกครั้ง</translation>
 <translation id="1786044937610313874">ทางลัดจะเปิดใน Chrome</translation>
-<translation id="1812689907177901597">เมื่อปิดการตั้งค่านี้ คุณจะลงชื่อเข้าใช้เว็บไซต์ของ Google อย่างเช่น Gmail ได้โดยไม่ต้องลงชื่อเข้าใช้ Chrome</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome แนะนำให้หยุดแท็บที่ทำให้เบราว์เซอร์ทำงานช้าลงชั่วคราว}other{Chrome แนะนำให้หยุดแท็บที่ทําให้เบราว์เซอร์ทำงานช้าลงชั่วคราว}}</translation>
 <translation id="1832046143430087831">เร่งความเร็วเว็บไซต์ด้วยเครื่องมือ V8 ของ Chrome แต่ทำให้ Chrome ต้านทานการโจมตีได้น้อยลงเล็กน้อย การตั้งค่านี้ปิดอยู่</translation>
 <translation id="1838374766361614909">ล้างการค้นหา</translation>
@@ -172,7 +169,6 @@
 <translation id="2661616016316841783">ลงชื่อเข้าใช้ Chrome เพื่อเข้าถึงส่วนขยายและข้อมูลอื่นๆ จาก <ph name="DEVICE" /></translation>
 <translation id="2665296953892887393">ช่วยทำให้ Google Chrome ดียิ่งขึ้นโดยการส่งรายงานข้อขัดข้องและ <ph name="UMA_LINK" /> ไปยัง Google</translation>
 <translation id="2668094785979141847">คลิกเพื่อออกจาก Google Lens</translation>
-<translation id="2674238339205910678">ChromeOS Flex บันทึกข้อมูล Chrome ในบัญชี Google ไม่ได้เนื่องจากรายละเอียดการลงชื่อเข้าใช้บัญชีของคุณไม่ใช่ข้อมูลปัจจุบัน</translation>
 <translation id="2681444469812712297">เปิด <ph name="URL" /> ในแท็บใหม่ใน Google Chrome</translation>
 <translation id="2699790011615497488">เปิด Gemini ใน Chrome Beta</translation>
 <translation id="2738871930057338499">เชื่อมต่อกับอินเทอร์เน็ตไม่ได้ HTTP 403 Forbidden โปรดตรวจสอบการกำหนดค่าพร็อกซีของคุณ</translation>
@@ -283,7 +279,6 @@
 <translation id="3756724684201900923">ดูข้อมูลเพิ่มเติมเกี่ยวกับการติดตั้ง Chrome</translation>
 <translation id="3772152698251011058">รายงานเว็บไซต์นี้ไปยัง Google</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
-<translation id="3785324443014631273">Chrome OS Flex ซิงค์ข้อมูลไม่ได้เนื่องจากเกิดข้อผิดพลาดในการลงชื่อเข้าใช้</translation>
 <translation id="3810973564298564668">จัดการ</translation>
 <translation id="383455301564000773">หากจะอัปเกรดเป็น Windows 11 ดาวน์โหลด Chrome ลงใน OneDrive เพื่อให้คุณพร้อมใช้งานตั้งแต่วันแรก</translation>
 <translation id="383928141529488001">Google Chrome ต้องการสิทธิ์เข้าถึงบลูทูธเพื่อสำรวจอุปกรณ์บลูทูธ <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
@@ -373,7 +368,6 @@
 <translation id="4803313124144656665">ปิด Google Search ใน Chrome</translation>
 <translation id="4828579605166583682">Google Chrome กำลังพยายามแทนที่รหัสผ่านที่มีอยู่ โปรดพิมพ์รหัสผ่าน Windows ของคุณเพื่ออนุญาต</translation>
 <translation id="4836321460899997044">โปรไฟล์ Chrome</translation>
-<translation id="4842397268809523050">Chrome OS Flex ซิงค์ข้อมูลไม่ได้เนื่องจากการซิงค์ใช้ไม่ได้กับโดเมนของคุณ</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> ลงชื่อเข้าใช้อยู่แล้ว  หากต้องการแยกการท่องเว็บไว้ต่างหาก ให้ลงชื่อเข้าใช้ Chrome ในโปรไฟล์ของคุณเองด้วย <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="4855026984605187434">หากต้องการแชร์หน้าจอ ให้อนุญาตการบันทึกหน้าจอสำหรับ Chrome ใน "การตั้งค่าระบบ"</translation>
 <translation id="4873783916118289636">ตรวจสอบการควบคุมที่สำคัญด้านความเป็นส่วนตัวและความปลอดภัยใน Chrome</translation>
@@ -387,7 +381,6 @@
 <translation id="492720062778050435">Chrome ขอแนะนำให้คุณตรวจสอบส่วนขยายนี้</translation>
 <translation id="4953650215774548573">ตั้ง Google Chrome เป็นเบราว์เซอร์เริ่มต้นของคุณ</translation>
 <translation id="495931528404527476">ใน Chrome</translation>
-<translation id="4969674060580488087">Chrome OS Flex ซิงค์ข้อมูลไม่ได้เนื่องจากรายละเอียดการลงชื่อเข้าใช้บัญชีไม่เป็นปัจจุบัน</translation>
 <translation id="4970761609246024540">ยินดีต้อนรับสู่โปรไฟล์ Chrome</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">คลิก "เครื่องมือจัดการรหัสผ่านบน Google"</translation>
@@ -419,7 +412,6 @@
 <translation id="5271833978500241046">ใช้พร้อมกับฟีเจอร์อื่นๆ ของ Gemini ใน Chrome</translation>
 <translation id="5320351714793324716">Chrome อาจใช้คุกกี้เมื่อโหลดล่วงหน้าหากคุณอนุญาต</translation>
 <translation id="5321325624576443340">Google Lens ไม่พร้อมให้บริการ โปรดลองอีกครั้งในภายหลัง</translation>
-<translation id="5334309298019785904">Chrome OS ซิงค์ข้อมูลไม่ได้เนื่องจากการซิงค์ไม่พร้อมใช้งานสำหรับโดเมนของคุณ</translation>
 <translation id="5336664042114176802">คุณสามารถเปลี่ยนไปใช้ผู้ช่วย Gemini ที่เชื่อมโยงกับบัญชี Google ของคุณตั้งแต่แรกและไม่ได้จัดการโดย <ph name="DOMAIN" /> คำตอบจะไม่อิงตามแหล่งข้อมูลจากไฟล์หรือบริการที่ <ph name="DOMAIN" /> จัดการอีกต่อไป และระบบจะไม่ย้ายประวัติการแชทของคุณ ซึ่งอาจไม่เหมาะกับการใช้เพื่อการทำงาน ในการเปลี่ยนจะต้องเปิด Chrome อีกครั้ง</translation>
 <translation id="5346389065299425353">เจาะลึกการค้นหาด้วยการเพิ่มแท็บ ไฟล์ และเครื่องมือหลายรายการ</translation>
 <translation id="5353252989841766347">ส่งออกรหัสผ่านจาก Chrome</translation>
@@ -547,7 +539,6 @@
 <translation id="6497147134301593682">มีการปิด Chrome โดยอัตโนมัติ</translation>
 <translation id="6506909944137591434">Chrome ต้องการสิทธิ์เข้าถึงกล้องเพื่อสร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณ</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
-<translation id="6520608191273161151">ChromeOS Flex บันทึกข้อมูล Chrome ในบัญชี Google ไม่ได้เนื่องจากเกิดข้อผิดพลาดในการลงชื่อเข้าใช้</translation>
 <translation id="6520670145826811516">หากต้องการใช้ตำแหน่ง โปรดให้สิทธิ์เข้าถึงแก่ Chrome ใน<ph name="BEGIN_LINK" />การตั้งค่าระบบ<ph name="END_LINK" /></translation>
 <translation id="652948702951888897">ประวัติการเข้าชมใน Chrome</translation>
 <translation id="6532945796722480006">เปิด Gemini ใน Chrome Canary</translation>
@@ -569,7 +560,6 @@
 <translation id="6712881677154121168">ข้อผิดพลาดในการดาวน์โหลด: <ph name="DOWNLOAD_ERROR" /></translation>
 <translation id="6718739135284199302">ทำให้ Chrome เร็วขึ้น</translation>
 <translation id="6734827584173583205">คุณไม่ได้เข้าชมเมื่อเร็วๆ นี้ Chrome นำสิทธิ์เข้าถึง<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="COUNT" /> รายการออกแล้ว</translation>
-<translation id="6735387454586646204">ระบบ Chrome OS Flex</translation>
 <translation id="674891594898436429">ปิดการค้นหากิจกรรมที่ใช้งานอยู่ในแท็บนี้</translation>
 <translation id="6750954913813541382">Chrome จะส่งข้อความที่คุณพิมพ์ในเบราว์เซอร์ไปยัง Google เพื่อแก้ไขข้อผิดพลาดของการสะกดคำ</translation>
 <translation id="6760235774835597023">เร่งความเร็วเว็บไซต์ด้วยเครื่องมือ V8 ของ Chrome แต่ทำให้ Chrome ต้านทานการโจมตีได้น้อยลงเล็กน้อย การตั้งค่านี้เปิดอยู่</translation>
@@ -590,7 +580,6 @@
 <translation id="6908182077349113099">ซิงค์รหัสผ่าน บุ๊กมาร์ก และประวัติการเข้าชมในอุปกรณ์ต่างๆ ได้อย่างสมบูรณ์แบบ เข้าถึงฟีเจอร์ที่คุณรู้จักและชื่นชอบได้อย่างง่ายดายด้วยการอัปเดตเบราว์เซอร์เริ่มต้นเป็น Chrome</translation>
 <translation id="6926772305569367352">ปุ่ม "Google Search ใน Chrome" บนแถบเครื่องมือมีไอคอนใหม่ คลิกเพื่อถามคำถามขณะท่องเว็บด้วย Google Search ใน Chrome</translation>
 <translation id="6930294499209825">โปรดอัปเดตซอฟต์แวร์ Google ให้เป็นเวอร์ชันล่าสุดอยู่เสมอ หากปิดใช้หรือหยุดบริการนี้ ซอฟต์แวร์ Google ของคุณจะไม่ได้รับการอัปเดต ซึ่งหมายความว่าช่องโหว่ด้านความปลอดภัยที่อาจเกิดขึ้นจะไม่สามารถแก้ไขได้และฟีเจอร์อาจไม่ทำงาน บริการนี้จะถอนการติดตั้งตัวเองเมื่อไม่มีซอฟต์แวร์ Google ใช้งานอยู่</translation>
-<translation id="6933858244219479645">ระบบ ChromeOS</translation>
 <translation id="6938166777909186039">คุณจะต้องใช้ Windows 10 ขึ้นไปเพื่อรับการอัปเดต Google Chrome ในอนาคต คอมพิวเตอร์เครื่องนี้ใช้ Windows 8.1</translation>
 <translation id="6962628299694876291"><ph name="EXISTING_USER" /> ลงชื่อเข้าใช้อยู่แล้ว หากต้องการแยกการท่องเว็บไว้ต่างหาก ให้ลงชื่อเข้าใช้ Chrome ในโปรไฟล์ของคุณเองด้วย <ph name="USER_EMAIL_ADDRESS" /> นอกจากนี้ คุณยังรับรหัสผ่านและข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่องได้ด้วย</translation>
 <translation id="6965382102122355670">ตกลง</translation>
@@ -681,7 +670,6 @@
 <translation id="7801699035218095297">Google Chrome กำลังพยายามคัดลอกรหัสผ่าน โปรดพิมพ์รหัสผ่าน Windows ของคุณเพื่ออนุญาต</translation>
 <translation id="7804364787702057554">บัญชีของคุณใน Chrome</translation>
 <translation id="7804947029129221742">มีการเปลี่ยนเครื่องมือค้นหาของคุณจากภายนอก Chrome Chrome จึงรีเซ็ตเครื่องมือดังกล่าวเป็นค่าเริ่มต้นเดิมเพื่อปกป้องคุณ <ph name="LEARN_MORE_LINK" /></translation>
-<translation id="7808348361785373670">นำออกจาก Chrome...</translation>
 <translation id="7827099906024714326">Chrome จำเป็นต้องยืนยันว่าเป็นคุณก่อนจึงจะบันทึกข้อมูลบางอย่างในบัญชี Google และใช้ในอุปกรณ์ทุกเครื่องได้ หากคุณออกจากระบบตอนนี้ ระบบจะลบข้อมูลนี้</translation>
 <translation id="7829850924999627855">ลงชื่อเข้าใช้ Chrome เพื่อเข้าถึงข้อมูลที่บันทึกไว้และข้อมูลอื่นๆ จาก <ph name="DEVICE" /></translation>
 <translation id="7832314606810669113">ลงชื่อเข้าใช้ Chrome เพื่อเข้าถึงบุ๊กมาร์กและข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่อง ระบบจะบันทึกบุ๊กมาร์กนี้ไว้ในบัญชี Google หลังจากที่คุณลงชื่อเข้าใช้</translation>
@@ -694,7 +682,6 @@
 <translation id="7896673875602241923">ก่อนหน้านี้มีผู้ลงชื่อเข้าใช้ Chrome ในคอมพิวเตอร์นี้ด้วยชื่อ <ph name="ACCOUNT_EMAIL_LAST" /> โปรดสร้างผู้ใช้ Chrome ใหม่เพื่อเก็บข้อมูลแยก</translation>
 <translation id="7904213866086517086">เปิด Google Search ในแผงด้านข้างอีกครั้ง</translation>
 <translation id="7904985524660297937">ลองใช้ Gemini ใน Google Chrome</translation>
-<translation id="7905880575591690197">ChromeOS บันทึกข้อมูล Chrome ในบัญชี Google ไม่ได้เนื่องจากเกิดข้อผิดพลาดในการลงชื่อเข้าใช้</translation>
 <translation id="7936702483636872823">Chrome บล็อกการดาวน์โหลดนี้เนื่องจากไฟล์มีการหลอกลวงและอาจทำการเปลี่ยนแปลงที่ไม่คาดคิดกับอุปกรณ์</translation>
 <translation id="7951272445806340501">Chrome OS Flex ต้องรีสตาร์ทเพื่อใช้การอัปเดต</translation>
 <translation id="7959172989483770734">จัดการโปรไฟล์ Chrome</translation>
@@ -755,7 +742,6 @@
 <translation id="8402881611069691789">{COUNT,plural, =1{Chrome อัปเดตเสร็จแล้ว คุณจะใช้เวอร์ชันล่าสุดได้ทันทีที่เปิดอีกครั้ง หลังจากนั้น แท็บปัจจุบันจะเปิดขึ้นอีกครั้ง มีหน้าต่างที่ไม่ระบุตัวตนหรือหน้าต่างแยกเปิดอยู่ หน้าต่างดังกล่าวจะไม่เปิดขึ้นมาใหม่เมื่อคุณเปิดเบราว์เซอร์อีกครั้ง}other{Chrome อัปเดตเสร็จแล้ว คุณจะใช้เวอร์ชันล่าสุดได้ทันทีที่เปิดอีกครั้ง หลังจากนั้น แท็บปัจจุบันจะเปิดขึ้นอีกครั้ง มีหน้าต่างที่ไม่ระบุตัวตนและหน้าต่างแยก # หน้าต่างเปิดอยู่ในโปรไฟล์ต่างๆ หน้าต่างดังกล่าวจะไม่เปิดขึ้นมาใหม่เมื่อคุณเปิดเบราว์เซอร์อีกครั้ง}}</translation>
 <translation id="8403038600646341038">โลโก้ Chrome ในหน้าจอคอมพิวเตอร์</translation>
 <translation id="8406687098231754303">จากปุ่ม "Google Search ในแผงด้านข้าง" บนแถบเครื่องมือ คุณสามารถเปิด Google Search ในแผงด้านข้างอีกครั้งเพื่อถามคำถามขณะท่องเว็บได้</translation>
-<translation id="8418845734693287262">Chrome OS ซิงค์ข้อมูลไม่ได้เนื่องจากรายละเอียดการลงชื่อเข้าใช้บัญชีของคุณไม่ใช่ข้อมูลปัจจุบัน</translation>
 <translation id="842386925677997438">เครื่องมือด้านความปลอดภัยของ Chrome</translation>
 <translation id="8425765582779547329">หากต้องการท่องโลกออนไลน์อย่างปลอดภัยยิ่งขึ้นด้วยตัวเลือกของผู้ปกครอง ให้ลงชื่อเข้าใช้ Chrome</translation>
 <translation id="842852285618875960">คุณมีบุ๊กมาร์กถึงขีดจำกัด <ph name="BOOKMARK_LIMIT" /> รายการของ Google Chrome แล้ว ระบบจึงยังไม่ได้บันทึกบุ๊กมาร์กบางรายการลงในบัญชี Google
@@ -784,7 +770,6 @@
 <translation id="8624541899164515475">การตั้งค่า เปิดในแท็บใหม่</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome จะเปิดขึ้นมาใหม่ใน 1 นาที}other{Chrome จะเปิดขึ้นมาใหม่ใน # นาที}}</translation>
 <translation id="8637932705841171563">หากต้องการแชร์หน้าต่าง ให้อนุญาตการบันทึกหน้าจอสำหรับ Chrome ใน "การตั้งค่าระบบ"</translation>
-<translation id="8642497536370021917">โปรดยืนยันว่าเป็นคุณเพื่อให้ใช้และบันทึกข้อมูล Chrome ในบัญชี Google ได้เสมอ</translation>
 <translation id="8656634243791296665">เปิด Gemini ใน Chrome Dev</translation>
 <translation id="8669527147644353129">ตัวช่วยเหลือของ Google Chrome</translation>
 <translation id="8679801911857917785">อีกทั้งยังควบคุมหน้าที่จะแสดงเมื่อคุณเปิด Chrome ด้วย</translation>
@@ -846,7 +831,6 @@
 <translation id="922152298093051471">ปรับแต่ง Chrome</translation>
 <translation id="93760716455950538">รีสตาร์ท Chrome OS Flex</translation>
 <translation id="945522503751344254">ส่งความคิดเห็น</translation>
-<translation id="973195869036269770">ChromeOS บันทึกข้อมูล Chrome ในบัญชี Google ไม่ได้เนื่องจากรายละเอียดการลงชื่อเข้าใช้บัญชีของคุณไม่ใช่ข้อมูลปัจจุบัน</translation>
 <translation id="983803489796659991">การติดตั้งไม่สำเร็จเนื่องจากเซิร์ฟเวอร์การอัปเดตไม่มีข้อมูลแฮชสำหรับแอปพลิเคชัน</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> จะสลับไปมาระหว่างโปรไฟล์ Chrome ได้</translation>
 </translationbundle>

@@ -78,11 +78,13 @@ Cuestións que debes ter en conta:
 <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="2450221499140985490">Abre as ligazóns de mensaxes e documentos directamente en Chrome.</translation>
 <translation id="2459400997522001951">Completa tarefas rápidas e descubre como tirar o máximo proveito de Chrome:</translation>
-<translation id="2464852008153767546">{THRESHOLD,plural, =1{Isto ocorre cando Chrome non se utiliza durante {THRESHOLD} minuto. Eses datos poderían incluír o historial e a función de autocompletar.}other{Isto ocorre cando Chrome non se utiliza durante {THRESHOLD} minutos. Eses datos poderían incluír o historial e a función de autocompletar.}}</translation>
+<translation id="2464852008153767546">{THRESHOLD,plural, =1{Isto ocorre cando Chrome non se utiliza durante {THRESHOLD} minuto. Eses datos poderían incluír o historial e a función de autocompletar.}many{This happens when Chrome isn't used for {THRESHOLD} minutes. This could include history and autofill.}other{Isto ocorre cando Chrome non se utiliza durante {THRESHOLD} minutos. Eses datos poderían incluír o historial e a función de autocompletar.}}</translation>
 <translation id="2561231791489583059">Usa Chrome como navegador predeterminado para protexer a túa seguranza contra sitios perigosos e manter a salvo os teus contrasinais</translation>
 <translation id="2574249610672786438">Para ver as túas pestanas desde calquera dispositivo no que utilices Chrome, inicia sesión en todos eles</translation>
 <translation id="2576431527583832481">Chrome introduciu melloras. Hai dispoñible unha nova versión.</translation>
 <translation id="257708665678654955">Queres que a próxima vez Google Chrome che ofreza a posibilidade de traducir as páxinas en <ph name="LANGUAGE_NAME" /> deste sitio?</translation>
+<translation id="2599258827968143948">Os teus servizos favoritos de Google funcionan mellor con Chrome</translation>
+<translation id="260980777626165320">Abre as ligazóns externas en Chrome de forma predeterminada.</translation>
 <translation id="2668242166988961773">Fai buscas por voz en Chrome.</translation>
 <translation id="2703746758996815929">Se queres recibir consellos útiles sobre Chrome, activa as notificacións na configuración de iOS.</translation>
 <translation id="2728851697704606655">Traduce textos con Google Lens</translation>
@@ -111,11 +113,12 @@ Non poderás gardar máis ata que elimines uns cantos. Se pechas a sesión agora
 <translation id="314782365035065913">Accede a Chrome máis rápido desde a barra de aplicacións da pantalla de inicio</translation>
 <translation id="3167189358072330585">A túa conta non funciona en Google Chrome. Ponte en contacto co teu administrador de dominio ou utiliza unha conta normal de Google para iniciar sesión.</translation>
 <translation id="322254490661677575">Para usar e gardar os datos de Chrome na túa Conta de Google, introduce a túa frase de acceso.</translation>
+<translation id="3253082773078342494">Abre as ligazóns directamente en Chrome.</translation>
 <translation id="3303503998967553377">Usa Accións de Chrome en iOS</translation>
 <translation id="3348862487678490430">Engadir o elemento da lista de lectura a Chrome</translation>
 <translation id="3350281376951945723">Abre as ligazóns máis rápido ao definir Chrome como navegador predeterminado</translation>
 <translation id="3357827134511189025">Usa Chromium para autocompletar os contrasinais e as claves de acceso gardadas e iniciar sesión en calquera aplicación</translation>
-<translation id="3360031466389132716">{THRESHOLD,plural, =1{Isto ocorre cando Chrome non se utiliza durante {THRESHOLD} minuto}other{Isto ocorre cando Chrome non se utiliza durante {THRESHOLD} minutos}}</translation>
+<translation id="3360031466389132716">{THRESHOLD,plural, =1{Isto ocorre cando Chrome non se utiliza durante {THRESHOLD} minuto}many{This happens when Chrome isn't used for {THRESHOLD} minutes}other{Isto ocorre cando Chrome non se utiliza durante {THRESHOLD} minutos}}</translation>
 <translation id="3367797402528056312">Termina de configurar Chrome</translation>
 <translation id="3371064404604898522">Establecer Chrome como navegador predeterminado</translation>
 <translation id="3399930248910934354">Abrir configuración de Chrome</translation>
@@ -160,6 +163,7 @@ Non poderás gardar máis ata que elimines uns cantos. Se pechas a sesión agora
 <translation id="4693084815234024320">Estás no modo de incógnito de Chrome</translation>
 <translation id="4713740144985377441">Volve a Chrome para cargar o ficheiro</translation>
 <translation id="4724297637870447613">Usa Chrome en todas as partes</translation>
+<translation id="4733290155432110050">Ir directamente a Chrome</translation>
 <translation id="4738647308035481133">Páxina de Google Chrome</translation>
 <translation id="4742795653798179840">Datos de Chrome eliminados</translation>
 <translation id="4761869838909035636">Executar Comprobación de seguranza de Chrome</translation>
@@ -204,7 +208,7 @@ Espera uns minutiños antes de pechar a sesión. Se a pechas agora, estes datos 
 <translation id="5642200033778930880">Google Chrome non pode usar a cámara no modo Vista dividida</translation>
 <translation id="5661521615548540542">O xestor de contrasinais de Google non puido comprobar todos os contrasinais. Téntao de novo máis tarde.</translation>
 <translation id="5681291952421236520">Activa Chrome</translation>
-<translation id="5690398455483874150">{count,plural, =1{Mostrando 1 ventá de Chrome}other{Mostrando {count} ventás de Chrome}}</translation>
+<translation id="5690398455483874150">{count,plural, =1{Mostrando 1 ventá de Chrome}many{Now showing {count} Chrome windows}other{Mostrando {count} ventás de Chrome}}</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5709557627224531708">Define Chrome como navegador predeterminado</translation>
 <translation id="571296537125272375">Non tes conexión. Chrome non puido buscar actualizacións</translation>
@@ -267,6 +271,7 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="7038674195294813388">Abre a configuración de Default Apps (Aplicacións predeterminadas) en iOS, toca Browser App (Aplicación de navegador) e selecciona Chrome.</translation>
 <translation id="7056826488869329999">Abre e executa Comprobación de seguranza en Chrome.</translation>
 <translation id="7061455974939528301">Mantén premida a icona de Chrome e fai clic en na opción Edit Home Screen (Editar pantalla de inicio)</translation>
+<translation id="7067302528015227615">Define Chrome como navegador predeterminado para que as transicións entre aplicacións sexan máis rápidas e sinxelas.</translation>
 <translation id="7095110968493193530">No xestor de contrasinais de Google para <ph name="EMAIL" /></translation>
 <translation id="7124339256045485976">Mantén Chrome actualizado</translation>
 <translation id="7135936755418321901">Toca en Configuración e permite que Chrome use a túa localización para poder compartila con sitios web.</translation>
@@ -278,6 +283,7 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="7200524487407690471">Chrome executa automaticamente Comprobación de seguranza todos os días para protexerte das violacións da seguranza dos datos e dos sitios web pouco seguros, entre outras cousas. Podes consultar máis información sobre esta función en Configuración.</translation>
 <translation id="7214019116829172458">Abre unha pestana do modo de incógnito en Chrome</translation>
 <translation id="722167379782941918">Chrome recomenda protección mellorada</translation>
+<translation id="722921700949937243">Asegúrate de que todas as ligazóns se abran sempre en Chrome.</translation>
 <translation id="723787869754590019">Usa Chrome para a función de autocompletar</translation>
 <translation id="7261678641327190792">Chrome non puido comprobar os teus contrasinais</translation>
 <translation id="7272091023280308138">Abre as ligazóns directamente en Chrome a próxima vez sen ter que copiar primeiro os URL.</translation>

@@ -97,7 +97,7 @@
 <translation id="5095424396646120601">崩溃报告</translation>
 <translation id="5170982930780719864">主机 ID 无效。</translation>
 <translation id="5204575267916639804">常见问题解答</translation>
-<translation id="5222676887888702881">退出</translation>
+<translation id="5222676887888702881">退出账号</translation>
 <translation id="5234764350956374838">关闭</translation>
 <translation id="5308380583665731573">连接</translation>
 <translation id="533625276787323658">没有可连接到的计算机</translation>
@@ -140,6 +140,7 @@
 <translation id="7067321367069083429">屏幕充当触摸屏</translation>
 <translation id="7116737094673640201">欢迎使用 Chrome 远程桌面</translation>
 <translation id="7144878232160441200">重试</translation>
+<translation id="7162927787954413908">按 Ctrl+Alt+Esc 可断开连接</translation>
 <translation id="7312846573060934304">主机未连接到网络。</translation>
 <translation id="7319983568955948908">停止共享</translation>
 <translation id="7359298090707901886">无法使用所选浏览器在本地计算机上打开网址。</translation>

@@ -373,6 +373,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> erabiltzaileak fitxa bat kendu du</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1623104350909869708">Ez utzi orri honi elkarrizketa-koadroa gehigarriak sortzea</translation>
+<translation id="1624535934412288769">Zutabeak</translation>
 <translation id="1629390138158333592">Bilatu sarean</translation>
 <translation id="1633137413609266904">{0,plural, =1{Administratzailearen gidalerroek ez dute uzten fitxategia irekitzen}other{Administratzailearen gidalerroek ez dute uzten # fitxategi irekitzen}}</translation>
 <translation id="1634828734222219955">Guztira</translation>
@@ -1082,6 +1083,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2803320044666896137">Gidalerroaren balioari ez ikusi egiten zaio, erabiltzailea ez dagoelako afiliatuta.</translation>
 <translation id="2807052079800581569">Irudiaren Y ardatzaren posizioa</translation>
 <translation id="2808278141522721006">Windows Hello aktibatu edo desaktibatzeko, joan <ph name="SETTINGS" /> atalera</translation>
+<translation id="2820159698793041599">Ezin izan da ezarri konexio segururik proxy-zerbitzariarekin.</translation>
 <translation id="2820957248982571256">Bilatzen…</translation>
 <translation id="282457273878278063">Kudeatu harremanetarako informazioa</translation>
 <translation id="2824775600643448204">Helbide- eta bilaketa-barra</translation>
@@ -1263,6 +1265,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="3120807611504813890">Gutun-azala (arina)</translation>
 <translation id="3121994479408824897">Joan <ph name="DOMAIN" /> domeinura</translation>
 <translation id="3126023634486644099">Etiketak (iraunkorrak)</translation>
+<translation id="3128081114752791872">Proxy-zerbitzariaren segurtasun-ziurtagiriak ez du balio.</translation>
 <translation id="3131746543143948171">Webgune hau phishingarekin, malwarearekin eta azpikeriekin erlazionatutako beste webgune batzuen antzekoa da. <ph name="BEGIN_LEARN_MORE_LINK" />Lortu informazio gehiago<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">Gorde Redress zenbakia</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> da bilatzaile lehenetsia orain</translation>
@@ -1677,7 +1680,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="3800436529451849929"><ph name="SITE" /> webgunetik</translation>
 <translation id="3801297763951514916">Maiz bisitatzen duzu</translation>
 <translation id="380329542618494757">Izena</translation>
-<translation id="3803481123869276674">Chrome-n erosketak egitean, izan diru-zorro digitala kontuan</translation>
 <translation id="3803801106042434208">Bilatzaile hauek asko erabiltzen dira zure lurraldean</translation>
 <translation id="3804112825000113857">Ikusi betetze automatikoaren ezarpenak</translation>
 <translation id="380666903981445943">Gorde ordainketa-metodo bat Google-ko kontuan, Chrome-n zerbait erostean automatikoki betetzeko</translation>
@@ -2160,6 +2162,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="4612631413844865947">Errore bat gertatu da <ph name="MERCHANT_ORIGIN" /> saltzaileari <ph name="PAYMENT_APP_ORIGIN" /> bidez egindako eskaera prozesatzean.</translation>
 <translation id="4612904677925722054">Baliteke webgune honek helduentzako edukia izatea. Guraso edo tutore batek webgunea bisitatzeko baimena eman behar dizu.</translation>
 <translation id="4613873770449493819">URLak <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> domeinu batera bideratu behar du.</translation>
+<translation id="4615154194248230658">Eredu hau ez dator bat balio duen helbide elektroniko baten domeinuarekin. Baliteke erabiltzaileek saioa hasi ezin izatea edo lehendik dauden profilak kentzea.</translation>
 <translation id="4619564267100705184">Egiaztatu zeu zarela</translation>
 <translation id="4619669610757527494">Gorde gidabaimena Google Wallet-en</translation>
 <translation id="4622292761762557753">Transferitu halere</translation>
@@ -2678,7 +2681,6 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="5447235695608032700">Eman zuri buruz gordetako informazioa erabiltzeko baimena <ph name="SITE" /> webguneari</translation>
 <translation id="5447973833955560753">Kontua berreskuratzeko pasahitza</translation>
 <translation id="5452270690849572955">Ezin da aurkitu <ph name="HOST_NAME" /> webguneko orria</translation>
-<translation id="5452923259299906094">Ordaindu diru-zorro digitala eta Pix erabilita</translation>
 <translation id="5455374756549232013">Gidalerroaren denbora-zigiluak ez du balio</translation>
 <translation id="5456428544444655325">Ez erakutsi inoiz</translation>
 <translation id="5457082343331641453">Gehitu zerbait bilaketan</translation>
@@ -3892,7 +3894,6 @@ Xehetasun gehiago:
 <translation id="7489919936111034362">Beteta dago Google Drive-ko biltegia</translation>
 <translation id="7490622939531327327">Inprimakien ulermen adimentsuagoa</translation>
 <translation id="7495528107193238112">Eduki hori blokeatuta dago. Jarri harremanetan webgunearen arduradunarekin arazoa konpontzeko.</translation>
-<translation id="7499188644237027195">Chrome-n erosketak egitean, izan diru-zorro digitala eta Pix kontuan</translation>
 <translation id="7499684925421947861"><ph name="DOMAIN" /> domeinuan zure izenean saioa hasteko baimena eman nahi diozu <ph name="ACTOR_NAME" /> zerbitzuari?</translation>
 <translation id="7501663406926337752">Zure erakundeak webgune hori salatu du</translation>
 <translation id="7502044688973049724">informazioa kudeatzeko</translation>
@@ -4017,7 +4018,6 @@ Xehetasun gehiago:
 <translation id="7676840398262504532">Zure erakundeak kontrolatzen du kopiak egiteko aukera</translation>
 <translation id="767806704757698045">Onartutako webguneetan soilik funtzionatzen du</translation>
 <translation id="7678730592635586336">Errepikatu grabaketa</translation>
-<translation id="7679287273775285018">Ordaindu diru-zorro digitala erabilita</translation>
 <translation id="7679367271685653708">Ikusi eta kudeatu arakatze-historia Chrome-ren ezarpenetan</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, <ph name="CARD_EXPIRATION" /> datan iraungiko da</translation>
 <translation id="7682287625158474539">Bidalketa</translation>
@@ -4092,7 +4092,6 @@ Xehetasun gehiago:
 <translation id="7791543448312431591">Gehitu</translation>
 <translation id="7798389633136518089">Gidalerroari ez ikusi egin zaio ez duelako hodeiko iturri batek ezarri.</translation>
 <translation id="7800304661137206267">Konexioa <ph name="CIPHER" /> bidez enkriptatuta dago, <ph name="MAC" /> erabiltzen du mezu-autentifikaziorako eta <ph name="KX" /> du gako-trukaketarako mekanismo gisa.</translation>
-<translation id="780228007282527248">Gehitu fitxa edo irudi bat bilaketa hobetzeko</translation>
 <translation id="7802523362929240268">Fidagarria da webgunea</translation>
 <translation id="7802989406998618639">Idatzi <ph name="SIDE_OF_CARD" /> dagoen <ph name="NUMBER_OF_DIGITS" /> digituko segurtasun-kodea, bankuak zeu zarela egiaztatu ahal izan dezan</translation>
 <translation id="780301667611848630">Ez, eskerrik asko</translation>
@@ -4158,6 +4157,7 @@ Xehetasun gehiago:
 <translation id="7916162853251942238">Flexo oinarria</translation>
 <translation id="7916802424606434188">Ireki <ph name="WINDOW_INDEX" /> leihoa (<ph name="NUM_TABS" /> fitxa) beste leiho batean</translation>
 <translation id="791698251820376781">Erakundeak ez dizu uzten saioa hasten</translation>
+<translation id="7918936720558783139">Gordetako eskaintza ordainketa-prozesuan egongo da erabilgarri betetze automatikoa erabilita. <ph name="BEGIN_LINK" />Kudeatu eskaintzak<ph name="END_LINK" /></translation>
 <translation id="7927046851848613453">Gorde ikusten dituzun orrietako sarrerak, gertaerak eta bestelako informazioa; ez bete dituzun inprimakiak soilik. Ondoren, atzitu txartelak bizkor, hala nola sarrerak eta fideltasun-txartelak. Gordetako informazioa zure gailuetan eta Google-ren produktuetan ager daiteke.</translation>
 <translation id="7930282586031445870">Epekako ordainketaren zerbitzu-baldintzen pantaila itxita dago.</translation>
 <translation id="7932035970207573919">Laneko helbidea, <ph name="ADDRESS" /></translation>
@@ -4227,6 +4227,7 @@ Xehetasun gehiago:
 <translation id="8029829038322015001">Gorri argia</translation>
 <translation id="8032546467100845887">Gardentasuna</translation>
 <translation id="8035152190676905274">Bolaluma</translation>
+<translation id="803703704549420287">Garbitu iragazkiak</translation>
 <translation id="8037117624646282037">Gailua duela gutxi erabili dutenak</translation>
 <translation id="803771048473350947">Fitxategia</translation>
 <translation id="8038182528865038593">Gorria</translation>
@@ -4415,6 +4416,7 @@ Xehetasun gehiago:
 <translation id="8363502534493474904">Hegaldi modua desaktibatu.</translation>
 <translation id="8363929499301563123">Webguneen cookieak (azkenaldian bisitatu dituzun webguneetako saio-hasierak mantenduko dira)</translation>
 <translation id="8364627913115013041">Ez da ezarri.</translation>
+<translation id="8364664414979300296">Gehitu fitxak, argazkiak eta abar bilaketa hobetzeko</translation>
 <translation id="836616551641291797">Lortu arakatzailea kudeatzeko moduari buruzko informazio gehiago</translation>
 <translation id="8367705492654390392">Galdetu edozer</translation>
 <translation id="8368001212524806591">Egin prezioen jarraipena</translation>

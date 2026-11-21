@@ -10,6 +10,7 @@
 <translation id="1097658378307015415">Trước khi đăng nhập, vui lòng đăng nhập với tư cách khách để kích hoạt mạng <ph name="NETWORK_ID" /></translation>
 <translation id="1111932478203988717">Trẻ có thể dùng mã PIN này để đăng nhập vào thiết bị của mình</translation>
 <translation id="1122587596907914265">Thiết kế hình nền độc đáo</translation>
+<translation id="1122913801042512795">Thông tin chi tiết đăng nhập vào tài khoản của bạn đã cũ. Vui lòng đăng xuất và đăng nhập lại.</translation>
 <translation id="1131201598497838573">Đã cập nhật mã PIN của trẻ</translation>
 <translation id="1147322039136785890">Bây giờ, <ph name="SUPERVISED_USER_NAME" /> có thể dùng thiết bị</translation>
 <translation id="1148669835763563782">Bạn sẽ nhận được bản cập nhật phần mềm mới nhất giúp tăng cường khả năng bảo mật và các tính năng mới nhất của Chromebook. Bản cập nhật này đã cải thiện quy trình thiết lập, giúp bạn có khởi đầu suôn sẻ trên Chromebook.</translation>
@@ -26,6 +27,7 @@
 <translation id="1256588359404100567">Đã đồng bộ hoá chế độ cài đặt từ thiết bị trước của bạn.</translation>
 <translation id="1272978324304772054">Tài khoản người dùng này không thuộc về miền mà thiết bị được đăng ký. Nếu bạn muốn đăng ký miền khác, bạn cần tìm thiết bị trước tiên.</translation>
 <translation id="1293556467332435079">Tệp</translation>
+<translation id="1302523850133262269">Vui lòng đợi khi Chrome cài đặt các bản cập nhật hệ thống mới nhất.</translation>
 <translation id="1307559529304613120">Rất tiếc! Hệ thống không lưu trữ được mã thông báo truy cập API dài hạn cho thiết bị này.</translation>
 <translation id="1335929031622236846">Đăng ký thiết bị của bạn</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Tính năng gỡ lỗi<ph name="END_H3" />
@@ -49,6 +51,7 @@
 <translation id="1347625331607114917">Xác minh mã trên điện thoại Android</translation>
 <translation id="1347975661240122359">Sẽ bắt đầu cập nhật khi pin đạt đến mức <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">Để sử dụng các quyền kiểm soát của cha mẹ như phê duyệt ứng dụng và giới hạn thời gian sử dụng thiết bị, trẻ phải có một Tài khoản Google do cha mẹ quản lý. Bạn có thể thêm một tài khoản trường học vào lúc khác để dùng các công cụ như Google Lớp học.</translation>
+<translation id="1363996462118479832">ChromeOS không thể đồng bộ hoá dữ liệu của bạn do lỗi đăng nhập.</translation>
 <translation id="1375557162880614858">Bạn có muốn kích hoạt ChromeVox (trình đọc màn hình tích hợp cho ChromeOS Flex) không?</translation>
 <translation id="1377600615067678409">Bỏ qua ngay bây giờ</translation>
 <translation id="1399261165075500043">Không tải được Điều khoản dịch vụ của Google Play</translation>
@@ -73,6 +76,7 @@
 <translation id="1642494467033190216">Yêu cầu xóa bảo vệ rootfs và khởi động lại trước khi bật các tính năng gỡ lỗi khác.</translation>
 <translation id="1646045728251578877">Đã có bản cập nhật phần mềm</translation>
 <translation id="1650801028905250434">Các tệp trong Drive của tôi sẽ tự động đồng bộ hoá với Chromebook để bạn có thể truy cập các tệp này mà không cần kết nối Internet. Bạn có thể thay đổi chế độ cài đặt này bất cứ lúc nào trong phần Cài đặt &gt; Tệp.</translation>
+<translation id="16620462294541761">Rất tiếc, không thể xác minh được mật khẩu của bạn. Vui lòng thử lại.</translation>
 <translation id="1668435968811469751">Đăng ký theo cách thủ công</translation>
 <translation id="1678919064276516737">Địa chỉ email và mã PIN bạn nhập không khớp</translation>
 <translation id="1692115862433274081">Sử dụng một tài khoản khác</translation>
@@ -94,6 +98,7 @@
 <translation id="1868617395637139709">Sử dụng thông tin vị trí cho các ứng dụng và dịch vụ Android.</translation>
 <translation id="1877377730633446520">Tính năng này sẽ sử dụng khoảng <ph name="REQUIRED_SPACE" />. Bạn hiện có <ph name="FREE_SPACE" />.</translation>
 <translation id="1878155070920054810">Có vẻ như Chromebook sẽ hết pin trước khi quá trình cập nhật hoàn tất. Hãy đảm bảo Chromebook đang sạc đúng cách để tránh bị gián đoạn.</translation>
+<translation id="1887442540531652736">Lỗi đăng nhập</translation>
 <translation id="189035593835762169">Điều khoản và điều kiện</translation>
 <translation id="189358972401248634">Ngôn ngữ khác</translation>
 <translation id="1915734383465415025">Số hiệu cửa hàng</translation>
@@ -122,6 +127,7 @@
 <translation id="2210462644007531147">Không thể hoàn tất quá trình cài đặt</translation>
 <translation id="221872881068107022">Cuộn ngược</translation>
 <translation id="2219081237089444028">Đặt mật khẩu cho <ph name="DEVICE_TYPE" /> để đăng nhập dễ dàng hơn</translation>
+<translation id="2220529011494928058">Báo cáo sự cố</translation>
 <translation id="222115440608612541">Chuyển đổi giao diện lúc bình minh và hoàng hôn</translation>
 <translation id="2229161054156947610">Còn hơn 1 giờ</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> của bạn tự động cập nhật ở chế độ nền để đem đến cho bạn những cải tiến về khả năng bảo mật và tính năng mới nhất. Bạn có thể xem xét các lựa chọn ưu tiên về bản cập nhật trong phần Cài đặt.</translation>
@@ -132,6 +138,7 @@
 <translation id="2328137272841210255">Đặt lại mã PIN của bạn</translation>
 <translation id="2342180549977909852">Con bạn có thể sử dụng một dãy số (mã PIN) thay vì mật khẩu để mở khóa thiết bị này. Để đặt mã PIN vào thời điểm khác, hãy chuyển đến phần Cài đặt.</translation>
 <translation id="2359808026110333948">Tiếp tục</translation>
+<translation id="2384373936468275798">ChromiumOS không thể đồng bộ hoá dữ liệu của bạn vì thông tin đăng nhập vào tài khoản của bạn đã lỗi thời.</translation>
 <translation id="2387052489799050037">Chuyển đến Màn hình chính</translation>
 <translation id="2395616325548404795">Thiết bị <ph name="DEVICE_TYPE" /> của bạn đã được đăng ký thành công cho quản lý doanh nghiệp, nhưng không gửi được thông tin phần tử và vị trí. Vui lòng nhập thủ công thông tin này từ Bảng điều khiển dành cho quản trị viên của thiết bị này.</translation>
 <translation id="2408955596600435184">Nhập mã PIN của bạn</translation>
@@ -158,6 +165,7 @@
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Dịch vụ vị trí của Google dùng những nguồn như Wi-Fi, mạng di động và các cảm biến để giúp ước tính vị trí của thiết bị này.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Bạn có thể tắt dịch vụ vị trí của Android trên thiết bị này bất cứ lúc nào bằng cách chuyển tới phần Cài đặt &gt; Ứng dụng &gt; Cửa hàng Google Play &gt; Quản lý tuỳ chọn Android &gt; Bảo mật và vị trí &gt; Vị trí. Bạn cũng có thể không cho phép dịch vụ vị trí của Android sử dụng Wi-Fi, mạng di động và các cảm biến bằng cách tắt lựa chọn "Độ chính xác của vị trí trên Google" trong cùng một trình đơn.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2663302507110284145">Ngôn ngữ</translation>
+<translation id="2674238339205910678">ChromeOS Flex không thể lưu dữ liệu Chrome vào Tài khoản Google của bạn vì thông tin đăng nhập tài khoản đã lỗi thời</translation>
 <translation id="2687407218262674387">Điều khoản dịch vụ của Google</translation>
 <translation id="2688196195245426394">Lỗi khi đăng ký thiết bị với máy chủ: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Đây là thiết bị đi kèm và bạn không thể đăng ký bằng Bản nâng cấp Kiosk &amp; Signage.</translation>
@@ -252,6 +260,7 @@
 <translation id="3740945083753997630">Giảm kích thước hiển thị và văn bản</translation>
 <translation id="376841534249795524">Bạn sẽ dùng <ph name="DEVICE_TYPE" /> vào những việc gì?</translation>
 <translation id="3772046291955677288">Tôi đã đọc và đồng ý với <ph name="BEGIN_LINK1" />Điều khoản dịch vụ của Google<ph name="END_LINK1" /> và <ph name="BEGIN_LINK2" />Điều khoản dịch vụ bổ sung của Google Chrome và Chrome OS<ph name="END_LINK2" />.</translation>
+<translation id="3785324443014631273">ChromeOS Flex không đồng bộ hoá được dữ liệu của bạn do xảy ra lỗi khi đăng nhập.</translation>
 <translation id="3789841737615482174">Cài đặt</translation>
 <translation id="3800828618615365228">Các điều khoản bổ sung của Google Chrome và Chrome OS</translation>
 <translation id="3828953470056652895">Tôi đã đọc và đồng ý với <ph name="BEGIN_LINK1" />Điều khoản dịch vụ của Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Điều khoản dịch vụ bổ sung của Google Chrome và Chrome OS<ph name="END_LINK2" /> và <ph name="BEGIN_LINK3" />Điều khoản dịch vụ của Play<ph name="END_LINK3" />.</translation>
@@ -332,6 +341,7 @@
         <ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Để được trợ giúp thêm, hãy truy cập: g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Bạn muốn thêm ai vào chiếc <ph name="DEVICE_TYPE" /> này?</translation>
+<translation id="4543778593405494224">Trình quản lý chứng chỉ</translation>
 <translation id="4566170377336116390">Nếu muốn chuyển đổi sau khi đăng ký, bạn sẽ phải đặt lại thiết bị về trạng thái ban đầu (powerwash).</translation>
 <translation id="4567512141633030272">Sai phương thức đăng nhập?</translation>
 <translation id="4567533462991917415">Sau khi thiết lập, bạn có thể thêm những người khác bất cứ lúc nào. Mỗi người đều có thể điều chỉnh tài khoản theo cách riêng và bảo mật dữ liệu.</translation>
@@ -349,6 +359,7 @@
 <translation id="4814327014588285482">Bỏ qua và nhắc tôi sau</translation>
 <translation id="4830502475412647084">Đang cài đặt bản cập nhật hệ điều hành</translation>
 <translation id="4837926214103741331">Bạn không được phép sử dụng thiết bị này. Vui lòng liên hệ với chủ sở hữu thiết bị để có quyền đăng nhập.</translation>
+<translation id="4842397268809523050">ChromeOS Flex không đồng bộ hoá được dữ liệu của bạn vì miền của bạn không dùng được tính năng đồng bộ hoá.</translation>
 <translation id="4844333629810439236">Các bàn phím khác</translation>
 <translation id="484462545196658690">Tự động</translation>
 <translation id="4864369630010738180">Đang đăng nhập...</translation>
@@ -360,6 +371,7 @@
 <translation id="4944310289250773232">Dịch vụ xác thực này do <ph name="SAML_DOMAIN" /> lưu trữ</translation>
 <translation id="4955710816792587366">Chọn mã PIN</translation>
 <translation id="4965808351167763748">Bạn có chắc chắn muốn thiết lập thiết bị này để chạy Hangouts Meet không?</translation>
+<translation id="4969674060580488087">ChromeOS Flex không đồng bộ hoá được dữ liệu của bạn vì thông tin đăng nhập tài khoản của bạn đã cũ.</translation>
 <translation id="4987944280765486504">Chromebook sẽ khởi động lại khi quá trình tải xuống hoàn tất và bạn có thể tiếp tục thiết lập sau đó.</translation>
 <translation id="5029287942302939687">Đã đặt mật khẩu xong</translation>
 <translation id="503155457707535043">Đang tải ứng dụng xuống</translation>
@@ -401,6 +413,8 @@
 <translation id="528208740344463258">Để tải xuống và dùng các ứng dụng Android, trước tiên, bạn cần cài đặt bản cập nhật bắt buộc này. Bạn sẽ không thể sử dụng <ph name="DEVICE_TYPE" /> trong khi thiết bị đang cập nhật. <ph name="DEVICE_TYPE" /> sẽ khởi động lại sau khi quá trình cài đặt hoàn tất.</translation>
 <translation id="5283677936944177147">Rất tiếc! Hệ thống không xác định được số sê-ri hoặc kiểu thiết bị.</translation>
 <translation id="5333896723098573627">Để xoá ứng dụng, hãy chuyển đến phần Cài đặt &gt; Cửa hàng Google Play &gt; Quản lý tuỳ chọn Android &gt; Ứng dụng hoặc Trình quản lý ứng dụng. Tiếp theo, nhấn vào ứng dụng mà bạn muốn gỡ cài đặt (bạn có thể phải vuốt sang phải hoặc trái để tìm ứng dụng đó). Sau đó, nhấn vào Gỡ cài đặt hoặc Tắt.</translation>
+<translation id="5334309298019785904">ChromeOS không đồng bộ hoá được dữ liệu của bạn vì miền của bạn không dùng được tính năng đồng bộ hoá.</translation>
+<translation id="535243042947607642">ChromiumOS không thể lưu dữ liệu Chromium vào Tài khoản Google của bạn vì thông tin đăng nhập tài khoản đã lỗi thời</translation>
 <translation id="5355501370336370394">Đăng ký thiết bị doanh nghiệp</translation>
 <translation id="5372529912055771682">Chế độ đăng ký đã cung cấp không được phiên bản hệ điều hành này hỗ trợ. Hãy đảm bảo bạn đang chạy phiên bản mới nhất và thử lại.</translation>
 <translation id="5397378439569041789">Đăng ký thiết bị kiosk hoặc thiết bị bảng hiệu</translation>
@@ -412,6 +426,7 @@
 <translation id="5448293924669608770">Rất tiếc, đã xảy ra lỗi khi đăng nhập</translation>
 <translation id="5453829744223920473">Con bạn có thể sử dụng tất cả ứng dụng, dấu trang và tài nguyên của trường học giống như trong lớp học. Trường học sẽ đặt ra các quy tắc cơ bản.</translation>
 <translation id="5473099001878321374">Bằng cách tiếp tục, bạn đồng ý rằng thiết bị này cũng có thể tự động tải xuống và cài đặt các bản cập nhật và ứng dụng của Google, nhà mạng của con bạn và nhà sản xuất thiết bị (có thể dùng dữ liệu di động). Một vài ứng dụng trong số này có thể cung cấp các lựa chọn mua hàng trong ứng dụng.</translation>
+<translation id="549669000822060376">Vui lòng đợi khi Chromium cài đặt các bản cập nhật hệ thống mới nhất.</translation>
 <translation id="5502915260472117187">Một trẻ</translation>
 <translation id="5511823366942919280">Bạn có chắc chắn muốn thiết lập thiết bị này là "Shark" không?</translation>
 <translation id="5513807280330619196">Máy tính</translation>
@@ -515,6 +530,7 @@
 <translation id="6495266441917713704">Không thể truyền Wi-Fi</translation>
 <translation id="6515620015470298987">Không đăng nhập được do vấn đề về việc kiểm tra cấu hình thiết bị. Vui lòng định dạng lại <ph name="DEVICE_TYPE" /> rồi thử lại.</translation>
 <translation id="6519689855001245063">Đang kiểm tra tính đủ điều kiện</translation>
+<translation id="6520608191273161151">ChromeOS Flex không thể lưu dữ liệu Chrome vào Tài khoản Google của bạn do xảy ra lỗi khi đăng nhập</translation>
 <translation id="6532527800157340614">Không đăng nhập được do không thể lấy mã truy cập. Vui lòng kiểm tra kết nối mạng rồi thử lại.</translation>
 <translation id="653920215766444089">Đang tìm kiếm thiết bị trỏ</translation>
 <translation id="65513682072153627">Bạn sẽ thấy biểu tượng Được quản lý khi một chế độ cài đặt hay tính năng là do quản trị viên của bạn quản lý.</translation>
@@ -526,8 +542,10 @@
 <translation id="6675665718701918026">Đã kết nối thiết bị trỏ</translation>
 <translation id="667752334740867460">Đang nhận thông tin Wi-Fi...</translation>
 <translation id="6680442031740878064">Còn trống: <ph name="AVAILABLE_SPACE" /></translation>
+<translation id="668175097507315160">ChromiumOS không thể đồng bộ hoá dữ liệu của bạn do lỗi khi đăng nhập.</translation>
 <translation id="6684827949542560880">Đang tải bản cập nhật mới nhất xuống</translation>
 <translation id="6722744767592605627">Bạn có thể khôi phục <ph name="EMAIL" />, nhưng dữ liệu cục bộ sẽ bị xoá.</translation>
+<translation id="6735387454586646204">Hệ thống ChromeOS Flex</translation>
 <translation id="6748980958975836188">Tôi đã đọc và đồng ý với <ph name="BEGIN_LINK1" />Điều khoản dịch vụ của Google<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Điều khoản dịch vụ bổ sung của Google Chrome và Chrome OS<ph name="END_LINK2" />.</translation>
 <translation id="6749473226660745022">Ảnh</translation>
 <translation id="6754918760968695779">Chèn nhanh</translation>
@@ -552,6 +570,7 @@
 <translation id="6918733588290914545">Thiết lập nhanh bằng điện thoại Android</translation>
 <translation id="6920473853105515518">Hãy đảm bảo <ph name="DEVICE_TYPE" /> đã kết nối với Internet rồi thử lại. Bạn cũng có thể truy cập play.google/play-terms trên một thiết bị khác.</translation>
 <translation id="6929126689972602640">Tài khoản trường học không hỗ trợ các quyền kiểm soát của cha mẹ. Nếu bạn muốn thêm một tài khoản trường học để truy cập vào Google Lớp học và các trang web khác để làm bài tập ở nhà, trước tiên, hãy đăng nhập bằng tài khoản cá nhân của trẻ. Bạn có thể thêm tài khoản trường học sau này trong phần cài đặt.</translation>
+<translation id="6933858244219479645">Hệ thống ChromeOS</translation>
 <translation id="6935031746833428401">Tìm hiểu thêm về Quản lý thiết bị</translation>
 <translation id="6950351336108213154">Đang cập nhật thiết bị ngoại vi</translation>
 <translation id="6955698182324067397">Bạn đang bật tính năng gỡ lỗi của ChromeOS. Tính năng này sẽ thiết lập trình nền sshd và bật tính năng khởi động qua ổ đĩa USB.</translation>
@@ -648,6 +667,7 @@
 <translation id="7870730066603611552">Xem lại các tùy chọn đồng bộ hóa sau khi thiết lập</translation>
 <translation id="7883792253546618164">Bạn có thể hủy đăng ký bất kỳ lúc nào.</translation>
 <translation id="7887864092952184874">Đã ghép nối chuột Bluetooth</translation>
+<translation id="7905880575591690197">ChromeOS không thể lưu dữ liệu Chrome vào Tài khoản Google của bạn do xảy ra lỗi khi đăng nhập</translation>
 <translation id="7906440585529721295">Dữ liệu cục bộ sẽ bị xoá</translation>
 <translation id="7910725946105920830">Dùng Tài khoản Google cá nhân của bạn</translation>
 <translation id="7918257978052780342">Đăng ký</translation>
@@ -674,6 +694,7 @@
 <translation id="8098616321286360457">Cần kết nối mạng</translation>
 <translation id="8129265306888404830">Để sử dụng địa chỉ email của tổ chức (<ph name="EMAIL_DOMAIN" />), bạn cần sử dụng quy trình đăng ký doanh nghiệp. Nếu bạn sử dụng thiết bị này cho mục đích cá nhân, hãy đăng nhập bằng Tài khoản Google cá nhân của bạn.</translation>
 <translation id="8131740175452115882">Xác nhận</translation>
+<translation id="8133124826068723441">ChromiumOS không thể đồng bộ hoá dữ liệu của bạn vì miền của bạn không dùng được tính năng Đồng bộ hoá.</translation>
 <translation id="8146177459103116374">Nếu bạn đã đăng ký trên thiết bị này, bạn có thể <ph name="LINK2_START" />đăng nhập với tư cách là người dùng hiện tại<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Đăng nhập không thành công. Vui lòng liên hệ với quản trị viên của bạn hoặc thử lại.</translation>
 <translation id="8147346945017130012">Giúp cải thiện hiệu suất và các tính năng của Chrome và Chrome OS bằng cách tự động gửi các báo cáo sự cố cũng như dữ liệu sử dụng và thông tin chẩn đoán cho Google.</translation>
@@ -692,6 +713,7 @@
 <translation id="8271379370373330993">Cha mẹ chỉ cần thực hiện một vài bước nữa là xong. Bạn có thể đưa <ph name="DEVICE_TYPE" /> lại cho trẻ sau khi thiết lập tài khoản.</translation>
 <translation id="8274924778568117936">Không tắt hoặc đóng <ph name="DEVICE_TYPE" /> cho đến khi cập nhật xong. <ph name="DEVICE_TYPE" /> của bạn sẽ khởi động lại sau khi cài đặt xong.</translation>
 <translation id="8281886186245836920">Bỏ qua</translation>
+<translation id="8286036467436129157">Đăng nhập</translation>
 <translation id="8289509909262565712">Chào mừng bạn đến với <ph name="DEVICE_OS" /></translation>
 <translation id="8291942417224950075">Dùng cho mục đích cá nhân</translation>
 <translation id="8304383784961451596">Bạn không được phép sử dụng thiết bị này. Vui lòng liên hệ với quản trị viên để có quyền đăng nhập hoặc dùng một Tài khoản Google được giám sát bằng Family Link để đăng nhập.</translation>
@@ -703,6 +725,7 @@
 <translation id="8401432541486058167">Hãy cung cấp mã PIN liên kết với thẻ thông minh của bạn.</translation>
 <translation id="8408270600235826886">Bạn có thể kiểm soát những dữ liệu nào được chia sẻ với Google. Bạn có thể thay đổi lựa chọn này bất cứ lúc nào trong phần Cài đặt. <ph name="BEGIN_LINK" />Chính sách quyền riêng tư<ph name="END_LINK" /> của Google chi phối việc dùng dữ liệu.</translation>
 <translation id="8413956290606243087">Bạn có muốn kích hoạt ChromeVox (trình đọc màn hình tích hợp cho ChromeOS) không?</translation>
+<translation id="8418845734693287262">ChromeOS không thể đồng bộ hoá dữ liệu của bạn do thông tin đăng nhập vào tài khoản của bạn đã lỗi thời.</translation>
 <translation id="8425768983279799676">Bạn có thể sử dụng mã PIN để mở khóa thiết bị của mình.</translation>
 <translation id="8428213095426709021">Cài đặt</translation>
 <translation id="843173223122814223">Tạo nền bằng AI</translation>
@@ -742,10 +765,12 @@
 <translation id="8794548468611058947">Thay vì nhập mật khẩu của Tài khoản Google để đăng nhập, bạn có thể tạo mã PIN cho <ph name="DEVICE_TYPE" /> này</translation>
 <translation id="8830779999439981481">Đang khởi động lại để áp dụng bản cập nhật</translation>
 <translation id="8830796635868321089">Kiểm tra cập nhật không thành công khi sử dụng cài đặt proxy hiện tại. Vui lòng điều chỉnh <ph name="PROXY_SETTINGS_LINK_START" />cài đặt proxy<ph name="PROXY_SETTINGS_LINK_END" /> của bạn.</translation>
+<translation id="8833697763442816810">Hệ thống ChromiumOS</translation>
 <translation id="8855977033756560989">Thiết bị Chromebook Enterprise này đi kèm với Bản nâng cấp Chrome Enterprise. Để tận dụng các tính năng dành cho doanh nghiệp, hãy đăng ký thiết bị này bằng tài khoản quản trị viên của Google.</translation>
 <translation id="885746075120788020">Các lựa chọn ưu tiên và hoạt động mà bạn đã lưu sẽ sẵn sàng trên mọi thiết bị ChromeOS nơi bạn đăng nhập bằng Tài khoản Google. Bạn có thể chọn loại dữ liệu bạn muốn đồng bộ hoá trong phần Cài đặt.</translation>
 <translation id="8868333925931032127">Đang khởi động chế độ minh họa</translation>
 <translation id="8875221558267407626">Tóm tắt nội dung, đơn giản hoá ngôn ngữ phức tạp hoặc đặt câu hỏi</translation>
+<translation id="8890569919834781711">ChromiumOS không thể lưu dữ liệu Chromium vào Tài khoản Google của bạn do xảy ra lỗi khi đăng nhập</translation>
 <translation id="8907701755790961703">Vui lòng chọn một quốc gia</translation>
 <translation id="8913163265790894442">Dễ dàng thiết lập <ph name="DEVICE_TYPE" /> bằng điện thoại. Bạn có thể thêm Wi-Fi và Tài khoản Google mà không cần nhập mật khẩu theo cách thủ công.
         <ph name="BR" />
@@ -781,5 +806,6 @@
 <translation id="951991426597076286">Từ chối</translation>
 <translation id="954749761428814584">Ngôn ngữ và phương thức nhập</translation>
 <translation id="960987915827980018">Còn khoảng 1 giờ</translation>
+<translation id="973195869036269770">ChromeOS không thể lưu dữ liệu Chrome vào Tài khoản Google của bạn vì thông tin đăng nhập tài khoản đã lỗi thời</translation>
 <translation id="995420352808264005">Chọn loại đăng ký thiết bị</translation>
 </translationbundle>

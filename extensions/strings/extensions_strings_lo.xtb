@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">ເປີດນຳໃຊ້ສີສັນໜ້າຕາ</translation>
+<translation id="1085064499066015002">ເປີດຕະຫຼອດທຸກເວັບໄຊ</translation>
 <translation id="1135328998467923690">ແພັກເກດໃຊ້ບໍ່ໄດ້: '<ph name="ERROR_CODE" />'.</translation>
 <translation id="1140871961407805696">ປິ່ນໜ້າໃສ່ສິ່ງແວດລ້ອມ</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> ໄດ້ເພີ່ມສ່ວນຂະຫຍາຍທີ່ອາດປ່ຽນວິທີການເຮັດວຽກຂອງ Chromium.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">ເວີຊັນທີ່ຄາດໄວ້ "<ph name="EXPECTED_VERSION" />", ແຕ່ເວີຊັນທີ່ຕິດຕັ້ງແມ່ນ "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">ສົ່ງປຸ່ມສ່ວນຕົວອອກມາບໍ່ໄດ້.</translation>
 <translation id="4811956658694082538">ບໍ່​ສາ​ມາດ​ຕິດ​ຕັ້ງ​ແພັກ​ເກດ​ໄດ້ ເພາະ​ວ່າ​ຂະ​ບວນ​ການ​ໃຊ້​ປະ​ໂຫຍດ​ເກີດ​ຂັດ​ຂ້ອງ. ລອງ​ປິດ​ເປີດ Chrome ໃໝ່ ແລະ​ລອງ​ໃໝ່​ອີກ.</translation>
+<translation id="4883436287898674711">ທຸກເວັບໄຊທ໌ <ph name="WEBSITE_1" /></translation>
 <translation id="4988792151665380515">ສົ່ງປຸ່ມທົ່ວໄປອອກບໍ່ສໍາເລັດ.</translation>
 <translation id="501057610015570208">ແອັບທີ່ມີຄຸນສົມບັດ manifest 'kiosk_only' ຈະຕ້ອງຖືກຕິດຕັ້ງໃນໂໝດ kiosk ຂອງ ChromeOS Flex.</translation>
 <translation id="5026754133087629784">ມຸມມອງເວັບ: <ph name="WEBVIEW_TAG_NAME" /></translation>

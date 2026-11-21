@@ -59,7 +59,7 @@
 <translation id="1090629319939036170">Menu VR</translation>
 <translation id="1091463901118115503">Continua a leggere</translation>
 <translation id="1091779689406092804">screenshot</translation>
-<translation id="1095093219235104018">Cerca e compila con Gemini</translation>
+<translation id="1095093219235104018">Trova e Completa con Gemini</translation>
 <translation id="1096545575934602868">Questo campo non deve avere più di <ph name="MAX_ITEMS_LIMIT" /> voci. Tutte le voci in esubero verranno eliminate.</translation>
 <translation id="1099928364755383720">modalità Picture in picture automatica</translation>
 <translation id="1100782917270858593">Pulsante Riprendi il percorso, premi Invio per riprendere il percorso e visualizzare le attività pertinenti nella tua cronologia di Chrome.</translation>
@@ -373,6 +373,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1619648179761984213">Chi ha rimosso una scheda: <ph name="USER_DISPLAY_NAME" /></translation>
 <translation id="1620510694547887537">Videocamera</translation>
 <translation id="1623104350909869708">Impedisci la creazione di altre finestre di dialogo in questa pagina</translation>
+<translation id="1624535934412288769">Colonne</translation>
 <translation id="1629390138158333592">Cerca nel Web</translation>
 <translation id="1633137413609266904">{0,plural, =1{L'apertura di questo file è bloccata dalla policy dell'amministratore}other{L'apertura di # file è bloccata dalla policy dell'amministratore}}</translation>
 <translation id="1634828734222219955">Totale</translation>
@@ -727,7 +728,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2213612003795704869">La pagina è stampata</translation>
 <translation id="2214086901479959524">Aggiorna Chrome per continuare a utilizzare i gruppi di schede condivisi</translation>
 <translation id="2214453882118345682">Acquista, traduci e identifica ciò che vedi con la fotocamera.</translation>
-<translation id="2215368073167343359">Usa compilazione automatica Google</translation>
+<translation id="2215368073167343359">Usa Compilazione automatica Google</translation>
 <translation id="2215727959747642672">Modifica di file</translation>
 <translation id="2219658597883514593">Riavvia tutorial</translation>
 <translation id="2219735899272417925">È richiesta la reimpostazione del dispositivo</translation>
@@ -1082,6 +1083,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2803320044666896137">Questo valore della policy viene ignorato perché l'utente non è affiliato.</translation>
 <translation id="2807052079800581569">Posizione Y immagine</translation>
 <translation id="2808278141522721006">Puoi attivare o disattivare Windows Hello nelle <ph name="SETTINGS" /></translation>
+<translation id="2820159698793041599">Il server proxy non è riuscito a stabilire una connessione sicura.</translation>
 <translation id="2820957248982571256">Scansione…</translation>
 <translation id="282457273878278063">Gestisci i dati di contatto</translation>
 <translation id="2824775600643448204">Barra degli indirizzi e di ricerca</translation>
@@ -1263,6 +1265,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3120807611504813890">Busta (leggera)</translation>
 <translation id="3121994479408824897">Vai a <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Etichette (fisse)</translation>
+<translation id="3128081114752791872">Il certificato di sicurezza del server proxy non è valido.</translation>
 <translation id="3131746543143948171">Questo sito sembra simile ad altri siti associati a phishing, malware e truffe. <ph name="BEGIN_LEARN_MORE_LINK" />Scopri di più<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">Salva Redress Number</translation>
 <translation id="3133565499688974786">Ora <ph name="SEARCH_ENGINE_NAME" /> è il tuo motore di ricerca predefinito</translation>
@@ -1678,7 +1681,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="3800436529451849929">Da <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Visiti spesso questa pagina</translation>
 <translation id="380329542618494757">Nome</translation>
-<translation id="3803481123869276674">Quando fai acquisti su Chrome, vedi l'opzione e-wallet</translation>
 <translation id="3803801106042434208">Questi motori di ricerca sono molto usati nella tua regione</translation>
 <translation id="3804112825000113857">Visualizza le impostazioni di compilazione automatica</translation>
 <translation id="380666903981445943">Salva un metodo di pagamento nel tuo Account Google per la compilazione automatica negli acquisti effettuati in Chrome</translation>
@@ -2161,6 +2163,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4612631413844865947">Si è verificato un errore durante l'elaborazione dell'ordine su <ph name="MERCHANT_ORIGIN" /> tramite <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="4612904677925722054">Questo sito potrebbe includere contenuti inappropriati per i minori. Un genitore o tutore deve autorizzarti a visitare questo sito web.</translation>
 <translation id="4613873770449493819">L'URL deve indirizzare a un dominio <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
+<translation id="4615154194248230658">Questo pattern non sembra corrispondere a un dominio di indirizzo email valido. Gli utenti potrebbero non essere in grado di accedere o i profili esistenti potrebbero essere rimossi.</translation>
 <translation id="4619564267100705184">Verifica la tua identità</translation>
 <translation id="4619669610757527494">Salva la patente di guida in Google Wallet</translation>
 <translation id="4622292761762557753">Trasferisci comunque</translation>
@@ -2679,7 +2682,6 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5447235695608032700">Consenti a <ph name="SITE" /> di utilizzare le informazioni salvate su di te</translation>
 <translation id="5447973833955560753">Password di recupero</translation>
 <translation id="5452270690849572955">Impossibile trovare la pagina <ph name="HOST_NAME" /></translation>
-<translation id="5452923259299906094">Paga con e-wallet e Pix</translation>
 <translation id="5455374756549232013">Timestamp della policy errato</translation>
 <translation id="5456428544444655325">Non mostrare mai</translation>
 <translation id="5457082343331641453">Aggiungi alla tua ricerca</translation>
@@ -3894,7 +3896,6 @@ Ulteriori dettagli:
 <translation id="7489919936111034362">Il tuo spazio di archiviazione di Google Drive è esaurito</translation>
 <translation id="7490622939531327327">Comprensione più intelligente del modulo</translation>
 <translation id="7495528107193238112">Questi contenuti sono bloccati. Contatta il proprietario del sito per risolvere il problema.</translation>
-<translation id="7499188644237027195">Quando fai acquisti su Chrome, vedi le opzioni e-wallet e Pix</translation>
 <translation id="7499684925421947861">Consentire a <ph name="ACTOR_NAME" /> di accedere a <ph name="DOMAIN" /> per te?</translation>
 <translation id="7501663406926337752">Il sito che stai per visitare è stato segnalato dalla tua organizzazione</translation>
 <translation id="7502044688973049724">gestire le tue informazioni</translation>
@@ -4019,7 +4020,6 @@ Ulteriori dettagli:
 <translation id="7676840398262504532">La tua organizzazione monitora le operazioni di copia</translation>
 <translation id="767806704757698045">Funziona solo sui siti supportati</translation>
 <translation id="7678730592635586336">Nuova ripresa video</translation>
-<translation id="7679287273775285018">Paga con e-wallet</translation>
 <translation id="7679367271685653708">Visualizza e gestisci la tua cronologia di navigazione nelle impostazioni di Chrome</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, scade il giorno <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Spedizione</translation>
@@ -4094,7 +4094,6 @@ Ulteriori dettagli:
 <translation id="7791543448312431591">Aggiungi</translation>
 <translation id="7798389633136518089">Ignorata perché la policy non è stata impostata da un'origine cloud.</translation>
 <translation id="7800304661137206267">La connessione è stata criptata utilizzando <ph name="CIPHER" />, con <ph name="MAC" /> per l'autenticazione dei messaggi e <ph name="KX" /> come meccanismo principale di scambio delle chiavi.</translation>
-<translation id="780228007282527248">Aggiungi una scheda o un'immagine per migliorare la ricerca</translation>
 <translation id="7802523362929240268">Il sito è legittimo</translation>
 <translation id="7802989406998618639">Inserisci il codice di sicurezza a <ph name="NUMBER_OF_DIGITS" /> cifre che trovi sul <ph name="SIDE_OF_CARD" /> della carta per consentire alla banca di verificare la tua identità</translation>
 <translation id="780301667611848630">No, grazie</translation>
@@ -4160,6 +4159,7 @@ Ulteriori dettagli:
 <translation id="7916162853251942238">Base flexo</translation>
 <translation id="7916802424606434188">Apri la finestra <ph name="WINDOW_INDEX" /> (<ph name="NUM_TABS" /> schede) in una nuova finestra</translation>
 <translation id="791698251820376781">La tua organizzazione non ti consente di accedere</translation>
+<translation id="7918936720558783139">L'offerta salvata sarà disponibile al momento del checkout utilizzando la compilazione automatica. <ph name="BEGIN_LINK" />Gestisci le offerte<ph name="END_LINK" /></translation>
 <translation id="7927046851848613453">Salva biglietti, eventi e altre informazioni dalle pagine che visualizzi, non solo dai moduli che compili. Accedi rapidamente alle tue tessere, come biglietti per un evento e carte fedeltà. Le informazioni salvate possono essere visualizzate sui tuoi dispositivi e nei prodotti Google.</translation>
 <translation id="7930282586031445870">La schermata dei Termini di servizio di Buy now, pay later è chiusa.</translation>
 <translation id="7932035970207573919">Indirizzo di lavoro, <ph name="ADDRESS" /></translation>
@@ -4229,6 +4229,7 @@ Ulteriori dettagli:
 <translation id="8029829038322015001">Rosso 1</translation>
 <translation id="8032546467100845887">Trasparenza</translation>
 <translation id="8035152190676905274">Penna</translation>
+<translation id="803703704549420287">Cancella filtri</translation>
 <translation id="8037117624646282037">Utenti che hanno usato il dispositivo di recente</translation>
 <translation id="803771048473350947">Archivio</translation>
 <translation id="8038182528865038593">Rosso 2</translation>
@@ -4417,6 +4418,7 @@ Ulteriori dettagli:
 <translation id="8363502534493474904">Disattivare la modalità aereo</translation>
 <translation id="8363929499301563123">Cookie dei siti web (lo stato di accesso sui siti web visitati di recente verrà conservato)</translation>
 <translation id="8364627913115013041">Non impostata.</translation>
+<translation id="8364664414979300296">Aggiungi schede, foto e altro per migliorare la ricerca</translation>
 <translation id="836616551641291797">Scopri di più su come viene gestito il tuo browser</translation>
 <translation id="8367705492654390392">Chiedi qualsiasi cosa</translation>
 <translation id="8368001212524806591">Monitora prezzo</translation>

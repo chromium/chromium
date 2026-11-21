@@ -83,7 +83,6 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="188102464690227119">Butang "Search dalam panel sisi" pada bar alat mengandungi ikon baharu. Klik ikon tersebut untuk mengemukakan pertanyaan semasa menyemak imbas dengan Search dalam panel sisi.</translation>
 <translation id="1896836275755235458">Chromium menjimatkan kuasa bateri dengan mengehadkan aktiviti latar dan kesan visual, seperti penatalan lancar dan kadar bingkai video. <ph name="BEGIN_LINK" />Ketahui Penjimat Tenaga dengan lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Perkhidmatan Pengemas Kini Chromium</translation>
-<translation id="1911763535808217981">Dengan mematikan pilihan ini, anda boleh mengelog masuk ke tapak Google seperti Gmail tanpa perlu mengelog masuk ke Chromium</translation>
 <translation id="1929939181775079593">Chromium tidak responsif. Lancarkan semula sekarang?</translation>
 <translation id="1933341829955786215">Organisasi anda, <ph name="MANAGER" />, menghendaki anda untuk log masuk ke Chromium</translation>
 <translation id="193439633299369377">Chromium OS perlu dimulakan semula untuk melaksanakan kemas kini.</translation>
@@ -130,7 +129,6 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="2361918034042471035">Sambungan "<ph name="EXTENSION_NAME" />" mahu anda log masuk ke Chromium</translation>
 <translation id="236943522426971115">Lumpuhkan Chromium yang Berjalan pada Latar untuk Apl</translation>
 <translation id="2374216753258219393">Untuk menggunakan sambungan ini sebagai <ph name="USER_EMAIL_ADDRESS" />, log masuk ke Chromium.</translation>
-<translation id="2384373936468275798">Chromium OS tidak dapat menyegerakkan data anda kerana butiran log masuk akaun anda sudah lapuk.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{1 peranti HID telah diakses oleh satu atau beberapa sambungan Chromium}=1{1 peranti HID sedang diakses oleh satu atau beberapa sambungan Chromium}other{# peranti HID sedang diakses oleh satu atau beberapa sambungan Chromium}}</translation>
 <translation id="2401032172288869980">Chromium memerlukan kebenaran kamera dan mikrofon untuk laman ini</translation>
 <translation id="2403703063067034158">Ralat permulaan: terdapat tika persediaan lain sedang dijalankan pada masa ini, sila cuba sebentar lagi.</translation>
@@ -172,7 +170,6 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="2819844767470613567">Amaran: Chromium tidak dapat menghalang sambungan daripada merakam sejarah penyemakan imbas anda. Untuk melumpuhkan sambungan ini dalam mod Inkognito, nyahpilih pilihan ini.</translation>
 <translation id="2841525013647267359">Terjemahkan daripada</translation>
 <translation id="2846251086934905009">Ralat pemasangan: Proses pemasang tidak selesai. Pemasangan telah dihenti paksa.</translation>
-<translation id="2847479871509788944">Alih keluar daripada Chromium...</translation>
 <translation id="2850691299438350830">Memastikan anda selamat pada Chromium dan mungkin digunakan untuk meningkatkan keselamatan anda dalam apl Google yang lain apabila anda log masuk</translation>
 <translation id="2885378588091291677">Pengurus Tugas</translation>
 <translation id="2898830646167954300">Beralih kembali kepada pembantu Gemini anda yang tidak terurus</translation>
@@ -383,7 +380,6 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="5346389065299425353">Perincikan carian anda dengan menambahkan berbilang tab, fail dan alatan</translation>
 <translation id="5352264705793813212">Chromium menemukan beberapa syor keselamatan untuk semakan anda</translation>
 <translation id="5352361688875342522">Profil Chromium Lain</translation>
-<translation id="535243042947607642">ChromiumOS tidak dapat menyimpan data Chromium dalam Google Account anda kerana butiran log masuk akaun anda sudah lapuk</translation>
 <translation id="5368118228313795342">Kod tambahan: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Untuk mendapatkan pemeribadian, sertakan Chromium dalam Aktiviti Web &amp; Apl</translation>
 <translation id="5382964351116519680">Buka carian dengan Chromium</translation>
@@ -398,7 +394,6 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium Mengesyorkan Penjedaan Tab yang Memperlahankan Penyemak Imbas Anda}other{Chromium Mengesyorkan Penjedaan Tab yang Memperlahankan Penyemak Imbas Anda}}</translation>
 <translation id="5473971139929175403">Chromium mungkin tidak akan berfungsi dengan betul kerana tidak disokong pada edaran Linux ini lagi</translation>
 <translation id="5475924890392386523">Chromium menyekat muat turun ini kerana fail tersebut boleh membahayakan akaun peribadi dan rangkaian sosial anda</translation>
-<translation id="549669000822060376">Sila tunggu sementara Chromium memasang kemas kini sistem terkini.</translation>
 <translation id="5496810170689441661">Chromium cuba mengedit kata laluan. Taip kata laluan Windows anda untuk membenarkan tindakan ini.</translation>
 <translation id="5524890928877629608">penjuru atas sebelah kiri kawasan carian: kiri <ph name="LEFT" />%, atas <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Buka PDF dalam Chromium</translation>
@@ -493,7 +488,6 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="6390800440335263989">Untuk meneruskan, log masuk ke Chromium sebagai <ph name="EMAIL" />. Tindakan ini untuk memastikan bahawa anda memahami dasar organisasi anda.</translation>
 <translation id="6400112897226594999">Logo Chromium dalam skrin komputer.</translation>
 <translation id="6403826409255603130">Chromium merupakan penyemak imbas yang mengendalikan laman web dan aplikasi dengan kelajuan sepantas kilat. Chromium cepat, stabil dan mudah digunakan. Semak imbas web lebih selamat dengan perlindungan perisian hasad dan pancingan data terbina dalam Chromium.</translation>
-<translation id="6414624068245092115">Untuk memastikan anda dapat menggunakan dan menyimpan data Chromium dalam Google Account anda pada bila-bila masa, sahkan identiti anda</translation>
 <translation id="642132557830635295">Chromium berfungsi dengan lebih pantas dan ciri yang menggunakan JavaScript sepatutnya berfungsi seperti yang direka bentuk</translation>
 <translation id="6434631832954028336">Buka semula panel Search</translation>
 <translation id="6436260184216827876">Carian Imej tidak tersedia. Cuba sebentar lagi.</translation>
@@ -524,7 +518,6 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="665732753414869868">Chromium memerlukan kebenaran kamera untuk membuat peta 3D bagi persekitaran anda</translation>
 <translation id="6669284030132180248">Jika anda juga menyimpan penanda halaman dalam Google Account anda, anda boleh menjejak harga produk dalam Chromium dan mendapatkan pemberitahuan jika harga produk tersebut turun</translation>
 <translation id="6676384891291319759">Akses Internet</translation>
-<translation id="668175097507315160">Chromium OS tidak dapat menyegerakkan data anda disebabkan oleh ralat melog masuk.</translation>
 <translation id="6691132793308828750">Alih keluar data apl ini daripada Chromium</translation>
 <translation id="6709350901466051922">Chromium memerlukan kebenaran mikrofon untuk laman ini</translation>
 <translation id="6712881677154121168">Ralat muat turun: <ph name="DOWNLOAD_ERROR" />.</translation>
@@ -682,7 +675,6 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8107060931443639922">Apabila anda membuka Chromium pada <ph name="DEVICE_TYPE" /> anda selepas ini, anda akan melihat gesaan untuk mendayakan makluman penjejakan harga.</translation>
 <translation id="8118331347066725040">Hantar maklum balas untuk cari dengan Lens</translation>
 <translation id="8130609355518033382">Peribadikan Chromium anda</translation>
-<translation id="8133124826068723441">Chromium OS tidak dapat menyegerakkan data anda kerana Segerak tidak tersedia untuk domain anda.</translation>
 <translation id="813913629614996137">Memulakan...</translation>
 <translation id="8158143604667288086">Anda boleh menyematkan Search dalam Chrome untuk mengemukakan pertanyaan semasa menyemak imbas</translation>
 <translation id="8161503455832158203">Buka Gemini dalam Chromium dengan pintasan papan kekunci.</translation>
@@ -749,11 +741,9 @@ Chromium tidak dapat mengembalikan tetapan anda.</translation>
 <translation id="8816416449795340678">Kongsi dokumen ini dengan Gemini dalam Chromium untuk mendapatkan ikhtisar pantas dan mengemukakan pertanyaan susulan</translation>
 <translation id="8818550178040858407">Log Masuk ke Chromium?</translation>
 <translation id="8826492472752484139">Klik “Password Manager”</translation>
-<translation id="8833697763442816810">Sistem Chromium OS</translation>
 <translation id="8852026904190808918">Bahasa ini digunakan untuk memaparkan menu, tetapan, makluman dan teks lain dalam Chromium</translation>
 <translation id="8862326446509486874">Anda tidak mempunyai hak wajar untuk pemasangan peringkat sistem. Cuba jalankan pemasang semula sebagai Pentadbir.</translation>
 <translation id="8876044221123442390">Tambahkan Profil Chromium</translation>
-<translation id="8890569919834781711">ChromiumOS tidak dapat menyimpan data Chromium dalam Google Account anda disebabkan oleh ralat log masuk</translation>
 <translation id="8891709362986793894">Organisasi anda menghendaki anda untuk log masuk ke Chromium</translation>
 <translation id="8906384069222226849">Chromium memerlukan Windows 10 versi 1809 atau versi lebih baharu.</translation>
 <translation id="8907580949721785412">Chromium cuba menunjukkan kata laluan. Taip kata laluan Windows anda untuk membenarkannya.</translation>

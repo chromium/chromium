@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">تھیم کو فعال کریں</translation>
+<translation id="1085064499066015002">ہمیشہ سبھی سائٹس پر</translation>
 <translation id="1135328998467923690">پیکیج غلط ہے: '<ph name="ERROR_CODE" />'۔</translation>
 <translation id="1140871961407805696">بیک کیمرہ</translation>
 <translation id="1171831736360285680">‏‫<ph name="PARTNER_NAME" /> نے ایک ایکسٹینشن شامل کی ہے جو Chromium کے کام کرنے کے طریقے کو تبدیل کر سکتی ہے۔
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">متوقع ورژن "<ph name="EXPECTED_VERSION" />"، لیکن ورژن تھا "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">نجی کلید کو آؤٹ پٹ کرنے میں ناکام۔</translation>
 <translation id="4811956658694082538">‏پیکیج انسٹال نہیں کیا جا سکا کیونکہ یوٹیلیٹی کی کارروائی کریش ہو گئی۔ Chrome دوبارہ شروع کرنا اور دوبارہ کوشش کرنا آزمائیں۔</translation>
+<translation id="4883436287898674711">سبھی <ph name="WEBSITE_1" /> سائٹس</translation>
 <translation id="4988792151665380515">عوامی کلید کو دریافت کرنے کیلئے ناکام ہوگیا۔</translation>
 <translation id="501057610015570208">‏'kiosk_only' مینی فیسٹ انتساب والی ایپ کا ChromeOS Flex کیوسک وضع میں انسٹال ہونا ضروری ہے</translation>
 <translation id="5026754133087629784">ویب منظر: <ph name="WEBVIEW_TAG_NAME" /></translation>

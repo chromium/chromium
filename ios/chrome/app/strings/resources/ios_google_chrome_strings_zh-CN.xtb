@@ -83,6 +83,8 @@
 <translation id="2574249610672786438">要查看您在其他设备上用 Chrome 打开的标签页，请在所有设备上登录</translation>
 <translation id="2576431527583832481">Chrome 浏览器刚刚经过了改进！新版本已推出。</translation>
 <translation id="257708665678654955">下次访问这个网站时，您希望 Google Chrome 翻译其中的<ph name="LANGUAGE_NAME" />网页吗？</translation>
+<translation id="2599258827968143948">Chrome 配合您常用的 Google 应用和服务，体验更佳</translation>
+<translation id="260980777626165320">默认在 Chrome 中打开外部链接。</translation>
 <translation id="2668242166988961773">在 Chrome 中使用语音搜索。</translation>
 <translation id="2703746758996815929">若要获取实用 Chrome 提示，请在 iOS 设置中开启通知。</translation>
 <translation id="2728851697704606655">使用 Google 智能镜头翻译</translation>
@@ -111,6 +113,7 @@
 <translation id="314782365035065913">从主屏幕程序坞更快访问 Chrome</translation>
 <translation id="3167189358072330585">无法在 Google Chrome 上登录您的账号。请与您的网域管理员联系，或使用普通的 Google 账号登录。</translation>
 <translation id="322254490661677575">如要将 Chrome 数据保存在您的 Google 账号中并使用这些数据，请输入您的口令。</translation>
+<translation id="3253082773078342494">直接在 Chrome 中打开链接。</translation>
 <translation id="3303503998967553377">在 iOS 中使用 Chrome 操作</translation>
 <translation id="3348862487678490430">将阅读清单项添加到 Chrome</translation>
 <translation id="3350281376951945723">将 Chrome 设为默认浏览器，打开链接更快速</translation>
@@ -160,6 +163,7 @@
 <translation id="4693084815234024320">您正在使用 Chrome 无痕模式</translation>
 <translation id="4713740144985377441">返回到 Chrome 以上传文件</translation>
 <translation id="4724297637870447613">随时随地使用 Chrome</translation>
+<translation id="4733290155432110050">直接跳转到 Chrome</translation>
 <translation id="4738647308035481133">Google Chrome 页面</translation>
 <translation id="4742795653798179840">已删除 Chrome 数据</translation>
 <translation id="4761869838909035636">运行 Chrome 安全检查</translation>
@@ -265,6 +269,7 @@
 <translation id="7038674195294813388">在 iOS 中打开“默认应用”设置，然后点按“浏览器应用”并选择“Chrome”。</translation>
 <translation id="7056826488869329999">在 Chrome 中打开并运行安全检查。</translation>
 <translation id="7061455974939528301">按住 Chrome 图标，然后点击“修改主屏幕”</translation>
+<translation id="7067302528015227615">将 Chrome 设为默认浏览器，让应用间跳转更快、更轻松。</translation>
 <translation id="7095110968493193530">保存到 <ph name="EMAIL" /> 的 Google 密码管理工具</translation>
 <translation id="7124339256045485976">确保使用最新版的 Chrome</translation>
 <translation id="7135936755418321901">如需与网站分享您的位置信息，请点按“设置”，并允许 Chrome 使用您的位置信息。</translation>
@@ -276,6 +281,7 @@
 <translation id="7200524487407690471">Chrome 每天都会自动运行安全检查，以保护您免受数据泄露、不安全网站等问题的影响。您可在“设置”中详细了解安全检查。</translation>
 <translation id="7214019116829172458">打开 Chrome 无痕式标签页</translation>
 <translation id="722167379782941918">Chrome 建议使用增强型保护</translation>
+<translation id="722921700949937243">确保所有链接一律在 Chrome 中打开。</translation>
 <translation id="723787869754590019">使用 Chrome 自动填充</translation>
 <translation id="7261678641327190792">Chrome 无法检查您的密码</translation>
 <translation id="7272091023280308138">下次直接在 Chrome 中打开链接，无需先复制网址。</translation>

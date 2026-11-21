@@ -623,7 +623,7 @@
 <translation id="2996108796702395498">O número de serie do teu dispositivo é <ph name="SERIAL_NUMBER" />. Este número pode usarse para axudar a activar o servizo.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3001144475369593262">Contas infantís</translation>
-<translation id="3001614333383288217">{COUNT,plural, =0{Ningunha tecla personalizada}=1{1 tecla personalizada}other{{COUNT} teclas personalizadas}}</translation>
+<translation id="3001614333383288217">{COUNT,plural, =0{Ningunha tecla personalizada}=1{1 tecla personalizada}many{{COUNT} customized keys}other{{COUNT} teclas personalizadas}}</translation>
 <translation id="3003144360685731741">Redes preferidas</translation>
 <translation id="3003967365858406397">O teléfono <ph name="PHONE_NAME" /> creará unha conexión wifi privada.</translation>
 <translation id="3004385386820284928">Personalizar teclas do teclado</translation>
@@ -1027,7 +1027,7 @@
 <translation id="4297813521149011456">Rotación da pantalla</translation>
 <translation id="4307992518367153382">Opcións básicas</translation>
 <translation id="4310139701823742692">O ficheiro ten un formato que non é válido. Comproba o ficheiro PPD e téntao de novo.</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 Conta de Google}other{<ph name="EXTRA_ACCOUNTS" /> Contas de Google}}</translation>
+<translation id="4312701113286993760">{COUNT,plural, =1{1 Conta de Google}many{<ph name="EXTRA_ACCOUNTS" /> Google Accounts}other{<ph name="EXTRA_ACCOUNTS" /> Contas de Google}}</translation>
 <translation id="4314497418046265427">Para aumentar a produtividade, conecta o teléfono ao teu dispositivo (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="4314561087119792062">Engadir novo nome do punto de acceso</translation>
 <translation id="4314815835985389558">Xestionar sincronización</translation>
@@ -1378,7 +1378,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5476957746413745956">Axustar velocidade de maneira separada para cada dirección</translation>
 <translation id="5477089831058413614">Configurar a zona wifi do dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481941284378890518">Engadir impresoras que estean cerca</translation>
-<translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> require que fagas unha copia de seguranza dos teus datos e que devolvas este dispositivo (<ph name="DEVICE_TYPE" />) hoxe. <ph name="LINK_BEGIN" />Ver detalles<ph name="LINK_END" />}other{<ph name="MANAGER" /> require que fagas unha copia de seguranza dos teus datos e que devolvas este dispositivo (<ph name="DEVICE_TYPE" />) no prazo de {NUM_DAYS} días. <ph name="LINK_BEGIN" />Ver detalles<ph name="LINK_END" />}}</translation>
+<translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> require que fagas unha copia de seguranza dos teus datos e que devolvas este dispositivo (<ph name="DEVICE_TYPE" />) hoxe. <ph name="LINK_BEGIN" />Ver detalles<ph name="LINK_END" />}many{<ph name="MANAGER" /> requires you to back up your data and return this <ph name="DEVICE_TYPE" /> within {NUM_DAYS} days. <ph name="LINK_BEGIN" />See details<ph name="LINK_END" />}other{<ph name="MANAGER" /> require que fagas unha copia de seguranza dos teus datos e que devolvas este dispositivo (<ph name="DEVICE_TYPE" />) no prazo de {NUM_DAYS} días. <ph name="LINK_BEGIN" />Ver detalles<ph name="LINK_END" />}}</translation>
 <translation id="5487460042548760727">Cambiar nome do perfil por <ph name="PROFILE_NAME" /></translation>
 <translation id="5490798133083738649">Permitir que Linux acceda ao micrófono</translation>
 <translation id="5493455553805432330">Esquecer</translation>
@@ -1995,7 +1995,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (propietario)</translation>
 <translation id="7648048654005891115">Estilo do mapa de teclas</translation>
 <translation id="7649070708921625228">Axuda</translation>
-<translation id="7650582458329409456">{COUNT,plural, =1{Hai configurada 1 impresión dixital}other{Hai configuradas {COUNT} impresións dixitais}}</translation>
+<translation id="7650582458329409456">{COUNT,plural, =1{Hai configurada 1 impresión dixital}many{{COUNT} fingerprints set up}other{Hai configuradas {COUNT} impresións dixitais}}</translation>
 <translation id="7650677314924139716">A configuración de uso de datos actual é Só por wifi</translation>
 <translation id="7651400349472467012">Zona wifi instantánea dispoñible</translation>
 <translation id="7651784568388208829">Continuación de tarefas a través de O meu teléfono</translation>

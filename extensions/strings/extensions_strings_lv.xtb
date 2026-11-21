@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Iespējot motīvu</translation>
+<translation id="1085064499066015002">Vienmēr visās vietnēs</translation>
 <translation id="1135328998467923690">Pakotne nav derīga: <ph name="ERROR_CODE" />.</translation>
 <translation id="1140871961407805696">Vērsta uz aizmuguri</translation>
 <translation id="1171831736360285680"><ph name="PARTNER_NAME" /> pievienoja paplašinājumu, kas var ietekmēt pārlūka Chromium darbību.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">Paredzētā versija bija <ph name="EXPECTED_VERSION" />, bet faktiskā versija bija <ph name="NEW_ID" />.</translation>
 <translation id="471800408830181311">Neizdevās izvadīt privāto atslēgu.</translation>
 <translation id="4811956658694082538">Nevarēja instalēt pakotni, jo radās avārija utilītprogrammas darbībā. Restartējiet pārlūku Chrome un mēģiniet vēlreiz.</translation>
+<translation id="4883436287898674711">Visās <ph name="WEBSITE_1" /> vietnēs</translation>
 <translation id="4988792151665380515">Neizdevās eksportēt publisko atslēgu.</translation>
 <translation id="501057610015570208">Lai instalētu lietotni ar manifesta atribūtu kiosk_only, ir jāizmanto Chrome OS Flex kioska režīms.</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>

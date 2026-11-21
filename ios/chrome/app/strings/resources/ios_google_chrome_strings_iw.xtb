@@ -83,6 +83,8 @@
 <translation id="2574249610672786438">‏כדי לראות את הכרטיסיות שלך מכל מקום שבו פתחת את Chrome יש להיכנס לחשבון בכל המכשירים</translation>
 <translation id="2576431527583832481">‏‫Chrome ממשיך להשתפר! קיימת גירסה חדשה.</translation>
 <translation id="257708665678654955">‏האם ברצונך ש-Google Chrome יציע בפעם הבאה לתרגם דפים ב-<ph name="LANGUAGE_NAME" /> מאתר זה?</translation>
+<translation id="2599258827968143948">‏מוצרי Google האהובים עובדים טוב יותר עם Chrome</translation>
+<translation id="260980777626165320">‏הקישורים החיצוניים ייפתחו ב-Chrome כברירת מחדל.</translation>
 <translation id="2668242166988961773">‏חיפוש קולי ב-Chrome.</translation>
 <translation id="2703746758996815929">‏כדי לקבל טיפים מועילים ל-Chrome, צריך להפעיל את ההתראות בהגדרות iOS.</translation>
 <translation id="2728851697704606655">‏תרגום באמצעות Google Lens</translation>
@@ -111,6 +113,7 @@
 <translation id="314782365035065913">‏גישה מהירה יותר ל-Chrome דרך ה-Dock של מסך הבית</translation>
 <translation id="3167189358072330585">‏החשבון שלך לא פועל ב-Google Chrome. יש לפנות אל מנהל הדומיין או להשתמש בחשבון Google רגיל כדי להיכנס לחשבון.</translation>
 <translation id="322254490661677575">‏כדי להשתמש בנתוני Chrome ולשמור אותם בחשבון Google, עליך להזין את ביטוי הסיסמה שלך.</translation>
+<translation id="3253082773078342494">‏קישורים נפתחים ישירות ב-Chrome.</translation>
 <translation id="3303503998967553377">‏שימוש בפעולות ב-Chrome ב-iOS</translation>
 <translation id="3348862487678490430">‏הוספת פריט מרשימת הקריאה ל-Chrome</translation>
 <translation id="3350281376951945723">‏הקישורים נפתחים מהר יותר כשמגדירים את Chrome כדפדפן ברירת המחדל</translation>
@@ -160,6 +163,7 @@
 <translation id="4693084815234024320">‏במצב פרטי ב-Chrome</translation>
 <translation id="4713740144985377441">‏כדי להעלות את הקובץ, צריך לחזור ל-Chrome</translation>
 <translation id="4724297637870447613">‏אפשר להשתמש ב-Chrome בכל מקום</translation>
+<translation id="4733290155432110050">‏מעבר ישיר ל-Chrome</translation>
 <translation id="4738647308035481133">‏דף Google Chrome</translation>
 <translation id="4742795653798179840">‏הנתונים של Chrome נמחקו</translation>
 <translation id="4761869838909035636">‏הרצה של בדיקת אבטחה ב-Chrome</translation>
@@ -267,6 +271,7 @@
 <translation id="7038674195294813388">‏פותחים את הגדרות אפליקציות ברירת המחדל ב-iOS, לוחצים על "אפליקציית דפדפן" ובוחרים ב-Chrome.</translation>
 <translation id="7056826488869329999">‏פתיחה והפעלה של 'טיימר לדיווח על מצב מסוכן' ב-Chrome.</translation>
 <translation id="7061455974939528301">‏לוחצים לחיצה ארוכה על סמל Chrome ואז לוחצים על 'עריכה של מסך הבית'</translation>
+<translation id="7067302528015227615">‏כדי לעבור בין אפליקציות במהירות ובקלות, כדאי להגדיר את Chrome כברירת המחדל.</translation>
 <translation id="7095110968493193530">‏נשמרה במנהל הסיסמאות של Google בחשבון <ph name="EMAIL" /></translation>
 <translation id="7124339256045485976">‏Chrome יתעדכן באופן קבוע</translation>
 <translation id="7135936755418321901">‏כדי לשתף את המיקום שלך עם אתרים, צריך ללחוץ על "הגדרות" ולאפשר ל-Chrome להשתמש במיקום.</translation>
@@ -278,6 +283,7 @@
 <translation id="7200524487407690471">‏Chrome מפעיל בדיקת אבטחה באופן אוטומטי מדי יום כדי להגן עליך מפני פרצות באבטחת מידע, אתרים לא בטוחים ועוד. מידע נוסף על בדיקת האבטחה זמין בהגדרות.</translation>
 <translation id="7214019116829172458">‏פתיחה של כרטיסייה פרטית ב-Chrome</translation>
 <translation id="722167379782941918">‏ההמלצה של Chrome היא הגנה משופרת</translation>
+<translation id="722921700949937243">‏צריך לוודא שכל הקישורים תמיד נפתחים ב-Chrome.</translation>
 <translation id="723787869754590019">‏שימוש ב-Chrome למילוי אוטומטי</translation>
 <translation id="7261678641327190792">‏Chrome לא יכול לבדוק את הסיסמאות שלך</translation>
 <translation id="7272091023280308138">‏בפעם הבאה, אפשר לפתוח קישורים ישירות ב-Chrome בלי להעתיק קודם את הכתובות שלהם.</translation>

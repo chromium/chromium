@@ -62,7 +62,6 @@
 <translation id="1615755956145364867">A webhelyek rákérdezhetnek arra, hogy lejátszhatnak-e védett tartalmakat</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1621729191093924223">A mikrofont igénylő funkciók nem működnek majd</translation>
-<translation id="1633720957382884102">Kapcsolódó webhelyek</translation>
 <translation id="1644574205037202324">Előzmények</translation>
 <translation id="1652197001188145583">Ha be van kapcsolva, a webhelyek kérhetik NFC-eszközök használatát. Ha ki van kapcsolva, a webhelyek nem használhatnak NFC-eszközöket.</translation>
 <translation id="1660204651932907780">A webhelyek lejátszhatnak hangokat (ajánlott)</translation>
@@ -76,6 +75,7 @@
 <translation id="1717996979683942279">Ha be van kapcsolva, a webhelyek kérhetik az ablakok kezelését az összes kijelzőn. Ha ki van kapcsolva, a webhelyek nem kezelhetnek ablakokat egyik kijelzőn sem.</translation>
 <translation id="1738912554587725807">Az Új lap oldal megjelenéséhez tartozó témagyűjtemények alsó lapja</translation>
 <translation id="1743802530341753419">Kérdezzen rá, mielőtt engedélyezné a webhelyek számára egy adott eszközhöz való csatlakozást (ajánlott)</translation>
+<translation id="1766455884659449403">Chrome-tippekről szóló értesítések fogadása</translation>
 <translation id="1777815584158991902">Discover-feed alsó lapja</translation>
 <translation id="1779089405699405702">Képdekóder</translation>
 <translation id="1781533683087883868">Az Olvasási mód linkjeinek kikapcsolása</translation>
@@ -184,6 +184,7 @@
 <translation id="2750481671343847896">A webhelyek megjeleníthetnek identitásszolgáltatásoktól származó bejelentkezési értesítéseket.</translation>
 <translation id="2789132527330338807">A webhelyek kérhetik az Ön környezetéről készített 3D-s térkép létrehozását, valamint a kamera pozíciójának nyomon követését</translation>
 <translation id="2790501146643349491">Ha be van kapcsolva, a nemrégiben bezárt webhelyek befejezhetik az adatok küldését és fogadását. Ha ki van kapcsolva, a nemrégiben bezárt webhelyek nem tudják befejezni az adatok küldését és fogadását.</translation>
+<translation id="2794551654724114396">Kapcsolja be az értesítéseket, hogy hasznos tippeket kapjon, amelyek segítségével a legtöbbet hozhatja ki a Chrome-ból</translation>
 <translation id="2795716239552913152">A webhelyek általában arra használják az Ön helyadatait, hogy releváns szolgáltatásokat vagy információkat biztosítsanak (például helyi hírekről vagy közeli üzletekről)</translation>
 <translation id="2800760947029405028">Kép feltöltése</translation>
 <translation id="2802908157808345702">A webhelyek nem jeleníthetnek meg előugró ablakokat és nem használhatnak átirányításokat</translation>
@@ -231,7 +232,6 @@
 <translation id="3232293466644486101">Böngészési adatok törlése…</translation>
 <translation id="3242646949159196181">Ha be van kapcsolva, a webhelyek lejátszhatnak hangot. Ha ki van kapcsolva, a webhelyek nem játszhatnak le hangot.</translation>
 <translation id="3273479183583863618">Árcsökkenések a lapokon</translation>
-<translation id="3285500645985761267">A csoportban végzett tevékenységei megtekintésének engedélyezése a kapcsolódó webhelyek számára</translation>
 <translation id="3295019059349372795">11. fejezet: A Smaragdváros csodái</translation>
 <translation id="3295602654194328831">Információk elrejtése…</translation>
 <translation id="3333961966071413176">Összes névjegy</translation>
@@ -249,7 +249,6 @@
 <translation id="3523447078673133727">A webhelyek nem követhetik a kézmozgását</translation>
 <translation id="3536227077203206203">Erre az alkalomra engedélyezve van</translation>
 <translation id="3538390592868664640">Az Ön környezetéről készített 3D-s térkép létrehozásának, valamint a kamerapozíció követésének letiltása a webhelyek számára</translation>
-<translation id="3544058026430919413">Az egyes vállalatok meghatározhatják azon webhelyek csoportját, amelyek cookie-k használatával megoszthatják egymással az Ön által a csoportban végzett tevékenységeket. Inkognitóban ki van kapcsolva ez a funkció.</translation>
 <translation id="3551268116566418498">Kilép az inkognitó módból?</translation>
 <translation id="3586500876634962664">Kamera- és mikrofonhasználat</translation>
 <translation id="358794129225322306">Engedély webhelynek több fájl automatikus letöltésére.</translation>
@@ -262,7 +261,6 @@
 <translation id="363748948745453283">Jelenleg a hozzávetőleges hely van használatban</translation>
 <translation id="3641456520301071208">A webhelyek lekérhetik az Ön helyadatait</translation>
 <translation id="3658847490588580244">Alapértelmezett böngésző alsó lapja</translation>
-<translation id="3669841141196828854">{COUNT,plural, =1{A(z) <ph name="RWS_OWNER" /> webhelycsoportjában <ph name="RWS_MEMBERS_COUNT" /> webhely található, amely láthatja az Ön által a csoportban végzett tevékenységeket}other{A(z) <ph name="RWS_OWNER" /> webhelycsoportjában <ph name="RWS_MEMBERS_COUNT" /> webhely található, amelyek láthatják az Ön által a csoportban végzett tevékenységeket}}</translation>
 <translation id="3676777756440746804">A webhelyek nem kérhetik Öntől az Önről elmentett adatok használatát</translation>
 <translation id="3677897809642449131">A webhelyek engedélyt kérhetnek a mozgásérzékelők használatára</translation>
 <translation id="3678318839615834650">Az Új lap oldal kártyáinak alsó lapja teljes magasságban megnyitva</translation>
@@ -538,16 +536,15 @@
 <translation id="656065428026159829">Továbbiak megjelenítése</translation>
 <translation id="6561560012278703671">Csendesebb üzenetküldés használata (letiltja az értesítéseket, hogy ne zavarják meg Önt)</translation>
 <translation id="6593061639179217415">Asztali webhely</translation>
-<translation id="659938948789980540">{COUNT,plural, =1{Cookie-k engedélyezve a(z) <ph name="RWS_OWNER" /> <ph name="RWS_MEMBERS_COUNT" /> webhelyén}other{Cookie-k engedélyezve a(z) <ph name="RWS_OWNER" /> <ph name="RWS_MEMBERS_COUNT" /> webhelyén}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Védett tartalom</translation>
 <translation id="6619015782482868078">Víz téma</translation>
 <translation id="662080504995468778">Mégse</translation>
 <translation id="6630443592285535486">Írja be ide a hexadecimális kódot</translation>
 <translation id="6635327442719709864">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek a soros portok használatára. Ha ki van kapcsolva, a webhelyek nem használhatják a soros portokat.</translation>
+<translation id="6669390930482049506">Értesítést kérek</translation>
 <translation id="6678072580827808850">Biztonsági ellenőrzés áttekintése</translation>
 <translation id="6682057173375416470">Javasolt cikkek megjelenítése az Új lap oldalon</translation>
-<translation id="6683865262523156564">Ez a webhely egy olyan csoportban található, amely láthatja az Ön tevékenységeit. A csoportot a következő határozza meg: <ph name="RWS_OWNER" />.</translation>
 <translation id="6689172468748959065">Profilfotók</translation>
 <translation id="6697925417670533197">Aktív letöltések</translation>
 <translation id="6709432001666529933">Rákérdezés, mielőtt engedélyezi a webhelyek számára a kézmozgás nyomon követését (ajánlott)</translation>

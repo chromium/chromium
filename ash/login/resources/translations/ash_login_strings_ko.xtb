@@ -10,6 +10,7 @@
 <translation id="1097658378307015415">로그인하기 전에 게스트로 로그인하여 <ph name="NETWORK_ID" /> 네트워크를 활성화하세요.</translation>
 <translation id="1111932478203988717">자녀가 이 PIN을 사용하여 기기에 로그인할 수 있습니다</translation>
 <translation id="1122587596907914265">나만의 배경화면을 꾸며보세요.</translation>
+<translation id="1122913801042512795">계정 로그인 정보가 오래되었습니다. 로그아웃한 다음 다시 로그인하세요.</translation>
 <translation id="1131201598497838573">자녀의 PIN이 업데이트됨</translation>
 <translation id="1147322039136785890"><ph name="SUPERVISED_USER_NAME" />님의 차례입니다</translation>
 <translation id="1148669835763563782">보안 강화 및 최신 Chromebook 기능을 위한 최신 소프트웨어 업데이트가 추가됩니다. 이번 업데이트에서는 Chromebook을 원활하게 시작할 수 있도록 설정 환경이 개선되었습니다</translation>
@@ -26,6 +27,7 @@
 <translation id="1256588359404100567">이전 기기에서 동기화된 설정</translation>
 <translation id="1272978324304772054">이 사용자 계정은 기기가 등록된 도메인에 속해 있지 않습니다. 다른 도메인에 등록하려면 먼저 기기 복구 절차를 거쳐야 합니다.</translation>
 <translation id="1293556467332435079">파일</translation>
+<translation id="1302523850133262269">Chrome에서 최신 시스템 업데이트를 설치하는 동안 잠시 기다려 주세요.</translation>
 <translation id="1307559529304613120">시스템이 이 기기에 대한 장기 API 액세스 토큰을 저장하지 못했습니다.</translation>
 <translation id="1335929031622236846">기기 등록</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />디버깅 기능<ph name="END_H3" />
@@ -50,6 +52,7 @@
 <translation id="1347625331607114917">Android 휴대전화에서 코드 확인</translation>
 <translation id="1347975661240122359">배터리 잔량이 <ph name="BATTERY_LEVEL" />%가 되면 업데이트가 시작됩니다.</translation>
 <translation id="1353275871123211385">앱 승인 및 기기 사용 시간 제한과 같은 자녀 보호 기능을 사용하려면 자녀에게 부모가 관리하는 Google 계정이 있어야 합니다. 나중에 학교 계정을 추가하여 Google 클래스룸과 같은 도구를 사용할 수 있습니다.</translation>
+<translation id="1363996462118479832">로그인 중 오류가 발생하여 ChromeOS에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="1375557162880614858">ChromeOS Flex의 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까?</translation>
 <translation id="1377600615067678409">건너뛰기</translation>
 <translation id="1399261165075500043">Google Play 서비스 약관을 로드할 수 없습니다</translation>
@@ -74,6 +77,7 @@
 <translation id="1642494467033190216">rootfs 보호를 삭제하고 다시 시작해야 다른 디버깅 기능을 사용 설정할 수 있습니다.</translation>
 <translation id="1646045728251578877">소프트웨어 업데이트 사용 가능</translation>
 <translation id="1650801028905250434">내 드라이브에 있는 파일이 Chromebook에 자동으로 동기화되므로 인터넷에 연결되지 않은 상태에서도 파일에 액세스할 수 있습니다. 언제든지 설정 &gt; 파일에서 이를 변경할 수 있습니다.</translation>
+<translation id="16620462294541761">비밀번호가 일치하지 않습니다. 다시 시도해 주세요.</translation>
 <translation id="1668435968811469751">직접 등록</translation>
 <translation id="1678919064276516737">입력한 이메일과 PIN이 일치하지 않습니다.</translation>
 <translation id="1692115862433274081">다른 계정 사용</translation>
@@ -95,6 +99,7 @@
 <translation id="1868617395637139709">Android 앱과 서비스에 위치 사용.</translation>
 <translation id="1877377730633446520">약 <ph name="REQUIRED_SPACE" />가 사용됩니다. 현재 <ph name="FREE_SPACE" /> 사용 가능합니다.</translation>
 <translation id="1878155070920054810">업데이트가 완료되기 전에 Chromebook의 전원이 부족해질 것 같습니다. 업데이트 중단을 방지하려면 올바르게 충전되고 있는지 확인하세요.</translation>
+<translation id="1887442540531652736">로그인 오류</translation>
 <translation id="189035593835762169">이용약관</translation>
 <translation id="189358972401248634">다른 언어</translation>
 <translation id="1915734383465415025">상점 번호</translation>
@@ -123,6 +128,7 @@
 <translation id="2210462644007531147">설치를 완료할 수 없음</translation>
 <translation id="221872881068107022">역방향 스크롤</translation>
 <translation id="2219081237089444028">더 쉽게 로그인할 수 있도록 <ph name="DEVICE_TYPE" /> 비밀번호 설정하기</translation>
+<translation id="2220529011494928058">문제 신고</translation>
 <translation id="222115440608612541">일출 및 일몰 시 테마를 전환합니다.</translation>
 <translation id="2229161054156947610">1시간 이상 남음</translation>
 <translation id="2246129643805925002">최신 기능과 보안 개선사항을 제공하기 위해 <ph name="DEVICE_TYPE" /> 업데이트는 백그라운드에서 자동으로 실행됩니다. 설정에서 업데이트 환경설정을 확인할 수 있습니다.</translation>
@@ -133,6 +139,7 @@
 <translation id="2328137272841210255">PIN 재설정</translation>
 <translation id="2342180549977909852">자녀가 비밀번호 대신 번호(PIN)를 사용해 이 기기를 잠금 해제할 수 있습니다. 나중에 PIN을 설정하려면 설정으로 이동하세요</translation>
 <translation id="2359808026110333948">계속</translation>
+<translation id="2384373936468275798">계정의 로그인 세부정보가 오래되어 ChromiumOS에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="2387052489799050037">홈으로 이동</translation>
 <translation id="2395616325548404795"><ph name="DEVICE_TYPE" /> 기기가 엔터프라이즈 관리용으로 등록되었지만 애셋과 위치 정보를 전송하지 못했습니다. 기기의 관리 콘솔에서 애셋과 위치 정보를 직접 입력하세요.</translation>
 <translation id="2408955596600435184">PIN 입력</translation>
@@ -159,6 +166,7 @@
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Google 위치 서비스는 이 기기의 위치를 파악하는 데 Wi-Fi, 모바일 네트워크, 센서와 같은 소스를 사용합니다.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />언제든지 기기에서 Android 위치를 사용 중지할 수 있습니다. 설정 &gt; 앱 &gt; Google Play 스토어 &gt; Android 환경설정 관리 &gt; 보안 및 위치 &gt; 위치로 이동하세요. 동일한 메뉴에서 'Google 위치 정확도'를 사용 중지하여 Android 위치에 Wi-Fi, 모바일 네트워크, 센서를 사용하지 않도록 할 수도 있습니다.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2663302507110284145">언어</translation>
+<translation id="2674238339205910678">Google 계정의 로그인 정보가 오래되어 ChromeOS Flex에서 Google 계정에 Chrome 데이터를 저장할 수 없습니다</translation>
 <translation id="2687407218262674387">Google 서비스 약관</translation>
 <translation id="2688196195245426394">기기를 서버에 등록하는 중에 오류 발생: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">번들 기기이며 Kiosk &amp; Signage 업그레이드에 등록할 수 없습니다.</translation>
@@ -253,6 +261,7 @@
 <translation id="3740945083753997630">디스플레이 및 텍스트 크기 줄이기</translation>
 <translation id="376841534249795524"><ph name="DEVICE_TYPE" />을 어떤 용도로 사용하시나요?</translation>
 <translation id="3772046291955677288"><ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_LINK2" />을 읽었으며 이에 동의합니다.</translation>
+<translation id="3785324443014631273">로그인 중 오류가 발생하여 ChromeOS Flex에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="3789841737615482174">설치</translation>
 <translation id="3800828618615365228">Chrome 및 ChromeOS 추가 약관</translation>
 <translation id="3828953470056652895"><ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_LINK2" />, <ph name="BEGIN_LINK3" />Play 서비스 약관<ph name="END_LINK3" />을 읽었으며 이에 동의합니다.</translation>
@@ -333,6 +342,7 @@
         <ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />도움이 더 필요하면 g.co/flex/InstallErrors 페이지를 참고하세요.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143"><ph name="DEVICE_TYPE" />에 어떤 사용자를 추가할까요?</translation>
+<translation id="4543778593405494224">인증서 관리자</translation>
 <translation id="4566170377336116390">등록 후 전환하려면 기기를 초기화(파워워시)해야 합니다.</translation>
 <translation id="4567512141633030272">잘못된 로그인 옵션인가요?</translation>
 <translation id="4567533462991917415">설정이 완료된 후에도 언제든지 사용자를 추가할 수 있습니다. 모든 사용자는 자신의 계정을 맞춤설정하고 데이터를 비공개로 유지할 수 있습니다.</translation>
@@ -350,6 +360,7 @@
 <translation id="4814327014588285482">건너뛰고 나중에 알림</translation>
 <translation id="4830502475412647084">OS 업데이트 설치 중</translation>
 <translation id="4837926214103741331">더 이상 이 기기를 사용할 권한이 없습니다. 기기 소유자에게 로그인 권한에 대해 문의하세요.</translation>
+<translation id="4842397268809523050">도메인에 대한 동기화가 허용되지 않아 ChromeOS Flex에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="4844333629810439236">기타 키보드</translation>
 <translation id="484462545196658690">자동</translation>
 <translation id="4864369630010738180">로그인 중...</translation>
@@ -361,6 +372,7 @@
 <translation id="4944310289250773232">이 인증 서비스는 <ph name="SAML_DOMAIN" />에서 호스팅합니다</translation>
 <translation id="4955710816792587366">PIN 선택</translation>
 <translation id="4965808351167763748">이 기기를 설정하여 행아웃 Meet를 실행하시겠습니까?</translation>
+<translation id="4969674060580488087">계정의 로그인 세부정보가 오래되어 ChromeOS Flex에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="4987944280765486504">다운로드가 완료되면 Chromebook이 다시 시작되고 설정을 계속할 수 있습니다</translation>
 <translation id="5029287942302939687">비밀번호가 설정됨</translation>
 <translation id="503155457707535043">앱 다운로드 중</translation>
@@ -403,6 +415,8 @@
 <translation id="528208740344463258">Android 앱을 다운로드하고 사용하려면 우선 필수 업데이트를 설치해야 합니다. 업데이트 중에는 <ph name="DEVICE_TYPE" /> 기기를 사용할 수 없습니다. 설치가 완료되면 <ph name="DEVICE_TYPE" /> 기기가 다시 시작됩니다.</translation>
 <translation id="5283677936944177147">시스템이 기기 모델 또는 일련번호를 확인하는 데 실패했습니다.</translation>
 <translation id="5333896723098573627">앱을 삭제하려면 설정 &gt; 앱 &gt; Google Play 스토어 &gt; Android 환경설정 관리 &gt; 앱 또는 애플리케이션 관리자로 이동합니다. 그런 다음 제거하려는 앱을 탭합니다(앱을 찾으려면 오른쪽이나 왼쪽으로 스와이프해야 할 수 있음). 그런 다음 제거 또는 사용 중지를 탭합니다.</translation>
+<translation id="5334309298019785904">내 도메인에서 동기화를 사용할 수 없으므로 ChromeOS에서 데이터를 동기화할 수 없습니다.</translation>
+<translation id="535243042947607642">Google 계정의 로그인 정보가 오래되어 ChromiumOS에서 Google 계정에 Chromium 데이터를 저장할 수 없습니다</translation>
 <translation id="5355501370336370394">회사 기기 등록</translation>
 <translation id="5372529912055771682">제공된 등록 모드는 해당 버전의 운영 체제에서 지원되지 않습니다. 최신 버전을 실행하고 있는지 확인한 뒤 다시 시도하세요.</translation>
 <translation id="5397378439569041789">키오스크 또는 사이니지 기기 등록</translation>
@@ -414,6 +428,7 @@
 <translation id="5448293924669608770">로그인 중에 문제가 발생했습니다.</translation>
 <translation id="5453829744223920473">자녀는 수업 시간과 마찬가지로 모든 학교 앱, 북마크, 리소스를 사용할 수 있습니다. 기본 규칙은 학교에서 정합니다.</translation>
 <translation id="5473099001878321374">계속하면 이 기기에서 Google, 자녀의 이동통신사, 기기 제조업체로부터 업데이트와 앱을 자동으로 다운로드하고 설치하는 데 동의하는 것으로 간주됩니다(이때 모바일 데이터가 사용될 수도 있음). 일부 앱에서는 인앱 구매가 제공될 수도 있습니다.</translation>
+<translation id="549669000822060376">Chromium에서 최신 시스템 업데이트를 설치하는 동안 잠시 기다려 주세요.</translation>
 <translation id="5502915260472117187">자녀</translation>
 <translation id="5511823366942919280">이 기기를 'Shark'로 설정하시겠습니까?</translation>
 <translation id="5513807280330619196">계산기</translation>
@@ -517,6 +532,7 @@
 <translation id="6495266441917713704">Wi-Fi 전송 불가</translation>
 <translation id="6515620015470298987">기기 구성 확인 문제로 인해 로그인할 수 없습니다. <ph name="DEVICE_TYPE" /> 기기를 초기화한 후 다시 시도해 주세요.</translation>
 <translation id="6519689855001245063">자격 충족 여부 확인 중</translation>
+<translation id="6520608191273161151">로그인 중에 오류가 발생하여 ChromeOS Flex에서 Google 계정에 Chrome 데이터를 저장할 수 없습니다</translation>
 <translation id="6532527800157340614">액세스 토큰을 검색할 수 없어 로그인에 실패했습니다. 네트워크 연결을 확인한 다음 다시 시도해 보세요.</translation>
 <translation id="653920215766444089">포인팅 기기 검색 중</translation>
 <translation id="65513682072153627">관리자가 관리하는 설정이나 기능의 경우 관리됨 아이콘이 표시됩니다</translation>
@@ -528,8 +544,10 @@
 <translation id="6675665718701918026">포인팅 기기 연결됨</translation>
 <translation id="667752334740867460">Wi-Fi 정보 수신 중…</translation>
 <translation id="6680442031740878064">사용 가능한 저장용량: <ph name="AVAILABLE_SPACE" /></translation>
+<translation id="668175097507315160">로그인 중 오류가 발생하여 ChromiumOS에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="6684827949542560880">최신 업데이트 다운로드 중</translation>
 <translation id="6722744767592605627"><ph name="EMAIL" /> 계정을 복구할 수 있지만 로컬 데이터는 삭제됩니다</translation>
+<translation id="6735387454586646204">ChromeOS Flex 시스템</translation>
 <translation id="6748980958975836188"><ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_LINK2" />을 읽었으며 이에 동의합니다.</translation>
 <translation id="6749473226660745022">사진</translation>
 <translation id="6754918760968695779">빠른 입력</translation>
@@ -554,6 +572,7 @@
 <translation id="6918733588290914545">Android 휴대전화를 사용한 빠른 설정</translation>
 <translation id="6920473853105515518"><ph name="DEVICE_TYPE" /> 기기가 인터넷에 연결되었는지 확인하고 다시 시도하세요. 다른 기기에서 play.google/play-terms를 방문할 수도 있습니다.</translation>
 <translation id="6929126689972602640">학교 계정에서는 자녀 보호 기능이 지원되지 않습니다. 집에서 학교 과제를 위해 Google 클래스룸 및 다른 웹사이트에 액세스할 수 있는 학교 계정을 추가하려면 먼저 자녀의 개인 계정으로 로그인하세요. 설정에서 학교 계정을 나중에 추가할 수 있습니다.</translation>
+<translation id="6933858244219479645">ChromeOS 시스템</translation>
 <translation id="6935031746833428401">기기 관리 자세히 알아보기</translation>
 <translation id="6950351336108213154">기기 주변기기 업데이트 중</translation>
 <translation id="6955698182324067397">sshd 데몬을 설정하고 USB 드라이브에서 부팅하도록 사용 설정하는 ChromeOS 디버깅 기능을 사용 설정 중입니다.</translation>
@@ -650,6 +669,7 @@
 <translation id="7870730066603611552">설정 후 동기화 옵션 검토</translation>
 <translation id="7883792253546618164">언제든지 수신 거부할 수 있습니다.</translation>
 <translation id="7887864092952184874">블루투스 마우스 페어링됨</translation>
+<translation id="7905880575591690197">로그인 중에 오류가 발생하여 ChromeOS에서 Google 계정에 Chrome 데이터를 저장할 수 없습니다</translation>
 <translation id="7906440585529721295">로컬 데이터가 삭제됩니다</translation>
 <translation id="7910725946105920830">개인 Google 계정 사용</translation>
 <translation id="7918257978052780342">등록</translation>
@@ -676,6 +696,7 @@
 <translation id="8098616321286360457">네트워크 연결 필요</translation>
 <translation id="8129265306888404830">조직(<ph name="EMAIL_DOMAIN" />)의 이메일 주소를 사용하려면 엔터프라이즈 등록을 사용해야 합니다. 이 기기를 개인용으로 사용하는 경우 개인 Google 계정으로 로그인하세요.</translation>
 <translation id="8131740175452115882">확인</translation>
+<translation id="8133124826068723441">내 도메인에서 동기화를 사용할 수 없으므로 ChromiumOS에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="8146177459103116374">이 기기에 이미 등록한 경우 <ph name="LINK2_START" />기존 사용자로 로그인<ph name="LINK2_END" />할 수 있습니다.</translation>
 <translation id="8146793085009540321">로그인하지 못했습니다. 관리자에게 문의하거나 다시 시도해 보세요.</translation>
 <translation id="8147346945017130012">진단 및 사용 데이터와 함께 비정상 종료 보고서를 Google에 자동으로 전송하여 Chrome 및 ChromeOS의 기능과 성능 개선에 참여합니다.</translation>
@@ -694,6 +715,7 @@
 <translation id="8271379370373330993">다음 몇 단계는 부모님이 진행하셔야 합니다. 계정 설정이 완료된 후 <ph name="DEVICE_TYPE" /> 기기를 자녀에게 돌려주세요.</translation>
 <translation id="8274924778568117936">업데이트가 완료될 때까지 <ph name="DEVICE_TYPE" />을(를) 끄거나 닫지 마세요. 설치가 완료되면 <ph name="DEVICE_TYPE" />이(가) 다시 시작됩니다.</translation>
 <translation id="8281886186245836920">건너뛰기</translation>
+<translation id="8286036467436129157">로그인</translation>
 <translation id="8289509909262565712"><ph name="DEVICE_OS" /> 시작하기</translation>
 <translation id="8291942417224950075">개인용</translation>
 <translation id="8304383784961451596">이 기기를 사용할 권한이 없습니다. 관리자에게 문의하여 로그인 권한을 요청하거나 Family Link의 감독을 받는 Google 계정으로 로그인하세요.</translation>
@@ -705,6 +727,7 @@
 <translation id="8401432541486058167">스마트 카드와 연결된 PIN을 입력하세요.</translation>
 <translation id="8408270600235826886">사용자는 Google과 어떤 데이터를 공유할지 관리할 수 있으며 언제든지 설정에서 변경할 수 있습니다. 데이터는 Google의 <ph name="BEGIN_LINK" />개인정보처리방침<ph name="END_LINK" />에 따라 사용됩니다.</translation>
 <translation id="8413956290606243087">ChromeOS 내장 스크린 리더인 ChromeVox를 활성화하시겠습니까?</translation>
+<translation id="8418845734693287262">계정의 로그인 세부정보가 오래되어 ChromeOS에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="8425768983279799676">PIN을 사용하여 기기를 잠금 해제할 수 있습니다.</translation>
 <translation id="8428213095426709021">설정</translation>
 <translation id="843173223122814223">AI로 배경 만들기</translation>
@@ -744,10 +767,12 @@
 <translation id="8794548468611058947">로그인할 때 Google 계정 비밀번호를 입력하는 대신 <ph name="DEVICE_TYPE" /> 기기에서 사용할 PIN을 만들 수 있습니다</translation>
 <translation id="8830779999439981481">업데이트 적용을 위해 다시 시작하는 중</translation>
 <translation id="8830796635868321089">현재 프록시 설정을 사용하여 업데이트를 확인하지 못했습니다. <ph name="PROXY_SETTINGS_LINK_START" />프록시 설정<ph name="PROXY_SETTINGS_LINK_END" />을 조정하세요.</translation>
+<translation id="8833697763442816810">ChromiumOS 시스템</translation>
 <translation id="8855977033756560989">이 Chromebook Enterprise 기기는 Chrome Enterprise 업그레이드와 함께 제공됩니다. 엔터프라이즈 기능을 활용하려면 Google 관리 계정으로 이 기기를 등록하세요.</translation>
 <translation id="885746075120788020">Google 계정을 사용해 로그인할 경우 모든 ChromeOS 기기에서 저장된 환경설정 및 활동을 사용할 수 있습니다. 설정에서 동기화할 항목을 선택하세요</translation>
 <translation id="8868333925931032127">데모 모드 시작</translation>
 <translation id="8875221558267407626">콘텐츠를 요약하거나, 복잡한 언어를 단순화하거나, 질문하세요</translation>
+<translation id="8890569919834781711">로그인 중에 오류가 발생하여 ChromiumOS에서 Google 계정에 Chromium 데이터를 저장할 수 없습니다</translation>
 <translation id="8907701755790961703">국가를 선택하세요.</translation>
 <translation id="8913163265790894442">휴대전화로 <ph name="DEVICE_TYPE" /> 기기를 간편하게 설정하세요. 비밀번호를 직접 입력하지 않고도 Wi-Fi와 Google 계정을 추가할 수 있습니다
         <ph name="BR" />
@@ -783,5 +808,6 @@
 <translation id="951991426597076286">거부</translation>
 <translation id="954749761428814584">언어 및 입력 방법</translation>
 <translation id="960987915827980018">약 1시간 남음</translation>
+<translation id="973195869036269770">Google 계정의 로그인 정보가 오래되어 ChromeOS에서 Google 계정에 Chrome 데이터를 저장할 수 없습니다</translation>
 <translation id="995420352808264005">기기 등록 유형 선택</translation>
 </translationbundle>

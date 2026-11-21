@@ -32,13 +32,11 @@
 <translation id="1278833599417554002">ხელახლა გაშვება &amp;Chrome-ის გასაახლებლად</translation>
 <translation id="1289911795790071537">Chrome-ით ძიების გახსნა</translation>
 <translation id="1290883685122687410">დაყენების შეცდომა: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1302523850133262269">დაელოდეთ, სანამ Chrome დააინსტალირებს სისტემის უახლეს განახლებებს.</translation>
 <translation id="1330562121671411446">ენის ამოცნობა</translation>
 <translation id="1333654552732143316">Chrome-ის ჩართვა</translation>
 <translation id="1341711321000856656">ახლა შეგიძლიათ გადართვა, პაროლები სხვა Chrome პროფილიდან რომ ნახოთ</translation>
 <translation id="1343830902827845050">Chrome-ში შესვლა</translation>
 <translation id="1361351916482714918">დაათვალიერეთ უფრო გონივრულად Google Lens-ის მეშვეობით</translation>
-<translation id="1363996462118479832">Chrome S-მა ვერ დაასინქრონა თქვენი მონაცემები შესვლის შეცდომის გამო.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1383876407941801731">ძიება</translation>
 <translation id="1399397803214730675">ამ კომპიუტერს უკვე აქვს Google Chrom-ის უფრო ახალი ვერსია. იმ შემთხვევაში, თუ პროგრამა არ მუშაობს, გთხოვთ, განახორციელეთ Google Chrome-ის დეინსტალაცია და სცადეთ ისევ.</translation>
@@ -89,7 +87,6 @@
 <translation id="177180974022074201">ცადეთ Gemini Chrome-ში</translation>
 <translation id="1786003790898721085">დარწმუნდით, რომ თქვენს <ph name="TARGET_DEVICE_NAME" />-ზე შესული ხართ Chrome-ში, შემდეგ კი ხელახლა ცადეთ გაგზავნა.</translation>
 <translation id="1786044937610313874">მალსახმობები იხსნება Chrome-ში</translation>
-<translation id="1812689907177901597">ამ პარამეტრის გამორთვის შემთხვევაში, Google-ის საიტებში (მაგალითად, Gmail-ში) შესვლას შეძლებთ Chrome-ში შესვლის გარეშე</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome გირჩევთ, დააპაუზოთ ჩანართი, რომელიც ანელებს თქვენი ბრაუზერის მუშაობას}other{Chrome გირჩევთ, დააპაუზოთ ჩანართები, რომლებიც ანელებს თქვენი ბრაუზერის მუშაობას}}</translation>
 <translation id="1832046143430087831">აჩქარებს Chrom-ის V8 მექანიზმის მქონე საიტების მუშაობას, მაგრამ Chrom ოდნავ ნაკლებად უძლებს შეტევებს. ეს პარამეტრი გამორთულია.</translation>
 <translation id="1838374766361614909">ძიების გასუფთავება</translation>
@@ -176,7 +173,6 @@
 <translation id="2661616016316841783"><ph name="DEVICE" />-დან თქვენი გაფართოებებისა და სხვა კონტენტის მისაღებად გაიარეთ ავტორიზაცია Chrome-ში</translation>
 <translation id="2665296953892887393">დაგვეხმარეთ Google Chrome-ის გაუმჯობესებაში: გამოგზავნეთ მოხსენებები შეცდომების შესახებ <ph name="UMA_LINK" /> Google-ში</translation>
 <translation id="2668094785979141847">დააწკაპუნეთ Google Lens-იდან გასასვლელად</translation>
-<translation id="2674238339205910678">ChromeOS Flex-მა ვერ შეინახა Chrome-ის მონაცემები თქვენს Google ანგარიშში, რადგან თქვენი ანგარიშის შესვლის დეტალები მოძველებულია</translation>
 <translation id="2681444469812712297">გახსენით <ph name="URL" /> Google Chrome-ის ახალ ჩანართში.</translation>
 <translation id="2699790011615497488">Gemini Chrome Beta-ში გახსნა</translation>
 <translation id="2738871930057338499">ინტერნეტთან დაკავშირება ვერ ხერხდება. HTTP 403 — აკრძალულია. შეამოწმეთ პროქსი-სერვერის კონფიგურაცია.</translation>
@@ -287,7 +283,6 @@
 <translation id="3756724684201900923">შეიტყვეთ მეტი Chrome-ის ინსტალაციის შესახებ</translation>
 <translation id="3772152698251011058">ამ საიტის შესახებ Google-ისთვის მოხსენება</translation>
 <translation id="3780814664026482060">Chrome — <ph name="PAGE_TITLE" /></translation>
-<translation id="3785324443014631273">ChromeOS Flex-მა ვერ მოახერხა თქვენი მონაცემების სინქრონიზაცია, რადგან შესვლისას მოხდა შეცდომა.</translation>
 <translation id="3810973564298564668">მართვა</translation>
 <translation id="383455301564000773">Windows 11-ზე გადახვალთ? ჩამოტვირთეთ Chrome OneDrive-ში, რომ პირველივე დღეს მზად იყოთ.</translation>
 <translation id="383928141529488001">Bluetooth მოწყობილობების აღმოსაჩენად Google Chrome საჭიროებს 
@@ -378,7 +373,6 @@
 <translation id="4803313124144656665">Google Search-ის დახურვა Chrome-ში</translation>
 <translation id="4828579605166583682">Google Chrome ცდილობს არსებული პაროლების ჩანაცვლებას. აღნიშნულის დასაშვებად აკრიფეთ თქვენი Windows-ის პაროლი.</translation>
 <translation id="4836321460899997044">Chrome პროფილი</translation>
-<translation id="4842397268809523050">ChromeOS Flex-მა ვერ მოახერხა თქვენი მონაცემების სინქრონიზაცია, რადგან თქვენი დომენისთვის სინქრონიზაცია მიუწვდომელია.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> მზად არის შესასვლელად.  ცალკე დათვალიერების გასაგრძელებლად შედით Chrome-ში თქვენს პირად პროფილში <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">თქვენი ეკრანის გასაზიარებლად დაუშვით ეკრანის ჩაწერა Chrome-ისთვის სისტემის პარამეტრებში</translation>
 <translation id="4873783916118289636">გადახედეთ კონფიდენციალურობისა და უსაფრთხოების მართვის საკვანძო საშუალებებს Chrome-ში</translation>
@@ -392,7 +386,6 @@
 <translation id="492720062778050435">Chrome გირჩევთ, შეამოწმოთ ეს გაფართოება</translation>
 <translation id="4953650215774548573">Google Chrome-ის დაყენება ნაგულისხმევ ბრაუზერად</translation>
 <translation id="495931528404527476">Chrome-ში</translation>
-<translation id="4969674060580488087">ChromeOS Flex-მა ვერ მოახერხა თქვენი მონაცემების სინქრონიზაცია, რადგან თქვენი ანგარიშის სისტემაში შესვლის მონაცემები მოძველდა.</translation>
 <translation id="4970761609246024540">მოგესალმებათ Chrome პროფილები</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">დაწკაპუნებით აირჩიეთ „Google პაროლების მმართველი“</translation>
@@ -426,7 +419,6 @@
 <translation id="5271833978500241046">გამოიყენეთ ისინი Chrome-ში Gemini-ს სხვა ფუნქციებთან ერთად</translation>
 <translation id="5320351714793324716">ქუქი-ჩანაწერების დაშვების შემთხვევაში, Chrome-მა, შესაძლოა, გამოიყენოს ისინი წინასწარ ჩატვირთვისთვის</translation>
 <translation id="5321325624576443340">Google Lens მიუწვდომელია. ცადეთ მოგვიანებით.</translation>
-<translation id="5334309298019785904">ChromeOS-მა ვერ დაასინქრონა თქვენი მონაცემები, რადგან სინქრონიზაცია თქვენი დომენისთვის არ არის ხელმისაწვდომი.</translation>
 <translation id="5336664042114176802">შეგიძლიათ გადაერთოთ Gemini ასისტენტზე, რომელიც თავდაპირველად იყო დაკავშირებული თქვენს Google ანგარიშთან და რომელსაც არ მართავს <ph name="DOMAIN" />. პასუხები აღარ იქნება დაფუძნებული იმ ფაილებსა თუ სერვისებზე, რომლებსაც <ph name="DOMAIN" /> მართავს და თქვენი ჩეთის ისტორია აღარ გადმოვა. ის შეიძლება არ იყოს შესაფერისი სამუშაოდ გამოსაყენებლად. გადართვა საჭიროებს Chrome-ის ხელახლა გაშვებას.</translation>
 <translation id="5346389065299425353">გააღრმავეთ თქვენი ძიება რამდენიმე ჩანართის, ფაილისა და ხელსაწყოს დამატებით</translation>
 <translation id="5353252989841766347">პაროლების ექსპორტი Chrome-იდან</translation>
@@ -556,7 +548,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6497147134301593682">Chrome ავტომატურად დაიხურა</translation>
 <translation id="6506909944137591434">თქვენი შემოგარენის 3-განზომილებიანი რუკის შესაქმნელად Chrome საჭიროებს მეხსიერებაზე წვდომის ნებართვას</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> — Google Chrome Dev</translation>
-<translation id="6520608191273161151">ChromeOS Flex-მა ვერ შეინახა Chrome-ის მონაცემები თქვენს Google ანგარიშში ავტორიზაციის შეცდომის გამო</translation>
 <translation id="6520670145826811516">თქვენი მდებარეობა რომ გამოიყენოთ, გახსენით <ph name="BEGIN_LINK" />სისტემის პარამეტრები<ph name="END_LINK" /> და მიანიჭეთ Chrome-ს წვდომა</translation>
 <translation id="652948702951888897">Chrome ისტორია</translation>
 <translation id="6532945796722480006">Gemini in Chrome Canary-ში გახსნა</translation>
@@ -578,7 +569,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6712881677154121168">შეცდომა ჩამოტვირთვისას: <ph name="DOWNLOAD_ERROR" /></translation>
 <translation id="6718739135284199302">ააჩქარეთ Chrome-ის მუშაობა</translation>
 <translation id="6734827584173583205">ბოლო დროს არ ყოფილხართ. Chrome-მა ამოშალა <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და კიდევ <ph name="COUNT" />.</translation>
-<translation id="6735387454586646204">ChromeOS Flex სისტემა</translation>
 <translation id="674891594898436429">ამ ჩანართში აქტიური ძიების დახურვა</translation>
 <translation id="6750954913813541382">მართლწერის შეცდომების შესასწორებლად Chrome უგზავნის Google-ს თქვენ მიერ ბრაუზერში აკრეფილ ტექსტს</translation>
 <translation id="6760235774835597023">აჩქარებს Chrom-ის V8 მექანიზმის მქონე საიტების მუშაობას, მაგრამ Chrom ოდნავ ნაკლებად უძლებს შეტევებს. ეს პარამეტრი ჩართულია.</translation>
@@ -599,7 +589,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6908182077349113099">დაასინქრონეთ თქვენი პაროლები, სანიშნეები და ისტორია თქვენს მოწყობილობებში. ნაგულისხმევ ბრაუზერად Chrome-ის დაყენებით მარტივად მიიღეთ წვდომა თქვენთვის ნაცნობ და საყვარელ ფუნქციებზე.</translation>
 <translation id="6926772305569367352">ხელსაწყოთა ზოლში არსებულ ღილაკს „Google Search Chrome-ში“ ახალი ხატულა აქვს. დააწკაპუნეთ მასზე, რომ დასვათ შეკითხვები Chrome-ში Google Search-ით დათვალიერებისას.</translation>
 <translation id="6930294499209825">იზრუნებს, რომ თქვენი Google-ის პროგრამული უზრუნველყოფა განახლებული იყოს. თუ ეს სერვისი გაითიშება ან შეჩერდება, Google-ის პროგრამული უზრუნველყოფა აღარ განახლდება, რაც იმას ნიშნავს, რომ უსაფრთხოებასთან დაკავშირებული პოტენციური საფრთხეების აღმოფხვრა აღარ მოხდება და ფუნქციებმა შეიძლება არ იმუშაოს. ეს სერვისი დეინსტალირდება, როცა მისით მოსარგებლე Google-ის პროგრამული უზრუნველყოფა არ არსებობს.</translation>
-<translation id="6933858244219479645">ChromeOS სისტემა</translation>
 <translation id="6938166777909186039">Google Chrome-ის მომავალი განახლებების მისაღებად დაგჭირდებათ Windows 10 ან უფრო ახალი ვერსია. ეს კომპიუტერი იყენებს Windows 8.1-ს.</translation>
 <translation id="6962628299694876291"><ph name="EXISTING_USER" /> მზად არის ავტორიზაციისთვის. ცალკე დათვალიერების გასაგრძელებლად შედით Chrome-ში თქვენს პირად პროფილში ანგარიშით <ph name="USER_EMAIL_ADDRESS" />. თქვენს ყველა მოწყობილობაში მიიღებთ პაროლებსა და სხვა მონაცემებს.</translation>
 <translation id="6965382102122355670">კარგი</translation>
@@ -690,7 +679,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="7801699035218095297">Google Chrome ცდილობს პაროლების კოპირებას. აღნიშნულის დასაშვებად აკრიფეთ თქვენი Windows-ის პაროლი ამის დასაშვებად.</translation>
 <translation id="7804364787702057554">თქვენი ანგარიში Chrome-ში</translation>
 <translation id="7804947029129221742">თქვენი საძიებო სისტემა შეიცვალა Chrome-ს მიღმა. თქვენი დაცვის მიზნით, Chrome-მა დააბრუნა ის თავდაპირველ ნაგულისხმევ პარამეტრებზე. <ph name="LEARN_MORE_LINK" /></translation>
-<translation id="7808348361785373670">Chrome-იდან ამოღება...</translation>
 <translation id="7827099906024714326">Chrome საჭიროებს თქვენი ვინაობის დადასტურებას, სანამ მონაცემები Google ანგარიშში შეინახება და თქვენს მოწყობილობებში გამოიყენება. ახლა გასვლის შემთხვევაში, აღნიშნული მონაცემები წაიშლება.</translation>
 <translation id="7829850924999627855"><ph name="DEVICE" />-დან თქვენი შენახული ინფორმაციისა და სხვა კონტენტის მისაღებად გაიარეთ ავტორიზაცია Chrome-ში</translation>
 <translation id="7832314606810669113">თქვენს ყველა მოწყობილობაში სანიშნეებისა და სხვა ინფორმაციის მისაღებად შედით Chrome-ში. შესვლის შემდეგ ეს სანიშნე შეინახება თქვენს Google ანგარიშში.</translation>
@@ -703,7 +691,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="7896673875602241923">Chrome-ში უკვე განხორციელდა შესვლა ამ კომპიუტერიდან, როგორც <ph name="ACCOUNT_EMAIL_LAST" />. გთხოვთ, შექმნათ Chrome-ის ახალი მომხმარებელი თქვენი ინფორმაციის ცალკე შესანახად.</translation>
 <translation id="7904213866086517086">Google Search-ის ხელახლა გახსნა გვერდით პანელში</translation>
 <translation id="7904985524660297937">ცადეთ Gemini Google Chrome-ში</translation>
-<translation id="7905880575591690197">ChromeOS-მა ვერ შეინახა Chrome-ის მონაცემები თქვენს Google ანგარიშში ავტორიზაციის შეცდომის გამო</translation>
 <translation id="7936702483636872823">Chrome-მა დაბლოკა ეს ჩამოტვირთვა, რადგან ეს ფაილი შეცდომაში შემყვანია და მას შეუძლია მოულოდნელი ცვლილებების განხორციელება თქვენს მოწყობილობაზე</translation>
 <translation id="7951272445806340501">ChromeOS Flex უნდა გადაიტვირთოს განახლების გასააქტიურებლად.</translation>
 <translation id="7959172989483770734">Chrome-ის პროფილების მართვა</translation>
@@ -764,7 +751,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="8402881611069691789">{COUNT,plural, =1{Chrome-მა დაასრულა განახლება. ახალი ვერსიის გამოსაყენებლად საჭიროა მისი ხელახლა გაშვება. თქვენი ამჟამინდელი ჩანართები თავიდან გაიხსნება. გახსნილია ინკოგნიტო ან იზოლირებული ფანჯარა. ის არ გაიხსნება ხელახლა გაშვების შემდეგ.}other{Chrome-მა დაასრულა განახლება. ახალი ვერსიის გამოსაყენებლად საჭიროა მისი ხელახლა გაშვება. თქვენი ამჟამინდელი ჩანართები თავიდან გაიხსნება. პროფილებში გახსნილია # ინკოგნიტო და იზოლირებული ფანჯარა. ისინი არ გაიხსნება ხელახლა გაშვების შემდეგ.}}</translation>
 <translation id="8403038600646341038">Chrome-ის ლოგო კომპიუტერის ეკრანზე.</translation>
 <translation id="8406687098231754303">ხელსაწყოთა ზოლში არსებული ღილაკით „Google Search გვერდით პანელში“ შეგიძლიათ, ხელახლა გახსნათ Google Search გვერდით პანელში, რათა დასვათ კითხვები დათვალიერების პარალელურად</translation>
-<translation id="8418845734693287262">ChromeOS-მა ვერ დაასინქრონა თქვენი მონაცემები, რადგან თქვენი ანგარიშის შესვლის დეტალები მოძველდა.</translation>
 <translation id="842386925677997438">Chrome-ის უსაფრთხოების ხელსაწყოები</translation>
 <translation id="8425765582779547329">ონლაინუსაფრთხოების დასაცავად, თქვენი მშობლის არჩევანით, შედით Chrome-ში</translation>
 <translation id="842852285618875960">თქვენ მიაღწიეთ Google Chrome-ის <ph name="BOOKMARK_LIMIT" /> სანიშნის ლიმიტს, ამიტომ თქვენი ზოგიერთი სანიშნე ჯერ არ შენახულა თქვენს Google ანგარიშში.
@@ -793,7 +779,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="8624541899164515475">პარამეტრები, გაიხსნება ახალ ჩანართში.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome ხელახლა გაეშვება 1 წუთში}other{Chrome ხელახლა გაეშვება # წუთში}}</translation>
 <translation id="8637932705841171563">თქვენი ფანჯრის გასაზიარებლად დაუშვით ეკრანის ჩაწერა Chrome-ისთვის სისტემის პარამეტრებში</translation>
-<translation id="8642497536370021917">დაადასტურეთ ვინაობა, რომ თქვენს Google ანგარიშში გამოიყენოთ და შეინახოთ Chrome-ის მონაცემები</translation>
 <translation id="8656634243791296665">Gemini Chrome Dev-ში გახსნა</translation>
 <translation id="8669527147644353129">Google Chrome-ის დახმარება</translation>
 <translation id="8679801911857917785">იგი, ასევე, აკონტროლებს, თუ რომელი გვერდი გამოჩნდება Chrome-ის გაშვებისას.</translation>
@@ -855,7 +840,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="922152298093051471">Chrome-ის მორგება</translation>
 <translation id="93760716455950538">გადატვირთეთ ChromeOS Flex</translation>
 <translation id="945522503751344254">შეფასების გაგზავნა</translation>
-<translation id="973195869036269770">ChromeOS-მა ვერ შეინახა Chrome-ის მონაცემები თქვენს Google ანგარიშში, რადგან თქვენი ანგარიშის შესვლის დეტალები მოძველებულია</translation>
 <translation id="983803489796659991">ინსტალაცია ვერ მოხერხდა, რადგან განახლების სერვერს არ აქვს ამ აპლიკაციის ჰეშ-მონაცემები.</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> გადართავს Chrome პროფილებს</translation>
 </translationbundle>

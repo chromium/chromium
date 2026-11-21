@@ -10,6 +10,7 @@
 <translation id="1097658378307015415">Înainte de a vă conecta, începeți o sesiune pentru invitați pentru activarea rețelei <ph name="NETWORK_ID" /></translation>
 <translation id="1111932478203988717">Copilul tău poate să folosească acest cod PIN pentru a se conecta la dispozitiv</translation>
 <translation id="1122587596907914265">Imagini de fundal unice cu stil</translation>
+<translation id="1122913801042512795">Detaliile de conectare la cont sunt învechite. Deconectează-te și conectează-te din nou.</translation>
 <translation id="1131201598497838573">Codul PIN al copilului a fost actualizat</translation>
 <translation id="1147322039136785890"><ph name="SUPERVISED_USER_NAME" /> poate acum să folosească dispozitivul</translation>
 <translation id="1148669835763563782">Instalezi cea mai recentă actualizare de software pentru securitate sporită și cele mai noi funcții ale Chromebookului. Actualizarea include o experiență de configurare îmbunătățită, pentru a te ajuta să începi lucrul pe Chromebook fără probleme.</translation>
@@ -26,6 +27,7 @@
 <translation id="1256588359404100567">Setarea este sincronizată de pe dispozitivul anterior.</translation>
 <translation id="1272978324304772054">Acest cont de utilizator nu aparține domeniului pe care este înscris dispozitivul. Dacă doriți să vă înscrieți pe un alt domeniu, trebuie să parcurgeți mai întâi procesul de recuperare a dispozitivului.</translation>
 <translation id="1293556467332435079">Fișiere</translation>
+<translation id="1302523850133262269">Așteaptă până când Chrome instalează cele mai recente actualizări de sistem.</translation>
 <translation id="1307559529304613120">Hopa! Sistemul nu a putut stoca indicativul de acces pe termen lung la API pentru acest dispozitiv.</translation>
 <translation id="1335929031622236846">Înregistrează dispozitivul</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Funcțiile de remediere a erorilor<ph name="END_H3" />
@@ -49,6 +51,7 @@
 <translation id="1347625331607114917">Confirmă codul pe telefonul Android</translation>
 <translation id="1347975661240122359">Actualizarea va începe când bateria va ajunge la <ph name="BATTERY_LEVEL" />%.</translation>
 <translation id="1353275871123211385">Pentru a folosi opțiunile de control parental, precum aprobarea aplicațiilor și limitele pentru durata de folosire a dispozitivului, copilul trebuie să aibă un Cont Google gestionat de un părinte. Mai târziu se poate adăuga un cont de la școală pentru instrumente cum ar fi Google Classroom.</translation>
+<translation id="1363996462118479832">ChromeOS nu a putut sincroniza datele din cauza unei erori la conectare.</translation>
 <translation id="1375557162880614858">Vrei să activezi ChromeVox, cititorul de ecran încorporat pentru sistemul de operare Chrome Flex?</translation>
 <translation id="1377600615067678409">Ignorați deocamdată</translation>
 <translation id="1399261165075500043">Nu pot să încarc Termenii și condițiile Google Play</translation>
@@ -73,6 +76,7 @@
 <translation id="1642494467033190216">Înainte de activarea altor funcții de remediere a erorilor, trebuie să elimini protecția sistemului rootfs și să repornești.</translation>
 <translation id="1646045728251578877">Actualizare de software disponibilă</translation>
 <translation id="1650801028905250434">Fișierele din Contul meu Drive se vor sincroniza automat cu Chromebookul, ca să le poți accesa fără conexiune la internet. Poți modifica oricând opțiunea în Setări &gt; Fișiere.</translation>
+<translation id="16620462294541761">Ne pare rău, parola nu a putut fi verificată. Încercați din nou.</translation>
 <translation id="1668435968811469751">Înregistrează-te manual</translation>
 <translation id="1678919064276516737">Adresa de e-mail și PIN-ul pe care le-ai introdus nu corespund</translation>
 <translation id="1692115862433274081">Folosește alt cont</translation>
@@ -94,6 +98,7 @@
 <translation id="1868617395637139709">Folosește locația pentru serviciile și aplicațiile pentru Android.</translation>
 <translation id="1877377730633446520">Aceasta va folosi aproximativ <ph name="REQUIRED_SPACE" />. Momentan ai <ph name="FREE_SPACE" /> la dispoziție.</translation>
 <translation id="1878155070920054810">Se pare că Chromebookul tău se va descărca înainte să se încheie actualizarea. Verifică dacă încărcarea e corectă, ca să eviți întreruperile.</translation>
+<translation id="1887442540531652736">Eroare de conectare</translation>
 <translation id="189035593835762169">Termeni și condiții</translation>
 <translation id="189358972401248634">Alte limbi</translation>
 <translation id="1915734383465415025">Numărul magazinului</translation>
@@ -122,6 +127,7 @@
 <translation id="2210462644007531147">Instalarea nu a putut fi finalizată</translation>
 <translation id="221872881068107022">Derulare inversă</translation>
 <translation id="2219081237089444028">Setează o parolă pentru <ph name="DEVICE_TYPE" /> ca să te conectezi mai ușor</translation>
+<translation id="2220529011494928058">Semnalați o problemă</translation>
 <translation id="222115440608612541">Schimbă tema la răsărit și la apus</translation>
 <translation id="2229161054156947610">A mai rămas mai mult de 1 oră</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> se actualizează automat în fundal, pentru a-ți oferi cele mai recente funcții și îmbunătățiri de securitate. Poți examina preferințele pentru actualizări în Setări.</translation>
@@ -132,6 +138,7 @@
 <translation id="2328137272841210255">Resetează codul PIN</translation>
 <translation id="2342180549977909852">Copilul tău poate folosi un număr (PIN) în locul unei parole pentru a debloca dispozitivul. Pentru a seta codul PIN mai târziu, accesează Setări.</translation>
 <translation id="2359808026110333948">Continuă</translation>
+<translation id="2384373936468275798">Sistemul de operare Chromium nu a putut sincroniza datele, deoarece detaliile de conectare pentru contul tău nu sunt actualizate.</translation>
 <translation id="2387052489799050037">Accesează ecranul de pornire</translation>
 <translation id="2395616325548404795">Dispozitivul <ph name="DEVICE_TYPE" /> a fost înscris pentru gestionarea de întreprindere, dar nu a putut trimite informațiile despre locație și articol. Introdu manual aceste informații din consola de administrare pentru acest dispozitiv.</translation>
 <translation id="2408955596600435184">Introdu codul PIN</translation>
@@ -158,6 +165,7 @@
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Serviciul bazat pe localizare Google folosește surse precum rețelele Wi-Fi, rețelele mobile și senzorii pentru a estima locația acestui dispozitiv.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Poți dezactiva oricând locația Android pe acest dispozitiv accesând Setări &gt; Aplicații &gt; Magazin Google Play &gt; Gestionează preferințele Android &gt; Securitate și locație &gt; Locație. În plus, poți dezactiva folosirea conexiunii Wi-Fi, a rețelelor mobile și a senzorilor pentru locația Android dezactivând Precizia locației în Google în același meniu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2663302507110284145">Limbă</translation>
+<translation id="2674238339205910678">ChromeOS Flex nu a putut salva datele Chrome în Contul Google deoarece detaliile de conectare pentru cont nu sunt actualizate</translation>
 <translation id="2687407218262674387">Termenii și condițiile Google</translation>
 <translation id="2688196195245426394">Eroare la înregistrarea gadgetului pe server: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Acesta este un dispozitiv care face parte dintr-un grup și nu poate fi înregistrat pentru Upgrade-ul la Chioșc și afișaj.</translation>
@@ -252,6 +260,7 @@
 <translation id="3740945083753997630">Micșorează dimensiunea afișării și a textului</translation>
 <translation id="376841534249795524">Pentru ce vei folosi <ph name="DEVICE_TYPE" />?</translation>
 <translation id="3772046291955677288">Am citit și sunt de acord cu <ph name="BEGIN_LINK1" />Termenii și condițiile Google<ph name="END_LINK1" /> și <ph name="BEGIN_LINK2" />Termenii și condițiile suplimentare pentru Chrome și sistemul de operare Chrome<ph name="END_LINK2" />.</translation>
+<translation id="3785324443014631273">ChromeOS Flex nu a putut sincroniza datele din cauza unei erori la conectare.</translation>
 <translation id="3789841737615482174">Instalează</translation>
 <translation id="3800828618615365228">Condițiile suplimentare pentru Google Chrome și sistemul de operare Chrome</translation>
 <translation id="3828953470056652895">Am citit și sunt de acord cu <ph name="BEGIN_LINK1" />Termenii și condițiile Google<ph name="END_LINK1" /> și cu <ph name="BEGIN_LINK2" />Termenii și condițiile suplimentare pentru Chrome și sistemul de operare Chrome<ph name="END_LINK2" /> și <ph name="BEGIN_LINK3" />Termenii și condițiile Google Play<ph name="END_LINK3" />.</translation>
@@ -332,6 +341,7 @@
         <ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Pentru ajutor suplimentar, accesează g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Pe cine vrei să adaugi la acest <ph name="DEVICE_TYPE" />?</translation>
+<translation id="4543778593405494224">Manager de certificate</translation>
 <translation id="4566170377336116390">Dacă vrei să schimbi acest lucru după înregistrare, va trebui să revii cu dispozitivul la setările din fabrică (funcția powerwash).</translation>
 <translation id="4567512141633030272">Opțiune de conectare greșită?</translation>
 <translation id="4567533462991917415">După configurare, poți oricând să adaugi mai multe persoane. Fiecare persoană poate să-și personalizeze contul și să-și păstreze datele private.</translation>
@@ -349,6 +359,7 @@
 <translation id="4814327014588285482">Omite și amintește-mi mai târziu</translation>
 <translation id="4830502475412647084">Se instalează actualizarea sistemului de operare</translation>
 <translation id="4837926214103741331">Nu ești autorizat(ă) să folosești acest dispozitiv. Contactează proprietarul dispozitivului pentru permisiunea de conectare.</translation>
+<translation id="4842397268809523050">ChromeOS Flex nu a putut sincroniza datele, deoarece sincronizarea nu este disponibilă pentru domeniu.</translation>
 <translation id="4844333629810439236">Alte tastaturi</translation>
 <translation id="484462545196658690">Automat</translation>
 <translation id="4864369630010738180">Se conectează...</translation>
@@ -360,6 +371,7 @@
 <translation id="4944310289250773232">Acest serviciu de autentificare este găzduit de <ph name="SAML_DOMAIN" /></translation>
 <translation id="4955710816792587366">Alege codul PIN</translation>
 <translation id="4965808351167763748">Sigur dorești să configurezi acest dispozitiv pentru a rula Hangouts Meet?</translation>
+<translation id="4969674060580488087">ChromeOS Flex nu a putut sincroniza datele, deoarece detaliile de conectare pentru cont nu sunt actualizate.</translation>
 <translation id="4987944280765486504">Chromebookul va reporni după finalizarea descărcării și poți continua configurarea.</translation>
 <translation id="5029287942302939687">Parola este setată</translation>
 <translation id="503155457707535043">Aplicațiile se descarcă</translation>
@@ -401,6 +413,8 @@
 <translation id="528208740344463258">Ca să descarci și să folosești aplicații Android, mai întâi trebuie să instalezi această actualizare obligatorie. În timp ce dispozitivul <ph name="DEVICE_TYPE" /> se actualizează, nu îl poți folosi. Dispozitivul <ph name="DEVICE_TYPE" /> va reporni după ce se finalizează instalarea.</translation>
 <translation id="5283677936944177147">Hopa! Sistemul nu a detectat modelul sau numărul de serie al dispozitivului.</translation>
 <translation id="5333896723098573627">Pentru a elimina aplicații, accesează Setări &gt; Aplicații &gt; Magazin Google Play &gt; Gestionează preferințele Android &gt; Aplicații sau Manager de aplicații. Apoi, atinge aplicația pe care dorești să o dezinstalezi (poate fi necesar să glisezi la dreapta sau la stânga pentru a găsi aplicația). Apoi, atinge Dezinstalează sau Dezactivează.</translation>
+<translation id="5334309298019785904">ChromeOS nu a putut sincroniza datele, deoarece sincronizarea nu este disponibilă pentru domeniu.</translation>
+<translation id="535243042947607642">ChromiumOS nu a putut salva datele Chromium în Contul Google, deoarece detaliile de conectare pentru cont nu sunt actualizate</translation>
 <translation id="5355501370336370394">Înregistrează un dispozitiv de întreprindere</translation>
 <translation id="5372529912055771682">Modul de înscriere furnizat nu este acceptat de această versiune a sistemului de operare. Asigurați-vă că rulați cea mai recentă versiune și încercați din nou.</translation>
 <translation id="5397378439569041789">Înregistrează chioșcul sau dispozitivul pentru semne</translation>
@@ -412,6 +426,7 @@
 <translation id="5448293924669608770">Hopa, a apărut o eroare la conectare</translation>
 <translation id="5453829744223920473">Copilul tău poate să folosească toate aplicațiile, marcajele și resursele de la școală la fel cum le folosește în sala de clasă. Școala stabilește regulile de bază.</translation>
 <translation id="5473099001878321374">Dacă alegi să continui înseamnă că ești de acord ca dispozitivul să poată descărca și instala automat actualizări și aplicații de la Google, de la operatorul copilului și de la producătorul dispozitivului, probabil folosind datele mobile. Este posibil ca unele dintre aceste aplicații să ofere achiziții în aplicație.</translation>
+<translation id="549669000822060376">Așteaptă până când Chromium instalează cele mai recente actualizări de sistem.</translation>
 <translation id="5502915260472117187">Un copil</translation>
 <translation id="5511823366942919280">Sigur dorești să configurezi acest dispozitiv drept „Rechin”?</translation>
 <translation id="5513807280330619196">Calculator</translation>
@@ -515,6 +530,7 @@
 <translation id="6495266441917713704">Nu se poate transfera conexiunea Wi-Fi</translation>
 <translation id="6515620015470298987">Conectarea nu a reușit din cauza unei probleme la verificarea configurației dispozitivului. Șterge datele de pe <ph name="DEVICE_TYPE" /> și încearcă din nou.</translation>
 <translation id="6519689855001245063">Se verifică eligibilitatea</translation>
+<translation id="6520608191273161151">ChromeOS Flex nu a putut salva datele Chrome în Contul Google din cauza unei erori la conectare</translation>
 <translation id="6532527800157340614">Conectarea nu a reușit, deoarece indicativul de acces nu a putut fi preluat. Verifică starea conexiunii la rețea și încearcă din nou.</translation>
 <translation id="653920215766444089">Se caută dispozitivul de indicat</translation>
 <translation id="65513682072153627">Vei vedea această pictogramă Gestionată când o setare sau o funcție este gestionată de administrator.</translation>
@@ -526,8 +542,10 @@
 <translation id="6675665718701918026">Dispozitivul de indicat este conectat</translation>
 <translation id="667752334740867460">Se primesc informații despre Wi-Fi...</translation>
 <translation id="6680442031740878064">Spațiu disponibil: <ph name="AVAILABLE_SPACE" /></translation>
+<translation id="668175097507315160">Sistemul de operare Chromium nu a putut sincroniza datele din cauza unei erori la conectare.</translation>
 <translation id="6684827949542560880">Se descarcă ultima actualizare</translation>
 <translation id="6722744767592605627">Poți recupera <ph name="EMAIL" />, dar datele locale se vor șterge.</translation>
+<translation id="6735387454586646204">ChromeOS Flex</translation>
 <translation id="6748980958975836188">Am citit și sunt de acord cu <ph name="BEGIN_LINK1" />Termenii și condițiile Google<ph name="END_LINK1" /> și cu <ph name="BEGIN_LINK2" />Termenii și condițiile suplimentare pentru Chrome și sistemul de operare Chrome<ph name="END_LINK2" />.</translation>
 <translation id="6749473226660745022">Fotografii</translation>
 <translation id="6754918760968695779">Inserare rapidă</translation>
@@ -552,6 +570,7 @@
 <translation id="6918733588290914545">Configurare rapidă cu telefonul Android</translation>
 <translation id="6920473853105515518">Verifică dacă <ph name="DEVICE_TYPE" /> este conectat la internet și încearcă din nou. Poți să accesezi play.google/play-terms și de pe alt dispozitiv.</translation>
 <translation id="6929126689972602640">Controlul parental nu este acceptat pentru conturile de la școală. Ca să adaugi un cont de la școală cu care să accesezi Google Classroom și alte site-uri pentru teme pentru acasă, mai întâi conectează-te cu contul personal al copilului. Poți adăuga contul de la școală mai târziu în timpul configurării.</translation>
+<translation id="6933858244219479645">ChromeOS</translation>
 <translation id="6935031746833428401">Află mai multe despre gestionarea dispozitivelor</translation>
 <translation id="6950351336108213154">Se actualizează dispozitivele periferice</translation>
 <translation id="6955698182324067397">Activezi funcțiile de remediere a erorilor în sistemul de operare Chrome, care vor configura SSH daemon și vor activa pornirea de pe unități USB.</translation>
@@ -645,6 +664,7 @@
 <translation id="7870730066603611552">Examinează opțiunile de sincronizare după configurare</translation>
 <translation id="7883792253546618164">Te poți dezabona în orice moment.</translation>
 <translation id="7887864092952184874">Mouse Bluetooth conectat</translation>
+<translation id="7905880575591690197">ChromeOS nu a putut salva datele Chrome în Contul Google din cauza unei erori la conectare</translation>
 <translation id="7906440585529721295">Datele locale se vor șterge</translation>
 <translation id="7910725946105920830">Folosește Contul Google personal</translation>
 <translation id="7918257978052780342">Înscrieți</translation>
@@ -671,6 +691,7 @@
 <translation id="8098616321286360457">Este necesară o conexiune la rețea</translation>
 <translation id="8129265306888404830">Pentru a folosi adresa de e-mail a organizației (<ph name="EMAIL_DOMAIN" />), trebuie să folosești înregistrarea de companie. Dacă dispozitivul este pentru uz personal, conectează-te cu Contul Google personal.</translation>
 <translation id="8131740175452115882">Confirmați</translation>
+<translation id="8133124826068723441">Sistemul de operare Chromium nu a putut sincroniza datele, deoarece sincronizarea nu este disponibilă pentru domeniu.</translation>
 <translation id="8146177459103116374">Dacă v-ați înregistrat deja pe acest dispozitiv, puteți să vă <ph name="LINK2_START" />conectați ca utilizator existent<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Conectarea nu a reușit. Contactează administratorul sau încearcă din nou.</translation>
 <translation id="8147346945017130012">Contribuie la îmbunătățirea funcțiilor și a performanței Chrome și a sistemului de operare Chrome, trimițând automat la Google rapoarte de blocare, precum și date de diagnosticare și de utilizare.</translation>
@@ -689,6 +710,7 @@
 <translation id="8271379370373330993">Pașii următori sunt pentru părinți. Poți să îi înapoiezi copilului dispozitivul <ph name="DEVICE_TYPE" /> după crearea contului.</translation>
 <translation id="8274924778568117936">Nu închide și nu opri dispozitivul <ph name="DEVICE_TYPE" /> înainte să se finalizeze actualizarea. Dispozitivul <ph name="DEVICE_TYPE" /> va reporni după ce se finalizează instalarea.</translation>
 <translation id="8281886186245836920">Omite</translation>
+<translation id="8286036467436129157">Conectați-vă</translation>
 <translation id="8289509909262565712">Bun venit la <ph name="DEVICE_OS" /></translation>
 <translation id="8291942417224950075">Pentru uz personal</translation>
 <translation id="8304383784961451596">Nu ești autorizat(ă) să folosești acest dispozitiv. Contactează administratorul pentru permisiunea de conectare sau conectează-te cu un cont Google supravegheat prin Family Link.</translation>
@@ -700,6 +722,7 @@
 <translation id="8401432541486058167">Introdu codul PIN asociat cardului inteligent.</translation>
 <translation id="8408270600235826886">Poți stabili ce informații sunt trimise la Google. Poți modifica oricând opțiunea din Setări. Datele vor fi folosite conform <ph name="BEGIN_LINK" />Politicii de confidențialitate<ph name="END_LINK" /> Google.</translation>
 <translation id="8413956290606243087">Vrei să activezi ChromeVox, cititorul de ecran încorporat pentru sistemul de operare Chrome?</translation>
+<translation id="8418845734693287262">ChromeOS nu a putut sincroniza datele, deoarece detaliile de conectare pentru cont nu sunt actualizate.</translation>
 <translation id="8425768983279799676">Poți folosi codul PIN ca să deblochezi dispozitivul.</translation>
 <translation id="8428213095426709021">Setări</translation>
 <translation id="843173223122814223">Creează fundaluri cu AI</translation>
@@ -739,10 +762,12 @@
 <translation id="8794548468611058947">În loc să introduci parola Contului Google pentru a te conecta, poți crea un cod PIN pentru <ph name="DEVICE_TYPE" /></translation>
 <translation id="8830779999439981481">Se repornește pentru aplicarea actualizărilor</translation>
 <translation id="8830796635868321089">Căutarea actualizărilor utilizând setările de proxy actuale nu a reușit. Ajustați <ph name="PROXY_SETTINGS_LINK_START" />setările de proxy<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
+<translation id="8833697763442816810">Sistemul de operare Chromium</translation>
 <translation id="8855977033756560989">Acest dispozitiv Chromebook Enterprise vine la pachet cu upgrade-ul la Chrome Enterprise. Pentru a beneficia de capacitățile enterprise, înregistrează dispozitivul folosind un cont de administrator Google.</translation>
 <translation id="885746075120788020">Preferințele și activitățile salvate vor fi disponibile pe orice dispozitiv cu sistemul de operare Chrome dacă te conectezi folosind Contul Google. Poți să alegi ce să sincronizezi în Setări.</translation>
 <translation id="8868333925931032127">Se pornește modul demonstrativ</translation>
 <translation id="8875221558267407626">Rezumă conținut, simplifică limbajul complex sau pune întrebări</translation>
+<translation id="8890569919834781711">ChromiumOS nu a putut salva datele Chromium în Contul Google din cauza unei erori la conectare</translation>
 <translation id="8907701755790961703">Selectați o țară</translation>
 <translation id="8913163265790894442">Configurează cu ușurință dispozitivul <ph name="DEVICE_TYPE" /> cu telefonul. Poți adăuga rețeaua Wi-Fi și Contul Google fără să introduci manual parolele.
         <ph name="BR" />
@@ -778,5 +803,6 @@
 <translation id="951991426597076286">Refuză</translation>
 <translation id="954749761428814584">Limba și metoda de introducere a textului</translation>
 <translation id="960987915827980018">A mai rămas aproape 1 oră</translation>
+<translation id="973195869036269770">ChromeOS nu a putut salva datele Chrome în Contul Google, deoarece detaliile de conectare pentru cont nu sunt actualizate</translation>
 <translation id="995420352808264005">Alege tipul de înregistrare a dispozitivului</translation>
 </translationbundle>

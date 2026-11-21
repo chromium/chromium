@@ -373,6 +373,7 @@
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> премахна раздел</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1623104350909869708">Да не се създават допълнителни диалогови прозорци от тази страница</translation>
+<translation id="1624535934412288769">Колони</translation>
 <translation id="1629390138158333592">Търсене в мрежата</translation>
 <translation id="1633137413609266904">{0,plural, =1{Отварянето на този файл е блокирано чрез администраторско правило}other{Отварянето на # файла е блокирано чрез администраторско правило}}</translation>
 <translation id="1634828734222219955">Общо</translation>
@@ -1082,6 +1083,7 @@
 <translation id="2803320044666896137">Стойността на това правило е пренебрегната, тъй като потребителят не е свързан.</translation>
 <translation id="2807052079800581569">Позиция на изображението по оста Y</translation>
 <translation id="2808278141522721006">Можете да включите или изключите Windows Hello в „<ph name="SETTINGS" />“</translation>
+<translation id="2820159698793041599">Прокси сървърът не успя да установи защитена връзка.</translation>
 <translation id="2820957248982571256">Сканира се...</translation>
 <translation id="282457273878278063">Управление на информацията за връзка</translation>
 <translation id="2824775600643448204">Лента за адреси и за търсене</translation>
@@ -1263,6 +1265,7 @@
 <translation id="3120807611504813890">Плик (лека хартия)</translation>
 <translation id="3121994479408824897">Към <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Етикети (постоянни)</translation>
+<translation id="3128081114752791872">Сертификатът за сигурност на прокси сървъра е невалиден.</translation>
 <translation id="3131746543143948171">Този сайт изглежда подобен на други, свързани с фишинг, злонамерен софтуер и измами. <ph name="BEGIN_LEARN_MORE_LINK" />Научете повече<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">Запазване на номера в програмата за обезщетения</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> вече е основната ви търсеща машина</translation>
@@ -1681,7 +1684,6 @@
 <translation id="3800436529451849929">От <ph name="SITE" /></translation>
 <translation id="3801297763951514916">Посещавате често</translation>
 <translation id="380329542618494757">Име</translation>
-<translation id="3803481123869276674">Когато извършвате покупки в Chrome, ще виждате eWallet като опция</translation>
 <translation id="3803801106042434208">Тези търсещи машини са популярни в региона ви</translation>
 <translation id="3804112825000113857">Преглед на настройките за автоматично попълване</translation>
 <translation id="380666903981445943">Запазете начин на плащане в профила си в Google, който да се попълва автоматично при покупки в Chrome</translation>
@@ -2164,6 +2166,7 @@
 <translation id="4612631413844865947">Възникна грешка при обработването на поръчката ви в(ъв) <ph name="MERCHANT_ORIGIN" /> чрез <ph name="PAYMENT_APP_ORIGIN" />.</translation>
 <translation id="4612904677925722054">В този сайт може да има съдържание за възрастни. Родител или настойник трябва да разреши да го посетите.</translation>
 <translation id="4613873770449493819">URL адресът трябва да води до домейн на <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />.</translation>
+<translation id="4615154194248230658">Изглежда, че този образец не съответства на домейн на валиден имейл адрес. Възможно е потребителите да не могат да влязат в профилите си или съществуващите потребителски профили да бъдат премахнати.</translation>
 <translation id="4619564267100705184">Потвърдете, че сте вие</translation>
 <translation id="4619669610757527494">Запазване на шофьорската книжка в Google Wallet</translation>
 <translation id="4622292761762557753">Прехвърляне въпреки това</translation>
@@ -2682,7 +2685,6 @@
 <translation id="5447235695608032700">Разрешаване на <ph name="SITE" /> да използва запазената за вас информация</translation>
 <translation id="5447973833955560753">Парола за възстановяване</translation>
 <translation id="5452270690849572955">Тази страница на <ph name="HOST_NAME" /> не може да бъде намерена</translation>
-<translation id="5452923259299906094">Плащане с eWallet и Pix</translation>
 <translation id="5455374756549232013">Невалидно клеймо за дата и час на правилото</translation>
 <translation id="5456428544444655325">Да не се показва никога</translation>
 <translation id="5457082343331641453">Добавете към търсенето си</translation>
@@ -3898,7 +3900,6 @@
 <translation id="7489919936111034362">Хранилището ви в Google Диск е пълно</translation>
 <translation id="7490622939531327327">По-интелигентно разбиране на формулярите</translation>
 <translation id="7495528107193238112">Това съдържание е блокирано. Свържете се със собственика на сайта, за да отстрани проблема.</translation>
-<translation id="7499188644237027195">Когато извършвате покупки в Chrome, ще виждате eWallet и Pix като опции</translation>
 <translation id="7499684925421947861">Да се разреши ли на <ph name="ACTOR_NAME" /> да влиза в профила ви в(ъв) <ph name="DOMAIN" /> вместо вас?</translation>
 <translation id="7501663406926337752">За сайта е подаден сигнал от организацията ви</translation>
 <translation id="7502044688973049724">да управлявате информацията си</translation>
@@ -4023,7 +4024,6 @@
 <translation id="7676840398262504532">Организацията ви наблюдава копирането</translation>
 <translation id="767806704757698045">Работи само в поддържаните сайтове.</translation>
 <translation id="7678730592635586336">Повторно заснемане на видеоклипа</translation>
-<translation id="7679287273775285018">Плащане с eWallet</translation>
 <translation id="7679367271685653708">Преглед и управление на историята ви на сърфиране в настройките на Chrome</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, изтича на <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">Адрес за доставка</translation>
@@ -4098,7 +4098,6 @@
 <translation id="7791543448312431591">Добавяне</translation>
 <translation id="7798389633136518089">Правилото бе пренебрегнато, защото не е зададено от източник в облака.</translation>
 <translation id="7800304661137206267">Връзката е шифрована посредством <ph name="CIPHER" />, с/ъс <ph name="MAC" /> за удостоверяване за съобщения и <ph name="KX" /> като механизъм за обмен на ключове.</translation>
-<translation id="780228007282527248">Добавете раздел или изображение, за да подобрите търсенето си</translation>
 <translation id="7802523362929240268">Сайтът е легитимен</translation>
 <translation id="7802989406998618639">Въведете <ph name="NUMBER_OF_DIGITS" />-цифрения код за сигурност, който се намира на <ph name="SIDE_OF_CARD" />, за да може банката ви да потвърди, че това сте вие</translation>
 <translation id="780301667611848630">Не, благодаря</translation>
@@ -4164,6 +4163,7 @@
 <translation id="7916162853251942238">Флексопечат</translation>
 <translation id="7916802424606434188">Отваряне на прозорец <ph name="WINDOW_INDEX" /> (<ph name="NUM_TABS" /> раздела) в нов прозорец</translation>
 <translation id="791698251820376781">Организацията ви не разрешава да влизате в профила си</translation>
+<translation id="7918936720558783139">Запазената ви оферта ще бъде налице при плащане чрез автоматично попълване. <ph name="BEGIN_LINK" />Управление на офертите<ph name="END_LINK" /></translation>
 <translation id="7927046851848613453">Запазвайте билети, събития и друга информация от страниците, които преглеждате, а не само формулярите, които попълвате. След това бързо осъществявайте достъп до картите си, като билети за събития и карти за лоялност. Запазената от вас информация може да се показва на устройствата ви и в продуктите на Google.</translation>
 <translation id="7930282586031445870">Екранът с Общите условия на „Купете сега, платете по-късно“ е затворен.</translation>
 <translation id="7932035970207573919">Служебен адрес: <ph name="ADDRESS" /></translation>
@@ -4233,6 +4233,7 @@
 <translation id="8029829038322015001">червено 1</translation>
 <translation id="8032546467100845887">Прозрачен носител</translation>
 <translation id="8035152190676905274">Писалка</translation>
+<translation id="803703704549420287">Изчистване на филтрите</translation>
 <translation id="8037117624646282037">Кой е използвал устройството наскоро</translation>
 <translation id="803771048473350947">Файл</translation>
 <translation id="8038182528865038593">червено 2</translation>
@@ -4421,6 +4422,7 @@
 <translation id="8363502534493474904">Изключете самолетния режим.</translation>
 <translation id="8363929499301563123">„Бисквитки“ на уебсайтовете (състоянието на влизане в профила на наскоро посетените уебсайтове ще бъде запазено)</translation>
 <translation id="8364627913115013041">Не е зададено.</translation>
+<translation id="8364664414979300296">Добавете раздели, снимки и др., за да подобрите търсенето си</translation>
 <translation id="836616551641291797">Научете повече за това как се управлява браузърът ви</translation>
 <translation id="8367705492654390392">Попитайте каквото и да е</translation>
 <translation id="8368001212524806591">Проследяване на цената</translation>

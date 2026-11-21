@@ -32,13 +32,11 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="1278833599417554002">&amp;Chrome'u güncəlləmək üçün yenidən başladın</translation>
 <translation id="1289911795790071537">Chrome ilə axtarışı açın</translation>
 <translation id="1290883685122687410">Ayarlama xətası: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1302523850133262269">Chrome'un ən son sistem güncəlləşmələrini quraşdırmasını gözləyin.</translation>
 <translation id="1330562121671411446">Dili aşkar edin</translation>
 <translation id="1333654552732143316">Chrome-u başladın</translation>
 <translation id="1341711321000856656">Dəyişməklə parollara başqa Chrome profilindən baxa bilərsiniz</translation>
 <translation id="1343830902827845050">Chrome-a daxil olun</translation>
 <translation id="1361351916482714918">Google Linza ilə daha ağıllı şəkildə nəzər salın</translation>
-<translation id="1363996462118479832">Hesaba giriş xətası üzündən ChromeOS datanızı sinxronlaşdıra bilmədi.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
 <translation id="1383876407941801731">Axtar</translation>
 <translation id="1399397803214730675">Kompüterdə daha yeni Google Chrome versiyası var. Əgər proqram təminatı işləmirsə, lütfən, Google Chrome'u sistemdən silin və yenidən cəhd edin.</translation>
@@ -87,7 +85,6 @@ Bəzi funksiyalar əlçatmaz ola bilər ki, nəticədə tərcihlərə edilən d�
 <translation id="177180974022074201">Chrome-da Gemini ilə sınayın</translation>
 <translation id="1786003790898721085"><ph name="TARGET_DEVICE_NAME" /> cihazınızda Chrome'a daxil olduğunuza əmin olun və sonra yenidən göndərin.</translation>
 <translation id="1786044937610313874">Qısayollar Chrome-da açılır</translation>
-<translation id="1812689907177901597">Bunu deaktiv etməklə Chrome'a giriş etmədən Gmail kimi Google saytlarına daxil ola bilərsiniz</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome brauzeri yavaşladan tabı durdurmağı tövsiyə edir}other{Chrome brauzeri yavaşladan tabları durdurmağı tövsiyə edir}}</translation>
 <translation id="1832046143430087831">Chrome-un V8 mühərriki ilə saytları sürətləndirir, lakin Chrome-un hücumlara qarşı müqavimətini bir qədər azaldır. Bu ayar deaktivdir.</translation>
 <translation id="1838374766361614909">Axtarışı təmizləyin</translation>
@@ -174,7 +171,6 @@ Bu səhifə gözlənildiyi kimi işləmirsə, optimallaşdırmaya icazə verməy
 <translation id="2661616016316841783"><ph name="DEVICE" /> cihazından artırmaları və s. əldə etmək üçün Chrome-a daxil olun</translation>
 <translation id="2665296953892887393">Qəza raportlarını və <ph name="UMA_LINK" /> linkini Google'a göndərməklə Google Chrome'un daha keyfiyyətli olmasına kömək edin</translation>
 <translation id="2668094785979141847">Klikləyərək Google Linzadan çıxın</translation>
-<translation id="2674238339205910678">ChromeOS Flex hesaba giriş məlumatlarınız köhnə olduğu üçün Chrome datasını Google Hesabınızda yadda saxlaya bilmədi</translation>
 <translation id="2681444469812712297">Google Chrome-da yeni tabda <ph name="URL" /> açın.</translation>
 <translation id="2699790011615497488">Gemini-ı Chrome Beta-da açın</translation>
 <translation id="2738871930057338499">İnternetə qoşulmaq olmur. HTTP 403 qadağan edilib. Proksi konfiqurasiyasını yoxlayın.</translation>
@@ -285,7 +281,6 @@ Bu səhifə gözlənildiyi kimi işləmirsə, optimallaşdırmaya icazə verməy
 <translation id="3756724684201900923">Chrome quraşdırmaq haqqında ətraflı məlumat əldə edin</translation>
 <translation id="3772152698251011058">Bu saytı Google-a şikayət edin</translation>
 <translation id="3780814664026482060">Chrome - <ph name="PAGE_TITLE" /></translation>
-<translation id="3785324443014631273">Giriş xətası səbəbindən ChromeOS Flex datanızı sinxronizasiya edə bilmədi.</translation>
 <translation id="3810973564298564668">İdarə edin</translation>
 <translation id="383455301564000773">Windows 11-ə təkmilləşdirirsiniz? Chrome-u OneDrive-a endirin, beləliklə ilk gündən hazır olacaqsınız.</translation>
 <translation id="383928141529488001">Google Chrome Bluetooth cihazlarını araşdırmaq üçün 
@@ -376,7 +371,6 @@ Bu səhifə gözlənildiyi kimi işləmirsə, optimallaşdırmaya icazə verməy
 <translation id="4803313124144656665">Chrome-da Google Axtarışı bağlayın</translation>
 <translation id="4828579605166583682">Google Chrome mövcud parolları əvəz etmək istəyir. İcazə vermək üçün Windows parolunu yazın.</translation>
 <translation id="4836321460899997044">Chrome profili</translation>
-<translation id="4842397268809523050">ChromeOS Flex datanızı sinxronizasiya edə bilmədi, çünki sinxronizasiya domeniniz üçün əlçatan deyil.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> artıq giriş edib.  Baxışı ayrı saxlamaq üçün öz profilinizdə Chrome-a <ph name="USER_EMAIL_ADDRESS" /> kimi daxil olun.</translation>
 <translation id="4855026984605187434">Ekranı paylaşmaq üçün Sistem Ayarlarında Chrome üçün ekranın qeydə alınmasına icazə verin</translation>
 <translation id="4873783916118289636">Chrome'da əsas məxfilik və təhlükəsizlik nəzarətlərini nəzərdən keçirin</translation>
@@ -390,7 +384,6 @@ Bu səhifə gözlənildiyi kimi işləmirsə, optimallaşdırmaya icazə verməy
 <translation id="492720062778050435">Chrome bu artırmanı nəzərdən keçirməyi tövsiyə edir</translation>
 <translation id="4953650215774548573">Google Chrome'u defolt brauzer təyin edin</translation>
 <translation id="495931528404527476">Chrome'da</translation>
-<translation id="4969674060580488087">ChromeOS Flex datanızı sinxronizasiya edə bilmir, çünki hesaba giriş məlumatlarınız köhnədir.</translation>
 <translation id="4970761609246024540">Chrome profillərinə xoş gəlmisiniz</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">"Google Parol Meneceri" üzərinə klikləyin</translation>
@@ -424,7 +417,6 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="5271833978500241046">Onları Chrome-da digər Gemini funksiyaları ilə birlikdə istifadə edin</translation>
 <translation id="5320351714793324716">Kukilərə icazə versəniz, əvvəlcədən yükləmə zamanı Chrome onlardan istifadə edə bilər</translation>
 <translation id="5321325624576443340">Google Linza əlçatan deyil. Sonra cəhd edin.</translation>
-<translation id="5334309298019785904">ChromeOS datanızı sinxronizasiya edə bilmədi, çünki sinxronizasiya domeniniz üçün əlçatan deyil.</translation>
 <translation id="5336664042114176802">Əvvəlcə Google Hesabınızla əlaqələndirilmiş və <ph name="DOMAIN" /> tərəfindən idarə olunmayan Gemini assistentinə keçə bilərsiniz. Cavablar artıq <ph name="DOMAIN" /> tərəfindən idarə olunan fayl və ya xidmətlərə əsaslanmayacaq və söhbət tarixçəniz köçürülməyəcək. İş üçün istifadə etmək uyğun olmaya bilər. Keçid üçün Chrome-u yenidən başlatmaq lazımdır.</translation>
 <translation id="5346389065299425353">Bir neçə tab, fayl və alət əlavə edərək axtarışı dərinləşdirin</translation>
 <translation id="5353252989841766347">Parolları Chrome'dan eksport edin</translation>
@@ -552,7 +544,6 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="6497147134301593682">Chrome avtomatik bağlandı</translation>
 <translation id="6506909944137591434">Chrome ətrafınızın 3D xəritəsini yaratmaq üçün kameranıza giriş icazəsi tələb edir</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
-<translation id="6520608191273161151">ChromeOS Flex hesaba giriş xətası səbəbindən Chrome datasını Google Hesabınızda yadda saxlaya bilmədi</translation>
 <translation id="6520670145826811516">Məkandan istifadə etmək üçün Chrome-a <ph name="BEGIN_LINK" />sistem ayarlarında<ph name="END_LINK" /> giriş imkanı verin</translation>
 <translation id="652948702951888897">Chrome tarixçəsi</translation>
 <translation id="6532945796722480006">Gemini-ı Chrome Canary-də açın</translation>
@@ -574,7 +565,6 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="6712881677154121168">Endirmə xətası: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chrome'u sürətli edin</translation>
 <translation id="6734827584173583205">Bu yaxınlarda daxil olmamısınız. Chrome sildi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> və daha <ph name="COUNT" /> icazə.</translation>
-<translation id="6735387454586646204">ChromeOS Flex Sistemi</translation>
 <translation id="674891594898436429">Bu tabda aktiv axtarışı bağlayın</translation>
 <translation id="6750954913813541382">Orfoqrafik səhvləri düzəltmək üçün Chrome brauzerində yazdığınız mətni Google'a göndərir</translation>
 <translation id="6760235774835597023">Chrome-un V8 mühərriki ilə saytları sürətləndirir, lakin Chrome-un hücumlara qarşı müqavimətini bir qədər azaldır. Bu ayar aktivdir.</translation>
@@ -595,7 +585,6 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="6908182077349113099">Parollarınızı, əlfəcinlərinizi və tarixçənizi cihazlar arasında mükəmməl şəkildə sinxronlaşdırın. Defolt brauzerinizi Chrome-a güncəlləməklə bildiyiniz və sevdiyiniz funksiyalara asanlıqla daxil olun.</translation>
 <translation id="6926772305569367352">Alətlər panelindəki "Chrome-da Google Axtarış" düyməsinin yeni ikonası var. Chrome-da Google Axtarış ilə axtarış edərkən sual vermək üçün ona klikləyin.</translation>
 <translation id="6930294499209825">Google proqram təminatınızı güncəl saxlayın. Bu xidmət deaktiv edilərsə və ya dayandırılarsa, Google proqram təminatınız güncəl saxlanılmayacaq, yəni yarana biləcək təhlükəsizlik problemləri aradan qaldırıla bilməz və funksiyalar işləməyə bilər. Bu xidmət ondan istifadə edən Google proqram təminatı olmadıqda özünü silir.</translation>
-<translation id="6933858244219479645">ChromeOS sistemi</translation>
 <translation id="6938166777909186039">Google Chrome güncəlləmələrini əldə etmək üçün Windows 10 və ya daha yeni versiya tələb olunur. Bu kompüter Windows 8.1 istifadə edir.</translation>
 <translation id="6962628299694876291"><ph name="EXISTING_USER" /> artıq daxil olub. Baxışı ayrı saxlamaq üçün öz profilinizdə Chrome-a <ph name="USER_EMAIL_ADDRESS" /> kimi daxil olun. Bütün cihazlarınızda parollarınızı və daha çoxunu da əldə edəcəksiniz.</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -686,7 +675,6 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="7801699035218095297">Google Chrome parolları kopyalamağa çalışır. Buna icazə vermək üçün Windows parolunuzu yazın.</translation>
 <translation id="7804364787702057554">Chrome-dakı hesabınız</translation>
 <translation id="7804947029129221742">Axtarış sisteminiz Chrome-dan kənarda dəyişdirildi. Sizi qorumaq üçün Chrome onu orijinal defolta sıfırladı. <ph name="LEARN_MORE_LINK" /></translation>
-<translation id="7808348361785373670">Chrome'dan silin...</translation>
 <translation id="7827099906024714326">Müəyyən datanın Google Hesabında yadda saxlanılması və bütün cihazlarda istifadə edilməsi üçün Chrome kimliyinizi doğrulamalıdır. İndi çıxsanız, bu data silinəcək.</translation>
 <translation id="7829850924999627855"><ph name="DEVICE" /> cihazından yadda saxlanmış məlumatları və s. əldə etmək üçün Chrome-a daxil olun</translation>
 <translation id="7832314606810669113">Əlfəcinləri və digər məlumatları bütün cihazlarınızda əldə etmək üçün Chrome-a daxil olun. Daxil olduqdan sonra bu əlfəcin Google Hesabınızda yadda saxlanılacaq.</translation>
@@ -699,7 +687,6 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="7896673875602241923">Kimsə bu kompüterdə <ph name="ACCOUNT_EMAIL_LAST" /> olaraq Chrome'a daxil olub. Məlumatınızı ayrı saxlamaq üçün yeni Chrome istifadəçisi yaradın.</translation>
 <translation id="7904213866086517086">Yan paneldə Google Axtarışı yenidən açın</translation>
 <translation id="7904985524660297937">Gemini-ı Google Chrome-da sınayın</translation>
-<translation id="7905880575591690197">ChromeOS hesaba giriş xətası səbəbindən Chrome datasını Google Hesabınızda yadda saxlaya bilmədi</translation>
 <translation id="7936702483636872823">Bu fayl aldadıcı olduğu və cihaza gözlənilməz dəyişikliklər edə biləcəyi üçün Chrome endirməni blokladı</translation>
 <translation id="7951272445806340501">ChromeOS Flex yenidən başlamalıdır ki, güncəlləşmə tətbiq olunsun.</translation>
 <translation id="7959172989483770734">Chrome profillərini idarə edin</translation>
@@ -760,7 +747,6 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="8402881611069691789">{COUNT,plural, =1{Chrome güncəlləndi. Son versiya üçün yenidən başladın. Cari tablar təkrar açılacaq. Açıq Anonim və ya İzolə edilmiş pəncərə var. Yenidən başlatdıqdan sonra təkrar açılmayacaq.}other{Chrome güncəlləndi. Son versiya üçün yenidən başladın. Cari tablar təkrar açılacaq. Profillər üzrə # Anonim və İzolə edilmiş pəncərə açıqdır. Yenidən başlatdıqdan sonra onlar təkrar açılmayacaq.}}</translation>
 <translation id="8403038600646341038">Kompüter ekranında Chrome loqosu.</translation>
 <translation id="8406687098231754303">Alətlər panelindəki "Yan paneldə Google Axtarış" düyməsindən istifadə edərək axtarış zamanı suallar vermək üçün yan paneldə Google Axtarışı yenidən aça bilərsiniz</translation>
-<translation id="8418845734693287262">ChromeOS datanızı sinxronizasiya edə bilmir, çünki hesaba giriş məlumatlarınız köhnədir.</translation>
 <translation id="842386925677997438">Chrome-un güvənlik alətləri</translation>
 <translation id="8425765582779547329">Onlayn təhlükəsizliyinizi valideyninizin seçimləri ilə qorumaq üçün Chrome-a daxil olun</translation>
 <translation id="842852285618875960">Google Chrome-un <ph name="BOOKMARK_LIMIT" /> əlfəcin limitinə çatdınız, ona görə də əlfəcinlərinizin bir hissəsi hələ Google Hesabınızda yadda saxlanılmayıb.
@@ -789,7 +775,6 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="8624541899164515475">Ayarlar, yeni tabda açılır.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome 1 dəqiqəyə yenidən başlayacaq}other{Chrome # dəqiqəyə yenidən başlayacaq}}</translation>
 <translation id="8637932705841171563">Pəncərəni paylaşmaq üçün Sistem Ayarlarında Chrome üçün ekranın qeydə alınmasına icazə verin</translation>
-<translation id="8642497536370021917">Google Hesabında Chrome datasını hər zaman istifadə edə və yadda saxlaya biləcəyinizə əmin olmaq üçün kimliyinizi doğrulayın</translation>
 <translation id="8656634243791296665">Gemini-ı Chrome Dev-də açın</translation>
 <translation id="8669527147644353129">Google Chrome Yardımçı</translation>
 <translation id="8679801911857917785">O, həmçinin, Chrome açılanda hansı səhifənin göstərildiyini idarə edir.</translation>
@@ -851,7 +836,6 @@ Bəzilərini silənə qədər yeni əlfəcinləri hesabınızda yadda saxlamaq o
 <translation id="922152298093051471">Chrome'u fərdiləşdirin</translation>
 <translation id="93760716455950538">ChromeOS Flex'i yenidən başladın</translation>
 <translation id="945522503751344254">Geri əlaqə göndərin</translation>
-<translation id="973195869036269770">ChromeOS hesaba giriş məlumatlarınız köhnə olduğu üçün Chrome datasını Google Hesabınızda yadda saxlaya bilmədi</translation>
 <translation id="983803489796659991">Yeniləmə serverində tətbiq heş datası olmadığı üçün quraşdırma alınmadı.</translation>
 <translation id="989816563149873169"><ph name="SHORTCUT" /> Chrome profilləri arasında keçid edə bilər</translation>
 </translationbundle>

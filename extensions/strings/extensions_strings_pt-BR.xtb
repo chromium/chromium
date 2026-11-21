@@ -6,6 +6,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="1076698951459398590">Ativar tema</translation>
+<translation id="1085064499066015002">Sempre em todos os sites</translation>
 <translation id="1135328998467923690">O pacote é inválido: "<ph name="ERROR_CODE" />".</translation>
 <translation id="1140871961407805696">Voltada para o ambiente</translation>
 <translation id="1171831736360285680">O parceiro <ph name="PARTNER_NAME" /> adicionou uma extensão que pode mudar a forma como o Chromium funciona.
@@ -80,6 +81,7 @@
 <translation id="4660476621274971848">A versão esperada era "<ph name="EXPECTED_VERSION" />", mas a instalada foi a "<ph name="NEW_ID" />"</translation>
 <translation id="471800408830181311">Falha ao emitir a chave privada.</translation>
 <translation id="4811956658694082538">Não foi possível instalar o pacote devido a uma falha no processo do utilitário. Reinicie o Google Chrome e tente novamente.</translation>
+<translation id="4883436287898674711">Todos os sites de <ph name="WEBSITE_1" /></translation>
 <translation id="4988792151665380515">Falha ao exportar chave pública.</translation>
 <translation id="501057610015570208">O app com o atributo de manifesto "kiosk_only" precisa ser instalado no modo quiosque do ChromeOS Flex</translation>
 <translation id="5026754133087629784">Webview: <ph name="WEBVIEW_TAG_NAME" /></translation>

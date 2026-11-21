@@ -58,6 +58,7 @@ Uusi järjehoidjaid ei saa teie kontole salvestada, enne kui mõned kustutate. K
 <translation id="2027881372245801507">Soovituste väljalülitamine ei mõjuta Chromiumi lehtede pealkirjade ja URL-ide töötlemist muude funktsioonide puhul. Saate hallata juurdepääsu nendele andmetele oma <ph name="BEGIN_LINK" />sünkroonimisseadetes<ph name="END_LINK" />.</translation>
 <translation id="2036929290919363111">Logige sisse sellele saidile ja Chromiumi, et teie paroolid ja muu sisu oleksid saadaval kõigis seadmetes.</translation>
 <translation id="2042889939382983733">Chromiumi ajaloo vaatamine</translation>
+<translation id="2054352566231434723">Avage välislingid vaikimisi Chromiumis.</translation>
 <translation id="2059365270911640413">Viige Chromiumi seadistamine lõpule</translation>
 <translation id="2168108852149185974">Mõned pistikprogrammid põhjustavad Chromiumi kokkujooksmise. Desinstallige need:</translation>
 <translation id="2168593389981132306">Chromiumi täiustamine</translation>
@@ -85,6 +86,7 @@ Uusi järjehoidjaid ei saa teie kontole salvestada, enne kui mõned kustutate. K
 <translation id="2485774047568879945">Määrake Chromium oma vaikebrauseriks, et hõlpsalt linke jagada ja avada</translation>
 <translation id="2512597191798760956">Hoidke Chromiumi ikooni all ja klõpsake valikul „Muuda avakuva”</translation>
 <translation id="2517624234762908348">Chromiumi andmete sünkroonimine</translation>
+<translation id="2519012503779379646">Määrake Chromium vaikebrauseriks, et muuta rakenduste vahel liikumine kiiremaks ja lihtsamaks.</translation>
 <translation id="2592940277904433508">Jätkan Chromiumi kasutamist</translation>
 <translation id="2601766165676560303">Chromiumi teema iPhone’i ja iPadi jaoks</translation>
 <translation id="2607609479243848905">Kui unustasite parooli või soovite seda seadet muuta, <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi andmed<ph name="END_LINK" />.</translation>
@@ -189,6 +191,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi an
 <translation id="4985291216379576555">Võrguühenduseta, Chromium ei saa värskendusi otsida</translation>
 <translation id="4996471330284142407">Chromium on nüüd lihtsam, turvalisem ja kiirem kui kunagi varem ning aitab teil veelgi rohkem toiminguid teha.</translation>
 <translation id="4999538639245140991">Kuna logite välja kontolt, mida haldab <ph name="SIGNOUT_MANAGED_DOMAIN" />, kustutatakse selles seadmes teie Chromiumi andmed. Google'i kontole jäävad teie andmed alles.</translation>
+<translation id="5004986813285860899">Minge otse Chromiumi</translation>
 <translation id="5042011327527167688">Puudutage valikut „Kuva Google Mapsi abil Chromiumis“.</translation>
 <translation id="5044871537677053278">Chromium tuvastab aadressid ning annab teile Google Mapsi abil juhiseid ja kohalikku teavet.</translation>
 <translation id="5048140766121299007">Lülitage üksuse „<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” seadetes sisse valik „Chromium”</translation>
@@ -202,6 +205,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chromiumi an
 <translation id="5224391634244552924">Salvestatud paroole ei ole. Chromium saab teie paroole kontrollida, kui olete need salvestanud.</translation>
 <translation id="5259423875997548710">Otsige Chromiumis visuaale.</translation>
 <translation id="5284913972719948193">Importige andmed, et kasutada Chromiumis oma paroole, ajalugu, järjehoidjaid ja krediitkaarte</translation>
+<translation id="5299421317003704533">Avage lingid otse Chromiumis.</translation>
 <translation id="5308226104666789935">Chromium ei saa värskendusi otsida</translation>
 <translation id="5311557153294205270">Lisab sisestatud URL-id Chromiumis teie järjehoidjatesse.</translation>
 <translation id="5383251701169024761">Selleks et muudes rakendustes hõlpsasti oma salvestatud paroolidele juurde pääseda, valige automaattäite jaoks Chromium.</translation>
@@ -268,6 +272,7 @@ Tasub teada
 <translation id="6387994184698195448">Püsige kursis kasulike Chromiumi nõuannete ja muuga.</translation>
 <translation id="6424492062988593837">Chromium muutus just veelgi paremaks! Saadaval on uus versioon.</translation>
 <translation id="6433172051771630690">Nõuanded Chromiumi kasutamiseks.</translation>
+<translation id="6458110851735461646">Teie Google'i lemmikud on Chromiumiga paremad</translation>
 <translation id="65045991564554105">Kuva Chromiumi järjehoidjad</translation>
 <translation id="6519797228806907665">Avage Chromium kiiremini oma iPhone'i avakuva kaudu.</translation>
 <translation id="6538713818758208754">Avab Chromiumis makseviisi seadete lehe.</translation>
@@ -357,6 +362,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="8602103377623855616">Chromiumi leht</translation>
 <translation id="865600487977764604">Kaitseb teid Chromiumis ja seda võidakse kasutada teie turvalisuse suurendamiseks muudes Google'i rakendustes, kui olete sisse logitud.</translation>
 <translation id="8663480472502753423">Hoidke Chromium ajakohasena</translation>
+<translation id="8671588626059602995">Veenduge, et kõik lingid avaneksid alati Chromiumis.</translation>
 <translation id="8685813584220679697">Logige sellele saidile ja Chromiumisse sisse.</translation>
 <translation id="8697693743327341604">Kui valite soovituse või eirate seda, kohandub Chromium nii, et näeksite tulevikus asjakohasemaid soovitusi.</translation>
 <translation id="869832267508702259">Määrake Chromium vaikebrauseriks, et saada Gemini statistikat kõikjal, kus sirvite.</translation>

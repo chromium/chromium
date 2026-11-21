@@ -30,13 +30,11 @@
 <translation id="1278833599417554002">Päivitä &amp;Chrome käynnistämällä se uudelleen</translation>
 <translation id="1289911795790071537">Avaa haku Chromella</translation>
 <translation id="1290883685122687410">Käyttöönottovirhe: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
-<translation id="1302523850133262269">Odota hetki, Chrome asentaa uusimpia järjestelmäpäivityksiä.</translation>
 <translation id="1330562121671411446">Tunnista kieli</translation>
 <translation id="1333654552732143316">Käynnistä Chrome</translation>
 <translation id="1341711321000856656">Voit vaihtaa profiilia nähdäksesi toisen Chrome-profiilin salasanat</translation>
 <translation id="1343830902827845050">Chromeen kirjautuminen</translation>
 <translation id="1361351916482714918">Selaa älykkäämmin Google Lensilla</translation>
-<translation id="1363996462118479832">Chrome-käyttöjärjestelmä ei voi synkronoida dataa sisäänkirjautumisvirheen vuoksi.</translation>
 <translation id="137466361146087520">Google Chromen betaversio</translation>
 <translation id="1383876407941801731">Haku</translation>
 <translation id="1399397803214730675">Tietokoneessa on jo Google Chromen uudempi versio. Jos sovellus ei toimi, poista Google Chrome ja yritä uudelleen.</translation>
@@ -85,7 +83,6 @@
 <translation id="177180974022074201">Kokeile Gemini in Chromella</translation>
 <translation id="1786003790898721085">Varmista, että olet kirjautunut Chromeen laitteellasi (<ph name="TARGET_DEVICE_NAME" />) ja yritä sitten lähettämistä uudelleen.</translation>
 <translation id="1786044937610313874">Pikakuvakkeet avautuvat Chromessa</translation>
-<translation id="1812689907177901597">Poistamalla tämän käytöstä voit kirjautua Google-sivustoille, esim. Gmailiin, kirjautumatta Chromeen.</translation>
 <translation id="1821644463306970002">{NUM_TABS,plural, =1{Chrome suosittelee selainta hidastavan välilehden keskeyttämistä}other{Chrome suosittelee selainta hidastavien välilehtien keskeyttämistä}}</translation>
 <translation id="1832046143430087831">Nopeuttaa sivustoja Chromen V8-moottorilla, mutta heikentää Chromen suojaa hyökkäyksiä vastaan. Tämä asetus on poissa päältä.</translation>
 <translation id="1838374766361614909">Tyhjennä haku</translation>
@@ -172,7 +169,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="2661616016316841783">Kirjaudu Chromeen, niin voit käyttää esimerkiksi laajennuksia tältä laitteelta: <ph name="DEVICE" /></translation>
 <translation id="2665296953892887393">Auta parantamaan Google Chromea lähettämällä kaatumisilmoitukset ja <ph name="UMA_LINK" /> Googlelle</translation>
 <translation id="2668094785979141847">Poistu Google Lensistä klikkaamalla</translation>
-<translation id="2674238339205910678">ChromeOS Flex ei voinut tallentaa Chrome-dataa Google-tilillesi, koska tilin kirjautumistiedot ovat vanhentuneet</translation>
 <translation id="2681444469812712297">Avaa <ph name="URL" /> Google Chromessa uudella välilehdellä.</translation>
 <translation id="2699790011615497488">Avaa Gemini in Chrome Beta</translation>
 <translation id="2738871930057338499">Internetyhteyden muodostaminen ei onnistu. HTTP 403 (kielletty). Tarkista välityspalvelimen asetukset.</translation>
@@ -283,7 +279,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="3756724684201900923">Lue lisää Chromen asentamisesta</translation>
 <translation id="3772152698251011058">Ilmoita tästä sivustosta Googlelle</translation>
 <translation id="3780814664026482060">Chrome – <ph name="PAGE_TITLE" /></translation>
-<translation id="3785324443014631273">ChromeOS Flex ei voinut synkronoida tietoja kirjautumisvirheen vuoksi.</translation>
 <translation id="3810973564298564668">Hallinnoi</translation>
 <translation id="383455301564000773">Päivitätkö Windows 11:een? Lataa Chrome OneDriveen, jotta pääset vauhtiin heti ensimmäisestä päivästä lähtien.</translation>
 <translation id="383928141529488001">Google Chrome tarvitsee pääsyn Bluetoothiin etsiäkseen
@@ -374,7 +369,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="4803313124144656665">Sulje Google Haku Chromessa</translation>
 <translation id="4828579605166583682">Google Chrome yrittää korvata nykyiset salasanat. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="4836321460899997044">Chrome-profiili</translation>
-<translation id="4842397268809523050">ChromeOS Flex ei voinut synkronoida dataa, koska synkronointi ei ole käytettävissä verkkotunnuksessasi.</translation>
 <translation id="4851866215237571846"><ph name="EXISTING_USER" /> on jo kirjautunut sisään.  Jos haluat pitää selaamisen erillään, kirjaudu Chromeen omalla profiilillasi käyttämällä tiliä <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="4855026984605187434">Jos haluat jakaa näytön, salli Chromen näytön tallennus järjestelmäasetuksista.</translation>
 <translation id="4873783916118289636">Tarkista Chromen tärkeimmät yksityisyys‑ ja turvallisuusasetukset</translation>
@@ -388,7 +382,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="492720062778050435">Chrome suosittelee, että tarkistat tämän laajennukseen</translation>
 <translation id="4953650215774548573">Aseta Google Chrome oletusselaimeksi</translation>
 <translation id="495931528404527476">Chromessa</translation>
-<translation id="4969674060580488087">ChromeOS Flex ei voinut synkronoida dataa, koska tilin kirjautumistiedot ovat vanhentuneet.</translation>
 <translation id="4970761609246024540">Tervetuloa Chrome-profiileihin</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
 <translation id="5003967926796347400">Valitse "Google Salasanat"</translation>
@@ -420,7 +413,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="5271833978500241046">Käytä niitä yhdessä muiden Gemini in Chromen ominaisuuksien kanssa</translation>
 <translation id="5320351714793324716">Jos sallit evästeet, Chrome voi käyttää niitä esilataamisen aikana</translation>
 <translation id="5321325624576443340">Google Lens ei ole käytettävissä. Yritä myöhemmin uudelleen.</translation>
-<translation id="5334309298019785904">Chrome-käyttöjärjestelmä ei voinut synkronoida dataa, koska synkronointi ei ole käytettävissä verkkotunnuksessasi.</translation>
 <translation id="5336664042114176802">Voit vaihtaa Gemini-avustajaan, joka on alun perin liitetty Google-tiliisi ja jota <ph name="DOMAIN" /> ei hallinnoi. Vastaukset eivät enää perustu tiedostoihin tai palveluihin, joita <ph name="DOMAIN" /> hallinnoi, eikä keskusteluhistoria siirry. Se ei välttämättä sovellu työkäyttöön. Vaihtaminen edellyttää Chromen uudelleenkäynnistystä.</translation>
 <translation id="5346389065299425353">Tarkenna hakua lisäämällä useita välilehtiä, tiedostoja ja työkaluja</translation>
 <translation id="5353252989841766347">Vie salasanat Chromesta</translation>
@@ -548,7 +540,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="6497147134301593682">Chrome on suljettu automaattisesti</translation>
 <translation id="6506909944137591434">Chrome tarvitsee kameran luvan, jotta se voi luoda 3D-kartan ympäristöstäsi</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome Dev</translation>
-<translation id="6520608191273161151">ChromeOS Flex ei voinut tallentaa Chrome-dataa Google-tilillesi kirjautumisvirheen vuoksi</translation>
 <translation id="6520670145826811516">Anna Chromelle pääsyoikeus <ph name="BEGIN_LINK" />järjestelmäasetuksista<ph name="END_LINK" />, jotta voit käyttää sijaintia.</translation>
 <translation id="652948702951888897">Chromen historia</translation>
 <translation id="6532945796722480006">Avaa Gemini in Chrome Canary</translation>
@@ -570,7 +561,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="6712881677154121168">Latausvirhe: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chromen nopeuttaminen</translation>
 <translation id="6734827584173583205">Sivustot, joilla et ole käynyt viime aikoina. Chrome poisti nämä luvat: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="COUNT" /> muuta.</translation>
-<translation id="6735387454586646204">ChromeOS Flexin järjestelmä</translation>
 <translation id="674891594898436429">Hylkää aktiivinen haku tällä välilehdellä</translation>
 <translation id="6750954913813541382">Chrome lähettää selaimeen kirjoittamasi tekstin Googlelle kirjoitusvirheiden korjaamiseksi</translation>
 <translation id="6760235774835597023">Nopeuttaa sivustoja Chromen V8-moottorilla, mutta heikentää Chromen suojaa hyökkäyksiä vastaan. Tämä asetus on päällä.</translation>
@@ -591,7 +581,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="6908182077349113099">Pidä salasanat, kirjanmerkit ja historia synkronoituina kaikilla laitteilla. Päivitä oletusselaimeksi Chrome, niin saat tutut ominaisuudet helposti käyttöösi.</translation>
 <translation id="6926772305569367352">Yläpalkin "Google-haku Chromessa" ‐painikkeella on uusi kuvake. Klikkaa sitä esittääksesi kysymyksiä selaamisen aikana Google Haussa Chromessa.</translation>
 <translation id="6930294499209825">Pitää Google-ohjelmiston ajan tasalla. Jos palvelu on poistettu käytöstä tai lopetettu, Google-ohjelmistoa ei pidetä ajan tasalla. Tämä tarkoittaa, että mahdollisia tietoturvahaavoittuvuuksia ei voida korjata ja ominaisuudet eivät välttämättä toimi. Tämän palvelun asennus poistetaan automaattisesti, kun sitä ei käytä mikään Google-ohjelmisto.</translation>
-<translation id="6933858244219479645">ChromeOS</translation>
 <translation id="6938166777909186039">Jotta saat tulevia Google Chromen päivityksiä, sinulla on oltava Windows 10 tai uudempi. Tietokoneen käyttöjärjestelmä on Windows 8.1.</translation>
 <translation id="6962628299694876291"><ph name="EXISTING_USER" /> on jo kirjautunut sisään. Jos haluat pitää selaamisen erillään, kirjaudu Chromeen omalla profiilillasi käyttämällä tiliä <ph name="USER_EMAIL_ADDRESS" />. Voit myös käyttää salasanojasi ja muita tietoja kaikilla laitteillasi.</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -682,7 +671,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="7801699035218095297">Google Chrome yrittää kopioida salasanoja. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="7804364787702057554">Tilisi Chromessa</translation>
 <translation id="7804947029129221742">Hakukoneesi on vaihdettu Chromen ulkopuolelta. Chrome on nollannut sen alkuperäisiin oletusasetuksiin suojellakseen sinua. <ph name="LEARN_MORE_LINK" /></translation>
-<translation id="7808348361785373670">Poista Chromesta…</translation>
 <translation id="7827099906024714326">Chromen on vahvistettava henkilöllisyytesi, ennen kuin tiettyä dataa voidaan tallentaa Google-tilillesi ja käyttää kaikilla laitteillasi. Jos kirjaudut ulos nyt, tämä data poistetaan.</translation>
 <translation id="7829850924999627855">Kirjaudu Chromeen, niin voit käyttää esimerkiksi tallennettuja tietoja tältä laitteelta: <ph name="DEVICE" /></translation>
 <translation id="7832314606810669113">Kirjaudu sisään Chromeen, niin voit käyttää kirjanmerkkejä ja muita tietoja kaikilla laitteillasi. Tämä kirjanmerkki tallennetaan Google-tilillesi kirjautumisen jälkeen.</translation>
@@ -695,7 +683,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="7896673875602241923">Joku on jo kirjautunut tällä tietokoneella Chromeen käyttäjätilillä <ph name="ACCOUNT_EMAIL_LAST" />. Luo uusi Chrome-käyttäjä, jos haluat pitää tiedot erillään.</translation>
 <translation id="7904213866086517086">Avaa Google Haku uudelleen sivupaneelissa</translation>
 <translation id="7904985524660297937">Kokeile Geminiä Google Chromessa</translation>
-<translation id="7905880575591690197">ChromeOS ei voinut tallentaa Chrome-dataa Google-tilillesi kirjautumisvirheen vuoksi</translation>
 <translation id="7936702483636872823">Chrome on estänyt tämän latauksen, koska tiedosto on harhaanjohtava ja se voi tehdä odottamattomia muutoksia laitteellesi</translation>
 <translation id="7951272445806340501">ChromeOS Flex täytyy käynnistää uudelleen, jotta päivitys voidaan ottaa käyttöön.</translation>
 <translation id="7959172989483770734">Ylläpidä Chrome-profiileja</translation>
@@ -756,7 +743,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="8402881611069691789">{COUNT,plural, =1{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen. Incognito- tai eristetty selainikkuna on auki. Sitä ei avata uudelleenkäynnistyksen jälkeen.}other{Chromen päivitys on valmis. Voit käyttää uusinta versiota heti, kun käynnistät sovelluksen uudelleen. Sen jälkeen nykyiset välilehdet avautuvat uudelleen. Profiileissa on auki # incognito- ja eristettyä selainikkunaa. Niitä ei avata uudelleen uudelleenkäynnistyksen jälkeen.}}</translation>
 <translation id="8403038600646341038">Chrome-logo tietokoneen näytöllä.</translation>
 <translation id="8406687098231754303">Yläpalkin "Google Haku sivupaneelissa" ‑painikkeella voit avata Google Haun sivupaneelissa uudelleen ja esittää kysymyksiä selailun aikana</translation>
-<translation id="8418845734693287262">Chrome-käyttöjärjestelmä ei voinut synkronoida dataa, koska tilin kirjautumistiedot ovat vanhentuneet.</translation>
 <translation id="842386925677997438">Chromen turvallisuustyökalut</translation>
 <translation id="8425765582779547329">Jos haluat käyttää vanhempasi valitsemia asetuksia, kirjaudu Chromeen</translation>
 <translation id="842852285618875960">Olet saavuttanut Google Chromen <ph name="BOOKMARK_LIMIT" /> kirjanmerkin rajan, joten kaikkia kirjanmerkkejäsi ei ole vielä tallennettu Google-tilillesi.
@@ -785,7 +771,6 @@ Uusia kirjanmerkkejä ei voi tallentaa tilillesi, ennen kuin poistat joitakin. J
 <translation id="8624541899164515475">Asetukset, avautuu uudelle välilehdelle.</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome käynnistetään uudelleen 1 minuutin kuluttua}other{Chrome käynnistetään uudelleen # minuutin kuluttua.}}</translation>
 <translation id="8637932705841171563">Jos haluat jakaa ikkunan, salli Chromen näytön tallennus järjestelmäasetuksista.</translation>
-<translation id="8642497536370021917">Vahvista henkilöllisyytesi, jotta voit aina käyttää ja tallentaa Chrome-dataa Google-tililläsi</translation>
 <translation id="8656634243791296665">Avaa Gemini in Chrome Dev</translation>
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Määrittää myös Chromen aloitussivun.</translation>
@@ -847,7 +832,6 @@ Uusia kirjanmerkkejä ei voi tallentaa tilillesi, ennen kuin poistat joitakin. J
 <translation id="922152298093051471">Yksilöi Chromea</translation>
 <translation id="93760716455950538">Käynnistä ChromeOS Flex uudelleen</translation>
 <translation id="945522503751344254">Lähetä palautetta</translation>
-<translation id="973195869036269770">ChromeOS ei voinut tallentaa Chrome-dataa Google-tilillesi, koska tilin kirjautumistiedot ovat vanhentuneet</translation>
 <translation id="983803489796659991">Asennus epäonnistui, koska päivityspalvelimella ei ole tiivistedataa sovelluksesta.</translation>
 <translation id="989816563149873169">Valitsemalla <ph name="SHORTCUT" /> voit vaihdella eri Chrome-profiilien välillä</translation>
 </translationbundle>

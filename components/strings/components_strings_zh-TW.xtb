@@ -372,6 +372,7 @@
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" />已移除分頁</translation>
 <translation id="1620510694547887537">攝影機</translation>
 <translation id="1623104350909869708">防止這個網頁產生其他對話方塊</translation>
+<translation id="1624535934412288769">欄</translation>
 <translation id="1629390138158333592">搜尋網站</translation>
 <translation id="1633137413609266904">{0,plural, =1{根據系統管理員政策，你無法開啟這個檔案}other{根據系統管理員政策，你無法開啟這 # 個檔案}}</translation>
 <translation id="1634828734222219955">全部</translation>
@@ -1081,6 +1082,7 @@
 <translation id="2803320044666896137">該使用者受其他網域管理，因此系統會忽略此政策值。</translation>
 <translation id="2807052079800581569">圖片 Y 位置</translation>
 <translation id="2808278141522721006">你可以前往「<ph name="SETTINGS" />」開啟或關閉 Windows Hello</translation>
+<translation id="2820159698793041599">Proxy 伺服器無法建立安全連線。</translation>
 <translation id="2820957248982571256">掃描中...</translation>
 <translation id="282457273878278063">管理聯絡資訊</translation>
 <translation id="2824775600643448204">網址與搜尋列</translation>
@@ -1261,6 +1263,7 @@
 <translation id="3120807611504813890">信封 (輕磅)</translation>
 <translation id="3121994479408824897">前往 <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">標籤 (永久)</translation>
+<translation id="3128081114752791872">Proxy 伺服器的安全性憑證無效。</translation>
 <translation id="3131746543143948171">這個網站似乎與其他涉及網路釣魚、惡意軟體和詐騙的網站相似。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">儲存補救號碼 (redress number)</translation>
 <translation id="3133565499688974786"><ph name="SEARCH_ENGINE_NAME" /> 已設為預設搜尋引擎</translation>
@@ -1679,7 +1682,6 @@
 <translation id="3800436529451849929">來自 <ph name="SITE" /></translation>
 <translation id="3801297763951514916">經常造訪</translation>
 <translation id="380329542618494757">姓名</translation>
-<translation id="3803481123869276674">在 Chrome 中進行購買交易時可選擇「電子錢包」</translation>
 <translation id="3803801106042434208">以下是你所在地區的熱門搜尋引擎</translation>
 <translation id="3804112825000113857">查看自動填入設定</translation>
 <translation id="380666903981445943">將付款方式儲存至 Google 帳戶，就能在 Chrome 中購物時自動填入</translation>
@@ -2162,6 +2164,7 @@
 <translation id="4612631413844865947">透過 <ph name="PAYMENT_APP_ORIGIN" /> 處理 <ph name="MERCHANT_ORIGIN" /> 的訂單時發生錯誤。</translation>
 <translation id="4612904677925722054">這個網站可能含有兒童不宜的內容。你必須獲得家長或監護人許可，才能造訪這個網站。</translation>
 <translation id="4613873770449493819">網址必須指向 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 網域。</translation>
+<translation id="4615154194248230658">這個模式似乎與有效的電子郵件地址網域不符。使用者可能無法登入，或現有設定檔可能會遭到移除。</translation>
 <translation id="4619564267100705184">驗證身分</translation>
 <translation id="4619669610757527494">將駕照儲存到 Google 錢包</translation>
 <translation id="4622292761762557753">仍要轉移</translation>
@@ -2680,7 +2683,6 @@
 <translation id="5447235695608032700">允許 <ph name="SITE" /> 使用與你相關的既有資訊</translation>
 <translation id="5447973833955560753">備援密碼</translation>
 <translation id="5452270690849572955">找不到 <ph name="HOST_NAME" /> 網頁</translation>
-<translation id="5452923259299906094">使用電子錢包和 Pix 付款</translation>
 <translation id="5455374756549232013">政策時間戳記有誤</translation>
 <translation id="5456428544444655325">永不顯示</translation>
 <translation id="5457082343331641453">加入搜尋字詞</translation>
@@ -3896,7 +3898,6 @@
 <translation id="7489919936111034362">Google 雲端硬碟儲存空間已滿</translation>
 <translation id="7490622939531327327">更聰明的表單辨識功能</translation>
 <translation id="7495528107193238112">這項內容已遭到封鎖，請聯絡網站擁有者以修正問題。</translation>
-<translation id="7499188644237027195">在 Chrome 中進行購買交易時可選擇「電子錢包」和「Pix」</translation>
 <translation id="7499684925421947861">要允許 <ph name="ACTOR_NAME" /> 為你登入「<ph name="DOMAIN" />」嗎？</translation>
 <translation id="7501663406926337752">貴機構標記了你要瀏覽的網站</translation>
 <translation id="7502044688973049724">管理你的資訊</translation>
@@ -4021,7 +4022,6 @@
 <translation id="7676840398262504532">貴機構會監控複製內容</translation>
 <translation id="767806704757698045">僅適用於支援的網站</translation>
 <translation id="7678730592635586336">重新拍攝影片</translation>
-<translation id="7679287273775285018">使用電子錢包付款</translation>
 <translation id="7679367271685653708">在 Chrome 設定中查看及管理瀏覽記錄</translation>
 <translation id="7680990533995586733"><ph name="CARD_NETWORK_NAME" />，<ph name="CARD_LAST_FOUR_DIGITS" />，到期日為 <ph name="CARD_EXPIRATION" /></translation>
 <translation id="7682287625158474539">寄送地址</translation>
@@ -4096,7 +4096,6 @@
 <translation id="7791543448312431591">新增</translation>
 <translation id="7798389633136518089">由於這個政策並非透過雲端來源設定，因此遭到忽略。</translation>
 <translation id="7800304661137206267">連線採用 <ph name="CIPHER" /> 加密，並設有 <ph name="MAC" /> 訊息驗證及 <ph name="KX" /> 金鑰交換機制。</translation>
-<translation id="780228007282527248">加入分頁或圖片，提升搜尋體驗</translation>
 <translation id="7802523362929240268">網站合法</translation>
 <translation id="7802989406998618639">請輸入<ph name="SIDE_OF_CARD" />的 <ph name="NUMBER_OF_DIGITS" /> 位數安全碼，讓銀行驗證你的身分</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
@@ -4162,6 +4161,7 @@
 <translation id="7916162853251942238">彈性凸版基底</translation>
 <translation id="7916802424606434188">在新視窗開啟「視窗 <ph name="WINDOW_INDEX" />」(<ph name="NUM_TABS" /> 個分頁)</translation>
 <translation id="791698251820376781">貴機構不允許你登入</translation>
+<translation id="7918936720558783139">結帳時，系統會自動填入已儲存的優惠。<ph name="BEGIN_LINK" />管理優惠<ph name="END_LINK" /></translation>
 <translation id="7927046851848613453">儲存瀏覽網頁中的票證、活動和其他資訊 (不限於填寫的表單)，之後就能快速存取活動票券和會員卡等票證。儲存的資訊可顯示在裝置和各項 Google 產品中。</translation>
 <translation id="7930282586031445870">「先買後付」服務條款畫面已關閉。</translation>
 <translation id="7932035970207573919">公司地址，<ph name="ADDRESS" /></translation>
@@ -4231,6 +4231,7 @@
 <translation id="8029829038322015001">紅色 1</translation>
 <translation id="8032546467100845887">透明</translation>
 <translation id="8035152190676905274">畫筆</translation>
+<translation id="803703704549420287">清除篩選條件</translation>
 <translation id="8037117624646282037">最近使用過裝置的使用者</translation>
 <translation id="803771048473350947">檔案</translation>
 <translation id="8038182528865038593">紅色 2</translation>
@@ -4419,6 +4420,7 @@
 <translation id="8363502534493474904">關閉飛航模式</translation>
 <translation id="8363929499301563123">網站 Cookie (保留近期造訪網站的登入狀態)</translation>
 <translation id="8364627913115013041">未設定。</translation>
+<translation id="8364664414979300296">加入分頁、相片等內容，提升搜尋體驗</translation>
 <translation id="836616551641291797">進一步瞭解如何管理瀏覽器</translation>
 <translation id="8367705492654390392">提出問題</translation>
 <translation id="8368001212524806591">追蹤價格</translation>

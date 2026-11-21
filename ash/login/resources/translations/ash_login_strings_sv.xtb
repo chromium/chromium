@@ -10,6 +10,7 @@
 <translation id="1097658378307015415">Aktivera nätverket <ph name="NETWORK_ID" /> genom att logga in som gäst innan du loggar in</translation>
 <translation id="1111932478203988717">Ditt barn kan använda den här pinkoden för att logga in på sin enhet</translation>
 <translation id="1122587596907914265">Skapa unika bakgrunder</translation>
+<translation id="1122913801042512795">Dina inloggningsuppgifter för kontot är inaktuella. Logga ut och logga sedan in igen.</translation>
 <translation id="1131201598497838573">Barnets pinkod har uppdaterats</translation>
 <translation id="1147322039136785890">Nu kan <ph name="SUPERVISED_USER_NAME" /> ta över</translation>
 <translation id="1148669835763563782">Du får den senaste mjukvaruuppdateringen för ökad säkerhet och de senaste Chromebook-funktionerna. Uppdateringen innehåller en förbättrad konfigureringsupplevelse så att det blir enkelt att komma igång med din Chromebook.</translation>
@@ -26,6 +27,7 @@
 <translation id="1256588359404100567">Inställningen har synkroniserats från din förra enhet.</translation>
 <translation id="1272978324304772054">Det här användarkontot hör inte till den domän som enheten är registrerad för. Om du vill registrera enheten för en annan domän måste du återställa den först.</translation>
 <translation id="1293556467332435079">Filer</translation>
+<translation id="1302523850133262269">Vänta medan de senaste systemuppdateringarna installeras av Chrome.</translation>
 <translation id="1307559529304613120">Hoppsan! Det gick inte att lagra någon långsiktig API-åtkomsttoken för den här enheten.</translation>
 <translation id="1335929031622236846">Registrera din enhet</translation>
 <translation id="1346669614038013595"><ph name="BEGIN_H3" />Felsökningsfunktioner<ph name="END_H3" />
@@ -49,6 +51,7 @@
 <translation id="1347625331607114917">Verifiera koden på Android-telefonen</translation>
 <translation id="1347975661240122359">Uppdateringen börjar när batterinivån är på <ph name="BATTERY_LEVEL" /> %.</translation>
 <translation id="1353275871123211385">Om du vill använda föräldrakontroller som appgodkännanden och skärmtidsgränser måste barnet ha ett Google-konto som hanteras av en förälder. Ett skolkonto som kan användas för verktyg som Google Classroom kan läggas till senare.</translation>
+<translation id="1363996462118479832">Det gick inte att synkronisera data med ChromeOS på grund av ett inloggningsfel.</translation>
 <translation id="1375557162880614858">Vill du aktivera ChromeVox, den inbyggda skärmläsaren för ChromeOS Flex?</translation>
 <translation id="1377600615067678409">Hoppa över nu</translation>
 <translation id="1399261165075500043">Det gick inte att läsa in Google Plays användarvillkor</translation>
@@ -73,6 +76,7 @@
 <translation id="1642494467033190216">Borttagning av rootfs-skydd och omstart krävs innan du kan aktivera andra felsökningsfunktioner.</translation>
 <translation id="1646045728251578877">Det finns en mjukvaruuppdatering</translation>
 <translation id="1650801028905250434">Filerna på Min enhet synkroniseras automatiskt med Chromebook så att du kan komma åt dem utan internetanslutning. Du kan när som helst ändra detta i Inställningar &gt; Filer.</translation>
+<translation id="16620462294541761">Det gick inte att verifiera lösenordet. Försök igen.</translation>
 <translation id="1668435968811469751">Registrera på egen hand</translation>
 <translation id="1678919064276516737">E-postadressen och pinkoden matchar inte</translation>
 <translation id="1692115862433274081">Använd ett annat konto</translation>
@@ -94,6 +98,7 @@
 <translation id="1868617395637139709">Använd plats för Android-appar och Android-tjänster.</translation>
 <translation id="1877377730633446520">Detta använder cirka <ph name="REQUIRED_SPACE" />. Du har för närvarande <ph name="FREE_SPACE" /> tillgängligt.</translation>
 <translation id="1878155070920054810">Det verkar som om batteriet i Chromebook kommer att ta slut innan uppdateringen är klar. Kontrollera att det laddas som det ska så att du slipper avbrott.</translation>
+<translation id="1887442540531652736">Inloggningsfel</translation>
 <translation id="189035593835762169">Villkor</translation>
 <translation id="189358972401248634">Övriga språk</translation>
 <translation id="1915734383465415025">Butiksnummer</translation>
@@ -122,6 +127,7 @@
 <translation id="2210462644007531147">Det gick inte att slutföra installationen</translation>
 <translation id="221872881068107022">Omvänd rullning</translation>
 <translation id="2219081237089444028">Ange ett lösenord för <ph name="DEVICE_TYPE" /> så att det blir enklare att logg ain</translation>
+<translation id="2220529011494928058">Rapportera ett problem</translation>
 <translation id="222115440608612541">Byt tema vid soluppgången och solnedgången</translation>
 <translation id="2229161054156947610">Mer än 1 timme kvar</translation>
 <translation id="2246129643805925002"><ph name="DEVICE_TYPE" /> uppdateras automatiskt i bakgrunden så att du får de senaste funktionerna och säkerhetsförbättringarna. Du kan hantera uppdateringsalternativen i inställningarna.</translation>
@@ -132,6 +138,7 @@
 <translation id="2328137272841210255">Återställ pinkoden</translation>
 <translation id="2342180549977909852">Ditt barn kan låsa upp enheten med en sifferkod (pinkod) i stället för ett lösenord. Du kan ange en pinkod senare i inställningarna.</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
+<translation id="2384373936468275798">Det gick inte att synkronisera data med Chromium OS eftersom inloggningsuppgifterna för kontot är inaktuella.</translation>
 <translation id="2387052489799050037">Öppna startskärmen</translation>
 <translation id="2395616325548404795"><ph name="DEVICE_TYPE" /> har registrerats för företagshantering, men har inte skickat tillgångs- och platsinformation. Ange informationen manuellt i administratörskonsolen för enheten.</translation>
 <translation id="2408955596600435184">Ange din pinkod</translation>
@@ -158,6 +165,7 @@
 <translation id="2619007277744171543"><ph name="BEGIN_PARAGRAPH1" />Med Googles platstjänst används källor som wifi, mobila nätverk och sensorer för att avgöra enhetens plats.<ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Du kan inaktivera plats för den här Android-enheten när du vill via Inställningar &gt; Appar &gt; Google Play Butik &gt; Hantera Android-inställningar &gt; Säkerhet och plats &gt; Plats. Du kan även inaktivera användningen av wifi, mobilnätverk och sensorer för platstjänsten genom att inaktivera Platsangivelsens exakthet i samma meny.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="2663302507110284145">Språk</translation>
+<translation id="2674238339205910678">Det gick inte att spara Chrome-data i Google-kontot med ChromeOS Flex eftersom inloggningsuppgifterna för kontot är inaktuella</translation>
 <translation id="2687407218262674387">Googles användarvillkor</translation>
 <translation id="2688196195245426394">Det uppstod ett fel när enheten registrerades med servern: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="2698147581454716013">Det här är en paketerad enhet som inte kan registreras för kiosk- och skyltuppgraderingar.</translation>
@@ -252,6 +260,7 @@
 <translation id="3740945083753997630">Minska visnings- och textstorleken</translation>
 <translation id="376841534249795524">Vad ska du använda din <ph name="DEVICE_TYPE" /> till?</translation>
 <translation id="3772046291955677288">Jag har läst och godkänner <ph name="BEGIN_LINK1" />Googles användarvillkor<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />de ytterligare användarvillkoren för Chrome och ChromeOS<ph name="END_LINK2" />.</translation>
+<translation id="3785324443014631273">Det gick inte att synkronisera data med ChromeOS Flex på grund av ett inloggningsfel.</translation>
 <translation id="3789841737615482174">Installera</translation>
 <translation id="3800828618615365228">Ytterligare villkor för Google Chrome och ChromeOS</translation>
 <translation id="3828953470056652895">Jag har läst och godkänner <ph name="BEGIN_LINK1" />Googles användarvillkor<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />de ytterligare användarvillkoren för Google Chrome och ChromeOS<ph name="END_LINK2" /> samt <ph name="BEGIN_LINK3" />användarvillkoren för Play<ph name="END_LINK3" />.</translation>
@@ -332,6 +341,7 @@
         <ph name="END_PARAGRAPH1" />
         <ph name="BEGIN_PARAGRAPH2" />Du hittar mer hjälp på g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="4531924570968473143">Vem vill du lägga till på denna <ph name="DEVICE_TYPE" />?</translation>
+<translation id="4543778593405494224">Certifikathanterare</translation>
 <translation id="4566170377336116390">Om du vill byta efter registreringen måste du återställa enhetens standardinställningar (Powerwash).</translation>
 <translation id="4567512141633030272">Fel inloggningsalternativ?</translation>
 <translation id="4567533462991917415">Du kan alltid lägga till fler personer när konfigureringen är klar. Var och en kan anpassa sitt konto och hålla sin data privat.</translation>
@@ -349,6 +359,7 @@
 <translation id="4814327014588285482">Hoppa över och påminn mig senare</translation>
 <translation id="4830502475412647084">Uppdateringen för operativsystemet installeras</translation>
 <translation id="4837926214103741331">Du har inte behörighet att använda den här enheten. Kontakta enhetens ägare om du vill ha behörighet att logga in.</translation>
+<translation id="4842397268809523050">Det gick inte att synkronisera data med ChromeOS Flex eftersom synkronisering inte är tillgängligt för din domän.</translation>
 <translation id="4844333629810439236">Övriga tangentbord</translation>
 <translation id="484462545196658690">Auto</translation>
 <translation id="4864369630010738180">Loggar in ...</translation>
@@ -360,6 +371,7 @@
 <translation id="4944310289250773232">Den här autentiseringstjänsten tillhandahålls av <ph name="SAML_DOMAIN" /></translation>
 <translation id="4955710816792587366">Välj en pinkod</translation>
 <translation id="4965808351167763748">Vill du konfigurera den här enheten för Hangouts Meet?</translation>
+<translation id="4969674060580488087">Det gick inte att synkronisera data med ChromeOS Flex eftersom inloggningsuppgifterna för kontot är inaktuella.</translation>
 <translation id="4987944280765486504">Din Chromebook startas om när nedladdningen har slutförts och du kan fortsätta konfigureringen.</translation>
 <translation id="5029287942302939687">Ditt lösenord har ställts in</translation>
 <translation id="503155457707535043">Appar laddas ned</translation>
@@ -401,6 +413,8 @@
 <translation id="528208740344463258">Om du vill ladda ned och använda Android-appar måste du först installera den här obligatoriska uppdateringen. Du kan inte använda <ph name="DEVICE_TYPE" /> medan uppdateringen installeras. <ph name="DEVICE_TYPE" /> startas om när installationen är slutförd.</translation>
 <translation id="5283677936944177147">Hoppsan! Det gick inte att fastställa enhetsmodell eller serienummer.</translation>
 <translation id="5333896723098573627">Om du vill ta bort appar öppnar du Inställningar &gt; Google Play Butik &gt; Hantera Android-inställningar &gt; Appar eller Apphanteraren. Tryck sedan på appen du vill avinstallera (du kanske måste svepa åt höger eller vänster för att hitta appen). Tryck sedan på Avinstallera eller Inaktivera.</translation>
+<translation id="5334309298019785904">Det gick inte att synkronisera data med ChromeOS eftersom synkronisering inte är tillgängligt för din domän.</translation>
+<translation id="535243042947607642">Det gick inte att spara Chromium-data i Google-kontot med ChromiumOS eftersom inloggningsuppgifterna för kontot är inaktuella</translation>
 <translation id="5355501370336370394">Registrera företagsenhet</translation>
 <translation id="5372529912055771682">Det angivna registreringsläget stöds inte av den här versionen av operativsystemet. Kontrollera att du har den senaste versionen och försök igen.</translation>
 <translation id="5397378439569041789">Registrera kioskenhet eller digital skyltningsenhet</translation>
@@ -412,6 +426,7 @@
 <translation id="5448293924669608770">Det uppstod problem vid inloggningen</translation>
 <translation id="5453829744223920473">Ditt barn kan använda alla sina skolappar, bokmärken och resurser på samma sätt som i skolan. Skolan sätter upp grundläggande regler.</translation>
 <translation id="5473099001878321374">Genom att fortsätta godkänner du att enheten kan ladda ned och installera uppdateringar och appar automatiskt från Google, ditt barns operatör och enhetstillverkaren, eventuellt genom att använda mobildata. Det kan hända att några av apparna erbjuder köp i appen.</translation>
+<translation id="549669000822060376">Vänta medan de senaste systemuppdateringarna installeras av Chromium.</translation>
 <translation id="5502915260472117187">Ett barn</translation>
 <translation id="5511823366942919280">Vill du ställa in enheten som en Shark?</translation>
 <translation id="5513807280330619196">Kalkylator</translation>
@@ -515,6 +530,7 @@
 <translation id="6495266441917713704">Det går inte att överföra wifi</translation>
 <translation id="6515620015470298987">Inloggningen misslyckades på grund av ett problem med att kontrollera enhetskonfigurationen. Använd Powerwash på <ph name="DEVICE_TYPE" /> och försök igen.</translation>
 <translation id="6519689855001245063">Kontrollerar behörighet</translation>
+<translation id="6520608191273161151">Det gick inte att spara Chrome-data i Google-kontot med ChromeOS Flex på grund av ett inloggningsfel</translation>
 <translation id="6532527800157340614">Inloggningen misslyckades eftersom det inte gick att hämta din åtkomsttoken. Kontrollera nätverksanslutningen och försök igen.</translation>
 <translation id="653920215766444089">Söker efter pekdon</translation>
 <translation id="65513682072153627">Denna ikon visas när en inställning eller funktion hanteras av administratören.</translation>
@@ -526,8 +542,10 @@
 <translation id="6675665718701918026">Pekdon har anslutits</translation>
 <translation id="667752334740867460">Tar emot wifi-information …</translation>
 <translation id="6680442031740878064">Tillgängligt: <ph name="AVAILABLE_SPACE" /></translation>
+<translation id="668175097507315160">Det gick inte att synkronisera data med Chromium OS på grund av ett inloggningsfel.</translation>
 <translation id="6684827949542560880">Den senaste uppdateringen laddas ned</translation>
 <translation id="6722744767592605627">Du kan återställa <ph name="EMAIL" />, men lokala uppgifter raderas.</translation>
+<translation id="6735387454586646204">ChromeOS Flex-system</translation>
 <translation id="6748980958975836188">Jag har läst och godkänner <ph name="BEGIN_LINK1" />Googles användarvillkor<ph name="END_LINK1" /> samt <ph name="BEGIN_LINK2" />de ytterligare användarvillkoren för Google Chrome och ChromeOS<ph name="END_LINK2" />.</translation>
 <translation id="6749473226660745022">Foton</translation>
 <translation id="6754918760968695779">Snabbinfogning</translation>
@@ -552,6 +570,7 @@
 <translation id="6918733588290914545">Snabb konfigurering med Android-telefon</translation>
 <translation id="6920473853105515518">Se till att <ph name="DEVICE_TYPE" /> är ansluten till internet och försök igen. Du kan även besöka play.google/play-terms på en annan enhet.</translation>
 <translation id="6929126689972602640">Föräldrakontroller stöds inte för skolkonton. Om du vill lägga till ett skolkonto för Google Classroom och andra webbplatser för skolarbete hemifrån behöver du först logga in med barnets personliga konto. Du kan lägga till skolkontot i ett senare steg.</translation>
+<translation id="6933858244219479645">ChromeOS-system</translation>
 <translation id="6935031746833428401">Läs mer om enhetshantering</translation>
 <translation id="6950351336108213154">Uppdaterar kringutrustning för enheten</translation>
 <translation id="6955698182324067397">Du aktiverar felsökningsfunktioner i ChromeOS som konfigurerar sshd daemon och aktiverar start från USB-enheter.</translation>
@@ -648,6 +667,7 @@ proxyservern fungerar. Om du inte tror att du bör använda en
 <translation id="7870730066603611552">Granska synkroniseringsalternativen efter konfigureringen</translation>
 <translation id="7883792253546618164">Du kan avsluta prenumerationen när du vill.</translation>
 <translation id="7887864092952184874">Bluetooth-musen har kopplats</translation>
+<translation id="7905880575591690197">Det gick inte att spara Chrome-data i Google-kontot med ChromeOS på grund av ett inloggningsfel</translation>
 <translation id="7906440585529721295">Lokal data raderas</translation>
 <translation id="7910725946105920830">Använd ditt personliga Google-konto</translation>
 <translation id="7918257978052780342">Registrera</translation>
@@ -674,6 +694,7 @@ proxyservern fungerar. Om du inte tror att du bör använda en
 <translation id="8098616321286360457">En nätverksanslutning krävs</translation>
 <translation id="8129265306888404830">Om du vill använda din e-postadress från organisationen (<ph name="EMAIL_DOMAIN" />) måste du använda företagsregistrering. Om enheten är avsedd för personligt bruk loggar du in med ditt personliga Google-konto.</translation>
 <translation id="8131740175452115882">Bekräfta</translation>
+<translation id="8133124826068723441">Det gick inte att synkronisera data med Chromium OS eftersom synkronisering inte är tillgängligt för domänen.</translation>
 <translation id="8146177459103116374">Om du redan är registrerad på den här enheten kan du <ph name="LINK2_START" />logga in som en befintlig användare<ph name="LINK2_END" />.</translation>
 <translation id="8146793085009540321">Inloggningen misslyckades. Kontakta administratören eller försök igen.</translation>
 <translation id="8147346945017130012">Skicka felrapporter samt diagnostik- och användningsdata automatiskt till Google och hjälp oss att förbättra funktioner och prestanda i Chrome och ChromeOS.</translation>
@@ -692,6 +713,7 @@ proxyservern fungerar. Om du inte tror att du bör använda en
 <translation id="8271379370373330993">Nästa steg är till för dig som är förälder. Du kan lämna tillbaka <ph name="DEVICE_TYPE" /> till barnet när konfigureringen av kontot är klar.</translation>
 <translation id="8274924778568117936">Stäng inte av eller stäng <ph name="DEVICE_TYPE" /> förrän uppdateringen har slutförts. <ph name="DEVICE_TYPE" /> startas om när installationen är slutförd.</translation>
 <translation id="8281886186245836920">Hoppa över</translation>
+<translation id="8286036467436129157">Logga in</translation>
 <translation id="8289509909262565712">Välkommen till <ph name="DEVICE_OS" /></translation>
 <translation id="8291942417224950075">För personligt bruk</translation>
 <translation id="8304383784961451596">Du har inte behörighet att använda den här enheten. Kontakta administratören om du vill ha behörighet att logga in, eller logga in med ett Google-konto som kontrolleras av Family Link.</translation>
@@ -703,6 +725,7 @@ proxyservern fungerar. Om du inte tror att du bör använda en
 <translation id="8401432541486058167">Ange den pinkod som är kopplad till ditt smartkort.</translation>
 <translation id="8408270600235826886">Du styr vilken data som delas med Google. Du kan när som helst ändra detta i inställningarna. Data används i enlighet med Googles <ph name="BEGIN_LINK" />integritetspolicy<ph name="END_LINK" />.</translation>
 <translation id="8413956290606243087">Vill du aktivera ChromeVox, den inbyggda skärmläsaren för ChromeOS?</translation>
+<translation id="8418845734693287262">Det gick inte att synkronisera data med ChromeOS eftersom inloggningsuppgifterna för kontot är inaktuella.</translation>
 <translation id="8425768983279799676">Du kan låsa upp enheten med pinkoden.</translation>
 <translation id="8428213095426709021">Inställningar</translation>
 <translation id="843173223122814223">Skapa bakgrunder med AI</translation>
@@ -742,10 +765,12 @@ proxyservern fungerar. Om du inte tror att du bör använda en
 <translation id="8794548468611058947">I stället för att ange lösenordet för Google-kontot när du loggar in kan du skapa en pinkod för denna <ph name="DEVICE_TYPE" /></translation>
 <translation id="8830779999439981481">Starta om för att tillämpa uppdateringarna</translation>
 <translation id="8830796635868321089">Det gick inte att genomföra uppdateringskontrollen med de aktuella proxyinställningarna. Justera dina <ph name="PROXY_SETTINGS_LINK_START" />proxyinställningar<ph name="PROXY_SETTINGS_LINK_END" />.</translation>
+<translation id="8833697763442816810">Chromium OS-system</translation>
 <translation id="8855977033756560989">Denna Chromebook Enterprise-enhet levereras med Chrome Enterprise Upgrade. Registrera enheten med ett konto i Google Administratörskonsol om du vill dra nytta av företagsfunktionerna.</translation>
 <translation id="885746075120788020">När du är inloggad med ditt Google-konto har du tillgång till dina sparade inställningar och din sparade aktivitet på alla ChromeOS-enheter. Du kan välja vad som ska synkroniseras i inställningarna.</translation>
 <translation id="8868333925931032127">Demoläget startas</translation>
 <translation id="8875221558267407626">Sammanfatta innehåll, förenkla komplicerat språk eller ställ frågor</translation>
+<translation id="8890569919834781711">Det gick inte att spara Chromium-data i Google-kontot med ChromiumOS på grund av ett inloggningsfel</translation>
 <translation id="8907701755790961703">Välj ett land</translation>
 <translation id="8913163265790894442">Konfigurera enkelt <ph name="DEVICE_TYPE" /> med telefonen. Du kan lägga till ditt wifi och ditt Google-konto utan att ange lösenorden manuellt.
         <ph name="BR" />
@@ -781,5 +806,6 @@ proxyservern fungerar. Om du inte tror att du bör använda en
 <translation id="951991426597076286">Godkänn inte</translation>
 <translation id="954749761428814584">Språk och inmatningsmetod</translation>
 <translation id="960987915827980018">Ca 1 timme kvar</translation>
+<translation id="973195869036269770">Det gick inte att spara Chrome-data i Google-kontot med ChromeOS eftersom inloggningsuppgifterna för kontot är inaktuella</translation>
 <translation id="995420352808264005">Välj typ av enhetsregistrering</translation>
 </translationbundle>

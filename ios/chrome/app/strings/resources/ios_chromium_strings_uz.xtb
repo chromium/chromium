@@ -57,6 +57,7 @@ Ayrim bukmarklar hisobingizdan oʻchirilmaguncha yangilari saqlanmaydi. Hozir hi
 <translation id="2027881372245801507">Takliflarni faolsizlantirish Chromiumning boshqa funksiyalar uchun sahifa sarlavhalari va URL manzillarini qayta ishlashini nazorat qilmaydi. Bu maʼlumotlarga ruxsatni <ph name="BEGIN_LINK" />sinxronizatsiya sozlamalari<ph name="END_LINK" /> orqali boshqarish mumkin.</translation>
 <translation id="2036929290919363111">Barcha qurilmalarda parollar va boshqalarni olish uchun bu sayt va Chromiumga Google hisobingizdan kiring</translation>
 <translation id="2042889939382983733">Chromium tarixini ochish</translation>
+<translation id="2054352566231434723">Tashqi havolalarni doim Chromiumda ochish.</translation>
 <translation id="2059365270911640413">Chromiumni sozlashni nihoyasiga yetkazing</translation>
 <translation id="2168108852149185974">Ba’zi kengaytmalar Chromium brauzerini ishdan chiqaradi. O‘chirilishi kerak bo‘lgan kengaytmalar:</translation>
 <translation id="2168593389981132306">Chromiumni yaxshilash</translation>
@@ -84,6 +85,7 @@ Ayrim bukmarklar hisobingizdan oʻchirilmaguncha yangilari saqlanmaydi. Hozir hi
 <translation id="2485774047568879945">Havolalarni oson ochish va ulashish uchun Chromiumni birlamchi brauzer deb belgilang</translation>
 <translation id="2512597191798760956">Chromium belgisini bosib turing va "Bosh ekranni tahrirlash" ustiga bosing</translation>
 <translation id="2517624234762908348">Chromium maʼlumotlaringizni sinxronlash</translation>
+<translation id="2519012503779379646">Ilovalar orasida tezroq va osonroq almashish uchun Chromiumni birlamchi brauzer sifatida belgilang.</translation>
 <translation id="2592940277904433508">Chromium yopilmasin</translation>
 <translation id="2601766165676560303">iPhone va iPad uchun Chromium mavzusi</translation>
 <translation id="2607609479243848905">Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, <ph name="BEGIN_LINK" />hisobingizda Chromium maʼlumotlarini oʻchiring<ph name="END_LINK" />.</translation>
@@ -188,6 +190,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chromium m
 <translation id="4985291216379576555">Oflayn, Chromium yangilanishlar chiqqanini tekshira olmadi</translation>
 <translation id="4996471330284142407">Oddiy, xavfsiz va har qachongidan tezkor Chromium brauzerida koʻplab imkoniyatlar.</translation>
 <translation id="4999538639245140991">Siz <ph name="SIGNOUT_MANAGED_DOMAIN" /> domenida boshqariladigan hisobdan chiqish arafasidasiz. Barcha Chromium maʼlumotlari ushbu qurilmadan tozalanadi, lekin Google hisobingizdagi axborotlar saqlanib qoladi.</translation>
+<translation id="5004986813285860899">Chromiumga bir zumda oʻting</translation>
 <translation id="5042011327527167688">“Chromiumda Google Xaritalar bilan ochish” ustiga bosing.</translation>
 <translation id="5044871537677053278">Chromium marshrut va mahalliy axborot berish uchun manzillarni Google Xaritalar yordamida aniqlaydi.</translation>
 <translation id="5048140766121299007">“<ph name="TEXT_OF_THE_SETTINGS_MENU_ITEM" />” sozlamalarida “Chromium” parametrini yoqing</translation>
@@ -201,6 +204,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chromium m
 <translation id="5224391634244552924">Hech qanday parol saqlanmagan. Chromium faqat saqlangan parollaringizni tekshira oladi.</translation>
 <translation id="5259423875997548710">Chromium orqali vizual qidiruv.</translation>
 <translation id="5284913972719948193">Chromiumda parollar, tarix, bukmarklar va kredit kartalardan foydalanish uchun maʼlumotlaringizni import qiling</translation>
+<translation id="5299421317003704533">Havolalarni bevosita Chromiumda oching.</translation>
 <translation id="5308226104666789935">Chromium yangilanishlar chiqqanini tekshira olmadi.</translation>
 <translation id="5311557153294205270">Kiritilgan URL manzillarni Chromium bukmarklariga kiritadi.</translation>
 <translation id="5383251701169024761">Boshqa ilovalarda saqlangan parollarni oson ochish uchun Chromium avtomatik kiritishini tanlang.</translation>
@@ -267,6 +271,7 @@ Bularni hisobga olish kerak:
 <translation id="6387994184698195448">Chromium foydali maslahatlari va boshqalarni olish.</translation>
 <translation id="6424492062988593837">Chromium ancha yaxshilandi! Yangi versiya mavjud.</translation>
 <translation id="6433172051771630690">Chromiumdan unumli foydalanish maslahatlari.</translation>
+<translation id="6458110851735461646">Sevimli Google xizmatlaringiz Chromium bilan yaxshiroq ishlaydi</translation>
 <translation id="65045991564554105">Chromium bukmarklarini koʻrish</translation>
 <translation id="6519797228806907665">Chromiumni iPhone bosh ekraniga mahkamlab, tezroq oching.</translation>
 <translation id="6538713818758208754">Chromiumda toʻlov usullari sozlamalari sahifasini ochadi.</translation>
@@ -356,6 +361,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="8602103377623855616">Chromium sahifasi</translation>
 <translation id="865600487977764604">Hisobingizga kirganingizda Chromium va boshqa Google ilovalaridan xavfsiz foydalanishingizni taʼminlaydi.</translation>
 <translation id="8663480472502753423">Chromium brauzerini yangilab boring</translation>
+<translation id="8671588626059602995">Barcha havolalar har doim Chromium brauzerida ochilishini sozlang.</translation>
 <translation id="8685813584220679697">Bu sayt va Chromium hisoblariga kiring.</translation>
 <translation id="8697693743327341604">Takliflarni tanlashingiz yoki rad etishingiz asosida Chromium kelgusida yanada mos va foydali maʼlumotlarni chiqarish uchun moslashib boradi.</translation>
 <translation id="869832267508702259">Internetni kezishda Gemini imkoniyatlaridan foydalanish uchun Chromiumni asosiy brauzer qilib belgilang</translation>

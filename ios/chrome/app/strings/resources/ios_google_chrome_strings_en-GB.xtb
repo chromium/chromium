@@ -83,6 +83,8 @@ Things to consider:
 <translation id="2574249610672786438">To see your tabs from wherever you use Chrome, sign in on all of your devices</translation>
 <translation id="2576431527583832481">Chrome just got better! A new version is available.</translation>
 <translation id="257708665678654955">Would you like Google Chrome to offer to translate <ph name="LANGUAGE_NAME" /> pages from this site next time?</translation>
+<translation id="2599258827968143948">Your Google favourites are better with Chrome</translation>
+<translation id="260980777626165320">Open external links in Chrome by default.</translation>
 <translation id="2668242166988961773">Search with voice in Chrome.</translation>
 <translation id="2703746758996815929">To get helpful Chrome tips, turn on notifications in your iOS settings.</translation>
 <translation id="2728851697704606655">Translate with Google Lens</translation>
@@ -111,6 +113,7 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="314782365035065913">Access Chrome faster from your Home Screen Dock</translation>
 <translation id="3167189358072330585">Your account does not work on Google Chrome. Please contact your domain administrator or use a regular Google Account to sign in.</translation>
 <translation id="322254490661677575">To use and save Chrome data in your Google Account, enter your passphrase.</translation>
+<translation id="3253082773078342494">Open links directly in Chrome.</translation>
 <translation id="3303503998967553377">Use Chrome actions on iOS</translation>
 <translation id="3348862487678490430">Add reading list item to Chrome</translation>
 <translation id="3350281376951945723">Open links faster when you set Chrome as default</translation>
@@ -160,6 +163,7 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="4693084815234024320">You're in Chrome Incognito</translation>
 <translation id="4713740144985377441">Return to Chrome to upload your file</translation>
 <translation id="4724297637870447613">Use Chrome everywhere</translation>
+<translation id="4733290155432110050">Jump straight to Chrome</translation>
 <translation id="4738647308035481133">Google Chrome page</translation>
 <translation id="4742795653798179840">Deleted Chrome data</translation>
 <translation id="4761869838909035636">Run Chrome Safety Check</translation>
@@ -267,6 +271,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="7038674195294813388">Open Default Apps settings in iOS, then tap on 'Browser App' and select Chrome.</translation>
 <translation id="7056826488869329999">Opens and Runs Safety Check in Chrome.</translation>
 <translation id="7061455974939528301">Press and hold the Chrome icon and click 'Edit home screen'</translation>
+<translation id="7067302528015227615">Set Chrome as default to make app transitions faster and easier.</translation>
 <translation id="7095110968493193530">To Google Password Manager for <ph name="EMAIL" /></translation>
 <translation id="7124339256045485976">Keep Chrome up to date</translation>
 <translation id="7135936755418321901">To share your location with websites, tap on Settings to let Chrome use your location.</translation>
@@ -278,6 +283,7 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
 <translation id="7200524487407690471">Chrome automatically runs Safety Check every day to keep you safe from data breaches, unsafe websites and more. You can find more about Safety Check in Settings.</translation>
 <translation id="7214019116829172458">Open Chrome Incognito tab</translation>
 <translation id="722167379782941918">Chrome recommends enhanced protection</translation>
+<translation id="722921700949937243">Ensure that all links always open in Chrome.</translation>
 <translation id="723787869754590019">Use Chrome for autofill</translation>
 <translation id="7261678641327190792">Chrome can't check your passwords</translation>
 <translation id="7272091023280308138">Open links directly in Chrome next time without copying URLs first.</translation>

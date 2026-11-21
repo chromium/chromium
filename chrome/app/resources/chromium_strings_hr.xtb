@@ -83,7 +83,6 @@
 <translation id="188102464690227119">Gumb Pretraživanje na bočnoj ploči na alatnoj traci ima novu ikonu. Kliknite ga kako biste postavljali pitanja dok pregledavate pomoću Pretraživanja na bočnoj ploči.</translation>
 <translation id="1896836275755235458">Chromium štedi bateriju ograničavajući pozadinsku aktivnost i vizualne efekte, kao što je glatko pomicanje i broj sličica u sekundi videozapisa. <ph name="BEGIN_LINK" />Saznajte više o štednji energije<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromium Updater Service</translation>
-<translation id="1911763535808217981">Ako isključite tu opciju, možete se prijaviti na Googleove web-lokacije kao što je Gmail bez prijavljivanja u Chromium</translation>
 <translation id="1929939181775079593">Chromium ne reagira. Ponovo pokrenuti sada?</translation>
 <translation id="1933341829955786215">Vaša organizacija <ph name="MANAGER" /> zahtijeva da se prijavite u Chromium</translation>
 <translation id="193439633299369377">Potrebno je ponovo pokrenuti Chromium OS kako bi se ažuriranje primijenilo.</translation>
@@ -130,7 +129,6 @@
 <translation id="2361918034042471035">Proširenje <ph name="EXTENSION_NAME" /> traži da se prijavite u Chromium</translation>
 <translation id="236943522426971115">Onemogući rad Chromiuma u pozadini za aplikacije</translation>
 <translation id="2374216753258219393">Da biste upotrebljavali ovo proširenje kao <ph name="USER_EMAIL_ADDRESS" />, prijavite se u Chromium.</translation>
-<translation id="2384373936468275798">Chromium OS nije mogao sinkronizirati podatke vašeg računa jer su podaci prijave na račun zastarjeli.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Jedno ili više Chromiumovih proširenja pristupalo je jednom HID uređaju}=1{Jedno ili više Chromiumovih proširenja pristupa jednom HID uređaju}one{Jedno ili više Chromiumovih proširenja pristupa # HID uređaju}few{Jedno ili više Chromiumovih proširenja pristupa # HID uređaja}other{Jedno ili više Chromiumovih proširenja pristupa # HID uređaja}}</translation>
 <translation id="2401032172288869980">Chromium treba dopuštenje za fotoaparat i mikrofon za ovu web-lokaciju</translation>
 <translation id="2403703063067034158">Pogreška pokretanja: trenutačno je u tijeku drugi primjerak postavljanja. Pokušajte ponovno kasnije.</translation>
@@ -172,7 +170,6 @@
 <translation id="2819844767470613567">Upozorenje: Chromium ne može onemogućiti proširenjima da bilježe vašu povijest pregledavanja. Da biste onemogućili to proširenje u izoliranom načinu rada, poništite odabir te opcije.</translation>
 <translation id="2841525013647267359">Jezik izvornika</translation>
 <translation id="2846251086934905009">Pogreška pri instalaciji: program za instalaciju nije dovršio radnju. Instalacija je prekinuta.</translation>
-<translation id="2847479871509788944">Ukloni iz Chromiuma...</translation>
 <translation id="2850691299438350830">Štiti vas na Chromiumu i može se upotrebljavati za poboljšanje sigurnosti u drugim Googleovim aplikacijama kad ste prijavljeni.</translation>
 <translation id="2885378588091291677">Upravitelj zadataka</translation>
 <translation id="2898830646167954300">Vratite se na neupravljanog Gemini asistenta</translation>
@@ -383,7 +380,6 @@
 <translation id="5346389065299425353">Produbite pretraživanje dodavanjem više kartica, datoteka i alata</translation>
 <translation id="5352264705793813212">Chromium je pronašao neke sigurnosne preporuke za vaš pregled</translation>
 <translation id="5352361688875342522">Ostali profili na Chromiumu</translation>
-<translation id="535243042947607642">Chromium OS nije mogao spremiti podatke iz Chromiuma na vaš Google račun jer su podaci za prijavu na račun zastarjeli</translation>
 <translation id="5368118228313795342">Dodatni kôd: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Da biste dobili personalizaciju, uključite Chromium u aktivnost na webu i u aplikacijama</translation>
 <translation id="5382964351116519680">Otvorite pretraživanje pomoću Chromiuma</translation>
@@ -398,7 +394,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium preporučuje pauziranje kartice koja usporava preglednik}one{Chromium preporučuje pauziranje kartica koje usporavaju preglednik}few{Chromium preporučuje pauziranje kartica koje usporavaju preglednik}other{Chromium preporučuje pauziranje kartica koje usporavaju preglednik}}</translation>
 <translation id="5473971139929175403">Chromium možda neće ispravno raditi jer više nije podržan na toj distribuciji Linuxa</translation>
 <translation id="5475924890392386523">Chromium je blokirao ovo preuzimanje jer ta datoteka može naštetiti vašim osobnim računima i računima na društvenim mrežama</translation>
-<translation id="549669000822060376">Pričekajte da Chromium instalira najnovija ažuriranja sustava.</translation>
 <translation id="5496810170689441661">Chromium pokušava urediti zaporke. Upišite svoju zaporku za Windows da biste to dopustili.</translation>
 <translation id="5524890928877629608">gornji lijevi kut područja za pretraživanje: lijevo <ph name="LEFT" />%, vrh <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">Otvori PDF-ove u Chromiumu</translation>
@@ -493,7 +488,6 @@ Ako ova stranica ne funkcionira ispravno, dopustite optimizaciju.</translation>
 <translation id="6390800440335263989">Da biste nastavili, prijavite se u Chromium kao <ph name="EMAIL" />. Time se omogućuje primjena pravila vaše organizacije.</translation>
 <translation id="6400112897226594999">Logotip Chromiuma na zaslonu računala.</translation>
 <translation id="6403826409255603130">Chromium je web-preglednik koji munjevitom brzinom prikazuje web-stranice i aplikacije. Brz je, stabilan i jednostavan za upotrebu. Pregledavajte web sigurnije jer je zaštita od zlonamjernog softvera i krađe identiteta ugrađena u Chromium.</translation>
-<translation id="6414624068245092115">Da biste uvijek mogli upotrebljavati i spremati podatke iz Chromiuma na svojem Google računu, potvrdite svoj identitet</translation>
 <translation id="642132557830635295">Chromium se pokreće brže, a značajke koje upotrebljavaju JavaScript trebale bi funkcionirati kako je predviđeno</translation>
 <translation id="6434631832954028336">Ponovno otvorite ploču Pretraživanja</translation>
 <translation id="6436260184216827876">Pretraživanje slika nije dostupno. Pokušajte ponovo kasnije.</translation>
@@ -524,7 +518,6 @@ Ako ova stranica ne funkcionira ispravno, dopustite optimizaciju.</translation>
 <translation id="665732753414869868">Chromium treba dopuštenje za fotoaparat kako bi mogao izraditi 3D kartu vašeg okruženja</translation>
 <translation id="6669284030132180248">Ako oznake spremate i na Google račun, cijene proizvoda možete pratiti u Chromiumu i primati obavijesti kad cijena padne</translation>
 <translation id="6676384891291319759">Pristup Internetu</translation>
-<translation id="668175097507315160">Chromium OS nije mogao sinkronizirati vaše podatke zbog pogreške prilikom prijave.</translation>
 <translation id="6691132793308828750">Uklonite podatke ove aplikacije iz Chromiuma</translation>
 <translation id="6709350901466051922">Chromium treba dopuštenje za mikrofon za ovu web-lokaciju</translation>
 <translation id="6712881677154121168">Pogreška pri preuzimanju: <ph name="DOWNLOAD_ERROR" /></translation>
@@ -682,7 +675,6 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="8107060931443639922">Sljedeći put kad otvorite Chromium na uređaju <ph name="DEVICE_TYPE" />, prikazat će vam se upit za omogućivanje upozorenja o praćenju cijena.</translation>
 <translation id="8118331347066725040">Pošaljite povratne informacije za pretraživanje pomoću Objektiva</translation>
 <translation id="8130609355518033382">Prilagodite Chromium sebi</translation>
-<translation id="8133124826068723441">Chromium OS nije mogao sinkronizirati vaše podatke jer sinkronizacija nije dostupna za vašu domenu.</translation>
 <translation id="813913629614996137">Pokretanje...</translation>
 <translation id="8158143604667288086">Možete prikvačiti Pretraživanje u Chromeu kako biste postavljali pitanja dok pregledavate</translation>
 <translation id="8161503455832158203">Otvorite Gemini u Chromiumu pomoću tipkovnog prečaca.</translation>
@@ -749,11 +741,9 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="8816416449795340678">Podijelite ovaj dokument s Geminijem u Chromiumu da biste dobili brzi pregled i postavili dodatna pitanja</translation>
 <translation id="8818550178040858407">Prijaviti se u Chromium?</translation>
 <translation id="8826492472752484139">Kliknite Upravitelj zaporki</translation>
-<translation id="8833697763442816810">Sustav Chromium OS</translation>
 <translation id="8852026904190808918">Taj se jezik koristi za prikazivanje izbornika, postavki, upozorenja i drugog teksta u Chromiumu</translation>
 <translation id="8862326446509486874">Nemate odgovarajuća prava za instaliranje na razini sustava. Pokušajte ponovno pokrenuti program za instalaciju kao administrator.</translation>
 <translation id="8876044221123442390">Dodavanje profila u Chromiumu</translation>
-<translation id="8890569919834781711">Chromium OS nije mogao spremiti podatke iz Chromiuma na vaš Google račun zbog pogreške prilikom prijave</translation>
 <translation id="8891709362986793894">Vaša organizacija zahtijeva da se prijavite u Chromium</translation>
 <translation id="8906384069222226849">Chromium zahtijeva verziju 1809 ili noviju verziju sustava Windows 10.</translation>
 <translation id="8907580949721785412">Chromium pokušava prikazati zaporke. Upišite svoju zaporku za Windows da biste to dopustili.</translation>

@@ -1115,6 +1115,7 @@ Jeśli nie korzystasz już z samouczka, użyj czytnika ChromeVox, by przejść 
 <translation id="8276439074553447000">Przejdź do poprzedniego elementu, który można zaznaczyć</translation>
 <translation id="8279039817939141096">Naciśnij klawisz na klawiaturze QWERTY lub na monitorze brajlowskim albo wykonaj gest dotykowy, aby poznać jego funkcję. Aby wyjść, naciśnij Ctrl + W lub spację + Z, przesuń dwoma palcami w lewo albo naciśnij Escape.</translation>
 <translation id="8283603667300770666">Następne pole formularza</translation>
+<translation id="8304225988857172661">Nie udało się wczytać japońskiego alfabetu Braille’a, więc obsługa brajla jest wyłączona. Aby spróbować ponownie, zmień tabelę brajlowską w ustawieniach ChromeVox.</translation>
 <translation id="8310185481635255431">Nie ma następnego linku</translation>
 <translation id="831207808878314375">Definicja</translation>
 <translation id="8313653172105209786">dir</translation>

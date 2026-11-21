@@ -83,7 +83,6 @@
 <translation id="188102464690227119">Yläpalkin "Sivupaneelin Haku" ‑painikkeella on uusi kuvake. Klikkaa sitä esittääksesi kysymyksiä selaamisen aikana sivupaneelin Haussa.</translation>
 <translation id="1896836275755235458">Chromium säästää akkua rajoittamalla taustatoimintaa ja visuaalisia tehosteita, esim. sujuvaa vierittämistä ja videon kuvanopeutta. <ph name="BEGIN_LINK" />Lue lisää Virransäästöstä<ph name="END_LINK" /></translation>
 <translation id="1900969832270057921">Chromiumin päivityspalvelu</translation>
-<translation id="1911763535808217981">Poistamalla tämän käytöstä voit kirjautua Google-sivustoille, esim. Gmailiin, kirjautumatta Chromiumiin.</translation>
 <translation id="1929939181775079593">Chromium ei vastaa. Käynnistetäänkö uudelleen?</translation>
 <translation id="1933341829955786215">Organisaatiosi (<ph name="MANAGER" />) edellyttää, että kirjaudut Chromiumiin</translation>
 <translation id="193439633299369377">Chromium-käyttöjärjestelmä täytyy käynnistää uudelleen, jotta päivitys voidaan ottaa käyttöön.</translation>
@@ -130,7 +129,6 @@
 <translation id="2361918034042471035">Laajennus "<ph name="EXTENSION_NAME" />" haluaa, että kirjaudut Chromiumiin</translation>
 <translation id="236943522426971115">Poista käytöstä Chromiumin taustalla toimiminen sovelluksissa</translation>
 <translation id="2374216753258219393">Jos haluat käyttää tätä laajennusta käyttäjänä <ph name="USER_EMAIL_ADDRESS" />, kirjaudu sisään Chromiumiin.</translation>
-<translation id="2384373936468275798">Chromium-käyttöjärjestelmä ei voi synkronoida tietoja, sillä tilin kirjautumistiedot ovat vanhentuneet.</translation>
 <translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Yhdellä tai useammalla Chromium-laajennuksella oli pääsy yhdelle HID-laitteelle}=1{Yhdellä tai useammalla Chromium-laajennuksella on pääsy yhdelle HID-laitteelle}other{Yhdellä tai useammalla Chromium-laajennuksella on pääsy # HID-laitteelle}}</translation>
 <translation id="2401032172288869980">Chromium tarvitsee kameran ja mikrofonin luvan tällä sivustolla</translation>
 <translation id="2403703063067034158">Käynnistysvirhe: toinen käyttöönotto on käynnissä, yritä myöhemmin uudelleen.</translation>
@@ -172,7 +170,6 @@
 <translation id="2819844767470613567">Varoitus: Chromium ei voi estää laajennuksia tallentamasta selaushistoriaa. Voit estää tämän laajennuksen käytön eristetyssä tilassa poistamalla tämän valinnan.</translation>
 <translation id="2841525013647267359">Käännä kielestä</translation>
 <translation id="2846251086934905009">Asennusvirhe: Asennusohjelmaa ei suoritettu loppuun. Asennus on keskeytetty.</translation>
-<translation id="2847479871509788944">Poista Chromiumista…</translation>
 <translation id="2850691299438350830">Pitää sinut turvassa Chromiumissa ja voi parantaa suojaustasi muissa Google-sovelluksissa, kun olet sisäänkirjautuneena</translation>
 <translation id="2885378588091291677">Tehtävänhallinta</translation>
 <translation id="2898830646167954300">Vaihda takaisin hallinnoimattomaan Gemini-avustajaan</translation>
@@ -383,7 +380,6 @@
 <translation id="5346389065299425353">Tarkenna hakua lisäämällä useita välilehtiä, tiedostoja ja työkaluja</translation>
 <translation id="5352264705793813212">Chromium on löytänyt turvallisuussuosituksia, jotka sinun täytyy tarkistaa</translation>
 <translation id="5352361688875342522">Muut Chromium-profiilit</translation>
-<translation id="535243042947607642">ChromiumOS ei voinut tallentaa Chromium-dataa Google-tilillesi, koska tilin kirjautumistiedot ovat vanhentuneet</translation>
 <translation id="5368118228313795342">Lisäkoodi: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5377622451696208284">Voit käyttää personointia, kun lisäät Chromiumin verkko- ja sovellustoimintaan</translation>
 <translation id="5382964351116519680">Avaa haku Chromiumilla</translation>
@@ -398,7 +394,6 @@
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium suosittelee selainta hidastavan välilehden keskeyttämistä}other{Chromium suosittelee selainta hidastavien välilehtien keskeyttämistä}}</translation>
 <translation id="5473971139929175403">Chromium ei ehkä toimi oikein, koska sen käyttöä tällä Linux-jakelulla ei enää tueta.</translation>
 <translation id="5475924890392386523">Chromium on estänyt tämän latauksen, koska tiedosto voi vahingoittaa some‐ ja henkilökohtaisia tilejäsi</translation>
-<translation id="549669000822060376">Odota hetki, Chromium asentaa uusimpia järjestelmäpäivityksiä.</translation>
 <translation id="5496810170689441661">Chromium yrittää muuttaa salasanoja. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="5524890928877629608">hakualueen vasen yläkulma: vasen <ph name="LEFT" /> %, ylä <ph name="TOP" /> %</translation>
 <translation id="5527463683072221100">Avaa PDF-tiedostot Chromiumissa</translation>
@@ -493,7 +488,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="6390800440335263989">Jatka kirjautumalla Chromiumiin käyttäjänä <ph name="EMAIL" />. Näin varmistat, että organisaatiosi käytännöt ovat käytössä.</translation>
 <translation id="6400112897226594999">Chromium-logo tietokoneen näytöllä.</translation>
 <translation id="6403826409255603130">Chromium on selain, jolla verkkosivut ja sovellukset toimivat salamannopeasti. Se on nopea, vakaa ja helppokäyttöinen. Chromiumin sisäänrakennettu haittaohjelma- ja tietojenkalastelusuojaus tekevät verkkoselauksesta turvallisempaa.</translation>
-<translation id="6414624068245092115">Vahvista henkilöllisyytesi, jotta voit aina käyttää ja tallentaa Chromium-dataa Google-tililläsi</translation>
 <translation id="642132557830635295">Chromium toimii nopeammin ja JavaScriptiä käyttävien ominaisuuksien pitäisi toimia suunnitellusti</translation>
 <translation id="6434631832954028336">Avaa Hakupaneeli uudelleen</translation>
 <translation id="6436260184216827876">Kuvahaku ei ole käytettävissä. Yritä myöhemmin uudelleen.</translation>
@@ -524,7 +518,6 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="665732753414869868">Chromium tarvitsee kameran luvan, jotta se voi luoda 3D-kartan ympäristöstäsi</translation>
 <translation id="6669284030132180248">Jos tallennat kirjanmerkit myös Google-tilillesi, voit seurata tuotteiden hintoja Chromiumissa ja saada ilmoituksen, kun hinta laskee</translation>
 <translation id="6676384891291319759">Käytä internetiä</translation>
-<translation id="668175097507315160">Chromium-käyttöjärjestelmä ei voi synkronoida dataa kirjautumisvirheen vuoksi.</translation>
 <translation id="6691132793308828750">Poista tämän sovelluksen data Chromiumista</translation>
 <translation id="6709350901466051922">Chromium tarvitsee mikrofonin luvan tällä sivustolla</translation>
 <translation id="6712881677154121168">Latausvirhe: <ph name="DOWNLOAD_ERROR" />.</translation>
@@ -682,7 +675,6 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8107060931443639922">Seuraavan kerran kun avaat Chromiumin laitteella (<ph name="DEVICE_TYPE" />), näet kehotteen ottaa käyttöön hintaseurantailmoitukset.</translation>
 <translation id="8118331347066725040">Lähetä palautetta Lensillä hakemisesta</translation>
 <translation id="8130609355518033382">Yksilöi Chromiumia</translation>
-<translation id="8133124826068723441">Chromium-käyttöjärjestelmä ei voi synkronoida dataa, koska synkronointi ei ole käytettävissä verkkotunnuksessasi.</translation>
 <translation id="813913629614996137">Alustetaan…</translation>
 <translation id="8158143604667288086">Voit kiinnittää Haun Chromessa esittääksesi kysymyksiä selaamisen aikana</translation>
 <translation id="8161503455832158203">Avaa Gemini in Chromium pikanäppäimellä.</translation>
@@ -749,11 +741,9 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8816416449795340678">Jaa tämä dokumentti Gemini in Chromiumille, niin saat nopean yleiskatsauksen ja voit esittää jatkokysymyksiä</translation>
 <translation id="8818550178040858407">Haluatko kirjautua Chromiumiin?</translation>
 <translation id="8826492472752484139">Klikkaa Salasanat</translation>
-<translation id="8833697763442816810">Chromium-käyttöjärjestelmä</translation>
 <translation id="8852026904190808918">Chromiumin valikot, asetukset, ilmoitukset ja muu teksti näytetään tällä kielellä</translation>
 <translation id="8862326446509486874">Sinulla ei ole käyttöoikeuksia järjestelmätason asennukseen. Kokeile asennusohjelman suorittamista uudelleen järjestelmänvalvojana.</translation>
 <translation id="8876044221123442390">Lisää Chromium-profiili</translation>
-<translation id="8890569919834781711">ChromiumOS ei voinut tallentaa Chromium-dataa Google-tilillesi kirjautumisvirheen vuoksi</translation>
 <translation id="8891709362986793894">Organisaatiosi edellyttää, että kirjaudut Chromiumiin</translation>
 <translation id="8906384069222226849">Chromium edellyttää Windows 10:n versiota 1809 tai uudempaa.</translation>
 <translation id="8907580949721785412">Chromium yrittää näyttää salasanat. Salli tämä kirjoittamalla Windows-salasanasi.</translation>

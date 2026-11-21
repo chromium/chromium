@@ -623,7 +623,7 @@
 <translation id="2996108796702395498">Số sê-ri thiết bị của bạn là <ph name="SERIAL_NUMBER" />. Số này có thể được dùng để giúp kích hoạt dịch vụ.</translation>
 <translation id="3000461861112256445">Đơn âm</translation>
 <translation id="3001144475369593262">Tài khoản con</translation>
-<translation id="3001614333383288217">{COUNT,plural, =0{Không có phím nào được tuỳ chỉnh}=1{Có 1 phím được tuỳ chỉnh}other{Có {COUNT} phím được tuỳ chỉnh}}</translation>
+<translation id="3001614333383288217">{COUNT,plural, =0{Không có phím nào được tuỳ chỉnh}=1{Có 1 phím được tuỳ chỉnh}one{{COUNT} customized keys}other{Có {COUNT} phím được tuỳ chỉnh}}</translation>
 <translation id="3003144360685731741">Mạng ưa thích</translation>
 <translation id="3003967365858406397"><ph name="PHONE_NAME" /> của bạn sẽ tạo kết nối Wi-Fi riêng tư.</translation>
 <translation id="3004385386820284928">Tuỳ chỉnh các phím trên bàn phím</translation>
@@ -1027,7 +1027,7 @@
 <translation id="4297813521149011456">Xoay màn hình</translation>
 <translation id="4307992518367153382">Cơ bản</translation>
 <translation id="4310139701823742692">Tệp có định dạng sai. Hãy kiểm tra tệp PPD rồi thử lại.</translation>
-<translation id="4312701113286993760">{COUNT,plural, =1{1 Tài khoản Google}other{<ph name="EXTRA_ACCOUNTS" /> Tài khoản Google}}</translation>
+<translation id="4312701113286993760">{COUNT,plural, =1{1 Tài khoản Google}one{<ph name="EXTRA_ACCOUNTS" /> Google Accounts}other{<ph name="EXTRA_ACCOUNTS" /> Tài khoản Google}}</translation>
 <translation id="4314497418046265427">Làm việc năng suất hơn khi kết nối điện thoại với <ph name="DEVICE_TYPE" /></translation>
 <translation id="4314561087119792062">Thêm tên mới cho Điểm truy cập</translation>
 <translation id="4314815835985389558">Quản lý dữ liệu đồng bộ hóa</translation>
@@ -1378,7 +1378,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="5476957746413745956">Điều chỉnh tốc độ riêng cho từng hướng</translation>
 <translation id="5477089831058413614">Định cấu hình điểm phát sóng <ph name="DEVICE_TYPE" /></translation>
 <translation id="5481941284378890518">Thêm máy in lân cận</translation>
-<translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> yêu cầu bạn sao lưu dữ liệu và trả lại chiếc <ph name="DEVICE_TYPE" /> này ngay hôm nay. <ph name="LINK_BEGIN" />Xem thông tin chi tiết<ph name="LINK_END" />}other{<ph name="MANAGER" /> yêu cầu bạn sao lưu dữ liệu và trả lại chiếc <ph name="DEVICE_TYPE" /> này trong vòng {NUM_DAYS} ngày. <ph name="LINK_BEGIN" />Xem thông tin chi tiết<ph name="LINK_END" />}}</translation>
+<translation id="5484772771923374861">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> yêu cầu bạn sao lưu dữ liệu và trả lại chiếc <ph name="DEVICE_TYPE" /> này ngay hôm nay. <ph name="LINK_BEGIN" />Xem thông tin chi tiết<ph name="LINK_END" />}one{<ph name="MANAGER" /> requires you to back up your data and return this <ph name="DEVICE_TYPE" /> within {NUM_DAYS} days. <ph name="LINK_BEGIN" />See details<ph name="LINK_END" />}other{<ph name="MANAGER" /> yêu cầu bạn sao lưu dữ liệu và trả lại chiếc <ph name="DEVICE_TYPE" /> này trong vòng {NUM_DAYS} ngày. <ph name="LINK_BEGIN" />Xem thông tin chi tiết<ph name="LINK_END" />}}</translation>
 <translation id="5487460042548760727">Đổi tên hồ sơ thành <ph name="PROFILE_NAME" /></translation>
 <translation id="5490798133083738649">Cho phép Linux sử dụng micrô của bạn</translation>
 <translation id="5493455553805432330">Xoá</translation>
@@ -1997,7 +1997,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (chủ sở hữu)</translation>
 <translation id="7648048654005891115">Kiểu sơ đồ bàn phím</translation>
 <translation id="7649070708921625228">Trợ giúp</translation>
-<translation id="7650582458329409456">{COUNT,plural, =1{Đã thiết lập 1 vân tay}other{Đã thiết lập {COUNT} vân tay}}</translation>
+<translation id="7650582458329409456">{COUNT,plural, =1{Đã thiết lập 1 vân tay}one{{COUNT} fingerprints set up}other{Đã thiết lập {COUNT} vân tay}}</translation>
 <translation id="7650677314924139716">Chế độ sử dụng dữ liệu hiện tại là Chỉ Wi-Fi</translation>
 <translation id="7651400349472467012">Có điểm phát sóng tức thì</translation>
 <translation id="7651784568388208829">Tiếp tục công việc trong Trung tâm điều khiển điện thoại</translation>
