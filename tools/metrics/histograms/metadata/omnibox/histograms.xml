@@ -4743,38 +4743,6 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
-<histogram
-    name="Omnibox.SuggestionUsed.ResumeJourney.ClusterKeywordType.{ClusterKeywordTypeLabel}.CTR"
-    enum="BooleanSelected" expires_after="2023-12-10">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <summary>
-    Emitted when the user uses the omnibox to go somewhere AND the &quot;Resume
-    Journey&quot; chip triggered by {ClusterKeywordTypeLabel} was offered in any
-    position.
-
-    This metric records &quot;Selected&quot; if the offered action chip was
-    selected, and records &quot;Not Selected&quot; if the offered action chip
-    was not selected.
-
-    Therefore the &quot;Selected&quot; bucket proportion is the CTR of the
-    action chip. The count of this bucket matches the {ClusterKeywordTypeLabel}
-    bucket of Omnibox.SuggestionUsed.ResumeJourney.ClusterKeywordType.
-
-    The total count of both buckets is how many times we've offered the chip
-    triggered by {ClusterKeywordTypeLabel} in total, and matches the
-    {ClusterKeywordTypeLabel} bucket of
-    Omnibox.ResumeJourneyShown.ClusterKeywordType.
-  </summary>
-  <token key="ClusterKeywordTypeLabel">
-    <variant name="Entity"/>
-    <variant name="EntityAlias"/>
-    <variant name="EntityCategory"/>
-    <variant name="SearchTerms"/>
-    <variant name="Unknown"/>
-  </token>
-</histogram>
-
 <histogram name="Omnibox.SuggestionUsed.RichAutocompletion"
     enum="OmniboxRichAutocompletionType" expires_after="2027-03-21">
   <owner>manukh@chromium.org</owner>

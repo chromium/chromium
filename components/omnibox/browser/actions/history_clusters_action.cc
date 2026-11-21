@@ -6,14 +6,12 @@
 
 #include <algorithm>
 #include <string>
-#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/escape.h"
-#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_util.h"
@@ -31,27 +29,6 @@
 #endif
 
 namespace history_clusters {
-
-namespace {
-
-// A template function for recording enum metrics for shown and used journey
-// chips as well as their CTR metrics.
-template <class EnumT>
-void RecordShownUsedEnumAndCtrMetrics(std::string_view metric_name,
-                                      EnumT val,
-                                      std::string_view label,
-                                      bool executed) {
-  base::UmaHistogramEnumeration(
-      base::StrCat({"Omnibox.ResumeJourneyShown.", metric_name}), val);
-
-  // Record the CTR metric.
-  std::string ctr_metric_name =
-      base::StrCat({"Omnibox.SuggestionUsed.ResumeJourney.", metric_name, ".",
-                    label, ".CTR"});
-  base::UmaHistogramBoolean(ctr_metric_name, executed);
-}
-
-}  // namespace
 
 int TopRelevance(std::vector<AutocompleteMatch>::const_iterator matches_begin,
                  std::vector<AutocompleteMatch>::const_iterator matches_end,
@@ -106,11 +83,9 @@ void HistoryClustersAction::RecordActionShown(size_t position,
         AutocompleteResult::kMaxAutocompletePositionValue);
   }
 
-  // Record cluster keyword type UMA metrics.
-  RecordShownUsedEnumAndCtrMetrics<
-      history::ClusterKeywordData::ClusterKeywordType>(
-      "ClusterKeywordType", matched_keyword_data_.type,
-      matched_keyword_data_.GetKeywordTypeLabel(), executed);
+  // Record cluster keyword type UMA metric.
+  base::UmaHistogramEnumeration("Omnibox.ResumeJourneyShown.ClusterKeywordType",
+                                matched_keyword_data_.type);
 }
 
 void HistoryClustersAction::Execute(ExecutionContext& context) const {

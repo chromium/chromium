@@ -1186,13 +1186,6 @@ struct ClusterKeywordData {
   // type.
   void MaybeUpdateKeywordType(ClusterKeywordType other_type);
 
-  // Returns a keyword type label.
-  // Only used for logging the UMA metric:
-  //   Omnibox.SuggestionUsed.ResumeJourney.ClusterKeywordType.*.CTR.
-  //
-  // crbug.com/1335975: Remove this method when we remove the histograms.
-  std::string GetKeywordTypeLabel() const;
-
   ClusterKeywordType type = ClusterKeywordData::kUnknown;
 
   // A floating point score describing how important this keyword is to the
