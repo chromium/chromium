@@ -173,7 +173,7 @@ void MoveTabGroupToBrowser(const TabGroup* source_tab_group,
   std::set<Browser*> browsers = browser_list->BrowsersOfType(browser_types);
 
   // Retrieve the `source_browser`.
-  Browser* source_browser;
+  Browser* source_browser = nullptr;
   for (Browser* browser : browsers) {
     WebStateList* web_state_list = browser->GetWebStateList();
     if (web_state_list->ContainsGroup(source_tab_group)) {
