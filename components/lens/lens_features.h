@@ -270,19 +270,6 @@ extern std::string GetHomepageURLForLens();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetEnableLensHtmlRedirectFix();
 
-// Returns whether the Search Image button in the Chrome Screenshot Sharing
-// feature is enabled
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsLensInScreenshotSharingEnabled();
-
-// The URL for the Lens ping.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern std::string GetLensPingURL();
-
-// Returns whether or not the Lens ping should be done sequentially.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetLensPingIsSequential();
-
 // Returns whether to issue Lens preconnect requests when the
 // context menu item is shown.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -437,16 +424,6 @@ extern bool UseOauthForLensOverlayRequests();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlayClusterInfoLifetimeSeconds();
 
-// Returns whether to include the search context with text-only Lens Overlay
-// requests. This is sent in the video params urlparam.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool UseVideoContextForTextOnlyLensOverlayRequests();
-
-// Returns whether to include the search context with text-only Lens Overlay
-// requests. This is sent in the video params urlparam.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool UseVideoContextForMultimodalLensOverlayRequests();
-
 // Returns the finch configured endpoint URL for the cluster info request.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern std::string GetLensOverlayClusterInfoEndpointUrl();
@@ -502,14 +479,6 @@ extern bool UseInnerTextAsContext();
 // UseUpdatedContextFields enabled when combined with other page content types.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseApcAsContext();
-
-// Returns whether to include the page URL in the page content upload request.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool SendPageUrlForContextualization();
-
-// Returns whether to include the page title in the page content upload request.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool SendPageTitleForContextualization();
 
 // The timeout set for page content upload requests in milliseconds.
 COMPONENT_EXPORT(LENS_FEATURES)
