@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/i18n/message_formatter.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -296,24 +297,36 @@ OmniboxContextMenuController::OmniboxContextMenuController(
       web_contents_(web_contents->GetWeakPtr()),
       contextual_searchbox_handler_(contextual_searchbox_handler) {
   menu_model_ = std::make_unique<TabSimpleMenuModel>(this);
-  auto* contextual_searchbox_handler_ptr = GetContextualSearchboxHandler();
-  if (contextual_searchbox_handler_ptr &&
-      base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)) {
-    // Pre-populate `input_state_` synchronously from the cached model state
-    // so dynamic items like recent tabs are available during initial menu
-    // build. Otherwise, menu will not have tabs.
-    if (contextual_searchbox_handler_ptr->input_state_model()) {
-      input_state_ = contextual_searchbox_handler_ptr->input_state_model()
-                         ->GetInputState();
-      input_state_subscription_ =
-          contextual_searchbox_handler_ptr->input_state_model()->Subscribe(
-              base::BindRepeating(
-                  &OmniboxContextMenuController::OnInputStateChanged,
-                  weak_ptr_factory_.GetWeakPtr()));
+  if (base::FeatureList::IsEnabled(omnibox::kAimUsePecApi)) {
+    ContextualSearchboxHandler* contextual_searchbox_handler_ptr =
+        contextual_searchbox_handler_
+            ? contextual_searchbox_handler_.get()
+            : GetContextualSearchboxHandler(web_contents_.get());
+    // The AI Mode page binds its handler once it loads, which may not have
+    // happened yet if opening this menu created the page. Read the model that
+    // handler will use, so the menu has its tabs, inputs and tools now.
+    contextual_search::InputStateModel* input_state_model = nullptr;
+    if (contextual_searchbox_handler_ptr) {
+      input_state_model = contextual_searchbox_handler_ptr->input_state_model();
+    } else if (OmniboxPopupUI* omnibox_popup_ui =
+                   GetOmniboxPopupUI(web_contents_.get())) {
+      input_state_model = omnibox_popup_ui->GetComposeboxInputStateModel();
     }
-    contextual_searchbox_handler_ptr->GetInputState(
-        base::BindOnce(&OmniboxContextMenuController::OnGetInputState,
-                       weak_ptr_factory_.GetWeakPtr()));
+    if (input_state_model) {
+      // Pre-populate `input_state_` synchronously from the cached model state
+      // so dynamic items like recent tabs are available during initial menu
+      // build. Otherwise, menu will not have tabs.
+      input_state_ = input_state_model->GetInputState();
+      input_state_subscription_ =
+          input_state_model->Subscribe(base::BindRepeating(
+              &OmniboxContextMenuController::OnInputStateChanged,
+              weak_ptr_factory_.GetWeakPtr()));
+    }
+    if (contextual_searchbox_handler_ptr) {
+      contextual_searchbox_handler_ptr->GetInputState(
+          base::BindOnce(&OmniboxContextMenuController::OnGetInputState,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
   }
   // TODO(crbug.com/558703434): Avoid redundant BuildMenu() call if
   // GetInputState() already executed synchronously during construction.

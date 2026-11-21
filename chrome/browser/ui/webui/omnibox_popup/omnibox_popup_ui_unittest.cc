@@ -26,8 +26,10 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/contextual_search/contextual_search_service.h"
+#include "components/contextual_search/input_state_model.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_features.h"
@@ -239,6 +241,47 @@ TEST_F(OmniboxPopupUITest, CreatesContextualSessionLazily) {
 
   EXPECT_TRUE(omnibox_popup_ui->GetOrCreateContextualSessionHandle());
   EXPECT_TRUE(omnibox_popup_ui->HasContextualSessionHandleForTesting());
+}
+
+class OmniboxPopupUIDynamicAimFulfillmentTest
+    : public OmniboxPopupUITest,
+      public testing::WithParamInterface<bool> {
+ public:
+  OmniboxPopupUIDynamicAimFulfillmentTest() {
+    if (GetParam()) {
+      feature_list_.InitWithFeatures({omnibox::kDynamicAimFulfillment,
+                                      omnibox::kDynamicAimFulfillmentOmnibox},
+                                     {});
+    } else {
+      feature_list_.InitWithFeatures({},
+                                     {omnibox::kDynamicAimFulfillment,
+                                      omnibox::kDynamicAimFulfillmentOmnibox});
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         OmniboxPopupUIDynamicAimFulfillmentTest,
+                         testing::Bool());
+
+// Callers that read `GetComposeboxInputStateModel()` before
+// `composebox_handler()` binds should see the same dynamic AIM fulfillment
+// opt-in the handler applies once it binds.
+TEST_P(OmniboxPopupUIDynamicAimFulfillmentTest,
+       GetComposeboxInputStateModelBeforeHandlerBinds) {
+  ASSERT_TRUE(ContextualSearchServiceFactory::GetForProfile(profile()));
+
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(web_contents());
+  auto omnibox_popup_ui = std::make_unique<OmniboxPopupUI>(&web_ui);
+  ASSERT_EQ(omnibox_popup_ui->composebox_handler(), nullptr);
+
+  auto* model = omnibox_popup_ui->GetComposeboxInputStateModel();
+  ASSERT_NE(model, nullptr);
+  EXPECT_EQ(model->dynamic_aim_fulfillment_enabled(), GetParam());
 }
 
 TEST_F(OmniboxPopupUITest, FullWebUIOmniboxLayoutHelperStandardMode) {

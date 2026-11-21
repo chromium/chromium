@@ -571,11 +571,18 @@ OmniboxPopupUI::GetComposeboxInputStateModel() {
     return composebox_handler_->input_state_model();
   }
   auto* session_handle = GetOrCreateContextualSessionHandle();
-  return session_handle
-             ? ContextualSearchboxHandler::GetOrCreateInputStateModelForSession(
-                   web_ui()->GetWebContents(), *session_handle)
-                   .get()
-             : nullptr;
+  if (!session_handle) {
+    return nullptr;
+  }
+  auto* input_state_model =
+      ContextualSearchboxHandler::GetOrCreateInputStateModelForSession(
+          web_ui()->GetWebContents(), *session_handle)
+          .get();
+  if (input_state_model &&
+      omnibox::IsDynamicAimFulfillmentEnabledForOmnibox()) {
+    input_state_model->EnableDynamicAimFulfillment();
+  }
+  return input_state_model;
 }
 
 ContextualSearchboxHandler* OmniboxPopupUI::GetContextualSearchboxHandler() {

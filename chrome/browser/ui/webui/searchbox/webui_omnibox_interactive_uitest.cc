@@ -4,7 +4,6 @@
 
 #include <optional>
 
-#include "base/auto_reset.h"
 #include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -27,7 +26,6 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
-#include "chrome/browser/ui/omnibox/omnibox_popup_webui_creation.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -80,6 +78,11 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/webview/webview.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/auto_reset.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_webui_creation.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kClassicPopupWebView);
@@ -695,23 +698,21 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
       InAnyContext(WaitForElementToRender(kAimPopupWebView, kDeepSearchChip)));
 }
 
-// Creates the omnibox popups' WebContents before they are shown, as production
-// does, rather than only when shown, which is the default in browser tests (see
-// `InProcessBrowserTest`).
-// TODO(crbug.com/542347163): The tests using this fixture fail otherwise:
-// adding a tab from the classic popup's context menu creates the AI Mode
-// popup's page then, and the tab context seems to be lost while that page
-// loads. Either keep that context until the page is ready or create the page
-// explicitly where it is needed, and move these tests back to
-// `OmniboxAimWebUiInteractiveTest`.
-class OmniboxAimWebUiEagerPopupInteractiveTest
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/570224989): On Mac, the classic popup stays open after a tab
+// is picked from its context menu if that menu created the AI Mode popup's
+// page. Mac doesn't create the page on demand in production.
+class OmniboxAimWebUiTabContextInteractiveTest
     : public OmniboxAimWebUiInteractiveTest {
  private:
   base::AutoReset<bool> create_popup_webui_on_demand_ =
       omnibox::SetCreatePopupWebUIOnDemandForTesting(false);
 };
+#else
+using OmniboxAimWebUiTabContextInteractiveTest = OmniboxAimWebUiInteractiveTest;
+#endif  // BUILDFLAG(IS_MAC)
 
-IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiEagerPopupInteractiveTest,
+IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiTabContextInteractiveTest,
                        QueryWithTabContext) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
   ASSERT_TRUE(embedded_test_server()->Start());
