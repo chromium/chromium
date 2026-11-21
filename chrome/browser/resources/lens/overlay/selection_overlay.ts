@@ -135,17 +135,7 @@ export class SelectionOverlayElement extends SelectionOverlayBaseElement {
       selectedRegionContextMenuY: Number,
       selectedRegionContextMenuHorizontalStyle: String,
       selectedRegionContextMenuVerticalStyle: String,
-      enableCopyAsImage: {
-        type: Boolean,
-        reflectToAttribute: true,
-        value: () => loadTimeData.getBoolean('enableCopyAsImage'),
-      },
-      enableSaveAsImage: {
-        type: Boolean,
-        reflectToAttribute: true,
-        value: () => loadTimeData.getBoolean('enableSaveAsImage'),
-      },
-      suppressCopyAndSaveAsImage: {
+      suppressCopyAsImage: {
         type: Boolean,
         reflectToAttribute: true,
         value: () => {
@@ -182,7 +172,7 @@ export class SelectionOverlayElement extends SelectionOverlayBaseElement {
   declare private areLanguagePickersOpen: boolean;
 
   // The selected region on which the context menu is being displayed. Used as
-  // argument for copy and save as image calls.
+  // argument for copy as image calls.
   private selectedRegionContextMenuBox: CenterRotatedBox;
   private highlightedText: string = '';
   private contentLanguage: string = '';
@@ -191,9 +181,7 @@ export class SelectionOverlayElement extends SelectionOverlayBaseElement {
   private detectedTextStartIndex: number = -1;
   private detectedTextEndIndex: number = -1;
   private isPointerInsideButton = false;
-  declare private enableCopyAsImage: boolean;
-  declare private enableSaveAsImage: boolean;
-  declare private suppressCopyAndSaveAsImage: boolean;
+  declare private suppressCopyAsImage: boolean;
 
   private browserProxy: BrowserProxy = BrowserProxyImpl.getInstance();
 
@@ -303,9 +291,7 @@ export class SelectionOverlayElement extends SelectionOverlayBaseElement {
         document, 'show-selected-region-context-menu',
         (e: CustomEvent<SelectedRegionContextMenuData>) => {
           this.updateSelectedRegionContextMenu(e.detail);
-          const shouldShow =
-              (!this.suppressCopyAndSaveAsImage &&
-               (this.enableCopyAsImage || this.enableSaveAsImage)) ||
+          const shouldShow = !this.suppressCopyAsImage ||
               this.showDetectedTextContextMenuOptions;
           this.setShowSelectedRegionContextMenu(shouldShow);
           if (shouldShow) {
@@ -329,8 +315,7 @@ export class SelectionOverlayElement extends SelectionOverlayBaseElement {
           // this condition by checking if the box has been set.
           if (this.selectedRegionContextMenuBox !== undefined) {
             this.setShowSelectedRegionContextMenu(
-                (!this.suppressCopyAndSaveAsImage &&
-                 (this.enableCopyAsImage || this.enableSaveAsImage)) ||
+                !this.suppressCopyAsImage ||
                 this.showDetectedTextContextMenuOptions);
             this.positionSelectedRegionContextMenu();
           }
@@ -443,7 +428,7 @@ export class SelectionOverlayElement extends SelectionOverlayBaseElement {
   }
 
   override handleGestureStart() {
-    this.suppressCopyAndSaveAsImage = false;
+    this.suppressCopyAsImage = false;
     super.handleGestureStart();
     this.dispatchEvent(
         new CustomEvent('selection-started', {bubbles: true, composed: true}));
@@ -703,16 +688,6 @@ export class SelectionOverlayElement extends SelectionOverlayBaseElement {
     }));
   }
 
-  private handleSaveAsImage(event?: Event) {
-    if (shouldIgnoreKeyboardEvent(event)) {
-      return;
-    }
-    BrowserProxyImpl.getInstance().handler.saveAsImage(
-        this.selectedRegionContextMenuBox);
-    this.setShowSelectedRegionContextMenu(false);
-    recordLensOverlayInteraction(INVOCATION_SOURCE, UserAction.kSaveAsImage);
-  }
-
   // Make the cursor disappear when entering selectable buttons, as if leaving
   // the overlay.
   private handlePointerEnterButton() {
@@ -774,15 +749,9 @@ export class SelectionOverlayElement extends SelectionOverlayBaseElement {
               INVOCATION_SOURCE, ContextMenuOption.TRANSLATE_TEXT_IN_REGION);
         }
       }
-      if (!this.suppressCopyAndSaveAsImage) {
-        if (this.enableCopyAsImage) {
-          recordContextMenuOptionShown(
-              INVOCATION_SOURCE, ContextMenuOption.COPY_AS_IMAGE);
-        }
-        if (this.enableSaveAsImage) {
-          recordContextMenuOptionShown(
-              INVOCATION_SOURCE, ContextMenuOption.SAVE_AS_IMAGE);
-        }
+      if (!this.suppressCopyAsImage) {
+        recordContextMenuOptionShown(
+            INVOCATION_SOURCE, ContextMenuOption.COPY_AS_IMAGE);
       }
     }
     this.showSelectedRegionContextMenu = shouldShow;
@@ -844,8 +813,8 @@ export class SelectionOverlayElement extends SelectionOverlayBaseElement {
     return this.showDetectedTextContextMenuOptions;
   }
 
-  getSuppressCopyAndSaveAsImageForTesting() {
-    return this.suppressCopyAndSaveAsImage;
+  getSuppressCopyAsImageForTesting() {
+    return this.suppressCopyAsImage;
   }
 
   handleSelectTextForTesting() {
@@ -870,10 +839,6 @@ export class SelectionOverlayElement extends SelectionOverlayBaseElement {
 
   handleCopyAsImageForTesting() {
     this.handleCopyAsImage();
-  }
-
-  handleSaveAsImageForTesting() {
-    this.handleSaveAsImage();
   }
 
   setSearchboxFocusForTesting(isFocused: boolean) {

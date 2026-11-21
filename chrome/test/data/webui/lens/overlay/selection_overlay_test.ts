@@ -50,8 +50,6 @@ suite('SelectionOverlay', function() {
       // Turn off the shimmer. Since the shimmer is resource intensive, turn off
       // to prevent from causing issues in the tests.
       'enableShimmer': false,
-      'enableCopyAsImage': true,
-      'enableSaveAsImage': true,
     });
 
 
@@ -269,25 +267,15 @@ suite('SelectionOverlay', function() {
       assertEquals(
           1,
           metrics.count(
-              'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown',
-              ContextMenuOption.SAVE_AS_IMAGE));
-      assertEquals(
-          1,
-          metrics.count(
               'Lens.Overlay.ContextMenuOption.Shown',
               ContextMenuOption.COPY_AS_IMAGE));
-      assertEquals(
-          1,
-          metrics.count(
-              'Lens.Overlay.ContextMenuOption.Shown',
-              ContextMenuOption.SAVE_AS_IMAGE));
 
       // Ensure that no other context menu options were shown.
       assertEquals(
-          2,
+          1,
           metrics.count(
               'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown'));
-      assertEquals(2, metrics.count('Lens.Overlay.ContextMenuOption.Shown'));
+      assertEquals(1, metrics.count('Lens.Overlay.ContextMenuOption.Shown'));
     });
 
     test('verify that resizing renders image with padding', async () => {
@@ -576,7 +564,7 @@ suite('SelectionOverlay', function() {
           // Verify that the image and detected text context menu options are
           // shown.
           assertEquals(
-              4, metrics.count('Lens.Overlay.ContextMenuOption.Shown'));
+              3, metrics.count('Lens.Overlay.ContextMenuOption.Shown'));
 
           selectionOverlayElement.handleCopyAsImageForTesting();
 
@@ -601,33 +589,7 @@ suite('SelectionOverlay', function() {
           // Verify that the image and detected text context menu options are
           // logged again.
           assertEquals(
-              8, metrics.count('Lens.Overlay.ContextMenuOption.Shown'));
-        });
-
-    test(
-        'verify that save as image in selected region context menu works',
-        async () => {
-          await simulateDrag(
-              selectionOverlayElement, {x: 0, y: 0}, {x: 80, y: 40});
-          selectionOverlayElement.handleSaveAsImageForTesting();
-
-          await testBrowserProxy.handler.whenCalled('saveAsImage');
-
-          // Verify context menu hides when an option is selected.
-          assertFalse(selectionOverlayElement
-                          .getShowSelectedRegionContextMenuForTesting());
-
-          // Verify context menu is restored when selection region is
-          // right-clicked.
-          await simulateClick(
-              selectionOverlayElement, {
-                x: 40,
-                y: 20,
-              },
-              /* button = */ 2);
-
-          assertTrue(selectionOverlayElement
-                         .getShowSelectedRegionContextMenuForTesting());
+              6, metrics.count('Lens.Overlay.ContextMenuOption.Shown'));
         });
   });
 
@@ -948,25 +910,15 @@ suite('SelectionOverlay', function() {
       assertEquals(
           1,
           metrics.count(
-              'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown',
-              ContextMenuOption.SAVE_AS_IMAGE));
-      assertEquals(
-          1,
-          metrics.count(
               'Lens.Overlay.ContextMenuOption.Shown',
               ContextMenuOption.COPY_AS_IMAGE));
-      assertEquals(
-          1,
-          metrics.count(
-              'Lens.Overlay.ContextMenuOption.Shown',
-              ContextMenuOption.SAVE_AS_IMAGE));
 
       // Ensure that no other context menu options were shown.
       assertEquals(
-          2,
+          1,
           metrics.count(
               'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown'));
-      assertEquals(2, metrics.count('Lens.Overlay.ContextMenuOption.Shown'));
+      assertEquals(1, metrics.count('Lens.Overlay.ContextMenuOption.Shown'));
     });
 
     test('SelectedRegionContextMenuAppearsWithEmptyText', async () => {
@@ -989,25 +941,15 @@ suite('SelectionOverlay', function() {
       assertEquals(
           1,
           metrics.count(
-              'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown',
-              ContextMenuOption.SAVE_AS_IMAGE));
-      assertEquals(
-          1,
-          metrics.count(
               'Lens.Overlay.ContextMenuOption.Shown',
               ContextMenuOption.COPY_AS_IMAGE));
-      assertEquals(
-          1,
-          metrics.count(
-              'Lens.Overlay.ContextMenuOption.Shown',
-              ContextMenuOption.SAVE_AS_IMAGE));
 
       // Ensure that no other context menu options were shown.
       assertEquals(
-          2,
+          1,
           metrics.count(
               'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown'));
-      assertEquals(2, metrics.count('Lens.Overlay.ContextMenuOption.Shown'));
+      assertEquals(1, metrics.count('Lens.Overlay.ContextMenuOption.Shown'));
     });
 
     test('SelectedRegionContextMenuAppearsWithText', async () => {
@@ -1030,8 +972,8 @@ suite('SelectionOverlay', function() {
       assertEquals(
           1,
           metrics.count(
-              'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown',
-              ContextMenuOption.SAVE_AS_IMAGE));
+              'Lens.Overlay.ContextMenuOption.Shown',
+              ContextMenuOption.COPY_AS_IMAGE));
       assertEquals(
           1,
           metrics.count(
@@ -1042,16 +984,6 @@ suite('SelectionOverlay', function() {
           metrics.count(
               'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown',
               ContextMenuOption.COPY_TEXT_IN_REGION));
-      assertEquals(
-          1,
-          metrics.count(
-              'Lens.Overlay.ContextMenuOption.Shown',
-              ContextMenuOption.COPY_AS_IMAGE));
-      assertEquals(
-          1,
-          metrics.count(
-              'Lens.Overlay.ContextMenuOption.Shown',
-              ContextMenuOption.SAVE_AS_IMAGE));
       assertEquals(
           1,
           metrics.count(
@@ -1065,10 +997,10 @@ suite('SelectionOverlay', function() {
 
       // Ensure that no other context menu options were shown.
       assertEquals(
-          4,
+          3,
           metrics.count(
               'Lens.Overlay.ByInvocationSource.AppMenu.ContextMenuOption.Shown'));
-      assertEquals(4, metrics.count('Lens.Overlay.ContextMenuOption.Shown'));
+      assertEquals(3, metrics.count('Lens.Overlay.ContextMenuOption.Shown'));
     });
 
     test(
@@ -1210,20 +1142,15 @@ suite('SelectionOverlay', function() {
       return waitAfterNextRender(selectionOverlayElement);
     });
 
-    test(
-        'verify that copy and save as image are initially suppressed',
-        async () => {
-          await addWords();
+    test('verify that copy as image is initially suppressed', async () => {
+      await addWords();
 
-          assertTrue(selectionOverlayElement
-                         .getSuppressCopyAndSaveAsImageForTesting());
+      assertTrue(selectionOverlayElement.getSuppressCopyAsImageForTesting());
 
-          await simulateDrag(
-              selectionOverlayElement, {x: 0, y: 0}, {x: 80, y: 40});
+      await simulateDrag(selectionOverlayElement, {x: 0, y: 0}, {x: 80, y: 40});
 
-          assertFalse(selectionOverlayElement
-                          .getSuppressCopyAndSaveAsImageForTesting());
-        });
+      assertFalse(selectionOverlayElement.getSuppressCopyAsImageForTesting());
+    });
   });
 
   suite('LineSelectionToggleShortcuts', function() {

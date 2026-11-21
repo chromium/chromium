@@ -2109,10 +2109,6 @@ Chromium is unable to recover your settings.
           desc="Command in the Lens Overlay context menu to copy the selected screen region to the clipboard as an image.">
           Copy as image
         </message>
-        <message name="IDS_LENS_OVERLAY_SAVE_AS_IMAGE"
-          desc="Command in the Lens Overlay context menu to save the selected screen region to disk as an image file.">
-          Save as image
-        </message>
         <message name="IDS_LENS_OVERLAY_LEARN_MORE"
           desc="Text that is shown in the more options menu to open the help center article.">
           Learn more

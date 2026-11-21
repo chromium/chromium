@@ -13,7 +13,6 @@ if (is_chrome_branded) {
     input_files = [
       "copy.svg",
       "copy_image.svg",
-      "download.svg",
       "encrypted.svg",
       "lens.svg",
       "search.svg",

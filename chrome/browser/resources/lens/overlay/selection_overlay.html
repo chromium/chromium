@@ -54,10 +54,7 @@
     pointer-events: none;
   }
 
-  :host([suppress-copy-and-save-as-image]) .copy-as-image-context-menu-item,
-  :host([suppress-copy-and-save-as-image]) .save-as-image-context-menu-item,
-  :host(:not([enable-copy-as-image])) .copy-as-image-context-menu-item,
-  :host(:not([enable-save-as-image])) .save-as-image-context-menu-item,
+  :host([suppress-copy-as-image]) .copy-as-image-context-menu-item,
   :host(:not([show-detected-text-context-menu-options])) .detected-text-context-menu-option,
   :host(:not([show-translate-context-menu-item])) .translate-context-menu-item,
   :host([disable-shimmer]) #overlayShimmerCanvas,
@@ -274,10 +271,6 @@
     mask-image: url("copy_image.svg");
   }
 
-  .menu-item-icon.download {
-    mask-image: url("download.svg");
-  }
-
   .menu-item-icon.translate {
     mask-image: url("translate.svg");
   }
@@ -460,14 +453,6 @@
       >
         <span class="menu-item-icon copy-image"></span>
         <span class="menu-item-label">$i18n{copyAsImage}</span>
-      </div>
-      <div
-        class="context-menu-item save-as-image-context-menu-item"
-        role="menuitem" tabindex="0" on-pointerup="handleSaveAsImage"
-        on-keyup="handleSaveAsImage"
-      >
-        <span class="menu-item-icon download"></span>
-        <span class="menu-item-label">$i18n{saveAsImage}</span>
       </div>
     </div>
   </div>

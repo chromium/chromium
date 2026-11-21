@@ -70,7 +70,6 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       {"learnMore", IDS_LENS_OVERLAY_LEARN_MORE},
       {"moreOptions", IDS_LENS_OVERLAY_MORE_OPTIONS_BUTTON_LABEL},
       {"myActivity", IDS_LENS_OVERLAY_MY_ACTIVITY},
-      {"saveAsImage", IDS_LENS_OVERLAY_SAVE_AS_IMAGE},
       {"sendFeedback", IDS_LENS_SEND_FEEDBACK},
       {"cursorTooltipDragMessage",
        IDS_LENS_OVERLAY_CURSOR_TOOLTIP_DRAG_MESSAGE},
@@ -180,8 +179,6 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enableOverlayTranslateButton",
       lens::features::IsLensOverlayTranslateButtonEnabled());
-  html_source->AddBoolean("enableCopyAsImage", true);
-  html_source->AddBoolean("enableSaveAsImage", false);
   html_source->AddInteger("textReceivedTimeout", kTextReceivedTimeoutMs);
   html_source->AddInteger("copyTextTimeout", kCopyTextTimeoutMs);
   html_source->AddInteger("translateTextTimeout", kTranslateTextTimeoutMs);
