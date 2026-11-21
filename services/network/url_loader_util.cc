@@ -405,10 +405,26 @@ std::unique_ptr<net::UploadDataStream> CreateUploadDataStream(
       std::move(element_readers), body->identifier());
 }
 
+bool IsStorageAccessPotentiallyAllowed(
+    bool factory_is_storage_access_potentially_allowed,
+    const ResourceRequest& request) {
+  // Trusted browser callers such as `NavigationURLLoaderImpl` share a single
+  // trusted `URLLoaderFactory` across frames (whose factory-level flag is
+  // true) and use per-request `trusted_params` to mark restricted frames.
+  if (factory_is_storage_access_potentially_allowed &&
+      (!request.trusted_params ||
+       request.trusted_params->is_storage_access_potentially_allowed)) {
+    return true;
+  }
+  return !base::FeatureList::IsEnabled(
+      features::kEnforceStorageAccessApiRestrictions);
+}
+
 net::CookieSettingOverrides CalculateCookieSettingOverrides(
     net::CookieSettingOverrides factory_overrides,
     net::CookieSettingOverrides devtools_overrides,
-    const ResourceRequest& request) {
+    const ResourceRequest& request,
+    bool is_storage_access_potentially_allowed) {
   net::CookieSettingOverrides overrides(factory_overrides);
 
   // Only apply the DevTools overrides if the request is from devtools enabled
@@ -430,10 +446,23 @@ net::CookieSettingOverrides CalculateCookieSettingOverrides(
   // Add the Storage Access override enum based on whether the request's url and
   // initiator are same-site, to prevent cross-site sibling iframes benefit from
   // each other's storage access API grants. This must be updated on redirects.
-  if (net::cookie_util::ShouldAddInitialStorageAccessApiOverride(
-          request.url, request.storage_access_api_status,
-          request.request_initiator)) {
-    overrides.Put(net::CookieSettingOverride::kStorageAccessGrantEligible);
+  if (is_storage_access_potentially_allowed) {
+    // `CalculateCookieSettingOverrides()` handles both renderer subresource
+    // requests (where `trusted_params` is null) and trusted browser requests
+    // such as navigations (where `trusted_params` is populated). Verify that
+    // callers passed the combined `IsStorageAccessPotentiallyAllowed()` result
+    // rather than the raw factory boolean.
+    CHECK(!request.trusted_params ||
+          request.trusted_params->is_storage_access_potentially_allowed ||
+          !base::FeatureList::IsEnabled(
+              features::kEnforceStorageAccessApiRestrictions));
+    if (net::cookie_util::ShouldAddInitialStorageAccessApiOverride(
+            request.url, request.storage_access_api_status,
+            request.request_initiator)) {
+      overrides.Put(net::CookieSettingOverride::kStorageAccessGrantEligible);
+    }
+  } else {
+    overrides.Remove(net::CookieSettingOverride::kStorageAccessGrantEligible);
   }
 
   // The `kStorageAccessGrantEligibleViaHeader` override will be applied
@@ -602,7 +631,9 @@ void ConfigureUrlRequest(const ResourceRequest& request,
   // `url_request.storage_access_status()`.
   url_request.cookie_setting_overrides() = CalculateCookieSettingOverrides(
       factory_params.cookie_setting_overrides,
-      factory_params.devtools_cookie_setting_overrides, request);
+      factory_params.devtools_cookie_setting_overrides, request,
+      IsStorageAccessPotentiallyAllowed(
+          factory_params.is_storage_access_potentially_allowed, request));
   url_request.SetLoadFlags(request.load_flags);
   SetRequestCredentials(
       request.url, factory_params.client_security_state, request.mode,

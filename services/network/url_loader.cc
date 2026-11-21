@@ -426,6 +426,10 @@ URLLoader::URLLoader(
       provide_data_use_updates_(context.DataUseUpdatesEnabled()),
       partial_decoder_decoding_buffer_size_(net::kMaxBytesToSniff),
       permissions_policy_(request.permissions_policy),
+      is_storage_access_potentially_allowed_(
+          url_loader_util::IsStorageAccessPotentiallyAllowed(
+              factory_params_->is_storage_access_potentially_allowed,
+              request)),
       expected_response_headers_for_synthetic_response(
           request.trusted_params
               ? request.trusted_params
@@ -2627,6 +2631,10 @@ bool URLLoader::ShouldSetLoadWithStorageAccess() const {
 
   auto determine_storage_access_load_outcome =
       [&]() -> net::cookie_util::ActivateStorageAccessLoadOutcome {
+    if (!is_storage_access_potentially_allowed_) {
+      return net::cookie_util::ActivateStorageAccessLoadOutcome::
+          kFailureInvalidStatus;
+    }
     if (!url_request_->storage_access_status().IsSet()) {
       url_request_->set_storage_access_status(
           url_request_->CalculateStorageAccessStatus());

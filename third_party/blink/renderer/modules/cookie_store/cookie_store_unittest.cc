@@ -99,6 +99,7 @@ class CookieStoreTest : public testing::Test {
             /*devtools_cookies_setting_overrides=*/
             net::CookieSettingOverrides(),
             /*prefer_bound_cookie_context=*/false,
+            /*is_storage_access_potentially_allowed=*/true,
             /*cookie_observer=*/mojo::NullRemote())) {}
 
   HeapMojoRemote<network::mojom::blink::RestrictedCookieManager>

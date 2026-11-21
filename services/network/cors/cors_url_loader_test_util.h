@@ -206,6 +206,7 @@ class CorsURLLoaderTestBase : public testing::Test {
     bool ignore_isolated_world_origin;
     std::optional<url::Origin> isolated_world_origin_lock;
     mojom::ClientSecurityStatePtr client_security_state;
+    bool is_storage_access_potentially_allowed;
 
     // Member of `mojom::URLLoaderFactoryOverride`.
     bool skip_cors_enabled_scheme_check;

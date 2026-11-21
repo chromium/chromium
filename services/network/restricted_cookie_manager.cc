@@ -378,6 +378,7 @@ RestrictedCookieManager::RestrictedCookieManager(
     const net::CookieSettingOverrides& cookie_setting_overrides,
     const net::CookieSettingOverrides& devtools_cookie_setting_overrides,
     bool prefer_bound_cookie_context,
+    bool is_storage_access_potentially_allowed,
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
     UmaMetricsUpdater* metrics_updater)
     : role_(role),
@@ -388,6 +389,8 @@ RestrictedCookieManager::RestrictedCookieManager(
       origin_(origin),
       isolation_info_(isolation_info),
       prefer_bound_cookie_context_(prefer_bound_cookie_context),
+      is_storage_access_potentially_allowed_(
+          is_storage_access_potentially_allowed),
       cookie_observer_(std::move(cookie_observer)),
       cookie_partition_key_(net::CookiePartitionKey::FromNetworkIsolationKey(
           isolation_info.network_isolation_key(),
@@ -497,7 +500,8 @@ void RestrictedCookieManager::GetAllForUrl(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!ValidateAccessToCookiesAt(url, renderer_site_for_cookies,
-                                 renderer_top_frame_origin)) {
+                                 renderer_top_frame_origin,
+                                 storage_access_api_status)) {
     std::move(callback).Run({});
     return;
   }
@@ -693,7 +697,8 @@ void RestrictedCookieManager::SetCanonicalCookie(
     bool apply_devtools_overrides,
     SetCanonicalCookieCallback callback) {
   if (!ValidateAccessToCookiesAt(url, renderer_site_for_cookies,
-                                 renderer_top_frame_origin)) {
+                                 renderer_top_frame_origin,
+                                 storage_access_api_status)) {
     std::move(callback).Run(false);
     return;
   }
@@ -744,6 +749,7 @@ void RestrictedCookieManager::SetCanonicalCookie(
     SetCanonicalCookieCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(ValidateAccessToCookiesAt(url, site_for_cookies, top_frame_origin,
+                                  storage_access_api_status,
                                   /*record_metrics=*/false));
   CHECK(IsCookieDomainValid(url, &cookie, status));
   CHECK(status.IsInclude());
@@ -907,7 +913,8 @@ void RestrictedCookieManager::AddChangeListener(
   }
 
   if (!ValidateAccessToCookiesAt(url, renderer_site_for_cookies,
-                                 renderer_top_frame_origin)) {
+                                 renderer_top_frame_origin,
+                                 storage_access_api_status)) {
     std::move(callback).Run();
     return;
   }
@@ -949,7 +956,8 @@ void RestrictedCookieManager::SetCookieFromString(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!ValidateAccessToCookiesAt(url, renderer_site_for_cookies,
-                                 renderer_top_frame_origin)) {
+                                 renderer_top_frame_origin,
+                                 storage_access_api_status)) {
     return;
   }
 
@@ -1037,7 +1045,8 @@ void RestrictedCookieManager::GetCookiesString(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!ValidateAccessToCookiesAt(url, renderer_site_for_cookies,
-                                 renderer_top_frame_origin)) {
+                                 renderer_top_frame_origin,
+                                 storage_access_api_status)) {
     std::move(callback).Run(mojo::shared_memory_version::kInvalidVersion, {},
                             "");
     return;
@@ -1093,7 +1102,8 @@ void RestrictedCookieManager::CookiesEnabledFor(
     bool apply_devtools_overrides,
     CookiesEnabledForCallback callback) {
   if (!ValidateAccessToCookiesAt(url, renderer_site_for_cookies,
-                                 renderer_top_frame_origin)) {
+                                 renderer_top_frame_origin,
+                                 storage_access_api_status)) {
     std::move(callback).Run(false);
     return;
   }
@@ -1127,6 +1137,7 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
+    net::StorageAccessApiStatus storage_access_api_status,
     bool record_metrics) {
   if (origin_.opaque()) {
     receiver_.ReportBadMessage("Access is denied in this context");
@@ -1166,11 +1177,22 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
     }
   }
 
-  if (origin_.IsSameOriginWith(url))
-    return true;
+  if (!is_storage_access_potentially_allowed_ &&
+      storage_access_api_status != net::StorageAccessApiStatus::kNone &&
+      base::FeatureList::IsEnabled(
+          features::kEnforceStorageAccessApiRestrictions)) {
+    receiver_.ReportBadMessage(
+        "RestrictedCookieManager: storage_access_api_status must be kNone when "
+        "storage access is not allowed");
+    return false;
+  }
 
-  receiver_.ReportBadMessage("Incorrect url origin");
-  return false;
+  if (!origin_.IsSameOriginWith(url)) {
+    receiver_.ReportBadMessage("Incorrect url origin");
+    return false;
+  }
+
+  return true;
 }
 
 net::CookieSettingOverrides RestrictedCookieManager::GetCookieSettingOverrides(
@@ -1179,12 +1201,18 @@ net::CookieSettingOverrides RestrictedCookieManager::GetCookieSettingOverrides(
     bool apply_devtools_overrides,
     bool force_disable_third_party_cookies) const {
   net::CookieSettingOverrides overrides = cookie_setting_overrides_;
-  switch (storage_access_api_status) {
-    case net::StorageAccessApiStatus::kNone:
-      break;
-    case net::StorageAccessApiStatus::kAccessViaAPI:
-      overrides.Put(net::CookieSettingOverride::kStorageAccessGrantEligible);
-      break;
+  if (is_storage_access_potentially_allowed_ ||
+      !base::FeatureList::IsEnabled(
+          features::kEnforceStorageAccessApiRestrictions)) {
+    switch (storage_access_api_status) {
+      case net::StorageAccessApiStatus::kNone:
+        break;
+      case net::StorageAccessApiStatus::kAccessViaAPI:
+        overrides.Put(net::CookieSettingOverride::kStorageAccessGrantEligible);
+        break;
+    }
+  } else {
+    overrides.Remove(net::CookieSettingOverride::kStorageAccessGrantEligible);
   }
   if (force_disable_third_party_cookies) {
     overrides.Put(net::CookieSettingOverride::kForceDisableThirdPartyCookies);

@@ -63,12 +63,23 @@ std::unique_ptr<net::UploadDataStream> CreateUploadDataStream(
     std::vector<base::File>& opened_files,
     base::SequencedTaskRunner* file_task_runner);
 
+// Returns true if the bool (which must be provided from trusted
+// URLLoaderFactory parameters) and `request` both allow potential storage
+// access.
+COMPONENT_EXPORT(NETWORK_SERVICE)
+bool IsStorageAccessPotentiallyAllowed(
+    bool factory_is_storage_access_potentially_allowed,
+    const ResourceRequest& request);
+
 // Computes the CookieSettingOverrides to use for a given `ResourceRequest`.
+// `is_storage_access_potentially_allowed` must have been computed via
+// `IsStorageAccessPotentiallyAllowed` above, using the factory params' bool.
 COMPONENT_EXPORT(NETWORK_SERVICE)
 net::CookieSettingOverrides CalculateCookieSettingOverrides(
     net::CookieSettingOverrides factory_overrides,
     net::CookieSettingOverrides devtools_overrides,
-    const ResourceRequest& request);
+    const ResourceRequest& request,
+    bool is_storage_access_potentially_allowed);
 
 // Determines the IsolationInfo for a request, checking sources in priority:
 // 1. `factory_isolation_info` (if non-empty).

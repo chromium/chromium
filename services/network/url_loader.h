@@ -307,6 +307,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
     return permissions_policy_;
   }
 
+  bool is_storage_access_potentially_allowed() const {
+    return is_storage_access_potentially_allowed_;
+  }
+
  private:
   // This class is used to set the URLLoader as user data on a URLRequest. This
   // is used instead of URLLoader directly because SetUserData requires a
@@ -711,6 +715,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   // Permissions policy of the request.
   const std::optional<network::PermissionsPolicy> permissions_policy_;
+
+  // Whether the requesting context could potentially be allowed to receive
+  // access to unpartitioned storage, according to the factory params and
+  // resource request.
+  const bool is_storage_access_potentially_allowed_;
 
   const scoped_refptr<net::HttpResponseHeaders>
       expected_response_headers_for_synthetic_response;

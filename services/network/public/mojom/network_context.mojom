@@ -1026,6 +1026,14 @@ struct URLLoaderFactoryParams {
   // will target. If absent, the default network is instead used. Represents a
   //net::handles::NetworkHandle. See URLRequestContext::CreateRequest.
   int64? target_network;
+
+  // Whether the context using this factory could potentially be allowed to
+  // receive unpartitioned storage access (e.g., not sandboxed without
+  // allow-storage-access-by-user-activation, not credentialless, not nested in
+  // a fenced frame, non-opaque origin, non-nonced StorageKey, and secure
+  // context). When false, requests with a non-kNone `storage_access_api_status`
+  // are rejected and Storage Access Headers are disabled.
+  bool is_storage_access_potentially_allowed = true;
 };
 
 struct IdAndAllowlistedPatterns {
@@ -1114,6 +1122,12 @@ interface NetworkContext {
   // authoritative cookie context that the renderer cannot compute (e.g., a
   // frame whose effective top frame for storage partitioning differs from
   // the actual top frame).
+  //
+  // |is_storage_access_potentially_allowed| indicates whether the execution
+  // context could potentially be allowed to use the Storage Access API. If
+  // false, the RestrictedCookieManager rejects any calls with a non-kNone
+  // |storage_access_api_status| via mojo::ReportBadMessage() and will not
+  // apply Storage Access API cookie setting overrides.
   GetRestrictedCookieManager(
       pending_receiver<RestrictedCookieManager> restricted_cookie_manager,
       RestrictedCookieManagerRole role,
@@ -1122,6 +1136,7 @@ interface NetworkContext {
       CookieSettingOverrides cookie_setting_overrides,
       CookieSettingOverrides devtools_cookie_setting_overrides,
       bool prefer_bound_cookie_context,
+      bool is_storage_access_potentially_allowed,
       pending_remote<CookieAccessObserver>? cookie_observer);
 
   // Binds a RestrictedDeviceBoundSessionManager for one Document. `origin` is

@@ -1350,6 +1350,7 @@ class URLLoaderTest : public testing::Test {
     OnServerReceivedRequest(request);
   }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   net::ScopedTestRoot scoped_test_root_;
   net::EmbeddedTestServer test_server_;
@@ -5557,6 +5558,91 @@ TEST_F(StorageAccessHeaderURLLoaderTest, LoadStatusActive) {
       /*expected_bucket_count=*/1);
 }
 
+TEST_F(StorageAccessHeaderURLLoaderTest,
+       LoadStorageAccessRestrictedByFactoryParams) {
+  base::RunLoop delete_run_loop;
+  ResourceRequest request = CreateResourceRequest(
+      "GET", test_server_.GetURL("/set-header?Activate-Storage-Access: load"));
+
+  test_network_delegate()->set_storage_access_status(
+      net::cookie_util::StorageAccessStatus::kActive);
+
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id =
+      OriginatingProcessId::browser();
+  context().mutable_factory_params().is_storage_access_potentially_allowed =
+      false;
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilComplete();
+  delete_run_loop.Run();
+
+  EXPECT_FALSE(client()->response_head()->load_with_storage_access);
+}
+
+TEST_F(StorageAccessHeaderURLLoaderTest,
+       LoadStorageAccessRestrictedByTrustedParams) {
+  base::RunLoop delete_run_loop;
+  ResourceRequest request = CreateResourceRequest(
+      "GET", test_server_.GetURL("/set-header?Activate-Storage-Access: load"));
+  request.trusted_params = ResourceRequest::TrustedParams();
+  request.trusted_params->is_storage_access_potentially_allowed = false;
+
+  test_network_delegate()->set_storage_access_status(
+      net::cookie_util::StorageAccessStatus::kActive);
+
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id =
+      OriginatingProcessId::browser();
+  context().mutable_factory_params().is_trusted = true;
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilComplete();
+  delete_run_loop.Run();
+
+  EXPECT_FALSE(client()->response_head()->load_with_storage_access);
+}
+
+TEST_F(StorageAccessHeaderURLLoaderTest,
+       LoadStorageAccessRestricted_FeatureDisabled) {
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kEnforceStorageAccessApiRestrictions);
+
+  base::RunLoop delete_run_loop;
+  ResourceRequest request = CreateResourceRequest(
+      "GET", test_server_.GetURL("/set-header?Activate-Storage-Access: load"));
+  request.trusted_params = ResourceRequest::TrustedParams();
+  request.trusted_params->is_storage_access_potentially_allowed = false;
+
+  test_network_delegate()->set_storage_access_status(
+      net::cookie_util::StorageAccessStatus::kActive);
+
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader;
+  context().mutable_factory_params().process_id =
+      OriginatingProcessId::browser();
+  context().mutable_factory_params().is_trusted = true;
+  context().mutable_factory_params().is_storage_access_potentially_allowed =
+      false;
+  url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilComplete();
+  delete_run_loop.Run();
+
+  EXPECT_TRUE(client()->response_head()->load_with_storage_access);
+}
+
 TEST_F(StorageAccessHeaderURLLoaderTest, Load_StatusActive_IgnoredParam) {
   base::RunLoop delete_run_loop;
   ResourceRequest request = CreateResourceRequest(
@@ -5726,6 +5812,103 @@ TEST_F(StorageAccessHeaderURLLoaderTest,
   delete_run_loop.Run();
 
   EXPECT_TRUE(client()->response_head()->load_with_storage_access);
+}
+
+TEST_F(
+    URLLoaderTest,
+    FactoryCookieSettingOverrides_StorageAccessRemovedWhenDisallowedByFactory) {
+  GURL url("http://www.example.com.test/");
+  base::RunLoop delete_run_loop;
+  mojo::PendingRemote<mojom::URLLoader> loader;
+
+  context().mutable_factory_params().process_id = kProcessId;
+  context().mutable_factory_params().cookie_setting_overrides = {
+      net::CookieSettingOverride::kStorageAccessGrantEligible};
+  context().mutable_factory_params().is_storage_access_potentially_allowed =
+      false;
+
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  std::unique_ptr<URLLoader> url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilComplete();
+  delete_run_loop.Run();
+
+  const std::vector<net::CookieSettingOverrides> records =
+      test_network_delegate()->cookie_setting_overrides_records();
+  EXPECT_THAT(records, ElementsAre(net::CookieSettingOverrides(),
+                                   net::CookieSettingOverrides()));
+}
+
+TEST_F(
+    URLLoaderTest,
+    FactoryCookieSettingOverrides_StorageAccessRemovedWhenDisallowedByRequest) {
+  GURL url("http://www.example.com.test/");
+  base::RunLoop delete_run_loop;
+  mojo::PendingRemote<mojom::URLLoader> loader;
+
+  context().mutable_factory_params().process_id =
+      OriginatingProcessId::browser();
+  context().mutable_factory_params().is_trusted = true;
+  context().mutable_factory_params().cookie_setting_overrides = {
+      net::CookieSettingOverride::kStorageAccessGrantEligible};
+
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  request.trusted_params = ResourceRequest::TrustedParams();
+  request.trusted_params->is_storage_access_potentially_allowed = false;
+
+  std::unique_ptr<URLLoader> url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilComplete();
+  delete_run_loop.Run();
+
+  const std::vector<net::CookieSettingOverrides> records =
+      test_network_delegate()->cookie_setting_overrides_records();
+  EXPECT_THAT(records, ElementsAre(net::CookieSettingOverrides(),
+                                   net::CookieSettingOverrides()));
+}
+
+TEST_F(
+    URLLoaderTest,
+    FactoryCookieSettingOverrides_StorageAccessPreservedWhenFeatureDisabled) {
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kEnforceStorageAccessApiRestrictions);
+
+  GURL url("http://www.example.com.test/");
+  base::RunLoop delete_run_loop;
+  mojo::PendingRemote<mojom::URLLoader> loader;
+
+  const net::CookieSettingOverrides storage_access_overrides = {
+      net::CookieSettingOverride::kStorageAccessGrantEligible};
+  context().mutable_factory_params().process_id =
+      OriginatingProcessId::browser();
+  context().mutable_factory_params().is_trusted = true;
+  context().mutable_factory_params().cookie_setting_overrides =
+      storage_access_overrides;
+  context().mutable_factory_params().is_storage_access_potentially_allowed =
+      false;
+
+  ResourceRequest request = CreateResourceRequest("GET", url);
+  request.trusted_params = ResourceRequest::TrustedParams();
+  request.trusted_params->is_storage_access_potentially_allowed = false;
+
+  std::unique_ptr<URLLoader> url_loader = URLLoaderOptions().MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      client()->CreateRemote());
+
+  client()->RunUntilComplete();
+  delete_run_loop.Run();
+
+  const std::vector<net::CookieSettingOverrides> records =
+      test_network_delegate()->cookie_setting_overrides_records();
+  EXPECT_THAT(records,
+              ElementsAre(storage_access_overrides, storage_access_overrides));
 }
 
 class URLLoaderCookieSettingOverridesTest

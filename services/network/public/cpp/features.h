@@ -451,6 +451,12 @@ BASE_DECLARE_FEATURE(kSocketLayerNetworkThrottling);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kClearPartitionedCookiesOnExitByTopLevelSite);
 
+// When enabled, enforces Storage Access API context restrictions (such as
+// `is_storage_access_potentially_allowed` checks in the Network Service and the
+// `storage-access` Permissions Policy on navigations).
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kEnforceStorageAccessApiRestrictions);
+
 }  // namespace network::features
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_FEATURES_H_

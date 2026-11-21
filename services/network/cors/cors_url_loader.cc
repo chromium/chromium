@@ -427,7 +427,8 @@ CorsURLLoader::CorsURLLoader(
     NetworkContext* context,
     std::optional<base::UnguessableToken> network_restrictions_id,
     net::CookieSettingOverrides factory_cookie_setting_overrides,
-    net::CookieSettingOverrides devtools_cookie_setting_overrides)
+    net::CookieSettingOverrides devtools_cookie_setting_overrides,
+    bool factory_is_storage_access_potentially_allowed)
     : receiver_(this, std::move(loader_receiver)),
       process_id_(process_id),
       request_id_(request_id),
@@ -457,7 +458,11 @@ CorsURLLoader::CorsURLLoader(
       shared_dictionary_storage_(std::move(shared_dictionary_storage)),
       shared_dictionary_observer_(shared_dictionary_observer),
       factory_cookie_setting_overrides_(factory_cookie_setting_overrides),
-      devtools_cookie_setting_overrides_(devtools_cookie_setting_overrides) {
+      devtools_cookie_setting_overrides_(devtools_cookie_setting_overrides),
+      is_storage_access_potentially_allowed_(
+          url_loader_util::IsStorageAccessPotentiallyAllowed(
+              factory_is_storage_access_potentially_allowed,
+              request_)) {
   TRACE_EVENT("loading", "CorsURLLoader::CorsURLLoader",
               net::NetLogWithSourceToFlow(net_log_), "url", request_.url.spec(),
               "process_id", process_id_, "request_id", request_id_,
@@ -1142,8 +1147,9 @@ CorsURLLoader::GetStorageAccessStatus() const {
       isolation_info_.top_frame_origin(),
       url_loader_util::CalculateCookieSettingOverrides(
           factory_cookie_setting_overrides_, devtools_cookie_setting_overrides_,
-          request_),
-      /*cookie_partition_key=*/std::nullopt, request_.permissions_policy);
+          request_, is_storage_access_potentially_allowed_),
+      /*cookie_partition_key=*/std::nullopt, request_.permissions_policy,
+      is_storage_access_potentially_allowed_);
 }
 
 bool CorsURLLoader::AllowUnsafeHeaders() const {

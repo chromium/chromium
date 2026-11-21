@@ -3865,7 +3865,12 @@ class StorageAccessHeadersCorsURLLoaderTest : public CorsURLLoaderTest {
   }
 
   std::optional<net::cookie_util::StorageAccessStatus>
-  ComputeStorageAccessStatus(const ResourceRequest& request) {
+  ComputeStorageAccessStatus(
+      const ResourceRequest& request,
+      bool factory_is_storage_access_potentially_allowed = true) {
+    const bool is_storage_access_potentially_allowed =
+        url_loader_util::IsStorageAccessPotentiallyAllowed(
+            factory_is_storage_access_potentially_allowed, request);
     return network_context()
         ->cookie_manager()
         ->cookie_settings()
@@ -3874,8 +3879,10 @@ class StorageAccessHeadersCorsURLLoaderTest : public CorsURLLoaderTest {
             request.trusted_params->isolation_info.top_frame_origin(),
             url_loader_util::CalculateCookieSettingOverrides(
                 /*factory_overrides=*/net::CookieSettingOverrides(),
-                /*devtools_overrides=*/net::CookieSettingOverrides(), request),
-            /*cookie_partition_key=*/std::nullopt, request.permissions_policy);
+                /*devtools_overrides=*/net::CookieSettingOverrides(), request,
+                is_storage_access_potentially_allowed),
+            /*cookie_partition_key=*/std::nullopt, request.permissions_policy,
+            is_storage_access_potentially_allowed);
   }
 
   ResourceRequest CreateNoCorsResourceRequest(
@@ -4067,6 +4074,61 @@ TEST_F(StorageAccessHeadersCorsURLLoaderTest, OmitsOriginWhenStatusIsActive) {
 
   EXPECT_FALSE(
       GetRequest().headers.HasHeader(net::HttpRequestHeaders::kOrigin));
+}
+
+TEST_F(StorageAccessHeadersCorsURLLoaderTest,
+       OmitsOriginWhenRestrictedDespiteGrant) {
+  network_context()->cookie_manager()->BlockThirdPartyCookies(true);
+  base::test::TestFuture<void> future;
+  network_context()->cookie_manager()->SetContentSettings(
+      ContentSettingsType::STORAGE_ACCESS,
+      {
+          ContentSettingPatternSource(
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(kUrl),
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                  kTopFrameOrigin.GetURL()),
+              base::Value(ContentSetting::CONTENT_SETTING_ALLOW),
+              content_settings::ProviderType::kDefaultProvider,
+              /*incognito=*/false),
+      },
+      future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  // Restricted via per-request `trusted_params`.
+  {
+    ResourceRequest request =
+        CreateNoCorsResourceRequest(kUrl, kTopFrameOrigin);
+    request.trusted_params->is_storage_access_potentially_allowed = false;
+
+    ASSERT_EQ(ComputeStorageAccessStatus(request),
+              net::cookie_util::StorageAccessStatus::kNone);
+
+    CreateLoaderAndRunToSuccessfulCompletion(request);
+
+    EXPECT_FALSE(
+        GetRequest().headers.HasHeader(net::HttpRequestHeaders::kOrigin));
+  }
+
+  // Restricted via `URLLoaderFactoryParams`.
+  {
+    ResetFactoryParams factory_params;
+    factory_params.is_trusted = true;
+    factory_params.is_storage_access_potentially_allowed = false;
+    ResetFactory(kInitiator, kRendererProcessId, factory_params);
+
+    ResourceRequest request =
+        CreateNoCorsResourceRequest(kUrl, kTopFrameOrigin);
+
+    ASSERT_EQ(
+        ComputeStorageAccessStatus(
+            request, /*factory_is_storage_access_potentially_allowed=*/false),
+        net::cookie_util::StorageAccessStatus::kNone);
+
+    CreateLoaderAndRunToSuccessfulCompletion(request);
+
+    EXPECT_FALSE(
+        GetRequest().headers.HasHeader(net::HttpRequestHeaders::kOrigin));
+  }
 }
 
 class RedirectCorsURLLoaderTest : public CorsURLLoaderTest,

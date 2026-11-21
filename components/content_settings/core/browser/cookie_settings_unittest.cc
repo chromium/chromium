@@ -1590,7 +1590,8 @@ TEST_F(CookieSettingsTest, GetStorageAccessStatus) {
       cookie_settings_->GetStorageAccessStatus(
           url, net::SiteForCookies::FromUrl(url), origin,
           net::CookieSettingOverrides(), /*cookie_partition_key=*/std::nullopt,
-          *allowing_permissions_policy),
+          *allowing_permissions_policy,
+          /*is_storage_access_potentially_allowed=*/true),
       std::nullopt);
 
   EXPECT_EQ(
@@ -1598,14 +1599,16 @@ TEST_F(CookieSettingsTest, GetStorageAccessStatus) {
           url, net::SiteForCookies::FromUrl(url), origin,
           net::CookieSettingOverrides(
               {net::CookieSettingOverride::kStorageAccessGrantEligible}),
-          /*cookie_partition_key=*/std::nullopt, *allowing_permissions_policy),
+          /*cookie_partition_key=*/std::nullopt, *allowing_permissions_policy,
+          /*is_storage_access_potentially_allowed=*/true),
       std::nullopt);
 
   EXPECT_EQ(
       cookie_settings_->GetStorageAccessStatus(
           url, net::SiteForCookies(), top_frame_origin,
           net::CookieSettingOverrides(), /*cookie_partition_key=*/std::nullopt,
-          *allowing_permissions_policy),
+          *allowing_permissions_policy,
+          /*is_storage_access_potentially_allowed=*/true),
 // We expect kActive when running the following in IOS due to the behavior of
 // `CookieSettings::ShouldBlockThirdPartyCookiesInternal()`.
 #if BUILDFLAG(IS_IOS)
@@ -1620,7 +1623,8 @@ TEST_F(CookieSettingsTest, GetStorageAccessStatus) {
           url, net::SiteForCookies(), top_frame_origin,
           net::CookieSettingOverrides(
               {net::CookieSettingOverride::kStorageAccessGrantEligible}),
-          /*cookie_partition_key=*/std::nullopt, *allowing_permissions_policy),
+          /*cookie_partition_key=*/std::nullopt, *allowing_permissions_policy,
+          /*is_storage_access_potentially_allowed=*/true),
 #if BUILDFLAG(IS_IOS)
       net::cookie_util::StorageAccessStatus::kActive
 #else
@@ -1636,7 +1640,8 @@ TEST_F(CookieSettingsTest, GetStorageAccessStatus) {
       cookie_settings_->GetStorageAccessStatus(
           url, net::SiteForCookies(), top_frame_origin,
           net::CookieSettingOverrides(), /*cookie_partition_key=*/std::nullopt,
-          *allowing_permissions_policy),
+          *allowing_permissions_policy,
+          /*is_storage_access_potentially_allowed=*/true),
 #if BUILDFLAG(IS_IOS)
       net::cookie_util::StorageAccessStatus::kActive
 #else
@@ -1657,7 +1662,8 @@ TEST_F(CookieSettingsTest, GetStorageAccessStatus) {
       cookie_settings_->GetStorageAccessStatus(
           url, net::SiteForCookies(), top_frame_origin,
           net::CookieSettingOverrides(), /*cookie_partition_key=*/std::nullopt,
-          *blocking_permissions_policy),
+          *blocking_permissions_policy,
+          /*is_storage_access_potentially_allowed=*/true),
 #if BUILDFLAG(IS_IOS)
       net::cookie_util::StorageAccessStatus::kActive
 #else
@@ -1670,7 +1676,8 @@ TEST_F(CookieSettingsTest, GetStorageAccessStatus) {
           url, net::SiteForCookies(), top_frame_origin,
           net::CookieSettingOverrides(
               {net::CookieSettingOverride::kStorageAccessGrantEligible}),
-          /*cookie_partition_key=*/std::nullopt, *allowing_permissions_policy),
+          /*cookie_partition_key=*/std::nullopt, *allowing_permissions_policy,
+          /*is_storage_access_potentially_allowed=*/true),
       net::cookie_util::StorageAccessStatus::kActive);
 
   EXPECT_EQ(
@@ -1679,7 +1686,8 @@ TEST_F(CookieSettingsTest, GetStorageAccessStatus) {
           net::CookieSettingOverrides(
               {net::CookieSettingOverride::
                    kStorageAccessGrantEligibleViaHeader}),
-          /*cookie_partition_key=*/std::nullopt, *allowing_permissions_policy),
+          /*cookie_partition_key=*/std::nullopt, *allowing_permissions_policy,
+          /*is_storage_access_potentially_allowed=*/true),
       net::cookie_util::StorageAccessStatus::kActive);
 
   net::CookiePartitionKey cookie_partition_key =
@@ -1691,14 +1699,16 @@ TEST_F(CookieSettingsTest, GetStorageAccessStatus) {
   EXPECT_EQ(cookie_settings_->GetStorageAccessStatus(
                 url, net::SiteForCookies(), top_frame_origin,
                 net::CookieSettingOverrides(), cookie_partition_key,
-                *allowing_permissions_policy),
+                *allowing_permissions_policy,
+                /*is_storage_access_potentially_allowed=*/true),
             net::cookie_util::StorageAccessStatus::kNone);
 
   EXPECT_EQ(cookie_settings_->GetStorageAccessStatus(
                 url, net::SiteForCookies(), top_frame_origin,
                 net::CookieSettingOverrides(
                     {net::CookieSettingOverride::kStorageAccessGrantEligible}),
-                cookie_partition_key, *allowing_permissions_policy),
+                cookie_partition_key, *allowing_permissions_policy,
+                /*is_storage_access_potentially_allowed=*/true),
             net::cookie_util::StorageAccessStatus::kNone);
 
   EXPECT_EQ(cookie_settings_->GetStorageAccessStatus(
@@ -1706,7 +1716,8 @@ TEST_F(CookieSettingsTest, GetStorageAccessStatus) {
                 net::CookieSettingOverrides(
                     {net::CookieSettingOverride::
                          kStorageAccessGrantEligibleViaHeader}),
-                cookie_partition_key, *allowing_permissions_policy),
+                cookie_partition_key, *allowing_permissions_policy,
+                /*is_storage_access_potentially_allowed=*/true),
             net::cookie_util::StorageAccessStatus::kNone);
 }
 

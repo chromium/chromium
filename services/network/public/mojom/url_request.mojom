@@ -181,6 +181,15 @@ struct TrustedUrlRequestParams {
   // TODO(crbug.com/447039330): This is temporary for the SyntheticResponse
   // experiment and will be removed after standardization.
   HttpResponseHeaders? expected_response_headers_for_synthetic_response;
+
+  // Whether the context for this trusted request could potentially be allowed
+  // to receive unpartitioned storage access. The effective value for the
+  // request is the logical AND of this field and
+  // `URLLoaderFactoryParams.is_storage_access_potentially_allowed` (so `true`
+  // here does not override `false` on the factory). Trusted browser callers
+  // sharing a `URLLoaderFactory` across frames (such as
+  // `NavigationURLLoaderImpl`) set this to `false` for restricted contexts.
+  bool is_storage_access_potentially_allowed = true;
 };
 
 // Options that may only be set on URLRequests which are related to WebBundle.
@@ -572,14 +581,12 @@ struct URLRequest {
   // network error will be returned.
   network.mojom.IPAddressSpace required_ip_address_space;
 
-  // True if the request is eligible for using Storage Access API grant (if
-  // one exists). This is secure since the renderer cannot forge a new storage
-  // access permission grant, so the renderer would not be able to gain access
-  // to unpartitioned cookies without also compromising the browser process or
-  // the network service. If permission has already been granted, then the
-  // compromised renderer would be able to access unpartitioned cookies. But by
-  // assumption, the browser process has already determined that this access is
-  // ok.
+  // Indicates whether the request is eligible to use a Storage Access API grant
+  // (if one exists). The Network Service validates this field against both
+  // `URLLoaderFactoryParams.is_storage_access_potentially_allowed` and
+  // `TrustedUrlRequestParams.is_storage_access_potentially_allowed` to ensure a
+  // compromised renderer hosting a storage-access-restricted document cannot
+  // opt into an existing Storage Access API permission grant.
   StorageAccessApiStatus storage_access_api_status;
 
   // When applicable, i.e. `keepalive` is true, indicates a fetch keepalive

@@ -1723,7 +1723,9 @@ void StoragePartitionImpl::CreateRestrictedCookieManager(
     GetNetworkContext()->GetRestrictedCookieManager(
         std::move(receiver), role, origin, isolation_info,
         cookie_setting_overrides, devtools_cookie_setting_overrides,
-        prefer_bound_cookie_context, std::move(cookie_observer));
+        prefer_bound_cookie_context,
+        /*is_storage_access_potentially_allowed=*/true,
+        std::move(cookie_observer));
   }
 }
 

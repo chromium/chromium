@@ -1296,14 +1296,15 @@ void NetworkContext::GetRestrictedCookieManager(
     const net::CookieSettingOverrides& cookie_setting_overrides,
     const net::CookieSettingOverrides& devtools_cookie_setting_overrides,
     bool prefer_bound_cookie_context,
+    bool is_storage_access_potentially_allowed,
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer) {
   std::unique_ptr<RestrictedCookieManager> ptr =
       std::make_unique<RestrictedCookieManager>(
           role, url_request_context_->cookie_store(),
           cookie_manager_->cookie_settings(), origin, isolation_info,
           cookie_setting_overrides, devtools_cookie_setting_overrides,
-          prefer_bound_cookie_context, std::move(cookie_observer),
-          network_service_->GetMetricsUpdater());
+          prefer_bound_cookie_context, is_storage_access_potentially_allowed,
+          std::move(cookie_observer), network_service_->GetMetricsUpdater());
 
   auto callback = base::BindOnce(&NetworkContext::OnRCMDisconnect,
                                  base::Unretained(this), ptr.get());

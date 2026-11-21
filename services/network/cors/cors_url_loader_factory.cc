@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/debug/crash_logging.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -265,6 +266,8 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
       is_outermost_main_frame_(params->is_outermost_main_frame),
       renderer_accessible_http_cache_write_enabled_(
           params->renderer_accessible_http_cache_write_enabled),
+      factory_is_storage_access_potentially_allowed_(
+          params->is_storage_access_potentially_allowed),
       origin_access_list_(origin_access_list),
       owner_(owner),
       network_restrictions_id_(params->network_restrictions_id) {
@@ -501,7 +504,8 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
         shared_dictionary_observer_ ? shared_dictionary_observer_.get()
                                     : nullptr,
         context_, network_restrictions_id_, factory_cookie_setting_overrides_,
-        devtools_cookie_setting_overrides_);
+        devtools_cookie_setting_overrides_,
+        factory_is_storage_access_potentially_allowed_);
     auto* raw_loader = loader.get();
     OnCorsURLLoaderCreated(std::move(loader));
     raw_loader->Start();
@@ -598,6 +602,15 @@ bool CorsURLLoaderFactory::IsValidRequest(
     UMA_HISTOGRAM_BOOLEAN(
         "NetworkService.CorsURLLoaderFactory.IsOutermostMainFrameClamped",
         true);
+  }
+
+  if (request.storage_access_api_status != net::StorageAccessApiStatus::kNone &&
+      !url_loader_util::IsStorageAccessPotentiallyAllowed(
+          factory_is_storage_access_potentially_allowed_, request)) {
+    mojo::ReportBadMessage(
+        "CorsURLLoaderFactory: storage_access_api_status must be kNone when "
+        "storage access is not allowed");
+    return false;
   }
 
   // Check if this is an untrusted factory being provided parameters that should

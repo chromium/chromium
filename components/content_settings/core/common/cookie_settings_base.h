@@ -342,9 +342,8 @@ class CookieSettingsBase {
       base::optional_ref<const url::Origin> top_frame_origin,
       net::CookieSettingOverrides overrides,
       base::optional_ref<const net::CookiePartitionKey> cookie_partition_key,
-      base::optional_ref<const network::PermissionsPolicy> permissions_policy)
-
-      const;
+      base::optional_ref<const network::PermissionsPolicy> permissions_policy,
+      bool is_storage_access_potentially_allowed) const;
 
  protected:
   // Returns the URL to be considered "first-party" for the given request. If

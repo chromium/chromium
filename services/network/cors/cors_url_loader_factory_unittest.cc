@@ -688,6 +688,101 @@ TEST_F(BrowserProcessCorsURLLoaderFactoryTest, OutermostMainFrameNotClamped) {
       "NetworkService.CorsURLLoaderFactory.IsOutermostMainFrameClamped", 0);
 }
 
+class StorageAccessRestrictedCorsURLLoaderFactoryTest
+    : public CorsURLLoaderFactoryTest {
+ protected:
+  void SetUp() override {
+    auto factory_params = network::mojom::URLLoaderFactoryParams::New();
+    factory_params->is_storage_access_potentially_allowed = false;
+    auto context_params = mojom::NetworkContextParams::New();
+    BaseSetup(std::move(factory_params), std::move(context_params));
+  }
+};
+
+TEST_F(StorageAccessRestrictedCorsURLLoaderFactoryTest,
+       StorageAccessApiStatusRejected) {
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kInclude;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = test_server()->GetURL("/echoall");
+  request.request_initiator = url::Origin::Create(request.url);
+  request.storage_access_api_status =
+      net::StorageAccessApiStatus::kAccessViaAPI;
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request);
+  EXPECT_EQ(
+      "CorsURLLoaderFactory: storage_access_api_status must be kNone when "
+      "storage access is not allowed",
+      bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(StorageAccessRestrictedCorsURLLoaderFactoryTest,
+       StorageAccessApiStatusNoneAllowed) {
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kInclude;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = test_server()->GetURL("/echoall");
+  request.request_initiator = url::Origin::Create(request.url);
+  request.storage_access_api_status = net::StorageAccessApiStatus::kNone;
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request);
+  test_cors_loader_clients().back()->RunUntilComplete();
+  EXPECT_EQ(net::OK,
+            test_cors_loader_clients().back()->completion_status().error_code);
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+}
+
+class StorageAccessRestrictedFeatureDisabledCorsURLLoaderFactoryTest
+    : public StorageAccessRestrictedCorsURLLoaderFactoryTest {
+ public:
+  StorageAccessRestrictedFeatureDisabledCorsURLLoaderFactoryTest() {
+    AddScopedFeatureList().InitAndDisableFeature(
+        features::kEnforceStorageAccessApiRestrictions);
+  }
+};
+
+TEST_F(StorageAccessRestrictedFeatureDisabledCorsURLLoaderFactoryTest,
+       FeatureDisabledBypassesBadMessage) {
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kInclude;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = test_server()->GetURL("/echoall");
+  request.request_initiator = url::Origin::Create(request.url);
+  request.storage_access_api_status =
+      net::StorageAccessApiStatus::kAccessViaAPI;
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request);
+  test_cors_loader_clients().back()->RunUntilComplete();
+  EXPECT_EQ(net::OK,
+            test_cors_loader_clients().back()->completion_status().error_code);
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+}
+
+TEST_F(CorsURLLoaderFactoryTest,
+       StorageAccessApiStatusAllowedWhenNotRestricted) {
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kInclude;
+  request.method = net::HttpRequestHeaders::kGetMethod;
+  request.url = test_server()->GetURL("/echoall");
+  request.request_initiator = url::Origin::Create(request.url);
+  request.storage_access_api_status =
+      net::StorageAccessApiStatus::kAccessViaAPI;
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  CreateLoaderAndStart(request);
+  test_cors_loader_clients().back()->RunUntilComplete();
+  EXPECT_EQ(net::OK,
+            test_cors_loader_clients().back()->completion_status().error_code);
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
+}
+
 #if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
 class SharedHttpCacheCorsURLLoaderFactoryTest
     : public CorsURLLoaderFactoryTest {

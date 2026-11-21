@@ -539,17 +539,32 @@ CookieSettingsBase::GetStorageAccessStatus(
     base::optional_ref<const url::Origin> top_frame_origin,
     net::CookieSettingOverrides overrides,
     base::optional_ref<const net::CookiePartitionKey> cookie_partition_key,
-    base::optional_ref<const network::PermissionsPolicy> permissions_policy)
-
-    const {
+    base::optional_ref<const network::PermissionsPolicy> permissions_policy,
+    bool is_storage_access_potentially_allowed) const {
   if (!IsThirdPartyRequest(url, site_for_cookies)) {
     return std::nullopt;
   }
+  const bool enforce_storage_access_restrictions =
+      !is_storage_access_potentially_allowed &&
+      base::FeatureList::IsEnabled(
+          network::features::kEnforceStorageAccessApiRestrictions);
+  // Callers must have already stripped Storage Access overrides when storage
+  // access is not potentially allowed.
+  CHECK(!enforce_storage_access_restrictions ||
+        !IsEligibleForStorageAccess(overrides));
+  // Check whether third-party cookies are already allowed (e.g. via non-SAA
+  // rules such as unblocked 3PCs or an explicit COOKIES setting, or via an
+  // active SAA override when storage access is potentially allowed).
   if (IsFullCookieAccessAllowed(url, site_for_cookies, top_frame_origin,
                                 overrides, cookie_partition_key)) {
     return net::cookie_util::StorageAccessStatus::kActive;
   }
-  if (IsEligibleForStorageAccess(overrides)) {
+  // If storage access is not potentially allowed, the request cannot opt in via
+  // Storage Access Headers. If `overrides` was already eligible for storage
+  // access yet `IsFullCookieAccessAllowed` returned false above, no matching
+  // grant permits access, so retrying via header would also fail.
+  if (enforce_storage_access_restrictions ||
+      IsEligibleForStorageAccess(overrides)) {
     return net::cookie_util::StorageAccessStatus::kNone;
   }
   if (!IsStorageAccessAllowedByPermissionsPolicy(url::Origin::Create(url),

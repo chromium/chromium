@@ -99,7 +99,11 @@ interface RestrictedCookieManager {
   // indicates whether this cookie access is being used for advertising.
   // |storage_access_api_status| is used to opt-in to using Storage Access API
   // permission grants. (Note: it does *not* grant access on its own, but rather
-  // allows an existing permission grant to be used, if one exists.)
+  // allows an existing permission grant to be used, if one exists.) If this
+  // RestrictedCookieManager was created with
+  // `is_storage_access_potentially_allowed` set to false, passing a non-kNone
+  // |storage_access_api_status| to any method on this interface is treated as
+  // a bad message.
   // |options| filters the returned list of cookies. The returned cookies
   // include CookieAccessResult information of the cookie.
   // Any information contained in the CookieInclusionStatus::WarningReasons

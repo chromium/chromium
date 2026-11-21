@@ -50,6 +50,16 @@ base::optional_ref<const network::PermissionsPolicy> GetPermissionsPolicy(
   const auto* const loader = URLLoader::ForRequest(request);
   return loader ? loader->GetPermissionsPolicy() : std::nullopt;
 }
+
+// Returns whether storage access is potentially allowed for `request`.
+// `loader` is null for non-URLLoader URLRequests (such as WebSocket handshakes,
+// which clamp `storage_access_api_status` in the browser process and do not
+// compute `StorageAccessStatus` or use Storage Access Headers), where returning
+// true is safe.
+bool IsStorageAccessPotentiallyAllowed(const net::URLRequest& request) {
+  const auto* const loader = URLLoader::ForRequest(request);
+  return !loader || loader->is_storage_access_potentially_allowed();
+}
 }  // namespace
 
 NetworkServiceNetworkDelegate::NetworkServiceNetworkDelegate(
@@ -208,7 +218,8 @@ NetworkServiceNetworkDelegate::OnGetStorageAccessStatus(
             redirect_info->new_url, redirect_info->new_site_for_cookies,
             request.isolation_info().top_frame_origin(),
             request.cookie_setting_overrides(), request.cookie_partition_key(),
-            GetPermissionsPolicy(request));
+            GetPermissionsPolicy(request),
+            IsStorageAccessPotentiallyAllowed(request));
   }
   return network_context_->cookie_manager()
       ->cookie_settings()
@@ -216,7 +227,8 @@ NetworkServiceNetworkDelegate::OnGetStorageAccessStatus(
                               request.isolation_info().top_frame_origin(),
                               request.cookie_setting_overrides(),
                               request.cookie_partition_key(),
-                              GetPermissionsPolicy(request));
+                              GetPermissionsPolicy(request),
+                              IsStorageAccessPotentiallyAllowed(request));
 }
 
 bool NetworkServiceNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(

@@ -79,6 +79,7 @@ class TestNetworkContext : public mojom::NetworkContext {
       const net::CookieSettingOverrides& cookie_setting_overrides,
       const net::CookieSettingOverrides& devtools_cookie_setting_overrides,
       bool prefer_bound_cookie_context,
+      bool is_storage_access_potentially_allowed,
       mojo::PendingRemote<mojom::CookieAccessObserver> observer) override {}
   void GetRestrictedDeviceBoundSessionManager(
       mojo::PendingReceiver<mojom::RestrictedDeviceBoundSessionManager>

@@ -194,6 +194,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   const bool is_main_frame_origin_recently_accessed_;
   const bool is_outermost_main_frame_;
   const bool renderer_accessible_http_cache_write_enabled_;
+  // Whether the factory params potentially allow storage
+  // access via the Storage Access API (or Storage Access Headers).
+  const bool factory_is_storage_access_potentially_allowed_;
 
   // Relative order of `network_loader_factory_` and `loaders_` matters -
   // URLLoaderFactory needs to live longer than URLLoaders created using the

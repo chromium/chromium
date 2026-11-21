@@ -136,6 +136,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     scoped_refptr<SharedDataPipeProducerHandle> response_body_stream;
     scoped_refptr<net::HttpResponseHeaders>
         expected_response_headers_for_synthetic_response;
+    // Whether the requesting context could potentially be allowed to receive
+    // access to unpartitioned storage.
+    bool is_storage_access_potentially_allowed = true;
   };
 
   // Typemapped to network.mojom.WebBundleTokenParams, see comments there

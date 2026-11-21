@@ -196,6 +196,8 @@ CorsURLLoaderTestBase::ResetFactoryParams::ResetFactoryParams() {
   ignore_isolated_world_origin = params.ignore_isolated_world_origin;
   isolated_world_origin_lock = params.isolated_world_origin_lock;
   client_security_state = std::move(params.client_security_state);
+  is_storage_access_potentially_allowed =
+      params.is_storage_access_potentially_allowed;
 
   mojom::URLLoaderFactoryOverride factory_override;
   skip_cors_enabled_scheme_check =
@@ -360,6 +362,8 @@ void CorsURLLoaderTestBase::ResetFactory(std::optional<url::Origin> initiator,
       params.skip_cors_enabled_scheme_check;
   factory_params->client_security_state = params.client_security_state.Clone();
   factory_params->isolation_info = params.isolation_info;
+  factory_params->is_storage_access_potentially_allowed =
+      params.is_storage_access_potentially_allowed;
   factory_params->url_loader_network_observer = std::move(
       const_cast<mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>&>(
           params.url_loader_network_observer));

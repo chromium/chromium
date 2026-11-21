@@ -98,6 +98,8 @@ bool StructTraits<network::mojom::TrustedUrlRequestParamsDataView,
           &out->expected_response_headers_for_synthetic_response)) {
     return false;
   }
+  out->is_storage_access_potentially_allowed =
+      data.is_storage_access_potentially_allowed();
   return true;
 }
 

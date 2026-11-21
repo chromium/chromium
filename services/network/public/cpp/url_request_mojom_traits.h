@@ -202,6 +202,11 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return trusted_params.expected_response_headers_for_synthetic_response;
   }
 
+  static bool is_storage_access_potentially_allowed(
+      const network::ResourceRequest::TrustedParams& trusted_params) {
+    return trusted_params.is_storage_access_potentially_allowed;
+  }
+
   static bool Read(network::mojom::TrustedUrlRequestParamsDataView data,
                    network::ResourceRequest::TrustedParams* out);
 };
