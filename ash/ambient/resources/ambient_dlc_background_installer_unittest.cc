@@ -5,9 +5,11 @@
 #include "ash/ambient/resources/ambient_dlc_background_installer.h"
 
 #include <string>
+#include <utility>
 
 #include "ash/constants/ambient_time_of_day_constants.h"
 #include "ash/public/cpp/personalization_app/time_of_day_test_utils.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
@@ -20,6 +22,30 @@
 
 namespace ash {
 namespace {
+
+// Counts Time of Day DLC install requests as they are made, so tests can wait
+// for one with `base::test::RunUntil()`. FakeDlcserviceClient reports
+// installed DLCs only through a posted callback.
+class InstallCountingDlcserviceClient : public FakeDlcserviceClient {
+ public:
+  // FakeDlcserviceClient:
+  void Install(const dlcservice::InstallRequest& install_request,
+               InstallCallback callback,
+               ProgressCallback progress_callback) override {
+    if (install_request.id() == kTimeOfDayDlcId) {
+      ++num_time_of_day_install_requests_;
+    }
+    FakeDlcserviceClient::Install(install_request, std::move(callback),
+                                  std::move(progress_callback));
+  }
+
+  size_t num_time_of_day_install_requests() const {
+    return num_time_of_day_install_requests_;
+  }
+
+ private:
+  size_t num_time_of_day_install_requests_ = 0;
+};
 
 class AmbientDlcBackgroundInstallerTest : public ::testing::Test {
  protected:
@@ -51,7 +77,7 @@ class AmbientDlcBackgroundInstallerTest : public ::testing::Test {
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   network_config::CrosNetworkConfigTestHelper cros_network_config_helper_;
-  FakeDlcserviceClient dlc_service_client_;
+  InstallCountingDlcserviceClient dlc_service_client_;
   std::string wifi_device_path_;
 };
 
@@ -62,8 +88,9 @@ TEST_F(AmbientDlcBackgroundInstallerTest, InstallsWhenNetworkUp) {
   cros_network_config_helper_.network_state_helper().SetServiceProperty(
       wifi_device_path_, shill::kStateProperty,
       base::Value(shill::kStateOnline));
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(IsTimeOfDayDlcInstalled());
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return dlc_service_client_.num_time_of_day_install_requests() > 0;
+  }));
 }
 
 TEST_F(AmbientDlcBackgroundInstallerTest, InstallsWhenNetworkAlreadyUp) {
@@ -72,8 +99,9 @@ TEST_F(AmbientDlcBackgroundInstallerTest, InstallsWhenNetworkAlreadyUp) {
       base::Value(shill::kStateOnline));
 
   AmbientBackgroundDlcInstaller installer;
-  task_environment_.RunUntilIdle();
-  EXPECT_TRUE(IsTimeOfDayDlcInstalled());
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return dlc_service_client_.num_time_of_day_install_requests() > 0;
+  }));
 }
 
 TEST_F(AmbientDlcBackgroundInstallerTest, InstallsOnlyOnce) {
@@ -83,11 +111,12 @@ TEST_F(AmbientDlcBackgroundInstallerTest, InstallsOnlyOnce) {
   cros_network_config_helper_.network_state_helper().SetServiceProperty(
       wifi_device_path_, shill::kStateProperty,
       base::Value(shill::kStateOnline));
-  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return dlc_service_client_.num_time_of_day_install_requests() > 0;
+  }));
 
   cros_network_config_helper_.network_state_helper().SetServiceProperty(
       wifi_device_path_, shill::kStateProperty, base::Value(shill::kStateIdle));
-  task_environment_.RunUntilIdle();
 
   cros_network_config_helper_.network_state_helper().SetServiceProperty(
       wifi_device_path_, shill::kStateProperty,
