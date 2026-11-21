@@ -5,15 +5,24 @@
 #ifndef REMOTING_PROTOCOL_HOST_EVENT_DISPATCHER_H_
 #define REMOTING_PROTOCOL_HOST_EVENT_DISPATCHER_H_
 
-#include <stdint.h>
+#include <cstddef>
+#include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "remoting/protocol/input_event_timestamps.h"
 
 namespace remoting::protocol {
 
 class InputStub;
+
+// Maximum serialized size accepted for a single EventMessage on the event
+// channel. Larger messages are dropped without being parsed. Key, mouse,
+// ten-point touch, and sentence-length text events are each estimated to be
+// under 1 KiB, so this leaves headroom for legitimate clients.
+inline constexpr size_t kMaxEventMessageSizeBytes = 4096;
 
 // HostEventDispatcher dispatches incoming messages on the event channel to
 // InputStub.
@@ -28,7 +37,7 @@ class HostEventDispatcher : public ChannelDispatcherBase {
 
   // Set InputStub that will be called for each incoming input
   // message. Doesn't take ownership of |input_stub|. It must outlive
-  // the dispatcher.
+  // the dispatcher. Messages received while no InputStub is set are dropped.
   void set_input_stub(InputStub* input_stub) { input_stub_ = input_stub; }
 
   // Returns InputEventTimestampsSource for events received on input channel.
@@ -46,9 +55,16 @@ class HostEventDispatcher : public ChannelDispatcherBase {
  private:
   void OnIncomingMessage(std::unique_ptr<CompoundBuffer> buffer) override;
 
+  // Logs a warning, at most once per logging interval, when a message of
+  // `message_size` bytes is dropped for exceeding `kMaxEventMessageSizeBytes`.
+  void OnOversizedMessageDropped(size_t message_size);
+
   scoped_refptr<InputEventTimestampsSourceImpl> event_timestamps_source_;
 
   raw_ptr<InputStub> input_stub_ = nullptr;
+
+  // The last time a dropped oversized message was logged.
+  base::TimeTicks last_oversized_message_log_time_;
 };
 
 }  // namespace remoting::protocol

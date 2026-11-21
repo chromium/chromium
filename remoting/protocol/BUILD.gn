@@ -334,6 +334,7 @@ source_set("unit_tests") {
     "data_channel_manager_unittest.cc",
     "fractional_input_filter_unittest.cc",
     "frame_stats_unittest.cc",
+    "host_event_dispatcher_unittest.cc",
     "ice_config_fetcher_cloud_unittest.cc",
     "ice_config_fetcher_default_unittest.cc",
     "ice_config_unittest.cc",

@@ -4,8 +4,11 @@
 
 #include "remoting/protocol/host_event_dispatcher.h"
 
+#include <memory>
+
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "net/socket/stream_socket.h"
+#include "base/time/time.h"
 #include "remoting/base/compound_buffer.h"
 #include "remoting/base/constants.h"
 #include "remoting/proto/event.pb.h"
@@ -15,6 +18,13 @@
 
 namespace remoting::protocol {
 
+namespace {
+
+// Minimum interval between log messages reporting oversized event messages.
+constexpr base::TimeDelta kOversizedMessageLogInterval = base::Seconds(10);
+
+}  // namespace
+
 HostEventDispatcher::HostEventDispatcher()
     : ChannelDispatcherBase(kEventChannelName),
       event_timestamps_source_(new InputEventTimestampsSourceImpl()) {}
@@ -23,7 +33,14 @@ HostEventDispatcher::~HostEventDispatcher() = default;
 
 void HostEventDispatcher::OnIncomingMessage(
     std::unique_ptr<CompoundBuffer> buffer) {
-  DCHECK(input_stub_);
+  if (buffer->total_bytes() > kMaxEventMessageSizeBytes) {
+    OnOversizedMessageDropped(buffer->total_bytes());
+    return;
+  }
+
+  if (!input_stub_) {
+    return;
+  }
 
   std::unique_ptr<EventMessage> message =
       ParseMessage<EventMessage>(buffer.get());
@@ -65,6 +82,22 @@ void HostEventDispatcher::OnIncomingMessage(
   } else {
     LOG(WARNING) << "Unknown event message received.";
   }
+}
+
+void HostEventDispatcher::OnOversizedMessageDropped(size_t message_size) {
+  // TODO: crbug.com/588598319 - Tell the client, with a generic response, when
+  // an input event is dropped for exceeding a size or rate limit. Clipboard
+  // events that exceed the configured size limit are also handled without
+  // telling the client.
+  base::TimeTicks now = base::TimeTicks::Now();
+  if (!last_oversized_message_log_time_.is_null() &&
+      now - last_oversized_message_log_time_ < kOversizedMessageLogInterval) {
+    return;
+  }
+  last_oversized_message_log_time_ = now;
+  LOG(WARNING) << "Dropped an event message of " << message_size
+               << " bytes (limit is " << kMaxEventMessageSizeBytes
+               << " bytes).";
 }
 
 }  // namespace remoting::protocol

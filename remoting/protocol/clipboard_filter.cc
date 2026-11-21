@@ -24,6 +24,8 @@ void ClipboardFilter::InjectClipboardEvent(const ClipboardEvent& event) {
     return;
   }
 
+  // TODO: crbug.com/588598319 - Tell the client, with a generic response, when
+  // clipboard data is dropped or truncated below for exceeding `max_size_`.
   if (max_size_.has_value() && *max_size_ == 0) {
     return;
   }
