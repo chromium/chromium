@@ -39,6 +39,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/textarea/textarea.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/controls/textfield/textfield_model.h"
 #include "ui/views/examples/example_combobox_model.h"
 #include "ui/views/examples/examples_action_id.h"
 #include "ui/views/examples/grit/views_examples_resources.h"
@@ -417,8 +418,8 @@ void ActionsExample::ActionInvoked(actions::ActionItem* action,
   auto bool_to_string = [](bool value) {
     return value ? kBoolStrings[1] : kBoolStrings[0];
   };
-  std::u16string text(actions_trigger_info_->GetText());
-  if (!text.empty()) {
+  std::u16string text;
+  if (!actions_trigger_info_->GetText().empty()) {
     text.append(u"\n");
   }
   text.append(base::ASCIIToUTF16(base::StringPrintf(
@@ -428,9 +429,9 @@ void ActionsExample::ActionInvoked(actions::ActionItem* action,
       base::UTF16ToASCII(action->GetText()).c_str(),
       bool_to_string(action->GetVisible()),
       bool_to_string(action->GetEnabled()))));
-  // Manually append the text since Textfield::AppendText() is broken right now.
-  // (crbug.com/1476989)
-  actions_trigger_info_->SetText(text);
+  actions_trigger_info_->AppendText(text);
+  actions_trigger_info_->SetSelectedRange(
+      gfx::Range(actions_trigger_info_->GetText().length()));
   if (GetSelectedAction() == action) {
     action_checked_->SetChecked(action->GetChecked());
   }
@@ -455,12 +456,9 @@ void ActionsExample::AssignAction(actions::ActionItem* action,
       static_cast<ViewsComboboxModel*>(controls_->GetModel());
   size_t index_val = index.value();
   View* view = model->GetViewItemAt(index_val);
-  if (IsViewClass<MdTextButton>(view)) {
+  if (view) {
     action_view_controller_.CreateActionViewRelationship(
-        static_cast<MdTextButton*>(view), GetSelectedAction()->GetAsWeakPtr());
-  } else if (IsViewClass<Checkbox>(view)) {
-    action_view_controller_.CreateActionViewRelationship(
-        static_cast<Checkbox*>(view), GetSelectedAction()->GetAsWeakPtr());
+        view, GetSelectedAction()->GetAsWeakPtr());
   }
 }
 
