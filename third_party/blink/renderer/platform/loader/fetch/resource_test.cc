@@ -4,8 +4,11 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 
+#include <array>
 #include <string_view>
+#include <utility>
 
+#include "base/notreached.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -14,6 +17,7 @@
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource.h"
@@ -598,47 +602,239 @@ TEST_F(ResourceTest, GarbageCollection) {
   EXPECT_FALSE(weak_resource);
 }
 
-// Tests that resources fetched via a Service Worker are only reused if the
-// requesting world matches the world that fetched the resource. This prevents
-// unexpected cross-world resource reuse.
-TEST_F(ResourceTest, CanReuseServiceWorkerResource) {
-  KURL url("http://127.0.0.1:8000/foo.html");
+// Tests `Resource::CanReuse()` across script worlds, for each world of the
+// cached resource, how its response was obtained, and the world of the new
+// request.
+TEST_F(ResourceTest, CanReuseAcrossWorlds) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {
+          kPreventExtensionResourceFetchAcrossIsolatedWorlds,
+          kPreventCrossWorldServiceWorkerResourceReuse,
+          kPreventAllCrossWorldForCspReuse,
+          kPreventAllCrossTargetWorldReuse,
+      },
+      {});
+
+  // The world of the cached resource or the new request.
+  enum class World {
+    // A Main World Resource obeying the main world's CSP.
+    kMain,
+
+    // A Main World Resource obeying an isolated world's CSP (e.g. a
+    // `<link rel=preload>` inserted by a content script).
+    kMainIsolatedCsp,
+
+    // Isolated World Resources (e.g. `fetch()` or dynamic `import()` in a
+    // content script) of two different isolated worlds.
+    kIsolated,
+    kIsolatedOther,
+  };
+
+  // How the response of the cached resource was obtained.
+  enum class ResponseSource {
+    // Served from the network server.
+    kNetwork,
+
+    // Produced by a ServiceWorker.
+    kServiceWorker,
+
+    // The final response was fetched from the network after a network redirect.
+    kNetworkAfterRedirect,
+
+    // The redirect was produced by a ServiceWorker, but the final response was
+    // fetched from the network, so `WasFetchedViaServiceWorker()` is false.
+    kNetworkAfterServiceWorkerRedirect,
+  };
+
+  using MatchStatus = Resource::MatchStatus;
+
+  const KURL url("http://127.0.0.1:8000/foo.html");
+  const KURL redirect_target_url("http://127.0.0.1:8000/bar.html");
+
   scoped_refptr<const SecurityOrigin> origin = SecurityOrigin::Create(url);
+  DOMWrapperWorld* isolated_world = DOMWrapperWorld::EnsureIsolatedWorld(
+      /*isolate=*/nullptr, /*world_id=*/blink::kIsolatedWorldIdLimit - 1);
+  DOMWrapperWorld* other_isolated_world = DOMWrapperWorld::EnsureIsolatedWorld(
+      /*isolate=*/nullptr, /*world_id=*/blink::kIsolatedWorldIdLimit - 2);
 
-  // Set up the cached resource which was fetched via a Service Worker.
-  ResourceRequest cache_request(url);
-  cache_request.SetRequestorOrigin(origin);
+  auto options = [&](World world) -> ResourceLoaderOptions {
+    switch (world) {
+      case World::kMain:
+        return ResourceLoaderOptions(/*world_for_csp=*/nullptr);
+      case World::kMainIsolatedCsp:
+        return ResourceLoaderOptions(isolated_world);
+      case World::kIsolated:
+        return ResourceLoaderOptions::CreateForTargetWorld(isolated_world);
+      case World::kIsolatedOther:
+        return ResourceLoaderOptions::CreateForTargetWorld(
+            other_isolated_world);
+    }
+    NOTREACHED();
+  };
 
-  ResourceResponse response(url);
-  response.SetHttpStatusCode(200);
-  response.SetWasFetchedViaServiceWorker(true);
+  auto create_cached_resource = [&](World cached_world,
+                                    ResponseSource cached_response_source) {
+    ResourceRequest cached_request(url);
+    cached_request.SetRequestorOrigin(origin);
+    auto* cached_resource = MakeGarbageCollected<MockResource>(
+        cached_request, options(cached_world));
 
-  auto* resource = MakeGarbageCollected<MockResource>(cache_request);
-  resource->ResponseReceived(response);
-  resource->FinishForTest();
+    auto follow_redirect = [&](bool was_fetched_via_service_worker) {
+      ResourceResponse redirect_response(url);
+      redirect_response.SetHttpStatusCode(302);
+      redirect_response.SetWasFetchedViaServiceWorker(
+          was_fetched_via_service_worker);
+      ResourceRequest redirected_request(redirect_target_url);
+      redirected_request.SetRequestorOrigin(origin);
+      cached_resource->WillFollowRedirect(redirected_request,
+                                          redirect_response);
+    };
 
-  // Verify that a request from the same world (both have null `world_for_csp`
-  // which represents the main world) can reuse the cached resource.
-  {
-    ResourceRequest request(url);
-    request.SetRequestorOrigin(origin);
-    FetchParameters params = FetchParameters::CreateForTest(std::move(request));
-    EXPECT_EQ(Resource::MatchStatus::kOk, resource->CanReuse(params));
-  }
+    ResourceResponse resource_response(url);
+    resource_response.SetHttpStatusCode(200);
 
-  // Verify that a request from a different isolated world (e.g., an extension
-  // or devtools) cannot reuse the cached resource, returning
-  // `Resource::MatchStatus::kCrossWorldServiceWorkerResourceMismatch`.
-  {
-    ResourceRequest request(url);
-    request.SetRequestorOrigin(origin);
-    DOMWrapperWorld* isolated_world = DOMWrapperWorld::EnsureIsolatedWorld(
-        /*v8::Isolate=*/nullptr, blink::kIsolatedWorldIdLimit - 1);
-    FetchParameters params(std::move(request),
-                           ResourceLoaderOptions(isolated_world));
+    switch (cached_response_source) {
+      case ResponseSource::kNetwork:
+        break;
+      case ResponseSource::kServiceWorker:
+        resource_response.SetWasFetchedViaServiceWorker(true);
+        break;
+      case ResponseSource::kNetworkAfterRedirect:
+        follow_redirect(/*was_fetched_via_service_worker=*/false);
+        resource_response.SetCurrentRequestUrl(redirect_target_url);
+        break;
+      case ResponseSource::kNetworkAfterServiceWorkerRedirect:
+        follow_redirect(/*was_fetched_via_service_worker=*/true);
+        resource_response.SetCurrentRequestUrl(redirect_target_url);
+        break;
+    }
+    cached_resource->ResponseReceived(resource_response);
+    cached_resource->FinishForTest();
+    return cached_resource;
+  };
 
-    EXPECT_EQ(Resource::MatchStatus::kCrossWorldServiceWorkerResourceMismatch,
-              resource->CanReuse(params));
+  auto can_reuse = [&](const Resource& cached_resource,
+                       World new_request_world) {
+    ResourceRequest new_request(url);
+    new_request.SetRequestorOrigin(origin);
+    FetchParameters new_request_params(std::move(new_request),
+                                       options(new_request_world));
+    return cached_resource.CanReuse(new_request_params);
+  };
+
+  struct TestCase {
+    World cached_world;
+    ResponseSource cached_response_source;
+    World new_request_world;
+    MatchStatus expected;
+  };
+  constexpr auto kCases = std::to_array<TestCase>({
+      // A resource from the network (`ResponseSource::kNetwork`):
+      // Cannot be reused by a request with a different `WorldForCsp()`, even
+      // without other conditions (e.g. Service Worker involvement) that might
+      // prevent the reuse.
+      {World::kMain, ResponseSource::kNetwork, World::kMain, MatchStatus::kOk},
+      {World::kMain, ResponseSource::kNetwork, World::kMainIsolatedCsp,
+       MatchStatus::kPreventAllCrossWorldForCspReuse},
+      {World::kMain, ResponseSource::kNetwork, World::kIsolated,
+       MatchStatus::kPreventAllCrossWorldForCspReuse},
+      {World::kMainIsolatedCsp, ResponseSource::kNetwork, World::kMain,
+       MatchStatus::kPreventAllCrossWorldForCspReuse},
+      {World::kIsolated, ResponseSource::kNetwork, World::kMain,
+       MatchStatus::kPreventAllCrossWorldForCspReuse},
+
+      // Resources via a ServiceWorker (`ResponseSource::kServiceWorker`):
+      // Cannot be reused by a request with a different `WorldForCsp()`, while a
+      // request with the same `WorldForCsp()` can still reuse the entry.
+      // `cached_world = World::kIsolated*` are omitted because Isolated World
+      // Resources can't be intercepted by ServiceWorkers.
+      {World::kMain, ResponseSource::kServiceWorker, World::kMain,
+       MatchStatus::kOk},
+      {World::kMain, ResponseSource::kServiceWorker, World::kMainIsolatedCsp,
+       MatchStatus::kCrossWorldServiceWorkerResourceMismatch},
+      {World::kMain, ResponseSource::kServiceWorker, World::kIsolated,
+       MatchStatus::kCrossWorldServiceWorkerResourceMismatch},
+      {World::kMainIsolatedCsp, ResponseSource::kServiceWorker,
+       World::kMainIsolatedCsp, MatchStatus::kOk},
+
+      // The same after a redirect, including a redirect produced by a Service
+      // Worker whose final hop fell through to the network
+      // (https://crbug.com/551254456).
+      {World::kMain, ResponseSource::kNetworkAfterRedirect, World::kMain,
+       MatchStatus::kOk},
+      {World::kMain, ResponseSource::kNetworkAfterRedirect, World::kIsolated,
+       MatchStatus::kPreventAllCrossWorldForCspReuse},
+      {World::kMain, ResponseSource::kNetworkAfterServiceWorkerRedirect,
+       World::kMain, MatchStatus::kOk},
+      {World::kMain, ResponseSource::kNetworkAfterServiceWorkerRedirect,
+       World::kIsolated, MatchStatus::kPreventAllCrossWorldForCspReuse},
+
+      // An Isolated World Resource and a Main World Resource are never reused
+      // for each other, even when they share the same `WorldForCsp()`, e.g. a
+      // `<link rel=preload>` inserted by a content script and a `fetch()` from
+      // the same content script. When `WorldForCsp()` matches, the
+      // `TargetWorld()` check still triggers `kPreventAllCrossTargetWorldReuse`
+      // even for a ServiceWorker response.
+      {World::kMainIsolatedCsp, ResponseSource::kNetwork,
+       World::kMainIsolatedCsp, MatchStatus::kOk},
+      {World::kMainIsolatedCsp, ResponseSource::kNetwork, World::kIsolated,
+       MatchStatus::kPreventAllCrossTargetWorldReuse},
+      {World::kMainIsolatedCsp, ResponseSource::kServiceWorker,
+       World::kIsolated, MatchStatus::kPreventAllCrossTargetWorldReuse},
+      {World::kIsolated, ResponseSource::kNetwork, World::kIsolated,
+       MatchStatus::kOk},
+      {World::kIsolated, ResponseSource::kNetwork, World::kMainIsolatedCsp,
+       MatchStatus::kPreventAllCrossTargetWorldReuse},
+
+      // Isolated World Resources of different isolated worlds (e.g. content
+      // scripts of different extensions) differ in both `WorldForCsp()` and
+      // `TargetWorld()`, and the `WorldForCsp()` check comes first.
+      {World::kIsolated, ResponseSource::kNetwork, World::kIsolatedOther,
+       MatchStatus::kPreventAllCrossWorldForCspReuse},
+  });
+
+  auto world_name = [](World world) -> std::string_view {
+    switch (world) {
+      case World::kMain:
+        return "kMain";
+      case World::kMainIsolatedCsp:
+        return "kMainIsolatedCsp";
+      case World::kIsolated:
+        return "kIsolated";
+      case World::kIsolatedOther:
+        return "kIsolatedOther";
+    }
+    NOTREACHED();
+  };
+
+  auto response_source_name = [](ResponseSource source) -> std::string_view {
+    switch (source) {
+      case ResponseSource::kNetwork:
+        return "kNetwork";
+      case ResponseSource::kServiceWorker:
+        return "kServiceWorker";
+      case ResponseSource::kNetworkAfterRedirect:
+        return "kNetworkAfterRedirect";
+      case ResponseSource::kNetworkAfterServiceWorkerRedirect:
+        return "kNetworkAfterServiceWorkerRedirect";
+    }
+    NOTREACHED();
+  };
+
+  for (size_t i = 0; i < kCases.size(); ++i) {
+    const auto& test_case = kCases[i];
+    SCOPED_TRACE(testing::Message()
+                 << "kCases[" << i
+                 << "]: cached_world=" << world_name(test_case.cached_world)
+                 << ", cached_response_source="
+                 << response_source_name(test_case.cached_response_source)
+                 << ", new_request_world="
+                 << world_name(test_case.new_request_world));
+    MockResource* cached_resource = create_cached_resource(
+        test_case.cached_world, test_case.cached_response_source);
+    EXPECT_EQ(test_case.expected,
+              can_reuse(*cached_resource, test_case.new_request_world));
   }
 }
 

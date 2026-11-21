@@ -936,7 +936,7 @@ Resource::MatchStatus Resource::CanReuse(const FetchParameters& params) const {
     //    could modify the response of a resource that is later loaded by an
     //    isolated world (e.g., an extension, DevTools, or a userscript),
     //    leading to unexpected code execution in that world. This behavior is
-    //    tested in `ResourceTest.CanReuseServiceWorkerResource`.
+    //    tested in `ResourceTest.CanReuseAcrossWorlds`.
     if (base::FeatureList::IsEnabled(
             kPreventCrossWorldServiceWorkerResourceReuse) &&
         GetResponse().WasFetchedViaServiceWorker()) {

@@ -77,6 +77,8 @@ PLATFORM_EXPORT BASE_DECLARE_FEATURE(
     kPreventExtensionResourceFetchAcrossIsolatedWorlds);
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(
     kPreventCrossWorldServiceWorkerResourceReuse);
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kPreventAllCrossWorldForCspReuse);
+PLATFORM_EXPORT BASE_DECLARE_FEATURE(kPreventAllCrossTargetWorldReuse);
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(
     kPreventDifferentSkipServiceWorkerResourceReuse);
 
