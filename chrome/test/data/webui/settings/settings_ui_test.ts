@@ -60,15 +60,17 @@ suite('SettingsUIToolbarAndDrawer', function() {
   });
 
   test('app drawer closes when exiting narrow mode', async () => {
-    // Mimic narrow mode and open the drawer
+    // Mimic narrow mode and open the drawer.
     toolbar.narrow = true;
-    drawer.openDrawer();
     await microtasksFinished();
-    await eventToPromise('cr-drawer-opened', drawer);
 
+    const drawerOpened = eventToPromise('cr-drawer-opened', drawer);
+    drawer.openDrawer();
+    await drawerOpened;
+
+    const drawerClosed = eventToPromise('close', drawer);
     toolbar.narrow = false;
-    await microtasksFinished();
-    await eventToPromise('close', drawer);
+    await drawerClosed;
     assertFalse(drawer.open);
   });
 });
