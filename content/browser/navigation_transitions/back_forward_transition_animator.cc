@@ -6,7 +6,6 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/ranges.h"
 #include "base/strings/string_number_conversions.h"
@@ -57,31 +56,6 @@ using SwipeEdge = ui::BackGestureEventSwipeEdge;
 using IgnoringInputReason = BackForwardTransitionAnimator::IgnoringInputReason;
 using AnimationAbortReason =
     BackForwardTransitionAnimator::AnimationAbortReason;
-
-static constexpr char kNewCommitInPrimaryMainFrame[] =
-    "Navigation.GestureTransition.NewCommitInPrimaryMainFrame";
-static constexpr char kNewCommitWhileDisplayingCanceledAnimation[] =
-    "Navigation.GestureTransition.NewCommitWhileDisplayingCanceledAnimation";
-static constexpr char kNewCommitWhileDisplayingCrossFadeAnimation[] =
-    "Navigation.GestureTransition.NewCommitWhileDisplayingCrossFadeAnimation";
-static constexpr char kNewCommitWhileWaitingForNewRendererToDraw[] =
-    "Navigation.GestureTransition.NewCommitWhileWaitingForNewRendererToDraw";
-
-// Indicates the type of the scheme of the navigation request.
-//
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(NavigationRequestSchemeType)
-enum class NavigationRequestSchemeType {
-  kOther = 0,
-  kChrome = 1,
-  kChromeNative = 2,
-
-  kMaxValue = kChromeNative,
-};
-
-// LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:NavigationRequestSchemeType)
 
 static constexpr base::TimeDelta kDismissScreenshotAfter = base::Seconds(4);
 
@@ -137,16 +111,6 @@ bool ShouldUseFallbackScreenshot(
                                 CacheHitOrMissReason::kCacheMissColdStart));
 
   return use_fallback_screenshot;
-}
-
-NavigationRequestSchemeType GetNavigationRequestSchemeType(
-    NavigationRequest* request) {
-  if (request->GetURL().SchemeIs(content::kChromeNativeScheme)) {
-    return NavigationRequestSchemeType::kChromeNative;
-  } else if (request->GetURL().SchemeIs(content::kChromeUIScheme)) {
-    return NavigationRequestSchemeType::kChrome;
-  }
-  return NavigationRequestSchemeType::kOther;
 }
 
 const char* IgnoringInputReasonToString(IgnoringInputReason reason) {
@@ -958,9 +922,6 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       // expected.
       CHECK(!tracked_request_);
       CHECK_EQ(navigation_state_, NavigationState::kNotStarted);
-      base::UmaHistogramEnumeration(
-          kNewCommitInPrimaryMainFrame,
-          GetNavigationRequestSchemeType(navigation_request));
       break;
     case State::kDisplayingInvokeAnimation: {
       // We can only get to `kDisplayingInvokeAnimation` if we have started
@@ -1019,9 +980,6 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
         // Before a dialog is shown, another navigation can start and commit.
         // We don't need to abort the animation since when the other navigation
         // commits, we just swap out the live page.
-        base::UmaHistogramEnumeration(
-            kNewCommitInPrimaryMainFrame,
-            GetNavigationRequestSchemeType(navigation_request));
       } else {
         // Our navigation has already committed while a second navigation
         // commits. This can be a client redirect: A.com -> B.com and B.com's
@@ -1029,9 +987,6 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
         // commit-pending invoke animation to bring B.com's screenshot to the
         // center of the viewport.
         CHECK_EQ(navigation_state_, NavigationState::kCommitted);
-        base::UmaHistogramEnumeration(
-            kNewCommitInPrimaryMainFrame,
-            GetNavigationRequestSchemeType(navigation_request));
         // TODO(https://crbug.com/375478872): Ideally, we only need to fake
         // Viz's frame notification if the redirect is cross-origin. We
         // shouldn't need to fake the frame notification for same-doc
@@ -1044,9 +999,6 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
     case State::kDisplayingCancelAnimation: {
       // A new navigation to C commits while we are displaying the cancel
       // animation. The live page will be replaced by C.
-      base::UmaHistogramEnumeration(
-          kNewCommitWhileDisplayingCanceledAnimation,
-          GetNavigationRequestSchemeType(navigation_request));
       break;
     }
     case State::kWaitingForNewRendererToDraw:
@@ -1055,9 +1007,6 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       // redirects to C.com, before B.com's renderer even submits a new frame.
       CHECK_EQ(navigation_state_, NavigationState::kCommitted);
       CHECK(tracked_request_);
-      base::UmaHistogramEnumeration(
-          kNewCommitWhileWaitingForNewRendererToDraw,
-          GetNavigationRequestSchemeType(navigation_request));
       PostNavigationFirstFrameActivated();
       break;
     case State::kWaitingForContentForNavigationEntryShown:
@@ -1074,9 +1023,6 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       // to whatever is underneath the screenshot.
       CHECK_EQ(navigation_state_, NavigationState::kCommitted);
       CHECK(tracked_request_);
-      base::UmaHistogramEnumeration(
-          kNewCommitWhileDisplayingCrossFadeAnimation,
-          GetNavigationRequestSchemeType(navigation_request));
       break;
     }
     case State::kWaitingForBeforeUnloadUserInteraction: {

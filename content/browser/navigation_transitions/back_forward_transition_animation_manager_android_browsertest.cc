@@ -616,9 +616,6 @@ class BackForwardTransitionAnimationManagerBrowserTest
         GetAnimationManager()->animator_.get());
   }
 
- protected:
-  base::HistogramTester histogram;
-
  private:
   base::AutoReset<int> min_required_physical_rm_mb_auto_reset_;
 };
@@ -1732,10 +1729,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
             BlueURL());
 
   EXPECT_STATE_EQ(kStarted, GetAnimator()->state());
-
-  histogram.ExpectBucketCount(
-      "Navigation.GestureTransition.NewCommitInPrimaryMainFrame", 0 /*=kOther*/,
-      1);
 
   // The gesture should have created and attached a screenshot layer with a
   // child scrim layer, under the live page.
@@ -4121,10 +4114,6 @@ IN_PROC_BROWSER_TEST_F(
   // The current live page should be blue.html.
   ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntry()->GetURL(),
             BlueURL());
-
-  histogram.ExpectBucketCount(
-      "Navigation.GestureTransition.NewCommitWhileDisplayingCanceledAnimation",
-      0 /*=kOther*/, 1);
 
   ASSERT_FALSE(did_invoke.IsReady());
   ASSERT_TRUE(did_cancel.Wait());
