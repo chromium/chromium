@@ -448,7 +448,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
-  'dawn_revision': '17b13f0bb345cee6e9f7f944143ff2f9cc20bce1',
+  'dawn_revision': 'd8d9c64367bb7c19e3795b485b895f563778576d',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling feed
   # and whatever else without interference from each other.
@@ -3612,7 +3612,7 @@ deps = {
 
   'src/chrome/browser/glic/e2e_test/internal': {
       'url': Var('chrome_git') + '/chrome/browser/glic/test/internal.git' + '@' +
-        '7f8f7ff793b413e91da85dcf7d08cc23202fc053',
+        '085caf455fc85600955ade052c5091e31f22a798',
       'condition': 'checkout_glic_e2e_tests',
   },
 
