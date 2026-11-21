@@ -4,6 +4,7 @@
 
 #include "components/variations/variations_seed_store.h"
 
+#include <array>
 #include <memory>
 #include <string_view>
 #include <tuple>
@@ -13,12 +14,17 @@
 #include "base/base64.h"
 #include "base/build_time.h"
 #include "base/byte_size.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
@@ -48,9 +54,13 @@
 #include "components/variations/variations_safe_seed_store.h"
 #include "components/variations/variations_switches.h"
 #include "components/variations/variations_test_utils.h"
+#include "crypto/hash.h"
+#include "crypto/keypair.h"
+#include "crypto/sign.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "third_party/boringssl/src/include/openssl/mldsa.h"
 #include "third_party/zlib/google/compression_utils.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -410,6 +420,49 @@ void CheckSafeSeedAndSeedPrefsAreCleared(const TestingPrefServiceSimple& prefs,
   }
   EXPECT_TRUE(PrefHasDefaultValue(prefs, prefs::kVariationsSafeSeedLocale));
 }
+
+// Helper that generates a real ML-DSA-44 + ECDSA P-256 keypair and signs seeds
+// using the exact Tink COMPOSITE_SIGN_MLDSA_44_ECDSA_P256_TINK_RAW scheme.
+struct TestHybridKeyPair {
+  TestHybridKeyPair()
+      : mldsa_priv(std::make_unique<MLDSA44_private_key>()),
+        ecdsa_priv(crypto::keypair::PrivateKey::GenerateEcP256()) {
+    uint8_t mldsa_seed[MLDSA_SEED_BYTES];
+    CHECK(MLDSA44_generate_key(mldsa_pub.data(), mldsa_seed, mldsa_priv.get()));
+    ecdsa_pub = crypto::keypair::PublicKey::FromPrivateKey(ecdsa_priv)
+                    .ToUncompressedX962Point();
+    CHECK_EQ(ecdsa_pub.size(), 65u);
+  }
+
+  std::vector<uint8_t> SignRaw(const std::string& seed_bytes) const {
+    constexpr std::string_view kPrefix = "CompositeAlgorithmSignatures2025";
+    constexpr std::string_view kLabel = "COMPSIG-MLDSA44-ECDSA-P256-SHA256";
+    const auto seed_hash = crypto::hash::Sha256(seed_bytes);
+    const std::string m_prime =
+        base::StrCat({kPrefix, kLabel, std::string_view("\0", 1),
+                      base::as_string_view(seed_hash)});
+    const base::span<const uint8_t> m_prime_bytes = base::as_byte_span(m_prime);
+
+    std::vector<uint8_t> raw_sig(MLDSA44_SIGNATURE_BYTES);
+    CHECK(MLDSA44_sign(raw_sig.data(), mldsa_priv.get(), m_prime_bytes.data(),
+                       m_prime_bytes.size(), base::as_byte_span(kLabel).data(),
+                       kLabel.size()));
+    std::vector<uint8_t> ecdsa_sig = crypto::sign::Sign(
+        crypto::sign::SignatureKind::ECDSA_SHA256, ecdsa_priv, m_prime_bytes);
+    raw_sig.insert(raw_sig.end(), ecdsa_sig.begin(), ecdsa_sig.end());
+    return raw_sig;
+  }
+
+  std::string SignHeader(const std::string& seed_bytes, uint32_t key_id) const {
+    return base::StrCat({base::NumberToString(key_id), ":",
+                         base::Base64Encode(SignRaw(seed_bytes))});
+  }
+
+  std::unique_ptr<MLDSA44_private_key> mldsa_priv;
+  std::array<uint8_t, MLDSA44_PUBLIC_KEY_BYTES> mldsa_pub = {};
+  crypto::keypair::PrivateKey ecdsa_priv;
+  std::vector<uint8_t> ecdsa_pub;
+};
 }  // namespace
 
 class VariationsSeedStoreTest : public ::testing::Test {
@@ -1962,7 +2015,8 @@ TEST_F(VariationsSeedStoreTest, DumpWithoutCrashingOnlyOnValidLargeSeed) {
   VariationsSeedStore::SeedData invalid_seed_data;
   invalid_seed_data.data = std::string(base::MiB(41).InBytes(), '\x07');
   auto invalid_result = VariationsSeedStore::ProcessSeedData(
-      /*signature_verification_enabled=*/false, std::move(invalid_seed_data));
+      /*signature_verification_enabled=*/false,
+      /*legacy_key_distrusted=*/false, std::move(invalid_seed_data));
   EXPECT_EQ(invalid_result.result, StoreSeedResult::kSuccess);
   EXPECT_EQ(invalid_result.validate_result, StoreSeedResult::kFailedParse);
   EXPECT_EQ(dump_count, 0);
@@ -1974,7 +2028,8 @@ TEST_F(VariationsSeedStoreTest, DumpWithoutCrashingOnlyOnValidLargeSeed) {
   VariationsSeedStore::SeedData valid_seed_data;
   valid_seed_data.data = SerializeSeed(valid_large_seed);
   auto valid_result = VariationsSeedStore::ProcessSeedData(
-      /*signature_verification_enabled=*/false, std::move(valid_seed_data));
+      /*signature_verification_enabled=*/false,
+      /*legacy_key_distrusted=*/false, std::move(valid_seed_data));
   EXPECT_EQ(valid_result.result, StoreSeedResult::kSuccess);
   EXPECT_EQ(valid_result.validate_result, StoreSeedResult::kSuccess);
   EXPECT_EQ(dump_count, 1);
@@ -2130,7 +2185,7 @@ TEST_P(StoreSeedDataAllGroupsTest, IdenticalToSafeSeed) {
   seed_store.GetSafeSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
       ValidatedSeedInfo{
           .seed_data = serialized_seed,
-          .signature = "ignored signature",
+          .signature = "",
           .milestone = 1,
           .seed_date = base::Time::Now(),
           .client_fetch_time = base::Time::Now(),
@@ -2721,7 +2776,7 @@ TEST_F(LoadSafeSeedDataSeedFilesGroupTest,
       }
       auto initial_seed = std::make_unique<SeedResponse>();
       initial_seed->data = seed_data;
-      initial_seed->signature = "initial signature";
+      initial_seed->signature = safe_info.signature();
       initial_seed->country = "fr";
       initial_seed->date = base::Time::Now();
       initial_seed->is_gzip_compressed = false;
@@ -3812,7 +3867,7 @@ TEST_P(StoreSafeSeedDataAllGroupsTest, StoreSafeSeed_IdenticalToLatestSeed) {
             store_seed_result = result;
             run_loop.Quit();
           }),
-      serialized_seed, "a completely ignored signature", /*seed_milestone=*/92,
+      serialized_seed, "ignored signature", /*seed_milestone=*/92,
       *client_state, /*seed_fetch_time=*/WrapTime(12345));
   run_loop.Run();
   ASSERT_TRUE(store_seed_result);
@@ -4649,5 +4704,396 @@ TEST_P(VariationsSeedStoreFirstRunPrefsTest, FirstRunPrefsAllowed) {
   EXPECT_EQ("us-ca", seed_store.GetLatestGeoLevel1());
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+class VariationsSeedStoreHybridSignatureTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    VariationsSeedStore::RegisterPrefs(prefs_.registry());
+    seed_store_ = std::make_unique<TestVariationsSeedStore>(
+        &prefs_, base::FilePath(), /*signature_verification_needed=*/true);
+  }
+
+  bool StoreSeedSync(const std::string& seed_bytes,
+                     const std::string& signature) {
+    base::test::TestFuture<bool, VariationsSeed> future;
+    seed_store_->StoreSeedData(future.GetCallback(), seed_bytes, signature,
+                               /*country_code=*/"us", /*geo_level1=*/"",
+                               base::Time::Now(), /*is_delta_compressed=*/false,
+                               /*is_gzip_compressed=*/false,
+                               /*require_synchronous=*/true);
+    return future.Get<0>();
+  }
+
+  void LoadAndExpectSeed(VariationsSeedStore& seed_store,
+                         std::string_view expected_data,
+                         std::string_view expected_sig) {
+    VariationsSeed loaded_seed;
+    std::string loaded_data;
+    std::string loaded_sig;
+    EXPECT_TRUE(
+        seed_store.LoadSeedSync(&loaded_seed, &loaded_data, &loaded_sig));
+    EXPECT_EQ(loaded_data, expected_data);
+    EXPECT_EQ(loaded_sig, expected_sig);
+  }
+
+  bool IsLegacyKeyDistrusted() const {
+    return prefs_.GetBoolean(prefs::kVariationsLegacySeedKeyDistrusted);
+  }
+
+  base::test::TaskEnvironment task_environment_;
+  TestingPrefServiceSimple prefs_;
+  std::unique_ptr<TestVariationsSeedStore> seed_store_;
+  TestHybridKeyPair key_pair_;
+};
+
+TEST_F(VariationsSeedStoreHybridSignatureTest,
+       LegacySeedRejectedWhenLegacyKeyDistrusted) {
+  const std::string legacy_seed_bytes =
+      Base64DecodeData(TestSeedData().base64_uncompressed_data);
+
+  // While the legacy key is still trusted, storing and loading a legacy seed
+  // succeeds and leaves the legacy key distrust pref false.
+  EXPECT_FALSE(IsLegacyKeyDistrusted());
+  ASSERT_TRUE(
+      StoreSeedSync(legacy_seed_bytes, TestSeedData().base64_signature));
+  EXPECT_FALSE(IsLegacyKeyDistrusted());
+  LoadAndExpectSeed(*seed_store_, legacy_seed_bytes,
+                    TestSeedData().base64_signature);
+
+  // Simulate the legacy key distrust pref being set by a verified new-key seed.
+  prefs_.SetBoolean(prefs::kVariationsLegacySeedKeyDistrusted, true);
+
+  // Load-time verification must reject the stored legacy-only seed.
+  {
+    base::HistogramTester histogram_tester;
+    VariationsSeed loaded_seed;
+    std::string loaded_data;
+    std::string loaded_sig;
+    EXPECT_FALSE(
+        seed_store_->LoadSeedSync(&loaded_seed, &loaded_data, &loaded_sig));
+    histogram_tester.ExpectUniqueSample(
+        "Variations.LoadSeedSignature",
+        VerifySignatureResult::kLegacyKeyDistrusted, 1);
+  }
+
+  // Fetch-time verification must also reject a legacy-only seed.
+  {
+    base::HistogramTester histogram_tester;
+    EXPECT_FALSE(
+        StoreSeedSync(legacy_seed_bytes, TestSeedData().base64_signature));
+    histogram_tester.ExpectUniqueSample(
+        "Variations.StoreSeedSignature",
+        VerifySignatureResult::kLegacyKeyDistrusted, 1);
+  }
+}
+
+TEST_F(VariationsSeedStoreHybridSignatureTest,
+       InvalidMalformedAndTruncatedHybridSignaturesRejected) {
+  base::ScopedClosureRunner key_override =
+      VariationsSeedStore::OverridePinnedHybridKeyForTesting(
+          /*key_id=*/2, key_pair_.mldsa_pub, key_pair_.ecdsa_pub);
+
+  const std::string seed_bytes = SerializeSeed(CreateTestSeed());
+  const std::vector<uint8_t> valid_raw_sig = key_pair_.SignRaw(seed_bytes);
+  const std::string valid_base64_sig = base::Base64Encode(valid_raw_sig);
+  ASSERT_GT(valid_raw_sig.size(), static_cast<size_t>(MLDSA44_SIGNATURE_BYTES));
+
+  // Corrupt a byte in the ML-DSA-44 portion, then in the ECDSA P-256 portion.
+  for (size_t corrupt_index : {size_t{0}, valid_raw_sig.size() - 1}) {
+    std::vector<uint8_t> bad_sig = valid_raw_sig;
+    bad_sig[corrupt_index] ^= 0x01;
+    const std::string bad_header =
+        base::StrCat({"2:", base::Base64Encode(bad_sig)});
+    EXPECT_FALSE(StoreSeedSync(seed_bytes, bad_header))
+        << "Expected rejection when corrupting byte " << corrupt_index;
+    EXPECT_FALSE(IsLegacyKeyDistrusted());
+  }
+
+  // Truncated signatures (<= MLDSA44_SIGNATURE_BYTES) must be rejected.
+  for (size_t truncated_size : {size_t{0}, size_t{MLDSA44_SIGNATURE_BYTES - 1},
+                                size_t{MLDSA44_SIGNATURE_BYTES}}) {
+    const std::string header = base::StrCat(
+        {"2:",
+         base::Base64Encode(base::span(valid_raw_sig).first(truncated_size))});
+    EXPECT_FALSE(StoreSeedSync(seed_bytes, header))
+        << "Expected rejection for truncated size " << truncated_size;
+    EXPECT_FALSE(IsLegacyKeyDistrusted());
+  }
+
+  // Legacy ("0:"), non-canonical, or out-of-range key IDs must be rejected.
+  for (std::string_view prefix : {"0:", "+2:", "02:", "4:", ":"}) {
+    const std::string header = base::StrCat({prefix, valid_base64_sig});
+    EXPECT_FALSE(StoreSeedSync(seed_bytes, header))
+        << "Expected rejection for prefix " << prefix;
+    EXPECT_FALSE(IsLegacyKeyDistrusted());
+  }
+}
+
+TEST_F(VariationsSeedStoreHybridSignatureTest,
+       IdenticalBytesUpgradedSignatureNotAliasedToLegacySafeSeed) {
+  const std::string seed_bytes =
+      Base64DecodeData(TestSeedData().base64_uncompressed_data);
+
+  base::ScopedClosureRunner key_override =
+      VariationsSeedStore::OverridePinnedHybridKeyForTesting(
+          /*key_id=*/1, key_pair_.mldsa_pub, key_pair_.ecdsa_pub);
+  const std::string pq_signature =
+      key_pair_.SignHeader(seed_bytes, /*key_id=*/1);
+
+  // Store the legacy-signed seed as the safe seed while legacy key is trusted.
+  std::unique_ptr<ClientFilterableState> client_state =
+      CreateTestClientFilterableState();
+  base::test::TestFuture<bool> store_safe_future;
+  seed_store_->StoreSafeSeed(store_safe_future.GetCallback(), seed_bytes,
+                             TestSeedData().base64_signature,
+                             /*seed_milestone=*/1, *client_state,
+                             base::Time::Now());
+  ASSERT_TRUE(store_safe_future.Get());
+  ASSERT_FALSE(IsLegacyKeyDistrusted());
+
+  // Store the exact same seed bytes with an upgraded PQ signature. It must NOT
+  // alias to the legacy-signed safe seed via kIdenticalToSafeSeedSentinel.
+  EXPECT_TRUE(StoreSeedSync(seed_bytes, pq_signature));
+  EXPECT_TRUE(IsLegacyKeyDistrusted());
+  EXPECT_FALSE(seed_store_->GetSeedReaderWriterForTesting()
+                   ->IsIdenticalToSafeSeedSentinel());
+  LoadAndExpectSeed(*seed_store_, seed_bytes, pq_signature);
+}
+
+TEST_F(VariationsSeedStoreHybridSignatureTest,
+       ImportInitialSeedWithPqSignatureVerifiesAndDistrustsLegacyKey) {
+  base::ScopedClosureRunner key_override =
+      VariationsSeedStore::OverridePinnedHybridKeyForTesting(
+          /*key_id=*/3, key_pair_.mldsa_pub, key_pair_.ecdsa_pub);
+
+  const std::string seed_bytes = SerializeSeed(CreateTestSeed());
+  const std::string pq_signature =
+      key_pair_.SignHeader(seed_bytes, /*key_id=*/3);
+
+  auto initial_seed = std::make_unique<SeedResponse>();
+  initial_seed->data = seed_bytes;
+  initial_seed->signature = pq_signature;
+  initial_seed->country = "us";
+  initial_seed->date = base::Time::Now();
+  initial_seed->is_gzip_compressed = false;
+
+  TestVariationsSeedStore seed_store(&prefs_, base::FilePath(),
+                                     /*signature_verification_needed=*/true,
+                                     std::move(initial_seed),
+                                     /*use_first_run_prefs=*/false);
+  EXPECT_TRUE(IsLegacyKeyDistrusted());
+  LoadAndExpectSeed(seed_store, seed_bytes, pq_signature);
+}
+
+TEST_F(VariationsSeedStoreHybridSignatureTest,
+       RejectedLegacySeedWhenDistrustedPreservesStoredPqSeed) {
+  base::ScopedClosureRunner key_override =
+      VariationsSeedStore::OverridePinnedHybridKeyForTesting(
+          /*key_id=*/1, key_pair_.mldsa_pub, key_pair_.ecdsa_pub);
+
+  const std::string pq_seed_bytes = SerializeSeed(CreateTestSeed());
+  const std::string pq_signature =
+      key_pair_.SignHeader(pq_seed_bytes, /*key_id=*/1);
+  const std::string legacy_seed_bytes =
+      Base64DecodeData(TestSeedData().base64_uncompressed_data);
+
+  // Store a valid PQ-signed seed, which stops trusting the legacy key.
+  ASSERT_FALSE(IsLegacyKeyDistrusted());
+  ASSERT_TRUE(StoreSeedSync(pq_seed_bytes, pq_signature));
+  EXPECT_TRUE(IsLegacyKeyDistrusted());
+  LoadAndExpectSeed(*seed_store_, pq_seed_bytes, pq_signature);
+
+  // A subsequent legacy-only seed must fail signature validation and leave the
+  // previously stored PQ-signed seed and signature intact and loadable.
+  EXPECT_FALSE(
+      StoreSeedSync(legacy_seed_bytes, TestSeedData().base64_signature));
+  LoadAndExpectSeed(*seed_store_, pq_seed_bytes, pq_signature);
+}
+
+TEST_F(VariationsSeedStoreHybridSignatureTest,
+       StoreSafeSeedSkipsLegacySeedWithoutFailureHistogramAfterDistrust) {
+  const std::string legacy_seed_bytes =
+      Base64DecodeData(TestSeedData().base64_uncompressed_data);
+
+  // Simulate the transition session where a newly fetched PQ-signed latest
+  // seed has set the legacy key distrust pref, while the active seed from
+  // startup is still legacy-signed.
+  prefs_.SetBoolean(prefs::kVariationsLegacySeedKeyDistrusted, true);
+
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<ClientFilterableState> client_state =
+      CreateTestClientFilterableState();
+  base::test::TestFuture<bool> store_safe_future;
+  seed_store_->StoreSafeSeed(store_safe_future.GetCallback(), legacy_seed_bytes,
+                             TestSeedData().base64_signature,
+                             /*seed_milestone=*/1, *client_state,
+                             base::Time::Now());
+  EXPECT_FALSE(store_safe_future.Get());
+  histogram_tester.ExpectTotalCount(
+      "Variations.SafeMode.StoreSafeSeed.SignatureValidity", 0);
+}
+
+TEST_F(VariationsSeedStoreHybridSignatureTest,
+       AsyncHybridStoreFlushesSeedFileOnTransition) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::test::ScopedFeatureList scoped_trials;
+  scoped_trials.InitWithEmptyFeatureAndFieldTrialLists();
+  SetUpSeedFileTrial(kSeedFilesGroup);
+  MockEntropyProviders entropy(
+      MockEntropyProviders::Results{.low_entropy = kAlwaysUseLastGroup});
+
+  auto file_tasks = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  base::MockOneShotTimer latest_timer;
+  auto seed_store = std::make_unique<TestVariationsSeedStore>(
+      &prefs_, temp_dir.GetPath(), /*signature_verification_needed=*/true,
+      /*initial_seed=*/nullptr, /*use_first_run_prefs=*/false,
+      version_info::Channel::DEV);
+  auto latest = std::make_unique<SeedReaderWriter>(
+      &prefs_, temp_dir.GetPath(), kSeedFilename, kRegularSeedFieldsPrefs,
+      version_info::Channel::DEV, &entropy, "Latest", file_tasks);
+  latest->SetTimerForTesting(&latest_timer);
+  seed_store->SetSeedReaderWriterForTesting(std::move(latest));
+  absl::Cleanup cleanup = [&] {
+    seed_store.reset();
+    file_tasks->RunPendingTasks();
+    task_environment_.RunUntilIdle();
+  };
+
+  base::ScopedClosureRunner key_override =
+      VariationsSeedStore::OverridePinnedHybridKeyForTesting(
+          /*key_id=*/1, key_pair_.mldsa_pub, key_pair_.ecdsa_pub);
+  const std::string seed_bytes = SerializeSeed(CreateTestSeed());
+  const std::string pq_signature =
+      key_pair_.SignHeader(seed_bytes, /*key_id=*/1);
+
+  ASSERT_FALSE(IsLegacyKeyDistrusted());
+  base::test::TestFuture<bool, VariationsSeed> future;
+  seed_store->StoreSeedData(future.GetCallback(), seed_bytes, pq_signature,
+                            /*country_code=*/"us", /*geo_level1=*/"",
+                            base::Time::Now(), /*is_delta_compressed=*/false,
+                            /*is_gzip_compressed=*/false,
+                            /*require_synchronous=*/false);
+  ASSERT_TRUE(future.Get<0>());
+  EXPECT_TRUE(IsLegacyKeyDistrusted());
+  // The one-time transition must flush immediately via CommitPendingWrite()
+  // rather than leaving the delayed write timer pending.
+  EXPECT_FALSE(latest_timer.IsRunning());
+  file_tasks->RunPendingTasks();
+  EXPECT_TRUE(base::PathExists(temp_dir.GetPath().Append(kSeedFilename)));
+}
+
+TEST_F(VariationsSeedStoreHybridSignatureTest, CrossKeyIdMismatchRejected) {
+  TestHybridKeyPair second_key_pair;
+  base::ScopedClosureRunner key1_override =
+      VariationsSeedStore::OverridePinnedHybridKeyForTesting(
+          /*key_id=*/1, key_pair_.mldsa_pub, key_pair_.ecdsa_pub);
+  base::ScopedClosureRunner key2_override =
+      VariationsSeedStore::OverridePinnedHybridKeyForTesting(
+          /*key_id=*/2, second_key_pair.mldsa_pub, second_key_pair.ecdsa_pub);
+
+  const std::string seed_bytes = SerializeSeed(CreateTestSeed());
+  // Sign with Key 1's private key, but label the signature as Key 2.
+  const std::string mismatched_header =
+      key_pair_.SignHeader(seed_bytes, /*key_id=*/2);
+
+  base::HistogramTester histogram_tester;
+  EXPECT_FALSE(StoreSeedSync(seed_bytes, mismatched_header));
+  EXPECT_FALSE(IsLegacyKeyDistrusted());
+  histogram_tester.ExpectUniqueSample(
+      "Variations.StoreSeedSignature",
+      VerifySignatureResult::kInvalidSeedSignature, 1);
+  histogram_tester.ExpectBucketCount("Variations.SeedStoreResult",
+                                     StoreSeedResult::kFailedSignature, 1);
+}
+
+TEST_F(VariationsSeedStoreHybridSignatureTest,
+       DeltaCompressedSeedWithHybridSignatureVerifiesAndDistrustsLegacyKey) {
+  base::ScopedClosureRunner key_override =
+      VariationsSeedStore::OverridePinnedHybridKeyForTesting(
+          /*key_id=*/1, key_pair_.mldsa_pub, key_pair_.ecdsa_pub);
+
+  // Seed the store with the uncompressed initial seed while the legacy key is
+  // still trusted.
+  seed_store_->GetSeedReaderWriterForTesting()->StoreValidatedSeedInfo(
+      ValidatedSeedInfo{
+          .seed_data = kSeedDeltaTestData.GetInitialSeedData(),
+          .signature = "ignored",
+          .milestone = 1,
+          .seed_date = base::Time::Now(),
+          .client_fetch_time = base::Time::Now(),
+          .session_country_code = "us",
+      });
+
+  const std::string target_seed_bytes = kSeedDeltaTestData.GetNewSeedData();
+  const std::string pq_signature =
+      key_pair_.SignHeader(target_seed_bytes, /*key_id=*/1);
+
+  ASSERT_FALSE(IsLegacyKeyDistrusted());
+  base::test::TestFuture<bool, VariationsSeed> future;
+  seed_store_->StoreSeedData(
+      future.GetCallback(), kSeedDeltaTestData.GetDeltaData(), pq_signature,
+      /*country_code=*/"us", /*geo_level1=*/"", base::Time::Now(),
+      /*is_delta_compressed=*/true, /*is_gzip_compressed=*/false,
+      /*require_synchronous=*/true);
+  EXPECT_TRUE(future.Get<0>());
+  EXPECT_TRUE(IsLegacyKeyDistrusted());
+  LoadAndExpectSeed(*seed_store_, target_seed_bytes, pq_signature);
+}
+
+TEST_F(VariationsSeedStoreHybridSignatureTest,
+       LegacySafeSeedRejectedWhenLegacyKeyDistrusted) {
+  const std::string legacy_seed_bytes =
+      Base64DecodeData(TestSeedData().base64_uncompressed_data);
+  std::unique_ptr<ClientFilterableState> client_state =
+      CreateTestClientFilterableState();
+
+  // Store a valid legacy-signed safe seed while the legacy key is trusted.
+  base::test::TestFuture<bool> store_safe_future;
+  seed_store_->StoreSafeSeed(store_safe_future.GetCallback(), legacy_seed_bytes,
+                             TestSeedData().base64_signature,
+                             /*seed_milestone=*/1, *client_state,
+                             base::Time::Now());
+  ASSERT_TRUE(store_safe_future.Get());
+  ASSERT_FALSE(IsLegacyKeyDistrusted());
+
+  // Once the legacy key distrust pref is set, loading the legacy safe seed must
+  // reject and clear it.
+  prefs_.SetBoolean(prefs::kVariationsLegacySeedKeyDistrusted, true);
+
+  base::HistogramTester histogram_tester;
+  VariationsSeed loaded_seed;
+  EXPECT_FALSE(seed_store_->LoadSafeSeedSync(&loaded_seed, client_state.get()));
+  histogram_tester.ExpectUniqueSample(
+      "Variations.SafeMode.LoadSafeSeed.SignatureValidity",
+      VerifySignatureResult::kLegacyKeyDistrusted, 1);
+  histogram_tester.ExpectUniqueSample("Variations.SafeMode.LoadSafeSeed.Result",
+                                      LoadSeedResult::kInvalidSignature, 1);
+  CheckSafeSeedAndSeedPrefsAreCleared(prefs_, *seed_store_);
+}
+
+TEST_F(VariationsSeedStoreHybridSignatureTest,
+       HybridSeedWithReceiveVerificationDisabledDoesNotDistrustLegacyKey) {
+  base::ScopedClosureRunner key_override =
+      VariationsSeedStore::OverridePinnedHybridKeyForTesting(
+          /*key_id=*/1, key_pair_.mldsa_pub, key_pair_.ecdsa_pub);
+
+  TestVariationsSeedStore unverified_store(
+      &prefs_, base::FilePath(), /*signature_verification_needed=*/false);
+  const std::string seed_bytes = SerializeSeed(CreateTestSeed());
+  const std::string pq_signature =
+      key_pair_.SignHeader(seed_bytes, /*key_id=*/1);
+
+  base::test::TestFuture<bool, VariationsSeed> future;
+  unverified_store.StoreSeedData(
+      future.GetCallback(), seed_bytes, pq_signature, /*country_code=*/"us",
+      /*geo_level1=*/"", base::Time::Now(), /*is_delta_compressed=*/false,
+      /*is_gzip_compressed=*/false, /*require_synchronous=*/true);
+  ASSERT_TRUE(future.Get<0>());
+  EXPECT_FALSE(IsLegacyKeyDistrusted());
+
+  LoadAndExpectSeed(unverified_store, seed_bytes, pq_signature);
+  EXPECT_FALSE(IsLegacyKeyDistrusted());
+}
 
 }  // namespace variations

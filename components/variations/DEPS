@@ -14,6 +14,7 @@ include_rules = [
   "+crypto",
   "-net",
   "+net/android",
+  "+third_party/boringssl/src/include/openssl",
   "+third_party/protobuf",
   "+third_party/smhasher",
   "+third_party/zlib/google",

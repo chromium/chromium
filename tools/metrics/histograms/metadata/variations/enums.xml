@@ -120,6 +120,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Invalid Public Key (Obsolete 2026-06)"/>
   <int value="3" label="Invalid Signature for Seed"/>
   <int value="4" label="Valid Signature for Seed"/>
+  <int value="5" label="Legacy Key Distrusted"/>
 </enum>
 
 <enum name="VariationsFirstRunResult">
