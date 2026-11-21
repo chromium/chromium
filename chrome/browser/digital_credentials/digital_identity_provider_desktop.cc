@@ -8,6 +8,7 @@
 #include <variant>
 
 #include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -24,10 +25,14 @@
 #include "content/public/browser/cross_device_request_info.h"
 #include "content/public/browser/digital_credentials_cross_device.h"
 #include "content/public/browser/digital_identity_provider.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "crypto/random.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/cable/v2_handshake.h"
+#include "device/fido/network_context_factory.h"
+#include "device/fido/public/features.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
@@ -139,10 +144,27 @@ void DigitalIdentityProviderDesktop::Transact(
       qr_generator_key,
       CrossDeviceRequestTypeToCredentialRequestType(request_type));
 
+  device::NetworkContextFactory network_context_factory;
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnHybridUseFrameNetworkContext)) {
+    network_context_factory = base::BindRepeating(
+        [](base::WeakPtr<content::WebContents> web_contents)
+            -> network::mojom::NetworkContext* {
+          CHECK(web_contents);
+          return web_contents->GetPrimaryMainFrame()
+              ->GetStoragePartition()
+              ->GetNetworkContext();
+        },
+        web_contents_);
+  } else {
+    network_context_factory = base::BindRepeating([]() {
+      return SystemNetworkContextManager::GetInstance()->GetContext();
+    });
+  }
+
   transaction_ = Transaction::New(
-      std::move(request_info), qr_generator_key, base::BindRepeating([]() {
-        return SystemNetworkContextManager::GetInstance()->GetContext();
-      }),
+      std::move(request_info), qr_generator_key,
+      std::move(network_context_factory),
       base::BindRepeating(&DigitalIdentityProviderDesktop::OnEvent,
                           weak_ptr_factory_.GetWeakPtr(), std::move(qr_url),
                           request_type, warning_level),

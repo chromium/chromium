@@ -74,7 +74,9 @@
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_authentication_request_proxy.h"
 #include "content/public/browser/web_contents.h"
 #include "crypto/random.h"
@@ -719,9 +721,6 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
       CHECK(!enclave_controller_);
       dialog_controller_->ConfigureEnclaveForUpgrade(discovery_factory,
                                                      cmtg_key_requested);
-      discovery_factory->set_network_context_factory(base::BindRepeating([]() {
-        return SystemNetworkContextManager::GetInstance()->GetContext();
-      }));
     } else if (request_type == device::FidoRequestType::kGetAssertion ||
                enclave_create_enabled) {
       // Set up the "regular" enclave controller.
@@ -772,10 +771,22 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
 
   discovery_factory->set_cable_data(request_type, qr_generator_key);
 
-  if (SystemNetworkContextManager::GetInstance()) {
-    // caBLE and the enclave depend on the network context factory.
-    // TODO(nsatragno): this should probably use a storage partition network
-    // context instead. See the SystemNetworkContextManager class comments.
+  // caBLE and the enclave depend on the network context factory. With
+  // kWebAuthnHybridUseFrameNetworkContext, requests go through the frame's
+  // storage partition, so they use the profile's network configuration, such as
+  // its proxy settings.
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnHybridUseFrameNetworkContext)) {
+    discovery_factory->set_network_context_factory(base::BindRepeating(
+        [](content::GlobalRenderFrameHostId render_frame_host_id)
+            -> network::mojom::NetworkContext* {
+          content::RenderFrameHost* render_frame_host =
+              content::RenderFrameHost::FromID(render_frame_host_id);
+          CHECK(render_frame_host);
+          return render_frame_host->GetStoragePartition()->GetNetworkContext();
+        },
+        render_frame_host_id_));
+  } else if (SystemNetworkContextManager::GetInstance()) {
     discovery_factory->set_network_context_factory(base::BindRepeating([]() {
       return SystemNetworkContextManager::GetInstance()->GetContext();
     }));

@@ -4,6 +4,7 @@
 
 #include "device/fido/cable/fido_tunnel_device.h"
 
+#include <optional>
 #include <variant>
 
 #include "base/containers/to_array.h"
@@ -156,7 +157,7 @@ FidoTunnelDevice::FidoTunnelDevice(
                           base::Unretained(this)));
   network_context_factory.Run()->CreateWebSocket(
       url, {kCableWebSocketProtocol}, net::StorageAccessApiStatus::kNone,
-      net::IsolationInfo(),
+      GetTunnelIsolationInfo(),
       /*additional_headers=*/{}, network::OriginatingProcessId::browser(),
       url::Origin::Create(url), network::mojom::ClientSecurityState::New(),
       GetWebSocketOptions(),
@@ -220,7 +221,7 @@ FidoTunnelDevice::FidoTunnelDevice(
       network::mojom::HttpHeader::New(kCableSignalConnectionHeader, "true"));
   network_context_factory.Run()->CreateWebSocket(
       url, {kCableWebSocketProtocol}, net::StorageAccessApiStatus::kNone,
-      net::IsolationInfo(), std::move(headers),
+      GetTunnelIsolationInfo(), std::move(headers),
       network::OriginatingProcessId::browser(), url::Origin::Create(url),
       network::mojom::ClientSecurityState::New(), GetWebSocketOptions(),
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),

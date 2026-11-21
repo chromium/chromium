@@ -4,17 +4,28 @@
 
 #include "device/fido/cable/websocket_adapter.h"
 
+#include <optional>
+
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/device_event_log/device_event_log.h"
+#include "device/fido/public/features.h"
 #include "device/fido/public/fido_constants.h"
 #include "net/http/http_status_code.h"
 
 namespace device {
 namespace cablev2 {
+
+net::IsolationInfo GetTunnelIsolationInfo() {
+  if (!base::FeatureList::IsEnabled(kWebAuthnHybridUseFrameNetworkContext)) {
+    return net::IsolationInfo();
+  }
+  return net::IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
+}
 
 // kMaxIncomingMessageSize is the maximum number of bytes in a single message
 // from a WebSocket. This is set to be far larger than any plausible CTAP2

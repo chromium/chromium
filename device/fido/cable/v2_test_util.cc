@@ -523,7 +523,7 @@ class LateLinkingDevice : public authenticator::Transaction {
 
     network_context_factory_.Run()->CreateWebSocket(
         target, {device::kCableWebSocketProtocol},
-        net::StorageAccessApiStatus::kNone, net::IsolationInfo(),
+        net::StorageAccessApiStatus::kNone, GetTunnelIsolationInfo(),
         /*additional_headers=*/{}, network::OriginatingProcessId::browser(),
         url::Origin::Create(target), network::mojom::ClientSecurityState::New(),
         network::mojom::kWebSocketOptionBlockAllCookies,
@@ -749,7 +749,7 @@ class HandshakeErrorDevice : public authenticator::Transaction {
 
     network_context_factory_.Run()->CreateWebSocket(
         target, {device::kCableWebSocketProtocol},
-        net::StorageAccessApiStatus::kNone, net::IsolationInfo(),
+        net::StorageAccessApiStatus::kNone, GetTunnelIsolationInfo(),
         /*additional_headers=*/{}, network::OriginatingProcessId::browser(),
         url::Origin::Create(target), network::mojom::ClientSecurityState::New(),
         network::mojom::kWebSocketOptionBlockAllCookies,

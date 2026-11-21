@@ -16,10 +16,14 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/isolation_info.h"
 #include "services/network/public/mojom/websocket.mojom.h"
 
 namespace device {
 namespace cablev2 {
+
+// Returns the IsolationInfo for a caBLE tunnel WebSocket.
+COMPONENT_EXPORT(DEVICE_FIDO) net::IsolationInfo GetTunnelIsolationInfo();
 
 // WebSocketAdapter implements several network::mojom interfaces needed to
 // create a WebSocket connection and translates the Mojo interface into a

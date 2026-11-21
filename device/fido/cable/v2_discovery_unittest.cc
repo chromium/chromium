@@ -12,6 +12,7 @@
 
 #include "base/functional/callback.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "crypto/random.h"
@@ -23,14 +24,16 @@
 #include "device/fido/cable/v2_test_util.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/mock_fido_discovery_observer.h"
+#include "device/fido/public/features.h"
 #include "device/fido/public/fido_constants.h"
+#include "net/base/isolation_info.h"
+#include "net/base/network_anonymization_key.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/test/test_network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "base/test/scoped_feature_list.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
 #include "device/bluetooth/floss/floss_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -75,10 +78,34 @@ class MockTunnelServer : public network::TestNetworkContext {
       network::mojom::IPAddressSpace target_address_space,
       std::optional<int64_t> target_network) override {
     create_called_ = true;
+    isolation_info_ = isolation_info;
   }
 
   bool create_called_ = false;
+  net::IsolationInfo isolation_info_;
 };
+
+// Contacts a paired device through a new Discovery whose tunnels open on
+// `mock_tunnel_server`.
+void ContactPairedDevice(MockTunnelServer& mock_tunnel_server) {
+  auto [contact_callback, contact_device_stream] =
+      FidoDiscoveryBase::EventStream<std::unique_ptr<Pairing>>::New();
+  Discovery discovery(
+      device::FidoRequestType::kGetAssertion,
+      base::BindLambdaForTesting([&]() -> network::mojom::NetworkContext* {
+        return &mock_tunnel_server;
+      }),
+      /*qr_generator_key=*/std::nullopt, std::move(contact_device_stream),
+      /*pairing_callback=*/std::nullopt,
+      /*invalidated_pairing_callback=*/std::nullopt,
+      /*event_callback=*/std::nullopt, /*must_support_ctap=*/true);
+
+  auto pairing = std::make_unique<Pairing>();
+  pairing->contact_id = {1, 2, 3, 4};
+  pairing->id = {5, 6, 7, 8};
+  pairing->secret = std::vector<uint8_t>(32, 9);
+  contact_callback.Run(std::move(pairing));
+}
 
 }  // namespace
 
@@ -198,6 +225,38 @@ TEST_F(CableV2DiscoveryTest, TestDiscoveryFindsNewDevice) {
   discovery()->Start();
   task_environment().FastForwardUntilNoTasksRemain();
   EXPECT_TRUE(mock_tunnel_server().create_called_);
+  // Network contexts that require a network anonymization key reject a
+  // WebSocket with an empty IsolationInfo.
+  EXPECT_FALSE(mock_tunnel_server().isolation_info_.IsEmpty());
+  EXPECT_TRUE(mock_tunnel_server()
+                  .isolation_info_.network_anonymization_key()
+                  .IsTransient());
+}
+
+// Tests that contacting a paired device opens its tunnel with a transient
+// IsolationInfo.
+TEST_F(CableV2DiscoveryTest,
+       TestContactingPairedDeviceSetsTransientIsolationInfo) {
+  ContactPairedDevice(mock_tunnel_server());
+
+  ASSERT_TRUE(mock_tunnel_server().create_called_);
+  EXPECT_FALSE(mock_tunnel_server().isolation_info_.IsEmpty());
+  EXPECT_TRUE(mock_tunnel_server()
+                  .isolation_info_.network_anonymization_key()
+                  .IsTransient());
+}
+
+// Tests that with kWebAuthnHybridUseFrameNetworkContext disabled, the tunnel
+// opens with an empty IsolationInfo, as it does on the system network context.
+TEST_F(CableV2DiscoveryTest,
+       TestContactingPairedDeviceWithoutFrameNetworkContextFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kWebAuthnHybridUseFrameNetworkContext);
+
+  ContactPairedDevice(mock_tunnel_server());
+
+  ASSERT_TRUE(mock_tunnel_server().create_called_);
+  EXPECT_TRUE(mock_tunnel_server().isolation_info_.IsEmpty());
 }
 
 #if BUILDFLAG(IS_MAC)

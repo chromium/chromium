@@ -59,6 +59,7 @@
 #include "components/webauthn/core/browser/test_passkey_model.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/web_contents_tester.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/cable/v2_constants.h"
@@ -302,6 +303,55 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
         break;
     }
   }
+}
+
+// caBLE tunnels use the frame's storage partition network context, so they
+// follow the profile's network configuration, such as its proxy settings.
+TEST_F(ChromeAuthenticatorRequestDelegateTest,
+       CableUsesStoragePartitionNetworkContext) {
+  MockCableDiscoveryFactory discovery_factory;
+  ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+  delegate.SetRelyingPartyId(kRpId);
+  delegate.ConfigureDiscoveries(url::Origin::Create(GURL(kOrigin)), kOrigin,
+                                content::AuthenticatorRequestClientDelegate::
+                                    RequestSource::kWebAuthentication,
+                                device::FidoRequestType::kGetAssertion,
+                                /*resident_key_requirement=*/std::nullopt,
+                                device::UserVerificationRequirement::kRequired,
+                                /*cmtg_key_requested=*/false,
+                                /*user_name=*/std::nullopt,
+                                /*is_enclave_authenticator_available=*/false,
+                                &discovery_factory);
+
+  ASSERT_TRUE(discovery_factory.network_context_factory_for_testing());
+  EXPECT_EQ(discovery_factory.network_context_factory_for_testing().Run(),
+            main_rfh()->GetStoragePartition()->GetNetworkContext());
+}
+
+// With kWebAuthnHybridUseFrameNetworkContext disabled, caBLE tunnels don't use
+// the frame's network context. The test harness has no system network context,
+// so no factory is set.
+TEST_F(ChromeAuthenticatorRequestDelegateTest,
+       CableNetworkContextWithoutFrameNetworkContextFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      device::kWebAuthnHybridUseFrameNetworkContext);
+
+  MockCableDiscoveryFactory discovery_factory;
+  ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+  delegate.SetRelyingPartyId(kRpId);
+  delegate.ConfigureDiscoveries(url::Origin::Create(GURL(kOrigin)), kOrigin,
+                                content::AuthenticatorRequestClientDelegate::
+                                    RequestSource::kWebAuthentication,
+                                device::FidoRequestType::kGetAssertion,
+                                /*resident_key_requirement=*/std::nullopt,
+                                device::UserVerificationRequirement::kRequired,
+                                /*cmtg_key_requested=*/false,
+                                /*user_name=*/std::nullopt,
+                                /*is_enclave_authenticator_available=*/false,
+                                &discovery_factory);
+
+  EXPECT_FALSE(discovery_factory.network_context_factory_for_testing());
 }
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest, NoExtraDiscoveriesWithoutUI) {

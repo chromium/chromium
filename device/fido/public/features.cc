@@ -123,6 +123,10 @@ BASE_FEATURE(kWebAuthnCrossDeviceFallbackUrl,
 
 BASE_FEATURE(kWebAuthnRemoteClientDataJson, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enabled by default in M160. Remove in or after M163.
+BASE_FEATURE(kWebAuthnHybridUseFrameNetworkContext,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enabled by default in M148. Remove in or after M152.
 BASE_FEATURE(kWebAuthnDoNotAlwaysTerminateStateMachineDuringIdentityChange,
              base::FEATURE_ENABLED_BY_DEFAULT);

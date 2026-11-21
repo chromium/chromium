@@ -121,6 +121,11 @@ BASE_DECLARE_FEATURE(kWebAuthnCrossDeviceFallbackUrl);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnRemoteClientDataJson);
 
+// Opens hybrid (caBLE) tunnels on the requesting frame's network context, with
+// a transient IsolationInfo, rather than on the system network context.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_DECLARE_FEATURE(kWebAuthnHybridUseFrameNetworkContext);
+
 // Enables the fix of the logic for handling identity change (the new logic
 // might decide to not terminate the running state machine in some cases,
 // whereas the previous logic was always terminating the state machine).

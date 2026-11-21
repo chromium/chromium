@@ -73,6 +73,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
       NetworkContextFactory network_context_factory) {
     network_context_factory_ = std::move(network_context_factory);
   }
+  const NetworkContextFactory& network_context_factory_for_testing() const {
+    return network_context_factory_;
+  }
 
   // set_cable_pairing_callback installs a repeating callback that will be
   // called when a QR handshake results in a phone wishing to pair with this
