@@ -263,6 +263,7 @@ class CORE_EXPORT HTMLImageElement
 
   void AttachLayoutTree(AttachContext&) override;
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;
+  bool CanGeneratePseudoElement(PseudoId) const override;
 
   bool CanStartSelection() const override { return false; }
 

@@ -6524,6 +6524,12 @@
       status: "stable",
     },
     {
+      // Kill switch for not generating ::before and ::after on images showing
+      // primary content.
+      name: "SkipImageBeforeAfterForPrimaryContent",
+      status: "stable",
+    },
+    {
       name: "SkipInitialForcedScrollbar",
       status: "test",
     },

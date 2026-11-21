@@ -629,6 +629,24 @@ LayoutObject* HTMLImageElement::CreateLayoutObject(const ComputedStyle& style) {
   }
 }
 
+bool HTMLImageElement::CanGeneratePseudoElement(PseudoId pseudo_id) const {
+  // Primary content is a LayoutImage, which can't have children, so ::before
+  // and ::after never get a box. Don't create them just to resolve their style
+  // and leave them unattached. Switching to or from fallback content changes
+  // the inherited UAShadowHostData of this element, which makes the style
+  // recalc update its pseudo-elements.
+  //
+  // ::marker would also be inside the image, but only for the rare
+  // display: list-item images, so it's not handled here. Other pseudo-elements,
+  // like ::backdrop and ::scroll-marker, get their box outside the image.
+  if ((pseudo_id == kPseudoIdBefore || pseudo_id == kPseudoIdAfter) &&
+      IsPrimaryContent() &&
+      RuntimeEnabledFeatures::SkipImageBeforeAfterForPrimaryContentEnabled()) {
+    return false;
+  }
+  return HTMLElement::CanGeneratePseudoElement(pseudo_id);
+}
+
 void HTMLImageElement::AttachLayoutTree(AttachContext& context) {
   HTMLElement::AttachLayoutTree(context);
   if (auto* layout_image = DynamicTo<LayoutImage>(GetLayoutObject())) {

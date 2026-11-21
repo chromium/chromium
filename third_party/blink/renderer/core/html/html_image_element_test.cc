@@ -14,10 +14,12 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -153,6 +155,58 @@ TEST_F(
   EXPECT_TRUE(image->IsPrimaryContent());
   EXPECT_EQ(image->UserAgentShadowRoot(), nullptr);
   EXPECT_EQ(200u, image->width());
+}
+
+TEST_F(HTMLImageElementTest, BeforeAfterOnlyForFallbackContent) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      img::before { content: "before"; }
+      img::after { content: "after"; }
+    </style>
+    <img id="i" src="image.png" alt="alt">
+  )HTML");
+
+  HTMLImageElement* image = To<HTMLImageElement>(GetElementById("i"));
+  ASSERT_TRUE(image->IsPrimaryContent());
+  EXPECT_FALSE(image->GetPseudoElement(kPseudoIdBefore));
+  EXPECT_FALSE(image->GetPseudoElement(kPseudoIdAfter));
+  // getComputedStyle() still resolves the style from the rules.
+  const ComputedStyle* before_style =
+      image->EnsureComputedStyle(kPseudoIdBefore);
+  ASSERT_TRUE(before_style);
+  EXPECT_TRUE(before_style->GetContentData());
+
+  image->EnsureCollapsedOrFallbackContent();
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_FALSE(image->IsPrimaryContent());
+  ASSERT_FALSE(image->IsCollapsed());
+  PseudoElement* before = image->GetPseudoElement(kPseudoIdBefore);
+  PseudoElement* after = image->GetPseudoElement(kPseudoIdAfter);
+  ASSERT_TRUE(before);
+  ASSERT_TRUE(after);
+  EXPECT_TRUE(before->GetLayoutObject());
+  EXPECT_TRUE(after->GetLayoutObject());
+
+  image->EnsurePrimaryContent();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(image->GetPseudoElement(kPseudoIdBefore));
+  EXPECT_FALSE(image->GetPseudoElement(kPseudoIdAfter));
+}
+
+TEST_F(HTMLImageElementTest, BeforeAfterForPrimaryContentWithoutSkip) {
+  ScopedSkipImageBeforeAfterForPrimaryContentForTest skip_before_after(false);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      img::before { content: "before"; }
+      img::after { content: "after"; }
+    </style>
+    <img id="i" src="image.png" alt="alt">
+  )HTML");
+
+  HTMLImageElement* image = To<HTMLImageElement>(GetElementById("i"));
+  ASSERT_TRUE(image->IsPrimaryContent());
+  EXPECT_TRUE(image->GetPseudoElement(kPseudoIdBefore));
+  EXPECT_TRUE(image->GetPseudoElement(kPseudoIdAfter));
 }
 
 using HTMLImageElementSimTest = SimTest;
