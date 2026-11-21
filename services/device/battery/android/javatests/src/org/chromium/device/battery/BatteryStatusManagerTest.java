@@ -274,6 +274,25 @@ public class BatteryStatusManagerTest {
 
     @Test
     @SmallTest
+    public void testChargingTimeWithNullBatteryManager() throws InterruptedException {
+        // A null wrapper models the platform returning null from
+        // getSystemService(BatteryManager.class); updateBatteryStatus() must be
+        // skipped so charge counter / current average are never queried.
+        initializeBatteryManager(null);
+
+        Intent intent = new Intent(Intent.ACTION_BATTERY_CHANGED);
+        intent.putExtra(BatteryManager.EXTRA_PRESENT, true);
+        intent.putExtra(BatteryManager.EXTRA_PLUGGED, BatteryManager.BATTERY_PLUGGED_USB);
+        intent.putExtra(BatteryManager.EXTRA_LEVEL, 50);
+        intent.putExtra(BatteryManager.EXTRA_SCALE, 100);
+        intent.putExtra(BatteryManager.EXTRA_STATUS, BatteryManager.BATTERY_STATUS_CHARGING);
+
+        mManager.onReceive(intent);
+        verifyValues(true, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, 0.5);
+    }
+
+    @Test
+    @SmallTest
     public void testDischargingTimeEstimateRounding() throws InterruptedException {
         Intent intent = new Intent(Intent.ACTION_BATTERY_CHANGED);
         intent.putExtra(BatteryManager.EXTRA_PRESENT, true);
