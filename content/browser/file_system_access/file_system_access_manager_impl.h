@@ -335,9 +335,11 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       ResolvedTokenCallback callback);
 
   // Generates a unique serialization of a URL, which can be used to check
-  // handles for equality. This is not cryptographically secure.
-  std::string SerializeURL(const storage::FileSystemURL& url,
-                           FileSystemAccessPermissionContext::HandleType type);
+  // handles for equality. This is not cryptographically secure and the result
+  // must not be persisted.
+  std::string SerializeURLForEqualityComparison(
+      const storage::FileSystemURL& url,
+      FileSystemAccessPermissionContext::HandleType type);
 
   base::WeakPtr<FileSystemAccessManagerImpl> AsWeakPtr();
 
