@@ -7,11 +7,15 @@
 
 #include "remoting/host/win/wts_session_process_delegate.h"
 
+#include <stdint.h>
+
 #include <atomic>
 #include <memory>
 #include <string>
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
@@ -20,13 +24,17 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/message_loop/message_pump_for_io.h"
 #include "base/notreached.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/win/scoped_handle.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_channel_proxy.h"
@@ -42,6 +50,7 @@
 #include "remoting/host/base/switches.h"
 #include "remoting/host/ipc_constants.h"
 #include "remoting/host/mojom/desktop_session.mojom.h"
+#include "remoting/host/win/io_completion_port_drainer.h"
 #include "remoting/host/win/launch_process_with_token.h"
 #include "remoting/host/win/security_descriptor.h"
 #include "remoting/host/win/wts_terminal_monitor.h"
@@ -50,6 +59,19 @@
 
 // Name of the default session desktop.
 const char kDefaultDesktopName[] = "winsta0\\default";
+
+// Fallback poll interval while waiting for terminated job processes to finish
+// kernel rundown in case `JOB_OBJECT_MSG_ACTIVE_PROCESS_ZERO` is dropped under
+// kernel resource pressure.
+constexpr base::TimeDelta kJobDrainPollInterval = base::Milliseconds(50);
+
+// Slower fallback poll interval used once `kJobDrainPollLogThreshold` has been
+// reached so stuck job processes do not keep polling at 20 Hz indefinitely.
+constexpr base::TimeDelta kJobDrainSlowPollInterval = base::Seconds(5);
+
+// Number of fallback poll ticks before logging a warning once and backing off
+// if processes still remain active after `TerminateJobObject()`.
+constexpr uint32_t kJobDrainPollLogThreshold = 100;
 
 namespace remoting {
 
@@ -103,9 +125,29 @@ class WtsSessionProcessDelegate::Core
       mojo::PlatformChannelServerEndpoint endpoint);
   void SetFatalErrorCallbackForTesting(base::OnceClosure callback);
   void SetProcessLaunchedCallbackForTesting(base::OnceClosure callback);
+  void SetCompletionPortDrainerForTesting(
+      std::unique_ptr<IoCompletionPortDrainer> drainer);
+  void SetActiveProcessCountOverrideForTesting(
+      base::RepeatingCallback<DWORD()> callback);
 
  private:
   friend class base::RefCountedThreadSafe<Core>;
+
+  enum class JobDrainState {
+    // Either `!launch_elevated_` or `InitializeJobCompleted()` has not yet run.
+    kNotInitialized,
+    // `InitializeJob()` failed to register the drainer or job object.
+    kInitializationFailed,
+    // `job_` is registered with the I/O completion port and open.
+    kActive,
+    // `Stop()` has terminated `job_`, waiting for `ActiveProcesses` to reach 0.
+    kWaitingForProcessesToExit,
+    // `job_` is closed and `completion_port_drainer_` is draining the port.
+    kDrainingCompletionPort,
+    // The sentinel packet has completed; no job packets remain in flight.
+    kDrained,
+  };
+
   ~Core() override;
 
   // base::MessagePumpForIO::IOHandler implementation.
@@ -123,19 +165,36 @@ class WtsSessionProcessDelegate::Core
   // The actual implementation of LaunchProcess()
   void DoLaunchProcess();
 
-  // Drains the completion port queue to make sure that all job object
-  // notifications have been received.
-  void DrainJobNotifications();
+  // Queries the active process count for `job_` (or runs the test override).
+  DWORD QueryActiveProcessCount() const;
 
-  // Notified that the completion port queue has been drained.
-  void DrainJobNotificationsCompleted();
+  // Fallback timer callback invoked while waiting for `ActiveProcesses` to
+  // reach zero.
+  void OnActiveProcessPollTimer();
 
-  // Creates and initializes the job object that will sandbox the launched child
-  // processes.
-  void InitializeJob(ScopedHandle job);
+  // Closes `job_` once all processes in the job have exited in the kernel and
+  // initiates completion-port draining.
+  void MaybeDrainJobNotifications(bool from_poll_timer = false);
+
+  // Enqueues a sentinel packet via `completion_port_drainer_` on
+  // `io_task_runner_` so `Core` stays alive until all prior packets have been
+  // dequeued.
+  void StartCompletionPortDrain();
+
+  // Invoked on `caller_task_runner_` once the completion port has been drained.
+  void OnJobNotificationsDrained();
+
+  // Registers `job` and `drainer` with the I/O completion port.
+  void InitializeJob(ScopedHandle job,
+                     std::unique_ptr<IoCompletionPortDrainer> drainer);
 
   // Notified that the job object initialization is complete.
-  void InitializeJobCompleted(ScopedHandle job);
+  void InitializeJobCompleted(ScopedHandle job,
+                              std::unique_ptr<IoCompletionPortDrainer> drainer);
+
+  // Notified on `caller_task_runner_` when `InitializeJob()` fails on the I/O
+  // thread.
+  void OnInitializeJobFailed();
 
   // Called when the number of processes running in the job reaches zero.
   void OnActiveProcessZero();
@@ -197,16 +256,25 @@ class WtsSessionProcessDelegate::Core
 
   mojo::AssociatedRemote<mojom::WorkerProcessControl> worker_process_control_;
 
-  // Keeps this object alive until all job object notifications are received.
+  // Keeps this object alive while `job_` is open and registered with the
+  // completion port. Transferred into the drain callback once `job_` is closed.
   scoped_refptr<Core> self_;
 
-  // True if Stop() has been called.
+  // True if `Stop()` has been called.
   bool stopped_ = false;
 
-  // True if a process has been assigned to the job object and the resulting
-  // JOB_OBJECT_MSG_ACTIVE_PROCESS_ZERO notification has not yet been delivered
-  // by the I/O thread.
-  bool job_process_assigned_ = false;
+  // Tracks job teardown and completion-port draining on `caller_task_runner_`.
+  JobDrainState job_drain_state_ = JobDrainState::kNotInitialized;
+
+  // Polls `job_` accounting as a fallback if `ACTIVE_PROCESS_ZERO` is dropped.
+  base::OneShotTimer active_process_poll_timer_;
+  uint32_t active_process_poll_count_ = 0;
+  bool logged_active_process_poll_stall_ = false;
+
+  // Drains `io_task_runner_`'s completion port after `job_` is closed.
+  std::unique_ptr<IoCompletionPortDrainer> completion_port_drainer_;
+  std::unique_ptr<IoCompletionPortDrainer> completion_port_drainer_for_testing_;
+  base::RepeatingCallback<DWORD()> active_process_count_override_for_testing_;
 
   base::OnceClosure deleted_callback_for_testing_;
   base::OnceClosure fatal_error_callback_for_testing_;
@@ -257,13 +325,21 @@ bool WtsSessionProcessDelegate::Core::Initialize(uint32_t session_id) {
       return false;
     }
 
+    std::unique_ptr<IoCompletionPortDrainer> drainer =
+        completion_port_drainer_for_testing_
+            ? std::move(completion_port_drainer_for_testing_)
+            : IoCompletionPortDrainer::Create();
+    if (!drainer) {
+      return false;
+    }
+
     // To receive job object notifications the job object is registered with
-    // the completion port represented by |io_task_runner|. The registration has
-    // to be done on the I/O thread because
-    // MessageLoopForIO::RegisterJobObject() can only be called via
-    // CurrentIOThread::Get().
+    // the completion port represented by `io_task_runner_`. The registration
+    // has to be done on the I/O thread because
+    // `CurrentIOThread::RegisterJobObject()` can only be called on that thread.
     io_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&Core::InitializeJob, this, std::move(job)));
+        FROM_HERE, base::BindOnce(&Core::InitializeJob, this, std::move(job),
+                                  std::move(drainer)));
   }
 
   // Create a session token for the launched process.
@@ -273,13 +349,16 @@ bool WtsSessionProcessDelegate::Core::Initialize(uint32_t session_id) {
 void WtsSessionProcessDelegate::Core::Stop() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
+  if (stopped_) {
+    return;
+  }
   stopped_ = true;
 
   KillProcess();
 
   // Drain the completion queue to make sure all job object notifications have
   // been received.
-  DrainJobNotificationsCompleted();
+  MaybeDrainJobNotifications();
 }
 
 void WtsSessionProcessDelegate::Core::LaunchProcess(
@@ -348,10 +427,10 @@ void WtsSessionProcessDelegate::Core::KillProcess() {
 bool WtsSessionProcessDelegate::Core::AssignProcessToJobForTesting(
     base::ProcessHandle process) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
-  if (!job_.is_valid() || !::AssignProcessToJobObject(job_.Get(), process)) {
+  if (stopped_ || !job_.is_valid() ||
+      !::AssignProcessToJobObject(job_.Get(), process)) {
     return false;
   }
-  job_process_assigned_ = true;
   return true;
 }
 
@@ -410,10 +489,25 @@ void WtsSessionProcessDelegate::Core::SetProcessLaunchedCallbackForTesting(
   process_launched_callback_for_testing_ = std::move(callback);
 }
 
+void WtsSessionProcessDelegate::Core::SetCompletionPortDrainerForTesting(
+    std::unique_ptr<IoCompletionPortDrainer> drainer) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_EQ(job_drain_state_, JobDrainState::kNotInitialized);
+  completion_port_drainer_for_testing_ = std::move(drainer);
+}
+
+void WtsSessionProcessDelegate::Core::SetActiveProcessCountOverrideForTesting(
+    base::RepeatingCallback<DWORD()> callback) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  active_process_count_override_for_testing_ = std::move(callback);
+}
+
 WtsSessionProcessDelegate::Core::~Core() {
   DCHECK(!channel_);
   DCHECK(!event_handler_);
   DCHECK(!worker_process_.is_valid());
+  DCHECK(!job_.is_valid());
+  DCHECK(!self_);
   if (deleted_callback_for_testing_) {
     std::move(deleted_callback_for_testing_).Run();
   }
@@ -504,8 +598,18 @@ void WtsSessionProcessDelegate::Core::DoLaunchProcess() {
   DCHECK(!channel_);
   DCHECK(!worker_process_.is_valid());
 
+  if (stopped_) {
+    return;
+  }
+
   base::CommandLine command_line(target_command_->argv());
   if (launch_elevated_) {
+    if (job_drain_state_ == JobDrainState::kInitializationFailed) {
+      LOG(ERROR) << "Cannot launch elevated worker: job initialization failed.";
+      ReportFatalError();
+      return;
+    }
+
     // The job object is not ready. Retry starting the host process later.
     if (!job_.is_valid()) {
       launch_pending_ = true;
@@ -576,7 +680,6 @@ void WtsSessionProcessDelegate::Core::DoLaunchProcess() {
       ReportFatalError();
       return;
     }
-    job_process_assigned_ = true;
   }
 
   if (!ResumeThread(worker_thread.Get())) {
@@ -600,104 +703,189 @@ void WtsSessionProcessDelegate::Core::DoLaunchProcess() {
   }
 }
 
-void WtsSessionProcessDelegate::Core::DrainJobNotifications() {
-  DCHECK(io_task_runner_->BelongsToCurrentThread());
-
-  // DrainJobNotifications() is posted after the job object is destroyed, so
-  // by this time all notifications from the job object have been processed
-  // already. Let the main thread know that the queue has been drained.
-  caller_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&Core::DrainJobNotificationsCompleted, this));
-}
-
-void WtsSessionProcessDelegate::Core::DrainJobNotificationsCompleted() {
+DWORD WtsSessionProcessDelegate::Core::QueryActiveProcessCount() const {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK(job_.is_valid());
 
-  if (job_.is_valid()) {
-    // Closing the last handle to the job destroys the kernel job object only
-    // once every process in the job has terminated. TerminateJobObject() does
-    // not wait for the processes to exit, so defer closing the handle until
-    // OnActiveProcessZero() has run so that no further notifications will be
-    // posted to the completion port after the handle is closed.
-    if (job_process_assigned_) {
-      return;
-    }
-
-    job_.Close();
-
-    // Drain the completion queue to make sure all job object notifications have
-    // been received.
-    io_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&Core::DrainJobNotifications, this));
-  } else {
-    // The job object has been closed and the completion port queue has been
-    // drained.
-    self_ = nullptr;
+  if (active_process_count_override_for_testing_) {
+    return active_process_count_override_for_testing_.Run();
   }
+
+  JOBOBJECT_BASIC_ACCOUNTING_INFORMATION info = {};
+  PCHECK(::QueryInformationJobObject(job_.Get(),
+                                     JobObjectBasicAccountingInformation, &info,
+                                     sizeof(info), nullptr));
+  return info.ActiveProcesses;
 }
 
-void WtsSessionProcessDelegate::Core::InitializeJob(ScopedHandle job) {
+void WtsSessionProcessDelegate::Core::OnActiveProcessPollTimer() {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK(stopped_);
+  MaybeDrainJobNotifications(/*from_poll_timer=*/true);
+}
+
+void WtsSessionProcessDelegate::Core::MaybeDrainJobNotifications(
+    bool from_poll_timer) {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK(stopped_);
+
+  if (job_drain_state_ != JobDrainState::kActive &&
+      job_drain_state_ != JobDrainState::kWaitingForProcessesToExit) {
+    return;
+  }
+
+  if (QueryActiveProcessCount() > 0) {
+    // Closing the last handle to the job destroys the kernel job object only
+    // once every process in the job has terminated. `TerminateJobObject()` does
+    // not wait for processes to finish kernel rundown, so keep `job_` open
+    // until `ActiveProcesses` reaches zero.
+    job_drain_state_ = JobDrainState::kWaitingForProcessesToExit;
+    if (from_poll_timer) {
+      ::TerminateJobObject(job_.Get(), CONTROL_C_EXIT);
+      if (!logged_active_process_poll_stall_ &&
+          ++active_process_poll_count_ >= kJobDrainPollLogThreshold) {
+        logged_active_process_poll_stall_ = true;
+        LOG(WARNING) << "Job object still has active processes after "
+                     << (kJobDrainPollInterval * active_process_poll_count_)
+                     << "; continuing to retry TerminateJobObject().";
+      }
+    }
+    if (!active_process_poll_timer_.IsRunning()) {
+      const base::TimeDelta poll_interval = logged_active_process_poll_stall_
+                                                ? kJobDrainSlowPollInterval
+                                                : kJobDrainPollInterval;
+      active_process_poll_timer_.Start(
+          FROM_HERE, poll_interval,
+          base::BindOnce(&Core::OnActiveProcessPollTimer,
+                         base::Unretained(this)));
+    }
+    return;
+  }
+
+  active_process_poll_timer_.Stop();
+  job_drain_state_ = JobDrainState::kDrainingCompletionPort;
+
+  // Assume that once `QueryInformationJobObject()` reports `ActiveProcesses` as
+  // zero, Windows has already queued the final job notifications for those
+  // processes to the completion port (this relies on NT kernel behavior rather
+  // than a documented API guarantee; a violation would leave a packet behind
+  // the sentinel and result in a use-after-free). Closing `job_` destroys the
+  // kernel job object so no further job notifications can be generated.
+  job_.Close();
+
+  // Enqueue a real completion packet onto the I/O completion port via
+  // `completion_port_drainer_` rather than relying on a regular posted task:
+  // `MessagePumpForIO` interleaves application tasks with individual completion
+  // packets, so a posted task can overtake job packets still queued behind
+  // other handlers' packets.
+  DCHECK(self_);
+  io_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&Core::StartCompletionPortDrain, std::move(self_)));
+}
+
+void WtsSessionProcessDelegate::Core::StartCompletionPortDrain() {
   DCHECK(io_task_runner_->BelongsToCurrentThread());
+  CHECK(completion_port_drainer_);
+
+  completion_port_drainer_->Drain(base::BindPostTask(
+      caller_task_runner_,
+      base::BindOnce(&Core::OnJobNotificationsDrained, this)));
+}
+
+void WtsSessionProcessDelegate::Core::OnJobNotificationsDrained() {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK_EQ(job_drain_state_, JobDrainState::kDrainingCompletionPort);
+
+  job_drain_state_ = JobDrainState::kDrained;
+  completion_port_drainer_.reset();
+}
+
+void WtsSessionProcessDelegate::Core::InitializeJob(
+    ScopedHandle job,
+    std::unique_ptr<IoCompletionPortDrainer> drainer) {
+  DCHECK(io_task_runner_->BelongsToCurrentThread());
+
+  if (!drainer->RegisterOnIoThread()) {
+    caller_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&Core::OnInitializeJobFailed, this));
+    return;
+  }
 
   // Register to receive job notifications via the I/O thread's completion port.
   if (!base::CurrentIOThread::Get()->RegisterJobObject(job.Get(), this)) {
     PLOG(ERROR) << "Failed to associate the job object with a completion port";
+    caller_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&Core::OnInitializeJobFailed, this));
     return;
   }
 
   // Let the main thread know that initialization is complete.
   caller_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Core::InitializeJobCompleted, this, std::move(job)));
+      FROM_HERE, base::BindOnce(&Core::InitializeJobCompleted, this,
+                                std::move(job), std::move(drainer)));
 }
 
-void WtsSessionProcessDelegate::Core::InitializeJobCompleted(ScopedHandle job) {
+void WtsSessionProcessDelegate::Core::InitializeJobCompleted(
+    ScopedHandle job,
+    std::unique_ptr<IoCompletionPortDrainer> drainer) {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
   DCHECK(!job_.is_valid());
-
-  if (stopped_) {
-    // If Stop() was called before the job was initialized, we must still ensure
-    // the completion port is drained because InitializeJob() has already
-    // called RegisterJobObject().
-    job_ = std::move(job);
-    self_ = this;
-    DrainJobNotificationsCompleted();
-    return;
-  }
+  DCHECK_EQ(job_drain_state_, JobDrainState::kNotInitialized);
 
   job_ = std::move(job);
+  completion_port_drainer_ = std::move(drainer);
 
   // Keep this object alive until the job object notifications have been
-  // drained. This ensures that OnIOCompleted() is not called with a dangling
+  // drained. This ensures that `OnIOCompleted()` is not called with a dangling
   // pointer.
   self_ = this;
+  job_drain_state_ = JobDrainState::kActive;
+
+  if (stopped_) {
+    // If `Stop()` was called before the job was initialized, we must still
+    // ensure the completion port is drained because `InitializeJob()` has
+    // already called `RegisterJobObject()`.
+    MaybeDrainJobNotifications();
+    return;
+  }
 
   if (launch_pending_) {
     DoLaunchProcess();
   }
 }
 
+void WtsSessionProcessDelegate::Core::OnInitializeJobFailed() {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+  DCHECK(!job_.is_valid());
+  DCHECK_EQ(job_drain_state_, JobDrainState::kNotInitialized);
+
+  job_drain_state_ = JobDrainState::kInitializationFailed;
+  if (stopped_) {
+    return;
+  }
+  if (launch_pending_) {
+    launch_pending_ = false;
+    ReportFatalError();
+  }
+}
+
 void WtsSessionProcessDelegate::Core::OnActiveProcessZero() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  if (job_.is_valid()) {
-    JOBOBJECT_BASIC_ACCOUNTING_INFORMATION info;
-    if (QueryInformationJobObject(job_.Get(),
-                                  JobObjectBasicAccountingInformation, &info,
-                                  sizeof(info), nullptr)) {
-      if (info.ActiveProcesses > 0) {
-        return;
-      }
-    }
+  if (stopped_) {
+    MaybeDrainJobNotifications();
+    return;
   }
 
-  job_process_assigned_ = false;
-
-  if (stopped_) {
-    // The I/O thread has now processed all pending job object notifications,
-    // so it is safe to close the job handle and release |self_|.
-    DrainJobNotificationsCompleted();
-    return;
+  if (job_.is_valid()) {
+    JOBOBJECT_BASIC_ACCOUNTING_INFORMATION info = {};
+    if (QueryInformationJobObject(job_.Get(),
+                                  JobObjectBasicAccountingInformation, &info,
+                                  sizeof(info), nullptr) &&
+        info.ActiveProcesses > 0) {
+      return;
+    }
   }
 
   if (launch_pending_) {
@@ -879,6 +1067,23 @@ void WtsSessionProcessDelegate::TestApi::SetFatalErrorCallback(
 void WtsSessionProcessDelegate::TestApi::SetProcessLaunchedCallback(
     base::OnceClosure callback) {
   delegate_->core_->SetProcessLaunchedCallbackForTesting(std::move(callback));
+}
+
+void WtsSessionProcessDelegate::TestApi::SetCompletionPortDrainer(
+    std::unique_ptr<IoCompletionPortDrainer> drainer) {
+  delegate_->core_->SetCompletionPortDrainerForTesting(  // IN-TEST
+      std::move(drainer));
+}
+
+void WtsSessionProcessDelegate::TestApi::SetActiveProcessCountOverride(
+    base::RepeatingCallback<DWORD()> callback) {
+  delegate_->core_->SetActiveProcessCountOverrideForTesting(  // IN-TEST
+      std::move(callback));
+}
+
+base::MessagePumpForIO::IOHandler*
+WtsSessionProcessDelegate::TestApi::GetJobIoHandler() {
+  return delegate_->core_.get();
 }
 
 }  // namespace remoting

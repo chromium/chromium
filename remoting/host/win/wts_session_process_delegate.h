@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/message_loop/message_pump_for_io.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
 #include "remoting/host/win/windows_process_delegate.h"
@@ -28,6 +29,8 @@ class PlatformChannelServerEndpoint;
 }  // namespace mojo
 
 namespace remoting {
+
+class IoCompletionPortDrainer;
 
 // Implements logic for launching and monitoring a worker process in a different
 // session.
@@ -92,6 +95,20 @@ class WtsSessionProcessDelegate : public WindowsProcessDelegate {
     // Registers callbacks for fatal error and process launched events.
     void SetFatalErrorCallback(base::OnceClosure callback);
     void SetProcessLaunchedCallback(base::OnceClosure callback);
+
+    // Overrides the `IoCompletionPortDrainer` used by `Initialize()`. Must be
+    // called before `Initialize()`.
+    void SetCompletionPortDrainer(
+        std::unique_ptr<IoCompletionPortDrainer> drainer);
+
+    // Overrides the active process count queried during job teardown so tests
+    // can deterministically exercise the fallback poll timer.
+    void SetActiveProcessCountOverride(
+        base::RepeatingCallback<DWORD()> callback);
+
+    // Returns the raw `IOHandler` pointer registered as the job object
+    // completion key.
+    base::MessagePumpForIO::IOHandler* GetJobIoHandler();
 
    private:
     raw_ptr<WtsSessionProcessDelegate> delegate_;
