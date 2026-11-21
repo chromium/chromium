@@ -121,6 +121,10 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
   const gpu::SyncToken& last_waited_sync_token() const {
     return last_waited_sync_token_;
   }
+  const std::vector<gpu::SyncToken>& waited_sync_tokens() const {
+    return waited_sync_tokens_;
+  }
+  void ClearWaitedSyncTokens() { waited_sync_tokens_.clear(); }
   void set_context_lost(bool context_lost) { context_lost_ = context_lost; }
 
   void set_support_texture_half_float_linear(bool support);
@@ -193,6 +197,7 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
   UpdateType last_update_type_ = NO_UPDATE;
   GLuint64 next_insert_fence_sync_ = 1;
   gpu::SyncToken last_waited_sync_token_;
+  std::vector<gpu::SyncToken> waited_sync_tokens_;
   int unpack_alignment_ = 4;
 
   base::flat_map<unsigned, unsigned> bound_buffer_;

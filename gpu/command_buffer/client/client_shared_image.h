@@ -374,6 +374,10 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   // the processing of the signal. Returns a SyncToken that the caller can use
   // to ensure that any future service-side accesses to this SharedImage are
   // sequenced with respect to this call being processed.
+  // When the UseAutomaticSyncTokenManagement feature is enabled, `sync_token`
+  // is ignored (as the caller must have already ensured prior accesses
+  // completed before updating the backing out-of-band), and an empty SyncToken
+  // is returned since the SyncToken for this call is tracked internally.
   gpu::SyncToken BackingWasExternallyUpdated(const gpu::SyncToken& sync_token);
 
   // Similar to the function above, except that this overloaded version accepts
@@ -384,17 +388,17 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   // Updates the GpuMemoryBuffer associated with this SharedImage after
   // waiting on the appropriate SyncToken(s). When the
   // UseAutomaticSyncTokenManagement feature is enabled, this function waits on
-  // all tracked SyncTokens for this SharedImage, ignoring `sync_token`. When
-  // the feature is disabled, it waits on `sync_token` if valid.
+  // the tracked write SyncToken for this SharedImage, ignoring `sync_token`.
+  // When the feature is disabled, it waits on `sync_token` if valid.
   void CopyToGpuMemoryBuffer(const SyncToken& sync_token);
 
   // Updates the GpuMemoryBuffer associated with this SharedImage after
   // waiting on the appropriate SyncToken(s). When the
   // UseAutomaticSyncTokenManagement feature is enabled, this function waits on
-  // all tracked SyncTokens for this SharedImage, ignoring `sync_token`. When
-  // the feature is disabled, it waits on `sync_token` if valid. The `callback`
-  // is run denoting if the copy was successful and the GpuMemoryBuffer is ready
-  // to be mapped by the client.
+  // the tracked write SyncToken for this SharedImage, ignoring `sync_token`.
+  // When the feature is disabled, it waits on `sync_token` if valid. The
+  // `callback` is run denoting if the copy was successful and the
+  // GpuMemoryBuffer is ready to be mapped by the client.
   void CopyToGpuMemoryBufferAsync(const SyncToken& sync_token,
                                   base::OnceCallback<void(bool)> callback);
 
@@ -572,12 +576,19 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
       base::UnsafeSharedMemoryRegion memory_region,
       base::OnceCallback<void(bool)> callback);
 
-  // Collect all SyncTokens stored in the internal map.
-  std::vector<SyncToken> CollectSyncTokensLocked()
+  // Collect SyncTokens stored internally. When `readonly` is true, only
+  // `write_sync_token_` is collected; otherwise, both `read_sync_token_map_`
+  // and `write_sync_token_` are collected.
+  std::vector<SyncToken> CollectSyncTokensLocked(bool readonly)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  std::vector<SyncToken> CollectSyncTokens();
+  std::vector<SyncToken> CollectSyncTokens(bool readonly);
 
-  void WaitSyncTokenInternal(InterfaceBase* ib, const SyncToken& sync_token);
+  // Wait on the input sync_token (in the manual SyncToken mode) or on the
+  // internal SyncTokens as returned by `CollectSyncTokens(readonly)` (in the
+  // automatic SyncToken mode).
+  void WaitSyncTokenInternal(InterfaceBase* ib,
+                             const SyncToken& sync_token,
+                             bool readonly);
   static void WaitSyncTokensInternal(
       std::vector<scoped_refptr<ClientSharedImage>> shared_images,
       std::vector<SyncToken> sync_tokens,
@@ -585,15 +596,20 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
 
   // Helper function for `StoreSyncTokenInternal` and
   // `StoreSyncTokenVectorInternal`; Must be called while holding `lock_`.
-  void StoreSyncTokenLocked(const SyncToken& sync_token)
+  void StoreSyncTokenLocked(const SyncToken& sync_token, bool readonly)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  SyncToken StoreSyncTokenInternal(const SyncToken& sync_token);
+  SyncToken StoreSyncTokenInternal(const SyncToken& sync_token, bool readonly);
   std::vector<SyncToken> StoreSyncTokenVectorInternal(
       const std::vector<SyncToken>& sync_tokens);
 
-  SyncToken GenSyncTokenInternal(InterfaceBase* ib);
+  SyncToken GenSyncTokenInternal(InterfaceBase* ib, bool readonly);
 
-  // Verify SyncTokens in-place in `sync_token_map_` and collect them.
+  // Verify SyncTokens in-place in `read_sync_token_map_` and
+  // `write_sync_token_`. Must be called while holding `lock_`.
+  void VerifySyncTokensLocked() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
+  // Verify SyncTokens in-place in `read_sync_token_map_` and
+  // `write_sync_token_`, and collect them.
   std::vector<SyncToken> VerifyAndCollectSyncTokens();
 
   void RunOnTaskRunner(MappableBuffer::CopyNativeBufferToShMemCallback callback,
@@ -617,9 +633,11 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   SyncToken creation_sync_token_;
   SyncToken destruction_sync_token_;
 
-  // Every SyncToken stored in this map is guaranteed to be non-empty, as
-  // enforced by StoreSyncTokenLocked().
-  base::flat_map<SyncPointClientId, SyncToken> sync_token_map_;
+  // Every SyncToken stored in `read_sync_token_map_` is guaranteed to be
+  // non-empty, as enforced by StoreSyncTokenLocked().
+  base::flat_map<SyncPointClientId, SyncToken> read_sync_token_map_
+      GUARDED_BY(lock_);
+  SyncToken write_sync_token_ GUARDED_BY(lock_);
 
   std::unique_ptr<MappableBuffer> mappable_buffer_;
   std::optional<gfx::BufferUsage> buffer_usage_;
@@ -700,7 +718,8 @@ struct GPU_COMMAND_BUFFER_CLIENT_EXPORT ExportedSharedImage {
   ExportedSharedImage(const Mailbox& mailbox,
                       const SharedImageMetadata& metadata,
                       const SyncToken& creation_sync_token,
-                      const std::vector<SyncToken>& managed_sync_tokens,
+                      const SyncToken& write_sync_token,
+                      const std::vector<SyncToken>& read_sync_tokens,
                       std::string debug_label,
                       std::optional<gfx::GpuMemoryBufferHandle> buffer_handle,
                       std::optional<gfx::BufferUsage> buffer_usage,
@@ -710,7 +729,8 @@ struct GPU_COMMAND_BUFFER_CLIENT_EXPORT ExportedSharedImage {
   Mailbox mailbox_;
   SharedImageMetadata metadata_;
   SyncToken creation_sync_token_;
-  std::vector<SyncToken> managed_sync_tokens_;
+  SyncToken write_sync_token_;
+  std::vector<SyncToken> read_sync_tokens_;
   std::string debug_label_;
   std::optional<gfx::GpuMemoryBufferHandle> buffer_handle_;
   std::optional<gfx::BufferUsage> buffer_usage_;

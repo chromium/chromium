@@ -13,6 +13,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/viz/test/test_context_support.h"
+#include "components/viz/test/test_gles2_interface.h"
+#include "components/viz/test/test_raster_interface.h"
 #include "gpu/command_buffer/client/gles2_interface_stub.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
@@ -104,8 +106,9 @@ TEST(ClientSharedImageTest, ImportUnowned) {
                                kUsage};
 
   auto client_si = ClientSharedImage::ImportUnowned(ExportedSharedImage(
-      mailbox, metadata, SyncToken(), /*managed_sync_tokens=*/{},
-      "ClientSharedImageTest", std::nullopt, std::nullopt, GL_TEXTURE_2D,
+      mailbox, metadata, SyncToken(), /*write_sync_token=*/SyncToken(),
+      /*read_sync_tokens=*/{}, "ClientSharedImageTest", std::nullopt,
+      std::nullopt, GL_TEXTURE_2D,
       /*is_software=*/false));
 
   // Check that the ClientSI's state matches the input parameters.
@@ -132,8 +135,9 @@ TEST(ClientSharedImageTest,
                                kUsage};
 
   ExportedSharedImage exported_si(
-      mailbox, metadata, SyncToken(), /*managed_sync_tokens=*/{},
-      "ClientSharedImageTest", std::nullopt, std::nullopt,
+      mailbox, metadata, SyncToken(), /*write_sync_token=*/SyncToken(),
+      /*read_sync_tokens=*/{}, "ClientSharedImageTest", std::nullopt,
+      std::nullopt,
       /*texture_target=*/0, /*is_software=*/false);
 
   ExportedSharedImage deserialized_si;
@@ -166,8 +170,8 @@ TEST(ClientSharedImageTest,
   empty_handle.type = gfx::EMPTY_BUFFER;
 
   ExportedSharedImage exported_si(
-      mailbox, metadata, SyncToken(), /*managed_sync_tokens=*/{},
-      "ClientSharedImageTest", std::move(empty_handle),
+      mailbox, metadata, SyncToken(), /*write_sync_token=*/SyncToken(),
+      /*read_sync_tokens=*/{}, "ClientSharedImageTest", std::move(empty_handle),
       gfx::BufferUsage::GPU_READ,
       /*texture_target=*/GL_TEXTURE_2D, /*is_software=*/false);
 
@@ -193,8 +197,9 @@ TEST(ClientSharedImageTest,
                                kUsage};
 
   ExportedSharedImage exported_si(
-      mailbox, metadata, SyncToken(), /*managed_sync_tokens=*/{},
-      "ClientSharedImageTest", std::nullopt, std::nullopt,
+      mailbox, metadata, SyncToken(), /*write_sync_token=*/SyncToken(),
+      /*read_sync_tokens=*/{}, "ClientSharedImageTest", std::nullopt,
+      std::nullopt,
       /*texture_target=*/GL_TEXTURE_2D, /*is_software=*/false);
 
   ExportedSharedImage deserialized_si;
@@ -228,8 +233,8 @@ TEST(ClientSharedImageTest,
   token2.SetVerifyFlush();
 
   ExportedSharedImage exported_si(
-      mailbox, metadata, SyncToken(), {token1, token2}, "ClientSharedImageTest",
-      std::nullopt, std::nullopt,
+      mailbox, metadata, SyncToken(), /*write_sync_token=*/SyncToken(),
+      {token1, token2}, "ClientSharedImageTest", std::nullopt, std::nullopt,
       /*texture_target=*/GL_TEXTURE_2D, /*is_software=*/false);
 
   ExportedSharedImage deserialized_si;
@@ -255,17 +260,20 @@ TEST(ClientSharedImageTest,
                                kUsage};
 
   CommandBufferNamespace ns = CommandBufferNamespace::GPU_IO;
+  CommandBufferId write_cmd_id = CommandBufferId::FromUnsafeValue(41);
   CommandBufferId cmd_id1 = CommandBufferId::FromUnsafeValue(42);
   CommandBufferId cmd_id2 = CommandBufferId::FromUnsafeValue(43);
 
+  SyncToken write_token(ns, write_cmd_id, /*release_count=*/50);
+  write_token.SetVerifyFlush();
   SyncToken token1(ns, cmd_id1, /*release_count=*/100);
   token1.SetVerifyFlush();
   SyncToken token2(ns, cmd_id2, /*release_count=*/200);
   token2.SetVerifyFlush();
 
   ExportedSharedImage exported_si(
-      mailbox, metadata, SyncToken(), {token1, token2}, "ClientSharedImageTest",
-      std::nullopt, std::nullopt,
+      mailbox, metadata, SyncToken(), write_token, {token1, token2},
+      "ClientSharedImageTest", std::nullopt, std::nullopt,
       /*texture_target=*/GL_TEXTURE_2D, /*is_software=*/false);
 
   ExportedSharedImage deserialized_si;
@@ -274,9 +282,10 @@ TEST(ClientSharedImageTest,
           exported_si, deserialized_si);
 
   EXPECT_TRUE(success);
-  EXPECT_EQ(deserialized_si.managed_sync_tokens_.size(), 2u);
-  EXPECT_EQ(deserialized_si.managed_sync_tokens_[0], token1);
-  EXPECT_EQ(deserialized_si.managed_sync_tokens_[1], token2);
+  EXPECT_EQ(deserialized_si.write_sync_token_, write_token);
+  EXPECT_EQ(deserialized_si.read_sync_tokens_.size(), 2u);
+  EXPECT_EQ(deserialized_si.read_sync_tokens_[0], token1);
+  EXPECT_EQ(deserialized_si.read_sync_tokens_[1], token2);
 }
 
 TEST(ClientSharedImageTest, CreateMappableBufferFromHandle_EmptyBuffer) {
@@ -907,6 +916,210 @@ TEST(ClientSharedImageTest, CreateGpuFenceForSyncTokensReusesTextures) {
   // Destroying the helper deletes the remaining textures.
   EXPECT_CALL(gl, DeleteTextures(1, testing::Pointee(12)));
   EXPECT_CALL(gl, DeleteTextures(1, testing::Pointee(13)));
+}
+
+TEST(ClientSharedImageTest,
+     AutomaticSyncTokenManagement_SeparateReadAndWriteSyncTokens) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kUseAutomaticSyncTokenManagement);
+
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  auto client_si = sii->CreateSharedImage(
+      CreateSharedImageInfo(viz::SinglePlaneFormat::kRGBA_8888,
+                            SHARED_IMAGE_USAGE_RASTER_READ |
+                                SHARED_IMAGE_USAGE_RASTER_WRITE |
+                                SHARED_IMAGE_USAGE_DISPLAY_READ),
+      kNullSurfaceHandle);
+  SyncToken creation_token = client_si->creation_sync_token();
+
+  constexpr uint64_t kReader1Id = 10;
+  constexpr uint64_t kReader2Id = 20;
+  constexpr uint64_t kWriterId = 30;
+  viz::TestRasterInterface reader1_ri;
+  reader1_ri.set_command_buffer_id(kReader1Id);
+  viz::TestRasterInterface reader2_ri;
+  reader2_ri.set_command_buffer_id(kReader2Id);
+  viz::TestRasterInterface writer_ri;
+  writer_ri.set_command_buffer_id(kWriterId);
+
+  // 1. First read-only access waits on `creation_token` (a write token).
+  {
+    auto read_access1 = client_si->BeginRasterAccess(&reader1_ri, SyncToken(),
+                                                     /*readonly=*/true);
+    RasterScopedAccess::EndAccess(std::move(read_access1));
+  }
+  EXPECT_THAT(reader1_ri.waited_sync_tokens(),
+              testing::UnorderedElementsAre(creation_token));
+  SyncToken reader1_token(CommandBufferNamespace::GPU_IO,
+                          CommandBufferId::FromUnsafeValue(kReader1Id),
+                          /*release_count=*/1);
+
+  // 2. Second read-only access only waits on write tokens (`creation_token`),
+  // and does NOT wait on `reader1_token`.
+  {
+    auto read_access2 = client_si->BeginRasterAccess(&reader2_ri, SyncToken(),
+                                                     /*readonly=*/true);
+    RasterScopedAccess::EndAccess(std::move(read_access2));
+  }
+  EXPECT_THAT(reader2_ri.waited_sync_tokens(),
+              testing::UnorderedElementsAre(creation_token));
+  SyncToken reader2_token(CommandBufferNamespace::GPU_IO,
+                          CommandBufferId::FromUnsafeValue(kReader2Id),
+                          /*release_count=*/1);
+
+  // 3. Write access waits on all prior read and write tokens, then clears the
+  // read SyncToken map and replaces the write SyncToken with `writer_token1`.
+  {
+    auto write_access = client_si->BeginRasterAccess(&writer_ri, SyncToken(),
+                                                     /*readonly=*/false);
+    RasterScopedAccess::EndAccess(std::move(write_access));
+  }
+  EXPECT_THAT(writer_ri.waited_sync_tokens(),
+              testing::UnorderedElementsAre(creation_token, reader1_token,
+                                            reader2_token));
+  SyncToken writer_token1(CommandBufferNamespace::GPU_IO,
+                          CommandBufferId::FromUnsafeValue(kWriterId),
+                          /*release_count=*/1);
+
+  // 4. Subsequent read-only access on `writer_ri` only waits on the latest
+  // write token (`writer_token1`, which replaced `creation_token`), and
+  // generates a newer read token on `kWriterId` (release_count = 2).
+  writer_ri.ClearWaitedSyncTokens();
+  {
+    auto read_access3 = client_si->BeginRasterAccess(&writer_ri, SyncToken(),
+                                                     /*readonly=*/true);
+    RasterScopedAccess::EndAccess(std::move(read_access3));
+  }
+  EXPECT_THAT(writer_ri.waited_sync_tokens(),
+              testing::UnorderedElementsAre(writer_token1));
+  SyncToken writer_read_token2(CommandBufferNamespace::GPU_IO,
+                               CommandBufferId::FromUnsafeValue(kWriterId),
+                               /*release_count=*/2);
+
+  // 5. Another read-only access on `reader1_ri` still only waits on
+  // `writer_token1` (release_count = 1), whereas a write access on `reader1_ri`
+  // waits on `reader1_token2` and the newer `writer_read_token2`
+  // (release_count = 2) deduplicated on `kWriterId` (while `creation_token` and
+  // `reader2_token` from before step 3's write were already cleared).
+  reader1_ri.ClearWaitedSyncTokens();
+  {
+    auto read_access4 = client_si->BeginRasterAccess(&reader1_ri, SyncToken(),
+                                                     /*readonly=*/true);
+    RasterScopedAccess::EndAccess(std::move(read_access4));
+  }
+  EXPECT_THAT(reader1_ri.waited_sync_tokens(),
+              testing::UnorderedElementsAre(writer_token1));
+  SyncToken reader1_token2(CommandBufferNamespace::GPU_IO,
+                           CommandBufferId::FromUnsafeValue(kReader1Id),
+                           /*release_count=*/2);
+
+  reader1_ri.ClearWaitedSyncTokens();
+  {
+    auto write_access2 = client_si->BeginRasterAccess(&reader1_ri, SyncToken(),
+                                                      /*readonly=*/false);
+    RasterScopedAccess::EndAccess(std::move(write_access2));
+  }
+  EXPECT_THAT(
+      reader1_ri.waited_sync_tokens(),
+      testing::UnorderedElementsAre(reader1_token2, writer_read_token2));
+}
+
+// Checks that when feature UseAutomaticSyncTokenManagement is enabled, creating
+// a GL texture only waits on the creation SyncToken, whereas a subsequent read
+// access waits on the latest write SyncToken.
+TEST(ClientSharedImageTest,
+     AutomaticSyncTokenManagement_CreateGLTextureWaitsOnCreationSyncToken) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kUseAutomaticSyncTokenManagement);
+
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  auto client_si = sii->CreateSharedImage(
+      CreateSharedImageInfo(
+          viz::SinglePlaneFormat::kRGBA_8888,
+          SHARED_IMAGE_USAGE_RASTER_WRITE | SHARED_IMAGE_USAGE_GLES2_READ),
+      kNullSurfaceHandle);
+  SyncToken creation_token = client_si->creation_sync_token();
+  ASSERT_TRUE(creation_token.HasData());
+
+  // Write to the SharedImage so that the latest write SyncToken differs from
+  // the creation SyncToken.
+  constexpr uint64_t kWriterId = 30;
+  viz::TestRasterInterface writer_ri;
+  writer_ri.set_command_buffer_id(kWriterId);
+  {
+    auto write_access = client_si->BeginRasterAccess(&writer_ri, SyncToken(),
+                                                     /*readonly=*/false);
+    RasterScopedAccess::EndAccess(std::move(write_access));
+  }
+  SyncToken writer_token(CommandBufferNamespace::GPU_IO,
+                         CommandBufferId::FromUnsafeValue(kWriterId),
+                         /*release_count=*/1);
+
+  // 1. Creating the GL texture only waits on `creation_token`.
+  viz::TestGLES2Interface gl;
+  auto texture = client_si->CreateGLTexture(&gl);
+  EXPECT_THAT(gl.waited_sync_tokens(), testing::ElementsAre(creation_token));
+
+  // 2. A read access to the pixels waits on the latest write SyncToken
+  // (`writer_token`).
+  gl.ClearWaitedSyncTokens();
+  {
+    auto read_access = texture->BeginAccess(SyncToken(), /*readonly=*/true);
+    SharedImageTexture::ScopedAccess::EndAccess(std::move(read_access));
+  }
+  EXPECT_THAT(gl.waited_sync_tokens(), testing::ElementsAre(writer_token));
+}
+
+// Checks that when feature UseAutomaticSyncTokenManagement is enabled,
+// BackingWasExternallyUpdated() does not wait on tracked SyncTokens via SII
+// (TestSharedImageInterface::WaitSyncToken is NOTREACHED) and replaces all
+// previously tracked read and write SyncTokens with the update's SyncToken.
+TEST(ClientSharedImageTest,
+     AutomaticSyncTokenManagement_BackingWasExternallyUpdatedReplacesTokens) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kUseAutomaticSyncTokenManagement);
+
+  auto sii = base::MakeRefCounted<TestSharedImageInterface>();
+  auto client_si = sii->CreateSharedImage(
+      CreateSharedImageInfo(viz::SinglePlaneFormat::kRGBA_8888,
+                            SHARED_IMAGE_USAGE_RASTER_READ |
+                                SHARED_IMAGE_USAGE_RASTER_WRITE |
+                                SHARED_IMAGE_USAGE_DISPLAY_READ),
+      kNullSurfaceHandle);
+
+  constexpr uint64_t kCompositorId = 789;
+  SyncToken compositor_token1(CommandBufferNamespace::GPU_IO,
+                              CommandBufferId::FromUnsafeValue(kCompositorId),
+                              /*release_count=*/101);
+  SyncToken compositor_token2(CommandBufferNamespace::GPU_IO,
+                              CommandBufferId::FromUnsafeValue(kCompositorId),
+                              /*release_count=*/102);
+
+  // 1. After an external update, prior write (`creation_token`) and read
+  // (`compositor_token1`) SyncTokens are replaced by `update_token1`.
+  client_si->EndDisplayCompositorAccess(compositor_token1);
+  client_si->BackingWasExternallyUpdated(SyncToken());
+  SyncToken update_token1 = sii->MostRecentGeneratedToken();
+
+  viz::TestRasterInterface reader_ri;
+  {
+    auto read_access = client_si->BeginRasterAccess(&reader_ri, SyncToken(),
+                                                    /*readonly=*/true);
+    RasterScopedAccess::EndAccess(std::move(read_access));
+  }
+  EXPECT_THAT(reader_ri.waited_sync_tokens(),
+              testing::ElementsAre(update_token1));
+
+  // 2. Same for the GpuFence overload: `update_token2` replaces `update_token1`
+  // and any subsequent read SyncTokens.
+  client_si->EndDisplayCompositorAccess(compositor_token2);
+  client_si->BackingWasExternallyUpdated(std::unique_ptr<gfx::GpuFence>());
+  SyncToken update_token2 = sii->MostRecentGeneratedToken();
+
+  // 3. Destruction only needs to wait on the SyncToken of the latest update.
+  client_si.reset();
+  EXPECT_THAT(sii->MostRecentDestroyTokens(),
+              testing::ElementsAre(update_token2));
 }
 
 }  // namespace gpu

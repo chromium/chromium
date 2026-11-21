@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_TEST_TEST_RASTER_INTERFACE_H_
 
 #include <utility>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -27,6 +28,14 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
 
   gpu::SyncToken last_waited_sync_token() const {
     return last_waited_sync_token_;
+  }
+  const std::vector<gpu::SyncToken>& waited_sync_tokens() const {
+    return waited_sync_tokens_;
+  }
+  void ClearWaitedSyncTokens() { waited_sync_tokens_.clear(); }
+
+  void set_command_buffer_id(uint64_t command_buffer_id) {
+    test_command_buffer_id_ = command_buffer_id;
   }
 
   void set_context_lost_callback(base::OnceClosure callback) {
@@ -147,11 +156,12 @@ class TestRasterInterface : public gpu::raster::RasterInterface {
   gpu::Capabilities caps_;
   base::OnceClosure context_lost_callback_;
   raw_ptr<TestContextSupport> test_support_ = nullptr;
-  const uint64_t test_command_buffer_id_ = 2u;
+  uint64_t test_command_buffer_id_ = 2u;
 
   bool context_lost_ = false;
   uint64_t next_insert_fence_sync_ = 1;
   gpu::SyncToken last_waited_sync_token_;
+  std::vector<gpu::SyncToken> waited_sync_tokens_;
 };
 
 }  // namespace viz

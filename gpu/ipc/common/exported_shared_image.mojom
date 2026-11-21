@@ -19,7 +19,8 @@ struct ExportedSharedImage {
   gpu.mojom.Mailbox mailbox;
   gpu.mojom.SharedImageMetadata metadata;
   gpu.mojom.SyncToken creation_sync_token;
-  array<gpu.mojom.SyncToken> managed_sync_tokens;
+  gpu.mojom.SyncToken write_sync_token;
+  array<gpu.mojom.SyncToken> read_sync_tokens;
   string debug_label;
 
   // Optional params as they are only needed when passed over VideoFrame

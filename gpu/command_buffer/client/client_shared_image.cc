@@ -382,7 +382,7 @@ ClientSharedImage::ClientSharedImage(
   CHECK(!mailbox.IsZero());
   CHECK(sii_holder_);
   texture_target_ = ComputeTextureTargetForSharedImage(metadata_, gmb_type);
-  StoreSyncTokenInternal(sync_token);
+  StoreSyncTokenInternal(sync_token, /*readonly=*/false);
 }
 
 ClientSharedImage::ClientSharedImage(
@@ -423,7 +423,7 @@ ClientSharedImage::ClientSharedImage(
 #if !BUILDFLAG(IS_FUCHSIA)
   CHECK(texture_target);
 #endif
-  StoreSyncTokenInternal(sync_token);
+  StoreSyncTokenInternal(sync_token, /*readonly=*/false);
 }
 
 ClientSharedImage::ClientSharedImage(
@@ -461,8 +461,8 @@ ClientSharedImage::ClientSharedImage(
   CHECK(texture_target_);
 #endif
 
-  StoreSyncTokenVectorInternal(exported_si.managed_sync_tokens_);
-  StoreSyncTokenInternal(exported_si.creation_sync_token_);
+  StoreSyncTokenInternal(exported_si.write_sync_token_, /*readonly=*/false);
+  StoreSyncTokenVectorInternal(exported_si.read_sync_tokens_);
 }
 
 ClientSharedImage::ClientSharedImage(
@@ -494,7 +494,7 @@ ClientSharedImage::ClientSharedImage(
   CHECK(mappable_buffer_);
   texture_target_ = ComputeTextureTargetForSharedImage(
       metadata_, mappable_buffer_->GetType());
-  StoreSyncTokenInternal(sync_token);
+  StoreSyncTokenInternal(sync_token, /*readonly=*/false);
 }
 
 ClientSharedImage::ClientSharedImage(const Mailbox& mailbox,
@@ -514,7 +514,7 @@ ClientSharedImage::~ClientSharedImage() {
     std::vector<SyncToken> sync_tokens;
     if (base::FeatureList::IsEnabled(
             features::kUseAutomaticSyncTokenManagement)) {
-      sync_tokens = CollectSyncTokens();
+      sync_tokens = CollectSyncTokens(/*readonly=*/false);
     } else if (destruction_sync_token_.HasData()) {
       sync_tokens.push_back(destruction_sync_token_);
     }
@@ -569,8 +569,13 @@ uint64_t ClientSharedImage::SignalLatestSyncToken(
         continue;
       }
       base::AutoLock auto_lock(shared_image->lock_);
-      auto it = shared_image->sync_token_map_.find(client_id);
-      if (it != shared_image->sync_token_map_.end() &&
+      if (shared_image->write_sync_token_.GetClientId() == client_id &&
+          shared_image->write_sync_token_.release_count() >
+              latest_sync_token.release_count()) {
+        latest_sync_token = shared_image->write_sync_token_;
+      }
+      auto it = shared_image->read_sync_token_map_.find(client_id);
+      if (it != shared_image->read_sync_token_map_.end() &&
           it->second.release_count() > latest_sync_token.release_count()) {
         latest_sync_token = it->second;
       }
@@ -610,7 +615,8 @@ void ClientSharedImage::SignalLatestSyncToken(
       if (!shared_image) {
         continue;
       }
-      std::vector<SyncToken> image_tokens = shared_image->CollectSyncTokens();
+      std::vector<SyncToken> image_tokens =
+          shared_image->CollectSyncTokens(/*readonly=*/false);
       sync_tokens.insert(sync_tokens.end(), image_tokens.begin(),
                          image_tokens.end());
     }
@@ -639,9 +645,14 @@ bool ClientSharedImage::IsSyncTokenSignaled(
           features::kUseAutomaticSyncTokenManagement)) {
     base::AutoLock auto_lock(lock_);
     SyncPointClientId client_id = context_support->GetSyncPointClientId();
-    auto it = sync_token_map_.find(client_id);
-    if (it != sync_token_map_.end()) {
-      return context_support->IsSyncTokenSignaled(it->second);
+    if (write_sync_token_.GetClientId() == client_id &&
+        !context_support->IsSyncTokenSignaled(write_sync_token_)) {
+      return false;
+    }
+    auto it = read_sync_token_map_.find(client_id);
+    if (it != read_sync_token_map_.end() &&
+        !context_support->IsSyncTokenSignaled(it->second)) {
+      return false;
     }
     return true;
   }
@@ -658,7 +669,7 @@ std::vector<SyncToken> ClientSharedImage::GetSyncTokensForDisplayCompositor(
     const SyncToken& sync_token) {
   if (base::FeatureList::IsEnabled(
           features::kUseAutomaticSyncTokenManagement)) {
-    return CollectSyncTokens();
+    return CollectSyncTokens(/*readonly=*/false);
   } else {
     if (sync_token.HasData()) {
       return {sync_token};
@@ -672,7 +683,7 @@ std::vector<SyncToken> ClientSharedImage::GetSyncTokensForVideoFrame(
     const SyncToken& sync_token) {
   if (base::FeatureList::IsEnabled(
           features::kUseAutomaticSyncTokenManagement)) {
-    return CollectSyncTokens();
+    return CollectSyncTokens(/*readonly=*/false);
   } else {
     if (sync_token.HasData()) {
       return {sync_token};
@@ -686,7 +697,7 @@ void ClientSharedImage::EndDisplayCompositorAccess(
     const SyncToken& sync_token) {
   if (base::FeatureList::IsEnabled(
           features::kUseAutomaticSyncTokenManagement)) {
-    StoreSyncTokenInternal(sync_token);
+    StoreSyncTokenInternal(sync_token, /*readonly=*/true);
   }
 }
 
@@ -776,6 +787,18 @@ ExportedSharedImage ClientSharedImage::Export(bool with_buffer_handle) {
       creation_sync_token_ = gpu::SyncToken();
     }
   }
+  SyncToken write_sync_token;
+  std::vector<SyncToken> read_sync_tokens;
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    base::AutoLock auto_lock(lock_);
+    VerifySyncTokensLocked();
+    write_sync_token = write_sync_token_;
+    read_sync_tokens.reserve(read_sync_token_map_.size());
+    for (const auto& [_, sync_token] : read_sync_token_map_) {
+      read_sync_tokens.push_back(sync_token);
+    }
+  }
   std::optional<gfx::GpuMemoryBufferHandle> buffer_handle;
   std::optional<gfx::BufferUsage> buffer_usage;
   if (with_buffer_handle && mappable_buffer_) {
@@ -783,9 +806,9 @@ ExportedSharedImage ClientSharedImage::Export(bool with_buffer_handle) {
     buffer_usage = buffer_usage_.value();
   }
   return ExportedSharedImage(mailbox_, metadata_, creation_sync_token_,
-                             VerifyAndCollectSyncTokens(), debug_label_,
-                             std::move(buffer_handle), buffer_usage,
-                             texture_target_, is_software_);
+                             write_sync_token, std::move(read_sync_tokens),
+                             debug_label_, std::move(buffer_handle),
+                             buffer_usage, texture_target_, is_software_);
 }
 
 scoped_refptr<ClientSharedImage> ClientSharedImage::ImportUnowned(
@@ -828,8 +851,17 @@ gpu::SyncToken ClientSharedImage::BackingWasExternallyUpdated(
     return gpu::SyncToken();
   }
 
-  sii->UpdateSharedImage(sync_token, mailbox());
-  return StoreSyncTokenInternal(sii->GenUnverifiedSyncToken());
+  if (base::FeatureList::IsEnabled(
+          features::kUseAutomaticSyncTokenManagement)) {
+    // Ignore `sync_token`: `BackingWasExternallyUpdated()` is called after the
+    // caller has already modified the backing out-of-band, so the caller must
+    // have already ensured all prior read and write SyncTokens passed.
+    sii->UpdateSharedImage(SyncToken(), mailbox());
+  } else {
+    sii->UpdateSharedImage(sync_token, mailbox());
+  }
+  return StoreSyncTokenInternal(sii->GenUnverifiedSyncToken(),
+                                /*readonly=*/false);
 }
 
 gpu::SyncToken ClientSharedImage::BackingWasExternallyUpdated(
@@ -841,7 +873,8 @@ gpu::SyncToken ClientSharedImage::BackingWasExternallyUpdated(
   }
 
   sii->UpdateSharedImage(SyncToken(), std::move(acquire_fence), mailbox());
-  return StoreSyncTokenInternal(sii->GenUnverifiedSyncToken());
+  return StoreSyncTokenInternal(sii->GenUnverifiedSyncToken(),
+                                /*readonly=*/false);
 }
 
 void ClientSharedImage::CopyToGpuMemoryBuffer(const SyncToken& sync_token) {
@@ -854,7 +887,7 @@ void ClientSharedImage::CopyToGpuMemoryBuffer(const SyncToken& sync_token) {
   std::vector<SyncToken> sync_tokens;
   if (base::FeatureList::IsEnabled(
           features::kUseAutomaticSyncTokenManagement)) {
-    sync_tokens = CollectSyncTokens();
+    sync_tokens = CollectSyncTokens(/*readonly=*/true);
   } else if (sync_token.HasData()) {
     sync_tokens.push_back(sync_token);
   }
@@ -874,7 +907,7 @@ void ClientSharedImage::CopyToGpuMemoryBufferAsync(
   std::vector<SyncToken> sync_tokens;
   if (base::FeatureList::IsEnabled(
           features::kUseAutomaticSyncTokenManagement)) {
-    sync_tokens = CollectSyncTokens();
+    sync_tokens = CollectSyncTokens(/*readonly=*/true);
   } else if (sync_token.HasData()) {
     sync_tokens.push_back(sync_token);
   }
@@ -1038,8 +1071,8 @@ ClientSharedImage::CreateForTesting(  // IN-TEST
     uint32_t texture_target,
     bool is_software) {
   gpu::ExportedSharedImage exported_shared_image = gpu::ExportedSharedImage(
-      mailbox, metadata, sync_token, /*managed_sync_tokens=*/{},
-      "CSICreateForTesting",
+      mailbox, metadata, sync_token, /*write_sync_token=*/sync_token,
+      /*read_sync_tokens=*/{}, "CSICreateForTesting",
       /*buffer_handle=*/std::nullopt, /*buffer_usage=*/std::nullopt,
       texture_target, is_software);
   auto shared_image =
@@ -1132,7 +1165,7 @@ void ClientSharedImage::WaitSyncTokenAndFinish(gles2::GLES2Interface* gl,
       !sync_token.HasData()) {
     return;
   }
-  WaitSyncTokenInternal(gl, sync_token);
+  WaitSyncTokenInternal(gl, sync_token, /*readonly=*/false);
   gl->Finish();
 }
 
@@ -1160,13 +1193,14 @@ void ClientSharedImage::WaitSyncTokenAndSignal(
 }
 
 void ClientSharedImage::WaitSyncTokenInternal(InterfaceBase* ib,
-                                              const SyncToken& sync_token) {
+                                              const SyncToken& sync_token,
+                                              bool readonly) {
   if (base::FeatureList::IsEnabled(
           features::kUseAutomaticSyncTokenManagement)) {
     // Ignore the input `sync_token` since all SyncTokens that we need to wait
-    // upon is already inside this ClientSharedImage instance.
+    // upon are already inside this ClientSharedImage instance.
     base::AutoLock auto_lock(lock_);
-    for (const auto& [_, token] : sync_token_map_) {
+    for (const auto& token : CollectSyncTokensLocked(readonly)) {
       ib->WaitSyncTokenCHROMIUM(token.GetConstData());
     }
   } else {
@@ -1183,7 +1217,8 @@ void ClientSharedImage::WaitSyncTokensInternal(
     // Ignore the input `sync_tokens`.
     SyncToken dummy_sync_token;
     for (auto& shared_image : shared_images) {
-      shared_image->WaitSyncTokenInternal(ib, dummy_sync_token);
+      shared_image->WaitSyncTokenInternal(ib, dummy_sync_token,
+                                          /*readonly=*/false);
     }
   } else {
     for (auto& sync_token : sync_tokens) {
@@ -1192,12 +1227,24 @@ void ClientSharedImage::WaitSyncTokensInternal(
   }
 }
 
-void ClientSharedImage::StoreSyncTokenLocked(const SyncToken& sync_token) {
+void ClientSharedImage::StoreSyncTokenLocked(const SyncToken& sync_token,
+                                             bool readonly) {
   if (!sync_token.HasData()) {
     return;
   }
+  if (!readonly) {
+    read_sync_token_map_.clear();
+    write_sync_token_ = sync_token;
+    return;
+  }
+
   gpu::SyncPointClientId client_id = sync_token.GetClientId();
-  auto [it, inserted] = sync_token_map_.try_emplace(client_id, sync_token);
+  if (write_sync_token_.GetClientId() == client_id &&
+      sync_token.release_count() <= write_sync_token_.release_count()) {
+    return;
+  }
+
+  auto [it, inserted] = read_sync_token_map_.try_emplace(client_id, sync_token);
   if (!inserted) {
     // Entry already exists for this client sequence. Only update if the new
     // SyncToken is newer or has updated flush state.
@@ -1209,12 +1256,12 @@ void ClientSharedImage::StoreSyncTokenLocked(const SyncToken& sync_token) {
   }
 }
 
-SyncToken ClientSharedImage::StoreSyncTokenInternal(
-    const SyncToken& sync_token) {
+SyncToken ClientSharedImage::StoreSyncTokenInternal(const SyncToken& sync_token,
+                                                    bool readonly) {
   if (base::FeatureList::IsEnabled(
           features::kUseAutomaticSyncTokenManagement)) {
     base::AutoLock auto_lock(lock_);
-    StoreSyncTokenLocked(sync_token);
+    StoreSyncTokenLocked(sync_token, readonly);
     return SyncToken();
   } else {
     return sync_token;
@@ -1226,8 +1273,11 @@ std::vector<SyncToken> ClientSharedImage::StoreSyncTokenVectorInternal(
   if (base::FeatureList::IsEnabled(
           features::kUseAutomaticSyncTokenManagement)) {
     base::AutoLock auto_lock(lock_);
+    // TODO(crbug.com/40286368): Split write and read SyncTokens in
+    // SharedImageExportResult so EndExport() can update `write_sync_token_`
+    // when an importer writes to the SharedImage (e.g. WebXR).
     for (const auto& sync_token : sync_tokens) {
-      StoreSyncTokenLocked(sync_token);
+      StoreSyncTokenLocked(sync_token, /*readonly=*/true);
     }
     return std::vector<SyncToken>();
   } else {
@@ -1235,7 +1285,8 @@ std::vector<SyncToken> ClientSharedImage::StoreSyncTokenVectorInternal(
   }
 }
 
-SyncToken ClientSharedImage::GenSyncTokenInternal(InterfaceBase* ib) {
+SyncToken ClientSharedImage::GenSyncTokenInternal(InterfaceBase* ib,
+                                                  bool readonly) {
   SyncToken sync_token;
   if (base::FeatureList::IsEnabled(
           features::kUseAutomaticSyncTokenManagement)) {
@@ -1249,7 +1300,7 @@ SyncToken ClientSharedImage::GenSyncTokenInternal(InterfaceBase* ib) {
   } else {
     ib->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
   }
-  return StoreSyncTokenInternal(sync_token);
+  return StoreSyncTokenInternal(sync_token, readonly);
 }
 
 std::unique_ptr<WebGPUTextureScopedAccess>
@@ -1266,31 +1317,58 @@ ClientSharedImage::BeginWebGPUTextureAccess(
       webgpu, this, sync_token, device, desc, usage, mailbox_flags));
 }
 
-std::vector<SyncToken> ClientSharedImage::CollectSyncTokensLocked() {
+std::vector<SyncToken> ClientSharedImage::CollectSyncTokensLocked(
+    bool readonly) {
   std::vector<SyncToken> sync_tokens;
-  sync_tokens.reserve(sync_token_map_.size());
-  for (const auto& [_, sync_token] : sync_token_map_) {
+  if (readonly) {
+    if (write_sync_token_.HasData()) {
+      sync_tokens.push_back(write_sync_token_);
+    }
+    return sync_tokens;
+  }
+
+  sync_tokens.reserve(read_sync_token_map_.size() + 1);
+  if (write_sync_token_.HasData() &&
+      !read_sync_token_map_.contains(write_sync_token_.GetClientId())) {
+    sync_tokens.push_back(write_sync_token_);
+  }
+  for (const auto& [_, sync_token] : read_sync_token_map_) {
     sync_tokens.push_back(sync_token);
   }
   return sync_tokens;
 }
 
-std::vector<SyncToken> ClientSharedImage::CollectSyncTokens() {
+std::vector<SyncToken> ClientSharedImage::CollectSyncTokens(bool readonly) {
   base::AutoLock auto_lock(lock_);
-  return CollectSyncTokensLocked();
+  return CollectSyncTokensLocked(readonly);
+}
+
+void ClientSharedImage::VerifySyncTokensLocked() {
+  auto sii = GetSharedImageInterface();
+  if (!sii) {
+    return;
+  }
+  bool flush_required = false;
+  if (write_sync_token_.HasData() && !write_sync_token_.verified_flush() &&
+      sii->CanVerifySyncToken(write_sync_token_)) {
+    flush_required = true;
+    write_sync_token_.SetVerifyFlush();
+  }
+  for (auto& [_, sync_token] : read_sync_token_map_) {
+    if (!sync_token.verified_flush() && sii->CanVerifySyncToken(sync_token)) {
+      flush_required = true;
+      sync_token.SetVerifyFlush();
+    }
+  }
+  if (flush_required) {
+    sii->VerifyFlush();
+  }
 }
 
 std::vector<SyncToken> ClientSharedImage::VerifyAndCollectSyncTokens() {
   base::AutoLock auto_lock(lock_);
-
-  auto sii = GetSharedImageInterface();
-  if (sii) {
-    sii->VerifySyncTokens(sync_token_map_, [](auto& entry) -> gpu::SyncToken& {
-      return entry.second;
-    });
-  }
-
-  return CollectSyncTokensLocked();
+  VerifySyncTokensLocked();
+  return CollectSyncTokensLocked(/*readonly=*/false);
 }
 
 SharedImageExportResult ClientSharedImage::EndImport(
@@ -1341,7 +1419,7 @@ SyncToken ClientSharedImage::EndExport(SharedImageExportResult&& result) {
     return tokens.empty() ? SyncToken() : tokens.back();
   } else {
     CHECK(result.sync_tokens_.size() == 1);
-    return StoreSyncTokenInternal(result.sync_tokens_[0]);
+    return StoreSyncTokenInternal(result.sync_tokens_[0], /*readonly=*/true);
   }
 }
 
@@ -1361,7 +1439,8 @@ ExportedSharedImage::ExportedSharedImage(
     const Mailbox& mailbox,
     const SharedImageMetadata& metadata,
     const SyncToken& creation_sync_token,
-    const std::vector<SyncToken>& managed_sync_tokens,
+    const SyncToken& write_sync_token,
+    const std::vector<SyncToken>& read_sync_tokens,
     std::string debug_label,
     std::optional<gfx::GpuMemoryBufferHandle> buffer_handle,
     std::optional<gfx::BufferUsage> buffer_usage,
@@ -1370,7 +1449,8 @@ ExportedSharedImage::ExportedSharedImage(
     : mailbox_(mailbox),
       metadata_(metadata),
       creation_sync_token_(creation_sync_token),
-      managed_sync_tokens_(managed_sync_tokens),
+      write_sync_token_(write_sync_token),
+      read_sync_tokens_(read_sync_tokens),
       debug_label_(debug_label),
       buffer_handle_(std::move(buffer_handle)),
       buffer_usage_(buffer_usage),
@@ -1383,7 +1463,7 @@ ExportedSharedImage ExportedSharedImage::Clone() const {
     handle = buffer_handle_->Clone();
   }
   return ExportedSharedImage(mailbox_, metadata_, creation_sync_token_,
-                             managed_sync_tokens_, debug_label_,
+                             write_sync_token_, read_sync_tokens_, debug_label_,
                              std::move(handle), buffer_usage_, texture_target_,
                              is_software_);
 }
@@ -1392,7 +1472,8 @@ SharedImageTexture::ScopedAccess::ScopedAccess(SharedImageTexture* texture,
                                                const SyncToken& sync_token,
                                                bool readonly)
     : texture_(texture), readonly_(readonly) {
-  texture_->shared_image_->WaitSyncTokenInternal(texture_->gl_, sync_token);
+  texture_->shared_image_->WaitSyncTokenInternal(texture_->gl_, sync_token,
+                                                 readonly_);
   texture_->gl_->BeginSharedImageAccessDirectCHROMIUM(
       texture->id(), (readonly_)
                          ? GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM
@@ -1414,7 +1495,8 @@ SyncToken SharedImageTexture::ScopedAccess::EndAccess(
   gles2::GLES2Interface* gl = scoped_shared_image->texture_->gl_;
   gl->EndSharedImageAccessDirectCHROMIUM(scoped_shared_image->texture_->id());
   scoped_shared_image->DidEndAccess();
-  return scoped_shared_image->texture_->shared_image_->GenSyncTokenInternal(gl);
+  return scoped_shared_image->texture_->shared_image_->GenSyncTokenInternal(
+      gl, scoped_shared_image->readonly_);
 }
 
 SharedImageTexture::SharedImageTexture(gles2::GLES2Interface* gl,
@@ -1422,8 +1504,8 @@ SharedImageTexture::SharedImageTexture(gles2::GLES2Interface* gl,
     : gl_(gl), shared_image_(shared_image) {
   CHECK(gl_);
   CHECK(shared_image_);
-  shared_image_->WaitSyncTokenInternal(gl_,
-                                       shared_image_->creation_sync_token());
+  gl_->WaitSyncTokenCHROMIUM(
+      shared_image_->creation_sync_token().GetConstData());
   id_ = gl_->CreateAndTexStorage2DSharedImageCHROMIUM(
       shared_image_->mailbox().name);
 }
@@ -1489,7 +1571,8 @@ RasterScopedAccess::RasterScopedAccess(InterfaceBase* raster_interface,
       readonly_(readonly) {
   CHECK(raster_interface_);
   shared_image_->BeginAccess(readonly);
-  shared_image_->WaitSyncTokenInternal(raster_interface_, sync_token);
+  shared_image_->WaitSyncTokenInternal(raster_interface_, sync_token,
+                                       readonly_);
   if (readonly) {
     bool has_read_usage =
         shared_image_->usage().Has(SHARED_IMAGE_USAGE_RASTER_READ) ||
@@ -1507,7 +1590,8 @@ SyncToken RasterScopedAccess::EndAccess(
     std::unique_ptr<RasterScopedAccess> scoped_access) {
   InterfaceBase* raster_interface = scoped_access->raster_interface_;
   scoped_access->shared_image_->EndAccess(scoped_access->readonly_);
-  return scoped_access->shared_image_->GenSyncTokenInternal(raster_interface);
+  return scoped_access->shared_image_->GenSyncTokenInternal(
+      raster_interface, scoped_access->readonly_);
 }
 
 WebGPUTextureScopedAccess::WebGPUTextureScopedAccess(
@@ -1519,14 +1603,6 @@ WebGPUTextureScopedAccess::WebGPUTextureScopedAccess(
     uint64_t usage,
     webgpu::MailboxFlags mailbox_flags)
     : webgpu_(webgpu), shared_image_(shared_image) {
-  // Wait on any work using the image.
-  shared_image_->WaitSyncTokenInternal(webgpu_, sync_token);
-
-  // Produce and inject image to WebGPU texture
-  webgpu::ReservedTexture reservation = webgpu_->ReserveTexture(
-      device.Get(), &static_cast<const WGPUTextureDescriptor&>(desc));
-  DCHECK(reservation.texture);
-
   // If either |desc.usage| or |usage| contains the following flags, the access
   // is not read-only.
   const wgpu::TextureUsage write_flags = wgpu::TextureUsage::CopyDst |
@@ -1538,6 +1614,14 @@ WebGPUTextureScopedAccess::WebGPUTextureScopedAccess(
   } else {
     CHECK(shared_image_->usage().Has(SHARED_IMAGE_USAGE_WEBGPU_WRITE));
   }
+
+  // Wait on any work using the image.
+  shared_image_->WaitSyncTokenInternal(webgpu_, sync_token, readonly_);
+
+  // Produce and inject image to WebGPU texture
+  webgpu::ReservedTexture reservation = webgpu_->ReserveTexture(
+      device.Get(), &static_cast<const WGPUTextureDescriptor&>(desc));
+  DCHECK(reservation.texture);
 
   shared_image_->BeginAccess(readonly_);
   texture_ = base::WrapUnique(
@@ -1572,7 +1656,8 @@ SyncToken WebGPUTextureScopedAccess::EndAccess(
   }
 
   scoped_access->shared_image_->EndAccess(scoped_access->readonly_);
-  return scoped_access->shared_image_->GenSyncTokenInternal(webgpu);
+  return scoped_access->shared_image_->GenSyncTokenInternal(
+      webgpu, scoped_access->readonly_);
 }
 
 const wgpu::dawn::wire::client::Texture& WebGPUTextureScopedAccess::texture() {
@@ -1616,7 +1701,7 @@ WebGPUBufferScopedAccess::WebGPUBufferScopedAccess(
     webgpu::MailboxFlags mailbox_flags)
     : webgpu_(webgpu), shared_image_(shared_image) {
   // Wait on any work using the buffer.
-  shared_image_->WaitSyncTokenInternal(webgpu_, sync_token);
+  shared_image_->WaitSyncTokenInternal(webgpu_, sync_token, /*readonly=*/false);
 
   webgpu::ReservedBuffer reservation = webgpu_->ReserveBuffer(
       device.Get(), &static_cast<const WGPUBufferDescriptor&>(desc));
@@ -1650,7 +1735,7 @@ SyncToken WebGPUBufferScopedAccess::EndAccess(
   // SyncToken must be verified to allow use from another pipe.
   webgpu->GenSyncTokenCHROMIUM(finished_access_token.GetData());
   return scoped_access->shared_image_->StoreSyncTokenInternal(
-      finished_access_token);
+      finished_access_token, /*readonly=*/false);
 }
 
 const wgpu::Buffer& WebGPUBufferScopedAccess::buffer() {
@@ -1693,7 +1778,8 @@ SyncToken WebNNScopedAccess::EndAccess(
     base::FunctionRef<SyncToken()> end_access_fn) {
   scoped_access->is_access_ended_ = true;
   scoped_access->shared_image_->EndAccess(/*readonly=*/false);
-  return scoped_access->shared_image_->StoreSyncTokenInternal(end_access_fn());
+  return scoped_access->shared_image_->StoreSyncTokenInternal(
+      end_access_fn(), /*readonly=*/false);
 }
 
 }  // namespace gpu

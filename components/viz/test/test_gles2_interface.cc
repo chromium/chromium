@@ -360,6 +360,10 @@ void TestGLES2Interface::WaitSyncTokenCHROMIUM(const GLbyte* sync_token) {
   if (sync_token)
     UNSAFE_TODO(memcpy(&sync_token_data, sync_token, sizeof(sync_token_data)));
 
+  if (sync_token_data.HasData()) {
+    waited_sync_tokens_.push_back(sync_token_data);
+  }
+
   if (sync_token_data.release_count() >
       last_waited_sync_token_.release_count()) {
     last_waited_sync_token_ = sync_token_data;
