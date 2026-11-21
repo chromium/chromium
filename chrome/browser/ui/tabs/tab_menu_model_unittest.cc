@@ -889,6 +889,8 @@ TEST_F(TabMenuModelTest, AiModeUnshareShownWhenTabInContext) {
 }
 
 TEST_F(TabMenuModelTest, CopyLinks_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kTabCopyLinks);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::MenuManagerFactory::GetInstance()->SetTestingFactoryAndUse(
       profile(), base::BindOnce([](content::BrowserContext* context)

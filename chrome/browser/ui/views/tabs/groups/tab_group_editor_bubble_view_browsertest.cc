@@ -903,7 +903,23 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
       1);
 }
 
-IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
+class TabGroupEditorBubbleViewCopyLinksDisabledBrowserTest
+    : public TabGroupEditorBubbleViewDialogBrowserTest {
+ public:
+  TabGroupEditorBubbleViewCopyLinksDisabledBrowserTest() {
+    feature_list_.InitAndDisableFeature(features::kTabCopyLinks);
+  }
+  TabGroupEditorBubbleViewCopyLinksDisabledBrowserTest(
+      const TabGroupEditorBubbleViewCopyLinksDisabledBrowserTest&) = delete;
+  TabGroupEditorBubbleViewCopyLinksDisabledBrowserTest& operator=(
+      const TabGroupEditorBubbleViewCopyLinksDisabledBrowserTest&) = delete;
+  ~TabGroupEditorBubbleViewCopyLinksDisabledBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewCopyLinksDisabledBrowserTest,
                        CopyLinks_FeatureDisabled_MenuItemNotPresent) {
   ShowUi("SetUp");
 
