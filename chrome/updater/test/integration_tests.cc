@@ -193,17 +193,18 @@ void ExpectPingRequest(
     const std::string& app_id,
     const update_client::UpdateClient::PingParams& ping_params,
     const base::Version& version = base::Version(kUpdaterVersion)) {
+  std::vector<json::ValueMatcher> event_matchers = {
+      json::HasKey("errorcode", ping_params.error_code),
+      json::HasKey("eventresult", ping_params.result),
+      json::HasKey("eventtype", ping_params.event_type)};
+  if (ping_params.extra_code1) {
+    event_matchers.push_back(
+        json::HasKey("extracode1", ping_params.extra_code1));
+  }
   test_server.ExpectOnce(
       {request::GetUpdaterUserAgentMatcher(version),
-       request::GetContentMatcher({absl::StrFormat(
-           R"(.*"appid":"%s".*"errorcode":%d,"eventresult":%d,"eventtype":%d,)"
-           R"(%s.*)",
-           app_id.c_str(), ping_params.error_code, ping_params.result,
-           ping_params.event_type,
-           ping_params.extra_code1
-               ? absl::StrFormat(R"("extracode1":%d,)", ping_params.extra_code1)
-                     .c_str()
-               : "")})},
+       request::GetJSONContentMatcher(json::HasApp(
+           app_id, json::HasEvent(testing::AllOfArray(event_matchers))))},
       absl::StrFormat(")]}'\n"
                       R"({"response":{)"
                       R"(  "protocol":"4.0",)"
@@ -251,22 +252,25 @@ void ExpectAppErrorEvent(ScopedServer& test_server,
                          const std::string& app_id,
                          const int error_code,
                          const int event_type) {
-  test_server.ExpectOnce({request::GetPathMatcher(test_server.update_path()),
-                          request::GetUpdaterUserAgentMatcher(),
-                          request::GetContentMatcher({absl::StrFormat(
-                              R"(.*"appid":"%s",.*)"
-                              R"(.*"errorcode":%d,)"
-                              R"("eventresult":0,"eventtype":%d,.*)",
-                              app_id, error_code, event_type)})},
-                         ")]}'\n");
+  test_server.ExpectOnce(
+      {request::GetPathMatcher(test_server.update_path()),
+       request::GetUpdaterUserAgentMatcher(),
+       request::GetJSONContentMatcher(
+           json::HasApp(app_id, json::HasEvent(testing::AllOf(
+                                    json::HasKey("errorcode", error_code),
+                                    json::HasKey("eventresult", 0),
+                                    json::HasKey("eventtype", event_type)))))},
+      ")]}'\n");
 }
 
 void ExpectUninstallPingPreviousVersion(ScopedServer& test_server,
                                         const base::Version& previous_version) {
   test_server.ExpectOnce(
-      {request::GetContentMatcher({absl::StrFormat(
-          R"(.*"appid":"%s".*"eventtype":4,"previousversion":"%s".*)",
-          kUpdaterAppId, previous_version.GetString())})},
+      {request::GetJSONContentMatcher(json::HasApp(
+          kUpdaterAppId, json::HasEvent(testing::AllOf(
+                             json::HasKey("eventtype", 4),
+                             json::HasKey("previousversion",
+                                          previous_version.GetString())))))},
       absl::StrFormat(")]}'\n"
                       R"({"response":{)"
                       R"(  "protocol":"3.1",)"
@@ -1336,7 +1340,7 @@ TEST_F(IntegrationTest, QualifyUpdater) {
   // for updates on the next check.
   test_server.ExpectOnce(
       {request::GetUpdaterUserAgentMatcher(),
-       request::GetContentMatcher({absl::StrFormat(".*%s.*", kUpdaterAppId)})},
+       request::GetJSONContentMatcher(json::HasApp(kUpdaterAppId))},
       ")]}'\n");
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -2932,7 +2936,7 @@ TEST_F(IntegrationTest, SameVersionUpdate) {
       ")]}'\n"
       R"({"response":{)"
       R"(  "protocol":"4.0",)"
-      R"(  "app":[)"
+      R"(  "apps":[)"
       R"(    {)"
       R"(      "appid":"%s",)"
       R"(      "status":"ok",)"
@@ -2945,16 +2949,22 @@ TEST_F(IntegrationTest, SameVersionUpdate) {
       app_id.c_str());
   test_server.ExpectOnce(
       {request::GetUpdaterUserAgentMatcher(),
-       request::GetContentMatcher(
-           {R"("updatecheck":{"sameversionupdate":true},"version":"0.1"}.*)"})},
+       request::GetJSONContentMatcher(json::HasApp(
+           app_id, testing::AllOf(json::HasKey("updatecheck",
+                                               base::DictValue().Set(
+                                                   "sameversionupdate", true)),
+                                  json::HasKey("version", "0.1"))))},
       response);
   ASSERT_NO_FATAL_FAILURE(CallServiceUpdate(
       app_id, "", UpdateService::PolicySameVersionUpdate::kAllowed));
 
-  test_server.ExpectOnce({request::GetUpdaterUserAgentMatcher(),
-                          request::GetContentMatcher(
-                              {R"(.*"updatecheck":{},"version":"0.1"}.*)"})},
-                         response);
+  test_server.ExpectOnce(
+      {request::GetUpdaterUserAgentMatcher(),
+       request::GetJSONContentMatcher(json::HasApp(
+           app_id,
+           testing::AllOf(json::HasKey("updatecheck", base::DictValue()),
+                          json::HasKey("version", "0.1"))))},
+      response);
   ASSERT_NO_FATAL_FAILURE(CallServiceUpdate(
       app_id, "", UpdateService::PolicySameVersionUpdate::kNotAllowed));
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server));
@@ -2991,9 +3001,12 @@ TEST_F(IntegrationTest, InstallDataIndex) {
 
   test_server.ExpectOnce(
       {request::GetUpdaterUserAgentMatcher(),
-       request::GetContentMatcher(
-           {absl::StrFormat(R"(.*"data":\[{"index":"%s","name":"install"}],.*)",
-                            install_data_index.c_str())})},
+       request::GetJSONContentMatcher(json::HasApp(
+           app_id,
+           json::HasKey("data", base::ListValue().Append(
+                                    base::DictValue()
+                                        .Set("index", install_data_index)
+                                        .Set("name", "install")))))},
       response);
 
   ASSERT_NO_FATAL_FAILURE(
@@ -3465,7 +3478,7 @@ TEST_F(IntegrationTestDeviceManagement, QualifyUpdaterWhenUpdateDisabled) {
       *test_server_, kDMToken, omaha_settings, /*first_request=*/false);
   test_server_->ExpectOnce(
       {request::GetUpdaterUserAgentMatcher(),
-       request::GetContentMatcher({absl::StrFormat(".*%s.*", kUpdaterAppId)})},
+       request::GetJSONContentMatcher(json::HasApp(kUpdaterAppId))},
       ")]}'\n");
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());

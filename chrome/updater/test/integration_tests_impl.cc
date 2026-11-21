@@ -324,6 +324,22 @@ void RunUpdaterWithSwitches(const base::Version& version,
   }
 }
 
+// Matches a body with an app `app_id` whose `data` is a single install entry
+// with index `install_data_index`, or with any `data` if `install_data_index`
+// is empty.
+json::ValueMatcher HasAppWithInstallData(
+    const std::string& app_id,
+    const std::string& install_data_index) {
+  if (install_data_index.empty()) {
+    return json::HasApp(app_id);
+  }
+  return json::HasApp(
+      app_id, json::HasKey("data", base::ListValue().Append(
+                                       base::DictValue()
+                                           .Set("index", install_data_index)
+                                           .Set("name", "install"))));
+}
+
 void ExpectUpdateCheckSequence(UpdaterScope scope,
                                ScopedServer& test_server,
                                const std::string& app_id,
@@ -342,8 +358,7 @@ void ExpectUpdateCheckSequence(UpdaterScope scope,
   test_server.ExpectOnce(
       {request::GetPathMatcher(test_server.update_path()),
        request::GetUpdaterUserAgentMatcher(updater_version),
-       request::GetContentMatcher(
-           {absl::StrFormat(R"(.*"appid":"%s".*)", app_id)}),
+       request::GetJSONContentMatcher(json::HasApp(app_id)),
        request::GetScopeMatcher(scope),
        request::GetAppPriorityMatcher(app_id, priority),
        request::GetUpdaterEnableUpdatesMatcher()},
@@ -358,11 +373,14 @@ void ExpectUpdateCheckSequence(UpdaterScope scope,
   test_server.ExpectOnce(
       {request::GetPathMatcher(test_server.update_path()),
        request::GetUpdaterUserAgentMatcher(updater_version),
-       request::GetContentMatcher({absl::StrFormat(
-           R"(.*"errorcat":4,"errorcode":4,"eventresult":0,"eventtype":%d,)"
-           R"(("nextfp":.*,)?"nextversion":"%s","previousversion":"%s".*)",
-           event_type, to_version.GetString().c_str(),
-           from_version.GetString().c_str())}),
+       request::GetJSONContentMatcher(json::HasApp(
+           app_id,
+           json::HasEvent(testing::AllOf(
+               json::HasKey("errorcat", 4), json::HasKey("errorcode", 4),
+               json::HasKey("eventresult", 0),
+               json::HasKey("eventtype", event_type),
+               json::HasKey("nextversion", to_version.GetString()),
+               json::HasKey("previousversion", from_version.GetString()))))),
        request::GetScopeMatcher(scope)},
       ")]}'\n");
 }
@@ -392,13 +410,8 @@ void ExpectUpdateSequence(UpdaterScope scope,
   test_server.ExpectOnce(
       {request::GetPathMatcher(test_server.update_path()),
        request::GetUpdaterUserAgentMatcher(updater_version),
-       request::GetContentMatcher(
-           {absl::StrFormat(R"("appid":"%s")", app_id),
-            install_data_index.empty()
-                ? ""
-                : absl::StrFormat(
-                      R"("data":\[{"index":"%s","name":"install"}],.*)",
-                      install_data_index)}),
+       request::GetJSONContentMatcher(
+           HasAppWithInstallData(app_id, install_data_index)),
        request::GetScopeMatcher(scope),
        request::GetAppPriorityMatcher(app_id, priority),
        request::GetUpdaterEnableUpdatesMatcher()},
@@ -414,9 +427,7 @@ void ExpectUpdateSequence(UpdaterScope scope,
     std::string crx_bytes;
     base::ReadFileToString(crx_path, &crx_bytes);
     test_server.ExpectOnce(
-        {request::GetUpdaterUserAgentMatcher(updater_version),
-         request::GetContentMatcher({""})},
-        crx_bytes);
+        {request::GetUpdaterUserAgentMatcher(updater_version)}, crx_bytes);
   }
 
   // Third request: event ping.
@@ -426,12 +437,13 @@ void ExpectUpdateSequence(UpdaterScope scope,
   test_server.ExpectOnce(
       {request::GetPathMatcher(test_server.update_path()),
        request::GetUpdaterUserAgentMatcher(updater_version),
-       request::GetContentMatcher({absl::StrFormat(
-           R"(.*"eventresult":1,"eventtype":%d,("nextfp":.*,)?)"
-           R"("nextversion":"%s",("previousfp":.*,)?)"
-           R"("previousversion":"%s".*)",
-           event_type, to_version.GetString().c_str(),
-           from_version.GetString().c_str())}),
+       request::GetJSONContentMatcher(json::HasApp(
+           app_id,
+           json::HasEvent(testing::AllOf(
+               json::HasKey("eventresult", 1),
+               json::HasKey("eventtype", event_type),
+               json::HasKey("nextversion", to_version.GetString()),
+               json::HasKey("previousversion", from_version.GetString()))))),
        request::GetContentMatcher({event_regex}),
        request::GetScopeMatcher(scope)},
       ")]}'\n");
@@ -1499,12 +1511,18 @@ void ExpectAppCommandPing(UpdaterScope scope,
       {
           request::GetPathMatcher(test_server.update_path()),
           request::GetUpdaterUserAgentMatcher(updater_version),
-          request::GetContentMatcher({absl::StrFormat(
-              R"(.*"appid":"%s","enabled":true,"events?":\[{)"
-              R"("appcommandid":"%s","errorcode":%d,"eventresult":%d,)"
-              R"("eventtype":%d,"previousversion":"%s"}\])",
-              appid.c_str(), appcommandid.c_str(), errorcode, eventresult,
-              event_type, version.GetString().c_str())}),
+          request::GetJSONContentMatcher(json::HasApp(
+              appid, testing::AllOf(
+                         json::HasKey("enabled", true),
+                         json::HasKey("events",
+                                      base::ListValue().Append(
+                                          base::DictValue()
+                                              .Set("appcommandid", appcommandid)
+                                              .Set("errorcode", errorcode)
+                                              .Set("eventresult", eventresult)
+                                              .Set("eventtype", event_type)
+                                              .Set("previousversion",
+                                                   version.GetString())))))),
           request::GetScopeMatcher(scope),
       },
       ")]}'\n");
@@ -1519,8 +1537,7 @@ void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer& test_server) {
   // First request: update check.
   test_server.ExpectOnce(
       {request::GetPathMatcher(test_server.update_path()),
-       request::GetContentMatcher(
-           {absl::StrFormat(R"(.*"appid":"%s".*)", kUpdaterAppId)}),
+       request::GetJSONContentMatcher(json::HasApp(kUpdaterAppId)),
        request::GetScopeMatcher(scope)},
       base::BindRepeating(
           &GetUpdateResponse, kUpdaterAppId, "",
@@ -1532,16 +1549,18 @@ void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer& test_server) {
   // Second request: update download.
   std::string crx_bytes;
   base::ReadFileToString(crx_path, &crx_bytes);
-  test_server.ExpectOnce({request::GetContentMatcher({""})}, crx_bytes);
+  test_server.ExpectOnce({}, crx_bytes);
 
   // Third request: event ping.
-  test_server.ExpectOnce({request::GetPathMatcher(test_server.update_path()),
-                          request::GetContentMatcher({absl::StrFormat(
-                              R"(.*"eventresult":1,"eventtype":3,)"
-                              R"(("nextfp":.*,)?"nextversion":"%s".*)",
-                              kUpdaterVersion)}),
-                          request::GetScopeMatcher(scope)},
-                         ")]}'\n");
+  test_server.ExpectOnce(
+      {request::GetPathMatcher(test_server.update_path()),
+       request::GetJSONContentMatcher(json::HasApp(
+           kUpdaterAppId,
+           json::HasEvent(testing::AllOf(
+               json::HasKey("eventresult", 1), json::HasKey("eventtype", 3),
+               json::HasKey("nextversion", kUpdaterVersion))))),
+       request::GetScopeMatcher(scope)},
+      ")]}'\n");
 }
 
 void ExpectUpdateCheckRequest(UpdaterScope scope, ScopedServer& test_server) {
@@ -1607,14 +1626,8 @@ void ExpectUpdateSequenceBadHash(UpdaterScope scope,
   test_server.ExpectOnce(
       {request::GetPathMatcher(test_server.update_path()),
        request::GetUpdaterUserAgentMatcher(),
-       request::GetContentMatcher(
-           {absl::StrFormat(R"("appid":"%s")", app_id.c_str()),
-            install_data_index.empty()
-                ? ""
-                : absl::StrFormat(
-                      R"("data":\[{"index":"%s","name":"install"}],.*)",
-                      install_data_index.c_str())
-                      .c_str()}),
+       request::GetJSONContentMatcher(
+           HasAppWithInstallData(app_id, install_data_index)),
        request::GetScopeMatcher(scope),
        request::GetAppPriorityMatcher(app_id, priority)},
       base::BindRepeating(
@@ -1626,18 +1639,19 @@ void ExpectUpdateSequenceBadHash(UpdaterScope scope,
   // Second request: update download.
   std::string crx_bytes;
   base::ReadFileToString(crx_path, &crx_bytes);
-  test_server.ExpectOnce(
-      {request::GetUpdaterUserAgentMatcher(), request::GetContentMatcher({""})},
-      crx_bytes);
+  test_server.ExpectOnce({request::GetUpdaterUserAgentMatcher()}, crx_bytes);
 
   // Third request: event ping.
   test_server.ExpectOnce(
       {request::GetPathMatcher(test_server.update_path()),
        request::GetUpdaterUserAgentMatcher(),
-       request::GetContentMatcher({absl::StrFormat(
-           R"(.*"errorcat":1,"errorcode":12,"eventresult":0,"eventtype":3,)"
-           R"(("nextfp":.*,)?"nextversion":"%s","previousversion":"%s".*)",
-           to_version.GetString().c_str(), from_version.GetString().c_str())}),
+       request::GetJSONContentMatcher(json::HasApp(
+           app_id,
+           json::HasEvent(testing::AllOf(
+               json::HasKey("errorcat", 1), json::HasKey("errorcode", 12),
+               json::HasKey("eventresult", 0), json::HasKey("eventtype", 3),
+               json::HasKey("nextversion", to_version.GetString()),
+               json::HasKey("previousversion", from_version.GetString()))))),
        request::GetScopeMatcher(scope)},
       ")]}'\n");
 }
