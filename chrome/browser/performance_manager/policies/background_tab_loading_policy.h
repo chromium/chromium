@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_BACKGROUND_TAB_LOADING_POLICY_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_BACKGROUND_TAB_LOADING_POLICY_H_
 
+#include <array>
 #include <map>
 #include <optional>
 #include <vector>
@@ -95,6 +96,53 @@ class BackgroundTabLoadingPolicy
   friend class ::performance_manager::BackgroundTabLoadingBrowserTest;
   friend class BackgroundTabLoadingPolicyTest;
 
+  // Decision returned by `ShouldLoad()`.
+  enum class LoadDecision {
+    kLoad,
+    kSkipForMaxTabs,
+    kSkipForFreeMemory,
+    kSkipForTabAge,
+  };
+
+  // Mutually exclusive outcomes for tabs passed to
+  // `ScheduleLoadForRestoredTabs()`.
+  // LINT.IfChange(TabLoadOutcome)
+  enum class TabLoadOutcome {
+    kLoadedByPolicy,
+    kAlreadyLoading,
+    kLoadedExternally,
+    kClosedBeforeLoading,
+    kSkippedForMaxTabs,
+    kSkippedForFreeMemory,
+    kSkippedForTabAge,
+    kStoppedForMemoryPressure,
+    kMaxValue = kStoppedForMemoryPressure,
+  };
+  // LINT.ThenChange(//chrome/browser/performance_manager/policies/background_tab_loading_policy.cc:TabLoadOutcomeHistogramNames)
+
+  // Tab counts for the active restore wave.
+  //
+  // Invariant while a wave is active (prior to `OnTakenFromGraph()`):
+  //   `num_tabs_scheduled ==
+  //       sum(num_tabs_per_outcome) + page_nodes_to_load_.size()`
+  // Every non-null PageNode passed to `ScheduleLoadForRestoredTabs()`
+  // increments `num_tabs_scheduled` and either immediately records
+  // `kAlreadyLoading` or enters `page_nodes_to_load_` (recording one outcome
+  // when removed). When `RecordRestoreTabCountMetrics()` runs, all queued tabs
+  // have recorded an outcome, so `num_tabs_scheduled ==
+  // sum(num_tabs_per_outcome)`.
+  struct RestoreTabCounts {
+    // Number of tabs passed to `ScheduleLoadForRestoredTabs()` in the wave.
+    // Recorded to `SessionRestore.BackgroundTabLoading.TabCount` and checked
+    // against the sum of `num_tabs_per_outcome` to verify that every scheduled
+    // tab recorded exactly one outcome.
+    size_t num_tabs_scheduled = 0;
+
+    // Number of tabs per `TabLoadOutcome` in the wave.
+    std::array<size_t, static_cast<size_t>(TabLoadOutcome::kMaxValue) + 1>
+        num_tabs_per_outcome{};
+  };
+
   // Holds data about a PageNode waiting to be loaded by this policy.
   struct PageNodeToLoadData {
     explicit PageNodeToLoadData(const PageNode* page_node);
@@ -136,11 +184,9 @@ class BackgroundTabLoadingPolicy
   // testing.
   virtual SiteDataReader* GetSiteDataReader(const PageNode* page_node) const;
 
-  // Determines whether or not the given PageNode should be loaded. If this
-  // returns false, then the policy no longer attempts to load |page_node| and
-  // removes it from the policy's internal state. This is called immediately
-  // prior to trying to load the PageNode.
-  bool ShouldLoad(const PageNodeToLoadData& page_node_data);
+  // Determines whether `page_node_data` should be loaded or why it should be
+  // skipped. Called immediately prior to trying to load the PageNode.
+  LoadDecision ShouldLoad(const PageNodeToLoadData& page_node_data) const;
 
   // This will initialize |page_node_to_load_data->used_in_bg| to the proper
   // value, score the tab and call DispatchNotifyAllTabsScoredIfNeeded().
@@ -170,9 +216,11 @@ class BackgroundTabLoadingPolicy
   // Helper to load a single PageNode.
   void InitiateSinglePageLoad(const PageNode* page_node);
 
-  // Removes the PageNode from all the sets of PageNodes that the policy is
-  // tracking.
-  void RemovePageNode(const PageNode* page_node);
+  // Removes `page_node` from all sets of PageNodes tracked by the policy. If
+  // `page_node` was still queued in `page_nodes_to_load_`, records
+  // `outcome_if_queued`.
+  void RemovePageNode(const PageNode* page_node,
+                      TabLoadOutcome outcome_if_queued);
 
   // Initiates the load of enough tabs to fill all loading slots. No-ops if all
   // loading slots are occupied.
@@ -204,9 +252,17 @@ class BackgroundTabLoadingPolicy
   // Compute the amount of free memory on the system.
   size_t GetFreePhysicalMemoryMib() const;
 
-  // If `page_node` is in the set of page nodes to load, removes it and returns
-  // true.
-  bool ErasePageNodeToLoadData(const PageNode* page_node);
+  // If `page_node` is in `page_nodes_to_load_`, removes it, records `outcome`,
+  // and returns true.
+  bool ErasePageNodeToLoadData(const PageNode* page_node,
+                               TabLoadOutcome outcome);
+
+  // Increments the count for `outcome` in `restore_tab_counts_` by `count`.
+  void RecordTabOutcomes(TabLoadOutcome outcome, size_t count);
+
+  // Emits `SessionRestore.BackgroundTabLoading.TabCount*` histograms for
+  // `restore_tab_counts_` and resets `restore_tab_counts_`.
+  void RecordRestoreTabCountMetrics();
 
   // Returns the `PageNodeToLoadData` for `page_node` if it exists, nullptr
   // otherwise.
@@ -251,6 +307,9 @@ class BackgroundTabLoadingPolicy
   // The number of simultaneous tab loads that are permitted by policy. This
   // is computed based on the number of cores on the machine.
   size_t max_simultaneous_tab_loads_;
+
+  // Counts of scheduled tabs and their outcomes for the active restore.
+  RestoreTabCounts restore_tab_counts_;
 
   // The number of tab loads that have started. Every call to InitiateLoad
   // increments this value.

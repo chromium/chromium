@@ -17,6 +17,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/performance_manager/mechanisms/page_loader.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
@@ -161,9 +162,16 @@ class BackgroundTabLoadingPolicyTest
   }
 
   void TearDown() override {
-    graph()->TakeFromGraph(policy_);
+    TakePolicyFromGraph();
     system_node_->reset();
     Super::TearDown();
+  }
+
+  void TakePolicyFromGraph() {
+    if (policy_) {
+      mock_loader_ = nullptr;
+      graph()->TakeFromGraph(std::exchange(policy_, nullptr));
+    }
   }
 
   int num_all_tabs_loaded_calls() const { return num_all_tabs_loaded_calls_; }
@@ -171,7 +179,60 @@ class BackgroundTabLoadingPolicyTest
   void AllTabsLoadedCallback() { ++num_all_tabs_loaded_calls_; }
 
  protected:
+  struct ExpectedTabCountMetrics {
+    int scheduled = 0;
+    int loaded_by_policy = 0;
+    int already_loading = 0;
+    int loaded_externally = 0;
+    int closed_before_loading = 0;
+    int skipped_for_max_tabs = 0;
+    int skipped_for_free_memory = 0;
+    int skipped_for_tab_age = 0;
+    int stopped_for_memory_pressure = 0;
+  };
+
+  // Verifies single-restore histogram samples and asserts that outcome counts
+  // sum to the number of tabs scheduled.
+  static void ExpectSingleRestoreMetrics(
+      const base::HistogramTester& tester,
+      const ExpectedTabCountMetrics& expected) {
+    tester.ExpectUniqueSample("SessionRestore.BackgroundTabLoading.TabCount",
+                              expected.scheduled, 1);
+    tester.ExpectUniqueSample(
+        "SessionRestore.BackgroundTabLoading.TabCount.LoadedByPolicy",
+        expected.loaded_by_policy, 1);
+    tester.ExpectUniqueSample(
+        "SessionRestore.BackgroundTabLoading.TabCount.AlreadyLoading",
+        expected.already_loading, 1);
+    tester.ExpectUniqueSample(
+        "SessionRestore.BackgroundTabLoading.TabCount.LoadedExternally",
+        expected.loaded_externally, 1);
+    tester.ExpectUniqueSample(
+        "SessionRestore.BackgroundTabLoading.TabCount.ClosedBeforeLoading",
+        expected.closed_before_loading, 1);
+    tester.ExpectUniqueSample(
+        "SessionRestore.BackgroundTabLoading.TabCount.SkippedForMaxTabs",
+        expected.skipped_for_max_tabs, 1);
+    tester.ExpectUniqueSample(
+        "SessionRestore.BackgroundTabLoading.TabCount.SkippedForFreeMemory",
+        expected.skipped_for_free_memory, 1);
+    tester.ExpectUniqueSample(
+        "SessionRestore.BackgroundTabLoading.TabCount.SkippedForTabAge",
+        expected.skipped_for_tab_age, 1);
+    tester.ExpectUniqueSample(
+        "SessionRestore.BackgroundTabLoading.TabCount.StoppedForMemoryPressure",
+        expected.stopped_for_memory_pressure, 1);
+
+    EXPECT_EQ(
+        expected.scheduled,
+        tester.GetTotalSum("SessionRestore.BackgroundTabLoading.TabCount"));
+    EXPECT_EQ(expected.scheduled,
+              tester.GetTotalSumForPrefix(
+                  "SessionRestore.BackgroundTabLoading.TabCount."));
+  }
+
   base::TestMemoryConsumerRegistry test_memory_consumer_registry_;
+  using LoadDecision = BackgroundTabLoadingPolicy::LoadDecision;
   using PageNodeToLoadData = BackgroundTabLoadingPolicy::PageNodeToLoadData;
 
   PageNodeToLoadData CreatePageNodeToLoadData(
@@ -562,10 +623,11 @@ TEST_F(BackgroundTabLoadingPolicyTest, ShouldLoad_MaxTabsToRestore) {
 
   // Test the maximum number of tabs to load threshold.
   for (uint32_t i = 0; i < policy()->kMaxTabsToLoad; i++) {
-    EXPECT_TRUE(policy()->ShouldLoad(page_node_datas[i]));
+    EXPECT_EQ(LoadDecision::kLoad, policy()->ShouldLoad(page_node_datas[i]));
     policy()->tab_loads_started_++;
   }
-  EXPECT_FALSE(policy()->ShouldLoad(page_node_datas[policy()->kMaxTabsToLoad]));
+  EXPECT_EQ(LoadDecision::kSkipForMaxTabs,
+            policy()->ShouldLoad(page_node_datas[policy()->kMaxTabsToLoad]));
 }
 
 TEST_F(BackgroundTabLoadingPolicyTest, ShouldLoad_MinTabsToRestore) {
@@ -587,10 +649,11 @@ TEST_F(BackgroundTabLoadingPolicyTest, ShouldLoad_MinTabsToRestore) {
 
   // Test that the minimum number of tabs to load is respected.
   for (uint32_t i = 0; i < policy()->kMinTabsToLoad; i++) {
-    EXPECT_TRUE(policy()->ShouldLoad(page_node_datas[i]));
+    EXPECT_EQ(LoadDecision::kLoad, policy()->ShouldLoad(page_node_datas[i]));
     policy()->tab_loads_started_++;
   }
-  EXPECT_FALSE(policy()->ShouldLoad(page_node_datas[policy()->kMinTabsToLoad]));
+  EXPECT_EQ(LoadDecision::kSkipForFreeMemory,
+            policy()->ShouldLoad(page_node_datas[policy()->kMinTabsToLoad]));
 }
 
 TEST_F(BackgroundTabLoadingPolicyTest, ShouldLoad_FreeMemory) {
@@ -605,11 +668,12 @@ TEST_F(BackgroundTabLoadingPolicyTest, ShouldLoad_FreeMemory) {
   // Test the free memory constraint.
   const size_t kFreeMemoryLimit = policy()->kDesiredAmountOfFreeMemoryMb;
   policy()->SetFreeMemoryForTesting(kFreeMemoryLimit);
-  EXPECT_TRUE(policy()->ShouldLoad(page_node_data));
+  EXPECT_EQ(LoadDecision::kLoad, policy()->ShouldLoad(page_node_data));
   policy()->SetFreeMemoryForTesting(kFreeMemoryLimit - 1);
-  EXPECT_FALSE(policy()->ShouldLoad(page_node_data));
+  EXPECT_EQ(LoadDecision::kSkipForFreeMemory,
+            policy()->ShouldLoad(page_node_data));
   policy()->SetFreeMemoryForTesting(kFreeMemoryLimit + 1);
-  EXPECT_TRUE(policy()->ShouldLoad(page_node_data));
+  EXPECT_EQ(LoadDecision::kLoad, policy()->ShouldLoad(page_node_data));
 }
 
 TEST_F(BackgroundTabLoadingPolicyTest, ShouldLoad_OldTab) {
@@ -626,7 +690,7 @@ TEST_F(BackgroundTabLoadingPolicyTest, ShouldLoad_OldTab) {
   policy()->tab_loads_started_ = policy()->kMinTabsToLoad;
 
   // Test the max time since last use threshold.
-  EXPECT_FALSE(policy()->ShouldLoad(page_node_data));
+  EXPECT_EQ(LoadDecision::kSkipForTabAge, policy()->ShouldLoad(page_node_data));
 }
 
 // Regression test for https://crrev.com/c/3909768: Deleting a PageNode with the
@@ -1283,6 +1347,320 @@ TEST_F(BackgroundTabLoadingPolicyFeatureDisabledTest,
   policy()->ScheduleLoadForRestoredTabs(to_load);
   task_env().RunUntilIdle();
   ::testing::Mock::VerifyAndClear(loader());
+}
+
+TEST_F(BackgroundTabLoadingPolicyTest, Metrics_MaxTabsCapTakesPrecedence) {
+  base::HistogramTester histogram_tester;
+
+  // Cap at 4 loaded tabs and also set free memory below the 150 MiB threshold
+  // once those 4 start loading, verifying that the max-tabs cap (checked first
+  // in `ShouldLoad()`) is recorded rather than free-memory skip.
+  policy()->SetMaxLoadedTabCountForTesting(4);
+  policy()->SetMaxSimultaneousLoadsForTesting(6);
+  policy()->SetFreeMemoryForTesting(50);
+
+  std::vector<TestNodeWrapper<PageNodeImpl>> page_nodes;
+  std::vector<PageNodeData> to_load;
+  for (int i = 0; i < 6; ++i) {
+    page_nodes.push_back(CreateNode<PageNodeImpl>());
+    page_nodes.back()->SetType(PageType::kTab);
+    to_load.emplace_back(page_nodes.back()->GetWeakPtr());
+  }
+
+  std::vector<PageNodeImpl*> loaded_pages;
+  EXPECT_CALL(*loader(), LoadPageNode(_))
+      .Times(4)
+      .WillRepeatedly([&](const PageNode* page_node) {
+        auto* impl = PageNodeImpl::FromNode(page_node);
+        impl->SetLoadingState(PageNode::LoadingState::kLoading);
+        loaded_pages.push_back(impl);
+      });
+
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  ASSERT_EQ(4u, loaded_pages.size());
+
+  // Metrics are only recorded once all initiated loads finish.
+  histogram_tester.ExpectTotalCount(
+      "SessionRestore.BackgroundTabLoading.TabCount", 0);
+
+  for (PageNodeImpl* page : loaded_pages) {
+    page->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  }
+
+  ExpectSingleRestoreMetrics(
+      histogram_tester,
+      {.scheduled = 6, .loaded_by_policy = 4, .skipped_for_max_tabs = 2});
+}
+
+TEST_F(BackgroundTabLoadingPolicyTest, Metrics_FreeMemorySkip) {
+  base::HistogramTester histogram_tester;
+
+  // Below the 150 MiB threshold: the first `kMinTabsToLoad` (4) tabs still
+  // load, and the remaining 3 tabs are skipped due to low free memory.
+  policy()->SetMaxSimultaneousLoadsForTesting(7);
+  policy()->SetFreeMemoryForTesting(149);
+
+  std::vector<TestNodeWrapper<PageNodeImpl>> page_nodes;
+  std::vector<PageNodeData> to_load;
+  for (int i = 0; i < 7; ++i) {
+    page_nodes.push_back(CreateNode<PageNodeImpl>());
+    page_nodes.back()->SetType(PageType::kTab);
+    to_load.emplace_back(page_nodes.back()->GetWeakPtr());
+  }
+
+  EXPECT_CALL(*loader(), LoadPageNode(_))
+      .Times(4)
+      .WillRepeatedly([](const PageNode* page_node) {
+        auto* impl = PageNodeImpl::FromNode(page_node);
+        impl->SetLoadingState(PageNode::LoadingState::kLoading);
+        impl->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+      });
+
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+
+  ExpectSingleRestoreMetrics(
+      histogram_tester,
+      {.scheduled = 7, .loaded_by_policy = 4, .skipped_for_free_memory = 3});
+}
+
+TEST_F(BackgroundTabLoadingPolicyTest, Metrics_TabAgeSkip) {
+  base::HistogramTester histogram_tester;
+
+  policy()->SetMaxSimultaneousLoadsForTesting(6);
+  const base::TimeTicks now = base::TimeTicks::Now();
+
+  std::vector<TestNodeWrapper<PageNodeImpl>> page_nodes;
+  std::vector<PageNodeData> to_load;
+  // 4 recent tabs (`kMinTabsToLoad`) and 2 tabs older than 30 days.
+  for (int i = 0; i < 4; ++i) {
+    page_nodes.push_back(
+        CreateNode<PageNodeImpl>(nullptr, base::UnguessableToken(), GURL(),
+                                 PagePropertyFlags{}, now - base::Days(1)));
+    page_nodes.back()->SetType(PageType::kTab);
+    to_load.emplace_back(page_nodes.back()->GetWeakPtr());
+  }
+  for (int i = 0; i < 2; ++i) {
+    page_nodes.push_back(
+        CreateNode<PageNodeImpl>(nullptr, base::UnguessableToken(), GURL(),
+                                 PagePropertyFlags{}, now - base::Days(31)));
+    page_nodes.back()->SetType(PageType::kTab);
+    to_load.emplace_back(page_nodes.back()->GetWeakPtr());
+  }
+
+  EXPECT_CALL(*loader(), LoadPageNode(_))
+      .Times(4)
+      .WillRepeatedly([](const PageNode* page_node) {
+        auto* impl = PageNodeImpl::FromNode(page_node);
+        impl->SetLoadingState(PageNode::LoadingState::kLoading);
+        impl->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+      });
+
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+
+  ExpectSingleRestoreMetrics(
+      histogram_tester,
+      {.scheduled = 6, .loaded_by_policy = 4, .skipped_for_tab_age = 2});
+}
+
+TEST_F(BackgroundTabLoadingPolicyTest, Metrics_StopLoadingTabs) {
+  base::HistogramTester histogram_tester;
+
+  policy()->SetMaxSimultaneousLoadsForTesting(1);
+
+  std::vector<TestNodeWrapper<PageNodeImpl>> page_nodes;
+  std::vector<PageNodeData> to_load;
+  for (int i = 0; i < 4; ++i) {
+    page_nodes.push_back(CreateNode<PageNodeImpl>());
+    page_nodes.back()->SetType(PageType::kTab);
+    to_load.emplace_back(page_nodes.back()->GetWeakPtr());
+  }
+
+  EXPECT_CALL(*loader(), LoadPageNode(page_nodes[0].get()));
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  ::testing::Mock::VerifyAndClear(loader());
+
+  // Moderate memory pressure drops the 3 queued tabs, while `page_nodes[0]` is
+  // still in flight so metrics are not yet emitted.
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimitAndRelease(
+      base::MemoryLimit::ModeratePressureThreshold());
+  histogram_tester.ExpectTotalCount(
+      "SessionRestore.BackgroundTabLoading.TabCount", 0);
+
+  page_nodes[0]->SetLoadingState(PageNode::LoadingState::kLoading);
+  page_nodes[0]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+
+  ExpectSingleRestoreMetrics(histogram_tester,
+                             {.scheduled = 4,
+                              .loaded_by_policy = 1,
+                              .stopped_for_memory_pressure = 3});
+}
+
+TEST_F(BackgroundTabLoadingPolicyTest,
+       Metrics_AlreadyLoadingActivatedAndClosedTabs) {
+  base::HistogramTester histogram_tester;
+
+  // 2 loading slots: 1 occupied by `page_nodes[0]` (already loading at schedule
+  // time, e.g. active foreground tab) and 1 available for `page_nodes[1]`.
+  policy()->SetMaxSimultaneousLoadsForTesting(2);
+
+  std::vector<TestNodeWrapper<PageNodeImpl>> page_nodes;
+  std::vector<PageNodeData> to_load;
+  for (int i = 0; i < 4; ++i) {
+    page_nodes.push_back(CreateNode<PageNodeImpl>());
+    page_nodes.back()->SetType(PageType::kTab);
+    to_load.emplace_back(page_nodes.back()->GetWeakPtr());
+  }
+
+  // `page_nodes[0]` starts loading before `ScheduleLoadForRestoredTabs()`.
+  page_nodes[0]->SetLoadingState(PageNode::LoadingState::kLoading);
+
+  EXPECT_CALL(*loader(), LoadPageNode(page_nodes[1].get()));
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  ::testing::Mock::VerifyAndClear(loader());
+
+  // User activates `page_nodes[2]` before a loading slot opens.
+  page_nodes[2]->SetLoadingState(PageNode::LoadingState::kLoading);
+
+  // User closes `page_nodes[3]` before it starts loading.
+  page_nodes[3].reset();
+
+  // Finish policy-loaded and user-activated tabs; `page_nodes[0]` is still
+  // loading so the restore wave is not done yet.
+  page_nodes[1]->SetLoadingState(PageNode::LoadingState::kLoading);
+  page_nodes[1]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  page_nodes[2]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  histogram_tester.ExpectTotalCount(
+      "SessionRestore.BackgroundTabLoading.TabCount", 0);
+
+  // Finishing `page_nodes[0]` completes the restore wave.
+  page_nodes[0]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+
+  ExpectSingleRestoreMetrics(histogram_tester, {.scheduled = 4,
+                                                .loaded_by_policy = 1,
+                                                .already_loading = 1,
+                                                .loaded_externally = 1,
+                                                .closed_before_loading = 1});
+}
+
+TEST_F(BackgroundTabLoadingPolicyTest, Metrics_TwoScheduleCallsOverlapping) {
+  base::HistogramTester histogram_tester;
+
+  policy()->SetMaxSimultaneousLoadsForTesting(1);
+
+  std::vector<TestNodeWrapper<PageNodeImpl>> page_nodes;
+  for (int i = 0; i < 3; ++i) {
+    page_nodes.push_back(CreateNode<PageNodeImpl>());
+    page_nodes.back()->SetType(PageType::kTab);
+  }
+
+  // First `ScheduleLoadForRestoredTabs()` call starts loading `page_nodes[0]`.
+  EXPECT_CALL(*loader(), LoadPageNode(page_nodes[0].get()));
+  policy()->ScheduleLoadForRestoredTabs(
+      {PageNodeData(page_nodes[0]->GetWeakPtr()),
+       PageNodeData(page_nodes[1]->GetWeakPtr())});
+  ::testing::Mock::VerifyAndClear(loader());
+  page_nodes[0]->SetLoadingState(PageNode::LoadingState::kLoading);
+
+  // Second `ScheduleLoadForRestoredTabs()` call arrives before the first batch
+  // finishes; both calls belong to the same restore wave.
+  policy()->ScheduleLoadForRestoredTabs(
+      {PageNodeData(page_nodes[2]->GetWeakPtr())});
+  histogram_tester.ExpectTotalCount(
+      "SessionRestore.BackgroundTabLoading.TabCount", 0);
+
+  // Close `page_nodes[1]` while queued; finishing `page_nodes[0]` then loads
+  // `page_nodes[2]`.
+  page_nodes[1].reset();
+  EXPECT_CALL(*loader(), LoadPageNode(page_nodes[2].get()));
+  page_nodes[0]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+  ::testing::Mock::VerifyAndClear(loader());
+
+  histogram_tester.ExpectTotalCount(
+      "SessionRestore.BackgroundTabLoading.TabCount", 0);
+
+  page_nodes[2]->SetLoadingState(PageNode::LoadingState::kLoading);
+  page_nodes[2]->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+
+  ExpectSingleRestoreMetrics(
+      histogram_tester,
+      {.scheduled = 3, .loaded_by_policy = 2, .closed_before_loading = 1});
+}
+
+TEST_F(BackgroundTabLoadingPolicyTest, Metrics_TwoScheduleCallsSequential) {
+  base::HistogramTester histogram_tester;
+
+  policy()->SetMaxSimultaneousLoadsForTesting(2);
+
+  std::vector<TestNodeWrapper<PageNodeImpl>> page_nodes;
+  for (int i = 0; i < 3; ++i) {
+    page_nodes.push_back(CreateNode<PageNodeImpl>());
+    page_nodes.back()->SetType(PageType::kTab);
+  }
+
+  // First restore wave schedules 2 tabs and completes.
+  EXPECT_CALL(*loader(), LoadPageNode(_))
+      .Times(2)
+      .WillRepeatedly([](const PageNode* page_node) {
+        auto* impl = PageNodeImpl::FromNode(page_node);
+        impl->SetLoadingState(PageNode::LoadingState::kLoading);
+        impl->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+      });
+  policy()->ScheduleLoadForRestoredTabs(
+      {PageNodeData(page_nodes[0]->GetWeakPtr()),
+       PageNodeData(page_nodes[1]->GetWeakPtr())});
+  ::testing::Mock::VerifyAndClear(loader());
+
+  histogram_tester.ExpectTotalCount(
+      "SessionRestore.BackgroundTabLoading.TabCount", 1);
+
+  // Second restore wave starts after the first wave completed and emits a
+  // second sample.
+  EXPECT_CALL(*loader(), LoadPageNode(page_nodes[2].get()))
+      .WillOnce([](const PageNode* page_node) {
+        auto* impl = PageNodeImpl::FromNode(page_node);
+        impl->SetLoadingState(PageNode::LoadingState::kLoading);
+        impl->SetLoadingState(PageNode::LoadingState::kLoadedIdle);
+      });
+  policy()->ScheduleLoadForRestoredTabs(
+      {PageNodeData(page_nodes[2]->GetWeakPtr())});
+  ::testing::Mock::VerifyAndClear(loader());
+
+  histogram_tester.ExpectTotalCount(
+      "SessionRestore.BackgroundTabLoading.TabCount", 2);
+  EXPECT_EQ(3, histogram_tester.GetTotalSum(
+                   "SessionRestore.BackgroundTabLoading.TabCount"));
+  EXPECT_EQ(3,
+            histogram_tester.GetTotalSum(
+                "SessionRestore.BackgroundTabLoading.TabCount.LoadedByPolicy"));
+  EXPECT_EQ(3, histogram_tester.GetTotalSumForPrefix(
+                   "SessionRestore.BackgroundTabLoading.TabCount."));
+}
+
+TEST_F(BackgroundTabLoadingPolicyTest, Metrics_RecordedOnGraphTeardown) {
+  base::HistogramTester histogram_tester;
+
+  policy()->SetMaxSimultaneousLoadsForTesting(1);
+
+  std::vector<TestNodeWrapper<PageNodeImpl>> page_nodes;
+  std::vector<PageNodeData> to_load;
+  for (int i = 0; i < 3; ++i) {
+    page_nodes.push_back(CreateNode<PageNodeImpl>());
+    page_nodes.back()->SetType(PageType::kTab);
+    to_load.emplace_back(page_nodes.back()->GetWeakPtr());
+  }
+
+  EXPECT_CALL(*loader(), LoadPageNode(page_nodes[0].get()));
+  policy()->ScheduleLoadForRestoredTabs(to_load);
+  ::testing::Mock::VerifyAndClear(loader());
+  page_nodes[0]->SetLoadingState(PageNode::LoadingState::kLoading);
+
+  // Removing the policy from the graph while a restore wave is in progress
+  // records the wave once, counting still-queued tabs as closed before loading.
+  TakePolicyFromGraph();
+
+  ExpectSingleRestoreMetrics(
+      histogram_tester,
+      {.scheduled = 3, .loaded_by_policy = 1, .closed_before_loading = 2});
 }
 
 }  // namespace policies
