@@ -33,6 +33,9 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
+#include "chrome/browser/webauthn/enclave_manager.h"
+#include "chrome/browser/webauthn/enclave_manager_factory.h"
+#include "chrome/browser/webauthn/gpm/local_gpm_passkeys_util.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/unexportable_key_utils.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
@@ -85,7 +88,6 @@
 #endif
 
 namespace {
-
 
 // Returns true iff |relying_party_id| is listed in the
 // SecurityKeyPermitAttestation policy.
@@ -451,46 +453,83 @@ void ChromeWebAuthenticationDelegate::BrowserProvidedPasskeysAvailable(
     std::move(callback).Run(false);
     return;
   }
+  if (!webauthn::IsLocalGpmPasskeysEnabled()) {
+    CheckTpmAvailable(std::move(callback));
+    return;
+  }
+
+  switch (device::kWebAuthnLocalGpmPasskeysMode.Get()) {
+    case device::LocalGpmPasskeysMode::kAllUsers:
+      std::move(callback).Run(true);
+      return;
+    case device::LocalGpmPasskeysMode::kNewUsersOnly: {
+      EnclaveManager* enclave_manager =
+          EnclaveManagerFactory::GetAsEnclaveManagerForProfile(profile);
+      if (!enclave_manager) {
+        std::move(callback).Run(true);
+        return;
+      }
+      CoreAccountInfo account = identity_manager->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
+      enclave_manager->IsRegisteredForAccount(
+          account.gaia,
+          base::BindOnce(
+              [](base::WeakPtr<ChromeWebAuthenticationDelegate> self,
+                 base::OnceCallback<void(bool)> callback, bool is_registered) {
+                if (!is_registered) {
+                  std::move(callback).Run(true);
+                  return;
+                }
+                if (!self) {
+                  std::move(callback).Run(false);
+                  return;
+                }
+                self->CheckTpmAvailable(std::move(callback));
+              },
+              weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      return;
+    }
+  }
+}
+
+void ChromeWebAuthenticationDelegate::CheckTpmAvailable(
+    base::OnceCallback<void(bool)> callback) {
   if (base::FeatureList::IsEnabled(
           device::kWebAuthnSoftwareKeysWhenTpmAbsent)) {
     std::move(callback).Run(true);
     return;
   }
-  // Check for TPM availability.
   if (tpm_available_.has_value()) {
     std::move(callback).Run(*tpm_available_);
     return;
   }
-  base::Time tpm_check_start_time = base::Time::Now();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_BLOCKING, base::MayBlock()},
       base::BindOnce([]() -> bool {
         std::unique_ptr<crypto::UnexportableKeyProvider> provider =
             GetWebAuthnUnexportableKeyProvider();
         if (!provider) {
-          FIDO_LOG(EVENT)
-              << "Enclave authenticator disabled because no key provider";
+          FIDO_LOG(EVENT) << "Enclave authenticator disabled because no "
+                             "key provider";
           return false;
         }
         return provider->SelectAlgorithm(device::enclave::kSigningAlgorithms) !=
                std::nullopt;
       }),
-      base::BindOnce(
-          [](base::OnceCallback<void(bool)> callback,
-             base::Time tpm_check_start_time,
-             base::WeakPtr<ChromeWebAuthenticationDelegate> webauthn_delegate,
-             bool available) {
-            FIDO_LOG(DEBUG) << "Checking for TPM availability took "
-                            << (base::Time::Now() - tpm_check_start_time);
-            if (webauthn_delegate) {
-              webauthn_delegate->tpm_available_ = available;
-            }
-            if (!available) {
-              FIDO_LOG(EVENT)
-                  << "Enclave authenticator disabled because of lack of TPM";
-            }
-            std::move(callback).Run(available);
-          },
-          std::move(callback), tpm_check_start_time,
-          weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&ChromeWebAuthenticationDelegate::OnTpmAvailableChecked,
+                     weak_ptr_factory_.GetWeakPtr(), base::Time::Now(),
+                     std::move(callback)));
+}
+
+void ChromeWebAuthenticationDelegate::OnTpmAvailableChecked(
+    base::Time start_time,
+    base::OnceCallback<void(bool)> callback,
+    bool available) {
+  FIDO_LOG(DEBUG) << "Checking for TPM availability took "
+                  << (base::Time::Now() - start_time);
+  tpm_available_ = available;
+  if (!available) {
+    FIDO_LOG(EVENT) << "Enclave authenticator disabled because of lack of TPM";
+  }
+  std::move(callback).Run(available);
 }

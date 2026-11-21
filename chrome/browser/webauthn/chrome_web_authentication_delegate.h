@@ -12,6 +12,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/webauthn/chrome_web_authentication_delegate_base.h"
@@ -24,7 +25,6 @@
 class ChromeWebAuthenticationDelegate final
     : public ChromeWebAuthenticationDelegateBase {
  public:
-
 #if BUILDFLAG(IS_MAC)
   // Returns a configuration struct for instantiating the macOS WebAuthn
   // platform authenticator for the given Profile.
@@ -87,6 +87,11 @@ class ChromeWebAuthenticationDelegate final
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
+  void CheckTpmAvailable(base::OnceCallback<void(bool)> callback);
+  void OnTpmAvailableChecked(base::Time start_time,
+                             base::OnceCallback<void(bool)> callback,
+                             bool available);
+
   // Caches the result from looking up whether a TPM is available for Enclave
   // requests.
   std::optional<bool> tpm_available_;

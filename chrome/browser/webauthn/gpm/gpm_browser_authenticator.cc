@@ -5,6 +5,7 @@
 #include "chrome/browser/webauthn/gpm/gpm_browser_authenticator.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/check.h"
@@ -12,10 +13,12 @@
 #include "base/containers/adapters.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/webauthn/core/browser/passkey_model.h"
 #include "components/webauthn/core/browser/passkey_model_utils.h"
@@ -298,4 +301,37 @@ GpmBrowserAuthenticator::AuthenticatorTransport() const {
 
 base::WeakPtr<device::FidoAuthenticator> GpmBrowserAuthenticator::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+GpmBrowserAuthenticatorDiscovery::GpmBrowserAuthenticatorDiscovery()
+    : FidoDiscoveryBase(device::FidoTransportProtocol::kInternal) {}
+
+GpmBrowserAuthenticatorDiscovery::~GpmBrowserAuthenticatorDiscovery() = default;
+
+GpmBrowserAuthenticatorDiscovery::AddAuthenticatorCallback
+GpmBrowserAuthenticatorDiscovery::GetAddAuthenticatorCallback() {
+  CHECK(!add_authenticator_callback_issued_);
+  add_authenticator_callback_issued_ = true;
+  return base::BindOnce(&GpmBrowserAuthenticatorDiscovery::AddAuthenticator,
+                        weak_factory_.GetWeakPtr());
+}
+
+void GpmBrowserAuthenticatorDiscovery::Start() {
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&GpmBrowserAuthenticatorDiscovery::StartDiscovery,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void GpmBrowserAuthenticatorDiscovery::StartDiscovery() {
+  observer()->DiscoveryStarted(this, /*success=*/true, {});
+}
+
+void GpmBrowserAuthenticatorDiscovery::AddAuthenticator(
+    GpmBrowserAuthenticatorRequest request) {
+  CHECK(observer());
+  CHECK(!authenticator_);
+  authenticator_ =
+      std::make_unique<GpmBrowserAuthenticator>(std::move(request));
+  observer()->AuthenticatorAdded(this, authenticator_.get());
 }

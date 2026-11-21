@@ -31,8 +31,8 @@ class MockUiReadinessBarrierDelegate : public UiReadinessBarrier::Delegate {
                PasswordCredentialFetcher::PasswordCredentials passwords),
               (override));
   MOCK_METHOD(bool, PasswordsUsable, (), (override));
-  MOCK_METHOD(bool, IsEnclaveActive, (), (override));
-  MOCK_METHOD(bool, IsEnclaveReady, (), (override));
+  MOCK_METHOD(bool, IsGpmActive, (), (override));
+  MOCK_METHOD(bool, IsGpmReady, (), (override));
   MOCK_METHOD(void,
               GetGpmPasskeys,
               (device::FidoRequestHandlerBase::TransportAvailabilityInfo tai,
@@ -77,8 +77,8 @@ class UiReadinessBarrierTest : public ChromeRenderViewHostTestHarness {
 TEST_F(UiReadinessBarrierTest, BasicFlow_AllReady) {
   // Setup delegate to indicate everything is ready.
   EXPECT_CALL(delegate_, PasswordsUsable()).WillRepeatedly(Return(true));
-  EXPECT_CALL(delegate_, IsEnclaveActive()).WillRepeatedly(Return(false));
-  EXPECT_CALL(delegate_, IsEnclaveReady()).WillRepeatedly(Return(true));
+  EXPECT_CALL(delegate_, IsGpmActive()).WillRepeatedly(Return(false));
+  EXPECT_CALL(delegate_, IsGpmReady()).WillRepeatedly(Return(true));
 
   // Expect ShowUI to be called once both inputs are provided.
   EXPECT_CALL(delegate_, ShowUI(_, _)).Times(1);
@@ -87,10 +87,10 @@ TEST_F(UiReadinessBarrierTest, BasicFlow_AllReady) {
   barrier_->SetPasswordCredentials(MakePasswords());
 }
 
-TEST_F(UiReadinessBarrierTest, EnclaveNotReady_DelaysUI) {
+TEST_F(UiReadinessBarrierTest, GpmNotReady_DelaysUI) {
   EXPECT_CALL(delegate_, PasswordsUsable()).WillRepeatedly(Return(true));
-  EXPECT_CALL(delegate_, IsEnclaveActive()).WillRepeatedly(Return(true));
-  EXPECT_CALL(delegate_, IsEnclaveReady()).WillRepeatedly(Return(false));
+  EXPECT_CALL(delegate_, IsGpmActive()).WillRepeatedly(Return(true));
+  EXPECT_CALL(delegate_, IsGpmReady()).WillRepeatedly(Return(false));
 
   // Should NOT show UI yet.
   EXPECT_CALL(delegate_, ShowUI(_, _)).Times(0);
@@ -98,8 +98,8 @@ TEST_F(UiReadinessBarrierTest, EnclaveNotReady_DelaysUI) {
   barrier_->SetTransportAvailabilityInfo(MakeTAI());
   barrier_->SetPasswordCredentials(MakePasswords());
 
-  // Now make enclave ready.
-  EXPECT_CALL(delegate_, IsEnclaveReady()).WillRepeatedly(Return(true));
+  // Now make GPM ready.
+  EXPECT_CALL(delegate_, IsGpmReady()).WillRepeatedly(Return(true));
   EXPECT_CALL(delegate_, ShowUI(_, _)).Times(1);
   // Simulating GPM passkey fetch
   EXPECT_CALL(delegate_, GetGpmPasskeys(_, _))

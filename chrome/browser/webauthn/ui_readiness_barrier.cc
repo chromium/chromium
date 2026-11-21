@@ -40,7 +40,7 @@ void UiReadinessBarrier::TryToShowUI() {
   if (!tai_) {
     return;
   }
-  if (!delegate_->IsEnclaveReady()) {
+  if (!delegate_->IsGpmReady()) {
     return;
   }
   if (delegate_->PasswordsUsable() && !passwords_) {
@@ -55,7 +55,7 @@ void UiReadinessBarrier::TryToShowUI() {
                        : PasswordCredentialFetcher::PasswordCredentials();
   passwords_.reset();
 
-  if (delegate_->IsEnclaveActive()) {
+  if (delegate_->IsGpmActive()) {
     delegate_->GetGpmPasskeys(
         std::move(tai),
         base::BindOnce(&UiReadinessBarrier::ContinueWithGpmPasskeys,

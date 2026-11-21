@@ -7,6 +7,7 @@
 
 #include <array>
 #include <cstdint>
+#include <memory>
 #include <optional>
 #include <string>
 #include <variant>
@@ -18,6 +19,7 @@
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
 #include "device/fido/fido_authenticator.h"
+#include "device/fido/fido_discovery_base.h"
 
 namespace device {
 struct CtapGetAssertionOptions;
@@ -110,6 +112,36 @@ class GpmBrowserAuthenticator : public device::FidoAuthenticator {
   GpmBrowserAuthenticatorRequest request_;
 
   base::WeakPtrFactory<GpmBrowserAuthenticator> weak_factory_{this};
+};
+
+class GpmBrowserAuthenticatorDiscovery : public device::FidoDiscoveryBase {
+ public:
+  using AddAuthenticatorCallback =
+      base::OnceCallback<void(GpmBrowserAuthenticatorRequest)>;
+
+  GpmBrowserAuthenticatorDiscovery();
+  ~GpmBrowserAuthenticatorDiscovery() override;
+
+  GpmBrowserAuthenticatorDiscovery(const GpmBrowserAuthenticatorDiscovery&) =
+      delete;
+  GpmBrowserAuthenticatorDiscovery& operator=(
+      const GpmBrowserAuthenticatorDiscovery&) = delete;
+
+  // Returns a single-use callback that instantiates and registers a
+  // `GpmBrowserAuthenticator` with this discovery. May only be called once.
+  AddAuthenticatorCallback GetAddAuthenticatorCallback();
+
+  // device::FidoDiscoveryBase:
+  void Start() override;
+
+ private:
+  void StartDiscovery();
+  void AddAuthenticator(GpmBrowserAuthenticatorRequest request);
+
+  bool add_authenticator_callback_issued_ = false;
+  std::unique_ptr<GpmBrowserAuthenticator> authenticator_;
+
+  base::WeakPtrFactory<GpmBrowserAuthenticatorDiscovery> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_GPM_GPM_BROWSER_AUTHENTICATOR_H_

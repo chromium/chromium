@@ -32,8 +32,8 @@ class UiReadinessBarrier : public AuthenticatorRequestDialogModel::Observer {
         device::FidoRequestHandlerBase::TransportAvailabilityInfo tai,
         PasswordCredentialFetcher::PasswordCredentials passwords) = 0;
     virtual bool PasswordsUsable() = 0;
-    virtual bool IsEnclaveActive() = 0;
-    virtual bool IsEnclaveReady() = 0;
+    virtual bool IsGpmActive() = 0;
+    virtual bool IsGpmReady() = 0;
     virtual void GetGpmPasskeys(
         device::FidoRequestHandlerBase::TransportAvailabilityInfo tai,
         base::OnceCallback<
