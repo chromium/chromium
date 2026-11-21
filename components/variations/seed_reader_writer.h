@@ -240,6 +240,9 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // being written to disk, unless it's empty or it's the sentinel value.
   void AllowToPurgeSeedDataFromMemory();
 
+  // Immediately flushes any pending scheduled seed file write.
+  void CommitPendingWrite();
+
   std::optional<std::string> stored_seed_data_for_testing() const {
     if (!stored_seed_info_.has_data()) {
       return std::nullopt;

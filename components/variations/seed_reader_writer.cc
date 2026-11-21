@@ -1055,6 +1055,13 @@ void SeedReaderWriter::GetSeedDataFromSeedFile(
       std::move(read_file_cb));
 }
 
+void SeedReaderWriter::CommitPendingWrite() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (seed_writer_ && seed_writer_->HasPendingWrite()) {
+    seed_writer_->DoScheduledWrite();
+  }
+}
+
 bool SeedReaderWriter::HasPendingWrite() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return seed_writer_ && seed_writer_->HasPendingWrite();
