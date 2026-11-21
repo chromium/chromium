@@ -4,8 +4,10 @@
 
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui.h"
 
+#include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/widget/conversions.h"
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
@@ -72,10 +74,20 @@ GlicInactiveSidePanelUi::~GlicInactiveSidePanelUi() = default;
 // which triggers this method and activates the Glic side panel for the current
 // tab.
 void GlicInactiveSidePanelUi::OnViewFocused(views::View* observed_view) {
-  if (tab_) {
-    // NOTE: `this` will be destroyed after this call.
-    delegate_->Show(ShowOptions::ForSidePanel(*tab_));
+  // Defer `Show()` out of synchronous focus/mouse dispatch because activating
+  // the side panel replaces its contents view and destroys both
+  // `observed_view` and `this`.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&GlicInactiveSidePanelUi::ActivateForCurrentTab,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
+void GlicInactiveSidePanelUi::ActivateForCurrentTab() {
+  if (!tab_ || !tab_->IsActivated()) {
+    return;
   }
+  // NOTE: `this` will be destroyed after this call.
+  delegate_->Show(ShowOptions::ForSidePanel(*tab_));
 }
 
 void GlicInactiveSidePanelUi::OnViewIsDeleting(views::View* observed_view) {

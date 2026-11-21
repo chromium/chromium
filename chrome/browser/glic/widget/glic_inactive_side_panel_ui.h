@@ -58,6 +58,7 @@ class GlicInactiveSidePanelUi : public GlicUiEmbedder,
  private:
   explicit GlicInactiveSidePanelUi(base::WeakPtr<tabs::TabInterface> tab,
                                    GlicUiEmbedder::Delegate& delegate);
+  void ActivateForCurrentTab();
   GlicSidePanelCoordinator* GetGlicSidePanelCoordinator() const;
 
   InactiveViewController inactive_view_controller_;

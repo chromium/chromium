@@ -8,6 +8,7 @@
 // sufficient and simpler than a full `RunTestSequence`.
 
 #include <memory>
+#include <string_view>
 
 #include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/utils.h"
@@ -95,8 +96,12 @@
 #else
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "ui/views/test/widget_activation_waiter.h"
+#include "ui/views/view_guard.h"
+#include "ui/views/view_tracker.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -2210,6 +2215,134 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   EXPECT_TRUE(floaty_widget->IsVisible());
   EXPECT_EQ(coordinator().GetInstanceWithFloaty(), floaty_instance);
   EXPECT_EQ(coordinator().GetActiveInstance(), floaty_instance);
+}
+
+class GlicInactiveSidePanelBrowserTest
+    : public GlicInstanceCoordinatorBrowserTest {
+ protected:
+  struct InactiveSidePanelSetup {
+    InactiveSidePanelSetup() = default;
+    InactiveSidePanelSetup(InactiveSidePanelSetup&&) = default;
+    InactiveSidePanelSetup& operator=(InactiveSidePanelSetup&&) = default;
+    ~InactiveSidePanelSetup() = default;
+
+    raw_ptr<tabs::TabInterface> inactive_tab = nullptr;
+    raw_ptr<tabs::TabInterface> other_tab = nullptr;
+    raw_ptr<GlicInstanceImpl> instance = nullptr;
+    std::unique_ptr<views::ViewTracker> inactive_view_tracker;
+  };
+
+  views::View* FindViewByClassName(views::View* root,
+                                   std::string_view class_name) {
+    if (!root) {
+      return nullptr;
+    }
+    if (root->GetClassName() == class_name) {
+      return root;
+    }
+    for (views::View* child : root->children()) {
+      if (views::View* match = FindViewByClassName(child, class_name)) {
+        return match;
+      }
+    }
+    return nullptr;
+  }
+
+  [[nodiscard]] TestResult<InactiveSidePanelSetup>
+  SetupDetachedInstanceWithInactiveSidePanelTab() {
+    InactiveSidePanelSetup setup;
+    setup.inactive_tab = GetTabListInterface()->GetActiveTab();
+    ASSIGN_OR_RETURN(setup.instance, OpenGlicForActiveTab());
+    PreventBlankDeletionOnClose(setup.instance);
+
+    setup.other_tab = CreateAndActivateTab(GURL("about:blank"));
+    setup.instance->Show(ShowOptions::ForSidePanel(*setup.other_tab));
+    RETURN_IF_ERROR(
+        WaitForEmbedderActivationOrPeek(setup.instance, setup.other_tab));
+
+    setup.instance->Detach(*setup.other_tab);
+    RETURN_IF_ERROR(
+        RunUntilEqual([&]() { return setup.instance->IsDetached(); }, true,
+                      "Failed to wait for Glic to detach"));
+
+    ActivateTab(setup.inactive_tab);
+    RETURN_IF_ERROR(WaitForSidePanelState(
+        setup.inactive_tab, GlicSidePanelCoordinator::State::kShown));
+    RETURN_IF_ERROR(ActivateWindow(GetBrowser()));
+
+    if (!setup.instance->IsDetached()) {
+      return base::unexpected("Expected instance to remain detached");
+    }
+
+    views::View* content_parent =
+        BrowserView::GetBrowserViewForBrowser(GetBrowser())
+            ->side_panel()
+            ->GetContentParentView();
+    views::View* inactive_view =
+        FindViewByClassName(content_parent, "InactiveGlicViewContainer");
+    if (!inactive_view) {
+      return base::unexpected("InactiveGlicViewContainer not found");
+    }
+    if (!inactive_view->GetWidget()->IsActive()) {
+      return base::unexpected("Inactive view widget is not active");
+    }
+    if (inactive_view->HasFocus()) {
+      return base::unexpected("Inactive view unexpectedly already has focus");
+    }
+    setup.inactive_view_tracker =
+        std::make_unique<views::ViewTracker>(inactive_view);
+    return setup;
+  }
+};
+
+// Regression test for crbug.com/579573882.
+// Verifies that focusing the inactive side panel view defers reactivation
+// asynchronously so the view is not synchronously destroyed inside
+// RequestFocus() / OnViewFocused().
+IN_PROC_BROWSER_TEST_F(GlicInactiveSidePanelBrowserTest,
+                       ActivationDeferredFromOnViewFocused) {
+  ASSERT_OK_AND_ASSIGN(InactiveSidePanelSetup setup,
+                       SetupDetachedInstanceWithInactiveSidePanelTab());
+
+  {
+    views::View* inactive_view = setup.inactive_view_tracker->view();
+    views::ViewGuard guard(*inactive_view);
+    inactive_view->RequestFocus();
+  }
+
+  ASSERT_OK(
+      WaitForActiveEmbedderToMatchTab(setup.instance, setup.inactive_tab));
+  EXPECT_FALSE(setup.instance->IsDetached());
+  EXPECT_EQ(setup.inactive_view_tracker->view(), nullptr);
+}
+
+// Regression test for crbug.com/579573882.
+// Verifies that if Tab 1 is deactivated synchronously after
+// InactiveGlicViewContainer::RequestFocus(), the deferred activation task does
+// not steal the active embedder onto backgrounded Tab 1.
+IN_PROC_BROWSER_TEST_F(GlicInactiveSidePanelBrowserTest,
+                       DoesNotActivateIfTabDeactivatedBeforeTaskRuns) {
+  ASSERT_OK_AND_ASSIGN(InactiveSidePanelSetup setup,
+                       SetupDetachedInstanceWithInactiveSidePanelTab());
+
+  {
+    views::View* inactive_view = setup.inactive_view_tracker->view();
+    views::ViewGuard guard(*inactive_view);
+    inactive_view->RequestFocus();
+  }
+
+  // Deactivate `inactive_tab` synchronously before the posted task runs, then
+  // complete an async navigation on `other_tab` so the posted task has run on
+  // the UI thread.
+  ActivateTab(setup.other_tab);
+  NavigateTab(*setup.other_tab, GetSimpleTestUrl());
+
+  EXPECT_TRUE(setup.instance->IsDetached());
+  EXPECT_EQ(setup.instance->GetActiveEmbedderTabForTesting(), nullptr);
+  EXPECT_EQ(GetTabListInterface()->GetActiveTab(), setup.other_tab);
+  EXPECT_NE(setup.instance->GetEmbedderForTab(setup.inactive_tab), nullptr);
+  ASSERT_OK(WaitForSidePanelState(
+      setup.inactive_tab, GlicSidePanelCoordinator::State::kBackgrounded));
 }
 #endif
 
