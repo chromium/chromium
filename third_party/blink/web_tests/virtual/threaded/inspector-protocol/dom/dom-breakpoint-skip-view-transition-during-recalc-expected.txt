@@ -1,0 +1,6 @@
+Tests that DOM breakpoints do not pause for DOM mutations during style recalc, where running script (e.g. skipping a view transition) is unsafe.
+Breakpoint node: ::view-transition-image-pair(target)
+Style recalc completed
+Paused on node-removed during script-removal
+Script removal completed
+

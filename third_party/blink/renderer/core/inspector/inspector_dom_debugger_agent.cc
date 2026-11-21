@@ -35,6 +35,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_target.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
 #include "third_party/blink/renderer/core/dom/css_pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -548,6 +550,14 @@ void InspectorDOMDebuggerAgent::BreakProgramOnDOMEvent(Node* target,
                                                        int breakpoint_type,
                                                        bool insertion) {
   DCHECK(HasBreakpoint(target, breakpoint_type));
+  // DOM mutations that happen inside a document lifecycle update (e.g. the
+  // removal of pseudo-elements during style recalc) are not caused by script,
+  // and the lifecycle code is not prepared for script to run in the middle of
+  // it. Pausing here would let the debugger client run arbitrary script (e.g.
+  // via Runtime.evaluate) while style/layout state is inconsistent.
+  if (!target->GetDocument().Lifecycle().StateAllowsTreeMutations()) {
+    return;
+  }
   std::unique_ptr<protocol::DictionaryValue> description =
       protocol::DictionaryValue::create();
 
