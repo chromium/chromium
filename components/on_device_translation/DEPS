@@ -15,7 +15,7 @@ specific_include_rules = {
     "+components/user_prefs/user_prefs.h",
     "+ui/base/l10n/l10n_util.h",
   ],
-  "translator\\.(cc|h)": [
+  "translator(_unittest)?\\.(cc|h)": [
     "+third_party/blink/public/mojom",
   ],
 }

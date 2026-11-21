@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -73,6 +74,19 @@ bool Translator::VerifyPrerequisites(
                                          target_lang_);
   RecordTranslatorApiTranslationLength(source_lang_, target_lang_,
                                        input.size());
+
+  // The renderer is not trusted, so check the size here, before the input
+  // reaches the translation service.
+  const int max_input_size = kTranslationAPIMaxInputSizeBytes.Get();
+  if (max_input_size > 0 &&
+      input.size() > static_cast<size_t>(max_input_size)) {
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge,
+        blink::mojom::QuotaErrorInfo::New(
+            base::saturated_cast<uint32_t>(input.size()),
+            static_cast<uint32_t>(max_input_size)));
+    return false;
+  }
 
   // https://github.com/webmachinelearning/translation-api/pull/38: "If |input|
   // is the empty string, or otherwise consists of no translatable content

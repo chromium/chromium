@@ -41,6 +41,13 @@ extern const base::FeatureParam<size_t> kTranslationAPIMaxServiceCount;
 extern const base::FeatureParam<base::TimeDelta>
     kTranslationAPIModelIdleUnloadTimeout;
 
+// The largest input in UTF-8 bytes that `translate()` and
+// `translateStreaming()` accept. Larger input fails with a QuotaExceededError
+// before it reaches the translation service. 0 or less turns the limit off.
+// The limit applies to each call. It doesn't limit how many calls a page
+// queues, which the service runs one after another.
+extern const base::FeatureParam<int> kTranslationAPIMaxInputSizeBytes;
+
 // Enables automatic download of language packs for on-device translation.
 BASE_DECLARE_FEATURE(kAutoDownloadTranslateLanguagePacks);
 

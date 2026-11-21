@@ -51,6 +51,18 @@ const base::FeatureParam<base::TimeDelta> kTranslationAPIModelIdleUnloadTimeout{
 #endif  // BUILDFLAG(IS_ANDROID)
 };
 
+const base::FeatureParam<int> kTranslationAPIMaxInputSizeBytes{
+    &blink::features::kTranslationAPI, "TranslationAPIMaxInputSizeBytes",
+#if BUILDFLAG(IS_ANDROID)
+    // The engine translates the whole input of one call at once, in a process
+    // that phones may run short of memory for. 256 KiB is about 40,000
+    // English words.
+    256 * 1024
+#else
+    0
+#endif  // BUILDFLAG(IS_ANDROID)
+};
+
 BASE_FEATURE(kAutoDownloadTranslateLanguagePacks,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
