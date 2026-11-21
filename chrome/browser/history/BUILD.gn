@@ -204,6 +204,7 @@ if (is_android) {
       "java/src/org/chromium/chrome/browser/history/CriticalActionsMediatorTest.java",
       "java/src/org/chromium/chrome/browser/history/CriticalActionsViewBinderTest.java",
       "java/src/org/chromium/chrome/browser/history/FilterSheetCoordinatorTest.java",
+      "java/src/org/chromium/chrome/browser/history/HistoryDeletionBridgeTest.java",
       "java/src/org/chromium/chrome/browser/history/IncognitoHistoryDisclaimerCoordinatorAnchorUnitTest.java",
       "java/src/org/chromium/chrome/browser/history/IncognitoHistoryDisclaimerCoordinatorUnitTest.java",
     ]
@@ -216,6 +217,7 @@ if (is_android) {
       "//base:base_junit_test_support",
       "//chrome/android:chrome_app_java_resources",
       "//chrome/browser/flags:java",
+      "//chrome/browser/profiles/android:java",
       "//chrome/browser/tabmodel:java",
       "//components/browser_ui/bottomsheet/android:java",
       "//components/browser_ui/theme/android:java_resources",
@@ -226,6 +228,10 @@ if (is_android) {
       "//ui/android:ui_java_test_support",
       "//ui/android:ui_no_recycler_view_java",
     ]
+
+    # Java deps resolve through subtargets, so assert on the header jar rather
+    # than the //chrome/android:chrome_java group.
+    assert_no_deps = [ "//chrome/android:chrome_java__header" ]
   }
 }
 
