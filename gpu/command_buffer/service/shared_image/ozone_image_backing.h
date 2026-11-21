@@ -117,6 +117,8 @@ class GPU_GLES2_EXPORT OzoneImageBacking final
                            FindsCompatibleContextAndReusesTexture);
   FRIEND_TEST_ALL_PREFIXES(OzoneImageBackingFactoryTest,
                            CorrectlyDestroysAndMarksContextLost);
+  FRIEND_TEST_ALL_PREFIXES(OzoneImageBackingFactoryTest,
+                           UploadAndReadbackWithoutContextCurrent);
 
   void FlushAndSubmitIfNecessary(
       std::vector<GrBackendSemaphore> signal_semaphores,

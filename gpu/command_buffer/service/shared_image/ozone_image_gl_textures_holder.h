@@ -38,6 +38,8 @@ class GPU_GLES2_EXPORT OzoneImageGLTexturesHolder
   static scoped_refptr<OzoneImageGLTexturesHolder> CreateAndInitTexturesHolder(
       SharedImageBacking* backing,
       scoped_refptr<gfx::NativePixmap> pixmap);
+  static scoped_refptr<OzoneImageGLTexturesHolder> CreateForTesting(
+      std::vector<scoped_refptr<gles2::TexturePassthrough>> textures);
 
   void MarkContextLost();
   bool WasContextLost();
