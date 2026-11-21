@@ -17,7 +17,7 @@ using ::net::test_server::BasicHttpResponse;
 using ::net::test_server::HttpRequest;
 using ::net::test_server::HttpResponse;
 
-constexpr char kFakeOnlineEulaPath[] = "/intl/en-US/chrome/eula_text.html";
+constexpr char kFakeOnlineEulaPath[] = "/intl/en-US/chrome/terms/";
 
 }  // namespace
 
@@ -46,7 +46,7 @@ std::unique_ptr<HttpResponse> FakeEulaMixin::HandleRequest(
     const HttpRequest& request) {
   GURL request_url = GURL("http://localhost").Resolve(request.relative_url);
   const std::string request_path = request_url.GetPath();
-  if (!base::EndsWith(request_path, "/eula_text.html",
+  if (!base::EndsWith(request_path, "/chrome/terms/",
                       base::CompareCase::SENSITIVE)) {
     return nullptr;
   }

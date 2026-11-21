@@ -1737,7 +1737,7 @@ are declared in tools/grit/grit_args.gni.
         Review
       </message>
       <message name="IDS_TOS_NOTIFICATION_LINK" desc="The URL for the new TOS change link." translateable="false">
-        https://www.google.com/chrome/privacy/eula_text.html
+        https://www.google.com/chrome/terms/
       </message>
 
       <message name="IDS_HELP_MENU" desc="The text label of the Help sub-menu item in the wrench menu">

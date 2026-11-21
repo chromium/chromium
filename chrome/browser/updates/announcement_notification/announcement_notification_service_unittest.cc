@@ -30,6 +30,7 @@
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 using testing::_;
 using testing::NiceMock;
@@ -211,6 +212,22 @@ TEST_F(AnnouncementNotificationServiceTest, RemoteUrl) {
   EXPECT_CALL(*delegate(), ShowNotification());
   service()->MaybeShowNotification();
   EXPECT_EQ(CurrentVersionPref(), 4);
+}
+
+TEST(AnnouncementNotificationServiceUrlTest, Default) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kAnnouncementNotification);
+  EXPECT_EQ(AnnouncementNotificationService::GetAnnouncementURL(),
+            GURL("https://www.google.com/chrome/terms/"));
+}
+
+TEST(AnnouncementNotificationServiceUrlTest, FromParam) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kAnnouncementNotification,
+      {{kAnnouncementUrl, "https://www.example.com/"}});
+  EXPECT_EQ(AnnouncementNotificationService::GetAnnouncementURL(),
+            GURL("https://www.example.com/"));
 }
 
 // First run timestamp should be persisted even if the Finch parameter is not
