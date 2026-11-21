@@ -57,6 +57,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.permissions.PermissionCallback;
 
 import java.lang.ref.WeakReference;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link TtcSessionMediator}. */
@@ -376,6 +377,17 @@ public class TtcSessionMediatorTest {
         return captor.getValue();
     }
 
+    /**
+     * Returns the models of the FRE dialogs shown in two windows, in the order they were shown.
+     * Both windows share {@link #mModalDialogManager}.
+     */
+    private List<PropertyModel> getShownFreDialogsInTwoWindows() {
+        ArgumentCaptor<PropertyModel> captor = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mModalDialogManager, times(2))
+                .showDialog(captor.capture(), eq(ModalDialogManager.ModalDialogType.APP));
+        return captor.getAllValues();
+    }
+
     /** Simulates the user tapping {@code buttonType} on {@code dialog}, which dismisses it. */
     private void clickFreDialogButton(
             PropertyModel dialog, @ModalDialogProperties.ButtonType int buttonType) {
@@ -558,6 +570,39 @@ public class TtcSessionMediatorTest {
         // Testing stopgap until there is a settings UI: lets the dialog show again when the FRE
         // is re-enabled.
         verify(mPrefService).clearPref(Pref.TTC_FRE_COMPLETED);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TTC_FRE)
+    public void testSessionStartDismissesFreDialogInOtherWindow() {
+        when(mPrefService.getBoolean(Pref.TTC_FRE_COMPLETED)).thenReturn(false);
+        TtcSessionMediator mediator = createMediator();
+        TtcSessionMediator otherMediator = createOtherWindowMediator();
+
+        // Each window may show its own dialog.
+        mediator.toggleSession();
+        otherMediator.toggleSession();
+        List<PropertyModel> dialogs = getShownFreDialogsInTwoWindows();
+        PropertyModel dialog = dialogs.get(0);
+        PropertyModel otherDialog = dialogs.get(1);
+
+        // Accepting the dialog in one window completes the FRE and starts the session, which
+        // both windows hear about.
+        clickFreDialogButton(otherDialog, ModalDialogProperties.ButtonType.POSITIVE);
+        verify(mPrefService).setBoolean(Pref.TTC_FRE_COMPLETED, true);
+        verify(mService).startSession();
+        mediator.onServiceStateChanged(ServiceState.SESSION_ACTIVE);
+        otherMediator.onServiceStateChanged(ServiceState.SESSION_ACTIVE);
+
+        // The dialog in the window that didn't answer goes away.
+        verify(mModalDialogManager).dismissDialog(dialog, DialogDismissalCause.DISMISSED_BY_NATIVE);
+        dialog.get(ModalDialogProperties.CONTROLLER)
+                .onDismiss(dialog, DialogDismissalCause.DISMISSED_BY_NATIVE);
+
+        // The FRE stays completed and no second session starts.
+        verify(mPrefService).setBoolean(eq(Pref.TTC_FRE_COMPLETED), anyBoolean());
+        verify(mPrefService, never()).clearPref(Pref.TTC_FRE_COMPLETED);
+        verify(mService).startSession();
     }
 
     // Multiple windows sharing the profile's session.

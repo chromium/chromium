@@ -71,7 +71,8 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
     // even if the session has already ended.
     private boolean mShowingError;
 
-    // The first run dialog while it is showing, so it can be dismissed if the service goes away.
+    // The first run dialog while it is showing, so it can be dismissed if the service goes away
+    // or a session starts from another window.
     private @Nullable PropertyModel mFreDialog;
 
     /**
@@ -232,6 +233,9 @@ class TtcSessionMediator implements TtcKeyedService.Observer, StartStopWithNativ
         boolean active = state == ServiceState.SESSION_ACTIVE;
         updateEntryPoint(active);
         if (active) {
+            // Each window can show its own first run dialog. A session normally starts only
+            // after one of them is accepted, so this window's dialog is no longer needed.
+            dismissFreDialog();
             clearError();
             mModel.set(TtcSessionProperties.STATUS_TEXT_RES_ID, getSessionStatusTextResId());
             mModel.set(TtcSessionProperties.AUDIO_LEVEL, 0f);
