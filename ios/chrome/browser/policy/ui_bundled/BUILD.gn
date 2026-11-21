@@ -38,7 +38,6 @@ source_set("user_policy_scene_agent") {
     "//ios/chrome/browser/authentication/ui_bundled/signin",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_screen_provider",
     "//ios/chrome/browser/policy/model",
-    "//ios/chrome/browser/policy/model:browser_agent",
     "//ios/chrome/browser/policy/model:constants",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/policy/ui_bundled/user_policy",

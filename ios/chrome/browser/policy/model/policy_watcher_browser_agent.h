@@ -79,9 +79,6 @@ class PolicyWatcherBrowserAgent
   // this exclusion when the pref changs to `true`.
   void UpdateAppContainerBackupExclusion();
 
-  // Callback called when the sign out is complete.
-  void OnSignOutComplete();
-
   // AuthenticationServiceObserver implementation.
   void OnPrimaryAccountRestricted() override;
 
