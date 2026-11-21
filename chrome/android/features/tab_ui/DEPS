@@ -255,10 +255,8 @@ specific_include_rules = {
     "+chrome/browser/ui/android/searchactivityutils",
   ],
   "TabSearchOverlayTest\\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/history/BrowsingHistoryBridge.java",
-    "+chrome/android/java/src/org/chromium/chrome/browser/history/HistoryItem.java",
-    "+chrome/android/java/src/org/chromium/chrome/browser/history/HistoryProvider.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/tabbed_mode/TabbedRootUiCoordinator.java",
+    "+chrome/browser/history/java",
   ],
   "TabSwitcherDragHandlerUnitTest\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/dragdrop/ChromeTabDropDataAndroid.java",
@@ -284,9 +282,7 @@ specific_include_rules = {
     "+chrome/browser/ui/android/night_mode",
   ],
   "TabSwitcherSearchTest\\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/history/BrowsingHistoryBridge.java",
-    "+chrome/android/java/src/org/chromium/chrome/browser/history/HistoryItem.java",
-    "+chrome/android/java/src/org/chromium/chrome/browser/history/HistoryProvider.java",
+    "+chrome/browser/history/java",
   ],
   "TabSwitcherTabletTest\\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/Layout.java",

@@ -182,6 +182,7 @@ public interface HistoryProvider {
     /**
      * Adds the HistoryItem to the list of items being removed. The removal will not be committed
      * until {@link #removeItems()} is called.
+     *
      * @param item The item to mark for removal.
      */
     void markItemForRemoval(HistoryItem item);

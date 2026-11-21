@@ -129,6 +129,8 @@ if (is_android) {
       "java/src/org/chromium/chrome/browser/history/AppHistoryInfoHeaderPref.java",
       "java/src/org/chromium/chrome/browser/history/AppHistoryUmaRecorder.java",
       "java/src/org/chromium/chrome/browser/history/BrowserHistoryInfoHeaderPref.java",
+      "java/src/org/chromium/chrome/browser/history/BrowsingHistoryBridge.java",
+      "java/src/org/chromium/chrome/browser/history/CriticalAction.java",
       "java/src/org/chromium/chrome/browser/history/CriticalActionsCoordinator.java",
       "java/src/org/chromium/chrome/browser/history/CriticalActionsExpansionAnimator.java",
       "java/src/org/chromium/chrome/browser/history/CriticalActionsMediator.java",
@@ -141,10 +143,13 @@ if (is_android) {
       "java/src/org/chromium/chrome/browser/history/FilterSheetViewBinder.java",
       "java/src/org/chromium/chrome/browser/history/HistoryDeletionBridge.java",
       "java/src/org/chromium/chrome/browser/history/HistoryDeletionInfo.java",
+      "java/src/org/chromium/chrome/browser/history/HistoryItem.java",
+      "java/src/org/chromium/chrome/browser/history/HistoryProvider.java",
       "java/src/org/chromium/chrome/browser/history/HistoryTabHelper.java",
       "java/src/org/chromium/chrome/browser/history/HistoryUmaRecorder.java",
       "java/src/org/chromium/chrome/browser/history/IncognitoHistoryDisclaimerCoordinator.java",
       "java/src/org/chromium/chrome/browser/history/InfoHeaderPref.java",
+      "java/src/org/chromium/chrome/browser/history/QueryOptions.java",
     ]
 
     deps = [
@@ -157,6 +162,9 @@ if (is_android) {
       "//chrome/browser/tab:java",
       "//chrome/browser/tabmodel:java",
       "//components/browser_ui/bottomsheet/android:java",
+      "//components/browser_ui/widget/android:java",
+      "//components/browsing_data/core:java",
+      "//components/critical_actions/core/browser:critical_actions_enums_java",
       "//content/public/android:content_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
@@ -164,12 +172,14 @@ if (is_android) {
       "//third_party/androidx:androidx_recyclerview_recyclerview_java",
       "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_full_java",
+      "//url:gurl_java",
     ]
     resources_package = "org.chromium.chrome.browser.history"
   }
 
   generate_jni("jni_headers") {
     sources = [
+      "java/src/org/chromium/chrome/browser/history/BrowsingHistoryBridge.java",
       "java/src/org/chromium/chrome/browser/history/HistoryDeletionBridge.java",
       "java/src/org/chromium/chrome/browser/history/HistoryDeletionInfo.java",
       "java/src/org/chromium/chrome/browser/history/HistoryTabHelper.java",

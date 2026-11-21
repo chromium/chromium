@@ -158,12 +158,16 @@ public class HistoryItem extends TimedItem {
         return mUrl;
     }
 
-    /** @return The string to display for the item's domain. */
+    /**
+     * @return The string to display for the item's domain.
+     */
     public String getDomain() {
         return mDomain;
     }
 
-    /** @return The string to display for the item's title. */
+    /**
+     * @return The string to display for the item's title.
+     */
     public String getTitle() {
         return mTitle;
     }
@@ -176,7 +180,9 @@ public class HistoryItem extends TimedItem {
         return mAppId;
     }
 
-    /** @return Whether the visit to this item was blocked when it was attempted. */
+    /**
+     * @return Whether the visit to this item was blocked when it was attempted.
+     */
     public boolean wasBlockedVisit() {
         return mWasBlockedVisit;
     }

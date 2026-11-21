@@ -87,7 +87,7 @@ ScopedJavaLocalRef<jobject> ToJniType<critical_actions::CriticalActionEntry>(
 }  // namespace jni_zero
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/BrowsingHistoryBridge_jni.h"
+#include "chrome/browser/history/jni_headers/BrowsingHistoryBridge_jni.h"
 
 namespace jni_zero {
 template <>
