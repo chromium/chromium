@@ -34,9 +34,6 @@ BASE_FEATURE(kLensOverlayTranslateButton, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayTranslateLanguages, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensOverlayImageContextMenuActions,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensOverlayContextualSearchbox, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlaySuggestionsMigration,
@@ -315,18 +312,6 @@ const base::FeatureParam<bool> kLensOverlayEnableInFullscreen{
 
 constexpr base::FeatureParam<int> kLensOverlaySegmentationMaskCornerRadius{
     &kLensOverlay, "segmentation-mask-corner-radius", 12};
-
-constexpr base::FeatureParam<bool>
-    kLensOverlayImageContextMenuActionsEnableCopyAsImage{
-        &kLensOverlayImageContextMenuActions, "enable-copy-as-image", true};
-
-constexpr base::FeatureParam<bool>
-    kLensOverlayImageContextMenuActionsEnableSaveAsImage{
-        &kLensOverlayImageContextMenuActions, "enable-save-as-image", false};
-
-constexpr base::FeatureParam<int>
-    kLensOverlayImageContextMenuActionsTextReceivedTimeout{
-        &kLensOverlayImageContextMenuActions, "text-received-timeout", 2000};
 
 constexpr base::FeatureParam<bool> kEnableClusterInfoOptimization{
     &kLensOverlayLatencyOptimizations, "enable-cluster-info-optimization",
@@ -878,20 +863,6 @@ int GetLensOverlaySegmentationMaskCornerRadius() {
 
 bool IsLensOverlayTranslateButtonEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayTranslateButton);
-}
-
-bool IsLensOverlayCopyAsImageEnabled() {
-  return base::FeatureList::IsEnabled(kLensOverlayImageContextMenuActions) &&
-         kLensOverlayImageContextMenuActionsEnableCopyAsImage.Get();
-}
-
-bool IsLensOverlaySaveAsImageEnabled() {
-  return base::FeatureList::IsEnabled(kLensOverlayImageContextMenuActions) &&
-         kLensOverlayImageContextMenuActionsEnableSaveAsImage.Get();
-}
-
-int GetLensOverlayImageContextMenuActionsTextReceivedTimeout() {
-  return kLensOverlayImageContextMenuActionsTextReceivedTimeout.Get();
 }
 
 bool IsLensOverlaySidePanelOpenInNewTabEnabled() {

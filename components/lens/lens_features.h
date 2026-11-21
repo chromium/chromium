@@ -37,10 +37,6 @@ BASE_DECLARE_FEATURE(kLensOverlayTranslateButton);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayTranslateLanguages);
 
-// Enables the Lens overlay image context menu actions.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensOverlayImageContextMenuActions);
-
 // Enables the Lens overlay searchbox.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayContextualSearchbox);
@@ -627,19 +623,6 @@ extern int GetLensOverlaySegmentationMaskCornerRadius();
 // of the screenshot of the page.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayTranslateButtonEnabled();
-
-// Whether to show the copy as image context menu option.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsLensOverlayCopyAsImageEnabled();
-
-// Whether to show the save as image context menu option.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsLensOverlaySaveAsImageEnabled();
-
-// Time to wait for Lens text response before displaying the selected region
-// context menu, in milliseconds.
-COMPONENT_EXPORT(LENS_FEATURES)
-int GetLensOverlayImageContextMenuActionsTextReceivedTimeout();
 
 // Whether to enable the "open in new tab" option in the side panel.
 COMPONENT_EXPORT(LENS_FEATURES)

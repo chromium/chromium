@@ -3304,11 +3304,6 @@ inline constexpr char kLensOverlayForceEmptyCsbQueryName[] =
 inline constexpr char kLensOverlayForceEmptyCsbQueryDescription[] =
     "Forces Lens overlay to issue an empty CSB query on invocation.";
 
-inline constexpr char kLensOverlayImageContextMenuActionsName[] =
-    "Lens overlay image context menu actions";
-inline constexpr char kLensOverlayImageContextMenuActionsDescription[] =
-    "Enables image context menu actions in the Lens overlay.";
-
 inline constexpr char kLensOverlayNonBlockingPrivacyNoticeName[] =
     "Lens overlay non-blocking privacy notice";
 inline constexpr char kLensOverlayNonBlockingPrivacyNoticeDescription[] =

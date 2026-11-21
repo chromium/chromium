@@ -3051,30 +3051,6 @@ const FeatureEntry::FeatureVariation kLensOverlayAndroidVariations[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kLensOverlayImageContextMenuActionsCopy[] = {
-    {"enable-copy-as-image", "true"},
-    {"enable-save-as-image", "false"},
-};
-
-const FeatureEntry::FeatureParam kLensOverlayImageContextMenuActionsSave[] = {
-    {"enable-copy-as-image", "false"},
-    {"enable-save-as-image", "true"},
-};
-
-const FeatureEntry::FeatureParam
-    kLensOverlayImageContextMenuActionsCopyAndSave[] = {
-        {"enable-copy-as-image", "true"},
-        {"enable-save-as-image", "true"},
-};
-
-const FeatureEntry::FeatureVariation
-    kLensOverlayImageContextMenuActionsVariations[] = {
-        {"copy as image", kLensOverlayImageContextMenuActionsCopy, nullptr},
-        {"save as image", kLensOverlayImageContextMenuActionsSave, nullptr},
-        {"copy and save as image",
-         kLensOverlayImageContextMenuActionsCopyAndSave, nullptr},
-};
-
 const FeatureEntry::FeatureParam
     kLensOverlayTextSelectionContextMenuEntrypointContextualized[] = {
         {"contextualize", "true"}};
@@ -10531,17 +10507,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensOverlayLatencyOptimizationsName,
      flag_descriptions::kLensOverlayLatencyOptimizationsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kLensOverlayLatencyOptimizations)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID)
-    {"enable-lens-overlay-image-context-menu-actions",
-     flag_descriptions::kLensOverlayImageContextMenuActionsName,
-     flag_descriptions::kLensOverlayImageContextMenuActionsDescription,
-     kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         lens::features::kLensOverlayImageContextMenuActions,
-         kLensOverlayImageContextMenuActionsVariations,
-         "LensOverlayImageContextMenuActions")},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)

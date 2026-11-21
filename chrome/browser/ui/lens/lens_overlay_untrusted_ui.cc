@@ -180,10 +180,8 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "enableOverlayTranslateButton",
       lens::features::IsLensOverlayTranslateButtonEnabled());
-  html_source->AddBoolean("enableCopyAsImage",
-                          lens::features::IsLensOverlayCopyAsImageEnabled());
-  html_source->AddBoolean("enableSaveAsImage",
-                          lens::features::IsLensOverlaySaveAsImageEnabled());
+  html_source->AddBoolean("enableCopyAsImage", true);
+  html_source->AddBoolean("enableSaveAsImage", false);
   html_source->AddInteger("textReceivedTimeout", kTextReceivedTimeoutMs);
   html_source->AddInteger("copyTextTimeout", kCopyTextTimeoutMs);
   html_source->AddInteger("translateTextTimeout", kTranslateTextTimeoutMs);
