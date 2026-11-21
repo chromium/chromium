@@ -49,9 +49,6 @@ BASE_FEATURE(kLensOverlaySurvey, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kLensOverlaySidePanelOpenInNewTab,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensOverlayUpdatedClientContext,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensSearchSidePanelNewFeedback,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -958,10 +955,6 @@ bool UpdateViewportEachQueryEnabled() {
 
 bool ShowContextualSearchboxZeroPrefixSuggest() {
   return kShowContextualSearchboxZeroPrefixSuggest.Get();
-}
-
-bool IsUpdatedClientContextEnabled() {
-  return base::FeatureList::IsEnabled(kLensOverlayUpdatedClientContext);
 }
 
 bool ShouldShowAimInSidePanel() {

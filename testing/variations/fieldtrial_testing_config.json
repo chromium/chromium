@@ -5362,24 +5362,6 @@
             ]
         }
     ],
-    "ChromnientUpdatedClientContext": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20250826",
-                    "enable_features": [
-                        "LensOverlayUpdatedClientContext"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClampAutoScaling": [
         {
             "platforms": [

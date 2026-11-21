@@ -65,8 +65,7 @@ class LensOverlayUrlBuilderTest : public testing::Test {
               {"use-video-context-for-text-only-requests", "true"},
               {"use-video-context-for-multimodal-requests", "true"},
           }},
-         {lens::features::kLensOverlayTranslateLanguages, {}},
-         {lens::features::kLensOverlayUpdatedClientContext, {}}},
+         {lens::features::kLensOverlayTranslateLanguages, {}}},
         /*disabled_features=*/{});
   }
 
@@ -590,8 +589,7 @@ TEST_F(LensOverlayUrlBuilderTest,
        {lens::features::kLensOverlayContextualSearchbox,
         {
             {"use-video-context-for-multimodal-requests", "false"},
-        }},
-       {lens::features::kLensOverlayUpdatedClientContext, {}}},
+        }}},
       /*disabled_features=*/{});
 
   std::string text_query = "Green Apples";

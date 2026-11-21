@@ -62,10 +62,6 @@ BASE_DECLARE_FEATURE(kLensOverlaySurvey);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlaySidePanelOpenInNewTab);
 
-// Enables the Lens overlay updated client context.
-COMPONENT_EXPORT(LENS_FEATURES)
-BASE_DECLARE_FEATURE(kLensOverlayUpdatedClientContext);
-
 // Enables the Lens Overlay omnibox entry point.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayOmniboxEntryPoint);
@@ -745,10 +741,6 @@ extern bool UpdateViewportEachQueryEnabled();
 // Whether to show zero prefix suggestions in the contextual searchbox.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool ShowContextualSearchboxZeroPrefixSuggest();
-
-// Whether to use the updated client context.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsUpdatedClientContextEnabled();
 
 // Whether to show open AIM search pages in the side panel.
 COMPONENT_EXPORT(LENS_FEATURES)

@@ -387,15 +387,6 @@ class LensOverlayQueryControllerTest : public testing::Test {
               lens::RENDERING_ENV_LENS_OVERLAY);
   }
 
-  void CheckClusterInfoRequestMatchesUpdatedClientContextRequest(
-      const lens::LensOverlayServerClusterInfoRequest& cluster_info_request) {
-    ASSERT_TRUE(cluster_info_request.enable_search_session_id());
-    ASSERT_EQ(cluster_info_request.surface(), lens::SURFACE_LENS_OVERLAY);
-    ASSERT_EQ(cluster_info_request.platform(), lens::PLATFORM_LENS_OVERLAY);
-    ASSERT_EQ(cluster_info_request.rendering_context().rendering_environment(),
-              lens::RENDERING_ENV_UNSPECIFIED);
-  }
-
   std::string GetEncodedRequestId(lens::LensOverlayRequestId request_id) {
     std::string serialized_proto;
     EXPECT_TRUE(request_id.SerializeToString(&serialized_proto));
@@ -409,15 +400,6 @@ class LensOverlayQueryControllerTest : public testing::Test {
         {{lens::features::kLensOverlayLatencyOptimizations,
           {{"enable-cluster-info-optimization", "true"}}},
          kDefaultLensOverlayContextualSearchboxParams},
-        {});
-  }
-
-  void InitFeaturesWithClusterInfoOptimizationAndUpdatedClientContext() {
-    feature_list_.Reset();
-    feature_list_.InitWithFeaturesAndParameters(
-        {{lens::features::kLensOverlayLatencyOptimizations,
-          {{"enable-cluster-info-optimization", "true"}}},
-         {lens::features::kLensOverlayUpdatedClientContext, {}}},
         {});
   }
 
@@ -544,76 +526,6 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
       sent_object_request.request_context().request_id().has_chrome_tab_data());
   ASSERT_TRUE(
       sent_object_request.request_context().request_id().is_implicit_upload());
-  ASSERT_EQ(sent_object_request.image_data().image_metadata().width(), 100);
-  ASSERT_EQ(sent_object_request.image_data().image_metadata().height(), 100);
-  ASSERT_EQ(sent_object_request.request_context()
-                .client_context()
-                .locale_context()
-                .language(),
-            kLocale);
-  ASSERT_EQ(sent_object_request.request_context()
-                .client_context()
-                .locale_context()
-                .region(),
-            kRegion);
-  ASSERT_EQ(sent_object_request.request_context()
-                .client_context()
-                .locale_context()
-                .time_zone(),
-            kTimeZone);
-  ASSERT_EQ(query_controller.latency_gen_204_counter(
-                LatencyType::kFullPageObjectsRequestFetchLatency),
-            1);
-  ASSERT_EQ(query_controller.latency_gen_204_counter(
-                LatencyType::kInvocationToInitialFullPageObjectsRequestSent),
-            1);
-  ASSERT_EQ(
-      query_controller.latency_gen_204_counter(
-          LatencyType::kInvocationToInitialFullPageObjectsResponseReceived),
-      1);
-  ASSERT_EQ(query_controller.sent_client_logs().lens_overlay_entry_point(),
-            lens::LensOverlayClientLogs::APP_MENU);
-  ASSERT_NE(query_controller.sent_client_logs().paella_id(), 0u);
-}
-
-TEST_F(LensOverlayQueryControllerTest,
-       FetchInitialQuery_UpdatedClientContext_ReturnsResponse) {
-  InitFeaturesWithClusterInfoOptimizationAndUpdatedClientContext();
-  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
-                         lens::mojom::TextPtr, bool>
-      full_image_response_future;
-  TestLensOverlayQueryController query_controller(
-      full_image_response_future.GetRepeatingCallback(), base::NullCallback(),
-      base::NullCallback(), base::NullCallback(), base::NullCallback(),
-      fake_variations_client_.get(),
-      IdentityManagerFactory::GetForProfile(profile()), profile(),
-      lens::LensOverlayInvocationSource::kAppMenu,
-      /*use_dark_mode=*/false, GetGen204Controller());
-
-  // Set up the query controller responses.
-  lens::LensOverlayObjectsResponse fake_objects_response;
-  fake_objects_response.mutable_cluster_info()->set_server_session_id(
-      kTestServerSessionId);
-  query_controller.set_fake_objects_response(fake_objects_response);
-
-  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
-  query_controller.StartQueryFlow(
-      bitmap, bitmap, GURL(kTestPageUrl),
-      std::make_optional<std::string>(kTestPageTitle),
-      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_page_contents=*/{},
-      /*primary_content_type=*/lens::MimeType::kUnknown,
-      /*pdf_current_page=*/std::nullopt, 0, base::TimeTicks::Now());
-
-  ASSERT_TRUE(full_image_response_future.Wait());
-  CheckClusterInfoRequestMatchesUpdatedClientContextRequest(
-      *query_controller.last_cluster_info_request());
-  query_controller.EndQuery();
-
-  // Check initial fetch objects request is correct.
-  auto sent_object_request = query_controller.sent_full_image_objects_request();
-  ASSERT_EQ(sent_object_request.request_context().request_id().sequence_id(),
-            1);
   ASSERT_EQ(sent_object_request.image_data().image_metadata().width(), 100);
   ASSERT_EQ(sent_object_request.image_data().image_metadata().height(), 100);
   ASSERT_EQ(sent_object_request.request_context()
