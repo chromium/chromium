@@ -2,30 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use icu_experimental::transliterate::Transliterator;
+#[path = "translit/custom_transliterator.rs"]
+mod custom_transliterator;
 
-#[path = "translit/mod.rs"]
-mod translit;
+use custom_transliterator::TransliteratorChain;
 
-#[cxx::bridge(namespace = "transliterator")]
-pub mod ffi {
+#[cxx::bridge(namespace = "base::i18n::translit_ffi")]
+mod ffi {
     extern "Rust" {
         type TransliteratorWrapper;
-        fn create_from_locale(locale: &str) -> Box<TransliteratorWrapper>;
-        fn create_from_rules(rules: &str) -> Box<TransliteratorWrapper>;
+        fn create_from_id(id: &[u8]) -> Box<TransliteratorWrapper>;
+        fn is_valid(t: &TransliteratorWrapper) -> bool;
         fn transliterate(t: &TransliteratorWrapper, text: &str) -> String;
     }
 }
 
-struct TransliteratorWrapper(Transliterator);
+struct TransliteratorWrapper(Option<TransliteratorChain>);
 
-fn create_from_rules(rules: &str) -> Box<TransliteratorWrapper> {
-    return Box::new(TransliteratorWrapper(translit::make_transliterator_from_rules(rules)));
+fn create_from_id(id: &[u8]) -> Box<TransliteratorWrapper> {
+    let inner = std::str::from_utf8(id).ok().and_then(TransliteratorChain::try_from_id);
+    Box::new(TransliteratorWrapper(inner))
 }
-fn create_from_locale(locale: &str) -> Box<TransliteratorWrapper> {
-    return Box::new(TransliteratorWrapper(translit::make_transliterator_from_locale(locale)));
+
+fn is_valid(t: &TransliteratorWrapper) -> bool {
+    t.0.is_some()
 }
 
 fn transliterate(t: &TransliteratorWrapper, text: &str) -> String {
-    return t.0.transliterate(text.to_string());
+    match &t.0 {
+        Some(chain) => chain.transliterate(text.to_string()),
+        None => text.to_string(),
+    }
 }

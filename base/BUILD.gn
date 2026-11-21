@@ -84,9 +84,12 @@ declare_args() {
   # for 32-bit architecture.
   ios_stack_profiler_enabled = true
 
-  # Set to true to enable icu4x transliterator
+  # Set to true to enable icu4x transliterator (not built in Cronet).
   enable_rust_translit = false
 }
+
+assert(!enable_rust_translit || !is_cronet_build,
+       "enable_rust_translit is not supported in Cronet builds")
 
 # Mutex priority inheritance is disabled by default due to security
 # vulnerabilities in older versions of Linux kernel and glibc. However,
@@ -3293,7 +3296,6 @@ if (enable_rust_translit) {
     crate_root = "i18n/transliterator.rs"
     sources = [
       "i18n/translit/custom_transliterator.rs",
-      "i18n/translit/mod.rs",
       "i18n/transliterator.rs",
     ]
     cxx_bindings = [ "i18n/transliterator.rs" ]
@@ -3303,8 +3305,6 @@ if (enable_rust_translit) {
       "//third_party/rust/icu_experimental/v0_7:lib",
       "//third_party/rust/icu_locale_core/v2:lib",
       "//third_party/rust/icu_normalizer/v2:lib",
-      "//third_party/rust/icu_properties/v2:lib",
-      "//third_party/rust/icu_provider/v2:lib",
     ]
   }
 }
@@ -3348,8 +3348,6 @@ component("i18n") {
     "i18n/string_search.h",
     "i18n/time_formatting.cc",
     "i18n/time_formatting.h",
-    "i18n/transliterator.cc",
-    "i18n/transliterator.h",
     "i18n/unicodestring.h",
     "i18n/utf8_validator_tables.cc",
     "i18n/utf8_validator_tables.h",
@@ -3366,13 +3364,19 @@ component("i18n") {
     "//third_party/icu",
   ]
   deps = [
-    ":i18n_transliterator",
     "//base/i18n/internal:canonical_language_tags",
     "//build:chromecast_buildflags",
   ]
 
-  if (enable_rust_translit) {
-    deps += [ ":i18n_transliterator_ffi" ]
+  if (!is_cronet_build) {
+    sources += [
+      "i18n/transliterator.cc",
+      "i18n/transliterator.h",
+    ]
+    deps += [ ":i18n_transliterator" ]
+    if (enable_rust_translit) {
+      deps += [ ":i18n_transliterator_ffi" ]
+    }
   }
   if (!is_debug) {
     configs -= [ "//build/config/compiler:default_optimization" ]
@@ -3963,7 +3967,6 @@ test("base_unittests") {
     "i18n/string_search_unittest.cc",
     "i18n/time_formatting_unittest.cc",
     "i18n/timezone_unittest.cc",
-    "i18n/transliterator_unittest.cc",
     "json/json_reader_unittest.cc",
     "json/json_value_converter_unittest.cc",
     "json/json_value_serializer_unittest.cc",
@@ -4268,7 +4271,10 @@ test("base_unittests") {
     # location_unittest.cc fails gn check for tracing-shimmed Cronet builds.
     # Cronet buildbot do not run base_unittests, so exclusing this test
     # instead of adding a nogncheck is preferred (crbug.com/1400235).
-    sources += [ "location_unittest.cc" ]
+    sources += [
+      "i18n/transliterator_unittest.cc",
+      "location_unittest.cc",
+    ]
   }
 
   if (!(current_cpu == "riscv64" || current_cpu == "loong64" ||
@@ -4336,6 +4342,10 @@ test("base_unittests") {
     # TODO(crbug.com/40158212): Move partition_alloc tests into its repository.
     "allocator/partition_allocator/src/partition_alloc:test_support",
   ]
+
+  if (!is_cronet_build) {
+    deps += [ ":i18n_transliterator" ]
+  }
 
   # TODO(https://crbug.com/532647976): Add test coverage to ChromeOS and Fuchsia
   # after fixing linking errors found by
