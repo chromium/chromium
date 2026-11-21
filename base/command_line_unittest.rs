@@ -36,7 +36,7 @@ fn test_subprocess_command_line_mutations() {
 
     cl.append_arg("test-rust-positional-arg");
     let args = cl.get_args();
-    expect_true!(args.contains(&"test-rust-positional-arg".to_string()));
+    expect_true!(args.iter().any(|i| i == "test-rust-positional-arg"));
 }
 
 // Can't launch subprocesses on mobile.

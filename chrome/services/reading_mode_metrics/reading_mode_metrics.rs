@@ -384,7 +384,7 @@ fn calculate_struct_score(
     let mut in_list = false;
 
     for node in tagged_nodes {
-        let is_li = node.tag_path.contains(&"LI".to_string());
+        let is_li = node.tag_path.iter().any(|i| i == "LI");
         if is_li {
             in_list = true;
             current_list.push(node.text.trim().to_string());
@@ -450,24 +450,23 @@ fn calculate_format_score(
     let dist_bold: Vec<&TaggedText> = tagged_nodes
         .iter()
         .filter(|node| {
-            node.tag_path.contains(&"B".to_string())
-                || node.tag_path.contains(&"STRONG".to_string())
+            node.tag_path.iter().any(|i| i == "B") || node.tag_path.iter().any(|i| i == "STRONG")
         })
         .collect();
 
     let dist_italic: Vec<&TaggedText> = tagged_nodes
         .iter()
         .filter(|node| {
-            node.tag_path.contains(&"I".to_string()) || node.tag_path.contains(&"EM".to_string())
+            node.tag_path.iter().any(|i| i == "I") || node.tag_path.iter().any(|i| i == "EM")
         })
         .collect();
 
     let dist_code: Vec<&TaggedText> =
-        tagged_nodes.iter().filter(|node| node.tag_path.contains(&"CODE".to_string())).collect();
+        tagged_nodes.iter().filter(|node| node.tag_path.iter().any(|i| i == "CODE")).collect();
 
     let dist_blockquotes: Vec<&TaggedText> = tagged_nodes
         .iter()
-        .filter(|node| node.tag_path.contains(&"BLOCKQUOTE".to_string()))
+        .filter(|node| node.tag_path.iter().any(|i| i == "BLOCKQUOTE"))
         .collect();
 
     let calculate_format_preservation =
