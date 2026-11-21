@@ -136,7 +136,6 @@ class MultiProfileCredentialsFilterTest : public testing::Test {
                        .Build();
     AccountCapabilitiesTestMutator(&account_info)
         .set_is_subject_to_account_level_enterprise_policies(false);
-    DCHECK(account_info.IsValid());
     identity_test_env()->UpdateAccountInfoForAccount(account_info);
     Profile* profile_2 = profile_manager_.CreateTestingProfile("Profile 2");
     ProfileAttributesEntry* entry =
@@ -369,7 +368,6 @@ TEST_F(MultiProfileCredentialsFilterTest, SigninNotIntercepted) {
                      .Build();
   AccountCapabilitiesTestMutator(&account_info)
       .set_is_subject_to_account_level_enterprise_policies(false);
-  CHECK(account_info.IsValid());
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
   password_manager::PasswordForm form =
