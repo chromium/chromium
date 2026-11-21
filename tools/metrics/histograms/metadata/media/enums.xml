@@ -1680,6 +1680,27 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//media/gpu/android/output_frame_metrics.h:OutputFrameEligibility) -->
 
+<!-- LINT.IfChange(MediaCodecOutputFrameStatus) -->
+
+<enum name="MediaCodecOutputFrameStatus">
+  <summary>
+    Result of MediaCodecBridge::GetOutputFrame() for one decoded video buffer of
+    a block model MediaCodec. See media::OutputFrameStatus.
+  </summary>
+  <int value="0" label="OK"/>
+  <int value="1" label="Not supported (IllegalStateException or other error)"/>
+  <int value="2" label="Invalid index"/>
+  <int value="3" label="No HardwareBuffer"/>
+  <int value="4" label="Stale frame (HardwareBuffer already closed)"/>
+  <int value="5" label="JNI failure"/>
+  <int value="6" label="Invalid size"/>
+  <int value="7" label="Protected buffer"/>
+  <int value="8" label="Not GPU sampleable"/>
+  <int value="9" label="Unsupported format"/>
+</enum>
+
+<!-- LINT.ThenChange(//media/base/android/media_codec_bridge.h:OutputFrameStatus) -->
+
 <!-- LINT.IfChange(MediaContainers) -->
 
 <enum name="MediaContainers">

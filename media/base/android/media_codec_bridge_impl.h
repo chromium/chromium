@@ -151,6 +151,8 @@ class MEDIA_EXPORT MediaCodecBridgeImpl : public MediaCodecBridge {
   bool SetSurface(const base::android::JavaRef<jobject>& surface) override;
   CodecType GetCodecType() const override;
   size_t GetMaxInputSize() override;
+  base::expected<base::android::ScopedHardwareBufferHandle, OutputFrameStatus>
+  GetOutputFrame(int index) override;
 
   // When the MediaCodec has been configured in async mode, this is called when
   // input or output buffers are available.

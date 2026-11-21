@@ -19,6 +19,13 @@ MockMediaCodecBridge::MockMediaCodecBridge() {
       .WillByDefault(Return(MediaCodecResult::Codes::kTryAgainLater));
   ON_CALL(*this, DequeueOutputBuffer(_, _, _, _, _, _, _))
       .WillByDefault(Return(MediaCodecResult::Codes::kTryAgainLater));
+  // Tests that don't set up OutputFrames never see an OK result.
+  ON_CALL(*this, GetOutputFrame(_))
+      .WillByDefault(
+          [](int) -> base::expected<base::android::ScopedHardwareBufferHandle,
+                                    OutputFrameStatus> {
+            return base::unexpected(OutputFrameStatus::kNotSupported);
+          });
 }
 
 MockMediaCodecBridge::~MockMediaCodecBridge() = default;

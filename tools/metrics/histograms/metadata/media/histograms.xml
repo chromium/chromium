@@ -927,6 +927,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Android.MediaCodec.OutputFrame.Status.{VideoCodec}"
+    enum="MediaCodecOutputFrameStatus" expires_after="2027-09-01">
+  <owner>philyan@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Android: result of each MediaCodec.getOutputFrame() probe call made in the
+    GPU process for a decoded video buffer of a {VideoCodec} block model
+    decoder. Recorded on probed output buffers only when
+    Media.Android.MediaCodec.OutputFrame.Eligibility is Eligible (see
+    MediaCodecVideoDecoder::GetOutputFrameEligibility()). Covers both
+    getOutputFrame() failures and post-call AHardwareBuffer validation
+    rejections (recording the first failing check).
+  </summary>
+  <token key="VideoCodec" variants="VideoCodec"/>
+</histogram>
+
 <histogram name="Media.Android.MediaCodec.VideoInputExceedsMaxCapacity"
     enum="Boolean" expires_after="2027-03-24">
   <owner>sobek@google.com</owner>

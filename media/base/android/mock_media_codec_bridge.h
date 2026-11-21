@@ -5,7 +5,9 @@
 #ifndef MEDIA_BASE_ANDROID_MOCK_MEDIA_CODEC_BRIDGE_H_
 #define MEDIA_BASE_ANDROID_MOCK_MEDIA_CODEC_BRIDGE_H_
 
+#include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/types/expected.h"
 #include "media/base/android/media_codec_bridge.h"
 #include "media/base/android/media_codec_bridge_impl.h"
 #include "media/base/android/test_destruction_observable.h"
@@ -79,6 +81,11 @@ class MockMediaCodecBridge : public MediaCodecBridge,
   MOCK_METHOD0(RequestKeyFrameSoon, void());
   MOCK_METHOD0(IsAdaptivePlaybackSupported, bool());
   MOCK_METHOD0(GetMaxInputSize, size_t());
+  MOCK_METHOD((base::expected<base::android::ScopedHardwareBufferHandle,
+                              OutputFrameStatus>),
+              GetOutputFrame,
+              (int index),
+              (override));
   CodecType GetCodecType() const override;
 
   // Return true if the codec is already drained.

@@ -13,9 +13,11 @@
 #include <vector>
 
 #include "base/android/jni_android.h"
+#include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/encryption_pattern.h"
 #include "media/base/encryption_scheme.h"
@@ -93,6 +95,41 @@ enum MediaCodecStatus {
   MEDIA_CODEC_MAX = MEDIA_CODEC_STORAGE_WRITE,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:MediaCodecError)
+
+// Result of MediaCodecBridge::GetOutputFrame().
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(OutputFrameStatus)
+enum class OutputFrameStatus {
+  kOk = 0,
+  // IllegalStateException: not block model, codec released or not
+  // executing, or a chunked or invalid C2Buffer. Includes
+  // MediaCodec.CodecException. Also returned below API 30 and for
+  // unexpected exceptions.
+  kNotSupported = 1,
+  // IndexOutOfBoundsException or IllegalArgumentException: invalid index, or
+  // the output buffer was already released.
+  kInvalidIndex = 2,
+  // No HardwareBuffer: linear block, empty, or non-Codec2 output.
+  kNoHardwareBuffer = 3,
+  // The cached HardwareBuffer was already closed: a second call for the same
+  // output buffer.
+  kStaleFrame = 4,
+  // No native AHardwareBuffer for an OK result.
+  kJniFailure = 5,
+  // Values 6 to 9 are set by CodecWrapper validation, never by Java.
+  // Zero size, or smaller than the visible rect.
+  kInvalidSize = 6,
+  // Usage has AHARDWAREBUFFER_USAGE_PROTECTED_CONTENT.
+  kProtectedBuffer = 7,
+  // Usage lacks AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE.
+  kNotGpuSampleable = 8,
+  // Format is AHARDWAREBUFFER_FORMAT_BLOB.
+  kUnsupportedFormat = 9,
+  kMaxValue = kUnsupportedFormat,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:MediaCodecOutputFrameStatus)
 
 struct MediaCodecResultTraits {
   enum class Codes : StatusCodeType {
@@ -228,6 +265,17 @@ class MEDIA_EXPORT MediaCodecBridge {
 
   // Returns the max input size we configured the codec with.
   virtual size_t GetMaxInputSize() = 0;
+
+  // Returns the AHardwareBuffer for dequeued output buffer `index` (block model
+  // only). Call at most once per dequeued buffer; a repeat call after success
+  // returns kStaleFrame.
+  //
+  // The returned handle keeps the buffer alive, but the codec may overwrite its
+  // contents after ReleaseOutputBuffer(index, ...) or Flush(). Errors are not
+  // reported to Media.MediaCodecError.*.
+  virtual base::expected<base::android::ScopedHardwareBufferHandle,
+                         OutputFrameStatus>
+  GetOutputFrame(int index) = 0;
 };
 
 }  // namespace media

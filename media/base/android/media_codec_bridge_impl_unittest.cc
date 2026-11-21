@@ -5,23 +5,33 @@
 
 #include "media/base/android/media_codec_bridge_impl.h"
 
+#include <android/hardware_buffer.h>
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
 
+#include "base/android/android_info.h"
 #include "base/containers/extend.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/to_vector.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_util.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_util.h"
 #include "media/base/test_data_util.h"
+#include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/libyuv/include/libyuv/convert_from.h"
@@ -392,6 +402,193 @@ TEST_F(MediaCodecBridgeTest, CreateUnsupportedCodec) {
   config.codec_type = CodecType::kAny;
   config.initial_expected_coded_size = gfx::Size(320, 240);
   EXPECT_THAT(MediaCodecBridgeImpl::CreateVideoDecoder(config), IsNull());
+}
+
+TEST_F(MediaCodecBridgeTest,
+       GetOutputFrameWithoutBlockModelReturnsNotSupported) {
+  if (!MediaCodecUtil::IsVp8DecoderAvailable()) {
+    GTEST_SKIP() << "VP8 decoder not available on this device.";
+  }
+
+  VideoCodecConfig config;
+  config.codec = VideoCodec::kVP8;
+  config.codec_type = CodecType::kAny;
+  config.profile = VP8PROFILE_ANY;
+  config.initial_expected_coded_size = gfx::Size(320, 240);
+
+  auto media_codec = MediaCodecBridgeImpl::CreateVideoDecoder(config);
+  ASSERT_THAT(media_codec, NotNull());
+
+  // Below API 30, Java returns NOT_SUPPORTED before it calls MediaCodec. From
+  // API 30, MediaCodec.getOutputFrame() throws IllegalStateException because
+  // the codec isn't in block model mode.
+  base::HistogramTester histogram_tester;
+  auto result = media_codec->GetOutputFrame(0);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), OutputFrameStatus::kNotSupported);
+  EXPECT_THAT(
+      histogram_tester.GetTotalCountsForPrefix("Media.MediaCodecError."),
+      testing::IsEmpty());
+}
+
+TEST_F(MediaCodecBridgeTest,
+       GetOutputFrameWithInvalidIndexReturnsInvalidIndex) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_R) {
+    GTEST_SKIP() << "MediaCodec.getOutputFrame() requires API 30+.";
+  }
+  if (!MediaCodecUtil::IsVp8DecoderAvailable()) {
+    GTEST_SKIP() << "VP8 decoder not available on this device.";
+  }
+
+  VideoCodecConfig config;
+  config.codec = VideoCodec::kVP8;
+  config.codec_type = CodecType::kAny;
+  config.profile = VP8PROFILE_ANY;
+  config.initial_expected_coded_size = gfx::Size(320, 240);
+  config.use_block_model = true;
+  // Chrome uses the block model only with the async API.
+  config.on_buffers_available_cb = base::DoNothing();
+
+  auto media_codec = MediaCodecBridgeImpl::CreateVideoDecoder(config);
+  ASSERT_THAT(media_codec, NotNull());
+
+  // No input was queued, so the codec has no output buffers and every index
+  // is invalid.
+  base::HistogramTester histogram_tester;
+  for (int index : {-1, 0}) {
+    auto result = media_codec->GetOutputFrame(index);
+    ASSERT_FALSE(result.has_value()) << "index " << index;
+    EXPECT_EQ(result.error(), OutputFrameStatus::kInvalidIndex)
+        << "index " << index;
+  }
+  EXPECT_THAT(
+      histogram_tester.GetTotalCountsForPrefix("Media.MediaCodecError."),
+      testing::IsEmpty());
+}
+
+TEST_F(MediaCodecBridgeTest, GetOutputFrameLifecycleInBlockModel) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_R) {
+    GTEST_SKIP() << "MediaCodec.getOutputFrame() requires API 30+.";
+  }
+  if (!MediaCodecUtil::IsVp8DecoderAvailable()) {
+    GTEST_SKIP() << "VP8 decoder not available on this device.";
+  }
+
+  // Declared before `media_codec` so async callbacks stay safe on early exit.
+  base::WaitableEvent buffers_available(
+      base::WaitableEvent::ResetPolicy::AUTOMATIC,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+
+  VideoCodecConfig config;
+  config.codec = VideoCodec::kVP8;
+  config.codec_type = CodecType::kAny;
+  config.profile = VP8PROFILE_ANY;
+  config.initial_expected_coded_size = gfx::Size(320, 240);
+  config.use_block_model = true;
+  config.on_buffers_available_cb = base::BindRepeating(
+      &base::WaitableEvent::Signal, base::Unretained(&buffers_available));
+
+  auto media_codec = MediaCodecBridgeImpl::CreateVideoDecoder(config);
+  ASSERT_THAT(media_codec, NotNull());
+  if (!base::StartsWith(media_codec->GetName(), "c2.",
+                        base::CompareCase::INSENSITIVE_ASCII)) {
+    GTEST_SKIP() << "Non-Codec2 decoder (" << media_codec->GetName()
+                 << ") does not expose OutputFrame HardwareBuffers.";
+  }
+
+  scoped_refptr<DecoderBuffer> buffer = ReadTestDataFile("vp8-I-frame-320x240");
+  constexpr int kMaxInputFrames = 8;
+  int queued_inputs = 0;
+  bool eos_queued = false;
+  int output_index = -1;
+  base::TimeDelta pts;
+  const base::TimeTicks deadline =
+      base::TimeTicks::Now() + TestTimeouts::action_timeout();
+  while (output_index < 0 && base::TimeTicks::Now() < deadline) {
+    bool made_progress = false;
+
+    if (!eos_queued) {
+      int input_index = -1;
+      MediaCodecResult in_res =
+          media_codec->DequeueInputBuffer(base::TimeDelta(), &input_index);
+      if (in_res.is_ok()) {
+        MediaCodecResult queue_res =
+            queued_inputs < kMaxInputFrames
+                ? media_codec->QueueInputBuffer(input_index, *buffer, pts)
+                : media_codec->QueueEOS(input_index);
+        ASSERT_TRUE(queue_res.is_ok()) << queue_res.message();
+        if (queued_inputs < kMaxInputFrames) {
+          ++queued_inputs;
+          pts += base::Microseconds(33000);
+        } else {
+          eos_queued = true;
+        }
+        made_progress = true;
+      } else {
+        ASSERT_EQ(in_res.code(), MediaCodecResult::Codes::kTryAgainLater)
+            << in_res.message();
+      }
+    }
+
+    size_t offset = 0;
+    size_t size = 0;
+    bool eos = false;
+    int candidate_index = -1;
+    MediaCodecResult out_res = media_codec->DequeueOutputBuffer(
+        base::TimeDelta(), &candidate_index, &offset, &size,
+        /*presentation_time=*/nullptr, &eos, /*key_frame=*/nullptr);
+    if (out_res.is_ok()) {
+      ASSERT_FALSE(eos) << "Reached EOS before receiving a decoded frame.";
+      ASSERT_GE(candidate_index, 0);
+      output_index = candidate_index;
+      break;
+    }
+    if (out_res.code() == MediaCodecResult::Codes::kOutputFormatChanged ||
+        out_res.code() == MediaCodecResult::Codes::kOutputBuffersChanged) {
+      made_progress = true;
+    } else {
+      ASSERT_EQ(out_res.code(), MediaCodecResult::Codes::kTryAgainLater)
+          << out_res.message();
+    }
+
+    if (!made_progress) {
+      ASSERT_TRUE(buffers_available.TimedWait(
+          std::max(base::TimeDelta(), deadline - base::TimeTicks::Now())));
+    }
+  }
+  ASSERT_GE(output_index, 0);
+
+  base::HistogramTester histogram_tester;
+
+  // First call acquires a native AHardwareBuffer and closes Java's reference.
+  auto first = media_codec->GetOutputFrame(output_index);
+  ASSERT_TRUE(first.has_value())
+      << "status=" << static_cast<int>(first.error());
+  ASSERT_TRUE(first->is_valid());
+  AHardwareBuffer_Desc desc = first->Describe();
+  EXPECT_GT(desc.width, 0u);
+  EXPECT_GT(desc.height, 0u);
+
+  // Second call for the same buffer sees the closed cached HardwareBuffer.
+  auto second = media_codec->GetOutputFrame(output_index);
+  ASSERT_FALSE(second.has_value());
+  EXPECT_EQ(second.error(), OutputFrameStatus::kStaleFrame);
+
+  // After release, MediaCodec rejects the index with IllegalArgumentException.
+  media_codec->ReleaseOutputBuffer(output_index, false);
+  auto after_release = media_codec->GetOutputFrame(output_index);
+  ASSERT_FALSE(after_release.has_value());
+  EXPECT_EQ(after_release.error(), OutputFrameStatus::kInvalidIndex);
+
+  EXPECT_THAT(
+      histogram_tester.GetTotalCountsForPrefix("Media.MediaCodecError."),
+      testing::IsEmpty());
+
+  // The acquired handle keeps the AHardwareBuffer alive after codec release.
+  media_codec.reset();
+  EXPECT_GT(first->Describe().width, 0u);
 }
 
 }  // namespace media

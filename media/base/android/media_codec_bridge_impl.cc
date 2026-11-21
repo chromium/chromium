@@ -5,6 +5,8 @@
 
 #include "media/base/android/media_codec_bridge_impl.h"
 
+#include <android/hardware_buffer_jni.h>
+
 #include <algorithm>
 #include <array>
 #include <limits>
@@ -15,6 +17,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_bytebuffer.h"
 #include "base/android/jni_string.h"
+#include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
@@ -25,6 +28,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/trace_event/trace_event.h"
 #include "media/base/android/jni_hdr_metadata.h"
 #include "media/base/android/media_codec_bridge.h"
 #include "media/base/android/media_codec_util.h"
@@ -825,6 +829,49 @@ void MediaCodecBridgeImpl::ReleaseOutputBuffer(int index, bool render) {
   DVLOG(3) << __func__ << ": " << index;
   JNIEnv* env = AttachCurrentThread();
   Java_MediaCodecBridge_releaseOutputBuffer(env, j_bridge_, index, render);
+}
+
+base::expected<base::android::ScopedHardwareBufferHandle, OutputFrameStatus>
+MediaCodecBridgeImpl::GetOutputFrame(int index) {
+  TRACE_EVENT("media", "MediaCodecBridge::GetOutputFrame");
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> j_result =
+      Java_MediaCodecBridge_getOutputFrame(env, j_bridge_, index);
+  ScopedJavaLocalRef<jobject> j_hardware_buffer =
+      Java_GetOutputFrameResult_hardwareBuffer(env, j_result);
+  // GetOutputFrameResult holds a HardwareBuffer iff status is kOk.
+  // OutputFrameStatus is tracked separately from Media.MediaCodecError.*, so
+  // don't call ReportAnyErrorToUMA() here.
+  if (j_hardware_buffer.is_null()) {
+    const OutputFrameStatus status =
+        Java_GetOutputFrameResult_status(env, j_result);
+    DCHECK_GE(static_cast<int>(status), 0);
+    DCHECK_LE(static_cast<int>(status),
+              static_cast<int>(OutputFrameStatus::kStaleFrame));
+    if (status == OutputFrameStatus::kOk) {
+      DVLOG(1) << __func__ << ": null HardwareBuffer for index " << index;
+      return base::unexpected(OutputFrameStatus::kJniFailure);
+    }
+    DVLOG(3) << __func__ << ": index: " << index
+             << ", status: " << static_cast<int>(status);
+    return base::unexpected(status);
+  }
+
+  AHardwareBuffer* buffer =
+      AHardwareBuffer_fromHardwareBuffer(env, j_hardware_buffer.obj());
+  base::android::ScopedHardwareBufferHandle handle;
+  if (buffer) {
+    // Take our own reference before Java closes its HardwareBuffer.
+    handle = base::android::ScopedHardwareBufferHandle::Create(buffer);
+  }
+  // Drop the Java reference now instead of at garbage collection.
+  Java_GetOutputFrameResult_close(env, j_result);
+
+  if (!handle.is_valid()) {
+    DVLOG(1) << __func__ << ": no AHardwareBuffer for index " << index;
+    return base::unexpected(OutputFrameStatus::kJniFailure);
+  }
+  return base::ok(std::move(handle));
 }
 
 base::span<uint8_t> MediaCodecBridgeImpl::GetInputBuffer(

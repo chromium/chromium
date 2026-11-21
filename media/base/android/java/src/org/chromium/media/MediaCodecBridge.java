@@ -6,16 +6,20 @@ package org.chromium.media;
 
 import android.annotation.SuppressLint;
 import android.graphics.Rect;
+import android.hardware.HardwareBuffer;
 import android.media.MediaCodec;
 import android.media.MediaCodec.CryptoInfo;
 import android.media.MediaCodec.LinearBlock;
 import android.media.MediaCrypto;
 import android.media.MediaDrm;
 import android.media.MediaFormat;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
 import android.view.Surface;
+
+import androidx.annotation.RequiresApi;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -235,6 +239,49 @@ class MediaCodecBridge {
                 }
                 mBlock = null;
                 mBuffer = null;
+            }
+        }
+    }
+
+    /**
+     * Result of getOutputFrame(). Holds a HardwareBuffer only for OK. Native takes its own
+     * AHardwareBuffer reference and then calls close().
+     */
+    private static class GetOutputFrameResult {
+        private final @OutputFrameStatus int mStatus;
+        private @Nullable HardwareBuffer mHardwareBuffer;
+
+        private GetOutputFrameResult(
+                @OutputFrameStatus int status, @Nullable HardwareBuffer hardwareBuffer) {
+            mStatus = status;
+            mHardwareBuffer = hardwareBuffer;
+            assert (status == OutputFrameStatus.OK) == (hardwareBuffer != null);
+        }
+
+        private static GetOutputFrameResult ok(HardwareBuffer hardwareBuffer) {
+            return new GetOutputFrameResult(OutputFrameStatus.OK, hardwareBuffer);
+        }
+
+        private static GetOutputFrameResult error(@OutputFrameStatus int status) {
+            return new GetOutputFrameResult(status, null);
+        }
+
+        @CalledByNative
+        private @JniType("media::OutputFrameStatus") @OutputFrameStatus int status() {
+            return mStatus;
+        }
+
+        @CalledByNative
+        private @Nullable HardwareBuffer hardwareBuffer() {
+            return mHardwareBuffer;
+        }
+
+        // Drops the Java reference now instead of at garbage collection.
+        @CalledByNative
+        private void close() {
+            if (mHardwareBuffer != null) {
+                mHardwareBuffer.close();
+                mHardwareBuffer = null;
             }
         }
     }
@@ -1006,6 +1053,89 @@ class MediaCodecBridge {
         } catch (IllegalStateException e) {
             // TODO(qinmin): May need to report the error to the caller. crbug.com/356498.
             Log.e(TAG, "Failed to release output buffer", e);
+        }
+    }
+
+    /**
+     * Returns the HardwareBuffer of an output buffer for a codec in block model mode. Call at most
+     * once per dequeued buffer: MediaCodec caches the frame, and native closes its HardwareBuffer
+     * after the first call.
+     *
+     * <p>Never throws RuntimeException across JNI; maps all outcomes to an {@link
+     * OutputFrameStatus}:
+     *
+     * <ul>
+     *   <li>{@code OK}: returns a non-null HardwareBuffer; native must acquire its own reference
+     *       and call {@link GetOutputFrameResult#close()}.
+     *   <li>{@code NOT_SUPPORTED}: pre-API 30, codec not in block model or not executing (including
+     *       CodecException), or any unexpected RuntimeException.
+     *   <li>{@code INVALID_INDEX}: invalid index or output buffer already released.
+     *   <li>{@code NO_HARDWARE_BUFFER}: linear, empty, or non-Codec2 output (any LinearBlock is
+     *       recycled immediately).
+     *   <li>{@code STALE_FRAME}: cached HardwareBuffer was already closed by an earlier call.
+     * </ul>
+     */
+    @CalledByNative
+    private GetOutputFrameResult getOutputFrame(int index) {
+        // MediaCodec.getOutputFrame() was added in API 30.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            return GetOutputFrameResult.error(OutputFrameStatus.NOT_SUPPORTED);
+        }
+        try {
+            return getOutputFrameInternal(index);
+        } catch (RuntimeException e) {
+            // An exception that reaches native code would crash the GPU process.
+            Log.e(TAG, "Unexpected getOutputFrame() failure", e);
+            return GetOutputFrameResult.error(OutputFrameStatus.NOT_SUPPORTED);
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    private GetOutputFrameResult getOutputFrameInternal(int index) {
+        MediaCodec.OutputFrame frame;
+        try {
+            frame = mMediaCodec.getOutputFrame(index);
+        } catch (IllegalStateException e) {
+            // Not block model, codec released or not executing, or a chunked or invalid C2Buffer.
+            // Includes MediaCodec.CodecException.
+            if (e instanceof MediaCodec.CodecException) {
+                Log.w(TAG, "getOutputFrame CodecException", e);
+            }
+            return GetOutputFrameResult.error(OutputFrameStatus.NOT_SUPPORTED);
+        } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
+            // Invalid index, or the output buffer was already released.
+            return GetOutputFrameResult.error(OutputFrameStatus.INVALID_INDEX);
+        }
+
+        HardwareBuffer hardwareBuffer;
+        try {
+            hardwareBuffer = frame.getHardwareBuffer();
+        } catch (IllegalStateException e) {
+            // Output frame holds a LinearBlock rather than a HardwareBuffer.
+            recycleLinearBlock(frame);
+            return GetOutputFrameResult.error(OutputFrameStatus.NO_HARDWARE_BUFFER);
+        }
+
+        if (hardwareBuffer == null) {
+            // Empty or non-Codec2 output.
+            return GetOutputFrameResult.error(OutputFrameStatus.NO_HARDWARE_BUFFER);
+        }
+        if (hardwareBuffer.isClosed()) {
+            return GetOutputFrameResult.error(OutputFrameStatus.STALE_FRAME);
+        }
+        return GetOutputFrameResult.ok(hardwareBuffer);
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    private static void recycleLinearBlock(MediaCodec.OutputFrame frame) {
+        // Recycle the LinearBlock now instead of leaving it to garbage collection.
+        try {
+            LinearBlock linearBlock = frame.getLinearBlock();
+            if (linearBlock != null) {
+                linearBlock.recycle();
+            }
+        } catch (IllegalStateException e) {
+            // Already recycled on an earlier call for this cached frame, or not linear.
         }
     }
 
