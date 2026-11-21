@@ -38,6 +38,7 @@ class CONTENT_EXPORT DateTimeChooserAndroid : public DateTimeChooser {
   FRIEND_TEST_ALL_PREFIXES(DateTimeChooserBrowserTest,
                            ResetResponseCallbackViaDisconnectionHandler);
   FRIEND_TEST_ALL_PREFIXES(DateTimeChooserBrowserTest, DisallowSystemUiPopups);
+  FRIEND_TEST_ALL_PREFIXES(DateTimeChooserBrowserTest, ReleaseDialogOnceDone);
 
   void DismissAndDestroyJavaObject();
 

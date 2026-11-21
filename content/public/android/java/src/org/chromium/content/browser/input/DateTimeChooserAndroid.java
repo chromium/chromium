@@ -17,22 +17,28 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content.browser.WindowEventObserver;
+import org.chromium.content.browser.WindowEventObserverManager;
 import org.chromium.content.browser.picker.DateTimeSuggestion;
 import org.chromium.content.browser.picker.InputDialogContainer;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Plumbing for the different date/time dialog adapters. */
 @JNINamespace("content")
 @NullMarked
-class DateTimeChooserAndroid {
+class DateTimeChooserAndroid implements WindowEventObserver {
     @JniType("::content::DateTimeChooserAndroid")
     interface NativeDateTimeChooserAndroid extends JniTypeToken {}
 
     private @Nullable JniRawPtr<NativeDateTimeChooserAndroid> mNativeDateTimeChooserAndroid;
     private final InputDialogContainer mInputDialogContainer;
+    private @Nullable WindowEventObserverManager mWindowEventObserverManager;
 
     private DateTimeChooserAndroid(
-            Context context, JniRawPtr<NativeDateTimeChooserAndroid> nativeDateTimeChooserAndroid) {
+            Context context,
+            WindowEventObserverManager windowEventObserverManager,
+            JniRawPtr<NativeDateTimeChooserAndroid> nativeDateTimeChooserAndroid) {
         mNativeDateTimeChooserAndroid = nativeDateTimeChooserAndroid;
         mInputDialogContainer =
                 new InputDialogContainer(
@@ -56,6 +62,21 @@ class DateTimeChooserAndroid {
                                         .cancelDialog(mNativeDateTimeChooserAndroid);
                             }
                         });
+        windowEventObserverManager.addObserver(this);
+        mWindowEventObserverManager = windowEventObserverManager;
+    }
+
+    // WindowEventObserver
+
+    @Override
+    public void onWindowAndroidChanged(@Nullable WindowAndroid newWindowAndroid) {
+        // The dialog belongs to the window it was shown in, so cancel the request once the
+        // WebContents leaves that window, e.g. for a new Activity. Native will call back into
+        // dismissAndDestroy() to dismiss the dialog and unregister this observer.
+        if (mNativeDateTimeChooserAndroid == null) {
+            return;
+        }
+        DateTimeChooserAndroidJni.get().cancelDialog(mNativeDateTimeChooserAndroid);
     }
 
     private void showDialog(
@@ -69,7 +90,11 @@ class DateTimeChooserAndroid {
     }
 
     @CalledByNative
-    private void dismissAndDestroy() {
+    void dismissAndDestroy() {
+        if (mWindowEventObserverManager != null) {
+            mWindowEventObserverManager.removeObserver(this);
+            mWindowEventObserverManager = null;
+        }
         if (mNativeDateTimeChooserAndroid != null) {
             mNativeDateTimeChooserAndroid.release();
             mNativeDateTimeChooserAndroid = null;
@@ -79,6 +104,7 @@ class DateTimeChooserAndroid {
 
     @CalledByNative
     static @Nullable DateTimeChooserAndroid createDateTimeChooser(
+            WebContents webContents,
             WindowAndroid windowAndroid,
             JniRawPtr<NativeDateTimeChooserAndroid> nativeDateTimeChooserAndroid,
             int dialogType,
@@ -94,7 +120,10 @@ class DateTimeChooserAndroid {
             return null;
         }
         DateTimeChooserAndroid chooser =
-                new DateTimeChooserAndroid(windowAndroidContext, nativeDateTimeChooserAndroid);
+                new DateTimeChooserAndroid(
+                        windowAndroidContext,
+                        WindowEventObserverManager.from(webContents),
+                        nativeDateTimeChooserAndroid);
         chooser.showDialog(dialogType, dialogValue, min, max, step, suggestions);
         return chooser;
     }

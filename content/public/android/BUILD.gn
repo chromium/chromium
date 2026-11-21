@@ -756,6 +756,7 @@ robolectric_binary("content_junit_tests") {
     "junit/src/org/chromium/content/browser/device_posture/DevicePosturePlatformProviderAndroidTest.java",
     "junit/src/org/chromium/content/browser/input/AutocorrectManagerTest.java",
     "junit/src/org/chromium/content/browser/input/CursorAnchorInfoControllerUnitTest.java",
+    "junit/src/org/chromium/content/browser/input/DateTimeChooserAndroidTest.java",
     "junit/src/org/chromium/content/browser/input/ImeAdapterImplTest.java",
     "junit/src/org/chromium/content/browser/input/ImeKeyEventReplayerTest.java",
     "junit/src/org/chromium/content/browser/input/ImeMetricsUtilsTest.java",

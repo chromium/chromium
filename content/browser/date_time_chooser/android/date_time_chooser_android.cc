@@ -96,7 +96,8 @@ void DateTimeChooserAndroid::OpenPlatformDialog(
   if (native_window && !(native_window->GetJavaObject()).is_null()) {
     j_date_time_chooser_.Reset(
         Java_DateTimeChooserAndroid_createDateTimeChooser(
-            env, native_window->GetJavaObject(), jni_zero::MakeRaw(this),
+            env, GetWebContents().GetJavaWebContents(),
+            native_window->GetJavaObject(), jni_zero::MakeRaw(this),
             value->dialog_type, value->dialog_value, value->minimum,
             value->maximum, value->step, suggestions_array));
   }
@@ -119,10 +120,13 @@ void DateTimeChooserAndroid::DismissAndDestroyJavaObject() {
 
 void DateTimeChooserAndroid::ReplaceDateTime(JNIEnv* env, double value) {
   std::move(open_date_time_response_callback_).Run(true, value);
+  // The dialog is done, so don't keep holding on to its Activity.
+  DismissAndDestroyJavaObject();
 }
 
 void DateTimeChooserAndroid::CancelDialog(JNIEnv* env) {
   std::move(open_date_time_response_callback_).Run(false, 0.0);
+  DismissAndDestroyJavaObject();
 }
 
 // static

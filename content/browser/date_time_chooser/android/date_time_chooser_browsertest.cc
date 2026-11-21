@@ -4,6 +4,7 @@
 
 #include "content/browser/date_time_chooser/date_time_chooser.h"
 
+#include "base/android/jni_android.h"
 #include "base/run_loop.h"
 #include "base/test/test_future.h"
 #include "content/browser/date_time_chooser/android/date_time_chooser_android.h"
@@ -84,6 +85,37 @@ IN_PROC_BROWSER_TEST_F(DateTimeChooserBrowserTest,
   date_time_chooser->OpenDateTimeDialog(CreateDummyDateTimeDialogValue(),
                                         std::move(response_callback));
   EXPECT_TRUE(date_time_chooser->j_date_time_chooser_);
+}
+
+IN_PROC_BROWSER_TEST_F(DateTimeChooserBrowserTest, ReleaseDialogOnceDone) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,<input type=date>")));
+
+  auto* date_time_chooser = static_cast<DateTimeChooserAndroid*>(
+      DateTimeChooser::GetDateTimeChooser(web_contents()));
+  ASSERT_TRUE(date_time_chooser);
+
+  mojo::Remote<blink::mojom::DateTimeChooser> date_time_chooser_remote;
+  date_time_chooser->OnDateTimeChooserReceiver(
+      date_time_chooser_remote.BindNewPipeAndPassReceiver());
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  // Choosing a value releases the dialog, which holds on to the Activity.
+  base::test::TestFuture<bool, double> replace_future;
+  date_time_chooser->OpenDateTimeDialog(CreateDummyDateTimeDialogValue(),
+                                        replace_future.GetCallback());
+  EXPECT_TRUE(date_time_chooser->j_date_time_chooser_);
+  date_time_chooser->ReplaceDateTime(env, 1.0);
+  EXPECT_TRUE(replace_future.Get<0>());
+  EXPECT_FALSE(date_time_chooser->j_date_time_chooser_);
+
+  // So does cancelling it, e.g. when the dialog is dismissed.
+  base::test::TestFuture<bool, double> cancel_future;
+  date_time_chooser->OpenDateTimeDialog(CreateDummyDateTimeDialogValue(),
+                                        cancel_future.GetCallback());
+  EXPECT_TRUE(date_time_chooser->j_date_time_chooser_);
+  date_time_chooser->CancelDialog(env);
+  EXPECT_FALSE(cancel_future.Get<0>());
+  EXPECT_FALSE(date_time_chooser->j_date_time_chooser_);
 }
 
 class DisallowSystemUiPopupsContentBrowserClient
