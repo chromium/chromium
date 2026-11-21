@@ -8,7 +8,6 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -37,8 +36,7 @@ enum class SlotAssignmentInvariant {
 // Held for the whole of a slot assignment recalc, including its side effects
 // (see SlotAssignment). The counter is global rather than per-document,
 // because recalc side effects can reach other documents (e.g. canvas subtree
-// propagation into a child frame). The scope also forbids script as a
-// backstop.
+// propagation into a child frame).
 //
 // SlotAssignmentInvariant checks at script, event, mutation, and focus entry
 // points call CheckNotActive().
@@ -77,11 +75,9 @@ class CORE_EXPORT [[nodiscard]] SlotAssignmentRecalcInProgressScope final {
 
   // Reports a violation of `invariant` if `violated` is true, and returns
   // `violated`, so that callers that need a fallback can branch on it. Callers
-  // that only report can ignore the result. If the
-  // EnforceSlotAssignmentInvariants feature is enabled, a violation is fatal in
-  // DCHECK builds, and dumps without crashing (with a crash key naming the
-  // rule) in release builds. Until release builds are switched to CHECK, every
+  // that only report can ignore the result. Until reporting is fatal, every
   // caller must stay safe after a violation.
+  // TODO(crbug.com/582346913): Reporting is not enabled yet.
   ALWAYS_INLINE static bool ReportViolationIf(
       bool violated,
       SlotAssignmentInvariant invariant) {
@@ -107,8 +103,6 @@ class CORE_EXPORT [[nodiscard]] SlotAssignmentRecalcInProgressScope final {
 
   static unsigned depth_;
   static unsigned flat_tree_traversal_forbidden_depth_;
-
-  ScriptForbiddenScope forbid_script_;
 };
 
 }  // namespace blink

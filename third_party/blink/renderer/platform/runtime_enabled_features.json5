@@ -3019,14 +3019,6 @@
       name: "EndpointInclusiveCommitStyles",
       status: "stable",
     },
-    {
-      // Reports violations of the slot assignment recalc rules (R1-R7 in the
-      // SlotAssignment class comment in slot_assignment.h). Violations are
-      // fatal in DCHECK builds and DumpWithoutCrashing in release builds.
-      // Kill switch.
-      name: "EnforceSlotAssignmentInvariants",
-      status: "stable",
-    },
     // When enabled, the LCP algorithm ignores image entropy for the first
     // video frame. See crbug.com/434659232.
     {

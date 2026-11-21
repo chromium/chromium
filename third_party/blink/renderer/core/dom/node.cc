@@ -2872,8 +2872,7 @@ String Node::ToString() const {
     DumpAttributeDesc(*this, html_names::kStyleAttr, builder);
   }
 #if DCHECK_IS_ON()
-  if (!GetDocument().IsSlotAssignmentRecalcForbidden() &&
-      !SlotAssignmentRecalcInProgressScope::IsActive() && IsEditable(*this)) {
+  if (!GetDocument().IsSlotAssignmentRecalcForbidden() && IsEditable(*this)) {
     builder.Append(" (editable)");
   }
 #else
