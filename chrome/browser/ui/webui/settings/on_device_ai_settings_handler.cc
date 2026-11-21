@@ -67,7 +67,7 @@ bool IsAllowedByEnterprisePolicy(const PrefService* local_state) {
 
 namespace features {
 // Feature flag for advanced On-device AI settings subpage.
-BASE_FEATURE(kOnDeviceModelAdvancedSettings, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOnDeviceModelAdvancedSettings, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 namespace settings {
