@@ -123,6 +123,10 @@ class GlicWebContentsManager {
   // If ShouldReloadOnShow() is already true when this method is called, the
   // callback is scheduled asynchronously via PostTask to avoid reentrancy.
   virtual void SetErrorCallback(base::RepeatingClosure callback) {}
+
+  // Called when the host's provider switch notice is cleared without the user
+  // continuing from it here, e.g. because they did in another instance.
+  virtual void OnProviderSwitchNoticeCleared();
 };
 
 }  // namespace glic

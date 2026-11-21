@@ -54,6 +54,10 @@ class GlicPageHandler : public glic::mojom::PageHandler, public Host::Observer {
 
   void Zoom(mojom::ZoomAction zoom_action, ZoomSource source);
 
+  // Tells the page to drop the provider switch notice, e.g. because the user
+  // continued from it in another instance.
+  void HideProviderSwitchNotice();
+
   Host& host();
 
   // glic::mojom::PageHandler implementation.

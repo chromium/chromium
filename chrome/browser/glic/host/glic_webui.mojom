@@ -146,6 +146,10 @@ interface Page {
   // of the client until the user continues.
   ShowProviderSwitchNotice();
 
+  // Called when the provider switch notice was acknowledged elsewhere, e.g. in
+  // another instance. The page loads the client if it's showing the notice.
+  HideProviderSwitchNotice();
+
   // Notifies the page to adjust the zoom level of its hosted webview.
   Zoom(ZoomAction action);
 };

@@ -25,6 +25,7 @@
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/public/glic_provider_change.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/visibility.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -265,7 +266,7 @@ class Host : public GlicSharingManagerProvider {
 
   // The provider switch to tell the user about in this host, or `kNone`. Set
   // when the host is created, unless a provider change is pending, and cleared
-  // once the user acknowledges it.
+  // once the user acknowledges it, in this or another instance.
   GlicProviderChange provider_switch_notice() const {
     return provider_switch_notice_;
   }
@@ -560,11 +561,17 @@ class Host : public GlicSharingManagerProvider {
 
   void OnActiveWebContentsChanged(content::WebContents* new_contents);
 
+  // Clears the provider switch notice once it's no longer due, e.g. because
+  // the user continued from it in another instance.
+  void OnKnownProviderChanged();
+
   raw_ptr<Profile> profile_;
 
   const GlicProviderChange pending_provider_change_;
 
   GlicProviderChange provider_switch_notice_;
+  // Watches the known provider while `provider_switch_notice_` is set.
+  PrefChangeRegistrar known_provider_registrar_;
 
   // The instance that owns this host.
   raw_ptr<InstanceDelegate> instance_delegate_;

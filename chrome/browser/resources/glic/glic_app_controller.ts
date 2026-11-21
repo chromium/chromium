@@ -1154,8 +1154,17 @@ export class GlicAppController implements WebviewDelegate {
     if (!this.hasProviderSwitchNotice) {
       return;
     }
-    this.hasProviderSwitchNotice = false;
     this.browserProxy.pageHandler.acknowledgeProviderSwitchNotice();
+    this.hideProviderSwitchNotice();
+  }
+
+  // Called when the provider switch notice is no longer due, e.g. because the
+  // user continued from it in another instance. Loads the client.
+  hideProviderSwitchNotice(): void {
+    if (!this.hasProviderSwitchNotice) {
+      return;
+    }
+    this.hasProviderSwitchNotice = false;
     this.reload();
   }
 

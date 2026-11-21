@@ -62,6 +62,9 @@ export class AppRouter {
     this.browserProxy.pageCallbackRouter.showProviderSwitchNotice.addListener(
         this.showProviderSwitchNotice_.bind(this),
     );
+    this.browserProxy.pageCallbackRouter.hideProviderSwitchNotice.addListener(
+        this.hideProviderSwitchNotice_.bind(this),
+    );
     this.switchToView(AppView.GLIC);
   }
 
@@ -71,6 +74,10 @@ export class AppRouter {
 
   private showProviderSwitchNotice_() {
     this.glicController?.showProviderSwitchNotice();
+  }
+
+  private hideProviderSwitchNotice_() {
+    this.glicController?.hideProviderSwitchNotice();
   }
 
   private clientReadyStateChanged_(ready: boolean) {

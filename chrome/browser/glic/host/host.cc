@@ -8,7 +8,9 @@
 #include <memory>
 #include <ranges>
 
+#include "base/check_op.h"
 #include "base/containers/to_vector.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
@@ -129,6 +131,14 @@ Host::Host(Profile* profile,
       glic_instance_(glic_instance),
       sharing_manager_provider_(sharing_manager_provider) {
   VLOG(1) << "Glic [Host] Constructor";
+  if (provider_switch_notice_ != GlicProviderChange::kNone) {
+    // Drops the notice if the user continues from it in another instance.
+    known_provider_registrar_.Init(profile_->GetPrefs());
+    known_provider_registrar_.Add(
+        prefs::kGlicProviderSwitchNoticeKnownProviderKey,
+        base::BindRepeating(&Host::OnKnownProviderChanged,
+                            base::Unretained(this)));
+  }
 }
 
 Host::~Host() {
@@ -235,7 +245,25 @@ void Host::AcknowledgeProviderSwitchNotice() {
     return;
   }
   provider_switch_notice_ = GlicProviderChange::kNone;
+  known_provider_registrar_.RemoveAll();
   glic::AcknowledgeProviderSwitchNotice(*profile_);
+}
+
+void Host::OnKnownProviderChanged() {
+  // The registrar only observes while this instance has a notice.
+  CHECK_NE(provider_switch_notice_, GlicProviderChange::kNone);
+  // Only ever clears the notice: one is never added to an existing instance.
+  if (GetProviderSwitchNotice(*profile_) != GlicProviderChange::kNone) {
+    return;
+  }
+  provider_switch_notice_ = GlicProviderChange::kNone;
+  known_provider_registrar_.RemoveAll();
+  if (contents_) {
+    contents_->OnProviderSwitchNoticeCleared();
+  }
+  if (page_handler_) {
+    page_handler_->HideProviderSwitchNotice();
+  }
 }
 
 void Host::Reload() {

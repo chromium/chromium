@@ -18,4 +18,6 @@ GlicWebContentsManager::RegisterNativeLoadingChangedCallback(
 
 void GlicWebContentsManager::OnHostNativeLoadingChanged(bool is_showing) {}
 
+void GlicWebContentsManager::OnProviderSwitchNoticeCleared() {}
+
 }  // namespace glic

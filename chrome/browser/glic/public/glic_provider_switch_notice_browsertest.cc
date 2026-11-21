@@ -12,6 +12,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
@@ -348,6 +350,35 @@ IN_PROC_BROWSER_TEST_F(GlicProviderSwitchNoticePanelBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicProviderSwitchNoticePanelBrowserTest,
+                       PRE_ContinueClearsNoticeInOtherInstance) {
+  OnboardToGeic();
+}
+
+// Continuing in one instance drops the notice in other open instances.
+IN_PROC_BROWSER_TEST_F(GlicProviderSwitchNoticePanelBrowserTest,
+                       ContinueClearsNoticeInOtherInstance) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * first, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForOverlayErrorPanel(
+      mojom::ErrorPanelType::kProviderSwitchNoticeGeicToGemini, first));
+  // A second window keeps `first` visible, so it can't hibernate.
+  BrowserWindowInterface* window = CreateAdditionalBrowserWindow();
+  ASSERT_OK_AND_ASSIGN(
+      GlicInstanceImpl * second,
+      OpenGlicForTab(TabListInterface::From(window)->GetActiveTab()));
+  ASSERT_NE(first, second);
+  ASSERT_OK(WaitForOverlayErrorPanel(
+      mojom::ErrorPanelType::kProviderSwitchNoticeGeicToGemini, second));
+
+  GetContentsManager(second)
+      ->GetOverlayPageHandlerForTesting()
+      ->OnProviderSwitchNoticeContinueClicked();
+
+  EXPECT_EQ(first->host().provider_switch_notice(), GlicProviderChange::kNone);
+  EXPECT_OK(WaitForErrorPanelType(std::nullopt, first));
+  EXPECT_OK(WaitForGlicClient(first));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicProviderSwitchNoticePanelBrowserTest,
                        PRE_ReopeningKeepsNotice) {
   OnboardToGeic();
 }
@@ -414,6 +445,36 @@ IN_PROC_BROWSER_TEST_F(GlicProviderSwitchNoticeWebviewBrowserTest,
 
   EXPECT_OK(WaitForWebUiState(mojom::WebUiState::kReady));
   EXPECT_EQ(KnownProviderKey(), GlicProviderKey::Gemini());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicProviderSwitchNoticeWebviewBrowserTest,
+                       PRE_ContinueClearsNoticeInOtherInstance) {
+  OnboardToGeic();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicProviderSwitchNoticeWebviewBrowserTest,
+                       ContinueClearsNoticeInOtherInstance) {
+  // `WaitForWebUiState()` needs a single instance, so poll each host.
+  auto shows_notice = [](GlicInstanceImpl* instance) {
+    return instance->host().GetPrimaryWebUiState() ==
+           mojom::WebUiState::kProviderSwitchNoticeGeicToGemini;
+  };
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * first, OpenGlicForActiveTab());
+  ASSERT_TRUE(base::test::RunUntil([&] { return shows_notice(first); }));
+  // A second window keeps `first` visible while it loads the client.
+  BrowserWindowInterface* window = CreateAdditionalBrowserWindow();
+  ASSERT_OK_AND_ASSIGN(
+      GlicInstanceImpl * second,
+      OpenGlicForTab(TabListInterface::From(window)->GetActiveTab()));
+  ASSERT_NE(first, second);
+  ASSERT_TRUE(base::test::RunUntil([&] { return shows_notice(second); }));
+
+  ASSERT_TRUE(content::ExecJs(
+      second->host().webui_contents(),
+      "document.getElementById('continueButton').click()"));
+
+  EXPECT_OK(WaitForGlicClient(first));
+  EXPECT_EQ(first->host().provider_switch_notice(), GlicProviderChange::kNone);
 }
 
 }  // namespace

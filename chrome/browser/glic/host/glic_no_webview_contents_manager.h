@@ -172,6 +172,7 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   void AttachModalDialogManagerDelegate(
       ScopedModalDialogManagerDelegate& delegate) override;
   void SetVisibility(content::Visibility visibility) override;
+  void OnProviderSwitchNoticeCleared() override;
   content::WebContents* active_web_contents() const override;
   bool IsShowingNativeLoading() const override;
   base::CallbackListSubscription RegisterNativeLoadingChangedCallback(

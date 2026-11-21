@@ -435,6 +435,10 @@ void GlicPageHandler::AcknowledgeProviderSwitchNotice() {
   host().AcknowledgeProviderSwitchNotice();
 }
 
+void GlicPageHandler::HideProviderSwitchNotice() {
+  page_->HideProviderSwitchNotice();
+}
+
 void GlicPageHandler::ResizeWidget(const gfx::Size& size,
                                    base::TimeDelta duration,
                                    ResizeWidgetCallback callback) {

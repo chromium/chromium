@@ -1373,6 +1373,12 @@ void GlicNoWebviewContentsManager::OnProfileReadyStateChanged() {
   UpdateForProfileReadyState(/*is_initial=*/false);
 }
 
+void GlicNoWebviewContentsManager::OnProviderSwitchNoticeCleared() {
+  if (error_reason_ == ClientLoadErrorReason::kProviderSwitchNotice) {
+    UpdateForProfileReadyState(/*is_initial=*/true);
+  }
+}
+
 void GlicNoWebviewContentsManager::SetVisibility(
     content::Visibility visibility) {
   is_visible_ = (visibility == content::Visibility::VISIBLE);
