@@ -33,6 +33,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/test/widget_test.h"
 
 namespace ash {
 
@@ -229,7 +230,6 @@ TEST_F(AutoclickTest, MouseMovement) {
 
 TEST_F(AutoclickTest, MovementThreshold) {
   UpdateDisplay("1280x1024,800x600");
-  base::RunLoop().RunUntilIdle();
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
   EXPECT_EQ(2u, root_windows.size());
 
@@ -574,6 +574,7 @@ TEST_F(AutoclickTest, AutoclickScrollEvents) {
   UpdateDisplay("800x600");
   GetAutoclickController()->SetEnabled(true, false /* do not show dialog */);
   GetAutoclickController()->SetAutoclickEventType(AutoclickEventType::kScroll);
+  int full_delay = UpdateAnimationDelayAndGetFullDelay(/*animation_delay=*/5);
   std::vector<ui::MouseEvent> events;
   std::vector<ui::MouseWheelEvent> wheel_events;
 
@@ -592,7 +593,7 @@ TEST_F(AutoclickTest, AutoclickScrollEvents) {
 
   // Expect that a dwell will set the scroll location.
   GetEventGenerator()->MoveMouseTo(90, 90);
-  base::RunLoop().RunUntilIdle();
+  FastForwardBy(full_delay);
   GetAutoclickController()->DoScrollAction(
       AutoclickController::ScrollPadAction::kScrollUp);
   events = GetMouseEvents();
@@ -617,7 +618,7 @@ TEST_F(AutoclickTest, AutoclickScrollEvents) {
 
   // Try another position, and the other two types of scroll action.
   GetEventGenerator()->MoveMouseTo(200, 200);
-  base::RunLoop().RunUntilIdle();
+  FastForwardBy(full_delay);
   GetAutoclickController()->DoScrollAction(
       AutoclickController::ScrollPadAction::kScrollDown);
   events = GetMouseEvents();
@@ -1036,8 +1037,9 @@ TEST_F(AutoclickTest, ConfirmationDialogShownWhenDisablingFeature) {
   ASSERT_TRUE(dialog);
 
   // Canceling the dialog will cause the feature to continue to be enabled.
+  views::test::WidgetDestroyedWaiter cancel_waiter(dialog->GetWidget());
   dialog->CancelDialog();
-  base::RunLoop().RunUntilIdle();
+  cancel_waiter.Wait();
   EXPECT_FALSE(GetAutoclickController()->GetDisableDialogForTesting());
   EXPECT_TRUE(Shell::Get()->accessibility_controller()->autoclick().enabled());
   EXPECT_TRUE(GetAutoclickController()->IsEnabled());
@@ -1047,8 +1049,9 @@ TEST_F(AutoclickTest, ConfirmationDialogShownWhenDisablingFeature) {
   Shell::Get()->accessibility_controller()->autoclick().SetEnabled(false);
   dialog = GetAutoclickController()->GetDisableDialogForTesting();
   ASSERT_TRUE(dialog);
+  views::test::WidgetDestroyedWaiter accept_waiter(dialog->GetWidget());
   dialog->AcceptDialog();
-  base::RunLoop().RunUntilIdle();
+  accept_waiter.Wait();
   EXPECT_FALSE(GetAutoclickController()->GetDisableDialogForTesting());
   EXPECT_FALSE(Shell::Get()->accessibility_controller()->autoclick().enabled());
   EXPECT_FALSE(GetAutoclickController()->IsEnabled());
@@ -1255,6 +1258,7 @@ TEST_F(AutoclickTest, ScrollMenuBubblePostioning) {
   Shell::Get()->accessibility_controller()->SetAutoclickMenuPosition(
       FloatingMenuPosition::kBottomRight);
   GetAutoclickController()->SetAutoclickEventType(AutoclickEventType::kScroll);
+  int full_delay = UpdateAnimationDelayAndGetFullDelay(/*animation_delay=*/5);
 
   ASSERT_TRUE(GetAutoclickScrollView());
 
@@ -1296,7 +1300,7 @@ TEST_F(AutoclickTest, ScrollMenuBubblePostioning) {
   // found.
   gfx::Point scroll_point = gfx::Point(0, 0);
   GetEventGenerator()->MoveMouseTo(scroll_point);
-  base::RunLoop().RunUntilIdle();
+  FastForwardBy(full_delay);
   GetAutoclickController()->HandleAutoclickScrollableBoundsFound(
       display_bounds);
   scroll_bounds = GetAutoclickScrollView()->GetBoundsInScreen();
