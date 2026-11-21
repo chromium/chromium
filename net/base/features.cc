@@ -224,6 +224,9 @@ BASE_FEATURE_PARAM(bool,
                    &kRendererAccessibleHttpCache,
                    true);
 
+BASE_FEATURE(kAllowUserAgentHeaderFromScript,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kEnableIPv6ReachabilityOverride,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

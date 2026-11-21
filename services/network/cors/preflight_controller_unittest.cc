@@ -5,6 +5,7 @@
 #include "services/network/cors/preflight_controller.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -15,6 +16,7 @@
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -57,6 +59,98 @@ namespace {
 
 using ::testing::Optional;
 using WithTrustedHeaderClient = PreflightController::WithTrustedHeaderClient;
+
+class PreflightControllerUserAgentTest : public testing::TestWithParam<bool> {
+ protected:
+  PreflightControllerUserAgentTest() {
+    feature_list_.InitWithFeatureState(
+        net::features::kAllowUserAgentHeaderFromScript, GetParam());
+    request_.url = GURL("https://example.com/");
+    request_.mode = mojom::RequestMode::kCors;
+    request_.request_initiator =
+        url::Origin::Create(GURL("https://other.test/"));
+    request_.headers.SetHeader("X-Custom-Header", "value");
+  }
+
+  ResourceRequest request_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(PreflightControllerUserAgentTest, PreservesContextOverride) {
+  if (GetParam()) {
+    request_.content_user_agent = "ContextAgent/1.0";
+  } else {
+    request_.headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
+                               "ContextAgent/1.0");
+  }
+  std::unique_ptr<ResourceRequest> preflight =
+      PreflightController::CreatePreflightRequestForTesting(request_);
+  EXPECT_THAT(preflight->headers.GetHeader(net::HttpRequestHeaders::kUserAgent),
+              Optional(testing::Eq("ContextAgent/1.0")));
+  EXPECT_THAT(
+      preflight->headers.GetHeader(header_names::kAccessControlRequestHeaders),
+      Optional(testing::Eq("x-custom-header")));
+}
+
+TEST_P(PreflightControllerUserAgentTest, DoesNotCopyAuthorUserAgentInNewMode) {
+  request_.headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
+                             "HeaderAgent/1.0");
+  if (GetParam()) {
+    request_.content_user_agent = "ContextAgent/1.0";
+  }
+  std::unique_ptr<ResourceRequest> preflight =
+      PreflightController::CreatePreflightRequestForTesting(request_);
+  EXPECT_THAT(preflight->headers.GetHeader(net::HttpRequestHeaders::kUserAgent),
+              Optional(GetParam() ? "ContextAgent/1.0" : "HeaderAgent/1.0"));
+  // TODO(crbug.com/40450316): With the feature enabled, expect
+  // "user-agent,x-custom-header" once User-Agent is no longer a forbidden
+  // header.
+  EXPECT_THAT(
+      preflight->headers.GetHeader(header_names::kAccessControlRequestHeaders),
+      Optional(testing::Eq("x-custom-header")));
+}
+
+TEST_P(PreflightControllerUserAgentTest,
+       MissingContextDoesNotPromoteAuthorHeader) {
+  request_.headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
+                             "HeaderAgent/1.0");
+  std::unique_ptr<ResourceRequest> preflight =
+      PreflightController::CreatePreflightRequestForTesting(request_);
+  if (GetParam()) {
+    EXPECT_EQ(std::nullopt, preflight->headers.GetHeader(
+                                net::HttpRequestHeaders::kUserAgent));
+  } else {
+    EXPECT_THAT(
+        preflight->headers.GetHeader(net::HttpRequestHeaders::kUserAgent),
+        Optional(testing::Eq("HeaderAgent/1.0")));
+  }
+}
+
+TEST_P(PreflightControllerUserAgentTest, PreservesEmptyContextOverride) {
+  if (GetParam()) {
+    request_.content_user_agent = "";
+  } else {
+    request_.headers.SetHeader(net::HttpRequestHeaders::kUserAgent, "");
+  }
+  std::unique_ptr<ResourceRequest> preflight =
+      PreflightController::CreatePreflightRequestForTesting(request_);
+  EXPECT_THAT(preflight->headers.GetHeader(net::HttpRequestHeaders::kUserAgent),
+              Optional(testing::Eq("")));
+}
+
+TEST_P(PreflightControllerUserAgentTest,
+       LeavesDefaultUserAgentToNetworkContext) {
+  std::unique_ptr<ResourceRequest> preflight =
+      PreflightController::CreatePreflightRequestForTesting(request_);
+  EXPECT_EQ(std::nullopt,
+            preflight->headers.GetHeader(net::HttpRequestHeaders::kUserAgent));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PreflightControllerUserAgentTest,
+                         testing::Bool());
 
 TEST(PreflightControllerCreatePreflightRequestTest, LexicographicalOrder) {
   ResourceRequest request;

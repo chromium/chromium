@@ -5140,6 +5140,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.ContentUserAgentSize" units="bytes"
+    expires_after="2027-11-01">
+  <owner>pryor@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The size of ResourceRequest::content_user_agent in bytes, before any
+    truncation to at most 512 bytes. Recorded in
+    CorsURLLoaderFactory::IsValidRequest() for requests that set it, only while
+    the AllowUserAgentHeaderFromScript feature is enabled. This helps choose the
+    size limit that keeps CORS-exempt User-Agent values small for cross-origin
+    servers.
+  </summary>
+</histogram>
+
 <histogram
     name="NetworkService.CorsURLLoaderFactory.CreateLoaderAndStart2.Duration"
     units="microseconds" expires_after="2027-03-28">

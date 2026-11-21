@@ -64,6 +64,7 @@ namespace {
   DO_FIELD(referrer_policy) __VA_ARGS__                            \
   DO_FIELD(headers) __VA_ARGS__                                    \
   DO_FIELD(cors_exempt_headers) __VA_ARGS__                        \
+  DO_FIELD(content_user_agent) __VA_ARGS__                         \
   DO_FIELD(load_flags) __VA_ARGS__                                 \
   DO_FIELD(resource_type) __VA_ARGS__                              \
   DO_FIELD(priority) __VA_ARGS__                                   \
@@ -219,7 +220,8 @@ enum class FieldsForUma {
   kIsReloadNavigation = 68,
   kRevalidationEtag = 69,
   kRevalidationLastModified = 70,
-  kMaxValue = kRevalidationLastModified,
+  kContentUserAgent = 71,
+  kMaxValue = kContentUserAgent,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/network/enums.xml:PrefetchMatchesResourceRequestField)
 
@@ -237,6 +239,7 @@ constexpr auto kUmaEnumMap = base::MakeFixedFlatMap<Fields, FieldsForUma>({
     {Fields::kreferrer_policy, FieldsForUma::kReferrerPolicy},
     {Fields::kheaders, FieldsForUma::kHeaders},
     {Fields::kcors_exempt_headers, FieldsForUma::kCorsExemptHeaders},
+    {Fields::kcontent_user_agent, FieldsForUma::kContentUserAgent},
     {Fields::kload_flags, FieldsForUma::kLoadFlags},
     {Fields::kresource_type, FieldsForUma::kResourceType},
     {Fields::kpriority, FieldsForUma::kPriority},

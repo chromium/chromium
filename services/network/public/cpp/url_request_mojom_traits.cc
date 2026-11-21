@@ -4,11 +4,13 @@
 
 #include "services/network/public/cpp/url_request_mojom_traits.h"
 
+#include <string>
 #include <vector>
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "mojo/public/cpp/base/byte_string_mojom_traits.h"
 #include "mojo/public/cpp/base/file_mojom_traits.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
@@ -149,6 +151,7 @@ bool StructTraits<
   if (!data.ReadReferrerPolicy(&out->referrer_policy) ||
       !data.ReadHeaders(&out->headers) ||
       !data.ReadCorsExemptHeaders(&out->cors_exempt_headers) ||
+      !data.ReadContentUserAgent(&out->content_user_agent) ||
       !data.ReadPriority(&out->priority) ||
       !data.ReadCorsPreflightPolicy(&out->cors_preflight_policy) ||
       !data.ReadMode(&out->mode) ||
@@ -175,6 +178,17 @@ bool StructTraits<
       !data.ReadFetchRetryOptions(&out->fetch_retry_options)) {
     // Note that data.ReadTrustTokenParams is temporarily handled below.
     return false;
+  }
+
+  // This string is used as an HTTP header value, but is not decoded through
+  // the HttpRequestHeaders traits, so trim and validate it the same way.
+  if (out->content_user_agent) {
+    *out->content_user_agent =
+        std::string(net::HttpUtil::TrimLWS(*out->content_user_agent));
+    if (!net::HttpUtil::IsValidHeaderValue(*out->content_user_agent)) {
+      network::debug::SetDeserializationCrashKeyString("content_user_agent");
+      return false;
+    }
   }
 
   // Temporarily separated from the remainder of the deserialization in order to

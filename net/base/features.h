@@ -231,6 +231,13 @@ NET_EXPORT BASE_DECLARE_FEATURE(kRendererAccessibleHttpCache);
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
                                       kRendererAccessibleHttpCacheWalMode);
 
+// If enabled, the browser's own User-Agent is carried separately from
+// script-supplied request headers, so that it stays CORS-exempt and is used
+// for CORS preflights. This is a prerequisite for letting scripts set the
+// User-Agent request header, which `net::HttpUtil::IsSafeHeader()` still
+// forbids. See crbug.com/40450316.
+NET_EXPORT BASE_DECLARE_FEATURE(kAllowUserAgentHeaderFromScript);
+
 // If enabled, overrides IPv6 reachability probe results based on the system's
 // IP addresses.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableIPv6ReachabilityOverride);

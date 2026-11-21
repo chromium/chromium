@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/time/time.h"
+#include "base/types/optional_ref.h"
 #include "net/base/isolation_info.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_util.h"
@@ -96,6 +97,17 @@ std::optional<net::IsolationInfo> GetIsolationInfo(
 std::string GetCookiesFromHeaders(
     const net::HttpRequestHeaders& headers,
     const net::HttpRequestHeaders& cors_exempt_headers);
+
+// Performs the "final merge" for headers, where `merged` (e.g. a
+// ResourceRequest's `cors_exempt_headers`) is merged onto `original` (e.g. its
+// `headers`, or redirect-modified headers), then `user_agent` (e.g. its
+// `content_user_agent`) is applied as the User-Agent header if the merge
+// didn't already set one.
+COMPONENT_EXPORT(NETWORK_SERVICE)
+net::HttpRequestHeaders MergeHeadersAndSetUserAgentIfMissing(
+    net::HttpRequestHeaders original,
+    const net::HttpRequestHeaders& merged,
+    base::optional_ref<const std::string> user_agent);
 
 // Records UMA metrics related to shared dictionary usage for non-cached
 // responses.

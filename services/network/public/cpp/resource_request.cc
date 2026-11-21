@@ -337,6 +337,7 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
          headers.ToString() == request.headers.ToString() &&
          cors_exempt_headers.ToString() ==
              request.cors_exempt_headers.ToString() &&
+         content_user_agent == request.content_user_agent &&
          load_flags == request.load_flags &&
          resource_type == request.resource_type &&
          priority == request.priority &&

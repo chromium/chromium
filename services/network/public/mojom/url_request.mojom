@@ -5,6 +5,7 @@
 module network.mojom;
 
 import "mojo/public/mojom/base/big_buffer.mojom";
+import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
@@ -334,6 +335,25 @@ struct URLRequest {
   // cors::IsForbiddenHeader for details, and Loading and CORS OWNERS when you
   // need to add your own headers to the list.
   HttpRequestHeaders cors_exempt_headers;  // See Note above before using.
+
+  // The browser's User-Agent for this request, after DevTools and embedder
+  // overrides. It is CORS-exempt, unlike a User-Agent in `headers`, which will
+  // follow the CORS protocol once User-Agent is no longer a forbidden request
+  // header (crbug.com/40450316).
+  //
+  // The request sends it only if neither `headers` nor `cors_exempt_headers`
+  // has a User-Agent. While the AllowUserAgentHeaderFromScript feature is
+  // enabled, CORS preflights send it in place of any User-Agent in `headers`.
+  // If it is null and no other User-Agent applies, the NetworkContext's
+  // User-Agent is sent; an empty string sends an empty User-Agent.
+  //
+  // Like other header values, it is opaque bytes, not necessarily UTF-8. It
+  // may be set by renderers. Deserialization trims surrounding whitespace and
+  // fails for values that are not valid header values. CorsURLLoaderFactory
+  // rejects the request with a bad message while the feature is disabled;
+  // otherwise it truncates the value to its first 512 bytes and trims any
+  // trailing whitespace the cut leaves.
+  mojo_base.mojom.ByteString? content_user_agent;
 
   // net::URLRequest load flags.
   int32 load_flags;

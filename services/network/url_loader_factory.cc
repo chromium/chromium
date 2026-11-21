@@ -19,6 +19,7 @@
 #include "net/base/isolation_info.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_setting_override.h"
+#include "net/http/http_request_headers.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_http_transaction_factory_override.h"
 #include "services/network/cookie_manager.h"
@@ -36,6 +37,7 @@
 #include "services/network/shared_dictionary/shared_dictionary_access_checker.h"
 #include "services/network/trust_tokens/trust_token_request_helper_factory.h"
 #include "services/network/url_loader.h"
+#include "services/network/url_loader_util.h"
 #include "services/network/web_bundle/web_bundle_url_loader_factory.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -250,8 +252,10 @@ void URLLoaderFactory::CreateLoaderAndStartWithSyncClient(
     const size_t url_size = resource_request.url.spec().size();
     size_t headers_size = 0;
 
-    net::HttpRequestHeaders merged_headers = resource_request.headers;
-    merged_headers.MergeFrom(resource_request.cors_exempt_headers);
+    const net::HttpRequestHeaders merged_headers =
+        url_loader_util::MergeHeadersAndSetUserAgentIfMissing(
+            resource_request.headers, resource_request.cors_exempt_headers,
+            resource_request.content_user_agent);
 
     for (const auto& pair : merged_headers.GetHeaderVector()) {
       headers_size += (pair.key.size() + pair.value.size());

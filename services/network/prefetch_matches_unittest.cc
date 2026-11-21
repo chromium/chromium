@@ -4,6 +4,8 @@
 
 #include "services/network/prefetch_matches.h"
 
+#include <optional>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -45,6 +47,18 @@ TEST(PrefetchMatchesTest, SiteForCookies) {
   prefetch.site_for_cookies =
       net::SiteForCookies::FromUrl(GURL("https://example.com/"));
   real.site_for_cookies = net::SiteForCookies();
+  EXPECT_FALSE(PrefetchMatches(prefetch, real));
+}
+
+TEST(PrefetchMatchesTest, ContentUserAgent) {
+  ResourceRequest prefetch;
+  ResourceRequest real;
+  prefetch.content_user_agent = "MyAgent/1.0";
+  real.content_user_agent = "MyAgent/1.0";
+  EXPECT_TRUE(PrefetchMatches(prefetch, real));
+  real.content_user_agent = "OtherAgent/1.0";
+  EXPECT_FALSE(PrefetchMatches(prefetch, real));
+  real.content_user_agent = std::nullopt;
   EXPECT_FALSE(PrefetchMatches(prefetch, real));
 }
 

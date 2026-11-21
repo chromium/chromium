@@ -3822,6 +3822,62 @@ TEST_F(URLLoaderTest, RedirectRemoveHeaderAndAddItBack) {
   EXPECT_EQ("Value2", request_headers2.find("Header2")->second);
 }
 
+// `content_user_agent` is sent as the User-Agent when the request has none.
+TEST_F(URLLoaderTest, SendsContentUserAgent) {
+  ResourceRequest request =
+      CreateResourceRequest("GET", test_server()->GetURL("/echo"));
+  request.content_user_agent = "ContentAgent/1.0";
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
+
+  EXPECT_THAT(sent_request().headers,
+              Contains(testing::Pair("User-Agent", "ContentAgent/1.0")));
+}
+
+// An explicit User-Agent in `headers` wins over `content_user_agent`.
+TEST_F(URLLoaderTest, ExplicitUserAgentOverridesContentUserAgent) {
+  ResourceRequest request =
+      CreateResourceRequest("GET", test_server()->GetURL("/echo"));
+  request.headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
+                            "ExplicitAgent/1.0");
+  request.content_user_agent = "ContentAgent/1.0";
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
+
+  EXPECT_THAT(sent_request().headers,
+              Contains(testing::Pair("User-Agent", "ExplicitAgent/1.0")));
+}
+
+// A User-Agent in `cors_exempt_headers` wins over both `headers` and
+// `content_user_agent`.
+TEST_F(URLLoaderTest, CorsExemptUserAgentOverridesContentUserAgent) {
+  ResourceRequest request =
+      CreateResourceRequest("GET", test_server()->GetURL("/echo"));
+  request.headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
+                            "ExplicitAgent/1.0");
+  request.cors_exempt_headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
+                                        "CorsExemptAgent/1.0");
+  request.content_user_agent = "ContentAgent/1.0";
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
+
+  EXPECT_THAT(sent_request().headers,
+              Contains(testing::Pair("User-Agent", "CorsExemptAgent/1.0")));
+}
+
+// An empty `content_user_agent` sends an empty User-Agent rather than the
+// NetworkContext's User-Agent.
+TEST_F(URLLoaderTest, EmptyContentUserAgentIsSent) {
+  ResourceRequest request =
+      CreateResourceRequest("GET", test_server()->GetURL("/echo"));
+  request.content_user_agent = "";
+
+  EXPECT_EQ(net::OK, LoadRequest(request));
+
+  EXPECT_THAT(sent_request().headers,
+              Contains(testing::Pair("User-Agent", "")));
+}
+
 // Validate Sec- prefixed headers are handled properly when redirecting from
 // insecure => secure urls. The Sec-Fetch-Site header should be re-added on the
 // secure url.

@@ -22,6 +22,7 @@
 #include "net/device_bound_sessions/session_usage.h"
 #include "net/filter/source_stream_type.h"
 #include "net/http/http_connection_info.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_response_info.h"
 #include "net/storage_access_api/status.h"
 #include "net/url_request/url_request.h"
@@ -512,7 +513,17 @@ std::string GetCookiesFromHeaders(
   return std::move(cookies).value_or(std::string());
 }
 
-
+net::HttpRequestHeaders MergeHeadersAndSetUserAgentIfMissing(
+    net::HttpRequestHeaders original,
+    const net::HttpRequestHeaders& merged,
+    base::optional_ref<const std::string> user_agent) {
+  original.MergeFrom(merged);
+  if (user_agent.has_value()) {
+    original.SetHeaderIfMissing(net::HttpRequestHeaders::kUserAgent,
+                                *user_agent);
+  }
+  return original;
+}
 
 void MaybeRecordSharedDictionaryUsedResponseMetrics(
     int error_code,
@@ -602,11 +613,12 @@ void ConfigureUrlRequest(const ResourceRequest& request,
           ? net::SecureDnsPolicy::kDisable
           : net::SecureDnsPolicy::kAllow);
 
-  // |cors_exempt_headers| must be merged here to avoid breaking CORS checks.
-  // They are non-empty when the values are given by the UA code, therefore
-  // they should be ignored by CORS checks.
-  net::HttpRequestHeaders merged_headers = request.headers;
-  merged_headers.MergeFrom(request.cors_exempt_headers);
+  // `cors_exempt_headers` and `content_user_agent` are set by Chromium code
+  // (including Blink), not by web script, so they are added to the outgoing
+  // headers only here, after CORS checks.
+  net::HttpRequestHeaders merged_headers = MergeHeadersAndSetUserAgentIfMissing(
+      request.headers, request.cors_exempt_headers, request.content_user_agent);
+
   // This should be ensured by the CorsURLLoaderFactory(), which is called
   // before URLLoaders are created.
   DCHECK(AreRequestHeadersSafe(merged_headers));

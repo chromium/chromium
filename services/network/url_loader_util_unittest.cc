@@ -5,6 +5,7 @@
 #include "services/network/url_loader_util.h"
 
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
@@ -12,6 +13,7 @@
 #include "net/base/isolation_info.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/filter/source_stream_type.h"
+#include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
@@ -579,6 +581,86 @@ TEST_F(SetRequestCredentialsTest,
       mojom::CredentialsMode::kSameOrigin, cross_initiator, *request,
       /*origin_access_list=*/nullptr, /*disable_web_security=*/true);
   EXPECT_FALSE(request->allow_credentials());
+}
+
+TEST(MergeHeadersAndSetUserAgentIfMissingTest, MergesHeaders) {
+  net::HttpRequestHeaders original;
+  original.SetHeader("X-Original", "original");
+  net::HttpRequestHeaders merged;
+  merged.SetHeader("X-Merged", "merged");
+
+  net::HttpRequestHeaders result =
+      MergeHeadersAndSetUserAgentIfMissing(original, merged, std::nullopt);
+  EXPECT_EQ("original", result.GetHeaderView("X-Original"));
+  EXPECT_EQ("merged", result.GetHeaderView("X-Merged"));
+  EXPECT_EQ(std::nullopt,
+            result.GetHeaderView(net::HttpRequestHeaders::kUserAgent));
+}
+
+TEST(MergeHeadersAndSetUserAgentIfMissingTest, SetsUserAgentIfMissing) {
+  const std::string user_agent = "MyAgent/1.0";
+
+  net::HttpRequestHeaders result = MergeHeadersAndSetUserAgentIfMissing(
+      net::HttpRequestHeaders(), net::HttpRequestHeaders(), user_agent);
+  EXPECT_EQ("MyAgent/1.0",
+            result.GetHeaderView(net::HttpRequestHeaders::kUserAgent));
+}
+
+TEST(MergeHeadersAndSetUserAgentIfMissingTest, PreservesEmptyUserAgent) {
+  const std::string user_agent;
+
+  net::HttpRequestHeaders result = MergeHeadersAndSetUserAgentIfMissing(
+      net::HttpRequestHeaders(), net::HttpRequestHeaders(), user_agent);
+  EXPECT_EQ("", result.GetHeaderView(net::HttpRequestHeaders::kUserAgent));
+}
+
+TEST(MergeHeadersAndSetUserAgentIfMissingTest, DoesNotOverwriteExisting) {
+  net::HttpRequestHeaders original;
+  original.SetHeader(net::HttpRequestHeaders::kUserAgent, "OriginalAgent/1.0");
+  const std::string user_agent = "MyAgent/1.0";
+
+  net::HttpRequestHeaders result = MergeHeadersAndSetUserAgentIfMissing(
+      original, net::HttpRequestHeaders(), user_agent);
+  EXPECT_EQ("OriginalAgent/1.0",
+            result.GetHeaderView(net::HttpRequestHeaders::kUserAgent));
+}
+
+TEST(MergeHeadersAndSetUserAgentIfMissingTest,
+     FindsExistingUserAgentCaseInsensitively) {
+  net::HttpRequestHeaders original;
+  original.SetHeader("uSeR-aGeNt", "OriginalAgent/1.0");
+  const std::string user_agent = "MyAgent/1.0";
+
+  net::HttpRequestHeaders result = MergeHeadersAndSetUserAgentIfMissing(
+      original, net::HttpRequestHeaders(), user_agent);
+  EXPECT_EQ("OriginalAgent/1.0",
+            result.GetHeaderView(net::HttpRequestHeaders::kUserAgent));
+}
+
+TEST(MergeHeadersAndSetUserAgentIfMissingTest, MergedUserAgentWins) {
+  net::HttpRequestHeaders original;
+  original.SetHeader(net::HttpRequestHeaders::kUserAgent, "OriginalAgent/1.0");
+  net::HttpRequestHeaders merged;
+  merged.SetHeader("USER-AGENT", "MergedAgent/1.0");
+  const std::string user_agent = "MyAgent/1.0";
+
+  net::HttpRequestHeaders result =
+      MergeHeadersAndSetUserAgentIfMissing(original, merged, user_agent);
+  EXPECT_EQ("MergedAgent/1.0",
+            result.GetHeaderView(net::HttpRequestHeaders::kUserAgent));
+}
+
+// A lowercase User-Agent that only `merged` sets still counts as present, so
+// `user_agent` is not added.
+TEST(MergeHeadersAndSetUserAgentIfMissingTest, MergedOnlyUserAgentWins) {
+  net::HttpRequestHeaders merged;
+  merged.SetHeader("user-agent", "MergedAgent/1.0");
+  const std::string user_agent = "MyAgent/1.0";
+
+  net::HttpRequestHeaders result = MergeHeadersAndSetUserAgentIfMissing(
+      net::HttpRequestHeaders(), merged, user_agent);
+  EXPECT_EQ("MergedAgent/1.0",
+            result.GetHeaderView(net::HttpRequestHeaders::kUserAgent));
 }
 
 }  // namespace

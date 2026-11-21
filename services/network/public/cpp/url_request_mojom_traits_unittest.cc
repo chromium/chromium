@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/url_request_mojom_traits.h"
 
 #include <optional>
+#include <string>
 
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
@@ -188,6 +189,48 @@ TEST_F(URLRequestMojomTraitsTest,
       mojo::test::SerializeAndDeserialize<mojom::URLRequest>(original, copied));
   EXPECT_EQ(copied.revalidation_etag, "\"12345\"");
   EXPECT_EQ(copied.revalidation_last_modified, "Wed, 21 Oct 2015 07:28:00 GMT");
+}
+
+TEST_F(URLRequestMojomTraitsTest, Roundtrips_ContentUserAgent) {
+  // The value is opaque bytes, so a value that is not UTF-8 round-trips too.
+  const std::optional<std::string> user_agents[] = {
+      std::nullopt, "", "ContextAgent/1.0", "Agent/1.0 \xE9\xFF"};
+  for (const auto& user_agent : user_agents) {
+    SCOPED_TRACE(user_agent.value_or("<nullopt>"));
+    network::ResourceRequest original;
+    original.url = GURL("https://example.com/");
+    original.content_user_agent = user_agent;
+    network::ResourceRequest copied;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::URLRequest>(original,
+                                                                       copied));
+    EXPECT_EQ(user_agent, copied.content_user_agent);
+  }
+}
+
+// Like other request header values, leading and trailing whitespace is
+// trimmed.
+TEST_F(URLRequestMojomTraitsTest, ContentUserAgent_TrimsWhitespace) {
+  network::ResourceRequest original;
+  original.url = GURL("https://example.com/");
+  original.content_user_agent = " \tMy Agent/1.0 \t";
+  network::ResourceRequest copied;
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::URLRequest>(original, copied));
+  EXPECT_EQ("My Agent/1.0", copied.content_user_agent);
+}
+
+TEST_F(URLRequestMojomTraitsTest, ContentUserAgent_InvalidValues) {
+  const std::string user_agents[] = {"bad\ragent", "bad\nagent", "bad\r\nagent",
+                                     std::string("bad\0agent", 9)};
+  for (const auto& user_agent : user_agents) {
+    SCOPED_TRACE(user_agent);
+    network::ResourceRequest original;
+    original.url = GURL("https://example.com/");
+    original.content_user_agent = user_agent;
+    network::ResourceRequest copied;
+    EXPECT_FALSE(mojo::test::SerializeAndDeserialize<mojom::URLRequest>(
+        original, copied));
+  }
 }
 
 TEST_F(URLRequestMojomTraitsTest, RevalidationMetadata_InvalidValues) {

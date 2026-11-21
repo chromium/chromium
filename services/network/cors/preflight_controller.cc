@@ -7,10 +7,12 @@
 #include <algorithm>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -18,6 +20,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/unguessable_token.h"
+#include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -181,12 +184,20 @@ std::unique_ptr<ResourceRequest> CreatePreflightRequest(
       net::HttpRequestHeaders::kOrigin,
       (tainted ? url::Origin() : *request.request_initiator).Serialize());
 
-  // We normally set User-Agent down in the network stack, but the DevTools
-  // emulation override is applied on a higher level (renderer or browser),
-  // so copy User-Agent from the original request, if present.
+  // DevTools and embedder User-Agent overrides are applied above the network
+  // stack, so the preflight carries them explicitly. With
+  // AllowUserAgentHeaderFromScript enabled, a User-Agent in `request.headers`
+  // may come from script and must not reach the preflight, so the override is
+  // taken from `request.content_user_agent` instead.
   // TODO(caseq, morlovich): do the same for client hints.
-  std::optional<std::string> user_agent =
-      request.headers.GetHeader(net::HttpRequestHeaders::kUserAgent);
+  std::optional<std::string_view> user_agent;
+  if (base::FeatureList::IsEnabled(
+          net::features::kAllowUserAgentHeaderFromScript)) {
+    user_agent = request.content_user_agent;
+  } else {
+    user_agent =
+        request.headers.GetHeaderView(net::HttpRequestHeaders::kUserAgent);
+  }
   if (user_agent) {
     preflight_request->headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
                                          *user_agent);

@@ -4,13 +4,17 @@
 
 #include "services/network/cors/cors_url_loader_factory.h"
 
+#include <stddef.h>
+
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -53,6 +57,13 @@
 namespace network::cors {
 
 namespace {
+
+// Maximum size, in bytes, of `ResourceRequest::content_user_agent`; longer
+// values are truncated. The value is CORS-exempt, so it reaches cross-origin
+// servers without a preflight; the cap keeps legacy servers, which have only
+// seen browser-generated User-Agent values, from receiving arbitrarily large
+// ones.
+constexpr size_t kMaxContentUserAgentSize = 512;
 
 // Verifies state that should hold for Trust Tokens parameters provided by a
 // functioning renderer:
@@ -994,6 +1005,26 @@ bool CorsURLLoaderFactory::IsValidRequest(
         "CorsURLLoaderFactory: client_side_content_decoding_enabled is set "
         "unexpectedly.");
     return false;
+  }
+
+  // `content_user_agent` is set only when the AllowUserAgentHeaderFromScript
+  // feature is enabled.
+  if (request.content_user_agent) {
+    if (!base::FeatureList::IsEnabled(
+            net::features::kAllowUserAgentHeaderFromScript)) {
+      mojo::ReportBadMessage(
+          "CorsURLLoaderFactory: content_user_agent is set unexpectedly.");
+      return false;
+    }
+    const size_t size = request.content_user_agent->size();
+    base::UmaHistogramCounts10000("NetworkService.ContentUserAgentSize", size);
+    if (size > kMaxContentUserAgentSize) {
+      // The cut may leave whitespace at the end, which header values must not
+      // have.
+      request.content_user_agent->resize(kMaxContentUserAgentSize);
+      *request.content_user_agent =
+          std::string(net::HttpUtil::TrimLWS(*request.content_user_agent));
+    }
   }
 
   // TODO(yhirano): If the request mode is "no-cors", the redirect mode should
