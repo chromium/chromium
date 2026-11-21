@@ -18,7 +18,6 @@ namespace blink {
 
 namespace {
 using testing::_;
-using testing::Return;
 
 class TestObserver : public GarbageCollected<TestObserver>,
                      public MediaStreamTrack::Observer {
@@ -300,9 +299,9 @@ TEST_F(TransferredMediaStreamTrackTest, CloneSetImplementation) {
           transferred_track_->clone(scope.GetExecutionContext()));
   MockMediaStreamTrack* mock_impl_ =
       MakeGarbageCollected<testing::NiceMock<MockMediaStreamTrack>>();
-  EXPECT_CALL(*mock_impl_, clone(_))
-      .WillOnce(Return(
-          MakeGarbageCollected<testing::NiceMock<MockMediaStreamTrack>>()));
+  EXPECT_CALL(*mock_impl_, clone(_)).WillOnce([](ExecutionContext*) {
+    return MakeGarbageCollected<testing::NiceMock<MockMediaStreamTrack>>();
+  });
 
   transferred_track_->SetImplementation(mock_impl_);
 
@@ -321,9 +320,9 @@ TEST_F(TransferredMediaStreamTrackTest, CloneMutationsReplayed) {
 
   MockMediaStreamTrack* mock_impl_ =
       MakeGarbageCollected<testing::NiceMock<MockMediaStreamTrack>>();
-  EXPECT_CALL(*mock_impl_, clone(_))
-      .WillOnce(Return(
-          MakeGarbageCollected<testing::NiceMock<MockMediaStreamTrack>>()));
+  EXPECT_CALL(*mock_impl_, clone(_)).WillOnce([](ExecutionContext*) {
+    return MakeGarbageCollected<testing::NiceMock<MockMediaStreamTrack>>();
+  });
   transferred_track_->SetImplementation(mock_impl_);
 
   EXPECT_EQ(transferred_track_->enabled(), false);

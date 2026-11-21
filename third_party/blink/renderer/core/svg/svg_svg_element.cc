@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
@@ -293,18 +294,14 @@ HeapVector<Member<Element>> ComputeIntersectionList(
   elements = root.GetTreeScope().ElementsFromHitTestResult(result);
   // We want all elements that are SVGGraphicsElements and descendants of the
   // common subtree root.
-  auto partition_condition = [common_subtree_root,
-                              filter](const Member<Element>& item) {
+  EraseIf(elements, [common_subtree_root, filter](const Member<Element>& item) {
     if (!IsA<SVGGraphicsElement>(*item)) {
-      return false;
+      return true;
     }
     return filter == ElementResultFilter::kDescendantsOrReference
-               ? common_subtree_root->contains(item)
-               : item->IsDescendantOf(common_subtree_root);
-  };
-  auto to_remove = std::stable_partition(elements.begin(), elements.end(),
-                                         partition_condition);
-  elements.erase(to_remove, elements.end());
+               ? !common_subtree_root->contains(item)
+               : !item->IsDescendantOf(common_subtree_root);
+  });
   // Hit-testing traverses the tree from last to first child for each
   // container, so the result needs to be reversed.
   std::ranges::reverse(elements);

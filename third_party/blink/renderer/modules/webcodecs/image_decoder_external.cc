@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/segment_reader.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -521,16 +522,16 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
                                    decode_weak_factory_.GetWeakCell()))))));
   }
 
-  auto new_end = std::stable_partition(
-      pending_decodes_.begin(), pending_decodes_.end(),
-      [](const auto& request) { return !request->IsFinal(); });
-
-  // Copy completed requests to a new local vector to avoid reentrancy issues
+  // Move completed requests to a new local vector to avoid reentrancy issues
   // when resolving and rejecting the promises.
   HeapVector<Member<DecodeRequest>> completed_decodes;
-  completed_decodes.Append(new_end, pending_decodes_.end());
-  pending_decodes_.Shrink(
-      static_cast<wtf_size_t>(new_end - pending_decodes_.begin()));
+  EraseIf(pending_decodes_, [&completed_decodes](const auto& request) {
+    if (!request->IsFinal()) {
+      return false;
+    }
+    completed_decodes.push_back(request);
+    return true;
+  });
 
   // Note: Promise resolution may invoke calls into this class.
   for (auto& request : completed_decodes) {
