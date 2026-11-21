@@ -2,7 +2,7 @@ Name: SPIR-V Headers
 Short Name: spirv-headers
 URL: https://github.com/KhronosGroup/SPIRV-Headers.git
 Version: N/A
-Revision: 50184103b19027f5c7080060712d6a9470cf59ee
+Revision: fb1379425b16e58dcbdda7be0f8604a7f5cdce78
 Update Mechanism: Autoroll
 Security Critical: yes
 Shipped: yes
