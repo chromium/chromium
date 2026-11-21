@@ -101,7 +101,10 @@ class IOSChromeVariationsSeedFetcherTest : public PlatformTest {
         dataTaskWithRequest:[OCMArg checkWithBlock:^BOOL(
                                         NSMutableURLRequest* request) {
           captured_url = request.URL;
-          return [request.allHTTPHeaderFields[@"A-IM"] isEqualToString:@"gzip"];
+          return
+              [request.allHTTPHeaderFields[@"A-IM"] isEqualToString:@"gzip"] &&
+              [[request valueForHTTPHeaderField:@"X-Seed-Key-Ids"]
+                  isEqualToString:@"1,2,3,0"];
         }]
           completionHandler:[OCMArg any]]);
     [fetcher doActualFetch];
@@ -146,7 +149,9 @@ TEST_F(IOSChromeVariationsSeedFetcherTest,
   BOOL (^request_matcher)(NSMutableURLRequest* request) =
       ^BOOL(NSMutableURLRequest* request) {
         return [request.URL.absoluteString hasPrefix:kTestServerUrl] &&
-               [request.allHTTPHeaderFields[@"A-IM"] isEqualToString:@"gzip"];
+               [request.allHTTPHeaderFields[@"A-IM"] isEqualToString:@"gzip"] &&
+               [[request valueForHTTPHeaderField:@"X-Seed-Key-Ids"]
+                   isEqualToString:@"1,2,3,0"];
       };
   id mock_url_session = OCMClassMock([NSURLSession class]);
   OCMStub([mock_url_session sharedSession]).andReturn(mock_url_session);

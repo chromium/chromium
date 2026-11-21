@@ -4913,4 +4913,36 @@ TEST_F(VariationsServiceTest, DoesNotClearNativeSeedWhenNotPending) {
   EXPECT_EQ(service.client()->clear_native_seed_call_count(), 0);
 }
 
+TEST_F(VariationsServiceTest,
+       RequestSeedKeyIdsHeaderRespectsLegacyKeyDistrust) {
+  VariationsService::EnableFetchForTesting();
+
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), true);
+  service.set_intercepts_fetch(false);
+
+  net::HttpRequestHeaders intercepted_headers;
+  service.test_url_loader_factory()->AddResponse(
+      service.interception_url().spec(), "");
+  service.test_url_loader_factory()->SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        intercepted_headers = request.headers;
+      }));
+
+  // While the legacy key is trusted, legacy Key ID 0 is advertised alongside
+  // pinned IDs 1,2,3.
+  ASSERT_FALSE(prefs_.GetBoolean(prefs::kVariationsLegacySeedKeyDistrusted));
+  service.DoActualFetch();
+  EXPECT_THAT(intercepted_headers.GetHeader("X-Seed-Key-Ids"),
+              ::testing::Optional(std::string("1,2,3,0")));
+
+  // Once the legacy key is distrusted, legacy Key ID 0 is omitted.
+  prefs_.SetBoolean(prefs::kVariationsLegacySeedKeyDistrusted, true);
+  service.DoActualFetch();
+  EXPECT_THAT(intercepted_headers.GetHeader("X-Seed-Key-Ids"),
+              ::testing::Optional(std::string("1,2,3")));
+}
+
 }  // namespace variations

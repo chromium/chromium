@@ -5,12 +5,16 @@
 #ifndef COMPONENTS_VARIATIONS_VARIATIONS_SEED_STORE_H_
 #define COMPONENTS_VARIATIONS_VARIATIONS_SEED_STORE_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <string>
 
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
@@ -42,7 +46,8 @@ struct COMPONENT_EXPORT(VARIATIONS) ValidatedSeed {
 
   // Serialized VariationsSeed.
   std::string seed_data;
-  // A cryptographic signature on the seed_data.
+  // A cryptographic signature on the seed_data (either legacy base64 ECDSA
+  // signature or "<key_id>:<base64_hybrid_signature>").
   std::string base64_seed_signature;
   // The seed data parsed as a proto.
   VariationsSeed parsed;
@@ -285,6 +290,17 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
       const std::string& seed_bytes,
       const std::string& base64_seed_signature);
 
+  // Overrides a pinned hybrid public key (Key IDs 1, 2, or 3) until the
+  // returned runner is destroyed, allowing tests to generate real ML-DSA-44 +
+  // ECDSA P-256 keys and signatures without modifying the pinned production
+  // keys. Not thread-safe with concurrent verification; install before
+  // spawning background seed processing tasks.
+  [[nodiscard]] static base::ScopedClosureRunner
+  OverridePinnedHybridKeyForTesting(
+      uint32_t key_id,
+      base::span<const uint8_t> mldsa44_public_key,
+      base::span<const uint8_t> ecdsa_p256_public_key);
+
   // Given a serialized VariationsSeed, compress it and base-64 encode it.
   // Fails if gzip encoding fails.
   static std::optional<std::string> SeedBytesToCompressedBase64Seed(
@@ -450,8 +466,9 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
       SeedProcessingResult result);
 
   // Stores the validated seed and calls `done_callback` with the result of the
-  // store and the validated seed. A missing `safe_seed_data` disables the
-  // optional alias optimization; no Safe read is required to store the seed.
+  // store and the validated seed. A non-success `safe_seed_read_result`
+  // disables the optional alias optimization; no Safe read is required to store
+  // the seed.
   void StoreValidatedSeed(
       base::OnceCallback<void(bool, VariationsSeed)> done_callback,
       ValidatedSeed seed,
@@ -459,7 +476,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
       std::string geo_level1,
       base::Time seed_date,
       bool require_synchronous,
-      std::optional<std::string> safe_seed_data);
+      SeedReaderWriter::ReadSeedDataResult safe_seed_read_result);
 
   // Called after the safe seed has been stored. It records the result of the
   // store and calls `done_callback`.
@@ -494,10 +511,13 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
   // a seed on startup.
   [[nodiscard]] static SeedProcessingResult ProcessSeedData(
       bool signature_verification_enabled,
+      bool legacy_key_distrusted,
       SeedData seed_data);
 
   // Validates that |seed_bytes| parses and matches |base64_seed_signature|.
   // Signature checking may be disabled via |signature_verification_enabled|.
+  // When |legacy_key_distrusted| is true, seeds signed only with the legacy
+  // ECDSA P-256 key are rejected.
   // |seed_type| indicates the source of the seed for logging purposes.
   // |result| must be non-null, and will be populated on success.
   // Returns success or some error value.
@@ -506,6 +526,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
       const std::string& base64_seed_signature,
       SeedType seed_type,
       bool signature_verification_enabled,
+      bool legacy_key_distrusted,
       ValidatedSeed* result);
 
   // Applies a delta-compressed |patch| to |existing_data|, producing the result

@@ -57,6 +57,13 @@ inline constexpr char kVariationsGoogleGroups[] = "variations_google_groups";
 // Variations server responds with 200 or 304). This is a client timestamp.
 inline constexpr char kVariationsLastFetchTime[] = "variations_last_fetch_time";
 
+// Pref indicating that this client has received and verified a seed signed by
+// one of the pinned post-quantum hybrid keys (Key IDs 1, 2, or 3). Once set to
+// true, the client stops advertising legacy Key ID 0 in `X-Seed-Key-Ids` and
+// rejects seeds signed only by the legacy ECDSA P-256 key.
+inline constexpr char kVariationsLegacySeedKeyDistrusted[] =
+    "variations_legacy_seed_key_distrusted";
+
 // The milestone, e.g. 96, with which the regular seed was fetched.
 inline constexpr char kVariationsSeedMilestone[] = "variations_seed_milestone";
 

@@ -270,6 +270,13 @@ std::string AppendOrReplaceQueryParameter(std::string_view query,
   // ("x-bm"), as it is not applicable on first run (since there is no
   // existing seed).
   [request setValue:@"gzip" forHTTPHeaderField:@"A-IM"];
+  // Advertise the pinned verification key IDs supported by this client
+  // (1, 2, 3 = hybrid ECDSA P-256 + ML-DSA-44 PQ keys; 0 = legacy ECDSA P-256
+  // fallback) so the server can return a post-quantum seed signature.
+  [request setValue:base::SysUTF8ToNSString(
+                        variations::kSupportedSeedKeyIdsWithLegacy)
+      forHTTPHeaderField:base::SysUTF8ToNSString(
+                             variations::kSeedKeyIdsHeaderName)];
   NSURLSessionDataTask* task = [[NSURLSession sharedSession]
       dataTaskWithRequest:request
         completionHandler:^(NSData* data, NSURLResponse* response,
