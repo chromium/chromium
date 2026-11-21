@@ -1656,6 +1656,78 @@ TEST_F(TextFragmentAnchorTest, NoMatchFoundFallsBackToElementFragment) {
       << LayoutViewport()->GetScrollOffset().ToString();
 }
 
+// Test that when a text directive fails to match and DidFinishSearch() runs
+// inside a ScriptForbiddenScope (e.g. during a script-forced layout), element
+// fragment fallback is deferred to FinalizeAnchor(), where it can safely
+// dispatch beforematch, reveal the hidden="until-found" target, and scroll it
+// into view after layout updates.
+TEST_F(TextFragmentAnchorTest,
+       FallbackToHiddenUntilFoundElementDefersToFinalizeAnchor) {
+  SimRequest request("https://example.com/test.html#element:~:text=cats",
+                     "text/html");
+  LoadURL("https://example.com/test.html#element:~:text=cats");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body {
+        height: 3200px;
+      }
+      #spacer {
+        height: 1000px;
+      }
+    </style>
+    <div id="spacer"></div>
+    <div id="element" hidden="until-found">Some text</div>
+    <script>
+      const element = document.getElementById('element');
+      element.addEventListener('beforematch', () => {
+        element.setAttribute(
+            'data-hidden-during-beforematch',
+            String(element.hasAttribute('hidden')));
+        element.setAttribute(
+            'data-scrolly-during-beforematch',
+            String(window.scrollY));
+        // Dirty layout during beforematch to verify that
+        // ElementFragmentAnchor::Invoke() runs after layout is updated.
+        document.getElementById('spacer').style.height = '2000px';
+      });
+    </script>
+  )HTML");
+
+  // Run the initial search at load. Since "cats" is not found, the
+  // TextFragmentAnchor remains active waiting for the post-load retry timer.
+  BeginEmptyFrame();
+  ASSERT_TRUE(GetDocument().View()->GetFragmentAnchor());
+
+  // Advance past the post-load retry timeout so the search completes
+  // (iteration_ == kDone) on the next layout, then force layout from script
+  // so DidFinishSearch() runs inside a ScriptForbiddenScope.
+  task_environment().FastForwardBy(TextFragmentAnchor::PostLoadTaskTimeout());
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
+
+  Element& element = *GetElementById("element");
+  // The element should not be revealed yet because FinalizeAnchor() has not
+  // run.
+  EXPECT_TRUE(element.FastHasAttribute(html_names::kHiddenAttr));
+
+  // In the next animation frame, FinalizeAnchor() runs in pre-rAF tasks to
+  // reveal #element and install the fallback ElementFragmentAnchor, which
+  // scrolls #element into view after layout and is then cleared.
+  Compositor().BeginFrame();
+  EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
+
+  EXPECT_FALSE(element.FastHasAttribute(html_names::kHiddenAttr));
+  EXPECT_EQ("true", element.getAttribute(
+                        AtomicString("data-hidden-during-beforematch")));
+  EXPECT_EQ("0", element.getAttribute(
+                     AtomicString("data-scrolly-during-beforematch")));
+  EXPECT_EQ(&element, GetDocument().CssTarget());
+  EXPECT_GE(LayoutViewport()->GetScrollOffset().y(), 2000);
+  EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(element)))
+      << "#element wasn't scrolled into view, viewport's scroll offset: "
+      << LayoutViewport()->GetScrollOffset().ToString();
+}
+
 // Test that we don't match partial words at the beginning or end of the text.
 TEST_F(TextFragmentAnchorTest, CheckForWordBoundary) {
   SimRequest request(
