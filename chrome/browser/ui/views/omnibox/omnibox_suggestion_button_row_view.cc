@@ -27,24 +27,24 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition_utils.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
-#include "ui/views/background.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_manager.h"
-#include "ui/views/painter.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
@@ -59,8 +59,7 @@ class OmniboxSuggestionRowChip : public views::MdTextButton {
       : MdTextButton({},
                      text,
                      CONTEXT_OMNIBOX_POPUP_ROW_CHIP,
-                     /*use_text_color_for_icon=*/true),
-        icon_(&icon) {
+                     /*use_text_color_for_icon=*/false) {
     // Default margin of the suggestion row's children is (0, 4, 0, 8). Remove
     // the left margin for chips per UX decision.
     SetProperty(
@@ -73,6 +72,13 @@ class OmniboxSuggestionRowChip : public views::MdTextButton {
     SetCustomPadding(gfx::Insets::VH(0, 7));
     SetCornerRadius(100);  // Large number to ensure 100% rounded.
 
+    SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(icon, kColorOmniboxResultsIcon, 10));
+    SetEnabledTextColors(ui::kColorSysOnSurfaceSubtle);
+    SetBgColorOverride(kColorOmniboxResultsChipBackground);
+    SetStrokeColorOverride(SK_ColorTRANSPARENT);
+
     views::InkDrop::Get(this)->GetInkDrop()->SetShowHighlightOnHover(false);
   }
 
@@ -80,37 +86,6 @@ class OmniboxSuggestionRowChip : public views::MdTextButton {
   OmniboxSuggestionRowChip& operator=(const OmniboxSuggestionRowChip&) = delete;
 
   ~OmniboxSuggestionRowChip() override = default;
-
-  void SetThemeState(OmniboxPartState theme_state) {
-    if (theme_state_ == theme_state) {
-      return;
-    }
-    theme_state_ = theme_state;
-    OnThemeChanged();
-  }
-
-  void OnThemeChanged() override {
-    MdTextButton::OnThemeChanged();
-    // We can't use colors from NativeTheme as the omnibox theme might be
-    // different (for example, if the NTP colors are customized).
-    const auto* const color_provider = GetColorProvider();
-    SetImageModel(
-        views::Button::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(*icon_, kColorOmniboxResultsIcon, 10));
-    SetEnabledTextColors(
-        color_provider->GetColor(ui::kColorSysOnSurfaceSubtle));
-  }
-
-  void UpdateBackgroundColor() override {
-    const auto* const color_provider = GetColorProvider();
-    const SkColor color =
-        color_provider->GetColor(kColorOmniboxResultsChipBackground);
-    SetBackground(views::CreateRoundedRectBackground(color, GetCornerRadii()));
-  }
-
- private:
-  raw_ptr<const gfx::VectorIcon> icon_;
-  OmniboxPartState theme_state_ = OmniboxPartState::NORMAL;
 };
 
 BEGIN_METADATA(OmniboxSuggestionRowChip)
@@ -315,6 +290,9 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
 
     GetViewAccessibility().SetRole(ax::mojom::Role::kListBoxOption);
     GetViewAccessibility().SetIsSelected(false);
+
+    SetStrokeColorOverride(kColorOmniboxResultsButtonBorder);
+    UpdateThemeColors();
   }
 
   OmniboxSuggestionRowButton(const OmniboxSuggestionRowButton&) = delete;
@@ -337,17 +315,14 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
       return;
     }
     theme_state_ = theme_state;
-    OnThemeChanged();
+    UpdateThemeColors();
   }
 
   OmniboxPopupSelection selection() const { return selection_; }
 
-  void OnThemeChanged() override {
-    MdTextButton::OnThemeChanged();
-    // We can't use colors from NativeTheme as the omnibox theme might be
-    // different (for example, if the NTP colors are customized).
-    const auto* const color_provider = GetColorProvider();
+  void UpdateThemeColors() {
     const bool selected = theme_state_ == OmniboxPartState::SELECTED;
+    SetBgColorOverride(GetOmniboxBackgroundColorId(theme_state_));
     if (!image_.IsEmpty()) {
       SetImageModel(views::Button::STATE_NORMAL,
                     ui::ImageModel::FromImage(image_));
@@ -360,8 +335,8 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
                        : kColorOmniboxResultsButtonIcon,
               GetLayoutConstant(LayoutConstant::kLocationBarIconSize)));
     }
-    SetEnabledTextColors(color_provider->GetColor(
-        selected ? kColorOmniboxResultsTextSelected : kColorOmniboxText));
+    SetEnabledTextColors(selected ? kColorOmniboxResultsTextSelected
+                                  : kColorOmniboxText);
     ConfigureInkDropForRefresh2023(
         this,
         /*hover_color_id=*/
@@ -374,30 +349,17 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     views::FocusRing::Get(this)->SchedulePaint();
   }
 
-  void UpdateBackgroundColor() override {
-    const auto* const color_provider = GetColorProvider();
-    const SkColor stroke_color =
-        color_provider->GetColor(kColorOmniboxResultsButtonBorder);
-    const SkColor fill_color =
-        color_provider->GetColor(GetOmniboxBackgroundColorId(theme_state_));
-    SetBackground(CreateBackgroundFromPainter(
-        views::Painter::CreateRoundRectWith1PxBorderPainter(
-            fill_color, stroke_color, GetCornerRadii(), SkBlendMode::kSrcOver,
-            /*antialias=*/true,
-            /*should_border_scale=*/true)));
-  }
-
   void SetIcon(const gfx::VectorIcon& icon) {
     if (icon_ != &icon) {
       icon_ = &icon;
-      OnThemeChanged();
+      UpdateThemeColors();
     }
   }
 
   void SetImage(const gfx::Image& image) {
     if (image_ != image) {
       image_ = image;
-      OnThemeChanged();
+      UpdateThemeColors();
     }
   }
 
@@ -576,9 +538,6 @@ void OmniboxSuggestionButtonRowView::SelectionStateChanged() {
 
 void OmniboxSuggestionButtonRowView::SetThemeState(
     OmniboxPartState theme_state) {
-  if (embeddings_chip_) {
-    embeddings_chip_->SetThemeState(theme_state);
-  }
   if (keyword_button_) {
     keyword_button_->SetThemeState(theme_state);
   }
