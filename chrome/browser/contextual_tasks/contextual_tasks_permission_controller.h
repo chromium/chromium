@@ -94,6 +94,8 @@ class ContextualTasksPermissionController
       toolbar_ui_api::mojom::LhsChipIdentifier chip_identifier,
       bool is_mouse_interaction,
       uint32_t state_token);
+  virtual void OnChipMousePressed(
+      toolbar_ui_api::mojom::LhsChipIdentifier chip_identifier);
   virtual void OnChipPointerEntered(
       toolbar_ui_api::mojom::LhsChipIdentifier chip_identifier);
   virtual void OnChipPointerExited(

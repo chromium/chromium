@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -14,10 +15,12 @@
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_location_bar.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_panel_controller.h"
+#include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/location_bar/location_bar_override_data.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
+#include "chrome/browser/ui/views/permissions/chip/permission_chip_interface.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_theme.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_chip.h"
@@ -43,6 +46,15 @@
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace contextual_tasks {
+
+namespace {
+
+class MockPermissionChipObserver : public PermissionChipInterface::Observer {
+ public:
+  MOCK_METHOD(void, OnMousePressed, (), (override));
+};
+
+}  // namespace
 
 class ContextualTasksPermissionControllerTest
     : public ChromeRenderViewHostTestHarness {
@@ -211,6 +223,27 @@ TEST_F(ContextualTasksPermissionControllerTest, ForwardsChipInteractions) {
   controller()->OnChipPointerExited(
       toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest);
   EXPECT_FALSE(request_chip->IsMouseHovered());
+
+  testing::StrictMock<MockPermissionChipObserver> request_observer;
+  testing::StrictMock<MockPermissionChipObserver> indicator_observer;
+  base::ScopedObservation<PermissionChipInterface,
+                          PermissionChipInterface::Observer>
+      request_observation(&request_observer);
+  base::ScopedObservation<PermissionChipInterface,
+                          PermissionChipInterface::Observer>
+      indicator_observation(&indicator_observer);
+  request_observation.Observe(request_chip);
+  indicator_observation.Observe(dashboard->indicator_chip());
+
+  EXPECT_CALL(request_observer, OnMousePressed());
+  controller()->OnChipMousePressed(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest);
+  testing::Mock::VerifyAndClearExpectations(&request_observer);
+
+  EXPECT_CALL(indicator_observer, OnMousePressed());
+  controller()->OnChipMousePressed(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator);
+  testing::Mock::VerifyAndClearExpectations(&indicator_observer);
 }
 
 // Switching the active task invalidates the chips' tokens even if their
@@ -1001,6 +1034,28 @@ TEST_F(ContextualTasksPermissionControllerRearchitectureDisabledTest,
   EXPECT_EQ(
       location_bar::LocationBarOverrideData::FromWebContents(web_contents()),
       nullptr);
+}
+
+TEST_F(ContextualTasksPermissionControllerTest,
+       LocationBarResolvesBubbleModelDelegate) {
+  ContextualTasksLocationBar* location_bar =
+      controller()->GetLocationBarForTesting();
+  ASSERT_TRUE(location_bar);
+
+  EXPECT_EQ(location_bar->GetContentSettingBubbleModelDelegate(), nullptr);
+  BrowserContentSettingBubbleModelDelegate bubble_model_delegate(
+      mock_browser_window());
+  ContentSettingBubbleModelDelegate* delegate =
+      location_bar->GetContentSettingBubbleModelDelegate();
+  ASSERT_NE(delegate, nullptr);
+
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller(
+      mock_browser_window());
+  EXPECT_CALL(
+      mock_panel_controller,
+      OpenUrlInNewTab(GURL("https://support.google.com/chrome/answer/3220216")))
+      .Times(1);
+  delegate->ShowLearnMorePage(ContentSettingsType::NOTIFICATIONS);
 }
 
 TEST_F(ContextualTasksPermissionControllerTest,

@@ -1478,7 +1478,11 @@ void ContextualTasksUIBase::OnChipCollapseAnimationEnded(
 }
 
 void ContextualTasksUIBase::OnChipMousePressed(
-    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {}
+    toolbar_ui_api::mojom::LhsChipIdentifier identifier) {
+  if (ContextualTasksPermissionController* controller = GetActiveController()) {
+    controller->OnChipMousePressed(identifier);
+  }
+}
 
 void ContextualTasksUIBase::OnChipPointerEntered(
     toolbar_ui_api::mojom::LhsChipIdentifier identifier) {

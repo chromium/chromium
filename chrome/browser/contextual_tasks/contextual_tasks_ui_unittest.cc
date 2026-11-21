@@ -265,6 +265,10 @@ class FakeContextualTasksPermissionController
     last_clicked_is_mouse_interaction = is_mouse_interaction;
     last_clicked_state_token = state_token;
   }
+  void OnChipMousePressed(
+      toolbar_ui_api::mojom::LhsChipIdentifier identifier) override {
+    last_mouse_pressed_ = identifier;
+  }
   void OnChipPointerEntered(
       toolbar_ui_api::mojom::LhsChipIdentifier identifier) override {
     last_pointer_entered_ = identifier;
@@ -285,8 +289,12 @@ class FakeContextualTasksPermissionController
   bool last_clicked_is_mouse_interaction = false;
   uint32_t last_clicked_state_token = 0;
 
-  std::optional<toolbar_ui_api::mojom::LhsChipIdentifier>
-  last_pointer_entered() const {
+  std::optional<toolbar_ui_api::mojom::LhsChipIdentifier> last_mouse_pressed()
+      const {
+    return last_mouse_pressed_;
+  }
+  std::optional<toolbar_ui_api::mojom::LhsChipIdentifier> last_pointer_entered()
+      const {
     return last_pointer_entered_;
   }
   std::optional<toolbar_ui_api::mojom::LhsChipIdentifier>
@@ -295,6 +303,7 @@ class FakeContextualTasksPermissionController
   }
 
  private:
+  std::optional<toolbar_ui_api::mojom::LhsChipIdentifier> last_mouse_pressed_;
   std::optional<toolbar_ui_api::mojom::LhsChipIdentifier> last_pointer_entered_;
   std::optional<toolbar_ui_api::mojom::LhsChipIdentifier> last_pointer_exited_;
 };
@@ -2167,11 +2176,15 @@ TEST_F(ContextualTasksUiTest, ContextualTasksToolbarUIServiceBindTest) {
   EXPECT_TRUE(fake_controller.last_clicked_is_mouse_interaction);
   EXPECT_EQ(fake_controller.last_clicked_state_token, 42u);
 
+  remote->OnChipMousePressed(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator);
   remote->OnChipPointerEntered(
       toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest);
   remote->OnChipPointerExited(
       toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator);
   remote.FlushForTesting();
+  EXPECT_EQ(fake_controller.last_mouse_pressed(),
+            toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator);
   EXPECT_EQ(fake_controller.last_pointer_entered(),
             toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest);
   EXPECT_EQ(fake_controller.last_pointer_exited(),

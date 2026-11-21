@@ -9,6 +9,7 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
+#include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
@@ -19,13 +20,25 @@
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/webui_permission_dashboard.h"
 #include "components/page_info/page_info.h"
+#include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
+#include "url/gurl.h"
 
 namespace contextual_tasks {
+
+namespace {
+
+// Matches `BrowserContentSettingBubbleModelDelegate::ShowLearnMorePage()`.
+constexpr char kInsecureScriptHelpUrl[] =
+    "https://support.google.com/chrome/?p=unauthenticated";
+constexpr char kNotificationsHelpUrl[] =
+    "https://support.google.com/chrome/answer/3220216";
+
+}  // namespace
 
 ContextualTasksLocationBar::ContextualTasksLocationBar(
     BrowserWindowInterface* browser_window,
@@ -239,7 +252,65 @@ ContextualTasksLocationBar::GetContentSettingWebContents() {
 
 ContentSettingBubbleModelDelegate*
 ContextualTasksLocationBar::GetContentSettingBubbleModelDelegate() {
-  return nullptr;
+  return BrowserContentSettingBubbleModelDelegate::From(browser_window_)
+             ? &bubble_model_delegate_
+             : nullptr;
+}
+
+ContextualTasksLocationBar::BubbleModelDelegate::BubbleModelDelegate(
+    ContextualTasksLocationBar& owner)
+    : owner_(owner) {}
+
+ContextualTasksLocationBar::BubbleModelDelegate::~BubbleModelDelegate() =
+    default;
+
+void ContextualTasksLocationBar::BubbleModelDelegate::
+    ShowCollectedCookiesDialog(content::WebContents* web_contents) {
+  if (auto* delegate = BrowserContentSettingBubbleModelDelegate::From(
+          owner_->browser_window_)) {
+    delegate->ShowCollectedCookiesDialog(web_contents);
+  }
+}
+
+void ContextualTasksLocationBar::BubbleModelDelegate::ShowContentSettingsPage(
+    ContentSettingsType type) {
+  if (auto* delegate = BrowserContentSettingBubbleModelDelegate::From(
+          owner_->browser_window_)) {
+    delegate->ShowContentSettingsPage(type);
+  }
+}
+
+void ContextualTasksLocationBar::BubbleModelDelegate::ShowMediaSettingsPage() {
+  if (auto* delegate = BrowserContentSettingBubbleModelDelegate::From(
+          owner_->browser_window_)) {
+    delegate->ShowMediaSettingsPage();
+  }
+}
+
+void ContextualTasksLocationBar::BubbleModelDelegate::ShowLearnMorePage(
+    ContentSettingsType type) {
+  ContextualTasksPanelController* coordinator = owner_->GetCoordinator();
+  if (!coordinator) {
+    if (auto* delegate = BrowserContentSettingBubbleModelDelegate::From(
+            owner_->browser_window_)) {
+      delegate->ShowLearnMorePage(type);
+    }
+    return;
+  }
+
+  switch (type) {
+    case ContentSettingsType::ADS:
+      coordinator->OpenUrlInNewTab(GURL(subresource_filter::kLearnMoreLink));
+      return;
+    case ContentSettingsType::MIXEDSCRIPT:
+      coordinator->OpenUrlInNewTab(GURL(kInsecureScriptHelpUrl));
+      return;
+    case ContentSettingsType::NOTIFICATIONS:
+      coordinator->OpenUrlInNewTab(GURL(kNotificationsHelpUrl));
+      return;
+    default:
+      return;
+  }
 }
 
 }  // namespace contextual_tasks

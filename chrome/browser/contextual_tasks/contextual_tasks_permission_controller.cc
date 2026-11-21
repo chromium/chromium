@@ -293,6 +293,16 @@ void ContextualTasksPermissionController::OnChipClicked(
 #endif
 }
 
+void ContextualTasksPermissionController::OnChipMousePressed(
+    toolbar_ui_api::mojom::LhsChipIdentifier chip_identifier) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (WebUIPermissionChip* chip = GetChip(chip_identifier)) {
+    chip->OnMousePressed();
+  }
+  // No state to push to webUI, so do not push state to webUI here.
+#endif
+}
+
 void ContextualTasksPermissionController::OnChipPointerEntered(
     toolbar_ui_api::mojom::LhsChipIdentifier chip_identifier) {
 #if !BUILDFLAG(IS_ANDROID)
