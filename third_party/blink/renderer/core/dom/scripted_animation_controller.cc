@@ -158,8 +158,10 @@ bool ScriptedAnimationController::DispatchEvents(DispatchFilter filter) {
     events.swap(event_queue_);
     per_frame_events_.clear();
   } else {
+    HeapVector<Member<Event>> original_events;
+    original_events.swap(event_queue_);
     HeapVector<Member<Event>> remaining;
-    for (auto& event : event_queue_) {
+    for (auto& event : original_events) {
       if (event && filter.Run(event)) {
         EraseFromPerFrameEventsMap(event.Get());
         events.push_back(event.Release());
@@ -167,6 +169,7 @@ bool ScriptedAnimationController::DispatchEvents(DispatchFilter filter) {
         remaining.push_back(event.Release());
       }
     }
+    remaining.append_range(event_queue_);
     remaining.swap(event_queue_);
   }
 
