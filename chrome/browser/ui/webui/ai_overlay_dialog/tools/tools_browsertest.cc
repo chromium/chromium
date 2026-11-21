@@ -41,6 +41,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/media_start_stop_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -445,6 +446,133 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, VideoControls) {
     base::test::TestFuture<SeekToTimestampResult> future;
     tools()->SeekToTimestamp("0:05", future.GetCallback());
     EXPECT_TRUE(future.Get().has_value());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest,
+                       PlayVideoResumesContentPausedVideo) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     "/media/session/video-with-metadata.html")));
+
+  content::WebContents* contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  // Start playback directly on the <video> element (without registering
+  // navigator.mediaSession action handlers) and wait for MediaSessionImpl on
+  // the browser UI thread to observe playback start, then pause via page
+  // script (SuspendType::kContent) and wait for browser-side pause propagation.
+  {
+    content::MediaStartStopObserver start_observer(
+        contents, content::MediaStartStopObserver::Type::kStart);
+    ASSERT_TRUE(
+        content::ExecJs(contents, "document.querySelector('video').play()"));
+    start_observer.Wait();
+  }
+  {
+    content::MediaStartStopObserver stop_observer(
+        contents, content::MediaStartStopObserver::Type::kStop);
+    ASSERT_TRUE(content::EvalJs(contents, R"(
+      (async () => {
+        const video = document.querySelector('video');
+        const paused = new Promise(
+            r => video.addEventListener('pause', r, {once: true}));
+        video.pause();
+        await paused;
+        return video.paused;
+      })()
+    )")
+                    .ExtractBool());
+    stop_observer.Wait();
+  }
+
+  ASSERT_TRUE(content::ExecJs(
+      contents,
+      "window.resumedPromise = new Promise(r => "
+      "document.querySelector('video').addEventListener('play', () => "
+      "r(!document.querySelector('video').paused), {once: true}));",
+      content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  base::test::TestFuture<PlayVideoResult> future;
+  tools()->PlayVideo(future.GetCallback());
+  EXPECT_TRUE(future.Get().has_value());
+  EXPECT_TRUE(content::EvalJs(contents, "window.resumedPromise").ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest,
+                       NullBrowserReturnsErrorWithoutCrashing) {
+  mojo::PendingRemote<ai_overlay_dialog::mojom::AiOverlayTools> remote;
+  std::unique_ptr<AiOverlayTools> null_browser_tools = AiOverlayTools::Create(
+      remote.InitWithNewPipeAndPassReceiver(), /*browser=*/nullptr,
+      /*page_context_monitor=*/nullptr);
+
+  {
+    base::test::TestFuture<base::expected<std::monostate, std::string>> future;
+    null_browser_tools->OpenUrl("https://example.com", /*new_tab=*/false,
+                                future.GetCallback());
+    EXPECT_FALSE(future.Get().has_value());
+  }
+  {
+    base::test::TestFuture<FollowLinkResult> future;
+    null_browser_tools->FollowLink("missing-link", future.GetCallback());
+    EXPECT_FALSE(future.Get().has_value());
+  }
+  {
+    base::test::TestFuture<PerformSearchResult> future;
+    null_browser_tools->PerformSearch("query", /*new_tab=*/false,
+                                      future.GetCallback());
+    EXPECT_FALSE(future.Get().has_value());
+  }
+  {
+    base::test::TestFuture<base::expected<std::string, std::string>> future;
+    null_browser_tools->OpenPage("example", future.GetCallback());
+    EXPECT_FALSE(future.Get().has_value());
+  }
+  {
+    base::test::TestFuture<PlayVideoResult> future;
+    null_browser_tools->PlayVideo(future.GetCallback());
+    EXPECT_FALSE(future.Get().has_value());
+  }
+  {
+    base::test::TestFuture<PauseVideoResult> future;
+    null_browser_tools->PauseVideo(future.GetCallback());
+    EXPECT_FALSE(future.Get().has_value());
+  }
+  {
+    base::test::TestFuture<base::expected<std::monostate, std::string>> future;
+    null_browser_tools->SetFullscreen(/*fullscreen=*/true,
+                                      future.GetCallback());
+    EXPECT_FALSE(future.Get().has_value());
+  }
+  {
+    base::test::TestFuture<base::expected<std::monostate, std::string>> future;
+    null_browser_tools->AddBookmark(future.GetCallback());
+    EXPECT_FALSE(future.Get().has_value());
+  }
+  {
+    base::test::TestFuture<base::expected<std::monostate, std::string>> future;
+    null_browser_tools->RemoveBookmark(future.GetCallback());
+    EXPECT_FALSE(future.Get().has_value());
+  }
+  {
+    base::test::TestFuture<SwitchTabResult> future;
+    null_browser_tools->SwitchTab("tab", future.GetCallback());
+    EXPECT_FALSE(future.Get().has_value());
+  }
+  {
+    base::test::TestFuture<CloseTabResult> future;
+    null_browser_tools->CloseCurrentTab(future.GetCallback());
+    EXPECT_FALSE(future.Get().has_value());
+  }
+  {
+    base::test::TestFuture<base::expected<std::string, std::string>> future;
+    null_browser_tools->OpenGeminiPanel("hello", future.GetCallback());
+    EXPECT_FALSE(future.Get().has_value());
+  }
+  {
+    base::test::TestFuture<base::expected<std::monostate, std::string>> future;
+    null_browser_tools->CloseGeminiPanel(future.GetCallback());
+    EXPECT_FALSE(future.Get().has_value());
   }
 }
 

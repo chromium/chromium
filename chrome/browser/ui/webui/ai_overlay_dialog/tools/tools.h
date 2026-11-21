@@ -166,8 +166,9 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools,
   mojo::Receiver<ai_overlay_dialog::mojom::AiOverlayToolRegistry>
       registry_receiver_{this};
   raw_ptr<BrowserWindowInterface> browser_;
-  // `page_context_monitor_` is owned by `AiOverlayDialogUntrustedUI` and must
-  // outlive `AiOverlayTools`.
+  // Owned by `AiOverlayDialogUntrustedUI` (when hosted by AI Overlay Dialog)
+  // and must outlive `AiOverlayTools` if non-null; may be null when hosted by
+  // Glic.
   raw_ptr<PageContextMonitor> page_context_monitor_;
 
   std::unique_ptr<AnnotationTask> annotation_task_;

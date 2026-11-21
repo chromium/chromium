@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
@@ -123,7 +124,8 @@ void AiOverlayTools::OpenUrl(const std::string& url_string,
     return;
   }
 
-  if (!browser()) {
+  BrowserWindowInterface* current_browser = browser();
+  if (!current_browser) {
     std::move(callback).Run(base::unexpected("No browser window available"));
     return;
   }
@@ -134,16 +136,20 @@ void AiOverlayTools::OpenUrl(const std::string& url_string,
   // TODO(crbug.com/534887116): Report the navigation outcome instead of
   // succeeding immediately. On Android, OpenURL() may start the navigation
   // asynchronously.
-  browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                         url, disposition, ui::PAGE_TRANSITION_LINK),
-                     /*navigation_handle_callback=*/{});
+  current_browser->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                               url, disposition, ui::PAGE_TRANSITION_LINK),
+                           /*navigation_handle_callback=*/{});
   std::move(callback).Run(std::monostate());
 }
 
 void AiOverlayTools::FollowLink(const std::string& id,
                                 FollowLinkCallback callback) {
   RecordToolCallInvoked("FollowLink");
-  CHECK(page_context_monitor_);
+  if (!page_context_monitor_) {
+    std::move(callback).Run(
+        base::unexpected("Page context monitor not available"));
+    return;
+  }
 
   std::string url = page_context_monitor_->GetUrlForHash(id);
   if (url.empty()) {
@@ -159,8 +165,13 @@ void AiOverlayTools::PerformSearch(const std::string& query,
                                    bool new_tab,
                                    PerformSearchCallback callback) {
   RecordToolCallInvoked("PerformSearch");
+  BrowserWindowInterface* current_browser = browser();
+  if (!current_browser) {
+    std::move(callback).Run(base::unexpected("No browser window available"));
+    return;
+  }
   TemplateURLService* template_url_service =
-      TemplateURLServiceFactory::GetForProfile(browser_->GetProfile());
+      TemplateURLServiceFactory::GetForProfile(current_browser->GetProfile());
   if (!template_url_service) {
     std::move(callback).Run(base::unexpected("Search service not available"));
     return;
@@ -297,7 +308,7 @@ void AiOverlayTools::PlayVideo(PlayVideoCallback callback) {
   content::MediaSession* media_session =
       content::MediaSession::GetIfExists(contents);
   if (media_session) {
-    media_session->Resume(content::MediaSession::SuspendType::kSystem);
+    media_session->Resume(content::MediaSession::SuspendType::kUI);
     std::move(callback).Run(std::monostate());
   } else {
     std::move(callback).Run(base::unexpected("No active media session"));
@@ -315,7 +326,7 @@ void AiOverlayTools::PauseVideo(PauseVideoCallback callback) {
   content::MediaSession* media_session =
       content::MediaSession::GetIfExists(contents);
   if (media_session) {
-    media_session->Suspend(content::MediaSession::SuspendType::kSystem);
+    media_session->Suspend(content::MediaSession::SuspendType::kUI);
     std::move(callback).Run(std::monostate());
   } else {
     std::move(callback).Run(base::unexpected("No active media session"));
@@ -389,7 +400,12 @@ void AiOverlayTools::TranslatePage(const std::string& target_language,
 
 void AiOverlayTools::AddBookmark(AddBookmarkCallback callback) {
   RecordToolCallInvoked("AddBookmark");
-  Profile* profile = browser_->GetProfile();
+  BrowserWindowInterface* current_browser = browser();
+  if (!current_browser) {
+    std::move(callback).Run(base::unexpected("No browser window available"));
+    return;
+  }
+  Profile* profile = current_browser->GetProfile();
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile);
   if (!bookmark_model || !bookmark_model->loaded()) {
@@ -414,7 +430,12 @@ void AiOverlayTools::AddBookmark(AddBookmarkCallback callback) {
 
 void AiOverlayTools::RemoveBookmark(RemoveBookmarkCallback callback) {
   RecordToolCallInvoked("RemoveBookmark");
-  Profile* profile = browser_->GetProfile();
+  BrowserWindowInterface* current_browser = browser();
+  if (!current_browser) {
+    std::move(callback).Run(base::unexpected("No browser window available"));
+    return;
+  }
+  Profile* profile = current_browser->GetProfile();
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile);
   if (!bookmark_model || !bookmark_model->loaded()) {
