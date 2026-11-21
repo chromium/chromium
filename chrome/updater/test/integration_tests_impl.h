@@ -457,8 +457,11 @@ void ExpectPing(UpdaterScope scope,
                 const std::string& app_id,
                 int event_type,
                 std::optional<GURL> target_url);
+// Expects an install ping for `app_id` with `installsource` set to
+// `install_source`.
 void ExpectInstallSource(UpdaterScope scope,
                          ScopedServer& test_server,
+                         const std::string& app_id,
                          const std::string& install_source);
 void ExpectAppCommandPing(UpdaterScope scope,
                           ScopedServer& test_server,
@@ -470,6 +473,8 @@ void ExpectAppCommandPing(UpdaterScope scope,
                           const base::Version& version,
                           const base::Version& updater_version);
 
+// Expects an update check in which at least one app has an empty
+// `updatecheck`, and responds with no apps.
 void ExpectUpdateCheckRequest(UpdaterScope scope, ScopedServer& test_server);
 
 void ExpectUpdateCheckSequence(UpdaterScope scope,

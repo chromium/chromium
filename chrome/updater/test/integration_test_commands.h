@@ -72,6 +72,7 @@ class IntegrationTestCommands
                           int event_type,
                           std::optional<GURL> target_url) const = 0;
   virtual void ExpectInstallSource(ScopedServer& test_server,
+                                   const std::string& app_id,
                                    const std::string& install_source) const = 0;
   virtual void ExpectAppCommandPing(
       ScopedServer& test_server,

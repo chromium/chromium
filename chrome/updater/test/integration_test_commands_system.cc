@@ -212,8 +212,9 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
   }
 
   void ExpectInstallSource(ScopedServer& test_server,
+                           const std::string& app_id,
                            const std::string& install_source) const override {
-    updater::test::ExpectInstallSource(updater_scope_, test_server,
+    updater::test::ExpectInstallSource(updater_scope_, test_server, app_id,
                                        install_source);
   }
 

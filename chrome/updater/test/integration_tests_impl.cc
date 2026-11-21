@@ -1489,15 +1489,17 @@ void ExpectPing(UpdaterScope scope,
 
 void ExpectInstallSource(UpdaterScope scope,
                          ScopedServer& test_server,
+                         const std::string& app_id,
                          const std::string& install_source) {
-  test_server.ExpectOnce({request::GetPathMatcher(test_server.update_path()),
-                          request::GetUpdaterUserAgentMatcher(),
-                          request::GetContentMatcher(
-                              {absl::StrFormat(R"(.*"eventtype":%d,.*)", 2)}),
-                          request::GetContentMatcher({absl::StrFormat(
-                              R"(.*"installsource":"%s",.*)", install_source)}),
-                          request::GetScopeMatcher(scope)},
-                         ")]}'\n");
+  test_server.ExpectOnce(
+      {request::GetPathMatcher(test_server.update_path()),
+       request::GetUpdaterUserAgentMatcher(),
+       request::GetJSONContentMatcher(json::HasApp(
+           app_id,
+           testing::AllOf(json::HasKey("installsource", install_source),
+                          json::HasEvent(json::HasKey("eventtype", 2))))),
+       request::GetScopeMatcher(scope)},
+      ")]}'\n");
 }
 
 void ExpectAppCommandPing(UpdaterScope scope,
@@ -1566,11 +1568,14 @@ void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer& test_server) {
 }
 
 void ExpectUpdateCheckRequest(UpdaterScope scope, ScopedServer& test_server) {
-  test_server.ExpectOnce({request::GetPathMatcher(test_server.update_path()),
-                          request::GetUpdaterUserAgentMatcher(),
-                          request::GetContentMatcher({R"("updatecheck":{})"}),
-                          request::GetScopeMatcher(scope)},
-                         GetUpdateResponseV4({}));
+  test_server.ExpectOnce(
+      {request::GetPathMatcher(test_server.update_path()),
+       request::GetUpdaterUserAgentMatcher(),
+       request::GetJSONContentMatcher(json::UpdateRequest(
+           json::HasKey("apps", json::IsList(testing::Contains(json::HasKey(
+                                    "updatecheck", base::DictValue())))))),
+       request::GetScopeMatcher(scope)},
+      GetUpdateResponseV4({}));
 }
 
 void ExpectUpdateCheckSequence(UpdaterScope scope,

@@ -793,8 +793,9 @@ class IntegrationTest : public ::testing::Test {
   }
 
   void ExpectInstallSource(ScopedServer& test_server,
+                           const std::string& app_id,
                            const std::string& install_source) {
-    test_commands_->ExpectInstallSource(test_server, install_source);
+    test_commands_->ExpectInstallSource(test_server, app_id, install_source);
   }
 
   void ExpectAppCommandPing(
@@ -5662,7 +5663,8 @@ TEST_F(IntegrationTest, OfflineInstallProvidedInstallSource) {
   ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
-  ASSERT_NO_FATAL_FAILURE(ExpectInstallSource(test_server, "enterprisemsi"));
+  ASSERT_NO_FATAL_FAILURE(ExpectInstallSource(
+      test_server, "{CDABE316-39CD-43BA-8440-6D1E0547AEE6}", "enterprisemsi"));
   ASSERT_NO_FATAL_FAILURE(
       RunOfflineInstall(/*is_legacy_install=*/false,
                         /*is_silent_install=*/false,
@@ -5680,7 +5682,8 @@ TEST_F(IntegrationTest, OfflineInstallInferredInstallSource) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
   ASSERT_NO_FATAL_FAILURE(
-      ExpectInstallSource(test_server, updater::kInstallSourceOffline));
+      ExpectInstallSource(test_server, "{CDABE316-39CD-43BA-8440-6D1E0547AEE6}",
+                          updater::kInstallSourceOffline));
   ASSERT_NO_FATAL_FAILURE(RunOfflineInstall(/*is_legacy_install=*/false,
                                             /*is_silent_install=*/false));
 
