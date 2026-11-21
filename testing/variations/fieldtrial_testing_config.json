@@ -21619,6 +21619,19 @@
             ]
         }
     ],
+    "WebRTC-RustOpenH264Encoding": [
+        {
+            "platforms": [
+                "linux",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled"
+                }
+            ]
+        }
+    ],
     "WebRTC-SendBufferSizeBytes": [
         {
             "platforms": [
