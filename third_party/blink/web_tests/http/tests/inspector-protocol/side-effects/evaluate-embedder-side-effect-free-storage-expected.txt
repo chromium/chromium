@@ -1,0 +1,20 @@
+Tests that Storage.getItem() and Storage.key() are side-effect-free.
+Expression `localStorage.getItem('k')`
+has side effect: false, expected: false
+Expression `localStorage.key(0)`
+has side effect: false, expected: false
+Expression `sessionStorage.getItem('sk')`
+has side effect: false, expected: false
+Expression `sessionStorage.key(0)`
+has side effect: false, expected: false
+Expression `localStorage.setItem('k', 'v2')`
+has side effect: true, expected: true
+Expression `localStorage.removeItem('k')`
+has side effect: true, expected: true
+Expression `localStorage.clear()`
+has side effect: true, expected: true
+Expression `sessionStorage.setItem('sk', 'sv2')`
+has side effect: true, expected: true
+Expression `localStorage.getItem({ toString() { window.pwned = 1; return 'k'; } })`
+has side effect: true, expected: true
+
