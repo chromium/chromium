@@ -5157,23 +5157,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="NetworkService.CorsURLLoaderFactory.CreateLoaderAndStart2.ThreadDuration"
-    units="microseconds" expires_after="2025-09-10">
-  <owner>olivier@chromium.org</owner>
-  <owner>cduvall@chromium.org</owner>
-  <summary>
-    Logs the thread time spent in CorsURLLoaderFactory::CreateLoaderAndStart.
-
-    Logged on exiting the function. Subsampled to one out of one thousand times.
-
-    Note that clients without high-resolution clocks will report 0 for very
-    short times.
-
-    Only recorded on clients with thread tick support.
-  </summary>
-</histogram>
-
-<histogram
     name="NetworkService.CorsURLLoaderFactory.IsOutermostMainFrameClamped"
     enum="Boolean" expires_after="2027-01-16">
   <owner>pmeenan@chromium.org</owner>

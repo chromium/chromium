@@ -389,13 +389,9 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
               perfetto::Flow::FromPointer(this));
 
   std::optional<base::ElapsedTimer> timer;
-  std::optional<base::ElapsedThreadTimer> thread_timer;
 
   if (base::ShouldRecordSubsampledMetric(0.001)) {
     timer.emplace();
-    if (base::ThreadTicks::IsSupported()) {
-      thread_timer.emplace();
-    }
   }
 
   debug::ScopedResourceRequestCrashKeys request_crash_keys(resource_request);
@@ -519,13 +515,6 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
         "NetworkService.CorsURLLoaderFactory.CreateLoaderAndStart2.Duration",
         timer->Elapsed(), base::Microseconds(1), base::Milliseconds(16), 100);
-  }
-  if (thread_timer.has_value()) {
-    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "NetworkService.CorsURLLoaderFactory.CreateLoaderAndStart2."
-        "ThreadDuration",
-        thread_timer->Elapsed(), base::Microseconds(1), base::Milliseconds(16),
-        100);
   }
 }
 
