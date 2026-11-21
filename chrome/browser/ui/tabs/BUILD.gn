@@ -423,7 +423,6 @@ if (!is_android) {
       "//components/commerce/core:utils",
       "//components/content_settings/core/browser",
       "//components/feature_engagement/public",
-      "//components/omnibox/common:features",
       "//components/pref_registry",
       "//components/reading_list/core",
       "//components/tab_groups",

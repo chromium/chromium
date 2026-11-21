@@ -92,7 +92,6 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/omnibox/common/composebox_features.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/sessions/core/session_id.h"
 #include "components/split_tabs/split_tab_id.h"
@@ -3159,7 +3158,6 @@ bool TabStripModel::IsContextMenuCommandEnabled(
     case CommandAiModeUnshare: {
       if (!contextual_tasks::
               IsContextualTasksSidePanelRearchitectureEnabled() ||
-          !omnibox::IsTabDeselectionInComposeboxEnabled() ||
           !contextual_tasks::CanShareTabContext(profile())) {
         return false;
       }

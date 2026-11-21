@@ -714,13 +714,11 @@ TEST_F(TabMenuModelTest, AiModeShareSubMenuRecentThreads) {
 
 TEST_F(TabMenuModelTest, AiModeUnshareShownWhenTabInContext) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeaturesAndParameters(
-      {{contextual_tasks::kContextualTasks, {}},
-       {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
-       {contextual_tasks::kContextualTasksSidePanelRearchitecture, {}},
-       {omnibox::kContextManagementInComposebox,
-        {{"enable_tab_deselection", "true"}}}},
-      {});
+  feature_list.InitWithFeatures(
+      {contextual_tasks::kContextualTasks,
+       contextual_tasks::kContextualTasksForceEntryPointEligibility,
+       contextual_tasks::kContextualTasksSidePanelRearchitecture},
+      {omnibox::kContextManagementInComposebox});
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::MenuManagerFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -808,12 +806,12 @@ TEST_F(TabMenuModelTest, AiModeUnshareShownWhenTabInContext) {
   histogram_tester.ExpectUniqueSample(
       "Tab.ContextMenu.AiModeUnshare.SelectedTabsCount", 2, 1);
 
-  // Disabling content sharing policy or tab deselection disables
+  // Disabling side panel rearchitecture or content sharing policy disables
   // `CommandAiModeUnshare`.
   {
-    base::test::ScopedFeatureList deselection_disabled;
-    deselection_disabled.InitAndDisableFeature(
-        omnibox::kContextManagementInComposebox);
+    base::test::ScopedFeatureList rearchitecture_disabled;
+    rearchitecture_disabled.InitAndDisableFeature(
+        contextual_tasks::kContextualTasksSidePanelRearchitecture);
     EXPECT_FALSE(tab_strip_model.IsContextMenuCommandEnabled(
         0, TabStripModel::CommandAiModeUnshare));
   }
