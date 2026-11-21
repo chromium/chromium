@@ -38,7 +38,3 @@
 # being launched when it is an accelerated bubble and so the subsequent click
 # to unselect it can fail.
 -*/DragAndDropBrowserTest.DropUrlIntoOmnibox/*
-
-# TODO(crbug.com/587583567): Wayland does not support programmatic window
-# activation via BringBrowserWindowToFront() after opening the incognito window.
--CommandsApiTest.IncognitoShortcutsIgnoredWhenNotAllowed

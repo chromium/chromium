@@ -691,6 +691,45 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest,
   content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(regular_web_contents);
   ASSERT_TRUE(content::ExecJs(regular_web_contents, kInstallKeyRecorderJs));
 
+  auto focus_tab = []([[maybe_unused]] BrowserWindowInterface* target_browser,
+                      content::WebContents* contents) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(target_browser));
+#endif
+    contents->Focus();
+  };
+  auto take_recorded_keys = [](content::WebContents* contents) {
+    return content::EvalJs(contents, "window.recordedKeys.splice(0).join(',')");
+  };
+  auto expect_shortcuts_handled = [&](BrowserWindowInterface* target_browser,
+                                      content::WebContents* contents) {
+    focus_tab(target_browser, contents);
+    ExtensionTestMessageListener command_listener(
+        "command_received:named-command");
+    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+        target_browser, ui::VKEY_K, /*control=*/false, /*shift=*/true,
+        /*alt=*/true, /*command=*/false));
+    EXPECT_TRUE(command_listener.WaitUntilSatisfied());
+
+    ExtensionTestMessageListener action_listener("action_clicked");
+    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+        target_browser, ui::VKEY_J, /*control=*/false, /*shift=*/true,
+        /*alt=*/true, /*command=*/false));
+    EXPECT_TRUE(action_listener.WaitUntilSatisfied());
+
+    EXPECT_EQ("", take_recorded_keys(contents));
+    EXPECT_TRUE(IsGrantedForTab(extension.get(), contents));
+  };
+
+  // Regular window: both shortcuts are intercepted and grant activeTab. Run
+  // this before opening the incognito window because Wayland compositors ignore
+  // programmatic activation of an already-mapped background window without a
+  // user-input activation token.
+  {
+    SCOPED_TRACE("regular window");
+    expect_shortcuts_handled(regular_browser, regular_web_contents);
+  }
+
   content::WebContents* incognito_web_contents =
       PlatformOpenURLOffTheRecord(profile(), test_url);
   ASSERT_TRUE(incognito_web_contents);
@@ -706,16 +745,6 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest,
           *incognito_web_contents);
   ASSERT_TRUE(incognito_browser);
 
-  auto focus_tab = []([[maybe_unused]] BrowserWindowInterface* target_browser,
-                      content::WebContents* contents) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-    ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(target_browser));
-#endif
-    contents->Focus();
-  };
-  auto take_recorded_keys = [](content::WebContents* contents) {
-    return content::EvalJs(contents, "window.recordedKeys.splice(0).join(',')");
-  };
   auto send_unintercepted_incognito_key = [&](ui::KeyboardCode key_code) {
     content::InputEventAckWaiter key_up_ack_waiter(
         incognito_web_contents->GetPrimaryMainFrame()->GetRenderWidgetHost(),
@@ -754,37 +783,11 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest,
     EXPECT_FALSE(IsGrantedForTab(extension.get(), incognito_web_contents));
   };
 
-  auto expect_shortcuts_handled = [&](BrowserWindowInterface* target_browser,
-                                      content::WebContents* contents) {
-    focus_tab(target_browser, contents);
-    ExtensionTestMessageListener command_listener(
-        "command_received:named-command");
-    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-        target_browser, ui::VKEY_K, /*control=*/false, /*shift=*/true,
-        /*alt=*/true, /*command=*/false));
-    EXPECT_TRUE(command_listener.WaitUntilSatisfied());
-
-    ExtensionTestMessageListener action_listener("action_clicked");
-    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
-        target_browser, ui::VKEY_J, /*control=*/false, /*shift=*/true,
-        /*alt=*/true, /*command=*/false));
-    EXPECT_TRUE(action_listener.WaitUntilSatisfied());
-
-    EXPECT_EQ("", take_recorded_keys(contents));
-    EXPECT_TRUE(IsGrantedForTab(extension.get(), contents));
-  };
-
   // Disabled in incognito: both shortcuts pass through to the webpage without
   // losing focus, dispatching extension events, or granting activeTab.
   {
     SCOPED_TRACE("initial incognito disabled");
     expect_incognito_shortcuts_ignored();
-  }
-
-  // Regular window: both shortcuts are intercepted and grant activeTab.
-  {
-    SCOPED_TRACE("regular window");
-    expect_shortcuts_handled(regular_browser, regular_web_contents);
   }
 
   // Verify that toggling "Allow in Incognito" (true -> false) while the
