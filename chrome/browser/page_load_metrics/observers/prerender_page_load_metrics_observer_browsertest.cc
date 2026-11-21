@@ -175,11 +175,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
   prerender_helper_.AddPrerender(prerender_url);
 
-  // Activate and wait for FCP.
+  // Activate and wait for FCP and LCP.
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
   waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
                                  TimingField::kFirstContentfulPaint);
+  waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                 TimingField::kLargestContentfulPaint);
   prerender_helper_.NavigatePrimaryPage(prerender_url);
   waiter->Wait();
 
@@ -355,11 +357,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
       prerender_helper_.GetHostForUrl(prerender_url);
   EXPECT_TRUE(host_id);
 
-  // Activate and wait for FCP.
+  // Activate and wait for FCP and LCP.
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
   waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
                                  TimingField::kFirstContentfulPaint);
+  waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                 TimingField::kLargestContentfulPaint);
   // Simulate a browser-initiated navigation.
   prerender_helper_.NavigatePrimaryPageAsync(
       prerender_url,
@@ -478,11 +482,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
                                                       redirected_url.spec());
   prerender_helper_.AddPrerender(prerender_url);
 
-  // Activate and wait for FCP.
+  // Activate and wait for FCP and LCP.
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
   waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
                                  TimingField::kFirstContentfulPaint);
+  waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                 TimingField::kLargestContentfulPaint);
   prerender_helper_.NavigatePrimaryPage(prerender_url);
   waiter->Wait();
 
@@ -563,6 +569,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
       web_contents());
   waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
                                  TimingField::kFirstContentfulPaint);
+  waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                 TimingField::kLargestContentfulPaint);
   primary_page_manager.WaitForNavigationFinished();
   prerender_observer.WaitForActivation();
   waiter->Wait();
@@ -817,11 +825,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   prerender_helper_.NavigatePrerenderedPage(host_id, navigation_url);
   prerender_helper_.WaitForPrerenderLoadCompletion(host_id);
 
-  // Activate and wait for FCP.
+  // Activate and wait for FCP and LCP.
   auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
       web_contents());
   waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
                                  TimingField::kFirstContentfulPaint);
+  waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                 TimingField::kLargestContentfulPaint);
   prerender_helper_.NavigatePrimaryPage(prerender_url);
   waiter->Wait();
 
