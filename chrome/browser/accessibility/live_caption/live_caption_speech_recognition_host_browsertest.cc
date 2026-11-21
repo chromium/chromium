@@ -221,9 +221,8 @@ void LiveCaptionSpeechRecognitionHostTest::DispatchTranscriptionCallback(
   EXPECT_EQ(expected_success, success);
 }
 
-// Disabled due to flaky crashes; https://crbug.com/40184759.
 IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
-                       DISABLED_DestroysWithoutCrashing) {
+                       DestroysWithoutCrashing) {
   content::RenderFrameHost* frame_host = browser()
                                              ->tab_strip_model()
                                              ->GetActiveWebContents()
@@ -238,8 +237,8 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
   base::RunLoop().RunUntilIdle();
   ExpectIsWidgetVisible(true);
 
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("http://www.google.com")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title1.html")));
   content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents());
   content::RenderFrameHost* new_frame_host = browser()
@@ -248,6 +247,7 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionSpeechRecognitionHostTest,
                                                  ->GetPrimaryMainFrame();
   // After navigating to a new URL, the main frame should be different from the
   // former frame host.
+  EXPECT_NE(frame_host, new_frame_host);
   CreateLiveCaptionSpeechRecognitionHost(new_frame_host);
   ExpectIsWidgetVisible(false);
   // Test passes if the following line runs without crashing.

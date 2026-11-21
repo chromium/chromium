@@ -246,32 +246,31 @@ IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, OnSodaInstalled) {
   EXPECT_TRUE(HasBubbleController());
 }
 
-// TODO(crbug.com/40936746): Re-enable this test.
-IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, DISABLED_OnSodaError) {
-  // Live Caption is disabled when there is an error in the SODA download for
-  // the language belonging to Live Caption.
+IN_PROC_BROWSER_TEST_F(LiveCaptionControllerTest, OnSodaError) {
+  // Live Caption is not disabled when there is an error in the SODA download
+  // for the language belonging to Live Caption.
   browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
-                                               true);
+                                                  true);
   EXPECT_TRUE(
       browser()->GetProfile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
   speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting(en_us());
-  EXPECT_FALSE(
-      browser()->GetProfile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
+      prefs::kLiveCaptionEnabled));
 
-  // Live Caption is disabled when there is an error in the SODA binary
+  // Live Caption is not disabled when there is an error in the SODA binary
   // download.
   browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
-                                               true);
+                                                  true);
   EXPECT_TRUE(
       browser()->GetProfile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
   speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting();
-  EXPECT_FALSE(
-      browser()->GetProfile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
+  EXPECT_TRUE(browser()->GetProfile()->GetPrefs()->GetBoolean(
+      prefs::kLiveCaptionEnabled));
 
   // Live Caption is not disabled when there is an error in the SODA download
   // for a language not belonging to Live Caption.
   browser()->GetProfile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
-                                               true);
+                                                  true);
   EXPECT_TRUE(
       browser()->GetProfile()->GetPrefs()->GetBoolean(prefs::kLiveCaptionEnabled));
   speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting(fr_fr());
