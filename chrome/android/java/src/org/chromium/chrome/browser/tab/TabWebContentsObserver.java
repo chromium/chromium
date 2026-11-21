@@ -64,7 +64,7 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
     private final TabImpl mTab;
     private final ObserverList<Callback<WebContents>> mInitObservers = new ObserverList<>();
     private @Nullable Observer mObserver;
-    private @Nullable GURL mLastUrl;
+    private @Nullable GURL mLastCommittedUrl;
 
     public static TabWebContentsObserver from(Tab tab) {
         TabWebContentsObserver observer = get(tab);
@@ -334,9 +334,11 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
             if (navigation.errorCode() != NetError.OK) {
                 mTab.didFailPageLoad(navigation.errorCode());
             }
-            mLastUrl = navigation.getUrl();
-
-            if (!navigation.hasCommitted()) {
+            if (navigation.hasCommitted()) {
+                // Only committed documents can hold device access, so only they may be named in
+                // the device-usage notifications sent from updateNotificationsForTab().
+                mLastCommittedUrl = navigation.getUrl();
+            } else {
                 // A navigation that started but never committed (e.g. a same-document
                 // traversal cancelled from the Navigation API's 'navigate' event) must
                 // still tell observers the navigation is over. Otherwise
@@ -442,29 +444,29 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
         }
 
         void updateNotificationsForTab() {
-            assumeNonNull(mLastUrl);
+            assumeNonNull(mLastCommittedUrl);
             MediaCaptureNotificationServiceImpl.updateMediaNotificationForTab(
-                    ContextUtils.getApplicationContext(), mTab.getId(), null, mLastUrl);
+                    ContextUtils.getApplicationContext(), mTab.getId(), null, mLastCommittedUrl);
             BluetoothNotificationManager.updateBluetoothNotificationForTab(
                     ContextUtils.getApplicationContext(),
                     BluetoothNotificationService.class,
                     mTab.getId(),
                     null,
-                    mLastUrl,
+                    mLastCommittedUrl,
                     mTab.isIncognito());
             UsbNotificationManager.updateUsbNotificationForTab(
                     ContextUtils.getApplicationContext(),
                     UsbNotificationService.class,
                     mTab.getId(),
                     null,
-                    mLastUrl,
+                    mLastCommittedUrl,
                     mTab.isIncognito());
             SerialNotificationManager.updateSerialNotificationForTab(
                     ContextUtils.getApplicationContext(),
                     SerialNotificationService.class,
                     mTab.getId(),
                     null,
-                    mLastUrl,
+                    mLastCommittedUrl,
                     mTab.isIncognito());
         }
     }

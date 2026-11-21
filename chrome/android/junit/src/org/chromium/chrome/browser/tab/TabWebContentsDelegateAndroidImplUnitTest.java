@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -18,6 +19,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -30,6 +33,7 @@ public class TabWebContentsDelegateAndroidImplUnitTest {
     @Mock private TabWebContentsDelegateAndroid mWrappedDelegate;
     @Mock private TabObserver mObserver1;
     @Mock private TabObserver mObserver2;
+    @Mock private WebContents mWebContents;
 
     private TabWebContentsDelegateAndroidImpl mDelegate;
 
@@ -66,6 +70,27 @@ public class TabWebContentsDelegateAndroidImplUnitTest {
         verify(mObserver1).onCloseContents(mTab);
         verify(mObserver2).onCloseContents(mTab);
         verify(mWrappedDelegate).closeContents();
+    }
+
+    @Test
+    public void testGetUrlForDeviceNotifications_usesCommittedUrlOverVisibleUrl() {
+        GURL committedUrl = new GURL("https://committed.example/");
+        GURL pendingUrl = new GURL("https://pending.example/");
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mWebContents.getLastCommittedUrl()).thenReturn(committedUrl);
+        when(mTab.getUrl()).thenReturn(pendingUrl);
+
+        assertEquals(
+                committedUrl, TabWebContentsDelegateAndroidImpl.getUrlForDeviceNotifications(mTab));
+    }
+
+    @Test
+    public void testGetUrlForDeviceNotifications_fallsBackToTabUrlWithoutWebContents() {
+        GURL tabUrl = new GURL("https://tab.example/");
+        when(mTab.getWebContents()).thenReturn(null);
+        when(mTab.getUrl()).thenReturn(tabUrl);
+
+        assertEquals(tabUrl, TabWebContentsDelegateAndroidImpl.getUrlForDeviceNotifications(mTab));
     }
 
     @Test

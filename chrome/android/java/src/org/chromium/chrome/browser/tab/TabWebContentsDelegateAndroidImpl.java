@@ -295,31 +295,29 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         }
 
         if ((flags & InvalidateTypes.TAB) != 0) {
+            GURL url = getUrlForDeviceNotifications(mTab);
             MediaCaptureNotificationServiceImpl.updateMediaNotificationForTab(
-                    ContextUtils.getApplicationContext(),
-                    mTab.getId(),
-                    mTab.getWebContents(),
-                    mTab.getUrl());
+                    ContextUtils.getApplicationContext(), mTab.getId(), mTab.getWebContents(), url);
             BluetoothNotificationManager.updateBluetoothNotificationForTab(
                     ContextUtils.getApplicationContext(),
                     BluetoothNotificationService.class,
                     mTab.getId(),
                     mTab.getWebContents(),
-                    mTab.getUrl(),
+                    url,
                     mTab.isIncognito());
             UsbNotificationManager.updateUsbNotificationForTab(
                     ContextUtils.getApplicationContext(),
                     UsbNotificationService.class,
                     mTab.getId(),
                     mTab.getWebContents(),
-                    mTab.getUrl(),
+                    url,
                     mTab.isIncognito());
             SerialNotificationManager.updateSerialNotificationForTab(
                     ContextUtils.getApplicationContext(),
                     SerialNotificationService.class,
                     mTab.getId(),
                     mTab.getWebContents(),
-                    mTab.getUrl(),
+                    url,
                     mTab.isIncognito());
         }
         if ((flags & InvalidateTypes.TITLE) != 0) {
@@ -332,6 +330,18 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
             }
         }
         mDelegate.navigationStateChanged(flags);
+    }
+
+    /**
+     * Returns the URL that device-usage notifications (camera/microphone, Bluetooth, USB, serial)
+     * attribute activity to. Device access is held by the committed document, so this is the last
+     * committed URL rather than {@link Tab#getUrl()}, which reflects a pending browser-initiated
+     * navigation before it commits.
+     */
+    @VisibleForTesting
+    static GURL getUrlForDeviceNotifications(Tab tab) {
+        WebContents webContents = tab.getWebContents();
+        return webContents != null ? webContents.getLastCommittedUrl() : tab.getUrl();
     }
 
     @Override

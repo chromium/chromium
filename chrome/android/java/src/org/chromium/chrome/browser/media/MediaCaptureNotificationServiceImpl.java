@@ -54,9 +54,12 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.TreeMap;
 
@@ -79,6 +82,7 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
     private BaseNotificationManagerProxy mNotificationManager;
     private SharedPreferencesManager mSharedPreferences;
     private final TreeMap<Integer, Set<@MediaType Integer>> mNotificationsType = new TreeMap<>();
+    private final Map<Integer, @Nullable String> mNotificationsUrl = new HashMap<>();
     private final List<Pair<Integer, NotificationWrapper>> mNotifications = new ArrayList<>();
 
     private boolean mStartedForegroundService;
@@ -95,12 +99,14 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
     /**
      * @param notificationId Unique id of the notification.
      * @param mediaTypes Media types of the notification.
-     * @return Whether the notification has already been created for provided notification id and
-     *     mediaTypes.
+     * @param url URL the notification attributes the media usage to.
+     * @return Whether the existing notification for {@code notificationId} differs from the given
+     *     media types or URL and therefore has to be rebuilt.
      */
     private boolean doesNotificationNeedUpdate(
-            int notificationId, Set<@MediaType Integer> mediaTypes) {
-        return !mediaTypes.equals(mNotificationsType.get(notificationId));
+            int notificationId, Set<@MediaType Integer> mediaTypes, @Nullable String url) {
+        return !mediaTypes.equals(mNotificationsType.get(notificationId))
+                || !Objects.equals(url, mNotificationsUrl.get(notificationId));
     }
 
     /**
@@ -197,7 +203,7 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
             int startId) {
         Set<@MediaType Integer> liveMediaTypes = refreshMediaTypes(notificationId, mediaTypes);
         if (doesNotificationExist(notificationId)
-                && !doesNotificationNeedUpdate(notificationId, liveMediaTypes)) {
+                && !doesNotificationNeedUpdate(notificationId, liveMediaTypes, url)) {
             return;
         }
         boolean hasActiveMediaTypes = !liveMediaTypes.isEmpty();
@@ -295,6 +301,7 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
                 tryStopMediaCapture(tabId);
             }
             mNotificationsType.remove(notificationId);
+            mNotificationsUrl.remove(notificationId);
             if (isBackgroundMediaCapturingEnabled()) {
                 int lastIndex = mNotifications.size() - 1;
                 boolean isRemovingLatestNotification =
@@ -397,6 +404,7 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
                         contentIntent,
                         stopIntent);
         mNotificationsType.put(notificationId, mediaTypes);
+        mNotificationsUrl.put(notificationId, url);
         if (isBackgroundMediaCapturingEnabled()) {
             // For large screen device, we use the latest notification to start or update
             // the foreground service.

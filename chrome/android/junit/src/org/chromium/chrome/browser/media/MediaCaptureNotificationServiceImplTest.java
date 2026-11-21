@@ -138,8 +138,12 @@ public class MediaCaptureNotificationServiceImplTest {
     }
 
     private Intent captureUpdateIntent(int tabId, @Nullable WebContents webContents) {
+        return captureUpdateIntent(tabId, webContents, TEST_URL);
+    }
+
+    private Intent captureUpdateIntent(int tabId, @Nullable WebContents webContents, GURL url) {
         MediaCaptureNotificationServiceImpl.updateMediaNotificationForTab(
-                mMockContext, tabId, webContents, TEST_URL);
+                mMockContext, tabId, webContents, url);
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
         verify(mMockContext).startService(intentCaptor.capture());
         clearInvocations(mMockContext);
@@ -232,6 +236,32 @@ public class MediaCaptureNotificationServiceImplTest {
                 ChromeSharedPreferences.getInstance()
                         .readStringSet(ChromePreferenceKeys.MEDIA_WEBRTC_NOTIFICATION_IDS, null));
         verify(mMockService).stopSelf();
+    }
+
+    @Test
+    @DisableFeatures(ContentFeatureList.ANDROID_ENABLE_BACKGROUND_MEDIA_CAPTURING)
+    public void testUpdateNotification_sameMediaTypesNewUrl_rebuildsNotification() {
+        when(mMediaCaptureJniMock.isCapturingAudio(mMockWebContents1)).thenReturn(true);
+        mService.onStartCommand(
+                captureUpdateIntent(TAB_ID_1, mMockWebContents1), /* flags= */ 0, /* startId= */ 1);
+        clearInvocations(mMockNotificationManager);
+
+        // The same media types attributed to a different URL must not be deduplicated away.
+        GURL otherUrl = new GURL("https://other.example");
+        mService.onStartCommand(
+                captureUpdateIntent(TAB_ID_1, mMockWebContents1, otherUrl),
+                /* flags= */ 0,
+                /* startId= */ 2);
+
+        verify(mMockNotificationManager).notify(any(NotificationWrapper.class));
+        clearInvocations(mMockNotificationManager);
+
+        // An identical repeat is still deduplicated.
+        mService.onStartCommand(
+                captureUpdateIntent(TAB_ID_1, mMockWebContents1, otherUrl),
+                /* flags= */ 0,
+                /* startId= */ 3);
+        verify(mMockNotificationManager, never()).notify(any(NotificationWrapper.class));
     }
 
     @Test
