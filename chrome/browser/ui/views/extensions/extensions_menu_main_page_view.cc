@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
@@ -52,6 +53,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "extensions/common/extension_urls.h"
@@ -431,6 +433,29 @@ ExtensionsMenuMainPageView::GetMenuEntries() const {
   return menu_entry_views;
 }
 
+ExtensionsMenuEntryView* ExtensionsMenuMainPageView::GetMenuEntry(
+    const extensions::ExtensionId& extension_id) const {
+  for (views::View* view : menu_entries_->children()) {
+    ExtensionsMenuEntryView* entry = GetAsMenuEntry(view);
+    if (entry->extension_id() == extension_id) {
+      return entry;
+    }
+  }
+  return nullptr;
+}
+
+void ExtensionsMenuMainPageView::ScrollToMenuEntry(
+    const extensions::ExtensionId& extension_id) {
+  ExtensionsMenuEntryView* entry = GetMenuEntry(extension_id);
+  if (!entry) {
+    return;
+  }
+  if (views::Widget* widget = GetWidget()) {
+    widget->LayoutRootViewIfNecessary();
+  }
+  entry->ScrollViewToVisible();
+}
+
 std::u16string_view ExtensionsMenuMainPageView::GetSiteSettingLabelForTesting()
     const {
   CHECK_IS_TEST();
@@ -563,6 +588,7 @@ ExtensionsMenuMainPageView::CreateContentsBuilder(
   constexpr int kMaxExtensionButtonsHeightDp = 448;
 
   return views::Builder<views::ScrollView>()
+      .CopyAddressTo(&scroll_view_)
       .ClipHeightTo(0, kMaxExtensionButtonsHeightDp)
       .SetDrawOverflowIndicator(false)
       .SetHorizontalScrollBarMode(views::ScrollView::ScrollBarMode::kDisabled)

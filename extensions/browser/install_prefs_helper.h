@@ -48,6 +48,11 @@ base::Time GetFirstInstallTime(const ExtensionPrefs* prefs,
 base::Time GetLastUpdateTime(const ExtensionPrefs* prefs,
                              const ExtensionId& extension_id);
 
+// Returns true if requested host permissions were withheld when the extension
+// was first installed.
+bool WerePermissionsWithheldOnInstall(const ExtensionPrefs* prefs,
+                                      const ExtensionId& extension_id);
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_INSTALL_PREFS_HELPER_H_

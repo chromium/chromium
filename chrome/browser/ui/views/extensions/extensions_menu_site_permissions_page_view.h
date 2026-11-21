@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension_id.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "url/origin.h"
@@ -22,6 +23,8 @@ class ToggleButton;
 
 class BrowserWindowInterface;
 class ExtensionsMenuHandler;
+
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kExtensionsMenuSiteAccessSectionElementId);
 
 class ExtensionsMenuSitePermissionsPageView : public views::View {
   METADATA_HEADER(ExtensionsMenuSitePermissionsPageView, views::View)

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_MAIN_PAGE_VIEW_H_
 
 #include <string_view>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "build/branding_buildflags.h"
@@ -18,6 +19,7 @@
 
 namespace views {
 class Label;
+class ScrollView;
 class ToggleButton;
 }  // namespace views
 
@@ -49,6 +51,14 @@ class ExtensionsMenuMainPageView : public views::View {
 
   // Returns the menu entry views.
   std::vector<ExtensionsMenuEntryView*> GetMenuEntries() const;
+
+  // Returns the menu entry view for `extension_id`, or nullptr if not found.
+  ExtensionsMenuEntryView* GetMenuEntry(
+      const extensions::ExtensionId& extension_id) const;
+
+  // Scrolls the menu so that the entry for `extension_id` is visible, if it
+  // exists.
+  void ScrollToMenuEntry(const extensions::ExtensionId& extension_id);
 
   // Updates the site settings views with the given parameters.
   void UpdateSiteSettings(
@@ -96,6 +106,7 @@ class ExtensionsMenuMainPageView : public views::View {
   GetExtensionsRequestingAccessForTesting();
   views::View* GetExtensionRequestingAccessEntryForTesting(
       const extensions::ExtensionId& extension_id);
+  views::ScrollView* scroll_view_for_testing() { return scroll_view_; }
 
  private:
   // Returns the header builder, which contains information about the site.
@@ -132,6 +143,9 @@ class ExtensionsMenuMainPageView : public views::View {
   raw_ptr<views::Label> site_settings_label_;
   raw_ptr<views::View> site_settings_tooltip_;
   raw_ptr<views::ToggleButton> site_settings_toggle_;
+
+  // Scrollable contents view.
+  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
 
   // Reload section.
   raw_ptr<views::View> reload_section_;

@@ -59,17 +59,15 @@ class ExtensionsMenuEntryView
   void UpdateContextMenuButton(
       ExtensionsMenuViewModel::ControlState button_state);
 
-  const extensions::ExtensionId& extension_id() { return extension_id_; }
+  const extensions::ExtensionId& extension_id() const { return extension_id_; }
   const url::Origin& origin() const { return origin_; }
+  HoverButton* site_permissions_button() { return site_permissions_button_; }
 
   // Accessors for testing.
   bool IsContextMenuRunningForTesting() const;
   HoverButton* action_button_for_testing() { return action_button_; }
   views::ToggleButton* site_access_toggle_for_testing() {
     return site_access_toggle_;
-  }
-  HoverButton* site_permissions_button_for_testing() {
-    return site_permissions_button_;
   }
   views::Label* site_permissions_label_for_testing() {
     return site_permissions_label_;

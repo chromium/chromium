@@ -49,6 +49,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/views_switches.h"
 
@@ -177,7 +178,7 @@ void ExtensionsMenuMainPageViewBrowserTest::LayoutMenuIfNecessary() {
 
 void ExtensionsMenuMainPageViewBrowserTest::ClickSitePermissionsButton(
     ExtensionsMenuEntryView* menu_entry) {
-  ClickButton(menu_entry->site_permissions_button_for_testing());
+  ClickButton(menu_entry->site_permissions_button());
   WaitForAnimation();
 }
 
@@ -272,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
   EXPECT_EQ(GetUserSiteSetting(url),
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
   EXPECT_FALSE(menu_entry->site_access_toggle_for_testing()->GetVisible());
-  EXPECT_FALSE(menu_entry->site_permissions_button_for_testing()->GetVisible());
+  EXPECT_FALSE(menu_entry->site_permissions_button()->GetVisible());
   auto* site_permissions_label =
       menu_entry->site_permissions_label_for_testing();
   EXPECT_TRUE(site_permissions_label->GetVisible());
@@ -288,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
   UpdateUserSiteSetting(
       PermissionsManager::UserSiteSetting::kBlockAllExtensions, url);
   EXPECT_FALSE(menu_entry->site_access_toggle_for_testing()->GetVisible());
-  EXPECT_FALSE(menu_entry->site_permissions_button_for_testing()->GetVisible());
+  EXPECT_FALSE(menu_entry->site_permissions_button()->GetVisible());
 }
 
 // Verifies the site access toggle and site permissions button properties for an
@@ -312,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
   EXPECT_EQ(GetUserSiteSetting(url),
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
   EXPECT_FALSE(menu_entry->site_access_toggle_for_testing()->GetVisible());
-  EXPECT_FALSE(menu_entry->site_permissions_button_for_testing()->GetVisible());
+  EXPECT_FALSE(menu_entry->site_permissions_button()->GetVisible());
   auto* site_permissions_label =
       menu_entry->site_permissions_label_for_testing();
   EXPECT_TRUE(site_permissions_label->GetVisible());
@@ -330,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
   UpdateUserSiteSetting(
       PermissionsManager::UserSiteSetting::kBlockAllExtensions, url);
   EXPECT_FALSE(menu_entry->site_access_toggle_for_testing()->GetVisible());
-  EXPECT_FALSE(menu_entry->site_permissions_button_for_testing()->GetVisible());
+  EXPECT_FALSE(menu_entry->site_permissions_button()->GetVisible());
 }
 
 // Verifies the site access toggle and site permissions button properties when
@@ -358,12 +359,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
             PermissionsManager::UserSiteAccess::kOnSite);
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetVisible());
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetVisible());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetEnabled());
-  EXPECT_EQ(
-      menu_entry->site_permissions_button_for_testing()->GetFocusBehavior(),
-      views::View::FocusBehavior::ALWAYS);
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()->GetText(),
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetVisible());
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetEnabled());
+  EXPECT_EQ(menu_entry->site_permissions_button()->GetFocusBehavior(),
+            views::View::FocusBehavior::ALWAYS);
+  EXPECT_EQ(menu_entry->site_permissions_button()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_SITE));
 
@@ -377,13 +377,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
             PermissionsManager::UserSiteAccess::kOnClick);
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetVisible());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetEnabled());
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()->GetText(),
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetVisible());
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetEnabled());
+  EXPECT_EQ(menu_entry->site_permissions_button()->GetText(),
             u"Ask on every visit");
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()->GetTooltipText(),
+  EXPECT_EQ(menu_entry->site_permissions_button()->GetTooltipText(),
             u"Change site permissions");
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()
+  EXPECT_EQ(menu_entry->site_permissions_button()
                 ->GetViewAccessibility()
                 .GetCachedName(),
             u"Ask on every visit. Select to change site permissions");
@@ -399,13 +399,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
             PermissionsManager::UserSiteAccess::kOnSite);
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetVisible());
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetVisible());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetEnabled());
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()->GetText(),
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetVisible());
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetEnabled());
+  EXPECT_EQ(menu_entry->site_permissions_button()->GetText(),
             u"Always on this site");
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()->GetTooltipText(),
+  EXPECT_EQ(menu_entry->site_permissions_button()->GetTooltipText(),
             u"Change site permissions");
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()
+  EXPECT_EQ(menu_entry->site_permissions_button()
                 ->GetViewAccessibility()
                 .GetCachedName(),
             u"Always on this site. Select to change site permissions");
@@ -436,13 +436,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
             PermissionsManager::UserSiteAccess::kOnAllSites);
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetVisible());
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetVisible());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetEnabled());
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()->GetText(),
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetVisible());
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetEnabled());
+  EXPECT_EQ(menu_entry->site_permissions_button()->GetText(),
             u"Always on all sites");
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()->GetTooltipText(),
+  EXPECT_EQ(menu_entry->site_permissions_button()->GetTooltipText(),
             u"Change site permissions");
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()
+  EXPECT_EQ(menu_entry->site_permissions_button()
                 ->GetViewAccessibility()
                 .GetCachedName(),
             u"Always on all sites. Select to change site permissions");
@@ -457,13 +457,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
             PermissionsManager::UserSiteAccess::kOnClick);
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetVisible());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetEnabled());
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()->GetText(),
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetVisible());
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetEnabled());
+  EXPECT_EQ(menu_entry->site_permissions_button()->GetText(),
             u"Ask on every visit");
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()->GetTooltipText(),
+  EXPECT_EQ(menu_entry->site_permissions_button()->GetTooltipText(),
             u"Change site permissions");
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()
+  EXPECT_EQ(menu_entry->site_permissions_button()
                 ->GetViewAccessibility()
                 .GetCachedName(),
             u"Ask on every visit. Select to change site permissions");
@@ -479,13 +479,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
             PermissionsManager::UserSiteAccess::kOnAllSites);
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetVisible());
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetVisible());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetEnabled());
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()->GetText(),
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetVisible());
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetEnabled());
+  EXPECT_EQ(menu_entry->site_permissions_button()->GetText(),
             u"Always on all sites");
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()->GetTooltipText(),
+  EXPECT_EQ(menu_entry->site_permissions_button()->GetTooltipText(),
             u"Change site permissions");
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()
+  EXPECT_EQ(menu_entry->site_permissions_button()
                 ->GetViewAccessibility()
                 .GetCachedName(),
             u"Always on all sites. Select to change site permissions");
@@ -517,10 +517,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
             PermissionsManager::UserSiteAccess::kOnAllSites);
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetVisible());
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetVisible());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetEnabled());
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetVisible());
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetEnabled());
   EXPECT_EQ(
-      menu_entry->site_permissions_button_for_testing()->GetText(),
+      menu_entry->site_permissions_button()->GetText(),
       l10n_util::GetStringUTF16(
           IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_ALL_SITES));
 
@@ -532,9 +532,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
   LayoutMenuIfNecessary();
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetVisible());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetEnabled());
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()->GetText(),
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetVisible());
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetEnabled());
+  EXPECT_EQ(menu_entry->site_permissions_button()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
 
@@ -545,7 +545,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
       PermissionsManager::UserSiteSetting::kBlockAllExtensions, url);
   LayoutMenuIfNecessary();
   EXPECT_FALSE(menu_entry->site_access_toggle_for_testing()->GetVisible());
-  EXPECT_FALSE(menu_entry->site_permissions_button_for_testing()->GetVisible());
+  EXPECT_FALSE(menu_entry->site_permissions_button()->GetVisible());
 }
 
 // Verifies the site access toggle persists its previous state when toggling
@@ -572,7 +572,7 @@ IN_PROC_BROWSER_TEST_F(
             PermissionsManager::UserSiteAccess::kOnAllSites);
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
   EXPECT_EQ(
-      menu_entry->site_permissions_button_for_testing()->GetText(),
+      menu_entry->site_permissions_button()->GetText(),
       l10n_util::GetStringUTF16(
           IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_ALL_SITES));
 
@@ -584,7 +584,7 @@ IN_PROC_BROWSER_TEST_F(
                        PermissionsManager::UserSiteAccess::kOnClick);
   LayoutMenuIfNecessary();
   EXPECT_FALSE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()->GetText(),
+  EXPECT_EQ(menu_entry->site_permissions_button()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
 
@@ -595,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(
   ClickSiteAccessToggle(menu_entry);
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
   EXPECT_EQ(
-      menu_entry->site_permissions_button_for_testing()->GetText(),
+      menu_entry->site_permissions_button()->GetText(),
       l10n_util::GetStringUTF16(
           IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_ALL_SITES));
 }
@@ -678,7 +678,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
   ASSERT_EQ(GetUserSiteAccess(*extension, url),
             PermissionsManager::UserSiteAccess::kOnAllSites);
   EXPECT_FALSE(menu_entry->site_access_toggle_for_testing()->GetVisible());
-  EXPECT_FALSE(menu_entry->site_permissions_button_for_testing()->GetVisible());
+  EXPECT_FALSE(menu_entry->site_permissions_button()->GetVisible());
   auto* site_permissions_label =
       menu_entry->site_permissions_label_for_testing();
   EXPECT_TRUE(site_permissions_label->GetVisible());
@@ -706,7 +706,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
   EXPECT_EQ(GetUserSiteAccess(*extension, url),
             PermissionsManager::UserSiteAccess::kOnAllSites);
   EXPECT_FALSE(menu_entry->site_access_toggle_for_testing()->GetVisible());
-  EXPECT_FALSE(menu_entry->site_permissions_button_for_testing()->GetVisible());
+  EXPECT_FALSE(menu_entry->site_permissions_button()->GetVisible());
   site_permissions_label = menu_entry->site_permissions_label_for_testing();
   EXPECT_TRUE(site_permissions_label->GetVisible());
   EXPECT_TRUE(site_permissions_label->GetEnabled());
@@ -740,9 +740,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
             PermissionsManager::UserSiteAccess::kOnClick);
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetVisible());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetEnabled());
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()->GetText(),
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetVisible());
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetEnabled());
+  EXPECT_EQ(menu_entry->site_permissions_button()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
 
@@ -757,9 +757,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
             PermissionsManager::UserSiteAccess::kOnClick);
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetVisible());
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetVisible());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetEnabled());
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()->GetText(),
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetVisible());
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetEnabled());
+  EXPECT_EQ(menu_entry->site_permissions_button()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
 
@@ -772,9 +772,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
   ClickSiteAccessToggle(menu_entry, /*active_tab_only=*/true);
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetVisible());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetEnabled());
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()->GetText(),
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetVisible());
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetEnabled());
+  EXPECT_EQ(menu_entry->site_permissions_button()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
 }
@@ -806,9 +806,9 @@ IN_PROC_BROWSER_TEST_F(
             PermissionsManager::UserSiteAccess::kOnClick);
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetVisible());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetEnabled());
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()->GetText(),
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetVisible());
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetEnabled());
+  EXPECT_EQ(menu_entry->site_permissions_button()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
 
@@ -836,9 +836,9 @@ IN_PROC_BROWSER_TEST_F(
             PermissionsManager::UserSiteAccess::kOnClick);
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetVisible());
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetVisible());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetEnabled());
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()->GetText(),
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetVisible());
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetEnabled());
+  EXPECT_EQ(menu_entry->site_permissions_button()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
 
@@ -854,9 +854,9 @@ IN_PROC_BROWSER_TEST_F(
             PermissionsManager::UserSiteAccess::kOnClick);
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetVisible());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetEnabled());
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()->GetText(),
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetVisible());
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetEnabled());
+  EXPECT_EQ(menu_entry->site_permissions_button()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
 }
@@ -883,9 +883,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetVisible());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetEnabled());
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()->GetText(),
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetVisible());
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetEnabled());
+  EXPECT_EQ(menu_entry->site_permissions_button()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
 
@@ -901,9 +901,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
   ASSERT_TRUE(active_tab_permission_granter);
   active_tab_permission_granter->GrantIfRequested(extension.get(),
                                                   base::DoNothing());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetVisible());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetEnabled());
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()->GetText(),
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetVisible());
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetEnabled());
+  EXPECT_EQ(menu_entry->site_permissions_button()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
 
@@ -918,9 +918,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
   NavigateAndCommit(url);
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetVisible());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetEnabled());
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()->GetText(),
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetVisible());
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetEnabled());
+  EXPECT_EQ(menu_entry->site_permissions_button()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
 
@@ -930,7 +930,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
   UpdateUserSiteSetting(
       PermissionsManager::UserSiteSetting::kBlockAllExtensions, url);
   EXPECT_FALSE(menu_entry->site_access_toggle_for_testing()->GetVisible());
-  EXPECT_FALSE(menu_entry->site_permissions_button_for_testing()->GetVisible());
+  EXPECT_FALSE(menu_entry->site_permissions_button()->GetVisible());
 }
 
 // Verifies the site permissions button opens the site permissions page when it
@@ -950,8 +950,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
   // extension" (default setting).
   EXPECT_EQ(GetUserSiteSetting(url),
             PermissionsManager::UserSiteSetting::kCustomizeByExtension);
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetVisible());
-  EXPECT_TRUE(menu_entry->site_permissions_button_for_testing()->GetEnabled());
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetVisible());
+  EXPECT_TRUE(menu_entry->site_permissions_button()->GetEnabled());
 
   // Clicking on an extension's site permission enabled button should open
   // its site permission page in the menu.
@@ -1058,11 +1058,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
   EXPECT_TRUE(requests_section->GetVisible());
   EXPECT_THAT(GetExtensionsInRequestsSection(),
               testing::ElementsAre(extension_A->id()));
-  EXPECT_EQ(extension_A_item->site_permissions_button_for_testing()->GetText(),
+  EXPECT_EQ(extension_A_item->site_permissions_button()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
-  EXPECT_FALSE(
-      extension_b_item->site_permissions_button_for_testing()->GetVisible());
+  EXPECT_FALSE(extension_b_item->site_permissions_button()->GetVisible());
   EXPECT_TRUE(
       extension_b_item->site_permissions_label_for_testing()->GetVisible());
   EXPECT_EQ(extension_b_item->site_permissions_label_for_testing()->GetText(),
@@ -1082,11 +1081,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
   EXPECT_TRUE(requests_section->GetVisible());
   EXPECT_THAT(GetExtensionsInRequestsSection(),
               testing::ElementsAre(extension_A->id()));
-  EXPECT_EQ(extension_A_item->site_permissions_button_for_testing()->GetText(),
+  EXPECT_EQ(extension_A_item->site_permissions_button()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
-  EXPECT_FALSE(
-      extension_b_item->site_permissions_button_for_testing()->GetVisible());
+  EXPECT_FALSE(extension_b_item->site_permissions_button()->GetVisible());
   EXPECT_TRUE(
       extension_b_item->site_permissions_label_for_testing()->GetVisible());
   EXPECT_EQ(extension_b_item->site_permissions_label_for_testing()->GetText(),
@@ -1104,10 +1102,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
             GetExpectedSiteSettingLabel(u"Allow extensions on other.com"));
   EXPECT_FALSE(reload_section->GetVisible());
   EXPECT_FALSE(requests_section->GetVisible());
-  EXPECT_EQ(extension_A_item->site_permissions_button_for_testing()->GetText(),
+  EXPECT_EQ(extension_A_item->site_permissions_button()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_CLICK));
-  EXPECT_EQ(extension_b_item->site_permissions_button_for_testing()->GetText(),
+  EXPECT_EQ(extension_b_item->site_permissions_button()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_SITE));
 }
@@ -1304,10 +1302,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest, RestrictedSite) {
       menu_entries()[0]->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(
       menu_entries()[1]->site_access_toggle_for_testing()->GetVisible());
-  EXPECT_FALSE(
-      menu_entries()[0]->site_permissions_button_for_testing()->GetVisible());
-  EXPECT_FALSE(
-      menu_entries()[1]->site_permissions_button_for_testing()->GetVisible());
+  EXPECT_FALSE(menu_entries()[0]->site_permissions_button()->GetVisible());
+  EXPECT_FALSE(menu_entries()[1]->site_permissions_button()->GetVisible());
 }
 
 // Test that user controls in the menu are hidden or disabled on policy blocked
@@ -1372,10 +1368,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
   EXPECT_FALSE(extension_item->site_access_toggle_for_testing()->GetVisible());
   EXPECT_FALSE(
       activeTab_extension_item->site_access_toggle_for_testing()->GetVisible());
+  EXPECT_FALSE(extension_item->site_permissions_button()->GetVisible());
   EXPECT_FALSE(
-      extension_item->site_permissions_button_for_testing()->GetVisible());
-  EXPECT_FALSE(activeTab_extension_item->site_permissions_button_for_testing()
-                   ->GetVisible());
+      activeTab_extension_item->site_permissions_button()->GetVisible());
   auto* extension_label = extension_item->site_permissions_label_for_testing();
   auto* activeTab_extension_label =
       activeTab_extension_item->site_permissions_label_for_testing();
@@ -1451,8 +1446,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
   //     enterprise extension can have access to a policy-blocked site.
   EXPECT_FALSE(enterprise_extension_item->site_access_toggle_for_testing()
                    ->GetVisible());
-  EXPECT_FALSE(enterprise_extension_item->site_permissions_button_for_testing()
-                   ->GetVisible());
+  EXPECT_FALSE(
+      enterprise_extension_item->site_permissions_button()->GetVisible());
   auto* enterprise_label =
       enterprise_extension_item->site_permissions_label_for_testing();
   EXPECT_TRUE(enterprise_label->GetVisible());
@@ -1493,7 +1488,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest, UserBlockedSite) {
   // Menu item controls are hidden since extensions are blocked on this site.
   ExtensionsMenuEntryView* menu_entry = GetOnlyMenuEntry();
   EXPECT_FALSE(menu_entry->site_access_toggle_for_testing()->GetVisible());
-  EXPECT_FALSE(menu_entry->site_permissions_button_for_testing()->GetVisible());
+  EXPECT_FALSE(menu_entry->site_permissions_button()->GetVisible());
 }
 
 // Tests that updating the optional section keeps the main page at the size
@@ -1563,7 +1558,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
   // access to the site.
   ExtensionsMenuEntryView* menu_entry = GetOnlyMenuEntry();
   EXPECT_FALSE(menu_entry->site_access_toggle_for_testing()->GetVisible());
-  EXPECT_FALSE(menu_entry->site_permissions_button_for_testing()->GetVisible());
+  EXPECT_FALSE(menu_entry->site_permissions_button()->GetVisible());
   auto* site_permissions_label =
       menu_entry->site_permissions_label_for_testing();
   EXPECT_TRUE(site_permissions_label->GetVisible());
@@ -2139,7 +2134,7 @@ IN_PROC_BROWSER_TEST_F(
             PermissionsManager::UserSiteAccess::kOnAllSites);
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
   EXPECT_EQ(
-      menu_entry->site_permissions_button_for_testing()->GetText(),
+      menu_entry->site_permissions_button()->GetText(),
       l10n_util::GetStringUTF16(
           IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_ALL_SITES));
 
@@ -2187,7 +2182,51 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(GetUserSiteAccess(*extension, url),
             PermissionsManager::UserSiteAccess::kOnSite);
   EXPECT_TRUE(menu_entry->site_access_toggle_for_testing()->GetIsOn());
-  EXPECT_EQ(menu_entry->site_permissions_button_for_testing()->GetText(),
+  EXPECT_EQ(menu_entry->site_permissions_button()->GetText(),
             l10n_util::GetStringUTF16(
                 IDS_EXTENSIONS_MENU_MAIN_PAGE_EXTENSION_SITE_ACCESS_ON_SITE));
+}
+
+// Verifies that `GetMenuEntry()` locates an extension's row by ID and
+// `ScrollToMenuEntry()` scrolls an off-screen entry into the visible scroll
+// viewport.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewBrowserTest,
+                       GetAndScrollToMenuEntry) {
+  constexpr int kNumExtensions = 15;
+  scoped_refptr<const extensions::Extension> last_extension;
+  for (int i = 0; i < kNumExtensions; ++i) {
+    // Zero-pad names so alphabetical menu ordering matches loop order.
+    std::string name = base::StrCat(
+        {"Extension ", i < 10 ? "0" : "", base::NumberToString(i)});
+    last_extension = InstallExtensionWithHostPermissions(name, {"<all_urls>"});
+  }
+  ASSERT_TRUE(last_extension);
+
+  NavigateAndCommit(GURL("http://www.example.com"));
+  ShowMenu();
+  LayoutMenuIfNecessary();
+  ASSERT_TRUE(main_page());
+
+  // Querying and scrolling to an unknown extension ID is a safe no-op.
+  EXPECT_EQ(main_page()->GetMenuEntry("nonexistent_extension_id"), nullptr);
+  main_page()->ScrollToMenuEntry("nonexistent_extension_id");
+
+  ExtensionsMenuEntryView* last_entry =
+      main_page()->GetMenuEntry(last_extension->id());
+  ASSERT_TRUE(last_entry);
+  EXPECT_EQ(last_entry, menu_entries().back());
+
+  views::ScrollView* scroll_view = main_page()->scroll_view_for_testing();
+  ASSERT_TRUE(scroll_view);
+
+  // Initially, the scroll view starts at the top and the last entry is clipped
+  // out of view below the viewport.
+  EXPECT_EQ(scroll_view->GetVisibleRect().y(), 0);
+  EXPECT_TRUE(last_entry->GetVisibleBounds().IsEmpty());
+
+  // Scrolling to `last_extension` brings the full entry into the visible
+  // viewport.
+  main_page()->ScrollToMenuEntry(last_extension->id());
+  EXPECT_GT(scroll_view->GetVisibleRect().y(), 0);
+  EXPECT_EQ(last_entry->GetVisibleBounds(), last_entry->GetLocalBounds());
 }

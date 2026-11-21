@@ -38,6 +38,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/radio_button.h"
 #include "ui/views/controls/button/toggle_button.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -837,4 +838,36 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(site_access_toggle->GetIsOn());
   EXPECT_EQ(GetUserSiteAccess(*extension, origin_b_url),
             PermissionsManager::UserSiteAccess::kOnClick);
+}
+
+// Verifies that the site access radio group section exposes its
+// `ui::ElementIdentifier` to `ElementTrackerViews` (used by IPH tutorials).
+IN_PROC_BROWSER_TEST_F(ExtensionsSitePermissionsPageViewBrowserTest,
+                       SiteAccessSectionElementIdentifierIsTracked) {
+  auto extension =
+      InstallExtensionWithHostPermissions("Extension", {"<all_urls>"});
+
+  NavigateAndCommit(GURL("http://www.url.com"));
+  ShowSitePermissionsPage(extension->id());
+  LayoutMenuIfNecessary();
+  ASSERT_TRUE(IsSitePermissionsPageOpened(extension->id()));
+
+  const ui::ElementContext context =
+      views::ElementTrackerViews::GetContextForView(extensions_button());
+  ASSERT_TRUE(context);
+
+  views::View* site_access_section =
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kExtensionsMenuSiteAccessSectionElementId, context);
+  ASSERT_TRUE(site_access_section);
+  EXPECT_TRUE(site_permissions_page()->Contains(site_access_section));
+  EXPECT_TRUE(site_access_section->Contains(
+      site_permissions_page()->GetSiteAccessButtonForTesting(
+          PermissionsManager::UserSiteAccess::kOnClick)));
+  EXPECT_TRUE(site_access_section->Contains(
+      site_permissions_page()->GetSiteAccessButtonForTesting(
+          PermissionsManager::UserSiteAccess::kOnSite)));
+  EXPECT_TRUE(site_access_section->Contains(
+      site_permissions_page()->GetSiteAccessButtonForTesting(
+          PermissionsManager::UserSiteAccess::kOnAllSites)));
 }

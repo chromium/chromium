@@ -35,6 +35,14 @@ inline constexpr char kPrefLastUpdateTime[] = "last_update_time";
 inline constexpr char kPrefHasStartedServiceWorker[] =
     "has_started_service_worker";
 
+// A preference that indicates whether requested host permissions were withheld
+// when the extension was first installed. This preference is written when an
+// extension is first installed with permissions withheld and deleted when it is
+// removed. It is NOT updated when the extension is updated or when the user
+// modifies site access settings later.
+inline constexpr char kPrefPermissionsWithheldOnInstall[] =
+    "permissions_withheld_on_install";
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_EXTENSION_PREF_NAMES_H_

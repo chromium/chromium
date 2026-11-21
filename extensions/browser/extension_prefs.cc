@@ -2430,9 +2430,10 @@ void ExtensionPrefs::PopulateExtensionInfoPrefs(
 
   std::string install_time_str = base::NumberToString(
       install_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  const bool is_first_install = !extension_dict->HasKey(kPrefFirstInstallTime);
   // Don't overwrite any existing first_install_time pref value so that we
   // preserve the original install time.
-  if (!extension_dict->HasKey(kPrefFirstInstallTime)) {
+  if (is_first_install) {
     extension_dict->SetString(kPrefFirstInstallTime, install_time_str);
   }
   extension_dict->SetString(kPrefLastUpdateTime, install_time_str);
@@ -2460,9 +2461,15 @@ void ExtensionPrefs::PopulateExtensionInfoPrefs(
   removed_prefs.Append(kDNREnabledStaticRulesetIDs);
 
   if (util::CanWithholdPermissionsFromExtension(*extension)) {
+    const bool withhold_creation_flag =
+        (extension->creation_flags() & Extension::WITHHOLD_PERMISSIONS) != 0;
+    if (is_first_install && withhold_creation_flag) {
+      extension_dict->SetBoolean(kPrefPermissionsWithheldOnInstall, true);
+    }
+
     // If the withhold permission creation flag is present it takes precedence
     // over any previous stored value.
-    if (extension->creation_flags() & Extension::WITHHOLD_PERMISSIONS) {
+    if (withhold_creation_flag) {
       extension_dict->SetBoolean(kPrefWithholdingPermissions, true);
     } else if (!HasWithholdingPermissionsSetting(extension->id())) {
       // If no withholding creation flag was specified and there is no value

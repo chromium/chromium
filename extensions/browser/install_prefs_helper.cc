@@ -41,6 +41,12 @@ constexpr PrefMap kFirstInstallTime = {kPrefFirstInstallTime, PrefType::kTime,
 constexpr PrefMap kLastUpdateTime = {kPrefLastUpdateTime, PrefType::kTime,
                                      PrefScope::kExtensionSpecific};
 
+// A preference that indicates whether requested host permissions were withheld
+// when the extension was first installed.
+constexpr PrefMap kPermissionsWithheldOnInstall = {
+    kPrefPermissionsWithheldOnInstall, PrefType::kBool,
+    PrefScope::kExtensionSpecific};
+
 bool ReadPrefAsBooleanOrFalse(const ExtensionPrefs* prefs,
                               const ExtensionId& extension_id,
                               const PrefMap& key) {
@@ -91,6 +97,12 @@ base::Time GetFirstInstallTime(const ExtensionPrefs* prefs,
 base::Time GetLastUpdateTime(const ExtensionPrefs* prefs,
                              const ExtensionId& extension_id) {
   return prefs->ReadPrefAsTime(extension_id, kLastUpdateTime);
+}
+
+bool WerePermissionsWithheldOnInstall(const ExtensionPrefs* prefs,
+                                      const ExtensionId& extension_id) {
+  return ReadPrefAsBooleanOrFalse(prefs, extension_id,
+                                  kPermissionsWithheldOnInstall);
 }
 
 }  // namespace extensions

@@ -20,6 +20,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/extension_id.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -117,6 +118,8 @@ std::unique_ptr<views::ImageView> GetSettingsButtonIcon(int icon_size) {
 }
 
 }  // namespace
+
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kExtensionsMenuSiteAccessSectionElementId);
 
 ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
     BrowserWindowInterface* browser,
@@ -301,12 +304,17 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                       .SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS)
                       .SetEnabledColor(kColorExtensionsMenuText)
                       .SetHorizontalAlignment(gfx::ALIGN_LEFT),
-                  create_radio_button_builder(
-                      PermissionsManager::UserSiteAccess::kOnClick),
-                  create_radio_button_builder(
-                      PermissionsManager::UserSiteAccess::kOnSite),
-                  create_radio_button_builder(
-                      PermissionsManager::UserSiteAccess::kOnAllSites),
+                  views::Builder<views::BoxLayoutView>()
+                      .SetOrientation(views::BoxLayout::Orientation::kVertical)
+                      .SetProperty(views::kElementIdentifierKey,
+                                   kExtensionsMenuSiteAccessSectionElementId)
+                      .AddChildren(
+                          create_radio_button_builder(
+                              PermissionsManager::UserSiteAccess::kOnClick),
+                          create_radio_button_builder(
+                              PermissionsManager::UserSiteAccess::kOnSite),
+                          create_radio_button_builder(
+                              PermissionsManager::UserSiteAccess::kOnAllSites)),
                   // Requests in toolbar toggle.
                   create_separator_builder(/*full_width=*/false),
                   views::Builder<views::FlexLayoutView>()
