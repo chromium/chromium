@@ -4107,20 +4107,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.PreloadRequestWaitTime" units="ms"
-    expires_after="2025-07-27">
-  <owner>cduvall@chromium.org</owner>
-  <owner>swarm-team@google.com</owner>
-  <owner>chrome-loading@google.com</owner>
-  <summary>
-    Measures the time from the creation of a PreloadRequest to when
-    PreloadRequest::Start is called. Logged for each PreloadRequest::Start call.
-
-    Warning: this histogram was expired from 2023-10-22 to 2023-12-12; data may
-    be missing.
-  </summary>
-</histogram>
-
 <histogram name="Blink.PrePaint.UpdateTime{BlinkUpdateTimeSuffixes}"
     units="microseconds" expires_after="2027-03-14">
   <owner>pdr@chromium.org</owner>

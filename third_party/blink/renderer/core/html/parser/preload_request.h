@@ -200,7 +200,6 @@ class CORE_EXPORT PreloadRequest {
       RenderBlockingBehavior::kUnset;
   bool from_insertion_scanner_ = false;
   const ResourceFetcher::IsImageSet is_image_set_;
-  base::TimeTicks creation_time_ = base::TimeTicks::Now();
   bool is_potentially_lcp_element_ = false;
   bool is_potentially_lcp_influencer_ = false;
 };
