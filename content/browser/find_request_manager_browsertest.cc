@@ -874,8 +874,9 @@ class MainFrameSizeChangedWaiter : public WebContentsObserver {
 
 // Tests match rects in the iframe are updated with the size of the main frame,
 // and the active match rect should be in it.
+// TODO(crbug.com/588635257): Consistently failing on Android.
 IN_PROC_BROWSER_TEST_F(FindRequestManagerTest,
-                       RectsUpdateWhenMainFrameSizeChanged) {
+                       DISABLED_RectsUpdateWhenMainFrameSizeChanged) {
   LoadAndWait("/find_in_page.html");
 
   // Make a initial size for native view.
