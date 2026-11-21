@@ -32,7 +32,7 @@ _PROTOBUF_DIR = os.path.join(
     'protobuf',
     'python',
 )
-if os.path.exists(_PROTOBUF_DIR) and _PROTOBUF_DIR not in sys.path:
+if _PROTOBUF_DIR not in sys.path:
     sys.path.insert(1, _PROTOBUF_DIR)
 
 # See b/315080809, b/545614704 and b/336173744 for context.

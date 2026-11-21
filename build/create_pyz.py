@@ -54,6 +54,9 @@ _SRC_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
 # PEP 552 unchecked hash-based .pyc flags (bit 0 = hash-based, bit 1 = 0).
 _UNCHECKED_HASH_FLAGS = b'\x01\x00\x00\x00'
 
+# Non-.py vpython specs automatically emitted by print_python_deps.py.
+_VPYTHON_SPEC_NAMES = frozenset(('vpython.toml', '.vpython3'))
+
 # Entry kinds stored in _index[dir_rel][mod_name]:
 _KIND_MODULE = 0
 _KIND_PACKAGE = 1
@@ -127,23 +130,41 @@ def _init():
                 submodule_search_locations=search_locations,
             )
 
-    _nc_src_root = os.path.normcase(_src_root)
-    _src_prefix = os.path.join(_src_root, '')
-    _nc_src_prefix = os.path.normcase(_src_prefix)
+    # Precompute match tuples `(root, normcase(root), root + sep,
+    # normcase(root + sep))` for `_src_root` and (when on a symlinked checkout)
+    # its `realpath`, so `_hook()` matches `sys.path` entries constructed via
+    # `Path.resolve()` or `os.path.realpath()` without recomputing prefixes.
+    _roots = [(_src_root, os.path.normcase(_src_root))]
+    _real_src_root = os.path.realpath(_src_root)
+    if os.path.normcase(_real_src_root) != _roots[0][1]:
+        _roots.append((_real_src_root, os.path.normcase(_real_src_root)))
+    _root_matchers = tuple(
+        (
+            root,
+            nc,
+            os.path.join(root, ''),
+            os.path.normcase(os.path.join(root, '')),
+        )
+        for root, nc in _roots
+    )
 
     # `sys.path_hooks` factory: intercepts `sys.path` entries under `_src_root`
-    # that appear in `_index`, and raises `ImportError` for everything else
-    # (stdlib, build dir, non-Python dirs) so Python's normal finders handle it.
+    # (or its `realpath`, for scripts using `Path.resolve()`) that appear in
+    # `_index`, and raises `ImportError` for everything else (stdlib, build dir,
+    # non-Python dirs) so Python's normal finders handle it.
     def _hook(p):
         ap = os.getcwd() if not p else os.path.abspath(p)
         nc = os.path.normcase(ap)
-        if nc == _nc_src_root:
-            rel = ''
-            dir_path = _src_root
-        elif nc.startswith(_nc_src_prefix):
-            suffix = ap[len(_src_prefix) :]
-            rel = suffix.replace(os.sep, '/')
-            dir_path = _src_prefix + suffix
+        for root, nc_root, prefix, nc_prefix in _root_matchers:
+            if nc == nc_root:
+                rel = ''
+                dir_path = root
+                break
+            if nc.startswith(nc_prefix):
+                suffix = ap[len(prefix) :]
+                rel = suffix.replace(os.sep, '/')
+                dir_path = prefix + suffix
+                break
         else:
             raise ImportError
         entries = _index.get(rel)
@@ -225,11 +246,12 @@ def _read_pydeps(pydeps_path):
             if not line or line.startswith('#'):
                 continue
             if line.startswith('//'):
-                paths.append(
-                    os.path.normpath(os.path.join(_SRC_ROOT, line[2:]))
-                )
+                path = os.path.normpath(os.path.join(_SRC_ROOT, line[2:]))
             else:
-                paths.append(os.path.normpath(os.path.join(base_dir, line)))
+                path = os.path.normpath(os.path.join(base_dir, line))
+            if os.path.basename(path) in _VPYTHON_SPEC_NAMES:
+                continue
+            paths.append(path)
     return paths
 
 
