@@ -96,7 +96,8 @@ enum class VerifySignatureResult {
   kInvalidSignature = 2,
   kInvalidSeed = 3,
   kValidSignature = 4,
-  kMaxValue = kValidSignature,
+  kLegacyKeyDistrusted = 5,
+  kMaxValue = kLegacyKeyDistrusted,
 };
 
 // Describes instance manipulations applied to data.

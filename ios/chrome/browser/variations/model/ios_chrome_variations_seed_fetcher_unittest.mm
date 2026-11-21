@@ -115,7 +115,9 @@ TEST_F(IOSChromeVariationsSeedFetcherTest,
         // 'const NSString *__strong`.
         NSString* prefix = [NSString stringWithFormat:@"%@", test_server];
         return [request.URL.absoluteString hasPrefix:prefix] &&
-               [request.allHTTPHeaderFields[@"A-IM"] isEqualToString:@"gzip"];
+               [request.allHTTPHeaderFields[@"A-IM"] isEqualToString:@"gzip"] &&
+               [[request valueForHTTPHeaderField:@"X-Seed-Key-Ids"]
+                   isEqualToString:@"1,2,3,0"];
       };
   id mock_url_session = OCMClassMock([NSURLSession class]);
   OCMStub([mock_url_session sharedSession]).andReturn(mock_url_session);

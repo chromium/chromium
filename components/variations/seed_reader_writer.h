@@ -191,6 +191,9 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Overrides the timer used for scheduling writes with `timer_override`.
   void SetTimerForTesting(base::OneShotTimer* timer_override);
 
+  // Immediately commits any scheduled seed file write to disk.
+  void CommitPendingWrite();
+
   // Updates the server-provided seed date that is used for study date checks.
   void SetSeedDate(base::Time server_date_fetched);
 

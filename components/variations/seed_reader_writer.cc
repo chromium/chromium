@@ -518,6 +518,13 @@ void SeedReaderWriter::SetTimerForTesting(base::OneShotTimer* timer_override) {
   }
 }
 
+void SeedReaderWriter::CommitPendingWrite() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (seed_writer_ && seed_writer_->HasPendingWrite()) {
+    seed_writer_->DoScheduledWrite();
+  }
+}
+
 void SeedReaderWriter::SetSeedDate(base::Time server_date_fetched) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Both groups write the seed date to local state.
