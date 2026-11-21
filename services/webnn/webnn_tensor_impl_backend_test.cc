@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <array>
 #include <string>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -73,9 +74,11 @@ struct CreateTensorSuccess {
 #if BUILDFLAG(IS_MAC)
 class WebNNTensorImplBackendTest : public testing::Test {
  public:
-  WebNNTensorImplBackendTest()
+  explicit WebNNTensorImplBackendTest(
+      const std::vector<base::test::FeatureRef>& disabled_features = {})
       : scoped_feature_list_(
-            webnn::mojom::features::kWebMachineLearningNeuralNetwork) {}
+            {webnn::mojom::features::kWebMachineLearningNeuralNetwork},
+            disabled_features) {}
 
   void SetUp() override;
   void TearDown() override;
@@ -103,9 +106,11 @@ void WebNNTensorImplBackendTest::SetUp() {
 #elif BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
 class WebNNTensorImplBackendTest : public testing::Test {
  public:
-  WebNNTensorImplBackendTest()
+  explicit WebNNTensorImplBackendTest(
+      const std::vector<base::test::FeatureRef>& disabled_features = {})
       : scoped_feature_list_(
-            webnn::mojom::features::kWebMachineLearningNeuralNetwork) {
+            {webnn::mojom::features::kWebMachineLearningNeuralNetwork},
+            disabled_features) {
     webnn_test_environment_.BindWebNNContextProvider(
         webnn_provider_remote_.BindNewPipeAndPassReceiver());
   }
@@ -439,13 +444,17 @@ TEST_F(WebNNTensorImplBackendTest, CreateContextImplManyTest) {
   EXPECT_FALSE(bad_message_helper.GetLastBadMessage().has_value());
 }
 
+class WebNNTensorImplBackendSyncPointGraphValidationDisabledTest
+    : public WebNNTensorImplBackendTest {
+ public:
+  WebNNTensorImplBackendSyncPointGraphValidationDisabledTest()
+      : WebNNTensorImplBackendTest({features::kSyncPointGraphValidation}) {}
+};
+
 // Test that ExportTensor() is rejected when SyncPointGraphValidation is
 // disabled.
-TEST_F(WebNNTensorImplBackendTest,
-       ExportTensorAsyncRejectedWhenSyncPointGraphValidationDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kSyncPointGraphValidation);
+TEST_F(WebNNTensorImplBackendSyncPointGraphValidationDisabledTest,
+       ExportTensorAsyncRejected) {
   ASSERT_FALSE(features::IsSyncPointGraphValidationEnabled());
 
   BadMessageTestHelper bad_message_helper;
@@ -486,21 +495,27 @@ TEST_F(WebNNTensorImplBackendTest,
 }
 
 #if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
+class WebNNTensorImplBackendInRendererTest : public WebNNTensorImplBackendTest {
+ public:
+  WebNNTensorImplBackendInRendererTest()
+      : WebNNTensorImplBackendTest(
+#if BUILDFLAG(IS_WIN)
+            // Disable the GPU-process ONNX Runtime backend on Windows so
+            // context creation falls back to the in-renderer LiteRT backend
+            // that registers `InRendererTensorHandle`.
+            {webnn::mojom::features::kWebNNOnnxRuntime}
+#endif  // BUILDFLAG(IS_WIN)
+        ) {
+  }
+};
+
 // Verifies that when two `InRendererTensorHandle::BeginReadTensor` calls are
 // issued before a `WriteTensor`, completing the first read and allowing the
 // subsequent write to replace the tensor's underlying buffer does not
 // invalidate or overwrite the second in-flight read's buffer span before its
 // `read_complete` closure is run.
-TEST_F(WebNNTensorImplBackendTest, InRendererConcurrentReadsAndWriteTest) {
-#if BUILDFLAG(IS_WIN)
-  // Disable the GPU-process ONNX Runtime backend on Windows so context creation
-  // falls back to the in-renderer LiteRT backend that registers
-  // `InRendererTensorHandle`.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      webnn::mojom::features::kWebNNOnnxRuntime);
-#endif  // BUILDFLAG(IS_WIN)
-
+TEST_F(WebNNTensorImplBackendInRendererTest,
+       InRendererConcurrentReadsAndWriteTest) {
   BadMessageTestHelper bad_message_helper;
 
   base::expected<CreateContextSuccess, webnn::mojom::Error::Code>

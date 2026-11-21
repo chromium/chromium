@@ -45,8 +45,8 @@ class WebNNContextProviderImplTest : public testing::Test {
   ~WebNNContextProviderImplTest() override = default;
 
  private:
-  test::WebNNTestEnvironment webnn_test_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  test::WebNNTestEnvironment webnn_test_environment_;
 };
 
 TEST_F(WebNNContextProviderImplTest, NotSupported) {

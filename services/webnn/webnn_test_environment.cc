@@ -7,8 +7,11 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/task/sequence_manager/task_queue.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/run_until.h"
+#include "gpu/command_buffer/service/gpu_task_priority.h"
+#include "gpu/command_buffer/service/scheduler.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -116,6 +119,22 @@ class InProcessFallbackContextProvider : public mojom::WebNNContextProvider {
       task_runner_;
 };
 
+class TaskEnvironmentWithGpuPriorities : public base::test::TaskEnvironment {
+ public:
+  TaskEnvironmentWithGpuPriorities()
+      : base::test::TaskEnvironment(CreateTaskEnvironmentWithPriorities(
+            gpu::CreateGpuPrioritySettings(),
+            SubclassCreatesDefaultTaskRunner{})) {
+    task_queue_ = sequence_manager()->CreateTaskQueue(
+        base::sequence_manager::TaskQueue::Spec(
+            base::sequence_manager::QueueName::TASK_ENVIRONMENT_DEFAULT_TQ));
+    DeferredInitFromSubclass(task_queue_.get());
+  }
+
+ private:
+  base::sequence_manager::TaskQueue::Handle task_queue_;
+};
+
 }  // namespace
 
 FakeWebNNBrowserHostForTesting::FakeWebNNBrowserHostForTesting()
@@ -209,7 +228,10 @@ WebNNTestEnvironment::WebNNTestEnvironment(
     WebNNContextProviderImpl::LoseAllContextsCallback
         lose_all_contexts_callback,
     std::unique_ptr<base::test::TaskEnvironment> task_environment)
-    : task_environment_(std::move(task_environment)),
+    : task_environment_(
+          task_environment
+              ? std::move(task_environment)
+              : std::make_unique<TaskEnvironmentWithGpuPriorities>()),
       destruction_callback_(
           base::BindRepeating(&WebNNTestEnvironment::OnContextDestroyed,
                               base::Unretained(this))) {
@@ -279,20 +301,26 @@ void WebNNTestEnvironment::OnReceiverDisconnected() {
 }
 
 void WebNNTestEnvironment::OnContextDestroyed() {
+  if (!task_environment_->GetMainThreadTaskRunner()->BelongsToCurrentThread()) {
+    task_environment_->GetMainThreadTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(&WebNNTestEnvironment::OnContextDestroyed,
+                                  base::Unretained(this)));
+    return;
+  }
   destroyed_context_count_++;
 }
 
 void WebNNTestEnvironment::WaitForAllContextsToBeDestroyed() {
   // Mojo pipe closure notifications are delivered by the IO thread (managed
   // by ScopedMojoIoForTest inside TaskEnvironment). Flushing the thread pool
-  // ensures those notifications have been forwarded to the GPU scheduler,
-  // which then posts disconnect tasks to the main thread. Without this flush,
-  // RunUntil would never see the disconnect tasks arrive.
+  // and worker thread ensures those notifications have been forwarded to the
+  // GPU scheduler, which then posts disconnect tasks to the main thread.
   base::ThreadPoolInstance::Get()->FlushForTesting();
+  context_provider_->FlushForTesting();
 
   // Wait for all contexts to be fully destroyed (not just removed from the
   // provider's map). After RemoveWebNNContextImpl erases a context,
-  // OnTaskRunnerDeleter posts the actual deletion to the SchedulerTaskRunner.
+  // OnTaskRunnerDeleter posts the actual deletion to the owning task runner.
   // The destructor explicitly resets gpu_task_scheduler_ (releasing
   // MultiplexRouter refs) then fires our callback, incrementing
   // destroyed_context_count_.
@@ -302,14 +330,15 @@ void WebNNTestEnvironment::WaitForAllContextsToBeDestroyed() {
       [&]() { return destroyed_context_count_ >= target_destroyed; }));
 }
 
-void WebNNTestEnvironment::TearDown() {
-  // Flush the thread pool to drain MultiplexRouter bounced tasks that hold
-  // scoped_refptr<MultiplexRouter> via WrapRefCounted. In production these
-  // drain naturally, but in tests the thread pool may shut down first.
-  base::ThreadPoolInstance::Get()->FlushForTesting();
+void WebNNTestEnvironment::RunUntilIdle() {
+  context_provider_->FlushForTesting();
+  task_environment_->RunUntilIdle();
+}
 
-  EXPECT_TRUE(
-      base::test::RunUntil([&]() { return pending_receiver_count_ == 0; }));
+void WebNNTestEnvironment::TearDown() {
+  WaitForAllContextsToBeDestroyed();
+  RunUntilIdle();
+  EXPECT_EQ(pending_receiver_count_, 0u);
 }
 
 WebNNTestEnvironment::~WebNNTestEnvironment() {
