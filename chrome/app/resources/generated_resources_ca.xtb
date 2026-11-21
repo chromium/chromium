@@ -1381,6 +1381,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="2519517390894391510">Nom del perfil del certificat</translation>
 <translation id="2520644704042891903">Estem esperant que hi hagi un sòcol disponible...</translation>
 <translation id="2522757085249311407">Permet que els dispositius Bluetooth propers detectin aquest dispositiu i s'hi connectin.</translation>
+<translation id="2523048609826818526">Escriptura d'ús general</translation>
 <translation id="2523184218357549926">Envia a Google els URL de les pàgines que visites</translation>
 <translation id="252513908494776481">Pregunta sobre aquesta pestanya</translation>
 <translation id="2525746158911982776">L'actualització ha fallat perquè el sistema no té prou espai d'emmagatzematge.</translation>
@@ -4225,6 +4226,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5633149627228920745">Més informació sobre els requisits del sistema</translation>
 <translation id="5633597859549257840">Obtén el millor de la IA de Google. Fixa Gemini a la barra d'eines per accedir-hi fàcilment o obre'l en qualsevol moment des del menú de Chrome.</translation>
 <translation id="5635312199252507107">Permet en llocs web concrets</translation>
+<translation id="5636363757061959967">avatar, imatge, nom, compte, perfil</translation>
 <translation id="5638202526629811571">Mostra aquesta pantalla al teu pare, mare o tutor perquè decideixi si pots afegir aquesta extensió</translation>
 <translation id="563821631542362636">Permet que el lloc web desi dades</translation>
 <translation id="5638309510554459422">Cerca extensions i temes a <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
@@ -5696,6 +5698,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7285008278689343502">Parc nacional de Grand Teton</translation>
 <translation id="7286867818472074330">Selecciona la clau d'accés</translation>
 <translation id="7287949630503871403">Dades emmagatzemades a l'aplicació</translation>
+<translation id="7288054329308394475">suprimir, eliminar, seguretat, privadesa, neteja, emmagatzematge, restablir, memòria cau, galetes, lent, velocitat</translation>
 <translation id="7288676996127329262"><ph name="HORIZONTAL_DPI" /> x <ph name="VERTICAL_DPI" /> ppp</translation>
 <translation id="7288761372977133974">Tema d'IA recent <ph name="INDEX" /> de <ph name="SUBJECT" /></translation>
 <translation id="7289049772085228972">Tens la seguretat més efectiva de Chrome</translation>
@@ -6030,6 +6033,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7659336857671800422">Consulta la guia de privadesa</translation>
 <translation id="7660146600670077843">Fes clic amb el botó dret en una pestanya i selecciona "Afegeix una pestanya a un grup nou"</translation>
 <translation id="7662535435481776002">Tema clar de baix contrast</translation>
+<translation id="7663157622371722196"><ph name="BEGIN_BOLD_1" />Les pestanyes es comparteixen per oferir-te respostes més rellevants<ph name="END_BOLD_1" />. Google utilitza el contingut i l'URL de les pestanyes compartides. La pestanya actual es comparteix als xats nous. Pots canviar aquesta opció de configuració en qualsevol moment. <ph name="BEGIN_BOLD_2" />Mantenim la privadesa i la seguretat de les dades de la teva organització<ph name="END_BOLD_2" />. No s'utilitzaran per entrenar models d'IA generativa.</translation>
 <translation id="7664442418269614729">Utilitza aquesta targeta a l'iPhone</translation>
 <translation id="7665445336029073980">Historial de baixades complet</translation>
 <translation id="766635563210446220">No es poden importar les contrasenyes. Comprova <ph name="FILENAME" /> i assegura't que el format sigui correcte. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
@@ -6229,6 +6233,7 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="7901728443188947649">Crea imatges</translation>
 <translation id="7903481341948453971">Utilitza el bloqueig de pantalla en emplenar les contrasenyes</translation>
 <translation id="7903925330883316394">Utilitat: <ph name="UTILITY_TYPE" /></translation>
+<translation id="790436879532554973">Tanca la barra lateral</translation>
 <translation id="7904492297081735975">&amp;Obre el gestor d'adreces d'interès</translation>
 <translation id="7904508617992122201">Els xats es revisen i s'utilitzen per entrenar els models d'IA generativa. Gemini és una IA i pot cometre errors. És possible que alguns continguts no siguin adequats per a tothom. Pots <ph name="BEGIN_LINK_MANAGE_HISTORY" />gestionar el teu historial<ph name="END_LINK_MANAGE_HISTORY" />, inclosa la informació sobre la teva ubicació. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació sobre les opcions<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">Per accedir a les pestanyes dels teus altres dispositius, verifica la teva identitat i sincronitza l'historial i les pestanyes. Pots aturar la sincronització en qualsevol moment a la configuració. És possible que Google personalitzi la Cerca i altres serveis en funció del teu historial.</translation>
@@ -6422,6 +6427,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8090513782447872344">Pots tornar-hi en qualsevol moment per donar-hi una altra ullada</translation>
 <translation id="8090686009202681725">Crea un tema amb IA</translation>
 <translation id="8092792048365451089">L'operació s'ha completat amb el resultat: <ph name="OUTCOME" /></translation>
+<translation id="8092940565705492083">Comandes i enviaments</translation>
 <translation id="8094536695728193970">Albercoc</translation>
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> està fent servir la connexió del servidor intermediari d'una extensió</translation>
 <translation id="8100057926383586173">Obre la configuració d'idioma</translation>
@@ -6677,6 +6683,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8378714024927312812">Gestionat per la teva organització</translation>
 <translation id="8380266723152870797">Nom de la finestra</translation>
 <translation id="838088912501985568">Ara, la vista <ph name="VIEW_ONE_ORIENTATION" /> té una alçada d'un <ph name="VIEW_ONE_PERCENT" /> i la vista <ph name="VIEW_TWO_ORIENTATION" /> d'un <ph name="VIEW_TWO_PERCENT" />.</translation>
+<translation id="8382805540285983013"><ph name="CURRENT_INFOBAR" /> de <ph name="TOTAL_INFOBARS" /></translation>
 <translation id="8382913212082956454">Copia l'&amp;adreça electrònica</translation>
 <translation id="8387157483437834731">La contrasenya s'ha canviat correctament</translation>
 <translation id="8387361103813440603">Sense permís per veure la teva ubicació</translation>
@@ -6826,6 +6833,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8546930481464505581">Personalitza la barra tàctil</translation>
 <translation id="8549127125482561383">Com s'han de mostrar les sol·licituds</translation>
 <translation id="8550239873869577759">S'ha baixat el fitxer sospitós</translation>
+<translation id="8550320113250619680">{COUNT,plural, =0{Darrera barra d'informació de la cua}=1{Es mostrarà 1 barra d'informació més quan aquesta es tanqui}other{Es mostraran # barres d'informació més quan aquesta es tanqui}}</translation>
 <translation id="8551388862522347954">Llicències</translation>
 <translation id="8552102814346875916">Desa a la llista Mantén aquests llocs web sempre actius</translation>
 <translation id="8552947739661397736">Vull assumir el control de la tasca. Actualment, el té Gemini.</translation>

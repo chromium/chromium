@@ -386,6 +386,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="2496180316473517155">Historial de navegació</translation>
 <translation id="250020030759455918">Veuràs l'estat de l'inici de sessió a <ph name="SITE_NAME" />, les dades de navegació i les dades del lloc web a Chrome</translation>
 <translation id="2501278716633472235">Torna</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{# baixada en curs}other{# baixades en curs}}</translation>
 <translation id="2510106555128151389">S'està instal·lant <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2512234228327349533">Cerca opcions de compra</translation>
 <translation id="2513403576141822879">Per trobar més opcions de configuració relacionades amb la privadesa, la seguretat i la recollida de dades, consulta <ph name="BEGIN_LINK" />Sincronització i serveis de Google<ph name="END_LINK" /></translation>
@@ -697,6 +698,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3740290940447881599">Assegura't que confies en aquest lloc web</translation>
 <translation id="3740525748616366977">La cerca per veu no està disponible en aquest dispositiu</translation>
 <translation id="3749289110408117711">Nom del fitxer</translation>
+<translation id="3751708358601675711">Edita el seguiment de preus</translation>
 <translation id="3756823472711156529">Restaura el grup</translation>
 <translation id="3759306015475526475">Gestiona la configuració de les dades d'ús i d'error</translation>
 <translation id="3763110477555836428">S'utilitzarà un número de targeta virtual per a l'emplenament quan tramitis una compra amb aquesta targeta a fi de protegir les teves dades reals. Gestiona-ho a Google Wallet. <ph name="BEGIN_LINK1" />Més informació sobre les targetes virtuals<ph name="END_LINK1" /></translation>
@@ -1137,6 +1139,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5415871492522952905">Tindràs el teu historial i les teves pestanyes en tots els dispositius perquè puguis continuar el que estaves fent</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) perdrà immediatament l'accés al grup de pestanyes "<ph name="GROUP_NAME" />"</translation>
 <translation id="5424588387303617268">GB disponibles: <ph name="GIGABYTES" /></translation>
+<translation id="5430861625274552852">Pregunta sobre el contingut d'una pàgina o compara diverses pestanyes</translation>
 <translation id="543271133149552180"><ph name="TAB_TITLE" />, pestanya d'incògnit multiseleccionada d'imatge sobre imatge</translation>
 <translation id="5436928407363358055">Per continuar fàcilment des d'on ho vas deixar, sincronitza l'historial i les pestanyes</translation>
 <translation id="5438292632479953702">Torna a baixar</translation>

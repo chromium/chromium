@@ -373,6 +373,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="1619648179761984213"><ph name="USER_DISPLAY_NAME" /> ha suprimit una pestanya</translation>
 <translation id="1620510694547887537">Càmera</translation>
 <translation id="1623104350909869708">Impedeix que aquesta pàgina creï quadres de diàleg addicionals</translation>
+<translation id="1624535934412288769">Columnes</translation>
 <translation id="1629390138158333592">Cerca a la web</translation>
 <translation id="1633137413609266904">{0,plural, =1{La política de l'administrador ha bloquejat l'opció d'obrir aquest fitxer}other{La política de l'administrador ha bloquejat l'opció d'obrir # fitxers}}</translation>
 <translation id="1634828734222219955">Total</translation>
@@ -1082,6 +1083,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2803320044666896137">El valor d'aquesta política s'ignora perquè l'usuari no està afiliat.</translation>
 <translation id="2807052079800581569">Posició de la imatge a l'eix Y</translation>
 <translation id="2808278141522721006">Pots activar o desactivar Windows Hello a <ph name="SETTINGS" /></translation>
+<translation id="2820159698793041599">El servidor intermediari no ha pogut establir una connexió segura.</translation>
 <translation id="2820957248982571256">S'està cercant...</translation>
 <translation id="282457273878278063">Gestiona la informació de contacte</translation>
 <translation id="2824775600643448204">Barra d'adreces i de cerca</translation>
@@ -1263,6 +1265,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="3120807611504813890">Sobre (baix gramatge)</translation>
 <translation id="3121994479408824897">Ves a <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Etiquetes (permanents)</translation>
+<translation id="3128081114752791872">El certificat de seguretat del servidor intermediari no és vàlid.</translation>
 <translation id="3131746543143948171">Aquest lloc web sembla similar a altres associats a la pesca de credencials, al programari maliciós i a les estafes. <ph name="BEGIN_LEARN_MORE_LINK" />Més informació<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">Desa el número Redress</translation>
 <translation id="3133565499688974786">Ara, <ph name="SEARCH_ENGINE_NAME" /> és el teu motor de cerca predeterminat</translation>
@@ -3332,6 +3335,7 @@ Per amagar les opcions de Paga més tard, ves a la <ph name="BEGIN_LINK" />confi
 <translation id="6520509611422418552"><ph name="MEMBER_FIRST_NAME" /> s'ha unit al grup de pestanyes "<ph name="GROUP_NAME" />"</translation>
 <translation id="6521745193039995384">No activa</translation>
 <translation id="6524830701589638230">Botó Gestiona la configuració d'accessibilitat: activa'l per personalitzar les eines d'accessibilitat a la configuració de Chrome</translation>
+<translation id="652643331002043144">Aquest lloc web sembla similar a d'altres associats a la pesca de credencials, al programari maliciós i a les estafes.</translation>
 <translation id="6529173248185917884">Setè corró</translation>
 <translation id="6529602333819889595">&amp;Refés la supressió</translation>
 <translation id="6532101170117367231">Desa a Google Drive</translation>
@@ -4419,6 +4423,7 @@ Detalls addicionals:
 <translation id="8363502534493474904">Desactiva el mode d'avió.</translation>
 <translation id="8363929499301563123">Galetes de llocs web (l'estat de sessió iniciada als llocs web que s'han visitat recentment es conservarà)</translation>
 <translation id="8364627913115013041">No s'ha definit.</translation>
+<translation id="8364664414979300296">Afegeix pestanyes, fotos i més per millorar la cerca</translation>
 <translation id="836616551641291797">Obtén més informació sobre com es gestiona el navegador</translation>
 <translation id="8367705492654390392">Pregunta el que vulguis</translation>
 <translation id="8368001212524806591">Fes un seguiment del preu</translation>

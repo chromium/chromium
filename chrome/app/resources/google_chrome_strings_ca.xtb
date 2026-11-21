@@ -77,6 +77,7 @@
 <translation id="1688214853608504530">Quan escrius a la barra d'adreces o al quadre de cerca, Chrome envia el que escrius a les eines de cerca, d'IA i d'agent de la teva organització per obtenir suggeriments.</translation>
 <translation id="1698376642261615901">Google Chrome és un navegador web que executa pàgines web i aplicacions a gran velocitat. És ràpid, estable i fàcil d'utilitzar. Navega d'una manera més segura pel web amb la protecció integrada contra programari maliciós i llocs de pesca de credencials a Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome es reiniciarà d'aquí a 1 hora}other{Chrome es reiniciarà d'aquí a # hores}}</translation>
+<translation id="1713866023633141719">La IA al dispositiu està a punt</translation>
 <translation id="1722488837206509557">Això et permetrà seleccionar un dels dispositius disponibles i mostrar-hi contingut.</translation>
 <translation id="1724094881572874997">Per protegir la teva feina a Chrome, la teva organització podrà veure o gestionar determinada informació quan tinguis la sessió iniciada a Chrome.</translation>
 <translation id="1769661297620183092">Pots tornar a obrir el tauler de la Cerca de Google per fer preguntes mentre navegues</translation>
@@ -149,6 +150,7 @@
 <translation id="2513154137948333830">Reinici necessari: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="251329670120169391">la teva organització</translation>
 <translation id="2521391734665471391">Tanca el mode IA de la Cerca de Google</translation>
+<translation id="2523048609826818526">Escriptura d'ús general</translation>
 <translation id="2523492931736391680">La teva feina està protegida a Chrome</translation>
 <translation id="2534365042754120737">Per protegir les teves dades, permet que Chrome suprimeixi els permisos dels llocs web que no has visitat recentment. En continuaràs rebent notificacions.</translation>
 <translation id="2556847002339236023">La teva organització tanca Chrome quan no s'utilitza durant <ph name="TIMEOUT_DURATION" />. Les dades de navegació s'han suprimit. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades.</translation>
@@ -247,6 +249,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="3373752068427117404">Algunes funcions i extensions de Chrome inclouen dreceres. Pots decidir si vols tornar-les a activar.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome es reiniciarà ara}=1{Chrome es reiniciarà d'aquí a 1 segon}other{Chrome es reiniciarà d'aquí a # segons}}</translation>
 <translation id="3380249972812870825">Per obrir Gemini a Chrome, prem <ph name="GLOBAL_HOTKEY" /></translation>
+<translation id="3392127217442962664">Chrome ha afegit una IA que s'executa al dispositiu. Els llocs web i Chrome la poden utilitzar per a funcions com ara:</translation>
 <translation id="3396977131400919238">Hi ha hagut un error en el sistema operatiu durant la instal·lació. Torna a baixar Google Chrome.</translation>
 <translation id="3428747202529429621">Et protegeix a Chrome i és possible que s'utilitzi per millorar la teva seguretat en altres aplicacions de Google quan tinguis la sessió iniciada</translation>
 <translation id="3438681572027105609">Per obtenir les teves contrasenyes i altres dades en tots els dispositius, inicia la sessió a Chrome</translation>
@@ -296,6 +299,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="3973161977468201858">Google Chrome vol suprimir les dades del gestor de contrasenyes de Google. Escriu la teva contrasenya de Windows per permetre-ho.</translation>
 <translation id="3984557288004650913">Des del botó Cerca de Google a Chrome de la barra d'eines, pots tornar a obrir la Cerca de Google a Chrome per fer preguntes mentre navegues</translation>
 <translation id="399788104667917863">Fixa a la barra d'eines</translation>
+<translation id="4000385468528550798">La IA al dispositiu s'ha actualitzat</translation>
 <translation id="400161754580828648">Per compartir la pantalla, permet que Chrome gravi la pantalla a Configuració del sistema.</translation>
 <translation id="4012899077942246412">Mentre tinguis la sessió iniciada, podràs utilitzar les teves contrasenyes i altres elements del teu Compte de Google a Chrome. Per canviar-ho, ves a El teu compte a Chrome.</translation>
 <translation id="4022972681110646219">Tradueix la pantalla</translation>
@@ -551,6 +555,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="6632012506031284914">per cercar amb Chrome.</translation>
 <translation id="6634299872736643004">Els canvis en aquesta opció de configuració s'aplicaran quan Chrome es reiniciï.</translation>
 <translation id="6644846457769259194">S'està actualitzant el dispositiu (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6659177157954429254">La IA al dispositiu està actualitzada</translation>
 <translation id="6660596345553328257">Vols iniciar la sessió a Chrome?</translation>
 <translation id="6664219008737641504">Si has oblidat la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="SETTINGS_LINK" /> les dades de Chrome del teu compte</translation>
 <translation id="6676384891291319759">Accedeix a Internet</translation>
@@ -592,6 +597,7 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="7024536598735240744">Error de descompressió: <ph name="UNPACK_ERROR" /></translation>
 <translation id="7025800014283535195">Pots canviar entre perfils de Chrome aquí</translation>
 <translation id="7026856149118332950">Fes clic a <ph name="BEGIN_BOLD" />Sí<ph name="END_BOLD" /> a la notificació de Windows per fixar Chrome a la barra de tasques i accedir-hi ràpidament.</translation>
+<translation id="7033785662379319359">Hi ha una versió nova i més compacta de la IA al dispositiu a punt per utilitzar-se en tasques com ara resums, correccions i més</translation>
 <translation id="7047386856539490735">Aquests resultats són útils?</translation>
 <translation id="7051685429025310665">No l'has visitat recentment. Chrome ha suprimit <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Personalitza Chrome</translation>
