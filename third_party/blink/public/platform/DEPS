@@ -10,7 +10,6 @@ include_rules = [
     "+base/files/file.h",
     "+base/location.h",
     "+base/logging.h",
-    "+base/memory/memory_pressure_listener.h",
     "+base/memory/ref_counted.h",
     "+base/memory/scoped_refptr.h",
     "+base/memory/weak_ptr.h",

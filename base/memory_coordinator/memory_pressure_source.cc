@@ -66,12 +66,6 @@ CallbackListSubscription MemoryPressureSource::AddCallback(Callback callback) {
   return callbacks_.Add(std::move(callback));
 }
 
-MemoryPressureLevel MemoryPressureSource::GetLastNotifiedMemoryPressureLevel(
-    PassKey<MemoryPressureListenerRegistry>) const {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  return simulated_memory_pressure_level_.value_or(last_memory_pressure_level_);
-}
-
 // static
 void MemoryPressureSource::IncreaseNotificationSuppressionCount() {
   // The source and its subscribers live on the process main thread and are

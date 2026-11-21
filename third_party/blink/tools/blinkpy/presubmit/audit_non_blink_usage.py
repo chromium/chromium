@@ -2313,9 +2313,7 @@ _CONFIG = [
         # explicitly blocked. blink::RefCounted and blink::ThreadSafeRefCounted
         # should be used instead.
         # Also, there is a blink-specific version of MemoryConsumerRegistration
-        # that should be used over its base counterpart, and
-        # base::MemoryPressureListener is deprecated in favor of
-        # base::MemoryConsumer.
+        # that should be used over its base counterpart.
         'allowed': ['.+'],
         'inclass_allowed': ['.+'],
         'disallowed': [
@@ -2328,10 +2326,6 @@ _CONFIG = [
             (
                 'base::AsyncMemoryConsumerRegistration',
                 'Use blink::MemoryConsumerRegistration',
-            ),
-            (
-                'base::MemoryPressureListenerRegistration',
-                'Use base::MemoryConsumer with blink::MemoryConsumerRegistration',
             ),
             # TODO(https://crbug.com/1267866): this warning is shown twice for
             # renderer/platform/ violations.

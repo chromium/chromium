@@ -12,11 +12,8 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/memory_pressure_level.h"
 #include "base/threading/thread_checker.h"
-#include "base/types/pass_key.h"
 
 namespace base {
-
-class MemoryPressureListenerRegistry;
 
 // MemoryPressureSource holds the memory pressure level of the process, as
 // reported by the platform-specific monitors and other producers of the memory
@@ -68,13 +65,6 @@ class BASE_EXPORT MemoryPressureSource {
   // Restricted to the plumbing of the memory pressure signal. See the class
   // comment.
   [[nodiscard]] CallbackListSubscription AddCallback(Callback callback);
-
-  // Returns the level of the last notification sent to subscribers: the
-  // simulated level while notifications are suppressed, the real level
-  // otherwise.
-  // TODO(406578344): Remove with MemoryPressureListenerRegistry.
-  MemoryPressureLevel GetLastNotifiedMemoryPressureLevel(
-      PassKey<MemoryPressureListenerRegistry>) const;
 
  private:
   friend class MemoryPressureSuppressionToken;

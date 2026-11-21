@@ -24,7 +24,8 @@ enum MemoryPressureLevel {
 message ChromeMemoryPressureNotification {
   optional MemoryPressureLevel level = 1;
 
-  // ID of interned source location where MemoryPressureListener was created
+  // Deprecated: ID of interned source location where the (now deleted)
+  // base::MemoryPressureListener was created.
   optional uint64 creation_location_iid = 2;
 }
 

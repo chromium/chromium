@@ -28,6 +28,9 @@ class MemoryConsumerRegistry;
 // By registering with the MemoryConsumerRegistry, instances of this class are
 // notified when they should reduce or increase memory usage.
 //
+// base::MemoryConsumer is the replacement API for the deleted
+// base::MemoryPressureListener class.
+//
 // Each consumer has a unique ID, and a set of traits. All registered consumers
 // with the same unique ID are assumed to be equivalent and must have the exact
 // same traits.
