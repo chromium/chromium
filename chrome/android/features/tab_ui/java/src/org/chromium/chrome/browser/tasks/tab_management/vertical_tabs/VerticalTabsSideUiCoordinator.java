@@ -123,9 +123,6 @@ public class VerticalTabsSideUiCoordinator
         mTabListCoordinator = tabListCoordinatorFactory.apply(mCollapseController);
         mIsVerticalTabsActiveSupplier = isVerticalTabsActiveSupplier;
         mCommittedResizeWidthDp = VerticalTabUtils.getUserResizedWidthDpFromSharedPref();
-        mSideUiCoordinator.addObserver(this);
-        mSideUiCoordinator.registerSideUiContainer(this);
-        mWindowAndroid.addActivityStateObserver(this);
 
         mRootView = new FrameLayout(activity);
         mRootView.setLayoutParams(
@@ -143,6 +140,10 @@ public class VerticalTabsSideUiCoordinator
                                 new UiUpdateRequest(
                                         getSideUiId(), /* suppressAnimations= */ false)));
         mTabListCoordinator.setExternalDragObserver(mExternalDragObserver);
+
+        mSideUiCoordinator.addObserver(this);
+        mSideUiCoordinator.registerSideUiContainer(this);
+        mWindowAndroid.addActivityStateObserver(this);
     }
 
     public NonNullObservableSupplier<Boolean> getIsAutoHiddenSupplier() {

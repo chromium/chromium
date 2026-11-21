@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -58,6 +59,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListCoordinator.ExternalDragObserver;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
+import org.chromium.chrome.browser.ui.side_ui.SideUiContainer;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.HeightType;
@@ -113,6 +115,14 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
         setWindowWidthPx(mWideWindowWidth);
         mTabListView = new View(mActivity);
         when(mMockTabListCoordinator.getView()).thenReturn(mTabListView);
+        doAnswer(
+                        invocation -> {
+                            SideUiContainer container = invocation.getArgument(0);
+                            assertNotNull(container.getView());
+                            return null;
+                        })
+                .when(mMockSideUiCoordinator)
+                .registerSideUiContainer(any());
         createCoordinator();
     }
 
