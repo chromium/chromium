@@ -6,6 +6,7 @@
 #define DEVICE_BLUETOOTH_PUBLIC_CPP_BLUETOOTH_UUID_H_
 
 #include <cstdint>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <vector>
@@ -93,6 +94,10 @@ class BluetoothUUID {
   // Returns the bytes of the canonical 128-bit UUID, or empty vector if
   // invalid.
   std::vector<uint8_t> GetBytes() const;
+
+  // Returns the 16-bit value if this UUID is derived from the Bluetooth Base
+  // UUID (0000xxxx-0000-1000-8000-00805f9b34fb), or std::nullopt otherwise.
+  std::optional<uint16_t> Get16BitValue() const;
 
   // Allow a UUID to be passed to e.g. `std::ranges::is_sorted()`.
   auto operator<=>(const BluetoothUUID& uuid) const {

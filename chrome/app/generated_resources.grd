@@ -15954,6 +15954,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_SERIAL_PORT_CHOOSER_NAME_WITH_PATH" desc="User option displaying a human-readable name for a serial port with the device path in parenthesis">
       <ph name="FRIENDLY_NAME">$1<ex>Virtual COM Port</ex></ph> (<ph name="DEVICE_PATH">$2<ex>COM1</ex></ph>)
     </message>
+    <message name="IDS_SERIAL_PORT_CHOOSER_NAME_WITH_SERVICE" desc="User option displaying a human-readable name for a serial port with the service name or UUID in parenthesis">
+      <ph name="PORT_NAME">$1<ex>Bluetooth Device</ex></ph> (<ph name="SERVICE_NAME">$2<ex>Serial Port</ex></ph>)
+    </message>
+    <message name="IDS_SERIAL_PORT_PROFILE_NAME" desc="The name of the Bluetooth Serial Port Profile (SPP) service.">
+      Serial Port
+    </message>
     <message name="IDS_SERIAL_POLICY_DESCRIPTION_FOR_USB_PRODUCT_ID_AND_VENDOR_ID" desc="String describing a USB device permission granted by enterprise policy to a site when only the numeric product ID and vendor ID are available.">
       USB device (<ph name="VENDOR_ID">$2<ex>12AB</ex></ph>:<ph name="PRODUCT_ID">$1<ex>12AB</ex></ph>)
     </message>

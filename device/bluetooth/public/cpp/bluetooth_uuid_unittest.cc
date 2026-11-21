@@ -223,4 +223,27 @@ TEST(BluetoothUUIDTest, BluetoothUUID_stream_insertion_operator) {
   EXPECT_EQ(uuid_str, out);
 }
 
+TEST(BluetoothUUIDTest, Get16BitValue) {
+  EXPECT_EQ(0x1101, BluetoothUUID("1101").Get16BitValue());
+
+  BluetoothUUID base_uuid("0000110e-0000-1000-8000-00805f9b34fb");
+  EXPECT_EQ(0x110e, base_uuid.Get16BitValue());
+
+  BluetoothUUID uppercase_uuid("0000ABCD-0000-1000-8000-00805F9B34FB");
+  EXPECT_EQ(0xabcd, uppercase_uuid.Get16BitValue());
+
+  BluetoothUUID base_32bit_uuid("12345678-0000-1000-8000-00805f9b34fb");
+  EXPECT_EQ(std::nullopt, base_32bit_uuid.Get16BitValue());
+
+  // Differs from the Base UUID in the last digit.
+  BluetoothUUID near_base_uuid("0000110e-0000-1000-8000-00805f9b34fc");
+  EXPECT_EQ(std::nullopt, near_base_uuid.Get16BitValue());
+
+  BluetoothUUID custom_uuid("12345678-1234-5678-9abc-def123456789");
+  EXPECT_EQ(std::nullopt, custom_uuid.Get16BitValue());
+
+  EXPECT_EQ(std::nullopt, BluetoothUUID().Get16BitValue());
+  EXPECT_EQ(std::nullopt, BluetoothUUID("invalid").Get16BitValue());
+}
+
 }  // namespace device

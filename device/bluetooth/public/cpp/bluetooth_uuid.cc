@@ -6,8 +6,10 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <ostream>
 #include <string>
+#include <string_view>
 
 #include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
@@ -156,6 +158,20 @@ std::vector<uint8_t> BluetoothUUID::GetBytes() const {
   DCHECK(success);
 
   return bytes;
+}
+
+std::optional<uint16_t> BluetoothUUID::Get16BitValue() const {
+  std::string_view canonical(canonical_value_);
+  if (!base::StartsWith(canonical, kCommonUuidPrefix) ||
+      !base::EndsWith(canonical, kCommonUuidPostfix)) {
+    return std::nullopt;
+  }
+  uint32_t value;
+  if (!base::HexStringToUInt(
+          canonical.substr(std::size(kCommonUuidPrefix) - 1, 4), &value)) {
+    return std::nullopt;
+  }
+  return static_cast<uint16_t>(value);
 }
 
 std::ostream& operator<<(std::ostream& os, BluetoothUUID uuid) {

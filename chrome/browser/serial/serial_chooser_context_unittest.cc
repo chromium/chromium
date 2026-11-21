@@ -4,6 +4,7 @@
 
 #include "chrome/browser/serial/serial_chooser_context.h"
 
+#include <algorithm>
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
@@ -29,6 +30,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "services/device/public/cpp/test/fake_serial_port_manager.h"
 #include "services/device/public/mojom/serial.mojom.h"
@@ -51,6 +53,14 @@ using ::testing::_;
 using ::testing::NiceMock;
 
 constexpr char kTestUserEmail[] = "user@example.com";
+constexpr char kDeviceAddress[] = "aa:aa:aa:aa:aa:aa";
+constexpr char kBluetoothServiceClassId1[] =
+    "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa";
+constexpr char kBluetoothServiceClassId2[] =
+    "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb";
+constexpr char kPortNameKey[] = "name";
+constexpr char kBluetoothDevicePathKey[] = "bluetooth_device_path";
+constexpr char kBluetoothServiceClassIdKey[] = "bluetooth_service_class_id";
 
 class MockPortObserver : public SerialChooserContext::PortObserver {
  public:
@@ -75,7 +85,7 @@ device::mojom::SerialPortInfoPtr CreatePersistentBluetoothPort(
   port->display_name = std::move(name);
   port->path = base::FilePath().AppendASCII(bluetooth_address);
   port->bluetooth_service_class_id =
-      device::BluetoothUUID("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+      device::BluetoothUUID(kBluetoothServiceClassId1);
   port->has_vendor_id = false;
   port->has_product_id = false;
   return port;
@@ -232,7 +242,7 @@ TEST_F(SerialChooserContextTest, GrantAndRevokeEphemeralPermission) {
 
   auto port_2 = CreatePersistentUsbPort("Persistent Port", "ABC123");
   auto port_3 = CreatePersistentBluetoothPort("Persistent Bluetooth Port",
-                                              "aa:aa:aa:aa:aa:aa");
+                                              kDeviceAddress);
 
   EXPECT_FALSE(context()->HasPortPermission(origin, *port_1));
   EXPECT_FALSE(context()->HasPortPermission(origin, *port_2));
@@ -340,7 +350,7 @@ TEST_F(SerialChooserContextTest, GrantAndCheckPersistentUsbPermission) {
   // for persistent permissions.
   auto port_1 = CreatePersistentUsbPort("Persistent USB Port", "ABC123");
   auto port_2 = CreatePersistentBluetoothPort("Persistent Bluetooth Port",
-                                              "aa:aa:aa:aa:aa:aa");
+                                              kDeviceAddress);
 
   EXPECT_FALSE(context()->HasPortPermission(origin, *port_1));
   EXPECT_FALSE(context()->HasPortPermission(origin, *port_2));
@@ -364,7 +374,7 @@ TEST_F(SerialChooserContextTest, GrantAndCheckPersistentBluetoothPermission) {
   // for persistent permissions.
   auto port_1 = CreatePersistentUsbPort("Persistent USB Port", "ABC123");
   auto port_2 = CreatePersistentBluetoothPort("Persistent Bluetooth Port",
-                                              "aa:aa:aa:aa:aa:aa");
+                                              kDeviceAddress);
 
   EXPECT_FALSE(context()->HasPortPermission(origin, *port_1));
   EXPECT_FALSE(context()->HasPortPermission(origin, *port_2));
@@ -379,6 +389,153 @@ TEST_F(SerialChooserContextTest, GrantAndCheckPersistentBluetoothPermission) {
   // Check that permission was granted only for the Bluetooth serial port.
   EXPECT_FALSE(context()->HasPortPermission(origin, *port_1));
   EXPECT_TRUE(context()->HasPortPermission(origin, *port_2));
+}
+
+TEST_F(SerialChooserContextTest, BluetoothServicesGrantedIndependently) {
+  const auto origin = url::Origin::Create(GURL("https://google.com"));
+
+  // Create two Bluetooth ports on the same device (same MAC address) but with
+  // different service UUIDs.
+  auto port_1 =
+      CreatePersistentBluetoothPort("Bluetooth Port 1", kDeviceAddress);
+  port_1->bluetooth_service_class_id =
+      device::BluetoothUUID(kBluetoothServiceClassId1);
+
+  auto port_2 =
+      CreatePersistentBluetoothPort("Bluetooth Port 2", kDeviceAddress);
+  port_2->bluetooth_service_class_id =
+      device::BluetoothUUID(kBluetoothServiceClassId2);
+
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_1));
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_2));
+
+  // Grant permission for port 1.
+  EXPECT_CALL(permission_observer(),
+              OnObjectPermissionChanged(
+                  std::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  ContentSettingsType::SERIAL_CHOOSER_DATA));
+  context()->GrantPortPermission(origin, *port_1);
+
+  // Check that permission is granted for port 1.
+  EXPECT_TRUE(context()->HasPortPermission(origin, *port_1));
+
+  // Check that permission is NOT granted for port 2.
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_2));
+
+  // Grant permission for port 2 and ensure both retain permission
+  // independently.
+  EXPECT_CALL(permission_observer(),
+              OnObjectPermissionChanged(
+                  std::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  ContentSettingsType::SERIAL_CHOOSER_DATA));
+  context()->GrantPortPermission(origin, *port_2);
+  EXPECT_TRUE(context()->HasPortPermission(origin, *port_1));
+  EXPECT_TRUE(context()->HasPortPermission(origin, *port_2));
+
+  auto objects = context()->GetGrantedObjects(origin);
+  ASSERT_EQ(2u, objects.size());
+
+  // Find object for port 1 and revoke it.
+  auto it = std::ranges::find_if(objects, [&](const auto& obj) {
+    const std::string* id = obj->value.FindString(kBluetoothServiceClassIdKey);
+    return id && *id == port_1->bluetooth_service_class_id->canonical_value();
+  });
+  ASSERT_NE(it, objects.end());
+  EXPECT_CALL(permission_observer(),
+              OnObjectPermissionChanged(
+                  std::make_optional(ContentSettingsType::SERIAL_GUARD),
+                  ContentSettingsType::SERIAL_CHOOSER_DATA));
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin));
+  context()->RevokeObjectPermission(origin, (*it)->value);
+
+  // Verify port 1 is revoked while port 2 remains granted.
+  EXPECT_FALSE(context()->HasPortPermission(origin, *port_1));
+  EXPECT_TRUE(context()->HasPortPermission(origin, *port_2));
+}
+
+TEST_F(SerialChooserContextTest, BluetoothObjectValidation) {
+  base::DictValue valid_object;
+  valid_object.Set(kPortNameKey, "Test Port");
+  valid_object.Set(kBluetoothDevicePathKey, kDeviceAddress);
+  valid_object.Set(kBluetoothServiceClassIdKey, kBluetoothServiceClassId1);
+  EXPECT_TRUE(context()->IsValidObject(valid_object));
+
+  // Short 16-bit UUID should fail validation (must be 128-bit canonical).
+  base::DictValue short_uuid_object;
+  short_uuid_object.Set(kPortNameKey, "Test Port");
+  short_uuid_object.Set(kBluetoothDevicePathKey, kDeviceAddress);
+  short_uuid_object.Set(kBluetoothServiceClassIdKey, "1101");
+  EXPECT_FALSE(context()->IsValidObject(short_uuid_object));
+
+  // Uppercase UUID should fail validation (must be lowercase canonical).
+  base::DictValue uppercase_uuid_object;
+  uppercase_uuid_object.Set(kPortNameKey, "Test Port");
+  uppercase_uuid_object.Set(kBluetoothDevicePathKey, kDeviceAddress);
+  uppercase_uuid_object.Set(kBluetoothServiceClassIdKey,
+                            "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA");
+  EXPECT_FALSE(context()->IsValidObject(uppercase_uuid_object));
+
+  // Malformed UUID should fail validation.
+  base::DictValue invalid_uuid_object;
+  invalid_uuid_object.Set(kPortNameKey, "Test Port");
+  invalid_uuid_object.Set(kBluetoothDevicePathKey, kDeviceAddress);
+  invalid_uuid_object.Set(kBluetoothServiceClassIdKey, "invalid-uuid");
+  EXPECT_FALSE(context()->IsValidObject(invalid_uuid_object));
+
+  // Missing bluetooth_service_class_id should fail validation.
+  base::DictValue missing_service_id_object;
+  missing_service_id_object.Set(kPortNameKey, "Test Port");
+  missing_service_id_object.Set(kBluetoothDevicePathKey, kDeviceAddress);
+  EXPECT_FALSE(context()->IsValidObject(missing_service_id_object));
+
+  // Empty bluetooth_device_path should fail validation.
+  base::DictValue empty_path_object;
+  empty_path_object.Set(kPortNameKey, "Test Port");
+  empty_path_object.Set(kBluetoothDevicePathKey, "");
+  empty_path_object.Set(kBluetoothServiceClassIdKey, kBluetoothServiceClassId1);
+  EXPECT_FALSE(context()->IsValidObject(empty_path_object));
+
+  // Extra unexpected keys should fail validation.
+  base::DictValue extra_key_object;
+  extra_key_object.Set(kPortNameKey, "Test Port");
+  extra_key_object.Set(kBluetoothDevicePathKey, kDeviceAddress);
+  extra_key_object.Set(kBluetoothServiceClassIdKey, kBluetoothServiceClassId1);
+  extra_key_object.Set("unexpected_key", "unexpected_value");
+  EXPECT_FALSE(context()->IsValidObject(extra_key_object));
+}
+
+TEST_F(SerialChooserContextTest, BluetoothObjectDisplayName) {
+  // Test USB port display name (unmodified).
+  base::DictValue usb_object;
+  usb_object.Set(kPortNameKey, "USB Port");
+  EXPECT_EQ(u"USB Port", context()->GetObjectDisplayName(usb_object));
+
+  // Test Bluetooth SPP port (displays localized "Serial Port").
+  base::DictValue spp_object;
+  spp_object.Set(kPortNameKey, "Bluetooth Device");
+  spp_object.Set(kBluetoothDevicePathKey, kDeviceAddress);
+  spp_object.Set(kBluetoothServiceClassIdKey,
+                 "00001101-0000-1000-8000-00805f9b34fb");
+  EXPECT_EQ(u"Bluetooth Device (Serial Port)",
+            context()->GetObjectDisplayName(spp_object));
+
+  // Test Bluetooth 16-bit short UUID (displays 0x-prefixed 16-bit hex).
+  base::DictValue short_uuid_object;
+  short_uuid_object.Set(kPortNameKey, "Bluetooth Device");
+  short_uuid_object.Set(kBluetoothDevicePathKey, kDeviceAddress);
+  short_uuid_object.Set(kBluetoothServiceClassIdKey,
+                        "00001234-0000-1000-8000-00805f9b34fb");
+  EXPECT_EQ(u"Bluetooth Device (0x1234)",
+            context()->GetObjectDisplayName(short_uuid_object));
+
+  // Test Bluetooth 128-bit custom UUID (displays full 128-bit UUID).
+  base::DictValue custom_uuid_object;
+  custom_uuid_object.Set(kPortNameKey, "Bluetooth Device");
+  custom_uuid_object.Set(kBluetoothDevicePathKey, kDeviceAddress);
+  custom_uuid_object.Set(kBluetoothServiceClassIdKey,
+                         kBluetoothServiceClassId1);
+  EXPECT_EQ(u"Bluetooth Device (aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa)",
+            context()->GetObjectDisplayName(custom_uuid_object));
 }
 
 TEST_F(SerialChooserContextTest, GrantAndRevokePersistentUsbPermission) {
@@ -441,7 +598,7 @@ TEST_F(SerialChooserContextTest, GrantAndRevokePersistentBluetoothPermission) {
   const auto origin = url::Origin::Create(GURL("https://google.com"));
 
   auto port_1 = CreatePersistentBluetoothPort("Persistent Bluetooth Port",
-                                              "aa:aa:aa:aa:aa:aa");
+                                              kDeviceAddress);
 
   auto port_2 = device::mojom::SerialPortInfo::New();
   port_2->token = base::UnguessableToken::Create();
@@ -807,7 +964,7 @@ TEST_F(SerialChooserContextTest, BluetoothPortConnectedState) {
 
   // Create a Bluetooth serial port.
   auto port = CreatePersistentBluetoothPort("Persistent Bluetooth Port",
-                                            "aa:aa:aa:aa:aa:aa");
+                                            kDeviceAddress);
 
   // Simulate disconnection of the Bluetooth device hosting `port`. The observer
   // is notified that the port is now disconnected.
