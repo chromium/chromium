@@ -59,14 +59,12 @@ export class DoodleShareDialogElement extends DoodleShareDialogElementBase {
 
       /** Share URL provided to the user. */
       url: {type: String},
-
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
   override accessor title: string = '';
   accessor url: string = '';
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   protected onFacebookClick_() {

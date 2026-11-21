@@ -78,7 +78,6 @@ export class LogoElement extends LogoElementBase {
       showAnimation_: {type: Boolean},
       showShareDialog_: {type: Boolean},
       imageDoodleTabIndex_: {type: Number},
-      webuiRoundedIconsEnabled_: {type: Boolean},
     };
   }
 
@@ -98,7 +97,7 @@ export class LogoElement extends LogoElementBase {
   private accessor showAnimation_: boolean = false;
   protected accessor showShareDialog_: boolean = false;
   protected accessor imageDoodleTabIndex_: number = -1;
-  protected accessor webuiRoundedIconsEnabled_: boolean =
+  protected readonly webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
 
   private pageHandler_: PageHandlerInterface;

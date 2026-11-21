@@ -46,7 +46,6 @@ export class AimEligibilityAppElement extends CrLitElement {
     return {
       eligibilityState_: {type: Object},
       inputState_: {type: String},
-      showFooter_: {type: Boolean},
     };
   }
 
@@ -66,7 +65,7 @@ export class AimEligibilityAppElement extends CrLitElement {
     driveStatus: null,
   };
   protected accessor inputState_: InputState = InputState.NONE;
-  protected accessor showFooter_: boolean =
+  protected readonly showFooter_: boolean =
       loadTimeData.getBoolean('showAimEligibilityFooter');
 
   private proxy_: BrowserProxy = browserProxyFactory.getInstance();

@@ -67,8 +67,6 @@ export class OmniboxPopupContextualEntrypointElement extends
       currentTabForChip_: {type: Object},
       isCurrentTabChipShown_: {type: Boolean},
       applyContextButtonBackground_: {type: Boolean},
-      usePecApi_: {type: Boolean},
-      isOblongShape_: {type: Boolean},
     };
   }
 
@@ -87,9 +85,9 @@ export class OmniboxPopupContextualEntrypointElement extends
   protected accessor currentTabForChip_: TabInfo|null = null;
   protected accessor isCurrentTabChipShown_: boolean = false;
   protected accessor applyContextButtonBackground_: boolean = false;
-  protected accessor usePecApi_: boolean =
+  protected readonly usePecApi_: boolean =
       loadTimeData.getBoolean('contextualMenuUsePecApi');
-  protected accessor isOblongShape_: boolean =
+  protected readonly isOblongShape_: boolean =
       loadTimeData.getBoolean('contextButtonShapeIsOblong');
 
   private isComposeboxChipEnabled_: boolean =

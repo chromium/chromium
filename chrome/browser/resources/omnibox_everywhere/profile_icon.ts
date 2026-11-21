@@ -53,7 +53,6 @@ export class OmniboxEverywhereProfileIconElement extends
       profileAvatarUrl_: {type: String},
       profileName_: {type: String},
       profileEmail_: {type: String},
-      profilePickerEnabled_: {type: Boolean},
     };
   }
 
@@ -71,7 +70,7 @@ export class OmniboxEverywhereProfileIconElement extends
       loadTimeData.getString('profileName');
   protected accessor profileEmail_: string =
       loadTimeData.getString('profileEmail');
-  protected accessor profilePickerEnabled_: boolean =
+  protected readonly profilePickerEnabled_: boolean =
       loadTimeData.getBoolean('omniboxEverywhereProfilePickerEnabled');
 
   private searchboxHandler_: SearchboxPageHandlerInterface =

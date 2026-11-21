@@ -42,7 +42,6 @@ import {getHtml} from './omnibox.html.js';
 import {browserProxyFactory} from './omnibox_everywhere.mojom-webui.js';
 import type {OmniboxEverywhereProfileIconElement} from './profile_icon.js';
 
-
 // Default hold and cross-fade durations for rotating placeholder hints,
 // matching `NTPComposeboxConfig_PlaceholderConfig` defaults (4000ms hold, 250ms
 // fade).
@@ -152,8 +151,6 @@ export class OmniboxEverywhereOmniboxElement extends
         reflect: true,
         type: Boolean,
       },
-      energyEffectAnimationEnabled_: {type: Boolean},
-      fileContextEnabled_: {type: Boolean},
       entrypointName: {type: String},
       isScreenshotMenuOpen: {
         type: Boolean,
@@ -203,9 +200,9 @@ export class OmniboxEverywhereOmniboxElement extends
   accessor isContextMenuOpen: boolean = false;
   accessor isOverflowMenuOpen: boolean = false;
   protected dragAndDropHandler: DragAndDropHandler;
-  protected accessor energyEffectAnimationEnabled_: boolean =
+  protected readonly energyEffectAnimationEnabled_: boolean =
       loadTimeData.getBoolean('energyEffectAnimationEnabled');
-  private accessor fileContextEnabled_: boolean =
+  private readonly fileContextEnabled_: boolean =
       loadTimeData.getBoolean('composeboxContextDragAndDropEnabled');
   accessor searchboxChromeRefreshTheming: boolean =
       loadTimeData.getBoolean('searchboxCr23Theming');

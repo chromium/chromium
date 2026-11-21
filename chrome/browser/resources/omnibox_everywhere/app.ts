@@ -89,9 +89,6 @@ export class OmniboxEverywhereAppElement extends
     return {
       isComposeboxMode_: {type: Boolean},
       searchboxLayoutMode_: {type: String},
-      usePecApi_: {type: Boolean},
-      isOblongShape_: {type: Boolean},
-      contextManagementInComposeboxEnabled_: {type: Boolean},
       showVoiceSearchOverlay_: {
         type: Boolean,
         reflect: true,
@@ -104,7 +101,6 @@ export class OmniboxEverywhereAppElement extends
       voiceQueryLengthLimit_: {type: Number},
       callbackRouter_: {type: Object},
       hasMostVisitedTiles_: {type: Boolean},
-      mostVisitedEnabled_: {type: Boolean},
       smallLoomnibox_: {
         type: Boolean,
         reflect: true,
@@ -125,7 +121,6 @@ export class OmniboxEverywhereAppElement extends
         reflect: true,
         attribute: 'small-font',
       },
-      hideTitle_: {type: Boolean},
       freStage_: {type: Number},
       hotkeyTokens_: {type: Array},
       isHotkeyDropdownOpen_: {type: Boolean},
@@ -146,11 +141,11 @@ export class OmniboxEverywhereAppElement extends
   protected accessor isPendingContextUpload_: boolean = false;
   protected accessor searchboxLayoutMode_: string =
       loadTimeData.getString('searchboxLayoutMode');
-  protected accessor usePecApi_: boolean =
+  protected readonly usePecApi_: boolean =
       loadTimeData.getBoolean('contextualMenuUsePecApi');
-  protected accessor isOblongShape_: boolean =
+  protected readonly isOblongShape_: boolean =
       loadTimeData.getBoolean('contextButtonShapeIsOblong');
-  protected accessor contextManagementInComposeboxEnabled_: boolean =
+  protected readonly contextManagementInComposeboxEnabled_: boolean =
       loadTimeData.getBoolean('contextManagementInComposeboxEnabled');
   protected accessor showVoiceSearchOverlay_: boolean = false;
   protected accessor hasVoiceSearchError_: boolean = false;
@@ -161,7 +156,7 @@ export class OmniboxEverywhereAppElement extends
   protected accessor voiceQueryLengthLimit_: number = VOICE_QUERY_LENGTH_LIMIT;
   protected accessor callbackRouter_: PageCallbackRouter =
       SearchboxBrowserProxy.getInstance().callbackRouter;
-  protected accessor mostVisitedEnabled_: boolean =
+  protected readonly mostVisitedEnabled_: boolean =
       loadTimeData.getBoolean('omniboxEverywhereMostVisitedEnabled');
   protected accessor smallLoomnibox_: boolean =
       loadTimeData.getBoolean('smallLoomnibox');
@@ -170,7 +165,7 @@ export class OmniboxEverywhereAppElement extends
   protected accessor dynamicSizingWidth_: number =
       loadTimeData.getInteger('dynamicSizingWidth');
   protected accessor smallFont_: boolean = loadTimeData.getBoolean('smallFont');
-  protected accessor hideTitle_: boolean =
+  protected readonly hideTitle_: boolean =
       loadTimeData.getBoolean('omniboxEverywhereMostVisitedHideTitle');
   private accessor hasMostVisitedTiles_: boolean = false;
   private accessor freStage_: FreStage =

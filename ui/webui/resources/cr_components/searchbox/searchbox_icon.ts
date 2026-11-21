@@ -211,8 +211,6 @@ export class SearchboxIconElement extends CrLitElement {
         type: Boolean,
       },
 
-      isTopChromeSearchbox_: {state: true, type: Boolean},
-
       isLensSearchbox_: {
         type: Boolean,
         reflect: true,
@@ -241,7 +239,7 @@ export class SearchboxIconElement extends CrLitElement {
   protected accessor imageSrc_: string = '';
   private accessor imageLoading_: boolean = false;
   private accessor imageError_: boolean = false;
-  private accessor isTopChromeSearchbox_: boolean =
+  private readonly isTopChromeSearchbox_: boolean =
       loadTimeData.getBoolean('isTopChromeSearchbox');
   private accessor isLensSearchbox_: boolean =
       loadTimeData.getBoolean('isLensSearchbox');
@@ -289,8 +287,7 @@ export class SearchboxIconElement extends CrLitElement {
         changedProperties.has('defaultIcon') ||
         changedProperties.has('inKeywordMode') ||
         changedProperties.has('inSearchbox') ||
-        changedPrivateProperties.has('isLensSearchbox_') ||
-        changedPrivateProperties.has('isTopChromeSearchbox_')) {
+        changedPrivateProperties.has('isLensSearchbox_')) {
       const oldFaviconImage = this.faviconImage_;
       this.faviconImage_ = this.computeFaviconImage_();
       if (this.faviconImage_ !== oldFaviconImage) {

@@ -117,8 +117,6 @@ export class ContextualActionMenuElement extends
       smartTabSharingActive: {type: Boolean},
       smartTabSharingVisible: {type: Boolean},
       tabPreviewUrl_: {type: String},
-      tabPreviewsEnabled_: {type: Boolean},
-      showContextMenuHeaders_: {type: Boolean},
       disableAutoReposition: {type: Boolean},
       contextManagementInComposeboxEnabled: {
         reflect: true,
@@ -172,12 +170,12 @@ export class ContextualActionMenuElement extends
   }
 
   protected accessor tabPreviewUrl_: string = '';
-  private accessor tabPreviewsEnabled_: boolean =
+  private readonly tabPreviewsEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenuTabPreviews');
   private maxFileCount_: number =
       loadTimeData.getInteger('composeboxFileMaxCount');
   private metricsSource_: string = loadTimeData.getString('composeboxSource');
-  protected accessor showContextMenuHeaders_: boolean =
+  protected readonly showContextMenuHeaders_: boolean =
       loadTimeData.getBoolean('ShowContextMenuHeaders');
   private enableTabDeselection_: boolean =
       getLoadTimeBoolean('composeboxContextMenuEnableTabDeselection', false);
@@ -916,7 +914,6 @@ export class ContextualActionMenuElement extends
       }, FIRST_TAB_DELAY * 5);
     }
 
-
     const isRestored = this.contextManagementInComposeboxEnabled &&
         (this.aimThreadRestoredTabs ||
          []).some(restoredTab => restoredTab.tabId === tabInfo.tabId);
@@ -1074,7 +1071,6 @@ export class ContextualActionMenuElement extends
       e.stopPropagation();
       this.setShareTabsFlyoutOpen_(false);
 
-
       const row =
           this.shadowRoot.querySelector<HTMLElement>('#shareTabsTrigger');
       if (row) {
@@ -1209,7 +1205,6 @@ export class ContextualActionMenuElement extends
       flyout.style.maxHeight = `${maxFlyoutHeight}px`;
     });
   }
-
 
   private scheduleCloseTimer_() {
     this.cancelCloseTimer_();

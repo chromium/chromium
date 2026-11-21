@@ -215,7 +215,6 @@ export class OmniboxPopupSearchboxElement extends
         type: Boolean,
         reflect: true,
       },
-      omniboxDogfoodFeedbackEnabled_: {type: Boolean},
       searchboxChromeRefreshTheming: {
         type: Boolean,
         reflect: true,
@@ -276,9 +275,6 @@ export class OmniboxPopupSearchboxElement extends
         reflect: true,
       },
       hasUserInput_: {
-        type: Boolean,
-      },
-      searchboxDynamicAnimation_: {
         type: Boolean,
       },
       aimButtonVisible_: {
@@ -380,7 +376,7 @@ export class OmniboxPopupSearchboxElement extends
       loadTimeData.getBoolean('searchboxCr23SteadyStateShadow');
   accessor omniboxPopupDebugEnabled_: boolean =
       loadTimeData.getBoolean('omniboxPopupDebugEnabled');
-  protected accessor omniboxDogfoodFeedbackEnabled_: boolean =
+  protected readonly omniboxDogfoodFeedbackEnabled_: boolean =
       loadTimeData.getBoolean('omniboxDogfoodFeedbackEnabled');
   protected accessor searchboxIcon_: string =
       loadTimeData.getString('searchboxDefaultIcon');
@@ -409,7 +405,7 @@ export class OmniboxPopupSearchboxElement extends
       loadTimeData.getBoolean('composeboxPersistentAimButton');
   protected accessor searchboxDynamicColorScheme_: boolean =
       loadTimeData.getBoolean('searchboxDynamicColorScheme');
-  protected accessor searchboxDynamicAnimation_: boolean =
+  protected readonly searchboxDynamicAnimation_: boolean =
       loadTimeData.getBoolean('searchboxDynamicAnimation');
   protected accessor hasUserInput_: boolean = false;
   protected accessor aimButtonVisible_: boolean = false;

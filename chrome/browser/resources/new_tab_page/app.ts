@@ -217,12 +217,6 @@ export class AppElement extends AppElementBase {
         type: Boolean,
         reflect: true,
       },
-      voiceSearchCoherenceAnySearchboxExperimentEnabled_: {type: Boolean},
-      voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled_:
-          {type: Boolean},
-      voiceSearchCoherenceRealboxAutoEndpointEnabled_: {type: Boolean},
-      voiceSearchCoherenceRealboxHelperTextEnabled_: {type: Boolean},
-      androidSpeechRecognition_: {type: Boolean},
 
       voiceSearchTranscript_: {type: String},
       voiceSearchReceivedSpeech_: {type: Boolean},
@@ -260,28 +254,15 @@ export class AppElement extends AppElementBase {
         reflect: true,
       },
 
-      logoEnabled_: {type: Boolean},
-      oneGoogleBarEnabled_: {type: Boolean},
-      shortcutsEnabled_: {type: Boolean},
-      shortcutsReorderEnabled_: {type: Boolean},
-      modulesEnabled_: {type: Boolean},
-
       browserPromoType_: {type: Number},
       showBrowserPromo_: {type: Boolean},
-      caretAnimationsEnabled_: {type: Boolean},
-      usePecApi_: {type: Boolean},
-      smartTabSharingVisible_: {type: Boolean},
-      contextManagementInComposeboxEnabled_: {type: Boolean},
 
       modulesShownToUser: {
         type: Boolean,
         reflect: true,
       },
 
-      microsoftModuleEnabled_: {type: Boolean},
       microsoftAuthIframePath_: {type: String},
-
-      multiLineEnabled_: {type: Boolean},
 
       /**
        * Modules are hidden until loaded.
@@ -307,11 +288,6 @@ export class AppElement extends AppElementBase {
         reflect: true,
       },
 
-      searchboxCyclingPlaceholders_: {
-        type: Boolean,
-      },
-
-      ntpNextFeaturesEnabled_: {type: Boolean},
       maxTilesInCollapsedState_: {type: Number},
       maxShortcutsInExpandedState_: {type: Number},
       maxMostVisitedTilesInExpandedState_: {type: Number},
@@ -322,7 +298,6 @@ export class AppElement extends AppElementBase {
         type: Boolean,
         reflect: true,
       },
-      composeboxOutsideClickEnabled_: {type: Boolean},
 
       /**
        * Whether the scrim is shown in Realbox Next.
@@ -359,7 +334,6 @@ export class AppElement extends AppElementBase {
       energyEffectEnabled_: {type: Boolean, reflect: true},
       energyEffectAnimationEnabled_: {type: Boolean, reflect: true},
       energyEffectVariant_: {type: String, reflect: true},
-      showCustomizeButton_: {type: Boolean},
     };
   }
 
@@ -378,21 +352,21 @@ export class AppElement extends AppElementBase {
   protected accessor showWallpaperSearch_: boolean = false;
   protected accessor showVoiceSearchOverlay_: boolean = false;
   protected accessor showVoiceSearchScrim_: boolean = false;
-  protected accessor voiceSearchCoherenceAnySearchboxExperimentEnabled_:
+  protected readonly voiceSearchCoherenceAnySearchboxExperimentEnabled_:
       boolean = loadTimeData.getBoolean(
                     'voiceSearchCoherenceAnySearchboxExperimentEnabled') ||
       loadTimeData.getBoolean(
           'voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled');
-  protected accessor voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled_:
+  protected readonly voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled_:
       boolean = loadTimeData.getBoolean(
           'voiceSearchCoherenceSearchboxWithLiveTranscriptionEnabled');
-  protected accessor voiceSearchCoherenceRealboxAutoEndpointEnabled_: boolean =
+  protected readonly voiceSearchCoherenceRealboxAutoEndpointEnabled_: boolean =
       loadTimeData.getBoolean('voiceSearchCoherenceRealboxAutoEndpointEnabled');
-  protected accessor voiceSearchCoherenceRealboxHelperTextEnabled_: boolean =
+  protected readonly voiceSearchCoherenceRealboxHelperTextEnabled_: boolean =
       loadTimeData.getBoolean('voiceSearchCoherenceRealboxHelperTextEnabled');
   // `true` only on Android, where voice search uses Android's speech recognizer
   // (see new_tab_page_ui.cc).
-  protected accessor androidSpeechRecognition_: boolean =
+  protected readonly androidSpeechRecognition_: boolean =
       loadTimeData.getBoolean('androidSpeechRecognition');
 
   protected accessor voiceSearchTranscript_: string = '';
@@ -414,32 +388,32 @@ export class AppElement extends AppElementBase {
   private accessor wasComposeboxOpened_: boolean = false;
   protected accessor showLensUploadDialog_: boolean = false;
   protected accessor showComposebox_: boolean = false;
-  protected accessor caretAnimationsEnabled_: boolean =
+  protected readonly caretAnimationsEnabled_: boolean =
       loadTimeData.getBoolean('caretAnimationEnabled');
-  protected accessor usePecApi_: boolean =
+  protected readonly usePecApi_: boolean =
       loadTimeData.getBoolean('contextualMenuUsePecApi');
-  protected accessor smartTabSharingVisible_: boolean =
+  protected readonly smartTabSharingVisible_: boolean =
       loadTimeData.getBoolean('composeboxSmartTabSharingVisible');
-  protected accessor contextManagementInComposeboxEnabled_: boolean =
+  protected readonly contextManagementInComposeboxEnabled_: boolean =
       loadTimeData.getBoolean('contextManagementInComposeboxEnabled');
-  protected accessor logoEnabled_: boolean =
+  protected readonly logoEnabled_: boolean =
       loadTimeData.getBoolean('logoEnabled');
-  protected accessor oneGoogleBarEnabled_: boolean =
+  protected readonly oneGoogleBarEnabled_: boolean =
       loadTimeData.getBoolean('oneGoogleBarEnabled');
-  protected accessor shortcutsEnabled_: boolean =
+  protected readonly shortcutsEnabled_: boolean =
       loadTimeData.getBoolean('shortcutsEnabled');
-  protected accessor shortcutsReorderEnabled_: boolean =
+  protected readonly shortcutsReorderEnabled_: boolean =
       loadTimeData.getBoolean('ntpShortcutsReorderEnabled');
-  protected accessor modulesEnabled_: boolean =
+  protected readonly modulesEnabled_: boolean =
       loadTimeData.getBoolean('modulesEnabled');
   private accessor browserPromoType_: BrowserPromoType =
       BrowserPromoType.kDisabled;
   private accessor showBrowserPromo_: boolean = false;
   protected accessor modulesShownToUser: boolean = false;
-  protected accessor microsoftModuleEnabled_: boolean =
+  protected readonly microsoftModuleEnabled_: boolean =
       loadTimeData.getBoolean('microsoftModuleEnabled');
   protected accessor microsoftAuthIframePath_: string = MSAL_IFRAME_ORIGIN;
-  protected accessor multiLineEnabled_: boolean =
+  protected readonly multiLineEnabled_: boolean =
       loadTimeData.getBoolean('multiLineEnabled');
   protected accessor modulesLoaded_: boolean = false;
   protected accessor lazyRender_: boolean = false;
@@ -454,9 +428,9 @@ export class AppElement extends AppElementBase {
   protected accessor isFooterVisible_: boolean = false;
   protected accessor ntpRealboxNextEnabled_: boolean =
       loadTimeData.getBoolean('ntpRealboxNextEnabled');
-  protected accessor searchboxCyclingPlaceholders_: boolean =
+  protected readonly searchboxCyclingPlaceholders_: boolean =
       loadTimeData.getBoolean('searchboxCyclingPlaceholders');
-  protected accessor ntpNextFeaturesEnabled_: boolean =
+  protected readonly ntpNextFeaturesEnabled_: boolean =
       loadTimeData.getBoolean('ntpNextFeaturesEnabled');
   protected accessor maxTilesInCollapsedState_: number =
       loadTimeData.getInteger('maxTilesInCollapsedState');
@@ -469,7 +443,7 @@ export class AppElement extends AppElementBase {
   private accessor containerFocused_: boolean = false;
   protected accessor composeboxFocused_: boolean = false;
   protected accessor pageContentHidden_: boolean = false;
-  protected accessor composeboxOutsideClickEnabled_: boolean =
+  protected readonly composeboxOutsideClickEnabled_: boolean =
       loadTimeData.getBoolean('composeboxRealboxOutsideClick');
   protected accessor showScrim_: boolean = false;
   private realboxContextMenuAnimationAllowed_: boolean = false;
@@ -485,7 +459,7 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('energyEffectAnimationEnabled');
   protected accessor energyEffectVariant_: string =
       loadTimeData.getString('energyEffectVariant');
-  protected accessor showCustomizeButton_: boolean =
+  protected readonly showCustomizeButton_: boolean =
       loadTimeData.getBoolean('showCustomizeButton');
   private contextMenuAnimationLimitingEnabled_: boolean =
       loadTimeData.getBoolean('contextMenuAnimationLimitingEnabled');

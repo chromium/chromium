@@ -44,7 +44,6 @@ export class OmniboxAimAppElement extends CrLitElement {
 
   static override get properties() {
     return {
-      webuiOmniboxFullPopupEnabled_: {type: Boolean},
       // Reflected so omnibox_popup_document_style.css's
       // 'body:has([webui-shadow-enabled_])' sees it on the page root, as it
       // does on <omnibox-full-app>.
@@ -58,7 +57,7 @@ export class OmniboxAimAppElement extends CrLitElement {
   // Host-specific composebox configuration. Which popup widget the composebox
   // is in decides whether it paints the popup surface itself and whether
   // Escape closes it; the composebox cannot know that on its own.
-  protected accessor webuiOmniboxFullPopupEnabled_: boolean =
+  protected readonly webuiOmniboxFullPopupEnabled_: boolean =
       loadTimeData.getBoolean('webuiOmniboxFullPopupEnabled');
   protected accessor webuiShadowEnabled_: boolean =
       loadTimeData.getBoolean('omniboxAimWebUIShadowEnabled');

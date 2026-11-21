@@ -57,7 +57,6 @@ export class ContextualEntrypointButtonElement extends
       windowWidthBelowThreshold_: {type: Boolean},
       sharedTabs: {type: Array},
       restoredTabs: {type: Array},
-      tabFaviconChipsToCoinsEnabled_: {type: Boolean},
       energyEffectAnimationEnabled: {type: Boolean, reflect: true},
       disableFallbackGlifAnimation: {type: Boolean},
       smartTabSharingActive: {type: Boolean},
@@ -86,7 +85,7 @@ export class ContextualEntrypointButtonElement extends
   protected accessor isLensSearchbox_: boolean =
       loadTimeData.valueExists('isLensSearchbox') &&
       loadTimeData.getBoolean('isLensSearchbox');
-  protected accessor tabFaviconChipsToCoinsEnabled_: boolean =
+  protected readonly tabFaviconChipsToCoinsEnabled_: boolean =
       loadTimeData.getBoolean('tabFaviconChipsToCoinsEnabled');
   private showContextMenuDescriptionEnabled_: boolean =
       getLoadTimeBoolean('composeboxShowContextMenuDescription', false);

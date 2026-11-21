@@ -162,8 +162,6 @@ export class SearchboxMatchElement extends CrLitElement {
         reflect: true,
       },
 
-      forceHideEllipsis_: {type: Boolean},
-
       /** Rendered primary text based on autocomplete provided styling. */
       primaryTextHtml_: {type: String},
 
@@ -208,7 +206,7 @@ export class SearchboxMatchElement extends CrLitElement {
       loadTimeData.getBoolean('isTopChromeSearchbox');
   private accessor isLensSearchbox_: boolean =
       loadTimeData.getBoolean('isLensSearchbox');
-  private accessor forceHideEllipsis_: boolean =
+  private readonly forceHideEllipsis_: boolean =
       loadTimeData.getBoolean('forceHideEllipsis');
   protected accessor primaryTextHtml_: TrustedHTML =
       window.trustedTypes!.emptyHTML;
@@ -254,8 +252,7 @@ export class SearchboxMatchElement extends CrLitElement {
         changedProperties as Map<PropertyKey, unknown>;
 
     if (changedProperties.has('showThumbnail') ||
-        changedPrivateProperties.has('isLensSearchbox_') ||
-        changedPrivateProperties.has('forceHideEllipsis_')) {
+        changedPrivateProperties.has('isLensSearchbox_')) {
       this.showEllipsis = this.computeShowEllipsis_();
     }
   }

@@ -85,7 +85,6 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
 
       result_: {type: Object},
       isAimButtonVisible_: {type: Boolean},
-      webuiOmniboxPopupSelectionControlEnabled_: {type: Boolean},
     };
   }
 
@@ -95,7 +94,7 @@ export class OmniboxPopupAppElement extends SearchboxSelectionMixin
   accessor isDebug: boolean = false;
   protected accessor hasVisibleMatches_: boolean = false;
   protected accessor result_: AutocompleteResult|null = null;
-  private accessor webuiOmniboxPopupSelectionControlEnabled_: boolean =
+  private readonly webuiOmniboxPopupSelectionControlEnabled_: boolean =
       loadTimeData.getBoolean('webuiOmniboxPopupSelectionControlEnabled');
   private accessor isAimButtonVisible_: boolean = false;
 
