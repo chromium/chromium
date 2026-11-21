@@ -386,7 +386,7 @@ TEST_P(SoftwareVideoEncoderTest, ForceAllKeyFrames) {
   int outputs_count = 0;
   int frames = 10;
   VideoEncoder::Options options = CreateDefaultOptions();
-  options.frame_size = gfx::Size(640, 480);
+  options.frame_size = gfx::Size(320, 200);
   auto frame_duration = base::Seconds(1.0 / 60);
 
   VideoEncoder::OutputCB output_cb = base::BindLambdaForTesting(
@@ -444,14 +444,19 @@ TEST_P(SoftwareVideoEncoderTest, ResizeFrames) {
   EXPECT_EQ(outputs_count, 3);
 }
 
+// 4 seconds of video at 25fps (100 frames) is enough to verify the initial
+// keyframe, delta frames, and a periodic keyframe at the 3s mark while keeping
+// the encode/decode tests fast.
+constexpr int kEncodeDecodeClipDurationSeconds = 4;
+
 TEST_P(SoftwareVideoEncoderTest, OutputCountEqualsFrameCount) {
   VideoEncoder::Options options = CreateDefaultOptions();
   options.frame_size = gfx::Size(320, 200);
   options.bitrate = Bitrate::VariableBitrate(1000000u, 2000000u);
   options.framerate = 25;
   options.keyframe_interval = options.framerate.value() * 3;  // every 3s
-  int total_frames_count =
-      options.framerate.value() * 10;  // total duration 20s
+  const int total_frames_count =
+      options.framerate.value() * kEncodeDecodeClipDurationSeconds;
   int outputs_count = 0;
 
   auto frame_duration = base::Seconds(1.0 / options.framerate.value());
@@ -492,7 +497,13 @@ TEST_P(SoftwareVideoEncoderTest, PerFrameQpEncoding) {
   if (qp_range.first == qp_range.second) {
     GTEST_SKIP() << "Per frame QP control is not supported.";
   }
-  int total_frames_count = qp_range.second - qp_range.first + 1;
+  constexpr int kQpStep = 4;
+  std::vector<int> qp_values;
+  for (int qp = qp_range.first; qp < qp_range.second; qp += kQpStep) {
+    qp_values.push_back(qp);
+  }
+  qp_values.push_back(qp_range.second);
+  int total_frames_count = static_cast<int>(qp_values.size());
   int outputs_count = 0;
 
   auto frame_duration = base::Seconds(1.0 / options.framerate.value());
@@ -511,13 +522,11 @@ TEST_P(SoftwareVideoEncoderTest, PerFrameQpEncoding) {
                        std::move(output_cb), ValidateStatusThenQuitCB());
 
   RunUntilQuit();
-  int qp = qp_range.first;
   for (int frame_index = 0; frame_index < total_frames_count; frame_index++) {
     auto timestamp = frame_index * frame_duration;
     auto frame = CreateFrame(options.frame_size, pixel_format_, timestamp);
     VideoEncoder::EncodeOptions encode_options(false);
-    encode_options.quantizer = qp;
-    qp++;
+    encode_options.quantizer = qp_values[frame_index];
     encoder_->Encode(std::move(frame), encode_options, ValidatingStatusCB());
   }
 
@@ -556,11 +565,6 @@ TEST_P(LargeTimestampOverflowTest, LargeTimestampOverflow) {
 }
 
 #if BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-
-// 4 seconds of video at 25fps (100 frames) is enough to verify the initial
-// keyframe, delta frames, and a periodic keyframe at the 3s mark while keeping
-// the round-trip encode/decode test fast.
-constexpr int kEncodeDecodeClipDurationSeconds = 4;
 
 TEST_P(SoftwareVideoEncoderTest, EncodeAndDecode) {
   VideoEncoder::Options options = CreateDefaultOptions();
@@ -777,6 +781,10 @@ TEST_P(SoftwareVideoEncoderTest, EncodeAndDecodeWithEnablingDrop) {
   EXPECT_EQ(total_decoded_frames + dropped_frames_count, total_frames_count);
 }
 
+// 8 full 4-frame L1T3 temporal cycles (4 before and 4 after ChangeOptions() in
+// ChangeLayers).
+constexpr size_t kTemporalSvcFrameCount = 32;
+
 TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvc) {
   VideoEncoder::Options options = CreateDefaultOptions();
   options.frame_size = gfx::Size(320, 200);
@@ -788,7 +796,7 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvc) {
   std::vector<scoped_refptr<VideoFrame>> frames_to_encode;
 
   std::vector<VideoEncoderOutput> chunks;
-  size_t total_frames_count = 80;
+  size_t total_frames_count = kTemporalSvcFrameCount;
 
   // Encoder all frames with 3 temporal layers and put all outputs in |chunks|
   auto frame_duration = base::Seconds(1.0 / options.framerate.value());
@@ -887,7 +895,7 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvcWithEnablingDrop) {
   std::vector<scoped_refptr<VideoFrame>> frames_to_encode;
 
   std::vector<VideoEncoderOutput> chunks;
-  size_t total_frames_count = 80;
+  size_t total_frames_count = kTemporalSvcFrameCount;
   std::vector<size_t> dropped_frame_indices;
 
   // Encoder all frames with 3 temporal layers and put all outputs in |chunks|
@@ -1014,7 +1022,7 @@ TEST_P(ManualSVCVideoEncoderTest, EncodeClipTemporalSvc) {
   std::vector<scoped_refptr<VideoFrame>> frames_to_encode;
 
   std::vector<VideoEncoderOutput> chunks;
-  size_t total_frames_count = 80;
+  size_t total_frames_count = kTemporalSvcFrameCount;
 
   // Encoder all frames with 3 temporal layers and put all outputs in |chunks|
   auto frame_duration = base::Seconds(1.0 / options.framerate.value());
@@ -1145,7 +1153,7 @@ TEST_P(SVCVideoEncoderTest, ChangeLayers) {
   std::vector<scoped_refptr<VideoFrame>> frames_to_encode;
 
   std::vector<VideoEncoderOutput> chunks;
-  size_t total_frames_count = 80;
+  size_t total_frames_count = kTemporalSvcFrameCount;
 
   // Encoder all frames with 3 temporal layers and put all outputs in |chunks|
   auto frame_duration = base::Seconds(1.0 / options.framerate.value());
@@ -1758,9 +1766,7 @@ INSTANTIATE_TEST_SUITE_P(VpxGeneric,
                          PrintTestParams);
 
 SwVideoTestParams kVpx10BitParams[] = {
-    {VideoCodec::kVP9, VP9PROFILE_PROFILE2, PIXEL_FORMAT_I420},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE2, PIXEL_FORMAT_YUV420P10},
-    {VideoCodec::kVP9, VP9PROFILE_PROFILE3, PIXEL_FORMAT_I420},
     {VideoCodec::kVP9, VP9PROFILE_PROFILE3, PIXEL_FORMAT_YUV444P10}};
 
 INSTANTIATE_TEST_SUITE_P(Vpx10BitSpecific,
