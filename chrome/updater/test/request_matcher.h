@@ -63,13 +63,6 @@ using MatcherGroup = std::list<Matcher>;
 // CHECKs that `target_url` is valid and has no query or fragment.
 [[nodiscard]] Matcher GetTargetURLMatcher(GURL target_url);
 
-// Returns a matcher that succeeds if the regexes in
-// `expected_content_regex_sequence` partially match non-overlapping substrings
-// of `decoded_content` in order, case-insensitively. CHECKs that each regex is
-// valid.
-[[nodiscard]] Matcher GetContentMatcher(
-    const std::vector<std::string>& expected_content_regex_sequence);
-
 // Returns a matcher that succeeds if the decoded body is a JSON dict that
 // matches `matcher`, after renaming protocol V3 names to their V4 names (see
 // `ParseJsonContent()`).

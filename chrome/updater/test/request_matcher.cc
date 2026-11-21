@@ -208,28 +208,6 @@ Matcher GetTargetURLMatcher(GURL target_url) {
       });
 }
 
-Matcher GetContentMatcher(
-    const std::vector<std::string>& expected_content_regex_sequence) {
-  for (const std::string& regex : expected_content_regex_sequence) {
-    CheckValidRegex(regex, CaseInsensitiveOptions());
-  }
-  return base::BindLambdaForTesting(
-      [expected_content_regex_sequence](
-          const HttpRequest& request) -> testing::AssertionResult {
-        const re2::RE2::Options options = CaseInsensitiveOptions();
-        std::string_view input(request.decoded_content);
-        for (const std::string& regex : expected_content_regex_sequence) {
-          if (!re2::RE2::FindAndConsume(&input, re2::RE2(regex, options))) {
-            return testing::AssertionFailure()
-                   << "Request content match failed. Expected regex: [" << regex
-                   << "] not found in content: ["
-                   << GetPrintableContent(request) << "]";
-          }
-        }
-        return testing::AssertionSuccess();
-      });
-}
-
 Matcher GetScopeMatcher(UpdaterScope scope) {
   return GetJSONContentMatcher(
       json::UpdateRequest(json::HasKey("ismachine", IsSystemInstall(scope))));

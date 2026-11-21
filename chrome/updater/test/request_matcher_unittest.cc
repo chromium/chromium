@@ -245,22 +245,6 @@ TEST(RequestMatcherTest, GetTargetURLMatcherWithPort) {
   EXPECT_TRUE(FailsWithMessage(matcher, request, "Request header [Host"));
 }
 
-TEST(RequestMatcherTest, GetContentMatcher) {
-  Matcher matcher = GetContentMatcher({"first.*token", "second-[0-9]+"});
-
-  HttpRequest request;
-  EXPECT_FALSE(matcher.Run(request));
-
-  request.decoded_content = "prefix FIRST_abc_TOKEN middle SECOND-99 suffix";
-  EXPECT_TRUE(matcher.Run(request));
-
-  request.decoded_content = "SECOND-99 before FIRST_abc_TOKEN";
-  EXPECT_FALSE(matcher.Run(request));
-
-  request.decoded_content = "only FIRST_abc_TOKEN present";
-  EXPECT_FALSE(matcher.Run(request));
-}
-
 TEST(RequestMatcherTest, GetJSONContentMatcher) {
   Matcher matcher = GetJSONContentMatcher(
       json::HasApp("{app-1}", json::HasKey("version", "1.0")));
@@ -607,7 +591,6 @@ TEST(RequestMatcherTest, GetMultipartContentMatcherMatchesPartHeaders) {
 TEST(RequestMatcherTest, InvalidRegexes) {
   EXPECT_CHECK_DEATH(std::ignore = GetPathMatcher("("));
   EXPECT_CHECK_DEATH(std::ignore = GetHeaderMatcher({{"X-Custom", "("}}));
-  EXPECT_CHECK_DEATH(std::ignore = GetContentMatcher({"valid", "("}));
   EXPECT_CHECK_DEATH(std::ignore = GetMultipartContentMatcher(
                          {FormExpectations("a", {"valid", "("})}));
 }
