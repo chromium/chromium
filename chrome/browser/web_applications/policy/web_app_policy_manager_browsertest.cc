@@ -19,11 +19,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/browser/web_applications/model/management_data.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
@@ -267,11 +269,12 @@ IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTest, AppIdWhenNoManifestId) {
   const WebApp* app = provider.registrar_unsafe().GetAppById(app_id);
 
   ASSERT_TRUE(app) << provider.registrar_unsafe().AsDebugValue();
-  EXPECT_EQ(app->management_to_external_config_map(),
-            (WebApp::ExternalConfigMap{{WebAppManagement::Type::kPolicy,
-                                        {/*is_placeholder=*/false,
-                                         /*install_urls=*/{install_url},
-                                         /*additional_policy_ids=*/{}}}}));
+  ManagementData expected_management_data;
+  expected_management_data.AddSource(WebAppManagement::kPolicy);
+  expected_management_data.SetIsPlaceholder(WebAppManagement::kPolicy, false);
+  expected_management_data.AddInstallUrl(WebAppManagement::kPolicy,
+                                         install_url);
+  EXPECT_EQ(app->management_data(), expected_management_data);
 }
 
 // TODO(crbug.com/40256661): Flaky on Mac and Linux.

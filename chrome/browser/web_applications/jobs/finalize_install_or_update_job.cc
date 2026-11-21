@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -673,9 +674,9 @@ void FinalizeInstallOrUpdateJob::SetWebAppFieldsForInstall(
         AppInstalledBy(clock_->Now(), web_app_info_.installed_by.value()));
   }
 
-  WriteExternalConfigMapInfo(
-      *web_app, options_.source, web_app_info_.is_placeholder,
-      web_app_info_.install_url, web_app_info_.additional_policy_ids);
+  WriteManagementData(*web_app, options_.source, web_app_info_.is_placeholder,
+                      web_app_info_.install_url,
+                      web_app_info_.additional_policy_ids);
 }
 
 void FinalizeInstallOrUpdateJob::SetWebAppManifestFieldsAndWriteData(
@@ -751,29 +752,27 @@ void FinalizeInstallOrUpdateJob::CommitToSyncBridge(
   }
 }
 
-void FinalizeInstallOrUpdateJob::WriteExternalConfigMapInfo(
+// static
+void FinalizeInstallOrUpdateJob::WriteManagementData(
     WebApp& web_app,
     WebAppManagement::Type source,
     bool is_placeholder,
     GURL install_url,
     std::vector<std::string> additional_policy_ids) {
-  CHECK(!(source == WebAppManagement::Type::kSync && is_placeholder),
-        base::NotFatalUntil::M162);
-  CHECK(!(source == WebAppManagement::Type::kUserInstalled && is_placeholder),
-        base::NotFatalUntil::M162);
-  if (source != WebAppManagement::Type::kSync &&
-      source != WebAppManagement::Type::kUserInstalled &&
-      !WebAppManagement::IsIwaType(source)) {
-    web_app.AddPlaceholderInfoToManagementExternalConfigMap(source,
-                                                            is_placeholder);
-    if (install_url.is_valid()) {
-      web_app.AddInstallURLToManagementExternalConfigMap(
-          source, std::move(install_url));
-    }
-    for (const auto& policy_id : additional_policy_ids) {
-      web_app.AddPolicyIdToManagementExternalConfigMap(source,
-                                                       std::move(policy_id));
-    }
+  CHECK(web_app.management_data().HasSource(source)) << base::ToString(source);
+  CHECK(!is_placeholder || kSourcesWithPlaceholder.Has(source))
+      << base::ToString(source);
+  CHECK(additional_policy_ids.empty() ||
+        kSourcesWithAdditionalPolicyIds.Has(source))
+      << base::ToString(source);
+  if (kSourcesWithPlaceholder.Has(source)) {
+    web_app.SetIsPlaceholder(source, is_placeholder);
+  }
+  if (kSourcesWithInstallUrls.Has(source) && install_url.is_valid()) {
+    web_app.AddInstallUrl(source, std::move(install_url));
+  }
+  for (auto& policy_id : additional_policy_ids) {
+    web_app.AddAdditionalPolicyId(std::move(policy_id));
   }
 }
 

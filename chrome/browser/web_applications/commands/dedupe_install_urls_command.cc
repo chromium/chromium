@@ -15,17 +15,16 @@
 #include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_url_job.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
+#include "chrome/browser/web_applications/model/management_data.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 
 namespace web_app {
-
-using ExternalManagementConfig = WebApp::ExternalManagementConfig;
-using ExternalConfigMap = WebApp::ExternalConfigMap;
 
 namespace {
 
@@ -37,9 +36,10 @@ base::flat_map<GURL, base::flat_set<webapps::AppId>> BuildInstallUrlToAppIdsMap(
   base::flat_map<GURL, base::flat_set<webapps::AppId>> result;
 
   for (const WebApp& app : registrar.GetApps()) {
-    for (const auto& [install_source, config] :
-         app.management_to_external_config_map()) {
-      for (const GURL& install_url : config.install_urls) {
+    for (WebAppManagement::Type install_source :
+         app.management_data().GetSources()) {
+      for (const GURL& install_url :
+           app.management_data().GetInstallUrls(install_source)) {
         result[install_url].insert(app.app_id());
         debug_value.EnsureList(install_url.spec())->Append(app.app_id());
       }
@@ -107,19 +107,21 @@ BuildOperationsToDedupeInstallUrlConfigsIntoSelectedApp(
     const WebApp& app_to_dedupe_out_of =
         *registrar.GetAppById(id_to_dedupe_out_of);
 
-    for (auto const& [install_source, config_to_dedupe_out_of] :
-         app_to_dedupe_out_of.management_to_external_config_map()) {
-      if (!config_to_dedupe_out_of.install_urls.contains(install_url)) {
+    for (WebAppManagement::Type install_source :
+         app_to_dedupe_out_of.management_data().GetSources()) {
+      if (!app_to_dedupe_out_of.management_data()
+               .GetInstallUrls(install_source)
+               .contains(install_url)) {
         continue;
       }
 
       app_to_dedupe_into.AddSource(install_source);
-      app_to_dedupe_into.AddInstallURLToManagementExternalConfigMap(
-          install_source, install_url);
-      for (const std::string& policy_id :
-           config_to_dedupe_out_of.additional_policy_ids) {
-        app_to_dedupe_into.AddPolicyIdToManagementExternalConfigMap(
-            install_source, policy_id);
+      app_to_dedupe_into.AddInstallUrl(install_source, install_url);
+      if (kSourcesWithAdditionalPolicyIds.Has(install_source)) {
+        for (const std::string& policy_id :
+             app_to_dedupe_out_of.management_data().GetAdditionalPolicyIds()) {
+          app_to_dedupe_into.AddAdditionalPolicyId(policy_id);
+        }
       }
 
       // Create job to remove deduped install URL from existing app.

@@ -32,6 +32,7 @@
 #include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/model/integrity_block_data.h"
 #include "chrome/browser/web_applications/model/isolation_data.h"
+#include "chrome/browser/web_applications/model/management_data.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_launch_handler.pb.h"
@@ -211,11 +212,11 @@ proto::WebAppFileHandler::LaunchType LaunchTypeToProto(
   }
 }
 
-WebAppManagement::Type ProtoToWebAppManagement(
+std::optional<WebAppManagement::Type> ProtoToWebAppManagement(
     proto::WebAppManagementType type) {
   switch (type) {
     case proto::WEB_APP_MANAGEMENT_TYPE_UNSPECIFIED:
-      NOTREACHED();
+      return std::nullopt;
     case proto::WEB_APP_MANAGEMENT_TYPE_SYSTEM:
       return WebAppManagement::Type::kSystem;
     case proto::WEB_APP_MANAGEMENT_TYPE_KIOSK:
@@ -245,6 +246,7 @@ WebAppManagement::Type ProtoToWebAppManagement(
     case proto::WEB_APP_MANAGEMENT_TYPE_APS_DEFAULT:
       return WebAppManagement::Type::kApsDefault;
   }
+  return std::nullopt;
 }
 
 proto::WebAppManagementType WebAppManagementToProto(
@@ -565,7 +567,9 @@ std::unique_ptr<WebApp> ParseWebAppProto(
                    "and is_uninstalling isn't true.";
     return nullptr;
   }
-  web_app->sources_ = sources;
+  for (WebAppManagement::Type source : sources) {
+    web_app->AddSource(source);
+  }
 
   if (!proto.has_name()) {
     RecordProtoParseResult(ProtoParseResult::kNoName);
@@ -1139,11 +1143,10 @@ std::unique_ptr<WebApp> ParseWebAppProto(
     web_app->SetLaunchHandler(ProtoToLaunchHandler(proto.launch_handler()));
   }
 
-  WebApp::ExternalConfigMap management_to_external_config;
+  ManagementData management_data = web_app->management_data();
   for (const auto& management_proto :
        proto.management_to_external_config_info()) {
-    WebApp::ExternalManagementConfig config;
-    base::flat_set<GURL> install_urls;
+    std::vector<GURL> install_urls;
     for (const auto& install_url_proto : management_proto.install_urls()) {
       GURL install_url(install_url_proto);
       if (install_url.is_empty() || !install_url.is_valid()) {
@@ -1152,26 +1155,42 @@ std::unique_ptr<WebApp> ParseWebAppProto(
                     << install_url.possibly_invalid_spec();
         return nullptr;
       }
-      install_urls.emplace(install_url);
+      install_urls.push_back(std::move(install_url));
     }
-    base::flat_set<std::string> additional_policy_ids;
+    std::vector<std::string> additional_policy_ids;
     for (const auto& policy_id : management_proto.additional_policy_ids()) {
       if (policy_id.empty()) {
         RecordProtoParseResult(ProtoParseResult::kEmptyPolicyId);
         DLOG(ERROR) << "WebApp proto empty policy_id";
         return nullptr;
       }
-      additional_policy_ids.emplace(policy_id);
+      additional_policy_ids.push_back(policy_id);
     }
 
-    config.is_placeholder = management_proto.is_placeholder();
-    config.install_urls = std::move(install_urls);
-    config.additional_policy_ids = std::move(additional_policy_ids);
-    management_to_external_config.insert_or_assign(
-        ProtoToWebAppManagement(management_proto.management()),
-        std::move(config));
+    std::optional<WebAppManagement::Type> type =
+        ProtoToWebAppManagement(management_proto.management());
+    if (!type.has_value() || !sources.Has(*type) ||
+        !kSourcesWithInstallUrls.Has(*type)) {
+      continue;
+    }
+
+    // Last entry wins if duplicate management entries exist in the proto.
+    management_data.RemoveSource(*type);
+    management_data.AddSource(*type);
+    for (GURL& install_url : install_urls) {
+      management_data.AddInstallUrl(*type, std::move(install_url));
+    }
+    if (kSourcesWithPlaceholder.Has(*type)) {
+      management_data.SetIsPlaceholder(*type,
+                                       management_proto.is_placeholder());
+    }
+    if (kSourcesWithAdditionalPolicyIds.Has(*type)) {
+      for (std::string& policy_id : additional_policy_ids) {
+        management_data.AddAdditionalPolicyId(std::move(policy_id));
+      }
+    }
   }
-  web_app->SetWebAppManagementExternalConfigMap(management_to_external_config);
+  web_app->SetManagementData(std::move(management_data));
 
   if (proto.has_tab_strip()) {
     web_app->SetTabStrip(ProtoToTabStrip(proto.tab_strip()));
@@ -1557,36 +1576,35 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
 
   local_data->set_name(web_app.untranslated_name());
 
-  CHECK(!web_app.sources_.empty() || web_app.is_uninstalling(),
+  CHECK(web_app.HasAnySources() || web_app.is_uninstalling(),
         base::NotFatalUntil::M162);
+  const WebAppManagementTypes sources = web_app.GetSources();
   local_data->mutable_sources()->set_system(
-      web_app.sources_.Has(WebAppManagement::kSystem));
+      sources.Has(WebAppManagement::kSystem));
   local_data->mutable_sources()->set_policy(
-      web_app.sources_.Has(WebAppManagement::kPolicy));
+      sources.Has(WebAppManagement::kPolicy));
   local_data->mutable_sources()->set_web_app_store(
-      web_app.sources_.Has(WebAppManagement::kWebAppStore));
-  local_data->mutable_sources()->set_sync(
-      web_app.sources_.Has(WebAppManagement::kSync));
+      sources.Has(WebAppManagement::kWebAppStore));
+  local_data->mutable_sources()->set_sync(sources.Has(WebAppManagement::kSync));
   local_data->mutable_sources()->set_user_installed(
-      web_app.sources_.Has(WebAppManagement::kUserInstalled));
+      sources.Has(WebAppManagement::kUserInstalled));
   local_data->mutable_sources()->set_default_(
-      web_app.sources_.Has(WebAppManagement::kDefault));
+      sources.Has(WebAppManagement::kDefault));
   local_data->mutable_sources()->set_sub_app(
-      web_app.sources_.Has(WebAppManagement::kSubApp));
+      sources.Has(WebAppManagement::kSubApp));
   local_data->mutable_sources()->set_kiosk(
-      web_app.sources_.Has(WebAppManagement::kKiosk));
+      sources.Has(WebAppManagement::kKiosk));
   local_data->mutable_sources()->set_iwa_shimless_rma(
-      web_app.sources_.Has(WebAppManagement::kIwaShimlessRma));
+      sources.Has(WebAppManagement::kIwaShimlessRma));
   local_data->mutable_sources()->set_iwa_policy(
-      web_app.sources_.Has(WebAppManagement::kIwaPolicy));
+      sources.Has(WebAppManagement::kIwaPolicy));
   local_data->mutable_sources()->set_iwa_user_installed(
-      web_app.sources_.Has(WebAppManagement::kIwaUserInstalled));
-  local_data->mutable_sources()->set_oem(
-      web_app.sources_.Has(WebAppManagement::kOem));
+      sources.Has(WebAppManagement::kIwaUserInstalled));
+  local_data->mutable_sources()->set_oem(sources.Has(WebAppManagement::kOem));
   local_data->mutable_sources()->set_one_drive_integration(
-      web_app.sources_.Has(WebAppManagement::kOneDriveIntegration));
+      sources.Has(WebAppManagement::kOneDriveIntegration));
   local_data->mutable_sources()->set_aps_default(
-      web_app.sources_.Has(WebAppManagement::kApsDefault));
+      sources.Has(WebAppManagement::kApsDefault));
 
   local_data->set_install_state(web_app.install_state());
 
@@ -1873,19 +1891,22 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
     local_data->set_parent_app_id(*web_app.parent_app_id_);
   }
 
-  if (!web_app.management_to_external_config_map().empty()) {
-    for (const auto& [source, external_config] :
-         web_app.management_to_external_config_map()) {
-      proto::ManagementToExternalConfigInfo* management_config_proto =
-          local_data->add_management_to_external_config_info();
-      management_config_proto->set_management(WebAppManagementToProto(source));
-      management_config_proto->set_is_placeholder(
-          external_config.is_placeholder);
-      for (const auto& url : external_config.install_urls) {
-        CHECK(url.is_valid(), base::NotFatalUntil::M162);
-        management_config_proto->add_install_urls(url.spec());
-      }
-      for (const auto& policy_id : external_config.additional_policy_ids) {
+  for (WebAppManagement::Type source : web_app.GetSources()) {
+    if (!kSourcesWithInstallUrls.Has(source)) {
+      continue;
+    }
+    proto::ManagementToExternalConfigInfo* management_config_proto =
+        local_data->add_management_to_external_config_info();
+    management_config_proto->set_management(WebAppManagementToProto(source));
+    management_config_proto->set_is_placeholder(
+        web_app.management_data().IsPlaceholder(source));
+    for (const GURL& url : web_app.management_data().GetInstallUrls(source)) {
+      CHECK(url.is_valid(), base::NotFatalUntil::M162);
+      management_config_proto->add_install_urls(url.spec());
+    }
+    if (kSourcesWithAdditionalPolicyIds.Has(source)) {
+      for (const std::string& policy_id :
+           web_app.management_data().GetAdditionalPolicyIds()) {
         CHECK(!policy_id.empty(), base::NotFatalUntil::M162);
         management_config_proto->add_additional_policy_ids(policy_id);
       }

@@ -20,10 +20,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
+#include "base/test/gtest_util.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/model/integrity_block_data.h"
+#include "chrome/browser/web_applications/model/management_data.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -541,6 +543,97 @@ TEST(WebAppTest, DisplayOverrideDebugValue) {
                 "display": "unframed",
                 "url_patterns": [{ "pathname": "/foo" }]
               })")));
+}
+
+TEST(WebAppTest, ManagementDataMutators) {
+  const GURL start_url("https://example.com");
+  const GURL policy_url("https://example.com/policy");
+  const GURL kiosk_url("https://example.com/kiosk");
+  const GURL default_url("https://example.com/default");
+  const GURL store_url("https://example.com/store");
+
+  WebApp app(GenerateManifestIdFromStartUrlOnly(start_url), start_url,
+             start_url.GetWithoutFilename());
+
+  app.AddSource(WebAppManagement::kDefault);
+  app.AddInstallUrl(WebAppManagement::kDefault, default_url);
+  EXPECT_TRUE(app.management_data().HasSource(WebAppManagement::kDefault));
+  EXPECT_THAT(app.management_data().GetInstallUrls(WebAppManagement::kDefault),
+              testing::ElementsAre(default_url));
+
+  EXPECT_FALSE(app.RemoveInstallUrl(WebAppManagement::kDefault, policy_url));
+  EXPECT_TRUE(app.RemoveInstallUrl(WebAppManagement::kDefault, default_url));
+  EXPECT_TRUE(app.management_data().HasSource(WebAppManagement::kDefault));
+  EXPECT_TRUE(
+      app.management_data().GetInstallUrls(WebAppManagement::kDefault).empty());
+
+  app.AddSource(WebAppManagement::kPolicy);
+  app.AddSource(WebAppManagement::kKiosk);
+  app.AddInstallUrl(WebAppManagement::kPolicy, policy_url);
+  app.AddInstallUrl(WebAppManagement::kKiosk, kiosk_url);
+  app.SetIsPlaceholder(WebAppManagement::kPolicy, true);
+  app.SetIsPlaceholder(WebAppManagement::kKiosk, true);
+  EXPECT_TRUE(app.management_data().IsPlaceholder(WebAppManagement::kPolicy));
+  EXPECT_TRUE(app.management_data().IsPlaceholder(WebAppManagement::kKiosk));
+  EXPECT_THAT(app.management_data().GetInstallUrls(WebAppManagement::kPolicy),
+              testing::ElementsAre(policy_url));
+  EXPECT_THAT(app.management_data().GetInstallUrls(WebAppManagement::kKiosk),
+              testing::ElementsAre(kiosk_url));
+
+  app.SetIsPlaceholder(WebAppManagement::kPolicy, false);
+  EXPECT_FALSE(app.management_data().IsPlaceholder(WebAppManagement::kPolicy));
+  EXPECT_TRUE(app.management_data().IsPlaceholder(WebAppManagement::kKiosk));
+
+  app.AddSource(WebAppManagement::kWebAppStore);
+  app.AddInstallUrl(WebAppManagement::kWebAppStore, store_url);
+  app.AddAdditionalPolicyId("policy_id_1");
+  EXPECT_THAT(app.management_data().GetAdditionalPolicyIds(),
+              testing::ElementsAre("policy_id_1"));
+
+  ManagementData replacement;
+  replacement.AddSource(WebAppManagement::kSync);
+  app.SetManagementData(replacement);
+  EXPECT_EQ(app.management_data(), replacement);
+  EXPECT_TRUE(app.IsSynced());
+  EXPECT_FALSE(app.IsPolicyInstalledApp());
+}
+
+TEST(WebAppDeathTest, SetIsPlaceholderChecks) {
+  const GURL start_url("https://example.com");
+
+  {
+    WebApp app(GenerateManifestIdFromStartUrlOnly(start_url), start_url,
+               start_url.GetWithoutFilename());
+    EXPECT_CHECK_DEATH(app.SetIsPlaceholder(WebAppManagement::kPolicy, true));
+  }
+
+  {
+    WebApp app(GenerateManifestIdFromStartUrlOnly(start_url), start_url,
+               start_url.GetWithoutFilename());
+    app.AddSource(WebAppManagement::kDefault);
+    EXPECT_CHECK_DEATH(app.SetIsPlaceholder(WebAppManagement::kDefault, true));
+  }
+}
+
+TEST(WebAppDeathTest, PolicyIdAndMigrationInstallStateChecks) {
+  const GURL start_url("https://example.com");
+
+  {
+    WebApp app(GenerateManifestIdFromStartUrlOnly(start_url), start_url,
+               start_url.GetWithoutFilename());
+    EXPECT_CHECK_DEATH(app.AddAdditionalPolicyId("policy_id"));
+    app.AddSource(WebAppManagement::kWebAppStore);
+    EXPECT_CHECK_DEATH(app.AddAdditionalPolicyId(""));
+  }
+
+  {
+    WebApp app(GenerateManifestIdFromStartUrlOnly(start_url), start_url,
+               start_url.GetWithoutFilename());
+    app.SetInstallState(proto::SUGGESTED_FROM_MIGRATION);
+    ManagementData sync_data;
+    sync_data.AddSource(WebAppManagement::kSync);
+    EXPECT_CHECK_DEATH(app.SetManagementData(sync_data));
+  }
 }
 
 }  // namespace web_app

@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
@@ -22,6 +23,7 @@
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
+#include "chrome/browser/web_applications/model/management_data.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
@@ -114,7 +116,12 @@ ExternallyManagedAppManager::SynchronizeRequest::SynchronizeRequest(
 struct ExternallyManagedAppManager::ExternalInstallMetadata {
   ExternalInstallMetadata(ExternalInstallOptions options,
                           OnceInstallCallback callback)
-      : options(std::move(options)), callback(std::move(callback)) {}
+      : options(std::move(options)), callback(std::move(callback)) {
+    CHECK(!this->options.install_placeholder ||
+          kSourcesWithPlaceholder.Has(ConvertExternalInstallSourceToSource(
+              this->options.install_source)))
+        << base::ToString(this->options.install_source);
+  }
   ~ExternalInstallMetadata() = default;
 
   ExternalInstallOptions options;
@@ -178,8 +185,13 @@ void ExternallyManagedAppManager::SynchronizeInstalledApps(
   CHECK(std::ranges::all_of(
       desired_apps_install_options,
       [&install_source](const ExternalInstallOptions& install_options) {
-        return install_options.install_source == install_source;
-      }));
+        return install_options.install_source == install_source &&
+               (!install_options.install_placeholder ||
+                kSourcesWithPlaceholder.Has(
+                    ConvertExternalInstallSourceToSource(
+                        install_options.install_source)));
+      }))
+      << base::ToString(install_source);
   // Only one concurrent SynchronizeInstalledApps() expected per
   // ExternalInstallSource.
   CHECK(!synchronize_requests_.contains(install_source));
@@ -363,7 +375,7 @@ void ExternallyManagedAppManager::MaybeStartNextOnLockAcquired(
       WebApp* app_to_update = update->UpdateApp(app_id.value());
       app_to_update->AddSource(
           ConvertExternalInstallSourceToSource(install_options.install_source));
-      app_to_update->AddInstallURLToManagementExternalConfigMap(
+      app_to_update->AddInstallUrl(
           ConvertExternalInstallSourceToSource(install_options.install_source),
           install_options.install_url);
 
@@ -572,16 +584,10 @@ void ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired(
     const WebApp* app = lock.registrar().GetAppById(app_id);
     CHECK(app);
 
-    absl::flat_hash_set<GURL> install_urls;
-    const WebApp::ExternalConfigMap& config_map =
-        app->management_to_external_config_map();
-    auto it =
-        config_map.find(ConvertExternalInstallSourceToSource(install_source));
-    if (it != config_map.end() && !it->second.install_urls.empty()) {
-      install_urls = absl::flat_hash_set<GURL>(it->second.install_urls.begin(),
-                                               it->second.install_urls.end());
-    }
-    return install_urls;
+    const base::flat_set<GURL>& install_urls =
+        app->management_data().GetInstallUrls(
+            ConvertExternalInstallSourceToSource(install_source));
+    return absl::flat_hash_set<GURL>(install_urls.begin(), install_urls.end());
   };
 
   absl::flat_hash_set<GURL> desired_urls;

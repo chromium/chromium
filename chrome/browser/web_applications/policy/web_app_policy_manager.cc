@@ -30,6 +30,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/external_install_options.h"
+#include "chrome/browser/web_applications/model/management_data.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
@@ -332,12 +333,7 @@ std::vector<std::string> WebAppPolicyManager::GetPolicyIds(
   }
 #endif  // BUIDLFLAG(IS_CHROMEOS)
 
-  for (const auto& [source, external_config] :
-       web_app.management_to_external_config_map()) {
-    if (!external_config.additional_policy_ids.empty()) {
-      base::Extend(policy_ids, external_config.additional_policy_ids);
-    }
-  }
+  base::Extend(policy_ids, web_app.management_data().GetAdditionalPolicyIds());
 
   if (!web_app_registrar.HasExternalAppWithInstallSource(
           app_id, ExternalInstallSource::kExternalPolicy)) {

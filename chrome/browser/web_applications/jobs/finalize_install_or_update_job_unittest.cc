@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gtest_util.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/model/integrity_block_data.h"
+#include "chrome/browser/web_applications/model/management_data.h"
 #include "chrome/browser/web_applications/model/migration_behavior.h"
 #include "chrome/browser/web_applications/model/migration_source.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
@@ -534,13 +536,89 @@ TEST_F(FinalizeInstallOrUpdateJobTest, InstallUrlSetInWebAppDB) {
       GenerateAppId(/*manifest_id_path=*/std::nullopt, info->start_url()));
 
   const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
-  const WebApp::ExternalConfigMap& config_map =
-      installed_app->management_to_external_config_map();
-  auto it = config_map.find(WebAppManagement::kPolicy);
-  EXPECT_NE(it, config_map.end());
-  EXPECT_EQ(1u, it->second.install_urls.size());
-  EXPECT_EQ(GURL("https://foo.example/installer"),
-            *it->second.install_urls.begin());
+  ASSERT_TRUE(installed_app);
+  EXPECT_TRUE(
+      installed_app->management_data().HasSource(WebAppManagement::kPolicy));
+  EXPECT_FALSE(installed_app->management_data().IsPlaceholder(
+      WebAppManagement::kPolicy));
+  EXPECT_THAT(installed_app->management_data().GetInstallUrls(
+                  WebAppManagement::kPolicy),
+              testing::ElementsAre(GURL("https://foo.example/installer")));
+}
+
+TEST(FinalizeInstallOrUpdateJobStaticTest, WriteManagementData) {
+  const GURL start_url(kDefaultAppUrl);
+  const GURL install_url("https://foo.example/installer");
+
+  {
+    WebApp app(GenerateManifestIdFromStartUrlOnly(start_url), start_url,
+               start_url.GetWithoutFilename());
+    app.AddSource(WebAppManagement::kPolicy);
+    FinalizeInstallOrUpdateJob::WriteManagementData(
+        app, WebAppManagement::kPolicy, /*is_placeholder=*/true, install_url,
+        /*additional_policy_ids=*/{});
+    EXPECT_TRUE(app.management_data().IsPlaceholder(WebAppManagement::kPolicy));
+    EXPECT_THAT(app.management_data().GetInstallUrls(WebAppManagement::kPolicy),
+                testing::ElementsAre(install_url));
+  }
+
+  {
+    WebApp app(GenerateManifestIdFromStartUrlOnly(start_url), start_url,
+               start_url.GetWithoutFilename());
+    app.AddSource(WebAppManagement::kWebAppStore);
+    FinalizeInstallOrUpdateJob::WriteManagementData(
+        app, WebAppManagement::kWebAppStore, /*is_placeholder=*/false, GURL(),
+        /*additional_policy_ids=*/{"id1"});
+    EXPECT_TRUE(
+        app.management_data().HasSource(WebAppManagement::kWebAppStore));
+    EXPECT_THAT(app.management_data().GetAdditionalPolicyIds(),
+                testing::ElementsAre("id1"));
+  }
+
+  {
+    WebApp app(GenerateManifestIdFromStartUrlOnly(start_url), start_url,
+               start_url.GetWithoutFilename());
+    app.AddSource(WebAppManagement::kUserInstalled);
+    app.AddSource(WebAppManagement::kSync);
+    FinalizeInstallOrUpdateJob::WriteManagementData(
+        app, WebAppManagement::kUserInstalled, /*is_placeholder=*/false,
+        install_url, /*additional_policy_ids=*/{});
+    FinalizeInstallOrUpdateJob::WriteManagementData(
+        app, WebAppManagement::kSync, /*is_placeholder=*/false, install_url,
+        /*additional_policy_ids=*/{});
+    EXPECT_FALSE(app.management_data().HasInstallUrl(install_url));
+  }
+}
+
+TEST(FinalizeInstallOrUpdateJobDeathTest, WriteManagementDataChecks) {
+  const GURL start_url(kDefaultAppUrl);
+  const GURL install_url("https://foo.example/installer");
+
+  {
+    WebApp app(GenerateManifestIdFromStartUrlOnly(start_url), start_url,
+               start_url.GetWithoutFilename());
+    EXPECT_CHECK_DEATH(FinalizeInstallOrUpdateJob::WriteManagementData(
+        app, WebAppManagement::kUserInstalled, /*is_placeholder=*/false,
+        /*install_url=*/GURL(), /*additional_policy_ids=*/{}));
+  }
+
+  {
+    WebApp app(GenerateManifestIdFromStartUrlOnly(start_url), start_url,
+               start_url.GetWithoutFilename());
+    app.AddSource(WebAppManagement::kDefault);
+    EXPECT_CHECK_DEATH(FinalizeInstallOrUpdateJob::WriteManagementData(
+        app, WebAppManagement::kDefault, /*is_placeholder=*/true, install_url,
+        /*additional_policy_ids=*/{}));
+  }
+
+  {
+    WebApp app(GenerateManifestIdFromStartUrlOnly(start_url), start_url,
+               start_url.GetWithoutFilename());
+    app.AddSource(WebAppManagement::kPolicy);
+    EXPECT_CHECK_DEATH(FinalizeInstallOrUpdateJob::WriteManagementData(
+        app, WebAppManagement::kPolicy, /*is_placeholder=*/false, install_url,
+        /*additional_policy_ids=*/{"id1"}));
+  }
 }
 
 TEST_F(FinalizeInstallOrUpdateJobTest, PopUpContentSettingsGrantedForIwa) {

@@ -111,6 +111,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/iwa_command_scheduler.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
+#include "chrome/browser/web_applications/model/management_data.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_registration.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
@@ -4730,15 +4731,10 @@ void WebAppIntegrationTestDriver::UninstallPolicyAppById(
   const WebApp* web_app = provider->registrar_unsafe().GetAppById(id);
   ASSERT_TRUE(web_app);
 
-  base::flat_set<GURL> install_urls;
-  {
-    auto policy_config_it = web_app->management_to_external_config_map().find(
-        WebAppManagement::kPolicy);
-    ASSERT_NE(policy_config_it,
-              web_app->management_to_external_config_map().end());
-    ASSERT_FALSE(policy_config_it->second.install_urls.empty());
-    install_urls = policy_config_it->second.install_urls;
-  }
+  ASSERT_TRUE(web_app->management_data().HasSource(WebAppManagement::kPolicy));
+  const base::flat_set<GURL> install_urls =
+      web_app->management_data().GetInstallUrls(WebAppManagement::kPolicy);
+  ASSERT_FALSE(install_urls.empty());
 
   {
     ScopedListPrefUpdate update(profile->GetPrefs(),

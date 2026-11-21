@@ -124,8 +124,13 @@ class FinalizeInstallOrUpdateJob {
 
   Profile* profile() { return &profile_.get(); }
 
-  // Writes external config data to the web_app DB, mapped per source.
-  void WriteExternalConfigMapInfo(
+  // Writes per-source management data to `web_app`. Crashes (`CHECK`) if:
+  // - `source` is not already active on `web_app`,
+  // - `is_placeholder` is true for a `source` outside
+  //   `kSourcesWithPlaceholder`, or
+  // - `additional_policy_ids` is non-empty for a `source` outside
+  //   `kSourcesWithAdditionalPolicyIds` (or contains an empty string).
+  static void WriteManagementData(
       WebApp& web_app,
       WebAppManagement::Type source,
       bool is_placeholder,

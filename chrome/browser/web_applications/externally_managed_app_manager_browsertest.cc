@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
+#include "chrome/browser/web_applications/model/management_data.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/external_app_registration_waiter.h"
@@ -684,10 +685,12 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
     ASSERT_TRUE(app_id.has_value());
     ASSERT_TRUE(registrar().AppMatches(app_id.value(),
                                        WebAppFilter::InstalledByUser()));
-    ASSERT_TRUE(registrar()
-                    .GetAppById(app_id.value())
-                    ->management_to_external_config_map()
-                    .empty());
+    ASSERT_TRUE((WebAppManagementTypes{WebAppManagement::kSync,
+                                       WebAppManagement::kUserInstalled})
+                    .HasAll(registrar()
+                                .GetAppById(app_id.value())
+                                ->management_data()
+                                .GetSources()));
     ASSERT_EQ("Test user app", registrar().GetAppShortName(app_id.value()));
   }
   {
@@ -935,10 +938,11 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerBrowserTest,
   webapps::AppId app_id =
       test::InstallWebApp(profile(), std::move(install_info));
   ASSERT_TRUE(registrar().AppMatches(app_id, WebAppFilter::InstalledByUser()));
-  ASSERT_TRUE(registrar()
-                  .GetAppById(app_id)
-                  ->management_to_external_config_map()
-                  .empty());
+  ASSERT_TRUE(
+      (WebAppManagementTypes{WebAppManagement::kSync,
+                             WebAppManagement::kUserInstalled})
+          .HasAll(
+              registrar().GetAppById(app_id)->management_data().GetSources()));
 
   // Install policy app
   std::optional<webapps::AppId> policy_app_id =

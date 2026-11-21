@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/file_utils_wrapper.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_source_job.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
+#include "chrome/browser/web_applications/model/management_data.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
@@ -226,13 +227,9 @@ void RemoveWebAppJob::Start(AllAppsLock& lock, Callback callback) {
     if (app->IsPreinstalledApp()) {
       // Update the default uninstalled web_app prefs if it is a preinstalled
       // app but being removed by user.
-      const WebApp::ExternalConfigMap& config_map =
-          app->management_to_external_config_map();
-      auto it = config_map.find(WebAppManagement::kDefault);
-      if (it != config_map.end()) {
-        UserUninstalledPreinstalledWebAppPrefs(profile_->GetPrefs())
-            .Add(app_id_, it->second.install_urls);
-      }
+      UserUninstalledPreinstalledWebAppPrefs(profile_->GetPrefs())
+          .Add(app_id_, app->management_data().GetInstallUrls(
+                            WebAppManagement::kDefault));
     }
   }
 

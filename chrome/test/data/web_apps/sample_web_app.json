@@ -161,46 +161,43 @@
    },
    "launch_query_params": "144210110",
    "lock_screen_start_url": "https://example.com/scope1234/lock_screen_start_url1308772041",
-   "management_type_to_external_configuration_map": {
+   "management_data": {
       "ApsDefault": {
-         "additional_policy_ids": [ "policy_id_1_1234", "policy_id_2_1234" ],
-         "install_urls": [ "https://example.com/installer1_1234/", "https://example.com/installer2_1234/" ],
-         "is_placeholder": true
+         "install_urls": [ "https://example.com/installer1_1234/", "https://example.com/installer2_1234/" ]
       },
       "Default": {
-         "additional_policy_ids": [ "policy_id_1_1234", "policy_id_2_1234" ],
-         "install_urls": [ "https://example.com/installer1_1234/", "https://example.com/installer2_1234/" ],
-         "is_placeholder": true
+         "install_urls": [ "https://example.com/installer1_1234/", "https://example.com/installer2_1234/" ]
+      },
+      "IwaPolicy": {
+      },
+      "IwaShimlessRma": {
+      },
+      "IwaUserInstalled": {
       },
       "Kiosk": {
-         "additional_policy_ids": [ "policy_id_1_1234", "policy_id_2_1234" ],
          "install_urls": [ "https://example.com/installer1_1234/", "https://example.com/installer2_1234/" ],
          "is_placeholder": true
       },
       "OEM": {
-         "additional_policy_ids": [ "policy_id_1_1234", "policy_id_2_1234" ],
-         "install_urls": [ "https://example.com/installer1_1234/", "https://example.com/installer2_1234/" ],
-         "is_placeholder": true
+         "install_urls": [ "https://example.com/installer1_1234/", "https://example.com/installer2_1234/" ]
       },
       "OneDriveIntegration": {
-         "additional_policy_ids": [ "policy_id_1_1234", "policy_id_2_1234" ],
-         "install_urls": [ "https://example.com/installer1_1234/", "https://example.com/installer2_1234/" ],
-         "is_placeholder": true
+         "install_urls": [ "https://example.com/installer1_1234/", "https://example.com/installer2_1234/" ]
       },
       "Policy": {
-         "additional_policy_ids": [ "policy_id_1_1234", "policy_id_2_1234" ],
          "install_urls": [ "https://example.com/installer1_1234/", "https://example.com/installer2_1234/" ],
          "is_placeholder": true
       },
       "SubApp": {
-         "additional_policy_ids": [ "policy_id_1_1234", "policy_id_2_1234" ],
-         "install_urls": [ "https://example.com/installer1_1234/", "https://example.com/installer2_1234/" ],
-         "is_placeholder": true
+         "install_urls": [ "https://example.com/installer1_1234/", "https://example.com/installer2_1234/" ]
+      },
+      "Sync": {
+      },
+      "UserInstalled": {
       },
       "WebAppStore": {
          "additional_policy_ids": [ "policy_id_1_1234", "policy_id_2_1234" ],
-         "install_urls": [ "https://example.com/installer1_1234/", "https://example.com/installer2_1234/" ],
-         "is_placeholder": true
+         "install_urls": [ "https://example.com/installer1_1234/", "https://example.com/installer2_1234/" ]
       }
    },
    "manifest_icons": [ {
@@ -414,7 +411,6 @@
       "name": "shortcut2591174840",
       "url": "https://example.com/scope1234/shortcut2591174840"
    } ],
-   "sources": [ "IwaShimlessRma", "Kiosk", "Policy", "IwaPolicy", "OEM", "SubApp", "WebAppStore", "OneDriveIntegration", "Sync", "UserInstalled", "IwaUserInstalled", "ApsDefault", "Default" ],
    "start_url": "https://example.com/scope1234/start1234",
    "stored_trusted_icon_sizes": {
       "ANY": [ 48 ],

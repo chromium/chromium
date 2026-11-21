@@ -38,6 +38,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -54,6 +55,7 @@
 #include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/model/integrity_block_data.h"
 #include "chrome/browser/web_applications/model/isolation_data.h"
+#include "chrome/browser/web_applications/model/management_data.h"
 #include "chrome/browser/web_applications/model/migration_behavior.h"
 #include "chrome/browser/web_applications/model/migration_source.h"
 #include "chrome/browser/web_applications/model/pending_migration_info.h"
@@ -1069,37 +1071,30 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
     app->SetWebAppChromeOsData(std::move(chromeos_data));
   }
 
-  WebApp::ExternalConfigMap management_to_external_config;
   for (WebAppManagement::Type type : management_types) {
-    if (type == WebAppManagement::kSync ||
-        type == WebAppManagement::kUserInstalled ||
-        WebAppManagement::IsIwaType(type)) {
+    if (!kSourcesWithInstallUrls.Has(type)) {
       continue;
     }
-    base::flat_set<GURL> install_urls;
-    base::flat_set<std::string> additional_policy_ids;
-    WebApp::ExternalManagementConfig config;
     if (random.next_bool()) {
-      install_urls.emplace(
-          params.base_url.Resolve("installer1_" + seed_str + "/"));
+      app->AddInstallUrl(
+          type, params.base_url.Resolve("installer1_" + seed_str + "/"));
     }
     if (random.next_bool()) {
-      install_urls.emplace(
-          params.base_url.Resolve("installer2_" + seed_str + "/"));
+      app->AddInstallUrl(
+          type, params.base_url.Resolve("installer2_" + seed_str + "/"));
     }
-    if (random.next_bool()) {
-      additional_policy_ids.emplace("policy_id_1_" + seed_str);
+    if (kSourcesWithAdditionalPolicyIds.Has(type)) {
+      if (random.next_bool()) {
+        app->AddAdditionalPolicyId("policy_id_1_" + seed_str);
+      }
+      if (random.next_bool()) {
+        app->AddAdditionalPolicyId("policy_id_2_" + seed_str);
+      }
     }
-    if (random.next_bool()) {
-      additional_policy_ids.emplace("policy_id_2_" + seed_str);
+    if (kSourcesWithPlaceholder.Has(type)) {
+      app->SetIsPlaceholder(type, random.next_bool());
     }
-    config.is_placeholder = random.next_bool();
-    config.install_urls = std::move(install_urls);
-    config.additional_policy_ids = std::move(additional_policy_ids);
-    management_to_external_config.insert_or_assign(type, std::move(config));
   }
-
-  app->SetWebAppManagementExternalConfigMap(management_to_external_config);
 
   app->SetAppSizeInBytes(random.next_uint());
   app->SetDataSizeInBytes(random.next_uint());
@@ -1430,8 +1425,10 @@ void AddInstallUrlData(PrefService* pref_service,
   DCHECK(app_to_update);
 
   // Adding external app data (source and URL) to web_app DB.
-  app_to_update->AddInstallURLToManagementExternalConfigMap(
-      ConvertExternalInstallSourceToSource(source), url);
+  WebAppManagement::Type management_type =
+      ConvertExternalInstallSourceToSource(source);
+  app_to_update->AddSource(management_type);
+  app_to_update->AddInstallUrl(management_type, url);
 }
 
 void AddInstallUrlAndPlaceholderData(PrefService* pref_service,
@@ -1445,8 +1442,15 @@ void AddInstallUrlAndPlaceholderData(PrefService* pref_service,
   DCHECK(app_to_update);
 
   // Adding install_url, source and placeholder information to the web_app DB.
-  app_to_update->AddExternalSourceInformation(
-      ConvertExternalInstallSourceToSource(source), url, is_placeholder);
+  WebAppManagement::Type management_type =
+      ConvertExternalInstallSourceToSource(source);
+  app_to_update->AddSource(management_type);
+  app_to_update->AddInstallUrl(management_type, url);
+  CHECK(!is_placeholder || kSourcesWithPlaceholder.Has(management_type))
+      << base::ToString(management_type);
+  if (kSourcesWithPlaceholder.Has(management_type)) {
+    app_to_update->SetIsPlaceholder(management_type, is_placeholder);
+  }
 }
 
 void SynchronizeOsIntegration(Profile* profile,

@@ -382,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(ExternalAppResolutionCommandBrowserTest,
 
   ExternalInstallOptions install_options(
       kWebAppUrl, mojom::UserDisplayMode::kStandalone,
-      ExternalInstallSource::kInternalDefault);
+      ExternalInstallSource::kExternalPolicy);
   install_options.install_placeholder = true;
   install_options.force_reinstall = true;
   // Set a custom icon.
@@ -420,7 +420,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ExternalInstallOptions install_options(
       kWebAppUrl, mojom::UserDisplayMode::kStandalone,
-      ExternalInstallSource::kInternalDefault);
+      ExternalInstallSource::kExternalPolicy);
   install_options.install_placeholder = true;
   install_options.force_reinstall = true;
   // Set a custom icon.
@@ -541,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ExternalInstallOptions install_options(
       kWebAppUrl, mojom::UserDisplayMode::kStandalone,
-      ExternalInstallSource::kInternalDefault);
+      ExternalInstallSource::kExternalPolicy);
   install_options.install_placeholder = true;
   install_options.force_reinstall = true;
   // Set a custom icon.
@@ -590,7 +590,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ExternalInstallOptions install_options(
       kWebAppUrl, mojom::UserDisplayMode::kStandalone,
-      ExternalInstallSource::kInternalDefault);
+      ExternalInstallSource::kExternalPolicy);
   install_options.install_placeholder = true;
   install_options.force_reinstall = true;
   // Set a custom icon.
@@ -641,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ExternalInstallOptions install_options(
       kWebAppUrl, mojom::UserDisplayMode::kStandalone,
-      ExternalInstallSource::kInternalDefault);
+      ExternalInstallSource::kExternalPolicy);
   install_options.install_placeholder = true;
   install_options.force_reinstall = true;
   // Set a custom icon.
@@ -688,7 +688,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ExternalInstallOptions install_options(
       kWebAppUrl, mojom::UserDisplayMode::kStandalone,
-      ExternalInstallSource::kInternalDefault);
+      ExternalInstallSource::kExternalPolicy);
   install_options.install_placeholder = true;
   install_options.force_reinstall = true;
   // Set a custom icon. This URL is blocked by the manifest test page csp

@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -25,6 +24,7 @@
 #include "chrome/browser/web_applications/model/app_installed_by.h"
 #include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/model/isolation_data.h"
+#include "chrome/browser/web_applications/model/management_data.h"
 #include "chrome/browser/web_applications/model/migration_source.h"
 #include "chrome/browser/web_applications/model/pending_migration_info.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-forward.h"
@@ -324,45 +324,11 @@ class WebApp {
     return data_size_in_bytes_;
   }
 
-  struct ExternalManagementConfig {
-    ExternalManagementConfig();
-    ExternalManagementConfig(
-        bool is_placeholder,
-        const base::flat_set<GURL>& install_urls,
-        const base::flat_set<std::string>& additional_policy_ids);
-    ~ExternalManagementConfig();
-    ExternalManagementConfig(
-        const ExternalManagementConfig& external_management_config);
-    ExternalManagementConfig& operator=(
-        const ExternalManagementConfig& external_management_config);
-    ExternalManagementConfig& operator=(
-        ExternalManagementConfig&& external_management_config);
-
-    friend bool operator==(const ExternalManagementConfig&,
-                           const ExternalManagementConfig&) = default;
-
-    base::DictValue AsDebugValue() const;
-
-    bool is_placeholder = false;
-    base::flat_set<GURL> install_urls;
-
-    // A list of additional terms to use when matching this app against
-    // identifiers in admin policies (for shelf pinning, default file handlers,
-    // etc).
-    // Note that list is not meant to be an exhaustive enumeration of all
-    // possible policy_ids but rather just a supplement for tricky cases.
-    base::flat_set<std::string> additional_policy_ids;
-
-    // Any new fields added should consider adding config merge logic to
-    // BuildOperationsToDedupeInstallUrlConfigsIntoSelectedApp().
-  };
-
-  using ExternalConfigMap =
-      base::flat_map<WebAppManagement::Type, ExternalManagementConfig>;
-
-  const ExternalConfigMap& management_to_external_config_map() const {
-    return management_to_external_config_map_;
-  }
+  // Read per-source management state via `management_data()`; mutate via
+  // `WebApp` methods (`AddSource()`, `RemoveSource()`, `SetIsPlaceholder()`,
+  // `AddInstallUrl()`, `RemoveInstallUrl()`, `AddAdditionalPolicyId()`,
+  // `SetManagementData()`) so cross-field `WebApp` invariants are enforced.
+  const ManagementData& management_data() const { return management_data_; }
 
   const std::optional<blink::Manifest::TabStrip>& tab_strip() const {
     return tab_strip_;
@@ -535,8 +501,7 @@ class WebApp {
       std::optional<webapps::WebappInstallSource> latest_install_source);
   void SetAppSizeInBytes(std::optional<int64_t> app_size_in_bytes);
   void SetDataSizeInBytes(std::optional<int64_t> data_size_in_bytes);
-  void SetWebAppManagementExternalConfigMap(
-      ExternalConfigMap management_to_external_config_map);
+  void SetManagementData(ManagementData management_data);
   void SetTabStrip(std::optional<blink::Manifest::TabStrip> tab_strip);
   void SetCurrentOsIntegrationStates(
       proto::os_state::WebAppOsIntegration current_os_integration_states);
@@ -554,28 +519,14 @@ class WebApp {
       std::optional<proto::PendingUpdateInfo> pending_update_info);
   void SetTrustedIcons(std::vector<apps::IconInfo> trusted_icons);
 
-  void AddPlaceholderInfoToManagementExternalConfigMap(
-      WebAppManagement::Type source_type,
-      bool is_placeholder);
+  void SetIsPlaceholder(WebAppManagement::Type source_type,
+                        bool is_placeholder);
 
-  // This adds an install_url per management type (source) for the
-  // ExternalConfigMap.
-  void AddInstallURLToManagementExternalConfigMap(WebAppManagement::Type type,
-                                                  GURL install_url);
+  void AddInstallUrl(WebAppManagement::Type type, GURL install_url);
 
-  // This adds a policy_id per management type (source) for the
-  // ExternalConfigMap.
-  void AddPolicyIdToManagementExternalConfigMap(WebAppManagement::Type type,
-                                                std::string policy_id);
+  bool RemoveInstallUrl(WebAppManagement::Type type, const GURL& install_url);
 
-  // Encapsulate the addition of install_url and is_placeholder information
-  // for cases where both need to be added.
-  void AddExternalSourceInformation(WebAppManagement::Type source_type,
-                                    GURL install_url,
-                                    bool is_placeholder);
-
-  bool RemoveInstallUrlForSource(WebAppManagement::Type type,
-                                 const GURL& install_url);
+  void AddAdditionalPolicyId(std::string policy_id);
 
   // Only used on Mac, determines if the toolbar should be permanently shown
   // when in fullscreen.
@@ -654,9 +605,6 @@ class WebApp {
   // LINT.IfChange(MemberVariables)
   webapps::AppId app_id_;
 
-  // This set always contains at least one source.
-  WebAppManagementTypes sources_;
-
   std::string name_;
   std::string description_;
   GURL start_url_;
@@ -672,10 +620,6 @@ class WebApp {
   proto::InstallState install_state_ =
       proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION;
   bool is_from_sync_and_pending_installation_ = false;
-  // Note: This field is not persisted in the database.
-  // TODO(crbug.com/40162790): Add this field to the protocol buffer file and
-  // other places to save it to the database, and then make sure to continue
-  // uninstallation on startup if any web apps have this field set to true.
   bool is_uninstalling_ = false;
   std::vector<apps::IconInfo> manifest_icons_;
   SortedSizesPx downloaded_icon_sizes_any_;
@@ -722,9 +666,7 @@ class WebApp {
   std::optional<int64_t> app_size_in_bytes_;
   std::optional<int64_t> data_size_in_bytes_;
 
-  // Maps WebAppManagement::Type to config values for externally installed apps,
-  // like is_placeholder and install URLs.
-  ExternalConfigMap management_to_external_config_map_;
+  ManagementData management_data_;
 
   std::optional<blink::Manifest::TabStrip> tab_strip_;
 
@@ -811,10 +753,6 @@ class WebApp {
 
 // For logging and debug purposes.
 std::ostream& operator<<(std::ostream& out, const WebApp& app);
-
-std::ostream& operator<<(
-    std::ostream& out,
-    const WebApp::ExternalManagementConfig& management_config);
 
 }  // namespace web_app
 

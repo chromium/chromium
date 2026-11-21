@@ -39,7 +39,9 @@
    "launch_handler": null,
    "launch_query_params": null,
    "lock_screen_start_url": "",
-   "management_type_to_external_configuration_map": {
+   "management_data": {
+      "Sync": {
+      }
    },
    "manifest_icons": [  ],
    "manifest_id": "https://example.com/path",
@@ -57,7 +59,6 @@
    "scope_extensions_validated": [  ],
    "share_target": null,
    "shortcuts_menu_item_infos": [  ],
-   "sources": [ "Sync" ],
    "start_url": "https://example.com/path",
    "stored_trusted_icon_sizes": {
       "ANY": [  ],

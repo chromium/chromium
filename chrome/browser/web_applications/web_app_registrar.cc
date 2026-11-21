@@ -33,6 +33,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/web_applications/commands/manifest_silent_update_command.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
+#include "chrome/browser/web_applications/model/management_data.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
@@ -272,19 +273,7 @@ bool WebAppRegistrar::IsPlaceholderApp(
   if (!web_app) {
     return false;
   }
-
-  const WebApp::ExternalConfigMap& config_map =
-      web_app->management_to_external_config_map();
-  auto it = config_map.find(source_type);
-
-  if (it == config_map.end()) {
-    return false;
-  }
-  // Only kiosk and policy sources currently have placeholder apps.
-  CHECK(!it->second.is_placeholder ||
-        (source_type == WebAppManagement::kPolicy ||
-         source_type == WebAppManagement::kKiosk));
-  return it->second.is_placeholder;
+  return web_app->management_data().IsPlaceholder(source_type);
 }
 
 // TODO(crbug.com/40264854): Revert changes back to old code
@@ -294,16 +283,10 @@ std::optional<webapps::AppId> WebAppRegistrar::LookupPlaceholderAppId(
     const GURL& install_url,
     const WebAppManagement::Type source_type) const {
   for (const WebApp& web_app : GetApps()) {
-    const WebApp::ExternalConfigMap& config_map =
-        web_app.management_to_external_config_map();
-    auto it = config_map.find(source_type);
-
-    if (it == config_map.end()) {
-      continue;
-    }
-
-    if (it->second.install_urls.contains(install_url) &&
-        it->second.is_placeholder) {
+    if (web_app.management_data().IsPlaceholder(source_type) &&
+        web_app.management_data()
+            .GetInstallUrls(source_type)
+            .contains(install_url)) {
       return web_app.app_id();
     }
   }
@@ -467,11 +450,10 @@ WebAppRegistrar::GetExternallyInstalledApps(
   WebAppManagement::Type management_source =
       ConvertExternalInstallSourceToSource(install_source);
   for (const WebApp& web_app : GetApps()) {
-    const WebApp::ExternalConfigMap& config_map =
-        web_app.management_to_external_config_map();
-    auto it = config_map.find(management_source);
-    if (it != config_map.end() && !it->second.install_urls.empty()) {
-      installed_apps[web_app.app_id()] = it->second.install_urls;
+    const base::flat_set<GURL>& install_urls =
+        web_app.management_data().GetInstallUrls(management_source);
+    if (!install_urls.empty()) {
+      installed_apps[web_app.app_id()] = install_urls;
     }
   }
   return installed_apps;
@@ -499,7 +481,7 @@ bool WebAppRegistrar::HasExternalAppWithInstallSource(
   }
 
   const WebApp* web_app = GetAppById(app_id);
-  return web_app && web_app->management_to_external_config_map().contains(
+  return web_app && web_app->management_data().HasSource(
                         ConvertExternalInstallSourceToSource(install_source));
 }
 
@@ -897,10 +879,8 @@ base::WeakPtr<WebAppRegistrar> WebAppRegistrar::AsWeakPtr() {
 std::optional<webapps::AppId> WebAppRegistrar::LookUpAppIdByInstallUrl(
     const GURL& install_url) const {
   for (const WebApp& web_app : GetApps()) {
-    for (const auto& it : web_app.management_to_external_config_map()) {
-      if (it.second.install_urls.contains(install_url)) {
-        return web_app.app_id();
-      }
+    if (web_app.management_data().HasInstallUrl(install_url)) {
+      return web_app.app_id();
     }
   }
   return std::nullopt;
@@ -910,13 +890,10 @@ const WebApp* WebAppRegistrar::LookUpAppByInstallSourceInstallUrl(
     WebAppManagement::Type install_source,
     const GURL& install_url) const {
   for (const WebApp& app : GetApps()) {
-    const WebApp::ExternalConfigMap& config_map =
-        app.management_to_external_config_map();
-    auto it = config_map.find(install_source);
-    if (it != config_map.end()) {
-      if (it->second.install_urls.contains(install_url)) {
-        return &app;
-      }
+    if (app.management_data()
+            .GetInstallUrls(install_source)
+            .contains(install_url)) {
+      return &app;
     }
   }
   return nullptr;

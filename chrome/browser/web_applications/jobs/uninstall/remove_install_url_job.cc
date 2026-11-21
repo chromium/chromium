@@ -8,6 +8,7 @@
 #include "base/values.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_install_source_job.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
+#include "chrome/browser/web_applications/model/management_data.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
@@ -34,14 +35,8 @@ MatchingWebAppResult FindMatchingWebApp(
     if (!candidate_app) {
       return {};
     }
-    const WebApp::ExternalConfigMap& config_map =
-        candidate_app->management_to_external_config_map();
-    auto map_it = config_map.find(install_source);
-    if (map_it == config_map.end()) {
-      return {};
-    }
-
-    const base::flat_set<GURL>& install_urls = map_it->second.install_urls;
+    const base::flat_set<GURL>& install_urls =
+        candidate_app->management_data().GetInstallUrls(install_source);
     if (!install_urls.contains(install_url)) {
       return {};
     }
@@ -53,17 +48,13 @@ MatchingWebAppResult FindMatchingWebApp(
   }
 
   for (const WebApp& candidate_app : registrar.GetApps()) {
-    const WebApp::ExternalConfigMap& config_map =
-        candidate_app.management_to_external_config_map();
-    auto it = config_map.find(install_source);
-    if (it != config_map.end()) {
-      const base::flat_set<GURL>& install_urls = it->second.install_urls;
-      if (install_urls.contains(install_url)) {
-        return {
-            .app = &candidate_app,
-            .is_only_install_url = install_urls.size() == 1u,
-        };
-      }
+    const base::flat_set<GURL>& install_urls =
+        candidate_app.management_data().GetInstallUrls(install_source);
+    if (install_urls.contains(install_url)) {
+      return {
+          .app = &candidate_app,
+          .is_only_install_url = install_urls.size() == 1u,
+      };
     }
   }
 
@@ -119,7 +110,7 @@ void RemoveInstallUrlJob::Start(AllAppsLock& lock, Callback callback) {
   {
     ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
     CHECK(update->UpdateApp(app->app_id())
-              ->RemoveInstallUrlForSource(install_source_, install_url_));
+              ->RemoveInstallUrl(install_source_, install_url_));
 
     // This is no longer a valid pointer after the registry update, clear it for
     // safety.

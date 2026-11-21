@@ -7,6 +7,7 @@
 #include "base/strings/strcat.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/app_id_helpers.h"
+#include "chrome/browser/web_applications/model/management_data.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -102,12 +103,13 @@ bool IsNonLocallyInstalledAppWithUrlInScope(Profile* profile, const GURL& url) {
 }
 
 bool LooksLikePlaceholder(const WebApp& app) {
-  for (const auto& [install_source, config] :
-       app.management_to_external_config_map()) {
-    if (config.is_placeholder) {
+  for (WebAppManagement::Type install_source :
+       app.management_data().GetSources()) {
+    if (app.management_data().IsPlaceholder(install_source)) {
       return true;
     }
-    for (const GURL& install_url : config.install_urls) {
+    for (const GURL& install_url :
+         app.management_data().GetInstallUrls(install_source)) {
       if (app.untranslated_name() == install_url.spec()) {
         return true;
       }

@@ -8,6 +8,7 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/model/management_data.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
@@ -31,6 +32,29 @@
 #endif
 
 namespace web_app {
+
+namespace {
+
+ManagementData MakeDefaultManagementData(const GURL& default_install_url) {
+  ManagementData data;
+  data.AddSource(WebAppManagement::kDefault);
+  data.AddInstallUrl(WebAppManagement::kDefault, default_install_url);
+  return data;
+}
+
+ManagementData MakePolicyAndDefaultManagementData(
+    const GURL& policy_install_url,
+    const GURL& default_install_url) {
+  ManagementData data;
+  data.AddSource(WebAppManagement::kPolicy);
+  data.SetIsPlaceholder(WebAppManagement::kPolicy, false);
+  data.AddInstallUrl(WebAppManagement::kPolicy, policy_install_url);
+  data.AddSource(WebAppManagement::kDefault);
+  data.AddInstallUrl(WebAppManagement::kDefault, default_install_url);
+  return data;
+}
+
+}  // namespace
 
 class DedupeInstallUrlsCommandTest : public WebAppTest {
  public:
@@ -86,8 +110,8 @@ class DedupeInstallUrlsCommandTest : public WebAppTest {
     ScopedRegistryUpdate update = provider().sync_bridge_unsafe().BeginUpdate();
     WebApp& placeholder_app = *update->UpdateApp(app_id);
     placeholder_app.AddSource(WebAppManagement::Type::kDefault);
-    placeholder_app.AddInstallURLToManagementExternalConfigMap(
-        WebAppManagement::Type::kDefault, install_url);
+    placeholder_app.AddInstallUrl(WebAppManagement::Type::kDefault,
+                                  install_url);
   }
 
   void SynchronizePreinstalledWebAppManagerWithInstallUrl(
@@ -205,11 +229,8 @@ TEST_F(DedupeInstallUrlsCommandTest,
 
   // Real app should contain both the policy and preinstall install_url
   // association configs.
-  EXPECT_EQ(
-      real_app->management_to_external_config_map(),
-      (WebApp::ExternalConfigMap{
-          {WebAppManagement::Type::kPolicy, {false, {install_url}, {}}},
-          {WebAppManagement::Type::kDefault, {false, {install_url}, {}}}}));
+  EXPECT_EQ(real_app->management_data(),
+            MakePolicyAndDefaultManagementData(install_url, install_url));
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "WebApp.DedupeInstallUrls.SessionRunCount"),
@@ -286,11 +307,8 @@ TEST_F(DedupeInstallUrlsCommandTest,
 
   // Real app should contain both the policy and preinstall install_url
   // association configs.
-  EXPECT_EQ(
-      real_app->management_to_external_config_map(),
-      (WebApp::ExternalConfigMap{
-          {WebAppManagement::Type::kPolicy, {false, {install_url}, {}}},
-          {WebAppManagement::Type::kDefault, {false, {install_url}, {}}}}));
+  EXPECT_EQ(real_app->management_data(),
+            MakePolicyAndDefaultManagementData(install_url, install_url));
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "WebApp.DedupeInstallUrls.SessionRunCount"),
@@ -362,9 +380,8 @@ TEST_F(DedupeInstallUrlsCommandTest, SameInstallUrlForRealAndPlaceholder) {
       const WebApp* placeholder_app =
           provider().registrar_unsafe().GetAppById(placeholder_app_id);
       ASSERT_TRUE(placeholder_app);
-      EXPECT_EQ(placeholder_app->management_to_external_config_map(),
-                (WebApp::ExternalConfigMap{{WebAppManagement::Type::kDefault,
-                                            {false, {install_url}, {}}}}));
+      EXPECT_EQ(placeholder_app->management_data(),
+                MakeDefaultManagementData(install_url));
 
       // The placeholder is no longer marked as a placeholder despite still
       // looking like one.
@@ -390,11 +407,8 @@ TEST_F(DedupeInstallUrlsCommandTest, SameInstallUrlForRealAndPlaceholder) {
 
   // Real app should contain both the policy and preinstall install_url
   // association configs.
-  EXPECT_EQ(
-      real_app->management_to_external_config_map(),
-      (WebApp::ExternalConfigMap{
-          {WebAppManagement::Type::kPolicy, {false, {install_url}, {}}},
-          {WebAppManagement::Type::kDefault, {false, {install_url}, {}}}}));
+  EXPECT_EQ(real_app->management_data(),
+            MakePolicyAndDefaultManagementData(install_url, install_url));
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "WebApp.DedupeInstallUrls.SessionRunCount"),
@@ -469,9 +483,8 @@ TEST_F(DedupeInstallUrlsCommandTest, DefaultPlaceholderForceReinstalled) {
     const WebApp* placeholder_app =
         provider().registrar_unsafe().GetAppById(placeholder_app_id);
     ASSERT_TRUE(placeholder_app);
-    EXPECT_EQ(placeholder_app->management_to_external_config_map(),
-              (WebApp::ExternalConfigMap{{WebAppManagement::Type::kDefault,
-                                          {false, {install_url}, {}}}}));
+    EXPECT_EQ(placeholder_app->management_data(),
+              MakeDefaultManagementData(install_url));
 
     // The placeholder is no longer marked as a placeholder despite still
     // looking like one.
@@ -499,11 +512,9 @@ TEST_F(DedupeInstallUrlsCommandTest, DefaultPlaceholderForceReinstalled) {
 
   // Real app should contain both the policy and preinstall configs for their
   // respective install URLs.
-  EXPECT_EQ(real_app->management_to_external_config_map(),
-            (WebApp::ExternalConfigMap{{WebAppManagement::Type::kPolicy,
-                                        {false, {alternate_install_url}, {}}},
-                                       {WebAppManagement::Type::kDefault,
-                                        {false, {install_url}, {}}}}));
+  EXPECT_EQ(
+      real_app->management_data(),
+      MakePolicyAndDefaultManagementData(alternate_install_url, install_url));
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "WebApp.DedupeInstallUrls.SessionRunCount"),
