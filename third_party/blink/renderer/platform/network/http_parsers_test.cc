@@ -1085,7 +1085,7 @@ TEST(ParseSRIMessageSignaturesTest, NoSignatures) {
       ("HTTP/1.1 200 OK\r\nSignature-Input: "
        "signature=(\"unencoded-digest\";sf);"
        "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";"
-       "tag=\"sri\"")};
+       "tag=\"ed25519-integrity\"")};
   for (const char* test : cases) {
     SCOPED_TRACE(test);
     auto result = ParseSRIMessageSignaturesFromHeaders(test);
@@ -1100,7 +1100,7 @@ TEST(ParseSRIMessageSignaturesTest, ValidSignature) {
       "UxXJprz89+2aOwEAz3w6KjjZuGkdrOUwxhBQ==:\r\n"
       "Signature-Input: signature=(\"unencoded-digest\";sf);"
       "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";"
-      "tag=\"sri\"\r\n\r\n";
+      "tag=\"ed25519-integrity\"\r\n\r\n";
   Vector<uint8_t> key_bytes;
   ASSERT_TRUE(Base64Decode(
       StringView("JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs="), key_bytes));
@@ -1112,7 +1112,7 @@ TEST(ParseSRIMessageSignaturesTest, ValidSignature) {
   EXPECT_FALSE(parsed->signatures[0]->expires.has_value());
   EXPECT_EQ(key_bytes, parsed->signatures[0]->keyid);
   EXPECT_TRUE(parsed->signatures[0]->nonce.IsNull());
-  EXPECT_EQ("sri", parsed->signatures[0]->tag);
+  EXPECT_EQ("ed25519-integrity", parsed->signatures[0]->tag);
 
   EXPECT_EQ(
       "amDAmvl9bsfIcfA/bIJsBuBvInjJAaxxNIlLOzNI3FkrnG2k52UxXJprz89+2aOwEAz3w6Kj"

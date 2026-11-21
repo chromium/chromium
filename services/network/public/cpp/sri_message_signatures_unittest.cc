@@ -208,11 +208,9 @@ TEST_F(SRIMessageSignatureParserTest, ValidHeaders) {
   ValidateBasicTestHeader(result->signatures[0]);
 }
 
-// TODO(crbug.com/419149647): Drop support for `sri` once tests are updated and
-// OT participants have adopted the new `tag`.
-TEST_F(SRIMessageSignatureParserTest, SriTagSupport) {
-  // Same as kValidSignatureInputHeader and kValidSignatureHeader, but using a
-  // `tag` of "sri" instead of "ed25519-input".
+TEST_F(SRIMessageSignatureParserTest, LegacySriTagIgnored) {
+  // Same as kValidSignatureInputHeader and kValidSignatureHeader, but using the
+  // legacy "sri" tag instead of "ed25519-integrity".
   const char* sri_input_header =
       "signature=(\"unencoded-digest\";sf);keyid=\"JrQLj5P/"
       "89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";tag=\"sri\"";
@@ -224,11 +222,8 @@ TEST_F(SRIMessageSignatureParserTest, SriTagSupport) {
   mojom::SRIMessageSignaturesPtr result =
       ParseSRIMessageSignaturesFromHeaders(*headers);
 
-  EXPECT_EQ(1u, result->signatures.size());
+  EXPECT_EQ(0u, result->signatures.size());
   EXPECT_EQ(0u, result->issues.size());
-  // The remainder of the signature properties are validated in `ValidHeaders`
-  // (and many other places); here we only care about the `tag`.
-  EXPECT_EQ("sri", result->signatures[0]->tag);
 }
 
 TEST_F(SRIMessageSignatureParserTest, UnmatchedLabelsInAdditionToValidHeaders) {
@@ -1146,14 +1141,14 @@ TEST_F(SRIMessageSignatureBaseTest, MethodComponent) {
   for (auto* const test_method : methods) {
     std::string input_header =
         base::StrCat({"signature=(\"unencoded-digest\";sf \"@method\";req);",
-                      "keyid=\"", kPublicKey, "\";tag=\"sri\""});
+                      "keyid=\"", kPublicKey, "\";tag=\"ed25519-integrity\""});
 
     std::stringstream expected_base;
     expected_base
         << "\"unencoded-digest\";sf: " << kValidDigestHeader << '\n'
         << "\"@method\";req: " << test_method << '\n'
         << "\"@signature-params\": (\"unencoded-digest\";sf \"@method\";req);"
-        << "keyid=\"" << kPublicKey << "\";tag=\"sri\"";
+        << "keyid=\"" << kPublicKey << "\";tag=\"ed25519-integrity\"";
 
     scoped_refptr<net::HttpResponseHeaders> headers =
         ValidHeadersPlusInput(input_header.c_str());

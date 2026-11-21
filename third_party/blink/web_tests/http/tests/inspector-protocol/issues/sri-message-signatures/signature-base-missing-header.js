@@ -13,7 +13,7 @@
     return e.params.issue.code === 'SRIMessageSignatureIssue';
   });
 
-  const signature_input = `signature=("unencoded-digest";sf "x-test-header");keyid="JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";tag="sri"`;
+  const signature_input = `signature=("unencoded-digest";sf "x-test-header");keyid="JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=";tag="ed25519-integrity"`;
   const signature = `signature=:SbCdPUyjc0IBJjFbVRWs81ucEUcFz87b37nQ63d6kDW+/JvDmET6O5cSdwlddePvlwemLdaWFuY6pQGO+hrkAg==:`;
   const digest = `sha-256=:X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=:`;
 

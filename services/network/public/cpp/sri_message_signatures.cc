@@ -588,8 +588,7 @@ mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
     // https://wicg.github.io/signature-based-sri/#abstract-opdef-validating-an-integrity-signature
     if (!std::ranges::any_of(input_entry->params, [](const auto& param) {
           const std::string* v = param.second.GetIfString();
-          return param.first == "tag" && v &&
-                 (*v == "ed25519-integrity" || *v == "sri");
+          return param.first == "tag" && v && *v == "ed25519-integrity";
         })) {
       continue;
     }
@@ -659,9 +658,7 @@ mojom::SRIMessageSignaturesPtr ParseSRIMessageSignaturesFromHeaders(
         }
       } else if (key == "tag") {
         if (const std::string* v = value.GetIfString();
-            v && (*v == "ed25519-integrity" || *v == "sri")) {
-          // TODO(crbug.com/419149647): Drop support for `sri` once tests are
-          // updated and OT participants have adopted the new `tag`.
+            v && *v == "ed25519-integrity") {
           message_signature->tag = *v;
         } else {
           ok = false;

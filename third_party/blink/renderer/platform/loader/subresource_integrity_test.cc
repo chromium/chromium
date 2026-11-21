@@ -824,10 +824,11 @@ TEST_P(SubresourceIntegritySignatureTest, CheckValidSignature) {
       "sha-256=:X48E9qOokqqrvdts8nOJRJN3OWDUoyWxBf7kbu9DBPE=:";
   String kValidSignatureInputHeader =
       "signature=(\"unencoded-digest\";sf);"
-      "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";tag=\"sri\"";
+      "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/"
+      "oPPsw3c5D0bs=\";tag=\"ed25519-integrity\"";
   String kValidSignatureHeader =
-      "signature=:gHim9e5Pk2H7c9BStOmxSmkyc8+ioZgoxynu3d4INAT4dwfj5LhvaV9DFnEQ9"
-      "p7C0hzW4o4Qpkm5aApd6WLLCw==:";
+      "signature=:SbCdPUyjc0IBJjFbVRWs81ucEUcFz87b37nQ63d6kDW+/"
+      "JvDmET6O5cSdwlddePvlwemLdaWFuY6pQGO+hrkAg==:";
 
   String raw_headers =
       "HTTP/1.1 200 OK\r\n"
@@ -874,10 +875,11 @@ TEST_P(SubresourceIntegritySignatureTest,
       "sha-384=:uU0nuZNNPgilLlLX2n2r+sSE7+N6U4DukIj3rOLvzek=:";
   String kValidSignatureInputHeader =
       "signature=(\"unencoded-digest\";sf);"
-      "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";tag=\"sri\"";
+      "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/"
+      "oPPsw3c5D0bs=\";tag=\"ed25519-integrity\"";
   String kValidSignatureHeader =
-      "signature=:gHim9e5Pk2H7c9BStOmxSmkyc8+ioZgoxynu3d4INAT4dwfj5LhvaV9DFnEQ9"
-      "p7C0hzW4o4Qpkm5aApd6WLLCw==:";
+      "signature=:SbCdPUyjc0IBJjFbVRWs81ucEUcFz87b37nQ63d6kDW+/"
+      "JvDmET6O5cSdwlddePvlwemLdaWFuY6pQGO+hrkAg==:";
 
   String raw_headers =
       "HTTP/1.1 200 OK\r\n"
