@@ -4002,6 +4002,12 @@ const web_pref::WebPreferences& WebViewImpl::GetWebPreferences() {
   return web_preferences_;
 }
 
+void WebViewImpl::SetInitialAutoplayRestriction(
+    const base::UnguessableToken& id,
+    bool restricted) {
+  page_->SetInitialAutoplayRestriction(id, restricted);
+}
+
 void WebViewImpl::UpdateWebPreferences(
     const blink::web_pref::WebPreferences& preferences) {
   web_preferences_ = preferences;

@@ -582,20 +582,24 @@ WebViewImpl* WebViewHelper::InitializePlaceholderRemote() {
 
 WebViewImpl* WebViewHelper::InitializeRemote(
     scoped_refptr<SecurityOrigin> security_origin,
-    WebViewClient* web_view_client) {
-  return InitializeRemoteWithOpener(nullptr, security_origin, web_view_client);
+    WebViewClient* web_view_client,
+    void (*update_settings_func)(WebSettings*)) {
+  return InitializeRemoteWithOpener(nullptr, security_origin, web_view_client,
+                                    update_settings_func);
 }
 
 WebViewImpl* WebViewHelper::InitializeRemoteWithOpener(
     WebFrame* opener,
     scoped_refptr<SecurityOrigin> security_origin,
-    WebViewClient* web_view_client) {
+    WebViewClient* web_view_client,
+    void (*update_settings_func)(WebSettings*)) {
   return InitializeRemoteWithOpenerAndAssociatedRemoteAndReceivers(
       opener, security_origin, web_view_client,
       CreateStubRemoteIfNeeded<mojom::blink::RemoteFrameHost>(
           mojo::NullAssociatedRemote()),
       mojo::AssociatedRemote<mojom::blink::RemoteFrame>()
-          .BindNewEndpointAndPassDedicatedReceiver());
+          .BindNewEndpointAndPassDedicatedReceiver(),
+      update_settings_func);
 }
 
 WebViewImpl*
@@ -605,12 +609,16 @@ WebViewHelper::InitializeRemoteWithOpenerAndAssociatedRemoteAndReceivers(
     WebViewClient* web_view_client,
     mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
         remote_frame_host,
-    mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver) {
+    mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver,
+    void (*update_settings_func)(WebSettings*)) {
   Reset();
 
   InitializeWebView(web_view_client, /*opener=*/nullptr,
                     /*fenced_frame_mode=*/std::nullopt,
                     /*is_prerendering=*/false);
+  if (update_settings_func) {
+    update_settings_func(web_view_->GetSettings());
+  }
 
   if (!security_origin)
     security_origin = SecurityOrigin::CreateUniqueOpaque();

@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/media/autoplay_policy.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/testing/mock_web_audio_device.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
@@ -667,6 +668,136 @@ TEST_P(AudioContextAutoplayTest,
 
   EXPECT_EQ(audio_context->ContextState(), V8AudioContextState::Enum::kRunning);
   EXPECT_EQ(promise.V8Promise()->State(), v8::Promise::kFulfilled);
+}
+
+TEST_P(AudioContextAutoplayTest,
+       InitialAutoplayRestrictionBlocksConstructionResumeAndSourceStart) {
+  for (LocalDOMWindow* window : {&GetWindow(), &ChildWindow()}) {
+    window->GetFrame()->GetPage()->SetInitialAutoplayRestrictionForTesting(
+        true);
+    ScriptState* script_state = GetScriptStateFrom(*window);
+    ScriptState::Scope scope(script_state);
+    AudioContext* context = AudioContext::Create(
+        window, AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+    EXPECT_EQ(context->ContextState(), V8AudioContextState::Enum::kSuspended);
+    auto promise = context->resumeContext(script_state, ASSERT_NO_EXCEPTION);
+    context->NotifySourceNodeStart();
+    test::RunPendingTasks();
+    EXPECT_EQ(context->ContextState(), V8AudioContextState::Enum::kSuspended);
+    EXPECT_EQ(promise.V8Promise()->State(), v8::Promise::kPending);
+    RejectPendingResolvers(context);
+  }
+}
+
+TEST_P(AudioContextAutoplayTest,
+       InitialAutoplayRestrictionWarningPrefersNormalPolicy) {
+  for (LocalDOMWindow* window : {&GetWindow(), &ChildWindow()}) {
+    window->GetFrame()->GetPage()->SetInitialAutoplayRestrictionForTesting(
+        true);
+    ScriptState* script_state = GetScriptStateFrom(*window);
+    ScriptState::Scope scope(script_state);
+    auto* client = static_cast<frame_test_helpers::TestWebFrameClient*>(
+        WebLocalFrameImpl::FromFrame(window->GetFrame())->Client());
+    auto& messages = client->ConsoleMessages();
+    messages.clear();
+    AudioContext* context = AudioContext::Create(
+        window, AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+    EXPECT_TRUE(messages.empty());
+    auto promise = context->resumeContext(script_state, ASSERT_NO_EXCEPTION);
+    ASSERT_EQ(1u, messages.size());
+
+    if (GetParam() == AutoplayPolicy::Type::kDocumentUserActivationRequired) {
+      EXPECT_EQ(
+          "The AudioContext was not allowed to start. It must be resumed (or "
+          "created) after a user gesture on the page. "
+          "https://developer.chrome.com/blog/autoplay/#web_audio",
+          messages.back());
+    } else if (GetParam() == AutoplayPolicy::Type::kUserGestureRequired &&
+               window == &ChildWindow()) {
+      EXPECT_EQ(
+          "The AudioContext was not allowed to start. It must be resumed (or "
+          "created) from a user gesture event handler. "
+          "https://developer.chrome.com/blog/autoplay/#web_audio",
+          messages.back());
+    } else {
+      EXPECT_EQ(
+          "The AudioContext was not allowed to start because autoplay is "
+          "temporarily blocked after session restore. Resume or recreate it "
+          "after a user gesture in the page.",
+          messages.back());
+    }
+    EXPECT_EQ(context->ContextState(), V8AudioContextState::Enum::kSuspended);
+    EXPECT_EQ(promise.V8Promise()->State(), v8::Promise::kPending);
+    EXPECT_TRUE(window->GetFrame()->GetPage()->HasInitialAutoplayRestriction());
+    RejectPendingResolvers(context);
+  }
+}
+
+TEST_P(AudioContextAutoplayTest,
+       InitialAutoplayRestrictionBlocksInterruptionRecovery) {
+  GetWindow().GetFrame()->GetPage()->SetInitialAutoplayRestrictionForTesting(
+      true);
+  ScriptState* script_state = GetScriptStateFrom(GetWindow());
+  ScriptState::Scope scope(script_state);
+  AudioContext* context = AudioContext::Create(
+      &GetWindow(), AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+  context->StartContextInterruption();
+  auto promise = context->resumeContext(script_state, ASSERT_NO_EXCEPTION);
+  context->EndContextInterruption();
+  test::RunPendingTasks();
+  EXPECT_EQ(context->ContextState(), V8AudioContextState::Enum::kSuspended);
+  EXPECT_EQ(promise.V8Promise()->State(), v8::Promise::kPending);
+  RejectPendingResolvers(context);
+}
+
+TEST_P(AudioContextAutoplayTest,
+       InitialAutoplayRestrictionAllowsSourceStartWithUserActivation) {
+  for (LocalDOMWindow* window : {&GetWindow(), &ChildWindow()}) {
+    window->GetFrame()->GetPage()->SetInitialAutoplayRestrictionForTesting(
+        true);
+    ScriptState* script_state = GetScriptStateFrom(*window);
+    ScriptState::Scope scope(script_state);
+    AudioContext* context = AudioContext::Create(
+        window, AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+    auto promise = context->resumeContext(script_state, ASSERT_NO_EXCEPTION);
+    ASSERT_EQ(context->ContextState(), V8AudioContextState::Enum::kSuspended);
+    LocalFrame::NotifyUserActivation(
+        window->GetFrame(), mojom::UserActivationNotificationType::kTest);
+    context->NotifySourceNodeStart();
+    EXPECT_FALSE(
+        window->GetFrame()->GetPage()->HasInitialAutoplayRestriction());
+    EXPECT_EQ(context->ContextState(), V8AudioContextState::Enum::kRunning);
+    EXPECT_EQ(promise.V8Promise()->State(), v8::Promise::kFulfilled);
+    LocalFrame::ConsumeTransientUserActivation(window->GetFrame());
+  }
+}
+
+TEST_P(AudioContextAutoplayTest,
+       InitialAutoplayRestrictionReleasePreservesNormalPolicy) {
+  for (LocalDOMWindow* window : {&GetWindow(), &ChildWindow()}) {
+    window->GetFrame()->GetPage()->SetInitialAutoplayRestrictionForTesting(
+        true);
+    ScriptState::Scope scope(GetScriptStateFrom(*window));
+    AudioContext* context = AudioContext::Create(
+        window, AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+    ASSERT_EQ(context->ContextState(), V8AudioContextState::Enum::kSuspended);
+
+    window->GetFrame()->GetPage()->SetInitialAutoplayRestrictionForTesting(
+        false);
+    test::RunPendingTasks();
+    EXPECT_EQ(context->ContextState(), V8AudioContextState::Enum::kSuspended);
+    EXPECT_FALSE(LocalFrame::HasTransientUserActivation(window->GetFrame()));
+    context->NotifySourceNodeStart();
+
+    const bool normal_policy_allows_playback =
+        GetParam() == AutoplayPolicy::Type::kNoUserGestureRequired ||
+        (GetParam() == AutoplayPolicy::Type::kUserGestureRequired &&
+         window == &GetWindow());
+    EXPECT_EQ(context->ContextState(),
+              normal_policy_allows_playback
+                  ? V8AudioContextState::Enum::kRunning
+                  : V8AudioContextState::Enum::kSuspended);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(

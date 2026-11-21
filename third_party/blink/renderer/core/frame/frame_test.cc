@@ -5,19 +5,28 @@
 #include "third_party/blink/renderer/core/frame/frame.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
+#include "third_party/blink/public/mojom/page/page.mojom-blink.h"
+#include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
+#include "third_party/blink/renderer/core/html/media/autoplay_policy.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -74,6 +83,160 @@ TEST_F(FrameTest, PossiblyExisting) {
   LocalFrame::NotifyUserActivation(
       nullptr, mojom::UserActivationNotificationType::kTest);
   EXPECT_TRUE(GetDocument().GetFrame()->HasStickyUserActivation());
+}
+
+TEST(FrameTreeTest, RemoteActivationReleasesInitialAutoplayRestriction) {
+  test::TaskEnvironment task_environment;
+  frame_test_helpers::WebViewHelper helper;
+  helper.InitializeRemote();
+  LocalFrame* child =
+      helper.CreateLocalChild(*helper.RemoteMainFrame())->GetFrame();
+  RemoteFrame* remote = helper.RemoteMainFrame()->GetFrame();
+  Page& page = *child->GetPage();
+  const auto id = base::UnguessableToken::Create();
+  page.SetInitialAutoplayRestriction(id, true);
+  ASSERT_TRUE(page.HasInitialAutoplayRestriction());
+
+  remote->UpdateUserActivationState(
+      mojom::blink::UserActivationUpdateType::kNotifyActivation,
+      mojom::UserActivationNotificationType::kTest);
+  EXPECT_FALSE(page.HasInitialAutoplayRestriction());
+
+  remote->UpdateUserActivationState(
+      mojom::blink::UserActivationUpdateType::kConsumeTransientActivation,
+      mojom::UserActivationNotificationType::kNone);
+  page.SetInitialAutoplayRestriction(id, true);
+  EXPECT_FALSE(page.HasInitialAutoplayRestriction());
+}
+
+TEST(FrameTreeTest, InitialAutoplayRestrictionReleaseSurvivesPageReplacement) {
+  test::TaskEnvironment task_environment;
+  frame_test_helpers::WebViewHelper provisional;
+  provisional.Initialize();
+  Page& provisional_page = *provisional.LocalMainFrame()->GetFrame()->GetPage();
+  const auto id = base::UnguessableToken::Create();
+  WeakPersistent<Page> original_page;
+  {
+    frame_test_helpers::WebViewHelper original;
+    original.Initialize();
+    original_page = original.LocalMainFrame()->GetFrame()->GetPage();
+    original_page->SetInitialAutoplayRestriction(id, true);
+    provisional_page.SetInitialAutoplayRestriction(id, true);
+    ASSERT_TRUE(provisional_page.HasInitialAutoplayRestriction());
+
+    LocalFrame::NotifyUserActivation(
+        original.LocalMainFrame()->GetFrame(),
+        mojom::UserActivationNotificationType::kTest);
+    EXPECT_FALSE(provisional_page.HasInitialAutoplayRestriction());
+  }
+  test::RunPendingTasks();
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  ASSERT_FALSE(original_page);
+  EXPECT_FALSE(provisional_page.HasInitialAutoplayRestriction());
+
+  frame_test_helpers::WebViewHelper replacement;
+  replacement.Initialize();
+  Page& replacement_page = *replacement.LocalMainFrame()->GetFrame()->GetPage();
+  replacement_page.SetInitialAutoplayRestriction(id, true);
+  EXPECT_FALSE(replacement_page.HasInitialAutoplayRestriction());
+
+  frame_test_helpers::WebViewHelper popup;
+  popup.Initialize();
+  Page& popup_page = *popup.LocalMainFrame()->GetFrame()->GetPage();
+  popup_page.SetInitialAutoplayRestriction(base::UnguessableToken::Create(),
+                                           true);
+  EXPECT_TRUE(popup_page.HasInitialAutoplayRestriction());
+}
+
+TEST(FrameTreeTest, InitialAutoplayRestrictionIgnoresStaleInitialization) {
+  test::TaskEnvironment task_environment;
+  frame_test_helpers::WebViewHelper current;
+  frame_test_helpers::WebViewHelper replacement;
+  frame_test_helpers::WebViewHelper unrelated;
+  current.Initialize();
+  replacement.Initialize();
+  unrelated.Initialize();
+  const auto id = base::UnguessableToken::Create();
+  Page& current_page = *current.LocalMainFrame()->GetFrame()->GetPage();
+  Page& replacement_page = *replacement.LocalMainFrame()->GetFrame()->GetPage();
+  Page& unrelated_page = *unrelated.LocalMainFrame()->GetFrame()->GetPage();
+  current_page.SetInitialAutoplayRestriction(id, false);
+  unrelated_page.SetInitialAutoplayRestriction(base::UnguessableToken::Create(),
+                                               true);
+
+  // The replacement's creation snapshot predates the browser's release.
+  replacement_page.SetInitialAutoplayRestriction(id, true);
+  current_page.SetInitialAutoplayRestriction(id, true);
+  EXPECT_FALSE(current_page.HasInitialAutoplayRestriction());
+  EXPECT_FALSE(replacement_page.HasInitialAutoplayRestriction());
+  EXPECT_TRUE(unrelated_page.HasInitialAutoplayRestriction());
+}
+
+TEST(FrameTreeTest, InitialAutoplayRestrictionRecreatedAfterLastPageTeardown) {
+  test::TaskEnvironment task_environment;
+  for (bool restricted : {false, true}) {
+    SCOPED_TRACE(restricted);
+    const auto id = base::UnguessableToken::Create();
+    WeakPersistent<Page> old_page;
+    {
+      frame_test_helpers::WebViewHelper original;
+      original.Initialize();
+      old_page = original.LocalMainFrame()->GetFrame()->GetPage();
+      old_page->SetInitialAutoplayRestriction(id, restricted);
+    }
+    test::RunPendingTasks();
+    ThreadState::Current()->CollectAllGarbageForTesting();
+    ASSERT_FALSE(old_page);
+
+    frame_test_helpers::WebViewHelper replacement;
+    replacement.Initialize();
+    Page& page = *replacement.LocalMainFrame()->GetFrame()->GetPage();
+    // With no live renderer copy, the browser supplies the current state.
+    page.SetInitialAutoplayRestriction(id, restricted);
+    EXPECT_EQ(restricted, page.HasInitialAutoplayRestriction());
+  }
+}
+
+TEST(FrameTreeTest,
+     InactivePageUserActivationReleasesInitialAutoplayRestriction) {
+  test::TaskEnvironment task_environment;
+  for (bool prerendering : {true, false}) {
+    SCOPED_TRACE(prerendering);
+    frame_test_helpers::WebViewHelper primary;
+    frame_test_helpers::WebViewHelper inactive;
+    primary.Initialize();
+    inactive.Initialize();
+    LocalFrame* primary_frame = primary.LocalMainFrame()->GetFrame();
+    LocalFrame* inactive_frame = inactive.LocalMainFrame()->GetFrame();
+    Page& primary_page = *primary_frame->GetPage();
+    Page& inactive_page = *inactive_frame->GetPage();
+    const auto id = base::UnguessableToken::Create();
+    primary_page.SetInitialAutoplayRestriction(id, true);
+    inactive_page.SetInitialAutoplayRestriction(id, true);
+
+    if (prerendering) {
+      inactive_page.SetIsPrerendering(true);
+    } else {
+      auto lifecycle_state = inactive_page.GetPageLifecycleState()->Clone();
+      lifecycle_state->is_in_back_forward_cache = true;
+      inactive_page.SetPageLifecycleState(std::move(lifecycle_state));
+    }
+
+    ASSERT_FALSE(AutoplayPolicy::IsDocumentAllowedToPlay(
+        *inactive_frame->GetDocument()));
+    LocalFrame::NotifyUserActivation(
+        inactive_frame, mojom::UserActivationNotificationType::kTest);
+    EXPECT_TRUE(LocalFrame::HasTransientUserActivation(inactive_frame));
+    EXPECT_TRUE(AutoplayPolicy::IsDocumentAllowedToPlay(
+        *inactive_frame->GetDocument()));
+    EXPECT_FALSE(inactive_page.HasInitialAutoplayRestriction());
+    EXPECT_FALSE(primary_page.HasInitialAutoplayRestriction());
+    EXPECT_FALSE(
+        AutoplayPolicy::IsDocumentAllowedToPlay(*primary_frame->GetDocument()));
+    EXPECT_EQ(prerendering, inactive_page.IsPrerendering());
+    EXPECT_EQ(!prerendering,
+              inactive_page.GetPageLifecycleState()->is_in_back_forward_cache);
+  }
 }
 
 TEST(FrameTreeTest, CommonAncestorAndSameOriginPath) {

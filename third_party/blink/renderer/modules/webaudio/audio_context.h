@@ -348,7 +348,8 @@ class MODULES_EXPORT AudioContext final
   // Returns the AutoplayPolicy currently applying to this instance.
   AutoplayPolicy::Type GetAutoplayPolicy() const;
 
-  // Returns whether the autoplay requirements are fulfilled.
+  // Returns whether the normal autoplay policy is satisfied, independently of
+  // the temporary autoplay restriction.
   bool AreAutoplayRequirementsFulfilled() const;
 
   // Re-evaluates autoplay policy and updates autoplay_status_ and

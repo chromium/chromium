@@ -413,6 +413,12 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   int32_t AutoplayFlags() const;
 
+  bool HasInitialAutoplayRestriction() const;
+  void SetInitialAutoplayRestriction(const base::UnguessableToken& id,
+                                     bool restricted);
+  void ReleaseInitialAutoplayRestriction();
+  void SetInitialAutoplayRestrictionForTesting(bool restricted);
+
   void SetIsPrerendering(bool is_prerendering) {
     is_prerendering_ = is_prerendering;
   }
@@ -557,6 +563,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   friend class TextFragmentGenerationNavigationTest;
   friend class ScopedPagePauser;
   class CloseTaskHandler;
+  struct InitialAutoplayRestrictionState;
 
   // SettingsDelegate overrides.
   void SettingsChanged(SettingsDelegate::ChangeType) override;
@@ -713,6 +720,8 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   VisionDeficiency vision_deficiency_ = VisionDeficiency::kNoVisionDeficiency;
 
   int32_t autoplay_flags_;
+  // Shared with other Pages for the same WebContents; traced by each Page.
+  Member<InitialAutoplayRestrictionState> initial_autoplay_restriction_;
 
   // Whether the page is being prerendered by the Prerender2
   // feature. See content/browser/preloading/prerender/README.md.

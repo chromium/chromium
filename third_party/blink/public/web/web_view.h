@@ -440,6 +440,12 @@ class BLINK_EXPORT WebView {
       const web_pref::WebPreferences& preferences) = 0;
   virtual const web_pref::WebPreferences& GetWebPreferences() = 0;
 
+  // Shares the restriction with other views of the same tab in this renderer.
+  // `id` must be non-empty and shared by all views of one WebContents.
+  // Keep the id after release; older updates must not restrict it again.
+  virtual void SetInitialAutoplayRestriction(const base::UnguessableToken& id,
+                                             bool restricted) = 0;
+
   // TODO(lfg): Remove this once the refactor of WebView/WebWidget is
   // completed.
   virtual WebFrameWidget* MainFrameWidget() = 0;

@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
@@ -111,6 +112,18 @@
 #include "ui/gfx/geometry/insets_conversions.h"
 
 namespace blink {
+
+struct Page::InitialAutoplayRestrictionState final
+    : public GarbageCollected<InitialAutoplayRestrictionState> {
+  InitialAutoplayRestrictionState(const base::UnguessableToken& id,
+                                  bool restricted)
+      : id(id), is_restricted(restricted) {}
+
+  void Trace(Visitor*) const {}
+
+  const base::UnguessableToken id;
+  bool is_restricted;
+};
 
 namespace {
 // This seems like a reasonable upper bound, and otherwise mutually
@@ -1333,6 +1346,7 @@ void Page::AcceptLanguagesChanged() {
 }
 
 void Page::Trace(Visitor* visitor) const {
+  visitor->Trace(initial_autoplay_restriction_);
   visitor->Trace(animator_);
   visitor->Trace(autoscroll_controller_);
   visitor->Trace(chrome_client_);
@@ -1461,6 +1475,50 @@ void Page::ClearAutoplayFlags() {
 
 int32_t Page::AutoplayFlags() const {
   return autoplay_flags_;
+}
+
+bool Page::HasInitialAutoplayRestriction() const {
+  return initial_autoplay_restriction_ &&
+         initial_autoplay_restriction_->is_restricted;
+}
+
+void Page::SetInitialAutoplayRestriction(const base::UnguessableToken& id,
+                                         bool restricted) {
+  CHECK(!id.is_empty());
+  if (!initial_autoplay_restriction_ ||
+      initial_autoplay_restriction_->id != id) {
+    initial_autoplay_restriction_ = nullptr;
+    // Replacement, cached, and prerendered Pages of the same tab share state.
+    // After the last live Page is gone, creation uses the browser's current
+    // value. Closed Pages are removed from OrdinaryPages() before garbage
+    // collection.
+    for (Page* page : OrdinaryPages()) {
+      if (page->initial_autoplay_restriction_ &&
+          page->initial_autoplay_restriction_->id == id) {
+        initial_autoplay_restriction_ = page->initial_autoplay_restriction_;
+        break;
+      }
+    }
+    if (!initial_autoplay_restriction_) {
+      initial_autoplay_restriction_ =
+          MakeGarbageCollected<InitialAutoplayRestrictionState>(id, restricted);
+    }
+  }
+  initial_autoplay_restriction_->is_restricted =
+      initial_autoplay_restriction_->is_restricted && restricted;
+}
+
+void Page::ReleaseInitialAutoplayRestriction() {
+  // Honor synthetic gestures on inactive Pages, as normal autoplay does.
+  // Playback still obeys lifecycle restrictions.
+  if (initial_autoplay_restriction_) {
+    initial_autoplay_restriction_->is_restricted = false;
+  }
+}
+
+void Page::SetInitialAutoplayRestrictionForTesting(bool restricted) {
+  CHECK_IS_TEST();
+  SetInitialAutoplayRestriction(base::UnguessableToken::Create(), restricted);
 }
 
 void Page::SetIsMainFrameFencedFrameRoot() {}

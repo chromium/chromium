@@ -220,6 +220,8 @@ class CORE_EXPORT WebViewImpl final : public WebView,
   const RendererPreferences& GetRendererPreferences() const override;
   void SetWebPreferences(const web_pref::WebPreferences& preferences) override;
   const web_pref::WebPreferences& GetWebPreferences() override;
+  void SetInitialAutoplayRestriction(const base::UnguessableToken& id,
+                                     bool restricted) override;
   void SetHistoryListFromNavigation(
       int32_t history_index,
       std::optional<int32_t> history_length) override;

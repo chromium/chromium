@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <atomic>
+#include <tuple>
 
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -903,6 +904,15 @@ ScriptPromise<IDLUndefined> AudioContext::resumeContext(
   // The context is no longer suspended by the user, so autoplay can start it.
   suspended_by_user_ = false;
 
+  // A resume request made during an interruption normally arms the context to
+  // restart when the interruption ends. Keep it pending while restricted.
+  if (AutoplayPolicy::ShouldBlockForInitialAutoplayRestriction(
+          *GetWindow()->document())) {
+    std::ignore = IsAllowedToStart();
+    AddPendingResumeResolver(resolver);
+    return promise;
+  }
+
   // Defer the resume until the frame visibility is known.
   if (should_interrupt_when_frame_is_hidden_ && !is_frame_hidden_.has_value()) {
     deferred_resume_resolvers_.push_back(resolver);
@@ -1057,6 +1067,16 @@ void AudioContext::ProcessDeferredResume() {
 
   // The context is no longer suspended by the user, so autoplay can start it.
   suspended_by_user_ = false;
+
+  if (AutoplayPolicy::ShouldBlockForInitialAutoplayRestriction(
+          *GetWindow()->document())) {
+    std::ignore = IsAllowedToStart();
+    for (auto& resolver : deferred_resume_resolvers_) {
+      AddPendingResumeResolver(resolver);
+    }
+    deferred_resume_resolvers_.clear();
+    return;
+  }
 
   StartContextInterruptionWhenFrameHiddenIfNeeded();
   TransitionToInterruptedIfTriggeredWhileSuspended();
@@ -1564,8 +1584,13 @@ bool AudioContext::AreAutoplayRequirementsFulfilled() const {
   switch (GetAutoplayPolicy()) {
     case AutoplayPolicy::Type::kNoUserGestureRequired:
       return true;
-    case AutoplayPolicy::Type::kUserGestureRequired:
-      return LocalFrame::HasTransientUserActivation(GetWindow()->GetFrame());
+    case AutoplayPolicy::Type::kUserGestureRequired: {
+      // user_gesture_required_ can remain set after the temporary restriction
+      // clears. This policy only requires a gesture for cross-origin frames.
+      LocalFrame* frame = GetWindow()->GetFrame();
+      return !frame->IsCrossOriginToOutermostMainFrame() ||
+             LocalFrame::HasTransientUserActivation(frame);
+    }
     case AutoplayPolicy::Type::kDocumentUserActivationRequired:
       return AutoplayPolicy::IsDocumentAllowedToPlay(*GetWindow()->document());
   }
@@ -1574,7 +1599,10 @@ bool AudioContext::AreAutoplayRequirementsFulfilled() const {
 }
 
 void AudioContext::MaybeAllowAutoplayWithUnlockType(AutoplayUnlockType type) {
-  if (!user_gesture_required_ || !AreAutoplayRequirementsFulfilled()) {
+  if (!user_gesture_required_ ||
+      AutoplayPolicy::ShouldBlockForInitialAutoplayRestriction(
+          *GetWindow()->document()) ||
+      !AreAutoplayRequirementsFulfilled()) {
     return;
   }
 
@@ -1592,6 +1620,12 @@ void AudioContext::UpdateAutoplayRequirement() {
   LocalDOMWindow* window = GetWindow();
   if (!window) {
     return;
+  }
+
+  if (AutoplayPolicy::ShouldBlockForInitialAutoplayRestriction(
+          *window->document())) {
+    autoplay_status_ = AutoplayStatus::kFailed;
+    user_gesture_required_ = true;
   }
 
   switch (GetAutoplayPolicy()) {
@@ -1615,6 +1649,22 @@ bool AudioContext::IsAllowedToStart(bool should_suppress_warning) const {
   if (blocked_by_prerendering_) {
     // In prerendering, the AudioContext will not start rendering. See:
     // https://wicg.github.io/nav-speculation/prerendering.html#web-audio-patch
+    return false;
+  }
+
+  // Prefer the normal policy's warning if it would independently block
+  // playback.
+  if (AutoplayPolicy::ShouldBlockForInitialAutoplayRestriction(
+          *GetWindow()->document()) &&
+      (!user_gesture_required_ || AreAutoplayRequirementsFulfilled())) {
+    if (!should_suppress_warning) {
+      GetWindow()->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kOther,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "The AudioContext was not allowed to start because autoplay is "
+          "temporarily blocked after session restore. Resume or recreate it "
+          "after a user gesture in the page."));
+    }
     return false;
   }
 

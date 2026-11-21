@@ -1033,6 +1033,10 @@ void Frame::NotifyUserActivationInFrame(
     node->user_activation_state_.SetHasBeenActive();
   } else {
     node->user_activation_state_.Activate(notification_type);
+    Page& page = *node->GetPage();
+    if (page.HasInitialAutoplayRestriction()) {
+      page.ReleaseInitialAutoplayRestriction();
+    }
   }
   auto* local_node = DynamicTo<LocalFrame>(node);
   if (local_node) {

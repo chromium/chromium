@@ -534,7 +534,7 @@ class CORE_EXPORT HTMLMediaElement
  private:
   // Friend class for testing.
   friend class ContextMenuControllerTest;
-  friend class HTMLMediaElementTest;
+  friend class HTMLMediaElementTestBase;
   friend class PictureInPictureControllerTestWithWidget;
   friend class VideoWakeLockTest;
 
@@ -1087,7 +1087,7 @@ class CORE_EXPORT HTMLMediaElement
   friend class AutoplayUmaHelperTest;
   friend class Internals;
   friend class MediaControlsImplTest;
-  friend class HTMLMediaElementTest;
+  friend class HTMLMediaElementTestBase;
   friend class HTMLMediaElementEventListenersTest;
   friend class HTMLVideoElement;
   friend class MediaControlInputElementTest;

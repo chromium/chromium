@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/html/media/autoplay_policy.h"
 #include "third_party/blink/renderer/core/messaging/message_channel.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
@@ -2162,6 +2163,72 @@ TEST_F(AudioContextTest, AudioWorkletSharedPortGCWithoutExplicitClose) {
   port.Clear();
   WebHeap::CollectAllGarbageForTesting();
   EXPECT_EQ(weak_port.Get(), nullptr);
+}
+
+TEST_F(AudioContextTest, InitialAutoplayRestrictionReleaseAllowsResume) {
+  GetFrame().GetSettings()->SetAutoplayPolicy(
+      AutoplayPolicy::Type::kNoUserGestureRequired);
+  GetFrame().GetPage()->SetInitialAutoplayRestrictionForTesting(true);
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ScriptState::Scope scope(script_state);
+  AudioContext* context =
+      AudioContext::Create(GetFrame().DomWindow(),
+                           AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+  auto pending_resume =
+      context->resumeContext(script_state, ASSERT_NO_EXCEPTION);
+  test::RunPendingTasks();
+  ExpectContextSuspended(context);
+  EXPECT_EQ(pending_resume.V8Promise()->State(), v8::Promise::kPending);
+
+  GetFrame().GetPage()->SetInitialAutoplayRestrictionForTesting(false);
+  test::RunPendingTasks();
+  ExpectContextSuspended(context);
+  EXPECT_EQ(pending_resume.V8Promise()->State(), v8::Promise::kPending);
+  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+
+  auto resumed = context->resumeContext(script_state, ASSERT_NO_EXCEPTION);
+  ContextRenderer* renderer = MakeGarbageCollected<ContextRenderer>(context);
+  renderer->Init();
+  renderer->Render(128, base::Milliseconds(0), {});
+  ExpectContextBecomesRunningAsync(context);
+  ExpectContextRunning(context);
+  EXPECT_EQ(pending_resume.V8Promise()->State(), v8::Promise::kFulfilled);
+  EXPECT_EQ(resumed.V8Promise()->State(), v8::Promise::kFulfilled);
+}
+
+TEST_F(AudioContextTest,
+       InitialAutoplayRestrictionReleasePreservesResumePolicy) {
+  GetFrame().GetSettings()->SetAutoplayPolicy(
+      AutoplayPolicy::Type::kDocumentUserActivationRequired);
+  GetFrame().GetPage()->SetInitialAutoplayRestrictionForTesting(true);
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ScriptState::Scope scope(script_state);
+  AudioContext* context =
+      AudioContext::Create(GetFrame().DomWindow(),
+                           AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
+  auto pending_resume =
+      context->resumeContext(script_state, ASSERT_NO_EXCEPTION);
+
+  GetFrame().GetPage()->SetInitialAutoplayRestrictionForTesting(false);
+  auto blocked_resume =
+      context->resumeContext(script_state, ASSERT_NO_EXCEPTION);
+  test::RunPendingTasks();
+  ExpectContextSuspended(context);
+  EXPECT_EQ(pending_resume.V8Promise()->State(), v8::Promise::kPending);
+  EXPECT_EQ(blocked_resume.V8Promise()->State(), v8::Promise::kPending);
+  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+
+  LocalFrame::NotifyUserActivation(
+      &GetFrame(), mojom::UserActivationNotificationType::kTest);
+  auto resumed = context->resumeContext(script_state, ASSERT_NO_EXCEPTION);
+  ContextRenderer* renderer = MakeGarbageCollected<ContextRenderer>(context);
+  renderer->Init();
+  renderer->Render(128, base::Milliseconds(0), {});
+  ExpectContextBecomesRunningAsync(context);
+  ExpectContextRunning(context);
+  EXPECT_EQ(pending_resume.V8Promise()->State(), v8::Promise::kFulfilled);
+  EXPECT_EQ(blocked_resume.V8Promise()->State(), v8::Promise::kFulfilled);
+  EXPECT_EQ(resumed.V8Promise()->State(), v8::Promise::kFulfilled);
 }
 
 TEST_F(AudioContextTest, ChannelCountRunning) {

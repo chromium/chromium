@@ -78,6 +78,13 @@ AutoplayPolicy::Type AutoplayPolicy::GetAutoplayPolicyForDocument(
 }
 
 // static
+bool AutoplayPolicy::ShouldBlockForInitialAutoplayRestriction(
+    const Document& document) {
+  const Page* page = document.GetPage();
+  return page && page->HasInitialAutoplayRestriction();
+}
+
+// static
 bool AutoplayPolicy::IsDocumentAllowedToPlay(const Document& document) {
   if (DocumentHasForceAllowFlag(document))
     return true;
@@ -144,8 +151,9 @@ bool AutoplayPolicy::DocumentHasUserExceptionFlag(const Document& document) {
 // static
 bool AutoplayPolicy::DocumentShouldAutoplayMutedVideos(
     const Document& document) {
-  return GetAutoplayPolicyForDocument(document) !=
-         AutoplayPolicy::Type::kNoUserGestureRequired;
+  return ShouldBlockForInitialAutoplayRestriction(document) ||
+         GetAutoplayPolicyForDocument(document) !=
+             AutoplayPolicy::Type::kNoUserGestureRequired;
 }
 
 // static
@@ -323,8 +331,12 @@ bool AutoplayPolicy::IsOrWillBeAutoplayingMutedInternal(bool muted) const {
 }
 
 bool AutoplayPolicy::IsLockedPendingUserGesture() const {
-  if (IsUsingDocumentUserActivationRequiredPolicy())
+  if (ShouldBlockForInitialAutoplayRestriction(element_->GetDocument())) {
+    return true;
+  }
+  if (IsUsingDocumentUserActivationRequiredPolicy()) {
     return !IsDocumentAllowedToPlay(element_->GetDocument());
+  }
 
   return locked_pending_user_gesture_;
 }
@@ -366,50 +378,43 @@ void AutoplayPolicy::EnsureAutoplayInitiatedSet() {
 
 void AutoplayPolicy::OnIntersectionChangedForAutoplay(
     const HeapVector<Member<IntersectionObserverEntry>>& entries) {
-  bool is_visible = (entries.back()->intersectionRatio() > 0);
+  element_->GetDocument()
+      .GetTaskRunner(TaskType::kInternalMedia)
+      ->PostTask(FROM_HERE,
+                 BindOnce(&AutoplayPolicy::UpdateAutoplayMutedWhenVisible,
+                          WrapWeakPersistent(this),
+                          entries.back()->intersectionRatio() > 0));
+}
+
+void AutoplayPolicy::UpdateAutoplayMutedWhenVisible(bool is_visible) {
+  // The temporary restriction may have cleared since observation or task
+  // posting. Return to the normal policy instead of retaining its pauses.
+  if (!DocumentShouldAutoplayMutedVideos(element_->GetDocument())) {
+    StopAutoplayMutedWhenVisible();
+    is_visible = true;
+  }
 
   if (!is_visible) {
-    auto pause_and_preserve_autoplay = [](AutoplayPolicy* self) {
-      if (!self)
-        return;
+    // Keep playing if the frames are still being consumed (e.g. by canvas).
+    WebMediaPlayer* player = element_->GetWebMediaPlayer();
+    if (player && player->IsVideoBeingCaptured()) {
+      return;
+    }
 
-      // Keep playing if the frames are still being consumed (e.g. by canvas).
-      WebMediaPlayer* player = self->element_->GetWebMediaPlayer();
-      if (player && player->IsVideoBeingCaptured()) {
-        return;
-      }
-
-      if (self->element_->can_autoplay_ && self->element_->Autoplay()) {
-        self->element_->PauseInternal(
-            WebMediaPlayer::PauseReason::kAutoplayAutoPause);
-        self->element_->can_autoplay_ = true;
-      }
-    };
-
-    element_->GetDocument()
-        .GetTaskRunner(TaskType::kInternalMedia)
-        ->PostTask(FROM_HERE, BindOnce(pause_and_preserve_autoplay,
-                                       WrapWeakPersistent(this)));
+    if (element_->can_autoplay_ && element_->Autoplay()) {
+      element_->PauseInternal(WebMediaPlayer::PauseReason::kAutoplayAutoPause);
+      element_->can_autoplay_ = true;
+    }
     return;
   }
 
-  auto maybe_autoplay = [](AutoplayPolicy* self) {
-    if (!self)
-      return;
-
-    if (self->ShouldAutoplay()) {
-      self->element_->paused_ = false;
-      self->element_->SetShowPosterFlag(false);
-      self->element_->ScheduleNamedEvent(event_type_names::kPlay);
-      self->element_->ScheduleNotifyPlaying();
-
-      self->element_->UpdatePlayState();
-    }
-  };
-
-  element_->GetDocument()
-      .GetTaskRunner(TaskType::kInternalMedia)
-      ->PostTask(FROM_HERE, BindOnce(maybe_autoplay, WrapWeakPersistent(this)));
+  if (ShouldAutoplay()) {
+    element_->paused_ = false;
+    element_->SetShowPosterFlag(false);
+    element_->ScheduleNamedEvent(event_type_names::kPlay);
+    element_->ScheduleNotifyPlaying();
+    element_->UpdatePlayState();
+  }
 }
 
 bool AutoplayPolicy::IsUsingDocumentUserActivationRequiredPolicy() const {

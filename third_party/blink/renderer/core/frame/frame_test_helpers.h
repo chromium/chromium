@@ -415,8 +415,10 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
   WebViewImpl* InitializePlaceholderRemote();
 
   // Same as InitializeRemoteWithOpener(), but always sets the opener to null.
-  WebViewImpl* InitializeRemote(scoped_refptr<SecurityOrigin> = nullptr,
-                                WebViewClient* = nullptr);
+  WebViewImpl* InitializeRemote(
+      scoped_refptr<SecurityOrigin> = nullptr,
+      WebViewClient* = nullptr,
+      void (*update_settings_func)(WebSettings*) = nullptr);
 
   // Same as InitializeRemoteWithOpenerAndAssociatedRemoteAndReceivers(), but
   // always sets the opener to null and sets the associated remote & receivers
@@ -425,7 +427,8 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
   WebViewImpl* InitializeRemoteWithOpener(
       WebFrame* opener,
       scoped_refptr<SecurityOrigin> = nullptr,
-      WebViewClient* = nullptr);
+      WebViewClient* = nullptr,
+      void (*update_settings_func)(WebSettings*) = nullptr);
 
   // Creates and initializes the WebView with a main WebRemoteFrame. Passing
   // nullptr as the SecurityOrigin results in a frame with a unique security
@@ -436,7 +439,8 @@ class WebViewHelper : public ScopedMockOverlayScrollbars {
       WebViewClient*,
       mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
           remote_frame_host,
-      mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver);
+      mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver,
+      void (*update_settings_func)(WebSettings*) = nullptr);
 
   // Creates a new uninitialized WebView.
   WebViewImpl* CreateWebView(WebViewClient*, bool compositing_enabled);

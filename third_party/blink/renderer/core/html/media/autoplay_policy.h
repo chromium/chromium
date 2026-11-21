@@ -37,6 +37,10 @@ class CORE_EXPORT AutoplayPolicy final
 
   static Type GetAutoplayPolicyForDocument(const Document&);
 
+  // Returns whether the initial autoplay restriction is still active. Normal
+  // autoplay policy is checked separately.
+  static bool ShouldBlockForInitialAutoplayRestriction(const Document&);
+
   // Return true if the given |document| is allowed to play.
   // This method may check parent frames if allow=autoplay (Permissions Policy)
   // was used, in which case, the frame will be allowed to play if its parents
@@ -120,6 +124,7 @@ class CORE_EXPORT AutoplayPolicy final
  private:
   friend class AutoplayUmaHelper;
   friend class AutoplayUmaHelperTest;
+  friend class HTMLMediaElementTestBase;
 
   // Start autoplaying the video element whenever its visible.
   void StartAutoplayMutedWhenVisible();
@@ -146,6 +151,7 @@ class CORE_EXPORT AutoplayPolicy final
   // pause the video when invisible and resume the video when visible.
   void OnIntersectionChangedForAutoplay(
       const HeapVector<Member<IntersectionObserverEntry>>& entries);
+  void UpdateAutoplayMutedWhenVisible(bool is_visible);
 
   // Returns whether the current autoplay policy is
   // kDocumentUserActivationRequired. This is a helper method for readability.

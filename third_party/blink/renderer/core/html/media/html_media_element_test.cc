@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "base/time/time_override.h"
+#include "base/unguessable_token.h"
 #include "media/base/media_content_type.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_track.h"
@@ -43,7 +44,9 @@
 #include "third_party/blink/renderer/core/html/track/text_track.h"
 #include "third_party/blink/renderer/core/html/track/text_track_list.h"
 #include "third_party/blink/renderer/core/html/track/video_track_list.h"
+#include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider_client.h"
@@ -426,8 +429,10 @@ enum class MediaTestParam { kAudio, kVideo };
 
 }  // namespace
 
-class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
+class HTMLMediaElementTestBase : public testing::Test {
  protected:
+  virtual MediaTestParam GetMediaTestParam() const = 0;
+
   void SetUp() override {
     // Sniff the media player pointer to facilitate mocking.
     auto mock_media_player =
@@ -459,7 +464,7 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
         MakeGarbageCollected<WebMediaStubLocalFrameClient>(
             std::move(mock_media_player)));
 
-    if (GetParam() == MediaTestParam::kAudio) {
+    if (GetMediaTestParam() == MediaTestParam::kAudio) {
       media_ = MakeGarbageCollected<HTMLAudioElement>(
           dummy_page_holder_->GetDocument());
     } else {
@@ -493,6 +498,39 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
   MockWebMediaPlayer* MockMediaPlayer() { return media_player_; }
 
   bool WasAutoplayInitiated() { return Media()->WasAutoplayInitiated(); }
+
+  bool HasAutoplayIntersectionObserver() const {
+    return !!Media()->autoplay_policy_->autoplay_intersection_observer_;
+  }
+
+  void UpdateAutoplayVisibility(bool visible) {
+    Media()->autoplay_policy_->UpdateAutoplayMutedWhenVisible(visible);
+  }
+
+  void QueueInvisibleAutoplayIntersection() {
+    std::optional<IntersectionGeometry::RootGeometry> root_geometry;
+    IntersectionGeometry geometry(nullptr, *Media(), {}, {0}, {}, {}, {},
+                                  root_geometry);
+    auto* entry =
+        MakeGarbageCollected<IntersectionObserverEntry>(geometry, 0, Media());
+    ASSERT_EQ(0, entry->intersectionRatio());
+    Media()->autoplay_policy_->OnIntersectionChangedForAutoplay({entry});
+  }
+
+  void PrepareMutedAttributeAutoplay(AutoplayPolicy::Type policy) {
+    Media()->GetDocument().GetSettings()->SetAutoplayPolicy(policy);
+    Media()->GetDocument().GetPage()->SetInitialAutoplayRestrictionForTesting(
+        true);
+    Media()->setMuted(true);
+    Media()->SetBooleanAttribute(html_names::kPlaysinlineAttr, true);
+    Media()->SetBooleanAttribute(html_names::kAutoplayAttr, true);
+    Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+    test::RunPendingTasks();
+    SetReadyState(HTMLMediaElement::kHaveEnoughData);
+    test::RunPendingTasks();
+    ASSERT_TRUE(HasAutoplayIntersectionObserver());
+    ASSERT_TRUE(Media()->paused());
+  }
 
   bool CouldPlayIfEnoughData() { return Media()->CouldPlayIfEnoughData(); }
 
@@ -901,6 +939,20 @@ class HTMLMediaElementTest : public testing::TestWithParam<MediaTestParam> {
       media_player_host_receiver_{&media_player_host_};
 };
 
+class HTMLMediaElementTest
+    : public HTMLMediaElementTestBase,
+      public testing::WithParamInterface<MediaTestParam> {
+ protected:
+  MediaTestParam GetMediaTestParam() const override { return GetParam(); }
+};
+
+class HTMLVideoElementAutoplayTest : public HTMLMediaElementTestBase {
+ protected:
+  MediaTestParam GetMediaTestParam() const override {
+    return MediaTestParam::kVideo;
+  }
+};
+
 INSTANTIATE_TEST_SUITE_P(Audio,
                          HTMLMediaElementTest,
                          testing::Values(MediaTestParam::kAudio));
@@ -1163,6 +1215,234 @@ TEST_P(HTMLMediaElementTest,
   Media()->Play();
 
   EXPECT_TRUE(WasAutoplayInitiated());
+}
+
+TEST_P(HTMLMediaElementTest,
+       InitialAutoplayRestrictionChangesAffectExistingElement) {
+  Media()->GetDocument().GetSettings()->SetAutoplayPolicy(
+      AutoplayPolicy::Type::kNoUserGestureRequired);
+  Media()->GetDocument().GetPage()->SetInitialAutoplayRestrictionForTesting(
+      true);
+
+  EXPECT_EQ(DOMExceptionCode::kNotAllowedError, Media()->Play());
+
+  Media()->GetDocument().GetPage()->SetInitialAutoplayRestrictionForTesting(
+      false);
+  EXPECT_EQ(std::nullopt, Media()->Play());
+
+  Media()->pause();
+  Media()->GetDocument().GetPage()->SetInitialAutoplayRestrictionForTesting(
+      true);
+  EXPECT_EQ(DOMExceptionCode::kNotAllowedError, Media()->Play());
+}
+
+TEST_P(HTMLMediaElementTest,
+       ActivatedPlaybackReleasesRestrictionAndGestureLock) {
+  Document& document = Media()->GetDocument();
+  document.GetSettings()->SetAutoplayPolicy(
+      AutoplayPolicy::Type::kUserGestureRequired);
+  HTMLMediaElement* media;
+  if (GetParam() == MediaTestParam::kAudio) {
+    media = MakeGarbageCollected<HTMLAudioElement>(document);
+  } else {
+    media = MakeGarbageCollected<HTMLVideoElement>(document);
+  }
+  EXPECT_EQ(DOMExceptionCode::kNotAllowedError, media->Play());
+  document.GetPage()->SetInitialAutoplayRestrictionForTesting(true);
+  LocalFrame::NotifyUserActivation(
+      document.GetFrame(), mojom::UserActivationNotificationType::kTest);
+
+  EXPECT_EQ(std::nullopt, media->Play());
+  EXPECT_FALSE(document.GetPage()->HasInitialAutoplayRestriction());
+  media->pause();
+  EXPECT_TRUE(LocalFrame::ConsumeTransientUserActivation(document.GetFrame()));
+  ASSERT_FALSE(LocalFrame::HasTransientUserActivation(document.GetFrame()));
+  EXPECT_EQ(std::nullopt, media->Play());
+}
+
+TEST_P(HTMLMediaElementTest,
+       InitialAutoplayRestrictionReleaseIgnoresStaleSnapshot) {
+  Document& document = Media()->GetDocument();
+  const auto id = base::UnguessableToken::Create();
+  document.GetSettings()->SetAutoplayPolicy(
+      AutoplayPolicy::Type::kNoUserGestureRequired);
+  document.GetPage()->SetInitialAutoplayRestriction(id, true);
+  EXPECT_EQ(DOMExceptionCode::kNotAllowedError, Media()->Play());
+
+  LocalFrame::NotifyUserActivation(
+      document.GetFrame(), mojom::UserActivationNotificationType::kTest);
+  ASSERT_FALSE(document.GetPage()->HasInitialAutoplayRestriction());
+  ASSERT_TRUE(LocalFrame::ConsumeTransientUserActivation(document.GetFrame()));
+  ASSERT_FALSE(LocalFrame::HasTransientUserActivation(document.GetFrame()));
+
+  document.GetPage()->SetInitialAutoplayRestriction(id, true);
+  EXPECT_FALSE(document.GetPage()->HasInitialAutoplayRestriction());
+  EXPECT_EQ(std::nullopt, Media()->Play());
+}
+
+TEST_F(HTMLVideoElementAutoplayTest,
+       InitialAutoplayRestrictionReleaseCancelsQueuedVisibilityPause) {
+  PrepareMutedAttributeAutoplay(AutoplayPolicy::Type::kNoUserGestureRequired);
+  UpdateAutoplayVisibility(true);
+  ASSERT_FALSE(Media()->paused());
+
+  QueueInvisibleAutoplayIntersection();
+  Media()->GetDocument().GetPage()->SetInitialAutoplayRestrictionForTesting(
+      false);
+  test::RunPendingTasks();
+  EXPECT_FALSE(HasAutoplayIntersectionObserver());
+  EXPECT_FALSE(Media()->paused());
+}
+
+TEST_F(HTMLVideoElementAutoplayTest,
+       InitialAutoplayRestrictionReleaseStopsVisibilityObservation) {
+  PrepareMutedAttributeAutoplay(AutoplayPolicy::Type::kNoUserGestureRequired);
+  UpdateAutoplayVisibility(true);
+  ASSERT_FALSE(Media()->paused());
+
+  Media()->GetDocument().GetPage()->SetInitialAutoplayRestrictionForTesting(
+      false);
+  QueueInvisibleAutoplayIntersection();
+  test::RunPendingTasks();
+  EXPECT_FALSE(HasAutoplayIntersectionObserver());
+  EXPECT_FALSE(Media()->paused());
+}
+
+TEST_F(HTMLVideoElementAutoplayTest,
+       InitialAutoplayRestrictionReleaseAllowsHiddenMutedAttributeAutoplay) {
+  PrepareMutedAttributeAutoplay(AutoplayPolicy::Type::kNoUserGestureRequired);
+  QueueInvisibleAutoplayIntersection();
+  Media()->GetDocument().GetPage()->SetInitialAutoplayRestrictionForTesting(
+      false);
+  test::RunPendingTasks();
+  EXPECT_FALSE(HasAutoplayIntersectionObserver());
+  EXPECT_FALSE(Media()->paused());
+}
+
+TEST_F(HTMLVideoElementAutoplayTest,
+       InitialAutoplayRestrictionReleasePreservesMutedVisibilityPolicy) {
+  PrepareMutedAttributeAutoplay(
+      AutoplayPolicy::Type::kDocumentUserActivationRequired);
+  UpdateAutoplayVisibility(true);
+  ASSERT_FALSE(Media()->paused());
+
+  QueueInvisibleAutoplayIntersection();
+  Media()->GetDocument().GetPage()->SetInitialAutoplayRestrictionForTesting(
+      false);
+  test::RunPendingTasks();
+  EXPECT_TRUE(HasAutoplayIntersectionObserver());
+  EXPECT_TRUE(Media()->paused());
+  UpdateAutoplayVisibility(true);
+  EXPECT_FALSE(Media()->paused());
+
+  Media()->GetDocument().GetSettings()->SetAutoplayPolicy(
+      AutoplayPolicy::Type::kUserGestureRequired);
+  QueueInvisibleAutoplayIntersection();
+  test::RunPendingTasks();
+  EXPECT_TRUE(HasAutoplayIntersectionObserver());
+  EXPECT_TRUE(Media()->paused());
+  UpdateAutoplayVisibility(true);
+  EXPECT_FALSE(Media()->paused());
+}
+
+TEST_P(HTMLMediaElementTest,
+       InitialAutoplayRestrictionReleaseDoesNotStartAttributeAutoplay) {
+  Media()->GetDocument().GetSettings()->SetAutoplayPolicy(
+      AutoplayPolicy::Type::kNoUserGestureRequired);
+  Media()->GetDocument().GetPage()->SetInitialAutoplayRestrictionForTesting(
+      true);
+  Media()->SetSrc(SrcSchemeToURL(TestURLScheme::kHttp));
+  Media()->SetBooleanAttribute(html_names::kAutoplayAttr, true);
+  test::RunPendingTasks();
+
+  SetReadyState(HTMLMediaElement::kHaveEnoughData);
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(Media()->paused());
+  EXPECT_FALSE(WasAutoplayInitiated());
+
+  LocalFrame::NotifyUserActivation(
+      Media()->GetDocument().GetFrame(),
+      mojom::UserActivationNotificationType::kTest);
+  EXPECT_FALSE(
+      Media()->GetDocument().GetPage()->HasInitialAutoplayRestriction());
+  EXPECT_TRUE(LocalFrame::ConsumeTransientUserActivation(
+      Media()->GetDocument().GetFrame()));
+  test::RunPendingTasks();
+  EXPECT_TRUE(Media()->paused());
+  EXPECT_EQ(std::nullopt, Media()->Play());
+}
+
+TEST_P(HTMLMediaElementTest,
+       InitialAutoplayRestrictionReleasePreservesDocumentPolicy) {
+  Media()->GetDocument().GetSettings()->SetAutoplayPolicy(
+      AutoplayPolicy::Type::kDocumentUserActivationRequired);
+  Media()->GetDocument().GetPage()->SetInitialAutoplayRestrictionForTesting(
+      true);
+  EXPECT_EQ(DOMExceptionCode::kNotAllowedError, Media()->Play());
+
+  Media()->GetDocument().GetPage()->SetInitialAutoplayRestrictionForTesting(
+      false);
+  EXPECT_EQ(DOMExceptionCode::kNotAllowedError, Media()->Play());
+
+  LocalFrame::NotifyUserActivation(
+      Media()->GetDocument().GetFrame(),
+      mojom::UserActivationNotificationType::kTest);
+  EXPECT_EQ(std::nullopt, Media()->Play());
+}
+
+TEST_F(HTMLVideoElementAutoplayTest,
+       InitialAutoplayRestrictionAllowsMutedVideoButNotUnmuting) {
+  Media()->GetDocument().GetSettings()->SetAutoplayPolicy(
+      AutoplayPolicy::Type::kNoUserGestureRequired);
+  Media()->GetDocument().GetPage()->SetInitialAutoplayRestrictionForTesting(
+      true);
+  EXPECT_EQ(DOMExceptionCode::kNotAllowedError, Media()->Play());
+  Media()->setMuted(true);
+  EXPECT_EQ(std::nullopt, Media()->Play());
+  ASSERT_FALSE(Media()->paused());
+  Media()->setMuted(false);
+  EXPECT_TRUE(Media()->paused());
+}
+
+TEST_F(HTMLVideoElementAutoplayTest,
+       InitialAutoplayRestrictionReleaseAllowsUnmuting) {
+  Media()->GetDocument().GetSettings()->SetAutoplayPolicy(
+      AutoplayPolicy::Type::kNoUserGestureRequired);
+  Media()->GetDocument().GetPage()->SetInitialAutoplayRestrictionForTesting(
+      true);
+  Media()->setMuted(true);
+  EXPECT_EQ(std::nullopt, Media()->Play());
+  ASSERT_FALSE(Media()->paused());
+
+  Media()->GetDocument().GetPage()->SetInitialAutoplayRestrictionForTesting(
+      false);
+  test::RunPendingTasks();
+  ASSERT_FALSE(Media()->paused());
+  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(
+      Media()->GetDocument().GetFrame()));
+  Media()->setMuted(false);
+  EXPECT_FALSE(Media()->paused());
+}
+
+TEST_F(HTMLVideoElementAutoplayTest,
+       InitialAutoplayRestrictionReleasePreservesUnmutePolicy) {
+  Media()->GetDocument().GetSettings()->SetAutoplayPolicy(
+      AutoplayPolicy::Type::kDocumentUserActivationRequired);
+  Media()->GetDocument().GetPage()->SetInitialAutoplayRestrictionForTesting(
+      true);
+  Media()->setMuted(true);
+  EXPECT_EQ(std::nullopt, Media()->Play());
+  ASSERT_FALSE(Media()->paused());
+
+  Media()->GetDocument().GetPage()->SetInitialAutoplayRestrictionForTesting(
+      false);
+  test::RunPendingTasks();
+  ASSERT_FALSE(Media()->paused());
+  EXPECT_FALSE(LocalFrame::HasTransientUserActivation(
+      Media()->GetDocument().GetFrame()));
+  Media()->setMuted(false);
+  EXPECT_TRUE(Media()->paused());
 }
 
 TEST_P(HTMLMediaElementTest, AutoplayInitiated_GestureRequired_Gesture) {

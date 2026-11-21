@@ -139,7 +139,7 @@ class CORE_EXPORT MediaVideoVisibilityTracker final
  private:
   // Friend class for testing.
   friend class MediaVideoVisibilityTrackerTest;
-  friend class HTMLMediaElementTest;
+  friend class HTMLMediaElementTestBase;
   friend class HTMLVideoElementTest;
 
   HTMLVideoElement& VideoElement() const { return *video_element_; }
