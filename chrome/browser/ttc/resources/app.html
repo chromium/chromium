@@ -31,6 +31,34 @@
       <input type="text" id="text-input" placeholder="Type instructions..."
           @keydown="${this.onTextInputKeydown}">
     </div>
+    ${this.initializationState === 'needs_api_key' ? html`
+      <div id="api-key-prompt">
+        <input id="api-key-input" type="password"
+            placeholder="Enter Gemini API key"
+            aria-label="Enter Gemini API key"
+            autocomplete="off" spellcheck="false"
+            .value="${this.pendingApiKey}"
+            @input="${this.onApiKeyInput}"
+            @keydown="${this.onApiKeyKeydown}">
+        <button id="api-key-save-button" type="button"
+            @click="${this.onSaveApiKeyClick}">
+          Save
+        </button>
+      </div>
+    ` : ''}
+    ${this.shouldShowErrorActions() ? html`
+      <div id="api-key-error">
+        <span class="error-label">Connection failed</span>
+        <button id="retry-connection-button" type="button"
+            @click="${this.onRetryClick}">
+          Retry
+        </button>
+        <button id="change-api-key-button" type="button"
+            @click="${this.onChangeApiKeyClick}">
+          Change API key
+        </button>
+      </div>
+    ` : ''}
     ${this.initializationState !== 'initialized' || !this.usePersona ||
       !this.speakingBlobUrl || !this.listeningBlobUrl
     ? html`

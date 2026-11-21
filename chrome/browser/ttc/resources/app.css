@@ -80,6 +80,11 @@ video[hidden],
   background-color: var(--color-ref-error50);
 }
 
+#initializerState.needs_api_key {
+  background-color: var(--color-ref-neutral50);
+  transform: scale(0.75);
+}
+
 @keyframes connecting-pulse {
   0% {
     transform: scale(0.80);
@@ -210,4 +215,79 @@ video[hidden],
 
 #text-input::placeholder {
   color: rgba(255, 255, 255, 0.7);
+}
+
+#api-key-prompt,
+#api-key-error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 16px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: rgba(20, 20, 20, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  font-family: system-ui, -apple-system, sans-serif;
+  font-size: 13px;
+  color: white;
+}
+
+#api-key-input {
+  width: 220px;
+  max-width: 100%;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.08);
+  color: white;
+  font-family: inherit;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+#api-key-input:focus {
+  outline: none;
+  border-color: #90caf9;
+  background-color: rgba(255, 255, 255, 0.14);
+}
+
+#api-key-input::placeholder {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+#api-key-save-button,
+#retry-connection-button,
+#change-api-key-button {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background-color: rgba(255, 255, 255, 0.14);
+  color: white;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+#api-key-save-button {
+  background-color: #1a73e8;
+  border-color: #1a73e8;
+}
+
+#api-key-save-button:hover {
+  background-color: #1b66c9;
+}
+
+#retry-connection-button:hover,
+#change-api-key-button:hover {
+  background-color: rgba(255, 255, 255, 0.24);
+}
+
+.error-label {
+  color: #f28b82;
+  margin-inline-end: 4px;
 }

@@ -354,6 +354,7 @@ source_set("browser_tests") {
     deps += [ "//components/skills:features" ]
     if (is_chrome_branded) {
       sources += [ "ai_overlay_dialog/ai_overlay_dialog_browsertest.cc" ]
+      deps += [ "//chrome/browser/ttc/core" ]
     }
   }
 
