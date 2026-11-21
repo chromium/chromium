@@ -381,6 +381,7 @@ class ContextualTasksWebContentsUserData
     kTabPicker,
   };
   struct PageSearchState;
+  class SubmitInteractionTracker;
 
   explicit ContextualTasksWebContentsUserData(content::WebContents* contents);
   friend class content::WebContentsUserData<ContextualTasksWebContentsUserData>;
@@ -514,7 +515,7 @@ class ContextualTasksWebContentsUserData
   base::flat_set<base::UnguessableToken> pending_context_uploads_;
   base::flat_set<base::UnguessableToken> failed_context_uploads_;
 
-  base::TimeTicks last_handled_submit_interaction_time_;
+  std::unique_ptr<SubmitInteractionTracker> submit_interaction_tracker_;
 
   // Uploads delayed tabs and recontextualizes the active tab on submit.
   std::unique_ptr<DesktopQueryContextualizerDelegate>

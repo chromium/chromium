@@ -10,10 +10,13 @@
 
 #include "base/auto_reset.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
@@ -30,6 +33,8 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/site_exclusion_detail.h"
 #include "chrome/browser/contextual_tasks/smart_tab_sharing_metrics.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -52,6 +57,10 @@
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/input_state.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/permissions/permission_request.h"
+#include "components/permissions/permission_request_manager.h"
+#include "components/permissions/permission_uma_constants.h"
+#include "components/permissions/request_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/util.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -84,6 +93,10 @@ namespace {
 
 constexpr size_t kMaxSearchMessageBytes = 1024 * 1024;
 constexpr size_t kMaxPendingSearchMessages = 100;
+// Matches `WebContentsImpl::HasRecentInteraction()` so a voice utterance that
+// ends right before `OnSubmitQueryRequest` (or a newly granted microphone
+// permission prompt) has a 5-second submission window.
+constexpr base::TimeDelta kRecentAudioCaptureWindow = base::Seconds(5);
 
 struct IdentityState {
   bool is_signed_in = false;
@@ -328,11 +341,180 @@ struct ContextualTasksWebContentsUserData::PageSearchState
 
 PAGE_USER_DATA_KEY_IMPL(ContextualTasksWebContentsUserData::PageSearchState);
 
+// Tracks unconsumed user interactions and user-initiated microphone capture on
+// the primary page so `HandleOnSubmitQueryRequest()` can attach context for
+// voice queries that outlast the 5-second DOM interaction window.
+class ContextualTasksWebContentsUserData::SubmitInteractionTracker
+    : public MediaStreamCaptureIndicator::Observer,
+      public permissions::PermissionRequestManager::Observer {
+ public:
+  explicit SubmitInteractionTracker(content::WebContents& web_contents)
+      : web_contents_(web_contents) {
+    if (auto* dispatcher = MediaCaptureDevicesDispatcher::GetInstance()) {
+      capture_indicator_ = dispatcher->GetMediaStreamCaptureIndicator();
+      if (capture_indicator_) {
+        indicator_observation_.Observe(capture_indicator_.get());
+      }
+    }
+    EnsureObservingPermissionRequestManager();
+  }
+  SubmitInteractionTracker(const SubmitInteractionTracker&) = delete;
+  SubmitInteractionTracker& operator=(const SubmitInteractionTracker&) = delete;
+  ~SubmitInteractionTracker() override = default;
+
+  // Attaches `permission_request_manager_observation_` once
+  // `PermissionRequestManager` exists on `web_contents_`, covering callers that
+  // create it after this user data.
+  void EnsureObservingPermissionRequestManager() {
+    if (web_contents_->IsBeingDestroyed()) {
+      return;
+    }
+    auto* permission_request_manager =
+        permissions::PermissionRequestManager::FromWebContents(&*web_contents_);
+    if (permission_request_manager &&
+        !permission_request_manager_observation_.IsObservingSource(
+            permission_request_manager)) {
+      permission_request_manager_observation_.Reset();
+      permission_request_manager_observation_.Observe(
+          permission_request_manager);
+    }
+  }
+
+  // Clears any pending microphone grant or audio capture authorization, used
+  // when switching tasks, swapping documents, or consuming a submission.
+  void ResetAudioCapture() {
+    authorized_audio_page_.reset();
+    is_capturing_audio_ = false;
+    audio_capture_end_time_ = base::TimeTicks();
+    last_mic_permission_grant_time_ = base::TimeTicks();
+  }
+
+  // Authorizes context attachment when the primary page has an unconsumed
+  // recent DOM interaction or an active/recently-ended user-initiated audio
+  // stream. Consumes both tokens on success so trailing dual-stream closures
+  // cannot replay a second submission.
+  bool ConsumeSubmitInteraction() {
+    const bool has_recent_interaction = HasUnconsumedRecentInteraction();
+    const bool on_authorized_page =
+        authorized_audio_page_.get() == &web_contents_->GetPrimaryPage();
+    const bool has_active_audio =
+        on_authorized_page && is_capturing_audio_ && IsCapturingAudio();
+    const bool has_recently_ended_audio =
+        on_authorized_page && !is_capturing_audio_ &&
+        !audio_capture_end_time_.is_null() &&
+        base::TimeTicks::Now() - audio_capture_end_time_ <=
+            kRecentAudioCaptureWindow;
+    if (!has_recent_interaction && !has_active_audio &&
+        !has_recently_ended_audio) {
+      ResetAudioCapture();
+      return false;
+    }
+    if (const base::TimeTicks last_interaction =
+            web_contents_->GetLastInteractionTimeTicks();
+        last_interaction > last_handled_interaction_time_) {
+      last_handled_interaction_time_ = last_interaction;
+    }
+    ResetAudioCapture();
+    return true;
+  }
+
+  // MediaStreamCaptureIndicator::Observer:
+  // Marks audio capture as authorized only when started from a recent page
+  // interaction or microphone permission grant so background scripts on
+  // pre-authorized origins cannot silently arm context attachment. When capture
+  // stops, starts a 5-second grace window for post-speech auto-submission.
+  void OnIsCapturingAudioChanged(content::WebContents* web_contents,
+                                 bool is_capturing_audio) override {
+    if (web_contents != &*web_contents_ || web_contents->IsBeingDestroyed()) {
+      return;
+    }
+    if (is_capturing_audio) {
+      const bool has_recent_mic_grant =
+          !last_mic_permission_grant_time_.is_null() &&
+          base::TimeTicks::Now() - last_mic_permission_grant_time_ <=
+              kRecentAudioCaptureWindow;
+      if (HasUnconsumedRecentInteraction() || has_recent_mic_grant) {
+        last_mic_permission_grant_time_ = base::TimeTicks();
+        authorized_audio_page_ = web_contents_->GetPrimaryPage().GetWeakPtr();
+        is_capturing_audio_ = true;
+        audio_capture_end_time_ = base::TimeTicks();
+      }
+      return;
+    }
+    if (is_capturing_audio_ &&
+        authorized_audio_page_.get() == &web_contents_->GetPrimaryPage()) {
+      is_capturing_audio_ = false;
+      audio_capture_end_time_ = base::TimeTicks::Now();
+    } else {
+      ResetAudioCapture();
+    }
+  }
+
+  // permissions::PermissionRequestManager::Observer:
+  // Clicking Allow on the native Views permission bubble does not update DOM
+  // `WebContents::HasRecentInteraction()`, so record a fresh grant timestamp
+  // when a microphone prompt is accepted after arbitrary user wait time.
+  void OnRequestDecided(permissions::PermissionAction action) override {
+    if (web_contents_->IsBeingDestroyed() ||
+        (action != permissions::PermissionAction::GRANTED &&
+         action != permissions::PermissionAction::GRANTED_ONCE)) {
+      return;
+    }
+    auto* permission_request_manager =
+        permissions::PermissionRequestManager::FromWebContents(&*web_contents_);
+    if (permission_request_manager &&
+        std::ranges::contains(permission_request_manager->Requests(),
+                              permissions::RequestType::kMicStream,
+                              &permissions::PermissionRequest::request_type)) {
+      last_mic_permission_grant_time_ = base::TimeTicks::Now();
+    }
+  }
+
+  // Detaches `permission_request_manager_observation_` if
+  // `PermissionRequestManager` is destroyed ahead of
+  // `ContextualTasksWebContentsUserData` during `WebContents` teardown.
+  void OnPermissionRequestManagerDestructed() override {
+    permission_request_manager_observation_.Reset();
+  }
+
+ private:
+  // Checks for a DOM input event within 5 seconds that has not yet authorized
+  // a query submission.
+  bool HasUnconsumedRecentInteraction() const {
+    return web_contents_->HasRecentInteraction() &&
+           web_contents_->GetLastInteractionTimeTicks() >
+               last_handled_interaction_time_;
+  }
+
+  // Queries live `MediaStreamCaptureIndicator` state so cached `is_capturing_`
+  // state cannot outlive actual stream teardown (such as across BFCache).
+  bool IsCapturingAudio() const {
+    return capture_indicator_ &&
+           capture_indicator_->IsCapturingAudio(&*web_contents_);
+  }
+
+  const raw_ref<content::WebContents> web_contents_;
+  scoped_refptr<MediaStreamCaptureIndicator> capture_indicator_;
+  base::TimeTicks last_handled_interaction_time_;
+  base::TimeTicks last_mic_permission_grant_time_;
+  base::WeakPtr<content::Page> authorized_audio_page_;
+  bool is_capturing_audio_ = false;
+  base::TimeTicks audio_capture_end_time_;
+  base::ScopedObservation<MediaStreamCaptureIndicator,
+                          MediaStreamCaptureIndicator::Observer>
+      indicator_observation_{this};
+  base::ScopedObservation<permissions::PermissionRequestManager,
+                          permissions::PermissionRequestManager::Observer>
+      permission_request_manager_observation_{this};
+};
+
 ContextualTasksWebContentsUserData::ContextualTasksWebContentsUserData(
     content::WebContents* contents)
     : content::WebContentsUserData<ContextualTasksWebContentsUserData>(
           *contents),
       content::WebContentsObserver(contents),
+      submit_interaction_tracker_(
+          std::make_unique<SubmitInteractionTracker>(*contents)),
       // The callbacks are only run by `query_contextualizer_`, which is owned
       // by `this`, so `base::Unretained` is safe.
       query_contextualizer_delegate_(std::make_unique<
@@ -611,7 +793,11 @@ void ContextualTasksWebContentsUserData::OnDocumentConnected(
 #endif
   if (page_state.connected_document_id != doc_id) {
     page_state.last_lens_crop_data_uri.clear();
+    if (!page_state.connected_document_id.empty()) {
+      submit_interaction_tracker_->ResetAudioCapture();
+    }
   }
+  submit_interaction_tracker_->EnsureObservingPermissionRequestManager();
   page_state.pending_search_messages.clear();
   page_state.is_lens_crop_mounted = false;
   page_state.has_aim_unsubmitted_input = false;
@@ -768,6 +954,7 @@ bool ContextualTasksWebContentsUserData::OnSearchMessageReceived(
 }
 
 void ContextualTasksWebContentsUserData::OnHandshakeComplete() {
+  submit_interaction_tracker_->EnsureObservingPermissionRequestManager();
   auto& page_state = GetPrimaryPageSearchState();
   if (page_state.handshake_start_time.has_value() &&
       !page_state.handshake_status_recorded) {
@@ -987,6 +1174,9 @@ void ContextualTasksWebContentsUserData::RenderFrameHostChanged(
     content::RenderFrameHost* old_host,
     content::RenderFrameHost* new_host) {
   if (old_host && new_host && new_host->IsInPrimaryMainFrame()) {
+    if (old_host != new_host) {
+      submit_interaction_tracker_->ResetAudioCapture();
+    }
     if (auto* old_state = PageSearchState::GetForPage(old_host->GetPage())) {
       old_state->RecordTeardownMetricsIfNeeded();
     }
@@ -1022,21 +1212,12 @@ void ContextualTasksWebContentsUserData::HandleOnSubmitQueryRequest(
     PostSearchMessage(response_message);
   };
 
-  content::WebContents* web_contents = &GetWebContents();
-  // Require a recent user interaction on the page before attaching context.
-  if (!web_contents->HasRecentInteraction()) {
+  // Require an unconsumed recent user interaction or gesture-initiated
+  // microphone capture on the primary page before attaching context.
+  if (!submit_interaction_tracker_->ConsumeSubmitInteraction()) {
     post_empty_response();
     return;
   }
-
-  // Prevent replay by ensuring each submission consumes a new interaction.
-  base::TimeTicks last_interaction =
-      web_contents->GetLastInteractionTimeTicks();
-  if (last_interaction <= last_handled_submit_interaction_time_) {
-    post_empty_response();
-    return;
-  }
-  last_handled_submit_interaction_time_ = last_interaction;
 
   const bool is_smart_tab_sharing_active = IsSmartTabSharingActive();
   LogThreadWithTabsSubmitted(is_smart_tab_sharing_active);
@@ -2387,6 +2568,7 @@ void ContextualTasksWebContentsUserData::ClearInputPlateState() {
   page_state.is_zero_state = false;
   page_state.has_known_page_state = false;
   page_state.has_aim_unsubmitted_input = false;
+  submit_interaction_tracker_->ResetAudioCapture();
   page_state.last_lens_crop_data_uri.clear();
   if (page_state.is_lens_crop_mounted) {
     page_state.is_lens_crop_mounted = false;
