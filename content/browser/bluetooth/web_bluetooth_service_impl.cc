@@ -1679,6 +1679,12 @@ void WebBluetoothServiceImpl::RequestScanningStart(
   CHECK(!render_frame_host().IsNestedWithinFencedFrame(),
         base::NotFatalUntil::M160);
 
+  blink::mojom::WebBluetoothResult allowed_result = GetBluetoothAllowed();
+  if (allowed_result != blink::mojom::WebBluetoothResult::SUCCESS) {
+    std::move(callback).Run(allowed_result);
+    return;
+  }
+
   const url::Origin requesting_origin = origin();
   const url::Origin embedding_origin =
       render_frame_host().GetMainFrame()->GetLastCommittedOrigin();

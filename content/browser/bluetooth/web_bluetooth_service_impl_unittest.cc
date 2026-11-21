@@ -2747,4 +2747,15 @@ TEST_F(WebBluetoothServiceImplTest,
   EXPECT_EQ(start_future2.Get(), WebBluetoothResult::GATT_NOT_AUTHORIZED);
 }
 
+TEST_F(WebBluetoothServiceImplTest, RequestScanningStart_NotAllowed) {
+  browser_client_.bluetooth_delegate()->set_may_use_bluetooth(false);
+
+  FakeWebBluetoothAdvertisementClient client;
+  base::test::TestFuture<WebBluetoothResult> future;
+  RequestScanningStart(client,
+                       CreateScanFilter(/*name=*/"battery", /*name_prefix=*/""),
+                       future.GetCallback());
+  EXPECT_EQ(future.Get(), WebBluetoothResult::WEB_BLUETOOTH_NOT_SUPPORTED);
+}
+
 }  // namespace content
