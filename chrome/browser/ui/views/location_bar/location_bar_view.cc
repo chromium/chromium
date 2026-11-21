@@ -75,7 +75,6 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_location_bar_host.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_view_browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_full_webui.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
@@ -396,9 +395,6 @@ void LocationBarView::Init() {
           /*controller=*/omnibox_controller_.get(), /*location_bar=*/this,
           std::move(presenter));
       omnibox_popup_view_ = std::move(popup_view);
-    } else if (omnibox::IsWebUIOmniboxInBrowserViewEnabled()) {
-      omnibox_popup_view_ =
-          std::make_unique<OmniboxPopupViewBrowserView>(this, browser_);
     } else if (is_full_webui_omnibox_) {
       std::unique_ptr<OmniboxPopupHost> popup_host;
       if (omnibox::ShouldHostUnboundedOmniboxInLocationBar()) {
@@ -1109,8 +1105,7 @@ void LocationBarView::Update(WebContents* contents) {
     base::AutoReset<bool> in_update(&in_update_, skip_redundant_updates);
     if (contents) {
       omnibox_view_->OnTabChanged(contents);
-      if (is_full_webui_omnibox_ &&
-          !omnibox::IsWebUIOmniboxInBrowserViewEnabled()) {
+      if (is_full_webui_omnibox_) {
         omnibox_popup_view_->OnTabChanged(contents);
       }
     } else {

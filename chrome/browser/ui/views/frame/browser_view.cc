@@ -107,7 +107,6 @@
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
@@ -195,7 +194,6 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/new_tab_footer/footer_web_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
-#include "chrome/browser/ui/views/omnibox/omnibox_popup_view_browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
@@ -4826,17 +4824,6 @@ void BrowserView::Layout(PassKey) {
   toolbar_->location_bar()->UpdateFocusBehavior(IsToolbarVisible());
   GetFrameView()->UpdateMinimumSize();
 
-  if (omnibox::IsWebUIOmniboxInBrowserViewEnabled()) {
-    // When the WebUI Omnibox is embedded directly in the `BrowserView` (instead
-    // of being a separate popup widget), its layout depends on the position of
-    // the `LocationBarView`. We must update its layout after the
-    // `BrowserView` layout to ensure it aligns correctly with the location bar.
-    SafeInvoke(toolbar_->location_bar())
-        .Then(&LocationBar::GetOmniboxPopupView)
-        .Then(&OmniboxPopupView::AsOmniboxPopupViewBrowserView)
-        .Then(&OmniboxPopupViewBrowserView::UpdateLayout);
-  }
-
   // Some of the situations when the BrowserView is laid out are:
   // - Enter/exit immersive fullscreen mode.
   // - Enter/exit tablet mode.
@@ -4971,17 +4958,6 @@ void BrowserView::AddedToWidget() {
 #endif
 
   toolbar_->Init();
-
-  if (omnibox::IsWebUIOmniboxInBrowserViewEnabled()) {
-    // When the WebUI Omnibox is embedded directly in the `BrowserView` (instead
-    // of being a separate popup widget), the popup view needs a reference to
-    // `BrowserView` to add the popup frame as a child view. We inject it here
-    // after the toolbar (and location bar) have been initialized.
-    SafeInvoke(toolbar_->location_bar())
-        .Then(&LocationBar::GetOmniboxPopupView)
-        .Then(&OmniboxPopupView::AsOmniboxPopupViewBrowserView)
-        .Then(&OmniboxPopupViewBrowserView::SetBrowserView, this);
-  }
 
   UpdateTabSearchBubbleHost();
 

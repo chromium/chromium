@@ -1129,8 +1129,6 @@ const FeatureEntry::FeatureParam kWebUIOmniboxPopupDebugSxS[] = {
 const FeatureEntry::FeatureVariation kWebUIOmniboxPopupDebugVariations[] = {
     {"Side by Side", kWebUIOmniboxPopupDebugSxS, nullptr}};
 
-const FeatureEntry::FeatureParam kWebUIOmniboxFullPopupUseBrowserView[] = {
-    {"Omnibox_UseBrowserView", "true"}};
 const FeatureEntry::FeatureParam
     kWebUIOmniboxFullPopupHostUnboundedInLocationBar[] = {
         {"Omnibox_HostUnboundedInLocationBar", "true"}};
@@ -1138,7 +1136,6 @@ const FeatureEntry::FeatureParam kWebUIOmniboxFullPopupMultiline[] = {
     {"Omnibox_Multiline", "true"}};
 
 const FeatureEntry::FeatureVariation kWebUIOmniboxFullPopupVariations[] = {
-    {"- Use BrowserView", kWebUIOmniboxFullPopupUseBrowserView, nullptr},
     {"- with Multiline", kWebUIOmniboxFullPopupMultiline, nullptr},
     {"- Host unbounded in LocationBar",
      kWebUIOmniboxFullPopupHostUnboundedInLocationBar, nullptr},

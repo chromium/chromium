@@ -354,11 +354,6 @@ bool ShouldUseWebUIOmniboxFullHandler() {
              omnibox::kWebUISearchboxWithoutModelController);
 }
 
-bool IsWebUIOmniboxInBrowserViewEnabled() {
-  return internal::IsWebUIOmniboxFullPopupEnabled() &&
-         kWebUIOmniboxFullPopupUseBrowserView.Get();
-}
-
 bool ShouldHostUnboundedOmniboxInLocationBar() {
   // TODO(crbug.com/584371333): WebUILocationBar doesn't host the omnibox in
   // the location bar yet.
@@ -601,8 +596,6 @@ const base::FeatureParam<bool> kContextButtonShapeIsOblong{
 const base::FeatureParam<bool> kContextButtonShowSuggestionLabel{
     &internal::kWebUIOmniboxSimplification,
     "Omnibox_ContextButtonShowSuggestionLabel", false};
-const base::FeatureParam<bool> kWebUIOmniboxFullPopupUseBrowserView{
-    &internal::kWebUIOmniboxFullPopup, "Omnibox_UseBrowserView", false};
 const base::FeatureParam<bool> kWebUIOmniboxFullPopupHostUnboundedInLocationBar{
     &internal::kWebUIOmniboxFullPopup, "Omnibox_HostUnboundedInLocationBar",
     false};

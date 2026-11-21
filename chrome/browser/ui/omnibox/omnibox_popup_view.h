@@ -25,7 +25,6 @@ class OmniboxController;
 class OmniboxPopupHost;
 class OmniboxResultView;
 class OmniboxSuggestionButtonRowView;
-class OmniboxPopupViewBrowserView;
 namespace gfx {
 class Point;
 }
@@ -144,9 +143,6 @@ class OmniboxPopupView {
 
   // Called when a browser fullscreen transition starts, in either direction.
   virtual void OnFullscreenTransitionStarting() {}
-
-  // Safe downcasting to the BrowserView-embedded implementation.
-  virtual OmniboxPopupViewBrowserView* AsOmniboxPopupViewBrowserView();
 
   base::TimeTicks construction_time() const { return construction_time_; }
 

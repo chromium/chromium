@@ -31,10 +31,6 @@ std::u16string_view OmniboxPopupView::GetAccessibleButtonTextForResult(
   return {};
 }
 
-OmniboxPopupViewBrowserView* OmniboxPopupView::AsOmniboxPopupViewBrowserView() {
-  return nullptr;
-}
-
 bool OmniboxPopupView::IsPopupHandlerReady() const {
   return false;
 }
