@@ -10,6 +10,10 @@
 static const char* const kOrtEpDevice_EpMetadataKey_Version = "version";
 
 // Key for the execution provider OS driver version.
+// Value should be a 4-part dot-separated version string in the format "a.b.c.d" (e.g., "31.0.101.4502").
+// This maps to the Windows DXCore adapter property DXCoreAdapterProperty::DriverVersion
+// (https://learn.microsoft.com/en-us/windows/win32/api/dxcore_interface/ne-dxcore_interface-dxcoreadapterproperty).
+// On non-Windows platforms, the EP should provide an equivalent OS-level driver version if available.
 static const char* const kOrtEpDevice_EpMetadataKey_OSDriverVersion = "os_driver_version";
 
 // Prefix for execution provider compatibility information stored in model metadata.

@@ -15,14 +15,15 @@ windows_app_sdk_headers = [
     "inc/abi/winml/winml/onnxruntime_c_api.h",
     "inc/abi/winml/winml/onnxruntime_ep_c_api.h",
     "inc/abi/winml/winml/onnxruntime_ep_device_ep_metadata_keys.h",
+    "inc/abi/winml/winml/onnxruntime_error_code.h",
     "inc/abi/winml/winml/onnxruntime_session_options_config_keys.h",
 ]
 headers = [version_info_header] + windows_app_sdk_headers
 
 # The target revision of WindowsAppSDK
-revision = "3e1905de7f390ea4bf4c16205341b2b7bd15de30"
+revision = "c5fbfa2932a43874120698ab1610b6705042292b"
 # The target version of WindowsAppSDK
-version = "2.0.1"
+version = "2.7.0"
 
 base_url = "https://raw.githubusercontent.com/microsoft/WindowsAppSDK"
 # Source URL for the current revision of WindowsAppSDK headers

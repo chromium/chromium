@@ -12,6 +12,7 @@ source_set("windows_app_sdk_headers") {
     "src/inc/abi/winml/winml/onnxruntime_c_api.h",
     "src/inc/abi/winml/winml/onnxruntime_ep_c_api.h",
     "src/inc/abi/winml/winml/onnxruntime_ep_device_ep_metadata_keys.h",
+    "src/inc/abi/winml/winml/onnxruntime_error_code.h",
     "src/inc/abi/winml/winml/onnxruntime_session_options_config_keys.h",
   ]
 
