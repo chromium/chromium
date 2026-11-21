@@ -109,7 +109,6 @@ suite('ComposeboxVoiceSearch', () => {
       voiceSearchCoherenceComposeboxesEnabled: false,
       voiceSearchCoherenceAnySearchboxExperimentEnabled: false,
       voiceSearchCoherenceCobrowsingComposeboxEnabled: false,
-      isSystemVoiceSearchEnabled: false,
       androidSpeechRecognition: false,
       composeboxSource: 'NTP_REALBOX',
     });

@@ -1984,14 +1984,6 @@ export const ComposeboxEmbedderMixin =
         }
 
         onVoiceSearchButtonClick() {
-          const isSystemVoiceSearchEnabled =
-              loadTimeData.valueExists('isSystemVoiceSearchEnabled') &&
-              loadTimeData.getBoolean('isSystemVoiceSearchEnabled');
-          if (isSystemVoiceSearchEnabled) {
-            this.getPageHandler().startPlatformVoiceRecognition();
-            return;
-          }
-
           if (this.inVoiceSearchMode) {
             return;
           }

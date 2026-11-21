@@ -97,7 +97,6 @@ class TestComposeboxWebUIController : public TestMojoWebUIController {
                        !BUILDFLAG(IS_ANDROID));
     source->AddBoolean("supportsLensButtonInComposebox",
                        !BUILDFLAG(IS_ANDROID));
-    source->AddBoolean("isSystemVoiceSearchEnabled", false);
     source->AddBoolean("androidSpeechRecognition", false);
     source->AddBoolean("clearAllInputsWhenSubmittingQuery", false);
     source->AddBoolean("lensSendRawFileMediaTypesEnabled", false);

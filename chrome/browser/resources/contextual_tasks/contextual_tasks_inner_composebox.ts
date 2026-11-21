@@ -290,6 +290,14 @@ export class
         'voiceSearchCoherenceCobrowsingComposeboxEnabled');
   }
 
+  override onVoiceSearchButtonClick() {
+    if (loadTimeData.getBoolean('isSystemVoiceSearchEnabled')) {
+      this.getPageHandler().startPlatformVoiceRecognition();
+      return;
+    }
+    super.onVoiceSearchButtonClick();
+  }
+
   private setupResizeObservers_() {
     const composeboxResizeObserver = new ResizeObserver(debounceEnd(() => {
       this.fire('composebox-resize', {height: this.offsetHeight});

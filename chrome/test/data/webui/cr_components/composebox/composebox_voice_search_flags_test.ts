@@ -57,7 +57,6 @@ suite('ComposeboxVoiceSearchFlags', () => {
       voiceSearchCoherenceComposeboxesEnabled: false,
       voiceSearchCoherenceAnySearchboxExperimentEnabled: false,
       voiceSearchCoherenceCobrowsingComposeboxEnabled: false,
-      isSystemVoiceSearchEnabled: false,
       androidSpeechRecognition: false,
     });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
