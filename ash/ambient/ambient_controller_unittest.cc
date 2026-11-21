@@ -670,7 +670,7 @@ TEST_F(AmbientControllerTest,
                    device::mojom::WakeLockType::kPreventDisplaySleep));
 
   HideAmbientScreen();
-  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(WaitForDisplayWakeLockRelease());
 
   EXPECT_EQ(0, GetNumOfActiveWakeLocks(
                    device::mojom::WakeLockType::kPreventDisplaySleep));
@@ -683,7 +683,7 @@ TEST_F(AmbientControllerTest,
 
   // Unlock screen to exit ambient mode.
   UnlockScreen();
-  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(WaitForDisplayWakeLockRelease());
 
   EXPECT_EQ(0, GetNumOfActiveWakeLocks(
                    device::mojom::WakeLockType::kPreventDisplaySleep));
@@ -705,7 +705,7 @@ TEST_F(AmbientControllerTest,
                    device::mojom::WakeLockType::kPreventDisplaySleep));
 
   HideAmbientScreen();
-  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(WaitForDisplayWakeLockRelease());
 
   EXPECT_EQ(0, GetNumOfActiveWakeLocks(
                    device::mojom::WakeLockType::kPreventDisplaySleep));
@@ -718,7 +718,7 @@ TEST_F(AmbientControllerTest,
 
   // Unlock screen to exit ambient mode.
   UnlockScreen();
-  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(WaitForDisplayWakeLockRelease());
 
   EXPECT_EQ(0, GetNumOfActiveWakeLocks(
                    device::mojom::WakeLockType::kPreventDisplaySleep));
@@ -740,7 +740,6 @@ TEST_F(AmbientControllerTest,
 
   // External official power connected, should acquire wake lock.
   SetExternalPowerConnected();
-  base::RunLoop().RunUntilIdle();
   HideAmbientScreen();
   FastForwardByLockScreenInactivityTimeout();
   FastForwardTiny();
@@ -751,7 +750,7 @@ TEST_F(AmbientControllerTest,
   // External USB power connected, should not acquire wake lock because the
   // power is not strong enough.
   SetExternalUsbPowerConnected();
-  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(WaitForDisplayWakeLockRelease());
   HideAmbientScreen();
   FastForwardByLockScreenInactivityTimeout();
   FastForwardTiny();
@@ -761,7 +760,6 @@ TEST_F(AmbientControllerTest,
 
   // When the battery is charging, should acquire wake lock.
   SetPowerStateCharging();
-  base::RunLoop().RunUntilIdle();
   HideAmbientScreen();
   FastForwardByLockScreenInactivityTimeout();
   FastForwardTiny();
