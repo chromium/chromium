@@ -402,8 +402,8 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         // Initialize the NTP theme customization listener before setting up top inset observers so
         // that NtpCustomizationConfigManager is initialized before observers query
         // supportsEdgeToEdgeOnTop(). The listener to observe custom background changes is added in
-        // all form factors as long as the feature is enabled.
-        if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
+        // all form factors as long as NTP theme customization is enabled by policy.
+        if (NtpCustomizationUtils.isNtpThemeCustomizationEnabledByPolicy()) {
             initHomepageStateListener();
         }
         if (mSupportsEnableEdgeToEdgeOnTop) {

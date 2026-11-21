@@ -177,7 +177,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final NonNullObservableSupplier<Integer> mKeyboardHeightSupplier;
     private final WindowAndroid mWindowAndroid;
     private final int mHairlineHeight;
-    private final boolean mIsNtpThemeCustomizationEnabled;
+    private final boolean mIsNtpThemeCustomizationEnabledByPolicy;
 
     private int mAndroidControlsHidingToken = TokenHolder.INVALID_TOKEN;
 
@@ -463,7 +463,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
         mKeyboardHeightSupplier.addSyncObserverAndPostIfNonNull(mKeyboardHeightProgressBarCallback);
 
         // Set up observer to handle edge-to-edge changes.
-        mIsNtpThemeCustomizationEnabled = NtpCustomizationUtils.isNtpThemeCustomizationEnabled();
+        mIsNtpThemeCustomizationEnabledByPolicy =
+                NtpCustomizationUtils.isNtpThemeCustomizationEnabledByPolicy();
         mTopInsetProviderObserver = this::onToEdgeChange;
         if (EdgeToEdgeUtils.isEdgeToEdgeRefactorEnabled()) {
             mEdgeToEdgeControllerCallback =
@@ -927,7 +928,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
      */
     @VisibleForTesting
     void maybeForceBottomToolbarLayoutUpdateAndCapture(boolean isNtpShowing) {
-        if (!mIsNtpThemeCustomizationEnabled) return;
+        if (!mIsNtpThemeCustomizationEnabledByPolicy) return;
 
         if (isNtpShowing) {
             // On certain devices, the toolbar position could switch from top to bottom, and then

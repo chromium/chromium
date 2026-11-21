@@ -110,9 +110,9 @@ public class NtpSyncedThemeManager
      * @param profile The original (non-incognito) profile.
      */
     public void onFinishNativeInitialization(Profile profile) {
-        // The manager is attached on tablets regardless of the feature. Both the feature and the
-        // policy are fixed for the lifetime of the process.
-        if (!NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) return;
+        // On tablets, this method is called regardless of the policy, so guard here. The policy is
+        // fixed for the lifetime of the process.
+        if (!NtpCustomizationUtils.isNtpThemeCustomizationEnabledByPolicy()) return;
 
         if (mProfile == profile) return;
 

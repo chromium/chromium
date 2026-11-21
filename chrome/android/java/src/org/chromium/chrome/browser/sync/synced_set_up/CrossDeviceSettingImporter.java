@@ -1453,7 +1453,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     boolean isThemeFeatureEnabled() {
         return ChromeFeatureList.sXplatSyncedSetupThemes.isEnabled()
                 && ChromeFeatureList.sNewTabPageCustomizationThemeSync.isEnabled()
-                && NtpCustomizationUtils.isNtpThemeCustomizationEnabled();
+                && NtpCustomizationUtils.isNtpThemeCustomizationEnabledByPolicy();
     }
 
     /**

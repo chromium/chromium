@@ -245,7 +245,7 @@ public class NtpThemeDailyRefreshManager {
     public void maybeSaveDailyRefreshAndReset(
             Context context, Runnable onDailyRefreshThemeCollectionApplied) {
         if ((!mIsDailyUpdateApplied && !mShouldSkipDailyRefreshForThemeCollection)
-                || !NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
+                || !NtpCustomizationUtils.isNtpThemeCustomizationEnabledByPolicy()) {
             return;
         }
 

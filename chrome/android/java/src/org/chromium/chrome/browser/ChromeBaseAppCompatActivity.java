@@ -270,7 +270,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     protected void onStart() {
         super.onStart();
 
-        if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
+        if (NtpCustomizationUtils.isNtpThemeCustomizationEnabledByPolicy()) {
             if (mNtpThemeStateObserver == null) {
                 mNtpThemeStateObserver = this::recreate;
                 NtpThemeStateProvider.getInstance().addObserver(mNtpThemeStateObserver);

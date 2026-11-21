@@ -362,7 +362,7 @@ public class NtpCustomizationUtils {
     }
 
     /** Returns whether custom Ntp's background theme is enabled by policy. */
-    public static boolean isNtpThemeCustomizationEnabled() {
+    public static boolean isNtpThemeCustomizationEnabledByPolicy() {
         return NtpCustomizationPolicyManager.getInstance().isNtpCustomBackgroundEnabled();
     }
 
@@ -374,7 +374,7 @@ public class NtpCustomizationUtils {
      */
     public static boolean isNtpThemeCustomizationEnabled(
             WindowAndroid windowAndroid, boolean isLff) {
-        if (!isNtpThemeCustomizationEnabled()) {
+        if (!isNtpThemeCustomizationEnabledByPolicy()) {
             return false;
         }
 
@@ -508,7 +508,7 @@ public class NtpCustomizationUtils {
      * NtpBackgroundType.DEFAULT if NTP theme customization is disabled by policy.
      */
     public static @NtpBackgroundType int getNtpBackgroundType() {
-        if (!isNtpThemeCustomizationEnabled()) {
+        if (!isNtpThemeCustomizationEnabledByPolicy()) {
             return NtpBackgroundType.DEFAULT;
         }
 
@@ -593,7 +593,7 @@ public class NtpCustomizationUtils {
 
     /** Returns whether a white background should be applied on the composeplate. */
     public static boolean shouldApplyWhiteBackgroundOnComposeplate() {
-        if (!NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
+        if (!isNtpThemeCustomizationEnabledByPolicy()) {
             return false;
         }
 
@@ -1177,14 +1177,14 @@ public class NtpCustomizationUtils {
     }
 
     /**
-     * Returns whether all flags are enabled to support truly edge-to-edge for customized theme on
-     * top.
+     * Returns whether truly edge-to-edge for customized theme on top is supported for the current
+     * form factor, SDK version, enterprise policy, and window state.
      */
     public static boolean supportsEnableEdgeToEdgeOnTop(
             WindowAndroid windowAndroid, boolean isLff) {
         return !isLff
                 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-                && NtpCustomizationUtils.isNtpThemeCustomizationEnabled()
+                && isNtpThemeCustomizationEnabledByPolicy()
                 && EdgeToEdgeStateProvider.isEdgeToEdgeEnabledForWindow(windowAndroid);
     }
 

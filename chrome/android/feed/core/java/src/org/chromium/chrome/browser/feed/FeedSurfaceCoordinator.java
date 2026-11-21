@@ -435,8 +435,8 @@ public class FeedSurfaceCoordinator
         mHeaderIndex = 0;
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mUseStaggeredLayout = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
-        boolean isNtpThemeCustomizationEnabled =
-                NtpCustomizationUtils.isNtpThemeCustomizationEnabled();
+        boolean isNtpThemeCustomizationEnabledByPolicy =
+                NtpCustomizationUtils.isNtpThemeCustomizationEnabledByPolicy();
         mDefaultBackgroundColor = ChromeSemanticColorUtils.getHomeSurfaceBackgroundColor(mActivity);
 
         mRootView = new RootView(mActivity);
@@ -456,7 +456,7 @@ public class FeedSurfaceCoordinator
         mFeedStreamViewResizer =
                 FeedStreamViewResizer.createAndAttach(mActivity, mRecyclerView, mUiConfig);
 
-        if (isNtpThemeCustomizationEnabled) {
+        if (isNtpThemeCustomizationEnabledByPolicy) {
             mNtpBackgroundImageCoordinator =
                     new NtpBackgroundImageCoordinator(
                             mActivity, mRootView, mUiConfig, mDefaultBackgroundColor);
@@ -485,7 +485,7 @@ public class FeedSurfaceCoordinator
             mRootView.addView(mNtpCustomizationButton);
         }
 
-        if (isNtpThemeCustomizationEnabled) {
+        if (isNtpThemeCustomizationEnabledByPolicy) {
             mNtpCustomizationConfigManager = NtpCustomizationConfigManager.getInstance();
             mHomepageStateListener =
                     new HomepageStateListener() {

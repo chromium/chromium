@@ -1695,7 +1695,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             new NavigationPredictorBridge(
                     originalProfile, getLifecycleDispatcher(), this::isWarmOnResume);
 
-            if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled() && !isIncognitoWindow()) {
+            if (NtpCustomizationUtils.isNtpThemeCustomizationEnabledByPolicy()
+                    && !isIncognitoWindow()) {
                 CrossDeviceThemeTracker themeTracker =
                         CrossDeviceThemeTracker.getForProfile(originalProfile);
                 if (themeTracker != null) {
@@ -4277,7 +4278,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             NtpCustomizationPolicyManager.getInstance().onDeferredStartup();
         }
 
-        if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
+        if (NtpCustomizationUtils.isNtpThemeCustomizationEnabledByPolicy()) {
             NtpThemeDailyRefreshManager.getInstance()
                     .maybeSaveDailyRefreshAndReset(
                             this,

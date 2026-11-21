@@ -215,16 +215,16 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    public void testIsNtpThemeCustomizationEnabled() {
+    public void testIsNtpThemeCustomizationEnabledByPolicy() {
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
         NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
         NtpCustomizationPolicyManager.setInstanceForTesting(policyManager);
         when(policyManager.isNtpCustomBackgroundEnabled()).thenReturn(true);
 
-        assertTrue(NtpCustomizationUtils.isNtpThemeCustomizationEnabled());
+        assertTrue(NtpCustomizationUtils.isNtpThemeCustomizationEnabledByPolicy());
 
         when(policyManager.isNtpCustomBackgroundEnabled()).thenReturn(false);
-        assertFalse(NtpCustomizationUtils.isNtpThemeCustomizationEnabled());
+        assertFalse(NtpCustomizationUtils.isNtpThemeCustomizationEnabledByPolicy());
     }
 
     @Test
@@ -273,7 +273,7 @@ public class NtpCustomizationUtilsUnitTest {
     @EnableFeatures({ChromeFeatureList.USE_WEB_UI_NTP_ANDROID})
     public void testIsNtpThemeCustomizationEnabledWithWindowAndroid_WebUiNtpEnabled() {
         DeviceInfo.setIsDesktopForTesting(true);
-        // Skips the early exit: !isNtpThemeCustomizationEnabled()
+        // Skips the early exit: !isNtpThemeCustomizationEnabledByPolicy()
         NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
         NtpCustomizationPolicyManager.setInstanceForTesting(policyManager);
         when(policyManager.isNtpCustomBackgroundEnabled()).thenReturn(true);

@@ -118,7 +118,7 @@ public class LogoCoordinator {
     }
 
     private void maybeInitHomepageStateListener(Context context) {
-        if (!NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {
+        if (!NtpCustomizationUtils.isNtpThemeCustomizationEnabledByPolicy()) {
             return;
         }
 
