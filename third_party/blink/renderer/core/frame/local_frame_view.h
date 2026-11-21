@@ -510,6 +510,7 @@ class CORE_EXPORT LocalFrameView final
                           bool same_document_navigation,
                           bool should_scroll = true);
   FragmentAnchor* GetFragmentAnchor() { return fragment_anchor_.Get(); }
+  void SetFragmentAnchor(FragmentAnchor*);
   void InvokeFragmentAnchor();
   void ClearFragmentAnchor();
 

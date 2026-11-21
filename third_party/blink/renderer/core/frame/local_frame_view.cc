@@ -1736,8 +1736,7 @@ void LocalFrameView::ProcessUrlFragment(const KURL& url,
       FragmentAnchor::TryCreate(url, *frame_, should_scroll);
 
   if (anchor) {
-    fragment_anchor_ = anchor;
-    fragment_anchor_->Installed();
+    SetFragmentAnchor(anchor);
     // Post-load, same-document navigations need to schedule a frame in which
     // the fragment anchor will be invoked. It will be done after layout as
     // part of the lifecycle.
@@ -2030,6 +2029,12 @@ void LocalFrameView::UpdateBaseBackgroundColorRecursively(
       [base_background_color](LocalFrameView& frame_view) {
         frame_view.SetBaseBackgroundColor(base_background_color);
       });
+}
+
+void LocalFrameView::SetFragmentAnchor(FragmentAnchor* anchor) {
+  DCHECK(anchor);
+  fragment_anchor_ = anchor;
+  fragment_anchor_->Installed();
 }
 
 void LocalFrameView::InvokeFragmentAnchor() {
