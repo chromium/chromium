@@ -396,13 +396,7 @@ class GeneratedCodeCache::PendingOperation {
   scoped_refptr<net::IOBufferWithSize> small_buffer() { return small_buffer_; }
   scoped_refptr<BigIOBuffer> large_buffer() { return large_buffer_; }
   ReadDataCallback TakeReadCallback() { return std::move(read_callback_); }
-  void RunReadCallback(GeneratedCodeCache* code_cache,
-                       base::Time response_time,
-                       mojo_base::BigBuffer data) {
-    if (code_cache->cache_type_ == CodeCacheType::kJavaScript) {
-      base::UmaHistogramBoolean("SiteIsolatedCodeCache.JS.Hit",
-                                data.size() > 0);
-    }
+  void RunReadCallback(base::Time response_time, mojo_base::BigBuffer data) {
     std::move(read_callback_).Run(response_time, std::move(data));
   }
   GetBackendCallback TakeBackendCallback() {
@@ -795,7 +789,7 @@ void GeneratedCodeCache::FetchEntryImpl(PendingOperation* op) {
         base::NotFatalUntil::M159);
 
   if (backend_state_ != kInitialized) {
-    op->RunReadCallback(this, base::Time(), mojo_base::BigBuffer());
+    op->RunReadCallback(base::Time(), mojo_base::BigBuffer());
     CloseOperationAndIssueNext(op);
     return;
   }
@@ -819,7 +813,7 @@ void GeneratedCodeCache::OpenCompleteForRead(
   if (entry_result.net_error() != net::OK) {
     CollectStatistics(op->resource_url(), op->origin_lock(),
                       CacheEntryStatus::kMiss);
-    op->RunReadCallback(this, base::Time(), mojo_base::BigBuffer());
+    op->RunReadCallback(base::Time(), mojo_base::BigBuffer());
     CloseOperationAndIssueNext(op);
     return;
   }
@@ -902,7 +896,7 @@ void GeneratedCodeCache::ReadComplete(PendingOperation* op) {
             Operation::kFetchWithSHAKey == op->operation(),
         base::NotFatalUntil::M159);
   if (!op->succeeded()) {
-    op->RunReadCallback(this, base::Time(), mojo_base::BigBuffer());
+    op->RunReadCallback(base::Time(), mojo_base::BigBuffer());
     // Doom this entry since it is inaccessible.
     DoomEntry(op);
   } else {
@@ -918,12 +912,11 @@ void GeneratedCodeCache::ReadComplete(PendingOperation* op) {
         DCHECK_EQ(0, op->large_buffer()->size());
         mojo_base::BigBuffer data(
             op->small_buffer()->span().subspan(kHeaderSizeInBytes, data_size));
-        op->RunReadCallback(this, response_time, std::move(data));
+        op->RunReadCallback(response_time, std::move(data));
       } else if (!ShouldDeduplicateEntry(data_size)) {
         // Large data below the merging threshold, or deduplication is disabled.
         // Return the large buffer.
-        op->RunReadCallback(this, response_time,
-                            op->large_buffer()->TakeBuffer());
+        op->RunReadCallback(response_time, op->large_buffer()->TakeBuffer());
       } else {
         // Very large data. Create the second fetch using the checksum as key.
         CHECK_EQ(static_cast<int>(kHeaderSizeInBytes + kSHAKeySizeInBytes),
@@ -941,7 +934,7 @@ void GeneratedCodeCache::ReadComplete(PendingOperation* op) {
       }
     } else {
       // Large merged code data with no header. |op| holds the response time.
-      op->RunReadCallback(this, op->response_time(),
+      op->RunReadCallback(op->response_time(),
                           op->large_buffer()->TakeBuffer());
     }
   }
