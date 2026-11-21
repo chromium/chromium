@@ -27,11 +27,16 @@
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_devtools_protocol_client.h"
+#include "content/public/test/test_navigation_observer.h"
+#include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_options.h"
@@ -43,6 +48,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -311,6 +317,15 @@ class GlicCicProxyBrowserTestBase : public GlicBrowserTest {
           "<!doctype html><html><body>"
           "<div id=\"sandbox-marker\">from-cic-sandbox</div>"
           "</body></html>");
+      return response;
+    }
+
+    if (path == "/cic/test_script.js") {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_OK);
+      response->set_content_type("text/javascript; charset=utf-8");
+      response->AddCustomHeader("Cache-Control", "no-store");
+      response->set_content("window.__cicScriptLoaded = true;");
       return response;
     }
 
@@ -816,7 +831,185 @@ IN_PROC_BROWSER_TEST_F(
   )js"));
 }
 
-// 5. When `kGlicCic` is disabled, requests are NOT proxied.
+// 5. CDP `Network.emulateNetworkConditions` applies end-to-end across the CiC
+// proxy boundary for both main-frame navigations (`/glic`) and subresources
+// (`/cic/*` fetch, script, POST upload) without leaking the upstream CiC origin
+// or corp SSO URLs via DevTools.
+IN_PROC_BROWSER_TEST_F(GlicCicProxyBrowserTest,
+                       HonorsDevToolsNetworkConditionsEmulation) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient(instance));
+
+  content::WebContents* guest_contents = instance->host().web_client_contents();
+  ASSERT_TRUE(guest_contents);
+
+  content::TestDevToolsProtocolClient devtools_client;
+  devtools_client.AttachToWebContents(guest_contents);
+  devtools_client.SendCommandSync("Network.enable");
+  devtools_client.SendCommandSync("Network.setCacheDisabled",
+                                  base::DictValue().Set("cacheDisabled", true));
+
+  auto set_conditions = [&](bool offline, double latency_ms,
+                            double download_bps, double upload_bps) {
+    devtools_client.SendCommandSync("Network.emulateNetworkConditions",
+                                    base::DictValue()
+                                        .Set("offline", offline)
+                                        .Set("latency", latency_ms)
+                                        .Set("downloadThroughput", download_bps)
+                                        .Set("uploadThroughput", upload_bps));
+    // Flush the guest StoragePartition's NetworkContext Mojo pipe so the
+    // network service updates `network::ThrottlingController` before proxied
+    // requests issue on the default StoragePartition's URLLoaderFactory pipe.
+    guest_contents->GetPrimaryMainFrame()
+        ->GetStoragePartition()
+        ->FlushNetworkInterfaceForTesting();
+  };
+
+  // Phase 1: Emulate offline -> proxied subresources (GET fetch, <script>, POST
+  // upload) and main-frame `/glic` navigation must fail with
+  // `ERR_INTERNET_DISCONNECTED` without reaching `cic_server_`.
+  set_conditions(/*offline=*/true, /*latency_ms=*/0, /*download_bps=*/-1,
+                 /*upload_bps=*/-1);
+  devtools_client.ClearNotifications();
+  const int hits_before_offline = cic_total_hits();
+
+  EXPECT_EQ("rejected", content::EvalJs(guest_contents, R"js(
+    fetch('/cic/api/healthz')
+      .then(() => 'succeeded')
+      .catch(() => 'rejected')
+  )js"));
+  devtools_client.WaitForMatchingNotification(
+      "Network.loadingFailed",
+      base::BindRepeating([](const base::DictValue& params) {
+        const std::string* error_text = params.FindString("errorText");
+        return error_text && *error_text == "net::ERR_INTERNET_DISCONNECTED";
+      }));
+
+  EXPECT_EQ("error", content::EvalJs(guest_contents, R"js(
+    new Promise(resolve => {
+      const s = document.createElement('script');
+      s.src = '/cic/test_script.js';
+      s.onload = () => resolve('loaded');
+      s.onerror = () => resolve('error');
+      document.head.appendChild(s);
+    })
+  )js"));
+
+  EXPECT_EQ("rejected", content::EvalJs(guest_contents, R"js(
+    fetch('/cic/api/echo', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({hello: 'offline'}),
+    })
+      .then(() => 'succeeded')
+      .catch(() => 'rejected')
+  )js"));
+
+  const GURL glic_url =
+      GetGlicHttpsTestServer()->GetURL(kGuestHostname, "/glic");
+  {
+    content::TestNavigationObserver nav_observer(guest_contents);
+    guest_contents->GetController().LoadURL(glic_url, content::Referrer(),
+                                            ui::PAGE_TRANSITION_TYPED,
+                                            std::string());
+    nav_observer.Wait();
+    EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+    EXPECT_EQ(nav_observer.last_net_error_code(),
+              net::ERR_INTERNET_DISCONNECTED);
+  }
+  EXPECT_EQ(cic_total_hits(), hits_before_offline);
+
+  // Phase 2: Switch back online with active latency + download/upload
+  // throttling. Verify proxied navigation, GET/POST fetches, and <script> all
+  // succeed cleanly through `ThrottlingNetworkTransaction` /
+  // `ThrottlingUploadDataStream`.
+  set_conditions(/*offline=*/false, /*latency_ms=*/1,
+                 /*download_bps=*/1000000, /*upload_bps=*/1000000);
+  devtools_client.ClearNotifications();
+
+  ASSERT_TRUE(content::NavigateToURL(guest_contents, glic_url));
+  EXPECT_EQ(GetGuestOrigin(GetProfile()),
+            guest_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  EXPECT_EQ(
+      "from-cic-server",
+      content::EvalJs(guest_contents,
+                      "document.getElementById('source-marker').textContent"));
+
+  EXPECT_EQ(R"({"status":"ok","source":"cic"})",
+            content::EvalJs(guest_contents,
+                            "fetch('/cic/api/healthz').then(r => r.text())"));
+
+  EXPECT_EQ(true, content::EvalJs(guest_contents, R"js(
+    new Promise((resolve, reject) => {
+      window.__cicScriptLoaded = false;
+      const s = document.createElement('script');
+      s.src = '/cic/test_script.js';
+      s.onload = () => resolve(Boolean(window.__cicScriptLoaded));
+      s.onerror = () => reject(new Error('script load failed'));
+      document.head.appendChild(s);
+    })
+  )js"));
+
+  EXPECT_EQ("POST", content::EvalJs(guest_contents, R"js(
+    fetch('/cic/api/echo', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({hello: 'throttled'}),
+    }).then(r => r.json()).then(d => d.method)
+  )js"));
+
+  // Silent corp SSO bounce also works under active throttling without exposing
+  // the corp login host or upstream origin to DevTools.
+  EXPECT_EQ(
+      R"({"status":"ok","sso":"minted"})",
+      content::EvalJs(guest_contents,
+                      "fetch('/cic/api/silent_sso').then(r => r.text())"));
+
+  // Confirm the DevTools session observes the guest origin URL (not the
+  // rewritten upstream `cic_base_url()` or `login.corp.google.com`) and does
+  // not receive stripped `Set-Cookie` headers.
+  base::DictValue healthz_event = devtools_client.WaitForMatchingNotification(
+      "Network.responseReceived",
+      base::BindRepeating([](const base::DictValue& params) {
+        const base::DictValue* response = params.FindDict("response");
+        const std::string* url =
+            response ? response->FindString("url") : nullptr;
+        return url && url->ends_with("/cic/api/healthz");
+      }));
+  const std::string* observed_url =
+      healthz_event.FindStringByDottedPath("response.url");
+  ASSERT_TRUE(observed_url);
+  EXPECT_TRUE(observed_url->starts_with(
+      GetGlicHttpsTestServer()->GetURL(kGuestHostname, "/").spec()));
+  EXPECT_EQ(observed_url->find(cic_base_url().spec()), std::string::npos);
+  const base::DictValue* observed_headers =
+      healthz_event.FindDictByDottedPath("response.headers");
+  ASSERT_TRUE(observed_headers);
+  EXPECT_FALSE(observed_headers->FindString("set-cookie"));
+  EXPECT_FALSE(observed_headers->FindString("Set-Cookie"));
+
+  base::DictValue sso_event = devtools_client.WaitForMatchingNotification(
+      "Network.responseReceived",
+      base::BindRepeating([](const base::DictValue& params) {
+        const base::DictValue* response = params.FindDict("response");
+        const std::string* url =
+            response ? response->FindString("url") : nullptr;
+        return url && url->ends_with("/cic/api/silent_sso");
+      }));
+  const std::string* sso_url = sso_event.FindStringByDottedPath("response.url");
+  ASSERT_TRUE(sso_url);
+  EXPECT_TRUE(sso_url->starts_with(
+      GetGlicHttpsTestServer()->GetURL(kGuestHostname, "/").spec()));
+  EXPECT_EQ(sso_url->find(kCorpLoginHostname), std::string::npos);
+  EXPECT_EQ(sso_url->find(cic_base_url().spec()), std::string::npos);
+
+  // Clean up throttling before detaching the DevTools client.
+  set_conditions(/*offline=*/false, /*latency_ms=*/0, /*download_bps=*/-1,
+                 /*upload_bps=*/-1);
+  devtools_client.DetachProtocolClient();
+}
+
+// 6. When `kGlicCic` is disabled, requests are NOT proxied.
 IN_PROC_BROWSER_TEST_F(GlicCicProxyDisabledBrowserTest,
                        DoesNotProxyWhenFeatureDisabled) {
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());

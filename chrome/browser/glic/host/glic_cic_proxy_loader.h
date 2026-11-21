@@ -11,6 +11,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/self_deleting.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/content_browser_client.h"
@@ -19,6 +20,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_factory_builder.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -116,12 +118,16 @@ class GlicCicProxyingURLLoaderFactory
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override;
 
+  void SetUpstreamFactoryForTesting(
+      scoped_refptr<network::SharedURLLoaderFactory> upstream_factory);
+
  private:
   ~GlicCicProxyingURLLoaderFactory() override;
   void OnTargetFactoryError();
 
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
   base::WeakPtr<Profile> profile_;
+  scoped_refptr<network::SharedURLLoaderFactory> upstream_factory_for_testing_;
   const content::ContentBrowserClient::URLLoaderFactoryType type_;
   const bool is_primary_main_frame_;
   const url::Origin guest_origin_;

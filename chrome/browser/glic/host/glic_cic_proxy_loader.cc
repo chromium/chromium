@@ -419,6 +419,19 @@ class GlicCicProxyURLLoader final : public network::mojom::URLLoader,
     upstream_request.enable_upload_progress =
         original_request.enable_upload_progress;
     upstream_request.enable_load_timing = original_request.enable_load_timing;
+    // Forward `throttling_profile_id` so CDP `Network.emulateNetworkConditions`
+    // throttling applies across the proxy boundary
+    // (`network::ThrottlingController` is a network-service-wide singleton
+    // keyed by this token). Leave `devtools_request_id` and `devtools_observer`
+    // unset so cross-origin corp SSO redirects, cookies, and raw upstream
+    // headers are never exposed to the guest's DevTools observer. Guard against
+    // empty `UnguessableToken` values, which Mojo rejects during
+    // deserialization.
+    if (original_request.throttling_profile_id &&
+        !original_request.throttling_profile_id->is_empty()) {
+      upstream_request.throttling_profile_id =
+          original_request.throttling_profile_id;
+    }
     upstream_request.credentials_mode =
         network::mojom::CredentialsMode::kInclude;
     const url::Origin upstream_origin =
@@ -742,6 +755,11 @@ void GlicCicProxyingURLLoaderFactory::MaybeProxyRequest(
       std::string(guest_url.path()), std::move(cic_base_url));
 }
 
+void GlicCicProxyingURLLoaderFactory::SetUpstreamFactoryForTesting(
+    scoped_refptr<network::SharedURLLoaderFactory> upstream_factory) {
+  upstream_factory_for_testing_ = std::move(upstream_factory);
+}
+
 void GlicCicProxyingURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
     int32_t request_id,
@@ -759,7 +777,7 @@ void GlicCicProxyingURLLoaderFactory::CreateLoaderAndStart(
     return;
   }
 
-  if (!profile_) {
+  if (!profile_ && !upstream_factory_for_testing_) {
     CompleteClientWithError(std::move(client), net::ERR_ABORTED);
     return;
   }
@@ -792,8 +810,10 @@ void GlicCicProxyingURLLoaderFactory::CreateLoaderAndStart(
   }
 
   scoped_refptr<network::SharedURLLoaderFactory> upstream_factory =
-      profile_->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess();
+      upstream_factory_for_testing_
+          ? upstream_factory_for_testing_
+          : profile_->GetDefaultStoragePartition()
+                ->GetURLLoaderFactoryForBrowserProcess();
   if (!upstream_factory) {
     CompleteClientWithError(std::move(client), net::ERR_FAILED);
     return;
