@@ -82,11 +82,6 @@ bool IsEncodeRowDeadlineNearOrPassed(base::TimeTicks deadline,
          deadline - row_encode_time_delta - kEncodeRowSlackBeforeDeadline;
 }
 
-void RecordIdleTaskStatusHistogram(
-    CanvasAsyncBlobCreator::IdleTaskStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.ToBlob.IdleTaskStatus", status);
-}
-
 void RecordInitiateEncodingTimeHistogram(ImageEncodingMimeType mime_type,
                                          base::TimeDelta elapsed_time) {
   if (mime_type == kMimeTypePng) {
@@ -421,8 +416,6 @@ void CanvasAsyncBlobCreator::ForceEncodeRows() {
 
 void CanvasAsyncBlobCreator::CreateBlobAndReturnResult(
     Vector<unsigned char> encoded_image) {
-  RecordIdleTaskStatusHistogram(idle_task_status_);
-
   Blob* result_blob =
       Blob::Create(encoded_image, ImageEncoderUtils::MimeTypeName(mime_type_));
   if (function_type_ == kHTMLCanvasToBlobCallback) {
@@ -443,10 +436,8 @@ void CanvasAsyncBlobCreator::CreateBlobAndReturnResult(
 }
 
 void CanvasAsyncBlobCreator::CreateNullAndReturnResult() {
-  RecordIdleTaskStatusHistogram(idle_task_status_);
   if (function_type_ == kHTMLCanvasToBlobCallback) {
     DCHECK(IsMainThread());
-    RecordIdleTaskStatusHistogram(idle_task_status_);
     context_->GetTaskRunner(TaskType::kCanvasBlobSerialization)
         ->PostTask(FROM_HERE,
                    BindOnce(&V8BlobCallback::InvokeAndReportException,

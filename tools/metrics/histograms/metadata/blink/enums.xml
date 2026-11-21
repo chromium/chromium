@@ -7744,15 +7744,6 @@ Called by update_permissions_policy_enum.py.-->
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/core/loader/cookie_jar.h:FirstCookieRequest) -->
 
-<enum name="IdleTaskStatus">
-  <int value="0" label="IdleTaskNotStarted"/>
-  <int value="1" label="IdleTaskStarted"/>
-  <int value="2" label="IdleTaskCompleted"/>
-  <int value="3" label="IdleTaskFailed"/>
-  <int value="4" label="IdleTaskSwitchedToMainThreadTask"/>
-  <int value="5" label="IdleTaskNotSupported"/>
-</enum>
-
 <enum name="ImageSelectionRetrievalOutcome">
   <int value="0" label="Cached image node was successfully retrieved."/>
   <int value="1" label="Cached image node was not found."/>

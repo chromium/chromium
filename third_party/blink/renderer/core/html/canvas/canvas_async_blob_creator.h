@@ -30,8 +30,7 @@ class ImageDataBuffer;
 class CORE_EXPORT CanvasAsyncBlobCreator
     : public GarbageCollected<CanvasAsyncBlobCreator> {
  public:
-  // This enum is used to back an UMA histogram, and should therefore be treated
-  // as append-only. Idle tasks are not implemented for some image types.
+  // Idle tasks are not implemented for some image types.
   enum IdleTaskStatus {
     kIdleTaskNotStarted = 0,
     kIdleTaskStarted = 1,

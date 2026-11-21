@@ -415,20 +415,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.Canvas.ToBlob.IdleTaskStatus" enum="IdleTaskStatus"
-    expires_after="2025-04-01">
-  <owner>fserb@chromium.org</owner>
-  <owner>aaronhk@chromium.org</owner>
-  <summary>
-    Records the status of the idle task when finishing a toBlob call.
-
-    In addition, metric values from OffscreenCanvas.convertToBlob API call are
-    also gathered into this histogram, because the logic flow is exactly the
-    same as canvas.toBlob. It's worth to note that the values can come from idle
-    tasks on either main or worker thread.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Canvas.ToBlob.InitialEncodingDelay.{Type}"
     units="microseconds" expires_after="2026-04-19">
   <owner>aaronhk@chromium.org</owner>
