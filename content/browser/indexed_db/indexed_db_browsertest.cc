@@ -18,6 +18,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
@@ -52,11 +53,14 @@
 #include "components/services/storage/sandboxed_vfs_file_impl.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/browser_main_loop.h"
+#include "content/browser/file_system_access/file_system_access.pb.h"
+#include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/indexed_db/file_path_util.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
 #include "content/browser/indexed_db/instance/leveldb/backing_store.h"
 #include "content/browser/indexed_db/instance/sqlite/database_connection.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -1754,6 +1758,78 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, LargeValueIsWrapped) {
 // closed databases.
 IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, BucketDeletionDuringCleanup) {
   SimpleTest(GetTestUrl("indexeddb", "bucket_deletion_during_cleanup.html"));
+}
+
+// Regression test for crbug.com/588328253: FSA handle stored without origin
+// remains usable.
+IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithSqlite, ReadLegacyFsaHandle) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath test_file = temp_dir.GetPath().AppendASCII("legacy.txt");
+  const std::string contents = "legacy file contents";
+  EXPECT_TRUE(base::WriteFile(test_file, contents));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL test_url =
+      embedded_test_server()->GetURL("/indexeddb/legacy_fsa_handle.html");
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+  StoragePartitionImpl* partition =
+      static_cast<StoragePartitionImpl*>(shell()
+                                             ->web_contents()
+                                             ->GetBrowserContext()
+                                             ->GetDefaultStoragePartition());
+  partition->GetFileSystemAccessManager()->SetFilePickerResultForTesting(
+      PathInfo(test_file));
+  EXPECT_TRUE(ExecJs(shell(), "storeHandle()"));
+
+  const blink::StorageKey storage_key =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(test_url));
+  ASSERT_OK_AND_ASSIGN(
+      const storage::BucketInfo bucket,
+      GetOrCreateBucket(
+          storage::BucketInitParams::ForDefaultBucket(storage_key)));
+  const base::FilePath database_path =
+      DatabaseFilePath(bucket.ToBucketLocator(), u"legacy-fsa");
+  base::test::TestFuture<void> closed;
+  GetControl().ForceClose(bucket.id, closed.GetCallback());
+  EXPECT_TRUE(closed.Wait());
+
+  // Rewrite the persisted token in the format used before origins were stored.
+  {
+    sql::Database database(
+        sql::DatabaseOptions().set_wal_mode(true).set_enable_triggers(true),
+        sql::test::kTestTag);
+    ASSERT_TRUE(database.Open(database_path));
+    int64_t row_id;
+    std::string serialized_handle;
+    {
+      sql::Statement statement(
+          database.GetUniqueStatement("SELECT row_id, bytes FROM blobs"));
+      ASSERT_TRUE(statement.Step());
+      row_id = statement.ColumnInt64(0);
+      FileSystemAccessHandleData data;
+      ASSERT_TRUE(
+          data.ParseFromString(base::as_string_view(statement.ColumnBlob(1))));
+      ASSERT_TRUE(data.has_local());
+      EXPECT_TRUE(data.local().has_origin());
+      data.mutable_local()->clear_origin();
+      EXPECT_TRUE(data.SerializeToString(&serialized_handle));
+      EXPECT_FALSE(statement.Step());
+      EXPECT_TRUE(statement.Succeeded());
+    }
+    sql::Statement statement(database.GetUniqueStatement(
+        "UPDATE blobs SET bytes = ? WHERE row_id = ?"));
+    statement.BindBlob(0, serialized_handle);
+    statement.BindInt64(1, row_id);
+    EXPECT_TRUE(statement.Run());
+    EXPECT_EQ(database.GetLastChangeCount(), 1);
+  }
+
+  // Reload to discard renderer-side handles, and read the legacy token from
+  // disk through IndexedDB and the real File System Access deserializer.
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+  EXPECT_EQ(contents, EvalJs(shell(), "readFile()"));
 }
 
 // Regression test for https://crbug.com/576590782

@@ -1373,7 +1373,7 @@ std::string SerializeURLImpl(const storage::FileSystemURL& url,
 
 }  // namespace
 
-std::string FileSystemAccessManagerImpl::SerializeURL(
+std::string FileSystemAccessManagerImpl::SerializeURLForEqualityComparison(
     const storage::FileSystemURL& url,
     HandleType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1389,6 +1389,9 @@ std::string FileSystemAccessManagerImpl::SerializeURLWithPermissionRoot(
     const base::FilePath& root_permission_path,
     const std::string& display_name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // URLs should not be serialized for disk storage on opaque origins because
+  // IndexedDB is blocked on opaque origins.
+  CHECK(!origin.opaque());
   return SerializeURLImpl(url, origin, type, root_permission_path,
                           display_name);
 }
@@ -1499,8 +1502,11 @@ void FileSystemAccessManagerImpl::DeserializeHandle(
               ? data.local()
               : data.external();
 
-      if (storage_key.origin().opaque() || !file_data.has_origin() ||
-          file_data.origin() != storage_key.origin().Serialize()) {
+      // Handles persisted before origin binding was added validly have no
+      // origin. See crbug.com/588328253
+      if (storage_key.origin().opaque() ||
+          (file_data.has_origin() &&
+           file_data.origin() != storage_key.origin().Serialize())) {
         // Drop `token`, and directly return.
         return;
       }

@@ -539,10 +539,10 @@ void FileSystemAccessFileHandleImpl::IsSameEntryImpl(
   }
 
   // The two handles are the same if they serialize to the same value.
-  auto serialization = manager()->SerializeURL(
+  std::string serialization = manager()->SerializeURLForEqualityComparison(
       url(), FileSystemAccessPermissionContext::HandleType::kFile);
-  auto other_serialization =
-      manager()->SerializeURL(other->url(), other->type());
+  std::string other_serialization =
+      manager()->SerializeURLForEqualityComparison(other->url(), other->type());
   std::move(callback).Run(file_system_access_error::Ok(),
                           serialization == other_serialization);
 }

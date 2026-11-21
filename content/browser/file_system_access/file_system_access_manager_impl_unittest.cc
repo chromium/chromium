@@ -2123,6 +2123,74 @@ TEST_F(FileSystemAccessManagerImplTest,
   EXPECT_EQ(resolve_future.Get(), nullptr);
 }
 
+// Regression test for crbug.com/588328253
+TEST_F(FileSystemAccessManagerImplTest, DeserializeHandle_LegacyWithoutOrigin) {
+  for (PathType path_type : {PathType::kLocal, PathType::kExternal}) {
+    const PathInfo path_info(
+        path_type, (path_type == PathType::kLocal
+                        ? dir_.GetPath()
+                        : base::FilePath::FromUTF8Unsafe(kTestMountPoint))
+                       .AppendASCII("foo"));
+    for (FileSystemAccessHandleData::HandleType handle_type :
+         {FileSystemAccessHandleData::kFile,
+          FileSystemAccessHandleData::kDirectory}) {
+      SCOPED_TRACE(testing::Message()
+                   << "path_type=" << static_cast<int>(path_type)
+                   << ", handle_type=" << handle_type);
+      FileSystemAccessHandleData data = MakeHandleData(
+          handle_type, path_info.path, base::FilePath(), path_type);
+      LocalFileData* file_data = path_type == PathType::kLocal
+                                     ? data.mutable_local()
+                                     : data.mutable_external();
+      // Unset the origin to simulate an older serialization format.
+      file_data->clear_origin();
+      const HandleType expected_type =
+          handle_type == FileSystemAccessHandleData::kFile
+              ? HandleType::kFile
+              : HandleType::kDirectory;
+      EXPECT_CALL(permission_context_,
+                  GetReadPermissionGrant(kTestStorageKey.origin(), path_info,
+                                         expected_type,
+                                         FileSystemAccessPermissionContext::
+                                             AccessTrigger::kLoadFromStorage))
+          .WillOnce(testing::Return(ask_grant_));
+      EXPECT_CALL(permission_context_,
+                  GetWritePermissionGrant(kTestStorageKey.origin(), path_info,
+                                          expected_type,
+                                          FileSystemAccessPermissionContext::
+                                              AccessTrigger::kLoadFromStorage))
+          .WillOnce(testing::Return(ask_grant2_));
+
+      // The origin is set again when it comes through deserialization.
+      FileSystemAccessTransferTokenImpl* token =
+          DeserializeAndResolveToken(data);
+      ASSERT_TRUE(token);
+      EXPECT_EQ(token->origin(), kTestStorageKey.origin());
+      EXPECT_EQ(token->type(), expected_type);
+      EXPECT_EQ(token->url().virtual_path(), path_info.path);
+      EXPECT_EQ(token->GetReadGrant(), ask_grant_);
+      EXPECT_EQ(token->GetWriteGrant(), ask_grant2_);
+
+      // Re-serializing a legacy handle binds it to its owning origin.
+      mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> remote;
+      token->Clone(remote.InitWithNewPipeAndPassReceiver());
+      base::test::TestFuture<std::vector<uint8_t>> serialize_future;
+      manager_->SerializeHandle(
+          kTestStorageKey, std::move(remote),
+          serialize_future.GetCallback<const std::vector<uint8_t>&>());
+      const std::vector<uint8_t> serialized = serialize_future.Take();
+      ASSERT_FALSE(serialized.empty());
+      FileSystemAccessHandleData saved_data;
+      ASSERT_TRUE(saved_data.ParseFromString(base::as_string_view(serialized)));
+      const LocalFileData& saved_file_data = path_type == PathType::kLocal
+                                                 ? saved_data.local()
+                                                 : saved_data.external();
+      EXPECT_TRUE(saved_file_data.has_origin());
+      EXPECT_EQ(saved_file_data.origin(), kTestStorageKey.origin().Serialize());
+    }
+  }
+}
+
 TEST_F(FileSystemAccessManagerImplTest,
        DeserializeHandle_Native_InvalidOrigin) {
   const base::FilePath root_path = dir_.GetPath().AppendASCII("foo");
@@ -2139,16 +2207,6 @@ TEST_F(FileSystemAccessManagerImplTest,
 
   for (auto handle_type : {FileSystemAccessHandleData::kFile,
                            FileSystemAccessHandleData::kDirectory}) {
-    // Missing `origin` field.
-    {
-      FileSystemAccessHandleData data;
-      data.set_handle_type(handle_type);
-      data.mutable_local()->set_root_path(SerializePathForTesting(root_path));
-      data.mutable_local()->set_relative_path(
-          SerializePathForTesting(base::FilePath()));
-      EXPECT_EQ(DeserializeAndResolveToken(data), nullptr);
-    }
-
     for (const auto& invalid_origin : invalid_origins) {
       FileSystemAccessHandleData data;
       data.set_handle_type(handle_type);
