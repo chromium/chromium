@@ -181,7 +181,6 @@ void FakeAdapter::StartDiscoverySession(
 void FakeAdapter::ConnectToServiceInsecurely(
     const std::string& address,
     const device::BluetoothUUID& service_uuid,
-    bool should_unbond_on_error,
     ConnectToServiceInsecurelyCallback callback) {
   if (!allowed_connections_for_address_and_uuid_pair_.contains(
           std::make_pair(address, service_uuid))) {

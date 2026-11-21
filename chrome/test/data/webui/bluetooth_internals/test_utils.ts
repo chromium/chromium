@@ -215,8 +215,7 @@ export class TestAdapter extends TestBrowserProxy {
     return Promise.resolve({session: null});
   }
 
-  connectToServiceInsecurely(
-      _address: string, _serviceUuid: UUID, _shouldUnboundOnError: boolean) {
+  connectToServiceInsecurely(_address: string, _serviceUuid: UUID) {
     return Promise.resolve({result: null});
   }
 

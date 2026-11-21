@@ -50,12 +50,10 @@ Adapter::ConnectToServiceRequestDetails::ConnectToServiceRequestDetails(
     const std::string& address,
     const device::BluetoothUUID& service_uuid,
     const base::Time& time_requested,
-    const bool should_unbond_on_error,
     ConnectToServiceInsecurelyCallback callback)
     : address(address),
       service_uuid(service_uuid),
       time_requested(time_requested),
-      should_unbond_on_error(should_unbond_on_error),
       callback(std::move(callback)) {}
 
 Adapter::ConnectToServiceRequestDetails::~ConnectToServiceRequestDetails() =
@@ -237,7 +235,6 @@ void Adapter::StartDiscoverySession(const std::string& client_name,
 void Adapter::ConnectToServiceInsecurely(
     const std::string& address,
     const device::BluetoothUUID& service_uuid,
-    bool should_unbond_on_error,
     ConnectToServiceInsecurelyCallback callback) {
   if (!allowed_uuids_.contains(service_uuid)) {
     mojo::ReportBadMessage(
@@ -249,9 +246,9 @@ void Adapter::ConnectToServiceInsecurely(
   auto* device = adapter_->GetDevice(address);
   int request_id = next_request_id_++;
   connect_to_service_request_map_.emplace(
-      request_id, std::make_unique<ConnectToServiceRequestDetails>(
-                      address, service_uuid, base::Time::Now(),
-                      should_unbond_on_error, std::move(callback)));
+      request_id,
+      std::make_unique<ConnectToServiceRequestDetails>(
+          address, service_uuid, base::Time::Now(), std::move(callback)));
 
   if (device) {
     ProcessDeviceForInsecureServiceConnection(request_id, device,
@@ -640,38 +637,6 @@ void Adapter::OnConnectToServiceInsecurelyError(
 #endif
     return;
   }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  device::BluetoothDevice* device = adapter_->GetDevice(it->second->address);
-  DCHECK(device);
-
-  ConnectToServiceFailureReason failure_reason =
-      ExtractFailureReasonFromErrorString(error_message);
-  // When the local device thinks it's paired with the remote device (IsBonded)
-  // and we receive one of these errors when trying to connect, then we're most
-  // likely in a state where the remote device doesn't recognize the pairing
-  // (half-paired).
-  bool is_half_paired_failure =
-      device->IsBonded() &&
-      (failure_reason == ConnectToServiceFailureReason::kReasonCanceled ||
-       failure_reason == ConnectToServiceFailureReason::kReasonRefused ||
-       failure_reason == ConnectToServiceFailureReason::kReasonUnknown);
-
-  if (is_half_paired_failure && it->second->should_unbond_on_error) {
-    // To recover from the half-paired state, just forget the remote device.
-    // This strategy works because the local device will continue attempting to
-    // connect. On the next attempt, it will no longer be in the half-paired
-    // state.
-    DLOG(ERROR) << "Half-paired state detected. Forgetting the device.";
-    device->Forget(base::BindOnce(&Adapter::OnConnectToServiceError,
-                                  weak_ptr_factory_.GetWeakPtr(), request_id,
-                                  error_message),
-                   base::BindOnce(&Adapter::OnConnectToServiceError,
-                                  weak_ptr_factory_.GetWeakPtr(), request_id,
-                                  error_message));
-    return;
-  }
-#endif
 
   OnConnectToServiceError(request_id, error_message);
 }
