@@ -477,6 +477,12 @@ void ExpectUpdateCheckSequence(UpdaterScope scope,
                                const base::Version& to_version,
                                const base::Version& updater_version);
 
+// Expects an update check for `app_id`, the CRX download unless
+// `skip_download`, and an event ping for a successful update from
+// `from_version` to `to_version`. The ping's entry for `app_id` in
+// `request.apps` must also match `ping_app_matcher`, if set. With
+// `do_fault_injection`, the server answers the first attempt at each request
+// with an HTTP 500 error. With `use_xz`, the server serves the `.xz` CRX.
 void ExpectUpdateSequence(
     UpdaterScope scope,
     ScopedServer& test_server,
@@ -488,7 +494,7 @@ void ExpectUpdateSequence(
     bool do_fault_injection,
     bool skip_download,
     const base::Version& updater_version = base::Version(kUpdaterVersion),
-    const std::string& event_regex = ".*",
+    std::optional<json::ValueMatcher> ping_app_matcher = std::nullopt,
     bool use_xz = false);
 
 void ExpectUpdateSequenceBadHash(UpdaterScope scope,
@@ -499,6 +505,10 @@ void ExpectUpdateSequenceBadHash(UpdaterScope scope,
                                  const base::Version& from_version,
                                  const base::Version& to_version);
 
+// Like `ExpectUpdateSequence()`, but for an install, and never with the `.xz`
+// CRX. In event pings, the updater sends the app's `iid` only with install
+// events, so `ping_app_matcher` can check it here but not in
+// `ExpectUpdateSequence()`.
 void ExpectInstallSequence(UpdaterScope scope,
                            ScopedServer& test_server,
                            const std::string& app_id,
@@ -509,7 +519,7 @@ void ExpectInstallSequence(UpdaterScope scope,
                            bool do_fault_injection,
                            bool skip_download,
                            const base::Version& updater_version,
-                           const std::string& event_regex);
+                           std::optional<json::ValueMatcher> ping_app_matcher);
 
 void ExpectEnterpriseCompanionAppOTAInstallSequence(ScopedServer& test_server);
 

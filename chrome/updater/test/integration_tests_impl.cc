@@ -399,7 +399,7 @@ void ExpectUpdateSequence(UpdaterScope scope,
                           const std::string& run_action,
                           const std::string& arguments,
                           const base::Version& updater_version,
-                          const std::string& event_regex,
+                          std::optional<json::ValueMatcher> ping_app_matcher,
                           bool use_xz) {
   ASSERT_TRUE(base::PathExists(crx_path));
 
@@ -434,19 +434,20 @@ void ExpectUpdateSequence(UpdaterScope scope,
   if (do_fault_injection) {
     test_server.ExpectOnce({}, "", net::HTTP_INTERNAL_SERVER_ERROR);
   }
-  test_server.ExpectOnce(
-      {request::GetPathMatcher(test_server.update_path()),
-       request::GetUpdaterUserAgentMatcher(updater_version),
-       request::GetJSONContentMatcher(json::HasApp(
-           app_id,
-           json::HasEvent(testing::AllOf(
-               json::HasKey("eventresult", 1),
-               json::HasKey("eventtype", event_type),
-               json::HasKey("nextversion", to_version.GetString()),
-               json::HasKey("previousversion", from_version.GetString()))))),
-       request::GetContentMatcher({event_regex}),
-       request::GetScopeMatcher(scope)},
-      ")]}'\n");
+  json::ValueMatcher event_app_matcher = json::HasEvent(testing::AllOf(
+      json::HasKey("eventresult", 1), json::HasKey("eventtype", event_type),
+      json::HasKey("nextversion", to_version.GetString()),
+      json::HasKey("previousversion", from_version.GetString())));
+  if (ping_app_matcher) {
+    event_app_matcher = testing::AllOf(std::move(event_app_matcher),
+                                       *std::move(ping_app_matcher));
+  }
+  test_server.ExpectOnce({request::GetPathMatcher(test_server.update_path()),
+                          request::GetUpdaterUserAgentMatcher(updater_version),
+                          request::GetJSONContentMatcher(json::HasApp(
+                              app_id, std::move(event_app_matcher))),
+                          request::GetScopeMatcher(scope)},
+                         ")]}'\n");
 }
 
 // Extends the run loop timeout during app installation or updates. This
@@ -1593,7 +1594,7 @@ void ExpectUpdateSequence(UpdaterScope scope,
                           bool do_fault_injection,
                           bool skip_download,
                           const base::Version& updater_version,
-                          const std::string& event_regex,
+                          std::optional<json::ValueMatcher> ping_app_matcher,
                           bool use_xz) {
   base::FilePath test_data_path;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
@@ -1606,7 +1607,7 @@ void ExpectUpdateSequence(UpdaterScope scope,
                        /*event_type=*/3, from_version, to_version,
                        do_fault_injection, skip_download, crx_path,
                        kDoNothingCRXRun, /*arguments=*/{}, updater_version,
-                       event_regex, use_xz);
+                       std::move(ping_app_matcher), use_xz);
 }
 
 void ExpectUpdateSequenceBadHash(UpdaterScope scope,
@@ -1666,7 +1667,7 @@ void ExpectInstallSequence(UpdaterScope scope,
                            bool do_fault_injection,
                            bool skip_download,
                            const base::Version& updater_version,
-                           const std::string& event_regex) {
+                           std::optional<json::ValueMatcher> ping_app_matcher) {
   base::FilePath test_data_path;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
   base::FilePath crx_path = test_data_path.Append(FILE_PATH_LITERAL("updater"))
@@ -1675,7 +1676,7 @@ void ExpectInstallSequence(UpdaterScope scope,
                        /*event_type=*/2, from_version, to_version,
                        do_fault_injection, skip_download, crx_path,
                        kDoNothingCRXRun, /*arguments=*/{}, updater_version,
-                       event_regex, false);
+                       std::move(ping_app_matcher), /*use_xz=*/false);
 }
 
 void ExpectEnterpriseCompanionAppOTAInstallSequence(ScopedServer& test_server) {
@@ -1690,7 +1691,8 @@ void ExpectEnterpriseCompanionAppOTAInstallSequence(ScopedServer& test_server) {
       base::Version(kEnterpriseCompanionVersion),
       /*do_fault_injection=*/false, /*skip_download=*/false, crx_path,
       kEnterpriseCompanionCRXRun, kEnterpriseCompanionCRXArguments,
-      base::Version(kUpdaterVersion), ".*", false);
+      base::Version(kUpdaterVersion), /*ping_app_matcher=*/std::nullopt,
+      /*use_xz=*/false);
 }
 
 // Runs multiple cycles of instantiating the update service, calling

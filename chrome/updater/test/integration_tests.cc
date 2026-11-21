@@ -811,12 +811,12 @@ class IntegrationTest : public ::testing::Test {
       bool do_fault_injection = false,
       bool skip_download = false,
       const base::Version& updater_version = base::Version(kUpdaterVersion),
-      const std::string& event_regex = ".*",
+      std::optional<json::ValueMatcher> ping_app_matcher = std::nullopt,
       bool use_xz = false) {
     test_commands_->ExpectUpdateSequence(
         test_server, app_id, install_data_index, priority, from_version,
         to_version, do_fault_injection, skip_download, updater_version,
-        event_regex, use_xz);
+        std::move(ping_app_matcher), use_xz);
   }
 
   void ExpectUpdateSequenceBadHash(ScopedServer& test_server,
@@ -844,11 +844,11 @@ class IntegrationTest : public ::testing::Test {
       bool do_fault_injection = false,
       bool skip_download = false,
       const base::Version& updater_version = base::Version(kUpdaterVersion),
-      const std::string& event_regex = ".*") {
+      std::optional<json::ValueMatcher> ping_app_matcher = std::nullopt) {
     test_commands_->ExpectInstallSequence(
         test_server, app_id, install_data_index, priority, from_version,
         to_version, do_fault_injection, skip_download, updater_version,
-        event_regex);
+        std::move(ping_app_matcher));
   }
 
   void StressUpdateService() { test_commands_->StressUpdateService(); }
@@ -1943,8 +1943,9 @@ TEST_F(IntegrationTest, UpdateAppXZ) {
   ScopedServer test_server(test_commands_);
   ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
       test_server, kAppId, "", UpdateService::Priority::kBackground,
-      base::Version("0.1"), v1, false, false, base::Version(kUpdaterVersion),
-      ".*", true));
+      base::Version("0.1"), v1, /*do_fault_injection=*/false,
+      /*skip_download=*/false, base::Version(kUpdaterVersion),
+      /*ping_app_matcher=*/std::nullopt, /*use_xz=*/true));
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
   ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
@@ -2483,8 +2484,10 @@ TEST_F(IntegrationTest, InstallId) {
   ExpectInstallEvent(test_server, kUpdaterAppId);
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
       test_server, kAppId, "", UpdateService::Priority::kForeground,
-      base::Version({0, 0, 0, 0}), base::Version("1"), false, false,
-      base::Version(kUpdaterVersion), "\"iid\":\"my_install_id\""));
+      base::Version({0, 0, 0, 0}), base::Version("1"),
+      /*do_fault_injection=*/false, /*skip_download=*/false,
+      base::Version(kUpdaterVersion),
+      /*ping_app_matcher=*/json::HasKey("iid", "my_install_id")));
   ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
       kAppId, /*is_silent_install=*/true,
       base::StrCat({"appguid=", kAppId, "&iid=my_install_id"})));
@@ -2516,7 +2519,7 @@ TEST_P(IntegrationSansInstallIdTest, Test) {
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
       test_server, kAppId, "", UpdateService::Priority::kForeground,
       base::Version({0, 0, 0, 0}), base::Version("1"), false, false,
-      GetParam().version, ".*"));
+      GetParam().version));
   ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
       kAppId, /*is_silent_install=*/true,
       base::StrCat({"appguid=", kAppId, "&iid=my_install_id"}),
@@ -4061,7 +4064,7 @@ class IntegrationTestUserInSystem : public IntegrationTest {
         /*do_fault_injection=*/false,
         /*skip_download=*/false,
         /*updater_version=*/base::Version(kUpdaterVersion),
-        /*event_regex=*/".*");
+        /*ping_app_matcher=*/std::nullopt);
   }
 
   void InstallUserUpdaterAndApp(
