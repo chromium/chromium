@@ -95,6 +95,11 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
       const TextPosition& script_start_position);
 
   bool IsParserInserted() const { return parser_inserted_; }
+  // Unlike scheduling state, CSP provenance survives preparing a non-empty
+  // script while it is disconnected in its parser document.
+  bool IsParserInsertedForCSP() const {
+    return parser_inserted_ || was_parser_inserted_for_csp_;
+  }
   bool AlreadyStarted() const { return already_started_; }
   void SetAlreadyStarted() { already_started_ = true; }
   bool IsForceAsync() const { return force_async_; }
@@ -180,6 +185,11 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
   // |CreateElementFlags::parser_document_| is null. Therefore, we have to
   // store this information separately.
   bool parser_inserted_ = false;
+
+  // Tracks whether a parser-created script in its parser document had its
+  // initial `PrepareScript()` call abort at the `!IsConnected()` check after
+  // `parser_inserted_` was cleared for scheduling.
+  bool was_parser_inserted_for_csp_ = false;
 
   // <spec href="https://html.spec.whatwg.org/C/#script-force-async">...
   // initially true. ...</spec>

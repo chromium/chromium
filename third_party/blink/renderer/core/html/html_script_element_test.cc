@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/create_element_flags.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/script/script_loader.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
@@ -67,6 +68,66 @@ TEST_F(HTMLScriptElementTest,
 
   ScriptElementBase* script_base = script;
   EXPECT_EQ(script_base->ScriptTextInternalSlot(), "");
+}
+
+TEST_F(HTMLScriptElementTest, DisconnectedParserScriptPreservesCSPProvenance) {
+  auto* disconnected_parser_script = MakeGarbageCollected<HTMLScriptElement>(
+      document(), CreateElementFlags::ByParser(&document()));
+  disconnected_parser_script->ParserAppendChild(
+      Text::Create(document(), "1 + 1;"));
+  disconnected_parser_script->FinishParsingChildren();
+  EXPECT_TRUE(disconnected_parser_script->Loader()->IsParserInserted());
+  EXPECT_TRUE(disconnected_parser_script->Loader()->IsParserInsertedForCSP());
+
+  EXPECT_EQ(disconnected_parser_script->Loader()->PrepareScript(
+                ScriptLoader::ParserBlockingInlineOption::kAllow,
+                TextPosition::MinimumPosition()),
+            nullptr);
+  EXPECT_FALSE(disconnected_parser_script->Loader()->IsParserInserted());
+  EXPECT_TRUE(disconnected_parser_script->Loader()->IsParserInsertedForCSP());
+  EXPECT_FALSE(disconnected_parser_script->Loader()->AlreadyStarted());
+
+  document().body()->AppendChild(disconnected_parser_script);
+  EXPECT_TRUE(disconnected_parser_script->Loader()->AlreadyStarted());
+  EXPECT_TRUE(disconnected_parser_script->Loader()->IsParserInsertedForCSP());
+}
+
+TEST_F(HTMLScriptElementTest, EmptyParserScriptClearsCSPProvenance) {
+  auto* empty_parser_script = MakeGarbageCollected<HTMLScriptElement>(
+      document(), CreateElementFlags::ByParser(&document()));
+  empty_parser_script->FinishParsingChildren();
+  EXPECT_EQ(empty_parser_script->Loader()->PrepareScript(
+                ScriptLoader::ParserBlockingInlineOption::kAllow,
+                TextPosition::MinimumPosition()),
+            nullptr);
+  EXPECT_FALSE(empty_parser_script->Loader()->IsParserInserted());
+  EXPECT_FALSE(empty_parser_script->Loader()->IsParserInsertedForCSP());
+}
+
+TEST_F(HTMLScriptElementTest, TemplateParserScriptClearsCSPProvenance) {
+  Document& template_doc = document().EnsureTemplateDocument();
+  auto* template_script = MakeGarbageCollected<HTMLScriptElement>(
+      template_doc, CreateElementFlags::ByParser(&document()));
+  template_script->ParserAppendChild(Text::Create(template_doc, "1 + 1;"));
+  template_script->FinishParsingChildren();
+  EXPECT_EQ(template_script->Loader()->PrepareScript(
+                ScriptLoader::ParserBlockingInlineOption::kAllow,
+                TextPosition::MinimumPosition()),
+            nullptr);
+  EXPECT_FALSE(template_script->Loader()->IsParserInserted());
+  EXPECT_FALSE(template_script->Loader()->IsParserInsertedForCSP());
+}
+
+TEST_F(HTMLScriptElementTest, DisconnectedDynamicScriptHasNoCSPProvenance) {
+  auto* dynamic_script = MakeGarbageCollected<HTMLScriptElement>(
+      document(), CreateElementFlags::ByCreateElement());
+  dynamic_script->AppendChild(Text::Create(document(), "1 + 1;"));
+  EXPECT_EQ(dynamic_script->Loader()->PrepareScript(
+                ScriptLoader::ParserBlockingInlineOption::kDeny,
+                TextPosition::MinimumPosition()),
+            nullptr);
+  EXPECT_FALSE(dynamic_script->Loader()->IsParserInserted());
+  EXPECT_FALSE(dynamic_script->Loader()->IsParserInsertedForCSP());
 }
 
 }  // namespace blink
