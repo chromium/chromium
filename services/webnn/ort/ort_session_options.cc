@@ -4,15 +4,20 @@
 
 #include "services/webnn/ort/ort_session_options.h"
 
+#include <optional>
 #include <set>
+#include <string>
 #include <string_view>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/values.h"
 #include "services/webnn/ort/environment.h"
 #include "services/webnn/ort/logging.h"
 #include "services/webnn/ort/ort_data_type.h"
@@ -71,9 +76,7 @@ EpSelectionPolicyDelegate(const OrtEpDevice** ep_devices,
       << "Selected device count (" << selected_devices.size()
       << ") exceeds maximum allowed (" << max_selected << ")";
 
-  OrtLoggingLevel ort_logging_level = GetOrtLoggingLevel();
-  if (ort_logging_level == ORT_LOGGING_LEVEL_VERBOSE ||
-      ort_logging_level == ORT_LOGGING_LEVEL_INFO) {
+  if (IsOrtInfoLoggingEnabled()) {
     // Logs selected EP devices for the given device type.
     const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
     LogEpDevices(ort_api, selected_devices, "Selected OrtEpDevice");
@@ -206,19 +209,19 @@ ScopedOrtSessionOptions CreateBaseSessionOptions(
   return session_options;
 }
 
-// Applies the session config entries required by `ep_name`. No-op for an EP
-// that is not in `kKnownEPs`.
-void ApplyEpConfigEntries(const OrtApi* ort_api,
-                          OrtSessionOptions* session_options,
-                          std::string_view ep_name) {
-  const auto ep_it = kKnownEPs.find(ep_name);
-  if (ep_it == kKnownEPs.end()) {
-    return;
-  }
-  for (const auto& [key, value] : ep_it->second.config_entries) {
-    CHECK_STATUS(ort_api->AddSessionConfigEntry(session_options, key.c_str(),
-                                                value.c_str()));
-  }
+// Returns a copy of `json`, a JSON object, with the member at `dotted_path`
+// (dot-separated keys of nested objects) set to the string `value`. For
+// example, ({"NPU":{"A":"1"}}, "NPU.B", "2") returns {"NPU":{"A":"1","B":"2"}}.
+std::string SetJsonMember(std::string_view json,
+                          std::string_view dotted_path,
+                          std::string_view value) {
+  std::optional<base::DictValue> dict =
+      base::JSONReader::ReadDict(json, base::JSON_PARSE_RFC);
+  CHECK(dict);
+  CHECK(dict->SetByDottedPath(dotted_path, value));
+  std::optional<std::string> result = base::WriteJson(*dict);
+  CHECK(result);
+  return std::move(*result);
 }
 
 // Binds `target_ort_device` directly, bypassing the auto EP selection policy,
@@ -245,7 +248,7 @@ void BindToTargetDevice(const OrtApi* ort_api,
   // disabled above.
   CHECK_STATUS(ort_api->SetIntraOpNumThreads(session_options, 1));
 
-  ApplyEpConfigEntries(ort_api, session_options, ep_name);
+  ApplyEpConfigEntries(session_options, ep_name);
 }
 
 // Builds the session options shared by both the GPU-process dispatch session
@@ -273,6 +276,32 @@ ScopedOrtSessionOptions CreateTrivialModelSessionOptions(
   BindToTargetDevice(ort_api, session_options.get(),
                      ort_api->EpDevice_EpName(ep_device), env, ep_device);
   return session_options;
+}
+
+void ApplyEpConfigEntries(OrtSessionOptions* session_options,
+                          std::string_view ep_name) {
+  const auto ep_it = kKnownEPs.find(ep_name);
+  if (ep_it == kKnownEPs.end()) {
+    return;
+  }
+  // The NPU `LOG_LEVEL` does not affect the compiled model. The GPU plugin
+  // rejects `LOG_LEVEL`.
+  // TODO(crbug.com/586576651): Remove once the OpenVINO EP derives LOG_LEVEL
+  // from the session logging severity.
+  const bool set_npu_log_level =
+      ep_name == kOpenVINOExecutionProvider && IsOrtInfoLoggingEnabled();
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+  for (const auto& [key, value] : ep_it->second.config_entries) {
+    if (set_npu_log_level &&
+        key == "ep.openvinoexecutionprovider.load_config") {
+      CHECK_STATUS(ort_api->AddSessionConfigEntry(
+          session_options, key.c_str(),
+          SetJsonMember(value, "NPU.LOG_LEVEL", "LOG_INFO").c_str()));
+      continue;
+    }
+    CHECK_STATUS(ort_api->AddSessionConfigEntry(session_options, key.c_str(),
+                                                value.c_str()));
+  }
 }
 
 void ApplySessionConfigEntriesFromCommandLine(
@@ -348,7 +377,7 @@ SessionOptions::Create(mojom::CreateContextOptionsPtr context_options,
     CHECK(ep_device);
     std::string_view ep_name = ort_api->EpDevice_EpName(ep_device);
     if (processed_ep_names.insert(ep_name).second) {
-      ApplyEpConfigEntries(ort_api, session_options.get(), ep_name);
+      ApplyEpConfigEntries(session_options.get(), ep_name);
     }
   }
 

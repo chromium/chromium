@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
@@ -32,6 +33,12 @@ struct EpDeviceInfo;
 namespace ort {
 
 class Environment;
+
+// Applies the session config entries required by `ep_name`. No-op for an EP
+// that is not in `kKnownEPs`.
+void COMPONENT_EXPORT(WEBNN_SERVICE)
+    ApplyEpConfigEntries(OrtSessionOptions* session_options,
+                         std::string_view ep_name);
 
 void COMPONENT_EXPORT(WEBNN_SERVICE) ApplySessionConfigEntriesFromCommandLine(
     OrtSessionOptions* session_options,

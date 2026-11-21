@@ -4,14 +4,18 @@
 
 #include "services/webnn/ort/ort_session_options.h"
 
+#include <optional>
 #include <string>
 
 #include "base/command_line.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/values_test_util.h"
+#include "base/values.h"
 #include "services/webnn/ort/platform_functions_ort.h"
 #include "services/webnn/ort/scoped_ort_types.h"
 #include "services/webnn/ort/test_base_ort.h"
+#include "services/webnn/public/cpp/execution_providers_info.h"
 #include "services/webnn/webnn_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/windows_app_sdk_headers/src/inc/abi/winml/winml/onnxruntime_session_options_config_keys.h"
@@ -209,6 +213,88 @@ TEST_F(WebNNOrtSessionOptionsTest, OrtRejectedEntryFailsFastWithContext) {
           session_options.get(), *scoped_command_line.GetProcessCommandLine()),
       "Failed to apply --webnn-ort-session-config-entries-for-testing entry "
       "\"k+,value\" from \"k+,value\": .+");
+}
+
+TEST_F(WebNNOrtSessionOptionsTest, DefaultLoggingKeepsOpenVINOConfigEntries) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->RemoveSwitch(
+      switches::kWebNNOrtLoggingLevel);
+  const SessionConfigEntry& load_config =
+      kKnownEPs.at(kOpenVINOExecutionProvider).config_entries[0];
+
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+  ScopedOrtSessionOptions session_options;
+  ASSERT_EQ(ort_api->CreateSessionOptions(
+                ScopedOrtSessionOptions::Receiver(session_options).get()),
+            nullptr);
+
+  ApplyEpConfigEntries(session_options.get(), kOpenVINOExecutionProvider);
+
+  EXPECT_EQ(GetSessionConfigEntry(ort_api, session_options.get(),
+                                  load_config.key.c_str()),
+            load_config.value);
+}
+
+TEST_F(WebNNOrtSessionOptionsTest,
+       InfoOrVerboseLoggingAddsOpenVINONpuLogLevel) {
+  const SessionConfigEntry& load_config =
+      kKnownEPs.at(kOpenVINOExecutionProvider).config_entries[0];
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+
+  for (const char* logging_level : {"INFO", "VERBOSE"}) {
+    SCOPED_TRACE(logging_level);
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->RemoveSwitch(
+        switches::kWebNNOrtLoggingLevel);
+    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        switches::kWebNNOrtLoggingLevel, logging_level);
+
+    ScopedOrtSessionOptions session_options;
+    ASSERT_EQ(ort_api->CreateSessionOptions(
+                  ScopedOrtSessionOptions::Receiver(session_options).get()),
+              nullptr);
+
+    ApplyEpConfigEntries(session_options.get(), kOpenVINOExecutionProvider);
+
+    base::DictValue applied_config =
+        base::test::ParseJsonDict(GetSessionConfigEntry(
+            ort_api, session_options.get(), load_config.key.c_str()));
+    std::optional<base::Value> npu_log_level =
+        applied_config.ExtractByDottedPath("NPU.LOG_LEVEL");
+    ASSERT_TRUE(npu_log_level);
+    EXPECT_EQ(*npu_log_level, base::Value("LOG_INFO"));
+    base::DictValue default_config =
+        base::test::ParseJsonDict(load_config.value);
+    EXPECT_EQ(applied_config, default_config);
+  }
+}
+
+TEST_F(WebNNOrtSessionOptionsTest,
+       InfoOrVerboseLoggingKeepsNonOpenVINOConfigEntries) {
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+
+  for (const char* logging_level : {"INFO", "VERBOSE"}) {
+    SCOPED_TRACE(logging_level);
+    base::test::ScopedCommandLine scoped_command_line;
+    scoped_command_line.GetProcessCommandLine()->RemoveSwitch(
+        switches::kWebNNOrtLoggingLevel);
+    scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+        switches::kWebNNOrtLoggingLevel, logging_level);
+
+    ScopedOrtSessionOptions session_options;
+    ASSERT_EQ(ort_api->CreateSessionOptions(
+                  ScopedOrtSessionOptions::Receiver(session_options).get()),
+              nullptr);
+
+    ApplyEpConfigEntries(session_options.get(), kWebGpuExecutionProvider);
+
+    for (const auto& [key, value] :
+         kKnownEPs.at(kWebGpuExecutionProvider).config_entries) {
+      EXPECT_EQ(
+          GetSessionConfigEntry(ort_api, session_options.get(), key.c_str()),
+          value);
+    }
+  }
 }
 
 }  // namespace

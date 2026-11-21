@@ -16,6 +16,9 @@ namespace webnn::ort {
 // if valid; defaults to ERROR level if unset or unrecognized.
 OrtLoggingLevel GetOrtLoggingLevel();
 
+// Returns whether the ORT logging level is INFO or VERBOSE.
+bool IsOrtInfoLoggingEnabled();
+
 // Helper to log detailed info for a list of EP devices.
 void LogEpDevices(const OrtApi* ort_api,
                   base::span<const OrtEpDevice* const> ep_devices,

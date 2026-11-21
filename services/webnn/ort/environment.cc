@@ -795,8 +795,7 @@ base::expected<scoped_refptr<Environment>, std::string> Environment::Create(
         package_info->library_path.value().c_str()));
   }
 
-  if (ort_logging_level == ORT_LOGGING_LEVEL_VERBOSE ||
-      ort_logging_level == ORT_LOGGING_LEVEL_INFO) {
+  if (IsOrtInfoLoggingEnabled()) {
     // Logs all registered EP devices in this environment.
     LogEpDevices(ort_api, GetRegisteredEpDevicesImpl(ort_api, env.get()),
                  "Registered OrtEpDevice");
@@ -919,8 +918,7 @@ Environment::CreateForCompilerProcess(const base::FilePath& ep_library_path,
         "Failed to register the execution provider library.");
   }
 
-  if (ort_logging_level == ORT_LOGGING_LEVEL_VERBOSE ||
-      ort_logging_level == ORT_LOGGING_LEVEL_INFO) {
+  if (IsOrtInfoLoggingEnabled()) {
     // Logs all registered EP devices in this environment.
     LogEpDevices(ort_api, GetRegisteredEpDevicesImpl(ort_api, env.get()),
                  "Registered OrtEpDevice");

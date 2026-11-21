@@ -31,7 +31,8 @@ inline constexpr char kWebNNTfliteDumpModel[] = "webnn-tflite-dump-model";
 // Configure the logging severity level of ONNX Runtime.
 // Usage: --webnn-ort-logging-level=VERBOSE
 // Other severity levels could be "INFO", "WARNING", "ERROR" (default), and
-// "FATAL".
+// "FATAL". "INFO" and "VERBOSE" also enable the logging of EPs that support it
+// (e.g. OpenVINO NPU).
 inline constexpr char kWebNNOrtLoggingLevel[] = "webnn-ort-logging-level";
 // Set the folder specified by --webnn-ort-dump-model for ONNX Runtime to save
 // optimized models after graph level transformations. By default, ORT saves the

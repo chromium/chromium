@@ -79,6 +79,12 @@ OrtLoggingLevel GetOrtLoggingLevel() {
   return ort_logging_level;
 }
 
+bool IsOrtInfoLoggingEnabled() {
+  const OrtLoggingLevel ort_logging_level = GetOrtLoggingLevel();
+  return ort_logging_level == ORT_LOGGING_LEVEL_VERBOSE ||
+         ort_logging_level == ORT_LOGGING_LEVEL_INFO;
+}
+
 void LogEpDevices(const OrtApi* ort_api,
                   base::span<const OrtEpDevice* const> ep_devices,
                   std::string_view prefix) {
