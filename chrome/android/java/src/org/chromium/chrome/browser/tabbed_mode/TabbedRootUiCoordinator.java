@@ -2513,6 +2513,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 mActivity.findViewById(R.id.side_ui_left_anchor_container_stub);
         ViewStub sideUiEndAnchorContainerStub =
                 mActivity.findViewById(R.id.side_ui_right_anchor_container_stub);
+        ViewStub sideUiResizeHandleContainerStub =
+                mActivity.findViewById(R.id.side_ui_resize_handle_container_stub);
 
         if (ChromeFeatureList.sTabSearchForDesktop.isEnabled()) {
             mTabSearchOverlayCoordinator =
@@ -2544,6 +2546,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         anchorContainerParent,
                         sideUiStartAnchorContainerStub,
                         sideUiEndAnchorContainerStub,
+                        sideUiResizeHandleContainerStub,
                         mTabModelSelectorSupplier.asNonNull().get());
 
         if (mSideUiCoordinator == null) {

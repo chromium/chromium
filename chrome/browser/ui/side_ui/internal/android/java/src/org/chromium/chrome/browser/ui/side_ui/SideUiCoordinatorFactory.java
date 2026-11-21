@@ -41,6 +41,8 @@ public final class SideUiCoordinatorFactory {
      *     containers.
      * @param leftAnchorContainerStub The {@link ViewStub} for the left-anchored container.
      * @param rightAnchorContainerStub The {@link ViewStub} for the right-anchored container.
+     * @param resizeHandleContainerStub The {@link ViewStub} for the container hosting the resize
+     *     handles.
      * @param tabModelSelector The {@link TabModelSelector} to query tabs.
      * @return The newly-created {@link SideUiCoordinator}, or {@code null} if it was not created.
      */
@@ -55,6 +57,7 @@ public final class SideUiCoordinatorFactory {
             @Nullable ViewGroup anchorContainerParent,
             @Nullable ViewStub leftAnchorContainerStub,
             @Nullable ViewStub rightAnchorContainerStub,
+            @Nullable ViewStub resizeHandleContainerStub,
             TabModelSelector tabModelSelector) {
         if (!AndroidSidePanelEnabledFn.isEnabled()
                 && !VerticalTabUtils.isVerticalTabsEligible(parentActivity)) {
@@ -64,6 +67,7 @@ public final class SideUiCoordinatorFactory {
         assert anchorContainerParent != null;
         assert leftAnchorContainerStub != null;
         assert rightAnchorContainerStub != null;
+        assert resizeHandleContainerStub != null;
 
         return new SideUiCoordinatorImpl(
                 parentActivity,
@@ -75,6 +79,7 @@ public final class SideUiCoordinatorFactory {
                 anchorContainerParent,
                 leftAnchorContainerStub,
                 rightAnchorContainerStub,
+                resizeHandleContainerStub,
                 tabModelSelector);
     }
 }

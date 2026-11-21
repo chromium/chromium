@@ -15,6 +15,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Px;
@@ -107,7 +108,7 @@ import java.util.Arrays;
     private final SideUiContainer mContainer;
     private final @AnchorSide int mAnchorSide;
     private final ViewGroup mAnchorContainer;
-    private final ViewGroup mAnchorContainerParent;
+    private final FrameLayout mResizeHandleContainer;
     private final SideUiCoordinator mSideUiCoordinator;
 
     private @Nullable SideUiResizeHandleView mHandleView;
@@ -141,20 +142,21 @@ import java.util.Arrays;
     /**
      * @param context The {@link Context} used to create the handle {@link View}.
      * @param anchorContainer The anchor container that hosts the handle.
-     * @param anchorContainerParent The parent of the anchor containers. It covers the web contents,
-     *     and shows the resize pointer icon while a drag moves the pointer off the handle.
+     * @param resizeHandleContainer The container above the anchor containers. It covers the Side UI
+     *     and web contents, and shows the resize pointer icon while a drag moves the pointer off
+     *     the handle.
      * @param container The {@link SideUiContainer} this handler serves.
      * @param sideUiCoordinator The {@link SideUiCoordinator} notified after each drag event.
      */
     /* package */ SideUiResizeHandler(
             Context context,
             ViewGroup anchorContainer,
-            ViewGroup anchorContainerParent,
+            FrameLayout resizeHandleContainer,
             SideUiContainer container,
             SideUiCoordinator sideUiCoordinator) {
         mContext = context;
         mAnchorContainer = anchorContainer;
-        mAnchorContainerParent = anchorContainerParent;
+        mResizeHandleContainer = resizeHandleContainer;
         mContainer = container;
         mAnchorSide = container.getAnchorSide();
         mSideUiCoordinator = sideUiCoordinator;
@@ -336,10 +338,10 @@ import java.util.Arrays;
         mDragStartRawX = event.getRawX();
         mDragStartWidthPx = mContainer.getView().getWidth();
         mIsResizing = false;
-        // Pointer icons are resolved from the view under the pointer. The anchor container parent
-        // covers the web contents and falls back to its own icon when no child provides one, so it
-        // keeps the resize icon while the drag moves off the handle.
-        mAnchorContainerParent.setPointerIcon(
+        // Pointer icons are resolved from the view under the pointer. The resize handle container
+        // covers the Side UI and web contents and falls back to its own icon when no child provides
+        // one, so it keeps the resize icon while the drag moves off the handle.
+        mResizeHandleContainer.setPointerIcon(
                 SideUiResizeHandleView.getResizePointerIcon(mContext));
     }
 
@@ -354,7 +356,7 @@ import java.util.Arrays;
         mDragStartRawX = null;
         mDragStartWidthPx = null;
         mIsResizing = false;
-        mAnchorContainerParent.setPointerIcon(null);
+        mResizeHandleContainer.setPointerIcon(null);
     }
 
     /** Returns the width implied by the pointer position of {@code event}, without clamping. */

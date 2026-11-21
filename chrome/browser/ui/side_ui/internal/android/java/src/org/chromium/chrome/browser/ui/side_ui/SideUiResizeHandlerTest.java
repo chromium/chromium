@@ -61,6 +61,7 @@ public class SideUiResizeHandlerTest {
     private FrameLayout mAnchorContainerParent;
     private View mSideUiContainerView;
     private FrameLayout mAnchorContainer;
+    private FrameLayout mResizeHandleContainer;
 
     @Before
     public void setUp() {
@@ -75,6 +76,8 @@ public class SideUiResizeHandlerTest {
         mAnchorContainerParent.addView(mAnchorContainer);
         // The handle is only shown while its anchor container is taking up space.
         mAnchorContainer.layout(0, 0, CONTAINER_WIDTH_PX, CONTAINER_HEIGHT_PX);
+        mResizeHandleContainer = new FrameLayout(mContext);
+        mAnchorContainerParent.addView(mResizeHandleContainer);
     }
 
     private SideUiResizeHandler createHandler(@AnchorSide int anchorSide) {
@@ -82,7 +85,7 @@ public class SideUiResizeHandlerTest {
         return new SideUiResizeHandler(
                 mContext,
                 mAnchorContainer,
-                mAnchorContainerParent,
+                mResizeHandleContainer,
                 mSideUiContainer,
                 mSideUiCoordinator);
     }
@@ -105,16 +108,16 @@ public class SideUiResizeHandlerTest {
     @Test
     public void testPointerIcon_SetDuringDragAndClearedOnUp() {
         SideUiResizeHandler handler = createHandler(AnchorSide.LEFT);
-        assertNull(mAnchorContainerParent.getPointerIcon());
+        assertNull(mResizeHandleContainer.getPointerIcon());
 
         dispatch(handler, MotionEvent.ACTION_DOWN, 100f);
-        assertNotNull(mAnchorContainerParent.getPointerIcon());
+        assertNotNull(mResizeHandleContainer.getPointerIcon());
 
         dispatch(handler, MotionEvent.ACTION_MOVE, 150f);
-        assertNotNull(mAnchorContainerParent.getPointerIcon());
+        assertNotNull(mResizeHandleContainer.getPointerIcon());
 
         dispatch(handler, MotionEvent.ACTION_UP, 150f);
-        assertNull(mAnchorContainerParent.getPointerIcon());
+        assertNull(mResizeHandleContainer.getPointerIcon());
     }
 
     @Test
@@ -122,10 +125,10 @@ public class SideUiResizeHandlerTest {
         SideUiResizeHandler handler = createHandler(AnchorSide.LEFT);
 
         dispatch(handler, MotionEvent.ACTION_DOWN, 100f);
-        assertNotNull(mAnchorContainerParent.getPointerIcon());
+        assertNotNull(mResizeHandleContainer.getPointerIcon());
 
         dispatch(handler, MotionEvent.ACTION_CANCEL, 150f);
-        assertNull(mAnchorContainerParent.getPointerIcon());
+        assertNull(mResizeHandleContainer.getPointerIcon());
     }
 
     @Test
@@ -133,10 +136,10 @@ public class SideUiResizeHandlerTest {
         SideUiResizeHandler handler = createShownHandler(AnchorSide.LEFT);
 
         dispatch(handler, MotionEvent.ACTION_DOWN, 100f);
-        assertNotNull(mAnchorContainerParent.getPointerIcon());
+        assertNotNull(mResizeHandleContainer.getPointerIcon());
 
         handler.destroyHandleView();
-        assertNull(mAnchorContainerParent.getPointerIcon());
+        assertNull(mResizeHandleContainer.getPointerIcon());
     }
 
     @Test
@@ -369,7 +372,7 @@ public class SideUiResizeHandlerTest {
         verify(mSideUiContainer, never()).onResizeLive(anyInt());
         verify(mSideUiContainer, never()).onResizeCommitted(anyInt());
         verify(mSideUiCoordinator, never()).updateUi(any());
-        assertNull(mAnchorContainerParent.getPointerIcon());
+        assertNull(mResizeHandleContainer.getPointerIcon());
         histogramWatcher.assertExpected();
     }
 
@@ -428,7 +431,7 @@ public class SideUiResizeHandlerTest {
         dispatch(handler, MotionEvent.ACTION_MOVE, 150f);
         dispatch(handler, MotionEvent.ACTION_UP, 160f);
 
-        assertNull(mAnchorContainerParent.getPointerIcon());
+        assertNull(mResizeHandleContainer.getPointerIcon());
         verify(mSideUiContainer, never()).onResizeLive(anyInt());
         verify(mSideUiContainer, never()).onResizeCommitted(anyInt());
         verify(mSideUiCoordinator, never()).updateUi(any());
@@ -446,7 +449,7 @@ public class SideUiResizeHandlerTest {
         // ignored without recording *_WITHOUT_DRAG.
         when(mSideUiCoordinator.areSideUiUpdatesPaused(SideUiId.VERTICAL_TABS)).thenReturn(true);
         dispatch(handler, MotionEvent.ACTION_MOVE, 150f);
-        assertNull(mAnchorContainerParent.getPointerIcon());
+        assertNull(mResizeHandleContainer.getPointerIcon());
 
         when(mSideUiCoordinator.areSideUiUpdatesPaused(SideUiId.VERTICAL_TABS)).thenReturn(false);
         dispatch(handler, MotionEvent.ACTION_MOVE, 160f);

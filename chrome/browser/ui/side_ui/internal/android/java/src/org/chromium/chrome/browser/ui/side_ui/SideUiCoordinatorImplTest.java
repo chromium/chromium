@@ -118,17 +118,21 @@ public class SideUiCoordinatorImplTest {
                 anchorContainerParent,
                 new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
-        // Set up anchor container stubs.
+        // Set up anchor and resize handle container stubs.
         ViewStub leftAnchorContainerStub =
                 new ViewStub(mTestActivity, R.layout.side_ui_anchor_container);
         ViewStub rightAnchorContainerStub =
                 new ViewStub(mTestActivity, R.layout.side_ui_anchor_container);
+        ViewStub resizeHandleContainerStub = new ViewStub(mTestActivity);
         anchorContainerParent.addView(
                 leftAnchorContainerStub,
                 new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
         anchorContainerParent.addView(
                 rightAnchorContainerStub,
                 new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
+        anchorContainerParent.addView(
+                resizeHandleContainerStub,
+                new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 
         // Set up browser controls classes.
         doReturn(mBrowserControlsVisibilityDelegate)
@@ -150,6 +154,7 @@ public class SideUiCoordinatorImplTest {
                         anchorContainerParent,
                         leftAnchorContainerStub,
                         rightAnchorContainerStub,
+                        resizeHandleContainerStub,
                         mTabModelSelector);
         mLeftAnchorContainer = (ViewGroup) anchorContainerParent.getChildAt(0);
         mRightAnchorContainer = (ViewGroup) anchorContainerParent.getChildAt(1);

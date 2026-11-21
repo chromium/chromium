@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewParent;
 import android.view.ViewStub;
+import android.widget.FrameLayout;
 
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
@@ -76,6 +77,7 @@ final class SideUiCoordinatorImpl
     private final FullscreenManager mFullscreenManager;
 
     private final ViewGroup mAnchorContainerParent;
+    private final FrameLayout mResizeHandleContainer;
 
     private final CallbackController mCallbackController = new CallbackController();
     private @Nullable LayoutStateProvider mLayoutStateProvider;
@@ -153,6 +155,8 @@ final class SideUiCoordinatorImpl
      *     containers.
      * @param leftAnchorContainerStub The {@link ViewStub} for the left-anchored container.
      * @param rightAnchorContainerStub The {@link ViewStub} for the right-anchored container.
+     * @param resizeHandleContainerStub The {@link ViewStub} for the container hosting the resize
+     *     handles.
      * @param tabModelSelector The {@link TabModelSelector} to query tabs.
      */
     /* package */ SideUiCoordinatorImpl(
@@ -165,6 +169,7 @@ final class SideUiCoordinatorImpl
             ViewGroup anchorContainerParent,
             ViewStub leftAnchorContainerStub,
             ViewStub rightAnchorContainerStub,
+            ViewStub resizeHandleContainerStub,
             TabModelSelector tabModelSelector) {
         mParentActivity = parentActivity;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
@@ -179,8 +184,11 @@ final class SideUiCoordinatorImpl
 
         ViewGroup leftAnchorContainer = (ViewGroup) leftAnchorContainerStub.inflate();
         ViewGroup rightAnchorContainer = (ViewGroup) rightAnchorContainerStub.inflate();
+        resizeHandleContainerStub.setLayoutResource(R.layout.side_ui_resize_handle_container);
+        mResizeHandleContainer = (FrameLayout) resizeHandleContainerStub.inflate();
         assert mAnchorContainerParent == leftAnchorContainer.getParent();
         assert mAnchorContainerParent == rightAnchorContainer.getParent();
+        assert mAnchorContainerParent == mResizeHandleContainer.getParent();
         mAnchorContainers.put(AnchorSide.LEFT, leftAnchorContainer);
         mAnchorContainers.put(AnchorSide.RIGHT, rightAnchorContainer);
         mCurrentSideUiSpecs =
@@ -228,7 +236,7 @@ final class SideUiCoordinatorImpl
                 new SideUiResizeHandler(
                         mParentActivity,
                         assumeNonNull(mAnchorContainers.get(anchorSide)),
-                        mAnchorContainerParent,
+                        mResizeHandleContainer,
                         sideUiContainer,
                         /* sideUiCoordinator= */ this));
     }
