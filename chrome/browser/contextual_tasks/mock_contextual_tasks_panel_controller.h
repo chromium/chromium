@@ -137,6 +137,7 @@ class MockContextualTasksPanelController
               permission_controller,
               (),
               (override));
+  MOCK_METHOD(void, AnnounceAlert, (const std::u16string& text), (override));
   MOCK_METHOD(void,
               RecordTimeToHandshakeComplete,
               (content::WebContents*),

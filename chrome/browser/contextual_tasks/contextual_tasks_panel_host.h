@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PANEL_HOST_H_
 
 #include <memory>
+#include <string>
 
 #include "base/observer_list_types.h"
 
@@ -99,6 +100,9 @@ class ContextualTasksPanelHost {
 
   // Returns whether the protected page error scrim is currently visible.
   virtual bool IsErrorPageVisible() const;
+
+  // Announces `text` as an accessibility alert on the panel's toolbar view.
+  virtual void AnnounceAlert(const std::u16string& text) {}
 };
 
 }  // namespace contextual_tasks

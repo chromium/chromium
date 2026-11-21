@@ -4,6 +4,8 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_permission_controller.h"
 
+#include <string>
+
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -999,6 +1001,51 @@ TEST_F(ContextualTasksPermissionControllerRearchitectureDisabledTest,
   EXPECT_EQ(
       location_bar::LocationBarOverrideData::FromWebContents(web_contents()),
       nullptr);
+}
+
+TEST_F(ContextualTasksPermissionControllerTest,
+       IndicatorAnnouncementOmitsAddressBarHint) {
+  std::unique_ptr<content::WebContents> toolbar_web_contents =
+      CreateTestWebContents();
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller(
+      mock_browser_window());
+  ON_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(mock_panel_controller, GetToolbarWebContents())
+      .WillByDefault(testing::Return(toolbar_web_contents.get()));
+
+  ContextualTasksLocationBar* location_bar =
+      controller()->GetLocationBarForTesting();
+  ASSERT_TRUE(location_bar);
+  ASSERT_TRUE(location_bar->CanAnnounceAlert());
+  EXPECT_FALSE(location_bar->ShouldAnnounceAddressBarHint());
+
+  const std::u16string expected_announcement =
+      l10n_util::GetStringUTF16(IDS_MICROPHONE_BLOCKED);
+  const std::u16string address_bar_hint =
+      l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT);
+  ASSERT_FALSE(expected_announcement.empty());
+  ASSERT_FALSE(address_bar_hint.empty());
+
+  std::u16string captured_announcement;
+  EXPECT_CALL(mock_panel_controller, AnnounceAlert(testing::_))
+      .WillOnce(testing::SaveArg<0>(&captured_announcement));
+
+  const GURL url("https://example.com");
+  NavigateAndCommit(url);
+  content_settings::PageSpecificContentSettings::CreateForWebContents(
+      web_contents(),
+      std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
+  content_settings::PageSpecificContentSettings* pscs =
+      content_settings::PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(pscs);
+  pscs->OnMediaStreamPermissionSet(
+      url, {content_settings::PageSpecificContentSettings::kMicrophoneAccessed,
+            content_settings::PageSpecificContentSettings::kMicrophoneBlocked});
+
+  EXPECT_EQ(captured_announcement, expected_announcement);
+  EXPECT_EQ(captured_announcement.find(address_bar_hint), std::u16string::npos);
 }
 
 }  // namespace contextual_tasks

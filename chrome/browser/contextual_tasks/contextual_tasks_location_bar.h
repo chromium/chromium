@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -83,6 +84,8 @@ class ContextualTasksLocationBar : public LocationBarStub,
       override;
   ChipController* GetChipController() override;
   PermissionDashboardController* GetPermissionDashboardController() override;
+  void AnnounceAlert(const std::u16string& announcement) override;
+  bool ShouldAnnounceAddressBarHint() const override;
   void OnChanged() override;
   void UpdateContentSettingsIcons() override;
   void Update(content::WebContents* contents) override;

@@ -24,6 +24,10 @@ bool LocationBar::CanAnnounceAlert() const {
   return true;
 }
 
+bool LocationBar::ShouldAnnounceAddressBarHint() const {
+  return true;
+}
+
 ui::ElementContext LocationBar::GetElementContext() const {
   return ui::ElementContext();
 }

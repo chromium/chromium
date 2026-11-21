@@ -378,9 +378,12 @@ bool PermissionDashboardController::Update(
     }
 
     if (location_bar_->CanAnnounceAlert()) {
-      indicator_chip->AnnounceAlert(l10n_util::GetStringFUTF16(
-          IDS_A11Y_INDICATORS_ANNOUNCEMENT, name,
-          l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT)));
+      indicator_chip->AnnounceAlert(
+          location_bar_->ShouldAnnounceAddressBarHint()
+              ? l10n_util::GetStringFUTF16(
+                    IDS_A11Y_INDICATORS_ANNOUNCEMENT, name,
+                    l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT))
+              : name);
       indicator_model->AccessibilityWasNotified(web_contents);
     }
   }

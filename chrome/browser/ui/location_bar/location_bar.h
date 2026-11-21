@@ -154,6 +154,13 @@ class LocationBar {
   // when the alert would be dropped.
   virtual bool CanAnnounceAlert() const;
 
+  // Returns whether screen reader announcements for permission indicators in
+  // this location bar should append the "Change this setting in the address
+  // bar." hint (`IDS_A11Y_OMNIBOX_CHIP_HINT`). Secondary surfaces such as a
+  // side panel toolbar override this to false because their settings are not in
+  // the main window's address bar.
+  virtual bool ShouldAnnounceAddressBarHint() const;
+
   // Called when anything has changed that might affect the layout or contents
   // of the views around the edit, including the text of the edit and the
   // status of any keyword- or hint-related state.

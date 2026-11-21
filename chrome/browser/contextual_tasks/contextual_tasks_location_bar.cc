@@ -4,8 +4,10 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_location_bar.h"
 
+#include <string>
 #include <utility>
 
+#include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -168,6 +170,17 @@ ChipController* ContextualTasksLocationBar::GetChipController() {
 PermissionDashboardController*
 ContextualTasksLocationBar::GetPermissionDashboardController() {
   return permission_dashboard_controller_.get();
+}
+
+void ContextualTasksLocationBar::AnnounceAlert(
+    const std::u16string& announcement) {
+  if (ContextualTasksPanelController* coordinator = GetCoordinator()) {
+    coordinator->AnnounceAlert(announcement);
+  }
+}
+
+bool ContextualTasksLocationBar::ShouldAnnounceAddressBarHint() const {
+  return false;
 }
 
 void ContextualTasksLocationBar::OnChanged() {

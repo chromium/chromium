@@ -4,6 +4,8 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host_desktop.h"
 
+#include <string>
+
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_scrim_view.h"
@@ -24,6 +26,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/controls/webview/webview.h"
 #include "url/gurl.h"
 
 namespace {
@@ -189,6 +192,13 @@ bool ContextualTasksPanelHostDesktop::IsErrorPageVisible() const {
     return web_view_->IsErrorPageVisible();
   }
   return is_error_page_visible_;
+}
+
+void ContextualTasksPanelHostDesktop::AnnounceAlert(
+    const std::u16string& text) {
+  if (web_view_) {
+    web_view_->AnnounceAlert(text);
+  }
 }
 
 void ContextualTasksPanelHostDesktop::OnEntryShown(SidePanelEntry* entry) {

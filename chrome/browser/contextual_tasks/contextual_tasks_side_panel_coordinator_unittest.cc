@@ -5964,6 +5964,14 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
       omnibox::ChromeAimEntryPoint::
           DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON);
 }
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       AnnounceAlertForwardsToPanelHost) {
+  EXPECT_CALL(*mock_panel_host_,
+              AnnounceAlert(std::u16string(u"Camera in use")))
+      .Times(1);
+  coordinator_->AnnounceAlert(u"Camera in use");
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace contextual_tasks

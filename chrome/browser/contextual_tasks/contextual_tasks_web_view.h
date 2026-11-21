@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_WEB_VIEW_H_
 
 #include <optional>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -96,6 +97,15 @@ class ContextualTasksWebView
   // Returns whether the protected page error scrim overlay is currently
   // visible.
   bool IsErrorPageVisible() const;
+
+  // Announces `text` as an accessibility alert on `toolbar_web_view_`, queuing
+  // it until `AddedToWidget()` only if the view has not been attached to a
+  // widget for the first time yet.
+  void AnnounceAlert(const std::u16string& text);
+
+  const std::optional<std::u16string>& pending_alert_for_testing() const {
+    return pending_alert_;
+  }
 
   // views::View:
   void AddedToWidget() override;
@@ -210,6 +220,16 @@ class ContextualTasksWebView
   // scrims hosted in `scrim_view_`.
   bool is_ghost_loader_visible_ = false;
   bool is_error_page_visible_ = false;
+
+  // Whether this view has been attached to a `views::Widget` at least once.
+  // Once attached, subsequent off-widget caching (e.g. in `SidePanelEntry`
+  // while another side panel is open) drops alerts instead of queuing stale
+  // `pending_alert_` announcements for reopen.
+  bool has_attached_to_widget_ = false;
+
+  // Accessibility alert text queued before initial `views::Widget` attachment,
+  // flushed in `AddedToWidget()`.
+  std::optional<std::u16string> pending_alert_;
 
   // Timestamp of the last browser-verified user interaction consumed by
   // `ConsumeUserActivation()` to prevent replay.

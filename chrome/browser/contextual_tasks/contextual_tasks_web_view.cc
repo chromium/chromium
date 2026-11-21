@@ -51,9 +51,11 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/webview/web_contents_delegate_views.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_class_properties.h"
@@ -322,9 +324,29 @@ bool ContextualTasksWebView::IsErrorPageVisible() const {
          scrim_view_->is_showing_error_page();
 }
 
+void ContextualTasksWebView::AnnounceAlert(const std::u16string& text) {
+  if (!toolbar_web_view_ || text.empty()) {
+    return;
+  }
+  if (toolbar_web_view_->GetWidget()) {
+    pending_alert_.reset();
+    toolbar_web_view_->GetViewAccessibility().AnnounceAlert(text);
+    return;
+  }
+  if (!has_attached_to_widget_) {
+    pending_alert_ = text;
+  }
+}
+
 void ContextualTasksWebView::AddedToWidget() {
+  has_attached_to_widget_ = true;
   if (content_web_view_ && content_web_view_->web_contents()) {
     content_web_view_->web_contents()->WasShown();
+  }
+  if (pending_alert_.has_value() && toolbar_web_view_ &&
+      toolbar_web_view_->GetWidget()) {
+    std::u16string alert = *std::exchange(pending_alert_, std::nullopt);
+    toolbar_web_view_->GetViewAccessibility().AnnounceAlert(alert);
   }
 }
 

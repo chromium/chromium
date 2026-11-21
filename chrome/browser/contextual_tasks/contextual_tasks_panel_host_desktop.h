@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PANEL_HOST_DESKTOP_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_PANEL_HOST_DESKTOP_H_
 
+#include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -60,6 +62,7 @@ class ContextualTasksPanelHostDesktop : public ContextualTasksPanelHost,
   void SetWebContents(content::WebContents* web_contents) override;
   void SetErrorPageVisible(bool visible) override;
   bool IsErrorPageVisible() const override;
+  void AnnounceAlert(const std::u16string& text) override;
 
   // SidePanelEntryObserver:
   void OnEntryShown(SidePanelEntry* entry) override;

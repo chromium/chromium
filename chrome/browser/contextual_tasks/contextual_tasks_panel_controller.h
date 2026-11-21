@@ -238,6 +238,9 @@ class ContextualTasksPanelController {
   virtual void OnLogoPointerDown() = 0;
   virtual ContextualTasksPermissionController* permission_controller() = 0;
 
+  // Announces `text` as an accessibility alert on the panel's toolbar view.
+  virtual void AnnounceAlert(const std::u16string& text) = 0;
+
   // Records the time to handshake complete metric for the given WebContents.
   virtual void RecordTimeToHandshakeComplete(
       content::WebContents* web_contents) {}

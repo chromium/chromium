@@ -5,10 +5,14 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host_desktop.h"
 
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -18,13 +22,23 @@
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/views/chrome_views_test_base.h"
 #include "components/contextual_tasks/public/features.h"
-#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/view_utils.h"
+#include "ui/views/widget/widget.h"
+
+#if !BUILDFLAG(IS_MAC)
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/views/accessibility/ax_update_notifier.h"
+#include "ui/views/test/ax_event_counter.h"
+#include "ui/views/widget/root_view.h"
+#endif
 
 using testing::_;
 using testing::NiceMock;
@@ -47,9 +61,10 @@ class MockContextualTasksPanelHostObserver
 
 }  // namespace
 
-class ContextualTasksPanelHostDesktopTest : public testing::Test {
+class ContextualTasksPanelHostDesktopTest : public ChromeViewsTestBase {
  public:
   void SetUp() override {
+    ChromeViewsTestBase::SetUp();
     TestingProfile::Builder builder;
     builder.AddTestingFactory(
         ChromeSigninClientFactory::GetInstance(),
@@ -79,10 +94,10 @@ class ContextualTasksPanelHostDesktopTest : public testing::Test {
     side_panel_registry_.reset();
     browser_window_.reset();
     profile_.reset();
+    ChromeViewsTestBase::TearDown();
   }
 
  protected:
-  content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestingProfile> profile_;
@@ -281,6 +296,103 @@ TEST_F(ContextualTasksPanelHostDesktopTest,
   EXPECT_EQ(panel_host_->GetToolbarWebContents(), toolbar_contents);
   EXPECT_EQ(webui::GetBrowserWindowInterface(toolbar_contents),
             browser_window_.get());
+}
+
+TEST_F(ContextualTasksPanelHostDesktopTest,
+       AnnounceAlertDeliversImmediatelyWhenAttachedToWidget) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kContextualTasksSidePanelRearchitecture);
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  std::unique_ptr<views::View> view =
+      panel_host_->CreateSidePanelView(*side_panel_registry_);
+  ContextualTasksWebView* web_view =
+      views::AsViewClass<ContextualTasksWebView>(view.get());
+  ASSERT_NE(web_view, nullptr);
+  widget->SetContentsView(std::move(view));
+
+#if !BUILDFLAG(IS_MAC)
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
+#endif
+  panel_host_->AnnounceAlert(u"Microphone in use");
+  EXPECT_EQ(web_view->pending_alert_for_testing(), std::nullopt);
+
+#if !BUILDFLAG(IS_MAC)
+  if (!views::ViewAccessibility::IsViewsAccessibilityTreeEnabled()) {
+    EXPECT_EQ(counter.GetCount(ax::mojom::Event::kAlert), 1);
+    views::View* announce_view =
+        static_cast<views::internal::RootView*>(widget->GetRootView())
+            ->GetAnnounceViewForTesting();
+    ASSERT_NE(announce_view, nullptr);
+    EXPECT_EQ(announce_view->GetViewAccessibility().GetCachedName(),
+              u"Microphone in use");
+  }
+#endif
+
+  widget.reset();
+}
+
+TEST_F(ContextualTasksPanelHostDesktopTest,
+       AnnounceAlertQueuesUntilAddedToWidget) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kContextualTasksSidePanelRearchitecture);
+
+  std::unique_ptr<views::View> view =
+      panel_host_->CreateSidePanelView(*side_panel_registry_);
+  ContextualTasksWebView* web_view =
+      views::AsViewClass<ContextualTasksWebView>(view.get());
+  ASSERT_NE(web_view, nullptr);
+  ASSERT_EQ(web_view->GetWidget(), nullptr);
+
+#if !BUILDFLAG(IS_MAC)
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
+#endif
+  panel_host_->AnnounceAlert(u"Queued microphone alert");
+  EXPECT_EQ(web_view->pending_alert_for_testing(),
+            std::optional<std::u16string>(u"Queued microphone alert"));
+#if !BUILDFLAG(IS_MAC)
+  if (!views::ViewAccessibility::IsViewsAccessibilityTreeEnabled()) {
+    EXPECT_EQ(counter.GetCount(ax::mojom::Event::kAlert), 0);
+  }
+#endif
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  views::View* container =
+      widget->SetContentsView(std::make_unique<views::View>());
+  container->AddChildView(std::move(view));
+
+  EXPECT_EQ(web_view->pending_alert_for_testing(), std::nullopt);
+#if !BUILDFLAG(IS_MAC)
+  if (!views::ViewAccessibility::IsViewsAccessibilityTreeEnabled()) {
+    EXPECT_EQ(counter.GetCount(ax::mojom::Event::kAlert), 1);
+    views::View* announce_view =
+        static_cast<views::internal::RootView*>(widget->GetRootView())
+            ->GetAnnounceViewForTesting();
+    ASSERT_NE(announce_view, nullptr);
+    EXPECT_EQ(announce_view->GetViewAccessibility().GetCachedName(),
+              u"Queued microphone alert");
+  }
+#endif
+
+  // Once attached at least once, detaching the view off-widget (e.g. when
+  // cached in `SidePanelEntry` while another side panel is open) drops alerts
+  // instead of queuing a stale announcement for re-attachment.
+  std::unique_ptr<views::View> cached_view =
+      container->RemoveChildViewT(web_view);
+  ASSERT_EQ(web_view->GetWidget(), nullptr);
+  panel_host_->AnnounceAlert(u"Stale cached alert");
+  EXPECT_EQ(web_view->pending_alert_for_testing(), std::nullopt);
+
+  container->AddChildView(std::move(cached_view));
+#if !BUILDFLAG(IS_MAC)
+  if (!views::ViewAccessibility::IsViewsAccessibilityTreeEnabled()) {
+    EXPECT_EQ(counter.GetCount(ax::mojom::Event::kAlert), 1);
+  }
+#endif
+
+  widget.reset();
 }
 
 }  // namespace contextual_tasks

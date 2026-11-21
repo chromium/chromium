@@ -242,6 +242,7 @@ class ContextualTasksSidePanelCoordinator
   void ShowPageInfoBubble(bool is_pointer_interaction) override;
   void OnLogoPointerDown() override;
   ContextualTasksPermissionController* permission_controller() override;
+  void AnnounceAlert(const std::u16string& text) override;
 #if !BUILDFLAG(IS_ANDROID)
   ContextualTasksOnboardingTooltipController*
   onboarding_controller_for_testing() {

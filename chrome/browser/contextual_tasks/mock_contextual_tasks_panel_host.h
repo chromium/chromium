@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_MOCK_CONTEXTUAL_TASKS_PANEL_HOST_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_MOCK_CONTEXTUAL_TASKS_PANEL_HOST_H_
 
+#include <string>
+
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_host.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -38,6 +40,7 @@ class MockContextualTasksPanelHost : public ContextualTasksPanelHost {
   }
   void SetErrorPageVisible(bool visible) override;
   bool IsErrorPageVisible() const override;
+  MOCK_METHOD(void, AnnounceAlert, (const std::u16string& text), (override));
 
  private:
   base::WeakPtr<content::WebContents> web_contents_ = nullptr;

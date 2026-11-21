@@ -527,6 +527,11 @@ ContextualTasksSidePanelCoordinator::permission_controller() {
   return permission_controller_.get();
 }
 
+void ContextualTasksSidePanelCoordinator::AnnounceAlert(
+    const std::u16string& text) {
+  contextual_tasks_panel_host_->AnnounceAlert(text);
+}
+
 // static
 ContextualTasksPanelController* ContextualTasksPanelController::From(
     BrowserWindowInterface* window) {
