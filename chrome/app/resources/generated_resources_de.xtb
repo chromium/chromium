@@ -1638,7 +1638,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2252017960592955005">Spionageschutz (Beta)</translation>
 <translation id="2253318212986772520">PPD für <ph name="PRINTER_NAME" /> kann nicht abgerufen werden.</translation>
 <translation id="2253797136365098595">Weitere Informationen zur Verlaufssuche</translation>
-<translation id="2253927598983295051">Inhalte zum Teilen mit <ph name="APP_NAME" /> auswählen</translation>
+<translation id="2253927598983295051">Festlegen, was mit <ph name="APP_NAME" /> geteilt werden soll</translation>
 <translation id="2255317897038918278">Microsoft-Zeitstempeldienst</translation>
 <translation id="2256049182613019001">Lesemodus schließen (<ph name="SHORTCUT" />)</translation>
 <translation id="2256115617011615191">Jetzt neu starten</translation>
@@ -6186,7 +6186,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5720729194423017301">Kürzel für Websites und Suchmaschinen</translation>
 <translation id="572155275267014074">Android-Einstellungen</translation>
 <translation id="5722086096420375088">Grün und Weiß</translation>
-<translation id="572328651809341494">Zuletzt geöffnete Tabs</translation>
+<translation id="572328651809341494">Letzte Tabs</translation>
 <translation id="5723508132121499792">Es werden keine Apps im Hintergrund ausgeführt.</translation>
 <translation id="5724723163580775373">Großer Fokus</translation>
 <translation id="5725112283692663422">Feedback zu „Design mit KI erstellen“ senden</translation>
@@ -9161,7 +9161,7 @@ Schlüsseldatei: <ph name="KEY_FILE" />
 
 Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, um neue Versionen deiner Erweiterung zu erstellen.</translation>
 <translation id="8000020256436988724">Symbolleiste</translation>
-<translation id="800117767980299235">Sprachnotiz</translation>
+<translation id="800117767980299235">Text hervorheben</translation>
 <translation id="8001561107130904792">Teilen von Seiteninhalten</translation>
 <translation id="8002274832045662704">Erweiterte Druckerkonfiguration</translation>
 <translation id="8002597610026749658">Chrome kann Untertitel für die hier angezeigten Sprachen erstellen</translation>

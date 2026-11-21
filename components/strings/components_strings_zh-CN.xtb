@@ -547,7 +547,7 @@
 <translation id="1919526244108283799">400 x 600 毫米</translation>
 <translation id="192020519938775529">{COUNT,plural, =0{无}=1{1 个网站}other{# 个网站}}</translation>
 <translation id="192095259937375524">“分享此标签页”按钮，激活它即可通过分享链接、创建二维码、投放等操作分享此标签页</translation>
-<translation id="1924727005275031552">新</translation>
+<translation id="1924727005275031552">新地址：</translation>
 <translation id="1927930548546198515">Chrome 会记录您对该功能的使用情况，例如您的请求以及您在面对建议时是选择接受还是忽略</translation>
 <translation id="1932098463447129402">不早于</translation>
 <translation id="1932629105611536854">配送邮政编码</translation>
@@ -858,7 +858,7 @@
 <translation id="240450251994300576">次要标题徽标</translation>
 <translation id="2404715426538856682">信用卡和借记卡 · IBAN · 会员卡</translation>
 <translation id="2404884497378469141">尝试重新复制文件</translation>
-<translation id="2413155254802890957">旧</translation>
+<translation id="2413155254802890957">旧地址：</translation>
 <translation id="2413528052993050574">此服务器无法证明它是<ph name="DOMAIN" />；其安全证书可能已被撤消。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="2414676293664737497">Markdown</translation>
 <translation id="2414886740292270097">深色调</translation>
@@ -2102,7 +2102,7 @@
 <translation id="4489023393592172404">Kaku 4 信封</translation>
 <translation id="4489977488133295402">先验证身份，再自动填充支付方式</translation>
 <translation id="4490717597759821841">A7</translation>
-<translation id="449126573531210296">使用您的 Google 账号加密已同步的密码</translation>
+<translation id="449126573531210296">使用您的 Google 帐号加密同步的密码</translation>
 <translation id="4493480324863638523">网址无效。必须是采用标准架构的网址，例如“http://example.com”或“https://example.com”。</translation>
 <translation id="4497843134750481377">管理优惠</translation>
 <translation id="4500587658229086076">不安全内容</translation>
@@ -4488,7 +4488,7 @@
 <translation id="8457125768502047971">无限期</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8461289985785035071">修改身份纠正识别号</translation>
-<translation id="8461694314515752532">使用您自己的同步口令加密已同步的数据</translation>
+<translation id="8461694314515752532">使用您自己的同步口令加密同步的数据</translation>
 <translation id="8461973047386722744">找不到任何密码</translation>
 <translation id="8467494337615822642">前往“设置”中的 Chrome 安全检查页面</translation>
 <translation id="8468358362970107653">C3 信封</translation>

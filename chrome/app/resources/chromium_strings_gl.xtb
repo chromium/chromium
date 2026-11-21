@@ -17,7 +17,7 @@
 <translation id="112640046208448578">Identifica obxectos ou lugares, e copia ou traduce texto. Cando usas a busca de imaxes, envíase unha captura de pantalla da páxina ao servidor. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium é o teu navegador predeterminado</translation>
 <translation id="1131805035311359397">Para comprobar se os teus contrasinais están protexidos fronte a violacións da seguranza dos datos e outros problemas de seguranza, debes <ph name="BEGIN_LINK" />iniciar sesión en Chromium<ph name="END_LINK" />.</translation>
-<translation id="1145158441928281100">{COUNT,plural, =1{A persoa que che administra a conta solicita que reinicies Chromium para aplicar esta actualización. Hai unha ventá no modo de incógnito ou illada aberta. Non se volverá abrir tras o reinicio.}other{A persoa que che administra a conta solicita que reinicies Chromium para aplicar esta actualización. Hai # ventás do modo de incógnito e illadas abertas nos perfís. Non se volverán abrir tras o reinicio.}}</translation>
+<translation id="1145158441928281100">{COUNT,plural, =1{A persoa que che administra a conta solicita que reinicies Chromium para aplicar esta actualización. Hai unha ventá no modo de incógnito ou illada aberta. Non se volverá abrir tras o reinicio.}many{Your administrator asks that you relaunch Chromium to apply this update. There are # Incognito and Isolated windows open across profiles. They won't reopen after you relaunch.}other{A persoa que che administra a conta solicita que reinicies Chromium para aplicar esta actualización. Hai # ventás do modo de incógnito e illadas abertas nos perfís. Non se volverán abrir tras o reinicio.}}</translation>
 <translation id="1150418667633096194">O botón Panel lateral da Busca de Google, situado na barra de ferramentas, ten unha icona nova. Fai clic nel para facer preguntas mentres navegas co panel lateral da Busca de Google.</translation>
 <translation id="1153368717515616349">Fai clic no menú de Chromium</translation>
 <translation id="1157952955648710254">Pechar o panel lateral da Busca de Google</translation>
@@ -42,7 +42,7 @@
 <translation id="1329040302064168406">Inicia sesión en Chromium no teléfono</translation>
 <translation id="1330562121671411446">Detectar idioma</translation>
 <translation id="1342274909142618978">Eliminar tamén datos de Chromium (<ph name="URL" />)</translation>
-<translation id="1344429655882689538">{COUNT,plural, =1{A opción Protección avanzada require que reinicies Chromium para aplicar unha actualización. Hai unha ventá no modo de incógnito ou illada aberta. Non se volverá abrir tras o reinicio.}other{A opción Protección avanzada require que reinicies Chromium para aplicar unha actualización. Hai # ventás no modo de incógnito e illadas abertas nos perfís. Non se volverán abrir tras o reinicio.}}</translation>
+<translation id="1344429655882689538">{COUNT,plural, =1{A opción Protección avanzada require que reinicies Chromium para aplicar unha actualización. Hai unha ventá no modo de incógnito ou illada aberta. Non se volverá abrir tras o reinicio.}many{Advanced Protection requires that you relaunch Chromium to apply an update. There are # Incognito and Isolated windows open across profiles. They won't reopen after you relaunch.}other{A opción Protección avanzada require que reinicies Chromium para aplicar unha actualización. Hai # ventás no modo de incógnito e illadas abertas nos perfís. Non se volverán abrir tras o reinicio.}}</translation>
 <translation id="1345251407431278948">Fixouse o elemento! Podes volver acceder á busca de imaxes desde o novo botón da barra de ferramentas</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="1388276868779258475">Usa a aplicación Chromium para seguir navegando esteas onde esteas</translation>
@@ -61,7 +61,7 @@
 <translation id="1562320819937089394">Fixar Chromium</translation>
 <translation id="1574377791422810894">Ferramentas de seguranza de Chromium</translation>
 <translation id="1594928384848033697">Chromium quere eliminar os datos do xestor de contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
-<translation id="1607715478322902680">{COUNT,plural, =0{O teu administrador require que reinicies Chromium para aplicar unha actualización}=1{O teu administrador require que reinicies Chromium para aplicar unha actualización. A ventá do modo de incógnito non se volverá abrir.}other{O teu administrador require que reinicies Chromium para aplicar unha actualización. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
+<translation id="1607715478322902680">{COUNT,plural, =0{O teu administrador require que reinicies Chromium para aplicar unha actualización}=1{O teu administrador require que reinicies Chromium para aplicar unha actualización. A ventá do modo de incógnito non se volverá abrir.}many{Your administrator requires that you relaunch Chromium to apply an update. Your # Incognito windows won't reopen.}other{O teu administrador require que reinicies Chromium para aplicar unha actualización. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
 <translation id="1623563412065267963">Desfruta do mellor de Google coa aplicación Chromium no teléfono</translation>
 <translation id="1625909126243026060">Revisa os controis clave de privacidade e seguranza en Chromium</translation>
 <translation id="1640672724030957280">Descargando…</translation>
@@ -113,7 +113,7 @@
 <translation id="2086476982681781442">Chromium bloqueou esta descarga porque o ficheiro é enganoso e pode producir cambios inesperados no teu dispositivo</translation>
 <translation id="208726765006323911">A próxima vez que abras Chromium en iOS, verás unha solicitude para probar <ph name="FEATURE_NAME" />.</translation>
 <translation id="2099452623287920103">Os teus contrasinais e outros datos de Chromium que gardases na túa Conta de Google quitaranse deste dispositivo. Para usalos de novo en Chromium, volve iniciar sesión.</translation>
-<translation id="2120965832000301375">{COUNT,plural, =1{A túa organización eliminará os datos de navegación automaticamente cando Chromium leve 1 minuto sen usarse. Entre esa información, poderían incluírse o historial, os datos da función de autocompletar e as descargas. As pestanas permanecerán abertas.}other{A túa organización eliminará os datos de navegación automaticamente cando Chromium leve # minutos sen usarse. Entre esa información, poderían incluírse o historial, os datos da función de autocompletar e as descargas. As pestanas permanecerán abertas.}}</translation>
+<translation id="2120965832000301375">{COUNT,plural, =1{A túa organización eliminará os datos de navegación automaticamente cando Chromium leve 1 minuto sen usarse. Entre esa información, poderían incluírse o historial, os datos da función de autocompletar e as descargas. As pestanas permanecerán abertas.}many{Your organization automatically deletes browsing data when Chromium isn't used for # minutes. This could include history, autofill, and downloads. Your tabs will stay open.}other{A túa organización eliminará os datos de navegación automaticamente cando Chromium leve # minutos sen usarse. Entre esa información, poderían incluírse o historial, os datos da función de autocompletar e as descargas. As pestanas permanecerán abertas.}}</translation>
 <translation id="2125838419757773031">Seleccionar unha rexión da pantalla para facer unha busca</translation>
 <translation id="2126108037660393668">Produciuse un erro ao verificar o ficheiro descargado.</translation>
 <translation id="2135919691573380097">Informar deste sitio</translation>
@@ -136,7 +136,7 @@
 <translation id="22571759390241347">Habilidades en Chromium</translation>
 <translation id="2283228908180457226">Icona nova, mesmo atallo: Fai clic para facer preguntas mentres navegas co panel lateral da Busca de Google.</translation>
 <translation id="2283803047247799269">Busca contido nesta pestana coa busca de imaxes</translation>
-<translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium recomenda pór en pausa a pestana que fai que o navegador vaia máis lento}other{Chromium recomenda pór en pausa as pestanas que fan que o navegador vaia máis lento}}</translation>
+<translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium recomenda pór en pausa a pestana que fai que o navegador vaia máis lento}many{Chromium recommends pausing the tabs slowing your browser}other{Chromium recomenda pór en pausa as pestanas que fan que o navegador vaia máis lento}}</translation>
 <translation id="2307973900865360088">Manter na barra de aplicacións</translation>
 <translation id="2313870531055795960">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chromium. Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chromium tamén pode comprobar os enderezos URL, entre os que se inclúen fragmentos de contido das páxinas, a través da función Navegación segura.</translation>
 <translation id="2356070529366658676">Preguntar</translation>
@@ -145,7 +145,7 @@
 <translation id="236943522426971115">Desactivar execución de Chromium en segundo plano para as aplicacións</translation>
 <translation id="2374216753258219393">Para usar esta extensión como <ph name="USER_EMAIL_ADDRESS" />, inicia sesión en Chromium.</translation>
 <translation id="2384373936468275798">Chromium OS non puido sincronizar os teus datos porque a información de inicio de sesión da túa conta está desactualizada.</translation>
-<translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Unha ou varias extensións de Chromium estaban accedendo a 1 dispositivo de interface humana}=1{Unha ou varias extensións de Chromium estaban accedendo a 1 dispositivo de interface humana}other{Unha ou varias extensións de Chromium estaban accedendo a # dispositivos de interface humana}}</translation>
+<translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Unha ou varias extensións de Chromium estaban accedendo a 1 dispositivo de interface humana}=1{Unha ou varias extensións de Chromium estaban accedendo a 1 dispositivo de interface humana}many{# HID devices are being accessed by one or more Chromium extensions}other{Unha ou varias extensións de Chromium estaban accedendo a # dispositivos de interface humana}}</translation>
 <translation id="2401032172288869980">Chromium necesita permiso de acceso á cámara e ao micrófono para este sitio</translation>
 <translation id="2403703063067034158">Produciuse un erro de inicio do sistema: Estase executando outra instancia de configuración. Téntao de novo máis tarde.</translation>
 <translation id="2418322681019544463">Abre ligazóns en Chromium desde calquera aplicación e accede facilmente ao navegador desde a barra de tarefas</translation>
@@ -171,7 +171,7 @@
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2629740064077610681">A túa organización pode ver e xestionar os datos de navegación (como, por exemplo, os marcadores, o historial e os contrasinais). Non poderá ver os datos de navegación doutros perfís de Chromium</translation>
 <translation id="2635452620547538388">Verifica a túa identidade para usar e gardar os datos de Chromium na túa conta (<ph name="ACCOUNT_EMAIL" />)</translation>
-<translation id="2637732208198500597">{COUNT,plural, =0{A opción Protección avanzada require que reinicies Chromium para aplicar unha actualización}=1{A opción Protección avanzada require que reinicies Chromium para aplicar unha actualización. A ventá do modo de incógnito non se volverá abrir.}other{A opción Protección avanzada require que reinicies Chromium para aplicar unha actualización. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
+<translation id="2637732208198500597">{COUNT,plural, =0{A opción Protección avanzada require que reinicies Chromium para aplicar unha actualización}=1{A opción Protección avanzada require que reinicies Chromium para aplicar unha actualización. A ventá do modo de incógnito non se volverá abrir.}many{Advanced Protection requires that you relaunch Chromium to apply an update. Your # Incognito windows won't reopen.}other{A opción Protección avanzada require que reinicies Chromium para aplicar unha actualización. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
 <translation id="263863604136125912">Iniciar Chromium</translation>
 <translation id="2648074677641340862">Produciuse un erro no sistema operativo durante a instalación. Volve descargar Chromium.</translation>
 <translation id="2661879430930417727">Se compartes un dispositivo, as túas amizades e os membros da túa familia poden navegar cun perfil independente e configurar Chromium como prefiran</translation>
@@ -205,7 +205,7 @@
 <translation id="2981563588585023386">Para protexerte en liña coas eleccións dos teus pais, inicia sesión en Chromium</translation>
 <translation id="2992577225802060159">Protexe a memoria de Chromium doutras aplicacións do teu ordenador.</translation>
 <translation id="3003694935412297923">Todas as tarefas</translation>
-<translation id="3012615494352020668">{count,plural, =1{Chromium necesita verificar a túa identidade antes de que algúns datos se garden na túa Conta de Google e se poidan usar en todos os teus dispositivos. Se a pechas agora, eliminaranse estes datos (1 elemento).}other{Chromium necesita verificar a túa identidade antes de que algúns datos se garden na túa Conta de Google e se poidan usar en todos os teus dispositivos. Se a pechas agora, eliminaranse estes datos ({count} elementos).}}</translation>
+<translation id="3012615494352020668">{count,plural, =1{Chromium necesita verificar a túa identidade antes de que algúns datos se garden na túa Conta de Google e se poidan usar en todos os teus dispositivos. Se a pechas agora, eliminaranse estes datos (1 elemento).}many{Chromium needs to verify it’s you before some data can be saved in your Google Account and used on all your devices. If you sign out now, this data ({count} items) will be deleted.}other{Chromium necesita verificar a túa identidade antes de que algúns datos se garden na túa Conta de Google e se poidan usar en todos os teus dispositivos. Se a pechas agora, eliminaranse estes datos ({count} elementos).}}</translation>
 <translation id="3013473503895162900">Abrir <ph name="URL" /> nunha nova pestana en Chromium.</translation>
 <translation id="302551344979399011">As innovacións de IA, como as habilidades, gárdanse na túa Conta de Google e xestiónanse á parte da sincronización de Chromium</translation>
 <translation id="3032219013429286568">Para poder acceder ás túas extensións e a outros datos en todos os teus dispositivos, inicia sesión en Chromium</translation>
@@ -220,7 +220,7 @@
 <translation id="3068290154869370196">As extensións son complementos que che permiten personalizar Chromium. Axúdanche a facelo teu, desde manter a organización ata simplificar as tarefas diarias.</translation>
 <translation id="3068515742935458733">Axudar a mellorar Chromium enviando informes sobre fallos e <ph name="UMA_LINK" /> a Google</translation>
 <translation id="3071024987058544609">Usa a aplicación Chromium para contar coa seguranza de Google esteas onde esteas</translation>
-<translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Unha ou varias extensións de Chromium estaban accedendo a 1 dispositivo USB}=1{Unha ou varias extensións de Chromium estaban accedendo a 1 dispositivo USB}other{Unha ou varias extensións de Chromium estaban accedendo a # dispositivos USB}}</translation>
+<translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Unha ou varias extensións de Chromium estaban accedendo a 1 dispositivo USB}=1{Unha ou varias extensións de Chromium estaban accedendo a 1 dispositivo USB}many{# USB devices are being accessed by one or more Chromium extensions}other{Unha ou varias extensións de Chromium estaban accedendo a # dispositivos USB}}</translation>
 <translation id="3090734884397229414">Para poder acceder á lista de lectura e a outros datos desde <ph name="DEVICE" />, inicia sesión en Chromium</translation>
 <translation id="3095811995836568724">Historial de Chromium</translation>
 <translation id="3103660991484857065">O instalador non puido descomprimir o arquivo. Descarga Chromium de novo.</translation>
@@ -244,7 +244,7 @@
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">Esteas onde esteas, leva contigo as túas ferramentas de IA de Google favoritas con Chromium en iOS.</translation>
 <translation id="3264761466044851269">Para poder acceder ás túas extensións e a outros datos desde <ph name="DEVICE" />, inicia sesión en Chromium</translation>
-<translation id="326944442937875564">{COUNT,plural, =1{Hai dispoñible unha actualización nova para Chromium que se aplicará en canto o reinicies. Non se volverá abrir a ventá illada.}other{Hai dispoñible unha actualización nova para Chromium que se aplicará en canto o reinicies. Non se volverán abrir # ventás illadas.}}</translation>
+<translation id="326944442937875564">{COUNT,plural, =1{Hai dispoñible unha actualización nova para Chromium que se aplicará en canto o reinicies. Non se volverá abrir a ventá illada.}many{A new update for Chromium is available and will be applied as soon as you relaunch. Your # Isolated windows won't reopen.}other{Hai dispoñible unha actualización nova para Chromium que se aplicará en canto o reinicies. Non se volverán abrir # ventás illadas.}}</translation>
 <translation id="3286538390144397061">Reiniciar agora</translation>
 <translation id="328888136576916638">Non se atopan as claves da API de Google. Desactivaranse algunhas funcións de Chromium.</translation>
 <translation id="3296368748942286671">Continuar executando aplicacións en segundo plano cando se peche Chromium</translation>
@@ -271,10 +271,10 @@
 <translation id="3597003331831379823">Produciuse un erro ao executar a configuración con privilexios avanzados. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Inicia sesión en Chromium</translation>
 <translation id="3639635944603682591">Os datos de navegación desta persoa eliminaranse deste dispositivo. Para recuperalos, inicia sesión en Chromium como <ph name="USER_EMAIL" />.</translation>
-<translation id="364817392622123556">{COUNT,plural, =0{Hai dispoñible unha actualización nova para Chromium e aplicarase en canto o reinicies.}=1{Hai dispoñible unha actualización nova para Chromium e aplicarase en canto o reinicies. A ventá do modo de incógnito non se volverá abrir.}other{Hai dispoñible unha actualización nova para Chromium e aplicarase en canto o reinicies. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
+<translation id="364817392622123556">{COUNT,plural, =0{Hai dispoñible unha actualización nova para Chromium e aplicarase en canto o reinicies.}=1{Hai dispoñible unha actualización nova para Chromium e aplicarase en canto o reinicies. A ventá do modo de incógnito non se volverá abrir.}many{A new update for Chromium is available and will be applied as soon as you relaunch. Your # Incognito windows won't reopen.}other{Hai dispoñible unha actualización nova para Chromium e aplicarase en canto o reinicies. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
 <translation id="3667616615096815454">Non se puido levar a cabo a instalación. O servidor non recoñece a aplicación.</translation>
 <translation id="3675854891107786059">Usa a túa <ph name="BEGIN_LINK" />propia frase de acceso<ph name="END_LINK" /> para encriptar todos os datos de Chromium na túa Conta de Google. Non se encriptarán os métodos de pago nin os enderezos de Google Pay. Tampouco se sincronizará o historial de navegación de Chromium.</translation>
-<translation id="370962675267501463">{COUNT,plural, =0{O teu administrador pídeche que reinicies Chromium para aplicar esta actualización}=1{O teu administrador pídeche que reinicies Chromium para aplicar esta actualización. A ventá do modo de incógnito non se volverá abrir.}other{O teu administrador pídeche que reinicies Chromium para aplicar esta actualización. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
+<translation id="370962675267501463">{COUNT,plural, =0{O teu administrador pídeche que reinicies Chromium para aplicar esta actualización}=1{O teu administrador pídeche que reinicies Chromium para aplicar esta actualización. A ventá do modo de incógnito non se volverá abrir.}many{Your administrator asks that you relaunch Chromium to apply this update. Your # Incognito windows won't reopen.}other{O teu administrador pídeche que reinicies Chromium para aplicar esta actualización. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
 <translation id="3713809861844741608">Abrir ligazón nunha nova &amp;pestana de Chromium</translation>
 <translation id="3728124580182886854">Vincula Chromium e outros servizos de Google se queres para beneficiarte da personalización, entre outras cousas</translation>
 <translation id="3729187154190517324">Para afondar na busca, agrega varias pestanas, ficheiros e ferramentas co botón Engadir unha pestana e moito máis.</translation>
@@ -289,7 +289,7 @@
           **Suxerir preguntas:** Crea unha lista con viñetas de 3 a 5 preguntas que fagan pensar e que un usuario podería facer para comprender mellor a captura de pantalla. Entre as preguntas débese incluír, polo menos, unha que sexa específica sobre un obxecto visual, o seu deseño ou a súa posición.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" />: Chromium</translation>
 <translation id="386243222263310720">Para poder acceder aos teus marcadores e a outros datos en todos os teus dispositivos, inicia sesión en Chromium</translation>
-<translation id="3864888736839865780">{COUNT,plural, =1{A persoa que che administra a conta solicita que reinicies Chromium para aplicar esta actualización. Non se volverá abrir a ventá illada.}other{A persoa que che administra a conta solicita que reinicies Chromium para aplicar esta actualización. Non se volverán abrir # ventás illadas.}}</translation>
+<translation id="3864888736839865780">{COUNT,plural, =1{A persoa que che administra a conta solicita que reinicies Chromium para aplicar esta actualización. Non se volverá abrir a ventá illada.}many{Your administrator asks that you relaunch Chromium to apply this update. Your # Isolated windows won't reopen.}other{A persoa que che administra a conta solicita que reinicies Chromium para aplicar esta actualización. Non se volverán abrir # ventás illadas.}}</translation>
 <translation id="3885770153807205175">Selector de idioma</translation>
 <translation id="388648406173476553">Personaliza e controla Chromium. Algo precisa a túa atención. Fai clic para obter información.</translation>
 <translation id="3889543394854987837">Fai clic no teu nome para abrir Chromium e comezar a navegar.</translation>
@@ -315,7 +315,7 @@
 <translation id="4036079820698952681">Informa da <ph name="BEGIN_LINK" />configuración actual<ph name="END_LINK" /> para axudar a mellorar Chromium</translation>
 <translation id="4050175100176540509">A última versión conta con melloras de seguranza importantes e novas funcións.</translation>
 <translation id="4055805654398742145">X&amp;estor de contrasinais</translation>
-<translation id="4095980151185649725">{COUNT,plural, =1{A túa organización pechará Chromium automaticamente cando leve 1 minuto sen usarse. Os datos de navegación (entre os que se poderían incluír o historial, os datos da función de autocompletar e as descargas) eliminaranse.}other{A túa organización pechará Chromium automaticamente cando leve # minuto sen usarse. Os datos de navegación (entre os que se poderían incluír o historial, os datos da función de autocompletar e as descargas) eliminaranse.}}</translation>
+<translation id="4095980151185649725">{COUNT,plural, =1{A túa organización pechará Chromium automaticamente cando leve 1 minuto sen usarse. Os datos de navegación (entre os que se poderían incluír o historial, os datos da función de autocompletar e as descargas) eliminaranse.}many{Your organization automatically closes Chromium when it isn't used for # minutes. Browsing data is deleted. This could include history, autofill, and downloads.}other{A túa organización pechará Chromium automaticamente cando leve # minuto sen usarse. Os datos de navegación (entre os que se poderían incluír o historial, os datos da función de autocompletar e as descargas) eliminaranse.}}</translation>
 <translation id="4118474109249235144">Modo de incógnito de Chromium</translation>
 <translation id="4122186850977583290">Vai á páxina Acerca de Chromium</translation>
 <translation id="4135244987012252068">Personaliza Chromium para darlle outro aire ao navegador</translation>
@@ -344,7 +344,7 @@
 <translation id="4407044323746248786">Queres saír de Chromium de todas formas?</translation>
 <translation id="4413205837991854510">Mostrar sempre atallo da busca de imaxes</translation>
 <translation id="4415566066719264597">Deixar que Chromium se execute en segundo plano</translation>
-<translation id="4419831163359812184">{NUM_EXTENSIONS,plural, =1{Chromium recomenda que a quites. <ph name="BEGIN_LINK" />Máis información sobre as extensións admitidas<ph name="END_LINK" />}other{Chromium recomenda que as quites. <ph name="BEGIN_LINK" />Máis información sobre as extensións admitidas<ph name="END_LINK" />}}</translation>
+<translation id="4419831163359812184">{NUM_EXTENSIONS,plural, =1{Chromium recomenda que a quites. <ph name="BEGIN_LINK" />Máis información sobre as extensións admitidas<ph name="END_LINK" />}many{Chromium recommends that you remove them. <ph name="BEGIN_LINK" />Learn more about supported extensions<ph name="END_LINK" />}other{Chromium recomenda que as quites. <ph name="BEGIN_LINK" />Máis información sobre as extensións admitidas<ph name="END_LINK" />}}</translation>
 <translation id="4423735387467980091">Personaliza e controla Chromium</translation>
 <translation id="4427306783828095590">A protección mellorada é máis eficaz á hora de bloquear o phishing e o software malicioso</translation>
 <translation id="4434353761996769206">Produciuse un erro co instalador: <ph name="INSTALLER_ERROR" /></translation>
@@ -439,7 +439,7 @@
 <translation id="5424544524441439284">Reduce o rendemento, pero fai que Chromium sexa máis resistente aos ataques</translation>
 <translation id="5427571867875391349">Establecer Chromium como o teu navegador predeterminado</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> (versión beta de Chromium)</translation>
-<translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium recomenda pór en pausa a pestana que fai que o navegador vaia máis lento}other{Chromium recomenda pór en pausa as pestanas que fan que o navegador vaia máis lento}}</translation>
+<translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium recomenda pór en pausa a pestana que fai que o navegador vaia máis lento}many{Chromium Recommends Pausing the Tabs Slowing Your Browser}other{Chromium recomenda pór en pausa as pestanas que fan que o navegador vaia máis lento}}</translation>
 <translation id="5473971139929175403">Pode que Chromium non funcione correctamente porque xa non é compatible con esta distribución de Linux</translation>
 <translation id="5475924890392386523">Chromium bloqueou esta descarga porque o ficheiro pode ser perigoso para as túas contas de redes sociais e persoais</translation>
 <translation id="5482575505313585759">Pechar panel da Busca de Google</translation>
@@ -456,12 +456,12 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> xa ten a sesión iniciada. Se queres navegar de forma independente, inicia sesión en Chromium co teu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. Tamén poderás acceder á túa información gardada e moito máis desde <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Produciuse un erro de inicio do sistema: Executa o instalador como un usuario normal, non como persoa administradora.</translation>
 <translation id="5580770360767802657">Utiliza Chromium de forma predeterminada e fíxao na barra de tarefas</translation>
-<translation id="5596063723521813107">{COUNT,plural, =1{A persoa que che administra a conta esixe que reinicies Chromium para aplicar unha actualización. Non se volverá abrir a ventá illada.}other{A persoa que che administra a conta esixe que reinicies Chromium para aplicar unha actualización. Non se volverán abrir # ventás illadas.}}</translation>
+<translation id="5596063723521813107">{COUNT,plural, =1{A persoa que che administra a conta esixe que reinicies Chromium para aplicar unha actualización. Non se volverá abrir a ventá illada.}many{Your administrator requires that you relaunch Chromium to apply an update. Your # Isolated windows won't reopen.}other{A persoa que che administra a conta esixe que reinicies Chromium para aplicar unha actualización. Non se volverán abrir # ventás illadas.}}</translation>
 <translation id="5596627076506792578">Máis opcións</translation>
 <translation id="5605834417512968703">Selecciona o que queiras atopar coa busca de imaxes ou preme Escape para saír da función</translation>
 <translation id="5614149501995591823">Hai unha <ph name="IMPORTANT_UPDATE" /> dispoñible. Podes reiniciar Chromium agora ou configuralo para que se actualice a próxima vez que a pantalla permaneza acendida e sen usar durante <ph name="IDLE_DURATION" />.</translation>
 <translation id="5618818588972826921">Selecciona calquera texto ou imaxe que queiras procurar mediante a busca de imaxes ou preme Escape para saír da función</translation>
-<translation id="5623402015214259806">{0,plural, =0{Hai unha actualización de Chromium dispoñible}=1{Hai unha actualización de Chromium dispoñible}other{Hai unha actualización de Chromium que leva dispoñible # días}}</translation>
+<translation id="5623402015214259806">{0,plural, =0{Hai unha actualización de Chromium dispoñible}=1{Hai unha actualización de Chromium dispoñible}many{A Chromium update has been available for # days}other{Hai unha actualización de Chromium que leva dispoñible # días}}</translation>
 <translation id="5643865575100044307">Eliminar sempre do dispositivo os datos dos sitios cando peches Chromium</translation>
 <translation id="5653831366781983928">Reinicia Chromium agora</translation>
 <translation id="565409517765894456">Se queres recibir actualizacións de Chromium no futuro, debes instalar a versión 1809 de Windows 10 ou unha posterior. Este ordenador ten unha versión de Windows 10 anterior.</translation>
@@ -489,7 +489,7 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="5949225980829865667">Para poder acceder a este marcador, entre outras cousas, en todos os teus dispositivos, inicia sesión en Chromium</translation>
 <translation id="5953657885167112863">Configura Chromium ao teu gusto</translation>
 <translation id="5960071705175224773">Unha aplicación descoñecida cambiou a túa configuración</translation>
-<translation id="5986585015444752010">{COUNT,plural, =1{A túa organización pechará Chromium automaticamente cando leve 1 minuto sen usarse.}other{A túa organización pechará Chromium automaticamente cando leve # minutos sen usarse.}}</translation>
+<translation id="5986585015444752010">{COUNT,plural, =1{A túa organización pechará Chromium automaticamente cando leve 1 minuto sen usarse.}many{Your organization automatically closes Chromium when it isn't used for # minutes.}other{A túa organización pechará Chromium automaticamente cando leve # minutos sen usarse.}}</translation>
 <translation id="5987687638152509985">Actualiza Chromium para iniciar a sincronización</translation>
 <translation id="5990360079535151574">Usa o botón Tarefas contextuais da barra de ferramentas para volver abrir esta función e facer preguntas mentres navegas</translation>
 <translation id="6003112304606738118">Descargando… Tempo restante: <ph name="HOURS" /> h</translation>
@@ -515,7 +515,7 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="6183079672144801177">Asegúrate de iniciar sesión en Chromium no teu <ph name="TARGET_DEVICE_NAME" /> e proba a enviar o número de novo.</translation>
 <translation id="6192070012454216182">Fai buscas e preguntas desde calquera lugar, aínda que Chromium estea minimizado. Permite que o navegador se execute en segundo plano.</translation>
 <translation id="6212496753309875659">Este ordenador xa conta cunha versión máis recente de Chromium. Se o software non funciona, desinstala Chromium e téntao de novo.</translation>
-<translation id="6219195342503754812">{0,plural, =0{Chromium reiniciarase agora}=1{Chromium reiniciarase en 1 segundo}other{Chromium reiniciarase en # segundos}}</translation>
+<translation id="6219195342503754812">{0,plural, =0{Chromium reiniciarase agora}=1{Chromium reiniciarase en 1 segundo}many{Chromium will relaunch in # seconds}other{Chromium reiniciarase en # segundos}}</translation>
 <translation id="6232046770428574552">Chromium actualizarase cando non esteas usando a pantalla</translation>
 <translation id="6241367896540709610">Chromium necesita permiso de acceso ao almacenamento para descargar ficheiros</translation>
 <translation id="6245734527075554892">Comproba enderezos URL cunha lista de sitios non seguros almacenada en Chromium</translation>
@@ -585,7 +585,7 @@ Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="6742093177587589736">Para poder acceder aos teus marcadores e a outros datos en todos os teus dispositivos, inicia sesión en Chromium. Despois de facelo, este marcador gardarase na túa Conta de Google.</translation>
 <translation id="674891594898436429">Pechar busca activa nesta pestana</translation>
 <translation id="6751374565094704799">Acelera os sitios co motor V8 de Chromium, pero fai que Chromium sexa un pouco menos resistente aos ataques. Esta opción de configuración está activada.</translation>
-<translation id="6754665438209053659">{count,plural, =1{Algúns dos teus datos de Chromium aínda non se gardaron na túa Conta de Google. Espera uns minutiños antes de pechar a sesión. Se a pechas agora, eliminaranse estes datos (1 elemento).}other{Algúns dos teus datos de Chromium aínda non se gardaron na túa Conta de Google. Espera uns minutiños antes de pechar a sesión. Se a pechas agora, eliminaranse estes datos ({count} elementos).}}</translation>
+<translation id="6754665438209053659">{count,plural, =1{Algúns dos teus datos de Chromium aínda non se gardaron na túa Conta de Google. Espera uns minutiños antes de pechar a sesión. Se a pechas agora, eliminaranse estes datos (1 elemento).}many{Some of your Chromium data hasn't been saved in your Google Account yet. Try waiting a few minutes before signing out. If you sign out now, this data ({count} items) will be deleted.}other{Algúns dos teus datos de Chromium aínda non se gardaron na túa Conta de Google. Espera uns minutiños antes de pechar a sesión. Se a pechas agora, eliminaranse estes datos ({count} elementos).}}</translation>
 <translation id="67706546131546258">Chromium recomenda analizar este ficheiro porque pode ser perigoso.</translation>
 <translation id="6779406956731413166">Chromium OS é posible grazas a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
 <translation id="6804256634866838775">Pechar busca activa</translation>
@@ -623,7 +623,7 @@ Non poderás gardar máis ata que elimines uns cantos. Se pechas a sesión agora
 <translation id="7003299027384820442">Escribe a túa frase de acceso para usar e gardar os datos de Chromium na túa conta (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="7011190694940573312">Produciuse un erro na instalación porque non se admite esta versión do sistema operativo.</translation>
 <translation id="7024536598735240744">Produciuse un erro na descompresión: <ph name="UNPACK_ERROR" />.</translation>
-<translation id="7037186623849853406">{COUNT,plural, =1{A opción Protección avanzada require que reinicies Chromium para aplicar unha actualización. Non se volverá abrir a ventá illada.}other{A opción Protección avanzada require que reinicies Chromium para aplicar unha actualización. Non se volverá abrir # ventás illadas.}}</translation>
+<translation id="7037186623849853406">{COUNT,plural, =1{A opción Protección avanzada require que reinicies Chromium para aplicar unha actualización. Non se volverá abrir a ventá illada.}many{Advanced Protection requires that you relaunch Chromium to apply an update. Your # Isolated windows won't reopen.}other{A opción Protección avanzada require que reinicies Chromium para aplicar unha actualización. Non se volverá abrir # ventás illadas.}}</translation>
 <translation id="7045244423563602563">Personaliza Chromium</translation>
 <translation id="7047386856539490735">Estes resultados son útiles?</translation>
 <translation id="705851970750939768">Actualizar Chromium</translation>
@@ -647,7 +647,7 @@ Non poderás gardar máis ata que elimines uns cantos. Se pechas a sesión agora
 <translation id="7274695763216404502">Fixouse o elemento! Usa a busca de imaxes de novo desde a barra de ferramentas</translation>
 <translation id="7288567540154601580">Pestanas e extensións</translation>
 <translation id="7290997427370476749">Usa o botón Panel da Busca de Google, situado na barra de ferramentas, para volver abrir ese panel e facer preguntas mentres navegas</translation>
-<translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium recomenda que a quites}other{Chromium recomenda que as quites}}</translation>
+<translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium recomenda que a quites}many{Chromium recommends that you remove them}other{Chromium recomenda que as quites}}</translation>
 <translation id="7296334833518879294">Para compartir o audio do sistema, abre a configuración do sistema e activa o permiso System Audio Recording Only (Só gravación de audio do sistema) para Chromium. Terás que reiniciar Chromium.</translation>
 <translation id="7299899569525778554">Facer buscas desde o ordenador</translation>
 <translation id="731795002583552498">Actualizando Chromium</translation>
@@ -679,7 +679,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="7483335560992089831">Non se pode instalar a mesma versión de Chromium que se está executando actualmente. Pecha Chromium e téntao de novo.</translation>
 <translation id="7510190804000607802">Recordatorio: O mellor de Google no teu peto</translation>
 <translation id="751935028865900641">É probable que os sitios funcionen segundo o previsto. Pecharase a túa sesión na maioría dos sitios cando peches todas as ventás de Chromium, excepto a túa Conta de Google se tes a sesión iniciada en Chromium.</translation>
-<translation id="753534427205733210">{0,plural, =1{Chromium reiniciarase en 1 minuto}other{Chromium reiniciarase en # minutos}}</translation>
+<translation id="753534427205733210">{0,plural, =1{Chromium reiniciarase en 1 minuto}many{Chromium will relaunch in # minutes}other{Chromium reiniciarase en # minutos}}</translation>
 <translation id="7565444033145385702">Para protexer os teus datos, Chromium quita permisos dos sitios que leves tempo sen visitar.</translation>
 <translation id="7583104404158659071">Abre Chromium de maneira automática para comezar a navegar ao instante.</translation>
 <translation id="7583399374488819119">Instalador de <ph name="COMPANY_NAME" /></translation>
@@ -707,7 +707,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="7801317262080715012">Icona nova, mesmo atallo: Fai clic para facer preguntas mentres navegas co panel da Busca de Google.</translation>
 <translation id="7803986347287457849">Fai que ás persoas que teñan acceso ao teu tráfico de Internet lles resulte máis difícil ver os sitios que visitas. Chromium usa unha conexión segura para buscar o enderezo IP dos sitios no DNS (Sistema de nomes de dominios).</translation>
 <translation id="7810005234485217901">Podes fixar a busca de imaxes para acceder facilmente</translation>
-<translation id="7813559034750130602">{COUNT,plural, =1{Hai dispoñible unha actualización nova para Chromium que se aplicará en canto o reinicies. Hai unha ventá no modo de incógnito ou illada aberta. Non se volverá abrir tras o reinicio.}other{Hai dispoñible unha actualización nova para Chromium que se aplicará en canto o reinicies. Hai # ventás de incógnito e illadas abertas nos perfís. Non se volverán abrir tras o reinicio.}}</translation>
+<translation id="7813559034750130602">{COUNT,plural, =1{Hai dispoñible unha actualización nova para Chromium que se aplicará en canto o reinicies. Hai unha ventá no modo de incógnito ou illada aberta. Non se volverá abrir tras o reinicio.}many{A new update for Chromium is available and will be applied as soon as you relaunch. There are # Incognito and Isolated windows open across profiles. They won't reopen after you relaunch.}other{Hai dispoñible unha actualización nova para Chromium que se aplicará en canto o reinicies. Hai # ventás de incógnito e illadas abertas nos perfís. Non se volverán abrir tras o reinicio.}}</translation>
 <translation id="7828527096541974699">Escoller o que queres compartir con Chromium</translation>
 <translation id="7828947555739565424">Neste dispositivo xa existe un perfil de Chromium con esta conta</translation>
 <translation id="7845233973568007926">Grazas por levar a cabo a instalación. Para utilizar <ph name="BUNDLE_NAME" />, debes reiniciar o ordenador.</translation>
@@ -746,7 +746,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="813913629614996137">Iniciando...</translation>
 <translation id="8161503455832158203">Abre Gemini en Chromium cun atallo de teclado.</translation>
 <translation id="8164014945047474187">Condicións de servizo adicionais de Chromium</translation>
-<translation id="8172503648109091906">{COUNT,plural, =1{A persoa que che administra a conta esixe que reinicies Chromium para aplicar unha actualización. Hai unha ventá no modo de incógnito ou illada aberta. Non se volverá abrir tras o reinicio.}other{A persoa que che administra a conta esixe que reinicies Chromium para aplicar unha actualización. Hai # ventás do modo de incógnito e illadas abertas nos perfís. Non se volverán abrir tras o reinicio.}}</translation>
+<translation id="8172503648109091906">{COUNT,plural, =1{A persoa que che administra a conta esixe que reinicies Chromium para aplicar unha actualización. Hai unha ventá no modo de incógnito ou illada aberta. Non se volverá abrir tras o reinicio.}many{Your administrator requires that you relaunch Chromium to apply an update. There are # Incognito and Isolated windows open across profiles. They won't reopen after you relaunch.}other{A persoa que che administra a conta esixe que reinicies Chromium para aplicar unha actualización. Hai # ventás do modo de incógnito e illadas abertas nos perfís. Non se volverán abrir tras o reinicio.}}</translation>
 <translation id="81770708095080097">Este ficheiro é perigoso, así que Chromium bloqueouno.</translation>
 <translation id="8177472873527554730">Non se puido atopar contido na páxina</translation>
 <translation id="8200109504272824693">Escribe a túa frase de acceso para usar e gardar os datos de Chromium na túa conta (<ph name="USER_EMAIL" />)</translation>
@@ -781,7 +781,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8401454788024434101">O programador anulou a publicación desta extensión, polo que poida que non sexa segura. Quítaa de Chromium para que non poida ver nin cambiar os teus datos (como a túa información persoal) nos sitios que visites.</translation>
 <translation id="8406687098231754303">Usa o botón Busca de Google no panel lateral, situado na barra de ferramentas, para volver abrir ese motor de busca no panel lateral e facer preguntas mentres navegas</translation>
 <translation id="8416884904046428725">Chromium necesita verificar a túa identidade antes de que algúns datos se garden na túa Conta de Google e se poidan usar en todos os teus dispositivos. Se pechas a sesión agora, estes datos eliminaranse.</translation>
-<translation id="8417404458978023919">{0,plural, =1{Reinicia Chromium en 1 día}other{Reinicia Chromium en # días}}</translation>
+<translation id="8417404458978023919">{0,plural, =1{Reinicia Chromium en 1 día}many{Relaunch Chromium within # days}other{Reinicia Chromium en # días}}</translation>
 <translation id="8438543370129609977">Cando usas a busca de imaxes, envíanse ao servidor o contido (incluídos os PDF), o URL e o título da páxina. <ph name="LEARN_MORE" /></translation>
 <translation id="8447525028100794994">Máis información sobre como facer consultas coa busca de imaxes de Chromium</translation>
 <translation id="8453117565092476964">O arquivo do instalador está danado ou non é válido. Volve descargar Chromium.</translation>
@@ -860,7 +860,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="9074163480955555019">Icona nova, mesmo atallo: Fai clic para facer preguntas mentres navegas coa Busca de Google en Chrome.</translation>
 <translation id="9078733879136747090">Chromium pechouse automaticamente</translation>
 <translation id="9089354809943900324">Chromium está desactualizado</translation>
-<translation id="9093206154853821181">{0,plural, =1{Chromium reiniciarase en 1 hora}other{Chromium reiniciarase en # horas}}</translation>
+<translation id="9093206154853821181">{0,plural, =1{Chromium reiniciarase en 1 hora}many{Chromium will relaunch in # hours}other{Chromium reiniciarase en # horas}}</translation>
 <translation id="9106236359747881194">Selecciona un texto para buscalo</translation>
 <translation id="9106612006984859720">Se queres recibir actualizacións de Chromium no futuro, debes instalar Windows 10 ou unha versión posterior. Este ordenador ten instalado Windows 8.1.</translation>
 <translation id="91086099826398415">Abrir ligazón nunha nova &amp;pestana de Chromium</translation>

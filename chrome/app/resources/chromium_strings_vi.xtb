@@ -15,7 +15,7 @@
 <translation id="112640046208448578">Xác định đồ vật hoặc địa điểm, sao chép hoặc dịch văn bản. Khi bạn sử dụng tính năng Tìm kiếm hình ảnh, ảnh chụp màn hình trang sẽ được gửi đến máy chủ. <ph name="LEARN_MORE" /></translation>
 <translation id="113122355610423240">Chromium là trình duyệt mặc định của bạn</translation>
 <translation id="1131805035311359397">Để kiểm tra xem mật khẩu của bạn có bị ảnh hưởng bởi các vụ rò rỉ dữ liệu và sự cố bảo mật khác hay không, hãy <ph name="BEGIN_LINK" />đăng nhập vào Chromium<ph name="END_LINK" />.</translation>
-<translation id="1145158441928281100">{COUNT,plural, =1{Quản trị viên yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật này. Có cửa sổ ẩn danh hoặc cửa sổ biệt lập đang mở. Cửa sổ ẩn danh hoặc cửa sổ biệt lập sẽ không mở lại sau khi bạn chạy lại.}other{Quản trị viên yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật này. Có # cửa sổ ẩn danh và cửa sổ biệt lập đang mở trên các hồ sơ. Những cửa sổ này sẽ không mở lại sau khi bạn chạy lại.}}</translation>
+<translation id="1145158441928281100">{COUNT,plural, =1{Quản trị viên yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật này. Có cửa sổ ẩn danh hoặc cửa sổ biệt lập đang mở. Cửa sổ ẩn danh hoặc cửa sổ biệt lập sẽ không mở lại sau khi bạn chạy lại.}one{Your administrator asks that you relaunch Chromium to apply this update. There are # Incognito and Isolated windows open across profiles. They won't reopen after you relaunch.}other{Quản trị viên yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật này. Có # cửa sổ ẩn danh và cửa sổ biệt lập đang mở trên các hồ sơ. Những cửa sổ này sẽ không mở lại sau khi bạn chạy lại.}}</translation>
 <translation id="1150418667633096194">Nút "Bảng điều khiển bên của Google Tìm kiếm" trên thanh công cụ vừa có biểu tượng mới. Hãy nhấp vào biểu tượng này để đặt câu hỏi trong khi duyệt web bằng bảng điều khiển bên của Google Tìm kiếm.</translation>
 <translation id="1153368717515616349">Nhấp vào trình đơn Chromium</translation>
 <translation id="1157952955648710254">Đóng bảng điều khiển bên của Google Tìm kiếm</translation>
@@ -40,7 +40,7 @@
 <translation id="1329040302064168406">Đăng nhập vào Chromium trên điện thoại</translation>
 <translation id="1330562121671411446">Phát hiện ngôn ngữ</translation>
 <translation id="1342274909142618978">Cũng xoá dữ liệu khỏi Chromium (<ph name="URL" />)</translation>
-<translation id="1344429655882689538">{COUNT,plural, =1{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. Có cửa sổ ẩn danh hoặc cửa sổ biệt lập đang mở. Cửa sổ ẩn danh hoặc cửa sổ biệt lập sẽ không mở lại sau khi bạn chạy lại.}other{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. Có # cửa sổ ẩn danh và cửa sổ biệt lập đang mở trên các hồ sơ. Những cửa sổ này sẽ không mở lại sau khi bạn chạy lại.}}</translation>
+<translation id="1344429655882689538">{COUNT,plural, =1{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. Có cửa sổ ẩn danh hoặc cửa sổ biệt lập đang mở. Cửa sổ ẩn danh hoặc cửa sổ biệt lập sẽ không mở lại sau khi bạn chạy lại.}one{Advanced Protection requires that you relaunch Chromium to apply an update. There are # Incognito and Isolated windows open across profiles. They won't reopen after you relaunch.}other{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. Có # cửa sổ ẩn danh và cửa sổ biệt lập đang mở trên các hồ sơ. Những cửa sổ này sẽ không mở lại sau khi bạn chạy lại.}}</translation>
 <translation id="1345251407431278948">Đã ghim! Bạn có thể nhấn vào nút mới trên thanh công cụ để truy cập lại vào tính năng Tìm kiếm hình ảnh</translation>
 <translation id="1383876407941801731">Tìm kiếm</translation>
 <translation id="1388276868779258475">Dùng ứng dụng Chromium để tiếp tục duyệt web mọi lúc, mọi nơi</translation>
@@ -59,7 +59,7 @@
 <translation id="1562320819937089394">Ghim Chromium</translation>
 <translation id="1574377791422810894">Công cụ đảm bảo an toàn của Chromium</translation>
 <translation id="1594928384848033697">Chromium muốn xoá dữ liệu của bạn trong Trình quản lý mật khẩu. Nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
-<translation id="1607715478322902680">{COUNT,plural, =0{Quản trị viên của bạn yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật}=1{Quản trị viên của bạn yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. Cửa sổ ẩn danh của bạn sẽ không mở lại.}other{Quản trị viên của bạn yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. # cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>
+<translation id="1607715478322902680">{COUNT,plural, =0{Quản trị viên của bạn yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật}=1{Quản trị viên của bạn yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. Cửa sổ ẩn danh của bạn sẽ không mở lại.}one{Your administrator requires that you relaunch Chromium to apply an update. Your # Incognito windows won't reopen.}other{Quản trị viên của bạn yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. # cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>
 <translation id="1623563412065267963">Tận hưởng những tính năng tuyệt vời nhất của Google nhờ ứng dụng Chromium trên điện thoại</translation>
 <translation id="1625909126243026060">Xem các chế độ kiểm soát quan trọng đối với quyền riêng tư và tính bảo mật trong Chromium</translation>
 <translation id="1640672724030957280">Đang tải xuống...</translation>
@@ -111,7 +111,7 @@
 <translation id="2086476982681781442">Chromium đã chặn tệp tải xuống này vì tệp này chứa nội dung lừa đảo và có thể thực hiện các thay đổi không mong muốn đối với thiết bị của bạn</translation>
 <translation id="208726765006323911">Lần tới, khi mở Chromium iOS, bạn sẽ thấy lời nhắc dùng thử <ph name="FEATURE_NAME" />.</translation>
 <translation id="2099452623287920103">Mật khẩu và các dữ liệu khác trên Chromium mà bạn đã lưu trong Tài khoản Google của mình sẽ bị xoá khỏi thiết bị này. Để tiếp tục sử dụng các dữ liệu đó trong Chromium, hãy đăng nhập lại.</translation>
-<translation id="2120965832000301375">{COUNT,plural, =1{Tổ chức của bạn sẽ tự động xoá dữ liệu duyệt web sau 1 phút bạn không dùng đến Chromium. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống. Các thẻ sẽ vẫn mở.}other{Tổ chức của bạn sẽ tự động xoá dữ liệu duyệt web sau # phút bạn không dùng đến Chromium. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống. Các thẻ sẽ vẫn mở.}}</translation>
+<translation id="2120965832000301375">{COUNT,plural, =1{Tổ chức của bạn sẽ tự động xoá dữ liệu duyệt web sau 1 phút bạn không dùng đến Chromium. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống. Các thẻ sẽ vẫn mở.}one{Your organization automatically deletes browsing data when Chromium isn't used for # minutes. This could include history, autofill, and downloads. Your tabs will stay open.}other{Tổ chức của bạn sẽ tự động xoá dữ liệu duyệt web sau # phút bạn không dùng đến Chromium. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống. Các thẻ sẽ vẫn mở.}}</translation>
 <translation id="2125838419757773031">Chọn vùng trên màn hình để tìm kiếm</translation>
 <translation id="2126108037660393668">Không xác minh được tệp tải xuống.</translation>
 <translation id="2135919691573380097">Báo cáo trang web này</translation>
@@ -134,7 +134,7 @@
 <translation id="22571759390241347">Kỹ năng trong Chromium</translation>
 <translation id="2283228908180457226">Biểu tượng mới, lối tắt không đổi: Nhấp vào biểu tượng này để đặt câu hỏi trong khi duyệt web bằng bảng điều khiển bên của Google Tìm kiếm.</translation>
 <translation id="2283803047247799269">Tìm kiếm thẻ này bằng tính năng Tìm kiếm hình ảnh</translation>
-<translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium đề xuất tạm dừng thẻ làm chậm trình duyệt của bạn}other{Chromium đề xuất tạm dừng các thẻ làm chậm trình duyệt của bạn}}</translation>
+<translation id="2287771843518581140">{NUM_TABS,plural, =1{Chromium đề xuất tạm dừng thẻ làm chậm trình duyệt của bạn}one{Chromium recommends pausing the tabs slowing your browser}other{Chromium đề xuất tạm dừng các thẻ làm chậm trình duyệt của bạn}}</translation>
 <translation id="2307973900865360088">Ghim vào thanh Dock</translation>
 <translation id="2313870531055795960">Kiểm tra đối chiếu các URL với danh sách trang web không an toàn được lưu trữ trong Chromium. Nếu một trang web cố ăn cắp mật khẩu của bạn hoặc nếu bạn tải một tệp gây hại xuống, thì Chrome cũng có thể gửi các URL đến tính năng Duyệt web an toàn, bao gồm cả các đoạn nội dung trên trang.</translation>
 <translation id="2356070529366658676">Yêu cầu</translation>
@@ -143,7 +143,7 @@
 <translation id="236943522426971115">Tắt Chromium đối với các ứng dụng chạy trong nền</translation>
 <translation id="2374216753258219393">Để sử dụng tiện ích này bằng tài khoản <ph name="USER_EMAIL_ADDRESS" />, hãy đăng nhập vào Chromium.</translation>
 <translation id="2384373936468275798">ChromiumOS không thể đồng bộ hoá dữ liệu của bạn vì thông tin đăng nhập vào tài khoản của bạn đã lỗi thời.</translation>
-<translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Một hoặc nhiều tiện ích Chromium đã truy cập vào 1 thiết bị HID}=1{Một hoặc nhiều tiện ích Chromium đang truy cập vào 1 thiết bị HID}other{Một hoặc nhiều tiện ích Chromium đang truy cập vào # thiết bị HID}}</translation>
+<translation id="2398377054246527950">{NUM_DEVICES,plural, =0{Một hoặc nhiều tiện ích Chromium đã truy cập vào 1 thiết bị HID}=1{Một hoặc nhiều tiện ích Chromium đang truy cập vào 1 thiết bị HID}one{# HID devices are being accessed by one or more Chromium extensions}other{Một hoặc nhiều tiện ích Chromium đang truy cập vào # thiết bị HID}}</translation>
 <translation id="2401032172288869980">Chromium cần có quyền truy cập máy ảnh và micrô đối với trang web này</translation>
 <translation id="2403703063067034158">Lỗi khi khởi động: một phiên bản thiết lập khác đang chạy, vui lòng thử lại sau.</translation>
 <translation id="2418322681019544463">Mở đường liên kết trong Chromium từ ứng dụng bất kỳ và giữ cho trình duyệt luôn xuất hiện trên thanh tác vụ</translation>
@@ -169,7 +169,7 @@
 <translation id="2620436844016719705">Hệ thống</translation>
 <translation id="2629740064077610681">Tổ chức của bạn có thể xem và quản lý dữ liệu duyệt web (chẳng hạn như dấu trang, nhật ký và mật khẩu). Tổ chức không thể xem dữ liệu duyệt web trong các hồ sơ Chromium khác</translation>
 <translation id="2635452620547538388">Xác minh danh tính của bạn để sử dụng và lưu dữ liệu Chromium trong tài khoản <ph name="ACCOUNT_EMAIL" /> của bạn</translation>
-<translation id="2637732208198500597">{COUNT,plural, =0{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật}=1{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. Cửa sổ ẩn danh của bạn sẽ không mở lại.}other{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. # cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>
+<translation id="2637732208198500597">{COUNT,plural, =0{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật}=1{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. Cửa sổ ẩn danh của bạn sẽ không mở lại.}one{Advanced Protection requires that you relaunch Chromium to apply an update. Your # Incognito windows won't reopen.}other{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. # cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>
 <translation id="263863604136125912">Khởi động Chromium</translation>
 <translation id="2648074677641340862">Đã xảy ra lỗi hệ điều hành khi cài đặt. Hãy tải xuống Chromium lại lần nữa.</translation>
 <translation id="2661879430930417727">Nếu các bạn dùng chung một thiết bị, thì bạn bè và gia đình có thể duyệt web một cách riêng biệt cũng như thiết lập Chromium theo ý muốn</translation>
@@ -203,7 +203,7 @@
 <translation id="2981563588585023386">Đăng nhập vào Chromium để an toàn hơn trên mạng nhờ các lựa chọn của cha mẹ bạn</translation>
 <translation id="2992577225802060159">Bảo vệ bộ nhớ của Chromium khỏi các ứng dụng khác trên máy tính của bạn.</translation>
 <translation id="3003694935412297923">Tất cả tác vụ</translation>
-<translation id="3012615494352020668">{count,plural, =1{Chromium cần xác minh danh tính của bạn thì mới có thể lưu một số dữ liệu vào Tài khoản Google và cho phép bạn sử dụng dữ liệu đó trên tất cả các thiết bị. Nếu bạn đăng xuất ngay, dữ liệu này (1 mục) sẽ bị xoá.}other{Chromium cần xác minh danh tính của bạn thì mới có thể lưu một số dữ liệu vào Tài khoản Google và cho phép bạn sử dụng dữ liệu đó trên tất cả các thiết bị. Nếu bạn đăng xuất ngay, dữ liệu này ({count}) sẽ bị xoá.}}</translation>
+<translation id="3012615494352020668">{count,plural, =1{Chromium cần xác minh danh tính của bạn thì mới có thể lưu một số dữ liệu vào Tài khoản Google và cho phép bạn sử dụng dữ liệu đó trên tất cả các thiết bị. Nếu bạn đăng xuất ngay, dữ liệu này (1 mục) sẽ bị xoá.}one{Chromium needs to verify it’s you before some data can be saved in your Google Account and used on all your devices. If you sign out now, this data ({count} items) will be deleted.}other{Chromium cần xác minh danh tính của bạn thì mới có thể lưu một số dữ liệu vào Tài khoản Google và cho phép bạn sử dụng dữ liệu đó trên tất cả các thiết bị. Nếu bạn đăng xuất ngay, dữ liệu này ({count}) sẽ bị xoá.}}</translation>
 <translation id="3013473503895162900">Mở <ph name="URL" /> trong một thẻ mới trên Chromium.</translation>
 <translation id="302551344979399011">Các phát kiến về AI, chẳng hạn như kỹ năng, được lưu vào Tài khoản Google của bạn và được quản lý riêng với tính năng đồng bộ hoá Chromium</translation>
 <translation id="3032219013429286568">Để sử dụng tiện ích và nhiều dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chromium</translation>
@@ -218,7 +218,7 @@
 <translation id="3068290154869370196">Tiện ích là các phần bổ sung giúp bạn tuỳ chỉnh Chromium. Từ sắp xếp khoa học đến đơn giản hoá các công việc hằng ngày, tiện ích giúp bạn biến Chromium thành trình duyệt của riêng mình.</translation>
 <translation id="3068515742935458733">Giúp cải thiện Chromium bằng cách gửi báo cáo sự cố và <ph name="UMA_LINK" /> tới Google</translation>
 <translation id="3071024987058544609">Dùng ứng dụng Chromium để mang theo các tính năng an toàn của Google mọi lúc, mọi nơi</translation>
-<translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Một hoặc nhiều tiện ích Chromium đã truy cập vào 1 thiết bị USB}=1{Một hoặc nhiều tiện ích Chromium đang truy cập vào 1 thiết bị USB}other{Một hoặc nhiều tiện ích Chromium đang truy cập vào # thiết bị USB}}</translation>
+<translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Một hoặc nhiều tiện ích Chromium đã truy cập vào 1 thiết bị USB}=1{Một hoặc nhiều tiện ích Chromium đang truy cập vào 1 thiết bị USB}one{# USB devices are being accessed by one or more Chromium extensions}other{Một hoặc nhiều tiện ích Chromium đang truy cập vào # thiết bị USB}}</translation>
 <translation id="3090734884397229414">Để sử dụng danh sách đọc và nhiều dữ liệu khác trên <ph name="DEVICE" />, hãy đăng nhập vào Chromium</translation>
 <translation id="3095811995836568724">Nhật ký duyệt web trên Chromium</translation>
 <translation id="3103660991484857065">Trình cài đặt không thể giải nén tệp lưu trữ. Hãy tải xuống Chromium lại lần nữa.</translation>
@@ -242,7 +242,7 @@
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">Mang theo các công cụ AI của Google mà bạn yêu thích mọi lúc, mọi nơi nhờ Chromium trên iOS.</translation>
 <translation id="3264761466044851269">Để sử dụng tiện ích và nhiều dữ liệu khác trên <ph name="DEVICE" />, hãy đăng nhập vào Chromium</translation>
-<translation id="326944442937875564">{COUNT,plural, =1{Đã có bản cập nhật Chromium mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chromium. Cửa sổ biệt lập của bạn sẽ không mở lại.}other{Đã có bản cập nhật Chromium mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chromium. # cửa sổ biệt lập của bạn sẽ không mở lại.}}</translation>
+<translation id="326944442937875564">{COUNT,plural, =1{Đã có bản cập nhật Chromium mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chromium. Cửa sổ biệt lập của bạn sẽ không mở lại.}one{A new update for Chromium is available and will be applied as soon as you relaunch. Your # Isolated windows won't reopen.}other{Đã có bản cập nhật Chromium mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chromium. # cửa sổ biệt lập của bạn sẽ không mở lại.}}</translation>
 <translation id="3286538390144397061">Khởi động lại Ngay bây giờ</translation>
 <translation id="328888136576916638">Khóa API của Google bị thiếu. Một số chức năng của Chromium sẽ bị tắt.</translation>
 <translation id="3296368748942286671">Tiếp tục chạy các ứng dụng dưới nền khi Chromium bị đóng</translation>
@@ -269,10 +269,10 @@
 <translation id="3597003331831379823">Không thể chạy quy trình thiết lập bằng đặc quyền cấp cao. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">Đăng nhập vào Chromium</translation>
 <translation id="3639635944603682591">Dữ liệu duyệt web của người này sẽ bị xóa khỏi thiết bị này. Để khôi phục dữ liệu, hãy đăng nhập vào Chromium bằng <ph name="USER_EMAIL" />.</translation>
-<translation id="364817392622123556">{COUNT,plural, =0{Đã có bản cập nhật Chromium mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chromium.}=1{Đã có bản cập nhật Chromium mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chromium. Cửa sổ ẩn danh của bạn sẽ không mở lại.}other{Đã có bản cập nhật Chromium mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chromium. # cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>
+<translation id="364817392622123556">{COUNT,plural, =0{Đã có bản cập nhật Chromium mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chromium.}=1{Đã có bản cập nhật Chromium mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chromium. Cửa sổ ẩn danh của bạn sẽ không mở lại.}one{A new update for Chromium is available and will be applied as soon as you relaunch. Your # Incognito windows won't reopen.}other{Đã có bản cập nhật Chromium mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chromium. # cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>
 <translation id="3667616615096815454">Không thể cài đặt, máy chủ không xác định được ứng dụng.</translation>
 <translation id="3675854891107786059">Sử dụng <ph name="BEGIN_LINK" />cụm mật khẩu của riêng bạn<ph name="END_LINK" /> để mã hoá tất cả dữ liệu Chrome trong Tài khoản Google Các địa chỉ và phương thức thanh toán từ Google Pay sẽ không được mã hoá. Nhật ký duyệt web trên Chromium sẽ không đồng bộ hoá.</translation>
-<translation id="370962675267501463">{COUNT,plural, =0{Quản trị viên của bạn yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật này}=1{Quản trị viên của bạn yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật này. Cửa sổ ẩn danh của bạn sẽ không mở lại.}other{Quản trị viên của bạn yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật này. # cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>
+<translation id="370962675267501463">{COUNT,plural, =0{Quản trị viên của bạn yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật này}=1{Quản trị viên của bạn yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật này. Cửa sổ ẩn danh của bạn sẽ không mở lại.}one{Your administrator asks that you relaunch Chromium to apply this update. Your # Incognito windows won't reopen.}other{Quản trị viên của bạn yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật này. # cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>
 <translation id="3713809861844741608">Mở đường liên kết trong thẻ mới của Chromium</translation>
 <translation id="3728124580182886854">Liên kết Chromium và các dịch vụ khác của Google cho mục đích cá nhân hoá và các mục đích khác</translation>
 <translation id="3729187154190517324">Mở rộng phạm vi tìm kiếm bằng cách thêm nhiều thẻ, tệp và công cụ bằng nút "Thêm một thẻ và các nội dung khác".</translation>
@@ -287,7 +287,7 @@
           **Đề xuất câu hỏi:** Tạo một danh sách có dấu đầu dòng gồm 3 đến 5 câu hỏi gợi mở mà người dùng có thể đặt ra để hiểu rõ hơn về ảnh chụp màn hình này. Danh sách này phải có ít nhất một câu hỏi cụ thể về một đối tượng trực quan trong ảnh và thiết kế hoặc vị trí của đối tượng đó.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386243222263310720">Để sử dụng dấu trang và nhiều dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chromium</translation>
-<translation id="3864888736839865780">{COUNT,plural, =1{Quản trị viên yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật này. Cửa sổ biệt lập của bạn sẽ không mở lại.}other{Quản trị viên yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật này. # cửa sổ biệt lập của bạn sẽ không mở lại.}}</translation>
+<translation id="3864888736839865780">{COUNT,plural, =1{Quản trị viên yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật này. Cửa sổ biệt lập của bạn sẽ không mở lại.}one{Your administrator asks that you relaunch Chromium to apply this update. Your # Isolated windows won't reopen.}other{Quản trị viên yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật này. # cửa sổ biệt lập của bạn sẽ không mở lại.}}</translation>
 <translation id="3885770153807205175">Bộ chọn ngôn ngữ</translation>
 <translation id="388648406173476553">Tùy chỉnh và kiểm soát Chromium. Bạn cần lưu ý - nhấp để xem thông tin chi tiết.</translation>
 <translation id="3889543394854987837">Nhấp vào tên của bạn để mở Chromium và bắt đầu duyệt web.</translation>
@@ -313,7 +313,7 @@
 <translation id="4036079820698952681">Giúp cải thiện Chromium bằng cách báo cáo <ph name="BEGIN_LINK" />cài đặt hiện tại<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Cải thiện bảo mật quan trọng và tính năng mới có trong phiên bản mới nhất.</translation>
 <translation id="4055805654398742145">Trình quản lý mật khẩu</translation>
-<translation id="4095980151185649725">{COUNT,plural, =1{Tổ chức sẽ tự động đóng Chromium sau 1 phút bạn không dùng đến. Dữ liệu duyệt web sẽ bị xoá. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống.}other{Tổ chức sẽ tự động đóng Chromium sau # phút bạn không dùng đến. Dữ liệu duyệt web sẽ bị xoá. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống.}}</translation>
+<translation id="4095980151185649725">{COUNT,plural, =1{Tổ chức sẽ tự động đóng Chromium sau 1 phút bạn không dùng đến. Dữ liệu duyệt web sẽ bị xoá. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống.}one{Your organization automatically closes Chromium when it isn't used for # minutes. Browsing data is deleted. This could include history, autofill, and downloads.}other{Tổ chức sẽ tự động đóng Chromium sau # phút bạn không dùng đến. Dữ liệu duyệt web sẽ bị xoá. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống.}}</translation>
 <translation id="4118474109249235144">Chế độ ẩn danh của Chromium</translation>
 <translation id="4122186850977583290">Chuyển đến trang Giới thiệu về Chromium</translation>
 <translation id="4135244987012252068">Tuỳ chỉnh Chromium để mang lại giao diện mới cho trình duyệt</translation>
@@ -342,7 +342,7 @@
 <translation id="4407044323746248786">Bạn vẫn muốn thoát khỏi Chromium?</translation>
 <translation id="4413205837991854510">Luôn hiện lối tắt Tìm kiếm hình ảnh</translation>
 <translation id="4415566066719264597">Cho phép Chromium chạy trong nền</translation>
-<translation id="4419831163359812184">{NUM_EXTENSIONS,plural, =1{Chromium khuyên bạn nên loại bỏ tiện ích này. <ph name="BEGIN_LINK" />Tìm hiểu thêm về các tiện ích được hỗ trợ<ph name="END_LINK" />}other{Chromium khuyên bạn nên loại bỏ các tiện ích này. <ph name="BEGIN_LINK" />Tìm hiểu thêm về các tiện ích được hỗ trợ<ph name="END_LINK" />.}}</translation>
+<translation id="4419831163359812184">{NUM_EXTENSIONS,plural, =1{Chromium khuyên bạn nên loại bỏ tiện ích này. <ph name="BEGIN_LINK" />Tìm hiểu thêm về các tiện ích được hỗ trợ<ph name="END_LINK" />}one{Chromium recommends that you remove them. <ph name="BEGIN_LINK" />Learn more about supported extensions<ph name="END_LINK" />}other{Chromium khuyên bạn nên loại bỏ các tiện ích này. <ph name="BEGIN_LINK" />Tìm hiểu thêm về các tiện ích được hỗ trợ<ph name="END_LINK" />.}}</translation>
 <translation id="4423735387467980091">Tùy chỉnh và điều khiển Chromium</translation>
 <translation id="4427306783828095590">Chế độ bảo vệ tăng cường giúp chặn phần mềm độc hại và hành vi lừa đảo hiệu quả hơn</translation>
 <translation id="4434353761996769206">Lỗi trình cài đặt: <ph name="INSTALLER_ERROR" /></translation>
@@ -437,7 +437,7 @@
 <translation id="5424544524441439284">Làm giảm hiệu suất nhưng giúp Chromium tăng khả năng chống lại các cuộc tấn công</translation>
 <translation id="5427571867875391349">Đặt Chromium là trình duyệt mặc định của bạn</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium phiên bản beta</translation>
-<translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium đề xuất tạm dừng thẻ làm chậm trình duyệt của bạn}other{Chromium đề xuất tạm dừng các thẻ làm chậm trình duyệt của bạn}}</translation>
+<translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium đề xuất tạm dừng thẻ làm chậm trình duyệt của bạn}one{Chromium Recommends Pausing the Tabs Slowing Your Browser}other{Chromium đề xuất tạm dừng các thẻ làm chậm trình duyệt của bạn}}</translation>
 <translation id="5473971139929175403">Chromium có thể không hoạt động đúng cách do không còn được hỗ trợ trên bản phân phối Linux này</translation>
 <translation id="5475924890392386523">Chromium đã chặn tệp tải xuống này vì tệp có thể gây hại cho tài khoản cá nhân và tài khoản mạng xã hội của bạn</translation>
 <translation id="5482575505313585759">Đóng bảng điều khiển Google Tìm kiếm</translation>
@@ -454,12 +454,12 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="5576587363991567745"><ph name="EXISTING_USER" /> đã đăng nhập. Để tách biệt hoạt động duyệt web của bạn, hãy đăng nhập vào Chromium bằng hồ sơ của riêng bạn qua địa chỉ <ph name="USER_EMAIL_ADDRESS" />. Bạn cũng sẽ nhận được thông tin đã lưu và nhiều dữ liệu khác trên <ph name="DEVICE" />.</translation>
 <translation id="5579324208890605088">Lỗi khi khởi động: vui lòng chạy trình cài đặt với tư cách người dùng thông thường, không phải quản trị viên.</translation>
 <translation id="5580770360767802657">Sử dụng Chromium theo mặc định và ghim Chromium</translation>
-<translation id="5596063723521813107">{COUNT,plural, =1{Quản trị viên yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. Cửa sổ biệt lập của bạn sẽ không mở lại.}other{Quản trị viên yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. # cửa sổ biệt lập của bạn sẽ không mở lại.}}</translation>
+<translation id="5596063723521813107">{COUNT,plural, =1{Quản trị viên yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. Cửa sổ biệt lập của bạn sẽ không mở lại.}one{Your administrator requires that you relaunch Chromium to apply an update. Your # Isolated windows won't reopen.}other{Quản trị viên yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. # cửa sổ biệt lập của bạn sẽ không mở lại.}}</translation>
 <translation id="5596627076506792578">Tuỳ chọn khác</translation>
 <translation id="5605834417512968703">Chọn nội dung bạn muốn tìm bằng tính năng Tìm kiếm hình ảnh hoặc nhấn phím Escape để thoát khỏi chế độ Tìm kiếm hình ảnh</translation>
 <translation id="5614149501995591823">Đã có <ph name="IMPORTANT_UPDATE" />. Bạn có thể chạy lại ngay hoặc thiết lập để Chromium cập nhật vào lần tới khi màn hình vẫn bật và không được sử dụng trong <ph name="IDLE_DURATION" />.</translation>
 <translation id="5618818588972826921">Chọn văn bản hoặc hình ảnh bất kỳ mà bạn muốn tìm kiếm bằng tính năng Tìm kiếm hình ảnh hoặc nhấn phím Escape để thoát khỏi chế độ Tìm kiếm hình ảnh</translation>
-<translation id="5623402015214259806">{0,plural, =0{Đã có bản cập nhật Chromium}=1{Đã có bản cập nhật Chromium}other{Đã có bản cập nhật Chromium từ # ngày trước}}</translation>
+<translation id="5623402015214259806">{0,plural, =0{Đã có bản cập nhật Chromium}=1{Đã có bản cập nhật Chromium}one{A Chromium update has been available for # days}other{Đã có bản cập nhật Chromium từ # ngày trước}}</translation>
 <translation id="5643865575100044307">Luôn xoá dữ liệu trang web khỏi thiết bị của bạn khi bạn đóng Chromium</translation>
 <translation id="5653831366781983928">Vui lòng khởi động lại Chromium ngay bây giờ</translation>
 <translation id="565409517765894456">Để nhận các bản cập nhật Chromium sau này, bạn cần có Windows 10 phiên bản 1809 trở lên. Máy tính này đang sử dụng một phiên bản Windows 10 cũ.</translation>
@@ -487,7 +487,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="5949225980829865667">Để sử dụng dấu trang này và các dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chromium</translation>
 <translation id="5953657885167112863">Biến Chromium thành trình duyệt của riêng bạn</translation>
 <translation id="5960071705175224773">Một ứng dụng lạ đã thay đổi chế độ cài đặt của bạn</translation>
-<translation id="5986585015444752010">{COUNT,plural, =1{Tổ chức sẽ tự động đóng Chromium sau 1 phút bạn không dùng đến.}other{Tổ chức sẽ tự động đóng Chromium sau # phút bạn không dùng đến.}}</translation>
+<translation id="5986585015444752010">{COUNT,plural, =1{Tổ chức sẽ tự động đóng Chromium sau 1 phút bạn không dùng đến.}one{Your organization automatically closes Chromium when it isn't used for # minutes.}other{Tổ chức sẽ tự động đóng Chromium sau # phút bạn không dùng đến.}}</translation>
 <translation id="5987687638152509985">Cập nhật Chromium để bắt đầu đồng bộ hóa</translation>
 <translation id="5990360079535151574">Từ nút "Thao tác theo ngữ cảnh" trên thanh công cụ, bạn có thể mở lại Thao tác theo ngữ cảnh để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="6003112304606738118">Đang tải xuống... Còn <ph name="HOURS" /> giờ.</translation>
@@ -513,7 +513,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="6183079672144801177">Đảm bảo bạn đã đăng nhập vào Chromium trên <ph name="TARGET_DEVICE_NAME" /> của mình rồi thử gửi lại.</translation>
 <translation id="6192070012454216182">Tìm kiếm và đặt câu hỏi ở bất cứ đâu, ngay cả khi Chromium đang ở trạng thái thu nhỏ. Cho phép Chromium chạy ở chế độ nền.</translation>
 <translation id="6212496753309875659">Máy tính này đã có phiên bản Chromium mới hơn. Nếu phần mềm không hoạt động, hãy gỡ cài đặt Chromium và thử lại.</translation>
-<translation id="6219195342503754812">{0,plural, =0{Chromium sẽ khởi động lại ngay bây giờ}=1{Chromium sẽ khởi động lại sau 1 giây}other{Chromium sẽ khởi động lại sau # giây}}</translation>
+<translation id="6219195342503754812">{0,plural, =0{Chromium sẽ khởi động lại ngay bây giờ}=1{Chromium sẽ khởi động lại sau 1 giây}one{Chromium will relaunch in # seconds}other{Chromium sẽ khởi động lại sau # giây}}</translation>
 <translation id="6232046770428574552">Chromium sẽ cập nhật khi bạn không sử dụng màn hình</translation>
 <translation id="6241367896540709610">Chromium cần có quyền truy cập vào bộ nhớ để tải tệp xuống</translation>
 <translation id="6245734527075554892">Kiểm tra đối chiếu các URL với danh sách trang web không an toàn được lưu trữ trong Chromium</translation>
@@ -583,7 +583,7 @@ Một số tính năng có thể không khả dụng. Hãy chỉ định thư m�
 <translation id="6742093177587589736">Để sử dụng mật khẩu, dấu trang và các dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chromium. Dấu trang này sẽ được lưu trong Tài khoản Google của bạn sau khi bạn đăng nhập.</translation>
 <translation id="674891594898436429">Đóng phiên tìm kiếm đang diễn ra trong thẻ này</translation>
 <translation id="6751374565094704799">Tăng tốc độ tải trang web bằng công cụ V8 của Chromium nhưng làm giảm khả năng chống lại các cuộc tấn công của Chromium. Chế độ cài đặt này đang bật.</translation>
-<translation id="6754665438209053659">{count,plural, =1{Một số dữ liệu Chromium của bạn chưa được lưu vào Tài khoản Google. Hãy đợi một vài phút trước khi đăng xuất. Nếu bạn đăng xuất ngay, dữ liệu này (1 mục) sẽ bị xoá.}other{Một số dữ liệu Chromium của bạn chưa được lưu vào Tài khoản Google. Hãy đợi một vài phút trước khi đăng xuất. Nếu bạn đăng xuất ngay, dữ liệu này ({count}) sẽ bị xoá.}}</translation>
+<translation id="6754665438209053659">{count,plural, =1{Một số dữ liệu Chromium của bạn chưa được lưu vào Tài khoản Google. Hãy đợi một vài phút trước khi đăng xuất. Nếu bạn đăng xuất ngay, dữ liệu này (1 mục) sẽ bị xoá.}one{Some of your Chromium data hasn't been saved in your Google Account yet. Try waiting a few minutes before signing out. If you sign out now, this data ({count} items) will be deleted.}other{Một số dữ liệu Chromium của bạn chưa được lưu vào Tài khoản Google. Hãy đợi một vài phút trước khi đăng xuất. Nếu bạn đăng xuất ngay, dữ liệu này ({count}) sẽ bị xoá.}}</translation>
 <translation id="67706546131546258">Chromium đề xuất quét tệp này vì tệp này có thể nguy hiểm.</translation>
 <translation id="6779406956731413166">ChromiumOS có thể hoạt động được là nhờ <ph name="BEGIN_LINK_CROS_OSS" />phần mềm nguồn mở<ph name="END_LINK_CROS_OSS" /> bổ sung.</translation>
 <translation id="6804256634866838775">Đóng phiên tìm kiếm đang diễn ra</translation>
@@ -621,7 +621,7 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="7003299027384820442">Nhập cụm mật khẩu để sử dụng và lưu dữ liệu Chromium trong tài khoản <ph name="ACCOUNT_EMAIL" /> của bạn</translation>
 <translation id="7011190694940573312">Cài đặt không thành công vì phiên bản hệ điều hành này không được hỗ trợ.</translation>
 <translation id="7024536598735240744">Lỗi khi giải nén: <ph name="UNPACK_ERROR" />.</translation>
-<translation id="7037186623849853406">{COUNT,plural, =1{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. Cửa sổ biệt lập của bạn sẽ không mở lại.}other{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. # cửa sổ biệt lập của bạn sẽ không mở lại.}}</translation>
+<translation id="7037186623849853406">{COUNT,plural, =1{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. Cửa sổ biệt lập của bạn sẽ không mở lại.}one{Advanced Protection requires that you relaunch Chromium to apply an update. Your # Isolated windows won't reopen.}other{Chế độ Bảo vệ nâng cao yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. # cửa sổ biệt lập của bạn sẽ không mở lại.}}</translation>
 <translation id="7045244423563602563">Biến Chromium thành trình duyệt của riêng bạn</translation>
 <translation id="7047386856539490735">Những kết quả này có hữu ích không?</translation>
 <translation id="705851970750939768">Cập nhật Chromium</translation>
@@ -645,7 +645,7 @@ Bạn phải xoá bớt một số dấu trang thì mới có thể lưu dấu t
 <translation id="7274695763216404502">Đã ghim! Sử dụng lại tính năng Tìm kiếm hình ảnh trên thanh công cụ</translation>
 <translation id="7288567540154601580">Thẻ và tiện ích</translation>
 <translation id="7290997427370476749">Từ nút "Bảng điều khiển Google Tìm kiếm" trên thanh công cụ, bạn có thể mở lại bảng điều khiển Google Tìm kiếm để đặt câu hỏi trong khi duyệt web</translation>
-<translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium khuyên bạn nên xoá tiện ích đó}other{Chromium khuyên bạn nên xoá các tiện ích đó}}</translation>
+<translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium khuyên bạn nên xoá tiện ích đó}one{Chromium recommends that you remove them}other{Chromium khuyên bạn nên xoá các tiện ích đó}}</translation>
 <translation id="7296334833518879294">Để chia sẻ âm thanh hệ thống, hãy mở phần Cài đặt hệ thống rồi bật chế độ "Chỉ ghi âm thanh hệ thống" cho Chromium. Sau đó, bạn cần khởi động lại Chromium.</translation>
 <translation id="7299899569525778554">Tìm kiếm trên máy tính</translation>
 <translation id="731795002583552498">Đang cập nhật Chromium</translation>
@@ -677,7 +677,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="7483335560992089831">Không thể cài đặt phiên bản Chromium giống với phiên bản hiện đang chạy. Hãy đóng Chromium và thử lại.</translation>
 <translation id="7510190804000607802">Lời nhắc: Các tính năng tốt nhất của Google ngay trên điện thoại của bạn</translation>
 <translation id="751935028865900641">Các trang web có thể sẽ hoạt động như dự kiến. Khi đóng tất cả các cửa sổ Chromium, bạn sẽ bị đăng xuất khỏi hầu hết các trang web, ngoại trừ Tài khoản Google nếu bạn đã đăng nhập vào Chromium.</translation>
-<translation id="753534427205733210">{0,plural, =1{Chromium sẽ khởi động lại sau 1 phút}other{Chromium sẽ khởi động lại sau # phút}}</translation>
+<translation id="753534427205733210">{0,plural, =1{Chromium sẽ khởi động lại sau 1 phút}one{Chromium will relaunch in # minutes}other{Chromium sẽ khởi động lại sau # phút}}</translation>
 <translation id="7565444033145385702">Để bảo vệ dữ liệu của bạn, hãy cho phép Chromium loại bỏ quyền của các trang web mà gần đây bạn không truy cập.</translation>
 <translation id="7583104404158659071">Tự động khởi chạy Chromium để bắt đầu duyệt web ngay lập tức.</translation>
 <translation id="7583399374488819119">Trình cài đặt <ph name="COMPANY_NAME" /></translation>
@@ -705,7 +705,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="7801317262080715012">Biểu tượng mới, lối tắt không đổi: Nhấp vào biểu tượng này để đặt câu hỏi trong khi duyệt web bằng bảng điều khiển Google Tìm kiếm.</translation>
 <translation id="7803986347287457849">Đảm bảo những người có quyền truy cập vào dữ liệu lưu lượng truy cập Internet của bạn khó biết được các trang web bạn truy cập hơn. Chromium dùng một kết nối bảo mật để tra cứu địa chỉ IP của mỗi trang web trong DNS (Hệ thống tên miền).</translation>
 <translation id="7810005234485217901">Bạn có thể ghim tính năng Tìm kiếm hình ảnh để thuận tiện sử dụng</translation>
-<translation id="7813559034750130602">{COUNT,plural, =1{Đã có bản cập nhật Chromium mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chromium. Có cửa sổ ẩn danh hoặc cửa sổ biệt lập đang mở. Cửa sổ ẩn danh hoặc cửa sổ biệt lập sẽ không mở lại sau khi bạn chạy lại.}other{Đã có bản cập nhật Chromium mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chromium. Có # cửa sổ ẩn danh và cửa sổ biệt lập đang mở trên các hồ sơ. Những cửa sổ này sẽ không mở lại sau khi bạn chạy lại.}}</translation>
+<translation id="7813559034750130602">{COUNT,plural, =1{Đã có bản cập nhật Chromium mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chromium. Có cửa sổ ẩn danh hoặc cửa sổ biệt lập đang mở. Cửa sổ ẩn danh hoặc cửa sổ biệt lập sẽ không mở lại sau khi bạn chạy lại.}one{A new update for Chromium is available and will be applied as soon as you relaunch. There are # Incognito and Isolated windows open across profiles. They won't reopen after you relaunch.}other{Đã có bản cập nhật Chromium mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chromium. Có # cửa sổ ẩn danh và cửa sổ biệt lập đang mở trên các hồ sơ. Những cửa sổ này sẽ không mở lại sau khi bạn chạy lại.}}</translation>
 <translation id="7828527096541974699">Chọn nội dung bạn muốn chia sẻ với Chromium</translation>
 <translation id="7828947555739565424">Thiết bị này đã có một hồ sơ trên Chromium sử dụng tài khoản này</translation>
 <translation id="7845233973568007926">Cảm ơn bạn đã cài đặt. Bạn phải khởi động lại máy tính trước khi sử dụng <ph name="BUNDLE_NAME" />.</translation>
@@ -744,7 +744,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="813913629614996137">Đang khởi chạy...</translation>
 <translation id="8161503455832158203">Mở Gemini trong Chromium bằng một phím tắt.</translation>
 <translation id="8164014945047474187">Điều khoản dịch vụ bổ sung của Chromium</translation>
-<translation id="8172503648109091906">{COUNT,plural, =1{Quản trị viên yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. Có cửa sổ ẩn danh hoặc cửa sổ biệt lập đang mở. Cửa sổ ẩn danh hoặc cửa sổ biệt lập sẽ không mở lại sau khi bạn chạy lại.}other{Quản trị viên yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. Có # cửa sổ ẩn danh và cửa sổ biệt lập đang mở trên các hồ sơ. Những cửa sổ này sẽ không mở lại sau khi bạn chạy lại.}}</translation>
+<translation id="8172503648109091906">{COUNT,plural, =1{Quản trị viên yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. Có cửa sổ ẩn danh hoặc cửa sổ biệt lập đang mở. Cửa sổ ẩn danh hoặc cửa sổ biệt lập sẽ không mở lại sau khi bạn chạy lại.}one{Your administrator requires that you relaunch Chromium to apply an update. There are # Incognito and Isolated windows open across profiles. They won't reopen after you relaunch.}other{Quản trị viên yêu cầu bạn chạy lại Chromium để áp dụng bản cập nhật. Có # cửa sổ ẩn danh và cửa sổ biệt lập đang mở trên các hồ sơ. Những cửa sổ này sẽ không mở lại sau khi bạn chạy lại.}}</translation>
 <translation id="81770708095080097">Tệp này nguy hiểm, do đó Chromium đã chặn tệp.</translation>
 <translation id="8177472873527554730">Không tìm thấy nội dung trong trang</translation>
 <translation id="8200109504272824693">Nhập cụm mật khẩu để sử dụng và lưu dữ liệu Chromium trong tài khoản <ph name="USER_EMAIL" /> của bạn</translation>
@@ -779,7 +779,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="8401454788024434101">Tiện ích này đã bị nhà phát triển huỷ phát hành và có thể không an toàn. Hãy xoá khỏi Chromium để tiện ích này không thể xem và thay đổi dữ liệu của bạn (bao gồm cả thông tin cá nhân) trên các trang web bạn truy cập nữa.</translation>
 <translation id="8406687098231754303">Từ nút "Google Tìm kiếm trong bảng điều khiển bên" trên thanh công cụ, bạn có thể mở lại Google Tìm kiếm trong bảng điều khiển bên để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="8416884904046428725">Chromium cần xác minh danh tính của bạn thì mới có thể lưu một số dữ liệu vào Tài khoản Google và cho phép bạn sử dụng dữ liệu đó trên tất cả các thiết bị. Nếu bạn đăng xuất bây giờ, dữ liệu này sẽ bị xoá.</translation>
-<translation id="8417404458978023919">{0,plural, =1{Khởi động lại Chromium trong vòng một ngày}other{Khởi động lại Chromium trong vòng # ngày}}</translation>
+<translation id="8417404458978023919">{0,plural, =1{Khởi động lại Chromium trong vòng một ngày}one{Relaunch Chromium within # days}other{Khởi động lại Chromium trong vòng # ngày}}</translation>
 <translation id="8438543370129609977">Khi bạn sử dụng tính năng Tìm kiếm hình ảnh thì nội dung, URL và tiêu đề của trang, bao gồm cả tệp PDF, sẽ được gửi đến máy chủ. <ph name="LEARN_MORE" /></translation>
 <translation id="8447525028100794994">Tìm hiểu thêm về cách tìm kiếm bằng tính năng Tìm kiếm hình ảnh trong Chromium</translation>
 <translation id="8453117565092476964">Tệp lưu trữ trình cài đặt bị hỏng hoặc không hợp lệ. Hãy tải xuống Chromium lại lần nữa.</translation>
@@ -858,7 +858,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="9074163480955555019">Biểu tượng mới, lối tắt không đổi: Nhấp vào biểu tượng này để đặt câu hỏi trong khi duyệt web bằng Google Tìm kiếm trong Chrome.</translation>
 <translation id="9078733879136747090">Chromium đã tự động đóng</translation>
 <translation id="9089354809943900324">Chromium đã lỗi thời</translation>
-<translation id="9093206154853821181">{0,plural, =1{Chromium sẽ khởi động lại sau một giờ}other{Chromium sẽ khởi động lại sau # giờ}}</translation>
+<translation id="9093206154853821181">{0,plural, =1{Chromium sẽ khởi động lại sau một giờ}one{Chromium will relaunch in # hours}other{Chromium sẽ khởi động lại sau # giờ}}</translation>
 <translation id="9106236359747881194">Chọn văn bản bạn muốn tìm</translation>
 <translation id="9106612006984859720">Để nhận các bản cập nhật Chromium sau này, bạn cần có Windows 10 trở lên. Máy tính này đang sử dụng Windows 8.1.</translation>
 <translation id="91086099826398415">Mở đường liên kết trong thẻ mới của Chromium</translation>

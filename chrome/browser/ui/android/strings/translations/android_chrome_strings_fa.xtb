@@ -360,7 +360,7 @@
 <translation id="2411239243988279592">‫<ph name="TAB_TITLE" />، زبانه شنیداری انتخابی</translation>
 <translation id="2413014528833954543">گذرواژه‌های ذخیره‌شده در این دستگاه بررسی نشد</translation>
 <translation id="2414886740292270097">تاریک</translation>
-<translation id="2415037988255164008">پنجره ها بازیابی شوند؟</translation>
+<translation id="2415037988255164008">پنجره ها بازگردانده شوند؟</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{ویدیوها، ۱ ویدیو در فهرست}one{ویدیوها، # ویدیو در فهرست}other{ویدیوها، # ویدیو در فهرست}}</translation>
 <translation id="2433507940547922241">ظاهر</translation>
 <translation id="2449931042095204989">‏وقتی یک برنامه یا سایت Google درخواست می‌کند پیوندها به‌طور خصوصی در صفحه آن پیش‌بارگیری شوند، Chrome صفحه‌ها را بدون کوکی‌ها ازطریق سرورهای Google رمزگذاری و پیش‌بارگیری می‌کند. با این کار هویت شما از سایت پیش‌بارگیری‌شده پنهان می‌شود.</translation>
@@ -1550,7 +1550,7 @@
 <translation id="7017219178341817193">افزودن صفحه جدید</translation>
 <translation id="7022756207310403729">بازکردن در مرورگر</translation>
 <translation id="7029809446516969842">گذرواژه‌ها</translation>
-<translation id="7037994709569287156">‏‫Chrome را مرورگر پیش‌فرض کنید</translation>
+<translation id="7037994709569287156">‏تعیین Chrome به‌عنوان مرورگر پیش‌فرض</translation>
 <translation id="7053256416619638731">گذرواژه‌های این دستگاه را تقویت کنید</translation>
 <translation id="7053983685419859001">مسدود کردن</translation>
 <translation id="7054588988317389591">توضیحات تصویر دریافت شود؟</translation>

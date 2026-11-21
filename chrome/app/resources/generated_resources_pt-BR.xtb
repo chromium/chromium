@@ -377,7 +377,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1261380933454402672">Moderada</translation>
 <translation id="1262395978737369974">Sempre permitir a otimização de JavaScript</translation>
 <translation id="1262564987698748643">Os sites podem pedir para substituir a entrada do teclado</translation>
-<translation id="1263231323834454256">Lista de Leitura</translation>
+<translation id="1263231323834454256">Lista de leitura</translation>
 <translation id="1263733306853729545">Usar as teclas <ph name="MINUS" /> e <ph name="EQUAL" /> para numerar uma lista de candidatos</translation>
 <translation id="126387934568812801">Incluir esta captura de tela e os títulos das guias abertas</translation>
 <translation id="1264083566674525434">Editar permissões do site</translation>
@@ -390,7 +390,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1267649802567297774">Imagem <ph name="INDEX" /> de <ph name="SUBJECT" /> gerada no estilo <ph name="STYLE" /> com o clima <ph name="MOOD" />.</translation>
 <translation id="126768002343224824">16x</translation>
 <translation id="1272079795634619415">Parar</translation>
-<translation id="1272508081857842302">Abertura de <ph name="BEGIN_LINK" />links compatíveis<ph name="END_LINK" /></translation>
+<translation id="1272508081857842302">Abrir <ph name="BEGIN_LINK" />links compatíveis<ph name="END_LINK" /></translation>
 <translation id="1274721046703404848">Gerencie a conexão entre os serviços da Pesquisa e os apps do Google Workspace, como o Google Drive</translation>
 <translation id="1274997165432133392">Cookies e outros dados de sites</translation>
 <translation id="1275936815032730048">acesso rápido + seta para a direita</translation>
@@ -4351,7 +4351,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4276390967705106170">Abrir em uma nova guia do navegador</translation>
 <translation id="4276598757692536305">PPD da impressora</translation>
 <translation id="4277434192562187284">Fonte de configuração XML</translation>
-<translation id="4278390842282768270">Permitido</translation>
+<translation id="4278390842282768270">Permitida</translation>
 <translation id="4279129444466079448">Você pode instalar até <ph name="PROFILE_LIMIT" /> perfis de eSIM no dispositivo. Para adicionar outro perfil, remova um existente.</translation>
 <translation id="427987768447457592">Novo grupo de guias</translation>
 <translation id="4280325816108262082">O dispositivo será desconectado automaticamente quando estiver desligado ou não estiver em uso</translation>
@@ -4393,7 +4393,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4301697210743228350">{COUNT,plural, =1{# contato não está disponível. Para usar o recurso "<ph name="FEATURE_NAME" />" com esse contato, adicione o endereço de e-mail associado à Conta do Google dele.}one{# contato não está disponível. Para usar o recurso "<ph name="FEATURE_NAME" />" com esse contato, adicione o endereço de e-mail associado à Conta do Google dele.}other{# contatos não estão disponíveis. Para usar o recurso "<ph name="FEATURE_NAME" />" com esses contatos, adicione o endereço de e-mail associado à Conta do Google deles.}}</translation>
 <translation id="4303079906735388947">Configure um novo PIN para sua chave de segurança</translation>
 <translation id="430351398235329166">Mude a posição da barra de endereço para personalizar sua experiência de navegação</translation>
-<translation id="4304713468139749426">Gerenciador de Senhas</translation>
+<translation id="4304713468139749426">Gerenciador de senhas</translation>
 <translation id="4305817255990598646">Alternar</translation>
 <translation id="4306489587293957491">Inserir</translation>
 <translation id="4306810703452026910">O Chrome não vai mais marcar as notificações desse site como spam</translation>
@@ -6995,7 +6995,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6339668969738228384">Criar um novo perfil para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protocolo de impressão via Internet (IPPS)</translation>
 <translation id="6341850831632289108">Detectar sua localização física</translation>
-<translation id="6342069812937806050">Neste instante</translation>
+<translation id="6342069812937806050">Agora</translation>
 <translation id="6343003829431264373">Somente páginas pares</translation>
 <translation id="6343981313228733146">Janela movida para cima e para a direita</translation>
 <translation id="6344170822609224263">Acessar lista de conexões de rede</translation>
@@ -8209,7 +8209,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7262004276116528033">Este serviço de login é hospedado por <ph name="SAML_DOMAIN" /></translation>
 <translation id="7262162806583378242">Selecione o que quiser na tela enquanto navega para comprar, traduzir e pesquisar usando a IA</translation>
 <translation id="7262564444061174264">Saiba mais sobre o atalho de navegação</translation>
-<translation id="7262919421769447042">Seu perfil é gerenciado por <ph name="PROFILE_MANAGER" />, que pode ver algumas informações, incluindo:</translation>
+<translation id="7262919421769447042">O <ph name="PROFILE_MANAGER" /> gerencia seu perfil e tem acesso a alguns dados, como:</translation>
 <translation id="7264695323040866038">Sempre usar o app <ph name="APP" /> para abrir links da Web com suporte?</translation>
 <translation id="7267898843336437186">Selecione uma pasta que este site pode ver</translation>
 <translation id="7268127947535186412">Esta configuração é gerenciada pelo proprietário do dispositivo.</translation>
