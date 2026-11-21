@@ -775,11 +775,21 @@ class IntegrationTest : public ::testing::Test {
                                               updater_version);
   }
 
+  // Expects the updater's uninstall ping.
   void ExpectUninstallPing(ScopedServer& test_server,
                            std::optional<GURL> target_url = {}) {
-    test_commands_->ExpectPing(test_server,
+    test_commands_->ExpectPing(test_server, kUpdaterAppId,
                                update_client::protocol_request::kEventUninstall,
                                target_url);
+  }
+
+  // Expects the uninstall ping that the updater sends for `app_id` when it
+  // removes the app's registration.
+  void ExpectAppUninstallPing(ScopedServer& test_server,
+                              const std::string& app_id) {
+    test_commands_->ExpectPing(test_server, app_id,
+                               update_client::protocol_request::kEventUninstall,
+                               /*target_url=*/{});
   }
 
   void ExpectInstallSource(ScopedServer& test_server,
@@ -3560,7 +3570,7 @@ TEST_F(IntegrationTestDeviceManagement,
   ASSERT_NO_FATAL_FAILURE(InstallEnterpriseCompanionApp());
 
   // Uninstall ping for the app.
-  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(*test_server_));
+  ASSERT_NO_FATAL_FAILURE(ExpectAppUninstallPing(*test_server_, kApp1.appid));
   // Expect an update check and then the uninstall ping for the updater itself.
   ExpectUpdateCheckRequest(*test_server_);
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(*test_server_));
@@ -4010,11 +4020,12 @@ class IntegrationTestUserInSystem : public IntegrationTest {
 
   void CopyUserLog() { user_test_commands_->CopyLog("user"); }
 
+  // Expects the user updater's uninstall ping.
   void ExpectUserUninstallPing(ScopedServer& test_server,
                                std::optional<GURL> target_url = {}) {
     user_test_commands_->ExpectPing(
-        test_server, update_client::protocol_request::kEventUninstall,
-        target_url);
+        test_server, kUpdaterAppId,
+        update_client::protocol_request::kEventUninstall, target_url);
   }
 
 #if BUILDFLAG(IS_MAC)

@@ -134,9 +134,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
   }
 
   void ExpectPing(ScopedServer& test_server,
+                  const std::string& app_id,
                   int event_type,
                   std::optional<GURL> target_url) const override {
-    updater::test::ExpectPing(updater_scope_, test_server, event_type,
+    updater::test::ExpectPing(updater_scope_, test_server, app_id, event_type,
                               target_url);
   }
 

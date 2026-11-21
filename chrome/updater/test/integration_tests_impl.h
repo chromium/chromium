@@ -450,8 +450,11 @@ int CountDirectoryFiles(const base::FilePath& dir);
 
 void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer& test_server);
 
+// Expects a ping with an event of type `event_type` for `app_id`, proxied to
+// `target_url` if set.
 void ExpectPing(UpdaterScope scope,
                 ScopedServer& test_server,
+                const std::string& app_id,
                 int event_type,
                 std::optional<GURL> target_url);
 void ExpectInstallSource(UpdaterScope scope,

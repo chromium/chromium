@@ -1472,13 +1472,14 @@ void SetupRealUpdater(UpdaterScope scope,
 
 void ExpectPing(UpdaterScope scope,
                 ScopedServer& test_server,
+                const std::string& app_id,
                 int event_type,
                 std::optional<GURL> target_url) {
   request::MatcherGroup request_matchers = {
       request::GetPathMatcher(test_server.update_path()),
       request::GetUpdaterUserAgentMatcher(),
-      request::GetContentMatcher(
-          {absl::StrFormat(R"(.*"eventtype":%d,.*)", event_type)}),
+      request::GetJSONContentMatcher(json::HasApp(
+          app_id, json::HasEvent(json::HasKey("eventtype", event_type)))),
       request::GetScopeMatcher(scope)};
   if (target_url) {
     request_matchers.push_back(request::GetTargetURLMatcher(*target_url));
