@@ -6450,7 +6450,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Prestable_20261105",
+                    "name": "Enabled_Prestable_20261116",
                     "enable_features": [
                         "ApiContextualTasksPrivate",
                         "BackForwardCacheForComponentExtensionFrames",
@@ -6458,7 +6458,6 @@
                         "ContextualTasksRearchitecture",
                         "ContextualTasksSidePanelRearchitecture",
                         "ContextualTasksSingleTabMenuItem",
-                        "LensComposeboxIdentityDelegation",
                         "OmitNativeFrameOnShadowlessMenus"
                     ]
                 }

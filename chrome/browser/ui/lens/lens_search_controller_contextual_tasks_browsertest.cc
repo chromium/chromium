@@ -1145,6 +1145,17 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensInteractionBrowserTest,
   }));
 }
 
+class ContextualTasksLensInteractionWebUiComposeboxBrowserTest
+    : public ContextualTasksLensInteractionBrowserTest {
+ protected:
+  std::vector<base::test::FeatureRef> GetAdditionalDisabledFeatures() override {
+    // Disable rearchitecture flags to exercise the WebUI
+    // <contextual-tasks-composebox> path directly.
+    return {contextual_tasks::kContextualTasksRearchitecture,
+            contextual_tasks::kContextualTasksSidePanelRearchitecture};
+  }
+};
+
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_SubsequentRegionSelectionFromComposeboxAddsVisualSelection \
   DISABLED_SubsequentRegionSelectionFromComposeboxAddsVisualSelection
@@ -1153,7 +1164,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensInteractionBrowserTest,
   SubsequentRegionSelectionFromComposeboxAddsVisualSelection
 #endif
 IN_PROC_BROWSER_TEST_F(
-    ContextualTasksLensInteractionBrowserTest,
+    ContextualTasksLensInteractionWebUiComposeboxBrowserTest,
     MAYBE_SubsequentRegionSelectionFromComposeboxAddsVisualSelection) {
   // Wait for the page to be painted to prevent flakiness when screenshotting.
   WaitForPaint();
