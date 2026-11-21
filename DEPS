@@ -546,7 +546,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling ffmpeg
   # and whatever else without interference from each other.
-  'ffmpeg_revision': '09dee08662c5d06155391829174a8fd2e8c0556d',
+  'ffmpeg_revision': '070991985f9bb0e5e7c7522b664d223eeda0f0a6',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling webpagereplay
   # and whatever else without interference from each other.
