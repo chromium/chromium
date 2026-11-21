@@ -17,6 +17,7 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
 #include "content/public/browser/back_forward_cache.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
@@ -316,6 +317,13 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
   } else {
     EXPECT_TRUE(unassigned_si->IsRelatedSiteInstance(initial_si.get()));
   }
+
+  // Since the SiteInstance is left unassigned, the committed origin must not
+  // inherit a precursor from the initiator.
+  const url::Origin& committed_origin =
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
+  EXPECT_TRUE(committed_origin.opaque());
+  EXPECT_FALSE(committed_origin.GetTupleOrPrecursorTupleIfOpaque().IsValid());
 }
 
 IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
@@ -338,6 +346,57 @@ IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
       web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
   EXPECT_FALSE(unassigned_si->HasSite());
   EXPECT_FALSE(unassigned_si->IsRelatedSiteInstance(initial_si.get()));
+}
+
+// Verify that a browser-initiated navigation to an embedder-defined empty
+// document scheme ignores the initiator when computing its own origin. Such
+// navigations leave the SiteInstance unassigned and the process unlocked, so
+// the committed origin must be opaque with no precursor. Otherwise, adding it
+// to the process's committed origins would let an unlocked process claim to
+// host opaque origins derived from the initiator's site. This mimics
+// chrome://newtab being rewritten to chrome-native://newtab on Android, where
+// the initiator origin may be set.
+IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,
+                       BrowserInitiatedNavigationTo_CustomUrl_WithInitiator) {
+  // Get a base page with a site.
+  EXPECT_TRUE(NavigateToURL(web_contents(), regular_url()));
+  RenderFrameHostImpl* initial_rfh = web_contents()->GetPrimaryMainFrame();
+  EXPECT_TRUE(initial_rfh->GetSiteInstance()->HasSite());
+  url::Origin initiator_origin = initial_rfh->GetLastCommittedOrigin();
+  ChildProcessId initial_process_id = initial_rfh->GetProcess()->GetID();
+
+  // Do a browser-initiated navigation to an embedder-defined unassigned url,
+  // with an initiator origin. NavigateToURL() does not set an initiator, so use
+  // LoadURLParams directly.
+  TestNavigationObserver observer(web_contents());
+  NavigationController::LoadURLParams params(embedder_defined_unassigned_url());
+  params.initiator_origin = initiator_origin;
+  web_contents()->GetController().LoadURLWithParams(params);
+  observer.Wait();
+  EXPECT_TRUE(observer.last_navigation_succeeded());
+  EXPECT_EQ(initiator_origin, observer.last_initiator_origin());
+
+  RenderFrameHostImpl* rfh = web_contents()->GetPrimaryMainFrame();
+  EXPECT_EQ(embedder_defined_unassigned_url(), rfh->GetLastCommittedURL());
+  EXPECT_FALSE(rfh->GetSiteInstance()->HasSite());
+  EXPECT_TRUE(rfh->GetProcess()->GetProcessLock().AllowsAnySite());
+
+  // The committed origin should be opaque, with no precursor from the
+  // initiator.
+  const url::Origin& committed_origin = rfh->GetLastCommittedOrigin();
+  EXPECT_TRUE(committed_origin.opaque());
+  EXPECT_FALSE(committed_origin.GetTupleOrPrecursorTupleIfOpaque().IsValid());
+
+  // The unlocked process should not be able to claim it hosts opaque origins
+  // derived from the initiator's origin. Only check this when all sites are
+  // isolated, since otherwise the unassigned SiteInstance may share a process
+  // with the initiator, which legitimately hosts the initiator's origin.
+  if (AreAllSitesIsolatedForTesting()) {
+    EXPECT_NE(initial_process_id, rfh->GetProcess()->GetID());
+    EXPECT_FALSE(ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessOrigin(
+        rfh->GetProcess()->GetID(), initiator_origin.DeriveNewOpaqueOrigin(),
+        ChildProcessSecurityPolicyImpl::AccessType::kHostsOrigin));
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(UnassignedSiteInstanceBrowserTest,

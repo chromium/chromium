@@ -14735,8 +14735,22 @@ void RenderFrameHostImpl::UpdatePermissionsForNavigation(
   // Note that GetOriginToCommit() internally CHECKs that the origin to commit
   // is valid for this process, using CanCommitNewOrigin() to perform jail and
   // citadel process lock checks, so this origin should to be safe to add.
+  url::Origin origin_to_commit = request->GetOriginToCommit().value();
+
+  // Navigations that leave the SiteInstance unassigned (e.g., about:blank with
+  // no initiator, or other empty document schemes) commit in a process that
+  // isn't locked to a site. Such navigations must commit an opaque origin with
+  // no precursor (i.e., not inherited from the initiator), so that adding it
+  // below doesn't let the unlocked process claim to host origins derived from
+  // another site.
+  CHECK(GetSiteInstance()->HasSite() ||
+            !origin_to_commit.GetTupleOrPrecursorTupleIfOpaque().IsValid(),
+        base::NotFatalUntil::M162)
+      << "Unexpected origin with precursor in an unassigned SiteInstance: "
+      << origin_to_commit;
+
   ChildProcessSecurityPolicyImpl::GetInstance()->AddCommittedOrigin(
-      GetProcess()->GetDeprecatedID(), request->GetOriginToCommit().value());
+      GetProcess()->GetDeprecatedID(), origin_to_commit);
 }
 
 mojo::AssociatedRemote<mojom::NavigationClient>
@@ -17077,6 +17091,18 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     // Note that `params.origin` is safe to add since it's already been
     // validated in ValidateDidCommitParams() above prior to getting here.
     if (is_synchronous_about_blank_commit) {
+      // Navigations that leave the SiteInstance unassigned (e.g., about:blank
+      // with no initiator, or other empty document schemes) commit in a process
+      // that isn't locked to a site. Such navigations must commit an opaque
+      // origin with no precursor (i.e., not inherited from the initiator), so
+      // that adding it below doesn't let the unlocked process claim to host
+      // origins derived from another site.
+      CHECK(GetSiteInstance()->HasSite() ||
+                !params->origin.GetTupleOrPrecursorTupleIfOpaque().IsValid(),
+            base::NotFatalUntil::M162)
+          << "Unexpected origin with precursor in an unassigned SiteInstance: "
+          << params->origin;
+
       ChildProcessSecurityPolicyImpl::GetInstance()->AddCommittedOrigin(
           GetProcess()->GetDeprecatedID(), params->origin);
     }

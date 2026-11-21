@@ -13343,6 +13343,18 @@ url::Origin NavigationRequest::GetOriginForURLLoaderFactoryUnchecked() {
             target_rph_id);
   }
 
+  // Empty document schemes other than about: (e.g., chrome-native: on Android)
+  // never assign a site to their SiteInstance (see
+  // SiteInstanceImpl::ShouldAssignSiteForUrlInfo()), so they may commit in a
+  // process that isn't locked to any site. Such documents must not derive their
+  // origin from the initiator, since that would give an unlocked process an
+  // opaque origin with the initiator's precursor (and add it to the process's
+  // committed origins). Use an opaque origin with no precursor instead.
+  if (!GetURL().SchemeIs(url::kAboutScheme) &&
+      !SiteInstance::ShouldAssignSiteForURL(GetURL())) {
+    return url::Origin();
+  }
+
   // In cases not covered above, URLLoaderFactory should be associated with the
   // origin of |common_params.url| and/or |common_params.initiator_origin|.
   url::Origin resolved_origin = url::Origin::Resolve(
