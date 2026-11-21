@@ -65,6 +65,7 @@ source_set("platform_browser_tests") {
       "//components/signin/public/identity_manager",
       "//components/signin/public/identity_manager:test_support",
       "//components/strings",
+      "//components/sync/base",
       "//components/tabs:public",
       "//google_apis",
       "//net:test_support",

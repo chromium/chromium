@@ -10,6 +10,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/values.h"
 #include "components/enterprise/net/core/types.h"
 #include "net/base/proxy_chain.h"
@@ -17,6 +18,11 @@
 #include "net/http/http_request_headers.h"
 
 class PrefService;
+
+namespace net {
+class AuthChallengeInfo;
+class HttpResponseHeaders;
+}  // namespace net
 
 namespace enterprise_net {
 
@@ -106,6 +112,29 @@ std::optional<ProvisioningDomainProxyConfig::RoutingRule> ParseRoutingRule(
 // Returns true if Secure Gateway is enabled and its privacy disclosure
 // should be displayed (currently applicable on Android and iOS).
 bool IsSecureGatewayEnabled(PrefService* prefs);
+
+// Case-insensitive parameter map parsed from an HTTP `Basic` authentication
+// challenge (all keys normalized to lowercase ASCII).
+using BasicAuthChallengeParams = base::flat_map<std::string, std::string>;
+
+// Parses comma-delimited `key=value` / `key="value"` auth-params from a single
+// HTTP `Basic` challenge string (e.g. `Basic realm="403",url="https://..."`)
+// using `net::HttpUtil::NameValuePairsIterator` (`STRICT_QUOTES`). Enforces RFC
+// 9110 `token` syntax for parameter names and unquoted parameter values, and
+// unique case-insensitive parameter names. Returns `std::nullopt` if the scheme
+// is not `Basic` or any parameter is malformed or duplicated.
+std::optional<BasicAuthChallengeParams> ParseBasicAuthChallengeParams(
+    std::string_view challenge);
+
+// Finds and parses the HTTP `Basic` challenge matching `auth_info.realm` by
+// enumerating `Proxy-Authenticate` headers in `response_headers` (when
+// provided) or falling back to `auth_info.challenge`. Returns `std::nullopt` if
+// `auth_info.scheme` is not `"basic"` (case-insensitive), any `Basic`
+// `Proxy-Authenticate` header is malformed, no matching valid `Basic` challenge
+// is found, or multiple `Proxy-Authenticate` headers match the same realm.
+std::optional<BasicAuthChallengeParams> ExtractMatchingBasicAuthChallengeParams(
+    const net::AuthChallengeInfo& auth_info,
+    const net::HttpResponseHeaders* response_headers);
 
 }  // namespace enterprise_net
 

@@ -2869,6 +2869,19 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/enterprise/net/core/enterprise_proxy_error_data.h:SecureGatewayErrorPageEvent) -->
 
+<!-- LINT.IfChange(EnterpriseSecureGatewayStaticErrorPageRedirectOutcome) -->
+
+<enum name="EnterpriseSecureGatewayStaticErrorPageRedirectOutcome">
+  <int value="0" label="Redirected"/>
+  <int value="1" label="Rejected: malformed or ambiguous auth challenge"/>
+  <int value="2" label="Rejected: invalid or unsafe URL"/>
+  <int value="3" label="Rejected: redirect loop or self-redirect"/>
+  <int value="4" label="Rejected: destination URL mismatch"/>
+  <int value="5" label="Canceled before redirect navigation started"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/enterprise/net/core/enterprise_proxy_error_data.h:SecureGatewayStaticErrorPageRedirectOutcome) -->
+
 <!-- LINT.IfChange(EnterpriseSignalsDisclaimerDismissalCause) -->
 
 <enum name="EnterpriseSignalsDisclaimerDismissalCause">

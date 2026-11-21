@@ -17,15 +17,19 @@
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/enterprise/net/core/auth_scope_metadata.h"
 #include "components/enterprise/net/core/features.h"
 #include "components/enterprise/net/core/prefs.h"
 #include "components/prefs/pref_service.h"
+#include "net/base/auth.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
+#include "net/http/http_auth_scheme.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "url/gurl.h"
 
@@ -76,6 +80,39 @@ constexpr char kAcceptLanguageCamelPlaceholder[] = "${acceptLanguage}";
 // Auth type string values.
 constexpr char kAuthNone[] = "none";
 constexpr char kAuthTypeProfileBearerToken[] = "profile_bearer_token";
+
+// HTTP proxy authentication challenge constants.
+constexpr std::string_view kProxyAuthenticateHeader = "Proxy-Authenticate";
+constexpr std::string_view kRealmAuthParam = "realm";
+
+bool HasBasicAuthScheme(std::string_view challenge) {
+  base::StringViewTokenizer scheme_tok(challenge, HTTP_LWS);
+  return scheme_tok.GetNext() &&
+         base::EqualsCaseInsensitiveASCII(scheme_tok.token_piece(),
+                                          net::kBasicAuthScheme);
+}
+
+std::optional<std::string_view> ExtractBasicAuthParamList(
+    std::string_view challenge) {
+  base::StringViewTokenizer scheme_tok(challenge, HTTP_LWS);
+  if (!scheme_tok.GetNext() ||
+      !base::EqualsCaseInsensitiveASCII(scheme_tok.token_piece(),
+                                        net::kBasicAuthScheme)) {
+    return std::nullopt;
+  }
+  std::string_view param_list = net::HttpUtil::TrimLWS(
+      std::string_view(scheme_tok.token_end(), challenge.end()));
+  if (param_list.empty()) {
+    return std::nullopt;
+  }
+  return param_list;
+}
+
+bool HasMatchingRealm(const BasicAuthChallengeParams& params,
+                      std::string_view expected_realm) {
+  auto it = params.find(kRealmAuthParam);
+  return it != params.end() && it->second == expected_realm;
+}
 
 std::string AuthTypeToString(AuthType type) {
   switch (type) {
@@ -697,6 +734,82 @@ bool IsSecureGatewayEnabled(PrefService* prefs) {
 #else
   return false;
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+}
+
+std::optional<BasicAuthChallengeParams> ParseBasicAuthChallengeParams(
+    std::string_view challenge) {
+  std::optional<std::string_view> param_list =
+      ExtractBasicAuthParamList(challenge);
+  if (!param_list.has_value()) {
+    return std::nullopt;
+  }
+
+  BasicAuthChallengeParams params;
+  net::HttpUtil::NameValuePairsIterator iter(
+      *param_list, /*delimiter=*/',',
+      net::HttpUtil::NameValuePairsIterator::Values::REQUIRED,
+      net::HttpUtil::NameValuePairsIterator::Quotes::STRICT_QUOTES);
+  while (iter.GetNext()) {
+    if (!net::HttpUtil::IsToken(iter.name()) ||
+        (!iter.value_is_quoted() && !net::HttpUtil::IsToken(iter.value()))) {
+      return std::nullopt;
+    }
+    auto [_, inserted] =
+        params.try_emplace(base::ToLowerASCII(iter.name()), iter.value());
+    if (!inserted) {
+      return std::nullopt;
+    }
+  }
+  if (!iter.valid() || params.empty()) {
+    return std::nullopt;
+  }
+  return params;
+}
+
+std::optional<BasicAuthChallengeParams> ExtractMatchingBasicAuthChallengeParams(
+    const net::AuthChallengeInfo& auth_info,
+    const net::HttpResponseHeaders* response_headers) {
+  if (!base::EqualsCaseInsensitiveASCII(auth_info.scheme,
+                                        net::kBasicAuthScheme)) {
+    return std::nullopt;
+  }
+
+  if (response_headers) {
+    std::optional<BasicAuthChallengeParams> matched_params;
+    size_t iter = 0;
+    std::optional<std::string_view> header_value;
+    while ((header_value = response_headers->EnumerateHeader(
+                &iter, kProxyAuthenticateHeader))) {
+      if (!HasBasicAuthScheme(*header_value)) {
+        continue;
+      }
+      // Fail closed if any `Basic` challenge header is malformed under strict
+      // parsing so we cannot skip past a header that `//net`'s non-strict
+      // parser selected and inadvertently read `url=` from a later header.
+      std::optional<BasicAuthChallengeParams> params =
+          ParseBasicAuthChallengeParams(*header_value);
+      if (!params.has_value()) {
+        return std::nullopt;
+      }
+      if (!HasMatchingRealm(*params, auth_info.realm)) {
+        continue;
+      }
+      if (matched_params.has_value()) {
+        return std::nullopt;
+      }
+      matched_params = std::move(params);
+    }
+    return matched_params;
+  }
+
+  if (!auth_info.challenge.empty()) {
+    std::optional<BasicAuthChallengeParams> params =
+        ParseBasicAuthChallengeParams(auth_info.challenge);
+    if (params.has_value() && HasMatchingRealm(*params, auth_info.realm)) {
+      return params;
+    }
+  }
+  return std::nullopt;
 }
 
 }  // namespace enterprise_net

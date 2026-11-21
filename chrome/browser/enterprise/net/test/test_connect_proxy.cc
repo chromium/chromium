@@ -52,6 +52,17 @@ void TestConnectProxy::SetRequireAuth(bool require_auth) {
 void TestConnectProxy::SetChallengeRealm(std::string realm) {
   base::AutoLock auto_lock(lock_);
   challenge_realm_ = std::move(realm);
+  challenge_header_.clear();
+}
+
+void TestConnectProxy::SetChallengeHeader(std::string header) {
+  base::AutoLock auto_lock(lock_);
+  challenge_header_ = std::move(header);
+}
+
+void TestConnectProxy::SetPostAuthChallengeHeader(std::string header) {
+  base::AutoLock auto_lock(lock_);
+  post_auth_challenge_header_ = std::move(header);
 }
 
 void TestConnectProxy::ResetStats() {
@@ -100,13 +111,25 @@ TestConnectProxy::HandleAuthRequest(
     response->set_code(net::HttpStatusCode::HTTP_PROXY_AUTHENTICATION_REQUIRED);
     response->AddCustomHeader(
         "Proxy-Authenticate",
-        base::StringPrintf("Basic realm=\"%s\"", challenge_realm_.c_str()));
+        !challenge_header_.empty()
+            ? challenge_header_
+            : base::StringPrintf("Basic realm=\"%s\"",
+                                 challenge_realm_.c_str()));
     response->set_content("Proxy Authentication Required");
     response->set_content_type("text/plain");
     return response;
   }
 
   last_received_auth_header_ = auth_it->second;
+  if (!post_auth_challenge_header_.empty()) {
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_code(net::HttpStatusCode::HTTP_PROXY_AUTHENTICATION_REQUIRED);
+    response->AddCustomHeader("Proxy-Authenticate",
+                              post_auth_challenge_header_);
+    response->set_content("Proxy Authentication Required");
+    response->set_content_type("text/plain");
+    return response;
+  }
   return nullptr;
 }
 

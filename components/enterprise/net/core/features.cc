@@ -53,12 +53,26 @@ const base::FeatureParam<int> kForcedDisguisedErrorCodeParam{
 const base::FeatureParam<bool> kForceSignInRequiredParam{
     &kEnterpriseProxyErrorHandling, kForceSignInRequiredParamName, false};
 
+const base::FeatureParam<bool> kEnableStaticErrorPageRedirectParam{
+    &kEnterpriseProxyErrorHandling, kEnableStaticErrorPageRedirectParamName,
+#if BUILDFLAG(IS_IOS)
+    false
+#else
+    true
+#endif
+};
+
 bool IsDynamicRouteFetchingEnabled() {
   return base::FeatureList::IsEnabled(kEnableDynamicRouteFetching);
 }
 
 bool IsEnterpriseProxyErrorHandlingEnabled() {
   return base::FeatureList::IsEnabled(kEnterpriseProxyErrorHandling);
+}
+
+bool IsStaticErrorPageRedirectEnabled() {
+  return IsEnterpriseProxyErrorHandlingEnabled() &&
+         kEnableStaticErrorPageRedirectParam.Get();
 }
 
 std::optional<int> GetForcedDisguisedErrorCode() {

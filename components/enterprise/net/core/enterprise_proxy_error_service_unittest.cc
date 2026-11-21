@@ -155,12 +155,17 @@ class EnterpriseProxyErrorServiceTest : public testing::Test {
 
   net::AuthChallengeInfo CreateProxyAuthChallengeInfo(
       std::string_view host,
-      std::string_view realm = "") {
+      std::string_view realm = "",
+      std::string_view challenge = "") {
     net::AuthChallengeInfo auth_info;
     auth_info.is_proxy = true;
     auth_info.challenger = url::SchemeHostPort("https", std::string(host), 443);
+    auth_info.scheme = "basic";
     if (!realm.empty()) {
       auth_info.realm = std::string(realm);
+    }
+    if (!challenge.empty()) {
+      auth_info.challenge = std::string(challenge);
     }
     return auth_info;
   }
@@ -169,10 +174,12 @@ class EnterpriseProxyErrorServiceTest : public testing::Test {
   std::optional<net::AuthCredentials> InterceptChallenge(
       std::string_view realm = "",
       int64_t navigation_id = kTestNavigationId,
-      const GURL& destination_url = GURL("https://target.example.com/test")) {
+      const GURL& destination_url = GURL("https://target.example.com/test"),
+      std::string_view challenge = "",
+      scoped_refptr<net::HttpResponseHeaders> response_headers = nullptr) {
     auto interception = error_service_->EvaluateProxyAuthChallenge(
-        CreateProxyAuthChallengeInfo("proxy.example.com", realm),
-        destination_url, nullptr, navigation_id);
+        CreateProxyAuthChallengeInfo("proxy.example.com", realm, challenge),
+        destination_url, response_headers, navigation_id);
     EXPECT_TRUE(interception.has_value());
     if (!interception) {
       return std::nullopt;
@@ -420,6 +427,12 @@ TEST_F(EnterpriseProxyErrorServiceTest, RemoveDisguisedError_CleansUpMap) {
   error_service_->RemoveDisguisedError(kTestNavigationId);
   EXPECT_FALSE(
       error_service_->TakeDisguisedError(kTestNavigationId).has_value());
+
+  // KeyedService::Shutdown() also clears any remaining cached disguised errors.
+  error_service_->RecordDisguisedError(kTestNavigationId, data, net_log);
+  error_service_->Shutdown();
+  EXPECT_FALSE(
+      error_service_->TakeDisguisedError(kTestNavigationId).has_value());
 }
 
 TEST_F(EnterpriseProxyErrorServiceTest, GetErrorPageParams_FeatureDisabled) {
@@ -587,5 +600,183 @@ INSTANTIATE_TEST_SUITE_P(
                                EnterpriseProxyErrorData::ErrorCategory::kOther},
         DisguisedErrorTestCase{
             504, EnterpriseProxyErrorData::ErrorCategory::kOther}));
+
+TEST_F(EnterpriseProxyErrorServiceTest,
+       DisguisedError_ExtractsAndValidatesRedirectUrl) {
+  base::test::ScopedFeatureList enabled_redirect_feature;
+  enabled_redirect_feature.InitWithFeaturesAndParameters(
+      {{kEnableDynamicRouteFetching, {}},
+       {kEnterpriseProxyErrorHandling,
+        {{kEnableStaticErrorPageRedirectParamName, "true"}}}},
+      {});
+
+  SetupManagedDomainWithProxy("proxy.example.com");
+
+  constexpr char kStaticBlockedUrl[] =
+      "https://error.example.com/blocked.html?txid=test-txid-1";
+  constexpr char kDisguisedChallengeWithUrl[] =
+      "Basic realm=\"403\","
+      "url=\"https://error.example.com/blocked.html?txid=test-txid-1\","
+      "message=\"Your company's policy restricts access to this content.\"";
+
+  // 1. Valid disguised-error challenge in `auth_info.challenge`
+  // (Desktop/Android path), including NetLog `redirect_url` verification.
+  {
+    net::RecordingNetLogObserver observer;
+    EXPECT_FALSE(InterceptChallenge("403", kTestNavigationId,
+                                    GURL("https://target.example.com/test"),
+                                    kDisguisedChallengeWithUrl)
+                     .has_value());
+
+    std::optional<EnterpriseProxyErrorData> error_data =
+        error_service_->TakeDisguisedError(kTestNavigationId);
+    ASSERT_TRUE(error_data.has_value());
+    EXPECT_EQ(403, error_data->error_code());
+    EXPECT_EQ(EnterpriseProxyErrorData::ErrorCategory::kAuthorization,
+              error_data->error_category());
+    ASSERT_TRUE(error_data->redirect_url().has_value());
+    EXPECT_EQ(GURL(kStaticBlockedUrl), *error_data->redirect_url());
+
+    auto saved_entries = observer.GetEntriesWithType(
+        net::NetLogEventType::ENTERPRISE_PROXY_DISGUISED_ERROR_SAVED);
+    ASSERT_EQ(1u, saved_entries.size());
+    const std::string* logged_redirect =
+        saved_entries[0].params.FindString("redirect_url");
+    ASSERT_TRUE(logged_redirect);
+    EXPECT_EQ(kStaticBlockedUrl, *logged_redirect);
+  }
+
+  // 2. Valid disguised-error challenge in `response_headers` when
+  // `auth_info.challenge` is empty (e.g. iOS path), plus case-insensitive
+  // `URL=` parameter name.
+  {
+    auto headers = net::HttpResponseHeaders::TryToCreate(
+        "HTTP/1.1 407 Proxy Authentication Required\r\n"
+        "Proxy-Authenticate: Basic realm=\"502\", "
+        "URL=\"https://error.example.com/gateway.html?txid=99\"\r\n\r\n");
+    ASSERT_TRUE(headers);
+    EXPECT_FALSE(InterceptChallenge("502", kTestNavigationId,
+                                    GURL("https://target.example.com/test"),
+                                    /*challenge=*/"", headers)
+                     .has_value());
+
+    std::optional<EnterpriseProxyErrorData> error_data =
+        error_service_->TakeDisguisedError(kTestNavigationId);
+    ASSERT_TRUE(error_data.has_value());
+    ASSERT_TRUE(error_data->redirect_url().has_value());
+    EXPECT_EQ(GURL("https://error.example.com/gateway.html?txid=99"),
+              *error_data->redirect_url());
+  }
+
+  // 3. Unsafe schemes, embedded credentials, and malformed auth-params must
+  // reject `redirect_url` while still recording the disguised error for the
+  // built-in interstitial fallback.
+  const char* const kRejectedChallenges[] = {
+      // Cleartext HTTP is disallowed.
+      ("Basic realm=\"403\","
+       "url=\"http://error.example.com/blocked.html\""),
+      // Privileged / script / data / local schemes are disallowed.
+      "Basic realm=\"403\",url=\"javascript:alert(1)\"",
+      "Basic realm=\"403\",url=\"data:text/html,<h1>blocked</h1>\"",
+      "Basic realm=\"403\",url=\"chrome://settings\"",
+      ("Basic realm=\"403\","
+       "url=\"chrome-extension://abcdefghijklmnop/page.html\""),
+      "Basic realm=\"403\",url=\"file:///etc/passwd\"",
+      // Embedded credentials in URL are disallowed.
+      ("Basic realm=\"403\","
+       "url=\"https://user:pass@error.example.com/blocked.html\""),
+      // Unclosed quote (`STRICT_QUOTES` rejection).
+      "Basic realm=\"403\",url=\"https://error.example.com/blocked.html",
+      // Duplicate `url=` or `realm=` parameter smuggling rejection.
+      ("Basic realm=\"403\","
+       "url=\"https://a.example.com/\",url=\"https://b.example.com/\""),
+      ("Basic realm=\"502\",realm=\"403\","
+       "url=\"https://error.example.com/blocked.html\""),
+      // Raw whitespace / control characters inside URL value.
+      "Basic realm=\"403\",url=\"https://error.example.com/blocked page\"",
+      // Mismatched realm in challenge text.
+      R"(Basic realm="502",url="https://error.example.com/blocked.html")",
+  };
+
+  {
+    base::HistogramTester histogram_tester;
+    for (const char* bad_challenge : kRejectedChallenges) {
+      SCOPED_TRACE(bad_challenge);
+      EXPECT_FALSE(InterceptChallenge("403", kTestNavigationId,
+                                      GURL("https://target.example.com/test"),
+                                      bad_challenge)
+                       .has_value());
+      std::optional<EnterpriseProxyErrorData> error_data =
+          error_service_->TakeDisguisedError(kTestNavigationId);
+      ASSERT_TRUE(error_data.has_value());
+      EXPECT_FALSE(error_data->redirect_url().has_value());
+    }
+    histogram_tester.ExpectBucketCount(
+        "Enterprise.SecureGateway.StaticErrorPageRedirectOutcome",
+        SecureGatewayStaticErrorPageRedirectOutcome::kRejectedInvalidUrl, 8);
+    histogram_tester.ExpectBucketCount(
+        "Enterprise.SecureGateway.StaticErrorPageRedirectOutcome",
+        SecureGatewayStaticErrorPageRedirectOutcome::kRejectedInvalidChallenge,
+        4);
+    histogram_tester.ExpectTotalCount(
+        "Enterprise.SecureGateway.StaticErrorPageRedirectOutcome", 12);
+  }
+
+  // 4. Non-HTTPS proxy challenger sharing `host:port` with a managed HTTPS
+  // proxy must never populate `redirect_url` (cleartext `Proxy-Authenticate`
+  // headers are attacker-controlled on the wire).
+  {
+    base::HistogramTester histogram_tester;
+    net::AuthChallengeInfo http_auth_info;
+    http_auth_info.is_proxy = true;
+    http_auth_info.challenger =
+        url::SchemeHostPort("http", "proxy.example.com", 443);
+    http_auth_info.scheme = "basic";
+    http_auth_info.realm = "403";
+    http_auth_info.challenge = kDisguisedChallengeWithUrl;
+
+    std::optional<EnterpriseProxyErrorService::PendingInterception>
+        interception = error_service_->EvaluateProxyAuthChallenge(
+            http_auth_info, GURL("https://target.example.com/test"), nullptr,
+            kTestNavigationId);
+    ASSERT_TRUE(interception.has_value());
+    base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
+    error_service_->ResolveProxyAuthChallenge(*std::move(interception),
+                                              future.GetCallback());
+    EXPECT_FALSE(future.Get().has_value());
+
+    std::optional<EnterpriseProxyErrorData> error_data =
+        error_service_->TakeDisguisedError(kTestNavigationId);
+    ASSERT_TRUE(error_data.has_value());
+    EXPECT_FALSE(error_data->redirect_url().has_value());
+    histogram_tester.ExpectUniqueSample(
+        "Enterprise.SecureGateway.StaticErrorPageRedirectOutcome",
+        SecureGatewayStaticErrorPageRedirectOutcome::kRejectedInvalidUrl, 1);
+  }
+
+  // 5. Setting `enable_static_error_page_redirect` to `false` disables `url=`
+  // extraction while keeping disguised error data for the built-in
+  // interstitial.
+  {
+    base::test::ScopedFeatureList disabled_redirect_feature;
+    disabled_redirect_feature.InitWithFeaturesAndParameters(
+        {{kEnableDynamicRouteFetching, {}},
+         {kEnterpriseProxyErrorHandling,
+          {{kEnableStaticErrorPageRedirectParamName, "false"}}}},
+        {});
+
+    base::HistogramTester histogram_tester;
+    EXPECT_FALSE(InterceptChallenge("403", kTestNavigationId,
+                                    GURL("https://target.example.com/test"),
+                                    kDisguisedChallengeWithUrl)
+                     .has_value());
+    std::optional<EnterpriseProxyErrorData> error_data =
+        error_service_->TakeDisguisedError(kTestNavigationId);
+    ASSERT_TRUE(error_data.has_value());
+    EXPECT_FALSE(error_data->redirect_url().has_value());
+    histogram_tester.ExpectTotalCount(
+        "Enterprise.SecureGateway.StaticErrorPageRedirectOutcome", 0);
+  }
+}
 
 }  // namespace enterprise_net

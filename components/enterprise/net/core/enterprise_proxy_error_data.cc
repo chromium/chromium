@@ -32,14 +32,17 @@ std::string_view GetErrorCategoryHistogramSuffix(
 
 EnterpriseProxyErrorData::EnterpriseProxyErrorData() = default;
 
-EnterpriseProxyErrorData::EnterpriseProxyErrorData(GURL destination_url,
-                                                   GURL proxy_url,
-                                                   int error_code,
-                                                   ErrorCategory error_category)
+EnterpriseProxyErrorData::EnterpriseProxyErrorData(
+    GURL destination_url,
+    GURL proxy_url,
+    int error_code,
+    ErrorCategory error_category,
+    std::optional<GURL> redirect_url)
     : destination_url_(std::move(destination_url)),
       proxy_url_(std::move(proxy_url)),
       error_code_(error_code),
-      error_category_(error_category) {}
+      error_category_(error_category),
+      redirect_url_(std::move(redirect_url)) {}
 
 EnterpriseProxyErrorData::EnterpriseProxyErrorData(
     const EnterpriseProxyErrorData&) = default;
@@ -65,6 +68,12 @@ void RecordEnterpriseProxyErrorPageEvent(
       base::StrCat({kErrorPageEventHistogram, ".",
                     GetErrorCategoryHistogramSuffix(category)}),
       event);
+}
+
+void RecordStaticErrorPageRedirectOutcome(
+    SecureGatewayStaticErrorPageRedirectOutcome outcome) {
+  base::UmaHistogramEnumeration(
+      "Enterprise.SecureGateway.StaticErrorPageRedirectOutcome", outcome);
 }
 
 }  // namespace enterprise_net

@@ -56,11 +56,25 @@ inline constexpr char kForceSignInRequiredParamName[] =
 // Feature param to force a sign-in required error. Defaults to false.
 extern const base::FeatureParam<bool> kForceSignInRequiredParam;
 
+inline constexpr char kEnableStaticErrorPageRedirectParamName[] =
+    "enable_static_error_page_redirect";
+
+// Feature param controlling whether primary main-frame navigations redirect to
+// static HTTPS partner error pages advertised via `url=` on disguised 407
+// challenges. Defaults to true on non-iOS platforms (acting as an independent
+// Finch kill-switch without disabling built-in Secure Gateway error pages) and
+// false on iOS until iOS tab-helper redirection lands.
+extern const base::FeatureParam<bool> kEnableStaticErrorPageRedirectParam;
+
 // Return true if dynamic route fetching is enabled.
 bool IsDynamicRouteFetchingEnabled();
 
 // Return true if enterprise proxy error handling is enabled.
 bool IsEnterpriseProxyErrorHandlingEnabled();
+
+// Returns true if enterprise proxy error handling and static `url=` error page
+// redirection are both enabled.
+bool IsStaticErrorPageRedirectEnabled();
 
 // Returns the forced disguised error code if configured (> 0) and error
 // handling is enabled, or std::nullopt.

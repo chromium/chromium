@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
@@ -31,6 +32,7 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/sync/base/command_line_switches.h"
 #include "net/base/host_port_pair.h"
 #include "net/dns/mock_host_resolver.h"
 
@@ -160,6 +162,18 @@ EnterpriseProxyBrowserTestBase::EnterpriseProxyBrowserTestBase(
 }
 
 EnterpriseProxyBrowserTestBase::~EnterpriseProxyBrowserTestBase() = default;
+
+void EnterpriseProxyBrowserTestBase::SetUpCommandLine(
+    base::CommandLine* command_line) {
+  MixinBasedPlatformBrowserTest::SetUpCommandLine(command_line);
+  // `SetUpOnMainThread()` signs in a primary account, which would otherwise
+  // start `SyncEngineBackend` on a background worker thread. On Android,
+  // `AndroidBrowserTest::TearDown()` does not tear down `Profile` before test
+  // fixture `ScopedFeatureList` destructors restore `base::FeatureList`, which
+  // races with `SyncEngineBackend::FetchAccessToken()` checking
+  // `kSyncUsePropagatedAccessToken`.
+  command_line->AppendSwitch(syncer::kDisableSync);
+}
 
 void EnterpriseProxyBrowserTestBase::SetUpInProcessBrowserTestFixture() {
   MixinBasedPlatformBrowserTest::SetUpInProcessBrowserTestFixture();
@@ -480,6 +494,12 @@ EnterpriseProxyBrowserTestBase::last_pvd_request_headers() const {
   return last_pvd_request_headers_;
 }
 
+net::test_server::HttpRequest::HeaderMap
+EnterpriseProxyBrowserTestBase::last_origin_request_headers() const {
+  base::AutoLock auto_lock(server_lock_);
+  return last_origin_request_headers_;
+}
+
 size_t EnterpriseProxyBrowserTestBase::pvd_request_count() const {
   base::AutoLock auto_lock(server_lock_);
   return pvd_request_count_;
@@ -596,6 +616,7 @@ EnterpriseProxyBrowserTestBase::HandleOriginRequest(
     {
       base::AutoLock auto_lock(server_lock_);
       ++origin_request_count_;
+      last_origin_request_headers_ = request.headers;
     }
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_code(net::HttpStatusCode::HTTP_OK);
@@ -610,6 +631,7 @@ EnterpriseProxyBrowserTestBase::HandleOriginRequest(
     {
       base::AutoLock auto_lock(server_lock_);
       ++origin_request_count_;
+      last_origin_request_headers_ = request.headers;
     }
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     response->set_code(net::HttpStatusCode::HTTP_OK);

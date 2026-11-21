@@ -32,14 +32,19 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "net/http/http_status_code.h"
 #include "net/log/net_log_event_type.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 namespace enterprise::test {
@@ -185,7 +190,7 @@ class EnterpriseProxyErrorBrowserTest : public EnterpriseProxyBrowserTestBase {
 
     const std::string expected_heading =
         l10n_util::GetStringUTF8(IDS_ENTERPRISE_PROXY_AUTHZ_ERROR_HEADING);
-    EXPECT_EQ(kDestinationHost,
+    EXPECT_EQ(destination_url.host(),
               content::EvalJs(web_contents, "document.title"));
     EXPECT_EQ(expected_heading,
               content::EvalJs(
@@ -282,6 +287,21 @@ class EnterpriseProxyErrorBrowserTest : public EnterpriseProxyBrowserTestBase {
     ASSERT_GE(pause_entries.size(), 2u);
     EXPECT_EQ(net::NetLogEventPhase::BEGIN, pause_entries[0].phase);
     EXPECT_EQ(net::NetLogEventPhase::END, pause_entries[1].phase);
+  }
+
+  // Navigates `web_contents` to `initial_url` and waits until a navigation to
+  // `expected_target_url` finishes loading. Returns whether that target
+  // navigation succeeded.
+  bool NavigateAndWaitForTargetUrl(content::WebContents* web_contents,
+                                   const GURL& initial_url,
+                                   const GURL& expected_target_url) {
+    content::TestNavigationObserver observer(expected_target_url);
+    observer.WatchExistingWebContents();
+    web_contents->GetController().LoadURL(initial_url, content::Referrer(),
+                                          ui::PAGE_TRANSITION_TYPED,
+                                          /*extra_headers=*/std::string());
+    observer.Wait();
+    return observer.last_navigation_succeeded();
   }
 
   // Verifies `Enterprise.SecureGateway.ErrorPage.Event{Category}` counts: when
@@ -532,6 +552,144 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyErrorBrowserTest,
   auto saved_entries = net_log_observer().GetEntriesWithType(
       net::NetLogEventType::ENTERPRISE_PROXY_DISGUISED_ERROR_SAVED);
   EXPECT_TRUE(saved_entries.empty());
+}
+
+// Verifies end-to-end handling of the `url=` static error page parameter on
+// disguised 407 challenges:
+// 1. Valid HTTPS `url=` returned after OAuth authentication redirects the tab
+//    to the static error page instead of rendering the built-in interstitial.
+// 2. Non-HTTPS `url=` (e.g. `http://`) is rejected and falls back to the
+//    built-in Authorization (403) error interstitial.
+// 3. When the `url=` target itself routes through the proxy and returns another
+//    disguised-error `url=`, loop protection stops after one redirect and
+//    renders the built-in Authorization (403) error interstitial.
+IN_PROC_BROWSER_TEST_F(EnterpriseProxyErrorBrowserTest,
+                       DisguisedProxyError_StaticErrorPageRedirectAndFallback) {
+  base::ListValue domains;
+  domains.Append(CreateDomainPolicyEntry(kTestPvdDomain));
+  SetUserProxyProvisioningDomains(std::move(domains));
+  WaitForDynamicRoutesReady();
+
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  const GURL destination_url = GetOriginURL(kDestinationHost, "/simple.html");
+
+  // Case #1: 2-round proxy flow (407 auth -> OAuth token -> 407 disguised 403
+  // with `url=` and `message=`) redirects to a static HTTPS error page that is
+  // same-site (`example.com`) with `default_proxy_server_`
+  // (`proxy1.example.com`), preserving Back history on a gestureless previous
+  // page while stripping `SameSite=Strict` cookies and `Referer` and sending
+  // `Sec-Fetch-Site: cross-site`.
+  {
+    const GURL initial_url = GetOriginURL(kUnmatchedHost, "/direct.html?init");
+    ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents, initial_url));
+
+    const GURL static_blocked_url =
+        GetOriginURL(kAddedDestinationHost, "/direct.html?txid=test-txid-1");
+    ASSERT_TRUE(content::SetCookie(
+        web_contents->GetBrowserContext(), static_blocked_url,
+        "strict_cookie=secret; SameSite=Strict; Secure; Domain=example.com; "
+        "Path=/"));
+    ASSERT_TRUE(content::SetCookie(
+        web_contents->GetBrowserContext(), static_blocked_url,
+        "lax_cookie=allowed; SameSite=Lax; Secure; Domain=example.com; "
+        "Path=/"));
+
+    default_proxy_server().SetPostAuthChallengeHeader(base::StringPrintf(
+        "Basic realm=\"403\",url=\"%s\","
+        "message=\"Your company's policy restricts access to this content.\"",
+        static_blocked_url.spec().c_str()));
+
+    base::HistogramTester histogram_tester;
+    EXPECT_TRUE(NavigateAndWaitForTargetUrl(web_contents, destination_url,
+                                            static_blocked_url));
+    EXPECT_EQ(static_blocked_url, web_contents->GetLastCommittedURL());
+    EXPECT_TRUE(web_contents->GetController().CanGoBack());
+    ASSERT_NE(nullptr, web_contents->GetController().GetEntryAtOffset(-1));
+    EXPECT_EQ(initial_url,
+              web_contents->GetController().GetEntryAtOffset(-1)->GetURL());
+
+    const net::test_server::HttpRequest::HeaderMap headers =
+        last_origin_request_headers();
+    ASSERT_TRUE(headers.contains("Sec-Fetch-Site"));
+    EXPECT_EQ("cross-site", headers.at("Sec-Fetch-Site"));
+    EXPECT_FALSE(headers.contains("Referer"));
+    ASSERT_TRUE(headers.contains("Cookie"));
+    EXPECT_NE(std::string::npos, headers.at("Cookie").find("lax_cookie="));
+    EXPECT_EQ(std::string::npos, headers.at("Cookie").find("strict_cookie="));
+
+    EXPECT_TRUE(was_proxy_accessed());
+    EXPECT_TRUE(was_auth_header_received());
+    VerifyErrorPageShownHistograms(histogram_tester, std::nullopt);
+    histogram_tester.ExpectUniqueSample(
+        "Enterprise.SecureGateway.StaticErrorPageRedirectOutcome",
+        enterprise_net::SecureGatewayStaticErrorPageRedirectOutcome::
+            kRedirected,
+        1);
+
+    auto saved_entries = net_log_observer().GetEntriesWithType(
+        net::NetLogEventType::ENTERPRISE_PROXY_DISGUISED_ERROR_SAVED);
+    ASSERT_GE(saved_entries.size(), 1u);
+    const std::string* logged_redirect =
+        saved_entries.back().params.FindString("redirect_url");
+    ASSERT_TRUE(logged_redirect);
+    EXPECT_EQ(static_blocked_url.spec(), *logged_redirect);
+  }
+
+  // Case #2: Unsafe non-HTTPS `url=` (`http://...`) is ignored and falls back
+  // to the built-in Authorization error interstitial.
+  {
+    default_proxy_server().ResetStats();
+    default_proxy_server().SetPostAuthChallengeHeader("");
+    default_proxy_server().SetChallengeHeader(
+        "Basic realm=\"403\","
+        "url=\"http://unmatched.foo.com/blocked.html?txid=unsafe\"");
+
+    base::HistogramTester histogram_tester;
+    EXPECT_FALSE(
+        chrome_test_utils::NavigateToURL(web_contents, destination_url));
+    VerifyErrorPageShownHistograms(histogram_tester,
+                                   enterprise_net::EnterpriseProxyErrorData::
+                                       ErrorCategory::kAuthorization);
+    histogram_tester.ExpectUniqueSample(
+        "Enterprise.SecureGateway.StaticErrorPageRedirectOutcome",
+        enterprise_net::SecureGatewayStaticErrorPageRedirectOutcome::
+            kRejectedInvalidUrl,
+        1);
+    VerifyAuthorizationErrorPage(web_contents, destination_url);
+  }
+
+  // Case #3: Static `url=` that itself matches the proxy route and triggers
+  // another disguised-error `url=` redirects once and then falls back to the
+  // built-in Authorization error interstitial instead of looping infinitely.
+  {
+    default_proxy_server().ResetStats();
+    const GURL looping_error_url =
+        GetOriginURL(kDestinationSubdomainHost, "/simple.html?txid=loop");
+    default_proxy_server().SetChallengeHeader(base::StringPrintf(
+        "Basic realm=\"403\",url=\"%s\"", looping_error_url.spec().c_str()));
+
+    base::HistogramTester histogram_tester;
+    EXPECT_FALSE(NavigateAndWaitForTargetUrl(web_contents, destination_url,
+                                             looping_error_url));
+    EXPECT_EQ(looping_error_url, web_contents->GetLastCommittedURL());
+    VerifyErrorPageShownHistograms(histogram_tester,
+                                   enterprise_net::EnterpriseProxyErrorData::
+                                       ErrorCategory::kAuthorization);
+    histogram_tester.ExpectBucketCount(
+        "Enterprise.SecureGateway.StaticErrorPageRedirectOutcome",
+        enterprise_net::SecureGatewayStaticErrorPageRedirectOutcome::
+            kRedirected,
+        1);
+    histogram_tester.ExpectBucketCount(
+        "Enterprise.SecureGateway.StaticErrorPageRedirectOutcome",
+        enterprise_net::SecureGatewayStaticErrorPageRedirectOutcome::
+            kRejectedLoopDetected,
+        1);
+    histogram_tester.ExpectTotalCount(
+        "Enterprise.SecureGateway.StaticErrorPageRedirectOutcome", 2);
+    VerifyAuthorizationErrorPage(web_contents, looping_error_url);
+  }
 }
 
 }  // namespace enterprise::test

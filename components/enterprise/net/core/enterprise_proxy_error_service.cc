@@ -4,6 +4,9 @@
 
 #include "components/enterprise/net/core/enterprise_proxy_error_service.h"
 
+#include <algorithm>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -12,15 +15,95 @@
 #include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/enterprise/net/core/features.h"
+#include "components/enterprise/net/core/utils.h"
 #include "components/error_page/common/localized_error.h"
 #include "components/strings/grit/components_strings.h"
+#include "net/http/http_auth_scheme.h"
 #include "net/http/http_status_code.h"
 #include "net/log/net_log_event_type.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "url/url_constants.h"
 
 namespace enterprise_net {
+
+namespace {
+
+constexpr std::string_view kUrlAuthParam = "url";
+
+// Validates a static error page URL extracted from a disguised 407 challenge.
+// `GURL` is safe to construct directly in the browser process under Chrome's
+// Rule of 2 (`//docs/security/rule-of-2.md#safe-types-and-abstractions`),
+// provided the parsed URL's semantics are validated:
+// - Bounds input to `url::kMaxURLChars` and requires printable non-whitespace
+//   ASCII so WHATWG canonicalization does not silently strip tabs/newlines or
+//   percent-encode raw spaces.
+// - Restricts to valid `https://` URLs without embedded credentials so a proxy
+//   challenge can never redirect a tab to privileged schemes (`chrome://`,
+//   `javascript:`, `data:`, `file:`, `chrome-extension:`), cleartext `http://`
+//   pages, or `user:pass@` URLs.
+std::optional<GURL> ValidateStaticErrorRedirectUrl(std::string_view raw_url) {
+  if (raw_url.empty() || raw_url.size() > url::kMaxURLChars ||
+      !std::ranges::all_of(raw_url, [](char c) {
+        return base::IsAsciiPrintable(c) && !base::IsAsciiWhitespace(c);
+      })) {
+    return std::nullopt;
+  }
+
+  GURL url(raw_url);
+  if (!url.is_valid() || !url.SchemeIs(url::kHttpsScheme) ||
+      url.has_username() || url.has_password()) {
+    return std::nullopt;
+  }
+  return url;
+}
+
+std::optional<GURL> ExtractDisguisedErrorRedirectUrl(
+    const net::AuthChallengeInfo& auth_info,
+    const scoped_refptr<net::HttpResponseHeaders>& response_headers) {
+  if (!IsStaticErrorPageRedirectEnabled()) {
+    return std::nullopt;
+  }
+  const bool has_raw_challenge =
+      response_headers != nullptr || !auth_info.challenge.empty();
+  if (auth_info.challenger.scheme() != url::kHttpsScheme) {
+    if (has_raw_challenge) {
+      RecordStaticErrorPageRedirectOutcome(
+          SecureGatewayStaticErrorPageRedirectOutcome::kRejectedInvalidUrl);
+    }
+    return std::nullopt;
+  }
+  if (!has_raw_challenge) {
+    return std::nullopt;
+  }
+  std::optional<BasicAuthChallengeParams> params =
+      ExtractMatchingBasicAuthChallengeParams(auth_info,
+                                              response_headers.get());
+  if (!params.has_value()) {
+    if (base::EqualsCaseInsensitiveASCII(auth_info.scheme,
+                                         net::kBasicAuthScheme)) {
+      RecordStaticErrorPageRedirectOutcome(
+          SecureGatewayStaticErrorPageRedirectOutcome::
+              kRejectedInvalidChallenge);
+    }
+    return std::nullopt;
+  }
+  auto url_it = params->find(kUrlAuthParam);
+  if (url_it == params->end()) {
+    return std::nullopt;
+  }
+  std::optional<GURL> validated_url =
+      ValidateStaticErrorRedirectUrl(url_it->second);
+  if (!validated_url.has_value()) {
+    RecordStaticErrorPageRedirectOutcome(
+        SecureGatewayStaticErrorPageRedirectOutcome::kRejectedInvalidUrl);
+  }
+  return validated_url;
+}
+
+}  // namespace
 
 EnterpriseProxyErrorService::PendingInterception::PendingInterception(
     PendingInterception&&) = default;
@@ -35,12 +118,14 @@ EnterpriseProxyErrorService::PendingInterception::PendingInterception(
     int64_t navigation_id,
     GURL destination_url,
     GURL proxy_url,
-    int error_code)
+    int error_code,
+    std::optional<GURL> redirect_url)
     : match_(std::move(match)),
       navigation_id_(navigation_id),
       destination_url_(std::move(destination_url)),
       proxy_url_(std::move(proxy_url)),
-      error_code_(error_code) {}
+      error_code_(error_code),
+      redirect_url_(std::move(redirect_url)) {}
 
 EnterpriseProxyErrorService::EnterpriseProxyErrorService(
     EnterpriseProxyService* enterprise_proxy_service)
@@ -50,6 +135,22 @@ EnterpriseProxyErrorService::EnterpriseProxyErrorService(
 
 EnterpriseProxyErrorService::~EnterpriseProxyErrorService() = default;
 
+void EnterpriseProxyErrorService::Shutdown() {
+  for (Observer& observer : observers_) {
+    observer.OnEnterpriseProxyErrorServiceShuttingDown();
+  }
+  observers_.Clear();
+  disguised_errors_.clear();
+}
+
+void EnterpriseProxyErrorService::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void EnterpriseProxyErrorService::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void EnterpriseProxyErrorService::RecordDisguisedError(
     int64_t navigation_id,
     EnterpriseProxyErrorData error_data,
@@ -57,15 +158,32 @@ void EnterpriseProxyErrorService::RecordDisguisedError(
   if (navigation_id != 0) {
     net_log.AddEvent(
         net::NetLogEventType::ENTERPRISE_PROXY_DISGUISED_ERROR_SAVED, [&] {
-          return base::DictValue()
-              .Set("navigation_id", base::NumberToString(navigation_id))
-              .Set("destination_url",
-                   error_data.destination_url().possibly_invalid_spec())
-              .Set("proxy_url", error_data.proxy_url().possibly_invalid_spec())
-              .Set("error_code", error_data.error_code());
+          base::DictValue dict =
+              base::DictValue()
+                  .Set("navigation_id", base::NumberToString(navigation_id))
+                  .Set("destination_url",
+                       error_data.destination_url().possibly_invalid_spec())
+                  .Set("proxy_url",
+                       error_data.proxy_url().possibly_invalid_spec())
+                  .Set("error_code", error_data.error_code());
+          if (error_data.redirect_url().has_value()) {
+            dict.Set("redirect_url",
+                     error_data.redirect_url()->possibly_invalid_spec());
+          }
+          return dict;
         });
   }
-  disguised_errors_.insert_or_assign(navigation_id, std::move(error_data));
+  const EnterpriseProxyErrorData& stored_error =
+      disguised_errors_.insert_or_assign(navigation_id, std::move(error_data))
+          .first->second;
+  if (navigation_id != 0 && !observers_.empty()) {
+    // Copy before notifying, as observers may synchronously call
+    // `RemoveDisguisedError(navigation_id)` when initiating a redirect.
+    const EnterpriseProxyErrorData error_copy = stored_error;
+    for (Observer& observer : observers_) {
+      observer.OnDisguisedErrorRecorded(navigation_id, error_copy);
+    }
+  }
 }
 
 std::optional<EnterpriseProxyErrorData>
@@ -161,15 +279,21 @@ EnterpriseProxyErrorService::EvaluateProxyAuthChallenge(
   }
 
   int error_code = 0;
+  std::optional<GURL> redirect_url;
   std::optional<int> forced_error_code = GetForcedDisguisedErrorCode();
   if (forced_error_code.has_value()) {
     error_code = *forced_error_code;
   } else {
     base::StringToInt(auth_info.realm, &error_code);
+    if (match.decision == Decision::kDisguisedError && navigation_id > 0) {
+      redirect_url =
+          ExtractDisguisedErrorRedirectUrl(auth_info, response_headers);
+    }
   }
 
   return PendingInterception(std::move(match), navigation_id, destination_url,
-                             auth_info.challenger.GetURL(), error_code);
+                             auth_info.challenger.GetURL(), error_code,
+                             std::move(redirect_url));
 }
 
 void EnterpriseProxyErrorService::ResolveProxyAuthChallenge(
@@ -204,7 +328,7 @@ void EnterpriseProxyErrorService::ResolveProxyAuthChallenge(
           interception.navigation_id_, interception.destination_url_,
           interception.proxy_url_, net::HTTP_PROXY_AUTHENTICATION_REQUIRED,
           EnterpriseProxyErrorData::ErrorCategory::kOther,
-          interception.match_.net_log);
+          /*redirect_url=*/std::nullopt, interception.match_.net_log);
       std::move(callback).Run(std::nullopt);
       return;
 
@@ -215,7 +339,7 @@ void EnterpriseProxyErrorService::ResolveProxyAuthChallenge(
           (interception.error_code_ == 403)
               ? EnterpriseProxyErrorData::ErrorCategory::kAuthorization
               : EnterpriseProxyErrorData::ErrorCategory::kOther,
-          interception.match_.net_log);
+          std::move(interception.redirect_url_), interception.match_.net_log);
       std::move(callback).Run(std::nullopt);
       return;
 
@@ -247,14 +371,16 @@ void EnterpriseProxyErrorService::MaybeRecordErrorForNavigation(
     const GURL& proxy_url,
     int error_code,
     EnterpriseProxyErrorData::ErrorCategory category,
+    std::optional<GURL> redirect_url,
     const net::NetLogWithSource& net_log) {
   if (navigation_id <= 0) {
     return;
   }
-  RecordDisguisedError(navigation_id,
-                       EnterpriseProxyErrorData(destination_url, proxy_url,
-                                                error_code, category),
-                       net_log);
+  RecordDisguisedError(
+      navigation_id,
+      EnterpriseProxyErrorData(destination_url, proxy_url, error_code, category,
+                               std::move(redirect_url)),
+      net_log);
 }
 
 // Weakly bound, so `callback` is dropped if this service is destroyed while a
@@ -280,14 +406,16 @@ void EnterpriseProxyErrorService::OnProxyAuthCredentialsFetched(
     case EnterpriseProxyService::CredentialFetchOutcome::kSignInRequired:
       MaybeRecordErrorForNavigation(
           navigation_id, destination_url, proxy_url, error_code,
-          EnterpriseProxyErrorData::ErrorCategory::kAuthentication, net_log);
+          EnterpriseProxyErrorData::ErrorCategory::kAuthentication,
+          /*redirect_url=*/std::nullopt, net_log);
       std::move(callback).Run(std::nullopt);
       return;
 
     case EnterpriseProxyService::CredentialFetchOutcome::kFailure:
       MaybeRecordErrorForNavigation(
           navigation_id, destination_url, proxy_url, error_code,
-          EnterpriseProxyErrorData::ErrorCategory::kOther, net_log);
+          EnterpriseProxyErrorData::ErrorCategory::kOther,
+          /*redirect_url=*/std::nullopt, net_log);
       std::move(callback).Run(std::nullopt);
       return;
   }

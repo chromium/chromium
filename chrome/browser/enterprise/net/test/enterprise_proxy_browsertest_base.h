@@ -36,6 +36,10 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"
 
+namespace base {
+class CommandLine;
+}  // namespace base
+
 namespace enterprise {
 class ProfileIdService;
 }  // namespace enterprise
@@ -98,6 +102,7 @@ class EnterpriseProxyBrowserTestBase : public MixinBasedPlatformBrowserTest {
   explicit EnterpriseProxyBrowserTestBase(const ManagementContext& context);
   ~EnterpriseProxyBrowserTestBase() override;
 
+  void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpInProcessBrowserTestFixture() override;
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
@@ -216,6 +221,7 @@ class EnterpriseProxyBrowserTestBase : public MixinBasedPlatformBrowserTest {
 
   // Server request telemetry accessors.
   net::test_server::HttpRequest::HeaderMap last_pvd_request_headers() const;
+  net::test_server::HttpRequest::HeaderMap last_origin_request_headers() const;
   size_t pvd_request_count() const;
   size_t GetPvdRequestCountForDomain(const std::string& domain) const;
   size_t origin_request_count() const;
@@ -278,8 +284,10 @@ class EnterpriseProxyBrowserTestBase : public MixinBasedPlatformBrowserTest {
       GUARDED_BY(server_lock_);
 
   // Total `/simple.html` and `/direct.html` requests handled by
-  // `origin_server_`.
+  // `origin_server_`, and headers from the most recent handled request.
   size_t origin_request_count_ GUARDED_BY(server_lock_) = 0;
+  net::test_server::HttpRequest::HeaderMap last_origin_request_headers_
+      GUARDED_BY(server_lock_);
 
   // Separated HTTPS test servers for realistic E2E routing isolation.
   std::unique_ptr<TestConnectProxy> default_proxy_server_;

@@ -13,6 +13,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/values.h"
 #include "components/enterprise/net/core/enterprise_proxy_error_data.h"
 #include "components/enterprise/net/core/enterprise_proxy_service.h"
@@ -30,6 +32,14 @@ class EnterpriseProxyErrorService : public KeyedService {
  public:
   using ProxyAuthCredentialsCallback =
       base::OnceCallback<void(const std::optional<net::AuthCredentials>&)>;
+
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnDisguisedErrorRecorded(
+        int64_t navigation_id,
+        const EnterpriseProxyErrorData& error_data) {}
+    virtual void OnEnterpriseProxyErrorServiceShuttingDown() {}
+  };
 
   // A 407 challenge that this service has committed to handling.
   //
@@ -50,13 +60,15 @@ class EnterpriseProxyErrorService : public KeyedService {
                         int64_t navigation_id,
                         GURL destination_url,
                         GURL proxy_url,
-                        int error_code);
+                        int error_code,
+                        std::optional<GURL> redirect_url);
 
     EnterpriseProxyService::ProxyAuthChallengeMatch match_;
     int64_t navigation_id_;
     GURL destination_url_;
     GURL proxy_url_;
     int error_code_;
+    std::optional<GURL> redirect_url_;
   };
 
   explicit EnterpriseProxyErrorService(
@@ -65,6 +77,12 @@ class EnterpriseProxyErrorService : public KeyedService {
   EnterpriseProxyErrorService& operator=(const EnterpriseProxyErrorService&) =
       delete;
   ~EnterpriseProxyErrorService() override;
+
+  // KeyedService:
+  void Shutdown() override;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Records a disguised proxy error for the specified navigation ID.
   void RecordDisguisedError(int64_t navigation_id,
@@ -120,6 +138,7 @@ class EnterpriseProxyErrorService : public KeyedService {
       const GURL& proxy_url,
       int error_code,
       EnterpriseProxyErrorData::ErrorCategory category,
+      std::optional<GURL> redirect_url,
       const net::NetLogWithSource& net_log);
 
   // Continuation for the asynchronous credential fetch.
@@ -135,6 +154,7 @@ class EnterpriseProxyErrorService : public KeyedService {
 
   raw_ptr<EnterpriseProxyService> enterprise_proxy_service_ = nullptr;
   base::flat_map<int64_t, EnterpriseProxyErrorData> disguised_errors_;
+  base::ObserverList<Observer> observers_;
   base::WeakPtrFactory<EnterpriseProxyErrorService> weak_ptr_factory_{this};
 };
 

@@ -47,6 +47,14 @@ class TestConnectProxy {
 
   void SetRequireAuth(bool require_auth);
   void SetChallengeRealm(std::string realm);
+  // Overrides the full `Proxy-Authenticate` header value on unauthenticated 407
+  // responses (e.g. `Basic realm="403",url="...",message="..."`).
+  void SetChallengeHeader(std::string header);
+  // When non-empty, responds to authenticated `CONNECT` requests (that already
+  // carry `Proxy-Authorization`) with a second 407 carrying this
+  // `Proxy-Authenticate` header, matching upstream disguised errors returned
+  // after OAuth token verification.
+  void SetPostAuthChallengeHeader(std::string header);
   void ResetStats();
 
   bool was_accessed() const;
@@ -64,6 +72,8 @@ class TestConnectProxy {
   mutable base::Lock lock_;
   bool require_auth_ GUARDED_BY(lock_) = true;
   std::string challenge_realm_ GUARDED_BY(lock_);
+  std::string challenge_header_ GUARDED_BY(lock_);
+  std::string post_auth_challenge_header_ GUARDED_BY(lock_);
   std::string last_received_auth_header_ GUARDED_BY(lock_);
   std::vector<std::string> tunneled_targets_ GUARDED_BY(lock_);
 

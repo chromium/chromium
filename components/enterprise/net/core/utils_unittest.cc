@@ -21,9 +21,11 @@
 #include "components/enterprise/net/core/features.h"
 #include "components/enterprise/net/core/prefs.h"
 #include "components/prefs/testing_pref_service.h"
+#include "net/base/auth.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
+#include "net/http/http_response_headers.h"
 #include "net/proxy_resolution/proxy_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1135,6 +1137,119 @@ TEST(UtilsTest, IsSecureGatewayEnabled) {
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
+TEST(BasicAuthChallengeParamsTest, ParseBasicAuthChallengeParams) {
+  std::optional<BasicAuthChallengeParams> params =
+      ParseBasicAuthChallengeParams(
+          "basic REALM=\"403\","
+          "URL=\"https://error.example.com/blocked.html?txid=test-txid\","
+          "message=\"Your company's policy restricts access.\"");
+  ASSERT_TRUE(params.has_value());
+  EXPECT_THAT(
+      *params,
+      testing::UnorderedElementsAre(
+          testing::Pair("realm", "403"),
+          testing::Pair(
+              "url", "https://error.example.com/blocked.html?txid=test-txid"),
+          testing::Pair("message", "Your company's policy restricts access.")));
+
+  std::optional<BasicAuthChallengeParams> unquoted_token_params =
+      ParseBasicAuthChallengeParams("Basic realm=403, ext=token123");
+  ASSERT_TRUE(unquoted_token_params.has_value());
+  EXPECT_THAT(*unquoted_token_params,
+              testing::UnorderedElementsAre(testing::Pair("realm", "403"),
+                                            testing::Pair("ext", "token123")));
+
+  const char* const kInvalidChallenges[] = {
+      "",
+      "Basic",
+      "Basic   ",
+      "Bearer realm=\"403\",url=\"https://error.example.com/blocked.html\"",
+      "Basic realm=\"403\",url=\"https://error.example.com/unclosed",
+      "Basic realm=\"403\",flag_without_value",
+      "Basic realm=\"403\",realm=\"502\"",
+      ("Basic realm=\"403\",url=\"https://a.example.com/\","
+       "URL=\"https://b.example.com/\""),
+      // Comma-coalesced multi-challenge produces a non-token `"Bearer realm"`
+      // parameter name and must be rejected so parameters from a second
+      // challenge cannot be smuggled into the `Basic` challenge.
+      ("Basic realm=\"403\", Bearer realm=\"corp\", "
+       "url=\"https://evil.example.com/\""),
+      "Basic realm=\"403\", bad key=\"value\"",
+      // Mid-value quote in an unquoted parameter value must be rejected because
+      // RFC 9110 requires unquoted auth-param values to be `token`s; otherwise
+      // `NameValuePairsIterator` skips `StrictUnquote()` and can smuggle a
+      // subsequent challenge's `url=`.
+      ("Basic realm=\"403\", foo=bar\"x, Bearer realm=\"corp, "
+       "url=\"https://evil.example.com/\""),
+      "Basic realm=\"403\", ext=bad value",
+  };
+  for (const char* challenge : kInvalidChallenges) {
+    SCOPED_TRACE(challenge);
+    EXPECT_FALSE(ParseBasicAuthChallengeParams(challenge).has_value());
+  }
+}
+
+TEST(BasicAuthChallengeParamsTest, ExtractMatchingBasicAuthChallengeParams) {
+  net::AuthChallengeInfo auth_info;
+  auth_info.is_proxy = true;
+  auth_info.scheme = "basic";
+  auth_info.realm = "502";
+
+  auto headers = net::HttpResponseHeaders::TryToCreate(
+      "HTTP/1.1 407 Proxy Authentication Required\r\n"
+      "Proxy-Authenticate: Negotiate\r\n"
+      "Proxy-Authenticate: Basic realm=\"403\", "
+      "url=\"https://other.example.com/\"\r\n"
+      "Proxy-Authenticate: Basic realm=\"502\", "
+      "url=\"https://error.example.com/gateway.html?txid=99\"\r\n\r\n");
+  ASSERT_TRUE(headers);
+
+  std::optional<BasicAuthChallengeParams> params =
+      ExtractMatchingBasicAuthChallengeParams(auth_info, headers.get());
+  ASSERT_TRUE(params.has_value());
+  EXPECT_EQ("https://error.example.com/gateway.html?txid=99", (*params)["url"]);
+
+  // Duplicate `Proxy-Authenticate` headers claiming the same realm are
+  // rejected to prevent header smuggling, even when `auth_info.challenge` is
+  // populated (as on Desktop/Android).
+  auth_info.challenge = "Basic realm=\"502\", url=\"https://a.example.com/\"";
+  auto duplicate_realm_headers = net::HttpResponseHeaders::TryToCreate(
+      "HTTP/1.1 407 Proxy Authentication Required\r\n"
+      "Proxy-Authenticate: Basic realm=\"502\", "
+      "url=\"https://a.example.com/\"\r\n"
+      "Proxy-Authenticate: Basic realm=\"502\", "
+      "url=\"https://b.example.com/\"\r\n\r\n");
+  ASSERT_TRUE(duplicate_realm_headers);
+  EXPECT_FALSE(ExtractMatchingBasicAuthChallengeParams(
+                   auth_info, duplicate_realm_headers.get())
+                   .has_value());
+
+  // If any `Basic` challenge header fails strict parsing, extraction must fail
+  // closed instead of continuing to a later `Basic` header (which could
+  // diverge from `//net`'s non-strict challenge selection).
+  auth_info.challenge.clear();
+  auto malformed_first_basic_headers = net::HttpResponseHeaders::TryToCreate(
+      "HTTP/1.1 407 Proxy Authentication Required\r\n"
+      "Proxy-Authenticate: Basic realm=\"502\", "
+      "url=\"https://unclosed.example.com/\r\n"
+      "Proxy-Authenticate: Basic realm=\"502\", "
+      "url=\"https://second.example.com/\"\r\n\r\n");
+  ASSERT_TRUE(malformed_first_basic_headers);
+  EXPECT_FALSE(ExtractMatchingBasicAuthChallengeParams(
+                   auth_info, malformed_first_basic_headers.get())
+                   .has_value());
+
+  // Non-Basic or empty `auth_info.scheme` must not match a `Basic` response
+  // header.
+  auth_info.scheme = "bearer";
+  auth_info.challenge.clear();
+  EXPECT_FALSE(ExtractMatchingBasicAuthChallengeParams(auth_info, headers.get())
+                   .has_value());
+  auth_info.scheme.clear();
+  EXPECT_FALSE(ExtractMatchingBasicAuthChallengeParams(auth_info, headers.get())
+                   .has_value());
+}
 
 }  // namespace
 }  // namespace enterprise_net
