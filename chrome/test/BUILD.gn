@@ -3740,7 +3740,6 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/web_applications:interactive_ui_tests",
       "//chrome/browser/ui/webui/access_code_cast:interactive_ui_tests",
       "//chrome/browser/ui/webui/downloads:interactive_ui_tests",
-      "//chrome/browser/ui/webui/print_preview:interactive_ui_tests",
       "//chrome/browser/ui/webui/searchbox:interactive_ui_tests",
       "//chrome/browser/ui/webui/settings:interactive_ui_tests",
       "//chrome/browser/ui/webui/side_panel/customize_chrome:interactive_ui_tests",
@@ -3761,6 +3760,10 @@ if (!is_android && !is_chromeos_device) {
       "//ui/display:display_interactive_ui_tests",
       "//ui/events:events_interactive_ui_tests",
     ]
+
+    if (enable_print_preview) {
+      deps += [ "//chrome/browser/ui/webui/print_preview:interactive_ui_tests" ]
+    }
 
     if (!is_chrome_for_testing) {
       deps += [ "//chrome/browser/search_engine_choice:interactive_ui_tests" ]
