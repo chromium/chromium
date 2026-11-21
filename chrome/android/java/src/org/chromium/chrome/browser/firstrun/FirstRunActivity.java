@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.firstrun;
 
-import static androidx.annotation.VisibleForTesting.PRIVATE;
-
 import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
@@ -17,7 +15,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -25,7 +22,6 @@ import androidx.annotation.CallSuper;
 import androidx.annotation.ColorInt;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 import androidx.viewpager2.widget.ViewPager2;
 
 import org.chromium.base.ActivityState;
@@ -214,10 +210,6 @@ public class FirstRunActivity extends FirstRunActivityBase
     private static @Nullable FirstRunActivityObserver sObserver;
 
     private static boolean sIsAnimationDisabled;
-
-    /** Prevents Tapjacking on T-. See crbug.com/40063907 */
-    private static final boolean sPreventTouches =
-            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU;
 
     private boolean mPostNativeAndPolicyPagesCreated;
 
@@ -789,20 +781,6 @@ public class FirstRunActivity extends FirstRunActivityBase
             setCurrentItemForPager(position, true);
         }
         return BackPressResult.SUCCESS;
-    }
-
-    @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
-        if (sPreventTouches && shouldPreventTouch()) {
-            // Discard the events which may be trickling down from an overlay activity above.
-            return true;
-        }
-        return super.dispatchTouchEvent(ev);
-    }
-
-    @VisibleForTesting(otherwise = PRIVATE)
-    boolean shouldPreventTouch() {
-        return ApplicationStatus.getStateForActivity(this) != ActivityState.RESUMED;
     }
 
     // FirstRunPageDelegate:

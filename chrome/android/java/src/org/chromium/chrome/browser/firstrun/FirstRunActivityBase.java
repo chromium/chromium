@@ -14,10 +14,14 @@ import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.view.MotionEvent;
 import android.view.WindowMetrics;
 
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.FeatureList;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
@@ -61,6 +65,15 @@ public abstract class FirstRunActivityBase extends FullscreenSigninAndHistorySyn
 
     public static final boolean DEFAULT_METRICS_AND_CRASH_REPORTING = true;
 
+    /**
+     * Whether touch events must be dropped while the activity is not resumed. Before Android T a
+     * non-touchable translucent activity on top can let touches reach this activity while it is
+     * paused, so every First Run surface (full and lightweight) consumes them. See
+     * crbug.com/40063907.
+     */
+    private static final boolean sPreventTouches =
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU;
+
     private boolean mNativeInitialized;
     private @Nullable AppHeaderStateProvider mAppHeaderStateProvider;
 
@@ -71,6 +84,21 @@ public abstract class FirstRunActivityBase extends FullscreenSigninAndHistorySyn
     }
 
     // Activity:
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        if (sPreventTouches && shouldPreventTouch()) {
+            // Discard the events which may be trickling down from an overlay activity above.
+            return true;
+        }
+        return super.dispatchTouchEvent(ev);
+    }
+
+    /** Returns whether touch events are currently discarded because the activity is not resumed. */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    boolean shouldPreventTouch() {
+        return ApplicationStatus.getStateForActivity(this) != ActivityState.RESUMED;
+    }
+
     @Override
     public void onPostCreate() {
         super.onPostCreate();
