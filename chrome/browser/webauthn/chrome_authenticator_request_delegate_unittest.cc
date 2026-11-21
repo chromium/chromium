@@ -67,6 +67,7 @@
 #include "device/fido/fido_device_authenticator.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_request_handler_base.h"
+#include "device/fido/network_context_factory.h"
 #include "device/fido/public/features.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public/fido_types.h"
@@ -133,8 +134,11 @@ class MockCableDiscoveryFactory : public device::FidoDiscoveryFactory {
   void set_cable_data(
       device::FidoRequestType request_type,
       const std::optional<std::array<uint8_t, device::cablev2::kQRKeySize>>&
-          qr_generator_key) override {
+          qr_generator_key,
+      device::NetworkContextFactory network_context_factory) override {
     qr_key = qr_generator_key;
+    FidoDiscoveryFactory::set_cable_data(request_type, qr_generator_key,
+                                         std::move(network_context_factory));
   }
 
   std::optional<std::array<uint8_t, device::cablev2::kQRKeySize>> qr_key;

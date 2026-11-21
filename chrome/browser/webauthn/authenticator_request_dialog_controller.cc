@@ -81,7 +81,6 @@
 #include "device/fido/enclave/constants.h"
 #include "device/fido/enclave/metrics.h"
 #include "device/fido/fido_authenticator.h"
-#include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/pin.h"
 #include "device/fido/public/features.h"
@@ -1716,17 +1715,10 @@ void AuthenticatorRequestDialogController::SetUIPresentation(
 }
 
 void AuthenticatorRequestDialogController::ConfigureEnclaveForUpgrade(
-    device::FidoDiscoveryFactory* discovery_factory,
+    PasskeyUpgradeRequestController::EnclaveRequestCallback
+        enclave_request_callback,
     bool cmtg_key_requested) {
   CHECK(!passkey_upgrade_request_controller_);
-
-  using EnclaveEventStream = device::FidoDiscoveryBase::EventStream<
-      std::unique_ptr<device::enclave::CredentialRequest>>;
-  std::unique_ptr<EnclaveEventStream> event_stream;
-  PasskeyUpgradeRequestController::EnclaveRequestCallback
-      enclave_request_callback;
-  std::tie(enclave_request_callback, event_stream) = EnclaveEventStream::New();
-  discovery_factory->set_enclave_ui_request_stream(std::move(event_stream));
 
   content::RenderFrameHost* render_frame_host = MaybeGetRenderFrameHost();
   if (!render_frame_host) {

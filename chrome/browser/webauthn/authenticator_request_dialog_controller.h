@@ -334,7 +334,8 @@ class AuthenticatorRequestDialogController
       content::AuthenticatorRequestClientDelegate::UIPresentation modality);
 
   void ConfigureEnclaveForUpgrade(
-      device::FidoDiscoveryFactory* discovery_factory,
+      PasskeyUpgradeRequestController::EnclaveRequestCallback
+          enclave_request_callback,
       bool cmtg_key_requested);
 
   base::WeakPtr<AuthenticatorRequestDialogController> GetWeakPtr();

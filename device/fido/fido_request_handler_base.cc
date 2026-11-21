@@ -182,15 +182,13 @@ FidoRequestHandlerBase::FidoRequestHandlerBase(
     FidoTransportProtocolSet available_transports)
     : FidoRequestHandlerBase() {
   InitDiscoveries(fido_discovery_factory, std::move(additional_discoveries),
-                  available_transports,
-                  /*consider_enclave=*/true);
+                  available_transports);
 }
 
 void FidoRequestHandlerBase::InitDiscoveries(
     FidoDiscoveryFactory* fido_discovery_factory,
     std::vector<std::unique_ptr<FidoDiscoveryBase>> additional_discoveries,
-    FidoTransportProtocolSet available_transports,
-    bool consider_enclave) {
+    FidoTransportProtocolSet available_transports) {
   FIDO_LOG(DEBUG) << "Initializing FIDO discoveries";
 #if BUILDFLAG(IS_WIN)
   // Try to instantiate the discovery for proxying requests to the native
@@ -245,26 +243,11 @@ void FidoRequestHandlerBase::InitDiscoveries(
     }
   }
 
-  // `additional_discoveries` are injected by
-  // AuthenticatorRequestClientDelegate.
+  // `additional_discoveries` are embedder-provided platform discoveries (e.g.
+  // GPM passkeys) injected by AuthenticatorRequestClientDelegate.
   for (auto& discovery : additional_discoveries) {
-    // TODO: Make this work better for non-standard discoveries like Windows,
-    // which currently pretends to be `kInternal`.
-    if (!available_transports.Has(discovery->transport())) {
-      continue;
-    }
     discovery->set_observer(this);
     discoveries_.emplace_back(std::move(discovery));
-  }
-
-  if (consider_enclave) {
-    std::optional<std::unique_ptr<FidoDiscoveryBase>> enclave_discovery =
-        fido_discovery_factory->MaybeCreateEnclaveDiscovery();
-    if (enclave_discovery) {
-      FIDO_LOG(DEBUG) << "Adding discovery for enclave";
-      enclave_discovery.value()->set_observer(this);
-      discoveries_.emplace_back(std::move(*enclave_discovery));
-    }
   }
 
   for (auto& discovery : discoveries_) {

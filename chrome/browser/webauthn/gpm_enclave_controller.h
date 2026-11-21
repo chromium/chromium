@@ -43,7 +43,6 @@ class WebContents;
 }  // namespace content
 
 namespace device {
-class FidoDiscoveryFactory;
 enum class FidoRequestType : uint8_t;
 enum class UserVerificationRequirement;
 namespace enclave {
@@ -161,13 +160,17 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
     kReady,
   };
 
+  using EnclaveRequestCallback = base::RepeatingCallback<void(
+      std::unique_ptr<device::enclave::CredentialRequest>)>;
+
   explicit GPMEnclaveController(
       content::RenderFrameHost* render_frame_host,
       AuthenticatorRequestDialogModel* model,
       const std::string& rp_id,
       device::FidoRequestType request_type,
       device::UserVerificationRequirement user_verification_requirement,
-      bool cmtg_key_requested);
+      bool cmtg_key_requested,
+      EnclaveRequestCallback enclave_request_callback);
   GPMEnclaveController(const GPMEnclaveController&) = delete;
   GPMEnclaveController& operator=(const GPMEnclaveController&) = delete;
   GPMEnclaveController(GPMEnclaveController&&) = delete;
@@ -188,10 +191,6 @@ class GPMEnclaveController : public AuthenticatorRequestDialogModel::Observer,
   // can be shown. If false, then the `OnGPMReadyForUI` event will be triggered
   // on the model when ready.
   bool ready_for_ui() const;
-
-  // Configures an WebAuthn enclave authenticator discovery and provides it with
-  // synced passkeys.
-  void ConfigureDiscoveries(device::FidoDiscoveryFactory* discovery_factory);
 
   // Fetch the set of GPM passkeys for this request.
   const std::vector<sync_pb::WebauthnCredentialSpecifics>& creds() const;

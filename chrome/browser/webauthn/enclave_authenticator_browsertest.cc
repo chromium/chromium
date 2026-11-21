@@ -4511,6 +4511,63 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   ASSERT_TRUE(second_message_queue.WaitForMessage(&script_result));
   EXPECT_EQ(script_result, "\"webauthn: OK\"");
 }
+
+// Verifies that GPM passkey creation and assertion work when the native
+// Windows WebAuthn API (`webauthn.dll`) is available, even though
+// `FidoRequestHandlerBase::InitDiscoveries()` clears `kInternal` from
+// `available_transports`.
+IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
+                       MakeCredentialAndGetAssertionWithWinWebAuthnApi) {
+  fake_webauthn_dll_->set_available(true);
+  fake_webauthn_dll_->set_is_uvpaa(true);
+  fake_webauthn_dll_->set_supports_silent_discovery(true);
+  SetTrustedVaultEmpty();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+  content::ExecuteScriptAsync(web_contents, kMakeCredentialUvRequired);
+  delegate_observer()->WaitForUI();
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey);
+  model_observer()->WaitForStep();
+  EXPECT_TRUE(std::ranges::any_of(
+      dialog_model()->mechanisms,
+      [](const AuthenticatorRequestDialogModel::Mechanism& m) {
+        return std::holds_alternative<
+            AuthenticatorRequestDialogModel::Mechanism::WindowsAPI>(m.type);
+      }));
+  dialog_model()->OnGPMCreationConfirmed();
+  ASSERT_EQ(dialog_model()->step(),
+            AuthenticatorRequestDialogModel::Step::kGPMCreatePin);
+  dialog_model()->OnGPMPinEntered(u"123456");
+
+  std::string script_result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: uv=true\"");
+
+  content::ExecuteScriptAsync(web_contents, kGetAssertionUvRequired);
+  delegate_observer()->WaitForUI();
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kSelectPriorityMechanism);
+  model_observer()->WaitForStep();
+  EXPECT_TRUE(std::ranges::any_of(
+      dialog_model()->mechanisms,
+      [](const AuthenticatorRequestDialogModel::Mechanism& m) {
+        return std::holds_alternative<
+            AuthenticatorRequestDialogModel::Mechanism::WindowsAPI>(m.type);
+      }));
+
+  model_observer()->SetStepToObserve(
+      AuthenticatorRequestDialogModel::Step::kGPMEnterPin);
+  dialog_model()->OnUserConfirmedPriorityMechanism();
+  model_observer()->WaitForStep();
+  dialog_model()->OnGPMPinEntered(u"123456");
+
+  ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
+  EXPECT_EQ(script_result, "\"webauthn: OK\"");
+}
 #endif  // BUILDFLAG(IS_WIN)
 
 class EnclaveAuthenticatorConditionalCreateBrowserTest

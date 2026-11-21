@@ -24,7 +24,6 @@
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public/fido_transport_protocol.h"
 #include "services/device/public/mojom/usb_manager.mojom.h"
-#include "services/network/public/mojom/network_context.mojom-forward.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/owned_objc.h"
@@ -35,10 +34,6 @@ namespace device {
 
 namespace cablev2 {
 struct Pairing;
-}
-
-namespace enclave {
-struct CredentialRequest;
 }
 
 // FidoDiscoveryFactory offers methods to construct instances of
@@ -54,25 +49,18 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   virtual std::vector<std::unique_ptr<FidoDiscoveryBase>> Create(
       FidoTransportProtocol transport);
 
-  // Return a discovery for enclave authenticators, if enclave mode is enabled
-  // and configured.
-  virtual std::optional<std::unique_ptr<FidoDiscoveryBase>>
-  MaybeCreateEnclaveDiscovery();
-
   // Returns whether the current instance is an override injected by the
   // WebAuthn testing API.
   virtual bool IsTestOverride();
 
-  // set_cable_data configures the QR code generator key for hybrid.
+  // set_cable_data configures the QR code generator key and network context
+  // factory for hybrid.
   virtual void set_cable_data(
       FidoRequestType request_type,
       const std::optional<std::array<uint8_t, cablev2::kQRKeySize>>&
-          qr_generator_key);
+          qr_generator_key,
+      NetworkContextFactory network_context_factory);
 
-  void set_network_context_factory(
-      NetworkContextFactory network_context_factory) {
-    network_context_factory_ = std::move(network_context_factory);
-  }
   const NetworkContextFactory& network_context_factory_for_testing() const {
     return network_context_factory_;
   }
@@ -100,10 +88,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   get_cable_contact_callback();
 
   void set_hid_ignore_list(base::flat_set<VidPid> hid_ignore_list);
-
-  void set_enclave_ui_request_stream(
-      std::unique_ptr<FidoDiscoveryBase::EventStream<
-          std::unique_ptr<enclave::CredentialRequest>>> stream);
 
 #if BUILDFLAG(IS_MAC)
   // Configures the Touch ID authenticator. Set to std::nullopt to disable it.
@@ -188,9 +172,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
       get_assertion_request_for_legacy_credential_check_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   base::flat_set<VidPid> hid_ignore_list_;
-  std::unique_ptr<FidoDiscoveryBase::EventStream<
-      std::unique_ptr<enclave::CredentialRequest>>>
-      enclave_ui_request_stream_;
 #if BUILDFLAG(IS_WIN)
   bool force_hybrid_discovery_ = false;
 #endif  // BUILDFLAG(IS_WIN)

@@ -71,8 +71,6 @@
 #include "device/fido/enclave/constants.h"
 #include "device/fido/enclave/metrics.h"
 #include "device/fido/enclave/types.h"
-#include "device/fido/fido_discovery_base.h"
-#include "device/fido/fido_discovery_factory.h"
 #include "device/fido/public/features.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public/fido_types.h"
@@ -399,7 +397,8 @@ GPMEnclaveController::GPMEnclaveController(
     const std::string& rp_id,
     device::FidoRequestType request_type,
     device::UserVerificationRequirement user_verification_requirement,
-    bool cmtg_key_requested)
+    bool cmtg_key_requested,
+    EnclaveRequestCallback enclave_request_callback)
     : render_frame_host_id_(render_frame_host->GetGlobalId()),
       rp_id_(rp_id),
       request_type_(request_type),
@@ -407,6 +406,7 @@ GPMEnclaveController::GPMEnclaveController(
       enclave_manager_(
           EnclaveManagerFactory::GetAsEnclaveManagerForProfile(GetProfile())),
       model_(model),
+      enclave_request_callback_(std::move(enclave_request_callback)),
       loading_timeout_(
           GpmTickAndTaskRunnerProvider::GetTickClock(render_frame_host)) {
   if (scoped_refptr<base::SequencedTaskRunner> task_runner =
@@ -521,15 +521,6 @@ bool GPMEnclaveController::is_active() const {
 
 bool GPMEnclaveController::ready_for_ui() const {
   return ready_for_ui_;
-}
-
-void GPMEnclaveController::ConfigureDiscoveries(
-    device::FidoDiscoveryFactory* discovery_factory) {
-  using EnclaveEventStream = device::FidoDiscoveryBase::EventStream<
-      std::unique_ptr<device::enclave::CredentialRequest>>;
-  std::unique_ptr<EnclaveEventStream> event_stream;
-  std::tie(enclave_request_callback_, event_stream) = EnclaveEventStream::New();
-  discovery_factory->set_enclave_ui_request_stream(std::move(event_stream));
 }
 
 const std::vector<sync_pb::WebauthnCredentialSpecifics>&

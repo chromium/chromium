@@ -84,10 +84,13 @@
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/discoverable_credential_metadata.h"
+#include "device/fido/enclave/enclave_discovery.h"
+#include "device/fido/enclave/types.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_request_handler_base.h"
+#include "device/fido/network_context_factory.h"
 #include "device/fido/public/features.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public/fido_transport_protocol.h"
@@ -239,6 +242,32 @@ constexpr char kSigninHybridPasskeyOutcomeHistogram[] =
 constexpr char kHybridOutcomeHistogram[] = "WebAuthentication.Hybrid.Outcome";
 constexpr char kHybridQrEngagementHistogram[] =
     "WebAuthentication.Hybrid.QrEngagement";
+
+// Creates a network context factory for caBLE and enclave connections. With
+// `kWebAuthnHybridUseFrameNetworkContext`, requests go through the frame's
+// storage partition so they use the profile's network configuration (such as
+// its proxy settings).
+device::NetworkContextFactory CreateNetworkContextFactory(
+    content::GlobalRenderFrameHostId render_frame_host_id) {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnHybridUseFrameNetworkContext)) {
+    return base::BindRepeating(
+        [](content::GlobalRenderFrameHostId render_frame_host_id)
+            -> network::mojom::NetworkContext* {
+          content::RenderFrameHost* render_frame_host =
+              content::RenderFrameHost::FromID(render_frame_host_id);
+          CHECK(render_frame_host);
+          return render_frame_host->GetStoragePartition()->GetNetworkContext();
+        },
+        render_frame_host_id);
+  }
+  if (SystemNetworkContextManager::GetInstance()) {
+    return base::BindRepeating([]() {
+      return SystemNetworkContextManager::GetInstance()->GetContext();
+    });
+  }
+  return {};
+}
 
 // Triggers a HaTS survey about the WebAuthn ("passkey") experience.
 void TriggerWebAuthnHatsSurvey(content::RenderFrameHost* render_frame_host,
@@ -686,6 +715,7 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
             resident_key_requirement.has_value(),
         base::NotFatalUntil::M163);
   request_source_ = request_source;
+  platform_discoveries_.clear();
 
   // Without the UI enabled, discoveries like caBLE, Android AOA, iCloud
   // keychain, and the enclave, don't make sense.
@@ -700,50 +730,10 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
     return;
   }
 
-  // Configure the enclave authenticator.
   if (browser_provided_passkeys_available && !IsVirtualEnvironmentEnabled() &&
       request_source == RequestSource::kWebAuthentication) {
-    // Creating credentials in GPM can be disabled by policy, but get() is
-    // always allowed.
-    const bool enclave_create_enabled =
-        profile()->GetPrefs()->GetBoolean(
-            password_manager::prefs::kCredentialsEnableService) &&
-        profile()->GetPrefs()->GetBoolean(
-            password_manager::prefs::kCredentialsEnablePasskeys);
-    if (!enclave_create_enabled) {
-      dialog_model_->gpm_create_available_but_disabled_by_policy = true;
-    }
-    if (dialog_controller_->ui_presentation() ==
-            UIPresentation::kPasskeyUpgrade &&
-        enclave_create_enabled) {
-      // PasskeyUpgradeRequestController will handle enclave transactions in
-      // place of the "regular" GPMEnclaveController.
-      CHECK(!enclave_controller_);
-      dialog_controller_->ConfigureEnclaveForUpgrade(discovery_factory,
-                                                     cmtg_key_requested);
-    } else if (request_type == device::FidoRequestType::kGetAssertion ||
-               enclave_create_enabled) {
-      // Set up the "regular" enclave controller.
-      auto* const identity_manager = IdentityManagerFactory::GetForProfile(
-          profile()->GetOriginalProfile());
-      const auto consent = signin::ConsentLevel::kSignin;
-      if (identity_manager->HasPrimaryAccount(consent)) {
-        CoreAccountInfo account_info =
-            identity_manager->GetPrimaryAccountInfo(consent);
-        if (SkipGpmPasskeyCreationForOwnAccount(
-                request_type, rp_id, user_name.value_or(""), account_info)) {
-          FIDO_LOG(EVENT)
-              << "Creation in GPM not offered (same primary account)";
-        } else {
-          enclave_controller_ = std::make_unique<GPMEnclaveController>(
-              GetRenderFrameHost(), dialog_model_.get(), rp_id, request_type,
-              user_verification_requirement, cmtg_key_requested);
-        }
-      }
-    } else {
-      FIDO_LOG(EVENT)
-          << "Enclave unavailable for creating passkeys due to policy.";
-    }
+    ConfigureGpm(rp_id, request_type, user_verification_requirement,
+                 cmtg_key_requested, user_name);
   }
 
   std::array<uint8_t, device::cablev2::kQRKeySize> qr_generator_key;
@@ -769,36 +759,13 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-  discovery_factory->set_cable_data(request_type, qr_generator_key);
-
-  // caBLE and the enclave depend on the network context factory. With
-  // kWebAuthnHybridUseFrameNetworkContext, requests go through the frame's
-  // storage partition, so they use the profile's network configuration, such as
-  // its proxy settings.
-  if (base::FeatureList::IsEnabled(
-          device::kWebAuthnHybridUseFrameNetworkContext)) {
-    discovery_factory->set_network_context_factory(base::BindRepeating(
-        [](content::GlobalRenderFrameHostId render_frame_host_id)
-            -> network::mojom::NetworkContext* {
-          content::RenderFrameHost* render_frame_host =
-              content::RenderFrameHost::FromID(render_frame_host_id);
-          CHECK(render_frame_host);
-          return render_frame_host->GetStoragePartition()->GetNetworkContext();
-        },
-        render_frame_host_id_));
-  } else if (SystemNetworkContextManager::GetInstance()) {
-    discovery_factory->set_network_context_factory(base::BindRepeating([]() {
-      return SystemNetworkContextManager::GetInstance()->GetContext();
-    }));
-  }
+  discovery_factory->set_cable_data(
+      request_type, qr_generator_key,
+      CreateNetworkContextFactory(render_frame_host_id_));
 
 #if BUILDFLAG(IS_MAC)
   ConfigureNSWindow(discovery_factory);
 #endif
-
-  if (enclave_controller_) {
-    enclave_controller_->ConfigureDiscoveries(discovery_factory);
-  }
 
   dialog_controller_->set_is_non_webauthn_request(
       request_source != RequestSource::kWebAuthentication);
@@ -896,6 +863,73 @@ void ChromeAuthenticatorRequestDelegate::SetCredentialIdFilter(
 void ChromeAuthenticatorRequestDelegate::SetUserEntityForMakeCredentialRequest(
     const device::PublicKeyCredentialUserEntity& user_entity) {
   dialog_model_->user_entity = user_entity;
+}
+
+void ChromeAuthenticatorRequestDelegate::ConfigureGpm(
+    const std::string& rp_id,
+    device::FidoRequestType request_type,
+    device::UserVerificationRequirement user_verification_requirement,
+    bool cmtg_key_requested,
+    std::optional<std::string_view> user_name) {
+  // Creating credentials in GPM can be disabled by policy, but get() is always
+  // allowed.
+  const bool enclave_create_enabled =
+      profile()->GetPrefs()->GetBoolean(
+          password_manager::prefs::kCredentialsEnableService) &&
+      profile()->GetPrefs()->GetBoolean(
+          password_manager::prefs::kCredentialsEnablePasskeys);
+  if (!enclave_create_enabled) {
+    dialog_model_->gpm_create_available_but_disabled_by_policy = true;
+    if (request_type == device::FidoRequestType::kMakeCredential) {
+      FIDO_LOG(EVENT) << "GPM unavailable (create disabled by policy)";
+      return;
+    }
+  }
+
+  auto* const identity_manager =
+      IdentityManagerFactory::GetForProfile(profile()->GetOriginalProfile());
+  const auto consent = signin::ConsentLevel::kSignin;
+  if (!identity_manager->HasPrimaryAccount(consent)) {
+    FIDO_LOG(EVENT) << "GPM unavailable (no primary account)";
+    return;
+  }
+  CoreAccountInfo account_info =
+      identity_manager->GetPrimaryAccountInfo(consent);
+  if (SkipGpmPasskeyCreationForOwnAccount(
+          request_type, rp_id, user_name.value_or(""), account_info)) {
+    FIDO_LOG(EVENT) << "GPM unavailable (create request for own account)";
+    return;
+  }
+
+  // GPM is available. Configure discovery and request controller.
+
+  using EnclaveEventStream = device::FidoDiscoveryBase::EventStream<
+      std::unique_ptr<device::enclave::CredentialRequest>>;
+  auto [enclave_request_callback, event_stream] = EnclaveEventStream::New();
+  platform_discoveries_.push_back(
+      std::make_unique<device::enclave::EnclaveAuthenticatorDiscovery>(
+          std::move(event_stream),
+          CreateNetworkContextFactory(render_frame_host_id_)));
+
+  if (dialog_controller_->ui_presentation() ==
+      UIPresentation::kPasskeyUpgrade) {
+    // PasskeyUpgradeRequestController will handle enclave transactions in place
+    // of the "regular" GPMEnclaveController.
+    CHECK(!enclave_controller_);
+    dialog_controller_->ConfigureEnclaveForUpgrade(
+        std::move(enclave_request_callback), cmtg_key_requested);
+    return;
+  }
+
+  enclave_controller_ = std::make_unique<GPMEnclaveController>(
+      GetRenderFrameHost(), dialog_model_.get(), rp_id, request_type,
+      user_verification_requirement, cmtg_key_requested,
+      std::move(enclave_request_callback));
+}
+
+std::vector<std::unique_ptr<device::FidoDiscoveryBase>>
+ChromeAuthenticatorRequestDelegate::CreatePlatformDiscoveries() {
+  return std::exchange(platform_discoveries_, {});
 }
 
 void ChromeAuthenticatorRequestDelegate::StartObserving(

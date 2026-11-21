@@ -12,7 +12,6 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/cable/pairing.h"
 #include "device/fido/cable/v2_discovery.h"
-#include "device/fido/enclave/enclave_discovery.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/hid/fido_hid_discovery.h"
 #include "device/fido/public/features.h"
@@ -87,12 +86,12 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
       if (device::BluetoothAdapterFactory::Get()->IsLowEnergySupported() &&
           qr_generator_key_.has_value()) {
         std::vector<std::unique_ptr<FidoDiscoveryBase>> ret;
-          ret.emplace_back(std::make_unique<cablev2::Discovery>(
-              request_type_.value(), network_context_factory_,
-              qr_generator_key_, std::move(contact_device_stream_),
-              std::move(cable_pairing_callback_),
-              std::move(cable_invalidated_pairing_callback_),
-              std::move(cable_event_callback_), cable_must_support_ctap_));
+        ret.emplace_back(std::make_unique<cablev2::Discovery>(
+            request_type_.value(), network_context_factory_, qr_generator_key_,
+            std::move(contact_device_stream_),
+            std::move(cable_pairing_callback_),
+            std::move(cable_invalidated_pairing_callback_),
+            std::move(cable_event_callback_), cable_must_support_ctap_));
         return ret;
       }
       return {};
@@ -114,15 +113,6 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
   NOTREACHED() << "Unhandled transport type";
 }
 
-std::optional<std::unique_ptr<FidoDiscoveryBase>>
-FidoDiscoveryFactory::MaybeCreateEnclaveDiscovery() {
-  if (!enclave_ui_request_stream_ || !network_context_factory_) {
-    return std::nullopt;
-  }
-  return std::make_unique<enclave::EnclaveAuthenticatorDiscovery>(
-      std::move(enclave_ui_request_stream_), network_context_factory_);
-}
-
 bool FidoDiscoveryFactory::IsTestOverride() {
   return false;
 }
@@ -130,9 +120,11 @@ bool FidoDiscoveryFactory::IsTestOverride() {
 void FidoDiscoveryFactory::set_cable_data(
     FidoRequestType request_type,
     const std::optional<std::array<uint8_t, cablev2::kQRKeySize>>&
-        qr_generator_key) {
+        qr_generator_key,
+    NetworkContextFactory network_context_factory) {
   request_type_ = request_type;
   qr_generator_key_ = std::move(qr_generator_key);
+  network_context_factory_ = std::move(network_context_factory);
 }
 
 void FidoDiscoveryFactory::set_cable_pairing_callback(
@@ -163,12 +155,6 @@ FidoDiscoveryFactory::get_cable_contact_callback() {
 void FidoDiscoveryFactory::set_hid_ignore_list(
     base::flat_set<VidPid> hid_ignore_list) {
   hid_ignore_list_ = std::move(hid_ignore_list);
-}
-
-void FidoDiscoveryFactory::set_enclave_ui_request_stream(
-    std::unique_ptr<FidoDiscoveryBase::EventStream<
-        std::unique_ptr<enclave::CredentialRequest>>> stream) {
-  enclave_ui_request_stream_ = std::move(stream);
 }
 
 // static

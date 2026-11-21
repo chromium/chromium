@@ -9,6 +9,7 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/fido_discovery_base.h"
+#include "device/fido/network_context_factory.h"
 #include "device/fido/public/features.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public/fido_transport_protocol.h"
@@ -42,7 +43,8 @@ TEST(FidoDiscoveryFactoryTest, CreateWindowsHybridDiscovery) {
       discovery_factory.set_force_hybrid_discovery(force_hybrid_discovery);
       discovery_factory.set_cable_data(
           FidoRequestType::kGetAssertion,
-          /*qr_generator_key=*/std::array<uint8_t, cablev2::kQRKeySize>());
+          /*qr_generator_key=*/std::array<uint8_t, cablev2::kQRKeySize>(),
+          /*network_context_factory=*/NetworkContextFactory());
       std::vector<std::unique_ptr<FidoDiscoveryBase>> discoveries =
           discovery_factory.Create(FidoTransportProtocol::kHybrid);
       EXPECT_EQ(discoveries.empty(),
