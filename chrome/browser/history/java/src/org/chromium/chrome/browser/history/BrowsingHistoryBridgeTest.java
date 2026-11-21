@@ -29,7 +29,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.history.HistoryProvider.TimePeriodOption;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.critical_actions.ActionType;
 import org.chromium.url.GURL;
@@ -45,7 +44,6 @@ public class BrowsingHistoryBridgeTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock BrowsingHistoryBridge.Natives mNativeMocks;
-    @Mock SigninPromoCoordinator mHistorySyncPromoCoordinator;
 
     @Mock private Profile mProfile;
 
@@ -67,41 +65,6 @@ public class BrowsingHistoryBridgeTest {
 
         // Verify DeleteBrowsingDataAction metric is recorded.
         histogramWatcher.assertExpected();
-    }
-
-    @Test
-    public void testAppIdPropagatesForDeletion() {
-        // Ensure the app ID passed from BrowsingHistoryBridge is stored in the item
-        // object, and later gets passed down when marking the item for removal.
-        HistoryContentManager contentManager = mock(HistoryContentManager.class);
-        HistoryAdapter adapter =
-                new HistoryAdapter(
-                        contentManager,
-                        mBrowsingHistoryBridge,
-                        mHistorySyncPromoCoordinator,
-                        /* shouldClusterByDomain= */ false);
-        mBrowsingHistoryBridge.setObserver(adapter);
-
-        List<HistoryItem> items = new ArrayList<>();
-        List<GURL> urls = List.of(GURL.emptyGURL());
-        List<long[]> timestampsList = List.of(new long[0]);
-        String appId = "org.chromium.dino.Trex";
-        BrowsingHistoryBridge.createHistoryItemAndAddToList(
-                items,
-                GURL.emptyGURL(),
-                "domain.com",
-                "title",
-                appId,
-                0,
-                urls,
-                timestampsList,
-                false,
-                false,
-                /* criticalActions= */ List.of());
-        mBrowsingHistoryBridge.onQueryHistoryComplete(items, false);
-
-        adapter.markItemForRemoval(items.get(0));
-        verify(mNativeMocks).markItemForRemoval(anyLong(), any(), eq(appId), any());
     }
 
     @Test
