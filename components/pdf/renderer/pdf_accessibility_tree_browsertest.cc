@@ -26,6 +26,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "components/pdf/renderer/pdf_accessibility_metrics.h"
 #include "components/strings/grit/components_strings.h"
@@ -1908,6 +1909,46 @@ TEST_F(PdfAccessibilityTreeTest, HeadingToBodySizeRatioMetrics) {
       "Accessibility.PdfHeuristics.HeadingToBodySizeRatioMax", 240, 1);
   histogram_tester.ExpectUniqueSample(
       "Accessibility.PdfHeuristics.HeadingToBodySizeRatioMin", 180, 1);
+}
+
+TEST_F(PdfAccessibilityTreeTest, HeuristicPageRecordsBuildPageTreeTime2) {
+  base::HistogramTester histogram_tester;
+  base::ScopedMockElapsedTimersForTest mock_elapsed_timers;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  SetUpHeuristicAccessibilityTree(/*font_sizes=*/{12.0f, 12.0f});
+
+  // Microsecond timing histograms drop samples on low-resolution clocks.
+  if (base::TimeTicks::IsHighResolution()) {
+    histogram_tester.ExpectUniqueSample(
+        "Accessibility.PDF.Heuristic.BuildPageTreeTime2",
+        base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMicroseconds(),
+        1);
+  } else {
+    histogram_tester.ExpectTotalCount(
+        "Accessibility.PDF.Heuristic.BuildPageTreeTime2", 0);
+  }
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.PDF.Heuristic.BuildPageTreeTime", 0);
+}
+
+TEST_F(PdfAccessibilityTreeTest, StructureTreePageSkipsBuildPageTreeTime2) {
+  base::HistogramTester histogram_tester;
+  SetUpStyleSplittingTestRunsAndChars();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {chrome_pdf::features::kPdfTags,
+       ::features::kPdfAccessibilityHeuristicEnhancements},
+      {});
+
+  CreatePdfAccessibilityTree();
+  ASSERT_NE(nullptr, SetUpAccessibilityTreeForStyleSplitting());
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.PDF.Heuristic.BuildPageTreeTime2", 0);
 }
 
 TEST_F(PdfAccessibilityTreeTest, HeaderFooterNormalizedLocationMetrics) {

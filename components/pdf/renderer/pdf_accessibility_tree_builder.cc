@@ -14,6 +14,7 @@
 #include "base/containers/span.h"
 #include "base/i18n/break_iterator.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "components/pdf/renderer/pdf_accessibility_table_detector.h"
@@ -236,6 +237,10 @@ PdfAccessibilityTreeBuilder::PdfAccessibilityTreeBuilder(
       // unassociated text runs as additional content. Fall back to heuristic
       // mode only when no structure tree is available.
       use_structure_mode_(ShouldUseStructureMode(page_structure_tree)),
+      heuristic_build_timer_(
+          use_structure_mode_
+              ? std::nullopt
+              : std::optional<base::ElapsedTimer>(std::in_place)),
       ruling_lines_(GetRulingLines(page_objects, use_structure_mode_)),
       split_result_(
           SplitTextRunsAtVerticalDividers(ruling_lines_, chars, text_runs)),
@@ -289,6 +294,12 @@ void PdfAccessibilityTreeBuilder::BuildPageTree() {
 
   if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
     NameHeadingsFromContents();
+  }
+
+  if (heuristic_build_timer_.has_value()) {
+    base::UmaHistogramMicrosecondsTimes(
+        "Accessibility.PDF.Heuristic.BuildPageTreeTime2",
+        heuristic_build_timer_->Elapsed());
   }
 }
 

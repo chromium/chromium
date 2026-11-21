@@ -34,7 +34,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/types/optional_ref.h"
 #include "components/pdf/renderer/pdf_accessibility_metrics.h"
 #include "components/pdf/renderer/pdf_accessibility_table_detector.h"
@@ -2970,14 +2969,11 @@ PdfAccessibilityTreeBuilderHeuristic::~PdfAccessibilityTreeBuilderHeuristic() =
     default;
 
 void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
-  base::ElapsedTimer timer;
   std::optional<float> min_heading_ratio;
   std::optional<float> max_heading_ratio;
-  absl::Cleanup run_on_exit = [&timer, &min_heading_ratio, &max_heading_ratio] {
-    base::UmaHistogramTimes("Accessibility.PDF.Heuristic.BuildPageTreeTime",
-                            timer.Elapsed());
+  absl::Cleanup run_on_exit = [&min_heading_ratio, &max_heading_ratio] {
     if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
-        min_heading_ratio && max_heading_ratio) {
+        min_heading_ratio.has_value() && max_heading_ratio.has_value()) {
       RecordHeadingToBodySizeRatioHistogram(
           "Accessibility.PdfHeuristics.HeadingToBodySizeRatioMax",
           static_cast<int>(std::round(*max_heading_ratio * 100.0f)));

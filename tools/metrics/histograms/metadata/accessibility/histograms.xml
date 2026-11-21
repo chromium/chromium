@@ -2511,14 +2511,17 @@ recorded in the same way, even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.PDF.Heuristic.BuildPageTreeTime" units="ms"
-    expires_after="2027-05-01">
+<histogram name="Accessibility.PDF.Heuristic.BuildPageTreeTime2"
+    units="microseconds" expires_after="2027-05-20">
   <owner>kristislee@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <owner>komo-eng@google.com</owner>
   <summary>
-    Records the time taken to build the accessibility page tree using heuristic
-    algorithms. Logged once per PDF page.
+    Records the total time taken to prepare page layout data and build a PDF
+    page's accessibility tree in heuristic mode (excluding tagged PDFs built
+    from a structure tree). Logged once per heuristic PDF page.
+
+    Note: This metric is only recorded on clients with high-resolution clocks.
   </summary>
 </histogram>
 

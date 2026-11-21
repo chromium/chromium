@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/pdf/renderer/pdf_accessibility_table_detector.h"
 #include "components/pdf/renderer/pdf_accessibility_tree.h"
 #include "pdf/accessibility_structs.h"
@@ -140,6 +141,9 @@ class PdfAccessibilityTreeBuilder {
   //
   // Whether `BuildPageTree()` uses the structure tree instead of heuristics.
   const bool use_structure_mode_;
+  // Times heuristic page setup and tree building, from `ruling_lines_` through
+  // `NameHeadingsFromContents()`. Unset in structure tree mode.
+  const std::optional<base::ElapsedTimer> heuristic_build_timer_;
   // Only extracted in heuristic mode, since the structure tree refers to text
   // runs that must not change.
   const std::vector<RulingLine> ruling_lines_;
