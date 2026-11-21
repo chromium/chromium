@@ -196,10 +196,8 @@ void InputType::Trace(Visitor* visitor) const {
 
 bool InputType::ShouldSuppressChangeEventForDisabledStateChange(
     DisabledChangedReason reason) const {
-  return RuntimeEnabledFeatures::
-             DisableFormControlChangeEventDuringMutationEnabled() &&
-         (GetElement().GetDocument().StatePreservingAtomicMoveInProgress() ||
-          reason == DisabledChangedReason::kFieldsetChildrenChanged);
+  return GetElement().GetDocument().StatePreservingAtomicMoveInProgress() ||
+         reason == DisabledChangedReason::kFieldsetChildrenChanged;
 }
 
 const AtomicString& InputType::FormControlTypeAsString() const {
