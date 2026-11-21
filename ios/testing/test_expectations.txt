@@ -620,3 +620,6 @@ crbug.com/583785828 GeminiFirstRunTestCase/testLightweightConvenienceFREAcceptCo
 crbug.com/583785828 GeminiFirstRunTestCase/testVisualRichFREAcceptConsent [ Skip ]
 crbug.com/583813595 [ iPhone ] PolicyTestCase/testEnterpriseBubbleInEnhancedSafeBrowsingPage [ Pass Failure ]
 crbug.com/587051138 [ iOS27 iPad Simulator ] NTPHomeTestCase/testMinimumHeight [ Pass Failure ]
+
+# Gardening suppression 2026-11-17
+crbug.com/584310068 [ iOS26 iOS27 Simulator ] HistoryUITestCase/testContextMenuRepeatedShare [ Pass Failure ]
