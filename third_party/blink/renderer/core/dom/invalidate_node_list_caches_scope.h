@@ -19,7 +19,7 @@ class Document;
 // to avoid n^2 calls to 'LiveNodeListBase::InvalidateCacheForAttribute()'
 // while cloning an element containing form elements inserted into a form
 // collection. (crbug.com/40874584)
-class InvalidateNodeListCachesScope {
+class [[nodiscard]] InvalidateNodeListCachesScope {
   STACK_ALLOCATED();
 
  public:

@@ -32,7 +32,7 @@
 
 namespace blink {
 
-class NodeChildRemovalTracker {
+class [[nodiscard]] NodeChildRemovalTracker {
   STACK_ALLOCATED();
 
  public:

@@ -16,7 +16,7 @@ class CustomElementReactionStack;
 class Element;
 
 // https://html.spec.whatwg.org/C/#cereactions
-class CORE_EXPORT CEReactionsScope final {
+class CORE_EXPORT [[nodiscard]] CEReactionsScope final {
   STACK_ALLOCATED();
 
  public:

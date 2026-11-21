@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_DOCUMENT_PARSER_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_DOCUMENT_PARSER_STATE_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/html/nesting_level_incrementer.h"
 #include "third_party/blink/renderer/core/html/parser/parser_synchronization_policy.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -136,10 +137,13 @@ class HTMLDocumentParserState
   bool HaveExitedHeader() const { return exited_header_; }
 
  private:
-  void EnterEndIfDelayedForbidden() { end_if_delayed_forbidden_++; }
+  void EnterEndIfDelayedForbidden() {
+    ++end_if_delayed_forbidden_;
+    CHECK_NE(end_if_delayed_forbidden_, 0u);
+  }
   void ExitEndIfDelayedForbidden() {
-    DCHECK(end_if_delayed_forbidden_);
-    end_if_delayed_forbidden_--;
+    CHECK_NE(end_if_delayed_forbidden_, 0u);
+    --end_if_delayed_forbidden_;
   }
 
   void EnterAttemptToEndForbidden() {
@@ -147,10 +151,13 @@ class HTMLDocumentParserState
     should_attempt_to_end_on_eof_ = false;
   }
 
-  void EnterShouldComplete() { should_complete_++; }
+  void EnterShouldComplete() {
+    ++should_complete_;
+    CHECK_NE(should_complete_, 0u);
+  }
   void ExitShouldComplete() {
-    DCHECK(should_complete_);
-    should_complete_--;
+    CHECK_NE(should_complete_, 0u);
+    --should_complete_;
   }
 
   DeferredParserState state_;

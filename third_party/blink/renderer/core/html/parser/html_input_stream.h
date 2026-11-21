@@ -118,7 +118,7 @@ class HTMLInputStream {
   raw_ptr<SegmentedString, UnprotectedInRelease | DanglingUntriaged> last_;
 };
 
-class InsertionPointRecord {
+class [[nodiscard]] InsertionPointRecord {
   STACK_ALLOCATED();
 
  public:

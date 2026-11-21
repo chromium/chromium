@@ -15,7 +15,7 @@ class Document;
 
 // A helper class that will increment a document's loadEventDelayCount on
 // construction and decrement it on destruction (semantics similar to RefPtr).
-class CORE_EXPORT IncrementLoadEventDelayCount {
+class CORE_EXPORT [[nodiscard]] IncrementLoadEventDelayCount {
   USING_FAST_MALLOC(IncrementLoadEventDelayCount);
 
  public:

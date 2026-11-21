@@ -38,7 +38,7 @@ namespace blink {
 
 namespace {
 
-class NodeRemovalScope {
+class [[nodiscard]] NodeRemovalScope {
   STACK_ALLOCATED();
 
  public:

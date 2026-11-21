@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element_with_state.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_inner_elements.h"
 #include "third_party/blink/renderer/core/style/text_overflow_data.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -420,7 +421,9 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
 
   // RAII helper that temporarily skips SetValue()'s automatic OpaqueRange
   // full-value diff for this scope. The flag is restored on destruction.
-  class ScopedSkipValueAutoDiff final {
+  class [[nodiscard]] ScopedSkipValueAutoDiff final {
+    STACK_ALLOCATED();
+
    public:
     explicit ScopedSkipValueAutoDiff(TextControlElement& element)
         : auto_reset_(&element.skip_next_set_value_auto_diff_, true) {}

@@ -9,7 +9,7 @@
 
 namespace blink {
 
-class ScopedWindowFocusAllowedIndicator final {
+class [[nodiscard]] ScopedWindowFocusAllowedIndicator final {
   USING_FAST_MALLOC(ScopedWindowFocusAllowedIndicator);
 
  public:

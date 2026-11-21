@@ -188,7 +188,7 @@ class HTMLConstructionSite final {
       const AtomicString& is,
       CustomElementRegistry* registry);
 
-  class RedirectToFosterParentGuard {
+  class [[nodiscard]] RedirectToFosterParentGuard {
     STACK_ALLOCATED();
 
    public:

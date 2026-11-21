@@ -233,7 +233,7 @@ base::TimeDelta GetTimedBudget(int times_yielded) {
   return kLongParserBudgetValue;
 }
 
-class EndIfDelayedForbiddenScope {
+class [[nodiscard]] EndIfDelayedForbiddenScope {
   STACK_ALLOCATED();
 
  public:
@@ -247,7 +247,7 @@ class EndIfDelayedForbiddenScope {
   HTMLDocumentParserState* state_;
 };
 
-class AttemptToEndForbiddenScope {
+class [[nodiscard]] AttemptToEndForbiddenScope {
   STACK_ALLOCATED();
 
  public:
@@ -260,7 +260,7 @@ class AttemptToEndForbiddenScope {
   HTMLDocumentParserState* state_;
 };
 
-class ShouldCompleteScope {
+class [[nodiscard]] ShouldCompleteScope {
   STACK_ALLOCATED();
 
  public:

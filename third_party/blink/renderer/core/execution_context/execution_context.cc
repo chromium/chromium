@@ -27,7 +27,10 @@
 
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 
+#include <limits>
+
 #include "base/auto_reset.h"
+#include "base/check_op.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "build/build_config.h"
@@ -431,10 +434,12 @@ const base::UnguessableToken& ExecutionContext::GetAgentClusterID() const {
 }
 
 void ExecutionContext::AllowWindowInteraction() {
+  CHECK_LT(window_interaction_tokens_, std::numeric_limits<int>::max());
   ++window_interaction_tokens_;
 }
 
 void ExecutionContext::ConsumeWindowInteraction() {
+  CHECK_GE(window_interaction_tokens_, 0);
   if (window_interaction_tokens_ == 0)
     return;
   --window_interaction_tokens_;

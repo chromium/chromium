@@ -37,6 +37,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/i18n/time_formatting.h"
@@ -8973,7 +8974,7 @@ Element* Document::PointerLockElement() const {
 }
 
 void Document::DecrementLoadEventDelayCount() {
-  DCHECK(load_event_delay_count_);
+  CHECK_GT(load_event_delay_count_, 0);
   --load_event_delay_count_;
 
   if (!load_event_delay_count_)
@@ -8981,7 +8982,7 @@ void Document::DecrementLoadEventDelayCount() {
 }
 
 void Document::DecrementLoadEventDelayCountAndCheckLoadEvent() {
-  DCHECK(load_event_delay_count_);
+  CHECK_GT(load_event_delay_count_, 0);
   --load_event_delay_count_;
 
   if (!load_event_delay_count_)

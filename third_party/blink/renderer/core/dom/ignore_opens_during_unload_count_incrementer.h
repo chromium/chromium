@@ -5,12 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_IGNORE_OPENS_DURING_UNLOAD_COUNT_INCREMENTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_IGNORE_OPENS_DURING_UNLOAD_COUNT_INCREMENTER_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
-class IgnoreOpensDuringUnloadCountIncrementer {
+class [[nodiscard]] IgnoreOpensDuringUnloadCountIncrementer {
   STACK_ALLOCATED();
 
  public:
@@ -20,6 +21,7 @@ class IgnoreOpensDuringUnloadCountIncrementer {
     if (!count_)
       return;
     ++(*count_);
+    CHECK_NE(*count_, 0u);
   }
   IgnoreOpensDuringUnloadCountIncrementer(
       const IgnoreOpensDuringUnloadCountIncrementer&) = delete;
@@ -29,6 +31,7 @@ class IgnoreOpensDuringUnloadCountIncrementer {
   ~IgnoreOpensDuringUnloadCountIncrementer() {
     if (!count_)
       return;
+    CHECK_NE(*count_, 0u);
     --(*count_);
   }
 

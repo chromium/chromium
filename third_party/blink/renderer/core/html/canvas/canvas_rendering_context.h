@@ -89,7 +89,7 @@ class CORE_EXPORT CanvasRenderingContext
   USING_PRE_FINALIZER(CanvasRenderingContext, Dispose);
 
  public:
-  class RestoreGuard {
+  class [[nodiscard]] RestoreGuard {
     STACK_ALLOCATED();
 
    public:

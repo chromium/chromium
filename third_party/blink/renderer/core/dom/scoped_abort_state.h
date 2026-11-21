@@ -20,7 +20,7 @@ namespace blink {
 // This keeps both the algorithm handle and signal alive, the latter because
 // some consumers need access to signal state after the abort algorithm runs, at
 // which point we can't guarantee the signal is alive.
-class ScopedAbortState {
+class [[nodiscard]] ScopedAbortState {
   USING_FAST_MALLOC(ScopedAbortState);
 
  public:

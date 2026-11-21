@@ -66,7 +66,7 @@ class CORE_EXPORT ScopedEventQueue {
   static ScopedEventQueue* instance_;
 };
 
-class EventQueueScope {
+class [[nodiscard]] EventQueueScope {
   STACK_ALLOCATED();
 
  public:

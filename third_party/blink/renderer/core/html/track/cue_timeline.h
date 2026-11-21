@@ -37,11 +37,14 @@ using CueList = HeapVector<Member<TextTrackCue>>;
 // with TextTracks. Owned by a HTMLMediaElement.
 class CORE_EXPORT CueTimeline final : public GarbageCollected<CueTimeline> {
  public:
-  class IgnoreUpdateScope {
+  class [[nodiscard]] IgnoreUpdateScope {
     STACK_ALLOCATED();
     friend CueTimeline;
 
    public:
+    IgnoreUpdateScope(const IgnoreUpdateScope&) = delete;
+    IgnoreUpdateScope& operator=(const IgnoreUpdateScope&) = delete;
+
     ~IgnoreUpdateScope() {
       DCHECK(cue_timeline_);
       cue_timeline_->EndIgnoreUpdateScope(base::PassKey<IgnoreUpdateScope>(),

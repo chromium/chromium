@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_EVENT_DISPATCH_FORBIDDEN_SCOPE_H_
 
 #include "base/auto_reset.h"
+#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -15,13 +16,14 @@ namespace blink {
 
 #if DCHECK_IS_ON()
 
-class EventDispatchForbiddenScope {
+class [[nodiscard]] EventDispatchForbiddenScope {
   STACK_ALLOCATED();
 
  public:
   EventDispatchForbiddenScope() {
     DCHECK(IsMainThread());
     ++count_;
+    CHECK_NE(count_, 0u);
   }
   EventDispatchForbiddenScope(const EventDispatchForbiddenScope&) = delete;
   EventDispatchForbiddenScope& operator=(const EventDispatchForbiddenScope&) =
@@ -29,7 +31,7 @@ class EventDispatchForbiddenScope {
 
   ~EventDispatchForbiddenScope() {
     DCHECK(IsMainThread());
-    DCHECK(count_);
+    CHECK_NE(count_, 0u);
     --count_;
   }
 
@@ -39,7 +41,7 @@ class EventDispatchForbiddenScope {
     return count_;
   }
 
-  class AllowUserAgentEvents {
+  class [[nodiscard]] AllowUserAgentEvents {
     STACK_ALLOCATED();
 
    public:
@@ -56,7 +58,7 @@ class EventDispatchForbiddenScope {
 
 #else
 
-class EventDispatchForbiddenScope {
+class [[nodiscard]] EventDispatchForbiddenScope {
   STACK_ALLOCATED();
 
  public:
@@ -65,7 +67,9 @@ class EventDispatchForbiddenScope {
   EventDispatchForbiddenScope& operator=(const EventDispatchForbiddenScope&) =
       delete;
 
-  class AllowUserAgentEvents {
+  class [[nodiscard]] AllowUserAgentEvents {
+    STACK_ALLOCATED();
+
    public:
     AllowUserAgentEvents() {}
   };

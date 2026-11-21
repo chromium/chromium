@@ -25,7 +25,10 @@
 
 #include "third_party/blink/renderer/core/dom/range.h"
 
+#include <limits>
+
 #include "base/check.h"
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/character_data.h"
@@ -76,12 +79,13 @@
 
 namespace blink {
 
-class RangeUpdateScope {
+class [[nodiscard]] RangeUpdateScope {
   STACK_ALLOCATED();
 
  public:
   explicit RangeUpdateScope(Range* range) {
     DCHECK(range);
+    CHECK_LT(scope_count_, std::numeric_limits<int>::max());
     if (++scope_count_ == 1) {
       range_ = range;
       old_document_ = &range->OwnerDocument();
@@ -96,7 +100,7 @@ class RangeUpdateScope {
   RangeUpdateScope& operator=(const RangeUpdateScope&) = delete;
 
   ~RangeUpdateScope() {
-    DCHECK_GE(scope_count_, 1);
+    CHECK_GE(scope_count_, 1);
     if (--scope_count_ > 0)
       return;
     Settings* settings = old_document_->GetFrame()
@@ -130,7 +134,6 @@ class RangeUpdateScope {
 #endif
   Range* range_ = nullptr;
   Document* old_document_ = nullptr;
-
 };
 
 int RangeUpdateScope::scope_count_ = 0;

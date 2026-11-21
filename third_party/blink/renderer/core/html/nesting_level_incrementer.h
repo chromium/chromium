@@ -30,19 +30,23 @@
 
 namespace blink {
 
-class NestingLevelIncrementer {
+class [[nodiscard]] NestingLevelIncrementer {
   STACK_ALLOCATED();
 
  public:
   explicit NestingLevelIncrementer(unsigned& nesting_level)
       : nesting_level_(&nesting_level) {
     ++(*nesting_level_);
+    CHECK_NE(*nesting_level_, 0u);
   }
 
   NestingLevelIncrementer(const NestingLevelIncrementer&) = delete;
   NestingLevelIncrementer& operator=(const NestingLevelIncrementer&) = delete;
 
-  ~NestingLevelIncrementer() { --(*nesting_level_); }
+  ~NestingLevelIncrementer() {
+    CHECK_NE(*nesting_level_, 0u);
+    --(*nesting_level_);
+  }
 
  private:
   unsigned* nesting_level_;

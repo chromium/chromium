@@ -59,7 +59,7 @@ CORE_EXPORT CustomElementConstructionStack* GetCustomElementConstructionStack(
 // Pushes the construction stack of the constructor of a definition when
 // entering the scope, and pops it when exiting. Helper class for manipulating
 // the construction stacks.
-class CORE_EXPORT CustomElementConstructionStackScope final {
+class CORE_EXPORT [[nodiscard]] CustomElementConstructionStackScope final {
   STACK_ALLOCATED();
 
  public:

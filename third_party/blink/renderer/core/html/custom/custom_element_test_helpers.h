@@ -24,7 +24,7 @@ namespace blink {
 
 // Supports creating test custom element definitions to be added into the global
 // registry. Does not support scoped registries.
-class CustomElementTestingScope : public V8TestingScope {
+class [[nodiscard]] CustomElementTestingScope : public V8TestingScope {
   STACK_ALLOCATED();
 
  public:

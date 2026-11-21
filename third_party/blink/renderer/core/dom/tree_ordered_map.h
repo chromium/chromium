@@ -81,7 +81,7 @@ class CORE_EXPORT TreeOrderedMap : public GarbageCollected<TreeOrderedMap> {
   // Rare trees, but ID lookups may legitimately fail across such removals;
   // this scope object informs TreeOrderedMaps about the transitory state of the
   // underlying tree.
-  class CORE_EXPORT RemoveScope {
+  class CORE_EXPORT [[nodiscard]] RemoveScope {
     STACK_ALLOCATED();
 
    public:
@@ -89,7 +89,7 @@ class CORE_EXPORT TreeOrderedMap : public GarbageCollected<TreeOrderedMap> {
     ~RemoveScope();
   };
 #else
-  class CORE_EXPORT RemoveScope {
+  class CORE_EXPORT [[nodiscard]] RemoveScope {
     STACK_ALLOCATED();
 
    public:

@@ -1397,7 +1397,7 @@ void AddBeforetoggleConsoleWarning(Document& document) {
 }  // namespace
 
 // https://html.spec.whatwg.org/multipage/popover.html#showing-popover
-class ScopedPopoverShowing {
+class [[nodiscard]] ScopedPopoverShowing {
   STACK_ALLOCATED();
 
  public:
@@ -1441,7 +1441,7 @@ class ScopedPopoverShowing {
 
 // https://html.spec.whatwg.org/multipage/popover.html#hiding-popover-nesting-count
 // https://html.spec.whatwg.org/multipage/popover.html#popover-hiding
-class ScopedPopoverHiding {
+class [[nodiscard]] ScopedPopoverHiding {
   STACK_ALLOCATED();
 
  public:
@@ -1837,7 +1837,7 @@ bool HTMLElement::SetUnboundedElementActive(bool active,
   // `source` is always null on close.
   Element* event_source = active ? source : nullptr;
   if (fire_events != UnboundedEvents::kSuppress) {
-    class ScopedTransitioning {
+    class [[nodiscard]] ScopedTransitioning {
       STACK_ALLOCATED();
 
      public:

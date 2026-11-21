@@ -258,7 +258,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
       mojom::blink::PreferredColorScheme::kLight};
 };
 
-class SubframeLoadingDisabler {
+class [[nodiscard]] SubframeLoadingDisabler {
   STACK_ALLOCATED();
 
  public:

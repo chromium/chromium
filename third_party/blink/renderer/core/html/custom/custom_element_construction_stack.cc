@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_construction_stack.h"
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
@@ -108,6 +109,7 @@ CustomElementConstructionStackScope::CustomElementConstructionStackScope(
   construction_stack_.push_back(
       CustomElementConstructionStackEntry(element, definition));
   ++nesting_level_;
+  CHECK_NE(nesting_level_, 0u);
 #if DCHECK_IS_ON()
   element_ = &element;
   depth_ = construction_stack_.size();
@@ -123,6 +125,7 @@ CustomElementConstructionStackScope::~CustomElementConstructionStackScope() {
   // Pop the construction stack.
   construction_stack_.pop_back();
   // Clear the memory backing if all construction stacks are empty.
+  CHECK_NE(nesting_level_, 0u);
   if (--nesting_level_ == 0) {
     GetWindowMapHolder().Clear();
   }

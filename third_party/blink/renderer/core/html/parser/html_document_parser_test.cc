@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -102,7 +103,9 @@ class HTMLDocumentParserTest
 
 // Calls DocumentParser::Detach() in the destructor. Used to ensure detach is
 // called, as otherwise some assertions may be triggered.
-class ScopedParserDetacher {
+class [[nodiscard]] ScopedParserDetacher {
+  STACK_ALLOCATED();
+
  public:
   explicit ScopedParserDetacher(DocumentParser* parser) : parser_(parser) {}
 
@@ -112,7 +115,7 @@ class ScopedParserDetacher {
   ~ScopedParserDetacher() { parser_->Detach(); }
 
  private:
-  UntracedMember<DocumentParser> parser_;
+  DocumentParser* parser_;
 };
 
 // Enables the kDeferTreeBuilderFlush feature with deterministic backoff

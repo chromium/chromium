@@ -31,6 +31,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOCUMENT_LIFECYCLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOCUMENT_LIFECYCLE_H_
 
+#include <limits>
+
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
@@ -81,7 +83,7 @@ class CORE_EXPORT DocumentLifecycle {
     kStopped,
   };
 
-  class Scope {
+  class [[nodiscard]] Scope {
     STACK_ALLOCATED();
 
    public:
@@ -95,28 +97,9 @@ class CORE_EXPORT DocumentLifecycle {
     LifecycleState final_state_;
   };
 
-  class DeprecatedTransition {
-    DISALLOW_NEW();
-
-   public:
-    DeprecatedTransition(LifecycleState from, LifecycleState to);
-    DeprecatedTransition(const DeprecatedTransition&) = delete;
-    DeprecatedTransition& operator=(const DeprecatedTransition&) = delete;
-    ~DeprecatedTransition();
-
-    LifecycleState From() const { return from_; }
-    LifecycleState To() const { return to_; }
-
-   private:
-    raw_ptr<DeprecatedTransition, UnprotectedInRelease | DanglingUntriaged>
-        previous_;
-    LifecycleState from_;
-    LifecycleState to_;
-  };
-
   // Within this scope, state transitions are not allowed.
   // Any attempts to advance or rewind will result in a DCHECK.
-  class DisallowTransitionScope {
+  class [[nodiscard]] DisallowTransitionScope {
     STACK_ALLOCATED();
 
    public:
@@ -135,7 +118,7 @@ class CORE_EXPORT DocumentLifecycle {
     DocumentLifecycle& document_lifecycle_;
   };
 
-  class DetachScope {
+  class [[nodiscard]] DetachScope {
     STACK_ALLOCATED();
 
    public:
@@ -156,7 +139,7 @@ class CORE_EXPORT DocumentLifecycle {
   // example, https://crbug.com/788219, this scope is triggered and no more
   // layout or style computation is allowed.
   // This class should never be used outside of debugging.
-  class PostponeTransitionScope {
+  class [[nodiscard]] PostponeTransitionScope {
     USING_FAST_MALLOC(PostponeTransitionScope);
 
    public:
@@ -173,7 +156,7 @@ class CORE_EXPORT DocumentLifecycle {
         document_lifecycle_;
   };
 
-  class CheckNoTransitionScope {
+  class [[nodiscard]] CheckNoTransitionScope {
     STACK_ALLOCATED();
 
    public:
@@ -199,16 +182,22 @@ class CORE_EXPORT DocumentLifecycle {
   void EnsureStateAtMost(LifecycleState);
 
   bool StateTransitionDisallowed() const { return disallow_transition_count_; }
-  void IncrementNoTransitionCount() { disallow_transition_count_++; }
+  void IncrementNoTransitionCount() {
+    CHECK_LT(disallow_transition_count_, std::numeric_limits<int>::max());
+    disallow_transition_count_++;
+  }
   void DecrementNoTransitionCount() {
-    DCHECK_GT(disallow_transition_count_, 0);
+    CHECK_GT(disallow_transition_count_, 0);
     disallow_transition_count_--;
   }
 
   bool InDetach() const { return detach_count_; }
-  void IncrementDetachCount() { detach_count_++; }
+  void IncrementDetachCount() {
+    CHECK_LT(detach_count_, std::numeric_limits<int>::max());
+    detach_count_++;
+  }
   void DecrementDetachCount() {
-    DCHECK_GT(detach_count_, 0);
+    CHECK_GT(detach_count_, 0);
     detach_count_--;
   }
 

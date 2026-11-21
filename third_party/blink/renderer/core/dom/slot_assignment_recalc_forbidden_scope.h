@@ -5,7 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SLOT_ASSIGNMENT_RECALC_FORBIDDEN_SCOPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SLOT_ASSIGNMENT_RECALC_FORBIDDEN_SCOPE_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -20,13 +22,17 @@ class [[nodiscard]] SlotAssignmentRecalcForbiddenScope {
   explicit SlotAssignmentRecalcForbiddenScope(Document& document)
       : count_(document.SlotAssignmentRecalcForbiddenRecursionDepth()) {
     ++count_;
+    CHECK_NE(count_, 0u);
   }
 
   SlotAssignmentRecalcForbiddenScope(
       const SlotAssignmentRecalcForbiddenScope&) = delete;
   SlotAssignmentRecalcForbiddenScope& operator=(
       const SlotAssignmentRecalcForbiddenScope&) = delete;
-  ~SlotAssignmentRecalcForbiddenScope() { --count_; }
+  ~SlotAssignmentRecalcForbiddenScope() {
+    CHECK_NE(count_, 0u);
+    --count_;
+  }
 
  private:
   unsigned& count_;

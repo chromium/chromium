@@ -89,7 +89,7 @@ class CORE_EXPORT NthIndexData final : public GarbageCollected<NthIndexData> {
 // it sets Document's NthIndexCache member to ourselves (so that NthChildIndex
 // etc. can be static, and we don't need to send the cache through to
 // selector matching), and when destroyed, unsets that member.
-class CORE_EXPORT NthIndexCache final {
+class CORE_EXPORT [[nodiscard]] NthIndexCache final {
   STACK_ALLOCATED();
 
  public:

@@ -5,6 +5,9 @@
 #include "third_party/blink/renderer/core/html/track/cue_timeline.h"
 
 #include <algorithm>
+#include <limits>
+
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
@@ -447,15 +450,15 @@ void CueTimeline::UpdateActiveCuePastAndFutureNodes() {
 
 CueTimeline::IgnoreUpdateScope CueTimeline::BeginIgnoreUpdateScope() {
   DCHECK(!ignore_update_ || !update_requested_while_ignoring_);
+  CHECK_LT(ignore_update_, std::numeric_limits<int>::max());
   ++ignore_update_;
 
-  IgnoreUpdateScope scope(*this);
-  return scope;
+  return IgnoreUpdateScope(*this);
 }
 
 void CueTimeline::EndIgnoreUpdateScope(base::PassKey<IgnoreUpdateScope>,
                                        IgnoreUpdateScope const& scope) {
-  DCHECK(ignore_update_);
+  CHECK_GT(ignore_update_, 0);
   --ignore_update_;
 
   // If this is the last scope and an update was requested, then perform it

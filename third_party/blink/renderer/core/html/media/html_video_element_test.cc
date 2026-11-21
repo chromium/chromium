@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 using testing::_;
@@ -205,7 +206,9 @@ class AcceleratedCompositingTestPlatform : public TestingPlatformSupport {
   bool IsGpuCompositingDisabled() const override { return false; }
 };
 
-class ScopedFakeGpuContext {
+class [[nodiscard]] ScopedFakeGpuContext {
+  STACK_ALLOCATED();
+
  public:
   ScopedFakeGpuContext() {
     SharedGpuContext::Reset();

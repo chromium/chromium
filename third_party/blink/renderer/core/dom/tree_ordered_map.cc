@@ -31,6 +31,7 @@
 
 #include "third_party/blink/renderer/core/dom/tree_ordered_map.h"
 
+#include "base/check_op.h"
 #include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -46,15 +47,16 @@ namespace blink {
 TreeOrderedMap::TreeOrderedMap() = default;
 
 #if DCHECK_IS_ON()
-static int g_remove_scope_level = 0;
+static unsigned g_remove_scope_level = 0;
 
 TreeOrderedMap::RemoveScope::RemoveScope() {
-  g_remove_scope_level++;
+  ++g_remove_scope_level;
+  CHECK_NE(g_remove_scope_level, 0u);
 }
 
 TreeOrderedMap::RemoveScope::~RemoveScope() {
-  DCHECK(g_remove_scope_level);
-  g_remove_scope_level--;
+  CHECK_NE(g_remove_scope_level, 0u);
+  --g_remove_scope_level;
 }
 #endif
 

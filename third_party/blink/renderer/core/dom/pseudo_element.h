@@ -138,7 +138,7 @@ class CORE_EXPORT PseudoElement : public Element {
   void SetIsGeneratedName(bool generated) { is_generated_name_ = generated; }
 
  private:
-  class AttachLayoutTreeScope {
+  class [[nodiscard]] AttachLayoutTreeScope {
     STACK_ALLOCATED();
 
    public:

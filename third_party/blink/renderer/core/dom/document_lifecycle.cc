@@ -38,26 +38,12 @@
 
 namespace blink {
 
-static DocumentLifecycle::DeprecatedTransition* g_deprecated_transition_stack =
-    nullptr;
-
 DocumentLifecycle::Scope::Scope(DocumentLifecycle& lifecycle,
                                 LifecycleState final_state)
     : lifecycle_(lifecycle), final_state_(final_state) {}
 
 DocumentLifecycle::Scope::~Scope() {
   lifecycle_.AdvanceTo(final_state_);
-}
-
-DocumentLifecycle::DeprecatedTransition::DeprecatedTransition(
-    LifecycleState from,
-    LifecycleState to)
-    : previous_(g_deprecated_transition_stack), from_(from), to_(to) {
-  g_deprecated_transition_stack = this;
-}
-
-DocumentLifecycle::DeprecatedTransition::~DeprecatedTransition() {
-  g_deprecated_transition_stack = previous_;
 }
 
 DocumentLifecycle::DocumentLifecycle()
@@ -183,11 +169,6 @@ bool DocumentLifecycle::CanRewindTo(LifecycleState next_state) const {
   if (StateTransitionDisallowed())
     return false;
 
-  // This transition is bogus, but we've allowed it anyway.
-  if (g_deprecated_transition_stack &&
-      state_ == g_deprecated_transition_stack->From() &&
-      next_state == g_deprecated_transition_stack->To())
-    return true;
   return state_ == kStyleClean || state_ == kAfterPerformLayout ||
          state_ == kLayoutClean || state_ == kCompositingInputsClean ||
          state_ == kPrePaintClean || state_ == kPaintClean;

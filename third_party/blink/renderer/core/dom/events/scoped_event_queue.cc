@@ -32,6 +32,7 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
@@ -87,10 +88,11 @@ ScopedEventQueue* ScopedEventQueue::Instance() {
 
 void ScopedEventQueue::IncrementScopingLevel() {
   scoping_level_++;
+  CHECK_NE(scoping_level_, 0u);
 }
 
 void ScopedEventQueue::DecrementScopingLevel() {
-  DCHECK(scoping_level_);
+  CHECK_NE(scoping_level_, 0u);
   scoping_level_--;
   if (!scoping_level_)
     DispatchAllEvents();

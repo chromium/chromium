@@ -31,6 +31,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_DOCUMENT_H_
 
 #include <cstdint>
+#include <limits>
 #include <memory>
 #include <optional>
 
@@ -1695,7 +1696,10 @@ class CORE_EXPORT Document : public ContainerNode,
 
   // Used to allow element that loads data without going through a FrameLoader
   // to delay the 'load' event.
-  void IncrementLoadEventDelayCount() { ++load_event_delay_count_; }
+  void IncrementLoadEventDelayCount() {
+    CHECK_LT(load_event_delay_count_, std::numeric_limits<int>::max());
+    ++load_event_delay_count_;
+  }
   void DecrementLoadEventDelayCount();
   void CheckLoadEventSoon();
   bool IsDelayingLoadEvent();
@@ -1797,9 +1801,12 @@ class CORE_EXPORT Document : public ContainerNode,
   uint32_t PopoverHidingNestingCount() const {
     return popover_hiding_nesting_count_;
   }
-  void IncrementPopoverHidingNestingCount() { ++popover_hiding_nesting_count_; }
+  void IncrementPopoverHidingNestingCount() {
+    ++popover_hiding_nesting_count_;
+    CHECK_NE(popover_hiding_nesting_count_, 0u);
+  }
   void DecrementPopoverHidingNestingCount() {
-    CHECK(popover_hiding_nesting_count_);
+    CHECK_NE(popover_hiding_nesting_count_, 0u);
     --popover_hiding_nesting_count_;
   }
 
@@ -2185,7 +2192,7 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void AddPostPrerenderingActivationStep(base::OnceClosure callback);
 
-  class CORE_EXPORT PaintPreviewScope {
+  class CORE_EXPORT [[nodiscard]] PaintPreviewScope {
     STACK_ALLOCATED();
 
    public:

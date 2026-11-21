@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/dom/child_list_mutation_scope.h"
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/no_destructor.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer_interest_group.h"
 #include "third_party/blink/renderer/core/dom/mutation_record.h"
@@ -67,7 +68,7 @@ ChildListMutationAccumulator::ChildListMutationAccumulator(
 }
 
 void ChildListMutationAccumulator::LeaveMutationScope() {
-  DCHECK_GT(mutation_scopes_, 0u);
+  CHECK_GT(mutation_scopes_, 0u);
   if (!--mutation_scopes_) {
     if (!IsEmpty())
       EnqueueMutationRecord();

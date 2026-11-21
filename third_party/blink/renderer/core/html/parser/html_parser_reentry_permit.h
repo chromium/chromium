@@ -5,7 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_PARSER_REENTRY_PERMIT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_PARSER_REENTRY_PERMIT_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
@@ -48,13 +50,14 @@ class HTMLParserReentryPermit final
     parser_pause_flag_ = true;
   }
 
-  class ScriptNestingLevelIncrementer final {
+  class [[nodiscard]] ScriptNestingLevelIncrementer final {
     STACK_ALLOCATED();
 
    public:
     explicit ScriptNestingLevelIncrementer(HTMLParserReentryPermit* permit)
         : permit_(permit) {
-      permit_->script_nesting_level_++;
+      ++permit_->script_nesting_level_;
+      CHECK_NE(permit_->script_nesting_level_, 0u);
     }
 
     ScriptNestingLevelIncrementer(const ScriptNestingLevelIncrementer&) =
@@ -62,10 +65,9 @@ class HTMLParserReentryPermit final
     ScriptNestingLevelIncrementer& operator=(
         const ScriptNestingLevelIncrementer&) = delete;
 
-    ScriptNestingLevelIncrementer(ScriptNestingLevelIncrementer&&) = default;
-
     ~ScriptNestingLevelIncrementer() {
-      permit_->script_nesting_level_--;
+      CHECK_NE(permit_->script_nesting_level_, 0u);
+      --permit_->script_nesting_level_;
       if (!permit_->script_nesting_level_)
         permit_->parser_pause_flag_ = false;
     }

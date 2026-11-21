@@ -342,7 +342,7 @@ namespace blink {
 
 namespace {
 
-class DisplayLockStyleScope {
+class [[nodiscard]] DisplayLockStyleScope {
   STACK_ALLOCATED();
 
  public:

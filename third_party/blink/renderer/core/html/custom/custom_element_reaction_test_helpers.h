@@ -129,7 +129,7 @@ class TestReaction : public CustomElementReaction {
   HeapVector<Member<Command>> commands_;
 };
 
-class ResetCustomElementReactionStackForTest final {
+class [[nodiscard]] ResetCustomElementReactionStackForTest final {
   STACK_ALLOCATED();
  public:
   explicit ResetCustomElementReactionStackForTest(Agent& agent)

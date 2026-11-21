@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CHILD_LIST_MUTATION_SCOPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_CHILD_LIST_MUTATION_SCOPE_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer.h"
@@ -64,7 +65,10 @@ class CORE_EXPORT ChildListMutationAccumulator final
 
   // Register and unregister mutation scopes that are using this mutation
   // accumulator.
-  void EnterMutationScope() { mutation_scopes_++; }
+  void EnterMutationScope() {
+    ++mutation_scopes_;
+    CHECK_NE(mutation_scopes_, 0u);
+  }
   void LeaveMutationScope();
 
   void Trace(Visitor*) const;
@@ -90,7 +94,7 @@ class CORE_EXPORT ChildListMutationAccumulator final
 // Put one of these on the stack around a compound child list change of
 // |target| (e.g. inserting a DocumentFragment) so that MutationObservers get
 // one record for it. Nested scopes for the same target join the outermost one.
-class ChildListMutationScope final {
+class [[nodiscard]] ChildListMutationScope final {
   STACK_ALLOCATED();
 
  public:

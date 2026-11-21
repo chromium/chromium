@@ -275,7 +275,7 @@ String BuildElementErrorMessage(const String& error) {
   return builder.ToString();
 }
 
-class AudioSourceProviderClientLockScope {
+class [[nodiscard]] AudioSourceProviderClientLockScope {
   STACK_ALLOCATED();
 
  public:
