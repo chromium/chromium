@@ -5,8 +5,8 @@
 #ifndef CHROME_UPDATER_TEST_JSON_MATCHERS_H_
 #define CHROME_UPDATER_TEST_JSON_MATCHERS_H_
 
-// GMock matchers on JSON values, for the update protocol request bodies that
-// `ScopedServer` receives. Combine them with GMock matchers such as
+// GMock matchers on JSON values, such as the update protocol request bodies
+// that `ScopedServer` receives. Combine them with GMock matchers such as
 // `testing::AllOf()` and `testing::Not()`, and match a request with
 // `request::GetJSONContentMatcher()`. A mismatch explains where the value
 // differs, as in `.request.apps[1].ping.ad: is 5098, expected absent`.

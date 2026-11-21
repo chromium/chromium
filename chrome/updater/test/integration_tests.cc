@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/check_deref.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -43,6 +42,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -1792,59 +1792,34 @@ TEST_F(IntegrationTest, GetPoliciesJson) {
 #else   // BUILDFLAG(IS_WIN)
         CreateUpdateServiceProxy(GetUpdaterScopeForTesting());
 #endif  // BUILDFLAG(IS_WIN)
-    base::RunLoop loop;
-    update_service->GetPoliciesJson(
-        base::BindLambdaForTesting([&](const std::string& result) {
-          const auto root = base::JSONReader::Read(
-              result, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
-          ASSERT_TRUE(root);
-          const base::DictValue& app_policies = CHECK_DEREF(
-              CHECK_DEREF(root).GetDict().FindDict("policiesByAppId"));
-          const base::DictValue& test1_install_policy = CHECK_DEREF(
-              CHECK_DEREF(app_policies.FindDict("test1")).FindDict("Install"));
-          EXPECT_EQ(
-              CHECK_DEREF(test1_install_policy.FindString("prevailingSource")),
-              "DictValuePolicy");
-          EXPECT_EQ(CHECK_DEREF(CHECK_DEREF(test1_install_policy.FindDict(
-                                                "valuesBySource"))
-                                    .FindInt("DictValuePolicy")),
-                    6);
-          const base::DictValue& test2_update_policy = CHECK_DEREF(
-              CHECK_DEREF(app_policies.FindDict("test2")).FindDict("Update"));
-          EXPECT_EQ(
-              CHECK_DEREF(test2_update_policy.FindString("prevailingSource")),
-              "DictValuePolicy");
-          EXPECT_EQ(CHECK_DEREF(CHECK_DEREF(test2_update_policy.FindDict(
-                                                "valuesBySource"))
-                                    .FindInt("DictValuePolicy")),
-                    3);
+    base::test::TestFuture<const std::string&> policies_json;
+    update_service->GetPoliciesJson(policies_json.GetCallback());
+    ASSERT_TRUE(policies_json.Wait());
+    const std::optional<base::Value> root = base::JSONReader::Read(
+        policies_json.Get(), base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+    ASSERT_TRUE(root) << policies_json.Get();
 
-          const base::DictValue& updater_policies = CHECK_DEREF(
-              CHECK_DEREF(root).GetDict().FindDict("policiesByName"));
-          const base::DictValue& last_check_period_policy =
-              CHECK_DEREF(updater_policies.FindDict("LastCheckPeriod"));
-          EXPECT_EQ(CHECK_DEREF(last_check_period_policy.FindString(
-                        "prevailingSource")),
-                    "DictValuePolicy");
-          EXPECT_EQ(CHECK_DEREF(CHECK_DEREF(last_check_period_policy.FindDict(
-                                                "valuesBySource"))
-                                    .FindString("DictValuePolicy")),
-                    "64800000000");
-          const base::DictValue& updates_suppressed_policy =
-              CHECK_DEREF(updater_policies.FindDict("UpdatesSuppressed"));
-          EXPECT_EQ(CHECK_DEREF(updates_suppressed_policy.FindString(
-                        "prevailingSource")),
-                    "DictValuePolicy");
-          EXPECT_EQ(CHECK_DEREF(CHECK_DEREF(updates_suppressed_policy.FindDict(
-                                                "valuesBySource"))
-                                    .FindDict("DictValuePolicy")),
-                    base::DictValue()
-                        .Set("Duration", 120)
-                        .Set("StartHour", 15)
-                        .Set("StartMinute", 0));
-          loop.Quit();
-        }));
-    loop.Run();
+    // Returns a matcher for a policy whose prevailing source,
+    // `DictValuePolicy`, sets it to `value`.
+    const auto set_by_dict_policy = [](const auto& value) {
+      return testing::AllOf(
+          json::HasKey("prevailingSource", "DictValuePolicy"),
+          json::HasPath("valuesBySource.DictValuePolicy", value));
+    };
+    EXPECT_THAT(
+        *root,
+        testing::AllOf(
+            json::HasPath("policiesByAppId.test1.Install",
+                          set_by_dict_policy(6)),
+            json::HasPath("policiesByAppId.test2.Update",
+                          set_by_dict_policy(3)),
+            json::HasPath("policiesByName.LastCheckPeriod",
+                          set_by_dict_policy("64800000000")),
+            json::HasPath("policiesByName.UpdatesSuppressed",
+                          set_by_dict_policy(base::DictValue()
+                                                 .Set("Duration", 120)
+                                                 .Set("StartHour", 15)
+                                                 .Set("StartMinute", 0)))));
   }
 
   ASSERT_NO_FATAL_FAILURE(Uninstall());
