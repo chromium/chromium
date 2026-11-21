@@ -560,4 +560,7 @@ BASE_FEATURE_PARAM(std::string,
                    /*default_value=*/"");
 BASE_FEATURE(kSocketLayerNetworkThrottling, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kClearPartitionedCookiesOnExitByTopLevelSite,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace network::features

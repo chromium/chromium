@@ -28,6 +28,7 @@
 #include "net/cookies/cookie_util.h"
 #include "net/url_request/url_request_context.h"
 #include "services/network/cookie_access_delegate_impl.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/session_cleanup_cookie_store.h"
 #include "url/gurl.h"
 
@@ -200,11 +201,21 @@ void CookieManager::DeleteSessionOnlyCookies(
 
   cookie_store_->DeleteMatchingCookiesAsync(
       base::BindRepeating(
-          [](const DeleteCookiePredicate& predicate,
+          [](const DeleteCookiePredicate& predicate, bool check_partition_site,
              const net::CanonicalCookie& cookie) {
-            return predicate.Run(cookie.Domain(), cookie.SourceScheme());
+            if (predicate.Run(cookie.Domain(), cookie.SourceScheme())) {
+              return true;
+            }
+            // Partitioned cookies belong to their partition's top-level site
+            // as well, so delete them if that site is session-only.
+            return check_partition_site && cookie.IsPartitioned() &&
+                   SessionCleanupCookieStore::
+                       ShouldDeletePartitionedCookiesForTopLevelSite(
+                           predicate, cookie.PartitionKey()->site());
           },
-          std::move(delete_cookie_predicate)),
+          std::move(delete_cookie_predicate),
+          base::FeatureList::IsEnabled(
+              features::kClearPartitionedCookiesOnExitByTopLevelSite)),
       std::move(callback));
 }
 

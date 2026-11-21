@@ -445,6 +445,12 @@ BASE_DECLARE_FEATURE_PARAM(std::string, kDnsHostMappingExperimentRules);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE(kSocketLayerNetworkThrottling);
 
+// When enabled, clearing session-only cookies (e.g. on exit) also deletes
+// partitioned cookies whose partition's top-level site is session-only, even
+// if the cookie's own domain is allowed to persist. See crbug.com/502262216.
+COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
+BASE_DECLARE_FEATURE(kClearPartitionedCookiesOnExitByTopLevelSite);
+
 }  // namespace network::features
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_FEATURES_H_

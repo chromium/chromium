@@ -2310,6 +2310,51 @@ TEST_F(SQLitePersistentCookieStoreTest, SavingPartitionedCookies) {
   DestroyStore();
 }
 
+TEST_F(SQLitePersistentCookieStoreTest, DeleteAllInListWithTopFrameSiteKeys) {
+  InitializeStore(/*crypt=*/false, /*restore_old_session_cookies=*/false);
+
+  auto add_cookie = [&](const std::string& name, const std::string& domain,
+                        std::optional<CookiePartitionKey> partition_key) {
+    store_->AddCookie(*CanonicalCookie::CreateUnsafeCookieForTesting(
+        name, "bar", domain, "/",
+        /*creation=*/base::Time::Now(),
+        /*expiration=*/base::Time::Now() + base::Days(1),
+        /*last_access=*/base::Time::Now(),
+        /*last_update=*/base::Time::Now(), /*secure=*/true,
+        /*httponly=*/false, CookieSameSite::NO_RESTRICTION,
+        COOKIE_PRIORITY_DEFAULT, CookieSourceType::kOther,
+        std::move(partition_key), CookieSourceScheme::kSecure));
+  };
+
+  add_cookie("unpartitioned", "embedded.com", std::nullopt);
+  add_cookie("partitioned_deleted", "embedded.com",
+             CookiePartitionKey::FromURLForTesting(
+                 GURL("https://sessiononly.com"),
+                 CookiePartitionKey::AncestorChainBit::kCrossSite));
+  add_cookie("partitioned_same_site_ancestor_deleted", "embedded.com",
+             CookiePartitionKey::FromURLForTesting(
+                 GURL("https://sessiononly.com"),
+                 CookiePartitionKey::AncestorChainBit::kSameSite));
+  add_cookie("partitioned_kept", "embedded.com",
+             CookiePartitionKey::FromURLForTesting(GURL("https://other.com")));
+  add_cookie("host_key_deleted", "sessiononly-host.com", std::nullopt);
+  Flush();
+
+  // Empty keys must not match unpartitioned cookies.
+  store_->DeleteAllInList({{"sessiononly-host.com", true}},
+                          {"https://sessiononly.com", ""});
+  DestroyStore();
+
+  CanonicalCookieVector cookies = CreateAndLoad(
+      /*crypt_cookies=*/false, /*restore_old_session_cookies=*/false);
+  std::vector<std::string> names;
+  for (const auto& cookie : cookies) {
+    names.push_back(cookie->Name());
+  }
+  EXPECT_THAT(names, testing::UnorderedElementsAre("unpartitioned",
+                                                   "partitioned_kept"));
+}
+
 TEST_F(SQLitePersistentCookieStoreTest, LoadingPartitionedCookies) {
   InitializeStore(/*crypt=*/false, /*restore_old_session_cookies=*/false);
   DestroyStore();

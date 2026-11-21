@@ -4936,6 +4936,13 @@ EVENT_TYPE(COOKIE_STORE_SESSION_PERSISTENCE)
 //  }
 EVENT_TYPE(COOKIE_PERSISTENT_STORE_ORIGIN_FILTERED)
 
+// Event emitted when all partitioned cookies in a particular partition are
+// removed from the persistent store on shutdown.
+//  {
+//    "top_level_site": <Serialized top-level site of the partition>
+//  }
+EVENT_TYPE(COOKIE_PERSISTENT_STORE_PARTITION_FILTERED)
+
 // Event emitted when the persistent database load is started and completed.
 //  {
 //  }

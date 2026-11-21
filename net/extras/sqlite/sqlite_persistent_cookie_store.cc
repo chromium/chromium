@@ -410,8 +410,10 @@ class SQLitePersistentCookieStore::Backend
 
   size_t GetQueueLengthForTesting();
 
-  // Post background delete of all cookies that match |cookies|.
-  void DeleteAllInList(const std::list<CookieOrigin>& cookies);
+  // Post background delete of all cookies that match |cookies| or whose
+  // top_frame_site_key is in |top_frame_site_keys|.
+  void DeleteAllInList(const std::list<CookieOrigin>& cookies,
+                       const std::list<std::string>& top_frame_site_keys);
 
  private:
   // You should call Close() before destructing this object.
@@ -493,7 +495,9 @@ class SQLitePersistentCookieStore::Backend
 
   void DeleteSessionCookiesOnStartup();
 
-  void BackgroundDeleteAllInList(const std::list<CookieOrigin>& cookies);
+  void BackgroundDeleteAllInList(
+      const std::list<CookieOrigin>& cookies,
+      const std::list<std::string>& top_frame_site_keys);
 
   // Shared code between the different load strategies to be used after all
   // cookies have been loaded.
@@ -1461,17 +1465,19 @@ size_t SQLitePersistentCookieStore::Backend::GetQueueLengthForTesting() {
 }
 
 void SQLitePersistentCookieStore::Backend::DeleteAllInList(
-    const std::list<CookieOrigin>& cookies) {
-  if (cookies.empty())
+    const std::list<CookieOrigin>& cookies,
+    const std::list<std::string>& top_frame_site_keys) {
+  if (cookies.empty() && top_frame_site_keys.empty()) {
     return;
+  }
 
   if (background_task_runner()->RunsTasksInCurrentSequence()) {
-    BackgroundDeleteAllInList(cookies);
+    BackgroundDeleteAllInList(cookies, top_frame_site_keys);
   } else {
     // Perform deletion on background task runner.
-    PostBackgroundTask(
-        FROM_HERE,
-        base::BindOnce(&Backend::BackgroundDeleteAllInList, this, cookies));
+    PostBackgroundTask(FROM_HERE,
+                       base::BindOnce(&Backend::BackgroundDeleteAllInList, this,
+                                      cookies, top_frame_site_keys));
   }
 }
 
@@ -1481,10 +1487,9 @@ void SQLitePersistentCookieStore::Backend::DeleteSessionCookiesOnStartup() {
     LOG(WARNING) << "Unable to delete session cookies.";
 }
 
-// TODO(crbug.com/40188414) Investigate including top_frame_site_key in the
-// WHERE clause.
 void SQLitePersistentCookieStore::Backend::BackgroundDeleteAllInList(
-    const std::list<CookieOrigin>& cookies) {
+    const std::list<CookieOrigin>& cookies,
+    const std::list<std::string>& top_frame_site_keys) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
 
   if (!db())
@@ -1498,6 +1503,13 @@ void SQLitePersistentCookieStore::Backend::BackgroundDeleteAllInList(
   sql::Statement delete_statement(db()->GetCachedStatement(
       SQL_FROM_HERE, "DELETE FROM cookies WHERE host_key=? AND is_secure=?"));
   if (!delete_statement.is_valid()) {
+    LOG(WARNING) << "Unable to delete cookies on shutdown.";
+    return;
+  }
+
+  sql::Statement delete_partition_statement(db()->GetCachedStatement(
+      SQL_FROM_HERE, "DELETE FROM cookies WHERE top_frame_site_key=?"));
+  if (!delete_partition_statement.is_valid()) {
     LOG(WARNING) << "Unable to delete cookies on shutdown.";
     return;
   }
@@ -1518,6 +1530,20 @@ void SQLitePersistentCookieStore::Backend::BackgroundDeleteAllInList(
     delete_statement.BindInt(1, cookie.second);
     if (!delete_statement.Run()) {
       LOG(WARNING) << "Could not delete a cookie from the DB.";
+    }
+  }
+
+  for (const std::string& top_frame_site_key : top_frame_site_keys) {
+    // Unpartitioned cookies are stored with an empty top_frame_site_key, so an
+    // empty key must never be used here.
+    if (top_frame_site_key.empty()) {
+      continue;
+    }
+
+    delete_partition_statement.Reset(true);
+    delete_partition_statement.BindString(0, top_frame_site_key);
+    if (!delete_partition_statement.Run()) {
+      LOG(WARNING) << "Could not delete partitioned cookies from the DB.";
     }
   }
 
@@ -1566,8 +1592,9 @@ SQLitePersistentCookieStore::SQLitePersistentCookieStore(
 }
 
 void SQLitePersistentCookieStore::DeleteAllInList(
-    const std::list<CookieOrigin>& cookies) {
-  backend_->DeleteAllInList(cookies);
+    const std::list<CookieOrigin>& cookies,
+    const std::list<std::string>& top_frame_site_keys) {
+  backend_->DeleteAllInList(cookies, top_frame_site_keys);
 }
 
 void SQLitePersistentCookieStore::Load(LoadedCallback loaded_callback,

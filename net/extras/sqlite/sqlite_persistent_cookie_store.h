@@ -61,8 +61,13 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentCookieStore
   SQLitePersistentCookieStore& operator=(const SQLitePersistentCookieStore&) =
       delete;
 
-  // Deletes the cookies whose origins match those given in |cookies|.
-  void DeleteAllInList(const std::list<CookieOrigin>& cookies);
+  // Deletes the cookies whose origins match those given in |cookies|, as well
+  // as all partitioned cookies whose serialized top-level site (i.e. the
+  // `top_frame_site_key` column) is in |top_frame_site_keys|. Empty keys in
+  // |top_frame_site_keys| are ignored so that unpartitioned cookies are never
+  // matched by them.
+  void DeleteAllInList(const std::list<CookieOrigin>& cookies,
+                       const std::list<std::string>& top_frame_site_keys);
 
   // CookieMonster::PersistentCookieStore:
   void Load(LoadedCallback loaded_callback,

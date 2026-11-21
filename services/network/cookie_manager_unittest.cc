@@ -19,6 +19,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/spin_wait.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -41,6 +42,7 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/cookie_access_delegate_impl.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
@@ -2593,6 +2595,19 @@ class SessionCleanupCookieManagerTest : public CookieManagerTest {
         net::COOKIE_PRIORITY_MEDIUM, net::CookieSourceType::kOther);
   }
 
+  net::CanonicalCookie CreatePartitionedCookie(const std::string& name,
+                                               const std::string& domain,
+                                               const GURL& top_level_url) {
+    base::Time t = base::Time::Now();
+    return *net::CanonicalCookie::CreateUnsafeCookieForTesting(
+        name, "B", domain, "/", t, t + base::Days(1), base::Time(),
+        base::Time(), /*secure=*/true, /*httponly=*/false,
+        net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_MEDIUM,
+        net::CookieSourceType::kOther,
+        net::CookiePartitionKey::FromURLForTesting(top_level_url),
+        net::CookieSourceScheme::kSecure);
+  }
+
   bool CreateAndTryToClearStaleCookie(base::Time expiration,
                                       base::Time last_access,
                                       base::Time last_update) {
@@ -2683,6 +2698,77 @@ TEST_F(SessionCleanupCookieManagerTest, SettingMustMatchDomain) {
 
   EXPECT_EQ(1u, service_wrapper()->DeleteSessionOnlyCookies());
   EXPECT_EQ(0u, service_wrapper()->GetAllCookies().size());
+}
+
+// Test fixture for testing the deletion of partitioned cookies whose
+// partition's top-level site is session-only.
+class PartitionedSessionCleanupCookieManagerTest
+    : public SessionCleanupCookieManagerTest {
+ protected:
+  static constexpr char kSessionOnlyTopLevelURL[] = "https://toplevel.com";
+
+  // Sets an unpartitioned cookie and a cookie partitioned under
+  // `kSessionOnlyTopLevelURL` for `kCookieDomain`, and makes only
+  // `kSessionOnlyTopLevelURL` session-only.
+  void SetUpPartitionedCookieWithSessionOnlyTopLevelSite() {
+    EXPECT_TRUE(SetCanonicalCookie(CreateCookie(), "https", true));
+    EXPECT_TRUE(SetCanonicalCookie(
+        CreatePartitionedCookie("Partitioned", kCookieDomain,
+                                GURL(kSessionOnlyTopLevelURL)),
+        "https", true));
+    EXPECT_EQ(2u, service_wrapper()->GetAllCookies().size());
+
+    SetContentSettings(
+        {CreateSetting(CONTENT_SETTING_SESSION_ONLY, kSessionOnlyTopLevelURL)});
+  }
+};
+
+TEST_F(PartitionedSessionCleanupCookieManagerTest,
+       DeletePartitionedCookiesForSessionOnlyTopLevelSiteOnShutdown) {
+  SetUpPartitionedCookieWithSessionOnlyTopLevelSite();
+
+  auto store = CreateCookieStore();
+  InitializeCookieService(store, store);
+
+  std::vector<net::CanonicalCookie> cookies =
+      service_wrapper()->GetAllCookies();
+  ASSERT_EQ(1u, cookies.size());
+  EXPECT_FALSE(cookies[0].IsPartitioned());
+}
+
+TEST_F(PartitionedSessionCleanupCookieManagerTest,
+       KeepPartitionedCookiesForSessionOnlyTopLevelSiteOnShutdownIfDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kClearPartitionedCookiesOnExitByTopLevelSite);
+  SetUpPartitionedCookieWithSessionOnlyTopLevelSite();
+
+  auto store = CreateCookieStore();
+  InitializeCookieService(store, store);
+
+  EXPECT_EQ(2u, service_wrapper()->GetAllCookies().size());
+}
+
+TEST_F(PartitionedSessionCleanupCookieManagerTest,
+       DeleteSessionOnlyPartitionedCookiesForSessionOnlyTopLevelSite) {
+  SetUpPartitionedCookieWithSessionOnlyTopLevelSite();
+
+  EXPECT_EQ(1u, service_wrapper()->DeleteSessionOnlyCookies());
+  std::vector<net::CanonicalCookie> cookies =
+      service_wrapper()->GetAllCookies();
+  ASSERT_EQ(1u, cookies.size());
+  EXPECT_FALSE(cookies[0].IsPartitioned());
+}
+
+TEST_F(PartitionedSessionCleanupCookieManagerTest,
+       KeepSessionOnlyPartitionedCookiesForSessionOnlyTopLevelSiteIfDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kClearPartitionedCookiesOnExitByTopLevelSite);
+  SetUpPartitionedCookieWithSessionOnlyTopLevelSite();
+
+  EXPECT_EQ(0u, service_wrapper()->DeleteSessionOnlyCookies());
+  EXPECT_EQ(2u, service_wrapper()->GetAllCookies().size());
 }
 
 TEST_F(SessionCleanupCookieManagerTest, DeleteStaleSessionOnlyCookies) {
