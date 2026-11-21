@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/stack_allocated.h"
 #include "base/message_loop/message_pump.h"
 #include "base/observer_list.h"
 #include "base/synchronization/waitable_event.h"
@@ -302,6 +303,13 @@ class BASE_EXPORT MessagePumpForIO : public MessagePumpWin {
     // |context| completes. |error| is the Win32 error code of the IO operation
     // (ERROR_SUCCESS if there was no error). |bytes_transfered| will be zero
     // on error.
+    //
+    // |context| is the raw OVERLAPPED* from the completion packet. It does not
+    // necessarily belong to this handler, or even point into this process:
+    // another handle to the same file object, possibly in another process, may
+    // have started the IO, and job notifications (see RegisterJobObject())
+    // carry a message-specific value such as a process id instead. Do not
+    // dereference it without checking that it is one of this handler's.
     virtual void OnIOCompleted(IOContext* context,
                                DWORD bytes_transfered,
                                DWORD error) = 0;
@@ -321,9 +329,11 @@ class BASE_EXPORT MessagePumpForIO : public MessagePumpWin {
       const Delegate::NextWorkInfo& next_work_info) override;
 
   // Register the handler to be used when asynchronous IO for the given file
-  // completes. The registration persists as long as |file_handle| is valid, so
-  // |handler| must be valid as long as there is pending IO for the given file.
-  // Returns true iff the registration succeeds.
+  // completes. The registration is attached to the kernel file object behind
+  // |file_handle| and lasts as long as that object does. Other handles or
+  // pending IO, possibly from another process, can keep it alive after
+  // |file_handle| is closed, so |handler| must stay valid as long as any IO on
+  // the file can complete. Returns true iff the registration succeeds.
   [[nodiscard]] bool RegisterIOHandler(HANDLE file_handle, IOHandler* handler);
 
   // Register the handler to be used to process job events. The registration
@@ -334,10 +344,14 @@ class BASE_EXPORT MessagePumpForIO : public MessagePumpWin {
 
  private:
   struct IOItem {
+    STACK_ALLOCATED();
+
+   public:
     raw_ptr<IOHandler> handler;
-    raw_ptr<IOContext> context;
-    DWORD bytes_transfered;
-    DWORD error;
+    // Not necessarily a valid pointer in this process.
+    IOContext* context = nullptr;
+    DWORD bytes_transfered = 0;
+    DWORD error = 0;
   };
 
   void DoRunLoop() override;
