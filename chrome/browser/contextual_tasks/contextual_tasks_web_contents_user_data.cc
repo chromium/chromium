@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -1061,6 +1062,10 @@ void ContextualTasksWebContentsUserData::UpdateContextLibraryInputState() {
   }
   UpdateContextState();
   UpdateSuggestInputs();
+  // Refresh tab picker visibility when session attachments change so
+  // deselecting an attached ineligible tab hides the picker once no eligible
+  // tabs remain.
+  UpdateTabPickerVisibility();
   MaybeFinishPendingSubmit();
 }
 
@@ -1794,15 +1799,6 @@ bool ContextualTasksWebContentsUserData::ResetSmartTabSharing() {
     NotifyExtensionFramesTabContextUpdated();
   }
   return default_active;
-}
-
-void ContextualTasksWebContentsUserData::
-    NotifyExtensionFramesTabContextUpdated() {
-  for (const auto& frame : extension_frames_) {
-    if (frame.is_page_bound && frame.on_tab_context_updated_cb) {
-      frame.on_tab_context_updated_cb.Run();
-    }
-  }
 }
 
 void ContextualTasksWebContentsUserData::OnLensThumbnailCreated(
@@ -2747,6 +2743,15 @@ void ContextualTasksWebContentsUserData::UpdateTabPickerVisibility() {
                         /*is_active=*/should_show);
 }
 
+void ContextualTasksWebContentsUserData::
+    NotifyExtensionFramesTabContextUpdated() {
+  for (const auto& frame : extension_frames_) {
+    if (frame.is_page_bound && frame.on_tab_context_updated_cb) {
+      frame.on_tab_context_updated_cb.Run();
+    }
+  }
+}
+
 void ContextualTasksWebContentsUserData::OnManualTabContextAdded(
     const GURL& url,
     SessionID tab_session_id) {
@@ -3463,6 +3468,17 @@ bool ContextualTasksWebContentsUserData::HasEligibleTabsForTabPicker() const {
   if (!tab_list) {
     return false;
   }
+
+  // Collect non-deselected session tabs so the picker stays visible whenever
+  // an attached tab can still be removed by the user.
+  base::flat_set<SessionID> always_include_tab_ids;
+  if (const contextual_search::ContextualSearchSessionHandle* session_handle =
+          GetExistingContextualSessionHandle()) {
+    always_include_tab_ids = session_handle->GetNonDeselectedTabSessionIds();
+  }
+
+  // Show the picker when any other tab passes the same filter the picker uses
+  // to list recent tabs, so the button and the list stay in sync.
   for (tabs::TabInterface* tab : tab_list->GetAllTabs()) {
     if (!tab || tab->GetContents() == &GetWebContents()) {
       continue;
@@ -3471,8 +3487,8 @@ bool ContextualTasksWebContentsUserData::HasEligibleTabsForTabPicker() const {
     if (url.is_empty() && tab->GetContents()) {
       url = tab->GetContents()->GetLastCommittedURL();
     }
-    if (IsUrlValidForContextSharing(url) && !IsAimURL(url) &&
-        !IsAimZeroStateURL(url)) {
+    if (IsRecentTabSelectable(*tab, url, always_include_tab_ids,
+                              /*exclude_page_context_ineligible_tabs=*/true)) {
       return true;
     }
   }

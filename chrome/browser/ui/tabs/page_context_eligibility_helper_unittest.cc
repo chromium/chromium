@@ -192,6 +192,38 @@ TEST_F(PageContextEligibilityHelperTest, BasicEligibility) {
             optimization_guide::PageContextEligibilityStatus::kNotEligible);
 }
 
+TEST_F(PageContextEligibilityHelperTest, LastKnownEligibilitySurvivesUnknown) {
+  EXPECT_CALL(*mock_api_, CheckPageEligibility(testing::_))
+      .WillRepeatedly(Return(optimization_guide::PageEligibilityResult{
+          .status = optimization_guide::PageEligibility::kEligible,
+          .meta_tag_names_affecting_eligibility = {.data = nullptr,
+                                                   .size = 0}}));
+
+  // A tab that has never resolved has no last known eligibility.
+  helper_ = std::make_unique<PageContextEligibilityHelper>(*mock_tab_);
+  EXPECT_EQ(helper_->GetLastKnownPageContextEligibility(),
+            optimization_guide::PageContextEligibilityStatus::kUnknown);
+  WaitForEligibility(helper_.get());
+  EXPECT_EQ(helper_->GetLastKnownPageContextEligibility(),
+            optimization_guide::PageContextEligibilityStatus::kEligible);
+
+  // Deactivate the tab so the next navigation recreates the observer and stays
+  // `kUnknown` until it resolves. The last known result is kept meanwhile.
+  ON_CALL(*mock_tab_, IsActivated()).WillByDefault(Return(false));
+  TriggerOnTabDeactivated(helper_.get(), &*mock_tab_);
+  g_mock_is_eligible_with_account = false;
+  content::WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com/next"));
+  EXPECT_EQ(helper_->IsPageContextEligible(),
+            optimization_guide::PageContextEligibilityStatus::kUnknown);
+  EXPECT_EQ(helper_->GetLastKnownPageContextEligibility(),
+            optimization_guide::PageContextEligibilityStatus::kEligible);
+
+  WaitForEligibility(helper_.get());
+  EXPECT_EQ(helper_->GetLastKnownPageContextEligibility(),
+            optimization_guide::PageContextEligibilityStatus::kNotEligible);
+}
+
 TEST_F(PageContextEligibilityHelperTest, CallbacksNotified) {
   EXPECT_CALL(*mock_api_, CheckPageEligibility(testing::_))
       .WillRepeatedly(Return(optimization_guide::PageEligibilityResult{

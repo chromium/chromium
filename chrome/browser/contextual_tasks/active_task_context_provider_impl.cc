@@ -8,7 +8,9 @@
 #include <map>
 #include <set>
 
+#include "base/callback_list.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
@@ -21,6 +23,7 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_search/contextual_search_types.h"
@@ -29,6 +32,7 @@
 #include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/common/composebox_features.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
@@ -219,7 +223,22 @@ class ActiveTaskContextProviderImpl::TabNavigationObserver
         owner_(owner),
         tab_(tab),
         last_committed_url_(
-            web_contents() ? web_contents()->GetLastCommittedURL() : GURL()) {}
+            web_contents() ? web_contents()->GetLastCommittedURL() : GURL()) {
+    // Subscribe to this tab's page context eligibility, which often resolves
+    // after navigation or flips with a `<meta>` tag update. The helper is
+    // per-tab, so the subscription survives `WebContents` replacement.
+    if (auto* eligibility_helper =
+            tabs::PageContextEligibilityHelper::From(tab_)) {
+      is_eligible_ = IsLastKnownEligible(*eligibility_helper);
+      // Safe to use `base::Unretained(this)` because
+      // `eligibility_subscription_` is owned by `this` and unsubscribes on
+      // destruction.
+      eligibility_subscription_ =
+          eligibility_helper->RegisterEligibilityChangeCallback(
+              base::BindRepeating(&TabNavigationObserver::OnEligibilityChanged,
+                                  base::Unretained(this)));
+    }
+  }
   ~TabNavigationObserver() override = default;
 
   void Reobserve(content::WebContents* contents) {
@@ -248,9 +267,33 @@ class ActiveTaskContextProviderImpl::TabNavigationObserver
   }
 
  private:
+  static bool IsLastKnownEligible(
+      const tabs::PageContextEligibilityHelper& eligibility_helper) {
+    return eligibility_helper.GetLastKnownPageContextEligibility() ==
+           optimization_guide::PageContextEligibilityStatus::kEligible;
+  }
+
+  // Refreshes the picker and open tab pickers only when this tab's last known
+  // eligibility enters or leaves `kEligible`, which is what decides whether the
+  // picker lists it. `kUnknown` never changes the last known result, so page
+  // changes and tab teardown don't trigger refreshes here.
+  void OnEligibilityChanged(
+      optimization_guide::PageContextEligibilityStatus /*status*/) {
+    auto* eligibility_helper = tabs::PageContextEligibilityHelper::From(tab_);
+    const bool is_eligible =
+        eligibility_helper && IsLastKnownEligible(*eligibility_helper);
+    if (is_eligible == is_eligible_) {
+      return;
+    }
+    is_eligible_ = is_eligible;
+    owner_->UpdateTabPickerVisibility(/*notify_extension_frames=*/true);
+  }
+
   const raw_ref<ActiveTaskContextProviderImpl> owner_;
   raw_ptr<tabs::TabInterface> tab_;
   GURL last_committed_url_;
+  bool is_eligible_ = false;
+  base::CallbackListSubscription eligibility_subscription_;
 };
 
 ActiveTaskContextProviderImpl::ActiveTaskContextProviderImpl(
@@ -519,7 +562,8 @@ bool ActiveTaskContextProviderImpl::NotifyTabClosedOrNavigated(
   return any_removed;
 }
 
-void ActiveTaskContextProviderImpl::UpdateTabPickerVisibility() {
+void ActiveTaskContextProviderImpl::UpdateTabPickerVisibility(
+    bool notify_extension_frames) {
   std::set<content::WebContents*> notified_web_contents;
   auto update_web_contents = [&](content::WebContents* wc) {
     if (!wc || !notified_web_contents.insert(wc).second) {
@@ -528,6 +572,11 @@ void ActiveTaskContextProviderImpl::UpdateTabPickerVisibility() {
     if (auto* user_data =
             ContextualTasksWebContentsUserData::FromWebContents(wc)) {
       user_data->UpdateTabPickerVisibility();
+      if (notify_extension_frames) {
+        // Notify bound extension frames so an open tab picker refreshes its
+        // recent-tabs list after an asynchronous eligibility change.
+        user_data->NotifyExtensionFramesTabContextUpdated();
+      }
     }
   };
 

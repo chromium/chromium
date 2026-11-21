@@ -48,6 +48,12 @@ class PageContextEligibilityHelper : public tabs::ContentsObservingTabFeature {
   virtual optimization_guide::PageContextEligibilityStatus
   IsPageContextEligible() const;
 
+  // Returns the tab's most recent `kEligible` or `kNotEligible` result, which
+  // stays in place while a new page is `kUnknown` (for example during a
+  // reload). Returns `kUnknown` only if the tab has never resolved.
+  virtual optimization_guide::PageContextEligibilityStatus
+  GetLastKnownPageContextEligibility() const;
+
   using EligibilityChangeCallback = base::RepeatingCallback<void(
       optimization_guide::PageContextEligibilityStatus)>;
 
@@ -89,6 +95,8 @@ class PageContextEligibilityHelper : public tabs::ContentsObservingTabFeature {
   std::unique_ptr<optimization_guide::PageContextEligibilityObserver> observer_;
 
   optimization_guide::PageContextEligibilityStatus last_eligibility_ =
+      optimization_guide::PageContextEligibilityStatus::kUnknown;
+  optimization_guide::PageContextEligibilityStatus last_known_eligibility_ =
       optimization_guide::PageContextEligibilityStatus::kUnknown;
 
   ui::ScopedUnownedUserData<PageContextEligibilityHelper>

@@ -311,6 +311,8 @@ class ContextualTasksWebContentsUserData
   // sends `INJECT_INPUT` (`is_active = false`) to hide the tab picker when no
   // eligible tabs exist.
   void UpdateTabPickerVisibility();
+  // Runs `on_tab_context_updated_cb` on every bound extension frame.
+  void NotifyExtensionFramesTabContextUpdated();
   // Unblocks `url` and clears `implicit_tab_` when manually attaching a tab.
   void OnManualTabContextAdded(const GURL& url, SessionID tab_session_id);
   std::optional<tabs::TabHandle> GetAutoSuggestedTabHandle() const;
@@ -422,8 +424,6 @@ class ContextualTasksWebContentsUserData
   void MaybeFinishPendingSubmit();
   void OnPageContextIneligible();
   void OnPageChanged(bool is_zero_state);
-  // Runs `on_tab_context_updated_cb` on every bound extension frame.
-  void NotifyExtensionFramesTabContextUpdated();
   void AppendTabContextsToOnSubmitQueryResponse(
       lens::ClientToSearchMessage* response_message,
       contextual_search::ContextualSearchSessionHandle* session_handle,

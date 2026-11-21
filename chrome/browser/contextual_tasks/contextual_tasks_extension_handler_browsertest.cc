@@ -8691,6 +8691,56 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksExtensionHandlerPageEligibilityBrowserTest,
+    UpdatesTabPickerAndTabContextOnDynamicMetaTagChange) {
+  const GURL public_url = embedded_test_server()->GetURL("/conditional-public");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), public_url,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  tabs::TabInterface* conditional_tab =
+      TabListInterface::From(browser())->GetActiveTab();
+  WaitForTabEligibility(
+      conditional_tab,
+      optimization_guide::PageContextEligibilityStatus::kEligible);
+  ASSERT_EQ(FetchRecentTabs().size(), 1u);
+
+  // Dynamically flip `<meta name="sensitivity">` to `"restricted"` on the
+  // active tab and verify `OnTabContextUpdated()` and `TAB_PICKER` (`false`)
+  // are dispatched as soon as the `<meta>` tag observer reports the change.
+  bool saw_tab_picker_hidden = false;
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillRepeatedly([&](mojo_base::ProtoWrapper wrapper) {
+        auto msg = wrapper.As<lens::ClientToSearchMessage>();
+        if (msg.has_value() && msg->has_inject_chrome_input() &&
+            msg->inject_chrome_input().input_type() ==
+                lens::ClientToSearchMessage::InjectChromeInput::TAB_PICKER &&
+            !msg->inject_chrome_input().is_active()) {
+          saw_tab_picker_hidden = true;
+        }
+      });
+  base::RunLoop context_updated_loop;
+  EXPECT_CALL(mock_page_, OnTabContextUpdated(_, _, _))
+      .WillOnce([&context_updated_loop](
+                    std::vector<searchbox::mojom::TabInfoPtr> /*tabs*/,
+                    const std::vector<int32_t>& /*submitted_tab_ids*/,
+                    mojom::SmartTabSharingStatePtr /*sts*/) {
+        context_updated_loop.Quit();
+      });
+
+  ASSERT_TRUE(content::ExecJs(
+      conditional_tab->GetContents(),
+      "document.querySelector('meta[name=\"sensitivity\"]').content = "
+      "'restricted';"));
+  context_updated_loop.Run();
+  mock_page_.FlushForTesting();
+  EXPECT_TRUE(saw_tab_picker_hidden);
+  EXPECT_TRUE(FetchRecentTabs().empty());
+  testing::Mock::VerifyAndClearExpectations(&mock_page_);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerPageEligibilityBrowserTest,
     GetRecentTabs_IncludesAttachedIneligibleTabUntilDeselected) {
   const GURL ineligible_url = embedded_test_server()->GetURL("/ineligible-doc");
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
@@ -8788,8 +8838,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(unfiltered_tabs.size(), 1u);
   EXPECT_EQ(unfiltered_tabs[0]->url, ineligible_url);
 
-  // 2. When `exclude_page_context_ineligible_tabs` is `true`, a tab whose
-  // eligibility is still `kUnknown` remains included.
+  // 2. When `exclude_page_context_ineligible_tabs` is `true`, a tab that
+  // resolved to `kEligible` stays included while a new page is `kUnknown`.
   const GURL unknown_url = embedded_test_server()->GetURL("/eligible-unknown");
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), unknown_url,

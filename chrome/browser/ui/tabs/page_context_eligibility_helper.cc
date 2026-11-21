@@ -47,6 +47,11 @@ PageContextEligibilityHelper::IsPageContextEligible() const {
   return last_eligibility_;
 }
 
+optimization_guide::PageContextEligibilityStatus
+PageContextEligibilityHelper::GetLastKnownPageContextEligibility() const {
+  return last_known_eligibility_;
+}
+
 base::CallbackListSubscription
 PageContextEligibilityHelper::RegisterEligibilityChangeCallback(
     EligibilityChangeCallback callback) {
@@ -137,6 +142,9 @@ void PageContextEligibilityHelper::NotifyEligibilityChanged(
     return;
   }
   last_eligibility_ = status;
+  if (status != optimization_guide::PageContextEligibilityStatus::kUnknown) {
+    last_known_eligibility_ = status;
+  }
   callbacks_.Notify(status);
 }
 

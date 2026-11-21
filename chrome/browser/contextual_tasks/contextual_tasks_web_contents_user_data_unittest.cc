@@ -69,8 +69,10 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
+#include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/contextual_search/mock_contextual_search_context_controller.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #endif
@@ -2190,6 +2192,45 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   EXPECT_EQ(response.added_contexts(0).request_id().context_id(), 105);
 }
 
+namespace {
+
+class FakePageContextEligibilityHelper
+    : public tabs::PageContextEligibilityHelper {
+ public:
+  FakePageContextEligibilityHelper(
+      tabs::TabInterface& tab,
+      optimization_guide::PageContextEligibilityStatus status)
+      : tabs::PageContextEligibilityHelper(tab) {
+    set_status(status);
+  }
+
+  // Mirrors the real helper: `kUnknown` keeps the last known result.
+  void set_status(optimization_guide::PageContextEligibilityStatus status) {
+    status_ = status;
+    if (status != optimization_guide::PageContextEligibilityStatus::kUnknown) {
+      last_known_status_ = status;
+    }
+  }
+
+  optimization_guide::PageContextEligibilityStatus IsPageContextEligible()
+      const override {
+    return status_;
+  }
+
+  optimization_guide::PageContextEligibilityStatus
+  GetLastKnownPageContextEligibility() const override {
+    return last_known_status_;
+  }
+
+ private:
+  optimization_guide::PageContextEligibilityStatus status_ =
+      optimization_guide::PageContextEligibilityStatus::kUnknown;
+  optimization_guide::PageContextEligibilityStatus last_known_status_ =
+      optimization_guide::PageContextEligibilityStatus::kUnknown;
+};
+
+}  // namespace
+
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(ContextualTasksWebContentsUserDataTest,
        UpdateTabPickerVisibility_InjectsAndHidesTabPicker) {
@@ -2227,6 +2268,9 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   tabs::MockTabInterface mock_other_tab;
   ON_CALL(mock_other_tab, GetContents())
       .WillByDefault(testing::Return(other_tab_contents));
+  FakePageContextEligibilityHelper eligibility_helper(
+      mock_other_tab,
+      optimization_guide::PageContextEligibilityStatus::kEligible);
   std::vector<tabs::TabInterface*> all_tabs = {&mock_other_tab};
   ON_CALL(mock_tab_list, GetAllTabs())
       .WillByDefault(testing::ReturnPointee(&all_tabs));
@@ -4265,6 +4309,120 @@ TEST_F(
   EXPECT_EQ(token3, user_data->GetLensOverlayToken());
   user_data->RemoveLensCrop();
   EXPECT_EQ(std::nullopt, user_data->GetLensOverlayToken());
+}
+
+TEST_F(
+    ContextualTasksWebContentsUserDataTest,
+    UpdateTabPickerVisibility_ExcludesPageContextIneligibleTabsExceptAttached) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kContextualTasksRearchitecture);
+
+  ui::UnownedUserDataHost unowned_user_data_host;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(unowned_user_data_host));
+  testing::NiceMock<MockTabListInterface> mock_tab_list;
+  ui::ScopedUnownedUserData<TabListInterface> tab_list_registration(
+      unowned_user_data_host, mock_tab_list);
+
+  webui::SetBrowserWindowInterface(web_contents_, &mock_browser_window);
+
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+
+  std::vector<bool> tab_picker_states;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+      [&](const lens::ClientToSearchMessage& message) {
+        if (message.has_inject_chrome_input() &&
+            message.inject_chrome_input().input_type() ==
+                lens::ClientToSearchMessage::InjectChromeInput::TAB_PICKER) {
+          tab_picker_states.push_back(
+              message.inject_chrome_input().is_active());
+        }
+      }));
+
+  content::WebContents* other_tab_contents =
+      web_contents_factory_->CreateWebContents(profile_.get());
+  sessions::SessionTabHelper::CreateForWebContents(other_tab_contents,
+                                                   base::NullCallback());
+  const SessionID other_session_id =
+      sessions::SessionTabHelper::IdForTab(other_tab_contents);
+  const GURL kIneligibleUrl("https://restricted.example.com/doc");
+  content::WebContentsTester::For(other_tab_contents)
+      ->NavigateAndCommit(kIneligibleUrl);
+
+  tabs::MockTabInterface mock_other_tab;
+  ON_CALL(mock_other_tab, GetContents())
+      .WillByDefault(testing::Return(other_tab_contents));
+  ON_CALL(mock_other_tab, GetProfile())
+      .WillByDefault(testing::Return(profile_.get()));
+  ON_CALL(mock_other_tab, GetURL())
+      .WillByDefault(testing::Return(kIneligibleUrl));
+  EXPECT_FALSE(
+      IsRecentTabSelectable(mock_other_tab, GURL("https://example.com/page"),
+                            /*always_include_tab_ids=*/{},
+                            /*exclude_page_context_ineligible_tabs=*/true));
+  FakePageContextEligibilityHelper eligibility_helper(
+      mock_other_tab,
+      optimization_guide::PageContextEligibilityStatus::kNotEligible);
+
+  std::vector<tabs::TabInterface*> all_tabs = {&mock_other_tab};
+  ON_CALL(mock_tab_list, GetAllTabs())
+      .WillByDefault(testing::ReturnPointee(&all_tabs));
+
+  // 1. Handshake with only a `kNotEligible` tab open does not inject
+  // `TAB_PICKER`.
+  user_data->OnHandshakeComplete();
+  EXPECT_TRUE(tab_picker_states.empty());
+
+  // 2. A `kUnknown` tab (for example during a reload) keeps its last known
+  // result, so `TAB_PICKER` doesn't flash. Only `kEligible` injects
+  // `TAB_PICKER` (`true`), and `kNotEligible` hides it (`false`).
+  eligibility_helper.set_status(
+      optimization_guide::PageContextEligibilityStatus::kUnknown);
+  user_data->UpdateTabPickerVisibility();
+  EXPECT_TRUE(tab_picker_states.empty());
+
+  eligibility_helper.set_status(
+      optimization_guide::PageContextEligibilityStatus::kEligible);
+  user_data->UpdateTabPickerVisibility();
+  EXPECT_THAT(tab_picker_states, testing::ElementsAre(true));
+
+  eligibility_helper.set_status(
+      optimization_guide::PageContextEligibilityStatus::kUnknown);
+  user_data->UpdateTabPickerVisibility();
+  EXPECT_THAT(tab_picker_states, testing::ElementsAre(true));
+
+  eligibility_helper.set_status(
+      optimization_guide::PageContextEligibilityStatus::kNotEligible);
+  user_data->UpdateTabPickerVisibility();
+  EXPECT_THAT(tab_picker_states, testing::ElementsAre(true, false));
+
+  // 3. When the `kNotEligible` tab is already attached to the session,
+  // `TAB_PICKER` stays visible (`true`) so the user can unselect it, and
+  // unselecting it via `DeleteTabContext()` immediately hides `TAB_PICKER`
+  // (`false`).
+  const int32_t tab_handle_id = mock_other_tab.GetHandle().raw_value();
+  user_data->RecordTabIdMapping(tab_handle_id, other_session_id.id());
+  mock_handle->AddPendingDelayedTab(other_session_id.id(), kIneligibleUrl,
+                                    "Restricted Doc");
+  EXPECT_THAT(tab_picker_states, testing::ElementsAre(true, false, true));
+
+  user_data->DeleteTabContext(tab_handle_id);
+  EXPECT_THAT(tab_picker_states,
+              testing::ElementsAre(true, false, true, false));
+
+  user_data->SetSearchMessageDispatcherForTesting(base::NullCallback());
+  webui::SetBrowserWindowInterface(web_contents_, nullptr);
 }
 #endif
 

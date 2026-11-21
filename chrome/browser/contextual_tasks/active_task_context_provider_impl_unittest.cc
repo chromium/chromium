@@ -8,12 +8,14 @@
 #include <set>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -29,6 +31,7 @@
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/context_decoration_params.h"
@@ -37,6 +40,8 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/omnibox/common/composebox_features.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -798,6 +803,32 @@ TEST_F(ActiveTaskContextProviderImplTest,
   EXPECT_TRUE(dummy_handle_.GetTabContextState().restored.empty());
 }
 
+namespace {
+
+class FakePageContextEligibilityHelper
+    : public tabs::PageContextEligibilityHelper {
+ public:
+  FakePageContextEligibilityHelper(
+      tabs::TabInterface& tab,
+      optimization_guide::PageContextEligibilityStatus status)
+      : tabs::PageContextEligibilityHelper(tab), status_(status) {}
+
+  optimization_guide::PageContextEligibilityStatus IsPageContextEligible()
+      const override {
+    return status_;
+  }
+
+  optimization_guide::PageContextEligibilityStatus
+  GetLastKnownPageContextEligibility() const override {
+    return status_;
+  }
+
+ private:
+  optimization_guide::PageContextEligibilityStatus status_;
+};
+
+}  // namespace
+
 TEST_F(ActiveTaskContextProviderImplTest,
        UpdateTabPickerVisibilityOnTabLifecycleEvents) {
   EXPECT_CALL(*contextual_tasks_panel_controller_,
@@ -884,6 +915,9 @@ TEST_F(ActiveTaskContextProviderImplTest,
 
   // `OnTabAdded` with an eligible tab injects `TAB_PICKER` (`true`).
   tabs::TabInterface* eligible_tab = CreateMockTab();
+  FakePageContextEligibilityHelper eligibility_helper(
+      *eligible_tab,
+      optimization_guide::PageContextEligibilityStatus::kEligible);
   content::WebContentsTester::For(eligible_tab->GetContents())
       ->NavigateAndCommit(GURL("https://example.com/1"));
   open_tabs.push_back(eligible_tab);
@@ -940,6 +974,181 @@ TEST_F(ActiveTaskContextProviderImplTest,
               testing::ElementsAre(true, false, true, false));
   webui::SetBrowserWindowInterface(panel_contents.get(), nullptr);
 #endif
+}
+
+namespace {
+
+bool g_provider_test_is_eligible = false;
+
+bool ProviderTestIsPageContextEligible(
+    const std::string& /*host*/,
+    const std::string& /*path*/,
+    const std::vector<optimization_guide::FrameMetadata>& /*metadata*/) {
+  return g_provider_test_is_eligible;
+}
+
+bool ProviderTestIsPageContextEligibleWithAccount(
+    const std::string& /*host*/,
+    const std::string& /*path*/,
+    const std::string& /*account*/,
+    const std::vector<optimization_guide::FrameMetadata>& /*metadata*/) {
+  return g_provider_test_is_eligible;
+}
+
+bool ProviderTestShouldReextractPageContext(
+    const std::string& /*host*/,
+    const std::string& /*path*/,
+    const std::vector<std::string>& /*updated_meta_tags*/) {
+  return false;
+}
+
+optimization_guide::PageEligibilityResult ProviderTestCheckPageEligibility(
+    const std::vector<optimization_guide::FrameUrl>& /*frames*/) {
+  return optimization_guide::PageEligibilityResult{
+      .status = g_provider_test_is_eligible
+                    ? optimization_guide::PageEligibility::kEligible
+                    : optimization_guide::PageEligibility::kIneligible,
+      .meta_tag_names_affecting_eligibility = {.data = nullptr, .size = 0}};
+}
+
+constexpr optimization_guide::PageContextEligibilityAPI kProviderTestApi = {
+    .IsPageContextEligible = &ProviderTestIsPageContextEligible,
+    .IsPageContextEligibleWithAccount =
+        &ProviderTestIsPageContextEligibleWithAccount,
+    .ShouldReextractPageContext = &ProviderTestShouldReextractPageContext,
+    .GetMetaTagNamesAffectingEligibility = nullptr,
+    .CheckPageEligibility = &ProviderTestCheckPageEligibility,
+};
+
+}  // namespace
+
+TEST_F(ActiveTaskContextProviderImplTest,
+       UpdateTabPickerVisibilityAndExtensionFramesOnEligibilityChanges) {
+  g_provider_test_is_eligible = false;
+  optimization_guide::PageContextEligibility test_eligibility(
+      &kProviderTestApi);
+  optimization_guide::PageContextEligibility::SetForTesting(&test_eligibility);
+
+  EXPECT_CALL(*contextual_tasks_panel_controller_,
+              GetSessionHandleForActiveTabOrPanel())
+      .WillRepeatedly(Return(std::make_pair(std::nullopt, nullptr)));
+
+  tabs::TabInterface* aim_tab = CreateMockTab();
+  content::WebContentsTester::For(aim_tab->GetContents())
+      ->NavigateAndCommit(GURL("https://www.google.com/search?udm=50"));
+
+  tabs::TabInterface* target_tab = CreateMockTab();
+  ON_CALL(*static_cast<tabs::MockTabInterface*>(target_tab), GetProfile())
+      .WillByDefault(Return(profile_.get()));
+  content::WebContentsTester::For(target_tab->GetContents())
+      ->NavigateAndCommit(GURL("https://restricted.example.com/1"));
+
+  // Construct `PageContextEligibilityHelper` before `GetAsync()` runs so the
+  // tab initially has `kUnknown` status when added to `tab_list_`.
+  auto eligibility_helper =
+      std::make_unique<tabs::PageContextEligibilityHelper>(*target_tab);
+  std::vector<tabs::TabInterface*> open_tabs = {aim_tab, target_tab};
+  std::vector<bool> aim_tab_picker_states;
+  int extension_frame_updates = 0;
+  const int handler_tag = 0;
+  ContextualTasksWebContentsUserData* aim_tab_user_data = nullptr;
+  base::ScopedClosureRunner cleanup(base::BindLambdaForTesting([&]() {
+    if (aim_tab_user_data) {
+      aim_tab_user_data->UnregisterExtensionFrame(&handler_tag);
+      aim_tab_user_data->SetSearchMessageDispatcherForTesting(
+          base::NullCallback());
+    }
+    testing::Mock::VerifyAndClearExpectations(tab_list_.get());
+    eligibility_helper.reset();
+    optimization_guide::PageContextEligibility::SetForTesting(nullptr);
+  }));
+
+  ASSERT_EQ(eligibility_helper->IsPageContextEligible(),
+            optimization_guide::PageContextEligibilityStatus::kUnknown);
+
+  ON_CALL(*tab_list_, GetAllTabs())
+      .WillByDefault(testing::ReturnPointee(&open_tabs));
+  ON_CALL(*tab_list_, GetTabCount()).WillByDefault([&]() {
+    return static_cast<int>(open_tabs.size());
+  });
+  ON_CALL(*tab_list_, GetTab(_)).WillByDefault([&](int index) {
+    return open_tabs[index];
+  });
+  for (auto& observer : tab_list_observers_) {
+    observer.OnTabAdded(*tab_list_, aim_tab, 0);
+    observer.OnTabAdded(*tab_list_, target_tab, 1);
+  }
+
+  aim_tab_user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          aim_tab->GetContents());
+  aim_tab_user_data->SetSearchMessageDispatcherForTesting(
+      base::BindLambdaForTesting([&](const lens::ClientToSearchMessage& msg) {
+        if (msg.has_inject_chrome_input() &&
+            msg.inject_chrome_input().input_type() ==
+                lens::ClientToSearchMessage::InjectChromeInput::TAB_PICKER) {
+          aim_tab_picker_states.push_back(
+              msg.inject_chrome_input().is_active());
+        }
+      }));
+
+  aim_tab_user_data->RegisterExtensionFrame(&handler_tag);
+  aim_tab_user_data->UpdateExtensionFrameBound(
+      &handler_tag, /*is_page_bound=*/true, base::DoNothing(),
+      base::BindLambdaForTesting([&]() { ++extension_frame_updates; }));
+
+  // `target_tab` has never resolved, so `OnHandshakeComplete()` doesn't inject
+  // `TAB_PICKER`.
+  aim_tab_user_data->OnHandshakeComplete();
+  EXPECT_TRUE(aim_tab_picker_states.empty());
+
+  // Resolving to `kNotEligible` keeps the tab out of the picker, so neither
+  // `TAB_PICKER` nor bound extension frames are updated.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return eligibility_helper->IsPageContextEligible() ==
+           optimization_guide::PageContextEligibilityStatus::kNotEligible;
+  }));
+  EXPECT_TRUE(aim_tab_picker_states.empty());
+  EXPECT_EQ(extension_frame_updates, 0);
+
+  // Navigating to an eligible page shows `TAB_PICKER` (`true`) and notifies
+  // bound extension frames once the new page resolves to `kEligible`.
+  g_provider_test_is_eligible = true;
+  const GURL eligible_url("https://example.com/eligible");
+  content::WebContentsTester::For(target_tab->GetContents())
+      ->NavigateAndCommit(eligible_url);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return eligibility_helper->IsPageContextEligible() ==
+               optimization_guide::PageContextEligibilityStatus::kEligible &&
+           extension_frame_updates == 1;
+  }));
+  EXPECT_THAT(aim_tab_picker_states, testing::ElementsAre(true));
+
+  // Reloading keeps the last known `kEligible` result while the page is
+  // `kUnknown`, so `TAB_PICKER` doesn't flash.
+  content::WebContentsTester::For(target_tab->GetContents())
+      ->NavigateAndCommit(eligible_url);
+  EXPECT_EQ(eligibility_helper->IsPageContextEligible(),
+            optimization_guide::PageContextEligibilityStatus::kUnknown);
+  EXPECT_THAT(aim_tab_picker_states, testing::ElementsAre(true));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return eligibility_helper->IsPageContextEligible() ==
+           optimization_guide::PageContextEligibilityStatus::kEligible;
+  }));
+  EXPECT_THAT(aim_tab_picker_states, testing::ElementsAre(true));
+  EXPECT_EQ(extension_frame_updates, 1);
+
+  // Navigating to an ineligible page hides `TAB_PICKER` (`false`) and notifies
+  // bound extension frames once the new page resolves to `kNotEligible`.
+  g_provider_test_is_eligible = false;
+  content::WebContentsTester::For(target_tab->GetContents())
+      ->NavigateAndCommit(GURL("https://restricted.example.com/2"));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return eligibility_helper->IsPageContextEligible() ==
+               optimization_guide::PageContextEligibilityStatus::kNotEligible &&
+           extension_frame_updates == 2;
+  }));
+  EXPECT_THAT(aim_tab_picker_states, testing::ElementsAre(true, false));
 }
 
 }  // namespace contextual_tasks

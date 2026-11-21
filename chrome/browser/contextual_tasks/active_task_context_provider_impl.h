@@ -97,7 +97,12 @@ class ActiveTaskContextProviderImpl : public ActiveTaskContextProvider,
   bool NotifyTabClosedOrNavigated(SessionID tab_session_id,
                                   std::optional<GURL> current_url,
                                   std::optional<std::string> current_title);
-  void UpdateTabPickerVisibility();
+  // Updates tab picker visibility on every Contextual Tasks `WebContents` in
+  // this window. Pass `notify_extension_frames` to also refresh open tab
+  // pickers when the listable tabs change without a tab strip event, such as
+  // page context eligibility changes. Notifying makes each bound frame fetch
+  // its session handle, so tab strip events skip it.
+  void UpdateTabPickerVisibility(bool notify_extension_frames = false);
 
   // Callback for when GetContextForTask() completes.
   void OnGetContextForTask(int callback_id,

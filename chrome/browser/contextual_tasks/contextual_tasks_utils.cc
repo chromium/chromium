@@ -32,7 +32,11 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
+#include "components/optimization_guide/content/browser/page_context_eligibility_observer.h"
+#include "components/search_engines/util.h"  // For IsAimURL(), IsAimZeroStateURL().
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
@@ -56,7 +60,6 @@
 #include "components/lens/lens_overlay_mime_type.h"
 #include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/actions/actions.h"
@@ -690,6 +693,42 @@ bool IsUrlValidForContextSharing(const GURL& url) {
   return !url.SchemeIs(content::kChromeUIScheme) &&
          !url.SchemeIs(content::kChromeUIUntrustedScheme) &&
          !url.SchemeIs("chrome-extension");
+}
+
+bool IsRecentTabSelectable(
+    tabs::TabInterface& tab,
+    const GURL& url,
+    const base::flat_set<SessionID>& always_include_tab_ids,
+    bool exclude_page_context_ineligible_tabs) {
+  // Never list blank or invalid URLs, or AI Mode pages.
+  if (!url.is_valid() || url.IsAboutBlank() || IsAimURL(url) ||
+      IsAimZeroStateURL(url)) {
+    return false;
+  }
+
+  // Keep tabs already attached to the session so users can deselect them.
+  if (!always_include_tab_ids.empty() && tab.GetContents() &&
+      always_include_tab_ids.contains(
+          sessions::SessionTabHelper::IdForTab(tab.GetContents()))) {
+    return true;
+  }
+
+  // Exclude unattached internal pages and, when requested, tabs whose last
+  // known eligibility is not `kEligible`. Using the last known result keeps the
+  // picker steady while a reloaded page is `kUnknown`, and tabs that have
+  // never resolved stay hidden until they do.
+  if (!IsUrlValidForContextSharing(url)) {
+    return false;
+  }
+  if (exclude_page_context_ineligible_tabs) {
+    auto* eligibility_helper = tabs::PageContextEligibilityHelper::From(&tab);
+    if (!eligibility_helper ||
+        eligibility_helper->GetLastKnownPageContextEligibility() !=
+            optimization_guide::PageContextEligibilityStatus::kEligible) {
+      return false;
+    }
+  }
+  return true;
 }
 
 // static
