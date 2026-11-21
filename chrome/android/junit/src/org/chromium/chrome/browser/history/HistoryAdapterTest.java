@@ -4,14 +4,21 @@
 
 package org.chromium.chrome.browser.history;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.history.HistoryTestUtils.checkAdapterContents;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
+import android.view.View;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Assert;
@@ -33,6 +40,9 @@ import org.chromium.chrome.browser.history.HistoryContentManager.ActorFilter;
 import org.chromium.chrome.browser.history.HistoryProvider.TimePeriodOption;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.components.browser_ui.widget.MoreProgressButton;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemViewHolder;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+import org.chromium.components.favicon.LargeIconBridge;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,6 +58,7 @@ public class HistoryAdapterTest {
     private HistoryAdapter mAdapter;
 
     @Mock private HistoryContentManager mContentManager;
+    @Mock private LargeIconBridge mLargeIconBridge;
     @Mock private SigninPromoCoordinator mHistorySyncPromoCoordinator;
 
     private MoreProgressButton mButton;
@@ -1053,5 +1064,33 @@ public class HistoryAdapterTest {
                                     /* beginTimeMs= */ QueryOptions.UNBOUNDED_TIME_MS,
                                     /* endTimeMs= */ QueryOptions.UNBOUNDED_TIME_MS));
         }
+    }
+
+    @Test
+    public void testCreateViewHolder_WiresItemViewCallbacksToContentManager() {
+        SelectionDelegate<HistoryItem> selectionDelegate = new SelectionDelegate<>();
+        doAnswer(
+                        invocation ->
+                                new SelectableItemViewHolder<>(
+                                        invocation.getArgument(0), selectionDelegate))
+                .when(mContentManager)
+                .getHistoryItemViewHolder(any());
+        doReturn(mLargeIconBridge).when(mContentManager).getLargeIconBridge();
+        doReturn(View.VISIBLE).when(mContentManager).getRemoveItemButtonVisibility();
+
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(mRecyclerView.getContext()));
+        RecyclerView.ViewHolder viewHolder = mAdapter.createViewHolder(mRecyclerView);
+        HistoryItemView itemView = (HistoryItemView) viewHolder.itemView;
+        HistoryItem item = StubbedHistoryProvider.createHistoryItem(0, new Date().getTime());
+
+        itemView.setItem(item);
+        verify(mContentManager).getLargeIconBridge();
+        verify(mLargeIconBridge).getLargeIconForUrl(eq(item.getUrl()), anyInt(), any());
+
+        itemView.handleNonSelectionClick();
+        verify(mContentManager).onItemClicked(item);
+
+        itemView.remove();
+        verify(mContentManager).onItemRemoved(item);
     }
 }

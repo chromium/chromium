@@ -12,7 +12,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.DateDividedAdapter.TimedItem;
-import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
@@ -39,8 +38,6 @@ public class HistoryItem extends TimedItem {
     private final boolean mIsExpanded;
     private final boolean mIsClusterHead;
     private final @Nullable Long mClusterId;
-
-    private @Nullable HistoryContentManager mManager;
 
     /**
      * @param url The url for this item.
@@ -262,39 +259,6 @@ public class HistoryItem extends TimedItem {
     }
 
     /**
-     * @param manager The HistoryContentManager associated with this item.
-     */
-    public void setHistoryManager(HistoryContentManager manager) {
-        mManager = manager;
-    }
-
-    /** Notifies when a history item was clicked. */
-    public void onItemClicked() {
-        if (mManager != null) {
-            mManager.onItemClicked(this);
-        }
-    }
-
-    /** Removes this item. */
-    public void onItemRemoved() {
-        if (mManager != null) {
-            mManager.onItemRemoved(this);
-        }
-    }
-
-    /**
-     * Given a URL, returns a large icon for that URL if one is available.
-     * @param desiredSizePx The desired size of the icon in pixels.
-     * @param callback The method to call asynchronously when the result is available. This callback
-     *                 will not be called if this method returns false.
-     */
-    void getLargeIconForUrl(int desiredSizePx, final LargeIconCallback callback) {
-        if (mManager == null || mManager.getLargeIconBridge() == null) return;
-
-        mManager.getLargeIconBridge().getLargeIconForUrl(getUrl(), desiredSizePx, callback);
-    }
-
-    /**
      * @return The ID of the cluster this item belongs to.
      */
     public @Nullable Long getClusterId() {
@@ -340,7 +304,6 @@ public class HistoryItem extends TimedItem {
         private final boolean mWasBlockedVisit;
         private final boolean mIsActorVisit;
         private final List<CriticalAction> mCriticalActions;
-        private @Nullable HistoryContentManager mManager;
 
         private String mTitle;
         private boolean mIsExpanded;
@@ -359,7 +322,6 @@ public class HistoryItem extends TimedItem {
             mWasBlockedVisit = item.wasBlockedVisit();
             mIsActorVisit = item.isActorVisit();
             mCriticalActions = item.getCriticalActions();
-            mManager = item.mManager;
 
             mIsExpanded = item.isExpanded();
             mIsClusterHead = item.isClusterHead();
@@ -392,11 +354,6 @@ public class HistoryItem extends TimedItem {
             return this;
         }
 
-        public Builder setHistoryManager(@Nullable HistoryContentManager manager) {
-            mManager = manager;
-            return this;
-        }
-
         public HistoryItem build() {
             return new HistoryItem(this);
         }
@@ -413,7 +370,6 @@ public class HistoryItem extends TimedItem {
         mWasBlockedVisit = builder.mWasBlockedVisit;
         mIsActorVisit = builder.mIsActorVisit;
         mCriticalActions = builder.mCriticalActions;
-        mManager = builder.mManager;
 
         mIsExpanded = builder.mIsExpanded;
         mIsClusterHead = builder.mIsClusterHead;

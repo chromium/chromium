@@ -367,7 +367,12 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
                 (HistoryItemView)
                         LayoutInflater.from(parent.getContext())
                                 .inflate(R.layout.history_item_view, parent, false);
-        v.initialize(mManager.getAppInfoCache(), () -> mShowSourceApp);
+        v.initialize(
+                mManager.getAppInfoCache(),
+                () -> mShowSourceApp,
+                mManager::onItemClicked,
+                mManager::onItemRemoved,
+                mManager::getLargeIconBridge);
         ViewHolder viewHolder = mManager.getHistoryItemViewHolder(v);
         HistoryItemView itemView = (HistoryItemView) viewHolder.itemView;
         itemView.setFaviconHelper(mFaviconHelper);
@@ -1118,7 +1123,6 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
                 .setSubItems(new ArrayList<>(cluster))
                 .setClusterId(clusterId)
                 .setIsExpanded(mExpandedClusterKeys.contains(expansionKey))
-                .setHistoryManager(mManager)
                 .build();
     }
 

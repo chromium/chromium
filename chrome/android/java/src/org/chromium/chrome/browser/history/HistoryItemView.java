@@ -25,6 +25,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -38,9 +39,11 @@ import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.selectable_list.CheckableSelectableItemView;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListUtils;
+import org.chromium.components.favicon.LargeIconBridge;
 
 import java.util.List;
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /** The CheckableSelectableItemView for items displayed in the browsing history UI. */
 @NullMarked
@@ -66,6 +69,9 @@ public class HistoryItemView extends CheckableSelectableItemView<HistoryItem> {
 
     private boolean mIsItemRemoved;
     private BooleanSupplier mShowSourceApp;
+    private Callback<HistoryItem> mOnItemClicked;
+    private Callback<HistoryItem> mOnItemRemoved;
+    private Supplier<@Nullable LargeIconBridge> mLargeIconBridgeSupplier;
     private ChipView mChipView;
     private View mSparkContainer;
 
@@ -235,11 +241,19 @@ public class HistoryItemView extends CheckableSelectableItemView<HistoryItem> {
     }
 
     @Initializer
-    void initialize(AppInfoCache appInfoCache, BooleanSupplier showSourceApp) {
+    void initialize(
+            AppInfoCache appInfoCache,
+            BooleanSupplier showSourceApp,
+            Callback<HistoryItem> onItemClicked,
+            Callback<HistoryItem> onItemRemoved,
+            Supplier<@Nullable LargeIconBridge> largeIconBridgeSupplier) {
         mAppInfoCache = appInfoCache;
         // ItemView can be reused every time a new query is made. Use a supplier to
         // check the condition that changes dynamically.
         mShowSourceApp = showSourceApp;
+        mOnItemClicked = onItemClicked;
+        mOnItemRemoved = onItemRemoved;
+        mLargeIconBridgeSupplier = largeIconBridgeSupplier;
     }
 
     private void updateChipView(HistoryItem item) {
@@ -284,10 +298,11 @@ public class HistoryItemView extends CheckableSelectableItemView<HistoryItem> {
     /** Removes the item associated with this view. */
     public void remove() {
         // If the remove button is double tapped, this method may be called twice.
-        if (getItem() == null || mIsItemRemoved) return;
+        HistoryItem item = getItem();
+        if (item == null || mIsItemRemoved) return;
 
         mIsItemRemoved = true;
-        getItem().onItemRemoved();
+        mOnItemRemoved.onResult(item);
     }
 
     /**
@@ -316,13 +331,17 @@ public class HistoryItemView extends CheckableSelectableItemView<HistoryItem> {
     @Override
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public void handleNonSelectionClick() {
-        if (getItem() != null) getItem().onItemClicked();
+        HistoryItem item = getItem();
+        if (item != null) mOnItemClicked.onResult(item);
     }
 
     private void requestIcon() {
         HistoryItem item = getItem();
         if (item == null || item.wasBlockedVisit()) return;
-        item.getLargeIconForUrl(
+        LargeIconBridge largeIconBridge = mLargeIconBridgeSupplier.get();
+        if (largeIconBridge == null) return;
+        largeIconBridge.getLargeIconForUrl(
+                item.getUrl(),
                 mMinIconSize,
                 (@Nullable Bitmap icon, int fallbackColor, boolean _, int _) -> {
                     // Prevent stale icons from making it through to the UI.
@@ -331,7 +350,7 @@ public class HistoryItemView extends CheckableSelectableItemView<HistoryItem> {
                     Drawable drawable =
                             FaviconUtils.getIconDrawableWithoutFilter(
                                     icon,
-                                    getItem().getUrl(),
+                                    item.getUrl(),
                                     fallbackColor,
                                     mIconGenerator,
                                     getResources(),
