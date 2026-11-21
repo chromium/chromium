@@ -57,9 +57,6 @@ TEST_F(LanguageDetectionModelValidTest, DetectLanguageMetrics) {
       base::HashMetricName("en"), 1);
   histogram_tester_.ExpectTotalCount(
       "LanguageDetection.TFLiteModel.DetectPageLanguage.Duration", 1);
-  histogram_tester_.ExpectUniqueSample(
-      "LanguageDetection.TFLiteModel.DetectPageLanguage.Size",
-      contents.length(), 1);
 }
 
 // Pads out `s` with spaces until it is `len` long.

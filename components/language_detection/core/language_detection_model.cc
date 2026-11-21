@@ -150,9 +150,6 @@ std::vector<Prediction> LanguageDetectionModel::Predict(
                           timer.Elapsed());
   base::UmaHistogramCounts1M("LanguageDetection.TFLiteModel.ClassifyText.Size",
                              utf8_contents.size());
-  base::UmaHistogramCounts1M(
-      "LanguageDetection.TFLiteModel.ClassifyText.Size.PreTruncation",
-      contents.size());
   bool detected =
       status_or_categories.ok() && !status_or_categories.value().empty();
   base::UmaHistogramBoolean(

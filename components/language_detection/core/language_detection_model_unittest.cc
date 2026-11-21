@@ -193,9 +193,6 @@ TEST_F(LanguageDetectionValidTest, DetectLanguageMetrics) {
   EXPECT_EQ("en", prediction.language);
   histogram_tester_.ExpectUniqueSample(
       "LanguageDetection.TFLiteModel.ClassifyText.Size", contents.length(), 1);
-  histogram_tester_.ExpectUniqueSample(
-      "LanguageDetection.TFLiteModel.ClassifyText.Size.PreTruncation",
-      contents.length(), 1);
   histogram_tester_.ExpectTotalCount(
       "LanguageDetection.TFLiteModel.ClassifyText.Duration", 1);
   histogram_tester_.ExpectUniqueSample(

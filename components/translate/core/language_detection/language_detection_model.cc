@@ -117,8 +117,6 @@ language_detection::Prediction LanguageDetectionModel::DetectLanguage(
   base::UmaHistogramTimes(
       "LanguageDetection.TFLiteModel.DetectPageLanguage.Duration",
       timer.Elapsed());
-  base::UmaHistogramCounts1M(
-      "LanguageDetection.TFLiteModel.DetectPageLanguage.Size", contents.size());
 
   return prediction;
 }
