@@ -4473,7 +4473,7 @@ Informations supplémentaires :
 Informations supplémentaires :
 <ph name="DEBUG_INFO" /></translation>
 <translation id="8416874502399604126">Accès au micro autorisé cette fois-ci</translation>
-<translation id="8421746712901926961">Enregistrez vos informations dans <ph name="GOOGLE_WALLET_TITLE_1" /> pour gagner du temps, par exemple en remplissant des formulaires dans les produits Google. Vous pouvez <ph name="MANAGE_INFO_LINK" /> dans <ph name="GOOGLE_WALLET_TITLE_2" /> pour <ph name="ACCOUNT" />.</translation>
+<translation id="8421746712901926961">Enregistrez vos informations dans <ph name="GOOGLE_WALLET_TITLE_1" /> pour gagner du temps, par exemple pour remplir des formulaires dans les produits Google. Vous pouvez <ph name="MANAGE_INFO_LINK" /> dans <ph name="GOOGLE_WALLET_TITLE_2" /> pour <ph name="ACCOUNT" />.</translation>
 <translation id="8424582179843326029"><ph name="FIRST_LABEL" /> <ph name="SECOND_LABEL" /> <ph name="THIRD_LABEL" /></translation>
 <translation id="8425213833346101688">Modifier</translation>
 <translation id="8426945547715537628">Autoriser le remplacement du clavier ?</translation>

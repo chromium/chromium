@@ -341,6 +341,7 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="4022972681110646219">Bildschirm übersetzen</translation>
 <translation id="4023601594785368013">Originalsprache: <ph name="LANGUAGE" /></translation>
 <translation id="4034249157893816477">Der Passwortmanager ist direkt in Chrome eingebunden und kann für dich starke Passwörter erstellen, speichern und automatisch einfügen. Füge die Verknüpfung hinzu, um einfacher darauf zuzugreifen.</translation>
+<translation id="4034420818911109432"><ph name="USER_NAME" />, <ph name="EMAIL" />. Mit Google-Abo.</translation>
 <translation id="4035053306113201399">Chrome OS muss neu gestartet werden, um das Update zu installieren.</translation>
 <translation id="4050175100176540509">Wichtige Sicherheitsverbesserungen und neue Funktionen sind in der aktuellen Version verfügbar.</translation>
 <translation id="4053720452172726777">Google Chrome anpassen und verwalten</translation>
@@ -931,6 +932,7 @@ Du kannst erst neue Lesezeichen in deinem Konto speichern, wenn du einige gelös
 <translation id="9148058034647219655">Beenden</translation>
 <translation id="9150331942025550505">Mit der Chrome App auf deinem <ph name="DEVICE_TYPE" /> die Möglichkeiten von KI nutzen</translation>
 <translation id="919706545465235479">Aktualisiere Chrome, um die Synchronisierung zu starten</translation>
+<translation id="9210313013767007472"><ph name="USER_NAME_OR_EMAIL" />. Mit Google-Abo.</translation>
 <translation id="922152298093051471">Chrome anpassen</translation>
 <translation id="93760716455950538">Chrome OS Flex neu starten</translation>
 <translation id="943390475793766444">Chrome empfiehlt, diese Datei zu scannen, da sie gefährlich sein könnte.</translation>

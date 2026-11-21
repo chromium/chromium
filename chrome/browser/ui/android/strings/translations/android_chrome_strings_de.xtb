@@ -912,6 +912,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4585751637295612750">Neuen Tab öffnen, um ihn zur Frage hinzuzufügen</translation>
 <translation id="4585793705637313973">Seite bearbeiten</translation>
 <translation id="4587589328781138893">Websites</translation>
+<translation id="4592634244097223647">Google nach Infos zu diesem Bild fragen</translation>
 <translation id="4594952190837476234">Diese Offlineseite ist vom <ph name="CREATION_TIME" /> und unterscheidet sich gegebenenfalls von der Onlineversion.</translation>
 <translation id="4595237294768457124">Öffne einen neuen Tab</translation>
 <translation id="4595276580892809760">Bilder aus Galerie anhängen</translation>
@@ -1090,6 +1091,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5257142004843671642">Größe der Seitenleiste anpassen</translation>
 <translation id="5264813352784073502">den letzten 24 Stunden</translation>
 <translation id="5267572070504076962">Du kannst Safe Browsing aktivieren, um den Schutz vor gefährlichen Websites zu verbessern</translation>
+<translation id="526760395289305534">Vertikale Tabs maximieren oder minimieren</translation>
 <translation id="5273031377282080577">Diese Einstellung wird von deinem Administrator verwaltet.</translation>
 <translation id="5284295735376057059">Dokumenteigenschaften</translation>
 <translation id="5286907366254680517">Erkannt</translation>
@@ -1188,7 +1190,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5698878456427040674">Prüfe, ob das ausgewählte Konto unterstützt wird.</translation>
 <translation id="5709213329446699338"><ph name="SITE" /> möchte eine Verbindung zu einem seriellen Port herstellen</translation>
 <translation id="5715150588940290235">Gespeicherte Sicherheitscodes löschen?</translation>
-<translation id="572328651809341494">Zuletzt geöffnete Tabs</translation>
+<translation id="572328651809341494">Letzte Tabs</translation>
 <translation id="5728072125198221967">Verknüpfte Google-Dienste</translation>
 <translation id="5733447028358645932">Wer gesurft hat</translation>
 <translation id="5734658507307260911"><ph name="TAB_TITLE" />, angepinnter Inkognitotab mit Audio</translation>
@@ -1800,6 +1802,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="7956713633345437162">Mobile Lesezeichen</translation>
 <translation id="7957413488482743710">Wenn du eine virtuelle Karte verwendest, werden deine tatsächlichen Kartendetails nicht preisgegeben – dadurch bist du besser vor Betrugsversuchen geschützt. <ph name="BEGIN_LINK1" />Weitere Informationen zu virtuellen Karten<ph name="END_LINK1" /></translation>
 <translation id="7959485987650214982">Tabs auf diesem Gerät</translation>
+<translation id="7959802829514004148">PDF konnte nicht heruntergeladen werden</translation>
 <translation id="7961926449547174351">Du hast den Speicherzugriff deaktiviert. Gehe zu den Einstellungen, um ihn zu aktivieren.</translation>
 <translation id="7965838025086216108">Du kannst gespeicherte Passwörter auf jedem Gerät nutzen. Sie werden im Google Passwortmanager für <ph name="ACCOUNT" /> gespeichert.</translation>
 <translation id="7968014550143838305">Zur Leseliste hinzugefügt</translation>
@@ -1887,6 +1890,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8244387390464017490">„Neuer Tab“ anpassen</translation>
 <translation id="8244444485683708655">Kamerabild anhängen</translation>
 <translation id="8250920743982581267">Dokumente</translation>
+<translation id="8254205582828322729">Tippe auf „Speichern“, um dieses Passwort bei der nächsten Anmeldung zu verwenden</translation>
 <translation id="8257429805444572809">Benachrichtigungen von <ph name="DOMAIN" /> abbestellt</translation>
 <translation id="8258999165172757081">Hinzugefügt</translation>
 <translation id="8259179246279078674">Da die vorab geladenen Seiten verschlüsselt sind, erfährt Google nichts über den Inhalt der vorab geladenen Seiten. Bestimmte Google-Server wissen nur, welche Websites privat vorab geladen werden. Diese Informationen werden ausschließlich zum Vorabladen der Seiten verwendet und nicht mit anderen Daten aus deinem Google-Konto verknüpft.</translation>
@@ -1976,6 +1980,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8560602726703398413">In den Lesezeichen findest du deine Leseliste</translation>
 <translation id="85618473456579127">Tippe rechts oben auf dein Profil</translation>
 <translation id="8565021320663436446"><ph name="MEMBER_FULL_NAME" /> entfernen?</translation>
+<translation id="8567433453247478023">Tippe auf „Datenschutz und Sicherheit“</translation>
 <translation id="8570677896027847510">Datei kann nicht sicher heruntergeladen werden</translation>
 <translation id="8571213806525832805">Letzte 4 Wochen</translation>
 <translation id="8580435650274205305">Ablaufdatum, erforderlich</translation>
@@ -1996,6 +2001,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8635399646025169806">Tabgruppe beibehalten?</translation>
 <translation id="8636825310635137004">Aktiviere die Synchronisierung, um Tabs von deinen anderen Geräten abzurufen.</translation>
 <translation id="8639963783467694461">Autofill-Einstellungen</translation>
+<translation id="8642256427178803328">Aktiviere „Inkognitotabs beim Verlassen von Chrome sperren“</translation>
 <translation id="8644482734962137770">Gemini benötigt die Berechtigung zur Verwendung von Chrome</translation>
 <translation id="8662474268934425487">Bei <ph name="SITE_ETLD_PLUS_ONE" /> anmelden</translation>
 <translation id="8664979001105139458">Dateiname schon vorhanden</translation>

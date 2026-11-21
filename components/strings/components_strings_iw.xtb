@@ -281,7 +281,7 @@
 <translation id="1449251255954293933">‏שמירת מספר ה-Redress ב-Google Wallet</translation>
 <translation id="1455413310270022028">כלי מחיקה</translation>
 <translation id="1456749217800922313">קוד אימות</translation>
-<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{אין ביקורות להצגה}=1{הצגת ביקורת אחת}one{הצגת כל # הביקורות}two{הצגת כל # הביקורות}other{הצגת כל # הביקורות}}</translation>
+<translation id="1457992721081300557">{NUM_REVIEWS,plural, =0{אין ביקורות}=1{צפייה בביקורת אחת}one{צפייה בכל # הביקורות}two{צפייה בכל # הביקורות}other{צפייה בכל # הביקורות}}</translation>
 <translation id="1460317464907341501">לאמת את האימייל הזה באופן אוטומטי?</translation>
 <translation id="1461041542809785877">ביצועים</translation>
 <translation id="1462245070427461050">JIS B9</translation>

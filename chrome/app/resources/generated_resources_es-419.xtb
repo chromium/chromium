@@ -343,7 +343,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1267081565119405990">Después de tomar una captura de pantalla o buscar en la pantalla, muestra más acciones, como agregar a Calendario, crear Documentos de Google y mucho más.</translation>
 <translation id="1267649802567297774">Imagen generada <ph name="INDEX" /> de <ph name="SUBJECT" />, en el estilo <ph name="STYLE" />, con el estado de ánimo <ph name="MOOD" />.</translation>
 <translation id="1272079795634619415">Interrumpir</translation>
-<translation id="1272508081857842302">Abriendo los <ph name="BEGIN_LINK" />vínculos compatibles<ph name="END_LINK" /></translation>
+<translation id="1272508081857842302">Abrir <ph name="BEGIN_LINK" />vínculos compatibles<ph name="END_LINK" /></translation>
 <translation id="1274721046703404848">Administra la conexión entre los servicios de la Búsqueda y las apps de Google Workspace, como Google Drive</translation>
 <translation id="1274997165432133392">Cookies y otros datos de sitios</translation>
 <translation id="1277020343994096713">Crea un nuevo PIN diferente al actual.</translation>
@@ -495,7 +495,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1426154609634610063">Revisar los riesgos de usar Gemini</translation>
 <translation id="1426410128494586442">Sí</translation>
 <translation id="142655739075382478">Se bloqueó <ph name="APP_NAME" /></translation>
-<translation id="1428373049397869723">Puedes abrir y editar los archivos compatibles con esta app desde Buscador o desde otras apps. A fin de controlar qué archivos se abren en esta app de forma predeterminada, <ph name="BEGIN_LINK" />obtén más información para establecer apps predeterminadas en tu dispositivo<ph name="END_LINK" />.</translation>
+<translation id="1428373049397869723">Puedes abrir y editar los archivos compatibles con esta app desde el Finder o desde otras apps. Si quieres controlar qué archivos se abren en esta app de forma predeterminada, <ph name="BEGIN_LINK" />obtén más información para establecer apps predeterminadas en tu dispositivo<ph name="END_LINK" />.</translation>
 <translation id="1428657116642077141">Guardaste una nota para una contraseña de este sitio. Para verla, selecciona la opción para administrar tus contraseñas en la barra de direcciones y de búsqueda.</translation>
 <translation id="1429300045468813835">Se borraron todas las entradas</translation>
 <translation id="1430915738399379752">Imprimir</translation>
@@ -750,7 +750,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1644852018355792105">Ingresa la clave de acceso Bluetooth para el dispositivo <ph name="DEVICE" />.</translation>
 <translation id="1645004815457365098">Origen desconocido.</translation>
-<translation id="1647408325348388858">¿Quieres abrir y editar <ph name="FILE_NAME" /> en la aplicación web?</translation>
+<translation id="1647408325348388858">¿Quieres abrir y editar <ph name="FILE_NAME" /> en la app web?</translation>
 <translation id="1648401604841225489">Desbloquear tus llaves de acceso</translation>
 <translation id="1648528859488547844">Usar Wi-Fi o redes móviles para determinar la ubicación</translation>
 <translation id="1650407365859096313">Se abre en una pestaña nueva. Permiso: <ph name="PERMISSION_STATE" /></translation>
@@ -859,7 +859,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="174123615272205933">Personalizado</translation>
 <translation id="1744108098763830590">página en segundo plano</translation>
 <translation id="1745732479023874451">Administrar contactos</translation>
-<translation id="1748283190377208783">{0,plural, =1{unused plural form}other{¿Quieres abrir y editar # archivos en la aplicación web?}}</translation>
+<translation id="1748283190377208783">{0,plural, =1{unused plural form}other{¿Quieres abrir y editar # archivos en la app web?}}</translation>
 <translation id="1748563609363301860">Puedes guardar esta contraseña en tu Cuenta de Google o solo en este dispositivo</translation>
 <translation id="1749733017156547309">Debes ingresar una contraseña</translation>
 <translation id="1750172676754093297">Tu llave de seguridad no puede almacenar huellas dactilares</translation>
@@ -4505,7 +4505,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4853328060971905294">Activado (habilitar el enfoque de línea)</translation>
 <translation id="4854317507773910281">Elige la cuenta parental para la aprobación</translation>
 <translation id="4854603338816296098">Se quitó la dirección</translation>
-<translation id="485480310608090163">Más opciones de configuración y permisos</translation>
+<translation id="485480310608090163">Más parámetros de configuración y permisos</translation>
 <translation id="4857304314344645169">Consulta una explicación paso a paso de cualquier problema</translation>
 <translation id="4858913220355269194">Balón</translation>
 <translation id="4860012864737017059">Pestaña reciente</translation>
@@ -4777,7 +4777,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5092567114307895466">Verifica que cumples con los requisitos y que eres apto</translation>
 <translation id="5093447877601682598">Enviar comentarios sobre la barra de pestañas</translation>
 <translation id="5093569275467863761">Submarco de incógnito en la Memoria caché atrás/adelante: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
-<translation id="5094176498302660097">Puedes abrir y editar los archivos compatibles con esta app desde la app de archivos o desde otras apps. A fin de controlar qué archivos se abren en esta app de forma predeterminada, <ph name="BEGIN_LINK" />obtén más información para establecer apps predeterminadas en tu dispositivo<ph name="END_LINK" />.</translation>
+<translation id="5094176498302660097">Puedes abrir y editar los archivos compatibles con esta app desde la app de Archivos o desde otras apps. Si quieres controlar qué archivos se abren en esta app de forma predeterminada, <ph name="BEGIN_LINK" />obtén más información para establecer apps predeterminadas en tu dispositivo<ph name="END_LINK" />.</translation>
 <translation id="5094721898978802975">Comunicarse con aplicaciones nativas en cooperación</translation>
 <translation id="5095252080770652994">Progreso</translation>
 <translation id="5095507226704905004">No se puede copiar el archivo porque ya no existe</translation>
@@ -5511,7 +5511,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5775863968701268310">Administrar las preferencias de Google Play</translation>
 <translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (predeterminado del sistema)</translation>
 <translation id="5776450228446082914">La lista de sitios que se pueden abrir en cualquier navegador.</translation>
-<translation id="5776571780337000608">Puedes abrir y editar los archivos compatibles con esta app desde el navegador de archivos o desde otras apps. A fin de controlar qué archivos se abren en esta app de forma predeterminada, <ph name="BEGIN_LINK" />obtén más información para establecer apps predeterminadas en tu dispositivo<ph name="END_LINK" />.</translation>
+<translation id="5776571780337000608">Puedes abrir y editar los archivos compatibles con esta app desde el navegador de archivos o desde otras apps. Si quieres controlar qué archivos se abren en esta app de forma predeterminada, <ph name="BEGIN_LINK" />obtén más información para establecer apps predeterminadas en tu dispositivo<ph name="END_LINK" />.</translation>
 <translation id="5777468213129569553">Abrir Chrome</translation>
 <translation id="5778491106820461378">Desde <ph name="LINK_BEGIN" />Configuración<ph name="LINK_END" />, puedes administrar las Cuentas de Google a las que se accedió. Es posible que se apliquen a todas las cuentas los permisos que otorgaste a sitios web y apps. Si no quieres que los sitios o apps accedan a la información de la cuenta, puedes acceder a tu <ph name="DEVICE_TYPE" /> como invitado.</translation>
 <translation id="5780011244986845107">La carpeta seleccionada contiene archivos confidenciales. ¿Confirmas que deseas otorgar a "<ph name="APP_NAME" />" acceso de lectura permanente a esta carpeta?</translation>
@@ -6298,6 +6298,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6466936665940546351">Verifica tu identidad para agregar contraseñas y obtenerlas en todos los dispositivos con tu Cuenta de Google</translation>
 <translation id="6467230443178397264">Escanear <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">Optimizar los videos en pantalla completa</translation>
+<translation id="6467327465309816244">Usa Gemini con cuidado y de manera <ph name="BEGIN_LINK1" />segura<ph name="LINK_END1" />. Puede cometer errores y producir <ph name="BEGIN_LINK2" />resultados inesperados<ph name="LINK_END2" />, como compras.</translation>
 <translation id="6467377768028664108">Tu <ph name="DEVICE_TYPE" /> te permitirá lo siguiente:</translation>
 <translation id="6468485451923838994">Fuentes</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> archivos</translation>

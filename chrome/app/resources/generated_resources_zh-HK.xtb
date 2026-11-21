@@ -6303,6 +6303,7 @@
 <translation id="6466936665940546351">驗證你的身分，以新增密碼並在所有已登入你 Google 帳戶的裝置上取用</translation>
 <translation id="6467230443178397264">掃瞄 <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">優化全螢幕影片</translation>
+<translation id="6467327465309816244">使用 Gemini 時必須謹慎<ph name="BEGIN_LINK1" />安全<ph name="LINK_END1" />。Gemini 可能會出錯，並產生<ph name="BEGIN_LINK2" />非預期的結果<ph name="LINK_END2" /> (例如購物)。</translation>
 <translation id="6467377768028664108">您的 <ph name="DEVICE_TYPE" /> 將可以：</translation>
 <translation id="6468485451923838994">字型</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> 個檔案</translation>

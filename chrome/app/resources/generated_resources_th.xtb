@@ -6291,6 +6291,7 @@
 <translation id="6466936665940546351">โปรดยืนยันว่าเป็นคุณเพื่อเพิ่มรหัสผ่านและรับรหัสผ่านในอุปกรณ์ทุกเครื่องด้วยบัญชี Google ของคุณ</translation>
 <translation id="6467230443178397264">สแกน <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">เพิ่มประสิทธิภาพวิดีโอเต็มหน้าจอ</translation>
+<translation id="6467327465309816244">โปรดใช้ Gemini อย่างรอบคอบและ<ph name="BEGIN_LINK1" />ปลอดภัย<ph name="LINK_END1" /> Gemini อาจทำผิดพลาดและสร้าง<ph name="BEGIN_LINK2" />ผลลัพธ์ที่ไม่คาดคิด<ph name="LINK_END2" /> เช่น การซื้อ</translation>
 <translation id="6467377768028664108">จากนั้น <ph name="DEVICE_TYPE" /> จะสามารถ</translation>
 <translation id="6468485451923838994">แบบอักษร</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> ไฟล์</translation>

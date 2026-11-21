@@ -150,7 +150,7 @@
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> không được phép in bằng <ph name="PRINTER_NAME" />. Vui lòng liên hệ với quản trị viên của bạn.</translation>
 <translation id="1391102559483454063">Đang bật</translation>
 <translation id="1394698770495054737">Mờ hoàn toàn</translation>
-<translation id="1395878931462960119">{DAYS,plural, =1{1 ngày trước}other{# ngày trước}}</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 ngày trước}one{# days ago}other{# ngày trước}}</translation>
 <translation id="1403222014593521787">Không thể kết nối với proxy này</translation>
 <translation id="1404963891829069586">Âm thanh tăng khả năng tập trung</translation>
 <translation id="1407069428457324124">Giao diện tối</translation>
@@ -267,7 +267,7 @@
 <translation id="174102739345480129">Tính năng Đánh dấu đang tắt.</translation>
 <translation id="1743570585616704562">Không nhận dạng được</translation>
 <translation id="1743927604032653654">Thu gọn thông báo <ph name="NOTIFICATION_TITLE" /></translation>
-<translation id="1744435831291625602">{HOURS,plural, =0{Trong vòng 1 giờ}=1{1 giờ trước}other{# giờ trước}}</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{Trong vòng 1 giờ}=1{1 giờ trước}one{# hr ago}other{# giờ trước}}</translation>
 <translation id="1746730358044914197">Các phương thức nhập do quản trị viên của bạn định cấu hình.</translation>
 <translation id="1747336645387973286">ngày đến hạn: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Đã bật bàn phím ảo</translation>
@@ -433,7 +433,7 @@
 <translation id="2322173485024759474">Lùi một ký tự</translation>
 <translation id="2326112202058075478">Hiện thêm biểu tượng cảm xúc khác</translation>
 <translation id="2335091074961603075">Chromebook hoặc thiết bị Bluetooth của bạn đang dùng phiên bản Bluetooth cũ. Sử dụng micrô gắn trong để có chất lượng âm thanh tốt hơn.</translation>
-<translation id="2336214675195760012">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> yêu cầu bạn kết nối Wi-Fi ngay hôm nay để tải bản cập nhật xuống. Bạn cũng có thể tải xuống qua một kết nối có đồng hồ đo (cước phí có thể phát sinh).}other{<ph name="MANAGER" /> yêu cầu bạn kết nối Wi-Fi và tải bản cập nhật xuống trước thời hạn. Bạn cũng có thể tải xuống qua một kết nối có đồng hồ đo (cước phí có thể phát sinh).}}</translation>
+<translation id="2336214675195760012">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> yêu cầu bạn kết nối Wi-Fi ngay hôm nay để tải bản cập nhật xuống. Bạn cũng có thể tải xuống qua một kết nối có đồng hồ đo (cước phí có thể phát sinh).}one{<ph name="MANAGER" /> requires you to connect to Wi-Fi and download an update before the deadline. Or, download from a metered connection (charges may apply).}other{<ph name="MANAGER" /> yêu cầu bạn kết nối Wi-Fi và tải bản cập nhật xuống trước thời hạn. Bạn cũng có thể tải xuống qua một kết nối có đồng hồ đo (cước phí có thể phát sinh).}}</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> đang in 1 trang bằng <ph name="PRINTER_NAME" /></translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">Hãy nhấn vào nút bút cảm ứng trên giá để ghi chú, chụp ảnh màn hình, sử dụng con trỏ laser hoặc kính lúp.</translation>
@@ -558,7 +558,7 @@
 <translation id="2687510499067466116">Phím tắt đã thay đổi</translation>
 <translation id="2689613560355655046">Không gian làm việc 8</translation>
 <translation id="2692092709110488417">Nhấn phím Tab để lấy tiêu điểm và di chuyển vùng đã chọn</translation>
-<translation id="2694970249217878574">{NUM_DAYS,plural, =1{Ngày cuối để cập nhật thiết bị <ph name="DEVICE_TYPE" />}other{Cập nhật thiết bị <ph name="DEVICE_TYPE" /> trong vòng {NUM_DAYS} ngày}}</translation>
+<translation id="2694970249217878574">{NUM_DAYS,plural, =1{Ngày cuối để cập nhật thiết bị <ph name="DEVICE_TYPE" />}one{Update <ph name="DEVICE_TYPE" /> within {NUM_DAYS} days}other{Cập nhật thiết bị <ph name="DEVICE_TYPE" /> trong vòng {NUM_DAYS} ngày}}</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Hiện chế độ cài đặt bàn phím. Đã chọn <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2699913284398121653">Sử dụng ứng dụng Chuyển nội dung để chuyển dữ liệu từ tài khoản trường học sang tài khoản cá nhân</translation>
@@ -784,7 +784,7 @@ Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau <ph name="T
 <translation id="334927402682780278">Chọn văn bản từ vị trí con trỏ đến cuối dòng</translation>
 <translation id="3349345708646875009">Mở trình quản lý tác vụ</translation>
 <translation id="3353786022389205125">Hãy bật tuỳ chọn "Hiển thị màn hình khóa khi đánh thức từ chế độ ngủ" và thử lại</translation>
-<translation id="3356737528691488125">{NUM_WEEKS,plural, =1{Cập nhật thiết bị <ph name="DEVICE_TYPE" /> trong vòng 1 tuần}other{Cập nhật thiết bị <ph name="DEVICE_TYPE" /> trong vòng {NUM_WEEKS} tuần}}</translation>
+<translation id="3356737528691488125">{NUM_WEEKS,plural, =1{Cập nhật thiết bị <ph name="DEVICE_TYPE" /> trong vòng 1 tuần}one{Update <ph name="DEVICE_TYPE" /> within {NUM_WEEKS} weeks}other{Cập nhật thiết bị <ph name="DEVICE_TYPE" /> trong vòng {NUM_WEEKS} tuần}}</translation>
 <translation id="3364721542077212959">Công cụ bút cảm ứng</translation>
 <translation id="3365281428003534650">Đặt hẹn giờ, công việc, nhạc</translation>
 <translation id="3365977133351922112">Điện thoại của bạn ở quá xa. Hãy đưa điện thoại đến gần hơn.</translation>
@@ -841,7 +841,7 @@ Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau <ph name="T
 <translation id="3513798432020909783">Người quản lý tài khoản: <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3516000762115478502">Đổi kích thước cửa sổ trong bố cục ô xếp hướng lên trên</translation>
 <translation id="3517037892157925473">Lần cập nhật việc cần làm gần đây nhất: <ph name="TIME" />, <ph name="DATE" />.</translation>
-<translation id="352245152354538528">{0,plural, =1{Cập nhật thiết bị trong vòng 1 phút}other{Cập nhật thiết bị trong vòng # phút}}</translation>
+<translation id="352245152354538528">{0,plural, =1{Cập nhật thiết bị trong vòng 1 phút}one{Update device within # minutes}other{Cập nhật thiết bị trong vòng # phút}}</translation>
 <translation id="3522979239100719575">Đang tìm hồ sơ có sẵn. Quá trình này có thể mất vài phút.</translation>
 <translation id="3526440770046466733">Mở đường liên kết trong thẻ mới và tiếp tục sử dụng thẻ hiện tại</translation>
 <translation id="353086728817903341">Đã kết nối với <ph name="NUM_DEVICES" /> thiết bị</translation>
@@ -869,7 +869,7 @@ Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau <ph name="T
 <translation id="3576141592585647168">Thay đổi múi giờ</translation>
 <translation id="3577473026931028326">Đã xảy ra lỗi. Hãy thử lại.</translation>
 <translation id="3580650856351781466">Đang tải các tệp mã chuyển lời nói thành văn bản xuống</translation>
-<translation id="3583350334315908861">{MINUTES,plural, =1{phút}other{phút}}</translation>
+<translation id="3583350334315908861">{MINUTES,plural, =1{phút}one{minutes}other{phút}}</translation>
 <translation id="3585296979871889131">Xem ứng dụng, thông báo, nội dung nghe nhìn và ảnh gần đây có trên điện thoại</translation>
 <translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590295622232282437">Đang vào phiên được quản lý.</translation>
@@ -935,7 +935,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="3741482431277446954">Nút chuột phải</translation>
 <translation id="3742055079367172538">Ảnh màn hình đã chụp</translation>
 <translation id="3743775386021959186">Chế độ Tập trung đang bật, còn <ph name="REMAINING_TIME" /></translation>
-<translation id="3744484896879440075">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> yêu cầu bạn sao lưu dữ liệu và trả lại thiết bị <ph name="DEVICE_TYPE" /> này ngay hôm nay.}other{<ph name="MANAGER" /> yêu cầu bạn sao lưu dữ liệu và trả lại thiết bị <ph name="DEVICE_TYPE" /> này trước thời hạn.}}</translation>
+<translation id="3744484896879440075">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> yêu cầu bạn sao lưu dữ liệu và trả lại thiết bị <ph name="DEVICE_TYPE" /> này ngay hôm nay.}one{<ph name="MANAGER" /> requires you to back up your data and return this <ph name="DEVICE_TYPE" /> before the deadline.}other{<ph name="MANAGER" /> yêu cầu bạn sao lưu dữ liệu và trả lại thiết bị <ph name="DEVICE_TYPE" /> này trước thời hạn.}}</translation>
 <translation id="3750403286520637847">Ẩn đề xuất về thời tiết</translation>
 <translation id="3752253558646317685">Yêu cầu con bạn liên tục nhấc ngón tay lên để lưu dấu vân tay</translation>
 <translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />Dữ liệu ứng dụng có thể là bất kỳ dữ liệu nào mà một ứng dụng đã lưu (dựa trên các chế độ cài đặt của nhà phát triển), bao gồm cả các dữ liệu như danh bạ, tin nhắn và ảnh.<ph name="END_PARAGRAPH1" />
@@ -957,7 +957,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="3798670284305777884">Loa (bên trong)</translation>
 <translation id="3799080171973636491">Bạn đã nhấn phím tắt của tính năng phóng to toàn màn hình. Bạn có muốn bật tính năng này không?</translation>
 <translation id="3804737937830804242">Thu gọn máy ảnh</translation>
-<translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 biểu tượng cảm xúc. Không có kết quả nào khác.}other{# biểu tượng cảm xúc. Không có kết quả nào khác.}}</translation>
+<translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 biểu tượng cảm xúc. Không có kết quả nào khác.}one{# emojis. No other results.}other{# biểu tượng cảm xúc. Không có kết quả nào khác.}}</translation>
 <translation id="381202950560906753">Thêm vân tay khác</translation>
 <translation id="3819261658055281761">Hệ thống không lưu trữ được mã thông báo truy cập API dài hạn cho thiết bị này.</translation>
 <translation id="3822403841174077928">Không thể sao chép cùng với định dạng</translation>
@@ -1057,7 +1057,8 @@ Hãy sạc thiết bị.</translation>
 <translation id="4123259114412175274">Để mở khoá Chromebook, hãy nhớ bật Bluetooth trên điện thoại</translation>
 <translation id="4123868835475902435">Đó mới chỉ là thông tin cơ bản! Hãy tiếp tục tìm hiểu trong Khám phá, ứng dụng tích hợp sẵn chuyên cung cấp các mẹo và thông tin trợ giúp của chúng tôi. Trong ứng dụng này, bạn sẽ tìm thấy các mẹo giúp bạn bắt đầu, ưu đãi đặc biệt và tính năng mới nhất của <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4124779003103520737">{0,plural, =1{Thiết bị <ph name="DEVICE_TYPE" /> của bạn sẽ tự động khoá sau # giây.
-        <ph name="DOMAIN" /> yêu cầu bạn không tháo thẻ thông minh.}other{Thiết bị <ph name="DEVICE_TYPE" /> của bạn sẽ tự động khoá sau # giây.
+        <ph name="DOMAIN" /> yêu cầu bạn không tháo thẻ thông minh.}one{Your <ph name="DEVICE_TYPE" /> will be locked automatically in # seconds.
+        <ph name="DOMAIN" /> requires you to keep your smart card inserted.}other{Thiết bị <ph name="DEVICE_TYPE" /> của bạn sẽ tự động khoá sau # giây.
         <ph name="DOMAIN" /> yêu cầu bạn không tháo thẻ thông minh.}}</translation>
 <translation id="4125970834901680537">Không thể phát trực tuyến nội dung trên ứng dụng ở chế độ máy tính bảng. Hãy thử lại ở chế độ máy tính xách tay.</translation>
 <translation id="4131973331381812765">Nhiệt độ: <ph name="TEMPERATURE" />°C – Tốc độ hiện tại: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
@@ -1074,7 +1075,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="416245495747357243">Đã xong!</translation>
 <translation id="4165275524535002941">Có thể cáp không hỗ trợ màn hình</translation>
 <translation id="4177415338862979658">Nhấp để xem thông tin chi tiết</translation>
-<translation id="4177913004758410636">{0,plural, =1{Cập nhật thiết bị trong vòng 1 ngày}other{Cập nhật thiết bị trong vòng # ngày}}</translation>
+<translation id="4177913004758410636">{0,plural, =1{Cập nhật thiết bị trong vòng 1 ngày}one{Update device within # days}other{Cập nhật thiết bị trong vòng # ngày}}</translation>
 <translation id="4181841719683918333">Ngôn ngữ</translation>
 <translation id="4185671786623711291">Di chuyển cửa sổ đang hoạt động sang không gian làm việc ở bên phải</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> – <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> Tìm kiếm</translation>
@@ -1124,7 +1125,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4285498937028063278">Bỏ ghim</translation>
 <translation id="428715201724021596">Đang kết nối với hồ sơ. Quá trình này có thể mất vài phút.</translation>
 <translation id="4287250812980588583">Cửa sổ Chrome</translation>
-<translation id="4291322857434980285">{NUM_APPS,plural, =1{Âm lượng micrô do <ph name="APP_NAME" /> kiểm soát}other{Âm lượng micrô do # ứng dụng kiểm soát}}</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{Âm lượng micrô do <ph name="APP_NAME" /> kiểm soát}one{Mic volume controlled by # apps}other{Âm lượng micrô do # ứng dụng kiểm soát}}</translation>
 <translation id="4296136865091727875">Xóa tất cả <ph name="COUNT" /> thông báo</translation>
 <translation id="4300272766492248925">Mở ứng dụng</translation>
 <translation id="430191667033048642">Đã chuyển <ph name="MOVED_APP_NAME" /> vào thư mục <ph name="FOLDER_NAME" />.</translation>
@@ -1175,7 +1176,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4439157218765614426">Bị cấm theo chính sách.</translation>
 <translation id="4441283832827406317">Ứng dụng được sắp xếp theo tên</translation>
 <translation id="4445159312344259901">Đăng nhập để mở khóa</translation>
-<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 thông báo quan trọng}other{# thông báo quan trọng}}</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 thông báo quan trọng}one{# important notifications}other{# thông báo quan trọng}}</translation>
 <translation id="4450893287417543264">Không hiện lại</translation>
 <translation id="4451374464530248585">Phím tắt Alt + Mũi tên xuống đã thay đổi. Để sử dụng phím Page Down, hãy nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + Mũi tên xuống.</translation>
 <translation id="4453430595102511050">Chạm vào cảm biến vân tay ở góc trên bên phải bàn phím. Dữ liệu vân tay được lưu trữ an toàn và chỉ có trên <ph name="DEVICE_TYPE" /> của bạn.</translation>
@@ -1184,7 +1185,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="445923051607553918">Tham gia mạng Wi-Fi</translation>
 <translation id="4465236939126352372">Giới hạn thời gian sử dụng <ph name="TIME" /> đã được đặt cho <ph name="APP_NAME" /></translation>
 <translation id="4471354919263203780">Đang tải các tệp nhận dạng lời nói xuống... <ph name="PERCENT" />%</translation>
-<translation id="4471432286288241507">{0,plural, =0{Cập nhật thiết bị ngay}=1{Cập nhật thiết bị trong vòng 1 giây}other{Cập nhật thiết bị trong vòng # giây}}</translation>
+<translation id="4471432286288241507">{0,plural, =0{Cập nhật thiết bị ngay}=1{Cập nhật thiết bị trong vòng 1 giây}one{Update device within # seconds}other{Cập nhật thiết bị trong vòng # giây}}</translation>
 <translation id="4472575034687746823">Bắt đầu</translation>
 <translation id="4473489370276014885">Danh bạ Google</translation>
 <translation id="4477751544736611934">Bạn có thể phải chịu chi phí dữ liệu.
@@ -1242,7 +1243,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, Xếp hạng theo sao <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Nhấn tổ hợp phím Ctrl+W để xoá</translation>
 <translation id="4633757335284074492">Sao lưu vào Google Drive. Dễ dàng khôi phục dữ liệu hoặc chuyển đổi thiết bị bất cứ lúc nào. Bản sao lưu này bao gồm cả dữ liệu ứng dụng. Các bản sao lưu được tải lên Google và mã hóa bằng mật khẩu Tài khoản Google của con bạn.</translation>
-<translation id="4635501805800894201">{0,plural, =0{Khôi phục hệ điều hành trên thiết bị về phiên bản trước ngay bây giờ}=1{Khôi phục hệ điều hành trên thiết bị về phiên bản trước trong vòng 1 giây}other{Khôi phục hệ điều hành trên thiết bị về phiên bản trước trong vòng # giây}}</translation>
+<translation id="4635501805800894201">{0,plural, =0{Khôi phục hệ điều hành trên thiết bị về phiên bản trước ngay bây giờ}=1{Khôi phục hệ điều hành trên thiết bị về phiên bản trước trong vòng 1 giây}one{Update device to previous version within # seconds}other{Khôi phục hệ điều hành trên thiết bị về phiên bản trước trong vòng # giây}}</translation>
 <translation id="4641539339823703554">Chrome đã không thể đặt giờ hệ thống. Vui lòng kiểm tra giờ bên dưới và sửa giờ nếu cần thiết.</translation>
 <translation id="4642092649622328492">Chụp ảnh một phần màn hình</translation>
 <translation id="4643833688073835173">Chromebook của bạn dùng một cảm biến tích hợp sẵn để phát hiện người ở đối diện thiết bị. Mọi dữ liệu đều được xử lý ngay trên thiết bị và sau đó sẽ được xoá. Dữ liệu cảm biến không bao giờ được gửi cho Google.</translation>
@@ -1281,7 +1282,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4736732123074402682">Hãy kiểm tra kết nối rồi thử lại.</translation>
 <translation id="473775607612524610">Cập nhật</translation>
 <translation id="4740516757091333363">Xoá không gian làm việc đã lưu?</translation>
-<translation id="4746798685375253449">{0,plural, =1{Khôi phục hệ điều hành trên thiết bị về phiên bản trước trong vòng 1 ngày}other{Khôi phục hệ điều hành trên thiết bị về phiên bản trước trong vòng # ngày}}</translation>
+<translation id="4746798685375253449">{0,plural, =1{Khôi phục hệ điều hành trên thiết bị về phiên bản trước trong vòng 1 ngày}one{Update device to previous version within # days}other{Khôi phục hệ điều hành trên thiết bị về phiên bản trước trong vòng # ngày}}</translation>
 <translation id="4747410141429390146">Vui lòng mở khoá để xem thông báo</translation>
 <translation id="4752784485658729358">Chỉ được lưu tối đa 6 không gian làm việc. Hãy xoá một không gian làm việc nếu muốn lưu một không gian làm việc mới.</translation>
 <translation id="4759238208242260848">Tệp đã tải xuống</translation>
@@ -1359,7 +1360,7 @@ Một số tính năng bị hạn chế nhằm tăng thời lượng pin.</trans
 <translation id="4964188651935955085">Khi bạn tắt Bluetooth, thiết bị bên ngoài sau đây sẽ ngắt kết nối khỏi <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Tăng âm lượng</translation>
 <translation id="496999337731226334">Bước <ph name="STEP" />/<ph name="TOTAL_STEPS" /> của hướng dẫn. Các chế độ cài đặt thường dùng như Wi-Fi, Bluetooth và âm lượng sẽ nằm trong phần Cài đặt nhanh. Bạn cũng có thể vào phần này để chụp ảnh màn hình. Nhấn tổ hợp phím Alt + Shift + S để mở phần Cài đặt nhanh.</translation>
-<translation id="4974836474136150508">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> yêu cầu bạn tải bản cập nhật xuống ngay hôm nay. Bản cập nhật sẽ tự động được tải xuống khi bạn kết nối Internet.}other{<ph name="MANAGER" /> yêu cầu bạn tải bản cập nhật xuống trước thời hạn. Bản cập nhật sẽ tự động được tải xuống khi bạn kết nối Internet.}}</translation>
+<translation id="4974836474136150508">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> yêu cầu bạn tải bản cập nhật xuống ngay hôm nay. Bản cập nhật sẽ tự động được tải xuống khi bạn kết nối Internet.}one{<ph name="MANAGER" /> requires you to download an update before the deadline. The update will download automatically when you connect to the internet.}other{<ph name="MANAGER" /> yêu cầu bạn tải bản cập nhật xuống trước thời hạn. Bản cập nhật sẽ tự động được tải xuống khi bạn kết nối Internet.}}</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
@@ -1435,13 +1436,13 @@ Bạn cũng có thể dùng phím tắt. Hãy đánh dấu phần văn bản b�
 <translation id="5176318573511391780">Ghi một phần màn hình</translation>
 <translation id="5187627942836026988">Hiển thị thông tin chi tiết về điểm phát sóng. Quản trị viên của bạn đã chặn điểm phát sóng.</translation>
 <translation id="5188648870018555788">Sử dụng thông tin vị trí. Cho phép các ứng dụng, trang web và dịch vụ trên ChromeOS và Android có quyền truy cập thông tin vị trí sử dụng thông tin vị trí của thiết bị. Chế độ Độ chính xác của vị trí cung cấp thông tin chính xác hơn về vị trí cho các ứng dụng và dịch vụ Android. Để thực hiện việc này, Google định kỳ xử lý thông tin về cảm biến thiết bị và tín hiệu không dây từ thiết bị của bạn nhằm thu thập dữ liệu vị trí dựa trên tín hiệu không dây từ đám đông. Những thông tin này sẽ được sử dụng theo cách không xác định danh tính của bạn nhằm cải thiện độ chính xác của vị trí và các dịch vụ dựa trên vị trí. Ngoài ra, những thông tin này còn dùng để cải thiện, cung cấp và duy trì các dịch vụ của Google căn cứ trên lợi ích chính đáng của Google và bên thứ ba nhằm phục vụ nhu cầu của người dùng. <ph name="BEGIN_LINK1" />Tìm hiểu thêm về việc sử dụng thông tin vị trí<ph name="END_LINK1" /></translation>
-<translation id="519224799121965725">{NUM_WEEKS,plural, =1{Trả lại thiết bị <ph name="DEVICE_TYPE" /> trong vòng {NUM_WEEKS} tuần}other{Trả lại thiết bị <ph name="DEVICE_TYPE" /> trong vòng {NUM_WEEKS} tuần}}</translation>
+<translation id="519224799121965725">{NUM_WEEKS,plural, =1{Trả lại thiết bị <ph name="DEVICE_TYPE" /> trong vòng {NUM_WEEKS} tuần}one{Return <ph name="DEVICE_TYPE" /> within {NUM_WEEKS} weeks}other{Trả lại thiết bị <ph name="DEVICE_TYPE" /> trong vòng {NUM_WEEKS} tuần}}</translation>
 <translation id="5198039720391525849">Ảnh GIF nổi bật</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> sự kiện</translation>
 <translation id="5198715732953550718">Đã kết hợp <ph name="MOVED_APP_NAME" /> với <ph name="IN_PLACE_APP" /> để tạo thư mục mới.</translation>
 <translation id="5204673965307125349">Vui lòng powerwash thiết bị và thử lại.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
-<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 thông báo khác}other{# thông báo khác}}</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 thông báo khác}one{# other notifications}other{# thông báo khác}}</translation>
 <translation id="5207949376430453814">Đánh dấu điểm chèn văn bản</translation>
 <translation id="5208059991603368177">Bật</translation>
 <translation id="5216991270656129561">Tắt cho đến <ph name="TIME" /></translation>
@@ -1751,7 +1752,8 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="6062360702481658777">Bạn sẽ tự động được đăng xuất sau <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6068258534237496331">Các tuỳ chọn điều khiển cuộc gọi video</translation>
 <translation id="6070081109266557120">{0,plural, =1{Bạn sẽ tự động đăng xuất sau # giây.
-        <ph name="DOMAIN" /> yêu cầu bạn không tháo thẻ thông minh.}other{Bạn sẽ tự động đăng xuất sau # giây.
+        <ph name="DOMAIN" /> yêu cầu bạn không tháo thẻ thông minh.}one{You will be automatically signed out in # seconds.
+        <ph name="DOMAIN" /> requires you to keep your smart card inserted.}other{Bạn sẽ tự động đăng xuất sau # giây.
         <ph name="DOMAIN" /> yêu cầu bạn không tháo thẻ thông minh.}}</translation>
 <translation id="6071576563962215370">Hệ thống không thiết lập được khóa thuộc tính thời gian cài đặt thiết bị.</translation>
 <translation id="6073451960410192870">Dừng ghi</translation>
@@ -1856,7 +1858,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="6378515133128829137">Ghim cửa sổ sang bên phải</translation>
 <translation id="6380143666419481200">Đồng ý và tiếp tục</translation>
 <translation id="6381109794406942707">Để mở khóa thiết bị, hãy nhập mã PIN của bạn.</translation>
-<translation id="6381305031890976705">{0,plural, =1{Khôi phục hệ điều hành trên thiết bị về phiên bản trước trong vòng 1 giờ}other{Khôi phục hệ điều hành trên thiết bị về phiên bản trước trong vòng # giờ}}</translation>
+<translation id="6381305031890976705">{0,plural, =1{Khôi phục hệ điều hành trên thiết bị về phiên bản trước trong vòng 1 giờ}one{Update device to previous version within # hours}other{Khôi phục hệ điều hành trên thiết bị về phiên bản trước trong vòng # giờ}}</translation>
 <translation id="638716340450135524">Bật quyền truy cập vào máy ảnh</translation>
 <translation id="6406458002328242616">Chỉnh sửa thời gian hẹn giờ. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
@@ -1885,7 +1887,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="6456096448804832585">Chỉ có chế độ dọc</translation>
 <translation id="6464094930452079790">hình ảnh</translation>
 <translation id="6467290994038932560">Đang bật đối với <ph name="GAME_APP_NAME" /></translation>
-<translation id="6468406072297048412">{0,plural, =1{Khôi phục hệ điều hành trên thiết bị về phiên bản trước trong vòng 1 phút}other{Khôi phục hệ điều hành trên thiết bị về phiên bản trước trong vòng # phút}}</translation>
+<translation id="6468406072297048412">{0,plural, =1{Khôi phục hệ điều hành trên thiết bị về phiên bản trước trong vòng 1 phút}one{Update device to previous version within # minutes}other{Khôi phục hệ điều hành trên thiết bị về phiên bản trước trong vòng # phút}}</translation>
 <translation id="6469104339369989396">Bật/tắt điểm phát sóng</translation>
 <translation id="6475294023568239942">Giải phóng dung lượng ổ đĩa hoặc thay đổi kích thước ổ đĩa Linux trong phần Cài đặt</translation>
 <translation id="6477681113376365978">Không tải được tệp xuống</translation>
@@ -1919,7 +1921,7 @@ Mới cài đặt</translation>
 <translation id="6560151649238390891">Đã chèn nội dung đề xuất</translation>
 <translation id="6562447480759345110">Kết thúc phiên Tập trung</translation>
 <translation id="6565007273808762236">Kết nối eSIM không có sẵn</translation>
-<translation id="6570831796530454248">{0,plural, =1{Cập nhật thiết bị trong vòng 1 giờ}other{Cập nhật thiết bị trong vòng # giờ}}</translation>
+<translation id="6570831796530454248">{0,plural, =1{Cập nhật thiết bị trong vòng 1 giờ}one{Update device within # hours}other{Cập nhật thiết bị trong vòng # giờ}}</translation>
 <translation id="6570902864550063460">Đang sạc qua USB</translation>
 <translation id="6571006437522772306">Tìm trong ứng dụng Files</translation>
 <translation id="6574587113394758819">Đã ẩn thông báo của <ph name="APP_TITLE" /> do đang bật chế độ chống nhìn lén</translation>
@@ -2024,12 +2026,12 @@ Mới cài đặt</translation>
 <translation id="6856708615407876657">Bật/tắt danh mục kết quả tìm kiếm</translation>
 <translation id="6856756288284651804">Chromebook đã cập nhật</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> giây</translation>
-<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Còn lại một số}other{Còn lại # số}}</translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Còn lại một số}one{# digits remaining}other{Còn lại # số}}</translation>
 <translation id="6867938213751067702">Đã tạm dừng tải <ph name="FILENAME" /> xuống</translation>
 <translation id="6868934826811377550">Xem thông tin chi tiết</translation>
 <translation id="6874854809828346832">Hiển thị thông tin chi tiết về điểm phát sóng. Điểm phát sóng đang bật.</translation>
 <translation id="6878400149835617132">Đã tắt phím tắt</translation>
-<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 ứng dụng}other{# ứng dụng}}</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 ứng dụng}one{# apps}other{# ứng dụng}}</translation>
 <translation id="6879454869409141992">Bật Caps Lock</translation>
 <translation id="6883768636838842873">Phím tắt, mẹo sử dụng thiết bị, v.v.</translation>
 <translation id="6884665277231944629">Quay lại hôm nay</translation>
@@ -2312,7 +2314,7 @@ Mới cài đặt</translation>
 <translation id="7720400844887872976">Bật cho đến <ph name="TIME" /></translation>
 <translation id="7720410380936703141">THỬ LẠI</translation>
 <translation id="7721132362314201794">Tên không gian làm việc</translation>
-<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 thông báo}other{# thông báo}}</translation>
+<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 thông báo}one{# notifications}other{# thông báo}}</translation>
 <translation id="7723703419796509666">Hiển thị hoặc ẩn bảng điều khiển Công cụ cho nhà phát triển</translation>
 <translation id="7724603315864178912">Cắt</translation>
 <translation id="7724711098786238351">Chế độ minh hoạ dành cho người dùng từ 18 tuổi trở lên và chịu sự điều chỉnh của Điều khoản dịch vụ cũng như Chính sách quyền riêng tư của Google. Những người khác có thể xem dữ liệu được nhập trên thiết bị này giữa các lần xoá định kỳ.</translation>
@@ -2495,7 +2497,7 @@ Mới cài đặt</translation>
 <translation id="8220076512072059941">Thêm <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="8228175756124063692">Ẩn đề xuất này</translation>
 <translation id="8230305195727960608">Chế độ đảo màu</translation>
-<translation id="8235839318057813827">{NUM_DAYS,plural, =1{Yêu cầu trả lại ngay}other{Trả lại thiết bị <ph name="DEVICE_TYPE" /> trong vòng {NUM_DAYS} ngày}}</translation>
+<translation id="8235839318057813827">{NUM_DAYS,plural, =1{Yêu cầu trả lại ngay}one{Return <ph name="DEVICE_TYPE" /> within {NUM_DAYS} days}other{Trả lại thiết bị <ph name="DEVICE_TYPE" /> trong vòng {NUM_DAYS} ngày}}</translation>
 <translation id="8236042855478648955">Giờ nghỉ giải lao</translation>
 <translation id="8237964652943995219">Không gian làm việc tiếp theo: <ph name="DESK_NAME" />. Không gian làm việc số <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />.</translation>
 <translation id="8238817965863339552">Xem hướng dẫn nhanh để biết cách thao tác trên <ph name="PRODUCT_NAME" />. Thiết lập và sử dụng trong 5 bước.</translation>
@@ -2728,7 +2730,7 @@ Mới cài đặt</translation>
 <translation id="8929566928381252430">Bạn đang tìm cách dùng phím Caps Lock? Hãy sử dụng</translation>
 <translation id="8929623844713377237">Đã tạo một mục người liên hệ</translation>
 <translation id="8934418770423095813">Tạo Google Tài liệu</translation>
-<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 tệp}other{# tệp}}</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 tệp}one{# files}other{# tệp}}</translation>
 <translation id="8936501819958976551">đã tắt</translation>
 <translation id="8938800817013097409">Thiết bị USB-C (cổng bên phải ở phía sau)</translation>
 <translation id="8939855324412367560">Âm thanh đầu vào là "<ph name="INPUT_DEVICE_NAME" />" và âm thanh đầu ra là "<ph name="OUTPUT_DEVICE_NAME" />". Chuyển đến phần Cài đặt để thay đổi.</translation>
@@ -2791,7 +2793,7 @@ Mới cài đặt</translation>
 <translation id="9098750710832798892">Không có mục nào được sao chép vào Bảng nhớ tạm</translation>
 <translation id="9098969848082897657">Tắt tiếng điện thoại</translation>
 <translation id="9126339866969410112">Huỷ thao tác thực hiện gần đây nhất</translation>
-<translation id="9127938699607518293">{MINUTES,plural, =1{1 phút nữa}other{# phút nữa}}</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{1 phút nữa}one{In # mins}other{# phút nữa}}</translation>
 <translation id="9129245940793250979">Nút phía sau</translation>
 <translation id="9133335900048457298">Không thể ghi nội dung được bảo vệ</translation>
 <translation id="9139720510312328767">Xoá chữ cái tiếp theo</translation>

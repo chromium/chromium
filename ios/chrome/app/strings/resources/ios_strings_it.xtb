@@ -38,7 +38,7 @@
 <translation id="108485301461714610">AI Mode della Ricerca Google e app connesse</translation>
 <translation id="1085677983426914530">Impossibile aprire <ph name="FILENAME" /></translation>
 <translation id="1086486568852410168">Cerca con Google Lens</translation>
-<translation id="1095093219235104018">Cerca e compila con Gemini</translation>
+<translation id="1095093219235104018">Trova e Completa con Gemini</translation>
 <translation id="1096245844813536669">Invia automaticamente la ricerca quando smetti di parlare</translation>
 <translation id="1096992026380844478">Le impostazioni di sincronizzazione verranno ripristinate in base all'ultimo backup. <ph name="BEGIN_LINK" />Scopri cosa puoi sincronizzare<ph name="END_LINK" /></translation>
 <translation id="1103523840287552314">Traduci sempre <ph name="LANGUAGE" /></translation>
@@ -649,6 +649,7 @@
 <translation id="2941680850471407949">Visualizza fonti</translation>
 <translation id="2952278131021475699">Ricerca con la fotocamera di Lens</translation>
 <translation id="2953821385349876107">Scegli un Account Google diverso</translation>
+<translation id="2957817184363338604">Le tue chat verranno salvate nella cronologia di Gemini. La cronologia include i tuoi audio, i video e le condivisioni schermo di Gemini Live, i contenuti che condividi con Gemini (come prompt, <ph name="BEGIN_LINK" />allegati<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />schermate<ph name="END_LINK" />), le risposte di Gemini, le attività e le chiamate agli strumenti, i feedback, le informazioni dei siti web che visiti con Gemini, i dati sull'utilizzo dei prodotti, la posizione generica del tuo dispositivo, l'indirizzo IP e gli indirizzi di casa o di lavoro nel tuo Account Google. Può anche includere dati delle app che connetti a Gemini.</translation>
 <translation id="2962516096219646456">Visualizza tutti i dati di compilazione automatica</translation>
 <translation id="2965594942405840553">Questa operazione non può essere annullata</translation>
 <translation id="2969979262385602596">Impossibile accedere. Riprova più tardi.</translation>

@@ -917,6 +917,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4585793705637313973">Баракты түзөтүү</translation>
 <translation id="4587589328781138893">Сайттар</translation>
 <translation id="4587590257937792551">Chrome'до ыңгайлуулук үчүн жасалган жаңы төмөнкү куралдар тилкеси бар. Каалаган убакта <ph name="BEGIN_LINK" />параметрлерден<ph name="END_LINK" /> кайра которула аласыз.</translation>
+<translation id="4592634244097223647">Google'дан бул сүрөт жөнүндө суроо</translation>
 <translation id="4594952190837476234">Бул оффлайн режиминдеги баракча <ph name="CREATION_TIME" /> сакталган жана онлайн версиясынан айырмаланышы мүмкүн.</translation>
 <translation id="4595237294768457124">Жаңы өтмөк бетин ачуу</translation>
 <translation id="4595276580892809760">Галереядан сүрөттөрдү тиркөө</translation>
@@ -989,7 +990,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="4822710610088666676"><ph name="TAB_GROUP_TITLE" /> өтмөктөр тобу жабылды жана сакталды</translation>
 <translation id="4835385943915508971">Суралган булакка Chrome’дун кирүү мүмкүнчүлүгү жок.</translation>
 <translation id="483742037940503070">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> өтмөктөн турган өтмөктөр тобун, <ph name="COLOR_NAME" /> түсүн фондогу жаңы өтмөктөр тобу катары калыбына келтирүү.}other{<ph name="TAB_COUNT_MANY" /> өтмөктөн турган өтмөктөр тобун, <ph name="COLOR_NAME" /> түсүн фондогу жаңы өтмөктөр тобу катары калыбына келтирүү.}}</translation>
-<translation id="48431900345921167">Айрым кызматтар <ph name="ACCOUNT_EMAIL" /> үчүн жеткиликсиз</translation>
+<translation id="48431900345921167"><ph name="ACCOUNT_EMAIL" /> аккаунтунда айрым кызматтар иштебейт</translation>
 <translation id="4849731766219625109"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аккаунтуңузду колдонуу</translation>
 <translation id="4850886885716139402">Көрүнүш</translation>
 <translation id="4860895144060829044">Чалуу</translation>
@@ -1097,6 +1098,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5257142004843671642">Капталдагы тилкенин өлчөмүн өзгөртүү</translation>
 <translation id="5264813352784073502">акыркы 24 саатта</translation>
 <translation id="5267572070504076962">Кооптуу сайттардан коргонуу үчүн Коопсуз серептөөнү күйгүзүңүз</translation>
+<translation id="526760395289305534">Вертикалдуу өтмөктөрдү жайып көрсөтүү же жыйыштыруу</translation>
 <translation id="5273031377282080577">Бул параметрди администраторуңуз тескейт.</translation>
 <translation id="5284295735376057059">Документтин мүнөздөмөлөрү</translation>
 <translation id="5286907366254680517">Аныкталды</translation>

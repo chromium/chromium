@@ -6307,6 +6307,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6466936665940546351">Vahvista henkilöllisyytesi, niin voit lisätä salasanoja ja käyttää niitä kaikilla laitteilla Google-tililläsi</translation>
 <translation id="6467230443178397264">Skannaa <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">Optimoi koko näytön videot</translation>
+<translation id="6467327465309816244">Käytä Geminiä harkiten ja <ph name="BEGIN_LINK1" />turvallisesti<ph name="LINK_END1" />. Se voi tehdä virheitä ja tuottaa <ph name="BEGIN_LINK2" />odottamattomia tuloksia<ph name="LINK_END2" />, esimerkiksi tehdä ostoksia.</translation>
 <translation id="6467377768028664108">Sen jälkeen <ph name="DEVICE_TYPE" /> voi</translation>
 <translation id="6468485451923838994">Fontit</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> tiedostoa</translation>

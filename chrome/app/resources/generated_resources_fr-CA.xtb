@@ -6298,6 +6298,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="6466936665940546351">Confirmez qu'il s'agit bien de vous pour ajouter des mots de passe et les utiliser sur tous les appareils avec votre compte Google</translation>
 <translation id="6467230443178397264">Analyser <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">Optimiser les vidéos en plein écran</translation>
+<translation id="6467327465309816244">Utilisez Gemini avec prudence et <ph name="BEGIN_LINK1" />de manière sécuritaire<ph name="LINK_END1" />. Il peut faire des erreurs et fournir des <ph name="BEGIN_LINK2" />résultats inattendus<ph name="LINK_END2" />, comme des achats.</translation>
 <translation id="6467377768028664108">Votre <ph name="DEVICE_TYPE" /> peut alors :</translation>
 <translation id="6468485451923838994">Polices</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> fichiers</translation>

@@ -474,7 +474,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="5321325624576443340">Google Lens non è disponibile. Riprova più tardi.</translation>
 <translation id="5334309298019785904">Impossibile sincronizzare i dati in ChromeOS perché la sincronizzazione non è disponibile per il tuo dominio.</translation>
 <translation id="5334487786912937552">Chrome deve avere l'autorizzazione di accesso allo spazio di archiviazione per poter scaricare file</translation>
-<translation id="5336664042114176802">Puoi passare all'assistente Gemini associato in origine al tuo Account Google e non gestito da <ph name="DOMAIN" />. Le risposte non saranno più basate su file o servizi gestiti da <ph name="DOMAIN" /> e la cronologia della chat non verrà trasferita. Potrebbe non essere adatto da usare per il lavoro. Per passare da un account all'altro è necessario riavviare Chrome.</translation>
+<translation id="5336664042114176802">Puoi passare all'assistente Gemini associato in origine al tuo Account Google e non gestito tramite <ph name="DOMAIN" />. Le risposte non saranno più basate su file o servizi gestiti tramite <ph name="DOMAIN" /> e la cronologia della chat non verrà trasferita. Potrebbe non essere adatto da usare per il lavoro. Per passare da un account all'altro è necessario riavviare Chrome.</translation>
 <translation id="5337648990166757586">(Facoltativo) Contribuisci a migliorare le funzionalità e le prestazioni di ChromeOS inviando automaticamente a Google dati diagnostici e sull'utilizzo.</translation>
 <translation id="5346389065299425353">Approfondisci la ricerca aggiungendo più schede, file e strumenti</translation>
 <translation id="5353252989841766347">Esporta le password da Chrome</translation>
@@ -605,7 +605,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="6438015621983209660">Estendi la Navigazione sicura avanzata con Chrome sul tuo smartphone</translation>
 <translation id="6442774133615368941">Acquista, traduci e identifica ciò che vedi con la fotocamera sull'app Chrome per iOS</translation>
 <translation id="6446105560007692480">per fare ricerche con Chrome o personalizzare in <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" /></translation>
-<translation id="6447943657065463998">Questo browser gestito può usare un assistente Gemini configurato per il lavoro da <ph name="DOMAIN" />. Può trovare informazioni e fornire risposte basate sui file e sui servizi approvati dell'organizzazione. L'utilizzo con un profilo personale potrebbe non essere consigliato. La cronologia della chat non verrà trasferita. Per passare da un account all'altro è necessario riavviare Chrome.</translation>
+<translation id="6447943657065463998">Questo browser gestito può usare un assistente Gemini configurato per il lavoro tramite <ph name="DOMAIN" />. Può trovare informazioni e fornire risposte basate sui file e sui servizi approvati dell'organizzazione. Potrebbe non essere consigliato usarlo con un profilo personale. La cronologia della chat non verrà trasferita. Per passare da un account all'altro è necessario riavviare Chrome.</translation>
 <translation id="6448835208126432197">Usa la scorciatoia da tastiera per selezionare una parte dello schermo in Gemini in Chrome.</translation>
 <translation id="6473905796280459355">Vai alla pagina Informazioni su Chrome</translation>
 <translation id="6481963882741794338">Collega Chrome e altri servizi Google per la personalizzazione e altri scopi</translation>

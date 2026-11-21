@@ -1454,7 +1454,7 @@
 <translation id="225163402930830576">ネットワークを更新</translation>
 <translation id="2252017960592955005">のぞき見防止（ベータ版）</translation>
 <translation id="2253318212986772520"><ph name="PRINTER_NAME" /> の PPD を取得できません。</translation>
-<translation id="2253927598983295051"><ph name="APP_NAME" /> と共有する情報を選択する</translation>
+<translation id="2253927598983295051"><ph name="APP_NAME" /> と共有する情報を選択</translation>
 <translation id="2255317897038918278">Microsoft タイム スタンプ</translation>
 <translation id="2256049182613019001">リーディング モードを閉じる（<ph name="SHORTCUT" />）</translation>
 <translation id="2256115617011615191">今すぐ再起動</translation>
@@ -1872,7 +1872,7 @@
 <translation id="2628258844236035475">Chrome の自動入力から自宅の住所を削除しますか？</translation>
 <translation id="2628770867680720336">ADB デバッグを有効にするには、この Chromebook を出荷時の設定にリセットする必要があります。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Gemini との新しいチャットを開始</translation>
-<translation id="2629058811622993283">（すべてのウィンドウと関連アプリの）アプリの音声も共有する</translation>
+<translation id="2629058811622993283">アプリの音声（すべてのアプリ ウィンドウと関連アプリの音声）も共有する</translation>
 <translation id="2629227353894235473">Android アプリの開発</translation>
 <translation id="2630703150574465936">Gemini があなたのアカウントを使用して、これらのサイトやアプリに自動でログインすることを許可しています</translation>
 <translation id="2632176111713971407">サイトが共有タブのスクロールとズームを要求できる</translation>
@@ -6292,6 +6292,7 @@
 <translation id="6466936665940546351">パスワードを追加し、Google アカウントを使用するすべてのデバイスで利用できるようにするには、本人確認を行ってください</translation>
 <translation id="6467230443178397264"><ph name="FILE_NAME" /> をスキャン</translation>
 <translation id="6467304607960172345">動画の全画面表示を最適化</translation>
+<translation id="6467327465309816244">Gemini は慎重かつ<ph name="BEGIN_LINK1" />安全に<ph name="LINK_END1" />使用してください。Gemini は不正確な情報を表示したり、購入などの<ph name="BEGIN_LINK2" />予期しない結果<ph name="LINK_END2" />を招いたりする可能性があります。</translation>
 <translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> で次の操作を実行できます。</translation>
 <translation id="6468485451923838994">フォント</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> 個のファイル</translation>
@@ -8948,7 +8949,7 @@
 <translation id="8730621377337864115">完了</translation>
 <translation id="8731029916209785242">権限（<ph name="FORMATTED_ORIGIN" />）</translation>
 <translation id="8731268612289859741">セキュリティ コード</translation>
-<translation id="8731629443331803108"><ph name="SITE_NAME" /> が次の許可を求めています: <ph name="PERMISSION" /></translation>
+<translation id="8731629443331803108"><ph name="SITE_NAME" /> が次の許可を求⁠め⁠て⁠い⁠ま⁠す: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">ポート番号</translation>
 <translation id="8732030010853991079">この拡張機能を使用するには、このアイコンをクリックします。</translation>
 <translation id="8732212173949624846">ログインしているすべてのデバイスでの閲覧履歴の読み取りと変更</translation>

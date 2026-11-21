@@ -387,7 +387,7 @@
 <translation id="2586146417912237930">xanh dương và chàm</translation>
 <translation id="2589921777872778654">Trình đơn chỉnh sửa và xoá</translation>
 <translation id="2597774443162333062">Tệp sẽ được gửi tới Google để gỡ lỗi</translation>
-<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Đã quét xong. Đã quét 1 trang}other{Đã quét xong. Đã quét {NUMBER_OF_PAGES} trang}}</translation>
+<translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{Đã quét xong. Đã quét 1 trang}one{Scanning completed. {NUMBER_OF_PAGES} pages scanned}other{Đã quét xong. Đã quét {NUMBER_OF_PAGES} trang}}</translation>
 <translation id="261322795497077164">Nhận diện người nói</translation>
 <translation id="2617397783536231890">vải bông</translation>
 <translation id="2618015542787108131">cồn cát</translation>
@@ -474,7 +474,7 @@
 <translation id="3122614491980756867">hồ nước</translation>
 <translation id="3122883569442693641">Thông tin chi tiết khác</translation>
 <translation id="3124039320086536031">Thiết bị đã được kết nối.</translation>
-<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Xóa trang?}=1{Xóa trang {PAGE_NUMBER}?}other{Xóa trang {PAGE_NUMBER}?}}</translation>
+<translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Xóa trang?}=1{Xóa trang {PAGE_NUMBER}?}one{Remove page {PAGE_NUMBER}?}other{Xóa trang {PAGE_NUMBER}?}}</translation>
 <translation id="3134486240968249588">Một vài điều cần lưu ý</translation>
 <translation id="3140130301071865159">tuyết</translation>
 <translation id="3146655726035122603">Dành riêng cho <ph name="PRODUCT_NAME" /></translation>
@@ -505,7 +505,7 @@
 <translation id="3263941347294171263">Hãy rút <ph name="DEVICE_NAME" /> ra rồi cắm lại để tiếp tục quá trình cập nhật</translation>
 <translation id="3268178239013324452">Không thành công – Cửa máy in đang mở</translation>
 <translation id="3275729367986477355">Hình đại diện</translation>
-<translation id="3283504360622356314">{0,plural, =1{Chỉnh sửa tệp}other{Chỉnh sửa các tệp}}</translation>
+<translation id="3283504360622356314">{0,plural, =1{Chỉnh sửa tệp}one{Edit files}other{Chỉnh sửa các tệp}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
 <translation id="3286538390144397061">Khởi động lại Ngay bây giờ</translation>
 <translation id="3291996639387199448">Hướng khoá</translation>
@@ -863,7 +863,7 @@
 <translation id="4848429997038228357">ĐANG CHẠY</translation>
 <translation id="4854586501323951986">Màn hình cảm ứng tích hợp sẵn</translation>
 <translation id="4855250849489639581">Vuốt xuống để xem thêm tuỳ chọn bố cục</translation>
-<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Bạn còn {0} lần thử}other{<ph name="ERROR_MESSAGE" /> Bạn còn {0} lần thử}}</translation>
+<translation id="4861758251032006121">{ATTEMPTS_LEFT,plural, =1{<ph name="ERROR_MESSAGE" /> Bạn còn {0} lần thử}one{<ph name="ERROR_MESSAGE" /> {0} attempts left}other{<ph name="ERROR_MESSAGE" /> Bạn còn {0} lần thử}}</translation>
 <translation id="4868181314237714900">lông cừu</translation>
 <translation id="4873827928179867585">Thuật toán xác thực</translation>
 <translation id="4880328057631981605">Tên điểm truy cập</translation>
@@ -948,7 +948,7 @@
 <translation id="5229344016299762883">Thoát khỏi trạng thái toàn màn hình</translation>
 <translation id="5234764350956374838">Đóng</translation>
 <translation id="5236119614998611749">Không tạo được bản tóm tắt</translation>
-<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Quản trị viên của bạn đã thiết lập để "<ph name="APP_NAME" />" tự khởi động mỗi khi bạn đăng nhập.}=2{Quản trị viên của bạn đã thiết lập để "<ph name="APP_NAME" />" và 1 ứng dụng khác tự khởi động mỗi khi bạn đăng nhập.}other{Quản trị viên của bạn đã thiết lập để "<ph name="APP_NAME" />" và # ứng dụng khác tự khởi động mỗi khi bạn đăng nhập.}}</translation>
+<translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Quản trị viên của bạn đã thiết lập để "<ph name="APP_NAME" />" tự khởi động mỗi khi bạn đăng nhập.}=2{Quản trị viên của bạn đã thiết lập để "<ph name="APP_NAME" />" và 1 ứng dụng khác tự khởi động mỗi khi bạn đăng nhập.}one{Your administrator has set up "<ph name="APP_NAME" />" and # other apps to start automatically every time you log in.}other{Quản trị viên của bạn đã thiết lập để "<ph name="APP_NAME" />" và # ứng dụng khác tự khởi động mỗi khi bạn đăng nhập.}}</translation>
 <translation id="5248419081947706722">xanh dương</translation>
 <translation id="5252456968953390977">Đang chuyển vùng</translation>
 <translation id="5254600740122644523">Giá sách <ph name="SIMPLE_STYLE" /> trong căn phòng màu <ph name="SIMPLE_TONE" /></translation>
@@ -996,7 +996,7 @@
 <translation id="54609108002486618">Được quản lý</translation>
 <translation id="5461608756903394951">Đang tải mô hình chép lời <ph name="LANGUAGE_NAME" /> xuống</translation>
 <translation id="5470776029649730099">vải thô</translation>
-<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Bạn còn {0} lần thử}other{Bạn còn {0} lần thử}}</translation>
+<translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Bạn còn {0} lần thử}one{{0} attempts left}other{Bạn còn {0} lần thử}}</translation>
 <translation id="5488280942828718790">hồng cánh sen</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Không thể hoàn tất quá trình quét</translation>
@@ -1087,7 +1087,7 @@
 <translation id="5915794087373112615">Giáo viên sẽ xem màn hình của bạn sau <ph name="NUM_SECONDS" /> giây</translation>
 <translation id="5916084858004523819">Bị cấm</translation>
 <translation id="5916664084637901428">Đang bật</translation>
-<translation id="5921506667911082617">{COUNT,plural, =1{Tệp của bạn đã được quét thành công và lưu vào <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Các tệp của bạn đã được quét thành công và lưu vào <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{Tệp của bạn đã được quét thành công và lưu vào <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Your files have been successfully scanned and saved to <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Các tệp của bạn đã được quét thành công và lưu vào <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5928411637936685857">Nút xoá dành cho <ph name="ACCELERATOR_INFO" />.</translation>
 <translation id="5930669310554144537">Cảnh huyền ảo</translation>
 <translation id="5931523347251946569">Không tìm thấy tệp</translation>
@@ -1209,7 +1209,7 @@
 <translation id="6439505561246192797">Yếu (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Chuyển đến phần cài đặt tài khoản</translation>
 <translation id="6462978824459367242">Nút Thêm APN hiện đã bật</translation>
-<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Quét lại trang?}=1{Quét lại trang {PAGE_NUMBER}?}other{Quét lại trang {PAGE_NUMBER}?}}</translation>
+<translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Quét lại trang?}=1{Quét lại trang {PAGE_NUMBER}?}one{Rescan page {PAGE_NUMBER}?}other{Quét lại trang {PAGE_NUMBER}?}}</translation>
 <translation id="6468146470109254228">3 câu lệnh và thông tin đầu ra gần đây nhất của bạn. Bạn chỉ có thể truy cập các câu lệnh và thông tin đầu ra này khi đang sử dụng tính năng Hình nền và phong cách.</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">thuyền</translation>
@@ -1365,7 +1365,7 @@
 <translation id="7118522231018231199">Hãy nhớ chọn APN do nhà cung cấp mạng di động hoặc quản trị viên của bạn cung cấp. Nếu bạn chọn một APN thì mọi APN tuỳ chỉnh sẽ bị tắt. APN không hợp lệ có thể làm gián đoạn kết nối di động.</translation>
 <translation id="7119389851461848805">nguồn</translation>
 <translation id="7130438335435247835">Tên điểm truy cập (APN)</translation>
-<translation id="7134436342991564651">{0,plural, =1{Máy chủ định danh}other{Các máy chủ định danh}}</translation>
+<translation id="7134436342991564651">{0,plural, =1{Máy chủ định danh}one{Name servers}other{Các máy chủ định danh}}</translation>
 <translation id="7135814714616751706">Tìm lối tắt</translation>
 <translation id="7138614237884624401">Văn bản đơn giản</translation>
 <translation id="7138668887584231801">Không đủ từ để tóm tắt</translation>
@@ -1552,7 +1552,7 @@ Hãy tải mô hình chép lời xuống (tối đa 100 MB) để nhận các b�
 <translation id="7978412674231730200">Khoá cá nhân</translation>
 <translation id="7979468455552394856">Class Tools đã được kết nối với học viên</translation>
 <translation id="7982789257301363584">Mạng</translation>
-<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" đã tự khởi động}other{# ứng dụng đã tự khởi động}}</translation>
+<translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{"<ph name="APP_NAME_1" />" đã tự khởi động}one{# apps were started automatically}other{# ứng dụng đã tự khởi động}}</translation>
 <translation id="7994702968232966508">Phương pháp EAP</translation>
 <translation id="8004582292198964060">Trình duyệt</translation>
 <translation id="8010765388850538088">Tìm hiểu thêm về AI tạo sinh</translation>
@@ -1767,7 +1767,7 @@ Hãy tải mô hình chép lời xuống (tối đa 100 MB) để nhận các b�
 <translation id="8968751544471797276">Tốc độ sạc</translation>
 <translation id="8970109610781093811">Chạy lại</translation>
 <translation id="8983038754672563810">HSPA</translation>
-<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Quét}=1{Quét trang {NUMBER_OF_PAGES}}other{Quét trang {NUMBER_OF_PAGES}}}</translation>
+<translation id="8987565828374052507">{NUMBER_OF_PAGES,plural, =0{Quét}=1{Quét trang {NUMBER_OF_PAGES}}one{Scan page {NUMBER_OF_PAGES}}other{Quét trang {NUMBER_OF_PAGES}}}</translation>
 <translation id="89945434909472341">làng</translation>
 <translation id="8997710128084572139">Thiết bị còn <ph name="BATTERY_PERCENTAGE" />% pin.</translation>
 <translation id="8998002498898621320">ảnh chân thực</translation>

@@ -6295,6 +6295,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6466936665940546351">Confirmă-ți identitatea pentru a adăuga parole și a le folosi pe toate dispozitivele cu Contul Google</translation>
 <translation id="6467230443178397264">Scanează <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">Optimizează videoclipurile pe ecran complet</translation>
+<translation id="6467327465309816244">Folosește Gemini cu atenție și <ph name="BEGIN_LINK1" />în siguranță<ph name="LINK_END1" />. Poate să facă greșeli și să producă <ph name="BEGIN_LINK2" />rezultate neașteptate<ph name="LINK_END2" />, cum ar fi achiziții.</translation>
 <translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> poate să realizeze următoarele:</translation>
 <translation id="6468485451923838994">Fonturi</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> fișiere</translation>

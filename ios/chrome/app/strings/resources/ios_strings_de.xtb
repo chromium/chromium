@@ -648,6 +648,7 @@
 <translation id="2941680850471407949">Quellen anzeigen</translation>
 <translation id="2952278131021475699">Lens-Kamerasuche</translation>
 <translation id="2953821385349876107">Anderes Google-Konto auswählen</translation>
+<translation id="2957817184363338604">Deine Chats werden in deinem Gemini-Verlauf gespeichert. Der Verlauf umfasst deine Audioinhalte, Gemini Live-Videos und -Bildschirmfreigaben, deine mit Gemini geteilten Inhalte (z. B. Prompts, <ph name="BEGIN_LINK" />Anhänge<ph name="END_LINK" /> und <ph name="BEGIN_LINK" />Bildschirminhalte<ph name="END_LINK" />), die Antworten von Gemini, Aufgaben und Toolaufrufe, Feedback, Informationen von Websites, die du mit Gemini besuchst, Daten zur Produktnutzung, den ungefähren Standort deines Geräts, deine IP‑Adresse und die Privat- oder Arbeitsadresse in deinem Google-Konto. Dazu können auch Daten aus Apps gehören, die du mit Gemini verbindest.</translation>
 <translation id="2962516096219646456">Alle Autofill-Daten ansehen</translation>
 <translation id="2965594942405840553">Diese Aktion kann nicht rückgängig gemacht werden</translation>
 <translation id="2969979262385602596">Anmeldefehler, bitte später erneut versuchen</translation>
@@ -1519,7 +1520,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="57094364128775171">Starkes Passwort vorschlagen…</translation>
 <translation id="5718049162805123412">Du solltest dieses Passwort bzw. diese Passwörter jetzt ändern</translation>
 <translation id="5721040778297053709">Positioniere die Kreditkarte in diesem Bereich</translation>
-<translation id="572328651809341494">Zuletzt geöffnete Tabs</translation>
+<translation id="572328651809341494">Letzte Tabs</translation>
 <translation id="5724941645893276623">Füge einen neuen Tab hinzu, um privat im Web zu surfen</translation>
 <translation id="5728072125198221967">Verknüpfte Google-Dienste</translation>
 <translation id="5728700505257787410">Beim Anmelden in deinem Konto ist ein Fehler aufgetreten.</translation>
@@ -2034,6 +2035,7 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="728025568708172005">Tour starten</translation>
 <translation id="7280980607183752256">Datei kann nicht importiert werden</translation>
 <translation id="7282197670900591579">Zitronengelbes Design</translation>
+<translation id="7283937415134849498">Damit Gemini dich individuell unterstützen kann, werden einige deiner Daten (z. B. Teile deiner Chats, dein Standort und andere relevante Informationen) an andere Google-Dienste wie Google Maps und Google Flüge weitergegeben. Diese Informationen können zur Verbesserung dieser Dienste verwendet werden, auch wenn du deinen Gemini-Verlauf später löschst. Weitere Informationen findest du im <ph name="BEGIN_LINK" />Privacy Hub für Gemini-Apps<ph name="END_LINK" />.</translation>
 <translation id="7293429513719260019">Sprache auswählen</translation>
 <translation id="72961285530871072">Dadurch wird dein Level-Up-Fortschritt endgültig gelöscht und die Daten zur Nutzung der Level-Up-Funktion werden für dein Profil nicht mehr an Google gesendet.
 
@@ -2648,6 +2650,7 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="91023216973987714">Zahlungsmethoden</translation>
 <translation id="9106655997975673326">Von „<ph name="SOURCE_DEVICE" />“</translation>
 <translation id="9107664647686727385">Auf kompromittierte Passwörter prüfen</translation>
+<translation id="9115035712231910133">Angehängtes Bild {title}</translation>
 <translation id="9119764377203471454">Anhänge können nicht hinzugefügt werden</translation>
 <translation id="9124387962554796433">Mithilfe deines Verlaufs kann Google die Google Suche und andere Google-Dienste personalisieren.</translation>
 <translation id="9124978074365039456">Kaufe ein, übersetze und finde mit deiner Kamera und Fotogalerie heraus, was du gerade siehst</translation>

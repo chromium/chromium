@@ -916,6 +916,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4585793705637313973">पृष्ठ सम्पादन गर्नुहोस्</translation>
 <translation id="4587589328781138893">साइटहरू</translation>
 <translation id="4587590257937792551">Chrome मा सहजताका लागि बनाइएको नयाँ पुछारको टुलबार उपलब्ध छ। तपाईं जुनसुकै बेला <ph name="BEGIN_LINK" />सेटिङ<ph name="END_LINK" />मा गई फेरि पुरानै मोड प्रयोग गर्न सक्नुहुन्छ।</translation>
+<translation id="4592634244097223647">Google लाई यो फोटोका बारेमा सोध्नुहोस्</translation>
 <translation id="4594952190837476234">यो पृष्ठ <ph name="CREATION_TIME" /> मा सिर्जना गरिएको हुँदा अनलाइन संस्करणभन्दा भिन्न हुन सक्छ।</translation>
 <translation id="4595237294768457124">नयाँ ट्याब पेज खोल्नुहोस्</translation>
 <translation id="4595276580892809760">ग्यालेरीबाट फोटोहरू एट्याच गर्नुहोस्</translation>
@@ -1096,6 +1097,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5257142004843671642">साइड प्यानलको आकार बदल्नुहोस्</translation>
 <translation id="5264813352784073502">पछिल्ला २४ घण्टा</translation>
 <translation id="5267572070504076962">खतरनाक साइटहरूबाट जोगिन Safe Browsing अन गर्नुहोस्</translation>
+<translation id="526760395289305534">भर्टिकल ट्याबहरू एक्स्पान्ड वा कोल्याप्स गर्नुहोस्</translation>
 <translation id="5273031377282080577">तपाईंका एड्मिन यो सेटिङ व्यवस्थापन गर्नुहुन्छ।</translation>
 <translation id="5284295735376057059">डकुमेन्टका विशेषताहरू</translation>
 <translation id="5286907366254680517">पहिचान गरिएको छ</translation>
@@ -1485,7 +1487,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="6764137532716892442">नयाँ गतिविधि भएको <ph name="GROUP_TITLE" /> नामक साझा ट्याब समूह</translation>
 <translation id="6783664456110886353">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> वटा इन्कोग्निटो ट्याब र अर्को <ph name="TAB_COUNT_ONE" /> ट्याब बन्द गरिने छन्}other{<ph name="INCOGNITO_TAB_COUNT" /> वटा इन्कोग्निटो ट्याब र अरू <ph name="TAB_COUNT_MANY" /> वटा ट्याब बन्द गरिने छन्}}</translation>
 <translation id="6785476624617658922">Chrome र ChromeOS का सेवाका अतिरिक्त सर्तहरू</translation>
-<translation id="6786747875388722282">विस्तारहरू</translation>
+<translation id="6786747875388722282">एक्स्टेन्सनहरू</translation>
 <translation id="6787600234697426339"><ph name="MAX_INSTANCE_COUNT" /> वटा विन्डो बनाइसकिएको छ र योभन्दा बढी विन्डो बनाउन मिल्दैन</translation>
 <translation id="6795633245022906657">तुरुन्तै नयाँ ट्याब खोल्नुहोस्। यो सर्टकट परिवर्तन गर्न सेटिङमा जानुहोस्।</translation>
 <translation id="679588508577699489">Chrome लाई डिफल्ट ब्राउजर बनाउनुहोस्</translation>

@@ -917,6 +917,7 @@
 <translation id="4585793705637313973">修改启动页</translation>
 <translation id="4587589328781138893">网站</translation>
 <translation id="4587590257937792551">Chrome 推出了全新底部工具栏，让操作更顺手。您随时可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中切换回来。</translation>
+<translation id="4592634244097223647">向 Google 询问此图片</translation>
 <translation id="4594952190837476234">此离线网页是在 <ph name="CREATION_TIME" />创建的，可能与在线版本有所不同。</translation>
 <translation id="4595237294768457124">打开“新标签页”页面</translation>
 <translation id="4595276580892809760">附加图库中的图片</translation>
@@ -1088,7 +1089,7 @@
 <translation id="5215957675041756913">控制您的数据和账号</translation>
 <translation id="5218324087477576825">卡号（必填）</translation>
 <translation id="5221437554987713282"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />等 <ph name="SEPARATOR" /> 由于您近期未访问过此网站，Chrome 已移除这些权限</translation>
-<translation id="5222676887888702881">退出</translation>
+<translation id="5222676887888702881">退出账号</translation>
 <translation id="5226378907213531272">每次使用车载系统时，您都需要解锁屏幕</translation>
 <translation id="5227554086496586518">点按即可查看搜索结果</translation>
 <translation id="5233638681132016545">打开新的标签页</translation>
@@ -1097,6 +1098,7 @@
 <translation id="5257142004843671642">调整侧边栏大小</translation>
 <translation id="5264813352784073502">过去 24 小时</translation>
 <translation id="5267572070504076962">开启“安全浏览”功能，防范危险网站</translation>
+<translation id="526760395289305534">展开或收起纵向标签页栏</translation>
 <translation id="5273031377282080577">此设置由您的管理员管理。</translation>
 <translation id="5284295735376057059">文档属性</translation>
 <translation id="5286907366254680517">检测到</translation>
@@ -1478,7 +1480,7 @@
 <translation id="6737429434215739253"><ph name="TAB_TITLE" />，已固定的无痕式标签页，正在录制内容</translation>
 <translation id="6738867403308150051">正在下载…</translation>
 <translation id="6745063744988317486">Mono</translation>
-<translation id="6746338529702829275">检查您的账号数据</translation>
+<translation id="6746338529702829275">查看您的账号数据</translation>
 <translation id="6751521182688001123">快速打开一个新标签页。若要修改此快捷方式，请轻触并按住这里。</translation>
 <translation id="6754359471209693699">开始新的搜索</translation>
 <translation id="6756507620369789050">分享反馈</translation>
@@ -1611,7 +1613,7 @@
 <translation id="7182051712900867547">使用其他账号</translation>
 <translation id="7182520625618447753">您可以将地址栏移至顶部或底部，获享个性化浏览体验</translation>
 <translation id="7183517696921903380">应用过滤器工作表已打开。</translation>
-<translation id="7186568385131859684">控制 Google 服务如何使用浏览记录及您的其他数据</translation>
+<translation id="7186568385131859684">控制 Google 服务如何搭配使用浏览记录与其他数据</translation>
 <translation id="7189516830800112767">{NUM_TABS,plural, =1{再次按 ^W 才能关闭固定标签页}other{再次按 ^W 才能关闭固定标签页}}</translation>
 <translation id="7190921792980745354">要屏蔽<ph name="MEMBER_FULL_NAME" />吗？</translation>
 <translation id="7191430249889272776">标签页已在后台打开。</translation>

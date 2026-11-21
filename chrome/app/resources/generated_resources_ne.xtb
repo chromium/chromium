@@ -6294,6 +6294,7 @@
 <translation id="6466936665940546351">पासवर्ड हाल्न र आफ्नो Google खाता प्रयोग गरी सबै डिभाइसमा ती पासवर्ड प्राप्त गर्न आफ्नो पहिचान पुष्टि गर्नुहोस्</translation>
 <translation id="6467230443178397264"><ph name="FILE_NAME" /> स्क्यान गर्नुहोस्</translation>
 <translation id="6467304607960172345">पूर्ण स्क्रिनका भिडियोहरूलाई अप्टिमाइज गर्नुहोस्</translation>
+<translation id="6467327465309816244">Gemini सावधानीपूर्वक र <ph name="BEGIN_LINK1" />सुरक्षित<ph name="LINK_END1" /> तरिकाले प्रयोग गर्नुहोस्। यसले गल्ती गर्न र खरिद गर्ने जस्ता <ph name="BEGIN_LINK2" />अप्रत्याशित परिणामहरू<ph name="LINK_END2" /> निकाल्न सक्छ।</translation>
 <translation id="6467377768028664108">त्यसपछि तपाईंको <ph name="DEVICE_TYPE" /> ले निम्न कार्य गर्न सक्छ:</translation>
 <translation id="6468485451923838994">फन्टहरू</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> वटा फाइल</translation>
@@ -6664,7 +6665,7 @@
 <translation id="6785779729084003225">Chrome मा उपलब्ध Gemini खोल्न <ph name="FOCUS_TOGGLE_HOTKEY" /> प्रयोग गर्नुहोस्</translation>
 <translation id="67862343314499040">हल्का निलो</translation>
 <translation id="6786480815699355166">लाइभ क्याप्सनमा प्रयोग गर्न मिल्ने भाषाहरूमा मात्र अनुवाद गर्न सकिन्छ</translation>
-<translation id="6786747875388722282">विस्तारहरू</translation>
+<translation id="6786747875388722282">एक्स्टेन्सनहरू</translation>
 <translation id="6786804673213172567">श्रेणी ३: उच्च</translation>
 <translation id="6787531944787756058">युजरनेम <ph name="USER_EMAIL" /> यो डिभाइसमा मात्र सेभ गरिएको छ। विवरणहरू हेर्नुहोस्</translation>
 <translation id="6787839852456839824">किबोर्ड शर्टकटहरू</translation>

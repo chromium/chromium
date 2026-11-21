@@ -917,6 +917,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4585793705637313973">Edit page</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4587590257937792551">Chrome has a new bottom toolbar, built for convenience. You can switch back at any time in <ph name="BEGIN_LINK" />settings<ph name="END_LINK" />.</translation>
+<translation id="4592634244097223647">Ask Google about this image</translation>
 <translation id="4594952190837476234">This offline page is from <ph name="CREATION_TIME" /> and may differ from the online version.</translation>
 <translation id="4595237294768457124">Open a New tab page</translation>
 <translation id="4595276580892809760">Attach images from gallery</translation>
@@ -1097,6 +1098,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5257142004843671642">Resize side panel</translation>
 <translation id="5264813352784073502">last 24 hours</translation>
 <translation id="5267572070504076962">Turn on Safe Browsing to get protection against dangerous sites</translation>
+<translation id="526760395289305534">Expand or collapse vertical tabs</translation>
 <translation id="5273031377282080577">Your administrator manages this setting.</translation>
 <translation id="5284295735376057059">Document properties</translation>
 <translation id="5286907366254680517">Detected</translation>
@@ -2189,7 +2191,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="959544960061022767">Your organisation requires you to sign in to use Chrome</translation>
 <translation id="961856697154696964">Delete browsing data</translation>
 <translation id="963246339335003378">Open task manager</translation>
-<translation id="966337994629449077">You’re signed in as <ph name="FROM_EMAIL" />.\n\nTo continue from your computer, switch to <ph name="TO_EMAIL" />. You'll get the passwords, bookmarks and more from this account.</translation>
+<translation id="966337994629449077">You're signed in as <ph name="FROM_EMAIL" />.\n\nTo continue from your computer, switch to <ph name="TO_EMAIL" />. You'll get the passwords, bookmarks and more from this account.</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> mins left</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Close all tabs</translation>

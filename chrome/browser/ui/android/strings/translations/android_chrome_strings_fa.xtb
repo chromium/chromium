@@ -367,7 +367,7 @@
 <translation id="2411239243988279592">‫<ph name="TAB_TITLE" />، زبانه شنیداری انتخابی</translation>
 <translation id="2413014528833954543">گذرواژه‌های ذخیره‌شده در این دستگاه بررسی نشد</translation>
 <translation id="2414886740292270097">تاریک</translation>
-<translation id="2415037988255164008">پنجره ها بازیابی شوند؟</translation>
+<translation id="2415037988255164008">پنجره ها بازگردانده شوند؟</translation>
 <translation id="2427025860753516072">{FILE_COUNT,plural, =1{ویدیوها، ۱ ویدیو در فهرست}one{ویدیوها، # ویدیو در فهرست}other{ویدیوها، # ویدیو در فهرست}}</translation>
 <translation id="2433507940547922241">ظاهر</translation>
 <translation id="2449931042095204989">‏وقتی یک برنامه یا سایت Google درخواست می‌کند پیوندها به‌طور خصوصی در صفحه آن پیش‌بارگیری شوند، Chrome صفحه‌ها را بدون کوکی‌ها ازطریق سرورهای Google رمزگذاری و پیش‌بارگیری می‌کند. با این کار هویت شما از سایت پیش‌بارگیری‌شده پنهان می‌شود.</translation>
@@ -917,6 +917,7 @@
 <translation id="4585793705637313973">ویرایش صفحه</translation>
 <translation id="4587589328781138893">سایت‌ها</translation>
 <translation id="4587590257937792551">‏‫Chrome نوارابزار پایینی جدیدی دارد که برای راحتی ساخته شده است. هر زمان که بخواهید می‌توانید در <ph name="BEGIN_LINK" />تنظیمات<ph name="END_LINK" /> به حالت قبل برگردید.</translation>
+<translation id="4592634244097223647">‏پرسیدن از Google درباره این تصویر</translation>
 <translation id="4594952190837476234">این صفحه آفلاین مربوط به تاریخ <ph name="CREATION_TIME" /> است و ممکن است با نسخه آنلاین متفاوت باشد.</translation>
 <translation id="4595237294768457124">صفحه «زبانه جدید» را باز کنید</translation>
 <translation id="4595276580892809760">پیوست کردن تصاویر از گالری</translation>
@@ -1097,6 +1098,7 @@
 <translation id="5257142004843671642">تغییر اندازه قاب کناری</translation>
 <translation id="5264813352784073502">۲۴ ساعت گذشته</translation>
 <translation id="5267572070504076962">برای محافظت دربرابر سایت‌های خطرناک، «مرور ایمن» را روشن کنید</translation>
+<translation id="526760395289305534">گستردن یا جمع کردن زبانه‌های عمودی</translation>
 <translation id="5273031377282080577">سرپرستتان این تنظیم را مدیریت می‌کند.</translation>
 <translation id="5284295735376057059">مشخصات سند</translation>
 <translation id="5286907366254680517">تشخیص داده شد</translation>
@@ -1568,7 +1570,7 @@
 <translation id="7017219178341817193">افزودن صفحه جدید</translation>
 <translation id="7022756207310403729">بازکردن در مرورگر</translation>
 <translation id="7029809446516969842">گذرواژه‌ها</translation>
-<translation id="7037994709569287156">‏‫Chrome را مرورگر پیش‌فرض کنید</translation>
+<translation id="7037994709569287156">‏تعیین Chrome به‌عنوان مرورگر پیش‌فرض</translation>
 <translation id="7053256416619638731">گذرواژه‌های این دستگاه را تقویت کنید</translation>
 <translation id="7053983685419859001">مسدود کردن</translation>
 <translation id="7054588988317389591">توضیحات تصویر دریافت شود؟</translation>

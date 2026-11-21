@@ -53,7 +53,7 @@
 <translation id="154404805518949443">Accedi a Chromium</translation>
 <translation id="1547469039832541117">Termina l'attività evidenziata.</translation>
 <translation id="1562320819937089394">Fissa Chromium</translation>
-<translation id="1572572333538561328">Riapri AI Mode della Ricerca</translation>
+<translation id="1572572333538561328">Riapri AI Mode nella Ricerca</translation>
 <translation id="1574377791422810894">Strumenti per la sicurezza di Chromium</translation>
 <translation id="1594928384848033697">Chromium vuole eliminare i tuoi dati del Gestore delle password. Digita la tua password di Windows per consentire l'operazione.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{L'amministratore richiede il riavvio di Chromium per installare un aggiornamento}=1{L'amministratore richiede il riavvio di Chromium per installare un aggiornamento. La finestra Incognito non verrà riaperta.}other{L'amministratore richiede il riavvio di Chromium per installare un aggiornamento. Le # finestre Incognito non verranno riaperte.}}</translation>
@@ -403,7 +403,7 @@
 <translation id="504699503110800016">Apri il menu extra</translation>
 <translation id="5074496654342756568">Accedi a tutti i tuoi preferiti Google con Chromium sul tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="5123973130450702873">Chromium deve avere l'autorizzazione per monitorare le tue mani</translation>
-<translation id="5139546603444206048">Puoi passare all'assistente Gemini associato in origine al tuo Account Google e non gestito da <ph name="DOMAIN" />. Le risposte non saranno più basate su file o servizi gestiti da <ph name="DOMAIN" /> e la cronologia della chat non verrà trasferita. Potrebbe non essere adatto da usare per il lavoro. Per effettuare il passaggio è necessario riavviare Chromium.</translation>
+<translation id="5139546603444206048">Puoi passare all'assistente Gemini associato in origine al tuo Account Google e non gestito tramite <ph name="DOMAIN" />. Le risposte non saranno più basate su file o servizi gestiti tramite <ph name="DOMAIN" /> e la cronologia della chat non verrà trasferita. Potrebbe non essere adatto da usare per il lavoro. Per procedere con il passaggio è necessario riavviare Chromium.</translation>
 <translation id="5141988424377517949">Non hai visitato il sito di recente. Chromium ha rimosso <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" />.</translation>
 <translation id="5171868502429358653">Accedi a Chromium</translation>
 <translation id="5174969993834422967">Di solito blocchi le notifiche. Per ricevere notifiche da questo sito, fai clic sull'icona delle notifiche nell'angolo destro della barra degli indirizzi.</translation>
@@ -480,7 +480,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="5821520528363214608">Aggiorna Chromium per usare e salvare i dati di Chromium nel tuo Account Google</translation>
 <translation id="5824893331272123205">Impossibile caricare questo riquadro. Riprova.</translation>
 <translation id="583474880403859264">Apri Ricerca in Chrome</translation>
-<translation id="5840880340010374616">Chiudi il riquadro della Ricerca</translation>
+<translation id="5840880340010374616">Chiudi riquadro della Ricerca</translation>
 <translation id="5862307444128926510">Benvenuto in Chromium</translation>
 <translation id="5862977913729030139">AI Mode nella Ricerca</translation>
 <translation id="5871205389137001634">Fai clic per uscire dalla ricerca immagini</translation>
@@ -508,7 +508,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="6069027071882229820">Copia come immagine</translation>
 <translation id="6072279588547424923">L'estensione <ph name="EXTENSION_NAME" /> è stata aggiunta a Chromium</translation>
 <translation id="6076631285161795690">Dal pulsante "Ricerca in Chrome" sulla barra degli strumenti, puoi riaprire Ricerca in Chrome per fare domande mentre navighi</translation>
-<translation id="6090632163254655665">Riapri il riquadro laterale della Ricerca</translation>
+<translation id="6090632163254655665">Riapri riquadro laterale della Ricerca</translation>
 <translation id="6096348254544841612">È disponibile un nuovo aggiornamento.</translation>
 <translation id="6107893135096467929">On • Chromium non può verificare la provenienza dell'estensione</translation>
 <translation id="611228897408671387">Il tuo account in Chromium</translation>
@@ -554,7 +554,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="6403826409255603130">Chromium è un browser web che esegue le pagine web e le applicazioni alla velocità della luce. È veloce, stabile e facile da utilizzare. Naviga su Internet in modo più sicuro grazie alla protezione da malware e phishing integrata in Chromium.</translation>
 <translation id="6414624068245092115">Per assicurarti di poter usare e salvare sempre i dati di Chromium nel tuo Account Google, verifica la tua identità</translation>
 <translation id="642132557830635295">Chromium funziona più velocemente e le funzionalità che utilizzano JavaScript dovrebbero avere il comportamento previsto</translation>
-<translation id="6434631832954028336">Riapri il riquadro della Ricerca</translation>
+<translation id="6434631832954028336">Riapri riquadro della Ricerca</translation>
 <translation id="6436260184216827876">La ricerca immagini non è disponibile. Riprova più tardi.</translation>
 <translation id="6436991218539695041">Nuova icona, stessa scorciatoia: fai clic per fare domande mentre navighi con la Ricerca in Chrome.</translation>
 <translation id="6442900851116057561">Riavvia Chromium OS</translation>
@@ -640,7 +640,7 @@ Non è possibile salvare nuovi preferiti nel tuo account finché non ne elimini 
 <translation id="7037186623849853406">{COUNT,plural, =1{La protezione avanzata richiede il riavvio di Chromium per applicare un aggiornamento. La finestra isolata non verrà riaperta.}other{La protezione avanzata richiede il riavvio di Chromium per applicare un aggiornamento. # finestre isolate non verranno riaperte.}}</translation>
 <translation id="7045244423563602563">Personalizza Chromium</translation>
 <translation id="7047386856539490735">Questi risultati sono utili?</translation>
-<translation id="7056949952597412593">Dal pulsante "Ricerca nel riquadro laterale" sulla barra degli strumenti, puoi riaprire Ricerca nel riquadro laterale per fare domande mentre navighi</translation>
+<translation id="7056949952597412593">Dal pulsante "Ricerca nel riquadro laterale" sulla barra degli strumenti, puoi riaprire la Ricerca nel riquadro laterale per fare domande mentre navighi</translation>
 <translation id="705851970750939768">Aggiorna Chromium</translation>
 <translation id="7067091210845072982">Se un'immagine è senza descrizione utile, Chromium proverà a fornirne una. Per la creazione delle descrizioni, le immagini vengono inviate a Google.</translation>
 <translation id="7074836723476134809">Sfrutta le potenzialità dell'AI usando l'app Chromium sul tuo <ph name="DEVICE_TYPE" /></translation>
@@ -743,7 +743,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="7997934263947464652">Estensioni, app e temi da origini sconosciute possono danneggiare il tuo dispositivo. Chromium consiglia di installare questi elementi soltanto dal <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /></translation>
 <translation id="8000759043835159571">Ottieni il meglio di Google con l'app Chromium sul tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="8004582292198964060">Browser</translation>
-<translation id="8008233848513969696">Chiudi riquadro laterale Ricerca</translation>
+<translation id="8008233848513969696">Chiudi riquadro laterale della Ricerca</translation>
 <translation id="8010081455002666927">Rileva automaticamente</translation>
 <translation id="8013436988911883588">Dopo che Chromium avrà ottenuto l'accesso, i siti web potranno chiederti l'accesso.</translation>
 <translation id="8014387184082426885">Operazione riuscita. Ora puoi fare domande in tutta semplicità mentre navighi con il riquadro della Ricerca</translation>
@@ -802,7 +802,7 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8453117565092476964">L'archivio di installazione è danneggiato o non valido. Scarica di nuovo Chromium.</translation>
 <translation id="8463672209299734063">(Facoltativo) Contribuisci a migliorare le funzionalità e le prestazioni di Chromium OS inviando automaticamente a Google dati diagnostici e sull'utilizzo.</translation>
 <translation id="8471947159125090285">Per usare e salvare i dati di Chromium nel tuo Account Google, verifica la tua identità</translation>
-<translation id="8473541503127475913">Riavvia Chromium per completare il passaggio</translation>
+<translation id="8473541503127475913">Riavvia Chromium per fare il passaggio</translation>
 <translation id="8482493977473846331">Mostra le richieste di accesso a Chromium</translation>
 <translation id="8493179195440786826">Chromium non è aggiornato</translation>
 <translation id="850264194101621529">Grazie per aver scelto Chromium come browser predefinito.</translation>
@@ -840,8 +840,8 @@ Chromium non è in grado di recuperare le impostazioni.</translation>
 <translation id="8891709362986793894">La tua organizzazione richiede l'accesso a Chromium</translation>
 <translation id="8906384069222226849">Chromium richiede Windows 10 versione 1809 o successive.</translation>
 <translation id="8907580949721785412">Chromium sta cercando di visualizzare le password. Per consentire la visualizzazione, digita la tua password Windows.</translation>
-<translation id="8910309838319708610">Operazione riuscita. Ora puoi fare domande in tutta semplicità mentre navighi con AI Mode di Ricerca</translation>
-<translation id="8915682436012075700">Questo browser gestito può usare un assistente Gemini configurato per il lavoro da <ph name="DOMAIN" />. Può trovare informazioni e fornire risposte basate sui file e sui servizi approvati dell'organizzazione. L'utilizzo con un profilo personale potrebbe non essere consigliato. La cronologia della chat non verrà trasferita. Per effettuare il passaggio è necessario riavviare Chromium.</translation>
+<translation id="8910309838319708610">Operazione riuscita. Ora puoi fare domande in tutta semplicità mentre navighi con AI Mode nella Ricerca</translation>
+<translation id="8915682436012075700">Questo browser gestito può usare un assistente Gemini configurato per il lavoro tramite <ph name="DOMAIN" />. Può trovare informazioni e fornire risposte basate sui file e sui servizi approvati dell'organizzazione. Potrebbe non essere consigliato usarlo con un profilo personale. La cronologia della chat non verrà trasferita. Per procedere con il passaggio è necessario riavviare Chromium.</translation>
 <translation id="8932992523185907506">Chromium non è più il browser predefinito. Impostare Chromium come browser predefinito?</translation>
 <translation id="8941642502866065432">Impossibile aggiornare Chromium</translation>
 <translation id="8944232836376404813">L'azione avrà l'effetto di:

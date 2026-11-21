@@ -79,7 +79,7 @@
 <translation id="124678866338384709">Fechar a guia atual</translation>
 <translation id="1246905108078336582">Remover sugestão da área de transferência?</translation>
 <translation id="1258753120186372309">Doodle do Google: <ph name="DOODLE_DESCRIPTION" /></translation>
-<translation id="1263231323834454256">Lista de Leitura</translation>
+<translation id="1263231323834454256">Lista de leitura</translation>
 <translation id="1269129608791067105">Seu histórico será mostrado aqui</translation>
 <translation id="1280921956537356716">Ativar notificações de dicas</translation>
 <translation id="1287449971634955609">Remover as extensões e excluir os dados salvos por elas neste dispositivo</translation>
@@ -918,6 +918,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4585793705637313973">Editar página</translation>
 <translation id="4587589328781138893">Sites</translation>
 <translation id="4587590257937792551">O Chrome tem uma nova barra de ferramentas inferior, criada para facilitar sua vida. Você pode voltar a qualquer momento nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />.</translation>
+<translation id="4592634244097223647">Pergunte ao Google sobre esta imagem</translation>
 <translation id="4594952190837476234">Esta página off-line é de <ph name="CREATION_TIME" /> e pode ser diferente da versão on-line.</translation>
 <translation id="4595237294768457124">Abra uma página Nova Guia.</translation>
 <translation id="4595276580892809760">Anexar imagens da galeria</translation>
@@ -1098,6 +1099,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5257142004843671642">Redimensionar painel lateral</translation>
 <translation id="5264813352784073502">nas últimas 24 horas</translation>
 <translation id="5267572070504076962">Ative a Navegação Segura para ter proteção contra sites perigosos</translation>
+<translation id="526760395289305534">Abrir ou fechar guias verticais</translation>
 <translation id="5273031377282080577">O administrador gerencia essa configuração.</translation>
 <translation id="5284295735376057059">Propriedades do documento</translation>
 <translation id="5286907366254680517">Detectado</translation>
@@ -1369,7 +1371,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6338345532044450921"><ph name="TAB_TITLE" />, guia anônima com áudio</translation>
 <translation id="6340526405444716530">Personalização</translation>
 <translation id="6341580099087024258">Perguntar onde salvar os arquivos</translation>
-<translation id="6342069812937806050">Neste instante</translation>
+<translation id="6342069812937806050">Agora</translation>
 <translation id="634208815998129842">Gerenciador de tarefas</translation>
 <translation id="6343495912647200061">{SHIPPING_ADDRESS,plural, =1{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}one{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}other{<ph name="SHIPPING_ADDRESS_PREVIEW" />\u2026 e mais <ph name="NUMBER_OF_ADDITIONAL_ADDRESSES" />}}</translation>
 <translation id="6345878117466430440">Marcar como lida</translation>

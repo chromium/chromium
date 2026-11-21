@@ -150,7 +150,7 @@
 <translation id="1390907927270446471"><ph name="PROFILE_USERNAME" /> non ten a autorización necesaria para enviar documentos á impresora <ph name="PRINTER_NAME" />. Ponte en contacto co teu administrador.</translation>
 <translation id="1391102559483454063">Activada</translation>
 <translation id="1394698770495054737">Desenfoque completo</translation>
-<translation id="1395878931462960119">{DAYS,plural, =1{Hai 1 día}other{Hai # días}}</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{Hai 1 día}many{# days ago}other{Hai # días}}</translation>
 <translation id="1403222014593521787">Non se puido establecer conexión co proxy</translation>
 <translation id="1404963891829069586">Sons do modo Sen distraccións</translation>
 <translation id="1407069428457324124">Tema escuro</translation>
@@ -267,7 +267,7 @@
 <translation id="174102739345480129">O marcador está desactivado.</translation>
 <translation id="1743570585616704562">Non se recoñece</translation>
 <translation id="1743927604032653654">Contraer a notificación <ph name="NOTIFICATION_TITLE" /></translation>
-<translation id="1744435831291625602">{HOURS,plural, =0{Dentro de 1 h}=1{Hai 1 h}other{Hai # h}}</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{Dentro de 1 h}=1{Hai 1 h}many{# hr ago}other{Hai # h}}</translation>
 <translation id="1746730358044914197">O teu administrador configura os métodos de entrada.</translation>
 <translation id="1747336645387973286">data límite <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Teclado en pantalla activado</translation>
@@ -433,7 +433,7 @@
 <translation id="2322173485024759474">Retroceder unha letra</translation>
 <translation id="2326112202058075478">Mostrar máis emojis</translation>
 <translation id="2335091074961603075">O teu dispositivo Chromebook ou Bluetooth usa unha versión antiga de Bluetooth. Para gozar dunha mellor calidade de audio, usa o micrófono interno.</translation>
-<translation id="2336214675195760012">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> require que te conectes hoxe á wifi para descargar unha actualización. Tamén podes descargala desde unha conexión de pago por consumo (pódense aplicar cargos).}other{<ph name="MANAGER" /> require que te conectes á wifi e descargues unha actualización antes de que acabe o prazo. Tamén podes descargala desde unha conexión de pago por consumo (pódense aplicar cargos).}}</translation>
+<translation id="2336214675195760012">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> require que te conectes hoxe á wifi para descargar unha actualización. Tamén podes descargala desde unha conexión de pago por consumo (pódense aplicar cargos).}many{<ph name="MANAGER" /> requires you to connect to Wi-Fi and download an update before the deadline. Or, download from a metered connection (charges may apply).}other{<ph name="MANAGER" /> require que te conectes á wifi e descargues unha actualización antes de que acabe o prazo. Tamén podes descargala desde unha conexión de pago por consumo (pódense aplicar cargos).}}</translation>
 <translation id="2336258397628212480"><ph name="APP_NAME" /> está imprimindo unha páxina con: <ph name="PRINTER_NAME" /></translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2339073806695260576">Toca o botón do lapis óptico no estante para crear unha nota, facer unha captura de pantalla, utilizar o punteiro láser ou aplicar a lupa.</translation>
@@ -558,7 +558,7 @@ Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="2687510499067466116">O atallo de teclado cambiou</translation>
 <translation id="2689613560355655046">Escritorio 8</translation>
 <translation id="2692092709110488417">Preme a pestana para enfocar e mover a área seleccionada</translation>
-<translation id="2694970249217878574">{NUM_DAYS,plural, =1{Último día para actualizar o dispositivo (<ph name="DEVICE_TYPE" />)}other{Dispós de {NUM_DAYS} días para actualizar o dispositivo (<ph name="DEVICE_TYPE" />)}}</translation>
+<translation id="2694970249217878574">{NUM_DAYS,plural, =1{Último día para actualizar o dispositivo (<ph name="DEVICE_TYPE" />)}many{Update <ph name="DEVICE_TYPE" /> within {NUM_DAYS} days}other{Dispós de {NUM_DAYS} días para actualizar o dispositivo (<ph name="DEVICE_TYPE" />)}}</translation>
 <translation id="2695305337569143674">web</translation>
 <translation id="2697697418792422688">Mostrar a configuración do teclado. Seleccionouse <ph name="KEYBOARD_NAME" />.</translation>
 <translation id="2699913284398121653">Usa a aplicación Transferencia de contido para pasar os datos da túa conta de centro educativo á túa conta persoal</translation>
@@ -784,7 +784,7 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="334927402682780278">Selecciona o texto desde cursor ata o final da liña</translation>
 <translation id="3349345708646875009">Abrir xestor de tarefas</translation>
 <translation id="3353786022389205125">Activa Mostrar pantalla de bloqueo ao activarse despois da suspensión e, logo, volve tentalo</translation>
-<translation id="3356737528691488125">{NUM_WEEKS,plural, =1{Dispós de 1 semana para actualizar o dispositivo (<ph name="DEVICE_TYPE" />)}other{Dispós de {NUM_WEEKS} semanas para actualizar o dispositivo (<ph name="DEVICE_TYPE" />)}}</translation>
+<translation id="3356737528691488125">{NUM_WEEKS,plural, =1{Dispós de 1 semana para actualizar o dispositivo (<ph name="DEVICE_TYPE" />)}many{Update <ph name="DEVICE_TYPE" /> within {NUM_WEEKS} weeks}other{Dispós de {NUM_WEEKS} semanas para actualizar o dispositivo (<ph name="DEVICE_TYPE" />)}}</translation>
 <translation id="3364721542077212959">Ferramentas de lapis óptico</translation>
 <translation id="3365281428003534650">Define temporizador e tarefa</translation>
 <translation id="3365977133351922112">O teu teléfono está demasiado lonxe. Achégao.</translation>
@@ -841,7 +841,7 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="3513798432020909783">A conta está xestionada por <ph name="MANAGER_EMAIL" /></translation>
 <translation id="3516000762115478502">Colocar ventá de cambio de tamaño de mosaico cara arriba</translation>
 <translation id="3517037892157925473">Última actualización das tarefas: <ph name="TIME" />, <ph name="DATE" />.</translation>
-<translation id="352245152354538528">{0,plural, =1{Actualiza o dispositivo en 1 minuto}other{Actualiza o dispositivo en # minutos}}</translation>
+<translation id="352245152354538528">{0,plural, =1{Actualiza o dispositivo en 1 minuto}many{Update device within # minutes}other{Actualiza o dispositivo en # minutos}}</translation>
 <translation id="3522979239100719575">Buscando perfís dispoñibles. Esta acción pode tardar uns minutos.</translation>
 <translation id="3526440770046466733">Abre a ligazón nunha pestana nova e queda na pestana actual</translation>
 <translation id="353086728817903341">Conexión establecida con <ph name="NUM_DEVICES" /> dispositivos</translation>
@@ -869,7 +869,7 @@ Se non o fas, o panel táctil volverá activarse dentro de <ph name="TIMEOUT_SEC
 <translation id="3576141592585647168">Cambiar fuso horario</translation>
 <translation id="3577473026931028326">Produciuse un erro. Téntao de novo.</translation>
 <translation id="3580650856351781466">Descargando ficheiros de voz</translation>
-<translation id="3583350334315908861">{MINUTES,plural, =1{minuto}other{minutos}}</translation>
+<translation id="3583350334315908861">{MINUTES,plural, =1{minuto}many{minutes}other{minutos}}</translation>
 <translation id="3585296979871889131">Consulta o contido multimedia, as notificacións, as aplicacións e as fotos recentes do teu teléfono</translation>
 <translation id="358832729276157756">ExpressKey 1</translation>
 <translation id="3590295622232282437">Introducindo sesión xestionada.</translation>
@@ -935,7 +935,7 @@ Conecta o dispositivo á corrente.</translation>
 <translation id="3741482431277446954">Botón dereito do rato</translation>
 <translation id="3742055079367172538">Captura de pantalla feita</translation>
 <translation id="3743775386021959186">Modo Sen distraccións activado. Tempo restante: <ph name="REMAINING_TIME" /></translation>
-<translation id="3744484896879440075">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> require que fagas unha copia de seguranza dos teus datos e que devolvas o dispositivo (<ph name="DEVICE_TYPE" />) hoxe.}other{<ph name="MANAGER" /> require que fagas unha copia de seguranza dos teus datos e que devolvas o dispositivo (<ph name="DEVICE_TYPE" />) antes de que acabe o prazo.}}</translation>
+<translation id="3744484896879440075">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> require que fagas unha copia de seguranza dos teus datos e que devolvas o dispositivo (<ph name="DEVICE_TYPE" />) hoxe.}many{<ph name="MANAGER" /> requires you to back up your data and return this <ph name="DEVICE_TYPE" /> before the deadline.}other{<ph name="MANAGER" /> require que fagas unha copia de seguranza dos teus datos e que devolvas o dispositivo (<ph name="DEVICE_TYPE" />) antes de que acabe o prazo.}}</translation>
 <translation id="3750403286520637847">Ocultar suxestión do tempo</translation>
 <translation id="3752253558646317685">Dille ao teu fillo ou filla que levante o dedo e o volva a poñer para gardar a impresión dixital</translation>
 <translation id="3755239467337474637"><ph name="BEGIN_PARAGRAPH1" />Os datos das aplicacións poden incluír calquera tipo de información que gardase unha aplicación (baseándose na configuración de quen a programase), incluídos os contactos, as mensaxes e as fotos.<ph name="END_PARAGRAPH1" />
@@ -958,7 +958,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="3798670284305777884">Altofalante (interno)</translation>
 <translation id="3799080171973636491">Premiches o atallo de teclado para a lupa de pantalla completa. Queres activala?</translation>
 <translation id="3804737937830804242">Contraer a cámara</translation>
-<translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Non hai máis resultados.}other{# emojis. Non hai máis resultados.}}</translation>
+<translation id="3808558065322073119">{NUM_RESULTS,plural, =1{1 emoji. Non hai máis resultados.}many{# emojis. No other results.}other{# emojis. Non hai máis resultados.}}</translation>
 <translation id="381202950560906753">Engadir outra</translation>
 <translation id="3819261658055281761">O sistema non puido almacenar o token de acceso á API de longo prazo para este dispositivo.</translation>
 <translation id="3822403841174077928">Non se puido copiar o texto co formato</translation>
@@ -1058,7 +1058,8 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4123259114412175274">Para desbloquear o Chromebook, asegúrate de ter activado o Bluetooth do teléfono</translation>
 <translation id="4123868835475902435">Eses son os conceptos básicos. Continúa en Explorar, a nosa aplicación integrada, para obter consellos e axuda. Atoparás ideas sobre como comezar, ofertas especiais e as funcións de <ph name="PRODUCT_NAME" /> máis recentes.</translation>
 <translation id="4124779003103520737">{0,plural, =1{O teu dispositivo (<ph name="DEVICE_TYPE" />) bloquearase automaticamente dentro de # segundo.
-        <ph name="DOMAIN" /> require que manteñas a tarxeta intelixente inserida.}other{O teu dispositivo (<ph name="DEVICE_TYPE" />) bloquearase automaticamente dentro de # segundos.
+        <ph name="DOMAIN" /> require que manteñas a tarxeta intelixente inserida.}many{Your <ph name="DEVICE_TYPE" /> will be locked automatically in # seconds.
+        <ph name="DOMAIN" /> requires you to keep your smart card inserted.}other{O teu dispositivo (<ph name="DEVICE_TYPE" />) bloquearase automaticamente dentro de # segundos.
         <ph name="DOMAIN" /> require que manteñas a tarxeta intelixente inserida.}}</translation>
 <translation id="4125970834901680537">Non se pode emitir contido de aplicacións no modo de tableta. Téntao de novo no modo de ordenador portátil.</translation>
 <translation id="4131973331381812765">Temperatura: <ph name="TEMPERATURE" /> °C. Velocidade actual: <ph name="CPU_AVERAGE_CURRENT_FREQUENCY_GHZ" /> GHz</translation>
@@ -1075,7 +1076,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="416245495747357243">Todo listo!</translation>
 <translation id="4165275524535002941">O cable non é compatible coas pantallas</translation>
 <translation id="4177415338862979658">Fai clic para consultar os detalles</translation>
-<translation id="4177913004758410636">{0,plural, =1{Actualiza o dispositivo en 1 día}other{Actualiza o dispositivo en # días}}</translation>
+<translation id="4177913004758410636">{0,plural, =1{Actualiza o dispositivo en 1 día}many{Update device within # days}other{Actualiza o dispositivo en # días}}</translation>
 <translation id="4181841719683918333">Idiomas</translation>
 <translation id="4185671786623711291">Mover ventá activa ao escritorio da dereita</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" />: Busca de <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
@@ -1125,7 +1126,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="4285498937028063278">Deixar de fixar</translation>
 <translation id="428715201724021596">Conectando co perfil. Esta acción pode tardar uns minutos.</translation>
 <translation id="4287250812980588583">Ventá de Chrome</translation>
-<translation id="4291322857434980285">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> controla o volume do micrófono}other{# aplicacións controlan o volume do micrófono}}</translation>
+<translation id="4291322857434980285">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> controla o volume do micrófono}many{Mic volume controlled by # apps}other{# aplicacións controlan o volume do micrófono}}</translation>
 <translation id="4296136865091727875">Borrar as <ph name="COUNT" /> notificacións</translation>
 <translation id="4300272766492248925">Abrir aplicación</translation>
 <translation id="430191667033048642"><ph name="MOVED_APP_NAME" /> moveuse ao cartafol <ph name="FOLDER_NAME" />.</translation>
@@ -1176,7 +1177,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="4439157218765614426">Operación prohibida pola política.</translation>
 <translation id="4441283832827406317">As aplicacións están ordenadas por nome</translation>
 <translation id="4445159312344259901">Para usala, inicia sesión</translation>
-<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notificación importante}other{# notificacións importantes}}</translation>
+<translation id="4449692009715125625">{NUM_NOTIFICATIONS,plural, =1{1 notificación importante}many{# important notifications}other{# notificacións importantes}}</translation>
 <translation id="4450893287417543264">Non mostrar outra vez</translation>
 <translation id="4451374464530248585">O atallo Alt + Frecha abaixo cambiou. Para usar a tecla Avanzar páxina, preme <ph name="LAUNCHER_KEY_NAME" /> + Frecha abaixo.</translation>
 <translation id="4453430595102511050">Toca o sensor de impresión dixital situado na esquina superior dereita do teclado. Os datos da túa impresión dixital almacenaranse de maneira segura no teu dispositivo (<ph name="DEVICE_TYPE" />) e nunca sairán del.</translation>
@@ -1185,7 +1186,7 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="445923051607553918">Unirse á rede wifi</translation>
 <translation id="4465236939126352372">Aplicouse un límite de tempo de <ph name="TIME" /> a <ph name="APP_NAME" /></translation>
 <translation id="4471354919263203780">Descargando ficheiros de recoñecemento de voz… <ph name="PERCENT" /> %</translation>
-<translation id="4471432286288241507">{0,plural, =0{Actualiza o dispositivo agora}=1{Actualiza o dispositivo en 1 segundo}other{Actualiza o dispositivo en # segundos}}</translation>
+<translation id="4471432286288241507">{0,plural, =0{Actualiza o dispositivo agora}=1{Actualiza o dispositivo en 1 segundo}many{Update device within # seconds}other{Actualiza o dispositivo en # segundos}}</translation>
 <translation id="4472575034687746823">Comezar</translation>
 <translation id="4473489370276014885">Contactos de Google</translation>
 <translation id="4477751544736611934">Pode que se apliquen custos polo uso de datos.
@@ -1243,7 +1244,7 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, valoración en estrelas: <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Preme Control + W para eliminar</translation>
 <translation id="4633757335284074492">Facer copia de seguranza en Drive. Restaura os datos facilmente ou cambia de dispositivo en calquera momento. Esta copia de seguranza inclúe os datos das aplicacións. As copias de seguranza cárganse en Google e encríptanse co contrasinal da Conta de Google do teu fillo.</translation>
-<translation id="4635501805800894201">{0,plural, =0{Restaura a versión anterior no dispositivo agora}=1{Restaura a versión anterior no dispositivo no prazo de 1 segundo}other{Restaura a versión anterior no dispositivo no prazo de # segundos}}</translation>
+<translation id="4635501805800894201">{0,plural, =0{Restaura a versión anterior no dispositivo agora}=1{Restaura a versión anterior no dispositivo no prazo de 1 segundo}many{Update device to previous version within # seconds}other{Restaura a versión anterior no dispositivo no prazo de # segundos}}</translation>
 <translation id="4641539339823703554">Chrome non puido establecer a hora do sistema. Comproba a hora a continuación e corríxea se é necesario.</translation>
 <translation id="4642092649622328492">Fai unha captura de pantalla parcial</translation>
 <translation id="4643833688073835173">O teu Chromebook utiliza un sensor integrado para detectar as persoas que se atopan diante do dispositivo. Todos os datos se procesan no teu dispositivo de inmediato e, logo, elimínanse. Os datos do sensor nunca se lle envían a Google.</translation>
@@ -1282,7 +1283,7 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="4736732123074402682">Comproba a túa conexión e téntao de novo.</translation>
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4740516757091333363">Queres eliminar o escritorio gardado?</translation>
-<translation id="4746798685375253449">{0,plural, =1{Restaura a versión anterior no dispositivo no prazo de 1 día}other{Restaura a versión anterior no dispositivo no prazo de # días}}</translation>
+<translation id="4746798685375253449">{0,plural, =1{Restaura a versión anterior no dispositivo no prazo de 1 día}many{Update device to previous version within # days}other{Restaura a versión anterior no dispositivo no prazo de # días}}</translation>
 <translation id="4747410141429390146">Desbloquea a pantalla para ver as notificacións</translation>
 <translation id="4752784485658729358">Só se poden gardar 6 escritorios. Para gardar un novo, antes tes que quitar un.</translation>
 <translation id="4759238208242260848">Descargas</translation>
@@ -1360,7 +1361,7 @@ Hai 1 dispositivo conectado.</translation>
 <translation id="4964188651935955085">Se desactivas o Bluetooth, este aparello externo desconectarase do teu dispositivo (<ph name="DEVICE_TYPE" />):</translation>
 <translation id="4966431234408005599">Subir volume</translation>
 <translation id="496999337731226334">Paso <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> da visita. Os controis que se usan con frecuencia, como a wifi, o Bluetooth e o volume, están en Configuración rápida. Tamén podes facer capturas de pantalla desde aquí. Preme Alt + Maiúsculas + S para abrir Configuración rápida.</translation>
-<translation id="4974836474136150508">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> require que descargues unha actualización hoxe. Farase automaticamente cando te conectes a Internet.}other{<ph name="MANAGER" /> require que descargues unha actualización antes de que acabe o prazo. Farase automaticamente cando te conectes a Internet.}}</translation>
+<translation id="4974836474136150508">{NUM_DAYS,plural, =1{<ph name="MANAGER" /> require que descargues unha actualización hoxe. Farase automaticamente cando te conectes a Internet.}many{<ph name="MANAGER" /> requires you to download an update before the deadline. The update will download automatically when you connect to the internet.}other{<ph name="MANAGER" /> require que descargues unha actualización antes de que acabe o prazo. Farase automaticamente cando te conectes a Internet.}}</translation>
 <translation id="4977493774330778463"><ph name="NUM_IMPORTANT_NOTIFICATION" />:
         <ph name="NOTIFICATION_1" />,
         <ph name="NOTIFICATION_2" />,
@@ -1436,13 +1437,13 @@ Tamén podes usar o atallo de teclado. Primeiro, destaca o texto e, a continuaci
 <translation id="5176318573511391780">Gravar pantalla parcial</translation>
 <translation id="5187627942836026988">Mostrar os detalles da zona wifi. A persoa administradora bloqueou a zona wifi.</translation>
 <translation id="5188648870018555788">Usa a localización. Permite que os servizos, sitios web e aplicacións para Android e ChromeOS con permiso de localización utilicen a do teu dispositivo. A opción Precisión da localización proporciónalles unha localización máis exacta aos servizos e aplicacións para Android. Con este fin, Google procesa periodicamente a información captada polos sinais sen fíos e os sensores do teu dispositivo para obter con participación colectiva a localización deses sinais. Estes datos utilízanse sen identificarte para mellorar a precisión da localización e os servizos baseados nela, así como para perfeccionar, proporcionar e manter os servizos de Google en función dos intereses lexítimos de Google e de terceiros coa finalidade de satisfacer as necesidades dos usuarios. <ph name="BEGIN_LINK1" />Máis información sobre o uso da localización<ph name="END_LINK1" /></translation>
-<translation id="519224799121965725">{NUM_WEEKS,plural, =1{Dispós de {NUM_WEEKS} semana para devolver o dispositivo (<ph name="DEVICE_TYPE" />)}other{Dispós de {NUM_WEEKS} semanas para devolver o dispositivo (<ph name="DEVICE_TYPE" />)}}</translation>
+<translation id="519224799121965725">{NUM_WEEKS,plural, =1{Dispós de {NUM_WEEKS} semana para devolver o dispositivo (<ph name="DEVICE_TYPE" />)}many{Return <ph name="DEVICE_TYPE" /> within {NUM_WEEKS} weeks}other{Dispós de {NUM_WEEKS} semanas para devolver o dispositivo (<ph name="DEVICE_TYPE" />)}}</translation>
 <translation id="5198039720391525849">GIF destacados</translation>
 <translation id="5198413532174090167"><ph name="DATE" />, <ph name="NUMBER" /> eventos</translation>
 <translation id="5198715732953550718"><ph name="MOVED_APP_NAME" /> combinouse con <ph name="IN_PLACE_APP" /> para crear un cartafol novo.</translation>
 <translation id="5204673965307125349">Leva a cabo un Powerwash do dispositivo e téntao de novo.</translation>
 <translation id="5206028654245650022"><ph name="APP_NAME" />, <ph name="NOTIFICATION_TITLE" />: <ph name="MESSAGE" />, <ph name="PHONE_NAME" /></translation>
-<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 notificación máis}other{# notificacións máis}}</translation>
+<translation id="5206057955438543357">{NUM_NOTIFICATIONS,plural, =1{1 notificación máis}many{# other notifications}other{# notificacións máis}}</translation>
 <translation id="5207949376430453814">Destacar o cursor de texto</translation>
 <translation id="5208059991603368177">Activado</translation>
 <translation id="5216991270656129561">Función desactivada ata esta hora: <ph name="TIME" /></translation>
@@ -1752,7 +1753,8 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6062360702481658777">A túa sesión pecharase automaticamente en <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6068258534237496331">Controis de videochamada</translation>
 <translation id="6070081109266557120">{0,plural, =1{A túa sesión pecharase automaticamente dentro de # segundo.
-        <ph name="DOMAIN" /> require que manteñas a tarxeta intelixente inserida.}other{A túa sesión pecharase automaticamente dentro de # segundos.
+        <ph name="DOMAIN" /> require que manteñas a tarxeta intelixente inserida.}many{You will be automatically signed out in # seconds.
+        <ph name="DOMAIN" /> requires you to keep your smart card inserted.}other{A túa sesión pecharase automaticamente dentro de # segundos.
         <ph name="DOMAIN" /> require que manteñas a tarxeta intelixente inserida.}}</translation>
 <translation id="6071576563962215370">O sistema non puido establecer o bloqueo de atributos do tempo de instalación do dispositivo.</translation>
 <translation id="6073451960410192870">Deter gravación</translation>
@@ -1857,7 +1859,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6378515133128829137">Fixar ventá na dereita</translation>
 <translation id="6380143666419481200">Aceptar e continuar</translation>
 <translation id="6381109794406942707">Para desbloquear o dispositivo escribe o PIN.</translation>
-<translation id="6381305031890976705">{0,plural, =1{Restaura a versión anterior no dispositivo no prazo de 1 hora}other{Restaura a versión anterior no dispositivo no prazo de # horas}}</translation>
+<translation id="6381305031890976705">{0,plural, =1{Restaura a versión anterior no dispositivo no prazo de 1 hora}many{Update device to previous version within # hours}other{Restaura a versión anterior no dispositivo no prazo de # horas}}</translation>
 <translation id="638716340450135524">Activar acceso á cámara</translation>
 <translation id="6406458002328242616">Modificar o temporizador. <ph name="FOCUS_DURATION" />.</translation>
 <translation id="6406704438230478924">altgr</translation>
@@ -1886,7 +1888,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6456096448804832585">Só está dispoñible en vertical</translation>
 <translation id="6464094930452079790">imaxes</translation>
 <translation id="6467290994038932560">Activados para <ph name="GAME_APP_NAME" /></translation>
-<translation id="6468406072297048412">{0,plural, =1{Restaura a versión anterior no dispositivo no prazo de 1 minuto}other{Restaura a versión anterior no dispositivo no prazo de # minutos}}</translation>
+<translation id="6468406072297048412">{0,plural, =1{Restaura a versión anterior no dispositivo no prazo de 1 minuto}many{Update device to previous version within # minutes}other{Restaura a versión anterior no dispositivo no prazo de # minutos}}</translation>
 <translation id="6469104339369989396">Activar ou desactivar a zona wifi</translation>
 <translation id="6475294023568239942">Libera espazo ou cambia o tamaño do disco de Linux en Configuración</translation>
 <translation id="6477681113376365978">Non se puido descargar o ficheiro</translation>
@@ -1920,7 +1922,7 @@ Nova instalación</translation>
 <translation id="6560151649238390891">Púxose a suxestión</translation>
 <translation id="6562447480759345110">Finalizar o modo Sen distraccións</translation>
 <translation id="6565007273808762236">Non se puido establecer conexión coa eSIM</translation>
-<translation id="6570831796530454248">{0,plural, =1{Actualiza o dispositivo en 1 hora}other{Actualiza o dispositivo en # horas}}</translation>
+<translation id="6570831796530454248">{0,plural, =1{Actualiza o dispositivo en 1 hora}many{Update device within # hours}other{Actualiza o dispositivo en # horas}}</translation>
 <translation id="6570902864550063460">Cargando por USB</translation>
 <translation id="6571006437522772306">Busca elementos en Ficheiros</translation>
 <translation id="6574587113394758819">Ocultouse unha notificación da aplicación <ph name="APP_TITLE" /> porque está activada a protección fronte a miróns</translation>
@@ -2025,12 +2027,12 @@ Nova instalación</translation>
 <translation id="6856708615407876657">Activar/desactivar as categorías dos resultados de busca</translation>
 <translation id="6856756288284651804">Chromebook actualizado</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
-<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta un díxito}other{Faltan # díxitos}}</translation>
+<translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta un díxito}many{# digits remaining}other{Faltan # díxitos}}</translation>
 <translation id="6867938213751067702">Púxose en pausa a descarga de <ph name="FILENAME" /></translation>
 <translation id="6868934826811377550">Consultar detalles</translation>
 <translation id="6874854809828346832">Mostrar os detalles da zona wifi. A zona wifi está activada.</translation>
 <translation id="6878400149835617132">Desactivouse o atallo</translation>
-<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 aplicación}other{# aplicacións}}</translation>
+<translation id="6878701771800702153">{NUM_APPS,plural, =1{1 aplicación}many{# apps}other{# aplicacións}}</translation>
 <translation id="6879454869409141992">Activar bloqueo de maiúsculas</translation>
 <translation id="6883768636838842873">Atallos de teclado, consellos para usar o dispositivo e moito máis</translation>
 <translation id="6884665277231944629">Volver a hoxe</translation>
@@ -2313,7 +2315,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7720400844887872976">Función activada ata esta hora: <ph name="TIME" /></translation>
 <translation id="7720410380936703141">TENTAR DE NOVO</translation>
 <translation id="7721132362314201794">Nome do escritorio</translation>
-<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificación}other{# notificacións}}</translation>
+<translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificación}many{# notifications}other{# notificacións}}</translation>
 <translation id="7723703419796509666">Mostrar ou ocultar consola de ferramentas para programadores</translation>
 <translation id="7724603315864178912">Cortar</translation>
 <translation id="7724711098786238351">O modo de demostración está pensado para usuarios maiores de 18 anos e está suxeito á Política de privacidade e ás Condicións de servizo de Google. Os datos que se engadan a este dispositivo poderán ser vistos por outras persoas entre borrados periódicos.</translation>
@@ -2496,7 +2498,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8220076512072059941">Engadir <ph name="FOCUS_DURATION_DELTA" /></translation>
 <translation id="8228175756124063692">Ocultar esta suxestión</translation>
 <translation id="8230305195727960608">Modo de inversión da cor</translation>
-<translation id="8235839318057813827">{NUM_DAYS,plural, =1{Cómpre facer unha devolución de inmediato}other{Dispós de {NUM_DAYS} días para devolver o dispositivo (<ph name="DEVICE_TYPE" />)}}</translation>
+<translation id="8235839318057813827">{NUM_DAYS,plural, =1{Cómpre facer unha devolución de inmediato}many{Return <ph name="DEVICE_TYPE" /> within {NUM_DAYS} days}other{Dispós de {NUM_DAYS} días para devolver o dispositivo (<ph name="DEVICE_TYPE" />)}}</translation>
 <translation id="8236042855478648955">É hora de que fagas unha pausa</translation>
 <translation id="8237964652943995219">Escritorio seguinte: <ph name="DESK_NAME" />. Escritorio <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="8238817965863339552">Fai unha visita rápida para familiarizarte co teu dispositivo <ph name="PRODUCT_NAME" />. Comeza a usalo en cinco pasos.</translation>
@@ -2729,7 +2731,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8929566928381252430">Estás tentando usar a tecla de bloqueo de maiúsculas? Usar</translation>
 <translation id="8929623844713377237">Creouse o contacto</translation>
 <translation id="8934418770423095813">Crear documento de Google</translation>
-<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ficheiro}other{# ficheiros}}</translation>
+<translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ficheiro}many{# files}other{# ficheiros}}</translation>
 <translation id="8936501819958976551">desactivou</translation>
 <translation id="8938800817013097409">Dispositivo USB‑C (porto dereito posterior)</translation>
 <translation id="8939855324412367560">O dispositivo de entrada de audio é <ph name="INPUT_DEVICE_NAME" /> e o de saída, <ph name="OUTPUT_DEVICE_NAME" />. Vai a Configuración para cambialos.</translation>
@@ -2792,7 +2794,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="9098750710832798892">Non hai ningún elemento copiado en Copiar e pegar</translation>
 <translation id="9098969848082897657">Silenciar teléfono</translation>
 <translation id="9126339866969410112">Desfai a última acción</translation>
-<translation id="9127938699607518293">{MINUTES,plural, =1{Dentro de 1 min}other{Dentro de # min}}</translation>
+<translation id="9127938699607518293">{MINUTES,plural, =1{Dentro de 1 min}many{In # mins}other{Dentro de # min}}</translation>
 <translation id="9129245940793250979">Botón traseiro</translation>
 <translation id="9133335900048457298">Non se pode gravar contido protexido</translation>
 <translation id="9139720510312328767">Elimina a letra seguinte</translation>

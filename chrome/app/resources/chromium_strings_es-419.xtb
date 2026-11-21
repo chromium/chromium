@@ -661,7 +661,7 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="7288567540154601580">Pestañas y extensiones</translation>
 <translation id="7295544978856094497">{NUM_EXTENSIONS,plural, =1{Chromium te recomienda quitarla}other{Chromium te recomienda quitarlas}}</translation>
 <translation id="7296334833518879294">Para compartir el audio del sistema, abre la configuración del sistema y permite la opción "Solo grabación de audio del sistema" para Chromium. Luego, deberás reiniciar Chromium.</translation>
-<translation id="7299899569525778554">Buscar desde una computadora</translation>
+<translation id="7299899569525778554">Buscar desde el escritorio</translation>
 <translation id="731795002583552498">Actualizando Chromium</translation>
 <translation id="7318036098707714271">Tu archivo de preferencias está dañado o no es válido. Chromium no puede recuperar tu configuración.</translation>
 <translation id="7324051657739063017">Puedes volver a abrir Tareas contextuales para hacer preguntas mientras navegas</translation>

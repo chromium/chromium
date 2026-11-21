@@ -916,7 +916,7 @@
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{"<ph name="APP_NAME" />" ஆப்ஸை நிறுவல் நீக்குவது, இந்த ஆப்ஸையும் நிறுவல் நீக்கும்:}other{"<ph name="APP_NAME" />" ஆப்ஸை நிறுவல் நீக்குவது, இந்த ஆப்ஸையும் நிறுவல் நீக்கும்:}}</translation>
 <translation id="1785698972112179866"><ph name="DEVICE" /> இருந்து புக்மார்க்குகளையும், மேலும் பலவற்றையும் பெற உள்நுழையுங்கள்</translation>
 <translation id="1786290960428378411">படிப்பதற்கும் மாற்றுவதற்கும் அனுமதி கோருகிறது</translation>
-<translation id="1786370916735012964">plugins, developer, tools, blocks, adblock, safety, customize, widgets</translation>
+<translation id="1786370916735012964">செருகுநிரல்கள், டெவெலப்பர், கருவிகள், தடுப்புகள், விளம்பரத் தடுப்பு, பாதுகாப்பு, பிரத்தியேக்கம், விட்ஜெட்கள்</translation>
 <translation id="1789543093145556097">எப்போதும் மறை</translation>
 <translation id="179021551944139249">வாசிப்புப் பட்டியலில் இணைப்பைச் சேர்</translation>
 <translation id="1790976235243700817">அணுகலை அகற்று</translation>
@@ -1083,7 +1083,7 @@
 <translation id="192494336144674234">இதன் மூலம் திற:</translation>
 <translation id="1925017091976104802">ஒட்ட, <ph name="MODIFIER_KEY_DESCRIPTION" /> ஐ அழுத்தவும்</translation>
 <translation id="1925021887439448749">பிரத்தியேக இணைய முகவரியை உள்ளிடவும்</translation>
-<translation id="1925153812376372199">history, topics, past, searches, tab, groups, organization, previous, yesterday, before, earlier</translation>
+<translation id="1925153812376372199">பதிவுகள், தலைப்புகள், கடந்தவை, தேடல்கள், பக்கங்கள், குழுக்கள், நிறுவனம், முந்தையவை, நேற்று, இதற்கு முன், முன்னால்</translation>
 <translation id="192564025059434655">டிசம்பர் 2022க்குப் பிறகு Windows சாதனங்களில் Chrome ஆப்ஸின் பழைய பதிப்புகள் இயங்காது. புதிய பதிப்பு உள்ளதா என நீங்கள் பார்க்கலாம்.</translation>
 <translation id="1925907592956229423">வேலை செய்யவில்லையா?</translation>
 <translation id="1926339101652878330">இந்த அமைப்புகள் நிறுவனக் கொள்கையால் கட்டுப்படுத்தப்படுகின்றன. மேலும் தகவலுக்கு உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும்.</translation>
@@ -1865,7 +1865,7 @@
 <translation id="261305050785128654">நீங்கள் பேசும் மொழிகளை இணையதளங்களுக்குத் தெரியப்படுத்துங்கள். கிடைக்கும்பட்சத்தில், அந்த மொழிகளில் உள்ளடக்கத்தை அவை காட்டும்.</translation>
 <translation id="2613210758071148851"><ph name="RESTRICTED_SITE" /> தளத்தில் நீட்டிப்புகள் எதையும் அனுமதிக்காதே</translation>
 <translation id="2613535083491958306"><ph name="ORIGIN" /> டொமைனால் <ph name="FILENAME" /> ஃபைலில் மாற்றங்களைச் செய்ய முடியும்</translation>
-<translation id="2614639185974290947">articles, offline, queue, backlog, sidebar, mode</translation>
+<translation id="2614639185974290947">செய்திக் கட்டுரைகள், ஆஃப்லைன், வரிசை, பக்கப்பட்டி, மோட், படிக்க வேண்டியவை</translation>
 <translation id="2615159404909536465">{FILE_COUNT,plural, =1{இந்த நீட்டிப்பில் <ph name="FILE1" /> ஃபைலைத் திறந்து திருத்து}other{இந்த ஆப்ஸில் <ph name="FILE1" />, ... ஃபைல்களைத் திறந்து திருத்து}}</translation>
 <translation id="2615836333611528168">உங்கள் Windows அமைப்புகளின் அளவு இங்கே பொருந்தும் வகையில் மாற்றப்படும்.</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" /> இல் உங்கள் உங்கள் தரவைப் படித்தல் மற்றும் திருத்துதல்</translation>
@@ -2206,7 +2206,7 @@
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="288734198558082692"><ph name="DEVICE" />, மேலும் <ph name="NUMBER_OF_DEVICES" /> சாதனங்கள்</translation>
 <translation id="2887344147309501015">பிரவுசிங் செய்யும்போதே Chromeமில் Gemini உடன் உரையாடி பதில்கள், முக்கியமான தகவல்கள் மற்றும் பலவற்றைப் பெறுங்கள்</translation>
-<translation id="2887952085648076216">plugins, themes, install, extensions, customization, manage</translation>
+<translation id="2887952085648076216">செருகுநிரல்கள், தீம்கள், நிறுவு, நீட்டிப்புகள், பிரத்தியேகமாக்கம், நிர்வகி</translation>
 <translation id="2889043468805635730">சிக்கல்கள் எதுவுமில்லை</translation>
 <translation id="2889064240420137087">இதைக் கொண்டு இணைப்பைத் திற...</translation>
 <translation id="2889937141553641427">{0,plural, =1{ஐசோலேட்டட் மோட்}other{திறந்துள்ள ஐசோலேட்டட் மோட் விண்டோக்கள்: #}}</translation>
@@ -3193,7 +3193,7 @@
 <translation id="3707348585109246684">புதிய <ph name="APP" /> பக்கத்தில் இணைப்பைத் திற</translation>
 <translation id="3708684582558000260">தரவை அனுப்புவதையோ பெறுவதையோ நிறைவுசெய்ய, மூடப்பட்ட தளங்களை அனுமதிக்காதே</translation>
 <translation id="3709244229496787112">பதிவிறக்கம் நிறைவுபெறுவதற்கு முன்பாகவே உலாவி மூடப்பட்டது.</translation>
-<translation id="3709564015493363298">delete, remove, security, privacy, cleanup, storage, reset, cache, slow, speed</translation>
+<translation id="3709564015493363298">நீக்கு, அகற்று, பாதுகாப்பு, தனியுரிமை, கிளீன்-அப், சேமிப்பகம், மீட்டமை, தற்காலிகச் சேமிப்பு, குறைந்த வேகம், அதிக வேகம்</translation>
 <translation id="3710438437470197252">Google Driveவில் மேலும் பாருங்கள்</translation>
 <translation id="3710501561113687889">தொடர, <ph name="FIELDS_STRING" /> ஐ இந்தத் தளத்துடன் <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> பகிரும்.</translation>
 <translation id="3711931198657368127"><ph name="URL" /> எனும் இணைப்பை ஒட்டி அங்கு செல்</translation>
@@ -3231,12 +3231,12 @@
 <translation id="3729506734996624908">அனுமதிக்கப்பட்ட தளங்கள்</translation>
 <translation id="3729957991398443677">கடவுச்சொல்லைப் பார்க்கவோ அதுகுறித்த குறிப்பைச் சேர்க்கவோ தேடல் மற்றும் முகவரிப் பட்டியில் 'உங்கள் கடவுச்சொற்களை நிர்வகியுங்கள்' என்பதைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="3730298295914858769">வைஃபை டைரக்ட்டின் வசதிகள்:</translation>
-<translation id="3730617546883088705">quit, close, terminate, shutdown, power off, stop, end</translation>
+<translation id="3730617546883088705">வெளியேறு, மூடு, முடித்துவிடு, ஷட்-டவுன், பவர் ஆஃப், நிறுத்து</translation>
 <translation id="3732078975418297900"><ph name="ERROR_LINE" />வது வரியில் பிழை</translation>
 <translation id="3732108843630241049">இந்தச் சாதனம் இனி தானியங்கு மென்பொருள் புதுப்பிப்புகளைப் பெறாது. பாதுகாப்பு, நிலைப்புத்தன்மை மற்றும் செயல்திறனைத் தொடர்ந்து பெற நீட்டிக்கப்பட்ட பாதுகாப்புப் புதுப்பிப்புகளை இயக்கவும். சில செயல்பாடுகள் கட்டுப்படுத்தப்படும். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="3732414796052961578"><ph name="ACCOUNT_NAME" /> கணக்கில் தொடர்க</translation>
 <translation id="3732530910372558017">பின்னில் அதிகப்பட்சம் 63 எழுத்துகள் வரை இருக்க வேண்டும்</translation>
-<translation id="3734326936095310284">favorites, organizer, search, backup</translation>
+<translation id="3734326936095310284">பிடித்தவை, ஒருங்கிணைப்பாளர், தேடல், காப்புப்பிரதி</translation>
 <translation id="3734547157266039796">அரிசி நெல்</translation>
 <translation id="3735740477244556633">இதன்படி வரிசைப்படுத்து</translation>
 <translation id="3735827758948958091">வரம்புள்ள இணைப்பில் இருக்கும்போது <ph name="FILE_NAMES" /> ஃபைலைத் திறக்க முடியாது</translation>
@@ -4538,7 +4538,7 @@
 <translation id="4871719318659334896">குழுவை மூடுக</translation>
 <translation id="4872192066608821120">கடவுச்சொற்களை ஏற்ற CSV ஃபைலைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="4872212987539553601">சாதனத்திற்குள்ளான என்க்ரிப்ஷனை அமையுங்கள்</translation>
-<translation id="4873893357102681644">toolbar, favorites bar, top, display, settings, shortcuts, show, open</translation>
+<translation id="4873893357102681644">கருவிப்பட்டி, பிடித்தவை பிரிவு, மேலே, டிஸ்பிளே, அமைப்புகள், ஷார்ட்கட்டுகள், காட்டு, திற</translation>
 <translation id="4875690134140862902">பக்கம்</translation>
 <translation id="4876273079589074638">இந்தச் சிதைவிற்கான காரணங்களை ஆராய்ந்து, சரிசெய்வதற்கு எங்கள் பொறியாளர்களுக்கு உதவவும். முடிந்தால், என்ன நடந்தது என்பதைத் துல்லியமாகப் பட்டியலிடவும். நீங்கள் வழங்கும் சிறிய தகவலும் எங்களுக்கு உதவும்!</translation>
 <translation id="4876305945144899064">பயனர்பெயர் இல்லை</translation>
@@ -4561,7 +4561,7 @@
 <translation id="4887424188275796356">சிஸ்டம் வியூவருடன் திற</translation>
 <translation id="488862352499217187">புதிய ஃபோல்டரை உருவாக்கும்</translation>
 <translation id="4888899258150891194">CppGC நினைவகம்</translation>
-<translation id="488906917257031024">file, download, offline, PDF, HTML, document</translation>
+<translation id="488906917257031024">ஃபைல், பதிவிறக்கம், ஆஃப்லைன், PDF, HTML, ஆவணம்</translation>
 <translation id="4890292359366636311">பிக்ச்சர்-இன்-பிக்ச்சர் அம்சத்திற்குத் தானாகவே மாறும். நீங்கள் அதை மற்ற பக்கங்கள் மற்றும் சாளரங்களின் மீது பயன்படுத்தலாம்.</translation>
 <translation id="4890399733764921729">இணைக்க முடியவில்லை. வேறொரு மொபைல் சேவை வழங்குநரால் லாக் செய்யப்பட்டுள்ளது.</translation>
 <translation id="4890585766056792498">ஆபத்தான தளங்களில் இருந்து பாதுகாப்பாக இருங்கள்</translation>
@@ -4712,7 +4712,7 @@
 <translation id="5024511550058813796">ஒத்திசைக்கப்பட்டுள்ள சாதனங்கள் அனைத்திலும் உங்கள் பதிவு சேமிக்கப்படுவதால் விட்ட இடத்திலிருந்து செயல்பாட்டைத் தொடரலாம்</translation>
 <translation id="5024992827689317672">தரவு நீக்கப்பட்டது</translation>
 <translation id="5026492829171796515">Google கணக்கைச் சேர்க்க உள்நுழையுங்கள்</translation>
-<translation id="5026572062076949786">controls, customization, language, privacy, defaults, advanced</translation>
+<translation id="5026572062076949786">கட்டுப்பாடுகள், பிரத்தியேகமாக்கம், மொழி, தனியுரிமை, இயல்பு, மேம்பட்டது</translation>
 <translation id="5026806129670917316">வைஃபையை இயக்கு</translation>
 <translation id="5026874946691314267">இதை மீண்டும் காட்டாதே</translation>
 <translation id="5027550639139316293">மின்னஞ்சல் சான்றிதழ்</translation>
@@ -4933,7 +4933,7 @@
 <translation id="5213481667492808996">இப்போது உங்கள் '<ph name="NAME" />' டேட்டா சேவையைப் பயன்படுத்தலாம்</translation>
 <translation id="5213891612754844763">ப்ராக்ஸி அமைப்புகளைக் காட்டு</translation>
 <translation id="5214639857958972833">'<ph name="BOOKMARK_TITLE" />' புக்மார்க் உருவாக்கப்பட்டது.</translation>
-<translation id="5215129792463370549">camera, visual search, AI, OCR, translation, photo, find item, page, screen, capture</translation>
+<translation id="5215129792463370549">கேமரா, காட்சித் தேடல், AI, OCR, மொழிபெயர்ப்பு, ஃபோட்டோ, கண்டறிதல், திரை, கேப்சர்</translation>
 <translation id="5215450412607891876">நீட்டிக்கப்பட்ட பாதுகாப்புப் புதுப்பிப்புகளை இயக்குதல்</translation>
 <translation id="5216674789212441076">உடனடி வசனங்கள் தானாகவே மொழிபெயர்க்கப்படும். அவை மொழிபெயர்ப்பிற்காக Googleளுக்கு அனுப்பப்படும்.</translation>
 <translation id="5217925057416367138">தற்போது இயங்குவது</translation>
@@ -5003,7 +5003,7 @@
 <translation id="5276357196618041410">உள்ளமைவைச் சேமிக்க முதலில் உள்நுழைந்திருக்க வேண்டும்</translation>
 <translation id="5277127016695466621">பக்கவாட்டுப் பேனலைக் காட்டும்</translation>
 <translation id="5278823018825269962">நிலை ஐடி</translation>
-<translation id="5278860720349085301">save, session, group, folder, backup</translation>
+<translation id="5278860720349085301">சேமி, அமர்வு, குழு, ஃபோல்டர், காப்புப் பிரதி</translation>
 <translation id="5280064835262749532"><ph name="SHARE_PATH" />க்கான அனுமதிச் சான்றுகளைப் புதுப்பியுங்கள்</translation>
 <translation id="5280303168922585051">இந்த அமைப்பை உங்கள் நிறுவனம் அமைத்துள்ளது. இந்தத் தேடல் இன்ஜினை நீக்க விரும்புகிறீர்களா?</translation>
 <translation id="5280426389926346830">ஷார்ட்கட்டை உருவாக்கவா?</translation>
@@ -6022,7 +6022,7 @@
 <translation id="6212039847102026977">மேம்பட்ட நெட்வொர்க் பண்புகளைக் காட்டு</translation>
 <translation id="6212168817037875041">திரையை அணை</translation>
 <translation id="6212752530110374741">இணைப்பை மின்னஞ்சல் செய்</translation>
-<translation id="6213264040363415560">app, desktop, offline, launch, install, standalone</translation>
+<translation id="6213264040363415560">ஆப்ஸ், டெஸ்க்டாப், ஆஃப்லைன், வெளியிடு, நிறுவு, தனித்தியங்கும்</translation>
 <translation id="6214106213498203737">வாட்டர் கலர்</translation>
 <translation id="6214157047210274853">Google Walletடில் திருத்து</translation>
 <translation id="621470880408090483">புளூடூத் சாதனங்களுடன் இணைவதற்குத் தளங்களை அனுமதிக்காதே</translation>
@@ -6200,7 +6200,7 @@
 <translation id="6367853307713830174">முக்கியமான செயல்களை மேற்கொள்வதற்கு முன் அவற்றை உங்களிடம் காட்டி உங்கள் ஒப்புதலைப் பெற Gemini முயலும். இதை எப்போது வேண்டுமானாலும் நிறுத்தலாம் அல்லது நீங்களே செயலைத் தொடரலாம்.</translation>
 <translation id="6367985768157257101">அருகிலுள்ளவற்றுடன் பகிர்தல் அம்சத்தின் மூலம் பெறவா?</translation>
 <translation id="6368276408895187373">இயக்கப்பட்டுள்ளது – <ph name="VARIATION_NAME" /></translation>
-<translation id="6368657205242976814">save, star, favorite, keep, page, list, remember</translation>
+<translation id="6368657205242976814">சேமி, நட்சத்திரமிடு, பிடித்தவை, வைத்திரு, பக்கம், பட்டியல், நினைவில் உள்ளவை</translation>
 <translation id="6369420654782669629">அம்சங்கள் மற்றும் நீட்டிப்புகளுக்கான ஷார்ட்கட்கள்</translation>
 <translation id="6370021412472292592">மெனிஃபெஸ்ட்டை ஏற்ற முடியவில்லை.</translation>
 <translation id="637135143619858508">தொலைவு</translation>
@@ -6312,6 +6312,7 @@
 <translation id="6466936665940546351">கடவுச்சொற்களைச் சேர்த்து உங்கள் Google கணக்கின் மூலம் எல்லாச் சாதனங்களிலும் அவற்றைப் பெற இது நீங்கள்தான் என்பதை உறுதிப்படுத்துங்கள்</translation>
 <translation id="6467230443178397264"><ph name="FILE_NAME" /> ஐ ஸ்கேன் செய்யும்</translation>
 <translation id="6467304607960172345">முழுத்திரை வீடியோக்களை மேம்படுத்து</translation>
+<translation id="6467327465309816244">Geminiயைக் கவனமாகவும் <ph name="BEGIN_LINK1" />பாதுகாப்பாகவும்<ph name="LINK_END1" /> பயன்படுத்துங்கள். அது தவறுகள் செய்யக்கூடும், பர்ச்சேஸ்கள் போன்ற <ph name="BEGIN_LINK2" />எதிர்பாராத விளைவுகளை<ph name="LINK_END2" /> ஏற்படுத்தக்கூடும்.</translation>
 <translation id="6467377768028664108">உங்கள் <ph name="DEVICE_TYPE" />:</translation>
 <translation id="6468485451923838994">எழுத்துருக்கள்</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> ஃபைல்கள் </translation>
@@ -7249,7 +7250,7 @@
 <translation id="7269229526547981029">இந்தச் சுயவிவரத்தை நிர்வகிப்பது: <ph name="PROFILE_MANAGER" />. <ph name="USER_EMAIL_ADDRESS" /> கணக்கிற்கான புதிய சுயவிவரத்தை <ph name="ACCOUNT_MANAGER" /> உருவாக்க வேண்டும்</translation>
 <translation id="7269736181983384521">’அருகிலுள்ளவற்றுடன் பகிர்தல்’ அம்சத்தின் டேட்டா உபயோகம்</translation>
 <translation id="7270447384127135313">நீங்கள் பிரவுசிங் செய்யும்போது பகிரும் பக்கங்கள் குறித்து Geminiயிடம் எளிதாகக் கேள்விகளைக் கேட்கலாம்.</translation>
-<translation id="7271285317028475866">safari, edge, firefox, restore, backup, transfer, setup, old</translation>
+<translation id="7271285317028475866">safari, firefox, மீட்டமை, காப்புப்பிரதி, நகரத்து, அமைவு, பழையது</translation>
 <translation id="7272674038937250585">விளக்கம் எதுவும் வழங்கப்படவில்லை</translation>
 <translation id="7273110280511444812">கடைசியாக இணைத்த தேதி <ph name="DATE" /></translation>
 <translation id="7273894023751806510">எனது MIDI சாதனங்களைக் கட்டுப்படுத்துவதில் இருந்தும் மீண்டும் புரோகிராம் செய்வதில் இருந்தும் <ph name="HOST" /> தளத்தை எப்போதும் தடு</translation>
@@ -7463,7 +7464,7 @@
 <translation id="7434509671034404296">டெவெலப்பர்</translation>
 <translation id="7434969625063495310">பிரிண்ட் சேவையகத்தைச் சேர்க்க முடியவில்லை. உங்கள் சேவையகத்தின் உள்ளமைவைச் சரிபார்த்துவிட்டு மீண்டும் முயலவும்.</translation>
 <translation id="7435500219604275502">புதுப்பிப்பைப் பயன்படுத்து</translation>
-<translation id="743760275071945925">private, anonymous, stealth, secret, safety, tracking protection, cookies, clear, cache</translation>
+<translation id="743760275071945925">தனிப்பட்டது, அடையாளம் நீக்கியது, ரகசியம், பாதுகாப்பு, கண்காணிப்பு பாதுகாப்பு, குக்கீ தற்காலிகச் சேமிப்பு, நீக்கு</translation>
 <translation id="7439519621174723623">தொடர, சாதனத்தின் பெயரைச் சேர்க்கவும்</translation>
 <translation id="7440404390546433462">Google Search</translation>
 <translation id="7441736921018636843">இந்த அமைப்பை மாற்ற, <ph name="BEGIN_LINK" />ஒத்திசைவை மீட்டமைத்து<ph name="END_LINK" /> உங்கள் ஒத்திசைவுக் கடவுச்சொற்றொடரை அகற்றவும்</translation>
@@ -7680,7 +7681,7 @@
 <translation id="7641720519047586765">இந்தக் கடவுச்சாவி இந்தத் தளத்தில் இருந்து நீக்கப்பட்டது</translation>
 <translation id="764178579712141045"><ph name="USER_EMAIL" /> சேர்க்கப்பட்டார்</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (உரிமையாளர்)</translation>
-<translation id="7645993210569143154">link, desktop, icon, bookmark, homescreen, drive, home, launch</translation>
+<translation id="7645993210569143154">இணைப்பு, டெஸ்க்டாப், ஐகான், புக்மார்க், முகப்புத் திரை, டிரைவ், முகப்பு, வெளியிடு</translation>
 <translation id="7646425900255826066">நீங்கள் Chromeமில் உள்நுழைந்திருக்கும்போது Google Password Managerரில் கடவுச்சொற்களைச் சேமிக்க முடியும்</translation>
 <translation id="7646499124171960488">பாதுகாப்பற்ற பொதுத் தளங்களுக்கு எச்சரிக்கை செய்</translation>
 <translation id="7646772052135772216">கடவுச்சொல் ஒத்திசைவு இயங்கவில்லை</translation>
@@ -7916,7 +7917,7 @@
 <translation id="7839871177690823984">குறுகலான பள்ளத்தாக்கு</translation>
 <translation id="7840222916565569061">உங்கள் கேமராவைப் பயன்படுத்த ஆப்ஸிற்கு அனுமதியில்லை</translation>
 <translation id="784273751836026224">Linuxஸை நிறுவல் நீக்கு</translation>
-<translation id="7843778027750163580">search, look, page, text, string, replace, editor, locate</translation>
+<translation id="7843778027750163580">தேடல், தோற்றம், பக்கங்கள், வார்த்தைகள், வாக்கியம், மாற்று, எடிட்டர், தேடு</translation>
 <translation id="7846161022626028328">பிழை ஏற்பட்டது. மீண்டும் முயலவும்.</translation>
 <translation id="7846296061357476882">Google சேவைகள்</translation>
 <translation id="7848244988854036372">எல்லாவற்றையும் (<ph name="URL_COUNT" />) புதிய பக்கக் குழுவில் திறக்கும்</translation>
@@ -9160,7 +9161,7 @@
 <translation id="8898790559170352647">உங்கள் Microsoft கணக்கைச் சேருங்கள்</translation>
 <translation id="8898822736010347272">இணையத்தில் புதிய அச்சுறுத்தல்களைக் கண்டறிவதற்காகவும் அனைத்துப் பயனர்களையும் பாதுகாப்பதற்காகவும், நீங்கள் பார்வையிடும் சில பக்கங்களின் URLகள், வரையறுக்கப்பட்ட சிஸ்டம் தகவல்கள், சில பக்கங்களின் உள்ளடக்கம் ஆகியவற்றை Googleளுக்கு அனுப்பும்.</translation>
 <translation id="8899851313684471736">புதிய &amp;சாளரத்தில் இணைப்பைத் திற</translation>
-<translation id="8900218716805821403">past pages, journeys, timeline, crash, recovery, restore, tabs, find, site, visited, sites, previous, yesterday, before, earlier</translation>
+<translation id="8900218716805821403">கடந்தகால பதிவுகள், பயணங்கள், டைம்லைன், சிதைவு, மீட்டெடுப்பு, மீட்டெடுத்தல், பிரிவுகள், கண்டறி, தளம், பார்த்தவை, முந்தையவை, நேற்று, முன்னர், இதற்கு முன்</translation>
 <translation id="8900413463156971200">செல்லுலார் இணைப்பை இயக்கு</translation>
 <translation id="8903733144777177139">மைக்ரோஃபோன் அணுகல் முடக்கப்பட்டுள்ளது</translation>
 <translation id="8904787158537906492">கிளிப்போர்டுக்கு இணைப்பு நகலெடுக்கப்பட்டது</translation>
@@ -9507,7 +9508,7 @@
 <translation id="9205396811802112046">இரட்டைக் காட்சியை ஒழுங்கமைக்கும் - தற்போது மேற்புறக் காட்சி உள்ளது</translation>
 <translation id="9207434080086272167">வெயில்</translation>
 <translation id="9207669213427469593">திரைப் பிரிப்பு அம்சத்தைப் பயன்படுத்த நீங்கள் சாளரத்தை ஒரு பக்கத்திற்கு நகர்த்தினால் மறுபக்கத்திற்கான சாளரப் பரிந்துரைகள் காட்டப்படும்</translation>
-<translation id="9207990187617864000">artificial, intelligence, writing, aid, helper, search, assistant, chat, query, prompt, Gemini, AI</translation>
+<translation id="9207990187617864000">செயற்கை நுண்ணறிவு, எழுதுதல், உதவி, உதவியாளர், தேடல், உரையாடல், வினவல், ப்ராம்ப்ட், Gemini, AI</translation>
 <translation id="9212565256020141627">Gemini உடன் படத்தைப் பகிர முடியவில்லை. மீண்டும் முயலவும் அல்லது வேறொரு படத்தைப் பகிரவும்.</translation>
 <translation id="9214695392875603905">கப்கேக்</translation>
 <translation id="9215293857209265904">"<ph name="EXTENSION_NAME" />" சேர்க்கப்பட்டது</translation>

@@ -6290,6 +6290,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6466936665940546351">Pokud chcete přidávat hesla a mít je pomocí svého účtu Google na všech zařízeních, ověřte svou totožnost</translation>
 <translation id="6467230443178397264">Zkontrolovat soubor <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">Optimalizovat videa na celou obrazovku</translation>
+<translation id="6467327465309816244">Používejte Gemini opatrně a <ph name="BEGIN_LINK1" />bezpečně<ph name="LINK_END1" />. Může se dopouštět chyb, které mohou vést k <ph name="BEGIN_LINK2" />neočekávaným následkům<ph name="LINK_END2" />, například v podobě nákupů.</translation>
 <translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> pak může:</translation>
 <translation id="6468485451923838994">Písma</translation>
 <translation id="6468773105221177474">Počet souborů: <ph name="FILE_COUNT" /></translation>

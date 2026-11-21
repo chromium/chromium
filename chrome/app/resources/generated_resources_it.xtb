@@ -1535,7 +1535,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2327920026543055248">Inserisci il carattere <ph name="CHARACTER" /> di <ph name="TOTAL" /></translation>
 <translation id="2328474416100889417">Tutte le persone perderanno immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />" e tutti i link di invito verranno disattivati</translation>
 <translation id="2328773543844041445">Espandi automaticamente le schede al passaggio del mouse</translation>
-<translation id="232936259653692697">Chiedi a Gemini qualsiasi cosa mentre navighi e ricevi risposte basate su file e servizi della tua organizzazione, il tutto con protezioni a livello aziendale</translation>
+<translation id="232936259653692697">Chiedi a Gemini qualsiasi cosa mentre navighi e ricevi risposte fondate su file e servizi della tua organizzazione, il tutto con protezioni a livello aziendale</translation>
 <translation id="2330182457402792918">Seleziona i file che questo sito può leggere</translation>
 <translation id="2332115969598251205">Impossibile caricare i dispositivi salvati in <ph name="PRIMARY_EMAIL" />. Controlla la connessione a Internet e riprova.</translation>
 <translation id="2332131598580221120">Visualizza nello store</translation>
@@ -4072,7 +4072,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4481467543947557978">service worker</translation>
 <translation id="4482990632723642375">Scheda chiusa di recente</translation>
 <translation id="4486333480498805415">Precisione della localizzazione</translation>
-<translation id="4487416356987296988">Visita Google Wallet per controllare le <ph name="BEGIN_LINK1" />preferenze relative a dati e privacy<ph name="END_LINK1" /> o gestire <ph name="BEGIN_LINK2" />metodi di pagamento<ph name="END_LINK2" /> e <ph name="BEGIN_LINK3" />tessere<ph name="END_LINK3" /></translation>
+<translation id="4487416356987296988">Visita Google Wallet per controllare le <ph name="BEGIN_LINK1" />preferenze per dati e privacy<ph name="END_LINK1" /> o gestire <ph name="BEGIN_LINK2" />metodi di pagamento<ph name="END_LINK2" /> e <ph name="BEGIN_LINK3" />tessere<ph name="END_LINK3" /></translation>
 <translation id="4488257340342212116">Possono utilizzare la videocamera</translation>
 <translation id="4490798467014431984">Le estensioni non sono consentite su questo sito</translation>
 <translation id="449126573531210296">Cripta le password sincronizzate con il tuo Account Google</translation>
@@ -6293,6 +6293,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6466936665940546351">Verifica la tua identità per aggiungere password e sincronizzarle su tutti i dispositivi con il tuo Account Google</translation>
 <translation id="6467230443178397264">Analizza il file <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">Ottimizza video a schermo intero</translation>
+<translation id="6467327465309816244">Usa Gemini con attenzione e <ph name="BEGIN_LINK1" />in modo sicuro<ph name="LINK_END1" />. Può fare errori e produrre <ph name="BEGIN_LINK2" />risultati imprevisti<ph name="LINK_END2" />, ad esempio azioni di acquisto.</translation>
 <translation id="6467377768028664108">Su <ph name="DEVICE_TYPE" />:</translation>
 <translation id="6468485451923838994">Caratteri</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> file</translation>
@@ -8940,7 +8941,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8725066075913043281">Riprova</translation>
 <translation id="8725178340343806893">Preferiti/Segnalibri</translation>
 <translation id="87254326763805752">Conferma passkey</translation>
-<translation id="8725492688185786791">Chiedi a Gemini qualsiasi cosa mentre navighi e ricevi risposte basate su file e servizi della tua organizzazione</translation>
+<translation id="8725492688185786791">Chiedi a Gemini qualsiasi cosa mentre navighi e ricevi risposte fondate su file e servizi della tua organizzazione</translation>
 <translation id="8727751378406387165">Invia <ph name="BEGIN_LINK1" />metadati di compilazione automatica<ph name="END_LINK1" />
           <ph name="LINE_BREAK" />
           (i dati di compilazione automatica non verranno condivisi)</translation>

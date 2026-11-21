@@ -256,7 +256,7 @@
 <translation id="2981113813906970160">Hiện con trỏ chuột lớn</translation>
 <translation id="2989123969927553766">Tăng tốc độ cuộn chuột</translation>
 <translation id="3000461861112256445">Đơn âm</translation>
-<translation id="3001614333383288217">{COUNT,plural, =0{Không có phím nào được tuỳ chỉnh}=1{Có 1 phím được tuỳ chỉnh}other{Có {COUNT} phím được tuỳ chỉnh}}</translation>
+<translation id="3001614333383288217">{COUNT,plural, =0{Không có phím nào được tuỳ chỉnh}=1{Có 1 phím được tuỳ chỉnh}one{{COUNT} customized keys}other{Có {COUNT} phím được tuỳ chỉnh}}</translation>
 <translation id="3004385386820284928">Tuỳ chỉnh các phím trên bàn phím</translation>
 <translation id="3009178788565917040">Thiết bị ra</translation>
 <translation id="3009352964623081324">Nhấn tổ hợp phím Tìm kiếm + O, sau đó nhấn S. Dùng để cài đặt, quản lý và tùy chỉnh giọng nói.</translation>

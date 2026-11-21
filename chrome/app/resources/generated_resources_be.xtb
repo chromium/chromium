@@ -1790,7 +1790,7 @@
 <translation id="2546302722632337735">Не дазваляць сайтам выкарыстоўваць ідэнтыфікатары для прайгравання абароненае змесціва</translation>
 <translation id="2548347166720081527">Дадзены дазвол (<ph name="PERMISSION" />)</translation>
 <translation id="2548545707296594436">Скінуць кэш профілю eSIM-карты</translation>
-<translation id="2549960622681003635">{COUNT,plural, =1{Паглядзець яшчэ 1 укладку}one{Паглядзець яшчэ # укладку}few{Паглядзець яшчэ # укладкі}many{Паглядзець яшчэ # укладкі}other{Паглядзець яшчэ # укладкі}}</translation>
+<translation id="2549960622681003635">{COUNT,plural, =1{Паглядзець яшчэ 1 укладку}one{Паглядзець яшчэ # укладку}few{Паглядзець яшчэ # укладкі}many{Паглядзець яшчэ # укладак}other{Паглядзець яшчэ # укладкі}}</translation>
 <translation id="2549985041256363841">Пачаць запіс</translation>
 <translation id="2550212893339833758">Памяць падпампоўвання</translation>
 <translation id="2550596535588364872">Дазволіць пашырэнню "<ph name="EXTENSION_NAME" />" адкрыць файл "<ph name="FILE_NAME" />"?</translation>
@@ -6294,6 +6294,7 @@
 <translation id="6466936665940546351">Каб дадаваць паролі і атрымліваць доступ да іх на ўсіх прыладах, дзе вы ўвайшлі ў свой Уліковы запіс Google, патрабуецца спраўджанне асобы</translation>
 <translation id="6467230443178397264">Сканіраваць файл "<ph name="FILE_NAME" />"</translation>
 <translation id="6467304607960172345">Аптымізацыя поўнаэкраннага відэа</translation>
+<translation id="6467327465309816244">Выкарыстоўвайце Gemini ўважліва і <ph name="BEGIN_LINK1" />бяспечна<ph name="LINK_END1" />. Штучны інтэлект можа рабіць памылкі і прыводзіць да <ph name="BEGIN_LINK2" />нечаканых вынікаў<ph name="LINK_END2" />, напрыклад да купляў.</translation>
 <translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> можа выконваць наступныя дзеянні:</translation>
 <translation id="6468485451923838994">Шрыфты</translation>
 <translation id="6468773105221177474">Файлаў: <ph name="FILE_COUNT" /></translation>

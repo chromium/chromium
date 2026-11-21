@@ -1874,7 +1874,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2628258844236035475">¿Quitar dirección de casa de Autocompletar de Chrome?</translation>
 <translation id="2628770867680720336">Para habilitar la depuración ADB, deben restablecerse los ajustes de fábrica de este Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="2628874386573004005">Iniciar nueva conversación con Gemini</translation>
-<translation id="2629058811622993283">Compartir también el audio de la aplicación (de todas sus ventanas y aplicaciones relacionadas)</translation>
+<translation id="2629058811622993283">Compartir también el audio de la app (de todas sus ventanas y apps relacionadas)</translation>
 <translation id="2629227353894235473">Desarrollar aplicaciones de Android</translation>
 <translation id="2630703150574465936">Has permitido que Gemini inicie sesión automáticamente en estos sitios y aplicaciones con tus cuentas</translation>
 <translation id="2632176111713971407">Los sitios pueden solicitar permiso para desplazarse por las pestañas compartidas y ampliarlas</translation>
@@ -6296,6 +6296,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6466936665940546351">Verifica que eres tú para añadir contraseñas y acceder a ellas desde todos los dispositivos con tu cuenta de Google</translation>
 <translation id="6467230443178397264">Analizar <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">Optimizar vídeos en pantalla completa</translation>
+<translation id="6467327465309816244">Usa Gemini con cuidado y de forma <ph name="BEGIN_LINK1" />segura<ph name="LINK_END1" />. Puede cometer errores y producir <ph name="BEGIN_LINK2" />resultados inesperados<ph name="LINK_END2" />, como compras.</translation>
 <translation id="6467377768028664108">Tu <ph name="DEVICE_TYPE" /> puede:</translation>
 <translation id="6468485451923838994">Fuentes</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> archivos</translation>

@@ -649,6 +649,7 @@
 <translation id="2941680850471407949">查看来源</translation>
 <translation id="2952278131021475699">智能镜头拍照搜索</translation>
 <translation id="2953821385349876107">选择其他 Google 账号</translation>
+<translation id="2957817184363338604">您的对话会保存在 Gemini 历史记录中。历史记录包括您的音频、Gemini Live 视频和屏幕共享内容、您与 Gemini 共享的内容（例如提示词、<ph name="BEGIN_LINK" />附件<ph name="END_LINK" />和<ph name="BEGIN_LINK" />屏幕内容<ph name="END_LINK" />）、Gemini 的回答、任务和工具调用、反馈、您通过 Gemini 访问的网站中的信息、产品使用情况数据、设备的大致位置、IP 地址，以及 Google 账号中的住址或工作地址。其中还可能包括您关联到 Gemini 的应用中的数据。</translation>
 <translation id="2962516096219646456">查看所有自动填充数据</translation>
 <translation id="2965594942405840553">此操作无法撤销</translation>
 <translation id="2969979262385602596">登录失败，请稍后重试。</translation>
@@ -915,7 +916,7 @@
 <translation id="386224966259596343">下次您填写相关表单时，可选择将此信息保存到 Google 钱包。</translation>
 <translation id="3868495844258915202">显示完整网址</translation>
 <translation id="3875783148670536197">操作步骤</translation>
-<translation id="3878657761594430423">动作条抓取器</translation>
+<translation id="3878657761594430423">面板拖拽条</translation>
 <translation id="3884810423191119660">安全保存密码，轻松登录网站和应用</translation>
 <translation id="3885587018298784481">加入家人群组</translation>
 <translation id="3888230626190453136">试试无痕浏览</translation>
@@ -1023,7 +1024,7 @@
 <translation id="4196758674971560031">您创建的标签页分组会保存在“标签页分组”部分，并在您的所有设备上更新。</translation>
 <translation id="4197456013861852807">{count,plural, =1{有 {count} 项内容会仅保存到此设备上。若要在其他设备上使用，请将其保存到您的 Google 账号 {email}。}other{有 {count} 项内容会仅保存到此设备上。若要在其他设备上使用，请将其保存到您的 Google 账号 {email}。}}</translation>
 <translation id="4207873326995387292">浏览器信息</translation>
-<translation id="421070604241073551">当此设置处于开启状态时，数据会保存在您的 Google 账号中。当此设置处于关闭状态时，数据只会保存到此设备上。</translation>
+<translation id="421070604241073551">开启时，数据将保存到您的 Google 账号。关闭时，数据仅保存在此设备上。</translation>
 <translation id="4224534474590365556">要关闭超过 99 个闲置标签页吗？</translation>
 <translation id="422474357428465195">您有多个密码问题，这可能会给您带来安全风险。</translation>
 <translation id="422477017457571619">根据系统向 Google 发送的浏览数据，实时提供 AI 赋能的保护，防范危险的网站、下载内容和扩展程序</translation>
@@ -1369,7 +1370,7 @@
 <translation id="5217245356412073535">您可在“设置”&gt;“内容设置”中将默认网站视图改为桌面版视图</translation>
 <translation id="5217329997012062137">使用 Google 智能镜头时，相关页面的屏幕截图将会发送给 Google。</translation>
 <translation id="5220945116117011963">根据日期创建日历活动</translation>
-<translation id="5222676887888702881">退出</translation>
+<translation id="5222676887888702881">退出账号</translation>
 <translation id="5225388483876575107">A</translation>
 <translation id="5225463052809312700">开启摄像头</translation>
 <translation id="5229315183665181733">修改网站</translation>
@@ -1870,7 +1871,7 @@
 <translation id="672735642903863329">在所有设备上获取保存的书签、密码等信息。</translation>
 <translation id="6729493062119577923">共享标签页分组活动记录</translation>
 <translation id="6732087373923685049">摄像头</translation>
-<translation id="6746338529702829275">检查您的账号数据</translation>
+<translation id="6746338529702829275">查看您的账号数据</translation>
 <translation id="6749473226660745022">照片</translation>
 <translation id="6750456911389438250">{count,plural, =1{已导入 {count} 项历史记录}other{已导入 {count} 项历史记录}}</translation>
 <translation id="6751817018972413719">{count,plural, =1{键盘上方显示了 {count} 个凭证选项。}other{键盘上方显示了 {count} 个凭证选项。}}</translation>
@@ -2005,7 +2006,7 @@
 <translation id="7173114856073700355">打开“设置”</translation>
 <translation id="7173721738069475737">{count,plural, =1{书签已保存}other{{count} 个书签已保存}}</translation>
 <translation id="7176183551031110427">缩小</translation>
-<translation id="7186568385131859684">控制 Google 服务如何使用浏览记录及您的其他数据</translation>
+<translation id="7186568385131859684">控制 Google 服务如何搭配使用浏览记录与其他数据</translation>
 <translation id="719133302483559673">管理您的兴趣和偏好设置。</translation>
 <translation id="7191382490098297347">相机胶卷中的图片</translation>
 <translation id="7203150201908454328">已展开</translation>

@@ -88,7 +88,7 @@
 <translation id="1258491128795710625">O que há de novo</translation>
 <translation id="126093867734601535">Reajusta a altura da página.</translation>
 <translation id="1262724000444746916">Ocultar "Adicionar aos favoritos"</translation>
-<translation id="1263231323834454256">Lista de Leitura</translation>
+<translation id="1263231323834454256">Lista de leitura</translation>
 <translation id="1263433075299269530">Sua última guia aberta</translation>
 <translation id="1264156759663453185">O texto selecionado é muito grande para a tradução parcial.</translation>
 <translation id="1264974993859112054">Esportes</translation>
@@ -649,6 +649,7 @@
 <translation id="2941680850471407949">Ver fontes</translation>
 <translation id="2952278131021475699">Pesquisa com a câmera do Lens</translation>
 <translation id="2953821385349876107">Escolher outra Conta do Google</translation>
+<translation id="2957817184363338604">Suas conversas serão salvas no Histórico do Gemini. Ele inclui vídeos e compartilhamentos de tela do Gemini Live, seus áudios e conteúdo compartilhado com o Gemini (como comandos, <ph name="BEGIN_LINK" />anexos<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />telas<ph name="END_LINK" />), assim como as respostas, tarefas e chamadas de ferramentas do Gemini, feedback, informações de sites acessados com o Gemini, dados de uso do produto, a região do seu dispositivo, o endereço IP e os endereços de casa ou do trabalho na sua Conta do Google. Ele também pode incluir dados de apps que você conecta ao Gemini.</translation>
 <translation id="2962516096219646456">Mostrar todos os dados de preenchimento automático</translation>
 <translation id="2965594942405840553">Não é possível desfazer essa ação</translation>
 <translation id="2969979262385602596">Falha durante o login. Tente novamente mais tarde.</translation>
@@ -1044,7 +1045,7 @@
 <translation id="4271575273430679392">Toque duas vezes e mantenha para abrir o histórico</translation>
 <translation id="4272631900155121838">Para ler um QR code, ative a câmera nas configurações</translation>
 <translation id="4277990410970811858">Navegação Segura</translation>
-<translation id="4278390842282768270">Permitido</translation>
+<translation id="4278390842282768270">Permitida</translation>
 <translation id="4279431713294750185">Deslize a borda da tela para avançar.</translation>
 <translation id="4282944936010261425">Sem problemas de segurança para corrigir.</translation>
 <translation id="4286718549648564014">Endereço movido para sua conta <ph name="USER_EMAIL" /></translation>
@@ -1058,7 +1059,7 @@
 <translation id="4297031046690565608">Inserir manualmente</translation>
 <translation id="4297418774230471285">Selecionar informações pessoais</translation>
 <translation id="4302061870579014542">Definir posição</translation>
-<translation id="4304713468139749426">Gerenciador de Senhas</translation>
+<translation id="4304713468139749426">Gerenciador de senhas</translation>
 <translation id="4309403553630140242">Toque duas vezes para ver mais informações</translation>
 <translation id="4310738531374808763">Personalize sua página inicial</translation>
 <translation id="4320848494125124980">Recentes</translation>
@@ -1725,7 +1726,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6341140761912903432">Fazer login com a conta gerenciada ajuda a separar sua navegação relacionada à organização (incluindo guias, histórico e senhas) da sua outra navegação.
 
        Seus dados de navegação atuais vão ser mantidos separados. Para isso, saia da conta gerenciada.</translation>
-<translation id="6342069812937806050">Neste instante</translation>
+<translation id="6342069812937806050">Agora</translation>
 <translation id="6344533709188026708">Um espaço só para o trabalho</translation>
 <translation id="6347953390226388422">{count,plural, =1{Esse endereço será excluído da sua Conta do Google (<ph name="USER_EMAIL" />) e deste dispositivo.}one{Esse endereço será excluído da sua Conta do Google (<ph name="USER_EMAIL" />) e deste dispositivo.}other{Esses endereços serão excluídos da sua Conta do Google (<ph name="USER_EMAIL" />) e deste dispositivo.}}</translation>
 <translation id="634878792104344809">Sincronize senhas, histórico e muito mais em todos os seus dispositivos</translation>
@@ -2186,7 +2187,7 @@ Você pode reiniciar a qualquer momento.</translation>
 <translation id="7730937523779541003">Página "Nova guia" simplificada aplicada</translation>
 <translation id="7733646263819020771"><ph name="BOOKMRK_NAME" />. Somente neste dispositivo.</translation>
 <translation id="7737550920399185748">As fotos da página inicial da biblioteca de fotos não serão sincronizadas entre seus dispositivos.</translation>
-<translation id="7738120385185846461">Informar um problema…</translation>
+<translation id="7738120385185846461">Informar problema…</translation>
 <translation id="7744192722284567281">Encontrada em uma violação de dados</translation>
 <translation id="7749790401023484470">Você não selecionou nenhum texto.</translation>
 <translation id="7753518506804173312">Fixe seus sites favoritos para acessá-los com mais facilidade depois</translation>

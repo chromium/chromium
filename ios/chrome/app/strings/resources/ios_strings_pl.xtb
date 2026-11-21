@@ -66,7 +66,7 @@
 <translation id="1165039591588034296">Błąd</translation>
 <translation id="1172898394251786223">Następne pole</translation>
 <translation id="1179890706672152411">Pamięć jest pełna</translation>
-<translation id="1181037720776840403">Usuń</translation>
+<translation id="1181037720776840403">Cofnij</translation>
 <translation id="1190609913194133056">Centrum powiadomień</translation>
 <translation id="1191987227666124897">Żądanie rezygnacji</translation>
 <translation id="1196534270480620381">Przygotuj krótkie podsumowanie tej strony</translation>
@@ -649,6 +649,7 @@
 <translation id="2941680850471407949">Wyświetl źródła</translation>
 <translation id="2952278131021475699">Wyszukiwanie za pomocą aparatu i Obiektywu</translation>
 <translation id="2953821385349876107">Wybierz inne konto Google</translation>
+<translation id="2957817184363338604">Twoje czaty będą zapisywane w historii w Gemini. Obejmuje ona Twoje nagrania audio, obrazy na żywo i udostępnianie ekranu w Gemini Live, treści udostępniane Gemini (takie jak prompty, <ph name="BEGIN_LINK" />załączniki<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />ekrany<ph name="END_LINK" />), odpowiedzi Gemini, zadania i wywołania narzędzi, opinie, informacje ze stron internetowych, które odwiedzasz za pomocą Gemini, dane o korzystaniu z usługi, ogólną lokalizację urządzenia, adres IP oraz zapisany na koncie Google adres domowy lub służbowy. Może też zawierać dane z aplikacji, które połączysz z Gemini.</translation>
 <translation id="2962516096219646456">Zobacz wszystkie dane autouzupełniania</translation>
 <translation id="2965594942405840553">Nie można tego cofnąć</translation>
 <translation id="2969979262385602596">Nie udało się zalogować. Spróbuj ponownie później.</translation>

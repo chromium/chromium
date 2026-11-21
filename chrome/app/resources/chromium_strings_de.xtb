@@ -256,6 +256,7 @@
 <translation id="3561853857681580870">Wenn du deinen Bildschirm teilen möchtest, musst du in den Systemeinstellungen die Bildschirmaufzeichnung für Chromium zulassen.</translation>
 <translation id="3597003331831379823">Die Einrichtung konnte nicht mit erhöhten Berechtigungen ausgeführt werden. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3600428265489994557">In Chromium anmelden</translation>
+<translation id="36205707939705218"><ph name="USER_NAME" />, <ph name="EMAIL" />. Mit Abo.</translation>
 <translation id="3639635944603682591">Die Browserdaten dieser Person werden von diesem Gerät gelöscht. Wenn du die Daten wiederherstellen möchtest, melde dich als <ph name="USER_EMAIL" /> in Chromium an.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Ein neues Update für Chromium ist verfügbar und wird installiert, sobald du den Browser neu startest.}=1{Ein neues Update für Chromium ist verfügbar und wird installiert, sobald du den Browser neu startest. Dein Inkognitofenster wird nicht wieder geöffnet.}other{Ein neues Update für Chromium ist verfügbar und wird installiert, sobald du den Browser neu startest. Deine # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
 <translation id="3667616615096815454">Installation nicht möglich. Die App ist dem Server nicht bekannt.</translation>
@@ -570,6 +571,7 @@ Einige Funktionen stehen möglicherweise nicht zur Verfügung. Gib bitte ein and
 <translation id="67706546131546258">Chromium empfiehlt, diese Datei zu scannen, da sie gefährlich sein könnte.</translation>
 <translation id="6779406956731413166">ChromiumOS wird durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
 <translation id="6804256634866838775">Aktive Suche schließen</translation>
+<translation id="6818170431027022139"><ph name="USER_NAME_OR_EMAIL" />. Mit Abo.</translation>
 <translation id="6831043979455480757">Übersetzen</translation>
 <translation id="6847869444787758381">Chromium wird dich informieren, sollten deine Passwörter nicht mehr sicher sein</translation>
 <translation id="684888714667046800">Internetverbindung kann nicht hergestellt werden. Wenn du eine Firewall verwendest, achte darauf, dass <ph name="PRODUCT_EXE_NAME" /> auf der Zulassungsliste steht.</translation>

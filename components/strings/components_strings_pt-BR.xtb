@@ -1987,7 +1987,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="4277529130885813215">Usar outro dispositivo</translation>
 <translation id="4277937682389409325">Endereço local</translation>
 <translation id="4278090321534187713">Os cartões não aceitos por esta loja estão desativados</translation>
-<translation id="4278390842282768270">Permitido</translation>
+<translation id="4278390842282768270">Permitida</translation>
 <translation id="4281245629646759298">Amarelo-claro</translation>
 <translation id="4281998142035485137">{0,plural, =1{Abrir arquivo confidencial?}one{Abrir arquivo confidencial?}other{Abrir arquivos confidenciais?}}</translation>
 <translation id="4284885181066817063">Bloqueado por <ph name="DOMAIN" /></translation>
@@ -3224,7 +3224,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="6338645927051849741">Senha • Gerenciador de senhas do Google</translation>
 <translation id="6340739886198108203">A política do administrador não recomenda fazer capturas de tela ou gravações quando há conteúdo confidencial visível:</translation>
 <translation id="6341434961864773665">{0,plural, =1{A política do administrador não recomenda fazer upload do arquivo para este local: <ph name="DESTINATION_NAME" />}one{A política do administrador não recomenda fazer upload do arquivo para este local: <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda fazer upload dos arquivos para este local: <ph name="DESTINATION_NAME" />}}</translation>
-<translation id="6342069812937806050">Neste instante</translation>
+<translation id="6342069812937806050">Agora</translation>
 <translation id="6342171901363060580">Enviamos este alerta porque o site não é compatível com HTTPS e você está no modo de navegação anônima. <ph name="LEARN_MORE" /></translation>
 <translation id="634500758737709758">Rotas</translation>
 <translation id="6345664705388712774">Adicionar imagens à sua pesquisa</translation>

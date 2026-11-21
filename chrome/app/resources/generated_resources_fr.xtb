@@ -1455,7 +1455,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="225163402930830576">Actualiser les réseaux</translation>
 <translation id="2252017960592955005">Protection anti-regard (bêta)</translation>
 <translation id="2253318212986772520">Impossible de récupérer le PPD pour <ph name="PRINTER_NAME" />.</translation>
-<translation id="2253927598983295051">Choisissez ce qui doit être partagé avec <ph name="APP_NAME" /></translation>
+<translation id="2253927598983295051">Choisissez ce que vous partagez avec <ph name="APP_NAME" /></translation>
 <translation id="2255317897038918278">Enregistrement des informations de date Microsoft</translation>
 <translation id="2256049182613019001">Fermer le mode Lecture (<ph name="SHORTCUT" />)</translation>
 <translation id="2256115617011615191">Redémarrer maintenant</translation>
@@ -6295,6 +6295,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6466936665940546351">Validez votre identité pour ajouter des mots de passe et les utiliser sur tous les appareils associés à votre compte Google</translation>
 <translation id="6467230443178397264">Scanner <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">Optimiser les vidéos en plein écran</translation>
+<translation id="6467327465309816244">Utilisez Gemini avec précaution et <ph name="BEGIN_LINK1" />de façon sécurisée<ph name="LINK_END1" />. Il peut faire des erreurs et produire des <ph name="BEGIN_LINK2" />résultats inattendus<ph name="LINK_END2" />, tels que des achats.</translation>
 <translation id="6467377768028664108">Votre <ph name="DEVICE_TYPE" /> pourra ensuite :</translation>
 <translation id="6468485451923838994">Polices</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> fichiers</translation>

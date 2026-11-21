@@ -256,7 +256,7 @@
 <translation id="2981113813906970160">Mostrar cursor do rato grande</translation>
 <translation id="2989123969927553766">Aceleración de desprazamento do rato</translation>
 <translation id="3000461861112256445">Audio mono</translation>
-<translation id="3001614333383288217">{COUNT,plural, =0{Ningunha tecla personalizada}=1{1 tecla personalizada}other{{COUNT} teclas personalizadas}}</translation>
+<translation id="3001614333383288217">{COUNT,plural, =0{Ningunha tecla personalizada}=1{1 tecla personalizada}many{{COUNT} customized keys}other{{COUNT} teclas personalizadas}}</translation>
 <translation id="3004385386820284928">Personalizar teclas do teclado</translation>
 <translation id="3009178788565917040">Saída</translation>
 <translation id="3009352964623081324">Buscar + O e despois S. Utilízao para instalar, xestionar e personalizar as voces.</translation>

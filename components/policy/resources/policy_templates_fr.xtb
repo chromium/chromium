@@ -3704,7 +3704,7 @@ Si <ph name="NTPCARDSVISIBLE" /> est désactivé, la carte Outlook ne s'affiche 
 <translation id="3286159327013237833">Activer les clics automatiques sur l'écran de connexion</translation>
 <translation id="3286515980166695377">Cette règle a été abandonnée dans M153 et n'a aucun effet à partir de M159. Les signatures ponctuelles pour les applis natives créées lors de l'installation d'une progressive web app (PWA) sont désormais activées de manière permanente sur <ph name="MAC_OS_NAME" />. Cela garantit que chaque appli installée a une identité unique pour les composants système <ph name="MAC_OS_NAME" />.
 
-Si cette règle est activée ou qu'elle n'est pas configurée, les signatures ponctuelles sont autorisées pour l'appli native créée lors de l'installation d'une progressive web app (PWA). Cela garantit que chaque appli installée a une identité unique pour les composants système <ph name="MAC_OS_NAME" />.
+Si cette règle est activée ou si elle n'est pas configurée, les signatures ponctuelles sont autorisées pour l'appli native créée lors de l'installation d'une progressive web app (PWA). Cela garantit que chaque appli installée a une identité unique pour les composants système <ph name="MAC_OS_NAME" />.
 
 Si cette règle est désactivée, toutes les applis natives créées lors de l'installation de PWA auront la même identité. Cela peut interférer avec la fonctionnalité <ph name="MAC_OS_NAME" />.
 

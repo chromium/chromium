@@ -335,7 +335,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1260451001046713751">Sempre permitir pop-ups e redirecionamentos de <ph name="HOST" /></translation>
 <translation id="1262395978737369974">Sempre permitir a otimização de JavaScript</translation>
 <translation id="1262564987698748643">Os sites podem pedir para substituir a entrada do teclado</translation>
-<translation id="1263231323834454256">Lista de Leitura</translation>
+<translation id="1263231323834454256">Lista de leitura</translation>
 <translation id="126387934568812801">Incluir esta captura de tela e os títulos das guias abertas</translation>
 <translation id="1264083566674525434">Editar permissões do site</translation>
 <translation id="1265094893042958831">Gerando sugestões para esta página…</translation>
@@ -343,7 +343,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1267081565119405990">Depois de fazer uma captura de tela ou pesquisar na tela, mostre mais ações, como adicionar ao Google Agenda, criar um documento Google e muito mais.</translation>
 <translation id="1267649802567297774">Imagem <ph name="INDEX" /> de <ph name="SUBJECT" /> gerada no estilo <ph name="STYLE" /> com o clima <ph name="MOOD" />.</translation>
 <translation id="1272079795634619415">Parar</translation>
-<translation id="1272508081857842302">Abertura de <ph name="BEGIN_LINK" />links compatíveis<ph name="END_LINK" /></translation>
+<translation id="1272508081857842302">Abrir <ph name="BEGIN_LINK" />links compatíveis<ph name="END_LINK" /></translation>
 <translation id="1274721046703404848">Gerencie a conexão entre os serviços da Pesquisa e os apps do Google Workspace, como o Google Drive</translation>
 <translation id="1274997165432133392">Cookies e outros dados de sites</translation>
 <translation id="1277020343994096713">Crie um PIN diferente do atual</translation>
@@ -3850,7 +3850,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4276390967705106170">Abrir em uma nova guia do navegador</translation>
 <translation id="4276598757692536305">PPD da impressora</translation>
 <translation id="4277434192562187284">Fonte de configuração XML</translation>
-<translation id="4278390842282768270">Permitido</translation>
+<translation id="4278390842282768270">Permitida</translation>
 <translation id="4279129444466079448">Você pode instalar até <ph name="PROFILE_LIMIT" /> perfis de eSIM no dispositivo. Para adicionar outro perfil, remova um existente.</translation>
 <translation id="427987768447457592">Novo grupo de guias</translation>
 <translation id="4280325816108262082">O dispositivo será desconectado automaticamente quando estiver desligado ou não estiver em uso</translation>
@@ -3886,7 +3886,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4301697210743228350">{COUNT,plural, =1{# contato não está disponível. Para usar o recurso "<ph name="FEATURE_NAME" />" com esse contato, adicione o endereço de e-mail associado à Conta do Google dele.}one{# contato não está disponível. Para usar o recurso "<ph name="FEATURE_NAME" />" com esse contato, adicione o endereço de e-mail associado à Conta do Google dele.}other{# contatos não estão disponíveis. Para usar o recurso "<ph name="FEATURE_NAME" />" com esses contatos, adicione o endereço de e-mail associado à Conta do Google deles.}}</translation>
 <translation id="4303079906735388947">Configure um novo PIN para sua chave de segurança</translation>
 <translation id="430351398235329166">Mude a posição da barra de endereço para personalizar sua experiência de navegação</translation>
-<translation id="4304713468139749426">Gerenciador de Senhas</translation>
+<translation id="4304713468139749426">Gerenciador de senhas</translation>
 <translation id="4305817255990598646">Alternar</translation>
 <translation id="4306489587293957491">Inserir</translation>
 <translation id="4306810703452026910">O Chrome não vai mais marcar as notificações desse site como spam</translation>
@@ -6167,7 +6167,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6339668969738228384">Criar um novo perfil para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="6340071272923955280">Protocolo de impressão via Internet (IPPS)</translation>
 <translation id="6341850831632289108">Detectar sua localização física</translation>
-<translation id="6342069812937806050">Neste instante</translation>
+<translation id="6342069812937806050">Agora</translation>
 <translation id="6343003829431264373">Somente páginas pares</translation>
 <translation id="6343380106788901166">Use o microfone para conversar com o Gemini. Os áudios das conversas com o Gemini são salvos no histórico, se ele estiver ativado. Seus dados não são usados para treinar modelos de IA generativa.</translation>
 <translation id="6344170822609224263">Acessar lista de conexões de rede</translation>
@@ -6312,6 +6312,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6466936665940546351">Confirme sua identidade para adicionar senhas e acessá-las em todos os dispositivos com sua Conta do Google</translation>
 <translation id="6467230443178397264">Digitalizar <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">Otimizar vídeos em tela cheia</translation>
+<translation id="6467327465309816244">Use o Gemini com cuidado e <ph name="BEGIN_LINK1" />segurança<ph name="LINK_END1" />. Ele pode cometer erros e produzir <ph name="BEGIN_LINK2" />resultados inesperados<ph name="LINK_END2" />, como compras.</translation>
 <translation id="6467377768028664108">O <ph name="DEVICE_TYPE" /> poderá fazer os seguinte:</translation>
 <translation id="6468485451923838994">Fontes</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> arquivos</translation>

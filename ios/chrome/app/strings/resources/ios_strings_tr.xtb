@@ -649,6 +649,7 @@
 <translation id="2941680850471407949">Kaynakları göster</translation>
 <translation id="2952278131021475699">Lens Kamera ile Arama</translation>
 <translation id="2953821385349876107">Farklı bir Google Hesabı seçin</translation>
+<translation id="2957817184363338604">Sohbetleriniz Gemini Geçmişinize kaydedilir. Geçmiş; ses kayıtlarınızı, Gemini Live videolarını ve ekran paylaşımlarını, Gemini ile paylaştığınız bilgileri (ör. istemler, <ph name="BEGIN_LINK" />ekler<ph name="END_LINK" /> ve <ph name="BEGIN_LINK" />ekranlar<ph name="END_LINK" />), Gemini'ın yanıtlarını, görevleri ve araç çağrılarını, geri bildirimleri, Gemini ile ziyaret ettiğiniz web sitelerinden alınan bilgileri, ürün kullanım verilerini, cihazınızın yaklaşık konumunu, IP adresini ve Google Hesabınızdaki ev ya da iş adreslerini içerir. Gemini'a bağladığınız uygulamalardaki veriler de dahil edilebilir.</translation>
 <translation id="2962516096219646456">Tüm otomatik doldurma verilerini göster</translation>
 <translation id="2965594942405840553">Bu işlem geri alınamaz</translation>
 <translation id="2969979262385602596">Oturum açılamadı. Daha sonra tekrar deneyin.</translation>
@@ -1980,7 +1981,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="7080806333218412752">URL'leri kontrol etmek için Güvenli Tarama'ya gönderir. Ayrıca yeni tehditlerin keşfedilmesine yardımcı olmak için sayfalar, indirmeler, uzantı etkinliği ve sistem bilgilerinden küçük bir örnek gönderir. Sizi Google uygulamalarında korumak için oturumunuz açıkken bu verileri geçici olarak Google Hesabınıza bağlar.</translation>
 <translation id="7082853213442715471">Bu mod etkinleştirildiğinde, belirli web teknolojileri engellendiği için bazı web siteleri daha yavaş yüklenebilir veya düzgün çalışmayabilir.</translation>
 <translation id="7091023926159231962">{count,plural, =1{{count} şifre içe aktarılamadı}other{{count} şifre içe aktarılamadı}}</translation>
-<translation id="7095110968493193530"><ph name="EMAIL" /> için Google Şifre Yöneticisi'ne</translation>
+<translation id="7095110968493193530">Şifre, <ph name="EMAIL" /> için Google Şifre Yöneticisi'ne kaydedilecek</translation>
 <translation id="7097046145876891318">Adres çubuğunda fiyat geçmişine dokunarak zaman içindeki fiyat değişikliklerini görün</translation>
 <translation id="7102005569666697658">İndiriliyor… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menü → Ayarlar → Ödeme yöntemleri</translation>
@@ -2036,7 +2037,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="728025568708172005">Tura katılın</translation>
 <translation id="7280980607183752256">Bu dosya içe aktarılamıyor</translation>
 <translation id="7282197670900591579">Limon sarısı tema</translation>
-<translation id="7283937415134849498">Gemini, kişiye özel yardım sunmak için sohbetlerinizin bazı bölümleri, konumunuz ve diğer alakalı bilgiler dahil bazı verilerinizi Haritalar ve Uçuş Arama gibi diğer Google hizmetleriyle paylaşır. Daha sonra Gemini Geçmişinizi silseniz bile bu hizmetler, kendilerini geliştirmek amacıyla bu bilgileri kullanabilir. <ph name="BEGIN_LINK" />Gemini Uygulamaları Gizlilik Merkezi<ph name="END_LINK" />'nden daha fazla bilgi edinebilirsiniz.</translation>
+<translation id="7283937415134849498">Gemini, kişiye özel yardım sunmak için sohbetlerinizin bazı bölümleri, konumunuz ve diğer alakalı bilgiler dahil bazı verilerinizi Haritalar ve Uçuş Arama gibi diğer Google hizmetleriyle paylaşır. Daha sonra Gemini geçmişinizi silseniz bile bu hizmetler, kendilerini geliştirmek amacıyla bu bilgileri kullanabilir. <ph name="BEGIN_LINK" />Gemini Uygulamaları Gizlilik Merkezi<ph name="END_LINK" />'nden daha fazla bilgi edinebilirsiniz.</translation>
 <translation id="7293429513719260019">Dil seç</translation>
 <translation id="72961285530871072">Bu işlemle, Seviye Atla ilerlemeniz kalıcı olarak silinir ve Seviye Atla özelliği kullanım verileri artık profiliniz için Google'a gönderilmez.
 

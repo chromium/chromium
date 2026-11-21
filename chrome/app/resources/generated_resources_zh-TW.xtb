@@ -495,7 +495,7 @@
 <translation id="1426154609634610063">瞭解使用 Gemini 的風險</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="142655739075382478">「<ph name="APP_NAME" />」已遭封鎖</translation>
-<translation id="1428373049397869723">你可以在 Finder 或其他應用程式中，透過這個應用程式開啟及編輯支援的檔案。如要控管要在這個應用程式預設開啟哪些檔案，請<ph name="BEGIN_LINK" />進一步瞭解如何在裝置上設定預設應用程式<ph name="END_LINK" />。</translation>
+<translation id="1428373049397869723">在 Finder 或其他應用程式中，你可以透過這個應用程式開啟及編輯支援的檔案。如要控管哪些檔案預設開啟此應用程式，請參閱<ph name="BEGIN_LINK" />這篇文章<ph name="END_LINK" />，進一步瞭解如何在裝置上設定預設應用程式。</translation>
 <translation id="1428657116642077141">你已儲存這個網站的某個密碼的附註。如要查看該附註，請在搜尋列和網址列中選取「管理密碼」。</translation>
 <translation id="1429300045468813835">已全部清除</translation>
 <translation id="1430915738399379752">列印</translation>
@@ -1146,7 +1146,7 @@
 <translation id="1983612835086592681">你過去一週內曾開啟</translation>
 <translation id="1984087999855033707">電話號碼</translation>
 <translation id="1984417487208496350">無防護 (不建議)</translation>
-<translation id="198507684520034826">輔助說明</translation>
+<translation id="198507684520034826">說明</translation>
 <translation id="1986113927738155371">iPad</translation>
 <translation id="1986836014090708999">進階位置資訊設定</translation>
 <translation id="1987317783729300807">帳戶</translation>
@@ -1738,7 +1738,7 @@
 <translation id="2498539833203011245">最小化</translation>
 <translation id="2498765460639677199">最大</translation>
 <translation id="2500471369733289700">已封鎖權限，保護你的隱私</translation>
-<translation id="2500915336169200382">向 Gemini 提出有關「<ph name="SELECTION" />」的問題</translation>
+<translation id="2500915336169200382">問問 Gemini 有關「<ph name="SELECTION" />」的問題</translation>
 <translation id="2501173422421700905">憑證保留中</translation>
 <translation id="2501797496290880632">按下快速鍵</translation>
 <translation id="2502441965851148920">自動更新功能已啟用。您的管理員停用了手動更新功能。</translation>
@@ -2655,7 +2655,7 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{檔案}other{# 個檔案}}</translation>
 <translation id="3270965368676314374">讀取、變更及刪除你電腦中的相片、音樂及其他媒體</translation>
 <translation id="3275464924531706548">收合「<ph name="HEADER" />」</translation>
-<translation id="3275778913554317645">在視窗中開啟</translation>
+<translation id="3275778913554317645">以視窗開啟</translation>
 <translation id="3279092821516760512">指定聯絡人在附近時可與你分享內容。系統會先確認你是否同意，然後才會開始進行資料傳輸作業。</translation>
 <translation id="3280237271814976245">另存新檔(&amp;A)...</translation>
 <translation id="3280243678470289153">繼續使用 Chrome</translation>
@@ -6286,6 +6286,7 @@
 <translation id="6466936665940546351">驗證身分，即可在所有登入 Google 帳戶的裝置上新增及使用密碼</translation>
 <translation id="6467230443178397264">掃描「<ph name="FILE_NAME" />」</translation>
 <translation id="6467304607960172345">針對全螢幕影片進行最佳化處理</translation>
+<translation id="6467327465309816244">請以<ph name="BEGIN_LINK1" />安全方式<ph name="LINK_END1" />謹慎使用 Gemini。系統可能會出錯，並產生<ph name="BEGIN_LINK2" />不符預期的結果<ph name="LINK_END2" />，例如購物。</translation>
 <translation id="6467377768028664108">你的 <ph name="DEVICE_TYPE" /> 將可以：</translation>
 <translation id="6468485451923838994">字型</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> 個檔案</translation>
@@ -9352,7 +9353,7 @@
 <translation id="907972398081911688">自動變更外洩的密碼</translation>
 <translation id="9081543426177426948">無痕模式不會儲存你造訪的網站</translation>
 <translation id="9082750838489080452">應用程式：<ph name="APP_NAME" /></translation>
-<translation id="9084064520949870008">在視窗中開啟</translation>
+<translation id="9084064520949870008">以視窗開啟</translation>
 <translation id="9084383457260170045">隔離網頁應用程式可要求控制智慧卡讀卡機</translation>
 <translation id="9085256200913095638">複製所選分頁</translation>
 <translation id="9085446486797400519">攝影機存取權</translation>

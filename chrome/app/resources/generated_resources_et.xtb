@@ -6302,6 +6302,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="6466936665940546351">Kinnitage oma isik, et lisada paroole ja kasutada neid kõigis oma Google'i kontoga seotud seadmetes</translation>
 <translation id="6467230443178397264">Faili <ph name="FILE_NAME" /> skannimine</translation>
 <translation id="6467304607960172345">Optimeeri täisekraanrežiimis videoid</translation>
+<translation id="6467327465309816244">Kasutage Geminit ettevaatlikult ja <ph name="BEGIN_LINK1" />turvaliselt<ph name="LINK_END1" />. See võib teha vigu ja anda <ph name="BEGIN_LINK2" />ootamatuid tulemusi<ph name="LINK_END2" />, näiteks teha oste.</translation>
 <translation id="6467377768028664108">Seade <ph name="DEVICE_TYPE" /> saab seejärel teha järgmist.</translation>
 <translation id="6468485451923838994">Fondid</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> faili</translation>

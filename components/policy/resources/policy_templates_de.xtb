@@ -3702,6 +3702,13 @@ Wenn die Richtlinie <ph name="NTPCARDSVISIBLE" /> deaktiviert ist, wird die Outl
 <translation id="3284094172359247914">Verwendung der WebUSB API steuern</translation>
 <translation id="3285231260918855067">Konturdeckkraft des Texts auf dem Wasserzeichen von 0 (durchsichtig) bis 100 (undurchsichtig).</translation>
 <translation id="3286159327013237833">„Automatischer Klick“ auf dem Anmeldebildschirm aktivieren</translation>
+<translation id="3286515980166695377">Diese Richtlinie wurde in M153 eingestellt und hat ab M159 keine Auswirkungen mehr. Ad-hoc-Signaturen für native Anwendungen, die bei der Installation einer progressiven Webanwendung (PWA) erstellt werden, sind jetzt unter <ph name="MAC_OS_NAME" /> dauerhaft aktiviert. So wird sichergestellt, dass jede installierte Anwendung eine eindeutige Identität für <ph name="MAC_OS_NAME" />-Systemkomponenten hat.
+
+Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, ist die Verwendung von Ad-hoc-Signaturen für die native Anwendung erlaubt, die bei der Installation einer progressiven Webanwendung (PWA) erstellt wird. So wird sichergestellt, dass jede installierte Anwendung eine eindeutige Identität für <ph name="MAC_OS_NAME" />-Systemkomponenten hat.
+
+Wenn die Richtlinie deaktiviert ist, hat jede native Anwendung, die bei der Installation von progressiven Webanwendungen erstellt wird, dieselbe Identität. Dies kann die Funktionalität von <ph name="MAC_OS_NAME" /> beeinträchtigen.
+
+Deaktiviere die Richtlinie nur, wenn du eine Endpunkt-Sicherheitslösung verwendest, die Apps mit einer Ad‑hoc-Signatur blockiert.</translation>
 <translation id="3288595667065905535">Release-Kanal</translation>
 <translation id="3294430356898755483">Mit dieser Richtlinie können Administratoren eine Liste von Druckern für die Nutzer festlegen. Die Druckerauswahl wird angezeigt, wenn die Nutzer zum ersten Mal einen Druckauftrag ausführen.
 
@@ -5552,6 +5559,11 @@ Das Erhöhen über den Standardwert (128) erfolgt auf eigenes Risiko.
 
 Beachte, dass die erzwungenen Limits durch „<ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" />“ beeinflusst werden.</translation>
 <translation id="4528981768990874684">Funktion „<ph name="IP_PROTECTION_NAME" />“ deaktivieren.</translation>
+<translation id="4529292353296224032">Wenn die Richtlinie aktiviert ist, können keine Screenshots über Tastenkombinationen oder Erweiterungs-APIs aufgenommen werden. Ist die Richtlinie deaktiviert oder nicht konfiguriert, sind Screenshots zulässig.
+
+In den <ph name="PRODUCT_NAME" />-Versionen 155 bis 158 kann das Aktivieren dieser Richtlinie auch verhindern, dass Erweiterungen den Debugger über „chrome.debugger.attach()“ anhängen, z. B. wenn die Richtlinie „<ph name="CHROME_VARIATIONS_POLICY_NAME" />“ alle Varianten deaktiviert.
+
+Beachte, dass unter <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> und <ph name="LINUX_OS_NAME" /> Screenshots, die mit Betriebssystem- oder Drittanbieter-Apps aufgenommen wurden, weiterhin zulässig sind.</translation>
 <translation id="453031441196755904">Diese Richtlinie ist veraltet.</translation>
 <translation id="4531088355818260318">Mit dieser Richtlinie lässt sich eine Liste von Regeln definieren, um benutzerdefinierte HTTP-Header in Webanfragen einzuschleusen, die mit bestimmten URL-Mustern übereinstimmen. Header, die durch diese Richtlinie festgelegt werden, haben Vorrang vor Headern, die ursprünglich bereits in der Anfrage vorhanden waren, sowie vor Änderungen, die von Nutzern oder Erweiterungen vorgenommen werden.
 
@@ -5713,6 +5725,21 @@ Diese Richtlinie hat keine Auswirkungen, wenn „<ph name="PROVISION_MANAGED_CLI
       Wird die Richtlinie auf „false“ gesetzt, sind Netzwerkpaketaufnahmen auf dem Gerät nicht möglich.</translation>
 <translation id="4599810650416623373">JavaScript-Optimierungen auf diesen Websites blockieren</translation>
 <translation id="4600786265870346112">Großen Cursor aktivieren</translation>
+<translation id="460264931744856609">Mit dieser Richtlinie werden Einstellungen zur Erweiterungsverwaltung für <ph name="PRODUCT_NAME" /> festgelegt, darunter Einstellungen, die von anderen auf Erweiterungen bezogenen Richtlinien geregelt werden.
+
+Mit dieser Richtlinie wird eine Erweiterungs-ID oder eine Update-URL nur ihrer bestimmten Einstellung zugeordnet. Eine Standardkonfiguration kann für die Spezial-ID „<ph name="DEFAULT_SCOPE" />“ festgelegt werden, die auf alle Erweiterungen angewendet wird, für die keine benutzerdefinierte Konfiguration in dieser Richtlinie konfiguriert ist.
+
+Diese Richtlinie kann die Konfiguration einzelner Erweiterungen aus älteren Richtlinien überschreiben.
+
+Erweiterungsspezifische Einstellungen pro ID aus „<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />“, „<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />“, „<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />“ oder „<ph name="EXTENSION_SETTINGS_POLICY_NAME" />“ übernehmen nur „installation_mode“ und „update_url“ aus den Standardwerten von <ph name="DEFAULT_SCOPE" />. Es werden keine anderen Attribute übernommen. Bei einer Update-URL wird die Konfiguration auf alle Erweiterungen mit genau der im Manifest dieser Erweiterung angegebenen Update-URL angewendet (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Wenn das Flag „override_update_url“ auf „true“ gesetzt ist, wird die Erweiterung über die in der Richtlinie „<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />“ oder im Feld „update_url“ dieser Richtlinie angegebene Update-URL installiert und aktualisiert. Das Flag „override_update_url“ wird ignoriert, wenn „update_url“ eine URL für den Chrome Web Store ist.
+
+In den <ph name="PRODUCT_NAME" />-Versionen 155 bis 158 kann die Anwendung von „runtime_blocked_hosts“ auf eine Erweiterung mit der Berechtigung „debugger“ die Funktion „chrome.debugger.attach()“ für alle Ziele vollständig deaktivieren, z. B. wenn die Richtlinie „<ph name="CHROME_VARIATIONS_POLICY_NAME" />“ alle Varianten deaktiviert.
+
+Bei <ph name="MS_WIN_NAME" />-Instanzen kann die Installation von Apps und Erweiterungen, die nicht aus dem Chrome Web Store stammen, nur auf solchen Instanzen erzwungen werden, die Teil einer <ph name="MS_AD_NAME" />-Domain oder von <ph name="MS_AAD_NAME" /> sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
+
+Bei <ph name="MAC_OS_NAME" />-Instanzen kann die Installation von Apps und Erweiterungen, die nicht aus dem Chrome Web Store stammen, nur auf solchen Instanzen erzwungen werden, die über die Mobilgeräteverwaltung verwaltet werden, die über MCX Teil einer Domain sind oder die in <ph name="CHROME_ENTERPRISE_CORE_NAME" /> angemeldet sind.
+
+Hinweis: Diese Richtlinie gilt nur für Plattformen, die Erweiterungen unterstützen.</translation>
 <translation id="4602988345256038309">Verbindungen zu diesem Computer per Remote-Unterstützung erlauben</translation>
 <translation id="4605677392792989397">Mit dieser Richtlinie kannst du die Liste der URLs für die Unternehmensanmeldung festlegen (nur HTTP- und HTTPS-Protokolle). Der Passwortschutzdienst erfasst auf diesen URLs den Salted-Hash-Wert von Passwörtern und verwendet ihn, um zu prüfen, ob Passwörter wiederverwendet werden. Deine Anmeldeseiten müssen den Richtlinien unter https://www.chromium.org/developers/design-documents/create-amazing-password-forms entsprechen, damit Salted-Hash-Werte von Passwörtern in <ph name="PRODUCT_NAME" /> richtig erfasst werden können.
 
@@ -11770,6 +11797,12 @@ Zertifikate müssen mit Base64 codiert sein.</translation>
 Wenn diese Richtlinie konfiguriert ist, werden Berichte mit Telemetriedaten zu den Websites erstellt, deren URLs auf der Zulassungsliste aufgeführt sind.
 Ist die Richtlinie nicht konfiguriert, werden keine Telemetriedaten zu Websites gemeldet.
 Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://chromeenterprise.google/policies/url-patterns/. Für diese Richtlinie sind nur HTTP- und HTTPS-URL-Schemata zulässig.</translation>
+<translation id="8392016343898518010">Diese Richtlinie wird nicht mehr unterstützt und hat ab M159 keine Auswirkungen mehr, da die Funktion „Vorgeschlagene Inhalte“ entfernt wurde.
+
+Vor M159 wurden mit dieser Funktion Vorschläge für neue Inhalte wie Apps und Webseiten aktiviert.
+Wenn diese Richtlinie auf „True“ gesetzt war, waren Vorschläge für neue Inhalte aktiviert.
+War sie auf „False“ gesetzt, waren Vorschläge für neue Inhalte deaktiviert.
+Wenn diese Richtlinie nicht konfiguriert war, waren Vorschläge für neue Inhalte für verwaltete Nutzer deaktiviert und für andere Nutzer aktiviert.</translation>
 <translation id="8392478748777481636">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen die Richtlinie „<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" />“.</translation>
 <translation id="8393850527597048037">Nur Plattform</translation>
 <translation id="8395350646076131800">Zeitlimit für die Inaktivität für den Bildschirmschoner auf dem Sperrbildschirm des Nutzers.</translation>

@@ -6311,6 +6311,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6466936665940546351">Verify that it's you to add passwords and get them on all devices with your Google Account</translation>
 <translation id="6467230443178397264">Scan <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">Optimise full-screen videos</translation>
+<translation id="6467327465309816244">Use Gemini carefully and <ph name="BEGIN_LINK1" />safely<ph name="LINK_END1" />. It can make mistakes and produce <ph name="BEGIN_LINK2" />unexpected results<ph name="LINK_END2" /> like purchases.</translation>
 <translation id="6467377768028664108">Your <ph name="DEVICE_TYPE" /> can then:</translation>
 <translation id="6468485451923838994">Fonts</translation>
 <translation id="6468773105221177474"><ph name="FILE_COUNT" /> files</translation>
@@ -7563,7 +7564,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7523585675576642403">Rename profile</translation>
 <translation id="7525067979554623046">Create</translation>
 <translation id="7526083414913154899">Learn more about Gemini tasks</translation>
-<translation id="7528224636098571080">Don’t Open</translation>
+<translation id="7528224636098571080">Don’t open</translation>
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{Ungroup tab group?}other{Ungroup tab groups?}}</translation>
 <translation id="7529865045818406536">Preferred networks will be used if more than one previous network is available</translation>
 <translation id="7530215951451994972">Create image</translation>
