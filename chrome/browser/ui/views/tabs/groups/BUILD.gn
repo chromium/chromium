@@ -59,6 +59,7 @@ source_set("impl") {
   deps = [
     ":groups",
     "//base",
+    "//base:i18n",
     "//chrome/app/vector_icons",
     "//chrome/browser/collaboration",
     "//chrome/browser/collaboration/messaging",
@@ -101,7 +102,6 @@ source_set("impl") {
     "//components/tabs:public",
     "//components/vector_icons",
     "//skia",
-    "//third_party/icu",
     "//ui/accessibility:ax_enums_mojo",
     "//ui/base",
     "//ui/base:features",

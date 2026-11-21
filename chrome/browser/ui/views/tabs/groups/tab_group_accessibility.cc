@@ -4,23 +4,17 @@
 
 #include "chrome/browser/ui/views/tabs/groups/tab_group_accessibility.h"
 
-#include <memory>
 #include <vector>
 
 #include "base/check.h"
-#include "base/i18n/icu4c_tag_converter.h"
-#include "base/i18n/icubridge/default_icu_locale.h"
-#include "base/i18n/unicodestring.h"
+#include "base/i18n/icubridge/icu_bridge.h"
+#include "base/i18n/icubridge/list_formatter.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/tab_group_data.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_group.h"
-#include "third_party/icu/source/common/unicode/locid.h"
-#include "third_party/icu/source/common/unicode/unistr.h"
-#include "third_party/icu/source/common/unicode/utypes.h"
-#include "third_party/icu/source/i18n/unicode/listformatter.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_elider.h"
 
@@ -42,35 +36,6 @@ std::u16string GetGroupContentString(const TabGroup* tab_group) {
 }
 
 namespace {
-
-std::u16string MakeICUFormattedTabTitleList(
-    base::span<const std::u16string> items) {
-  if (items.empty()) {
-    return std::u16string();
-  }
-  std::vector<icu::UnicodeString> strings;
-  strings.reserve(items.size());
-  for (const auto& item : items) {
-    strings.emplace_back(item.data(), item.size());
-  }
-  UErrorCode error = U_ZERO_ERROR;
-  // Use UNITS type to avoid conjunctions like "and".
-  // on the last item of the list.
-  std::unique_ptr<icu::ListFormatter> formatter(
-      icu::ListFormatter::createInstance(
-          base::i18n::IcuLocaleConverter::GetInstance().FromLanguageTag(
-              base::i18n::GetDefaultIcuLocale()),
-          ULISTFMT_TYPE_UNITS, ULISTFMT_WIDTH_WIDE, error));
-  if (U_FAILURE(error) || !formatter) {
-    return std::u16string();
-  }
-  icu::UnicodeString formatted;
-  formatter->format(strings.data(), strings.size(), formatted, error);
-  if (U_FAILURE(error)) {
-    return std::u16string();
-  }
-  return base::i18n::UnicodeStringToString16(formatted);
-}
 
 // Returns the comma-separated list describing the group's tabs, starting with
 // the tab count (e.g. "3 tabs, • Tab 1, • Tab 2, • Tab 3").
@@ -99,7 +64,8 @@ std::u16string GetTabListString(const tabs::TabGroupData& data) {
     formatted_titles.emplace_back(remaining_string);
   }
 
-  return MakeICUFormattedTabTitleList(formatted_titles);
+  return base::i18n::IcuBridge::GetInstance().list_formatter()->FormatUnitList(
+      formatted_titles);
 }
 
 std::u16string GetCollapsedStateString(const tabs::TabGroupData& data) {

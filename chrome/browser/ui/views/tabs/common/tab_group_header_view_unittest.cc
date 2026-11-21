@@ -10,6 +10,7 @@
 #include <string>
 #include <tuple>
 
+#include "base/i18n/language_tag.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/test/scoped_rtl_for_testing.h"
 #include "base/strings/strcat.h"
@@ -23,13 +24,16 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_style.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_unfocus_button.h"
+#include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/mock_tab_group.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/l10n/test/scoped_application_locale.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
@@ -39,6 +43,7 @@
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 
 namespace {
 
@@ -710,6 +715,90 @@ TEST_F(TabGroupHeaderViewTest, HoverCardAccessibilityText_UnnamedGroup) {
 #endif
 
   EXPECT_EQ(header->GetViewAccessibility().GetCachedName(), expected_acc_text);
+}
+
+// Tests that the list of tabs in the accessible name of an unnamed group is
+// joined with the unit list pattern of the current locale.
+TEST_F(TabGroupHeaderViewTest, HoverCardAccessibilityText_AcrossLocales) {
+  MockDelegate delegate;
+  tab_groups::TabGroupVisualData visual_data(
+      u"", tab_groups::TabGroupColorId::kRed, false);
+
+  auto header = std::make_unique<TabGroupHeaderView>(
+      delegate, TabStripOrientation::kVertical, nullptr, &visual_data);
+
+  tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
+  tabs::MockTabGroup mock_tab_group(nullptr, group_id, visual_data);
+
+  EXPECT_CALL(delegate, GetTabGroup())
+      .WillRepeatedly(testing::ReturnRef(mock_tab_group));
+
+  tabs::TabGroupData data;
+  data.visual_data = visual_data;
+  data.num_tabs_in_group = 2;
+
+  tabs::TabGroupTabData tab1;
+  tab1.title = u"Tab 1";
+  tab1.last_committed_url = GURL("https://google.com");
+  data.tab_data.push_back(tab1);
+
+  tabs::TabGroupTabData tab2;
+  tab2.title = u"Tab 2";
+  tab2.last_committed_url = GURL("https://google.com");
+  data.tab_data.push_back(tab2);
+
+  EXPECT_CALL(delegate, GetTabGroupData())
+      .WillRepeatedly(testing::ReturnRef(data));
+
+  {
+    const base::i18n::LanguageTag locale =
+        base::i18n::GetKnownLanguageTag("en-US");
+    ui::test::ScopedApplicationLocale scoped_app_locale(locale);
+    header->OnDataChanged(data);
+#if BUILDFLAG(IS_MAC)
+    EXPECT_EQ(header->GetViewAccessibility().GetCachedName(),
+              u" unnamed group - 2 Tabs, \u2022  Tab 1, \u2022  Tab 2 - "
+              u"Expanded");
+#else
+    EXPECT_EQ(header->GetViewAccessibility().GetCachedName(),
+              u" unnamed group - 2 tabs, \u2022  Tab 1, \u2022  Tab 2 - "
+              u"Expanded");
+#endif
+  }
+  {
+    const base::i18n::LanguageTag locale =
+        base::i18n::GetKnownLanguageTag("fr");
+    ui::test::ScopedApplicationLocale scoped_app_locale(locale);
+    header->OnDataChanged(data);
+    EXPECT_EQ(header->GetViewAccessibility().GetCachedName(),
+              u"Groupe sans nom \u00a0\u2013 2\u00a0onglets, \u2022  Tab 1 et "
+              u"\u2022  Tab 2\u00a0\u2013 D\u00e9velopp\u00e9");
+  }
+  {
+    const base::i18n::LanguageTag locale =
+        base::i18n::GetKnownLanguageTag("de");
+    ui::test::ScopedApplicationLocale scoped_app_locale(locale);
+    header->OnDataChanged(data);
+    EXPECT_EQ(header->GetViewAccessibility().GetCachedName(),
+              u" unbenannte Gruppe\u00a0\u2013 2 Tabs, \u2022  Tab 1 und "
+              u"\u2022  Tab 2\u00a0\u2013 Erweitert");
+  }
+  {
+    const base::i18n::LanguageTag locale =
+        base::i18n::GetKnownLanguageTag("ar");
+    ui::test::ScopedApplicationLocale scoped_app_locale(locale);
+    header->OnDataChanged(data);
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
+    EXPECT_EQ(
+        header->GetViewAccessibility().GetCachedName(),
+        u"\u200Fمجموعة  بدون اسم - \u200Fعلامتا تبويب (2)، و\u2022  Tab 1، "
+        u"و\u2022  Tab 2 - \u200Fموسع");
+#else
+    EXPECT_EQ(header->GetViewAccessibility().GetCachedName(),
+              u"مجموعة  بدون اسم - علامتا تبويب (2)، و\u2022  Tab 1، "
+              u"و\u2022  Tab 2 - موسع");
+#endif
+  }
 }
 
 TEST_F(TabGroupHeaderViewTest, HoverCardAccessibilityText_LongTabTitleElided) {
