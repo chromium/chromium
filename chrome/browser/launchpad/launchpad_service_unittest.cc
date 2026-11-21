@@ -4,23 +4,42 @@
 
 #include "chrome/browser/launchpad/launchpad_service.h"
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
+#include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
-#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "chrome/browser/glic/glic_profile_manager.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/glic/test_support/mock_glic_instance.h"
+#include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
 #include "chrome/browser/launchpad/launchpad_task.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/personal_context/core/context_memory_error.h"
 #include "components/personal_context/core/mock_personal_context_service.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/personal_context/proto/context_memory_service.pb.h"
 #include "components/personal_context/proto/features/auto_todos.pb.h"
 #include "components/personal_context/proto/features/common_data.pb.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -36,11 +55,13 @@ using ::testing::VariantWith;
 
 class LaunchpadServiceTest : public testing::Test {
  public:
-  LaunchpadServiceTest() : service_(&mock_personal_context_service_) {}
+  LaunchpadServiceTest()
+      : service_(&profile_, &mock_personal_context_service_) {}
   ~LaunchpadServiceTest() override = default;
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfile profile_;
   personal_context::MockPersonalContextService mock_personal_context_service_;
   LaunchpadService service_;
 };
@@ -328,6 +349,138 @@ TEST_F(LaunchpadServiceTest, GenerateTasks_ParseError) {
 
   EXPECT_FALSE(future.Get().has_value());
   EXPECT_FALSE(service_.IsGeneratingTasks());
+}
+
+class LaunchpadServiceRunTaskTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    ASSERT_TRUE(profile_manager_.SetUp());
+
+    profile_ = profile_manager_.CreateTestingProfile(
+        "launchpad_test",
+        {TestingProfile::TestingFactory{
+            glic::GlicKeyedServiceFactory::GetInstance(),
+            base::BindRepeating(
+                &LaunchpadServiceRunTaskTest::CreateMockGlicService,
+                base::Unretained(this))}});
+    ASSERT_TRUE(profile_);
+
+    mock_glic_service_ = static_cast<glic::MockGlicKeyedService*>(
+        glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile_,
+                                                           /*create=*/true));
+    ASSERT_TRUE(mock_glic_service_);
+
+    service_ = std::make_unique<LaunchpadService>(
+        profile_, &mock_personal_context_service_);
+  }
+
+  content::BrowserTaskEnvironment task_environment_;
+  std::optional<glic::GlicEnabling::ScopedBypassEnablementChecksForTesting>
+      scoped_glic_bypass_{std::in_place};
+  glic::GlicProfileManager glic_profile_manager_;
+  TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
+  personal_context::MockPersonalContextService mock_personal_context_service_;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
+  raw_ptr<glic::MockGlicKeyedService> mock_glic_service_ = nullptr;
+  std::unique_ptr<LaunchpadService> service_;
+
+ private:
+  std::unique_ptr<KeyedService> CreateMockGlicService(
+      content::BrowserContext* context) {
+    Profile* profile = Profile::FromBrowserContext(context);
+    return std::make_unique<testing::NiceMock<glic::MockGlicKeyedService>>(
+        profile, IdentityManagerFactory::GetForProfile(profile),
+        profile_manager_.profile_manager(), &glic_profile_manager_,
+        /*contextual_cueing_service=*/nullptr,
+        /*actor_keyed_service=*/nullptr);
+  }
+};
+
+TEST_F(LaunchpadServiceRunTaskTest, RunTask_InvokesGlicWithAutoSubmit) {
+  testing::NiceMock<glic::MockGlicInstance> mock_instance;
+  std::optional<glic::GlicInvokeOptions> captured_options;
+  std::optional<glic::GlicInvokeWithAutoSubmitOptions>
+      captured_auto_submit_options;
+  EXPECT_CALL(
+      *mock_glic_service_,
+      InvokeWithAutoSubmit(
+          _, _, testing::Matcher<glic::GlicInvokeWithAutoSubmitOptions>(_)))
+      .WillOnce([&](glic::InvokeWithAutoSubmitPasskey,
+                    glic::GlicInvokeOptions options,
+                    glic::GlicInvokeWithAutoSubmitOptions auto_submit_options) {
+        captured_options = std::move(options);
+        captured_auto_submit_options = std::move(auto_submit_options);
+        return mock_instance.GetWeakPtr();
+      });
+
+  EXPECT_TRUE(service_->RunTask("Book apartment tour https://example.com/a",
+                                &mock_browser_window_));
+
+  ASSERT_TRUE(captured_options.has_value());
+  EXPECT_EQ(captured_options->GetInvocationSource(),
+            glic::mojom::InvocationSource::kContextHubAutoTodos);
+  EXPECT_THAT(
+      captured_options->prompts,
+      testing::ElementsAre("Book apartment tour https://example.com/a"));
+  EXPECT_EQ(captured_options->feature_mode,
+            glic::mojom::FeatureMode::kActuation);
+  EXPECT_THAT(captured_options->target.actuation_target,
+              VariantWith<glic::mojom::ActuationTarget>(
+                  glic::mojom::ActuationTarget::kAgentDecides));
+  EXPECT_TRUE(std::holds_alternative<glic::NewConversation>(
+      captured_options->target.conversation));
+  const auto* surface =
+      std::get_if<glic::DefaultSurface>(&captured_options->target.surface);
+  ASSERT_TRUE(surface);
+  EXPECT_EQ(surface->browser, &mock_browser_window_);
+
+  ASSERT_TRUE(captured_auto_submit_options.has_value());
+  EXPECT_TRUE(captured_auto_submit_options->show_panel);
+}
+
+TEST_F(LaunchpadServiceRunTaskTest, RunTask_FailsWhenInvocationRejected) {
+  EXPECT_CALL(
+      *mock_glic_service_,
+      InvokeWithAutoSubmit(
+          _, _, testing::Matcher<glic::GlicInvokeWithAutoSubmitOptions>(_)))
+      .WillOnce(testing::Return(glic::GlicInvocationHandle()));
+
+  EXPECT_FALSE(
+      service_->RunTask("Task: Reply to Alice", &mock_browser_window_));
+}
+
+TEST_F(LaunchpadServiceRunTaskTest, RunTask_FailsWhenPromptEmpty) {
+  EXPECT_CALL(
+      *mock_glic_service_,
+      InvokeWithAutoSubmit(
+          _, _, testing::Matcher<glic::GlicInvokeWithAutoSubmitOptions>(_)))
+      .Times(0);
+
+  EXPECT_FALSE(service_->RunTask("", &mock_browser_window_));
+}
+
+TEST_F(LaunchpadServiceRunTaskTest, RunTask_FailsWhenGlicDisabledForProfile) {
+  scoped_glic_bypass_.reset();
+  EXPECT_CALL(
+      *mock_glic_service_,
+      InvokeWithAutoSubmit(
+          _, _, testing::Matcher<glic::GlicInvokeWithAutoSubmitOptions>(_)))
+      .Times(0);
+
+  EXPECT_FALSE(
+      service_->RunTask("Task: Reply to Alice", &mock_browser_window_));
+}
+
+TEST_F(LaunchpadServiceRunTaskTest, RunTaskForProfile_FailsWhenProfileNull) {
+  EXPECT_CALL(
+      *mock_glic_service_,
+      InvokeWithAutoSubmit(
+          _, _, testing::Matcher<glic::GlicInvokeWithAutoSubmitOptions>(_)))
+      .Times(0);
+
+  EXPECT_FALSE(LaunchpadService::RunTaskForProfile(
+      /*profile=*/nullptr, "Task: Reply to Alice", &mock_browser_window_));
 }
 
 }  // namespace

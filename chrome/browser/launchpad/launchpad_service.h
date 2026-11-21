@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_LAUNCHPAD_LAUNCHPAD_SERVICE_H_
 
 #include <optional>
+#include <string>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -14,6 +15,9 @@
 #include "chrome/browser/launchpad/launchpad_task.h"
 #include "chrome/browser/launchpad/tasks_store.h"
 #include "components/keyed_service/core/keyed_service.h"
+
+class BrowserWindowInterface;
+class Profile;
 
 namespace personal_context {
 struct FetchContextResult;
@@ -24,7 +28,8 @@ namespace launchpad {
 
 class LaunchpadService : public KeyedService {
  public:
-  explicit LaunchpadService(
+  LaunchpadService(
+      Profile* profile,
       personal_context::PersonalContextService* personal_context_service);
 
   LaunchpadService(const LaunchpadService&) = delete;
@@ -49,11 +54,25 @@ class LaunchpadService : public KeyedService {
   // TODO(b/586300169): Read from server cache when implemented.
   void GetAllTasks(TasksStore::GetAllTasksCallback callback) const;
 
+  // Invokes Glic with auto-submit in actuation (AutoBrowse) mode to execute
+  // `prompt` in `browser_window`. Returns true if the invocation was
+  // dispatched, or false if `prompt` is empty or Glic is unavailable.
+  bool RunTask(const std::string& prompt,
+               BrowserWindowInterface* browser_window);
+
+  // Temporary helper for legacy `kAutoTodos` callers when `kLaunchpad` (and
+  // thus `LaunchpadService`) is disabled.
+  // TODO(b/587591147): Remove once `kAutoTodos` callers are cleaned up.
+  static bool RunTaskForProfile(Profile* profile,
+                                const std::string& prompt,
+                                BrowserWindowInterface* browser_window);
+
  private:
   // Handles the async response from the AutoTodos fetch.
   void OnTasksFetched(GenerateTasksCallback callback,
                       personal_context::FetchContextResult result);
 
+  const raw_ref<Profile> profile_;
   const raw_ref<personal_context::PersonalContextService>
       personal_context_service_;
 

@@ -26,8 +26,11 @@ namespace indigo {
 class IndigoPageActionController;
 }
 
-class ContextHubPageHandler;
 class GlicPasswordChangeActuator;
+
+namespace launchpad {
+class LaunchpadService;
+}
 
 namespace actor {
 class ActorGeminiPanelToolBrowserTest;
@@ -74,8 +77,8 @@ class InvokeWithAutoSubmitPasskeyProvider {
 #endif
   friend class extensions::GlicPrivateInvokeFunction;
   friend class extensions::PdfViewerPrivateGlicSummarizeFunction;
-  friend class ::ContextHubPageHandler;
   friend class ::GlicPasswordChangeActuator;
+  friend class ::launchpad::LaunchpadService;
   friend class GlicInternalsPageHandler;
   friend class GlicInstanceCoordinatorBrowserTest;
   friend class GlicInvokeBrowserTest;

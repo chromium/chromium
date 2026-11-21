@@ -17,6 +17,12 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/personal_context/proto/context_memory_service.pb.h"
@@ -124,8 +130,10 @@ LaunchpadTask ToLaunchpadTask(
 }  // namespace
 
 LaunchpadService::LaunchpadService(
+    Profile* profile,
     personal_context::PersonalContextService* personal_context_service)
-    : personal_context_service_(CHECK_DEREF(personal_context_service)) {}
+    : profile_(CHECK_DEREF(profile)),
+      personal_context_service_(CHECK_DEREF(personal_context_service)) {}
 
 LaunchpadService::~LaunchpadService() = default;
 
@@ -153,6 +161,41 @@ void LaunchpadService::GetAllTasks(
     TasksStore::GetAllTasksCallback callback) const {
   // TODO(b/586300169): Read from server cache when implemented.
   tasks_store_.GetAllTasks(std::move(callback));
+}
+
+bool LaunchpadService::RunTask(const std::string& prompt,
+                               BrowserWindowInterface* browser_window) {
+  return RunTaskForProfile(&profile_.get(), prompt, browser_window);
+}
+
+// static
+bool LaunchpadService::RunTaskForProfile(
+    Profile* profile,
+    const std::string& prompt,
+    BrowserWindowInterface* browser_window) {
+  if (prompt.empty() || !glic::GlicEnabling::IsEnabledForProfile(profile)) {
+    return false;
+  }
+
+  glic::GlicKeyedService* glic_service = glic::GlicKeyedService::Get(profile);
+  if (!glic_service) {
+    return false;
+  }
+
+  glic::GlicInvokeOptions options(
+      glic::mojom::InvocationSource::kContextHubAutoTodos);
+  options.prompts.push_back(prompt);
+  options.target.conversation = glic::NewConversation();
+  options.feature_mode = glic::mojom::FeatureMode::kActuation;
+  options.target.actuation_target = glic::mojom::ActuationTarget::kAgentDecides;
+  options.target.surface = glic::DefaultSurface{browser_window};
+
+  glic::GlicInvokeWithAutoSubmitOptions auto_submit_options;
+  auto_submit_options.show_panel = true;
+
+  return static_cast<bool>(glic_service->InvokeWithAutoSubmit(
+      glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
+      std::move(options), std::move(auto_submit_options)));
 }
 
 void LaunchpadService::OnTasksFetched(

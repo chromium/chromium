@@ -51,5 +51,5 @@ LaunchpadServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
   return std::make_unique<launchpad::LaunchpadService>(
-      personal_context_service);
+      profile, personal_context_service);
 }
