@@ -1759,9 +1759,6 @@ void HTMLDocumentParser::MaybeFetchQueuedPreloads() {
   base::ElapsedTimer timer;
   preloader_->TakeAndPreload(queued_preloads_);
   base::TimeDelta elapsed_time = timer.Elapsed();
-  base::UmaHistogramTimes(base::StrCat({"Blink.FetchQueuedPreloadsTime",
-                                        GetPreloadHistogramSuffix()}),
-                          elapsed_time);
   if (metrics_reporter_) {
     metrics_reporter_->AddFetchQueuedPreloadsTime(
         elapsed_time.InMicroseconds());
