@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -125,6 +126,12 @@ class ActivityReporterImplTest : public testing::Test {
  protected:
   ActivityReporterImplTest() {
     pref_service_.registry()->RegisterIntegerPref(kTestPref, 0);
+    update_client::RegisterPrefs(pref_service_.registry());
+    persisted_data_ = update_client::CreatePersistedData(
+        base::BindRepeating([](PrefService* prefs) { return prefs; },
+                            &pref_service_),
+        /*activity_data_service=*/nullptr);
+    activity_reporter_ = CreateReporter(task_environment_.GetMockClock());
   }
 
   // Creates a reporter that uses the prefs and update client of this fixture,
@@ -137,6 +144,11 @@ class ActivityReporterImplTest : public testing::Test {
         base::BindRepeating([] { return version_info::Channel::UNKNOWN; }),
         base::BindRepeating([] { return std::string("TEST"); }),
         base::DoNothing(), clock);
+  }
+
+  // Returns the DateLastActive of `app_id` persisted in `pref_service_`.
+  int GetDateLastActive(std::string_view app_id) const {
+    return persisted_data_->GetDateLastActive(std::string(app_id));
   }
 
   // Dirties `kTestPref` (with a new value each call, so the pref store has a
@@ -165,12 +177,13 @@ class ActivityReporterImplTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingPrefServiceSimple pref_service_;
   // What the reporter's pref service provider returns. Tests may clear it to
-  // simulate the pref service going away before an update check completes.
+  // simulate a missing pref service.
   raw_ptr<PrefService> provided_pref_service_ = &pref_service_;
+  // Reads and writes the update_client data in `pref_service_`.
+  std::unique_ptr<update_client::PersistedData> persisted_data_;
   scoped_refptr<MockUpdateClient> mock_update_client_ =
       base::MakeRefCounted<MockUpdateClient>();
-  std::unique_ptr<ActivityReporter> activity_reporter_ =
-      CreateReporter(task_environment_.GetMockClock());
+  std::unique_ptr<ActivityReporter> activity_reporter_;
 };
 
 TEST_F(ActivityReporterImplTest, ReportActiveThrottles) {
@@ -227,6 +240,43 @@ TEST_F(ActivityReporterImplTest, ReportActiveSendsComponentData) {
   EXPECT_EQ(components[0]->brand, "TEST");
   EXPECT_EQ(components[0]->channel, "unknown");
   EXPECT_FALSE(components[0]->updates_enabled);
+}
+
+TEST_F(ActivityReporterImplTest, ReportActiveMarksFirstReport) {
+  // The reporter must write the first-time marker before the update check
+  // sends it.
+  EXPECT_CALL(*mock_update_client_, CheckForUpdate(_, _, _, _, _))
+      .WillOnce([this] {
+        EXPECT_EQ(GetDateLastActive(kChromeActivityId),
+                  update_client::kDateFirstTime);
+      });
+
+  activity_reporter_->ReportActive();
+}
+
+TEST_F(ActivityReporterImplTest, ReportActiveKeepsPersistedDateLastActive) {
+  persisted_data_->SetDateLastActive(std::string(kChromeActivityId), 7000);
+  EXPECT_CALL(*mock_update_client_, CheckForUpdate(_, _, _, _, _));
+
+  activity_reporter_->ReportActive();
+  EXPECT_EQ(GetDateLastActive(kChromeActivityId), 7000);
+}
+
+TEST_F(ActivityReporterImplTest, ReportActiveNoMarkerWithoutPrefService) {
+  // The pref service provider may return null when the first report starts.
+  // The reporter must then still send it, without the first-time marker.
+  provided_pref_service_ = nullptr;
+  EXPECT_CALL(*mock_update_client_, CheckForUpdate(_, _, _, _, _));
+
+  activity_reporter_->ReportActive();
+  EXPECT_EQ(GetDateLastActive(kChromeActivityId), update_client::kDateUnknown);
+}
+
+TEST_F(ActivityReporterImplTest, ConstructionWritesNoPrefs) {
+  std::unique_ptr<ActivityReporter> reporter =
+      CreateReporterForPrefs(&pref_service_);
+  EXPECT_FALSE(
+      pref_service_.HasPrefPath(update_client::kPersistedDataPreference));
 }
 
 TEST_F(ActivityReporterImplTest, ReportActiveCommitsPendingWrite) {
