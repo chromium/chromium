@@ -101,8 +101,8 @@
     const attachedPromise = dp.Target.onceAttachedToTarget();
     await dp.Target.setAutoAttach({
       autoAttach: true, waitForDebuggerOnStart: false, flatten: true});
-    const childSession = session.createChild(
-        (await attachedPromise).params.sessionId);
+    const {sessionId, targetInfo: {targetId}} = (await attachedPromise).params;
+    const childSession = session.createChild(sessionId);
     childSession.protocol.Runtime.onConsoleAPICalled((event) => {
       consoleLog.push(event.params.args[0].value);
     });
@@ -131,7 +131,14 @@
       dp.Log.onceEntryAdded()]);
     clientLog.push('Terminating worker');
     flushLogs();
-    await session.evaluate('worker.terminate()');
+    await dp.Target.setDiscoverTargets({discover: true});
+    const destroyedPromise = dp.Target.onceTargetDestroyed(
+        event => event.params.targetId === targetId);
+    await Promise.all([
+      destroyedPromise,
+      session.evaluate('worker.terminate()'),
+    ]);
+    await dp.Target.setDiscoverTargets({discover: false});
   }
 
   {
@@ -140,14 +147,16 @@
     // This time we start the worker only after Target.setAutoAttach, so
     // we may await the autoattach response.
     clientLog.push('Starting autoattach');
-    const attachedPromise = dp.Target.onceAttachedToTarget();
     await dp.Target.setAutoAttach({
       autoAttach: true, waitForDebuggerOnStart: false, flatten: true});
 
     clientLog.push('Starting worker');
-    session.evaluate('startWorker()');
-    const childSession = session.createChild(
-        (await attachedPromise).params.sessionId);
+    const [attachedEvent] = await Promise.all([
+      dp.Target.onceAttachedToTarget(),
+      session.evaluateAsync('startWorker()'),
+    ]);
+    const {sessionId} = attachedEvent.params;
+    const childSession = session.createChild(sessionId);
     childSession.protocol.Runtime.onConsoleAPICalled((event) => {
       consoleLog.push(event.params.args[0].value);
     });
@@ -167,17 +176,24 @@
       dp.Log.onceEntryAdded()]);
     clientLog.push('Terminating worker');
     flushLogs();
-    await session.evaluate('worker.terminate()');
+    const detachedPromise = dp.Target.onceDetachedFromTarget(
+        event => event.params.sessionId === sessionId);
+    await Promise.all([
+      detachedPromise,
+      session.evaluate('worker.terminate()'),
+    ]);
   }
 
   {
     clientLog.push(
         '\n=== New worker, with auto-attach still enabled. ===');
     clientLog.push('Starting worker');
-    const attachedPromise = dp.Target.onceAttachedToTarget();
-    session.evaluate('startWorker()');
-    const childSession = session.createChild(
-        (await attachedPromise).params.sessionId);
+    const [attachedEvent] = await Promise.all([
+      dp.Target.onceAttachedToTarget(),
+      session.evaluateAsync('startWorker()'),
+    ]);
+    const {sessionId} = attachedEvent.params;
+    const childSession = session.createChild(sessionId);
     childSession.protocol.Runtime.onConsoleAPICalled((event) => {
       consoleLog.push(event.params.args[0].value);
     });
@@ -190,10 +206,15 @@
     clientLog.push('Terminating worker');
     clientLog.push('Stopping autoattach');
     flushLogs();
-    await session.evaluate('worker.terminate()');
+    const detachedPromise = dp.Target.onceDetachedFromTarget(
+        event => event.params.sessionId === sessionId);
+    await Promise.all([
+      detachedPromise,
+      session.evaluate('worker.terminate()'),
+    ]);
 
-    dp.Target.setAutoAttach({autoAttach: false,
-                             waitForDebuggerOnStart: false});
+    await dp.Target.setAutoAttach(
+        {autoAttach: false, waitForDebuggerOnStart: false});
   }
   testRunner.completeTest();
 })
