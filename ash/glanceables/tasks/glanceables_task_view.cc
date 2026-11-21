@@ -23,8 +23,8 @@
 #include "base/functional/bind.h"
 #include "base/i18n/icubridge/date_time_formatter.h"
 #include "base/i18n/icubridge/icu_bridge.h"
+#include "base/i18n/icubridge/list_formatter.h"
 #include "base/location.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -429,7 +429,8 @@ GlanceablesTaskView::GlanceablesTaskView(
     a11y_description += u". ";
     a11y_description += l10n_util::GetStringFUTF16(
         IDS_GLANCEABLES_TASKS_TASK_ITEM_METADATA_WRAPPER_ACCESSIBLE_DESCRIPTION,
-        base::JoinString(details, u", "));
+        base::i18n::IcuBridge::GetInstance().list_formatter()->FormatNarrowList(
+            details));
   }
   check_button_->GetViewAccessibility().SetDescription(a11y_description);
   check_button_->NotifyAccessibilityEventDeprecated(

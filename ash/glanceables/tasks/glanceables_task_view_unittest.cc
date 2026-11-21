@@ -16,6 +16,7 @@
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_future.h"
@@ -23,8 +24,10 @@
 #include "base/time/time_override.h"
 #include "chromeos/ash/components/settings/scoped_timezone_settings.h"
 #include "google_apis/common/api_error_codes.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/base/l10n/test/scoped_application_locale.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -689,6 +692,49 @@ TEST_F(GlanceablesTaskViewTest,
   check_button->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.GetCheckedState(), ax::mojom::CheckedState::kFalse);
   EXPECT_EQ(data.GetDefaultActionVerb(), ax::mojom::DefaultActionVerb::kCheck);
+}
+
+// Tests that the task metadata in the check button accessible description is
+// joined with the list separator of the current locale.
+TEST_F(GlanceablesTaskViewTest, CheckButtonAccessibleDescriptionListFormat) {
+  const auto task = api::Task("task-id", "Task title",
+                              /*due=*/std::nullopt, /*completed=*/false,
+                              /*has_subtasks=*/true, /*has_email_link=*/false,
+                              /*has_notes=*/true, /*updated=*/base::Time(),
+                              /*web_view_link=*/GURL(),
+                              api::Task::OriginSurfaceType::kRegular);
+
+  // Returns the accessible description of the check button of a view created
+  // for `task` in the current locale.
+  auto get_description = [&task]() {
+    const GlanceablesTaskView view(
+        &task, /*mark_as_completed_callback=*/base::DoNothing(),
+        /*save_callback=*/base::DoNothing(),
+        /*edit_in_browser_callback=*/base::DoNothing(),
+        /*show_error_message_callback=*/base::DoNothing());
+    return view.GetCheckButtonForTest()
+        ->GetViewAccessibility()
+        .GetCachedDescription();
+  };
+
+  {
+    ui::test::ScopedApplicationLocale locale(
+        base::i18n::GetKnownLanguageTag("en-US"));
+    EXPECT_EQ(get_description(),
+              u"Task title. This item has: subtask, details.");
+  }
+  {
+    ui::test::ScopedApplicationLocale locale(
+        base::i18n::GetKnownLanguageTag("ja"));
+    EXPECT_EQ(get_description(),
+              u"Task title. This item has: subtask、details.");
+  }
+  {
+    ui::test::ScopedApplicationLocale locale(
+        base::i18n::GetKnownLanguageTag("ar"));
+    EXPECT_EQ(get_description(),
+              u"Task title. This item has: subtask وdetails.");
+  }
 }
 
 }  // namespace ash
