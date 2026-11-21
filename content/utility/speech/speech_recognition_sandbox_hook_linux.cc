@@ -6,7 +6,9 @@
 
 #include <dlfcn.h>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "components/soda/buildflags.h"
 #include "components/soda/constants.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
@@ -19,18 +21,31 @@ namespace speech {
 
 namespace {
 
-// Gets the file permissions required by the Speech On-Device API (SODA).
-std::vector<BrokerFilePermission> GetSodaFilePermissions() {
+DISABLE_CFI_DLSYM bool CallSodaPreSandboxInit(void* presandbox_init_function) {
+  DCHECK(presandbox_init_function);
+  using SodaPreSandboxInitFn = bool (*)();
+  return reinterpret_cast<SodaPreSandboxInitFn>(presandbox_init_function)();
+}
+
+}  // namespace
+
+std::vector<BrokerFilePermission> GetSodaFilePermissions(
+    bool allow_proc_cpuinfo) {
   auto soda_dir = GetSodaDirectory();
   std::vector<BrokerFilePermission> permissions{
       BrokerFilePermission::ReadOnly("/dev/urandom"),
       // Read by the memory allocator bundled with libsoda.so when it is loaded
       // after the sandbox has been engaged. Without it the allocator aborts.
-      BrokerFilePermission::ReadOnly("/sys/devices/system/cpu/possible"),
-      // Read by cpuinfo when XNNPACK initializes for the SodaXnnpackDelegate
-      // feature. Without /proc/cpuinfo, XNNPACK fails to initialize and SODA
-      // runs the built-in TFLite kernels.
-      BrokerFilePermission::ReadOnly("/proc/cpuinfo")};
+      BrokerFilePermission::ReadOnly("/sys/devices/system/cpu/possible")};
+
+  if (allow_proc_cpuinfo) {
+    // Fallback for older SODA binaries without SodaPreSandboxInit (or if
+    // pre-sandbox initialization failed): cpuinfo reads /proc/cpuinfo when
+    // XNNPACK initializes for the SodaXnnpackDelegate feature.
+    // TODO(crbug.com/573909933): Remove once SODA binaries exporting
+    // SodaPreSandboxInit have rolled out everywhere.
+    permissions.push_back(BrokerFilePermission::ReadOnly("/proc/cpuinfo"));
+  }
 
   // This may happen if a user doesn't have a SODA installation.
   if (!soda_dir.empty()) {
@@ -56,7 +71,25 @@ std::vector<BrokerFilePermission> GetSodaFilePermissions() {
   return permissions;
 }
 
-}  // namespace
+bool TrySodaPreSandboxInit(void* soda_library) {
+  if (!soda_library) {
+    return false;
+  }
+  void* presandbox_init = dlsym(soda_library, "SodaPreSandboxInit");
+  if (!presandbox_init) {
+    VLOG(1) << "SodaPreSandboxInit not found; falling back to brokering "
+               "/proc/cpuinfo.";
+    return false;
+  }
+  if (!CallSodaPreSandboxInit(presandbox_init)) {
+    LOG(WARNING) << "SodaPreSandboxInit failed; falling back to brokering "
+                    "/proc/cpuinfo.";
+    return false;
+  }
+  VLOG(1) << "SodaPreSandboxInit succeeded; omitting /proc/cpuinfo from "
+             "sandbox broker.";
+  return true;
+}
 
 const char* GetSodaBinaryPathSwitch() {
   return kSodaBinaryPathSwitch;
@@ -71,6 +104,8 @@ bool SpeechRecognitionPreSandboxHook(
   void* soda_test_library = dlopen(GetSodaTestBinaryPath().value().c_str(),
                                    RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE);
   DCHECK(soda_test_library);
+  const bool test_presandbox_initialized =
+      TrySodaPreSandboxInit(soda_test_library);
 #endif
 
   // Fall back to the latest installed binary for embedders that don't pass the
@@ -82,15 +117,22 @@ bool SpeechRecognitionPreSandboxHook(
   void* soda_library = dlopen(binary_path.value().c_str(),
                               RTLD_NOW | RTLD_GLOBAL | RTLD_NODELETE);
   DCHECK(soda_library);
+  bool presandbox_initialized = TrySodaPreSandboxInit(soda_library);
+#if BUILDFLAG(ENABLE_SODA_INTEGRATION_TESTS)
+  presandbox_initialized =
+      presandbox_initialized && test_presandbox_initialized;
+#endif
 
   auto* instance = sandbox::policy::SandboxLinux::GetInstance();
-  instance->StartBrokerProcess(MakeBrokerCommandSet({
-                                   sandbox::syscall_broker::COMMAND_ACCESS,
-                                   sandbox::syscall_broker::COMMAND_OPEN,
-                                   sandbox::syscall_broker::COMMAND_READLINK,
-                                   sandbox::syscall_broker::COMMAND_STAT,
-                               }),
-                               GetSodaFilePermissions(), options);
+  instance->StartBrokerProcess(
+      MakeBrokerCommandSet({
+          sandbox::syscall_broker::COMMAND_ACCESS,
+          sandbox::syscall_broker::COMMAND_OPEN,
+          sandbox::syscall_broker::COMMAND_READLINK,
+          sandbox::syscall_broker::COMMAND_STAT,
+      }),
+      GetSodaFilePermissions(/*allow_proc_cpuinfo=*/!presandbox_initialized),
+      options);
   instance->EngageNamespaceSandboxIfPossible();
 
   return true;

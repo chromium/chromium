@@ -18,3 +18,13 @@ source_set("speech_recognition_sandbox_hook") {
 
   public_deps = [ "//sandbox/policy" ]
 }
+
+shared_library("fake_soda_presandbox_library_for_testing") {
+  testonly = true
+  sources = [ "fake_soda_presandbox_library.cc" ]
+}
+
+shared_library("fake_soda_legacy_library_for_testing") {
+  testonly = true
+  sources = [ "fake_soda_legacy_library.cc" ]
+}
