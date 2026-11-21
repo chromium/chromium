@@ -29,6 +29,7 @@
 #include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/http_constants.h"
+#include "net/third_party/quiche/src/quiche/quic/core/http/web_transport_http3.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_constants.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packet_writer_wrapper.h"
 #include "net/third_party/quiche/src/quiche/quic/test_tools/crypto_test_utils.h"
@@ -583,6 +584,115 @@ TEST_F(DedicatedWebTransportHttp3Test, CloseReason) {
       .WillOnce(DoAll(StopRunning(), SaveArg<0>(&received_close_info)));
   Run();
   EXPECT_THAT(received_close_info, Optional(close_info));
+}
+
+TEST_F(DedicatedWebTransportHttp3Test, CloseWithStopSendingBeforeCloseCapsule) {
+  StartServer();
+  client_ = std::make_unique<DedicatedWebTransportHttp3Client>(
+      GetURL("/echo"), origin_, &visitor_, anonymization_key_,
+      handles::kInvalidNetworkHandle, context_.get(), WebTransportParameters());
+
+  EXPECT_CALL(visitor_, OnBeforeConnect);
+  EXPECT_CALL(visitor_, OnConnected).WillOnce(StopRunning());
+  client_->Connect();
+  Run();
+  ASSERT_TRUE(client_->session() != nullptr);
+
+  quic::QuicSession* server_session =
+      quic::test::QuicDispatcherPeer::GetFirstSessionIfAny(
+          server_->dispatcher());
+  ASSERT_TRUE(server_session != nullptr);
+  quic::QuicStreamId connect_stream_id =
+      quic::QuicUtils::GetFirstBidirectionalStreamId(
+          server_session->transport_version(), quic::Perspective::IS_CLIENT);
+  auto* server_connect_stream = static_cast<quic::QuicSpdyStream*>(
+      server_session->GetActiveStream(connect_stream_id));
+  ASSERT_TRUE(server_connect_stream != nullptr);
+  ASSERT_TRUE(server_connect_stream->web_transport() != nullptr);
+
+  // Send STOP_SENDING ahead of WT_CLOSE_SESSION + FIN on the CONNECT stream.
+  server_connect_stream->SendStopSending(quic::QuicResetStreamError::FromIetf(
+      quic::QuicHttp3ErrorCode::HTTP3_NO_ERROR));
+  server_connect_stream->web_transport()->CloseSession(42, "test error");
+
+  WebTransportCloseInfo close_info(42, "test error");
+  std::optional<WebTransportCloseInfo> received_close_info;
+  EXPECT_CALL(visitor_, OnError(_)).Times(0);
+  EXPECT_CALL(visitor_, OnClosed(_))
+      .WillOnce(DoAll(StopRunning(), SaveArg<0>(&received_close_info)));
+  Run();
+  EXPECT_THAT(received_close_info, Optional(close_info));
+}
+
+TEST_F(DedicatedWebTransportHttp3Test, CloseWithStopSendingAndFinOnly) {
+  StartServer();
+  client_ = std::make_unique<DedicatedWebTransportHttp3Client>(
+      GetURL("/echo"), origin_, &visitor_, anonymization_key_,
+      handles::kInvalidNetworkHandle, context_.get(), WebTransportParameters());
+
+  EXPECT_CALL(visitor_, OnBeforeConnect);
+  EXPECT_CALL(visitor_, OnConnected).WillOnce(StopRunning());
+  client_->Connect();
+  Run();
+  ASSERT_TRUE(client_->session() != nullptr);
+
+  quic::QuicSession* server_session =
+      quic::test::QuicDispatcherPeer::GetFirstSessionIfAny(
+          server_->dispatcher());
+  ASSERT_TRUE(server_session != nullptr);
+  quic::QuicStreamId connect_stream_id =
+      quic::QuicUtils::GetFirstBidirectionalStreamId(
+          server_session->transport_version(), quic::Perspective::IS_CLIENT);
+  auto* server_connect_stream = static_cast<quic::QuicSpdyStream*>(
+      server_session->GetActiveStream(connect_stream_id));
+  ASSERT_TRUE(server_connect_stream != nullptr);
+  ASSERT_TRUE(server_connect_stream->web_transport() != nullptr);
+
+  // Send STOP_SENDING ahead of FIN (without a WT_CLOSE_SESSION capsule).
+  server_connect_stream->SendStopSending(quic::QuicResetStreamError::FromIetf(
+      quic::QuicHttp3ErrorCode::HTTP3_NO_ERROR));
+  server_connect_stream->web_transport()->CloseSessionWithFinOnlyForTests();
+
+  WebTransportCloseInfo close_info(0, "");
+  std::optional<WebTransportCloseInfo> received_close_info;
+  EXPECT_CALL(visitor_, OnError(_)).Times(0);
+  EXPECT_CALL(visitor_, OnClosed(_))
+      .WillOnce(DoAll(StopRunning(), SaveArg<0>(&received_close_info)));
+  Run();
+  EXPECT_THAT(received_close_info, Optional(close_info));
+}
+
+TEST_F(DedicatedWebTransportHttp3Test, AbruptResetWithStopSendingReportsError) {
+  StartServer();
+  client_ = std::make_unique<DedicatedWebTransportHttp3Client>(
+      GetURL("/echo"), origin_, &visitor_, anonymization_key_,
+      handles::kInvalidNetworkHandle, context_.get(), WebTransportParameters());
+
+  EXPECT_CALL(visitor_, OnBeforeConnect);
+  EXPECT_CALL(visitor_, OnConnected).WillOnce(StopRunning());
+  client_->Connect();
+  Run();
+  ASSERT_TRUE(client_->session() != nullptr);
+
+  quic::QuicSession* server_session =
+      quic::test::QuicDispatcherPeer::GetFirstSessionIfAny(
+          server_->dispatcher());
+  ASSERT_TRUE(server_session != nullptr);
+  quic::QuicStreamId connect_stream_id =
+      quic::QuicUtils::GetFirstBidirectionalStreamId(
+          server_session->transport_version(), quic::Perspective::IS_CLIENT);
+  auto* server_connect_stream = static_cast<quic::QuicSpdyStream*>(
+      server_session->GetActiveStream(connect_stream_id));
+  ASSERT_TRUE(server_connect_stream != nullptr);
+
+  // Resetting the CONNECT stream without a close capsule or FIN should still
+  // report a session error.
+  server_connect_stream->ResetWithError(quic::QuicResetStreamError::FromIetf(
+      quic::QuicHttp3ErrorCode::HTTP3_NO_ERROR));
+
+  EXPECT_CALL(visitor_, OnClosed(_)).Times(0);
+  EXPECT_CALL(visitor_, OnError(_)).WillOnce(StopRunning());
+  Run();
 }
 
 TEST_F(DedicatedWebTransportHttp3Test, SessionDraining) {

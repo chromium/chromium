@@ -210,7 +210,8 @@ class ConnectStream : public quic::QuicSpdyClientStream {
 
   void OnClose() override {
     quic::QuicSpdyClientStream::OnClose();
-    if (fin_received() && fin_sent()) {
+    if ((web_transport() != nullptr && web_transport()->close_received()) ||
+        fin_sent()) {
       // Clean close.
       return;
     }
