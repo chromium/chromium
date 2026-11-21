@@ -202,34 +202,34 @@ std::vector<SkPath> CustomCornersBackground::GetCornerPaths(
 
   // Bump out the corners by 1 DIP to avoid cracking/subpixel issues.
   // (This is why the insets are applied below.)
-  if (corners[VisualCorner::kTopLeft].type != CornerType::kSquare) {
-    const int radius =
-        corners[VisualCorner::kTopLeft].radius.value_or(default_radius());
+  if (const int radius =
+          CornerToRadius(corners[VisualCorner::kTopLeft], default_radius_);
+      radius > 0) {
     gfx::Rect bounds(in_bounds.x(), in_bounds.y(), radius, radius);
     const gfx::Insets insets = gfx::Insets::TLBR(1, 1, 0, 0);
     bounds.Inset(-insets);
     result.push_back(GetCornerPath(VisualCorner::kTopLeft, bounds, insets));
   }
-  if (corners[VisualCorner::kTopRight].type != CornerType::kSquare) {
-    const int radius =
-        corners[VisualCorner::kTopRight].radius.value_or(default_radius());
+  if (const int radius =
+          CornerToRadius(corners[VisualCorner::kTopRight], default_radius_);
+      radius > 0) {
     gfx::Rect bounds(in_bounds.right() - radius, in_bounds.y(), radius, radius);
     const gfx::Insets insets = gfx::Insets::TLBR(1, 0, 0, 1);
     bounds.Inset(-insets);
     result.push_back(GetCornerPath(VisualCorner::kTopRight, bounds, insets));
   }
-  if (corners[VisualCorner::kBottomRight].type != CornerType::kSquare) {
-    const int radius =
-        corners[VisualCorner::kBottomRight].radius.value_or(default_radius());
+  if (const int radius =
+          CornerToRadius(corners[VisualCorner::kBottomRight], default_radius_);
+      radius > 0) {
     gfx::Rect bounds(in_bounds.right() - radius, in_bounds.bottom() - radius,
                      radius, radius);
     const gfx::Insets insets = gfx::Insets::TLBR(0, 0, 1, 1);
     bounds.Inset(-insets);
     result.push_back(GetCornerPath(VisualCorner::kBottomRight, bounds, insets));
   }
-  if (corners[VisualCorner::kBottomLeft].type != CornerType::kSquare) {
-    const int radius =
-        corners[VisualCorner::kBottomLeft].radius.value_or(default_radius());
+  if (const int radius =
+          CornerToRadius(corners[VisualCorner::kBottomLeft], default_radius_);
+      radius > 0) {
     gfx::Rect bounds(in_bounds.x(), in_bounds.bottom() - radius, radius,
                      radius);
     const gfx::Insets insets = gfx::Insets::TLBR(0, 1, 1, 0);
@@ -400,10 +400,27 @@ void CustomCornersBackground::Paint(gfx::Canvas* canvas,
     PaintPath(canvas, corner_path, corner_color_, /*anti_alias=*/false);
   }
 
-  // Draw solid rect/rrect background:
+  // Draw solid rect/rrect background. When the corner radii fit within `rect`,
+  // anti-alias only the rounded corner cutouts and draw `rect` without
+  // anti-aliasing so straight edges snap to integer pixels instead of leaving a
+  // semi-transparent subpixel seam at fractional scale factors.
   CornerRadii radii;
-  PaintPath(canvas, GetBackgroundPath(view_->GetLocalBounds(), &radii),
-            primary_color_, /*anti_alias=*/true);
+  const SkPath background_path = GetBackgroundPath(rect, &radii);
+  const bool corners_fit = radii[0].x() + radii[1].x() <= rect.width() &&
+                           radii[3].x() + radii[2].x() <= rect.width() &&
+                           radii[0].y() + radii[3].y() <= rect.height() &&
+                           radii[1].y() + radii[2].y() <= rect.height();
+  if (corners_fit) {
+    gfx::ScopedCanvas primary_scope(canvas);
+    for (const SkPath& corner_path : GetCornerPaths(rect)) {
+      canvas->ClipPath(corner_path, /*do_anti_alias=*/true,
+                       SkClipOp::kDifference);
+    }
+    PaintPath(canvas, SkPath::Rect(gfx::RectToSkRect(rect)), primary_color_,
+              /*anti_alias=*/false);
+  } else {
+    PaintPath(canvas, background_path, primary_color_, /*anti_alias=*/true);
+  }
 
   // Paint strokes around the outside. Corners get strokes if they are between
   // two sides with strokes and have a radius. Multiple paths may be drawn if

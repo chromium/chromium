@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/browser_view.h"
 
+#include <cmath>
 #include <memory>
 #include <optional>
 
@@ -133,6 +134,8 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_test_helper.h"
 #include "ui/actions/action_id.h"
@@ -148,6 +151,7 @@
 #include "ui/base/ozone_buildflags.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/compositor/canvas_painter.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
@@ -2650,4 +2654,51 @@ IN_PROC_BROWSER_TEST_F(BrowserViewDeferLayoutTest,
   EXPECT_FALSE(browser_view2->is_layout_deferred_for_testing());
 
   widget2->CloseNow();
+}
+
+// Regression test for https://crbug.com/503507695: at fractional scale factors
+// where the toolbar's bottom edge in pixels has fractional part >= 0.5, the
+// straight bottom edge of ToolbarView's CustomCornersBackground must snap to
+// the same pixel boundary as adjacent views rather than leaving a
+// semi-transparent anti-aliased pixel row.
+IN_PROC_BROWSER_TEST_F(BrowserViewTest,
+                       ToolbarBottomEdgeOpaqueAtFractionalScale) {
+  browser()->GetProfile()->GetPrefs()->SetBoolean(
+      bookmarks::prefs::kShowBookmarkBar, false);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  views::test::RunScheduledLayout(browser_view());
+
+  ASSERT_TRUE(browser_view()->toolbar()->GetVisible());
+
+  views::View* root_view = browser_view()->GetWidget()->GetRootView();
+  const gfx::Rect toolbar_in_root = views::View::ConvertRectToTarget(
+      browser_view()->toolbar(), root_view,
+      browser_view()->toolbar()->GetLocalBounds());
+
+  // Pick a fractional scale (~1.3x) such that `toolbar_in_root.bottom() *
+  // scale` has fractional part 0.625, so an adjacent snapped layer starts on
+  // the next pixel row (`boundary_px`).
+  const float target_bottom_px =
+      std::floor(toolbar_in_root.bottom() * 1.3f) + 0.625f;
+  const float scale = target_bottom_px / toolbar_in_root.bottom();
+  const int boundary_px = base::ClampRound(target_bottom_px);
+
+  SkBitmap bitmap;
+  {
+    ui::CanvasPainter painter(&bitmap, root_view->size(), scale,
+                              SK_ColorTRANSPARENT, /*is_pixel_canvas=*/false);
+    browser_view()->GetWidget()->OnNativeWidgetPaint(painter.context());
+  }
+
+  const int sample_x =
+      base::ClampRound(toolbar_in_root.CenterPoint().x() * scale);
+  ASSERT_GT(boundary_px, 1);
+  ASSERT_LT(boundary_px, bitmap.height());
+  ASSERT_LT(sample_x, bitmap.width());
+
+  const SkColor toolbar_interior = bitmap.getColor(sample_x, boundary_px - 2);
+  const SkColor toolbar_bottom_row = bitmap.getColor(sample_x, boundary_px - 1);
+
+  EXPECT_EQ(SK_AlphaOPAQUE, SkColorGetA(toolbar_interior));
+  EXPECT_EQ(toolbar_interior, toolbar_bottom_row);
 }
