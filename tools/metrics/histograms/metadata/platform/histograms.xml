@@ -711,7 +711,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FbPreprocessor.Pseudonymization.DumpType"
-    enum="Platform.FbPreprocessor.FirmwareType" expires_after="2027-03-07">
+    enum="Platform.FbPreprocessor.FirmwareType" expires_after="2027-12-31">
   <owner>jintaolin@chromium.org</owner>
   <owner>yichenyu@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -724,7 +724,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Platform.FbPreprocessor.{FirmwareType}.Collection.Allowed"
     enum="Platform.FbPreprocessor.CollectionAllowedStatus"
-    expires_after="2027-03-07">
+    expires_after="2027-12-31">
   <owner>jintaolin@chromium.org</owner>
   <owner>yichenyu@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -737,7 +737,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.FbPreprocessor.{FirmwareType}.Output.Number"
-    units="count" expires_after="2027-03-07">
+    units="count" expires_after="2027-12-31">
   <owner>jintaolin@chromium.org</owner>
   <owner>yichenyu@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -752,7 +752,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Platform.FbPreprocessor.{FirmwareType}.Pseudonymization.Result"
     enum="Platform.FbPreprocessor.PseudonymizationResult"
-    expires_after="2027-03-07">
+    expires_after="2027-12-31">
   <owner>jintaolin@chromium.org</owner>
   <owner>yichenyu@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
@@ -2925,7 +2925,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.WiFiDeviceCount" units="wifi devices"
-    expires_after="2026-12-31">
+    expires_after="2027-12-31">
   <owner>kglund@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2935,7 +2935,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.WiFiDisapppearedFromPCI" units="units"
-    expires_after="2026-12-31">
+    expires_after="2027-12-31">
   <owner>kglund@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2948,7 +2948,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.WiFiStatusAfterForcedPCIRescan" enum="WiFiPCIStatus"
-    expires_after="2026-12-31">
+    expires_after="2027-12-31">
   <owner>kglund@google.com</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
