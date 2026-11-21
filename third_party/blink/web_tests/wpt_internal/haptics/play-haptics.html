@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Web Haptics: navigator.playHaptics() Mojo dispatch</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<body>
+<script type="module">
+import {createHapticsTestContext} from './resources/haptics-helpers.js';
+
+promise_test(async t => {
+  const {navigator: frameNavigator, activate, mock} =
+      await createHapticsTestContext(t);
+
+  // Without sticky user activation, playHaptics must not send a Mojo call.
+  frameNavigator.playHaptics('tick', 0.5);
+
+  // Activate the frame and play a valid haptic.
+  await activate();
+  frameNavigator.playHaptics('align', 0.25);
+
+  const first = await mock.nextHaptic();
+  assert_equals(first.effect, 'align',
+                'unactivated playHaptics call should not have dispatched');
+  assert_equals(first.intensity, 0.25);
+  assert_equals(mock.pendingCount, 0);
+}, 'playHaptics requires sticky user activation');
+
+promise_test(async t => {
+  const {navigator: frameNavigator, activate, mock} =
+      await createHapticsTestContext(t);
+  await activate();
+
+  const effects = ['hint', 'edge', 'tick', 'align', 'success', 'error'];
+  for (const effect of effects) {
+    frameNavigator.playHaptics(effect);
+  }
+
+  const played = await mock.nextHaptics(effects.length);
+  for (let i = 0; i < effects.length; i++) {
+    assert_equals(played[i].effect, effects[i]);
+    assert_equals(played[i].intensity, 1.0);
+  }
+  assert_equals(mock.pendingCount, 0);
+}, 'playHaptics dispatches all semantic effects with default intensity 1.0');
+
+promise_test(async t => {
+  const {navigator: frameNavigator, activate, mock} =
+      await createHapticsTestContext(t);
+  await activate();
+
+  frameNavigator.playHaptics('hint', 0.0);
+  frameNavigator.playHaptics('align', 0.4);
+  frameNavigator.playHaptics('success', 1.0);
+  frameNavigator.playHaptics('tick', -0.5);
+  frameNavigator.playHaptics('edge', 2.5);
+
+  const played = await mock.nextHaptics(5);
+  assert_equals(played[0].effect, 'hint');
+  assert_equals(played[0].intensity, 0.0);
+  assert_equals(played[1].effect, 'align');
+  assert_equals(played[1].intensity, 0.4);
+  assert_equals(played[2].effect, 'success');
+  assert_equals(played[2].intensity, 1.0);
+  assert_equals(played[3].effect, 'tick');
+  assert_equals(played[3].intensity, 0.0);
+  assert_equals(played[4].effect, 'edge');
+  assert_equals(played[4].intensity, 1.0);
+  assert_equals(mock.pendingCount, 0);
+}, 'playHaptics clamps intensity to [0.0, 1.0] and preserves boundaries');
+
+promise_test(async t => {
+  const {window: frameWindow, navigator: frameNavigator, activate, mock} =
+      await createHapticsTestContext(t);
+  await activate();
+
+  assert_throws_js(frameWindow.TypeError, () => {
+    frameNavigator.playHaptics('invalid');
+  });
+  for (const badIntensity of [NaN, Infinity, -Infinity]) {
+    assert_throws_js(frameWindow.TypeError, () => {
+      frameNavigator.playHaptics('tick', badIntensity);
+    });
+  }
+
+  // Play a valid haptic and confirm it is the first call received.
+  frameNavigator.playHaptics('error', 0.5);
+  const first = await mock.nextHaptic();
+  assert_equals(first.effect, 'error');
+  assert_equals(first.intensity, 0.5);
+  assert_equals(mock.pendingCount, 0);
+}, 'playHaptics throws TypeError for invalid effect or non-finite intensity');
+
+promise_test(async t => {
+  const {navigator: frameNavigator, activate, mock} =
+      await createHapticsTestContext(t, {allow: "haptics 'none'"});
+  await activate();
+
+  frameNavigator.playHaptics('tick', 0.5);
+  assert_false(mock.bound,
+               'HapticsService should not bind when permissions policy denies haptics');
+  assert_equals(mock.pendingCount, 0);
+}, 'playHaptics is blocked when disallowed by permissions policy');
+</script>
+</body>
