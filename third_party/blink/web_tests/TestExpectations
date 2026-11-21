@@ -9250,3 +9250,8 @@ crbug.com/587966203 [ Debug Linux ] virtual/split-http-cache/external/wpt/signed
 
 # Gardener 2026-10-19
 crbug.com/570886829 [ Mac ] external/wpt/css/css-contain/contain-size-flexbox-002.html [ Failure Pass ]
+
+# Gardener 2026-11-20
+crbug.com/566841082 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-propagation-001.html [ Failure Pass ]
+crbug.com/569420237 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-propagation-002.html [ Failure Pass ]
+crbug.com/566469808 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-propagation-003.html [ Failure Pass ]
