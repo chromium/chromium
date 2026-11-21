@@ -38,7 +38,8 @@ message LocalFileData {
   // of the file path is used.
   optional bytes display_name = 3;
 
-  // The serialized `url::Origin` associated with the handle.
+  // The serialized `url::Origin` associated with the handle. Absent in legacy
+  // handles persisted before origin binding was added.
   optional string origin = 4;
 }
 
