@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
@@ -1162,6 +1163,11 @@ TEST_F(InternalPopupMenuTest, DisconnectDuringPopupConstruction) {
   if (!RuntimeEnabledFeatures::PagePopupEnabled()) {
     return;
   }
+
+  // Production Chrome has OmitBlurEventOnElementRemoval disabled (status:
+  // "test"), so removing the focused date-time sub-field fires `blur`. Disable
+  // the test-only flag here to match shipping behavior.
+  ScopedOmitBlurEventOnElementRemovalForTest omit_blur(false);
 
   frame_test_helpers::WebViewHelper web_view_helper;
   WebViewImpl* web_view = web_view_helper.Initialize();
