@@ -12,7 +12,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/webui/resources/cr_components/history/foreign_sessions.mojom-forward.h"
-#include "ui/webui/resources/cr_components/history/history_cross_device_signin_promo.mojom-forward.h"
 
 class PrefChangeRegistrar;
 class Profile;
@@ -70,14 +69,6 @@ std::unique_ptr<user_education::mojom::UserEducationMixedTrustHandler>
 CreateUserEducationMixedTrustHandler(
     mojo::PendingReceiver<user_education::mojom::UserEducationMixedTrustHandler>
         receiver,
-    content::WebUI* web_ui);
-
-// Creates the platform-appropriate cross-device signin promo handler.
-std::unique_ptr<history_cross_device_signin_promo::mojom::
-                    HistoryCrossDeviceSigninPromoHandler>
-CreateCrossDeviceSigninPromoHandler(
-    mojo::PendingReceiver<history_cross_device_signin_promo::mojom::
-                              HistoryCrossDeviceSigninPromoHandler> receiver,
     content::WebUI* web_ui);
 
 }  // namespace history

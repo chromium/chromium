@@ -12,8 +12,10 @@ mojom("mojo_bindings") {
   sources = [
     "foreign_sessions.mojom",
     "history.mojom",
-    "history_cross_device_signin_promo.mojom",
   ]
+  if (!is_android) {
+    sources += [ "history_cross_device_signin_promo.mojom" ]
+  }
   public_deps = [
     "//mojo/public/mojom/base",
     "//ui/base/mojom",
@@ -30,8 +32,11 @@ build_webui("build") {
   mojo_files = [
     "$target_gen_dir/foreign_sessions.mojom-webui.ts",
     "$target_gen_dir/history.mojom-webui.ts",
-    "$target_gen_dir/history_cross_device_signin_promo.mojom-webui.ts",
   ]
+  if (!is_android) {
+    mojo_files +=
+        [ "$target_gen_dir/history_cross_device_signin_promo.mojom-webui.ts" ]
+  }
 
   ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/history"
   ts_composite = true

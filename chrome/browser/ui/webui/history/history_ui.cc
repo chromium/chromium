@@ -36,6 +36,7 @@
 #include "components/history/core/browser/features.h"
 #include "components/page_image_service/image_service.h"
 #include "components/page_image_service/image_service_handler.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
 #include "content/public/browser/browser_context.h"
@@ -46,6 +47,10 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #include "ui/webui/webui_util.h"
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/ui/webui/history/history_cross_device_signin_promo_handler.h"
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/history_clusters/history_clusters_handler.h"
@@ -76,10 +81,6 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       {"compareHistoryRow", IDS_COMPARE_HISTORY_ROW},
       {"compareHistoryMenuAriaLabel", IDS_COMPARE_HISTORY_MENU_ARIA_LABEL},
       {"noSyncedResults", IDS_HISTORY_NO_SYNCED_RESULTS},
-      {"signinOnPhonePromoButton", IDS_HISTORY_SIGNIN_ON_PHONE_PROMO_BUTTON},
-      {"signinOnPhonePromoSubtitle",
-       IDS_HISTORY_SIGNIN_ON_PHONE_PROMO_SUBTITLE},
-      {"signinOnPhonePromoTitle", IDS_HISTORY_SIGNIN_ON_PHONE_PROMO_TITLE},
       {"turnOnSyncHistoryButton", IDS_HISTORY_SYNC_HISTORY_BUTTON},
       {"turnOnSyncHistoryPromo", IDS_HISTORY_SYNC_HISTORY_PROMO},
       {"syncHistoryPromoBodySignedOut",
@@ -129,6 +130,16 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
   };
   source->AddLocalizedStrings(kHistorySyncStrings);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_ANDROID)
+  static constexpr webui::LocalizedString kCrossDeviceSigninPromoStrings[] = {
+      {"signinOnPhonePromoButton", IDS_HISTORY_SIGNIN_ON_PHONE_PROMO_BUTTON},
+      {"signinOnPhonePromoSubtitle",
+       IDS_HISTORY_SIGNIN_ON_PHONE_PROMO_SUBTITLE},
+      {"signinOnPhonePromoTitle", IDS_HISTORY_SIGNIN_ON_PHONE_PROMO_TITLE},
+  };
+  source->AddLocalizedStrings(kCrossDeviceSigninPromoStrings);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   source->AddBoolean("isBrowsingHistoryCollapsibleDayCardsEnabled",
                      base::FeatureList::IsEnabled(
@@ -257,14 +268,16 @@ void HistoryUI::BindInterface(
       web_ui()->GetWebContents());
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void HistoryUI::BindInterface(
     mojo::PendingReceiver<history_cross_device_signin_promo::mojom::
                               HistoryCrossDeviceSigninPromoHandler>
         pending_receiver) {
   history_cross_device_signin_promo_handler_ =
-      history::CreateCrossDeviceSigninPromoHandler(std::move(pending_receiver),
-                                                   web_ui());
+      std::make_unique<HistoryCrossDeviceSigninPromoHandler>(
+          std::move(pending_receiver), web_ui()->GetWebContents());
 }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 void HistoryUI::BindInterface(
     mojo::PendingReceiver<history::mojom::ForeignSessionPageHandlerFactory>

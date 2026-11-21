@@ -6,6 +6,10 @@ module history_cross_device_signin_promo.mojom;
 
 // Browser-side handler for the cross-device sign-in promo card.
 // Messages sent from TS to C++.
+//
+// This interface is Desktop-only (not built on Android): the promo opens a
+// Desktop Views bubble with a QR code so the user can sign into Chrome on their
+// phone.
 interface HistoryCrossDeviceSigninPromoHandler {
   // Checks if the promo card should be shown.
   ShouldShowPromoCard() => (bool should_show);
@@ -32,10 +36,6 @@ interface HistoryCrossDeviceSigninPromoHandler {
 };
 
 // WebUI-side receiver for the cross-device sign-in promo card.
-// Note: This interface is compiled on both Desktop and Android because
-// `chrome://history` shares a single TypeScript bundle across platforms; on
-// Android it is backed by a no-op stub in
-// `history_ui_platform_handlers_android.cc`.
 // Messages sent from C++ to TS.
 interface HistoryCrossDeviceSigninPromoPage {
   // Called when the open state of the QR code bubble changes for this profile

@@ -46,7 +46,6 @@
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "chrome/browser/ui/signin/account_preview_utils.h"
-#include "chrome/browser/ui/webui/history/history_cross_device_signin_promo_handler.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -193,21 +192,6 @@ CreateUserEducationMixedTrustHandler(
     content::WebUI* web_ui) {
   return std::make_unique<UserEducationMixedTrustHandler>(
       std::move(receiver), web_ui->GetWebContents());
-}
-
-std::unique_ptr<history_cross_device_signin_promo::mojom::
-                    HistoryCrossDeviceSigninPromoHandler>
-CreateCrossDeviceSigninPromoHandler(
-    mojo::PendingReceiver<history_cross_device_signin_promo::mojom::
-                              HistoryCrossDeviceSigninPromoHandler> receiver,
-    content::WebUI* web_ui) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  return std::make_unique<HistoryCrossDeviceSigninPromoHandler>(
-      std::move(receiver), web_ui->GetWebContents());
-#else
-  receiver.reset();
-  return nullptr;
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
 
 }  // namespace history

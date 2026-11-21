@@ -25,10 +25,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
-#include "ui/webui/resources/cr_components/history/history_cross_device_signin_promo.mojom.h"
 
 namespace history {
 
@@ -58,37 +56,6 @@ class AndroidUserEducationMixedTrustHandler
 
  private:
   mojo::Receiver<user_education::mojom::UserEducationMixedTrustHandler>
-      receiver_;
-};
-
-// Cross-device sign-in promos are desktop-only concepts that are not supported
-// on Android.
-class AndroidHistoryCrossDeviceSigninPromoHandler
-    : public history_cross_device_signin_promo::mojom::
-          HistoryCrossDeviceSigninPromoHandler {
- public:
-  explicit AndroidHistoryCrossDeviceSigninPromoHandler(
-      mojo::PendingReceiver<history_cross_device_signin_promo::mojom::
-                                HistoryCrossDeviceSigninPromoHandler> receiver)
-      : receiver_(this, std::move(receiver)) {}
-  ~AndroidHistoryCrossDeviceSigninPromoHandler() override = default;
-
-  void ShouldShowPromoCard(ShouldShowPromoCardCallback callback) override {
-    std::move(callback).Run(false);
-  }
-  void OnPromoCardShown() override {}
-  void OnPromoCardDismissed() override {}
-  void OnPromoCardActionClicked(
-      OnPromoCardActionClickedCallback callback) override {
-    std::move(callback).Run();
-  }
-  void SetPage(mojo::PendingRemote<history_cross_device_signin_promo::mojom::
-                                       HistoryCrossDeviceSigninPromoPage> page)
-      override {}
-
- private:
-  mojo::Receiver<history_cross_device_signin_promo::mojom::
-                     HistoryCrossDeviceSigninPromoHandler>
       receiver_;
 };
 
@@ -175,16 +142,6 @@ CreateUserEducationMixedTrustHandler(
         receiver,
     content::WebUI* web_ui) {
   return std::make_unique<AndroidUserEducationMixedTrustHandler>(
-      std::move(receiver));
-}
-
-std::unique_ptr<history_cross_device_signin_promo::mojom::
-                    HistoryCrossDeviceSigninPromoHandler>
-CreateCrossDeviceSigninPromoHandler(
-    mojo::PendingReceiver<history_cross_device_signin_promo::mojom::
-                              HistoryCrossDeviceSigninPromoHandler> receiver,
-    content::WebUI* web_ui) {
-  return std::make_unique<AndroidHistoryCrossDeviceSigninPromoHandler>(
       std::move(receiver));
 }
 

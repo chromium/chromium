@@ -30,7 +30,6 @@
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/webui/resources/cr_components/history/foreign_sessions.mojom.h"
 #include "ui/webui/resources/cr_components/history/history.mojom.h"
-#include "ui/webui/resources/cr_components/history/history_cross_device_signin_promo.mojom.h"
 
 namespace {
 
@@ -114,18 +113,6 @@ TEST_F(HistoryUITest, ForeignSessionHandlerLifecycleAndOperations) {
   handler_remote->DeleteForeignSession("test_session");
   handler_remote.FlushForTesting();
   EXPECT_TRUE(handler_remote.is_connected());
-}
-
-TEST_F(HistoryUITest, AndroidSigninPromoCardReturnsFalse) {
-  auto history_ui = std::make_unique<HistoryUI>(web_ui());
-  mojo::Remote<history_cross_device_signin_promo::mojom::
-                   HistoryCrossDeviceSigninPromoHandler>
-      promo_remote;
-  history_ui->BindInterface(promo_remote.BindNewPipeAndPassReceiver());
-
-  base::test::TestFuture<bool> future;
-  promo_remote->ShouldShowPromoCard(future.GetCallback());
-  EXPECT_FALSE(future.Get());
 }
 
 TEST_F(HistoryUITest, AndroidUserEducationMixedTrustHandler) {

@@ -11,8 +11,10 @@ import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 // <if expr="not is_chromeos">
-import './history_cross_device_signin_promo.js';
 import './history_sync_promo.js';
+// </if>
+// <if expr="not is_chromeos and not is_android">
+import './history_cross_device_signin_promo.js';
 // </if>
 import './history_list.js';
 import './history_toolbar.js';
@@ -132,6 +134,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
       // <if expr="not is_chromeos">
       unoPhase2FollowUpEnabled_: {type: Boolean},
       shouldShowHistorySyncPromo_: {type: Boolean},
+      // </if>
+      // <if expr="not is_chromeos and not is_android">
       shouldShowHistoryCrossDeviceSigninPromo_: {type: Boolean},
       // </if>
       contentPage_: {type: String},
@@ -183,6 +187,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
   private accessor unoPhase2FollowUpEnabled_: boolean =
       loadTimeData.getBoolean('unoPhase2FollowUp');
   private accessor shouldShowHistorySyncPromo_: boolean = false;
+  // </if>
+  // <if expr="not is_chromeos and not is_android">
   protected accessor shouldShowHistoryCrossDeviceSigninPromo_: boolean = false;
   // </if>
   protected accessor hasDrawer_: boolean = false;
@@ -807,7 +813,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
       shouldShowHistorySyncPromo: boolean) {
     this.shouldShowHistorySyncPromo_ = shouldShowHistorySyncPromo;
   }
+  // </if>
 
+  // <if expr="not is_chromeos and not is_android">
   protected onShouldShowHistoryCrossDeviceSigninPromo_(
       e: CustomEvent<{shouldShow: boolean}>) {
     this.shouldShowHistoryCrossDeviceSigninPromo_ = e.detail.shouldShow;

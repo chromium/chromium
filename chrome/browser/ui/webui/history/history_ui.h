@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "components/user_education/webui/user_education.mojom.h"
 #include "content/public/browser/webui_config.h"
@@ -23,7 +24,10 @@
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 #include "ui/webui/resources/cr_components/history/foreign_sessions.mojom.h"
 #include "ui/webui/resources/cr_components/history/history.mojom-forward.h"
-#include "ui/webui/resources/cr_components/history/history_cross_device_signin_promo.mojom.h"
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "ui/webui/resources/cr_components/history/history_cross_device_signin_promo.mojom-forward.h"
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom.h"
@@ -34,6 +38,10 @@ class RefCountedMemory;
 }
 
 class BrowsingHistoryHandler;
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+class HistoryCrossDeviceSigninPromoHandler;
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if !BUILDFLAG(IS_ANDROID)
 namespace history_clusters {
@@ -93,10 +101,12 @@ class HistoryUI
       mojo::PendingReceiver<
           user_education::mojom::UserEducationMixedTrustHandlerFactory>
           pending_receiver);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void BindInterface(
       mojo::PendingReceiver<history_cross_device_signin_promo::mojom::
                                 HistoryCrossDeviceSigninPromoHandler>
           pending_receiver);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if !BUILDFLAG(IS_ANDROID)
   void BindInterface(
@@ -150,9 +160,10 @@ class HistoryUI
       foreign_session_handler_;
   std::unique_ptr<user_education::mojom::UserEducationMixedTrustHandler>
       user_education_handler_;
-  std::unique_ptr<history_cross_device_signin_promo::mojom::
-                      HistoryCrossDeviceSigninPromoHandler>
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  std::unique_ptr<HistoryCrossDeviceSigninPromoHandler>
       history_cross_device_signin_promo_handler_;
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<history_clusters::HistoryClustersHandler>

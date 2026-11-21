@@ -89,6 +89,8 @@ export function getHtml(this: HistoryAppElement) {
             <history-sync-promo></history-sync-promo>
           </div>
         ` : ''}
+</if>
+<if expr="not is_chromeos and not is_android">
         <div class="history-cards"
             ?hidden="${!this.shouldShowHistoryCrossDeviceSigninPromo_}">
           <history-cross-device-signin-promo id="historyCrossDeviceSigninPromo"

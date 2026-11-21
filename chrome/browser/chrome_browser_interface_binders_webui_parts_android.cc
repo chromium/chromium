@@ -32,7 +32,6 @@
 #include "components/user_education/webui/user_education.mojom.h"  // nogncheck
 #include "ui/webui/resources/cr_components/history/foreign_sessions.mojom.h"  // nogncheck
 #include "ui/webui/resources/cr_components/history/history.mojom.h"  // nogncheck
-#include "ui/webui/resources/cr_components/history/history_cross_device_signin_promo.mojom.h"  // nogncheck
 #endif
 
 namespace chrome::internal {
@@ -50,10 +49,6 @@ void PopulateChromeWebUIFrameBindersPartsAndroid(
                                          HistoryUI>(map);
   RegisterWebUIControllerInterfaceBinder<
       history::mojom::ForeignSessionPageHandlerFactory, HistoryUI>(map);
-  RegisterWebUIControllerInterfaceBinder<
-      history_cross_device_signin_promo::mojom::
-          HistoryCrossDeviceSigninPromoHandler,
-      HistoryUI>(map);
   RegisterWebUIControllerInterfaceBinder<
       user_education::mojom::UserEducationMixedTrustHandlerFactory, HistoryUI>(
       map);
