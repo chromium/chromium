@@ -1414,36 +1414,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Notifications.WebPlatformV2.{Action}.TimeToActivity"
-    units="ms" expires_after="M112">
-  <owner>peconn@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records the delay between the user clicking on the {Action} of a web
-    platform notification, and an Activity being launched. Only records if the
-    duration is less than 10 seconds.
-  </summary>
-  <token key="Action">
-    <variant name="ActionButton" summary="action button"/>
-    <variant name="Body" summary="body"/>
-  </token>
-</histogram>
-
-<histogram name="Notifications.WebPlatformV2.{Action}.TimeToClose" units="ms"
-    expires_after="M112">
-  <owner>peconn@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records the delay between the user clicking on the {Action} of a web
-    platform notification, and the notification being closed. Only records if
-    the duration is less than 10 seconds.
-  </summary>
-  <token key="Action">
-    <variant name="ActionButton" summary="action button"/>
-    <variant name="Body" summary="body"/>
-  </token>
-</histogram>
-
 <histogram name="Notifications.Windows.ActivationStatus"
     enum="WindowsNotificationActivationStatus" expires_after="2027-06-13">
   <owner>finnur@chromium.org</owner>
