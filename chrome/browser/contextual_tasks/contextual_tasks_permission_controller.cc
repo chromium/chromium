@@ -136,6 +136,22 @@ void ContextualTasksPermissionController::Update(
   PushStateToWebUI();
 }
 
+void ContextualTasksPermissionController::InvalidateChipTokens() {
+#if !BUILDFLAG(IS_ANDROID)
+  if (location_bar_) {
+    location_bar_->InvalidateChipTokens();
+  }
+#endif
+}
+
+void ContextualTasksPermissionController::RefreshContentSettingsIcons() {
+#if !BUILDFLAG(IS_ANDROID)
+  if (location_bar_) {
+    location_bar_->UpdateContentSettingsIcons();
+  }
+#endif
+}
+
 toolbar_ui_api::mojom::PermissionDashboardStatePtr
 ContextualTasksPermissionController::GetState() const {
 #if !BUILDFLAG(IS_ANDROID)

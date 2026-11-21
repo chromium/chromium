@@ -193,6 +193,10 @@ std::unique_ptr<content::WebContents> CreateWebContents(
     BrowserWindowInterface* browser_window) {
   content::WebContents::CreateParams create_params(
       browser_window->GetProfile());
+  // Unattached cached and background-rebuilt task `WebContents` must start
+  // hidden so `PermissionRequestManager` treats them as inactive until they are
+  // attached to the side panel view (`SetWebContents()` / `AddedToWidget()`).
+  create_params.initially_hidden = true;
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContents::Create(create_params);
   webui::SetBrowserWindowInterface(web_contents.get(), browser_window);
@@ -858,6 +862,9 @@ void ContextualTasksSidePanelCoordinator::Close() {
     }
   }
   UpdateOpenState(/*is_open=*/false);
+  if (permission_controller_) {
+    permission_controller_->InvalidateChipTokens();
+  }
   SetErrorPageVisible(false);
   contextual_tasks_panel_host_->Close(
       ContextualTasksPanelHost::AnimationStyle::kStandard);
@@ -3152,7 +3159,14 @@ void ContextualTasksSidePanelCoordinator::OnSurfaceStateChanged(
     NotifyActiveTaskContextProvider();
   }
 
-  if (state == ContextualTasksPanelHost::SurfaceState::kClosed) {
+  if (state == ContextualTasksPanelHost::SurfaceState::kVisible) {
+    if (permission_controller_) {
+      permission_controller_->RefreshContentSettingsIcons();
+    }
+  } else if (state == ContextualTasksPanelHost::SurfaceState::kClosed) {
+    if (permission_controller_) {
+      permission_controller_->InvalidateChipTokens();
+    }
     MaybeRemoveImplicitTabContext();
 #if !BUILDFLAG(IS_ANDROID)
     onboarding_controller_->CloseBubble();

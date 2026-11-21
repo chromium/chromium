@@ -65,6 +65,11 @@ class ContextualTasksLocationBar : public LocationBarStub,
     return permission_dashboard_.get();
   }
 
+  // Rotates chip state tokens and schedules a dashboard push without detaching
+  // `web_contents_`, dropping any click IPCs still in flight when the panel
+  // closes or is replaced by another side panel entry.
+  void InvalidateChipTokens();
+
   // LocationBar overrides:
   // Returns the `WebContents` hosting the currently active task's guest web
   // content in the side panel (i.e. the page that permissions apply to).
@@ -130,6 +135,9 @@ class ContextualTasksLocationBar : public LocationBarStub,
   // `WebContents`. Looked up on demand because the controller lives
   // the longest.
   ContextualTasksPanelController* GetCoordinator() const;
+
+  // Returns whether the Contextual Tasks side panel is currently open.
+  bool IsPanelOpen() const;
 
   raw_ptr<BrowserWindowInterface> browser_window_;
   base::RepeatingClosure state_changed_callback_;

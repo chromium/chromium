@@ -76,6 +76,14 @@ class ContextualTasksPermissionControllerTest
 
     ON_CALL(mock_browser_window_, GetUnownedUserDataHost())
         .WillByDefault(testing::ReturnRef(unowned_user_data_host_));
+    ON_CALL(testing::Const(mock_browser_window_), GetUnownedUserDataHost())
+        .WillByDefault(testing::ReturnRef(unowned_user_data_host_));
+
+    mock_panel_controller_ =
+        std::make_unique<testing::NiceMock<MockContextualTasksPanelController>>(
+            &mock_browser_window_);
+    ON_CALL(*mock_panel_controller_, IsPanelOpenForContextualTask())
+        .WillByDefault(testing::Return(true));
 
     controller_ = std::make_unique<ContextualTasksPermissionController>(
         &mock_browser_window_);
@@ -85,11 +93,16 @@ class ContextualTasksPermissionControllerTest
 
   void TearDown() override {
     controller_.reset();
+    mock_panel_controller_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
   ContextualTasksPermissionController* controller() {
     return controller_.get();
+  }
+
+  MockContextualTasksPanelController& mock_panel_controller() {
+    return *mock_panel_controller_;
   }
 
   MockBrowserWindowInterface* mock_browser_window() {
@@ -100,6 +113,8 @@ class ContextualTasksPermissionControllerTest
   base::test::ScopedFeatureList feature_list_;
   ui::UnownedUserDataHost unowned_user_data_host_;
   testing::NiceMock<MockBrowserWindowInterface> mock_browser_window_;
+  std::unique_ptr<testing::NiceMock<MockContextualTasksPanelController>>
+      mock_panel_controller_;
   std::unique_ptr<ContextualTasksPermissionController> controller_;
 };
 
@@ -589,19 +604,17 @@ TEST_F(ContextualTasksPermissionControllerTest,
   histogram_tester.ExpectTotalCount("ContextualTasks.PermissionChip.Impression",
                                     5);
 
-  // When a panel controller is present and the side panel is closed, state
-  // pushes do not record impressions and reset the last-seen chip type so that
-  // re-opening the side panel records the visible chip.
-  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller(
-      mock_browser_window());
-  ON_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
+  // When the side panel is closed, state pushes do not record impressions and
+  // reset the last-seen chip type so that re-opening the side panel records the
+  // visible chip.
+  ON_CALL(mock_panel_controller(), IsPanelOpenForContextualTask())
       .WillByDefault(testing::Return(false));
   indicator_chip->SetTheme(PermissionChipTheme::kInUseActivityIndicator);
   task_environment()->RunUntilIdle();
   histogram_tester.ExpectTotalCount("ContextualTasks.PermissionChip.Impression",
                                     5);
 
-  ON_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
+  ON_CALL(mock_panel_controller(), IsPanelOpenForContextualTask())
       .WillByDefault(testing::Return(true));
   controller()->PushStateToWebUI();
   task_environment()->RunUntilIdle();
@@ -665,11 +678,7 @@ TEST_F(ContextualTasksPermissionControllerTest,
   const GURL url("https://example.com");
   std::unique_ptr<content::WebContents> toolbar_web_contents =
       CreateTestWebContents();
-  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller(
-      mock_browser_window());
-  ON_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
-      .WillByDefault(testing::Return(true));
-  ON_CALL(mock_panel_controller, GetToolbarWebContents())
+  ON_CALL(mock_panel_controller(), GetToolbarWebContents())
       .WillByDefault(testing::Return(toolbar_web_contents.get()));
 
   ContextualTasksLocationBar* location_bar =
@@ -788,15 +797,13 @@ TEST_F(
       web_contents(),
       std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
 
-  // Even if cached toolbar WebContents exist from a prior open, a closed side
-  // panel has no live view to deliver screen-reader alerts.
+  // While the side panel is closed, `CanAnnounceAlert()` is false and indicator
+  // updates (along with `Show` metrics) are suppressed completely.
   std::unique_ptr<content::WebContents> toolbar_web_contents =
       CreateTestWebContents();
-  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller(
-      mock_browser_window());
-  ON_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
+  ON_CALL(mock_panel_controller(), IsPanelOpenForContextualTask())
       .WillByDefault(testing::Return(false));
-  ON_CALL(mock_panel_controller, GetToolbarWebContents())
+  ON_CALL(mock_panel_controller(), GetToolbarWebContents())
       .WillByDefault(testing::Return(toolbar_web_contents.get()));
 
   ContextualTasksLocationBar* location_bar =
@@ -810,6 +817,21 @@ TEST_F(
   pscs->OnMediaStreamPermissionSet(
       url, {content_settings::PageSpecificContentSettings::kMicrophoneAccessed,
             content_settings::PageSpecificContentSettings::kMicrophoneBlocked});
+
+  EXPECT_FALSE(
+      location_bar->permission_dashboard()->indicator_chip()->GetVisible());
+  histogram_tester.ExpectTotalCount(
+      "Permissions.ActivityIndicator.LHS.AudioCapture.Show", 0);
+
+  // When the panel is open before `GetToolbarWebContents()` is ready,
+  // `CanAnnounceAlert()` remains false: the indicator updates once without
+  // flipping `AccessibilityWasNotified()`.
+  ON_CALL(mock_panel_controller(), IsPanelOpenForContextualTask())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(mock_panel_controller(), GetToolbarWebContents())
+      .WillByDefault(testing::Return(nullptr));
+  EXPECT_FALSE(location_bar->CanAnnounceAlert());
+  controller()->RefreshContentSettingsIcons();
 
   PermissionDashboardController* dashboard_controller =
       location_bar->GetPermissionDashboardController();
@@ -941,9 +963,7 @@ TEST_F(ContextualTasksPermissionControllerTest,
   // timer keeps running.
   std::unique_ptr<content::WebContents> toolbar_web_contents =
       CreateTestWebContents();
-  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller(
-      mock_browser_window());
-  ON_CALL(mock_panel_controller, GetToolbarWebContents())
+  ON_CALL(mock_panel_controller(), GetToolbarWebContents())
       .WillByDefault(testing::Return(toolbar_web_contents.get()));
   permissions::PermissionRequestManager::CreateForWebContents(web_contents());
   FakePermissionPromptDelegate fake_delegate(web_contents(), url);
@@ -1049,10 +1069,8 @@ TEST_F(ContextualTasksPermissionControllerTest,
       location_bar->GetContentSettingBubbleModelDelegate();
   ASSERT_NE(delegate, nullptr);
 
-  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller(
-      mock_browser_window());
   EXPECT_CALL(
-      mock_panel_controller,
+      mock_panel_controller(),
       OpenUrlInNewTab(GURL("https://support.google.com/chrome/answer/3220216")))
       .Times(1);
   delegate->ShowLearnMorePage(ContentSettingsType::NOTIFICATIONS);
@@ -1062,11 +1080,7 @@ TEST_F(ContextualTasksPermissionControllerTest,
        IndicatorAnnouncementOmitsAddressBarHint) {
   std::unique_ptr<content::WebContents> toolbar_web_contents =
       CreateTestWebContents();
-  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller(
-      mock_browser_window());
-  ON_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
-      .WillByDefault(testing::Return(true));
-  ON_CALL(mock_panel_controller, GetToolbarWebContents())
+  ON_CALL(mock_panel_controller(), GetToolbarWebContents())
       .WillByDefault(testing::Return(toolbar_web_contents.get()));
 
   ContextualTasksLocationBar* location_bar =
@@ -1083,7 +1097,7 @@ TEST_F(ContextualTasksPermissionControllerTest,
   ASSERT_FALSE(address_bar_hint.empty());
 
   std::u16string captured_announcement;
-  EXPECT_CALL(mock_panel_controller, AnnounceAlert(testing::_))
+  EXPECT_CALL(mock_panel_controller(), AnnounceAlert(testing::_))
       .WillOnce(testing::SaveArg<0>(&captured_announcement));
 
   const GURL url("https://example.com");

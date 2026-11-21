@@ -74,6 +74,19 @@ ContextualTasksPanelController* ContextualTasksLocationBar::GetCoordinator()
   return ContextualTasksPanelController::From(browser_window_);
 }
 
+bool ContextualTasksLocationBar::IsPanelOpen() const {
+  ContextualTasksPanelController* coordinator = GetCoordinator();
+  return coordinator && coordinator->IsPanelOpenForContextualTask();
+}
+
+void ContextualTasksLocationBar::InvalidateChipTokens() {
+  if (!permission_dashboard_) {
+    return;
+  }
+  permission_dashboard_->InvalidateStateTokens();
+  OnChanged();
+}
+
 content::WebContents* ContextualTasksLocationBar::GetWebContents() {
   return web_contents_.get();
 }
@@ -207,7 +220,7 @@ void ContextualTasksLocationBar::OnChanged() {
 }
 
 void ContextualTasksLocationBar::UpdateContentSettingsIcons() {
-  if (!GetWebContents()) {
+  if (!GetWebContents() || !IsPanelOpen()) {
     return;
   }
   if (content_setting_image_control_.UpdatePermissionDashboard(
@@ -242,7 +255,7 @@ void ContextualTasksLocationBar::Update(content::WebContents* contents) {
 }
 
 bool ContextualTasksLocationBar::ShouldHideContentSettingImage() {
-  return false;
+  return !IsPanelOpen();
 }
 
 content::WebContents*

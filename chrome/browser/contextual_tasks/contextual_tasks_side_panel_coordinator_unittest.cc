@@ -75,6 +75,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
@@ -106,9 +107,14 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/contextual_tasks/contextual_tasks_location_bar.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_page.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
+#include "chrome/browser/ui/views/permissions/chip/webui_permission_chip.h"
+#include "chrome/browser/ui/views/permissions/chip/webui_permission_dashboard.h"
+#include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/contextual_tasks/contextual_tasks_extension_handler.h"
 #endif
@@ -348,6 +354,8 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
 #endif
 
     ON_CALL(*browser_window_, GetUnownedUserDataHost())
+        .WillByDefault(ReturnRef(unowned_user_data_host_));
+    ON_CALL(Const(*browser_window_), GetUnownedUserDataHost())
         .WillByDefault(ReturnRef(unowned_user_data_host_));
 
     tab_list_ = std::make_unique<NiceMock<MockTabListInterface>>();
@@ -3948,6 +3956,8 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
       GetWebContentsForTaskForTesting(task_id);
   ASSERT_TRUE(panel_contents);
   mock_panel_host_->SetWebContents(panel_contents);
+  mock_panel_host_->Show(
+      ContextualTasksPanelHost::AnimationStyle::kNoAnimation);
 
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       panel_contents, GURL(permissions::MockPermissionRequest::kDefaultOrigin)
@@ -5971,6 +5981,435 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
               AnnounceAlert(std::u16string(u"Camera in use")))
       .Times(1);
   coordinator_->AnnounceAlert(u"Camera in use");
+}
+
+class ContextualTasksSidePanelCoordinatorPermissionTest
+    : public ContextualTasksSidePanelCoordinatorTest {
+ public:
+  ContextualTasksSidePanelCoordinatorPermissionTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {kContextualTasks, kContextualTasksSidePanelTabState,
+         kContextualTasksSidePanelRearchitecture},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ContextualTasksSidePanelCoordinatorPermissionTest,
+       CloseAndHideInvalidateChipTokensWithoutDetachingWebContents) {
+  tabs::TabInterface* tab1 = CreateMockTab();
+  tabs::TabInterface* tab2 = CreateMockTab();
+  const SessionID tab1_id =
+      sessions::SessionTabHelper::IdForTab(tab1->GetContents());
+  const SessionID tab2_id =
+      sessions::SessionTabHelper::IdForTab(tab2->GetContents());
+
+  // Associate both tabs with the same task while keeping the panel closed on
+  // `tab2`, so switching between `tab1` and `tab2` keeps `panel_wc` attached on
+  // `mock_panel_host_` (`UpdateWebContentsForActiveTab()` is a no-op) and
+  // isolates `Hide()` and `Unhide()`.
+  const base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ContextualTask task(task_id);
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(tab1_id))
+      .WillByDefault(Return(task));
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(tab2_id))
+      .WillByDefault(Return(task));
+  ON_CALL(*mock_controller_, GetTabsAssociatedWithTask(task_id))
+      .WillByDefault(Return(std::vector<SessionID>{tab1_id, tab2_id}));
+
+  CreateCachedWebContentsForTesting(task_id, /*is_open=*/true);
+  content::WebContents* panel_wc = GetWebContentsForTaskForTesting(task_id);
+  ASSERT_NE(panel_wc, nullptr);
+  SetPanelClosedOnTab(tab2);
+
+  ContextualTasksPermissionController* permission_controller =
+      coordinator_->permission_controller();
+  ASSERT_NE(permission_controller, nullptr);
+  ContextualTasksLocationBar* location_bar =
+      permission_controller->GetLocationBarForTesting();
+  ASSERT_NE(location_bar, nullptr);
+  WebUIPermissionChip* indicator_chip =
+      location_bar->permission_dashboard()->indicator_chip();
+  ASSERT_NE(indicator_chip, nullptr);
+
+  SetActiveTab(tab1);
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(false));
+  coordinator_->OnActiveTabChanged(*tab_list_, tab1);
+  ASSERT_EQ(mock_panel_host_->GetWebContents(), panel_wc);
+  EXPECT_EQ(location_bar->GetWebContents(), panel_wc);
+
+  const uint32_t open_token = indicator_chip->state_token();
+  int click_count = 0;
+  indicator_chip->SetPressedCallback(
+      base::BindRepeating([](int* count, bool) { ++(*count); }, &click_count));
+
+  // Switching to `tab2` (same task, per-tab closed state) triggers `Hide()`,
+  // which closes with `kNoAnimation` (synchronously firing `kClosed` on
+  // desktop). `panel_wc` stays attached on `location_bar`, while chip tokens
+  // rotate so late clicks in flight are dropped.
+  SetActiveTab(tab2);
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(true));
+  coordinator_->OnActiveTabChanged(*tab_list_, tab2);
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kClosed,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+  ASSERT_EQ(mock_panel_host_->GetWebContents(), panel_wc);
+  EXPECT_EQ(location_bar->GetWebContents(), panel_wc);
+  EXPECT_NE(indicator_chip->state_token(), open_token);
+
+  permission_controller->OnChipClicked(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator,
+      /*is_mouse_interaction=*/true, open_token);
+  EXPECT_EQ(click_count, 0);
+
+  // Switching back to `tab1` triggers `Unhide()` and keeps `panel_wc` attached.
+  SetActiveTab(tab1);
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(false));
+  coordinator_->OnActiveTabChanged(*tab_list_, tab1);
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(true));
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kVisible,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+  ASSERT_EQ(mock_panel_host_->GetWebContents(), panel_wc);
+  EXPECT_EQ(location_bar->GetWebContents(), panel_wc);
+
+  // Side-panel eviction (`kClosed`) keeps `panel_wc` attached while rotating
+  // tokens; after re-showing (`kVisible`), clicks carrying the fresh token
+  // succeed.
+  const uint32_t visible_token = indicator_chip->state_token();
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kClosed,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+  EXPECT_EQ(location_bar->GetWebContents(), panel_wc);
+  EXPECT_NE(indicator_chip->state_token(), visible_token);
+
+  permission_controller->OnChipClicked(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator,
+      /*is_mouse_interaction=*/true, visible_token);
+  EXPECT_EQ(click_count, 0);
+
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kVisible,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+  EXPECT_EQ(location_bar->GetWebContents(), panel_wc);
+  permission_controller->OnChipClicked(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator,
+      /*is_mouse_interaction=*/true, indicator_chip->state_token());
+  EXPECT_EQ(click_count, 1);
+
+  // Closing the panel immediately rotates tokens (covering the animated close
+  // window before `kClosed` arrives), and after `Show()` clicks with the
+  // current `state_token()` increment `click_count` again.
+  const uint32_t reopened_token = indicator_chip->state_token();
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(true));
+  coordinator_->Close();
+  ASSERT_EQ(mock_panel_host_->GetWebContents(), panel_wc);
+  EXPECT_EQ(location_bar->GetWebContents(), panel_wc);
+  EXPECT_NE(indicator_chip->state_token(), reopened_token);
+
+  permission_controller->OnChipClicked(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator,
+      /*is_mouse_interaction=*/true, reopened_token);
+  EXPECT_EQ(click_count, 1);
+
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(false));
+  coordinator_->Show(/*transition_from_tab=*/false,
+                     omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(true));
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kVisible,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+  EXPECT_EQ(location_bar->GetWebContents(), panel_wc);
+  permission_controller->OnChipClicked(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator,
+      /*is_mouse_interaction=*/true, indicator_chip->state_token());
+  EXPECT_EQ(click_count, 2);
+}
+
+TEST_F(
+    ContextualTasksSidePanelCoordinatorPermissionTest,
+    PendingRequestChipSurvivesSidePanelReplacementAndSuppressesClosedIndicators) {
+  display::test::TestScreen test_screen(
+      /*create_display=*/true, /*register_screen=*/!display::Screen::Get());
+
+  tabs::TabInterface* tab1 = CreateMockTab();
+  tabs::TabInterface* tab2 = CreateMockTab();
+  const SessionID tab1_id =
+      sessions::SessionTabHelper::IdForTab(tab1->GetContents());
+  const SessionID tab2_id =
+      sessions::SessionTabHelper::IdForTab(tab2->GetContents());
+
+  ContextualTask task1(base::Uuid::GenerateRandomV4());
+  ContextualTask task2(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(tab1_id))
+      .WillByDefault(Return(task1));
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(tab2_id))
+      .WillByDefault(Return(task2));
+  ON_CALL(*mock_controller_, GetTabsAssociatedWithTask(task1.GetTaskId()))
+      .WillByDefault(Return(std::vector<SessionID>{tab1_id}));
+  ON_CALL(*mock_controller_, GetTabsAssociatedWithTask(task2.GetTaskId()))
+      .WillByDefault(Return(std::vector<SessionID>{tab2_id}));
+
+  CreateCachedWebContentsForTesting(task1.GetTaskId(), /*is_open=*/true);
+  CreateCachedWebContentsForTesting(task2.GetTaskId(), /*is_open=*/false);
+  content::WebContents* panel_wc1 =
+      GetWebContentsForTaskForTesting(task1.GetTaskId());
+  content::WebContents* panel_wc2 =
+      GetWebContentsForTaskForTesting(task2.GetTaskId());
+  ASSERT_NE(panel_wc1, nullptr);
+  ASSERT_NE(panel_wc2, nullptr);
+
+  SetActiveTab(tab1);
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(false));
+  coordinator_->OnActiveTabChanged(*tab_list_, tab1);
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(true));
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kVisible,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+  ASSERT_EQ(panel_wc1->GetVisibility(), content::Visibility::VISIBLE);
+
+  ContextualTasksLocationBar* location_bar =
+      coordinator_->permission_controller()->GetLocationBarForTesting();
+  ASSERT_NE(location_bar, nullptr);
+  WebUIPermissionChip* request_chip =
+      location_bar->permission_dashboard()->request_chip();
+  WebUIPermissionChip* indicator_chip =
+      location_bar->permission_dashboard()->indicator_chip();
+  ASSERT_NE(request_chip, nullptr);
+  ASSERT_NE(indicator_chip, nullptr);
+
+  // Trigger a pending permission request on `panel_wc1`.
+  const GURL origin(permissions::MockPermissionRequest::kDefaultOrigin);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(panel_wc1, origin);
+  permissions::PermissionRequestManager* prm1 =
+      permissions::PermissionRequestManager::FromWebContents(panel_wc1);
+  ASSERT_NE(prm1, nullptr);
+  prm1->DocumentOnLoadCompletedInPrimaryMainFrame();
+  prm1->AddRequest(panel_wc1->GetPrimaryMainFrame(),
+                   std::make_unique<permissions::MockPermissionRequest>(
+                       permissions::RequestType::kMicStream,
+                       permissions::PermissionRequestGestureType::GESTURE));
+  base::RunLoop().RunUntilIdle();
+  ASSERT_NE(prm1->GetCurrentPrompt(), nullptr);
+  EXPECT_TRUE(request_chip->GetVisible());
+  const uint32_t initial_request_token = request_chip->state_token();
+
+  // Simulate another side panel entry replacing Contextual Tasks:
+  // `SidePanelCoordinator` detaches and caches the view (`WasHidden()`) and
+  // notifies `OnEntryHidden()` (`kClosed`).
+  panel_wc1->WasHidden();
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(false));
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kClosed,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(request_chip->GetVisible());
+  EXPECT_TRUE(prm1->IsRequestInProgress());
+  EXPECT_NE(request_chip->state_token(), initial_request_token);
+
+  // Re-showing the cached Contextual Tasks view re-attaches it to the widget
+  // (`WasShown()` in `AddedToWidget()`) before `OnEntryShown()` (`kVisible`).
+  // Because `location_bar` kept `panel_wc1` attached, `OnSurfaceStateChanged`
+  // does not reset the re-created prompt chip.
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(true));
+  panel_wc1->WasShown();
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kVisible,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_NE(prm1->GetCurrentPrompt(), nullptr);
+  EXPECT_TRUE(request_chip->GetVisible());
+
+  prm1->Dismiss(/*prompt_options=*/std::monostate());
+  base::RunLoop().RunUntilIdle();
+
+  // Now close the panel (`kClosed`) and verify that:
+  // 1) background content-setting updates on `panel_wc1` do not surface an
+  //    indicator while closed, and
+  // 2) switching to `tab2` (whose task has `!ShouldBeOpen()`) keeps `panel_wc2`
+  //    hidden and suppresses its indicator until the panel opens.
+  mock_panel_host_->Close(ContextualTasksPanelHost::AnimationStyle::kStandard);
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(false));
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kClosed,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(panel_wc2, origin);
+  auto* pscs1 = content_settings::PageSpecificContentSettings::GetForFrame(
+      panel_wc1->GetPrimaryMainFrame());
+  auto* pscs2 = content_settings::PageSpecificContentSettings::GetForFrame(
+      panel_wc2->GetPrimaryMainFrame());
+  ASSERT_NE(pscs1, nullptr);
+  ASSERT_NE(pscs2, nullptr);
+  pscs1->OnMediaStreamPermissionSet(
+      origin,
+      {content_settings::PageSpecificContentSettings::kMicrophoneAccessed,
+       content_settings::PageSpecificContentSettings::kMicrophoneBlocked});
+  pscs2->OnMediaStreamPermissionSet(
+      origin,
+      {content_settings::PageSpecificContentSettings::kMicrophoneAccessed,
+       content_settings::PageSpecificContentSettings::kMicrophoneBlocked});
+  EXPECT_FALSE(indicator_chip->GetVisible());
+
+  SetActiveTab(tab2);
+  coordinator_->OnActiveTabChanged(*tab_list_, tab2);
+  EXPECT_EQ(panel_wc2->GetVisibility(), content::Visibility::HIDDEN);
+  EXPECT_FALSE(indicator_chip->GetVisible());
+
+  // Opening the panel on `tab2` refreshes content-setting icons on `kVisible`
+  // and displays the deferred indicator.
+  coordinator_->Show(/*transition_from_tab=*/false,
+                     omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT);
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(true));
+  coordinator_->OnSurfaceStateChanged(
+      ContextualTasksPanelHost::SurfaceState::kVisible,
+      ContextualTasksPanelHost::StateChangeReason::kUserAction);
+  EXPECT_EQ(panel_wc2->GetVisibility(), content::Visibility::VISIBLE);
+  EXPECT_TRUE(indicator_chip->GetVisible());
+}
+
+TEST_F(
+    ContextualTasksSidePanelCoordinatorPermissionTest,
+    BackgroundRebuiltWebContentsStartsHiddenAndDoesNotHijackActivePermissionChip) {
+  display::test::TestScreen test_screen(
+      /*create_display=*/true, /*register_screen=*/!display::Screen::Get());
+
+  ContextualTask old_task(base::Uuid::GenerateRandomV4());
+  ContextualTask new_task(base::Uuid::GenerateRandomV4());
+  tabs::TabInterface* tab_a = tab_list_->GetActiveTab();
+  tabs::TabInterface* tab_b = CreateMockTab();
+  const SessionID tab_a_id =
+      sessions::SessionTabHelper::IdForTab(tab_a->GetContents());
+  const SessionID tab_b_id =
+      sessions::SessionTabHelper::IdForTab(tab_b->GetContents());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(tab_a_id))
+      .WillByDefault(Return(old_task));
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(tab_b_id))
+      .WillByDefault(Return(new_task));
+  ON_CALL(*mock_controller_, GetTabsAssociatedWithTask(old_task.GetTaskId()))
+      .WillByDefault(Return(std::vector<SessionID>{tab_a_id}));
+  ON_CALL(*mock_controller_, GetTabsAssociatedWithTask(new_task.GetTaskId()))
+      .WillByDefault(Return(std::vector<SessionID>{tab_b_id}));
+  const GURL thread_url("https://www.google.com/search?udm=50&mtid=thread1");
+  ON_CALL(*mock_controller_,
+          GetThreadUrlFromTaskId(old_task.GetTaskId(), _, _, _))
+      .WillByDefault([thread_url](const base::Uuid&, const std::string&,
+                                  omnibox::ChromeAimEntryPoint,
+                                  base::OnceCallback<void(GURL)> callback) {
+        std::move(callback).Run(thread_url);
+      });
+
+  // Unattached cached `WebContents` starts `HIDDEN`, stays `HIDDEN` when
+  // `SetWebContents()` runs while the panel host is closed, and becomes
+  // `VISIBLE` once the panel host is shown.
+  CreateCachedWebContentsForTesting(old_task.GetTaskId(), /*is_open=*/true);
+  content::WebContents* panel_contents =
+      GetWebContentsForTaskForTesting(old_task.GetTaskId());
+  ASSERT_NE(panel_contents, nullptr);
+  EXPECT_EQ(panel_contents->GetVisibility(), content::Visibility::HIDDEN);
+
+  UpdateWebContentsForActiveTab();
+  ASSERT_EQ(panel_contents, coordinator_->GetActiveWebContents());
+  EXPECT_EQ(panel_contents->GetVisibility(), content::Visibility::HIDDEN);
+
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(true));
+  mock_panel_host_->Show(
+      ContextualTasksPanelHost::AnimationStyle::kNoAnimation);
+  EXPECT_EQ(panel_contents->GetVisibility(), content::Visibility::VISIBLE);
+
+  ContextualTasksPermissionController* permission_controller =
+      coordinator_->permission_controller();
+  ASSERT_NE(permission_controller, nullptr);
+  ContextualTasksLocationBar* location_bar =
+      permission_controller->GetLocationBarForTesting();
+  ASSERT_NE(location_bar, nullptr);
+  ChipController* chip_controller = location_bar->GetChipController();
+  ASSERT_NE(chip_controller, nullptr);
+  WebUIPermissionChip* request_chip =
+      location_bar->permission_dashboard()->request_chip();
+  ASSERT_NE(request_chip, nullptr);
+
+  // Trigger a permission request on the active panel `WebContents` so it owns
+  // the shared `ChipController`.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      panel_contents, GURL(permissions::MockPermissionRequest::kDefaultOrigin));
+  permissions::PermissionRequestManager* active_prm =
+      permissions::PermissionRequestManager::FromWebContents(panel_contents);
+  ASSERT_NE(active_prm, nullptr);
+  active_prm->DocumentOnLoadCompletedInPrimaryMainFrame();
+  active_prm->AddRequest(
+      panel_contents->GetPrimaryMainFrame(),
+      std::make_unique<permissions::MockPermissionRequest>(
+          permissions::RequestType::kMicStream,
+          permissions::PermissionRequestGestureType::GESTURE));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_NE(active_prm->GetCurrentPrompt(), nullptr);
+  EXPECT_TRUE(request_chip->GetVisible());
+  EXPECT_EQ(chip_controller->active_permission_request_manager(), active_prm);
+  const uint32_t active_chip_token = request_chip->state_token();
+
+  // Split the active panel onto `new_task` on `tab_b`, triggering a background
+  // rebuild of `old_task`'s `WebContents` for `tab_a`.
+  SetActiveTab(tab_b);
+  coordinator_->OnTaskChanged(panel_contents, new_task.GetTaskId());
+
+  content::WebContents* rebuilt_contents =
+      GetWebContentsForTaskForTesting(old_task.GetTaskId());
+  ASSERT_NE(rebuilt_contents, nullptr);
+  ASSERT_NE(rebuilt_contents, panel_contents);
+  EXPECT_EQ(rebuilt_contents->GetVisibility(), content::Visibility::HIDDEN);
+
+  // A gesture-less permission request on the unattached background-rebuilt
+  // `WebContents` must stay queued/unshown (`tab_is_active_ == false`) and
+  // cannot hijack the active task's `ChipController`.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      rebuilt_contents,
+      GURL(permissions::MockPermissionRequest::kDefaultOrigin));
+  permissions::PermissionRequestManager* rebuilt_prm =
+      permissions::PermissionRequestManager::FromWebContents(rebuilt_contents);
+  ASSERT_NE(rebuilt_prm, nullptr);
+  rebuilt_prm->DocumentOnLoadCompletedInPrimaryMainFrame();
+  rebuilt_prm->AddRequest(
+      rebuilt_contents->GetPrimaryMainFrame(),
+      std::make_unique<permissions::MockPermissionRequest>(
+          permissions::RequestType::kGeolocation,
+          permissions::PermissionRequestGestureType::NO_GESTURE));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(rebuilt_prm->GetCurrentPrompt(), nullptr);
+  EXPECT_NE(active_prm->GetCurrentPrompt(), nullptr);
+  EXPECT_TRUE(request_chip->GetVisible());
+  EXPECT_EQ(chip_controller->active_permission_request_manager(), active_prm);
+  EXPECT_EQ(request_chip->state_token(), active_chip_token);
+
+  // Switching back to `tab_a` attaches and shows `rebuilt_contents`, allowing
+  // its queued request to display in the location bar.
+  SetActiveTab(tab_a);
+  coordinator_->OnActiveTabChanged(*tab_list_, tab_a);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(rebuilt_contents->GetVisibility(), content::Visibility::VISIBLE);
+  EXPECT_NE(rebuilt_prm->GetCurrentPrompt(), nullptr);
+  EXPECT_EQ(chip_controller->active_permission_request_manager(), rebuilt_prm);
+
+  coordinator_->Close();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
