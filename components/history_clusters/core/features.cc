@@ -32,9 +32,6 @@ BASE_FEATURE(kUserVisibleDebug,
 
 BASE_FEATURE(kHistoryClustersInternalsPage, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kHistoryClustersNavigationContextClustering,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace internal
 
 // Intended to be Enabled by default on Desktop and the flag left here as a

@@ -190,7 +190,7 @@ struct Config {
   // visits within a cluster. Will always be greater than or equal to 0.
   float has_url_keyed_image_ranking_weight = 1.5;
 
-  // The `kHistoryClustersNavigationContextClustering` feature and child params.
+  // Navigation context clustering params.
 
   // Whether to use the new clustering path that does context clustering at
   // navigation and embellishes clusters for display at UI time.

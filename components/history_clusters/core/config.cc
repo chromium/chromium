@@ -102,24 +102,6 @@ Config::Config() {
         "max_num_keywords_per_cluster", max_num_keywords_per_cluster);
   }
 
-  // The `kHistoryClustersNavigationContextClustering` feature and child params.
-  {
-    use_navigation_context_clusters = base::FeatureList::IsEnabled(
-        internal::kHistoryClustersNavigationContextClustering);
-
-    context_clustering_clean_up_duration =
-        base::Minutes(GetFieldTrialParamByFeatureAsInt(
-            internal::kHistoryClustersNavigationContextClustering,
-            "clean_up_duration_minutes",
-            context_clustering_clean_up_duration.InMinutes()));
-
-    cluster_triggerability_cutoff_duration =
-        base::Minutes(GetFieldTrialParamByFeatureAsInt(
-            internal::kHistoryClustersNavigationContextClustering,
-            "cluster_triggerability_cutoff_duration_minutes",
-            cluster_triggerability_cutoff_duration.InMinutes()));
-  }
-
   // Lonely features without child params.
   {
     non_user_visible_debug =

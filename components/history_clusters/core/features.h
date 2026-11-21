@@ -40,10 +40,6 @@ BASE_DECLARE_FEATURE(kUserVisibleDebug);
 // Enables the history clusters internals page.
 BASE_DECLARE_FEATURE(kHistoryClustersInternalsPage);
 
-// Enables context clustering to be performed at navigation time rather than in
-// batches.
-BASE_DECLARE_FEATURE(kHistoryClustersNavigationContextClustering);
-
 // Order consistently with config.h.
 
 }  // namespace internal
