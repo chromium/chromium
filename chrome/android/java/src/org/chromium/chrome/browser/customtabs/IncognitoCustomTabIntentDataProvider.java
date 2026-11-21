@@ -109,7 +109,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
                                 IntentHandler.EXTRA_INCOGNITO_CCT_CALLER_ID,
                                 IncognitoCctCallerId.OTHER_CHROME_FEATURES));
             }
-            CustomTabIntentDataProvider.populateTimeoutExtras(builder, intent);
+            CustomTabIntentDataProvider.populateColorSchemeAndTimeoutExtras(builder, intent);
 
             mDataHolder = builder.build();
         }

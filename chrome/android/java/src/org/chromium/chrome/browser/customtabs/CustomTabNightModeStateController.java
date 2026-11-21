@@ -45,23 +45,35 @@ public class CustomTabNightModeStateController implements DestroyObserver, Night
 
     /**
      * Initializes the initial night mode state.
+     *
      * @param delegate The {@link AppCompatDelegate} that controls night mode state in support
-     *                 library.
-     * @param intent  The {@link Intent} to retrieve information about the initial state.
+     *     library.
+     * @param intent The {@link Intent} to retrieve information about the initial state.
      */
     void initialize(AppCompatDelegate delegate, Intent intent) {
+        initialize(delegate, getRequestedColorScheme(intent));
+    }
+
+    /**
+     * Initializes the initial night mode state.
+     *
+     * @param delegate The {@link AppCompatDelegate} that controls night mode state in support
+     *     library.
+     * @param requestedColorScheme The color scheme requested for the CCT.
+     */
+    void initialize(AppCompatDelegate delegate, int requestedColorScheme) {
         if (!NightModeUtils.isNightModeSupported()) {
             // Always stay in light mode if night mode is not available.
             mRequestedColorScheme = CustomTabsIntent.COLOR_SCHEME_LIGHT;
             return;
         }
 
-        mRequestedColorScheme = getRequestedColorScheme(intent);
+        mRequestedColorScheme = requestedColorScheme;
         mAppCompatDelegate = delegate;
 
         updateNightMode();
 
-        // No need to observe system settings if the intent specifies a light/dark color scheme.
+        // No need to observe system settings if a light/dark color scheme is specified.
         if (mRequestedColorScheme == CustomTabsIntent.COLOR_SCHEME_SYSTEM) {
             SystemNightModeMonitor.getInstance().addObserver(mSystemNightModeObserver);
         }

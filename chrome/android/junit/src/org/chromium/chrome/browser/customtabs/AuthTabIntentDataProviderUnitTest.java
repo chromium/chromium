@@ -329,13 +329,14 @@ public class AuthTabIntentDataProviderUnitTest {
     }
 
     @Test
-    public void testReconstructFromSavedDataHolder_timeoutAndUmaGating() {
+    public void testReconstructFromSavedDataHolder_timeoutColorSchemeAndUmaGating() {
         PendingIntent timeoutPi =
                 PendingIntent.getBroadcast(
                         mActivity,
                         13,
                         new Intent("auth_tab_timeout"),
                         IntentUtils.getPendingIntentMutabilityFlag(true));
+        mIntent.putExtra(CustomTabsIntent.EXTRA_COLOR_SCHEME, COLOR_SCHEME_DARK);
         mIntent.putExtra(CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_MINUTES, 20);
         mIntent.putExtra(CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_PENDING_INTENT, timeoutPi);
 
@@ -353,6 +354,7 @@ public class AuthTabIntentDataProviderUnitTest {
 
         CustomTabIntentDataHolder holder = originalProvider.getCustomTabIntentDataHolder();
         assertNotNull(holder);
+        assertEquals(COLOR_SCHEME_DARK, holder.mColorScheme);
         assertEquals(Integer.valueOf(20), originalProvider.getTimeoutMinutes());
         assertEquals(timeoutPi, originalProvider.getTimeoutPendingIntent());
         assertNull(originalProvider.getEmbedderTabId());
@@ -377,6 +379,8 @@ public class AuthTabIntentDataProviderUnitTest {
                         new Intent(), mActivity, COLOR_SCHEME_DARK, restoredHolder);
         noUmaOnRestore.assertExpected();
 
+        assertEquals(
+                COLOR_SCHEME_DARK, restoredProvider.getCustomTabIntentDataHolder().mColorScheme);
         assertEquals(Integer.valueOf(20), restoredProvider.getTimeoutMinutes());
         assertEquals(timeoutPi, restoredProvider.getTimeoutPendingIntent());
         assertNull(restoredProvider.getEmbedderTabId());
@@ -384,11 +388,12 @@ public class AuthTabIntentDataProviderUnitTest {
     }
 
     @Test
-    public void testReconstructFromSavedDataHolder_nullTimeout() {
+    public void testReconstructFromSavedDataHolder_defaultColorSchemeAndNullTimeout() {
         AuthTabIntentDataProvider originalProvider =
                 new AuthTabIntentDataProvider(mIntent, mActivity, COLOR_SCHEME_LIGHT);
         CustomTabIntentDataHolder holder = originalProvider.getCustomTabIntentDataHolder();
         assertNotNull(holder);
+        assertEquals(CustomTabsIntent.COLOR_SCHEME_SYSTEM, holder.mColorScheme);
         assertNull(originalProvider.getTimeoutMinutes());
         assertNull(originalProvider.getTimeoutPendingIntent());
 
@@ -405,6 +410,9 @@ public class AuthTabIntentDataProviderUnitTest {
         AuthTabIntentDataProvider restoredProvider =
                 new AuthTabIntentDataProvider(
                         new Intent(), mActivity, COLOR_SCHEME_LIGHT, restoredHolder);
+        assertEquals(
+                CustomTabsIntent.COLOR_SCHEME_SYSTEM,
+                restoredProvider.getCustomTabIntentDataHolder().mColorScheme);
         assertNull(restoredProvider.getTimeoutMinutes());
         assertNull(restoredProvider.getTimeoutPendingIntent());
     }

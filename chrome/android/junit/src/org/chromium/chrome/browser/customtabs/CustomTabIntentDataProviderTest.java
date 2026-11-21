@@ -136,6 +136,7 @@ public class CustomTabIntentDataProviderTest {
         Intent intent = new CustomTabsIntent.Builder().build().intent;
         intent.setData(Uri.parse("https://www.example.com/regular"));
         setIsTrustedCustomTab(intent);
+        intent.putExtra(CustomTabsIntent.EXTRA_COLOR_SCHEME, COLOR_SCHEME_DARK);
         intent.putExtra(CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_MINUTES, 15);
         intent.putExtra(CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_PENDING_INTENT, timeoutPi);
         intent.putExtra(CustomTabResumeManager.EXTRA_EMBEDDER_TAB_ID, "embedder-tab-123");
@@ -159,6 +160,7 @@ public class CustomTabIntentDataProviderTest {
 
         CustomTabIntentDataHolder holder = originalProvider.getCustomTabIntentDataHolder();
         assertNotNull(holder);
+        assertEquals(COLOR_SCHEME_DARK, holder.mColorScheme);
         assertEquals(Integer.valueOf(15), originalProvider.getTimeoutMinutes());
         assertEquals(timeoutPi, originalProvider.getTimeoutPendingIntent());
         assertEquals("embedder-tab-123", originalProvider.getEmbedderTabId());
@@ -187,6 +189,8 @@ public class CustomTabIntentDataProviderTest {
                         new Intent(), mContext, COLOR_SCHEME_DARK, restoredHolder);
         noUmaOnRestore.assertExpected();
 
+        assertEquals(
+                COLOR_SCHEME_DARK, restoredProvider.getCustomTabIntentDataHolder().mColorScheme);
         assertEquals(Integer.valueOf(15), restoredProvider.getTimeoutMinutes());
         assertEquals(timeoutPi, restoredProvider.getTimeoutPendingIntent());
         assertEquals("embedder-tab-123", restoredProvider.getEmbedderTabId());
@@ -198,6 +202,9 @@ public class CustomTabIntentDataProviderTest {
 
         CustomTabIntentDataProvider defaultProvider =
                 new CustomTabIntentDataProvider(new Intent(), mContext, COLOR_SCHEME_LIGHT);
+        assertEquals(
+                CustomTabsIntent.COLOR_SCHEME_SYSTEM,
+                defaultProvider.getCustomTabIntentDataHolder().mColorScheme);
         assertNull(defaultProvider.getTimeoutMinutes());
         assertNull(defaultProvider.getTimeoutPendingIntent());
         assertNull(defaultProvider.getEmbedderTabId());
@@ -245,7 +252,7 @@ public class CustomTabIntentDataProviderTest {
     }
 
     @Test
-    public void testIncognitoReconstructFromSavedDataHolder_timeoutAndUmaGating() {
+    public void testIncognitoReconstructFromSavedDataHolder_timeoutColorSchemeAndUmaGating() {
         PendingIntent timeoutPi =
                 PendingIntent.getBroadcast(
                         mContext,
@@ -258,6 +265,7 @@ public class CustomTabIntentDataProviderTest {
                 intent, BrowserServicesIntentDataProvider.IncognitoCctCallerId.READ_LATER);
         intent.setPackage(mContext.getPackageName());
         IntentUtils.addTrustedIntentExtras(intent);
+        intent.putExtra(CustomTabsIntent.EXTRA_COLOR_SCHEME, COLOR_SCHEME_DARK);
         intent.putExtra(CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_MINUTES, 25);
         intent.putExtra(CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_PENDING_INTENT, timeoutPi);
         intent.putExtra(CustomTabResumeManager.EXTRA_EMBEDDER_TAB_ID, "incognito-tab-id");
@@ -279,6 +287,7 @@ public class CustomTabIntentDataProviderTest {
 
         CustomTabIntentDataHolder holder = originalProvider.getCustomTabIntentDataHolder();
         assertNotNull(holder);
+        assertEquals(COLOR_SCHEME_DARK, holder.mColorScheme);
         assertEquals(Integer.valueOf(25), originalProvider.getTimeoutMinutes());
         assertEquals(timeoutPi, originalProvider.getTimeoutPendingIntent());
         assertNull(originalProvider.getEmbedderTabId());
@@ -305,6 +314,8 @@ public class CustomTabIntentDataProviderTest {
                         new Intent(), mContext, COLOR_SCHEME_DARK, restoredHolder);
         noUmaOnRestore.assertExpected();
 
+        assertEquals(
+                COLOR_SCHEME_DARK, restoredProvider.getCustomTabIntentDataHolder().mColorScheme);
         assertEquals(Integer.valueOf(25), restoredProvider.getTimeoutMinutes());
         assertEquals(timeoutPi, restoredProvider.getTimeoutPendingIntent());
         assertNull(restoredProvider.getEmbedderTabId());

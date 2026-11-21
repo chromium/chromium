@@ -117,6 +117,7 @@ public class CustomTabIntentDataHolder implements Parcelable {
     public final int mAndroidBrowserHelperVersion;
     public final @Nullable WindowFeatures mRequestedWindowFeatures;
     public final @Nullable Integer mIncognitoCctCallerId;
+    public final int mColorScheme;
     public final @Nullable Integer mTimeoutMinutes;
     public final @Nullable PendingIntent mTimeoutPendingIntent;
     public @Nullable String mEmbedderTabId;
@@ -193,6 +194,7 @@ public class CustomTabIntentDataHolder implements Parcelable {
         mAndroidBrowserHelperVersion = builder.mAndroidBrowserHelperVersion;
         mRequestedWindowFeatures = builder.mRequestedWindowFeatures;
         mIncognitoCctCallerId = builder.mIncognitoCctCallerId;
+        mColorScheme = builder.mColorScheme;
         mTimeoutMinutes = builder.mTimeoutMinutes;
         mTimeoutPendingIntent = builder.mTimeoutPendingIntent;
         mEmbedderTabId = builder.mEmbedderTabId;
@@ -275,6 +277,7 @@ public class CustomTabIntentDataHolder implements Parcelable {
         mRequestedWindowFeatures =
                 windowFeaturesBundle != null ? new WindowFeatures(windowFeaturesBundle) : null;
         mIncognitoCctCallerId = (Integer) in.readValue(classLoader);
+        mColorScheme = in.readInt();
         mTimeoutMinutes = readNullableInt(in);
         mTimeoutPendingIntent = in.readTypedObject(PendingIntent.CREATOR);
         mEmbedderTabId = in.readString();
@@ -358,6 +361,7 @@ public class CustomTabIntentDataHolder implements Parcelable {
         dest.writeBundle(
                 mRequestedWindowFeatures != null ? mRequestedWindowFeatures.toBundle() : null);
         dest.writeValue(mIncognitoCctCallerId);
+        dest.writeInt(mColorScheme);
         writeNullableInt(dest, mTimeoutMinutes);
         dest.writeTypedObject(mTimeoutPendingIntent, flags);
         dest.writeString(mEmbedderTabId);
@@ -669,6 +673,7 @@ public class CustomTabIntentDataHolder implements Parcelable {
         private int mAndroidBrowserHelperVersion;
         private @Nullable WindowFeatures mRequestedWindowFeatures;
         private @Nullable Integer mIncognitoCctCallerId;
+        private int mColorScheme = CustomTabsIntent.COLOR_SCHEME_SYSTEM;
         private @Nullable Integer mTimeoutMinutes;
         private @Nullable PendingIntent mTimeoutPendingIntent;
         private @Nullable String mEmbedderTabId;
@@ -1019,6 +1024,11 @@ public class CustomTabIntentDataHolder implements Parcelable {
 
         public Builder setIncognitoCctCallerId(@Nullable Integer incognitoCctCallerId) {
             mIncognitoCctCallerId = incognitoCctCallerId;
+            return this;
+        }
+
+        public Builder setColorScheme(int colorScheme) {
+            mColorScheme = colorScheme;
             return this;
         }
 

@@ -10,6 +10,7 @@ import static androidx.browser.customtabs.CustomTabsIntent.COLOR_SCHEME_SYSTEM;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -116,6 +117,40 @@ public class CustomTabNightModeStateControllerTest {
         initializeWithColorScheme(COLOR_SCHEME_SYSTEM);
         mNightModeController.addObserver(observer);
         verify(observer, never()).onNightModeStateChanged();
+    }
+
+    @Test
+    public void initializeWithColorSchemeInt_Light() {
+        setSystemNightMode(true);
+        mNightModeController.initialize(mAppCompatDelegate, COLOR_SCHEME_LIGHT);
+
+        assertFalse(mNightModeController.isInNightMode());
+        verify(mAppCompatDelegate).setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        verify(mSystemNightModeMonitor, never()).addObserver(any());
+    }
+
+    @Test
+    public void initializeWithColorSchemeInt_Dark() {
+        setSystemNightMode(false);
+        mNightModeController.initialize(mAppCompatDelegate, COLOR_SCHEME_DARK);
+
+        assertTrue(mNightModeController.isInNightMode());
+        verify(mAppCompatDelegate).setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        verify(mSystemNightModeMonitor, never()).addObserver(any());
+    }
+
+    @Test
+    public void initializeWithColorSchemeInt_System() {
+        setSystemNightMode(true);
+        mNightModeController.initialize(mAppCompatDelegate, COLOR_SCHEME_SYSTEM);
+
+        assertTrue(mNightModeController.isInNightMode());
+        verify(mAppCompatDelegate).setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+        verify(mSystemNightModeMonitor).addObserver(any());
+
+        setSystemNightMode(false);
+        assertFalse(mNightModeController.isInNightMode());
+        verify(mAppCompatDelegate).setLocalNightMode(AppCompatDelegate.MODE_NIGHT_NO);
     }
 
     private void initializeWithColorScheme(int colorScheme) {

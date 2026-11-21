@@ -151,6 +151,7 @@ public class CustomTabIntentDataHolderUnitTest {
         assertEquals(0, restored.mAndroidBrowserHelperVersion);
         assertNull(restored.mRequestedWindowFeatures);
         assertNull(restored.mIncognitoCctCallerId);
+        assertEquals(CustomTabsIntent.COLOR_SCHEME_SYSTEM, restored.mColorScheme);
         assertNull(restored.mTimeoutMinutes);
         assertNull(restored.mTimeoutPendingIntent);
         assertNull(restored.mEmbedderTabId);
@@ -337,6 +338,7 @@ public class CustomTabIntentDataHolderUnitTest {
                         .setAndroidBrowserHelperVersion(42)
                         .setRequestedWindowFeatures(new WindowFeatures(10, 20, 300, 400))
                         .setIncognitoCctCallerId(IncognitoCctCallerId.DOWNLOAD_HOME)
+                        .setColorScheme(CustomTabsIntent.COLOR_SCHEME_DARK)
                         .setTimeoutMinutes(15)
                         .setTimeoutPendingIntent(timeoutPi)
                         .setEmbedderTabId("embedder-tab-42")
@@ -491,6 +493,7 @@ public class CustomTabIntentDataHolderUnitTest {
         assertEquals(
                 Integer.valueOf(IncognitoCctCallerId.DOWNLOAD_HOME),
                 restored.mIncognitoCctCallerId);
+        assertEquals(CustomTabsIntent.COLOR_SCHEME_DARK, restored.mColorScheme);
         assertEquals(Integer.valueOf(15), restored.mTimeoutMinutes);
         assertEquals(timeoutPi, restored.mTimeoutPendingIntent);
         assertEquals("embedder-tab-42", restored.mEmbedderTabId);
@@ -504,6 +507,7 @@ public class CustomTabIntentDataHolderUnitTest {
     public void testParcelRoundTrip_explicitNullOptionalFields() {
         CustomTabIntentDataHolder original =
                 new CustomTabIntentDataHolder.Builder()
+                        .setColorScheme(CustomTabsIntent.COLOR_SCHEME_LIGHT)
                         .setTimeoutMinutes(null)
                         .setTimeoutPendingIntent(null)
                         .setEmbedderTabId(null)
@@ -514,6 +518,7 @@ public class CustomTabIntentDataHolderUnitTest {
                         .build();
         CustomTabIntentDataHolder restored = roundTripThroughParcel(original);
 
+        assertEquals(CustomTabsIntent.COLOR_SCHEME_LIGHT, restored.mColorScheme);
         assertNull(restored.mTimeoutMinutes);
         assertNull(restored.mTimeoutPendingIntent);
         assertNull(restored.mEmbedderTabId);

@@ -814,7 +814,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             builder.setAndroidBrowserHelperVersion(
                     IntentUtils.safeGetIntExtra(intent, EXTRA_ANDROID_BROWSER_HELPER_VERSION, 0));
             builder.setRequestedWindowFeatures(extractRequestedWindowFeatures(intent, uiType));
-            populateTimeoutExtras(builder, intent);
+            populateColorSchemeAndTimeoutExtras(builder, intent);
             int fedCmId = IntentUtils.safeGetIntExtra(intent, IntentHandler.EXTRA_FEDCM_ID, -1);
             if (fedCmId != -1) {
                 builder.setFedCmId(fedCmId);
@@ -875,7 +875,13 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         }
     }
 
-    static void populateTimeoutExtras(CustomTabIntentDataHolder.Builder builder, Intent intent) {
+    static void populateColorSchemeAndTimeoutExtras(
+            CustomTabIntentDataHolder.Builder builder, Intent intent) {
+        builder.setColorScheme(
+                IntentUtils.safeGetIntExtra(
+                        intent,
+                        CustomTabsIntent.EXTRA_COLOR_SCHEME,
+                        CustomTabsIntent.COLOR_SCHEME_SYSTEM));
         if (IntentUtils.safeHasExtra(
                 intent, CustomTabActivityTimeoutHandler.EXTRA_TIMEOUT_MINUTES)) {
             builder.setTimeoutMinutes(

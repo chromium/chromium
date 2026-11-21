@@ -429,6 +429,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
             return false;
         }
 
+        mSavedInstanceState = savedInstanceState;
         if (requiresFirstRunToBeCompleted(intent)
                 && FirstRunFlowSequencer.launch(this, intent, shouldPreferLightweightFre(intent))) {
             abortLaunch(LaunchIntentDispatcher.Action.FINISH_ACTIVITY);
@@ -437,7 +438,6 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
 
         super.onCreate(transformSavedInstanceStateForOnCreate(savedInstanceState));
         mOnCreateTimestampMs = SystemClock.elapsedRealtime();
-        mSavedInstanceState = savedInstanceState;
 
         mWindowAndroid = createWindowAndroid();
         if (isSelfOcclusionTrackingEnabled()) {
@@ -482,6 +482,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     protected void initializeStartupMetrics() {}
 
     private void abortLaunch(@LaunchIntentDispatcher.Action int dispatchAction) {
+        mSavedInstanceState = null;
         super.onCreate(null);
         if (dispatchAction == LaunchIntentDispatcher.Action.FINISH_ACTIVITY) {
             finish();

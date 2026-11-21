@@ -118,7 +118,7 @@ public class AuthTabIntentDataProvider extends BrowserServicesIntentDataProvider
                     AuthTabColorProvider.getColorSchemeParams(
                             intent, CustomTabsIntent.COLOR_SCHEME_DARK));
             builder.setUrlToLoad(IntentHandler.getUrlFromIntent(intent));
-            CustomTabIntentDataProvider.populateTimeoutExtras(builder, intent);
+            CustomTabIntentDataProvider.populateColorSchemeAndTimeoutExtras(builder, intent);
 
             mDataHolder = builder.build();
         }

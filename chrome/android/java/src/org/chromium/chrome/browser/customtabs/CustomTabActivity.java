@@ -603,16 +603,28 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     @Override
     protected boolean requiresFirstRunToBeCompleted(Intent intent) {
         // Custom Tabs can be used to open Chrome help pages before the ToS has been accepted.
-        if (CustomTabIntentDataProvider.isTrustedCustomTab(intent, mSession)
-                && IntentUtils.safeGetIntExtra(
-                                intent,
-                                CustomTabIntentDataProvider.EXTRA_UI_TYPE,
-                                CustomTabIntentDataProvider.CustomTabsUiType.DEFAULT)
-                        == CustomTabIntentDataProvider.CustomTabsUiType.INFO_PAGE) {
-            return false;
+        // Checked in #onCreateInternal (before IntentDataProvider exists; recreated launches have
+        // a stripped |intent| and must read saved state) and #onStart (after IntentDataProvider is
+        // built and savedInstanceState may have been cleared).
+        boolean isTrustedInfoPage;
+        var dataProvider = getIntentDataProvider();
+        var savedHolder = dataProvider == null ? getSavedDataHolder() : null;
+        if (dataProvider != null) {
+            isTrustedInfoPage = dataProvider.isTrustedIntent() && dataProvider.isInfoPage();
+        } else if (savedHolder != null) {
+            isTrustedInfoPage =
+                    savedHolder.mIsTrustedIntent
+                            && savedHolder.mUiType == CustomTabsUiType.INFO_PAGE;
+        } else {
+            isTrustedInfoPage =
+                    CustomTabIntentDataProvider.isTrustedCustomTab(intent, mSession)
+                            && IntentUtils.safeGetIntExtra(
+                                            intent,
+                                            CustomTabIntentDataProvider.EXTRA_UI_TYPE,
+                                            CustomTabsUiType.DEFAULT)
+                                    == CustomTabsUiType.INFO_PAGE;
         }
-
-        return super.requiresFirstRunToBeCompleted(intent);
+        return isTrustedInfoPage ? false : super.requiresFirstRunToBeCompleted(intent);
     }
 
     @Override
