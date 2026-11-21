@@ -22,25 +22,21 @@ chrome.test.runTests([
   },
 
   // Display results in current tab if no disposition is provided.
-  function QueryPopulatedDispositionEmpty() {
-    chrome.tabs.create({}, async (tab) => {
-      await waitForNewTab(tab.id);
-      const navigated = waitForNavigationToGoogle(tab.id);
-      chrome.search.query({text: SEARCH_WORDS}, () => {});
-      await navigated;
-      chrome.test.succeed();
-    });
+  async function QueryPopulatedDispositionEmpty() {
+    const tab = await createNewTab();
+    const navigated = waitForNavigationToGoogle(tab.id);
+    chrome.search.query({text: SEARCH_WORDS}, () => {});
+    await navigated;
+    chrome.test.succeed();
   },
 
   // Display results in current tab if said disposition is provided.
-  function QueryPopulatedDispositionCurrentTab() {
-    chrome.tabs.create({}, async (tab) => {
-      await waitForNewTab(tab.id);
-      const navigated = waitForNavigationToGoogle(tab.id);
-      chrome.search.query({text: SEARCH_WORDS, disposition: 'CURRENT_TAB'});
-      await navigated;
-      chrome.test.succeed();
-    });
+  async function QueryPopulatedDispositionCurrentTab() {
+    const tab = await createNewTab();
+    const navigated = waitForNavigationToGoogle(tab.id);
+    chrome.search.query({text: SEARCH_WORDS, disposition: 'CURRENT_TAB'});
+    await navigated;
+    chrome.test.succeed();
   },
 
   // Display results in new tab if said disposition is provided.
@@ -103,14 +99,12 @@ chrome.test.runTests([
   },
 
   // Display results in specified tab if said tabId is provided.
-  function QueryPopulatedTabIDValid() {
-    chrome.tabs.create({}, async (tab) => {
-      await waitForNewTab(tab.id);
-      const navigated = waitForNavigationToGoogle(tab.id);
-      chrome.search.query({text: SEARCH_WORDS, tabId: tab.id});
-      await navigated;
-      chrome.test.succeed();
-    });
+  async function QueryPopulatedTabIDValid() {
+    const tab = await createNewTab();
+    const navigated = waitForNavigationToGoogle(tab.id);
+    chrome.search.query({text: SEARCH_WORDS, tabId: tab.id});
+    await navigated;
+    chrome.test.succeed();
   },
 
   // Error if tab id invalid.
@@ -154,8 +148,35 @@ function waitForTab(tabIdExpected, expectedHostname) {
   });
 }
 
-function waitForNewTab(tabId) {
-  return waitForTab(tabId, 'newtab');
+// Creates a tab and resolves with it once it has finished loading the NTP.
+// The onUpdated listener is registered before the tab is created, since the
+// tab could finish loading before a listener added in the tabs.create()
+// callback is registered with the browser.
+function createNewTab() {
+  return new Promise((resolve) => {
+    let createdTabId;
+    const completedTabs = new Map();
+    function maybeResolve() {
+      const tab = completedTabs.get(createdTabId);
+      if (!tab) {
+        return;
+      }
+      chrome.tabs.onUpdated.removeListener(listener);
+      assertEq('newtab', new URL(tab.url).hostname);
+      resolve(tab);
+    }
+    function listener(tabId, changeInfo, tab) {
+      if (changeInfo.status === 'complete') {
+        completedTabs.set(tabId, tab);
+        maybeResolve();
+      }
+    }
+    chrome.tabs.onUpdated.addListener(listener);
+    chrome.tabs.create({}, (tab) => {
+      createdTabId = tab.id;
+      maybeResolve();
+    });
+  });
 }
 
 function waitForNavigationToGoogle(tabId) {
