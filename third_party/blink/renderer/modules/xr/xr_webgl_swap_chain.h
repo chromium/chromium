@@ -5,12 +5,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_WEBGL_SWAP_CHAIN_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_WEBGL_SWAP_CHAIN_H_
 
+#include <memory>
+
+#include "base/memory/weak_ptr.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_unowned_texture.h"
 #include "third_party/blink/renderer/modules/xr/xr_swap_chain.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/xr_webgl_drawing_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
@@ -114,20 +118,30 @@ class XRWebGLStaticSwapChain final : public XRWebGLSwapChain {
   void OnFrameEnd() override;
 
  private:
-  GLuint owned_texture_;
+  GLuint owned_texture_ = 0;
 };
 
 // A swap chain backed by SharedImages
-class XRWebGLSharedImageSwapChain final : public XRWebGLSwapChain {
+class XRWebGLSharedImageSwapChain final
+    : public XRWebGLSwapChain,
+      public WebGraphicsContext3DProviderWrapper::DestructionObserver {
+  USING_PRE_FINALIZER(XRWebGLSharedImageSwapChain, Dispose);
+
  public:
   XRWebGLSharedImageSwapChain(WebGLRenderingContextBase*,
                               const XRWebGLSwapChain::Descriptor&,
                               bool webgl2);
-  ~XRWebGLSharedImageSwapChain() override = default;
+  ~XRWebGLSharedImageSwapChain() override;
+
+  void Dispose();
 
   WebGLUnownedTexture* ProduceTexture() override;
 
+  void OnFrameStart() override;
   void OnFrameEnd() override;
+
+  // WebGraphicsContext3DProviderWrapper::DestructionObserver:
+  void OnContextDestroyed() override;
 
   std::unique_ptr<SharedImageHolder> TransferToSharedImageHolder() override;
   std::unique_ptr<SharedImageHolder> DoneWithSharedBuffer() override;
@@ -135,6 +149,9 @@ class XRWebGLSharedImageSwapChain final : public XRWebGLSwapChain {
   gpu::SyncToken GetSyncToken() const override { return sync_token_; }
 
  private:
+  void EndTextureAccess(bool verify_sync_token);
+
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   std::unique_ptr<gpu::SharedImageTexture> shared_image_texture_;
   std::unique_ptr<gpu::SharedImageTexture::ScopedAccess>
       shared_image_scoped_access_;

@@ -4,12 +4,16 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_webgl_swap_chain.h"
 
+#include <utility>
+
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
+#include "gpu/command_buffer/client/gles2_interface.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_framebuffer.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_texture.h"
 #include "third_party/blink/renderer/modules/xr/xr_layer_shared_image_manager.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/xr_webgl_drawing_buffer.h"
 
 namespace blink {
@@ -282,23 +286,53 @@ XRWebGLSharedImageSwapChain::XRWebGLSharedImageSwapChain(
     WebGLRenderingContextBase* context,
     const XRWebGLSwapChain::Descriptor& descriptor,
     bool webgl2)
-    : XRWebGLSwapChain(context, descriptor, webgl2) {
+    : XRWebGLSwapChain(context, descriptor, webgl2) {}
+
+XRWebGLSharedImageSwapChain::~XRWebGLSharedImageSwapChain() = default;
+
+void XRWebGLSharedImageSwapChain::Dispose() {
+  EndTextureAccess(/*verify_sync_token=*/false);
 }
 
 WebGLUnownedTexture* XRWebGLSharedImageSwapChain::ProduceTexture() {
-  gpu::gles2::GLES2Interface* context_gl = context()->ContextGL();
+  if (!context() || context()->isContextLost()) {
+    return nullptr;
+  }
+
+  DrawingBuffer* drawing_buffer = context()->GetDrawingBuffer();
+  if (!drawing_buffer || drawing_buffer->destroyed()) {
+    return nullptr;
+  }
+
+  base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper =
+      drawing_buffer->ContextProviderWeakPtr();
+  if (!context_provider_wrapper) {
+    return nullptr;
+  }
+
+  gpu::gles2::GLES2Interface* context_gl =
+      context_provider_wrapper->ContextProvider().ContextGL();
   if (!context_gl) {
     return nullptr;
   }
 
-  const XRSharedImageData& content_image_data = layer()->SharedImage();
+  if (!layer()) {
+    return nullptr;
+  }
 
+  const XRSharedImageData& content_image_data = layer()->SharedImage();
   if (!content_image_data.shared_image) {
     return nullptr;
   }
 
   // Create a texture backed by the shared image.
+  CHECK(!context_provider_wrapper_);
   CHECK(!shared_image_texture_);
+  CHECK(!shared_image_scoped_access_);
+
+  context_provider_wrapper_ = std::move(context_provider_wrapper);
+  context_provider_wrapper_->AddObserver(this);
+
   shared_image_texture_ =
       content_image_data.shared_image->CreateGLTexture(context_gl);
   shared_image_scoped_access_ =
@@ -311,22 +345,51 @@ WebGLUnownedTexture* XRWebGLSharedImageSwapChain::ProduceTexture() {
       context(), shared_image_texture_->id(), texture_target);
 }
 
-void XRWebGLSharedImageSwapChain::OnFrameEnd() {
-  WebGLUnownedTexture* texture = ResetCurrentTexture();
-  if (texture) {
-    gpu::gles2::GLES2Interface* gl = context()->ContextGL();
-    if (gl) {
+void XRWebGLSharedImageSwapChain::EndTextureAccess(bool verify_sync_token) {
+  gpu::gles2::GLES2Interface* gl =
+      context_provider_wrapper_
+          ? context_provider_wrapper_->ContextProvider().ContextGL()
+          : nullptr;
+
+  if (shared_image_scoped_access_) {
+    if (gl && !verify_sync_token) {
       gl->Flush();
     }
 
-    DCHECK(shared_image_texture_);
     sync_token_ = gpu::SharedImageTexture::ScopedAccess::EndAccess(
         std::move(shared_image_scoped_access_));
-    shared_image_texture_.reset();
-
-    // Notify our WebGLUnownedTexture that we have deleted it.
-    static_cast<WebGLUnownedTexture*>(texture)->OnGLDeleteTextures();
+    if (verify_sync_token && sync_token_.HasData() && gl) {
+      int8_t* sync_token_data = sync_token_.GetData();
+      gl->VerifySyncTokensCHROMIUM(&sync_token_data, 1);
+    }
   }
+
+  if (shared_image_texture_) {
+    shared_image_texture_.reset();
+  }
+
+  if (context_provider_wrapper_) {
+    context_provider_wrapper_->RemoveObserver(this);
+    context_provider_wrapper_.reset();
+  }
+
+  if (WebGLUnownedTexture* texture = ResetCurrentTexture()) {
+    // Notify our WebGLUnownedTexture that we have deleted it.
+    texture->OnGLDeleteTextures();
+  }
+}
+
+void XRWebGLSharedImageSwapChain::OnFrameStart() {
+  XRWebGLSwapChain::OnFrameStart();
+  sync_token_ = gpu::SyncToken();
+}
+
+void XRWebGLSharedImageSwapChain::OnContextDestroyed() {
+  EndTextureAccess(/*verify_sync_token=*/true);
+}
+
+void XRWebGLSharedImageSwapChain::OnFrameEnd() {
+  EndTextureAccess(/*verify_sync_token=*/false);
 }
 
 std::unique_ptr<SharedImageHolder>
@@ -336,6 +399,9 @@ XRWebGLSharedImageSwapChain::TransferToSharedImageHolder() {
 
 std::unique_ptr<SharedImageHolder>
 XRWebGLSharedImageSwapChain::DoneWithSharedBuffer() {
+  if (!layer()) {
+    return nullptr;
+  }
   const XRSharedImageData& content_image_data = layer()->SharedImage();
   if (!content_image_data.shared_image) {
     return nullptr;

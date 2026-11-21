@@ -631,26 +631,14 @@ void XRWebGLDrawingBuffer::SwapColorBuffers() {
 
 std::unique_ptr<SharedImageHolder>
 XRWebGLDrawingBuffer::TransferToSharedImageHolder() {
-  scoped_refptr<ColorBuffer> buffer;
-  bool success = false;
-
-  // Ensure the context isn't lost and the framebuffer is complete before
-  // continuing.
-  if (!ContextLost()) {
-    SwapColorBuffers();
-
-    buffer = front_color_buffer_;
-    success = true;
+  // Ensure the context isn't lost before swapping and exporting the buffer.
+  if (ContextLost()) {
+    return nullptr;
   }
 
-  // If we can't get a mailbox, simply crash here since the image returned
-  // by the current function will be used in XRFrameProvider::SubmitLayer()
-  // later, where an UnacceleratedStaticBitmapImage will cause a crash anyway.
-  // The only situation in which this could happen is when two or more calls
-  // to transferToImageBitmap are made back-to-back, if the framebuffer is
-  // incomplete (likely due to a failed buffer allocation), or when the
-  // context gets lost.
-  CHECK(success) << "WebXR requires hardware-accelerated rendering to texture";
+  SwapColorBuffers();
+  scoped_refptr<ColorBuffer> buffer = front_color_buffer_;
+  CHECK(buffer);
 
   // This holds a ref on the XRWebGLDrawingBuffer that will keep it alive
   // until the mailbox is released (and while the callback is running).

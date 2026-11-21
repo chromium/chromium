@@ -53,10 +53,16 @@ XRWebGLDrawingBufferSwapChain::XRWebGLDrawingBufferSwapChain(
 }
 
 XRWebGLDrawingBufferSwapChain::~XRWebGLDrawingBufferSwapChain() {
-  drawing_buffer_->BeginDestruction();
+  if (drawing_buffer_) {
+    drawing_buffer_->BeginDestruction();
+  }
 }
 
 WebGLUnownedTexture* XRWebGLDrawingBufferSwapChain::ProduceTexture() {
+  if (context()->isContextLost()) {
+    return nullptr;
+  }
+
   GLuint owned_texture = drawing_buffer_->GetCurrentColorBufferTextureId();
 
   return MakeGarbageCollected<WebGLUnownedTexture>(context(), owned_texture,
@@ -69,6 +75,9 @@ XRWebGLDrawingBufferSwapChain::TransferToSharedImageHolder() {
   if (texture) {
     // Notify our WebGLUnownedTexture that we have deleted it.
     static_cast<WebGLUnownedTexture*>(texture)->OnGLDeleteTextures();
+  }
+  if (!drawing_buffer_) {
+    return nullptr;
   }
   return drawing_buffer_->TransferToSharedImageHolder();
 }

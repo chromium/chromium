@@ -222,6 +222,7 @@ void XRWebGLCubemapSwapChain::OnFrameEnd() {
 
   gpu::gles2::GLES2Interface* gl = context()->ContextGL();
   if (!gl) {
+    wrapped_swapchain_->OnFrameEnd();
     return;
   }
 

@@ -104,6 +104,11 @@ bool XRFrameTransport::FrameSubmit(
           SUBMIT_AS_TEXTURE_HANDLE) {
 #if BUILDFLAG(IS_WIN)
     TRACE_EVENT0("gpu", "XRFrameTransport::CopyImage");
+    if (delegate->IsContextLost()) {
+      FrameSubmitMissing(vr_presentation_provider,
+                         std::move(camera_export_result), vr_frame_id);
+      return false;
+    }
     // Update last_transfer_succeeded_ value. This should usually complete
     // without waiting.
     if (transport_options_->wait_for_transfer_notification) {
@@ -167,6 +172,8 @@ bool XRFrameTransport::FrameSubmit(
                  DRAW_INTO_TEXTURE_MAILBOX) {
     TRACE_EVENT0("gpu", "XRFrameTransport::SubmitFrameDrawnIntoTexture");
     if (delegate->IsContextLost()) {
+      FrameSubmitMissing(vr_presentation_provider,
+                         std::move(camera_export_result), vr_frame_id);
       return false;
     }
     if (waiting_for_previous_frame_render_) {

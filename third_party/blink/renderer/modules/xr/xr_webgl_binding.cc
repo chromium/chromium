@@ -459,6 +459,9 @@ XRWebGLSubImage* XRWebGLBinding::getViewSubImage(
     ExceptionState& exception_state) {
   CHECK(layer);
   CHECK(view);
+  if (!ValidateSessionAndContext(exception_state)) {
+    return nullptr;
+  }
 
   auto* drawing_context = layer->drawing_context();
   CHECK(drawing_context);
@@ -468,10 +471,28 @@ XRWebGLSubImage* XRWebGLBinding::getViewSubImage(
     return nullptr;
   }
 
+  // This cast is safe because if the layer is from the same session that
+  // created the binding, as checked above, then it must have been created using
+  // an XRWebGLBinding.
+  XRWebGLBinding* gl_binding = static_cast<XRWebGLBinding*>(layer->binding());
+  if (gl_binding->context() != this->context()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Layer was not created with the same context as this binding.");
+    return nullptr;
+  }
+
   if (!view || view->session() != session()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "View was not created with the same session as this binding.");
+    return nullptr;
+  }
+
+  XRFrame* frame = view->frame();
+  if (!frame || !frame->IsActive() || !frame->IsAnimationFrame()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Invalid frame state.");
     return nullptr;
   }
 
@@ -528,11 +549,22 @@ XRWebGLSubImage* XRWebGLBinding::getSubImage(XRCompositionLayer* layer,
     return nullptr;
   }
 
+  // This cast is safe because if the layer is from the same session that
+  // created the binding, as checked above, then it must have been created using
+  // an XRWebGLBinding.
+  XRWebGLBinding* gl_binding = static_cast<XRWebGLBinding*>(layer->binding());
+  if (gl_binding->context() != this->context()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Layer was not created with the same context as this binding.");
+    return nullptr;
+  }
+
   // Check the frame state.
   if (frame->session() != session() || !frame->IsActive() ||
       !frame->IsAnimationFrame()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid frame state.");
+                                      "Frame is not active.");
     return nullptr;
   }
 
@@ -701,6 +733,20 @@ WebGLTexture* XRWebGLBinding::getCameraImage(XRCamera* camera,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Camera comes from a different session than this binding");
+    return nullptr;
+  }
+
+  if (session()->ended()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Cannot get camera image for a session which has ended.");
+    return nullptr;
+  }
+
+  if (webgl_context_->isContextLost()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Cannot get camera image for a lost WebGL context.");
     return nullptr;
   }
 
