@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/frame/csp/source_list_directive.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -409,6 +411,19 @@ TEST_F(SourceListDirectiveTest, IsNone) {
         ParseSourceList("frame-src", test.sources);
     EXPECT_EQ(CSPSourceListIsNone(*frame_src), test.expected);
   }
+
+  EXPECT_FALSE(CSPSourceListIsNone(
+      *ParseSourceList("script-src", "'inline-speculation-rules'")));
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      network::features::kCSPScriptSrcHashesInV1);
+  EXPECT_FALSE(CSPSourceListIsNone(
+      *ParseSourceList("script-src", "'strict-dynamic-url'")));
+  EXPECT_FALSE(CSPSourceListIsNone(
+      *ParseSourceList("script-src", "'url-sha256-321cba'")));
+  EXPECT_FALSE(CSPSourceListIsNone(
+      *ParseSourceList("script-src", "'eval-sha256-321cba'")));
 }
 
 TEST_F(SourceListDirectiveTest, IsSelf) {
@@ -452,6 +467,19 @@ TEST_F(SourceListDirectiveTest, IsSelf) {
         ParseSourceList("frame-src", test.sources);
     EXPECT_EQ(CSPSourceListIsSelf(*frame_src), test.expected);
   }
+
+  EXPECT_FALSE(CSPSourceListIsSelf(
+      *ParseSourceList("script-src", "'self' 'inline-speculation-rules'")));
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      network::features::kCSPScriptSrcHashesInV1);
+  EXPECT_FALSE(CSPSourceListIsSelf(
+      *ParseSourceList("script-src", "'self' 'strict-dynamic-url'")));
+  EXPECT_FALSE(CSPSourceListIsSelf(
+      *ParseSourceList("script-src", "'self' 'url-sha256-321cba'")));
+  EXPECT_FALSE(CSPSourceListIsSelf(
+      *ParseSourceList("script-src", "'self' 'eval-sha256-321cba'")));
 }
 
 TEST_F(SourceListDirectiveTest, AllowsURLBasedMatching) {

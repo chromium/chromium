@@ -44,6 +44,32 @@ bool IsStyleDirective(CSPDirectiveName directive_type) {
           directive_type == CSPDirectiveName::DefaultSrc);
 }
 
+bool HasNoExpressionsExceptSelf(
+    const network::mojom::blink::CSPSourceList& source_list) {
+  const auto& [sources, nonces, hashes, url_hashes, eval_hashes, allow_self,
+               allow_star, allow_inline, allow_inline_speculation_rules,
+               allow_eval, allow_wasm_eval, allow_wasm_unsafe_eval,
+               allow_dynamic, allow_dynamic_url, allow_unsafe_hashes,
+               report_sample, allow_trusted_types_eval,
+               report_hash_algorithm] = source_list;
+  // `allow_self` is checked by callers; `report_sample` and
+  // `report_hash_algorithm` are reporting modifiers, not source expressions.
+  std::ignore = allow_self;
+  std::ignore = report_sample;
+  std::ignore = report_hash_algorithm;
+
+  // Check the remaining characteristics to verify whether any are set:
+  return source_list.sources.empty() && !source_list.allow_star &&
+         !source_list.allow_inline &&
+         !source_list.allow_inline_speculation_rules &&
+         !source_list.allow_unsafe_hashes && !source_list.allow_eval &&
+         !source_list.allow_wasm_eval && !source_list.allow_wasm_unsafe_eval &&
+         !source_list.allow_dynamic && !source_list.allow_dynamic_url &&
+         source_list.nonces.empty() && source_list.hashes.empty() &&
+         source_list.url_hashes.empty() && source_list.eval_hashes.empty() &&
+         !source_list.allow_trusted_types_eval;
+}
+
 }  // namespace
 
 CSPCheckResult CSPSourceListAllows(
@@ -125,22 +151,12 @@ bool CSPSourceListAllowUrlHash(
 
 bool CSPSourceListIsNone(
     const network::mojom::blink::CSPSourceList& source_list) {
-  return !source_list.sources.size() && !source_list.allow_self &&
-         !source_list.allow_star && !source_list.allow_inline &&
-         !source_list.allow_unsafe_hashes && !source_list.allow_eval &&
-         !source_list.allow_wasm_eval && !source_list.allow_wasm_unsafe_eval &&
-         !source_list.allow_dynamic && !source_list.nonces.size() &&
-         !source_list.hashes.size() && !source_list.allow_trusted_types_eval;
+  return !source_list.allow_self && HasNoExpressionsExceptSelf(source_list);
 }
 
 bool CSPSourceListIsSelf(
     const network::mojom::blink::CSPSourceList& source_list) {
-  return source_list.allow_self && !source_list.sources.size() &&
-         !source_list.allow_star && !source_list.allow_inline &&
-         !source_list.allow_unsafe_hashes && !source_list.allow_eval &&
-         !source_list.allow_wasm_eval && !source_list.allow_wasm_unsafe_eval &&
-         !source_list.allow_dynamic && !source_list.nonces.size() &&
-         !source_list.hashes.size() && !source_list.allow_trusted_types_eval;
+  return source_list.allow_self && HasNoExpressionsExceptSelf(source_list);
 }
 
 bool CSPSourceListIsHashOrNoncePresent(
