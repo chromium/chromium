@@ -5,12 +5,16 @@ agentic_review {
     rules: "agents/knowledge_base/rules/general/java/colocate-tojnitype-and-fromjnitype-conversions.md"
     rules: "agents/knowledge_base/rules/general/java/do-not-use-define-jni-for-system-or-jar-classes.md"
     rules: "agents/knowledge_base/rules/general/java/omit-redundant-namespace-in-jni-type.md"
+    rules: "agents/knowledge_base/rules/general/java/omit-redundant-null-asserts-on-jni-pointer-receivers.md"
+    rules: "agents/knowledge_base/rules/general/java/prefer-jni-pointer-wrappers-over-long-native-pointers.md"
     rules: "agents/knowledge_base/rules/general/java/use-jni-types-for-jni-method-parameters.md"
   }
   capability_groups {
     path_expression: "(?:.*/)?[^/]*\\.java"
     rules: "agents/knowledge_base/rules/general/java/accurate-target-references-in-javadoc-link-tags.md"
+    rules: "agents/knowledge_base/rules/general/java/add-callers-for-new-apis-in-the-same-cl.md"
     rules: "agents/knowledge_base/rules/general/java/add-unit-tests-for-new-code.md"
+    rules: "agents/knowledge_base/rules/general/java/annotate-test-widened-members-with-visiblefortesting.md"
     rules: "agents/knowledge_base/rules/general/java/annotate-typedef-annotations-with-target-type-use.md"
     rules: "agents/knowledge_base/rules/general/java/assert-mutual-exclusivity-of-execution-modes.md"
     rules: "agents/knowledge_base/rules/general/java/avoid-backward-compat-in-debug-logs.md"
@@ -36,6 +40,7 @@ agentic_review {
     rules: "agents/knowledge_base/rules/general/java/catch-broad-exception-for-recoverable-android-os-apis.md"
     rules: "agents/knowledge_base/rules/general/java/check-resolved-object-identity-over-selector-enum.md"
     rules: "agents/knowledge_base/rules/general/java/check-test-overrides-before-production-detection.md"
+    rules: "agents/knowledge_base/rules/general/java/clear-handlers-on-outliving-views-in-destroy.md"
     rules: "agents/knowledge_base/rules/general/java/compose-primitive-methods-over-specialized-core-helpers.md"
     rules: "agents/knowledge_base/rules/general/java/consistent-ts-private-protected-member-naming.md"
     rules: "agents/knowledge_base/rules/general/java/consolidate-coupled-accessors-into-compound-structures.md"
@@ -71,6 +76,7 @@ agentic_review {
     rules: "agents/knowledge_base/rules/general/java/group-static-and-instance-methods-in-java.md"
     rules: "agents/knowledge_base/rules/general/java/implement-interface-convenience-overloads-as-default-methods.md"
     rules: "agents/knowledge_base/rules/general/java/implement-service-hooks-in-nested-classes.md"
+    rules: "agents/knowledge_base/rules/general/java/import-classes-instead-of-fully-qualified-names.md"
     rules: "agents/knowledge_base/rules/general/java/include-target-receiver-in-platform-delegate-methods.md"
     rules: "agents/knowledge_base/rules/general/java/invert-return-condition-on-predicate-polarity-refactoring.md"
     rules: "agents/knowledge_base/rules/general/java/keep-parameter-ordering-consistent-across-signatures.md"
@@ -101,6 +107,7 @@ agentic_review {
     rules: "agents/knowledge_base/rules/general/java/proxy-static-methods-through-public-interface.md"
     rules: "agents/knowledge_base/rules/general/java/qualify-domain-specific-class-names-in-shared-namespaces.md"
     rules: "agents/knowledge_base/rules/general/java/qualify-specialized-sub-variants-in-enum-names.md"
+    rules: "agents/knowledge_base/rules/general/java/regression-tests-must-fail-without-the-fix.md"
     rules: "agents/knowledge_base/rules/general/java/return-unabbreviated-state-names-directly.md"
     rules: "agents/knowledge_base/rules/general/java/safe-generic-container-upcasting-in-java.md"
     rules: "agents/knowledge_base/rules/general/java/scoped-java-local-ref-for-stack-allocated-classes.md"
@@ -140,6 +147,7 @@ agentic_review {
     rules: "agents/knowledge_base/rules/general/java/no-nullable-delegate-when-null-is-execution-sentinel.md"
     rules: "agents/knowledge_base/rules/general/java/retain-runtime-null-checks-when-refactoring-for-nullaway.md"
     rules: "agents/knowledge_base/rules/general/java/return-nullable-in-java-testing-getters.md"
+    rules: "agents/knowledge_base/rules/general/java/use-assumenonnull-only-before-immediate-dereference.md"
   }
   capability_groups {
     path_expression: "(?:.*/)?[^/]*\\.java"
@@ -195,5 +203,16 @@ agentic_review {
     path_expression: "(?:.*/)?[^/]*\\.java"
     content_patterns: "\\bOptional(?:Int|Long|Double)?\\b"
     rules: "agents/knowledge_base/rules/general/java/avoid-optional-in-java.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?[^/]*\\.(?:h|cc|mm)"
+    content_patterns: "\\bJava_\\w+_\\w+\\("
+    rules: "agents/knowledge_base/rules/general/java/prefer-jni-zero-wrappers-over-legacy-java-calls.md"
+  }
+  capability_groups {
+    path_expression: "(?:.*/)?javatests/.*\\.java"
+    content_patterns: "\\b(?:Station|TripBuilder|runTo|noopTo|hopOnTo|arriveAt)\\b"
+    rules: "agents/knowledge_base/rules/general/java/keep-public-transit-station-references-fresh.md"
+    rules: "agents/knowledge_base/rules/general/java/trigger-state-changes-inside-public-transit-trips.md"
   }
 }
