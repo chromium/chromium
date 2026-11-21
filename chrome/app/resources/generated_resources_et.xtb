@@ -94,7 +94,6 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1090126737595388931">Taustal rakendusi ei tööta</translation>
 <translation id="109038914521989341">Sisestage nende andmete kopeerimise põhjus.</translation>
 <translation id="1094158807129647987">Esita küsimus teksti „<ph name="SELECTION" />“ kohta</translation>
-<translation id="1095398697303758108">Täiustatud automaattäite kasutamiseks vajutage kaks korda klahvi Ctrl</translation>
 <translation id="1095879482467973146">Google'i paroolihaldur veebis</translation>
 <translation id="1097016918605049747">Seda lehte ei õnnestunud tõlkida</translation>
 <translation id="1099962274138857708">Pilt kopeeriti seadmest <ph name="DEVICE_NAME" /></translation>
@@ -582,6 +581,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Kas eemaldada vaheleht ja kustutada grupp?}=1{Kas eemaldada vaheleht ja kustutada grupp?}other{Kas eemaldada vahelehed ja kustutada grupid?}}</translation>
 <translation id="1637765355341780467">Teie profiili avamisel läks midagi valesti. Mõned funktsioonid ei pruugi olla saadaval.</translation>
 <translation id="1639239467298939599">Laadimine</translation>
+<translation id="1640672724030957280">Allalaadimine ...</translation>
 <translation id="1641113438599504367">Google'i ohutu sirvimine</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Veel 1 parooli ei imporditud, kuna see on valesti vormindatud}other{Veel {NUM_PASSWORDS} parooli ei imporditud, kuna need on valesti vormindatud}}</translation>
 <translation id="1642299742557467312">See fail võib teie seadet kahjustada</translation>
@@ -1802,7 +1802,6 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="2988328607561082373">Te ei kasuta ühtegi parooli mitu korda</translation>
 <translation id="2989523299700148168">Hiljuti külastatud</translation>
 <translation id="2989786307324390836">DER-i kodeeritud kahendsüsteem, üks sertifikaat</translation>
-<translation id="2990500505358145117">Täiustatud automaattäite otsetee muutmine</translation>
 <translation id="2990583317361835189">Ära luba saitidel kasutada liikumisandureid</translation>
 <translation id="2991182900092497283">Sisestage nende andmete kleepimise põhjus.</translation>
 <translation id="2992754757708650257">Kas lahkuda saidilt ja lõpetada ülesanne?</translation>
@@ -2057,7 +2056,6 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="3244294424315804309">Jätka heli vaigistamist</translation>
 <translation id="3247649647204519958">Seejärel saate vaadata ja hallata külastatava saidi laiendusõigusi</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – võrguviga</translation>
-<translation id="3248957351402065497">Täiustatud automaattäite kohandatud otsetee</translation>
 <translation id="3249558306861350254">Klõpsake Windowsi seadetes valikul <ph name="BEGIN_BOLD" />Määra vaikeväärtus<ph name="END_BOLD" />.</translation>
 <translation id="3250374026663843838">Oskuse haldamine</translation>
 <translation id="3251759466064201842">&lt;Ei sisaldu sertifikaadis&gt;</translation>
@@ -2278,6 +2276,7 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="3481268647794498892">Brauser <ph name="ALTERNATIVE_BROWSER_NAME" /> avatakse <ph name="COUNTDOWN_SECONDS" /> sekundi pärast</translation>
 <translation id="348247802372410699">Valige stiil</translation>
 <translation id="3482573964681964096">Windowsist imporditud sertifikaatide haldamine</translation>
+<translation id="348268549820508141">Kõnetuvastus</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> saab vaadata järgmisi faile</translation>
 <translation id="3486380520195228369">Peidetud kuni lehe värskendamiseni.</translation>
 <translation id="3487007233252413104">anonüümne funktsioon</translation>
@@ -2648,7 +2647,6 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="3826086052025847742">ChromeOS Flexi logid</translation>
 <translation id="3827774300009121996">&amp;Täisekraan</translation>
 <translation id="3828029223314399057">Otsi jäjehoidjaid</translation>
-<translation id="3828454092958722155">Täiustatud automaattäite otsetee kustutamine</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Suur mälukasutus - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Teise pääsuvõtme kasutamine</translation>
 <translation id="3838085852053358637">Laienduse laadimine ebaõnnestus</translation>
@@ -3729,7 +3727,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="5060419232449737386">Subtiitrite seaded</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Kaust sisaldab järjehoidjat. Kas soovite kindlasti selle kustutada?}other{Kaust sisaldab # järjehoidjat. Kas soovite kindlasti selle kustutada?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
-<translation id="5061781067616989032">Seadistage oma klaviatuuri otsetee.</translation>
 <translation id="5062863364865466276">Liikumine</translation>
 <translation id="5063480226653192405">Kasutus</translation>
 <translation id="5064921774605267982">Ava profiil <ph name="PROFILE_NAME" />. Seda profiili haldab sinu vanem.</translation>
@@ -5005,7 +5002,6 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="6540488083026747005">Lubasite sellel saidil kolmanda osapoole küpsisefailid</translation>
 <translation id="6541638731489116978">Sellel saidil on juurdepääs teie liikumisanduritele blokeeritud.</translation>
 <translation id="6542417422899025860">Enamiku isiklike andmete automaatselt eemaldamine</translation>
-<translation id="6548240707386871455">Täiustatud automaattäite otsetee</translation>
 <translation id="654871471440386944">Kas soovite sisestusmärgiga sirvimise sisse lülitada?</translation>
 <translation id="6549689063733911810">Hiljutised</translation>
 <translation id="6550675742724504774">Valikud</translation>
@@ -5169,7 +5165,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6710172959248731469">Google'i teenuste seaded</translation>
 <translation id="6710394144992407503">Kontrolli veebilehtedele teksti sisestamisel õigekirjavigu</translation>
 <translation id="6711236403841768371">Enne kuupäeva <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Täiustatud automaattäite kasutamiseks vajutage kaks korda klahvi ⌘</translation>
 <translation id="6712943853047024245">Salvestasite selle kasutajanimega parooli juba järgmise saidi või rakenduse jaoks: <ph name="WEBSITE" /></translation>
 <translation id="6713668088933662563">Ära kunagi paku nende keelte tõlkimist</translation>
 <translation id="6714871567554212732">Üksikasjade vaatamine grupi <ph name="GROUP_NAME" /> kohta</translation>
@@ -6090,7 +6085,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="7706742200777909964">Lisage lehed kõrvuti samasse vahekaarti, et lihtsustada valikute võrdlemist jpm.</translation>
 <translation id="7707108266051544351">Saidil pole lubatud liikumisandureid kasutada.</translation>
 <translation id="7709152031285164251">Ebaõnnestus – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Täiustatud automaattäite kohandatud otsetee kustutamine</translation>
 <translation id="7710568461918838723">&amp;Ülekandmine …</translation>
 <translation id="7712739869553853093">Printimise eelvaate dialoog</translation>
 <translation id="7714464543167945231">Sertifikaat</translation>
@@ -6450,7 +6444,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="810185532889603849">Kohandatud värv</translation>
 <translation id="8103484184517840583">Välju AI-režiimist</translation>
 <translation id="810362914482827094">Otsige pääsukoode</translation>
-<translation id="8104388155778519213">Jagage ekraanisisu Google Lensiga</translation>
 <translation id="8104412594956510627">Seadmest <ph name="DEVICE" /> ajaloo hankimiseks sünkroonige ajalugu. Sünkroonimise võite seadetes igal ajal lõpetada. Google võib Otsingut ja muid teenuseid teie ajaloo alusel isikupärastada.</translation>
 <translation id="8104778744208707085">Vajab teie tähelepanu</translation>
 <translation id="8105273883928376822">Jätkamiseks logige sisse.</translation>
@@ -6548,7 +6541,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8214489666383623925">Ava fail...</translation>
 <translation id="8214771296778317256">Valige siin eelistatav vahelehtede stiil</translation>
 <translation id="8217399928341212914">Jätka mitme faili automaatse allalaadimise blokeerimist</translation>
-<translation id="8218411859495801458">Täiustatud automaattäite kohandatud otsetee muutmine</translation>
 <translation id="8221358554841691213">Keskmise fookuse stiil</translation>
 <translation id="8221942262855134126">Parooli haldamine</translation>
 <translation id="8222112516148944758">Teie vahelehegruppe salvestatakse ja värskendatakse kõikides teie seadmetes automaatselt</translation>
@@ -6821,7 +6813,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8512476990829870887">Lõpeta protsess</translation>
 <translation id="851263357009351303">Luba alati saidil <ph name="HOST" /> pilte kuvada</translation>
 <translation id="8513357934662532537">Paroolide importimiseks teenusesse <ph name="BRAND" /> kasutaja <ph name="USER_EMAIL" /> jaoks valige CSV-fail.</translation>
-<translation id="8514257511170433540">Kasutage vormide täitmisel klaviatuuri vaikeotseteed.</translation>
 <translation id="8514746246728959655">Proovige muud turvavõtit</translation>
 <translation id="8514828975162859845">Pulgakoogid</translation>
 <translation id="8514955299594277296">Saitidel ei lubata teie seadmesse andmeid salvestada (pole soovitatav)</translation>

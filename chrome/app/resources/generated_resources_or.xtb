@@ -94,7 +94,6 @@
 <translation id="1090126737595388931">କୌଣସି ଆପ୍ସ ପୃଷ୍ଠପଟରେ ଚାଲୁନାହିଁ</translation>
 <translation id="109038914521989341">ଦୟାକରି ଏହି ଡାଟାକୁ ପ୍ରିଣ୍ଟ କରିବାର ଏକ କାରଣ ଲେଖନ୍ତୁ:</translation>
 <translation id="1094158807129647987">“<ph name="SELECTION" />” ବିଷୟରେ ପଚାରନ୍ତୁ</translation>
-<translation id="1095398697303758108">ଉନ୍ନତ ଅଟୋଫିଲ ପାଇଁ Ctrlକୁ ଦୁଇଥର ଦବାନ୍ତୁ</translation>
 <translation id="1095879482467973146">ୱେବରେ Google Password Manager</translation>
 <translation id="1097016918605049747">ଏହି ପୃଷ୍ଠାଟିକୁ ଅନୁବାଦ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" />ରୁ କପି କରାଯାଇଥିବା ଛବି</translation>
@@ -582,6 +581,7 @@
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{ଟାବକୁ କାଢ଼ି ଦେଇ ଗ୍ରୁପକୁ ଡିଲିଟ କରିବେ?}=1{ଟାବଗୁଡ଼ିକୁ କାଢ଼ି ଦେଇ ଗ୍ରୁପକୁ ଡିଲିଟ କରିବେ?}other{ଟାବଗୁଡ଼ିକୁ କାଢ଼ି ଦେଇ ଗ୍ରୁପଗୁଡ଼ିକୁ ଡିଲିଟ କରିବେ?}}</translation>
 <translation id="1637765355341780467">ଆପଣଙ୍କର ପ୍ରୋଫାଇଲ୍‌ ଖୋଲିବା ସମୟରେ କିଛି ତ୍ରୁଟି ହୋ‍ଇଛି। କିଛି ବୈଶିଷ୍ଟ୍ୟ ଉପଲବ୍ଧ ନଥାଇପାରେ।</translation>
 <translation id="1639239467298939599">ଲୋଡ୍ ହେଉଛି</translation>
+<translation id="1640672724030957280">ଡାଉନଲୋଡ ହେଉଛି…</translation>
 <translation id="1641113438599504367">ସେଫ୍ ବ୍ରାଉଜିଂ</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{ଅନ୍ୟ 1ଟି ପାସୱାର୍ଡକୁ ଇମ୍ପୋର୍ଟ କରାଯାଇନାହିଁ କାରଣ ଏହାକୁ ଭୁଲରେ ଫର୍ମାଟ କରାଯାଇଛି}other{ଅନ୍ୟ {NUM_PASSWORDS}ଟି ପାସୱାର୍ଡକୁ ଇମ୍ପୋର୍ଟ କରାଯାଇନାହିଁ କାରଣ ସେଗୁଡ଼ିକୁ ଭୁଲରେ ଫର୍ମାଟ କରାଯାଇଛି}}</translation>
 <translation id="1642299742557467312">ଏହି ଫାଇଲ ଆପଣଙ୍କ ଡିଭାଇସକୁ କ୍ଷତି କରିପାରେ</translation>
@@ -1800,7 +1800,6 @@
 <translation id="2988328607561082373">ଆପଣ କୌଣସି ପାସୱାର୍ଡ ପୁଣି ବ୍ୟବହାର କରୁନାହାଁନ୍ତି</translation>
 <translation id="2989523299700148168">ନିକଟରେ ଯାଇଥିବା</translation>
 <translation id="2989786307324390836">DER-ଏନ୍‌କୋଡେଡ୍ ବାଇନାରୀ, ଏକକ ସାର୍ଟିଫିକେଟ୍</translation>
-<translation id="2990500505358145117">ଉନ୍ନତ ଅଟୋଫିଲ ସର୍ଟକଟକୁ ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="2990583317361835189">ମୋସନ୍ ସେନ୍ସରଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
 <translation id="2991182900092497283">ଦୟାକରି ଏହି ଡାଟାକୁ ପେଷ୍ଟ କରିବାର ଏକ କାରଣ ଲେଖନ୍ତୁ:</translation>
 <translation id="2992754757708650257">ସାଇଟରୁ ବାହାରି ଯାଇ ଟାସ୍କକୁ ଶେଷ କରିବେ?</translation>
@@ -2055,7 +2054,6 @@
 <translation id="3244294424315804309">ସାଉଣ୍ଡ ମ୍ୟୁଟ୍‍ କରିବା ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="3247649647204519958">ଏଠାରୁ, ଆପଣ ଯେଉଁ ସାଇଟରେ ଅଛନ୍ତି ସେଥିପାଇଁ ଏକ୍ସଟେନସନ ଅନୁମତିଗୁଡ଼ିକୁ ଦେଖି ପରିଚାଳନା କରିପାରିବେ</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - ନେଟ୍‌ୱର୍କ ତ୍ରୁଟି</translation>
-<translation id="3248957351402065497">ଉନ୍ନତ ଅଟୋଫିଲ ପାଇଁ କଷ୍ଟମ ସର୍ଟକଟ</translation>
 <translation id="3249558306861350254">ଆପଣଙ୍କ Windows ସେଟିଂସରେ <ph name="BEGIN_BOLD" />ଡିଫଲ୍ଟ ଭାବେ ସେଟ କରନ୍ତୁ<ph name="END_BOLD" />ରେ କ୍ଲିକ କରନ୍ତୁ।</translation>
 <translation id="3250374026663843838">ଆପଣଙ୍କ ଦକ୍ଷତାକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="3251759466064201842">&lt;ସାର୍ଟିଫିକେଟ୍‍ର ଅଂଶ ନୁହେଁ&gt;</translation>
@@ -2276,6 +2274,7 @@
 <translation id="3481268647794498892"><ph name="ALTERNATIVE_BROWSER_NAME" />ରେ <ph name="COUNTDOWN_SECONDS" />ରେ ଖୋଲୁଛି</translation>
 <translation id="348247802372410699">ଏକ ଷ୍ଟାଇଲ ବାଛନ୍ତୁ</translation>
 <translation id="3482573964681964096">Windowsରୁ ଇମ୍ପୋର୍ଟ କରାଯାଇଥିବା ସାର୍ଟିଫିକେଟଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="348268549820508141">ସ୍ପିଚ ଚିହ୍ନଟକରଣ</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> ନିମ୍ନୋକ୍ତ ଫାଇଲଗୁଡ଼ିକୁ ଦେଖିପାରିବେ</translation>
 <translation id="3486380520195228369">ପୃଷ୍ଠା ରିଫ୍ରେସ ନହେବା ପର୍ଯ୍ୟନ୍ତ ଲୁକ୍କାୟିତ</translation>
 <translation id="3487007233252413104">ନାମହୀନ ଫକ୍‌ସନ୍</translation>
@@ -2646,7 +2645,6 @@
 <translation id="3826086052025847742">ChromeOS Flex ଲଗଗୁଡ଼ିକ</translation>
 <translation id="3827774300009121996">&amp;ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍</translation>
 <translation id="3828029223314399057">ବୁକ୍‍ମାର୍କଗୁଡ଼ିକ ଖୋଜନ୍ତୁ</translation>
-<translation id="3828454092958722155">ଉନ୍ନତ ଅଟୋଫିଲ ସର୍ଟକଟ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - ଅଧିକ ମେମୋରୀ ବ୍ୟବହାର - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">ଏକ ଭିନ୍ନ ପାସକୀ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="3838085852053358637">ଏକ୍ସଟେନ୍‍ସନ୍ ଲୋଡ୍ କରିହେଲା ନାହିଁ</translation>
@@ -3725,7 +3723,6 @@
 <translation id="5060419232449737386">କେପସନ ସେଟିଂସ</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{ଏହି ଫୋଲ୍ଡର୍‌ରେ ଗୋଟିଏ ବୁକ୍‌ମାର୍କ ଅଛି। ଆପଣ ଏହାକୁ ଡିଲିଟ୍ କରିବାକୁ ନିଶ୍ଚିତ କି?}other{ଏହି ଫୋଲ୍ଡର୍‌ରେ #ଟି ବୁକ୍‌ମାର୍କ ଅଛି। ଆପଣ ଏହାକୁ ଡିଲିଟ୍ କରିବାକୁ ନିଶ୍ଚିତ କି?}}</translation>
 <translation id="5061531353537614467">ତୁନ୍ଦ୍ରା</translation>
-<translation id="5061781067616989032">ଆପଣଙ୍କ ନିଜର କୀବୋର୍ଡ ସର୍ଟକଟ ସେଟ ଅପ କରନ୍ତୁ</translation>
 <translation id="5062863364865466276">ମୁଭମେଣ୍ଟ</translation>
 <translation id="5063480226653192405">ବ୍ୟବହାର</translation>
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" /> ପ୍ରୋଫାଇଲ ଖୋଲନ୍ତୁ। ଏହି ପ୍ରୋଫାଇଲ ତୁମ ବାପାମାଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ।</translation>
@@ -4998,7 +4995,6 @@
 <translation id="6540488083026747005">ଏହି ସାଇଟରେ ଆପଣ ତୃତୀୟ-ପକ୍ଷ କୁକୀଗୁଡ଼ିକୁ ଅନୁମତି ଦେଇଛନ୍ତି</translation>
 <translation id="6541638731489116978">ଏହି ସାଇଟ୍‍କୁ ଆପଣଙ୍କ ମୋସନ୍ ସେନ୍‌ସର୍ ଆକ୍ସେସ୍ କରିବା ପାଇଁ ବ୍ଲକ୍ କରାଯାଇଛି।</translation>
 <translation id="6542417422899025860">ଅଧିକାଂଶ ବ୍ୟକ୍ତିଗତ ସୂଚନାକୁ ସ୍ୱତଃ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
-<translation id="6548240707386871455">ଉନ୍ନତ ଅଟୋଫିଲ ସର୍ଟକଟ</translation>
 <translation id="654871471440386944">କ୍ୟାରେଟ୍ ବ୍ରାଉଜିଂ ଚାଲୁ କରିବେ?</translation>
 <translation id="6549689063733911810">ବର୍ତ୍ତମାନ</translation>
 <translation id="6550675742724504774">ବିକଳ୍ପଗୁଡ଼ିକ</translation>
@@ -5162,7 +5158,6 @@
 <translation id="6710172959248731469">Google ସେବାଗୁଡ଼ିକର ସେଟିଂସ</translation>
 <translation id="6710394144992407503">ଆପଣ ୱେବ ପୃଷ୍ଠାଗୁଡ଼ିକରେ ଟେକ୍ସଟ ଟାଇପ କରିବା ସମୟରେ ବନାନ ତ୍ରୁଟିଗୁଡ଼ିକ ପାଇଁ ଯାଞ୍ଚ କରନ୍ତୁ</translation>
 <translation id="6711236403841768371"><ph name="END_DATE" /> ପୂର୍ବରୁ</translation>
-<translation id="6711569175139833669">ଉନ୍ନତ ଅଟୋଫିଲ ପାଇଁ ⌘କୁ ଦୁଇଥର ଦବାନ୍ତୁ</translation>
 <translation id="6712943853047024245">ଆପଣ <ph name="WEBSITE" /> ପାଇଁ ଏହି ଉପଯୋଗକର୍ତ୍ତାନାମରେ ପୂର୍ବରୁ ଏକ ପାସୱାର୍ଡ ସେଭ କରିଛନ୍ତି</translation>
 <translation id="6713668088933662563">ଏହି ଭାଷାଗୁଡ଼ିକର ଅନୁବାଦ କରିବାକୁ କେବେ ବି ଅଫର କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="6714871567554212732"><ph name="GROUP_NAME" /> ବିଷୟରେ ଅଧିକ ବିବରଣୀ ଭ୍ୟୁ କରନ୍ତୁ</translation>
@@ -6082,7 +6077,6 @@
 <translation id="7706742200777909964">ସମାନ ଟାବରେ ପୃଷ୍ଠାଗୁଡ଼ିକୁ ପାଖାପାଖି ରଖନ୍ତୁ ଯାହା ଫଳରେ ଆପଣ ସହଜରେ ବିକଳ୍ପଗୁଡ଼ିକୁ ଏବଂ ଆହୁରି ଅନେକ କିଛିକୁ ତୁଳନା କରିପାରିବେ</translation>
 <translation id="7707108266051544351">ଏହି ସାଇଟ୍‍କୁ ମୋସନ୍ ସେନ୍‌ସର୍ ବ୍ୟବହାର କରିବା ପାଇଁ ବ୍ଲକ୍ କରାଯାଇଛି।</translation>
 <translation id="7709152031285164251">ବିଫଳ ହେଲା - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">ଉନ୍ନତ ଅଟୋଫିଲ ପାଇଁ କଷ୍ଟମ ସର୍ଟକଟ ଖାଲି କରନ୍ତୁ</translation>
 <translation id="7710568461918838723">&amp;କାଷ୍ଟ...</translation>
 <translation id="7712739869553853093">ପ୍ରିଣ୍ଟ ପ୍ରିଭ୍ୟୁ ଡାଏଲଗ୍</translation>
 <translation id="7714464543167945231">ସାର୍ଟିଫିକେଟ୍</translation>
@@ -6441,7 +6435,6 @@
 <translation id="810185532889603849">କଷ୍ଟମ୍ ରଙ୍ଗ</translation>
 <translation id="8103484184517840583">AI ମୋଡରୁ ବାହାରି ଯାଆନ୍ତୁ</translation>
 <translation id="810362914482827094">ପାସକୀଗୁଡ଼ିକୁ ସନ୍ଧାନ କରନ୍ତୁ</translation>
-<translation id="8104388155778519213">Google Lens ମାଧ୍ୟମରେ ଆପଣଙ୍କ ସ୍କ୍ରିନରେ କଣ ଅଛି ତାହା ସେୟାର କରନ୍ତୁ</translation>
 <translation id="8104412594956510627"><ph name="DEVICE" />ରୁ ଆପଣଙ୍କ ଇତିହାସ ପାଇବାକୁ ଇତିହାସକୁ ସିଙ୍କ କରନ୍ତୁ। ଆପଣ ଯେ କୌଣସି ସମୟରେ ସେଟିଂସରେ ସିଙ୍କ କରିବା ବନ୍ଦ କରିପାରିବେ। Google ଆପଣଙ୍କ ଇତିହାସ ଆଧାରରେ Search ଏବଂ ଅନ୍ୟ ସର୍ଭିସେସକୁ ପର୍ସନାଲାଇଜ କରିପାରେ।</translation>
 <translation id="8104778744208707085">ଆପଣଙ୍କର ଧ୍ୟାନ ଆବଶ୍ୟକ କରେ</translation>
 <translation id="8105273883928376822">ଜାରି ରଖିବାକୁ ଦୟାକରି ସାଇନ ଇନ କରନ୍ତୁ।</translation>
@@ -6539,7 +6532,6 @@
 <translation id="8214489666383623925">ଫାଇଲ୍ ଖୋଲନ୍ତୁ...</translation>
 <translation id="8214771296778317256">ଏଠାରେ ଆପଣଙ୍କ ପସନ୍ଦର ଟାବ ଷ୍ଟାଇଲିଂ ବାଛନ୍ତୁ</translation>
 <translation id="8217399928341212914">ଏକାଧିକ ଫାଇଲ୍‍କୁ ସ୍ୱଚାଳିତ ଡାଉନ୍‌ଲୋଡ୍‌ର ଅବରୋଧ କରିବା ଜାରି ରଖନ୍ତୁ</translation>
-<translation id="8218411859495801458">ଉନ୍ନତ ଅଟୋଫିଲ ପାଇଁ କଷ୍ଟମ ସର୍ଟକଟକୁ ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="8221358554841691213">ମଧ୍ୟମ ଫୋକସ ଷ୍ଟାଇଲ</translation>
 <translation id="8221942262855134126">ପାସୱାର୍ଡ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="8222112516148944758">ଆପଣଙ୍କ ଟାବ ଗ୍ରୁପ ଆପଣଙ୍କର ସମସ୍ତ ଡିଭାଇସରେ ସ୍ୱତଃ ସେଭ ଏବଂ ଅପଡେଟ ହୁଏ</translation>
@@ -6812,7 +6804,6 @@
 <translation id="8512476990829870887">ପ୍ରକ୍ରିୟା ଶେଷ କରନ୍ତୁ</translation>
 <translation id="851263357009351303">ଛବି ଦେଖାଇବା ପାଇଁ ସର୍ବଦା <ph name="HOST" />କୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="8513357934662532537"><ph name="USER_EMAIL" /> ପାଇଁ <ph name="BRAND" />କୁ ପାସୱାର୍ଡଗୁଡ଼ିକ ଇମ୍ପୋର୍ଟ କରିବା ପାଇଁ ଏକ CSV ଫାଇଲ ଚୟନ କରନ୍ତୁ।</translation>
-<translation id="8514257511170433540">ଫର୍ମଗୁଡ଼ିକ ପୂରଣ କରିବା ସମୟରେ ଡିଫଲ୍ଟ କୀବୋର୍ଡ ସର୍ଟକଟ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="8514746246728959655">ଗୋଟିଏ ଅଲଗା ସୁରକ୍ଷା କୀ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ</translation>
 <translation id="8514828975162859845">କେକ ପପ୍ସ</translation>
 <translation id="8514955299594277296">ଆପଣଙ୍କ ଡିଭାଇସରେ ଡାଟା ସେଭ କରିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ (ସୁପାରିଶ କରାଯାଇନାହିଁ)</translation>

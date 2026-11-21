@@ -94,7 +94,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1090126737595388931">Tiada Apl Latar Belakang Dijalankan</translation>
 <translation id="109038914521989341">Sila masukkan sebab untuk menyalin data ini:</translation>
 <translation id="1094158807129647987">Tanya Perihal “<ph name="SELECTION" />”</translation>
-<translation id="1095398697303758108">Tekan Ctrl dua kali untuk menggunakan autolengkap dipertingkatkan</translation>
 <translation id="1095879482467973146">Google Password Manager pada web</translation>
 <translation id="1097016918605049747">Halaman ini tidak dapat diterjemahkan</translation>
 <translation id="1099962274138857708">Imej disalin daripada <ph name="DEVICE_NAME" /></translation>
@@ -582,6 +581,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Alih keluar tab dan padamkan kumpulan?}=1{Alih keluar tab dan padamkan kumpulan?}other{Alih keluar tab dan padamkan kumpulan?}}</translation>
 <translation id="1637765355341780467">Berlaku kesilapan semasa membuka profil anda. Sesetengah ciri mungkin tidak tersedia.</translation>
 <translation id="1639239467298939599">Memuatkan</translation>
+<translation id="1640672724030957280">Memuat turun...</translation>
 <translation id="1641113438599504367">Penyemakan Imbas Selamat</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 kata laluan lain tidak diimport kerana tidak diformatkan dengan betul}other{{NUM_PASSWORDS} kata laluan lain tidak diimport kerana tidak diformatkan dengan betul}}</translation>
 <translation id="1642299742557467312">Fail ini boleh membahayakan peranti anda</translation>
@@ -1394,6 +1394,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2519517390894391510">Nama Profil Sijil</translation>
 <translation id="2520644704042891903">Menunggu soket tersedia...</translation>
 <translation id="2522757085249311407">Benarkan peranti Bluetooth berdekatan untuk menemukan dan menyambung kepada peranti ini.</translation>
+<translation id="2523048609826818526">Penulisan tujuan umum</translation>
 <translation id="2523184218357549926">Menghantar URL halaman yang anda lawati kepada Google</translation>
 <translation id="252513908494776481">Tanya tentang tab ini</translation>
 <translation id="2525746158911982776">Kemaskinian gagal kerana sistem kekurangan ruang storan yang mencukupi.</translation>
@@ -1811,7 +1812,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2988328607561082373">Anda tidak menggunakan semula apa-apa kata laluan</translation>
 <translation id="2989523299700148168">Dilawati baru-baru ini</translation>
 <translation id="2989786307324390836">Binari terkod DER, sijil tunggal</translation>
-<translation id="2990500505358145117">Edit pintasan autolengkap dipertingkatkan</translation>
 <translation id="2990583317361835189">Jangan benarkan laman menggunakan penderia gerakan</translation>
 <translation id="2991182900092497283">Sila masukkan sebab untuk menampal data ini:</translation>
 <translation id="2992754757708650257">Tinggalkan laman dan tamatkan tugasan?</translation>
@@ -2066,7 +2066,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="3244294424315804309">Teruskan meredam bunyi</translation>
 <translation id="3247649647204519958">Dari sini, anda dapat melihat dan mengurus kebenaran sambungan untuk laman yang anda lawati</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Ralat rangkaian</translation>
-<translation id="3248957351402065497">Pintasan tersuai untuk autolengkap dipertingkatkan</translation>
 <translation id="3249558306861350254">Klik <ph name="BEGIN_BOLD" />Tetapkan sebagai Lalai<ph name="END_BOLD" /> dalam tetapan Windows anda.</translation>
 <translation id="3250374026663843838">Urus kemahiran anda</translation>
 <translation id="3251759466064201842">&lt;Bukan Sebahagian Daripada Sijil&gt;</translation>
@@ -2287,6 +2286,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="3481268647794498892">Membuka dalam <ph name="ALTERNATIVE_BROWSER_NAME" /> dalam masa <ph name="COUNTDOWN_SECONDS" /> saat</translation>
 <translation id="348247802372410699">Pilih gaya</translation>
 <translation id="3482573964681964096">Urus sijil yang diimport daripada Windows</translation>
+<translation id="348268549820508141">Pengecaman pertuturan</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> boleh melihat fail yang berikut</translation>
 <translation id="3486380520195228369">Disembunyikan sehingga halaman disegarkan semula</translation>
 <translation id="3487007233252413104">fungsi awanama</translation>
@@ -2657,7 +2657,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="3826086052025847742">Log ChromeOS Flex</translation>
 <translation id="3827774300009121996">&amp;Skrin Penuh</translation>
 <translation id="3828029223314399057">Cari penanda halaman</translation>
-<translation id="3828454092958722155">Kosongkan pintasan autolengkap dipertingkatkan</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Penggunaan memori tinggi - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Gunakan kunci laluan lain</translation>
 <translation id="3838085852053358637">Gagal memuatkan sambungan</translation>
@@ -3738,7 +3737,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="5060419232449737386">Tetapan sari kata</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Folder ini mengandungi penanda halaman. Adakah anda pasti mahu memadamnya?}other{Folder ini mengandungi # penanda halaman. Adakah anda pasti mahu memadamnya?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
-<translation id="5061781067616989032">Sediakan pintasan papan kekunci anda sendiri</translation>
 <translation id="5062863364865466276">Pergerakan</translation>
 <translation id="5063480226653192405">Penggunaan</translation>
 <translation id="5064921774605267982">Buka profil <ph name="PROFILE_NAME" />. Profil ini diurus oleh ibu/bapa anda.</translation>
@@ -5015,7 +5013,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="6540488083026747005">Anda membenarkan kuki pihak ketiga pada laman ini</translation>
 <translation id="6541638731489116978">Tapak ini telah disekat daripada mengakses penderia gerakan anda.</translation>
 <translation id="6542417422899025860">Alih keluar kebanyakan maklumat peribadi secara automatik</translation>
-<translation id="6548240707386871455">Pintasan autolengkap dipertingkatkan</translation>
 <translation id="654871471440386944">Hidupkan semak imbas karet?</translation>
 <translation id="6549689063733911810">Terbaharu</translation>
 <translation id="6550675742724504774">Pilihan</translation>
@@ -5179,7 +5176,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6710172959248731469">Tetapan perkhidmatan Google</translation>
 <translation id="6710394144992407503">Semak ralat ejaan apabila anda menaip teks pada halaman web</translation>
 <translation id="6711236403841768371">Sebelum <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Tekan ⌘ dua kali untuk menggunakan autolengkap dipertingkatkan</translation>
 <translation id="6712943853047024245">Anda telah menyimpan kata laluan dengan nama pengguna ini untuk <ph name="WEBSITE" /></translation>
 <translation id="6713668088933662563">Tidak sekali-kali menawarkan untuk menterjemahkan bahasa ini</translation>
 <translation id="6714871567554212732">Lihat butiran lanjut tentang <ph name="GROUP_NAME" /></translation>
@@ -6100,7 +6096,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="7706742200777909964">Letakkan halaman secara bersebelahan dalam tab yang sama supaya anda dapat membandingkan pilihan dengan mudah dan pelbagai lagi</translation>
 <translation id="7707108266051544351">Tapak ini telah disekat daripada menggunakan penderia gerakan.</translation>
 <translation id="7709152031285164251">Gagal - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Kosongkan pintasan tersuai untuk autolengkap dipertingkatkan</translation>
 <translation id="7710568461918838723">&amp;Cast...</translation>
 <translation id="7712739869553853093">Dialog pratonton cetakan</translation>
 <translation id="7714464543167945231">Sijil</translation>
@@ -6460,7 +6455,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="810185532889603849">Warna tersuai</translation>
 <translation id="8103484184517840583">Keluar daripada AI Mode</translation>
 <translation id="810362914482827094">Cari kunci laluan</translation>
-<translation id="8104388155778519213">Kongsi kandungan yang dipaparkan pada skrin anda dengan Google Lens</translation>
 <translation id="8104412594956510627">Untuk mendapatkan sejarah anda daripada <ph name="DEVICE" />, segerakkan sejarah. Anda boleh menghentikan penyegerakan pada bila-bila masa dalam tetapan ini. Google mungkin memeribadikan Search dan perkhidmatan lain berdasarkan sejarah anda.</translation>
 <translation id="8104778744208707085">Memerlukan perhatian anda</translation>
 <translation id="8105273883928376822">Sila log masuk untuk meneruskan proses.</translation>
@@ -6558,7 +6552,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8214489666383623925">Buka Fail...</translation>
 <translation id="8214771296778317256">Pilih penggayaan tab pilihan anda di sini</translation>
 <translation id="8217399928341212914">Teruskan menyekat muat turun automatik berbilang fail</translation>
-<translation id="8218411859495801458">Edit pintasan tersuai untuk autolengkap dipertingkatkan</translation>
 <translation id="8221358554841691213">Gaya fokus sederhana</translation>
 <translation id="8221942262855134126">Urus Kata Laluan</translation>
 <translation id="8222112516148944758">Kumpulan tab disimpan dan dikemaskinikan secara automatik merentas semua peranti anda</translation>
@@ -6831,7 +6824,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8512476990829870887">Tamatkan Proses</translation>
 <translation id="851263357009351303">Sentiasa benarkan <ph name="HOST" /> untuk memaparkan imej</translation>
 <translation id="8513357934662532537">Untuk mengimport kata laluan kepada <ph name="BRAND" /> bagi <ph name="USER_EMAIL" />, pilih fail CSV.</translation>
-<translation id="8514257511170433540">Gunakan pintasan papan kekunci lalai semasa mengisi borang</translation>
 <translation id="8514746246728959655">Cuba kunci keselamatan lain</translation>
 <translation id="8514828975162859845">Kek lolipop</translation>
 <translation id="8514955299594277296">Jangan benarkan laman menyimpan data pada peranti anda (tidak disyorkan)</translation>

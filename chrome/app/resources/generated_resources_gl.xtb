@@ -94,7 +94,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1090126737595388931">Non hai ningunha aplicación en segundo plano en execución</translation>
 <translation id="109038914521989341">Indica un motivo para copiar estes datos:</translation>
 <translation id="1094158807129647987">Preguntar sobre "<ph name="SELECTION" />"</translation>
-<translation id="1095398697303758108">Premer Control dúas veces para usar a función de autocompletar mellorada</translation>
 <translation id="1095879482467973146">Xestor de contrasinais de Google na Web</translation>
 <translation id="1097016918605049747">Non se puido traducir esta páxina</translation>
 <translation id="1099962274138857708">Copiouse a imaxe desde o dispositivo (<ph name="DEVICE_NAME" />)</translation>
@@ -581,6 +580,7 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Queres quitar a pestana e eliminar o grupo?}=1{Queres quitar as pestanas e eliminar o grupo?}many{Remove tabs and delete groups?}other{Queres quitar as pestanas e eliminar os grupos?}}</translation>
 <translation id="1637765355341780467">Produciuse un erro ao abrir o perfil. É posible que algunhas funcións non estean dispoñibles.</translation>
 <translation id="1639239467298939599">Cargando</translation>
+<translation id="1640672724030957280">Descargando…</translation>
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Hai 1 contrasinal que non se importou porque ten un formato incorrecto}many{{NUM_PASSWORDS} other passwords weren't imported because they're formatted incorrectly}other{Hai {NUM_PASSWORDS} contrasinais que non se importaron porque teñen un formato incorrecto}}</translation>
 <translation id="1642299742557467312">Este ficheiro podería danar o teu dispositivo</translation>
@@ -1798,7 +1798,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2988328607561082373">Non estás reutilizando ningún contrasinal</translation>
 <translation id="2989523299700148168">Visitados recentemente</translation>
 <translation id="2989786307324390836">Binario con codificación DER, un só certificado</translation>
-<translation id="2990500505358145117">Editar o atallo da función de autocompletar mellorada</translation>
 <translation id="2990583317361835189">Non permitir que os sitios utilicen sensores de movemento</translation>
 <translation id="2991182900092497283">Indica un motivo para pegar estes datos:</translation>
 <translation id="2992754757708650257">Queres saír do sitio e finalizar a tarefa?</translation>
@@ -2053,7 +2052,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3244294424315804309">Continuar silenciando o son</translation>
 <translation id="3247649647204519958">Desde aquí, podes ver e xestionar os permisos das extensións do sitio no que esteas</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" />: erro da rede</translation>
-<translation id="3248957351402065497">Atallo personalizado para a función de autocompletar mellorada</translation>
 <translation id="3249558306861350254">Fai clic en <ph name="BEGIN_BOLD" />Definir como predeterminado<ph name="END_BOLD" /> na configuración de Windows.</translation>
 <translation id="3250374026663843838">Xestionar a túa habilidade</translation>
 <translation id="3251759466064201842">&lt;Non forma parte do certificado&gt;</translation>
@@ -2274,6 +2272,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3481268647794498892">Abrirase a páxina no navegador <ph name="ALTERNATIVE_BROWSER_NAME" /> en <ph name="COUNTDOWN_SECONDS" /> segundos</translation>
 <translation id="348247802372410699">Escoller un estilo</translation>
 <translation id="3482573964681964096">Xestionar os certificados importados de Windows</translation>
+<translation id="348268549820508141">Recoñecemento de voz</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> pode ver os seguintes ficheiros</translation>
 <translation id="3486380520195228369">Ocultarase ata que se actualice a páxina</translation>
 <translation id="3487007233252413104">función anónima</translation>
@@ -2644,7 +2643,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3826086052025847742">Rexistros de ChromeOS Flex</translation>
 <translation id="3827774300009121996">&amp;Pantalla completa</translation>
 <translation id="3828029223314399057">Buscar marcadores</translation>
-<translation id="3828454092958722155">Borrar atallo da función de autocompletar mellorada</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Uso elevado da memoria - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Usar outra clave de acceso</translation>
 <translation id="3838085852053358637">Produciuse un erro ao cargar a extensión</translation>
@@ -3725,7 +3723,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="5060419232449737386">Configuración de subtítulos</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Este cartafol contén un marcador. Seguro que queres eliminalo?}many{This folder contains # bookmarks. Are you sure you want to delete it?}other{Este cartafol contén # marcadores. Seguro que queres eliminalos?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
-<translation id="5061781067616989032">Configura o teu propio atallo de teclado</translation>
 <translation id="5062863364865466276">Movemento</translation>
 <translation id="5063480226653192405">Uso</translation>
 <translation id="5064921774605267982">Abrir o perfil: <ph name="PROFILE_NAME" />. O teu pai ou nai xestiona este perfil.</translation>
@@ -4998,7 +4995,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6540488083026747005">Permitiches o uso de cookies de terceiros neste sitio</translation>
 <translation id="6541638731489116978">Bloqueouse o acceso deste sitio aos teus sensores de movemento.</translation>
 <translation id="6542417422899025860">Quitar automaticamente a maior parte da información persoal</translation>
-<translation id="6548240707386871455">Atallo da función de autocompletar mellorada</translation>
 <translation id="654871471440386944">Queres activar a navegación por cursor de texto?</translation>
 <translation id="6549689063733911810">Recente</translation>
 <translation id="6550675742724504774">Opcións</translation>
@@ -5164,7 +5160,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="6710172959248731469">Configuración dos servizos de Google</translation>
 <translation id="6710394144992407503">Buscar erros ortográficos cando escribes texto en páxinas web</translation>
 <translation id="6711236403841768371">Antes do <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Premer ⌘ dúas veces para usar a función de autocompletar mellorada</translation>
 <translation id="6712943853047024245">Xa gardaches un contrasinal con este nome de usuario para <ph name="WEBSITE" /></translation>
 <translation id="6713668088933662563">Non ofrecer nunca que se traduzan estes idiomas</translation>
 <translation id="6714871567554212732">Ver máis detalles sobre <ph name="GROUP_NAME" /></translation>
@@ -6084,7 +6079,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o navega
 <translation id="7706742200777909964">Pon as páxinas en paralelo na mesma pestana para poder comparar facilmente opcións e moito máis</translation>
 <translation id="7707108266051544351">Bloqueouse o uso dos sensores de movemento por parte deste sitio.</translation>
 <translation id="7709152031285164251">Erro: <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Borrar o atallo personalizado para a función de autocompletar mellorada</translation>
 <translation id="7710568461918838723">&amp;Emitir...</translation>
 <translation id="7712739869553853093">Cadro de diálogo de vista previa de impresión</translation>
 <translation id="7714464543167945231">Certificado</translation>
@@ -6444,7 +6438,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="810185532889603849">Cor personalizada</translation>
 <translation id="8103484184517840583">Saír do modo IA</translation>
 <translation id="810362914482827094">Buscar claves de acceso</translation>
-<translation id="8104388155778519213">Comparte o que aparece na pantalla con Google Lens</translation>
 <translation id="8104412594956510627">Para ver o teu historial de <ph name="DEVICE" />, sincronízao. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="8104778744208707085">A tarefa precisa a túa atención</translation>
 <translation id="8105273883928376822">Inicia sesión para continuar.</translation>
@@ -6542,7 +6535,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8214489666383623925">Abrir ficheiro...</translation>
 <translation id="8214771296778317256">Escolle o estilo de pestana que prefiras aquí</translation>
 <translation id="8217399928341212914">Continuar bloqueando as descargas automáticas de varios ficheiros</translation>
-<translation id="8218411859495801458">Editar o atallo personalizado para a función de autocompletar mellorada</translation>
 <translation id="8221358554841691213">Estilo Enfoque medio</translation>
 <translation id="8221942262855134126">Xestionar contrasinal</translation>
 <translation id="8222112516148944758">Os grupos de pestanas gárdanse e actualízanse automaticamente en todos os dispositivos</translation>
@@ -6815,7 +6807,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8512476990829870887">Finalizar proceso</translation>
 <translation id="851263357009351303">Permitir sempre a <ph name="HOST" /> mostrar imaxes</translation>
 <translation id="8513357934662532537">Para importar os contrasinais de <ph name="USER_EMAIL" /> a <ph name="BRAND" />, selecciona un ficheiro CSV.</translation>
-<translation id="8514257511170433540">Usa o atallo de teclado predeterminado ao completar formularios</translation>
 <translation id="8514746246728959655">Proba a utilizar unha chave de seguranza distinta</translation>
 <translation id="8514828975162859845">Piruletas de biscoito</translation>
 <translation id="8514955299594277296">Non permitir que os sitios garden datos no teu dispositivo (non recomendado)</translation>

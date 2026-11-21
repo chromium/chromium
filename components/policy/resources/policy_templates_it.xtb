@@ -5816,21 +5816,6 @@ Questa policy non ha effetto se <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_F
       Se è impostata su false, l'acquisizione di pacchetti di rete non è disponibile sul dispositivo.</translation>
 <translation id="4599810650416623373">Blocca le ottimizzazioni di JavaScript su questi siti</translation>
 <translation id="4600786265870346112">Attivazione del puntatore grande</translation>
-<translation id="460264931744856609">L'impostazione della policy permette di controllare le impostazioni di gestione delle estensioni per <ph name="PRODUCT_NAME" />, incluse quelle controllate da policy esistenti relative alle estensioni.
-
-Questa policy consente di mappare un ID estensione o un URL di aggiornamento soltanto alla relativa impostazione specifica. È possibile impostare una configurazione predefinita per l'ID speciale <ph name="DEFAULT_SCOPE" />, che verrà applicata a tutte le estensioni senza una configurazione personalizzata in questa policy.
-
-Questa policy può fare l'override della configurazione per singola estensione delle policy legacy.
-
-Tieni presente che qualsiasi impostazione dell'estensione per ID da <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> o <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> erediterà solo 'installation_mode' e 'update_url' dalle impostazioni predefinite di <ph name="DEFAULT_SCOPE" />. Non erediterà altre proprietà. Con un URL di aggiornamento, la configurazione verrà applicata alle estensioni con l'esatto URL di aggiornamento indicato nel file manifest dell'estensione (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Se il flag 'override_update_url' viene impostato su true, l'estensione verrà installata e aggiornata usando l'URL di aggiornamento ("update") specificato nella policy <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o nel campo 'update_url' di questa policy. Il flag 'override_update_url' viene ignorato se il valore 'update_url' è un URL del Chrome Web Store.
-
-Nelle versioni di <ph name="PRODUCT_NAME" /> dalla 155 alla 158, l'applicazione di 'runtime_blocked_hosts' a un'estensione con l'autorizzazione 'debugger' può disattivare completamente 'chrome.debugger.attach()' su tutte le destinazioni, ad esempio quando la policy <ph name="CHROME_VARIATIONS_POLICY_NAME" /> disattiva tutte le varianti.
-
-Sulle istanze <ph name="MS_WIN_NAME" />, l'installazione forzata di app ed estensioni esterne a Chrome Web Store è consentita solo se l'istanza è collegata a un dominio <ph name="MS_AD_NAME" />, associata a <ph name="MS_AAD_NAME" /> o registrata in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Sulle istanze di <ph name="MAC_OS_NAME" /> è possibile forzare l'installazione di app ed estensioni che non fanno parte di Chrome Web Store soltanto se l'istanza è gestita tramite MDM, aggiunta a un dominio tramite MCX o registrata in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Nota: questa policy si applica solo alle piattaforme che supportano le estensioni.</translation>
 <translation id="4602988345256038309">Consenti le connessioni di assistenza da remoto a questo computer</translation>
 <translation id="4605677392792989397">La configurazione della policy consente di impostare un elenco di URL di accesso aziendale (solo protocolli HTTP e HTTPS). Il servizio di protezione tramite password acquisisce gli hash con salt delle password in questi URL e li utilizza per il rilevamento del riutilizzo delle password. Per consentire a <ph name="PRODUCT_NAME" /> di acquisire correttamente gli hash con salt della password, assicurati che le pagine di accesso seguano queste linee guida (https://www.chromium.org/developers/design-documents/create-amazing-password-forms).
 

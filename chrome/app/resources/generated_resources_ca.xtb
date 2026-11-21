@@ -94,7 +94,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1090126737595388931">No hi cap aplicació en execució en segon pla</translation>
 <translation id="109038914521989341">Introdueix un motiu per copiar aquestes dades:</translation>
 <translation id="1094158807129647987">Pregunta sobre "<ph name="SELECTION" />"</translation>
-<translation id="1095398697303758108">Prem Ctrl dues vegades per utilitzar l'emplenament automàtic millorat</translation>
 <translation id="1095879482467973146">Gestor de contrasenyes de Google al web</translation>
 <translation id="1097016918605049747">Aquesta pàgina no s'ha pogut traduir</translation>
 <translation id="1099962274138857708">Imatge copiada des del dispositiu <ph name="DEVICE_NAME" /></translation>
@@ -581,6 +580,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Vols suprimir la pestanya i el grup?}=1{Vols suprimir la pestanya i el grup?}other{Vols suprimir les pestanyes i els grups?}}</translation>
 <translation id="1637765355341780467">S'ha produït un error mentre obries el perfil. És possible que algunes funcions no estiguin disponibles.</translation>
 <translation id="1639239467298939599">S'està carregant</translation>
+<translation id="1640672724030957280">S'està baixant...</translation>
 <translation id="1641113438599504367">Navegació segura</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{No s'ha importat 1 contrasenya més perquè té un format incorrecte}other{No s'han importat {NUM_PASSWORDS} contrasenyes més perquè tenen un format incorrecte}}</translation>
 <translation id="1642299742557467312">Aquest fitxer podria malmetre el dispositiu</translation>
@@ -1798,7 +1798,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="2988328607561082373">No estàs reutilitzant cap contrasenya</translation>
 <translation id="2989523299700148168">Visitats últimament</translation>
 <translation id="2989786307324390836">Binari codificat amb DER, certificat únic</translation>
-<translation id="2990500505358145117">Edita la drecera d'Emplenament automàtic millorat</translation>
 <translation id="2990583317361835189">No permetis que els llocs web utilitzin sensors de moviment</translation>
 <translation id="2991182900092497283">Introdueix un motiu per enganxar aquestes dades:</translation>
 <translation id="2992754757708650257">Vols sortir del lloc web i finalitzar la tasca?</translation>
@@ -2051,7 +2050,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="3244294424315804309">Continua silenciant el so</translation>
 <translation id="3247649647204519958">Aquí pots veure i gestionar els permisos d'extensions del lloc web que estàs visitant</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" />: error de la xarxa</translation>
-<translation id="3248957351402065497">Drecera personalitzada d'Emplenament automàtic millorat</translation>
 <translation id="3249558306861350254">Fes clic a <ph name="BEGIN_BOLD" />Defineix com a predeterminat<ph name="END_BOLD" /> a la configuració de Windows.</translation>
 <translation id="3250374026663843838">Gestiona la teva habilitat</translation>
 <translation id="3251759466064201842">&lt;No forma part del certificat&gt;</translation>
@@ -2272,6 +2270,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="3481268647794498892">S'obrirà a <ph name="ALTERNATIVE_BROWSER_NAME" /> d'aquí a <ph name="COUNTDOWN_SECONDS" /> segons</translation>
 <translation id="348247802372410699">Tria un estil</translation>
 <translation id="3482573964681964096">Gestiona els certificats importats de Windows</translation>
+<translation id="348268549820508141">Reconeixement de parla</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> pot veure els fitxers següents</translation>
 <translation id="3486380520195228369">S'amaga fins que s'actualitzi la pàgina</translation>
 <translation id="3487007233252413104">funció anònima</translation>
@@ -2642,7 +2641,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="3826086052025847742">Registres de ChromeOS Flex</translation>
 <translation id="3827774300009121996">&amp;Pantalla completa</translation>
 <translation id="3828029223314399057">Cerca adreces d'interès</translation>
-<translation id="3828454092958722155">Esborra la drecera d'Emplenament automàtic millorat</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Ús elevat de memòria - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Utilitza una altra clau d'accés</translation>
 <translation id="3838085852053358637">No s'ha pogut carregar l'extensió</translation>
@@ -3721,7 +3719,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="5060419232449737386">Configuració dels subtítols</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Aquesta carpeta conté una adreça d'interès. Confirmes que vols suprimir-la?}other{Aquesta carpeta conté # adreces d'interès. Confirmes que vols suprimir-la?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
-<translation id="5061781067616989032">Configura les teves pròpies tecles de drecera</translation>
 <translation id="5062863364865466276">Moviment</translation>
 <translation id="5063480226653192405">Ús</translation>
 <translation id="5064921774605267982">Obre el perfil de <ph name="PROFILE_NAME" />. El teu pare o mare gestiona aquest perfil.</translation>
@@ -4995,7 +4992,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6540488083026747005">Has permès les galetes de tercers en aquest lloc web</translation>
 <translation id="6541638731489116978">No es permet que aquest lloc web accedeixi als sensors de moviment.</translation>
 <translation id="6542417422899025860">Suprimeix automàticament la major part de la informació personal</translation>
-<translation id="6548240707386871455">Drecera d'Emplenament automàtic millorat</translation>
 <translation id="654871471440386944">Vols activar la navegació amb cursor de text?</translation>
 <translation id="6549689063733911810">Recent</translation>
 <translation id="6550675742724504774">Opcions</translation>
@@ -5159,7 +5155,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6710172959248731469">Configuració dels serveis de Google</translation>
 <translation id="6710394144992407503">Comprova si hi ha errors ortogràfics quan escriguis text en pàgines web</translation>
 <translation id="6711236403841768371">Abans del dia <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Prem ⌘ dues vegades per utilitzar l'emplenament automàtic millorat</translation>
 <translation id="6712943853047024245">Ja has desat una contrasenya amb aquest nom d'usuari per a <ph name="WEBSITE" /></translation>
 <translation id="6713668088933662563">No ofereixis mai traduir d'aquests idiomes</translation>
 <translation id="6714871567554212732">Mostra més detalls sobre <ph name="GROUP_NAME" /></translation>
@@ -6078,7 +6073,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="7706742200777909964">Posa les pàgines una al costat de l'altra a la mateixa pestanya per poder comparar fàcilment opcions i més</translation>
 <translation id="7707108266051544351">No es permet que aquest lloc web utilitzi els sensors de moviment.</translation>
 <translation id="7709152031285164251">Error: <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Esborra la drecera personalitzada de l'emplenament automàtic millorat</translation>
 <translation id="7710568461918838723">&amp;Emet…</translation>
 <translation id="7712739869553853093">Quadre de diàleg de la previsualització d'impressió</translation>
 <translation id="7714464543167945231">Certificat</translation>
@@ -6436,7 +6430,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="810185532889603849">Color personalitzat</translation>
 <translation id="8103484184517840583">Surt del mode IA</translation>
 <translation id="810362914482827094">Cerca claus d'accés</translation>
-<translation id="8104388155778519213">Comparteix el que es mostra en pantalla amb Google Lens</translation>
 <translation id="8104412594956510627">Per accedir a l'historial <ph name="DEVICE" />, sincronitza l'historial. Pots aturar la sincronització en qualsevol moment a la configuració. És possible que Google personalitzi la Cerca i altres serveis en funció del teu historial.</translation>
 <translation id="8104778744208707085">Requereix la teva atenció</translation>
 <translation id="8105273883928376822">Inicia la sessió per continuar.</translation>
@@ -6534,7 +6527,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8214489666383623925">Obre un fitxer...</translation>
 <translation id="8214771296778317256">Tria l'estil de pestanya que prefereixis aquí</translation>
 <translation id="8217399928341212914">Continua bloquejant les baixades automàtiques de diversos fitxers</translation>
-<translation id="8218411859495801458">Edita la drecera personalitzada de l'emplenament automàtic millorat</translation>
 <translation id="8221358554841691213">Estil de focus mitjà</translation>
 <translation id="8221942262855134126">Gestiona la contrasenya</translation>
 <translation id="8222112516148944758">Els grups de pestanyes es desen i s'actualitzen automàticament en tots els teus dispositius</translation>
@@ -6806,7 +6798,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8512476990829870887">Finalitza el procés</translation>
 <translation id="851263357009351303">Permet sempre que <ph name="HOST" /> mostri imatges</translation>
 <translation id="8513357934662532537">Per importar contrasenyes a <ph name="BRAND" /> per a <ph name="USER_EMAIL" />, selecciona un fitxer CSV.</translation>
-<translation id="8514257511170433540">Utilitza les tecles de drecera predeterminades en emplenar formularis</translation>
 <translation id="8514746246728959655">Prova una altra clau de seguretat</translation>
 <translation id="8514828975162859845">Piruleta de pa de pessic</translation>
 <translation id="8514955299594277296">No permetis que els llocs web desin dades al teu dispositiu (opció no recomanada)</translation>

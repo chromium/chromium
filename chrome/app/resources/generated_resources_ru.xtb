@@ -94,7 +94,6 @@
 <translation id="1090126737595388931">Нет приложений, работающих в фоновом режиме</translation>
 <translation id="109038914521989341">Укажите причину, по которой вы хотите скопировать эти данные:</translation>
 <translation id="1094158807129647987">Задать вопрос по теме "<ph name="SELECTION" />"</translation>
-<translation id="1095398697303758108">Чтобы включить улучшенное автозаполнение, нажмите Ctrl дважды</translation>
 <translation id="1095879482467973146">Google Менеджер паролей (веб-версия)</translation>
 <translation id="1097016918605049747">Не удалось перевести страницу</translation>
 <translation id="1099962274138857708">Изображение скопировано с устройства "<ph name="DEVICE_NAME" />"</translation>
@@ -581,6 +580,7 @@
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Удалить вкладки и группу?}=1{Удалить вкладку и группу?}one{Удалить вкладки и группы?}few{Удалить вкладки и группы?}many{Удалить вкладки и группы?}other{Удалить вкладки и группы?}}</translation>
 <translation id="1637765355341780467">Не удалось открыть профиль. Некоторые функции могут быть недоступны.</translation>
 <translation id="1639239467298939599">Загрузка…</translation>
+<translation id="1640672724030957280">Загрузка...</translation>
 <translation id="1641113438599504367">Безопасный просмотр</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Не удалось импортировать 1 пароль. У него неверный формат.}one{Не удалось импортировать {NUM_PASSWORDS} пароль. У них неверный формат.}few{Не удалось импортировать {NUM_PASSWORDS} пароля. У них неверный формат.}many{Не удалось импортировать {NUM_PASSWORDS} паролей. У них неверный формат.}other{Не удалось импортировать {NUM_PASSWORDS} пароля. У них неверный формат.}}</translation>
 <translation id="1642299742557467312">Этот файл может навредить устройству</translation>
@@ -1798,7 +1798,6 @@
 <translation id="2988328607561082373">Вы используете разные пароли</translation>
 <translation id="2989523299700148168">Недавние</translation>
 <translation id="2989786307324390836">Двоичный единый сертификат с расшифровкой DER</translation>
-<translation id="2990500505358145117">Изменить сочетание клавиш для улучшенного автозаполнения</translation>
 <translation id="2990583317361835189">Запретить сайтам использовать датчики движения</translation>
 <translation id="2991182900092497283">Укажите причину, по которой вы хотите вставить эти данные:</translation>
 <translation id="2992754757708650257">Покинуть сайт и завершить задачу?</translation>
@@ -2053,7 +2052,6 @@
 <translation id="3244294424315804309">Не включать звук</translation>
 <translation id="3247649647204519958">Здесь вы можете узнавать, у каких расширений есть доступ к сайту, и управлять их разрешениями.</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" />: ошибка сети</translation>
-<translation id="3248957351402065497">Настраиваемое сочетание клавиш для улучшенного автозаполнения</translation>
 <translation id="3249558306861350254">В настройках Windows нажмите <ph name="BEGIN_BOLD" />По умолчанию<ph name="END_BOLD" />.</translation>
 <translation id="3250374026663843838">Управление навыком</translation>
 <translation id="3251759466064201842">&lt;Не является частью сертификата&gt;</translation>
@@ -2274,6 +2272,7 @@
 <translation id="3481268647794498892">Открывается в <ph name="ALTERNATIVE_BROWSER_NAME" />. Осталось <ph name="COUNTDOWN_SECONDS" /> сек.</translation>
 <translation id="348247802372410699">Выбрать стиль</translation>
 <translation id="3482573964681964096">Настроить сертификаты, импортированные из Windows</translation>
+<translation id="348268549820508141">Распознавание речи</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> может просматривать следующие файлы:</translation>
 <translation id="3486380520195228369">Скрыто до обновления страницы.</translation>
 <translation id="3487007233252413104">анонимные функции</translation>
@@ -2644,7 +2643,6 @@
 <translation id="3826086052025847742">Журналы ChromeOS Flex</translation>
 <translation id="3827774300009121996">Полноэкранный режим</translation>
 <translation id="3828029223314399057">Искать в закладках</translation>
-<translation id="3828454092958722155">Удалить сочетание клавиш для улучшенного автозаполнения</translation>
 <translation id="3829530269338026191">Вкладка "<ph name="WINDOW_TITLE" />" использует много памяти: <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Использовать другой ключ доступа</translation>
 <translation id="3838085852053358637">Ошибка загрузки</translation>
@@ -3724,7 +3722,6 @@
 <translation id="5060419232449737386">Настройки субтитров</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{В папке есть закладка. Все равно удалить ее?}one{В папке есть # закладка. Все равно удалить ее?}few{В папке есть # закладки. Все равно удалить ее?}many{В папке есть # закладок. Все равно удалить ее?}other{В папке есть # закладки. Все равно удалить ее?}}</translation>
 <translation id="5061531353537614467">Тундра</translation>
-<translation id="5061781067616989032">Настройте собственное сочетание клавиш</translation>
 <translation id="5062863364865466276">Движение</translation>
 <translation id="5063480226653192405">Использование</translation>
 <translation id="5064921774605267982">Открыть профиль "<ph name="PROFILE_NAME" />". Профилем управляет один из родителей.</translation>
@@ -5000,7 +4997,6 @@
 <translation id="6540488083026747005">Вы разрешили сторонние файлы cookie для этого сайта.</translation>
 <translation id="6541638731489116978">Этому сайту закрыт доступ к датчикам движения.</translation>
 <translation id="6542417422899025860">Автоматически удалять большую часть личных данных</translation>
-<translation id="6548240707386871455">Сочетание клавиш для улучшенного автозаполнения</translation>
 <translation id="654871471440386944">Включить режим активного курсора?</translation>
 <translation id="6549689063733911810">Недавние</translation>
 <translation id="6550675742724504774">Параметры</translation>
@@ -5170,7 +5166,6 @@
 <translation id="6710172959248731469">Настройки сервисов Google</translation>
 <translation id="6710394144992407503">Проверка правописания текста, вводимого на веб-страницах</translation>
 <translation id="6711236403841768371">до <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Чтобы включить улучшенное автозаполнение, дважды нажмите ⌘</translation>
 <translation id="6712943853047024245">Для этого имени пользователя на сайте <ph name="WEBSITE" /> уже сохранен пароль.</translation>
 <translation id="6713668088933662563">Никогда не предлагать перевести страницы на этих языках</translation>
 <translation id="6714871567554212732">Подробнее о группе "<ph name="GROUP_NAME" />"</translation>
@@ -6091,7 +6086,6 @@
 <translation id="7706742200777909964">Откройте страницы рядом друг с другом на одной вкладке, чтобы сравнить их или выполнить другие задачи.</translation>
 <translation id="7707108266051544351">Этому сайту запрещено использовать датчики движения</translation>
 <translation id="7709152031285164251">Ошибка: <ph name="INTERRUPT_REASON" />.</translation>
-<translation id="7709839510451455295">Удалить настраиваемое сочетание клавиш для улучшенного автозаполнения</translation>
 <translation id="7710568461918838723">&amp;Трансляция...</translation>
 <translation id="7712739869553853093">Диалоговое окно предварительного просмотра при печати</translation>
 <translation id="7714464543167945231">Сертификат</translation>
@@ -6451,7 +6445,6 @@
 <translation id="810185532889603849">Свои цвета</translation>
 <translation id="8103484184517840583">Выйти из режима ИИ</translation>
 <translation id="810362914482827094">Поиск ключей доступа</translation>
-<translation id="8104388155778519213">Предоставьте Google Объективу доступ к информации на экране</translation>
 <translation id="8104412594956510627">Чтобы видеть историю с <ph name="DEVICE" />, синхронизируйте ее. Синхронизацию можно в любой момент отключить в настройках. Google может персонализировать Поиск и другие сервисы с учетом истории.</translation>
 <translation id="8104778744208707085">Требуется действие.</translation>
 <translation id="8105273883928376822">Войдите в аккаунт</translation>
@@ -6549,7 +6542,6 @@
 <translation id="8214489666383623925">Открыть файл...</translation>
 <translation id="8214771296778317256">Здесь можно выбрать стиль вкладок</translation>
 <translation id="8217399928341212914">Всегда блокировать автоскачивание нескольких файлов</translation>
-<translation id="8218411859495801458">Изменить настраиваемое сочетание клавиш для улучшенного автозаполнения</translation>
 <translation id="8221358554841691213">Средний фокус</translation>
 <translation id="8221942262855134126">Управление паролем</translation>
 <translation id="8222112516148944758">Группы вкладок автоматически сохраняются и обновляются на всех ваших устройствах.</translation>
@@ -6822,7 +6814,6 @@
 <translation id="8512476990829870887">Завершить процесс</translation>
 <translation id="851263357009351303">Всегда показывать изображения с сайта <ph name="HOST" /></translation>
 <translation id="8513357934662532537">Чтобы импортировать пароли в <ph name="BRAND" /> для аккаунта <ph name="USER_EMAIL" />, выберите CSV-файл</translation>
-<translation id="8514257511170433540">Использовать при заполнении форм сочетание клавиш по умолчанию</translation>
 <translation id="8514746246728959655">Попробуйте применить другой электронный ключ</translation>
 <translation id="8514828975162859845">Пирожные</translation>
 <translation id="8514955299594277296">Запретить сайтам сохранять данные на устройстве (не рекомендуется)</translation>

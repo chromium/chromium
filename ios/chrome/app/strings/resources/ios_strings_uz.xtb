@@ -261,7 +261,6 @@
 <translation id="1739364174357629566">Tanish sayohatchi raqamini (KTN) yangilash</translation>
 <translation id="1740468249224277719">O‘rnatish uchun ikki marta bosing.</translation>
 <translation id="1740650426894359238">Boshqa profilni tanlash</translation>
-<translation id="1741219894094057085">Smart soat</translation>
 <translation id="1743244221910283364">Bekor qilish</translation>
 <translation id="1748975028205587434">Faylni tanlang</translation>
 <translation id="1749733017156547309">Parolni kiriting</translation>
@@ -285,7 +284,6 @@
 <translation id="1810976980198522421">Bekor qilish</translation>
 <translation id="1815941218935345331">Maxfiy kod</translation>
 <translation id="1818687879307252150">{count,plural, =0{Hech qanday parolingiz oshkor etilmagan}=1{{count} ta parol oshkor etilgan}other{{count} ta parol oshkor etilgan}}</translation>
-<translation id="1819374301217551116">Narx kuzatuvi va statistika</translation>
 <translation id="1820195936249950412">Yaroqli hisobdan kiring</translation>
 <translation id="1820259098641718022">Mutolaa ro‘yxatiga qo‘shildi</translation>
 <translation id="1823768272150895732">Shrift</translation>
@@ -415,7 +413,6 @@
 <translation id="2199562093267256223">Bunda guruh <ph name="USER_EMAIL" /> hisobidan kirilgan barcha qurilmalarda oʻchiriladi.</translation>
 <translation id="2202084845446535117">Email hisoblari topilmadi</translation>
 <translation id="2214453882118345682">Kamera orqali mahsulot toping, matn tarjima qiling va atrofdagi obyektlar axborotini oling.</translation>
-<translation id="2216366330550244277">Mahsulot sahifasini oching</translation>
 <translation id="2218389616572918761">Saytlar mikrofondan foydalanishga ruxsat soʻrashi mumkin</translation>
 <translation id="2219935992754556187">Chrome Face ID bilan maxfiy maʼlumotlarni xavfsiz saqlaydi</translation>
 <translation id="2220529011494928058">Muammo haqida xabar yuborish</translation>
@@ -541,7 +538,6 @@
 <translation id="2584994295315085351">4 soatdan keyin Chromega qaytganingizda yangi varaq ochilsin</translation>
 <translation id="2592917252160773942">Saytlar kameradan foydalanishga ruxsat soʻrashi mumkin</translation>
 <translation id="2593272815202181319">Bir xil kenglikdagi</translation>
-<translation id="2601778637777010194">Mahsulotlar narxi pasayishini kuzating</translation>
 <translation id="2602372807870028932">Bunday qilinsa, ushbu qurilmada saqlangan tanlangan axborot oʻchib tashlanadi.</translation>
 <translation id="260378315836159338">Ekrannign yuqori qismida + belgisini bosing</translation>
 <translation id="2612625650119459859">“Varaqni mahkamlash” bajarildi!</translation>
@@ -1195,7 +1191,6 @@
 <translation id="4719927025381752090">Tarjima qilishni taklif qilish</translation>
 <translation id="4720530280568305198">Tanlaganingiz yangi varaqda ochildi</translation>
 <translation id="4720782081196952026">Matnni kichiklashtirish</translation>
-<translation id="472259426228234149">Narxi: 100$ - 180$</translation>
 <translation id="4735849923335729414">Tashkilot boshqaruvidagi <ph name="EMAIL" /> hisobidan kiring.</translation>
 <translation id="473775607612524610">Yangilash</translation>
 <translation id="4738968082443868320">Google Drive</translation>
@@ -1338,7 +1333,6 @@
 <translation id="5116347248003317626">Saytlarga joylashuvingiz axborotidan foydalanishni taqiqlash</translation>
 <translation id="5118462200606189584">Hisob kiritish…</translation>
 <translation id="5118764316110575523">Oʻchiq</translation>
-<translation id="5119329531859909472">Mahsulot narxini kuzatish uchun Kuzatish ustiga bosing</translation>
 <translation id="5121618895923301719">Siz bu mahsulotni kuzatyapsiz. Bu sahifa <ph name="BEGIN_LINK" />Mobil bukmarklarga<ph name="END_LINK" /> saqlandi.</translation>
 <translation id="512533434554095351">Bir nechta parol bilan bogʻliq muammo bor.</translation>
 <translation id="5126335625961252141">Planshet</translation>
@@ -1430,7 +1424,6 @@
 <translation id="5414763847370083940">Istalgan saytda narx tushganda ogohlantirish olasiz.</translation>
 <translation id="5415289094036440596">Kirish kalitlari ulashilmaydi</translation>
 <translation id="5416455648658732408">Varaqlar guruhiga koʻchirish</translation>
-<translation id="5423269318075950257">Narxni kuzatish</translation>
 <translation id="542659109038405424">Tarjima tili</translation>
 <translation id="5429624150850059322">“Davom etish” bosilmaguncha varaqlar xira qoladi</translation>
 <translation id="5431239785743546285">Ochilgan sahifalar</translation>
@@ -1968,7 +1961,6 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="6989636517316575338">Istalgan sahifa haqida savol bering</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998236305642926573">Barcha vazifalar</translation>
-<translation id="6998251471716094661">Mahsulotlar narxini kuzating va saytlarda narx tushganda bildirishnoma oling</translation>
 <translation id="7004032350256606903">Tashkilotingiz internetni pinhona kezishni talab qiladi.
 <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Sozlamalar orqali Birlamchi qilish…</translation>
@@ -1992,7 +1984,6 @@ Kompyuterda davom etish uchun <ph name="OTHER_EMAIL" /> hisobiga almashtiring. B
 <translation id="7082853213442715471">Yoniq boʻlsa, ayrim veb texnologiyalar bloklanadi va ayrim saytlar uzoqroq ochilishi yoki nosoz ishlashi mumkin.</translation>
 <translation id="7091023926159231962">{count,plural, =1{{count} ta parol import qilinmadi}other{{count} ta parol import qilinmadi}}</translation>
 <translation id="7095110968493193530"><ph name="EMAIL" /> uchun Google Parollar menejerida</translation>
-<translation id="7097046145876891318">Narx qanday oʻzgarganini koʻrish uchun manzillar qatorida narxlar tarixini bosing</translation>
 <translation id="7102005569666697658">Yuklab olinmoqda… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menyu → Sozlamalar → Toʻlov usullari</translation>
 <translation id="7108338896283013870">Berkitish</translation>

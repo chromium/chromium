@@ -576,7 +576,6 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="7213407614656404070">Usa Chromium cada vez que hagas clic en vínculos de mensajes, documentos y otras apps</translation>
 <translation id="7216228761061470870">Cuando usas la Búsqueda con imágenes en la computadora, el título de la página, la URL y el contenido, incluidos los archivos PDF, se envían al servidor</translation>
 <translation id="7223968959479464213">Administrador de tareas - Chromium</translation>
-<translation id="7226331818892775989">Preguntar sobre contenido fuera de Chromium, como otras apps o archivos</translation>
 <translation id="7227958669698166857">Ya accedió <ph name="EXISTING_USER" />. Para mantener separada la navegación, accede a Chromium en tu propio perfil como <ph name="USER_EMAIL_ADDRESS" />. También obtendrás tu información guardada y más en todos tus dispositivos.</translation>
 <translation id="7252276985725323153">Comienza a navegar al instante: Chromium ahora se puede ejecutar cuando se inicia Windows.</translation>
 <translation id="7274695763216404502">Se fijó. Vuelve a usar la Búsqueda con imágenes desde la barra de herramientas.</translation>
@@ -691,7 +690,6 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="8310603974518734211">Código QR para acceder a Chromium como <ph name="USER_NAME" /></translation>
 <translation id="8313851650939857356">Error de inicio: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Tu organización cierra Chromium cuando no se usa durante <ph name="TIMEOUT_DURATION" />.</translation>
-<translation id="8321888067342493336">Guardar como imagen</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> usaba Chromium anteriormente</translation>
 <translation id="8351551329754447960">Habilitar habilidades en Chromium</translation>
 <translation id="8359544530202147897">Actualiza Chromium para seguir usando los datos de Chromium en tu Cuenta de Google, <ph name="ACCOUNT_EMAIL" /></translation>

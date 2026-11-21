@@ -94,7 +94,6 @@
 <translation id="1090126737595388931">কোনো পৃষ্ঠভূমি অ্যাপ্লিকেশান চলছে না</translation>
 <translation id="109038914521989341">এই ডেটা কপি করার কারণ লিখুন:</translation>
 <translation id="1094158807129647987">“<ph name="SELECTION" />” সম্পর্কে জিজ্ঞাসা করুন</translation>
-<translation id="1095398697303758108">উন্নত অটোফিলের জন্য Ctrl দুবার প্রেস করুন</translation>
 <translation id="1095879482467973146">ওয়েবে Google Password Manager</translation>
 <translation id="1097016918605049747">এই পৃষ্ঠা অনুবাদ করা যায়নি</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> থেকে ছবি কপি করা হয়েছে</translation>
@@ -582,6 +581,7 @@
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{ট্যাব সরিয়ে গ্রুপ মুছে দেবেন?}=1{ট্যাব সরিয়ে গ্রুপ মুছে দেবেন?}one{ট্যাব সরিয়ে গ্রুপ মুছে দেবেন?}other{ট্যাব সরিয়ে গ্রুপগুলি মুছে দেবেন?}}</translation>
 <translation id="1637765355341780467">আপনার প্রোফাইল খোলার সময় কোনো সমস্যা হয়েছে। কিছু বৈশিষ্ট্য অনুপলব্ধ হতে পারে।</translation>
 <translation id="1639239467298939599">লোড হচ্ছে</translation>
+<translation id="1640672724030957280">ডাউনলোড হচ্ছে...</translation>
 <translation id="1641113438599504367">নিরাপদ ব্রাউজিং</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{১টি পাসওয়ার্ড সঠিকভাবে ফর্ম্যাট না থাকার জন্য ইমপোর্ট করা যায়নি}one{{NUM_PASSWORDS}টি পাসওয়ার্ড সঠিকভাবে ফর্ম্যাট না থাকার জন্য ইমপোর্ট করা যায়নি}other{{NUM_PASSWORDS}টি পাসওয়ার্ড সঠিকভাবে ফর্ম্যাট না থাকার জন্য ইমপোর্ট করা যায়নি}}</translation>
 <translation id="1642299742557467312">এই ফাইল আপনার ডিভাইসের ক্ষতি করতে পারে</translation>
@@ -1811,7 +1811,6 @@
 <translation id="2988328607561082373">আপনি কোনও পাসওয়ার্ড আবার ব্যবহার করছেন না</translation>
 <translation id="2989523299700148168">সাম্প্রতিক দেখা হয়েছে</translation>
 <translation id="2989786307324390836">DER-এনকোডেড বাইনারি, একক সার্টিফিকেট</translation>
-<translation id="2990500505358145117">উন্নত অটোফিল শর্টকাট এডিট করুন</translation>
 <translation id="2990583317361835189">সাইটগুলিকে মোশন সেন্সর ব্যবহার করতে দেয় না</translation>
 <translation id="2991182900092497283">এই ডেটা পেস্ট করার জন্য একটি কারণ লিখুন:</translation>
 <translation id="2992754757708650257">সাইট ছেড়ে বেরিয়ে যাবেন এবং টাস্ক শেষ করবেন?</translation>
@@ -2066,7 +2065,6 @@
 <translation id="3244294424315804309">সাউন্ড মিউট করে রাখুন</translation>
 <translation id="3247649647204519958">আপনি যে সাইটে রয়েছেন, এখান থেকে তার এক্সটেনশন সংক্রান্ত অনুমতি দেখতে ও ম্যানেজ করতে পারবেন</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - নেটওয়ার্ক ত্রুটি</translation>
-<translation id="3248957351402065497">উন্নত অটোফিলের জন্য কাস্টম শর্টকাট</translation>
 <translation id="3249558306861350254">আপনার Windows সেটিংসে <ph name="BEGIN_BOLD" />ডিফল্ট হিসেবে সেট করুন<ph name="END_BOLD" /> বিকল্পে ক্লিক করুন।</translation>
 <translation id="3250374026663843838">আপনার স্কিল ম্যানেজ করুন</translation>
 <translation id="3251759466064201842">&lt;শংসাপত্রের অংশ নয়&gt;</translation>
@@ -2287,6 +2285,7 @@
 <translation id="3481268647794498892"><ph name="COUNTDOWN_SECONDS" /> সেকেন্ডের মধ্যে <ph name="ALTERNATIVE_BROWSER_NAME" /> চালু হতে চলেছে</translation>
 <translation id="348247802372410699">স্টাইল বেছে নিন</translation>
 <translation id="3482573964681964096">Windows থেকে ইমপোর্ট করা সার্টিফিকেট ম্যানেজ করুন</translation>
+<translation id="348268549820508141">স্পিচ শনাক্তকরণ</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> নিচে উল্লেখ করা ফাইলগুলি দেখতে পারবে</translation>
 <translation id="3486380520195228369">পৃষ্ঠা রিফ্রেশ না হওয়া পর্যন্ত লুকানো থাকবে</translation>
 <translation id="3487007233252413104">নামহীন ক্রিয়াকলাপ</translation>
@@ -2657,7 +2656,6 @@
 <translation id="3826086052025847742">ChromeOS Flex লগ</translation>
 <translation id="3827774300009121996">&amp;পূর্ণ স্ক্রীণ</translation>
 <translation id="3828029223314399057">বুকমার্কগুলি খুঁজুন</translation>
-<translation id="3828454092958722155">উন্নত অটোফিল শর্টকাট মুছুন</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - বেশি মেমরির ব্যবহার - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">আলাদা পাসকী ব্যবহার করুন</translation>
 <translation id="3838085852053358637">এক্সটেনশন লোড করা যায়নি</translation>
@@ -3738,7 +3736,6 @@
 <translation id="5060419232449737386">ক্যাপশন সেটিংস</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{এই ফোল্ডারটিতে একটি বুকমার্ক আছে। এটা মুছে ফেলার বিষয়ে আপনি কি নিশ্চিত?}one{এই ফোল্ডারটিতে #টি বুকমার্ক আছে। এটা মুছে ফেলার বিষয়ে আপনি কি নিশ্চিত?}other{এই ফোল্ডারটিতে #টি বুকমার্ক আছে। এটা মুছে ফেলার বিষয়ে আপনি কি নিশ্চিত?}}</translation>
 <translation id="5061531353537614467">তুন্দ্রা</translation>
-<translation id="5061781067616989032">আপনার নিজের কীবোর্ড শর্টকাট সেট-আপ করুন</translation>
 <translation id="5062863364865466276">মুভমেন্ট</translation>
 <translation id="5063480226653192405">ব্যবহার</translation>
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" /> প্রোফাইল খুলুন। এই প্রোফাইল আপনার অভিভাবক ম্যানেজ করেন।</translation>
@@ -5015,7 +5012,6 @@
 <translation id="6540488083026747005">এই সাইটে আপনি থার্ড-পার্টি কুকিকে অনুমতি দিয়েছেন</translation>
 <translation id="6541638731489116978">আপনার মোশন সেন্সর ব্যবহার করা থেকে এই সাইটকে ব্লক করা হয়েছে।</translation>
 <translation id="6542417422899025860">বেশিরভাগ ব্যক্তিগত তথ্য অটোমেটিক সরিয়ে দিন</translation>
-<translation id="6548240707386871455">উন্নত অটোফিল শর্টকাট</translation>
 <translation id="654871471440386944">ক্যারেট ব্রাউজিং চালু করতে চান?</translation>
 <translation id="6549689063733911810">সাম্প্রতিক</translation>
 <translation id="6550675742724504774">বিকল্পসমূহ</translation>
@@ -5181,7 +5177,6 @@
 <translation id="6710172959248731469">Google পরিষেবা সংক্রান্ত সেটিংস</translation>
 <translation id="6710394144992407503">ওয়েব পৃষ্ঠাতে টেক্সট টাইপ করার সময় বানান সংক্রান্ত সমস্যা চেক করুন</translation>
 <translation id="6711236403841768371"><ph name="END_DATE" />-এর আগে</translation>
-<translation id="6711569175139833669">উন্নত অটোফিলের জন্য দুবার ⌘ প্রেস করুন</translation>
 <translation id="6712943853047024245"><ph name="WEBSITE" />-এ এই ইউজারনেম সহ আপনি আগেই একটি পাসওয়ার্ড সেভ করেছেন</translation>
 <translation id="6713668088933662563">কখনই এই ভাষাগুলি অনুবাদ করার প্রস্তাব দেবেন না</translation>
 <translation id="6714871567554212732"><ph name="GROUP_NAME" /> সম্পর্কে আরও বিবরণ দেখুন</translation>
@@ -6102,7 +6097,6 @@
 <translation id="7706742200777909964">একাধিক পৃষ্ঠা একই ট্যাবে পাশাপাশি রেখে বিকল্প তুলনা করে দেখা সহ অন্যান্য কাজ আরও সহজে করুন</translation>
 <translation id="7707108266051544351">এই সাইটকে মোশন সেন্সর ব্যবহার করা থেকে ব্লক করা হয়েছে।</translation>
 <translation id="7709152031285164251">ব্যর্থ হয়েছে - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">উন্নত অটোফিলের জন্য কাস্টম শর্টকাট মুছুন</translation>
 <translation id="7710568461918838723">&amp;কাস্ট করুন...</translation>
 <translation id="7712739869553853093">প্রিন্ট প্রিভিউ ডায়ালগ</translation>
 <translation id="7714464543167945231">সার্টিফিকেট</translation>
@@ -6462,7 +6456,6 @@
 <translation id="810185532889603849">কাস্টম রঙ</translation>
 <translation id="8103484184517840583">AI মোড থেকে বেরিয়ে আসুন</translation>
 <translation id="810362914482827094">'পাসকী' সার্চ করুন</translation>
-<translation id="8104388155778519213">Google Lens ব্যবহার করে আপনার স্ক্রিনে যা আছে তা শেয়ার করুন</translation>
 <translation id="8104412594956510627"><ph name="DEVICE" /> থেকে আপনার ইতিহাস পেতে, ইতিহাস সিঙ্ক করুন। সেটিংস থেকে আপনি যেকোনও সময় সিঙ্ক করা বন্ধ করতে পারবেন। আপনার ইতিহাসের ভিত্তিতে, সার্চ ও অন্যান্য পরিষেবা পছন্দমতো করে তুলতে Google এই ডেটা ব্যবহার করতে পারে।</translation>
 <translation id="8104778744208707085">আপনার মনোযোগ প্রয়োজন</translation>
 <translation id="8105273883928376822">চালিয়ে যেতে, সাইন-ইন করুন।</translation>
@@ -6560,7 +6553,6 @@
 <translation id="8214489666383623925">ফাইল খুলুন...</translation>
 <translation id="8214771296778317256">এখানে আপনার পছন্দের ট্যাব স্টাইলিং বেছে নিন</translation>
 <translation id="8217399928341212914">একাধিক ফাইলের অটোমেটিক ডাউনলোড ব্লক করা চালিয়ে যান</translation>
-<translation id="8218411859495801458">উন্নত অটোফিলের জন্য কাস্টম শর্টকাট এডিট করুন</translation>
 <translation id="8221358554841691213">মাঝারি ফোকাস স্টাইল</translation>
 <translation id="8221942262855134126">পাসওয়ার্ড ম্যানেজ করুন</translation>
 <translation id="8222112516148944758">আপনার সবকটি ডিভাইস জুড়ে আপনার ট্যাব গ্রুপ অটোমেটিক সেভ এবং আপডেট হয়</translation>
@@ -6833,7 +6825,6 @@
 <translation id="8512476990829870887">প্রক্রিয়া সমাপ্ত করুন</translation>
 <translation id="851263357009351303">ছবিগুলি দেখানোর জন্য সর্বদা <ph name="HOST" />-কে অনুমতি দিন </translation>
 <translation id="8513357934662532537"><ph name="USER_EMAIL" />-এর জন্য <ph name="BRAND" />-এ পাসওয়ার্ড ইমপোর্ট করতে, একটি CSV ফাইল বেছে নিন।</translation>
-<translation id="8514257511170433540">ফর্ম পূরণ করার সময় ডিফল্ট কীবোর্ড শর্টকাট ব্যবহার করুন</translation>
 <translation id="8514746246728959655">অন্য একটি নিরাপত্তা কী ব্যবহার করে দেখুন</translation>
 <translation id="8514828975162859845">কেক পপ</translation>
 <translation id="8514955299594277296">সাইটগুলিকে আপনার ডিভাইসে ডেটা সেভ করার অনুমতি দেবেন না (প্রস্তাবিত নয়)</translation>

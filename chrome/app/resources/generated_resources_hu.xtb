@@ -94,7 +94,6 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1090126737595388931">Nincs háttérben futó alkalmazás</translation>
 <translation id="109038914521989341">Adja meg az adat másolásának okát:</translation>
 <translation id="1094158807129647987">Kérdés feltevése erről: „<ph name="SELECTION" />”</translation>
-<translation id="1095398697303758108">A Ctrl kétszeri lenyomása a továbbfejlesztett automatikus kitöltéshez</translation>
 <translation id="1095879482467973146">Google Jelszókezelő az interneten</translation>
 <translation id="1097016918605049747">Nem sikerült lefordítani ezt az oldalt</translation>
 <translation id="1099962274138857708">Kép vágólapra másolva a következő eszközről: <ph name="DEVICE_NAME" /></translation>
@@ -582,6 +581,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Eltávolítja a lapot és törli a csoportot?}=1{Eltávolítja a lapokat, és törli a csoportot?}other{Eltávolítja a lapokat, és törli a csoportokat?}}</translation>
 <translation id="1637765355341780467">Hiba történt a profil megnyitása során. Lehet, hogy egyes funkciók nem állnak rendelkezésre.</translation>
 <translation id="1639239467298939599">Betöltés</translation>
+<translation id="1640672724030957280">Letöltés...</translation>
 <translation id="1641113438599504367">Biztonságos Böngészés</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 további jelszót nem sikerült importálni, mert nem volt megfelelő a formátuma}other{{NUM_PASSWORDS} további jelszót nem sikerült importálni, mert nem volt megfelelő a formátumuk}}</translation>
 <translation id="1642299742557467312">Ez a fájl károsíthatja az eszközét</translation>
@@ -1809,7 +1809,6 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="2988328607561082373">Ön egyetlen jelszót sem használ fel újra</translation>
 <translation id="2989523299700148168">Legutóbb látogatott</translation>
 <translation id="2989786307324390836">DER kódolású bináris, egyedüli tanúsítvány</translation>
-<translation id="2990500505358145117">A továbbfejlesztett automatikus kitöltés billentyűparancsának szerkesztése</translation>
 <translation id="2990583317361835189">A webhelyek nem használhatnak mozgásérzékelőket</translation>
 <translation id="2991182900092497283">Adja meg az adat beillesztésének okát:</translation>
 <translation id="2992754757708650257">Elhagyja a webhelyet és befejezi a feladatot?</translation>
@@ -2064,7 +2063,6 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="3244294424315804309">Némítás megtartása</translation>
 <translation id="3247649647204519958">Itt tekintheti meg és kezelheti a bővítmények engedélyeit az aktuális webhelyre vonatkozóan</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Hálózati hiba</translation>
-<translation id="3248957351402065497">Egyéni billentyűparancs a továbbfejlesztett automatikus kitöltéshez</translation>
 <translation id="3249558306861350254">Kattintson a <ph name="BEGIN_BOLD" />Beállítás alapértelmezettként<ph name="END_BOLD" /> lehetőségre a Windows beállításaiban.</translation>
 <translation id="3250374026663843838">Készség kezelése</translation>
 <translation id="3251759466064201842">&lt;Nem része a tanúsítványnak&gt;</translation>
@@ -2285,6 +2283,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="3481268647794498892">Megnyitás a(z) <ph name="ALTERNATIVE_BROWSER_NAME" /> böngészőben <ph name="COUNTDOWN_SECONDS" /> másodperc múlva…</translation>
 <translation id="348247802372410699">Válasszon stílust</translation>
 <translation id="3482573964681964096">Windows rendszerről importált tanúsítványok kezelése</translation>
+<translation id="348268549820508141">Beszédfelismerés</translation>
 <translation id="3482719661246593752">A(z) <ph name="ORIGIN" /> megtekintheti a következő fájlokat</translation>
 <translation id="3486380520195228369">Az oldal frissítéséig elrejtve</translation>
 <translation id="3487007233252413104">névtelen funkció</translation>
@@ -2655,7 +2654,6 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="3826086052025847742">ChromeOS Flex-naplók</translation>
 <translation id="3827774300009121996">&amp;Teljes képernyő</translation>
 <translation id="3828029223314399057">Könyvjelzők keresése</translation>
-<translation id="3828454092958722155">A továbbfejlesztett automatikus kitöltés billentyűparancsának törlése</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Nagy memóriahasználat – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Másik azonosítókulcs használata</translation>
 <translation id="3838085852053358637">Nem sikerült betölteni a bővítményt</translation>
@@ -3735,7 +3733,6 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="5060419232449737386">Feliratbeállítások</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Ebben a mappában van egy könyvjelző. Biztosan törli?}other{Ebben a mappában van # könyvjelző. Biztosan törli őket?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
-<translation id="5061781067616989032">Saját billentyűparancs beállítása</translation>
 <translation id="5062863364865466276">Mozgás</translation>
 <translation id="5063480226653192405">Használat</translation>
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" /> profil megnyitása. Ezt a munkaprofilt a szülőd felügyeli.</translation>
@@ -5012,7 +5009,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6540488083026747005">Engedélyezte a harmadik féltől származó cookie-kat ezen a webhelyen</translation>
 <translation id="6541638731489116978">Ennél a webhelynél le van tiltva a mozgásérzékelőkhöz való hozzáférés.</translation>
 <translation id="6542417422899025860">A legtöbb személyes adat automatikus eltávolítása</translation>
-<translation id="6548240707386871455">A továbbfejlesztett automatikus kitöltés billentyűparancsa</translation>
 <translation id="654871471440386944">Bekapcsolja a billentyűzettel böngészést?</translation>
 <translation id="6549689063733911810">Legutóbbiak</translation>
 <translation id="6550675742724504774">Beállítások</translation>
@@ -5176,7 +5172,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6710172959248731469">Google-szolgáltatások beállításai</translation>
 <translation id="6710394144992407503">Helyesírási hibák keresése szöveg weboldalakon való beírásakor</translation>
 <translation id="6711236403841768371"><ph name="END_DATE" /> előtt</translation>
-<translation id="6711569175139833669">A ⌘ kétszeri lenyomása a továbbfejlesztett automatikus kitöltéshez</translation>
 <translation id="6712943853047024245">Már mentett jelszót ezzel a felhasználónévvel a következőhöz: <ph name="WEBSITE" /></translation>
 <translation id="6713668088933662563">Soha ne ajánljon fel fordítást ezekről a nyelvekről</translation>
 <translation id="6714871567554212732">További részletek megtekintése a következőről: <ph name="GROUP_NAME" /></translation>
@@ -6097,7 +6092,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="7706742200777909964">Egymás mellé helyezhet oldalakat ugyanazon a lapon, így könnyedén összehasonlíthatja a lehetőségeket és egyebeket.</translation>
 <translation id="7707108266051544351">Ennél a webhelynél le van tiltva a mozgásérzékelők használata.</translation>
 <translation id="7709152031285164251">Meghiúsult – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">A továbbfejlesztett automatikus kitöltés egyéni billentyűparancsának törlése</translation>
 <translation id="7710568461918838723">&amp;Átküldés…</translation>
 <translation id="7712739869553853093">Nyomtatási előnézet párbeszédpanelje</translation>
 <translation id="7714464543167945231">Tanúsítvány</translation>
@@ -6457,7 +6451,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="810185532889603849">Egyéni szín</translation>
 <translation id="8103484184517840583">Kilépés az AI-módból</translation>
 <translation id="810362914482827094">Azonosítókulcsok keresése</translation>
-<translation id="8104388155778519213">Megoszthatja a képernyője tartalmát a Google Lens segítségével</translation>
 <translation id="8104412594956510627">Ha a(z) <ph name="DEVICE" /> eszközön lévő előzményeihez is szeretne hozzáférni, szinkronizálja az előzményeit. A beállítások között bármikor leállíthatja a szinkronizálást. A Google az Ön előzményei alapján személyre szabhatja a Keresőt és más szolgáltatásokat.</translation>
 <translation id="8104778744208707085">További teendők szükségesek</translation>
 <translation id="8105273883928376822">Kérjük, jelentkezzen be a folytatáshoz</translation>
@@ -6555,7 +6548,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8214489666383623925">Fájl megnyitása...</translation>
 <translation id="8214771296778317256">Itt választhatja ki a kívánt lapstílust</translation>
 <translation id="8217399928341212914">Továbbra is tiltsa le több fájl automatikus letöltését</translation>
-<translation id="8218411859495801458">A továbbfejlesztett automatikus kitöltés egyéni billentyűparancsának szerkesztése</translation>
 <translation id="8221358554841691213">Közepes fókuszstílus</translation>
 <translation id="8221942262855134126">Jelszó kezelése</translation>
 <translation id="8222112516148944758">A rendszer automatikusan menti a lapcsoportokat, és frissíti őket az Ön összes eszközén</translation>
@@ -6828,7 +6820,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8512476990829870887">Folyamat leállítása</translation>
 <translation id="851263357009351303"><ph name="HOST" /> mindig mutathasson képeket</translation>
 <translation id="8513357934662532537">Ha jelszavakat szeretne importálni a <ph name="BRAND" /> szolgáltatásba a(z) <ph name="USER_EMAIL" /> fiók számára, válassza ki a kívánt CSV-fájlt.</translation>
-<translation id="8514257511170433540">Az alapértelmezett billentyűparancs használata űrlapok kitöltésekor</translation>
 <translation id="8514746246728959655">Próbálkozzon másik biztonsági hardverkulccsal</translation>
 <translation id="8514828975162859845">Sütinyalóka</translation>
 <translation id="8514955299594277296">A webhelyek nem menthetnek adatokat az eszközre (nem ajánlott)</translation>

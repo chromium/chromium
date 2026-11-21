@@ -582,7 +582,6 @@
 <translation id="7213407614656404070">ប្រើ Chromium រាល់ពេល​ដែលអ្នកចុចលើ​តំណ​នៅក្នុងសារ ឯកសារ និងកម្មវិធី​ផ្សេងទៀត</translation>
 <translation id="7216228761061470870">នៅពេលអ្នកប្រើការ​ស្វែងរករូបភាពនៅលើកុំព្យូទ័រ នោះចំណងជើង, URL និងខ្លឹមសារទំព័រ រួមទាំង PDF ត្រូវបានបញ្ជូនទៅម៉ាស៊ីនមេ</translation>
 <translation id="7223968959479464213">កម្មវិធីគ្រប់គ្រងភារកិច្ច - Chromium</translation>
-<translation id="7226331818892775989">សួរអំពី​ខ្លឹមសារ​នៅក្រៅ Chromium ដូចជា​ឯកសារ ឬ​កម្មវិធី​ផ្សេងទៀត​ជាដើម</translation>
 <translation id="7227958669698166857"><ph name="EXISTING_USER" /> បានចូល​គណនី​ស្រាប់ហើយ។ ដើម្បី​រក្សាការរុករក​របស់អ្នក​ដាច់ដោយឡែក សូម​ចូលគណនី Chromium នៅក្នុង​កម្រងព័ត៌មាន​របស់អ្នកផ្ទាល់​ជា <ph name="USER_EMAIL_ADDRESS" />។ អ្នក​ក៏នឹង​ទទួលបាន​ព័ត៌មាន​ដែលអ្នក​បានរក្សាទុក និង​អ្វីៗជា​ច្រើនទៀត​នៅលើ​ឧបករណ៍​ទាំងអស់​របស់អ្នក​ផងដែរ។</translation>
 <translation id="7252276985725323153">ចាប់ផ្ដើមរុករកភ្លាមៗ៖ ឥឡូវនេះ Chromium អាចចាប់ផ្ដើម នៅពេល Windows ចាប់ផ្ដើម។</translation>
 <translation id="7274695763216404502">បាន​ខ្ទាស់! ប្រើការស្វែងរករូបភាពម្ដងទៀតពីរបារឧបករណ៍</translation>
@@ -699,7 +698,6 @@ Chromium មិនអាចសង្គ្រោះការកំណត់រ�
 <translation id="8310603974518734211">កូដ QR សម្រាប់ចូលគណនី Chromium ជា <ph name="USER_NAME" /></translation>
 <translation id="8313851650939857356">បញ្ហា​ក្នុងការ​ចាប់ផ្ដើម៖ <ph name="STARTUP_ERROR" />។</translation>
 <translation id="8318772038038596122">ស្ថាប័ន​របស់អ្នក​បិទ Chromium នៅពេលដែល​មិនប្រើប្រាស់វា​រយៈពេល <ph name="TIMEOUT_DURATION" />។</translation>
-<translation id="8321888067342493336">រក្សាទុកជា​រូបភាព</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> បានប្រើ Chromium កាលពីមុន</translation>
 <translation id="8351551329754447960">បើក​ជំនាញ​នៅក្នុង Chromium</translation>
 <translation id="8359544530202147897">ដំឡើង​កំណែ Chromium ដើម្បី​បន្តប្រើ​ទិន្នន័យ Chromium នៅក្នុង​គណនី Google របស់អ្នក <ph name="ACCOUNT_EMAIL" /></translation>

@@ -94,7 +94,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1090126737595388931">Ingen apps kører i baggrunden</translation>
 <translation id="109038914521989341">Angiv en årsag til, at du vil kopiere disse data:</translation>
 <translation id="1094158807129647987">Spørg om "<ph name="SELECTION" />"</translation>
-<translation id="1095398697303758108">Tryk to gange på Ctrl for at bruge forbedret autofyld</translation>
 <translation id="1095879482467973146">Google Adgangs­kode­admin­istrator på nettet</translation>
 <translation id="1097016918605049747">Denne side kunne ikke oversættes</translation>
 <translation id="1099962274138857708">Billede kopieret fra <ph name="DEVICE_NAME" /></translation>
@@ -582,6 +581,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Vil du fjerne fanen og slette gruppen?}=1{Vil du fjerne fanerne og slette gruppen?}one{Vil du fjerne fanerne og slette gruppen?}other{Vil du fjerne fanerne og slette grupperne?}}</translation>
 <translation id="1637765355341780467">Noget gik galt ved åbningen af din profil. Nogle funktioner er muligvis ikke tilgængelige.</translation>
 <translation id="1639239467298939599">Indlæser</translation>
+<translation id="1640672724030957280">Downloader...</translation>
 <translation id="1641113438599504367">Beskyttet browsing</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 anden adgangskode blev ikke importeret, fordi den er formateret forkert}one{{NUM_PASSWORDS} anden adgangskode blev ikke importeret, fordi den er formateret forkert}other{{NUM_PASSWORDS} andre adgangskoder blev ikke importeret, fordi de er formateret forkert}}</translation>
 <translation id="1642299742557467312">Denne fil kan beskadige din enhed</translation>
@@ -1812,7 +1812,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2988328607561082373">Du genbruger ikke nogen adgangskoder</translation>
 <translation id="2989523299700148168">Besøgt for nylig</translation>
 <translation id="2989786307324390836">DER-kodet binær, enkeltcertifikat</translation>
-<translation id="2990500505358145117">Rediger genvej til forbedret autofyld</translation>
 <translation id="2990583317361835189">Tillad ikke, at websites anvender bevægelsessensorer</translation>
 <translation id="2991182900092497283">Angiv en årsag til, at du vil indsætte disse data:</translation>
 <translation id="2992754757708650257">Vil du forlade websitet og afslutte opgaven?</translation>
@@ -2067,7 +2066,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="3244294424315804309">Lad lyden forblive slået fra</translation>
 <translation id="3247649647204519958">Her kan du se og administrere udvidelsestilladelser for det website, du besøger</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – netværksfejl</translation>
-<translation id="3248957351402065497">Tilpasset genvej til forbedret autofyld</translation>
 <translation id="3249558306861350254">Klik på <ph name="BEGIN_BOLD" />Angiv som standard<ph name="END_BOLD" /> i dine Windows-indstillinger.</translation>
 <translation id="3250374026663843838">Administrer din færdighed</translation>
 <translation id="3251759466064201842">&lt;Ikke en del af certifikatet&gt;</translation>
@@ -2288,6 +2286,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="3481268647794498892">Åbner i <ph name="ALTERNATIVE_BROWSER_NAME" /> om <ph name="COUNTDOWN_SECONDS" /> sekunder</translation>
 <translation id="348247802372410699">Vælg en stil</translation>
 <translation id="3482573964681964096">Administrer importerede certifikater fra Windows</translation>
+<translation id="348268549820508141">Talegenkendelse</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> kan se følgende filer</translation>
 <translation id="3486380520195228369">Skjult, indtil siden opdateres</translation>
 <translation id="3487007233252413104">anonym funktion</translation>
@@ -2658,7 +2657,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="3826086052025847742">ChromeOS Flex-logs</translation>
 <translation id="3827774300009121996">&amp;Fuld skærm</translation>
 <translation id="3828029223314399057">Søg i bogmærker</translation>
-<translation id="3828454092958722155">Genvej til at rydde forbedret autofyld</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Højt hukommelsesforbrug –<ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Brug en anden adgangsnøgle</translation>
 <translation id="3838085852053358637">Udvidelsen kunne ikke indlæses</translation>
@@ -3739,7 +3737,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5060419232449737386">Indstillinger for undertekster</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Denne mappe indeholder et bogmærke. Er du sikker på, at du vil slette det?}one{Denne mappe indeholder # bogmærke. Er du sikker på, at du vil slette det?}other{Denne mappe indeholder # bogmærker. Er du sikker på, at du vil slette dem?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
-<translation id="5061781067616989032">Konfigurer din egen tastaturgenvej</translation>
 <translation id="5062863364865466276">Bevægelse</translation>
 <translation id="5063480226653192405">Databrug</translation>
 <translation id="5064921774605267982">Åbn profilen <ph name="PROFILE_NAME" />. Denne profil administreres af din forælder.</translation>
@@ -5015,7 +5012,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6540488083026747005">Du har tilladt tredjepartscookies på dette website</translation>
 <translation id="6541638731489116978">Der er blokeret for adgang til dine bevægelsessensorer på dette website.</translation>
 <translation id="6542417422899025860">Fjern automatisk de fleste personlige oplysninger</translation>
-<translation id="6548240707386871455">Genvej til forbedret autofyld</translation>
 <translation id="654871471440386944">Vil du aktivere tastenavigation?</translation>
 <translation id="6549689063733911810">Seneste</translation>
 <translation id="6550675742724504774">Valgmuligheder</translation>
@@ -5181,7 +5177,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="6710172959248731469">Indstillinger for Google-tjenester</translation>
 <translation id="6710394144992407503">Tjek, om der er stavefejl, når du skriver tekst på websider</translation>
 <translation id="6711236403841768371">Før <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Tryk to gange på ⌘ for at bruge forbedret autofyld</translation>
 <translation id="6712943853047024245">Du har allerede gemt en adgangskode for dette brugernavn til <ph name="WEBSITE" /></translation>
 <translation id="6713668088933662563">Tilbyd aldrig at oversætte disse sprog</translation>
 <translation id="6714871567554212732">Se flere oplysninger om <ph name="GROUP_NAME" /></translation>
@@ -6102,7 +6097,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="7706742200777909964">Placer sider side om side på den samme fane, så du nemt kan sammenligne forskellige muligheder m.m.</translation>
 <translation id="7707108266051544351">Der er blokeret for brug af bevægelsessensorer på dette website.</translation>
 <translation id="7709152031285164251">Mislykket - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Ryd tilpasset genvej til forbedret autofyld</translation>
 <translation id="7710568461918838723">&amp;Cast...</translation>
 <translation id="7712739869553853093">Dialogboks for udskriftsvisning</translation>
 <translation id="7714464543167945231">Certifikat</translation>
@@ -6462,7 +6456,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="810185532889603849">Tilpasset farve</translation>
 <translation id="8103484184517840583">Afslut AI-tilstand</translation>
 <translation id="810362914482827094">Søg efter adgangskoder</translation>
-<translation id="8104388155778519213">Del det, der vises på din skærm, med Google Lens</translation>
 <translation id="8104412594956510627">Synkroniser historikken for at få adgang til din historik fra <ph name="DEVICE" />. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="8104778744208707085">Kræver gennemgang</translation>
 <translation id="8105273883928376822">Log ind for at fortsætte.</translation>
@@ -6560,7 +6553,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8214489666383623925">Åbn fil...</translation>
 <translation id="8214771296778317256">Vælg din foretrukne fanestil her</translation>
 <translation id="8217399928341212914">Fortsæt med at blokere automatiske downloads af flere filer</translation>
-<translation id="8218411859495801458">Rediger tilpasset genvej til forbedret autofyld</translation>
 <translation id="8221358554841691213">Stil med medium fokus</translation>
 <translation id="8221942262855134126">Administrer adgangskode</translation>
 <translation id="8222112516148944758">Fanegrupper gemmes og opdateres automatisk på alle dine enheder</translation>
@@ -6833,7 +6825,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8512476990829870887">Afslut proces</translation>
 <translation id="851263357009351303">Tillad altid, at <ph name="HOST" /> viser billeder</translation>
 <translation id="8513357934662532537">Vælg en CSV-fil for at importere adgangskoder til <ph name="BRAND" /> for <ph name="USER_EMAIL" />.</translation>
-<translation id="8514257511170433540">Brug standardtastaturgenvejen, når du udfylder formularer</translation>
 <translation id="8514746246728959655">Prøv med en anden sikkerhedsnøgle</translation>
 <translation id="8514828975162859845">Popcakes</translation>
 <translation id="8514955299594277296">Tillad ikke, at websites gemmer data på din enhed (anbefales ikke)</translation>

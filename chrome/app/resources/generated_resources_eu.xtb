@@ -94,7 +94,6 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1090126737595388931">Ez da aplikaziorik abian atzeko planoan</translation>
 <translation id="109038914521989341">Idatzi datu hauek kopiatzeko arrazoi bat:</translation>
 <translation id="1094158807129647987">Galdetu "<ph name="SELECTION" />" gaiari buruz</translation>
-<translation id="1095398697303758108">Sakatu Ktrl birritan Betetze automatiko hobetua erabiltzeko</translation>
 <translation id="1095879482467973146">Sareko Google-ren Pasahitz-kudeatzailea</translation>
 <translation id="1097016918605049747">Ezin izan da itzuli orri hau</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> gailutik kopiatu da irudia</translation>
@@ -581,6 +580,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Fitxa kendu, eta taldea ezabatu nahi duzu?}=1{Fitxak kendu, eta taldea ezabatu nahi duzu?}other{Fitxak kendu, eta taldeak ezabatu nahi dituzu?}}</translation>
 <translation id="1637765355341780467">Arazo bat izan da profila irekitzean. Baliteke eginbide batzuk erabilgarri ez egotea.</translation>
 <translation id="1639239467298939599">Kargatzen</translation>
+<translation id="1640672724030957280">Deskargatzen…</translation>
 <translation id="1641113438599504367">Arakatze segurua</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Beste pasahitz bat ez da inportatu, formatu okerra duelako}other{Beste {NUM_PASSWORDS} pasahitz ez dira inportatu, formatu okerra dutelako}}</translation>
 <translation id="1642299742557467312">Baliteke fitxategi honek gailua kaltetzea</translation>
@@ -1797,7 +1797,6 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="2988328607561082373">Ez zara beste inon erabiltzen ari pasahitzak</translation>
 <translation id="2989523299700148168">Erabilitako azkenak</translation>
 <translation id="2989786307324390836">DER kodetze bitarra, ziurtagiri bakarra</translation>
-<translation id="2990500505358145117">Editatu betetze automatiko hobetuaren lasterbidea</translation>
 <translation id="2990583317361835189">Ez eman mugimendu-sentsoreak erabiltzeko baimena webguneei</translation>
 <translation id="2991182900092497283">Idatzi datu hauek itsasteko arrazoi bat:</translation>
 <translation id="2992754757708650257">Webgunetik irten eta zeregina amaitu nahi duzu?</translation>
@@ -2050,7 +2049,6 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="3244294424315804309">Ez aktibatu audioa</translation>
 <translation id="3247649647204519958">Bisitatzen ari zaren webguneko luzapenen baimenak ikusi eta kudea ditzakezu hemen</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Sareko errorea</translation>
-<translation id="3248957351402065497">Betetze automatiko hobetuaren lasterbide pertsonalizatua</translation>
 <translation id="3249558306861350254">Sakatu <ph name="BEGIN_BOLD" />Ezarri lehenetsi gisa<ph name="END_BOLD" /> Windows-en ezarpenetan.</translation>
 <translation id="3250374026663843838">Kudeatu gaitasuna</translation>
 <translation id="3251759466064201842">&lt;ez dago ziurtagirian&gt;</translation>
@@ -2271,6 +2269,7 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="3481268647794498892"><ph name="ALTERNATIVE_BROWSER_NAME" /> arakatzailean irekiko da <ph name="COUNTDOWN_SECONDS" /> segundo barru</translation>
 <translation id="348247802372410699">Aukeratu estilo bat</translation>
 <translation id="3482573964681964096">Kudeatu Windows-etik inportatutako ziurtagiriak</translation>
+<translation id="348268549820508141">Hizketa-hautematea</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> webguneak honako fitxategi hauek ikus ditzake</translation>
 <translation id="3486380520195228369">Orria freskatu arte ezkutatuta</translation>
 <translation id="3487007233252413104">funtzio anonimoa</translation>
@@ -2641,7 +2640,6 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="3826086052025847742">ChromeOS Flex-en erregistroak</translation>
 <translation id="3827774300009121996">&amp;Pantaila osoa</translation>
 <translation id="3828029223314399057">Bilatu laster-markak</translation>
-<translation id="3828454092958722155">Garbitu betetze automatiko hobetuaren lasterbidea</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Memoriaren erabilera handia - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Erabili beste sarbide-gako bat</translation>
 <translation id="3838085852053358637">Ezin izan da kargatu luzapena</translation>
@@ -3721,7 +3719,6 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="5060419232449737386">Azpitituluen ezarpenak</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Laster-marka bat du karpeta honek. Ziur ezabatu nahi duzula?}other{# laster-marka ditu karpeta honek. Ziur ezabatu nahi duzula?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
-<translation id="5061781067616989032">Konfiguratu zeure lasterbidea</translation>
 <translation id="5062863364865466276">Mugimendua</translation>
 <translation id="5063480226653192405">Erabilera</translation>
 <translation id="5064921774605267982">Ireki <ph name="PROFILE_NAME" /> profila. Gurasoak kudeatzen du profila.</translation>
@@ -4993,7 +4990,6 @@ Egiaztatu pasahitzak <ph name="GOOGLE_PASSWORD_MANAGER" /> zerbitzuan.</translat
 <translation id="6540488083026747005">Webgune honetan hirugarrenen cookieak erabiltzeko baimena eman duzu</translation>
 <translation id="6541638731489116978">Webgune honi mugimendu-sentsoreak atzitzeko aukera blokeatu zaio.</translation>
 <translation id="6542417422899025860">Kendu automatikoki informazio pertsonal gehiena</translation>
-<translation id="6548240707386871455">Betetze automatiko hobetuaren lasterbidea</translation>
 <translation id="654871471440386944">Testu-kurtsorearen bidez arakatzeko eginbidea aktibatu nahi duzu?</translation>
 <translation id="6549689063733911810">Azkenaldikoak</translation>
 <translation id="6550675742724504774">Aukerak</translation>
@@ -5157,7 +5153,6 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6710172959248731469">Google-ren zerbitzuen ezarpenak</translation>
 <translation id="6710394144992407503">Egiaztatu ortografia web-orrietan testua idazten duzunean</translation>
 <translation id="6711236403841768371"><ph name="END_DATE" /> arte</translation>
-<translation id="6711569175139833669">Sakatu ⌘ birritan Betetze automatiko hobetua erabiltzeko</translation>
 <translation id="6712943853047024245">Dagoeneko gorde duzu pasahitz bat erabiltzaile-izen honekin hemen: <ph name="WEBSITE" /></translation>
 <translation id="6713668088933662563">Ez eskaini inoiz hizkuntza hauen itzulpenik</translation>
 <translation id="6714871567554212732">Ikusi <ph name="GROUP_NAME" /> taldeari buruzko xehetasun gehiago</translation>
@@ -6077,7 +6072,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="7706742200777909964">Ezarri orriak bata bestearen ondoan aukerak alderatzea eta abar errazteko</translation>
 <translation id="7707108266051544351">Webgune honi mugimendu-sentsoreak erabiltzeko aukera blokeatu zaio.</translation>
 <translation id="7709152031285164251">Bertan behera - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Garbitu betetze automatiko hobetuaren lasterbide pertsonalizatua</translation>
 <translation id="7710568461918838723">&amp;Igorri…</translation>
 <translation id="7712739869553853093">Inprimatze-aurrebistaren leihoa</translation>
 <translation id="7714464543167945231">Ziurtagiria</translation>
@@ -6437,7 +6431,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="810185532889603849">Kolore pertsonalizatua</translation>
 <translation id="8103484184517840583">Irten AA modutik</translation>
 <translation id="810362914482827094">Bilatu sarbide-gakoak</translation>
-<translation id="8104388155778519213">Partekatu pantailan duzuna Google Lens-ekin</translation>
 <translation id="8104412594956510627"><ph name="DEVICE" /> gailuko historia lortzeko, sinkronizatu historia. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="8104778744208707085">Zerbait egin behar duzu</translation>
 <translation id="8105273883928376822">Hasi saioa aurrera egin ahal izateko.</translation>
@@ -6535,7 +6528,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8214489666383623925">Ireki fitxategia…</translation>
 <translation id="8214771296778317256">Aukeratu fitxetarako nahiago duzun estiloa hemen</translation>
 <translation id="8217399928341212914">Jarraitu blokeatzen fitxategi bat baino gehiagoren deskarga automatikoa</translation>
-<translation id="8218411859495801458">Editatu betetze automatiko hobetuaren lasterbide pertsonalizatua</translation>
 <translation id="8221358554841691213">Foku ertaineko estiloa</translation>
 <translation id="8221942262855134126">Kudeatu pasahitza</translation>
 <translation id="8222112516148944758">Fitxa taldeak automatikoki gordetzen eta eguneratzen dira zure gailu guztietan</translation>
@@ -6808,7 +6800,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8512476990829870887">Amaitu prozesua</translation>
 <translation id="851263357009351303">Eman beti irudiak erakusteko baimena <ph name="HOST" /> webguneari</translation>
 <translation id="8513357934662532537"><ph name="USER_EMAIL" /> kontuko pasahitzak <ph name="BRAND" /> zerbitzura inportatzeko, hautatu CSV fitxategi bat.</translation>
-<translation id="8514257511170433540">Erabili lasterbide lehenetsia inprimakiak betetzean</translation>
 <translation id="8514746246728959655">Erabili beste segurtasun-giltza bat</translation>
 <translation id="8514828975162859845">Tarta-bolatxoak</translation>
 <translation id="8514955299594277296">Ez eman gailuan datuak gordetzeko baimena webguneei (ez da gomendatzen)</translation>

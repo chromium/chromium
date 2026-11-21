@@ -94,7 +94,6 @@
 <translation id="1090126737595388931">Ei käynnissä olevia taustasovelluksia</translation>
 <translation id="109038914521989341">Kerro, miksi kopioit tätä dataa:</translation>
 <translation id="1094158807129647987">Kysy tästä: "<ph name="SELECTION" />"</translation>
-<translation id="1095398697303758108">Käytä parannettua automaattista täyttöä painamalla Ctrl kahdesti</translation>
 <translation id="1095879482467973146">Google Salasanat verkossa</translation>
 <translation id="1097016918605049747">Sivua ei voitu kääntää</translation>
 <translation id="1099962274138857708">Kuva kopioitu laitteelta <ph name="DEVICE_NAME" /></translation>
@@ -582,6 +581,7 @@
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Poistetaanko välilehti ja ryhmä?}=1{Poistetaanko välilehdet ja ryhmä?}other{Poistetaanko välilehdet ja ryhmät?}}</translation>
 <translation id="1637765355341780467">Profiiliasi avattaessa tapahtui virhe. Jotkin ominaisuudet eivät ehkä ole käytettävissä.</translation>
 <translation id="1639239467298939599">Ladataan</translation>
+<translation id="1640672724030957280">Ladataan...</translation>
 <translation id="1641113438599504367">Selaussuoja</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Toista salasanaa ei tuotu, koska se on muotoiltu virheellisesti}other{{NUM_PASSWORDS} muuta salasanaa ei tuotu, koska ne on muotoiltu virheellisesti}}</translation>
 <translation id="1642299742557467312">Tiedosto voi vahingoittaa laitettasi</translation>
@@ -1810,7 +1810,6 @@
 <translation id="2988328607561082373">Et uudelleenkäytä salasanoja</translation>
 <translation id="2989523299700148168">Viimeksi käytetyt</translation>
 <translation id="2989786307324390836">DER-koodattu binääri, yksittäinen varmenne</translation>
-<translation id="2990500505358145117">Muokkaa parannetun automaattisen täytön pikanäppäinyhdistelmää</translation>
 <translation id="2990583317361835189">Älä salli sivustojen käyttää liiketunnistimia</translation>
 <translation id="2991182900092497283">Kerro, miksi liität tätä dataa:</translation>
 <translation id="2992754757708650257">Poistutaanko sivustolta ja lopetetaanko tehtävä?</translation>
@@ -2065,7 +2064,6 @@
 <translation id="3244294424315804309">Jatka äänen mykistystä</translation>
 <translation id="3247649647204519958">Täältä voit tarkistaa ja ylläpitää käyttämäsi sivuston laajennuslupia</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – verkkovirhe</translation>
-<translation id="3248957351402065497">Parannetun automaattisen täytön oma pikanäppäinyhdistelmä</translation>
 <translation id="3249558306861350254">Klikkaa Windowsin asetuksista <ph name="BEGIN_BOLD" />Aseta oletukseksi<ph name="END_BOLD" />.</translation>
 <translation id="3250374026663843838">Hallinnoi taitoa</translation>
 <translation id="3251759466064201842">&lt;Ei osa varmennetta&gt;</translation>
@@ -2286,6 +2284,7 @@
 <translation id="3481268647794498892">Avataan selaimessa <ph name="ALTERNATIVE_BROWSER_NAME" /> <ph name="COUNTDOWN_SECONDS" /> sekunnin päästä</translation>
 <translation id="348247802372410699">Valitse tyyli</translation>
 <translation id="3482573964681964096">Hallinnoi Windowsista tuotuja varmenteita</translation>
+<translation id="348268549820508141">Puheentunnistus</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> saa nähdä seuraavat tiedostot</translation>
 <translation id="3486380520195228369">Piilotettu, kunnes sivu päivittyy</translation>
 <translation id="3487007233252413104">tuntematon toiminto</translation>
@@ -2656,7 +2655,6 @@
 <translation id="3826086052025847742">ChromeOS Flex ‐lokit</translation>
 <translation id="3827774300009121996">&amp;Koko näyttö</translation>
 <translation id="3828029223314399057">Hae kirjanmerkeistä</translation>
-<translation id="3828454092958722155">Tyhjennä parannetun automaattisen täytön pikanäppäinyhdistelmä</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Korkea muistin käyttö - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Käytä toista avainkoodia</translation>
 <translation id="3838085852053358637">Laajennuksen lataus epäonnistui</translation>
@@ -3734,7 +3732,6 @@
 <translation id="5060419232449737386">Tekstitysasetukset</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Tässä kansiossa on kirjanmerkki. Haluatko varmasti poistaa sen?}other{Tässä kansiossa on # kirjanmerkkiä. Haluatko varmasti poistaa sen?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
-<translation id="5061781067616989032">Luo oma pikanäppäinyhdistelmä</translation>
 <translation id="5062863364865466276">Liike</translation>
 <translation id="5063480226653192405">Käyttö</translation>
 <translation id="5064921774605267982">Avaa profiili: <ph name="PROFILE_NAME" /> Vanhempasi hallinnoi tätä käyttäjäprofiilia.</translation>
@@ -5010,7 +5007,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6540488083026747005">Olet sallinut kolmannen osapuolen evästeet tällä sivustolla</translation>
 <translation id="6541638731489116978">Tältä sivustolta on estetty liiketunnistimien lukemien käyttö.</translation>
 <translation id="6542417422899025860">Poista useimmat henkilökohtaiset tiedot automaattisesti</translation>
-<translation id="6548240707386871455">Parannetun automaattisen täytön pikanäppäinyhdistelmä</translation>
 <translation id="654871471440386944">Laitetaanko näppäimistöselaaminen päälle?</translation>
 <translation id="6549689063733911810">Viimeisimmät</translation>
 <translation id="6550675742724504774">Asetukset</translation>
@@ -5174,7 +5170,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="6710172959248731469">Googlen palveluiden asetukset</translation>
 <translation id="6710394144992407503">Tarkista kirjoitusvirheet, kun kirjoitat tekstiä verkkosivuilla</translation>
 <translation id="6711236403841768371">Ennen <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Paina ⌘ kahdesti, niin voit käyttää parannettua automaattista täyttöä</translation>
 <translation id="6712943853047024245">Olet jo tallentanut tämän käyttäjänimen salasanan täällä: <ph name="WEBSITE" /></translation>
 <translation id="6713668088933662563">Älä koskaan ehdota näiden kielten kääntämistä</translation>
 <translation id="6714871567554212732">Katso lisätietoa tästä: <ph name="GROUP_NAME" /></translation>
@@ -6095,7 +6090,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="7706742200777909964">Aseta sivut rinnakkain samalle välilehdelle, jotta voit helposti vertailla vaihtoehtoja ja muuta</translation>
 <translation id="7707108266051544351">Tältä sivustolta on estetty liikkeentunnistimien käyttö.</translation>
 <translation id="7709152031285164251">Epäonnistui – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Tyhjennä parannetun automaattisen täytön oma pikanäppäinyhdistelmä</translation>
 <translation id="7710568461918838723">&amp;Cast...</translation>
 <translation id="7712739869553853093">Tulostuksen esikatseluikkuna</translation>
 <translation id="7714464543167945231">Varmenne</translation>
@@ -6455,7 +6449,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="810185532889603849">Oma väri</translation>
 <translation id="8103484184517840583">Poistu tekoälytilasta</translation>
 <translation id="810362914482827094">Hae avainkoodeja</translation>
-<translation id="8104388155778519213">Jaa näyttö Google Lensilla</translation>
 <translation id="8104412594956510627">Jos haluat käyttää historiaa tältä laitteelta (<ph name="DEVICE" />), synkronoi historia. Voit lopettaa synkronoinnin milloin tahansa asetuksista. Google voi personoida Hakua ja muita palveluita historiasi perusteella.</translation>
 <translation id="8104778744208707085">Edellyttää toimenpiteitä</translation>
 <translation id="8105273883928376822">Jatka kirjautumalla sisään.</translation>
@@ -6553,7 +6546,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8214489666383623925">Avaa tiedosto...</translation>
 <translation id="8214771296778317256">Valitse haluamasi välilehtityyli täältä</translation>
 <translation id="8217399928341212914">Estä edelleen useiden tiedostojen automaattinen lataaminen</translation>
-<translation id="8218411859495801458">Muokkaa parannetun automaattisen täytön omaa pikanäppäinyhdistelmää</translation>
 <translation id="8221358554841691213">Keskitason kohdistustyyli</translation>
 <translation id="8221942262855134126">Muuta salasanaa</translation>
 <translation id="8222112516148944758">Välilehtiryhmäsi tallentuvat ja päivittyvät automaattisesti kaikilla laitteillasi</translation>
@@ -6826,7 +6818,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8512476990829870887">Lopeta prosessi</translation>
 <translation id="851263357009351303">Salli aina sivuston <ph name="HOST" /> näyttää kuvia</translation>
 <translation id="8513357934662532537">Jos haluat siirtää salasanoja tänne: <ph name="BRAND" /> (<ph name="USER_EMAIL" />), valitse CSV-tiedosto.</translation>
-<translation id="8514257511170433540">Käytä oletuspikanäppäinyhdistelmää lomakkeiden täyttämiseen</translation>
 <translation id="8514746246728959655">Kokeile toista suojausavainta</translation>
 <translation id="8514828975162859845">Kakkutikkari</translation>
 <translation id="8514955299594277296">Älä salli sivustojen tallentaa dataa laitteellesi (ei suositella)</translation>

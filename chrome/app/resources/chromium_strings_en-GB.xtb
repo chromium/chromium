@@ -582,7 +582,6 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="7213407614656404070">Use Chromium any time that you click links in messages, documents and other apps</translation>
 <translation id="7216228761061470870">When you use image search on desktop, the page title, URL and content, including PDFs, are sent to the server</translation>
 <translation id="7223968959479464213">Task Manager - Chromium</translation>
-<translation id="7226331818892775989">Ask about content outside of Chromium, like other apps or files</translation>
 <translation id="7227958669698166857"><ph name="EXISTING_USER" /> is already signed in. To keep your browsing separate, sign in to Chromium in your own profile as <ph name="USER_EMAIL_ADDRESS" />. You'll also get your saved info and more on all your devices.</translation>
 <translation id="7252276985725323153">Begin browsing instantly: Chromium can now launch when Windows starts.</translation>
 <translation id="7274695763216404502">Pinned! Use image search again from the toolbar</translation>
@@ -699,7 +698,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8310603974518734211">QR code to sign in to Chromium as <ph name="USER_NAME" /></translation>
 <translation id="8313851650939857356">Startup error: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Your organisation closes Chromium when it isn't used for <ph name="TIMEOUT_DURATION" />.</translation>
-<translation id="8321888067342493336">Save as image</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> was previously using Chromium</translation>
 <translation id="8351551329754447960">Enable skills in Chromium</translation>
 <translation id="8359544530202147897">Update Chromium to keeping using the Chromium data in your Google Account, <ph name="ACCOUNT_EMAIL" /></translation>

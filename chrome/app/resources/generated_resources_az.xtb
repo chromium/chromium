@@ -94,7 +94,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1090126737595388931">Axra fonda tətbiq işləmir</translation>
 <translation id="109038914521989341">Bu datanı kopiyalama səbəbini daxil edin:</translation>
 <translation id="1094158807129647987">"<ph name="SELECTION" />" haqqında soruşun</translation>
-<translation id="1095398697303758108">Qabaqcıl avtodoldurma üçün Ctrl düyməsinə iki dəfə basın</translation>
 <translation id="1095879482467973146">Vebdə Google Parol Meneceri</translation>
 <translation id="1097016918605049747">Bu səhifəni tərcümə etmək mümkün olmadı</translation>
 <translation id="1099962274138857708">Şəkil <ph name="DEVICE_NAME" /> cihazından kopyalanıb</translation>
@@ -581,6 +580,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Tab və qrup silinsin?}=1{Tablar və qrup silinsin?}other{Tablar və qruplar silinsin?}}</translation>
 <translation id="1637765355341780467">Profilinizi açarkən xəta baş verdi. Bəzi funksiyalar əlçatan olmaya bilər.</translation>
 <translation id="1639239467298939599">Yüklənir</translation>
+<translation id="1640672724030957280">Endirilir...</translation>
 <translation id="1641113438599504367">Təhlükəsiz Axtarış</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Yanlış formatlaşdırıldığı üçün başqa 1 parol import edilmədi}other{Yanlış formatlaşdırıldığı üçün başqa {NUM_PASSWORDS} parol import edilmədi}}</translation>
 <translation id="1642299742557467312">Bu fayl cihazınızı zədələyə bilər</translation>
@@ -1801,7 +1801,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="2988328607561082373">Heç bir paroldan təkrar istifadə etmirsiniz</translation>
 <translation id="2989523299700148168">Son ziyarət</translation>
 <translation id="2989786307324390836">DER-kodlaşdırılmış binar, tək sertifikat</translation>
-<translation id="2990500505358145117">Təkmil avtodoldurma qısayolunu redaktə edin</translation>
 <translation id="2990583317361835189">Saytlara hərəkət sensorlarından istifadə etmək icazəsi verməyin</translation>
 <translation id="2991182900092497283">Bu datanı əlavə etmə səbəbini daxil edin:</translation>
 <translation id="2992754757708650257">Saytdan çıxılsın və tapşırıq sonlandırılsın?</translation>
@@ -2056,7 +2055,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="3244294424315804309">Səssiz etməyə davam edin</translation>
 <translation id="3247649647204519958">Burada sayt üzrə artırma icazələrinə baxa və onları idarə edə bilərsiniz</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Şəbəkə xətası</translation>
-<translation id="3248957351402065497">Təkmil avtodoldurma üçün fərdi qısayol</translation>
 <translation id="3249558306861350254">Windows ayarlarında <ph name="BEGIN_BOLD" />Defolt olaraq ayarlayın<ph name="END_BOLD" /> seçiminə klikləyin.</translation>
 <translation id="3250374026663843838">Bacarıqlarınızı idarə edin</translation>
 <translation id="3251759466064201842">&lt;Sertifikat Hissəsi Yoxdur&gt;</translation>
@@ -2277,6 +2275,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="3481268647794498892"><ph name="COUNTDOWN_SECONDS" /> saniyə ərzində <ph name="ALTERNATIVE_BROWSER_NAME" /> tətbiqində açılacaq</translation>
 <translation id="348247802372410699">Üslub seçin</translation>
 <translation id="3482573964681964096">Windows-dan import edilmiş sertifikatları idarə edin</translation>
+<translation id="348268549820508141">Nitqin tanınması</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> aşağıdakı fayllara baxa bilər</translation>
 <translation id="3486380520195228369">Səhifə yenilənənə qədər gizlədilir</translation>
 <translation id="3487007233252413104">anonim funksiyası</translation>
@@ -2647,7 +2646,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="3826086052025847742">ChromeOS Flex jurnalları</translation>
 <translation id="3827774300009121996">Tam ekran</translation>
 <translation id="3828029223314399057">Əlfəcin axtarın</translation>
-<translation id="3828454092958722155">Təkmil avtodoldurma qısayolunu silin</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Yüksək yaddaş istifadəsi - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Başqa giriş açarı istifadə edin</translation>
 <translation id="3838085852053358637">Artırmanı yükləmək alınmadı</translation>
@@ -3726,7 +3724,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="5060419232449737386">Altyazı ayarları</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Bu qovluqda əlfəcin var. Onu silmək istədiyinizə əminsiniz?}other{Bu qovluqda # əlfəcin var. Onu silmək istədiyinizə əminsiniz?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
-<translation id="5061781067616989032">Öz klaviatura qısayolunuzu ayarlayın</translation>
 <translation id="5062863364865466276">Hərəkət</translation>
 <translation id="5063480226653192405">Istifadə</translation>
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" /> profilini açın. Bu profili valideyniniz idarə edir.</translation>
@@ -5003,7 +5000,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="6540488083026747005">Bu saytda üçüncü tərəf kukilərinə icazə verdiniz</translation>
 <translation id="6541638731489116978">Bu saytın hərəkət sensorlarınıza girişini blok edilib.</translation>
 <translation id="6542417422899025860">Ən şəxsi məlumatları avtomatik silin</translation>
-<translation id="6548240707386871455">Təkmil avtodoldurma qısayolu</translation>
 <translation id="654871471440386944">Klaviatura ilə baxış aktiv edilsin?</translation>
 <translation id="6549689063733911810">Son</translation>
 <translation id="6550675742724504774">Seçimlər</translation>
@@ -5167,7 +5163,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6710172959248731469">Google xidmətləri ayarları</translation>
 <translation id="6710394144992407503">Veb səhifələrdə mətn yazarkən orfoqrafik səhvləri yoxlayın</translation>
 <translation id="6711236403841768371"><ph name="END_DATE" /> tarixindən əvvəl</translation>
-<translation id="6711569175139833669">Qabaqcıl avtodoldurma üçün ⌘ düyməsinə iki dəfə basın</translation>
 <translation id="6712943853047024245"><ph name="WEBSITE" /> üçün bu istifadəçi adı ilə parolu artıq yadda saxlamısınız</translation>
 <translation id="6713668088933662563">Heç vaxt bu dilləri tərcümə etməyi təklif etməyin</translation>
 <translation id="6714871567554212732"><ph name="GROUP_NAME" /> haqqında ətraflı məlumata baxın</translation>
@@ -6087,7 +6082,6 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="7706742200777909964">Səhifələri yan-yana eyni tabda yerləşdirin ki, seçimləri və daha çoxunu asanlıqla müqayisə edə biləsiniz</translation>
 <translation id="7707108266051544351">Bu saytın hərəkət sensorlarınıza girişi blok edilib.</translation>
 <translation id="7709152031285164251">Alınmadı - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Qabaqcıl avtodoldurma üçün fərdi qısayolu silin</translation>
 <translation id="7710568461918838723">&amp;Yayım...</translation>
 <translation id="7712739869553853093">Çap önbaxışı dialoqu</translation>
 <translation id="7714464543167945231">Sertifikat</translation>
@@ -6447,7 +6441,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="810185532889603849">Fərdi rəng</translation>
 <translation id="8103484184517840583">Sİ rejimindən çıxın</translation>
 <translation id="810362914482827094">Parolları axtarın</translation>
-<translation id="8104388155778519213">Ekranınızdakıları Google Linza ilə paylaşın</translation>
 <translation id="8104412594956510627"><ph name="DEVICE" /> cihazındakı tarixçəni əldə etmək üçün tarixçəni sinxronlaşdırın. Ayarlarda sinxronlaşdırmanı istənilən vaxt dayandıra bilərsiniz. Google tarixçənizə əsasən Axtarış və digər xidmətləri fərdiləşdirə bilər.</translation>
 <translation id="8104778744208707085">Diqqət yetirin</translation>
 <translation id="8105273883928376822">Davam etmək üçün daxil olun.</translation>
@@ -6545,7 +6538,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8214489666383623925">Fayl Açın...</translation>
 <translation id="8214771296778317256">Tərcih etdiyiniz tab üslubunu burada seçin</translation>
 <translation id="8217399928341212914">Çoxsaylı faylların avtomatik endirilməsini bloklamağa davam edin</translation>
-<translation id="8218411859495801458">Qabaqcıl avtodoldurma üçün fərdi qısayolu redaktə edin</translation>
 <translation id="8221358554841691213">Orta fokus üslubu</translation>
 <translation id="8221942262855134126">Parolu idarə edin</translation>
 <translation id="8222112516148944758">Tab qrupları bütün cihazlarda avtomatik yadda saxlanılır və güncəllənir</translation>
@@ -6818,7 +6810,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8512476990829870887">Prosesi Bitirin</translation>
 <translation id="851263357009351303"><ph name="HOST" /> şəkilləri göstərməyə hər zaman icazə verin</translation>
 <translation id="8513357934662532537"><ph name="USER_EMAIL" /> üçün parolları <ph name="BRAND" /> bölməsinə import etmək məqsədilə CSV faylı seçin.</translation>
-<translation id="8514257511170433540">Formaları doldurarkən defolt klaviatura qısayolundan istifadə edin</translation>
 <translation id="8514746246728959655">Başqa təhlükəsizlik açarından istifadə edin</translation>
 <translation id="8514828975162859845">Keks dilimləri</translation>
 <translation id="8514955299594277296">Saytlara cihazınızda məlumat saxlamağa icazə verməyin (tövsiyə edilmir)</translation>

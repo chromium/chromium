@@ -261,7 +261,6 @@
 <translation id="1739364174357629566">ओळखीच्या प्रवाशाचा नंबर अपडेट करा</translation>
 <translation id="1740468249224277719">इंस्टॉल करण्यासाठी दोनदा टॅप करा.</translation>
 <translation id="1740650426894359238">दुसऱ्या प्रोफाइलवर स्विच करा</translation>
-<translation id="1741219894094057085">स्‍मार्ट वॉच</translation>
 <translation id="1743244221910283364">बदल काढून टाका</translation>
 <translation id="1748975028205587434">तुमची फाइल निवडा</translation>
 <translation id="1749733017156547309">पासवर्ड आवश्यक आहे</translation>
@@ -285,7 +284,6 @@
 <translation id="1810976980198522421">रद्द करा</translation>
 <translation id="1815941218935345331">पासकोड</translation>
 <translation id="1818687879307252150">{count,plural, =0{No compromised passwords}=1{धोक्यात असलेला {count} पासवर्ड}other{धोक्यात असलेले {count} पासवर्ड}}</translation>
-<translation id="1819374301217551116">किमतीचा माग ठेवणे आणि इनसाइट</translation>
 <translation id="1820195936249950412">योग्य खाते वापरून साइन इन करा</translation>
 <translation id="1820259098641718022">वाचन सूचीमध्ये जोडले</translation>
 <translation id="1823768272150895732">फॉंट</translation>
@@ -415,7 +413,6 @@
 <translation id="2199562093267256223">यामुळे <ph name="USER_EMAIL" /> मध्ये साइन इन केलेल्या सर्व डिव्हासवरून गट हटवला जाईल.</translation>
 <translation id="2202084845446535117">ईमेल खाती नाहीत</translation>
 <translation id="2214453882118345682">तुमचा कॅमेरा वापरून, तुम्ही जे पाहता ते खरेदी करा, त्याचे भाषांतर करा आणि ते ओळखा.</translation>
-<translation id="2216366330550244277">उत्पादनाच्या पेजवर जा</translation>
 <translation id="2218389616572918761">साइट तुमच्या मायक्रोफोनची परवानगी मागू शकतात</translation>
 <translation id="2219935992754556187">Chrome हे फेस आयडी वापरून तुमचा संवेदनशील डेटा सुरक्षित ठेवते</translation>
 <translation id="2220529011494928058">समस्या नोंदवा</translation>
@@ -541,7 +538,6 @@
 <translation id="2584994295315085351">४ तासांनंतर तुम्ही पुन्हा Chrome वापरता तेव्हा नवीन टॅब उघडा</translation>
 <translation id="2592917252160773942">साइट तुमच्या कॅमेराची परवानगी मागू शकतात</translation>
 <translation id="2593272815202181319">मोनोस्पेस</translation>
-<translation id="2601778637777010194">उत्पादनांच्या किमतीतील घसरणीचा माग ठेवा</translation>
 <translation id="2602372807870028932">यामुळे या डिव्हाइसवर सेव्ह केलेली निवडक माहिती हटवली जाते</translation>
 <translation id="260378315836159338">स्क्रीनच्या सर्वात वरती, + वर टॅप करा</translation>
 <translation id="2612625650119459859">"टॅब पिन करा" टास्क पूर्ण झाली!</translation>
@@ -1195,7 +1191,6 @@
 <translation id="4719927025381752090">भाषांतर करण्यास ऑफर करा</translation>
 <translation id="4720530280568305198">तुमची निवड नवीन टॅबमध्ये उघडली आहे</translation>
 <translation id="4720782081196952026">मजकुराचा आकार कमी करा</translation>
-<translation id="472259426228234149">किंमत $१०० ते $१८०</translation>
 <translation id="4735849923335729414">तुमच्या संस्थेने व्यवस्थापित केला आहे <ph name="EMAIL" /> म्हणून साइन इन करा.</translation>
 <translation id="473775607612524610">अपडेट करा</translation>
 <translation id="4738968082443868320">Google Drive</translation>
@@ -1338,7 +1333,6 @@
 <translation id="5116347248003317626">साइटना तुमचे स्थान वापरण्याची अनुमती देऊ नका</translation>
 <translation id="5118462200606189584">खाते जोडा…</translation>
 <translation id="5118764316110575523">बंद</translation>
-<translation id="5119329531859909472">उत्पादन ट्रॅक करण्यासाठी, ट्रॅक करा वर टॅप करा</translation>
 <translation id="5121618895923301719">तुम्ही आधीच या उत्पादनाचा माग ठेवत आहात. हे पेज <ph name="BEGIN_LINK" />मोबाइल बुकमार्क<ph name="END_LINK" /> मध्ये सेव्ह केले आहे.</translation>
 <translation id="512533434554095351">तुमच्याकडे पासवर्डसंबंधित अनेक समस्या आहेत.</translation>
 <translation id="5126335625961252141">तुमचा टॅबलेट</translation>
@@ -1430,7 +1424,6 @@
 <translation id="5414763847370083940">कोणत्याही साइटवर किंमत कमी झाल्यास तुम्हाला सूचना मिळेल.</translation>
 <translation id="5415289094036440596">पासकी शेअर केल्या जाऊ शकत नाहीत</translation>
 <translation id="5416455648658732408">टॅब गट यामध्ये हलवा</translation>
-<translation id="5423269318075950257">किमतीचा माग ठेवा</translation>
 <translation id="542659109038405424">यामध्ये</translation>
 <translation id="5429624150850059322">तुम्ही परत आल्यावर, तुम्ही पुढे सुरू ठेवा वर टॅप करेपर्यंत टॅब ब्लर केले जातात</translation>
 <translation id="5431239785743546285">तुम्ही वाचलेली पेज</translation>
@@ -1970,7 +1963,6 @@
 <translation id="6989636517316575338">कोणत्याही पेजबद्दल विचारा</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998236305642926573">सर्व टास्क</translation>
-<translation id="6998251471716094661">उत्पादनांच्या किमती ट्रॅक करा आणि कोणत्याही साइटवर किंमत कमी झाल्यावर सूचना मिळवा</translation>
 <translation id="7004032350256606903">तुमच्या संस्थेनुसार तुम्ही खाजगीरीत्या ब्राउझ करणे आवश्यक आहे.
 <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">सेटिंग्ज मध्ये डीफॉल्ट करा…</translation>
@@ -1994,7 +1986,6 @@
 <translation id="7082853213442715471">सुरू केल्यावर, काही वेब तंत्रज्ञाने ब्लॉक केली जातात, ज्यामुळे काही वेबसाइट अधिक हळू लोड होऊ शकतात किंवा योग्यरीत्या ऑपरेट करू शकत नाहीत.</translation>
 <translation id="7091023926159231962">{count,plural, =1{{count} पासवर्ड इंपोर्ट करता आला नाही}other{{count} पासवर्ड इंपोर्ट करता आले नाहीत}}</translation>
 <translation id="7095110968493193530"><ph name="EMAIL" /> साठी Google Password Manager</translation>
-<translation id="7097046145876891318">अ‍ॅड्रेस बारमध्ये, काळानुसार किमतीमधील बदल पाहण्यासाठी किंमत इतिहासावर टॅप करा</translation>
 <translation id="7102005569666697658">डाउनलोड होत आहे… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">मेनू → सेटिंग्ज → पेमेंट पद्धती</translation>
 <translation id="7108338896283013870">लपवा</translation>

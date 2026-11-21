@@ -94,7 +94,6 @@
 <translation id="1090126737595388931">कुनै पृष्ठभूमिमा चलिरहेका एपहरू छैनन्</translation>
 <translation id="109038914521989341">यो डेटा कपी गर्नुको कारण बताउनुहोस्:</translation>
 <translation id="1094158807129647987">“<ph name="SELECTION" />” का बारेमा सोध्नुहोस्</translation>
-<translation id="1095398697303758108">अटोफिल गर्ने परिष्कृत सुविधा प्रयोग गर्न दुई पटक Ctrl थिच्नुहोस्</translation>
 <translation id="1095879482467973146">वेबमा भएको Google पासवर्ड म्यानेजर</translation>
 <translation id="1097016918605049747">यो पेज अनुवाद गर्न सकिँदैन</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> बाट फोटो कपी गरियो</translation>
@@ -582,6 +581,7 @@
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{ट्याब हटाउने र समूह मेटाउने हो?}=1{ट्याबहरू हटाउने र समूह मेटाउने हो?}other{ट्याबहरू हटाउने र समूहहरू मेटाउने हो?}}</translation>
 <translation id="1637765355341780467">तपाईँको प्रोफाइल खोल्दा केही गडबड भयो। केही सुविधाहरू उपलब्ध नहुन सक्छन्।</translation>
 <translation id="1639239467298939599">लोड गर्दै</translation>
+<translation id="1640672724030957280">डाउनलोड गरिँदै छ...</translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउजिङ</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{थप एउटा पासवर्डको फर्म्याट नमिलेको हुनाले उक्त पासवर्ड इम्पोर्ट गरिएन}other{थप {NUM_PASSWORDS} वटा पासवर्डको फर्म्याट नमिलेको हुनाले ती पासवर्डहरू इम्पोर्ट गरिएनन्}}</translation>
 <translation id="1642299742557467312">यो फाइलले तपाईंको डिभाइसमा हानि पुर्‍याउन सक्छ</translation>
@@ -1798,7 +1798,6 @@
 <translation id="2988328607561082373">तपाईंले पहिला नै प्रयोग गरिएको कुनै पनि पासवर्ड प्रयोग गर्नुभएको छैन</translation>
 <translation id="2989523299700148168">भर्खरै हेरिएका</translation>
 <translation id="2989786307324390836">DER-इनकोडेड बाइनरी, एउटा प्रमाणपत्र</translation>
-<translation id="2990500505358145117">अटोफिल गर्ने परिष्कृत सुविधाको सर्टकट सम्पादन गर्नुहोस्</translation>
 <translation id="2990583317361835189">साइटहरूलाई मोसन सेन्सर प्रयोग गर्ने अनुमति नदिनुहोस्</translation>
 <translation id="2991182900092497283">यो जानकारी पेस्ट गर्नुको कारण बताउनुहोस्:</translation>
 <translation id="2992754757708650257">साइट छाड्ने र कार्य अन्त्य गर्ने हो?</translation>
@@ -2051,7 +2050,6 @@
 <translation id="3244294424315804309">आवाज म्युट गरिराख्नुहोस्</translation>
 <translation id="3247649647204519958">तपाईं यहाँबाट साइटलाई दिइएका एक्स्टेन्सनसम्बन्धी अनुमतिहरू हेर्न र व्यवस्थापन गर्न सक्नुहुन्छ</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - नेटवर्क सम्बन्धी त्रुटि</translation>
-<translation id="3248957351402065497">अटोफिल गर्ने परिष्कृत सुविधाको कस्टम सर्टकट</translation>
 <translation id="3249558306861350254">Windows का सेटिङमा रहेको <ph name="BEGIN_BOLD" />डिफल्ट बनाउनुहोस्<ph name="END_BOLD" /> मा क्लिक गर्नुहोस्।</translation>
 <translation id="3250374026663843838">आफ्नो सीप व्यवस्थापन गर्नुहोस्</translation>
 <translation id="3251759466064201842">&lt;प्रमाणपत्रको भाग होइन&gt;</translation>
@@ -2272,6 +2270,7 @@
 <translation id="3481268647794498892"><ph name="COUNTDOWN_SECONDS" /> सेकेन्डमा <ph name="ALTERNATIVE_BROWSER_NAME" /> खोलिँदै</translation>
 <translation id="348247802372410699">कुनै शैली चयन गर्नुहोस्</translation>
 <translation id="3482573964681964096">Windows बाट इम्पोर्ट गरिएका सर्टिफिकेटहरू व्यवस्थापन गर्नुहोस्</translation>
+<translation id="348268549820508141">वाक् पहिचान</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> ले निम्न फाइलहरू हेर्न सक्छ</translation>
 <translation id="3486380520195228369">यो पेज रिफ्रेस नभएसम्म लुकाइन्छ</translation>
 <translation id="3487007233252413104">बेनाम प्रकार्य</translation>
@@ -2642,7 +2641,6 @@
 <translation id="3826086052025847742">ChromeOS Flex का लगहरू</translation>
 <translation id="3827774300009121996">&amp;पूर्ण स्क्रिन</translation>
 <translation id="3828029223314399057">बुकमार्कहरू खोज्नुहोस्</translation>
-<translation id="3828454092958722155">अटोफिल गर्ने परिष्कृत सुविधाको सर्टकट हटाउनुहोस्</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - मेमोरीको उच्च प्रयोग - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">कुनै अर्को पासकी प्रयोग गर्नुहोस्</translation>
 <translation id="3838085852053358637">विस्तार लोड गर्न सकिएन</translation>
@@ -3722,7 +3720,6 @@
 <translation id="5060419232449737386">क्याप्सनसम्बन्धी सेटिङ</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{यस फोल्डरमा एउटा पुस्तक चिन्ह छ। तपाईं निश्चित रूपमा यसलाई मेटाउन चाहनुहुन्छ?}other{यस फोल्डरमा # वटा पुस्तक चिन्हहरू छन्। तपाईं निश्चित रूपमा यसलाई मेटाउन चाहनुहुन्छ?}}</translation>
 <translation id="5061531353537614467">टुन्ड्रा</translation>
-<translation id="5061781067616989032">आफ्नै किबोर्ड सर्टकट सेटअप गर्नुहोस्</translation>
 <translation id="5062863364865466276">चाल</translation>
 <translation id="5063480226653192405">उपयोग</translation>
 <translation id="5064921774605267982">"<ph name="PROFILE_NAME" />" प्रोफाइल खोल्नुहोस्। तपाईंको सङ्गठनले यो प्रोफाइल व्यवस्थापन गर्छ।</translation>
@@ -4996,7 +4993,6 @@
 <translation id="6540488083026747005">तपाईंले यो साइटमा तेस्रो पक्षीय कुकीहरू प्रयोग गर्ने अनुमति दिनुभएको छ</translation>
 <translation id="6541638731489116978">यो साइटलाई तपाईंको चालसम्बन्धी सेन्सरहरूको पहुँच राख्नबाट रोक लगाइएको छ।</translation>
 <translation id="6542417422899025860">अधिकांश व्यक्तिगत जानकारी स्वतः हटाउनुहोस्</translation>
-<translation id="6548240707386871455">अटोफिल गर्ने परिष्कृत सुविधाको सर्टकट</translation>
 <translation id="654871471440386944">क्यारेट ब्राउजिङ अन गर्ने हो?</translation>
 <translation id="6549689063733911810">हालै</translation>
 <translation id="6550675742724504774">विकल्पहरू</translation>
@@ -5160,7 +5156,6 @@
 <translation id="6710172959248731469">Google का सेवाहरूसम्बन्धी सेटिङ</translation>
 <translation id="6710394144992407503">मैले वेब पेजहरूमा टेक्स्ट टाइप गर्दा हिज्जेसम्बन्धी त्रुटिहरूको जाँच गर्नुहोस्</translation>
 <translation id="6711236403841768371"><ph name="END_DATE" /> अघि</translation>
-<translation id="6711569175139833669">अटोफिल गर्ने परिष्कृत सुविधा प्रयोग गर्न ⌘ दुई पटक थिच्नुहोस्</translation>
 <translation id="6712943853047024245">तपाईंले <ph name="WEBSITE" /> मा यो युजरनेमको पासवर्ड सेभ गरिसक्नुभएको छ</translation>
 <translation id="6713668088933662563">यी भाषाहरूमा अनुवाद गर्ने विकल्प कहिल्यै नदेखाउनुहोस्</translation>
 <translation id="6714871567554212732"><ph name="GROUP_NAME" /> का बारेमा थप विवरणहरू हेर्नुहोस्</translation>
@@ -6080,7 +6075,6 @@
 <translation id="7706742200777909964">तपाईं विकल्प र थप कुराहरूको सजिलै तुलना गर्न सक्नुहोस् भन्नाका लागि उही ट्याबमा पेजहरू सँगै हाल्नुहोस्</translation>
 <translation id="7707108266051544351">यो साइटलाई चालसम्बन्धी सेन्सरहरू प्रयोग गर्नबाट रोक लगाइएको छ।</translation>
 <translation id="7709152031285164251">असफल भयो - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">अटोफिल गर्ने परिष्कृत सुविधाको कस्टम सर्टकट हटाउनुहोस्</translation>
 <translation id="7710568461918838723">&amp;Cast...</translation>
 <translation id="7712739869553853093">प्रिन्ट प्रिभ्यू डायलग</translation>
 <translation id="7714464543167945231">प्रमाणपत्र</translation>
@@ -6440,7 +6434,6 @@
 <translation id="810185532889603849">आफूले रोजेको रङ</translation>
 <translation id="8103484184517840583">AI मोडबाट बाहिरिनुहोस्</translation>
 <translation id="810362914482827094">पासकी खोज्नुहोस्</translation>
-<translation id="8104388155778519213">Google लेन्स प्रयोग गरी आफ्नो स्क्रिनमा भएका कुरा सेयर गर्नुहोस्</translation>
 <translation id="8104412594956510627"><ph name="DEVICE" />मा रहेको हिस्ट्री प्राप्त गर्न हिस्ट्री सिंक गर्नुहोस्। तपाईं जुनसुकै बेला सेटिङमा गई सिंक गर्ने कार्य रोक्न सक्नुहुन्छ। Google ले तपाईंको हिस्ट्रीका आधारमा Search तथा अन्य सेवाहरू पर्सनलाइज गर्न सक्छ।</translation>
 <translation id="8104778744208707085">तपाईंले कारबाही गर्नु पर्ने हुन्छ</translation>
 <translation id="8105273883928376822">जारी राख्न कृपया साइन इन गर्नुहोस्।</translation>
@@ -6538,7 +6531,6 @@
 <translation id="8214489666383623925">फाइल खोल्नुहोस्...</translation>
 <translation id="8214771296778317256">यहाँ आफूले रुचाएको ट्याबको शैली छनौट गर्नुहोस्</translation>
 <translation id="8217399928341212914">बहुवुध फाइलहरूको स्वचालित डाउनलोड रोक्न जारी राख्नुहोस्</translation>
-<translation id="8218411859495801458">अटोफिल गर्ने परिष्कृत सुविधाको कस्टम सर्टकट सम्पादन गर्नुहोस्</translation>
 <translation id="8221358554841691213">मध्यम फोकस शैली</translation>
 <translation id="8221942262855134126">पासवर्ड व्यवस्थापन गर्नुहोस्</translation>
 <translation id="8222112516148944758">तपाईंका ट्याब समूहहरू स्वतः सेभ गरिन्छन् र तपाईंका सबै डिभाइसमा अपडेट गरिन्छन्</translation>
@@ -6811,7 +6803,6 @@
 <translation id="8512476990829870887">प्रक्रिया समाप्त गर्नुहोस्</translation>
 <translation id="851263357009351303">फोटो देखाउन <ph name="HOST" /> लाई सधैँ अनुमति दिनुहोस्</translation>
 <translation id="8513357934662532537">तपाईं <ph name="USER_EMAIL" /> का पासवर्डहरू <ph name="BRAND" /> मा इम्पोर्ट गर्न चाहनुहुन्छ भने कुनै CSV फाइल छनौट गर्नुहोस्।</translation>
-<translation id="8514257511170433540">फारामहरू भर्दा किबोर्डको डिफल्ट सर्टकट प्रयोग गर्नुहोस्</translation>
 <translation id="8514746246728959655">कुनै अर्को सुरक्षा साँचो प्रयोग गरी हेर्नुहोस्</translation>
 <translation id="8514828975162859845">केक पप</translation>
 <translation id="8514955299594277296">साइटहरूलाई तपाईंको डिभाइसमा जानकारी सेभ गर्ने अनुमति नदिनुहोस् (सिफारिस गरिएको छैन)</translation>

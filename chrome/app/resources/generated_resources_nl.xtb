@@ -94,7 +94,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1090126737595388931">Geen actieve achtergrondapps</translation>
 <translation id="109038914521989341">Voer een reden in waarom je deze gegevens kopieert:</translation>
 <translation id="1094158807129647987">Vragen stellen over <ph name="SELECTION" /></translation>
-<translation id="1095398697303758108">Druk 2 keer op Ctrl voor verbeterd automatisch invullen</translation>
 <translation id="1095879482467973146">Google Wachtwoordmanager op internet</translation>
 <translation id="1097016918605049747">Deze pagina kan niet worden vertaald</translation>
 <translation id="1099962274138857708">Afbeelding gekopieerd vanaf <ph name="DEVICE_NAME" /></translation>
@@ -581,6 +580,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Tabblad verwijderen en groep verwijderen?}=1{Tabblad verwijderen en groep verwijderen?}other{Tabbladen verwijderen en groepen verwijderen?}}</translation>
 <translation id="1637765355341780467">Er is iets misgegaan bij het openen van je profiel. Mogelijk zijn sommige functies niet beschikbaar.</translation>
 <translation id="1639239467298939599">Laden</translation>
+<translation id="1640672724030957280">Bezig met downloaden...</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 ander wachtwoord is niet geïmporteerd omdat het niet de juiste indeling heeft}other{{NUM_PASSWORDS} andere wachtwoorden zijn niet geïmporteerd omdat ze niet de juiste indeling hebben}}</translation>
 <translation id="1642299742557467312">Dit bestand kan je apparaat beschadigen</translation>
@@ -1381,6 +1381,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2519517390894391510">Naam van certificaatprofiel</translation>
 <translation id="2520644704042891903">Wachten op beschikbare socket...</translation>
 <translation id="2522757085249311407">Toestaan dat bluetooth-apparaten in de buurt dit apparaat kunnen vinden en er verbinding mee kunnen maken.</translation>
+<translation id="2523048609826818526">Algemeen schrijven</translation>
 <translation id="2523184218357549926">Hiermee worden de URL's van pagina's die je bezoekt, verzonden naar Google</translation>
 <translation id="252513908494776481">Stel vragen over dit tabblad</translation>
 <translation id="2525746158911982776">De update is mislukt omdat het systeem niet genoeg opslagruimte heeft.</translation>
@@ -1798,7 +1799,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2988328607561082373">Je hergebruikt geen wachtwoorden</translation>
 <translation id="2989523299700148168">Onlangs bezocht</translation>
 <translation id="2989786307324390836">DER Encoded Binary, één certificaat</translation>
-<translation id="2990500505358145117">Snelkoppeling voor verbeterd automatisch invullen bewerken</translation>
 <translation id="2990583317361835189">Niet toestaan dat sites bewegingssensoren gebruiken</translation>
 <translation id="2991182900092497283">Voer een reden in waarom je deze gegevens plakt:</translation>
 <translation id="2992754757708650257">Site verlaten en taak beëindigen?</translation>
@@ -2051,7 +2051,6 @@ Je kunt instellingen op deze kaart altijd beheren of meer opties bekijken in het
 <translation id="3244294424315804309">Geluid blijft uit</translation>
 <translation id="3247649647204519958">Hier kun je extensierechten bekijken en beheren voor de site die je bezoekt</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" />: netwerkfout</translation>
-<translation id="3248957351402065497">Aangepaste snelkoppeling voor verbeterd automatisch invullen</translation>
 <translation id="3249558306861350254">Klik op <ph name="BEGIN_BOLD" />Standaard instellen<ph name="END_BOLD" /> in je Windows-instellingen.</translation>
 <translation id="3250374026663843838">Je vaardigheid beheren</translation>
 <translation id="3251759466064201842">&lt;Geen onderdeel van certificaat&gt;</translation>
@@ -2272,6 +2271,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3481268647794498892">Wordt geopend in <ph name="ALTERNATIVE_BROWSER_NAME" /> over <ph name="COUNTDOWN_SECONDS" /> seconden</translation>
 <translation id="348247802372410699">Een stijl kiezen</translation>
 <translation id="3482573964681964096">Geïmporteerde certificaten van Windows beheren</translation>
+<translation id="348268549820508141">Spraakherkenning</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> kan de volgende bestanden bekijken</translation>
 <translation id="3486380520195228369">Verborgen totdat de pagina wordt vernieuwd</translation>
 <translation id="3487007233252413104">anonieme functie</translation>
@@ -2642,7 +2642,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3826086052025847742">ChromeOS Flex-logboeken</translation>
 <translation id="3827774300009121996">&amp;Volledig scherm</translation>
 <translation id="3828029223314399057">Zoeken in bookmarks</translation>
-<translation id="3828454092958722155">Sneltoets voor verbeterd automatisch invullen wissen</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Intensief geheugengebruik - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Een andere toegangssleutel gebruiken</translation>
 <translation id="3838085852053358637">Kan extensie niet laden</translation>
@@ -3721,7 +3720,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="5060419232449737386">Ondertitelingsinstellingen</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Deze map bevat een bookmark. Weet je zeker dat je deze wilt verwijderen?}other{Deze map bevat # bookmarks. Weet je zeker dat je deze wilt verwijderen?}}</translation>
 <translation id="5061531353537614467">Toendra</translation>
-<translation id="5061781067616989032">Je eigen sneltoets instellen</translation>
 <translation id="5062863364865466276">Beweging</translation>
 <translation id="5063480226653192405">Gebruik</translation>
 <translation id="5064921774605267982">Profiel van <ph name="PROFILE_NAME" /> openen. Dit profiel wordt beheerd door je ouder.</translation>
@@ -4994,7 +4992,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6540488083026747005">Je hebt cookies van derden toegestaan voor deze site</translation>
 <translation id="6541638731489116978">Deze site heeft geen toegang tot je bewegingssensoren.</translation>
 <translation id="6542417422899025860">Automatisch de meeste persoonlijke informatie verwijderen</translation>
-<translation id="6548240707386871455">Snelkoppeling voor verbeterd automatisch invullen</translation>
 <translation id="654871471440386944">Browsen met navigatietoetsen aanzetten?</translation>
 <translation id="6549689063733911810">Recent</translation>
 <translation id="6550675742724504774">Opties</translation>
@@ -5158,7 +5155,6 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6710172959248731469">Instellingen voor Google-services</translation>
 <translation id="6710394144992407503">Checken op spelfouten als je tekst op webpagina's typt</translation>
 <translation id="6711236403841768371">Vóór <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Druk 2 keer op ⌘ voor verbeterd automatisch invullen</translation>
 <translation id="6712943853047024245">Je hebt al een wachtwoord met deze gebruikersnaam opgeslagen voor <ph name="WEBSITE" /></translation>
 <translation id="6713668088933662563">Nooit aanbieden om deze talen te vertalen</translation>
 <translation id="6714871567554212732">Meer informatie over <ph name="GROUP_NAME" /> bekijken</translation>
@@ -6079,7 +6075,6 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="7706742200777909964">Plaats pagina's naast elkaar op hetzelfde tabblad, zodat je makkelijk opties en meer kunt vergelijken</translation>
 <translation id="7707108266051544351">Deze site mag je bewegingssensoren niet gebruiken.</translation>
 <translation id="7709152031285164251">Mislukt - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Aangepaste snelkoppeling voor verbeterd automatisch invullen wissen</translation>
 <translation id="7710568461918838723">&amp;Casten...</translation>
 <translation id="7712739869553853093">Dialoogvenster met afdrukvoorbeeld</translation>
 <translation id="7714464543167945231">Certificaat</translation>
@@ -6439,7 +6434,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="810185532889603849">Aangepaste kleur</translation>
 <translation id="8103484184517840583">AI-modus afsluiten</translation>
 <translation id="810362914482827094">Toegangscodes zoeken</translation>
-<translation id="8104388155778519213">Deel wat er op je scherm staat met Google Lens</translation>
 <translation id="8104412594956510627">Synchroniseer je geschiedenis om je geschiedenis van <ph name="DEVICE" /> te krijgen. Je kunt de synchronisatie op elk moment stopzetten via de instellingen. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
 <translation id="8104778744208707085">Vereist je aandacht</translation>
 <translation id="8105273883928376822">Log in om door te gaan.</translation>
@@ -6537,7 +6531,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8214489666383623925">Open bestand...</translation>
 <translation id="8214771296778317256">Kies hier de gewenste tabbladstijl</translation>
 <translation id="8217399928341212914">Automatische downloads van meerdere bestanden blijven blokkeren</translation>
-<translation id="8218411859495801458">Aangepaste snelkoppeling voor verbeterd automatisch invullen bewerken</translation>
 <translation id="8221358554841691213">Stijl voor gemiddelde focus</translation>
 <translation id="8221942262855134126">Wachtwoord beheren</translation>
 <translation id="8222112516148944758">Je tabbladgroepen worden automatisch opgeslagen en geüpdatet op al je apparaten</translation>
@@ -6810,7 +6803,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8512476990829870887">Proces beëindigen</translation>
 <translation id="851263357009351303"><ph name="HOST" /> altijd toestaan afbeeldingen te bekijken</translation>
 <translation id="8513357934662532537">Selecteer een csv-bestand om wachtwoorden te importeren in <ph name="BRAND" /> voor <ph name="USER_EMAIL" />.</translation>
-<translation id="8514257511170433540">Gebruik de standaard sneltoets als je formulieren invult</translation>
 <translation id="8514746246728959655">Probeer een andere beveiligingssleutel</translation>
 <translation id="8514828975162859845">Cakepops</translation>
 <translation id="8514955299594277296">Niet toestaan dat sites gegevens opslaan op je apparaat (niet aanbevolen)</translation>

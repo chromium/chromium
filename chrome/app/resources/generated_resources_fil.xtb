@@ -94,7 +94,6 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1090126737595388931">Walang Tumatakbong Apps sa Background</translation>
 <translation id="109038914521989341">Maglagay ng dahilan sa pagkopya ng data na ito:</translation>
 <translation id="1094158807129647987">Magtanong Tungkol sa “<ph name="SELECTION" />”</translation>
-<translation id="1095398697303758108">Pindutin ang Ctrl nang dalawang beses para sa pinahusay na autofill</translation>
 <translation id="1095879482467973146">Google Password Manager sa web</translation>
 <translation id="1097016918605049747">Hindi maisasalin ang page na ito</translation>
 <translation id="1099962274138857708">Nakopya ang larawan mula sa <ph name="DEVICE_NAME" /></translation>
@@ -582,6 +581,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Alisin ang tab at i-delete ang grupo?}=1{Alisin ang mga tab at i-delete ang grupo?}one{Alisin ang mga tab at i-delete ang mga grupo?}other{Alisin ang mga tab at i-delete ang mga grupo?}}</translation>
 <translation id="1637765355341780467">Nagkaproblema noong binubuksan ang iyong profile. Maaaring hindi available ang ilang feature.</translation>
 <translation id="1639239467298939599">Naglo-load</translation>
+<translation id="1640672724030957280">Dina-download...</translation>
 <translation id="1641113438599504367">Ligtas na Pagba-browse</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Hindi na-import ang 1 pang password dahil mali ang format nito}one{Hindi na-import ang {NUM_PASSWORDS} pang password dahil mali ang format ng mga ito}other{Hindi na-import ang {NUM_PASSWORDS} pang password dahil mali ang format ng mga ito}}</translation>
 <translation id="1642299742557467312">Posibleng mapinsala ng file na ito ang iyong device</translation>
@@ -1811,7 +1811,6 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="2988328607561082373">Wala kang password na ginamit ulit</translation>
 <translation id="2989523299700148168">Mga kamakailang binisita</translation>
 <translation id="2989786307324390836">DER-encoded binary, single certificate</translation>
-<translation id="2990500505358145117">I-edit ang shortcut ng pinahusay na autofill</translation>
 <translation id="2990583317361835189">Huwag payagan ang mga site na gumamit ng mga sensor ng paggalaw</translation>
 <translation id="2991182900092497283">Maglagay ng dahilan sa pag-paste ng data na ito:</translation>
 <translation id="2992754757708650257">Umalis sa site at tapusin ang gawain?</translation>
@@ -2066,7 +2065,6 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="3244294424315804309">Patuloy na i-mute ang tunog</translation>
 <translation id="3247649647204519958">Mula rito, makikita at mapapamahalaan mo ang mga pahintulot sa extension para sa site kung nasaan ka</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Error sa network</translation>
-<translation id="3248957351402065497">Custom na shortcut para sa pinahusay na autofill</translation>
 <translation id="3249558306861350254">I-click ang <ph name="BEGIN_BOLD" />Itakda ang Default<ph name="END_BOLD" /> sa iyong mga setting ng Windows.</translation>
 <translation id="3250374026663843838">Pamahalaan ang iyong kasanayan</translation>
 <translation id="3251759466064201842">&lt;Hindi Bahagi Ng Certificate&gt;</translation>
@@ -2287,6 +2285,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="3481268647794498892">Bubukas sa <ph name="ALTERNATIVE_BROWSER_NAME" /> sa loob ng <ph name="COUNTDOWN_SECONDS" /> segundo</translation>
 <translation id="348247802372410699">Pumili ng istilo</translation>
 <translation id="3482573964681964096">Pamahalaan ang mga in-import na certificate mula sa Windows</translation>
+<translation id="348268549820508141">Pagkilala sa speech</translation>
 <translation id="3482719661246593752">Puwedeng tingnan ng <ph name="ORIGIN" /> ang mga sumusunod na file</translation>
 <translation id="3486380520195228369">Nakatago hanggang sa mag-refresh ang page</translation>
 <translation id="3487007233252413104">hindi kilalang function</translation>
@@ -2657,7 +2656,6 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="3826086052025847742">Mga Log ng ChromeOS Flex</translation>
 <translation id="3827774300009121996">&amp;Full Screen</translation>
 <translation id="3828029223314399057">Bookmark sa paghahanap</translation>
-<translation id="3828454092958722155">I-clear ang shortcut ng pinahusay na autofill</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Mataas na paggamit ng memory - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Gumamit ng ibang passkey</translation>
 <translation id="3838085852053358637">Hindi na-load ang extension</translation>
@@ -3738,7 +3736,6 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="5060419232449737386">Mga setting ng caption</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Naglalaman ng bookmark ang folder na ito. Sigurado ka bang gusto mo itong i-delete?}one{Naglalaman ng # bookmark ang folder na ito. Sigurado ka bang gusto mo itong i-delete?}other{Naglalaman ng # na bookmark ang folder na ito. Sigurado ka bang gusto mo itong i-delete?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
-<translation id="5061781067616989032">I-set up ang sarili mong keyboard shortcut</translation>
 <translation id="5062863364865466276">Paggalaw</translation>
 <translation id="5063480226653192405">Paggamit</translation>
 <translation id="5064921774605267982">Buksan ang profile na <ph name="PROFILE_NAME" />. Pinapamahalaan ng iyong magulang ang profile na ito.</translation>
@@ -5015,7 +5012,6 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="6540488083026747005">Pinayagan mo ang third-party na cookies sa site na ito</translation>
 <translation id="6541638731489116978">Na-block ang site na ito sa pag-access sa iyong mga sensor ng paggalaw.</translation>
 <translation id="6542417422899025860">Awtomatikong alisin ang karamihan sa personal na impormasyon</translation>
-<translation id="6548240707386871455">Shortcut ng pinahusay na autofill</translation>
 <translation id="654871471440386944">I-on ang caret browsing?</translation>
 <translation id="6549689063733911810">Kamakailan</translation>
 <translation id="6550675742724504774">Mga Pagpipilian</translation>
@@ -5181,7 +5177,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6710172959248731469">Mga setting ng mga serbisyo ng Google</translation>
 <translation id="6710394144992407503">Suriin kung may mga error sa pagbabaybay kapag nag-type ka ng text sa mga web page</translation>
 <translation id="6711236403841768371">Bago ang <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Pindutin ang ⌘ nang dalawang beses para sa pinahusay na autofill</translation>
 <translation id="6712943853047024245">Nag-save ka na ng password na may ganitong username para sa <ph name="WEBSITE" /></translation>
 <translation id="6713668088933662563">Huwag kailanmang mag-alok na isalin ang mga wikang ito.</translation>
 <translation id="6714871567554212732">Tumingin ng higit pang detalye tungkol sa <ph name="GROUP_NAME" /></translation>
@@ -6102,7 +6097,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="7706742200777909964">Gawing side-by-side ang mga page sa iisang tab para madali kang makakapaghambing ng mga opsyon at higit pa</translation>
 <translation id="7707108266051544351">Na-block ang site na ito sa paggamit ng mga sensor ng paggalaw.</translation>
 <translation id="7709152031285164251">Nabigo - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">I-clear ang custom na shortcut para sa pinahusay na autofill</translation>
 <translation id="7710568461918838723">&amp;Cast...</translation>
 <translation id="7712739869553853093">Dialog ng preview ng pag-print</translation>
 <translation id="7714464543167945231">Certificate</translation>
@@ -6462,7 +6456,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="810185532889603849">Custom na kulay</translation>
 <translation id="8103484184517840583">Lumabas sa AI Mode</translation>
 <translation id="810362914482827094">Maghanap sa mga passkey</translation>
-<translation id="8104388155778519213">I-share kung ano ang nasa iyong screen gamit ang Google Lens</translation>
 <translation id="8104412594956510627">Para makuha ang iyong history mula sa <ph name="DEVICE" />, i-sync ang history. Puwede mong ihinto ang pag-sync anumang oras sa mga setting. Puwedeng i-personalize ng Google ang Search at iba pang serbisyo batay sa iyong history.</translation>
 <translation id="8104778744208707085">Nangangailangan ng iyong atensyon</translation>
 <translation id="8105273883928376822">Mag-sign in para magpatuloy.</translation>
@@ -6560,7 +6553,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8214489666383623925">Open File...</translation>
 <translation id="8214771296778317256">Piliin ang gusto mong pag-iistilo ng tab dito</translation>
 <translation id="8217399928341212914">Patuloy na i-block ang mga awtomatikong pagda-download ng maraming file</translation>
-<translation id="8218411859495801458">I-edit ang custom na shortcut para sa pinahusay na autofill</translation>
 <translation id="8221358554841691213">Istilo ng katamtamang focus</translation>
 <translation id="8221942262855134126">Pamahalaan ang Password</translation>
 <translation id="8222112516148944758">Awtomatikong nase-save at naa-update ang iyong mga grupo ng tab sa lahat ng device mo</translation>
@@ -6833,7 +6825,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8512476990829870887">Tapusin ang Proseso</translation>
 <translation id="851263357009351303">Palaging hayaan ang <ph name="HOST" /> na magpakita ng mga larawan</translation>
 <translation id="8513357934662532537">Para mag-import ng mga password sa <ph name="BRAND" /> para sa <ph name="USER_EMAIL" />, pumili ng CSV file.</translation>
-<translation id="8514257511170433540">Gamitin ang default na keyboard shortcut kapag nagsasagot ng mga form</translation>
 <translation id="8514746246728959655">Sumubok ng ibang security key</translation>
 <translation id="8514828975162859845">Mga Cake pop</translation>
 <translation id="8514955299594277296">Huwag payagan ang mga site na mag-save ng data sa iyong device (hindi inirerekomenda)</translation>

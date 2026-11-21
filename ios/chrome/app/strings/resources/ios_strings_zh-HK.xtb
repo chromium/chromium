@@ -261,7 +261,6 @@
 <translation id="1739364174357629566">更新已知的旅客編號</translation>
 <translation id="1740468249224277719">輕按兩下即可安裝。</translation>
 <translation id="1740650426894359238">切換至其他設定檔</translation>
-<translation id="1741219894094057085">智能手錶</translation>
 <translation id="1743244221910283364">捨棄變更</translation>
 <translation id="1748975028205587434">選取檔案</translation>
 <translation id="1749733017156547309">必須輸入密碼</translation>
@@ -285,7 +284,6 @@
 <translation id="1810976980198522421">取消</translation>
 <translation id="1815941218935345331">密碼</translation>
 <translation id="1818687879307252150">{count,plural, =0{沒有被盜用的密碼}=1{{count} 個被盜用的密碼}other{{count} 個被盜用的密碼}}</translation>
-<translation id="1819374301217551116">價格追蹤和分析資料</translation>
 <translation id="1820195936249950412">請使用有效的帳戶登入</translation>
 <translation id="1820259098641718022">已加入閣讀清單</translation>
 <translation id="1823768272150895732">字型</translation>
@@ -415,7 +413,6 @@
 <translation id="2199562093267256223">此操作會將群組從所有已登入 <ph name="USER_EMAIL" /> 的裝置刪除</translation>
 <translation id="2202084845446535117">無電郵帳戶</translation>
 <translation id="2214453882118345682">使用相機購物、翻譯及識別所見內容。</translation>
-<translation id="2216366330550244277">前往產品頁面</translation>
 <translation id="2218389616572918761">網站可以要求使用麥克風</translation>
 <translation id="2219935992754556187">Chrome 會使用 Face ID 保護你的敏感資料安全</translation>
 <translation id="2220529011494928058">報告問題</translation>
@@ -541,7 +538,6 @@
 <translation id="2584994295315085351">4 小時後返回 Chrome 時開啟新分頁</translation>
 <translation id="2592917252160773942">網站可以要求使用相機</translation>
 <translation id="2593272815202181319">等寬</translation>
-<translation id="2601778637777010194">追蹤產品的減價資訊</translation>
 <translation id="2602372807870028932">此操作會刪除儲存在此裝置上的所選資料</translation>
 <translation id="260378315836159338">輕按畫面頂部的「+」圖示</translation>
 <translation id="2612625650119459859">完成「固定分頁」！</translation>
@@ -1195,7 +1191,6 @@
 <translation id="4719927025381752090">提供翻譯</translation>
 <translation id="4720530280568305198">你選取的項目已在新分頁中開啟</translation>
 <translation id="4720782081196952026">縮小文字</translation>
-<translation id="472259426228234149">價格 100 - 180 美元</translation>
 <translation id="4735849923335729414">登入 <ph name="EMAIL" /> (由你的機構管理)。</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4738968082443868320">Google 雲端硬碟</translation>
@@ -1338,7 +1333,6 @@
 <translation id="5116347248003317626">不允許網站使用你的位置</translation>
 <translation id="5118462200606189584">新增帳戶…</translation>
 <translation id="5118764316110575523">關閉</translation>
-<translation id="5119329531859909472">如要追蹤產品，請輕按 [追蹤]</translation>
 <translation id="5121618895923301719">您已追蹤此產品。此網頁已儲存在「<ph name="BEGIN_LINK" />流動裝置書籤<ph name="END_LINK" />」中。</translation>
 <translation id="512533434554095351">你有幾個密碼問題。</translation>
 <translation id="5126335625961252141">你的平板電腦</translation>
@@ -1430,7 +1424,6 @@
 <translation id="5414763847370083940">如果產品在任何網站上降價，系統將通知您。</translation>
 <translation id="5415289094036440596">無法分享密鑰</translation>
 <translation id="5416455648658732408">移至分頁群組</translation>
-<translation id="5423269318075950257">追蹤價格</translation>
 <translation id="542659109038405424">譯文</translation>
 <translation id="5429624150850059322">當你返回時，分頁會呈模糊效果，直至你輕按後繼續操作</translation>
 <translation id="5431239785743546285">你看過的網頁</translation>
@@ -1966,7 +1959,6 @@
 <translation id="6989636517316575338">提出有關任何頁面的問題</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998236305642926573">所有任務</translation>
-<translation id="6998251471716094661">追蹤商品價格，並在任何網站降價時透過快訊通知你</translation>
 <translation id="7004032350256606903">您的機構要求您私密瀏覽內容。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">在「設定」中設定為預設…</translation>
@@ -1990,7 +1982,6 @@
 <translation id="7082853213442715471">開啟後，系統會封鎖特定網絡技術，這可能會導致部分網站載入速度變慢或無法正常運作。</translation>
 <translation id="7091023926159231962">{count,plural, =1{無法匯入 {count} 個密碼}other{無法匯入 {count} 個密碼}}</translation>
 <translation id="7095110968493193530">儲存至 <ph name="EMAIL" /> 的「Google 密碼管理工具」</translation>
-<translation id="7097046145876891318">輕按網址列的「價格記錄」，即可查看價格變動情況</translation>
 <translation id="7102005569666697658">正在下載…<ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">選單 → 設定 → 付款方法</translation>
 <translation id="7108338896283013870">隱藏</translation>

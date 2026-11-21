@@ -261,7 +261,6 @@
 <translation id="1739364174357629566">更新已知旅客编号</translation>
 <translation id="1740468249224277719">点按两次即可安装。</translation>
 <translation id="1740650426894359238">切换到另一份个人资料</translation>
-<translation id="1741219894094057085">智能手表</translation>
 <translation id="1743244221910283364">舍弃更改</translation>
 <translation id="1748975028205587434">选择文件</translation>
 <translation id="1749733017156547309">必须输入密码</translation>
@@ -285,7 +284,6 @@
 <translation id="1810976980198522421">取消</translation>
 <translation id="1815941218935345331">密码</translation>
 <translation id="1818687879307252150">{count,plural, =0{没有任何密码遭泄露}=1{有 {count} 个密码遭泄露}other{有 {count} 个密码遭泄露}}</translation>
-<translation id="1819374301217551116">价格跟踪和分析</translation>
 <translation id="1820195936249950412">请使用有效账号登录</translation>
 <translation id="1820259098641718022">已添加到阅读清单</translation>
 <translation id="1823768272150895732">字体</translation>
@@ -415,7 +413,6 @@
 <translation id="2199562093267256223">此操作会从已登录 <ph name="USER_EMAIL" /> 的所有设备中删除该分组。</translation>
 <translation id="2202084845446535117">没有电子邮件账号</translation>
 <translation id="2214453882118345682">打开相机，轻松购物、实时翻译、拍照识物。</translation>
-<translation id="2216366330550244277">前往商品页面</translation>
 <translation id="2218389616572918761">网站可以请求使用麦克风</translation>
 <translation id="2219935992754556187">Chrome 可利用面容 ID 确保您的敏感数据安全</translation>
 <translation id="2220529011494928058">报告问题</translation>
@@ -541,7 +538,6 @@
 <translation id="2584994295315085351">离开 Chrome 4 小时后返回时打开新标签页</translation>
 <translation id="2592917252160773942">网站可以请求使用摄像头</translation>
 <translation id="2593272815202181319">等宽</translation>
-<translation id="2601778637777010194">跟踪商品降价情况</translation>
 <translation id="2602372807870028932">此操作将删除保存在本设备上的所选信息</translation>
 <translation id="260378315836159338">点按屏幕顶部的 +</translation>
 <translation id="2612625650119459859">“固定标签页”任务已完成！</translation>
@@ -1195,7 +1191,6 @@
 <translation id="4719927025381752090">提供翻译</translation>
 <translation id="4720530280568305198">您选择的内容已在新标签页中打开</translation>
 <translation id="4720782081196952026">缩小文字</translation>
-<translation id="472259426228234149">价格：100 美元 - 180 美元</translation>
 <translation id="4735849923335729414">以 <ph name="EMAIL" /> 的身份登录，该账号由组织管理。</translation>
 <translation id="473775607612524610">更新</translation>
 <translation id="4738968082443868320">Google 云端硬盘</translation>
@@ -1338,7 +1333,6 @@
 <translation id="5116347248003317626">不允许网站使用您的位置信息</translation>
 <translation id="5118462200606189584">添加账号…</translation>
 <translation id="5118764316110575523">已关闭</translation>
-<translation id="5119329531859909472">如需跟踪此商品，请点按“跟踪”</translation>
 <translation id="5121618895923301719">您已在跟踪此商品。该网页已保存在<ph name="BEGIN_LINK" />移动设备书签<ph name="END_LINK" />中。</translation>
 <translation id="512533434554095351">发现多个密码问题。</translation>
 <translation id="5126335625961252141">您的平板电脑</translation>
@@ -1430,7 +1424,6 @@
 <translation id="5414763847370083940">当相应商品在所跟踪的任何网站上降价时，您都会收到提醒。</translation>
 <translation id="5415289094036440596">无法分享通行密钥</translation>
 <translation id="5416455648658732408">移至标签页分组</translation>
-<translation id="5423269318075950257">跟踪价格</translation>
 <translation id="542659109038405424">目标语言</translation>
 <translation id="5429624150850059322">当您返回时，标签页会被模糊处理，直到您点按以继续操作</translation>
 <translation id="5431239785743546285">您已读过的页面</translation>
@@ -1968,7 +1961,6 @@
 <translation id="6989636517316575338">就任意网页提问</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998236305642926573">所有任务</translation>
-<translation id="6998251471716094661">跟踪商品价格，并在有网站降价时收到提醒</translation>
 <translation id="7004032350256606903">贵单位要求您进行无痕浏览。
 <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">前往“设置”设为默认…</translation>
@@ -1992,7 +1984,6 @@
 <translation id="7082853213442715471">开启锁定模式后，系统会屏蔽某些网络技术，这可能会导致部分网站的加载速度变慢或无法正常运行。</translation>
 <translation id="7091023926159231962">{count,plural, =1{无法导入 {count} 个密码}other{无法导入 {count} 个密码}}</translation>
 <translation id="7095110968493193530">保存到 <ph name="EMAIL" /> 的 Google 密码管理工具</translation>
-<translation id="7097046145876891318">在地址栏中，点按“既往价格”即可查看价格随时间的变化情况</translation>
 <translation id="7102005569666697658">正在下载…<ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">菜单 → 设置 → 支付方式</translation>
 <translation id="7108338896283013870">隐藏</translation>

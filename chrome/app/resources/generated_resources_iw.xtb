@@ -93,7 +93,6 @@
 <translation id="1090126737595388931">אין יישומים פועלים ברקע</translation>
 <translation id="109038914521989341">למה העתקת את הנתונים?</translation>
 <translation id="1094158807129647987">יש לי שאלה לגבי "<ph name="SELECTION" />"</translation>
-<translation id="1095398697303758108">‏כדי להשתמש במילוי האוטומטי המשופר, צריך ללחוץ פעמיים על Ctrl</translation>
 <translation id="1095879482467973146">‏מנהל הסיסמאות של Google באינטרנט</translation>
 <translation id="1097016918605049747">לא ניתן היה לתרגם את הדף הזה</translation>
 <translation id="1099962274138857708">התמונה הועתקה מהמכשיר הבא: <ph name="DEVICE_NAME" /></translation>
@@ -579,6 +578,7 @@
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{להסיר את הכרטיסייה ולמחוק את הקבוצה?}=1{להסיר את הכרטיסיות ולמחוק את הקבוצה?}one{להסיר את הכרטיסיות ולמחוק את הקבוצות?}two{להסיר את הכרטיסיות ולמחוק את הקבוצות?}other{להסיר את הכרטיסיות ולמחוק את הקבוצות?}}</translation>
 <translation id="1637765355341780467">אירעה שגיאה בפתיחת הפרופיל שלך. ייתכן שחלק מהתכונות לא יהיו זמינות.</translation>
 <translation id="1639239467298939599">בטעינה</translation>
+<translation id="1640672724030957280">מוריד...</translation>
 <translation id="1641113438599504367">גלישה בטוחה</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{סיסמה אחת נוספת לא יובאה כי הפורמט שלה שגוי}one{{NUM_PASSWORDS} סיסמאות נוספות לא יובאו כי הפורמט שלהן שגוי}two{{NUM_PASSWORDS} סיסמאות נוספות לא יובאו כי הפורמט שלהן שגוי}other{{NUM_PASSWORDS} סיסמאות נוספות לא יובאו כי הפורמט שלהן שגוי}}</translation>
 <translation id="1642299742557467312">הקובץ הזה עלול להזיק למכשיר</translation>
@@ -1801,7 +1801,6 @@
 <translation id="2988328607561082373">לא נעשה שימוש חוזר בסיסמאות כלשהן</translation>
 <translation id="2989523299700148168">מנועי חיפוש שהשתמשת בהם לאחרונה</translation>
 <translation id="2989786307324390836">‏בינארי בקידוד DER, אישור יחיד</translation>
-<translation id="2990500505358145117">עריכת מקשי הקיצור למילוי אוטומטי משופר</translation>
 <translation id="2990583317361835189">לא לאפשר לאתרים להשתמש בחיישני תנועה</translation>
 <translation id="2991182900092497283">עליך להזין סיבה להדבקת הנתונים האלה:</translation>
 <translation id="2992754757708650257">רוצה לצאת מהאתר ולסיים את המשימה?</translation>
@@ -2052,7 +2051,6 @@
 <translation id="3244294424315804309">המשך השתקת הצלילים</translation>
 <translation id="3247649647204519958">כאן אפשר לראות ולנהל את ההרשאות שיש לתוספים לגבי האתר הנוכחי</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - שגיאת רשת</translation>
-<translation id="3248957351402065497">מקשי קיצור בהתאמה אישית למילוי אוטומטי משופר</translation>
 <translation id="3249558306861350254">‏בהגדרות של Windows, צריך ללחוץ על <ph name="BEGIN_BOLD" />הגדרה כברירת מחדל<ph name="END_BOLD" />.</translation>
 <translation id="3250374026663843838">ניהול המיומנות</translation>
 <translation id="3251759466064201842">&lt;לא חלק מהאישור&gt;</translation>
@@ -2272,6 +2270,7 @@
 <translation id="3481268647794498892">ייפתח ב-<ph name="ALTERNATIVE_BROWSER_NAME" /> בעוד <ph name="COUNTDOWN_SECONDS" /> שניות</translation>
 <translation id="348247802372410699">בחירת סגנון</translation>
 <translation id="3482573964681964096">‏ניהול אישורים שיובאו מ-Windows</translation>
+<translation id="348268549820508141">זיהוי דיבור</translation>
 <translation id="3482719661246593752">ל-<ph name="ORIGIN" /> יש אפשרות לראות את הקבצים הבאים</translation>
 <translation id="3486380520195228369">כדי לראות את ההודעה, צריך לרענן את הדף</translation>
 <translation id="3487007233252413104">פונקציה אנונימית</translation>
@@ -2640,7 +2639,6 @@
 <translation id="3826086052025847742">‏יומנים של ChromeOS Flex</translation>
 <translation id="3827774300009121996">&amp;מסך מלא</translation>
 <translation id="3828029223314399057">חיפוש סימניות</translation>
-<translation id="3828454092958722155">מחיקת מקשי הקיצור למילוי אוטומטי משופר</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – שימוש בנפח גדול מהזיכרון – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">שימוש במפתח גישה אחר</translation>
 <translation id="3838085852053358637">טעינת התוסף נכשלה</translation>
@@ -3718,7 +3716,6 @@
 <translation id="5060419232449737386">הגדרות לכתוביות</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{תיקייה זו מכילה סימנייה. ברצונך באמת למחוק אותה?}one{תיקייה זו מכילה # סימניות. ברצונך באמת למחוק אותה?}two{תיקייה זו מכילה שתי סימניות. ברצונך באמת למחוק אותה?}other{תיקייה זו מכילה # סימניות. ברצונך באמת למחוק אותה?}}</translation>
 <translation id="5061531353537614467">טונדרה</translation>
-<translation id="5061781067616989032">הגדרת מקש קיצור</translation>
 <translation id="5062863364865466276">תנועה</translation>
 <translation id="5063480226653192405">שימוש</translation>
 <translation id="5064921774605267982">פתיחת הפרופיל <ph name="PROFILE_NAME" />. הפרופיל הזה מנוהל על ידי ההורה שלך.</translation>
@@ -4993,7 +4990,6 @@
 <translation id="6540488083026747005">‏אישרת את השימוש בקובצי Cookie של צד שלישי באתר הזה</translation>
 <translation id="6541638731489116978">גישת האתר לחיישני תנועה נחסמה.</translation>
 <translation id="6542417422899025860">הסרה אוטומטית של רוב הפרטים האישיים</translation>
-<translation id="6548240707386871455">מקשי הקיצור למילוי אוטומטי משופר</translation>
 <translation id="654871471440386944">להפעיל את הגלישה באמצעות סמן הטקסט?</translation>
 <translation id="6549689063733911810">מהזמן האחרון</translation>
 <translation id="6550675742724504774">אפשרויות</translation>
@@ -5161,7 +5157,6 @@
 <translation id="6710172959248731469">‏ההגדרות של שירותי Google</translation>
 <translation id="6710394144992407503">בדיקה של שגיאות איות תוך כדי הקלדה של טקסט בדפי אינטרנט</translation>
 <translation id="6711236403841768371">לפני <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">כדי להשתמש במילוי האוטומטי המשופר, צריך ללחוץ פעמיים על ⌘</translation>
 <translation id="6712943853047024245">כבר שמרת סיסמה עם שם המשתמש הזה לאתר <ph name="WEBSITE" /></translation>
 <translation id="6713668088933662563">אין להציע לתרגם את השפות האלה אף פעם</translation>
 <translation id="6714871567554212732">לפרטים נוספים על <ph name="GROUP_NAME" /></translation>
@@ -6076,7 +6071,6 @@
 <translation id="7706742200777909964">אפשר להציג דפים זה לצד זה באותה כרטיסייה כדי להשוות בקלות בין אפשרויות ועוד</translation>
 <translation id="7707108266051544351">גישת האתר הזה אל חיישני התנועה נחסמה.</translation>
 <translation id="7709152031285164251">נכשל - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">מחיקת מקשי הקיצור המותאמים אישית למילוי אוטומטי משופר</translation>
 <translation id="7710568461918838723">&amp;העברה...</translation>
 <translation id="7712739869553853093">תיבת דו-שיח של התצוגה המקדימה להדפסה</translation>
 <translation id="7714464543167945231">אישור</translation>
@@ -6431,7 +6425,6 @@
 <translation id="810185532889603849">צבע מותאם אישית</translation>
 <translation id="8103484184517840583">‏יציאה ממצב AI</translation>
 <translation id="810362914482827094">חיפוש מפתחות גישה</translation>
-<translation id="8104388155778519213">‏שיתוף של מה שמוצג במסך באמצעות Google Lens</translation>
 <translation id="8104412594956510627">‏כדי להעביר את ההיסטוריה מ<ph name="DEVICE" />, צריך לסנכרן את ההיסטוריה. תמיד אפשר להיכנס להגדרות ולהפסיק את הסנכרון. יכול להיות ש-Google תתאים לך אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="8104778744208707085">נדרש טיפול</translation>
 <translation id="8105273883928376822">צריך להיכנס לחשבון כדי להמשיך.</translation>
@@ -6529,7 +6522,6 @@
 <translation id="8214489666383623925">פתיחת קובץ...</translation>
 <translation id="8214771296778317256">כאן אפשר לבחור את סגנון הכרטיסיות המועדף</translation>
 <translation id="8217399928341212914">להמשיך לחסום הורדות אוטומטיות של קבצים מרובים</translation>
-<translation id="8218411859495801458">עריכת מקשי הקיצור המותאמים אישית למילוי אוטומטי משופר</translation>
 <translation id="8221358554841691213">מיקוד בינוני באפשרויות הסגנון</translation>
 <translation id="8221942262855134126">לפרטי הסיסמה</translation>
 <translation id="8222112516148944758">קבוצות הכרטיסיות נשמרות אוטומטית ומתעדכנות בכל המכשירים</translation>
@@ -6801,7 +6793,6 @@
 <translation id="8512476990829870887">סיום תהליך</translation>
 <translation id="851263357009351303">התרה ל-<ph name="HOST" /> להציג תמונות תמיד</translation>
 <translation id="8513357934662532537">‏כדי לייבא סיסמאות של <ph name="USER_EMAIL" /> אל <ph name="BRAND" />, צריך לבחור קובץ CSV.</translation>
-<translation id="8514257511170433540">שימוש במקש הקיצור שמוגדר כברירת מחדל למילוי טפסים</translation>
 <translation id="8514746246728959655">יש לנסות מפתח אבטחה שונה</translation>
 <translation id="8514828975162859845">קייקפופס</translation>
 <translation id="8514955299594277296">אין הרשאה לאתרים לשמור נתונים במכשיר (לא מומלץ)</translation>

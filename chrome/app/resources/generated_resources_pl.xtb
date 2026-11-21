@@ -94,7 +94,6 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1090126737595388931">Brak aplikacji uruchomionych w tle</translation>
 <translation id="109038914521989341">Wpisz uzasadnienie kopiowania tych danych:</translation>
 <translation id="1094158807129647987">Zapytaj o „<ph name="SELECTION" />”</translation>
-<translation id="1095398697303758108">Naciśnij dwukrotnie Ctrl, aby użyć ulepszonego autouzupełniania</translation>
 <translation id="1095879482467973146">Menedżer haseł Google w internecie</translation>
 <translation id="1097016918605049747">Nie udało się przetłumaczyć strony</translation>
 <translation id="1099962274138857708">Obraz skopiowany z urządzenia <ph name="DEVICE_NAME" /></translation>
@@ -581,6 +580,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Usunąć kartę i grupę?}=1{Usunąć kartę i grupę?}few{Usunąć karty i grupy?}many{Usunąć karty i grupy?}other{Usunąć karty i grupy?}}</translation>
 <translation id="1637765355341780467">Coś poszło nie tak podczas otwierania Twojego profilu. Niektóre funkcje mogą być niedostępne.</translation>
 <translation id="1639239467298939599">Wczytuję</translation>
+<translation id="1640672724030957280">Pobieram...</translation>
 <translation id="1641113438599504367">Bezpieczne przeglądanie</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Nie udało się zaimportować 1 innego hasła, ponieważ jest ono nieprawidłowo sformatowane}few{Nie udało się zaimportować {NUM_PASSWORDS} innych haseł, ponieważ są one nieprawidłowo sformatowane}many{Nie udało się zaimportować {NUM_PASSWORDS} innych haseł, ponieważ są one nieprawidłowo sformatowane}other{Nie udało się zaimportować {NUM_PASSWORDS} innego hasła, ponieważ są one nieprawidłowo sformatowane}}</translation>
 <translation id="1642299742557467312">Ten plik może uszkodzić urządzenie</translation>
@@ -1376,6 +1376,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="2519517390894391510">Nazwa certyfikowanego profilu</translation>
 <translation id="2520644704042891903">Czekam na dostępne gniazdo...</translation>
 <translation id="2522757085249311407">Zezwalaj urządzeniom Bluetooth w pobliżu na wykrywanie tego urządzenia i łączenie się z nim.</translation>
+<translation id="2523048609826818526">Pisanie tekstów ogólnego przeznaczenia</translation>
 <translation id="2523184218357549926">Adresy URL odwiedzanych stron będą wysyłane do Google</translation>
 <translation id="252513908494776481">Zapytaj o tę kartę</translation>
 <translation id="2525746158911982776">Aktualizacja się nie udała, ponieważ w systemie jest za mało dostępnego miejsca.</translation>
@@ -1793,7 +1794,6 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="2988328607561082373">Nie używasz ponownie żadnych haseł</translation>
 <translation id="2989523299700148168">Ostatnio odwiedzone</translation>
 <translation id="2989786307324390836">Plik binarny z kodowaniem DER, jeden certyfikat</translation>
-<translation id="2990500505358145117">Edytuj skrót do ulepszonego autouzupełniania</translation>
 <translation id="2990583317361835189">Nie zezwalaj witrynom na używanie czujników ruchu</translation>
 <translation id="2991182900092497283">Wpisz uzasadnienie wklejenia tych danych:</translation>
 <translation id="2992754757708650257">Opuścić witrynę i zakończyć zadanie?</translation>
@@ -2046,7 +2046,6 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="3244294424315804309">Nadal wyciszaj dźwięk</translation>
 <translation id="3247649647204519958">Tutaj możesz wyświetlać uprawnienia rozszerzeń do witryny, którą przeglądasz, i nimi zarządzać</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – błąd sieci</translation>
-<translation id="3248957351402065497">Niestandardowy skrót do ulepszonego autouzupełniania</translation>
 <translation id="3249558306861350254">W ustawieniach systemu Windows kliknij <ph name="BEGIN_BOLD" />Ustaw jako domyślną<ph name="END_BOLD" />.</translation>
 <translation id="3250374026663843838">Zarządzaj umiejętnością</translation>
 <translation id="3251759466064201842">&lt;brak w certyfikacie&gt;</translation>
@@ -2265,6 +2264,7 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="3481268647794498892">Strona zostanie otwarta w przeglądarce <ph name="ALTERNATIVE_BROWSER_NAME" /> za <ph name="COUNTDOWN_SECONDS" /> s</translation>
 <translation id="348247802372410699">Wybierz styl</translation>
 <translation id="3482573964681964096">Zarządzaj certyfikatami zaimportowanymi z systemu Windows</translation>
+<translation id="348268549820508141">Rozpoznawanie mowy</translation>
 <translation id="3482719661246593752">Strona <ph name="ORIGIN" /> może wyświetlać te pliki:</translation>
 <translation id="3486380520195228369">Ukryte do momentu odświeżenia strony</translation>
 <translation id="3487007233252413104">funkcja anonimowa</translation>
@@ -2633,7 +2633,6 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="3826086052025847742">Logi ChromeOS Flex</translation>
 <translation id="3827774300009121996">&amp;Pełny ekran</translation>
 <translation id="3828029223314399057">Przeszukaj zakładki</translation>
-<translation id="3828454092958722155">Wyczyść skrót do ulepszonego autouzupełniania</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – duże wykorzystanie pamięci – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Użyj innego klucza dostępu</translation>
 <translation id="3838085852053358637">Nie udało się wczytać rozszerzenia</translation>
@@ -3713,7 +3712,6 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="5060419232449737386">Ustawienia napisów</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Ten folder zawiera zakładkę. Na pewno chcesz go usunąć?}few{Ten folder zawiera # zakładki. Na pewno chcesz go usunąć?}many{Ten folder zawiera # zakładek. Na pewno chcesz go usunąć?}other{Ten folder zawiera # zakładki. Na pewno chcesz go usunąć?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
-<translation id="5061781067616989032">Skonfiguruj własny skrót klawiszowy</translation>
 <translation id="5062863364865466276">Ruch</translation>
 <translation id="5063480226653192405">Wykorzystanie</translation>
 <translation id="5064921774605267982">Otwórz profil <ph name="PROFILE_NAME" />. Tym profilem zarządza Twój rodzic.</translation>
@@ -4989,7 +4987,6 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="6540488083026747005">W przypadku tej witryny zezwalasz na pliki cookie innych firm</translation>
 <translation id="6541638731489116978">Tej stronie zablokowano dostęp do czujników ruchu.</translation>
 <translation id="6542417422899025860">Automatycznie usuwaj większość danych osobowych</translation>
-<translation id="6548240707386871455">Skrót do ulepszonego autouzupełniania</translation>
 <translation id="654871471440386944">Włączyć przeglądanie przy użyciu kursora?</translation>
 <translation id="6549689063733911810">Ostatnie</translation>
 <translation id="6550675742724504774">Opcje</translation>
@@ -5157,7 +5154,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6710172959248731469">Ustawienia usług Google</translation>
 <translation id="6710394144992407503">Sprawdzaj pisownię podczas wpisywania tekstu na stronach internetowych</translation>
 <translation id="6711236403841768371">Do <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Naciśnij dwukrotnie ⌘, aby użyć ulepszonego autouzupełniania</translation>
 <translation id="6712943853047024245">Masz już zapisane hasło do strony <ph name="WEBSITE" /> powiązane z tą nazwą użytkownika.</translation>
 <translation id="6713668088933662563">Nigdy nie proponuj tłumaczenia tych języków</translation>
 <translation id="6714871567554212732">Wyświetl więcej informacji o grupie <ph name="GROUP_NAME" /></translation>
@@ -6076,7 +6072,6 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="7706742200777909964">Umieść strony obok siebie na tej samej karcie, aby łatwo porównywać opcje i inne elementy</translation>
 <translation id="7707108266051544351">Tej stronie zablokowano używanie czujników ruchu.</translation>
 <translation id="7709152031285164251">Niepowodzenie – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Wyczyść niestandardowy skrót do ulepszonego autouzupełniania</translation>
 <translation id="7710568461918838723">&amp;Przesyłaj…</translation>
 <translation id="7712739869553853093">Okno podglądu wydruku</translation>
 <translation id="7714464543167945231">Certyfikat</translation>
@@ -6436,7 +6431,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="810185532889603849">Kolor niestandardowy</translation>
 <translation id="8103484184517840583">Wyjdź z Trybu AI</translation>
 <translation id="810362914482827094">Wyszukaj klucze dostępu</translation>
-<translation id="8104388155778519213">Udostępnij zawartość ekranu Obiektywowi Google</translation>
 <translation id="8104412594956510627">Aby zobaczyć historię z urządzenia <ph name="DEVICE" />, zsynchronizuj ją. Synchronizację możesz wyłączyć w każdej chwili w ustawieniach. Google może korzystać z Twojej historii, aby dostosowywać działanie wyszukiwarki i innych usług.</translation>
 <translation id="8104778744208707085">Wymaga uwagi</translation>
 <translation id="8105273883928376822">Zaloguj się, aby kontynuować.</translation>
@@ -6534,7 +6528,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8214489666383623925">Otwórz plik...</translation>
 <translation id="8214771296778317256">Tutaj wybierz preferowany styl kart</translation>
 <translation id="8217399928341212914">Dalej blokuj automatyczne pobieranie wielu plików</translation>
-<translation id="8218411859495801458">Edytuj niestandardowy skrót do ulepszonego autouzupełniania</translation>
 <translation id="8221358554841691213">Styl średniego zaznaczenia</translation>
 <translation id="8221942262855134126">Zarządzaj hasłem</translation>
 <translation id="8222112516148944758">Grupy kart są automatycznie zapisywane i aktualizowane na wszystkich Twoich urządzeniach</translation>
@@ -6807,7 +6800,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8512476990829870887">Zakończ proces</translation>
 <translation id="851263357009351303">Zawsze zezwalaj na pokazywanie grafik w witrynie <ph name="HOST" /></translation>
 <translation id="8513357934662532537">Aby zaimportować hasła do usługi <ph name="BRAND" /> na koncie <ph name="USER_EMAIL" />, wybierz plik CSV.</translation>
-<translation id="8514257511170433540">Używaj domyślnego skrótu klawiszowego podczas wypełniania formularzy</translation>
 <translation id="8514746246728959655">Użyj innego klucza bezpieczeństwa</translation>
 <translation id="8514828975162859845">Lizaki ciasteczkowe</translation>
 <translation id="8514955299594277296">Nie zezwalaj witrynom na zapisywanie danych na urządzeniu (niezalecane)</translation>

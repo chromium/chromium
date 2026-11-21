@@ -261,7 +261,6 @@
 <translation id="1739364174357629566">Actualitza el número de viatger conegut</translation>
 <translation id="1740468249224277719">Feu doble toc per instal·lar l'aplicació.</translation>
 <translation id="1740650426894359238">Canvia de perfil</translation>
-<translation id="1741219894094057085">Rellotge intel·ligent</translation>
 <translation id="1743244221910283364">Descarta els canvis</translation>
 <translation id="1748975028205587434">Selecciona el fitxer</translation>
 <translation id="1749733017156547309">Has d'introduir una contrasenya</translation>
@@ -285,7 +284,6 @@
 <translation id="1810976980198522421">Cancel·la</translation>
 <translation id="1815941218935345331">Codi d'accés</translation>
 <translation id="1818687879307252150">{count,plural, =0{Cap contrasenya en perill}=1{{count} contrasenya en perill}other{{count} contrasenyes en perill}}</translation>
-<translation id="1819374301217551116">Seguiment de preus i estadístiques</translation>
 <translation id="1820195936249950412">Inicia la sessió amb un compte vàlid</translation>
 <translation id="1820259098641718022">S'ha afegit a la llista de lectura</translation>
 <translation id="1823768272150895732">Tipus de lletra</translation>
@@ -415,7 +413,6 @@
 <translation id="2199562093267256223">Aquesta acció suprimirà el grup de tots els dispositius amb què s'hagi iniciat la sessió a <ph name="USER_EMAIL" />.</translation>
 <translation id="2202084845446535117">Cap compte de correu electrònic</translation>
 <translation id="2214453882118345682">Compra, tradueix i identifica el que veus amb la càmera.</translation>
-<translation id="2216366330550244277">Ves a la pàgina d'un producte</translation>
 <translation id="2218389616572918761">Els llocs web poden demanar permís per utilitzar el micròfon</translation>
 <translation id="2219935992754556187">Chrome protegeix les teves dades sensibles amb Face ID</translation>
 <translation id="2220529011494928058">Informa d'un problema</translation>
@@ -541,7 +538,6 @@
 <translation id="2584994295315085351">Obre una pestanya nova quan tornis a Chrome després de 4 hores</translation>
 <translation id="2592917252160773942">Els llocs web poden demanar permís per utilitzar la càmera</translation>
 <translation id="2593272815202181319">Monospace</translation>
-<translation id="2601778637777010194">Fes un seguiment de les baixades de preu dels productes</translation>
 <translation id="2602372807870028932">Se suprimirà la informació seleccionada que s'ha desat en aquest dispositiu</translation>
 <translation id="260378315836159338">A la part superior de la pantalla, toca +</translation>
 <translation id="2612625650119459859">S'ha completat "Fixar una pestanya".</translation>
@@ -1195,7 +1191,6 @@
 <translation id="4719927025381752090">Proposa traduir aquest idioma</translation>
 <translation id="4720530280568305198">La teva selecció s'ha obert en una pestanya nova</translation>
 <translation id="4720782081196952026">Redueix la mida del text</translation>
-<translation id="472259426228234149">Preu 100 $ - 180 $</translation>
 <translation id="4735849923335729414">Inicia la sessió com a <ph name="EMAIL" />, gestionat per la teva organització.</translation>
 <translation id="473775607612524610">Actualitza</translation>
 <translation id="4738968082443868320">Google Drive</translation>
@@ -1337,7 +1332,6 @@
 <translation id="5116347248003317626">No permetis que els llocs web utilitzin la teva ubicació</translation>
 <translation id="5118462200606189584">Afegeix un compte…</translation>
 <translation id="5118764316110575523">Desactivat</translation>
-<translation id="5119329531859909472">Per fer un seguiment del producte, toca Fes un seguiment</translation>
 <translation id="5121618895923301719">Ja estàs fent el seguiment d'aquest producte. Aquesta pàgina s'ha desat a <ph name="BEGIN_LINK" />Adreces d'interès per a mòbils<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Tens diversos problemes relacionats amb les contrasenyes.</translation>
 <translation id="5126335625961252141">de la teva tauleta</translation>
@@ -1429,7 +1423,6 @@
 <translation id="5414763847370083940">Rebràs una alerta si el preu baixa en qualsevol lloc web.</translation>
 <translation id="5415289094036440596">Les claus d'accés no es poden compartir</translation>
 <translation id="5416455648658732408">Mou a un grup de pestanyes</translation>
-<translation id="5423269318075950257">Fes un seguiment del preu</translation>
 <translation id="542659109038405424">A</translation>
 <translation id="5429624150850059322">Quan tornis, les pestanyes estaran desenfocades fins que toquis per continuar</translation>
 <translation id="5431239785743546285">Pàgines que has llegit</translation>
@@ -1965,7 +1958,6 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="6989636517316575338">Pregunta sobre qualsevol pàgina</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998236305642926573">Totes les tasques</translation>
-<translation id="6998251471716094661">Fes un seguiment dels preus dels productes i rep alertes quan el preu baixi en qualsevol lloc web</translation>
 <translation id="7004032350256606903">La teva organització requereix que naveguis de manera privada.
 <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Estableix com a predeterminat a Configuració…</translation>
@@ -1989,7 +1981,6 @@ Per continuar des de l'ordinador, canvia a <ph name="OTHER_EMAIL" />. Obtindràs
 <translation id="7082853213442715471">Quan està activat, determinades tecnologies web es bloquegen, la qual cosa pot fer que alguns llocs web es carreguin més lentament o no funcionin correctament.</translation>
 <translation id="7091023926159231962">{count,plural, =1{No s'ha pogut importar {count} contrasenya}other{No s'han pogut importar {count} contrasenyes}}</translation>
 <translation id="7095110968493193530">Ves al gestor de contrasenyes de Google per a <ph name="EMAIL" /></translation>
-<translation id="7097046145876891318">A la barra d'adreces, toca l'historial de preus per veure els canvis de preu al llarg del temps</translation>
 <translation id="7102005569666697658">S'està baixant… (<ph name="FILE_SIZE" />)</translation>
 <translation id="7104701424653979232">Menú → Configuració → Formes de pagament</translation>
 <translation id="7108338896283013870">Amaga</translation>

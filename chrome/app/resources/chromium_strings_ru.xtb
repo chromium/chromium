@@ -577,7 +577,6 @@
 <translation id="7213407614656404070">Открывайте ссылки в сообщениях, документах и других приложениях с помощью Chromium</translation>
 <translation id="7216228761061470870">Когда вы используете поиск картинок на компьютере, заголовок, URL и контент страницы, включая PDF-файлы, отправляются на сервер.</translation>
 <translation id="7223968959479464213">Диспетчер задач – Chromium</translation>
-<translation id="7226331818892775989">Задавайте вопросы о контенте за пределами Chromium, например в других приложениях или файлах.</translation>
 <translation id="7227958669698166857">Активный профиль пользователя: <ph name="EXISTING_USER" />. Чтобы данные о вашей работе в браузере хранились отдельно, войдите в собственный профиль Chromium (<ph name="USER_EMAIL_ADDRESS" />). Сохраненная информация и другие сведения также появятся на всех ваших устройствах.</translation>
 <translation id="7252276985725323153">Пользуйтесь браузером сразу после включения компьютера. Chromium теперь может запускаться вместе с Windows.</translation>
 <translation id="7274695763216404502">Закреплено. Теперь вы можете запускать поиск по изображениям с панели инструментов.</translation>
@@ -692,7 +691,6 @@
 <translation id="8310603974518734211">QR-код для входа в Chromium с аккаунтом <ph name="USER_NAME" /></translation>
 <translation id="8313851650939857356">Ошибка при запуске: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Ваша организация задала настройки, согласно которым браузер Chromium закрывается, если он не используется в течение <ph name="TIMEOUT_DURATION" />.</translation>
-<translation id="8321888067342493336">Сохранить как изображение</translation>
 <translation id="8340674089072921962">Адрес <ph name="USER_EMAIL_ADDRESS" /> уже использовался в Chromium</translation>
 <translation id="8351551329754447960">Включить специализированные действия в Chromium</translation>
 <translation id="8359544530202147897">Обновите Chromium, чтобы продолжать использовать данные Chromium в аккаунте Google <ph name="ACCOUNT_EMAIL" />.</translation>

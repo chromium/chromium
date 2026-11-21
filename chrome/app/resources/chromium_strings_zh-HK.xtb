@@ -581,7 +581,6 @@
 <translation id="7213407614656404070">隨時使用 Chromium 開啟訊息、文件和其他應用程式中的連結</translation>
 <translation id="7216228761061470870">在桌面電腦使用「圖片搜尋」時，網頁標題、網址和內容 (包括 PDF) 會傳送至伺服器</translation>
 <translation id="7223968959479464213">工作管理員 - Chromium</translation>
-<translation id="7226331818892775989">查詢 Chromium 以外的內容，例如其他應用程式或檔案</translation>
 <translation id="7227958669698166857"><ph name="EXISTING_USER" />已登入。如要分開保存你的瀏覽資料，請在 Chromium 登入你的個人檔案 (<ph name="USER_EMAIL_ADDRESS" />)。你也可在所有裝置上取用已儲存的資料及其他內容。</translation>
 <translation id="7252276985725323153">立即開始瀏覽：Chromium 現在可於 Windows 啟動時開啟。</translation>
 <translation id="7274695763216404502">已固定！你可透過工具列再次使用「圖片搜尋」</translation>
@@ -698,7 +697,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8310603974518734211">用嚟以 <ph name="USER_NAME" /> 登入 Chromium 嘅二維碼</translation>
 <translation id="8313851650939857356">啟動錯誤：<ph name="STARTUP_ERROR" />。</translation>
 <translation id="8318772038038596122">您的機構會在 Chromium 閒置 <ph name="TIMEOUT_DURATION" />後關閉 Chromium。</translation>
-<translation id="8321888067342493336">儲存為圖片</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> 以往曾使用 Chromium</translation>
 <translation id="8351551329754447960">在 Chromium 中啟用「技能」</translation>
 <translation id="8359544530202147897">請更新 Chromium 以繼續使用 Google 帳戶 <ph name="ACCOUNT_EMAIL" /> 中的 Chromium 資料</translation>

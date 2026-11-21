@@ -94,7 +94,6 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1090126737595388931">Nema pokrenutih pozadinskih aplikacija</translation>
 <translation id="109038914521989341">Unesite razlog za kopiranje tih podataka:</translation>
 <translation id="1094158807129647987">Postavite pitanje o odabranom tekstu: <ph name="SELECTION" /></translation>
-<translation id="1095398697303758108">Dvaput pritisnite Ctrl za poboljšano automatsko popunjavanje</translation>
 <translation id="1095879482467973146">Google upravitelj zaporki na webu</translation>
 <translation id="1097016918605049747">Stranica nije prevedena</translation>
 <translation id="1099962274138857708">Slika kopirana s uređaja <ph name="DEVICE_NAME" /></translation>
@@ -581,6 +580,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Želite li ukloniti karticu i izbrisati grupu?}=1{Želite li ukloniti karticu i izbrisati grupu?}one{Želite li ukloniti kartice i izbrisati grupe?}few{Želite li ukloniti kartice i izbrisati grupe?}other{Želite li ukloniti kartice i izbrisati grupe?}}</translation>
 <translation id="1637765355341780467">Prilikom otvaranja profila dogodila se pogreška. Neke značajke možda nisu dostupne.</translation>
 <translation id="1639239467298939599">Učitavanje</translation>
+<translation id="1640672724030957280">Preuzimanje...</translation>
 <translation id="1641113438599504367">Sigurno pregledavanje</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Još jedna zaporka nije uvezena jer nije pravilno formatirana}one{Još {NUM_PASSWORDS} zaporka nije uvezena jer nije pravilno formatirana}few{Još {NUM_PASSWORDS} zaporke nisu uvezene jer nisu pravilno formatirane}other{Još {NUM_PASSWORDS} zaporki nije uvezeno jer nisu pravilno formatirane}}</translation>
 <translation id="1642299742557467312">Ta datoteka može naštetiti vašem uređaju</translation>
@@ -1799,7 +1799,6 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="2988328607561082373">Ne upotrebljavate stare zaporke</translation>
 <translation id="2989523299700148168">Nedavno posjećeno</translation>
 <translation id="2989786307324390836">DER-binarno kodirano, jedan certifikat</translation>
-<translation id="2990500505358145117">Uredi prečac za poboljšano automatsko popunjavanje</translation>
 <translation id="2990583317361835189">Ne dopuštaj web-lokacijama korištenje senzora kretanja</translation>
 <translation id="2991182900092497283">Unesite razlog za lijepljenje tih podataka:</translation>
 <translation id="2992754757708650257">Želite li napustiti web-lokaciju i završiti zadatak?</translation>
@@ -2053,7 +2052,6 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="3244294424315804309">Neka zvuk ostane isključen</translation>
 <translation id="3247649647204519958">Ovdje možete vidjeti dopuštenja za proširenja za web-lokaciju na kojoj se nalazite i upravljati njima</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – mrežna pogreška</translation>
-<translation id="3248957351402065497">Prilagođeni prečac za poboljšano automatsko popunjavanje</translation>
 <translation id="3249558306861350254">Kliknite <ph name="BEGIN_BOLD" />Postavi kao zadano<ph name="END_BOLD" /> u postavkama Windowsa.</translation>
 <translation id="3250374026663843838">Upravljajte svojom vještinom</translation>
 <translation id="3251759466064201842">&lt;Nije dio certifikata&gt;</translation>
@@ -2274,6 +2272,7 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="3481268647794498892">Otvaranje u pregledniku <ph name="ALTERNATIVE_BROWSER_NAME" /> za <ph name="COUNTDOWN_SECONDS" /> s</translation>
 <translation id="348247802372410699">Odaberite stil</translation>
 <translation id="3482573964681964096">Upravljanje uvezenim certifikatima iz sustava Windows</translation>
+<translation id="348268549820508141">Prepoznavanje govora</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> može pregledavati sljedeće datoteke</translation>
 <translation id="3486380520195228369">Skriveno do osvježavanja stranice</translation>
 <translation id="3487007233252413104">anonimna funkcija</translation>
@@ -2644,7 +2643,6 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="3826086052025847742">Zapisnici na ChromeOS Flexu</translation>
 <translation id="3827774300009121996">&amp;Cijeli zaslon</translation>
 <translation id="3828029223314399057">Pretraži oznake</translation>
-<translation id="3828454092958722155">Izbriši prečac za poboljšano automatsko popunjavanje</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Visoka upotreba memorije – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Upotrijebite drugi pristupni ključ</translation>
 <translation id="3838085852053358637">Učitavanje proširenja nije uspjelo</translation>
@@ -3724,7 +3722,6 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="5060419232449737386">Postavke titlova</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Mapa sadrži oznaku. Jeste li sigurni da je želite izbrisati?}one{Mapa sadrži # oznaku. Jeste li sigurni da je želite izbrisati?}few{Mapa sadrži # oznake. Jeste li sigurni da je želite izbrisati?}other{Mapa sadrži # oznaka. Jeste li sigurni da je želite izbrisati?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
-<translation id="5061781067616989032">Postavite vlastiti tipkovni prečac</translation>
 <translation id="5062863364865466276">Pokret</translation>
 <translation id="5063480226653192405">Upotreba</translation>
 <translation id="5064921774605267982">Otvori profil <ph name="PROFILE_NAME" />. Ovim profilom upravlja tvoj roditelj.</translation>
@@ -4996,7 +4993,6 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="6540488083026747005">Dopustili ste kolačiće trećih strana na ovoj web-lokaciji</translation>
 <translation id="6541638731489116978">Web-lokaciji je blokiran pristup senzorima kretanja.</translation>
 <translation id="6542417422899025860">Automatsko uklanjanje većine osobnih podataka</translation>
-<translation id="6548240707386871455">Prečac za poboljšano automatsko popunjavanje</translation>
 <translation id="654871471440386944">Uključiti pregledavanje kursorom?</translation>
 <translation id="6549689063733911810">Nedavno</translation>
 <translation id="6550675742724504774">Opcije</translation>
@@ -5164,7 +5160,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6710172959248731469">Postavke Googleovih usluga</translation>
 <translation id="6710394144992407503">Provjerite ima li pravopisnih pogrešaka dok pišete tekst na web-stranicama</translation>
 <translation id="6711236403841768371">Prije <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Dvaput pritisnite ⌘ za poboljšano automatsko popunjavanje</translation>
 <translation id="6712943853047024245">Već ste spremili zaporku uz to korisničko ime za <ph name="WEBSITE" /></translation>
 <translation id="6713668088933662563">Nikad ne nudi prevođenje tih jezika</translation>
 <translation id="6714871567554212732">Pogledajte više pojedinosti o grupi <ph name="GROUP_NAME" /></translation>
@@ -6085,7 +6080,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="7706742200777909964">Postavite stranice jednu pored druge na istoj kartici da biste jednostavno usporedili opcije i drugo</translation>
 <translation id="7707108266051544351">Web-lokaciji je blokirana upotreba senzora kretanja.</translation>
 <translation id="7709152031285164251">Nije uspjelo – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Izbriši prilagođeni prečac za poboljšano automatsko popunjavanje</translation>
 <translation id="7710568461918838723">&amp;Emitiraj...</translation>
 <translation id="7712739869553853093">Dijalog Pregled ispisa</translation>
 <translation id="7714464543167945231">Certifikat</translation>
@@ -6445,7 +6439,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="810185532889603849">Prilagođena boja</translation>
 <translation id="8103484184517840583">Izađi iz AI načina</translation>
 <translation id="810362914482827094">Pretraživanje pristupnih ključeva</translation>
-<translation id="8104388155778519213">Podijelite sadržaj zaslona pomoću Google objektiva</translation>
 <translation id="8104412594956510627">Da bi se prikazala povijest s uređaja <ph name="DEVICE" />, sinkronizirajte povijest. Sinkronizaciju možete uvijek zaustaviti u postavkama. Google može prilagoditi Pretraživanje i druge usluge na temelju vaše povijesti.</translation>
 <translation id="8104778744208707085">Zahtijeva vašu pažnju</translation>
 <translation id="8105273883928376822">Prijavite se da biste nastavili.</translation>
@@ -6543,7 +6536,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8214489666383623925">Otvori datoteku...</translation>
 <translation id="8214771296778317256">Ovdje odaberite željeni stil kartice</translation>
 <translation id="8217399928341212914">Nastavi blokirati automatska preuzimanja više datoteka</translation>
-<translation id="8218411859495801458">Uredi prilagođeni prečac za poboljšano automatsko popunjavanje</translation>
 <translation id="8221358554841691213">Stil srednjeg fokusa</translation>
 <translation id="8221942262855134126">Upravljanje zaporkom</translation>
 <translation id="8222112516148944758">Grupe kartica automatski se spremaju i ažuriraju na svim vašim uređajima</translation>
@@ -6816,7 +6808,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8512476990829870887">Završi proces</translation>
 <translation id="851263357009351303">Uvijek dopusti da web-lokacija <ph name="HOST" /> prikazuje slike</translation>
 <translation id="8513357934662532537">Da biste uvezli zaporke na uslugu <ph name="BRAND" /> za <ph name="USER_EMAIL" />, odaberite CSV datoteku.</translation>
-<translation id="8514257511170433540">Upotreba zadanog tipkovnog prečaca pri ispunjavanju obrazaca</translation>
 <translation id="8514746246728959655">Pokušajte s nekim drugim sigurnosnim ključem</translation>
 <translation id="8514828975162859845">Kolačići na štapiću</translation>
 <translation id="8514955299594277296">Web-lokacijama nije dopušteno spremati podatke na vaš uređaj (ne preporučuje se)</translation>

@@ -582,7 +582,6 @@
 <translation id="7213407614656404070">സന്ദേശങ്ങൾ, ഡോക്യുമെന്റുകൾ മറ്റ് ആപ്പുകൾ എന്നിവയിലെ ലിങ്കുകളിൽ ക്ലിക്ക് ചെയ്യുമ്പോഴെല്ലാം Chromium ഉപയോഗിക്കുക</translation>
 <translation id="7216228761061470870">ഡെസ്‌ക്‌ടോപ്പിൽ നിങ്ങൾ ചിത്രമുപയോഗിച്ചുള്ള തിരയൽ ഉപയോഗിക്കുമ്പോൾ, പേജിന്റെ പേര്, URL, PDF-കൾ ഉൾപ്പെടെയുള്ള ഉള്ളടക്കം എന്നിവയെല്ലാം സെർവറിലേക്ക് അയയ്ക്കുന്നു</translation>
 <translation id="7223968959479464213">ടാസ്‌ക് മാനേജർ - Chromium</translation>
-<translation id="7226331818892775989">മറ്റ് ആപ്പുകളോ ഫയലുകളോ പോലെ, Chromium-ത്തിന് പുറത്തുള്ള ഉള്ളടക്കത്തെക്കുറിച്ച് ചോദിക്കൂ</translation>
 <translation id="7227958669698166857"><ph name="EXISTING_USER" /> ഇതിനകം സൈൻ ഇൻ ചെയ്‌തിട്ടുണ്ട്. നിങ്ങളുടെ ബ്രൗസിംഗ് പ്രത്യേകമായി നിലനിർത്താൻ, <ph name="USER_EMAIL_ADDRESS" /> എന്ന വിലാസത്തിൽ നിങ്ങളുടെ സ്വന്തം പ്രൊഫൈലിൽ Chromium-ലേക്ക് സൈൻ ഇൻ ചെയ്യുക. നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും, സംരക്ഷിച്ച വിവരങ്ങളും മറ്റും ലഭിക്കുകയും ചെയ്യും.</translation>
 <translation id="7252276985725323153">തൽക്ഷണം ബ്രൗസ് ചെയ്യാൻ ആരംഭിക്കുക: Windows ആരംഭിക്കുമ്പോൾ ഇപ്പോൾ Chromium ലോഞ്ച് ചെയ്യാനാകും.</translation>
 <translation id="7274695763216404502">പിൻ ചെയ്‌തു! ടൂൾബാറിൽ നിന്ന് ചിത്രമുപയോഗിച്ചുള്ള തിരയൽ വീണ്ടും ഉപയോഗിക്കുക</translation>
@@ -698,7 +697,6 @@
 <translation id="8310603974518734211"><ph name="USER_NAME" /> ആയി Chromium-ലേക്ക് സൈൻ ഇൻ ചെയ്യാനുള്ള QR കോഡ്</translation>
 <translation id="8313851650939857356">സ്റ്റാർട്ടപ്പിലെ പിശക്: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122"><ph name="TIMEOUT_DURATION" /> ഉപയോഗിച്ചില്ലെങ്കിൽ നിങ്ങളുടെ സ്ഥാപനം Chromium ഡാറ്റ അടയ്ക്കുന്നു.</translation>
-<translation id="8321888067342493336">ചിത്രം ആയി സംരക്ഷിക്കുക</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> മുമ്പ് Chromium ഉപയോഗിച്ചിട്ടുണ്ട്</translation>
 <translation id="8351551329754447960">Chromium-ൽ Skills പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="8359544530202147897">നിങ്ങളുടെ <ph name="ACCOUNT_EMAIL" /> എന്ന Google Account-ൽ Chromium ഡാറ്റ ഉപയോഗിക്കുന്നത് തുടരാൻ Chromium അപ്‌ഡേറ്റ് ചെയ്യുക</translation>

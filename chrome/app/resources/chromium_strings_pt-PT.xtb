@@ -580,7 +580,6 @@ Não é possível guardar novos marcadores na sua conta até eliminar alguns. Se
 <translation id="7213407614656404070">Use o Chromium sempre que clicar em links de mensagens, documentos e outras apps</translation>
 <translation id="7216228761061470870">Quando usa a pesquisa de imagens no computador, o título, o URL e o conteúdo da página, incluindo PDFs, são enviados para o servidor</translation>
 <translation id="7223968959479464213">Gestor de Tarefas - Chromium</translation>
-<translation id="7226331818892775989">Faça perguntas sobre conteúdo fora do Chromium, como outras apps ou ficheiros</translation>
 <translation id="7227958669698166857"><ph name="EXISTING_USER" /> já tem sessão iniciada. Para manter a sua navegação separada, inicie sessão no Chromium no seu perfil como <ph name="USER_EMAIL_ADDRESS" />. Também tem acesso às suas informações guardadas e muito mais em todos os seus dispositivos.</translation>
 <translation id="7252276985725323153">Comece a navegar instantaneamente: agora pode iniciar o Chromium quando o Windows arranca.</translation>
 <translation id="7274695763216404502">Fixado! Use novamente a pesquisa de imagens a partir da barra de ferramentas</translation>
@@ -697,7 +696,6 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="8310603974518734211">Código QR para iniciar sessão no Chromium como <ph name="USER_NAME" /></translation>
 <translation id="8313851650939857356">Erro de arranque: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">A sua organização fecha o Chromium quando este não é usado durante <ph name="TIMEOUT_DURATION" />.</translation>
-<translation id="8321888067342493336">Guardar como imagem</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> estava a utilizar o Chromium</translation>
 <translation id="8351551329754447960">Ativar competências no Chromium</translation>
 <translation id="8359544530202147897">Atualize o Chromium para continuar a usar os dados do Chromium na sua Conta Google, <ph name="ACCOUNT_EMAIL" /></translation>

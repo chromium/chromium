@@ -261,7 +261,6 @@
 <translation id="1739364174357629566">Diweddaru'r Rhif Teithiwr Hysbys</translation>
 <translation id="1740468249224277719">Tapiwch ddwywaith i'w osod.</translation>
 <translation id="1740650426894359238">Newid i broffil arall</translation>
-<translation id="1741219894094057085">Oriawr Glyfar</translation>
 <translation id="1743244221910283364">Cael gwared ar newidiadau</translation>
 <translation id="1748975028205587434">Dewis eich ffeil</translation>
 <translation id="1749733017156547309">Mae angen cyfrinair</translation>
@@ -285,7 +284,6 @@
 <translation id="1810976980198522421">Canslo</translation>
 <translation id="1815941218935345331">Cyfrinair</translation>
 <translation id="1818687879307252150">{count,plural, =0{Nid oes unrhyw gyfrineiriau sydd wedi'u darganfod}=1{{count} cyfrinair sydd wedi'i ddarganfod}two{{count} gyfrinair sydd wedi'u darganfod}few{{count} cyfrinair sydd wedi'u darganfod}many{{count} cyfrinair sydd wedi'u darganfod}other{{count} cyfrinair sydd wedi'u darganfod}}</translation>
-<translation id="1819374301217551116">Olrhain prisiau a mewnwelediadau</translation>
 <translation id="1820195936249950412">Mewngofnodi gyda chyfrif dilys</translation>
 <translation id="1820259098641718022">Ychwanegwyd at y Rhestr Ddarllen</translation>
 <translation id="1823768272150895732">Ffont</translation>
@@ -415,7 +413,6 @@
 <translation id="2199562093267256223">Bydd hyn yn dileu'r grŵp o bob dyfais sydd wedi'i mewngofnodi i <ph name="USER_EMAIL" />.</translation>
 <translation id="2202084845446535117">Dim cyfrifon e-bost</translation>
 <translation id="2214453882118345682">Siopa, cyfieithu, a nodi'r hyn a welwch gyda'ch camera.</translation>
-<translation id="2216366330550244277">Mynd at dudalen cynnyrch</translation>
 <translation id="2218389616572918761">Gall gwefannau ofyn am eich meicroffon</translation>
 <translation id="2219935992754556187">Mae Chrome yn cadw'ch data sensitif yn ddiogel gyda Face ID</translation>
 <translation id="2220529011494928058">Adrodd am broblem</translation>
@@ -541,7 +538,6 @@
 <translation id="2584994295315085351">Agor tab newydd pan fyddwch yn dychwelyd i Chrome ar ôl 4 awr</translation>
 <translation id="2592917252160773942">Gall gwefannau ofyn am eich camera</translation>
 <translation id="2593272815202181319">Lled sefydlog</translation>
-<translation id="2601778637777010194">Olrhain gostyngiadau pris cynhyrchion</translation>
 <translation id="2602372807870028932">Mae hyn yn dileu gwybodaeth a ddewiswyd sydd wedi'i chadw ar y ddyfais hon</translation>
 <translation id="260378315836159338">Ar frig y sgrîn, tapiwch +</translation>
 <translation id="2612625650119459859">"Pinio tab" wedi'i gwblhau!</translation>
@@ -1195,7 +1191,6 @@
 <translation id="4719927025381752090">Cynnig cyfieithu</translation>
 <translation id="4720530280568305198">Mae eich dewis wedi agor mewn tab newydd</translation>
 <translation id="4720782081196952026">Lleihau maint y testun</translation>
-<translation id="472259426228234149">Pris $100 - $180</translation>
 <translation id="4735849923335729414">Mewngofnodi fel <ph name="EMAIL" />, rheolir gan eich sefydliad.</translation>
 <translation id="473775607612524610">Diweddaru</translation>
 <translation id="4738968082443868320">Google Drive</translation>
@@ -1338,7 +1333,6 @@
 <translation id="5116347248003317626">Peidio â chaniatáu i wefannau ddefnyddio eich lleoliad</translation>
 <translation id="5118462200606189584">Ychwanegu cyfrif…</translation>
 <translation id="5118764316110575523">Diffodd</translation>
-<translation id="5119329531859909472">I olrhain y cynnyrch, tapiwch Olrhain</translation>
 <translation id="5121618895923301719">Rydych yn olrhain y cynnyrch hwn yn barod. Mae'r dudalen hon wedi'i chadw yn <ph name="BEGIN_LINK" />Nodau Tudalen Dyfais Symudol<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Mae gennych nifer o broblemau cyfrinair.</translation>
 <translation id="5126335625961252141">eich llechen</translation>
@@ -1430,7 +1424,6 @@
 <translation id="5414763847370083940">Byddwch yn cael rhybudd os bydd y pris yn gostwng ar unrhyw wefan.</translation>
 <translation id="5415289094036440596">Nid oes modd rhannu codau pas</translation>
 <translation id="5416455648658732408">Symud i Grŵp Tabiau</translation>
-<translation id="5423269318075950257">Dilyn y Pris</translation>
 <translation id="542659109038405424">I</translation>
 <translation id="5429624150850059322">Pan fyddwch yn dychwelyd, mae tabiau'n niwlog nes i chi dapio i barhau</translation>
 <translation id="5431239785743546285">Tudalennau rydych wedi'u darllen</translation>
@@ -1968,7 +1961,6 @@ I barhau o'ch cyfrifiadur, newidiwch i <ph name="OTHER_EMAIL" />. Byddwch yn cae
 <translation id="6989636517316575338">Gofyn am unrhyw dudalen</translation>
 <translation id="6990519590575500580">Facetime</translation>
 <translation id="6998236305642926573">Pob Tasg</translation>
-<translation id="6998251471716094661">Olrhain prisiau cynhyrchion a chael rhybuddion pan fydd y pris yn gostwng ar unrhyw wefan</translation>
 <translation id="7004032350256606903">Mae eich sefydliad yn gofyn i chi bori'n breifat.
 <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Gwneud yn ddiofyn yn y gosodiadau…</translation>
@@ -1992,7 +1984,6 @@ I barhau o'ch cyfrifiadur, newidiwch i <ph name="OTHER_EMAIL" />. Byddwch yn cae
 <translation id="7082853213442715471">Pan gaiff ei droi ymlaen, bydd rhai technolegau gwe yn cael eu rhwystro, a allai achosi i rai gwefannau lwytho'n arafach neu beidio â gweithredu'n gywir.</translation>
 <translation id="7091023926159231962">{count,plural, =1{Methu mewnforio {count} cyfrinair}zero{Methu mewnforio {count} cyfrineiriau}two{Methu mewnforio {count} gyfrinair}few{Methu mewnforio {count} chyfrinair}many{Methu mewnforio {count} chyfrinair}other{Methu mewnforio {count} cyfrinair}}</translation>
 <translation id="7095110968493193530">I Reolwr Cyfrineiriau Google ar gyfer <ph name="EMAIL" /></translation>
-<translation id="7097046145876891318">Yn y bar cyfeiriad, tapiwch hanes prisiau i weld newidiadau pris dros amser</translation>
 <translation id="7102005569666697658">Wrthi'n lawrlwytho… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Dewislen → Gosodiadau → Dulliau talu</translation>
 <translation id="7108338896283013870">Cuddio</translation>

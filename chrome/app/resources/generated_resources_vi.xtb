@@ -94,7 +94,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1090126737595388931">Không có ứng dụng nền nào đang chạy</translation>
 <translation id="109038914521989341">Vui lòng nhập lý do bạn sao chép dữ liệu này:</translation>
 <translation id="1094158807129647987">Hỏi về "<ph name="SELECTION" />"</translation>
-<translation id="1095398697303758108">Nhấn Ctrl hai lần để dùng tính năng tự động điền nâng cao</translation>
 <translation id="1095879482467973146">Trình quản lý mật khẩu của Google trên web</translation>
 <translation id="1097016918605049747">Không thể dịch trang này</translation>
 <translation id="1099962274138857708">Hình ảnh được sao chép từ <ph name="DEVICE_NAME" /></translation>
@@ -582,6 +581,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Loại bỏ thẻ và xoá nhóm?}=1{Loại bỏ các thẻ và xoá nhóm?}one{Remove tabs and delete groups?}other{Loại bỏ các thẻ và xoá các nhóm?}}</translation>
 <translation id="1637765355341780467">Đã xảy ra lỗi khi mở hồ sơ của bạn. Một số tính năng có thể không khả dụng.</translation>
 <translation id="1639239467298939599">Đang tải</translation>
+<translation id="1640672724030957280">Đang tải xuống...</translation>
 <translation id="1641113438599504367">Duyệt web an toàn</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 mật khẩu khác không được nhập vì định dạng không chính xác}one{{NUM_PASSWORDS} other passwords weren't imported because they're formatted incorrectly}other{{NUM_PASSWORDS} mật khẩu khác không được nhập vì định dạng không chính xác}}</translation>
 <translation id="1642299742557467312">Tệp này có thể gây hại cho thiết bị của bạn</translation>
@@ -1811,7 +1811,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="2988328607561082373">Bạn không sử dụng lại bất kỳ mật khẩu nào</translation>
 <translation id="2989523299700148168">Đã truy cập gần đây</translation>
 <translation id="2989786307324390836">DER-mã hóa nhị phân, chứng chỉ đơn</translation>
-<translation id="2990500505358145117">Chỉnh sửa lối tắt của tính năng tự động điền nâng cao</translation>
 <translation id="2990583317361835189">Không cho phép các trang web sử dụng cảm biến chuyển động</translation>
 <translation id="2991182900092497283">Vui lòng nhập lý do bạn dán dữ liệu này:</translation>
 <translation id="2992754757708650257">Rời khỏi trang web và kết thúc nhiệm vụ?</translation>
@@ -2066,7 +2065,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="3244294424315804309">Tiếp tục tắt tiếng</translation>
 <translation id="3247649647204519958">Tại đây, bạn có thể xem và quản lý các quyền của tiện ích đối với trang web bạn đang truy cập</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Lỗi mạng</translation>
-<translation id="3248957351402065497">Lối tắt tuỳ chỉnh cho tính năng tự động điền nâng cao</translation>
 <translation id="3249558306861350254">Nhấp vào <ph name="BEGIN_BOLD" />Đặt làm mặc định<ph name="END_BOLD" /> trong phần cài đặt Windows.</translation>
 <translation id="3250374026663843838">Quản lý kỹ năng</translation>
 <translation id="3251759466064201842">&lt;Không Thuộc Chứng chỉ&gt;</translation>
@@ -2287,6 +2285,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="3481268647794498892">Sẽ mở trong <ph name="ALTERNATIVE_BROWSER_NAME" /> sau <ph name="COUNTDOWN_SECONDS" /> giây</translation>
 <translation id="348247802372410699">Chọn một kiểu</translation>
 <translation id="3482573964681964096">Quản lý các chứng chỉ được nhập từ Windows</translation>
+<translation id="348268549820508141">Nhận dạng lời nói</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> có thể xem các tệp sau</translation>
 <translation id="3486380520195228369">Ẩn cho đến khi trang được làm mới</translation>
 <translation id="3487007233252413104">chức năng ẩn danh</translation>
@@ -2657,7 +2656,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="3826086052025847742">Nhật ký ChromeOS Flex</translation>
 <translation id="3827774300009121996">&amp;Toàn Màn hình</translation>
 <translation id="3828029223314399057">Tìm dấu trang</translation>
-<translation id="3828454092958722155">Xoá lối tắt của tính năng tự động điền nâng cao</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Mức sử dụng bộ nhớ cao – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Sử dụng khoá truy cập khác</translation>
 <translation id="3838085852053358637">Không tải được tiện ích</translation>
@@ -3738,7 +3736,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="5060419232449737386">Cài đặt phụ đề</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Thư mục này chứa một dấu trang. Bạn có chắc chắn muốn xóa thư mục không?}one{This folder contains # bookmarks. Are you sure you want to delete it?}other{Thư mục này chứa # dấu trang. Bạn có chắc chắn muốn xóa thư mục không?}}</translation>
 <translation id="5061531353537614467">Lãnh nguyên</translation>
-<translation id="5061781067616989032">Thiết lập phím tắt của riêng bạn</translation>
 <translation id="5062863364865466276">Chuyển động</translation>
 <translation id="5063480226653192405">Mức sử dụng</translation>
 <translation id="5064921774605267982">Mở hồ sơ <ph name="PROFILE_NAME" />. Hồ sơ này do cha mẹ của bạn quản lý.</translation>
@@ -5014,7 +5011,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="6540488083026747005">Bạn đã cho phép cookie của bên thứ ba trên trang web này</translation>
 <translation id="6541638731489116978">Trang web này đã bị chặn sử dụng cảm biến chuyển động.</translation>
 <translation id="6542417422899025860">Tự động xoá hầu hết thông tin cá nhân</translation>
-<translation id="6548240707386871455">Lối tắt của tính năng tự động điền nâng cao</translation>
 <translation id="654871471440386944">Bật tính năng duyệt web có con nháy?</translation>
 <translation id="6549689063733911810">Gần đây</translation>
 <translation id="6550675742724504774">Tùy chọn</translation>
@@ -5180,7 +5176,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6710172959248731469">Cài đặt các dịch vụ của Google</translation>
 <translation id="6710394144992407503">Kiểm tra lỗi chính tả khi bạn nhập văn bản trên các trang web</translation>
 <translation id="6711236403841768371">Trước <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Nhấn ⌘ hai lần để dùng tính năng tự động điền nâng cao</translation>
 <translation id="6712943853047024245">Bạn đã lưu mật khẩu cho tên người dùng này trên <ph name="WEBSITE" /></translation>
 <translation id="6713668088933662563">Không bao giờ đề xuất dịch những ngôn ngữ này</translation>
 <translation id="6714871567554212732">Xem thêm thông tin về <ph name="GROUP_NAME" /></translation>
@@ -6101,7 +6096,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="7706742200777909964">Đặt các trang cạnh nhau trong cùng một thẻ để bạn có thể dễ dàng so sánh các lựa chọn và nhiều nội dung khác</translation>
 <translation id="7707108266051544351">Trang web này đã bị chặn sử dụng cảm biến chuyển động.</translation>
 <translation id="7709152031285164251">Không thành công - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Xoá phím tắt tuỳ chỉnh của tính năng tự động điền nâng cao</translation>
 <translation id="7710568461918838723">&amp;Truyền...</translation>
 <translation id="7712739869553853093">Hộp thoại Xem trước bản in</translation>
 <translation id="7714464543167945231">Chứng chỉ</translation>
@@ -6461,7 +6455,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="810185532889603849">Màu tùy chỉnh</translation>
 <translation id="8103484184517840583">Thoát Chế độ AI</translation>
 <translation id="810362914482827094">Tìm kiếm khoá đăng nhập</translation>
-<translation id="8104388155778519213">Chia sẻ nội dung trên màn hình với Google Ống kính</translation>
 <translation id="8104412594956510627">Để truy cập vào nhật ký của bạn trên <ph name="DEVICE" />, hãy đồng bộ hoá nhật ký. Bạn có thể dừng đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
 <translation id="8104778744208707085">Cần kiểm tra lại</translation>
 <translation id="8105273883928376822">Vui lòng đăng nhập để tiếp tục.</translation>
@@ -6559,7 +6552,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8214489666383623925">Mở Tệp...</translation>
 <translation id="8214771296778317256">Chọn giao diện thẻ bạn muốn tại đây</translation>
 <translation id="8217399928341212914">Tiếp tục chặn tự động tải nhiều tệp xuống</translation>
-<translation id="8218411859495801458">Chỉnh sửa phím tắt tuỳ chỉnh của tính năng tự động điền nâng cao</translation>
 <translation id="8221358554841691213">Kiểu tiêu điểm trung bình</translation>
 <translation id="8221942262855134126">Quản lý mật khẩu</translation>
 <translation id="8222112516148944758">Các nhóm thẻ sẽ tự động lưu và cập nhật trên mọi thiết bị của bạn.</translation>
@@ -6832,7 +6824,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8512476990829870887">Kết thúc quá trình</translation>
 <translation id="851263357009351303">Luôn cho phép <ph name="HOST" /> hiển thị hình ảnh</translation>
 <translation id="8513357934662532537">Để nhập mật khẩu vào <ph name="BRAND" /> cho <ph name="USER_EMAIL" />, hãy chọn một tệp CSV.</translation>
-<translation id="8514257511170433540">Sử dụng phím tắt mặc định khi điền vào biểu mẫu</translation>
 <translation id="8514746246728959655">Thử một khóa bảo mật khác</translation>
 <translation id="8514828975162859845">Bánh kẹo mút</translation>
 <translation id="8514955299594277296">Không cho phép các trang web lưu dữ liệu trên thiết bị của bạn (không khuyến nghị)</translation>

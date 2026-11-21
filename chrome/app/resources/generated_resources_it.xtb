@@ -94,7 +94,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1090126737595388931">Nessuna applicazione in esecuzione in background</translation>
 <translation id="109038914521989341">Indica il motivo per cui desideri copiare questi dati:</translation>
 <translation id="1094158807129647987">Chiedi informazioni su "<ph name="SELECTION" />"</translation>
-<translation id="1095398697303758108">Premi Ctrl due volte per la compilazione automatica avanzata</translation>
 <translation id="1095879482467973146">Gestore delle password di Google sul web</translation>
 <translation id="1097016918605049747">Impossibile tradurre questa pagina</translation>
 <translation id="1099962274138857708">Immagine copiata da <ph name="DEVICE_NAME" /></translation>
@@ -581,6 +580,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Rimuovere scheda ed eliminare gruppo?}=1{Rimuovere scheda ed eliminare gruppo?}other{Rimuovere le schede ed eliminare i gruppi?}}</translation>
 <translation id="1637765355341780467">Si è verificato un errore durante l'apertura del profilo. Alcune funzioni potrebbero non essere disponibili.</translation>
 <translation id="1639239467298939599">Caricamento</translation>
+<translation id="1640672724030957280">Download in corso...</translation>
 <translation id="1641113438599504367">Navigazione sicura</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Non è stata importata 1 altra password perché non è formattata correttamente}other{Non sono state importate {NUM_PASSWORDS} altre password perché non sono formattate correttamente}}</translation>
 <translation id="1642299742557467312">Questo file potrebbe danneggiare il tuo dispositivo</translation>
@@ -1797,7 +1797,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="2988328607561082373">Non stai riutilizzando alcuna password</translation>
 <translation id="2989523299700148168">Visitati di recente</translation>
 <translation id="2989786307324390836">Binario codificato DER, singolo certificato</translation>
-<translation id="2990500505358145117">Modifica la scorciatoia per la compilazione automatica avanzata</translation>
 <translation id="2990583317361835189">Non consentire ai siti di usare i sensori di movimento</translation>
 <translation id="2991182900092497283">Inserisci un motivo per voler incollare questi dati:</translation>
 <translation id="2992754757708650257">Uscire dal sito e terminare l'attività?</translation>
@@ -2052,7 +2051,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="3244294424315804309">Continua a tenere l'audio disattivato</translation>
 <translation id="3247649647204519958">Qui puoi visualizzare e gestire le autorizzazioni delle estensioni per il sito in cui ti trovi</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Errore di rete</translation>
-<translation id="3248957351402065497">Scorciatoia personalizzata per la compilazione automatica avanzata</translation>
 <translation id="3249558306861350254">Fai clic su <ph name="BEGIN_BOLD" />Imposta come predefinito<ph name="END_BOLD" /> nelle impostazioni di Windows.</translation>
 <translation id="3250374026663843838">Gestisci la competenza</translation>
 <translation id="3251759466064201842">&lt;Non parte del certificato&gt;</translation>
@@ -2273,6 +2271,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="3481268647794498892">Apertura in <ph name="ALTERNATIVE_BROWSER_NAME" /> tra <ph name="COUNTDOWN_SECONDS" /> secondi</translation>
 <translation id="348247802372410699">Scegli uno stile</translation>
 <translation id="3482573964681964096">Gestisci i certificati importati da Windows</translation>
+<translation id="348268549820508141">Riconoscimento vocale</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> può visualizzare i seguenti file</translation>
 <translation id="3486380520195228369">Nascosto fino all'aggiornamento della pagina</translation>
 <translation id="3487007233252413104">funzione anonima</translation>
@@ -2643,7 +2642,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="3826086052025847742">Log ChromeOS Flex</translation>
 <translation id="3827774300009121996">&amp;Schermo intero</translation>
 <translation id="3828029223314399057">Cerca tra i preferiti</translation>
-<translation id="3828454092958722155">Cancella scorciatoia per la compilazione automatica avanzata</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Memoria utilizzata elevata - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Usa una passkey diversa</translation>
 <translation id="3838085852053358637">Caricamento estensione non riuscito</translation>
@@ -3723,7 +3721,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="5060419232449737386">Impostazioni sottotitoli codificati</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{La cartella contiene un preferito. Eliminarla?}other{La cartella contiene # preferiti. Eliminarla?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
-<translation id="5061781067616989032">Configura la tua scorciatoia da tastiera</translation>
 <translation id="5062863364865466276">Movimento</translation>
 <translation id="5063480226653192405">Utilizzo</translation>
 <translation id="5064921774605267982">Apri il profilo <ph name="PROFILE_NAME" />. Questo profilo è gestito da un tuo genitore.</translation>
@@ -4996,7 +4993,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="6540488083026747005">Hai consentito i cookie di terze parti su questo sito</translation>
 <translation id="6541638731489116978">A questo sito è stato impedito l'accesso ai sensori di movimento.</translation>
 <translation id="6542417422899025860">Rimuovi automaticamente la maggior parte delle informazioni personali</translation>
-<translation id="6548240707386871455">Scorciatoia per la compilazione automatica avanzata</translation>
 <translation id="654871471440386944">Attivare navigazione con cursore?</translation>
 <translation id="6549689063733911810">Recenti</translation>
 <translation id="6550675742724504774">Opzioni</translation>
@@ -5160,7 +5156,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6710172959248731469">Impostazioni dei servizi Google</translation>
 <translation id="6710394144992407503">Verifica la presenza di errori ortografici durante la digitazione di testo nelle pagine web.</translation>
 <translation id="6711236403841768371">Prima del giorno <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Premi ⌘ due volte per la compilazione automatica avanzata</translation>
 <translation id="6712943853047024245">Hai già salvato una password con questo nome utente per <ph name="WEBSITE" /></translation>
 <translation id="6713668088933662563">Non proporre mai di tradurre queste lingue</translation>
 <translation id="6714871567554212732">Visualizza altri dettagli su <ph name="GROUP_NAME" /></translation>
@@ -6081,7 +6076,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="7706742200777909964">Affianca le pagine nella stessa scheda per confrontare facilmente le opzioni e altro ancora</translation>
 <translation id="7707108266051544351">A questo sito è stato impedito l'uso dei sensori di movimento.</translation>
 <translation id="7709152031285164251">Operazione non riuscita. <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Cancella scorciatoia personalizzata per la compilazione automatica avanzata</translation>
 <translation id="7710568461918838723">&amp;Trasmetti...</translation>
 <translation id="7712739869553853093">Finestra di dialogo di anteprima di stampa</translation>
 <translation id="7714464543167945231">Certificato</translation>
@@ -6441,7 +6435,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="810185532889603849">Colore personalizzato</translation>
 <translation id="8103484184517840583">Esci da AI Mode</translation>
 <translation id="810362914482827094">Cerca nelle passkey</translation>
-<translation id="8104388155778519213">Condividi i contenuti sullo schermo con Google Lens</translation>
 <translation id="8104412594956510627">Per recuperare la cronologia dal <ph name="DEVICE" />, sincronizza la cronologia. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="8104778744208707085">Richiede la tua attenzione</translation>
 <translation id="8105273883928376822">Accedi per continuare.</translation>
@@ -6539,7 +6532,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8214489666383623925">Apri file...</translation>
 <translation id="8214771296778317256">Scegli lo stile della scheda che preferisci qui</translation>
 <translation id="8217399928341212914">Continua a bloccare download automatici di più file</translation>
-<translation id="8218411859495801458">Modifica la scorciatoia personalizzata per la compilazione automatica avanzata</translation>
 <translation id="8221358554841691213">Stile selezione media</translation>
 <translation id="8221942262855134126">Gestisci password</translation>
 <translation id="8222112516148944758">I gruppi di schede vengono automaticamente salvati e aggiornati su tutti i tuoi dispositivi</translation>
@@ -6812,7 +6804,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8512476990829870887">Termina processo</translation>
 <translation id="851263357009351303">Consenti sempre la visualizzazione di immagini in <ph name="HOST" /></translation>
 <translation id="8513357934662532537">Seleziona un file CSV per importare password in <ph name="BRAND" /> per <ph name="USER_EMAIL" /></translation>
-<translation id="8514257511170433540">Utilizza la scorciatoia da tastiera predefinita durante la compilazione dei moduli</translation>
 <translation id="8514746246728959655">Prova a usare un altro token di sicurezza</translation>
 <translation id="8514828975162859845">Cake pop</translation>
 <translation id="8514955299594277296">Non consentire ai siti di salvare dati sul dispositivo (opzione non consigliata)</translation>

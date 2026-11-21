@@ -579,7 +579,6 @@
 <translation id="7213407614656404070">ใช้ Chromium ทุกครั้งที่คุณคลิกลิงก์ในข้อความ เอกสาร และแอปอื่นๆ</translation>
 <translation id="7216228761061470870">เมื่อคุณใช้ฟีเจอร์ค้นหารูปภาพบนเดสก์ท็อป ระบบจะส่งชื่อหน้า, URL และเนื้อหา รวมถึง PDF ไปยังเซิร์ฟเวอร์</translation>
 <translation id="7223968959479464213">ตัวจัดการงาน - Chromium</translation>
-<translation id="7226331818892775989">ถามเกี่ยวกับเนื้อหานอก Chromium เช่น แอปหรือไฟล์อื่นๆ</translation>
 <translation id="7227958669698166857"><ph name="EXISTING_USER" /> ลงชื่อเข้าใช้อยู่แล้ว หากต้องการแยกการท่องเว็บของคุณไว้ต่างหาก ให้ลงชื่อเข้าใช้ Chromium ในโปรไฟล์ของคุณเองด้วย <ph name="USER_EMAIL_ADDRESS" /> นอกจากนี้ คุณยังรับข้อมูลที่บันทึกไว้และข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่องได้ด้วย</translation>
 <translation id="7252276985725323153">เริ่มท่องเว็บได้ทันที: ตอนนี้ระบบสามารถเปิด Chromium เมื่อ Windows เริ่มทำงานได้แล้ว</translation>
 <translation id="7274695763216404502">ปักหมุดแล้ว ใช้การค้นหารูปภาพอีกครั้งจากแถบเครื่องมือ</translation>
@@ -696,7 +695,6 @@ Chromium ไม่สามารถกู้คืนการตั้งค�
 <translation id="8310603974518734211">คิวอาร์โค้ดสำหรับลงชื่อเข้าใช้ Chromium <ph name="USER_NAME" /></translation>
 <translation id="8313851650939857356">ข้อผิดพลาดในการเริ่มต้น: <ph name="STARTUP_ERROR" /></translation>
 <translation id="8318772038038596122">องค์กรจะปิด Chromium เมื่อไม่มีการใช้งานเป็นเวลา <ph name="TIMEOUT_DURATION" /></translation>
-<translation id="8321888067342493336">บันทึกเป็นรูปภาพ</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> ใช้ Chromium อยู่ก่อนหน้านี้</translation>
 <translation id="8351551329754447960">เปิดใช้ทักษะใน Chromium</translation>
 <translation id="8359544530202147897">อัปเดต Chromium เพื่อใช้ข้อมูล Chromium ในบัญชี Google (<ph name="ACCOUNT_EMAIL" />) ของคุณต่อไป</translation>

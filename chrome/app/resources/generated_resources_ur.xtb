@@ -94,7 +94,6 @@
 <translation id="1090126737595388931">پس منظر کی کوئی ایپس نہیں چل رہی ہیں</translation>
 <translation id="109038914521989341">براہ کرم اس ڈیٹا کو کاپی کرنے کی وجہ درج کریں:</translation>
 <translation id="1094158807129647987">‫"<ph name="SELECTION" />" کے بارے میں پوچھیں</translation>
-<translation id="1095398697303758108">‏بہتر کردہ آٹو فل کے لیے Ctrl کو دو بار دبائیں</translation>
 <translation id="1095879482467973146">‏ویب پر موجود Google پاس ورڈ مینیجر</translation>
 <translation id="1097016918605049747">اس صفحہ کا ترجمہ نہیں ہو سکا</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> سے تصویر کاپی کی گئی</translation>
@@ -581,6 +580,7 @@
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{ٹیب کو ہٹائیں اور گروپ کو حذف کریں؟}=1{ٹیبز کو ہٹائیں اور گروپ کو حذف کریں؟}other{ٹیبز کو ہٹائیں اور گروپس کو حذف کریں؟}}</translation>
 <translation id="1637765355341780467">آپ کے پروفائل کو کھولتے وقت کچھ غلط ہوگیا۔ کچھ خصوصیات غیر دستیاب ہو سکتی ہیں۔</translation>
 <translation id="1639239467298939599">لوڈ ہو رہی ہے</translation>
+<translation id="1640672724030957280">ڈاؤن لوڈ ہو رہی ہے…</translation>
 <translation id="1641113438599504367">محفوظ براؤزنگ</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 دوسرا پاس ورڈ درآمد نہیں کیا گیا کیونکہ اسے غلط طریقے سے فارمیٹ کیا گیا ہے}other{{NUM_PASSWORDS} دوسرے پاس ورڈز درآمد نہیں کیے گئے کیونکہ وہ غلط طریقے سے فارمیٹ کیے گئے ہیں}}</translation>
 <translation id="1642299742557467312">یہ فائل آپ کے آلے کو نقصان پہنچا سکتی ہے</translation>
@@ -1798,7 +1798,6 @@
 <translation id="2988328607561082373">آپ کوئی پاس ورڈ دوبارہ استعمال نہیں کر رہے ہیں</translation>
 <translation id="2989523299700148168">حال ہی میں ملاحظہ کردہ</translation>
 <translation id="2989786307324390836">‏DER ان کوڈ کردہ بائنری، واحد سرٹیفیکیٹ</translation>
-<translation id="2990500505358145117">بہتر کردہ آٹو فل شارٹ کٹ میں ترمیم کریں</translation>
 <translation id="2990583317361835189">سائٹس کو موشن سینسرز کا استعمال کرنے کی اجازت نہ دیں</translation>
 <translation id="2991182900092497283">براہ کرم اس ڈیٹا کو پیسٹ کرنے کی وجہ درج کریں:</translation>
 <translation id="2992754757708650257">سائٹ چھوڑیں اور ٹاسک ختم کریں؟</translation>
@@ -2051,7 +2050,6 @@
 <translation id="3244294424315804309">آواز بند کرنا جاری رکھیں</translation>
 <translation id="3247649647204519958">یہاں سے، آپ جس سائٹ پر ہیں اس کے لیے ایکسٹینشن کی اجازتیں دیکھ اور ان کا نظم کر سکتے ہیں</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - نیٹ ورک کی خرابی</translation>
-<translation id="3248957351402065497">بہتر کردہ آٹو فل کے لیے حسب ضرورت شارٹ کٹ</translation>
 <translation id="3249558306861350254">اپنی ونڈو کی ترتیبات میں <ph name="BEGIN_BOLD" />ڈیفالٹ سیٹ کریں<ph name="END_BOLD" /> پر کلک کریں۔</translation>
 <translation id="3250374026663843838">اپنی مہارت کا نظم کریں</translation>
 <translation id="3251759466064201842">&lt;سرٹیفکیٹ کا حصہ نہیں ہے&gt;</translation>
@@ -2272,6 +2270,7 @@
 <translation id="3481268647794498892"><ph name="ALTERNATIVE_BROWSER_NAME" /> میں <ph name="COUNTDOWN_SECONDS" /> سیکنڈ میں کھل رہا ہے</translation>
 <translation id="348247802372410699">اسٹائل منتخب کریں</translation>
 <translation id="3482573964681964096">‏‫Windows سے درآمد شدہ سرٹیفکیٹس کا نظم کریں</translation>
+<translation id="348268549820508141">اسپیچ شناخت</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> درج ذیل فائلز کو دیکھ سکتا ہے</translation>
 <translation id="3486380520195228369">صفحہ ریفریش ہونے تک پوشیدہ ہے</translation>
 <translation id="3487007233252413104">گمنام فنکشن</translation>
@@ -2642,7 +2641,6 @@
 <translation id="3826086052025847742">‏ChromeOS Flex لاگز</translation>
 <translation id="3827774300009121996">&amp;پوری اسکرین</translation>
 <translation id="3828029223314399057">بُک مارکس تلاش کریں</translation>
-<translation id="3828454092958722155">بہتر کردہ آٹو فل شارٹ کٹ صاف کریں</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - زیادہ میموری کا استعمال - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">مختلف پاس کی استعمال کریں</translation>
 <translation id="3838085852053358637">ایکسٹیشن لوڈ کرنے میں ناکام</translation>
@@ -3722,7 +3720,6 @@
 <translation id="5060419232449737386">کیپشن کی ترتیبات</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{اس فولڈر میں ایک بُک مارک شامل ہے۔ کیا آپ واقعی اسے حذف کرنا چاہتے ہیں؟}other{اس فولڈر میں # بک مارکس ہیں۔ کیا آپ واقعی اسے حذف کرنا چاہتے ہیں؟}}</translation>
 <translation id="5061531353537614467">ٹٔنڈرا</translation>
-<translation id="5061781067616989032">اپنا کی بورڈ شارٹ کٹ سیٹ اپ کریں</translation>
 <translation id="5062863364865466276">حرکت</translation>
 <translation id="5063480226653192405">استعمال</translation>
 <translation id="5064921774605267982">‫<ph name="PROFILE_NAME" /> پروفائل کھولیں۔ یہ پروفائل آپ کے والد/والدہ کے زیر انتظام ہے۔</translation>
@@ -4997,7 +4994,6 @@
 <translation id="6540488083026747005">آپ نے اس سائٹ پر فریق ثالث کوکیز کی اجازت دی ہے</translation>
 <translation id="6541638731489116978">اس سائٹ کو آپ کے موشن سینسرز تک رسائی حاصل کرنے سے مسدود کر دیا گیا ہے۔</translation>
 <translation id="6542417422899025860">زیادہ تر ذاتی معلومات کو خودکار طور پر ہٹا دیں</translation>
-<translation id="6548240707386871455">بہتر کردہ آٹو فل شارٹ کٹ</translation>
 <translation id="654871471440386944">کیرٹ براؤزنگ آن کریں؟</translation>
 <translation id="6549689063733911810">حالیہ</translation>
 <translation id="6550675742724504774">اختیارات</translation>
@@ -5161,7 +5157,6 @@
 <translation id="6710172959248731469">‏‫Google سروسز کی ترتیبات</translation>
 <translation id="6710394144992407503">آپ ویب صفحات پر ٹیکسٹ ٹائپ کرتے وقت املا کی غلطیاں چیک کریں</translation>
 <translation id="6711236403841768371">‫<ph name="END_DATE" /> سے پہلے</translation>
-<translation id="6711569175139833669">بہتر کردہ آٹو فل کے لیے ⌘ کو دو بار دبائیں</translation>
 <translation id="6712943853047024245">آپ نے پہلے ہی <ph name="WEBSITE" /> کے لیے اس صارف نام کے ساتھ پاس ورڈ محفوظ کیا ہے</translation>
 <translation id="6713668088933662563">ان زبانوں کو ترجمہ کرنے کی کبھی بھی پیشکش نہ کریں</translation>
 <translation id="6714871567554212732"><ph name="GROUP_NAME" /> سے متعلق مزید تفصیلات دیکھیں</translation>
@@ -6081,7 +6076,6 @@
 <translation id="7706742200777909964">ایک ہی ٹیب میں صفحات کو ساتھ ساتھ رکھیں تاکہ آپ آسانی سے اختیارات کا موازنہ وغیرہ کر سکیں</translation>
 <translation id="7707108266051544351">اس سائٹ کو موشن سینسرز استعمال کرنے سے مسدود کر دیا گيا ہے۔</translation>
 <translation id="7709152031285164251">ناکام ہوگیا - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">بہتر کردہ آٹو فل کے لیے حسب ضرورت شارٹ کٹ صاف کریں</translation>
 <translation id="7710568461918838723">&amp;کاسٹ کریں…</translation>
 <translation id="7712739869553853093">پرنٹ کے پیش منظر کا ڈائیلاگ</translation>
 <translation id="7714464543167945231">سرٹیفیکیٹ</translation>
@@ -6441,7 +6435,6 @@
 <translation id="810185532889603849">حسب ضرورت رنگ</translation>
 <translation id="8103484184517840583">‏‫AI وضع سے باہر نکلیں</translation>
 <translation id="810362914482827094">پاس کیز تلاش کریں</translation>
-<translation id="8104388155778519213">‏‫Google لینز کے ساتھ جو کچھ آپ کی اسکرین پر ہے اس کا اشتراک کریں</translation>
 <translation id="8104412594956510627">‏‫<ph name="DEVICE" /> سے اپنی سرگزشت حاصل کرنے کے لیے، سرگزشت کو مطابقت پذیر بنائیں۔ آپ ترتیبات میں کسی بھی وقت سنکنگ کو روک سکتے ہیں۔ ‫Google آپ کی سرگزشت کی بنیاد پر تلاش اور دیگر سروسز کو ذاتی نوعیت کا بنا سکتا ہے۔</translation>
 <translation id="8104778744208707085">آپ کی توجہ درکار ہے</translation>
 <translation id="8105273883928376822">جاری رکھنے کیلئے براہ کرم سائن ان کریں۔</translation>
@@ -6539,7 +6532,6 @@
 <translation id="8214489666383623925">فائل کھولیں…</translation>
 <translation id="8214771296778317256">یہاں اپنا ترجیحی ٹیب اسٹائل منتخب کریں</translation>
 <translation id="8217399928341212914">متعدد فائلوں کے خودکار ڈاؤن لوڈز کو مسدود کرنا جاری رکھیں</translation>
-<translation id="8218411859495801458">بہتر کردہ آٹو فل کے لیے حسب ضرورت شارٹ کٹ میں ترمیم کریں</translation>
 <translation id="8221358554841691213">میڈیم فوکس اسٹائل</translation>
 <translation id="8221942262855134126">پاس ورڈ کا نظم کریں</translation>
 <translation id="8222112516148944758">آپ کے ٹیب گروپس آپ کے تمام آلات پر خودکار طور پر محفوظ ہو جاتے ہیں، نیز اپ ڈیٹ بھی ہو جاتے ہیں</translation>
@@ -6812,7 +6804,6 @@
 <translation id="8512476990829870887">کارروائی ختم کریں</translation>
 <translation id="851263357009351303"><ph name="HOST" /> کو تصاویر دکھانے کی ہمیشہ اجازت دیں</translation>
 <translation id="8513357934662532537">‏<ph name="USER_EMAIL" /> کے لیے <ph name="BRAND" /> میں پاس ورڈز درآمد کرنے کی خاطر، ایک CSV فائل منتخب کریں۔</translation>
-<translation id="8514257511170433540">فارمز پُر کرتے وقت ڈیفالٹ کی بورڈ شارٹ کٹ استعمال کریں</translation>
 <translation id="8514746246728959655">کوئی مختلف سیکیورٹی کلید آزمائیں</translation>
 <translation id="8514828975162859845">کیک پاپس</translation>
 <translation id="8514955299594277296">سائٹس کو اپنے آلے پر ڈیٹا محفوظ کرنے کی اجازت نہ دیں (تجویز نہیں کی جاتی ہے)</translation>

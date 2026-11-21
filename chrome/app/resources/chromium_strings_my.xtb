@@ -582,7 +582,6 @@
 <translation id="7213407614656404070">မက်ဆေ့ဂျ်၊ မှတ်တမ်းနှင့် အခြားအက်ပ်တို့ရှိ လင့်ခ်များကို နှိပ်သည့်အခါတိုင်း Chromium ကို အသုံးပြုပါ</translation>
 <translation id="7216228761061470870">ဒက်စ်တော့တွင် ‘ပုံဖြင့်ရှာဖွေမှု’ သုံးသောအခါ PDF များအပါအဝင် စာမျက်နှာခေါင်းစဉ်၊ URL နှင့် အကြောင်းအရာတို့ကို ဆာဗာသို့ ပို့သည်</translation>
 <translation id="7223968959479464213">လုပ်ငန်းမန်နေဂျာ - Chromium</translation>
-<translation id="7226331818892775989">အခြားအက်ပ် (သို့) ဖိုင်များကဲ့သို့ Chromium ပြင်ပရှိ အကြောင်းအရာအကြောင်း မေးနိုင်သည်</translation>
 <translation id="7227958669698166857"><ph name="EXISTING_USER" /> သည် လက်မှတ်ထိုးဝင်ပြီးဖြစ်သည်။ သင်၏ ဘရောက်စ်လုပ်ခြင်းကို ခွဲခြားထားရန်အတွက် သင့်ကိုယ်ပိုင်ပရိုဖိုင်တွင် <ph name="USER_EMAIL_ADDRESS" /> အဖြစ် Chromium သို့ လက်မှတ်ထိုးဝင်ပါ။ သင့်စက်ပစ္စည်းအားလုံးတွင် သိမ်းထားသော အချက်အလက်နှင့် အခြားအရာများကိုလည်း ရရှိပါမည်။</translation>
 <translation id="7252276985725323153">ချက်ချင်း စတင်ဘရောက်စ်လုပ်ပါ- Windows စတင်သောအခါ Chromium ကို စတင်နိုင်ပါပြီ။</translation>
 <translation id="7274695763216404502">ပင်ထိုးထားသည်။ ‘ပုံဖြင့်ရှာဖွေမှု’ ကို ကိရိယာဘားမှတစ်ဆင့် ထပ်သုံးနိုင်သည်</translation>
@@ -698,7 +697,6 @@ Chromium သည်သင့်ကြိုတင်ချိန်ညှိခ�
 <translation id="8310603974518734211"><ph name="USER_NAME" /> အဖြစ် Chromium သို့ လက်မှတ်ထိုးဝင်ရန် QR ကုဒ်</translation>
 <translation id="8313851650939857356">စတင်မှုဆိုင်ရာ အမှားအယွင်း- <ph name="STARTUP_ERROR" />။</translation>
 <translation id="8318772038038596122">Chromium ကို <ph name="TIMEOUT_DURATION" /> ကြာ အသုံးမပြုဘဲထားပါက သင့်အဖွဲ့အစည်းသည် ၎င်းကို ပိတ်ပါသည်။</translation>
-<translation id="8321888067342493336">ပုံအဖြစ် သိမ်းရန်</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> သည် ယခင်က Chromium ကို အသုံးပြုခဲ့သည်</translation>
 <translation id="8351551329754447960">Chromium ရှိ စွမ်းရည်များ ဖွင့်ရန်</translation>
 <translation id="8359544530202147897">သင်၏ Google Account <ph name="ACCOUNT_EMAIL" /> တွင် Chromium ဒေတာ ဆက်သုံးရန်အတွက် Chromium ကို အပ်ဒိတ်လုပ်ပါ</translation>

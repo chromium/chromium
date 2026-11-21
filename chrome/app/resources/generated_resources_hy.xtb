@@ -94,7 +94,6 @@
 <translation id="1090126737595388931">Հետնաշերտում աշխատող հավելվածներ չկան</translation>
 <translation id="109038914521989341">Նշեք, թե որն է այս տվյալները պատճենելու պատճառը՝</translation>
 <translation id="1094158807129647987">Հարց տալ «<ph name="SELECTION" />» թեմայով</translation>
-<translation id="1095398697303758108">Երկու անգամ սեղմեք Ctrl ստեղնը՝ բարելավված ինքնալրացման համար</translation>
 <translation id="1095879482467973146">Google գաղտնաբառերի կառավարչի վեբ տարբերակը</translation>
 <translation id="1097016918605049747">Չհաջողվեց թարգմանել այս էջը</translation>
 <translation id="1099962274138857708">Պատկերը պատճենվեց «<ph name="DEVICE_NAME" />» սարքից</translation>
@@ -581,6 +580,7 @@
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Հեռացնե՞լ ներդիրը և ջնջել խումբը}=1{Հեռացնե՞լ ներդիրները և ջնջել խումբը}one{Հեռացնե՞լ ներդիրները և ջնջել խումբը}other{Հեռացնե՞լ ներդիրները և ջնջել խմբերը}}</translation>
 <translation id="1637765355341780467">Պրոֆիլը բացելիս սխալ առաջացավ: Հնարավոր է՝ որոշ գործառույթներ անհասանելի լինեն:</translation>
 <translation id="1639239467298939599">Բեռնում</translation>
+<translation id="1640672724030957280">Ներբեռնում…</translation>
 <translation id="1641113438599504367">Անվտանգ դիտարկում</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 այլ գաղտնաբառ չի ներմուծվել, քանի որ այն սխալ կերպով է ֆորմատավորվել}one{{NUM_PASSWORDS} այլ գաղտնաբառ չի ներմուծվել, քանի որ այն սխալ կերպով է ֆորմատավորվել}other{{NUM_PASSWORDS} այլ գաղտնաբառ չի ներմուծվել, քանի որ դրանք սխալ կերպով են ֆորմատավորվել}}</translation>
 <translation id="1642299742557467312">Այս ֆայլը կարող է վնասել ձեր սարքը</translation>
@@ -1796,7 +1796,6 @@
 <translation id="2988328607561082373">Դուք կրկնվող գաղտնաբառեր չունեք</translation>
 <translation id="2989523299700148168">Վերջերս այցելած</translation>
 <translation id="2989786307324390836">Բինարային մեկ վկայագիր՝ DER-գաղտնագրումով</translation>
-<translation id="2990500505358145117">Փոփոխել բարելավված ինքնալրացման դյուրանցումը</translation>
 <translation id="2990583317361835189">Թույլ չտալ կայքերին օգտագործել շարժման տվիչները</translation>
 <translation id="2991182900092497283">Նշեք, թե որն է այս տվյալները տեղադրելու պատճառը՝</translation>
 <translation id="2992754757708650257">Լքե՞լ կայքը և ավարտել առաջադրանքը</translation>
@@ -2051,7 +2050,6 @@
 <translation id="3244294424315804309">Անջատել ձայնը</translation>
 <translation id="3247649647204519958">Այստեղից դուք կարող եք տեսնել և կառավարել ընդլայնման թույլտվությունները այն կայքի համար, որում դուք գտնվում եք</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Ցանցի սխալ</translation>
-<translation id="3248957351402065497">Հատուկ դյուրանցում բարելավված ինքնալրացման համար</translation>
 <translation id="3249558306861350254">Windows-ի կարգավորումներում սեղմեք <ph name="BEGIN_BOLD" />Սահմանել որպես կանխադրված<ph name="END_BOLD" />։</translation>
 <translation id="3250374026663843838">Կառավարել հմտությունը</translation>
 <translation id="3251759466064201842">&lt;Վկայագրի մաս չի կազմում&gt;</translation>
@@ -2270,6 +2268,7 @@
 <translation id="3481268647794498892">Կբացվի <ph name="ALTERNATIVE_BROWSER_NAME" /> դիտարկիչով <ph name="COUNTDOWN_SECONDS" /> վայրկյանից</translation>
 <translation id="348247802372410699">Ընտրեք ոճ</translation>
 <translation id="3482573964681964096">Կառավարել Windows-ից ներմուծված հավաստագրերը</translation>
+<translation id="348268549820508141">Խոսքի ճանաչում</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> կայքը կարող է դիտել հետևյալ ֆայլերը</translation>
 <translation id="3486380520195228369">Թաքցված է, մինչև էջը թարմացվի</translation>
 <translation id="3487007233252413104">անանուն գործառույթ</translation>
@@ -2640,7 +2639,6 @@
 <translation id="3826086052025847742">ChromeOS Flex-ի մատյաններ</translation>
 <translation id="3827774300009121996">&amp;Լիաէկրան</translation>
 <translation id="3828029223314399057">Որոնել էջանիշներ</translation>
-<translation id="3828454092958722155">Մաքրել բարելավված ինքնալրացման դյուրանցումը</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Ներդիրը շատ հիշողություն է օգտագործում – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Օգտագործել այլ մուտքի բանալի</translation>
 <translation id="3838085852053358637">Չհաջողվեց բեռնել ընդլայնումը</translation>
@@ -3721,7 +3719,6 @@
 <translation id="5060419232449737386">Ենթագրերի կարգավորումներ</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Այս պանակը էջանիշ է պարունակում: Ուզո՞ւմ եք ջնջել այն:}one{Այս պանակը պարունակում է # էջանիշ: Ուզո՞ւմ եք ջնջել այն:}other{Այս պանակը պարունակում է # էջանիշ: Ուզո՞ւմ եք ջնջել այն:}}</translation>
 <translation id="5061531353537614467">Տունդրա</translation>
-<translation id="5061781067616989032">Կարգավորեք ձեր սեփական ստեղնային դյուրանցումը</translation>
 <translation id="5062863364865466276">Շարժում</translation>
 <translation id="5063480226653192405">Վիճակագրություն</translation>
 <translation id="5064921774605267982">Բացեք <ph name="PROFILE_NAME" /> պրոֆիլը։ Այս պրոֆիլը կառավարվում է ձեր կազմակերպության կողմից։</translation>
@@ -4993,7 +4990,6 @@
 <translation id="6540488083026747005">Դուք թույլատրել եք երրորդ կողմի քուքիներն այս կայքի համար</translation>
 <translation id="6541638731489116978">Այս կայքին արգելվել է օգտագործել շարժման տվիչները:</translation>
 <translation id="6542417422899025860">Ավտոմատ հեռացնել անձնական տեղեկությունների մեծ մասը</translation>
-<translation id="6548240707386871455">Բարելավված ինքնալրացման դյուրանցում</translation>
 <translation id="654871471440386944">Միացնե՞լ ստեղնային դիտարկումը</translation>
 <translation id="6549689063733911810">Վերջին</translation>
 <translation id="6550675742724504774">Ընտրանքներ</translation>
@@ -5159,7 +5155,6 @@
 <translation id="6710172959248731469">Google-ի ծառայությունների կարգավորումներ</translation>
 <translation id="6710394144992407503">Վեբ էջերում տեքստ մուտքագրելիս ստուգել ուղղագրական սխալների առկայությունը</translation>
 <translation id="6711236403841768371">Մինչև <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Երկու անգամ սեղմեք ⌘՝ բարելավված ինքնալրացման համար</translation>
 <translation id="6712943853047024245">Դուք այս օգտանվան հետ արդեն գաղտնաբառ պահել եք <ph name="WEBSITE" /> կայքի համար</translation>
 <translation id="6713668088933662563">Երբեք չառաջարկել թարգմանել այս լեզուները</translation>
 <translation id="6714871567554212732">Դիտել այլ մանրամասներ «<ph name="GROUP_NAME" />» խմբի մասին</translation>
@@ -6079,7 +6074,6 @@
 <translation id="7706742200777909964">Բացեք էջերը կողք կողքի նույն ներդիրում՝ դրանք հեշտությամբ համեմատելու կամ այլ գործողություններ կատարելու համար</translation>
 <translation id="7707108266051544351">Այս կայքին արգելվել է օգտագործել շարժման տվիչները:</translation>
 <translation id="7709152031285164251">Չհաջողվեց՝ <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Մաքրել հատուկ դյուրանցումը բարելավված ինքնալրացման համար</translation>
 <translation id="7710568461918838723">&amp;Հեռարձակել...</translation>
 <translation id="7712739869553853093">Տպել նախադիտման պատուհանը</translation>
 <translation id="7714464543167945231">Վկայագիր</translation>
@@ -6439,7 +6433,6 @@
 <translation id="810185532889603849">Հատուկ գույն</translation>
 <translation id="8103484184517840583">Դուրս գալ ԱԲ ռեժիմից</translation>
 <translation id="810362914482827094">Որոնել մուտքի բանալիներ</translation>
-<translation id="8104388155778519213">Կիսվեք ձեր էկրանի բովանդակությամբ Google Տեսապակու միջոցով</translation>
 <translation id="8104412594956510627"><ph name="DEVICE" /> սարքից ձեր պատմությունն օգտագործելու համար համաժամացրեք պատմությունը։ Ցանկացած ժամանակ կարգավորումներում կարող եք կանգնեցնել համաժամացումը։ Google-ը կարող է ձեր պատմության հիման վրա անհատականացնել Որոնումը և այլ ծառայություններ։</translation>
 <translation id="8104778744208707085">Անհրաժեշտ է ուշադրություն դարձնել</translation>
 <translation id="8105273883928376822">Շարունակելու համար մուտք գործեք հաշիվ։</translation>
@@ -6537,7 +6530,6 @@
 <translation id="8214489666383623925">Open File...</translation>
 <translation id="8214771296778317256">Այստեղ ընտրեք ներդիրների ձեր նախընտրած ոճը</translation>
 <translation id="8217399928341212914">Շարունակել արգելափակել բազմակի ֆայլերի ավտոմատ ներբեռնումները</translation>
-<translation id="8218411859495801458">Փոփոխել հատուկ դյուրանցումը բարելավված ինքնալրացման համար</translation>
 <translation id="8221358554841691213">Միջին ֆոկուսի ոճ</translation>
 <translation id="8221942262855134126">Գաղտնաբառի կառավարում</translation>
 <translation id="8222112516148944758">Ձեր ներդիրների խմբերն ավտոմատ պահվում և թարմացվում են ձեր բոլոր սարքերում</translation>
@@ -6810,7 +6802,6 @@
 <translation id="8512476990829870887">Ավարտել գործընթացը</translation>
 <translation id="851263357009351303">Միշտ թույլատրել <ph name="HOST" />-ին ցուցադրել պատկերները</translation>
 <translation id="8513357934662532537">Ընտրեք CSV ֆայլ, որպեսզի գաղտնաբառերը <ph name="USER_EMAIL" /> հաշվի համար ներմուծեք <ph name="BRAND" />։</translation>
-<translation id="8514257511170433540">Օգտագործեք կանխադրված ստեղնային դյուրանցումը ձևեր լրացնելիս</translation>
 <translation id="8514746246728959655">Օգտագործեք անվտանգության մեկ այլ բանալի</translation>
 <translation id="8514828975162859845">Քեյք փոփեր</translation>
 <translation id="8514955299594277296">Չթույլատրել կայքերին տվյալներ պահել ձեր սարքում (խորհուրդ չի տրվում)</translation>

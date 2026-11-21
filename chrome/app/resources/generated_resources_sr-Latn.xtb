@@ -94,7 +94,6 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1090126737595388931">Nije pokrenuta nijedna pozadinska aplikacija</translation>
 <translation id="109038914521989341">Unesite razlog za kopiranje ovih podataka:</translation>
 <translation id="1094158807129647987">Upitajte o: <ph name="SELECTION" /></translation>
-<translation id="1095398697303758108">Pritisnite Ctrl dvaput za poboljšano automatsko popunjavanje</translation>
 <translation id="1095879482467973146">Google menadžer lozinki na vebu</translation>
 <translation id="1097016918605049747">Prevođenje ove stranice nije uspelo</translation>
 <translation id="1099962274138857708">Slika je kopirana sa uređaja <ph name="DEVICE_NAME" /></translation>
@@ -581,6 +580,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Želite da uklonite karticu i izbrišete grupu?}=1{Želite da uklonite kartice i izbrišete grupu?}one{Želite da uklonite kartice i izbrišete grupe?}few{Želite da uklonite kartice i izbrišete grupe?}other{Želite da uklonite kartice i izbrišete grupe?}}</translation>
 <translation id="1637765355341780467">Došlo je do problema pri otvaranju profila. Neke funkcije će možda biti nedostupne.</translation>
 <translation id="1639239467298939599">Učitava se</translation>
+<translation id="1640672724030957280">Preuzimanje...</translation>
 <translation id="1641113438599504367">Bezbedno pregledanje</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Nije uvezena još 1 lozinka jer je nepravilno formatirana}one{Nije uvezena još {NUM_PASSWORDS} lozinka jer je nepravilno formatirana}few{Nisu uvezene još {NUM_PASSWORDS} lozinke jer su nepravilno formatirane}other{Nije uvezeno još {NUM_PASSWORDS} lozinki jer su nepravilno formatirane}}</translation>
 <translation id="1642299742557467312">Ovaj fajl može da naškodi uređaju</translation>
@@ -1798,7 +1798,6 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="2988328607561082373">Nijednu lozinku ne koristite za više naloga</translation>
 <translation id="2989523299700148168">Nedavno posećeno</translation>
 <translation id="2989786307324390836">Binarna datoteka šifrovana metodom „DER“, jedan sertifikat</translation>
-<translation id="2990500505358145117">Izmeni prečicu za poboljšano automatsko popunjavanje</translation>
 <translation id="2990583317361835189">Ne dozvoljavaj sajtovima da koriste senzore pokreta</translation>
 <translation id="2991182900092497283">Unesite razlog za nalepljivanje ovih podataka:</translation>
 <translation id="2992754757708650257">Želite da napustite sajt i završite zadatak?</translation>
@@ -2053,7 +2052,6 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="3244294424315804309">Ne uključuj zvuk</translation>
 <translation id="3247649647204519958">Ovde možete da vidite dozvole za dodatak za sajt na kom se nalazite i da upravljate njima</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – greška na mreži</translation>
-<translation id="3248957351402065497">Prilagođena prečica za poboljšano automatsko popunjavanje</translation>
 <translation id="3249558306861350254">Kliknite na <ph name="BEGIN_BOLD" />Podesi kao podrazumevano<ph name="END_BOLD" /> u podešavanjima Windows-a.</translation>
 <translation id="3250374026663843838">Upravljajte veštinom</translation>
 <translation id="3251759466064201842">&lt;Nije deo sertifikata&gt;</translation>
@@ -2274,6 +2272,7 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="3481268647794498892">Otvara se u pregledaču <ph name="ALTERNATIVE_BROWSER_NAME" /> za <ph name="COUNTDOWN_SECONDS" /> sek</translation>
 <translation id="348247802372410699">Odaberite stil</translation>
 <translation id="3482573964681964096">Upravljajte uvezenim sertifikatima iz Windows-a</translation>
+<translation id="348268549820508141">Prepoznavanje govora</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> može da pregleda sledeće datoteke</translation>
 <translation id="3486380520195228369">Skriveno dok se stranica ne osveži</translation>
 <translation id="3487007233252413104">anonimna funkcija</translation>
@@ -2644,7 +2643,6 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="3826086052025847742">ChromeOS Flex evidencije</translation>
 <translation id="3827774300009121996">&amp;Ceo ekran</translation>
 <translation id="3828029223314399057">Pretraži obeleživače</translation>
-<translation id="3828454092958722155">Obriši prečicu za poboljšano automatsko popunjavanje</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Visoka potrošnja memorije – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Koristite drugi pristupni ključ</translation>
 <translation id="3838085852053358637">Učitavanje dodatka nije uspelo</translation>
@@ -3725,7 +3723,6 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="5060419232449737386">Podešavanja titla</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Ovaj folder sadrži obeleživač. Želite li stvarno da ga izbrišete?}one{Ovaj folder sadrži # obeleživač. Želite li stvarno da ga izbrišete?}few{Ovaj folder sadrži # obeleživača. Želite li stvarno da ga izbrišete?}other{Ovaj folder sadrži # obeleživača. Želite li stvarno da ga izbrišete?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
-<translation id="5061781067616989032">Podesite svoju tastersku prečicu</translation>
 <translation id="5062863364865466276">Pokret</translation>
 <translation id="5063480226653192405">Korišćenje</translation>
 <translation id="5064921774605267982">Otvorite profil <ph name="PROFILE_NAME" /> Ovim profilom upravlja roditelj.</translation>
@@ -5001,7 +4998,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6540488083026747005">Dozvolili ste kolačiće treće strane za ovaj sajt</translation>
 <translation id="6541638731489116978">Ovom sajtu je zabranjeno da pristupa senzorima za pokret.</translation>
 <translation id="6542417422899025860">Automatski uklonite većinu ličnih podataka</translation>
-<translation id="6548240707386871455">Prečica za poboljšano automatsko popunjavanje</translation>
 <translation id="654871471440386944">Želite da uključite navigaciju kursorom?</translation>
 <translation id="6549689063733911810">Nedavno</translation>
 <translation id="6550675742724504774">Opcije</translation>
@@ -5169,7 +5165,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="6710172959248731469">Podešavanja Google usluga</translation>
 <translation id="6710394144992407503">Proverite da li ima pravopisnih grešaka kada unosite tekst na veb-stranicama</translation>
 <translation id="6711236403841768371">Pre <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Pritisnite ⌘ dvaput za poboljšano automatsko popunjavanje</translation>
 <translation id="6712943853047024245">Već ste sačuvali lozinku sa ovim korisničkim imenom za <ph name="WEBSITE" /></translation>
 <translation id="6713668088933662563">Nikada ne nudi prevod za ove jezike</translation>
 <translation id="6714871567554212732">Pogledajte još detalja o <ph name="GROUP_NAME" /></translation>
@@ -6090,7 +6085,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="7706742200777909964">Postavite stranice jednu pored druge na istoj kartici da biste lako mogli da uporedite opcije i drugo</translation>
 <translation id="7707108266051544351">Ovom sajtu je zabranjeno da koristi senzore za pokret.</translation>
 <translation id="7709152031285164251">Nije uspelo – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Obriši prilagođenu prečicu za poboljšano automatsko popunjavanje</translation>
 <translation id="7710568461918838723">&amp;Prebaci...</translation>
 <translation id="7712739869553853093">Odštampajte dijalog pregleda</translation>
 <translation id="7714464543167945231">Sertifikat</translation>
@@ -6450,7 +6444,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="810185532889603849">Prilagođena boja</translation>
 <translation id="8103484184517840583">Izađi iz AI režima</translation>
 <translation id="810362914482827094">Pretražite pristupne kodove</translation>
-<translation id="8104388155778519213">Delite sadržaj ekrana pomoću Google objektiva</translation>
 <translation id="8104412594956510627">Da biste preuzeli istoriju sa uređaja <ph name="DEVICE" />, sinhronizujte istoriju. Uvek možete da zaustavite sinhronizaciju u podešavanjima. Google može da personalizuje Pretragu i druge usluge na osnovu istorije.</translation>
 <translation id="8104778744208707085">Treba da obratite pažnju na ovo</translation>
 <translation id="8105273883928376822">Prijavite se da biste nastavili.</translation>
@@ -6548,7 +6541,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8214489666383623925">Otvori datoteku...</translation>
 <translation id="8214771296778317256">Ovde izaberite željeni stil kartice</translation>
 <translation id="8217399928341212914">Nastavi da blokiraš automatska preuzimanja više datoteka</translation>
-<translation id="8218411859495801458">Izmeni prilagođenu prečicu za poboljšano automatsko popunjavanje</translation>
 <translation id="8221358554841691213">Stil srednjeg fokusa</translation>
 <translation id="8221942262855134126">Upravljaj lozinkom</translation>
 <translation id="8222112516148944758">Grupe kartica se automatski čuvaju i ažuriraju na svim uređajima</translation>
@@ -6821,7 +6813,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8512476990829870887">Završi proces</translation>
 <translation id="851263357009351303">Uvek dozvoli sajtu <ph name="HOST" /> da prikazuje slike</translation>
 <translation id="8513357934662532537">Da biste uvezli lozinke u <ph name="BRAND" /> za <ph name="USER_EMAIL" />, izaberite CSV fajl.</translation>
-<translation id="8514257511170433540">Koristite podrazumevanu tastersku prečicu kada popunjavate obrasce</translation>
 <translation id="8514746246728959655">Probajte sa nekim drugim bezbednosnim ključem</translation>
 <translation id="8514828975162859845">Kolači na štapiću</translation>
 <translation id="8514955299594277296">Ne dozvoljavajte sajtovima da čuvaju podatke na uređaju (ne preporučuje se)</translation>

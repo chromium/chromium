@@ -94,7 +94,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1090126737595388931">Não há aplicações em execução em segundo plano</translation>
 <translation id="109038914521989341">Introduza um motivo para a cópia destes dados:</translation>
 <translation id="1094158807129647987">Perguntar sobre "<ph name="SELECTION" />"</translation>
-<translation id="1095398697303758108">Prima Ctrl duas vezes para o preenchimento automático melhorado</translation>
 <translation id="1095879482467973146">Gestor de Palavras-passe da Google na Web</translation>
 <translation id="1097016918605049747">Não foi possível traduzir esta página</translation>
 <translation id="1099962274138857708">Imagem copiada do <ph name="DEVICE_NAME" /></translation>
@@ -581,6 +580,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Remover o separador e eliminar o grupo?}=1{Remover os separadores e eliminar o grupo?}other{Remover os separadores e eliminar os grupos?}}</translation>
 <translation id="1637765355341780467">Ocorreu um erro ao abrir o perfil. Algumas funcionalidades podem estar indisponíveis.</translation>
 <translation id="1639239467298939599">A carregar…</translation>
+<translation id="1640672724030957280">A transferir...</translation>
 <translation id="1641113438599504367">Navegação segura</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 outra palavra-passe não foi importada porque está formatada incorretamente}other{{NUM_PASSWORDS} outras palavras-passe não foram importadas porque estão formatadas incorretamente}}</translation>
 <translation id="1642299742557467312">Este ficheiro pode danificar o seu dispositivo</translation>
@@ -1798,7 +1798,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="2988328607561082373">Não está a reutilizar nenhuma palavra-passe</translation>
 <translation id="2989523299700148168">Visitados recentemente</translation>
 <translation id="2989786307324390836">Certificado único de binário codificado DER</translation>
-<translation id="2990500505358145117">Editar atalho de preenchimento automático melhorado</translation>
 <translation id="2990583317361835189">Não permitir que os sites utilizem sensores de movimentos</translation>
 <translation id="2991182900092497283">Introduza um motivo para a colagem destes dados:</translation>
 <translation id="2992754757708650257">Sair do site e terminar a tarefa?</translation>
@@ -2053,7 +2052,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="3244294424315804309">Manter o som desativado</translation>
 <translation id="3247649647204519958">A partir daqui, pode ver e gerir as autorizações de extensões para o site que está a visitar</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – erro de rede</translation>
-<translation id="3248957351402065497">Atalho personalizado para o preenchimento automático melhorado</translation>
 <translation id="3249558306861350254">Clique em <ph name="BEGIN_BOLD" />Predefinir<ph name="END_BOLD" /> nas definições do Windows.</translation>
 <translation id="3250374026663843838">Gerir a sua competência</translation>
 <translation id="3251759466064201842">&lt;Não faz parte do certificado&gt;</translation>
@@ -2274,6 +2272,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="3481268647794498892">A abrir o <ph name="ALTERNATIVE_BROWSER_NAME" /> dentro de <ph name="COUNTDOWN_SECONDS" /> segundos</translation>
 <translation id="348247802372410699">Escolher estilo</translation>
 <translation id="3482573964681964096">Faça a gestão de certificados importados do Windows</translation>
+<translation id="348268549820508141">Reconhecimento de voz</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> pode ver os seguintes ficheiros</translation>
 <translation id="3486380520195228369">Ocultado até à atualização da página</translation>
 <translation id="3487007233252413104">função anónima</translation>
@@ -2644,7 +2643,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="3826086052025847742">Registos do ChromeOS Flex</translation>
 <translation id="3827774300009121996">&amp;Ecrã inteiro</translation>
 <translation id="3828029223314399057">Pesquisar marcadores</translation>
-<translation id="3828454092958722155">Limpar atalho de preenchimento automático melhorado</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Utilização elevada de memória – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Usar uma chave de acesso diferente</translation>
 <translation id="3838085852053358637">Falha ao carregar a extensão</translation>
@@ -3725,7 +3723,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="5060419232449737386">Definições das legendas</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Esta pasta contém um marcador. Tem a certeza de que quer eliminá-la?}other{Esta pasta contém # marcadores. Tem a certeza de que quer eliminá-la?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
-<translation id="5061781067616989032">Configure o seu próprio atalho de teclado</translation>
 <translation id="5062863364865466276">Movimento</translation>
 <translation id="5063480226653192405">Utilização</translation>
 <translation id="5064921774605267982">Abrir perfil <ph name="PROFILE_NAME" />. O perfil é gerido por um dos teus pais.</translation>
@@ -5003,7 +5000,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6540488083026747005">Permitiu cookies de terceiros neste site</translation>
 <translation id="6541638731489116978">Este site foi impedido de aceder aos sensores de movimentos.</translation>
 <translation id="6542417422899025860">Remover automaticamente a maioria das informações pessoais</translation>
-<translation id="6548240707386871455">Atalho do preenchimento automático melhorado</translation>
 <translation id="654871471440386944">Ativar a navegação por cursor?</translation>
 <translation id="6549689063733911810">Recente</translation>
 <translation id="6550675742724504774">Opções</translation>
@@ -5167,7 +5163,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6710172959248731469">Definições dos serviços Google</translation>
 <translation id="6710394144992407503">Verifique se existem erros ortográficos quando escreve texto em páginas Web</translation>
 <translation id="6711236403841768371">antes de <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Premir ⌘ duas vezes para preenchimento automático melhorado</translation>
 <translation id="6712943853047024245">Já guardou uma palavra-passe com este nome de utilizador para <ph name="WEBSITE" /></translation>
 <translation id="6713668088933662563">Nunca se disponibilizar para traduzir estes idiomas</translation>
 <translation id="6714871567554212732">Ver mais detalhes sobre o grupo <ph name="GROUP_NAME" /></translation>
@@ -6088,7 +6083,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="7706742200777909964">Coloque páginas lado a lado no mesmo separador para poder comparar facilmente opções e muito mais</translation>
 <translation id="7707108266051544351">Este site foi impedido de utilizar os sensores de movimentos.</translation>
 <translation id="7709152031285164251">Falha - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Limpar atalho personalizado para preenchimento automático melhorado</translation>
 <translation id="7710568461918838723">&amp;Transmitir…</translation>
 <translation id="7712739869553853093">Caixa de diálogo de pré-visualização da impressão</translation>
 <translation id="7714464543167945231">Certificado</translation>
@@ -6448,7 +6442,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="810185532889603849">Cor personalizada</translation>
 <translation id="8103484184517840583">Sair do Modo IA</translation>
 <translation id="810362914482827094">Pesquisar chaves de acesso</translation>
-<translation id="8104388155778519213">Partilhe o que está no seu ecrã com o Google Lens</translation>
 <translation id="8104412594956510627">Para ver o histórico do dispositivo <ph name="DEVICE" />, sincronize o histórico. Pode parar a sincronização em qualquer altura nas definições. A Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="8104778744208707085">Precisa da sua atenção</translation>
 <translation id="8105273883928376822">Inicie sessão para continuar.</translation>
@@ -6546,7 +6539,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8214489666383623925">Abrir ficheiro...</translation>
 <translation id="8214771296778317256">Escolha o seu estilo de separador preferido aqui</translation>
 <translation id="8217399928341212914">Continuar a bloquear transferências automáticas de vários ficheiros</translation>
-<translation id="8218411859495801458">Editar atalho personalizado para preenchimento automático melhorado</translation>
 <translation id="8221358554841691213">Estilo de foco médio</translation>
 <translation id="8221942262855134126">Gerir palavra-passe</translation>
 <translation id="8222112516148944758">Os seus grupos de separadores são guardados e atualizados automaticamente em todos os seus dispositivos</translation>
@@ -6819,7 +6811,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8512476990829870887">Terminar Processo</translation>
 <translation id="851263357009351303">Permitir sempre que o site <ph name="HOST" /> mostre imagens</translation>
 <translation id="8513357934662532537">Para importar palavras-passe para o <ph name="BRAND" /> de <ph name="USER_EMAIL" />, selecione um ficheiro CSV.</translation>
-<translation id="8514257511170433540">Use o atalho de teclado predefinido ao preencher formulários</translation>
 <translation id="8514746246728959655">Experimente uma chave de segurança diferente</translation>
 <translation id="8514828975162859845">Cake pops</translation>
 <translation id="8514955299594277296">Não permitir que os sites guardem dados no seu dispositivo (não recomendado)</translation>

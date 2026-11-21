@@ -5812,21 +5812,6 @@ Chính sách này không có hiệu lực nếu bạn tắt hoặc không đặt
       Nếu bạn tắt chính sách này, người dùng sẽ không sử dụng được kỹ thuật chặn bắt gói tin qua mạng trên thiết bị.</translation>
 <translation id="4599810650416623373">Chặn tính năng tối ưu hoá JavaScript trên các trang web này</translation>
 <translation id="4600786265870346112">Bật con trỏ lớn</translation>
-<translation id="460264931744856609">Nếu bạn đặt chính sách này, hệ thống sẽ kiểm soát các chế độ cài đặt quản lý tiện ích cho <ph name="PRODUCT_NAME" />, bao gồm cả những chế độ cài đặt chịu sự kiểm soát của các chính sách hiện có liên quan đến tiện ích.
-
-Chính sách này chỉ ánh xạ một mã tiện ích hoặc một URL cập nhật với chế độ cài đặt cụ thể tương ứng. Bạn có thể đặt cấu hình mặc định cho mã đặc biệt <ph name="DEFAULT_SCOPE" />. Cấu hình này sẽ áp dụng cho tất cả tiện ích chưa đặt cấu hình tuỳ chỉnh trong chính sách này.
-
-Chính sách này có thể ghi đè cấu hình theo từng tiện ích từ các chính sách cũ.
-
-Lưu ý: Mọi chế độ cài đặt tiện ích theo mã nhận dạng từ <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> hoặc <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> sẽ chỉ kế thừa "installation_mode" và "update_url" từ các giá trị mặc định của <ph name="DEFAULT_SCOPE" />. Chế độ cài đặt sẽ không kế thừa bất kỳ thuộc tính nào khác. Với URL cập nhật, cấu hình sẽ áp dụng cho những tiện ích có URL cập nhật chính xác được nêu trong tệp kê khai của tiện ích đó (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Nếu bạn đặt cờ "override_update_url" thành true (đúng), thì tiện ích đó sẽ được cài đặt và cập nhật bằng URL "cập nhật" được chỉ định trong chính sách <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> hoặc trong trường "update_url" của chính sách này. Cờ "override_update_url" sẽ bị bỏ qua nếu "update_url" là một URL của Cửa hàng Chrome trực tuyến.
-
-Trong các phiên bản <ph name="PRODUCT_NAME" /> từ 155 đến 158, việc áp dụng "runtime_blocked_hosts" cho một tiện ích có quyền "debugger" có thể tắt hoàn toàn "chrome.debugger.attach()" trên tất cả các mục tiêu, chẳng hạn như khi chính sách <ph name="CHROME_VARIATIONS_POLICY_NAME" /> tắt tất cả các biến thể.
-
-Trên các phiên bản <ph name="MS_WIN_NAME" />, bạn chỉ có thể buộc cài đặt các ứng dụng và tiện ích từ bên ngoài Cửa hàng Chrome trực tuyến nếu phiên bản đó đã liên kết với một miền <ph name="MS_AD_NAME" />, <ph name="MS_AAD_NAME" /> hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Trên các phiên bản <ph name="MAC_OS_NAME" />, bạn chỉ có thể buộc cài đặt các ứng dụng và tiện ích từ bên ngoài Cửa hàng Chrome trực tuyến nếu phiên bản đó được quản lý qua MDM, đã liên kết với một miền qua MCX hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Lưu ý: Chính sách này chỉ áp dụng cho những nền tảng hỗ trợ tiện ích.</translation>
 <translation id="4602988345256038309">Cho phép các kết nối hỗ trợ từ xa đến máy này</translation>
 <translation id="4605677392792989397">Việc đặt chính sách này sẽ đặt danh sách các URL đăng nhập của doanh nghiệp (chỉ giao thức HTTP và HTTPS). Dịch vụ bảo vệ mật khẩu sẽ ghi lại hàm băm được thêm dữ liệu ngẫu nhiên của mật khẩu trên các URL này và dùng cho mục đích phát hiện mật khẩu trùng lặp. Để <ph name="PRODUCT_NAME" /> ghi lại chính xác hàm băm được thêm dữ liệu ngẫu nhiên vào mật khẩu, hãy đảm bảo các trang đăng nhập của bạn tuân thủ những nguyên tắc này (https://www.chromium.org/developers/design-documents/create-amazing-password-forms).
 

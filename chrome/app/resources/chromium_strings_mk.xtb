@@ -582,7 +582,6 @@
 <translation id="7213407614656404070">Користете го Chromium секогаш кога ќе кликнете линкови во пораки, документи и други апликации</translation>
 <translation id="7216228761061470870">Кога ја користите „Пребарување слики“ на компјутер, насловот, URL-адресата и содржините на страницата, вклучително и PDF-датотеките, се испраќаат до Google</translation>
 <translation id="7223968959479464213">Управник со задачи - Chromium</translation>
-<translation id="7226331818892775989">Прашувајте за содржини надвор од Chromium, како други апликации или датотеки</translation>
 <translation id="7227958669698166857">Корисникот <ph name="EXISTING_USER" /> веќе е најавен. За да прелистувате одделно, најавете се на Chromium во вашиот профил како <ph name="USER_EMAIL_ADDRESS" />. Ќе ги добиете и вашите зачувани податоци и друго на сите ваши уреди.</translation>
 <translation id="7252276985725323153">Започнете да прелистувате веднаш: Chromium отсега може да се стартува заедно со Windows.</translation>
 <translation id="7274695763216404502">Закачено! Користете ја „Пребарување со слики“ повторно од алатникот</translation>
@@ -698,7 +697,6 @@ Chromium не може да ги обнови вашите поставки.</tr
 <translation id="8310603974518734211">QR-код за најавување на Chromium како <ph name="USER_NAME" /></translation>
 <translation id="8313851650939857356">Грешка при стартување: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Вашата организација го затвора Chromium кога не се користи <ph name="TIMEOUT_DURATION" />.</translation>
-<translation id="8321888067342493336">Зачувај како слика</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> претходно користеше Chromium</translation>
 <translation id="8351551329754447960">Овозможете ја „Вештини“ во Chromium</translation>
 <translation id="8359544530202147897">Ажурирајте го Chromium за да продолжите да ги користите податоците од Chromium во вашата сметка на Google <ph name="ACCOUNT_EMAIL" /></translation>

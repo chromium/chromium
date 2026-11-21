@@ -94,7 +94,6 @@
 <translation id="1090126737595388931">ليس هناك تطبيقات خلفية قيد التشغيل</translation>
 <translation id="109038914521989341">يُرجى إدخال سبب لنسخ هذه البيانات:</translation>
 <translation id="1094158807129647987">بانتظار أسئلتك حول "<ph name="SELECTION" />"</translation>
-<translation id="1095398697303758108">‏الضغط على Ctrl مرّتين لتفعيل ميزة "الملء التلقائي المحسّن"</translation>
 <translation id="1095879482467973146">‏"مدير كلمات المرور في Google" على الويب</translation>
 <translation id="1097016918605049747">تعذَّرت ترجمة هذه الصفحة</translation>
 <translation id="1099962274138857708">تم نسخ الصورة من <ph name="DEVICE_NAME" />.</translation>
@@ -581,6 +580,7 @@
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{هل تريد إزالة علامة التبويب وحذف المجموعة؟}=1{هل تريد إزالة علامة التبويب وحذف المجموعة؟}two{هل تريد إزالة علامتَي التبويب وحذف المجموعتين؟}few{هل تريد إزالة علامات التبويب وحذف المجموعات؟}many{هل تريد إزالة علامات التبويب وحذف المجموعات؟}other{هل تريد إزالة علامات التبويب وحذف المجموعات؟}}</translation>
 <translation id="1637765355341780467">حدث خطأ ما أثناء فتح ملفك الشخصي. وقد تكون بعض الميزات غير متاحة.</translation>
 <translation id="1639239467298939599">جارٍ التحميل</translation>
+<translation id="1640672724030957280">جارٍ التنزيل...</translation>
 <translation id="1641113438599504367">التصفح الآمن</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{لم يتم استيراد كلمة مرور واحدة أخرى بسبب تنسيقها بشكل غير صحيح.}zero{لم يتم استيراد {NUM_PASSWORDS} كلمة مرور أخرى بسبب تنسيقها بشكل غير صحيح.}two{لم يتم استيراد كلمتَي مرور ({NUM_PASSWORDS}) أخريين بسبب تنسيقهما بشكل غير صحيح.}few{لم يتم استيراد {NUM_PASSWORDS} كلمات مرور أخرى بسبب تنسيقها بشكل غير صحيح.}many{لم يتم استيراد {NUM_PASSWORDS} كلمة مرور أخرى بسبب تنسيقها بشكل غير صحيح.}other{لم يتم استيراد {NUM_PASSWORDS} كلمة مرور أخرى بسبب تنسيقها بشكل غير صحيح.}}</translation>
 <translation id="1642299742557467312">هذا الملف يمكن أن يضر جهازك</translation>
@@ -1798,7 +1798,6 @@
 <translation id="2988328607561082373">لم يتم العثور على أي كلمات مرور مستخدَمة لحساب آخر</translation>
 <translation id="2989523299700148168">تم الانتقال إليها مؤخرًا</translation>
 <translation id="2989786307324390836">‏حفظ شهادة واحدة بتشفير DER ثنائي</translation>
-<translation id="2990500505358145117">تعديل اختصار ميزة "الملء التلقائي المحسّن"</translation>
 <translation id="2990583317361835189">عدم السماح للمواقع الإلكترونية باستخدام أجهزة استشعار الحركة</translation>
 <translation id="2991182900092497283">يُرجى إدخال سبب للصق هذه البيانات:</translation>
 <translation id="2992754757708650257">مغادرة الموقع الإلكتروني وإنهاء المهمة؟</translation>
@@ -2053,7 +2052,6 @@
 <translation id="3244294424315804309">استمرار كتم الصوت</translation>
 <translation id="3247649647204519958">يمكنك هنا الاطّلاع على أذونات الإضافات وإدارتها للموقع الإلكتروني الذي تتصفّحه.</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - خطأ في الشبكة</translation>
-<translation id="3248957351402065497">اختصار مخصّص لميزة "الملء التلقائي المحسّن"</translation>
 <translation id="3249558306861350254">‏انقر على <ph name="BEGIN_BOLD" />الضبط كمتصفّح تلقائي<ph name="END_BOLD" /> في إعدادات Windows.</translation>
 <translation id="3250374026663843838">إدارة مهارتك</translation>
 <translation id="3251759466064201842">&lt;ليس جزءًا من الشهادة&gt;</translation>
@@ -2274,6 +2272,7 @@
 <translation id="3481268647794498892">جارٍ الفتح في <ph name="ALTERNATIVE_BROWSER_NAME" /> خلال <ph name="COUNTDOWN_SECONDS" /> ثانية</translation>
 <translation id="348247802372410699">اختيار نمط</translation>
 <translation id="3482573964681964096">‏إدارة الشهادات المستورَدة من Windows</translation>
+<translation id="348268549820508141">التعرُّف على الكلام</translation>
 <translation id="3482719661246593752">بإمكان <ph name="ORIGIN" /> عرض الملفات التالية:</translation>
 <translation id="3486380520195228369">تم إخفاء التطبيق المصغر للتحديد إلى أن تتم إعادة تحميل الصفحة</translation>
 <translation id="3487007233252413104">وظيفة مجهولة</translation>
@@ -2645,7 +2644,6 @@
 <translation id="3826086052025847742">‏سجلات نظام التشغيل ChromeOS Flex</translation>
 <translation id="3827774300009121996">&amp;ملء الشاشة</translation>
 <translation id="3828029223314399057">بحث في الإشارات المرجعية</translation>
-<translation id="3828454092958722155">محو اختصار ميزة "الملء التلقائي المحسّن"</translation>
 <translation id="3829530269338026191">"<ph name="WINDOW_TITLE" />" - استخدام مرتفع للذاكرة - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">استخدام مفتاح مرور آخر</translation>
 <translation id="3838085852053358637">فشل تحميل الإضافة</translation>
@@ -3723,7 +3721,6 @@
 <translation id="5060419232449737386">إعدادات الترجمة والشرح</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{يحتوي هذا المجلَّد على إشارة مرجعية واحدة. هل ترغب في حذفه بالتأكيد؟}zero{يحتوي هذا المجلَّد على # إشارة مرجعية. هل ترغب في حذفه بالتأكيد؟}two{يحتوي هذا المجلَّد على إشارتيْن مرجعيتيْن (#). هل ترغب في حذفه بالتأكيد؟}few{يحتوي هذا المجلَّد على # إشارات مرجعية. هل ترغب في حذفه بالتأكيد؟}many{يحتوي هذا المجلَّد على # إشارةً مرجعية. هل ترغب في حذفه بالتأكيد؟}other{يحتوي هذا المجلَّد على # إشارة مرجعية. هل ترغب في حذفه بالتأكيد؟}}</translation>
 <translation id="5061531353537614467">سهل جليدي</translation>
-<translation id="5061781067616989032">يمكنك ضبط اختصار لوحة المفاتيح الخاص بك</translation>
 <translation id="5062863364865466276">الحركة</translation>
 <translation id="5063480226653192405">الاستخدام</translation>
 <translation id="5064921774605267982">يفتح هذا الزر ملف "<ph name="PROFILE_NAME" />" الشخصي. يدير أحد والدَيك هذا الملف الشخصي.</translation>
@@ -4999,7 +4996,6 @@
 <translation id="6540488083026747005">لقد سمحت باستخدام ملفات تعريف الارتباط التابعة لجهات خارجية في هذا الموقع الإلكتروني.</translation>
 <translation id="6541638731489116978">تم حظر الموقع الإلكتروني هذا من الوصول إلى مستشعرات الحركة.</translation>
 <translation id="6542417422899025860">إزالة معظم المعلومات الشخصية تلقائيًا</translation>
-<translation id="6548240707386871455">اختصار ميزة "الملء التلقائي المحسّن"</translation>
 <translation id="654871471440386944">هل تريد تفعيل ميزة "التصفُّح النصي بالمؤشر"؟</translation>
 <translation id="6549689063733911810">الأحدث</translation>
 <translation id="6550675742724504774">خيارات</translation>
@@ -5171,7 +5167,6 @@
 <translation id="6710172959248731469">‏إعدادات خدمات Google</translation>
 <translation id="6710394144992407503">التحقق من الأخطاء الإملائية عند كتابة نص على صفحات الويب</translation>
 <translation id="6711236403841768371">‏قبل ‎<ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">الضغط على ⌘ مرّتين لتفعيل ميزة "الملء التلقائي المحسّن"</translation>
 <translation id="6712943853047024245">سبق أن حفظت كلمة مرور مع اسم المستخدم هذا للموقع الإلكتروني <ph name="WEBSITE" />.</translation>
 <translation id="6713668088933662563">عدم اقتراح ترجمة المحتوى المعروض بهذه اللغات مطلقًا</translation>
 <translation id="6714871567554212732">عرض مزيد من التفاصيل عن "<ph name="GROUP_NAME" />"</translation>
@@ -6093,7 +6088,6 @@
 <translation id="7706742200777909964">يمكنك وضع الصفحات جنبًا إلى جنب في علامة التبويب نفسها للتمكّن من مقارنة الخيارات وأداء مهام أخرى بسهولة</translation>
 <translation id="7707108266051544351">تم حظر الموقع الإلكتروني هذا من استخدام مستشعرات الحركة.</translation>
 <translation id="7709152031285164251">تعذّر - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">محو الاختصار المخصّص لميزة "الملء التلقائي المحسّن"</translation>
 <translation id="7710568461918838723">&amp;إرسال...</translation>
 <translation id="7712739869553853093">مربع حوار معاينة الطباعة</translation>
 <translation id="7714464543167945231">شهادة</translation>
@@ -6453,7 +6447,6 @@
 <translation id="810185532889603849">لون مخصص</translation>
 <translation id="8103484184517840583">‏الخروج من "وضع AI"</translation>
 <translation id="810362914482827094">البحث في مفاتيح المرور</translation>
-<translation id="8104388155778519213">‏يمكنك مشاركة المحتوى الذي يظهر على شاشتك باستخدام "عدسة Google"</translation>
 <translation id="8104412594956510627">‏للحصول على السجلّ من "<ph name="DEVICE" />"، يُرجى مزامنة السجلّ. ويمكنك إيقاف المزامنة في أي وقت من خلال الإعدادات. وقد تستخدم Google السجلّ لتخصيص "بحث Google" والخدمات الأخرى.</translation>
 <translation id="8104778744208707085">تستدعي انتباهك</translation>
 <translation id="8105273883928376822">يُرجى تسجيل الدخول للمتابعة.</translation>
@@ -6552,7 +6545,6 @@
 <translation id="8214489666383623925">فتح ملف...</translation>
 <translation id="8214771296778317256">يمكنك اختيار نمط علامة التبويب المفضّل لديك هنا</translation>
 <translation id="8217399928341212914">متابعة حظر عمليات التنزيل التلقائية لعدة ملفات</translation>
-<translation id="8218411859495801458">تعديل الاختصار المخصّص لميزة "الملء التلقائي المحسّن"</translation>
 <translation id="8221358554841691213">نمط التركيز على نطاق متوسط</translation>
 <translation id="8221942262855134126">إدارة كلمة المرور</translation>
 <translation id="8222112516148944758">يتم حفظ مجموعات علامات التبويب وتعديلها تلقائيًا على جميع أجهزتك</translation>
@@ -6825,7 +6817,6 @@
 <translation id="8512476990829870887">إنهاء العملية</translation>
 <translation id="851263357009351303">السماح للموقع <ph name="HOST" /> بعرض الصور دومًا</translation>
 <translation id="8513357934662532537">‏لاستيراد كلمات مرور إلى "<ph name="BRAND" />" على حساب <ph name="USER_EMAIL" />، اختَر أحد ملفات CSV.</translation>
-<translation id="8514257511170433540">يمكنك استخدام اختصار لوحة المفاتيح التلقائي عند ملء النماذج</translation>
 <translation id="8514746246728959655">تجربة مفتاح أمان آخر</translation>
 <translation id="8514828975162859845">كيك بوبس</translation>
 <translation id="8514955299594277296">عدم السماح للمواقع الإلكترونية بحفظ البيانات على جهازك (لا يُنصح بتفعيل هذا الإعداد)</translation>

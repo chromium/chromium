@@ -578,7 +578,6 @@
 <translation id="7213407614656404070">যেকোনও সময় মেসেজ, ডকুমেন্ট এবং অন্যান্য অ্যাপে থাকা লিঙ্কে ক্লিক করতে Chromium ব্যবহার করুন</translation>
 <translation id="7216228761061470870">ডেস্কটপে 'ছবি সার্চ করা' ফিচার ব্যবহার করার সময়, পৃষ্ঠার টাইটেল, URL এবং PDF সহ কন্টেন্ট সার্ভারে পাঠানো হয়</translation>
 <translation id="7223968959479464213">টাস্ক ম্যানেজার - Chromium</translation>
-<translation id="7226331818892775989">Chromium-এর বাইরে থাকা কন্টেন্ট সম্পর্কে জিজ্ঞাসা করুন, যেমন অন্যান্য অ্যাপ বা ফাইল সংক্রান্ত</translation>
 <translation id="7227958669698166857"><ph name="EXISTING_USER" /> আগেই সাইন-ইন করেছেন। আপনি আলাদাভাবে ব্রাউজ করতে চাইলে, নিজের Chromium প্রোফাইলে <ph name="USER_EMAIL_ADDRESS" /> হিসেবে সাইন-ইন করুন। এছাড়াও, আপনার সব ডিভাইসে সেভ করা তথ্য ও আরও অনেক কিছু পাবেন।</translation>
 <translation id="7252276985725323153">ইনস্ট্যান্ট ব্রাউজ করা শুরু করুন: Windows চালু হলেই এখন Chromium লঞ্চ হতে পারবে।</translation>
 <translation id="7274695763216404502">পিন করা আছে! টুলবার থেকে 'ছবি সার্চ করা' ফিচার আবার ব্যবহার করুন</translation>
@@ -694,7 +693,6 @@ Chromium আপনার সেটিংস পুনরুদ্ধার ক�
 <translation id="8310603974518734211"><ph name="USER_NAME" /> হিসেবে Chromium-এ সাইন-ইন করার QR কোড</translation>
 <translation id="8313851650939857356">স্টার্টআপ সম্পর্কিত এরর: <ph name="STARTUP_ERROR" />।</translation>
 <translation id="8318772038038596122"><ph name="TIMEOUT_DURATION" /> ধরে ব্যবহার করা না হলে, আপনার সংস্থা Chromium বন্ধ করে দেয়।</translation>
-<translation id="8321888067342493336">ছবি হিসেবে সেভ করুন</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> পূর্বে Chromium ব্যবহার করছিলেন</translation>
 <translation id="8351551329754447960">Chromium-এ স্কিল চালু করুন</translation>
 <translation id="8359544530202147897">আপনার অ্যাকাউন্ট, <ph name="ACCOUNT_EMAIL" />-এ Chromium ডেটা ব্যবহার করা চালিয়ে যেতে Chromium আপডেট করুন</translation>

@@ -94,7 +94,6 @@
 <translation id="1090126737595388931">Çalışan Hiç Arka Plan Uygulama Yok</translation>
 <translation id="109038914521989341">Lütfen bu verileri kopyalama nedeninizi girin:</translation>
 <translation id="1094158807129647987">"<ph name="SELECTION" />" Hakkında Soru Sorun</translation>
-<translation id="1095398697303758108">Gelişmiş otomatik doldurma için Ctrl tuşuna iki kez basın</translation>
 <translation id="1095879482467973146">Web'de Google Şifre Yöneticisi</translation>
 <translation id="1097016918605049747">Bu sayfa çevrilemedi</translation>
 <translation id="1099962274138857708">Resim, <ph name="DEVICE_NAME" /> cihazından kopyalandı</translation>
@@ -581,6 +580,7 @@
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Sekme kaldırılıp grup silinsin mi?}=1{Sekmeler kaldırılıp grup silinsin mi?}other{Sekmeler kaldırılıp gruplar silinsin mi?}}</translation>
 <translation id="1637765355341780467">Profiliniz açılırken bir sorun oluştu. Bazı özellikler kullanılamayabilir.</translation>
 <translation id="1639239467298939599">Yükleniyor</translation>
+<translation id="1640672724030957280">İndiriliyor...</translation>
 <translation id="1641113438599504367">Güvenli Tarama</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Yanlış biçimlendirildiği için diğer 1 şifre içe aktarılamadı}other{Yanlış biçimlendirildikleri için diğer {NUM_PASSWORDS} şifre içe aktarılamadı}}</translation>
 <translation id="1642299742557467312">Bu dosya, cihazınıza zarar verebilir</translation>
@@ -1798,7 +1798,6 @@
 <translation id="2988328607561082373">Yeniden kullandığınız şifre yok</translation>
 <translation id="2989523299700148168">Son ziyaret edilenler</translation>
 <translation id="2989786307324390836">DER kodlu ikili, tek sertifika</translation>
-<translation id="2990500505358145117">Gelişmiş otomatik doldurma kısayolunu düzenle</translation>
 <translation id="2990583317361835189">Sitelerin hareket sensörlerini kullanmasına izin verme</translation>
 <translation id="2991182900092497283">Lütfen bu verileri yapıştırma nedeninizi girin:</translation>
 <translation id="2992754757708650257">Siteden çıkılıp görev sonlandırılsın mı?</translation>
@@ -2051,7 +2050,6 @@
 <translation id="3244294424315804309">Sesi kapatmaya devam et</translation>
 <translation id="3247649647204519958">Buradan, açtığınız sitenin uzantı izinlerini görebilir ve yönetebilirsiniz</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Ağ hatası</translation>
-<translation id="3248957351402065497">Gelişmiş otomatik doldurma için özel kısayol</translation>
 <translation id="3249558306861350254">Windows ayarlarınızda <ph name="BEGIN_BOLD" />Varsayılan Olarak Ayarla<ph name="END_BOLD" />'yı tıklayın.</translation>
 <translation id="3250374026663843838">Becerileri yönet</translation>
 <translation id="3251759466064201842">&lt;Sertifikanın Parçası Değil&gt;</translation>
@@ -2272,6 +2270,7 @@
 <translation id="3481268647794498892"><ph name="ALTERNATIVE_BROWSER_NAME" /> <ph name="COUNTDOWN_SECONDS" /> saniye içinde açılıyor</translation>
 <translation id="348247802372410699">Stil seçin</translation>
 <translation id="3482573964681964096">Windows'dan içe aktarılan sertifikaları yönetin</translation>
+<translation id="348268549820508141">Konuşma tanıma</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> şu dosyaları görüntüleyebilir:</translation>
 <translation id="3486380520195228369">Sayfa yenilenene kadar gizlenir</translation>
 <translation id="3487007233252413104">anonim işlev</translation>
@@ -2642,7 +2641,6 @@
 <translation id="3826086052025847742">ChromeOS Flex Günlükleri</translation>
 <translation id="3827774300009121996">&amp;Tam Ekran</translation>
 <translation id="3828029223314399057">Yer işaretlerinde arayın</translation>
-<translation id="3828454092958722155">Gelişmiş otomatik doldurma kısayolunu temizle</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Yüksek bellek kullanımı - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Farklı bir geçiş anahtarı kullanın</translation>
 <translation id="3838085852053358637">Uzantı yüklenemedi</translation>
@@ -3723,7 +3721,6 @@
 <translation id="5060419232449737386">Altyazı ayarları</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Bu klasör bir yer işareti içeriyor. Silmek istediğinizden emin misiniz?}other{Bu klasör # yer işareti içeriyor. Silmek istediğinizden emin misiniz?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
-<translation id="5061781067616989032">Kendi klavye kısayolunuzu oluşturun</translation>
 <translation id="5062863364865466276">Hareket</translation>
 <translation id="5063480226653192405">Kullanım</translation>
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" /> profilini açın. Bu profil, ebeveyniniz tarafından yönetiliyor.</translation>
@@ -4999,7 +4996,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6540488083026747005">Bu sitede üçüncü taraf çerezlerine izin verdiniz</translation>
 <translation id="6541638731489116978">Bu sitenin, hareket sensörlerinize erişimi engellenmiştir.</translation>
 <translation id="6542417422899025860">Kişisel bilgilerin çoğunu otomatik olarak kaldırın</translation>
-<translation id="6548240707386871455">Gelişmiş otomatik doldurma kısayolu</translation>
 <translation id="654871471440386944">Klavyeyle göz atma açılsın mı?</translation>
 <translation id="6549689063733911810">En son</translation>
 <translation id="6550675742724504774">Seçenekler</translation>
@@ -5163,7 +5159,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="6710172959248731469">Google hizmetleri ayarları</translation>
 <translation id="6710394144992407503">Web sayfalarında metin yazarken yazım hatalarını kontrol et</translation>
 <translation id="6711236403841768371"><ph name="END_DATE" /> öncesi</translation>
-<translation id="6711569175139833669">Gelişmiş otomatik doldurma için ⌘ tuşuna iki kez basın</translation>
 <translation id="6712943853047024245"><ph name="WEBSITE" /> için bu kullanıcı adıyla zaten bir şifre kaydettiniz</translation>
 <translation id="6713668088933662563">Şu dilleri çevirmeyi hiçbir zaman önerme</translation>
 <translation id="6714871567554212732"><ph name="GROUP_NAME" /> hakkında daha fazla ayrıntı göster</translation>
@@ -6084,7 +6079,6 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="7706742200777909964">Seçenekleri karşılaştırmak ve daha fazlasını yapmak için sayfaları aynı sekmede yan yana yerleştirin</translation>
 <translation id="7707108266051544351">Bu sitenin, hareket sensörlerini kullanması engellenmiştir.</translation>
 <translation id="7709152031285164251">Başarısız - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Gelişmiş otomatik doldurma için özel kısayolu temizleyin</translation>
 <translation id="7710568461918838723">&amp;Yayınla...</translation>
 <translation id="7712739869553853093">Yazdırma önizleme iletişim kutusu</translation>
 <translation id="7714464543167945231">Sertifika</translation>
@@ -6444,7 +6438,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="810185532889603849">Özel renk</translation>
 <translation id="8103484184517840583">AI Modu'ndan çık</translation>
 <translation id="810362914482827094">Geçiş anahtarı arama</translation>
-<translation id="8104388155778519213">Google Lens ile ekranınızdakileri paylaşın</translation>
 <translation id="8104412594956510627"><ph name="DEVICE" /> cihazındaki geçmişinize ulaşmak için geçmişi senkronize edin. Senkronizasyonu istediğiniz zaman ayarlardan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="8104778744208707085">İşlem yapmanız gerekiyor</translation>
 <translation id="8105273883928376822">Devam etmek için lütfen oturum açın.</translation>
@@ -6542,7 +6535,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8214489666383623925">Dosya Aç...</translation>
 <translation id="8214771296778317256">Tercih ettiğiniz sekme stilini buradan seçin</translation>
 <translation id="8217399928341212914">Otomatik olarak birden fazla dosya indirilmesini engellemeye devam et</translation>
-<translation id="8218411859495801458">Gelişmiş otomatik doldurma için özel kısayolu düzenleyin</translation>
 <translation id="8221358554841691213">Orta odak stili</translation>
 <translation id="8221942262855134126">Şifreyi yönetin</translation>
 <translation id="8222112516148944758">Sekme gruplarınız tüm cihazlarınızda otomatik olarak kaydedilip güncellenir</translation>
@@ -6815,7 +6807,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8512476990829870887">İşlemi Bitir</translation>
 <translation id="851263357009351303"><ph name="HOST" /> sitesindeki resimlerin gösterilmesine her zaman izin ver</translation>
 <translation id="8513357934662532537"><ph name="USER_EMAIL" /> hesabının şifrelerini <ph name="BRAND" /> hizmetine aktarmak için CSV dosyası seçin.</translation>
-<translation id="8514257511170433540">Formları doldururken varsayılan klavye kısayolunu kullanın</translation>
 <translation id="8514746246728959655">Başka bir güvenlik anahtarı deneyin</translation>
 <translation id="8514828975162859845">Lolipop kekler</translation>
 <translation id="8514955299594277296">Sitelerin cihazıma veri kaydetmesine izin verme (önerilmez)</translation>

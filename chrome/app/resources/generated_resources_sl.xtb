@@ -94,7 +94,6 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1090126737595388931">Ni aktivnih programov v ozadju</translation>
 <translation id="109038914521989341">Navedite razlog za kopiranje teh podatkov:</translation>
 <translation id="1094158807129647987">Vprašajte glede tega: »<ph name="SELECTION" />«</translation>
-<translation id="1095398697303758108">Dvakrat pritisnite Ctrl za izboljšano samodejno izpolnjevanje</translation>
 <translation id="1095879482467973146">Googlov upravitelj gesel v spletu</translation>
 <translation id="1097016918605049747">Te strani ni bilo mogoče prevesti</translation>
 <translation id="1099962274138857708">Slika je kopirana iz naprave <ph name="DEVICE_NAME" /></translation>
@@ -582,6 +581,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Želite odstraniti zavihek in izbrisati skupino?}=1{Želite odstraniti zavihke in izbrisati skupino?}one{Želite odstraniti zavihke in izbrisati skupine?}two{Želite odstraniti zavihke in izbrisati skupine?}few{Želite odstraniti zavihke in izbrisati skupine?}other{Želite odstraniti zavihke in izbrisati skupine?}}</translation>
 <translation id="1637765355341780467">Pri odpiranju profila je prišlo do težave. Nekatere funkcije morda niso na voljo.</translation>
 <translation id="1639239467298939599">Nalaganje</translation>
+<translation id="1640672724030957280">Prenos ...</translation>
 <translation id="1641113438599504367">Varno brskanje</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Uvoženo ni bilo še 1 geslo, ker ni pravilno oblikovano.}one{Uvoženo ni bilo še {NUM_PASSWORDS} drugo geslo, ker ni pravilno oblikovano.}two{Uvoženi nista bili še {NUM_PASSWORDS} drugi gesli, ker nista pravilno oblikovani.}few{Uvožena niso bila še {NUM_PASSWORDS} druga gesla, ker niso pravilno oblikovana.}other{Uvoženih ni bilo še {NUM_PASSWORDS} drugih gesel, ker niso pravilno oblikovana.}}</translation>
 <translation id="1642299742557467312">Ta datoteka lahko škoduje vaši napravi</translation>
@@ -1810,7 +1810,6 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="2988328607561082373">Nimate nobenih znova uporabljenih gesel.</translation>
 <translation id="2989523299700148168">Nedavno obiskano</translation>
 <translation id="2989786307324390836">DER kodirano dvojiško, enojno potrdilo</translation>
-<translation id="2990500505358145117">Urejanje bližnjice za izboljšano samodejno izpolnjevanje</translation>
 <translation id="2990583317361835189">Spletnim mestom ni dovoljena uporaba tipal gibanja.</translation>
 <translation id="2991182900092497283">Navedite razlog za lepljenje teh podatkov:</translation>
 <translation id="2992754757708650257">Želite zapustiti spletno mesto in končati opravilo?</translation>
@@ -2065,7 +2064,6 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="3244294424315804309">Zvok naj bo še naprej izklopljen</translation>
 <translation id="3247649647204519958">Tukaj si lahko ogledate in upravljate dovoljenja za razširitve za spletno mesto, na katerem ste</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – napaka omrežja</translation>
-<translation id="3248957351402065497">Bližnjica po meri za izboljšano samodejno izpolnjevanje</translation>
 <translation id="3249558306861350254">V nastavitvah sistema Windows kliknite <ph name="BEGIN_BOLD" />Nastavi privzeto<ph name="END_BOLD" />.</translation>
 <translation id="3250374026663843838">Upravljanje veščine</translation>
 <translation id="3251759466064201842">&lt;Ni del potrdila&gt;</translation>
@@ -2286,6 +2284,7 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="3481268647794498892">Odpiranje v brskalniku <ph name="ALTERNATIVE_BROWSER_NAME" /> čez <ph name="COUNTDOWN_SECONDS" /> s</translation>
 <translation id="348247802372410699">Izberite slog</translation>
 <translation id="3482573964681964096">Upravljanje uvoženih potrdil iz sistema Windows</translation>
+<translation id="348268549820508141">Prepoznavanje govora</translation>
 <translation id="3482719661246593752">Spletno mesto <ph name="ORIGIN" /> si lahko ogleda te datoteke</translation>
 <translation id="3486380520195228369">Skrito, dokler se stran ne osveži</translation>
 <translation id="3487007233252413104">anonimna funkcija</translation>
@@ -2656,7 +2655,6 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="3826086052025847742">Dnevniki za ChromeOS Flex</translation>
 <translation id="3827774300009121996">&amp;Celozaslonsko</translation>
 <translation id="3828029223314399057">Išči po zaznamkih</translation>
-<translation id="3828454092958722155">Brisanje bližnjice za izboljšano samodejno izpolnjevanje</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Visoka uporaba pomnilnika – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Uporabi drug ključ za dostop</translation>
 <translation id="3838085852053358637">Ni bilo mogoče naložiti razširitve</translation>
@@ -3737,7 +3735,6 @@ Svoja gesla lahko kadar koli preverite v storitvi <ph name="GOOGLE_PASSWORD_MANA
 <translation id="5060419232449737386">Nastavitve za podnapise</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Ta mapa vsebuje zaznamek. Ali ste prepričani, da jo želite izbrisati?}one{Ta mapa vsebuje # zaznamek. Ali ste prepričani, da jo želite izbrisati?}two{Ta mapa vsebuje # zaznamka. Ali ste prepričani, da jo želite izbrisati?}few{Ta mapa vsebuje # zaznamke. Ali ste prepričani, da jo želite izbrisati?}other{Ta mapa vsebuje # zaznamkov. Ali ste prepričani, da jo želite izbrisati?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
-<translation id="5061781067616989032">Nastavite lastno bližnjično tipko</translation>
 <translation id="5062863364865466276">Gibanje</translation>
 <translation id="5063480226653192405">Uporaba</translation>
 <translation id="5064921774605267982">Odpri profil <ph name="PROFILE_NAME" />. Ta profil upravlja starš.</translation>
@@ -5014,7 +5011,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6540488083026747005">Na tem spletnem mestu ste dovolili piškotke tretjih oseb</translation>
 <translation id="6541638731489116978">Temu spletnemu mestu je preprečen dostop do tipal gibanja.</translation>
 <translation id="6542417422899025860">Samodejno odstranjevanje večine osebnih podatkov</translation>
-<translation id="6548240707386871455">Bližnjica za izboljšano samodejno izpolnjevanje</translation>
 <translation id="654871471440386944">Želite vklopiti brskanje s kazalko?</translation>
 <translation id="6549689063733911810">Nedavno</translation>
 <translation id="6550675742724504774">Možnosti</translation>
@@ -5184,7 +5180,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="6710172959248731469">Nastavitve Googlovih storitev</translation>
 <translation id="6710394144992407503">Preverjanje črkovanja pri vnašanju besedila na spletnih straneh</translation>
 <translation id="6711236403841768371">Pred <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Dvakratni pritisk ⌘ za izboljšano samodejno izpolnjevanje</translation>
 <translation id="6712943853047024245">Geslo ste s tem uporabniškim imenom že shranili za: <ph name="WEBSITE" />.</translation>
 <translation id="6713668088933662563">Nikoli ne ponudi prevajanja teh jezikov</translation>
 <translation id="6714871567554212732">Ogled več podrobnosti o skupini <ph name="GROUP_NAME" /></translation>
@@ -6105,7 +6100,6 @@ To lahko vključuje podatke o nameščeni programski opremi, datotekah, brskalni
 <translation id="7706742200777909964">Postavite strani vzporedno na istem zavihku, da boste lahko preprosto primerjali možnosti in drugo</translation>
 <translation id="7707108266051544351">Temu spletnemu mestu je preprečena uporaba tipal gibanja.</translation>
 <translation id="7709152031285164251">Ni uspelo – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Brisanje bližnjice po meri za izboljšano samodejno izpolnjevanje</translation>
 <translation id="7710568461918838723">&amp;Predvajanje ...</translation>
 <translation id="7712739869553853093">Pogovorno okno za predogled tiskanja</translation>
 <translation id="7714464543167945231">Potrdilo</translation>
@@ -6465,7 +6459,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="810185532889603849">Barva po meri</translation>
 <translation id="8103484184517840583">Izhod iz načina umetne inteligence</translation>
 <translation id="810362914482827094">Iskanje gesel</translation>
-<translation id="8104388155778519213">Delite vsebino na zaslonu z Googlom Lens</translation>
 <translation id="8104412594956510627">Če želite dostopati do zgodovine iz naprave <ph name="DEVICE" />, sinhronizirajte zgodovino. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="8104778744208707085">Preverite</translation>
 <translation id="8105273883928376822">Če želite nadaljevati, se prijavite.</translation>
@@ -6563,7 +6556,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8214489666383623925">Odpri datoteko ...</translation>
 <translation id="8214771296778317256">Tukaj izberite želeno oblikovanje zavihkov</translation>
 <translation id="8217399928341212914">Še naprej blokiraj samodejni prenos več datotek</translation>
-<translation id="8218411859495801458">Urejanje bližnjice po meri za izboljšano samodejno izpolnjevanje</translation>
 <translation id="8221358554841691213">Slog srednje velikega fokusa</translation>
 <translation id="8221942262855134126">Upravljanje gesla</translation>
 <translation id="8222112516148944758">Skupine zavihkov se samodejno shranjujejo in posodabljajo v vseh napravah</translation>
@@ -6836,7 +6828,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8512476990829870887">Končaj proces</translation>
 <translation id="851263357009351303">Vedno dovoli mestu <ph name="HOST" />, da pokaže slike</translation>
 <translation id="8513357934662532537">Če želite v izdelek <ph name="BRAND" /> uvoziti gesla za račun <ph name="USER_EMAIL" />, izberite datoteko CSV.</translation>
-<translation id="8514257511170433540">Uporabite privzeto bližnjično tipko pri izpolnjevanju obrazcev</translation>
 <translation id="8514746246728959655">Poskusite z drugim varnostnim ključem</translation>
 <translation id="8514828975162859845">Čokoladne lizike</translation>
 <translation id="8514955299594277296">Spletnim mestom ni dovoljeno shranjevanje podatkov v napravi (ni priporočljivo)</translation>

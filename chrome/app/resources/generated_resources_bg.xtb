@@ -94,7 +94,6 @@
 <translation id="1090126737595388931">Не се изпълняват приложения на заден план</translation>
 <translation id="109038914521989341">Въведете причина за копирането на тези данни:</translation>
 <translation id="1094158807129647987">Попитайте за „<ph name="SELECTION" />“</translation>
-<translation id="1095398697303758108">Двукратно натискане на Ctrl за подобрено автоматично попълване</translation>
 <translation id="1095879482467973146">Google Мениджър на пароли в мрежата</translation>
 <translation id="1097016918605049747">Страницата не бе преведена</translation>
 <translation id="1099962274138857708">Изображение, копирано от <ph name="DEVICE_NAME" /></translation>
@@ -582,6 +581,7 @@
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Искате ли да премахнете раздела и да изтриете групата?}=1{Искате ли да премахнете разделите и да изтриете групата?}other{Искате ли да премахнете разделите и да изтриете групите?}}</translation>
 <translation id="1637765355341780467">Нещо се обърка при отварянето на потребителския ви профил. Някои функции може да не са налице.</translation>
 <translation id="1639239467298939599">Зарежда се</translation>
+<translation id="1640672724030957280">Изтегля се...</translation>
 <translation id="1641113438599504367">Безопасно сърфиране</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Още 1 парола не бе импортирана поради неправилно форматиране}other{Още {NUM_PASSWORDS} пароли не бяха импортирани поради неправилно форматиране}}</translation>
 <translation id="1642299742557467312">Този файл може да навреди на устройството ви</translation>
@@ -1810,7 +1810,6 @@
 <translation id="2988328607561082373">Не използвате повторно нито една парола</translation>
 <translation id="2989523299700148168">Наскоро посетени</translation>
 <translation id="2989786307324390836">DER кодирано двоично, единичен сертификат</translation>
-<translation id="2990500505358145117">Редактиране на прекия път за подобреното автоматично попълване</translation>
 <translation id="2990583317361835189">Да не се разрешава на сайтовете да използват сензорите за движение</translation>
 <translation id="2991182900092497283">Въведете причина за поставянето на тези данни:</translation>
 <translation id="2992754757708650257">Искате ли да напуснете сайта и да прекратите задачата?</translation>
@@ -2065,7 +2064,6 @@
 <translation id="3244294424315804309">Продължаване без звук</translation>
 <translation id="3247649647204519958">Оттук можете да преглеждате и управлявате разрешенията за разширенията за сайта, който сте отворили</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – грешка в мрежата</translation>
-<translation id="3248957351402065497">Персонализиран пряк път за подобреното автоматично попълване</translation>
 <translation id="3249558306861350254">Кликнете върху опцията за <ph name="BEGIN_BOLD" />задаване като основен<ph name="END_BOLD" /> в настройките на Windows.</translation>
 <translation id="3250374026663843838">Управление на умението ви</translation>
 <translation id="3251759466064201842">&lt;Не е част от сертификата&gt;</translation>
@@ -2286,6 +2284,7 @@
 <translation id="3481268647794498892">Ще се отвори чрез <ph name="ALTERNATIVE_BROWSER_NAME" /> след <ph name="COUNTDOWN_SECONDS" /> секунди</translation>
 <translation id="348247802372410699">Изберете стил</translation>
 <translation id="3482573964681964096">Управление на сертификатите, импортирани от Windows</translation>
+<translation id="348268549820508141">Разпознаване на говор</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> може да преглежда следните файлове</translation>
 <translation id="3486380520195228369">Скрито до опресняването на страницата</translation>
 <translation id="3487007233252413104">анонимна функция</translation>
@@ -2656,7 +2655,6 @@
 <translation id="3826086052025847742">Регистрационни файлове за ChromeOS Flex</translation>
 <translation id="3827774300009121996">&amp;На цял екран</translation>
 <translation id="3828029223314399057">Търсене в отметките</translation>
-<translation id="3828454092958722155">Изчистване на прекия път за подобреното автоматично попълване</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – голямо количество използвана памет: <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Използване на друг ключ за достъп</translation>
 <translation id="3838085852053358637">Зареждането на разширението не бе успешно</translation>
@@ -3737,7 +3735,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5060419232449737386">Настройки за надписите</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Тази папка съдържа отметка. Наистина ли искате да я изтриете?}other{Тази папка съдържа # отметки. Наистина ли искате да я изтриете?}}</translation>
 <translation id="5061531353537614467">Тундра</translation>
-<translation id="5061781067616989032">Настройте своя собствена клавишна комбинация</translation>
 <translation id="5062863364865466276">Движение</translation>
 <translation id="5063480226653192405">Употреба</translation>
 <translation id="5064921774605267982">Отваряне на потребителския профил <ph name="PROFILE_NAME" />. Той се управлява от родителя ви.</translation>
@@ -5014,7 +5011,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6540488083026747005">Разрешихте „бисквитките“ на трети страни на този сайт</translation>
 <translation id="6541638731489116978">Достъпът на този сайт до сензорите ви за движение е блокиран.</translation>
 <translation id="6542417422899025860">Автоматично премахване на по-голямата част от личната информация</translation>
-<translation id="6548240707386871455">Пряк път за подобреното автоматично попълване</translation>
 <translation id="654871471440386944">Да се включи ли Caret Browsing?</translation>
 <translation id="6549689063733911810">Скорошни</translation>
 <translation id="6550675742724504774">Опции</translation>
@@ -5178,7 +5174,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6710172959248731469">Настройки за услугите на Google</translation>
 <translation id="6710394144992407503">Проверка на правописа при въвеждане на текст в уеб страници</translation>
 <translation id="6711236403841768371">Преди <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Двукратно натискане на ⌘ за подобрено автоматично попълване</translation>
 <translation id="6712943853047024245">Вече запазихте парола с това потребителско име за <ph name="WEBSITE" /></translation>
 <translation id="6713668088933662563">Никога да не се предлага превод за тези езици</translation>
 <translation id="6714871567554212732">Вижте още подробности за „<ph name="GROUP_NAME" />“</translation>
@@ -6099,7 +6094,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7706742200777909964">Поставяйте страници една до друга в един и същ раздел, за да можете лесно да сравнявате опции и др.</translation>
 <translation id="7707108266051544351">Сайтът бе блокиран, така че да не използва сензорите за движение.</translation>
 <translation id="7709152031285164251">Не бе успешно – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Изчистване на персонализираната клавишна комбинация за подобреното автоматично попълване</translation>
 <translation id="7710568461918838723">&amp;Предаване...</translation>
 <translation id="7712739869553853093">Диалогов прозорец за визуализация за печат</translation>
 <translation id="7714464543167945231">Сертификат</translation>
@@ -6459,7 +6453,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="810185532889603849">Персонализиран цвят</translation>
 <translation id="8103484184517840583">Изход от режима с AI</translation>
 <translation id="810362914482827094">Търсене в кодовете за достъп</translation>
-<translation id="8104388155778519213">Споделете съдържанието на екрана си с Google Обектив</translation>
 <translation id="8104412594956510627">За да получите достъп до историята от <ph name="DEVICE" />, синхронизирайте я. Можете да спрете синхронизирането по всяко време от настройките. Google може да персонализира Търсене и други услуги въз основа на историята ви.</translation>
 <translation id="8104778744208707085">Изисква вниманието ви</translation>
 <translation id="8105273883928376822">Влезте в профила си, за да продължите.</translation>
@@ -6557,7 +6550,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8214489666383623925">Отваряне на файл...</translation>
 <translation id="8214771296778317256">Изберете предпочитания от вас стил на разделите тук</translation>
 <translation id="8217399928341212914">Автоматичното изтегляне на няколко файла да остане блокирано</translation>
-<translation id="8218411859495801458">Редактиране на персонализираната клавишна комбинация за подобреното автоматично попълване</translation>
 <translation id="8221358554841691213">Стил „Среден фокус“</translation>
 <translation id="8221942262855134126">Управление на паролата</translation>
 <translation id="8222112516148944758">Групите раздели се запазват и актуализират автоматично на всичките ви устройства</translation>
@@ -6830,7 +6822,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8512476990829870887">Прекратяване на процеса</translation>
 <translation id="851263357009351303">Да се разреши на <ph name="HOST" /> винаги да показва изображения</translation>
 <translation id="8513357934662532537">За да импортирате пароли в <ph name="BRAND" /> за <ph name="USER_EMAIL" />, изберете CSV файл.</translation>
-<translation id="8514257511170433540">Използвайте стандартната клавишна комбинация при попълване на формуляри</translation>
 <translation id="8514746246728959655">Опитайте с друг ключ за сигурност</translation>
 <translation id="8514828975162859845">Торта на клечка</translation>
 <translation id="8514955299594277296">Забраняване на сайтовете да запазват данни на устройството ви (не се препоръчва)</translation>

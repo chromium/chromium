@@ -94,7 +94,6 @@
 <translation id="1090126737595388931">Ямар ч үндсэн апп ажиллаагүй байна.</translation>
 <translation id="109038914521989341">Энэ өгөгдлийг хуулах шалтгаан оруулна уу:</translation>
 <translation id="1094158807129647987">“<ph name="SELECTION" />”-н тухай асуух</translation>
-<translation id="1095398697303758108">Сайжруулсан автомат бөглөлтийг ашиглахын тулд Ctrl дээр хоёр удаа дарах</translation>
 <translation id="1095879482467973146">Веб дээрх Google Password Manager</translation>
 <translation id="1097016918605049747">Энэ хуудсыг орчуулах боломжгүй байна</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" />-с хуулсан зураг</translation>
@@ -582,6 +581,7 @@
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Табыг хасаж, бүлгийг устгах уу?}=1{Табуудыг хасаж, бүлгийг устгах уу?}other{Табуудыг хасаж, бүлгүүдийг устгах уу?}}</translation>
 <translation id="1637765355341780467">Таны профайлыг нээхэд алдаа гарлаа. Зарим онцлог боломжгүй байж болзошгүй.</translation>
 <translation id="1639239467298939599">Ачаалж байна</translation>
+<translation id="1640672724030957280">Татаж байна...</translation>
 <translation id="1641113438599504367">Аюулгүй хайлт</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Өөр 1 нууц үгний формат буруу байсан тул үүнийг импорт хийгээгүй}other{Өөр {NUM_PASSWORDS} нууц үгний формат буруу байсан тул үүнийг импорт хийгээгүй}}</translation>
 <translation id="1642299742557467312">Энэ файл таны төхөөрөмжийг гэмтээж болно</translation>
@@ -1810,7 +1810,6 @@
 <translation id="2988328607561082373">Та ямар ч нууц үгийг дахин ашиглаагүй байна</translation>
 <translation id="2989523299700148168">Саяхан хандсан</translation>
 <translation id="2989786307324390836">DER шифрлэлттэй бинар дан гэрчилгээ</translation>
-<translation id="2990500505358145117">Сайжруулсан автоматаар бөглөх хэсгийн товчлолыг засах</translation>
 <translation id="2990583317361835189">Сайтуудад хөдөлгөөн мэдрэгчдийг ашиглахыг бүү зөвшөөр</translation>
 <translation id="2991182900092497283">Энэ өгөгдлийг буулгах шалтгаан оруулна уу:</translation>
 <translation id="2992754757708650257">Сайтыг орхиж, ажлыг дуусгах уу?</translation>
@@ -2065,7 +2064,6 @@
 <translation id="3244294424315804309">Дууг үргэлжлүүлэн хаах</translation>
 <translation id="3247649647204519958">Эндээс та байгаа сайтынхаа өргөтгөлийн зөвшөөрлийг харах болон удирдах боломжтой</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Сүлжээний алдаа</translation>
-<translation id="3248957351402065497">Сайжруулсан автоматаар бөглөх хэсгийн захиалгат товчлол</translation>
 <translation id="3249558306861350254">Windows-н тохиргооноосоо <ph name="BEGIN_BOLD" />Өгөгдмөл тохируулах<ph name="END_BOLD" /> дээр товшино уу.</translation>
 <translation id="3250374026663843838">Ур чадвараа удирдах</translation>
 <translation id="3251759466064201842">&lt;Сертификатын хэсэг биш&gt;</translation>
@@ -2286,6 +2284,7 @@
 <translation id="3481268647794498892"><ph name="ALTERNATIVE_BROWSER_NAME" />-г <ph name="COUNTDOWN_SECONDS" /> секундийн дараа нээх гэж байна</translation>
 <translation id="348247802372410699">Загвар сонгох</translation>
 <translation id="3482573964681964096">Windows-с импорт хийсэн сертификатыг удирдах</translation>
+<translation id="348268549820508141">Яриа таних</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> нь дараах файлуудыг үзэх боломжтой</translation>
 <translation id="3486380520195228369">Хуудсыг сэргээх хүртэл нуусан</translation>
 <translation id="3487007233252413104">Нэрээ нууцалсан үйлдэл</translation>
@@ -2656,7 +2655,6 @@
 <translation id="3826086052025847742">ChromeOS Flex-н логууд</translation>
 <translation id="3827774300009121996">Бүтэн дэлгэцээр харуулах</translation>
 <translation id="3828029223314399057">Хадгалагдсан хуудсуудыг хайх</translation>
-<translation id="3828454092958722155">Сайжруулсан автоматаар бөглөх хэсгийн товчлолыг арилгах</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Санах ойн өндөр хэрэглээ - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Өөр нэвтрэх түлхүүр ашиглах</translation>
 <translation id="3838085852053358637">Өргөтгөлийг ачаалж чадсангүй</translation>
@@ -3736,7 +3734,6 @@
 <translation id="5060419232449737386">Тайлбарын тохиргоо</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Энэ фолдер хавчуурга агуулдаг. Та үүнийг устгахдаа итгэлтэй байна уу?}other{Энэ фолдерт # хавчуурга байна. Та үүнийг устгахдаа итгэлтэй байна уу?}}</translation>
 <translation id="5061531353537614467">Тундр</translation>
-<translation id="5061781067616989032">Өөрийн гарын товчлолыг тохируулаарай</translation>
 <translation id="5062863364865466276">Хөдөлгөөн</translation>
 <translation id="5063480226653192405">Ашиглалт</translation>
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" /> профайлыг нээнэ үү. Энэ профайлыг таны эцэг эх удирддаг.</translation>
@@ -5012,7 +5009,6 @@
 <translation id="6540488083026747005">Та энэ сайтад гуравдагч талын күүкинүүдийг зөвшөөрсөн</translation>
 <translation id="6541638731489116978">Энэ сайтыг таны хөдөлгөөн мэдрэгчийг ашиглахыг хориглосон байна.</translation>
 <translation id="6542417422899025860">Ихэнх хувийн мэдээллийг автоматаар хасах</translation>
-<translation id="6548240707386871455">Сайжруулсан автоматаар бөглөх хэсгийн товчлол</translation>
 <translation id="654871471440386944">Caret browsing-г асаах уу?</translation>
 <translation id="6549689063733911810">Сүүлд</translation>
 <translation id="6550675742724504774">Сонголтууд</translation>
@@ -5176,7 +5172,6 @@
 <translation id="6710172959248731469">Google-н үйлчилгээний тохиргоо</translation>
 <translation id="6710394144992407503">Вэб хуудсан дээр текст бичихдээ зөв бичгийн алдаа байгаа эсэхийг шалгана уу</translation>
 <translation id="6711236403841768371"><ph name="END_DATE" />-с өмнө</translation>
-<translation id="6711569175139833669">Сайжруулсан автомат бөглөлтийг ашиглахын тулд ⌘ дээр хоёр удаа дарах</translation>
 <translation id="6712943853047024245">Та аль хэдийн <ph name="WEBSITE" />-д энэ хэрэглэгчийн нэрээр нууц үг хадгалсан байна</translation>
 <translation id="6713668088933662563">Эдгээр хэлээр орчуулахыг хэзээ ч бүү санал болго</translation>
 <translation id="6714871567554212732"><ph name="GROUP_NAME" />-н талаарх дэлгэрэнгүй мэдээллийг харах</translation>
@@ -6096,7 +6091,6 @@
 <translation id="7706742200777909964">Хуудаснуудыг нэг табд зэрэгцүүлэн байрлуулснаар та сонголт болон бусад зүйлийг хялбархан харьцуулах боломжтой</translation>
 <translation id="7707108266051544351">Энэ сайтад хөдөлгөөн мэдрэгч ашиглахыг хориглосон.</translation>
 <translation id="7709152031285164251">Амжилтгүй боллоо - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Сайжруулсан автомат бөглөлтийн захиалгат товчлолыг арилгах</translation>
 <translation id="7710568461918838723">&amp;Дамжуулах...</translation>
 <translation id="7712739869553853093">Урьдчилан үзэх харилцах цонхыг хэвлэх</translation>
 <translation id="7714464543167945231">Сертификат</translation>
@@ -6455,7 +6449,6 @@
 <translation id="810185532889603849">Захиалгат өнгө</translation>
 <translation id="8103484184517840583">ХОУ-ы горимоос гарах</translation>
 <translation id="810362914482827094">Нууц үгнүүд хайх</translation>
-<translation id="8104388155778519213">Google Lens-р дэлгэц дээрээ байгаа зүйлийг хуваалцаарай</translation>
 <translation id="8104412594956510627"><ph name="DEVICE" />-с түүхээ авахын тулд түүхийг синк хийнэ үү. Та хүссэн үедээ тохиргооноос синк хийхийг зогсоох боломжтой. Google таны түүхэд тулгуурлан Хайлт болон бусад үйлчилгээг хувийн болгож магадгүй.</translation>
 <translation id="8104778744208707085">Анхаарлаа хандуулах шаардлагатай</translation>
 <translation id="8105273883928376822">Үргэлжлүүлэхийн тулд нэвтэрнэ үү.</translation>
@@ -6553,7 +6546,6 @@
 <translation id="8214489666383623925">Файлыг нээ...</translation>
 <translation id="8214771296778317256">Илүүд үзсэн табын загвараа эндээс сонгоно уу</translation>
 <translation id="8217399928341212914">Олон файл автоматаар зэрэг татах үйлдлийг блозлох тохиргоог үргэлжлүүлэх</translation>
-<translation id="8218411859495801458">Сайжруулсан автомат бөглөлтийн захиалгат товчлолыг засах</translation>
 <translation id="8221358554841691213">Дунд хэмжээний сонголтын загвар</translation>
 <translation id="8221942262855134126">Нууц үгийг удирдах</translation>
 <translation id="8222112516148944758">Таны табын бүлгийг таны бүх төхөөрөмж дээр автоматаар хадгалж, шинэчилдэг</translation>
@@ -6826,7 +6818,6 @@
 <translation id="8512476990829870887">Дуусгах явц</translation>
 <translation id="851263357009351303"><ph name="HOST" />-д зургуудыг харуулахыг үргэлж зөвшөөр</translation>
 <translation id="8513357934662532537"><ph name="USER_EMAIL" />-д зориулж нууц үгнүүдийг <ph name="BRAND" /> руу импорт хийхийн тулд CSV файл сонгоно уу.</translation>
-<translation id="8514257511170433540">Маягт бөглөхөд өгөгдмөл гарын товчлолыг ашиглаарай</translation>
 <translation id="8514746246728959655">Аюулгүй байдлын өөр түлхүүр туршиж үзнэ үү</translation>
 <translation id="8514828975162859845">Иштэй чихрэн бялуу</translation>
 <translation id="8514955299594277296">Сайтуудад таны төхөөрөмж дээр өгөгдөл хадгалахыг бүү зөвшөөр (санал болгодоггүй)</translation>

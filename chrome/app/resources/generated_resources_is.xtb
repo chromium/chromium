@@ -94,7 +94,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1090126737595388931">Engin bakgrunnsforrit í gangi</translation>
 <translation id="109038914521989341">Tilgreindu ástæðu þess að þú ert að afrita þessi gögn:</translation>
 <translation id="1094158807129647987">Spyrja um „<ph name="SELECTION" />“</translation>
-<translation id="1095398697303758108">Ýttu tvisvar á Ctrl til að nota ítarlega sjálfvirka útfyllingu</translation>
 <translation id="1095879482467973146">Google-aðgangsorðastjórnun á vefnum</translation>
 <translation id="1097016918605049747">Ekki tókst að þýða síðuna</translation>
 <translation id="1099962274138857708">Mynd afrituð úr <ph name="DEVICE_NAME" /></translation>
@@ -582,6 +581,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Fjarlægja flipa og eyða hópi?}=1{Fjarlægja flipa og eyða hópi?}one{Fjarlægja flipa og eyða hópum?}other{Fjarlægja flipa og eyða hópum?}}</translation>
 <translation id="1637765355341780467">Eitthvað fór úrskeiðis við að opna prófílinn þinn. Sumir eiginleikar kunna að vera óaðgengilegir.</translation>
 <translation id="1639239467298939599">Hleður</translation>
+<translation id="1640672724030957280">Sækir...</translation>
 <translation id="1641113438599504367">Örugg vefnotkun</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 aðgangsorði í viðbót var ekki bætt við þar sem það er ekki á réttu sniði}one{{NUM_PASSWORDS} aðgangsorði í viðbót var ekki bætt við þar sem þau eru ekki á réttu sniði}other{{NUM_PASSWORDS} aðgangsorðum í viðbót var ekki bætt við þar sem þau eru ekki á réttu sniði}}</translation>
 <translation id="1642299742557467312">Þessi skrá gæti skaðað tækið þitt</translation>
@@ -1811,7 +1811,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2988328607561082373">Þú ert ekki að endurnýta nein aðgangsorð</translation>
 <translation id="2989523299700148168">Nýlega heimsótt</translation>
 <translation id="2989786307324390836">DER-kóðuð tvíundakerfisskrá, stakt vottorð</translation>
-<translation id="2990500505358145117">Breyta flýtileið ítarlegrar sjálfvirkrar útfyllingar</translation>
 <translation id="2990583317361835189">Ekki leyfa vefsvæðum að nota hreyfiskynjara</translation>
 <translation id="2991182900092497283">Tilgreindu ástæðu þess að þú ert að líma þessi gögn:</translation>
 <translation id="2992754757708650257">Viltu loka vefsvæði og ljúka verkefni?</translation>
@@ -2066,7 +2065,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="3244294424315804309">Hafa áfram slökkt á hljóði</translation>
 <translation id="3247649647204519958">Hér geturðu séð og stjórnað heimildum viðbóta fyrir vefsvæðið sem þú ert á</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – netvilla</translation>
-<translation id="3248957351402065497">Sérsniðin flýtileið ítarlegrar sjálfvirkrar útfyllingar</translation>
 <translation id="3249558306861350254">Smelltu á <ph name="BEGIN_BOLD" />Stilla sem sjálfgefið<ph name="END_BOLD" /> í Windows-stillingunum.</translation>
 <translation id="3250374026663843838">Stjórnaðu færninni þinni</translation>
 <translation id="3251759466064201842">&lt;Ekki hluti af vottorði&gt;</translation>
@@ -2287,6 +2285,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="3481268647794498892">Opnar í <ph name="ALTERNATIVE_BROWSER_NAME" /> eftir <ph name="COUNTDOWN_SECONDS" /> sekúndur</translation>
 <translation id="348247802372410699">Veldu stíl</translation>
 <translation id="3482573964681964096">Stjórna innfluttum vottorðum úr Windows</translation>
+<translation id="348268549820508141">Raddgreining</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> getur skoðað eftirfarandi skrár</translation>
 <translation id="3486380520195228369">Falið þar til síðan hleðst á ný</translation>
 <translation id="3487007233252413104">nafnlaust fall</translation>
@@ -2657,7 +2656,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="3826086052025847742">ChromeOS Flex-annálar</translation>
 <translation id="3827774300009121996">Allur skjárinn</translation>
 <translation id="3828029223314399057">Leita í bókamerkjum</translation>
-<translation id="3828454092958722155">Hreinsa flýtileið ítarlegrar sjálfvirkrar útfyllingar</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Mikil minnisnotkun - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Nota annan aðgangslykil</translation>
 <translation id="3838085852053358637">Ekki tókst að hlaða viðbót</translation>
@@ -3738,7 +3736,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="5060419232449737386">Stillingar skjátexta</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Þessi mappa inniheldur bókamerki. Ertu viss um að þú viljir eyða henni?}one{Þessi mappa inniheldur # bókamerki. Ertu viss um að þú viljir eyða henni?}other{Þessi mappa inniheldur # bókamerki. Ertu viss um að þú viljir eyða henni?}}</translation>
 <translation id="5061531353537614467">Túndra</translation>
-<translation id="5061781067616989032">Settu upp þinn eigin flýtilykil</translation>
 <translation id="5062863364865466276">Hreyfing</translation>
 <translation id="5063480226653192405">Notkun</translation>
 <translation id="5064921774605267982">Opna prófílinn <ph name="PROFILE_NAME" />. Foreldri þitt stjórnar þessum prófíl.</translation>
@@ -5014,7 +5011,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="6540488083026747005">Þú leyfðir fótspor þriðju aðila á þessu vefsvæði</translation>
 <translation id="6541638731489116978">Lokað hefur verið á aðgang þessa vefsvæðis að hreyfiskynjurum þínum.</translation>
 <translation id="6542417422899025860">Fjarlægja flestar persónuupplýsingar sjálfkrafa</translation>
-<translation id="6548240707386871455">Flýtileið ítarlegrar sjálfvirkrar útfyllingar</translation>
 <translation id="654871471440386944">Viltu kveikja á skoðun með textabendli?</translation>
 <translation id="6549689063733911810">Nýlegt</translation>
 <translation id="6550675742724504774">Valkostir</translation>
@@ -5180,7 +5176,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="6710172959248731469">Stillingar Google-þjónustu</translation>
 <translation id="6710394144992407503">Leita að stafsetningarvillum þegar þú slærð inn texta á vefsíðum</translation>
 <translation id="6711236403841768371">Fyrir <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Ýttu tvisvar á ⌘ til að nota ítarlega sjálfvirka útfyllingu</translation>
 <translation id="6712943853047024245">Þú hefur þegar vistað aðgangsorð með þessu notandanafni fyrir <ph name="WEBSITE" /></translation>
 <translation id="6713668088933662563">Aldrei bjóðast til að þýða þessi tungumál</translation>
 <translation id="6714871567554212732">Sjá frekari upplýsingar um „<ph name="GROUP_NAME" />“</translation>
@@ -6100,7 +6095,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="7706742200777909964">Raðaðu síðum hlið við hlið á sama flipanum þannig þú getir borið saman valkosti og fleira með einföldum hætti</translation>
 <translation id="7707108266051544351">Lokað hefur verið á aðgang þessa vefsvæðis að hreyfiskynjurum.</translation>
 <translation id="7709152031285164251">Mistókst – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Hreinsa sérsniðna flýtileið ítarlegrar sjálfvirkrar útfyllingar</translation>
 <translation id="7710568461918838723">&amp;Senda út...</translation>
 <translation id="7712739869553853093">Gluggi prentforskoðunar</translation>
 <translation id="7714464543167945231">Vottorð</translation>
@@ -6460,7 +6454,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="810185532889603849">Sérsniðinn litur</translation>
 <translation id="8103484184517840583">Loka gervigreindarstillingu</translation>
 <translation id="810362914482827094">Leita að aðgangslyklum</translation>
-<translation id="8104388155778519213">Deildu því sem er á skjánum með Google-linsu</translation>
 <translation id="8104412594956510627">Samstilltu feril til að sækja ferilinn þinn úr <ph name="DEVICE" />. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="8104778744208707085">Þarfnast skoðunar frá þér</translation>
 <translation id="8105273883928376822">Skráðu þig inn til að halda áfram.</translation>
@@ -6558,7 +6551,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8214489666383623925">Opna skrá...</translation>
 <translation id="8214771296778317256">Veldu hér hvernig þú vilt að fliparnir þínir líti út</translation>
 <translation id="8217399928341212914">Halda áfram að útiloka sjálfvirkt niðurhal margra skráa</translation>
-<translation id="8218411859495801458">Breyta sérsniðinni flýtileið ítarlegrar sjálfvirkrar útfyllingar</translation>
 <translation id="8221358554841691213">Miðlungs fókusstíll</translation>
 <translation id="8221942262855134126">Stjórna aðgangsorði</translation>
 <translation id="8222112516148944758">Flipahóparnir þínir vistast og uppfærast sjálfkrafa í öllum tækjunum þínum</translation>
@@ -6831,7 +6823,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8512476990829870887">Ljúka ferli</translation>
 <translation id="851263357009351303">Leyfa <ph name="HOST" /> alltaf að sýna myndir</translation>
 <translation id="8513357934662532537">Veldu CVS-skrá til að flytja aðgangsorð inn í <ph name="BRAND" /> fyrir <ph name="USER_EMAIL" />.</translation>
-<translation id="8514257511170433540">Nota sjálfgefinn flýtilykil þegar eyðublöð eru fyllt út</translation>
 <translation id="8514746246728959655">Prófaðu annan öryggislykil</translation>
 <translation id="8514828975162859845">Kökukúlupinnar</translation>
 <translation id="8514955299594277296">Ekki leyfa vefsvæðum að vista gögn í tækinu (ekki er mælt með þessu)</translation>

@@ -5675,21 +5675,6 @@ SwiftShader 曾用于在没有 GPU 加速的系统（例如无头系统或虚拟
       如果此政策设为 false，用户将无法在设备上执行网络数据包捕获流程。</translation>
 <translation id="4599810650416623373">禁止在这些网站上使用 JavaScript 优化功能</translation>
 <translation id="4600786265870346112">启用大号光标</translation>
-<translation id="460264931744856609">通过设置此政策，您可以控制 <ph name="PRODUCT_NAME" /> 的扩展程序管理设置，其中包括由现有的扩展程序相关政策控制的设置。
-
-此政策仅用于将扩展程序 ID 或更新网址与其特定的设置相关联。您可为特殊 ID<ph name="DEFAULT_SCOPE" />设定默认配置，该配置会应用于未在此政策中设定自定义配置的所有扩展程序。
-
-此政策可以覆盖旧版政策中针对各扩展程序的配置。
-
-请注意，来自 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />、<ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />、<ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> 或 <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> 的任何按 ID 配置的扩展程序设置都只会从 <ph name="DEFAULT_SCOPE" /> 默认设置继承“installation_mode”和“update_url”。它不会继承任何其他属性。对于更新网址，相应配置会应用于具有在扩展程序清单中注明的确切更新网址的扩展程序（如 http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy 中所述）。如果“override_update_url”flag 设为 true，则系统会根据 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 政策中或此政策的“update_url”字段中指定的“更新”网址安装并更新扩展程序。如果“update_url”是 Chrome 应用商店网址，“override_update_url”flag 会被忽略。
-
-在 <ph name="PRODUCT_NAME" /> 版本 155 至 158 中，如果将“runtime_blocked_hosts”应用于具有“debugger”权限的扩展程序，系统会在所有目标上完全停用“chrome.debugger.attach()”，例如当 <ph name="CHROME_VARIATIONS_POLICY_NAME" /> 政策停用所有变体版本时。
-
-只有当 <ph name="MS_WIN_NAME" /> 实例已加入 <ph name="MS_AD_NAME" /> 网域、已加入 <ph name="MS_AAD_NAME" /> 或已注册 <ph name="CHROME_ENTERPRISE_CORE_NAME" />时，才能在该实例上强制安装并非来自 Chrome 应用商店的应用和扩展程序。
-
-只有当 <ph name="MAC_OS_NAME" /> 实例是通过 MDM 进行管理、已通过 MCX 加入网域或已注册 <ph name="CHROME_ENTERPRISE_CORE_NAME" />时，才能在该实例上强制安装并非来自 Chrome 应用商店的应用和扩展程序。
-
-注意：此政策仅适用于支持扩展程序的平台。</translation>
 <translation id="4602988345256038309">允许与这台计算机建立远程支持连接</translation>
 <translation id="4605677392792989397">通过设置此政策，您可以配置企业登录网址（仅限 HTTP 和 HTTPS 协议）列表。密码保护服务会在这些网址上捕获密码的加盐哈希值，用于检测密码重用情况。为了使 <ph name="PRODUCT_NAME" /> 能够正确捕获密码的加盐哈希值，请确保登录页面遵循了这些准则 (https://www.chromium.org/developers/design-documents/create-amazing-password-forms)。
 

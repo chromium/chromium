@@ -582,7 +582,6 @@
 <translation id="7213407614656404070">ໃຊ້ Chromium ຕອນໃດກໍໄດ້ທີ່ທ່ານຄລິກລິ້ງໃນຂໍ້ຄວາມ, ເອກະສານ ແລະ ແອັບອື່ນໆ</translation>
 <translation id="7216228761061470870">ເມື່ອທ່ານໃຊ້ຄຸນສົມບັດຊອກຫາຮູບຢູ່ເດັສທັອບ, ລະບົບຈະສົ່ງຊື່ໜ້າ, URL ແລະ ເນື້ອຫາ, ຮວມທັງ PDF ໄປຫາເຊີບເວີ</translation>
 <translation id="7223968959479464213">ຕົວຈັດການໜ້າວຽກ - Chromium</translation>
-<translation id="7226331818892775989">ຖາມກ່ຽວກັບເນື້ອຫາພາຍນອກ Chromium ເຊັ່ນ: ແອັບ ຫຼື ໄຟລ໌ອື່ນໆ</translation>
 <translation id="7227958669698166857"><ph name="EXISTING_USER" /> ເຂົ້າສູ່ລະບົບຢູ່ແລ້ວ. ເພື່ອແຍກການທ່ອງເວັບຂອງທ່ານໄວ້ຕ່າງຫາກ, ໃຫ້ເຂົ້າສູ່ລະບົບ Chromium ໃນໂປຣໄຟລ໌ຂອງທ່ານເອງເປັນ <ph name="USER_EMAIL_ADDRESS" />. ນອກຈາກນີ້, ທ່ານຍັງຈະໄດ້ຮັບຂໍ້ມູນທີ່ບັນທຶກໄວ້ ແລະ ຂໍ້ມູນອື່ນໆຂອງທ່ານໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານນຳ.</translation>
 <translation id="7252276985725323153">ເລີ່ມທ່ອງເວັບໄດ້ທັນທີ: ຕອນນີ້ລະບົບສາມາດເປີດໃຊ້ Chromium ເມື່ອ Windows ເລີ່ມເຮັດວຽກໄດ້ແລ້ວ.</translation>
 <translation id="7274695763216404502">ປັກໝຸດແລ້ວ! ໃຊ້ການຊອກຫາຮູບອີກຄັ້ງຈາກແຖບເຄື່ອງມື</translation>
@@ -699,7 +698,6 @@ Chromium ບໍ່ສາມາດກູ້ການຕັ້ງຄ່າຂອ�
 <translation id="8310603974518734211">ລະຫັດ QR ເພື່ອເຂົ້າສູ່ລະບົບ Chromium ໃນຊື່ <ph name="USER_NAME" /></translation>
 <translation id="8313851650939857356">ຂໍ້ຜິດພາດໃນການເລີ່ມຕົ້ນ: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">ອົງກອນຂອງທ່ານປິດ Chromium ໄວ້ເມື່ອມັນບໍ່ໄດ້ຖືກນຳໃຊ້ເປັນເວລາ <ph name="TIMEOUT_DURATION" />.</translation>
-<translation id="8321888067342493336">ບັນທຶກເປັນຮູບ</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> ເຄີຍໃຊ້ Chromium ໃນເມື່ອກ່ອນ</translation>
 <translation id="8351551329754447960">ເປີດການນຳໃຊ້ທັກສະໃນ Chromium</translation>
 <translation id="8359544530202147897">ອັບເດດ Chromium ເພື່ອສືບຕໍ່ນຳໃຊ້ຂໍ້ມູນ Chromium ໃນບັນຊີ Google ຂອງທ່ານ, <ph name="ACCOUNT_EMAIL" /></translation>

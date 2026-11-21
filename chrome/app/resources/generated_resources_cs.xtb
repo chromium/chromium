@@ -94,7 +94,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1090126737595388931">Na pozadí nejsou spuštěny žádné aplikace</translation>
 <translation id="109038914521989341">Zadejte důvod kopírování těchto dat:</translation>
 <translation id="1094158807129647987">Zeptat se na „<ph name="SELECTION" />“</translation>
-<translation id="1095398697303758108">Dvojitým stisknutím klávesy Ctrl spustíte vylepšené automatické vyplňování</translation>
 <translation id="1095879482467973146">Správce hesel Google na webu</translation>
 <translation id="1097016918605049747">Stránku se nepodařilo přeložit</translation>
 <translation id="1099962274138857708">Obrázek zkopírovaný ze zařízení <ph name="DEVICE_NAME" /></translation>
@@ -581,6 +580,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Odstranit kartu a smazat skupinu?}=1{Odstranit karty a smazat skupinu?}few{Odstranit karty a smazat skupiny?}many{Odstranit karty a smazat skupiny?}other{Odstranit karty a smazat skupiny?}}</translation>
 <translation id="1637765355341780467">Při otevírání vašeho profilu se něco pokazilo. Některé funkce mohou být nedostupné.</translation>
 <translation id="1639239467298939599">Načítání</translation>
+<translation id="1640672724030957280">Stahování...</translation>
 <translation id="1641113438599504367">Bezpečné prohlížení</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 další heslo nebylo importováno, protože nemá správný formát}few{{NUM_PASSWORDS} další hesla nebyla importována, protože nemají správný formát}many{{NUM_PASSWORDS} dalšího hesla nebylo importováno, protože nemají správný formát}other{{NUM_PASSWORDS} dalších hesel nebylo importováno, protože nemají správný formát}}</translation>
 <translation id="1642299742557467312">Tento soubor by mohl poškodit vaše zařízení</translation>
@@ -1798,7 +1798,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="2988328607561082373">Nemáte žádná opakovaně použitá hesla</translation>
 <translation id="2989523299700148168">Nedávno navštívené</translation>
 <translation id="2989786307324390836">Binární soubor kódovaný DER, jeden certifikát</translation>
-<translation id="2990500505358145117">Upravit zkratku vylepšeného automatického vyplňování</translation>
 <translation id="2990583317361835189">Nepovolovat webům používat senzory pohybu</translation>
 <translation id="2991182900092497283">Zadejte důvod vložení těchto dat:</translation>
 <translation id="2992754757708650257">Opustit web a ukončit úkol?</translation>
@@ -2051,7 +2050,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="3244294424315804309">Pokračovat v tlumení zvuku</translation>
 <translation id="3247649647204519958">Zde můžete zobrazit a spravovat oprávnění rozšíření pro web, na kterém se nacházíte</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – chyba sítě</translation>
-<translation id="3248957351402065497">Vlastní zkratka pro vylepšené automatické vyplňování</translation>
 <translation id="3249558306861350254">V nastavení systému Windows klikněte na <ph name="BEGIN_BOLD" />Nastavit jako výchozí<ph name="END_BOLD" />.</translation>
 <translation id="3250374026663843838">Spravovat dovednost</translation>
 <translation id="3251759466064201842">&lt;Není součástí certifikátu&gt;</translation>
@@ -2272,6 +2270,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="3481268647794498892">Za <ph name="COUNTDOWN_SECONDS" /> se obsah otevře v prohlížeči <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
 <translation id="348247802372410699">Vybrat styl</translation>
 <translation id="3482573964681964096">Spravovat certifikáty importované z Windows</translation>
+<translation id="348268549820508141">Rozpoznávání řeči</translation>
 <translation id="3482719661246593752">Web <ph name="ORIGIN" /> může číst následující soubory</translation>
 <translation id="3486380520195228369">Do obnovení stránky skryto</translation>
 <translation id="3487007233252413104">anonymní funkce</translation>
@@ -2642,7 +2641,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="3826086052025847742">Protokoly ChromeOS Flex</translation>
 <translation id="3827774300009121996">&amp;Celá obrazovka</translation>
 <translation id="3828029223314399057">Hledat v záložkách</translation>
-<translation id="3828454092958722155">Vymazat zkratku vylepšeného automatického vyplňování</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Vysoké využití paměti – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Použít jiný přístupový klíč</translation>
 <translation id="3838085852053358637">Rozšíření se nepodařilo načíst</translation>
@@ -3721,7 +3719,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="5060419232449737386">Nastavení titulků</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Tato složka obsahuje jednu záložku. Opravdu ji chcete smazat?}few{Tato složka obsahuje # záložky. Opravdu ji chcete smazat?}many{Tato složka obsahuje # záložky. Opravdu ji chcete smazat?}other{Tato složka obsahuje # záložek. Opravdu ji chcete smazat?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
-<translation id="5061781067616989032">Nastavte si vlastní klávesovou zkratku</translation>
 <translation id="5062863364865466276">Pohyb</translation>
 <translation id="5063480226653192405">Použití</translation>
 <translation id="5064921774605267982">Otevřít profil <ph name="PROFILE_NAME" />. Tenhle profil spravuje tvůj rodič.</translation>
@@ -4993,7 +4990,6 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="6540488083026747005">Pro tento web jste povolili soubory cookie třetích stran</translation>
 <translation id="6541638731489116978">Tomuto webu byl zablokován přístup k senzorům pohybu.</translation>
 <translation id="6542417422899025860">Automaticky odstranit většinu osobních údajů</translation>
-<translation id="6548240707386871455">Zkratka vylepšeného automatického vyplňování</translation>
 <translation id="654871471440386944">Zapnout procházení pomocí kurzoru?</translation>
 <translation id="6549689063733911810">Poslední</translation>
 <translation id="6550675742724504774">Možnosti</translation>
@@ -5161,7 +5157,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="6710172959248731469">Nastavení služeb Google</translation>
 <translation id="6710394144992407503">Při zadávání textu na webových stránkách kontrolovat pravopis</translation>
 <translation id="6711236403841768371">Před <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Dvojitým stisknutím ⌘ aktivovat vylepšené automatické vyplňování</translation>
 <translation id="6712943853047024245">Heslo pro toto uživatelské jméno na webu <ph name="WEBSITE" /> už máte uložené</translation>
 <translation id="6713668088933662563">U těchto jazyků překlad nikdy nenabízet</translation>
 <translation id="6714871567554212732">Zobrazit další podrobnosti o skupině <ph name="GROUP_NAME" /></translation>
@@ -6082,7 +6077,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="7706742200777909964">Umístěte stránky vedle sebe na stejnou kartu, abyste mohli snadno porovnávat možnosti a podobně</translation>
 <translation id="7707108266051544351">Tomuto webu bylo zablokováno používání senzorů pohybu.</translation>
 <translation id="7709152031285164251">Chyba – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Vymazat vlastní zkratku pro vylepšené automatické vyplňování</translation>
 <translation id="7710568461918838723">&amp;Odeslat...</translation>
 <translation id="7712739869553853093">Dialogové okno náhledu tisku</translation>
 <translation id="7714464543167945231">Certifikát</translation>
@@ -6442,7 +6436,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="810185532889603849">Vlastní barva</translation>
 <translation id="8103484184517840583">Ukončit režim AI</translation>
 <translation id="810362914482827094">Vyhledat přístupové klíče</translation>
-<translation id="8104388155778519213">Sdílejte obsah obrazovky pomocí Google Lens</translation>
 <translation id="8104412594956510627">Pokud chcete mít k dispozici historii ze zařízení <ph name="DEVICE" />, synchronizujte historii. Synchronizaci můžete v nastavení kdykoli zastavit. Google může personalizovat Vyhledávání a další služby na základě vaší historie.</translation>
 <translation id="8104778744208707085">Vyžaduje vaši pozornost</translation>
 <translation id="8105273883928376822">Pokud chcete pokračovat, přihlaste se.</translation>
@@ -6540,7 +6533,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8214489666383623925">Otevřít soubor...</translation>
 <translation id="8214771296778317256">Zde vyberte preferovaný styl karet</translation>
 <translation id="8217399928341212914">I nadále blokovat automatické stahování několika souborů</translation>
-<translation id="8218411859495801458">Upravit vlastní zkratku pro vylepšené automatické vyplňování</translation>
 <translation id="8221358554841691213">Styl středního označení</translation>
 <translation id="8221942262855134126">Spravovat heslo</translation>
 <translation id="8222112516148944758">Skupiny karet se automaticky ukládají a aktualizují na všech vašich zařízeních</translation>
@@ -6813,7 +6805,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8512476990829870887">Ukončit proces</translation>
 <translation id="851263357009351303">Vždy povolovat zobrazování obrázků z webu <ph name="HOST" /></translation>
 <translation id="8513357934662532537">Pokud do <ph name="BRAND" /> chcete importovat hesla pro účet <ph name="USER_EMAIL" />, vyberte soubor CSV.</translation>
-<translation id="8514257511170433540">Používat při vyplňování formulářů výchozí klávesovou zkratku</translation>
 <translation id="8514746246728959655">Zkuste jiný bezpečnostní klíč</translation>
 <translation id="8514828975162859845">Dortová lízátka</translation>
 <translation id="8514955299594277296">Nepovolovat webům ukládat data do zařízení (nedoporučeno)</translation>

@@ -577,7 +577,6 @@ Ayrim bukmarklar hisobingizdan oʻchirilmaguncha yangilari saqlanmaydi. Hozir hi
 <translation id="7213407614656404070">Xabarlar, hujjatlar va boshqa ilovalardagi havolalarni har doim Chromium orqali ochish</translation>
 <translation id="7216228761061470870">Kompyuterda Rasm orqali qidiruv ishlatilganda sahifa sarlavhasi, URL manzili va kontent (jumladan, PDF fayllar) serverga yuboriladi.</translation>
 <translation id="7223968959479464213">Vazifalar menejeri – Chromium</translation>
-<translation id="7226331818892775989">Boshqa ilovalar yoki fayllar kabi Chromiumdan tashqaridagi kontent haqida soʻrang</translation>
 <translation id="7227958669698166857"><ph name="EXISTING_USER" /> hisobiga allaqachon kirilgan. Internetni alohida kezish uchun Chromiumga shaxsiy profilingiz (<ph name="USER_EMAIL_ADDRESS" />) orqali kiring. Shuningdek, saqlangan maʼlumotlar va boshqa maʼlumotlardan barcha qurilmalarda foydalana olasiz.</translation>
 <translation id="7252276985725323153">Darhol kezishni boshlang: Chromium endi Windows ishga tushirilganda ochiladi.</translation>
 <translation id="7274695763216404502">Mahkamlandi! Endi uni asboblar panelidan ochish mumkin</translation>
@@ -694,7 +693,6 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8310603974518734211">Chromiumga <ph name="USER_NAME" /> hisobidan kirish uchun QR kod</translation>
 <translation id="8313851650939857356">Ishga tushirishda xato: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Tashkilotingiz Chromium <ph name="TIMEOUT_DURATION" /> ishlatilmasa avtomatik yopilishini sozlagan.</translation>
-<translation id="8321888067342493336">Rasm sifatida saqlash</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> hisobi avvallari Chromium’da ishlatilgan</translation>
 <translation id="8351551329754447960">Chromium ichidagi malakalarni yoqish</translation>
 <translation id="8359544530202147897"><ph name="ACCOUNT_EMAIL" /> Google hisobingizdagi Chromium maʼlumotlaridan foydalanishda davom etish uchun Chromium brauzerini yangilang</translation>

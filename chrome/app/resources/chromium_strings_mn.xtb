@@ -580,7 +580,6 @@
 <translation id="7213407614656404070">Та мессеж, документ болон бусад аппын холбоосыг товших бүрдээ Chromium-г ашиглана уу</translation>
 <translation id="7216228761061470870">Таныг Зурган хайлтыг компьютер дээр ашиглахад хуудасны гарчиг, URL, PDF зэрэг контентыг сервер лүү илгээдэг</translation>
 <translation id="7223968959479464213">Бодлогын менежер - Chromium</translation>
-<translation id="7226331818892775989">Бусад апп, файл зэрэг Chromium-с гадуурх контентын талаар асуугаарай</translation>
 <translation id="7227958669698166857"><ph name="EXISTING_USER" /> аль хэдийн нэвтэрсэн байна. Хөтчийн түүхээ тусад нь байлгахын тулд Chromium-д <ph name="USER_EMAIL_ADDRESS" />-р өөрийн профайлаар нэвтэрнэ үү. Та мөн бүх төхөөрөмж дээрээ хадгалсан мэдээлэл болон бусад зүйлээ авна.</translation>
 <translation id="7252276985725323153">Шуурхай үзэж эхлээрэй: Chromium одоо Windows-г эхлэх үед эхлэх боломжтой боллоо.</translation>
 <translation id="7274695763216404502">Бэхэлсэн! Самбараас Зурган хайлтыг дахин ашиглана уу</translation>
@@ -693,7 +692,6 @@
 <translation id="8310603974518734211"><ph name="USER_NAME" />-р Chromium-д нэвтрэх QR код</translation>
 <translation id="8313851650939857356">Эхлэхэд алдаа гарлаа: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Танай байгууллага Chromium-г <ph name="TIMEOUT_DURATION" />-н турш ашиглаагүй үед хаадаг.</translation>
-<translation id="8321888067342493336">Зургаар хадгалах</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> өмнө нь Chromium-г ашиглаж байсан</translation>
 <translation id="8351551329754447960">Chromium-д Ур чадварыг идэвхжүүлэх</translation>
 <translation id="8359544530202147897"><ph name="ACCOUNT_EMAIL" /> Google Бүртгэлдээ Chromium-н өгөгдлөө ашигласаар байхын тулд Chromium-г шинэчилнэ үү</translation>

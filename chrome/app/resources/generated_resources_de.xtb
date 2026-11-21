@@ -93,7 +93,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1090126737595388931">Es werden keine Apps im Hintergrund ausgeführt.</translation>
 <translation id="109038914521989341">Gib einen Grund für das Kopieren dieser Daten an:</translation>
 <translation id="1094158807129647987">Nach Informationen zu „<ph name="SELECTION" />“ fragen</translation>
-<translation id="1095398697303758108">Drücke zweimal die Strg-Taste, um die Funktion „Erweitertes Autofill“ zu verwenden</translation>
 <translation id="1095879482467973146">Google Passwortmanager im Web</translation>
 <translation id="1097016918605049747">Diese Seite konnte nicht übersetzt werden</translation>
 <translation id="1099962274138857708">Bild kopiert von <ph name="DEVICE_NAME" /></translation>
@@ -577,6 +576,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Tab entfernen und Gruppe löschen?}=1{Tabs entfernen und Gruppe löschen?}other{Tabs entfernen und Gruppen löschen?}}</translation>
 <translation id="1637765355341780467">Beim Öffnen deines Profils ist ein Fehler aufgetreten. Einige Funktionen sind möglicherweise nicht verfügbar.</translation>
 <translation id="1639239467298939599">Wird geladen</translation>
+<translation id="1640672724030957280">Download wird ausgeführt...</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 weiteres Passwort wurde nicht importiert, weil es falsch formatiert ist}other{{NUM_PASSWORDS} weitere Passwörter wurden nicht importiert, weil sie falsch formatiert sind}}</translation>
 <translation id="1642299742557467312">Diese Datei könnte dein Gerät beschädigen</translation>
@@ -1785,7 +1785,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="2988328607561082373">Du verwendest keine Passwörter mehrfach</translation>
 <translation id="2989523299700148168">Kürzlich besucht</translation>
 <translation id="2989786307324390836">DER-verschlüsselte Binärdatei, Einzelzertifikat</translation>
-<translation id="2990500505358145117">Tastenkombination für erweitertes Autofill bearbeiten</translation>
 <translation id="2990583317361835189">Websites dürfen keine Bewegungssensoren verwenden</translation>
 <translation id="2991182900092497283">Bitte gib einen Grund für das Einfügen dieser Daten an:</translation>
 <translation id="2992754757708650257">Website verlassen und Aufgabe beenden?</translation>
@@ -2033,7 +2032,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="3244294424315804309">Töne weiterhin stummschalten</translation>
 <translation id="3247649647204519958">Hier kannst du die Erweiterungsberechtigungen für die aktuelle Website ansehen und verwalten</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Netzwerkfehler</translation>
-<translation id="3248957351402065497">Benutzerdefinierte Tastenkombination für erweitertes Autofill</translation>
 <translation id="3249558306861350254">Klicke in den Windows-Einstellungen auf <ph name="BEGIN_BOLD" />Als Standard festlegen<ph name="END_BOLD" />.</translation>
 <translation id="3250374026663843838">Kompetenz verwalten</translation>
 <translation id="3251759466064201842">&lt;Gehört nicht zum Zertifikat&gt;</translation>
@@ -2253,6 +2251,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="3481268647794498892">Wird in <ph name="COUNTDOWN_SECONDS" /> Sekunden in <ph name="ALTERNATIVE_BROWSER_NAME" /> geöffnet</translation>
 <translation id="348247802372410699">Stil auswählen</translation>
 <translation id="3482573964681964096">Aus Windows importierte Zertifikate verwalten</translation>
+<translation id="348268549820508141">Spracherkennung</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> darf die folgenden Dateien aufrufen</translation>
 <translation id="3486380520195228369">Ausgeblendet, bis die Seite aktualisiert wird</translation>
 <translation id="3487007233252413104">Anonyme Funktion</translation>
@@ -2620,7 +2619,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="3826086052025847742">ChromeOS Flex-Protokolle</translation>
 <translation id="3827774300009121996">&amp;Vollbildmodus</translation>
 <translation id="3828029223314399057">In Lesezeichen suchen</translation>
-<translation id="3828454092958722155">Tastenkombination für erweitertes Autofill löschen</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Hohe Arbeitsspeichernutzung – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Anderen Passkey verwenden</translation>
 <translation id="3838085852053358637">Fehler beim Laden der Erweiterung</translation>
@@ -3695,7 +3693,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5060419232449737386">Untertiteleinstellungen</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Dieser Ordner enthält ein Lesezeichen. Möchtest du ihn wirklich löschen?}other{Dieser Ordner enthält # Lesezeichen. Möchtest du ihn wirklich löschen?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
-<translation id="5061781067616989032">Eigene Tastenkombination einrichten</translation>
 <translation id="5062863364865466276">Bewegung</translation>
 <translation id="5063480226653192405">Verwendung</translation>
 <translation id="5064921774605267982">Profil „<ph name="PROFILE_NAME" />“ öffnen. Dieses Profil wird von deinen Eltern verwaltet.</translation>
@@ -4963,7 +4960,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6540488083026747005">Du hast Drittanbieter-Cookies auf dieser Website zugelassen</translation>
 <translation id="6541638731489116978">Diese Website darf nicht auf deine Bewegungssensoren zugreifen.</translation>
 <translation id="6542417422899025860">Die meisten personenbezogenen Daten automatisch entfernen</translation>
-<translation id="6548240707386871455">Tastenkombination für erweitertes Autofill</translation>
 <translation id="654871471440386944">Tastaturnavigation aktivieren?</translation>
 <translation id="6549689063733911810">Zuletzt geöffnet</translation>
 <translation id="6550675742724504774">Optionen</translation>
@@ -5127,7 +5123,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6710172959248731469">Einstellungen für Google-Dienste</translation>
 <translation id="6710394144992407503">Bei der Eingabe von Text auf Webseiten nach Tippfehlern suchen</translation>
 <translation id="6711236403841768371">Vor dem <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Drücke zweimal die ⌘-Taste, um die Funktion „Erweitertes Autofill“ zu verwenden</translation>
 <translation id="6712943853047024245">Du hast bereits ein Passwort zu diesem Nutzernamen für <ph name="WEBSITE" /> gespeichert</translation>
 <translation id="6713668088933662563">Für diese Sprachen nie eine Übersetzung anbieten</translation>
 <translation id="6714871567554212732">Weitere Details zu „<ph name="GROUP_NAME" />“ anzeigen</translation>
@@ -6043,7 +6038,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="7706742200777909964">Du kannst Seiten im selben Tab nebeneinander anordnen, um beispielsweise Optionen ganz einfach zu vergleichen</translation>
 <translation id="7707108266051544351">Die Nutzung von Bewegungssensoren wurde für diese Website blockiert.</translation>
 <translation id="7709152031285164251">Fehler – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Benutzerdefinierte Tastenkombination für die Funktion „Erweitertes Autofill“ löschen</translation>
 <translation id="7710568461918838723">&amp;Streamen...</translation>
 <translation id="7712739869553853093">Dialogfeld zur Druckvorschau</translation>
 <translation id="7714464543167945231">Zertifikat</translation>
@@ -6399,7 +6393,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="810185532889603849">Personalisierte Farbe</translation>
 <translation id="8103484184517840583">KI-Modus beenden</translation>
 <translation id="810362914482827094">Passkeys durchsuchen</translation>
-<translation id="8104388155778519213">Inhalte auf dem Bildschirm mit Google Lens teilen</translation>
 <translation id="8104412594956510627">Wenn du deinen Verlauf von <ph name="DEVICE" /> abrufen möchtest, synchronisiere ihn. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="8104778744208707085">Erfordert deine Aufmerksamkeit</translation>
 <translation id="8105273883928376822">Melde dich an, um fortzufahren.</translation>
@@ -6497,7 +6490,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8214489666383623925">Datei öffnen...</translation>
 <translation id="8214771296778317256">Hier kannst du das gewünschte Tab-Design auswählen</translation>
 <translation id="8217399928341212914">Weiterhin automatisches Herunterladen mehrerer Dateien blockieren</translation>
-<translation id="8218411859495801458">Benutzerdefinierte Tastenkombination für die Funktion „Erweitertes Autofill“ bearbeiten</translation>
 <translation id="8221358554841691213">Stil „Mittlerer Fokus“</translation>
 <translation id="8221942262855134126">Passwort verwalten</translation>
 <translation id="8222112516148944758">Deine Tabgruppen werden auf allen deinen Geräten automatisch gespeichert und aktualisiert</translation>
@@ -6770,7 +6762,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8512476990829870887">Prozess beenden</translation>
 <translation id="851263357009351303">Anzeige von Bildern für <ph name="HOST" /> immer zulassen</translation>
 <translation id="8513357934662532537">Wähle eine CSV-Datei aus, um Passwörter für <ph name="USER_EMAIL" /> in <ph name="BRAND" /> zu importieren.</translation>
-<translation id="8514257511170433540">Beim Ausfüllen von Formularen die Standard-Tastenkombination verwenden</translation>
 <translation id="8514746246728959655">Versuche es mit einem anderen Sicherheitsschlüssel</translation>
 <translation id="8514828975162859845">Cake-Pops</translation>
 <translation id="8514955299594277296">Websites nicht erlauben, Daten auf deinem Gerät zu speichern (nicht empfohlen)</translation>

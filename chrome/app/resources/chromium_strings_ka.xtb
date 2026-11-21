@@ -582,7 +582,6 @@
 <translation id="7213407614656404070">გამოიყენეთ Chromium შეტყობინებებში, დოკუმენტებსა და სხვა აპებში არსებულ ბმულებზე ყოველი დაწკაპუნებისას.</translation>
 <translation id="7216228761061470870">როცა სურათების ძიებას იყენებთ დესკტოპზე, გვერდის სათაური, URL და კონტენტი, PDF-ების ჩათვლით, იგზავნება სერვერზე</translation>
 <translation id="7223968959479464213">დავალებათა მენეჯერი - Chromium</translation>
-<translation id="7226331818892775989">დასვით შეკითხვა Chromium-ის მიღმა არსებული კონტენტის, მაგალითად, სხვა აპების ან ფაილების შესახებ</translation>
 <translation id="7227958669698166857"><ph name="EXISTING_USER" /> მზად არის ავტორიზაციისთვის. ცალკე დათვალიერების გასაგრძელებლად შედით Chromium-ში თქვენს პირად პროფილში ანგარიშით <ph name="USER_EMAIL_ADDRESS" />. თქვენს ყველა მოწყობილობაში მიიღებთ შენახულ ინფორმაციასა და სხვა მონაცემებს.</translation>
 <translation id="7252276985725323153">მომენტალურად დაიწყეთ დათვალიერება: Chromium-ის გაშვება ახლა Windows-ის ჩართვისთანავე არის შესაძლებელი.</translation>
 <translation id="7274695763216404502">ჩამაგრებულია! ისევ გამოიყენეთ სურათების ძიება ხელსაწყოთა ზოლიდან</translation>
@@ -699,7 +698,6 @@ Chromium ვერ შეძლებს თქვენი პარამე�
 <translation id="8310603974518734211">QR კოდი Chromium-ში <ph name="USER_NAME" />-ის ანგარიშით შესასვლელად</translation>
 <translation id="8313851650939857356">გაშვების შეცდომა: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">თქვენი ორგანიზაცია ხურავს Chromium-ს, როცა ის <ph name="TIMEOUT_DURATION" /> არ გამოიყენება.</translation>
-<translation id="8321888067342493336">სურათად შენახვა</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> ადრე იყენებდა Chromium-ს</translation>
 <translation id="8351551329754447960">უნარების ჩართვა Chromium-ში</translation>
 <translation id="8359544530202147897">განაახლეთ Chromium, რომ განაგრძოთ Chromium-ის მონაცემების გამოყენება თქვენს Google ანგარიშში, <ph name="ACCOUNT_EMAIL" /></translation>

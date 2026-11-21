@@ -580,7 +580,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="7213407614656404070">Використовуйте Chromium щоразу, коли натискаєте посилання в повідомленнях, документах і інших додатках</translation>
 <translation id="7216228761061470870">Коли ви користуєтеся пошуком за зображенням на комп’ютері, на сервер надсилається назва сторінки, її URL-адреса й контент, зокрема файли PDF</translation>
 <translation id="7223968959479464213">Диспетчер завдань – Chromium</translation>
-<translation id="7226331818892775989">Ставте запитання про контент за межами Chromium, наприклад про інші додатки або файли</translation>
 <translation id="7227958669698166857">Ви вже ввійшли в обліковий запис <ph name="EXISTING_USER" />. Щоб переглядати вебсторінки окремо, увійдіть у свій профіль у Chromium як <ph name="USER_EMAIL_ADDRESS" />. Крім того, ви отримаєте доступ до збереженої інформації і інших даних на всіх своїх пристроях.</translation>
 <translation id="7252276985725323153">Відразу починайте переглядати вебсторінки: тепер Chromium може активуватися під час запуску Windows.</translation>
 <translation id="7274695763216404502">Пошук за зображенням закріплено. Тепер він доступний на панелі інструментів.</translation>
@@ -697,7 +696,6 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="8310603974518734211">QR-код для входу в Chromium за допомогою облікового запису такого користувача: <ph name="USER_NAME" /></translation>
 <translation id="8313851650939857356">Помилка запуску: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Ваша організація закриває веб-переглядач Chromium, якщо він не використовується протягом <ph name="TIMEOUT_DURATION" />.</translation>
-<translation id="8321888067342493336">Зберегти як зображення</translation>
 <translation id="8340674089072921962">Раніше ви входили в обліковий запис <ph name="USER_EMAIL_ADDRESS" /> у Chromium</translation>
 <translation id="8351551329754447960">Увімкнути навички в Chromium</translation>
 <translation id="8359544530202147897">Щоб і надалі використовувати дані Chromium в обліковому записі Google <ph name="ACCOUNT_EMAIL" />, оновіть вебпереглядач</translation>

@@ -94,7 +94,6 @@
 <translation id="1090126737595388931">Фонда орындалып жатқан қолданбалар жоқ</translation>
 <translation id="109038914521989341">Бұл деректерді көшіру себебін енгізіңіз:</translation>
 <translation id="1094158807129647987">"<ph name="SELECTION" />" жайында сұрау</translation>
-<translation id="1095398697303758108">Дұрысталған автотолтыру функциясын қолдану үшін Ctrl пернесін екі рет басу</translation>
 <translation id="1095879482467973146">Желідегі Google Password Manager</translation>
 <translation id="1097016918605049747">Бұл бет аударылмады</translation>
 <translation id="1099962274138857708">Сурет <ph name="DEVICE_NAME" /> құрылғысынан көшірілді</translation>
@@ -581,6 +580,7 @@
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Қойындыны өшіріп, топты жою қажет пе?}=1{Қойындыларды өшіріп, топты жою қажет пе?}other{Қойындыларды өшіріп, топтарды жою қажет пе?}}</translation>
 <translation id="1637765355341780467">Профильді ашу кезінде бірдеңе дұрыс болмады. Кейбір мүмкіндіктер қолжетімді болмауы мүмкін.</translation>
 <translation id="1639239467298939599">Жүктеліп жатыр</translation>
+<translation id="1640672724030957280">Жүктеп алынып жатыр…</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Дұрыс форматталмағандықтан, тағы 1 құпия сөз импортталмады.}other{Дұрыс форматталмағандықтан, тағы {NUM_PASSWORDS} құпия сөз импортталмады.}}</translation>
 <translation id="1642299742557467312">Бұл файл құрылғыңызға зиян тигізуі мүмкін</translation>
@@ -1798,7 +1798,6 @@
 <translation id="2988328607561082373">Ешқандай құпия сөзді қайта пайдаланып жатқан жоқсыз.</translation>
 <translation id="2989523299700148168">Соңғы кіргендер</translation>
 <translation id="2989786307324390836">DER кодталған екілік, бір сертификат</translation>
-<translation id="2990500505358145117">Дұрысталған автотолтырудың функциясының пернелер тіркесімін өзгерту</translation>
 <translation id="2990583317361835189">Сайттардың қозғалыс датчиктерін пайдалануына рұқсат бермеу</translation>
 <translation id="2991182900092497283">Бұл деректерді қою себебін енгізіңіз:</translation>
 <translation id="2992754757708650257">Сайттан шығып, тапсырманы аяқтау керек пе?</translation>
@@ -2051,7 +2050,6 @@
 <translation id="3244294424315804309">Дыбысын қоспау</translation>
 <translation id="3247649647204519958">Осы жерден сіз пайдаланып жатқан сайт үшін кеңейтім рұқсаттарын көруге және басқаруға болады</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – желі қатесі</translation>
-<translation id="3248957351402065497">Дұрысталған автотолтыру функциясының арнаулы пернелер тіркесімі</translation>
 <translation id="3249558306861350254">Windows параметрлерінде <ph name="BEGIN_BOLD" />Әдепкі ретінде орнату<ph name="END_BOLD" /> түймесін басыңыз.</translation>
 <translation id="3250374026663843838">Дағдыңызды басқару</translation>
 <translation id="3251759466064201842">&lt;Сертификаттың бөлігі емес&gt;</translation>
@@ -2272,6 +2270,7 @@
 <translation id="3481268647794498892"><ph name="ALTERNATIVE_BROWSER_NAME" /> браузері <ph name="COUNTDOWN_SECONDS" /> секундта ашылады.</translation>
 <translation id="348247802372410699">Стиль таңдау</translation>
 <translation id="3482573964681964096">Windows-дан импортталған сертификаттарды басқару</translation>
+<translation id="348268549820508141">Сөз тану</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> келесі файлдарды көре алады.</translation>
 <translation id="3486380520195228369">Бет жаңартылғанға дейін жасырылады.</translation>
 <translation id="3487007233252413104">анонимді функция</translation>
@@ -2642,7 +2641,6 @@
 <translation id="3826086052025847742">ChromeOS Flex журналдары</translation>
 <translation id="3827774300009121996">&amp;Толық экран</translation>
 <translation id="3828029223314399057">Бетбелгілерді іздеу</translation>
-<translation id="3828454092958722155">Дұрысталған автотолтыру функциясының пернелер тіркесімін өшіру</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Жадтың көп қолданылуы – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Басқа кіру кілтін пайдалану</translation>
 <translation id="3838085852053358637">Кеңейтім жүктелмеді</translation>
@@ -3722,7 +3720,6 @@
 <translation id="5060419232449737386">Жазу параметрлері</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Бұл қалтада бетбелгі бар. Оны шынымен жойғыңыз келе ме?}other{Бұл қалтада # бетбелгі бар. Оны шынымен жойғыңыз келе ме?}}</translation>
 <translation id="5061531353537614467">Тундра</translation>
-<translation id="5061781067616989032">Жеке пернелер тіркесімін реттеу</translation>
 <translation id="5062863364865466276">Қозғалыс</translation>
 <translation id="5063480226653192405">Пайдалану</translation>
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" /> профилін ашыңыз. Бұл профильді ата-анаңыз басқарады.</translation>
@@ -4994,7 +4991,6 @@
 <translation id="6540488083026747005">Сіз осы сайтта үшінші тарап cookie файлдарына рұқсат еттіңіз.</translation>
 <translation id="6541638731489116978">Бұл сайттың қозғалыс датчиктеріңізді пайдалануына тыйым салынды.</translation>
 <translation id="6542417422899025860">Көптеген жеке ақпаратты автоматты түрде өшіру</translation>
-<translation id="6548240707386871455">Дұрысталған автотолтыру функциясының пернелер тіркесімі</translation>
 <translation id="654871471440386944">Белсенді курсор режимі қосылсын ба?</translation>
 <translation id="6549689063733911810">Соңғы</translation>
 <translation id="6550675742724504774">Опциялар</translation>
@@ -5158,7 +5154,6 @@
 <translation id="6710172959248731469">Google қызметтерінің параметрлері</translation>
 <translation id="6710394144992407503">Веб-беттерде мәтінді терген кезде, емле қателерінің бар-жоғын тексеру</translation>
 <translation id="6711236403841768371"><ph name="END_DATE" /> дейін</translation>
-<translation id="6711569175139833669">Дұрысталған автотолтыру функциясын қолдану үшін ⌘ пернесін екі рет басу</translation>
 <translation id="6712943853047024245"><ph name="WEBSITE" /> қызметі үшін осы пайдаланушы аты мен құпия сөз сақталып қойған.</translation>
 <translation id="6713668088933662563">Бұл тілдерді аударуды ешқашан ұсынбау</translation>
 <translation id="6714871567554212732"><ph name="GROUP_NAME" /> туралы қосымша мәліметтерді көру</translation>
@@ -6078,7 +6073,6 @@
 <translation id="7706742200777909964">Опциялар мен басқа мәліметтерді салыстыру оңай болуы үшін, беттерді бір қойындыға қатар қойыңыз.</translation>
 <translation id="7707108266051544351">Бұл сайттың қозғалыс датчиктерін пайдалануына тыйым салынды.</translation>
 <translation id="7709152031285164251">Сәтсіз – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Дұрысталған автотолтыру функциясының арнаулы пернелер тіркесімін өшіру</translation>
 <translation id="7710568461918838723">&amp;Трансляциялау…</translation>
 <translation id="7712739869553853093">Баспаны алдын ала көру диалогі</translation>
 <translation id="7714464543167945231">Сертификат</translation>
@@ -6438,7 +6432,6 @@
 <translation id="810185532889603849">Арнаулы түс</translation>
 <translation id="8103484184517840583">ЖИ режимінен шығу</translation>
 <translation id="810362914482827094">Кіру кілттерінен іздеу</translation>
-<translation id="8104388155778519213">Экраныңыздағы нәрсені Google Lens арқылы бөлісіңіз</translation>
 <translation id="8104412594956510627"><ph name="DEVICE" /> құрылғысындағы тарихты алу үшін тарихты синхрондаңыз. Синхрондауды кез келген уақытта параметрлерде тоқтатуға болады. Google жүйесі Search және басқа да қызметтерді тарихыңызға негіздеп жекелендіре алады.</translation>
 <translation id="8104778744208707085">Назар аударуыңыз қажет.</translation>
 <translation id="8105273883928376822">Жалғастыру үшін аккаунтқа кіріңіз.</translation>
@@ -6536,7 +6529,6 @@
 <translation id="8214489666383623925">Файлды ашу…</translation>
 <translation id="8214771296778317256">Қойындының қалаған стилін осы жерден таңдаңыз</translation>
 <translation id="8217399928341212914">Бірнеше файлды автоматты жүктеуге салынған тыйымды сақтау</translation>
-<translation id="8218411859495801458">Дұрысталған автотолтыру функциясының арнаулы пернелер тіркесімін өзгерту</translation>
 <translation id="8221358554841691213">Орташа фокус стилі</translation>
 <translation id="8221942262855134126">Құпия сөзді басқару</translation>
 <translation id="8222112516148944758">Қойындылар топтары барлық құрылғыңызда автоматты түрде сақталып, жаңарады.</translation>
@@ -6809,7 +6801,6 @@
 <translation id="8512476990829870887">Процесті аяқтау</translation>
 <translation id="851263357009351303"><ph name="HOST" /> хостына кескіндерді әрқашан көрсету мүмкіндігін беру</translation>
 <translation id="8513357934662532537"><ph name="USER_EMAIL" /> мекенжайына арналған құпия сөздерді <ph name="BRAND" /> қолданбасына импорттау үшін CSV файлын таңдаңыз.</translation>
-<translation id="8514257511170433540">Үлгілерді толтыру кезінде әдепкі пернелер тіркесімін пайдалану</translation>
 <translation id="8514746246728959655">Басқа қауіпсіздік кілтін пайдаланып көріңіз</translation>
 <translation id="8514828975162859845">Тортты чупа-чупс</translation>
 <translation id="8514955299594277296">Сайттардың құрылғыңызда деректерді сақтауына рұқсат етпеу (ұсынылмайды)</translation>

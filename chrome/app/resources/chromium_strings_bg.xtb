@@ -576,7 +576,6 @@
 <translation id="7213407614656404070">Използвайте Chromium всеки път, когато кликнете върху връзки в съобщения, документи и други приложения</translation>
 <translation id="7216228761061470870">Когато използвате функцията за търсене на изображения на настолен компютър, заглавието, URL адресът и съдържанието на страницата, включително PDF файловете, се изпращат до сървъра</translation>
 <translation id="7223968959479464213">Диспечер на задачите – Chromium</translation>
-<translation id="7226331818892775989">Задавайте въпроси за съдържание извън Chromium, като например други приложения или файлове</translation>
 <translation id="7227958669698166857"><ph name="EXISTING_USER" /> вече е в профила си. За да бъде сърфирането ви отделно, влезте в Chromium със свой собствен потребителски профил като <ph name="USER_EMAIL_ADDRESS" />. Също така ще получите запазената си информация и др. на всичките си устройства.</translation>
 <translation id="7252276985725323153">Започнете да сърфирате незабавно: Chromium вече може да се стартира при стартиране на Windows.</translation>
 <translation id="7274695763216404502">Успешно фиксиране. Използвайте търсенето на изображения отново от лентата с инструменти</translation>
@@ -691,7 +690,6 @@
 <translation id="8310603974518734211">QR код за влизане в Chromium като <ph name="USER_NAME" /></translation>
 <translation id="8313851650939857356">Грешка при стартирането: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Организацията ви затваря Chromium, когато не се използва в продължение на <ph name="TIMEOUT_DURATION" />.</translation>
-<translation id="8321888067342493336">Запазване като изображение</translation>
 <translation id="8340674089072921962">По-рано <ph name="USER_EMAIL_ADDRESS" /> използва Chromium</translation>
 <translation id="8351551329754447960">Активиране на уменията в Chromium</translation>
 <translation id="8359544530202147897">Актуализирайте Chromium, за да продължите да използвате данните от браузъра в профила си в Google (<ph name="ACCOUNT_EMAIL" />)</translation>

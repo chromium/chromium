@@ -94,7 +94,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1090126737595388931">Tidak Ada Apl Latar Belakang yang Sedang Berjalan</translation>
 <translation id="109038914521989341">Masukkan alasan untuk menyalin data ini:</translation>
 <translation id="1094158807129647987">Tanyakan Tentang “<ph name="SELECTION" />”</translation>
-<translation id="1095398697303758108">Tekan Ctrl dua kali untuk menggunakan isi otomatis yang ditingkatkan</translation>
 <translation id="1095879482467973146">Pengelola Sandi Google di web</translation>
 <translation id="1097016918605049747">Halaman ini tidak dapat diterjemahkan</translation>
 <translation id="1099962274138857708">Gambar disalin dari <ph name="DEVICE_NAME" /></translation>
@@ -582,6 +581,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Hapus tab dan grup?}=1{Hapus tab dan grup?}other{Hapus tab dan grup?}}</translation>
 <translation id="1637765355341780467">Terjadi error saat membuka profil Anda. Beberapa fitur mungkin tidak tersedia.</translation>
 <translation id="1639239467298939599">Memuat</translation>
+<translation id="1640672724030957280">Mengunduh...</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 sandi lainnya tidak diimpor karena formatnya salah}other{{NUM_PASSWORDS} sandi lainnya tidak diimpor karena formatnya salah}}</translation>
 <translation id="1642299742557467312">File ini dapat membahayakan perangkat Anda</translation>
@@ -1810,7 +1810,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="2988328607561082373">Anda tidak menggunakan ulang sandi apa pun</translation>
 <translation id="2989523299700148168">Baru saja dikunjungi</translation>
 <translation id="2989786307324390836">Biner bersandiaksara DER, satu sertifikat</translation>
-<translation id="2990500505358145117">Edit pintasan isi otomatis yang ditingkatkan</translation>
 <translation id="2990583317361835189">Jangan izinkan situs menggunakan sensor gerakan</translation>
 <translation id="2991182900092497283">Masukkan alasan untuk menempel data ini:</translation>
 <translation id="2992754757708650257">Keluar dari situs dan akhiri tugas?</translation>
@@ -2065,7 +2064,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="3244294424315804309">Lanjutkan mematikan suara</translation>
 <translation id="3247649647204519958">Dari sini, Anda dapat melihat dan mengelola izin ekstensi untuk situs yang Anda buka</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Jaringan error</translation>
-<translation id="3248957351402065497">Pintasan kustom untuk isi otomatis yang ditingkatkan</translation>
 <translation id="3249558306861350254">Klik <ph name="BEGIN_BOLD" />Setel sebagai Default<ph name="END_BOLD" /> di setelan Windows Anda.</translation>
 <translation id="3250374026663843838">Kelola keterampilan Anda</translation>
 <translation id="3251759466064201842">&lt;Bukan Bagian Dari Sertifikat&gt;</translation>
@@ -2286,6 +2284,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="3481268647794498892">Membuka di <ph name="ALTERNATIVE_BROWSER_NAME" /> dalam <ph name="COUNTDOWN_SECONDS" /> detik</translation>
 <translation id="348247802372410699">Pilih gaya</translation>
 <translation id="3482573964681964096">Kelola sertifikat yang diimpor dari Windows</translation>
+<translation id="348268549820508141">Pengenalan ucapan</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> dapat melihat file berikut</translation>
 <translation id="3486380520195228369">Disembunyikan hingga halaman dimuat ulang</translation>
 <translation id="3487007233252413104">fungsi anonim</translation>
@@ -2656,7 +2655,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="3826086052025847742">Log ChromeOS Flex</translation>
 <translation id="3827774300009121996">Layar &amp;Penuh</translation>
 <translation id="3828029223314399057">Cari bookmark</translation>
-<translation id="3828454092958722155">Hapus pintasan isi otomatis yang ditingkatkan</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Penggunaan memori tinggi - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Gunakan kunci sandi lain</translation>
 <translation id="3838085852053358637">Gagal memuat ekstensi</translation>
@@ -3737,7 +3735,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="5060419232449737386">Setelan teks</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Folder ini berisi bookmark. Yakin ingin menghapusnya?}other{Folder ini berisi # bookmark. Yakin ingin menghapusnya?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
-<translation id="5061781067616989032">Siapkan pintasan keyboard Anda sendiri</translation>
 <translation id="5062863364865466276">Gerakan</translation>
 <translation id="5063480226653192405">Penggunaan</translation>
 <translation id="5064921774605267982">Buka profil <ph name="PROFILE_NAME" />. Profil ini dikelola oleh orang tuamu.</translation>
@@ -5013,7 +5010,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="6540488083026747005">Anda mengizinkan cookie pihak ketiga di situs ini</translation>
 <translation id="6541638731489116978">Situs ini telah diblokir agar tidak dapat mengakses sensor gerakan.</translation>
 <translation id="6542417422899025860">Otomatis hapus sebagian besar informasi pribadi secara otomatis</translation>
-<translation id="6548240707386871455">Pintasan isi otomatis yang ditingkatkan</translation>
 <translation id="654871471440386944">Aktifkan penjelajahan dengan keyboard?</translation>
 <translation id="6549689063733911810">Terkini</translation>
 <translation id="6550675742724504774">Opsi</translation>
@@ -5177,7 +5173,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="6710172959248731469">Setelan layanan Google</translation>
 <translation id="6710394144992407503">Periksa kesalahan ejaan saat mengetik teks di halaman web</translation>
 <translation id="6711236403841768371">Sebelum <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Tekan ⌘ dua kali untuk menggunakan isi otomatis yang ditingkatkan</translation>
 <translation id="6712943853047024245">Anda sudah menyimpan sandi dengan nama pengguna ini untuk <ph name="WEBSITE" /></translation>
 <translation id="6713668088933662563">Jangan pernah tawarkan penerjemahan bahasa ini</translation>
 <translation id="6714871567554212732">Lihat detail selengkapnya tentang <ph name="GROUP_NAME" /></translation>
@@ -6098,7 +6093,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="7706742200777909964">Tempatkan halaman secara berdampingan di tab yang sama agar Anda dapat dengan mudah membandingkan opsi dan lainnya</translation>
 <translation id="7707108266051544351">Situs ini telah diblokir agar tidak dapat mengakses sensor gerakan.</translation>
 <translation id="7709152031285164251">Gagal - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Hapus pintasan kustom untuk isi otomatis yang ditingkatkan</translation>
 <translation id="7710568461918838723">&amp;Cast...</translation>
 <translation id="7712739869553853093">Dialog pratinjau cetak</translation>
 <translation id="7714464543167945231">Sertifikat</translation>
@@ -6458,7 +6452,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="810185532889603849">Warna khusus</translation>
 <translation id="8103484184517840583">Keluar dari Mode AI</translation>
 <translation id="810362914482827094">Telusuri kunci sandi</translation>
-<translation id="8104388155778519213">Bagikan konten di layar Anda dengan Google Lens</translation>
 <translation id="8104412594956510627">Untuk mengakses histori dari <ph name="DEVICE" />, sinkronkan histori. Anda dapat berhenti menyinkronkan kapan saja di setelan. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
 <translation id="8104778744208707085">Perlu diperhatikan</translation>
 <translation id="8105273883928376822">Login untuk melanjutkan.</translation>
@@ -6556,7 +6549,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8214489666383623925">Buka File...</translation>
 <translation id="8214771296778317256">Pilih gaya tab yang Anda inginkan di sini</translation>
 <translation id="8217399928341212914">Lanjutkan memblokir download otomatis beberapa file</translation>
-<translation id="8218411859495801458">Edit pintasan kustom untuk isi otomatis yang ditingkatkan</translation>
 <translation id="8221358554841691213">Gaya fokus sedang</translation>
 <translation id="8221942262855134126">Kelola Sandi</translation>
 <translation id="8222112516148944758">Grup tab Anda disimpan dan diperbarui otomatis di semua perangkat Anda</translation>
@@ -6829,7 +6821,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8512476990829870887">Akhiri Proses</translation>
 <translation id="851263357009351303">Selalu izinkan <ph name="HOST" /> menampilkan gambar</translation>
 <translation id="8513357934662532537">Untuk mengimpor sandi ke <ph name="BRAND" /> untuk <ph name="USER_EMAIL" />, pilih file CSV.</translation>
-<translation id="8514257511170433540">Gunakan pintasan keyboard default saat mengisi formulir</translation>
 <translation id="8514746246728959655">Coba kunci keamanan lain</translation>
 <translation id="8514828975162859845">Kue pop</translation>
 <translation id="8514955299594277296">Jangan izinkan situs menyimpan data di perangkat Anda (tidak direkomendasikan)</translation>

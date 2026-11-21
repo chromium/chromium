@@ -94,7 +94,6 @@
 <translation id="1090126737595388931">არცერთი ფონური აპი გაშვებული არ არის</translation>
 <translation id="109038914521989341">შეიყვანეთ ამ მონაცემების კოპირების მიზეზი:</translation>
 <translation id="1094158807129647987">იკითხეთ თემაზე „<ph name="SELECTION" />“</translation>
-<translation id="1095398697303758108">გაუმჯობესებული ავტომატური შევსებისთვის ორჯერ დააჭირეთ Ctrl-ს</translation>
 <translation id="1095879482467973146">Google პაროლების მმართველი ვებში</translation>
 <translation id="1097016918605049747">ამ გვერდის თარგმნა ვერ მოხერხდა</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" />-დან დაკოპირდა სურათი</translation>
@@ -581,6 +580,7 @@
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{ამოიშალოს ჩანართი და წაიშალოს ჯგუფი?}=1{ამოიშალოს ჩანართები და წაიშალოს ჯგუფი?}other{ამოიშალოს ჩანართები და წაიშალოს ჯგუფები?}}</translation>
 <translation id="1637765355341780467">თქვენი პროფილის გახსნისას შეფერხება წარმოიქმნა. ზოგიერთი ფუნქცია შეიძლება მიუწვდომელი იყოს.</translation>
 <translation id="1639239467298939599">იტვირთება</translation>
+<translation id="1640672724030957280">მიმდინარეობს ჩამოტვირთვა…</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 სხვა პაროლის იმპორტირება ვერ მოხერხდა, რადგან მისი ფორმატი არასწორია}other{{NUM_PASSWORDS} სხვა პაროლის იმპორტირება ვერ მოხერხდა, რადგან მათი ფორმატი არასწორია}}</translation>
 <translation id="1642299742557467312">ამ ფაილმა, შესაძლოა, დააზიანოს თქვენი მოწყობილობა</translation>
@@ -1798,7 +1798,6 @@
 <translation id="2988328607561082373">ხელახლა გამოყენებული პაროლები არ გაქვთ</translation>
 <translation id="2989523299700148168">ახლახან მონახულებული</translation>
 <translation id="2989786307324390836">DER-დაშიფრული ბინარული, ერთი სერტიფიკატი</translation>
-<translation id="2990500505358145117">გაუმჯობესებული ავტომატური შევსების მალსახმობის რედაქტირება</translation>
 <translation id="2990583317361835189">საიტებისთვის მოძრაობის სენსორების გამოყენების აკრძალვა</translation>
 <translation id="2991182900092497283">შეიყვანეთ ამ მონაცემების ჩასმის მიზეზი:</translation>
 <translation id="2992754757708650257">გსურთ საიტის დატოვება და ამოცანის დასრულება?</translation>
@@ -2053,7 +2052,6 @@
 <translation id="3244294424315804309">ხმის დადუმების გაგრძელება</translation>
 <translation id="3247649647204519958">აქედან შეგიძლიათ ნახოთ და მართოთ გაფართოებებთან დაკავშირებული ნებართვები იმ საიტისთვის, რომელზეც იმყოფებით</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> — ქსელის შეცდომა</translation>
-<translation id="3248957351402065497">მორგებული მალსახმობი გაუმჯობესებული ავტომატური შევსებისთვის</translation>
 <translation id="3249558306861350254">დააწკაპუნეთ <ph name="BEGIN_BOLD" />ნაგულისხმევის დაყენებაზე<ph name="END_BOLD" /> Windows-ის პარამეტრებში.</translation>
 <translation id="3250374026663843838">თქვენი უნარის მართვა</translation>
 <translation id="3251759466064201842">&lt;არ არის სერთიფიკატის ნაწილი&gt;</translation>
@@ -2274,6 +2272,7 @@
 <translation id="3481268647794498892"><ph name="ALTERNATIVE_BROWSER_NAME" />-ში გაიხსნება <ph name="COUNTDOWN_SECONDS" /> წამში</translation>
 <translation id="348247802372410699">აირჩიეთ სტილი</translation>
 <translation id="3482573964681964096">Windows-იდან დაიმპორტებული სერტიფიკატების მართვა</translation>
+<translation id="348268549820508141">მეტყველების ამოცნობა</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" />-ს შეუძლია მითითებული ფაილების ნახვა</translation>
 <translation id="3486380520195228369">დამალულია, სანამ გვერდი განახლდება</translation>
 <translation id="3487007233252413104">ანონიმური ფუნქცია</translation>
@@ -2644,7 +2643,6 @@
 <translation id="3826086052025847742">ChromeOS Flex-ის ჟურნალები</translation>
 <translation id="3827774300009121996">&amp;სრული ეკრანი</translation>
 <translation id="3828029223314399057">სანიშნეების ძიება</translation>
-<translation id="3828454092958722155">გაუმჯობესებული ავტომატური შევსების მალსახმობის გასუფთავება</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> — მეხსიერების დიდი მოხმარება — <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">წვდომის სხვა გასაღების გამოყენება</translation>
 <translation id="3838085852053358637">გაფართოება ვერ ჩაიტვირთა</translation>
@@ -3725,7 +3723,6 @@
 <translation id="5060419232449737386">სუბტიტრების პარამეტრები</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{ეს საქაღალდე შეიცავს სანიშნეს. ნამდვილად გსურთ მისი წაშლა?}other{ეს საქაღალდე შეიცავს # სანიშნეს. ნამდვილად გსურთ მისი წაშლა?}}</translation>
 <translation id="5061531353537614467">ტუნდრა</translation>
-<translation id="5061781067616989032">კლავიატურის საკუთარი მალსახმობის დაყენება</translation>
 <translation id="5062863364865466276">მოძრაობა</translation>
 <translation id="5063480226653192405">გამოყენება</translation>
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" />-ის პროფილის გახსნა. ამ პროფილს მართავს თქვენი ორგანიზაცია.</translation>
@@ -5002,7 +4999,6 @@
 <translation id="6540488083026747005">თქვენ დაუშვით მესამე მხარის ქუქი-ჩანაწერები ამ საიტზე</translation>
 <translation id="6541638731489116978">ამ საიტს აეკრძალა მოძრაობის სენსორებზე წვდომა.</translation>
 <translation id="6542417422899025860">პერსონალური ინფორმაციის უმეტესობის ავტომატურად ამოშლა</translation>
-<translation id="6548240707386871455">გაუმჯობესებული ავტომატური შევსების მალსახმობი</translation>
 <translation id="654871471440386944">გსურთ კურსორით დათვალიერების ჩართვა?</translation>
 <translation id="6549689063733911810">უახლესი</translation>
 <translation id="6550675742724504774">პარამეტრები</translation>
@@ -5166,7 +5162,6 @@
 <translation id="6710172959248731469">Google სერვისების პარამეტრები</translation>
 <translation id="6710394144992407503">მართლწერის შეცდომების შემოწმება ვებგვერდებზე ტექსტის აკრეფისას</translation>
 <translation id="6711236403841768371"><ph name="END_DATE" />-მდე</translation>
-<translation id="6711569175139833669">გაუმჯობესებული ავტომატური შევსებისთვის ორჯერ დააჭირეთ ⌘-ს</translation>
 <translation id="6712943853047024245">თქვენ უკვე შეინახეთ პაროლი ამ მომხმარებლის სახელით <ph name="WEBSITE" />-ისთვის</translation>
 <translation id="6713668088933662563">არასოდეს შემომთავაზოთ ამ ენების თარგმა</translation>
 <translation id="6714871567554212732">მეტი დეტალის ნახვა <ph name="GROUP_NAME" />-ის შესახებ</translation>
@@ -6086,7 +6081,6 @@
 <translation id="7706742200777909964">დაალაგეთ გვერდები გვერდიგვერდ ერთსა და იმავე ჩანართში, რომ მარტივად შეადაროთ ისინი ერთმანეთს</translation>
 <translation id="7707108266051544351">ამ საიტს აეკრძალა მოძრაობის სენსორების გამოყენება.</translation>
 <translation id="7709152031285164251">ვერ მოხერხდა - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">გაუმჯობესებული ავტომატური შევსების მორგებული მალსახმობის გასუფთავება</translation>
 <translation id="7710568461918838723">&amp;ტრანსლირება…</translation>
 <translation id="7712739869553853093">ბეჭდვის გადახედვის დიალოგი</translation>
 <translation id="7714464543167945231">სერტიფიკატი</translation>
@@ -6446,7 +6440,6 @@
 <translation id="810185532889603849">მორგებული ფერი</translation>
 <translation id="8103484184517840583">ხელოვნური ინტელექტის რეჟიმიდან გასვლა</translation>
 <translation id="810362914482827094">წვდომის გასაღებების ძიება</translation>
-<translation id="8104388155778519213">გააზიარეთ თქვენს ეკრანზე არსებული კონტენტი Google Lens-ით</translation>
 <translation id="8104412594956510627"><ph name="DEVICE" />-დან თქვენი ისტორიის მისაღებად დაასინქრონეთ ისტორია. სინქრონიზაციის შეწყვეტა ნებისმიერ დროს შეგიძლიათ პარამეტრებიდან. თქვენი ისტორიის მეშვეობით Google შეძლებს Search-ისა და სხვა სერვისების თქვენზე მორგებას.</translation>
 <translation id="8104778744208707085">საჭიროებს თქვენს ყურადღებას</translation>
 <translation id="8105273883928376822">გასაგრძელებლად შედით სისტემაში</translation>
@@ -6544,7 +6537,6 @@
 <translation id="8214489666383623925">ფაილის გახსნა…</translation>
 <translation id="8214771296778317256">აირჩიეთ ჩანართის სასურველი სტილი აქ</translation>
 <translation id="8217399928341212914">გააგრძელეთ რამოდენიმე ფაილის ავტომატური ჩამოტვირთვის დაბლოკვა</translation>
-<translation id="8218411859495801458">გაუმჯობესებული ავტომატური შევსების მორგებული მალსახმობის რედაქტირება</translation>
 <translation id="8221358554841691213">საშუალო ფოკუსის სტილი</translation>
 <translation id="8221942262855134126">პაროლის მართვა</translation>
 <translation id="8222112516148944758">თქვენი ჩანართების ჯგუფები ავტომატურად შეინახება და განახლდება თქვენს ყველა მოწყობილობაში</translation>
@@ -6817,7 +6809,6 @@
 <translation id="8512476990829870887">პროცესის დასრულება</translation>
 <translation id="851263357009351303">ყოველთვის მიეცი ნება <ph name="HOST" />-ს, აჩვენოს გამოსახულებები</translation>
 <translation id="8513357934662532537"><ph name="USER_EMAIL" />-ის პაროლების <ph name="BRAND" />-ში იმპორტირებისთვის აირჩიეთ CSV-ფაილი.</translation>
-<translation id="8514257511170433540">ფორმების შევსებისას გამოიყენეთ კლავიატურის ნაგულისხმევი მალსახმობი</translation>
 <translation id="8514746246728959655">ცადეთ უსაფრთხოების სხვა გასაღები</translation>
 <translation id="8514828975162859845">ქეიქ-პოპი</translation>
 <translation id="8514955299594277296">საიტებისთვის თქვენს მოწყობილობაზე მონაცემების შენახვის აკრძალვა (არ არის რეკომენდებული)</translation>

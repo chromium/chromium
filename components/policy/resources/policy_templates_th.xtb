@@ -5727,21 +5727,6 @@ Use Case ทั่วไปของนโยบายนี้คือกา�
       หากตั้งค่าเป็น "เท็จ" การบันทึกแพ็กเก็ตเครือข่ายจะไม่พร้อมใช้งานในอุปกรณ์</translation>
 <translation id="4599810650416623373">บล็อกการเพิ่มประสิทธิภาพ JavaScript ในเว็บไซต์เหล่านี้</translation>
 <translation id="4600786265870346112">เปิดใช้งานเคอร์เซอร์ขนาดใหญ่</translation>
-<translation id="460264931744856609">การตั้งค่านโยบายนี้จะควบคุมการตั้งค่าการจัดการส่วนขยายสำหรับ <ph name="PRODUCT_NAME" /> ซึ่งรวมถึงการตั้งค่าที่ควบคุมโดยนโยบายเกี่ยวกับส่วนขยายที่มีอยู่
-
-นโยบายนี้จะจับคู่รหัสส่วนขยายหรือ URL อัปเดตกับการตั้งค่าที่เฉพาะเจาะจงของรายการนั้นๆ เท่านั้น คุณกำหนดค่าเริ่มต้นสำหรับรหัสพิเศษ <ph name="DEFAULT_SCOPE" /> ได้ ซึ่งระบบจะใช้กับส่วนขยายทั้งหมดที่ไม่มีการกำหนดค่าเองในนโยบายนี้
-
-นโยบายนี้สามารถลบล้างการกำหนดค่าต่อส่วนขยายจากนโยบายเดิมได้
-
-โปรดทราบว่าการตั้งค่าส่วนขยายต่อรหัสจาก <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_ALLOWLIST_POLICY_NAME" />, <ph name="EXTENSION_INSTALL_BLOCKLIST_POLICY_NAME" /> หรือ <ph name="EXTENSION_SETTINGS_POLICY_NAME" /> อย่างใดอย่างหนึ่งนี้ จะรับค่า "installation_mode" และ "update_url" จากค่าเริ่มต้นของ <ph name="DEFAULT_SCOPE" /> มาใช้ต่อเท่านั้น โดยจะไม่รับค่าพร็อพเพอร์ตี้อื่นๆ เมื่อใช้ URL อัปเดต ระบบจะใช้การกำหนดค่ากับส่วนขยายที่มี URL อัปเดตตรงกับที่ระบุไว้ในไฟล์ Manifest ของส่วนขยาย ( http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy ) หากตั้งค่า Flag "override_update_url" เป็น "จริง" ระบบจะติดตั้งและอัปเดตส่วนขยายโดยใช้ URL "อัปเดต" ที่ระบุในนโยบาย <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> หรือในช่อง "update_url" ในนโยบายนี้ ระบบจะไม่สนใจ Flag "override_update_url" หาก "update_url" คือ URL Chrome เว็บสโตร์
-
-ใน <ph name="PRODUCT_NAME" /> เวอร์ชัน 155 ถึง 158 การใช้ "runtime_blocked_hosts" กับส่วนขยายที่มีสิทธิ์ "debugger" จะปิดใช้ "chrome.debugger.attach()" ในเป้าหมายทั้งหมดโดยสมบูรณ์ เช่น เมื่อนโยบาย <ph name="CHROME_VARIATIONS_POLICY_NAME" /> ปิดใช้รูปแบบทั้งหมด
-
-ในอินสแตนซ์ <ph name="MS_WIN_NAME" /> จะบังคับติดตั้งแอปและส่วนขยายที่ไม่ได้มาจาก Chrome เว็บสโตร์ได้เฉพาะในกรณีที่อินสแตนซ์นั้นเข้าร่วมโดเมน <ph name="MS_AD_NAME" />, เข้าร่วม <ph name="MS_AAD_NAME" /> หรือลงทะเบียนใน <ph name="CHROME_ENTERPRISE_CORE_NAME" />
-
-ในอินสแตนซ์ <ph name="MAC_OS_NAME" /> จะบังคับติดตั้งแอปและส่วนขยายที่ไม่ได้มาจาก Chrome เว็บสโตร์ได้เฉพาะในกรณีที่อินสแตนซ์นั้นจัดการผ่าน MDM, เข้าร่วมโดเมนผ่าน MCX หรือลงทะเบียนใน <ph name="CHROME_ENTERPRISE_CORE_NAME" />
-
-หมายเหตุ: นโยบายนี้มีผลเฉพาะกับแพลตฟอร์มที่รองรับส่วนขยาย</translation>
 <translation id="4602988345256038309">อนุญาตให้มีการเชื่อมต่อกับเครื่องนี้เพื่อให้การสนับสนุนระยะไกล</translation>
 <translation id="4605677392792989397">การตั้งค่านโยบายจะกำหนดรายการ URL สำหรับเข้าสู่ระบบขององค์กร (โปรโตคอล HTTP และ HTTPS เท่านั้น) บริการปกป้องรหัสผ่านจะบันทึกแฮชที่ใช้ Salt ของรหัสผ่านใน URL เหล่านี้และนำไปใช้เพื่อตรวจหาการใช้รหัสผ่านซ้ำ โปรดตรวจสอบว่าหน้าลงชื่อเข้าใช้เป็นไปตามหลักเกณฑ์เหล่านี้ (https://www.chromium.org/developers/design-documents/create-amazing-password-forms) เพื่อให้ <ph name="PRODUCT_NAME" /> บันทึกแฮชที่ใช้ Salt ของรหัสผ่านได้อย่างถูกต้อง
 

@@ -581,7 +581,6 @@
 <translation id="7213407614656404070">언제든지 메시지, 문서 및 다른 앱에서 링크를 클릭하여 Chromium을 사용하세요</translation>
 <translation id="7216228761061470870">데스크톱에서 이미지 검색을 사용하면 페이지 제목, URL, PDF를 포함한 콘텐츠가 서버로 전송됩니다.</translation>
 <translation id="7223968959479464213">작업 관리자 - Chromium</translation>
-<translation id="7226331818892775989">다른 앱이나 파일과 같은 Chromium 외부의 콘텐츠에 관해 질문하세요.</translation>
 <translation id="7227958669698166857"><ph name="EXISTING_USER" /> 계정은 이미 로그인되어 있습니다. 방문 기록을 별도로 보관하려면 내 프로필에서 <ph name="USER_EMAIL_ADDRESS" /> 주소로 Chromium에 로그인하세요. 이렇게 하면 모든 기기에서 저장된 정보 등을 사용할 수 있습니다.</translation>
 <translation id="7252276985725323153">즉시 탐색 시작: 이제 Windows 시작 시 Chromium을 실행할 수 있습니다.</translation>
 <translation id="7274695763216404502">고정되었습니다. 툴바에서 이미지 검색을 다시 사용해 보세요.</translation>
@@ -698,7 +697,6 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8310603974518734211"><ph name="USER_NAME" /> 계정으로 Chromium에 로그인하기 위한 QR 코드</translation>
 <translation id="8313851650939857356">시작 오류: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122"><ph name="TIMEOUT_DURATION" /> 동안 사용하지 않으면 조직에서 Chromium을 종료합니다.</translation>
-<translation id="8321888067342493336">이미지로 저장</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" />에서 이전에 Chromium을 사용한 적이 있음</translation>
 <translation id="8351551329754447960">Chromium에서 스킬 사용 설정</translation>
 <translation id="8359544530202147897">Google 계정(<ph name="ACCOUNT_EMAIL" />)의 Chromium 데이터를 계속 사용하려면 Chromium을 업데이트하세요</translation>

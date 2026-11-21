@@ -94,7 +94,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1090126737595388931">Nu rulează aplicații în fundal</translation>
 <translation id="109038914521989341">Introdu un motiv pentru copierea acestor date:</translation>
 <translation id="1094158807129647987">Întreabă despre <ph name="SELECTION" /></translation>
-<translation id="1095398697303758108">Apasă de două ori pe Ctrl pentru completarea automată îmbunătățită</translation>
 <translation id="1095879482467973146">Managerul de parole Google pe web</translation>
 <translation id="1097016918605049747">Pagina nu a putut fi tradusă</translation>
 <translation id="1099962274138857708">Imagine copiată de pe <ph name="DEVICE_NAME" /></translation>
@@ -581,6 +580,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Elimini fila și ștergi grupul?}=1{Elimini filele și ștergi grupul?}few{Elimini filele și ștergi grupurile?}other{Elimini filele și ștergi grupurile?}}</translation>
 <translation id="1637765355341780467">A apărut o eroare la deschiderea profilului. Este posibil ca unele funcții să nu fie disponibile.</translation>
 <translation id="1639239467298939599">Se încarcă</translation>
+<translation id="1640672724030957280">Se descarcă…</translation>
 <translation id="1641113438599504367">Navigare sigură</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Încă o parolă nu a fost importată, deoarece este formatată incorect}few{{NUM_PASSWORDS} alte parole nu au fost importate, deoarece sunt formatate incorect}other{{NUM_PASSWORDS} de alte parole nu au fost importate, deoarece sunt formatate incorect}}</translation>
 <translation id="1642299742557467312">Acest fișier poate fi periculos pentru dispozitivul tău</translation>
@@ -1798,7 +1798,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="2988328607561082373">Nu refolosești parole</translation>
 <translation id="2989523299700148168">Accesate recent</translation>
 <translation id="2989786307324390836">Certificat unic, sub formă de fișier binar cu codificarea DER</translation>
-<translation id="2990500505358145117">Editează comanda rapidă pentru completarea automată îmbunătățită</translation>
 <translation id="2990583317361835189">Nu permite site-urilor să folosească senzori de mișcare</translation>
 <translation id="2991182900092497283">Introdu un motiv pentru inserarea acestor date:</translation>
 <translation id="2992754757708650257">Părăsești site-ul și închei activitatea?</translation>
@@ -2052,7 +2051,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="3244294424315804309">Continuă să dezactivezi sunetul</translation>
 <translation id="3247649647204519958">De aici, poți să vezi și să gestionezi permisiunile pentru extensii ale site-ului pe care l-ai accesat</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – eroare de rețea</translation>
-<translation id="3248957351402065497">Comandă rapidă personalizată pentru completarea automată îmbunătățită</translation>
 <translation id="3249558306861350254">Dă clic pe <ph name="BEGIN_BOLD" />Setează ca prestabilit<ph name="END_BOLD" /> în setările Windows.</translation>
 <translation id="3250374026663843838">Gestionează-ți abilitatea</translation>
 <translation id="3251759466064201842">&lt;Nu face parte dintr-un certificat&gt;</translation>
@@ -2273,6 +2271,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="3481268647794498892">Se deschide în <ph name="ALTERNATIVE_BROWSER_NAME" /> în <ph name="COUNTDOWN_SECONDS" /> secunde</translation>
 <translation id="348247802372410699">Alege un stil</translation>
 <translation id="3482573964681964096">Gestionează certificatele importate din Windows</translation>
+<translation id="348268549820508141">Recunoaștere vocală</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> poate să vadă următoarele fișiere</translation>
 <translation id="3486380520195228369">Ascuns până la actualizarea paginii</translation>
 <translation id="3487007233252413104">funcție anonimă</translation>
@@ -2643,7 +2642,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="3826086052025847742">Jurnale ChromeOS Flex</translation>
 <translation id="3827774300009121996">&amp;Ecran complet</translation>
 <translation id="3828029223314399057">Căutați în marcaje</translation>
-<translation id="3828454092958722155">Șterge comanda rapidă pentru completarea automată îmbunătățită</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Utilizare intensă a memoriei – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Folosește altă cheie de acces</translation>
 <translation id="3838085852053358637">Extensia nu s-a încărcat</translation>
@@ -3723,7 +3721,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="5060419232449737386">Setări pentru subtitrări</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Acest dosar conține un marcaj. Sigur dorești să îl ștergi?}few{Acest dosar conține # marcaje. Sigur dorești să îl ștergi?}other{Acest dosar conține # de marcaje. Sigur dorești să îl ștergi?}}</translation>
 <translation id="5061531353537614467">Tundră</translation>
-<translation id="5061781067616989032">Configurează-ți propria comandă rapidă de la tastatură</translation>
 <translation id="5062863364865466276">Mișcare</translation>
 <translation id="5063480226653192405">Utilizare</translation>
 <translation id="5064921774605267982">Deschide profilul <ph name="PROFILE_NAME" />. Profilul este gestionat de unul dintre părinți.</translation>
@@ -4998,7 +4995,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="6540488083026747005">Ai permis cookie-urile terță parte pentru acest site</translation>
 <translation id="6541638731489116978">Site-ul nu are permisiunea de a accesa senzorii de mișcare.</translation>
 <translation id="6542417422899025860">Elimină automat majoritatea informațiilor cu caracter personal</translation>
-<translation id="6548240707386871455">Comandă rapidă pentru completarea automată îmbunătățită</translation>
 <translation id="654871471440386944">Activezi navigarea cu tastatura?</translation>
 <translation id="6549689063733911810">Recente</translation>
 <translation id="6550675742724504774">Opțiuni</translation>
@@ -5164,7 +5160,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6710172959248731469">Setări pentru serviciile Google</translation>
 <translation id="6710394144992407503">Verifică dacă există greșeli de ortografie când introduci text în pagini web</translation>
 <translation id="6711236403841768371">Înainte de <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Apasă de două ori pe ⌘ pentru completarea automată îmbunătățită</translation>
 <translation id="6712943853047024245">Ai salvat deja o parolă folosind acest nume de utilizator pentru <ph name="WEBSITE" /></translation>
 <translation id="6713668088933662563">Nu oferi niciodată traducerea acestor limbi</translation>
 <translation id="6714871567554212732">Vezi mai multe detalii despre <ph name="GROUP_NAME" /></translation>
@@ -6085,7 +6080,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="7706742200777909964">Afișează paginile una lângă alta în aceeași filă ca să poți compara cu ușurință opțiunile și multe altele</translation>
 <translation id="7707108266051544351">Site-ul nu are permisiunea de a folosi senzorii de mișcare.</translation>
 <translation id="7709152031285164251">Nu a reușit – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Șterge comanda rapidă personalizată pentru completarea automată îmbunătățită</translation>
 <translation id="7710568461918838723">&amp;Proiectează…</translation>
 <translation id="7712739869553853093">Caseta de dialog pentru previzualizarea înainte de printare</translation>
 <translation id="7714464543167945231">Certificat</translation>
@@ -6445,7 +6439,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="810185532889603849">Culoare personalizată</translation>
 <translation id="8103484184517840583">Ieși din Modul AI</translation>
 <translation id="810362914482827094">Caută chei de acces</translation>
-<translation id="8104388155778519213">Permite accesul la conținutul de pe ecran cu Google Lens</translation>
 <translation id="8104412594956510627">Pentru a accesa istoricul de pe <ph name="DEVICE" />, sincronizează istoricul. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="8104778744208707085">Ia măsuri!</translation>
 <translation id="8105273883928376822">Conectează-te pentru a continua.</translation>
@@ -6543,7 +6536,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8214489666383623925">Deschide fișierul...</translation>
 <translation id="8214771296778317256">Alege aici stilul preferat pentru file</translation>
 <translation id="8217399928341212914">Blocați în continuare descărcarea automată a mai multor fișiere</translation>
-<translation id="8218411859495801458">Editează comanda rapidă personalizată pentru completarea automată îmbunătățită</translation>
 <translation id="8221358554841691213">Stil de focalizare mediu</translation>
 <translation id="8221942262855134126">Gestionează parola</translation>
 <translation id="8222112516148944758">Grupurile de file se salvează și se actualizează automat pe toate dispozitivele</translation>
@@ -6816,7 +6808,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8512476990829870887">Opriți procesul</translation>
 <translation id="851263357009351303">Permite întotdeauna afișarea de imagini de la <ph name="HOST" /></translation>
 <translation id="8513357934662532537">Ca să imporți parole în <ph name="BRAND" /> pentru <ph name="USER_EMAIL" />, selectează un fișier CSV.</translation>
-<translation id="8514257511170433540">Folosește comanda rapidă de la tastatură prestabilită când completezi formulare</translation>
 <translation id="8514746246728959655">Încearcă altă cheie de securitate</translation>
 <translation id="8514828975162859845">Prăjituri-acadea</translation>
 <translation id="8514955299594277296">Nu permite site-urilor să salveze date pe dispozitiv (nu se recomandă)</translation>

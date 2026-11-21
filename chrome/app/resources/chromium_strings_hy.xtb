@@ -582,7 +582,6 @@
 <translation id="7213407614656404070">Օգտագործեք Chromium-ը ցանկացած ժամանակ, երբ սեղմում եք հաղորդագրություններում, փաստաթղթերում և այլ հավելվածներում առկա հղումների վրա</translation>
 <translation id="7216228761061470870">Երբ օգտագործում եք «Որոնում պատկերով» գործառույթը, էջի վերնագիրը, URL-ը և բովանդակությունը՝ ներառյալ PDF-ները, ուղարկվում են սերվերին</translation>
 <translation id="7223968959479464213">Խնդիրների կառավարիչ - Chromium</translation>
-<translation id="7226331818892775989">Հարցեր տվեք Chromium-ից դուրս բովանդակության, օրինակ՝ այլ հավելվածների կամ ֆայլերի մասին</translation>
 <translation id="7227958669698166857"><ph name="EXISTING_USER" />-ն արդեն մտել է հաշիվ։ Ձեր այցելությունների պատմությունն առանձին պահելու համար ձեր սեփական պրոֆիլում մուտք գործեք Chromium <ph name="USER_EMAIL_ADDRESS" /> հաշվով։ Պահպանված տեղեկությունները և մյուս տվյալները նույնպես կհայտնվեն ձեր բոլոր սարքերում։</translation>
 <translation id="7252276985725323153">Ակնթարթորեն սկսեք դիտարկումը․ Chromium-ն այժմ կարող է գործարկվել Windows-ի միանալուն պես։</translation>
 <translation id="7274695763216404502">«Որոնում պատկերով» գործառույթն ամրացված է․ այն այժմ հասանելի է գործիքագոտում</translation>
@@ -699,7 +698,6 @@ Chromium-ին չհաջողվեց վերականգնել ձեր կարգավոր�
 <translation id="8310603974518734211">QR կոդ՝ Chromium որպես <ph name="USER_NAME" /> մուտք գործելու համար</translation>
 <translation id="8313851650939857356">Մեկնարկի սխալ․ <ph name="STARTUP_ERROR" />։</translation>
 <translation id="8318772038038596122">Ձեր կազմակերպությունը փակում է Chromium-ը, երբ այն չի օգտագործվում <ph name="TIMEOUT_DURATION" />։</translation>
-<translation id="8321888067342493336">Պահել որպես պատկեր</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" />-ը նախկինում Chromium է օգտագործել</translation>
 <translation id="8351551329754447960">Միացնել հմտությունները Chromium-ում</translation>
 <translation id="8359544530202147897">Թարմացրեք Chromium-ը, որպեսզի շարունակեք օգտագործել Chromium-ի տվյալները ձեր <ph name="ACCOUNT_EMAIL" /> Google հաշվում։</translation>

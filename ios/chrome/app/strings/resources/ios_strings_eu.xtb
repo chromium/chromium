@@ -261,7 +261,6 @@
 <translation id="1739364174357629566">Eguneratu fidagarritzat jotako bidaiariaren zenbakia</translation>
 <translation id="1740468249224277719">Instalatzeko, sakatu birritan.</translation>
 <translation id="1740650426894359238">Aldatu beste profil batera</translation>
-<translation id="1741219894094057085">Erloju adimenduna</translation>
 <translation id="1743244221910283364">Baztertu aldaketak</translation>
 <translation id="1748975028205587434">Hautatu fitxategia</translation>
 <translation id="1749733017156547309">Pasahitz bat behar da</translation>
@@ -285,7 +284,6 @@
 <translation id="1810976980198522421">Utzi</translation>
 <translation id="1815941218935345331">Pasakodea</translation>
 <translation id="1818687879307252150">{count,plural, =0{Ez dago pasahitzik arriskuan}=1{{count} pasahitz dago arriskuan}other{{count} pasahitz daude arriskuan}}</translation>
-<translation id="1819374301217551116">Prezioen jarraipena eta estatistikak</translation>
 <translation id="1820195936249950412">Hasi saioa balio duen kontu batekin</translation>
 <translation id="1820259098641718022">Gehitu da Irakurketa-zerrendan</translation>
 <translation id="1823768272150895732">Letra</translation>
@@ -415,7 +413,6 @@
 <translation id="2199562093267256223"><ph name="USER_EMAIL" /> kontuarekin saioa hasita daukaten gailuetan ezabatuko da taldea.</translation>
 <translation id="2202084845446535117">Ez dago helbide elektronikorik</translation>
 <translation id="2214453882118345682">Erosi, itzuli eta identifikatu ikusten duzuna kameraren bidez.</translation>
-<translation id="2216366330550244277">Joan produktu baten orrira</translation>
 <translation id="2218389616572918761">Webguneek zure mikrofonoa erabiltzeko baimena eska dezakete</translation>
 <translation id="2219935992754556187">Chrome-k Face ID bidez babesten ditu zure kontuzko datuak</translation>
 <translation id="2220529011494928058">Eman arazo baten berri</translation>
@@ -541,7 +538,6 @@
 <translation id="2584994295315085351">Ireki fitxa berri bat 4 orduren ostean Chrome-ra itzultzean</translation>
 <translation id="2592917252160773942">Webguneek zure kamera erabiltzeko baimena eska dezakete</translation>
 <translation id="2593272815202181319">Tarte bakarrekoak</translation>
-<translation id="2601778637777010194">Egin produktuen prezio-jaitsieren jarraipena</translation>
 <translation id="2602372807870028932">Gailuan gordeta dagoen hautatutako informazioa ezabatuko da</translation>
 <translation id="260378315836159338">Pantailaren goialdean, sakatu +</translation>
 <translation id="2612625650119459859">Osatu da "Ainguratu fitxa bat"!</translation>
@@ -1195,7 +1191,6 @@
 <translation id="4719927025381752090">Eskaini itzultzea</translation>
 <translation id="4720530280568305198">Hautatutakoa beste fitxa batean ireki da</translation>
 <translation id="4720782081196952026">Txikitu testuaren tamaina</translation>
-<translation id="472259426228234149">Prezioa: 100 dolar - 180 dolar</translation>
 <translation id="4735849923335729414">Hasi saioa <ph name="EMAIL" /> gisa. Erakundeak kudeatzen du.</translation>
 <translation id="473775607612524610">Eguneratu</translation>
 <translation id="4738968082443868320">Google Drive</translation>
@@ -1338,7 +1333,6 @@
 <translation id="5116347248003317626">Ez eman zure kokapena erabiltzeko baimena webguneei</translation>
 <translation id="5118462200606189584">Gehitu kontu bat…</translation>
 <translation id="5118764316110575523">Desaktibatuta</translation>
-<translation id="5119329531859909472">Produktuaren jarraipena egiteko, sakatu Egin jarraipena</translation>
 <translation id="5121618895923301719">Produktuaren jarraipena egiten ari zara jada. Orri hau <ph name="BEGIN_LINK" />Mugikorreko laster-markak<ph name="END_LINK" /> atalean gorde da.</translation>
 <translation id="512533434554095351">Pasahitzekin lotutako arazo batzuk dauzkazu.</translation>
 <translation id="5126335625961252141">zure tableta</translation>
@@ -1430,7 +1424,6 @@
 <translation id="5414763847370083940">Webgune bateko produktu baten prezioa jaisten bada, alerta bat jasoko duzu.</translation>
 <translation id="5415289094036440596">Pasahitzak ezin dira partekatu</translation>
 <translation id="5416455648658732408">Eraman fitxa taldera</translation>
-<translation id="5423269318075950257">Egin prezioen jarraipena</translation>
 <translation id="542659109038405424">Xede-hizkuntza</translation>
 <translation id="5429624150850059322">Itzultzen zarenean, fitxak lausotuta agertuko dira Egin aurrera sakatu arte</translation>
 <translation id="5431239785743546285">Irakurri dituzun orriak</translation>
@@ -1968,7 +1961,6 @@ Ordenagailuan jarraitzeko, aldatu <ph name="OTHER_EMAIL" /> helbide elektronikor
 <translation id="6989636517316575338">Egin edozein orriri buruzko galderak</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998236305642926573">Zeregin guztiak</translation>
-<translation id="6998251471716094661">Egin produktuen prezioen jarraipena eta jaso alertak edozein webgunetan prezioa jaisten denean</translation>
 <translation id="7004032350256606903">Modu pribatuan arakatzeko eskatzen dizu zure erakundeak.
 <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Ezarri balio lehenetsia ezarpenetan…</translation>
@@ -1992,7 +1984,6 @@ Ordenagailuan jarraitzeko, aldatu <ph name="OTHER_EMAIL" /> helbide elektronikor
 <translation id="7082853213442715471">Aktibatuta dagoenean, sareko zenbait teknologia blokeatzen dira. Horregatik, baliteke webgune batzuk motelago kargatzea edo gaizki funtzionatzea.</translation>
 <translation id="7091023926159231962">{count,plural, =1{Ezin izan da inportatu {count} pasahitz}other{Ezin izan dira inportatu {count} pasahitz}}</translation>
 <translation id="7095110968493193530">Google-ren Pasahitz-kudeatzailea zerbitzuan (<ph name="EMAIL" /> kontuan)</translation>
-<translation id="7097046145876891318">Helbide-barran, sakatu prezioen historia denboran zehar prezioek izan dituzten aldaketak ikusteko</translation>
 <translation id="7102005569666697658">Deskargatzen… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menua → Ezarpenak → Ordainketa-metodoak</translation>
 <translation id="7108338896283013870">Ezkutatu</translation>

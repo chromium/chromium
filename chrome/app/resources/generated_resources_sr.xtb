@@ -94,7 +94,6 @@
 <translation id="1090126737595388931">Није покренута ниједна позадинска апликација</translation>
 <translation id="109038914521989341">Унесите разлог за копирање ових података:</translation>
 <translation id="1094158807129647987">Упитајте о: <ph name="SELECTION" /></translation>
-<translation id="1095398697303758108">Притисните Ctrl двапут за побољшано аутоматско попуњавање</translation>
 <translation id="1095879482467973146">Google менаџер лозинки на вебу</translation>
 <translation id="1097016918605049747">Превођење ове странице није успело</translation>
 <translation id="1099962274138857708">Слика је копирана са уређаја <ph name="DEVICE_NAME" /></translation>
@@ -581,6 +580,7 @@
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Желите да уклоните картицу и избришете групу?}=1{Желите да уклоните картице и избришете групу?}one{Желите да уклоните картице и избришете групе?}few{Желите да уклоните картице и избришете групе?}other{Желите да уклоните картице и избришете групе?}}</translation>
 <translation id="1637765355341780467">Дошло је до проблема при отварању профила. Неке функције ће можда бити недоступне.</translation>
 <translation id="1639239467298939599">Учитава се</translation>
+<translation id="1640672724030957280">Преузимање...</translation>
 <translation id="1641113438599504367">Безбедно прегледање</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Није увезена још 1 лозинка јер је неправилно форматирана}one{Није увезена још {NUM_PASSWORDS} лозинка јер је неправилно форматирана}few{Нису увезене још {NUM_PASSWORDS} лозинке јер су неправилно форматиране}other{Није увезено још {NUM_PASSWORDS} лозинки јер су неправилно форматиране}}</translation>
 <translation id="1642299742557467312">Овај фајл може да нашкоди уређају</translation>
@@ -1798,7 +1798,6 @@
 <translation id="2988328607561082373">Ниједну лозинку не користите за више налога</translation>
 <translation id="2989523299700148168">Недавно посећено</translation>
 <translation id="2989786307324390836">Бинарна датотека шифрована методом „DER“, један сертификат</translation>
-<translation id="2990500505358145117">Измени пречицу за побољшано аутоматско попуњавање</translation>
 <translation id="2990583317361835189">Не дозвољавај сајтовима да користе сензоре покрета</translation>
 <translation id="2991182900092497283">Унесите разлог за налепљивање ових података:</translation>
 <translation id="2992754757708650257">Желите да напустите сајт и завршите задатак?</translation>
@@ -2053,7 +2052,6 @@
 <translation id="3244294424315804309">Не укључуј звук</translation>
 <translation id="3247649647204519958">Овде можете да видите дозволе за додатак за сајт на ком се налазите и да управљате њима</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – грешка на мрежи</translation>
-<translation id="3248957351402065497">Прилагођена пречица за побољшано аутоматско попуњавање</translation>
 <translation id="3249558306861350254">Кликните на <ph name="BEGIN_BOLD" />Подеси као подразумевано<ph name="END_BOLD" /> у подешавањима Windows-а.</translation>
 <translation id="3250374026663843838">Управљајте вештином</translation>
 <translation id="3251759466064201842">&lt;Није део сертификата&gt;</translation>
@@ -2274,6 +2272,7 @@
 <translation id="3481268647794498892">Отвара се у прегледачу <ph name="ALTERNATIVE_BROWSER_NAME" /> за <ph name="COUNTDOWN_SECONDS" /> сек</translation>
 <translation id="348247802372410699">Одаберите стил</translation>
 <translation id="3482573964681964096">Управљајте увезеним сертификатима из Windows-а</translation>
+<translation id="348268549820508141">Препознавање говора</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> може да прегледа следеће датотеке</translation>
 <translation id="3486380520195228369">Скривено док се страница не освежи</translation>
 <translation id="3487007233252413104">анонимна функција</translation>
@@ -2644,7 +2643,6 @@
 <translation id="3826086052025847742">ChromeOS Flex евиденције</translation>
 <translation id="3827774300009121996">&amp;Цео екран</translation>
 <translation id="3828029223314399057">Претражи обележиваче</translation>
-<translation id="3828454092958722155">Обриши пречицу за побољшано аутоматско попуњавање</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Висока потрошња меморије – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Користите други приступни кључ</translation>
 <translation id="3838085852053358637">Учитавање додатка није успело</translation>
@@ -3725,7 +3723,6 @@
 <translation id="5060419232449737386">Подешавања титла</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Овај фолдер садржи обележивач. Желите ли стварно да га избришете?}one{Овај фолдер садржи # обележивач. Желите ли стварно да га избришете?}few{Овај фолдер садржи # обележивача. Желите ли стварно да га избришете?}other{Овај фолдер садржи # обележивача. Желите ли стварно да га избришете?}}</translation>
 <translation id="5061531353537614467">Тундра</translation>
-<translation id="5061781067616989032">Подесите своју тастерску пречицу</translation>
 <translation id="5062863364865466276">Покрет</translation>
 <translation id="5063480226653192405">Коришћење</translation>
 <translation id="5064921774605267982">Отворите профил <ph name="PROFILE_NAME" /> Овим профилом управља родитељ.</translation>
@@ -5001,7 +4998,6 @@
 <translation id="6540488083026747005">Дозволили сте колачиће треће стране за овај сајт</translation>
 <translation id="6541638731489116978">Овом сајту је забрањено да приступа сензорима за покрет.</translation>
 <translation id="6542417422899025860">Аутоматски уклоните већину личних података</translation>
-<translation id="6548240707386871455">Пречица за побољшано аутоматско попуњавање</translation>
 <translation id="654871471440386944">Желите да укључите навигацију курсором?</translation>
 <translation id="6549689063733911810">Недавно</translation>
 <translation id="6550675742724504774">Опције</translation>
@@ -5169,7 +5165,6 @@
 <translation id="6710172959248731469">Подешавања Google услуга</translation>
 <translation id="6710394144992407503">Проверите да ли има правописних грешака када уносите текст на веб-страницама</translation>
 <translation id="6711236403841768371">Пре <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Притисните ⌘ двапут за побољшано аутоматско попуњавање</translation>
 <translation id="6712943853047024245">Већ сте сачували лозинку са овим корисничким именом за <ph name="WEBSITE" /></translation>
 <translation id="6713668088933662563">Никада не нуди превод за ове језике</translation>
 <translation id="6714871567554212732">Погледајте још детаља о <ph name="GROUP_NAME" /></translation>
@@ -6090,7 +6085,6 @@
 <translation id="7706742200777909964">Поставите странице једну поред друге на истој картици да бисте лако могли да упоредите опције и друго</translation>
 <translation id="7707108266051544351">Овом сајту је забрањено да користи сензоре за покрет.</translation>
 <translation id="7709152031285164251">Није успело – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Обриши прилагођену пречицу за побољшано аутоматско попуњавање</translation>
 <translation id="7710568461918838723">&amp;Пребаци...</translation>
 <translation id="7712739869553853093">Одштампајте дијалог прегледа</translation>
 <translation id="7714464543167945231">Сертификат</translation>
@@ -6450,7 +6444,6 @@
 <translation id="810185532889603849">Прилагођена боја</translation>
 <translation id="8103484184517840583">Изађи из AI режима</translation>
 <translation id="810362914482827094">Претражите приступне кодове</translation>
-<translation id="8104388155778519213">Делите садржај екрана помоћу Google објектива</translation>
 <translation id="8104412594956510627">Да бисте преузели историју са уређаја <ph name="DEVICE" />, синхронизујте историју. Увек можете да зауставите синхронизацију у подешавањима. Google може да персонализује Претрагу и друге услуге на основу историје.</translation>
 <translation id="8104778744208707085">Треба да обратите пажњу на ово</translation>
 <translation id="8105273883928376822">Пријавите се да бисте наставили.</translation>
@@ -6548,7 +6541,6 @@
 <translation id="8214489666383623925">Отвори датотеку...</translation>
 <translation id="8214771296778317256">Овде изаберите жељени стил картице</translation>
 <translation id="8217399928341212914">Настави да блокираш аутоматска преузимања више датотека</translation>
-<translation id="8218411859495801458">Измени прилагођену пречицу за побољшано аутоматско попуњавање</translation>
 <translation id="8221358554841691213">Стил средњег фокуса</translation>
 <translation id="8221942262855134126">Управљај лозинком</translation>
 <translation id="8222112516148944758">Групе картица се аутоматски чувају и ажурирају на свим уређајима</translation>
@@ -6821,7 +6813,6 @@
 <translation id="8512476990829870887">Заврши процес</translation>
 <translation id="851263357009351303">Увек дозволи сајту <ph name="HOST" /> да приказује слике</translation>
 <translation id="8513357934662532537">Да бисте увезли лозинке у <ph name="BRAND" /> за <ph name="USER_EMAIL" />, изаберите CSV фајл.</translation>
-<translation id="8514257511170433540">Користите подразумевану тастерску пречицу када попуњавате обрасце</translation>
 <translation id="8514746246728959655">Пробајте са неким другим безбедносним кључем</translation>
 <translation id="8514828975162859845">Колачи на штапићу</translation>
 <translation id="8514955299594277296">Не дозвољавајте сајтовима да чувају податке на уређају (не препоручује се)</translation>

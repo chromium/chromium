@@ -94,7 +94,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1090126737595388931">Orqa fonda ishlayotgan ilovalar yo‘q</translation>
 <translation id="109038914521989341">Bu axborot nusxalanishi sababini yozing:</translation>
 <translation id="1094158807129647987">“<ph name="SELECTION" />” haqida soʻrash</translation>
-<translation id="1095398697303758108">Yaxshilangan avtomatik kiritish uchun Ctrl tugmasini ikki marta bosing</translation>
 <translation id="1095879482467973146">Vebda Google Parollar menejeri</translation>
 <translation id="1097016918605049747">Bu sahifa tarjima qilinmaydi</translation>
 <translation id="1099962274138857708">Rasm <ph name="DEVICE_NAME" /> qurilmasidan nusxalandi</translation>
@@ -582,6 +581,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Varaq olib tashlanib, guruh oʻchirilsinmi?}=1{Varaqlar olib tashlanib, guruh oʻchirilsinmi?}other{Varaqlar olib tashlanib, guruhlar oʻchirilsinmi?}}</translation>
 <translation id="1637765355341780467">Profilni ochib bo‘lmadi. Ba’zi funksiyalar ishlamasligi mumkin.</translation>
 <translation id="1639239467298939599">Yuklanmoqda</translation>
+<translation id="1640672724030957280">Yuklab olinmoqda...</translation>
 <translation id="1641113438599504367">Saytlarni xavfsiz kezish</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Yana 1 ta parol xato formatdaligi uchun import qilinmadi.}other{Yana {NUM_PASSWORDS} ta parol xato formatdaligi uchun import qilinmadi.}}</translation>
 <translation id="1642299742557467312">Bu fayl qurilmaga zarar keltirishi mumkin</translation>
@@ -1803,7 +1803,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="2988328607561082373">Hech qaysi parolingiz takrorlanmagan</translation>
 <translation id="2989523299700148168">Oxirgi ishlatilganlar</translation>
 <translation id="2989786307324390836">DER shifrida kodlangan ikkilik sanoq tizimi yagona sertifikati</translation>
-<translation id="2990500505358145117">Yaxshilangan avtomatik kiritish tezkor tugmasini tahrirlash</translation>
 <translation id="2990583317361835189">Saytlarga harakat sensorlaridan foydalanishni taqiqlash</translation>
 <translation id="2991182900092497283">Bu axborot joylanishi sababini yozing:</translation>
 <translation id="2992754757708650257">Sayt tark etilib, vazifa tugatilsinmi?</translation>
@@ -2056,7 +2055,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="3244294424315804309">Ovoz o‘chirib qo‘yilsin</translation>
 <translation id="3247649647204519958">Bu yerda kengaytmalarning ochilgan saytdagi ruxsatlarini koʻrish va boshqarish mumkin</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – tarmoq xatosi</translation>
-<translation id="3248957351402065497">Yaxshilangan avtomatik kiritish uchun maxsus tezkor tugmasi</translation>
 <translation id="3249558306861350254">Windows sozlamalarida <ph name="BEGIN_BOLD" />Birlamchi qilib belgilash<ph name="END_BOLD" /> tugmasini bosing.</translation>
 <translation id="3250374026663843838">Koʻnikmangizni boshqaring</translation>
 <translation id="3251759466064201842">&lt;Sertifikat qismi hisoblanmaydi&gt;</translation>
@@ -2277,6 +2275,7 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="3481268647794498892"><ph name="COUNTDOWN_SECONDS" /> soniyadan keyin <ph name="ALTERNATIVE_BROWSER_NAME" /> orqali ochiladi</translation>
 <translation id="348247802372410699">Uslub tanlash</translation>
 <translation id="3482573964681964096">Windowsdan import qilingan sertifikatlarni boshqarish</translation>
+<translation id="348268549820508141">Nutqni aniqlash</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> quyidagi fayllarni koʻra oladi</translation>
 <translation id="3486380520195228369">Sahifa yangilanmaguncha berkitildi</translation>
 <translation id="3487007233252413104">anonim funksiya</translation>
@@ -2647,7 +2646,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="3826086052025847742">ChromeOS Flex jurnallari</translation>
 <translation id="3827774300009121996">&amp;To‘liq ekran rejimi</translation>
 <translation id="3828029223314399057">Xatcho‘plardan qidirish</translation>
-<translation id="3828454092958722155">Yaxshilangan avtomatik kiritish tezkor tugmasini tozalash</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - Yuqori xotira sarfi - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Boshqa kirish kalitidan foydalaning</translation>
 <translation id="3838085852053358637">Kengaytma yuklanmadi</translation>
@@ -3727,7 +3725,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="5060419232449737386">Izoh sozlamalari</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Bu jildda xatcho‘p bor. Uni o‘chirishni xohlaysizmi?}other{Bu jildda # ta xatcho‘p bor. Uni o‘chirishni xohlaysizmi?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
-<translation id="5061781067616989032">Oʻzingizga qulay klaviatura tezkor tugmani sozlang</translation>
 <translation id="5062863364865466276">Harakat</translation>
 <translation id="5063480226653192405">Sarfi</translation>
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" /> profilini ochish. Bu profil tashkilotingiz tomonidan boshqariladi.</translation>
@@ -5004,7 +5001,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6540488083026747005">Bu sayt uchun tashqi cookie fayllarga ruxsat bergansiz</translation>
 <translation id="6541638731489116978">Bu sayt uchun harakat sensorlaridan foydalanish taqiqlandi</translation>
 <translation id="6542417422899025860">Koʻplab shaxsiy maʼlumotlarni avtomatik ravishda oʻchirish</translation>
-<translation id="6548240707386871455">Yaxshilangan avtomatik kiritish tezkor tugmasi</translation>
 <translation id="654871471440386944">Faol kursor rejimi yoqilsinmi?</translation>
 <translation id="6549689063733911810">Yaqinda</translation>
 <translation id="6550675742724504774">Parametrlar</translation>
@@ -5168,7 +5164,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="6710172959248731469">Google xizmatlari sozlamalari</translation>
 <translation id="6710394144992407503">Veb-sahifalarda matn kiritayotganda imloviy xatolar tekshirilsin</translation>
 <translation id="6711236403841768371"><ph name="END_DATE" /> sanasidan oldin</translation>
-<translation id="6711569175139833669">Yaxshilangan avtomatik kiritish uchun ⌘ tugmasini ikki marta bosing</translation>
 <translation id="6712943853047024245"><ph name="WEBSITE" /> uchun parol bu foydalanuvchi nomi bilan allaqachon saqlangan</translation>
 <translation id="6713668088933662563">Hech qachon ushbu tillardagi sahifalarni tarjima qilish taklif qilinmasin</translation>
 <translation id="6714871567554212732"><ph name="GROUP_NAME" /> haqida batafsil</translation>
@@ -6088,7 +6083,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer, qurilmadagi operatsion ti
 <translation id="7706742200777909964">Bir xil varaqni yonma-yon chiqarib, tarkibini taqqoslash oson</translation>
 <translation id="7707108266051544351">Bu sayt uchun harakat sensorlaridan foydalanish taqiqlandi</translation>
 <translation id="7709152031285164251">Xatolik: <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Yaxshilangan avtomatik kiritish uchun maxsus tezkor tugmani tozalash</translation>
 <translation id="7710568461918838723">&amp;Translatsiya...</translation>
 <translation id="7712739869553853093">Bosmaga razm solish oynasi</translation>
 <translation id="7714464543167945231">Sertifikat</translation>
@@ -6448,7 +6442,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="810185532889603849">Maxsus rang</translation>
 <translation id="8103484184517840583">AI rejimidan chiqish</translation>
 <translation id="810362914482827094">Kodlarni qidirish</translation>
-<translation id="8104388155778519213">Ekrandan Google Lens yordamida qidirish</translation>
 <translation id="8104412594956510627"><ph name="DEVICE" /> qurilmasidagi tarix qaydlarini olish uchun tarixni sinxronlang. Sinxronlashni istalgan vaqt sozlamalar orqali toʻxtatish mumkin. Brauzer tarixi asosida Google Qidiruv va boshqa xizmatlarni moslashtirishi mumkin.</translation>
 <translation id="8104778744208707085">Amal bajarish lozim</translation>
 <translation id="8105273883928376822">Davom etish uchun hisobga kiring.</translation>
@@ -6546,7 +6539,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8214489666383623925">Faylni ochish...</translation>
 <translation id="8214771296778317256">Bu yerda kerakli varaq uslubini tanlang</translation>
 <translation id="8217399928341212914">Bir necha fayllarni birdaniga avtomatik yuklab olishga hali ham ruxsat berilsin</translation>
-<translation id="8218411859495801458">Yaxshilangan avtomatik kiritish uchun maxsus tezkor tugmani tahrirlash</translation>
 <translation id="8221358554841691213">Oʻrtacha fokus uslubi</translation>
 <translation id="8221942262855134126">Parolni boshqarish</translation>
 <translation id="8222112516148944758">Varaqlar guruhi barcha qurilmalarda avtomatik saqlanadi va yangilanib turadi.</translation>
@@ -6819,7 +6811,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8512476990829870887">Jarayonni yakunlash</translation>
 <translation id="851263357009351303"><ph name="HOST" /> rasmlarni doim ko‘rsatsin</translation>
 <translation id="8513357934662532537"><ph name="USER_EMAIL" /> parollarini <ph name="BRAND" /> ga import qilish uchun CSV faylni tanlang.</translation>
-<translation id="8514257511170433540">Shakllarni toʻldirishda standart tezkor tugmadan foydalaning</translation>
 <translation id="8514746246728959655">Boshqa elektron kalit bilan urining</translation>
 <translation id="8514828975162859845">Keyk-poplar</translation>
 <translation id="8514955299594277296">Saytlarga maʼlumotlarni qurilmangizga saqlashga ruxsat bermang (tavsiya etilmaydi)</translation>

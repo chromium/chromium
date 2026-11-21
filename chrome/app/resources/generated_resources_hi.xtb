@@ -94,7 +94,6 @@
 <translation id="1090126737595388931">कोई पृष्ठभूमि ऐप्स  चालू नहीं है</translation>
 <translation id="109038914521989341">कृपया इस डेटा को कॉपी करने की वजह बताएं:</translation>
 <translation id="1094158807129647987">“<ph name="SELECTION" />” के बारे में पूछें</translation>
-<translation id="1095398697303758108">बेहतर ऑटोफ़िल की सुविधा का इस्तेमाल करने के लिए, Ctrl को दो बार दबाएं</translation>
 <translation id="1095879482467973146">वेब पर Google Password Manager</translation>
 <translation id="1097016918605049747">इस पेज का अनुवाद नहीं किया जा सकता</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> से इमेज कॉपी की गई</translation>
@@ -582,6 +581,7 @@
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{क्या टैब को हटाकर ग्रुप मिटाना है?}=1{क्या टैब को हटाकर ग्रुप मिटाना है?}one{क्या टैब को हटाकर ग्रुप मिटाना है?}other{क्या टैब हटाकर ग्रुप मिटाने हैं?}}</translation>
 <translation id="1637765355341780467">आपकी प्रोफ़ाइल खोलते समय कुछ गलत हो गया. हो सकता है कि कुछ सुविधाएं अनुपलब्ध हों.</translation>
 <translation id="1639239467298939599">लोड हो रही है</translation>
+<translation id="1640672724030957280">डाउनलोड हो रहा है...</translation>
 <translation id="1641113438599504367">सुरक्षित ब्राउज़िंग</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 अन्य पासवर्ड इंपोर्ट नहीं किया जा सका, क्योंकि इसका फ़ॉर्मैट गलत था}one{{NUM_PASSWORDS} अन्य पासवर्ड इंपोर्ट नहीं किया जा सका, क्योंकि इसका फ़ॉर्मैट गलत था}other{{NUM_PASSWORDS} अन्य पासवर्ड इंपोर्ट नहीं किए जा सके, क्योंकि इनका फ़ॉर्मैट गलत था}}</translation>
 <translation id="1642299742557467312">यह फ़ाइल आपके डिवाइस को नुकसान पहुंचा सकती है</translation>
@@ -1811,7 +1811,6 @@
 <translation id="2988328607561082373">आपका कोई भी पासवर्ड ऐसा नहीं है जिसका इस्तेमाल एक से ज़्यादा खातों के लिए किया गया है</translation>
 <translation id="2989523299700148168">हाल ही में देखे गए</translation>
 <translation id="2989786307324390836">DER-एन्कोड की गई बाइनरी, एकल प्रमाणपत्र</translation>
-<translation id="2990500505358145117">ऑटोमैटिक तरीके से भरने की बेहतर सुविधा के शॉर्टकट में बदलाव करें</translation>
 <translation id="2990583317361835189">साइटों को मोशन सेंसर इस्तेमाल करने की अनुमति न दें</translation>
 <translation id="2991182900092497283">कृपया इस डेटा को चिपकाने की वजह बताएं:</translation>
 <translation id="2992754757708650257">क्या साइट छोड़कर टास्क खत्म करना है?</translation>
@@ -2066,7 +2065,6 @@
 <translation id="3244294424315804309">आवाज़ बंद रखें</translation>
 <translation id="3247649647204519958">यहां से, जिस साइट पर आप हैं उसके लिए एक्सटेंशन की अनुमतियों को देखा और मैनेज किया जा सकता है</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - नेटवर्क गड़बड़ी</translation>
-<translation id="3248957351402065497">ऑटोमैटिक तरीके से भरने की बेहतर सुविधा के लिए, पसंद के मुताबिक शॉर्टकट</translation>
 <translation id="3249558306861350254">Windows की सेटिंग में जाकर, <ph name="BEGIN_BOLD" />डिफ़ॉल्ट के तौर पर सेट करें<ph name="END_BOLD" /> पर क्लिक करें.</translation>
 <translation id="3250374026663843838">स्किल मैनेज करें</translation>
 <translation id="3251759466064201842">&lt;प्रमाणपत्र का भाग नहीं है&gt;</translation>
@@ -2287,6 +2285,7 @@
 <translation id="3481268647794498892"><ph name="ALTERNATIVE_BROWSER_NAME" /> पर <ph name="COUNTDOWN_SECONDS" /> सेकंड में खाेला जा रहा है</translation>
 <translation id="348247802372410699">कोई स्टाइल चुनें</translation>
 <translation id="3482573964681964096">Windows से इंपोर्ट किए गए सर्टिफ़िकेट मैनेज करें</translation>
+<translation id="348268549820508141">बोली पहचानने की सुविधा से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> नीचे दी गई फ़ाइलों काे देख सकती है</translation>
 <translation id="3486380520195228369">पेज रीफ़्रेश होने तक छिपा रहेगा</translation>
 <translation id="3487007233252413104">अनाम फ़ंक्शन</translation>
@@ -2657,7 +2656,6 @@
 <translation id="3826086052025847742">ChromeOS Flex के लॉग</translation>
 <translation id="3827774300009121996">&amp;पूर्ण स्क्रीन</translation>
 <translation id="3828029223314399057">बुकमार्क से खोजें</translation>
-<translation id="3828454092958722155">ऑटोमैटिक तरीके से भरने की बेहतर सुविधा का शॉर्टकट हटाएं</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - मेमोरी का ज़्यादा इस्तेमाल - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">किसी दूसरी पासकी का इस्तेमाल करें</translation>
 <translation id="3838085852053358637">एक्सटेंशन लोड नहीं हो सका</translation>
@@ -3736,7 +3734,6 @@
 <translation id="5060419232449737386">कैप्शन सेटिंग</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{इस फ़ोल्डर में एक बुकमार्क है. क्या आप वाकई इसे मिटाना चाहते हैं?}one{इस फ़ोल्डर में # बुकमार्क हैं. क्या आप वाकई इसे मिटाना चाहते हैं?}other{इस फ़ोल्डर में # बुकमार्क हैं. क्या आप वाकई इसे मिटाना चाहते हैं?}}</translation>
 <translation id="5061531353537614467">टुण्ड्रा</translation>
-<translation id="5061781067616989032">अपना कीबोर्ड शॉर्टकट सेट अप करें</translation>
 <translation id="5062863364865466276">मूवमेंट</translation>
 <translation id="5063480226653192405">उपयोग</translation>
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" /> प्रोफ़ाइल खोलें. इस प्रोफ़ाइल को आपके माता-पिता मैनेज करते हैं.</translation>
@@ -5012,7 +5009,6 @@
 <translation id="6540488083026747005">इस साइट पर आपने तीसरे पक्ष की कुकी को अनुमति दी है</translation>
 <translation id="6541638731489116978">इस साइट को आपके हलचल पकड़ने वाले सेंसर ऐक्सेस करने से रोक दिया गया है.</translation>
 <translation id="6542417422899025860">ज़्यादातर निजी जानकारी को अपने-आप हटाने का विकल्प</translation>
-<translation id="6548240707386871455">ऑटोमैटिक तरीके से भरने की बेहतर सुविधा का शॉर्टकट</translation>
 <translation id="654871471440386944">क्या आप कैरेट ब्राउज़िंग चालू करना चाहते हैं?</translation>
 <translation id="6549689063733911810">हाल के संग्रह</translation>
 <translation id="6550675742724504774">विकल्प</translation>
@@ -5178,7 +5174,6 @@
 <translation id="6710172959248731469">Google की सेवाओं से जुड़ी सेटिंग</translation>
 <translation id="6710394144992407503">वेब पेजों पर टेक्स्ट टाइप करते समय, स्पेलिंग की गड़बड़ियों की जांच करें</translation>
 <translation id="6711236403841768371"><ph name="END_DATE" /> से पहले</translation>
-<translation id="6711569175139833669">बेहतर ऑटोफ़िल की सुविधा का इस्तेमाल करने के लिए, ⌘ को दो बार दबाएं</translation>
 <translation id="6712943853047024245">आपने <ph name="WEBSITE" /> के लिए, इस उपयोगकर्ता नाम के साथ पहले से ही पासवर्ड सेव किया है</translation>
 <translation id="6713668088933662563">इन भाषाओं में अनुवाद करने की सुविधा कभी भी न दें</translation>
 <translation id="6714871567554212732"><ph name="GROUP_NAME" /> के बारे में ज़्यादा जानकारी देखें</translation>
@@ -6099,7 +6094,6 @@
 <translation id="7706742200777909964">अलग-अलग पेजों को एक ही टैब में अगल-बगल रखें और तुलना करने जैसे कामों में मदद पाएं</translation>
 <translation id="7707108266051544351">इस साइट को हलचल वाले सेंसर का इस्तेमाल करने से रोक दिया गया है.</translation>
 <translation id="7709152031285164251">विफल - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">बेहतर ऑटोफ़िल की सुविधा के लिए, पसंद के मुताबिक बनाए गए शॉर्टकट को हटाएं</translation>
 <translation id="7710568461918838723">&amp;कास्ट करें...</translation>
 <translation id="7712739869553853093">यह प्रिंट की झलक है</translation>
 <translation id="7714464543167945231">प्रमाणपत्र</translation>
@@ -6459,7 +6453,6 @@
 <translation id="810185532889603849">पसंद के मुताबिक रंग</translation>
 <translation id="8103484184517840583">एआई मोड से बाहर निकलें</translation>
 <translation id="810362914482827094">पासवर्ड खोजें</translation>
-<translation id="8104388155778519213">Google Lens की मदद से, स्क्रीन पर मौजूद कॉन्टेंट शेयर करें</translation>
 <translation id="8104412594956510627"><ph name="DEVICE" /> में मौजूद अपना ब्राउज़िंग इतिहास ऐक्सेस करने के लिए, उसे सिंक करें. सेटिंग में जाकर, सिंक करने की सुविधा को कभी भी बंद किया जा सकता है. Google आपके ब्राउज़िंग इतिहास के आधार पर, Search और अन्य सेवाओं में आपकी दिलचस्पी के मुताबिक अनुभव दे सकता है.</translation>
 <translation id="8104778744208707085">इन समस्याओं पर ध्यान देने की ज़रूरत है</translation>
 <translation id="8105273883928376822">कृपया जारी रखने के लिए साइन इन करें.</translation>
@@ -6557,7 +6550,6 @@
 <translation id="8214489666383623925">फ़ाइल खोलें...</translation>
 <translation id="8214771296778317256">यहां से अपनी पसंद के मुताबिक टैब की स्टाइल चुनें</translation>
 <translation id="8217399928341212914">कई फ़ाइलों के अपने आप डाउनलोड होने को ब्लॉक करना जारी रखें</translation>
-<translation id="8218411859495801458">बेहतर ऑटोफ़िल की सुविधा के लिए, पसंद के मुताबिक बनाए गए शॉर्टकट में बदलाव करें</translation>
 <translation id="8221358554841691213">मीडियम फ़ोकस स्टाइल</translation>
 <translation id="8221942262855134126">पासवर्ड मैनेज करें</translation>
 <translation id="8222112516148944758">टैब ग्रुप आपके सभी डिवाइसों पर, अपने-आप सेव और अपडेट हो जाते हैं</translation>
@@ -6830,7 +6822,6 @@
 <translation id="8512476990829870887">प्रक्रिया खत्म करें</translation>
 <translation id="851263357009351303"><ph name="HOST" /> को हमेशा चित्र दिखाने की अनुमति दें</translation>
 <translation id="8513357934662532537"><ph name="USER_EMAIL" /> से <ph name="BRAND" /> में पासवर्ड इंपोर्ट करने के लिए, कोई CSV फ़ाइल चुनें.</translation>
-<translation id="8514257511170433540">फ़ॉर्म भरते समय, डिफ़ॉल्ट कीबोर्ड शॉर्टकट का इस्तेमाल करें</translation>
 <translation id="8514746246728959655">कोई दूसरी सुरक्षा कुंजी आज़माकर देखें</translation>
 <translation id="8514828975162859845">केक पॉप</translation>
 <translation id="8514955299594277296">साइटों को अपने डिवाइस पर डेटा सेव करने की अनुमति न दें. हालांकि, हम इसका सुझाव नहीं देते</translation>

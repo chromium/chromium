@@ -582,7 +582,6 @@
 <translation id="7213407614656404070">Користите Chromium сваки пут када кликнете на линкове у порукама, документима и другим апликацијама</translation>
 <translation id="7216228761061470870">Када користите претрагу слика на рачунару, наслов, URL и садржај странице, укључујући PDF-ове, шаљу се на сервер</translation>
 <translation id="7223968959479464213">Менаџер задатака – Chromium</translation>
-<translation id="7226331818892775989">Постављајте питања о садржају изван Chromium-а, попут других апликација или фајлова</translation>
 <translation id="7227958669698166857">Корисник <ph name="EXISTING_USER" /> је већ пријављен. Да би вам прегледање било раздвојено, пријавите се у Chromium преко свог профила као <ph name="USER_EMAIL_ADDRESS" />. Моћи ћете дa приступате и сачуваним информацијама и другом садржају на свим уређајима.</translation>
 <translation id="7252276985725323153">Одмах почните да прегледате: Chromium сада може да се покрене када се покрене Windows.</translation>
 <translation id="7274695763216404502">Закачено је. Поново користите претрагу слика са траке с алаткама</translation>
@@ -699,7 +698,6 @@ Chromium не може да врати подешавања.</translation>
 <translation id="8310603974518734211">QR кôд за пријављивање у Chromium као <ph name="USER_NAME" /></translation>
 <translation id="8313851650939857356">Грешка при покретању: <ph name="STARTUP_ERROR" /></translation>
 <translation id="8318772038038596122">Организација затвара Chromium када се не користи <ph name="TIMEOUT_DURATION" />.</translation>
-<translation id="8321888067342493336">Сачувај као слику</translation>
 <translation id="8340674089072921962">Корисник <ph name="USER_EMAIL_ADDRESS" /> је претходно користио Chromium</translation>
 <translation id="8351551329754447960">Омогући вештине у Chromium-у</translation>
 <translation id="8359544530202147897">Ажурирајте Chromium да бисте наставили да користите Chromium податке на Google налогу, <ph name="ACCOUNT_EMAIL" /></translation>

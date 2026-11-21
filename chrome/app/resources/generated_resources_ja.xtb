@@ -94,7 +94,6 @@
 <translation id="1090126737595388931">実行中のバックグラウンド アプリはありません</translation>
 <translation id="109038914521989341">このデータをコピーする理由を入力してください。</translation>
 <translation id="1094158807129647987">「<ph name="SELECTION" />」について質問</translation>
-<translation id="1095398697303758108">Ctrl キーを 2 回押して高精度の自動入力を行う</translation>
 <translation id="1095879482467973146">ウェブ上の Google パスワード マネージャー</translation>
 <translation id="1097016918605049747">このページを翻訳できませんでした</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> から画像がコピーされました</translation>
@@ -581,6 +580,7 @@
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{タブとグループを削除しますか？}=1{タブとグループを削除しますか？}other{タブとグループを削除しますか？}}</translation>
 <translation id="1637765355341780467">プロフィールを開こうとして問題が発生しました。一部の機能を使用できない可能性があります。</translation>
 <translation id="1639239467298939599">読み込んでいます</translation>
+<translation id="1640672724030957280">ダウンロードしています...</translation>
 <translation id="1641113438599504367">セーフ ブラウジング</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{その他 1 件のパスワードは、形式が正しくないためインポートされませんでした}other{その他 {NUM_PASSWORDS} 件のパスワードは、形式が正しくないためインポートされませんでした}}</translation>
 <translation id="1642299742557467312">このファイルはデバイスに危害を及ぼす可能性があります</translation>
@@ -1797,7 +1797,6 @@
 <translation id="2988328607561082373">使い回されているパスワードはありません</translation>
 <translation id="2989523299700148168">最近のアクセス</translation>
 <translation id="2989786307324390836">DER エンコード バイナリ形式の単一の証明書</translation>
-<translation id="2990500505358145117">高精度の自動入力のショートカットを編集</translation>
 <translation id="2990583317361835189">サイトにモーション センサーの使用を許可しない</translation>
 <translation id="2991182900092497283">このデータを貼り付ける理由を入力してください。</translation>
 <translation id="2992754757708650257">サイトから移動してタスクを終了しますか？</translation>
@@ -2050,7 +2049,6 @@
 <translation id="3244294424315804309">音声のミュートを続行する</translation>
 <translation id="3247649647204519958">ここでは、表示しているサイトに対する拡張機能の権限を確認、管理できます</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - ネットワーク エラー</translation>
-<translation id="3248957351402065497">高精度の自動入力のカスタム ショートカット</translation>
 <translation id="3249558306861350254">Windows の設定で [<ph name="BEGIN_BOLD" />デフォルトに設定<ph name="END_BOLD" />] をクリックします。</translation>
 <translation id="3250374026663843838">スキルを管理</translation>
 <translation id="3251759466064201842">&lt;証明書に含まれていません&gt;</translation>
@@ -2271,6 +2269,7 @@
 <translation id="3481268647794498892"><ph name="COUNTDOWN_SECONDS" /> 秒後に <ph name="ALTERNATIVE_BROWSER_NAME" /> で開きます</translation>
 <translation id="348247802372410699">スタイルを選択</translation>
 <translation id="3482573964681964096">Windows からインポートした証明書を管理する</translation>
+<translation id="348268549820508141">音声認識</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> は次のファイルを表示できます</translation>
 <translation id="3486380520195228369">ページが更新されるまで非表示になります</translation>
 <translation id="3487007233252413104">無名関数</translation>
@@ -2641,7 +2640,6 @@
 <translation id="3826086052025847742">ChromeOS Flex のログ</translation>
 <translation id="3827774300009121996">全画面表示(&amp;F)</translation>
 <translation id="3828029223314399057">ブックマークを検索</translation>
-<translation id="3828454092958722155">高精度の自動入力のショートカットを消去</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - メモリを大量に使用 - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">別のパスキーを使用する</translation>
 <translation id="3838085852053358637">拡張機能を読み込めませんでした</translation>
@@ -3721,7 +3719,6 @@
 <translation id="5060419232449737386">字幕設定</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{このフォルダにはブックマークが含まれています。削除してもよろしいですか？}other{このフォルダには # 件のブックマークが含まれています。削除してもよろしいですか？}}</translation>
 <translation id="5061531353537614467">ツンドラ</translation>
-<translation id="5061781067616989032">独自のキーボード ショートカットを設定します</translation>
 <translation id="5062863364865466276">動き</translation>
 <translation id="5063480226653192405">使用状況</translation>
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" /> のプロフィールを開きます。このプロフィールは保護者によって管理されています。</translation>
@@ -4996,7 +4993,6 @@
 <translation id="6540488083026747005">このサイトのサードパーティ Cookie を許可しました</translation>
 <translation id="6541638731489116978">このサイトではモーション センサーへのアクセスがブロックされています。</translation>
 <translation id="6542417422899025860">ほとんどの個人情報を自動的に削除する</translation>
-<translation id="6548240707386871455">高精度の自動入力のショートカット</translation>
 <translation id="654871471440386944">カーソル ブラウジングをオンにしますか？</translation>
 <translation id="6549689063733911810">最近使用したアイテム</translation>
 <translation id="6550675742724504774">オプション</translation>
@@ -5160,7 +5156,6 @@
 <translation id="6710172959248731469">Google サービスの設定</translation>
 <translation id="6710394144992407503">ウェブページにテキストを入力するときにスペルミスがないか確認する</translation>
 <translation id="6711236403841768371"><ph name="END_DATE" />より前</translation>
-<translation id="6711569175139833669">⌘ キーを 2 回押して高精度の自動入力を行う</translation>
 <translation id="6712943853047024245">このユーザー名で <ph name="WEBSITE" /> のパスワードはすでに保存されています</translation>
 <translation id="6713668088933662563">翻訳するか確認しない言語</translation>
 <translation id="6714871567554212732"><ph name="GROUP_NAME" /> の詳細を表示</translation>
@@ -6081,7 +6076,6 @@
 <translation id="7706742200777909964">同じタブでページを並べて表示し、オプションなどを簡単に比較できます</translation>
 <translation id="7707108266051544351">このサイトではモーション センサーの使用がブロックされています。</translation>
 <translation id="7709152031285164251">失敗 - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">高精度の自動入力のカスタム ショートカットを消去</translation>
 <translation id="7710568461918838723">キャスト(&amp;C)...</translation>
 <translation id="7712739869553853093">印刷プレビュー ダイアログ</translation>
 <translation id="7714464543167945231">証明書</translation>
@@ -6441,7 +6435,6 @@
 <translation id="810185532889603849">カスタム色</translation>
 <translation id="8103484184517840583">AI モードを終了</translation>
 <translation id="810362914482827094">パスキーを検索</translation>
-<translation id="8104388155778519213">画面に表示されている内容を Google レンズと共有</translation>
 <translation id="8104412594956510627"><ph name="DEVICE" /> の履歴にアクセスできるようにするには、履歴を同期します。同期は [設定] でいつでも停止できます。Google では、履歴に基づいて検索やその他のサービスをカスタマイズすることがあります。</translation>
 <translation id="8104778744208707085">確認が必要です</translation>
 <translation id="8105273883928376822">続行するにはログインしてください。</translation>
@@ -6539,7 +6532,6 @@
 <translation id="8214489666383623925">ファイルを開く...</translation>
 <translation id="8214771296778317256">ここでタブのスタイルを選択できます</translation>
 <translation id="8217399928341212914">複数ファイルの自動ダウンロードを今後もブロックする</translation>
-<translation id="8218411859495801458">高精度の自動入力のカスタム ショートカットを編集</translation>
 <translation id="8221358554841691213">フォーカス（中）のスタイル</translation>
 <translation id="8221942262855134126">パスワードを管理</translation>
 <translation id="8222112516148944758">タブグループは自動的に保存され、すべてのデバイスで更新されます。</translation>
@@ -6812,7 +6804,6 @@
 <translation id="8512476990829870887">プロセスを終了</translation>
 <translation id="851263357009351303"><ph name="HOST" /> の画像を常に表示する</translation>
 <translation id="8513357934662532537"><ph name="BRAND" /> に <ph name="USER_EMAIL" /> のパスワードをインポートするには、CSV ファイルを選択してください。</translation>
-<translation id="8514257511170433540">フォームへの入力時にデフォルトのキーボード ショートカットを使用します</translation>
 <translation id="8514746246728959655">別のセキュリティ キーを試す</translation>
 <translation id="8514828975162859845">ケーキポップ</translation>
 <translation id="8514955299594277296">サイトによるデバイスへのデータの保存を許可しない（非推奨）</translation>

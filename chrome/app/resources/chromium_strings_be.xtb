@@ -581,7 +581,6 @@
 <translation id="7213407614656404070">Выкарыстоўвайце Chromium кожны раз, калі націскаеце на спасылкі ў паведамленнях, дакументах або іншых праграмах</translation>
 <translation id="7216228761061470870">Калі вы выкарыстоўваеце пошук відарысаў на камп’ютары, загаловак старонкі, URL-адрас і змесціва, у тым ліку файлы PDF, адпраўляюцца на сервер</translation>
 <translation id="7223968959479464213">Менеджар заданняў – Chromium</translation>
-<translation id="7226331818892775989">Вы можаце задаваць пытанні пра змесціва па-за межамі Chromium, напрыклад пра іншыя праграмы або файлы</translation>
 <translation id="7227958669698166857">Карыстальнік (<ph name="EXISTING_USER" />) ужо ўвайшоў. Каб аддзяліць сваю працу ў інтэрнэце ад працы іншых карыстальнікаў, увайдзіце ў Chromium ва ўласны профіль як <ph name="USER_EMAIL_ADDRESS" />. Таксама вы атрымаеце доступ да захаванай інфармацыі і іншых даных на ўсіх сваіх прыладах.</translation>
 <translation id="7252276985725323153">Пачынайце праглядаць вэб-старонкі адразу: Chromium цяпер можа запускацца пры запуску Windows.</translation>
 <translation id="7274695763216404502">Замацавана! Цяпер пошук відарысаў можна запускаць з панэлі інструментаў.</translation>
@@ -698,7 +697,6 @@
 <translation id="8310603974518734211">QR-код для ўваходу ў Chromium як <ph name="USER_NAME" /></translation>
 <translation id="8313851650939857356">Памылка запуску: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Ваша арганізацыя закрывае Chromium, калі ім не карысталіся на працягу <ph name="TIMEOUT_DURATION" />.</translation>
-<translation id="8321888067342493336">Захаваць як відарыс</translation>
 <translation id="8340674089072921962">Карыстальнік <ph name="USER_EMAIL_ADDRESS" /> раней выкарыстоўваў Chromium</translation>
 <translation id="8351551329754447960">Уключыць навыкі ў Chromium</translation>
 <translation id="8359544530202147897">Каб працягнуць выкарыстанне даных Chromium ва Уліковым запісе Google <ph name="ACCOUNT_EMAIL" />, абнавіце Chromium</translation>

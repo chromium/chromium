@@ -261,7 +261,6 @@
 <translation id="1739364174357629566">Ажурирајте го бројот на познат патник</translation>
 <translation id="1740468249224277719">Двоен допир за инсталирање.</translation>
 <translation id="1740650426894359238">Префрлете се на друг профил</translation>
-<translation id="1741219894094057085">Паметен часовник</translation>
 <translation id="1743244221910283364">Отфрли ги промените</translation>
 <translation id="1748975028205587434">Select your file</translation>
 <translation id="1749733017156547309">Полето за лозинката е задолжително</translation>
@@ -285,7 +284,6 @@
 <translation id="1810976980198522421">Откажи</translation>
 <translation id="1815941218935345331">Лозинка</translation>
 <translation id="1818687879307252150">{count,plural, =0{Нема компромитирани лозинки}=1{{count} компромитирана лозинка}one{{count} компромитирана лозинка}other{{count} компромитирани лозинки}}</translation>
-<translation id="1819374301217551116">Следење цени и увиди</translation>
 <translation id="1820195936249950412">Најавете се со важечка сметка</translation>
 <translation id="1820259098641718022">Додаено во „Список за читање“</translation>
 <translation id="1823768272150895732">Фонт</translation>
@@ -415,7 +413,6 @@
 <translation id="2199562093267256223">Ова ќе ја избрише групата картички од сите уреди најавени на <ph name="USER_EMAIL" />.</translation>
 <translation id="2202084845446535117">Нема сметки на е-пошта</translation>
 <translation id="2214453882118345682">Купувајте, преведувајте и идентификувајте ги работите што ги гледате со камерата.</translation>
-<translation id="2216366330550244277">Одете на страницата на некој производ</translation>
 <translation id="2218389616572918761">Сајтовите може да бараат да го користат микрофонот</translation>
 <translation id="2219935992754556187">Chrome ги штити вашите чувствителни податоци со Face ID</translation>
 <translation id="2220529011494928058">Пријави проблем</translation>
@@ -541,7 +538,6 @@
 <translation id="2584994295315085351">Отворете нова картичка кога ќе се вратите во Chrome по 4 часа</translation>
 <translation id="2592917252160773942">Сајтовите може да бараат да ја користат камерата</translation>
 <translation id="2593272815202181319">Monospace</translation>
-<translation id="2601778637777010194">Следете ги намалувањата на цените на производите</translation>
 <translation id="2602372807870028932">Ова ги брише избраните податоци зачувани на уредов</translation>
 <translation id="260378315836159338">Најгоре на екранот, допрете „+“</translation>
 <translation id="2612625650119459859">Задачата „Закачете картичка“ е завршена!</translation>
@@ -1195,7 +1191,6 @@
 <translation id="4719927025381752090">Понудувај превод</translation>
 <translation id="4720530280568305198">Вашиот избор се отвори во нова картичка</translation>
 <translation id="4720782081196952026">Намали го текстот</translation>
-<translation id="472259426228234149">Цена: 100 $ – 180 $</translation>
 <translation id="4735849923335729414">Најавени сте како <ph name="EMAIL" />, управувана од вашата организација.</translation>
 <translation id="473775607612524610">Ажурирај</translation>
 <translation id="4738968082443868320">Google Drive</translation>
@@ -1338,7 +1333,6 @@
 <translation id="5116347248003317626">Не дозволувај им на сајтовите да ја користат локацијата</translation>
 <translation id="5118462200606189584">Додајте сметка…</translation>
 <translation id="5118764316110575523">Исклучено</translation>
-<translation id="5119329531859909472">За да го следите производот, допрете „Следи“</translation>
 <translation id="5121618895923301719">Веќе го следите производов. Страницава е зачувана во <ph name="BEGIN_LINK" />Мобилни обележувачи<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Имате неколку проблеми со лозинки.</translation>
 <translation id="5126335625961252141">вашиот таблет</translation>
@@ -1430,7 +1424,6 @@
 <translation id="5414763847370083940">Ќе добиете известување ако цената се намали на кој било сајт.</translation>
 <translation id="5415289094036440596">Криптографските клучеви не може да се споделат</translation>
 <translation id="5416455648658732408">Премести во група картички</translation>
-<translation id="5423269318075950257">Следи ја цената</translation>
 <translation id="542659109038405424">До</translation>
 <translation id="5429624150850059322">Кога ќе се вратите, картичките ќе бидат замаглени сѐ додека не допрете за да продолжите</translation>
 <translation id="5431239785743546285">Прочитани страници</translation>
@@ -1968,7 +1961,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="6989636517316575338">Поставувајте прашања за која било страница</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998236305642926573">Сите задачи</translation>
-<translation id="6998251471716094661">Следете ги цените на производите и добивајте известувања кога ќе се намали цената на кој било сајт</translation>
 <translation id="7004032350256606903">Вашата организација бара да прелистувате „Инкогнито“.
 <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Поставете како стандарден прелистувач во поставките…</translation>
@@ -1992,7 +1984,6 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="7082853213442715471">Кога е вклучен, одредени технологии на интернет се блокирани, што може да предизвика некои веб-сајтови да се вчитуваат побавно или да не функционираат правилно.</translation>
 <translation id="7091023926159231962">{count,plural, =1{Не можеше да се увезе {count} лозинка}one{Не можеше да се увезат {count} лозинка}other{Не можеше да се увезат {count} лозинки}}</translation>
 <translation id="7095110968493193530">До Google Password Manager за <ph name="EMAIL" /></translation>
-<translation id="7097046145876891318">Во лентата за адреса, допрете ја историјата на цени за да ги видите промените на цените со текот на времето</translation>
 <translation id="7102005569666697658">Се презема… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Мени → Поставки → Начини на плаќање</translation>
 <translation id="7108338896283013870">Скриј</translation>

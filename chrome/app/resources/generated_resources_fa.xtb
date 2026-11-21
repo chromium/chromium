@@ -94,7 +94,6 @@
 <translation id="1090126737595388931">بدون برنامه‌های در حال اجرا در پس‌زمینه</translation>
 <translation id="109038914521989341">لطفاً دلیلی برای کپی کردن این داده وارد کنید:</translation>
 <translation id="1094158807129647987">پرسیدن درباره «<ph name="SELECTION" />»</translation>
-<translation id="1095398697303758108">‏برای تکمیل خودکار بهبودیافته، کلید Ctrl را دو بار فشار دهید</translation>
 <translation id="1095879482467973146">‏«مدیر گذرواژه Google» در وب</translation>
 <translation id="1097016918605049747">این صفحه را نمی‌توان ترجمه کرد</translation>
 <translation id="1099962274138857708">تصویر از <ph name="DEVICE_NAME" /> کپی شده است</translation>
@@ -582,6 +581,7 @@
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{زبانه برداشته و گروه حذف شود؟}=1{زبانه برداشته و گروه حذف شود؟}one{زبانه برداشته و گروه حذف شود؟}other{زبانه‌ها برداشته و گروه‌ها حذف شود؟}}</translation>
 <translation id="1637765355341780467">هنگام باز کردن نمایه‌تان خطایی رخ داد. ممکن است برخی از قابلیت‌ها در دسترس نباشند.</translation>
 <translation id="1639239467298939599">در حال بارگیری</translation>
+<translation id="1640672724030957280">در حال بارگیری…</translation>
 <translation id="1641113438599504367">مرور ایمن</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{یک گذرواژه دیگر درون‌برد نشد زیرا قالب‌بندی آن اشتباه است}one{{NUM_PASSWORDS} گذرواژه دیگر درون‌برد نشد زیرا قالب‌بندی آن اشتباه است}other{{NUM_PASSWORDS} گذرواژه دیگر درون‌برد نشد زیرا قالب‌بندی آن‌ها اشتباه است}}</translation>
 <translation id="1642299742557467312">این فایل می‌تواند به دستگاهتان آسیب برساند</translation>
@@ -1810,7 +1810,6 @@
 <translation id="2988328607561082373">از هیچ‌کدام از گذرواژه‌هایتان دوباره استفاده نکرده‌اید</translation>
 <translation id="2989523299700148168">اخیراً دیده‌شده</translation>
 <translation id="2989786307324390836">‏DER- رمزگذاری دودویی، تک گواهی</translation>
-<translation id="2990500505358145117">ویرایش میان‌بر تکمیل خودکار بهبودیافته</translation>
 <translation id="2990583317361835189">اجازه ندادن به سایت‌ها اجازه برای استفاده از حسگرهای حرکتی</translation>
 <translation id="2991182900092497283">لطفاً دلیلی برای جای‌گذاری این داده وارد کنید:</translation>
 <translation id="2992754757708650257">از سایت خارج می‌شوید و به تکلیف پایان می‌دهید؟</translation>
@@ -2065,7 +2064,6 @@
 <translation id="3244294424315804309">همچنان بی‌صدا</translation>
 <translation id="3247649647204519958">از اینجا می‌توانید اجازه‌های افزونه را برای سایتی که در آن هستید ببینید و مدیریت کنید</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - خطای شبکه</translation>
-<translation id="3248957351402065497">میان‌بر سفارشی برای تکمیل خودکار بهبودیافته</translation>
 <translation id="3249558306861350254">‏در تنظیمات Windows، روی <ph name="BEGIN_BOLD" />Set Default (تنظیم پیش‌فرض)<ph name="END_BOLD" /> کلیک کنید.</translation>
 <translation id="3250374026663843838">مهارت خود را مدیریت کنید</translation>
 <translation id="3251759466064201842">&lt;جزئی از گواهی نیست&gt;</translation>
@@ -2286,6 +2284,7 @@
 <translation id="3481268647794498892">درحال باز شدن در <ph name="ALTERNATIVE_BROWSER_NAME" /> در<ph name="COUNTDOWN_SECONDS" /> ثانیه</translation>
 <translation id="348247802372410699">سبکی را انتخاب کنید</translation>
 <translation id="3482573964681964096">‏مدیریت گواهینامه‌های واردشده از Windows</translation>
+<translation id="348268549820508141">تشخیص گفتار</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> می‌تواند فایل‌های زیر را مشاهده کند</translation>
 <translation id="3486380520195228369">تا زمانی که صفحه بازآوری شود پنهان است</translation>
 <translation id="3487007233252413104">تابع ناشناس</translation>
@@ -2656,7 +2655,6 @@
 <translation id="3826086052025847742">‏گزارش‌های ChromeOS Flex</translation>
 <translation id="3827774300009121996">&amp;تمام صفحه</translation>
 <translation id="3828029223314399057">جستجوی نشانک‌ها</translation>
-<translation id="3828454092958722155">پاک کردن میان‌بر تکمیل خودکار بهبودیافته</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - استفاده زیاد از حافظه - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">استفاده از گذرکلیدی دیگر</translation>
 <translation id="3838085852053358637">افزونه بار نشد</translation>
@@ -3737,7 +3735,6 @@
 <translation id="5060419232449737386">تنظیمات زیرنویس ناشنوایان</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{این پوشه حاوی نشانک است. مطمئنید که می‌خواهید آن را حذف کنید؟}one{این پوشه حاوی # نشانک است. مطمئنید که می‌خواهید آن را حذف کنید؟}other{این پوشه حاوی # نشانک است. مطمئنید که می‌خواهید آن را حذف کنید؟}}</translation>
 <translation id="5061531353537614467">توندرا</translation>
-<translation id="5061781067616989032">میان‌بر صفحه‌کلید خودتان را راه‌اندازی کنید</translation>
 <translation id="5062863364865466276">جنبش</translation>
 <translation id="5063480226653192405">مصرف</translation>
 <translation id="5064921774605267982">نمایه <ph name="PROFILE_NAME" /> باز می‌شود. این نمایه را ولی‌تان مدیریت می‌کند.</translation>
@@ -5013,7 +5010,6 @@
 <translation id="6540488083026747005">کوکی‌های طرف سوم را برای این سایت مجاز کرده‌اید</translation>
 <translation id="6541638731489116978">دسترسی این سایت به حسگرهای حرکتی مسدود شده است.</translation>
 <translation id="6542417422899025860">برداشتن خودکار اکثر اطلاعات شخصی</translation>
-<translation id="6548240707386871455">میان‌بر تکمیل خودکار بهبودیافته</translation>
 <translation id="654871471440386944">«مرور با هشتک» روشن شود؟</translation>
 <translation id="6549689063733911810">اخیر</translation>
 <translation id="6550675742724504774">گزینه‌ها</translation>
@@ -5179,7 +5175,6 @@
 <translation id="6710172959248731469">‏تنظیمات سرویس‌های Google</translation>
 <translation id="6710394144992407503">بررسی غلط‌های املایی درحین تایپ نوشتار در صفحه‌های وب</translation>
 <translation id="6711236403841768371">‏قبل‌از ‎<ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">برای تکمیل خودکار بهبودیافته، ⌘ را دوبار فشار دهید</translation>
 <translation id="6712943853047024245">قبلاً گذرواژه‌ای با این نام کاربری برای <ph name="WEBSITE" /> ذخیره کرده‌اید</translation>
 <translation id="6713668088933662563">ترجمه این زبان‌ها هرگز پیشنهاد نشود</translation>
 <translation id="6714871567554212732">مشاهده جزئیات بیشتر درباره <ph name="GROUP_NAME" /></translation>
@@ -6100,7 +6095,6 @@
 <translation id="7706742200777909964">صفحه‌ها را در یک زبانه به‌صورت پهلوبه‌پهلو قرار دهید تا بتوانید گزینه‌ها و اطلاعات دیگر را به‌راحتی مقایسه کنید</translation>
 <translation id="7707108266051544351">دسترسی این سایت به حسگرهای حرکتی مسدود شده است.</translation>
 <translation id="7709152031285164251">انجام نشد - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">پاک کردن میان‌بر سفارشی برای تکمیل خودکار بهبودیافته</translation>
 <translation id="7710568461918838723">&amp;ارسال محتوا…</translation>
 <translation id="7712739869553853093">کادر گفتگوی پیش‌نمایش چاپ</translation>
 <translation id="7714464543167945231">گواهی</translation>
@@ -6460,7 +6454,6 @@
 <translation id="810185532889603849">رنگ سفارشی</translation>
 <translation id="8103484184517840583">خروج از «حالت هوشواره‌ای»</translation>
 <translation id="810362914482827094">جستجوی گذرکلیدها</translation>
-<translation id="8104388155778519213">‏هم‌رسانی آنچه روی صفحه‌نمایش است با «لنز Google»</translation>
 <translation id="8104412594956510627">‏برای دریافت سابقه خود از <ph name="DEVICE" />، سابقه را همگام‌سازی کنید. همیشه می‌توانید همگام‌سازی را در تنظیمات متوقف کنید. ‫Google ممکن است «جستجو» و سایر سرویس‌ها را براساس سابقه‌تان شخصی‌سازی کند.</translation>
 <translation id="8104778744208707085">به رسیدگی شما نیاز دارد</translation>
 <translation id="8105273883928376822">لطفاً برای ادامه به سیستم وارد شوید.</translation>
@@ -6558,7 +6551,6 @@
 <translation id="8214489666383623925">باز کردن فایل...</translation>
 <translation id="8214771296778317256">سبک زبانه ترجیحی‌تان را اینجا انتخاب کنید</translation>
 <translation id="8217399928341212914">ادامه مسدود کردن بارگیری خودکار چندین فایل</translation>
-<translation id="8218411859495801458">ویرایش میان‌بر سفارشی برای تکمیل خودکار بهبودیافته</translation>
 <translation id="8221358554841691213">سبک تمرکز متوسط</translation>
 <translation id="8221942262855134126">مدیریت کردن گذرواژه</translation>
 <translation id="8222112516148944758">گروه‌های زبانه شما به‌طور خودکار در همه دستگاه‌هایتان ذخیره و به‌روز می‌شود</translation>
@@ -6831,7 +6823,6 @@
 <translation id="8512476990829870887">پایان دادن به فرایند</translation>
 <translation id="851263357009351303">همیشه اجازه دادن به <ph name="HOST" /> برای نشان دادن تصاویر</translation>
 <translation id="8513357934662532537">‏برای وارد کردن گذرواژه‌های <ph name="USER_EMAIL" /> به <ph name="BRAND" />، فایل CSV موردنظر را انتخاب کنید.</translation>
-<translation id="8514257511170433540">هنگام تکمیل فرم‌ها، از میان‌بر صفحه‌کلید پیش‌فرض استفاده کنید</translation>
 <translation id="8514746246728959655">کلید امنیتی دیگری را امتحان کنید</translation>
 <translation id="8514828975162859845">کیک چوبی</translation>
 <translation id="8514955299594277296">سایت‌ها اجازه ندارند در دستگاه داده ذخیره کنند (توصیه نمی‌شود)</translation>

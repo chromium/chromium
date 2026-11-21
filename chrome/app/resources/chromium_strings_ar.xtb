@@ -580,7 +580,6 @@
 <translation id="7213407614656404070">‏يمكنك فتح Chromium عند النقر على الروابط في الرسائل والمستندات والتطبيقات الأخرى</translation>
 <translation id="7216228761061470870">‏عند استخدام ميزة "البحث بالصور" على الكمبيوتر المكتبي، يتم إرسال عنوان الصفحة ومحتواها وعنوان URL الخاص بها، بما في ذلك ملفات PDF، إلى الخادم.</translation>
 <translation id="7223968959479464213">‏إدارة المهام - Chromium</translation>
-<translation id="7226331818892775989">‏يمكنك طرح أسئلة حول محتوى خارج Chromium، مثل تطبيقات أو ملفات أخرى</translation>
 <translation id="7227958669698166857">‏حساب "<ph name="EXISTING_USER" />" مسجّل الدخول حاليًا. للحصول على تجربة تصفّح منفصلة، يُرجى تسجيل الدخول إلى ملفك الشخصي في Chromium بحساب <ph name="USER_EMAIL_ADDRESS" />. سيتيح لك ذلك أيضًا الوصول إلى معلوماتك المحفوظة وغيرها على جميع أجهزتك.</translation>
 <translation id="7252276985725323153">‏بدء التصفّح على الفور: يمكن الآن فتح Chromium تلقائيًا عند بدء تشغيل Windows.</translation>
 <translation id="7274695763216404502">تمّ تثبيت اللوحة. يمكنك استخدام ميزة "البحث بالصور" مرة أخرى من خلال شريط الأدوات</translation>
@@ -697,7 +696,6 @@
 <translation id="8310603974518734211">‏رمز الاستجابة السريعة لتسجيل الدخول إلى Chromium باسم "<ph name="USER_NAME" />"</translation>
 <translation id="8313851650939857356">خطأ في بدء التشغيل: <ph name="STARTUP_ERROR" /></translation>
 <translation id="8318772038038596122">‏تغلق مؤسستك Chromium في حال عدم استخدامه لمدّة <ph name="TIMEOUT_DURATION" />.</translation>
-<translation id="8321888067342493336">حفظ كصورة</translation>
 <translation id="8340674089072921962">‏كان <ph name="USER_EMAIL_ADDRESS" /> يستخدم Chromium مسبقًا</translation>
 <translation id="8351551329754447960">‏تفعيل "المهارات" في Chromium</translation>
 <translation id="8359544530202147897">‏يُرجى تحديث متصفّح Chromium لمواصلة استخدام بياناته في حسابك على Google (<ph name="ACCOUNT_EMAIL" />)</translation>

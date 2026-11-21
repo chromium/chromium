@@ -94,7 +94,6 @@
 <translation id="1090126737595388931">કોઈપણ બૅકગ્રાઉન્ડ ઍપ ચાલી રહી નથી</translation>
 <translation id="109038914521989341">કૃપા કરીને આ ડેટા કૉપિ કરવાનું કારણ દાખલ કરો:</translation>
 <translation id="1094158807129647987">“<ph name="SELECTION" />” વિશે પૂછો</translation>
-<translation id="1095398697303758108">ઑટોમૅટિક રીતે ભરવાની બહેતર સુવિધા માટે બે વાર Ctrl દબાવો</translation>
 <translation id="1095879482467973146">વેબ પર Google Password Manager</translation>
 <translation id="1097016918605049747">આ પેજનો અનુવાદ કરી શકાયો નથી</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" />માંથી છબી કૉપિ કરવામાં આવી</translation>
@@ -581,6 +580,7 @@
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{શું ટૅબ કાઢી નાખીને ગ્રૂપ ડિલીટ કરીએ?}=1{શું ટૅબ કાઢી નાખીને ગ્રૂપ ડિલીટ કરીએ?}one{શું ટૅબ કાઢી નાખીને ગ્રૂપ ડિલીટ કરીએ?}other{શું ટૅબ કાઢી નાખીને ગ્રૂપ ડિલીટ કરીએ?}}</translation>
 <translation id="1637765355341780467">તમારી પ્રોફાઇલ ખોલતી વખતે કંઈક ખોટું થયું. કેટલીક સુવિધાઓ અનુપલબ્ધ હોઈ શકે છે.</translation>
 <translation id="1639239467298939599">લોડ થઇ રહી છે</translation>
+<translation id="1640672724030957280">ડાઉનલોડ કરી રહ્યું છે...</translation>
 <translation id="1641113438599504367">સલામત બ્રાઉઝિંગ</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{અન્ય 1 પાસવર્ડ આયાત કરવામાં આવ્યો ન હતો કારણ કે તેને અયોગ્ય રીતે ફૉર્મેટ કરવામાં આવ્યો હતો}one{અન્ય {NUM_PASSWORDS} પાસવર્ડ આયાત કરવામાં આવ્યો ન હતો કારણ કે તેને અયોગ્ય રીતે ફૉર્મેટ કરવામાં આવ્યો હતો}other{અન્ય {NUM_PASSWORDS} પાસવર્ડ આયાત કરવામાં આવ્યા ન હતા કારણ કે તેમને અયોગ્ય રીતે ફૉર્મેટ કરવામાં આવ્યા હતા}}</translation>
 <translation id="1642299742557467312">આ ફાઇલ તમારા ડિવાઇસને હાનિ પહોંચાડી શકે છે</translation>
@@ -1799,7 +1799,6 @@
 <translation id="2988328607561082373">તમે કોઈપણ પાસવર્ડ ફરીથી ઉપયોગમાં લઈ રહ્યાં નથી</translation>
 <translation id="2989523299700148168">તાજેતરમાં મુલાકાત લીધેલ</translation>
 <translation id="2989786307324390836">DER-encoded binary, એકલ પ્રમાણપત્ર</translation>
-<translation id="2990500505358145117">વધુ સારી બનાવેલી ઑટોમૅટિક રીતે ભરવાની સુવિધાના શૉર્ટકટમાં ફેરફાર કરો</translation>
 <translation id="2990583317361835189">સાઇટને મોશન સેન્સરનો ઉપયોગ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="2991182900092497283">કૃપા કરીને આ ડેટા પેસ્ટ કરવાનું કારણ દાખલ કરો:</translation>
 <translation id="2992754757708650257">સાઇટ છોડીને કાર્ય સમાપ્ત કરીએ?</translation>
@@ -2054,7 +2053,6 @@
 <translation id="3244294424315804309">અવાજ બંધ કરવાનું ચાલુ રાખો</translation>
 <translation id="3247649647204519958">અહીંથી, તમે જે સાઇટ પર છો તે માટેની એક્સ્ટેન્શન પરવાનગીઓને જોઈ અને મેનેજ કરી શકો છો</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - નેટવર્ક ભૂલ</translation>
-<translation id="3248957351402065497">વધુ સારી બનાવેલી ઑટોમૅટિક રીતે ભરવાની સુવિધા માટે કસ્ટમ શૉર્ટકટ</translation>
 <translation id="3249558306861350254">તમારા Windows સેટિંગમાં <ph name="BEGIN_BOLD" />ડિફૉલ્ટ તરીકે સેટ કરો<ph name="END_BOLD" /> પર ક્લિક કરો.</translation>
 <translation id="3250374026663843838">તમારું કૌશલ્ય મેનેજ કરો</translation>
 <translation id="3251759466064201842">&lt;પ્રમાણપત્રનો ભાગ નથી&gt;</translation>
@@ -2275,6 +2273,7 @@
 <translation id="3481268647794498892"><ph name="COUNTDOWN_SECONDS" /> સેકન્ડમાં <ph name="ALTERNATIVE_BROWSER_NAME" />માં ખુલી રહ્યું છે</translation>
 <translation id="348247802372410699">શૈલી પસંદ કરો</translation>
 <translation id="3482573964681964096">Windowsમાંથી આયાત કરેલા સર્ટિફિકેટ મેનેજ કરો</translation>
+<translation id="348268549820508141">વાણી ઓળખ</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> નીચે આપેલી ફાઇલો જોઈ શકે છે</translation>
 <translation id="3486380520195228369">પેજ રિફ્રેશ ન થાય ત્યાં સુધી છુપાવવામાં આવે છે</translation>
 <translation id="3487007233252413104">અનામી કાર્ય</translation>
@@ -2645,7 +2644,6 @@
 <translation id="3826086052025847742">ChromeOS Flex લૉગ</translation>
 <translation id="3827774300009121996">&amp;પૂર્ણ સ્ક્રીન</translation>
 <translation id="3828029223314399057">બુકમાર્ક શોધો</translation>
-<translation id="3828454092958722155">વધુ સારી બનાવેલી ઑટોમૅટિક રીતે ભરવાની સુવિધાનો શૉર્ટકટ સાફ કરો</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - મેમરીનો ઉચ્ચ વપરાશ - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">કોઈ જુદી પાસકીનો ઉપયોગ કરો</translation>
 <translation id="3838085852053358637">એક્સ્ટેન્શન લોડ કરવામાં નિષ્ફળ થયાં</translation>
@@ -3726,7 +3724,6 @@
 <translation id="5060419232449737386">કૅપ્શન સેટિંગ</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{આ ફોલ્ડર બુકમાર્ક સમાવે છે. શું તમે ખરેખર એને ડિલીટ કરવા માગો છો?}one{આ ફોલ્ડર # બુકમાર્ક સમાવે છે. શું તમે ખરેખર એને ડિલીટ કરવા માગો છો?}other{આ ફોલ્ડર # બુકમાર્ક સમાવે છે. શું તમે ખરેખર એને ડિલીટ કરવા માગો છો?}}</translation>
 <translation id="5061531353537614467">ટુંડ્ર</translation>
-<translation id="5061781067616989032">તમારા પોતાના કીબોર્ડ શૉર્ટકટનું સેટઅપ કરો</translation>
 <translation id="5062863364865466276">હિલચાલ</translation>
 <translation id="5063480226653192405">ઉપયોગ</translation>
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" />ની પ્રોફાઇલ ખોલો. તમારા માતાપિતા દ્વારા આ પ્રોફાઇલને મેનેજ કરવામાં આવે છે.</translation>
@@ -5003,7 +5000,6 @@
 <translation id="6540488083026747005">તમે આ સાઇટ માટે ત્રીજા પક્ષની કુકીને મંજૂરી આપી છે</translation>
 <translation id="6541638731489116978">આ સાઇટને તમારા મોશન સેન્સરને ઍક્સેસ કરવાથી બ્લૉક કરવામાં આવી છે.</translation>
 <translation id="6542417422899025860">સૌથી વધુ વ્યક્તિગત માહિતી ઑટોમૅટિક રીતે કાઢી નાખો</translation>
-<translation id="6548240707386871455">વધુ સારી બનાવેલી ઑટોમૅટિક રીતે ભરવાની સુવિધાનો શૉર્ટકટ</translation>
 <translation id="654871471440386944">શું ટેક્સ્ટના કર્સર વડે બ્રાઉઝ કરવાનું ચાલુ કરીએ?</translation>
 <translation id="6549689063733911810">તાજેતરનું</translation>
 <translation id="6550675742724504774">વિકલ્પો</translation>
@@ -5169,7 +5165,6 @@
 <translation id="6710172959248731469">Googleની સેવાઓના સેટિંગ</translation>
 <translation id="6710394144992407503">જ્યારે તમે વેબ પેજ પર ટેક્સ્ટ ટાઇપ કરો છે ત્યારે જોડણીમાં ભૂલો ચેક કરો</translation>
 <translation id="6711236403841768371"><ph name="END_DATE" /> પહેલાં</translation>
-<translation id="6711569175139833669">ઑટોમૅટિક રીતે ભરવાની બહેતર સુવિધા માટે ⌘ બે વાર દબાવો</translation>
 <translation id="6712943853047024245">તમે પહેલાંથી આ વપરાશકર્તાના નામ માટે <ph name="WEBSITE" />નો પાસવર્ડ સાચવ્યો છે</translation>
 <translation id="6713668088933662563">આ ભાષાઓનો અનુવાદ કરવાની ક્યારેય ઑફર કરશો નહીં</translation>
 <translation id="6714871567554212732"><ph name="GROUP_NAME" /> વિશે વધુ વિગતો જુઓ</translation>
@@ -6090,7 +6085,6 @@
 <translation id="7706742200777909964">તમે વિકલ્પો અને વધુની તુલના સરળતાથી કરી શકો તે માટે, એક જ ટૅબમાં પેજને બાજુ-બાજુમાં મૂકો</translation>
 <translation id="7707108266051544351">આ સાઇટને મોશન સેન્સરનો ઉપયોગ કરવાથી બ્લૉક કરવામાં આવી છે.</translation>
 <translation id="7709152031285164251">નિષ્ફળ થયું - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">ઑટોમૅટિક રીતે ભરવાની બહેતર સુવિધા માટે કસ્ટમ શૉર્ટકટ સાફ કરો</translation>
 <translation id="7710568461918838723">&amp;કાસ્ટ કરો...</translation>
 <translation id="7712739869553853093">પ્રિન્ટ પ્રીવ્યૂ માટેનો સંવાદ</translation>
 <translation id="7714464543167945231">પ્રમાણપત્ર</translation>
@@ -6445,7 +6439,6 @@
 <translation id="810185532889603849">કસ્ટમ રંગ</translation>
 <translation id="8103484184517840583">AI મોડમાંથી બહાર નીકળો</translation>
 <translation id="810362914482827094">પાસકી શોધો</translation>
-<translation id="8104388155778519213">Google Lens વડે તમારી સ્ક્રીન પર જે કંઈ હોય તે શેર કરો</translation>
 <translation id="8104412594956510627"><ph name="DEVICE" />માંથી તમારો ઇતિહાસ મેળવવા માટે, ઇતિહાસ સિંક કરો. તમે કોઈપણ સમયે સેટિંગમાં જઈને સિંક કરવાનું બંધ કરી શકો છો. Google તમારા ઇતિહાસના આધારે Search અને અન્ય સેવાઓને મનગમતી બનાવી શકે છે.</translation>
 <translation id="8104778744208707085">તમારે આના પર ધ્યાન આપવું જરૂરી છે</translation>
 <translation id="8105273883928376822">ચાલુ રાખવા માટે, કૃપા કરીને સાઇન ઇન કરો.</translation>
@@ -6543,7 +6536,6 @@
 <translation id="8214489666383623925">ફાઇલ ખોલો...</translation>
 <translation id="8214771296778317256">અહીં તમારી પસંદગીની ટૅબ શૈલી પસંદ કરો</translation>
 <translation id="8217399928341212914">બહુવિધ ફાઇલોના ઑટોમૅટિક ડાઉનલોડને બ્લૉક કરવાનું ચાલુ રાખો</translation>
-<translation id="8218411859495801458">ઑટોમૅટિક રીતે ભરવાની બહેતર સુવિધા માટે કસ્ટમ શૉર્ટકટમાં ફેરફાર કરો</translation>
 <translation id="8221358554841691213">મધ્યમ ફોકસની શૈલી</translation>
 <translation id="8221942262855134126">પાસવર્ડ મેનેજ કરો</translation>
 <translation id="8222112516148944758">તમારા ટૅબના ગ્રૂપ તમારા બધા ડિવાઇસ પર ઑટોમૅટિક રીતે સાચવવામાં અને અપડેટ કરવામાં આવે છે</translation>
@@ -6816,7 +6808,6 @@
 <translation id="8512476990829870887">પ્રક્રિયાનો અંત કરો</translation>
 <translation id="851263357009351303"><ph name="HOST" />ને હંમેશાં છબી બતાવવાની મંજૂરી આપો</translation>
 <translation id="8513357934662532537"><ph name="USER_EMAIL" /> માટે <ph name="BRAND" />માં પાસવર્ડ આયાત કરવા માટે, CSV ફાઇલ પસંદ કરો.</translation>
-<translation id="8514257511170433540">ફોર્મ ભરતી વખતે ડિફૉલ્ટ કીબોર્ડ શૉર્ટકટનો ઉપયોગ કરો</translation>
 <translation id="8514746246728959655">અલગ સુરક્ષા કોડ અજમાવી જુઓ</translation>
 <translation id="8514828975162859845">કેક પૉપ</translation>
 <translation id="8514955299594277296">સાઇટને તમારા ડિવાઇસ પર ડેટા સાચવવાની મંજૂરી આપશો નહીં (સુઝાવ આપવામાં આવતો નથી)</translation>

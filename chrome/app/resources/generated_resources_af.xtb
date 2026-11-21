@@ -94,7 +94,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1090126737595388931">Geen agtergrondprogramme wat loop nie</translation>
 <translation id="109038914521989341">Voer asseblief ’n rede in hoekom jy hierdie data kopieer:</translation>
 <translation id="1094158807129647987">Vra oor “<ph name="SELECTION" />”</translation>
-<translation id="1095398697303758108">Druk Ctrl twee keer vir Gevorderde Outovul</translation>
 <translation id="1095879482467973146">Google Wagwoordbestuurder op die web</translation>
 <translation id="1097016918605049747">Hierdie bladsy kon nie vertaal word nie.</translation>
 <translation id="1099962274138857708">Prent is van <ph name="DEVICE_NAME" /> af gekopieer</translation>
@@ -582,6 +581,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Verwyder oortjie en vee groep uit?}=1{Verwyder oortjies en vee groep uit?}other{Verwyder oortjies en vee groepe uit?}}</translation>
 <translation id="1637765355341780467">Iets het verkeerd geloop met die oopmaak van jou profiel. Sekere kenmerke kan dalk onbeskikbaar wees.</translation>
 <translation id="1639239467298939599">Laai tans</translation>
+<translation id="1640672724030957280">Laai tans af …</translation>
 <translation id="1641113438599504367">Veiligblaai</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Nog 1 wagwoord is nie ingevoer nie, want dit is verkeerd geformateer}other{Nog {NUM_PASSWORDS} wagwoorde is nie ingevoer nie, want hulle is verkeerd geformateer}}</translation>
 <translation id="1642299742557467312">Hierdie lêer kan jou toestel beskadig</translation>
@@ -1811,7 +1811,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="2988328607561082373">Jy hergebruik nie enige wagwoorde nie</translation>
 <translation id="2989523299700148168">Onlangs besoek</translation>
 <translation id="2989786307324390836">DER-geënkodeerde binêre, enkele sertifikaat</translation>
-<translation id="2990500505358145117">Wysig Gevorderde Outovul-kortpad</translation>
 <translation id="2990583317361835189">Moenie werwe toelaat om bewegingsensors te gebruik nie</translation>
 <translation id="2991182900092497283">Voer asseblief ’n rede in hoekom jy hierdie data plak:</translation>
 <translation id="2992754757708650257">Verlaat werf en beëindig taak?</translation>
@@ -2066,7 +2065,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="3244294424315804309">Hou aan om klank te demp</translation>
 <translation id="3247649647204519958">Van hier af kan jy uitbreidingtoestemmings sien en bestuur vir die werf waarop jy is</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Netwerkfout</translation>
-<translation id="3248957351402065497">Gepasmaakte kortpad vir Gevorderde Outovul</translation>
 <translation id="3249558306861350254">Klik <ph name="BEGIN_BOLD" />Stel as verstek<ph name="END_BOLD" /> in jou Windows-instellings.</translation>
 <translation id="3250374026663843838">Bestuur jou vaardigheid</translation>
 <translation id="3251759466064201842">&lt;Nie deel van sertifikaat nie&gt;</translation>
@@ -2287,6 +2285,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="3481268647794498892">Maak <ph name="ALTERNATIVE_BROWSER_NAME" /> binne <ph name="COUNTDOWN_SECONDS" /> sekondes oop</translation>
 <translation id="348247802372410699">Kies ’n styl</translation>
 <translation id="3482573964681964096">Bestuur ingevoerde sertifikate van Windows af</translation>
+<translation id="348268549820508141">Spraakherkenning</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> kan die volgende lêers bekyk</translation>
 <translation id="3486380520195228369">Versteek totdat die bladsy herlaai</translation>
 <translation id="3487007233252413104">anonieme funksie</translation>
@@ -2657,7 +2656,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="3826086052025847742">ChromeOS Flex-loglêer</translation>
 <translation id="3827774300009121996">Volskerm</translation>
 <translation id="3828029223314399057">Deursoek boekmerke</translation>
-<translation id="3828454092958722155">Vee Gevorderde Outovul-kortpad uit</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – hoë geheuegebruik – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Gebruik ’n ander toegangsleutel</translation>
 <translation id="3838085852053358637">Kon nie uitbreiding laai nie</translation>
@@ -3738,7 +3736,6 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="5060419232449737386">Onderskrifinstellings</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Hierdie vouer bevat 'n boekmerk. Is jy seker jy wil dit uitvee?}other{Hierdie vouer bevat # boekmerke. Is jy seker jy wil dit uitvee?}}</translation>
 <translation id="5061531353537614467">Toendra</translation>
-<translation id="5061781067616989032">Stel jou eie kortpadsleutel op</translation>
 <translation id="5062863364865466276">Beweging</translation>
 <translation id="5063480226653192405">Gebruik</translation>
 <translation id="5064921774605267982">Maak <ph name="PROFILE_NAME" />-profiel oop. Jou ouer bestuur hierdie profiel.</translation>
@@ -5015,7 +5012,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6540488083026747005">Jy het derdepartywebkoekies op hierdie werf toegelaat</translation>
 <translation id="6541638731489116978">Hierdie werf is geblokkeer om toegang tot jou bewegingsensors te kry.</translation>
 <translation id="6542417422899025860">Verwyder die meeste persoonlike inligting outomaties</translation>
-<translation id="6548240707386871455">Gevorderde Outovul-kortpad</translation>
 <translation id="654871471440386944">Skakel karetblaai aan?</translation>
 <translation id="6549689063733911810">Onlangs</translation>
 <translation id="6550675742724504774">Opsies</translation>
@@ -5179,7 +5175,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6710172959248731469">Google-dienste-instellings</translation>
 <translation id="6710394144992407503">Gaan na of daar spelfoute is wanneer jy teks op webbladsye tik</translation>
 <translation id="6711236403841768371">Voor <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Druk ⌘ twee keer vir Gevorderde Outovul</translation>
 <translation id="6712943853047024245">Jy het reeds 'n wagwoord met hierdie gebruikernaam vir <ph name="WEBSITE" /> gestoor</translation>
 <translation id="6713668088933662563">Moet nooit aanbied om hierdie tale te vertaal nie</translation>
 <translation id="6714871567554212732">Bekyk meer besonderhede oor <ph name="GROUP_NAME" /></translation>
@@ -6099,7 +6094,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="7706742200777909964">Plaas bladsye langs mekaar in dieselfde oortjie sodat jy maklik opsies kan vergelyk en meer kan doen</translation>
 <translation id="7707108266051544351">Hierdie werf is geblokkeer om bewegingsensors te gebruik.</translation>
 <translation id="7709152031285164251">Het misluk – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Vee gepasmaakte kortpad vir Gevorderde Outovul uit</translation>
 <translation id="7710568461918838723">&amp;amp;Saai uit …</translation>
 <translation id="7712739869553853093">Druk voorskoudialoog</translation>
 <translation id="7714464543167945231">Sertifikaat</translation>
@@ -6459,7 +6453,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="810185532889603849">Gepasmaakte kleur</translation>
 <translation id="8103484184517840583">Verlaat KI-modus</translation>
 <translation id="810362914482827094">Soek toegangsleutels</translation>
-<translation id="8104388155778519213">Deel wat op jou skerm is met Google Lens</translation>
 <translation id="8104412594956510627">Sinkroniseer geskiedenis om jou geskiedenis van <ph name="DEVICE" /> af te kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="8104778744208707085">Het jou aandag nodig</translation>
 <translation id="8105273883928376822">Meld asseblief aan om voort te gaan.</translation>
@@ -6557,7 +6550,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8214489666383623925">Maak lêer oop …</translation>
 <translation id="8214771296778317256">Kies hier jou voorkeurstilering vir oortjies</translation>
 <translation id="8217399928341212914">Hou aan om outomatiese aflaaie van veelvuldige lêers te blokkeer</translation>
-<translation id="8218411859495801458">Wysig gepasmaakte kortpad vir Gevorderde Outovul</translation>
 <translation id="8221358554841691213">Medium fokusstyl</translation>
 <translation id="8221942262855134126">Bestuur wagwoord</translation>
 <translation id="8222112516148944758">Jou oortjiegroepe stoor en dateer outomaties op al jou toestelle op</translation>
@@ -6830,7 +6822,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8512476990829870887">Beëindig proses</translation>
 <translation id="851263357009351303">Laat <ph name="HOST" /> altyd toe om prente te wys</translation>
 <translation id="8513357934662532537">Kies ’n CSV-lêer om wagwoorde na <ph name="BRAND" /> in te voer vir <ph name="USER_EMAIL" />.</translation>
-<translation id="8514257511170433540">Gebruik die verstekkortpadsleutels wanneer jy vorms invul</translation>
 <translation id="8514746246728959655">Probeer 'n ander sekuriteitsleutel</translation>
 <translation id="8514828975162859845">Koekstokkies</translation>
 <translation id="8514955299594277296">Moenie werwe toelaat om data op jou toestel te stoor nie (nie aanbeveel nie)</translation>

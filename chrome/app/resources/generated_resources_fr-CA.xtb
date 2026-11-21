@@ -94,7 +94,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1090126737595388931">Aucune application ne fonctionne en arrière-plan</translation>
 <translation id="109038914521989341">Veuillez entrer la raison pour laquelle vous copiez ces données :</translation>
 <translation id="1094158807129647987">Poser des questions à propos de « <ph name="SELECTION" /> »</translation>
-<translation id="1095398697303758108">Appuyer deux fois sur Ctrl pour le remplissage automatique amélioré</translation>
 <translation id="1095879482467973146">Gestionnaire de mots de passe Google sur le Web</translation>
 <translation id="1097016918605049747">Impossible de traduire cette page</translation>
 <translation id="1099962274138857708">Image copiée de l'appareil <ph name="DEVICE_NAME" /></translation>
@@ -581,6 +580,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Retirer l'onglet et supprimer le groupe?}=1{Retirer l'onglet et supprimer le groupe?}one{Retirer l'onglet et supprimer le groupe?}other{Retirer les onglets et supprimer les groupes?}}</translation>
 <translation id="1637765355341780467">Un problème est survenu lors de l'ouverture de votre profil. Certaines fonctionnalités ne seront peut-être pas disponibles.</translation>
 <translation id="1639239467298939599">Chargement en cours</translation>
+<translation id="1640672724030957280">Téléchargement en cours…</translation>
 <translation id="1641113438599504367">Navigation sécurisée</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 autre mot de passe n'a pas été importé, car son format est incorrect}one{{NUM_PASSWORDS} autre mot de passe n'a pas été importé, car son format est incorrect}other{{NUM_PASSWORDS} autres mots de passe n'ont pas été importés, car leur format est incorrect}}</translation>
 <translation id="1642299742557467312">Ce fichier pourrait endommager votre appareil</translation>
@@ -1800,7 +1800,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2988328607561082373">Vous ne réutilisez aucun mot de passe</translation>
 <translation id="2989523299700148168">Visites récentes</translation>
 <translation id="2989786307324390836">Certificat unique binaire codé DER</translation>
-<translation id="2990500505358145117">Modifier le raccourci de remplissage automatique amélioré</translation>
 <translation id="2990583317361835189">Ne pas autoriser les sites à utiliser les capteurs de mouvement</translation>
 <translation id="2991182900092497283">Veuillez entrer la raison pour laquelle vous collez ces données :</translation>
 <translation id="2992754757708650257">Quitter le site et terminer la tâche?</translation>
@@ -2055,7 +2054,6 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3244294424315804309">Continuer à désactiver le son</translation>
 <translation id="3247649647204519958">À partir d'ici, vous pouvez voir et gérer les autorisations d'extensions pour le site sur lequel vous vous trouvez</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - Erreur réseau</translation>
-<translation id="3248957351402065497">Raccourci personnalisé pour le remplissage automatique amélioré</translation>
 <translation id="3249558306861350254">Cliquez sur <ph name="BEGIN_BOLD" />Définir par défaut<ph name="END_BOLD" /> dans vos paramètres Windows.</translation>
 <translation id="3250374026663843838">Gérer votre compétence</translation>
 <translation id="3251759466064201842">&lt;Ne fait pas partie du certificat&gt;</translation>
@@ -2276,6 +2274,7 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3481268647794498892">Ouverture dans <ph name="ALTERNATIVE_BROWSER_NAME" /> dans <ph name="COUNTDOWN_SECONDS" /> secondes</translation>
 <translation id="348247802372410699">Choisir un style</translation>
 <translation id="3482573964681964096">Gérer les certificats importés de Windows</translation>
+<translation id="348268549820508141">Reconnaissance vocale</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> peut consulter les fichiers suivants</translation>
 <translation id="3486380520195228369">Masqué jusqu'à l'actualisation de la page</translation>
 <translation id="3487007233252413104">fonction anonyme</translation>
@@ -2646,7 +2645,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="3826086052025847742">Journaux de ChromeOS Flex</translation>
 <translation id="3827774300009121996">&amp;Plein écran</translation>
 <translation id="3828029223314399057">Rechercher dans les favoris</translation>
-<translation id="3828454092958722155">Effacer le raccourci de remplissage automatique amélioré</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> – Utilisation élevée de la mémoire – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Utiliser une autre clé d'accès</translation>
 <translation id="3838085852053358637">Échec du chargement de l'extension</translation>
@@ -3726,7 +3724,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="5060419232449737386">Paramètres des sous-titres</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Ce dossier contient un favori. Voulez-vous vraiment le supprimer?}one{Ce dossier contient # favori. Voulez-vous vraiment le supprimer?}other{Ce dossier contient # favoris. Voulez-vous vraiment le supprimer?}}</translation>
 <translation id="5061531353537614467">Toundra</translation>
-<translation id="5061781067616989032">Configurez votre propre raccourci-clavier</translation>
 <translation id="5062863364865466276">Mouvement</translation>
 <translation id="5063480226653192405">Utilisation</translation>
 <translation id="5064921774605267982">Ouvrir le profil <ph name="PROFILE_NAME" />. Ce profil est géré par ton parent.</translation>
@@ -5001,7 +4998,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="6540488083026747005">Vous avez autorisé les témoins tiers pour ce site</translation>
 <translation id="6541638731489116978">Ce site a été bloqué : il ne peut pas accéder à vos capteurs de mouvement.</translation>
 <translation id="6542417422899025860">Retirer automatiquement la plupart des renseignements personnels</translation>
-<translation id="6548240707386871455">Raccourci du remplissage automatique amélioré</translation>
 <translation id="654871471440386944">Activer la navigation au clavier?</translation>
 <translation id="6549689063733911810">Récent</translation>
 <translation id="6550675742724504774">Options</translation>
@@ -5167,7 +5163,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6710172959248731469">Paramètres des services Google</translation>
 <translation id="6710394144992407503">Vérifier les erreurs d'orthographe en cours de frappe sur des pages Web</translation>
 <translation id="6711236403841768371">Avant le <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Appuyer deux fois sur ⌘ pour le remplissage automatique amélioré</translation>
 <translation id="6712943853047024245">Vous avez déjà enregistré un mot de passe avec ce nom d'utilisateur pour <ph name="WEBSITE" /></translation>
 <translation id="6713668088933662563">Ne jamais proposer de traduire ces langues</translation>
 <translation id="6714871567554212732">Afficher plus de détails sur le groupe suivant : <ph name="GROUP_NAME" /></translation>
@@ -6087,7 +6082,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="7706742200777909964">Placez les pages côte à côte dans le même onglet pour pouvoir comparer facilement les options et plus encore</translation>
 <translation id="7707108266051544351">L'utilisation de capteurs de mouvement a été bloquée pour ce site.</translation>
 <translation id="7709152031285164251">Échec — <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Effacer le raccourci personnalisé pour le remplissage automatique amélioré</translation>
 <translation id="7710568461918838723">&amp;Diffuser…</translation>
 <translation id="7712739869553853093">Boîte de dialogue d'aperçu d'impression</translation>
 <translation id="7714464543167945231">Certificat</translation>
@@ -6447,7 +6441,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="810185532889603849">Couleur personnalisée</translation>
 <translation id="8103484184517840583">Quitter le mode IA</translation>
 <translation id="810362914482827094">Rechercher des clés d'accès</translation>
-<translation id="8104388155778519213">Partager ce qui se trouve sur votre écran avec Lentille Google</translation>
 <translation id="8104412594956510627">Pour obtenir votre historique à partir de votre <ph name="DEVICE" />, synchronisez l'historique. Vous pouvez arrêter la synchronisation en tout temps dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="8104778744208707085">Requiert votre attention</translation>
 <translation id="8105273883928376822">Veuillez vous connecter pour continuer.</translation>
@@ -6545,7 +6538,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8214489666383623925">Ouvrir...</translation>
 <translation id="8214771296778317256">Choisissez votre style d'onglet préféré ici</translation>
 <translation id="8217399928341212914">Continuer à bloquer le téléchargement automatique de plusieurs fichiers</translation>
-<translation id="8218411859495801458">Modifier le raccourci personnalisé pour le remplissage automatique amélioré</translation>
 <translation id="8221358554841691213">Style de mise en évidence moyen</translation>
 <translation id="8221942262855134126">Gérer le mot de passe</translation>
 <translation id="8222112516148944758">Vos groupes d'onglets sont automatiquement enregistrés et mis à jour sur l'ensemble de vos appareils</translation>
@@ -6818,7 +6810,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8512476990829870887">Arrêter le processus</translation>
 <translation id="851263357009351303">Toujours autoriser <ph name="HOST" /> à afficher les images</translation>
 <translation id="8513357934662532537">Pour importer des mots de passe dans <ph name="BRAND" /> pour <ph name="USER_EMAIL" />, sélectionnez un fichier CSV.</translation>
-<translation id="8514257511170433540">Utilisez le raccourci-clavier par défaut lors du remplissage des formulaires</translation>
 <translation id="8514746246728959655">Essayez une clé de sécurité différente</translation>
 <translation id="8514828975162859845">Gâteaux-sucettes</translation>
 <translation id="8514955299594277296">Ne pas autoriser les sites à enregistrer des données sur votre appareil (non recommandé)</translation>

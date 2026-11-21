@@ -94,7 +94,6 @@
 <translation id="1090126737595388931">沒有執行中的背景應用程式</translation>
 <translation id="109038914521989341">請說明複製這項資料的原因：</translation>
 <translation id="1094158807129647987">詢問「<ph name="SELECTION" />」相關問題</translation>
-<translation id="1095398697303758108">按兩下 Ctrl 鍵來啟用強化版自動填入功能</translation>
 <translation id="1095879482467973146">Google 密碼管理工具網頁版</translation>
 <translation id="1097016918605049747">無法翻譯這個網頁</translation>
 <translation id="1099962274138857708">從「<ph name="DEVICE_NAME" />」複製的圖片</translation>
@@ -581,6 +580,7 @@
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{要移除分頁並刪除群組嗎？}=1{要移除分頁並刪除群組嗎？}other{要移除分頁並刪除群組嗎？}}</translation>
 <translation id="1637765355341780467">開啟你的設定檔時發生錯誤，部分功能可能無法使用。</translation>
 <translation id="1639239467298939599">載入中</translation>
+<translation id="1640672724030957280">下載中…</translation>
 <translation id="1641113438599504367">安全瀏覽</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{另有 1 組密碼的格式有誤，因此無法匯入}other{另有 {NUM_PASSWORDS} 組密碼的格式有誤，因此無法匯入}}</translation>
 <translation id="1642299742557467312">這個檔案可能會損害你的裝置</translation>
@@ -1798,7 +1798,6 @@
 <translation id="2988328607561082373">目前未重複使用任何密碼</translation>
 <translation id="2989523299700148168">最近造訪過</translation>
 <translation id="2989786307324390836">DER 編碼 Binary，單一憑證</translation>
-<translation id="2990500505358145117">編輯「強化版自動填入」快速鍵</translation>
 <translation id="2990583317361835189">禁止網站使用動作感應器</translation>
 <translation id="2991182900092497283">請提供貼上這項資料的原因：</translation>
 <translation id="2992754757708650257">要離開網站並結束工作嗎？</translation>
@@ -2051,7 +2050,6 @@
 <translation id="3244294424315804309">繼續維持靜音</translation>
 <translation id="3247649647204519958">你可以在這裡查看及管理擴充功能在目前網站上的權限</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - 網路錯誤</translation>
-<translation id="3248957351402065497">「強化版自動填入」的自訂快速鍵</translation>
 <translation id="3249558306861350254">在 Windows 設定中，點選「設定預設值」<ph name="BEGIN_BOLD" /><ph name="END_BOLD" />。</translation>
 <translation id="3250374026663843838">管理技能</translation>
 <translation id="3251759466064201842">&lt;不是憑證的一部分&gt;</translation>
@@ -2272,6 +2270,7 @@
 <translation id="3481268647794498892">將於 <ph name="COUNTDOWN_SECONDS" /> 秒後在 <ph name="ALTERNATIVE_BROWSER_NAME" /> 中開啟</translation>
 <translation id="348247802372410699">選擇風格</translation>
 <translation id="3482573964681964096">管理從 Windows 匯入的憑證</translation>
+<translation id="348268549820508141">語音辨識</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> 可以檢視下列檔案</translation>
 <translation id="3486380520195228369">在頁面重新整理前會保持隱藏</translation>
 <translation id="3487007233252413104">匿名函式</translation>
@@ -2642,7 +2641,6 @@
 <translation id="3826086052025847742">ChromeOS Flex 記錄</translation>
 <translation id="3827774300009121996">全螢幕(&amp;F)</translation>
 <translation id="3828029223314399057">搜尋書籤</translation>
-<translation id="3828454092958722155">清除「強化版自動填入」快速鍵</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - 高記憶體用量 - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">使用其他密碼金鑰</translation>
 <translation id="3838085852053358637">無法載入擴充功能</translation>
@@ -3718,7 +3716,6 @@
 <translation id="5060419232449737386">字幕設定</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{這個資料夾內含 1 個書籤。確定要刪除該書籤嗎？}other{這個資料夾內含 # 個書籤。確定要刪除這些書籤嗎？}}</translation>
 <translation id="5061531353537614467">凍原</translation>
-<translation id="5061781067616989032">自行設定鍵盤快速鍵</translation>
 <translation id="5062863364865466276">移動方式</translation>
 <translation id="5063480226653192405">用量</translation>
 <translation id="5064921774605267982">開啟<ph name="PROFILE_NAME" />的設定檔。這個設定檔是由你的家長管理。</translation>
@@ -4990,7 +4987,6 @@
 <translation id="6540488083026747005">你已允許這個網站使用第三方 Cookie</translation>
 <translation id="6541638731489116978">這個網站無法存取你的動作感應器。</translation>
 <translation id="6542417422899025860">自動移除大部分的個人資訊</translation>
-<translation id="6548240707386871455">「強化版自動填入」快速鍵</translation>
 <translation id="654871471440386944">要開啟鍵盤瀏覽功能嗎？</translation>
 <translation id="6549689063733911810">近期</translation>
 <translation id="6550675742724504774">選項</translation>
@@ -5154,7 +5150,6 @@
 <translation id="6710172959248731469">Google 服務設定</translation>
 <translation id="6710394144992407503">在網頁上輸入文字時，檢查是否有拼字錯誤</translation>
 <translation id="6711236403841768371"><ph name="END_DATE" /> 之前</translation>
-<translation id="6711569175139833669">按兩下 ⌘ 鍵來啟用強化版自動填入功能</translation>
 <translation id="6712943853047024245">你已儲存過這個使用者名稱在「<ph name="WEBSITE" />」的密碼</translation>
 <translation id="6713668088933662563">一律不顯示翻譯以下語言的選項</translation>
 <translation id="6714871567554212732">查看「<ph name="GROUP_NAME" />」的詳細資訊</translation>
@@ -6075,7 +6070,6 @@
 <translation id="7706742200777909964">在同一個分頁中並排顯示網頁，方便比較選項及其他內容</translation>
 <translation id="7707108266051544351">這個網站無法使用動作感應器。</translation>
 <translation id="7709152031285164251">失敗 - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">清除強化版自動填入功能的自訂快速鍵</translation>
 <translation id="7710568461918838723">投放(&amp;C)...</translation>
 <translation id="7712739869553853093">列印預覽對話方塊</translation>
 <translation id="7714464543167945231">憑證</translation>
@@ -6435,7 +6429,6 @@
 <translation id="810185532889603849">自訂顏色</translation>
 <translation id="8103484184517840583">退出 AI 模式</translation>
 <translation id="810362914482827094">搜尋密碼金鑰</translation>
-<translation id="8104388155778519213">與 Google 智慧鏡頭分享畫面內容</translation>
 <translation id="8104412594956510627">如要存取「<ph name="DEVICE" />」的歷史記錄，請點選「同步歷史記錄」按鈕。你隨時可以前往設定停止同步。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務提供個人化體驗。</translation>
 <translation id="8104778744208707085">需要處理</translation>
 <translation id="8105273883928376822">如要繼續進行，請登入帳戶。</translation>
@@ -6533,7 +6526,6 @@
 <translation id="8214489666383623925">開啟檔案...</translation>
 <translation id="8214771296778317256">在這裡選擇偏好的分頁樣式</translation>
 <translation id="8217399928341212914">繼續禁止自動下載多個檔案</translation>
-<translation id="8218411859495801458">編輯強化版自動填入功能的自訂快速鍵</translation>
 <translation id="8221358554841691213">中型焦點樣式</translation>
 <translation id="8221942262855134126">管理密碼</translation>
 <translation id="8222112516148944758">系統現在會自動儲存分頁群組，並同步到所有裝置</translation>
@@ -6806,7 +6798,6 @@
 <translation id="8512476990829870887">結束處理程序</translation>
 <translation id="851263357009351303">永遠允許 <ph name="HOST" /> 顯示圖片</translation>
 <translation id="8513357934662532537">如要將 <ph name="USER_EMAIL" /> 的密碼匯入「<ph name="BRAND" />」，請選取 CSV 檔案</translation>
-<translation id="8514257511170433540">填寫表單時使用預設鍵盤快速鍵</translation>
 <translation id="8514746246728959655">請改用其他安全金鑰</translation>
 <translation id="8514828975162859845">蛋糕棒棒糖</translation>
 <translation id="8514955299594277296">不允許網站在裝置上儲存資料 (不建議)</translation>

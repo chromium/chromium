@@ -581,7 +581,6 @@
 <translation id="7213407614656404070">तुम्ही मेसेज, दस्तऐवज आणि इतर अ‍ॅप्समधील लिंकवर क्लिक करता, तेव्हा Chromium कधीही वापरा</translation>
 <translation id="7216228761061470870">तुम्ही डेस्कटॉपवर इमेज शोध वापरता, तेव्हा PDFs सह पेजचे शीर्षक, URL आणि आशय सर्व्हरला पाठवला जातो</translation>
 <translation id="7223968959479464213">टास्क मॅनेजर- Chromium</translation>
-<translation id="7226331818892775989">इतर अ‍ॅप्स किंवा फाइल यांसारख्या Chromium च्या बाहेरील आशयाबद्दल विचारा</translation>
 <translation id="7227958669698166857"><ph name="EXISTING_USER" /> यांनी आधीच साइन इन केले आहे. तुमचे ब्राउझिंग स्वतंत्र ठेवण्यासाठी, तुमच्या स्वतःच्या प्रोफाइलमधील Chromium मध्ये <ph name="USER_EMAIL_ADDRESS" /> म्हणून साइन इन करा. तुम्हाला तुमच्या सर्व डिव्हाइसवर तुमची सेव्ह केलेली माहिती आणि आणखी बरेच काही मिळेल.</translation>
 <translation id="7252276985725323153">ब्राउझ करणे तात्काळ सुरू करा: Windows सुरू होते, तेव्हा आता Chromium लाँच होऊ शकते.</translation>
 <translation id="7274695763216404502">पिन केले आहे! टूलबारमधून इमेज शोध पुन्हा वापरा</translation>
@@ -698,7 +697,6 @@ Chromium तुमची सेटिंग्ज रिकव्हर कर�
 <translation id="8310603974518734211"><ph name="USER_NAME" /> म्हणून Chromium मध्ये साइन इन करण्यासाठी QR कोड</translation>
 <translation id="8313851650939857356">स्टार्टअप एरर: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122"><ph name="TIMEOUT_DURATION" /> कालावधीसाठी Chromium वापरले जात नाही, तेव्हा तुमची संस्था ते बंद करते.</translation>
-<translation id="8321888067342493336">इमेज म्हणून सेव्ह करा</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> पूर्वी Chromium वापरत होते</translation>
 <translation id="8351551329754447960">Chromium मध्ये कौशल्ये सुरू करा</translation>
 <translation id="8359544530202147897">तुमच्या <ph name="ACCOUNT_EMAIL" /> Google खाते मध्ये Chromium डेटा वापरणे कायम ठेवण्यासाठी Chromium अपडेट करा</translation>

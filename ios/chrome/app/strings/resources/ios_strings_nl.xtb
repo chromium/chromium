@@ -261,7 +261,6 @@
 <translation id="1739364174357629566">Known Traveler Number updaten</translation>
 <translation id="1740468249224277719">Dubbeltik om te installeren.</translation>
 <translation id="1740650426894359238">Van profiel wisselen</translation>
-<translation id="1741219894094057085">Smartwatch</translation>
 <translation id="1743244221910283364">Niet opslaan</translation>
 <translation id="1748975028205587434">Je bestand selecteren</translation>
 <translation id="1749733017156547309">Er is een wachtwoord vereist</translation>
@@ -285,7 +284,6 @@
 <translation id="1810976980198522421">Annuleren</translation>
 <translation id="1815941218935345331">Toegangscode</translation>
 <translation id="1818687879307252150">{count,plural, =0{Geen gehackte wachtwoorden}=1{{count} gehackt wachtwoord}other{{count} gehackte wachtwoorden}}</translation>
-<translation id="1819374301217551116">Prijzen volgen en inzichten</translation>
 <translation id="1820195936249950412">Log in met een geldig account</translation>
 <translation id="1820259098641718022">Toegevoegd aan leeslijst</translation>
 <translation id="1823768272150895732">Lettertype</translation>
@@ -415,7 +413,6 @@
 <translation id="2199562093267256223">Hiermee wordt de groep verwijderd van alle apparaten die zijn ingelogd bij <ph name="USER_EMAIL" /></translation>
 <translation id="2202084845446535117">Geen e-mailaccounts</translation>
 <translation id="2214453882118345682">Winkel, vertaal en identificeer wat je ziet met je camera.</translation>
-<translation id="2216366330550244277">Ga naar de pagina van een product</translation>
 <translation id="2218389616572918761">Sites kunnen om je microfoon vragen</translation>
 <translation id="2219935992754556187">Chrome beveiligt je gevoelige gegevens met Face ID</translation>
 <translation id="2220529011494928058">Een probleem melden</translation>
@@ -541,7 +538,6 @@
 <translation id="2584994295315085351">Een nieuw tabblad openen als je na 4 uur terugkeert naar Chrome</translation>
 <translation id="2592917252160773942">Sites kunnen om je camera vragen</translation>
 <translation id="2593272815202181319">Monospace</translation>
-<translation id="2601778637777010194">Volg prijsdalingen van producten</translation>
 <translation id="2602372807870028932">Hiermee verwijder je geselecteerde informatie die is opgeslagen op dit apparaat</translation>
 <translation id="260378315836159338">Tik bovenaan het scherm op +</translation>
 <translation id="2612625650119459859">'Een tabblad vastzetten' is afgerond.</translation>
@@ -1195,7 +1191,6 @@
 <translation id="4719927025381752090">Aanbieden om te vertalen</translation>
 <translation id="4720530280568305198">Je selectie is geopend in een nieuw tabblad</translation>
 <translation id="4720782081196952026">Lettergrootte kleiner maken</translation>
-<translation id="472259426228234149">Prijs: $ 100-$ 180</translation>
 <translation id="4735849923335729414">Log in als <ph name="EMAIL" />, beheerd door je organisatie.</translation>
 <translation id="473775607612524610">Updaten</translation>
 <translation id="4738968082443868320">Google Drive</translation>
@@ -1338,7 +1333,6 @@
 <translation id="5116347248003317626">Niet toestaan dat sites je locatie gebruiken</translation>
 <translation id="5118462200606189584">Account toevoegen…</translation>
 <translation id="5118764316110575523">Uit</translation>
-<translation id="5119329531859909472">Tik op Volgen om het product te volgen</translation>
 <translation id="5121618895923301719">Je volgt dit product al. Deze pagina is opgeslagen in <ph name="BEGIN_LINK" />Mobiele bookmarks<ph name="END_LINK" />.</translation>
 <translation id="512533434554095351">Je hebt verschillende wachtwoordproblemen.</translation>
 <translation id="5126335625961252141">je tablet</translation>
@@ -1430,7 +1424,6 @@
 <translation id="5414763847370083940">Je krijgt een melding als de prijs op een site daalt.</translation>
 <translation id="5415289094036440596">Toegangssleutels kunnen niet worden gedeeld</translation>
 <translation id="5416455648658732408">Verplaatsen naar tabbladgroep</translation>
-<translation id="5423269318075950257">Prijs volgen</translation>
 <translation id="542659109038405424">Naar</translation>
 <translation id="5429624150850059322">Als je terugkomt, zijn de tabbladen vervaagd totdat je tikt om door te gaan</translation>
 <translation id="5431239785743546285">Pagina's die je hebt gelezen</translation>
@@ -1969,7 +1962,6 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="6989636517316575338">Stel vragen over een pagina</translation>
 <translation id="6990519590575500580">FaceTime</translation>
 <translation id="6998236305642926573">Alle taken</translation>
-<translation id="6998251471716094661">Volg de prijzen van producten en krijg meldingen als de prijs daalt op een site</translation>
 <translation id="7004032350256606903">Je organisatie vereist dat je privé browst.
 <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">Als standaard instellen in Instellingen…</translation>
@@ -1993,7 +1985,6 @@ Wissel naar <ph name="OTHER_EMAIL" /> om door te gaan vanaf je computer. Je krij
 <translation id="7082853213442715471">Als deze optie aanstaat, worden bepaalde webtechnologieën geblokkeerd. Hierdoor kunnen sommige websites trager worden geladen of niet goed werken.</translation>
 <translation id="7091023926159231962">{count,plural, =1{Kan {count} wachtwoord niet importeren}other{Kan {count} wachtwoorden niet importeren}}</translation>
 <translation id="7095110968493193530">In Google Wachtwoordmanager voor <ph name="EMAIL" /></translation>
-<translation id="7097046145876891318">Tik in de adresbalk op Prijsgeschiedenis om prijswijzigingen in de loop van de tijd te bekijken</translation>
 <translation id="7102005569666697658">Downloaden… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menu → Instellingen → Betaalmethoden</translation>
 <translation id="7108338896283013870">Verbergen</translation>

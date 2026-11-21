@@ -94,7 +94,6 @@
 <translation id="1090126737595388931">ምንም የሚያሂዱ የጀርባ መተግበሪያዎች የሉም</translation>
 <translation id="109038914521989341">እባክዎ ይህን ውሂብ የሚቀዱበትን ምክንያት ያስገቡ፦</translation>
 <translation id="1094158807129647987">ስለ «<ph name="SELECTION" />» ይጠይቁ</translation>
-<translation id="1095398697303758108">ለተሻሻለ ራስ-ሙላ Ctrlን ሁለት ጊዜ ይጫኑ</translation>
 <translation id="1095879482467973146">Google የይለፍ ቃል አስተዳዳሪ በድር ላይ</translation>
 <translation id="1097016918605049747">ይህን ገፅ መተርጎም አልተቻለም</translation>
 <translation id="1099962274138857708">ምስል ከ<ph name="DEVICE_NAME" /> ተቀድቷል</translation>
@@ -581,6 +580,7 @@
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{ትር ይወገድ እና ቡድን ይሰረዝ?}=1{ትር ይወገድ እና ቡድን ይሰረዝ?}one{ትር ይወገድ እና ቡድን ይሰረዝ?}other{ትሮች ይወገዱ እና ቡድኖች ይሰረዙ?}}</translation>
 <translation id="1637765355341780467">የእርስዎን መገለጫ በመክፈት ላይ የሆነ ችግር ተፈጥሯል። አንዳንድ ባህሪዎች ላይገኙ ይችላሉ።</translation>
 <translation id="1639239467298939599">በመጫን ላይ</translation>
+<translation id="1640672724030957280">በማውረድ ላይ...</translation>
 <translation id="1641113438599504367">የጥንቃቄ አሰሳ</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{በስህተት ቅርጸት ስለተሰራለት 1 ሌላ የይለፍ ቃል ማምጣት አልተቻለም}one{በስህተት ቅርጸት ስለተሰራለት {NUM_PASSWORDS} ሌላ የይለፍ ቃል ማምጣት አልተቻለም}other{በስህተት ቅርጸት ስለተሰራላቸው {NUM_PASSWORDS} ሌላ የይለፍ ቃላት ማምጣት አልተቻለም}}</translation>
 <translation id="1642299742557467312">ይህ ፋይል መሣሪያዎን ሊጎዳ ይችላል</translation>
@@ -1806,7 +1806,6 @@
 <translation id="2988328607561082373">ምንም የይለፍ ቃላትን ዳግም እየተጠቀሙ አይደለም</translation>
 <translation id="2989523299700148168">በቅርብ ጊዜ የተጎበኙ</translation>
 <translation id="2989786307324390836">DER-encoded binary፣ ነጠላ ሰርቲፊኬት</translation>
-<translation id="2990500505358145117">የተሻሻለ ራስ-ሙላ አቋራጭን አርትዕ</translation>
 <translation id="2990583317361835189">ጣቢያዎች የእንቅስቃሴ ዳሳሾችን እንዲጠቀሙ አይፍቀዱ</translation>
 <translation id="2991182900092497283">እባክዎ ይህን ውሂብ የሚያወርዱበትን ምክንያት ያስገቡ፦</translation>
 <translation id="2992754757708650257">ከጣቢያው ወጥተው እና ተግባሩ ያብቃ?</translation>
@@ -2061,7 +2060,6 @@
 <translation id="3244294424315804309">ድምጽን መዝጋቱ ቀጥል</translation>
 <translation id="3247649647204519958">ከዚህ፣ ላሉበት ጣቢያ የቅጥያ ፈቃዶችን ማየት እና ማስተዳደር ይችላሉ</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - የአውታረ መረብ ስህተት</translation>
-<translation id="3248957351402065497">ለተሻሻለ ራስ-ሙላ ብጁ አቋራጭ</translation>
 <translation id="3249558306861350254">በWindows ቅንብሮችዎ ውስጥ <ph name="BEGIN_BOLD" />ነባሪ አድርግ<ph name="END_BOLD" /> ላይ ጠቅ ያድርጉ።</translation>
 <translation id="3250374026663843838">ክህሎትዎን ያስተዳድሩ</translation>
 <translation id="3251759466064201842">‹የሰርቲፊኬቱ አካል አይደለም›</translation>
@@ -2282,6 +2280,7 @@
 <translation id="3481268647794498892"><ph name="ALTERNATIVE_BROWSER_NAME" />ን በ<ph name="COUNTDOWN_SECONDS" /> ሰከንዶች ውስጥ ይከፈታል</translation>
 <translation id="348247802372410699">ቅጥን ይምረጡ</translation>
 <translation id="3482573964681964096">ከWindows የመጡ የዕውቅና ማረጋገጫዎችን አስተዳድር</translation>
+<translation id="348268549820508141">ንግግርን ማወቅ</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> የሚከተሉትን ፋይሎች መመልከት ይችላል</translation>
 <translation id="3486380520195228369">ገጹ እስከሚታደስ ድረስ የተደበቀ</translation>
 <translation id="3487007233252413104">ስም-አልባ ተግባር</translation>
@@ -2652,7 +2651,6 @@
 <translation id="3826086052025847742">የChromeOS Flex ምዝግብ ማስታወሻዎች</translation>
 <translation id="3827774300009121996">&amp;በሙሉ ገፅ ማያ አሳይ</translation>
 <translation id="3828029223314399057">ዕልባቶች ፈልግ</translation>
-<translation id="3828454092958722155">የተሻሻለ ራስ-ሙላ አቋራጭን አጽዳ</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - ከፍተኛ የማህደረ ትውስታ አጠቃቀም - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">የተለየ የይለፍ ቁልፍ ይጠቀሙ</translation>
 <translation id="3838085852053358637">ቅጥያን መጫን አልተሳካም</translation>
@@ -3731,7 +3729,6 @@
 <translation id="5060419232449737386">የመግለጫ ጽሁፍ ቅንብሮች</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{ይህ አቃፊ ዕልባት አለው። እርግጠኛ ነዎት ሊሰርዙት ይፈልጋሉ?}one{ይህ አቃፊ # ዕልባቶች አሉት። እርግጠኛ ነዎት ሊሰርዙት ይፈልጋሉ?}other{ይህ አቃፊ # ዕልባቶች አሉት። እርግጠኛ ነዎት ሊሰርዙት ይፈልጋሉ?}}</translation>
 <translation id="5061531353537614467">ቱንድራ</translation>
-<translation id="5061781067616989032">የራስዎን የቁልፍ ሰሌዳ አቋራጭ ያዋቅሩ</translation>
 <translation id="5062863364865466276">እንቅስቃሴ</translation>
 <translation id="5063480226653192405">አጠቃቀም</translation>
 <translation id="5064921774605267982">መገለጫ <ph name="PROFILE_NAME" />ን ይክፈቱ። ይህ መገለጫ የሚተዳደድረው በወላጅዎ ነው።</translation>
@@ -5007,7 +5004,6 @@
 <translation id="6540488083026747005">በዚህ ጣቢያ ላይ የሦስተኛ ወገን ኩኪዎችን ፈቅደዋል</translation>
 <translation id="6541638731489116978">ይህ ጣቢያ የእንቅስቃሴ ዳሳሾችዎን እንዳይደርስ ታግዷል።</translation>
 <translation id="6542417422899025860">በጣም የግል የሆነ መረጃን በራስ-ሰር ያስወግዱ</translation>
-<translation id="6548240707386871455">የተሻሻለ ራስ-ሙላ አቋራጭ</translation>
 <translation id="654871471440386944">የጽሑፍ ጠቋሚ አሰሳ ይብራ?</translation>
 <translation id="6549689063733911810">የቅርብ ጊዜ</translation>
 <translation id="6550675742724504774">አማራጮች</translation>
@@ -5173,7 +5169,6 @@
 <translation id="6710172959248731469">የGoogle አገልግሎቶች ቅንብሮች</translation>
 <translation id="6710394144992407503">በድረ-ገጾች ላይ ጽሁፍ በሚተይቡበት ጊዜ የፊደል ስህተቶችን ይፈትሹ</translation>
 <translation id="6711236403841768371">ከ<ph name="END_DATE" /> በፊት</translation>
-<translation id="6711569175139833669">ለተሻሻለ ራስ-ሙላ ⌘ ሁለቴ ይጫኑ</translation>
 <translation id="6712943853047024245">ለ<ph name="WEBSITE" /> ከዚህ የተጠቃሚ ስም ጋር የይለፍ ቃል አስቀድመው አስቀምጠዋል</translation>
 <translation id="6713668088933662563">እነዚህን ቋንቋዎች በጭራሽ ለትርጉም አታቅርብ</translation>
 <translation id="6714871567554212732">ስለ<ph name="GROUP_NAME" /> ተጨማሪ ዝርዝሮችን ይመልከቱ</translation>
@@ -6094,7 +6089,6 @@
 <translation id="7706742200777909964">አማራጮችን እና ሌሎችንም በቀላሉ ማወዳደር እንዲችል በተመሳሳይ ትር ውስጥ ገጾቹን ጎን ለጎን ያድርጉ</translation>
 <translation id="7707108266051544351">ይህ ጣቢያ የእንቅስቃሴ ዳሳሾችን እንዳይጠቀም ታግዷል።</translation>
 <translation id="7709152031285164251">አልተሳካም - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">ለተሻሻለ ራስ-ሙላ ብጁ አቋራጭን አጽዳ</translation>
 <translation id="7710568461918838723">&amp;Cast...</translation>
 <translation id="7712739869553853093">የህትመት ቅድመ-ዕይታ መገናኛ</translation>
 <translation id="7714464543167945231">ሰርቲፊኬት</translation>
@@ -6459,7 +6453,6 @@ nil</translation>
 <translation id="810185532889603849">ብጁ ቀለም</translation>
 <translation id="8103484184517840583">ከሰው ሠራሽ አስተውሎት ሁነታ ውጣ</translation>
 <translation id="810362914482827094">የይለፍ ቁልፎችን ይፈልጉ</translation>
-<translation id="8104388155778519213">በማያ ገጽዎ ላይ ያለውን ለGoogle ሌንስ ያጋሩ</translation>
 <translation id="8104412594956510627">ታሪክዎን ከ<ph name="DEVICE" /> ለማግኘት ታሪክን ያሥምሩ። ቅንብሮች ውስጥ በማንኛውም ጊዜ ማሥመር ማቆም ይችላሉ። Google በእርስዎ ታሪክ ላይ በመመሥረት ፍለጋን እና ሌሎች አገልግሎቶችን ግላዊነት ሊያላብስ ይችላል።</translation>
 <translation id="8104778744208707085">የእርስዎን ትኩረት ያስፈልገዋል</translation>
 <translation id="8105273883928376822">ለመቀጠል እባክዎ በመለያ ይግቡ።</translation>
@@ -6557,7 +6550,6 @@ nil</translation>
 <translation id="8214489666383623925">ፋይል ክፈት…</translation>
 <translation id="8214771296778317256">የእርስዎን ተመራጭ የትር ቅጥ እዚህ ይምረጡ</translation>
 <translation id="8217399928341212914">በርካታ ፋይሎችን በራስ ሰር ማውረድን ማገድ ቀጥል</translation>
-<translation id="8218411859495801458">ለተሻሻለ ራስ-ሙላ ብጁ አቋራጭን አርትዕ</translation>
 <translation id="8221358554841691213">መካከለኛ የትኩረት ቅጥ</translation>
 <translation id="8221942262855134126">የይለፍ ቃልን ያስተዳድሩ</translation>
 <translation id="8222112516148944758">የትር ቡድኖችዎ በሁሉም መሣሪያዎችዎ ላይ በራስ-ሰር ይቀመጣሉ እና ይዘመናሉ</translation>
@@ -6830,7 +6822,6 @@ nil</translation>
 <translation id="8512476990829870887">ሂደቱን ግታ</translation>
 <translation id="851263357009351303">ሁልጊዜ <ph name="HOST" /> ምስሎችን እዲያሳይ ፍቀድ</translation>
 <translation id="8513357934662532537">ለ<ph name="USER_EMAIL" /> የይለፍ ቃላትን ወደ <ph name="BRAND" /> ለማስመጣት የCSV ፋይልን ይምረጡ።</translation>
-<translation id="8514257511170433540">ቅጾችን በሚሞሉበት ጊዜ ነባሪውን የቁልፍ ሰሌዳ አቋራጭ ይጠቀሙ</translation>
 <translation id="8514746246728959655">የተለየ የደህንነት ቁልፍ ይሞክሩ</translation>
 <translation id="8514828975162859845">የኬክ ሎሊፖፖች</translation>
 <translation id="8514955299594277296">ጣቢያዎች በመሣሪያዎ ላይ ውሂብ እንዲያስቀምጡ አይፍቀዱ (አይመከርም)</translation>

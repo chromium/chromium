@@ -94,7 +94,6 @@
 <translation id="1090126737595388931">Фондо иштеп жаткан колдонмо жок</translation>
 <translation id="109038914521989341">Бул маалыматты көчүрүп алуy үчүн себепти көрсөтүңүз:</translation>
 <translation id="1094158807129647987">"<ph name="SELECTION" />" жөнүндө суроо</translation>
-<translation id="1095398697303758108">Жакшыртылган автотолтуруу үчүн Ctrl баскычын эки жолу басыңыз</translation>
 <translation id="1095879482467973146">Интернеттеги Сырсөздөрдү башкаргыч</translation>
 <translation id="1097016918605049747">Бул барак которулган жок</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" /> түзмөгүнөн көчүрүлгөн сүрөт</translation>
@@ -582,6 +581,7 @@
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Өтмөктү алып салып, топту өчүрөсүзбү?}=1{Өтмөктөр алынып салынып, топ өчүрүлсүнбү?}other{Өтмөктөр алынып салынып, топтор өчүрүлсүнбү?}}</translation>
 <translation id="1637765355341780467">Профилиңизди ачууда бир жерден ката кетти. Айрым мүмкүнчүлүктөр иштетилбейт.</translation>
 <translation id="1639239467298939599">Жүктөлүүдө</translation>
+<translation id="1640672724030957280">Жүктөлүп алынууда...</translation>
 <translation id="1641113438599504367">Коопсуз серептөө</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{Туура эмес форматталгандыктан, 1 сырсөз импорттолгон жок}other{Туура эмес форматталгандыктан, {NUM_PASSWORDS} сырсөз импорттолгон жок}}</translation>
 <translation id="1642299742557467312">Бул файл түзмөгүңүзгө зыян келтириши мүмкүн</translation>
@@ -1811,7 +1811,6 @@
 <translation id="2988328607561082373">Сырсөздөрүңүздү кайталап колдонгон жоксуз</translation>
 <translation id="2989523299700148168">Жакында колдонулгандар</translation>
 <translation id="2989786307324390836">DER-коддолгон бинардык жалгыз тастыктама</translation>
-<translation id="2990500505358145117">Жакшыртылган автотолтуруунун ыкчам баскычын түзөтүү</translation>
 <translation id="2990583317361835189">Сайттар кыймыл сенсорлорун колдоно албасын</translation>
 <translation id="2991182900092497283">Бул маалыматты чаптоо үчүн себепти көрсөтүңүз:</translation>
 <translation id="2992754757708650257">Сайттан чыгып, тапшырманы бүтүрөсүзбү?</translation>
@@ -2066,7 +2065,6 @@
 <translation id="3244294424315804309">Үнүн басууну улантуу</translation>
 <translation id="3247649647204519958">Бул жерден сайттын кеңейтүүлөрүнө берилген уруксаттарды көрүп жана тескей аласыз</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Тармактагы ката</translation>
-<translation id="3248957351402065497">Жакшыртылган автотолтуруу үчүн жеке ыкчам баскыч</translation>
 <translation id="3249558306861350254">Windows параметрлеринен <ph name="BEGIN_BOLD" />Демейки катары коюу<ph name="END_BOLD" /> баскычын чыкылдатыңыз.</translation>
 <translation id="3250374026663843838">Жөндөмүңүздү тескеңиз</translation>
 <translation id="3251759466064201842">&lt;Тастыктаманын бөлүгү эмес&gt;</translation>
@@ -2287,6 +2285,7 @@
 <translation id="3481268647794498892"><ph name="ALTERNATIVE_BROWSER_NAME" /> аркылуу <ph name="COUNTDOWN_SECONDS" /> секунддан кийин ачылат</translation>
 <translation id="348247802372410699">Стиль тандаңыз</translation>
 <translation id="3482573964681964096">Windows'тон импорттолгон тастыктамаларды тескөө</translation>
+<translation id="348268549820508141">Кепти таануу</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> төмөнкү файлдарды көрө алат:</translation>
 <translation id="3486380520195228369">Барак жаңыртылганга чейин жашырылган</translation>
 <translation id="3487007233252413104">белгисиз функция</translation>
@@ -2657,7 +2656,6 @@
 <translation id="3826086052025847742">ChromeOS Flex таржымалдары</translation>
 <translation id="3827774300009121996">&amp;Толук экран</translation>
 <translation id="3828029223314399057">Кыстармаларды издөө</translation>
-<translation id="3828454092958722155">Жакшыртылган автотолтуруу ыкчам баскычын тазалоо</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> эстутумду көп колдонуп жатат: <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Башка киргизүүчү ачкычты колдонуу</translation>
 <translation id="3838085852053358637">Кеңейтүү жүктөлбөй калды</translation>
@@ -3738,7 +3736,6 @@
 <translation id="5060419232449737386">Коштомо жазуулардын параметрлери</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{Бул куржунда кыстарма камтылган. Аны чын эле өчүрөсүзбү?}other{Бул куржунда # кыстарма камтылган. Аны чын эле өчүрөсүзбү?}}</translation>
 <translation id="5061531353537614467">Тундра</translation>
-<translation id="5061781067616989032">Жеке ыкчам баскычты тууралаңыз</translation>
 <translation id="5062863364865466276">Кыймыл-аракет</translation>
 <translation id="5063480226653192405">Колдонулушу</translation>
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" /> профилин ачуу. Бул профилди ата-энең тескейт.</translation>
@@ -5014,7 +5011,6 @@
 <translation id="6540488083026747005">Бул сайтта үчүнчү тараптын cookie файлдарына уруксат бердиңиз</translation>
 <translation id="6541638731489116978">Бул сайттын кыймыл сенсорлорун колдонуу мүмкүнчүлүгү бөгөттөлгөн.</translation>
 <translation id="6542417422899025860">Көптөгөн жеке маалыматтарды автоматтык түрдө өчүрүү</translation>
-<translation id="6548240707386871455">Жакшыртылган автотолтуруунун ыкчам баскычы</translation>
 <translation id="654871471440386944">Caret серептөөсү күйгүзүлсүнбү?</translation>
 <translation id="6549689063733911810">Акыркы</translation>
 <translation id="6550675742724504774">Параметрлер</translation>
@@ -5178,7 +5174,6 @@
 <translation id="6710172959248731469">Google кызматтарынын параметрлери</translation>
 <translation id="6710394144992407503">Веб беттерде текст терип жатканда орфографиялык каталарды текшерүү</translation>
 <translation id="6711236403841768371"><ph name="END_DATE" /> чейин</translation>
-<translation id="6711569175139833669">Жакшыртылган автотолтуруу үчүн ⌘ баскычын эки жолу басыңыз</translation>
 <translation id="6712943853047024245"><ph name="WEBSITE" /> үчүн ушул колдонуучунун аты менен сырсөздү сактап койгонсуз</translation>
 <translation id="6713668088933662563">Бул тилдерди которуу эч качан сунушталбасын</translation>
 <translation id="6714871567554212732"><ph name="GROUP_NAME" /> тууралуу кеңири маалыматты көрүү</translation>
@@ -6098,7 +6093,6 @@
 <translation id="7706742200777909964">Параметрлерди оңой салыштыруу жана башка нерселерди аткаруу үчүн бир өтмөктө беттерди жанаша коюңуз</translation>
 <translation id="7707108266051544351">Бул сайттын кыймыл сенсорлорун колдонуу мүмкүнчүлүгү бөгөттөлгөн.</translation>
 <translation id="7709152031285164251">Ишке ашкан жок – <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Жакшыртылган автотолтуруу үчүн жеке ыкчам баскычты тазалоо</translation>
 <translation id="7710568461918838723">&amp;Тышкы экранга чыгаруу…</translation>
 <translation id="7712739869553853093">Басып чыгарууну алдын ала көрүү диалогу</translation>
 <translation id="7714464543167945231">Тастыктама</translation>
@@ -6458,7 +6452,6 @@
 <translation id="810185532889603849">Жеке түс</translation>
 <translation id="8103484184517840583">ЖИ режиминен чыгуу</translation>
 <translation id="810362914482827094">Киргизүүчү ачкычтар издөө</translation>
-<translation id="8104388155778519213">Экраныңыздагы нерсени Google Lens менен бөлүшүңүз</translation>
 <translation id="8104412594956510627"><ph name="DEVICE" /> түзмөгүндөгү таржымалды колдонуу үчүн таржымалды шайкештириңиз. Шайкештирүүнү параметрлерден каалаган убакта токтото аласыз. Google таржымалыңызга жараша Издөөнү жана башка кызматтарды ыңгайлаштырышы мүмкүн.</translation>
 <translation id="8104778744208707085">Чара көрүшүңүз керек</translation>
 <translation id="8105273883928376822">Улантуу үчүн кириңиз.</translation>
@@ -6556,7 +6549,6 @@
 <translation id="8214489666383623925">Төмөнкү файлды ачуу…</translation>
 <translation id="8214771296778317256">Өтмөктүн стилин бул жерден тандаңыз</translation>
 <translation id="8217399928341212914">Бир нече файлды автоматтык түрдө жүктөп алуу аракети бөгөттөлө берсин</translation>
-<translation id="8218411859495801458">Жакшыртылган автотолтуруу үчүн жеке ыкчам баскычты түзөтүү</translation>
 <translation id="8221358554841691213">Орточо фокус стили</translation>
 <translation id="8221942262855134126">Сырсөздү тескөө</translation>
 <translation id="8222112516148944758">Өтмөк топтору автоматтык түрдө сакталып, бардык түзмөктөрдө жаңыртылат</translation>
@@ -6829,7 +6821,6 @@
 <translation id="8512476990829870887">Процессти бүтүрүү</translation>
 <translation id="851263357009351303">Сүрөттөрдү көрсөтүү үчүн, <ph name="HOST" /> ар дайыма уруксат берилсин</translation>
 <translation id="8513357934662532537">Сырсөздөрдү <ph name="BRAND" /> кызматына (<ph name="USER_EMAIL" /> аккаунту үчүн ) өткөрүп алуу үчүн CSV файлын тандаңыз.</translation>
-<translation id="8514257511170433540">Формаларды толтурууда демейки баскычтоптун ыкчам баскычын колдонуңуз</translation>
 <translation id="8514746246728959655">Башка коопсуздук ачкычын колдонуп көрүңүз</translation>
 <translation id="8514828975162859845">Торт чыгат</translation>
 <translation id="8514955299594277296">Сайттарга түзмөккө маалыматтарды сактоого уруксат берилбесин (сунушталбайт)</translation>

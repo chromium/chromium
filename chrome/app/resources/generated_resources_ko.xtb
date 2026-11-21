@@ -94,7 +94,6 @@
 <translation id="1090126737595388931">실행 중인 백그라운드 앱 없음</translation>
 <translation id="109038914521989341">이 데이터를 복사하는 이유를 입력하세요.</translation>
 <translation id="1094158807129647987">"<ph name="SELECTION" />"에 관해 물어보기</translation>
-<translation id="1095398697303758108">Ctrl 키를 두 번 눌러 향상된 자동 완성 사용</translation>
 <translation id="1095879482467973146">웹용 Google 비밀번호 관리자</translation>
 <translation id="1097016918605049747">페이지를 번역할 수 없습니다</translation>
 <translation id="1099962274138857708"><ph name="DEVICE_NAME" />에서 이미지가 복사됨</translation>
@@ -582,6 +581,7 @@
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{탭 및 그룹을 삭제하시겠습니까?}=1{탭 및 그룹을 삭제하시겠습니까?}other{탭 및 그룹을 삭제하시겠습니까?}}</translation>
 <translation id="1637765355341780467">프로필을 여는 동안 문제가 발생했습니다. 일부 기능을 사용할 수 없습니다.</translation>
 <translation id="1639239467298939599">로드 중</translation>
+<translation id="1640672724030957280">다운로드 중...</translation>
 <translation id="1641113438599504367">세이프 브라우징</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{형식이 잘못되어 비밀번호 1개를 가져오지 못했습니다.}other{형식이 잘못되어 비밀번호 {NUM_PASSWORDS}개를 가져오지 못했습니다.}}</translation>
 <translation id="1642299742557467312">이 파일로 인해 기기가 손상될 수 있습니다.</translation>
@@ -1811,7 +1811,6 @@
 <translation id="2988328607561082373">재사용된 비밀번호가 없습니다.</translation>
 <translation id="2989523299700148168">최근 방문</translation>
 <translation id="2989786307324390836">DER-인코딩 바이너리, 단일 인증서</translation>
-<translation id="2990500505358145117">향상된 자동 완성 단축키 수정</translation>
 <translation id="2990583317361835189">사이트에서 움직임 감지 센서를 사용하도록 허용하지 않음</translation>
 <translation id="2991182900092497283">이 데이터를 다운로드하는 이유를 입력하세요.</translation>
 <translation id="2992754757708650257">사이트를 나가고 작업을 종료하시겠습니까?</translation>
@@ -2066,7 +2065,6 @@
 <translation id="3244294424315804309">계속 음소거</translation>
 <translation id="3247649647204519958">여기에서 현재 사용 중인 사이트의 확장 프로그램 권한을 보고 관리할 수 있습니다.</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> - 네트워크 오류</translation>
-<translation id="3248957351402065497">향상된 자동 완성에 사용할 맞춤 단축키</translation>
 <translation id="3249558306861350254">Windows 설정에서 <ph name="BEGIN_BOLD" />기본으로 설정<ph name="END_BOLD" />을 클릭합니다.</translation>
 <translation id="3250374026663843838">스킬 관리</translation>
 <translation id="3251759466064201842">&lt;인증서에 속하지 않음&gt;</translation>
@@ -2287,6 +2285,7 @@
 <translation id="3481268647794498892"><ph name="COUNTDOWN_SECONDS" />초 후 <ph name="ALTERNATIVE_BROWSER_NAME" />에서 열립니다.</translation>
 <translation id="348247802372410699">스타일 선택</translation>
 <translation id="3482573964681964096">Windows에서 가져온 인증서 관리</translation>
+<translation id="348268549820508141">음성 인식</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" />에서 다음 파일을 볼 수 있습니다.</translation>
 <translation id="3486380520195228369">페이지가 새로고침될 때까지 숨겨집니다</translation>
 <translation id="3487007233252413104">익명의 함수</translation>
@@ -2657,7 +2656,6 @@
 <translation id="3826086052025847742">ChromeOS Flex 로그</translation>
 <translation id="3827774300009121996">전체화면(&amp;F)</translation>
 <translation id="3828029223314399057">북마크 검색</translation>
-<translation id="3828454092958722155">향상된 자동 완성 단축키 삭제</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - 메모리 사용량 많음 - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">다른 패스키 사용</translation>
 <translation id="3838085852053358637">확장 프로그램을 로드하지 못함</translation>
@@ -3736,7 +3734,6 @@
 <translation id="5060419232449737386">자막 설정</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{폴더에 북마크가 있습니다. 삭제하시겠습니까?}other{폴더에 #개의 북마크가 있습니다. 삭제하시겠습니까?}}</translation>
 <translation id="5061531353537614467">툰드라</translation>
-<translation id="5061781067616989032">나만의 키보드 단축키를 설정합니다</translation>
 <translation id="5062863364865466276">움직임</translation>
 <translation id="5063480226653192405">사용</translation>
 <translation id="5064921774605267982"><ph name="PROFILE_NAME" />님의 프로필을 엽니다. 부모님이 관리하는 프로필입니다.</translation>
@@ -5012,7 +5009,6 @@
 <translation id="6540488083026747005">이 사이트에서 서드 파티 쿠키를 허용했습니다</translation>
 <translation id="6541638731489116978">움직임 감지 센서 액세스가 차단된 사이트입니다.</translation>
 <translation id="6542417422899025860">대부분의 개인 정보 자동 삭제</translation>
-<translation id="6548240707386871455">향상된 자동 완성 단축키</translation>
 <translation id="654871471440386944">캐럿 브라우징을 사용 설정하시겠습니까?</translation>
 <translation id="6549689063733911810">최근 문서함</translation>
 <translation id="6550675742724504774">옵션</translation>
@@ -5176,7 +5172,6 @@
 <translation id="6710172959248731469">Google 서비스 설정</translation>
 <translation id="6710394144992407503">웹페이지에 텍스트 입력 시 맞춤법 오류 확인</translation>
 <translation id="6711236403841768371"><ph name="END_DATE" /> 이전</translation>
-<translation id="6711569175139833669">⌘ 키를 두 번 눌러 향상된 자동 완성 사용</translation>
 <translation id="6712943853047024245">이미 <ph name="WEBSITE" />의 사용자 이름과 비밀번호를 저장했습니다.</translation>
 <translation id="6713668088933662563">다음 언어 번역 제공 안 함</translation>
 <translation id="6714871567554212732"><ph name="GROUP_NAME" />에 대한 세부정보 더보기</translation>
@@ -6097,7 +6092,6 @@
 <translation id="7706742200777909964">동일한 탭에서 페이지를 나란히 배치하여 옵션 등을 쉽게 비교할 수 있습니다.</translation>
 <translation id="7707108266051544351">움직임 감지 센서 사용이 차단된 사이트입니다.</translation>
 <translation id="7709152031285164251">실패 - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">향상된 자동 완성에 사용할 맞춤 단축키 삭제</translation>
 <translation id="7710568461918838723">전송(&amp;C)...</translation>
 <translation id="7712739869553853093">인쇄 미리보기 대화상자</translation>
 <translation id="7714464543167945231">인증서</translation>
@@ -6457,7 +6451,6 @@
 <translation id="810185532889603849">맞춤 색상</translation>
 <translation id="8103484184517840583">AI 모드 종료</translation>
 <translation id="810362914482827094">패스키 검색</translation>
-<translation id="8104388155778519213">Google 렌즈로 화면 내용 공유하기</translation>
 <translation id="8104412594956510627"><ph name="DEVICE" />에서 방문 기록을 가져오려면 방문 기록을 동기화하세요. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다</translation>
 <translation id="8104778744208707085">확인이 필요합니다</translation>
 <translation id="8105273883928376822">계속하려면 로그인하세요</translation>
@@ -6555,7 +6548,6 @@
 <translation id="8214489666383623925">파일 열기...</translation>
 <translation id="8214771296778317256">여기에서 원하는 탭 스타일을 선택하세요.</translation>
 <translation id="8217399928341212914">여러 파일을 다운로드하지 못하도록 계속 차단</translation>
-<translation id="8218411859495801458">향상된 자동 완성에 사용할 맞춤 단축키 수정</translation>
 <translation id="8221358554841691213">중간 포커스 스타일</translation>
 <translation id="8221942262855134126">비밀번호 관리</translation>
 <translation id="8222112516148944758">탭 그룹이 모든 기기에서 자동으로 저장되고 업데이트됩니다.</translation>
@@ -6828,7 +6820,6 @@
 <translation id="8512476990829870887">프로세스 종료</translation>
 <translation id="851263357009351303"><ph name="HOST" />에서 이미지 표시 항상 허용</translation>
 <translation id="8513357934662532537"><ph name="USER_EMAIL" />님을 위해 <ph name="BRAND" />로 비밀번호를 가져오려면 CSV 파일을 선택하세요.</translation>
-<translation id="8514257511170433540">양식을 작성할 때 기본 키보드 단축키를 사용합니다</translation>
 <translation id="8514746246728959655">다른 보안 키를 사용해 보세요</translation>
 <translation id="8514828975162859845">케이크 팝</translation>
 <translation id="8514955299594277296">사이트에서 기기에 데이터를 저장하도록 허용하지 않음(권장하지 않음)</translation>

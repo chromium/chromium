@@ -581,7 +581,6 @@
 <translation id="7213407614656404070">Хабарларда, құжаттарда және басқа қолданбаларда сілтемелерді басып, Chromium браузерін кез келген уақытта пайдаланыңыз.</translation>
 <translation id="7216228761061470870">Компьютерде сурет іздеу функциясын пайдалансаңыз, бет атауы, URL мекенжайы және контенті, соның ішінде PDF файлдары серверге жіберіледі.</translation>
 <translation id="7223968959479464213">Тапсырмалар реттегіші – Chromium</translation>
-<translation id="7226331818892775989">Chromium-нен тыс контент, мысалы, басқа қолданбалар немесе файлдар туралы сұраңыз.</translation>
 <translation id="7227958669698166857"><ph name="EXISTING_USER" /> әлдеқашан кірді. Браузерді пайдалану тарихын бөлек сақтау үшін Chromium-ге <ph name="USER_EMAIL_ADDRESS" /> ретінде жеке профиліңізбен кіріңіз. Сақталған ақпарат пен басқа деректер барлық құрылғыңызда қолжетімді болады.</translation>
 <translation id="7252276985725323153">Браузерден шолуды жылдам бастау: Windows жұмысын бастағанда, Chromium іске қосылады.</translation>
 <translation id="7274695763216404502">Бекітілді! "Сурет іздеу" функциясын құралдар тақтасынан қайтадан пайдаланыңыз.</translation>
@@ -698,7 +697,6 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="8310603974518734211">Chromium-ге <ph name="USER_NAME" /> ретінде кіруге арналған QR коды</translation>
 <translation id="8313851650939857356">Іске қосу қатесі: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Ұйымыңыз Chromium-ді <ph name="TIMEOUT_DURATION" /> бойы пайдаланбаған кезде жабады.</translation>
-<translation id="8321888067342493336">Сурет түрінде сақтау</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> бұрын Chromium браузерін пайдаланған</translation>
 <translation id="8351551329754447960">Chromium-дегі дағдыларды қосу</translation>
 <translation id="8359544530202147897">Chromium деректерін Google аккаунтында (<ph name="ACCOUNT_EMAIL" />) әрі қарай пайдалану үшін Chromium-ді жаңартыңыз.</translation>

@@ -94,7 +94,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1090126737595388931">No Background Apps Running</translation>
 <translation id="109038914521989341">Please enter a reason for copying this data:</translation>
 <translation id="1094158807129647987">Ask about “<ph name="SELECTION" />”</translation>
-<translation id="1095398697303758108">Press Ctrl twice for enhanced autofill</translation>
 <translation id="1095879482467973146">Google Password Manager on the web</translation>
 <translation id="1097016918605049747">This page couldn't be translated</translation>
 <translation id="1099962274138857708">Image copied from <ph name="DEVICE_NAME" /></translation>
@@ -582,6 +581,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Remove tab and delete group?}=1{Remove tab and delete group?}other{Remove tabs and delete groups?}}</translation>
 <translation id="1637765355341780467">Something went wrong when opening your profile. Some features may be unavailable.</translation>
 <translation id="1639239467298939599">Loading</translation>
+<translation id="1640672724030957280">Downloading ...</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1641884605525735390">{NUM_PASSWORDS,plural, =1{1 other password wasn't imported because it's formatted incorrectly}other{{NUM_PASSWORDS} other passwords weren't imported because they're formatted incorrectly}}</translation>
 <translation id="1642299742557467312">This file could harm your device</translation>
@@ -1811,7 +1811,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="2988328607561082373">You’re not reusing any passwords</translation>
 <translation id="2989523299700148168">Recently Visited</translation>
 <translation id="2989786307324390836">DER-encoded binary, single certificate</translation>
-<translation id="2990500505358145117">Edit enhanced autofill shortcut</translation>
 <translation id="2990583317361835189">Don't allow sites to use motion sensors</translation>
 <translation id="2991182900092497283">Please enter a reason for pasting this data:</translation>
 <translation id="2992754757708650257">Leave site and end task?</translation>
@@ -2066,7 +2065,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="3244294424315804309">Continue muting sound</translation>
 <translation id="3247649647204519958">From here, you can see and manage extension permissions for the site you're on</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Network error</translation>
-<translation id="3248957351402065497">Custom shortcut for enhanced autofill</translation>
 <translation id="3249558306861350254">Click <ph name="BEGIN_BOLD" />Set default<ph name="END_BOLD" /> in your Windows settings.</translation>
 <translation id="3250374026663843838">Manage your skill</translation>
 <translation id="3251759466064201842">&lt;Not part of certificate&gt;</translation>
@@ -2287,6 +2285,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="3481268647794498892">Opening in <ph name="ALTERNATIVE_BROWSER_NAME" /> in <ph name="COUNTDOWN_SECONDS" /> seconds</translation>
 <translation id="348247802372410699">Choose a style</translation>
 <translation id="3482573964681964096">Manage imported certificates from Windows</translation>
+<translation id="348268549820508141">Speech recognition</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> can view the following files</translation>
 <translation id="3486380520195228369">Hidden until the page refreshes</translation>
 <translation id="3487007233252413104">anonymous function</translation>
@@ -2657,7 +2656,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="3826086052025847742">ChromeOS Flex Logs</translation>
 <translation id="3827774300009121996">&amp;Full Screen</translation>
 <translation id="3828029223314399057">Search bookmarks</translation>
-<translation id="3828454092958722155">Clear enhanced autofill shortcut</translation>
 <translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - High memory usage - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3830470485672984938">Use a different passkey</translation>
 <translation id="3838085852053358637">Failed to load extension</translation>
@@ -3738,7 +3736,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="5060419232449737386">Caption settings</translation>
 <translation id="5061347216700970798">{NUM_BOOKMARKS,plural, =1{This folder contains a bookmark. Are you sure that you want to delete it?}other{This folder contains # bookmarks. Are you sure that you want to delete it?}}</translation>
 <translation id="5061531353537614467">Tundra</translation>
-<translation id="5061781067616989032">Set up your own keyboard shortcut</translation>
 <translation id="5062863364865466276">Movement</translation>
 <translation id="5063480226653192405">Usage</translation>
 <translation id="5064921774605267982">Open <ph name="PROFILE_NAME" /> profile. This profile is managed by your parent.</translation>
@@ -5014,7 +5011,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="6540488083026747005">You allowed third-party cookies on this site</translation>
 <translation id="6541638731489116978">This site has been blocked from accessing your motion sensors.</translation>
 <translation id="6542417422899025860">Automatically remove most personal information</translation>
-<translation id="6548240707386871455">Enhanced autofill shortcut</translation>
 <translation id="654871471440386944">Turn on caret browsing?</translation>
 <translation id="6549689063733911810">Recent</translation>
 <translation id="6550675742724504774">Options</translation>
@@ -5178,7 +5174,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6710172959248731469">Google services settings</translation>
 <translation id="6710394144992407503">Check for spelling errors when you type text on web pages</translation>
 <translation id="6711236403841768371">Before <ph name="END_DATE" /></translation>
-<translation id="6711569175139833669">Press ⌘ twice for enhanced autofill</translation>
 <translation id="6712943853047024245">You already saved a password with this username for <ph name="WEBSITE" /></translation>
 <translation id="6713668088933662563">Never offer to translate these languages</translation>
 <translation id="6714871567554212732">View more details about <ph name="GROUP_NAME" /></translation>
@@ -6099,7 +6094,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="7706742200777909964">Put pages side by side in the same tab so that you can easily compare options and more</translation>
 <translation id="7707108266051544351">This site has been blocked from using motion sensors.</translation>
 <translation id="7709152031285164251">Failed - <ph name="INTERRUPT_REASON" /></translation>
-<translation id="7709839510451455295">Clear custom shortcut for enhanced autofill</translation>
 <translation id="7710568461918838723">&amp;Cast...</translation>
 <translation id="7712739869553853093">Print preview dialogue</translation>
 <translation id="7714464543167945231">Certificate</translation>
@@ -6459,7 +6453,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="810185532889603849">Custom colour</translation>
 <translation id="8103484184517840583">Exit AI Mode</translation>
 <translation id="810362914482827094">Search passkeys</translation>
-<translation id="8104388155778519213">Share what’s on your screen with Google Lens</translation>
 <translation id="8104412594956510627">To get your history from <ph name="DEVICE" />, sync history. You can stop syncing at any time in Settings. Google may personalise Search and other services based on your history.</translation>
 <translation id="8104778744208707085">Needs your attention</translation>
 <translation id="8105273883928376822">Please sign in to continue.</translation>
@@ -6557,7 +6550,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8214489666383623925">Open File...</translation>
 <translation id="8214771296778317256">Choose your preferred tab styling here</translation>
 <translation id="8217399928341212914">Continue blocking automatic downloads of multiple files</translation>
-<translation id="8218411859495801458">Edit custom shortcut for enhanced autofill</translation>
 <translation id="8221358554841691213">Medium focus style</translation>
 <translation id="8221942262855134126">Manage password</translation>
 <translation id="8222112516148944758">Your tab groups automatically save and update across all your devices</translation>
@@ -6830,7 +6822,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8512476990829870887">End Process</translation>
 <translation id="851263357009351303">Always allow <ph name="HOST" /> to show images</translation>
 <translation id="8513357934662532537">To import passwords to <ph name="BRAND" /> for <ph name="USER_EMAIL" />, select a CSV file.</translation>
-<translation id="8514257511170433540">Use the default keyboard shortcut when filling in forms</translation>
 <translation id="8514746246728959655">Try a different security key</translation>
 <translation id="8514828975162859845">Cake pops</translation>
 <translation id="8514955299594277296">Don't allow sites to save data on your device (not recommended)</translation>
