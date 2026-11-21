@@ -54,16 +54,23 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
     DCHECK(HasPseudoElements());
   }
   void ClearColumnPseudoElements(wtf_size_t to_keep) {
-    if (!column_pseudo_elements_) {
+    if (!column_pseudo_elements_ ||
+        to_keep >= column_pseudo_elements_->size()) {
       return;
     }
+    // Remove the elements from the vector before disposing them, since
+    // disposing can re-enter and modify the vector.
+    HeapVector<Member<ColumnPseudoElement>> to_dispose;
     for (wtf_size_t i = to_keep; i < column_pseudo_elements_->size(); ++i) {
-      column_pseudo_elements_->at(i)->Dispose();
+      to_dispose.push_back(column_pseudo_elements_->at(i));
     }
     if (to_keep) {
       column_pseudo_elements_->Shrink(to_keep);
     } else {
       column_pseudo_elements_->clear();
+    }
+    for (ColumnPseudoElement* column_pseudo_element : to_dispose) {
+      column_pseudo_element->Dispose();
     }
   }
 

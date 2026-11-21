@@ -260,10 +260,25 @@ void Event::preventDefault() {
 }
 
 EventTarget* Event::target() const {
-  DCHECK(!target_ || !target_->ToNode() ||
-         !target_->ToNode()->IsPseudoElement())
-      << "Event target should not be a pseudo-element, but got "
-      << target_->ToNode()->DebugName();
+  // Pseudo-elements must never be exposed to script, but `target_` can be one
+  // while script can observe this event. For example, while default event
+  // handlers run, `target_` is a pseudo-element with activation behavior (see
+  // EventDispatcher::DispatchEventPostProcess()), and script run from there
+  // (e.g. a DOMActivate listener) can read the target of an event it kept.
+  // Also, the targets of coalesced and predicted pointer events are set to the
+  // raw dispatch node. Expose the originating element instead, or null if the
+  // pseudo-element is no longer connected (e.g. it has been disposed).
+  Node* node = target_ ? target_->ToNode() : nullptr;
+  if (auto* pseudo_element = DynamicTo<PseudoElement>(node)) {
+    if (!pseudo_element->isConnected()) {
+      return nullptr;
+    }
+    Element* originating_element =
+        &pseudo_element->UltimateOriginatingElement();
+    DCHECK(!originating_element->IsPseudoElement());
+    return originating_element;
+  }
+  DCHECK(!node || !node->IsPseudoElement());
   return target_.Get();
 }
 

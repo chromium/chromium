@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 
+#include "third_party/blink/renderer/core/dom/node_rare_data.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
@@ -127,6 +128,17 @@ void ColumnPseudoElement::AttachLayoutTree(AttachContext& context) {
 void ColumnPseudoElement::DetachLayoutTree(bool performing_reattach) {
   DetachPseudoElement(kPseudoIdScrollMarker, performing_reattach);
   ContainerNode::DetachLayoutTree(performing_reattach);
+}
+
+void ColumnPseudoElement::Dispose() {
+  // Other pseudo-elements dispose their child pseudo-elements via
+  // Element::DetachLayoutTree(), which DetachLayoutTree() above bypasses. Do
+  // it here, so that the ::scroll-marker is never left connected under a
+  // disposed ::column.
+  if (NodeRareData* data = RareData()) {
+    data->ClearPseudoElements();
+  }
+  PseudoElement::Dispose();
 }
 
 bool ColumnPseudoElement::LayoutObjectIsNeeded(const DisplayStyle&) const {
