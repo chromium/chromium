@@ -175,6 +175,8 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
   // Whether we've set up the device factory.
   bool initialized_ = false;
 
+  bool exclude_dispatch_from_safety_checks_ = false;
+
   // Thread for device I/O.
   EventThreadEvdev thread_;
 

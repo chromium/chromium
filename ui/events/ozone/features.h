@@ -42,6 +42,11 @@ COMPONENT_EXPORT(EVENTS_OZONE) BASE_DECLARE_FEATURE(kLibinputHandleTouchpad);
 COMPONENT_EXPORT(EVENTS_OZONE)
 BASE_DECLARE_FEATURE(kEnableFakeMouseHeuristic);
 
+// When enabled, excludes input event dispatch in `EventFactoryEvdev` from
+// PartitionAlloc safety checks.
+COMPONENT_EXPORT(EVENTS_OZONE)
+BASE_DECLARE_FEATURE(kExcludeEvdevDispatchFromSafetyChecks);
+
 COMPONENT_EXPORT(EVENTS_OZONE)
 extern const char kOzoneNNPalmSwitchName[];
 

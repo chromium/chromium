@@ -4,10 +4,12 @@
 
 #include "ui/events/ozone/evdev/event_factory_evdev.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/safety_checks.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
@@ -236,6 +238,8 @@ EventFactoryEvdev::EventFactoryEvdev(CursorDelegateEvdev* cursor,
       input_controller_(&keyboard_,
                         &mouse_button_map_,
                         &pointing_stick_button_map_),
+      exclude_dispatch_from_safety_checks_(
+          base::FeatureList::IsEnabled(kExcludeEvdevDispatchFromSafetyChecks)),
       touch_id_generator_(0) {
   CHECK(device_manager_, base::NotFatalUntil::M163);
 }
@@ -245,6 +249,9 @@ EventFactoryEvdev::~EventFactoryEvdev() = default;
 void EventFactoryEvdev::Init() {
   CHECK(!initialized_, base::NotFatalUntil::M163);
   CHECK(user_input_task_runner_, base::NotFatalUntil::M163);
+
+  exclude_dispatch_from_safety_checks_ =
+      base::FeatureList::IsEnabled(kExcludeEvdevDispatchFromSafetyChecks);
 
   StartThread();
 
@@ -271,6 +278,10 @@ EventFactoryEvdev::CreateSystemInputInjector() {
 void EventFactoryEvdev::DispatchKeyEvent(const KeyEventParams& params) {
   TRACE_EVENT1("evdev", "EventFactoryEvdev::DispatchKeyEvent", "device",
                params.device_id);
+  std::optional<base::ScopedSafetyChecksExclusion> excluded;
+  if (exclude_dispatch_from_safety_checks_) {
+    excluded.emplace();
+  }
   keyboard_.OnKeyChange(params.code, params.scan_code, params.down,
                         params.suppress_auto_repeat, params.timestamp,
                         params.device_id, params.flags);
@@ -280,6 +291,10 @@ void EventFactoryEvdev::DispatchMouseMoveEvent(
     const MouseMoveEventParams& params) {
   TRACE_EVENT1("evdev", "EventFactoryEvdev::DispatchMouseMoveEvent", "device",
                params.device_id);
+  std::optional<base::ScopedSafetyChecksExclusion> excluded;
+  if (exclude_dispatch_from_safety_checks_) {
+    excluded.emplace();
+  }
 
   gfx::PointF location = params.location;
   PointerDetails details = params.pointer_details;
@@ -298,6 +313,10 @@ void EventFactoryEvdev::DispatchMouseButtonEvent(
     const MouseButtonEventParams& params) {
   TRACE_EVENT1("evdev", "EventFactoryEvdev::DispatchMouseButtonEvent", "device",
                params.device_id);
+  std::optional<base::ScopedSafetyChecksExclusion> excluded;
+  if (exclude_dispatch_from_safety_checks_) {
+    excluded.emplace();
+  }
 
   gfx::PointF location = params.location;
   PointerDetails details = params.pointer_details;
@@ -364,6 +383,10 @@ void EventFactoryEvdev::DispatchMouseWheelEvent(
     const MouseWheelEventParams& params) {
   TRACE_EVENT1("evdev", "EventFactoryEvdev::DispatchMouseWheelEvent", "device",
                params.device_id);
+  std::optional<base::ScopedSafetyChecksExclusion> excluded;
+  if (exclude_dispatch_from_safety_checks_) {
+    excluded.emplace();
+  }
   MouseWheelEvent event(params.delta, gfx::PointF(), gfx::PointF(),
                         params.timestamp, modifiers_.GetModifierFlags(),
                         0 /* changed_button_flags */, params.tick_120ths);
@@ -376,6 +399,10 @@ void EventFactoryEvdev::DispatchMouseWheelEvent(
 void EventFactoryEvdev::DispatchPinchEvent(const PinchEventParams& params) {
   TRACE_EVENT1("evdev", "EventFactoryEvdev::DispatchPinchEvent", "device",
                params.device_id);
+  std::optional<base::ScopedSafetyChecksExclusion> excluded;
+  if (exclude_dispatch_from_safety_checks_) {
+    excluded.emplace();
+  }
   GestureEventDetails details(params.type);
   details.set_device_type(GestureDeviceType::DEVICE_TOUCHPAD);
   if (params.type == EventType::kGesturePinchUpdate) {
@@ -390,6 +417,10 @@ void EventFactoryEvdev::DispatchPinchEvent(const PinchEventParams& params) {
 void EventFactoryEvdev::DispatchScrollEvent(const ScrollEventParams& params) {
   TRACE_EVENT1("evdev", "EventFactoryEvdev::DispatchScrollEvent", "device",
                params.device_id);
+  std::optional<base::ScopedSafetyChecksExclusion> excluded;
+  if (exclude_dispatch_from_safety_checks_) {
+    excluded.emplace();
+  }
   ScrollEvent event(params.type, gfx::Point(), params.timestamp,
                     modifiers_.GetModifierFlags(), params.delta.x(),
                     params.delta.y(), params.ordinal_delta.x(),
@@ -403,6 +434,10 @@ void EventFactoryEvdev::DispatchScrollEvent(const ScrollEventParams& params) {
 void EventFactoryEvdev::DispatchTouchEvent(const TouchEventParams& params) {
   TRACE_EVENT1("evdev", "EventFactoryEvdev::DispatchTouchEvent", "device",
                params.device_id);
+  std::optional<base::ScopedSafetyChecksExclusion> excluded;
+  if (exclude_dispatch_from_safety_checks_) {
+    excluded.emplace();
+  }
 
   gfx::PointF location = GetTransformedEventLocation(params);
   PointerDetails details = GetTransformedEventPointerDetails(params);
@@ -425,6 +460,10 @@ void EventFactoryEvdev::DispatchTouchEvent(const TouchEventParams& params) {
 }
 
 void EventFactoryEvdev::DispatchGamepadEvent(const GamepadEvent& event) {
+  std::optional<base::ScopedSafetyChecksExclusion> excluded;
+  if (exclude_dispatch_from_safety_checks_) {
+    excluded.emplace();
+  }
   gamepad_provider_->DispatchGamepadEvent(event);
 }
 

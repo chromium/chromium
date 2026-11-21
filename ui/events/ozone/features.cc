@@ -20,6 +20,9 @@ BASE_FEATURE(kLibinputHandleTouchpad, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableFakeMouseHeuristic, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kExcludeEvdevDispatchFromSafetyChecks,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 extern const base::FeatureParam<std::string> kNeuralPalmRadiusPolynomial{
     &kEnableNeuralPalmDetectionFilter, "neural_palm_radius_polynomial", ""};
 
