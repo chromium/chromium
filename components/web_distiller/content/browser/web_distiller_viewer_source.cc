@@ -243,7 +243,7 @@ void WebDistillerViewerSource::StartDataRequest(
   auto remainder = base::RemovePrefix(path, kViewerSaveFontScalingPath);
   if (remainder) {
     double scale = 1.0;
-    if (base::StringToDouble(*remainder, &scale)) {
+    if (base::StringToDouble(*remainder, &scale) && IsValidFontScale(scale)) {
       web_distiller_service_->GetDistilledPagePrefs()->SetUserPrefFontScaling(
           scale);
     }

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_WEB_DISTILLER_CORE_DISTILLED_PAGE_PREFS_H_
 #define COMPONENTS_WEB_DISTILLER_CORE_DISTILLED_PAGE_PREFS_H_
 
+#include <cmath>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -16,8 +18,14 @@ class PrefService;
 
 namespace web_distiller {
 
-inline constexpr float kMinFontScale = 0.4f;
+inline constexpr float kMinFontScale = 0.5f;
 inline constexpr float kMaxFontScale = 3.0f;
+
+// Returns true iff `scale` is finite and within [kMinFontScale, kMaxFontScale].
+inline bool IsValidFontScale(double scale) {
+  return std::isfinite(scale) && scale >= kMinFontScale &&
+         scale <= kMaxFontScale;
+}
 
 // Custom values for Android reader mode font scaling boundaries.
 inline constexpr float kMinFontScaleAndroid = 1.0f;

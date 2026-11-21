@@ -4,6 +4,8 @@
 
 #include "components/web_distiller/core/distilled_page_prefs.h"
 
+#include <algorithm>
+
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
@@ -151,7 +153,7 @@ void DistilledPagePrefs::SetDefaultFontScaling(float scaling) {
 }
 
 float DistilledPagePrefs::GetFontScaling() {
-  float scaling;
+  double scaling;
   if (pref_service_->FindPreference(prefs::kFontScale)->HasUserSetting()) {
     scaling = pref_service_->GetDouble(prefs::kFontScale);
   } else {
@@ -162,13 +164,13 @@ float DistilledPagePrefs::GetFontScaling() {
     scaling = kDefaultFontScale;
 #endif
   }
-  if (scaling < kMinFontScale || scaling > kMaxFontScale) {
+  if (!IsValidFontScale(scaling)) {
     // Persisted data was incorrect, trying to clean it up by storing the
     // default.
     SetUserPrefFontScaling(kDefaultFontScale);
     return kDefaultFontScale;
   }
-  return scaling;
+  return static_cast<float>(scaling);
 }
 
 void DistilledPagePrefs::SetLinksEnabled(bool enabled) {

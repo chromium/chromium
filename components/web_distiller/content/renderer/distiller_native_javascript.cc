@@ -44,7 +44,7 @@ void DistillerNativeJavaScript::StoreIntFontFamily(int int_font_family) {
 }
 
 void DistillerNativeJavaScript::StoreFloatFontScaling(float float_font_scale) {
-  if (float_font_scale < kMinFontScale || float_font_scale > kMaxFontScale) {
+  if (!IsValidFontScale(float_font_scale)) {
     return;
   }
   distiller_js_service_->HandleStoreFontScalingPref(float_font_scale);

@@ -7,7 +7,9 @@ module web_distiller.mojom;
 import "components/web_distiller/core/mojom/distilled_page_prefs.mojom";
 
 // This service is implemented by the browser process and is used by the
-// renderer when a distiller JavaScript function is called.
+// renderer when a distiller JavaScript function is called. It may only be
+// bound by a primary main frame committed to a `chrome-distiller://` URL and
+// origin.
 interface DistillerJavaScriptService {
   // Open the Android view containing settings for Reader Mode; the
   // "distiller.openSettings" function.
@@ -17,6 +19,8 @@ interface DistillerJavaScriptService {
   HandleStoreThemePref(Theme theme);
   // Store selected font family as a synced preference.
   HandleStoreFontFamilyPref(FontFamily font_family);
-  // Store selected font size scaling factor as a preference.
+  // Store selected font size scaling factor as a preference. `font_scale` must
+  // be finite and within [kMinFontScale, kMaxFontScale] (0.5 to 3.0);
+  // out-of-range or non-finite values are rejected with ReportBadMessage.
   HandleStoreFontScalingPref(float font_scale);
 };

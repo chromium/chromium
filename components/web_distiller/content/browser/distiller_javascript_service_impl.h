@@ -5,10 +5,16 @@
 #ifndef COMPONENTS_WEB_DISTILLER_CONTENT_BROWSER_DISTILLER_JAVASCRIPT_SERVICE_IMPL_H_
 #define COMPONENTS_WEB_DISTILLER_CONTENT_BROWSER_DISTILLER_JAVASCRIPT_SERVICE_IMPL_H_
 
+#include "base/memory/self_deleting.h"
 #include "base/memory/weak_ptr.h"
 #include "components/web_distiller/content/common/mojom/distiller_javascript_service.mojom.h"
 #include "components/web_distiller/core/mojom/distilled_page_prefs.mojom.h"
+#include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+
+namespace content {
+class RenderFrameHost;
+}  // namespace content
 
 namespace web_distiller {
 
@@ -16,11 +22,13 @@ class WebDistillerService;
 
 // This is the receiving end of "distiller" JavaScript object calls.
 class DistillerJavaScriptServiceImpl
-    : public mojom::DistillerJavaScriptService {
+    : public content::DocumentService<mojom::DistillerJavaScriptService> {
  public:
-  explicit DistillerJavaScriptServiceImpl(
-      base::WeakPtr<WebDistillerService> distiller_service_weak_ptr);
-  ~DistillerJavaScriptServiceImpl() override;
+  DistillerJavaScriptServiceImpl(
+      content::RenderFrameHost& render_frame_host,
+      base::WeakPtr<WebDistillerService> distiller_service_weak_ptr,
+      mojo::PendingReceiver<mojom::DistillerJavaScriptService> receiver,
+      base::SelfDeletingPassKey key);
 
   // Mojo mojom::DistillerJavaScriptService implementation.
 
@@ -37,11 +45,15 @@ class DistillerJavaScriptServiceImpl
       const DistillerJavaScriptServiceImpl&) = delete;
 
  private:
+  ~DistillerJavaScriptServiceImpl() override;
+
   base::WeakPtr<WebDistillerService> distiller_service_weak_ptr_;
 };
 
-// static
+// Creates a DistillerJavaScriptServiceImpl bound to the lifetime of the
+// current document in `render_frame_host`.
 void CreateDistillerJavaScriptService(
+    content::RenderFrameHost& render_frame_host,
     base::WeakPtr<WebDistillerService> distiller_service_weak_ptr,
     mojo::PendingReceiver<mojom::DistillerJavaScriptService> receiver);
 

@@ -58,6 +58,7 @@
 #include "components/web_distiller/content/browser/distiller_javascript_service_impl.h"
 #include "components/web_distiller/content/common/mojom/distillability_service.mojom.h"
 #include "components/web_distiller/content/common/mojom/distiller_javascript_service.mojom.h"
+#include "components/web_distiller/core/url_constants.h"
 #include "components/web_distiller/core/web_distiller_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
@@ -66,6 +67,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "pdf/buildflags.h"
@@ -83,6 +85,7 @@
 #include "third_party/blink/public/public_buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_mode.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
 
@@ -253,6 +256,28 @@ void BindDistillerJavaScriptService(
     content::RenderFrameHost* const frame_host,
     mojo::PendingReceiver<web_distiller::mojom::DistillerJavaScriptService>
         receiver) {
+  // Require both a `chrome-distiller://` origin and a `chrome-distiller://`
+  // URL, since neither is sufficient alone:
+  // - A sandboxed `chrome-distiller://` document (or an error page for such a
+  //   URL) has a `chrome-distiller://` committed URL but an opaque origin.
+  // - An `about:blank` document opened by a distilled page inherits the origin
+  //   but does not commit a `chrome-distiller://` URL.
+  if (frame_host->GetParentOrOuterDocument() ||
+      frame_host->GetLastCommittedOrigin().scheme() !=
+          web_distiller::kWebDistillerScheme ||
+      !frame_host->GetLastCommittedURL().SchemeIs(
+          web_distiller::kWebDistillerScheme)) {
+    mojo::ReportBadMessage(
+        "DistillerJavaScriptService requested from an invalid frame");
+    return;
+  }
+  // Non-primary main frames (e.g., prerendering or BackForwardCache) still have
+  // `RenderFrame::IsMainFrame() == true` in the renderer, so an uncompromised
+  // renderer may request this interface; drop it instead of reporting a bad
+  // message.
+  if (!frame_host->IsInPrimaryMainFrame()) {
+    return;
+  }
   auto* web_contents = content::WebContents::FromRenderFrameHost(frame_host);
   if (!web_contents) {
     return;
@@ -261,13 +286,16 @@ void BindDistillerJavaScriptService(
   web_distiller::WebDistillerService* web_distiller_service =
       reader_mode::ReaderModeServiceFactory::GetForBrowserContext(
           web_contents->GetBrowserContext());
+  if (!web_distiller_service) {
+    return;
+  }
 #if BUILDFLAG(IS_ANDROID)
   static_cast<reader_mode::android::ReaderModeUIHandleAndroid*>(
       web_distiller_service->GetDistillerUIHandle())
       ->set_render_frame_host(frame_host);
 #endif
-  CreateDistillerJavaScriptService(web_distiller_service->GetWeakPtr(),
-                                   std::move(receiver));
+  CreateDistillerJavaScriptService(
+      *frame_host, web_distiller_service->GetWeakPtr(), std::move(receiver));
 }
 
 void BindNoStatePrefetchCanceler(

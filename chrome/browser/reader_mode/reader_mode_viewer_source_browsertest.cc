@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/run_until.h"
+#include "chrome/browser/chrome_browser_interface_binders.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reader_mode/reader_mode_service_factory.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -29,6 +30,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/web_distiller/content/browser/distiller_javascript_utils.h"
 #include "components/web_distiller/content/browser/web_distiller_viewer_source.h"
+#include "components/web_distiller/content/common/mojom/distiller_javascript_service.mojom.h"
 #include "components/web_distiller/core/article_entry.h"
 #include "components/web_distiller/core/distilled_page_prefs.h"
 #include "components/web_distiller/core/distiller.h"
@@ -39,13 +41,23 @@
 #include "components/web_distiller/core/url_utils.h"
 #include "components/web_distiller/core/web_distiller_service.h"
 #include "components/web_distiller/core/web_distiller_switches.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/isolated_world_ids.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/render_frame_host_test_support.h"
+#include "content/public/test/test_utils.h"
+#include "mojo/public/cpp/bindings/binder_map.h"
+#include "mojo/public/cpp/bindings/generic_pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/url_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -53,6 +65,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace reader_mode {
 
@@ -64,6 +78,7 @@ using web_distiller::DistilledArticleProto;
 using web_distiller::DistilledPagePrefs;
 using web_distiller::DistilledPageProto;
 using web_distiller::DistillerJavaScriptWorldIdIsSet;
+using web_distiller::kMinFontScale;
 using web_distiller::kUrlKey;
 using web_distiller::kViewerCssPath;
 using web_distiller::kWebDistillerScheme;
@@ -649,6 +664,193 @@ IN_PROC_BROWSER_TEST_F(ReaderModeViewerSourceBrowserTest, MAYBE_UISetsPrefs) {
          3.0f != distilled_page_prefs->GetFontScaling()) {
     observer.WaitForChange(distilled_page_prefs);
   }
+}
+
+IN_PROC_BROWSER_TEST_F(ReaderModeViewerSourceBrowserTest,
+                       DistillerJavaScriptServiceBindingValidation) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  content::WebContents* contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  content::RenderFrameHost* main_frame = contents->GetPrimaryMainFrame();
+
+  DistilledPagePrefs* distilled_page_prefs =
+      ReaderModeServiceFactory::GetForBrowserContext(browser()->GetProfile())
+          ->GetDistilledPagePrefs();
+
+  auto try_bind = [](content::RenderFrameHost* frame_host,
+                     mojo::GenericPendingReceiver& receiver) {
+    mojo::BinderMapWithContext<content::RenderFrameHost*> map;
+    chrome::internal::PopulateChromeFrameBinders(&map, frame_host);
+    return map.TryBind(frame_host, &receiver);
+  };
+
+  auto expect_rejected = [&](content::RenderFrameHost* frame_host) {
+    mojo::FakeMessageDispatchContext fake_dispatch_context;
+    mojo::test::BadMessageObserver bad_message_observer;
+    mojo::Remote<mojom::DistillerJavaScriptService> remote;
+    mojo::GenericPendingReceiver receiver(remote.BindNewPipeAndPassReceiver());
+    ASSERT_TRUE(try_bind(frame_host, receiver));
+    EXPECT_EQ("DistillerJavaScriptService requested from an invalid frame",
+              bad_message_observer.WaitForBadMessage());
+
+    remote->HandleStoreThemePref(mojom::Theme::kSepia);
+    remote->HandleStoreFontFamilyPref(mojom::FontFamily::kMonospace);
+    remote->HandleStoreFontScalingPref(2.5f);
+    remote.FlushForTesting();
+
+    EXPECT_FALSE(remote.is_connected());
+    EXPECT_EQ(mojom::Theme::kLight, distilled_page_prefs->GetTheme());
+    EXPECT_EQ(mojom::FontFamily::kSansSerif,
+              distilled_page_prefs->GetFontFamily());
+    EXPECT_FLOAT_EQ(1.0f, distilled_page_prefs->GetFontScaling());
+  };
+
+  // 1) Binding from a non-distiller main frame is rejected.
+  expect_rejected(main_frame);
+
+  const GURL url("chrome-distiller://bad");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(content::WaitForLoadStop(contents));
+  main_frame = contents->GetPrimaryMainFrame();
+
+  // 2) An `about:blank` subframe embedded inside a `chrome-distiller://` page
+  // is rejected.
+  ASSERT_TRUE(content::ExecJs(main_frame,
+                              "const f = document.createElement('iframe');"
+                              "f.src = 'about:blank';"
+                              "document.body.appendChild(f);"));
+  EXPECT_TRUE(content::WaitForLoadStop(contents));
+  content::RenderFrameHost* subframe =
+      content::ChildFrameAt(main_frame, /*index=*/0);
+  ASSERT_NE(nullptr, subframe);
+  expect_rejected(subframe);
+
+  // 3) A popup `window.open('about:blank')` main frame inheriting a
+  // `chrome-distiller://` origin without committing a `chrome-distiller://` URL
+  // is rejected.
+  content::WebContentsAddedObserver popup_observer;
+  ASSERT_TRUE(content::ExecJs(main_frame, "window.open('about:blank');"));
+  content::WebContents* popup_contents = popup_observer.GetWebContents();
+  ASSERT_NE(nullptr, popup_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(popup_contents));
+  content::RenderFrameHost* popup_frame = popup_contents->GetPrimaryMainFrame();
+  EXPECT_EQ(kWebDistillerScheme,
+            popup_frame->GetLastCommittedOrigin().scheme());
+  EXPECT_FALSE(
+      popup_frame->GetLastCommittedURL().SchemeIs(kWebDistillerScheme));
+  expect_rejected(popup_frame);
+
+  // 4) A valid `chrome-distiller://` primary main frame succeeds and stores
+  // prefs (including 50% / 0.5f minimum font scale and 2.5f).
+  {
+    mojo::Remote<mojom::DistillerJavaScriptService> remote;
+    mojo::GenericPendingReceiver receiver(remote.BindNewPipeAndPassReceiver());
+    ASSERT_TRUE(try_bind(main_frame, receiver));
+
+    remote->HandleStoreFontScalingPref(kMinFontScale);
+    remote.FlushForTesting();
+    EXPECT_FLOAT_EQ(0.5f, distilled_page_prefs->GetFontScaling());
+
+    remote->HandleStoreThemePref(mojom::Theme::kSepia);
+    remote->HandleStoreFontFamilyPref(mojom::FontFamily::kMonospace);
+    remote->HandleStoreFontScalingPref(2.5f);
+    remote.FlushForTesting();
+
+    EXPECT_TRUE(remote.is_connected());
+    EXPECT_EQ(mojom::Theme::kSepia, distilled_page_prefs->GetTheme());
+    EXPECT_EQ(mojom::FontFamily::kMonospace,
+              distilled_page_prefs->GetFontFamily());
+    EXPECT_FLOAT_EQ(2.5f, distilled_page_prefs->GetFontScaling());
+  }
+
+  // 5) A qualifying `chrome-distiller://` main frame that is no longer primary
+  // (e.g., pending deletion while an IPC is in flight) is silently dropped
+  // without ReportBadMessage.
+  {
+    content::DisableBackForwardCacheForTesting(
+        contents, content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+    // Navigate `contents` explicitly (case 3's `window.open()` shifted focus
+    // onto `popup_contents`) and cross-origin so the `RenderFrameHost` always
+    // swaps and leaves `pending_deletion_frame` behind.
+    ASSERT_TRUE(embedded_test_server()->Start());
+    content::RenderFrameHostWrapper pending_deletion_frame(main_frame);
+    content::LeaveInPendingDeletionState(pending_deletion_frame.get());
+    ASSERT_TRUE(content::NavigateToURL(
+        contents, embedded_test_server()->GetURL("/title1.html")));
+    ASSERT_FALSE(pending_deletion_frame.IsDestroyed());
+    ASSERT_NE(pending_deletion_frame.get(), contents->GetPrimaryMainFrame());
+    ASSERT_FALSE(pending_deletion_frame->IsInPrimaryMainFrame());
+
+    mojo::FakeMessageDispatchContext fake_dispatch_context;
+    mojo::test::BadMessageObserver bad_message_observer;
+    mojo::Remote<mojom::DistillerJavaScriptService> remote;
+    mojo::GenericPendingReceiver receiver(remote.BindNewPipeAndPassReceiver());
+    ASSERT_TRUE(try_bind(pending_deletion_frame.get(), receiver));
+    remote->HandleStoreThemePref(mojom::Theme::kDark);
+    remote->HandleStoreFontFamilyPref(mojom::FontFamily::kSerif);
+    remote->HandleStoreFontScalingPref(1.5f);
+    remote.FlushForTesting();
+
+    EXPECT_FALSE(remote.is_connected());
+    EXPECT_FALSE(bad_message_observer.got_bad_message());
+    EXPECT_EQ(mojom::Theme::kSepia, distilled_page_prefs->GetTheme());
+    EXPECT_EQ(mojom::FontFamily::kMonospace,
+              distilled_page_prefs->GetFontFamily());
+    EXPECT_FLOAT_EQ(2.5f, distilled_page_prefs->GetFontScaling());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ReaderModeViewerSourceBrowserTest,
+                       RendererGuardsDropInvalidFontScaleAndSubframeObjects) {
+  expect_distillation_ = true;
+  expect_distiller_page_ = true;
+  const GURL view_url = url_utils::GetDistillerViewUrlFromUrl(
+      kWebDistillerScheme, GURL("http://www.example.com/1"), "Title");
+  ViewSingleDistilledPage(view_url, "text/html");
+  content::WebContents* contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(content::WaitForLoadStop(contents));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(contents, kTestDistillerObject,
+                           content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                           ISOLATED_WORLD_ID_CHROME_INTERNAL)
+        .ExtractBool();
+  }));
+
+  // Out-of-bounds and non-finite scales must be dropped in the renderer without
+  // triggering a browser ReportBadMessage kill, while 0.5f (50%) commits.
+  ASSERT_TRUE(content::ExecJs(contents,
+                              "distiller.storeFontScalingPref(NaN);"
+                              "distiller.storeFontScalingPref(Infinity);"
+                              "distiller.storeFontScalingPref(-Infinity);"
+                              "distiller.storeFontScalingPref(-1);"
+                              "distiller.storeFontScalingPref(0.4);"
+                              "distiller.storeFontScalingPref(0.5);",
+                              content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                              ISOLATED_WORLD_ID_CHROME_INTERNAL));
+
+  DistilledPagePrefs* distilled_page_prefs =
+      ReaderModeServiceFactory::GetForBrowserContext(browser()->GetProfile())
+          ->GetDistilledPagePrefs();
+  PrefChangeObserver observer;
+  while (distilled_page_prefs->GetFontScaling() != 0.5f) {
+    observer.WaitForChange(distilled_page_prefs);
+  }
+  EXPECT_TRUE(
+      contents->GetPrimaryMainFrame()->GetProcess()->IsInitializedAndNotDead());
+
+  // Inherited `about:blank` subframes must not receive `distiller`.
+  ASSERT_TRUE(content::ExecJs(contents,
+                              "const f = document.createElement('iframe');"
+                              "f.src = 'about:blank';"
+                              "document.body.appendChild(f);"));
+  ASSERT_TRUE(content::WaitForLoadStop(contents));
+  content::RenderFrameHost* subframe =
+      content::ChildFrameAt(contents->GetPrimaryMainFrame(), /*index=*/0);
+  ASSERT_NE(nullptr, subframe);
+  EXPECT_EQ(false, content::EvalJs(subframe, kTestDistillerObject,
+                                   content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                                   ISOLATED_WORLD_ID_CHROME_INTERNAL));
 }
 
 }  // namespace reader_mode

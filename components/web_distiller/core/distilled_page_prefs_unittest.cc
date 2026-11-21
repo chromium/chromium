@@ -4,11 +4,14 @@
 
 #include "components/web_distiller/core/distilled_page_prefs.h"
 
+#include <cmath>
+#include <limits>
 #include <memory>
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/web_distiller/core/pref_names.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -563,6 +566,26 @@ TEST_F(DistilledPagePrefsTest, TestingOnChangeFontLexend) {
   EXPECT_EQ(mojom::FontFamily::kLexend, distilled_page_prefs_->GetFontFamily());
 
   distilled_page_prefs_->RemoveObserver(&obs);
+}
+
+TEST_F(DistilledPagePrefsTest, GetFontScalingResetsOutOfRangeAndNonFinite) {
+  distilled_page_prefs_->SetUserPrefFontScaling(kMinFontScale);
+  EXPECT_FLOAT_EQ(0.5f, distilled_page_prefs_->GetFontScaling());
+
+  distilled_page_prefs_->SetUserPrefFontScaling(kMaxFontScale);
+  EXPECT_FLOAT_EQ(3.0f, distilled_page_prefs_->GetFontScaling());
+
+  // Values below 50% (0.5f), above 300% (3.0f), or overflowing float reset
+  // both the returned scale and the persisted pref to default (1.0f).
+  for (double invalid :
+       {-1.0, static_cast<double>(std::nextafter(kMinFontScale, 0.0f)),
+        static_cast<double>(std::nextafter(kMaxFontScale, INFINITY)),
+        std::numeric_limits<double>::max(),
+        -std::numeric_limits<double>::max()}) {
+    pref_service_->SetDouble(prefs::kFontScale, invalid);
+    EXPECT_FLOAT_EQ(1.0f, distilled_page_prefs_->GetFontScaling());
+    EXPECT_DOUBLE_EQ(1.0, pref_service_->GetDouble(prefs::kFontScale));
+  }
 }
 
 }  // namespace web_distiller

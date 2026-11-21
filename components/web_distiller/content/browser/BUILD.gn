@@ -27,18 +27,17 @@ static_library("browser") {
   ]
 
   public_deps = [
+    "//components/web_distiller/content/common/mojom",
     "//components/web_distiller/core",
     "//content/public/browser",
+    "//mojo/public/cpp/bindings",
   ]
   deps = [
     "//base",
     "//components/back_forward_cache",
     "//components/resources",
     "//components/strings",
-    "//components/web_distiller/content/common/mojom",
-    "//content/public/browser",
     "//content/public/common",
-    "//mojo/public/cpp/bindings",
     "//net",
     "//services/service_manager/public/cpp",
     "//skia",
@@ -67,8 +66,12 @@ source_set("unit_tests") {
     ":browser",
     "//base/test:test_support",
     "//components/sync_preferences:test_support",
+    "//components/web_distiller/content/common/mojom",
     "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/test_support:test_utils",
     "//testing/gtest",
+    "//url",
   ]
 }
 
