@@ -38,6 +38,7 @@
 #include "chrome/browser/ai/ai_data_keyed_service.h"          // nogncheck
 #include "chrome/browser/ai/ai_data_keyed_service_factory.h"  // nogncheck
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/defaults.h"
@@ -50,6 +51,7 @@
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/infobars/browser_infobar_manager.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
@@ -800,6 +802,13 @@ void Browser::OnActiveTabChanged(const TabStripModelChange& change,
   // OnActiveTabChanged() below.
   BookmarkBarController::From(this)->UpdateBookmarkBarState(
       BookmarkBarController::StateChangeReason::kTabSwitch);
+
+  // Populate global infobars before BrowserWindow swaps its InfoBarContainer
+  // to avoid collapsing and re-animating the container on tab switch.
+  if (auto* infobar_manager =
+          infobars::BrowserInfoBarManager::From(g_browser_process)) {
+    infobar_manager->PrepareForActiveTabChange(this);
+  }
 
   // Let the BrowserWindow do its handling.  On e.g. views this changes the
   // focused object, which should happen before we update the toolbar below,

@@ -438,19 +438,20 @@ namespace {
 
 std::unique_ptr<infobars::InfoBar> CreateInfoBarForSpec(
     ConfirmInfoBarCreationAllowlist::PassKey pass_key,
-    const InfoBarSpec& spec,
+    InfoBarSpec spec,
     content::WebContents* contents,
     InfoBarShowParams params,
     BrowserInfoBarManager& manager) {
-  const InfoBarSpec::CustomViewCallback& custom_view_callback =
+  const InfoBarSpec::CustomViewCallback custom_view_callback =
       params.custom_view_callback ? params.custom_view_callback
                                   : spec.custom_view_callback();
   std::unique_ptr<views::View> custom_view =
       custom_view_callback ? custom_view_callback.Run(contents) : nullptr;
-  return CreateConfirmInfoBar(pass_key,
-                              std::make_unique<RegistryInfoBarDelegate>(
-                                  spec, contents, std::move(params), manager),
-                              std::move(custom_view));
+  return CreateConfirmInfoBar(
+      pass_key,
+      std::make_unique<RegistryInfoBarDelegate>(std::move(spec), contents,
+                                                std::move(params), manager),
+      std::move(custom_view));
 }
 
 // Removes `infobar` without reporting a result.
@@ -494,7 +495,8 @@ BrowserInfoBarManager::~BrowserInfoBarManager() = default;
 // static
 BrowserInfoBarManager* BrowserInfoBarManager::From(
     BrowserProcess* browser_process) {
-  return Get(browser_process->GetUnownedUserDataHost());
+  return browser_process ? Get(browser_process->GetUnownedUserDataHost())
+                         : nullptr;
 }
 
 void BrowserInfoBarManager::Register(InfoBarSpec spec) {
@@ -646,6 +648,7 @@ bool BrowserInfoBarManager::ShowGlobally(
 
   GlobalInfoBarContext& context = active_global_infobars_[identifier] =
       GlobalInfoBarContext{.spec = it->second, .params = std::move(params)};
+  active_global_order_.push_back(identifier);
 
   bool added_any_infobars = false;
   GlobalBrowserCollection::GetInstance()->ForEach(
@@ -685,6 +688,7 @@ bool BrowserInfoBarManager::ShowGlobally(
     // A false return must mean nothing is showing and nothing will appear
     // later, so drop the armed context.
     active_global_infobars_.erase(identifier);
+    std::erase(active_global_order_, identifier);
     StopObservingBrowsersIfIdle();
   }
   return added_any_infobars;
@@ -770,8 +774,14 @@ void BrowserInfoBarManager::Hide(
       RemoveInfoBarWithoutResult(manager, infobar);
     }
     active_global_infobars_.erase(active_it);
+    std::erase(active_global_order_, identifier);
     StopObservingBrowsersIfIdle();
   }
+}
+
+void BrowserInfoBarManager::PrepareForActiveTabChange(
+    BrowserWindowInterface* browser) {
+  PopulateGlobalInfoBarsForActiveTab(browser);
 }
 
 void BrowserInfoBarManager::OnBrowserCreated(BrowserWindowInterface* browser) {
@@ -868,6 +878,89 @@ void BrowserInfoBarManager::OnManagerWillBeDestroyed(
   }
 }
 
+void BrowserInfoBarManager::PopulateGlobalInfoBarsForActiveTab(
+    BrowserWindowInterface* browser) {
+  if (active_global_order_.empty()) {
+    return;
+  }
+
+  tabs::TabInterface* active_tab = browser->GetActiveTabInterface();
+  content::WebContents* active_contents =
+      active_tab ? active_tab->GetContents() : nullptr;
+  infobars::InfoBarManager* new_manager =
+      active_contents ? ContentInfoBarManager::FromWebContents(active_contents)
+                      : nullptr;
+  if (!new_manager) {
+    return;
+  }
+
+  // Snapshot order. Callbacks below may mutate `active_global_infobars_`.
+  const auto order = active_global_order_;
+  for (const auto identifier : order) {
+    auto ctx_it = active_global_infobars_.find(identifier);
+    if (ctx_it == active_global_infobars_.end()) {
+      continue;
+    }
+
+    if (const auto browser_filter = ctx_it->second.spec.browser_filter();
+        browser_filter && !browser_filter.Run(browser)) {
+      ctx_it = active_global_infobars_.find(identifier);
+      if (ctx_it != active_global_infobars_.end()) {
+        auto inst_it = ctx_it->second.active_instances.find(new_manager);
+        if (inst_it != ctx_it->second.active_instances.end()) {
+          infobars::InfoBar* infobar = inst_it->second;
+          ctx_it->second.active_instances.erase(inst_it);
+          RemoveInfoBarWithoutResult(new_manager, infobar);
+        }
+      }
+      continue;
+    }
+    ctx_it = active_global_infobars_.find(identifier);
+    if (ctx_it == active_global_infobars_.end()) {
+      continue;
+    }
+
+    if (ctx_it->second.active_instances.contains(new_manager)) {
+      continue;
+    }
+
+    // An interaction callback switched away and back; keep its instance.
+    auto existing = std::ranges::find_if(
+        new_manager->infobars(), [identifier](infobars::InfoBar* ib) {
+          return ib->delegate()->GetIdentifier() == identifier &&
+                 static_cast<RegistryInfoBarDelegate*>(ib->delegate())
+                     ->in_interaction();
+        });
+    if (existing != new_manager->infobars().end()) {
+      static_cast<RegistryInfoBarDelegate*>((*existing)->delegate())
+          ->set_close_after_interaction(false);
+      ctx_it->second.active_instances[new_manager] = *existing;
+      continue;
+    }
+
+    auto infobar = CreateInfoBarForSpec(
+        ConfirmInfoBarCreationAllowlist::GetPassKey(), ctx_it->second.spec,
+        active_contents, ctx_it->second.params, *this);
+    if (!active_global_infobars_.contains(identifier)) {
+      continue;
+    }
+
+    auto* added_infobar = new_manager->AddInfoBar(std::move(infobar));
+    if (added_infobar &&
+        std::ranges::contains(new_manager->infobars(), added_infobar)) {
+      ctx_it = active_global_infobars_.find(identifier);
+      if (ctx_it == active_global_infobars_.end()) {
+        RemoveInfoBarWithoutResult(new_manager, added_infobar);
+        continue;
+      }
+      ctx_it->second.active_instances[new_manager] = added_infobar;
+      if (!infobar_manager_observations_.IsObservingSource(new_manager)) {
+        infobar_manager_observations_.AddObservation(new_manager);
+      }
+    }
+  }
+}
+
 void BrowserInfoBarManager::OnActiveTabChanged(
     BrowserWindowInterface* browser) {
   tabs::TabInterface* active_tab = browser->GetActiveTabInterface();
@@ -895,37 +988,7 @@ void BrowserInfoBarManager::OnActiveTabChanged(
     }
   }
 
-  if (new_manager) {
-    for (auto& [identifier, context] : active_global_infobars_) {
-      if (context.spec.browser_filter() &&
-          !context.spec.browser_filter().Run(browser)) {
-        continue;
-      }
-      // An interaction callback switched away and back; keep its instance.
-      auto existing = std::ranges::find_if(
-          new_manager->infobars(), [identifier](infobars::InfoBar* ib) {
-            return ib->delegate()->GetIdentifier() == identifier &&
-                   static_cast<RegistryInfoBarDelegate*>(ib->delegate())
-                       ->in_interaction();
-          });
-      if (existing != new_manager->infobars().end()) {
-        static_cast<RegistryInfoBarDelegate*>((*existing)->delegate())
-            ->set_close_after_interaction(false);
-        context.active_instances[new_manager] = *existing;
-        continue;
-      }
-      auto infobar = CreateInfoBarForSpec(
-          ConfirmInfoBarCreationAllowlist::GetPassKey(), context.spec,
-          active_contents, context.params, *this);
-      auto* added_infobar = new_manager->AddInfoBar(std::move(infobar));
-      if (added_infobar) {
-        context.active_instances[new_manager] = added_infobar;
-        if (!infobar_manager_observations_.IsObservingSource(new_manager)) {
-          infobar_manager_observations_.AddObservation(new_manager);
-        }
-      }
-    }
-  }
+  PopulateGlobalInfoBarsForActiveTab(browser);
 
   last_active_managers_[browser] = new_manager;
 }

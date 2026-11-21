@@ -92,9 +92,11 @@ source_set("interactive_ui_tests") {
     "//chrome/app:command_ids",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:browser_process",
+    "//chrome/browser/infobars",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/startup",
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/views/infobars",
@@ -106,5 +108,8 @@ source_set("interactive_ui_tests") {
     "//components/prefs",
     "//testing/gtest",
     "//ui/base",
+    "//ui/gfx:test_support",
+    "//ui/gfx/animation",
+    "//ui/views",
   ]
 }
