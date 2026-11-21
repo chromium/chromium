@@ -45,6 +45,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "hls_data_source_provider_impl.cc": [
+    "+net/base/data_url.h",
+  ],
   "audio_manager_unittest.cc": [
     "+chromeos/ash/components/dbus"
   ],
