@@ -40,6 +40,7 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/api_permission_set.h"
+#include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -894,6 +895,57 @@ TEST_F(ExtensionManagementServiceTest, BlockedPermissionsConflictHandling) {
       APIPermissionSet(),
       GetBlockedAPIPermissions(kTargetExtension4,
                                "https://www.example.com/another_update_url"));
+}
+
+TEST_F(ExtensionManagementServiceTest, BlockedInternalPermissions) {
+  // devtools and tabCaptureForTab are internal but not policy-manageable, so
+  // they are dropped.
+  SetExampleDictPref(base::StringPrintf(
+      R"({
+    "*": {
+      "blocked_permissions": ["searchProvider", "homepage", "startupPages",
+                              "newTabPageOverride", "devtools",
+                              "tabCaptureForTab"]
+    },
+    "%s": {
+      "blocked_permissions": ["searchProvider", "homepage"],
+      "allowed_permissions": ["searchProvider"]
+    }
+  })",
+      kTargetExtension));
+
+  APIPermissionSet expected_default_blocked;
+  expected_default_blocked.insert(APIPermissionID::kSearchProvider);
+  expected_default_blocked.insert(APIPermissionID::kHomepage);
+  expected_default_blocked.insert(APIPermissionID::kStartupPages);
+  expected_default_blocked.insert(APIPermissionID::kNewTabPageOverride);
+  EXPECT_EQ(expected_default_blocked,
+            GetBlockedAPIPermissionsById(kNonExistingExtension));
+
+  APIPermissionSet expected_extension_blocked;
+  expected_extension_blocked.insert(APIPermissionID::kHomepage);
+  EXPECT_EQ(expected_extension_blocked,
+            GetBlockedAPIPermissionsById(kTargetExtension));
+
+  APIPermissionSet search_provider_api;
+  search_provider_api.insert(APIPermissionID::kSearchProvider);
+  PermissionSet search_provider_perms(std::move(search_provider_api),
+                                      ManifestPermissionSet(), URLPatternSet(),
+                                      URLPatternSet());
+
+  APIPermissionSet homepage_api;
+  homepage_api.insert(APIPermissionID::kHomepage);
+  PermissionSet homepage_perms(std::move(homepage_api), ManifestPermissionSet(),
+                               URLPatternSet(), URLPatternSet());
+
+  EXPECT_FALSE(extension_management_->IsPermissionSetAllowed(
+      kNonExistingExtension, kNonExistingUpdateUrl, search_provider_perms));
+  EXPECT_FALSE(extension_management_->IsPermissionSetAllowed(
+      kNonExistingExtension, kNonExistingUpdateUrl, homepage_perms));
+  EXPECT_TRUE(extension_management_->IsPermissionSetAllowed(
+      kTargetExtension, kNonExistingUpdateUrl, search_provider_perms));
+  EXPECT_FALSE(extension_management_->IsPermissionSetAllowed(
+      kTargetExtension, kNonExistingUpdateUrl, homepage_perms));
 }
 
 TEST_F(ExtensionManagementServiceTest, DefaultHostExtensionsOverride) {

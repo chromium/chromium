@@ -10,6 +10,8 @@ desc: |-
 
   In <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> versions 155 to 158, applying 'runtime_blocked_hosts' to an extension with the 'debugger' permission can completely disable 'chrome.debugger.attach()' on all targets, for example when the <ph name="CHROME_VARIATIONS_POLICY_NAME">ChromeVariations</ph> policy disables all variations.
 
+  Starting in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 160, 'blocked_permissions' and 'allowed_permissions' also accept these internal permissions, which extensions get from manifest keys: 'searchProvider', 'homepage', and 'startupPages' (from 'chrome_settings_overrides', <ph name="MS_WIN_NAME">Microsoft® Windows®</ph> and <ph name="MAC_OS_NAME">macOS</ph> only), and 'newTabPageOverride' (from 'chrome_url_overrides').
+
   On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph> instances, apps and extensions from outside the Chrome Web Store can only be forced installed if the instance is joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, joined to <ph name="MS_AAD_NAME">Microsoft® Azure® Active Directory®</ph> or enrolled in <ph name="CHROME_ENTERPRISE_CORE_NAME">Chrome Enterprise Core</ph>.
 
   On <ph name="MAC_OS_NAME">macOS</ph> instances, apps and extensions from outside the Chrome Web Store can only be force installed if the instance is managed via MDM, joined to a domain via MCX or enrolled in <ph name="CHROME_ENTERPRISE_CORE_NAME">Chrome Enterprise Core</ph>.

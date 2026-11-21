@@ -197,6 +197,10 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      APIPermissionInfo::kFlagInternal},
 
     // Settings override permissions.
+    // Enterprise admins can block these by name in the ExtensionSettings
+    // policy (see kPolicyManageableInternalPermissions in
+    // chrome/browser/extensions/extension_management_internal.cc), so their
+    // names must stay backward compatible.
     {APIPermissionID::kHomepage, "homepage",
      APIPermissionInfo::kFlagCannotBeOptional |
          APIPermissionInfo::kFlagInternal,

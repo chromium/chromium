@@ -111,6 +111,10 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
     {APIPermissionID::kNetworkingOnc, "networking.onc"},
     {APIPermissionID::kNetworkingPrivate, "networkingPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
+    // Enterprise admins can block this by name in the ExtensionSettings policy
+    // (see kPolicyManageableInternalPermissions in
+    // chrome/browser/extensions/extension_management_internal.cc), so its name
+    // must stay backward compatible.
     {APIPermissionID::kNewTabPageOverride, "newTabPageOverride",
      APIPermissionInfo::kFlagInternal |
          APIPermissionInfo::kFlagCannotBeOptional |

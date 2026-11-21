@@ -4882,6 +4882,46 @@ TEST_F(ExtensionServiceTest, PolicyBlockedPermissionPolicyUpdate) {
   EXPECT_FALSE(registry->enabled_extensions().GetByID(ext2_forced));
 }
 
+// Tests that policy can block an internal permission granted by a manifest key
+// (newTabPageOverride from chrome_url_overrides): an installed extension is
+// disabled, and a fresh install fails.
+TEST_F(ExtensionServiceTest, PolicyBlockedInternalPermission) {
+  InitializeEmptyExtensionServiceWithTestingPrefs();
+
+  constexpr char kManifest[] =
+      R"({
+           "name": "New Tab override",
+           "manifest_version": 3,
+           "version": "1.0",
+           "chrome_url_overrides": {"newtab": "newtab.html"}
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("newtab.html"), "<html></html>");
+
+  const Extension* extension = InstallCRX(test_dir.Pack(), INSTALL_NEW);
+  ASSERT_TRUE(extension);
+  const std::string id = extension->id();
+  EXPECT_TRUE(extension->permissions_data()->HasAPIPermission(
+      APIPermissionID::kNewTabPageOverride));
+
+  {
+    ManagementPrefUpdater pref(testing_profile()->GetTestingPrefService());
+    pref.AddBlockedPermission("*", "newTabPageOverride");
+  }
+  task_environment()->RunUntilIdle();
+
+  EXPECT_FALSE(registry()->enabled_extensions().GetByID(id));
+  EXPECT_TRUE(registry()->disabled_extensions().GetByID(id));
+  EXPECT_THAT(
+      prefs()->GetDisableReasons(id),
+      testing::UnorderedElementsAre(disable_reason::DISABLE_BLOCKED_BY_POLICY));
+
+  // A fresh install of the same extension should fail.
+  UninstallExtension(id);
+  InstallCRX(test_dir.Pack(), INSTALL_FAILED);
+}
+
 // Flaky on windows; http://crbug.com/41067305
 #if BUILDFLAG(IS_WIN)
 #define MAYBE_ExternalExtensionAutoAcknowledgement DISABLED_ExternalExtensionAutoAcknowledgement

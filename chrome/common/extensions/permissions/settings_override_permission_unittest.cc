@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/strings/utf_string_conversions.h"
@@ -19,6 +20,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/permissions/api_permission_set.h"
 #include "extensions/common/permissions/permission_message_test_util.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -176,6 +178,44 @@ TEST_F(SettingsOverridePermissionTest, Some) {
 #endif
 
   EXPECT_FALSE(permission_set.HasAPIPermission(APIPermissionID::kStartupPages));
+}
+
+TEST_F(SettingsOverridePermissionTest, ParseFromJSON) {
+  base::ListValue permissions;
+  permissions.Append("searchProvider");
+  permissions.Append("homepage");
+  permissions.Append("startupPages");
+
+  APIPermissionSet disallowed_set;
+  std::u16string error;
+  EXPECT_TRUE(APIPermissionSet::ParseFromJSON(
+      permissions, APIPermissionSet::kDisallowInternalPermissions,
+      &disallowed_set, &error, nullptr));
+  EXPECT_TRUE(disallowed_set.empty());
+
+  APIPermissionSet allowed_set;
+  EXPECT_TRUE(APIPermissionSet::ParseFromJSON(
+      permissions, APIPermissionSet::kAllowInternalPermissions, &allowed_set,
+      &error, nullptr));
+  EXPECT_EQ(1u, allowed_set.count(APIPermissionID::kSearchProvider));
+  EXPECT_EQ(1u, allowed_set.count(APIPermissionID::kHomepage));
+  EXPECT_EQ(1u, allowed_set.count(APIPermissionID::kStartupPages));
+
+  base::ListValue with_string_param;
+  with_string_param.Append(
+      base::DictValue().Set("searchProvider", "https://example.com"));
+  APIPermissionSet param_set;
+  EXPECT_TRUE(APIPermissionSet::ParseFromJSON(
+      with_string_param, APIPermissionSet::kAllowInternalPermissions,
+      &param_set, &error, nullptr));
+  EXPECT_EQ(1u, param_set.count(APIPermissionID::kSearchProvider));
+
+  base::ListValue invalid_param;
+  invalid_param.Append(base::DictValue().Set("searchProvider", 123));
+  APIPermissionSet invalid_set;
+  EXPECT_FALSE(APIPermissionSet::ParseFromJSON(
+      invalid_param, APIPermissionSet::kAllowInternalPermissions, &invalid_set,
+      &error, nullptr));
 }
 
 }  // namespace

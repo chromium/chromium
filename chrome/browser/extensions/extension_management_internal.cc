@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/extension_management_internal.h"
 
+#include <algorithm>
+#include <string>
 #include <utility>
 
 #include "base/logging.h"
@@ -14,6 +16,7 @@
 #include "extensions/browser/managed_installation_mode.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_urls.h"
+#include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/url_pattern_set.h"
 #include "url/gurl.h"
 
@@ -38,6 +41,38 @@ bool GetString(const base::DictValue& dict,
     return false;
   *result = *value;
   return true;
+}
+
+// Internal permissions that admins may name in ExtensionSettings. Each maps
+// to a manifest key, and the policy must stay backward compatible for them.
+// They are registered in chrome/common/extensions/permissions/
+// chrome_api_permissions.cc and extensions/common/permissions/
+// extensions_api_permissions.cc.
+constexpr mojom::APIPermissionID kPolicyManageableInternalPermissions[] = {
+    mojom::APIPermissionID::kHomepage,
+    mojom::APIPermissionID::kNewTabPageOverride,
+    mojom::APIPermissionID::kSearchProvider,
+    mojom::APIPermissionID::kStartupPages,
+};
+
+// Parses `list` into `permissions`, keeping only public permissions and the
+// internal permissions listed above.
+void ParsePolicyPermissions(const base::ListValue& list,
+                            APIPermissionSet* permissions) {
+  std::u16string error;
+  APIPermissionSet parsed;
+  if (!APIPermissionSet::ParseFromJSON(
+          list, APIPermissionSet::kAllowInternalPermissions, &parsed, &error,
+          nullptr)) {
+    LOG(WARNING) << error;
+  }
+  for (const APIPermission* permission : parsed) {
+    if (!permission->info()->is_internal() ||
+        std::ranges::contains(kPolicyManageableInternalPermissions,
+                              permission->id())) {
+      permissions->insert(permission->Clone());
+    }
+  }
 }
 }  // namespace
 
@@ -118,8 +153,6 @@ bool IndividualSettings::Parse(const base::DictValue& dict,
   }
 
   // Parses the blocked permission settings.
-  std::u16string error;
-
   // Parse the blocked and allowed permissions.
   // Note that we currently don't use default permission settings for
   // per-update-url or per-id settings at all even though they are not set.
@@ -137,19 +170,11 @@ bool IndividualSettings::Parse(const base::DictValue& dict,
   const base::ListValue* list_value =
       dict.FindList(schema_constants::kAllowedPermissions);
   if (list_value) {
-    if (!APIPermissionSet::ParseFromJSON(
-            *list_value, APIPermissionSet::kDisallowInternalPermissions,
-            &explicitly_allowed_permissions, &error, nullptr)) {
-      LOG(WARNING) << error;
-    }
+    ParsePolicyPermissions(*list_value, &explicitly_allowed_permissions);
   }
   list_value = dict.FindList(schema_constants::kBlockedPermissions);
   if (list_value) {
-    if (!APIPermissionSet::ParseFromJSON(
-            *list_value, APIPermissionSet::kDisallowInternalPermissions,
-            &parsed_blocked_permissions, &error, nullptr)) {
-      LOG(WARNING) << error;
-    }
+    ParsePolicyPermissions(*list_value, &parsed_blocked_permissions);
   }
   APIPermissionSet::Difference(parsed_blocked_permissions,
                                explicitly_allowed_permissions,
