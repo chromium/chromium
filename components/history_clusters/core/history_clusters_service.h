@@ -141,8 +141,8 @@ class HistoryClustersService : public base::SupportsUserData,
       bool recluster,
       QueryClustersCallback callback);
 
-  // Entrypoint to the `HistoryClustersServiceTaskUpdateClusters`. Updates the
-  // persisted clusters in the history DB and invokes `callback` when done.
+  // Entrypoint to the `HistoryClustersServiceTaskUpdateClusterTriggerability`.
+  // Updates the triggerability of persisted clusters in the history DB.
   void UpdateClusters();
 
   // Returns matched keyword data from cache synchronously if `query` matches a
@@ -183,7 +183,7 @@ class HistoryClustersService : public base::SupportsUserData,
   //  `PopulateClusterKeywordCache()` should be encapsulated into their own task
   //  to avoid cluttering `HistoryClusterService` with their callbacks. Similar
   //  to the `HistoryClustersServiceTaskGetMostRecentClusters` and
-  //  `HistoryClustersServiceTaskUpdateClusters` tasks.
+  //  `HistoryClustersServiceTaskUpdateClusterTriggerability` tasks.
   void StartKeywordCacheRefresh();
 
   // This is a callback used for the `QueryClusters()` call from

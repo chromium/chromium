@@ -621,42 +621,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.Clusters.Backend.UpdateClusters.{Segment}" units="ms"
-    expires_after="2024-03-31">
-  <owner>manukh@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>1457319</component>
-  <summary>
-    Near startup and every 1 hour afterwards, unclustered visits are clustered,
-    and the clusters are persisted in the history DB.
-
-    As needed, both fresh and persisted clusters are fetched. Clusters are
-    fetched for: a) displaying on the Journeys WebUI and b) generating keyword
-    caches to match with omnibox inputs and show journey chips or suggestions in
-    the omnibox.
-
-    This histogram records the latency breakdown for updating clusters.
-
-    Recorded for every batch of visits clustered; can be recorded more than once
-    every hour.
-
-    This slice records the time between the main thread requesting and
-    {Segment}.
-  </summary>
-  <token key="Segment">
-    <variant name="ComputeClustersLatency"
-        summary="receiving clusters from the model"/>
-    <variant name="GetAnnotatedVisitsToClusterLatency"
-        summary="receiving annotated visits to cluster (which can include
-                 clustered, unclustered, incomplete, and complete visits)"/>
-    <variant name="PersistClustersLatency"
-        summary="receiving acknowledgement for completion of persisting the
-                 clusters to the history DB"/>
-    <variant name="Total"
-        summary="the main thread being notified that the work was completed"/>
-  </token>
-</histogram>
-
 <histogram
     name="History.Clusters.Backend.WasClusterFiltered.{ClusterFilterReason}"
     enum="BooleanFiltered" expires_after="2024-10-06">

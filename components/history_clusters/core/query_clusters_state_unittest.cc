@@ -108,10 +108,6 @@ class QueryClustersStateTest : public testing::Test {
 };
 
 TEST_F(QueryClustersStateTest, FilterParamsSetForZeroState) {
-  Config config;
-  config.use_navigation_context_clusters = true;
-  SetConfigForTesting(config);
-
   QueryClustersState state(nullptr, nullptr, "");
 
   QueryClustersFilterParams filter_params =
@@ -120,25 +116,7 @@ TEST_F(QueryClustersStateTest, FilterParamsSetForZeroState) {
   EXPECT_FALSE(filter_params.has_related_searches);
 }
 
-TEST_F(QueryClustersStateTest,
-       FilterParamsNotSetForZeroStateContextClusteringDisabled) {
-  Config config;
-  config.use_navigation_context_clusters = false;
-  SetConfigForTesting(config);
-
-  QueryClustersState state(nullptr, nullptr, "");
-
-  QueryClustersFilterParams filter_params =
-      GetQueryClustersFilterParamsForState(&state);
-  EXPECT_FALSE(filter_params.is_search_initiated);
-  EXPECT_FALSE(filter_params.has_related_searches);
-}
-
 TEST_F(QueryClustersStateTest, FilterParamsEnabledButNotSetForQuery) {
-  Config config;
-  config.use_navigation_context_clusters = true;
-  SetConfigForTesting(config);
-
   QueryClustersState state(nullptr, nullptr, "query");
 
   QueryClustersFilterParams filter_params =

@@ -375,10 +375,6 @@ void SortClusters(std::vector<history::Cluster>* clusters) {
   });
 }
 
-bool ShouldUseNavigationContextClustersFromPersistence() {
-  return GetConfig().use_navigation_context_clusters;
-}
-
 bool IsTransitionUserVisible(int32_t transition) {
   ui::PageTransition page_transition = ui::PageTransitionFromInt(transition);
   return (ui::PAGE_TRANSITION_CHAIN_END & transition) != 0 &&

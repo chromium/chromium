@@ -52,6 +52,12 @@ class HistoryClustersServiceTestApi {
     history_clusters_service_->backend_ = std::move(backend);
   }
 
+  // Destroys the context clusterer so that visits added by tests are not
+  // clustered and persisted at navigation time.
+  void DisableContextClustererForTest() {
+    history_clusters_service_->context_clusterer_observer_.reset();
+  }
+
   void SetAllKeywordsCacheTimestamp(base::Time time) {
     history_clusters_service_->all_keywords_cache_timestamp_ = time;
   }

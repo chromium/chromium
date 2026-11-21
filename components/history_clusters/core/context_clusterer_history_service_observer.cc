@@ -143,21 +143,19 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
   if (!new_visit.originator_cache_guid.empty()) {
     // Skip determining the exact cluster id for remote synced visits.
 
-    if (ShouldUseNavigationContextClustersFromPersistence()) {
-      // Remote synced visits are context clustered on the originator machine
-      // and persisted via `HistorySyncBridge`; however, it still requires it's
-      // ClusterVisit metadata. It is calculated here instead of in
-      // `HistorySyncBridge` to avoid a circular dependency.
-      //
-      // If the sender device does not have context clustering at nav time
-      // enabled, this ends up being a no-op.
-      history_service_->UpdateClusterVisit(
-          std::move(cluster_visit),
-          base::BindOnce(&LogDbLatencyHistogram,
-                         ContextClustererDbLatencyType::kUpdateClusterVisit,
-                         base::TimeTicks::Now()),
-          &task_tracker_);
-    }
+    // Remote synced visits are context clustered on the originator machine
+    // and persisted via `HistorySyncBridge`; however, it still requires it's
+    // ClusterVisit metadata. It is calculated here instead of in
+    // `HistorySyncBridge` to avoid a circular dependency.
+    //
+    // If the sender device does not have context clustering at nav time
+    // enabled, this ends up being a no-op.
+    history_service_->UpdateClusterVisit(
+        std::move(cluster_visit),
+        base::BindOnce(&LogDbLatencyHistogram,
+                       ContextClustererDbLatencyType::kUpdateClusterVisit,
+                       base::TimeTicks::Now()),
+        &task_tracker_);
     return;
   }
 
@@ -234,8 +232,7 @@ void ContextClustererHistoryServiceObserver::OnURLVisited(
 
   // Only persist the visit if the transition is visible. Still add it to the
   // cluster maps in case newer visits reference it though.
-  if (ShouldUseNavigationContextClustersFromPersistence() &&
-      IsTransitionUserVisible(new_visit.transition)) {
+  if (IsTransitionUserVisible(new_visit.transition)) {
     // For new clusters, asyncly reserve an ID and have the
     //   `OnPersistedClusterIdReceived()` callback add the visits.
     // For clusters created recently for which history service hasn't yet
@@ -354,10 +351,8 @@ void ContextClustererHistoryServiceObserver::FinalizeCluster(
   }
 
   // Only delete the cluster if the persisted cluster ID is not needed because
-  // clusters are not being persisted or the persisted cluster ID has been
-  // received and there are unpersisted visits.
-  if (!ShouldUseNavigationContextClustersFromPersistence() ||
-      cluster.unpersisted_visits.empty()) {
+  // there are no unpersisted visits.
+  if (cluster.unpersisted_visits.empty()) {
     in_progress_clusters_.erase(cluster_id);
   } else {
     cluster.cleaned_up = true;

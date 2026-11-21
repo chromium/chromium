@@ -45,8 +45,7 @@ HistoryClustersInternalsPageHandlerImpl::
 
 void HistoryClustersInternalsPageHandlerImpl::GetContextClustersJson(
     GetContextClustersJsonCallback callback) {
-  if (history_clusters_service_ &&
-      history_clusters::ShouldUseNavigationContextClustersFromPersistence()) {
+  if (history_clusters_service_) {
     GetContextClusters(
         history_clusters::QueryClustersContinuationParams{
             /*continuation_time=*/base::Time::Now(), /*is_continuation=*/true,

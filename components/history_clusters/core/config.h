@@ -84,12 +84,6 @@ struct Config {
   // visits in case there are a few very large clusters in the same batch.
   size_t max_persisted_cluster_visits_to_fetch_soft_cap = 1000;
 
-  // The number of days of persisted clusters to recluster when updating
-  // clusters. E.g., if set to 2, and clusters up to 1/10 have been persisted,
-  // then the next request will include visits from clusters from 1/8 and 1/9,
-  // and unclustered visits from 1/10.
-  size_t persist_clusters_recluster_window_days = 0;
-
   // The `kOmniboxHistoryClusterProvider` feature and child params.
 
   // Enables `HistoryClusterProvider` to surface Journeys as a suggestion row
@@ -191,10 +185,6 @@ struct Config {
   float has_url_keyed_image_ranking_weight = 1.5;
 
   // Navigation context clustering params.
-
-  // Whether to use the new clustering path that does context clustering at
-  // navigation and embellishes clusters for display at UI time.
-  bool use_navigation_context_clusters = true;
 
   // The duration between context clustering clean up passes.
   base::TimeDelta context_clustering_clean_up_duration = base::Minutes(10);

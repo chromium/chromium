@@ -39,11 +39,6 @@ QueryClustersFilterParams GetFilterParamsFromFlags(const std::string& query) {
     return filter_params;
   }
 
-  // Only set special filter params if the zero state filtering flag is applied.
-  if (!ShouldUseNavigationContextClustersFromPersistence()) {
-    return filter_params;
-  }
-
   filter_params.is_search_initiated = true;
   filter_params.is_shown_on_prominent_ui_surfaces = true;
   // TODO(b/277528165): Apply category filtering only for eligible users.

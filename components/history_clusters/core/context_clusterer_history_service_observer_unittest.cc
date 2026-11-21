@@ -192,12 +192,6 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
         search_engines_test_environment_.template_url_service(),
         optimization_guide_decider_.get(), engagement_score_provider_.get());
     observer_->OverrideClockForTesting(task_environment_.GetMockClock());
-
-    // TODO(b/276488340): Update this test when non context clusterer code gets
-    //   cleaned up.
-    Config config;
-    config.use_navigation_context_clusters = false;
-    SetConfigForTesting(config);
   }
 
   void TearDown() override {
@@ -210,12 +204,13 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
     history::BlockUntilHistoryProcessesPendingRequests(history_service());
   }
 
-  // Sets the config so that we expect to persist clusters and visits using this
-  // code path.
-  void SetPersistenceExpectedConfig() {
-    Config config;
-    config.use_navigation_context_clusters = true;
-    SetConfigForTesting(config);
+  // Allows the observer to persist clusters without verifying the calls, for
+  // tests that only exercise the in-memory clustering logic.
+  void IgnoreClusterPersistence() {
+    EXPECT_CALL(*history_service(), ReserveNextClusterIdWithVisit(_, _, _))
+        .Times(testing::AnyNumber());
+    EXPECT_CALL(*history_service(), AddVisitsToCluster(_, _, _, _))
+        .Times(testing::AnyNumber());
   }
 
   // Simulates a visit to URL.
@@ -295,7 +290,6 @@ class ContextClustererHistoryServiceObserverTest : public testing::Test {
 TEST_F(ContextClustererHistoryServiceObserverTest, ClusterOneVisit) {
   base::HistogramTester histogram_tester;
 
-  SetPersistenceExpectedConfig();
   history::ClusterId cluster_id = history::ClusterId(123);
 
   history::ClusterVisit got_cluster_visit;
@@ -317,7 +311,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest, ClusterOneVisit) {
 
 TEST_F(ContextClustererHistoryServiceObserverTest,
        StillPersistsClusterEvenIfClusterIdComesBackWayLaterSingleVisit) {
-  SetPersistenceExpectedConfig();
   history::ClusterId cluster_id = history::ClusterId(123);
 
   history::ClusterVisit got_cluster_visit;
@@ -343,7 +336,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
 
 TEST_F(ContextClustererHistoryServiceObserverTest,
        StillPersistsClusterEvenIfClusterIdComesBackWayLaterMultipleVisits) {
-  SetPersistenceExpectedConfig();
   history::ClusterId cluster_id = history::ClusterId(123);
 
   {
@@ -395,7 +387,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
        ClusterTwoVisitsTiedByReferringVisit) {
   base::HistogramTester histogram_tester;
 
-  SetPersistenceExpectedConfig();
   history::ClusterId cluster_id = history::ClusterId(123);
 
   EXPECT_CALL(*history_service(), ReserveNextClusterIdWithVisit(
@@ -436,7 +427,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
        ClusterTwoVisitsTiedByOpenerVisit) {
   base::HistogramTester histogram_tester;
 
-  SetPersistenceExpectedConfig();
   history::ClusterId cluster_id = history::ClusterId(123);
 
   EXPECT_CALL(*history_service(), ReserveNextClusterIdWithVisit(
@@ -473,6 +463,7 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
 
 TEST_F(ContextClustererHistoryServiceObserverTest,
        ClusterTwoVisitsOpenerTakesPrecedenceOverReferrer) {
+  IgnoreClusterPersistence();
   VisitURL(GURL("https://example.com"), 1, base::Time::FromTimeT(123));
   VisitURL(GURL("https://hasopenerbutbadreferrer.com"), 2,
            base::Time::FromTimeT(123),
@@ -485,6 +476,7 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest, ClusterTwoVisitsTiedByURL) {
+  IgnoreClusterPersistence();
   VisitURL(GURL("https://example.com"), 1, base::Time::FromTimeT(123));
   VisitURL(GURL("https://example.com"), 2, base::Time::FromTimeT(123),
            /*opener_visit=*/history::kInvalidVisitID,
@@ -495,6 +487,7 @@ TEST_F(ContextClustererHistoryServiceObserverTest, ClusterTwoVisitsTiedByURL) {
 
 TEST_F(ContextClustererHistoryServiceObserverTest,
        ClusterVisitsTiedBySearchURL) {
+  IgnoreClusterPersistence();
   VisitURL(GURL("http://default-engine.com/search?q=foo"), 1,
            base::Time::FromTimeT(123));
   VisitURL(GURL("http://default-engine.com/search?q=foo#whatever"), 2,
@@ -510,8 +503,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
 
 TEST_F(ContextClustererHistoryServiceObserverTest, SplitClusterOnSearchTerm) {
   base::HistogramTester histogram_tester;
-
-  SetPersistenceExpectedConfig();
 
   history::ClusterVisit got_first_cluster_visit;
   EXPECT_CALL(*history_service(), ReserveNextClusterIdWithVisit(
@@ -546,6 +537,7 @@ TEST_F(ContextClustererHistoryServiceObserverTest, SplitClusterOnSearchTerm) {
 
 TEST_F(ContextClustererHistoryServiceObserverTest,
        SplitClusterOnNavigationTime) {
+  IgnoreClusterPersistence();
   VisitURL(GURL("https://example.com"), 1, base::Time::FromTimeT(123));
   VisitURL(GURL("https://example.com/2"), 2,
            base::Time::FromTimeT(123) + base::Milliseconds(1) +
@@ -558,8 +550,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
 TEST_F(ContextClustererHistoryServiceObserverTest,
        DoesNotClusterSyncedVisitsButUpdatesDetails) {
   base::HistogramTester histogram_tester;
-
-  SetPersistenceExpectedConfig();
 
   history::ClusterVisit updated_cluster_visit;
   EXPECT_CALL(*history_service(),
@@ -604,8 +594,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
        SearchNormalizedUrlIsNotAdjusted) {
   base::HistogramTester histogram_tester;
 
-  SetPersistenceExpectedConfig();
-
   history::ClusterVisit updated_cluster_visit;
   EXPECT_CALL(*history_service(),
               UpdateClusterVisit(_, base::test::IsNotNullCallback(), _))
@@ -628,8 +616,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest,
 TEST_F(ContextClustererHistoryServiceObserverTest, SkipsBlocklistedHost) {
   base::HistogramTester histogram_tester;
 
-  SetPersistenceExpectedConfig();
-
   VisitURL(GURL("https://shouldskip.com"), 1, base::Time::FromTimeT(123));
 
   EXPECT_EQ(0, GetNumClustersCreated());
@@ -640,8 +626,6 @@ TEST_F(ContextClustererHistoryServiceObserverTest, SkipsBlocklistedHost) {
 
 TEST_F(ContextClustererHistoryServiceObserverTest, Skips404Visits) {
   base::HistogramTester histogram_tester;
-
-  SetPersistenceExpectedConfig();
 
   VisitURL(GURL("https://example.com"), 1, base::Time::FromTimeT(123),
            history::kInvalidVisitID, history::kInvalidVisitID,
@@ -658,6 +642,7 @@ TEST_F(ContextClustererHistoryServiceObserverTest, Skips404Visits) {
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest, MultipleClusters) {
+  IgnoreClusterPersistence();
   VisitURL(GURL("https://example.com"), 1, base::Time::FromTimeT(1));
   VisitURL(GURL("https://example.com/2"), 2, base::Time::FromTimeT(2), 1);
   VisitURL(GURL("https://whatever.com"), 3, base::Time::FromTimeT(3));
@@ -670,6 +655,7 @@ TEST_F(ContextClustererHistoryServiceObserverTest, MultipleClusters) {
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest, CleansUpClusters) {
+  IgnoreClusterPersistence();
   {
     // Simulate a now time that is "old"-ish to make sure these get cleaned up
     // appropriately.
@@ -703,6 +689,7 @@ TEST_F(ContextClustererHistoryServiceObserverTest, CleansUpClusters) {
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest, DeleteAllHistory) {
+  IgnoreClusterPersistence();
   VisitURL(GURL("https://example.com"), 1, Now());
   VisitURL(GURL("https://example.com/2"), 2, Now());
 
@@ -714,6 +701,7 @@ TEST_F(ContextClustererHistoryServiceObserverTest, DeleteAllHistory) {
 }
 
 TEST_F(ContextClustererHistoryServiceObserverTest, DeleteSelectURLs) {
+  IgnoreClusterPersistence();
   VisitURL(GURL("https://example.com"), 1, Now());
   VisitURL(GURL("https://example.com/2"), 2, Now());
   VisitURL(GURL("https://default-engine.com/search?q=foo"), 3, Now());
