@@ -406,12 +406,6 @@ bool MediaRecorderHandler::CanSupportMimeTypeForCodec(const String& type,
         match = false;
       }
 
-      if (match) {
-        base::UmaHistogramBoolean(
-            "Media.MediaRecorder.HasCorrectAV1CodecString",
-            codec_string.StartsWithIgnoringAsciiCase("av01"));
-      }
-
       // If the profile is not supported by either the HW or the SW encoder,
       // reject it.
       if (!media::IsEncoderSupportedVideoType(

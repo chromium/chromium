@@ -6460,18 +6460,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Media.MediaRecorder.HasCorrectAV1CodecString"
-    enum="BooleanCorrect" expires_after="2024-06-30">
-  <owner>hiroh@chromium.org</owner>
-  <owner>handellm@google.com</owner>
-  <summary>
-    Record the correctness of the AV1 codecs string configured in MediaRecorder
-    and queried in MediaCapabilities. It is recorded when Initialize() in
-    MediaRecorder API is called and the capability is queried in
-    MediaCapabilities API.
-  </summary>
-</histogram>
-
 <histogram name="Media.MediaRecorder.TrackTransformationChangeCount"
     units="count" expires_after="2025-06-08">
   <owner>handellm@google.com</owner>
