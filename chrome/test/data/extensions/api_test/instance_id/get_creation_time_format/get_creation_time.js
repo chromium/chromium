@@ -16,9 +16,15 @@ chrome.test.runTests([
         const timeAfterGetCreationTimeCall = Date.now();
 
         // If the time was in a different unit (like seconds) this should fail.
+        // `creationTime` may have sub-millisecond precision, while Date.now()
+        // returns whole milliseconds that gin::TimeClamper may round up, so
+        // compare at millisecond granularity. The lower bound allows 1ms of
+        // slack because on Android `creationTime` is a floored integer
+        // millisecond, so a rounded-up `timeBeforeGetCreationTimeCall` can
+        // exceed it by 1.
         if (typeof creationTime === 'number' &&
-            creationTime >= timeBeforeGetCreationTimeCall &&
-            creationTime <= timeAfterGetCreationTimeCall) {
+            creationTime >= timeBeforeGetCreationTimeCall - 1 &&
+            Math.floor(creationTime) <= timeAfterGetCreationTimeCall) {
           chrome.test.succeed();
         } else {
           chrome.test.fail(
