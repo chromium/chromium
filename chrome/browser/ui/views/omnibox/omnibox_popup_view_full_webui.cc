@@ -505,6 +505,10 @@ void OmniboxPopupViewFullWebUI::ReshowPopup() {
       !IsPopupHandlerReady() || !controller()->edit_model()->HasDraft()) {
     return;
   }
+  // The host calls this again once it can show the popup.
+  if (popup_host()->DeferReshowPopup()) {
+    return;
+  }
   // Closing the popup cleared the WebUI, so resend the whole input state.
   last_sent_text_.reset();
   last_sent_focus_.reset();

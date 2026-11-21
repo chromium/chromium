@@ -57,6 +57,8 @@ class OmniboxPopupLocationBarHost : public OmniboxPopupHost,
   // No-op: the content fills LocationBarView, so it caches no content height.
   void ResetContentHeightForTabSwitch() override {}
   void DeactivateAndKillFocus() override;
+  // Never defers: the content has no window of its own.
+  bool DeferReshowPopup() override;
 
   // OmniboxPopupContentDelegate:
   bool ShouldReceiveFocus() const override;

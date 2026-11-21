@@ -5358,6 +5358,62 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       CheckVisibleOmniboxUnfocused(),
       CheckPopupState(OmniboxPopupState::kFull));
 }
+
+// Verifies that reopening a closed popup for an unfocused draft while the
+// browser window is off the active Space waits for the Space to become active,
+// then shows the popup attached to the browser window, without making it key.
+// See b/586993519.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       ReshowWithDraftWaitsForActiveSpace) {
+  std::optional<ScopedSimulateInactiveSpace> inactive_space;
+  auto reshow_popup = [this]() {
+    BrowserView::GetBrowserViewForBrowser(browser())
+        ->GetLocationBar()
+        ->GetOmniboxPopupView()
+        ->ReshowPopup();
+  };
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InputWebUIText("test draft"), WaitForWebUIInputValue("test draft"),
+      ClickWebPageBody(kTab1), WaitForVisibleOmniboxUnfocused(),
+      CheckPopupState(OmniboxPopupState::kFull),
+      UninstrumentWebContents(kPopupWebView),
+      // Close the popup as a fullscreen transition does, keeping the draft.
+      Do([this]() {
+        GetOmniboxControllerForTest()->popup_state_manager()->SetPopupState(
+            OmniboxPopupState::kNone);
+      }),
+      WaitForPopupTransitionLockout(), CheckUserInputInProgress(true),
+      Do([&]() {
+        inactive_space.emplace(GetBrowserWidget());
+        NotifyActiveSpaceChangedForTesting();
+      }),
+      CheckResult([this]() { return GetBrowserWidget()->IsVisibleOnScreen(); },
+                  false, "CheckBrowserWindowOffScreen"),
+      Do(reshow_popup), CheckPopupState(OmniboxPopupState::kNone),
+      Do([&]() { inactive_space.reset(); }),
+      WaitForPopupState(OmniboxPopupState::kFull),
+      PollUntil(
+          [this]() {
+            views::Widget* popup = GetPopupWidget(browser());
+            return popup && popup->IsVisible() &&
+                   IsOmniboxPopupAttachedForTesting(popup);
+          },
+          "WaitForPopupAttachedAndVisible"),
+      WaitForPopupTransitionLockout(),
+      CheckResult(
+          [this]() {
+            views::Widget* popup = GetPopupWidget(browser());
+            return popup && popup->IsVisible() && !popup->IsActive();
+          },
+          true, "CheckPopupVisibleAndInactive"),
+      CheckResult([this]() { return GetBrowserWidget()->IsActive(); }, true,
+                  "CheckBrowserWindowActive"),
+      InAnyContext(
+          InstrumentNonTabWebView(kPopupWebView, GetActivePopupWebView())),
+      InAnyContext(WaitForWebUIInputValue("test draft")),
+      CheckVisibleOmniboxUnfocused());
+}
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS)

@@ -286,6 +286,7 @@ source_set("unit_tests") {
     sources += [ "omnibox_popup_native_widget_mac_unittest.mm" ]
     deps += [
       ":native_widget_mac",
+      ":native_widget_mac_test_util",
       "//base",
       "//ui/gfx/geometry",
       "//ui/views",

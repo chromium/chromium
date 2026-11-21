@@ -130,6 +130,10 @@ bool OmniboxPopupLocationBarHost::CompletedFirstVisuallyNonEmptyPaint() {
 
 void OmniboxPopupLocationBarHost::DeactivateAndKillFocus() {}
 
+bool OmniboxPopupLocationBarHost::DeferReshowPopup() {
+  return false;
+}
+
 bool OmniboxPopupLocationBarHost::ShouldReceiveFocus() const {
   return true;
 }

@@ -117,6 +117,13 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
 
   void OnTabChanged() override;
 
+  // On macOS, defers while the browser window isn't on screen, e.g. while it's
+  // on another Space, and starts observing it so that
+  // `OnWidgetVisibilityOnScreenChanged()` can call `ReshowPopup()` once it's
+  // back. A popup shown before then may not be attached to the browser window,
+  // and then appears on the active Space, over another window.
+  bool DeferReshowPopup() override;
+
  protected:
   // OmniboxPopupPresenterBase:
   // Returns true so that explicit focus requests (`focus_requested_`) are
@@ -167,8 +174,18 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   // focused. On macOS, a popup opened in a window that isn't on the active
   // Space only appears once that Space becomes active, which is too late for
   // the focus request made when the popup opened.
+  // Also, on macOS, reopens a draft's popup that `DeferReshowPopup()` deferred
+  // once the browser window is back on screen.
   void OnWidgetVisibilityOnScreenChanged(views::Widget* widget,
                                          bool visible) override;
+
+#if BUILDFLAG(IS_MAC)
+  // Calls `ReshowPopup()` once the browser window is back on screen, unless a
+  // modal dialog closed the popup, as `RestoreFocusAfterModalDialog()` reopens
+  // it then. Stops observing the browser window if the popup stays closed,
+  // e.g. because the draft is gone.
+  void ReshowDeferredPopup();
+#endif  // BUILDFLAG(IS_MAC)
 
   void StopForwardingEvents();
 

@@ -250,6 +250,9 @@ class OmniboxPopupPresenterBase
 
   void DeactivateAndKillFocus() override = 0;
 
+  // Never defers. See `OmniboxPopupFullPresenter::DeferReshowPopup()`.
+  bool DeferReshowPopup() override;
+
   // Returns whether the WebUI content view receives focus.
   bool ShouldReceiveFocus() const override;
 

@@ -63,12 +63,26 @@ class RecordingPopupHost : public OmniboxPopupHost {
   void DeactivateAndKillFocus() override {
     calls_->push_back("DeactivateAndKillFocus");
   }
+  bool DeferReshowPopup() override {
+    calls_->push_back("DeferReshowPopup");
+    return defer_reshow_;
+  }
 
   void set_shown(bool shown) { shown_ = shown; }
+  void set_defer_reshow(bool defer_reshow) { defer_reshow_ = defer_reshow; }
 
  private:
   raw_ptr<std::vector<std::string>> calls_;
   bool shown_ = false;
+  bool defer_reshow_ = false;
+};
+
+// Reports a connected WebUI page handler, which `ReshowPopup()` requires.
+class ReadyPopupViewFullWebUI : public OmniboxPopupViewFullWebUI {
+ public:
+  using OmniboxPopupViewFullWebUI::OmniboxPopupViewFullWebUI;
+
+  bool IsPopupHandlerReady() const override { return true; }
 };
 
 class OmniboxPopupViewFullWebUITest : public views::ViewsTestBase {
@@ -93,6 +107,21 @@ class OmniboxPopupViewFullWebUITest : public views::ViewsTestBase {
     popup_view_ = std::make_unique<OmniboxPopupViewFullWebUI>(
         /*omnibox_view=*/nullptr, controller_.get(), /*location_bar=*/nullptr,
         std::move(popup_host));
+  }
+
+  // Creates a popup view that `ReshowPopup()` can reopen, with a draft.
+  void CreateReadyPopupViewWithDraft() {
+    auto popup_host = std::make_unique<RecordingPopupHost>(&calls_);
+    popup_host_ = popup_host.get();
+    popup_view_ = std::make_unique<ReadyPopupViewFullWebUI>(
+        /*omnibox_view=*/nullptr, controller_.get(), /*location_bar=*/nullptr,
+        std::move(popup_host));
+    controller_->edit_model()->SetUserText(u"draft");
+    ASSERT_TRUE(controller_->edit_model()->HasDraft());
+  }
+
+  OmniboxPopupState popup_state() const {
+    return controller_->popup_state_manager()->popup_state();
   }
 
   std::unique_ptr<OmniboxController> controller_;
@@ -215,6 +244,43 @@ TEST_F(OmniboxPopupViewFullWebUITest,
   EXPECT_FALSE(controller_->edit_model()->has_focus());
   EXPECT_EQ(controller_->popup_state_manager()->popup_state(),
             OmniboxPopupState::kNone);
+}
+
+TEST_F(OmniboxPopupViewFullWebUITest, ReshowPopupReopensForDraft) {
+  CreateReadyPopupViewWithDraft();
+
+  popup_view_->ReshowPopup();
+
+  EXPECT_EQ(popup_state(), OmniboxPopupState::kFull);
+}
+
+TEST_F(OmniboxPopupViewFullWebUITest, ReshowPopupStaysClosedWhileHostDefers) {
+  CreateReadyPopupViewWithDraft();
+  popup_host_->set_defer_reshow(true);
+
+  popup_view_->ReshowPopup();
+
+  EXPECT_EQ(popup_state(), OmniboxPopupState::kNone);
+  EXPECT_TRUE(controller_->edit_model()->HasDraft());
+
+  // The host calls `ReshowPopup()` again once it can show the popup.
+  popup_host_->set_defer_reshow(false);
+  popup_view_->ReshowPopup();
+
+  EXPECT_EQ(popup_state(), OmniboxPopupState::kFull);
+}
+
+// A host that defers reshows the popup later, so it's only asked when there is
+// a draft to reopen.
+TEST_F(OmniboxPopupViewFullWebUITest, ReshowPopupWithoutDraftDoesNotAskHost) {
+  CreateReadyPopupViewWithDraft();
+  controller_->edit_model()->SetUserText(u"");
+  ASSERT_FALSE(controller_->edit_model()->HasDraft());
+
+  popup_view_->ReshowPopup();
+
+  EXPECT_EQ(popup_state(), OmniboxPopupState::kNone);
+  EXPECT_THAT(calls_, IsEmpty());
 }
 
 // Uses a test WebContents for `OnTabChanged()`.

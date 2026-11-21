@@ -12,8 +12,9 @@ class Widget;
 }  // namespace views
 
 // While in scope, makes `browser_widget`'s NSWindow, and the NSWindows attached
-// to it, report that they aren't on the active Space, as when a new window has
-// entered fullscreen but macOS hasn't switched to its Space yet. This makes
+// to it, report that they aren't on the active Space and are occluded, as when
+// a new window has entered fullscreen but macOS hasn't switched to its Space
+// yet. This makes
 // NativeWidgetNSWindowBridge::OrderChildren() defer attaching child windows,
 // such as the omnibox popup. Destroying it restores the real Space state and
 // posts NSWorkspaceActiveSpaceDidChangeNotification, which attaches them.
@@ -32,5 +33,10 @@ class ScopedSimulateInactiveSpace {
 
 // Returns true if `popup_widget`'s NSWindow is attached to a parent NSWindow.
 bool IsOmniboxPopupAttachedForTesting(const views::Widget* popup_widget);
+
+// Posts NSWorkspaceActiveSpaceDidChangeNotification, so that already shown
+// widgets update whether they're on screen, e.g. right after a
+// ScopedSimulateInactiveSpace is created.
+void NotifyActiveSpaceChangedForTesting();
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_NATIVE_WIDGET_MAC_TEST_UTIL_H_

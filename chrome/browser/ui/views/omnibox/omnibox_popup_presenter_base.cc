@@ -1074,3 +1074,7 @@ void OmniboxPopupPresenterBase::ResetContentHeightForTabSwitch() {
     OnContentHeightChanged(1);
   }
 }
+
+bool OmniboxPopupPresenterBase::DeferReshowPopup() {
+  return false;
+}

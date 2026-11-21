@@ -18,8 +18,10 @@ namespace {
 // The root NSWindow whose hierarchy reports being off the active Space.
 NSWindow* __strong g_inactive_space_root_window = nil;
 
-// Swizzles -isOnActiveSpace while a ScopedSimulateInactiveSpace is alive.
+// Swizzle -isOnActiveSpace and -occlusionState while a
+// ScopedSimulateInactiveSpace is alive.
 base::apple::ScopedObjCClassSwizzler* g_active_space_swizzler = nullptr;
+base::apple::ScopedObjCClassSwizzler* g_occlusion_state_swizzler = nullptr;
 
 // Walks up both the NSWindow parents and the bridge parents. In immersive
 // fullscreen, the overlay window's NSWindow parent is AppKit's fullscreen
@@ -44,9 +46,12 @@ bool BelongsToInactiveSpaceRoot(NSWindow* window) {
 
 }  // namespace
 
-// Provides the -isOnActiveSpace implementation swapped into NSWindow.
+// Provides the -isOnActiveSpace and -occlusionState implementations swapped
+// into NSWindow. A window on another Space is also occluded, which
+// NativeWidgetNSWindowBridge reads when kDetectSpaceChangeViaOcclusion is on.
 @interface InactiveSpaceDonorForTesting : NSObject
 - (BOOL)isOnActiveSpace;
+- (NSWindowOcclusionState)occlusionState;
 @end
 
 @implementation InactiveSpaceDonorForTesting
@@ -59,15 +64,28 @@ bool BelongsToInactiveSpaceRoot(NSWindow* window) {
   return g_active_space_swizzler->InvokeOriginal<BOOL>(self, _cmd);
 }
 
+- (NSWindowOcclusionState)occlusionState {
+  NSWindow* window = static_cast<NSWindow*>(self);
+  if (BelongsToInactiveSpaceRoot(window)) {
+    return 0;
+  }
+  return g_occlusion_state_swizzler->InvokeOriginal<NSWindowOcclusionState>(
+      self, _cmd);
+}
+
 @end
 
 struct ScopedSimulateInactiveSpace::ObjCStorage {
   ObjCStorage()
       : swizzler([NativeWidgetMacNSWindow class],
                  [InactiveSpaceDonorForTesting class],
-                 @selector(isOnActiveSpace)) {}
+                 @selector(isOnActiveSpace)),
+        occlusion_state_swizzler([NativeWidgetMacNSWindow class],
+                                 [InactiveSpaceDonorForTesting class],
+                                 @selector(occlusionState)) {}
 
   base::apple::ScopedObjCClassSwizzler swizzler;
+  base::apple::ScopedObjCClassSwizzler occlusion_state_swizzler;
 };
 
 ScopedSimulateInactiveSpace::ScopedSimulateInactiveSpace(
@@ -78,19 +96,25 @@ ScopedSimulateInactiveSpace::ScopedSimulateInactiveSpace(
       browser_widget->GetNativeWindow().GetNativeNSWindow();
   storage_ = std::make_unique<ObjCStorage>();
   g_active_space_swizzler = &storage_->swizzler;
+  g_occlusion_state_swizzler = &storage_->occlusion_state_swizzler;
 }
 
 ScopedSimulateInactiveSpace::~ScopedSimulateInactiveSpace() {
   storage_.reset();
   g_active_space_swizzler = nullptr;
+  g_occlusion_state_swizzler = nullptr;
   g_inactive_space_root_window = nil;
-  [NSWorkspace.sharedWorkspace.notificationCenter
-      postNotificationName:NSWorkspaceActiveSpaceDidChangeNotification
-                    object:NSWorkspace.sharedWorkspace];
+  NotifyActiveSpaceChangedForTesting();
 }
 
 bool IsOmniboxPopupAttachedForTesting(const views::Widget* popup_widget) {
   NSWindow* ns_window =
       popup_widget ? popup_widget->GetNativeWindow().GetNativeNSWindow() : nil;
   return ns_window && ns_window.parentWindow;
+}
+
+void NotifyActiveSpaceChangedForTesting() {
+  [NSWorkspace.sharedWorkspace.notificationCenter
+      postNotificationName:NSWorkspaceActiveSpaceDidChangeNotification
+                    object:NSWorkspace.sharedWorkspace];
 }

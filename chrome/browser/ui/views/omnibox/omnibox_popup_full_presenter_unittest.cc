@@ -5,14 +5,23 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_full_presenter.h"
 
 #include <memory>
+#include <optional>
 
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/views/omnibox/full_webui_omnibox_frame.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_view_full_webui.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -21,6 +30,10 @@
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_native_widget_mac_test_util.h"
+#endif
 
 namespace {
 
@@ -219,4 +232,140 @@ TEST_F(OmniboxPopupFullPresenterTest,
 
   dummy_delegate_.set_location_bar_widget(nullptr);
 }
+
+#if BUILDFLAG(IS_MAC)
+// Reports a connected WebUI page handler, which `ReshowPopup()` requires.
+class ReadyPopupViewFullWebUI : public OmniboxPopupViewFullWebUI {
+ public:
+  using OmniboxPopupViewFullWebUI::OmniboxPopupViewFullWebUI;
+
+  bool IsPopupHandlerReady() const override { return true; }
+};
+
+// Hosts the presenter in its popup view, as in a browser window, with a draft
+// in the omnibox and a browser window that can be moved off the active Space.
+class OmniboxPopupFullPresenterReshowTest
+    : public OmniboxPopupFullPresenterTest {
+ public:
+  void SetUp() override {
+    OmniboxPopupFullPresenterTest::SetUp();
+    browser_widget_ =
+        CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+    dummy_delegate_.set_location_bar_widget(browser_widget_.get());
+    presenter_ptr_ = presenter_.get();
+    popup_view_ = std::make_unique<ReadyPopupViewFullWebUI>(
+        /*omnibox_view=*/nullptr, controller_.get(), /*location_bar=*/nullptr,
+        std::move(presenter_));
+    controller_->edit_model()->SetUserText(u"draft");
+    ASSERT_TRUE(controller_->edit_model()->HasDraft());
+  }
+
+  void TearDown() override {
+    inactive_space_.reset();
+    presenter_ptr_ = nullptr;
+    widget_ptr_ = nullptr;
+    popup_view_.reset();
+    dummy_delegate_.set_location_bar_widget(nullptr);
+    browser_widget_.reset();
+    OmniboxPopupFullPresenterTest::TearDown();
+  }
+
+ protected:
+  // Shows the browser window as if on a Space that isn't the active one.
+  void ShowBrowserWindowOffActiveSpace() {
+    inactive_space_.emplace(browser_widget_.get());
+    browser_widget_->ShowInactive();
+    ASSERT_FALSE(browser_widget_->IsVisibleOnScreen());
+  }
+
+  // Makes the browser window's Space the active one.
+  void ActivateBrowserWindowSpace() {
+    inactive_space_.reset();
+    ASSERT_TRUE(browser_widget_->IsVisibleOnScreen());
+  }
+
+  bool IsObservingBrowserWidget() const {
+    return browser_widget_->HasObserver(
+        static_cast<const views::WidgetObserver*>(presenter_ptr_.get()));
+  }
+
+  OmniboxPopupState popup_state() const {
+    return controller_->popup_state_manager()->popup_state();
+  }
+
+  std::unique_ptr<views::Widget> browser_widget_;
+  std::unique_ptr<ReadyPopupViewFullWebUI> popup_view_;
+  // Owned by `popup_view_`.
+  raw_ptr<TestOmniboxPopupFullPresenter> presenter_ptr_ = nullptr;
+  std::optional<ScopedSimulateInactiveSpace> inactive_space_;
+};
+
+// While the browser window is on another Space, a popup shown for it may not
+// be attached to it, and then appears on the active Space. Reopening a draft's
+// popup waits for the browser window to be back on screen.
+TEST_F(OmniboxPopupFullPresenterReshowTest,
+       DefersReshowUntilBrowserWindowIsOnScreen) {
+  ShowBrowserWindowOffActiveSpace();
+
+  popup_view_->ReshowPopup();
+  EXPECT_EQ(popup_state(), OmniboxPopupState::kNone);
+
+  ActivateBrowserWindowSpace();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&] { return popup_state() == OmniboxPopupState::kFull; }));
+}
+
+TEST_F(OmniboxPopupFullPresenterReshowTest,
+       DoesNotDeferReshowWhileBrowserWindowIsOnScreen) {
+  browser_widget_->ShowInactive();
+  ASSERT_TRUE(browser_widget_->IsVisibleOnScreen());
+
+  popup_view_->ReshowPopup();
+  EXPECT_EQ(popup_state(), OmniboxPopupState::kFull);
+}
+
+// If the draft is gone by the time the browser window is back on screen,
+// nothing reopens, and nothing is left to wait for.
+TEST_F(OmniboxPopupFullPresenterReshowTest,
+       StopsObservingBrowserWindowWhenDraftIsGone) {
+  ShowBrowserWindowOffActiveSpace();
+  popup_view_->ReshowPopup();
+  ASSERT_TRUE(IsObservingBrowserWidget());
+
+  controller_->edit_model()->SetUserText(u"");
+  ASSERT_FALSE(controller_->edit_model()->HasDraft());
+  ActivateBrowserWindowSpace();
+  EXPECT_TRUE(
+      base::test::RunUntil([&] { return !IsObservingBrowserWidget(); }));
+
+  EXPECT_EQ(popup_state(), OmniboxPopupState::kNone);
+}
+
+// A modal dialog that closed a draft's popup reopens it once the dialog
+// closes. The browser window coming back on screen must not reopen it sooner.
+TEST_F(OmniboxPopupFullPresenterReshowTest,
+       DoesNotReshowWhileModalDialogIsPending) {
+  // A file dialog opens over the draft's popup, which closes for it.
+  widget_ptr_->ShowInactive();
+  controller_->popup_state_manager()->SetPopupState(OmniboxPopupState::kFull);
+  presenter_ptr_->OnFileDialogOpened();
+  // Run the blur that the dialog posted.
+  base::RunLoop blur_run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, blur_run_loop.QuitClosure());
+  blur_run_loop.Run();
+  controller_->popup_state_manager()->SetPopupState(OmniboxPopupState::kNone);
+  presenter_ptr_->Hide();
+
+  ShowBrowserWindowOffActiveSpace();
+  popup_view_->ReshowPopup();
+  ASSERT_EQ(popup_state(), OmniboxPopupState::kNone);
+
+  ActivateBrowserWindowSpace();
+
+  EXPECT_EQ(popup_state(), OmniboxPopupState::kNone);
+  // Still observed, to reopen the popup once the dialog closes.
+  EXPECT_TRUE(IsObservingBrowserWidget());
+}
+#endif  // BUILDFLAG(IS_MAC)
 }  // namespace

@@ -636,6 +636,12 @@ void OmniboxPopupFullPresenter::OnWidgetBoundsChanged(
 void OmniboxPopupFullPresenter::OnWidgetVisibilityOnScreenChanged(
     views::Widget* widget,
     bool visible) {
+#if BUILDFLAG(IS_MAC)
+  if (visible && widget == GetBrowserWidget()) {
+    ReshowDeferredPopup();
+    return;
+  }
+#endif  // BUILDFLAG(IS_MAC)
   if (widget != GetWidget() || !visible) {
     return;
   }
@@ -646,6 +652,23 @@ void OmniboxPopupFullPresenter::OnWidgetVisibilityOnScreenChanged(
   SynchronizePopupBounds();
   RequestFocusIfOmniboxFocused();
 }
+
+#if BUILDFLAG(IS_MAC)
+void OmniboxPopupFullPresenter::ReshowDeferredPopup() {
+  if (had_focus_before_modal_dialog_) {
+    return;
+  }
+  if (OmniboxPopupView* popup_view = controller()->edit_model()->popup_view()) {
+    popup_view->ReshowPopup();
+  }
+  // If the popup reopened, `Show()` observes the browser window. Otherwise,
+  // e.g. if the draft is gone, nothing is left to wait for.
+  if (controller()->popup_state_manager()->popup_state() !=
+      OmniboxPopupState::kFull) {
+    browser_widget_observation_.Reset();
+  }
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 void OmniboxPopupFullPresenter::RequestFocusIfOmniboxFocused() {
   // Only refocus if the omnibox is still focused with the popup open. If the
@@ -945,6 +968,21 @@ void OmniboxPopupFullPresenter::OnTabChanged() {
       focus_manager->SetStoredFocusView(nullptr);
     }
   }
+}
+
+bool OmniboxPopupFullPresenter::DeferReshowPopup() {
+#if BUILDFLAG(IS_MAC)
+  views::Widget* browser_widget = GetBrowserWidget();
+  if (browser_widget && !browser_widget->IsVisibleOnScreen()) {
+    // `Hide()` stops observing the browser window when the popup closes,
+    // unless a modal dialog is pending.
+    if (!browser_widget_observation_.IsObserving()) {
+      browser_widget_observation_.Observe(browser_widget);
+    }
+    return true;
+  }
+#endif  // BUILDFLAG(IS_MAC)
+  return false;
 }
 
 void OmniboxPopupFullPresenter::RestoreFocusAfterModalDialog() {
