@@ -2350,7 +2350,7 @@ TEST_F(AmbientControllerDurationTest, AcquireWakeLockAfterScreenSaverStarts) {
                    device::mojom::WakeLockType::kPreventDisplaySleep));
 
   HideAmbientScreen();
-  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(WaitForDisplayWakeLockRelease());
 
   EXPECT_EQ(0, GetNumOfActiveWakeLocks(
                    device::mojom::WakeLockType::kPreventDisplaySleep));
@@ -2363,7 +2363,7 @@ TEST_F(AmbientControllerDurationTest, AcquireWakeLockAfterScreenSaverStarts) {
 
   // Unlock screen to exit ambient mode.
   UnlockScreen();
-  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(WaitForDisplayWakeLockRelease());
 
   EXPECT_EQ(0, GetNumOfActiveWakeLocks(
                    device::mojom::WakeLockType::kPreventDisplaySleep));

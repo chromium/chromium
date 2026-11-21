@@ -54,7 +54,10 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "components/prefs/testing_pref_service.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom-shared.h"
+#include "services/device/public/cpp/test/test_wake_lock_provider.h"
+#include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "ui/gfx/codec/jpeg_codec.h"
@@ -81,6 +84,29 @@ std::map<int, ::ambient::PhotoCacheEntry> GetCachedFilesFromStore(
   }
   return cached_files;
 }
+
+// Waits until TestWakeLockProvider reports that no kPreventDisplaySleep wake
+// lock is held.
+class DisplayWakeLockReleaseWaiter : public device::mojom::WakeLockObserver {
+ public:
+  explicit DisplayWakeLockReleaseWaiter(
+      device::TestWakeLockProvider* provider) {
+    provider->NotifyOnWakeLockDeactivation(
+        device::mojom::WakeLockType::kPreventDisplaySleep,
+        receiver_.BindNewPipeAndPassRemote());
+  }
+
+  bool Wait() { return future_.Wait(); }
+
+  // device::mojom::WakeLockObserver:
+  void OnWakeLockDeactivated(device::mojom::WakeLockType type) override {
+    future_.SetValue();
+  }
+
+ private:
+  base::test::TestFuture<void> future_;
+  mojo::Receiver<device::mojom::WakeLockObserver> receiver_{this};
+};
 
 }  // namespace
 
@@ -599,6 +625,12 @@ int AmbientAshTestBase::GetNumOfActiveWakeLocks(
                 &run_loop, &result_count));
   run_loop.Run();
   return result_count;
+}
+
+bool AmbientAshTestBase::WaitForDisplayWakeLockRelease() {
+  return DisplayWakeLockReleaseWaiter(
+             GetAmbientAshTestHelper()->wake_lock_provider())
+      .Wait();
 }
 
 void AmbientAshTestBase::IssueAccessToken(bool is_empty) {

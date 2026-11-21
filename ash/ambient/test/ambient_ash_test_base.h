@@ -201,6 +201,11 @@ class AmbientAshTestBase : public AshTestBase {
   // Returns the number of active wake locks of type |type|.
   int GetNumOfActiveWakeLocks(device::mojom::WakeLockType type);
 
+  // Waits until no kPreventDisplaySleep wake lock is held. AmbientController
+  // cancels its wake lock over mojo, so the count drops in a posted task after
+  // the call that releases it returns. Returns false if the wait times out.
+  bool WaitForDisplayWakeLockRelease();
+
   // Simulate to issue an |access_token|.
   // If |is_empty| is true, will return an empty access token.
   void IssueAccessToken(bool is_empty);
