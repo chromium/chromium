@@ -9519,22 +9519,11 @@ const ColumnPseudoElementsVector* Element::GetColumnPseudoElements() const {
 }
 
 void Element::ClearColumnPseudoElements(wtf_size_t to_keep) {
-  NodeRareData* data = RareData();
-  if (!data) {
-    return;
+  if (NodeRareData* data = RareData()) {
+    // Disposing each ::column also disposes its ::scroll-marker (see
+    // ColumnPseudoElement::Dispose()).
+    data->ClearColumnPseudoElements(to_keep);
   }
-  wtf_size_t idx = 0u;
-  if (const ColumnPseudoElementsVector* column_pseudo_elements =
-          data->GetColumnPseudoElements()) {
-    for (PseudoElement* column_pseudo_element : *column_pseudo_elements) {
-      if (++idx > to_keep) {
-        if (NodeRareData* column_data = column_pseudo_element->RareData()) {
-          column_data->ClearPseudoElements();
-        }
-      }
-    }
-  }
-  data->ClearColumnPseudoElements(to_keep);
 }
 
 void Element::SetScrollbarPseudoElementStylesDependOnFontMetrics(bool value) {
