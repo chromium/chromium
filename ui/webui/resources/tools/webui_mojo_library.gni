@@ -1,0 +1,144 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/typescript/ts_library.gni")
+import("//tools/typescript/webui_path_mappings.gni")
+import("//ui/webui/resources/mojo/shared_mojo_targets.gni")
+import("//ui/webui/resources/tools/generate_mojo_manifest.gni")
+import("//ui/webui/resources/tools/minify_js.gni")
+import("//ui/webui/webui_features.gni")
+
+template("webui_mojo_library") {
+  # Require callers to explicitly specify `mojo_target_name` so the link to the
+  # sibling mojom() target is clear at the call site, while enforcing the
+  # `<mojo_target_name>_webui` naming convention used to locate dependent
+  # webui_mojo_library() targets in `mojo_target_deps` below.
+  forward_variables_from(invoker, [ "mojo_target_name" ])
+  assert(defined(mojo_target_name) && mojo_target_name != "",
+         "webui_mojo_library() requires 'mojo_target_name' to be set to the " +
+             "sibling mojom() target's name (e.g. 'mojo_bindings').")
+  assert(
+      string_replace(mojo_target_name, ":", "") == mojo_target_name &&
+          string_replace(mojo_target_name, "/", "") == mojo_target_name,
+      "'mojo_target_name' ('${mojo_target_name}') must be the bare name of a " +
+          "sibling mojom() target in the same BUILD.gn file, not a label.")
+  expected_target_name = "${mojo_target_name}_webui"
+  assert(
+      target_name == expected_target_name,
+      "webui_mojo_library() target '${target_name}' must be named " +
+          "'${expected_target_name}' ('<mojo_target_name>_webui') so " +
+          "dependent webui_mojo_library() targets can locate it. Rename this " +
+          "target to '${expected_target_name}'.")
+
+  base_target_name = target_name
+  generator_target = ":${mojo_target_name}_ts__generator"
+  raw_files =
+      filter_include(get_target_outputs(generator_target), [ "*-webui.ts" ])
+  mojo_in_files = rebase_path(raw_files, target_gen_dir)
+
+  repo_dir = rebase_path(target_gen_dir, root_gen_dir)
+  target_tsc_dir = "$target_gen_dir/${base_target_name}_tsc"
+
+  assert(!defined(invoker.deps),
+         "Use 'mojo_target_deps' instead of 'deps' in webui_mojo_library().")
+
+  mojo_ts_deps = [ "//ui/webui/resources/mojo:build_ts" ]
+  webui_lib_deps = []
+  dep_manifest_files = []
+  if (defined(invoker.mojo_target_deps)) {
+    foreach(d, invoker.mojo_target_deps) {
+      full_name = get_label_info("$d", "label_no_toolchain")
+      if (filter_exclude([ full_name ], shared_mojo_targets) != []) {
+        dep_dir = get_label_info("$d", "dir")
+        dep_name = get_label_info("$d", "name") + "_webui"
+        dep_gen_dir = get_label_info("$d", "target_gen_dir")
+        mojo_ts_deps += [ "${dep_dir}:${dep_name}_ts" ]
+        webui_lib_deps += [ "${dep_dir}:${dep_name}" ]
+        dep_manifest_files += [ "${dep_gen_dir}/${dep_name}_manifest.json" ]
+      }
+    }
+  }
+
+  webui_path_mappings("${base_target_name}_path_map") {
+    forward_variables_from(invoker, [ "testonly" ])
+    ts_deps = mojo_ts_deps
+    manifest_files = dep_manifest_files
+    manifest_deps = webui_lib_deps
+    visibility = [ ":${base_target_name}_ts" ]
+  }
+
+  own_path_mappings = []
+  mojo_js_files = []
+  foreach(f, mojo_in_files) {
+    js_file = string_replace(f, ".ts", ".js")
+    mojo_js_files += [ js_file ]
+    own_path_mappings += [ "${repo_dir}/${js_file}|./${f}" ]
+  }
+
+  minify = optimize_webui && (!defined(invoker.testonly) || !invoker.testonly)
+
+  ts_library("${base_target_name}_ts") {
+    forward_variables_from(invoker,
+                           [
+                             "testonly",
+                             "visibility",
+                           ])
+    if (defined(visibility)) {
+      visibility += [ ":${base_target_name}" ]
+      if (minify) {
+        visibility += [ ":${base_target_name}_min_js" ]
+      }
+    }
+    root_dir = target_gen_dir
+    out_dir = target_tsc_dir
+    composite = true
+    in_files = mojo_in_files
+
+    deps = mojo_ts_deps
+    extra_deps = [
+      ":${base_target_name}_path_map",
+      generator_target,
+    ]
+    path_mappings_file =
+        "$target_gen_dir/path_mappings_${base_target_name}_path_map.json"
+    path_mappings = own_path_mappings
+  }
+
+  if (minify) {
+    target_minified_dir = "$target_gen_dir/${base_target_name}_minified"
+
+    minify_js("${base_target_name}_min_js") {
+      visibility = [ ":${base_target_name}" ]
+      in_folder = target_tsc_dir
+      out_folder = target_minified_dir
+      in_files = []
+      js_files = filter_include(get_target_outputs(":${base_target_name}_ts"),
+                                [ "*.js" ])
+      foreach(_js_file, js_files) {
+        in_files += [ rebase_path(_js_file, target_tsc_dir) ]
+      }
+      deps = [ ":${base_target_name}_ts" ]
+    }
+    js_out_dir = target_minified_dir
+    own_target = ":${base_target_name}_min_js"
+  } else {
+    js_out_dir = target_tsc_dir
+    own_target = ":${base_target_name}_ts"
+  }
+
+  generate_mojo_manifest(base_target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "testonly",
+                             "visibility",
+                           ])
+    out_manifest = "$target_gen_dir/${base_target_name}_manifest.json"
+    base_dir = js_out_dir
+    dts_dir = target_tsc_dir
+    url_prefix = repo_dir
+    in_files = mojo_js_files
+    dep_manifests = dep_manifest_files
+    public_deps = [ own_target ] + webui_lib_deps
+  }
+}

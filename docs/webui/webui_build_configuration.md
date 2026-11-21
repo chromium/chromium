@@ -628,11 +628,58 @@ generate_zip("build_zip") {
 }
 ```
 
+### **webui_mojo_library**
+
+This rule compiles and (when `optimize_webui = true`) minifies the
+`.mojom-webui.ts` bindings produced by a sibling `mojom()` target configured
+with `webui_module_path = "REPO_PATHS"`, and outputs a manifest
+(`$target_gen_dir/${target_name}_manifest.json`) aggregating its own
+`.mojom-webui.js` files and those of any transitive `webui_mojo_library()`
+dependencies. The target must be named `<mojo_target_name>_webui` matching
+`mojo_target_name` (e.g. `mojo_bindings_webui` for `mojom("mojo_bindings")`).
+
+#### **Arguments**
+```
+mojo_target_name: Required parameter. The name of the sibling `mojom()` target
+                  in the same `BUILD.gn` file (e.g. `"mojo_bindings"`). The
+                  `webui_mojo_library()` target itself must be named
+                  `"<mojo_target_name>_webui"`.
+mojo_target_deps: Optional parameter. List of `mojom()` target labels that the
+                  sibling `mojom()` target depends on (typically shared via a
+                  `mojo_deps` variable with the `mojom()` target's
+                  `public_deps`). Shared Mojo targets listed in
+                  `//ui/webui/resources/mojo/shared_mojo_targets.gni` are
+                  automatically filtered out, while other Mojo dependencies are
+                  mapped to their corresponding `<name>_webui`
+                  `webui_mojo_library()` targets.
+```
+
+#### **Example**
+```python
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//ui/webui/resources/tools/webui_mojo_library.gni")
+
+mojo_deps = [ "//mojo/public/mojom/base" ]
+
+mojom("mojo_bindings") {
+  sources = [ "my_webui.mojom" ]
+  public_deps = mojo_deps
+  webui_module_path = "REPO_PATHS"
+}
+
+webui_mojo_library("mojo_bindings_webui") {
+  mojo_target_name = "mojo_bindings"
+  mojo_target_deps = mojo_deps
+}
+```
+
 ### **generate_mojo_manifest**
 
 This rule writes a JSON manifest file (`entries` containing `base_dir`,
 `dts_dir`, optional `url_prefix`, and `files`) combining a target's own Mojo JS
 files with the entries from any dependent Mojo manifests (`dep_manifests`).
+Used internally by `webui_mojo_library()` and
+`//ui/webui/resources/mojo:mojo_manifest`.
 
 #### **Arguments**
 ```
