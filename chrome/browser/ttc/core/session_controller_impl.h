@@ -50,6 +50,7 @@ class SessionInactivityDetector;
 class SessionView;
 class TtcDebugSession;
 class TtcKeyedService;
+class TtcToolCallTracer;
 
 class SessionControllerImpl : public SessionController,
                               public SessionViewDelegate,
@@ -115,6 +116,11 @@ class SessionControllerImpl : public SessionController,
   // pointing. See Observer::OnPointerLocationsReported().
   void NotifyPointerLocationsReported(base::span<const gfx::Point> points);
 
+#if BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
+  // Traces tool calls for the TTC debug tools. Null unless they're enabled.
+  TtcToolCallTracer* tool_call_tracer() { return tool_call_tracer_.get(); }
+#endif  // BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
+
   SessionView& session_view() { return CHECK_DEREF(session_view_.get()); }
   Conversation& conversation() { return CHECK_DEREF(conversation_.get()); }
   TtcPageContextMonitor* page_context_monitor_for_testing() {
@@ -169,6 +175,9 @@ class SessionControllerImpl : public SessionController,
   // depends on its factory) and keeps the record at least until it's ended
   // here.
   raw_ptr<TtcDebugSession> debug_session_;
+  // Traces tool calls into `debug_session_`; null when it is. Declared after
+  // `actor_task_holder_`, which it asks for the session's actor task.
+  std::unique_ptr<TtcToolCallTracer> tool_call_tracer_;
 #endif  // BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
   ToolController tool_controller_;
 

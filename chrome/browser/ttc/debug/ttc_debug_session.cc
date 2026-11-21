@@ -246,6 +246,23 @@ void TtcDebugSession::End() {
   Turn* turn = OpenTurn();
   CloseOpenTurn(turn && turn->first_audio_ms ? TurnStatus::kOk
                                              : TurnStatus::kNoAudio);
+  // Tool calls cut off by the end of the session would otherwise look like
+  // they're still running.
+  for (ToolCall& tool_call : tool_calls_) {
+    const bool in_flight = tool_call.status == ToolStatus::kPending ||
+                           tool_call.status == ToolStatus::kRunning;
+    const bool checking = tool_call.effect == ToolEffect::kChecking;
+    if (in_flight) {
+      tool_call.status = ToolStatus::kInterrupted;
+    }
+    if (checking) {
+      tool_call.effect = ToolEffect::kNotChecked;
+      tool_call.effect_detail = "The session ended before the effect was seen.";
+    }
+    if (in_flight || checking) {
+      MarkToolCallChanged(tool_call);
+    }
+  }
   ended_ = true;
   watchdog_.Stop();
   detector_timer_.Stop();

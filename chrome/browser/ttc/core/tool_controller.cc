@@ -49,6 +49,7 @@
 #include "chrome/browser/actor/tools/window_management_tool_request.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ttc/core/buildflags.h"
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ttc/core/get_pointer_tool.h"
 #include "chrome/browser/ttc/core/page_context_util.h"
@@ -75,6 +76,10 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
 #endif
+
+#if BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
+#include "chrome/browser/ttc/debug/ttc_tool_call_tracer.h"
+#endif  // BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
 
 namespace ttc {
 
@@ -233,6 +238,11 @@ void ToolController::RunNextToolCall() {
 
 void ToolController::OnToolCallDone(ToolResponse response) {
   CHECK(in_flight_tool_call_);
+#if BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
+  if (TtcToolCallTracer* tracer = session_controller_->tool_call_tracer()) {
+    tracer->OnToolFinished(in_flight_tool_call_->request.call_id, response);
+  }
+#endif  // BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
   PendingToolCall tool_call = std::move(*in_flight_tool_call_);
   in_flight_tool_call_.reset();
 
@@ -289,6 +299,12 @@ void ToolController::RunToolCall(const ToolRequest& tool_request,
                    base::WriteJson(tool_request.arguments).value_or(""))
               .Build()),
       std::move(callback));
+#if BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
+  if (TtcToolCallTracer* tracer = session_controller_->tool_call_tracer()) {
+    tracer->OnToolDispatched(tool_request.call_id, tool_request.name,
+                             tool_request.arguments);
+  }
+#endif  // BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
 
   if (std::optional<actor::ToolId> tool_id =
           actor::ToolRegistry::NameToToolId(tool_request.name)) {
@@ -1199,6 +1215,14 @@ void ToolController::PerformActionOnTrackedContents(
         actor::mojom::ActionResultCode::kTabWentAway, "No active tab"));
     return;
   }
+#if BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
+  // Every actor tool that acts on the tracked contents runs through here, so
+  // no tool has to say which tab it acts on. Tools that only read the tab
+  // (get_screenshot, get_pointer) don't report a target.
+  if (TtcToolCallTracer* tracer = session_controller_->tool_call_tracer()) {
+    tracer->OnToolTarget(in_flight_tool_call_->request.call_id, *contents);
+  }
+#endif  // BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
 
   PerformAction(create_action(actor_surface_handle), std::move(callback));
 }

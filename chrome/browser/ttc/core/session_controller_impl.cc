@@ -54,6 +54,7 @@
 #if BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
 #include "chrome/browser/ttc/debug/ttc_debug_session.h"
 #include "chrome/browser/ttc/debug/ttc_debug_tools_service.h"
+#include "chrome/browser/ttc/debug/ttc_tool_call_tracer.h"
 #endif  // BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
 
 namespace ttc {
@@ -120,6 +121,14 @@ SessionControllerImpl::SessionControllerImpl(
   if (TtcDebugToolsService* debug_tools =
           TtcDebugToolsService::Get(service.profile())) {
     debug_session_ = debug_tools->BeginSession(&journal_);
+    // Unretained is safe: `tool_call_tracer_` only asks for the task while it
+    // exists.
+    tool_call_tracer_ = std::make_unique<TtcToolCallTracer>(
+        *debug_session_,
+        CHECK_DEREF(actor::ActorKeyedService::Get(service.profile()))
+            .GetJournal(),
+        base::BindRepeating(&SessionControllerImpl::GetActorTaskId,
+                            base::Unretained(this)));
   }
 #endif  // BUILDFLAG(ENABLE_TTC_DEBUG_TOOLS)
 

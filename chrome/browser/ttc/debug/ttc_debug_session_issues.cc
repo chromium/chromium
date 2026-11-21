@@ -9,10 +9,14 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
+#include "base/values.h"
 #include "chrome/browser/ttc/debug/ttc_debug_session.h"
+#include "components/actor/public/mojom/actor_types.mojom-shared.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "url/gurl.h"
 
@@ -38,6 +42,31 @@ bool IsInForeground(const TtcDebugSession::TabSnapshot& tab) {
 
 // The kind of the "<kind>:<tool call id>" issue raised for a background target.
 constexpr std::string_view kBackgroundTarget = "tool_background_target";
+
+// The error reported by a tool call response of the form {"error": {"message":
+// ..., "code": <actor error code>}}. Either part may be missing.
+struct ResponseError {
+  std::string code;
+  std::string message;
+};
+
+ResponseError ParseResponseError(std::string_view response_json) {
+  ResponseError result;
+  std::optional<base::DictValue> response =
+      base::JSONReader::ReadDict(response_json, base::JSON_PARSE_RFC);
+  const base::DictValue* error =
+      response ? response->FindDict("error") : nullptr;
+  if (!error) {
+    return result;
+  }
+  if (std::optional<int> code = error->FindInt("code")) {
+    result.code = TtcDebugSession::ActionResultCodeName(*code);
+  }
+  if (const std::string* message = error->FindString("message")) {
+    result.message = *message;
+  }
+  return result;
+}
 
 }  // namespace
 
@@ -66,7 +95,23 @@ std::string_view TtcDebugSession::ToolStatusName(ToolStatus status) {
       return "error";
     case ToolStatus::kRejected:
       return "rejected";
+    case ToolStatus::kInterrupted:
+      return "interrupted";
   }
+}
+
+// static
+std::string TtcDebugSession::ActionResultCodeName(int32_t code) {
+  const auto action_result_code =
+      static_cast<actor::mojom::ActionResultCode>(code);
+  if (!actor::mojom::IsKnownEnumValue(action_result_code)) {
+    return base::NumberToString(code);
+  }
+  std::string name = base::ToString(action_result_code);
+  if (size_t pos = name.rfind("::"); pos != std::string::npos) {
+    name.erase(0, pos + 2);
+  }
+  return name;
 }
 
 // static
@@ -338,33 +383,9 @@ void TtcDebugSession::RaiseToolIssue(std::string_view kind,
               .tool_call_id = tool_call.id});
 }
 
-void TtcDebugSession::OnToolCallRejected(std::string_view call_id,
-                                         std::string_view reason) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (ended_) {
-    return;
-  }
-  ToolCall* tool_call = FindOrCreateToolCall(call_id, "");
-  if (!tool_call) {
-    return;
-  }
-  tool_call->status = ToolStatus::kRejected;
-  tool_call->finished_ms = NowMs();
-  tool_call->result_message = Truncate(reason);
-  AddEvent(EventKind::kToolEnd, static_cast<float>(tool_call->id),
-           base::StrCat({tool_call->name, " rejected: ", reason}));
-  MarkToolCallChanged(*tool_call);
-  RaiseToolIssue("tool_rejected", *tool_call, IssueSeverity::kError,
-                 base::StrCat({"Tool call rejected: ", tool_call->name}),
-                 base::StrCat({"The tool call never reached the browser: ",
-                               reason, ". The model was told it failed."}));
-}
-
 void TtcDebugSession::OnToolDispatched(std::string_view call_id,
                                        std::string_view name,
-                                       std::string_view arguments_json,
-                                       const std::optional<TabSnapshot>& target,
-                                       bool verifying) {
+                                       std::string_view arguments_json) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ended_) {
     return;
@@ -378,15 +399,28 @@ void TtcDebugSession::OnToolDispatched(std::string_view call_id,
   }
   tool_call->status = ToolStatus::kRunning;
   tool_call->dispatched_ms = NowMs();
-  // Browser-level tools (e.g. switch_tab) don't act on a tab.
-  if (target) {
-    tool_call->target_before = TruncateTab(*target);
+  tool_call->effect = ToolEffect::kNotChecked;
+  MarkToolCallChanged(*tool_call);
+}
+
+void TtcDebugSession::OnToolTarget(std::string_view call_id,
+                                   const TabSnapshot& target,
+                                   bool verifying) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (ended_) {
+    return;
   }
-  tool_call->effect =
-      verifying ? ToolEffect::kChecking : ToolEffect::kNotChecked;
+  ToolCall* tool_call = FindOrCreateToolCall(call_id, "");
+  if (!tool_call) {
+    return;
+  }
+  tool_call->target_before = TruncateTab(target);
+  if (verifying) {
+    tool_call->effect = ToolEffect::kChecking;
+  }
   MarkToolCallChanged(*tool_call);
 
-  if (target && !IsInForeground(*target)) {
+  if (!IsInForeground(target)) {
     RaiseToolIssue(
         kBackgroundTarget, *tool_call, IssueSeverity::kWarning,
         base::StrCat({tool_call->name, " is acting on a background tab"}),
@@ -396,73 +430,77 @@ void TtcDebugSession::OnToolDispatched(std::string_view call_id,
   }
 }
 
-void TtcDebugSession::OnToolNoTarget(std::string_view call_id,
-                                     std::string_view name) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (ended_) {
-    return;
-  }
-  ToolCall* tool_call = FindOrCreateToolCall(call_id, name);
-  if (!tool_call) {
-    return;
-  }
-  tool_call->dispatched_ms = NowMs();
-  MarkToolCallChanged(*tool_call);
-  RaiseToolIssue(
-      "tool_no_target", *tool_call, IssueSeverity::kError,
-      base::StrCat({tool_call->name, " had no tab to act on"}),
-      "TTC isn't voice-focused on any tab, so the action couldn't run.");
-}
-
-void TtcDebugSession::OnToolFinished(
+TtcDebugSession::ToolCall* TtcDebugSession::FinishToolCall(
     std::string_view call_id,
-    bool ok,
+    ToolStatus status,
     std::string_view result_code,
     std::string_view message,
     const std::optional<TabSnapshot>& target_after) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (ended_) {
-    return;
-  }
   ToolCall* tool_call = FindOrCreateToolCall(call_id, "");
   if (!tool_call) {
-    return;
+    return nullptr;
   }
-  tool_call->status = ok ? ToolStatus::kOk : ToolStatus::kError;
+  tool_call->status = status;
   tool_call->finished_ms = NowMs();
   tool_call->result_code = Truncate(result_code);
   tool_call->result_message = Truncate(message);
   if (target_after) {
     tool_call->target_after = TruncateTab(*target_after);
   }
-  if (!ok && tool_call->effect == ToolEffect::kChecking) {
-    tool_call->effect = ToolEffect::kNotChecked;
-  }
   const double latency =
       *tool_call->finished_ms -
       tool_call->dispatched_ms.value_or(tool_call->received_ms);
   AddEvent(EventKind::kToolEnd, static_cast<float>(tool_call->id),
-           base::StrCat({tool_call->name, " ", result_code, " in ", Ms(latency),
-                         message.empty() ? "" : ": ", message}));
+           base::StrCat(
+               {tool_call->name, " ",
+                result_code.empty() ? ToolStatusName(status) : result_code,
+                " in ", Ms(latency), message.empty() ? "" : ": ", message}));
   MarkToolCallChanged(*tool_call);
   ResolveIssue(ToolIssueKey("tool_timeout", tool_call->id));
+  return tool_call;
+}
 
-  if (!ok) {
-    RaiseToolIssue(
-        "tool_error", *tool_call, IssueSeverity::kError,
-        base::StrCat({tool_call->name, " failed: ", result_code}),
-        message.empty()
-            ? std::string("The action failed in the browser.")
-            : base::StrCat({"The action failed in the browser: ", message}));
-  } else if (target_after && !IsInForeground(*target_after) &&
-             !FindOpenIssue(ToolIssueKey(kBackgroundTarget, tool_call->id))) {
-    // Skipped if the dispatch already flagged a background target.
-    RaiseToolIssue(
-        kBackgroundTarget, *tool_call, IssueSeverity::kWarning,
-        base::StrCat({tool_call->name, " finished in a background tab"}),
-        "The action reported success, but the tab it acted on isn't "
-        "the visible, active tab.");
+void TtcDebugSession::OnToolSucceeded(
+    std::string_view call_id,
+    const std::optional<TabSnapshot>& target_after) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (ended_) {
+    return;
   }
+  // A background target is only an issue at dispatch (OnToolTarget()). After
+  // the tool, it's often expected: a tool that opens a new tab, such as
+  // open_url with new_tab, leaves the tab it acted on behind it.
+  FinishToolCall(call_id, ToolStatus::kOk, "kOk", /*message=*/"", target_after);
+}
+
+void TtcDebugSession::OnToolFailed(
+    std::string_view call_id,
+    std::string_view error_code,
+    std::string_view message,
+    const std::optional<TabSnapshot>& target_after) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (ended_) {
+    return;
+  }
+  ToolCall* tool_call = FinishToolCall(call_id, ToolStatus::kError, error_code,
+                                       message, target_after);
+  if (!tool_call) {
+    return;
+  }
+  // A failed tool has no effect to check. Its effect may already have been
+  // reported missing (e.g. a navigation that committed an error page reports
+  // before the tool does), which the failure explains.
+  if (tool_call->effect == ToolEffect::kChecking ||
+      tool_call->effect == ToolEffect::kNoEffect) {
+    tool_call->effect = ToolEffect::kNotChecked;
+    ResolveIssue(ToolIssueKey("tool_no_effect", tool_call->id));
+  }
+  RaiseToolIssue(
+      "tool_error", *tool_call, IssueSeverity::kError,
+      base::StrCat({tool_call->name, " failed: ", error_code}),
+      message.empty()
+          ? std::string("The action failed in the browser.")
+          : base::StrCat({"The action failed in the browser: ", message}));
 }
 
 void TtcDebugSession::OnToolEffect(std::string_view call_id,
@@ -503,6 +541,20 @@ void TtcDebugSession::OnToolResponseSent(std::string_view call_id,
   tool_call->response_json = Truncate(response_json);
   tool_call->response_dropped = !sent;
   MarkToolCallChanged(*tool_call);
+  if (tool_call->status == ToolStatus::kPending) {
+    // The call never ran: the browser rejected it (e.g. busy, or cancelled
+    // after an earlier call failed) or couldn't parse its arguments.
+    const ResponseError error = ParseResponseError(response_json);
+    FinishToolCall(call_id, ToolStatus::kRejected, error.code, error.message,
+                   std::nullopt);
+    RaiseToolIssue(
+        "tool_rejected", *tool_call, IssueSeverity::kError,
+        base::StrCat({"Tool call not run: ", tool_call->name}),
+        base::StrCat({"The browser didn't run the tool call (",
+                      error.code.empty() ? "no error code" : error.code,
+                      error.message.empty() ? "" : ": ", error.message,
+                      "). The model was told it failed."}));
+  }
   if (!sent) {
     RaiseToolIssue("tool_response_not_sent", *tool_call, IssueSeverity::kError,
                    base::StrCat({"Result of ", tool_call->name, " never sent"}),
@@ -617,7 +669,7 @@ void TtcDebugSession::RunDetectors() {
     return t ? now - *t : 0.0;
   };
 
-  // Tools that never finish. Resolved by OnToolFinished().
+  // Tools that never finish. Resolved by OnToolSucceeded() or OnToolFailed().
   for (const ToolCall& tool_call : tool_calls_) {
     if (tool_call.status == ToolStatus::kRunning && tool_call.dispatched_ms &&
         age(tool_call.dispatched_ms) >= kToolTimeout.InMillisecondsF()) {
