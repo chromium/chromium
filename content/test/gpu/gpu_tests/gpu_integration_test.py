@@ -444,6 +444,11 @@ class GpuIntegrationTest(
       # seems to allow such tests to pass.
       default_args.append('--disable-gpu-watchdog')
 
+    if host_information.IsMac() and host_information.IsAppleGpu():
+      # TODO(crbug.com/588514727): Remove this once the issue with the Metal
+      # shader cache's interaction with the partition allocator is fixed.
+      default_args.append('--disable-metal-shader-cache')
+
     return default_args + additional_args
 
   @classmethod
