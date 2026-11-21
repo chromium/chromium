@@ -62,9 +62,12 @@ class WorkerProcessLauncher {
 
   // Creates the launcher that will use |launcher_delegate| to manage the worker
   // process and |ipc_handler| to handle IPCs. The caller must ensure that
-  // |ipc_handler| outlives this object.
+  // |ipc_handler| outlives this object. If |auto_relaunch| is true, the worker
+  // process is automatically relaunched after exiting (unless stopped,
+  // destroyed, or exited with a permanent error).
   WorkerProcessLauncher(std::unique_ptr<Delegate> launcher_delegate,
-                        WorkerProcessIpcDelegate* ipc_handler);
+                        WorkerProcessIpcDelegate* ipc_handler,
+                        bool auto_relaunch = true);
 
   WorkerProcessLauncher(const WorkerProcessLauncher&) = delete;
   WorkerProcessLauncher& operator=(const WorkerProcessLauncher&) = delete;
@@ -73,8 +76,8 @@ class WorkerProcessLauncher {
 
   // Asks the worker process to crash and generate a dump, and closes the IPC
   // channel. |location| is passed to the worker so that it is on the stack in
-  // the dump. Restarts the worker process forcefully, if it does not exit on
-  // its own.
+  // the dump. Terminates the worker process forcefully if it does not exit on
+  // its own, and relaunches it if |auto_relaunch_| is true.
   void Crash(const base::Location& location);
 
   // Provides a way to request an associated interface from the worker process
@@ -118,8 +121,9 @@ class WorkerProcessLauncher {
   // Set the desired timeout for |kill_process_timer_|.
   void SetKillProcessTimeoutForTest(const base::TimeDelta& timeout);
 
-  // Stops the worker process and schedules next launch attempt unless the
-  // object is being destroyed already.
+  // Stops the worker process and schedules the next launch attempt if
+  // |auto_relaunch_| is true (unless the object is being destroyed already or
+  // the process exited with a permanent error).
   void StopWorker();
 
   // Handles IPC messages sent by the worker process.
@@ -150,6 +154,7 @@ class WorkerProcessLauncher {
   base::OneShotTimer launch_result_timer_;
 
   bool process_launched_ = false;
+  const bool auto_relaunch_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

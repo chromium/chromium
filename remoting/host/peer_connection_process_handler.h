@@ -58,7 +58,7 @@ class PeerConnectionProcessHandler : public WorkerProcessIpcDelegate {
       mojo::ScopedInterfaceEndpointHandle handle) override;
 
  private:
-  void CloseSelf();
+  void CloseSelf(StoppedCallback stopped_callback);
 
   scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner_;
   std::unique_ptr<WorkerProcessLauncher> launcher_;

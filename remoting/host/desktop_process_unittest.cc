@@ -518,6 +518,55 @@ TEST_F(DesktopProcessTest,
   EXPECT_EQ(last_exit_code_, kSuccessExitCode);
 }
 
+TEST_F(DesktopProcessTest, DuplicateDesktopSessionAgentBindRequestsCrash) {
+  mojo::AssociatedRemote<mojom::DesktopSessionAgent> duplicate_agent;
+  bool crash_requested = false;
+  bool first_disconnected = false;
+  bool duplicate_disconnected = false;
+
+  auto maybe_disconnect = [&]() {
+    if (crash_requested && duplicate_disconnected) {
+      EXPECT_FALSE(first_disconnected);
+      EXPECT_TRUE(desktop_session_agent_.is_connected());
+      task_environment_.GetMainThreadTaskRunner()->PostTask(
+          FROM_HERE, base::BindLambdaForTesting([&]() {
+            duplicate_agent.reset();
+            DisconnectChannels();
+          }));
+    }
+  };
+
+  {
+    InSequence s;
+    EXPECT_CALL(daemon_listener_, OnChannelConnected(_));
+    EXPECT_CALL(daemon_listener_, ConnectDesktopChannel(_))
+        .WillOnce([&](mojo::ScopedMessagePipeHandle desktop_pipe) {
+          CreateNetworkChannel(std::move(desktop_pipe));
+        });
+    EXPECT_CALL(network_listener_, OnChannelConnected(_)).WillOnce([&]() {
+      network_channel_->GetRemoteAssociatedInterface(&desktop_session_agent_);
+      desktop_session_agent_.set_disconnect_handler(
+          base::BindLambdaForTesting([&]() { first_disconnected = true; }));
+
+      network_channel_->GetRemoteAssociatedInterface(&duplicate_agent);
+      duplicate_agent.set_disconnect_handler(base::BindLambdaForTesting([&]() {
+        duplicate_disconnected = true;
+        maybe_disconnect();
+      }));
+    });
+    EXPECT_CALL(daemon_listener_, CrashNetworkProcess()).WillOnce([&]() {
+      crash_requested = true;
+      maybe_disconnect();
+    });
+  }
+
+  RunDesktopProcess();
+  EXPECT_TRUE(crash_requested);
+  EXPECT_TRUE(duplicate_disconnected);
+  EXPECT_FALSE(first_disconnected);
+  EXPECT_EQ(last_exit_code_, kSuccessExitCode);
+}
+
 // Run the desktop process and ask it to crash.
 TEST_F(DesktopProcessTest, DeathTest) {
   GTEST_FLAG_SET(death_test_style, "threadsafe");

@@ -151,6 +151,7 @@ void DesktopSessionAgent::OnAssociatedInterfaceRequest(
       LOG(ERROR) << "Receiver already bound for associated interface: "
                  << mojom::DesktopSessionAgent::Name_;
       delegate_->CrashNetworkProcess(base::Location::Current());
+      return;
     }
 
     mojo::PendingAssociatedReceiver<mojom::DesktopSessionAgent>

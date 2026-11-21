@@ -11,6 +11,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -162,7 +163,7 @@ class WorkerProcessLauncherTest : public testing::Test, public IPC::Listener {
   void CrashWorker();
 
   // Starts the worker.
-  void StartWorker();
+  void StartWorker(bool auto_relaunch = true);
 
   // Stops the worker.
   void StopWorker();
@@ -344,9 +345,9 @@ void WorkerProcessLauncherTest::CrashWorker() {
   launcher_->Crash(FROM_HERE);
 }
 
-void WorkerProcessLauncherTest::StartWorker() {
+void WorkerProcessLauncherTest::StartWorker(bool auto_relaunch) {
   launcher_ = std::make_unique<WorkerProcessLauncher>(
-      std::move(launcher_delegate_), &server_listener_);
+      std::move(launcher_delegate_), &server_listener_, auto_relaunch);
 
   launcher_->SetKillProcessTimeoutForTest(base::Milliseconds(100));
 }
@@ -527,6 +528,39 @@ TEST_F(WorkerProcessLauncherTest, CrashAnyway) {
   EXPECT_CALL(server_listener_, OnWorkerProcessStopped()).Times(1);
 
   StartWorker();
+  Run();
+}
+
+// Requests the worker to crash when auto-relaunch is disabled and verifies it
+// is not relaunched.
+TEST_F(WorkerProcessLauncherTest, CrashNoAutoRelaunch) {
+  EXPECT_CALL(*launcher_delegate_, LaunchProcess(_))
+      .Times(1)
+      .WillOnce(
+          Invoke(this, &WorkerProcessLauncherTest::LaunchProcessAndConnect));
+
+  EXPECT_CALL(server_listener_, OnChannelConnected(_))
+      .Times(1)
+      .WillOnce(
+          InvokeWithoutArgs(this, &WorkerProcessLauncherTest::CrashWorker));
+
+  EXPECT_CALL(client_listener_, CrashProcess(_, _, _))
+      .Times(1)
+      .WillOnce([this]() { TerminateWorker(kInitializationFailed); });
+  EXPECT_CALL(server_listener_, OnPermanentError(_)).Times(0);
+  EXPECT_CALL(server_listener_, OnWorkerProcessStopped())
+      .Times(1)
+      .WillOnce([this]() {
+        // Use PostTaskAndReply (two task hops) so that any 0ms launch_timer_
+        // scheduled after OnWorkerProcessStopped() returns would run before
+        // StopWorker().
+        task_runner_->PostTaskAndReply(
+            FROM_HERE, base::DoNothing(),
+            base::BindOnce(&WorkerProcessLauncherTest::StopWorker,
+                           base::Unretained(this)));
+      });
+
+  StartWorker(/*auto_relaunch=*/false);
   Run();
 }
 

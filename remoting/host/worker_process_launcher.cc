@@ -49,12 +49,14 @@ WorkerProcessLauncher::Delegate::~Delegate() {}
 
 WorkerProcessLauncher::WorkerProcessLauncher(
     std::unique_ptr<WorkerProcessLauncher::Delegate> launcher_delegate,
-    WorkerProcessIpcDelegate* ipc_handler)
+    WorkerProcessIpcDelegate* ipc_handler,
+    bool auto_relaunch)
     : ipc_handler_(ipc_handler),
       launcher_delegate_(std::move(launcher_delegate)),
       exit_code_(kInitializationFailed),
       kill_process_timeout_(base::Seconds(kKillProcessTimeoutSeconds)),
-      launch_backoff_(&kDefaultBackoffPolicy) {
+      launch_backoff_(&kDefaultBackoffPolicy),
+      auto_relaunch_(auto_relaunch) {
   DCHECK(ipc_handler_);
 
   LaunchWorker();
@@ -207,6 +209,10 @@ void WorkerProcessLauncher::StopWorker() {
   if (kMinPermanentErrorExitCode <= exit_code_ &&
       exit_code_ <= kMaxPermanentErrorExitCode) {
     ipc_handler_->OnPermanentError(exit_code_);
+    return;
+  }
+
+  if (!auto_relaunch_) {
     return;
   }
 

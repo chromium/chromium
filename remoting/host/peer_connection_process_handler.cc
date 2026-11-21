@@ -19,8 +19,11 @@ PeerConnectionProcessHandler::PeerConnectionProcessHandler(
     StoppedCallback stopped_callback)
     : caller_task_runner_(caller_task_runner),
       stopped_callback_(std::move(stopped_callback)) {
+  // Do not attempt to restart the Peer Connection process because WebRTC
+  // connection state is lost on crash (requiring a client reconnect), and the
+  // desktop pipe cannot be recovered.
   launcher_ = std::make_unique<WorkerProcessLauncher>(
-      std::move(launcher_delegate), this);
+      std::move(launcher_delegate), this, /*auto_relaunch=*/false);
 }
 
 PeerConnectionProcessHandler::~PeerConnectionProcessHandler() {
@@ -68,13 +71,15 @@ void PeerConnectionProcessHandler::OnPermanentError(int exit_code) {
 
 void PeerConnectionProcessHandler::OnWorkerProcessStopped() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // We do not attempt to restart the Peer Connection process because WebRTC
-  // connection state is lost on crash (requiring a client reconnect), and the
-  // desktop pipe cannot be recovered. Thus, we tear down the handler and the
-  // session.
+  if (!stopped_callback_) {
+    return;
+  }
+  // Tear down asynchronously after WorkerProcessLauncher::StopWorker()
+  // returns; WeakPtr cancels the task if this handler is destroyed first.
   caller_task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&PeerConnectionProcessHandler::CloseSelf,
-                                weak_factory_.GetWeakPtr()));
+      FROM_HERE,
+      base::BindOnce(&PeerConnectionProcessHandler::CloseSelf,
+                     weak_factory_.GetWeakPtr(), std::move(stopped_callback_)));
 }
 
 void PeerConnectionProcessHandler::OnAssociatedInterfaceRequest(
@@ -84,13 +89,9 @@ void PeerConnectionProcessHandler::OnAssociatedInterfaceRequest(
   LOG(ERROR) << "Unexpected associated interface request: " << interface_name;
 }
 
-void PeerConnectionProcessHandler::CloseSelf() {
+void PeerConnectionProcessHandler::CloseSelf(StoppedCallback stopped_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (stopped_callback_) {
-    caller_task_runner_->PostTask(FROM_HERE,
-                                  base::BindOnce(std::move(stopped_callback_),
-                                                 weak_factory_.GetWeakPtr()));
-  }
+  std::move(stopped_callback).Run(weak_factory_.GetWeakPtr());
 }
 
 }  // namespace remoting

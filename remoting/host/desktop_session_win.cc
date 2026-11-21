@@ -617,6 +617,7 @@ void DesktopSessionWin::OnAssociatedInterfaceRequest(
       LOG(ERROR) << "Receiver already bound for associated interface: "
                  << mojom::DesktopSessionRequestHandler::Name_;
       CrashDesktopProcess(FROM_HERE);
+      return;
     }
 
     mojo::PendingAssociatedReceiver<mojom::DesktopSessionRequestHandler>
