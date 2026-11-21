@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/stable_sort.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -248,8 +249,7 @@ void StringKeyframe::EnsureCssPropertyMap() const {
   }
 
   if (requires_sorting) {
-    std::stable_sort(resolvers.begin(), resolvers.end(),
-                     PropertyResolver::HasLowerPriority);
+    StableSort(resolvers, PropertyResolver::HasLowerPriority);
   }
 
   for (const auto& resolver : resolvers) {

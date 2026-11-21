@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/stable_sort.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -2262,8 +2263,8 @@ void SortNonOverflowingCandidates(
 
   // §5.2, most-block-size (etc): "Stably sort the position fallbacks list
   // according to this size, with the largest coming first".
-  std::stable_sort(
-      candidates.begin(), candidates.end(),
+  StableSort(
+      candidates,
       [physical_position_try_order](const NonOverflowingCandidate& a,
                                     const NonOverflowingCandidate& b) {
         switch (physical_position_try_order) {

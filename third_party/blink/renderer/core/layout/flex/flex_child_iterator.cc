@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/flex/flex_child_iterator.h"
 
+#include "third_party/blink/renderer/platform/heap/collection_support/stable_sort.h"
+
 namespace blink {
 
 FlexChildIterator::FlexChildIterator(const BlockNode node) {
@@ -26,10 +28,10 @@ FlexChildIterator::FlexChildIterator(const BlockNode node) {
   // We only need to sort this vector if we encountered a non-initial
   // -webkit-box-ordinal-group/order property.
   if (needs_sort) {
-    std::stable_sort(children_.begin(), children_.end(),
-                     [](const ChildWithOrder& c1, const ChildWithOrder& c2) {
-                       return c1.order < c2.order;
-                     });
+    StableSort(children_,
+               [](const ChildWithOrder& c1, const ChildWithOrder& c2) {
+                 return c1.order < c2.order;
+               });
   }
 }
 

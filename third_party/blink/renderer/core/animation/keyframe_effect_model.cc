@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/stable_sort.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "ui/gfx/geometry/transform.h"
@@ -656,7 +657,7 @@ bool KeyframeEffectModelBase::ResolveTimelineOffsets(
         keyframe->ResolveTimelineOffset(timeline_range, range_start, range_end);
   }
   if (needs_update) {
-    std::stable_sort(keyframes_.begin(), keyframes_.end(), &Keyframe::LessThan);
+    StableSort(keyframes_, &Keyframe::LessThan);
     ClearCachedData();
   }
 

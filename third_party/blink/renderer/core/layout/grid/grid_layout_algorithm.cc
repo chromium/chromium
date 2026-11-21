@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/relative_utils.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/stable_sort.h"
 
 namespace blink {
 
@@ -2470,8 +2471,7 @@ void GridLayoutAlgorithm::SetReadingFlowNodes(const GridItems& grid_items) {
           return lhs->SetIndices(reading_direction_first).begin <
                  rhs->SetIndices(reading_direction_first).begin;
         };
-    std::stable_sort(reordered_grid_items.begin(), reordered_grid_items.end(),
-                     compare_grid_items_for_reading_flow);
+    StableSort(reordered_grid_items, compare_grid_items_for_reading_flow);
     for (const auto& grid_item : reordered_grid_items) {
       add_item_if_needed(*grid_item);
     }

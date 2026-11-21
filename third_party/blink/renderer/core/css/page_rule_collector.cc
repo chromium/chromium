@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/core/css/page_rule_collector.h"
 
-#include <algorithm>
 #include <compare>
 
 #include "third_party/blink/renderer/core/css/cascade_layer_map.h"
@@ -38,6 +37,7 @@
 #include "third_party/blink/renderer/core/css/rule_set.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/stable_sort.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -91,17 +91,17 @@ void PageRuleCollector::MatchPageRules(RuleSet* rules,
 
   // TODO(crbug.com/463591206): We're only sorting within each RuleSet,
   // which seems wrong.
-  std::stable_sort(matched_page_rules.begin(), matched_page_rules.end(),
-                   [layer_map](const CascadeLayered<StyleRulePage>& r1,
-                               const CascadeLayered<StyleRulePage>& r2) {
-                     std::weak_ordering ordering =
-                         CascadeLayerMap::CompareLayerOrder(layer_map, r1, r2);
-                     if (ordering != 0) {
-                       return ordering < 0;
-                     }
-                     return r1.value->Selector()->Specificity() <
-                            r2.value->Selector()->Specificity();
-                   });
+  StableSort(matched_page_rules,
+             [layer_map](const CascadeLayered<StyleRulePage>& r1,
+                         const CascadeLayered<StyleRulePage>& r2) {
+               std::weak_ordering ordering =
+                   CascadeLayerMap::CompareLayerOrder(layer_map, r1, r2);
+               if (ordering != 0) {
+                 return ordering < 0;
+               }
+               return r1.value->Selector()->Specificity() <
+                      r2.value->Selector()->Specificity();
+             });
 
   if (origin == CascadeOrigin::kAuthor) {
     CHECK(tree_scope);

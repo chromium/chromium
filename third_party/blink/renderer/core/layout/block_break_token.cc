@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/break_token_algorithm_data.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_break_token.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/stable_sort.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -89,12 +90,11 @@ BlockBreakToken::BlockBreakToken(PassKey key, BoxFragmentBuilder* builder)
       const auto* block_token = DynamicTo<BlockBreakToken>(token.Get());
       return block_token && block_token->InputNode().IsOutOfFlowPositioned();
     };
-    std::stable_sort(builder->child_break_tokens_.begin(),
-                     builder->child_break_tokens_.end(),
-                     [&is_oof](const Member<const BreakToken>& a,
-                               const Member<const BreakToken>& b) {
-                       return !is_oof(a) < !is_oof(b);
-                     });
+    StableSort(builder->child_break_tokens_,
+               [&is_oof](const Member<const BreakToken>& a,
+                         const Member<const BreakToken>& b) {
+                 return !is_oof(a) < !is_oof(b);
+               });
   }
 
   for (wtf_size_t i = 0; i < const_num_children_; ++i) {

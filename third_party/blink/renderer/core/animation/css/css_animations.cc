@@ -105,6 +105,7 @@
 #include "third_party/blink/renderer/core/style/style_timeline_scope.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/platform/animation/timing_function.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/stable_sort.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -483,7 +484,7 @@ StringKeyframeVector ProcessKeyframesRule(
   for (wtf_size_t i = 0; i < keyframes.size(); i++) {
     keyframes[i]->SetIndex(i);
   }
-  std::stable_sort(keyframes.begin(), keyframes.end(), &Keyframe::LessThan);
+  StableSort(keyframes, &Keyframe::LessThan);
   return keyframes;
 }
 

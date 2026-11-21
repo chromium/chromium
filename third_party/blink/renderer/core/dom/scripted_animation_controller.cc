@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/stable_sort.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -276,7 +277,8 @@ void ScriptedAnimationController::SortAnimationEvents(wtf_size_t start_index) {
            type == event_type_names::kTransitioncancel;
   });
   if (end - events.begin() > 1) {
-    std::stable_sort(events.begin(), end, CompareAnimationEvents);
+    StableSort(events.first(static_cast<size_t>(end - events.begin())),
+               CompareAnimationEvents);
   }
 }
 

@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/stable_sort.h"
 
 namespace blink {
 
@@ -273,8 +274,7 @@ static void ForAllChildrenSortedByOrder(
   for (auto* child = layer.FirstChild(); child; child = child->NextSibling()) {
     sorted_children.push_back(child);
   }
-  std::stable_sort(sorted_children.begin(), sorted_children.end(),
-                   OrderLessThan);
+  StableSort(sorted_children, OrderLessThan);
   for (auto& child : sorted_children) {
     function(*child);
   }
@@ -295,10 +295,8 @@ void PaintLayerStackingNode::RebuildZOrderLists() {
       });
 
   // Sort the two lists.
-  std::stable_sort(pos_z_order_list_.begin(), pos_z_order_list_.end(),
-                   ZIndexLessThan);
-  std::stable_sort(neg_z_order_list_.begin(), neg_z_order_list_.end(),
-                   ZIndexLessThan);
+  StableSort(pos_z_order_list_, ZIndexLessThan);
+  StableSort(neg_z_order_list_, ZIndexLessThan);
 
   // Append overscroll area parent layers after all normal layers in this
   // stacking context. Note that these are appended in reverse order to match

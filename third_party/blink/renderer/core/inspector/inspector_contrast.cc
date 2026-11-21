@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/style/style_generated_image.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/stable_sort.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "ui/gfx/color_utils.h"
 
@@ -398,24 +399,25 @@ void InspectorContrast::SortElementsByPaintOrder(
   InspectorDOMSnapshotAgent::PaintOrderMap* paint_layer_tree =
       InspectorDOMSnapshotAgent::BuildPaintLayerTree(document);
 
-  std::stable_sort(
-      unsorted_elements.begin(), unsorted_elements.end(),
-      [&paint_layer_tree = paint_layer_tree](Node* a, Node* b) {
-        const LayoutObject* a_layout = To<Element>(a)->GetLayoutObject();
-        const LayoutObject* b_layout = To<Element>(b)->GetLayoutObject();
-        int a_order = 0;
-        int b_order = 0;
+  StableSort(unsorted_elements,
+             [&paint_layer_tree = paint_layer_tree](Node* a, Node* b) {
+               const LayoutObject* a_layout = To<Element>(a)->GetLayoutObject();
+               const LayoutObject* b_layout = To<Element>(b)->GetLayoutObject();
+               int a_order = 0;
+               int b_order = 0;
 
-        auto a_item = paint_layer_tree->find(a_layout->PaintingLayer());
-        if (a_item != paint_layer_tree->end())
-          a_order = a_item->value;
+               auto a_item = paint_layer_tree->find(a_layout->PaintingLayer());
+               if (a_item != paint_layer_tree->end()) {
+                 a_order = a_item->value;
+               }
 
-        auto b_item = paint_layer_tree->find(b_layout->PaintingLayer());
-        if (b_item != paint_layer_tree->end())
-          b_order = b_item->value;
+               auto b_item = paint_layer_tree->find(b_layout->PaintingLayer());
+               if (b_item != paint_layer_tree->end()) {
+                 b_order = b_item->value;
+               }
 
-        return a_order < b_order;
-      });
+               return a_order < b_order;
+             });
 }
 
 }  // namespace blink

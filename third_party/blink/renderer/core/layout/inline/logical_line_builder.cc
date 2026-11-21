@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/layout/inline/text_fit_scale.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/stable_sort.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 
 namespace blink {
@@ -790,12 +791,10 @@ void LogicalLineBuilder::BidiReorder(
               .subspan(column->start_index, column->size));
     }
     // The order is important for RubyBlockPositionCalculator::HandleRubyLine().
-    std::stable_sort(
-        column_list.begin(), column_list.end(),
-        [](const auto& column1, const auto& column2) {
-          int32_t diff = column2->start_index - column1->start_index;
-          return diff != 0 ? (diff > 0) : (column1->size > column2->size);
-        });
+    StableSort(column_list, [](const auto& column1, const auto& column2) {
+      int32_t diff = column2->start_index - column1->start_index;
+      return diff != 0 ? (diff > 0) : (column1->size > column2->size);
+    });
   }
 }
 

@@ -45,6 +45,8 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/stable_sort.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_objects.h"
@@ -3292,6 +3294,173 @@ TEST_F(HeapTest, HeapVectorPromptlyFree) {
   }
 
   ProcessHeap::SetHeapVectorPromptlyFreeEnabledForTesting(was_enabled);
+}
+
+TEST_F(HeapTest, StableSortMemberVector) {
+  auto compare_values = [](const IntWrapper* a, const IntWrapper* b) {
+    return a->Value() < b->Value();
+  };
+
+  // Empty and single-element vectors.
+  {
+    HeapVector<Member<IntWrapper>> empty_vec;
+    StableSort(empty_vec, compare_values);
+    EXPECT_TRUE(empty_vec.empty());
+
+    HeapVector<Member<IntWrapper>> single_vec;
+    auto* only = MakeGarbageCollected<IntWrapper>(7);
+    single_vec.push_back(only);
+    StableSort(single_vec, compare_values);
+    ASSERT_EQ(1u, single_vec.size());
+    EXPECT_EQ(only, single_vec[0]);
+  }
+
+  // Already-sorted vector with duplicate keys preserves exact pointer order.
+  {
+    HeapVector<Member<IntWrapper>> sorted_vec;
+    auto* a1 = MakeGarbageCollected<IntWrapper>(1);
+    auto* a2 = MakeGarbageCollected<IntWrapper>(1);
+    auto* b1 = MakeGarbageCollected<IntWrapper>(2);
+    sorted_vec.push_back(a1);
+    sorted_vec.push_back(a2);
+    sorted_vec.push_back(b1);
+    StableSort(sorted_vec, compare_values);
+    ASSERT_EQ(3u, sorted_vec.size());
+    EXPECT_EQ(a1, sorted_vec[0]);
+    EXPECT_EQ(a2, sorted_vec[1]);
+    EXPECT_EQ(b1, sorted_vec[2]);
+  }
+
+  // Unsorted vector with duplicate keys preserves relative insertion order.
+  {
+    HeapVector<Member<IntWrapper>> vec;
+    std::array<Vector<Persistent<IntWrapper>>, 7> expected_by_key;
+    constexpr int kCount = 50;
+    for (int i = 0; i < kCount; ++i) {
+      const size_t key = static_cast<size_t>((kCount - 1 - i) % 7);
+      auto* item = MakeGarbageCollected<IntWrapper>(static_cast<int>(key));
+      vec.push_back(item);
+      expected_by_key[key].push_back(item);
+    }
+
+    StableSort(vec, compare_values);
+
+    ASSERT_EQ(static_cast<wtf_size_t>(kCount), vec.size());
+    wtf_size_t pos = 0;
+    for (const auto& bucket : expected_by_key) {
+      for (const auto& expected : bucket) {
+        EXPECT_EQ(expected.Get(), vec[pos]);
+        ++pos;
+      }
+    }
+  }
+
+  // Subrange span overload sorts only the requested prefix.
+  {
+    HeapVector<Member<IntWrapper>> span_vec;
+    auto* first_two = MakeGarbageCollected<IntWrapper>(2);
+    auto* first_one = MakeGarbageCollected<IntWrapper>(1);
+    auto* second_two = MakeGarbageCollected<IntWrapper>(2);
+    auto* trailing_zero = MakeGarbageCollected<IntWrapper>(0);
+    span_vec.push_back(first_two);
+    span_vec.push_back(first_one);
+    span_vec.push_back(second_two);
+    span_vec.push_back(trailing_zero);
+
+    StableSort(base::span(span_vec).first(3u), compare_values);
+
+    ASSERT_EQ(4u, span_vec.size());
+    EXPECT_EQ(first_one, span_vec[0]);
+    EXPECT_EQ(first_two, span_vec[1]);
+    EXPECT_EQ(second_two, span_vec[2]);
+    EXPECT_EQ(trailing_zero, span_vec[3]);
+  }
+}
+
+namespace {
+struct SortablePartObject {
+  DISALLOW_NEW();
+
+ public:
+  SortablePartObject() = default;
+  SortablePartObject(int k,
+                     int order,
+                     IntWrapper* w,
+                     IncrementalMarkingTestDriver* d = nullptr)
+      : key(k), original_order(order), wrapper(w), driver(d) {}
+
+  SortablePartObject(SortablePartObject&& other) noexcept
+      : key(other.key),
+        original_order(other.original_order),
+        wrapper(std::move(other.wrapper)),
+        driver(other.driver) {
+    if (driver && ThreadState::Current()->IsIncrementalMarking()) {
+      driver->TriggerMarkingSteps();
+    }
+  }
+
+  SortablePartObject& operator=(SortablePartObject&& other) noexcept {
+    key = other.key;
+    original_order = other.original_order;
+    wrapper = std::move(other.wrapper);
+    driver = other.driver;
+    if (driver && ThreadState::Current()->IsIncrementalMarking()) {
+      driver->TriggerMarkingSteps();
+    }
+    return *this;
+  }
+
+  void Trace(Visitor* visitor) const { visitor->Trace(wrapper); }
+
+  int key = 0;
+  int original_order = 0;
+  Member<IntWrapper> wrapper;
+  IncrementalMarkingTestDriver* driver = nullptr;
+};
+}  // namespace
+
+template <>
+struct VectorTraits<SortablePartObject> : VectorTraitsBase<SortablePartObject> {
+  static constexpr bool kCanClearUnusedSlotsWithMemset = true;
+};
+
+TEST_F(HeapTest, StableSortTraceablePartObjects) {
+  Persistent<GCedHeapVector<SortablePartObject>> vec =
+      MakeGarbageCollected<GCedHeapVector<SortablePartObject>>();
+  IncrementalMarkingTestDriver driver(ThreadState::Current());
+
+  // Populate `vec` with elements whose keys cycle through 0..4 in descending
+  // order so multiple elements share each key. Each element records its
+  // pre-sort insertion index `i` (`original_order`), holds a distinct
+  // `IntWrapper(100 + i)` without any other root keeping it alive, and advances
+  // incremental marking via `driver` whenever it is moved during `StableSort`.
+  constexpr int kCount = 40;
+  for (int i = 0; i < kCount; ++i) {
+    const int key = (kCount - i) % 5;
+    vec->push_back(SortablePartObject(
+        key, i, MakeGarbageCollected<IntWrapper>(100 + i), &driver));
+  }
+
+  driver.StartGC();
+  StableSort(*vec, [](const SortablePartObject& a,
+                      const SortablePartObject& b) { return a.key < b.key; });
+  driver.FinishGC();
+
+  ASSERT_EQ(static_cast<wtf_size_t>(kCount), vec->size());
+  for (wtf_size_t i = 0; i < vec->size(); ++i) {
+    // Verify that incremental GC triggered mid-move kept every element's
+    // `IntWrapper` alive and paired with the element from `original_order`.
+    ASSERT_TRUE((*vec)[i].wrapper);
+    EXPECT_EQ(100 + (*vec)[i].original_order, (*vec)[i].wrapper->Value());
+    if (i > 0) {
+      // Verify that keys are non-decreasing and that elements with equal keys
+      // preserved their pre-sort `original_order` (stability).
+      EXPECT_LE((*vec)[i - 1].key, (*vec)[i].key);
+      if ((*vec)[i - 1].key == (*vec)[i].key) {
+        EXPECT_LT((*vec)[i - 1].original_order, (*vec)[i].original_order);
+      }
+    }
+  }
 }
 
 }  // namespace blink

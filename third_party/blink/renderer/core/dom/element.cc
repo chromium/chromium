@@ -315,6 +315,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/tracked_element_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/stable_sort.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -997,10 +998,9 @@ const HeapVector<Member<Node>> Element::ReadingFlowChildren() const {
     }
     return 0;
   };
-  std::stable_sort(children.begin(), children.end(),
-                   [&reading_order](const auto& lhs, const auto& rhs) {
-                     return reading_order(lhs) < reading_order(rhs);
-                   });
+  StableSort(children, [&reading_order](const auto& lhs, const auto& rhs) {
+    return reading_order(lhs) < reading_order(rhs);
+  });
   return children;
 }
 

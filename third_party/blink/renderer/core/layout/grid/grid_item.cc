@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 
 #include "third_party/blink/renderer/core/layout/grid/grid_placement.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/stable_sort.h"
 #include "third_party/blink/renderer/platform/text/writing_mode_utils.h"
 
 namespace blink {
@@ -507,8 +508,7 @@ void GridItems::SortByOrderProperty() {
                                         const GridItemData* rhs) {
     return lhs->node.Style().Order() < rhs->node.Style().Order();
   };
-  std::stable_sort(item_data_.begin(), item_data_.end(),
-                   CompareItemsByOrderProperty);
+  StableSort(item_data_, CompareItemsByOrderProperty);
 }
 
 }  // namespace blink

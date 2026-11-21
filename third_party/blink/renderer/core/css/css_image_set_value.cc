@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/style/style_image_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/stable_sort.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -84,11 +85,10 @@ const CSSImageSetOptionValue* CSSImageSetValue::GetBestOption(
       // nullptr is inserted in the options_ vector.
       options_.push_back(nullptr);
     } else {
-      std::stable_sort(options_.begin(), options_.end(),
-                       [&resolver](auto& left, auto& right) {
-                         return left->ComputedResolution(resolver) <
-                                right->ComputedResolution(resolver);
-                       });
+      StableSort(options_, [&resolver](auto& left, auto& right) {
+        return left->ComputedResolution(resolver) <
+               right->ComputedResolution(resolver);
+      });
       auto last = std::unique(options_.begin(), options_.end(),
                               [&resolver](auto& left, auto& right) {
                                 return left->ComputedResolution(resolver) ==

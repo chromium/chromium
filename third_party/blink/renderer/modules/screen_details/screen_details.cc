@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/screen_details/screen_detailed.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/stable_sort.h"
 #include "ui/display/screen_info.h"
 
 namespace blink {
@@ -100,7 +101,7 @@ void ScreenDetails::UpdateScreenInfosImpl(LocalDOMWindow* window,
   }
 
   // Sort `screens_` by position; x first and then y.
-  std::ranges::stable_sort(screens_, [](ScreenDetailed* a, ScreenDetailed* b) {
+  StableSort(screens_, [](ScreenDetailed* a, ScreenDetailed* b) {
     if (a->left() != b->left())
       return a->left() < b->left();
     return a->top() < b->top();
