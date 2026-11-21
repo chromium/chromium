@@ -156,10 +156,7 @@ public class NtpCustomizationConfigManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
-    })
+    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC})
     public void testOnBackgroundDataChanged_Color() {
         mNtpCustomizationConfigManager.addListener(mListener, mContext, /* skipNotify= */ false);
         mNtpCustomizationConfigManager.setBackgroundTypeForTesting(NtpBackgroundType.DEFAULT);
@@ -259,19 +256,13 @@ public class NtpCustomizationConfigManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
-    })
+    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC})
     public void testOnUploadedImageSelected_sync() {
         testOnUploadedImageSelectedImpl(/* primaryColor= */ null);
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
-    })
+    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC})
     public void testOnUploadedImageSelected_fromHistory() {
         testOnUploadedImageSelectedImpl(Color.BLUE);
     }
@@ -407,7 +398,6 @@ public class NtpCustomizationConfigManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testEnsureInitialized_colorFromHex_restoresLightAndDarkColors() {
         @ColorInt int backgroundColorLight = Color.WHITE;
         @ColorInt int backgroundColorDark = Color.BLACK;
@@ -691,23 +681,18 @@ public class NtpCustomizationConfigManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
-    })
+    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC})
     public void testOnBackgroundReset_fromUploadImage_syncEnabled() {
         testOnBackgroundReset_fromUploadImageImpl(/* deleteImageFile= */ false);
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testOnBackgroundImageLoadedFromDisk_fallback() {
         testOnBackgroundImageLoadedFromDiskImpl(
                 /* bitmap= */ null, /* imageInfo= */ null, NtpBackgroundType.DEFAULT);
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testOnBackgroundImageLoadedFromDisk() {
         BackgroundImageInfo imageInfo = mock(BackgroundImageInfo.class);
         testOnBackgroundImageLoadedFromDiskImpl(
@@ -803,19 +788,13 @@ public class NtpCustomizationConfigManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
-    })
+    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC})
     public void testOnThemeCollectionImageSelected_sync() {
         testOnThemeCollectionImageSelectedImpl(/* primaryColor= */ null);
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
-    })
+    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC})
     public void testOnThemeCollectionImageSelected_fromHistory() {
         testOnThemeCollectionImageSelectedImpl(Color.RED);
     }
@@ -872,20 +851,14 @@ public class NtpCustomizationConfigManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
-    })
+    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC})
     public void testOnThemeCollectionImageSelected_isBitmapSavedTrue() {
         testOnThemeCollectionImageSelected_isBitmapSavedImpl(
                 /* isBitmapSaved= */ true, /* expectedSaved= */ false);
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
-    })
+    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC})
     public void testOnThemeCollectionImageSelected_isBitmapSavedFalse_fromHistory() {
         testOnThemeCollectionImageSelected_isBitmapSavedImpl(
                 /* isBitmapSaved= */ false, /* expectedSaved= */ true);
@@ -973,7 +946,6 @@ public class NtpCustomizationConfigManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testInitialization_withThemeCollection() {
         // 1. Set up shared preferences to indicate a theme collection background.
         NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(
@@ -1020,7 +992,6 @@ public class NtpCustomizationConfigManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testInitialization_withThemeCollection_noCustomBackgroundInfo() {
         NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(
                 NtpBackgroundType.THEME_COLLECTION);
@@ -1066,17 +1037,13 @@ public class NtpCustomizationConfigManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
     public void testInitialize_imageFromDisk() throws IOException {
         testInitialize_imageFromDiskImpl(/* isSyncEnabled= */ false);
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
-    })
+    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC})
     public void testInitialize_syncEnabled_imageFromDisk() throws IOException {
         testInitialize_imageFromDiskImpl(/* isSyncEnabled= */ true);
     }
@@ -1791,10 +1758,7 @@ public class NtpCustomizationConfigManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
-    })
+    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC})
     public void testOnBackgroundImageLoadedFromDiskFailed_withPendingSync_keepsSyncedData() {
         NtpCustomizationConfigManager manager = createConfigManagerWithLoadingImage();
         NtpBackgroundDataThemeCollection themeCollectionData =

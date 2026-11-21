@@ -231,8 +231,6 @@ constexpr base::FeatureParam<bool> kEnableRecentTabsTip{
     &kAndroidTipsNotificationsV2, "enable_recent_tabs_tip",
     /*default_value=*/true};
 
-BASE_FEATURE(kNewTabPageCustomizationV2, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kMagicStackNTPThemeTipIos, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kMagicStackNTPCustomizationTipIos,
              base::FEATURE_DISABLED_BY_DEFAULT);

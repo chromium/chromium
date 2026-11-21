@@ -1960,14 +1960,6 @@ public class CrossDeviceSettingImporterUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
-    @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES)
-    public void testIsThemeFeatureEnabled_NtpCustomizationV2Disabled_ReturnsFalse() {
-        CrossDeviceSettingImporter importer = initializeCrossDeviceSettingImporter();
-        assertFalse(importer.isThemeFeatureEnabled());
-    }
-
-    @Test
     @EnableFeatures(ChromeFeatureList.XPLAT_SYNCED_SETUP_THEMES)
     public void testIsThemeFeatureEnabled_DisabledByPolicy_ReturnsFalse() {
         NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);

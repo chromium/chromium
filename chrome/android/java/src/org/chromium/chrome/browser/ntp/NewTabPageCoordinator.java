@@ -2049,8 +2049,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         return mNtpCustomizationConfigManager;
     }
 
-    // Called when ChromeFeatureList.sNewTabPageCustomizationV2 is enabled to add a
-    // HomepageStateListener.
+    // Called when NTP theme customization is enabled to add a HomepageStateListener.
     private void initHomepageStateListener() {
         mHomepageStateListener =
                 new HomepageStateListener() {

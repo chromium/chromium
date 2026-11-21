@@ -464,7 +464,6 @@ public class FeedSurfaceCoordinatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testSetBackground_withImageFromDisk_delegatesToView() {
         mCoordinator.setBackgroundImageCoordinatorForTesting(mBackgroundImageCoordinator);
         NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
@@ -486,7 +485,6 @@ public class FeedSurfaceCoordinatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testSetBackground_disabledByPolicy() {
         assertNotNull(mCoordinator.getNtpBackgroundImageCoordinatorForTesting());
         mCoordinator.destroy();
@@ -500,7 +498,6 @@ public class FeedSurfaceCoordinatorTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     @Config(qualifiers = "sw600dp")
     public void testNtpCustomizationButtonCreated() {
         assertNotNull(

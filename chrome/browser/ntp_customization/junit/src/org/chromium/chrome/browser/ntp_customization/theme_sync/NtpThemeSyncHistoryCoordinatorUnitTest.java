@@ -80,10 +80,7 @@ import java.util.List;
 
 /** Unit tests for {@link NtpThemeSyncHistoryCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures({
-    ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
-    ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
-})
+@Features.EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC})
 public class NtpThemeSyncHistoryCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

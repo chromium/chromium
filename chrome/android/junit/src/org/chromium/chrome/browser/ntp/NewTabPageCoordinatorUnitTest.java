@@ -92,6 +92,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationTestHelper;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
+import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpCustomizationPromoManager;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
@@ -488,7 +489,6 @@ public class NewTabPageCoordinatorUnitTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.R)
-    @Features.EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testMaybeTriggerCustomizationBottomSheet_triggersWhenEducationNotShown() {
         var customizationCoordinator = setUpThemeTipTrigger();
 
@@ -502,7 +502,6 @@ public class NewTabPageCoordinatorUnitTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.R)
-    @Features.EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testMaybeTriggerCustomizationBottomSheet_deferredWhenEducationShown() {
         var customizationCoordinator = setUpThemeTipTrigger();
         BottomBarEducationCoordinator.setEducationShownThisSessionForTesting();
@@ -1815,10 +1814,7 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures({
-        ChromeFeatureList.NTP_AURORA,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2
-    })
+    @Features.EnableFeatures({ChromeFeatureList.NTP_AURORA})
     public void testOnCustomizedBackgroundChanged_composeplateFlagNotInitialized_earlyExit() {
         setupMockSubCoordinators();
         mCoordinator.setIsComposeplateEnabledForTesting(TriState.NOT_SET);
@@ -1836,10 +1832,7 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures({
-        ChromeFeatureList.NTP_AURORA,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2
-    })
+    @Features.EnableFeatures({ChromeFeatureList.NTP_AURORA})
     public void testOnCustomizedBackgroundChanged_searchBoxNotInitialized_earlyExit() {
         setupMockSubCoordinators();
         mCoordinator.setIsComposeplateEnabledForTesting(TriState.TRUE);
@@ -1889,10 +1882,7 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     @Test
-    @Features.DisableFeatures({
-        ChromeFeatureList.NTP_AURORA,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2
-    })
+    @Features.DisableFeatures(ChromeFeatureList.NTP_AURORA)
     public void
             testOnCustomizedBackgroundChanged_searchBox_uninitializedAndShouldNotApply_doesNotApplyBackground() {
         setupMockSubCoordinators();
@@ -1919,7 +1909,6 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void
             testOnCustomizedBackgroundChanged_searchBox_alreadyAppliedAndShouldApply_doesNotReapplyBackground() {
         setupMockSubCoordinators();
@@ -1937,10 +1926,7 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     @Test
-    @Features.DisableFeatures({
-        ChromeFeatureList.NTP_AURORA,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2
-    })
+    @Features.DisableFeatures(ChromeFeatureList.NTP_AURORA)
     public void
             testOnCustomizedBackgroundChanged_composeplate_uninitializedAndShouldNotApply_doesNotApplyBackground() {
         setupMockSubCoordinators();
@@ -1966,7 +1952,6 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void
             testOnCustomizedBackgroundChanged_composeplate_alreadyAppliedAndShouldApply_doesNotReapplyBackground() {
         setupMockSubCoordinators();
@@ -1985,7 +1970,6 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void
             testOnCustomizedBackgroundChanged_searchBox_previouslyFalseAndShouldApply_appliesWhiteBackground() {
         setupMockSubCoordinators();
@@ -2032,7 +2016,6 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void
             testOnCustomizedBackgroundChanged_composeplate_previouslyFalseAndShouldApply_appliesWhiteBackground() {
         setupMockSubCoordinators();
@@ -2057,10 +2040,7 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     @Test
-    @Features.DisableFeatures({
-        ChromeFeatureList.NTP_AURORA,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2
-    })
+    @Features.DisableFeatures(ChromeFeatureList.NTP_AURORA)
     public void
             testOnCustomizedBackgroundChanged_searchBox_alreadyAppliedAndShouldNotApply_removesWhiteBackground() {
         setupMockSubCoordinators();
@@ -2076,7 +2056,6 @@ public class NewTabPageCoordinatorUnitTest {
     }
 
     @Test
-    @Features.DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void
             testOnCustomizedBackgroundChanged_composeplate_alreadyAppliedAndShouldNotApply_removesWhiteBackground() {
         setupMockSubCoordinators();
@@ -2396,7 +2375,6 @@ public class NewTabPageCoordinatorUnitTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.R)
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testSupportsEdgeToEdgeOnTop_LiveThemeSwitchWithEarlierListener() {
         final int systemTopInset = 50;
         int toolbarHeightNoShadow =
@@ -2529,7 +2507,6 @@ public class NewTabPageCoordinatorUnitTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.R)
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testSupportsEdgeToEdgeOnTop_ConstructedWithActiveCustomThemeOnPhone() {
         mEdgeToEdgeStateProvider = NtpCustomizationTestHelper.setupEdgeToEdge(mWindowAndroid);
         applyChromeColorTheme();
@@ -2550,7 +2527,6 @@ public class NewTabPageCoordinatorUnitTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.R)
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testSupportsEdgeToEdgeOnTop_InitializesConfigManagerOnConstruction() {
         mEdgeToEdgeStateProvider = NtpCustomizationTestHelper.setupEdgeToEdge(mWindowAndroid);
 
@@ -2572,7 +2548,6 @@ public class NewTabPageCoordinatorUnitTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.R)
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testSupportsEdgeToEdgeOnTop_DisabledOnLff() {
         mEdgeToEdgeStateProvider = NtpCustomizationTestHelper.setupEdgeToEdge(mWindowAndroid);
         applyChromeColorTheme();
@@ -2586,7 +2561,6 @@ public class NewTabPageCoordinatorUnitTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.R)
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testSupportsEdgeToEdgeOnTop_DisabledWhenWindowNotEdgeToEdge() {
         applyChromeColorTheme();
 
@@ -2598,8 +2572,10 @@ public class NewTabPageCoordinatorUnitTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.R)
-    @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
-    public void testSupportsEdgeToEdgeOnTop_DisabledWhenCustomizationFeatureDisabled() {
+    public void testSupportsEdgeToEdgeOnTop_DisabledWhenCustomizationDisabledByPolicy() {
+        NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
+        NtpCustomizationPolicyManager.setInstanceForTesting(policyManager);
+        when(policyManager.isNtpCustomBackgroundEnabled()).thenReturn(false);
         mEdgeToEdgeStateProvider = NtpCustomizationTestHelper.setupEdgeToEdge(mWindowAndroid);
         NtpCustomizationConfigManager configManager = NtpCustomizationConfigManager.getInstance();
         configManager.setBackgroundTypeForTesting(NtpBackgroundType.CHROME_COLOR);
@@ -2607,7 +2583,7 @@ public class NewTabPageCoordinatorUnitTest {
         createCoordinator(/* isLff= */ false);
 
         // Verify behaviorally that NewTabPageCoordinator did not register a HomepageStateListener
-        // when NEW_TAB_PAGE_CUSTOMIZATION_V2 is disabled.
+        // when NTP theme customization is disabled by policy.
         Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
         BackgroundImageInfo imageInfo =
                 new BackgroundImageInfo(

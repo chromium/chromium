@@ -48,7 +48,6 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.supplier.SupplierUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -216,21 +215,6 @@ public final class NtpCustomizationBottomSheetContentUnitTest {
         // Returns null for other types like MAIN when theme sync is disabled.
         mBottomSheetTypeSupplier = () -> MAIN;
         assertNull(mBottomSheetContent.getActiveRecyclerView());
-    }
-
-    @Test
-    @EnableFeatures({
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
-    })
-    public void testGetActiveRecyclerView_themeSyncEnabled() {
-        // Returns the theme collections recycler view for THEME_COLLECTIONS type.
-        mBottomSheetTypeSupplier = () -> THEME_COLLECTIONS;
-        assertEquals(mThemeCollectionsRecyclerView, mBottomSheetContent.getActiveRecyclerView());
-
-        // Returns the single theme collection recycler view for SINGLE_THEME_COLLECTION type.
-        mBottomSheetTypeSupplier = () -> SINGLE_THEME_COLLECTION;
-        assertEquals(
-                mSingleThemeCollectionRecyclerView, mBottomSheetContent.getActiveRecyclerView());
     }
 
     @Test

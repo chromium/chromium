@@ -1633,11 +1633,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
-        boolean isNewTabPageCustomizationV2Enabled =
+        boolean isNtpThemeCustomizationEnabled =
                 isTablet
                         || NtpCustomizationUtils.supportsEnableEdgeToEdgeOnTop(
                                 mWindowAndroid, isTablet);
-        if (isNewTabPageCustomizationV2Enabled) {
+        if (isNtpThemeCustomizationEnabled) {
             NtpSyncedThemeManager.getInstance().onFinishNativeInitialization(originalProfile);
             NtpCustomizationPolicyManager.getInstance()
                     .onFinishNativeInitialization(currentlySelectedProfile);

@@ -57,7 +57,6 @@ import java.io.File;
 
 /** Unit tests for {@link NtpThemeDailyRefreshManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
 public class NtpThemeDailyRefreshManagerUnitTest {
     private static final String COLLECTION_ID = "id";
     private static final String DAILY_REFRESH_COLLECTION_ID = "id_daily";

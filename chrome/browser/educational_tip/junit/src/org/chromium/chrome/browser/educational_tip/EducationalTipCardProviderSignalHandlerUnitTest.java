@@ -24,9 +24,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
@@ -301,7 +299,6 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testCreateInputContext_NtpThemePromoCard() {
         when(mActionDelegate.supportCustomizedNtpTheme()).thenReturn(true);
         ChromeSharedPreferences.getInstance()

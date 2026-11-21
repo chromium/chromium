@@ -618,7 +618,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &segmentation_platform::features::kAndroidTipsNotificationsV2,
     &segmentation_platform::features::kContextualPageActionTabGrouping,
     &segmentation_platform::features::kContextualPageActions,
-    &segmentation_platform::features::kNewTabPageCustomizationV2,
     &segmentation_platform::features::kSegmentationPlatformAndroidHomeModuleRanker,
     &segmentation_platform::features::kSegmentationPlatformAndroidHomeModuleRankerV2,
     &segmentation_platform::features::kSegmentationPlatformEphemeralCardRanker,

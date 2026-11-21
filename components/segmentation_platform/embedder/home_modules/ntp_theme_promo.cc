@@ -4,13 +4,11 @@
 
 #include "components/segmentation_platform/embedder/home_modules/ntp_theme_promo.h"
 
-#include "base/feature_list.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/ephemeral_module_utils.h"
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry_android.h"
-#include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
 namespace {
@@ -175,11 +173,6 @@ bool NtpThemePromo::IsEnabled(PrefService* profile_prefs) {
       forced_result.value().result_label.has_value() &&
       kNtpThemePromo == forced_result.value().result_label.value()) {
     return true;
-  }
-
-  if (!base::FeatureList::IsEnabled(
-          segmentation_platform::features::kNewTabPageCustomizationV2)) {
-    return false;
   }
 
   if (profile_prefs->IsManagedPreference("ntp.custom_background_dict2")) {

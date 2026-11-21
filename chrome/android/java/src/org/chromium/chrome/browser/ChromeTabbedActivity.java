@@ -4274,9 +4274,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         if (isColdStart()) {
             NtpCustomizationMetricsUtils.recordNtpThemeType();
             NtpCustomizationMetricsUtils.recordMvtUserEngagement();
-            if (ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) {
-                NtpCustomizationPolicyManager.getInstance().onDeferredStartup();
-            }
+            NtpCustomizationPolicyManager.getInstance().onDeferredStartup();
         }
 
         if (NtpCustomizationUtils.isNtpThemeCustomizationEnabled()) {

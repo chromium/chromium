@@ -422,14 +422,12 @@ public class NtpCustomizationMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testBuildListContent_IncludesTheme() {
         // Condition Check:
-        // 1. Feature Flag V2: Enabled via @EnableFeatures
-        // 2. Policy: Enabled via setUp
-        // 3. !isLff: True (Robolectric context is phone by default)
-        // 4. SDK >= R: True via @Config
-        // 5. E2E Enabled for Window: True via setUp (token acquired)
+        // 1. Policy: Enabled via setUp
+        // 2. !isLff: True (Robolectric context is phone by default)
+        // 3. SDK >= R: True via @Config
+        // 4. E2E Enabled for Window: True via setUp (token acquired)
 
         List<Integer> listContent = mMediator.buildListContent(mContext);
 
@@ -438,10 +436,7 @@ public class NtpCustomizationMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures({
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
-    })
+    @Features.EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC})
     public void testBuildListContent_SyncEnabled_ExcludesTheme() {
         List<Integer> listContent = mMediator.buildListContent(mContext);
 
@@ -451,7 +446,6 @@ public class NtpCustomizationMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testBuildListContent_ExcludesThemeWhenE2EDisabled() {
         // Release the token so E2E returns false
         mE2EProvider.releaseEdgeToEdgeToken(0);
@@ -465,7 +459,6 @@ public class NtpCustomizationMediatorUnitTest {
 
     @Test
     @Config(qualifiers = "sw600dp")
-    @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testBuildListContent_IncludesThemeWhenE2EDisabled_tablet() {
         // Release the token so E2E returns false
         mE2EProvider.releaseEdgeToEdgeToken(0);
@@ -483,7 +476,6 @@ public class NtpCustomizationMediatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testBuildListContent() {
         // Mock dependencies to enable FeedFeatures.isFeedEnabled(profile) to return true.
         when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);

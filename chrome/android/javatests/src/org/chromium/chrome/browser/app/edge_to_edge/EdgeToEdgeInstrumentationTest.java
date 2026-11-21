@@ -557,10 +557,9 @@ public class EdgeToEdgeInstrumentationTest {
     }
 
     /**
-     * Verifies that when NEW_TAB_PAGE_CUSTOMIZATION_V2 and EDGE_TO_EDGE_TOP_INSET are enabled,
-     * navigating from an NTP with a customized background theme (where top edge-to-edge is active)
-     * to a standard web page properly transitions isDrawingToTopEdge to false without displacing
-     * browser controls.
+     * Verifies that when EDGE_TO_EDGE_TOP_INSET is enabled, navigating from an NTP with a
+     * customized background theme (where top edge-to-edge is active) to a standard web page
+     * properly transitions isDrawingToTopEdge to false without displacing browser controls.
      */
     @Test
     @MediumTest
@@ -680,8 +679,7 @@ public class EdgeToEdgeInstrumentationTest {
     @MediumTest
     @EnableFeatures({
         ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET + ":enable_top_edge_to_edge/true",
-        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2
+        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
     })
     public void testTopEdgeToEdge_customNtpWithStatusIndicator() {
         TabbedRootUiCoordinator.setDisableTopControlsAnimationsForTesting(true);

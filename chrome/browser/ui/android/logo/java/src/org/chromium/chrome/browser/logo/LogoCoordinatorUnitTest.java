@@ -40,8 +40,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.logo.LogoUtils.DoodleSize;
@@ -90,14 +88,6 @@ public class LogoCoordinatorUnitTest {
     }
 
     @Test
-    @DisableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
-    public void testMaybeInitHomepageStateListener_featuresDisabled() {
-        createLogoCoordinator();
-        verify(mNtpCustomizationConfigManager, never()).addListener(any(), any(), anyBoolean());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testMaybeInitHomepageStateListener_disabledByPolicy() {
         NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
         NtpCustomizationPolicyManager.setInstanceForTesting(policyManager);
@@ -108,15 +98,13 @@ public class LogoCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
-    public void testMaybeInitHomepageStateListener_featuresEnabled() {
+    public void testMaybeInitHomepageStateListener_enabledByPolicy() {
         createLogoCoordinator();
         verify(mNtpCustomizationConfigManager)
                 .addListener(mHomepageStateListenerCaptor.capture(), eq(mContext), eq(true));
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testHomepageStateListener_GoogleLogoNotShown() {
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         BackgroundImageInfo backgroundImageInfo = mock(BackgroundImageInfo.class);
@@ -139,7 +127,6 @@ public class LogoCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testHomepageStateListener_onBackgroundImageChanged() {
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         BackgroundImageInfo backgroundImageInfo = mock(BackgroundImageInfo.class);
@@ -175,7 +162,6 @@ public class LogoCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testHomepageStateListener_onBackgroundColorChanged() {
         when(mLogoMediator.isDefaultGoogleLogoShown()).thenReturn(true);
         @NtpThemeColorId int colorInfoId = NtpThemeColorId.NTP_COLORS_BLUE;
@@ -244,7 +230,6 @@ public class LogoCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testHomepageStateListener_onBackgroundReset() {
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         BackgroundImageInfo backgroundImageInfo = mock(BackgroundImageInfo.class);
@@ -278,7 +263,6 @@ public class LogoCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testDestroyRemovesListener() {
         mLogoCoordinator = createLogoCoordinator();
         verify(mNtpCustomizationConfigManager)

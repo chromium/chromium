@@ -69,7 +69,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link NtpChromeColorsCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
 public class NtpChromeColorsCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -349,7 +348,6 @@ public class NtpChromeColorsCoordinatorUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testOnItemClicked_ntpThemeColorInfo_withPrimaryColorSelected() {
         @NtpThemeColorId int colorId = NtpThemeColorId.NTP_COLORS_BLUE;
         @NtpThemeColorId int colorId1 = NtpThemeColorId.NTP_COLORS_AQUA;

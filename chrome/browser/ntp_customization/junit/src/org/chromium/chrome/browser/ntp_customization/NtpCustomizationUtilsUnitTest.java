@@ -80,7 +80,6 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.BuildConfig;
@@ -216,7 +215,6 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testIsNtpThemeCustomizationEnabled() {
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
         NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
@@ -230,50 +228,18 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
-    public void testIsNtpThemeCustomizationEnabled_flagDisabled() {
-        NtpCustomizationUtils.resetSharedPreferenceForTesting();
-        NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
-        NtpCustomizationPolicyManager.setInstanceForTesting(policyManager);
-        when(policyManager.isNtpCustomBackgroundEnabled()).thenReturn(true);
-
-        assertFalse(NtpCustomizationUtils.isNtpThemeCustomizationEnabled());
-    }
-
-    @Test
-    @EnableFeatures({
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
-    })
-    public void testIsNTPCustomizationSyncEnabled_BothEnabled() {
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
+    public void testIsNTPCustomizationSyncEnabled_ThemeSyncEnabled() {
         assertTrue(NtpCustomizationUtils.isNTPCustomizationSyncEnabled());
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
-    public void testIsNTPCustomizationSyncEnabled_OnlyV2Enabled() {
+    public void testIsNTPCustomizationSyncEnabled_ThemeSyncDisabled() {
         assertFalse(NtpCustomizationUtils.isNTPCustomizationSyncEnabled());
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
-    @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
-    public void testIsNTPCustomizationSyncEnabled_OnlyThemeSyncEnabled() {
-        assertFalse(NtpCustomizationUtils.isNTPCustomizationSyncEnabled());
-    }
-
-    @Test
-    @DisableFeatures({
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC
-    })
-    public void testIsNTPCustomizationSyncEnabled_BothDisabled() {
-        assertFalse(NtpCustomizationUtils.isNTPCustomizationSyncEnabled());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testIsNtpThemeCustomizationEnabledWithWindowAndroid() {
         NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
         NtpCustomizationPolicyManager.setInstanceForTesting(policyManager);
@@ -304,10 +270,7 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
-        ChromeFeatureList.USE_WEB_UI_NTP_ANDROID
-    })
+    @EnableFeatures({ChromeFeatureList.USE_WEB_UI_NTP_ANDROID})
     public void testIsNtpThemeCustomizationEnabledWithWindowAndroid_WebUiNtpEnabled() {
         DeviceInfo.setIsDesktopForTesting(true);
         // Skips the early exit: !isNtpThemeCustomizationEnabled()
@@ -324,7 +287,6 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetAndSetNtpBackgroundType() {
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
         NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
@@ -337,18 +299,6 @@ public class NtpCustomizationUtilsUnitTest {
         NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(imageType);
 
         assertEquals(imageType, NtpCustomizationUtils.getNtpBackgroundType());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
-    public void testGetAndSetNtpBackgroundType_flagDisabled() {
-        NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
-        NtpCustomizationPolicyManager.setInstanceForTesting(policyManager);
-        when(policyManager.isNtpCustomBackgroundEnabled()).thenReturn(true);
-
-        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(IMAGE_FROM_DISK);
-
-        assertEquals(DEFAULT, NtpCustomizationUtils.getNtpBackgroundType());
     }
 
     @Test
@@ -730,7 +680,6 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetPrimaryColorFromCustomizedThemeColor_colorFromHex_LightAndDark() {
         NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(COLOR_FROM_HEX);
 
@@ -766,15 +715,6 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
-    public void testGetPrimaryColorFromCustomizedThemeColor_flagDisabled() {
-        assertNull(
-                NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(
-                        mContext, /* checkDailyRefresh= */ false));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetPrimaryColorFromCustomizedThemeColor_wrongImageType() {
         NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(NtpBackgroundType.DEFAULT);
         NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(Color.RED);
@@ -784,7 +724,6 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetPrimaryColorFromCustomizedThemeColor_chromeColor_colorNotSet() {
         NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(
                 NtpBackgroundType.CHROME_COLOR);
@@ -797,7 +736,6 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetPrimaryColorFromCustomizedThemeColor_chromeColor_colorSet() {
         @NtpThemeColorId int colorId = NtpThemeColorId.NTP_COLORS_BLUE;
         NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(
@@ -813,7 +751,6 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetPrimaryColorFromCustomizedThemeColor_chromeColor_colorSet_dailyRefresh() {
         @NtpThemeColorId int colorId = NtpThemeColorId.NTP_COLORS_BLUE;
         @NtpThemeColorId int newColorId = NtpThemeColorId.NTP_COLORS_BLUE + 1;
@@ -848,7 +785,6 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetPrimaryColorFromCustomizedThemeColor_colorFromHex() {
         NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(COLOR_FROM_HEX);
         NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(Color.GREEN);
@@ -869,7 +805,6 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetPrimaryColorFromCustomizedThemeColor_colorSetWithImage() {
         NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(IMAGE_FROM_DISK);
         NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(Color.BLUE);
@@ -882,7 +817,6 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetPrimaryColorFromCustomizedThemeColor_themeCollection() {
         NtpThemeDailyRefreshManager.createInstanceForTesting();
         NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(
@@ -1049,7 +983,6 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetTintedGoogleLogoDrawable_chromeColor_lightMode() {
         // Test cases in light mode.
         ColorUtils.setInNightModeForTesting(false);
@@ -1077,7 +1010,6 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetTintedGoogleLogoDrawable_chromeColor_darkMode() {
         // Test cases in dark mode.
         ColorUtils.setInNightModeForTesting(true);
@@ -1110,20 +1042,6 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
-    public void testShouldApplyWhiteBackgroundOnSearchBox_flagDisabled() {
-        NtpCustomizationConfigManager configManager = new NtpCustomizationConfigManager();
-        NtpCustomizationConfigManager.setInstanceForTesting(configManager);
-
-        configManager.setBackgroundTypeForTesting(NtpBackgroundType.IMAGE_FROM_DISK);
-
-        assertFalse(NtpCustomizationUtils.shouldApplyWhiteBackgroundOnSearchBox());
-
-        configManager.resetForTesting();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testShouldApplyWhiteBackgroundOnSearchBox_disabledByPolicy() {
         // TODO(crbug.com/525121661): Failing on Desktop Android.
         assumeFalse(BuildConfig.IS_DESKTOP_ANDROID);
@@ -1142,7 +1060,6 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testShouldApplyWhiteBackgroundOnSearchBox_withType() {
         assertFalse(
                 NtpCustomizationUtils.shouldApplyWhiteBackgroundForNtpBackgroundType(
@@ -1178,22 +1095,6 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
-    public void testShouldAdjustIconTintForNtp_flagDisabled() {
-        NtpCustomizationConfigManager configManager = new NtpCustomizationConfigManager();
-        NtpCustomizationConfigManager.setInstanceForTesting(configManager);
-
-        configManager.setBackgroundTypeForTesting(NtpBackgroundType.IMAGE_FROM_DISK);
-
-        assertFalse(
-                NtpCustomizationUtils.shouldAdjustIconTintForNtp(
-                        mWindowAndroid, /* isLff= */ false));
-
-        configManager.resetForTesting();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testShouldAdjustIconTintForNtp_isLff() {
         NtpCustomizationConfigManager configManager = new NtpCustomizationConfigManager();
         NtpCustomizationConfigManager.setInstanceForTesting(configManager);
@@ -1212,7 +1113,6 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testShouldAdjustIconTintForNtp_phone() {
         NtpCustomizationConfigManager configManager = new NtpCustomizationConfigManager();
         NtpCustomizationConfigManager.setInstanceForTesting(configManager);
@@ -1747,8 +1647,10 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
-    public void testShouldUseEditIconWithGreyBackground_flagDisabled() {
+    public void testShouldUseEditIconWithGreyBackground_disabledByPolicy() {
+        NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
+        NtpCustomizationPolicyManager.setInstanceForTesting(policyManager);
+        when(policyManager.isNtpCustomBackgroundEnabled()).thenReturn(false);
         when(mConfigManager.getBackgroundType()).thenReturn(NtpBackgroundType.DEFAULT);
         assertFalse(NtpCustomizationUtils.shouldUseEditIconWithGreyBackground());
 
@@ -1766,7 +1668,6 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testCreateNtpCustomizationButton_greyBackground() {
         when(mConfigManager.getBackgroundType()).thenReturn(IMAGE_FROM_DISK);
         View.OnClickListener listener = mock(View.OnClickListener.class);
@@ -1794,7 +1695,6 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testCreateNtpCustomizationButton_defaultBackground() {
         when(mConfigManager.getBackgroundType()).thenReturn(DEFAULT);
         View.OnClickListener listener = mock(View.OnClickListener.class);

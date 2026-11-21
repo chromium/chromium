@@ -1321,7 +1321,6 @@ public class ToolbarPositionControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testMaybeForceBottomToolbarLayoutUpdateAndCapture() {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
         mActivityTabSupplier.set(mTab);
@@ -1344,7 +1343,6 @@ public class ToolbarPositionControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testMaybeForceCapture_StaleControlContainerHeight() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();

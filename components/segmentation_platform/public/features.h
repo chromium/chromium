@@ -174,9 +174,6 @@ extern const base::FeatureParam<bool> kEnableCustomizeMVTTip;
 // The control param for the Recent Tabs tip.
 extern const base::FeatureParam<bool> kEnableRecentTabsTip;
 
-// Feature flag for New Tab Page Customization V2.
-BASE_DECLARE_FEATURE(kNewTabPageCustomizationV2);
-
 // Feature flags for the new Magic Stack Tips on iOS (NTP Theme, NTP
 // Customization, Tips notification).
 BASE_DECLARE_FEATURE(kMagicStackNTPThemeTipIos);

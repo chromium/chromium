@@ -183,7 +183,6 @@ public class NewBackgroundTabAnimationDataUnitTest {
 
     @Test
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testCaptureState_NtpAdjustment() {
         when(mMockPolicyManager.isNtpCustomBackgroundEnabled()).thenReturn(true);
         when(mMockConfigManager.getBackgroundType()).thenReturn(NtpBackgroundType.IMAGE_FROM_DISK);

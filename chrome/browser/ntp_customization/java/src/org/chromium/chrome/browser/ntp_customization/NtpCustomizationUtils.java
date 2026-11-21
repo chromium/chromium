@@ -361,10 +361,9 @@ public class NtpCustomizationUtils {
         }
     }
 
-    /** Returns whether custom Ntp's background theme is enabled by flag and policy. */
+    /** Returns whether custom Ntp's background theme is enabled by policy. */
     public static boolean isNtpThemeCustomizationEnabled() {
-        return ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()
-                && NtpCustomizationPolicyManager.getInstance().isNtpCustomBackgroundEnabled();
+        return NtpCustomizationPolicyManager.getInstance().isNtpCustomBackgroundEnabled();
     }
 
     /**
@@ -506,7 +505,7 @@ public class NtpCustomizationUtils {
 
     /**
      * Gets the current NTP's background type from the SharedPreference. Returns
-     * NtpBackgroundType.DEFAULT if the feature flag is disabled.
+     * NtpBackgroundType.DEFAULT if NTP theme customization is disabled by policy.
      */
     public static @NtpBackgroundType int getNtpBackgroundType() {
         if (!isNtpThemeCustomizationEnabled()) {
@@ -1997,8 +1996,7 @@ public class NtpCustomizationUtils {
 
     /** Returns whether NTP theme customization sync is enabled. */
     public static boolean isNTPCustomizationSyncEnabled() {
-        return ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()
-                && ChromeFeatureList.sNewTabPageCustomizationThemeSync.isEnabled();
+        return ChromeFeatureList.sNewTabPageCustomizationThemeSync.isEnabled();
     }
 
     /**

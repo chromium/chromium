@@ -18,7 +18,6 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.transit.ViewElement.displayingAtLeastOption;
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2;
 import static org.chromium.chrome.browser.ntp.HomeSurfaceTestUtils.START_SURFACE_RETURN_TIME_IMMEDIATE;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_AT_STARTUP_UMA;
 import static org.chromium.chrome.browser.tasks.ReturnToChromeUtil.HOME_SURFACE_SHOWN_UMA;
@@ -574,7 +573,7 @@ public class ShowNtpAtStartupTest {
     @MediumTest
     @Feature({"StartSurface", "RenderTest"})
     @Restriction(DeviceFormFactor.PHONE)
-    @EnableFeatures({START_SURFACE_RETURN_TIME_IMMEDIATE, NEW_TAB_PAGE_CUSTOMIZATION_V2})
+    @EnableFeatures({START_SURFACE_RETURN_TIME_IMMEDIATE})
     // TODO(crbug.com/475816843): Remove this and update goldens once migration is complete.
     @DisableFeatures(SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING)
     public void testToolbar_defaultBackground() throws IOException {

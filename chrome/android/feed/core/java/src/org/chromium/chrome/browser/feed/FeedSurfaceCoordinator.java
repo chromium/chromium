@@ -126,7 +126,6 @@ public class FeedSurfaceCoordinator
     private final long mEmbeddingSurfaceCreatedTimeNs;
 
     private FeedSurfaceMediator mMediator;
-    private final boolean mIsNtpCustomizationV2Enabled;
     private final UiConfig mUiConfig;
     private final FrameLayout mRootView;
     private boolean mIsActive;
@@ -162,7 +161,6 @@ public class FeedSurfaceCoordinator
 
     // Used to handle padding adjustment when edge to edge is enabled.
     private final EdgeToEdgePadAdjuster mEdgePadAdjuster;
-    private final boolean mIsNewTabPageCustomizationV2Enabled;
     private @Nullable ImageButton mNtpCustomizationButton;
     private @Nullable NtpCustomizationConfigManager mNtpCustomizationConfigManager;
     private @Nullable NtpBackgroundImageCoordinator mNtpBackgroundImageCoordinator;
@@ -437,7 +435,7 @@ public class FeedSurfaceCoordinator
         mHeaderIndex = 0;
         mTabStripHeightSupplier = tabStripHeightSupplier;
         mUseStaggeredLayout = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
-        mIsNewTabPageCustomizationV2Enabled =
+        boolean isNtpThemeCustomizationEnabled =
                 NtpCustomizationUtils.isNtpThemeCustomizationEnabled();
         mDefaultBackgroundColor = ChromeSemanticColorUtils.getHomeSurfaceBackgroundColor(mActivity);
 
@@ -458,8 +456,7 @@ public class FeedSurfaceCoordinator
         mFeedStreamViewResizer =
                 FeedStreamViewResizer.createAndAttach(mActivity, mRecyclerView, mUiConfig);
 
-        mIsNtpCustomizationV2Enabled = NtpCustomizationUtils.isNtpThemeCustomizationEnabled();
-        if (mIsNewTabPageCustomizationV2Enabled) {
+        if (isNtpThemeCustomizationEnabled) {
             mNtpBackgroundImageCoordinator =
                     new NtpBackgroundImageCoordinator(
                             mActivity, mRootView, mUiConfig, mDefaultBackgroundColor);
@@ -488,7 +485,7 @@ public class FeedSurfaceCoordinator
             mRootView.addView(mNtpCustomizationButton);
         }
 
-        if (mIsNtpCustomizationV2Enabled) {
+        if (isNtpThemeCustomizationEnabled) {
             mNtpCustomizationConfigManager = NtpCustomizationConfigManager.getInstance();
             mHomepageStateListener =
                     new HomepageStateListener() {

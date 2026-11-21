@@ -60,7 +60,6 @@ import java.time.Duration;
 /** Unit tests for {@link NtpCustomizationPromoManager} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = Build.VERSION_CODES.R)
-@EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
 @DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
 public class NtpCustomizationPromoManagerUnitTest {
     private static final int NTP_OPENED_COUNT_FOR_BOTTOM_SHEET = 2;
@@ -383,10 +382,7 @@ public class NtpCustomizationPromoManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2,
-        ChromeFeatureList.USE_WEB_UI_NTP_ANDROID
-    })
+    @EnableFeatures({ChromeFeatureList.USE_WEB_UI_NTP_ANDROID})
     public void testNtpThemeDisabled_whenWebUiNtpOverrideEnabled() {
         DeviceInfo.setIsDesktopForTesting(true);
         assertTrue(UrlOverrideUtils.isWebUiNtpOverrideEnabled());
@@ -423,7 +419,6 @@ public class NtpCustomizationPromoManagerUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     @Features.DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
     public void testNtpThemeEnabled_whenWebUiNtpOverrideDisabled() {
         DeviceInfo.setIsDesktopForTesting(true);

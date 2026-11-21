@@ -18,7 +18,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.USE_WEB_UI_NTP_ANDROID;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.FEED;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.MAIN;
@@ -339,14 +338,14 @@ public class NtpCustomizationCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({NEW_TAB_PAGE_CUSTOMIZATION_V2, NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC})
+    @EnableFeatures({NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC})
     public void testShowBottomSheet_SyncEnabled() {
         mNtpCustomizationCoordinator.showBottomSheet();
         assertNotNull(mNtpCustomizationCoordinator.getNtpThemeSyncHistoryCoordinatorForTesting());
     }
 
     @Test
-    @EnableFeatures({NEW_TAB_PAGE_CUSTOMIZATION_V2, NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC})
+    @EnableFeatures({NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC})
     public void testThemeSyncHistoryPreparedEachTimeMainBottomSheetIsShown() {
         // Uses the real mediator so that back navigation to the main bottom sheet goes through
         // the coordinator's showMainBottomSheet().
@@ -383,11 +382,7 @@ public class NtpCustomizationCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        NEW_TAB_PAGE_CUSTOMIZATION_V2,
-        NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC,
-        USE_WEB_UI_NTP_ANDROID
-    })
+    @EnableFeatures({NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC, USE_WEB_UI_NTP_ANDROID})
     public void testShowBottomSheet_webUiNtpEnabled_doesNotCreateThemeSyncHistory() {
         testShowBottomSheetDoesNotCreateThemeSyncHistoryImpl(/* isDesktop= */ true);
     }
