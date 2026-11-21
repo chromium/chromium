@@ -23,7 +23,7 @@ class ActionView;
 class ActionLabel : public views::LabelButton {
   METADATA_HEADER(ActionLabel, views::LabelButton)
  public:
-  static std::vector<raw_ptr<ActionLabel, VectorExperimental>> Show(
+  static std::vector<raw_ptr<ActionLabel>> Show(
       views::View* parent,
       ActionType action_type,
       const InputElement& input_element,

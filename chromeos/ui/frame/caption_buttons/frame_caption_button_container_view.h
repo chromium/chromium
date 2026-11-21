@@ -236,8 +236,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
 
   // Mapping of the image needed to paint a button for each of the values of
   // CaptionButtonIcon.
-  std::map<views::CaptionButtonIcon,
-           raw_ptr<const gfx::VectorIcon, CtnExperimental>>
+  std::map<views::CaptionButtonIcon, raw_ptr<const gfx::VectorIcon>>
       button_icon_map_;
 
   // Animation that affects the visibility of |size_button_| and the position of

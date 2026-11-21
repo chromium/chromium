@@ -487,8 +487,7 @@ class OAuth2Test : public OobeBaseTest {
 
  private:
   base::FilePath test_data_dir_;
-  std::map<std::string, raw_ptr<RequestDeferrer, CtnExperimental>>
-      request_deferers_;
+  std::map<std::string, raw_ptr<RequestDeferrer>> request_deferers_;
 
   // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
   extensions::ScopedTestMV2Enabler mv2_enabler;

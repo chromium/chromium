@@ -92,7 +92,7 @@ class EditLabels : public views::View {
   raw_ptr<NameTag, DanglingUntriaged> name_tag_ = nullptr;
   const bool for_editing_list_ = false;
 
-  std::vector<raw_ptr<EditLabel, VectorExperimental>> labels_;
+  std::vector<raw_ptr<EditLabel>> labels_;
 
   // It is true that at least one of `labels_` is unassigned.
   bool missing_assign_ = false;

@@ -39,7 +39,7 @@ class ARC_EXPORT ArcToastSurfaceManager : public exo::ToastSurfaceManager,
 
   void UpdateVisibility();
 
-  std::vector<raw_ptr<exo::ToastSurface, VectorExperimental>> toast_surfaces_;
+  std::vector<raw_ptr<exo::ToastSurface>> toast_surfaces_;
 
   bool locked_;
 

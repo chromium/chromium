@@ -402,8 +402,7 @@ class FakeFeatureStateManagerFactory : public FeatureStateManagerImpl::Factory {
       PrefService* pref_service,
       HostStatusProvider* host_status_provider,
       device_sync::DeviceSyncClient* device_sync_client,
-      const base::flat_map<mojom::Feature,
-                           raw_ptr<GlobalStateFeatureManager, CtnExperimental>>&
+      const base::flat_map<mojom::Feature, raw_ptr<GlobalStateFeatureManager>>&
           global_state_feature_managers,
       bool is_secondary_user) override {
     EXPECT_FALSE(instance_);

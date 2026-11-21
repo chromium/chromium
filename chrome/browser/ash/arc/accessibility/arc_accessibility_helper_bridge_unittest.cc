@@ -142,8 +142,7 @@ class ArcAccessibilityHelperBridgeTest : public ChromeViewsTestBase {
     }
 
    private:
-    std::map<std::string, raw_ptr<ArcNotificationSurface, CtnExperimental>>
-        surfaces_;
+    std::map<std::string, raw_ptr<ArcNotificationSurface>> surfaces_;
     base::ObserverList<Observer> observers_;
   };
 

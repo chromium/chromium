@@ -251,7 +251,7 @@ class ArcTracingDataSource
   }
 
   scoped_refptr<base::SequencedTaskRunner> perfetto_task_runner_;
-  std::set<raw_ptr<ArcTracingBridge, SetExperimental>> bridges_;
+  std::set<raw_ptr<ArcTracingBridge>> bridges_;
   // In case StopTracing() is called before tracing was started for all bridges,
   // this stores a callback to StopTracing() that's executed when all bridges
   // have started.

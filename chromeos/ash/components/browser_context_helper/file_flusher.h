@@ -56,7 +56,7 @@ class COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER) FileFlusher {
   void OnJobDone(Job* job);
 
   // Not owned. Job manages its own life time.
-  std::vector<raw_ptr<Job, VectorExperimental>> jobs_;
+  std::vector<raw_ptr<Job>> jobs_;
 
   // A callback for testing to be invoked when a file is flushed.
   OnFlushCallback on_flush_callback_for_test_;

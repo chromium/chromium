@@ -222,12 +222,12 @@ END_METADATA
 
 }  // namespace
 
-std::vector<raw_ptr<ActionLabel, VectorExperimental>> ActionLabel::Show(
+std::vector<raw_ptr<ActionLabel>> ActionLabel::Show(
     views::View* parent,
     ActionType action_type,
     const InputElement& input_element,
     TapLabelPosition label_position) {
-  std::vector<raw_ptr<ActionLabel, VectorExperimental>> labels;
+  std::vector<raw_ptr<ActionLabel>> labels;
   gfx::Size touch_point_size;
 
   switch (action_type) {

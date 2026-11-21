@@ -233,7 +233,7 @@ class VpnService : public KeyedService,
 
   // Maps shill service path to (unowned) configuration.
   using StringToConfigurationMap =
-      base::flat_map<std::string, raw_ptr<VpnConfiguration, CtnExperimental>>;
+      base::flat_map<std::string, raw_ptr<VpnConfiguration>>;
   StringToConfigurationMap service_path_to_configuration_map_;
 
   // Configuration that is currently in use.

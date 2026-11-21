@@ -112,7 +112,7 @@ struct GraphicsEventsContext {
   // To keep in correct order of creation. This converts pair of 'B' and 'E'
   // events to the completed event, 'X'.
   ArcTracingModel::TracingEvents converted_events;
-  std::map<uint32_t, std::vector<raw_ptr<ArcTracingEvent, VectorExperimental>>>
+  std::map<uint32_t, std::vector<raw_ptr<ArcTracingEvent>>>
       per_thread_pending_events_stack;
 
   std::map<std::pair<char, std::string>, std::unique_ptr<ArcTracingEvent>>

@@ -40,7 +40,7 @@ class FakeWMHelper : public exo::WMHelper {
   }
 
  private:
-  std::map<int, raw_ptr<aura::Window, CtnExperimental>> map_;
+  std::map<int, raw_ptr<aura::Window>> map_;
 };
 
 }  // namespace

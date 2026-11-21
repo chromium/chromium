@@ -133,8 +133,7 @@ class BorealisWindowManager : public apps::InstanceRegistry::Observer {
   base::ScopedObservation<apps::InstanceRegistry,
                           apps::InstanceRegistry::Observer>
       instance_registry_observation_;
-  base::flat_map<std::string,
-                 base::flat_set<raw_ptr<aura::Window, CtnExperimental>>>
+  base::flat_map<std::string, base::flat_set<raw_ptr<aura::Window>>>
       ids_to_windows_;
   base::ObserverList<AnonymousAppObserver> anon_observers_;
   base::ObserverList<AppWindowLifetimeObserver> lifetime_observers_;

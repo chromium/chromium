@@ -37,9 +37,8 @@ class FeatureStateManagerImpl : public FeatureStateManager,
         PrefService* pref_service,
         HostStatusProvider* host_status_provider,
         device_sync::DeviceSyncClient* device_sync_client,
-        const base::flat_map<
-            mojom::Feature,
-            raw_ptr<GlobalStateFeatureManager, CtnExperimental>>&
+        const base::flat_map<mojom::Feature,
+                             raw_ptr<GlobalStateFeatureManager>>&
             global_state_feature_managers,
         bool is_secondary_user);
     static void SetFactoryForTesting(Factory* test_factory);
@@ -50,9 +49,8 @@ class FeatureStateManagerImpl : public FeatureStateManager,
         PrefService* pref_service,
         HostStatusProvider* host_status_provider,
         device_sync::DeviceSyncClient* device_sync_client,
-        const base::flat_map<
-            mojom::Feature,
-            raw_ptr<GlobalStateFeatureManager, CtnExperimental>>&
+        const base::flat_map<mojom::Feature,
+                             raw_ptr<GlobalStateFeatureManager>>&
             global_state_feature_managers,
         bool is_secondary_user) = 0;
 
@@ -70,8 +68,7 @@ class FeatureStateManagerImpl : public FeatureStateManager,
       PrefService* pref_service,
       HostStatusProvider* host_status_provider,
       device_sync::DeviceSyncClient* device_sync_client,
-      const base::flat_map<mojom::Feature,
-                           raw_ptr<GlobalStateFeatureManager, CtnExperimental>>&
+      const base::flat_map<mojom::Feature, raw_ptr<GlobalStateFeatureManager>>&
           global_state_feature_managers,
       bool is_secondary_user);
 
@@ -108,8 +105,7 @@ class FeatureStateManagerImpl : public FeatureStateManager,
   raw_ptr<PrefService> pref_service_;
   raw_ptr<HostStatusProvider> host_status_provider_;
   raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
-  const base::flat_map<mojom::Feature,
-                       raw_ptr<GlobalStateFeatureManager, CtnExperimental>>
+  const base::flat_map<mojom::Feature, raw_ptr<GlobalStateFeatureManager>>
       global_state_feature_managers_;
 
   // Certain features may be unavailable to secondary users logged into a

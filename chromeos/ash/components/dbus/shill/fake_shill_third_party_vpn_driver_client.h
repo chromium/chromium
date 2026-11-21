@@ -62,8 +62,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillThirdPartyVpnDriverClient
 
  private:
   using ObserverMap =
-      std::map<std::string,
-               raw_ptr<ShillThirdPartyVpnObserver, CtnExperimental>>;
+      std::map<std::string, raw_ptr<ShillThirdPartyVpnObserver>>;
 
   ObserverMap observer_map_;
 };

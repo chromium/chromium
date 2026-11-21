@@ -224,7 +224,7 @@ TEST_F(ClientCertStoreKcerTest, Filter) {
   const struct FilterTest {
     std::string description;
     base::WeakPtr<kcer::Kcer> kcer;
-    std::vector<raw_ptr<net::X509Certificate, VectorExperimental>> results;
+    std::vector<raw_ptr<net::X509Certificate>> results;
   } kTests[] = {
       {"user1 without system slot",
        user1_kcer_without_system_slot.GetKcer(),

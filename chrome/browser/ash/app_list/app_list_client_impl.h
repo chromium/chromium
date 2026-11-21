@@ -231,8 +231,7 @@ class AppListClientImpl
   // (https://crbug.com/40617296).
   // TODO: Replace the mojo interface functions provided by AppListClient with
   // callbacks.
-  std::map<int, raw_ptr<AppListModelUpdater, CtnExperimental>>
-      profile_model_mappings_;
+  std::map<int, raw_ptr<AppListModelUpdater>> profile_model_mappings_;
 
   std::unique_ptr<app_list::SearchController> search_controller_;
   std::unique_ptr<AppSyncUIStateWatcher> app_sync_ui_state_watcher_;

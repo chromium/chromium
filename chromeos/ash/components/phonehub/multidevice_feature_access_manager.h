@@ -204,12 +204,11 @@ class MultideviceFeatureAccessManager {
   void OnFeatureSetupConnectionOperationDeleted(int operation_id);
 
   int next_operation_id_ = 0;
-  base::flat_map<int,
-                 raw_ptr<NotificationAccessSetupOperation, CtnExperimental>>
+  base::flat_map<int, raw_ptr<NotificationAccessSetupOperation>>
       id_to_notification_operation_map_;
-  base::flat_map<int, raw_ptr<CombinedAccessSetupOperation, CtnExperimental>>
+  base::flat_map<int, raw_ptr<CombinedAccessSetupOperation>>
       id_to_combined_operation_map_;
-  base::flat_map<int, raw_ptr<FeatureSetupConnectionOperation, CtnExperimental>>
+  base::flat_map<int, raw_ptr<FeatureSetupConnectionOperation>>
       id_to_connection_operation_map_;
   base::ObserverList<Observer> observer_list_;
   base::WeakPtrFactory<MultideviceFeatureAccessManager> weak_ptr_factory_{this};

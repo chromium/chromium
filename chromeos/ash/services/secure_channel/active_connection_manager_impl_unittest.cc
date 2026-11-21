@@ -39,8 +39,7 @@ class FakeMultiplexedChannelFactory : public MultiplexedChannelImpl::Factory {
 
   ~FakeMultiplexedChannelFactory() override = default;
 
-  base::flat_map<ConnectionDetails,
-                 raw_ptr<FakeMultiplexedChannel, CtnExperimental>>&
+  base::flat_map<ConnectionDetails, raw_ptr<FakeMultiplexedChannel>>&
   connection_details_to_active_channel_map() {
     return connection_details_to_active_channel_map_;
   }
@@ -88,8 +87,7 @@ class FakeMultiplexedChannelFactory : public MultiplexedChannelImpl::Factory {
 
   raw_ptr<AuthenticatedChannel> next_expected_authenticated_channel_ = nullptr;
 
-  base::flat_map<ConnectionDetails,
-                 raw_ptr<FakeMultiplexedChannel, CtnExperimental>>
+  base::flat_map<ConnectionDetails, raw_ptr<FakeMultiplexedChannel>>
       connection_details_to_active_channel_map_;
 };
 

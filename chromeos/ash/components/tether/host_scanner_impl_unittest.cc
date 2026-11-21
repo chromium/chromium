@@ -95,15 +95,13 @@ class FakeTetherAvailabilityOperationOrchestratorFactory
     return base::WrapUnique(orchestrator);
   }
 
-  std::vector<
-      raw_ptr<FakeTetherAvailabilityOperationOrchestrator, VectorExperimental>>&
+  std::vector<raw_ptr<FakeTetherAvailabilityOperationOrchestrator>>&
   created_orchestrators() {
     return created_orchestrators_;
   }
 
  private:
-  std::vector<
-      raw_ptr<FakeTetherAvailabilityOperationOrchestrator, VectorExperimental>>
+  std::vector<raw_ptr<FakeTetherAvailabilityOperationOrchestrator>>
       created_orchestrators_;
 };
 

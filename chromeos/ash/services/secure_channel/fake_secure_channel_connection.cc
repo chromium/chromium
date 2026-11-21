@@ -36,8 +36,7 @@ void FakeSecureChannelConnection::ChangeStatus(const Status& new_status) {
   status_ = new_status;
 
   // Copy to prevent channel from being removed during handler.
-  std::vector<raw_ptr<Observer, VectorExperimental>> observers_copy =
-      observers_;
+  std::vector<raw_ptr<Observer>> observers_copy = observers_;
   for (ash::secure_channel::SecureChannel::Observer* observer :
        observers_copy) {
     observer->OnSecureChannelStatusChanged(this, old_status, status_);
@@ -48,8 +47,7 @@ void FakeSecureChannelConnection::ChangeNearbyConnectionState(
     mojom::NearbyConnectionStep nearby_connection_step,
     mojom::NearbyConnectionStepResult result) {
   // Copy to prevent channel from being removed during handler.
-  std::vector<raw_ptr<Observer, VectorExperimental>> observers_copy =
-      observers_;
+  std::vector<raw_ptr<Observer>> observers_copy = observers_;
   for (Observer* observer : observers_copy) {
     observer->OnNearbyConnectionStateChanged(this, nearby_connection_step,
                                              result);
@@ -59,8 +57,7 @@ void FakeSecureChannelConnection::ChangeNearbyConnectionState(
 void FakeSecureChannelConnection::ChangeSecureChannelAuthenticationState(
     mojom::SecureChannelState secure_channel_authentication_state) {
   // Copy to prevent channel from being removed during handler.
-  std::vector<raw_ptr<Observer, VectorExperimental>> observers_copy =
-      observers_;
+  std::vector<raw_ptr<Observer>> observers_copy = observers_;
   for (Observer* observer : observers_copy) {
     observer->OnSecureChannelAuthenticationStateChanged(
         this, secure_channel_authentication_state);
@@ -70,8 +67,7 @@ void FakeSecureChannelConnection::ChangeSecureChannelAuthenticationState(
 void FakeSecureChannelConnection::ReceiveMessage(const std::string& feature,
                                                  const std::string& payload) {
   // Copy to prevent channel from being removed during handler.
-  std::vector<raw_ptr<Observer, VectorExperimental>> observers_copy =
-      observers_;
+  std::vector<raw_ptr<Observer>> observers_copy = observers_;
   for (ash::secure_channel::SecureChannel::Observer* observer :
        observers_copy) {
     observer->OnMessageReceived(this, feature, payload);
@@ -81,8 +77,7 @@ void FakeSecureChannelConnection::ReceiveMessage(const std::string& feature,
 void FakeSecureChannelConnection::CompleteSendingMessage(int sequence_number) {
   DCHECK(next_sequence_number_ > sequence_number);
   // Copy to prevent channel from being removed during handler.
-  std::vector<raw_ptr<Observer, VectorExperimental>> observers_copy =
-      observers_;
+  std::vector<raw_ptr<Observer>> observers_copy = observers_;
   for (ash::secure_channel::SecureChannel::Observer* observer :
        observers_copy) {
     observer->OnMessageSent(this, sequence_number);

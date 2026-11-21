@@ -191,10 +191,8 @@ void BorealisWindowManager::HandleWindowDestruction(aura::Window* window,
     observer.OnWindowFinished(app_id, window);
   }
 
-  base::flat_map<
-      std::string,
-      base::flat_set<raw_ptr<aura::Window, CtnExperimental>>>::iterator iter =
-      ids_to_windows_.find(app_id);
+  base::flat_map<std::string, base::flat_set<raw_ptr<aura::Window>>>::iterator
+      iter = ids_to_windows_.find(app_id);
   CHECK(iter != ids_to_windows_.end(), base::NotFatalUntil::M160);
   CHECK(iter->second.contains(window), base::NotFatalUntil::M160);
   iter->second.erase(window);

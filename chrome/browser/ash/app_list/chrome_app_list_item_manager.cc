@@ -24,9 +24,8 @@ ChromeAppListItem* ChromeAppListItemManager::AddChromeItem(
   items_[item->id()] = std::move(app_item);
 
   if (item->is_folder()) {
-    folder_item_mappings_.emplace(
-        item->id(),
-        std::vector<raw_ptr<ChromeAppListItem, VectorExperimental>>());
+    folder_item_mappings_.emplace(item->id(),
+                                  std::vector<raw_ptr<ChromeAppListItem>>());
   } else if (!item->folder_id().empty()) {
     AddChildItemToFolderItemMapping(item, item->folder_id());
   }
@@ -139,8 +138,7 @@ ChromeAppListItem* ChromeAppListItemManager::FindLastChildInFolder(
   if (iter == folder_item_mappings_.end()) {
     return nullptr;
   }
-  const std::vector<raw_ptr<ChromeAppListItem, VectorExperimental>>&
-      sorted_children = iter->second;
+  const std::vector<raw_ptr<ChromeAppListItem>>& sorted_children = iter->second;
 
   if (sorted_children.empty())
     return nullptr;
@@ -158,8 +156,7 @@ void ChromeAppListItemManager::AddChildItemToFolderItemMapping(
   if (iter == folder_item_mappings_.end()) {
     return;
   }
-  std::vector<raw_ptr<ChromeAppListItem, VectorExperimental>>*
-      sorted_children_ptr = &iter->second;
+  std::vector<raw_ptr<ChromeAppListItem>>* sorted_children_ptr = &iter->second;
 
   EnsureChildItemValidPosition(child_item, *sorted_children_ptr);
   size_t target_index = GetItemSortOrderIndex(child_item, *sorted_children_ptr);
@@ -177,8 +174,8 @@ void ChromeAppListItemManager::RemoveChildFromFolderItemMapping(
   if (folder_item_mappings_iter == folder_item_mappings_.end()) {
     return;
   }
-  std::vector<raw_ptr<ChromeAppListItem, VectorExperimental>>*
-      sorted_children_ptr = &folder_item_mappings_iter->second;
+  std::vector<raw_ptr<ChromeAppListItem>>* sorted_children_ptr =
+      &folder_item_mappings_iter->second;
 
   auto children_array_iter =
       std::ranges::find(*sorted_children_ptr, child_item);
@@ -192,8 +189,7 @@ void ChromeAppListItemManager::RemoveChildFromFolderItemMapping(
 
 void ChromeAppListItemManager::EnsureChildItemValidPosition(
     ChromeAppListItem* child_item,
-    const std::vector<raw_ptr<ChromeAppListItem, VectorExperimental>>&
-        sorted_children) {
+    const std::vector<raw_ptr<ChromeAppListItem>>& sorted_children) {
   syncer::StringOrdinal position = child_item->position();
   if (position.IsValid())
     return;
@@ -208,8 +204,7 @@ void ChromeAppListItemManager::EnsureChildItemValidPosition(
 
 size_t ChromeAppListItemManager::GetItemSortOrderIndex(
     ChromeAppListItem* child_item,
-    const std::vector<raw_ptr<ChromeAppListItem, VectorExperimental>>&
-        sorted_children) {
+    const std::vector<raw_ptr<ChromeAppListItem>>& sorted_children) {
   const syncer::StringOrdinal& position = child_item->position();
   const std::string& id = child_item->id();
 

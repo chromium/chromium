@@ -49,8 +49,7 @@ class FakeDisconnectTetheringOperationFactory
   FakeDisconnectTetheringOperationFactory() = default;
   ~FakeDisconnectTetheringOperationFactory() override = default;
 
-  std::vector<raw_ptr<FakeDisconnectTetheringOperation, VectorExperimental>>&
-  created_operations() {
+  std::vector<raw_ptr<FakeDisconnectTetheringOperation>>& created_operations() {
     return created_operations_;
   }
 
@@ -67,8 +66,7 @@ class FakeDisconnectTetheringOperationFactory
   }
 
  private:
-  std::vector<raw_ptr<FakeDisconnectTetheringOperation, VectorExperimental>>
-      created_operations_;
+  std::vector<raw_ptr<FakeDisconnectTetheringOperation>> created_operations_;
 };
 
 class FakeDisconnectTetheringRequestSenderObserver

@@ -61,9 +61,7 @@ class FakeSecureChannelConnection : public SecureChannel {
   void ChangeSecureChannelAuthenticationState(
       mojom::SecureChannelState secure_channel_authentication_state);
 
-  std::vector<raw_ptr<Observer, VectorExperimental>> observers() {
-    return observers_;
-  }
+  std::vector<raw_ptr<Observer>> observers() { return observers_; }
 
   std::vector<SentMessage> sent_messages() { return sent_messages_; }
 
@@ -91,7 +89,7 @@ class FakeSecureChannelConnection : public SecureChannel {
  private:
   int next_sequence_number_ = 0;
   bool was_initialized_ = false;
-  std::vector<raw_ptr<Observer, VectorExperimental>> observers_;
+  std::vector<raw_ptr<Observer>> observers_;
   std::vector<SentMessage> sent_messages_;
   std::vector<RegisterPayloadFileRequest> register_payload_file_requests_;
   std::optional<int32_t> rssi_to_return_;

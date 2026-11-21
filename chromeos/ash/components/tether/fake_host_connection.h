@@ -46,7 +46,7 @@ class FakeHostConnection : public HostConnection {
 
     base::flat_map<std::string, std::unique_ptr<FakeHostConnection>>
         pending_connection_attempts_;
-    base::flat_map<std::string, raw_ptr<FakeHostConnection, CtnExperimental>>
+    base::flat_map<std::string, raw_ptr<FakeHostConnection>>
         active_connections_;
 
     base::WeakPtrFactory<Factory> weak_ptr_factory_{this};

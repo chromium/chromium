@@ -47,8 +47,7 @@ class FakeErrorTolerantBleAdvertisementFactory
     return last_created_device_id_pair_;
   }
 
-  base::flat_map<DeviceIdPair,
-                 raw_ptr<FakeErrorTolerantBleAdvertisement, CtnExperimental>>&
+  base::flat_map<DeviceIdPair, raw_ptr<FakeErrorTolerantBleAdvertisement>>&
   device_id_pair_to_active_advertisement_map() {
     return device_id_pair_to_active_advertisement_map_;
   }
@@ -93,8 +92,7 @@ class FakeErrorTolerantBleAdvertisementFactory
   raw_ptr<BleSynchronizerBase> ble_synchronizer_base_;
 
   std::optional<DeviceIdPair> last_created_device_id_pair_;
-  base::flat_map<DeviceIdPair,
-                 raw_ptr<FakeErrorTolerantBleAdvertisement, CtnExperimental>>
+  base::flat_map<DeviceIdPair, raw_ptr<FakeErrorTolerantBleAdvertisement>>
       device_id_pair_to_active_advertisement_map_;
   size_t num_instances_created_ = 0u;
 };

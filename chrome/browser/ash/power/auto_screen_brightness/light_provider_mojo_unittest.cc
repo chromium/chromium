@@ -106,8 +106,7 @@ class LightProviderMojoTest : public testing::Test {
   std::unique_ptr<AlsReader> als_reader_;
   std::unique_ptr<LightProviderMojo> provider_;
 
-  std::map<int32_t,
-           raw_ptr<chromeos::sensors::FakeSensorDevice, CtnExperimental>>
+  std::map<int32_t, raw_ptr<chromeos::sensors::FakeSensorDevice>>
       sensor_devices_;
 
   int num_samples_ = 0;

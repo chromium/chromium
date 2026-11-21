@@ -480,7 +480,7 @@ class PortsTest : public testing::Test, public MessageRouter {
   base::Lock global_lock_;
 
   base::Lock lock_;
-  std::map<NodeName, raw_ptr<TestNode, CtnExperimental>> nodes_;
+  std::map<NodeName, raw_ptr<TestNode>> nodes_;
 };
 
 }  // namespace

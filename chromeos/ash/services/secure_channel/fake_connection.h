@@ -65,9 +65,7 @@ class FakeConnection : public Connection {
     return reigster_payload_file_requests_;
   }
 
-  std::vector<raw_ptr<ConnectionObserver, VectorExperimental>>& observers() {
-    return observers_;
-  }
+  std::vector<raw_ptr<ConnectionObserver>>& observers() { return observers_; }
 
   using Connection::SetStatus;
 
@@ -93,7 +91,7 @@ class FakeConnection : public Connection {
 
   std::vector<RegisterPayloadFileRequest> reigster_payload_file_requests_;
 
-  std::vector<raw_ptr<ConnectionObserver, VectorExperimental>> observers_;
+  std::vector<raw_ptr<ConnectionObserver>> observers_;
 
   std::optional<int32_t> rssi_to_return_;
   const bool should_auto_connect_;

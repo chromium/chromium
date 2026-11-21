@@ -57,8 +57,7 @@ class MahiMediaAppContentManagerImpl
  private:
   std::map<base::UnguessableToken, raw_ptr<MahiMediaAppClient>>
       client_id_to_client_;
-  std::set<raw_ptr<const aura::Window, SetExperimental>>
-      windows_of_live_clients_;
+  std::set<raw_ptr<const aura::Window>> windows_of_live_clients_;
   // The user selected text on the current focused PDF content.
   std::string selected_text_;
 };

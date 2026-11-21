@@ -99,7 +99,7 @@ class ExternalCacheImpl::AnyInstallFailureObserver
                                      InstallObserver>
       install_tracker_observations_{this};
 
-  base::flat_set<raw_ptr<Profile, CtnExperimental>> observed_profiles_;
+  base::flat_set<raw_ptr<Profile>> observed_profiles_;
 
   // Required to outlive |this|, which is guaranteed in practice by having
   // |owner_| own |this|.
