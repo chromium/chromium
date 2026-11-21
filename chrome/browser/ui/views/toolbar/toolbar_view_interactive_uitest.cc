@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_accessibility_test.h"
@@ -129,7 +130,8 @@ int GetIDForFocusedViewElement(const views::View* view) {
 
 }  // namespace
 
-class ToolbarViewTest : public ToolbarAccessibilityTest {
+class ToolbarViewTest
+    : public TabStripInteractiveTestMixin<ToolbarAccessibilityTest> {
  public:
   ToolbarViewTest() {
     if (GetParam()) {
@@ -149,7 +151,7 @@ class ToolbarViewTest : public ToolbarAccessibilityTest {
   ToolbarViewTest& operator=(const ToolbarViewTest&) = delete;
 
   void SetUpOnMainThread() override {
-    ToolbarAccessibilityTest::SetUpOnMainThread();
+    TabStripInteractiveTestMixin<ToolbarAccessibilityTest>::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
 
     WaitForInitialWebUI();
@@ -186,6 +188,7 @@ class ToolbarViewTest : public ToolbarAccessibilityTest {
     const char kTabToHover[] = "Tab to hover";
 
     return Steps(
+        FinishTabstripAnimations(),
         NameViewRelative(
             kBrowserViewElementId, kTabToHover,
             base::BindOnce(

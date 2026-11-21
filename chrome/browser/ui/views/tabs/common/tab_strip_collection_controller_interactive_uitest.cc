@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_view.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_bubble_view.h"
+#include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -49,7 +50,8 @@ const int kShift = ui::EF_LEFT_MOUSE_BUTTON | ui::EF_SHIFT_DOWN;
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 
 class TabStripCollectionControllerInteractiveUiTest
-    : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest>,
+    : public TabStripInteractiveTestMixin<
+          VerticalTabsInteractiveTestMixin<InteractiveBrowserTest>>,
       public testing::WithParamInterface<TabStripOrientation> {
  public:
   TabStripCollectionControllerInteractiveUiTest() = default;
@@ -61,8 +63,8 @@ class TabStripCollectionControllerInteractiveUiTest
   }
 
   void SetUpOnMainThread() override {
-    VerticalTabsInteractiveTestMixin<
-        InteractiveBrowserTest>::SetUpOnMainThread();
+    TabStripInteractiveTestMixin<VerticalTabsInteractiveTestMixin<
+        InteractiveBrowserTest>>::SetUpOnMainThread();
     if (is_horizontal()) {
       ExitVerticalTabsMode();
     }
@@ -70,8 +72,9 @@ class TabStripCollectionControllerInteractiveUiTest
 
   const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       override {
-    auto enabled = VerticalTabsInteractiveTestMixin<
-        InteractiveBrowserTest>::GetEnabledFeatures();
+    auto enabled =
+        TabStripInteractiveTestMixin<VerticalTabsInteractiveTestMixin<
+            InteractiveBrowserTest>>::GetEnabledFeatures();
     enabled.push_back({tabs::kTabStripUnification, {}});
     return enabled;
   }
@@ -134,6 +137,7 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
       EnsurePresent(kNewTabButtonElementId),
       PressButton(kNewTabButtonElementId,
                   ui::test::InteractionTestUtil::InputType::kDontCare),
+      FinishTabstripAnimations(),
       // Name views so we can interact with them.
       NameDescendantViewByType<TabView>(kBrowserViewElementId, kFirstTabName,
                                         0),
@@ -159,6 +163,7 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
       EnsurePresent(kNewTabButtonElementId),
       PressButton(kNewTabButtonElementId,
                   ui::test::InteractionTestUtil::InputType::kDontCare),
+      FinishTabstripAnimations(),
       CheckResult([this]() { return browser()->GetTabStripModel()->count(); },
                   2),
       // Name views so we can interact with them.
@@ -196,6 +201,7 @@ IN_PROC_BROWSER_TEST_P(
       EnsurePresent(kNewTabButtonElementId),
       PressButton(kNewTabButtonElementId,
                   ui::test::InteractionTestUtil::InputType::kDontCare),
+      FinishTabstripAnimations(),
       CheckResult([this]() { return browser()->GetTabStripModel()->count(); },
                   2),
       // Name views so we can interact with them.
@@ -288,6 +294,7 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
       EnsurePresent(kNewTabButtonElementId),
       PressButton(kNewTabButtonElementId,
                   ui::test::InteractionTestUtil::InputType::kDontCare),
+      FinishTabstripAnimations(),
       // Name views so we can interact with them.
       NameDescendantViewByType<TabView>(kBrowserViewElementId, kFirstTabName,
                                         0),
@@ -461,6 +468,7 @@ IN_PROC_BROWSER_TEST_P(TabStripCollectionControllerInteractiveUiTest,
       WaitForShow(kNewTabButtonElementId),
       // Add a second tab and open its context menu.
       AddInstrumentedTab(kSecondTabId, GURL("https://www.example.com/")),
+      FinishTabstripAnimations(),
       NameDescendantViewByType<TabView>(kBrowserViewElementId, kSecondTabName,
                                         1),
       MoveMouseTo(kSecondTabName), ClickMouse(ui_controls::RIGHT),

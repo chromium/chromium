@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_context_menu_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chrome/browser/user_education/tutorial_identifiers.h"
@@ -463,12 +464,13 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfIphControllerCreationTest,
 // live tab context menus and device submenus to toast completion, and baseline
 // screenshot capture.
 // -----------------------------------------------------------------------------
-class SendTabToSelfIphInteractiveUiTest : public InteractiveFeaturePromoTest {
+class SendTabToSelfIphInteractiveUiTest
+    : public TabStripInteractiveTestMixin<InteractiveFeaturePromoTest> {
  public:
   explicit SendTabToSelfIphInteractiveUiTest(
       InitialSessionState initial_session_state =
           InitialSessionState::kOutsideGracePeriod)
-      : InteractiveFeaturePromoTest(
+      : TabStripInteractiveTestMixin<InteractiveFeaturePromoTest>(
             UseDefaultTrackerAllowingPromos(
                 {feature_engagement::kIPHSendTabToSelfTutorialFeature}),
             ClockMode::kUseTestClock,
@@ -592,19 +594,6 @@ class SendTabToSelfIphInteractiveUiTest : public InteractiveFeaturePromoTest {
             tab_index));
   }
 
-  auto StopTabStripAnimations() {
-    return Do([this]() {
-      auto* const browser_view =
-          BrowserView::GetBrowserViewForBrowser(browser());
-      if (auto* const tab_strip =
-              browser_view->horizontal_tab_strip_for_testing()) {
-        tab_strip->StopAnimating();
-        tab_strip->InvalidateLayout();
-        views::test::RunScheduledLayout(browser_view);
-      }
-    });
-  }
-
   // Stops any running tab strip animations and opens the context menu for the
   // tab at `tab_index`. On macOS, posting lets this step return so the
   // following `WaitForShow()` is staged before the modal NSMenu loop starts.
@@ -614,12 +603,13 @@ class SendTabToSelfIphInteractiveUiTest : public InteractiveFeaturePromoTest {
     // before the menu opens instead of arriving late and canceling it.
     if (!views::test::InteractionTestUtilSimulatorViews::IsWayland()) {
       static constexpr char kTargetTabName[] = "TargetTab";
-      return Steps(StopTabStripAnimations(), NameTab(kTargetTabName, tab_index),
+      return Steps(FinishTabstripAnimations(),
+                   NameTab(kTargetTabName, tab_index),
                    MoveMouseTo(kTargetTabName), ClickMouse(ui_controls::RIGHT));
     }
 #endif
     return Steps(
-        StopTabStripAnimations(), Do([this, tab_index]() {
+        FinishTabstripAnimations(), Do([this, tab_index]() {
           auto* const browser_view =
               BrowserView::GetBrowserViewForBrowser(browser());
           base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
@@ -764,7 +754,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
           OnIncompatibleAction::kIgnoreAndContinue,
           "Screenshots not supported in all testing environments."),
       InstrumentTab(kTabId), AddInstrumentedTab(kSecondTabId, eligible_url),
-      StopTabStripAnimations(),
+      FinishTabstripAnimations(),
       // 1. Initial tutorial entry promo bubble anchored to the active tab
       // (second tab).
       WaitForPromo(feature_engagement::kIPHSendTabToSelfTutorialFeature),
