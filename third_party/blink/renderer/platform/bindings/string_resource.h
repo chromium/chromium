@@ -8,6 +8,7 @@
 #include <atomic>
 #include <type_traits>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
@@ -15,6 +16,7 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -41,10 +43,13 @@ class StringResourceBase {
     memory_accounter_.Increase(isolate, atomic_string_.CharactersSizeInBytes());
   }
 
+  // Only valid for `may_be_parked()` ParkableStrings on the main thread;
+  // non-parkable strings should use StringResource8/StringResource16.
   explicit StringResourceBase(v8::Isolate* isolate, ParkableString string)
-      : parkable_string_(string) {
+      : parkable_string_(std::move(string)) {
     // TODO(lizeb): This is only true without compression.
     DCHECK(!parkable_string_.IsNull());
+    CHECK(IsMainThread() && parkable_string_.may_be_parked());
     memory_accounter_.Increase(isolate,
                                parkable_string_.CharactersSizeInBytes());
   }
@@ -234,6 +239,8 @@ class StringResource16 final : public StringResource16Base {
   }
 };
 
+// Only used for `may_be_parked()` ParkableStrings on the main thread (enforced
+// in StringResourceBase). Non-parkable strings use StringResource16.
 class ParkableStringResource16 final : public StringResource16Base {
  public:
   explicit ParkableStringResource16(v8::Isolate* isolate, ParkableString string)
@@ -243,7 +250,9 @@ class ParkableStringResource16 final : public StringResource16Base {
   ParkableStringResource16& operator=(const ParkableStringResource16&) = delete;
 
   bool IsCacheable() const override {
-    return !GetParkableString().may_be_parked();
+    // `may_be_parked()` is enforced at construction time in StringResourceBase.
+    DCHECK(GetParkableString().may_be_parked());
+    return false;
   }
 
   void Lock() const override {
@@ -313,6 +322,8 @@ class StringResource8 final : public StringResource8Base {
   }
 };
 
+// Only used for `may_be_parked()` ParkableStrings on the main thread (enforced
+// in StringResourceBase). Non-parkable strings use StringResource8.
 class ParkableStringResource8 final : public StringResource8Base {
  public:
   explicit ParkableStringResource8(v8::Isolate* isolate, ParkableString string)
@@ -322,7 +333,9 @@ class ParkableStringResource8 final : public StringResource8Base {
   ParkableStringResource8& operator=(const ParkableStringResource8&) = delete;
 
   bool IsCacheable() const override {
-    return !GetParkableString().may_be_parked();
+    // `may_be_parked()` is enforced at construction time in StringResourceBase.
+    DCHECK(GetParkableString().may_be_parked());
+    return false;
   }
 
   void Lock() const override {

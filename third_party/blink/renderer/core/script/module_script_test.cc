@@ -687,4 +687,31 @@ TEST_F(ModuleScriptTest, MAYBE_LoadingSupportsWebUIBundledCodeCaching) {
   EXPECT_TRUE(cache_handler->did_use_code_cache_for_testing());
 }
 
+TEST_F(ModuleScriptTest, IsolatedCopyCreatesNonParkableSource) {
+  feature_list_.InitAndEnableFeature(features::kCompressParkableStrings);
+
+  String large_source(Vector<char>(20000, 'a'));
+  ParkableString source_text(std::move(large_source).ReleaseImpl());
+  ASSERT_TRUE(source_text.may_be_parked());
+
+  const KURL url("https://fox.url/script.js");
+  ModuleScriptCreationParams params(
+      url, url, ScriptSourceLocationType::kExternalFile,
+      ResolvedModuleType::kJavaScript, ParkableString(source_text),
+      /*cache_handler=*/nullptr, network::mojom::ReferrerPolicy::kDefault,
+      /*source_map_url=*/String());
+  EXPECT_FALSE(params.IsSafeToSendToAnotherThread());
+
+  {
+    ModuleScriptCreationParams isolated = params.IsolatedCopy();
+    EXPECT_TRUE(isolated.IsSafeToSendToAnotherThread());
+    EXPECT_FALSE(isolated.GetSourceText().may_be_parked());
+    EXPECT_EQ(source_text.ToString().Impl(),
+              isolated.GetSourceText().ToString().Impl());
+    EXPECT_FALSE(source_text.ToString().Impl()->HasOneRef());
+  }
+
+  EXPECT_TRUE(source_text.ToString().Impl()->HasOneRef());
+}
+
 }  // namespace blink

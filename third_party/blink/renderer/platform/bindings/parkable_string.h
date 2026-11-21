@@ -9,6 +9,7 @@
 #include <utility>
 #include <variant>
 
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
@@ -32,9 +33,13 @@
 // |ToString()| method.
 // As a consequence, the inner pointer should never be cached, and only touched
 // through a string returned by the |ToString()| method.
-// It is safe to call `ToString()` and destroy ParkableStrings from any thread,
-// although the interactions with the ParkableStringManager must always be
-// performed on the main thread.
+// Non-parkable ParkableStrings (`!may_be_parked()`) never discard or replace
+// their underlying StringImpl and may be read and destroyed from any thread.
+// Parkable ones (`may_be_parked()`) are bound to the main thread for
+// `ToString()`, uncached access, destruction, and ParkableStringManager
+// interactions; only `Lock()`/`Unlock()` and copying handles
+// (`CreateNonParkableCopy()` when pinning for another thread) are safe across
+// threads.
 namespace blink {
 
 class Digestor;
@@ -372,6 +377,12 @@ class PLATFORM_EXPORT ParkableString final {
   ParkableString(const ParkableString&) = default;
   ~ParkableString();
 
+  // Returns a non-parkable copy sharing the underlying StringImpl. If `this`
+  // string is parkable, must be called on the main thread (unparking first if
+  // needed); the shared StringImpl reference keeps the buffer pinned until all
+  // copies are released.
+  ParkableString CreateNonParkableCopy() const;
+
   // Locks a string. A string is unlocked when the number of Lock()/Unlock()
   // calls match. A locked string cannot be parked.
   // Can be called from any thread.
@@ -436,6 +447,8 @@ class PLATFORM_EXPORT ParkableString final {
   }
 
  private:
+  explicit ParkableString(scoped_refptr<ParkableStringImpl>&& impl);
+
   scoped_refptr<ParkableStringImpl> impl_;
 };
 

@@ -26,10 +26,13 @@
 #include "third_party/blink/renderer/platform/bindings/v8_value_cache.h"
 
 #include <utility>
+
+#include "base/check.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/string_resource.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -156,6 +159,11 @@ v8::Local<v8::String> StringCache::V8ExternalString(
     const ParkableString& string) {
   if (!string.length())
     return v8::String::Empty(isolate);
+
+  if (!string.may_be_parked()) {
+    return V8ExternalString(isolate, string.ToString().Impl());
+  }
+  CHECK(IsMainThread());
 
   ParkableStringCacheMapTraits::MapType::PersistentValueReference
       cached_v8_string = parkable_string_cache_.GetReference(string.Impl());

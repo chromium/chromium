@@ -48,7 +48,7 @@ void WorkletModuleResponsesMap::Entry::SetParams(
     PostCrossThreadTask(
         *it.value, FROM_HERE,
         CrossThreadBindOnce(&ModuleScriptFetcher::Client::OnFetched, it.key,
-                            params.IsolatedCopy()));
+                            GetParams()));
   }
 
   clients_.clear();

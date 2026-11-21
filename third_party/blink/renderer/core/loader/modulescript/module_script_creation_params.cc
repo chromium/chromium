@@ -27,7 +27,13 @@ ModuleScriptCreationParams::CopySource() const {
   if (module_type_ == ResolvedModuleType::kWasm) {
     return base::HeapArray<uint8_t>::CopiedFrom(GetWasmSource());
   }
-  return GetSourceText();
+  // Parkable ParkableStrings and V8 uncached external strings rely on
+  // main-thread task serialization to keep character buffers alive during
+  // access. Wrap the shared StringImpl in a non-parkable ParkableStringImpl
+  // when copying across threads so its reference count pins the buffer while
+  // off-thread references exist and allows main-thread parking again once they
+  // are released.
+  return GetSourceText().CreateNonParkableCopy();
 }
 
 }  // namespace blink
