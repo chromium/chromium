@@ -125,7 +125,6 @@ const char* const kNonembeddedLowEntropySourceDenylist[] = {
     "UMA-Uniformity-Trial-5-Percent",
     "UMA-Uniformity-Trial-50-Percent",
     "UnthrottleAsyncTouchMovesV2",
-    "UseDynamicBackingAllocations",
     "UseRustCborParser",
     "UseRustCborWriter",
     "V8DateTimePatternGeneratorCacheEviction",

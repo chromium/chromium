@@ -13,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -33,7 +32,6 @@
 #include "gpu/command_buffer/service/shared_image/test_image_backing.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
-#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -428,10 +426,6 @@ class CompoundImageBackingTest : public testing::Test {
 class CompoundImageBackingCopyToGpuMemoryBufferTest
     : public CompoundImageBackingTest {
  public:
-  CompoundImageBackingCopyToGpuMemoryBufferTest() {
-    feature_list_.InitAndEnableFeature(features::kUseDynamicBackingAllocations);
-  }
-
   SharedImageFactory* GetSharedImageFactory() {
     CHECK_EQ(gl::GetGLImplementation(), gl::kGLImplementationDisabled);
     if (!shared_image_factory_) {
@@ -478,7 +472,6 @@ class CompoundImageBackingCopyToGpuMemoryBufferTest
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   // Declared before `shared_image_factory_` so that GL is still reported as
   // disabled while the factory is destroyed.
   ScopedGLDisabled gl_disabled_;

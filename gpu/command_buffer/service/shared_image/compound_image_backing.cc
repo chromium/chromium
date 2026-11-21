@@ -8,7 +8,6 @@
 #include <ostream>
 
 #include "base/check_is_test.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -32,7 +31,6 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/shared_memory_image_backing_factory.h"
-#include "gpu/config/gpu_finch_features.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
@@ -748,12 +746,11 @@ bool CompoundImageBacking::ComputeIsThreadSafe(
     factory_ref->Execute([&](SharedImageFactory* factory) {
       is_thread_safe = factory->IsSharedBetweenThreads(usage);
 
-      // If dynamic backing allocation is enabled, the backing must also be
-      // thread-safe if the environment is multi-threaded (e.g., DrDC or
-      // WebView), as we can't predict all future sharing needs from the
-      // initial usage.
-      if (!is_thread_safe && base::FeatureList::IsEnabled(
-                                 features::kUseDynamicBackingAllocations)) {
+      // Because dynamic backing allocation can allocate additional backings on
+      // demand, the container must also be thread-safe if the environment is
+      // multi-threaded (e.g., DrDC or WebView), as we can't predict all future
+      // sharing needs from the initial usage.
+      if (!is_thread_safe) {
         is_thread_safe =
             factory->shared_image_manager_->display_context_on_another_thread();
       }
@@ -1346,8 +1343,7 @@ void CompoundImageBacking::NotifyEndAccess(SharedImageBacking* backing,
     // see the updated data. Note that we are copying back to all the backings
     // here, even to those that will never be read. This can be a performance
     // bottleneck when there are multiple backings.
-    if (base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations) &&
-        is_thread_safe() && is_transient_backing) {
+    if (is_thread_safe() && is_transient_backing) {
       for (auto& element : elements_) {
         auto* dst_backing = element.GetBacking();
         if (dst_backing && dst_backing != backing &&
@@ -1870,11 +1866,9 @@ SharedImageBacking* CompoundImageBacking::GetOrAllocateBacking(
     return target_element->GetBacking();
   }
 
-  // If no backing is found, we will try to create a new one. This feature is
-  // disabled by default currently until SharedImageCopyManager is fully ready
-  // to support all the existing gpu-gpu copy usages.
-  if (base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations) &&
-      shared_image_factory_) {
+  // If no existing backing supports the requested access, try to dynamically
+  // allocate a compatible backing.
+  if (shared_image_factory_) {
     // When the original format has PrefersExternalSampler() set(which can be
     // only set for multiplanar formats), then per plane texture access is not
     // allowed. It can be only sampled as single RGBA texture on the GPU.

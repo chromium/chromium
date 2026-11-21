@@ -92,9 +92,6 @@ using AccessStreamSet = base::EnumSet<SharedImageAccessStream,
 // based on usage and memory pressure, provided that at least one backing
 // remains active at all times.
 //
-// (Note: Dynamic allocation/de-allocations are currently disabled by default
-// but is a core architectural feature).
-//
 // ---------------------------------------
 // Critical Constraints and Assumptions
 // ---------------------------------------

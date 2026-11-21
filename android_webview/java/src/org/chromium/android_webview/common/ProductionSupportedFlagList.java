@@ -1281,10 +1281,6 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.PRERENDER2_WARM_UP_COMPOSITOR_FOR_WEBVIEW,
                 "Requests the compositor warm-up for the WebView prerender triggers."),
         Flag.baseFeature(
-                "UseDynamicBackingAllocations",
-                "Allows CompoundImageBacking to allocate backings during runtime if a compatible"
-                        + " backing to serve clients requested usage is not already present."),
-        Flag.baseFeature(
                 "DataUrlMimeTypeParameterPreservation",
                 "Preserve parameters in the MIME type of data: URLs."),
         Flag.baseFeature(
