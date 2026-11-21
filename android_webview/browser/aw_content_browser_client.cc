@@ -1256,12 +1256,14 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
   std::vector<InterceptorEntryPtr> profile_header_interceptors =
       aw_browser_context->GetHeaderInterceptorStore().GetInterceptors();
 
+  // The default security options block CORS-enabled requests, but when the
+  // frame is set we consider the special settings and may override this.
+  auto security_options =
+      std::make_optional<AwProxyingURLLoaderFactory::SecurityOptions>();
+  security_options->disable_web_security =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableWebSecurity);
   if (frame) {
-    auto security_options =
-        std::make_optional<AwProxyingURLLoaderFactory::SecurityOptions>();
-    security_options->disable_web_security =
-        base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kDisableWebSecurity);
     WebContents* web_contents = WebContents::FromRenderFrameHost(frame);
     const auto& preferences = web_contents->GetOrCreateWebPreferences();
     // See also //android_webview/docs/cors-and-webview-api.md to understand how
@@ -1308,8 +1310,7 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
             std::move(browser_context_handle), navigation_id));
   } else {
     // A service worker and worker subresources set nullptr to |frame|, and
-    // work without seeing the AllowUniversalAccessFromFileURLs setting. So,
-    // we don't pass a valid |security_options| here.
+    // work without seeing the AllowUniversalAccessFromFileURLs setting.
     content::GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -1319,7 +1320,7 @@ void AwContentBrowserClient::WillCreateURLLoaderFactory(
             std::move(proxied_receiver), std::move(target_factory_remote),
             /*is_for_profile_initiated_prefetch=*/type ==
                 URLLoaderFactoryType::kPrefetch,
-            std::nullopt /* security_options */,
+            security_options,
             aw_browser_context->GetOriginMatchedHeaders(),
             std::move(profile_header_interceptors),
             /*web_contents_header_interceptors=*/
