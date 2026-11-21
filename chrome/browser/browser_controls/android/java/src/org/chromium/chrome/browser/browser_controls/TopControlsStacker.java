@@ -54,6 +54,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         TopControlType.PROGRESS_BAR,
         TopControlType.TAB_SHARING_TOOLBAR,
         TopControlType.TOP_SCALP,
+        TopControlType.FLOATING_PILL,
     })
     public @interface TopControlType {
         int STATUS_INDICATOR = 0;
@@ -64,6 +65,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
         int PROGRESS_BAR = 5;
         int TAB_SHARING_TOOLBAR = 6;
         int TOP_SCALP = 7;
+        int FLOATING_PILL = 8;
     }
 
     // LINT.ThenChange(:TopControlTypeName)
@@ -136,6 +138,7 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
                 TopControlType.HAIRLINE,
                 TopControlType.TAB_SHARING_TOOLBAR,
                 TopControlType.PROGRESS_BAR,
+                TopControlType.FLOATING_PILL,
             };
 
     /** Helper class used to mark state for {@link #requestLayerUpdatePost(boolean).} */
@@ -885,6 +888,8 @@ public class TopControlsStacker implements BrowserControlsStateProvider.Observer
                 return "TAB_SHARING_TOOLBAR";
             case TopControlType.TOP_SCALP:
                 return "TOP_SCALP";
+            case TopControlType.FLOATING_PILL:
+                return "FLOATING_PILL";
         }
         assert false : "Unknown TopControlType: " + type;
         return "";

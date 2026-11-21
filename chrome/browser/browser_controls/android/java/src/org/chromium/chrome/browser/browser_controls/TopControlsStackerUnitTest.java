@@ -257,6 +257,16 @@ public class TopControlsStackerUnitTest {
                     /* contributesToTotalHeight= */ true,
                     LAYER_HEIGHT_TOP_SCALP);
         }
+
+        static TestLayer floatingPillLayer() {
+            return new TestLayer(
+                    "FLOATING_PILL",
+                    TopControlType.FLOATING_PILL,
+                    TopControlVisibility.VISIBLE,
+                    ScrollBehavior.DEFAULT_SCROLLABLE,
+                    /* contributesToTotalHeight= */ false,
+                    /* height= */ 0);
+        }
     }
 
     @Mock private BrowserControlsSizer mBrowserControlsSizer;
@@ -332,6 +342,31 @@ public class TopControlsStackerUnitTest {
         mTopControlsStacker.requestLayerUpdateSync(false);
 
         assertControlsHeight(100, 0);
+    }
+
+    @Test
+    public void testFloatingPill_PlacedBelowAllControls() {
+        TestLayer toolbar = TestLayer.toolbarLayer();
+        TestLayer bookmarkBar = TestLayer.bookmarkLayer();
+        TestLayer progressBar = TestLayer.progressBarLayer();
+        TestLayer floatingPill = TestLayer.floatingPillLayer();
+
+        mTopControlsStacker.addControl(floatingPill);
+        mTopControlsStacker.addControl(toolbar);
+        mTopControlsStacker.addControl(bookmarkBar);
+        mTopControlsStacker.addControl(progressBar);
+        mTopControlsStacker.requestLayerUpdateSync(false);
+
+        // The floating pill does not add to the controls height and sits at their bottom.
+        assertControlsHeight(220, 0);
+        progressBar.assertOffset(220);
+        floatingPill.assertOffset(220);
+
+        bookmarkBar.mVisibility = TopControlVisibility.HIDDEN;
+        mTopControlsStacker.requestLayerUpdateSync(false);
+
+        assertControlsHeight(100, 0);
+        floatingPill.assertOffset(100);
     }
 
     @Test
