@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
+#include "third_party/skia/include/core/SkPixmap.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "v8/include/v8.h"
 
@@ -148,6 +149,25 @@ media::VideoPixelFormat ToOpaqueMediaPixelFormat(media::VideoPixelFormat fmt) {
     default:
       NOTIMPLEMENTED() << "Missing support for making " << fmt << " opaque.";
       return fmt;
+  }
+}
+
+// Returns the color type with alpha that has the same memory layout as the
+// opaque `color_type`, or `color_type` itself if there is none.
+SkColorType ColorTypeWithAlpha(SkColorType color_type) {
+  switch (color_type) {
+    case kRGB_888x_SkColorType:
+      return kRGBA_8888_SkColorType;
+    case kBGR_888x_SkColorType:
+      return kBGRA_8888_SkColorType;
+    case kRGB_101010x_SkColorType:
+      return kRGBA_1010102_SkColorType;
+    case kBGR_101010x_SkColorType:
+      return kBGRA_1010102_SkColorType;
+    case kRGB_F16F16F16x_SkColorType:
+      return kRGBA_F16_SkColorType;
+    default:
+      return color_type;
   }
 }
 
@@ -1303,10 +1323,24 @@ bool VideoFrame::ConvertAndCopyToRGB(scoped_refptr<media::VideoFrame> frame,
   }
 
   const auto sk_info = media::GetSkInfoForFormat(dest_layout.Format());
-  SkImageInfo dst_image_info = SkImageInfo::Make(
-      src_rect.width(), src_rect.height(),
-      sk_info.plane_color_types[media::VideoFrame::Plane::kARGB],
-      kUnpremul_SkAlphaType, sk_color_space);
+  const SkColorType final_color_type =
+      sk_info.plane_color_types[media::VideoFrame::Plane::kARGB];
+  const SkAlphaType final_alpha_type =
+      sk_info.plane_alpha_types[media::VideoFrame::Plane::kARGB];
+  // Skia treats opaque color types (e.g., kRGB_888x) as opaque even when
+  // drawing, and drawing a translucent source into an opaque destination
+  // stores premultiplied color. To drop alpha without changing color, draw
+  // into the color type with alpha that has the same memory layout,
+  // unpremultiplied, and convert to the opaque color type after drawing.
+  SkColorType dst_color_type = final_color_type;
+  SkAlphaType dst_alpha_type = final_alpha_type;
+  if (final_alpha_type == kOpaque_SkAlphaType) {
+    dst_color_type = ColorTypeWithAlpha(final_color_type);
+    dst_alpha_type = kUnpremul_SkAlphaType;
+  }
+  SkImageInfo dst_image_info =
+      SkImageInfo::Make(src_rect.width(), src_rect.height(), dst_color_type,
+                        dst_alpha_type, sk_color_space);
 
   const wtf_size_t plane = 0;
   DCHECK_EQ(dest_layout.NumPlanes(), 1u);
@@ -1342,6 +1376,18 @@ bool VideoFrame::ConvertAndCopyToRGB(scoped_refptr<media::VideoFrame> frame,
   // always supports `gpu_rasterization`.
   renderer.Paint(std::move(frame), &canvas, flags, paint_params,
                  context_provider.get());
+
+  // Convert to the opaque color type in place. This keeps the unpremultiplied
+  // color and sets the ignored bits (e.g., the padding byte of RGBX) to
+  // opaque.
+  if (dst_color_type != final_color_type) {
+    const size_t stride = dest_layout.Stride(plane);
+    const SkPixmap drawn_pixmap(dst_image_info, dst, stride);
+    const SkPixmap final_pixmap(dst_image_info.makeColorType(final_color_type)
+                                    .makeAlphaType(final_alpha_type),
+                                dst, stride);
+    CHECK(drawn_pixmap.readPixels(final_pixmap));
+  }
   return true;
 }
 

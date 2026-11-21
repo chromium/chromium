@@ -1348,7 +1348,7 @@ TEST(VideoFrame, GetVisibleSkYUVAPixmaps) {
 
     const std::optional<SkPixmap> pm = frame->GetVisibleRGBPlanePixmap();
     ASSERT_TRUE(pm);
-    EXPECT_EQ(pm->colorType(), kRGBA_8888_SkColorType);
+    EXPECT_EQ(pm->colorType(), kRGB_888x_SkColorType);
     EXPECT_EQ(pm->alphaType(), kOpaque_SkAlphaType);
   }
 

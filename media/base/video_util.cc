@@ -835,6 +835,10 @@ VideoPixelFormat VideoPixelFormatFromSkColorType(SkColorType sk_color_type,
       return is_opaque ? PIXEL_FORMAT_XBGR : PIXEL_FORMAT_ABGR;
     case kBGRA_8888_SkColorType:
       return is_opaque ? PIXEL_FORMAT_XRGB : PIXEL_FORMAT_ARGB;
+    case kRGB_888x_SkColorType:
+      return PIXEL_FORMAT_XBGR;
+    case kBGR_888x_SkColorType:
+      return PIXEL_FORMAT_XRGB;
     case kRGBA_F16_SkColorType:
       return PIXEL_FORMAT_RGBAF16;
     default:
@@ -860,7 +864,7 @@ VideoPixelFormatSkInfo GetSkInfoForFormat(VideoPixelFormat format) {
     case PIXEL_FORMAT_UNKNOWN:
       return result;
     case PIXEL_FORMAT_XBGR:
-      result.plane_color_types = {kRGBA_8888_SkColorType};
+      result.plane_color_types = {kRGB_888x_SkColorType};
       result.plane_alpha_types = {kOpaque_SkAlphaType};
       break;
     case PIXEL_FORMAT_ABGR:
@@ -868,7 +872,7 @@ VideoPixelFormatSkInfo GetSkInfoForFormat(VideoPixelFormat format) {
       result.plane_alpha_types = {kUnpremul_SkAlphaType};
       break;
     case PIXEL_FORMAT_XRGB:
-      result.plane_color_types = {kBGRA_8888_SkColorType};
+      result.plane_color_types = {kBGR_888x_SkColorType};
       result.plane_alpha_types = {kOpaque_SkAlphaType};
       break;
     case PIXEL_FORMAT_ARGB:

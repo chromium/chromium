@@ -749,7 +749,16 @@ TEST_F(VideoUtilTest, GetSkInfoForFormat) {
     const auto info = GetSkInfoForFormat(PIXEL_FORMAT_XRGB);
     EXPECT_EQ(info.yuva_plane_config, SkYUVAInfo::PlaneConfig::kUnknown);
     EXPECT_EQ(info.yuva_subsampling, SkYUVAInfo::Subsampling::kUnknown);
-    EXPECT_EQ(info.plane_color_types[0], kBGRA_8888_SkColorType);
+    EXPECT_EQ(info.plane_color_types[0], kBGR_888x_SkColorType);
+    EXPECT_EQ(info.plane_alpha_types[0], kOpaque_SkAlphaType);
+    EXPECT_EQ(info.bit_depth, 8u);
+    EXPECT_EQ(info.bit_alignment, skia::YUVBitAlignment::kExact);
+  }
+  {
+    const auto info = GetSkInfoForFormat(PIXEL_FORMAT_XBGR);
+    EXPECT_EQ(info.yuva_plane_config, SkYUVAInfo::PlaneConfig::kUnknown);
+    EXPECT_EQ(info.yuva_subsampling, SkYUVAInfo::Subsampling::kUnknown);
+    EXPECT_EQ(info.plane_color_types[0], kRGB_888x_SkColorType);
     EXPECT_EQ(info.plane_alpha_types[0], kOpaque_SkAlphaType);
     EXPECT_EQ(info.bit_depth, 8u);
     EXPECT_EQ(info.bit_alignment, skia::YUVBitAlignment::kExact);
@@ -767,6 +776,23 @@ TEST_F(VideoUtilTest, GetSkInfoForFormat) {
     const auto info = GetSkInfoForFormat(PIXEL_FORMAT_UNKNOWN);
     EXPECT_EQ(info.bit_depth, 0u);
     EXPECT_EQ(info.bit_alignment, skia::YUVBitAlignment::kExact);
+  }
+}
+
+TEST_F(VideoUtilTest, VideoPixelFormatFromSkColorType) {
+  EXPECT_EQ(VideoPixelFormatFromSkColorType(kRGBA_8888_SkColorType, false),
+            PIXEL_FORMAT_ABGR);
+  EXPECT_EQ(VideoPixelFormatFromSkColorType(kRGBA_8888_SkColorType, true),
+            PIXEL_FORMAT_XBGR);
+  EXPECT_EQ(VideoPixelFormatFromSkColorType(kBGRA_8888_SkColorType, false),
+            PIXEL_FORMAT_ARGB);
+  EXPECT_EQ(VideoPixelFormatFromSkColorType(kBGRA_8888_SkColorType, true),
+            PIXEL_FORMAT_XRGB);
+  for (bool is_opaque : {false, true}) {
+    EXPECT_EQ(VideoPixelFormatFromSkColorType(kRGB_888x_SkColorType, is_opaque),
+              PIXEL_FORMAT_XBGR);
+    EXPECT_EQ(VideoPixelFormatFromSkColorType(kBGR_888x_SkColorType, is_opaque),
+              PIXEL_FORMAT_XRGB);
   }
 }
 

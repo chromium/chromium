@@ -160,8 +160,8 @@ class RasterInterface : public InterfaceBase {
   // memory referenced by `dst_pixmap`.
   // |source_origin| specifies texture coordinate directions, but
   // pixels in `dst_pixmap` are laid out with top-left origin.
-  // Currently supports the kRGBA_8888_SkColorType and
-  // kBGRA_8888_SkColorType color types.
+  // Currently supports the kRGBA_8888_SkColorType, kBGRA_8888_SkColorType,
+  // kRGB_888x_SkColorType, and kBGR_888x_SkColorType color types.
   // The memory backing `dst_pixmap` must remain valid until `readback_done` is
   // called with a bool indicating if the readback was successful.
   // `source_size` describes dimensions of the `source_mailbox` texture.

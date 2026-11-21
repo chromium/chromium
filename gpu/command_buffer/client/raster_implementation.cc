@@ -1659,7 +1659,9 @@ void RasterImplementation::ReadbackARGBPixelsAsync(
   // request a different |color_type| (i.e., requiring using some other GL
   // format).
   if (dst_info.colorType() != kRGBA_8888_SkColorType &&
-      dst_info.colorType() != kBGRA_8888_SkColorType) {
+      dst_info.colorType() != kBGRA_8888_SkColorType &&
+      dst_info.colorType() != kRGB_888x_SkColorType &&
+      dst_info.colorType() != kBGR_888x_SkColorType) {
     std::move(readback_done).Run(/*readback_sucess=*/false);
     return;
   }
