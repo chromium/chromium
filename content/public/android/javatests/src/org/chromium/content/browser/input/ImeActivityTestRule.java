@@ -794,6 +794,11 @@ class ImeActivityTestRule extends ContentShellActivityTestRule {
         }
 
         @Override
+        public void onUpdateContainerView() {
+            mFactory.onUpdateContainerView();
+        }
+
+        @Override
         public void setTriggerDelayedOnCreateInputConnection(boolean trigger) {
             mFactory.setTriggerDelayedOnCreateInputConnection(trigger);
         }

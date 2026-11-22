@@ -21,8 +21,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 
 /**
- * A factory class for {@link ThreadedInputConnection}. The class also includes triggering
- * mechanism (hack) to run our InputConnection on non-UI thread.
+ * A factory class for {@link ThreadedInputConnection}. The class also includes triggering mechanism
+ * (hack) to run our InputConnection on non-UI thread.
  */
 @NullMarked
 public class ThreadedInputConnectionFactory implements ChromiumBaseInputConnection.Factory {
@@ -197,7 +197,7 @@ public class ThreadedInputConnectionFactory implements ChromiumBaseInputConnecti
 
         Runnable r =
                 () -> {
-                    assumeNonNull(mProxyView);
+                    if (mProxyView == null) return;
                     // This is a hack to make InputMethodManager believe that the proxy view
                     // now has a focus. As a result, InputMethodManager will think that
                     // mProxyView is focused, and will call getHandler() of the view when
@@ -266,7 +266,7 @@ public class ThreadedInputConnectionFactory implements ChromiumBaseInputConnecti
     private void checkRegisterResult(View view, CheckInvalidator checkInvalidator, int retry) {
         if (DEBUG_LOGS) Log.i(TAG, "checkRegisterResult - retry: " + retry);
         // Success.
-        if (mInputMethodManagerWrapper.isActive(mProxyView)) {
+        if (mProxyView != null && mInputMethodManagerWrapper.isActive(mProxyView)) {
             onRegisterProxyViewSuccess();
             return;
         }
@@ -329,5 +329,20 @@ public class ThreadedInputConnectionFactory implements ChromiumBaseInputConnecti
         if (mCheckInvalidator != null) mCheckInvalidator.invalidate();
         if (mProxyView != null) mProxyView.onOriginalViewDetachedFromWindow();
         mThreadedInputConnection = null;
+    }
+
+    @Override
+    public void onUpdateContainerView() {
+        if (DEBUG_LOGS) Log.d(TAG, "onUpdateContainerView");
+        if (mCheckInvalidator != null) mCheckInvalidator.invalidate();
+        if (mProxyView != null) {
+            mProxyView.onOriginalViewDetachedFromWindow();
+            mProxyView = null;
+        }
+        mThreadedInputConnection = null;
+    }
+
+    @Nullable ThreadedInputConnectionProxyView getProxyViewForTesting() {
+        return mProxyView;
     }
 }

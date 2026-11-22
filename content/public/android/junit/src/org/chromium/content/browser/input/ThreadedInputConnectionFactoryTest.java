@@ -352,4 +352,24 @@ public class ThreadedInputConnectionFactoryTest {
         assertTrue(mFactory.hasSucceeded());
         assertFalse(mFactory.hasFailed());
     }
+
+    @Test
+    @Feature({"TextInput"})
+    public void testOnUpdateContainerViewClearsProxyViewAndInputConnection() {
+        mUiShadowLooper.pause();
+        mImeShadowLooper.pause();
+
+        activateInput();
+        runOneUiTask();
+        assertNotNull("Proxy view should have been created.", mFactory.getProxyViewForTesting());
+
+        // Container view changes before delayed activation finishes: proxy view is cleared and
+        // pending UI runnable becomes a no-op rather than crashing or retaining the old view.
+        mFactory.onUpdateContainerView();
+        assertNull(mFactory.getProxyViewForTesting());
+
+        runOneUiTask();
+        assertFalse(mFactory.hasSucceeded());
+        assertFalse(mFactory.hasFailed());
+    }
 }

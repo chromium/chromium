@@ -43,6 +43,8 @@ public interface ChromiumBaseInputConnection extends InputConnection {
 
         void onViewDetachedFromWindow();
 
+        void onUpdateContainerView();
+
         void setTriggerDelayedOnCreateInputConnection(boolean trigger);
     }
 
@@ -72,6 +74,7 @@ public interface ChromiumBaseInputConnection extends InputConnection {
 
     /**
      * Send key event on UI thread.
+     *
      * @param event A key event.
      */
     boolean sendKeyEventOnUiThread(KeyEvent event);
@@ -86,9 +89,6 @@ public interface ChromiumBaseInputConnection extends InputConnection {
     @VisibleForTesting
     Handler getHandler();
 
-    /**
-     * Unblock thread function if needed, e.g. we found that we will
-     * never get state update.
-     */
+    /** Unblock thread function if needed, e.g. we found that we will never get state update. */
     void unblockOnUiThread();
 }

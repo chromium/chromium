@@ -32,6 +32,7 @@ import android.view.KeyCharacterMap;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.CorrectionInfo;
 import android.view.inputmethod.DeleteGesture;
@@ -92,6 +93,7 @@ import org.chromium.mojo.system.MojoException;
 import org.chromium.mojo.system.impl.CoreImpl;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.EventForwarder.TouchSequenceObserver;
+import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.base.ime.TextInputAction;
@@ -132,6 +134,7 @@ import java.util.Set;
 public class ImeAdapterImpl
         implements ImeAdapter,
                 WindowEventObserver,
+                ViewAndroidDelegate.ContainerViewObserver,
                 UserData,
                 InputMethodManagerWrapper.Delegate,
                 AutocorrectManager.Delegate,
@@ -157,6 +160,8 @@ public class ImeAdapterImpl
     private InputMethodManagerWrapper mInputMethodManagerWrapper;
     private @Nullable ChromiumBaseInputConnection mInputConnection;
     private ChromiumBaseInputConnection.@Nullable Factory mInputConnectionFactory;
+    private @Nullable WeakReference<View> mInputConnectionView;
+    private @Nullable ViewAndroidDelegate mLastViewDelegate;
 
     // NOTE: This object will not be released by Android framework until the matching
     // ResultReceiver in the InputMethodService (IME app) gets gc'ed.
@@ -364,6 +369,7 @@ public class ImeAdapterImpl
         sNativeHelperMap.put(mNativeImeAdapterAndroid, new WeakReference<>(this));
         ImeAdapterImplJni.get().initialize(mNativeImeAdapterAndroid);
         WindowEventObserverManager.from(mWebContents).addObserver(this);
+        ensureViewAndroidDelegate();
         if (ContentFeatureMap.isEnabled(ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE)
                 || ContentFeatureMap.isEnabled(
                         ContentFeatures.ANDROID_PK_AUTOCORRECT_UNDERLINE_V2)) {
@@ -517,7 +523,23 @@ public class ImeAdapterImpl
         return mTextInputType != TextInputType.NONE && mTextInputMode != WebTextInputMode.NONE;
     }
 
+    private void ensureViewAndroidDelegate() {
+        if (mNativeImeAdapterAndroid == 0) return;
+        ViewAndroidDelegate viewDelegate = mWebContents.getViewAndroidDelegate();
+        if (mLastViewDelegate == viewDelegate) return;
+        if (mLastViewDelegate != null) {
+            mLastViewDelegate.removeObserver(this);
+        }
+        mLastViewDelegate = viewDelegate;
+        if (viewDelegate != null) {
+            viewDelegate.addObserver(this);
+        }
+        resetInputConnectionIfContainerViewChanged(
+                viewDelegate != null ? viewDelegate.getContainerView() : null);
+    }
+
     private View getContainerView() {
+        ensureViewAndroidDelegate();
         var viewDelegate = assumeNonNull(mWebContents.getViewAndroidDelegate());
         if (viewDelegate == null) {
             // This may be null on destruction.
@@ -561,6 +583,7 @@ public class ImeAdapterImpl
         }
         if (mInputConnectionFactory == null) return null;
         View containerView = getContainerView();
+        mInputConnectionView = new WeakReference<>(containerView);
         if (DEBUG_LOGS) Log.i(TAG, "Last text: " + mLastText);
         setInputConnection(
                 mInputConnectionFactory.initializeAndGet(
@@ -1090,6 +1113,27 @@ public class ImeAdapterImpl
         }
     }
 
+    // ViewAndroidDelegate.ContainerViewObserver
+
+    @Override
+    public void onUpdateContainerView(@Nullable ViewGroup view) {
+        resetInputConnectionIfContainerViewChanged(view);
+    }
+
+    private void resetInputConnectionIfContainerViewChanged(@Nullable View view) {
+        if (view != null && mInputConnectionView != null && view == mInputConnectionView.get()) {
+            return;
+        }
+        // The input connection and factory hold the previous container view. Drop them so they
+        // don't keep the old view (and its Activity) alive or reuse a connection bound to it when
+        // the WebContents moves to a new container view.
+        setInputConnection(null);
+        mInputConnectionView = null;
+        if (mInputConnectionFactory != null) {
+            mInputConnectionFactory.onUpdateContainerView();
+        }
+    }
+
     // WindowEventObserver
 
     @Override
@@ -1151,6 +1195,7 @@ public class ImeAdapterImpl
 
     @Override
     public void onWindowAndroidChanged(@Nullable WindowAndroid windowAndroid) {
+        ensureViewAndroidDelegate();
         if (mInputMethodManagerWrapper != null) {
             mInputMethodManagerWrapper.onWindowAndroidChanged(windowAndroid);
         }
@@ -1259,6 +1304,11 @@ public class ImeAdapterImpl
         assert oldValue != null;
         assert oldValue.get() == this;
         mNativeImeAdapterAndroid = 0;
+        if (mLastViewDelegate != null) {
+            mLastViewDelegate.removeObserver(this);
+            mLastViewDelegate = null;
+        }
+        mInputConnectionView = null;
     }
 
     /**

@@ -7,7 +7,9 @@ package org.chromium.content.browser.input;
 import static android.view.WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -32,6 +34,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.CorrectionInfo;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 
@@ -134,8 +137,11 @@ public class ImeAdapterImplTest {
     @Mock private EventForwarder mEventForwarder;
     @Mock private RenderFrameHost mRenderFrameHost;
     @Mock private RenderCoordinatesImpl mRenderCoordinatesImpl;
+    @Mock private ChromiumBaseInputConnection mInputConnection;
+    @Mock private ChromiumBaseInputConnection.Factory mInputConnectionFactory;
 
     private final TestContainerView mContainerView = new TestContainerView();
+    private TestViewAndroidDelegate mViewAndroidDelegate;
 
     @Before
     public void setUp() {
@@ -150,8 +156,8 @@ public class ImeAdapterImplTest {
                 .when(mWebContentsImpl)
                 .getOrSetUserData(any(), any());
 
-        when(mWebContentsImpl.getViewAndroidDelegate())
-                .thenReturn(new TestViewAndroidDelegate(mContainerView));
+        mViewAndroidDelegate = new TestViewAndroidDelegate(mContainerView);
+        when(mWebContentsImpl.getViewAndroidDelegate()).thenReturn(mViewAndroidDelegate);
         when(mWebContentsImpl.getEventForwarder()).thenReturn(mEventForwarder);
     }
 
@@ -181,6 +187,150 @@ public class ImeAdapterImplTest {
         adapter.resetAndHideKeyboard();
         verify(mImeEventObserver).onNodeAttributeUpdated(eq(false), eq(false));
         reset(mImeEventObserver);
+    }
+
+    @Test
+    public void testOnUpdateContainerViewReleasesInputConnection() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.setInputMethodManagerWrapper(mInputMethodManagerWrapper);
+        adapter.setInputConnectionFactory(mInputConnectionFactory);
+        adapter.onConnectedToRenderProcess();
+        when(mInputConnectionFactory.initializeAndGet(
+                        any(), any(), anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), anyInt(),
+                        any(), any()))
+                .thenReturn(mInputConnection);
+        updateTextInputType(adapter, TextInputType.TEXT);
+        adapter.onCreateInputConnection(new EditorInfo(), /* allowKeyboardLearning= */ true);
+        assertNotNull(adapter.getInputConnectionForTest());
+
+        // Swapping the container view drops the input connection and notifies the factory.
+        mViewAndroidDelegate.setContainerView(new TestContainerView());
+        assertNull(adapter.getInputConnectionForTest());
+        verify(mInputConnection).unblockOnUiThread();
+        verify(mInputConnectionFactory).onUpdateContainerView();
+    }
+
+    @Test
+    public void testOnUpdateContainerViewWithRealFactoryCreatesNewInputConnection() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.setInputMethodManagerWrapper(mInputMethodManagerWrapper);
+        adapter.onConnectedToRenderProcess();
+        updateTextInputType(adapter, TextInputType.TEXT);
+        InputConnection firstConnection =
+                adapter.onCreateInputConnection(
+                        new EditorInfo(), /* allowKeyboardLearning= */ true);
+        assertNotNull(firstConnection);
+
+        // Even without a preceding onDetachedFromWindow(), swapping the container view must drop
+        // both ImeAdapterImpl's reference and ThreadedInputConnectionFactory's cached connection.
+        mViewAndroidDelegate.setContainerView(new TestContainerView());
+        assertNull(adapter.getInputConnectionForTest());
+
+        InputConnection secondConnection =
+                adapter.onCreateInputConnection(
+                        new EditorInfo(), /* allowKeyboardLearning= */ true);
+        assertNotNull(secondConnection);
+        assertNotSame(firstConnection, secondConnection);
+    }
+
+    @Test
+    public void testOnUpdateContainerViewAfterDetachWhenImmNotActive() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.setInputMethodManagerWrapper(mInputMethodManagerWrapper);
+        adapter.onConnectedToRenderProcess();
+        when(mInputMethodManagerWrapper.isActive(mContainerView)).thenReturn(false);
+        updateTextInputType(adapter, TextInputType.TEXT);
+        InputConnection firstConnection =
+                adapter.onCreateInputConnection(
+                        new EditorInfo(), /* allowKeyboardLearning= */ true);
+        assertNotNull(firstConnection);
+
+        // Detaching while IMM is not serving this view leaves mInputConnection set.
+        adapter.onDetachedFromWindow();
+        assertSame(firstConnection, adapter.getInputConnectionForTest());
+
+        // Moving to a new container view drops the stale connection.
+        mViewAndroidDelegate.setContainerView(new TestContainerView());
+        assertNull(adapter.getInputConnectionForTest());
+    }
+
+    @Test
+    public void testOnUpdateContainerViewWithSameViewKeepsInputConnection() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.setInputMethodManagerWrapper(mInputMethodManagerWrapper);
+        adapter.setInputConnectionFactory(mInputConnectionFactory);
+        adapter.onConnectedToRenderProcess();
+        when(mInputConnectionFactory.initializeAndGet(
+                        any(), any(), anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), anyInt(),
+                        any(), any()))
+                .thenReturn(mInputConnection);
+        updateTextInputType(adapter, TextInputType.TEXT);
+        adapter.onCreateInputConnection(new EditorInfo(), /* allowKeyboardLearning= */ true);
+        assertSame(mInputConnection, adapter.getInputConnectionForTest());
+
+        // Re-setting the already-current container view must not disrupt the active connection.
+        mViewAndroidDelegate.setContainerView(mContainerView);
+        assertSame(mInputConnection, adapter.getInputConnectionForTest());
+        verify(mInputConnection, never()).unblockOnUiThread();
+        verify(mInputConnectionFactory, never()).onUpdateContainerView();
+    }
+
+    @Test
+    public void testOnUpdateContainerViewWithNullDropsInputConnection() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.setInputMethodManagerWrapper(mInputMethodManagerWrapper);
+        adapter.setInputConnectionFactory(mInputConnectionFactory);
+        adapter.onConnectedToRenderProcess();
+        when(mInputConnectionFactory.initializeAndGet(
+                        any(), any(), anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), anyInt(),
+                        any(), any()))
+                .thenReturn(mInputConnection);
+        updateTextInputType(adapter, TextInputType.TEXT);
+        adapter.onCreateInputConnection(new EditorInfo(), /* allowKeyboardLearning= */ true);
+
+        mViewAndroidDelegate.setContainerView(null);
+        assertNull(adapter.getInputConnectionForTest());
+        verify(mInputConnection).unblockOnUiThread();
+        verify(mInputConnectionFactory).onUpdateContainerView();
+    }
+
+    @Test
+    public void testRebindsViewAndroidDelegateOnWindowChangeAndRemovesObserverOnDestroy() {
+        TestViewAndroidDelegate firstDelegate = mViewAndroidDelegate;
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.setInputMethodManagerWrapper(mInputMethodManagerWrapper);
+        adapter.setInputConnectionFactory(mInputConnectionFactory);
+        adapter.onConnectedToRenderProcess();
+        when(mInputConnectionFactory.initializeAndGet(
+                        any(), any(), anyInt(), anyInt(), anyInt(), anyInt(), anyInt(), anyInt(),
+                        any(), any()))
+                .thenReturn(mInputConnection);
+        updateTextInputType(adapter, TextInputType.TEXT);
+        adapter.onCreateInputConnection(new EditorInfo(), /* allowKeyboardLearning= */ true);
+
+        // Simulate WebContents#setDelegates() replacing the ViewAndroidDelegate.
+        TestViewAndroidDelegate secondDelegate =
+                new TestViewAndroidDelegate(new TestContainerView());
+        when(mWebContentsImpl.getViewAndroidDelegate()).thenReturn(secondDelegate);
+        adapter.onWindowAndroidChanged(null);
+        assertNull(adapter.getInputConnectionForTest());
+        verify(mInputConnection).unblockOnUiThread();
+        verify(mInputConnectionFactory).onUpdateContainerView();
+        reset(mInputConnection, mInputConnectionFactory);
+
+        // Old delegate is no longer observed.
+        firstDelegate.setContainerView(new TestContainerView());
+        verify(mInputConnectionFactory, never()).onUpdateContainerView();
+
+        // New delegate is observed.
+        secondDelegate.setContainerView(new TestContainerView());
+        verify(mInputConnectionFactory).onUpdateContainerView();
+        reset(mInputConnectionFactory);
+
+        // destroyFromNative() removes the observer so subsequent changes are ignored.
+        adapter.destroyFromNative();
+        secondDelegate.setContainerView(new TestContainerView());
+        verify(mInputConnectionFactory, never()).onUpdateContainerView();
     }
 
     private void updateTextInputType(ImeAdapterImpl adapter, @TextInputType int textInputType) {
