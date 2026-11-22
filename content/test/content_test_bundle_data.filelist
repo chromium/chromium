@@ -8560,6 +8560,8 @@ data/indexeddb/key_path_test.html
 data/indexeddb/key_path_test.js
 data/indexeddb/key_types_test.html
 data/indexeddb/key_types_test.js
+data/indexeddb/legacy_fsa_handle.html
+data/indexeddb/legacy_fsa_handle.js
 data/indexeddb/migration_database_generator.html
 data/indexeddb/missing_sst/file__0.indexeddb.leveldb/000008.sst
 data/indexeddb/missing_sst/file__0.indexeddb.leveldb/000009.log
