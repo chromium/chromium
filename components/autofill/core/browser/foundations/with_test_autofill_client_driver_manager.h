@@ -31,7 +31,8 @@ namespace autofill {
 //     TaskEnvironment is destroyed.
 //   Typically, that's in the constructor or SetUp() and the destructor or
 //   TearDown().
-// - Call CreateAutofillDriver() to create an AutofillDriver and
+// - Call CreateAndActivateAutofillDriver() (or CreateAutofillDriver() if the
+//   driver should start inactive) to create an AutofillDriver and
 //   AutofillManager. The living AutofillDrivers and their AutofillManagers are
 //   destroyed implicitly by DestroyAutofillClient().
 //
@@ -47,7 +48,7 @@ namespace autofill {
 //   };
 //
 //   TEST_F(FooTest, Bar) {
-//     CreateAutofillDriver();
+//     CreateAndActivateAutofillDriver();
 //     EXPECT_CALL(autofill_driver(), ApplyFormAction);
 //     autofill_manager().FillOrPreviewForm(...);
 //   }
@@ -102,13 +103,15 @@ class WithTestAutofillClientDriverManager {
     client_.reset();
   }
 
-  // Creates a new AutofillDriver and its owned AutofillManager.
-  void CreateAutofillDriver() {
-    auto driver = std::make_unique<Driver>(&autofill_client());
-    auto manager = std::make_unique<Manager>(driver.get());
-    driver->set_autofill_manager(std::move(manager));
-    autofill_client().GetAutofillDriverFactory().TakeOwnership(
-        std::move(driver));
+  // Creates a new AutofillDriver and its owned AutofillManager, leaving it
+  // inactive (`AutofillDriver::LifecycleState::kInactive`). Most tests should
+  // prefer `CreateAndActivateAutofillDriver()`.
+  void CreateAutofillDriver() { CreateAutofillDriverImpl(); }
+
+  // Creates a new AutofillDriver and its owned AutofillManager, and activates
+  // the newly created driver via `ActivateAutofillDriver()`.
+  void CreateAndActivateAutofillDriver() {
+    ActivateAutofillDriver(CreateAutofillDriverImpl());
   }
 
   Client& autofill_client() {
@@ -158,6 +161,16 @@ class WithTestAutofillClientDriverManager {
   }
 
  private:
+  Driver& CreateAutofillDriverImpl() {
+    auto driver = std::make_unique<Driver>(&autofill_client());
+    auto manager = std::make_unique<Manager>(driver.get());
+    driver->set_autofill_manager(std::move(manager));
+    Driver& raw_driver = *driver;
+    autofill_client().GetAutofillDriverFactory().TakeOwnership(
+        std::move(driver));
+    return raw_driver;
+  }
+
   std::optional<Client> client_;
 };
 

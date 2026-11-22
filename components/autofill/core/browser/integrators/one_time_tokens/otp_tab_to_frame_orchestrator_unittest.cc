@@ -110,8 +110,7 @@ class OtpTabToFrameOrchestratorTest
     autofill_client().set_otp_phish_guard_delegate(
         std::make_unique<FakeOtpPhishGuardDelegate>());
 
-    CreateAutofillDriver();
-    ActivateAutofillDriver(autofill_driver());
+    CreateAndActivateAutofillDriver();
   }
 
   void TearDown() override {

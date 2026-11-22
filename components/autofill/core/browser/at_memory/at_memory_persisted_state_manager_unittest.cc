@@ -1978,8 +1978,7 @@ TEST_F(AtMemoryPersistedStateManagerNavigationTest,
   ActivateAutofillDriver(autofill_driver(0));
 
   // Navigate cross-document to a new page; the old page enters the BFCache.
-  CreateAutofillDriver();
-  ActivateAutofillDriver(autofill_driver(1));
+  CreateAndActivateAutofillDriver();
   autofill_driver(0).SetIsActive(false);
   DeactivateAutofillDriver(autofill_driver(0));
   ResetAutofillDriver(autofill_driver(1));

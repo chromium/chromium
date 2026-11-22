@@ -40,8 +40,7 @@ TEST_F(ScopedCreditCardAccessManagersObservationTest, SingleFrameObservation) {
   ScopedCreditCardAccessManagersObservation observation(&observer);
 
   observation.Observe(&autofill_client());
-  CreateAutofillDriver();
-  ActivateAutofillDriver(autofill_driver());
+  CreateAndActivateAutofillDriver();
 
   EXPECT_CALL(observer, OnCreditCardAccessManagerDestroyed(Ref(
                             *autofill_manager().GetCreditCardAccessManager())));
@@ -53,8 +52,7 @@ TEST_F(ScopedCreditCardAccessManagersObservationTest,
   MockCreditCardAccessManagerObserver observer;
   ScopedCreditCardAccessManagersObservation observation(&observer);
 
-  CreateAutofillDriver();
-  ActivateAutofillDriver(autofill_driver());
+  CreateAndActivateAutofillDriver();
   observation.Observe(&autofill_client());
 
   EXPECT_CALL(observer, OnCreditCardAccessManagerDestroyed(Ref(
@@ -67,8 +65,7 @@ TEST_F(ScopedCreditCardAccessManagersObservationTest, Reset) {
   ScopedCreditCardAccessManagersObservation observation(&observer);
 
   observation.Observe(&autofill_client());
-  CreateAutofillDriver();
-  ActivateAutofillDriver(autofill_driver());
+  CreateAndActivateAutofillDriver();
 
   EXPECT_CALL(observer, OnCreditCardAccessManagerDestroyed).Times(0);
   observation.Reset();
@@ -81,10 +78,8 @@ TEST_F(ScopedCreditCardAccessManagersObservationTest,
   ScopedCreditCardAccessManagersObservation observation(&observer);
 
   observation.Observe(&autofill_client());
-  CreateAutofillDriver();
-  CreateAutofillDriver();
-  ActivateAutofillDriver(autofill_driver(0));
-  ActivateAutofillDriver(autofill_driver(1));
+  CreateAndActivateAutofillDriver();
+  CreateAndActivateAutofillDriver();
 
   EXPECT_CALL(observer,
               OnCreditCardAccessManagerDestroyed(

@@ -97,8 +97,7 @@ class OtpSecurityGatewayTest : public Test,
  public:
   void SetUp() override {
     InitAutofillClient();
-    CreateAutofillDriver();
-    ActivateAutofillDriver(autofill_driver());
+    CreateAndActivateAutofillDriver();
     autofill_client().log_router().RegisterReceiver(&log_receiver_);
     auto delegate = std::make_unique<MockOtpPhishGuardDelegate>();
     phish_guard_delegate_ = delegate.get();

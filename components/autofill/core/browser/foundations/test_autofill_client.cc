@@ -31,8 +31,9 @@ TestAutofillClientBase::GetAutofillManagerForPrimaryMainFrame() {
   }
   CHECK(allow_null_primary_main_frame_driver_ || num_matches > 0)
       << "No active primary main frame AutofillDriver found.\n\n"
-         "If your test is using `WithTestAutofillClientDriverManager`, "
-         "activate the driver with `ActivateAutofillDriver()`.\n\n"
+         "If your test is using `WithTestAutofillClientDriverManager`, call "
+         "`CreateAndActivateAutofillDriver()` or "
+         "`ActivateAutofillDriver()`.\n\n"
          "Otherwise, make sure it satisfies `IsActive()` and "
          "`GetLifecycleState() == kActive` and `!IsEmbedded()` and "
          "`GetParent() == nullptr`.\n\n"
@@ -43,8 +44,9 @@ TestAutofillClientBase::GetAutofillManagerForPrimaryMainFrame() {
       << "Found " << num_matches
       << " active primary main frame AutofillDrivers.\n\n"
          "If your test is using `WithTestAutofillClientDriverManager`, make "
-         "sure at most one driver is activated with "
-         "`ActivateAutofillDriver()`.\n\n"
+         "sure at most one driver is activated (via "
+         "`CreateAndActivateAutofillDriver()` or "
+         "`ActivateAutofillDriver()`).\n\n"
          "Otherwise, make sure at most one driver satisfies `IsActive()` and "
          "`GetLifecycleState() == kActive` and `!IsEmbedded()` and "
          "`GetParent() == nullptr`.\n\n"

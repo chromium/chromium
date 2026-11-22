@@ -93,10 +93,9 @@ class ReceivedTabFormsFillerTest
   void SetUp() override {
     // Initialize the test Autofill client to manage autofill state.
     InitAutofillClient();
-    // Create the test driver associated with the client.
-    CreateAutofillDriver();
-    // Activate the driver to allow it to receive and process page actions.
-    ActivateAutofillDriver(autofill_driver());
+    // Create and activate the test driver associated with the client so it can
+    // receive and process page actions.
+    CreateAndActivateAutofillDriver();
   }
 
   void TearDown() override { DestroyAutofillClient(); }

@@ -110,8 +110,7 @@ ActorTestBase::~ActorTestBase() = default;
 
 void ActorTestBase::SetUp() {
   InitAutofillClient();
-  CreateAutofillDriver();
-  ActivateAutofillDriver(autofill_driver());
+  CreateAndActivateAutofillDriver();
   client().GetPersonalDataManager().address_data_manager().AddProfile(
       test::GetFullProfile());
 

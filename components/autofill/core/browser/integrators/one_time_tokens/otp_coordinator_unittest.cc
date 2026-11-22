@@ -219,8 +219,7 @@ class OtpCoordinatorTest
     gmail_service_ = gmail_service.get();
     autofill_client().set_gmail_otp_service(std::move(gmail_service));
 
-    CreateAutofillDriver();
-    ActivateAutofillDriver(autofill_driver());
+    CreateAndActivateAutofillDriver();
     coordinator_ = std::make_unique<OtpCoordinator>(&autofill_client());
     frame_observer_ = std::make_unique<TestFrameObserver>(&autofill_manager(),
                                                           coordinator_.get());
