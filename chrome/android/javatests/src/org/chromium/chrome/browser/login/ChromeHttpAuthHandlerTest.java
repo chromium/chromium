@@ -8,7 +8,6 @@ import android.view.View;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.test.filters.MediumTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -37,7 +36,7 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
-import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.http_auth.LoginPrompt;
 import org.chromium.components.browser_ui.http_auth.R;
@@ -59,7 +58,7 @@ public class ChromeHttpAuthHandlerTest {
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
 
     private EmbeddedTestServer mTestServer;
-    private WebPageStation mPage;
+    private CtaPageStation mPage;
 
     @Before
     public void setUp() throws Exception {
@@ -117,8 +116,7 @@ public class ChromeHttpAuthHandlerTest {
     @DisabledTest(message = "https://crbug.com/40771422")
     public void authDialogSuppressedOnBackgroundTab() throws Exception {
         Tab firstTab = mActivityTestRule.getActivityTab();
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        mPage = mPage.openNewTabFast();
         // If the first tab was closed due to OOM, then just exit the test.
         if (ThreadUtils.runOnUiThreadBlocking(
                 () -> firstTab.isClosing() || SadTab.isShowing(firstTab))) {

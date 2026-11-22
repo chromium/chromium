@@ -53,7 +53,6 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabSelectedCondition;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.FullscreenTestUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.SelectionPopupController;
@@ -238,7 +237,7 @@ public class FullscreenManagerTest {
         FullscreenTestUtils.waitForPersistentFullscreen(delegate, false);
 
         // Open a new tab, which puts the tab to test background.
-        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), activity);
+        page.openNewTabFast();
 
         // Having the background tab enter fullscreen should be delayed until it comes foreground.
         FullscreenTestUtils.togglePersistentFullscreen(tab, true);
@@ -264,7 +263,7 @@ public class FullscreenManagerTest {
         FullscreenTestUtils.waitForPersistentFullscreen(delegate, false);
 
         // Open a new tab, which puts the tab to test background.
-        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), activity);
+        page.openNewTabFast();
 
         // Having the background tab enter fullscreen should be delayed until it comes foreground.
         FullscreenTestUtils.togglePersistentFullscreen(tab, true);

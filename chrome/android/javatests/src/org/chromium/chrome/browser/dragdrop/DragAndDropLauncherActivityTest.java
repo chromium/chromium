@@ -13,7 +13,6 @@ import android.os.Build.VERSION_CODES;
 
 import androidx.annotation.RequiresApi;
 import androidx.test.filters.LargeTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.After;
@@ -54,7 +53,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
-import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.DragDropType;
 import org.chromium.ui.dragdrop.DragDropMetricUtils.UrlIntentSource;
@@ -82,7 +81,7 @@ public class DragAndDropLauncherActivityTest {
     private String mLinkUrl;
     private final CallbackHelper mTabAddedCallback = new CallbackHelper();
     private UserActionTester mActionTester;
-    private WebPageStation mPage;
+    private CtaPageStation mPage;
     private TabModelSelectorTabModelObserver mTabModelObserver;
 
     @Before
@@ -241,9 +240,9 @@ public class DragAndDropLauncherActivityTest {
         var sourceActivity = mActivityTestRule.getActivity();
 
         // Open a new tab in the current activity, that will be used as the dragged tab.
-        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), sourceActivity);
+        mPage = mPage.openNewTabFast();
 
-        var draggedTab = ThreadUtils.runOnUiThreadBlocking(sourceActivity::getActivityTab);
+        var draggedTab = mPage.getTab();
         var initialTabCountInSourceActivity =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> sourceActivity.getTabModelSelector().getTotalTabCount());
@@ -374,8 +373,8 @@ public class DragAndDropLauncherActivityTest {
     public void testDraggedMultipleTabs_newWindow() throws Exception {
         var sourceActivity = mActivityTestRule.getActivity();
         // Open new tabs in the current activity, that will be used as the dragged tabs.
-        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), sourceActivity);
-        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), sourceActivity);
+        mPage = mPage.openNewTabFast();
+        mPage = mPage.openNewTabFast();
         var initialTabCountInSourceActivity =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> sourceActivity.getTabModelSelector().getTotalTabCount());
@@ -511,10 +510,8 @@ public class DragAndDropLauncherActivityTest {
 
     private List<Tab> prepareTabGroup() {
         // 1. Create two new tabs.
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        mPage = mPage.openNewTabFast();
+        mPage = mPage.openNewTabFast();
 
         // 2. Assert the normal tab strip is selected and there are 3 normal tabs in total.
         Assert.assertFalse(

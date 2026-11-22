@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.ui;
 import android.view.View;
 
 import androidx.test.filters.SmallTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,8 +26,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
-import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
@@ -41,7 +39,7 @@ public class MediaCaptureOverlayControllerTest {
     public final AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
-    private WebPageStation mPage;
+    private CtaPageStation mPage;
     private ChromeTabbedActivity mActivity;
 
     private MediaCaptureOverlayController mController;
@@ -61,8 +59,8 @@ public class MediaCaptureOverlayControllerTest {
 
     public Tab openNewTab() {
         // Launch a new tab in the foreground.
-        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), mActivity);
-        return mActivityTestRule.getActivityTab();
+        mPage = mPage.openNewTabFast();
+        return mPage.getTab();
     }
 
     public void waitForOverlayVisibility(boolean visible) {

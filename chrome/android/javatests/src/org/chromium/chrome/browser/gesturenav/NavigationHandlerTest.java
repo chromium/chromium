@@ -13,7 +13,6 @@ import android.view.MotionEvent;
 
 import androidx.activity.BackEventCompat;
 import androidx.test.filters.SmallTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -45,7 +44,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
-import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -83,7 +82,7 @@ public class NavigationHandlerTest {
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private GestureNavigationTestUtils mNavUtils;
-    private WebPageStation mPage;
+    private CtaPageStation mPage;
 
     @Before
     public void setUp() throws InterruptedException {
@@ -108,11 +107,7 @@ public class NavigationHandlerTest {
     }
 
     private void loadNewTabPage() {
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(),
-                mActivityTestRule.getActivity(),
-                false,
-                true);
+        mPage = mPage.openNewTabFast();
     }
 
     private void assertNavigateOnSwipeFrom(boolean edge, String toUrl) {

@@ -55,7 +55,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
-import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
@@ -96,7 +96,7 @@ public class NavigateTest {
 
     private OmniboxTestUtils mOmnibox;
     private EmbeddedTestServer mTestServer;
-    private WebPageStation mStartingPage;
+    private CtaPageStation mStartingPage;
 
     @Before
     public void setUp() {
@@ -212,17 +212,10 @@ public class NavigateTest {
     @Feature({"Navigation"})
     public void testOpenAndNavigate() throws Exception {
         final String url = mTestServer.getURL("/chrome/test/data/android/navigate/simple.html");
-        navigateAndObserve(url);
+        mStartingPage = mStartingPage.loadWebPageProgrammatically(url);
+        mOmnibox.checkText(equalTo(expectedLocation(url)), null);
 
-        final int tabCount = mActivityTestRule.tabsCount(/* incognito= */ false);
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
-        UiUtils.settleDownUI(InstrumentationRegistry.getInstrumentation());
-
-        Assert.assertEquals(
-                "Wrong number of tabs",
-                tabCount + 1,
-                mActivityTestRule.tabsCount(/* incognito= */ false));
+        mStartingPage = mStartingPage.openNewTabFast();
         String result = typeInOmniboxAndNavigate(url, "Simple");
         Assert.assertEquals(expectedLocation(url), result);
     }
