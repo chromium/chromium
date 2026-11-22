@@ -5694,6 +5694,7 @@
 <translation id="7285008278689343502">הפארק הלאומי גרנד טיטון</translation>
 <translation id="7286867818472074330">בחירת מפתח גישה</translation>
 <translation id="7287949630503871403">נפח הנתונים ששמורים באפליקציה</translation>
+<translation id="7288054329308394475">‏מחיקה, הסרה, אבטחה, פרטיות, ניקוי נתונים, ניקוי אחסון, איפוס, מטמון, קובצי Cookie, עוגיות, איטי, מהירות</translation>
 <translation id="7288676996127329262">‏<ph name="HORIZONTAL_DPI" />‏x‏<ph name="VERTICAL_DPI" /> dpi</translation>
 <translation id="7288761372977133974">‏עיצוב <ph name="INDEX" /> מהזמן האחרון של <ph name="SUBJECT" /> שנוצר על ידי AI</translation>
 <translation id="7289049772085228972">‏במכשיר שלך פועלים אמצעי האבטחה הכי חזקים של Chrome</translation>
@@ -6028,6 +6029,7 @@
 <translation id="7659336857671800422">כניסה למדריך בנושא פרטיות</translation>
 <translation id="7660146600670077843">לוחצים לחיצה ימנית על הכרטיסייה ובוחרים באפשרות 'הוספת כרטיסייה לקבוצה חדשה'</translation>
 <translation id="7662535435481776002">ניגודיות נמוכה בעיצוב בהיר</translation>
+<translation id="7663157622371722196">‏<ph name="BEGIN_BOLD_1" />כרטיסיות משותפות כדי לתת תשובות רלוונטיות יותר.<ph name="END_BOLD_1" /> ‫Google משתמשת בתוכן ובכתובות ה-URL של הכרטיסיות האלה. הכרטיסייה הנוכחית משותפת בשיחות חדשות. תמיד אפשר לשנות את ההגדרה הזו. <ph name="BEGIN_BOLD_2" />נתוני הארגון פרטיים ומאובטחים.<ph name="END_BOLD_2" /> הם לא ישמשו לאימון מודלים של AI גנרטיבי.</translation>
 <translation id="7664442418269614729">שימוש בכרטיס הזה באייפון</translation>
 <translation id="7665445336029073980">היסטוריית ההורדות המלאה</translation>
 <translation id="766635563210446220">לא ניתן לייבא את הסיסמאות. צריך לבדוק את הקובץ <ph name="FILENAME" /> ולוודא שהפורמט שלו תקין. <ph name="BEGIN_LINK" />למידע נוסף<ph name="END_LINK" /></translation>
@@ -6226,6 +6228,7 @@
 <translation id="7901728443188947649">יצירת תמונות</translation>
 <translation id="7903481341948453971">שימוש בנעילת המסך במהלך מילוי סיסמאות</translation>
 <translation id="7903925330883316394">תוכנית שירות: <ph name="UTILITY_TYPE" /></translation>
+<translation id="790436879532554973">סגירת סרגל הצד</translation>
 <translation id="7904492297081735975">&amp;פתיחת ניהול הסימניות</translation>
 <translation id="7904508617992122201">‏השיחות נבדקות ומשמשות לאימון מודלים של AI גנרטיבי. ‫Gemini מבוסס על AI ויכול לטעות. יכול להיות שחלק מהתוכן לא מתאים לכולם. אפשר <ph name="BEGIN_LINK_MANAGE_HISTORY" />לשנות את הגדרות ההיסטוריה<ph name="END_LINK_MANAGE_HISTORY" />, כולל מידע על המיקום שלך. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף על הגדרות הפרטיות<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">‏כדי לקבל את הכרטיסיות מהמכשירים האחרים שלך, עליך לאמת את הזהות ולסנכרן את ההיסטוריה ואת הכרטיסיות. בהגדרות אפשר תמיד להפסיק את הסנכרון. ‫Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
@@ -6417,6 +6420,7 @@
 <translation id="8090513782447872344">אפשר לחזור לכאן בכל שלב כדי לקרוא שוב</translation>
 <translation id="8090686009202681725">‏יצירת עיצוב באמצעות AI</translation>
 <translation id="8092792048365451089">הפעולה הושלמה עם התוצאה: <ph name="OUTCOME" /></translation>
+<translation id="8092940565705492083">הזמנות ומשלוחים</translation>
 <translation id="8094536695728193970">משמש</translation>
 <translation id="809792523045608178">‏<ph name="IDS_SHORT_PRODUCT_NAME" /> משתמש בהגדרות שרת proxy שנקבעו על-ידי תוסף</translation>
 <translation id="8100057926383586173">פתיחת הגדרות השפה</translation>
@@ -6672,6 +6676,7 @@
 <translation id="8378714024927312812">מנוהל על-ידי הארגון</translation>
 <translation id="8380266723152870797">שם החלון</translation>
 <translation id="838088912501985568">התצוגה ה<ph name="VIEW_ONE_ORIENTATION" /> נמצאת עכשיו בגובה <ph name="VIEW_ONE_PERCENT" />, והתצוגה ה<ph name="VIEW_TWO_ORIENTATION" /> נמצאת עכשיו בגובה <ph name="VIEW_TWO_PERCENT" />.</translation>
+<translation id="8382805540285983013">‫<ph name="CURRENT_INFOBAR" /> מתוך <ph name="TOTAL_INFOBARS" /></translation>
 <translation id="8382913212082956454">העתקת &amp;כתובת אימייל</translation>
 <translation id="8387157483437834731">הסיסמה שונתה בהצלחה</translation>
 <translation id="8387361103813440603">לא מורשים לראות את המיקום</translation>
@@ -6821,6 +6826,7 @@
 <translation id="8546930481464505581">התאמה אישית של סרגל המגע</translation>
 <translation id="8549127125482561383">איך להציג בקשות</translation>
 <translation id="8550239873869577759">בוצעה הורדה של קובץ חשוד</translation>
+<translation id="8550320113250619680">{COUNT,plural, =0{סרגל המידע האחרון בתור}=1{עוד סרגל מידע אחד יופיע אחרי שהסרגל הזה ייסגר}one{עוד # סרגלי מידע יופיעו אחרי שהסרגל הזה ייסגר}two{עוד # סרגלי מידע יופיעו אחרי שהסרגל הזה ייסגר}other{עוד # סרגלי מידע יופיעו אחרי שהסרגל הזה ייסגר}}</translation>
 <translation id="8551388862522347954">רישיונות</translation>
 <translation id="8552102814346875916">שמירה ברשימה 'יש להשאיר תמיד את האתרים האלה פעילים'</translation>
 <translation id="8552947739661397736">‏השתלטות על המשימה, Gemini שולט כרגע</translation>

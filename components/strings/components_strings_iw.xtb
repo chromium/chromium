@@ -373,6 +373,7 @@
 <translation id="1619648179761984213">כרטיסייה הוסרה על ידי <ph name="USER_DISPLAY_NAME" /></translation>
 <translation id="1620510694547887537">מצלמה</translation>
 <translation id="1623104350909869708">אני רוצה למנוע מהדף זה ליצור תיבות דו-שיח נוספות</translation>
+<translation id="1624535934412288769">עמודות</translation>
 <translation id="1629390138158333592">חפש באינטרנט</translation>
 <translation id="1633137413609266904">{0,plural, =1{בהתאם למדיניות האדמין, פתיחת הקובץ הזה נחסמה}one{בהתאם למדיניות האדמין, הפתיחה של # קבצים נחסמה}two{בהתאם למדיניות האדמין, הפתיחה של # קבצים נחסמה}other{בהתאם למדיניות האדמין, הפתיחה של # קבצים נחסמה}}</translation>
 <translation id="1634828734222219955">סך הכל</translation>
@@ -1081,6 +1082,7 @@
 <translation id="2803320044666896137">המערכת מתעלמת מערך המדיניות הזה כי המשתמש לא משויך.</translation>
 <translation id="2807052079800581569">‏מיקום תמונה על ציר Y</translation>
 <translation id="2808278141522721006">‏אפשר להפעיל או להשבית את Windows Hello ב<ph name="SETTINGS" /></translation>
+<translation id="2820159698793041599">‏שרת ה-proxy לא הצליח ליצור חיבור מאובטח.</translation>
 <translation id="2820957248982571256">מתבצעת סריקה…</translation>
 <translation id="282457273878278063">ניהול הפרטים ליצירת קשר</translation>
 <translation id="2824775600643448204">שורת חיפוש וכתובות אתרים</translation>
@@ -1261,6 +1263,7 @@
 <translation id="3120807611504813890">Envelope (Lightweight)</translation>
 <translation id="3121994479408824897">מעבר אל <ph name="DOMAIN" /></translation>
 <translation id="3126023634486644099">Labels (Permanent)</translation>
+<translation id="3128081114752791872">‏אישור האבטחה של שרת ה-proxy לא תקין.</translation>
 <translation id="3131746543143948171">האתר דומה לאתרים אחרים שקשורים לפישינג, לתוכנות זדוניות ולתרמיות. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3132345256151444894">‏לשמור את מספר ה-Redress?</translation>
 <translation id="3133565499688974786">מנוע החיפוש שמוגדר כברירת מחדל הוא <ph name="SEARCH_ENGINE_NAME" /></translation>
@@ -4422,6 +4425,7 @@ Del</translation>
 <translation id="8363502534493474904">לכבות את מצב הטיסה</translation>
 <translation id="8363929499301563123">‏קובצי Cookie של אתרים (מצב הכניסה יישמר באתרים שביקרת בהם לאחרונה)</translation>
 <translation id="8364627913115013041">לא מוגדר.</translation>
+<translation id="8364664414979300296">כדי לשפר את החיפוש, אפשר להוסיף כרטיסיות, תמונות ועוד</translation>
 <translation id="836616551641291797">מידע נוסף על ניהול הדפדפן</translation>
 <translation id="8367705492654390392">אפשר לשאול הכל</translation>
 <translation id="8368001212524806591">מעקב אחר המחיר</translation>

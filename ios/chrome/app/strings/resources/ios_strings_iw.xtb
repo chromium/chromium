@@ -1243,6 +1243,7 @@
 <translation id="4869146460927742717">המיקום של סרגל הכתובות</translation>
 <translation id="4870911314065352661">לסגור את כל הכרטיסיות?</translation>
 <translation id="4872664437015695612">פתיחה ב'הורדות'</translation>
+<translation id="4875498861824207343">התגובה שלך:</translation>
 <translation id="4876237378696925987">שנתחיל?</translation>
 <translation id="4876305945144899064">אין שם משתמש</translation>
 <translation id="4876665338492917862">תאריך הפתיחה: <ph name="LAST_OPENING_DATE" /></translation>
@@ -1516,6 +1517,7 @@
 <translation id="570209299585559496">יש לך אפשרות לשנות את תצוגת האתר שמוגדרת כברירת מחדל לגרסה הייעודית למחשב ב'הגדרות' ואז ב'הגדרות תוכן'</translation>
 <translation id="5702108177581350218">‏כשמשתפים עותק של שם המשתמש והסיסמה, החברים בקבוצה המשפחתית יכולים למלא את הפרטים האלה באמצעות מנהל הסיסמאות של Google.</translation>
 <translation id="5704908597376970822">אי אפשר להיכנס.</translation>
+<translation id="5705806772157965834">המשימה הסתיימה</translation>
 <translation id="5709005673595820640">{count,plural, =1{יש לך סיסמה אחת בשימוש חוזר ({count}) שעלולה לסכן את האבטחה שלך. עליך לשפר אותה עכשיו כדי לשמור על הבטיחות.}one{יש לך {count} סיסמאות בשימוש חוזר שעלולות לסכן את האבטחה שלך. עליך לשפר אותן עכשיו כדי לשמור על הבטיחות.}two{יש לך {count} סיסמאות בשימוש חוזר שעלולות לסכן את האבטחה שלך. עליך לשפר אותן עכשיו כדי לשמור על הבטיחות.}other{יש לך {count} סיסמאות בשימוש חוזר שעלולות לסכן את האבטחה שלך. עליך לשפר אותן עכשיו כדי לשמור על הבטיחות.}}</translation>
 <translation id="57094364128775171">הצעת סיסמה חזקה…</translation>
 <translation id="5718049162805123412">עליך לשנות את הסיסמאות האלה עכשיו</translation>
@@ -1761,6 +1763,7 @@
 <translation id="6436318499800111867">תאריך השיתוף: <ph name="SHARED_WITH_ME_DATE" /></translation>
 <translation id="6442327260099531031">‏חשוב <ph name="BEGIN_LINK" />לכבד את הפרטיות של אנשים אחרים<ph name="END_LINK" /> ולבקש מהם רשות לפני שמקליטים אותם או מצרפים אותם לשיחה במצב Live.</translation>
 <translation id="6442697326824312960">ביטול הצמדה של כרטיסייה</translation>
+<translation id="6442784376230121293">"<ph name="RESPONSE" />"</translation>
 <translation id="6443118737398455446">תאריך התפוגה אינו חוקי</translation>
 <translation id="6444435711855078002">אפשרויות נוספות</translation>
 <translation id="6445051938772793705">מדינה</translation>
@@ -2677,6 +2680,7 @@
 <translation id="9186762474139509529">תחילת רישום ביומן</translation>
 <translation id="9191031968346938109">הוספה אל…</translation>
 <translation id="9200875785104711666">לפני <ph name="TIME" /> ימים</translation>
+<translation id="9203093465376646297">המשימה הופעלה מחדש</translation>
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9203951165704618409">מעבירים את סרגל הכתובות מהחלק העליון לתחתית המסך ונהנים מחוויית גלישה בהתאמה אישית.</translation>
 <translation id="9205189991633470489">נעילה במצב פרטי</translation>
