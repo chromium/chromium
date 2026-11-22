@@ -118,6 +118,14 @@ class COMPONENT_EXPORT(X11) WindowCache : public EventObserver {
     pending_requests_.push_back(std::move(future));
   }
 
+  // Implements GetWindowAtPoint(). Sets `*ignored_window_hit` if the point is
+  // over an ignored window, so that its ancestors (eg. WM frames, which may
+  // have a WM_NAME) are not returned in its place.
+  Window GetWindowAtPointImpl(gfx::Point point_px,
+                              Window window,
+                              const base::flat_set<Window>* ignore,
+                              bool* ignored_window_hit);
+
   // EventObserver:
   void OnEvent(const Event& event) override;
 

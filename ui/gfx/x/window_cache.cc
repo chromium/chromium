@@ -135,9 +135,14 @@ Window WindowCache::GetWindowAtPoint(gfx::Point point_px,
                                      Window window,
                                      const base::flat_set<Window>* ignore) {
   delete_when_destroy_timer_fires_ = true;
-  if (ignore && ignore->contains(window)) {
-    return Window::None;
-  }
+  bool ignored_window_hit = false;
+  return GetWindowAtPointImpl(point_px, window, ignore, &ignored_window_hit);
+}
+
+Window WindowCache::GetWindowAtPointImpl(gfx::Point point_px,
+                                         Window window,
+                                         const base::flat_set<Window>* ignore,
+                                         bool* ignored_window_hit) {
   auto* info = GetInfo(window);
   if (!info || !info->mapped) {
     return Window::None;
@@ -162,11 +167,24 @@ Window WindowCache::GetWindowAtPoint(gfx::Point point_px,
     }
   }
 
+  if (ignore && ignore->contains(window)) {
+    *ignored_window_hit = true;
+    return Window::None;
+  }
+
+  bool child_ignored = false;
   for (Window child : std::views::reverse(info->children)) {
-    Window ret = GetWindowAtPoint(point_px, child, ignore);
+    Window ret = GetWindowAtPointImpl(point_px, child, ignore, &child_ignored);
     if (ret != Window::None) {
       return ret;
     }
+  }
+  if (child_ignored) {
+    // The point is over an ignored window, so its ancestors must not be
+    // returned either. Some WMs (eg. Mutter with mutter-x11-frames) set
+    // WM_NAME on the frame window of a client.
+    *ignored_window_hit = true;
+    return Window::None;
   }
   if (info->has_wm_name) {
     return window;

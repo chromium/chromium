@@ -480,4 +480,28 @@ TEST_F(WindowCacheTest, NestedWmName) {
   EXPECT_EQ(cache()->GetWindowAtPoint({100, 100}, root()), a);
 }
 
+// Regression test for https://crbug.com/40285047
+// If an ignored window is reparented into a named WM frame, neither should be
+// returned and windows below them should be hit instead.
+TEST_F(WindowCacheTest, IgnoredWindowInNamedFrame) {
+  connection()->MapWindow(root());
+
+  Window below = CreateWindow(root());
+  connection()->MapWindow(below);
+  connection()->SetStringProperty(below, Atom::WM_NAME, Atom::STRING, "below");
+
+  Window frame = CreateWindow(root());
+  connection()->MapWindow(frame);
+  connection()->SetStringProperty(frame, Atom::WM_NAME, Atom::STRING, "frame");
+
+  Window client = CreateWindow(frame);
+  connection()->MapWindow(client);
+  connection()->SetStringProperty(client, Atom::WM_NAME, Atom::STRING, "c");
+
+  cache()->SyncForTest();
+  EXPECT_EQ(cache()->GetWindowAtPoint({100, 100}, root()), client);
+  base::flat_set<Window> ignore{client};
+  EXPECT_EQ(cache()->GetWindowAtPoint({100, 100}, root(), &ignore), below);
+}
+
 }  // namespace x11
