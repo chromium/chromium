@@ -1144,14 +1144,14 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
 
   ::testing::AssertionResult UpdateFormElementsForFormHostingShadowDom() {
     username_element_ = GetElementByID("un_host")
-                            .ShadowRoot()
+                            .OpenOrClosedShadowRoot()
                             .FirstChild()
                             .To<WebInputElement>();
     if (!username_element_) {
       return ::testing::AssertionFailure() << "Username element is null.";
     }
     password_element_ = GetElementByID("pw_host")
-                            .ShadowRoot()
+                            .OpenOrClosedShadowRoot()
                             .FirstChild()
                             .To<WebInputElement>();
     if (!password_element_) {
@@ -5131,11 +5131,15 @@ TEST_F(PasswordAutofillAgentTest,
   LoadHTML(kFormTagHostsShadowDomInputs);
 
   // Identify username and password elements.
-  username_element_ =
-      GetElementByID("un_host").ShadowRoot().FirstChild().To<WebInputElement>();
+  username_element_ = GetElementByID("un_host")
+                          .OpenOrClosedShadowRoot()
+                          .FirstChild()
+                          .To<WebInputElement>();
   ASSERT_TRUE(username_element_);
-  password_element_ =
-      GetElementByID("pw_host").ShadowRoot().FirstChild().To<WebInputElement>();
+  password_element_ = GetElementByID("pw_host")
+                          .OpenOrClosedShadowRoot()
+                          .FirstChild()
+                          .To<WebInputElement>();
   ASSERT_TRUE(password_element_);
 
   // Simulate user modifying field values and ensure they are propagated to the

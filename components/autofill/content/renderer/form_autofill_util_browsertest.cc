@@ -1428,7 +1428,7 @@ TEST_F(FormAutofillUtilsTest,
   )");
 
   WebDocument doc = GetDocument();
-  WebNode shadow_root = GetElementById(doc, "host").ShadowRoot();
+  WebNode shadow_root = GetElementById(doc, "host").OpenOrClosedShadowRoot();
   WebFormElement f = GetFormElementById(shadow_root, "f");
   WebFormControlElement t = GetFormControlElementById(shadow_root, "t");
 
@@ -1729,16 +1729,18 @@ TEST_F(FormAutofillUtilsTest, GetOutermostAncestorFormElement) {
   WebDocument doc = GetDocument();
   EXPECT_EQ(GetOutermostAncestorFormElement(GetElementById(doc, "unowned")),
             WebFormElement());
-  EXPECT_EQ(GetOutermostAncestorFormElement(GetElementById(
-                GetElementById(doc, "unowned_shadow_host").ShadowRoot(),
-                "unowned_shadow")),
-            WebFormElement());
+  EXPECT_EQ(
+      GetOutermostAncestorFormElement(GetElementById(
+          GetElementById(doc, "unowned_shadow_host").OpenOrClosedShadowRoot(),
+          "unowned_shadow")),
+      WebFormElement());
   EXPECT_EQ(GetOutermostAncestorFormElement(GetElementById(doc, "owned1")),
             GetFormElementById(doc, "outer_form"));
-  EXPECT_EQ(GetOutermostAncestorFormElement(GetElementById(
-                GetElementById(doc, "owned_shadow_host").ShadowRoot(),
-                "owned_shadow")),
-            GetFormElementById(doc, "outer_form"));
+  EXPECT_EQ(
+      GetOutermostAncestorFormElement(GetElementById(
+          GetElementById(doc, "owned_shadow_host").OpenOrClosedShadowRoot(),
+          "owned_shadow")),
+      GetFormElementById(doc, "outer_form"));
   EXPECT_EQ(GetOutermostAncestorFormElement(GetElementById(doc, "owned2")),
             GetFormElementById(doc, "outer_form"));
   EXPECT_EQ(GetOutermostAncestorFormElement(GetElementById(doc, "owned3")),
@@ -1786,8 +1788,8 @@ TEST_F(FormAutofillUtilsTest, IsDomPredecessorTest) {
       return elem;
     }
     WebElement host = GetElementById(doc, "a2", AllowNull(true));
-    if (host && host.ShadowRoot()) {
-      return GetElementById(host.ShadowRoot(), id, AllowNull(true));
+    if (host && host.OpenOrClosedShadowRoot()) {
+      return GetElementById(host.OpenOrClosedShadowRoot(), id, AllowNull(true));
     }
     return WebNode();
   };
@@ -2126,12 +2128,13 @@ TEST_F(FormAutofillUtilsTest, ExtractFormData_IframesInShadowDom) {
   };
 
   WebElement unowned_shadow_host = GetElementById(doc, "unowned_shadow_host");
-  ASSERT_TRUE(unowned_shadow_host && unowned_shadow_host.ShadowRoot());
-  WebNode unowned_shadow_root = unowned_shadow_host.ShadowRoot();
+  ASSERT_TRUE(unowned_shadow_host &&
+              unowned_shadow_host.OpenOrClosedShadowRoot());
+  WebNode unowned_shadow_root = unowned_shadow_host.OpenOrClosedShadowRoot();
 
   WebElement owned_shadow_host = GetElementById(doc, "owned_shadow_host");
-  ASSERT_TRUE(owned_shadow_host && owned_shadow_host.ShadowRoot());
-  WebNode owned_shadow_root = owned_shadow_host.ShadowRoot();
+  ASSERT_TRUE(owned_shadow_host && owned_shadow_host.OpenOrClosedShadowRoot());
+  WebNode owned_shadow_root = owned_shadow_host.OpenOrClosedShadowRoot();
 
   // 1. Test unowned form (synthetic form).
   {

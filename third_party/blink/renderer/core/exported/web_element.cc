@@ -505,13 +505,6 @@ bool WebElement::IsAutonomousCustomElement() const {
   return false;
 }
 
-WebNode WebElement::ShadowRoot() const {
-  auto* root = ConstUnwrap<Element>()->GetShadowRoot();
-  if (!root || root->IsUserAgent())
-    return WebNode();
-  return WebNode(root);
-}
-
 WebElement WebElement::OwnerShadowHost() const {
   if (auto* host = ConstUnwrap<Element>()->OwnerShadowHost()) {
     return WebElement(host);
@@ -519,7 +512,7 @@ WebElement WebElement::OwnerShadowHost() const {
   return WebElement();
 }
 
-WebNode WebElement::OpenOrClosedShadowRoot() {
+WebNode WebElement::OpenOrClosedShadowRoot() const {
   if (IsNull()) {
     return WebNode();
   }

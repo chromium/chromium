@@ -179,13 +179,9 @@ class BLINK_EXPORT WebElement : public WebNode {
   // Returns the owning shadow host for this element, if there is one.
   WebElement OwnerShadowHost() const;
 
-  // Returns an author ShadowRoot attached to this element, regardless
-  // of open or closed.  This returns null WebNode if this
-  // element has no ShadowRoot or has a UA ShadowRoot.
-  WebNode ShadowRoot() const;
-
-  // Returns the open shadow root or the closed shadow root.
-  WebNode OpenOrClosedShadowRoot();
+  // Returns an author ShadowRoot (open or closed) attached to this element, or
+  // a null WebNode if this element has no ShadowRoot or has a UA ShadowRoot.
+  WebNode OpenOrClosedShadowRoot() const;
 
   // Returns the open ShadowRoot attached to this element, or a null WebNode if
   // this element has no ShadowRoot or has a closed or UA ShadowRoot.
