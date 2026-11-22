@@ -2026,6 +2026,7 @@ crbug.com/443773822 external/wpt/webdriver/tests/classic/take_element_screenshot
 crbug.com/575780008 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/activate/activate.py [ Failure Pass ]
 crbug.com/576634461 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/navigate/navigate.py [ Skip Timeout ]
 crbug.com/575784421 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/window_open.py [ Failure ]
+crbug.com/589039289 [ Debug Linux ] external/wpt/webdriver/tests/bidi/emulation/set_network_conditions/contexts.py [ Failure Pass Timeout ]
 crbug.com/571893816 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/disable_simulation/context.py [ Failure ]
 crbug.com/571893816 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_adapter/context.py [ Failure ]
 crbug.com/577081408 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_characteristic/invalid.py [ Failure Pass ]
