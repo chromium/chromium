@@ -126,13 +126,15 @@ void SetWMSpecState(x11::Window window,
 // move/resize mode.  As per NET_WM_MOVERESIZE spec, |location| is the position
 // in pixels (relative to the root window) of mouse button press, and
 // |direction| indicates whether this is a move or resize event, and if it is a
-// resize event, which edges of the window the size grip applies to.
+// resize event, which edges of the window the size grip applies to. |button|
+// is the pointer button that is held, or 0 if unknown.
 COMPONENT_EXPORT(UI_BASE_X)
 void DoWMMoveResize(x11::Connection* connection,
                     x11::Window root_window,
                     x11::Window window,
                     const gfx::Point& location_px,
-                    int direction);
+                    int direction,
+                    uint32_t button = 0);
 
 // Checks if the window manager has set a specific state.
 COMPONENT_EXPORT(UI_BASE_X)

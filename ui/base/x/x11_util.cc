@@ -349,7 +349,8 @@ void DoWMMoveResize(x11::Connection* connection,
                     x11::Window root_window,
                     x11::Window window,
                     const gfx::Point& location_px,
-                    int direction) {
+                    int direction,
+                    uint32_t button) {
   // This handler is usually sent when the window has the implicit grab.  We
   // need to dump it because what we're about to do is tell the window manager
   // that it's now responsible for moving the window around; it immediately
@@ -360,7 +361,7 @@ void DoWMMoveResize(x11::Connection* connection,
                     connection->GetAtom("_NET_WM_MOVERESIZE"),
                     {static_cast<uint32_t>(location_px.x()),
                      static_cast<uint32_t>(location_px.y()),
-                     static_cast<uint32_t>(direction), 0, 0});
+                     static_cast<uint32_t>(direction), button, 0});
 }
 
 bool HasWMSpecProperty(const base::flat_set<x11::Atom>& properties,

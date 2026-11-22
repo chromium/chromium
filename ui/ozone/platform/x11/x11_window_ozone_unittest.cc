@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/nix/xdg_util.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -14,6 +17,7 @@
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/hit_test.h"
 #include "ui/base/x/x11_pointer_grab.h"
 #include "ui/base/x/x11_util.h"
 #include "ui/display/display.h"
@@ -24,6 +28,7 @@
 #include "ui/events/test/events_test_utils_x11.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
+#include "ui/gfx/x/event_observer.h"
 #include "ui/ozone/platform/x11/x11_window.h"
 #include "ui/ozone/platform/x11/x11_window_manager.h"
 #include "ui/ozone/test/mock_platform_window_delegate.h"
@@ -31,6 +36,7 @@
 #include "ui/platform_window/platform_window_delegate.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 #include "ui/platform_window/wm/wm_move_loop_handler.h"
+#include "ui/platform_window/wm/wm_move_resize_handler.h"
 
 namespace ui {
 
@@ -444,6 +450,32 @@ void DispatchTouch(int evtype, int tracking_id, x11::Window event_window) {
   x11::Connection::Get()->DispatchEvent(*event);
 }
 
+// Stores the button of a _NET_WM_MOVERESIZE message for `window`.
+class MoveResizeObserver : public x11::EventObserver {
+ public:
+  MoveResizeObserver(x11::Connection& connection,
+                     x11::Window window,
+                     std::optional<uint32_t>* button)
+      : connection_(connection), window_(window), button_(button) {
+    connection_->AddEventObserver(this);
+  }
+  ~MoveResizeObserver() override { connection_->RemoveEventObserver(this); }
+
+  // x11::EventObserver:
+  void OnEvent(const x11::Event& xev) override {
+    auto* message = xev.As<x11::ClientMessageEvent>();
+    if (message && message->window == window_ &&
+        message->type == connection_->GetAtom("_NET_WM_MOVERESIZE")) {
+      *button_ = message->data.data32[3];
+    }
+  }
+
+ private:
+  const raw_ref<x11::Connection> connection_;
+  const x11::Window window_;
+  const raw_ptr<std::optional<uint32_t>> button_;
+};
+
 }  // namespace
 
 class X11WindowOzoneTouchTest : public X11WindowOzoneTest {
@@ -551,6 +583,34 @@ TEST_F(X11WindowOzoneTouchTest, MoveLoopWithoutPointerGrabKeepsActiveTouches) {
 
   EXPECT_TRUE(received_touches_.empty());
   window_->ReleaseCapture();
+}
+
+// The window manager follows the touch only through pointer emulation, so a
+// move started by a touch must report the emulated button 1 as held.
+// https://crbug.com/40928551
+TEST_F(X11WindowOzoneTouchTest, TouchStartsWindowManagerMoveWithButton) {
+  // Receive _NET_WM_MOVERESIZE as the window manager would.
+  x11::Connection wm_connection;
+  wm_connection.ChangeWindowAttributes(x11::ChangeWindowAttributesRequest{
+      .window = wm_connection.default_root(),
+      .event_mask = x11::EventMask::SubstructureNotify,
+  });
+  wm_connection.Sync();
+
+  ON_CALL(delegate_, DispatchEvent(_)).WillByDefault([this](Event* event) {
+    if (event->type() == EventType::kTouchPressed) {
+      GetWmMoveResizeHandler(*window_)->DispatchHostWindowDragMovement(
+          HTCAPTION, gfx::Point(100, 100));
+    }
+  });
+  DispatchTouch(x11::Input::DeviceEvent::TouchBegin, 10, xwindow());
+  x11::Connection::Get()->Sync();
+
+  std::optional<uint32_t> button;
+  MoveResizeObserver observer(wm_connection, xwindow(), &button);
+  wm_connection.Sync();
+  wm_connection.DispatchAll();
+  EXPECT_EQ(1u, button);
 }
 
 // Setting and releasing capture on a window while a drag or move loop holds the

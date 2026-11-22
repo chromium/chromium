@@ -28,6 +28,7 @@
 #include "ui/gfx/x/event.h"
 #include "ui/gfx/x/sync.h"
 #include "ui/gfx/x/xfixes.h"
+#include "ui/gfx/x/xinput.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/platform_window/extensions/workspace_extension.h"
 #include "ui/platform_window/extensions/x11_extension.h"
@@ -281,7 +282,8 @@ class X11Window : public PlatformWindow,
   void SetWMStateMaximize(bool maximize);
   bool IsActive() const;
   bool IsTargetedBy(const x11::Event& xev) const;
-  bool IsDispatchingTouchEvent() const;
+  // Returns the XI2 touch event being dispatched, if any.
+  const x11::Input::DeviceEvent* GetDispatchingTouchEvent() const;
   void HandleEvent(const x11::Event& xev);
 
   bool IsMinimized() const;

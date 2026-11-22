@@ -1737,18 +1737,38 @@ void X11Window::DispatchHostWindowDragMovement(
     return;
   }
 
+  // The window manager follows the core pointer, which a touch only drives
+  // through pointer emulation, and the server emulates pointer events for a
+  // touch only once every client that selected touch events has rejected it.
+  // Reject the touch, then report the emulated button 1 as held, so the
+  // window manager follows the touch and ends the move when it is lifted.
+  uint32_t button = 0;
+  if (const auto* touch = GetDispatchingTouchEvent()) {
+    connection_->xinput().XIAllowEvents({
+        .time = x11::Time::CurrentTime,
+        .deviceid = touch->deviceid,
+        .event_mode = x11::Input::EventMode::RejectTouch,
+        .touchid = touch->detail,
+        .grab_window = touch->event,
+    });
+    button = 1;
+  }
+
   DoWMMoveResize(&connection_.get(), x_root_window_, xwindow_,
-                 pointer_location_in_px, direction);
+                 pointer_location_in_px, direction, button);
 }
 
-bool X11Window::IsDispatchingTouchEvent() const {
+const x11::Input::DeviceEvent* X11Window::GetDispatchingTouchEvent() const {
   const auto* event = connection_->dispatching_event();
   const auto* device_event =
       event ? event->As<x11::Input::DeviceEvent>() : nullptr;
-  return device_event &&
-         (device_event->opcode == x11::Input::DeviceEvent::TouchBegin ||
-          device_event->opcode == x11::Input::DeviceEvent::TouchUpdate ||
-          device_event->opcode == x11::Input::DeviceEvent::TouchEnd);
+  if (device_event &&
+      (device_event->opcode == x11::Input::DeviceEvent::TouchBegin ||
+       device_event->opcode == x11::Input::DeviceEvent::TouchUpdate ||
+       device_event->opcode == x11::Input::DeviceEvent::TouchEnd)) {
+    return device_event;
+  }
+  return nullptr;
 }
 
 bool X11Window::RunMoveLoop(const gfx::Vector2d& drag_offset) {
@@ -1761,7 +1781,7 @@ bool X11Window::RunMoveLoop(const gfx::Vector2d& drag_offset) {
   // state, so a tab drag session may mix them. Touch drags also keep using the
   // client-driven loop, since the window manager's move follows the pointer.
   if (!override_redirect_ && window_mapped_in_client_ &&
-      !IsDispatchingTouchEvent() && X11WmMoveLoop::IsSupported(*connection_)) {
+      !GetDispatchingTouchEvent() && X11WmMoveLoop::IsSupported(*connection_)) {
     wm_move_loop_ =
         std::make_unique<X11WmMoveLoop>(*connection_, x_root_window_, xwindow_);
     const bool moved = wm_move_loop_->Run(
