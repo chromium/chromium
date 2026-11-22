@@ -139,26 +139,49 @@ public class HardwareDraw {
                                 try (TraceEvent e =
                                         TraceEvent.scoped("Renderer::requestDraw::task")) {
                                     HardwareRenderer renderer = new HardwareRenderer();
-                                    Surface s = mImageReader.getSurface();
-                                    renderer.setContentRoot(renderNode);
-                                    renderer.setSurface(s);
-                                    HardwareRenderer.FrameRenderRequest request =
-                                            renderer.createRenderRequest();
-                                    // Block until the frame is submitted to the surface, so that it
-                                    // is safe to discard all resources afterwards.
-                                    request.setWaitForPresent(true);
-                                    request.syncAndDraw();
-                                    renderer.stop();
-                                    renderer.destroy();
-                                    renderNode.discardDisplayList();
+                                    try {
+                                        Surface s = mImageReader.getSurface();
+                                        renderer.setContentRoot(renderNode);
+                                        renderer.setSurface(s);
+                                        HardwareRenderer.FrameRenderRequest request =
+                                                renderer.createRenderRequest();
+                                        // Block until the frame is submitted to the surface, so
+                                        // that it is safe to discard all resources afterwards.
+                                        request.setWaitForPresent(true);
+                                        request.syncAndDraw();
+                                    } finally {
+                                        renderer.stop();
+                                        renderer.setSurface(null);
+                                        renderer.destroy();
+                                        renderNode.discardDisplayList();
+                                    }
+                                }
+                            });
+        }
+
+        private void closeResourcesAsync(
+                @Nullable HardwareBuffer hardwareBuffer, @Nullable Image image) {
+            // Sequence ImageReader teardown on sHardwareRequestThreadExecutor so it always runs
+            // after requestDraw() finishes detaching and destroying HardwareRenderer. Closing the
+            // ImageReader while RenderThread is still finishing swapBuffers/teardown abandons the
+            // BufferQueue and triggers a RenderThread crash on Android 17+ emulators.
+            assumeNonNull(sHardwareRequestThreadExecutor)
+                    .execute(
+                            () -> {
+                                try (ImageReader reader = mImageReader;
+                                        @Nullable Image img = image;
+                                        @Nullable HardwareBuffer hb = hardwareBuffer) {
+                                    // Resources close in reverse order: HardwareBuffer -> Image ->
+                                    // ImageReader.
                                 }
                             });
         }
 
         /**
-         * This method runs on the sHardwareCallbackThreadHandler. It acquires an image and releases
-         * it after copying it to a bitmap. Then posts the callback to the UI thread. Ignores any
-         * subsequent calls.
+         * This method runs on the sHardwareCallbackThreadHandler. It acquires an image and produces
+         * a CaptureResult (either by copying to a Bitmap or wrapping a HardwareBuffer with a
+         * release callback), then posts the callback to the UI thread. Ignores any subsequent
+         * calls.
          */
         @Override
         public void onImageAvailable(ImageReader reader) {
@@ -170,6 +193,10 @@ public class HardwareDraw {
                     return;
                 }
                 Image image = reader.acquireNextImage();
+                if (image == null) {
+                    closeResourcesAsync(/* hardwareBuffer= */ null, /* image= */ null);
+                    return;
+                }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     boolean synced = false;
                     try (var fence = image.getFence()) {
@@ -178,23 +205,31 @@ public class HardwareDraw {
                         Log.e(TAG, "Couldn't obtain fence for acquired image", exception);
                     }
                     if (!synced) {
+                        closeResourcesAsync(/* hardwareBuffer= */ null, image);
                         return;
                     }
                 }
                 if (mResultDestination == CaptureResult.Destination.BITMAP) {
-                    if (image != null) {
+                    try {
                         result = new CaptureResult(toBitmap(image));
+                    } finally {
+                        // We won't reuse the image reader, so it's safe to free resources once
+                        // requestDraw() finishes tearing down HardwareRenderer.
+                        closeResourcesAsync(/* hardwareBuffer= */ null, image);
                     }
-                    // We won't reuse the image reader, so it's safe to free resources now.
-                    mImageReader.close();
-                } else if (image != null) {
-                    Runnable releaseCallback = mImageReader::close;
-                    result =
-                            new CaptureResult(
-                                    assumeNonNull(image.getHardwareBuffer()), releaseCallback);
-                    mImageReader.discardFreeBuffers();
                 } else {
-                    mImageReader.close();
+                    HardwareBuffer hardwareBuffer = image.getHardwareBuffer();
+                    if (hardwareBuffer == null) {
+                        closeResourcesAsync(/* hardwareBuffer= */ null, image);
+                        return;
+                    }
+                    // Queue discardFreeBuffers() ahead of posting the CaptureResult so it executes
+                    // after requestDraw() finishes and strictly before releaseCallback closes the
+                    // ImageReader.
+                    assumeNonNull(sHardwareRequestThreadExecutor)
+                            .execute(mImageReader::discardFreeBuffers);
+                    Runnable releaseCallback = () -> closeResourcesAsync(hardwareBuffer, image);
+                    result = new CaptureResult(hardwareBuffer, releaseCallback);
                 }
             } finally {
                 if (mOnCapture != null) {
@@ -265,7 +300,6 @@ public class HardwareDraw {
             }
             int scaledWidth = (int) (view.getWidth() * scale);
             int scaledHeight = (int) (height * scale);
-            mRenderer = new Renderer(scaledWidth, scaledHeight, destination);
 
             RenderNode renderNode = new RenderNode("bitmapRenderNode");
             renderNode.setPosition(0, 0, view.getWidth(), height);
@@ -281,6 +315,7 @@ public class HardwareDraw {
             renderNode.endRecording();
 
             if (captureSuccess) {
+                mRenderer = new Renderer(scaledWidth, scaledHeight, destination);
                 mPendingDraw = true;
                 mRenderer.requestDraw(
                         renderNode,
@@ -289,6 +324,8 @@ public class HardwareDraw {
                             onCapture.onResult(result);
                             mPendingDraw = false;
                         });
+            } else {
+                renderNode.discardDisplayList();
             }
             return captureSuccess;
         }
