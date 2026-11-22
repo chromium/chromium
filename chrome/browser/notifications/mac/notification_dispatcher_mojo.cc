@@ -124,8 +124,10 @@ void NotificationDispatcherMojo::GetDisplayedNotificationsForProfileId(
     bool incognito,
     GetDisplayedNotificationsCallback callback) {
   if (HasNoDisplayedNotifications()) {
-    std::move(callback).Run(/*notification_ids=*/{},
-                            /*supports_synchronization=*/true);
+    std::move(callback).Run(
+        /*notification_ids=*/{},
+        /*supports_synchronization=*/displayed_notifications_state_ ==
+            DisplayedNotificationsState::kConfirmedEmpty);
     return;
   }
 
@@ -146,8 +148,10 @@ void NotificationDispatcherMojo::GetDisplayedNotificationsForProfileIdAndOrigin(
     const GURL& origin,
     GetDisplayedNotificationsCallback callback) {
   if (HasNoDisplayedNotifications()) {
-    std::move(callback).Run(/*notification_ids=*/{},
-                            /*supports_synchronization=*/true);
+    std::move(callback).Run(
+        /*notification_ids=*/{},
+        /*supports_synchronization=*/displayed_notifications_state_ ==
+            DisplayedNotificationsState::kConfirmedEmpty);
     return;
   }
 
@@ -241,7 +245,6 @@ void NotificationDispatcherMojo::OnServiceResponded() {
 void NotificationDispatcherMojo::OnServiceDisconnectedGracefully(
     ShutdownType shutdown_type) {
   base::TimeDelta elapsed = base::TimeTicks::Now() - service_start_time_;
-  const bool had_displayed_notifications = !HasNoDisplayedNotifications();
 
   // Log utility process runtime metrics to UMA.
   if (service_) {
@@ -287,11 +290,10 @@ void NotificationDispatcherMojo::OnServiceDisconnectedGracefully(
     next_service_restart_timer_delay_ = kInitialServiceRestartTimerDelay;
   }
 
-  // Once the restart delay has reached its maximum, only keep retrying if the
-  // provider wants indefinite retries.
+  // Only automatically restart providers that retry indefinitely (e.g.,
+  // banner/alert). App shims rely on on-demand relaunch.
   if (shutdown_type == ShutdownType::kUnexpected &&
-      (next_service_restart_timer_delay_ < kMaximumServiceRestartTimerDelay ||
-       provider_factory_->ShouldRetryIndefinitely())) {
+      provider_factory_->ShouldRetryIndefinitely()) {
     // Calling CheckIfServiceCanBeTerminated() will force a new connection
     // attempt. base::Unretained(this) is safe here because |this| owns
     // |service_restart_timer_|.
@@ -307,10 +309,36 @@ void NotificationDispatcherMojo::OnServiceDisconnectedGracefully(
     service_restart_timer_.Stop();
   }
 
+  // Only mark notifications as possibly displayed if this connection actually
+  // responded. For providers that don't retry indefinitely (app shims), give
+  // up on speculative relaunches (`kUnknown`) after two consecutive unexpected
+  // disconnects before first response: one retry absorbs races with a dying
+  // app shim host, while a second failure stops a broken shim from relaunching
+  // indefinitely without falsely confirming zero notifications.
+  if (shutdown_type == ShutdownType::kChromeInitiated) {
+    displayed_notifications_state_ =
+        DisplayedNotificationsState::kConfirmedEmpty;
+  } else if (service_first_response_time_.has_value()) {
+    displayed_notifications_state_ =
+        DisplayedNotificationsState::kMayHaveNotifications;
+  } else if (shutdown_type == ShutdownType::kUnexpected &&
+             !provider_factory_->ShouldRetryIndefinitely()) {
+    switch (displayed_notifications_state_) {
+      case DisplayedNotificationsState::kMayHaveNotifications:
+        displayed_notifications_state_ = DisplayedNotificationsState::
+            kMayHaveNotificationsAfterFailedReconnect;
+        break;
+      case DisplayedNotificationsState::
+          kMayHaveNotificationsAfterFailedReconnect:
+        displayed_notifications_state_ = DisplayedNotificationsState::kUnknown;
+        break;
+      case DisplayedNotificationsState::kUnknown:
+      case DisplayedNotificationsState::kConfirmedEmpty:
+        break;
+    }
+  }
+
   service_first_response_time_.reset();
-  may_have_displayed_notifications_ =
-      had_displayed_notifications &&
-      shutdown_type != ShutdownType::kChromeInitiated;
   no_notifications_checker_.Cancel();
   provider_.reset();
   service_.reset();
@@ -319,7 +347,10 @@ void NotificationDispatcherMojo::OnServiceDisconnectedGracefully(
 
 bool NotificationDispatcherMojo::HasNoDisplayedNotifications() const {
   return !service_ && !service_restart_timer_.IsRunning() &&
-         !may_have_displayed_notifications_;
+         (displayed_notifications_state_ ==
+              DisplayedNotificationsState::kUnknown ||
+          displayed_notifications_state_ ==
+              DisplayedNotificationsState::kConfirmedEmpty);
 }
 
 mac_notifications::mojom::MacNotificationService*
