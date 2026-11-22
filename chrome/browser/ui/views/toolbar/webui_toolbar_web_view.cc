@@ -102,6 +102,8 @@
 #include "mojo/public/mojom/base/error.mojom.h"
 #include "net/base/filename_util.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
@@ -135,6 +137,12 @@
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view_util_mac.h"
 #endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "ui/views/widget/widget_delegate.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -311,6 +319,44 @@ class WebUIToolbarInternalWebView : public views::WebView {
   void OnBlur() override {
     views::WebView::OnBlur();
     webui_toolbar_web_view_->OnBlur();
+  }
+
+  // Matches Views toolbar behavior for the back/forward mouse buttons. Views
+  // toolbar buttons only respond to left and middle clicks, so these events are
+  // kept from the toolbar page entirely (otherwise its buttons would act on
+  // them, e.g. reloading, or navigating in the button's direction rather than
+  // the mouse button's).
+  //
+  // On Windows, the unhandled WM_XBUTTONUP over a Views toolbar reaches
+  // DefWindowProc, which generates WM_APPCOMMAND, which the browser window
+  // turns into IDC_BACK/IDC_FORWARD via WidgetDelegate::ExecuteWindowsCommand.
+  // Content always marks WM_XBUTTON* events as handled (so DefWindowProc never
+  // sees them), and its own fallback navigates this WebContents rather than the
+  // active tab, so do the equivalent here. Other platforms do nothing for these
+  // buttons over a Views toolbar.
+  bool PreHandleMouseEvent(content::WebContents* source,
+                           const blink::WebMouseEvent& event) override {
+    using Button = blink::WebPointerProperties::Button;
+    using Type = blink::WebInputEvent::Type;
+    const bool is_back_forward_button =
+        event.button == Button::kBack || event.button == Button::kForward;
+    // Mouse moves while a button is held also carry `button`, so only consider
+    // press/release.
+    if (!is_back_forward_button || (event.GetType() != Type::kMouseDown &&
+                                    event.GetType() != Type::kMouseUp)) {
+      return views::WebView::PreHandleMouseEvent(source, event);
+    }
+#if BUILDFLAG(IS_WIN)
+    if (event.GetType() == Type::kMouseUp) {
+      if (views::Widget* widget = GetWidget();
+          widget && widget->widget_delegate()) {
+        widget->widget_delegate()->ExecuteWindowsCommand(
+            event.button == Button::kBack ? APPCOMMAND_BROWSER_BACKWARD
+                                          : APPCOMMAND_BROWSER_FORWARD);
+      }
+    }
+#endif  // BUILDFLAG(IS_WIN)
+    return true;
   }
 
 #if BUILDFLAG(IS_MAC)
