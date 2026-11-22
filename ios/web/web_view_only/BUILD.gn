@@ -9,6 +9,7 @@ source_set("web_view_only") {
 
   deps = [
     "//base",
+    "//ios/web/public",
     "//ios/web/public/web_view_only:web_view_only_api_header",
     "//ios/web/web_state:web_state_impl_header",
     "//ios/web/web_state/ui",
@@ -28,9 +29,12 @@ source_set("unittests") {
 
   deps = [
     "//base",
+    "//base/test:test_support",
     "//ios/web/public",
+    "//ios/web/public/js_messaging",
     "//ios/web/public/web_view_only",
     "//ios/web/test:test_support",
+    "//url",
   ]
 
   visibility = [

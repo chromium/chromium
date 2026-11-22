@@ -602,6 +602,13 @@ class WebViewHolder : public web::WebStateUserData<WebViewHolder> {
   [self updateCurrentURLs];
 }
 
+- (void)prewarm {
+  if (![self isWebStateSafeToUse]) {
+    return;
+  }
+  web::PrewarmWebView(_webState.get());
+}
+
 - (void)evaluateJavaScript:(NSString*)javaScriptString
          completionHandler:(void (^)(id result, NSError* error))completion {
   if (![self isWebStateSafeToUse]) {

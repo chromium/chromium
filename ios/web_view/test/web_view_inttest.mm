@@ -111,6 +111,43 @@ TEST_F(WebViewTest, UserAgentProduct) {
             user_agent_it->second.find("MyUserAgentProduct"));
 }
 
+// Tests that a custom user agent set after -[CWVWebView prewarm] is used by the
+// first load, even though the prewarmed WKWebView was created before the
+// change.
+TEST_F(WebViewTest, CustomUserAgentSetAfterPrewarm) {
+  ASSERT_TRUE(test_server_->Start());
+
+  CWVWebView* web_view = test::CreateWebView();
+  [web_view prewarm];
+  CWVGlobalState.sharedInstance.customUserAgent = @"PrewarmCustomUserAgent";
+
+  GURL url = test_server_->GetURL("/CaptureRequest");
+  ASSERT_TRUE(test::LoadUrl(web_view, net::NSURLWithGURL(url)));
+  EXPECT_FALSE(web_view.canGoBack);
+
+  ASSERT_NE(nullptr, last_request_.get());
+  auto user_agent_it = last_request_->headers.find("User-Agent");
+  ASSERT_NE(last_request_->headers.end(), user_agent_it);
+  EXPECT_EQ("PrewarmCustomUserAgent", user_agent_it->second);
+}
+
+// Tests that a custom user agent set after a web view is created is used by
+// its first load.
+TEST_F(WebViewTest, CustomUserAgentSetAfterCreation) {
+  ASSERT_TRUE(test_server_->Start());
+
+  CWVWebView* web_view = test::CreateWebView();
+  CWVGlobalState.sharedInstance.customUserAgent = @"MyCustomUserAgent";
+
+  GURL url = test_server_->GetURL("/CaptureRequest");
+  ASSERT_TRUE(test::LoadUrl(web_view, net::NSURLWithGURL(url)));
+
+  ASSERT_NE(nullptr, last_request_.get());
+  auto user_agent_it = last_request_->headers.find("User-Agent");
+  ASSERT_NE(last_request_->headers.end(), user_agent_it);
+  EXPECT_EQ("MyCustomUserAgent", user_agent_it->second);
+}
+
 // Tests -[CWVWebView loadRequest:].
 TEST_F(WebViewTest, LoadRequest) {
   ASSERT_TRUE(test_server_->Start());

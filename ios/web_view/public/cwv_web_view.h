@@ -221,6 +221,17 @@ CWV_EXPORT
 // Unlike WKWebView, this method supports HTTPBody.
 - (void)loadRequest:(NSURLRequest*)request;
 
+// Creates the underlying web view without loading anything, so that the first
+// load can start sooner.
+// Unlike loading a placeholder page such as about:blank, this does not add an
+// item to `backForwardList`: the first page loaded afterwards becomes its first
+// item. Does nothing if this web view has already loaded or started loading a
+// page. Calling it more than once is safe.
+//
+// A prewarmed web view holds the memory of its underlying web view until it is
+// released.
+- (void)prewarm;
+
 // Evaluates a JavaScript string in the main frame of the page content world.
 // `completion` is invoked with the result of evaluating the script and a
 // boolean representing success (`YES`) or failure (`NO`) of the evaluation.

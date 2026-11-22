@@ -6,6 +6,7 @@
 
 #import <WebKit/WebKit.h>
 
+#import "ios/web/public/web_state.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "ios/web/web_state/web_state_impl.h"
@@ -26,6 +27,16 @@ WKWebView* EnsureWebViewCreatedWithConfiguration(
   // `web_controller` will get the `configuration` from the `provider` to create
   // the webView to return.
   return [web_controller ensureWebViewCreated];
+}
+
+void PrewarmWebView(WebState* web_state) {
+  if (!web_state->IsWebUsageEnabled()) {
+    return;
+  }
+  // Uses the same configuration provider as a lazily created web view, without
+  // resetting it.
+  [WebStateImpl::FromWebState(web_state)->GetWebController()
+      ensureWebViewCreated];
 }
 
 }  // namespace web
