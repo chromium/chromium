@@ -187,6 +187,10 @@ class BLINK_EXPORT WebElement : public WebNode {
   // Returns the open shadow root or the closed shadow root.
   WebNode OpenOrClosedShadowRoot();
 
+  // Returns the open ShadowRoot attached to this element, or a null WebNode if
+  // this element has no ShadowRoot or has a closed or UA ShadowRoot.
+  WebNode OpenShadowRoot() const;
+
   // Returns the bounds of the element relative to the RenderWidget (local root
   // frame + viewport transform in the main frame). The bounds have been
   // adjusted to include any transformations, including page scale. This

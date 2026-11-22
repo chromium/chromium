@@ -112,17 +112,20 @@ using ::testing::Values;
 using ::testing::ValuesIn;
 using ::testing::WithParamInterface;
 
-class ScopedRangeGroupFeature {
+class ScopedWebRuntimeFeature {
  public:
-  ScopedRangeGroupFeature() {
-    blink::WebRuntimeFeatures::EnableFeatureFromString("RangeGroup", true);
+  explicit ScopedWebRuntimeFeature(std::string_view name) : name_(name) {
+    blink::WebRuntimeFeatures::EnableFeatureFromString(name_, true);
   }
-  ScopedRangeGroupFeature(const ScopedRangeGroupFeature&) = delete;
-  ScopedRangeGroupFeature& operator=(const ScopedRangeGroupFeature&) = delete;
+  ScopedWebRuntimeFeature(const ScopedWebRuntimeFeature&) = delete;
+  ScopedWebRuntimeFeature& operator=(const ScopedWebRuntimeFeature&) = delete;
 
-  ~ScopedRangeGroupFeature() {
-    blink::WebRuntimeFeatures::EnableFeatureFromString("RangeGroup", false);
+  ~ScopedWebRuntimeFeature() {
+    blink::WebRuntimeFeatures::EnableFeatureFromString(name_, false);
   }
+
+ private:
+  const std::string name_;
 };
 
 struct AutofillFieldUtilCase {
@@ -347,7 +350,7 @@ class FormAutofillUtilsTest : public content::RenderViewTest {
 // Tests that some form control types are extracted by ExtractFormData() and
 // others are not.
 TEST_F(FormAutofillUtilsTest, ExtractFormData_FormControlTypes) {
-  ScopedRangeGroupFeature scoped_range_group;
+  ScopedWebRuntimeFeature scoped_range_group("RangeGroup");
   LoadHTML(R"(
     <form id=form-id>
       <!-- These form controls are not extracted. -->
@@ -7735,7 +7738,7 @@ TEST_F(AutofillFocusTest, VerifyFocusAndBlurEventAfterElementRemoved) {
 // belong to another document in the same renderer process.
 TEST_F(FormAutofillUtilsTest,
        DispatchAutofillEventIgnoresCrossDocumentElements) {
-  blink::WebRuntimeFeatures::EnableFeatureFromString("AutofillEvent", true);
+  ScopedWebRuntimeFeature scoped_autofill_event("AutofillEvent");
   LoadHTML(R"(
     <input id="main_input">
     <iframe id="iframe"></iframe>
@@ -7795,6 +7798,80 @@ TEST_F(FormAutofillUtilsTest,
       u"window.autofillFieldIds[0] === 'main_input' ? 1 : 0",
       &matched_only_main));
   EXPECT_EQ(matched_only_main, 1);
+}
+
+// Tests that `DispatchAutofillEvent()` excludes elements inside closed shadow
+// trees (including open shadow trees nested inside closed shadow trees) and
+// disconnected elements (including disconnected open shadow hosts), while
+// exposing light-DOM elements (including slotted ones) and connected open
+// shadow tree elements.
+TEST_F(FormAutofillUtilsTest,
+       DispatchAutofillEventIgnoresClosedShadowAndDisconnectedElements) {
+  ScopedWebRuntimeFeature scoped_autofill_event("AutofillEvent");
+  LoadHTML(R"(
+    <input id="light">
+    <input id="disconnected">
+    <div><template shadowrootmode="open">
+      <input id="open">
+      <div><template shadowrootmode="open"><input id="open_in_open"></template></div>
+    </template></div>
+    <div id="detached_host"><template shadowrootmode="open">
+      <input id="detached_open">
+    </template></div>
+    <div>
+      <template shadowrootmode="closed">
+        <slot name="s"></slot>
+        <input id="closed">
+        <div><template shadowrootmode="open"><input id="open_in_closed"></template></div>
+      </template>
+      <input id="slotted" slot="s">
+    </div>
+    <script>
+      window.autofillEventCount = 0;
+      document.addEventListener('autofill', (e) => {
+        ++window.autofillEventCount;
+        document.body.dataset.autofillLog =
+            e.autofillValues.map((v) => `${v.field.id}=${v.value}`).join(',');
+      });
+    </script>
+  )");
+
+  WebDocument doc = GetDocument();
+  std::vector<FormFieldData::FillData> fields =
+      base::ToVector(GetOwnedFormControlsForTesting(doc, WebFormElement()),
+                     [](const WebFormControlElement& el) {
+                       FormFieldData field;
+                       field.set_renderer_id(GetFieldRendererId(el));
+                       field.set_value(el.GetAttribute("id").Utf16());
+                       return FormFieldData::FillData(field);
+                     });
+  ASSERT_EQ(fields.size(), 8u);
+
+  ExecuteJavaScriptForTests(
+      "window.__detached = [disconnected, detached_host];"
+      "window.__detached.forEach((el) => el.remove());");
+
+  // Only light-DOM (including slotted) and connected open-shadow elements are
+  // exposed.
+  DispatchAutofillEvent(doc, fields, FillId::Create(),
+                        /*supports_refill=*/false);
+  int event_count = -1;
+  ASSERT_TRUE(ExecuteJavaScriptAndReturnIntValue(u"window.autofillEventCount",
+                                                 &event_count));
+  EXPECT_EQ(event_count, 1);
+  EXPECT_EQ(doc.Body().GetAttribute("data-autofill-log").Utf8(),
+            "light=light,open=open,open_in_open=open_in_open,slotted=slotted");
+
+  // If no reachable elements remain, no event is dispatched.
+  std::erase_if(fields, [](const FormFieldData::FillData& f) {
+    return f.value == u"light" || f.value == u"open" ||
+           f.value == u"open_in_open" || f.value == u"slotted";
+  });
+  DispatchAutofillEvent(doc, fields, FillId::Create(),
+                        /*supports_refill=*/true);
+  ASSERT_TRUE(ExecuteJavaScriptAndReturnIntValue(u"window.autofillEventCount",
+                                                 &event_count));
+  EXPECT_EQ(event_count, 1);
 }
 
 }  // namespace

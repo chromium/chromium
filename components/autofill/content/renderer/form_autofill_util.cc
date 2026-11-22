@@ -2789,6 +2789,23 @@ void DispatchAutofillEvent(blink::WebDocument document,
                            base::span<const FormFieldData::FillData> fields,
                            const FillId& fill_id,
                            bool supports_refill) {
+  // Returns true if `element` is inside a closed shadow DOM.
+  //
+  // The HTML spec's name of the concept is "closed-shadow-hidden from the
+  // document": https://dom.spec.whatwg.org/#concept-closed-shadow-hidden.
+  //
+  // Exposing such elements in the AutofillEvent would break shadow DOM
+  // encapsulation.
+  auto is_in_closed_shadow_dom = [](const WebElement& element) {
+    for (WebElement host = element.OwnerShadowHost(); host;
+         host = host.OwnerShadowHost()) {
+      if (!host.OpenShadowRoot()) {
+        return true;
+      }
+    }
+    return false;
+  };
+
   if (fields.empty()) {
     return;
   }
@@ -2800,7 +2817,8 @@ void DispatchAutofillEvent(blink::WebDocument document,
       });
   std::erase_if(autofill_values, [&](const auto& p) {
     const WebFormControlElement& control = p.first;
-    return !control || control.GetDocument() != document;
+    return !control || control.GetDocument() != document ||
+           !IsAccessible(control) || is_in_closed_shadow_dom(control);
   });
 
   if (autofill_values.empty()) {

@@ -520,11 +520,17 @@ WebElement WebElement::OwnerShadowHost() const {
 }
 
 WebNode WebElement::OpenOrClosedShadowRoot() {
-  if (IsNull())
+  if (IsNull()) {
     return WebNode();
+  }
+  return WebNode(ConstUnwrap<Element>()->AuthorShadowRoot());
+}
 
-  auto* root = ConstUnwrap<Element>()->AuthorShadowRoot();
-  return WebNode(root);
+WebNode WebElement::OpenShadowRoot() const {
+  if (IsNull()) {
+    return WebNode();
+  }
+  return WebNode(ConstUnwrap<Element>()->OpenShadowRoot());
 }
 
 gfx::Rect WebElement::BoundsInWidget() const {
