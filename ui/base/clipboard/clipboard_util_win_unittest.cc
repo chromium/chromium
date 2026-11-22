@@ -120,7 +120,8 @@ class MockVirtualFilesDataObject
           Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
           IDataObject> {
  public:
-  MockVirtualFilesDataObject() = default;
+  explicit MockVirtualFilesDataObject(bool return_null_stream = false)
+      : return_null_stream_(return_null_stream) {}
 
   IFACEMETHODIMP GetData(FORMATETC* format_etc, STGMEDIUM* medium) override {
     if (!format_etc || !medium) {
@@ -149,6 +150,11 @@ class MockVirtualFilesDataObject
 
     if (format_etc->cfFormat ==
         ClipboardFormatType::FileContentAtIndexType(0).ToFormatEtc().cfFormat) {
+      if (return_null_stream_) {
+        *medium = {
+            .tymed = TYMED_ISTREAM, .pstm = nullptr, .pUnkForRelease = nullptr};
+        return S_OK;
+      }
       HGLOBAL hglobal = ::GlobalAlloc(GHND, 4);
       auto* data = static_cast<char*>(::GlobalLock(hglobal));
       // SAFETY: `hglobal` size is 4.
@@ -203,6 +209,9 @@ class MockVirtualFilesDataObject
   IFACEMETHODIMP DUnadvise(DWORD) override { return E_NOTIMPL; }
 
   IFACEMETHODIMP EnumDAdvise(IEnumSTATDATA**) override { return E_NOTIMPL; }
+
+ private:
+  const bool return_null_stream_;
 };
 
 // Emits a FILEGROUPDESCRIPTORW that allocates room for `allocated_items`
@@ -443,6 +452,19 @@ TEST_F(ClipboardUtilWinTest, GetFileContents) {
                                               &file_contents));
   EXPECT_EQ(filename, L"File1.txt");
   EXPECT_EQ(base::span(file_contents), base::byte_span_from_cstring("test"));
+}
+
+TEST_F(ClipboardUtilWinTest, GetFileContentsWithNullStream) {
+  Microsoft::WRL::ComPtr<IDataObject> data_object =
+      Microsoft::WRL::Make<MockVirtualFilesDataObject>(
+          /*return_null_stream=*/true);
+
+  std::wstring filename;
+  std::vector<uint8_t> file_contents = {1, 2, 3};
+  EXPECT_TRUE(clipboard_util::GetFileContents(data_object.Get(), &filename,
+                                              &file_contents));
+  EXPECT_EQ(filename, L"File1.txt");
+  EXPECT_TRUE(file_contents.empty());
 }
 
 TEST_F(ClipboardUtilWinTest, GetVirtualFilenamesRejectsOversizedItemCount) {

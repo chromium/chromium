@@ -1167,7 +1167,12 @@ bool GetFileContents(IDataObject* data_object,
       base::win::ScopedHGlobal<uint8_t*> data(content.hGlobal);
       *file_contents = base::ToVector(data);
     } else if (TYMED_ISTREAM == content.tymed) {
-      if (!ReadStreamToVector(content.pstm, file_contents)) {
+      if (!content.pstm) {
+        LOG(WARNING)
+            << "Drag source returned TYMED_ISTREAM with a null stream.";
+        file_contents->clear();
+        content.tymed = TYMED_NULL;
+      } else if (!ReadStreamToVector(content.pstm, file_contents)) {
         file_contents->clear();
       }
     }
