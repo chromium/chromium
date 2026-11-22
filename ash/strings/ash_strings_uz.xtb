@@ -447,6 +447,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2053312383184521053">Harakatsiz holat ma’lumotlari</translation>
 <translation id="2058456167109518507">Qurilma topildi</translation>
 <translation id="2064048859448024834">Kamera orqali razm solish yoniq</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 ta havola}other{# ta havola}}</translation>
 <translation id="2067220651560163985">Haroratni Selsiyda chiqarish</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> <ph name="PRINTER_NAME" /> printerida chop etishni yakunladi</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> tugmasi. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" />.</translation>

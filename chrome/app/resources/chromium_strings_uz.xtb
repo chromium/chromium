@@ -51,6 +51,7 @@
 <translation id="1572572333538561328">Qidiruv AI rejimini qayta ochish</translation>
 <translation id="1574377791422810894">Chromium xavfsizlik vositalari</translation>
 <translation id="1594928384848033697">Chromium Parollar menejeri maʼlumotlarini oʻchirmoqchi. Ruxsat berish uchun Windows parolingizni kiriting.</translation>
+<translation id="1599690375407103815">Faolsizlantirilsa, Chromium qurilmadagi AI modellarini olib tashlaydi va ularni qayta yuklab olmaydi. Ayrim saytlar va Chromium funksiyalari ishlamasligi mumkin.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni talab qilmoqda}=1{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni talab qilmoqda Inkognito oynalar qayta ochilmaydi.}other{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni talab qilmoqda # ta inkognito oyna qayta ochilmaydi.}}</translation>
 <translation id="1625909126243026060">Chromium ichida asosiy maxfiylik va xavfsizlik boshqaruvini tekshiring</translation>
 <translation id="1640672724030957280">Yuklab olinmoqda...</translation>
@@ -65,6 +66,7 @@
 <translation id="1745121272106313518">Chromium <ph name="REMAINING_TIME" />dan keyin qayta ishga tushadi</translation>
 <translation id="1749104137266986751">HTTPS mavjud boʻlmasa, Chromium sizni ogohlantirmasdan himoyalanmagan ulanishdan foydalanadi.</translation>
 <translation id="1774152462503052664">Chromium fonda ishlashiga ruxsat</translation>
+<translation id="1792680680989393197">Ularni istalgan vaqt olib tashlashingiz mumkin. Sayt yoki funksiya talab qilganda Chromium ularni avtomatik qayta yuklab olishi mumkin.</translation>
 <translation id="1793486931176048546">Tezkor kirish uchun Chromiumni vazifalar paneliga mahkamlash uchun Windows bildirishnomasida <ph name="BEGIN_BOLD" />Ha<ph name="END_BOLD" /> tugmasini bosing</translation>
 <translation id="1808667845054772817">Chromium brauzerini qayta o‘rnatish</translation>
 <translation id="1820835682567584003">Chromium buni bajarmoqchi: <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -248,6 +250,7 @@
 <translation id="3751920144677881410">Asboblar panelidagi “Yon paneldagi Qidiruv” tugmasi orqali internetni kezish davomida savollar berish uchun Qidiruvni yon panelda istalgan vaqtda qayta ochishingiz mumkin</translation>
 <translation id="3788675262216168505">Chromium profillarini boshqaring</translation>
 <translation id="3790262771324122253">Chromium ayrim yuklanmalarni nega bloklashi haqida</translation>
+<translation id="3793196697433239004">Qurilma xotirasidan foydalanadi. Chromium ishlatilmagan AI modellarini 45 kundan keyin yoki xotira kam qolganda olib tashlaydi</translation>
 <translation id="379589255253486813">Chromium biror sozlamaga diqqat qilish kerak boʻlganda sizga xabar qiladi.</translation>
 <translation id="3802055581630249637">Chromium siz tashrif buyurishingiz mumkin boʻlgan sahifalarni oldindan yuklaydi, shunda ular tashrif buyurganingizda tezroq yuklanadi</translation>
 <translation id="3810973564298564668">Sozlash</translation>
@@ -329,6 +332,7 @@
 <translation id="4621240073146040695">Yangilashni yakunlash uchun Chromium brauzerini qayta ishga tushiring.</translation>
 <translation id="4625064703209785397">Chromium V8 tizimi bilan saytlar ishlashini tezlashtiradi, ammo Chromium brauzerining hujumlardan himoyasini biroz pasaytiradi</translation>
 <translation id="4626321472657185181">Chromium orqali qidiruvni ochish</translation>
+<translation id="4639628733881319833">Boshqa ilovalar yoki fayllar kabi Chromiumdan tashqaridagi kontent skrinshotini ulashing</translation>
 <translation id="4654639495249754755">Chromium profili</translation>
 <translation id="4665829708273112819">Diqqat! Chromium kengaytmalarga brauzer tarixini yozib olishni taqiqlay olmaydi. Kengaytmani inkognito rejimida faolsizlantirish uchun bayroqchani olib tashlang.</translation>
 <translation id="4673151026126227699">Shuningdek, Chromium foydalanish statistikasini ham ulashsangiz, bu hisobotlarga siz tashrif qilgan URL manzillar ham kiradi</translation>
@@ -387,6 +391,7 @@
 <translation id="5405650547142096840">Chromiumdan oʻchirish</translation>
 <translation id="5424544524441439284">Unumdorlik pasayadi, ammo Chrimium hujumlarga yaxshiroq qarshilik qiladi</translation>
 <translation id="5427571867875391349">Chromium‘ni standart brauzer sifatida tayinlash.</translation>
+<translation id="5435079900593041559">Chromium orqali qidiruv belgisini Windows vazifalar panelida chiqarish va tezkor tugmasini yoqish</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
 <translation id="5460618461609401056">{NUM_TABS,plural, =1{Chromium brauzerni sekinlashtiruvchi varaqni pauza qilishni tavsiya qiladi}other{Chromium brauzerni sekinlashtiruvchi varaqlarni pauza qilishni tavsiya qiladi}}</translation>
 <translation id="5473971139929175403">Chromium brauzeri endi ishlamay qolishi mumkin, chunki uning yangi versiyalarida ushbu Linux distributivi taʼminoti toʻxtatiladi.</translation>
@@ -413,6 +418,7 @@ Bu sahifa kutilganidek ishlamasa, optimallashga ruxsat bering.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium shu tilda ko‘rsatilsin</translation>
 <translation id="569897634095159764">Internetga ulanmadi. Proksi server autentifikatsiyani talab qiladi.</translation>
+<translation id="5755377560105094542">Saytlar va Chromium xulosalar, tuzatishlar, taglavhalar va boshqalar kabi funksiyalar uchun bevosita qurilmangizda ishlaydigan AI ishlatishi mumkin. Bu Chromium ichidagi Geminidan alohida ishlaydi. <ph name="BEGIN_LINK" />Qurilmadagi AI haqida batafsil<ph name="END_LINK" /></translation>
 <translation id="5762954990778294910">Asboblar panelidagi “Qidiruv paneli” tugmasi orqali internetni kezish davomida savollar berish uchun Qidiruv panelini istalgan vaqtda qayta ochishingiz mumkin</translation>
 <translation id="5768371961535086509">Chromium nofaol varaqlar orqali xotirani boʻshatadi. Bunda faol varaqlar va boshqa ilovalar kompyuter resurslarini oshiradi va Chromium ishlashi tezlashadi. Nofaol varaqlar ularga qaytilganda avtomatik faollashadi. <ph name="BEGIN_LINK" />Operativ xotirani tejash haqida batafsil<ph name="END_LINK" /></translation>
 <translation id="5775198138441669627">Agar kodli iborani unutsangiz yoki bu sozlamani oʻzgartirmoqchi boʻlsangiz, hisobingizda Chromium maʼlumotlarini <ph name="SETTINGS_LINK" /></translation>
@@ -469,6 +475,7 @@ Bu sahifa kutilganidek ishlamasa, optimallashga ruxsat bering.</translation>
 <translation id="6245734527075554892">URL manzillar Chromium bilgan zararli saytlar roʻyxati orqali tekshiriladi</translation>
 <translation id="6248213926982192922">Chromium‘ni standart brauzer etib tayinlash</translation>
 <translation id="6248988683584659830">Qidiruv sozlamalari</translation>
+<translation id="6251986571402453005">Chromium bu AI modellarini avtomatik yuklab oladi va yangilaydi</translation>
 <translation id="6268381023930128611">Chromium’dan chiqmoqchimisiz?</translation>
 <translation id="6270547683008298381">Bu varaqlar ortiqcha resurs sarflayapti. Unumdorlikni kuchaytirish uchun Chromium varaqlarni nofaol qilishiga ruxsat bering.</translation>
 <translation id="6281746429495226318">Chromium profilingizni sozlang</translation>
@@ -761,6 +768,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8981886272598860786">va Chromium orqali qidiring yoki <ph name="BEGIN_LINK" />Sozlamalar<ph name="END_LINK" /> orqali moslang.</translation>
 <translation id="8988036198400390003">Chromium profillarini boshqaring</translation>
 <translation id="8993855408334954620">Chromium ichidagi Gemini va ochiq varaq oynalarini almashtirish uchun klaviaturadan foydalaning.</translation>
+<translation id="9002987346523307190">Chromium bu qurilmadan AI modellarini olib tashlaydi. Ayrim saytlar va Chromium funksiyalari ishlamasligi mumkin.</translation>
 <translation id="9018218886431812662">O‘rnatildi.</translation>
 <translation id="9022552996538154597">Chromium‘ga kirish</translation>
 <translation id="9035791714111278917">Chromium orqali qidiruv belgisini Mac menyu panelida chiqarish va tezkor tugmasini yoqish</translation>

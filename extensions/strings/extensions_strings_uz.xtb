@@ -34,6 +34,7 @@
 <translation id="2150661552845026580">“<ph name="EXTENSION_NAME" />” o‘rnatilsinmi?</translation>
 <translation id="2159915644201199628">Tasvirni dekodlab bo‘lmadi: “<ph name="IMAGE_NAME" />”</translation>
 <translation id="2193567467390483943">Ota-onangiz bu kengaytmani tasdiqlamadi</translation>
+<translation id="2207866393056347613">Barcha saytlardagi maʼlumotlaringizga doimiy ruxsat beradi</translation>
 <translation id="23030561267973084">“<ph name="EXTENSION_NAME" />” kengaytmasi qo‘shimcha ruxsatnomalar so‘radi.</translation>
 <translation id="2327492829706409234">Ilovani yoqish</translation>
 <translation id="2350172092385603347">Mahalliylashtirish qo‘llanilmoqda, lekin manifest faylida “default_locale” qiymati belgilanmagan.</translation>
@@ -42,6 +43,7 @@
 <translation id="2678063897982469759">Qayta faollashtirish</translation>
 <translation id="2743583586211388067">Tashkilotingizning kengaytmalardan xatarlarga oid siyosatiga binoan ushbu kengaytmaga ruxsat bloklandi.</translation>
 <translation id="2766161002040448006">Ota-onangizdan soʻrang</translation>
+<translation id="2775557057525247505">Barcha saytlarni koʻrsatish</translation>
 <translation id="2785530881066938471">Kontent skripti uchun <ph name="RELATIVE_PATH" /> faylini yuklab bo‘lmadi. Uning kodirovkasi UTF-8‘dan farq qiladi.</translation>
 <translation id="2850541429955027218">Mavzuni o‘rnatish</translation>
 <translation id="2883143988769190738">Bu kengaytma quyidagi ruxsatlarni soʻraydi:</translation>
@@ -60,6 +62,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (seriya raqami: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="VENDOR_ID" /> tomonidan ishlab chiqaruvchilgan <ph name="PRODUCT_NAME" /> mahsuloti (seriya raqami: <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Shaxsiy kalit uchun faqat yaroqli yo‘l ko‘rsatish mumkin.</translation>
+<translation id="3769470010314114481">Saytdagi maʼlumotlaringizga vaqtinchalik ruxsat beradi</translation>
 <translation id="3788401245189148511">Ruxsatlar:</translation>
 <translation id="3834775135533257713">“<ph name="TO_INSTALL_APP_NAME" />” ilovasi o‘rnatilmadi, chunki u “<ph name="INSTALLED_APP_NAME" />” ilovasi bilan moslasha olmayapti.</translation>
 <translation id="388442998277590542"><ph name="OPTIONS_PAGE" /> parametrlar sahifasini yuklab bo‘lmadi.</translation>
@@ -67,6 +70,7 @@
 <translation id="3908501907586732282">Kengaytmani yoqish</translation>
 <translation id="3927932062596804919">Taqiqlash</translation>
 <translation id="3984413272403535372">Kengaytma imzolanishida xatolik yuz berdi.</translation>
+<translation id="3990894032742690314">Roʻyxatdagi saytlarda har doim</translation>
 <translation id="4014432863917027322">“<ph name="EXTENSION_NAME" />” kengaytmasi tiklansinmi?</translation>
 <translation id="4061696872429826774">Kompyuterdagi boshqa dastur Chromium ishlashini oʻzgartirishi mumkin kengaytmani oʻrnatdi.
 
@@ -75,6 +79,7 @@
 <translation id="4233778200880751280"><ph name="ABOUT_PAGE" /> sahifasini yuklab bo‘lmadi.</translation>
 <translation id="424963718355121712">Ilovalar yopilishidan avval ochiq qolgan saytlar bilan birga ishga tushiriladi</translation>
 <translation id="4306119971288449206">Ilovalar “<ph name="CONTENT_TYPE" />” kontent turi bilan ishga tushiriladi</translation>
+<translation id="4307774243840254737">Quyida keltirilgan saytlardagi maʼlumotlaringizga doimiy ruxsat beradi</translation>
 <translation id="4349181963619779233">Bu saytdan kengaytma va ilovalar kiritish imkonsiz</translation>
 <translation id="4625078469366263107">Ilovani yoqish</translation>
 <translation id="4633003931260532286">Kengaytmaga kamida “<ph name="IMPORT_VERSION" />” versiyadagi “<ph name="IMPORT_NAME" />” kerak, lekin hozir “<ph name="INSTALLED_VERSION" />” versiyasi o‘rnatilgan</translation>
@@ -92,6 +97,7 @@
 <translation id="5185386675596372454">“<ph name="EXTENSION_NAME" />” kengaytmasining so‘nggi versiyasi qo‘shimcha ruxsatlarni talab qilganligi uchun o‘chirib qo‘yildi.</translation>
 <translation id="5242724311594467048">“<ph name="EXTENSION_NAME" />” kengaytmasi ishga tushirilsinmi?</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">Faqat kengaytmani bosganingizda</translation>
 <translation id="5405650547142096840">Chromiumdan oʻchirish</translation>
 <translation id="5456409301717116725">Bu kengaytma <ph name="KEY_PATH" /> kalit fayliga ega. Bu nomaqbul bo‘lishi mumkin.</translation>
 <translation id="5485102783864353244">Ilovani o‘rnatish</translation>
@@ -120,6 +126,7 @@
 <translation id="677806580227005219">Mimehandler: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Ushbu kengaytma juda ko‘p marotaba qayta yuklangan.</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> tomonidan ishlab chiqarilgan noma’lum mahsulot: <ph name="PRODUCT_ID" /></translation>
+<translation id="7017635639223148413">Roʻyxatga kiritilgan saytlar</translation>
 <translation id="7068383018033524534">Manifest fayli yaroqsiz</translation>
 <translation id="7217838517480956708">Ushbu kompyuterda “<ph name="EXTENSION_NAME" />” kengaytmasini o‘chirish yoki o‘zgartirish administrator tomonidan taqiqlangan.</translation>
 <translation id="7287143125007575591">Ruxsat berilmadi.</translation>
@@ -137,6 +144,7 @@
 <translation id="8035920974645200807">Old kamera</translation>
 <translation id="8047248493720652249">Bu kengaytma yuklamaga "<ph name="ATTEMPTED_FILENAME" />" nomini bera olmadi, chunki boshqa kengaytma (<ph name="EXTENSION_NAME" />) unga "<ph name="ACTUAL_FILENAME" />" nomini berdi.</translation>
 <translation id="8049705080247101012">Google “<ph name="EXTENSION_NAME" />” kengaytmasini zararli deb belgilagan, o‘rnatish to‘xtatildi</translation>
+<translation id="823691536304079791">Maʼlumotlaringizni oʻqish va oʻzgartirish</translation>
 <translation id="8284835137979141223"><ph name="VENDOR_NAME" /> dan <ph name="PRODUCT_NAME" /></translation>
 <translation id="8353683614194668312">Ruxsatlar:</translation>
 <translation id="8517576857589387417">Manifest fayli mavjud emas yoki o‘qish uchun yaroqsiz</translation>

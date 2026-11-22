@@ -308,6 +308,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1308105352527684175">Anda mungkin tidak dapat mengakses kandungan tertentu</translation>
 <translation id="1311092170520822848">Laman ini sedang mengawal pembaca kad pintar yang disambungkan kepada peranti anda dan kad pintar yang berkemungkinan tersedia untuk pembaca tersebut</translation>
 <translation id="131112695174432497">Data yang mempengaruhi pemeribadian iklan dipadamkan</translation>
+<translation id="13115907161008983">Salin Pautan</translation>
 <translation id="131188242279372879">Temukan perlindungan dipertingkat untuk mendapatkan tahap keselamatan tertinggi Chrome bagi muat turun</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{Betulkan Tab yang Memperlahankan Penyemak Imbas Anda}other{Betulkan Tab yang Memperlahankan Penyemak Imbas Anda}}</translation>
 <translation id="1312721752506309252">Perlindungan dipertingkat dihidupkan</translation>
@@ -444,6 +445,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1482626744466814421">Tanda Tab Ini...</translation>
 <translation id="1482772681918035149">edit kata laluan</translation>
 <translation id="1483137792530497944">Sungai</translation>
+<translation id="1483148302144576204">Salin pautan</translation>
 <translation id="1483151333977672176">Dihantar!</translation>
 <translation id="1483431819520123112">Nama paparan disalin kepada papan keratan</translation>
 <translation id="1483493594462132177">Hantar</translation>
@@ -1069,6 +1071,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2168036794078614559">Laporan dihantar</translation>
 <translation id="2168735174585029637">Berikan rupa lut sinar baharu kepada tab anda</translation>
 <translation id="217120844667431680">Lakukan lebih banyak perkara dengan AI Mode</translation>
+<translation id="2172046302886074612">'<ph name="MODEL_CATEGORY" />' dialih keluar</translation>
 <translation id="2173302385160625112">Periksa sambungan Internet anda</translation>
 <translation id="2175384018164129879">&amp;Urus Enjin Carian dan Carian Laman</translation>
 <translation id="2175773164573457310">Pilih mana-mana teks atau imej untuk bertanya kepada Gemini</translation>
@@ -2096,6 +2099,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="3270965368676314374">Baca, ubah dan padam foto, muzik dan media lain daripada komputer anda</translation>
 <translation id="3275464924531706548">Runtuhkan <ph name="HEADER" /></translation>
 <translation id="3275778913554317645">Buka sebagai tetingkap</translation>
+<translation id="3277325180914877290">Jadikan teks lebih besar</translation>
 <translation id="3280237271814976245">Simpan &amp;sebagai...</translation>
 <translation id="3280243678470289153">Kekal dalam Chrome</translation>
 <translation id="3282210178675490297">Berkongsi tab kepada <ph name="APP_NAME" /></translation>
@@ -2605,6 +2609,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="3786890785076278600">Baris statik</translation>
 <translation id="3787434344076711519">Menunggu terjemahan</translation>
 <translation id="3789432704615470433">Fail SharePoint dan OneDrive</translation>
+<translation id="3789493399245366422">skrin penuh, skrin-penuh, maksimumkan, mengasyikkan, sembunyikan bar alat, pembentangan, F11</translation>
 <translation id="3789841737615482174">Pasang</translation>
 <translation id="3790417903123637354">Kesilapan telah berlaku. Cuba lagi nanti</translation>
 <translation id="379082410132524484">Kad anda telah tamat tempoh</translation>
@@ -3375,6 +3380,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="4665035764476941598">Klik di sini untuk mengembalikan tab anda yang lain</translation>
 <translation id="4665446389743427678">Semua data yang disimpan oleh <ph name="SITE" /> akan dipadamkan.</translation>
 <translation id="4666483368282673356">Urus sejarah Gemini anda</translation>
+<translation id="4667646546186544608">zum keluar, kecutkan, lebih kecil, kurangkan, kurangkan, skala ke bawah, zum halaman</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670909875730475086">Tahniah! <ph name="APP_NAME" /> telah berjaya dipasang pada peranti anda</translation>
 <translation id="4672759829555593783">Buka <ph name="FILE_NAME" /> sekarang</translation>
@@ -4778,6 +4784,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="6255253900817321392">Buat carian dengan lebih pantas dari mana-mana sahaja pada Mac anda tanpa membuka tab baharu</translation>
 <translation id="6257602895346497974">Hidupkan penyegerakan...</translation>
 <translation id="6258818697161346451">Gunakan kunci laluan anda pada peranti ini</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{Salin pautan}other{Salin pautan}}</translation>
 <translation id="6261688934280090835">Log Apl Kiosk ChromeOS</translation>
 <translation id="6263082573641595914">Versi Microsoft CA</translation>
 <translation id="6264060420924719834">Apl ini mengandungi kandungan web daripada laman lain</translation>
@@ -4906,6 +4913,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">Fail Imej</translation>
 <translation id="6410390304316730527">Penyemakan Imbas Selamat melindungi anda daripada penyerang yang mungkin memperdaya anda agar melakukan sesuatu yang berbahaya seperti memasang perisian hasad atau mendedahkan maklumat peribadi, seperti kata laluan, nombor telefon atau kad kredit. Jika anda mematikan ciri ini, sila berhati-hati semasa menyemak imbas laman web yang tidak biasa dilawati atau tidak bereputasi baik.</translation>
+<translation id="6411490324917773403">Jadikan teks lebih kecil</translation>
 <translation id="6416743254476733475">Benarkan atau sekat pada komputer anda.</translation>
 <translation id="6416856063840710198">Untuk meningkatkan lawatan anda, laman akan kerap menyimpan aktiviti anda – selalunya pada peranti anda. <ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">Tindakan lalai</translation>
@@ -6399,6 +6407,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8041093619605951337">Gembira</translation>
 <translation id="8042142357103597104">Kelegapan teks</translation>
 <translation id="8042331986490021244">Kata laluan anda disulitkan pada peranti sebelum disimpan ke Pengurus Kata Laluan Google</translation>
+<translation id="8042441076562098746">zum masuk, besarkan, lebih besar, lebih besar, tingkatkan, besarkan skala, zum halaman</translation>
 <translation id="8045253504249021590">Penyegerakan telah dihentikan melalui Papan Pemuka Google.</translation>
 <translation id="8045752459073395242">Ketahui AI generatif di tempat kerja dengan lebih lanjut</translation>
 <translation id="8045923671629973368">Masukkan ID aplikasi atau URL gedung web</translation>
@@ -6754,6 +6763,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="844059392176531372">Kongsi Kumpulan Tab “<ph name="GROUP_NAME" />”</translation>
 <translation id="844063558976952706">Sentiasa hidup pada laman ini</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{Terdapat tetingkap Inkognito atau Terasing yang dibuka. Tetingkap tersebut tidak akan dibuka semula.}other{Terdapat # tetingkap Inkognito dan Terasing yang dibuka merentas profil. Tetingkap tersebut tidak akan dibuka semula.}}</translation>
+<translation id="84426883520448311">tema, warna, latar, hiasan latar, cerah, gelap, mod, mod cerah, mod gelap, peribadi, penggayaan, estetik</translation>
 <translation id="8443986842926457191">URL melebihi 2048 aksara</translation>
 <translation id="8445281870900174108">Tab ini menggunakan kamera anda</translation>
 <translation id="8446884382197647889">Ketahui Lebih Lanjut</translation>
@@ -7344,6 +7354,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="9076821103818989526">Panel sisi</translation>
 <translation id="907779190626433918">Gunakan kata laluan unik untuk setiap laman atau apl. Jika seseorang menemukan kata laluan yang digunakan semula, kata laluan itu boleh digunakan untuk mengakses akaun anda yang lain.</translation>
 <translation id="9078546160009814724">Nama pengguna: <ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{Salin Pautan}other{Salin Pautan}}</translation>
 <translation id="907972398081911688">Tukar kata laluan anda yang mengalami pelanggaran secara automatik</translation>
 <translation id="9081543426177426948">Laman yang anda lawati tidak disimpan dalam Inkognito</translation>
 <translation id="9082750838489080452">Aplikasi: <ph name="APP_NAME" /></translation>

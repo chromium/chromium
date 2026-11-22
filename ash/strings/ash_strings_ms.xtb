@@ -447,6 +447,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2053312383184521053">Data Keadaan Melahu</translation>
 <translation id="2058456167109518507">Peranti dikesan</translation>
 <translation id="2064048859448024834">Pratonton kamera dihidupkan</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 pautan}other{# pautan}}</translation>
 <translation id="2067220651560163985">Paparkan suhu dalam Celsius</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> telah selesai mencetak pada <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Togol <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> kini <ph name="CAPTURE_STATE" /></translation>

@@ -386,6 +386,7 @@
 <translation id="2496180316473517155">ประวัติการท่องเว็บ</translation>
 <translation id="250020030759455918">คุณจะเห็นสถานะการลงชื่อเข้าใช้ ข้อมูลการท่องเว็บ และข้อมูลเว็บไซต์ของ <ph name="SITE_NAME" /> ใน Chrome</translation>
 <translation id="2501278716633472235">ย้อนกลับ</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{กำลังดาวน์โหลด # รายการ}other{กำลังดาวน์โหลด # รายการ}}</translation>
 <translation id="2510106555128151389">กำลังติดตั้ง <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2512234228327349533">ค้นหาตัวเลือกการซื้อ</translation>
 <translation id="2513403576141822879">ดูการตั้งค่าเพิ่มเติมเกี่ยวกับความเป็นส่วนตัว ความปลอดภัย และการรวบรวมข้อมูลได้ที่<ph name="BEGIN_LINK" />การซิงค์และบริการต่างๆ ของ Google<ph name="END_LINK" /></translation>
@@ -697,6 +698,7 @@
 <translation id="3740290940447881599">ตรวจสอบว่าคุณเชื่อถือเว็บไซต์นี้ได้</translation>
 <translation id="3740525748616366977">การค้นหาด้วยเสียงไม่พร้อมใช้งานในอุปกรณ์นี้</translation>
 <translation id="3749289110408117711">ชื่อไฟล์</translation>
+<translation id="3751708358601675711">แก้ไขการติดตามราคา</translation>
 <translation id="3756823472711156529">กู้คืนกลุ่ม</translation>
 <translation id="3759306015475526475">จัดการการตั้งค่าข้อมูลการใช้งานและการขัดข้อง</translation>
 <translation id="3763110477555836428">ระบบจะกรอกหมายเลขบัตรเสมือนเมื่อคุณชำระเงินด้วยบัตรนี้เพื่อปกป้องรายละเอียดบัตรจริงของคุณ จัดการใน Google Wallet <ph name="BEGIN_LINK1" />ดูข้อมูลเพิ่มเติมเกี่ยวกับบัตรเสมือน<ph name="END_LINK1" /></translation>
