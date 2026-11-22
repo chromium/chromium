@@ -20,7 +20,6 @@
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
-#include "chrome/browser/metrics/cached_metrics_profile.h"
 #include "chrome/browser/metrics/incognito_observer.h"
 #include "chrome/browser/metrics/metrics_memory_details.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
@@ -52,10 +51,6 @@ class BrowserActivityWatcher;
 class Profile;
 class ProfileManager;
 class PrefRegistrySimple;
-
-namespace regional_capabilities {
-class CountryIdHolder;
-}
 
 namespace network_time {
 class NetworkTimeTracker;
@@ -155,8 +150,6 @@ class ChromeMetricsServiceClient
   std::optional<bool> GetCurrentUserMetricsChoice() const override;
   std::optional<std::string> GetCurrentUserId() const override;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  std::optional<regional_capabilities::CountryIdHolder>
-  GetProfileCountryIdForPrivateMetricsReporting() override;
 
   // ukm::HistoryDeleteObserver:
   void OnHistoryDeleted() override;
@@ -299,9 +292,6 @@ class ChromeMetricsServiceClient
 
   // The DwaService that |this| is a client of.
   std::unique_ptr<metrics::dwa::DwaService> dwa_service_;
-
-  // This member variable ensures the profile lookup is cached across calls.
-  metrics::CachedMetricsProfile cached_profile_;
 
   // Listener for changes in incognito activity.
   std::unique_ptr<IncognitoObserver> incognito_observer_;

@@ -54,7 +54,6 @@
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_metrics_provider.h"
-#include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/safe_browsing/metrics/bundled_settings_metrics_provider.h"
 #include "chrome/browser/safe_browsing/metrics/safe_browsing_metrics_provider.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_metrics_provider.h"
@@ -111,8 +110,6 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/regional_capabilities/regional_capabilities_country_id.h"
-#include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/site_token_provider/features.h"
@@ -635,17 +632,6 @@ ChromeMetricsServiceClient::GetStructuredMetricsService() {
 
 metrics::dwa::DwaService* ChromeMetricsServiceClient::GetDwaService() {
   return dwa_service_.get();
-}
-
-std::optional<regional_capabilities::CountryIdHolder>
-ChromeMetricsServiceClient::GetProfileCountryIdForPrivateMetricsReporting() {
-  auto* service =
-      regional_capabilities::RegionalCapabilitiesServiceFactory::GetForProfile(
-          cached_profile_.GetMetricsProfile());
-  if (service) {
-    return service->GetCountryId();
-  }
-  return std::nullopt;
 }
 
 void ChromeMetricsServiceClient::SetMetricsClientId(

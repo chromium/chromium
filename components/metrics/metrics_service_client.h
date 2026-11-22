@@ -25,10 +25,6 @@ namespace ukm {
 class UkmService;
 }
 
-namespace regional_capabilities {
-class CountryIdHolder;
-}
-
 namespace metrics::dwa {
 class DwaService;
 }
@@ -262,11 +258,6 @@ class MetricsServiceClient {
   // disabled, or current user should not have a user id.
   virtual std::optional<std::string> GetCurrentUserId() const;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-  // Returns the country ID associated with the profile used for metrics.
-  // Returns std::nullopt if it's not available.
-  virtual std::optional<regional_capabilities::CountryIdHolder>
-  GetProfileCountryIdForPrivateMetricsReporting();
 
  private:
   base::RepeatingClosure update_running_services_;

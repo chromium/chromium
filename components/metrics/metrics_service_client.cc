@@ -17,7 +17,6 @@
 #include "components/metrics/metrics_features.h"
 #include "components/metrics/metrics_switches.h"
 #include "components/metrics/server_urls.h"
-#include "components/regional_capabilities/regional_capabilities_country_id.h"
 
 namespace metrics {
 
@@ -300,10 +299,5 @@ std::optional<std::string> MetricsServiceClient::GetCurrentUserId() const {
   return std::nullopt;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-std::optional<regional_capabilities::CountryIdHolder>
-MetricsServiceClient::GetProfileCountryIdForPrivateMetricsReporting() {
-  return std::nullopt;
-}
 
 }  // namespace metrics

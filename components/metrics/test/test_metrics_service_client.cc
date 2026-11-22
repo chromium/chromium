@@ -10,7 +10,6 @@
 
 #include "base/functional/callback.h"
 #include "components/metrics/metrics_log_uploader.h"
-#include "components/regional_capabilities/regional_capabilities_country_id.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace metrics {
@@ -121,11 +120,6 @@ bool TestMetricsServiceClient::ShouldResetClientIdsOnClonedInstall() {
 MetricsLogStore::StorageLimits TestMetricsServiceClient::GetStorageLimits()
     const {
   return storage_limits_;
-}
-
-std::optional<regional_capabilities::CountryIdHolder>
-TestMetricsServiceClient::GetProfileCountryIdForPrivateMetricsReporting() {
-  return country_id_holder_;
 }
 
 void TestMetricsServiceClient::AllowMetricUploadForUserId(uint64_t user_id) {
