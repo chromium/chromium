@@ -31,7 +31,7 @@ struct PageActionProperties {
   bool exempt_from_omnibox_suppression = false;
   // Indicates the page action type and it's mandatory.
   PageActionIconType type;
-  // This indicates the page action view element identifier. This is optional.
+  // Indicates the page action view element identifier. This is mandatory.
   ui::ElementIdentifier element_identifier;
 
   PageActionPriorityCategory priority = PageActionPriorityCategory::kUnknown;

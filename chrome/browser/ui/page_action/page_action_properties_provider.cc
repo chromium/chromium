@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/page_action/page_action_properties_provider.h"
 
-#include <algorithm>
 #include <array>
 
 #include "base/containers/fixed_flat_map.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/page_action/action_ids.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "ui/actions/action_id.h"
@@ -56,6 +56,7 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
         {
             .histogram_name = "LensOverlay",
             .type = PageActionIconType::kLensOverlay,
+            .element_identifier = kLensOverlayPageActionIconElementId,
             .priority =
                 page_actions::PageActionPriorityCategory::kStrategicPromotion,
         },
@@ -291,6 +292,7 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
         {
             .histogram_name = "Glic",
             .type = PageActionIconType::kGlic,
+            .element_identifier = kGlicContextualCueingPageActionIconElementId,
         },
     },
     {
@@ -298,6 +300,7 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
         {
             .histogram_name = "ContextualCueing",
             .type = PageActionIconType::kAnchoredContextualCue,
+            .element_identifier = kAnchoredContextualCuePageActionIconElementId,
         },
     },
     {
@@ -323,6 +326,7 @@ constexpr auto kPageActionProperties = base::MakeFixedFlatMap<
         {
             .histogram_name = "FakePageActionForDebug",
             .type = PageActionIconType::kFakePageActionForDebug,
+            .element_identifier = kFakePageActionForDebugElementId,
             .priority = page_actions::PageActionPriorityCategory::
                 kSecurityTrustAndPermissions,
         },
@@ -384,6 +388,49 @@ static_assert(
     CheckNoUserInteractionDefaultPriority(),
     "kUserInteraction priority should not be the default for any page action");
 
+constexpr bool CheckAllActionIdsHaveProperties() {
+  for (actions::ActionId action_id : page_actions::kActionIds) {
+    if (!kPageActionProperties.contains(action_id)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static_assert(
+    CheckAllActionIdsHaveProperties(),
+    "Every ActionId in kActionIds must have an entry in kPageActionProperties");
+
+constexpr bool CheckElementIdentifiersDefined() {
+  for (const auto& [action_id, properties] : kPageActionProperties) {
+    if (!properties.element_identifier) {
+      return false;
+    }
+  }
+  return true;
+}
+
+static_assert(CheckElementIdentifiersDefined(),
+              "Every page action must define an element_identifier");
+
+constexpr bool CheckElementIdentifiersUnique() {
+  // TODO(crbug.com/587994323): This is O(n^2)...use std::set once Chromium
+  // migrates to C++26.
+  for (auto it1 = kPageActionProperties.begin();
+       it1 != kPageActionProperties.end(); ++it1) {
+    auto it2 = it1;
+    for (++it2; it2 != kPageActionProperties.end(); ++it2) {
+      if (it1->second.element_identifier == it2->second.element_identifier) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+static_assert(CheckElementIdentifiersUnique(),
+              "Each page action must have a unique element_identifier");
+
 }  // namespace
 
 namespace page_actions {
@@ -399,16 +446,10 @@ bool PageActionPropertiesProvider::Contains(actions::ActionId action_id) const {
 base::span<const ui::ElementIdentifier>
 PageActionPropertiesProvider::GetAllElementIdentifiers() {
   static constexpr auto kElementIdentifiers = []() consteval {
-    constexpr size_t kCount =
-        std::ranges::count_if(kPageActionProperties, [](const auto& entry) {
-          return static_cast<bool>(entry.second.element_identifier);
-        });
-    std::array<ui::ElementIdentifier, kCount> result;
+    std::array<ui::ElementIdentifier, kPageActionProperties.size()> result;
     size_t index = 0;
     for (const auto& [action_id, properties] : kPageActionProperties) {
-      if (properties.element_identifier) {
-        result[index++] = properties.element_identifier;
-      }
+      result[index++] = properties.element_identifier;
     }
     return result;
   }();

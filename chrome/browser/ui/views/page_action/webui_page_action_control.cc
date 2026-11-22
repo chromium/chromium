@@ -14,7 +14,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/page_action/action_ids.h"
@@ -628,14 +627,11 @@ void WebUIPageActionControl::WebUIPageActionDelegate::
     return;
   }
 
-  ui::ElementIdentifier anchor_element_id = kLocationBarElementId;
-  page_actions::PageActionPropertiesProvider provider;
-  if (provider.Contains(action_id_)) {
-    if (ui::ElementIdentifier element_id =
-            provider.GetProperties(action_id_).element_identifier) {
-      anchor_element_id = element_id;
-    }
-  }
+  const ui::ElementIdentifier anchor_element_id =
+      page_actions::PageActionPropertiesProvider()
+          .GetProperties(action_id_)
+          .element_identifier;
+  CHECK(anchor_element_id);
 
   views::BubbleAnchor anchor(
       BrowserElements::From(browser)->GetElement(anchor_element_id));

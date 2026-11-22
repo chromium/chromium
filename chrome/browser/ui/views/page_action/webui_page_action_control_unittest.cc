@@ -639,11 +639,6 @@ TEST_F(WebUIPageActionControlTest, GetBubbleAnchor) {
       control_->GetPageActionViewInterface(kActionAiMode);
   ASSERT_TRUE(ai_mode_view);
 
-  page_actions::PageActionViewInterface* lens_view =
-      control_->GetPageActionViewInterface(
-          kActionSidePanelShowLensOverlayResults);
-  ASSERT_TRUE(lens_view);
-
   // 1. When browser is null, BubbleAnchor is null.
   EXPECT_CALL(webui_delegate_, GetBrowser())
       .WillRepeatedly(testing::Return(nullptr));
@@ -654,7 +649,6 @@ TEST_F(WebUIPageActionControlTest, GetBubbleAnchor) {
   EXPECT_CALL(webui_delegate_, GetBrowser())
       .WillRepeatedly(testing::Return(&mock_browser));
   EXPECT_TRUE(ai_mode_view->GetBubbleAnchor().IsNull());
-  EXPECT_TRUE(lens_view->GetBubbleAnchor().IsNull());
 
   // 3. When the specific page action element is not tracked, but the location
   // bar element is tracked, GetBubbleAnchor falls back to the location bar.
@@ -665,12 +659,6 @@ TEST_F(WebUIPageActionControlTest, GetBubbleAnchor) {
   views::BubbleAnchor fallback_anchor = ai_mode_view->GetBubbleAnchor();
   EXPECT_FALSE(fallback_anchor.IsNull());
   EXPECT_EQ(fallback_anchor.GetIfElement(), &location_bar_element);
-
-  // An action without a specific element identifier (e.g. LensOverlay) also
-  // anchors to the location bar.
-  views::BubbleAnchor lens_anchor = lens_view->GetBubbleAnchor();
-  EXPECT_FALSE(lens_anchor.IsNull());
-  EXPECT_EQ(lens_anchor.GetIfElement(), &location_bar_element);
 
   // 4. When the specific page action element is tracked, GetBubbleAnchor
   // anchors to that specific element instead of the location bar.
@@ -1545,16 +1533,26 @@ TEST_F(WebUIPageActionControlAnchoredMessageTest,
 }
 
 TEST_F(WebUIPageActionControlAnchoredMessageTest,
-       ActionWithoutElementIdDefersToLocationBarElement) {
+       AnchoredContextualCueAnchorsToPageActionElement) {
+  // The message is postponed until the corresponding anchor element exists.
   location_bar_element_->Hide();
   ASSERT_EQ(ShowAnchoredMessage(kActionAnchoredContextualCue), nullptr);
-
   location_bar_element_->Show();
+  EXPECT_EQ(GetAnchoredMessage(kActionAnchoredContextualCue), nullptr);
+
+  const ui::ElementContext context =
+      views::ElementTrackerViews::GetContextForWidget(anchor_widget_.get());
+  ui::test::TestElement cue_element(
+      kAnchoredContextualCuePageActionIconElementId, context);
+  cue_element.SetNativeView(anchor_widget_->GetNativeView());
+  cue_element.SetScreenBounds(
+      gfx::Rect(/*x=*/700, /*y=*/10, /*width=*/24, /*height=*/24));
+  cue_element.Show();
 
   AnchoredMessageBubbleView* bubble =
       GetAnchoredMessage(kActionAnchoredContextualCue);
   ASSERT_TRUE(bubble);
-  EXPECT_EQ(bubble->GetAnchor().GetIfElement(), location_bar_element_.get());
+  EXPECT_EQ(bubble->GetAnchor().GetIfElement(), &cue_element);
   EXPECT_TRUE(control_->IsAnchoredMessageShowing(kActionAnchoredContextualCue));
 }
 
