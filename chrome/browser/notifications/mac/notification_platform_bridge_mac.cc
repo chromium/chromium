@@ -5,14 +5,19 @@
 #include "chrome/browser/notifications/mac/notification_platform_bridge_mac.h"
 
 #include <algorithm>
+#include <set>
 #include <utility>
+#include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/notifications/mac/mac_notification_provider_factory.h"
 #include "chrome/browser/notifications/mac/notification_dispatcher_mojo.h"
 #include "chrome/browser/notifications/mac/notification_utils.h"
@@ -20,6 +25,7 @@
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
@@ -69,6 +75,27 @@ CreateGetDisplayedBarrierCallback(
              },
              notifications_ptr, supports_synchronization_ptr)
       .Then(barrier_closure);
+}
+
+// Returns true if `app_id` is installed in at least one loaded regular profile
+// (other than `excluded_profile`). In production
+// `ProfileManager::UnloadProfile` removes the shutting-down profile from
+// `GetLoadedProfiles()` before keyed services shut down, so `excluded_profile`
+// is defensive (and needed when unit tests call `DisplayServiceShutDown()`
+// directly).
+bool HasLoadedRegularProfileForApp(base::span<Profile* const> loaded_profiles,
+                                   const webapps::AppId& app_id,
+                                   const Profile* excluded_profile = nullptr) {
+  const std::set<base::FilePath> installed_profiles =
+      AppShimRegistry::Get()->GetInstalledProfilesForApp(app_id);
+  if (installed_profiles.empty()) {
+    return false;
+  }
+  return std::ranges::any_of(loaded_profiles, [&](Profile* loaded_profile) {
+    return loaded_profile != excluded_profile &&
+           loaded_profile->IsRegularProfile() &&
+           installed_profiles.contains(loaded_profile->GetPath());
+  });
 }
 
 }  // namespace
@@ -136,7 +163,7 @@ void NotificationPlatformBridgeMac::Display(
     } else {
       uint64_t display_request_id = ++next_display_request_id_;
       pending_displays_[identifier] = {display_request_id,
-                                       notification.origin_url()};
+                                       notification.origin_url(), web_app_id};
       GetOrCreateDispatcherForWebApp(web_app_id)
           ->DisplayNotification(
               notification_type, profile, notification,
@@ -242,8 +269,13 @@ void NotificationPlatformBridgeMac::OnAttributedNotificationDisplayed(
     return;
   }
 
+  // Look up (rather than create) the dispatcher so we don't resurrect an
+  // evicted dispatcher just to exclude it from `CloseImpl()`.
+  auto dispatcher_it = app_specific_dispatchers_.find(web_app_id);
   NotificationDispatcherMac* web_app_dispatcher =
-      GetOrCreateDispatcherForWebApp(web_app_id);
+      dispatcher_it != app_specific_dispatchers_.end()
+          ? dispatcher_it->second.get()
+          : nullptr;
   // For non-attributed notifications `Display()` closes any existing
   // notification with the same ID in other dispatchers immediately, whereas for
   // attributed notifications we don't know which dispatchers to close until the
@@ -288,15 +320,15 @@ void NotificationPlatformBridgeMac::CloseImpl(
     alert_dispatcher_->CloseNotificationWithId(
         {notification_id, profile_id, incognito});
   }
-  // TODO(crbug.com/574102798): Avoid fanning out to unrelated app dispatchers,
-  // as that can relaunch an unrelated app shim in the background if it had
-  // notifications on screen when it last quit.
-  for (auto& [app_id, dispatcher] : app_specific_dispatchers_) {
-    if (std::ranges::contains(excluded_dispatchers, dispatcher.get())) {
-      continue;
-    }
-    dispatcher->CloseNotificationWithId(
-        {notification_id, profile_id, incognito});
+  // App shims are only used for regular profiles, so never fan out to app
+  // dispatchers for OTR/non-regular profiles.
+  if (profile->IsRegularProfile()) {
+    // TODO(crbug.com/574102798): Avoid fanning out to unrelated app
+    // dispatchers, as that can relaunch an unrelated app shim in the background
+    // if it had notifications on screen when it last quit.
+    EvictStaleAppDispatchers(
+        /*excluded_profile=*/nullptr, excluded_dispatchers,
+        MacNotificationIdentifier{notification_id, profile_id, incognito});
   }
 }
 
@@ -417,6 +449,68 @@ void NotificationPlatformBridgeMac::CloseAllNotificationsForProfile(
 
   banner_dispatcher_->CloseNotificationsWithProfileId(profile_id, incognito);
   alert_dispatcher_->CloseNotificationsWithProfileId(profile_id, incognito);
+
+  if (app_specific_dispatchers_.empty()) {
+    return;
+  }
+
+  // During browser shutdown `profile_manager()` is already null while
+  // `~ProfileManager()` tears down profiles, so `AppShimRegistry` cannot be
+  // queried; clear all app dispatchers instead (regardless of which profile
+  // shuts down first).
+  if (!g_browser_process || g_browser_process->IsShuttingDown()) {
+    app_specific_dispatchers_.clear();
+    return;
+  }
+
+  if (profile->IsRegularProfile()) {
+    EvictStaleAppDispatchers(/*excluded_profile=*/profile);
+  }
+}
+
+bool NotificationPlatformBridgeMac::HasPendingDisplayForApp(
+    const webapps::AppId& web_app_id) const {
+  return std::ranges::any_of(pending_displays_, [&](const auto& entry) {
+    return entry.second.web_app_id == web_app_id;
+  });
+}
+
+void NotificationPlatformBridgeMac::EvictStaleAppDispatchers(
+    const Profile* excluded_profile,
+    base::span<const NotificationDispatcherMac* const> excluded_dispatchers,
+    std::optional<MacNotificationIdentifier> close_identifier) {
+  if (app_specific_dispatchers_.empty() || !g_browser_process ||
+      g_browser_process->IsShuttingDown()) {
+    return;
+  }
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  if (!profile_manager) {
+    return;
+  }
+
+  const std::vector<Profile*> loaded_profiles =
+      profile_manager->GetLoadedProfiles();
+  for (auto it = app_specific_dispatchers_.begin();
+       it != app_specific_dispatchers_.end();) {
+    const auto& [app_id, dispatcher] = *it;
+    if (std::ranges::contains(excluded_dispatchers, dispatcher.get())) {
+      ++it;
+      continue;
+    }
+    if (!HasLoadedRegularProfileForApp(loaded_profiles, app_id,
+                                       excluded_profile)) {
+      if (!HasPendingDisplayForApp(app_id)) {
+        it = app_specific_dispatchers_.erase(it);
+      } else {
+        ++it;
+      }
+      continue;
+    }
+    if (close_identifier) {
+      dispatcher->CloseNotificationWithId(*close_identifier);
+    }
+    ++it;
+  }
 }
 
 NotificationDispatcherMac*
