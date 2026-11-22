@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -83,10 +84,34 @@ AiOverlayTools::AiOverlayTools(
     BrowserWindowInterface* browser,
     PageContextMonitor* page_context_monitor)
     : receiver_(this, std::move(receiver)),
-      browser_(browser),
+      browser_(browser && !browser->IsDeleteScheduled() ? browser : nullptr),
+      page_context_monitor_(page_context_monitor) {
+  if (browser_) {
+    browser_close_subscription_ =
+        browser_->RegisterBrowserDidClose(base::BindRepeating(
+            &AiOverlayTools::OnBrowserDidClose, base::Unretained(this)));
+  }
+}
+
+AiOverlayTools::AiOverlayTools(
+    mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayTools> receiver,
+    BrowserResolver browser_resolver,
+    PageContextMonitor* page_context_monitor)
+    : receiver_(this, std::move(receiver)),
+      browser_resolver_(std::move(browser_resolver)),
       page_context_monitor_(page_context_monitor) {}
 
 AiOverlayTools::~AiOverlayTools() = default;
+
+BrowserWindowInterface* AiOverlayTools::browser() const {
+  return browser_resolver_ ? browser_resolver_.Run() : browser_.get();
+}
+
+void AiOverlayTools::OnBrowserDidClose(BrowserWindowInterface* closed_browser) {
+  if (browser_ == closed_browser) {
+    browser_ = nullptr;
+  }
+}
 
 void AiOverlayTools::BindRegistryReceiver(
     mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayToolRegistry>

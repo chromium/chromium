@@ -22,6 +22,11 @@ class AiOverlayToolsViews : public AiOverlayTools {
       mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayTools> receiver,
       BrowserWindowInterface* browser,
       PageContextMonitor* page_context_monitor);
+  AiOverlayToolsViews(
+      base::PassKey<AiOverlayTools>,
+      mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayTools> receiver,
+      BrowserResolver browser_resolver,
+      PageContextMonitor* page_context_monitor);
   AiOverlayToolsViews(const AiOverlayToolsViews&) = delete;
   AiOverlayToolsViews& operator=(const AiOverlayToolsViews&) = delete;
   ~AiOverlayToolsViews() override;

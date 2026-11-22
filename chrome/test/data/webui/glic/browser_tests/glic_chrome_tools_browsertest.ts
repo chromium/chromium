@@ -72,6 +72,25 @@ class GlicChromeToolsBrowserTest extends ApiTestFixtureBase {
     assertUndefined(result.errorReason);
     assertEquals(result.result, '{}');
   }
+
+  async testExecuteToolAfterClosingInitialBrowser() {
+    const toolsAccessor = checkDefined(this.host.tools);
+    const toolsHost = checkDefined(toolsAccessor.call(this.host));
+    const executeTool = checkDefined(toolsHost.executeTool);
+
+    const firstResult = await executeTool.call(
+        toolsHost, 'open_url',
+        JSON.stringify({url: 'https://example.com', new_tab: true}));
+    assertUndefined(firstResult.errorReason);
+
+    await this.advanceToNextStep();
+
+    const secondResult = await executeTool.call(
+        toolsHost, 'open_url',
+        JSON.stringify({url: 'https://example.org', new_tab: true}));
+    assertUndefined(secondResult.errorReason);
+    assertEquals(secondResult.result, '{}');
+  }
 }
 
 const TEST_FIXTURES = [

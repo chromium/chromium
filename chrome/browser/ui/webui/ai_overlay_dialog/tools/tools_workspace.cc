@@ -144,6 +144,9 @@ void ForEachBrowserWindow(BrowserWindowInterface* primary_browser, Fn&& fn) {
             ProfileBrowserCollection::GetForProfile(profile)) {
       collection->ForEach(
           [&](BrowserWindowInterface* bwi) {
+            if (bwi->IsDeleteScheduled()) {
+              return true;
+            }
             visited.insert(bwi);
             fn(bwi);
             return true;
@@ -151,7 +154,8 @@ void ForEachBrowserWindow(BrowserWindowInterface* primary_browser, Fn&& fn) {
           BrowserCollection::Order::kActivation);
     }
   }
-  if (!visited.contains(primary_browser)) {
+  if (!primary_browser->IsDeleteScheduled() &&
+      !visited.contains(primary_browser)) {
     fn(primary_browser);
   }
 }
@@ -274,6 +278,877 @@ BrowserWindowInterface* ResolveBrowserWindowByIndex(
   return ResolveBrowserWindowBySessionId(
       primary_browser, window_session_ids[target_win_idx - 1]);
 }
+
+bool IsMutatingWorkspaceActionType(std::string_view type) {
+  return type == "create_group" || type == "add_to_group" ||
+         type == "ungroup_tabs" || type == "close_tabs" ||
+         type == "move_to_new_window" || type == "move_tabs_to_window" ||
+         type == "merge_windows" || type == "reorder_tabs" ||
+         type == "pin_tabs" || type == "unpin_tabs" || type == "mute_tabs" ||
+         type == "unmute_tabs" || type == "discard_tabs";
+}
+
+void ExecuteCreateGroupAction(BrowserWindowInterface* current_browser,
+                              const base::DictValue& action,
+                              base::ListValue& actions_taken,
+                              base::ListValue& skipped) {
+  std::string title =
+      action.FindString("title") ? *action.FindString("title") : "Group";
+  std::string color_str =
+      action.FindString("color") ? *action.FindString("color") : "blue";
+  const base::ListValue* tab_ids = action.FindList("tab_ids");
+  if (!tab_ids || tab_ids->empty()) {
+    return;
+  }
+
+  std::map<TabStripModel*, std::vector<int>> indices_by_strip;
+  for (const base::Value& tid_val : *tab_ids) {
+    std::optional<int> tid = tid_val.GetIfInt();
+    if (!tid.has_value()) {
+      continue;
+    }
+    std::optional<ResolvedWorkspaceTab> resolved =
+        ResolveWorkspaceTabById(current_browser, *tid);
+    if (!resolved.has_value()) {
+      base::DictValue skip_entry;
+      skip_entry.Set("tab_id", *tid);
+      skip_entry.Set("reason", "not_found");
+      skipped.Append(std::move(skip_entry));
+      continue;
+    }
+    indices_by_strip[resolved->tab_strip].push_back(resolved->index);
+  }
+
+  for (auto& [tab_strip, indices] : indices_by_strip) {
+    if (!tab_strip || !tab_strip->SupportsTabGroups() || indices.empty()) {
+      continue;
+    }
+    std::ranges::sort(indices);
+    indices.erase(std::unique(indices.begin(), indices.end()), indices.end());
+    tab_groups::TabGroupId group_id = tab_strip->AddToNewGroup(indices);
+    tab_groups::TabGroupVisualData visual_data(base::UTF8ToUTF16(title),
+                                               StringToTabGroupColor(color_str),
+                                               /*is_collapsed=*/false);
+    tab_strip->ChangeTabGroupVisuals(group_id, std::move(visual_data),
+                                     /*is_customized=*/true);
+
+    base::DictValue taken;
+    taken.Set("type", "create_group");
+    taken.Set("title", title);
+    taken.Set("color", color_str);
+    taken.Set("tab_count", static_cast<int>(indices.size()));
+    actions_taken.Append(std::move(taken));
+  }
+}
+
+void ExecuteAddToGroupAction(BrowserWindowInterface* current_browser,
+                             const base::DictValue& action,
+                             base::ListValue& actions_taken,
+                             base::ListValue& skipped) {
+  std::string group_title =
+      action.FindString("group_title")
+          ? *action.FindString("group_title")
+          : (action.FindString("title") ? *action.FindString("title") : "");
+  std::optional<int> target_group_seq = action.FindInt("group_id");
+  const base::ListValue* tab_ids = action.FindList("tab_ids");
+  if (!tab_ids || tab_ids->empty()) {
+    return;
+  }
+
+  std::map<TabStripModel*, std::vector<int>> indices_by_strip;
+  for (const base::Value& tid_val : *tab_ids) {
+    std::optional<int> tid = tid_val.GetIfInt();
+    if (!tid.has_value()) {
+      continue;
+    }
+    std::optional<ResolvedWorkspaceTab> resolved =
+        ResolveWorkspaceTabById(current_browser, *tid);
+    if (!resolved.has_value()) {
+      base::DictValue skip_entry;
+      skip_entry.Set("tab_id", *tid);
+      skip_entry.Set("reason", "not_found");
+      skipped.Append(std::move(skip_entry));
+      continue;
+    }
+    indices_by_strip[resolved->tab_strip].push_back(resolved->index);
+  }
+
+  // Build global 1-based group_id -> (TabStripModel*, TabGroupId) map
+  // across all windows in the same order as BuildWorkspaceSnapshot().
+  std::map<int, std::pair<TabStripModel*, tab_groups::TabGroupId>>
+      group_by_global_seq;
+  int global_seq = 1;
+  ForEachBrowserWindow(current_browser, [&](BrowserWindowInterface* bwi) {
+    TabStripModel* ts = bwi->GetTabStripModel();
+    if (!ts || !ts->group_model()) {
+      return;
+    }
+    for (const tab_groups::TabGroupId& gid :
+         ts->group_model()->ListTabGroups()) {
+      if (ts->group_model()->GetTabGroup(gid)) {
+        group_by_global_seq.emplace(global_seq++, std::make_pair(ts, gid));
+      }
+    }
+  });
+
+  for (auto& [tab_strip, indices] : indices_by_strip) {
+    if (!tab_strip || !tab_strip->SupportsTabGroups() ||
+        !tab_strip->group_model() || indices.empty()) {
+      continue;
+    }
+    std::ranges::sort(indices);
+    indices.erase(std::unique(indices.begin(), indices.end()), indices.end());
+
+    std::optional<tab_groups::TabGroupId> matched_gid;
+    if (target_group_seq.has_value()) {
+      auto seq_it = group_by_global_seq.find(*target_group_seq);
+      if (seq_it != group_by_global_seq.end() &&
+          seq_it->second.first == tab_strip) {
+        matched_gid = seq_it->second.second;
+        TabGroup* grp = tab_strip->group_model()->GetTabGroup(*matched_gid);
+        if (group_title.empty() && grp && grp->visual_data()) {
+          group_title = base::UTF16ToUTF8(grp->visual_data()->title());
+        }
+      }
+    }
+
+    if (!matched_gid.has_value() && !group_title.empty()) {
+      std::string lower_target = base::ToLowerASCII(group_title);
+      for (const tab_groups::TabGroupId& gid :
+           tab_strip->group_model()->ListTabGroups()) {
+        TabGroup* grp = tab_strip->group_model()->GetTabGroup(gid);
+        if (grp && grp->visual_data() &&
+            base::ToLowerASCII(base::UTF16ToUTF8(
+                grp->visual_data()->title())) == lower_target) {
+          matched_gid = gid;
+          break;
+        }
+      }
+    }
+
+    if (matched_gid.has_value()) {
+      tab_strip->AddToExistingGroup(indices, *matched_gid);
+    } else {
+      tab_groups::TabGroupId new_gid = tab_strip->AddToNewGroup(indices);
+      tab_groups::TabGroupVisualData visual_data(
+          base::UTF8ToUTF16(group_title.empty() ? "Group" : group_title),
+          tab_groups::TabGroupColorId::kBlue, /*is_collapsed=*/false);
+      tab_strip->ChangeTabGroupVisuals(new_gid, std::move(visual_data),
+                                       /*is_customized=*/true);
+    }
+
+    base::DictValue taken;
+    taken.Set("type", "add_to_group");
+    taken.Set("group_title", group_title);
+    taken.Set("tab_count", static_cast<int>(indices.size()));
+    actions_taken.Append(std::move(taken));
+  }
+}
+
+void ExecuteUngroupTabsAction(BrowserWindowInterface* current_browser,
+                              const base::DictValue& action,
+                              base::ListValue& actions_taken,
+                              base::ListValue& skipped) {
+  const base::ListValue* tab_ids = action.FindList("tab_ids");
+  if (!tab_ids || tab_ids->empty()) {
+    return;
+  }
+
+  std::map<TabStripModel*, std::vector<int>> indices_by_strip;
+  for (const base::Value& tid_val : *tab_ids) {
+    std::optional<int> tid = tid_val.GetIfInt();
+    if (!tid.has_value()) {
+      continue;
+    }
+    std::optional<ResolvedWorkspaceTab> resolved =
+        ResolveWorkspaceTabById(current_browser, *tid);
+    if (!resolved.has_value()) {
+      base::DictValue skip_entry;
+      skip_entry.Set("tab_id", *tid);
+      skip_entry.Set("reason", "not_found");
+      skipped.Append(std::move(skip_entry));
+      continue;
+    }
+    indices_by_strip[resolved->tab_strip].push_back(resolved->index);
+  }
+
+  for (auto& [tab_strip, indices] : indices_by_strip) {
+    if (!tab_strip || indices.empty()) {
+      continue;
+    }
+    std::ranges::sort(indices);
+    indices.erase(std::unique(indices.begin(), indices.end()), indices.end());
+    tab_strip->RemoveFromGroup(indices);
+
+    base::DictValue taken;
+    taken.Set("type", "ungroup_tabs");
+    taken.Set("tab_count", static_cast<int>(indices.size()));
+    actions_taken.Append(std::move(taken));
+  }
+}
+
+int ExecuteCloseTabsAction(BrowserWindowInterface* current_browser,
+                           const base::DictValue& action,
+                           base::ListValue& actions_taken,
+                           base::ListValue& skipped) {
+  int total_closed = 0;
+  const base::ListValue* tab_ids = action.FindList("tab_ids");
+  if (!tab_ids || tab_ids->empty()) {
+    return 0;
+  }
+
+  // Map TabStripModel* -> list of (tab_strip_index, tab_id).
+  std::map<TabStripModel*, std::vector<std::pair<int, int>>> to_close_by_strip;
+  for (const base::Value& tid_val : *tab_ids) {
+    std::optional<int> tid = tid_val.GetIfInt();
+    if (!tid.has_value()) {
+      continue;
+    }
+    std::optional<ResolvedWorkspaceTab> resolved =
+        ResolveWorkspaceTabById(current_browser, *tid);
+    if (!resolved.has_value()) {
+      base::DictValue skip_entry;
+      skip_entry.Set("tab_id", *tid);
+      skip_entry.Set("reason", "not_found");
+      skipped.Append(std::move(skip_entry));
+      continue;
+    }
+    // Safety guardrail: Never close tabs with unsaved form/editor state.
+    if (WebContentsHasUnsavedState(resolved->contents)) {
+      base::DictValue skip_entry;
+      skip_entry.Set("tab_id", *tid);
+      skip_entry.Set("title",
+                     base::UTF16ToUTF8(resolved->contents->GetTitle()));
+      skip_entry.Set("reason", "has_unsaved_state");
+      skipped.Append(std::move(skip_entry));
+      continue;
+    }
+    to_close_by_strip[resolved->tab_strip].emplace_back(resolved->index, *tid);
+  }
+
+  for (auto& [tab_strip, pairs] : to_close_by_strip) {
+    if (!tab_strip || pairs.empty()) {
+      continue;
+    }
+    // Sort descending by index so closing higher indices first never
+    // invalidates lower indices.
+    std::sort(pairs.begin(), pairs.end(),
+              [](const auto& a, const auto& b) { return a.first > b.first; });
+    pairs.erase(std::unique(pairs.begin(), pairs.end(),
+                            [](const auto& a, const auto& b) {
+                              return a.first == b.first;
+                            }),
+                pairs.end());
+
+    int closed_count = 0;
+    for (const auto& [idx, tid] : pairs) {
+      // Safety guardrail: Never close the last remaining tab in a window.
+      if (tab_strip->count() <= 1) {
+        base::DictValue skip_entry;
+        skip_entry.Set("tab_id", tid);
+        skip_entry.Set("reason", "cannot_close_last_tab_in_window");
+        skipped.Append(std::move(skip_entry));
+        continue;
+      }
+      tab_strip->CloseWebContentsAt(idx,
+                                    TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
+      ++closed_count;
+      ++total_closed;
+    }
+    if (closed_count > 0) {
+      base::DictValue taken;
+      taken.Set("type", "close_tabs");
+      taken.Set("tab_count", closed_count);
+      actions_taken.Append(std::move(taken));
+    }
+  }
+  return total_closed;
+}
+
+void ExecuteActivateTabAction(BrowserWindowInterface* current_browser,
+                              const base::DictValue& action,
+                              base::ListValue& actions_taken,
+                              base::ListValue& skipped) {
+  std::optional<int> tid = action.FindInt("tab_id");
+  if (!tid.has_value()) {
+    return;
+  }
+  std::optional<ResolvedWorkspaceTab> resolved =
+      ResolveWorkspaceTabById(current_browser, *tid);
+  if (!resolved.has_value()) {
+    base::DictValue skip_entry;
+    skip_entry.Set("tab_id", *tid);
+    skip_entry.Set("reason", "not_found");
+    skipped.Append(std::move(skip_entry));
+    return;
+  }
+  if (resolved->tab && resolved->tab->GetGroup().has_value() &&
+      resolved->tab_strip->SupportsTabGroups() &&
+      resolved->tab_strip->group_model()) {
+    tab_groups::TabGroupId gid = *resolved->tab->GetGroup();
+    TabGroup* grp = resolved->tab_strip->group_model()->GetTabGroup(gid);
+    if (grp && grp->visual_data() && grp->visual_data()->is_collapsed()) {
+      tab_groups::TabGroupVisualData expanded(grp->visual_data()->title(),
+                                              grp->visual_data()->color(),
+                                              /*is_collapsed=*/false);
+      resolved->tab_strip->ChangeTabGroupVisuals(gid, std::move(expanded),
+                                                 /*is_customized=*/true);
+    }
+  }
+  resolved->tab_strip->ActivateTabAt(resolved->index);
+  if (resolved->browser && resolved->browser->GetWindow()) {
+    resolved->browser->GetWindow()->Activate();
+  }
+  base::DictValue taken;
+  taken.Set("type", "activate_tab");
+  taken.Set("tab_id", *tid);
+  taken.Set("title", base::UTF16ToUTF8(resolved->contents->GetTitle()));
+  actions_taken.Append(std::move(taken));
+}
+
+void ExecuteSetTabsPinnedAction(BrowserWindowInterface* current_browser,
+                                const base::DictValue& action,
+                                std::string_view action_type,
+                                bool should_pin,
+                                base::ListValue& actions_taken,
+                                base::ListValue& skipped) {
+  const base::ListValue* tab_ids = action.FindList("tab_ids");
+  if (!tab_ids || tab_ids->empty()) {
+    return;
+  }
+  int changed_count = 0;
+  for (const base::Value& tid_val : *tab_ids) {
+    std::optional<int> tid = tid_val.GetIfInt();
+    if (!tid.has_value()) {
+      continue;
+    }
+    std::optional<ResolvedWorkspaceTab> resolved =
+        ResolveWorkspaceTabById(current_browser, *tid);
+    if (!resolved.has_value() || !resolved->tab_strip) {
+      base::DictValue skip_entry;
+      skip_entry.Set("tab_id", *tid);
+      skip_entry.Set("reason", "not_found");
+      skipped.Append(std::move(skip_entry));
+      continue;
+    }
+    resolved->tab_strip->SetTabPinned(resolved->index, should_pin);
+    ++changed_count;
+  }
+  if (changed_count > 0) {
+    base::DictValue taken;
+    taken.Set("type", action_type);
+    taken.Set("tab_count", changed_count);
+    actions_taken.Append(std::move(taken));
+  }
+}
+
+void ExecuteSetTabsMutedAction(BrowserWindowInterface* current_browser,
+                               const base::DictValue& action,
+                               std::string_view action_type,
+                               bool should_mute,
+                               base::ListValue& actions_taken,
+                               base::ListValue& skipped) {
+  const base::ListValue* tab_ids = action.FindList("tab_ids");
+  if (!tab_ids || tab_ids->empty()) {
+    return;
+  }
+  int changed_count = 0;
+  for (const base::Value& tid_val : *tab_ids) {
+    std::optional<int> tid = tid_val.GetIfInt();
+    if (!tid.has_value()) {
+      continue;
+    }
+    std::optional<ResolvedWorkspaceTab> resolved =
+        ResolveWorkspaceTabById(current_browser, *tid);
+    if (!resolved.has_value() || !resolved->contents) {
+      base::DictValue skip_entry;
+      skip_entry.Set("tab_id", *tid);
+      skip_entry.Set("reason", "not_found");
+      skipped.Append(std::move(skip_entry));
+      continue;
+    }
+    resolved->contents->SetAudioMuted(should_mute);
+    ++changed_count;
+  }
+  if (changed_count > 0) {
+    base::DictValue taken;
+    taken.Set("type", action_type);
+    taken.Set("tab_count", changed_count);
+    actions_taken.Append(std::move(taken));
+  }
+}
+
+void ExecuteDiscardTabsAction(BrowserWindowInterface* current_browser,
+                              const base::DictValue& action,
+                              base::ListValue& actions_taken,
+                              base::ListValue& skipped) {
+  const base::ListValue* tab_ids = action.FindList("tab_ids");
+  if (!tab_ids || tab_ids->empty()) {
+    return;
+  }
+  int discarded_count = 0;
+  for (const base::Value& tid_val : *tab_ids) {
+    std::optional<int> tid = tid_val.GetIfInt();
+    if (!tid.has_value()) {
+      continue;
+    }
+    std::optional<ResolvedWorkspaceTab> resolved =
+        ResolveWorkspaceTabById(current_browser, *tid);
+    if (!resolved.has_value() || !resolved->tab || !resolved->browser) {
+      base::DictValue skip_entry;
+      skip_entry.Set("tab_id", *tid);
+      skip_entry.Set("reason", "not_found");
+      skipped.Append(std::move(skip_entry));
+      continue;
+    }
+    if (resolved->tab_strip &&
+        resolved->tab_strip->active_index() == resolved->index) {
+      base::DictValue skip_entry;
+      skip_entry.Set("tab_id", *tid);
+      skip_entry.Set("reason", "cannot_discard_active_tab");
+      skipped.Append(std::move(skip_entry));
+      continue;
+    }
+    if (WebContentsHasUnsavedState(resolved->contents)) {
+      base::DictValue skip_entry;
+      skip_entry.Set("tab_id", *tid);
+      skip_entry.Set("reason", "has_unsaved_state");
+      skipped.Append(std::move(skip_entry));
+      continue;
+    }
+    TabListInterface* tab_list =
+        TabListInterface::From(resolved->browser.get());
+    if (tab_list && tab_list->DiscardTab(resolved->tab->GetHandle())) {
+      ++discarded_count;
+    } else {
+      base::DictValue skip_entry;
+      skip_entry.Set("tab_id", *tid);
+      skip_entry.Set("reason", "discard_failed");
+      skipped.Append(std::move(skip_entry));
+    }
+  }
+  if (discarded_count > 0) {
+    base::DictValue taken;
+    taken.Set("type", "discard_tabs");
+    taken.Set("tab_count", discarded_count);
+    actions_taken.Append(std::move(taken));
+  }
+}
+
+void ExecuteOpenSavedGroupAction(BrowserWindowInterface* current_browser,
+                                 const base::DictValue& action,
+                                 base::ListValue& actions_taken,
+                                 base::ListValue& skipped) {
+  std::string target_guid =
+      action.FindString("saved_guid") ? *action.FindString("saved_guid") : "";
+  std::string target_title = action.FindString("title")
+                                 ? *action.FindString("title")
+                                 : (action.FindString("group_title")
+                                        ? *action.FindString("group_title")
+                                        : "");
+  Profile* profile = current_browser->GetProfile();
+  tab_groups::TabGroupSyncService* sync_service =
+      profile ? tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile)
+              : nullptr;
+  if (!sync_service) {
+    return;
+  }
+  std::optional<tab_groups::SavedTabGroup> matched_group;
+  for (const tab_groups::SavedTabGroup& group : sync_service->GetAllGroups()) {
+    if (!target_guid.empty() &&
+        base::EqualsCaseInsensitiveASCII(group.saved_guid().AsLowercaseString(),
+                                         target_guid)) {
+      matched_group = group;
+      break;
+    }
+    if (!target_title.empty() &&
+        base::EqualsCaseInsensitiveASCII(base::UTF16ToUTF8(group.title()),
+                                         target_title)) {
+      matched_group = group;
+      break;
+    }
+  }
+  if (!matched_group.has_value()) {
+    base::DictValue skip_entry;
+    skip_entry.Set("type", "open_saved_group");
+    skip_entry.Set("reason", "not_found");
+    skipped.Append(std::move(skip_entry));
+    return;
+  }
+  sync_service->OpenTabGroup(
+      matched_group->saved_guid(),
+      std::make_unique<tab_groups::TabGroupActionContextDesktop>(
+          current_browser, tab_groups::OpeningSource::kUnknown));
+  base::DictValue taken;
+  taken.Set("type", "open_saved_group");
+  taken.Set("title", base::UTF16ToUTF8(matched_group->title()));
+  actions_taken.Append(std::move(taken));
+}
+
+void ExecuteReorderTabsAction(BrowserWindowInterface* current_browser,
+                              const base::DictValue& action,
+                              base::ListValue& actions_taken,
+                              base::ListValue& skipped) {
+  const base::ListValue* tab_ids = action.FindList("tab_ids");
+  if (!tab_ids || tab_ids->empty()) {
+    return;
+  }
+
+  // Map tabs to their respective TabStripModel and resolve indices.
+  std::map<TabStripModel*, std::vector<int>> tabs_by_strip;
+  for (const base::Value& tid_val : *tab_ids) {
+    std::optional<int> tid = tid_val.GetIfInt();
+    if (!tid.has_value()) {
+      continue;
+    }
+    std::optional<ResolvedWorkspaceTab> resolved =
+        ResolveWorkspaceTabById(current_browser, *tid);
+    if (!resolved.has_value()) {
+      base::DictValue skip_entry;
+      skip_entry.Set("tab_id", *tid);
+      skip_entry.Set("reason", "not_found");
+      skipped.Append(std::move(skip_entry));
+      continue;
+    }
+    tabs_by_strip[resolved->tab_strip].push_back(*tid);
+  }
+
+  int total_reordered = 0;
+  for (auto& [tab_strip, target_order_tids] : tabs_by_strip) {
+    if (!tab_strip || target_order_tids.size() < 2) {
+      continue;
+    }
+
+    // Find the minimum index occupied by these tabs as the target start
+    // position.
+    int min_index = tab_strip->count();
+    for (int tid : target_order_tids) {
+      std::optional<ResolvedWorkspaceTab> resolved =
+          ResolveWorkspaceTabById(current_browser, tid);
+      if (resolved.has_value() && resolved->tab_strip == tab_strip) {
+        min_index = std::min(min_index, resolved->index);
+      }
+    }
+    if (min_index >= tab_strip->count()) {
+      continue;
+    }
+
+    // Move each tab in target_order_tids sequentially starting from
+    // min_index, preserving the tab's current group membership.
+    int target_slot = min_index;
+    for (int tid : target_order_tids) {
+      std::optional<ResolvedWorkspaceTab> resolved =
+          ResolveWorkspaceTabById(current_browser, tid);
+      if (!resolved.has_value() || resolved->tab_strip != tab_strip) {
+        continue;
+      }
+      int current_slot = resolved->index;
+      if (current_slot != target_slot) {
+        tab_strip->MoveWebContentsAt(current_slot, target_slot,
+                                     /*select_after_move=*/false);
+        ++total_reordered;
+      }
+      ++target_slot;
+    }
+  }
+
+  if (total_reordered > 0) {
+    base::DictValue taken;
+    taken.Set("type", "reorder_tabs");
+    taken.Set("tab_count", static_cast<int>(tab_ids->size()));
+    actions_taken.Append(std::move(taken));
+  }
+}
+
+void ExecuteMoveToNewWindowAction(BrowserWindowInterface* current_browser,
+                                  const base::DictValue& action,
+                                  base::ListValue& actions_taken,
+                                  base::ListValue& skipped) {
+  const base::ListValue* tab_ids = action.FindList("tab_ids");
+  if (!tab_ids || tab_ids->empty()) {
+    return;
+  }
+  std::string group_title =
+      action.FindString("group_title")
+          ? *action.FindString("group_title")
+          : (action.FindString("title") ? *action.FindString("title") : "");
+  std::string color_str =
+      action.FindString("color") ? *action.FindString("color") : "blue";
+
+  std::map<BrowserWindowInterface*, std::vector<std::pair<int, int>>>
+      to_move_by_browser;
+  for (const base::Value& tid_val : *tab_ids) {
+    std::optional<int> tid = tid_val.GetIfInt();
+    if (!tid.has_value()) {
+      continue;
+    }
+    std::optional<ResolvedWorkspaceTab> resolved =
+        ResolveWorkspaceTabById(current_browser, *tid);
+    if (!resolved.has_value()) {
+      base::DictValue skip_entry;
+      skip_entry.Set("tab_id", *tid);
+      skip_entry.Set("reason", "not_found");
+      skipped.Append(std::move(skip_entry));
+      continue;
+    }
+    to_move_by_browser[resolved->browser.get()].emplace_back(resolved->index,
+                                                             *tid);
+  }
+
+  std::map<BrowserWindowInterface*, std::vector<int>> indices_by_browser;
+  for (auto& [src_bwi, pairs] : to_move_by_browser) {
+    if (!src_bwi || pairs.empty() || !src_bwi->GetTabStripModel()) {
+      continue;
+    }
+    std::sort(pairs.begin(), pairs.end(),
+              [](const auto& a, const auto& b) { return a.first < b.first; });
+    pairs.erase(std::unique(pairs.begin(), pairs.end(),
+                            [](const auto& a, const auto& b) {
+                              return a.first == b.first;
+                            }),
+                pairs.end());
+
+    // Safety guardrail: Never move all tabs out of a source window into a
+    // new window (which would empty and close the source window).
+    const size_t total_in_src =
+        static_cast<size_t>(src_bwi->GetTabStripModel()->count());
+    while (pairs.size() >= total_in_src && !pairs.empty()) {
+      base::DictValue skip_entry;
+      skip_entry.Set("tab_id", pairs.back().second);
+      skip_entry.Set("reason", "cannot_move_all_tabs_from_window");
+      skipped.Append(std::move(skip_entry));
+      pairs.pop_back();
+    }
+
+    for (const auto& [idx, tid] : pairs) {
+      indices_by_browser[src_bwi].push_back(idx);
+    }
+  }
+
+  if (indices_by_browser.empty()) {
+    return;
+  }
+
+  Profile* profile = current_browser->GetProfile();
+  if (!profile) {
+    return;
+  }
+  BrowserWindowInterface* new_browser =
+      waap::CreateBrowserWindowAndRecordCreationSource(
+          BrowserWindowCreateParams(*profile, true),
+          waap::NewWindowCreationSource::kMoveTabsToNewWindow);
+  if (!new_browser) {
+    return;
+  }
+
+  int total_moved = 0;
+  for (auto& [src_bwi, indices] : indices_by_browser) {
+    if (!src_bwi || indices.empty()) {
+      continue;
+    }
+    chrome::MoveTabsToExistingWindow(src_bwi, new_browser, indices);
+    total_moved += static_cast<int>(indices.size());
+  }
+
+  if (total_moved > 0 && !group_title.empty() &&
+      new_browser->GetTabStripModel() &&
+      new_browser->GetTabStripModel()->SupportsTabGroups()) {
+    TabStripModel* new_strip = new_browser->GetTabStripModel();
+    std::optional<tab_groups::TabGroupId> gid;
+    if (new_strip->group_model() &&
+        !new_strip->group_model()->ListTabGroups().empty()) {
+      gid = new_strip->group_model()->ListTabGroups().front();
+    } else {
+      std::vector<int> all_indices(new_strip->count());
+      std::iota(all_indices.begin(), all_indices.end(), 0);
+      gid = new_strip->AddToNewGroup(all_indices);
+    }
+    if (gid.has_value()) {
+      tab_groups::TabGroupVisualData visual_data(
+          base::UTF8ToUTF16(group_title), StringToTabGroupColor(color_str),
+          /*is_collapsed=*/false);
+      new_strip->ChangeTabGroupVisuals(*gid, std::move(visual_data),
+                                       /*is_customized=*/true);
+    }
+  }
+
+  if (new_browser->GetWindow()) {
+    new_browser->GetWindow()->Show();
+  }
+
+  base::DictValue taken;
+  taken.Set("type", "move_to_new_window");
+  taken.Set("tab_count", total_moved);
+  if (!group_title.empty()) {
+    taken.Set("group_title", group_title);
+  }
+  actions_taken.Append(std::move(taken));
+}
+
+void ExecuteMoveTabsToWindowAction(
+    BrowserWindowInterface* current_browser,
+    const std::vector<SessionID>& batch_window_session_ids,
+    const base::DictValue& action,
+    base::ListValue& actions_taken,
+    base::ListValue& skipped) {
+  const base::ListValue* tab_ids = action.FindList("tab_ids");
+  std::optional<int> target_win_idx = action.FindInt("target_window");
+  if (!target_win_idx.has_value()) {
+    target_win_idx = action.FindInt("window_index");
+  }
+  if (!target_win_idx.has_value() || !tab_ids || tab_ids->empty()) {
+    return;
+  }
+
+  BrowserWindowInterface* target_browser = ResolveBrowserWindowByIndex(
+      current_browser, batch_window_session_ids, *target_win_idx);
+  if (!target_browser) {
+    base::DictValue skip_entry;
+    skip_entry.Set("type", "move_tabs_to_window");
+    skip_entry.Set("target_window", *target_win_idx);
+    skip_entry.Set("reason", "target_window_not_found");
+    skipped.Append(std::move(skip_entry));
+    return;
+  }
+
+  std::map<BrowserWindowInterface*, std::vector<std::pair<int, int>>>
+      to_move_by_browser;
+  for (const base::Value& tid_val : *tab_ids) {
+    std::optional<int> tid = tid_val.GetIfInt();
+    if (!tid.has_value()) {
+      continue;
+    }
+    std::optional<ResolvedWorkspaceTab> resolved =
+        ResolveWorkspaceTabById(current_browser, *tid);
+    if (!resolved.has_value()) {
+      base::DictValue skip_entry;
+      skip_entry.Set("tab_id", *tid);
+      skip_entry.Set("reason", "not_found");
+      skipped.Append(std::move(skip_entry));
+      continue;
+    }
+    if (resolved->browser.get() == target_browser) {
+      continue;
+    }
+    to_move_by_browser[resolved->browser.get()].emplace_back(resolved->index,
+                                                             *tid);
+  }
+
+  int total_moved = 0;
+  for (auto& [src_bwi, pairs] : to_move_by_browser) {
+    if (!src_bwi || pairs.empty() || !src_bwi->GetTabStripModel()) {
+      continue;
+    }
+    std::sort(pairs.begin(), pairs.end(),
+              [](const auto& a, const auto& b) { return a.first < b.first; });
+    pairs.erase(std::unique(pairs.begin(), pairs.end(),
+                            [](const auto& a, const auto& b) {
+                              return a.first == b.first;
+                            }),
+                pairs.end());
+
+    // Safety guardrail: Never empty `current_browser` (which hosts the
+    // active AI Overlay Dialog session).
+    if (src_bwi == current_browser) {
+      const size_t total_in_src =
+          static_cast<size_t>(src_bwi->GetTabStripModel()->count());
+      while (pairs.size() >= total_in_src && !pairs.empty()) {
+        base::DictValue skip_entry;
+        skip_entry.Set("tab_id", pairs.back().second);
+        skip_entry.Set("reason", "cannot_empty_active_overlay_window");
+        skipped.Append(std::move(skip_entry));
+        pairs.pop_back();
+      }
+    }
+    if (pairs.empty()) {
+      continue;
+    }
+
+    std::vector<int> indices;
+    indices.reserve(pairs.size());
+    for (const auto& [idx, tid] : pairs) {
+      indices.push_back(idx);
+    }
+    chrome::MoveTabsToExistingWindow(src_bwi, target_browser, indices);
+    total_moved += static_cast<int>(indices.size());
+  }
+
+  if (total_moved > 0) {
+    if (target_browser->GetWindow()) {
+      target_browser->GetWindow()->Show();
+    }
+
+    base::DictValue taken;
+    taken.Set("type", "move_tabs_to_window");
+    taken.Set("target_window", *target_win_idx);
+    taken.Set("tab_count", total_moved);
+    actions_taken.Append(std::move(taken));
+  }
+}
+
+void ExecuteMergeWindowsAction(
+    BrowserWindowInterface* current_browser,
+    const std::vector<SessionID>& batch_window_session_ids,
+    const base::DictValue& action,
+    base::ListValue& actions_taken,
+    base::ListValue& skipped) {
+  std::optional<int> src_win_idx = action.FindInt("source_window");
+  std::optional<int> target_win_idx = action.FindInt("target_window");
+  if (!src_win_idx.has_value() || !target_win_idx.has_value()) {
+    return;
+  }
+
+  BrowserWindowInterface* src_browser = ResolveBrowserWindowByIndex(
+      current_browser, batch_window_session_ids, *src_win_idx);
+  BrowserWindowInterface* target_browser = ResolveBrowserWindowByIndex(
+      current_browser, batch_window_session_ids, *target_win_idx);
+  if (!src_browser || !target_browser) {
+    base::DictValue skip_entry;
+    skip_entry.Set("type", "merge_windows");
+    skip_entry.Set("reason", "window_not_found");
+    skipped.Append(std::move(skip_entry));
+    return;
+  }
+  if (src_browser == target_browser) {
+    base::DictValue skip_entry;
+    skip_entry.Set("type", "merge_windows");
+    skip_entry.Set("reason", "source_and_target_are_same_window");
+    skipped.Append(std::move(skip_entry));
+    return;
+  }
+  // Safety guardrail: Never empty `current_browser` (which hosts the
+  // active AI Overlay Dialog session).
+  if (src_browser == current_browser) {
+    base::DictValue skip_entry;
+    skip_entry.Set("type", "merge_windows");
+    skip_entry.Set("source_window", *src_win_idx);
+    skip_entry.Set("target_window", *target_win_idx);
+    skip_entry.Set("reason", "cannot_close_active_overlay_window");
+    skipped.Append(std::move(skip_entry));
+    return;
+  }
+
+  TabStripModel* src_strip = src_browser->GetTabStripModel();
+  if (!src_strip || src_strip->count() == 0) {
+    return;
+  }
+  std::vector<int> all_indices(src_strip->count());
+  std::iota(all_indices.begin(), all_indices.end(), 0);
+  int moved_count = static_cast<int>(all_indices.size());
+  chrome::MoveTabsToExistingWindow(src_browser, target_browser, all_indices);
+
+  if (target_browser->GetWindow()) {
+    target_browser->GetWindow()->Show();
+    target_browser->GetWindow()->Activate();
+  }
+
+  base::DictValue taken;
+  taken.Set("type", "merge_windows");
+  taken.Set("source_window", *src_win_idx);
+  taken.Set("target_window", *target_win_idx);
+  taken.Set("tab_count", moved_count);
+  actions_taken.Append(std::move(taken));
+}
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
@@ -301,10 +1176,11 @@ void AiOverlayTools::WorkspaceUndoSnapshotDeleter::operator()(
 
 base::DictValue AiOverlayTools::BuildWorkspaceSnapshot() {
 #if !BUILDFLAG(IS_ANDROID)
-  if (!browser_) {
+  BrowserWindowInterface* current_browser = browser();
+  if (!current_browser) {
     return base::DictValue();
   }
-  Profile* profile = browser_->GetProfile();
+  Profile* profile = current_browser->GetProfile();
   if (!profile) {
     return base::DictValue();
   }
@@ -331,6 +1207,9 @@ base::DictValue AiOverlayTools::BuildWorkspaceSnapshot() {
   if (browser_collection) {
     browser_collection->ForEach(
         [&](BrowserWindowInterface* bwi) {
+          if (bwi->IsDeleteScheduled()) {
+            return true;
+          }
           TabStripModel* tab_strip = bwi->GetTabStripModel();
           if (!tab_strip) {
             return true;
@@ -338,7 +1217,7 @@ base::DictValue AiOverlayTools::BuildWorkspaceSnapshot() {
 
           base::DictValue win_dict;
           win_dict.Set("window_index", ++window_index);
-          win_dict.Set("is_active", bwi == browser_);
+          win_dict.Set("is_active", bwi == current_browser);
           win_dict.Set("tab_count", tab_strip->count());
 
           // 1. Tab groups in this window
@@ -544,8 +1423,9 @@ base::DictValue AiOverlayTools::BuildWorkspaceSnapshot() {
 
 void AiOverlayTools::SaveWorkspaceUndoSnapshot() {
 #if !BUILDFLAG(IS_ANDROID)
+  BrowserWindowInterface* current_browser = browser();
   workspace_undo_snapshot_.reset(new WorkspaceUndoSnapshot());
-  ForEachBrowserWindow(browser_, [&](BrowserWindowInterface* bwi) {
+  ForEachBrowserWindow(current_browser, [&](BrowserWindowInterface* bwi) {
     TabStripModel* tab_strip = bwi->GetTabStripModel();
     if (!tab_strip) {
       return;
@@ -590,15 +1470,18 @@ void AiOverlayTools::SaveWorkspaceUndoSnapshot() {
 
 bool AiOverlayTools::RestoreWorkspaceUndoSnapshot() {
 #if !BUILDFLAG(IS_ANDROID)
-  if (!workspace_undo_snapshot_ || !browser_) {
+  BrowserWindowInterface* current_browser = browser();
+  if (!workspace_undo_snapshot_ || !current_browser) {
     return false;
   }
+  base::WeakPtr<BrowserWindowInterface> weak_browser =
+      current_browser->GetWeakPtr();
   std::unique_ptr<WorkspaceUndoSnapshot, WorkspaceUndoSnapshotDeleter>
       snapshot = std::move(workspace_undo_snapshot_);
 
   // 1. Reopen tabs closed in the last action batch.
   for (int i = 0; i < snapshot->closed_tabs_count; ++i) {
-    chrome::RestoreTab(browser_);
+    chrome::RestoreTab(current_browser);
   }
 
   // 1b. TabRestoreService mints a new SessionTabHelper ID for each restored
@@ -614,7 +1497,7 @@ bool AiOverlayTools::RestoreWorkspaceUndoSnapshot() {
       bool matched = false;
     };
     std::vector<RestoredCandidate> new_tab_candidates;
-    ForEachBrowserWindow(browser_, [&](BrowserWindowInterface* bwi) {
+    ForEachBrowserWindow(current_browser, [&](BrowserWindowInterface* bwi) {
       TabStripModel* ts = bwi->GetTabStripModel();
       if (!ts) {
         return;
@@ -686,8 +1569,15 @@ bool AiOverlayTools::RestoreWorkspaceUndoSnapshot() {
   // window if that window is still open.
   for (const auto& [target_win_id, prior_tab_ids] :
        snapshot->tab_order_by_window) {
+    if (!weak_browser || weak_browser->IsDeleteScheduled()) {
+      current_browser = browser();
+      if (!current_browser) {
+        return true;
+      }
+      weak_browser = current_browser->GetWeakPtr();
+    }
     BrowserWindowInterface* target_bwi =
-        ResolveBrowserWindowBySessionId(browser_, target_win_id);
+        ResolveBrowserWindowBySessionId(current_browser, target_win_id);
     if (!target_bwi) {
       continue;
     }
@@ -695,7 +1585,7 @@ bool AiOverlayTools::RestoreWorkspaceUndoSnapshot() {
         cross_win_indices_by_src;
     for (int prior_tid : prior_tab_ids) {
       std::optional<ResolvedWorkspaceTab> resolved =
-          ResolveWorkspaceTabById(browser_, prior_tid);
+          ResolveWorkspaceTabById(current_browser, prior_tid);
       if (!resolved.has_value() || !resolved->browser ||
           resolved->browser.get() == target_bwi) {
         continue;
@@ -713,6 +1603,14 @@ bool AiOverlayTools::RestoreWorkspaceUndoSnapshot() {
     }
   }
 
+  if (!weak_browser || weak_browser->IsDeleteScheduled()) {
+    current_browser = browser();
+    if (!current_browser) {
+      return true;
+    }
+    weak_browser = current_browser->GetWeakPtr();
+  }
+
   // Collect distinct prior TabGroupIds to restore.
   std::vector<tab_groups::TabGroupId> distinct_prior_groups;
   for (const auto& [tab_id, prior_group] : snapshot->tab_groups_by_tab_id) {
@@ -725,7 +1623,7 @@ bool AiOverlayTools::RestoreWorkspaceUndoSnapshot() {
   // 3. Restore pin/mute state, tab ordering, and tab group memberships/visuals.
   for (const auto& [tab_id, prior_muted] : snapshot->tab_muted_by_tab_id) {
     std::optional<ResolvedWorkspaceTab> resolved =
-        ResolveWorkspaceTabById(browser_, tab_id);
+        ResolveWorkspaceTabById(current_browser, tab_id);
     if (resolved.has_value() && resolved->contents &&
         resolved->contents->IsAudioMuted() != prior_muted) {
       resolved->contents->SetAudioMuted(prior_muted);
@@ -733,14 +1631,14 @@ bool AiOverlayTools::RestoreWorkspaceUndoSnapshot() {
   }
   for (const auto& [tab_id, prior_pinned] : snapshot->tab_pinned_by_tab_id) {
     std::optional<ResolvedWorkspaceTab> resolved =
-        ResolveWorkspaceTabById(browser_, tab_id);
+        ResolveWorkspaceTabById(current_browser, tab_id);
     if (resolved.has_value() && resolved->tab_strip && resolved->tab &&
         resolved->tab->IsPinned() != prior_pinned) {
       resolved->tab_strip->SetTabPinned(resolved->index, prior_pinned);
     }
   }
 
-  ForEachBrowserWindow(browser_, [&](BrowserWindowInterface* bwi) {
+  ForEachBrowserWindow(current_browser, [&](BrowserWindowInterface* bwi) {
     TabStripModel* tab_strip = bwi->GetTabStripModel();
     if (!tab_strip) {
       return;
@@ -754,7 +1652,7 @@ bool AiOverlayTools::RestoreWorkspaceUndoSnapshot() {
       int target_slot = 0;
       for (int prior_tid : order_it->second) {
         std::optional<ResolvedWorkspaceTab> resolved =
-            ResolveWorkspaceTabById(browser_, prior_tid);
+            ResolveWorkspaceTabById(current_browser, prior_tid);
         if (!resolved.has_value() || resolved->tab_strip != tab_strip) {
           continue;
         }
@@ -857,30 +1755,23 @@ base::DictValue AiOverlayTools::ExecuteWorkspaceSubAgentOutput(
   base::ListValue skipped;
 
   const base::ListValue* actions = dict->FindList("actions");
-  if (actions && !actions->empty() && browser_) {
+  BrowserWindowInterface* current_browser = browser();
+  if (actions && !actions->empty() && current_browser) {
+    base::WeakPtr<BrowserWindowInterface> weak_browser =
+        current_browser->GetWeakPtr();
     // Capture the 1-based window index -> SessionID mapping before executing
     // the batch so window indices stay stable even if actions activate, open,
     // or close windows mid-batch.
     const std::vector<SessionID> batch_window_session_ids =
-        CaptureWorkspaceWindowSessionIds(browser_);
+        CaptureWorkspaceWindowSessionIds(current_browser);
 
     // Save a 1-step undo snapshot if the batch contains any mutating action.
     bool has_mutating_action = false;
     for (const base::Value& action_val : *actions) {
-      if (!action_val.is_dict()) {
-        continue;
-      }
-      const std::string* type = action_val.GetDict().FindString("type");
-      if (!type) {
-        continue;
-      }
-      if (*type == "create_group" || *type == "add_to_group" ||
-          *type == "ungroup_tabs" || *type == "close_tabs" ||
-          *type == "move_to_new_window" || *type == "move_tabs_to_window" ||
-          *type == "merge_windows" || *type == "reorder_tabs" ||
-          *type == "pin_tabs" || *type == "unpin_tabs" ||
-          *type == "mute_tabs" || *type == "unmute_tabs" ||
-          *type == "discard_tabs") {
+      const std::string* type = action_val.is_dict()
+                                    ? action_val.GetDict().FindString("type")
+                                    : nullptr;
+      if (type && IsMutatingWorkspaceActionType(*type)) {
         has_mutating_action = true;
         break;
       }
@@ -893,6 +1784,22 @@ base::DictValue AiOverlayTools::ExecuteWorkspaceSubAgentOutput(
     }
 
     for (const base::Value& action_val : *actions) {
+      // Individual action handlers below never invalidate `current_browser`
+      // mid-action (`close_tabs` retains at least one tab per window, and
+      // `move_to_new_window`, `move_tabs_to_window`, and `merge_windows` guard
+      // against emptying `current_browser` and finish all `current_browser`
+      // lookups before moving tabs). However, `undo_last_action`
+      // (`RestoreWorkspaceUndoSnapshot`) can empty and close `current_browser`
+      // when undoing a prior `move_to_new_window`, so re-resolve
+      // `current_browser` before each subsequent action. If no normal browser
+      // window remains open, stop executing remaining actions in the batch.
+      if (!weak_browser || weak_browser->IsDeleteScheduled()) {
+        current_browser = browser();
+        if (!current_browser) {
+          break;
+        }
+        weak_browser = current_browser->GetWeakPtr();
+      }
       if (!action_val.is_dict()) {
         continue;
       }
@@ -903,815 +1810,49 @@ base::DictValue AiOverlayTools::ExecuteWorkspaceSubAgentOutput(
       }
 
       if (*type == "create_group") {
-        std::string title =
-            action.FindString("title") ? *action.FindString("title") : "Group";
-        std::string color_str =
-            action.FindString("color") ? *action.FindString("color") : "blue";
-        const base::ListValue* tab_ids = action.FindList("tab_ids");
-        if (!tab_ids || tab_ids->empty()) {
-          continue;
-        }
-
-        std::map<TabStripModel*, std::vector<int>> indices_by_strip;
-        for (const base::Value& tid_val : *tab_ids) {
-          std::optional<int> tid = tid_val.GetIfInt();
-          if (!tid.has_value()) {
-            continue;
-          }
-          std::optional<ResolvedWorkspaceTab> resolved =
-              ResolveWorkspaceTabById(browser_, *tid);
-          if (!resolved.has_value()) {
-            base::DictValue skip_entry;
-            skip_entry.Set("tab_id", *tid);
-            skip_entry.Set("reason", "not_found");
-            skipped.Append(std::move(skip_entry));
-            continue;
-          }
-          indices_by_strip[resolved->tab_strip].push_back(resolved->index);
-        }
-
-        for (auto& [tab_strip, indices] : indices_by_strip) {
-          if (!tab_strip || !tab_strip->SupportsTabGroups() ||
-              indices.empty()) {
-            continue;
-          }
-          std::ranges::sort(indices);
-          indices.erase(std::unique(indices.begin(), indices.end()),
-                        indices.end());
-          tab_groups::TabGroupId group_id = tab_strip->AddToNewGroup(indices);
-          tab_groups::TabGroupVisualData visual_data(
-              base::UTF8ToUTF16(title), StringToTabGroupColor(color_str),
-              /*is_collapsed=*/false);
-          tab_strip->ChangeTabGroupVisuals(group_id, std::move(visual_data),
-                                           /*is_customized=*/true);
-
-          base::DictValue taken;
-          taken.Set("type", "create_group");
-          taken.Set("title", title);
-          taken.Set("color", color_str);
-          taken.Set("tab_count", static_cast<int>(indices.size()));
-          actions_taken.Append(std::move(taken));
-        }
+        ExecuteCreateGroupAction(current_browser, action, actions_taken,
+                                 skipped);
       } else if (*type == "add_to_group") {
-        std::string group_title =
-            action.FindString("group_title")
-                ? *action.FindString("group_title")
-                : (action.FindString("title") ? *action.FindString("title")
-                                              : "");
-        std::optional<int> target_group_seq = action.FindInt("group_id");
-        const base::ListValue* tab_ids = action.FindList("tab_ids");
-        if (!tab_ids || tab_ids->empty()) {
-          continue;
-        }
-
-        std::map<TabStripModel*, std::vector<int>> indices_by_strip;
-        for (const base::Value& tid_val : *tab_ids) {
-          std::optional<int> tid = tid_val.GetIfInt();
-          if (!tid.has_value()) {
-            continue;
-          }
-          std::optional<ResolvedWorkspaceTab> resolved =
-              ResolveWorkspaceTabById(browser_, *tid);
-          if (!resolved.has_value()) {
-            base::DictValue skip_entry;
-            skip_entry.Set("tab_id", *tid);
-            skip_entry.Set("reason", "not_found");
-            skipped.Append(std::move(skip_entry));
-            continue;
-          }
-          indices_by_strip[resolved->tab_strip].push_back(resolved->index);
-        }
-
-        // Build global 1-based group_id -> (TabStripModel*, TabGroupId) map
-        // across all windows in the same order as BuildWorkspaceSnapshot().
-        std::map<int, std::pair<TabStripModel*, tab_groups::TabGroupId>>
-            group_by_global_seq;
-        int global_seq = 1;
-        ForEachBrowserWindow(browser_, [&](BrowserWindowInterface* bwi) {
-          TabStripModel* ts = bwi->GetTabStripModel();
-          if (!ts || !ts->group_model()) {
-            return;
-          }
-          for (const tab_groups::TabGroupId& gid :
-               ts->group_model()->ListTabGroups()) {
-            if (ts->group_model()->GetTabGroup(gid)) {
-              group_by_global_seq.emplace(global_seq++,
-                                          std::make_pair(ts, gid));
-            }
-          }
-        });
-
-        for (auto& [tab_strip, indices] : indices_by_strip) {
-          if (!tab_strip || !tab_strip->SupportsTabGroups() ||
-              !tab_strip->group_model() || indices.empty()) {
-            continue;
-          }
-          std::ranges::sort(indices);
-          indices.erase(std::unique(indices.begin(), indices.end()),
-                        indices.end());
-
-          std::optional<tab_groups::TabGroupId> matched_gid;
-          if (target_group_seq.has_value()) {
-            auto seq_it = group_by_global_seq.find(*target_group_seq);
-            if (seq_it != group_by_global_seq.end() &&
-                seq_it->second.first == tab_strip) {
-              matched_gid = seq_it->second.second;
-              TabGroup* grp =
-                  tab_strip->group_model()->GetTabGroup(*matched_gid);
-              if (group_title.empty() && grp && grp->visual_data()) {
-                group_title = base::UTF16ToUTF8(grp->visual_data()->title());
-              }
-            }
-          }
-
-          if (!matched_gid.has_value() && !group_title.empty()) {
-            std::string lower_target = base::ToLowerASCII(group_title);
-            for (const tab_groups::TabGroupId& gid :
-                 tab_strip->group_model()->ListTabGroups()) {
-              TabGroup* grp = tab_strip->group_model()->GetTabGroup(gid);
-              if (grp && grp->visual_data() &&
-                  base::ToLowerASCII(base::UTF16ToUTF8(
-                      grp->visual_data()->title())) == lower_target) {
-                matched_gid = gid;
-                break;
-              }
-            }
-          }
-
-          if (matched_gid.has_value()) {
-            tab_strip->AddToExistingGroup(indices, *matched_gid);
-          } else {
-            tab_groups::TabGroupId new_gid = tab_strip->AddToNewGroup(indices);
-            tab_groups::TabGroupVisualData visual_data(
-                base::UTF8ToUTF16(group_title.empty() ? "Group" : group_title),
-                tab_groups::TabGroupColorId::kBlue, /*is_collapsed=*/false);
-            tab_strip->ChangeTabGroupVisuals(new_gid, std::move(visual_data),
-                                             /*is_customized=*/true);
-          }
-
-          base::DictValue taken;
-          taken.Set("type", "add_to_group");
-          taken.Set("group_title", group_title);
-          taken.Set("tab_count", static_cast<int>(indices.size()));
-          actions_taken.Append(std::move(taken));
-        }
+        ExecuteAddToGroupAction(current_browser, action, actions_taken,
+                                skipped);
       } else if (*type == "ungroup_tabs") {
-        const base::ListValue* tab_ids = action.FindList("tab_ids");
-        if (!tab_ids || tab_ids->empty()) {
-          continue;
-        }
-
-        std::map<TabStripModel*, std::vector<int>> indices_by_strip;
-        for (const base::Value& tid_val : *tab_ids) {
-          std::optional<int> tid = tid_val.GetIfInt();
-          if (!tid.has_value()) {
-            continue;
-          }
-          std::optional<ResolvedWorkspaceTab> resolved =
-              ResolveWorkspaceTabById(browser_, *tid);
-          if (!resolved.has_value()) {
-            base::DictValue skip_entry;
-            skip_entry.Set("tab_id", *tid);
-            skip_entry.Set("reason", "not_found");
-            skipped.Append(std::move(skip_entry));
-            continue;
-          }
-          indices_by_strip[resolved->tab_strip].push_back(resolved->index);
-        }
-
-        for (auto& [tab_strip, indices] : indices_by_strip) {
-          if (!tab_strip || indices.empty()) {
-            continue;
-          }
-          std::ranges::sort(indices);
-          indices.erase(std::unique(indices.begin(), indices.end()),
-                        indices.end());
-          tab_strip->RemoveFromGroup(indices);
-
-          base::DictValue taken;
-          taken.Set("type", "ungroup_tabs");
-          taken.Set("tab_count", static_cast<int>(indices.size()));
-          actions_taken.Append(std::move(taken));
-        }
+        ExecuteUngroupTabsAction(current_browser, action, actions_taken,
+                                 skipped);
       } else if (*type == "close_tabs") {
-        const base::ListValue* tab_ids = action.FindList("tab_ids");
-        if (!tab_ids || tab_ids->empty()) {
-          continue;
-        }
-
-        // Map TabStripModel* -> list of (tab_strip_index, tab_id).
-        std::map<TabStripModel*, std::vector<std::pair<int, int>>>
-            to_close_by_strip;
-        for (const base::Value& tid_val : *tab_ids) {
-          std::optional<int> tid = tid_val.GetIfInt();
-          if (!tid.has_value()) {
-            continue;
-          }
-          std::optional<ResolvedWorkspaceTab> resolved =
-              ResolveWorkspaceTabById(browser_, *tid);
-          if (!resolved.has_value()) {
-            base::DictValue skip_entry;
-            skip_entry.Set("tab_id", *tid);
-            skip_entry.Set("reason", "not_found");
-            skipped.Append(std::move(skip_entry));
-            continue;
-          }
-          // Safety guardrail: Never close tabs with unsaved form/editor state.
-          if (WebContentsHasUnsavedState(resolved->contents)) {
-            base::DictValue skip_entry;
-            skip_entry.Set("tab_id", *tid);
-            skip_entry.Set("title",
-                           base::UTF16ToUTF8(resolved->contents->GetTitle()));
-            skip_entry.Set("reason", "has_unsaved_state");
-            skipped.Append(std::move(skip_entry));
-            continue;
-          }
-          to_close_by_strip[resolved->tab_strip].emplace_back(resolved->index,
-                                                              *tid);
-        }
-
-        for (auto& [tab_strip, pairs] : to_close_by_strip) {
-          if (!tab_strip || pairs.empty()) {
-            continue;
-          }
-          // Sort descending by index so closing higher indices first never
-          // invalidates lower indices.
-          std::sort(
-              pairs.begin(), pairs.end(),
-              [](const auto& a, const auto& b) { return a.first > b.first; });
-          pairs.erase(std::unique(pairs.begin(), pairs.end(),
-                                  [](const auto& a, const auto& b) {
-                                    return a.first == b.first;
-                                  }),
-                      pairs.end());
-
-          int closed_count = 0;
-          for (const auto& [idx, tid] : pairs) {
-            // Safety guardrail: Never close the last remaining tab in a window.
-            if (tab_strip->count() <= 1) {
-              base::DictValue skip_entry;
-              skip_entry.Set("tab_id", tid);
-              skip_entry.Set("reason", "cannot_close_last_tab_in_window");
-              skipped.Append(std::move(skip_entry));
-              continue;
-            }
-            tab_strip->CloseWebContentsAt(
-                idx, TabCloseTypes::CLOSE_CREATE_HISTORICAL_TAB);
-            ++closed_count;
-            if (workspace_undo_snapshot_) {
-              ++workspace_undo_snapshot_->closed_tabs_count;
-            }
-          }
-          if (closed_count > 0) {
-            base::DictValue taken;
-            taken.Set("type", "close_tabs");
-            taken.Set("tab_count", closed_count);
-            actions_taken.Append(std::move(taken));
-          }
+        int closed_total = ExecuteCloseTabsAction(current_browser, action,
+                                                  actions_taken, skipped);
+        if (workspace_undo_snapshot_) {
+          workspace_undo_snapshot_->closed_tabs_count += closed_total;
         }
       } else if (*type == "activate_tab") {
-        std::optional<int> tid = action.FindInt("tab_id");
-        if (!tid.has_value()) {
-          continue;
-        }
-        std::optional<ResolvedWorkspaceTab> resolved =
-            ResolveWorkspaceTabById(browser_, *tid);
-        if (!resolved.has_value()) {
-          base::DictValue skip_entry;
-          skip_entry.Set("tab_id", *tid);
-          skip_entry.Set("reason", "not_found");
-          skipped.Append(std::move(skip_entry));
-          continue;
-        }
-        if (resolved->tab && resolved->tab->GetGroup().has_value() &&
-            resolved->tab_strip->SupportsTabGroups() &&
-            resolved->tab_strip->group_model()) {
-          tab_groups::TabGroupId gid = *resolved->tab->GetGroup();
-          TabGroup* grp = resolved->tab_strip->group_model()->GetTabGroup(gid);
-          if (grp && grp->visual_data() && grp->visual_data()->is_collapsed()) {
-            tab_groups::TabGroupVisualData expanded(grp->visual_data()->title(),
-                                                    grp->visual_data()->color(),
-                                                    /*is_collapsed=*/false);
-            resolved->tab_strip->ChangeTabGroupVisuals(gid, std::move(expanded),
-                                                       /*is_customized=*/true);
-          }
-        }
-        resolved->tab_strip->ActivateTabAt(resolved->index);
-        if (resolved->browser && resolved->browser->GetWindow()) {
-          resolved->browser->GetWindow()->Activate();
-        }
-        base::DictValue taken;
-        taken.Set("type", "activate_tab");
-        taken.Set("tab_id", *tid);
-        taken.Set("title", base::UTF16ToUTF8(resolved->contents->GetTitle()));
-        actions_taken.Append(std::move(taken));
+        ExecuteActivateTabAction(current_browser, action, actions_taken,
+                                 skipped);
       } else if (*type == "pin_tabs" || *type == "unpin_tabs") {
-        const bool should_pin = (*type == "pin_tabs");
-        const base::ListValue* tab_ids = action.FindList("tab_ids");
-        if (!tab_ids || tab_ids->empty()) {
-          continue;
-        }
-        int changed_count = 0;
-        for (const base::Value& tid_val : *tab_ids) {
-          std::optional<int> tid = tid_val.GetIfInt();
-          if (!tid.has_value()) {
-            continue;
-          }
-          std::optional<ResolvedWorkspaceTab> resolved =
-              ResolveWorkspaceTabById(browser_, *tid);
-          if (!resolved.has_value() || !resolved->tab_strip) {
-            base::DictValue skip_entry;
-            skip_entry.Set("tab_id", *tid);
-            skip_entry.Set("reason", "not_found");
-            skipped.Append(std::move(skip_entry));
-            continue;
-          }
-          resolved->tab_strip->SetTabPinned(resolved->index, should_pin);
-          ++changed_count;
-        }
-        if (changed_count > 0) {
-          base::DictValue taken;
-          taken.Set("type", *type);
-          taken.Set("tab_count", changed_count);
-          actions_taken.Append(std::move(taken));
-        }
+        ExecuteSetTabsPinnedAction(current_browser, action, *type,
+                                   /*should_pin=*/(*type == "pin_tabs"),
+                                   actions_taken, skipped);
       } else if (*type == "mute_tabs" || *type == "unmute_tabs") {
-        const bool should_mute = (*type == "mute_tabs");
-        const base::ListValue* tab_ids = action.FindList("tab_ids");
-        if (!tab_ids || tab_ids->empty()) {
-          continue;
-        }
-        int changed_count = 0;
-        for (const base::Value& tid_val : *tab_ids) {
-          std::optional<int> tid = tid_val.GetIfInt();
-          if (!tid.has_value()) {
-            continue;
-          }
-          std::optional<ResolvedWorkspaceTab> resolved =
-              ResolveWorkspaceTabById(browser_, *tid);
-          if (!resolved.has_value() || !resolved->contents) {
-            base::DictValue skip_entry;
-            skip_entry.Set("tab_id", *tid);
-            skip_entry.Set("reason", "not_found");
-            skipped.Append(std::move(skip_entry));
-            continue;
-          }
-          resolved->contents->SetAudioMuted(should_mute);
-          ++changed_count;
-        }
-        if (changed_count > 0) {
-          base::DictValue taken;
-          taken.Set("type", *type);
-          taken.Set("tab_count", changed_count);
-          actions_taken.Append(std::move(taken));
-        }
+        ExecuteSetTabsMutedAction(current_browser, action, *type,
+                                  /*should_mute=*/(*type == "mute_tabs"),
+                                  actions_taken, skipped);
       } else if (*type == "discard_tabs") {
-        const base::ListValue* tab_ids = action.FindList("tab_ids");
-        if (!tab_ids || tab_ids->empty()) {
-          continue;
-        }
-        int discarded_count = 0;
-        for (const base::Value& tid_val : *tab_ids) {
-          std::optional<int> tid = tid_val.GetIfInt();
-          if (!tid.has_value()) {
-            continue;
-          }
-          std::optional<ResolvedWorkspaceTab> resolved =
-              ResolveWorkspaceTabById(browser_, *tid);
-          if (!resolved.has_value() || !resolved->tab || !resolved->browser) {
-            base::DictValue skip_entry;
-            skip_entry.Set("tab_id", *tid);
-            skip_entry.Set("reason", "not_found");
-            skipped.Append(std::move(skip_entry));
-            continue;
-          }
-          if (resolved->tab_strip &&
-              resolved->tab_strip->active_index() == resolved->index) {
-            base::DictValue skip_entry;
-            skip_entry.Set("tab_id", *tid);
-            skip_entry.Set("reason", "cannot_discard_active_tab");
-            skipped.Append(std::move(skip_entry));
-            continue;
-          }
-          if (WebContentsHasUnsavedState(resolved->contents)) {
-            base::DictValue skip_entry;
-            skip_entry.Set("tab_id", *tid);
-            skip_entry.Set("reason", "has_unsaved_state");
-            skipped.Append(std::move(skip_entry));
-            continue;
-          }
-          TabListInterface* tab_list =
-              TabListInterface::From(resolved->browser.get());
-          if (tab_list && tab_list->DiscardTab(resolved->tab->GetHandle())) {
-            ++discarded_count;
-          } else {
-            base::DictValue skip_entry;
-            skip_entry.Set("tab_id", *tid);
-            skip_entry.Set("reason", "discard_failed");
-            skipped.Append(std::move(skip_entry));
-          }
-        }
-        if (discarded_count > 0) {
-          base::DictValue taken;
-          taken.Set("type", "discard_tabs");
-          taken.Set("tab_count", discarded_count);
-          actions_taken.Append(std::move(taken));
-        }
+        ExecuteDiscardTabsAction(current_browser, action, actions_taken,
+                                 skipped);
       } else if (*type == "open_saved_group") {
-        std::string target_guid = action.FindString("saved_guid")
-                                      ? *action.FindString("saved_guid")
-                                      : "";
-        std::string target_title =
-            action.FindString("title")
-                ? *action.FindString("title")
-                : (action.FindString("group_title")
-                       ? *action.FindString("group_title")
-                       : "");
-        Profile* profile = browser_->GetProfile();
-        tab_groups::TabGroupSyncService* sync_service =
-            profile
-                ? tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile)
-                : nullptr;
-        if (!sync_service) {
-          continue;
-        }
-        std::optional<tab_groups::SavedTabGroup> matched_group;
-        for (const tab_groups::SavedTabGroup& group :
-             sync_service->GetAllGroups()) {
-          if (!target_guid.empty() &&
-              base::EqualsCaseInsensitiveASCII(
-                  group.saved_guid().AsLowercaseString(), target_guid)) {
-            matched_group = group;
-            break;
-          }
-          if (!target_title.empty() &&
-              base::EqualsCaseInsensitiveASCII(base::UTF16ToUTF8(group.title()),
-                                               target_title)) {
-            matched_group = group;
-            break;
-          }
-        }
-        if (!matched_group.has_value()) {
-          base::DictValue skip_entry;
-          skip_entry.Set("type", "open_saved_group");
-          skip_entry.Set("reason", "not_found");
-          skipped.Append(std::move(skip_entry));
-          continue;
-        }
-        sync_service->OpenTabGroup(
-            matched_group->saved_guid(),
-            std::make_unique<tab_groups::TabGroupActionContextDesktop>(
-                browser_, tab_groups::OpeningSource::kUnknown));
-        base::DictValue taken;
-        taken.Set("type", "open_saved_group");
-        taken.Set("title", base::UTF16ToUTF8(matched_group->title()));
-        actions_taken.Append(std::move(taken));
+        ExecuteOpenSavedGroupAction(current_browser, action, actions_taken,
+                                    skipped);
       } else if (*type == "reorder_tabs") {
-        const base::ListValue* tab_ids = action.FindList("tab_ids");
-        if (!tab_ids || tab_ids->empty()) {
-          continue;
-        }
-
-        // Map tabs to their respective TabStripModel and resolve indices.
-        std::map<TabStripModel*, std::vector<int>> tabs_by_strip;
-        for (const base::Value& tid_val : *tab_ids) {
-          std::optional<int> tid = tid_val.GetIfInt();
-          if (!tid.has_value()) {
-            continue;
-          }
-          std::optional<ResolvedWorkspaceTab> resolved =
-              ResolveWorkspaceTabById(browser_, *tid);
-          if (!resolved.has_value()) {
-            base::DictValue skip_entry;
-            skip_entry.Set("tab_id", *tid);
-            skip_entry.Set("reason", "not_found");
-            skipped.Append(std::move(skip_entry));
-            continue;
-          }
-          tabs_by_strip[resolved->tab_strip].push_back(*tid);
-        }
-
-        int total_reordered = 0;
-        for (auto& [tab_strip, target_order_tids] : tabs_by_strip) {
-          if (!tab_strip || target_order_tids.size() < 2) {
-            continue;
-          }
-
-          // Find the minimum index occupied by these tabs as the target start
-          // position.
-          int min_index = tab_strip->count();
-          for (int tid : target_order_tids) {
-            std::optional<ResolvedWorkspaceTab> resolved =
-                ResolveWorkspaceTabById(browser_, tid);
-            if (resolved.has_value() && resolved->tab_strip == tab_strip) {
-              min_index = std::min(min_index, resolved->index);
-            }
-          }
-          if (min_index >= tab_strip->count()) {
-            continue;
-          }
-
-          // Move each tab in target_order_tids sequentially starting from
-          // min_index, preserving the tab's current group membership.
-          int target_slot = min_index;
-          for (int tid : target_order_tids) {
-            std::optional<ResolvedWorkspaceTab> resolved =
-                ResolveWorkspaceTabById(browser_, tid);
-            if (!resolved.has_value() || resolved->tab_strip != tab_strip) {
-              continue;
-            }
-            int current_slot = resolved->index;
-            if (current_slot != target_slot) {
-              tab_strip->MoveWebContentsAt(current_slot, target_slot,
-                                           /*select_after_move=*/false);
-              ++total_reordered;
-            }
-            ++target_slot;
-          }
-        }
-
-        if (total_reordered > 0) {
-          base::DictValue taken;
-          taken.Set("type", "reorder_tabs");
-          taken.Set("tab_count", static_cast<int>(tab_ids->size()));
-          actions_taken.Append(std::move(taken));
-        }
+        ExecuteReorderTabsAction(current_browser, action, actions_taken,
+                                 skipped);
       } else if (*type == "move_to_new_window") {
-        const base::ListValue* tab_ids = action.FindList("tab_ids");
-        if (!tab_ids || tab_ids->empty()) {
-          continue;
-        }
-        std::string group_title =
-            action.FindString("group_title")
-                ? *action.FindString("group_title")
-                : (action.FindString("title") ? *action.FindString("title")
-                                              : "");
-        std::string color_str =
-            action.FindString("color") ? *action.FindString("color") : "blue";
-
-        std::map<BrowserWindowInterface*, std::vector<std::pair<int, int>>>
-            to_move_by_browser;
-        for (const base::Value& tid_val : *tab_ids) {
-          std::optional<int> tid = tid_val.GetIfInt();
-          if (!tid.has_value()) {
-            continue;
-          }
-          std::optional<ResolvedWorkspaceTab> resolved =
-              ResolveWorkspaceTabById(browser_, *tid);
-          if (!resolved.has_value()) {
-            base::DictValue skip_entry;
-            skip_entry.Set("tab_id", *tid);
-            skip_entry.Set("reason", "not_found");
-            skipped.Append(std::move(skip_entry));
-            continue;
-          }
-          to_move_by_browser[resolved->browser.get()].emplace_back(
-              resolved->index, *tid);
-        }
-
-        std::map<BrowserWindowInterface*, std::vector<int>> indices_by_browser;
-        for (auto& [src_bwi, pairs] : to_move_by_browser) {
-          if (!src_bwi || pairs.empty() || !src_bwi->GetTabStripModel()) {
-            continue;
-          }
-          std::sort(
-              pairs.begin(), pairs.end(),
-              [](const auto& a, const auto& b) { return a.first < b.first; });
-          pairs.erase(std::unique(pairs.begin(), pairs.end(),
-                                  [](const auto& a, const auto& b) {
-                                    return a.first == b.first;
-                                  }),
-                      pairs.end());
-
-          // Safety guardrail: Never move all tabs out of a source window into a
-          // new window (which would empty and close the source window).
-          const size_t total_in_src =
-              static_cast<size_t>(src_bwi->GetTabStripModel()->count());
-          while (pairs.size() >= total_in_src && !pairs.empty()) {
-            base::DictValue skip_entry;
-            skip_entry.Set("tab_id", pairs.back().second);
-            skip_entry.Set("reason", "cannot_move_all_tabs_from_window");
-            skipped.Append(std::move(skip_entry));
-            pairs.pop_back();
-          }
-
-          for (const auto& [idx, tid] : pairs) {
-            indices_by_browser[src_bwi].push_back(idx);
-          }
-        }
-
-        if (indices_by_browser.empty()) {
-          continue;
-        }
-
-        Profile* profile = browser_->GetProfile();
-        if (!profile) {
-          continue;
-        }
-        BrowserWindowInterface* new_browser =
-            waap::CreateBrowserWindowAndRecordCreationSource(
-                BrowserWindowCreateParams(*profile, true),
-                waap::NewWindowCreationSource::kMoveTabsToNewWindow);
-        if (!new_browser) {
-          continue;
-        }
-
-        int total_moved = 0;
-        for (auto& [src_bwi, indices] : indices_by_browser) {
-          if (!src_bwi || indices.empty()) {
-            continue;
-          }
-          chrome::MoveTabsToExistingWindow(src_bwi, new_browser, indices);
-          total_moved += static_cast<int>(indices.size());
-        }
-
-        if (total_moved > 0 && !group_title.empty() &&
-            new_browser->GetTabStripModel() &&
-            new_browser->GetTabStripModel()->SupportsTabGroups()) {
-          TabStripModel* new_strip = new_browser->GetTabStripModel();
-          std::optional<tab_groups::TabGroupId> gid;
-          if (new_strip->group_model() &&
-              !new_strip->group_model()->ListTabGroups().empty()) {
-            gid = new_strip->group_model()->ListTabGroups().front();
-          } else {
-            std::vector<int> all_indices(new_strip->count());
-            std::iota(all_indices.begin(), all_indices.end(), 0);
-            gid = new_strip->AddToNewGroup(all_indices);
-          }
-          if (gid.has_value()) {
-            tab_groups::TabGroupVisualData visual_data(
-                base::UTF8ToUTF16(group_title),
-                StringToTabGroupColor(color_str),
-                /*is_collapsed=*/false);
-            new_strip->ChangeTabGroupVisuals(*gid, std::move(visual_data),
-                                             /*is_customized=*/true);
-          }
-        }
-
-        if (new_browser->GetWindow()) {
-          new_browser->GetWindow()->Show();
-        }
-
-        base::DictValue taken;
-        taken.Set("type", "move_to_new_window");
-        taken.Set("tab_count", total_moved);
-        if (!group_title.empty()) {
-          taken.Set("group_title", group_title);
-        }
-        actions_taken.Append(std::move(taken));
+        ExecuteMoveToNewWindowAction(current_browser, action, actions_taken,
+                                     skipped);
       } else if (*type == "move_tabs_to_window") {
-        const base::ListValue* tab_ids = action.FindList("tab_ids");
-        std::optional<int> target_win_idx = action.FindInt("target_window");
-        if (!target_win_idx.has_value()) {
-          target_win_idx = action.FindInt("window_index");
-        }
-        if (!target_win_idx.has_value() || !tab_ids || tab_ids->empty()) {
-          continue;
-        }
-
-        BrowserWindowInterface* target_browser = ResolveBrowserWindowByIndex(
-            browser_, batch_window_session_ids, *target_win_idx);
-        if (!target_browser) {
-          base::DictValue skip_entry;
-          skip_entry.Set("type", "move_tabs_to_window");
-          skip_entry.Set("target_window", *target_win_idx);
-          skip_entry.Set("reason", "target_window_not_found");
-          skipped.Append(std::move(skip_entry));
-          continue;
-        }
-
-        std::map<BrowserWindowInterface*, std::vector<std::pair<int, int>>>
-            to_move_by_browser;
-        for (const base::Value& tid_val : *tab_ids) {
-          std::optional<int> tid = tid_val.GetIfInt();
-          if (!tid.has_value()) {
-            continue;
-          }
-          std::optional<ResolvedWorkspaceTab> resolved =
-              ResolveWorkspaceTabById(browser_, *tid);
-          if (!resolved.has_value()) {
-            base::DictValue skip_entry;
-            skip_entry.Set("tab_id", *tid);
-            skip_entry.Set("reason", "not_found");
-            skipped.Append(std::move(skip_entry));
-            continue;
-          }
-          if (resolved->browser.get() == target_browser) {
-            continue;
-          }
-          to_move_by_browser[resolved->browser.get()].emplace_back(
-              resolved->index, *tid);
-        }
-
-        int total_moved = 0;
-        for (auto& [src_bwi, pairs] : to_move_by_browser) {
-          if (!src_bwi || pairs.empty() || !src_bwi->GetTabStripModel()) {
-            continue;
-          }
-          std::sort(
-              pairs.begin(), pairs.end(),
-              [](const auto& a, const auto& b) { return a.first < b.first; });
-          pairs.erase(std::unique(pairs.begin(), pairs.end(),
-                                  [](const auto& a, const auto& b) {
-                                    return a.first == b.first;
-                                  }),
-                      pairs.end());
-
-          // Safety guardrail: Never empty `browser_` (which hosts the active AI
-          // Overlay Dialog session).
-          if (src_bwi == browser_) {
-            const size_t total_in_src =
-                static_cast<size_t>(src_bwi->GetTabStripModel()->count());
-            while (pairs.size() >= total_in_src && !pairs.empty()) {
-              base::DictValue skip_entry;
-              skip_entry.Set("tab_id", pairs.back().second);
-              skip_entry.Set("reason", "cannot_empty_active_overlay_window");
-              skipped.Append(std::move(skip_entry));
-              pairs.pop_back();
-            }
-          }
-          if (pairs.empty()) {
-            continue;
-          }
-
-          std::vector<int> indices;
-          indices.reserve(pairs.size());
-          for (const auto& [idx, tid] : pairs) {
-            indices.push_back(idx);
-          }
-          chrome::MoveTabsToExistingWindow(src_bwi, target_browser, indices);
-          total_moved += static_cast<int>(indices.size());
-        }
-
-        if (total_moved > 0) {
-          if (target_browser->GetWindow()) {
-            target_browser->GetWindow()->Show();
-          }
-
-          base::DictValue taken;
-          taken.Set("type", "move_tabs_to_window");
-          taken.Set("target_window", *target_win_idx);
-          taken.Set("tab_count", total_moved);
-          actions_taken.Append(std::move(taken));
-        }
+        ExecuteMoveTabsToWindowAction(current_browser, batch_window_session_ids,
+                                      action, actions_taken, skipped);
       } else if (*type == "merge_windows") {
-        std::optional<int> src_win_idx = action.FindInt("source_window");
-        std::optional<int> target_win_idx = action.FindInt("target_window");
-        if (!src_win_idx.has_value() || !target_win_idx.has_value()) {
-          continue;
-        }
-
-        BrowserWindowInterface* src_browser = ResolveBrowserWindowByIndex(
-            browser_, batch_window_session_ids, *src_win_idx);
-        BrowserWindowInterface* target_browser = ResolveBrowserWindowByIndex(
-            browser_, batch_window_session_ids, *target_win_idx);
-        if (!src_browser || !target_browser) {
-          base::DictValue skip_entry;
-          skip_entry.Set("type", "merge_windows");
-          skip_entry.Set("reason", "window_not_found");
-          skipped.Append(std::move(skip_entry));
-          continue;
-        }
-        if (src_browser == target_browser) {
-          base::DictValue skip_entry;
-          skip_entry.Set("type", "merge_windows");
-          skip_entry.Set("reason", "source_and_target_are_same_window");
-          skipped.Append(std::move(skip_entry));
-          continue;
-        }
-        // Safety guardrail: Never empty `browser_` (which hosts the active AI
-        // Overlay Dialog session).
-        if (src_browser == browser_) {
-          base::DictValue skip_entry;
-          skip_entry.Set("type", "merge_windows");
-          skip_entry.Set("source_window", *src_win_idx);
-          skip_entry.Set("target_window", *target_win_idx);
-          skip_entry.Set("reason", "cannot_close_active_overlay_window");
-          skipped.Append(std::move(skip_entry));
-          continue;
-        }
-
-        TabStripModel* src_strip = src_browser->GetTabStripModel();
-        if (!src_strip || src_strip->count() == 0) {
-          continue;
-        }
-        std::vector<int> all_indices(src_strip->count());
-        std::iota(all_indices.begin(), all_indices.end(), 0);
-        int moved_count = static_cast<int>(all_indices.size());
-        chrome::MoveTabsToExistingWindow(src_browser, target_browser,
-                                         all_indices);
-
-        if (target_browser->GetWindow()) {
-          target_browser->GetWindow()->Show();
-          target_browser->GetWindow()->Activate();
-        }
-
-        base::DictValue taken;
-        taken.Set("type", "merge_windows");
-        taken.Set("source_window", *src_win_idx);
-        taken.Set("target_window", *target_win_idx);
-        taken.Set("tab_count", moved_count);
-        actions_taken.Append(std::move(taken));
+        ExecuteMergeWindowsAction(current_browser, batch_window_session_ids,
+                                  action, actions_taken, skipped);
       } else if (*type == "undo_last_action") {
         if (RestoreWorkspaceUndoSnapshot()) {
           base::DictValue taken;
@@ -1769,11 +1910,12 @@ void AiOverlayTools::AnalyzeAndManageTabs(
     return;
   }
 #if !BUILDFLAG(IS_ANDROID)
-  if (!browser_) {
+  BrowserWindowInterface* current_browser = browser();
+  if (!current_browser) {
     std::move(callback).Run(base::unexpected("Browser window not available"));
     return;
   }
-  Profile* profile = browser_->GetProfile();
+  Profile* profile = current_browser->GetProfile();
   if (!profile) {
     std::move(callback).Run(base::unexpected("Profile not available"));
     return;

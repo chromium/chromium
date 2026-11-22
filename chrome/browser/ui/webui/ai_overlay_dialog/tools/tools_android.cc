@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ai_overlay_dialog/tools/tools_android.h"
 
 #include <string>
+#include <utility>
 #include <variant>
 
 #include "base/time/time.h"
@@ -30,12 +31,31 @@ std::unique_ptr<AiOverlayTools> AiOverlayTools::Create(
       page_context_monitor);
 }
 
+// static
+std::unique_ptr<AiOverlayTools> AiOverlayTools::Create(
+    mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayTools> receiver,
+    BrowserResolver browser_resolver,
+    PageContextMonitor* page_context_monitor) {
+  return std::make_unique<AiOverlayToolsAndroid>(
+      base::PassKey<AiOverlayTools>(), std::move(receiver),
+      std::move(browser_resolver), page_context_monitor);
+}
+
 AiOverlayToolsAndroid::AiOverlayToolsAndroid(
     base::PassKey<AiOverlayTools>,
     mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayTools> receiver,
     BrowserWindowInterface* browser,
     PageContextMonitor* page_context_monitor)
     : AiOverlayTools(std::move(receiver), browser, page_context_monitor) {}
+
+AiOverlayToolsAndroid::AiOverlayToolsAndroid(
+    base::PassKey<AiOverlayTools>,
+    mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayTools> receiver,
+    BrowserResolver browser_resolver,
+    PageContextMonitor* page_context_monitor)
+    : AiOverlayTools(std::move(receiver),
+                     std::move(browser_resolver),
+                     page_context_monitor) {}
 
 AiOverlayToolsAndroid::~AiOverlayToolsAndroid() = default;
 

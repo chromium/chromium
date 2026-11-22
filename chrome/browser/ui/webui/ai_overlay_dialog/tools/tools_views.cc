@@ -83,6 +83,10 @@ void FinishOpenPage(base::DictValue response,
       const base::DictValue& tab_dict = (*open_tabs)[0].GetDict();
       int tab_id = tab_dict.FindInt("tab_id").value_or(0);
       const std::string* title = tab_dict.FindString("title");
+      if (!tab_strip.ContainsIndex(tab_id)) {
+        std::move(callback).Run(base::unexpected("Matching tab closed"));
+        return;
+      }
 
       tab_strip.ActivateTabAt(tab_id);
       base::DictValue auto_response;
@@ -175,12 +179,31 @@ std::unique_ptr<AiOverlayTools> AiOverlayTools::Create(
                                                page_context_monitor);
 }
 
+// static
+std::unique_ptr<AiOverlayTools> AiOverlayTools::Create(
+    mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayTools> receiver,
+    BrowserResolver browser_resolver,
+    PageContextMonitor* page_context_monitor) {
+  return std::make_unique<AiOverlayToolsViews>(
+      base::PassKey<AiOverlayTools>(), std::move(receiver),
+      std::move(browser_resolver), page_context_monitor);
+}
+
 AiOverlayToolsViews::AiOverlayToolsViews(
     base::PassKey<AiOverlayTools>,
     mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayTools> receiver,
     BrowserWindowInterface* browser,
     PageContextMonitor* page_context_monitor)
     : AiOverlayTools(std::move(receiver), browser, page_context_monitor) {}
+
+AiOverlayToolsViews::AiOverlayToolsViews(
+    base::PassKey<AiOverlayTools>,
+    mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayTools> receiver,
+    BrowserResolver browser_resolver,
+    PageContextMonitor* page_context_monitor)
+    : AiOverlayTools(std::move(receiver),
+                     std::move(browser_resolver),
+                     page_context_monitor) {}
 
 AiOverlayToolsViews::~AiOverlayToolsViews() = default;
 
@@ -278,14 +301,15 @@ void AiOverlayToolsViews::Scroll(
 void AiOverlayToolsViews::OpenPage(const std::string& query,
                                    OpenPageCallback callback) {
   RecordToolCallInvoked("OpenPage");
+  BrowserWindowInterface* current_browser = browser();
   TabStripModel* tab_strip =
-      browser() ? browser()->GetTabStripModel() : nullptr;
+      current_browser ? current_browser->GetTabStripModel() : nullptr;
   if (!tab_strip) {
     std::move(callback).Run(base::unexpected("No tab strip model available"));
     return;
   }
 
-  Profile* profile = browser()->GetProfile();
+  Profile* profile = current_browser->GetProfile();
   std::string lower_query = base::ToLowerASCII(query);
 
   base::DictValue response;
@@ -357,14 +381,20 @@ void AiOverlayToolsViews::OpenPage(const std::string& query,
       base::UTF8ToUTF16(query), options,
       base::BindOnce(
           [](base::DictValue res, OpenPageCallback cb,
-             base::WeakPtr<AiOverlayToolsViews> self, int start_target_id,
-             history::QueryResults results) {
-            if (!self || !self->browser()) {
+             base::WeakPtr<AiOverlayToolsViews> self,
+             base::WeakPtr<BrowserWindowInterface> target_browser,
+             int start_target_id, history::QueryResults results) {
+            if (!self || !target_browser ||
+                target_browser->IsDeleteScheduled()) {
               std::move(cb).Run(base::unexpected("Browser closed"));
               return;
             }
-            TabStripModel* tab_strip = self->browser()->GetTabStripModel();
-            CHECK(tab_strip);
+            TabStripModel* tab_strip = target_browser->GetTabStripModel();
+            if (!tab_strip) {
+              std::move(cb).Run(
+                  base::unexpected("No tab strip model available"));
+              return;
+            }
             base::ListValue history_list;
             int current_target_id = start_target_id;
 
@@ -386,7 +416,7 @@ void AiOverlayToolsViews::OpenPage(const std::string& query,
             FinishOpenPage(std::move(res), *tab_strip, std::move(cb));
           },
           std::move(response), std::move(callback), weak_factory_.GetWeakPtr(),
-          target_id_counter),
+          current_browser->GetWeakPtr(), target_id_counter),
       &task_tracker());
 }
 

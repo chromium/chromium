@@ -9,6 +9,8 @@
 #include <string>
 #include <string_view>
 
+#include "base/callback_list.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -44,11 +46,22 @@ class PageContextMonitor;
 class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools,
                        public ai_overlay_dialog::mojom::AiOverlayToolRegistry {
  public:
-  // Returns the implementation for the current platform. Defined in
-  // tools_views.cc or tools_android.cc.
+  using BrowserResolver = base::RepeatingCallback<BrowserWindowInterface*()>;
+
+  // Returns the implementation for the current platform pinned to `browser`
+  // (automatically cleared if `browser` closes before `AiOverlayTools` is
+  // destroyed). Defined in tools_views.cc or tools_android.cc.
   static std::unique_ptr<AiOverlayTools> Create(
       mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayTools> receiver,
       BrowserWindowInterface* browser,
+      PageContextMonitor* page_context_monitor);
+
+  // Returns the implementation for the current platform that dynamically
+  // resolves the target `BrowserWindowInterface` on each access. Defined in
+  // tools_views.cc or tools_android.cc.
+  static std::unique_ptr<AiOverlayTools> Create(
+      mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayTools> receiver,
+      BrowserResolver browser_resolver,
       PageContextMonitor* page_context_monitor);
 
   AiOverlayTools(const AiOverlayTools&) = delete;
@@ -115,13 +128,17 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools,
       mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayTools> receiver,
       BrowserWindowInterface* browser,
       PageContextMonitor* page_context_monitor);
+  AiOverlayTools(
+      mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayTools> receiver,
+      BrowserResolver browser_resolver,
+      PageContextMonitor* page_context_monitor);
 
   static void RecordToolCallInvoked(std::string_view tool_name);
   // On the base class because glic_passkeys.h grants the passkey to
   // `AiOverlayTools`, and friendship is not inherited by subclasses.
   static glic::InvokeWithAutoSubmitPasskey GetGlicPassKey();
 
-  BrowserWindowInterface* browser() const { return browser_; }
+  BrowserWindowInterface* browser() const;
   PageContextMonitor* page_context_monitor() const {
     return page_context_monitor_;
   }
@@ -157,6 +174,7 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools,
     FindAndHighlightCallback callback_;
   };
 
+  void OnBrowserDidClose(BrowserWindowInterface* closed_browser);
   void OnAnnotationAgentDisconnected();
 
   void SaveWorkspaceUndoSnapshot();
@@ -165,7 +183,9 @@ class AiOverlayTools : public ai_overlay_dialog::mojom::AiOverlayTools,
   mojo::Receiver<ai_overlay_dialog::mojom::AiOverlayTools> receiver_;
   mojo::Receiver<ai_overlay_dialog::mojom::AiOverlayToolRegistry>
       registry_receiver_{this};
-  raw_ptr<BrowserWindowInterface> browser_;
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
+  base::CallbackListSubscription browser_close_subscription_;
+  BrowserResolver browser_resolver_;
   // Owned by `AiOverlayDialogUntrustedUI` (when hosted by AI Overlay Dialog)
   // and must outlive `AiOverlayTools` if non-null; may be null when hosted by
   // Glic.

@@ -22,6 +22,11 @@ class AiOverlayToolsAndroid : public AiOverlayTools {
       mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayTools> receiver,
       BrowserWindowInterface* browser,
       PageContextMonitor* page_context_monitor);
+  AiOverlayToolsAndroid(
+      base::PassKey<AiOverlayTools>,
+      mojo::PendingReceiver<ai_overlay_dialog::mojom::AiOverlayTools> receiver,
+      BrowserResolver browser_resolver,
+      PageContextMonitor* page_context_monitor);
   AiOverlayToolsAndroid(const AiOverlayToolsAndroid&) = delete;
   AiOverlayToolsAndroid& operator=(const AiOverlayToolsAndroid&) = delete;
   ~AiOverlayToolsAndroid() override;
