@@ -655,7 +655,7 @@ class TabStripModelTest : public testing::Test {
 };
 
 TEST_F(TabStripModelTest, TestBasicAPI) {
-  typedef MockTabStripModelObserver::State State;
+  using State = MockTabStripModelObserver::State;
 
   std::unique_ptr<WebContents> contents1 = CreateWebContentsWithID(1);
   WebContents* raw_contents1 = contents1.get();
@@ -5845,7 +5845,7 @@ TEST_F(TabStripModelTest, CloseTypesPreservedAfterUnload) {
 
 // Tests various permutations of pinning tabs.
 TEST_F(TabStripModelTest, Pinning) {
-  typedef MockTabStripModelObserver::State State;
+  using State = MockTabStripModelObserver::State;
 
   std::unique_ptr<WebContents> contents1 = CreateWebContentsWithID(1);
   WebContents* raw_contents1 = contents1.get();
@@ -6004,7 +6004,7 @@ TEST_F(TabStripModelTest, Pinning) {
 // Makes sure the TabStripModel calls the right observer methods during a
 // replace.
 TEST_F(TabStripModelTest, ReplaceSendsSelected) {
-  typedef MockTabStripModelObserver::State State;
+  using State = MockTabStripModelObserver::State;
 
   std::unique_ptr<WebContents> first_contents = CreateWebContents();
   WebContents* raw_first_contents = first_contents.get();
@@ -6749,7 +6749,7 @@ TEST_F(TabStripModelTest, FirstTabIsActive) {
 }
 
 TEST_F(TabStripModelTest, MultipleSelection) {
-  typedef MockTabStripModelObserver::State State;
+  using State = MockTabStripModelObserver::State;
 
   std::unique_ptr<WebContents> contents0 = CreateWebContents();
   WebContents* raw_contents0 = contents0.get();
@@ -6895,7 +6895,7 @@ TEST_F(TabStripModelTest, RemoveAnchorTabReassignsToActiveTab) {
 // selection, but not in a way that changes the selected_index that
 // TabSelectionChanged is invoked.
 TEST_F(TabStripModelTest, MultipleToSingle) {
-  typedef MockTabStripModelObserver::State State;
+  using State = MockTabStripModelObserver::State;
 
   std::unique_ptr<WebContents> contents2 = CreateWebContents();
   WebContents* raw_contents2 = contents2.get();

@@ -24,7 +24,7 @@ namespace ui {
 template <class NodeType>
 class TreeNodeIterator {
  public:
-  typedef base::RepeatingCallback<bool(NodeType*)> PruneCallback;
+  using PruneCallback = base::RepeatingCallback<bool(NodeType*)>;
 
   // This constructor accepts an optional filter function |prune| which could be
   // used to prune complete branches of the tree. The filter function will be

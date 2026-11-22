@@ -128,7 +128,7 @@ class WebUILoginView : public views::View,
 
  private:
   // Map type for the accelerator-to-identifier map.
-  typedef std::map<ui::Accelerator, LoginAcceleratorAction> AccelMap;
+  using AccelMap = std::map<ui::Accelerator, LoginAcceleratorAction>;
 
   // Overridden from content::WebContentsDelegate.
   bool HandleContextMenu(content::RenderFrameHost& render_frame_host,

@@ -411,7 +411,7 @@ class TestShelfControllerHelper : public ShelfControllerHelper {
   ArcAppListPrefs* GetArcAppListPrefs() const override { return nullptr; }
 
  private:
-  typedef std::map<content::WebContents*, std::string> TabToStringMap;
+  using TabToStringMap = std::map<content::WebContents*, std::string>;
 
   TabToStringMap tab_id_map_;
 };

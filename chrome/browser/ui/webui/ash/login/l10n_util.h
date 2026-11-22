@@ -22,11 +22,10 @@ class LanguageTag;
 
 namespace ash {
 
-typedef base::OnceCallback<void(
-    base::ListValue /* new_language_list */,
-    const std::string& /* new_language_list_locale */,
-    const std::string& /* new_selected_language */)>
-    UILanguageListResolvedCallback;
+using UILanguageListResolvedCallback =
+    base::OnceCallback<void(base::ListValue /* new_language_list */,
+                            const std::string& /* new_language_list_locale */,
+                            const std::string& /* new_selected_language */)>;
 
 // GetUILanguageList() returns a concatenated list of the most relevant
 // languages followed by all others. An entry with its "code" attribute set to
@@ -93,8 +92,8 @@ base::ListValue GetAndActivateOobeInputMethods(
 // followed by a divider and locale-specific keyboard layouts, if any. All
 // layouts supported for `locale` are returned, including those that produce
 // non-Latin characters by default.
-typedef base::OnceCallback<void(base::ListValue)>
-    GetKeyboardLayoutsForLocaleCallback;
+using GetKeyboardLayoutsForLocaleCallback =
+    base::OnceCallback<void(base::ListValue)>;
 void GetKeyboardLayoutsForLocale(
     GetKeyboardLayoutsForLocaleCallback callback,
     const std::string& locale,

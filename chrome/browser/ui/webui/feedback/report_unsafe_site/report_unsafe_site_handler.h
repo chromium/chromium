@@ -23,8 +23,8 @@ class WebContents;
 class ReportUnsafeSitePageHandler
     : public feedback::report_unsafe_site::mojom::PageHandler {
  public:
-  typedef feedback::report_unsafe_site::mojom::PageHandler::
-      GetTriggeringPageInfoCallback GetTriggeringPageInfoCallback;
+  using GetTriggeringPageInfoCallback = feedback::report_unsafe_site::mojom::
+      PageHandler::GetTriggeringPageInfoCallback;
 
   ReportUnsafeSitePageHandler(
       base::WeakPtr<TopChromeWebUIController::Embedder> embedder,

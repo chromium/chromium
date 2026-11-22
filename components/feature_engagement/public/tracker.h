@@ -63,7 +63,7 @@ std::unique_ptr<Tracker> CreateDemoModeTracker(
 // can be displayed.
 class DisplayLockHandle {
  public:
-  typedef base::OnceClosure ReleaseCallback;
+  using ReleaseCallback = base::OnceClosure;
   explicit DisplayLockHandle(ReleaseCallback callback);
 
   DisplayLockHandle(const DisplayLockHandle&) = delete;

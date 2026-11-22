@@ -27,7 +27,7 @@
 
 namespace {
 
-typedef std::map<std::string, IconLoader::IconSize> QueryIconSizeMap;
+using QueryIconSizeMap = std::map<std::string, IconLoader::IconSize>;
 
 // The path used in internal URLs to file icon data.
 const char kFileIconPath[] = "fileicon";

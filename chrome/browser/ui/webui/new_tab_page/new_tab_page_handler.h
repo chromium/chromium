@@ -197,9 +197,8 @@ class NewTabPageHandler
   void LogEvent(NTPLoggingEventType event);
   void LogEvent(NTPLoggingEventType event, base::TimeDelta delta);
 
-  typedef base::OnceCallback<void(bool success,
-                                  std::optional<std::string> body)>
-      OnFetchResultCallback;
+  using OnFetchResultCallback =
+      base::OnceCallback<void(bool success, std::optional<std::string> body)>;
   void Fetch(const GURL& url, OnFetchResultCallback on_result);
   void OnFetchResult(const network::SimpleURLLoader* loader,
                      OnFetchResultCallback on_result,

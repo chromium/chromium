@@ -9,7 +9,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 
-typedef InProcessBrowserTest NativeWindowTrackerTest;
+using NativeWindowTrackerTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(NativeWindowTrackerTest, Basic) {
   // Create a second browser to prevent the app from exiting when the browser is

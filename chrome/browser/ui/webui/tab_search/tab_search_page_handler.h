@@ -134,7 +134,7 @@ class TabSearchPageHandler
   // results of GetProfileData. Tab url/group combinations that have been
   // previously added to the ProfileData will not be added more than once by
   // leveraging DedupKey comparisons.
-  typedef std::tuple<GURL, std::optional<base::Token>> DedupKey;
+  using DedupKey = std::tuple<GURL, std::optional<base::Token>>;
 
   tab_search::mojom::ProfileDataPtr CreateProfileData();
 

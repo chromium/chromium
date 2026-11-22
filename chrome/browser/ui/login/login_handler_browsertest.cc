@@ -370,7 +370,7 @@ class LoginPromptBrowserTest
         : username_(username), password_(password) {}
   };
 
-  typedef std::map<std::string, AuthInfo> AuthMap;
+  using AuthMap = std::map<std::string, AuthInfo>;
 
   void SetAuthFor(LoginHandler* handler);
   // Authenticates for BasicAuth and waits the authentication is accepted.

@@ -32,9 +32,9 @@ struct DefaultSingletonTraits;
 //
 class AcceleratorsCocoa {
  public:
-  typedef std::map<int, ui::Accelerator> AcceleratorMap;
-  typedef std::vector<ui::Accelerator> AcceleratorVector;
-  typedef AcceleratorMap::const_iterator const_iterator;
+  using AcceleratorMap = std::map<int, ui::Accelerator>;
+  using AcceleratorVector = std::vector<ui::Accelerator>;
+  using const_iterator = AcceleratorMap::const_iterator;
 
   AcceleratorsCocoa(const AcceleratorsCocoa&) = delete;
   AcceleratorsCocoa& operator=(const AcceleratorsCocoa&) = delete;

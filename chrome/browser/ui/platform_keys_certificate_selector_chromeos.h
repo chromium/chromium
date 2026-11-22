@@ -17,14 +17,13 @@ class WebContents;
 
 namespace net {
 class X509Certificate;
-typedef std::vector<scoped_refptr<X509Certificate>> CertificateList;
+using CertificateList = std::vector<scoped_refptr<X509Certificate>>;
 }  // namespace net
 
 namespace chromeos {
 
-typedef base::OnceCallback<void(
-    const scoped_refptr<net::X509Certificate>& selected_certificate)>
-    CertificateSelectedCallback;
+using CertificateSelectedCallback = base::OnceCallback<void(
+    const scoped_refptr<net::X509Certificate>& selected_certificate)>;
 
 // Opens a constrained client certificate selection dialog associated with
 // |web_contents|, offering |certificates| to the user and explaining that the

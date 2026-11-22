@@ -79,7 +79,7 @@ class SettingsWindowManager : public ash::SettingsAppManager {
   bool IsSettingsBrowser(BrowserWindowInterface* browser) const;
 
  private:
-  typedef std::map<Profile*, SessionID> ProfileSessionMap;
+  using ProfileSessionMap = std::map<Profile*, SessionID>;
 
   std::unique_ptr<aura::WindowTracker> legacy_settings_title_updater_;
 

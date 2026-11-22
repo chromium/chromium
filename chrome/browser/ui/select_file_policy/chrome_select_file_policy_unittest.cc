@@ -75,7 +75,7 @@ class FileSelectionUser : public ui::SelectFileDialog::Listener {
 
 }  // namespace
 
-typedef testing::Test ChromeSelectFilePolicyTest;
+using ChromeSelectFilePolicyTest = testing::Test;
 
 // Tests if SelectFileDialog::SelectFile returns asynchronously with
 // file-selection dialogs disabled by policy.

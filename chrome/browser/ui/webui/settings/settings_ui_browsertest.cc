@@ -46,7 +46,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-typedef InProcessBrowserTest SettingsUITest;
+using SettingsUITest = InProcessBrowserTest;
 
 using ::testing::_;
 using ui_test_utils::NavigateToURL;

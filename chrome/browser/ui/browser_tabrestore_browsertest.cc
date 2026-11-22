@@ -34,7 +34,7 @@
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 
-typedef InProcessBrowserTest BrowserTabRestoreTest;
+using BrowserTabRestoreTest = InProcessBrowserTest;
 
 void AwaitTabsReady(content::DOMMessageQueue* message_queue, int tabs) {
   for (int i = 0; i < tabs; ++i) {

@@ -4158,7 +4158,7 @@ TEST_F(SiteSettingsHandlerTest,
                                    /*embargoed=*/true, 0}});
 }
 
-typedef std::pair<std::string_view, std::string_view> OriginStringParams;
+using OriginStringParams = std::pair<std::string_view, std::string_view>;
 class StorageAccessSiteSettingsHandlerTest
     : public SiteSettingsHandlerBaseTest,
       public testing::WithParamInterface<

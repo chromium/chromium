@@ -45,18 +45,18 @@ class TabCollectionNode {
 
   // Helper type for creating CustomAddChildViewCallbacks with
   // base::BindRepeating.
-  typedef views::View* (views::View::*CustomAddChildView)(
-      std::unique_ptr<views::View>);
-  typedef base::RepeatingCallback<views::View*(std::unique_ptr<views::View>)>
-      CustomAddChildViewCallback;
-  typedef base::RepeatingCallback<void(views::View* view_to_remove)>
-      CustomRemoveChildViewCallback;
-  typedef base::RepeatingCallback<void(std::unique_ptr<views::View>,
-                                       const gfx::Rect&)>
-      CustomAttachChildViewCallback;
-  typedef base::RepeatingCallback<std::unique_ptr<views::View>(views::View*)>
-      CustomDetachChildViewCallback;
-  typedef std::vector<std::unique_ptr<TabCollectionNode>> NodeChildren;
+  using CustomAddChildView =
+      views::View* (views::View::*)(std::unique_ptr<views::View>);
+  using CustomAddChildViewCallback =
+      base::RepeatingCallback<views::View*(std::unique_ptr<views::View>)>;
+  using CustomRemoveChildViewCallback =
+      base::RepeatingCallback<void(views::View* view_to_remove)>;
+  using CustomAttachChildViewCallback =
+      base::RepeatingCallback<void(std::unique_ptr<views::View>,
+                                   const gfx::Rect&)>;
+  using CustomDetachChildViewCallback =
+      base::RepeatingCallback<std::unique_ptr<views::View>(views::View*)>;
+  using NodeChildren = std::vector<std::unique_ptr<TabCollectionNode>>;
 
   explicit TabCollectionNode(tabs::ConstChildPtr node_data,
                              TabStripOrientation orientation);

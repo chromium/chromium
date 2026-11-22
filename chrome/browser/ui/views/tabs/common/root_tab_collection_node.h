@@ -66,8 +66,8 @@ class RootTabCollectionNode : public TabCollectionNode,
   base::CallbackListSubscription RegisterOnTabWillBeRemovedCallback(
       TabWillBeRemovedCallback callback);
 
-  typedef base::RepeatingCallback<void(const tabs::TabInterface*)>
-      ActiveTabChangedCallback;
+  using ActiveTabChangedCallback =
+      base::RepeatingCallback<void(const tabs::TabInterface*)>;
   base::CallbackListSubscription RegisterOnActiveTabChangedCallback(
       ActiveTabChangedCallback callback);
 

@@ -142,7 +142,7 @@ class TSFBridgeImpl : public TSFBridge {
   // Note that some IMEs don't change their state unless the document focus is
   // changed. This is why we use multiple documents instead of changing TSF
   // metadata of a single document on the fly.
-  typedef std::map<TextInputType, TSFDocument> TSFDocumentMap;
+  using TSFDocumentMap = std::map<TextInputType, TSFDocument>;
   TSFDocumentMap tsf_document_map_;
 
   // An identifier of TSF client.

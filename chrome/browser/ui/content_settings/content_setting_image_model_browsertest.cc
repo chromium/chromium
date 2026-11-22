@@ -24,7 +24,7 @@
 using content::WebContents;
 using ImageType = ContentSettingImageModel::ImageType;
 
-typedef InProcessBrowserTest ContentSettingImageModelBrowserTest;
+using ContentSettingImageModelBrowserTest = InProcessBrowserTest;
 
 // Tests that every model creates a valid bubble.
 IN_PROC_BROWSER_TEST_F(ContentSettingImageModelBrowserTest, CreateBubbleModel) {

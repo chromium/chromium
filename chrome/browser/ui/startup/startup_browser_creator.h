@@ -74,7 +74,7 @@ struct StartupProfileInfo {
 // initialize the profile.
 class StartupBrowserCreator {
  public:
-  typedef std::vector<Profile*> Profiles;
+  using Profiles = std::vector<Profile*>;
 
   StartupBrowserCreator();
   StartupBrowserCreator(const StartupBrowserCreator&) = delete;

@@ -19,8 +19,8 @@ enum CryptoModulePasswordReason {
   kCryptoModulePasswordCertExport,
 };
 
-typedef base::OnceCallback<void(const std::string&)>
-    CryptoModulePasswordCallback;
+using CryptoModulePasswordCallback =
+    base::OnceCallback<void(const std::string&)>;
 
 // Display a dialog, prompting the user to authenticate to unlock
 // |module|. |reason| describes the purpose of the authentication and

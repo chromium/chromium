@@ -45,13 +45,11 @@ struct ODFSEntryMetadata {
   std::optional<std::string> url;
 };
 
-typedef base::OnceCallback<void(
-    base::expected<ODFSMetadata, base::File::Error> metadata_or_error)>
-    GetODFSMetadataCallback;
+using GetODFSMetadataCallback = base::OnceCallback<void(
+    base::expected<ODFSMetadata, base::File::Error> metadata_or_error)>;
 
-typedef base::OnceCallback<void(
-    base::expected<ODFSEntryMetadata, base::File::Error> metadata)>
-    GetODFSEntryMetadataCallback;
+using GetODFSEntryMetadataCallback = base::OnceCallback<void(
+    base::expected<ODFSEntryMetadata, base::File::Error> metadata)>;
 
 // Type of the source location from which a given file is being uploaded.
 enum class SourceType {

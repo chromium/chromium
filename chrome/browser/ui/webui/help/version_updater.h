@@ -54,7 +54,7 @@ class VersionUpdater {
   // TODO(jhawkins): Use a delegate interface instead of multiple callback
   // types.
 #if BUILDFLAG(IS_CHROMEOS)
-  typedef base::OnceCallback<void(const std::string&)> ChannelCallback;
+  using ChannelCallback = base::OnceCallback<void(const std::string&)>;
   using EolInfoCallback =
       base::OnceCallback<void(ash::UpdateEngineClient::EolInfo eol_info)>;
   using IsFeatureEnabledCallback =
@@ -72,17 +72,17 @@ class VersionUpdater {
   // |update_size| is the size of the available update in bytes and should be 0
   //     when update is not available.
   // |message| is a message explaining a failure.
-  typedef base::RepeatingCallback<void(Status status,
-                                       int progress,
-                                       bool rollback,
-                                       bool powerwash,
-                                       const std::string& version,
-                                       int64_t update_size,
-                                       const std::u16string& message)>
-      StatusCallback;
+  using StatusCallback =
+      base::RepeatingCallback<void(Status status,
+                                   int progress,
+                                   bool rollback,
+                                   bool powerwash,
+                                   const std::string& version,
+                                   int64_t update_size,
+                                   const std::u16string& message)>;
 
   // Used to show or hide the promote UI elements. Mac-only.
-  typedef base::RepeatingCallback<void(PromotionState)> PromoteCallback;
+  using PromoteCallback = base::RepeatingCallback<void(PromotionState)>;
 
   virtual ~VersionUpdater() = default;
 

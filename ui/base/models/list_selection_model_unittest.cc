@@ -14,7 +14,7 @@
 
 namespace ui {
 
-typedef testing::Test ListSelectionModelTest;
+using ListSelectionModelTest = testing::Test;
 
 TEST_F(ListSelectionModelTest, InitialState) {
   ListSelectionModel model;

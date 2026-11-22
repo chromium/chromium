@@ -193,8 +193,8 @@ class MockInputMethodObserver : public InputMethodObserver {
   int input_locale_changes_ = 0;
 };
 
-typedef base::ScopedObservation<InputMethod, InputMethodObserver>
-    InputMethodScopedObservation;
+using InputMethodScopedObservation =
+    base::ScopedObservation<InputMethod, InputMethodObserver>;
 
 void SetFocusedTextInputClient(InputMethod* input_method,
                                TextInputClient* text_input_client) {

@@ -17,7 +17,7 @@
 
 using views::Widget;
 
-typedef ChromeViewsTestBase ConfirmBubbleViewsTest;
+using ConfirmBubbleViewsTest = ChromeViewsTestBase;
 
 // TODO(crbug.com/40099109) Disabled on windows due to flake
 #if BUILDFLAG(IS_WIN)

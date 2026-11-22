@@ -176,7 +176,7 @@ ITfInputScope* CreateInputScope(TextInputType text_input_type,
   return new TSFInputScope(input_scopes);
 }
 
-typedef HRESULT(WINAPI* SetInputScopeFunc)(HWND window_handle,
+using SetInputScopeFunc = HRESULT(WINAPI*)(HWND window_handle,
                                            InputScope input_scope);
 
 SetInputScopeFunc g_set_input_scope = NULL;

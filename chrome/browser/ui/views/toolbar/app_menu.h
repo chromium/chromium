@@ -147,8 +147,8 @@ class AppMenu final : public views::MenuDelegate,
   class RecentTabsMenuModelDelegate;
   class ZoomView;
 
-  typedef std::pair<ui::MenuModel*, size_t> Entry;
-  typedef std::map<int, Entry> CommandIDToEntry;
+  using Entry = std::pair<ui::MenuModel*, size_t>;
+  using CommandIDToEntry = std::map<int, Entry>;
 
   void BookmarkMergedSurfaceServiceChanged();
 

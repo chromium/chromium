@@ -139,7 +139,7 @@ class ChromeWebContentsViewFocusHelperTest : public ChromeViewsTestBase {
 
 }  // namespace
 
-typedef ChromeRenderViewHostTestHarness ChromeWebContentsViewDelegateViewsTest;
+using ChromeWebContentsViewDelegateViewsTest = ChromeRenderViewHostTestHarness;
 
 // Test that makes sure ShowContextMenu does not crash if web_contents() does
 // not have a focused frame.

@@ -412,7 +412,7 @@ class RenderViewSizeObserver : public content::WebContentsObserver {
     gfx::Size wcv_commit_size;   // Size of WebContentsView when committed.
   };
 
-  typedef std::map<content::RenderViewHost*, Sizes> RenderViewSizes;
+  using RenderViewSizes = std::map<content::RenderViewHost*, Sizes>;
   RenderViewSizes render_view_sizes_;
   // Enlarge WebContentsView by this size insets in
   // DidStartNavigation.

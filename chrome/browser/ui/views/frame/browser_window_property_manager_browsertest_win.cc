@@ -55,7 +55,7 @@
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/views/win/hwnd_util.h"
 
-typedef extensions::ExtensionBrowserTest BrowserWindowPropertyManagerTest;
+using BrowserWindowPropertyManagerTest = extensions::ExtensionBrowserTest;
 
 namespace {
 

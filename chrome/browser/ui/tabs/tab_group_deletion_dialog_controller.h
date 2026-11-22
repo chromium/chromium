@@ -28,8 +28,8 @@ class BrowserWindowInterface;
 class Profile;
 namespace tab_groups {
 
-typedef base::RepeatingCallback<void(std::unique_ptr<ui::DialogModel>)>
-    ShowDialogModelCallback;
+using ShowDialogModelCallback =
+    base::RepeatingCallback<void(std::unique_ptr<ui::DialogModel>)>;
 
 // Controller that is responsible for showing/hiding and performing callbacks
 // for group deletions. Manages the state on a per-browser basis. Browsers can

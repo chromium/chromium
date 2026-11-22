@@ -51,8 +51,8 @@ class MenuControllerMnemonicTest : public MenuTestBase {
 
 // Pressing the mnemonic for a menu item should execute the command for that
 // menu item.
-typedef MenuControllerMnemonicTest<ui::VKEY_DIVIDE, 1>
-    MenuControllerMnemonicTestMnemonicMatch;
+using MenuControllerMnemonicTestMnemonicMatch =
+    MenuControllerMnemonicTest<ui::VKEY_DIVIDE, 1>;
 
 #if BUILDFLAG(IS_MAC)
 // Mnemonics and activation by title match aren't used on macOS.
@@ -67,13 +67,13 @@ VIEW_TEST(MenuControllerMnemonicTestMnemonicMatch, MAYBE_MnemonicMatch)
 
 // Pressing a key which matches the first letter of the menu item's title
 // should execute the command for that menu item.
-typedef MenuControllerMnemonicTest<ui::VKEY_T, 2>
-    MenuControllerMnemonicTestTitleMatch;
+using MenuControllerMnemonicTestTitleMatch =
+    MenuControllerMnemonicTest<ui::VKEY_T, 2>;
 
 VIEW_TEST(MenuControllerMnemonicTestTitleMatch, MAYBE_TitleMatch)
 
 // Pressing an arbitrary key should not execute any commands.
-typedef MenuControllerMnemonicTest<ui::VKEY_A, 0>
-    MenuControllerMnemonicTestNoMatch;
+using MenuControllerMnemonicTestNoMatch =
+    MenuControllerMnemonicTest<ui::VKEY_A, 0>;
 
 VIEW_TEST(MenuControllerMnemonicTestNoMatch, NoMatch)

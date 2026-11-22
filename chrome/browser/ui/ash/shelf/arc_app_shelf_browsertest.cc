@@ -165,7 +165,7 @@ enum TestAction {
 };
 
 // Test parameters include TestAction and pin/unpin state.
-typedef std::tuple<TestAction, bool> TestParameter;
+using TestParameter = std::tuple<TestAction, bool>;
 
 TestParameter build_test_parameter[] = {
     TestParameter(TEST_ACTION_START, false),

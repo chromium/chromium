@@ -253,7 +253,7 @@ ui::TableColumn TestTableColumn(int id, const std::string& title) {
 
 }  // namespace
 
-typedef InProcessBrowserTest AutomationManagerAuraBrowserTest;
+using AutomationManagerAuraBrowserTest = InProcessBrowserTest;
 
 // A WebContents can be "hooked up" to the Chrome OS Desktop accessibility
 // tree two different ways: via its aura::Window, and via a views::WebView.

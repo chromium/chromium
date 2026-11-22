@@ -71,8 +71,8 @@ enum class SiteSettingSource {
 
 // Maps from a pair(secondary pattern, incognito)  to a setting and if it's
 // embargoed.
-typedef std::map<std::pair<ContentSettingsPattern, bool>, SiteExceptionInfo>
-    OnePatternSettings;
+using OnePatternSettings =
+    std::map<std::pair<ContentSettingsPattern, bool>, SiteExceptionInfo>;
 
 // Maps from a pair (primary pattern, source) to a OnePatternSettings. All the
 // mappings in OnePatternSettings share the given primary pattern and source.
@@ -81,10 +81,10 @@ typedef std::map<std::pair<ContentSettingsPattern, bool>, SiteExceptionInfo>
 // preferences are saved in lowest precedence pattern to the highest. However,
 // we want to show the patterns with the highest precedence (the more specific
 // ones) on the top, hence `std::greater<>`.
-typedef std::map<std::pair<ContentSettingsPattern, SiteSettingSource>,
-                 OnePatternSettings,
-                 std::greater<>>
-    AllPatternsSettings;
+using AllPatternsSettings =
+    std::map<std::pair<ContentSettingsPattern, SiteSettingSource>,
+             OnePatternSettings,
+             std::greater<>>;
 
 // A set of <origin, source, incognito> tuple for organizing granted permission
 // objects that belong to the same device.

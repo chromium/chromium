@@ -31,7 +31,7 @@ struct UI_CHROMEOS_EXPORT InputMethodMenuItem {
                       // (e.g. "Switch to full punctuation mode", "Hiragana")
   bool is_selection_item_checked;  // true if the selection_item is selected.
 };
-typedef std::vector<InputMethodMenuItem> InputMethodMenuItemList;
+using InputMethodMenuItemList = std::vector<InputMethodMenuItem>;
 
 }  // namespace ime
 }  // namespace ui

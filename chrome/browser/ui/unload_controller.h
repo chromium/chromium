@@ -278,7 +278,7 @@ class UnloadController : public WebContentsCollection::Observer,
   base::WeakPtr<UnloadController> GetWeakPtr();
 
  private:
-  typedef std::set<raw_ptr<content::WebContents>> UnloadListenerSet;
+  using UnloadListenerSet = std::set<raw_ptr<content::WebContents>>;
 
   enum class CancelDownloadConfirmationState {
     kNotPrompted,         // We have not asked the user.

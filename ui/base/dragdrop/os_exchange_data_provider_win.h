@@ -175,7 +175,7 @@ class DataObjectImpl : public DownloadFileObserver,
     StoredDataInfo(const FORMATETC& format_etc, const STGMEDIUM& medium);
   };
 
-  typedef std::vector<std::unique_ptr<StoredDataInfo>> StoredData;
+  using StoredData = std::vector<std::unique_ptr<StoredDataInfo>>;
   StoredData contents_;
 
   Microsoft::WRL::ComPtr<IDataObject> source_object_;

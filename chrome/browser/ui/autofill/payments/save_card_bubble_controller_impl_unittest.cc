@@ -647,7 +647,7 @@ TEST_P(SaveCreditCardPromptResultMetricTest,
 // Param of the SaveCardBubbleSingletonTestData:
 // -- bool first_shown_is_local;
 // -- bool second_and_third_shown_are_local;
-typedef std::tuple<bool, bool> SaveCardBubbleSingletonTestData;
+using SaveCardBubbleSingletonTestData = std::tuple<bool, bool>;
 
 // One test case will be run several times till we cover all the param
 // combinations of the |SaveCardBubbleSingletonTestData|. GetParam() will help
@@ -714,8 +714,8 @@ const SaveCardOptionParam kSaveCardOptionParam[] = {
 // -- std::string save_destination
 // -- std::string show_type
 // -- SaveCardOptionParam save_card_option_param
-typedef std::tuple<std::string, std::string, SaveCardOptionParam>
-    SaveCardBubbleLoggingTestData;
+using SaveCardBubbleLoggingTestData =
+    std::tuple<std::string, std::string, SaveCardOptionParam>;
 
 // Test class to ensure the save card bubble events are logged correctly.
 class SaveCardBubbleLoggingTest

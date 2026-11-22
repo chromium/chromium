@@ -25,10 +25,10 @@ class WindowAndroid;
 namespace hats {
 
 // Key-value mapping type for survey's product specific bits data.
-typedef std::map<std::string, bool> SurveyBitsData;
+using SurveyBitsData = std::map<std::string, bool>;
 
 // Key-value mapping type for survey's product specific string data.
-typedef std::map<std::string, std::string> SurveyStringData;
+using SurveyStringData = std::map<std::string, std::string>;
 
 // C++ equivalent of Java SurveyClient.
 class SurveyClientAndroid {

@@ -28,10 +28,9 @@ class WebContents;
 
 using chrome_browser_server_certificate_database::CertificateTrust;
 
-typedef base::RepeatingCallback<void(
+using CertMetadataModificationsCallback = base::RepeatingCallback<void(
     net::ServerCertificateDatabase::CertInformation,
-    base::OnceCallback<void(bool)>)>
-    CertMetadataModificationsCallback;
+    base::OnceCallback<void(bool)>)>;
 
 class ConstrainedWebDialogDelegate;
 

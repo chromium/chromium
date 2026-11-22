@@ -81,7 +81,7 @@ class ContentSettingQuietRequestBubbleModel;
 // the action triggered when the allow / block radio buttons are triggered.
 class ContentSettingBubbleModel {
  public:
-  typedef ContentSettingBubbleModelDelegate Delegate;
+  using Delegate = ContentSettingBubbleModelDelegate;
 
   struct ListItem {
     ListItem(const gfx::VectorIcon* image,
@@ -103,7 +103,7 @@ class ContentSettingBubbleModel {
     // in the UI is required.
     GURL url;
   };
-  typedef std::vector<ListItem> ListItems;
+  using ListItems = std::vector<ListItem>;
 
   static std::u16string FormatTitleWithBullet(const std::u16string& title);
   static std::u16string FormatUrlWithBullet(const GURL& url);
@@ -119,7 +119,7 @@ class ContentSettingBubbleModel {
     virtual ~Owner() = default;
   };
 
-  typedef std::vector<std::u16string> RadioItems;
+  using RadioItems = std::vector<std::u16string>;
   struct RadioGroup {
     RadioGroup();
     ~RadioGroup();
@@ -129,7 +129,7 @@ class ContentSettingBubbleModel {
     int default_item = 0;
   };
 
-  typedef std::map<net::SchemefulSite, /*allowed*/ bool> SiteList;
+  using SiteList = std::map<net::SchemefulSite, /*allowed*/ bool>;
 
   struct MediaMenu {
     MediaMenu();
@@ -141,7 +141,7 @@ class ContentSettingBubbleModel {
     blink::MediaStreamDevice selected_device;
     bool disabled = false;
   };
-  typedef std::map<blink::mojom::MediaStreamType, MediaMenu> MediaMenuMap;
+  using MediaMenuMap = std::map<blink::mojom::MediaStreamType, MediaMenu>;
 
   enum class ManageTextStyle {
     // No Manage button or checkbox is displayed.

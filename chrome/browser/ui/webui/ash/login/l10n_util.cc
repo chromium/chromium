@@ -131,8 +131,8 @@ base::ListValue GetLanguageList(
   // In theory, we should be able to create a map that is sorted by
   // display names using ICU comparator, but doing it is hard, thus we'll
   // use an auxiliary vector to achieve the same result.
-  typedef std::pair<std::string, std::u16string> LanguagePair;
-  typedef std::map<std::u16string, LanguagePair> LanguageMap;
+  using LanguagePair = std::pair<std::string, std::u16string>;
+  using LanguageMap = std::map<std::u16string, LanguagePair>;
   LanguageMap language_map;
 
   // The auxiliary vector mentioned above (except the most relevant locales).

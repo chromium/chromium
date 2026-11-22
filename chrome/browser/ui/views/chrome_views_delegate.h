@@ -70,7 +70,7 @@ class ChromeViewsDelegate : public views::ViewsDelegate {
 
  private:
 #if BUILDFLAG(IS_WIN)
-  typedef std::map<HMONITOR, int> AppbarAutohideEdgeMap;
+  using AppbarAutohideEdgeMap = std::map<HMONITOR, int>;
 
   // Callback on main thread with the edges. |returned_edges| is the value that
   // was returned from the call to GetAutohideEdges() that initiated the lookup.

@@ -284,7 +284,7 @@ void ExpectNewWindowActivationToken(BrowserWindowInterface* browser,
 }
 #endif  // BUILDFLAG(IS_LINUX)
 
-typedef std::optional<policy::PolicyLevel> PolicyVariant;
+using PolicyVariant = std::optional<policy::PolicyLevel>;
 
 // Extra parts that facilitates observing the first Browser instance created
 // for the chrome process.

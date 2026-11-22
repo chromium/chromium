@@ -40,7 +40,7 @@ TEST(PageTransitionTypesTest, PageTransitionTypeIncludingQualifiersIs) {
 }
 
 TEST(PageTransitionTypesTest, PageTransitionStripQualifier) {
-  typedef int32_t underlying_type;
+  using underlying_type = int32_t;
 
   EXPECT_EQ(static_cast<underlying_type>(
                 PageTransitionStripQualifier(PAGE_TRANSITION_TYPED)),

@@ -55,7 +55,7 @@ class TreeNodeModelTest : public testing::Test, public TreeModelObserver {
   int changed_count_ = 0;
 };
 
-typedef TreeNodeWithValue<int> TestNode;
+using TestNode = TreeNodeWithValue<int>;
 
 // Verifies if the model is properly adding a new node in the tree and
 // notifying the observers.

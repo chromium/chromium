@@ -48,9 +48,9 @@ class TextInputClient;
 class InputMethod {
  public:
 #if BUILDFLAG(IS_WIN)
-  typedef LRESULT NativeEventResult;
+  using NativeEventResult = LRESULT;
 #else
-  typedef int32_t NativeEventResult;
+  using NativeEventResult = int32_t;
 #endif
 
   virtual ~InputMethod() = default;
