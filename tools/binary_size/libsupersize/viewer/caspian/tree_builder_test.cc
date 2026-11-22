@@ -836,4 +836,215 @@ TEST(TreeBuilderTest, TestMinSizeRelocationsModeDiff) {
   EXPECT_FLOAT_EQ(-1.0f, builder.Open("")["size"].asFloat());
 }
 
+TEST(TreeBuilderTest, TestDumpCsvNormalModeSnapshot) {
+  std::unique_ptr<SizeInfo> size_info = MakeSizeInfo();
+  MakeSymbol(size_info.get(), SectionId::kText, 104, "a/b.cc", "",
+             "foo(int, \"bar\")");
+  size_info->raw_symbols.back().address_ = 0x1a0;
+  size_info->raw_symbols.back().padding_ = 4;
+
+  MakeSymbol(size_info.get(), SectionId::kData, 50, "", "", "obj_sym");
+  size_info->raw_symbols.back().address_ = 0x20;
+  size_info->raw_symbols.back().object_path_ = "obj/c.o";
+
+  MakeAliasSymbols(size_info.get(), SectionId::kText, 120, "a/d.cc", "alias_",
+                   0, 2);
+  for (size_t i = 2; i < 4; ++i) {
+    size_info->raw_symbols[i].address_ = 0x300;
+    size_info->raw_symbols[i].padding_ = 8;
+  }
+  MakeAliasGroup(size_info.get(), 2, 4);
+
+  MakeSymbol(size_info.get(), SectionId::kRoData, 30, "", "", "no_path");
+  size_info->raw_symbols.back().address_ = static_cast<int32_t>(0x80000010u);
+
+  MakeSymbol(size_info.get(), SectionId::kText, 10, "a/b.cc", "",
+             "tiny_filtered");
+
+  TreeBuilder builder(size_info.get());
+  FilterList filters;
+  builder.Build(std::make_unique<IdPathLens>(), '/', false, filters,
+                /*relocations_mode=*/false, /*minimum_size=*/20);
+
+  EXPECT_EQ(5u, builder.Open("")["symbolCount"].asUInt());
+  EXPECT_FALSE(builder.Open("a/b.cc").isMember("symbolCount"));
+
+  EXPECT_EQ(
+      "address,full_name,path,size_without_padding,num_aliases\n"
+      "0x1a0,\"foo(int, \"\"bar\"\")\",a/b.cc,100,1\n"
+      "0x300,alias_0,a/d.cc,112,2\n"
+      "0x300,alias_1,a/d.cc,112,2\n"
+      "0x20,obj_sym,obj/c.o,50,1\n"
+      "0x80000010,no_path,,30,1\n",
+      builder.DumpCsv());
+
+  TreeBuilder empty_builder(size_info.get());
+  empty_builder.Build(std::make_unique<IdPathLens>(), '/', false, filters,
+                      /*relocations_mode=*/false, /*minimum_size=*/1000);
+  EXPECT_EQ(0u, empty_builder.Open("")["symbolCount"].asUInt());
+  EXPECT_EQ("address,full_name,path,size_without_padding,num_aliases\n",
+            empty_builder.DumpCsv());
+}
+
+TEST(TreeBuilderTest, TestDumpCsvNormalModeDiff) {
+  std::unique_ptr<SizeInfo> before = MakeSizeInfo();
+  MakeSymbol(before.get(), SectionId::kText, 10, "a/b.cc", "", "changed");
+  before->raw_symbols.back().padding_ = 2;
+  MakeSymbol(before.get(), SectionId::kText, 40, "a/b.cc", "", "unchanged");
+  MakeAliasSymbols(before.get(), SectionId::kText, 64, "a/b.cc", "removed_", 0,
+                   2);
+  for (size_t i = 2; i < 4; ++i) {
+    before->raw_symbols[i].padding_ = 4;
+  }
+  MakeAliasGroup(before.get(), 2, 4);
+
+  std::unique_ptr<SizeInfo> after = MakeSizeInfo();
+  MakeSymbol(after.get(), SectionId::kText, 60, "a/b.cc", "", "changed");
+  after->raw_symbols.back().padding_ = 2;
+  MakeSymbol(after.get(), SectionId::kText, 40, "a/b.cc", "", "unchanged");
+  MakeAliasSymbols(after.get(), SectionId::kText, 44, "a/b.cc", "alias_", 0, 2);
+  for (size_t i = 2; i < 4; ++i) {
+    after->raw_symbols[i].padding_ = 4;
+  }
+  MakeAliasGroup(after.get(), 2, 4);
+
+  DeltaSizeInfo diff = Diff(before.get(), after.get(), nullptr, nullptr);
+  TreeBuilder builder(&diff);
+  FilterList filters;
+  builder.Build(std::make_unique<IdPathLens>(), '/', false, filters,
+                /*relocations_mode=*/false, /*minimum_size=*/0);
+
+  EXPECT_EQ(5u, builder.Open("")["symbolCount"].asUInt());
+  EXPECT_EQ(
+      "full_name,path,size_without_padding,num_aliases\n"
+      "changed,a/b.cc,50,1\n"
+      "removed_0,a/b.cc,-60,2\n"
+      "removed_1,a/b.cc,-60,2\n"
+      "alias_0,a/b.cc,40,2\n"
+      "alias_1,a/b.cc,40,2\n",
+      builder.DumpCsv());
+
+  TreeBuilder empty_builder(&diff);
+  empty_builder.Build(std::make_unique<IdPathLens>(), '/', false, filters,
+                      /*relocations_mode=*/false, /*minimum_size=*/1000);
+  EXPECT_EQ(0u, empty_builder.Open("")["symbolCount"].asUInt());
+  EXPECT_EQ("full_name,path,size_without_padding,num_aliases\n",
+            empty_builder.DumpCsv());
+}
+
+TEST(TreeBuilderTest, TestDumpCsvMethodCountModeSnapshot) {
+  std::unique_ptr<SizeInfo> size_info = MakeSizeInfo();
+  MakeSymbol(size_info.get(), SectionId::kDexMethod, 100, "a/z.java", "",
+             "z_method");
+  size_info->raw_symbols.back().address_ = 0x10;
+  MakeSymbol(size_info.get(), SectionId::kDexMethod, 10, "a/a.java", "",
+             "a_method");
+  size_info->raw_symbols.back().address_ = 0x20;
+  MakeSymbol(size_info.get(), SectionId::kText, 500, "a/b.cc", "", "native");
+
+  TreeBuilder builder(size_info.get());
+  FilterList filters = {
+      [](const GroupedPath&, const BaseSymbol& sym) {
+        return sym.Section() == SectionId::kDexMethod;
+      },
+  };
+  builder.Build(std::make_unique<IdPathLens>(), '/',
+                /*method_count_mode=*/true, filters,
+                /*relocations_mode=*/false, /*minimum_size=*/0);
+
+  EXPECT_EQ(2u, builder.Open("")["symbolCount"].asUInt());
+  EXPECT_EQ(
+      "address,full_name,path,method_count,num_aliases\n"
+      "0x20,a_method,a/a.java,1,1\n"
+      "0x10,z_method,a/z.java,1,1\n",
+      builder.DumpCsv());
+}
+
+TEST(TreeBuilderTest, TestDumpCsvMethodCountModeDiff) {
+  std::unique_ptr<SizeInfo> before = MakeSizeInfo();
+  MakeSymbol(before.get(), SectionId::kDexMethod, 10, "a/a.java", "",
+             "unchanged");
+  MakeSymbol(before.get(), SectionId::kDexMethod, 20, "a/b.java", "",
+             "removed");
+
+  std::unique_ptr<SizeInfo> after = MakeSizeInfo();
+  MakeSymbol(after.get(), SectionId::kDexMethod, 10, "a/a.java", "",
+             "unchanged");
+  MakeSymbol(after.get(), SectionId::kDexMethod, 30, "a/a.java", "", "added");
+
+  DeltaSizeInfo diff = Diff(before.get(), after.get(), nullptr, nullptr);
+  TreeBuilder builder(&diff);
+  FilterList filters;
+  builder.Build(std::make_unique<IdPathLens>(), '/',
+                /*method_count_mode=*/true, filters,
+                /*relocations_mode=*/false, /*minimum_size=*/0);
+
+  EXPECT_EQ(2u, builder.Open("")["symbolCount"].asUInt());
+  EXPECT_EQ(
+      "full_name,path,method_count,num_aliases\n"
+      "added,a/a.java,1,1\n"
+      "removed,a/b.java,-1,1\n",
+      builder.DumpCsv());
+}
+
+TEST(TreeBuilderTest, TestDumpCsvRelocationsModeSnapshot) {
+  std::unique_ptr<SizeInfo> size_info = MakeSizeInfo();
+  MakeSymbol(size_info.get(), SectionId::kDataRelRo, 1000, "a/b.cc", "",
+             "no_relocs");
+  MakeSymbol(size_info.get(), SectionId::kDataRelRo, 8, "a/b.cc", "", "single");
+  size_info->raw_symbols.back().address_ = 0x10;
+  size_info->raw_symbols.back().relocation_count_ = 3;
+
+  MakeAliasSymbols(size_info.get(), SectionId::kDataRelRo, 100, "a/c.cc",
+                   "alias_", 0, 2, /*relocation_count=*/10);
+  for (size_t i = 2; i < 4; ++i) {
+    size_info->raw_symbols[i].address_ = 0x20;
+  }
+  MakeAliasGroup(size_info.get(), 2, 4);
+
+  TreeBuilder builder(size_info.get());
+  FilterList filters;
+  builder.Build(std::make_unique<IdPathLens>(), '/', false, filters,
+                /*relocations_mode=*/true, /*minimum_size=*/0);
+
+  EXPECT_EQ(3u, builder.Open("")["symbolCount"].asUInt());
+  EXPECT_EQ(
+      "address,full_name,path,relocation_count,num_aliases\n"
+      "0x20,alias_0,a/c.cc,10,2\n"
+      "0x20,alias_1,a/c.cc,10,2\n"
+      "0x10,single,a/b.cc,3,1\n",
+      builder.DumpCsv());
+}
+
+TEST(TreeBuilderTest, TestDumpCsvRelocationsModeDiff) {
+  std::unique_ptr<SizeInfo> before = MakeSizeInfo();
+  MakeSymbol(before.get(), SectionId::kDataRelRo, 100, "a/b.cc", "", "inc");
+  before->raw_symbols.back().relocation_count_ = 1;
+  MakeSymbol(before.get(), SectionId::kDataRelRo, 100, "a/b.cc", "", "dec");
+  before->raw_symbols.back().relocation_count_ = 6;
+  MakeSymbol(before.get(), SectionId::kDataRelRo, 100, "a/b.cc", "", "same");
+  before->raw_symbols.back().relocation_count_ = 4;
+
+  std::unique_ptr<SizeInfo> after = MakeSizeInfo();
+  MakeSymbol(after.get(), SectionId::kDataRelRo, 100, "a/b.cc", "", "inc");
+  after->raw_symbols.back().relocation_count_ = 4;
+  MakeSymbol(after.get(), SectionId::kDataRelRo, 100, "a/b.cc", "", "dec");
+  after->raw_symbols.back().relocation_count_ = 1;
+  MakeSymbol(after.get(), SectionId::kDataRelRo, 100, "a/b.cc", "", "same");
+  after->raw_symbols.back().relocation_count_ = 4;
+
+  DeltaSizeInfo diff = Diff(before.get(), after.get(), nullptr, nullptr);
+  TreeBuilder builder(&diff);
+  FilterList filters;
+  builder.Build(std::make_unique<IdPathLens>(), '/', false, filters,
+                /*relocations_mode=*/true, /*minimum_size=*/0);
+
+  EXPECT_EQ(2u, builder.Open("")["symbolCount"].asUInt());
+  EXPECT_EQ(
+      "full_name,path,relocation_count,num_aliases\n"
+      "dec,a/b.cc,-5,1\n"
+      "inc,a/b.cc,3,1\n",
+      builder.DumpCsv());
+}
+
 }  // namespace caspian

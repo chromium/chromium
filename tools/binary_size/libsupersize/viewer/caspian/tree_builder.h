@@ -35,6 +35,7 @@ class TreeBuilder {
   TreeNode* Find(std::string_view path);
   Json::Value Open(const char* path);
   Json::Value GetAncestryById(uint32_t id);
+  std::string DumpCsv() const;
 
  private:
   struct SmallDiffAggregate {
@@ -101,6 +102,7 @@ class TreeBuilder {
   char sep_;
   std::vector<FilterFunc> filters_;
   std::vector<const BaseSymbol*> symbols_;
+  std::vector<const BaseSymbol*> filtered_symbols_;
   absl::flat_hash_map<std::string_view, DiffStatus> source_to_diff_status_;
 };  // TreeBuilder
 }  // namespace caspian

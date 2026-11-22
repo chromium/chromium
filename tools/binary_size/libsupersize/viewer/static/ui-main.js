@@ -31,11 +31,66 @@
   const _metadataTreeUi = new MetadataTreeUi(_metadataTreeModel);
   _metadataTreeUi.init();
 
+  /**
+   * Copy small CSV exports directly to the clipboard; download larger ones as
+   * a file to avoid slow clipboard writes.
+   */
+  const _CSV_CLIPBOARD_MAX_SYMBOLS = 1000;
+  const _CSV_COPIED_FEEDBACK_MS = 1500;
+
+  /** @type {number} */
+  let _filteredSymbolCount = 0;
+
+  /** @type {number} */
+  let _copyResetTimerId = 0;
+
+  /** @type {number} */
+  let _rebuildSeq = 0;
+
+  /** @type {number} */
+  let _completedRebuildSeq = 0;
+
+  /** @type {boolean} */
+  let _csvExportInFlight = false;
+
+  /**
+   * @param {number} symbolCount
+   * @return {boolean}
+   */
+  function canCopyCsvToClipboard(symbolCount) {
+    return symbolCount < _CSV_CLIPBOARD_MAX_SYMBOLS &&
+        Boolean(navigator.clipboard);
+  }
+
+  function updateCsvButtonDisabled() {
+    g_el.btnDownloadCsv.disabled =
+        _completedRebuildSeq !== _rebuildSeq || _filteredSymbolCount === 0;
+  }
+
+  function updateCsvButtonTitle() {
+    clearTimeout(_copyResetTimerId);
+    g_el.btnDownloadCsv.classList.remove('copied');
+    g_el.spanLiveStatus.textContent = '';
+    const actionLabel =
+        canCopyCsvToClipboard(_filteredSymbolCount) ? 'Copy' : 'Download';
+    const symbolNoun = _filteredSymbolCount === 1 ? 'symbol' : 'symbols';
+    const label = `${actionLabel} ${formatNumber(_filteredSymbolCount)} ${
+        symbolNoun} as CSV`;
+    g_el.btnDownloadCsv.title = label;
+    g_el.btnDownloadCsv.setAttribute('aria-label', label);
+  }
+
   /** @param {TreeProgress} message */
   function onProgressMessage(message) {
     const {error, percent} = message;
     _progress.setValue(percent);
     document.body.classList.toggle('error', Boolean(error));
+    if (error) {
+      // Worker errors post to id: 0 without settling request promises.
+      _completedRebuildSeq = _rebuildSeq;
+      _csvExportInFlight = false;
+      updateCsvButtonDisabled();
+    }
   }
 
   /**
@@ -97,6 +152,11 @@
 
     const noSymbols = (Object.keys(root.childStats).length === 0);
     _symbolTreeUi.toggleNoSymbolsMessage(noSymbols);
+
+    _filteredSymbolCount = /** @type {!TreeNode} */ (root).symbolCount ?? 0;
+    updateCsvButtonTitle();
+    updateCsvButtonDisabled();
+    g_el.btnDownloadCsv.hidden = false;
 
     /** @type {?DocumentFragment} */
     let rootElement = null;
@@ -262,7 +322,12 @@
 
   async function rebuildTree() {
     _progress.setValue(0);
+    const seq = ++_rebuildSeq;
+    updateCsvButtonDisabled();
     const message = await window.supersize.worker.buildTree();
+    if (seq === _rebuildSeq) {
+      _completedRebuildSeq = seq;
+    }
     processBuildTreeResponse(message);
     renderAndShowMetricsTree(null);
   }
@@ -275,13 +340,73 @@
 
     state.stLoadUrl.set(fileUrl);
 
+    g_el.btnDownloadCsv.hidden = true;
+    _filteredSymbolCount = 0;
+    updateCsvButtonTitle();
+    _csvExportInFlight = false;
+    const seq = ++_rebuildSeq;
+    updateCsvButtonDisabled();
+
     const worker = restartWorker(onProgressMessage);
     _progress.setValue(0.3);
     const message = await worker.loadAndBuildTree(fileUrl);
     URL.revokeObjectURL(fileUrl);
+    if (worker !== window.supersize.worker) {
+      return;
+    }
+    if (seq === _rebuildSeq) {
+      _completedRebuildSeq = seq;
+    }
     processLoadTreeResponse(message);
     // Clean up afterwards so new files trigger event.
     input.value = '';
+  });
+
+  g_el.btnDownloadCsv.addEventListener('click', async () => {
+    if (_csvExportInFlight) {
+      return;
+    }
+    _csvExportInFlight = true;
+    const worker = window.supersize.worker;
+    let csv = '';
+    let symbolCount = 0;
+    try {
+      ({csv, symbolCount} = await worker.dumpCsv());
+    } finally {
+      if (worker === window.supersize.worker) {
+        _csvExportInFlight = false;
+      }
+    }
+    if (worker !== window.supersize.worker || !csv || symbolCount === 0) {
+      return;
+    }
+    if (canCopyCsvToClipboard(symbolCount)) {
+      try {
+        await navigator.clipboard.writeText(csv);
+        if (worker !== window.supersize.worker) {
+          return;
+        }
+        clearTimeout(_copyResetTimerId);
+        g_el.btnDownloadCsv.classList.add('copied');
+        g_el.btnDownloadCsv.title = 'Copied CSV to clipboard';
+        g_el.spanLiveStatus.textContent = 'Copied CSV to clipboard';
+        _copyResetTimerId =
+            setTimeout(updateCsvButtonTitle, _CSV_COPIED_FEEDBACK_MS);
+        return;
+      } catch (err) {
+        // Fall back to downloading if clipboard write is blocked.
+      }
+    }
+    if (worker !== window.supersize.worker) {
+      return;
+    }
+    const blob = new Blob([csv], {type: 'text/csv;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = 'symbols.csv';
+    anchor.click();
+    setTimeout(() => URL.revokeObjectURL(url), 0);
   });
 
   g_el.frmOptions.addEventListener('change', (event) => {

@@ -48,6 +48,8 @@
  * @property {_DIFF_STATUSES} diffStatus
  * @property {Object<string, !TreeNodeChildStats>} childStats - Stats about
  *     this node's descendants, keyed by symbol type.
+ * @property {number|undefined} symbolCount - Root node only: Filtered symbol
+ *     count.
  */
 
 /**
@@ -127,6 +129,12 @@
  * @property {Object} root
  * @property {boolean} diffMode - Whether diff mode is engaged.
  * @property {?LoadTreeResults} loadResults
+ */
+
+/**
+ * @typedef {Object} DumpCsvResults
+ * @property {string} csv
+ * @property {number} symbolCount
  */
 
 /**

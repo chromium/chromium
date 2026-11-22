@@ -275,6 +275,39 @@ ul {
   vertical-align: middle;
 }
 
+#btn-download-csv {
+  fill: #1a73e8;
+  margin-left: 4px;
+  padding: 0;
+}
+
+#btn-download-csv[hidden] {
+  display: none;
+}
+
+#btn-download-csv.copied {
+  fill: #188038;
+}
+
+#btn-download-csv:disabled {
+  background: transparent;
+  cursor: not-allowed;
+  fill: #80868b;
+}
+
+.sr-only {
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
 #div-metrics-view:not(.active),
 #div-metadata-view:not(.active) {
   display: none;

@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <iostream>
 #include <memory>
@@ -337,6 +338,21 @@ const char* QueryAncestryById(uint32_t id) {
   v["ancestorIds"] = builder->GetAncestryById(id);
   cached_result = JsonSerialize(v);
   return cached_result.c_str();
+}
+
+// Returns a malloc-allocated NUL-terminated CSV string that the caller must
+// pass to free(), or nullptr if no tree has been built or allocation fails.
+char* DumpCsv() {
+  if (!builder) {
+    return nullptr;
+  }
+  std::string csv = builder->DumpCsv();
+  char* out = static_cast<char*>(malloc(csv.size() + 1));
+  if (!out) {
+    return nullptr;
+  }
+  memcpy(out, csv.c_str(), csv.size() + 1);
+  return out;
 }
 
 }  // extern "C"

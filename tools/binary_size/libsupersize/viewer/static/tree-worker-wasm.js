@@ -32,8 +32,23 @@ const JSON_MAX_BYTES_TO_READ = 2 ** 26;
 /** @type {?Promise} */
 let g_loadTreePromise = null;
 
+/** @type {?Promise<BuildTreeResults>} */
+let g_initialBuildPromise = null;
+
 /** @type {?Promise} */
 let g_buildTreePromise = null;
+
+/** @type {?Promise<void>} */
+let g_pendingBuildPromise = null;
+
+/** @type {?function(): void} */
+let g_resolvePendingBuild = null;
+
+/** @type {number} */
+let g_pendingBuildSeq = 0;
+
+/** @type {number} */
+let g_lastSymbolCount = 0;
 
 
 /**
@@ -295,11 +310,18 @@ const actions = {
       // New loads should create new WebWorkers instead.
       throw new Error('loadTree with input called multiple times.');
     }
-    g_loadTreePromise = loadTreeWorkhorse(input, accessToken, buildOptions);
-    const loadResults = await g_loadTreePromise;
-    const ret = await actions.buildTree({buildOptions});
-    ret.loadResults = loadResults;
-    return ret;
+    g_initialBuildPromise = (async () => {
+      g_loadTreePromise = loadTreeWorkhorse(input, accessToken, buildOptions);
+      const loadResults = await g_loadTreePromise;
+      const ret = await actions.buildTree({buildOptions});
+      ret.loadResults = loadResults;
+      return ret;
+    })();
+    try {
+      return await g_initialBuildPromise;
+    } finally {
+      g_initialBuildPromise = null;
+    }
   },
 
   /**
@@ -312,24 +334,29 @@ const actions = {
 
     // Wait for queued up calls to complete. There should not be too many
     // since we debounce load calls.
-    // TODO(huangs): Replace this and runActionDebounced() with explicit logic
-    //     to cancel stale requests.
+    // TODO(huangs): Replace this and runBuildTreeDebounced() with explicit
+    //     logic to cancel stale requests.
     while (g_buildTreePromise) {
       await g_buildTreePromise;
     }
-    g_buildTreePromise = wasmBuildTree(buildOptions);
-
-    const diffMode = await g_buildTreePromise;
-    g_buildTreePromise = null;
-    sendProgressMessage(0.9);
-    const root = await wasmOpen('');
-    // TODO(crbug.com/40818460): Move diffMode to loadResults and do not store
-    // it the viewer's query parameters.
-    return {
-      root,
-      diffMode,
-      loadResults: null,
-    };
+    g_buildTreePromise = (async () => {
+      const diffMode = await wasmBuildTree(buildOptions);
+      sendProgressMessage(0.9);
+      const root = await wasmOpen('');
+      g_lastSymbolCount = root.symbolCount ?? 0;
+      // TODO(crbug.com/40818460): Move diffMode to loadResults and do not store
+      // it the viewer's query parameters.
+      return {
+        root,
+        diffMode,
+        loadResults: null,
+      };
+    })();
+    try {
+      return await g_buildTreePromise;
+    } finally {
+      g_buildTreePromise = null;
+    }
   },
 
   /**
@@ -346,6 +373,29 @@ const actions = {
    */
   async queryAncestryById(id) {
     return wasmQueryAncestryById(id);
+  },
+
+  /**
+   * @return {Promise<!DumpCsvResults>}
+   */
+  async dumpCsv() {
+    // Ignore build rejections here: runAction() already reports errors on id 0,
+    // and DumpCsv() returns nullptr if |builder| was not constructed.
+    while (g_initialBuildPromise || g_pendingBuildPromise ||
+           g_buildTreePromise) {
+      await (
+          g_initialBuildPromise?.catch(() => {}) || g_pendingBuildPromise ||
+          g_buildTreePromise?.catch(() => {}));
+    }
+    const ptr = Module.cwrap('DumpCsv', 'number', [])();
+    if (!ptr) {
+      return {csv: '', symbolCount: 0};
+    }
+    try {
+      return {csv: Module.UTF8ToString(ptr), symbolCount: g_lastSymbolCount};
+    } finally {
+      Module._free(ptr);
+    }
   },
 };
 
@@ -368,7 +418,25 @@ async function runAction(id, action, data) {
   }
 }
 
-const runActionDebounced = debounce(runAction, 0);
+const runBuildTreeDebounced = debounce(
+    /**
+     * @param {number} id
+     * @param {any} data
+     */
+    (id, data) => {
+      const seq = g_pendingBuildSeq;
+      return runAction(id, 'buildTree', data).finally(() => {
+        if (seq === g_pendingBuildSeq) {
+          g_pendingBuildPromise = null;
+          const resolve = g_resolvePendingBuild;
+          g_resolvePendingBuild = null;
+          if (resolve) {
+            resolve();
+          }
+        }
+      });
+    },
+    0);
 
 /**
  * @param {MessageEvent} event Event for when this worker receives a message.
@@ -381,7 +449,15 @@ self.onmessage = async event => {
     // an await statement is reached. During this time, multiple load messages
     // can pile up due to filters being adjusted. We debounce the load call
     // so that only the last message is read (the current set of filters).
-    runActionDebounced(id, action, data);
+    g_pendingBuildSeq++;
+    if (!g_pendingBuildPromise) {
+      g_pendingBuildPromise = new Promise(
+          /** @param {function(): void} resolve */
+          (resolve) => {
+            g_resolvePendingBuild = resolve;
+          });
+    }
+    runBuildTreeDebounced(id, data);
   } else {
     runAction(id, action, data);
   }

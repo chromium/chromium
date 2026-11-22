@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace caspian {
 
@@ -85,6 +86,7 @@ void TreeBuilder::Build(std::unique_ptr<BaseLens> lens,
   // Initialize tree root.
   root_->id_path = GroupedPath{"", ""};
   _parents[root_->id_path] = root_;
+  filtered_symbols_.clear();
 
   // Group symbols by (group, path) using a two-level lookup:
   // 1. |fast_key_to_entry| keys on the raw (group.data(), group.size(), path)
@@ -200,6 +202,9 @@ Json::Value TreeBuilder::Open(const char* path) {
   };
   Json::Value v;
   node->WriteIntoJson(opts, node_sort_func, 1, &v);
+  if (node == root_) {
+    v["symbolCount"] = static_cast<Json::UInt>(filtered_symbols_.size());
+  }
   return v;
 }
 
@@ -216,6 +221,106 @@ Json::Value TreeBuilder::GetAncestryById(uint32_t id) {
     }
   }
   return v;
+}
+
+namespace {
+std::string_view PathForCsv(const BaseSymbol& sym) {
+  if (sym.SourcePath() && *sym.SourcePath()) {
+    return sym.SourcePath();
+  }
+  if (sym.ObjectPath() && *sym.ObjectPath()) {
+    return sym.ObjectPath();
+  }
+  return "";
+}
+
+void AppendCsvField(std::string* out, std::string_view field) {
+  if (field.find_first_of(",\"\r\n") == std::string_view::npos) {
+    out->append(field);
+    return;
+  }
+  out->push_back('"');
+  for (char c : field) {
+    if (c == '"') {
+      out->push_back('"');
+    }
+    out->push_back(c);
+  }
+  out->push_back('"');
+}
+}  // namespace
+
+std::string TreeBuilder::DumpCsv() const {
+  std::vector<const BaseSymbol*> sorted = filtered_symbols_;
+  std::sort(sorted.begin(), sorted.end(),
+            [this](const BaseSymbol* a, const BaseSymbol* b) {
+              if (!method_count_mode_) {
+                float a_size =
+                    std::abs(relocations_mode_ ? a->RelocationPss() : a->Pss());
+                float b_size =
+                    std::abs(relocations_mode_ ? b->RelocationPss() : b->Pss());
+                if (a_size != b_size) {
+                  return a_size > b_size;
+                }
+              }
+              std::string_view a_path = PathForCsv(*a);
+              std::string_view b_path = PathForCsv(*b);
+              if (a_path != b_path) {
+                return a_path < b_path;
+              }
+              if (a->FullName() != b->FullName()) {
+                return a->FullName() < b->FullName();
+              }
+              return static_cast<uint32_t>(a->Address()) <
+                     static_cast<uint32_t>(b->Address());
+            });
+
+  std::string out = diff_mode_ ? "full_name,path," : "address,full_name,path,";
+  if (method_count_mode_) {
+    out += "method_count";
+  } else if (relocations_mode_) {
+    out += "relocation_count";
+  } else {
+    out += "size_without_padding";
+  }
+  out += ",num_aliases\n";
+
+  for (const BaseSymbol* sym : sorted) {
+    if (!diff_mode_) {
+      absl::StrAppendFormat(&out, "0x%x,",
+                            static_cast<uint32_t>(sym->Address()));
+    }
+    AppendCsvField(&out, sym->FullName());
+    out.push_back(',');
+    AppendCsvField(&out, PathForCsv(*sym));
+
+    int32_t metric_value = 0;
+    if (method_count_mode_) {
+      if (!diff_mode_) {
+        metric_value = 1;
+      } else {
+        DiffStatus status = sym->GetDiffStatus();
+        metric_value = status == DiffStatus::kAdded
+                           ? 1
+                           : (status == DiffStatus::kRemoved ? -1 : 0);
+      }
+    } else if (relocations_mode_) {
+      metric_value = sym->RelocationCount();
+    } else {
+      metric_value = sym->SizeWithoutPadding();
+    }
+
+    int32_t num_aliases = 1;
+    if (diff_mode_) {
+      const auto* delta = static_cast<const DeltaSymbol*>(sym);
+      num_aliases =
+          (delta->After() ? delta->After() : delta->Before())->NumAliases();
+    } else {
+      num_aliases = sym->NumAliases();
+    }
+    absl::StrAppendFormat(&out, ",%d,%d\n", metric_value, num_aliases);
+  }
+  return out;
 }
 
 void TreeBuilder::AddFileEntry(const GroupedPath& grouped_path,
@@ -279,6 +384,7 @@ void TreeBuilder::AddFileEntry(const GroupedPath& grouped_path,
       agg.padding += padding;
       continue;
     }
+    filtered_symbols_.push_back(sym);
     TreeNode* symbol_node = tree_node_factory_.Make(ArtifactType::kSymbol);
     symbol_node->id_path =
         GroupedPath{"", sym->IsDex() ? sym->TemplateName() : sym->FullName()};

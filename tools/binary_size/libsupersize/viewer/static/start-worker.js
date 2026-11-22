@@ -104,6 +104,13 @@ class TreeWorker {
   queryAncestryById(id) {
     return this._waitForResponse('queryAncestryById', id);
   }
+
+  /**
+   * @return {Promise<!DumpCsvResults>}
+   */
+  dumpCsv() {
+    return this._waitForResponse('dumpCsv', null);
+  }
 }
 /**
  * @param {function(TreeProgress): *} onProgressHandler

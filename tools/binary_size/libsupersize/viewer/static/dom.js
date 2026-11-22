@@ -113,6 +113,14 @@ class MainElements {
     this.linkDownloadLoad =
         /** @type {!HTMLAnchorElement} */ (this.query('#link-download-load'));
 
+    /** @type {!HTMLButtonElement} */
+    this.btnDownloadCsv =
+        /** @type {!HTMLButtonElement} */ (this.query('#btn-download-csv'));
+
+    /** @type {!HTMLSpanElement} */
+    this.spanLiveStatus =
+        /** @type {!HTMLSpanElement} */ (this.query('#span-live-status'));
+
     /** @type {!HTMLInputElement} */
     this.fileUpload =
         /** @type {!HTMLInputElement} */ (this.query('#file-upload'));
