@@ -4926,7 +4926,6 @@ void WebAppIntegrationTestDriver::SetFileHandlingEnabled(Site site,
 
 void WebAppIntegrationTestDriver::LaunchFile(Site site,
                                              FilesOptions files_options) {
-  webapps::AppId app_id = GetAppIdBySiteMode(site);
   std::vector<base::FilePath> file_paths = GetTestFilePaths(files_options);
 #if BUILDFLAG(IS_MAC)
   std::vector<GURL> urls;
@@ -4937,6 +4936,7 @@ void WebAppIntegrationTestDriver::LaunchFile(Site site,
 
   LaunchFromAppShim(site, urls, /*wait_for_complete_launch=*/false);
 #else
+  webapps::AppId app_id = GetAppIdBySiteMode(site);
   StartupBrowserCreator browser_creator;
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kAppId, app_id);

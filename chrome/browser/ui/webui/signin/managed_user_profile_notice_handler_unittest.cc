@@ -530,10 +530,6 @@ TEST_F(ManagedUserProfileNoticeHandlerTest,
     const std::string unknown_device_manager = "";
     ScopedDeviceManagerForTesting unknown_device_manager_for_testing(
         unknown_device_manager.c_str());
-    std::string title =
-        ManagedUserProfileNoticeHandler::GetManagedAccountTitleWithEmail(
-            &managed_profile, GetProfileEntry(&managed_profile),
-            "intercepted.com", u"alice@intercepted.com");
     l10n_util::GetStringFUTF8(
         IDS_ENTERPRISE_PROFILE_WELCOME_PROFILE_SEPARATION_DEVICE_MANAGED,
         u"alice@intercepted.com");

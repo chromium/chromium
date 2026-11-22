@@ -804,10 +804,8 @@ std::vector<OmniboxContextMenuController::TabInfo>
 OmniboxContextMenuController::GetRecentTabs() const {
   std::vector<OmniboxContextMenuController::TabInfo> tabs;
 
-  std::vector<contextual_search::FileInfo> uploaded_file_infos;
-  if (auto* session_handle = GetOrCreateContextualSessionHandle()) {
-    uploaded_file_infos = session_handle->GetUploadedContextFileInfos();
-  }
+  // Make sure the contextual session handle exists.
+  GetOrCreateContextualSessionHandle();
 
   // Iterate through the tab strip model.
   auto* browser_window_interface =

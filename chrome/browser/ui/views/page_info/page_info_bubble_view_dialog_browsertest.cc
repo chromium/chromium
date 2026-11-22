@@ -897,10 +897,10 @@ class PageInfoBubbleViewWebAppBrowserTest
     // https://crbug.com/41419544.
     set_should_verify_dialog_bounds(false);
 
+#if BUILDFLAG(IS_MAC)
     const std::string& name =
         name_with_param_suffix.substr(0, name_with_param_suffix.find("/"));
 
-#if BUILDFLAG(IS_MAC)
     if (name == "NotificationSystemPermissionDenied") {
       AppShimHost* app_shim_host =
           apps::AppShimManager::Get()->FindOrCreateHostForTesting(

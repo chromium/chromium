@@ -4854,7 +4854,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, DuplicateTabsShownMetric) {
   base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>>
       tab_info_future;
   handler().GetRecentTabs(tab_info_future.GetCallback());
-  auto tabs = tab_info_future.Take();
+  EXPECT_TRUE(tab_info_future.Wait());
 
   // Even though there are more duplicates above, only three tabs are kept
   // by `GetRecentTabs` with the default configuration, so there can only
@@ -4871,7 +4871,7 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, ActiveTabsCountMetric) {
   base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>>
       tab_info_future;
   handler().GetRecentTabs(tab_info_future.GetCallback());
-  auto tabs = tab_info_future.Take();
+  EXPECT_TRUE(tab_info_future.Wait());
 
   histogram_tester().ExpectUniqueSample(
       "ContextualSearch.ActiveTabsCountOnContextMenuOpen.NewTabPage", 3, 1);
