@@ -118,9 +118,13 @@ SkPath ContentsContainerOutline::GetPath(const gfx::RectF& local_bounds,
 
 void ContentsContainerOutline::UpdateState(bool is_active,
                                            bool is_highlighted) {
+  const bool highlight_changed = is_highlighted_ != is_highlighted;
   is_active_ = is_active;
   is_highlighted_ = is_highlighted;
   SetVisible(true);
+  if (highlight_changed) {
+    SetClipPath();
+  }
   SchedulePaint();
 }
 
@@ -154,8 +158,22 @@ void ContentsContainerOutline::OnPaint(gfx::Canvas* canvas) {
 
 void ContentsContainerOutline::OnViewBoundsChanged(views::View* observed_view) {
   CHECK(observed_view == mini_toolbar_.get());
-  SetClipPath();
-  SchedulePaint();
+  if (mini_toolbar_->size() != mini_toolbar_clip_size_) {
+    SetClipPath();
+  }
+  if (GetVisible()) {
+    SchedulePaint();
+  }
+}
+
+void ContentsContainerOutline::OnViewVisibilityChanged(
+    views::View* observed_view,
+    views::View* starting_view,
+    bool visible) {
+  CHECK(observed_view == mini_toolbar_.get());
+  if (visible) {
+    SetClipPath();
+  }
 }
 
 void ContentsContainerOutline::OnViewIsDeleting(views::View* observed_view) {
@@ -165,6 +183,11 @@ void ContentsContainerOutline::OnViewIsDeleting(views::View* observed_view) {
 }
 
 void ContentsContainerOutline::SetClipPath() {
+  if (!mini_toolbar_ || !mini_toolbar_->GetVisible() ||
+      mini_toolbar_->size().IsEmpty()) {
+    return;
+  }
+
   // Set clip path on the mini toolbar view, it uses half thickness less corner
   // radius than the outline. This path needs to match the outline path.
   gfx::Rect mini_toolbar_rect(mini_toolbar_->GetLocalBounds());
@@ -202,6 +225,7 @@ void ContentsContainerOutline::SetClipPath() {
   }
 
   mini_toolbar_->SetClipPath(clip_path.detach());
+  mini_toolbar_clip_size_ = mini_toolbar_->size();
 }
 
 BEGIN_METADATA(ContentsContainerOutline)

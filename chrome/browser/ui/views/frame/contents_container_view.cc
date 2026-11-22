@@ -602,21 +602,26 @@ views::ProposedLayout ContentsContainerView::CalculateProposedLayout(
   }
 
   if (mini_toolbar_) {
-    // |mini_toolbar_| should be offset in the bottom right corner, overlapping
-    // the outline. Shrink the available space by corner radius to ensure we
-    // have space to draw it at the corners.
-    views::SizeBounds available_space(width, height);
-    available_space.Enlarge(-ContentsContainerOutline::kCornerRadius,
-                            -ContentsContainerOutline::kCornerRadius);
-    gfx::Size mini_toolbar_size =
-        mini_toolbar_->GetPreferredSize(available_space);
-    const int offset_x = width - mini_toolbar_size.width();
-    const int offset_y = height - mini_toolbar_size.height();
-    const gfx::Rect mini_toolbar_rect =
-        gfx::Rect(offset_x, offset_y, mini_toolbar_size.width(),
-                  mini_toolbar_size.height());
-    layouts.child_layouts.emplace_back(
-        mini_toolbar_.get(), mini_toolbar_->GetVisible(), mini_toolbar_rect);
+    if (mini_toolbar_->GetVisible()) {
+      // |mini_toolbar_| should be offset in the bottom right corner,
+      // overlapping the outline. Shrink the available space by corner radius to
+      // ensure we have space to draw it at the corners.
+      views::SizeBounds available_space(width, height);
+      available_space.Enlarge(-ContentsContainerOutline::kCornerRadius,
+                              -ContentsContainerOutline::kCornerRadius);
+      gfx::Size mini_toolbar_size =
+          mini_toolbar_->GetPreferredSize(available_space);
+      const int offset_x = width - mini_toolbar_size.width();
+      const int offset_y = height - mini_toolbar_size.height();
+      const gfx::Rect mini_toolbar_rect =
+          gfx::Rect(offset_x, offset_y, mini_toolbar_size.width(),
+                    mini_toolbar_size.height());
+      layouts.child_layouts.emplace_back(mini_toolbar_.get(), true,
+                                         mini_toolbar_rect);
+    } else {
+      layouts.child_layouts.emplace_back(mini_toolbar_.get(), false,
+                                         gfx::Rect());
+    }
   }
 
   if (container_outline_) {

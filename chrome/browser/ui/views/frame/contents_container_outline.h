@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
@@ -48,11 +49,15 @@ class ContentsContainerOutline : public views::View,
 
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
+  void OnViewVisibilityChanged(views::View* observed_view,
+                               views::View* starting_view,
+                               bool visible) override;
   void OnViewIsDeleting(views::View* observed_view) override;
 
   raw_ptr<views::View> mini_toolbar_ = nullptr;
   bool is_active_ = false;
   bool is_highlighted_ = false;
+  gfx::Size mini_toolbar_clip_size_;
   base::ScopedObservation<views::View, views::ViewObserver>
       view_bounds_observer_{this};
 };
