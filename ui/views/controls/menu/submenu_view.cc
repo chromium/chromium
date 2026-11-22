@@ -35,6 +35,8 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_scroll_view_container.h"
 #include "ui/views/controls/menu/menu_separator.h"
+#include "ui/views/rect_based_targeting_utils.h"
+#include "ui/views/view_targeter.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget.h"
@@ -61,6 +63,7 @@ std::vector<MIV*> GetMenuItemsFromChildren(const View::Views& children) {
 
 SubmenuView::SubmenuView(MenuItemView* parent) : parent_menu_item_(parent) {
   CHECK(parent_menu_item_);
+  SetEventTargeter(std::make_unique<ViewTargeter>(this));
 
   // Menus in Chrome are always traversed in a vertical direction.
   GetViewAccessibility().SetIsVertical(true);
@@ -216,8 +219,21 @@ void SubmenuView::ChildPreferredSizeChanged(View* child) {
   }
 }
 
+void SubmenuView::ChildVisibilityChanged(View* child) {
+  visible_children_.clear();
+}
+
+void SubmenuView::OnChildLayerChanged(View* child) {
+  if (child->parent() == this) {
+    visible_children_.clear();
+  }
+}
+
 void SubmenuView::ViewHierarchyChanged(
     const ViewHierarchyChangedDetails& details) {
+  if (details.parent == this) {
+    visible_children_.clear();
+  }
   if (!details.is_add && details.child == drop_item_) {
     drop_item_ = nullptr;
     drop_position_ = MenuDelegate::DropPosition::kNone;
@@ -229,6 +245,7 @@ void SubmenuView::ViewHierarchyChanged(
 void SubmenuView::Layout(PassKey) {
   // We're in a ScrollView, and need to set our width/height ourselves.
   if (!parent()) {
+    visible_children_.clear();
     return;
   }
 
@@ -239,6 +256,8 @@ void SubmenuView::Layout(PassKey) {
                 ? std::max(parent()->height() - pref_height, y())
                 : 0,
             parent()->width(), pref_height);
+  // `SetBounds()` may re-enter `Layout()`, so clear any cache it built.
+  visible_children_.clear();
 
   const gfx::Insets insets = GetInsets();
   const int x = insets.left();
@@ -248,6 +267,8 @@ void SubmenuView::Layout(PassKey) {
       MenuConfig::instance().between_item_vertical_padding;
   bool previous_child_was_lower_separator = false;
   bool previous_child_was_menu_item_separator = false;
+  Views visible_children;
+  bool can_cache_visible_children = true;
   for (View* child : children()) {
     if (child->GetVisible()) {
       const auto* separator = AsViewClass<MenuSeparator>(child);
@@ -261,11 +282,19 @@ void SubmenuView::Layout(PassKey) {
       }
       child->SetBounds(x, y, menu_item_width,
                        child->GetHeightForWidth(menu_item_width));
+      if (child->layer() || child->targeter()) {
+        can_cache_visible_children = false;
+      } else if (can_cache_visible_children) {
+        visible_children.push_back(child);
+      }
       y = child->bounds().bottom();
       previous_child_was_lower_separator =
           separator && separator->GetType() == ui::LOWER_SEPARATOR;
       previous_child_was_menu_item_separator = is_menu_item_separator;
     }
+  }
+  if (can_cache_visible_children) {
+    visible_children_ = std::move(visible_children);
   }
 }
 
@@ -863,6 +892,50 @@ void SubmenuView::SetBorderColorId(std::optional<ui::ColorId> color_id) {
   }
 
   border_color_id_ = color_id;
+}
+
+View* SubmenuView::GetTooltipHandlerForPoint(const gfx::Point& point) {
+  if (visible_children_.empty()) {
+    return View::GetTooltipHandlerForPoint(point);
+  }
+  if (!HitTestPoint(point) || !GetCanProcessEventsWithinSubtree()) {
+    return nullptr;
+  }
+
+  View* const child = GetVisibleChildAtY(point.y());
+  if (!child) {
+    return this;
+  }
+  View* const handler = child->GetTooltipHandlerForPoint(
+      ConvertPointToTarget(this, child, point));
+  return handler ? handler : this;
+}
+
+View* SubmenuView::TargetForRect(View* root, const gfx::Rect& rect) {
+  if (root != this || visible_children_.empty() ||
+      !views::UsePointBasedTargeting(rect)) {
+    return ViewTargeterDelegate::TargetForRect(root, rect);
+  }
+
+  View* const child = GetVisibleChildAtY(rect.y());
+  if (!child || !child->GetCanProcessEventsWithinSubtree()) {
+    return this;
+  }
+  const gfx::Point point_in_child_coords =
+      ConvertPointToTarget(this, child, rect.origin());
+  if (!child->HitTestPoint(point_in_child_coords)) {
+    return this;
+  }
+  return child->GetEventHandlerForPoint(point_in_child_coords);
+}
+
+View* SubmenuView::GetVisibleChildAtY(int y) {
+  const auto it = std::ranges::upper_bound(visible_children_, y, {}, &View::y);
+  if (it == visible_children_.begin()) {
+    return nullptr;
+  }
+  View* const child = *std::prev(it);
+  return y < child->bounds().bottom() ? child : nullptr;
 }
 
 BEGIN_METADATA(SubmenuView)

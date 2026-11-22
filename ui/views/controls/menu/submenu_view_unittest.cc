@@ -21,6 +21,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
@@ -146,5 +147,74 @@ TEST_F(SubmenuViewTest, NestedSubmenuHostsChildAXTreeOnOwningMenuItem) {
   owner->CloseNow();
 }
 #endif  // BUILDFLAG(HAS_NATIVE_ACCESSIBILITY)
+
+TEST_F(SubmenuViewTest, BinarySearchTargetForRectAndTooltipMatchesBase) {
+  auto owner = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  owner->Show();
+
+  auto menu_delegate = std::make_unique<MenuDelegate>();
+  auto root_owning = std::make_unique<MenuItemView>(menu_delegate.get());
+  MenuItemView* root = root_owning.get();
+  constexpr int kItemCount = 15;
+  for (int i = 0; i < kItemCount; ++i) {
+    MenuItemView* item = root->AppendMenuItem(i + 1, u"Bookmark Item");
+    if (i == 3) {
+      item->SetVisible(false);
+    }
+    if (i == 6) {
+      item->SetEnabled(false);
+    }
+    if (i == 9) {
+      root->AppendSeparator();
+    }
+  }
+
+  MenuRunner menu_runner(std::move(root_owning), 0);
+  menu_runner.RunMenuAt(owner.get(), nullptr, gfx::Rect(0, 0, 20, 20),
+                        MenuAnchorPosition::kTopLeft,
+                        ui::mojom::MenuSourceType::kNone);
+  ASSERT_TRUE(menu_runner.IsRunning());
+
+  SubmenuView* submenu = root->GetSubmenu();
+  ASSERT_NE(nullptr, submenu);
+  ASSERT_GT(submenu->height(), 0);
+  ASSERT_GT(submenu->width(), 0);
+
+  const auto verify_queries = [&](bool mirrored) {
+    submenu->SetMirrored(mirrored);
+    const int x_inside = submenu->width() / 2;
+    const int x_left = 0;
+    const int x_outside = submenu->width() + 5;
+    const int y_limit = submenu->height() + 10;
+    // Sweep every row, covering each item edge, padding gap, the
+    // hidden/disabled/separator rows, and past the bottom of the submenu.
+    for (int y = -5; y <= y_limit; ++y) {
+      for (int x : {x_inside, x_left, x_outside}) {
+        const gfx::Point pt(x, y);
+        const gfx::Rect rect(pt, gfx::Size(1, 1));
+        EXPECT_EQ(submenu->ViewTargeterDelegate::TargetForRect(submenu, rect),
+                  submenu->GetEventHandlerForPoint(pt))
+            << "mirrored=" << mirrored << " pt=" << pt.ToString();
+        EXPECT_EQ(submenu->View::GetTooltipHandlerForPoint(pt),
+                  submenu->GetTooltipHandlerForPoint(pt))
+            << "mirrored=" << mirrored << " pt=" << pt.ToString();
+      }
+    }
+  };
+
+  verify_queries(/*mirrored=*/false);
+  verify_queries(/*mirrored=*/true);
+
+  // Mutate child visibility and add a new item, re-layout, and verify again.
+  submenu->GetMenuItemAt(3)->SetVisible(true);
+  submenu->GetMenuItemAt(4)->SetVisible(false);
+  root->AppendMenuItem(kItemCount + 1, u"Appended Item");
+  submenu->InvalidateLayout();
+  test::RunScheduledLayout(submenu);
+  verify_queries(/*mirrored=*/false);
+
+  menu_runner.Cancel();
+  owner->CloseNow();
+}
 
 }  // namespace views

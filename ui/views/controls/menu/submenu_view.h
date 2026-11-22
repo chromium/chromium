@@ -19,6 +19,7 @@
 #include "ui/views/controls/prefix_delegate.h"
 #include "ui/views/controls/prefix_selector.h"
 #include "ui/views/view.h"
+#include "ui/views/view_targeter_delegate.h"
 
 namespace ui {
 struct OwnedWindowAnchor;
@@ -47,7 +48,8 @@ class MenuScrollViewContainer;
 // are provided that allow the user to see all the menu items.
 class VIEWS_EXPORT SubmenuView : public View,
                                  public PrefixDelegate,
-                                 public ScrollDelegate {
+                                 public ScrollDelegate,
+                                 public ViewTargeterDelegate {
   METADATA_HEADER(SubmenuView, View)
 
  public:
@@ -142,6 +144,11 @@ class VIEWS_EXPORT SubmenuView : public View,
   // Overriden from View to prevent tab from doing anything.
   bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& e) override;
 
+  View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
+
+  // ViewTargeterDelegate:
+  View* TargetForRect(View* root, const gfx::Rect& rect) override;
+
   // Returns the parent menu item we're showing children for.
   const MenuItemView* GetMenuItem() const;
   MenuItemView* GetMenuItem() {
@@ -215,11 +222,17 @@ class VIEWS_EXPORT SubmenuView : public View,
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
   void ChildPreferredSizeChanged(View* child) override;
+  void ChildVisibilityChanged(View* child) override;
+  void OnChildLayerChanged(View* child) override;
   void ViewHierarchyChanged(
       const ViewHierarchyChangedDetails& details) override;
 
  private:
   friend class MenuControllerTest;
+
+  // Returns the child in `visible_children_` whose vertical extent contains
+  // `y`, or nullptr if there is none.
+  View* GetVisibleChildAtY(int y);
 
   void SchedulePaintForDropIndicator(MenuItemView* item,
                                      MenuDelegate::DropPosition position);
@@ -297,6 +310,13 @@ class VIEWS_EXPORT SubmenuView : public View,
   std::optional<ui::ColorId> border_color_id_;
 
   bool use_scroll_bar_ = false;
+
+  // The visible children in the order `Layout()` stacked them top to bottom,
+  // for O(log N) hit-testing in large menus. Empty if any visible child has a
+  // layer or a targeter, in which case lookups use the base implementations.
+  // Assumes children don't change their bounds, transform or targeter after
+  // `Layout()`, since those changes don't notify this view.
+  Views visible_children_;
 
   base::WeakPtrFactory<SubmenuView> weak_ptr_factory_{this};
 };
