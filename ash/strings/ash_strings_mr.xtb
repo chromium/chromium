@@ -447,6 +447,7 @@
 <translation id="2053312383184521053">निष्क्रिय स्थिती डेटा</translation>
 <translation id="2058456167109518507">डिव्हाइस आढळले</translation>
 <translation id="2064048859448024834">कॅमेराचे पूर्वावलोकन सुरू आहे</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{१ लिंक}other{# लिंक}}</translation>
 <translation id="2067220651560163985">तापमान सेल्सियसमध्ये दाखवा</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> ने <ph name="PRINTER_NAME" /> प्रिंट करणे पूर्ण केले आहे</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> टॉगल करा. <ph name="CAPTURE_MEDIUM" /> हा <ph name="CAPTURE_STATE" /></translation>

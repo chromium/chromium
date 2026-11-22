@@ -308,6 +308,7 @@
 <translation id="1308105352527684175">तुम्ही ठरावीक आशय अ‍ॅक्सेस करू शकणार नाही</translation>
 <translation id="1311092170520822848">ही साइट तुमच्या डिव्हाइसशी कनेक्ट केलेले स्मार्ट कार्ड रीडर आणि त्यांना उपलब्ध असलेली संभाव्य स्‍मार्ट कार्ड नियंत्रित करत आहे</translation>
 <translation id="131112695174432497">जाहिरात पर्सनलायझेशनवर परिणाम करणारा डेटा हटवला आहे</translation>
+<translation id="13115907161008983">लिंक कॉपी करा</translation>
 <translation id="131188242279372879">Chrome ची सर्वोच्च सुरक्षा पातळी मिळवण्यासाठी वर्धित संरक्षण डिस्कव्हर करा</translation>
 <translation id="1312298796781107732">{NUM_TABS,plural, =1{तुमच्या ब्राउझर चा वेग कमी करणाऱ्या टॅब चे निराकरण करा}other{तुमच्या ब्राउझर चा वेग कमी करणाऱ्या टॅब चे निराकरण करा}}</translation>
 <translation id="1312721752506309252">सुधारित संरक्षण सुरू आहे</translation>
@@ -444,6 +445,7 @@
 <translation id="1482626744466814421">हा टॅब बुकमार्क करा…</translation>
 <translation id="1482772681918035149">पासवर्ड संपादित करा</translation>
 <translation id="1483137792530497944">नदी</translation>
+<translation id="1483148302144576204">लिंक कॉपी करा</translation>
 <translation id="1483151333977672176">पाठवले!</translation>
 <translation id="1483431819520123112">दाखवण्याचे नाव क्लिपबोर्डवर कॉपी केले आहे</translation>
 <translation id="1483493594462132177">पाठवा</translation>
@@ -1069,6 +1071,7 @@
 <translation id="2168036794078614559">अहवाल पाठवला</translation>
 <translation id="2168735174585029637">तुमच्या टॅबना नवीन पारदर्शक लुक द्या</translation>
 <translation id="217120844667431680">AI मोड वापरून आणखी बरेच काही करा</translation>
+<translation id="2172046302886074612">‘<ph name="MODEL_CATEGORY" />' काढून टाकले आहे</translation>
 <translation id="2173302385160625112">तुमचे इंटरनेट कनेक्शन तपासा</translation>
 <translation id="2175384018164129879">शोध इंजीन आणि साइट शोध व्यवस्थापित करा</translation>
 <translation id="2175773164573457310">Gemini ला विचारण्यासाठी कोणताही मजकूर किंवा इमेज निवडा</translation>
@@ -2096,6 +2099,7 @@
 <translation id="3270965368676314374">तुमच्या कॉंप्युटरवरील फोटो, संगीत आणि अन्य मीडिया वाचा, बदला आणि हटवा</translation>
 <translation id="3275464924531706548"><ph name="HEADER" /> कोलॅप्स करा</translation>
 <translation id="3275778913554317645">विंडो म्हणून उघडा</translation>
+<translation id="3277325180914877290">मजकूर आणखी मोठा करा</translation>
 <translation id="3280237271814976245">या फॉरमॅटमध्ये सेव्ह करा...</translation>
 <translation id="3280243678470289153">Chrome मध्ये रहा</translation>
 <translation id="3282210178675490297"><ph name="APP_NAME" /> वर टॅब शेअर करत आहे</translation>
@@ -2605,6 +2609,7 @@
 <translation id="3786890785076278600">स्थिर ओळ</translation>
 <translation id="3787434344076711519">भाषांतराची प्रतीक्षा करत आहे</translation>
 <translation id="3789432704615470433">SharePoint आणि OneDrive फाइल</translation>
+<translation id="3789493399245366422">फुलस्क्रीन, फुल-स्क्रीन, मॅक्झिमाइज, मॅक्झिमाइज, इमर्सिव्ह, टूलबार लपवा, प्रेझेंटेशन, F11</translation>
 <translation id="3789841737615482174">स्थापना करा</translation>
 <translation id="3790417903123637354">काहीतरी चूक झाली. नंतर पुन्हा प्रयत्न करा</translation>
 <translation id="379082410132524484">तुमचे कार्ड एक्सपायर झालेले आहे</translation>
@@ -3373,6 +3378,7 @@
 <translation id="4665035764476941598">तुमचे इतर टॅब परत आणण्यासाठी इथे क्लिक करा</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> द्वारे स्टोअर केलेला डेटा हटवला जाईल.</translation>
 <translation id="4666483368282673356">तुमचा Gemini इतिहास व्यवस्थापित करा</translation>
+<translation id="4667646546186544608">झूम आउट करा, संकुचित करा, लहान, कमी करा, कमी करा, स्केल कमी करा, पेज झूम करा</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670909875730475086">अभिनंदन! तुमच्या डिव्हाइसवर <ph name="APP_NAME" /> यशस्वीरीत्या इंस्टॉल करण्यात आले आहे</translation>
 <translation id="4672759829555593783"><ph name="FILE_NAME" /> आता उघडा</translation>
@@ -4778,6 +4784,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6255253900817321392">नवीन टॅब न उघडता तुमच्या Mac वर कुठेही अधिक जलद शोधा</translation>
 <translation id="6257602895346497974">सिंक सुरू करा…</translation>
 <translation id="6258818697161346451">या डिव्हाइसवर तुमच्या पासकी वापरा</translation>
+<translation id="6259429507754648364">{NUM_TABS,plural, =1{लिंक कॉपी करा}other{लिंक कॉपी करा}}</translation>
 <translation id="6261688934280090835">ChromeOS कियोस्क ॲपचे लॉग</translation>
 <translation id="6263082573641595914">Microsoft CA आवृत्ती</translation>
 <translation id="6264060420924719834">या अ‍ॅपमध्ये इतर साइटवरील वेब आशय आहे</translation>
@@ -4906,6 +4913,7 @@ I feel - विटांची इमारत</translation>
 <translation id="640980925764810750"><ph name="MENU_ITEM" />...</translation>
 <translation id="6410257289063177456">इमेज फाइल</translation>
 <translation id="6410390304316730527">तुम्हाला फसवून द्वेषयुक्त सॉफ्टवेअर इंस्टॉल करणे किंवा पासवर्ड, फोन नंबर किंवा क्रेडिट कार्डसारखी वैयक्तिक माहिती उघड करणे यांसारखी एखादी धोकादायक गोष्ट करायला लावणार्‍या हल्लेखोरांपासून सुरक्षित ब्राउझिंग तुमचे संरक्षण करते. तुम्ही ते बंद केल्यास, अनोळखी किंवा अप्रतिष्ठित साइट ब्राउझ करताना सावध रहा.</translation>
+<translation id="6411490324917773403">मजकूर आणखी लहान करा</translation>
 <translation id="6416743254476733475">अनुमती द्या किंवा तुमच्या कॉंप्युटरवर ब्लॉक करा.</translation>
 <translation id="6416856063840710198">तुमच्या भेटींमध्ये सुधारणा करण्यासाठी, साइट बऱ्याचदा तुमची ॲक्टिव्हिटी तुमच्या डिव्हाइसवर सेव्ह करतात. <ph name="SETTINGS" /></translation>
 <translation id="6417468503703810114">डीफॉल्ट वर्तन</translation>
@@ -6399,6 +6407,7 @@ I feel - विटांची इमारत</translation>
 <translation id="8041093619605951337">आनंदी</translation>
 <translation id="8042142357103597104">मजकुराची अपारदर्शकता</translation>
 <translation id="8042331986490021244">तुमचे पासवर्ड हे Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केले जाण्यापूर्वी तुमच्या डिव्हाइसवर एंक्रिप्ट केले जातात</translation>
+<translation id="8042441076562098746">झूम इन करा, मॅग्निफाय करा, मोठे करा, आणखी मोठे, मोठे, वाढवा, स्केल अप करा, पेज झूम करा</translation>
 <translation id="8045253504249021590">Google डॅशबोर्ड द्वारे सिंक थांबविले गेले आहे.</translation>
 <translation id="8045752459073395242">ऑफिसमध्ये जनरेटिव्ह AI वापरण्याविषयी अधिक जाणून घ्या</translation>
 <translation id="8045923671629973368">ॲप्लिकेशन आयडी किंवा वेबस्टोअर URL टाका</translation>
@@ -6754,6 +6763,7 @@ I feel - विटांची इमारत</translation>
 <translation id="844059392176531372">“<ph name="GROUP_NAME" />” हा टॅब गट शेअर करा</translation>
 <translation id="844063558976952706">नेहमी या साइटवर</translation>
 <translation id="8442599250002885105">{COUNT,plural, =1{गुप्त मोड किंवा अलिप्त विंडो उघडी आहे. ती पुन्हा उघडणार नाही.}other{सर्व प्रोफाइलमध्ये # गुप्त मोड आणि अलिप्त विंडो उघड्या आहेत. त्या पुन्हा उघडणार नाहीत.}}</translation>
+<translation id="84426883520448311">थीम, रंग, बॅकग्राउंड, वॉलपेपर, फिकट, गडद, मोड, फिकट मोड, गडद मोड, वैयक्तिक, स्टायलिंग, सौंदर्यशास्त्र</translation>
 <translation id="8443986842926457191">URL मध्ये २०४८ पेक्षा जास्त वर्ण आहेत</translation>
 <translation id="8445281870900174108">हा टॅब तुमचा कॅमेरा वापरत आहे</translation>
 <translation id="8446884382197647889">अधिक जाणून घ्या</translation>
@@ -7344,6 +7354,7 @@ I feel - विटांची इमारत</translation>
 <translation id="9076821103818989526">साइड पॅनल</translation>
 <translation id="907779190626433918">प्रत्येक साइट किंवा अ‍ॅपसाठी युनिक पासवर्ड वापरा. एखाद्या व्यक्तीला पुन्हा वापरलेला पासवर्ड आढळल्यास, तो तुमची इतर खाती अ‍ॅक्सेस करण्यासाठी वापरला जाऊ शकतो.</translation>
 <translation id="9078546160009814724">वापरकर्ता नाव: <ph name="USERNAME" /></translation>
+<translation id="9078700412066082407">{NUM_TABS,plural, =1{लिंक कॉपी करा}other{लिंक कॉपी करा}}</translation>
 <translation id="907972398081911688">तुमचा भंग केलेला पासवर्ड आपोआप बदला</translation>
 <translation id="9081543426177426948">गुप्त मोडमध्ये तुम्ही भेट देता त्या साइट सेव्ह केल्या जात नाहीत</translation>
 <translation id="9082750838489080452">अ‍ॅप्लिकेशन: <ph name="APP_NAME" /></translation>

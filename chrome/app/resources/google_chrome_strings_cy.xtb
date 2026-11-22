@@ -81,6 +81,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="1688214853608504530">Pan fyddwch chi'n teipio yn y bar cyfeiriad neu'r blwch chwilio, mae Chrome yn anfon yr hyn rydych chi'n ei deipio i offer chwilio, AI ac asiant eich sefydliad i gael awgrymiadau.</translation>
 <translation id="1698376642261615901">Porwr gwe yw Google Chrome sy'n rhedeg tudalennau gwe a rhaglenni mewn chwinciad. Mae'n gyflym, sefydlog ac yn hawdd ei ddefnyddio. Porwch y we'n fwy diogel gyda diogelwch rhag maleiswedd a gwe-rwydo pwrpasol yn Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Bydd Chrome yn ail-lansio mewn awr}zero{Bydd Chrome yn ail-lansio mewn # awr}two{Bydd Chrome yn ail-lansio mewn # awr}few{Bydd Chrome yn ail-lansio mewn # awr}many{Bydd Chrome yn ail-lansio mewn # awr}other{Bydd Chrome yn ail-lansio mewn # awr}}</translation>
+<translation id="1713866023633141719">Mae AI ar ddyfais yn barod</translation>
 <translation id="1722488837206509557">Bydd hyn yn caniatáu i chi ddewis o'r dyfeisiau sydd ar gael ac arddangos cynnwys arnynt.</translation>
 <translation id="1724094881572874997">Er mwyn diogelu eich gwaith ar Chrome, bydd eich sefydliad yn gallu gweld neu reoli gwybodaeth benodol pan fyddwch wedi mewngofnodi i Chrome.</translation>
 <translation id="1769661297620183092">Gallwch ailagor panel Google Search i ofyn cwestiynau wrth i chi bori</translation>
@@ -153,6 +154,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="2513154137948333830">Mae angen ailgychwyn: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="251329670120169391">eich sefydliad</translation>
 <translation id="2521391734665471391">Cau Dull AI Google Search</translation>
+<translation id="2523048609826818526">Ysgrifennu pwrpas cyffredinol</translation>
 <translation id="2523492931736391680">Eich gwaith wedi'i ddiogelu ar Chrome</translation>
 <translation id="2534365042754120737">I ddiogelu eich data, gadewch i Chrome dynnu caniatadau o wefannau nad ydych wedi ymweld â nhw yn ddiweddar. Nid yw'n stopio hysbysiadau.</translation>
 <translation id="2556847002339236023">Mae eich sefydliad yn cau Chrome pan na chaiff ei ddefnyddio ar ei gyfer <ph name="TIMEOUT_DURATION" />. Cafodd data pori eu dileu. Gallai hyn gynnwys hanes, awtolenwi, a lawrlwythiadau.</translation>
@@ -251,6 +253,7 @@ Os nad yw'r dudalen hon yn gweithio fel y disgwylir, rhowch gynnig ar ganiatáu 
 <translation id="3373752068427117404">Mae llwybrau byr yn rhan o rai nodweddion ac estyniadau Chrome. Gallwch ddewis eu troi yn ôl ymlaen.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Bydd Chrome yn ail-lansio nawr}=1{Bydd Chrome yn ail-lansio mewn 1 eiliad}two{Bydd Chrome yn ail-lansio mewn # eiliad}few{Bydd Chrome yn ail-lansio mewn # eiliad}many{Bydd Chrome yn ail-lansio mewn # eiliad}other{Bydd Chrome yn ail-lansio mewn # eiliad}}</translation>
 <translation id="3380249972812870825">I agor Gemini yn Chrome, pwyswch <ph name="GLOBAL_HOTKEY" /></translation>
+<translation id="3392127217442962664">Ychwanegodd Chrome AI sy'n rhedeg ar eich dyfais. Gall gwefannau a Chrome ei ddefnyddio ar gyfer nodweddion megis:</translation>
 <translation id="3396977131400919238">Bu gwall system weithredu wrth osod. Lawrlwythwch Google Chrome eto.</translation>
 <translation id="3428747202529429621">Yn eich cadw'n ddiogel ar Chrome a gellir ei ddefnyddio i wella'ch diogelwch mewn apiau Google eraill pan fyddwch wedi'ch mewngofnodi</translation>
 <translation id="3438681572027105609">I gael eich cyfrineiriau a rhagor ar eich holl ddyfeisiau, mewngofnodwch i Chrome</translation>
@@ -300,6 +303,7 @@ Os nad yw'r dudalen hon yn gweithio fel y disgwylir, rhowch gynnig ar ganiatáu 
 <translation id="3973161977468201858">Mae Google Chrome eisiau dileu eich data Rheolwr Cyfrineiriau Google. Teipiwch eich cyfrinair Windows i ganiatáu hyn.</translation>
 <translation id="3984557288004650913">O'r botwm "Google Search yn Chrome" ar y bar offer, gallwch ailagor Google Search yn Chrome i ofyn cwestiynau wrth i chi bori</translation>
 <translation id="399788104667917863">Pinio i'r bar offer</translation>
+<translation id="4000385468528550798">AI ar ddyfais wedi'i ddiweddaru</translation>
 <translation id="400161754580828648">I rannu'ch sgrîn, caniatewch recordio sgrîn ar gyfer Chrome yn y Gosodiadau System.</translation>
 <translation id="4012899077942246412">Tra byddwch wedi mewngofnodi, gallwch ddefnyddio'ch cyfrineiriau a rhagor o'ch Cyfrif Google yn Chrome. I newid hyn, ewch i 'Eich cyfrif yn Chrome'.</translation>
 <translation id="4022972681110646219">Cyfieithu'r sgrîn</translation>
@@ -559,6 +563,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6632012506031284914">i chwilio gyda Chrome.</translation>
 <translation id="6634299872736643004">Bydd newidiadau i'r gosodiad hwn yn cael eu gweithredu unwaith y bydd Chrome yn ailgychwyn.</translation>
 <translation id="6644846457769259194">Yn diweddaru eich dyfais (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6659177157954429254">Mae AI ar ddyfais yn gyfredol</translation>
 <translation id="6660596345553328257">Mewngofnodi i Chrome?</translation>
 <translation id="6664219008737641504">Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, <ph name="SETTINGS_LINK" /> y data Chrome yn eich cyfrif</translation>
 <translation id="6676384891291319759">Cyrchu'r Rhyngrwyd</translation>
@@ -600,6 +605,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="7024536598735240744">Gwall dadbacio: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Gallwch newid rhwng proffiliau Chrome yma</translation>
 <translation id="7026856149118332950">Cliciwch <ph name="BEGIN_BOLD" />Ie<ph name="END_BOLD" /> yn yr hysbysiad Windows i binio Chrome i'ch bar tasgau i gael mynediad cyflym.</translation>
+<translation id="7033785662379319359">Mae fersiwn newydd, fwy cryno o AI ar ddyfais yn barod i'w defnyddio ar gyfer tasgau fel crynodebau, prawfddarllen a rhagor</translation>
 <translation id="7047386856539490735">Ydy'r canlyniadau hyn yn ddefnyddiol?</translation>
 <translation id="7051685429025310665">Nid ydych wedi ymweld yn ddiweddar. Mae Chrome wedi tynnu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Personoleiddiwch Chrome</translation>
