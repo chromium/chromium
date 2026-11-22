@@ -14,10 +14,13 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_log.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_logging_settings.h"
 #include "base/version_info/channel.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -26,6 +29,14 @@
 #include "google_apis/gaia/gaia_config.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "google_apis/google_api_keys.h"
+#include "testing/gmock/include/gmock/gmock.h"
+
+using ::testing::_;
+using ::testing::AllOf;
+using ::testing::AnyNumber;
+using ::testing::HasSubstr;
+using ::testing::Not;
+using ::testing::Return;
 
 GoogleAPIKeysTest::GoogleAPIKeysTest() : env_(base::Environment::Create()) {
 #if BUILDFLAG(SUPPORT_CDM_SERVER_CERTIFICATE)
@@ -734,4 +745,123 @@ TEST_F(GoogleAPIKeysTest, OverrideAllKeysUsingConfig) {
   EXPECT_EQ("config-CDM_SERVER_CERTIFICATE",
             google_apis::GetCdmServerCertificate());
 #endif
+}
+
+namespace redact_vlog_test {
+
+#undef GOOGLE_API_KEY
+#undef GOOGLE_CLIENT_ID_MAIN
+#undef GOOGLE_CLIENT_SECRET_MAIN
+#undef GOOGLE_CLIENT_ID_REMOTING
+#undef GOOGLE_CLIENT_SECRET_REMOTING
+#undef GOOGLE_CLIENT_ID_REMOTING_HOST
+#undef GOOGLE_CLIENT_SECRET_REMOTING_HOST
+#undef GOOGLE_DEFAULT_CLIENT_ID
+#undef GOOGLE_DEFAULT_CLIENT_SECRET
+#undef GOOGLE_CDM_SERVER_CERTIFICATE
+
+#define GOOGLE_DEFAULT_CLIENT_SECRET "baked-default-secret"
+
+#include "google_apis/default_api_keys-inc.cc"
+
+}  // namespace redact_vlog_test
+
+TEST_F(GoogleAPIKeysTest, RedactsOverrideValuesInVlog) {
+  // Declared before `scoped_vmodule_switches` so `ScopedLoggingSettings` tears
+  // down after `ScopedVmoduleSwitches`.
+  logging::ScopedLoggingSettings scoped_logging_settings;
+  logging::SetMinLogLevel(logging::LOGGING_FATAL);
+
+  logging::ScopedVmoduleSwitches scoped_vmodule_switches;
+  scoped_vmodule_switches.InitWithSwitches("api_key_cache=1");
+  if (logging::GetVlogLevel("api_key_cache.cc") < 1) {
+    GTEST_SKIP() << "Runtime VLOG is disabled in this build.";
+  }
+
+  std::unique_ptr<base::Environment> env(base::Environment::Create());
+  env->SetVar("GOOGLE_API_KEY", "AIzaSyDemoKey1234567890abcdefghijWXYZ");
+  env->SetVar("GOOGLE_CLIENT_ID_REMOTING", "short-key");
+  env->SetVar("GOOGLE_CLIENT_SECRET_REMOTING",
+              "AIzaSyDemoKey1234567890abcdefghijWXYZ\n");
+
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kGaiaConfigContents,
+      R"({"api_keys":{)"
+      R"("GOOGLE_CLIENT_ID_REMOTING_HOST":"config-LongClientID12345",)"
+      R"("GOOGLE_CLIENT_SECRET_REMOTING_HOST":"")"
+      R"(}})");
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kOAuth2ClientID, "switch-LongClientID12345");
+  auto scoped_config_override = GaiaConfig::SetScopedConfigForTesting(
+      GaiaConfig::CreateFromCommandLineForTesting(
+          scoped_command_line.GetProcessCommandLine()));
+
+  base::test::MockLog log;
+  EXPECT_CALL(log, Log).Times(AnyNumber());
+
+  EXPECT_CALL(
+      log, Log(-1, _, _, _,
+               AllOf(HasSubstr("Overriding API key GOOGLE_API_KEY with value "
+                               "AIza...WXYZ (len=37) from environment "
+                               "variable."),
+                     Not(HasSubstr("DemoKey1234567890abcdefghij")))))
+      .WillOnce(Return(true));
+  EXPECT_CALL(
+      log, Log(-1, _, _, _,
+               AllOf(HasSubstr("Overriding API key GOOGLE_CLIENT_ID_REMOTING "
+                               "with value [redacted, len=9] from environment "
+                               "variable."),
+                     Not(HasSubstr("short-key")))))
+      .WillOnce(Return(true));
+  EXPECT_CALL(
+      log,
+      Log(-1, _, _, _,
+          AllOf(HasSubstr("Overriding API key GOOGLE_CLIENT_SECRET_REMOTING "
+                          "with value [redacted, len=38] from environment "
+                          "variable."),
+                Not(HasSubstr("DemoKey1234567890abcdefghij")))))
+      .WillOnce(Return(true));
+  EXPECT_CALL(
+      log,
+      Log(-1, _, _, _,
+          AllOf(HasSubstr("Overriding API key GOOGLE_CLIENT_ID_REMOTING_HOST "
+                          "with value conf...2345 (len=24) from gaia config."),
+                Not(HasSubstr("LongClientID")))))
+      .WillOnce(Return(true));
+  EXPECT_CALL(log,
+              Log(-1, _, _, _,
+                  HasSubstr("Overriding API key "
+                            "GOOGLE_CLIENT_SECRET_REMOTING_HOST with value "
+                            "[empty] from gaia config.")))
+      .WillOnce(Return(true));
+  EXPECT_CALL(
+      log, Log(-1, _, _, _,
+               AllOf(HasSubstr("Overriding API key GOOGLE_CLIENT_ID_MAIN with "
+                               "value swit...2345 (len=24) from command-line "
+                               "switch."),
+                     Not(HasSubstr("LongClientID")))))
+      .WillOnce(Return(true));
+  EXPECT_CALL(
+      log,
+      Log(-1, _, _, _,
+          AllOf(
+              HasSubstr(
+                  "Using default value for API key GOOGLE_CLIENT_SECRET_MAIN"),
+              Not(HasSubstr("baked-default-secret")))))
+      .WillOnce(Return(true));
+
+  log.StartCapturingLogs();
+
+  google_apis::DefaultApiKeys keys =
+      redact_vlog_test::GetDefaultApiKeysFromDefinedValues();
+  keys.allow_override_via_environment = true;
+  keys.allow_unset_values = true;
+  google_apis::ApiKeyCache api_key_cache(keys);
+
+  log.StopCapturingLogs();
+
+  env->UnSetVar("GOOGLE_API_KEY");
+  env->UnSetVar("GOOGLE_CLIENT_ID_REMOTING");
+  env->UnSetVar("GOOGLE_CLIENT_SECRET_REMOTING");
 }

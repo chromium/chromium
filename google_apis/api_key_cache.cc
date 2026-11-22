@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/environment.h"
@@ -17,6 +18,9 @@
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringize_macros.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -44,6 +48,25 @@ std::string GetAPIKeyOverrideViaFeature() {
     }
   }
   return std::string();
+}
+
+// Formats `value` for VLOG(1) without leaking full credentials. Shows a short
+// prefix/suffix for long printable ASCII values (and length for all values) so
+// developers can still distinguish test overrides or spot malformed env vars.
+std::string RedactKeyValue(std::string_view value) {
+  if (value.empty()) {
+    return "[empty]";
+  }
+  constexpr size_t kMinLengthToPreview = 16;
+  constexpr size_t kPreviewChars = 4;
+  if (value.size() < kMinLengthToPreview ||
+      !std::ranges::all_of(value, base::IsAsciiPrintable<char>)) {
+    return base::StrCat(
+        {"[redacted, len=", base::NumberToString(value.size()), "]"});
+  }
+  return base::StrCat({value.substr(0, kPreviewChars), "...",
+                       value.substr(value.size() - kPreviewChars),
+                       " (len=", base::NumberToString(value.size()), ")"});
 }
 
 // Gets a value for a key.  In priority order, this will be the value
@@ -94,7 +117,8 @@ static std::string CalculateKeyValue(
         maybe_key_value.has_value()) {
       key_value = *maybe_key_value;
       VLOG(1) << "Overriding API key " << environment_variable_name
-              << " with value " << key_value << " from environment variable.";
+              << " with value " << RedactKeyValue(key_value)
+              << " from environment variable.";
     }
   }
 
@@ -102,13 +126,15 @@ static std::string CalculateKeyValue(
       gaia_config->GetAPIKeyIfExists(environment_variable_name, &temp)) {
     key_value = temp;
     VLOG(1) << "Overriding API key " << environment_variable_name
-            << " with value " << key_value << " from gaia config.";
+            << " with value " << RedactKeyValue(key_value)
+            << " from gaia config.";
   }
 
   if (command_line_switch && command_line->HasSwitch(command_line_switch)) {
     key_value = command_line->GetSwitchValueASCII(command_line_switch);
     VLOG(1) << "Overriding API key " << environment_variable_name
-            << " with value " << key_value << " from command-line switch.";
+            << " with value " << RedactKeyValue(key_value)
+            << " from command-line switch.";
   }
 
   if (key_value == DefaultApiKeys::kUnsetApiToken) {
@@ -117,8 +143,8 @@ static std::string CalculateKeyValue(
     // check as their "unset" value is not DefaultApiKeys::kUnsetApiToken.
     CHECK(allow_unset_values);
     if (default_if_unset.size() > 0) {
-      VLOG(1) << "Using default value \"" << default_if_unset
-              << "\" for API key " << environment_variable_name;
+      VLOG(1) << "Using default value for API key "
+              << environment_variable_name;
       key_value = default_if_unset;
     }
   }
