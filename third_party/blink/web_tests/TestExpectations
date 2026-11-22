@@ -2093,6 +2093,7 @@ crbug.com/587450809 [ Linux ] external/wpt/webdriver/tests/classic/perform_actio
 crbug.com/560925587 [ Debug Linux ] external/wpt/webdriver/tests/classic/perform_actions/user_prompts.py [ Crash Failure Pass Timeout ]
 crbug.com/428744357 [ Linux ] external/wpt/webdriver/tests/classic/perform_actions/wheel.py [ Failure Pass Timeout ]
 crbug.com/568343392 [ Linux ] external/wpt/webdriver/tests/classic/set_timeouts/user_prompts.py [ Failure Pass ]
+crbug.com/589068951 [ Linux ] external/wpt/webdriver/tests/classic/take_screenshot/screenshot.py [ Failure Pass Timeout ]
 
 # Android
 crbug.com/534416988 [ Android ] external/wpt/webdriver/tests/bidi/browser/set_client_window_state/rect_state.py [ Failure ]
