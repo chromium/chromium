@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -142,26 +143,50 @@ media::OutputDeviceInfo GetDeviceInfo(SecondDeviceQuery query) {
 }
 
 struct InitTestParam {
+  using QueryPair =
+      std::pair<FirstDeviceQuery, std::optional<SecondDeviceQuery>>;
   using TupleT =
-      std::tuple<FirstDeviceQuery,
-                 SecondDeviceQuery,
+      std::tuple<QueryPair,
                  std::optional<float>,
                  blink::WebAudioLatencyHint::AudioContextLatencyCategory,
                  bool>;
 
   explicit InitTestParam(const TupleT& t)
-      : first_query(std::get<0>(t)),
-        second_query(std::get<1>(t)),
-        context_sample_rate(std::get<2>(t)),
-        latency_category(std::get<3>(t)),
-        remove_resampler(std::get<4>(t)) {}
+      : first_query(std::get<0>(t).first),
+        second_query(std::get<0>(t).second),
+        context_sample_rate(std::get<1>(t)),
+        latency_category(std::get<2>(t)),
+        remove_resampler(std::get<3>(t)) {}
 
   FirstDeviceQuery first_query;
-  SecondDeviceQuery second_query;
+  std::optional<SecondDeviceQuery> second_query;
   std::optional<float> context_sample_rate;
   blink::WebAudioLatencyHint::AudioContextLatencyCategory latency_category;
   bool remove_resampler;
 };
+
+std::vector<InitTestParam::QueryPair> GetDeviceQueryPairs() {
+  std::vector<InitTestParam::QueryPair> pairs;
+  for (FirstDeviceQuery first :
+       {FirstDeviceQuery::kHealthy, FirstDeviceQuery::kTimedOut,
+        FirstDeviceQuery::kNotAuthorized, FirstDeviceQuery::kInvalid}) {
+    switch (first) {
+      case FirstDeviceQuery::kHealthy:
+      case FirstDeviceQuery::kInvalid:
+        for (SecondDeviceQuery second :
+             {SecondDeviceQuery::kOkAlternateBuffer, SecondDeviceQuery::kOk,
+              SecondDeviceQuery::kTimedOut}) {
+          pairs.emplace_back(first, second);
+        }
+        break;
+      case FirstDeviceQuery::kTimedOut:
+      case FirstDeviceQuery::kNotAuthorized:
+        pairs.emplace_back(first, std::nullopt);
+        break;
+    }
+  }
+  return pairs;
+}
 
 std::string GetInitTestParamName(
     const testing::TestParamInfo<InitTestParam>& info) {
@@ -181,17 +206,19 @@ std::string GetInitTestParamName(
       first = "InvalidParams";
       break;
   }
-  std::string second;
-  switch (param.second_query) {
-    case SecondDeviceQuery::kOk:
-      second = base::StringPrintf("ThenOk%d", kDeviceBufferSize);
-      break;
-    case SecondDeviceQuery::kOkAlternateBuffer:
-      second = base::StringPrintf("ThenOk%d", kAlternateDeviceBufferSize);
-      break;
-    case SecondDeviceQuery::kTimedOut:
-      second = "ThenTimedOut";
-      break;
+  std::string second = "NoSecondQuery";
+  if (param.second_query) {
+    switch (*param.second_query) {
+      case SecondDeviceQuery::kOk:
+        second = base::StringPrintf("ThenOk%d", kDeviceBufferSize);
+        break;
+      case SecondDeviceQuery::kOkAlternateBuffer:
+        second = base::StringPrintf("ThenOk%d", kAlternateDeviceBufferSize);
+        break;
+      case SecondDeviceQuery::kTimedOut:
+        second = "ThenTimedOut";
+        break;
+    }
   }
   const std::string context_rate =
       param.context_sample_rate
@@ -874,14 +901,21 @@ TEST_F(RendererWebAudioDeviceImplTest,
   webaudio_device_->Stop();
 }
 
+// Verifies that an internal error during construction tears down `sink_` once
+// and causes a subsequent MaybeCreateSinkAndGetStatus() call to return the
+// cached error without recreating or re-querying the sink.
 TEST_F(RendererWebAudioDeviceImplTest,
        CreateSinkAndGetDeviceStatus_ErrorDevice) {
-  EXPECT_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo)
-      .WillRepeatedly(testing::Return(GetErrorDevice()));
+  {
+    InSequence s;
+
+    EXPECT_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo)
+        .WillOnce(testing::Return(GetErrorDevice()));
+    // Construction failure stops and releases `sink_`.
+    EXPECT_CALL(*mock_audio_renderer_sink_, Stop).Times(1);
+  }
   EXPECT_CALL(*mock_audio_renderer_sink_, Start).Times(0);
   EXPECT_CALL(*mock_audio_renderer_sink_, Play).Times(0);
-  // Stop() is necessary before destruction per AudioRendererSink contract.
-  EXPECT_CALL(*mock_audio_renderer_sink_, Stop).Times(testing::AtLeast(1));
 
   SetupDevice(media::ChannelLayoutConfig::Stereo());
 
@@ -898,16 +932,109 @@ TEST_F(RendererWebAudioDeviceImplTest,
             media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
 }
 
+// Verifies that after a construction timeout, MaybeCreateSinkAndGetStatus()
+// returns the cached timeout without re-querying, while Start() still opens
+// `sink_` asynchronously without clearing the cached status.
+TEST_F(RendererWebAudioDeviceImplTest,
+       StartAfterTimedOutConstructionDoesNotRequery) {
+  {
+    InSequence s;
+
+    EXPECT_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo)
+        .WillOnce(testing::Return(GetDeviceInfo(FirstDeviceQuery::kTimedOut)));
+    EXPECT_CALL(*mock_audio_renderer_sink_, Stop).Times(1);
+    EXPECT_CALL(*mock_audio_renderer_sink_, Start).Times(1);
+    EXPECT_CALL(*mock_audio_renderer_sink_, Play).Times(1);
+    EXPECT_CALL(*mock_audio_renderer_sink_, Stop).Times(1);
+  }
+
+  SetupDevice(media::ChannelLayoutConfig::Stereo());
+  EXPECT_EQ(webaudio_device_->GetSinkForTesting(), nullptr);
+  EXPECT_EQ(webaudio_device_->MaybeCreateSinkAndGetStatus(),
+            media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_TIMED_OUT);
+  EXPECT_EQ(webaudio_device_->GetSinkForTesting(), nullptr);
+
+  webaudio_device_->Start();
+  EXPECT_NE(webaudio_device_->GetSinkForTesting(), nullptr);
+  EXPECT_EQ(webaudio_device_->MaybeCreateSinkAndGetStatus(),
+            media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_TIMED_OUT);
+  EXPECT_NE(webaudio_device_->GetSinkForTesting(), nullptr);
+
+  webaudio_device_->Stop();
+  EXPECT_EQ(webaudio_device_->GetSinkForTesting(), nullptr);
+}
+
 TEST_F(RendererWebAudioDeviceImplTest,
        MaybeCreateSinkAndGetStatus_ErrorDevice) {
+  {
+    InSequence s;
+
+    EXPECT_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo)
+        .WillOnce(testing::Return(GetHealthyDevice()));
+    EXPECT_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo)
+        .WillOnce(testing::Return(GetErrorDevice()));
+    EXPECT_CALL(*mock_audio_renderer_sink_, Stop).Times(1);
+  }
+
   SetupDevice(media::ChannelLayoutConfig::Stereo());
-  EXPECT_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo())
-      .WillOnce(testing::Return(GetErrorDevice()));
   media::OutputDeviceStatus status =
       webaudio_device_->MaybeCreateSinkAndGetStatus();
   EXPECT_EQ(status,
             media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
   EXPECT_EQ(webaudio_device_->GetSinkForTesting(), nullptr);
+
+  // Subsequent calls return the cached error without querying the sink again.
+  EXPECT_EQ(webaudio_device_->MaybeCreateSinkAndGetStatus(),
+            media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
+  EXPECT_EQ(webaudio_device_->GetSinkForTesting(), nullptr);
+}
+
+// Verifies that Stop() on a healthy device preserves OK status so
+// MaybeCreateSinkAndGetStatus() can reopen `sink_` while keeping construction
+// params fixed, and that a failure on a subsequent reopen is cached so further
+// calls do not retry.
+TEST_F(RendererWebAudioDeviceImplTest,
+       MaybeCreateSinkAndGetStatus_ReopensAfterStopAndCachesFailure) {
+  {
+    InSequence s;
+
+    EXPECT_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo)
+        .WillOnce(testing::Return(GetHealthyDevice()));
+    EXPECT_CALL(*mock_audio_renderer_sink_, Stop).Times(1);
+    EXPECT_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo)
+        .WillOnce(testing::Return(
+            GetDeviceInfo(SecondDeviceQuery::kOkAlternateBuffer)));
+    EXPECT_CALL(*mock_audio_renderer_sink_, Stop).Times(1);
+    EXPECT_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo)
+        .WillOnce(testing::Return(GetErrorDevice()));
+    EXPECT_CALL(*mock_audio_renderer_sink_, Stop).Times(1);
+  }
+
+  SetupDevice(media::ChannelLayoutConfig::Stereo());
+  EXPECT_NE(webaudio_device_->GetSinkForTesting(), nullptr);
+
+  // Stopping a working device preserves OK status so it can be reopened with
+  // the original construction params.
+  webaudio_device_->Stop();
+  EXPECT_EQ(webaudio_device_->GetSinkForTesting(), nullptr);
+  EXPECT_EQ(webaudio_device_->MaybeCreateSinkAndGetStatus(),
+            media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK);
+  EXPECT_NE(webaudio_device_->GetSinkForTesting(), nullptr);
+  EXPECT_EQ(webaudio_device_->FramesPerBuffer(), kHardwareBufferSize);
+  EXPECT_EQ(webaudio_device_->SampleRate(), kHardwareSampleRate);
+  ASSERT_EQ(mock_audio_renderer_sink_->initialize_params_.size(), 2u);
+  EXPECT_TRUE(mock_audio_renderer_sink_->initialize_params_[0].Equals(
+      mock_audio_renderer_sink_->initialize_params_[1]));
+
+  // A failure on a subsequent reopen is cached and skips further retries.
+  webaudio_device_->Stop();
+  EXPECT_EQ(webaudio_device_->MaybeCreateSinkAndGetStatus(),
+            media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
+  EXPECT_EQ(webaudio_device_->GetSinkForTesting(), nullptr);
+  EXPECT_EQ(webaudio_device_->MaybeCreateSinkAndGetStatus(),
+            media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
+  EXPECT_EQ(webaudio_device_->GetSinkForTesting(), nullptr);
+  EXPECT_EQ(mock_audio_renderer_sink_->initialize_params_.size(), 2u);
 }
 
 TEST_F(RendererWebAudioDeviceImplTest,
@@ -1032,7 +1159,7 @@ TEST_F(RendererWebAudioDeviceImplTest,
   base::HistogramTester histogram_tester;
   // A timed-out authorization reports valid placeholder parameters.
   EXPECT_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo)
-      .WillRepeatedly(testing::Return(media::OutputDeviceInfo(
+      .WillOnce(testing::Return(media::OutputDeviceInfo(
           std::string(), media::OUTPUT_DEVICE_STATUS_ERROR_TIMED_OUT,
           media::AudioParameters::UnavailableDeviceParams())));
 
@@ -1046,7 +1173,7 @@ TEST_F(RendererWebAudioDeviceImplTest,
        InvalidHardwareParamsRecordNoHardwareBufferSize) {
   base::HistogramTester histogram_tester;
   EXPECT_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo)
-      .WillRepeatedly(testing::Return(
+      .WillOnce(testing::Return(
           media::OutputDeviceInfo(std::string(), media::OUTPUT_DEVICE_STATUS_OK,
                                   media::AudioParameters())));
 
@@ -1141,9 +1268,14 @@ class RendererWebAudioDeviceImplInitTest
         features::kWebAudioRemoveAudioDestinationResampler,
         param.remove_resampler);
     context_sample_rate_ = param.context_sample_rate;
-    EXPECT_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo())
-        .WillOnce(testing::Return(GetDeviceInfo(param.first_query)))
-        .WillRepeatedly(testing::Return(GetDeviceInfo(param.second_query)));
+    if (param.second_query) {
+      EXPECT_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo())
+          .WillOnce(testing::Return(GetDeviceInfo(param.first_query)))
+          .WillOnce(testing::Return(GetDeviceInfo(*param.second_query)));
+    } else {
+      EXPECT_CALL(*mock_audio_renderer_sink_, GetOutputDeviceInfo())
+          .WillOnce(testing::Return(GetDeviceInfo(param.first_query)));
+    }
   }
 
   void RunAudibleInitSequence() {
@@ -1179,13 +1311,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     RendererWebAudioDeviceImplInitTest,
     testing::ConvertGenerator<InitTestParam::TupleT>(testing::Combine(
-        testing::Values(FirstDeviceQuery::kHealthy,
-                        FirstDeviceQuery::kTimedOut,
-                        FirstDeviceQuery::kNotAuthorized,
-                        FirstDeviceQuery::kInvalid),
-        testing::Values(SecondDeviceQuery::kOkAlternateBuffer,
-                        SecondDeviceQuery::kOk,
-                        SecondDeviceQuery::kTimedOut),
+        testing::ValuesIn(GetDeviceQueryPairs()),
         testing::Values(std::optional<float>(),
                         std::optional<float>(kDeviceSampleRate)),
         testing::Values(blink::WebAudioLatencyHint::kCategoryInteractive,

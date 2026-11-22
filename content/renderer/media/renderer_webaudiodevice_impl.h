@@ -92,8 +92,9 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
     return sink_;
   }
 
-  // Creates a new sink if one hasn't been created yet, and returns the sink
-  // status.
+  // Creates a new sink if one hasn't been created yet and returns the sink
+  // status. Once any query returns a non-OK status, returns that cached status
+  // without creating or querying a sink.
   media::OutputDeviceStatus MaybeCreateSinkAndGetStatus() override;
 
   const media::AudioParameters& GetOriginalSinkParamsForTesting() const {
@@ -179,6 +180,12 @@ class CONTENT_EXPORT RendererWebAudioDeviceImpl
 
   const media::ChannelLayoutConfig layout_config_;
   const std::optional<float> context_sample_rate_;
+
+  // Status of the most recent synchronous device query; latched once non-OK
+  // for MaybeCreateSinkAndGetStatus(). Intentionally ignored by Start(),
+  // which still opens `sink_` asynchronously so OnRenderError() can fire.
+  media::OutputDeviceStatus sink_status_ =
+      media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK;
   bool is_sink_initialized_ = false;
   bool is_detecting_silence_ = true;
   base::RepeatingClosure render_error_callback_;

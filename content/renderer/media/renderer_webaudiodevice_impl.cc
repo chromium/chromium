@@ -282,7 +282,7 @@ media::OutputDeviceInfo RendererWebAudioDeviceImpl::GetSinkOutputDeviceInfo() {
 void RendererWebAudioDeviceImpl::HandleDeviceStatus(
     media::OutputDeviceInfo device_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  media::OutputDeviceStatus status = device_info.device_status();
+  sink_status_ = device_info.device_status();
   original_sink_params_ = device_info.output_params();
 
   // On systems without audio hardware the returned parameters may be invalid.
@@ -357,7 +357,7 @@ void RendererWebAudioDeviceImpl::HandleDeviceStatus(
 
   InitializeSink();
 
-  if (status != media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK) {
+  if (sink_status_ != media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK) {
     Stop();
   }
 }
@@ -563,28 +563,34 @@ void RendererWebAudioDeviceImpl::CreateAudioRendererSink() {
 media::OutputDeviceStatus
 RendererWebAudioDeviceImpl::MaybeCreateSinkAndGetStatus() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!sink_) {
-    CreateAudioRendererSink();
-  }
-
-  media::OutputDeviceStatus status = GetSinkOutputDeviceInfo().device_status();
-
-  if (status == media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK) {
-    if (!is_sink_initialized_) {
-      // AudioDestination caches FramesPerBuffer() at construction. We must
-      // not recompute the params via HandleDeviceStatus(), so we just init.
-      InitializeSink();
+  // A non-OK status is sticky for the device's lifetime so a failed sink is
+  // never re-queried on the main thread (and on construction failure,
+  // AudioDestination already cached placeholder params). Callers create a new
+  // device to retry.
+  if (sink_status_ == media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK) {
+    if (!sink_) {
+      CreateAudioRendererSink();
     }
-  } else {
-    Stop();
+
+    sink_status_ = GetSinkOutputDeviceInfo().device_status();
+
+    if (sink_status_ == media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK) {
+      if (!is_sink_initialized_) {
+        // AudioDestination caches FramesPerBuffer() at construction. We must
+        // not recompute the params via HandleDeviceStatus(), so we just init.
+        InitializeSink();
+      }
+    } else {
+      Stop();
+    }
   }
 
   TRACE_EVENT2("webaudio",
                "RendererWebAudioDeviceImpl::MaybeCreateSinkAndGetStatus",
                "sink_id", sink_descriptor_.SinkId().Utf8(), "status",
-               static_cast<int>(status));
+               static_cast<int>(sink_status_));
 
-  return status;
+  return sink_status_;
 }
 
 }  // namespace content
