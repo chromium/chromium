@@ -11,6 +11,7 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -157,6 +158,21 @@ TEST_F(GtkColorMixersTest, MatchingPaletteUsesGtkColors) {
                    ui::kColorPrimaryBackground);
     ExpectToolbarReadable(*provider);
   }
+}
+
+// Regression test for crbug.com/41486474: themes like Orchis give the window
+// a translucent background, which must not reach BlendForMinContrast() (it
+// DCHECKs on non-opaque backgrounds).
+TEST_F(GtkColorMixersTest, TranslucentWindowBackground) {
+  UseAdwaita(/*dark=*/false);
+  base::ScopedClosureRunner css = AddGlobalCssForTesting(
+      "window.background { background: rgba(246, 246, 246, 0.867); }");
+  ClearStyleColorCache();
+  auto provider = CreateProvider(ColorMode::kLight);
+  EXPECT_EQ(SkColorGetA(provider->GetColor(ui::kColorPrimaryBackground)),
+            SK_AlphaOPAQUE);
+  ExpectReadable(*provider, ui::kColorPrimaryForeground,
+                 ui::kColorPrimaryBackground);
 }
 
 // Regression test for crbug.com/571161438: focus rings and tab hover used

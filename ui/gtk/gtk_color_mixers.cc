@@ -35,17 +35,19 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   const auto tooltip_context =
       AppendCssNodeToStyleContext({}, "tooltip.background");
 
-  const SkColor primary_bg = GetBgColor("");
   const SkColor button_bg_disabled = GetBgColor("button.text-button:disabled");
   const SkColor frame_color =
       SkColorSetA(GetBgColor(header_selector), SK_AlphaOPAQUE);
   const SkColor frame_color_inactive =
       SkColorSetA(GetBgColor(header_selector_inactive), SK_AlphaOPAQUE);
+  // Some themes (e.g. Orchis) use a translucent window background. Composite
+  // it over the frame, as the toolbar is, since other colors are blended
+  // against this one and require it to be opaque.
+  const SkColor primary_bg =
+      color_utils::GetResultingPaintColor(GetBgColor(""), frame_color);
   const SkColor label_fg = GetFgColor("label");
   const SkColor label_fg_disabled = GetFgColor("label:disabled");
   const SkColor entry_border = GetBorderColor("entry");
-  const SkColor toolbar_color =
-      color_utils::GetResultingPaintColor(primary_bg, frame_color);
   const SkColor accent_fg = GetFgColor(
       "treeview.view "
       "treeview.view.cell:selected:focus label");
@@ -264,7 +266,7 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
       GetFgColor(header_selector + " label.title")};
   mixer[ui::kColorNativeTabForegroundInactiveFrameInactive] = {
       GetFgColor(header_selector_inactive + " label.title")};
-  mixer[ui::kColorNativeToolbarBackground] = {toolbar_color};
+  mixer[ui::kColorNativeToolbarBackground] = {primary_bg};
   mixer[ui::kColorNativeTextfieldBorderUnfocused] = {entry_border};
   mixer[ui::kColorNativeBoxFrameBorder] = {GetBorderColor("box.frame")};
   mixer[ui::kColorNativeLabelForeground] = {label_fg};
