@@ -432,8 +432,15 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
     private @Nullable Tab tryRestoringTab(TabModelOrchestrator tabModelOrchestrator) {
         if (mSavedInstanceStateSupplier.get() == null) return null;
 
+        // An in-process recreation reparents the live tab through AsyncTabParamsManager without
+        // reading its encrypted TabState file, so it can be restored before CipherFactory has
+        // lazily generated a key.
         boolean hadCipherData = mCipherFactory.restoreFromBundle(mSavedInstanceStateSupplier.get());
-        if (!hadCipherData && mIntentDataProvider.isOffTheRecord()) return null;
+        if (!hadCipherData
+                && mIntentDataProvider.isOffTheRecord()
+                && !isOffTheRecordProfileUsedByTabAwaitingReparenting()) {
+            return null;
+        }
 
         tabModelOrchestrator.loadState(
                 /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false, null);

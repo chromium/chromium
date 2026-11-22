@@ -280,6 +280,24 @@ public class CustomTabActivityTabControllerUnitTest {
     }
 
     @Test
+    public void usesRestoredTab_IfOffTheRecord_NoCipherKeyButTabAwaitsReparenting() {
+        env.isOffTheRecord = true;
+        Tab savedTab = env.prepareTab();
+        env.saveTab(savedTab);
+        mTabController = env.createTabController();
+        when(env.intentDataProvider.isOffTheRecord()).thenReturn(true);
+        when(env.cipherFactory.restoreFromBundle(any())).thenReturn(false);
+        env.setOffTheRecordProfileExists(true);
+        env.addTabAwaitingReparenting(savedTab);
+
+        mTabController.setUpInitialTab(null);
+        mTabController.finishNativeInitialization();
+
+        assertEquals(savedTab, env.tabProvider.getTab());
+        assertEquals(TabCreationMode.RESTORED, env.tabProvider.getInitialTabCreationMode());
+    }
+
+    @Test
     public void doesntCreateTabAfterRestoreCookies_IfControllerDestroyed() {
         env.isOffTheRecord = true;
         mTabController = env.createTabController();
