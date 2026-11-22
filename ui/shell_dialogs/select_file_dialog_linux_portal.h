@@ -14,11 +14,15 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "components/dbus/xdg/request.h"
 #include "dbus/bus.h"
 #include "ui/shell_dialogs/select_file_dialog_linux.h"
 #include "ui/shell_dialogs/shell_dialogs_export.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_observer.h"
 #include "url/gurl.h"
 
 namespace ui {
@@ -31,7 +35,8 @@ using OnSelectFileCanceledCallback = base::OnceCallback<void()>;
 // Implementation of SelectFileDialog that has the XDG file chooser portal show
 // a platform-dependent file selection dialog. This acts as a modal dialog.
 class SHELL_DIALOGS_EXPORT SelectFileDialogLinuxPortal
-    : public SelectFileDialogLinux {
+    : public SelectFileDialogLinux,
+      public views::WidgetObserver {
  public:
   SelectFileDialogLinuxPortal(Listener* listener,
                               std::unique_ptr<ui::SelectFilePolicy> policy);
@@ -62,6 +67,24 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogLinuxPortal
   base::WeakPtr<SelectFileDialogLinuxPortal> GetWeakPtrForTesting() {
     return weak_factory_.GetWeakPtr();
   }
+
+  // Requests the portal once no activation key (Enter or Space) is held.
+  // Virtual for testing.
+  virtual void RequestPortal(std::u16string title,
+                             base::FilePath default_path,
+                             base::FilePath::StringType default_extension,
+                             std::optional<GURL> caller);
+
+  // Starts the window during which accept responses are rejected. Called when
+  // the file chooser request is made.
+  void StartAcceptDelay();
+
+  // Returns whether an accept response arriving now should be honored.
+  bool IsAcceptAllowed() const;
+
+  // views::WidgetObserver:
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+  void OnWidgetDestroying(views::Widget* widget) override;
 
  private:
   friend class TestableSelectFileDialogLinuxPortal;
@@ -166,6 +189,20 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogLinuxPortal
   // We keep this alive until the response arrives or until the dialog
   // is destroyed, whichever comes first.
   std::unique_ptr<dbus_xdg::Request> file_chooser_request_;
+
+  // Whether a file chooser request is in flight.
+  bool awaiting_response_ = false;
+
+  // When the dialog is assumed to have been shown: initially the time of the
+  // request, then updated when the parent widget loses activation, which
+  // happens when the portal dialog maps and takes focus. Accept responses
+  // that arrive sooner than kFileDialogMinDisplayDuration after this are
+  // treated as cancellations, since the user could not have perceived the
+  // dialog yet.
+  base::TimeTicks dialog_shown_time_;
+
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
 
   // Event handling on the parent window is disabled while the dialog is active
   // to make the dialog modal.  This closure should be run when the dialog is

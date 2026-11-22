@@ -16,6 +16,7 @@
 #include "ui/aura/window_tree_host_platform.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/ozone/public/ozone_switches.h"
+#include "ui/shell_dialogs/activation_key_tracker_linux.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 
 namespace ui {
@@ -69,6 +70,10 @@ class SelectFileDialogLinuxPortalTest : public testing::Test {
     listener_ = std::make_unique<MockSelectFileDialogListener>();
   }
 
+  void TearDown() override {
+    ActivationKeyTracker::GetInstance()->ResetForTesting();
+  }
+
   // Simulates posting a callback from a background thread (e.g., DBus thread)
   // back to the UI thread with a weak pointer, then incrementing count if
   // valid.
@@ -85,7 +90,8 @@ class SelectFileDialogLinuxPortalTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
-      base::test::TaskEnvironment::ThreadPoolExecutionMode::ASYNC};
+      base::test::TaskEnvironment::ThreadPoolExecutionMode::ASYNC,
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   display::test::TestScreen test_screen_{/*create_display=*/true,
                                          /*register_screen=*/true};
   std::unique_ptr<aura::Env> env_;
@@ -118,13 +124,29 @@ class TestableSelectFileDialogLinuxPortal : public SelectFileDialogLinuxPortal {
 
   using SelectFileDialogLinuxPortal::DialogCreatedOnInvoker;
   using SelectFileDialogLinuxPortal::host_;
+  using SelectFileDialogLinuxPortal::IsAcceptAllowed;
   using SelectFileDialogLinuxPortal::listener_;
   using SelectFileDialogLinuxPortal::ListenerDestroyed;
+  using SelectFileDialogLinuxPortal::OnWidgetActivationChanged;
   using SelectFileDialogLinuxPortal::reenable_window_event_handling_;
+  using SelectFileDialogLinuxPortal::StartAcceptDelay;
 
   base::WeakPtr<SelectFileDialogLinuxPortal> GetWeakPtrForTesting() {
     return SelectFileDialogLinuxPortal::GetWeakPtrForTesting();
   }
+
+  // Records portal requests instead of making D-Bus calls.
+  void RequestPortal(std::u16string title,
+                     base::FilePath default_path,
+                     base::FilePath::StringType default_extension,
+                     std::optional<GURL> caller) override {
+    portal_requests_++;
+  }
+
+  int portal_requests() const { return portal_requests_; }
+
+ private:
+  int portal_requests_ = 0;
 
  protected:
   ~TestableSelectFileDialogLinuxPortal() override = default;
@@ -254,6 +276,86 @@ TEST_F(SelectFileDialogLinuxPortalTest,
 
   EXPECT_FALSE(host);
   EXPECT_FALSE(dialog->host_);
+}
+
+// Tests that the portal is not requested while Enter or Space is held, so a
+// held key can't accept the dialog as soon as it appears.
+TEST_F(SelectFileDialogLinuxPortalTest, RequestDeferredUntilActivationKeyUp) {
+  auto dialog = base::MakeRefCounted<TestableSelectFileDialogLinuxPortal>(
+      listener_.get());
+  ActivationKeyTracker::GetInstance()->SetActivationKeyDownForTesting(true);
+
+  dialog->SelectFile(SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
+                     base::FilePath(), nullptr, 0, base::FilePath::StringType(),
+                     gfx::NativeWindow());
+  EXPECT_EQ(0, dialog->portal_requests());
+
+  ActivationKeyTracker::GetInstance()->SetActivationKeyDownForTesting(false);
+  EXPECT_EQ(1, dialog->portal_requests());
+}
+
+// Tests that the portal is requested immediately when no activation key is
+// held.
+TEST_F(SelectFileDialogLinuxPortalTest, RequestImmediateWithoutActivationKey) {
+  auto dialog = base::MakeRefCounted<TestableSelectFileDialogLinuxPortal>(
+      listener_.get());
+  ActivationKeyTracker::GetInstance()->SetActivationKeyDownForTesting(false);
+
+  dialog->SelectFile(SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
+                     base::FilePath(), nullptr, 0, base::FilePath::StringType(),
+                     gfx::NativeWindow());
+  EXPECT_EQ(1, dialog->portal_requests());
+}
+
+// Tests that a pending request is dropped if the listener goes away while an
+// activation key is held.
+TEST_F(SelectFileDialogLinuxPortalTest, DeferredRequestDroppedAfterDestroy) {
+  auto dialog = base::MakeRefCounted<TestableSelectFileDialogLinuxPortal>(
+      listener_.get());
+  ActivationKeyTracker::GetInstance()->SetActivationKeyDownForTesting(true);
+
+  dialog->SelectFile(SelectFileDialog::SELECT_OPEN_FILE, std::u16string(),
+                     base::FilePath(), nullptr, 0, base::FilePath::StringType(),
+                     gfx::NativeWindow());
+  dialog->ListenerDestroyed();
+  ActivationKeyTracker::GetInstance()->SetActivationKeyDownForTesting(false);
+  EXPECT_EQ(0, dialog->portal_requests());
+}
+
+// Tests that accept responses are rejected until the dialog could have been
+// visible for kFileDialogMinDisplayDuration.
+TEST_F(SelectFileDialogLinuxPortalTest, AcceptRejectedUntilMinDisplayDuration) {
+  auto dialog = base::MakeRefCounted<TestableSelectFileDialogLinuxPortal>(
+      listener_.get());
+
+  dialog->StartAcceptDelay();
+  EXPECT_FALSE(dialog->IsAcceptAllowed());
+
+  task_environment_.FastForwardBy(kFileDialogMinDisplayDuration -
+                                  base::Milliseconds(1));
+  EXPECT_FALSE(dialog->IsAcceptAllowed());
+
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  EXPECT_TRUE(dialog->IsAcceptAllowed());
+}
+
+// Tests that the parent losing activation, which happens when the portal
+// dialog maps, restarts the accept delay.
+TEST_F(SelectFileDialogLinuxPortalTest, DeactivationRestartsAcceptDelay) {
+  auto dialog = base::MakeRefCounted<TestableSelectFileDialogLinuxPortal>(
+      listener_.get());
+
+  dialog->StartAcceptDelay();
+  task_environment_.FastForwardBy(base::Milliseconds(400));
+  dialog->OnWidgetActivationChanged(nullptr, /*active=*/false);
+
+  task_environment_.FastForwardBy(base::Milliseconds(400));
+  EXPECT_FALSE(dialog->IsAcceptAllowed());
+
+  // Regaining activation doesn't restart the delay.
+  dialog->OnWidgetActivationChanged(nullptr, /*active=*/true);
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  EXPECT_TRUE(dialog->IsAcceptAllowed());
 }
 
 }  // namespace ui

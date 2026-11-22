@@ -19,7 +19,6 @@
 
 #include "base/byte_size.h"
 #include "base/check_op.h"
-#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -36,17 +35,14 @@
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/aura/env.h"
-#include "ui/aura/env_observer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/glib/scoped_gobject.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/events/event_handler.h"
-#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gtk/gtk_compat.h"
 #include "ui/gtk/gtk_ui.h"
 #include "ui/gtk/gtk_ui_platform.h"
 #include "ui/gtk/gtk_util.h"
+#include "ui/shell_dialogs/activation_key_tracker_linux.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_linux.h"
 #include "ui/shell_dialogs/selected_file_info.h"
@@ -57,114 +53,6 @@
 namespace gtk {
 
 namespace {
-
-// Accept responses are ignored until the dialog has been shown for at least
-// this long.
-constexpr base::TimeDelta kMinDisplayDuration = base::Milliseconds(500);
-
-class ActivationKeyTracker : public ui::EventHandler, public aura::EnvObserver {
- public:
-  static ActivationKeyTracker* GetInstance() {
-    static base::NoDestructor<ActivationKeyTracker> instance;
-    return instance.get();
-  }
-
-  ActivationKeyTracker() { EnsureObserving(); }
-
-  // Only ever stored in a NoDestructor, so this never runs. It can't be
-  // `= delete`d because it overrides the base classes' virtual destructors.
-  ~ActivationKeyTracker() override { NOTREACHED(); }
-
-  void EnsureObserving() {
-    if (!observing_ && aura::Env::HasInstance()) {
-      aura::Env::GetInstance()->AddPreTargetHandler(this);
-      aura::Env::GetInstance()->AddObserver(this);
-      observing_ = true;
-    }
-  }
-
-  bool IsActivationKeyDown() const {
-    return is_down_for_testing_.value_or(!pressed_keys_.empty());
-  }
-
-  void WaitForKeyRelease(base::OnceClosure callback) {
-    if (!IsActivationKeyDown()) {
-      std::move(callback).Run();
-      return;
-    }
-    release_callbacks_.push_back(std::move(callback));
-  }
-
-  void SetActivationKeyDownForTesting(bool is_down) {
-    is_down_for_testing_ = is_down;
-    if (!is_down) {
-      NotifyCallbacks();
-    }
-  }
-
-  void ResetForTesting() {
-    is_down_for_testing_.reset();
-    pressed_keys_.clear();
-    release_callbacks_.clear();
-  }
-
-  // ui::EventHandler:
-  void OnKeyEvent(ui::KeyEvent* event) override {
-    if (is_down_for_testing_.has_value()) {
-      return;
-    }
-    if (!IsActivationKey(event->key_code())) {
-      return;
-    }
-    if (event->type() == ui::EventType::kKeyPressed) {
-      pressed_keys_.insert(event->key_code());
-    } else if (event->type() == ui::EventType::kKeyReleased) {
-      pressed_keys_.erase(event->key_code());
-      if (pressed_keys_.empty()) {
-        NotifyCallbacks();
-      }
-    }
-  }
-
-  void OnCancelMode(ui::CancelModeEvent* event) override {
-    if (is_down_for_testing_.has_value()) {
-      return;
-    }
-    pressed_keys_.clear();
-    NotifyCallbacks();
-  }
-
-  // aura::EnvObserver:
-  void OnWillDestroyEnv() override {
-    if (observing_ && aura::Env::HasInstance()) {
-      aura::Env::GetInstance()->RemovePreTargetHandler(this);
-      aura::Env::GetInstance()->RemoveObserver(this);
-    }
-    observing_ = false;
-    pressed_keys_.clear();
-    NotifyCallbacks();
-  }
-
- private:
-  static bool IsActivationKey(ui::KeyboardCode key_code) {
-    return key_code == ui::VKEY_RETURN || key_code == ui::VKEY_SPACE;
-  }
-
-  void NotifyCallbacks() {
-    auto callbacks = std::move(release_callbacks_);
-    release_callbacks_.clear();
-    for (auto& cb : callbacks) {
-      if (cb) {
-        std::move(cb).Run();
-      }
-    }
-  }
-
-  bool observing_ = false;
-  base::flat_set<ui::KeyboardCode> pressed_keys_;
-  std::vector<base::OnceClosure> release_callbacks_;
-  std::optional<bool> is_down_for_testing_;
-};
 
 // TODO(crbug.com/41469294): These getters will be unnecessary after
 // migrating to GtkFileChooserNative.
@@ -367,17 +255,18 @@ SelectFileDialogLinuxGtk::~SelectFileDialogLinuxGtk() {
 
 // static
 void SelectFileDialogLinuxGtk::EnsureActivationKeyTracking() {
-  ActivationKeyTracker::GetInstance()->EnsureObserving();
+  ui::ActivationKeyTracker::GetInstance()->EnsureObserving();
 }
 
 // static
 void SelectFileDialogLinuxGtk::SetActivationKeyDownForTesting(bool is_down) {
-  ActivationKeyTracker::GetInstance()->SetActivationKeyDownForTesting(is_down);
+  ui::ActivationKeyTracker::GetInstance()->SetActivationKeyDownForTesting(
+      is_down);
 }
 
 // static
 void SelectFileDialogLinuxGtk::ResetForTesting() {
-  ActivationKeyTracker::GetInstance()->ResetForTesting();
+  ui::ActivationKeyTracker::GetInstance()->ResetForTesting();
 }
 
 // static
@@ -395,12 +284,12 @@ int SelectFileDialogLinuxGtk::GetFilterCountForTesting(GtkWidget* dialog) {
 
 // static
 void SelectFileDialogLinuxGtk::DispatchKeyEventForTesting(ui::KeyEvent* event) {
-  ActivationKeyTracker::GetInstance()->OnKeyEvent(event);
+  ui::ActivationKeyTracker::GetInstance()->OnKeyEvent(event);
 }
 
 // static
 void SelectFileDialogLinuxGtk::DispatchCancelModeForTesting() {
-  ActivationKeyTracker::GetInstance()->OnCancelMode(nullptr);
+  ui::ActivationKeyTracker::GetInstance()->OnCancelMode(nullptr);
 }
 
 bool SelectFileDialogLinuxGtk::IsRunning(
@@ -476,7 +365,7 @@ void SelectFileDialogLinuxGtk::SelectFileImpl(
   if (file_types)
     set_file_types(*file_types);
 
-  if (ActivationKeyTracker::GetInstance()->IsActivationKeyDown()) {
+  if (ui::ActivationKeyTracker::GetInstance()->IsActivationKeyDown()) {
     if (owning_window) {
       owning_window->AddObserver(this);
     }
@@ -488,7 +377,7 @@ void SelectFileDialogLinuxGtk::SelectFileImpl(
         file_type_index,
         default_extension,
         owning_window};
-    ActivationKeyTracker::GetInstance()->WaitForKeyRelease(
+    ui::ActivationKeyTracker::GetInstance()->WaitForKeyRelease(
         base::BindOnce(&SelectFileDialogLinuxGtk::ShowPendingDialog,
                        weak_factory_.GetWeakPtr()));
     return;
@@ -812,7 +701,8 @@ bool SelectFileDialogLinuxGtk::IsAcceptResponseAllowed(GtkWidget* dialog,
   if (it == dialogs_.end()) {
     return false;
   }
-  if (base::TimeTicks::Now() - it->second.show_time < kMinDisplayDuration) {
+  if (base::TimeTicks::Now() - it->second.show_time <
+      ui::kFileDialogMinDisplayDuration) {
     return false;
   }
   return true;

@@ -30,6 +30,7 @@
 #include "ui/gfx/native_ui_types.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/linux/linux_ui_delegate.h"
+#include "ui/shell_dialogs/activation_key_tracker_linux.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
@@ -132,6 +133,10 @@ void SelectFileDialogLinuxPortal::SelectFileImpl(
   invoker_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
 
   if (owning_window) {
+    if (auto* widget = views::Widget::GetWidgetForNativeWindow(owning_window)) {
+      widget_observation_.Reset();
+      widget_observation_.Observe(widget);
+    }
     if (auto* root = owning_window->GetRootWindow()) {
       if (auto* host = root->GetNativeWindowProperty(
               views::DesktopWindowTreeHostLinux::kWindowKey)) {
@@ -151,12 +156,27 @@ void SelectFileDialogLinuxPortal::SelectFileImpl(
     caller_copy = *caller;
   }
 
+  // Defer the dialog until Enter and Space are released so that a held key
+  // can't accept the dialog as soon as it appears.
+  auto* tracker = ActivationKeyTracker::GetInstance();
+  tracker->EnsureObserving();
+  tracker->WaitForKeyRelease(base::BindOnce(
+      &SelectFileDialogLinuxPortal::RequestPortal, weak_factory_.GetWeakPtr(),
+      title, default_path, default_extension, std::move(caller_copy)));
+}
+
+void SelectFileDialogLinuxPortal::RequestPortal(
+    std::u16string title,
+    base::FilePath default_path,
+    base::FilePath::StringType default_extension,
+    std::optional<GURL> caller) {
   dbus_xdg::RequestXdgDesktopPortal(
       dbus_thread_linux::GetSharedSessionBus().get(),
       dbus_xdg::kFileChooserInterfaceName,
       base::BindOnce(&SelectFileDialogLinuxPortal::OnPortalAvailable,
-                     weak_factory_.GetWeakPtr(), title, default_path,
-                     default_extension, std::move(caller_copy)));
+                     weak_factory_.GetWeakPtr(), std::move(title),
+                     std::move(default_path), std::move(default_extension),
+                     std::move(caller)));
 }
 
 void SelectFileDialogLinuxPortal::OnPortalAvailable(
@@ -420,6 +440,7 @@ void SelectFileDialogLinuxPortal::MakeFileChooserRequest(
   auto callback =
       base::BindOnce(&SelectFileDialogLinuxPortal::OnFileChooserResponse,
                      base::Unretained(this));
+  StartAcceptDelay();
   file_chooser_request_ = std::make_unique<dbus_xdg::Request>(
       bus, portal, dbus_xdg::kFileChooserInterfaceName, method,
       std::move(options), std::move(callback), std::move(parent_handle), title);
@@ -429,11 +450,38 @@ void SelectFileDialogLinuxPortal::MakeFileChooserRequest(
                      weak_factory_.GetWeakPtr()));
 }
 
+void SelectFileDialogLinuxPortal::StartAcceptDelay() {
+  awaiting_response_ = true;
+  dialog_shown_time_ = base::TimeTicks::Now();
+}
+
+bool SelectFileDialogLinuxPortal::IsAcceptAllowed() const {
+  return base::TimeTicks::Now() - dialog_shown_time_ >=
+         kFileDialogMinDisplayDuration;
+}
+
+void SelectFileDialogLinuxPortal::OnWidgetActivationChanged(
+    views::Widget* widget,
+    bool active) {
+  // The portal dialog runs in another process, so its map time is unknown.
+  // When it maps it takes focus from the parent window; restart the delay
+  // then so that it covers the time the dialog is actually visible.
+  if (!active && awaiting_response_) {
+    dialog_shown_time_ = base::TimeTicks::Now();
+  }
+}
+
+void SelectFileDialogLinuxPortal::OnWidgetDestroying(views::Widget* widget) {
+  widget_observation_.Reset();
+}
+
 void SelectFileDialogLinuxPortal::OnFileChooserResponse(
     base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results) {
   CHECK(invoker_task_runner_->RunsTasksInCurrentSequence());
 
   file_chooser_request_.reset();
+  const bool accept_allowed = IsAcceptAllowed();
+  awaiting_response_ = false;
 
   if (!results.has_value()) {
     CancelOpen();
@@ -449,6 +497,14 @@ void SelectFileDialogLinuxPortal::OnFileChooserResponse(
   }
 
   if (uris.empty()) {
+    CancelOpen();
+    return;
+  }
+
+  // The portal dialog runs out of process, so an accept can't be ignored while
+  // keeping the dialog open. Treat an accept that arrives before the user
+  // could have perceived the dialog as a cancellation instead.
+  if (!accept_allowed) {
     CancelOpen();
     return;
   }
@@ -537,6 +593,7 @@ void SelectFileDialogLinuxPortal::CancelOpenOnInvoker() {
 }
 
 void SelectFileDialogLinuxPortal::UnparentOnInvoker() {
+  widget_observation_.Reset();
   if (reenable_window_event_handling_) {
     std::move(reenable_window_event_handling_).Run();
   }

@@ -53,11 +53,16 @@ component("shell_dialogs") {
 
   if (is_linux && !is_castos) {
     sources += [
+      "activation_key_tracker_linux.cc",
+      "activation_key_tracker_linux.h",
       "select_file_dialog_linux.cc",
       "select_file_dialog_linux.h",
       "shell_dialog_linux.cc",
     ]
-    deps += [ "//ui/linux:linux_ui" ]
+    deps += [
+      "//ui/events",
+      "//ui/linux:linux_ui",
+    ]
     if (use_dbus) {
       sources += [
         "select_file_dialog_linux_portal.cc",
