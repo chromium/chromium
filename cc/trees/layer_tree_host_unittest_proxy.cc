@@ -708,7 +708,9 @@ SINGLE_AND_MULTI_THREAD_TEST_F(
 class LayerTreeHostProxyTestRequestImmediateBeginMainFrame
     : public LayerTreeHostProxyTest {
  protected:
-  LayerTreeHostProxyTestRequestImmediateBeginMainFrame() = default;
+  LayerTreeHostProxyTestRequestImmediateBeginMainFrame() {
+    feature_list_.InitAndEnableFeature(features::kSendEarlyFinalBeginMainFrame);
+  }
   ~LayerTreeHostProxyTestRequestImmediateBeginMainFrame() override = default;
 
   void BeginTest() override { PostSetNeedsCommitToMainThread(); }
@@ -737,6 +739,7 @@ class LayerTreeHostProxyTestRequestImmediateBeginMainFrame
   void AfterTest() override { EXPECT_TRUE(received_); }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   bool requested_ = false;
   bool received_ = false;
 };
