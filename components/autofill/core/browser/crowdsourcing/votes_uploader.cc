@@ -22,6 +22,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -269,8 +270,7 @@ bool VotesUploader::MaybeStartVoteUploadProcess(
   // |form| with the help of |AlternativeStateNameMap|.
   // |AlternativeStateNameMap| can only be accessed on the main UI thread.
   std::set<FieldGlobalId> fields_that_match_state =
-      PreProcessStateMatchingTypes(
-          profiles, *form, std::string(client_->GetAppLocale().tag_string()));
+      PreProcessStateMatchingTypes(profiles, *form);
 
   if (sms_otp_service && vote_data.otps.empty() && has_potential_otp_field) {
     // This is the 80 percentile latency of the otp success retrieval flow. The
@@ -336,8 +336,8 @@ void VotesUploader::StartVoteUploadProcess(
       base::BindOnce(
           [](VoteData vote_data,
              const std::u16string& last_unlocked_credit_card_cvc,
-             const std::string& app_locale, bool observed_submission,
-             std::unique_ptr<FormStructure> form,
+             const base::i18n::LanguageTag& app_locale,
+             bool observed_submission, std::unique_ptr<FormStructure> form,
              std::optional<RandomizedEncoder> randomized_encoder,
              LanguageCode current_page_language,
              FormStructure::FormAssociations form_associations,
@@ -374,8 +374,7 @@ void VotesUploader::StartVoteUploadProcess(
             return std::pair(std::move(form), std::move(upload_contents));
           },
           std::move(vote_data), last_unlocked_credit_card_cvc,
-          std::string(client_->GetAppLocale().tag_string()),
-          observed_submission, std::move(form),
+          client_->GetAppLocale(), observed_submission, std::move(form),
           RandomizedEncoder::Create(client_->GetPrefs()),
           std::move(current_page_language), std::move(form_associations),
           std::move(fields_that_match_state)),

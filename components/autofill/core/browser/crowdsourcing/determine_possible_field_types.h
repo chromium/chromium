@@ -20,6 +20,10 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/unique_ids.h"
 
+namespace base::i18n {
+class LanguageTag;
+}
+
 namespace one_time_tokens {
 class OneTimeToken;
 }
@@ -57,8 +61,7 @@ struct PossibleTypes {
 // passed to DeterminePossibleFieldTypesForUpload().
 [[nodiscard]] std::set<FieldGlobalId> PreProcessStateMatchingTypes(
     base::span<const AutofillProfile*> profiles,
-    base::span<const std::unique_ptr<AutofillField>> fields,
-    const std::string& app_locale);
+    base::span<const std::unique_ptr<AutofillField>> fields);
 
 // Determines the `FieldType`s for which profiles etc. define non-empty
 // values.
@@ -74,7 +77,7 @@ struct PossibleTypes {
     const std::set<FieldGlobalId>& fields_that_match_state,
     std::u16string_view last_unlocked_credit_card_cvc,
     base::span<const one_time_tokens::OneTimeToken> recent_otps,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     base::span<const std::unique_ptr<AutofillField>> fields);
 
 // Returns the set of `FieldType`s for which the given profiles etc. contain
@@ -86,7 +89,7 @@ FieldTypeSet DetermineAvailableFieldTypes(
     base::span<const LoyaltyCard> loyalty_cards,
     std::u16string_view last_unlocked_credit_card_cvc,
     base::span<const one_time_tokens::OneTimeToken> recent_otps,
-    const std::string& app_locale);
+    const base::i18n::LanguageTag& app_locale);
 
 base::flat_set<std::pair<data_util::Date, PossibleTypes*>>
 FindDatesAndSetFormatStringsForTesting(

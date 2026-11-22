@@ -8,6 +8,7 @@
 
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -371,7 +372,7 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
           std::vector<LoyaltyCard>(),
           /*fields_that_match_state=*/{},
           /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
-          "en-us", form_structure->fields());
+          base::i18n::GetKnownLanguageTag("en-US"), form_structure->fields());
 
   ASSERT_EQ(form_structure->field_count(), possible_types.size());
   EXPECT_THAT(possible_types[0].types,
@@ -427,7 +428,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceCVCFieldByValue) {
           std::vector<EntityInstance>(), std::vector<LoyaltyCard>(),
           /*fields_that_match_state=*/{},
           /*last_unlocked_credit_card_cvc=*/kCvc16, std::vector<OneTimeToken>(),
-          "en-us", form_structure->fields());
+          base::i18n::GetKnownLanguageTag("en-US"), form_structure->fields());
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(possible_types, 2,
                                                CREDIT_CARD_VERIFICATION_CODE);
@@ -468,7 +469,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           std::vector<EntityInstance>(), std::vector<LoyaltyCard>(),
           /*fields_that_match_state=*/{},
           /*last_unlocked_credit_card_cvc=*/std::u16string(),
-          std::vector<OneTimeToken>(), "en-us", form_structure->fields());
+          std::vector<OneTimeToken>(), base::i18n::GetKnownLanguageTag("en-US"),
+          form_structure->fields());
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(possible_types, 2,
                                                CREDIT_CARD_VERIFICATION_CODE);
@@ -509,7 +511,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           std::vector<EntityInstance>(), std::vector<LoyaltyCard>(),
           /*fields_that_match_state=*/{},
           /*last_unlocked_credit_card_cvc=*/std::u16string(),
-          std::vector<OneTimeToken>(), "en-us", form_structure->fields());
+          std::vector<OneTimeToken>(), base::i18n::GetKnownLanguageTag("en-US"),
+          form_structure->fields());
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(possible_types, 2,
                                                CREDIT_CARD_VERIFICATION_CODE);
@@ -549,7 +552,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           std::vector<EntityInstance>(), std::vector<LoyaltyCard>(),
           /*fields_that_match_state=*/{},
           /*last_unlocked_credit_card_cvc=*/std::u16string(),
-          std::vector<OneTimeToken>(), "en-us", form_structure->fields());
+          std::vector<OneTimeToken>(), base::i18n::GetKnownLanguageTag("en-US"),
+          form_structure->fields());
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(possible_types, 1,
                                                CREDIT_CARD_VERIFICATION_CODE);
@@ -589,7 +593,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           std::vector<EntityInstance>(), std::vector<LoyaltyCard>(),
           /*fields_that_match_state=*/{},
           /*last_unlocked_credit_card_cvc=*/std::u16string(),
-          std::vector<OneTimeToken>(), "en-us", form_structure->fields());
+          std::vector<OneTimeToken>(), base::i18n::GetKnownLanguageTag("en-US"),
+          form_structure->fields());
   EXPECT_THAT(possible_types,
               Each(Field(&PossibleTypes::types,
                          Not(Contains(CREDIT_CARD_VERIFICATION_CODE)))));
@@ -627,7 +632,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           std::vector<EntityInstance>(), std::vector<LoyaltyCard>(),
           /*fields_that_match_state=*/{},
           /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
-          "en-us", form_structure->fields());
+          base::i18n::GetKnownLanguageTag("en-US"), form_structure->fields());
   EXPECT_THAT(possible_types,
               Each(Field(&PossibleTypes::types,
                          Not(Contains(CREDIT_CARD_VERIFICATION_CODE)))));
@@ -658,7 +663,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceLoyaltyCardField) {
           std::vector<EntityInstance>(), {loyalty_card},
           /*fields_that_match_state=*/{},
           /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
-          "en-us", form_structure->fields());
+          base::i18n::GetKnownLanguageTag("en-US"), form_structure->fields());
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(possible_types, 1,
                                                LOYALTY_MEMBERSHIP_ID);
@@ -694,7 +699,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           {loyalty_card},
           /*fields_that_match_state=*/{},
           /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
-          "en-us", form_structure->fields());
+          base::i18n::GetKnownLanguageTag("en-US"), form_structure->fields());
 
   // No loyalty card votes.
   EXPECT_THAT(possible_types[0].types, UnorderedElementsAre(EMAIL_ADDRESS));
@@ -726,7 +731,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           std::vector<LoyaltyCard>(),
           /*fields_that_match_state=*/{},
           /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
-          "en-US", form_structure->fields());
+          base::i18n::GetKnownLanguageTag("en-US"), form_structure->fields());
 
   ASSERT_EQ(form_structure->field_count(), possible_types.size());
   EXPECT_THAT(possible_types[0].types,
@@ -755,8 +760,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceOtpField) {
           std::vector<AutofillProfile>(), std::vector<CreditCard>(),
           std::vector<EntityInstance>(), std::vector<LoyaltyCard>(),
           /*fields_that_match_state=*/{},
-          /*last_unlocked_credit_card_cvc=*/u"", recent_otps, "en-us",
-          form_structure->fields());
+          /*last_unlocked_credit_card_cvc=*/u"", recent_otps,
+          base::i18n::GetKnownLanguageTag("en-US"), form_structure->fields());
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(possible_types_otp, 2,
                                                ONE_TIME_CODE);
@@ -784,7 +789,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           std::vector<EntityInstance>(), std::vector<LoyaltyCard>(),
           /*fields_that_match_state=*/{},
           /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
-          "en-us", form_structure->fields());
+          base::i18n::GetKnownLanguageTag("en-US"), form_structure->fields());
 
   EXPECT_THAT(possible_types,
               Each(Field(&PossibleTypes::types, Not(Contains(ONE_TIME_CODE)))));
@@ -813,7 +818,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           std::vector<EntityInstance>(), std::vector<LoyaltyCard>(),
           /*fields_that_match_state=*/{},
           /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
-          "en-us", form_structure->fields());
+          base::i18n::GetKnownLanguageTag("en-US"), form_structure->fields());
 
   EXPECT_THAT(possible_types,
               Each(Field(&PossibleTypes::types, Not(Contains(ONE_TIME_CODE)))));
@@ -847,7 +852,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           std::vector<LoyaltyCard>(),
           /*fields_that_match_state=*/{},
           /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
-          "en-US", form_structure->fields()),
+          base::i18n::GetKnownLanguageTag("en-US"), form_structure->fields()),
       ElementsAre(HasTypes(UNKNOWN_TYPE), HasTypes(UNKNOWN_TYPE)));
 }
 
@@ -891,7 +896,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           base::span_from_ref(entity), std::vector<LoyaltyCard>(),
           /*fields_that_match_state=*/{},
           /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
-          "en-US", form_structure->fields()),
+          base::i18n::GetKnownLanguageTag("en-US"), form_structure->fields()),
       ElementsAre(HasTypes(NAME_FIRST),                   //
                   HasTypes(NAME_LAST, NAME_LAST_SECOND),  //
                   HasTypes(PASSPORT_NUMBER),              //
@@ -933,7 +938,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           base::span_from_ref(entity), std::vector<LoyaltyCard>(),
           /*fields_that_match_state=*/{},
           /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
-          "en-US", form_structure->fields()),
+          base::i18n::GetKnownLanguageTag("en-US"), form_structure->fields()),
       ElementsAre(HasTypes(PASSPORT_NUMBER), HasTypes(UNKNOWN_TYPE)));
 }
 
@@ -969,7 +974,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           std::vector<LoyaltyCard>(),
           /*fields_that_match_state=*/{},
           /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
-          "en-US", form_structure->fields()),
+          base::i18n::GetKnownLanguageTag("en-US"), form_structure->fields()),
       ElementsAre(HasTypes(UNKNOWN_TYPE)));
 }
 
@@ -1000,7 +1005,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           base::span_from_ref(entity), std::vector<LoyaltyCard>(),
           /*fields_that_match_state=*/{},
           /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
-          "en-US", form_structure->fields()),
+          base::i18n::GetKnownLanguageTag("en-US"), form_structure->fields()),
       ElementsAre(HasTypes(UNKNOWN_TYPE)));
 }
 
@@ -1070,7 +1075,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           {passport_entity, flight_entity}, std::vector<LoyaltyCard>(),
           /*fields_that_match_state=*/{},
           /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
-          "en-US", form_structure->fields()),
+          base::i18n::GetKnownLanguageTag("en-US"), form_structure->fields()),
       ElementsAre(
           AllOf(HasTypes(NAME_FIRST), HasNoFormats()),
           AllOf(HasTypes(NAME_LAST, NAME_LAST_SECOND), HasNoFormats()),
@@ -1139,7 +1144,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           base::span_from_ref(entity), std::vector<LoyaltyCard>(),
           /*fields_that_match_state=*/{},
           /*last_unlocked_credit_card_cvc=*/u"", std::vector<OneTimeToken>(),
-          "en-US", form_structure->fields()),
+          base::i18n::GetKnownLanguageTag("en-US"), form_structure->fields()),
       ElementsAre(AllOf(HasTypes(PASSPORT_NUMBER), HasNoFormats()),
                   AllOf(HasTypes(UNKNOWN_TYPE), HasNoFormats()),
                   AllOf(HasTypes(PASSPORT_NUMBER), HasAffixFormats("-3")),
@@ -1193,9 +1198,7 @@ TEST_F(PreProcessStateMatchingTypesTest, PreProcessStateMatchingTypes) {
     ASSERT_EQ(form_structure.fields()[0]->initial_value(), u"");
     ASSERT_EQ(form_structure.fields()[1]->initial_value(), u"");
 
-    EXPECT_THAT(PreProcessStateMatchingTypes(
-                    profiles, form_structure,
-                    std::string(client().GetAppLocale().tag_string())),
+    EXPECT_THAT(PreProcessStateMatchingTypes(profiles, form_structure),
                 ElementsAre(form_structure.field(1)->global_id()));
   }
 
@@ -1212,9 +1215,7 @@ TEST_F(PreProcessStateMatchingTypesTest, PreProcessStateMatchingTypes) {
     FormStructure form_structure(form);
     EXPECT_EQ(form_structure.field_count(), 2U);
 
-    EXPECT_THAT(PreProcessStateMatchingTypes(
-                    profiles, form_structure,
-                    std::string(client().GetAppLocale().tag_string())),
+    EXPECT_THAT(PreProcessStateMatchingTypes(profiles, form_structure),
                 IsEmpty());
   }
 
@@ -1242,9 +1243,7 @@ TEST_F(PreProcessStateMatchingTypesTest, PreProcessStateMatchingTypes) {
   ASSERT_EQ(form_structure.fields()[0]->initial_value(), u"");
   ASSERT_EQ(form_structure.fields()[1]->initial_value(), u"");
 
-  EXPECT_THAT(PreProcessStateMatchingTypes(
-                  profiles, form_structure,
-                  std::string(client().GetAppLocale().tag_string())),
+  EXPECT_THAT(PreProcessStateMatchingTypes(profiles, form_structure),
               ElementsAre(form_structure.field(1)->global_id()));
 }
 
@@ -1541,7 +1540,7 @@ TEST_F(DetermineAvailableFieldTypesTest, Entities) {
       /*loyalty_cards=*/{},
       /*last_unlocked_credit_card_cvc=*/u"",
       /*recent_otps=*/{},
-      /*app_locale=*/"en-US");
+      /*app_locale=*/base::i18n::GetKnownLanguageTag("en-US"));
   EXPECT_THAT(
       available_types,
       UnorderedElementsAre(NAME_FULL, NAME_FIRST, NAME_LAST, NAME_LAST_SECOND,
@@ -1559,7 +1558,7 @@ TEST_F(DetermineAvailableFieldTypesTest, LoyaltyCards) {
       /*loyalty_cards=*/{card},
       /*last_unlocked_credit_card_cvc=*/u"",
       /*recent_otps=*/{},
-      /*app_locale=*/"");
+      /*app_locale=*/base::i18n::GetKnownLanguageTag("und"));
   EXPECT_TRUE(available_types.contains(LOYALTY_MEMBERSHIP_ID));
 }
 
@@ -1609,8 +1608,8 @@ TEST_P(ZipTypesMatchingTest, DeterminePossibleFieldTypesForUpload) {
       DeterminePossibleFieldTypesForUpload(
           profiles, /*credit_cards=*/{}, /*entities=*/{},
           /*loyalty_cards=*/{}, /*fields_that_match_state=*/{},
-          /*last_unlocked_credit_card_cvc=*/u"", /*recent_otps=*/{}, "en-us",
-          form_structure->fields());
+          /*last_unlocked_credit_card_cvc=*/u"", /*recent_otps=*/{},
+          base::i18n::GetKnownLanguageTag("en-US"), form_structure->fields());
 
   ASSERT_EQ(form_structure->field_count(), possible_types.size());
   for (size_t i = 0; i < test_case.fields.size(); ++i) {
@@ -1673,8 +1672,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
           {profile}, /*credit_cards=*/{}, /*entities=*/{},
           /*loyalty_cards=*/{},
           /*fields_that_match_state=*/{},
-          /*last_unlocked_credit_card_cvc=*/u"", /*recent_otps=*/{}, "en-us",
-          form_structure->fields());
+          /*last_unlocked_credit_card_cvc=*/u"", /*recent_otps=*/{},
+          base::i18n::GetKnownLanguageTag("en-US"), form_structure->fields());
 
   ASSERT_THAT(possible_types, SizeIs(3u));
   EXPECT_THAT(possible_types[1].types, ElementsAre(PHONE_HOME_COUNTRY_CODE));
@@ -1694,8 +1693,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
       DeterminePossibleFieldTypesForUpload(
           /*profiles=*/{}, /*credit_cards=*/{}, /*entities=*/{},
           /*loyalty_cards=*/{}, /*fields_that_match_state=*/{},
-          /*last_unlocked_credit_card_cvc=*/u"", /*recent_otps=*/{}, "en-US",
-          form_structure->fields());
+          /*last_unlocked_credit_card_cvc=*/u"", /*recent_otps=*/{},
+          base::i18n::GetKnownLanguageTag("en-US"), form_structure->fields());
   EXPECT_THAT(possible_types, SizeIs(1u));
 
   histogram_tester.ExpectTotalCount(

@@ -20,6 +20,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -257,14 +258,15 @@ void FindAndSetPossibleCvcFieldTypes(
 // value.
 FieldTypeSet GetAvailableAutofillAiFieldTypes(
     base::span<const EntityInstance> entities,
-    const std::string& app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   CHECK(base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema));
   FieldTypeSet types;
   for (const EntityInstance& entity : entities) {
     for (const AttributeInstance& attribute : entity.attributes()) {
       for (FieldType field_type : attribute.type().field_subtypes()) {
-        bool is_empty = normalization::HasOnlySkippableCharacters(
-            attribute.GetInfo(field_type, app_locale, std::nullopt));
+        bool is_empty =
+            normalization::HasOnlySkippableCharacters(attribute.GetInfo(
+                field_type, app_locale.tag_string(), std::nullopt));
         if (!is_empty) {
           types.insert(field_type);
         }
@@ -369,7 +371,7 @@ void AddPossibleAutofillAiTypesForMaskedValue(
 // string to `PossibleTypes::format`.
 void AddPossibleAutofillAiTypes(base::span<const EntityInstance> entities,
                                 std::u16string_view value_u16,
-                                const std::string& app_locale,
+                                const base::i18n::LanguageTag& app_locale,
                                 PossibleTypes& pt) {
   CHECK(base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema));
 
@@ -392,8 +394,8 @@ void AddPossibleAutofillAiTypes(base::span<const EntityInstance> entities,
       }
       for (const FieldType field_type : attribute.type().field_subtypes()) {
         const std::u16string& value_on_file =
-            normalization::NormalizeForComparison(
-                attribute.GetInfo(field_type, app_locale, std::nullopt));
+            normalization::NormalizeForComparison(attribute.GetInfo(
+                field_type, app_locale.tag_string(), std::nullopt));
         if (value_on_file.empty()) {
           continue;
         }
@@ -415,7 +417,7 @@ void AddPossibleAutofillAiTypes(base::span<const EntityInstance> entities,
 
 void FindAndSetPossibleDateFieldTypesAndFormatStrings(
     base::span<const EntityInstance> entities,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     base::span<const std::unique_ptr<AutofillField>> fields,
     base::span<PossibleTypes> possible_types) {
   base::flat_set<std::pair<data_util::Date, PossibleTypes*>> dates =
@@ -428,8 +430,9 @@ void FindAndSetPossibleDateFieldTypesAndFormatStrings(
           continue;
         }
         data_util::Date date;
-        if (data_util::ParseDate(attribute.GetCompleteInfo(app_locale),
-                                 u"YYYY-MM-DD", date)) {
+        if (data_util::ParseDate(
+                attribute.GetCompleteInfo(app_locale.tag_string()),
+                u"YYYY-MM-DD", date)) {
           auto get_date = [](const auto& p) { return p.first; };
           for (auto& [same_date, pt] :
                std::ranges::equal_range(dates, date, {}, get_date)) {
@@ -482,21 +485,21 @@ PossibleTypes GetPossibleTypes(
     base::span<const EntityInstance> entities,
     base::span<const LoyaltyCard> loyalty_cards,
     const std::set<FieldGlobalId> fields_that_match_state,
-    const std::string& app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   const std::u16string_view value_u16 =
       base::TrimWhitespace(field.value_for_import(), base::TRIM_ALL);
 
   PossibleTypes pt;
 
   for (const AutofillProfile& profile : profiles) {
-    profile.GetMatchingTypes(value_u16, app_locale, &pt.types);
+    profile.GetMatchingTypes(value_u16, app_locale.tag_string(), &pt.types);
   }
   if (fields_that_match_state.contains(field.global_id())) {
     pt.types.insert(ADDRESS_HOME_STATE);
   }
 
   for (const CreditCard& card : credit_cards) {
-    card.GetMatchingTypes(value_u16, app_locale, &pt.types);
+    card.GetMatchingTypes(value_u16, app_locale.tag_string(), &pt.types);
   }
 
   // Do not issue loyalty card votes on values matching the email format.
@@ -547,8 +550,7 @@ PossibleTypes::~PossibleTypes() = default;
 
 std::set<FieldGlobalId> PreProcessStateMatchingTypes(
     base::span<const AutofillProfile*> profiles,
-    base::span<const std::unique_ptr<AutofillField>> fields,
-    const std::string& app_locale) {
+    base::span<const std::unique_ptr<AutofillField>> fields) {
   std::set<FieldGlobalId> fields_that_match_state;
   for (const auto* profile : profiles) {
     std::optional<AlternativeStateNameMap::CanonicalStateName>
@@ -590,7 +592,7 @@ std::vector<PossibleTypes> DeterminePossibleFieldTypesForUpload(
     const std::set<FieldGlobalId>& fields_that_match_state,
     std::u16string_view last_unlocked_credit_card_cvc,
     base::span<const OneTimeToken> recent_otps,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     base::span<const std::unique_ptr<AutofillField>> fields) {
   SCOPED_UMA_HISTOGRAM_TIMER(
       "Autofill.Timing.DeterminePossibleFieldTypesForUpload");
@@ -640,14 +642,14 @@ FieldTypeSet DetermineAvailableFieldTypes(
     base::span<const LoyaltyCard> loyalty_cards,
     std::u16string_view last_unlocked_credit_card_cvc,
     base::span<const OneTimeToken> recent_otps,
-    const std::string& app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   FieldTypeSet types;
   for (const AutofillProfile& profile : profiles) {
-    profile.GetNonEmptyTypes(app_locale, &types);
+    profile.GetNonEmptyTypes(app_locale.tag_string(), &types);
   }
 
   for (const CreditCard& card : credit_cards) {
-    card.GetNonEmptyTypes(app_locale, &types);
+    card.GetNonEmptyTypes(app_locale.tag_string(), &types);
   }
   // As CVC is not stored, treat it separately.
   if (!last_unlocked_credit_card_cvc.empty() ||
