@@ -8658,3 +8658,8 @@ crbug.com/574451292 crbug.com/575210275 external/wpt/largest-contentful-paint/vi
 
 # Gardener 2026-11-18
 crbug.com/587146146 virtual/clean-up-activation-behavior-disabled/editing/pasteboard/copy-backslash-with-euc.html [ Failure Pass ]
+
+# Gardener 2026-11-20
+crbug.com/566841082 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-propagation-001.html [ Failure Pass ]
+crbug.com/569420237 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-propagation-002.html [ Failure Pass ]
+crbug.com/566469808 [ Mac ] external/wpt/css/css-overflow/scrollbar-gutter-propagation-003.html [ Failure Pass ]
