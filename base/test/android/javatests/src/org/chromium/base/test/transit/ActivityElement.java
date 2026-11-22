@@ -12,9 +12,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Represents an {@link Activity} that needs to exist to consider the Station active.
@@ -245,33 +243,37 @@ public class ActivityElement<ActivityT extends Activity> extends Element<Activit
         }
     }
 
+    /**
+     * Matches an Activity in a task that no other active Station's Activity is in.
+     *
+     * <p>Checks the active Stations on every check rather than taking a snapshot of their task ids.
+     * The Station that owns this Element only becomes active after the Transition into it
+     * completes, so while the Transition runs, every active Station is one that existed before it.
+     * Not taking a snapshot keeps the Condition correct regardless of when it was created, e.g.
+     * when the Element is bound in a Station's constructor long before the Trip.
+     */
     private class ActivityExistsInNewTaskCondition extends ActivityExistsCondition {
-        private final Map<Integer, Station<?>> mExistingTaskIds;
-
         private ActivityExistsInNewTaskCondition() {
             super();
             withTimeout(NEW_TASK_TIMEOUT_MS);
-
-            // Store all task ids of Activities known to Public Transit.
-            mExistingTaskIds = new HashMap<>();
-            for (Station<?> activeStation : TrafficControl.getActiveStations()) {
-                ActivityElement<? extends Activity> knownActivityElement =
-                        activeStation.getActivityElement();
-                if (knownActivityElement != null) {
-                    mExistingTaskIds.put(knownActivityElement.value().getTaskId(), activeStation);
-                }
-            }
         }
 
         @Override
         protected @Nullable String getReasonForTaskIdDifference(ActivityT activity) {
-            // Ignore Activities in known tasks
+            // Ignore Activities in tasks of other active Stations.
             int candidateTaskId = activity.getTaskId();
-            Station<?> stationInSameTask = mExistingTaskIds.get(candidateTaskId);
-            if (stationInSameTask != null) {
-                return String.format(
-                        "%s's Activity was in same task: %d",
-                        stationInSameTask.getName(), candidateTaskId);
+            for (Station<?> activeStation : TrafficControl.getActiveStations()) {
+                // When rechecking after the Transition, the owner Station is active itself.
+                if (activeStation == mOwner) continue;
+                ActivityElement<? extends Activity> knownActivityElement =
+                        activeStation.getActivityElement();
+                if (knownActivityElement == null) continue;
+                Activity knownActivity = knownActivityElement.get();
+                if (knownActivity != null && knownActivity.getTaskId() == candidateTaskId) {
+                    return String.format(
+                            "%s's Activity was in same task: %d",
+                            activeStation.getName(), candidateTaskId);
+                }
             }
             return null;
         }

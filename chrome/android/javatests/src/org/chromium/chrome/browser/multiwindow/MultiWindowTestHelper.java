@@ -246,18 +246,28 @@ public class MultiWindowTestHelper {
      *     state is initialized.
      */
     public static CtaPageStation createNewChromeTabbedActivityWindow(Context context) {
-        Intent intent =
-                MultiWindowUtils.createNewWindowIntent(
-                        context,
-                        /* windowId= */ -1,
-                        /* preferNew= */ true,
-                        /* openAdjacently= */ false,
-                        NewWindowAppSource.MENU);
+        Intent intent = createNewWindowIntent(context);
         return arriveInNewWindow(
                 Triggers.runOnUiThreadTo(
                         () -> ContextUtils.getApplicationContext().startActivity(intent)),
                 /* isIncognito= */ false,
                 /* allowSubclasses= */ false);
+    }
+
+    /**
+     * Creates an Intent that opens a new ChromeTabbedActivity window (API 31 only).
+     *
+     * <p>From an active Station, start it in a Trip's Trigger and arrive at the new window's
+     * Station in a new task, rather than calling {@link #createNewChromeTabbedActivity(Context)}
+     * inside a Trip's Trigger, which would run a second Transition into the same window.
+     */
+    public static Intent createNewWindowIntent(Context context) {
+        return MultiWindowUtils.createNewWindowIntent(
+                context,
+                /* windowId= */ -1,
+                /* preferNew= */ true,
+                /* openAdjacently= */ false,
+                NewWindowAppSource.MENU);
     }
 
     /**
