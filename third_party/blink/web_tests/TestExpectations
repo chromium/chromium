@@ -2041,6 +2041,7 @@ crbug.com/577081408 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetoo
 crbug.com/577081408 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_preconnected_peripheral/simulate_preconnected_peripheral.py [ Failure Pass ]
 crbug.com/577081408 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_service/invalid.py [ Failure Pass ]
 crbug.com/577081408 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_service/simulate_service.py [ Failure Pass ]
+crbug.com/589039015 [ Debug Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/invalid.py [ Failure Pass Timeout ]
 crbug.com/576967791 [ Debug ] external/wpt/webdriver/tests/bidi/network/set_extra_headers/headers_name_standard_tentative.py [ Failure Pass ]
 crbug.com/576967791 [ Linux Release ] external/wpt/webdriver/tests/bidi/network/set_extra_headers/headers_name_standard_tentative.py [ Failure Pass ]
 crbug.com/574485364 [ Linux ] external/wpt/webdriver/tests/bidi/session/capabilities/unhandled_prompt_behavior/file/ignore.py [ Failure ]
