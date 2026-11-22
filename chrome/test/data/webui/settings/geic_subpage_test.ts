@@ -5,7 +5,7 @@
 import 'chrome://settings/settings.js';
 
 import type {CrCollapseElement, CrExpandButtonElement} from 'chrome://settings/lazy_load.js';
-import {AiSettingsSection, GlicAssistantSelection, GlicBrowserProxyImpl, LifetimeBrowserProxyImpl, loadTimeData, OpenWindowProxyImpl, PrefService, resetRouterForTesting, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
+import {AiSettingsSection, GlicAssistantSelection, GlicBrowserProxyImpl, LifetimeBrowserProxyImpl, loadTimeData, OpenWindowProxyImpl, PrefsBrowserProxy, PrefService, resetRouterForTesting, SettingsGlicPageFeaturePrefName as PrefName} from 'chrome://settings/settings.js';
 import type {CrButtonElement, SettingsGeicSubpageElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
@@ -13,10 +13,12 @@ import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestGlicBrowserProxy} from './test_glic_browser_proxy.js';
 import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
 
 suite('GeicSubpage', function() {
   let page: SettingsGeicSubpageElement;
   let prefService: PrefService;
+  let prefsBrowserProxy: TestPrefsBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
   let lifetimeBrowserProxy: TestLifetimeBrowserProxy;
   let glicBrowserProxy: TestGlicBrowserProxy;
@@ -27,8 +29,6 @@ suite('GeicSubpage', function() {
       aiSettingsSection: AiSettingsSection.GEMINI_ENTERPRISE,
     });
     resetRouterForTesting();
-    prefService = PrefService.getInstance();
-    return prefService.whenInitialized();
   });
 
   async function createPage(showDevicePolicyToggle: boolean = false) {
@@ -42,6 +42,23 @@ suite('GeicSubpage', function() {
   }
 
   setup(async function() {
+    prefsBrowserProxy = new TestPrefsBrowserProxy([
+      {
+        key: PrefName.TABSTRIP_BUTTON_ENABLED,
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: true,
+      },
+      {
+        key: PrefName.DEFAULT_TAB_CONTEXT_ENABLED,
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: true,
+      },
+    ]);
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    prefService = PrefService.getInstance();
+    await prefService.whenInitialized();
+
     openWindowProxy = new TestOpenWindowProxy();
     OpenWindowProxyImpl.setInstance(openWindowProxy);
     lifetimeBrowserProxy = new TestLifetimeBrowserProxy();
@@ -68,8 +85,7 @@ suite('GeicSubpage', function() {
           url);
       assertEquals(page.i18n('geicDefaultTabAccessToggleLearnMoreUrl'), url);
     });
-    // Each test awaits the initial pref write to the browser and then toggles
-    // once, so a late pref update from the browser can't race the click.
+
     test('TabstripButtonTogglePref', async () => {
       const toggle = page.shadowRoot.querySelector<SettingsToggleButtonElement>(
           '#tabstripButtonToggle');
