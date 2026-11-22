@@ -51,6 +51,7 @@ OmniboxPopupWebUIPoolClient::OmniboxPopupWebUIPoolClient(
       kind_(presenter.GetSharedPopupKind()),
       pool_(pool.GetWeakPtr()) {
   pool.AddPresenter(&presenter);
+  pool.AddClient(this);
   // Presenters are built after the location bar joins the browser window's
   // widget, so this is set outside unit tests.
   if (browser_widget) {
@@ -61,11 +62,20 @@ OmniboxPopupWebUIPoolClient::OmniboxPopupWebUIPoolClient(
 OmniboxPopupWebUIPoolClient::~OmniboxPopupWebUIPoolClient() {
   if (pool_) {
     pool_->RemovePresenter(&*presenter_, kind_);
+    pool_->RemoveClient(this);
   }
 }
 
 bool OmniboxPopupWebUIPoolClient::HasSharedWebUIContent() const {
   return pool_ && pool_->HasWebUIContent(*presenter_);
+}
+
+bool OmniboxPopupWebUIPoolClient::SkipPrewarmIfSharedContentExists() {
+  if (!HasSharedWebUIContent()) {
+    return false;
+  }
+  RecordContentSource(ContentSource::kPrewarmSkipped);
+  return true;
 }
 
 std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>>
@@ -107,6 +117,33 @@ void OmniboxPopupWebUIPoolClient::RecordContentSource(ContentSource source) {
       base::StrCat(
           {presenter_->GetPopupMetricPrefix(), ".Shared.ContentSource"}),
       source);
+}
+
+void OmniboxPopupWebUIPoolClient::RequestWebUIContents(
+    base::OnceClosure callback) {
+  pending_request_ = std::move(callback);
+  RunPendingRequestIfReady();
+}
+
+bool OmniboxPopupWebUIPoolClient::RunPendingRequestIfReady() {
+  if (!pending_request_) {
+    return false;
+  }
+  if (presenter_->GetWebUIContent()) {
+    pending_request_.Reset();
+    return false;
+  }
+  if (pool_ && pool_->HasLoadingWebUIContent(*presenter_)) {
+    return false;
+  }
+  std::move(pending_request_).Run();
+  return true;
+}
+
+void OmniboxPopupWebUIPoolClient::OnWebUIContentsLoaded() {
+  if (pool_) {
+    pool_->PostRunWaitingClient();
+  }
 }
 
 void OmniboxPopupWebUIPoolClient::OnPopupHidden() {
@@ -152,7 +189,7 @@ void OmniboxPopupWebUIPoolClient::OnWidgetDestroying(views::Widget* widget) {
 }
 
 void OmniboxPopupWebUIPoolClient::TakeIdleWebUIContentsIfNeeded() {
-  if (presenter_->GetWebUIContent()) {
+  if (presenter_->GetWebUIContent() || RunPendingRequestIfReady()) {
     return;
   }
   TakeAndAdoptIdleWebUIContents(ContentSource::kTakenOnActivation);

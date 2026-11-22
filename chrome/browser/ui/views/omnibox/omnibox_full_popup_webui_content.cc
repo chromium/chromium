@@ -77,9 +77,16 @@ bool OmniboxFullPopupWebUIContent::EscClosesUI() const {
   return false;
 }
 
+void OmniboxFullPopupWebUIContent::ShowUI() {
+  OmniboxPopupWebUIContent::ShowUI();
+  // `OnClearCallback()` never runs if the page went away before replying.
+  clear_in_flight_ = false;
+}
+
 void OmniboxFullPopupWebUIContent::Clear() {
   CancelPendingContextMenuRequest();
   if (auto* handler = popup_handler()) {
+    clear_in_flight_ = true;
     handler->ClearPopup(
         base::BindOnce(&OmniboxFullPopupWebUIContent::OnClearCallback,
                        weak_ptr_factory_.GetWeakPtr()));
@@ -89,7 +96,17 @@ void OmniboxFullPopupWebUIContent::Clear() {
 }
 
 void OmniboxFullPopupWebUIContent::OnClearCallback() {
+  clear_in_flight_ = false;
   Detach();
+}
+
+bool OmniboxFullPopupWebUIContent::CanReleaseContentsWrapper() {
+  // A draft keeps the full popup open on blur, and belongs to this window.
+  if (clear_in_flight_ || pending_context_menu_request_ ||
+      controller()->edit_model()->HasDraft()) {
+    return false;
+  }
+  return OmniboxPopupWebUIContent::CanReleaseContentsWrapper();
 }
 
 // TODO(b/504668887): If necessary, copy `OmniboxAimPopupWebUIContent::Clear()`

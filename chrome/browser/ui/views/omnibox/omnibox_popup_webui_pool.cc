@@ -11,16 +11,21 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory_coordinator/memory_limit.h"
 #include "base/memory_coordinator/traits.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_pool_client.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -108,11 +113,35 @@ void OmniboxPopupWebUIPool::RemovePresenter(
   }
 }
 
+void OmniboxPopupWebUIPool::AddClient(OmniboxPopupWebUIPoolClient* client) {
+  CHECK(!std::ranges::contains(clients_, client));
+  clients_.push_back(client);
+}
+
+void OmniboxPopupWebUIPool::RemoveClient(OmniboxPopupWebUIPoolClient* client) {
+  std::erase(clients_, client);
+  // The removed client's popup may have been the one others waited for.
+  PostRunWaitingClient();
+}
+
 bool OmniboxPopupWebUIPool::HasWebUIContent(
     const OmniboxPopupPresenterBase& presenter) const {
   return std::ranges::any_of(presenters_, [&](const auto& other) {
     return other != &presenter && IsSameKind(*other, presenter) &&
            other->GetWebUIContent();
+  });
+}
+
+bool OmniboxPopupWebUIPool::HasLoadingWebUIContent(
+    const OmniboxPopupPresenterBase& presenter) const {
+  return std::ranges::any_of(presenters_, [&](const auto& other) {
+    if (other == &presenter || !IsSameKind(*other, presenter)) {
+      return false;
+    }
+    OmniboxPopupWebUIBaseContent* content = other->GetWebUIContent();
+    content::WebContents* web_contents =
+        content ? content->GetWrappedWebContents() : nullptr;
+    return web_contents && web_contents->IsLoading();
   });
 }
 
@@ -144,6 +173,14 @@ size_t OmniboxPopupWebUIPool::DropOtherIdleWebUIContents(
 
 bool OmniboxPopupWebUIPool::ConsumeHolderClosed(OmniboxPopupState kind) {
   return holder_closed_kinds_.erase(kind) > 0;
+}
+
+void OmniboxPopupWebUIPool::PostRunWaitingClient() {
+  // Posted so that a popup does not move inside its own page's load
+  // notification or its window's teardown.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&OmniboxPopupWebUIPool::RunWaitingClient,
+                                weak_factory_.GetWeakPtr()));
 }
 
 void OmniboxPopupWebUIPool::OnBrowserWindowActivated(
@@ -183,3 +220,13 @@ void OmniboxPopupWebUIPool::OnReleaseMemory() {
 }
 
 void OmniboxPopupWebUIPool::OnUpdateMemoryLimit() {}
+
+void OmniboxPopupWebUIPool::RunWaitingClient() {
+  views::Widget* active_widget = last_active_browser_widget_.get();
+  for (OmniboxPopupWebUIPoolClient* client : clients_) {
+    if ((!active_widget || client->browser_widget() == active_widget) &&
+        client->RunPendingRequestIfReady()) {
+      return;
+    }
+  }
+}

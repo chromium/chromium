@@ -364,6 +364,16 @@ void OmniboxPopupFullPresenter::DeactivateAndKillFocus() {
   DeactivatePopupAndKillFocus(FocusAfterBlur::kNone);
 }
 
+OmniboxPopupState OmniboxPopupFullPresenter::GetSharedPopupKind() const {
+  // With `kWebUISearchboxWithoutModelController`, `OmniboxPopupUI` builds a
+  // `WebuiOmniboxFullHandler` whose `ChromeOmniboxClient` is permanently bound
+  // to the window that loaded the page (see
+  // `OmniboxPopupUI::DetachFromWindow()`, which CHECKs against it), instead of
+  // the detachable `WebuiOmniboxHandler`.
+  return omnibox::ShouldUseWebUIOmniboxFullHandler() ? OmniboxPopupState::kNone
+                                                     : OmniboxPopupState::kFull;
+}
+
 std::unique_ptr<RoundedOmniboxResultsFrame>
 OmniboxPopupFullPresenter::CreateResultsFrame(
     std::unique_ptr<views::View> contents,
@@ -1167,6 +1177,10 @@ OmniboxPopupFullPresenter::CreateWebUIContent(
   return std::make_unique<OmniboxFullPopupWebUIContent>(
       /*content_delegate=*/this, /*sizer=*/this, /*config=*/config(),
       location_bar(), controller(), std::move(contents));
+}
+
+bool OmniboxPopupFullPresenter::NeedsWebUIContentBeforeShow() const {
+  return true;
 }
 
 void OmniboxPopupFullPresenter::OnWebUIContentsAdopted() {

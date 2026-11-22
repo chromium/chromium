@@ -75,6 +75,11 @@ class OmniboxPopupPresenterBase
     kShow,
     kContextMenu,
     kOmniboxFocus,
+    // The omnibox was focused in a window whose popup has no content and can't
+    // create it in `Show()`: the window skipped prewarming because another
+    // window had a popup of this kind, or another window took its popup, or
+    // the pool dropped it.
+    kOmniboxFocusWithoutContent,
   };
 
   // An RAII-style helper that registers itself as a blocker upon creation and
@@ -207,6 +212,7 @@ class OmniboxPopupPresenterBase
   }
   // content::WebContentsObserver
   void PrimaryPageChanged(content::Page& page) override;
+  void DidStopLoading() override;
 
   // OmniboxPopupContentDelegate (SearchboxHandler::Delegate):
   void OnEmbeddedPermissionDialogChanged(bool is_showing,
@@ -292,6 +298,11 @@ class OmniboxPopupPresenterBase
   // null by default.
   virtual std::unique_ptr<OmniboxPopupWebUIBaseContent> CreateWebUIContent(
       std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents);
+
+  // Returns whether the content must exist before `Show()`. Presenters that
+  // show their popup only once its page is ready override this to return
+  // true, so a window whose omnibox is focused gets a page then instead.
+  virtual bool NeedsWebUIContentBeforeShow() const;
 
   // Called at the end of `AdoptWebUIContents()` and `ReleaseWebUIContents()`,
   // for presenters whose window state depends on having a loaded page.

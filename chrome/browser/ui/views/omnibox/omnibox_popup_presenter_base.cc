@@ -69,6 +69,8 @@ std::string_view CreationReasonToString(
       return "ContextMenu";
     case OmniboxPopupPresenterBase::CreationReason::kOmniboxFocus:
       return "OmniboxFocus";
+    case OmniboxPopupPresenterBase::CreationReason::kOmniboxFocusWithoutContent:
+      return "OmniboxFocusWithoutContent";
     case OmniboxPopupPresenterBase::CreationReason::kAfterWindowPresentation:
       return "AfterWindowPresentation";
   }
@@ -84,6 +86,7 @@ bool IsPrewarm(OmniboxPopupPresenterBase::CreationReason reason) {
       return true;
     case OmniboxPopupPresenterBase::CreationReason::kShow:
     case OmniboxPopupPresenterBase::CreationReason::kContextMenu:
+    case OmniboxPopupPresenterBase::CreationReason::kOmniboxFocusWithoutContent:
       return false;
   }
 }
@@ -488,9 +491,7 @@ OmniboxPopupPresenterBase::GetOrCreateWebUIContent(CreationReason reason) {
   }
   if (pool_client_) {
     if (IsPrewarm(reason)) {
-      if (pool_client_->HasSharedWebUIContent()) {
-        pool_client_->RecordContentSource(
-            OmniboxPopupWebUIPoolClient::ContentSource::kPrewarmSkipped);
+      if (pool_client_->SkipPrewarmIfSharedContentExists()) {
         return nullptr;
       }
     } else if (auto* content = pool_client_->TakeAndAdoptIdleWebUIContents(
@@ -623,6 +624,10 @@ OmniboxPopupPresenterBase::CreateWebUIContent(
   return nullptr;
 }
 
+bool OmniboxPopupPresenterBase::NeedsWebUIContentBeforeShow() const {
+  return false;
+}
+
 void OmniboxPopupPresenterBase::CreateWebUIContentAfterWindowPresentation() {
   views::Widget* widget = delegate().GetLocationBarWidget();
   // Key on the browser window's widget rather than the macOS immersive
@@ -668,6 +673,20 @@ void OmniboxPopupPresenterBase::OnBrowserWindowPresented() {
 
 void OmniboxPopupPresenterBase::OnOmniboxFocused() {
   omnibox_focused_ = true;
+  // A presenter whose popup can't create its page in `Show()` takes or creates
+  // one here if it has none: it skipped prewarming, or another window took its
+  // popup or the pool dropped it. Such presenters create their content eagerly
+  // and don't wait for the window's first frame.
+  if (NeedsWebUIContentBeforeShow() && pool_client_) {
+    if (!GetWebUIContent()) {
+      pool_client_->RequestWebUIContents(base::BindOnce(
+          base::IgnoreResult(
+              &OmniboxPopupPresenterBase::GetOrCreateWebUIContent),
+          weak_factory_.GetWeakPtr(),
+          CreationReason::kOmniboxFocusWithoutContent));
+    }
+    return;
+  }
   // A window that opens with its omnibox focused gets here before its first
   // frame. Creating the content then would put the popup's WebContents back on
   // the window's critical path, so `OnBrowserWindowPresented()` creates it.
@@ -899,6 +918,12 @@ void OmniboxPopupPresenterBase::PrimaryPageChanged(content::Page& page) {
     if (webui_controller) {
       webui_controller->SetSearchboxHandlerDelegate(this);
     }
+  }
+}
+
+void OmniboxPopupPresenterBase::DidStopLoading() {
+  if (pool_client_) {
+    pool_client_->OnWebUIContentsLoaded();
   }
 }
 

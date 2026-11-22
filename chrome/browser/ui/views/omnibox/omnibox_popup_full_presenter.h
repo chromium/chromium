@@ -97,6 +97,7 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   std::string_view GetPopupMetricPrefix() const override;
   // Calls `DeactivatePopupAndKillFocus(FocusAfterBlur::kNone)`.
   void DeactivateAndKillFocus() override;
+  OmniboxPopupState GetSharedPopupKind() const override;
 
   bool ShouldReceiveFocus() const override;
 
@@ -138,6 +139,9 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
   void OnWidgetPresentedChanged(bool presented) override;
   std::unique_ptr<OmniboxPopupWebUIBaseContent> CreateWebUIContent(
       std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents) override;
+  // The popup shows only once its page is ready (see
+  // `OmniboxPopupViewFullWebUI::OnFocus()`), so `Show()` never creates it.
+  bool NeedsWebUIContentBeforeShow() const override;
   void OnWebUIContentsAdopted() override;
   void OnWebUIContentsReleased() override;
 

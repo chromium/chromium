@@ -53,7 +53,11 @@ class OmniboxFullPopupWebUIContent
 
   bool EscClosesUI() const override;
 
+  // WebUIContentsWrapper::Host:
+  void ShowUI() override;
+
   void Clear() override;
+  bool CanReleaseContentsWrapper() override;
 
   // Requests the WebUI searchbox context menu at `screen_point`, shown once
   // the popup widget is active and the `<input>` is focused.
@@ -121,6 +125,9 @@ class OmniboxFullPopupWebUIContent
   };
   std::optional<ContextMenuRequest> pending_context_menu_request_;
   bool popup_presented_ = false;
+  // Whether a `ClearPopup()` reply is pending. The reply detaches the popup in
+  // this window, so the popup must not move until it arrives.
+  bool clear_in_flight_ = false;
 
   base::WeakPtrFactory<OmniboxFullPopupWebUIContent> weak_ptr_factory_{this};
 };

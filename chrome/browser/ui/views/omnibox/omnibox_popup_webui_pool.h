@@ -23,6 +23,7 @@ class Widget;
 
 class OmniboxPopupPresenterBase;
 class OmniboxPopupUI;
+class OmniboxPopupWebUIPoolClient;
 template <typename T>
 class WebUIContentsWrapperT;
 
@@ -43,16 +44,22 @@ class OmniboxPopupWebUIPool : public KeyedService, public base::MemoryConsumer {
 
   base::WeakPtr<OmniboxPopupWebUIPool> GetWeakPtr();
 
-  // `presenter` must be removed before it is destroyed.
+  // `presenter` and `client` must be removed before they are destroyed.
   void AddPresenter(OmniboxPopupPresenterBase* presenter);
   // `kind` is the presenter's `GetSharedPopupKind()`, which can't be read
   // while the presenter is being destroyed.
   void RemovePresenter(OmniboxPopupPresenterBase* presenter,
                        OmniboxPopupState kind);
+  void AddClient(OmniboxPopupWebUIPoolClient* client);
+  void RemoveClient(OmniboxPopupWebUIPoolClient* client);
 
   // Returns whether a presenter other than `presenter`, of the same popup
   // kind, has WebUI content.
   bool HasWebUIContent(const OmniboxPopupPresenterBase& presenter) const;
+
+  // Returns whether a presenter other than `presenter`, of the same popup
+  // kind, has WebUI content whose page is still loading.
+  bool HasLoadingWebUIContent(const OmniboxPopupPresenterBase& presenter) const;
 
   // Releases the WebContents of an idle popup of the same kind as `presenter`
   // in another browser window, or returns null if there is none.
@@ -66,6 +73,11 @@ class OmniboxPopupWebUIPool : public KeyedService, public base::MemoryConsumer {
   // Returns whether the last popup of `kind` was destroyed with its browser
   // window since the last call for `kind`.
   bool ConsumeHolderClosed(OmniboxPopupState kind);
+
+  // Posts a task that runs a client waiting for a loading popup; see
+  // `OmniboxPopupWebUIPoolClient::RequestWebUIContents()`. Called when a
+  // popup's page finishes loading and when a client is removed.
+  void PostRunWaitingClient();
 
   // Records the browser window of the profile that was activated last.
   void OnBrowserWindowActivated(views::Widget* browser_widget);
@@ -86,8 +98,15 @@ class OmniboxPopupWebUIPool : public KeyedService, public base::MemoryConsumer {
   void OnUpdateMemoryLimit() override;
 
  private:
+  // Runs the pending request of at most one client per call, since running a
+  // second one would immediately steal the popup from the first. Only clients
+  // in the window that was activated last run theirs, or clients in any window
+  // if none is known. The others run theirs when their window is activated.
+  void RunWaitingClient();
+
   std::vector<raw_ptr<OmniboxPopupPresenterBase>> presenters_;
   base::flat_set<OmniboxPopupState> holder_closed_kinds_;
+  std::vector<raw_ptr<OmniboxPopupWebUIPoolClient>> clients_;
   base::WeakPtr<views::Widget> last_active_browser_widget_;
   std::optional<base::MemoryConsumerRegistration> memory_consumer_registration_;
   base::WeakPtrFactory<OmniboxPopupWebUIPool> weak_factory_{this};

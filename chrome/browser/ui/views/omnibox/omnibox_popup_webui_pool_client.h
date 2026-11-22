@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -70,6 +71,10 @@ class OmniboxPopupWebUIPoolClient : public views::WidgetObserver {
   // moves to this window when this window needs it.
   bool HasSharedWebUIContent() const;
 
+  // Returns true, and records that prewarming was skipped, when another window
+  // of the profile already has a popup of the same kind.
+  bool SkipPrewarmIfSharedContentExists();
+
   // Releases an idle popup of the same kind from another window of the
   // profile, or returns null if there is none.
   std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>>
@@ -86,6 +91,25 @@ class OmniboxPopupWebUIPoolClient : public views::WidgetObserver {
 
   void RecordContentSource(ContentSource source);
 
+  // Runs `callback`, which takes or creates the presenter's content, once no
+  // other window's popup of this kind is still loading, so restored windows
+  // do not each load one.
+  void RequestWebUIContents(base::OnceClosure callback);
+
+  // Runs the pending `RequestWebUIContents()` callback, if any, unless the
+  // presenter has content or another window's popup is still loading.
+  // Returns whether it ran the callback.
+  bool RunPendingRequestIfReady();
+
+  // Called when the presenter's page finishes loading, so that a window
+  // waiting for it can take it.
+  void OnWebUIContentsLoaded();
+
+  // The browser window that hosts the popup, if any.
+  views::Widget* browser_widget() {
+    return browser_widget_observation_.GetSource();
+  }
+
   // Called after the presenter hid its shown popup. Destroys the idle popups
   // of the same kind in the profile's other windows, keeping this one, so that
   // copies that other windows created while this popup was busy do not stay
@@ -97,7 +121,8 @@ class OmniboxPopupWebUIPoolClient : public views::WidgetObserver {
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  // Takes an idle popup from another window if the presenter still has none.
+  // Takes an idle popup from another window if the presenter still has none,
+  // or runs a pending `RequestWebUIContents()` call.
   void TakeIdleWebUIContentsIfNeeded();
 
   void DropOtherIdleWebUIContents();
@@ -109,6 +134,8 @@ class OmniboxPopupWebUIPoolClient : public views::WidgetObserver {
   // The pool outlives the presenter in practice, since browser windows keep
   // their profile alive; the weak pointer makes the order not matter.
   base::WeakPtr<OmniboxPopupWebUIPool> pool_;
+
+  base::OnceClosure pending_request_;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       browser_widget_observation_{this};

@@ -426,33 +426,6 @@ IN_PROC_BROWSER_TEST_F(
       [&]() { return GetPageResultInput(contents) == "bar"; }));
 }
 
-// Tests sharing with the full WebUI popup, which each window keeps for itself.
-class OmniboxPopupShareAcrossWindowsFullPopupBrowserTest
-    : public OmniboxPopupShareAcrossWindowsBrowserTest {
- public:
-  OmniboxPopupShareAcrossWindowsFullPopupBrowserTest() {
-    full_popup_feature_list_.InitAndEnableFeature(
-        omnibox::internal::kWebUIOmniboxFullPopup);
-  }
-
- private:
-  base::test::ScopedFeatureList full_popup_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsFullPopupBrowserTest,
-                       EachWindowKeepsItsFullPopup) {
-  EXPECT_EQ(GetPresenter(browser())->GetSharedPopupKind(),
-            OmniboxPopupState::kNone);
-  content::WebContents* contents = GetPopupContents(browser());
-  ASSERT_TRUE(contents);
-  BrowserWindowInterface* other_browser = CreateActiveBrowser();
-
-  content::WebContents* other_contents = GetPopupContents(other_browser);
-  ASSERT_TRUE(other_contents);
-  EXPECT_NE(other_contents, contents);
-  EXPECT_EQ(GetPopupContents(browser()), contents);
-}
-
 // Tests sharing when windows prewarm their popup, as in
 // production.
 class OmniboxPopupShareAcrossWindowsEagerBrowserTest
@@ -731,4 +704,280 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupShareAcrossWindowsBrowserTest,
 
   histograms.ExpectUniqueSample(
       "Omnibox.Popup.WebUI.Shared.CopiesDroppedOnHide", 1, 1);
+}
+
+// Tests that browser windows of a profile share the full WebUI popup.
+class OmniboxPopupShareFullPopupAcrossWindowsBrowserTest
+    : public OmniboxPopupShareAcrossWindowsBrowserTest {
+ public:
+  OmniboxPopupShareFullPopupAcrossWindowsBrowserTest() {
+    full_popup_feature_list_.InitAndEnableFeature(
+        omnibox::internal::kWebUIOmniboxFullPopup);
+  }
+
+ protected:
+  static LocationBarView* GetLocationBarView(BrowserWindowInterface* browser) {
+    return BrowserView::GetBrowserViewForBrowser(browser)
+        ->toolbar()
+        ->location_bar_view();
+  }
+
+  // Hides the loaded full popup of `browser` and waits until it is idle, which
+  // takes the reply to the `ClearPopup()` that hiding sends. Returns the
+  // popup's WebContents.
+  static content::WebContents* GetIdleFullPopup(
+      BrowserWindowInterface* browser) {
+    content::WebContents* contents = GetPopupContents(browser);
+    CHECK(contents);
+    WaitForPopupPage(contents);
+    GetPresenter(browser)->Hide();
+    CHECK(base::test::RunUntil(
+        [&]() { return GetPresenter(browser)->CanReleaseWebUIContents(); }));
+    return contents;
+  }
+
+  // Opens a second window that skipped loading its full popup because the
+  // first window has one, and returns it. The first window keeps its popup,
+  // and the second has none.
+  BrowserWindowInterface* CreateBrowserWithSkippedFullPopup() {
+    GetIdleFullPopup(browser());
+    // Keeps the new window from taking the popup when it becomes active.
+    std::unique_ptr<OmniboxPopupDeactivationBlocker> blocker =
+        GetPresenter(browser())->CreateDeactivationBlocker();
+    CHECK(blocker);
+    BrowserWindowInterface* other_browser = CreateActiveBrowser();
+    DropPopup(other_browser);
+    return other_browser;
+  }
+
+  // Destroys the popup of `browser`, if it has one. A window that skipped
+  // loading its full popup creates one if its omnibox is focused as it opens
+  // while the other window's popup is busy.
+  static void DropPopup(BrowserWindowInterface* browser) {
+    if (GetPresenter(browser)->GetWebUIContent()) {
+      // Destroys the released WebContents.
+      GetPresenter(browser)->ReleaseWebUIContents();
+    }
+  }
+
+  // Replaces the hidden full popup of `browser` with a new one whose page is
+  // still loading, and returns the new popup's WebContents.
+  static content::WebContents* ReplaceWithLoadingFullPopup(
+      BrowserWindowInterface* browser) {
+    // Destroys the released WebContents.
+    GetPresenter(browser)->ReleaseWebUIContents();
+    CHECK(GetPresenter(browser)->GetOrCreateWebUIContent(
+        OmniboxPopupPresenterBase::CreationReason::kShow));
+    content::WebContents* contents = GetPopupContents(browser);
+    CHECK(contents->IsLoading());
+    return contents;
+  }
+
+ private:
+  base::test::ScopedFeatureList full_popup_feature_list_;
+};
+
+// Tests the full WebUI popup with the full WebUI handler, which is bound to
+// the window that loaded the page.
+class OmniboxPopupShareFullHandlerBrowserTest
+    : public OmniboxPopupShareFullPopupAcrossWindowsBrowserTest {
+ public:
+  OmniboxPopupShareFullHandlerBrowserTest() {
+    full_handler_feature_list_.InitAndEnableFeature(
+        omnibox::kWebUISearchboxWithoutModelController);
+  }
+
+ private:
+  base::test::ScopedFeatureList full_handler_feature_list_;
+};
+
+// Each window keeps its own full popup, since the full handler can't move.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupShareFullHandlerBrowserTest,
+                       EachWindowKeepsItsOwnFullPopup) {
+  EXPECT_EQ(GetPresenter(browser())->GetSharedPopupKind(),
+            OmniboxPopupState::kNone);
+  content::WebContents* contents = GetPopupContents(browser());
+  ASSERT_TRUE(contents);
+
+  BrowserWindowInterface* other_browser = CreateActiveBrowser();
+
+  content::WebContents* other_contents = GetPopupContents(other_browser);
+  ASSERT_TRUE(other_contents);
+  EXPECT_NE(other_contents, contents);
+  EXPECT_EQ(GetPopupContents(browser()), contents);
+}
+
+// A new window loads no full popup of its own while another window has one,
+// and takes that popup once it is idle.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupShareFullPopupAcrossWindowsBrowserTest,
+                       NewWindowTakesIdleFullPopup) {
+  EXPECT_EQ(GetPresenter(browser())->GetSharedPopupKind(),
+            OmniboxPopupState::kFull);
+  content::WebContents* contents = GetIdleFullPopup(browser());
+
+  BrowserWindowInterface* other_browser = CreateActiveBrowser();
+  // The new window either skipped creating its popup or already took it, if
+  // it showed the popup for its focused omnibox.
+  content::WebContents* other_contents = GetPopupContents(other_browser);
+  EXPECT_TRUE(!other_contents || other_contents == contents);
+
+  ASSERT_TRUE(GetPresenter(other_browser)
+                  ->GetOrCreateWebUIContent(
+                      OmniboxPopupPresenterBase::CreationReason::kShow));
+  EXPECT_EQ(GetPopupContents(other_browser), contents);
+  EXPECT_FALSE(GetPresenter(browser())->GetWebUIContent());
+}
+
+// A draft in the omnibox keeps the full popup in its window.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupShareFullPopupAcrossWindowsBrowserTest,
+                       DraftKeepsFullPopup) {
+  GetIdleFullPopup(browser());
+
+  GetLocationBar(browser())->GetOmniboxController()->edit_model()->SetUserText(
+      u"draft");
+
+  ASSERT_FALSE(GetPresenter(browser())->IsShown());
+  EXPECT_FALSE(GetPresenter(browser())->CanReleaseWebUIContents());
+}
+
+// The full popup stays in its window while a `ClearPopup()` reply is pending.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupShareFullPopupAcrossWindowsBrowserTest,
+                       PendingClearKeepsFullPopup) {
+  GetIdleFullPopup(browser());
+
+  GetPresenter(browser())->GetWebUIContent()->Clear();
+
+  EXPECT_FALSE(GetPresenter(browser())->CanReleaseWebUIContents());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetPresenter(browser())->CanReleaseWebUIContents(); }));
+}
+
+// A window that skipped loading its full popup creates its own when its
+// omnibox is focused while another window's popup is busy, since the full popup
+// is only shown once its page is ready.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupShareFullPopupAcrossWindowsBrowserTest,
+                       SkippedPrewarmCreatesFullPopupOnFocusWhileOtherBusy) {
+  content::WebContents* contents = GetIdleFullPopup(browser());
+  // Keeps the first window's popup busy.
+  std::unique_ptr<OmniboxPopupDeactivationBlocker> blocker =
+      GetPresenter(browser())->CreateDeactivationBlocker();
+  ASSERT_TRUE(blocker);
+  BrowserWindowInterface* other_browser = CreateActiveBrowser();
+
+  // The new window may already have focused its omnibox when it opened.
+  GetLocationBarView(other_browser)->OnOmniboxFocused();
+
+  content::WebContents* other_contents = GetPopupContents(other_browser);
+  ASSERT_TRUE(other_contents);
+  EXPECT_NE(other_contents, contents);
+  EXPECT_EQ(GetPopupContents(browser()), contents);
+}
+
+// A window that skipped loading its full popup waits when its omnibox is
+// focused while another window's popup is still loading, and takes that popup
+// once it has loaded.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupShareFullPopupAcrossWindowsBrowserTest,
+                       SkippedPrewarmTakesLoadingFullPopupOnceLoaded) {
+  BrowserWindowInterface* other_browser = CreateBrowserWithSkippedFullPopup();
+  content::WebContents* contents = ReplaceWithLoadingFullPopup(browser());
+  ActivateBrowser(other_browser);
+
+  GetLocationBarView(other_browser)->OnOmniboxFocused();
+
+  EXPECT_FALSE(GetPopupContents(other_browser));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetPopupContents(other_browser) == contents; }));
+  EXPECT_FALSE(GetPresenter(browser())->GetWebUIContent());
+}
+
+// A window waiting for another window's loading full popup creates its own if
+// that window closes first.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupShareFullPopupAcrossWindowsBrowserTest,
+                       SkippedPrewarmCreatesFullPopupWhenLoadingHolderCloses) {
+  BrowserWindowInterface* other_browser = CreateBrowserWithSkippedFullPopup();
+  ReplaceWithLoadingFullPopup(browser());
+  ActivateBrowser(other_browser);
+  GetLocationBarView(other_browser)->OnOmniboxFocused();
+  ASSERT_FALSE(GetPopupContents(other_browser));
+
+  CloseBrowserSynchronously(browser());
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetPopupContents(other_browser) != nullptr; }));
+}
+
+// A window that skipped loading its full popup creates its own when its
+// omnibox is focused after the window that had the popup closed with it.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupShareFullPopupAcrossWindowsBrowserTest,
+                       SkippedPrewarmCreatesFullPopupOnFocusAfterHolderClosed) {
+  GetIdleFullPopup(browser());
+  // Keeps the other window from taking the popup when it becomes active as
+  // the first window closes, so the popup closes with its window.
+  std::unique_ptr<OmniboxPopupDeactivationBlocker> blocker =
+      GetPresenter(browser())->CreateDeactivationBlocker();
+  ASSERT_TRUE(blocker);
+  BrowserWindowInterface* other_browser = CreateActiveBrowser();
+  DropPopup(other_browser);
+  CloseBrowserSynchronously(browser());
+  blocker.reset();
+
+  GetLocationBarView(other_browser)->OnOmniboxFocused();
+
+  EXPECT_TRUE(GetPopupContents(other_browser));
+}
+
+// A window that waits for a loading full popup in another window keeps
+// waiting when the popup loads while a third window is active, and takes the
+// popup once it is activated itself.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupShareFullPopupAcrossWindowsBrowserTest,
+                       InactiveWindowWaitsForActivationToTakeFullPopup) {
+  BrowserWindowInterface* waiting_browser = CreateBrowserWithSkippedFullPopup();
+  // Window managers activate a new window themselves, possibly after
+  // `ActivateBrowser()`, so the active window is the newest one.
+  BrowserWindowInterface* active_browser = CreateActiveBrowser();
+  ActivateBrowser(active_browser);
+  // Gives the active window a loaded popup of its own, which a blocker keeps
+  // there, so that it has no request of its own for the next popup.
+  OmniboxPopupWebUIBaseContent* active_content =
+      GetPresenter(active_browser)
+          ->GetOrCreateWebUIContent(
+              OmniboxPopupPresenterBase::CreationReason::kShow);
+  ASSERT_TRUE(active_content);
+  ASSERT_TRUE(content::WaitForLoadStop(active_content->GetWebContents()));
+  std::unique_ptr<OmniboxPopupDeactivationBlocker> blocker =
+      GetPresenter(active_browser)->CreateDeactivationBlocker();
+  ASSERT_TRUE(blocker);
+  ASSERT_TRUE(GetPresenter(browser())->GetOrCreateWebUIContent(
+      OmniboxPopupPresenterBase::CreationReason::kShow));
+  content::WebContents* contents = GetPopupContents(browser());
+  ASSERT_TRUE(contents->IsLoading());
+  GetLocationBarView(waiting_browser)->OnOmniboxFocused();
+  ASSERT_FALSE(GetPopupContents(waiting_browser));
+
+  ASSERT_TRUE(content::WaitForLoadStop(contents));
+  // Runs the task that the load posted to run a waiting client.
+  FlushPostedTasks();
+  EXPECT_FALSE(GetPopupContents(waiting_browser));
+
+  ActivateBrowser(waiting_browser);
+
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return GetPopupContents(waiting_browser) == contents; }));
+}
+
+// A window whose own full popup another window took gets one again when its
+// omnibox is focused.
+IN_PROC_BROWSER_TEST_F(OmniboxPopupShareFullPopupAcrossWindowsBrowserTest,
+                       WindowThatLostItsFullPopupGetsOneOnFocus) {
+  content::WebContents* contents = GetIdleFullPopup(browser());
+  BrowserWindowInterface* other_browser = CreateActiveBrowser();
+  ASSERT_TRUE(GetPresenter(other_browser)
+                  ->GetOrCreateWebUIContent(
+                      OmniboxPopupPresenterBase::CreationReason::kShow));
+  ASSERT_EQ(GetPopupContents(other_browser), contents);
+  ASSERT_FALSE(GetPresenter(browser())->GetWebUIContent());
+
+  GetLocationBarView(browser())->OnOmniboxFocused();
+
+  EXPECT_TRUE(GetPopupContents(browser()));
 }
