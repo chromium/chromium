@@ -23,6 +23,7 @@
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/service/sync_user_settings.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/passwords/password_exporter/coordinator/password_exporter.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/saved_passwords_presenter_observer.h"
@@ -579,9 +580,10 @@ bool IsCredentialLocalPassword(const CredentialUIEntry& credential) {
   __weak id<PasswordSettingsConsumer> weakConsumer = self.consumer;
   _trustedVaultClientBackend->FetchKeys(
       _identity, trusted_vault::SecurityDomainId::kPasskeys,
-      base::BindOnce(^(const std::vector<std::vector<uint8_t>>& keys) {
-        [weakConsumer setCanChangeGPMPin:!keys.empty()];
-      }));
+      base::BindOnce(
+          ^(const std::vector<trusted_vault::TrustedVaultKeyAndVersion>& keys) {
+            [weakConsumer setCanChangeGPMPin:!keys.empty()];
+          }));
 }
 
 // Called when the PasskeyModel changes or becomes ready.

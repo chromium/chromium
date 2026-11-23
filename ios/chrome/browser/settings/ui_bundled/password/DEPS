@@ -6,3 +6,11 @@ include_rules = [
   "+ios/chrome/browser/settings/password/public",
   # keep-sorted end
 ]
+
+specific_include_rules = {
+  "^password_settings_mediator.*": [
+    # keep-sorted start
+    "+components/trusted_vault/trusted_vault_key_and_version.h",
+    # keep-sorted end
+  ],
+}

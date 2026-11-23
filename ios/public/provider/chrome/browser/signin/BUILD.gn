@@ -50,5 +50,5 @@ source_set("embedded_reauth_api") {
 
 source_set("trusted_vault_api") {
   sources = [ "trusted_vault_api.h" ]
-  deps = [ "//ios/chrome/browser/signin/model/trusted_vault" ]
+  public_deps = [ "//ios/chrome/browser/signin/model/trusted_vault" ]
 }

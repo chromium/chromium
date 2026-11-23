@@ -17,6 +17,7 @@
 #import "components/sync/base/data_type.h"
 #import "components/sync/base/passphrase_enums.h"
 #import "components/sync/test/mock_sync_service.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "components/webauthn/core/browser/passkey_sync_bridge.h"
 #import "components/webauthn/core/browser/test_passkey_model.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
@@ -61,7 +62,7 @@ class MockTrustedVaultClientBackend : public TrustedVaultClientBackend {
               FetchKeys,
               (id<SystemIdentity> identity,
                trusted_vault::SecurityDomainId security_domain_id,
-               KeysFetchedCallback completion),
+               KeysWithVersionsFetchedCallback completion),
               (override));
   MOCK_METHOD(void,
               MarkLocalKeysAsStale,
@@ -325,7 +326,8 @@ TEST_F(PasswordSettingsMediatorTest, ShowsUpdateGPMPinButtonForEligibleUser) {
   EXPECT_CALL(*trusted_vault_backend_,
               FetchKeys(fake_identity_, kPasskeysDomain, _))
       .WillOnce(WithArg<2>([](auto callback) {
-        std::move(callback).Run(/*shared_keys=*/{{1, 2, 3}});
+        std::move(callback).Run(
+            {trusted_vault::TrustedVaultKeyAndVersion({1, 2, 3}, 1)});
       }));
 
   CreateMediator();
@@ -357,8 +359,7 @@ TEST_F(PasswordSettingsMediatorTest,
           [](auto callback) { std::move(callback).Run(/*status=*/false); }));
   EXPECT_CALL(*trusted_vault_backend_,
               FetchKeys(fake_identity_, kPasskeysDomain, _))
-      .WillOnce(WithArg<2>(
-          [](auto callback) { std::move(callback).Run(/*shared_keys=*/{}); }));
+      .WillOnce(WithArg<2>([](auto callback) { std::move(callback).Run({}); }));
 
   CreateMediator();
   [[consumer_ verify] setCanChangeGPMPin:NO];
@@ -375,7 +376,8 @@ TEST_F(PasswordSettingsMediatorTest, SyncChangeUpdatesChangeGPMPinButton) {
   EXPECT_CALL(*trusted_vault_backend_,
               FetchKeys(fake_identity_, kPasskeysDomain, _))
       .WillOnce(WithArg<2>([](auto callback) {
-        std::move(callback).Run(/*shared_keys=*/{{1, 2, 3}});
+        std::move(callback).Run(
+            {trusted_vault::TrustedVaultKeyAndVersion({1, 2, 3}, 1)});
       }));
 
   CreateMediator();

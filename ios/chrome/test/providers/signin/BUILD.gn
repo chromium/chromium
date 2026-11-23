@@ -106,6 +106,7 @@ source_set("trusted_vault") {
   ]
   deps = [
     "//base",
+    "//components/trusted_vault",
     "//ios/chrome/browser/signin/model/trusted_vault",
   ]
   frameworks = [ "UIKit.framework" ]

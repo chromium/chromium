@@ -9,9 +9,12 @@ source_set("trusted_vault") {
     "trusted_vault_configuration.h",
     "trusted_vault_configuration.mm",
   ]
-  deps = [
+  public_deps = [
     "//base",
+    "//components/keyed_service/core",
     "//components/trusted_vault",
+  ]
+  deps = [
     "//google_apis",
     "//ios/public/provider/chrome/browser/signin:signin_sso_api",
   ]

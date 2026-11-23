@@ -19,7 +19,7 @@ class ChromiumTrustedVaultClientBackend final
   // TrustedVaultClientBackend implementation.
   void FetchKeys(id<SystemIdentity> identity,
                  trusted_vault::SecurityDomainId security_domain_id,
-                 KeysFetchedCallback completion) final;
+                 KeysWithVersionsFetchedCallback completion) final;
   void MarkLocalKeysAsStale(id<SystemIdentity> identity,
                             trusted_vault::SecurityDomainId security_domain_id,
                             base::OnceClosure completion) final;
@@ -54,7 +54,7 @@ class ChromiumTrustedVaultClientBackend final
 void ChromiumTrustedVaultClientBackend::FetchKeys(
     id<SystemIdentity> identity,
     trusted_vault::SecurityDomainId security_domain_id,
-    KeysFetchedCallback completion) {
+    KeysWithVersionsFetchedCallback completion) {
   NOTREACHED();
 }
 

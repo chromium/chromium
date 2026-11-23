@@ -18,6 +18,10 @@
 #import "components/trusted_vault/trusted_vault_client.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 
+namespace trusted_vault {
+struct TrustedVaultKeyAndVersion;
+}  // namespace trusted_vault
+
 @protocol SystemIdentity;
 
 // Abstract class to manage shared keys.
@@ -35,6 +39,8 @@ class TrustedVaultClientBackend : public KeyedService {
 
   // Types for the different callbacks.
   using KeysFetchedCallback = base::OnceCallback<void(const SharedKeyList&)>;
+  using KeysWithVersionsFetchedCallback = base::OnceCallback<void(
+      const std::vector<trusted_vault::TrustedVaultKeyAndVersion>&)>;
   using CompletionBlock = void (^)(BOOL success, NSError* error);
   using GetPublicKeyCallback = base::OnceCallback<void(const PublicKey&)>;
   using CancelDialogCallback =
@@ -56,10 +62,18 @@ class TrustedVaultClientBackend : public KeyedService {
                       trusted_vault::SecurityDomainId security_domain_id);
 
   // Asynchronously fetches the shared keys for `identity` and invokes
-  // `callback` with the fetched keys.
+  // `completion` with the fetched keys.
+  // Deprecated: subclasses should override the overload taking
+  // `KeysWithVersionsFetchedCallback`.
   virtual void FetchKeys(id<SystemIdentity> identity,
                          trusted_vault::SecurityDomainId security_domain_id,
-                         KeysFetchedCallback completion) = 0;
+                         KeysFetchedCallback completion);
+
+  // Asynchronously fetches the shared keys and their versions for `identity`
+  // and invokes `completion` with the fetched keys.
+  virtual void FetchKeys(id<SystemIdentity> identity,
+                         trusted_vault::SecurityDomainId security_domain_id,
+                         KeysWithVersionsFetchedCallback completion);
 
   // Invoked when the result of FetchKeys() contains keys that are not
   // up-to-date. During the execution, before `callback` is invoked, the

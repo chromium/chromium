@@ -4,12 +4,17 @@
 
 #import "ios/chrome/browser/trusted_vault/model/ios_trusted_vault_client.h"
 
+#import <utility>
+
+#import "base/containers/to_vector.h"
 #import "base/feature_list.h"
+#import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/notimplemented.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/trusted_vault/features.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/trusted_vault/trusted_vault_client_backend.h"
@@ -42,8 +47,13 @@ void IOSTrustedVaultClient::FetchKeys(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)>
         callback) {
-  backend_->FetchKeys(IdentityForAccount(account_info), security_domain_id_,
-                      std::move(callback));
+  backend_->FetchKeys(
+      IdentityForAccount(account_info), security_domain_id_,
+      base::BindOnce([](const std::vector<
+                         trusted_vault::TrustedVaultKeyAndVersion>& keys) {
+        return base::ToVector(keys,
+                              &trusted_vault::TrustedVaultKeyAndVersion::key);
+      }).Then(std::move(callback)));
 }
 
 void IOSTrustedVaultClient::StoreKeys(

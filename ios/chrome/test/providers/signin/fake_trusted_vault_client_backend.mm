@@ -8,6 +8,7 @@
 
 #import "base/check.h"
 #import "base/functional/callback.h"
+#import "components/trusted_vault/trusted_vault_key_and_version.h"
 
 namespace {
 
@@ -68,11 +69,12 @@ FakeTrustedVaultClientBackend::~FakeTrustedVaultClientBackend() = default;
 void FakeTrustedVaultClientBackend::FetchKeys(
     id<SystemIdentity> identity,
     trusted_vault::SecurityDomainId security_domain_id,
-    KeysFetchedCallback completion) {
+    KeysWithVersionsFetchedCallback completion) {
   // Return the keys for passkeys domain, so the `UpdateGPMPinForAccount` can be
   // tested.
   if (security_domain_id == trusted_vault::SecurityDomainId::kPasskeys) {
-    std::move(completion).Run({{1, 2, 3}});
+    std::move(completion)
+        .Run({trusted_vault::TrustedVaultKeyAndVersion({1, 2, 3}, 1)});
   }
 
   // Otherwise do nothing.
