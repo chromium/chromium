@@ -1807,7 +1807,8 @@ public class SettingsSearchCoordinatorUnitTest {
         ChromeFeatureList.SETTINGS_IA_REORGANIZATION,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING,
-        SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS
+        SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
+        SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2
     })
     public void
             testRealMainSettingsCreatePreferences_whenFlagOn_addsHiddenHeaderUntilListenerSet() {
@@ -1869,7 +1870,8 @@ public class SettingsSearchCoordinatorUnitTest {
         ChromeFeatureList.SETTINGS_SEARCH_COLLAPSIBLE_SEARCH_BOX,
         SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
         SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING,
-        SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS
+        SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
+        SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2
     })
     public void testRealMainSettingsCreatePreferences_whenFlagOff_doesNotAddSearchHeader() {
         MainSettings mainSettings = attachRealMainSettings();

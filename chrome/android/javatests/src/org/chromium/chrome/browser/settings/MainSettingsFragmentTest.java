@@ -726,6 +726,26 @@ public class MainSettingsFragmentTest {
         onView(allOf(withId(R.id.alert_icon), isDisplayed())).check(matches(isDisplayed()));
     }
 
+    @Test
+    @SmallTest
+    @DisableFeatures({
+        SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
+        SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2,
+    })
+    public void testSigninRowUpdatesOnAccountRemoval_legacy() {
+        verifySigninRowUpdatesOnAccountRemoval();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
+        SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2,
+    })
+    public void testSigninRowUpdatesOnAccountRemoval() {
+        verifySigninRowUpdatesOnAccountRemoval();
+    }
+
     // Tests that the account row shows the AI tier ring for an eligible account.
     @Test
     @SmallTest
@@ -1527,6 +1547,41 @@ public class MainSettingsFragmentTest {
         mSettingsTestRule.startSettingsActivity();
         mMainSettings = mSettingsTestRule.getFragment();
         Assert.assertNotNull("SettingsActivity failed to launch.", mMainSettings);
+    }
+
+    private void verifySigninRowUpdatesOnAccountRemoval() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> SyncServiceFactory.setInstanceForTesting(new FakeSyncServiceImpl()));
+        mSyncTestRule.getSigninTestRule().addAccountThenSignin(TestAccounts.ACCOUNT1);
+        startSettings();
+
+        SignInPreference signInPreference = mMainSettings.findPreference(MainSettings.PREF_SIGN_IN);
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            signInPreference.getTitle().toString(),
+                            Matchers.is(TestAccounts.ACCOUNT1.getFullName()));
+                    Criteria.checkThat(
+                            signInPreference.getSummary().toString(),
+                            Matchers.is(TestAccounts.ACCOUNT1.getEmail()));
+                    Criteria.checkThat(
+                            signInPreference.getFragment(),
+                            Matchers.is(ManageSyncSettings.class.getName()));
+                });
+
+        mSyncTestRule.getSigninTestRule().removeAccount(TestAccounts.ACCOUNT1.getId());
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            signInPreference.getTitle().toString(),
+                            Matchers.is(mMainSettings.getString(R.string.signin_settings_title)));
+                    Criteria.checkThat(
+                            signInPreference.getSummary().toString(),
+                            Matchers.is(
+                                    mMainSettings.getString(R.string.signin_settings_subtitle)));
+                    Criteria.checkThat(signInPreference.getFragment(), Matchers.nullValue());
+                });
     }
 
     /** Makes the primary account eligible for the AI tier ring. */

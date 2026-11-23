@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.settings;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
@@ -16,6 +17,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 
 import static org.chromium.base.test.transit.ViewFinder.waitForView;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.res.Configuration;
 import android.view.View;
@@ -30,7 +32,12 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
+import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -39,21 +46,42 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 
-/** Integration tests for sign-in / sign-out behavior in {@link SettingsPage}. */
-@RunWith(ChromeJUnit4ClassRunner.class)
+import java.util.Arrays;
+import java.util.List;
+
+/**
+ * Integration tests for sign-in / sign-out behavior in {@link SettingsPage}.
+ *
+ * <p>TODO(crbug.com/493130564): Revert to regular runner after
+ * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2 launch.
+ */
+@RunWith(ParameterizedRunner.class)
+@UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-@EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB)
+@EnableFeatures({
+    ChromeFeatureList.SETTINGS_IN_TAB,
+    SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
+})
 public class SettingsPageSigninTest {
+    @ClassParameter
+    private static final List<ParameterSet> sClassParameters =
+            Arrays.asList(
+                    new ParameterSet().value(false).name("withAccountManagerFacadeSource"),
+                    new ParameterSet().value(true).name("withIdentityManagerSource"));
+
+    private final boolean mIsIdentityManagerSourceOfAccounts;
+
     private final SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
     private final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
@@ -62,8 +90,15 @@ public class SettingsPageSigninTest {
     public final RuleChain mRuleChain =
             RuleChain.outerRule(mSigninTestRule).around(mActivityTestRule);
 
+    public SettingsPageSigninTest(boolean isIdentityManagerSourceOfAccounts) {
+        mIsIdentityManagerSourceOfAccounts = isIdentityManagerSourceOfAccounts;
+    }
+
     @Before
     public void setUp() {
+        FeatureOverrides.overrideFlag(
+                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2,
+                mIsIdentityManagerSourceOfAccounts);
         mActivityTestRule.startMainActivityOnBlankPage();
 
         // Skip the tests on landscape devices. Rotating to portrait may letterbox the activity on
@@ -211,8 +246,20 @@ public class SettingsPageSigninTest {
                     return detailFragment == null;
                 });
 
-        // Verify MainSettings header pane is visible and Account settings is not displayed.
+        // Verify MainSettings header pane is visible, SignInPreference updated to the signed-out
+        // state, and Account settings is not displayed.
         waitForView(withText(R.string.search_engine_settings));
+        onViewWaiting(
+                        allOf(
+                                withId(R.id.recycler_view),
+                                isDescendantOfA(withId(R.id.preferences_header))))
+                .perform(scrollTo(hasDescendant(withText(R.string.signin_settings_title))));
+        onView(
+                        allOf(
+                                isDescendantOfA(withId(R.id.preferences_header)),
+                                withText(R.string.signin_settings_title)))
+                .check(matches(isDisplayed()));
+        onView(withText(TestAccounts.ACCOUNT1.getEmail())).check(doesNotExist());
         onView(allOf(withText(R.string.account_settings_title), isDisplayed()))
                 .check(doesNotExist());
     }

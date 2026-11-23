@@ -45,6 +45,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncService;
@@ -53,6 +54,7 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.base.ViewUtils;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -64,7 +66,6 @@ public class SignInPreference extends Preference
         implements SignInStateObserver,
                 ProfileDataCache.Observer,
                 SyncService.SyncStateChangedListener,
-                AccountsChangeObserver,
                 BottomSheetSigninAndHistorySyncCoordinator.Delegate {
     private boolean mWasGenericSigninPromoDisplayed;
     private boolean mViewEnabled;
@@ -78,6 +79,7 @@ public class SignInPreference extends Preference
     private PrefService mPrefService;
     private ProfileDataCache mProfileDataCache;
     private AccountManagerFacade mAccountManagerFacade;
+    private final AccountsChangeObserver mAccountManagerAccountsChangeObserver = this::update;
     private @Nullable SyncService mSyncService;
     private SigninManager mSigninManager;
     // TODO(crbug.com/469772349): Remove @Nullable after activity-less sign-in launch.
@@ -131,7 +133,10 @@ public class SignInPreference extends Preference
     public void onAttached() {
         super.onAttached();
 
-        mAccountManagerFacade.addObserver(this);
+        if (!SigninFeatureMap.isEnabled(
+                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2)) {
+            mAccountManagerFacade.addObserver(mAccountManagerAccountsChangeObserver);
+        }
         mSigninManager.addSignInStateObserver(this);
         mProfileDataCache.addObserver(this);
         if (mSyncService != null) {
@@ -146,8 +151,10 @@ public class SignInPreference extends Preference
     @Override
     public void onDetached() {
         super.onDetached();
-
-        mAccountManagerFacade.removeObserver(this);
+        if (!SigninFeatureMap.isEnabled(
+                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2)) {
+            mAccountManagerFacade.removeObserver(mAccountManagerAccountsChangeObserver);
+        }
         mSigninManager.removeSignInStateObserver(this);
         mProfileDataCache.removeObserver(this);
         if (mSyncService != null) {
@@ -386,13 +393,16 @@ public class SignInPreference extends Preference
 
     // ProfileDataCache.Observer implementation.
     @Override
-    public void onProfileDataUpdated(DisplayableProfileData profileData) {
+    public void onAccountsUpdated(List<DisplayableProfileData> accounts) {
+        if (!SigninFeatureMap.isEnabled(
+                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS_PART2)) {
+            return;
+        }
         update();
     }
 
-    // AccountsChangeObserver implementation.
     @Override
-    public void onAccountsChanged() {
+    public void onProfileDataUpdated(DisplayableProfileData profileData) {
         update();
     }
 }
