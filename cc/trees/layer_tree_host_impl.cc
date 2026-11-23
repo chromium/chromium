@@ -530,6 +530,10 @@ const RenderSurfaceImpl* FindDrawnUnboundedRenderTarget(
   return surface;
 }
 
+// Kill-swtich to remove RGBA4444 which is only used on low-end <=512 MiB
+// devices. Remove once M160 reaches stable.
+BASE_FEATURE(kUseRGBA4444, base::FEATURE_DISABLED_BY_DEFAULT);
+
 #define VERBOSE_LOG() \
   VLOG_IF(3, VerboseLogEnabled()) << ClientNameForVerboseLog() << ": "
 
@@ -3657,7 +3661,8 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
   const bool is_graphite_enabled =
       gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
       gpu::kGpuFeatureStatusEnabled;
-  const bool use_rgba_4444 = settings_.prefer_rgba_4444 && !is_graphite_enabled;
+  bool use_rgba_4444 = base::FeatureList::IsEnabled(kUseRGBA4444) &&
+                       settings_.prefer_rgba_4444 && !is_graphite_enabled;
 
   if (settings_.gpu_rasterization_disabled ||
       gpu_feature_info
