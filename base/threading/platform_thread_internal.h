@@ -38,7 +38,7 @@ class BASE_EXPORT ThreadTypeManager {
         {};
 
     // A bitmask of the thread types that have active leases. This is used to
-    // find the highest active lease thread type via Log2Floor.
+    // find the highest active lease thread type via std::bit_width.
     uint32_t bitmask = 0;
   };
   ThreadTypeManager() = default;

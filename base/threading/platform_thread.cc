@@ -4,7 +4,8 @@
 
 #include "base/threading/platform_thread.h"
 
-#include "base/bits.h"
+#include <bit>
+
 #include "base/no_destructor.h"
 #include "base/task/current_thread.h"
 #include "base/threading/platform_thread_internal.h"
@@ -166,7 +167,7 @@ std::optional<ThreadType> ThreadTypeManager::RaiseLeases::GetHighestLease()
   if (bitmask == 0) {
     return std::nullopt;
   }
-  return static_cast<ThreadType>(base::bits::Log2Floor(bitmask));
+  return static_cast<ThreadType>(std::bit_width(bitmask) - 1);
 }
 
 void ThreadTypeManager::SetCurrentThreadTypeImpl(
