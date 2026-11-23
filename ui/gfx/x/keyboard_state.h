@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/component_export.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace x11 {
@@ -15,7 +16,7 @@ class Connection;
 
 // This is an interface used by Connection to manage conversion between keycodes
 // (8 bit values) and keysyms (32 bit values).
-class KeyboardState {
+class COMPONENT_EXPORT(X11) KeyboardState {
  public:
   KeyboardState();
   virtual ~KeyboardState();

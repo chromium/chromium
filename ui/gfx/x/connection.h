@@ -280,6 +280,10 @@ class COMPONENT_EXPORT(X11) Connection final : public XProto,
   // If |synchronous| is true, this makes all requests Sync().
   void SynchronizeForTest(bool synchronous);
 
+  // Replaces the keycode/keysym conversion state and returns the old one.
+  std::unique_ptr<KeyboardState> SetKeyboardStateForTesting(
+      std::unique_ptr<KeyboardState> keyboard_state);
+
   // Read all responses from the socket without blocking.  This function will
   // make non-blocking read() syscalls.
   void ReadResponses();

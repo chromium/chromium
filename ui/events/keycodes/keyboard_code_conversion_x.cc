@@ -635,8 +635,21 @@ KeyboardCode KeyboardCodeFromXKeyEvent(const x11::Event& xev) {
   // un-modified KeySym and use that to map, so that e.g. Ctrl+D correctly
   // generates VKEY_D.
   if (modifiers & 0xFF & ~static_cast<int>(x11::KeyButMask::Mod2)) {
+    const bool control_down =
+        modifiers & static_cast<int>(x11::KeyButMask::Control);
     modifiers &= (~0xFF | static_cast<int>(x11::KeyButMask::Mod2));
     keysym = TranslateKey(xkeycode, modifiers);
+    // Some layouts give Control its own shift level, e.g. to keep shortcuts
+    // on QWERTY positions in a Dvorak layout. Prefer a letter or digit from
+    // that level, matching XkbKeyboardLayoutEngine on Wayland.
+    if (control_down) {
+      uint32_t control_keysym = TranslateKey(
+          xkeycode, modifiers | static_cast<int>(x11::KeyButMask::Control));
+      if ((control_keysym >= XK_a && control_keysym <= XK_z) ||
+          (control_keysym >= XK_0 && control_keysym <= XK_9)) {
+        keysym = control_keysym;
+      }
+    }
   }
 
   // [a-z] cases.

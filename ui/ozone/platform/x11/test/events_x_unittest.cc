@@ -23,6 +23,8 @@
 #include "ui/events/features.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/events/keycodes/keyboard_code_conversion_x.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/events_test_utils.h"
 #include "ui/events/test/events_test_utils_x11.h"
 #include "ui/events/test/keyboard_layout.h"
@@ -33,6 +35,8 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/event.h"
+#include "ui/gfx/x/keyboard_state.h"
+#include "ui/gfx/x/keysyms/keysyms.h"
 #include "ui/gfx/x/xproto.h"
 
 namespace ui {
@@ -615,6 +619,54 @@ TEST_F(EventsXTest, ImeFabricatedKeyEvents) {
       EXPECT_FALSE(key_event->flags() & ui::EF_IME_FABRICATED_KEY);
     }
   }
+}
+
+// A layout whose key types give Control its own level, like QWERTY shortcut
+// layers on Dvorak-style layouts: <AD02> is "v", but Control+<AD02> is "w".
+// <AC01> is "a" with or without Control.
+class ControlLevelKeyboardState : public x11::KeyboardState {
+ public:
+  static constexpr int kAd02 = 25;
+  static constexpr int kAc01 = 38;
+
+  x11::KeyCode KeysymToKeycode(uint32_t keysym) const override { return {}; }
+  uint32_t KeycodeToKeysym(x11::KeyCode keycode,
+                           uint32_t modifiers) const override {
+    // Latin-1 keysyms equal their code points.
+    if (static_cast<int>(keycode) == kAc01) {
+      return 'a';
+    }
+    if (static_cast<int>(keycode) != kAd02) {
+      return XK_VoidSymbol;
+    }
+    return modifiers & static_cast<uint32_t>(x11::KeyButMask::Control) ? 'w'
+                                                                       : 'v';
+  }
+
+ private:
+  void UpdateMapping() override {}
+};
+
+TEST_F(EventsXTest, ControlLevelKeyboardCode) {
+  auto* connection = x11::Connection::Get();
+  auto old_state = connection->SetKeyboardStateForTesting(
+      std::make_unique<ControlLevelKeyboardState>());
+
+  x11::Event x_event;
+  InitKeyEvent(&x_event, true, ControlLevelKeyboardState::kAd02, {});
+  EXPECT_EQ(VKEY_V, KeyboardCodeFromXKeyEvent(x_event));
+  InitKeyEvent(&x_event, true, ControlLevelKeyboardState::kAd02,
+               x11::KeyButMask::Control);
+  EXPECT_EQ(VKEY_W, KeyboardCodeFromXKeyEvent(x_event));
+
+  // Keys without a Control level are unaffected by Control.
+  InitKeyEvent(&x_event, true, ControlLevelKeyboardState::kAc01, {});
+  EXPECT_EQ(VKEY_A, KeyboardCodeFromXKeyEvent(x_event));
+  InitKeyEvent(&x_event, true, ControlLevelKeyboardState::kAc01,
+               x11::KeyButMask::Control);
+  EXPECT_EQ(VKEY_A, KeyboardCodeFromXKeyEvent(x_event));
+
+  connection->SetKeyboardStateForTesting(std::move(old_state));
 }
 #endif
 

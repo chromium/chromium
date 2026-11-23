@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <string>
+#include <utility>
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
@@ -508,6 +509,12 @@ uint32_t Connection::KeycodeToKeysym(KeyCode keycode,
                                      uint32_t modifiers) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return keyboard_state_->KeycodeToKeysym(keycode, modifiers);
+}
+
+std::unique_ptr<KeyboardState> Connection::SetKeyboardStateForTesting(
+    std::unique_ptr<KeyboardState> keyboard_state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return std::exchange(keyboard_state_, std::move(keyboard_state));
 }
 
 std::unique_ptr<Connection> Connection::Clone() const {
