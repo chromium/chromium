@@ -217,6 +217,7 @@ _CONFIG = [
             # //base/observer_list.h.
             'base::CheckedObserver',
             'base::ObserverList',
+            'base::ReentrantObserverList',
             # //base/functional/callback_helpers.h.
             'base::DoNothing',
             'base::DoNothingAs',

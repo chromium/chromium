@@ -16330,4 +16330,68 @@ TEST_F(WebFrameTest, DidAddMessageToConsole) {
   web_view_helper.Reset();
 }
 
+namespace {
+
+class ReentrantSubmitObserver : public WebLocalFrameObserver {
+ public:
+  explicit ReentrantSubmitObserver(WebLocalFrame* frame)
+      : WebLocalFrameObserver(frame) {}
+
+  void WillSendSubmitEvent(const WebFormElement&) override {
+    ++submit_count_;
+    GetWebLocalFrame()->AddMessageToConsole(WebConsoleMessage(
+        mojom::ConsoleMessageLevel::kWarning, "reentrant message"));
+  }
+
+  void DidAddMessageToConsole(const WebConsoleMessage& message,
+                              const WebString& source_name,
+                              unsigned source_line,
+                              const WebString& stack_trace) override {
+    messages_.push_back(message.text);
+  }
+
+  void OnFrameDetached() override {}
+
+  int submit_count() const { return submit_count_; }
+  const Vector<String>& messages() const { return messages_; }
+
+ private:
+  int submit_count_ = 0;
+  Vector<String> messages_;
+};
+
+}  // namespace
+
+// Regression test for crbug.com/589719846: reentrant notifications on the
+// WebLocalFrameObserver list (e.g. a console message logged during
+// WillSendSubmitEvent) must be allowed.
+TEST_F(WebFrameTest, ReentrantWebLocalFrameObserverNotification) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.Initialize();
+
+  WebLocalFrameImpl* main_frame = web_view_helper.LocalMainFrame();
+  frame_test_helpers::LoadHTMLString(
+      main_frame,
+      "<html><body><form onsubmit='return false;'>"
+      "<button id='btn' type='submit'>Submit</button>"
+      "</form></body></html>",
+      url_test_helpers::ToKURL("http://example.com/"));
+  RunPendingTasks();
+
+  ReentrantSubmitObserver observer(main_frame);
+  ConsoleMessageObserver second_observer(main_frame);
+
+  main_frame->ExecuteScript(
+      WebScriptSource("document.getElementById('btn').click();"));
+  RunPendingTasks();
+
+  EXPECT_EQ(1, observer.submit_count());
+  EXPECT_THAT(observer.messages(), testing::ElementsAre("reentrant message"));
+  ASSERT_EQ(1u, second_observer.messages().size());
+  EXPECT_EQ("reentrant message",
+            second_observer.messages()[0].message.text.Utf8());
+
+  web_view_helper.Reset();
+}
+
 }  // namespace blink

@@ -784,8 +784,10 @@ class CORE_EXPORT WebLocalFrameImpl final
 
   Member<HistoryItem> current_history_item_;
 
-  // All the registered observers.
-  base::ObserverList<WebLocalFrameObserver, true> observers_;
+  // All the registered observers. Reentrancy is allowed because an observer
+  // callback (e.g. WillSendSubmitEvent) can trigger Blink operations that log
+  // console messages or otherwise notify observers again.
+  base::ReentrantObserverList<WebLocalFrameObserver, true> observers_;
   base::ObserverList<WebLocalFrameMetricsObserver, true> metrics_observers_;
 };
 
