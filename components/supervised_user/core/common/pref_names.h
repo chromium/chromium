@@ -108,14 +108,6 @@ inline constexpr char kSupervisedUserMetricsDayId[] =
 inline constexpr char kSupervisedUserSharedSettings[] =
     "profile.managed.shared_settings";
 
-// An integer pref specifying the fallback behavior for sites outside of content
-// packs (see SupervisedUserFilter::FilteringBehavior). One of:
-// 0: Allow (does nothing)
-// 1: Warn [Deprecated]
-// 2: Block
-// 3: Invalid
-inline constexpr char kDefaultSupervisedUserFilteringBehavior[] =
-    "profile.managed.default_filtering_behavior";
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

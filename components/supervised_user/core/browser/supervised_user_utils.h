@@ -27,7 +27,9 @@ enum class FilteringBehaviorReason {
 };
 
 // A Java counterpart will be generated for this enum.
-// Values are stored in prefs under kDefaultSupervisedUserFilteringBehavior.
+// `FilteringBehavior` is a component of `supervised_user::WebFilteringResult`
+// and is an implementation detail for ultimate url handling. Prefer to use
+// high-level `WebFilteringResult::IsAllowed` or `WebFilteringResult::IsBlocked`
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.superviseduser
 enum class FilteringBehavior : int {
   kAllow = 0,

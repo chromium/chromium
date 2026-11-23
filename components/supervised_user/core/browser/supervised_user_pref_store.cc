@@ -48,14 +48,6 @@ FamilyLinkSettingsPrefMappingEntry kFamilyLinkSettingsPrefMapping[] = {
         prefs::kSkipParentApprovalToInstallExtensions,
     },
 };
-
-FamilyLinkSettingsPrefMappingEntry kFamilyLinkWebFilteringPrefMapping[] = {
-    {
-        supervised_user::kContentPackDefaultFilteringBehavior,
-        prefs::kDefaultSupervisedUserFilteringBehavior,
-    },
-};
-
 }  // namespace
 
 void SetSupervisedUserPrefStoreDefaults(PrefValueMap& pref_values) {
@@ -174,18 +166,6 @@ void SupervisedUserPrefStore::RecreatePreferences() {
 
     // Copy non-web filtering family link user settings to prefs.
     for (const auto& entry : supervised_user::kFamilyLinkSettingsPrefMapping) {
-      const base::Value* value =
-          family_link_settings_->Find(entry.settings_name);
-      if (value) {
-        prefs_->SetValue(entry.pref_name, value->Clone());
-      }
-    }
-
-    // TODO(crbug.com/465666839): after the migration is complete, stop
-    // propagating these prefs (guard with kSupervisedUserUseUrlFilteringService
-    // first).
-    for (const auto& entry :
-         supervised_user::kFamilyLinkWebFilteringPrefMapping) {
       const base::Value* value =
           family_link_settings_->Find(entry.settings_name);
       if (value) {

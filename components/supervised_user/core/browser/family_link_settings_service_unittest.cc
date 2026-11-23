@@ -479,8 +479,6 @@ TEST_F(FamilyLinkSettingsServiceTest, CheckDefaultValues) {
   // at settings service initialization.
   EXPECT_FALSE(pref_store->GetValue(
       prefs::kSkipParentApprovalToInstallExtensions, &value));
-  EXPECT_FALSE(pref_store->GetValue(
-      prefs::kDefaultSupervisedUserFilteringBehavior, &value));
 }
 
 class FamilyLinkSettingsServiceValuePropagationTest
@@ -522,10 +520,6 @@ INSTANTIATE_TEST_SUITE_P(
          supervised_user::kSkipParentApprovalToInstallExtensions,
          prefs::kSkipParentApprovalToInstallExtensions,
          []() { return base::Value(true); }},
-        {"kDefaultSupervisedUserFilteringBehavior",
-         supervised_user::kContentPackDefaultFilteringBehavior,
-         prefs::kDefaultSupervisedUserFilteringBehavior,
-         []() { return base::Value(0); }},
     }),
     [](const testing::TestParamInfo<
         FamilyLinkSettingsServiceValuePropagationTest::ParamType>& info) {

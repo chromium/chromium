@@ -162,15 +162,12 @@ TEST_F(SupervisedUserServiceTestUnsupervised,
        CantRequestUrlClassificationBlocking) {
   SetWebFilterType(WebFilterType::kCertainSites);
 
-  EXPECT_TRUE(
-      supervised_user_test_environment_->pref_service()
-          ->FindPreference(prefs::kDefaultSupervisedUserFilteringBehavior)
-          ->IsDefaultValue())
-      << "With supervision disabled, the pref should be"
-         " reset to default.";
-  EXPECT_EQ(static_cast<int>(FilteringBehavior::kAllow),
-            supervised_user_test_environment_->pref_service()->GetInteger(
-                prefs::kDefaultSupervisedUserFilteringBehavior));
+  // Even though we attempted to set the web filter type to kCertainSites, the
+  // url filtering service should report kDisabled because the user is
+  // unsupervised.
+  EXPECT_EQ(supervised_user_test_environment_->url_filtering_service()
+                ->GetWebFilterType(),
+            WebFilterType::kDisabled);
 }
 
 // This test suite verifies how web filter type changes are propagated from this

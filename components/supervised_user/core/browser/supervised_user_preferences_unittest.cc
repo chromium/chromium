@@ -35,18 +35,6 @@ class SupervisedUserPreferencesTest : public ::testing::Test {
   SupervisedUserTestEnvironment supervised_user_test_environment_;
 };
 
-TEST_F(SupervisedUserPreferencesTest, RegisterProfilePrefsAndCheckDefaults) {
-  // Checks the preference registration from the Setup.
-  EXPECT_EQ(supervised_user_test_environment_.pref_service()->GetInteger(
-                prefs::kDefaultSupervisedUserFilteringBehavior),
-            static_cast<int>(FilteringBehavior::kAllow));
-
-  EXPECT_FALSE(IsSubjectToParentalControls(
-      *supervised_user_test_environment_.pref_service()));
-  // TODO(b/306376651): When we migrate more preference reading methods in this
-  // library, add more test cases for their correct default values.
-}
-
 TEST_F(SupervisedUserPreferencesTest, ToggleParentalControlsSetsUserId) {
   supervised_user_test_environment_.EnableSupervisedAccount();
   EXPECT_EQ(supervised_user_test_environment_.pref_service()->GetString(
