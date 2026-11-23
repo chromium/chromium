@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "device/fido/public/fido_transport_protocol.h"
 #include "device/fido/public/fido_types.h"
@@ -64,7 +63,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) DiscoverableCredentialMetadata {
 
   // The transports that this credential supports, as reported by the platform
   // API. May be empty if the platform does not provide transport information.
-  base::flat_set<FidoTransportProtocol> transports;
+  FidoTransportProtocolSet transports;
 
   // Time when this passkey was last successfully asserted. Can be nullopt for
   // platform provided credentials.

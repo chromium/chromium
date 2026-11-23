@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/enum_set.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -427,17 +428,16 @@ bool WebAuthRequestSecurityCheckerImpl::
       // Combine transport hints of descriptors with identical IDs. Empty
       // transport list means _any_ transport, so the union should still be
       // empty.
-      base::flat_set<device::FidoTransportProtocol> merged_transports;
+      device::FidoTransportProtocolSet merged_transports;
       if (!it->transports.empty() &&
           !credential_descriptor.transports.empty()) {
-        std::ranges::set_union(
-            it->transports, credential_descriptor.transports,
-            std::inserter(merged_transports, merged_transports.begin()));
+        merged_transports =
+            base::Union(it->transports, credential_descriptor.transports);
       }
       unique_credential_descriptors.erase(it);
       unique_credential_descriptors.insert(
           {credential_descriptor.credential_type, credential_descriptor.id,
-           std::move(merged_transports)});
+           merged_transports});
     }
   }
   *list = {unique_credential_descriptors.begin(),

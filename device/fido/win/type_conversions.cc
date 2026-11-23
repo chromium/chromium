@@ -77,19 +77,17 @@ std::optional<FidoTransportProtocol> FromWinTransportsMask(
   return std::nullopt;
 }
 
-base::flat_set<FidoTransportProtocol> FromWinTransportsBitmask(
-    const DWORD transports) {
-  base::flat_set<FidoTransportProtocol> result;
+FidoTransportProtocolSet FromWinTransportsBitmask(DWORD transports) {
+  FidoTransportProtocolSet result;
   for (const auto& [mask, protocol] : kTransportMap) {
     if (transports & mask) {
-      result.insert(protocol);
+      result.Put(protocol);
     }
   }
   return result;
 }
 
-uint32_t ToWinTransportsMask(
-    const base::flat_set<FidoTransportProtocol>& transports) {
+uint32_t ToWinTransportsMask(FidoTransportProtocolSet transports) {
   uint32_t result = 0;
   for (const FidoTransportProtocol transport : transports) {
     switch (transport) {
@@ -158,8 +156,11 @@ ToAuthenticatorMakeCredentialResponse(
               std::move(*cbor_attestation_statement))));
   if (credential_attestation.dwVersion >=
       WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_8) {
-    ret.transports =
-        FromWinTransportsBitmask(credential_attestation.dwTransports);
+    ret.transports.emplace();
+    for (FidoTransportProtocol transport :
+         FromWinTransportsBitmask(credential_attestation.dwTransports)) {
+      ret.transports->insert(transport);
+    }
   } else if (transport_used == FidoTransportProtocol::kInternal) {
     // Before webauthn.dll version 9, Windows would only enumerate platform
     // credentials. These credentials can't be used from other devices, so we

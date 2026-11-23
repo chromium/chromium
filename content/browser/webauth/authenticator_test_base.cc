@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -486,11 +485,11 @@ std::vector<device::PublicKeyCredentialDescriptor> GetTestCredentials(
   for (size_t i = 0; i < num_credentials; i++) {
     DCHECK(i <= std::numeric_limits<uint8_t>::max());
     std::vector<uint8_t> id(kTestCredentialIdLength, static_cast<uint8_t>(i));
-    base::flat_set<device::FidoTransportProtocol> transports{
+    device::FidoTransportProtocolSet transports{
         device::FidoTransportProtocol::kUsbHumanInterfaceDevice,
         device::FidoTransportProtocol::kBluetoothLowEnergy};
     descriptors.emplace_back(device::CredentialType::kPublicKey, std::move(id),
-                             std::move(transports));
+                             transports);
   }
   return descriptors;
 }

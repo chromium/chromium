@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/containers/flat_tree.h"
 #include "base/notreached.h"
 #include "device/fido/public/authenticator_selection_criteria.h"
 #include "device/fido/public/fido_constants.h"
@@ -81,7 +80,7 @@ struct COMPONENT_EXPORT(AUTHENTICATOR_MOJOM)
   static const std::vector<device::FidoTransportProtocol> transports(
       const device::PublicKeyCredentialDescriptor& in) {
     std::vector<device::FidoTransportProtocol> protocols;
-    for (const auto& protocol : in.transports) {
+    for (device::FidoTransportProtocol protocol : in.transports) {
       protocols.push_back(protocol);
     }
     return protocols;

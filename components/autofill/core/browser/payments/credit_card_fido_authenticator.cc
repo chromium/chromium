@@ -17,7 +17,6 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
-#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
@@ -664,7 +663,7 @@ CreditCardFidoAuthenticator::ParseCredentialDescriptor(
   std::vector<uint8_t> credential_id = Base64ToBytes(
       CHECK_DEREF(key_info.GetDict().FindString("credential_id")));
 
-  base::flat_set<device::FidoTransportProtocol> authenticator_transports;
+  device::FidoTransportProtocolSet authenticator_transports;
   const auto* transports =
       key_info.GetDict().FindList("authenticator_transport_support");
   if (transports && !transports->empty()) {
@@ -673,13 +672,13 @@ CreditCardFidoAuthenticator::ParseCredentialDescriptor(
           device::ConvertToFidoTransportProtocol(
               base::ToLowerASCII(transport_type.GetString()));
       if (protocol.has_value())
-        authenticator_transports.insert(*protocol);
+        authenticator_transports.Put(*protocol);
     }
   }
 
   return device::PublicKeyCredentialDescriptor(
       device::CredentialType::kPublicKey, std::move(credential_id),
-      std::move(authenticator_transports));
+      authenticator_transports);
 }
 
 base::DictValue CreditCardFidoAuthenticator::ParseAssertionResponse(

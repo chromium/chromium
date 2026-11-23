@@ -854,7 +854,7 @@ TEST_F(AuthenticatorImplTest, OversizedCredentialId) {
     device::PublicKeyCredentialDescriptor credential;
     credential.credential_type = device::CredentialType::kPublicKey;
     credential.id.resize(size);
-    credential.transports.emplace(
+    credential.transports.Put(
         device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
 
     const bool should_be_valid = size < 256;
@@ -889,8 +889,8 @@ TEST_F(AuthenticatorImplTest, NoSilentAuthenticationForCable) {
       virtual_device_factory_->SetTransport(
           device::FidoTransportProtocol::kHybrid);
       for (auto& cred : options->allow_credentials) {
-        cred.transports.clear();
-        cred.transports.emplace(device::FidoTransportProtocol::kHybrid);
+        cred.transports.Clear();
+        cred.transports.Put(device::FidoTransportProtocol::kHybrid);
       }
     }
 

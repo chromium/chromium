@@ -367,7 +367,7 @@ TouchIdCredentialStore::FindCredentialsFromCredentialDescriptorList(
   for (const auto& descriptor : descriptors) {
     if (descriptor.credential_type == CredentialType::kPublicKey &&
         (descriptor.transports.empty() ||
-         descriptor.transports.contains(FidoTransportProtocol::kInternal))) {
+         descriptor.transports.Has(FidoTransportProtocol::kInternal))) {
       credential_ids.insert(descriptor.id);
     }
   }

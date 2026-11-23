@@ -250,7 +250,7 @@ ReadCredentials(const base::ListValue* serialized_descriptors) {
         std::optional<device::FidoTransportProtocol> fidoTransportProtocol =
             device::ConvertToFidoTransportProtocol(transport.GetString());
         if (fidoTransportProtocol.has_value()) {
-          credential_descriptor.transports.insert(*fidoTransportProtocol);
+          credential_descriptor.transports.Put(*fidoTransportProtocol);
         }
       }
     }

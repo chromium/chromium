@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/containers/flat_set.h"
 #include "components/cbor/values.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public/fido_transport_protocol.h"
@@ -31,10 +30,9 @@ class COMPONENT_EXPORT(FIDO_PUBLIC) PublicKeyCredentialDescriptor {
   PublicKeyCredentialDescriptor();
   PublicKeyCredentialDescriptor(CredentialType credential_type,
                                 std::vector<uint8_t> id);
-  PublicKeyCredentialDescriptor(
-      CredentialType credential_type,
-      std::vector<uint8_t> id,
-      base::flat_set<FidoTransportProtocol> transports);
+  PublicKeyCredentialDescriptor(CredentialType credential_type,
+                                std::vector<uint8_t> id,
+                                FidoTransportProtocolSet transports);
   PublicKeyCredentialDescriptor(const PublicKeyCredentialDescriptor& other);
   PublicKeyCredentialDescriptor(PublicKeyCredentialDescriptor&& other);
   PublicKeyCredentialDescriptor& operator=(
@@ -46,7 +44,7 @@ class COMPONENT_EXPORT(FIDO_PUBLIC) PublicKeyCredentialDescriptor {
 
   CredentialType credential_type;
   std::vector<uint8_t> id;
-  base::flat_set<FidoTransportProtocol> transports;
+  FidoTransportProtocolSet transports;
 
   // had_other_keys is true if, when parsed from CBOR, this descriptor
   // contained keys other than 'id' and 'type'. This is only used for testing

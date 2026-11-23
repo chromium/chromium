@@ -639,7 +639,7 @@ class AuthenticatorCableV2AuthenticatorTest
 TEST_F(AuthenticatorCableV2AuthenticatorTest, GetAssertion) {
   PublicKeyCredentialRequestOptionsPtr options =
       GetTestPublicKeyCredentialRequestOptions();
-  options->allow_credentials[0].transports.insert(
+  options->allow_credentials[0].transports.Put(
       device::FidoTransportProtocol::kHybrid);
   ASSERT_TRUE(virtual_device_.mutable_state()->InjectRegistration(
       options->allow_credentials[0].id, options->relying_party_id));
@@ -732,7 +732,7 @@ BuildPRFGetAssertion(device::VirtualCtap2Device& virtual_device,
   }
   prf_inputs.emplace_back(std::move(prf_value));
 
-  options->allow_credentials[0].transports.insert(
+  options->allow_credentials[0].transports.Put(
       device::FidoTransportProtocol::kHybrid);
   options->extensions->prf = true;
   options->extensions->prf_inputs = std::move(prf_inputs);

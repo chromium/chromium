@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/containers/flat_set.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
@@ -86,12 +85,10 @@ std::optional<FidoTransportProtocol> FromWinTransportsMask(
     const DWORD transport);
 
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::flat_set<FidoTransportProtocol> FromWinTransportsBitmask(
-    const DWORD transports);
+FidoTransportProtocolSet FromWinTransportsBitmask(DWORD transports);
 
 COMPONENT_EXPORT(DEVICE_FIDO)
-uint32_t ToWinTransportsMask(
-    const base::flat_set<FidoTransportProtocol>& transports);
+uint32_t ToWinTransportsMask(FidoTransportProtocolSet transports);
 
 COMPONENT_EXPORT(DEVICE_FIDO)
 std::vector<const wchar_t*> ToWinCredentialHints(

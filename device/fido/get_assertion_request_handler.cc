@@ -237,7 +237,7 @@ CtapGetAssertionRequest SpecializeRequestForAuthenticator(
   }
   if (preselected_credential &&
       preselected_credential->source == authenticator.GetType()) {
-    base::flat_set<FidoTransportProtocol> transports;
+    FidoTransportProtocolSet transports;
     if (!preselected_credential->transports.empty()) {
       transports = preselected_credential->transports;
     } else if (preselected_credential->source ==
@@ -248,7 +248,7 @@ CtapGetAssertionRequest SpecializeRequestForAuthenticator(
     }
     specialized_request.allow_list = {PublicKeyCredentialDescriptor(
         CredentialType::kPublicKey, preselected_credential->cred_id,
-        std::move(transports))};
+        transports)};
   }
   if (authenticator.AuthenticatorTransport() !=
       FidoTransportProtocol::kHybrid) {
@@ -280,12 +280,12 @@ CtapGetAssertionOptions SpecializeOptionsForAuthenticator(
   return specialized_options;
 }
 
-bool AllowListIncludedTransport(const CtapGetAssertionRequest& request,
-                                FidoTransportProtocol transport) {
+bool AllowListIncludedAnyTransport(const CtapGetAssertionRequest& request,
+                                   FidoTransportProtocolSet transports) {
   return std::ranges::any_of(
       request.allow_list,
-      [transport](const PublicKeyCredentialDescriptor& cred) {
-        return cred.transports.empty() || cred.transports.contains(transport);
+      [transports](const PublicKeyCredentialDescriptor& cred) {
+        return cred.transports.empty() || cred.transports.HasAny(transports);
       });
 }
 
@@ -312,22 +312,21 @@ GetAssertionRequestHandler::GetAssertionRequestHandler(
   transport_availability_info().has_empty_allow_list =
       request_.allow_list.empty();
   transport_availability_info().transport_list_did_include_internal =
-      AllowListIncludedTransport(request_, FidoTransportProtocol::kInternal);
+      AllowListIncludedAnyTransport(request_,
+                                    {FidoTransportProtocol::kInternal});
   transport_availability_info().transport_list_did_include_hybrid =
-      AllowListIncludedTransport(request_, FidoTransportProtocol::kHybrid);
+      AllowListIncludedAnyTransport(request_, {FidoTransportProtocol::kHybrid});
   transport_availability_info().transport_list_did_include_security_key =
-      AllowListIncludedTransport(
-          request_, FidoTransportProtocol::kUsbHumanInterfaceDevice) ||
-      AllowListIncludedTransport(request_,
-                                 FidoTransportProtocol::kBluetoothLowEnergy) ||
-      AllowListIncludedTransport(
-          request_, FidoTransportProtocol::kNearFieldCommunication);
+      AllowListIncludedAnyTransport(
+          request_, {FidoTransportProtocol::kUsbHumanInterfaceDevice,
+                     FidoTransportProtocol::kBluetoothLowEnergy,
+                     FidoTransportProtocol::kNearFieldCommunication});
   transport_availability_info().request_is_internal_only =
       !request_.allow_list.empty() &&
       std::ranges::all_of(
           request_.allow_list, [](const PublicKeyCredentialDescriptor& cred) {
             return cred.transports ==
-                   std::vector{FidoTransportProtocol::kInternal};
+                   FidoTransportProtocolSet{FidoTransportProtocol::kInternal};
           });
 
   std::string json_string;

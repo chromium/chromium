@@ -12,7 +12,6 @@
 #include "base/base64.h"
 #include "base/base64url.h"
 #include "base/check.h"
-#include "base/containers/flat_tree.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
@@ -129,7 +128,7 @@ void SecurePaymentConfirmationApp::InvokePaymentApp(
   } else {
     // Enable authentication only through internal authenticators by default.
     credentials.emplace_back(device::CredentialType::kPublicKey, credential_id_,
-                             base::flat_set<device::FidoTransportProtocol>{
+                             device::FidoTransportProtocolSet{
                                  device::FidoTransportProtocol::kInternal});
   }
 

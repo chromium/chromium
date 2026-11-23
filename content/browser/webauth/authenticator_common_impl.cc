@@ -775,9 +775,7 @@ device::FidoTransportProtocolSet GetTransportsAllowedByRP(
     if (credential.transports.empty()) {
       return kAllTransports;
     }
-    for (device::FidoTransportProtocol transport : credential.transports) {
-      transports.Put(transport);
-    }
+    transports.PutAll(credential.transports);
   }
 
   return transports;

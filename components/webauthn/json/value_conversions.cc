@@ -161,7 +161,7 @@ base::Value ToValue(const device::PublicKeyCredentialDescriptor& descriptor) {
   }
   value.Set("id", Base64UrlEncode(descriptor.id));
   base::ListValue transports;
-  for (const device::FidoTransportProtocol& transport : descriptor.transports) {
+  for (device::FidoTransportProtocol transport : descriptor.transports) {
     transports.Append(ToString(transport));
   }
   if (!transports.empty()) {

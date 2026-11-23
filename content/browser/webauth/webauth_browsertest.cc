@@ -14,7 +14,6 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -674,8 +673,8 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
 
   blink::mojom::GetCredentialOptionsPtr BuildBasicGetOptions() {
     std::vector<device::PublicKeyCredentialDescriptor> credentials;
-    base::flat_set<device::FidoTransportProtocol> transports;
-    transports.emplace(device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
+    device::FidoTransportProtocolSet transports;
+    transports.Put(device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
 
     device::PublicKeyCredentialDescriptor descriptor(
         device::CredentialType::kPublicKey,
@@ -1950,7 +1949,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthBrowserCtapTest,
     device::PublicKeyCredentialDescriptor excluded_credential(
         device::CredentialType::kPublicKey,
         base::ToVector(device::test_data::kCtap2MakeCredentialCredentialId),
-        std::vector<device::FidoTransportProtocol>{
+        device::FidoTransportProtocolSet{
             device::FidoTransportProtocol::kUsbHumanInterfaceDevice});
     make_credential_request->exclude_credentials.push_back(excluded_credential);
 

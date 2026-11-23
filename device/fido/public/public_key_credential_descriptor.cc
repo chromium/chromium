@@ -56,10 +56,10 @@ PublicKeyCredentialDescriptor::PublicKeyCredentialDescriptor(
 PublicKeyCredentialDescriptor::PublicKeyCredentialDescriptor(
     CredentialType credential_type,
     std::vector<uint8_t> id,
-    base::flat_set<FidoTransportProtocol> transports)
+    FidoTransportProtocolSet transports)
     : credential_type(credential_type),
       id(std::move(id)),
-      transports(std::move(transports)) {}
+      transports(transports) {}
 
 PublicKeyCredentialDescriptor::PublicKeyCredentialDescriptor(
     const PublicKeyCredentialDescriptor& other) = default;

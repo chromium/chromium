@@ -14,6 +14,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "device/fido/public/fido_transport_protocol.h"
 #include "device/fido/virtual_fido_device_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -67,11 +68,11 @@ std::vector<device::PublicKeyCredentialDescriptor> GetTestCredentials(
   for (size_t i = 0; i < num_credentials; i++) {
     DCHECK(i <= std::numeric_limits<uint8_t>::max());
     std::vector<uint8_t> id(kTestCredentialIdLength, static_cast<uint8_t>(i));
-    base::flat_set<device::FidoTransportProtocol> transports{
+    device::FidoTransportProtocolSet transports{
         device::FidoTransportProtocol::kUsbHumanInterfaceDevice,
         device::FidoTransportProtocol::kBluetoothLowEnergy};
     descriptors.emplace_back(device::CredentialType::kPublicKey, std::move(id),
-                             std::move(transports));
+                             transports);
   }
   return descriptors;
 }

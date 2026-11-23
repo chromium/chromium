@@ -4,6 +4,8 @@
 
 #include "third_party/blink/public/mojom/authenticator_mojom_traits.h"  // nogncheck
 
+#include <utility>
+
 #include "base/notreached.h"
 
 namespace mojo {
@@ -99,9 +101,11 @@ bool StructTraits<blink::mojom::PublicKeyCredentialDescriptorDataView,
       !data.ReadTransports(&protocols)) {
     return false;
   }
-  device::PublicKeyCredentialDescriptor descriptor(type, id,
-                                                   {std::move(protocols)});
-  *out = descriptor;
+  device::FidoTransportProtocolSet transports;
+  for (device::FidoTransportProtocol protocol : protocols) {
+    transports.Put(protocol);
+  }
+  *out = device::PublicKeyCredentialDescriptor(type, std::move(id), transports);
   return true;
 }
 

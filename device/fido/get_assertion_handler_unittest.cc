@@ -176,7 +176,7 @@ class FidoGetAssertionHandlerTest : public ::testing::Test {
 
   std::unique_ptr<GetAssertionRequestHandler>
   CreateGetAssertionHandlerWithRequestedTransports(
-      std::vector<std::vector<FidoTransportProtocol>> transports) {
+      std::vector<FidoTransportProtocolSet> transports) {
     CtapGetAssertionRequest request(test_data::kRelyingPartyId,
                                     test_data::kClientDataJson);
     for (uint8_t i = 0; i < transports.size(); ++i) {
