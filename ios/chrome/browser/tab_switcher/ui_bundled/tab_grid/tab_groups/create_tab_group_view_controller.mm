@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/color_palette/tab_group_color_palette.h"
+#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/create_or_edit_tab_group_view_controller_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/group_tab_view.h"
@@ -228,6 +229,8 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   tabGroupTextField.spellCheckingType = UITextSpellCheckingTypeNo;
   tabGroupTextField.maximumContentSizeCategory =
       UIContentSizeCategoryAccessibilityExtraLarge;
+  tabGroupTextField.textAlignment =
+      UseRTLLayout() ? NSTextAlignmentRight : NSTextAlignmentLeft;
 
   UIButton* clearButton = [UIButton buttonWithType:UIButtonTypeSystem];
   clearButton.translatesAutoresizingMaskIntoConstraints = NO;
