@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/ios/block_types.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
@@ -32,8 +33,8 @@
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
 #import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
-#import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
 #import "testing/platform_test.h"
@@ -73,10 +74,7 @@ class PaymentsSuggestionBottomSheetCoordinatorTest : public PlatformTest {
     mock_settings_commands_handler_ =
         OCMProtocolMock(@protocol(SettingsCommands));
 
-    window_ = [[UIWindow alloc]
-        initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
-    window_.rootViewController = [[UIViewController alloc] init];
-    [window_ addSubview:window_.rootViewController.view];
+    window_ = scoped_key_window_.Get();
     UIView.animationsEnabled = NO;
 
     InsertWebState();
@@ -92,6 +90,10 @@ class PaymentsSuggestionBottomSheetCoordinatorTest : public PlatformTest {
                            browser:browser_.get()
                             params:params_];
     coordinator_.settingsHandler = mock_settings_commands_handler_;
+  }
+
+  ~PaymentsSuggestionBottomSheetCoordinatorTest() override {
+    UIView.animationsEnabled = YES;
   }
 
  protected:
@@ -114,12 +116,39 @@ class PaymentsSuggestionBottomSheetCoordinatorTest : public PlatformTest {
     return base::SysUTF8ToNSString(credit_card_.guid());
   }
 
+  // Returns true if the bottom sheet view controller has been presented and its
+  // presentation transition has completed. UIKit drops dismissals requested
+  // while a presentation transition is still in flight.
+  [[nodiscard]] bool WaitForSheetPresentation() {
+    UIViewController* root_view_controller = window_.rootViewController;
+    return base::test::ios::WaitUntilConditionOrTimeout(
+        base::test::ios::kWaitForUIElementTimeout, ^bool {
+          UIViewController* presented_view_controller =
+              root_view_controller.presentedViewController;
+          return presented_view_controller &&
+                 !presented_view_controller.beingPresented;
+        });
+  }
+
+  // Returns true if `dismiss_condition` is satisfied after stopping the
+  // coordinator and spinning the run loop for the asynchronous UIKit dismissal
+  // completion block. Stopping the coordinator first disconnects the mediator
+  // before the completion block runs, as `FormSuggestionTabHelper` is not
+  // attached in this test fixture.
+  [[nodiscard]] bool StopCoordinatorAndWaitForDismissal(
+      ConditionBlock dismiss_condition) {
+    [coordinator_ stop];
+    return base::test::ios::WaitUntilConditionOrTimeout(
+        base::test::ios::kWaitForUIElementTimeout, dismiss_condition);
+  }
+
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   id mock_autofill_commands_handler_;
   id mock_settings_commands_handler_;
+  ScopedKeyWindow scoped_key_window_;
   UIWindow* window_;
   PaymentsSuggestionBottomSheetCoordinator* coordinator_;
   autofill::FormActivityParams params_;
@@ -134,15 +163,21 @@ TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, PrimaryButton) {
   base::HistogramTester histogram_tester;
 
   [coordinator_ start];
+  ASSERT_TRUE(WaitForSheetPresentation());
 
-  OCMExpect([mock_autofill_commands_handler_ dismissPaymentsBottomSheet]);
+  __block bool dismiss_invoked = false;
+  OCMExpect([mock_autofill_commands_handler_ dismissPaymentsBottomSheet])
+      .andDo(^(NSInvocation* invocation) {
+        dismiss_invoked = true;
+      });
 
   [coordinator_ primaryButtonTappedForCard:[[CreditCardData alloc]
                                                initWithCreditCard:credit_card_
                                                              icon:nil]
                                    atIndex:0];
-  [coordinator_ stop];
-  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(StopCoordinatorAndWaitForDismissal(^bool {
+    return dismiss_invoked;
+  }));
 
   EXPECT_OCMOCK_VERIFY(mock_autofill_commands_handler_);
   histogram_tester.ExpectUniqueSample(
@@ -156,15 +191,21 @@ TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, PrimaryButtonVirtualCard) {
   base::HistogramTester histogram_tester;
 
   [coordinator_ start];
+  ASSERT_TRUE(WaitForSheetPresentation());
 
-  OCMExpect([mock_autofill_commands_handler_ dismissPaymentsBottomSheet]);
+  __block bool dismiss_invoked = false;
+  OCMExpect([mock_autofill_commands_handler_ dismissPaymentsBottomSheet])
+      .andDo(^(NSInvocation* invocation) {
+        dismiss_invoked = true;
+      });
 
   [coordinator_ primaryButtonTappedForCard:[[CreditCardData alloc]
                                                initWithCreditCard:virtual_card_
                                                              icon:nil]
                                    atIndex:0];
-  [coordinator_ stop];
-  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(StopCoordinatorAndWaitForDismissal(^bool {
+    return dismiss_invoked;
+  }));
 
   EXPECT_OCMOCK_VERIFY(mock_autofill_commands_handler_);
   histogram_tester.ExpectUniqueSample(
@@ -194,19 +235,23 @@ TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, SecondaryButton) {
 
 // Test that using the payments method long press menu logs the correct exit
 // reason.
-// TODO(crbug.com/581354992): Flaky on device and simulator.
-TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, DISABLED_PaymentsMethods) {
+TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, PaymentsMethods) {
   base::HistogramTester histogram_tester;
 
   [coordinator_ start];
+  ASSERT_TRUE(WaitForSheetPresentation());
 
   OCMExpect([mock_settings_commands_handler_ showCreditCardSettings]);
-  OCMExpect([mock_autofill_commands_handler_ dismissPaymentsBottomSheet]);
+  __block bool dismiss_invoked = false;
+  OCMExpect([mock_autofill_commands_handler_ dismissPaymentsBottomSheet])
+      .andDo(^(NSInvocation* invocation) {
+        dismiss_invoked = true;
+      });
 
   [coordinator_ displayPaymentMethods];
-
-  [coordinator_ stop];
-  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(StopCoordinatorAndWaitForDismissal(^bool {
+    return dismiss_invoked;
+  }));
 
   EXPECT_OCMOCK_VERIFY(mock_settings_commands_handler_);
   EXPECT_OCMOCK_VERIFY(mock_autofill_commands_handler_);
@@ -217,19 +262,23 @@ TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, DISABLED_PaymentsMethods) {
 
 // Test that using the payments details long press menu logs the correct exit
 // reason.
-// TODO(crbug.com/581354992): Flaky on device and simulator.
-TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, DISABLED_PaymentsDetails) {
+TEST_F(PaymentsSuggestionBottomSheetCoordinatorTest, PaymentsDetails) {
   base::HistogramTester histogram_tester;
 
   [coordinator_ start];
+  ASSERT_TRUE(WaitForSheetPresentation());
 
-  OCMExpect([mock_autofill_commands_handler_ dismissPaymentsBottomSheet]);
+  __block bool dismiss_invoked = false;
+  OCMExpect([mock_autofill_commands_handler_ dismissPaymentsBottomSheet])
+      .andDo(^(NSInvocation* invocation) {
+        dismiss_invoked = true;
+      });
 
   [coordinator_
       displayPaymentDetailsForCreditCardIdentifier:BackendIdentifier()];
-
-  [coordinator_ stop];
-  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(StopCoordinatorAndWaitForDismissal(^bool {
+    return dismiss_invoked;
+  }));
 
   EXPECT_OCMOCK_VERIFY(mock_autofill_commands_handler_);
   histogram_tester.ExpectUniqueSample(
