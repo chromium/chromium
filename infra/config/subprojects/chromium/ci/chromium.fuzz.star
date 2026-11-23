@@ -1079,11 +1079,13 @@ libfuzzer_linux_asan_builder(
     branch_selector = branches.selector.LINUX_BRANCHES,
     description_html = "Builds libFuzzer targets with AddressSanitizer on Linux x64 release and uploads them to ClusterFuzz.",
     ssd = None,
+    free_space = builders.free_space.high,
     build_config = builder_config.build_config.RELEASE,
     target_bits = 64,
     clusterfuzz_archive_path = "linux-release-asan/libfuzzer-linux-release",
     clusterfuzz_archive_schema_version = 1,
     execution_timeout = 5 * time.hour,
+    free_space_for_test_builder = builders.free_space.standard,
     gclient_apply_configs_for_ci = [
         "checkout_mesa",
     ],
