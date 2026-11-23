@@ -12,9 +12,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/android/autofill/at_memory_suggestion_controller.h"
 #include "chrome/browser/ui/android/autofill/autofill_keyboard_accessory_controller_impl.h"
-#include "components/autofill/core/common/autofill_util.h"
 #elif BUILDFLAG(IS_MAC)
 // We cannot include the Objective-C++ header of AutofillPopupControllerImplMac
 // here. This function is defined in autofill_popup_controller_impl_mac.mm.
@@ -39,14 +37,8 @@ base::WeakPtr<AutofillSuggestionController>
 AutofillSuggestionController::Create(
     base::WeakPtr<AutofillSuggestionDelegate> delegate,
     content::WebContents* web_contents,
-    PopupControllerCommon controller_common,
-    AutofillSuggestionTriggerSource trigger_source) {
+    PopupControllerCommon controller_common) {
 #if BUILDFLAG(IS_ANDROID)
-  if (IsAtMemoryTriggerSource(trigger_source)) {
-    auto* controller = new AtMemorySuggestionController(
-        delegate, web_contents, std::move(controller_common));
-    return controller->GetWeakPtr();
-  }
   auto* controller = new AutofillKeyboardAccessoryControllerImpl(
       delegate, web_contents, std::move(controller_common));
   return controller->GetWeakPtr();
@@ -88,8 +80,7 @@ AutofillSuggestionController::GetOrCreate(
     previous->Hide(SuggestionHidingReason::kViewDestroyed);
   }
 
-  return Create(delegate, web_contents, std::move(controller_common),
-                trigger_source);
+  return Create(delegate, web_contents, std::move(controller_common));
 }
 
 }  // namespace autofill

@@ -139,8 +139,7 @@ class AutofillSuggestionController : public AutofillPopupViewDelegate {
   static base::WeakPtr<AutofillSuggestionController> Create(
       base::WeakPtr<AutofillSuggestionDelegate> delegate,
       content::WebContents* web_contents,
-      PopupControllerCommon controller_common,
-      AutofillSuggestionTriggerSource trigger_source);
+      PopupControllerCommon controller_common);
 
  protected:
   ~AutofillSuggestionController() override = default;

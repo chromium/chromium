@@ -31,7 +31,6 @@
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/android/autofill/at_memory_suggestion_controller.h"
 #include "chrome/browser/ui/android/autofill/autofill_keyboard_accessory_view.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
