@@ -3207,11 +3207,12 @@ TEST_P(ResourceFetcherTest,
   platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
 }
 
-// Uses of Early Hints preloads by isolated worlds must not be exposed to the
-// page via the SpeculationMeasurement API, neither directly via the `used`
-// timestamp, nor by keeping the page's own later use from being recorded.
-TEST_P(ResourceFetcherTest,
-       IsolatedWorldLoadDoesNotMarkEarlyHintsPreloadAsUsed) {
+// Early Hints preloads are made on behalf of the document, so loads initiated
+// by isolated worlds must not consume them. Otherwise, the page could observe
+// such loads, either directly via the SpeculationMeasurement API's `used`
+// timestamp, or by its own later load not being attributed to Early Hints (e.g.
+// in Resource Timing's `initiatorType`) or marked as used.
+TEST_P(ResourceFetcherTest, IsolatedWorldLoadDoesNotConsumeEarlyHintsPreload) {
   ScopedSpeculationMeasurementForTest enable_speculation_measurement(true);
   auto* fetcher = CreateFetcher();
   DOMWrapperWorld* isolated_world = DOMWrapperWorld::EnsureIsolatedWorld(
@@ -3240,9 +3241,12 @@ TEST_P(ResourceFetcherTest,
   ASSERT_TRUE(isolated_resource);
   platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
   EXPECT_TRUE(isolated_resource->IsLoaded());
+  // The isolated world's load is served from the Early Hints preload, but
+  // doesn't consume it.
+  EXPECT_TRUE(isolated_resource->IsPreloadedByEarlyHints());
   EXPECT_FALSE(it->value.used_time.has_value());
 
-  // A later main world load of the same URL marks the preload as used.
+  // A later main world load of the same URL consumes the Early Hints preload.
   FetchParameters main_params =
       FetchParameters::CreateForTest(ResourceRequest(url));
   Resource* main_resource = MockResource::Fetch(main_params, fetcher, nullptr);
@@ -3250,7 +3254,51 @@ TEST_P(ResourceFetcherTest,
   EXPECT_NE(isolated_resource, main_resource);
   platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
   EXPECT_TRUE(main_resource->IsLoaded());
+  EXPECT_TRUE(main_resource->IsPreloadedByEarlyHints());
   EXPECT_TRUE(it->value.used_time.has_value());
+}
+
+// The `used` timestamp of an Early Hints preload reflects its first use. A
+// consumer can match an in-flight <link rel=preload> of the same URL before the
+// link preload's response consumes the Early Hints preload, which must not
+// overwrite the timestamp.
+TEST_P(ResourceFetcherTest, EarlyHintsPreloadKeepsFirstUseTime) {
+  ScopedSpeculationMeasurementForTest enable_speculation_measurement(true);
+  auto* fetcher = CreateFetcher();
+
+  KURL url("http://127.0.0.1:8000/foo.png");
+  RegisterMockedURLLoad(url);
+  HashMap<KURL, EarlyHintsPreloadEntry> early_hints_preloads;
+  early_hints_preloads.insert(
+      url, EarlyHintsPreloadEntry(
+               network::mojom::LinkAsAttribute::kImage,
+               network::mojom::CrossOriginAttribute::kUnspecified));
+  fetcher->SetEarlyHintsPreloadedResources(std::move(early_hints_preloads));
+
+  // A <link rel=preload> of the same URL, whose response hasn't arrived yet.
+  FetchParameters preload_params =
+      FetchParameters::CreateForTest(ResourceRequest(url));
+  preload_params.SetLinkPreload(true);
+  Resource* preload = MockResource::Fetch(preload_params, fetcher, nullptr);
+  ASSERT_TRUE(preload);
+
+  // A consumer matches the in-flight preload, which marks it as used.
+  FetchParameters params = FetchParameters::CreateForTest(ResourceRequest(url));
+  Resource* resource = MockResource::Fetch(params, fetcher, nullptr);
+  EXPECT_EQ(preload, resource);
+  const auto& preload_records = fetcher->GetPreloadRecords();
+  ASSERT_TRUE(preload_records.Contains(url));
+  const std::optional<base::TimeTicks> first_use_time =
+      preload_records.find(url)->value.used_time;
+  ASSERT_TRUE(first_use_time.has_value());
+
+  // The preload's response then consumes the Early Hints preload, which
+  // doesn't overwrite the time of its first use.
+  task_environment_.AdvanceClock(base::Seconds(1));
+  platform_->GetURLLoaderMockFactory()->ServeAsynchronousRequests();
+  EXPECT_TRUE(preload->IsLoaded());
+  EXPECT_TRUE(preload->IsPreloadedByEarlyHints());
+  EXPECT_EQ(preload_records.find(url)->value.used_time, first_use_time);
 }
 
 // Receiving a response marks Early Hints preloads as used, but receiving a link

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<meta charset=utf-8>
+<script src="/resources/testharness.js"></script>
+<body>
+<script>
+// This document is served after an Early Hints response that preloads
+// earlyHintsUrl() for each of the labels used below. Early Hints preloads are
+// made on behalf of the document, so loads from isolated worlds (e.g. extension
+// content scripts) must not consume them. Otherwise, the document's own later
+// loads wouldn't be attributed to Early Hints, revealing to it that an isolated
+// world loaded these resources first.
+//
+// It's opened as a popup by the test in
+// ../initiator-type-early-hints-isolated-world.h2.window.js, which collects its
+// subtests with fetch_tests_from_window(), so it doesn't load
+// testharnessreport.js.
+
+const kIsolatedWorldId = 1;
+
+function earlyHintsUrl(label) {
+  const token = new URLSearchParams(location.search).get('token');
+  return new URL(`blue-cacheable.png?${label}&token=${token}`, location.href)
+      .href;
+}
+
+// Runs `func` in an isolated world, like an extension content script, and
+// resolves with its result, which must be a primitive. `func` is serialized,
+// so it can only use globals and its JSON-serializable `args`.
+async function runInIsolatedWorld(func, ...args) {
+  return testRunner.evaluateScriptInIsolatedWorldAndReturnValue(
+      kIsolatedWorldId, `(${func})(...${JSON.stringify(args)})`);
+}
+
+function loadImage(url) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = resolve;
+    image.onerror = () => reject(new Error(`Failed to load ${url}`));
+    image.src = url;
+  });
+}
+
+function assertAttributedToEarlyHints(url) {
+  const entries = performance.getEntriesByName(url);
+  assert_equals(entries.length, 1, "the document's load should be reported");
+  assert_equals(entries[0].initiatorType, 'early-hints');
+}
+
+promise_test(async () => {
+  const url = earlyHintsUrl('main-world');
+  await loadImage(url);
+  assertAttributedToEarlyHints(url);
+}, "The document's load of an Early Hints preload is attributed to Early " +
+   "Hints");
+
+promise_test(async () => {
+  const url = earlyHintsUrl('isolated-world-fetch');
+  assert_true(
+      await runInIsolatedWorld(async url => (await fetch(url)).ok, url),
+      "the isolated world's fetch should succeed");
+  await loadImage(url);
+  assertAttributedToEarlyHints(url);
+}, "The document's load of an Early Hints preload is attributed to Early " +
+   "Hints after an isolated world fetched it");
+
+promise_test(async () => {
+  const url = earlyHintsUrl('isolated-world-image');
+  assert_equals(
+      await runInIsolatedWorld(url => new Promise(resolve => {
+        const host = document.createElement('div');
+        document.body.append(host);
+        const image = document.createElement('img');
+        image.onload = image.onerror = e => resolve(e.type);
+        image.src = url;
+        host.attachShadow({mode: 'closed'}).append(image);
+      }), url),
+      'load', "the isolated world's image should load");
+  await loadImage(url);
+  assertAttributedToEarlyHints(url);
+}, "The document's load of an Early Hints preload is attributed to Early " +
+   "Hints after an isolated world loaded it in a closed shadow root");
+</script>
+</body>

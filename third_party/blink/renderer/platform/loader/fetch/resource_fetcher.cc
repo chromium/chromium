@@ -3381,22 +3381,26 @@ void ResourceFetcher::MarkEarlyHintConsumedIfNeeded(
       resource->GetResourceRequest().GetRedirectInfo().has_value()
           ? resource->GetResourceRequest().GetRedirectInfo()->original_url
           : resource->GetResourceRequest().Url();
-  // Mark Early Hints preloads as used in `preload_records_` for the
-  // SpeculationMeasurement API, on their first use by the main world. Uses by
-  // isolated worlds (e.g. extension content scripts) must not be exposed to
-  // the page, so they're ignored. This is independent of the bookkeeping of
-  // `unused_early_hints_preloaded_resources_` below, so that the page's own
-  // use is still recorded if an isolated world used the resource first.
-  if (!IsInitiatedByIsolatedWorld(resource->Options().WorldForCsp())) {
-    auto record_it = preload_records_.find(initial_url);
-    if (record_it != preload_records_.end() && record_it->value.early_hints &&
-        !record_it->value.used_time.has_value()) {
-      record_it->value.used_time = base::TimeTicks::Now();
-    }
-  }
   auto iter = unused_early_hints_preloaded_resources_.find(initial_url);
   if (iter != unused_early_hints_preloaded_resources_.end()) {
-    unused_early_hints_preloaded_resources_.erase(iter);
+    // Early Hints preloads are made on behalf of the document, so loads
+    // initiated by isolated worlds (e.g. extension content scripts) don't
+    // consume them. Otherwise, the page could observe such loads, as its own
+    // later load wouldn't be attributed to Early Hints (e.g. in Resource
+    // Timing's `initiatorType`), nor mark the preload as used for the
+    // SpeculationMeasurement API.
+    if (!IsInitiatedByIsolatedWorld(resource->Options().WorldForCsp())) {
+      unused_early_hints_preloaded_resources_.erase(iter);
+      // Mark as used in preload_records_ for the SpeculationMeasurement API,
+      // unless it was already used. That happens when a <link rel=preload> of
+      // the same URL was matched by a consumer in MatchPreload() before its
+      // response consumed the Early Hints preload here.
+      auto record_it = preload_records_.find(initial_url);
+      if (record_it != preload_records_.end() &&
+          !record_it->value.used_time.has_value()) {
+        record_it->value.used_time = base::TimeTicks::Now();
+      }
+    }
     // The network service may not reuse the response fetched by the early hints
     // due to cache control policies.
     if (!response.NetworkAccessed() &&
