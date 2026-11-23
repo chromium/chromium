@@ -104,7 +104,8 @@ enum class VerifySignatureResult {
   // kInvalidPublicKey = 2, // no longer used
   kInvalidSeedSignature = 3,
   kValidSignature = 4,
-  kMaxValue = kValidSignature,
+  kLegacyKeyDistrusted = 5,
+  kMaxValue = kLegacyKeyDistrusted,
 };
 
 // The result of attempting to prepare runtime mutable changes from a new seed.

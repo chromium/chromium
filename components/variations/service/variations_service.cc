@@ -825,6 +825,14 @@ void VariationsService::DoFetchFromURL(const GURL& url,
   const char* supported_im = enable_deltas ? "x-bm,gzip" : "gzip";
   resource_request->headers.SetHeader("A-IM", supported_im);
 
+  // Advertise the pinned seed signing key IDs trusted by this client. Key ID 0
+  // is the legacy ECDSA P-256 key and is omitted once distrusted.
+  const char* supported_key_ids =
+      local_state_->GetBoolean(prefs::kVariationsLegacySeedKeyDistrusted)
+          ? kSupportedSeedKeyIdsWithoutLegacy
+          : kSupportedSeedKeyIdsWithLegacy;
+  resource_request->headers.SetHeader(kSeedKeyIdsHeaderName, supported_key_ids);
+
   pending_seed_request_ = network::SimpleURLLoader::Create(
       std::move(resource_request), traffic_annotation);
   // Ensure our callback is called even with "304 Not Modified" responses.

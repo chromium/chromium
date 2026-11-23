@@ -206,6 +206,8 @@ const char* const kPersistentPrefsAllowlist[] = {
     // determine if the seed is expired.
     variations::prefs::kVariationsLastFetchTime,
     variations::prefs::kVariationsSeedDate,
+    // Flag indicating that the legacy seed signing key is distrusted.
+    variations::prefs::kVariationsLegacySeedKeyDistrusted,
 
     // The state of the previous background tracing session.
     tracing::kBackgroundTracingSessionState,

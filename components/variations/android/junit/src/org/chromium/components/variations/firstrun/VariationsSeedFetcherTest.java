@@ -106,6 +106,10 @@ public class VariationsSeedFetcherTest {
 
         mFetcher.fetchSeed(sRestrict, sMilestone, sChannel);
 
+        verify(mConnection)
+                .setRequestProperty(
+                        VariationsSeedFetcher.SEED_KEY_IDS_HEADER,
+                        VariationsSeedFetcher.SEED_KEY_IDS_VALUE);
         assertThat(mPrefs.getString(VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_SIGNATURE, ""))
                 .isEqualTo("signature");
         assertThat(mPrefs.getString(VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_COUNTRY, ""))
@@ -365,7 +369,7 @@ public class VariationsSeedFetcherTest {
         when(mConnection.getHeaderFieldDate("Date", 0)).thenReturn(34567L);
 
         SeedInfo curSeedInfo = new SeedInfo();
-        curSeedInfo.signature = "";
+        curSeedInfo.signature = "1:pqSignature";
         curSeedInfo.country = "US";
         curSeedInfo.geoLevel1 = "us-ca";
         curSeedInfo.isGzipCompressed = false;
@@ -395,6 +399,10 @@ public class VariationsSeedFetcherTest {
                         .build();
         SeedFetchInfo seedFetchInfo = mFetcher.downloadContent(params, curSeedInfo);
 
+        verify(mConnection)
+                .setRequestProperty(
+                        VariationsSeedFetcher.SEED_KEY_IDS_HEADER,
+                        VariationsSeedFetcher.SEED_KEY_IDS_VALUE_WITHOUT_LEGACY);
         assertEquals(HttpURLConnection.HTTP_NOT_MODIFIED, seedFetchInfo.seedFetchResult);
 
         SeedInfo updatedSeedInfo = seedFetchInfo.seedInfo;
@@ -406,6 +414,92 @@ public class VariationsSeedFetcherTest {
         assertArrayEquals(curSeedInfo.seedData, updatedSeedInfo.seedData);
 
         assertEquals("savedSerialNumber", curSeedInfo.getParsedVariationsSeed().getSerialNumber());
+    }
+
+    /**
+     * Test method for {@link VariationsSeedFetcher#downloadContent()} when the current seed has a
+     * hybrid signature and the server responds 200 OK with a legacy-only signature.
+     */
+    @Test
+    public void testDownloadContent_ignoresLegacyOnlyResponseWhenCurrentSeedIsHybrid()
+            throws IOException {
+        when(mConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
+        when(mConnection.getHeaderField("X-Seed-Signature")).thenReturn("legacySignature");
+        when(mConnection.getHeaderField("IM")).thenReturn("gzip");
+        when(mConnection.getInputStream())
+                .thenReturn(new ByteArrayInputStream(ApiCompatibilityUtils.getBytesUtf8("1234")));
+
+        SeedInfo curSeedInfo = new SeedInfo();
+        curSeedInfo.signature = "1:pqSignature";
+
+        final VariationsSeedFetcher.SeedFetchParameters params =
+                VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                        .setPlatform(VariationsSeedFetcher.VariationsPlatform.ANDROID)
+                        .setRestrictMode(sRestrict)
+                        .setMilestone(sMilestone)
+                        .setChannel(sChannel)
+                        .build();
+        SeedFetchInfo fetchInfo = mFetcher.downloadContent(params, curSeedInfo);
+
+        verify(mConnection)
+                .setRequestProperty(
+                        VariationsSeedFetcher.SEED_KEY_IDS_HEADER,
+                        VariationsSeedFetcher.SEED_KEY_IDS_VALUE_WITHOUT_LEGACY);
+        assertEquals(
+                VariationsSeedFetcher.SEED_FETCH_RESULT_MISSING_HYBRID_SIGNATURE,
+                fetchInfo.seedFetchResult);
+        assertThat(fetchInfo.seedInfo).isNull();
+    }
+
+    /**
+     * Test method for {@link VariationsSeedFetcher#fetchSeed()} verifying that a hybrid {@code
+     * "<key_id>:<base64>"} {@code X-Seed-Signature} header is persisted verbatim.
+     */
+    @Test
+    public void testFetchSeed_preservesHybridSignature() throws IOException {
+        when(mConnection.getResponseCode()).thenReturn(HttpURLConnection.HTTP_OK);
+        when(mConnection.getHeaderField("X-Seed-Signature")).thenReturn("2:cHFfc2lnbmF0dXJl");
+        when(mConnection.getHeaderField("X-Country")).thenReturn("US");
+        when(mConnection.getHeaderField("IM")).thenReturn("gzip");
+        when(mConnection.getHeaderFieldDate("Date", 0)).thenReturn(12345L);
+        when(mConnection.getInputStream())
+                .thenReturn(new ByteArrayInputStream(ApiCompatibilityUtils.getBytesUtf8("1234")));
+        doReturn(mConnection)
+                .when(mFetcher)
+                .getServerConnection(
+                        VariationsSeedFetcher.SeedFetchParameters.Builder.newBuilder()
+                                .setPlatform(VariationsSeedFetcher.VariationsPlatform.ANDROID)
+                                .setMilestone(sMilestone)
+                                .setChannel(sChannel)
+                                .setRestrictMode(null)
+                                .build());
+
+        mFetcher.fetchSeed(sRestrict, sMilestone, sChannel);
+
+        verify(mConnection)
+                .setRequestProperty(
+                        VariationsSeedFetcher.SEED_KEY_IDS_HEADER,
+                        VariationsSeedFetcher.SEED_KEY_IDS_VALUE);
+        assertThat(mPrefs.getString(VariationsSeedBridge.VARIATIONS_FIRST_RUN_SEED_SIGNATURE, ""))
+                .isEqualTo("2:cHFfc2lnbmF0dXJl");
+    }
+
+    /** Test method for {@link VariationsSeedFetcher#isHybridSeedSignature(String)}. */
+    @Test
+    public void testIsHybridSeedSignature() {
+        assertTrue(VariationsSeedFetcher.isHybridSeedSignature("1:abc"));
+        assertTrue(VariationsSeedFetcher.isHybridSeedSignature("2:abc"));
+        assertTrue(VariationsSeedFetcher.isHybridSeedSignature("3:abc"));
+
+        assertFalse(VariationsSeedFetcher.isHybridSeedSignature("MEUCIQDxLegacyBase64Sig"));
+        assertFalse(VariationsSeedFetcher.isHybridSeedSignature(null));
+        assertFalse(VariationsSeedFetcher.isHybridSeedSignature(""));
+        assertFalse(VariationsSeedFetcher.isHybridSeedSignature("0:abc"));
+        assertFalse(VariationsSeedFetcher.isHybridSeedSignature("4:abc"));
+        assertFalse(VariationsSeedFetcher.isHybridSeedSignature(":abc"));
+        assertFalse(VariationsSeedFetcher.isHybridSeedSignature("1"));
+        assertFalse(VariationsSeedFetcher.isHybridSeedSignature("+1:abc"));
+        assertFalse(VariationsSeedFetcher.isHybridSeedSignature("01:abc"));
     }
 
     /**
@@ -563,6 +657,10 @@ public class VariationsSeedFetcherTest {
                         VariationsCompressionUtils.gzipUncompress(fetchInfo.seedInfo.seedData),
                         Base64.NO_WRAP));
         assertTrue(fetchInfo.seedInfo.isGzipCompressed);
+        verify(mConnection)
+                .setRequestProperty(
+                        VariationsSeedFetcher.SEED_KEY_IDS_HEADER,
+                        VariationsSeedFetcher.SEED_KEY_IDS_VALUE);
         assertEquals(mockSignature, fetchInfo.seedInfo.signature);
         assertEquals(mockCountry, fetchInfo.seedInfo.country);
         assertEquals(mockGeoLevel1, fetchInfo.seedInfo.geoLevel1);

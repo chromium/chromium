@@ -103,6 +103,26 @@ public class VariationsSeedFetcher {
     private static final String DEFAULT_FAST_VARIATIONS_SERVER_URL =
             "https://clientservices.googleapis.com/chrome-variations/fastfinch/seed";
 
+    // Request header advertising the pinned PQ signing key IDs supported by this client
+    // (matching the C++ side's initial key IDs 1,2,3 plus legacy marker 0).
+    @VisibleForTesting public static final String SEED_KEY_IDS_HEADER = "X-Seed-Key-Ids";
+    // LINT.IfChange(VariationsSeedKeyIds)
+    @VisibleForTesting public static final String SEED_KEY_IDS_VALUE = "1,2,3,0";
+    @VisibleForTesting public static final String SEED_KEY_IDS_VALUE_WITHOUT_LEGACY = "1,2,3";
+
+    /**
+     * Returns whether {@code signature} starts with a pinned hybrid key ID ({@code "1:"}, {@code
+     * "2:"}, or {@code "3:"}) rather than a legacy bare base64 ECDSA signature.
+     */
+    public static boolean isHybridSeedSignature(@Nullable String signature) {
+        return signature != null
+                && signature.length() >= 2
+                && signature.charAt(1) == ':'
+                && signature.charAt(0) >= '1'
+                && signature.charAt(0) <= '3';
+    }
+    // LINT.ThenChange(//components/variations/variations_url_constants.h:VariationsSeedKeyIds)
+
     private static final int READ_TIMEOUT = 3000; // time in ms
     private static final int REQUEST_TIMEOUT = 1000; // time in ms
 
@@ -112,6 +132,7 @@ public class VariationsSeedFetcher {
     // Values for the "Variations.FirstRun.SeedFetchResult" sparse histogram, which also logs
     // HTTP result codes. These are negative so that they don't conflict with the HTTP codes.
     // These values should not be renumbered or reused since they are logged to UMA.
+    @VisibleForTesting public static final int SEED_FETCH_RESULT_MISSING_HYBRID_SIGNATURE = -7;
     @VisibleForTesting public static final int SEED_FETCH_RESULT_DELTA_PATCH_EXCEPTION = -6;
     @VisibleForTesting public static final int SEED_FETCH_RESULT_INVALID_IM_HEADER = -5;
     // private static final int SEED_FETCH_RESULT_INVALID_DATE_HEADER = -4;
@@ -665,6 +686,10 @@ public class VariationsSeedFetcher {
             }
             List<String> requestedInstanceManipulations = getAvailableInstanceManipulations();
             connection.setRequestProperty("A-IM", String.join(",", requestedInstanceManipulations));
+            boolean usePqOnly = currInfo != null && isHybridSeedSignature(currInfo.signature);
+            connection.setRequestProperty(
+                    SEED_KEY_IDS_HEADER,
+                    usePqOnly ? SEED_KEY_IDS_VALUE_WITHOUT_LEGACY : SEED_KEY_IDS_VALUE);
             connection.connect();
             int responseCode = connection.getResponseCode();
             fetchInfo.seedFetchResult = responseCode;
@@ -673,6 +698,14 @@ public class VariationsSeedFetcher {
 
                 SeedInfo seedInfo = new SeedInfo();
                 seedInfo.signature = getHeaderFieldOrEmpty(connection, "X-Seed-Signature");
+                if (usePqOnly && !isHybridSeedSignature(seedInfo.signature)) {
+                    Log.w(
+                            TAG,
+                            "Ignoring fetched seed without a hybrid signature because the current"
+                                    + " seed already has one.");
+                    fetchInfo.seedFetchResult = SEED_FETCH_RESULT_MISSING_HYBRID_SIGNATURE;
+                    return fetchInfo;
+                }
                 seedInfo.country = getHeaderFieldOrEmpty(connection, "X-Country");
                 seedInfo.geoLevel1 = getHeaderFieldOrEmpty(connection, "X-Geo-Level-1");
                 seedInfo.date = connection.getHeaderFieldDate("Date", 0);
