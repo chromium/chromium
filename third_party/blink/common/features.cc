@@ -1835,8 +1835,6 @@ BASE_FEATURE(kReuseNoStoreImageOnSameSrcReassignment,
 BASE_FEATURE(kRenderSizeInScoreAdBrowserSignals,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kResamplingInputEvents, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kResamplingScrollEvents, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kScrollPredictorMaxResampleTime,

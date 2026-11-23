@@ -23,7 +23,6 @@ constexpr float kVelocityInfluence = 1.0f;
 namespace ui {
 
 constexpr base::TimeDelta InputPredictor::kMaxTimeDelta;
-constexpr base::TimeDelta InputPredictor::kMaxResampleTime;
 constexpr base::TimeDelta InputPredictor::kMaxPredictionTime;
 constexpr base::TimeDelta InputPredictor::kTimeInterval;
 constexpr base::TimeDelta InputPredictor::kMinTimeInterval;

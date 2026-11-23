@@ -382,8 +382,7 @@ MainThreadEventQueue::MainThreadEventQueue(
   raf_fallback_timer_ = std::make_unique<base::OneShotTimer>();
   raf_fallback_timer_->SetTaskRunner(main_task_runner_);
 
-  event_predictor_ = std::make_unique<InputEventPrediction>(
-      base::FeatureList::IsEnabled(blink::features::kResamplingInputEvents));
+  event_predictor_ = std::make_unique<InputEventPrediction>();
 
 #if DCHECK_IS_ON()
   compositor_task_runner_ = compositor_task_runner;
@@ -659,7 +658,7 @@ void MainThreadEventQueue::DispatchEvents() {
       task = shared_state_.events_.Pop();
     }
 
-    HandleEventResampling(task, base::TimeTicks::Now());
+    HandleEventPrediction(task);
     // Dispatching the event is outside of critical section.
     task->Dispatch(this);
   }
@@ -772,7 +771,7 @@ void MainThreadEventQueue::DispatchRafAlignedInput(base::TimeTicks frame_time) {
       }
       task = shared_state_.events_.Pop();
     }
-    HandleEventResampling(task, frame_time);
+    HandleEventPrediction(task);
     // Dispatching the event is outside of critical section.
     task->Dispatch(this);
   }
@@ -908,12 +907,11 @@ bool MainThreadEventQueue::IsRafAlignedEvent(
   }
 }
 
-void MainThreadEventQueue::HandleEventResampling(
-    const std::unique_ptr<MainThreadEventQueueTask>& item,
-    base::TimeTicks frame_time) {
+void MainThreadEventQueue::HandleEventPrediction(
+    const std::unique_ptr<MainThreadEventQueueTask>& item) {
   if (item->IsWebInputEvent() && allow_raf_aligned_input_ && event_predictor_) {
     QueuedWebInputEvent* event = static_cast<QueuedWebInputEvent*>(item.get());
-    event_predictor_->HandleEvents(*event->MutableCoalescedEvent(), frame_time);
+    event_predictor_->HandleEvents(*event->MutableCoalescedEvent());
   }
 }
 

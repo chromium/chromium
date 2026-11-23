@@ -18,25 +18,21 @@
 
 namespace blink {
 
-// Handle resampling of WebMouseEvent, WebTouchEvent and WebPointerEvent.
+// Handle prediction of WebMouseEvent, WebTouchEvent and WebPointerEvent.
 // This class stores prediction of all active pointers.
 class PLATFORM_EXPORT InputEventPrediction {
  public:
-  // enable_resampling is true when kResamplingInputEvents is enabled.
-  explicit InputEventPrediction(bool enable_resampling);
+  InputEventPrediction();
   InputEventPrediction(const InputEventPrediction&) = delete;
   InputEventPrediction& operator=(const InputEventPrediction&) = delete;
   ~InputEventPrediction();
 
-  // Handle Resampling/Prediction of WebInputEvents. This function is mainly
-  // doing three things:
+  // Handle Prediction of WebInputEvents. This function is mainly
+  // doing two things:
   // 1. Maintain/Updates predictor using current CoalescedEvents vector.
-  // 2. When enable_resampling is true, change coalesced_event->EventPointer()'s
-  //    coordinates to the position at frame time.
-  // 3. Generates 3 predicted events when prediction is available, add the
-  //    PredictedEvent to coalesced_event.
-  void HandleEvents(blink::WebCoalescedInputEvent& coalesced_event,
-                    base::TimeTicks frame_time);
+  // 2. Generates predicted events when prediction is available and adds them
+  //    to `coalesced_event`.
+  void HandleEvents(blink::WebCoalescedInputEvent& coalesced_event);
 
   // Initialize predictor for different pointer.
   std::unique_ptr<ui::InputPredictor> CreatePredictor() const;
@@ -44,18 +40,12 @@ class PLATFORM_EXPORT InputEventPrediction {
  private:
   friend class InputEventPredictionTest;
   FRIEND_TEST_ALL_PREFIXES(InputEventPredictionTest, PredictorType);
-  FRIEND_TEST_ALL_PREFIXES(InputEventPredictionTest, ResamplingDisabled);
-  FRIEND_TEST_ALL_PREFIXES(InputEventPredictionTest,
-                           NoResampleWhenExceedMaxResampleTime);
 
   // The following functions are for handling multiple TouchPoints in a
   // WebTouchEvent. They should be more neat when WebTouchEvent is elimated.
   // Cast events from WebInputEvent to WebPointerProperties. Call
   // UpdateSinglePointer for each pointer.
   void UpdatePrediction(const WebInputEvent& event);
-  // Cast events from WebInputEvent to WebPointerProperties. Call
-  // ResamplingSinglePointer for each pointer.
-  void ApplyResampling(base::TimeTicks frame_time, WebInputEvent* event);
   // Reset predictor for each pointer in WebInputEvent by  ResetSinglePredictor.
   void ResetPredictor(const WebInputEvent& event);
 
@@ -93,8 +83,6 @@ class PLATFORM_EXPORT InputEventPrediction {
   // Store the field trial parameter used for choosing different types of
   // predictor.
   input_prediction::PredictorType selected_predictor_type_;
-
-  bool enable_resampling_ = false;
 
   // Records the timestamp for last event added to predictor.
   base::TimeTicks last_event_timestamp_;

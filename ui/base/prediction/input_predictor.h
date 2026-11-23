@@ -53,10 +53,6 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) InputPredictor {
       base::TimeTicks predict_time,
       base::TimeDelta frame_interval = base::Seconds(0)) = 0;
 
-  // Returns the maximum of prediction available for resampling
-  // before having side effects (jitter, wrong orientation, etc..)
-  const base::TimeDelta MaxResampleTime() const { return kMaxResampleTime; }
-
   // Returns the maximum prediction time available for the predictor
   // before having side effects (jitter, wrong orientation, etc..)
   const base::TimeDelta MaxPredictionTime() const { return kMaxPredictionTime; }
@@ -80,8 +76,6 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) InputPredictor {
   // Minimum time interval between events.
   static constexpr base::TimeDelta kMinTimeInterval = base::Milliseconds(2.5);
 
-  // Maximum amount of prediction when resampling.
-  static constexpr base::TimeDelta kMaxResampleTime = base::Milliseconds(20);
   // Maximum time delta for prediction.
   static constexpr base::TimeDelta kMaxPredictionTime = base::Milliseconds(25);
 };

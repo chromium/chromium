@@ -20,9 +20,8 @@ using input_prediction::PredictorType;
 class InputEventPredictionTest : public testing::Test {
  public:
   InputEventPredictionTest() {
-    // Default to enable resampling with empty predictor for testing.
-    ConfigureFieldTrialAndInitialize(blink::features::kResamplingInputEvents,
-                                     ::features::kPredictorNameEmpty);
+    // Default to empty predictor for testing.
+    ConfigureFieldTrialAndInitialize(::features::kPredictorNameEmpty);
   }
   InputEventPredictionTest(const InputEventPredictionTest&) = delete;
   InputEventPredictionTest& operator=(const InputEventPredictionTest&) = delete;
@@ -47,25 +46,24 @@ class InputEventPredictionTest : public testing::Test {
 
   void HandleEvents(const WebInputEvent& event) {
     blink::WebCoalescedInputEvent coalesced_event(event, ui::LatencyInfo());
-    event_predictor_->HandleEvents(coalesced_event, base::TimeTicks::Now());
+    event_predictor_->HandleEvents(coalesced_event);
   }
 
-  void ConfigureFieldTrial(const base::Feature& feature,
-                           const std::string& predictor_type) {
+  void ConfigureFieldTrial(const std::string& predictor_type) {
     base::FieldTrialParams params;
     params["predictor"] = predictor_type;
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(feature, params);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kInputPredictorTypeChoice, params);
 
     EXPECT_EQ(params["predictor"],
-              GetFieldTrialParamValueByFeature(feature, "predictor"));
+              GetFieldTrialParamValueByFeature(
+                  blink::features::kInputPredictorTypeChoice, "predictor"));
   }
 
-  void ConfigureFieldTrialAndInitialize(const base::Feature& feature,
-                                        const std::string& predictor_type) {
-    ConfigureFieldTrial(feature, predictor_type);
-    event_predictor_ = std::make_unique<InputEventPrediction>(
-        base::FeatureList::IsEnabled(blink::features::kResamplingInputEvents));
+  void ConfigureFieldTrialAndInitialize(const std::string& predictor_type) {
+    ConfigureFieldTrial(predictor_type);
+    event_predictor_ = std::make_unique<InputEventPrediction>();
   }
 
  protected:
@@ -75,42 +73,23 @@ class InputEventPredictionTest : public testing::Test {
 };
 
 TEST_F(InputEventPredictionTest, PredictorType) {
-  // Resampling is default to true for InputEventPredictionTest.
-  EXPECT_TRUE(event_predictor_->enable_resampling_);
   EXPECT_EQ(event_predictor_->selected_predictor_type_,
             PredictorType::kScrollPredictorTypeEmpty);
 
-  ConfigureFieldTrialAndInitialize(blink::features::kResamplingInputEvents,
-                                   ::features::kPredictorNameEmpty);
+  ConfigureFieldTrialAndInitialize(::features::kPredictorNameEmpty);
   EXPECT_EQ(event_predictor_->selected_predictor_type_,
             PredictorType::kScrollPredictorTypeEmpty);
 
-  ConfigureFieldTrialAndInitialize(blink::features::kResamplingInputEvents,
-                                   ::features::kPredictorNameKalman);
+  ConfigureFieldTrialAndInitialize(::features::kPredictorNameKalman);
   EXPECT_EQ(event_predictor_->selected_predictor_type_,
             PredictorType::kScrollPredictorTypeKalman);
 
-  ConfigureFieldTrialAndInitialize(blink::features::kResamplingInputEvents,
-                                   ::features::kPredictorNameKalman);
-  EXPECT_EQ(event_predictor_->selected_predictor_type_,
-            PredictorType::kScrollPredictorTypeKalman);
-
-  ConfigureFieldTrialAndInitialize(blink::features::kResamplingInputEvents,
-                                   ::features::kPredictorNameLsq);
+  ConfigureFieldTrialAndInitialize(::features::kPredictorNameLsq);
   EXPECT_EQ(event_predictor_->selected_predictor_type_,
             PredictorType::kScrollPredictorTypeLsq);
 
   // Default to Kalman predictor.
-  ConfigureFieldTrialAndInitialize(blink::features::kResamplingInputEvents, "");
-  EXPECT_EQ(event_predictor_->selected_predictor_type_,
-            PredictorType::kScrollPredictorTypeKalman);
-
-  ConfigureFieldTrialAndInitialize(blink::features::kInputPredictorTypeChoice,
-                                   ::features::kPredictorNameLsq);
-  EXPECT_FALSE(event_predictor_->enable_resampling_);
-  // When enable_resampling_ is true, kInputPredictorTypeChoice flag has no
-  // effect.
-  event_predictor_ = std::make_unique<InputEventPrediction>(true);
+  ConfigureFieldTrialAndInitialize(/*predictor_type=*/"");
   EXPECT_EQ(event_predictor_->selected_predictor_type_,
             PredictorType::kScrollPredictorTypeKalman);
 }
@@ -276,123 +255,9 @@ TEST_F(InputEventPredictionTest, TouchScrollStartedRemoveAllTouchPoints) {
   EXPECT_EQ(GetPredictorMapSize(), 0u);
 }
 
-TEST_F(InputEventPredictionTest, ResamplingDisabled) {
-  // When resampling is disabled, default to use kalman filter.
-  ConfigureFieldTrialAndInitialize(blink::features::kInputPredictorTypeChoice,
-                                   "");
-  EXPECT_FALSE(event_predictor_->enable_resampling_);
-  EXPECT_EQ(event_predictor_->selected_predictor_type_,
-            PredictorType::kScrollPredictorTypeKalman);
-
-  // Send 3 mouse move to get kalman predictor ready.
-  WebMouseEvent mouse_move = SyntheticWebMouseEventBuilder::Build(
-      WebInputEvent::Type::kMouseMove, 10, 10, 0);
-
-  HandleEvents(mouse_move);
-  mouse_move = SyntheticWebMouseEventBuilder::Build(
-      WebInputEvent::Type::kMouseMove, 11, 9, 0);
-  HandleEvents(mouse_move);
-
-  mouse_move = SyntheticWebMouseEventBuilder::Build(
-      WebInputEvent::Type::kMouseMove, 12, 8, 0);
-  HandleEvents(mouse_move);
-
-  // The 4th move event should generate predicted events.
-  mouse_move = SyntheticWebMouseEventBuilder::Build(
-      WebInputEvent::Type::kMouseMove, 13, 7, 0);
-  blink::WebCoalescedInputEvent coalesced_event(mouse_move, ui::LatencyInfo());
-  event_predictor_->HandleEvents(coalesced_event, base::TimeTicks::Now());
-
-  EXPECT_GT(coalesced_event.PredictedEventSize(), 0u);
-
-  // Verify when resampling event is disabled, original event coordinates don't
-  // change.
-  const WebMouseEvent& event =
-      static_cast<const blink::WebMouseEvent&>(coalesced_event.Event());
-  EXPECT_EQ(event.PositionInWidget().x(), 13);
-  EXPECT_EQ(event.PositionInWidget().y(), 7);
-}
-
-// Test that when dt > maxResampling, resampling is cut off .
-TEST_F(InputEventPredictionTest, NoResampleWhenExceedMaxResampleTime) {
-  ConfigureFieldTrialAndInitialize(blink::features::kResamplingInputEvents,
-                                   ::features::kPredictorNameKalman);
-
-  base::TimeDelta predictor_max_resample_time =
-      event_predictor_->mouse_predictor_->MaxResampleTime();
-
-  base::TimeTicks event_time = base::TimeTicks::Now();
-  // Send 3 mouse move each has 8ms interval to get kalman predictor ready.
-  WebMouseEvent mouse_move = SyntheticWebMouseEventBuilder::Build(
-      WebInputEvent::Type::kMouseMove, 10, 10, 0);
-  mouse_move.SetTimeStamp(event_time);
-  HandleEvents(mouse_move);
-  mouse_move = SyntheticWebMouseEventBuilder::Build(
-      WebInputEvent::Type::kMouseMove, 11, 9, 0);
-  mouse_move.SetTimeStamp(event_time += base::Milliseconds(8));
-  HandleEvents(mouse_move);
-  mouse_move = SyntheticWebMouseEventBuilder::Build(
-      WebInputEvent::Type::kMouseMove, 12, 8, 0);
-  mouse_move.SetTimeStamp(event_time += base::Milliseconds(8));
-  HandleEvents(mouse_move);
-
-  {
-    // When frame_time is 8ms away from the last event, we have both resampling
-    // and 3 predicted events.
-    mouse_move = SyntheticWebMouseEventBuilder::Build(
-        WebInputEvent::Type::kMouseMove, 13, 7, 0);
-    mouse_move.SetTimeStamp(event_time += base::Milliseconds(8));
-    blink::WebCoalescedInputEvent coalesced_event(mouse_move,
-                                                  ui::LatencyInfo());
-    base::TimeTicks frame_time =
-        event_time + predictor_max_resample_time;  // No cut off
-    event_predictor_->HandleEvents(coalesced_event, frame_time);
-
-    const WebMouseEvent& event =
-        static_cast<const blink::WebMouseEvent&>(coalesced_event.Event());
-    EXPECT_GT(event.PositionInWidget().x(), 13);
-    EXPECT_LT(event.PositionInWidget().y(), 7);
-    EXPECT_EQ(event.TimeStamp(), frame_time);
-
-    EXPECT_EQ(coalesced_event.PredictedEventSize(), 3u);
-    // First predicted event time stamp is 8ms from original event timestamp.
-    EXPECT_EQ(coalesced_event.PredictedEvent(0).TimeStamp(),
-              event_time + base::Milliseconds(8));
-  }
-
-  {
-    // Test When the delta time between the frame time and the event is greater
-    // than the maximum resampling time for a predictor, the resampling is cut
-    // off to the maximum allowed by the predictor
-    mouse_move = SyntheticWebMouseEventBuilder::Build(
-        WebInputEvent::Type::kMouseMove, 14, 6, 0);
-    mouse_move.SetTimeStamp(event_time += base::Milliseconds(8));
-    blink::WebCoalescedInputEvent coalesced_event(mouse_move,
-                                                  ui::LatencyInfo());
-    base::TimeTicks frame_time =
-        event_time + predictor_max_resample_time +
-        base::Milliseconds(10);  // overpredict on purpose
-    event_predictor_->HandleEvents(coalesced_event, frame_time);
-
-    // We expect the prediction to be cut off to the max resampling time of
-    // the predictor
-    const WebMouseEvent& event =
-        static_cast<const blink::WebMouseEvent&>(coalesced_event.Event());
-    EXPECT_GT(event.PositionInWidget().x(), 14);
-    EXPECT_LT(event.PositionInWidget().y(), 6);
-    EXPECT_EQ(event.TimeStamp(), event_time + predictor_max_resample_time);
-
-    EXPECT_EQ(coalesced_event.PredictedEventSize(), 3u);
-    // First predicted event time stamp is 8ms from original event timestamp.
-    EXPECT_EQ(coalesced_event.PredictedEvent(0).TimeStamp(),
-              event_time + base::Milliseconds(8));
-  }
-}
-
 // Test that when dt between events is 6ms, first predicted point is 6ms ahead.
 TEST_F(InputEventPredictionTest, PredictedEventsTimeIntervalEqualRealEvents) {
-  ConfigureFieldTrialAndInitialize(blink::features::kResamplingInputEvents,
-                                   ::features::kPredictorNameKalman);
+  ConfigureFieldTrialAndInitialize(::features::kPredictorNameKalman);
 
   base::TimeTicks event_time = base::TimeTicks::Now();
   // Send 3 mouse move each has 6ms interval to get kalman predictor ready.
@@ -415,7 +280,7 @@ TEST_F(InputEventPredictionTest, PredictedEventsTimeIntervalEqualRealEvents) {
     mouse_move.SetTimeStamp(event_time += base::Milliseconds(6));
     blink::WebCoalescedInputEvent coalesced_event(mouse_move,
                                                   ui::LatencyInfo());
-    event_predictor_->HandleEvents(coalesced_event, event_time);
+    event_predictor_->HandleEvents(coalesced_event);
 
     EXPECT_EQ(coalesced_event.PredictedEventSize(), 4u);
     // First predicted event time stamp is 6ms from original event timestamp.
@@ -443,7 +308,7 @@ TEST_F(InputEventPredictionTest, TouchPointStates) {
         static_cast<blink::WebTouchPoint::State>(state);
     blink::WebCoalescedInputEvent coalesced_event(touch_event,
                                                   ui::LatencyInfo());
-    event_predictor_->HandleEvents(coalesced_event, base::TimeTicks::Now());
+    event_predictor_->HandleEvents(coalesced_event);
     if (state == static_cast<size_t>(blink::WebTouchPoint::State::kStateMoved))
       EXPECT_GT(coalesced_event.PredictedEventSize(), 0u);
     else

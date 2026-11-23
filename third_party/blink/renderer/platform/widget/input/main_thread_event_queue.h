@@ -140,10 +140,9 @@ class PLATFORM_EXPORT MainThreadEventQueue
   // Request unbuffered input events until next pointerup.
   void RequestUnbufferedInputEvents();
 
-  // Resampling event before dispatch it.
-  void HandleEventResampling(
-      const std::unique_ptr<MainThreadEventQueueTask>& item,
-      base::TimeTicks frame_time);
+  // Updates the predictor with `item` and attaches any predicted events to it.
+  void HandleEventPrediction(
+      const std::unique_ptr<MainThreadEventQueueTask>& item);
 
   static bool IsForwardedAndSchedulerKnown(
       mojom::blink::InputEventResultState ack_state) {

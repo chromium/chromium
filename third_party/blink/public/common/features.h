@@ -652,11 +652,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 // RenderFrameMetadata.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInputCursorAnchorInfoMigration);
 
-// This flag is used to set field parameters to choose predictor we use when
-// kResamplingInputEvents is disabled. It's used for gathering accuracy metrics
-// on finch and also for choosing predictor type for predictedEvents API without
-// enabling resampling. It does not have any effect when the resampling flag is
-// enabled.
+// This flag is used to set field parameters to choose predictor we use. It's
+// used for gathering accuracy metrics on finch and also for choosing predictor
+// type for predictedEvents API.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kInputPredictorTypeChoice);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kIntensiveWakeUpThrottling);
@@ -1462,8 +1460,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#23-scoring-bids
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRenderSizeInScoreAdBrowserSignals);
 
-// Enables resampling input events on main thread.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kResamplingInputEvents);
 // Enables resampling GestureScroll events on compositor thread.
 // Uses the kPredictorName* values in ui_base_features.h as the 'predictor'
 // feature param.

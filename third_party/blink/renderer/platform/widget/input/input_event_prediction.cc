@@ -4,9 +4,7 @@
 
 #include "third_party/blink/renderer/platform/widget/input/input_event_prediction.h"
 
-#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/common/features.h"
 
 namespace blink {
@@ -30,17 +28,9 @@ WebPointerProperties* ToWebPointerProperties(WebInputEvent* event) {
 
 }  // namespace
 
-InputEventPrediction::InputEventPrediction(bool enable_resampling)
-    : enable_resampling_(enable_resampling) {
-  // When resampling is enabled, set predictor type by resampling flag params;
-  // otherwise, get predictor type parameters from kInputPredictorTypeChoice
-  // flag.
-  std::string predictor_name =
-      enable_resampling_
-          ? GetFieldTrialParamValueByFeature(
-                blink::features::kResamplingInputEvents, "predictor")
-          : GetFieldTrialParamValueByFeature(
-                blink::features::kInputPredictorTypeChoice, "predictor");
+InputEventPrediction::InputEventPrediction() {
+  std::string predictor_name = GetFieldTrialParamValueByFeature(
+      blink::features::kInputPredictorTypeChoice, "predictor");
 
   if (predictor_name.empty()) {
     selected_predictor_type_ =
@@ -56,8 +46,7 @@ InputEventPrediction::InputEventPrediction(bool enable_resampling)
 InputEventPrediction::~InputEventPrediction() {}
 
 void InputEventPrediction::HandleEvents(
-    blink::WebCoalescedInputEvent& coalesced_event,
-    base::TimeTicks frame_time) {
+    blink::WebCoalescedInputEvent& coalesced_event) {
   switch (coalesced_event.Event().GetType()) {
     case WebInputEvent::Type::kMouseMove:
     case WebInputEvent::Type::kTouchMove:
@@ -65,9 +54,6 @@ void InputEventPrediction::HandleEvents(
       size_t coalesced_size = coalesced_event.CoalescedEventSize();
       for (size_t i = 0; i < coalesced_size; i++)
         UpdatePrediction(coalesced_event.CoalescedEvent(i));
-
-      if (enable_resampling_)
-        ApplyResampling(frame_time, coalesced_event.EventPointer());
 
       AddPredictedEvents(coalesced_event);
       break;
@@ -102,43 +88,6 @@ void InputEventPrediction::UpdatePrediction(const WebInputEvent& event) {
     UpdateSinglePointer(*ToWebPointerProperties(&event), event.TimeStamp());
   }
   last_event_timestamp_ = event.TimeStamp();
-}
-
-void InputEventPrediction::ApplyResampling(base::TimeTicks frame_time,
-                                           WebInputEvent* event) {
-  base::TimeDelta prediction_delta = frame_time - event->TimeStamp();
-  base::TimeTicks predict_time;
-
-  if (event->GetType() == WebInputEvent::Type::kTouchMove) {
-    WebTouchEvent* touch_event = static_cast<WebTouchEvent*>(event);
-    for (unsigned i = 0; i < touch_event->touches_length; ++i) {
-      if (touch_event->touches[i].state ==
-          blink::WebTouchPoint::State::kStateMoved) {
-        if (auto* predictor = GetPredictor(touch_event->touches[i])) {
-          // When resampling, we don't want to predict too far away because the
-          // result will likely be inaccurate in that case. We then cut off the
-          // prediction to the MaxResampleTime for the predictor.
-          prediction_delta =
-              std::min(prediction_delta, predictor->MaxResampleTime());
-          predict_time = event->TimeStamp() + prediction_delta;
-
-          if (GetPointerPrediction(predict_time, &touch_event->touches[i]))
-            event->SetTimeStamp(predict_time);
-        }
-      }
-    }
-  } else {
-    WebPointerProperties* pointer_event = ToWebPointerProperties(event);
-    if (auto* predictor = GetPredictor(*pointer_event)) {
-      // Cutoff prediction if delta > MaxResampleTime
-      prediction_delta =
-          std::min(prediction_delta, predictor->MaxResampleTime());
-      predict_time = event->TimeStamp() + prediction_delta;
-
-      if (GetPointerPrediction(predict_time, pointer_event))
-        event->SetTimeStamp(predict_time);
-    }
-  }
 }
 
 void InputEventPrediction::ResetPredictor(const WebInputEvent& event) {
