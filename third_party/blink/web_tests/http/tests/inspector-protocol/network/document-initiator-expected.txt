@@ -1,0 +1,4 @@
+Tests that page navigation initiated by JS is correctly reported.
+http://127.0.0.1:8000/inspector-protocol/network/resources/document-initiator.html?foo: script
+    navigateFromScript http://127.0.0.1:8000/inspector-protocol/network/resources/document-initiator.html 6
+
