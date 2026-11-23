@@ -119,6 +119,7 @@ luci.project(
             groups = [
                 "project-chromium-try-task-accounts",
                 "project-chromium-ci-task-accounts",
+                "project-chromium-tryjob-access",
             ],
         ),
         # Roles for LUCI Analysis.
