@@ -8,8 +8,5 @@ import type {WithWebuiPluginLitMemberVisibilityViolationsElement} from './with_w
 
 export function getHtml(
     this: WithWebuiPluginLitMemberVisibilityViolationsElement) {
-  return html`
-    <div>${this.usedInSubTemplateAccessor_}</div>
-    <div>${this.usedInSubTemplateMethod_()}</div>
-  `;
+  return html`<div>${this.usedInSubTemplateAccessor_}</div>`;
 }

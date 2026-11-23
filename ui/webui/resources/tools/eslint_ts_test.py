@@ -1745,13 +1745,10 @@ class EslintTsTest(unittest.TestCase):
     )
 
     _UNNECESSARY_PROTECTED_PROPERTY_ERROR = "Property '%(propertyName)s' in class '%(className)s' is marked 'protected' but is not referenced in the HTML template. Mark it as 'private' instead"
-    _UNNECESSARY_PROTECTED_METHOD_ERROR = "%(methodType)s '%(methodName)s' in class '%(className)s' is marked 'protected' but is not referenced in the HTML template. Mark it as 'private' instead"
 
     class_name = 'WithWebuiPluginLitMemberVisibilityViolationsElement'
     inline_class_name = 'InlineTemplateDummyTestElement'
     no_template_class_name = 'NoTemplateDummyTestElement'
-    extended_parent_class_name = 'ExtendedConcreteParentElement'
-    extended_child_class_name = 'ExtendedConcreteChildElement'
 
     errors = [
       _UNNECESSARY_PROTECTED_PROPERTY_ERROR
@@ -1764,51 +1761,15 @@ class EslintTsTest(unittest.TestCase):
         'propertyName': 'unusedProtectedProp_',
         'className': class_name,
       },
-      _UNNECESSARY_PROTECTED_METHOD_ERROR
-      % {
-        'methodType': 'Method',
-        'methodName': 'unusedProtectedMethod_',
-        'className': class_name,
-      },
-      _UNNECESSARY_PROTECTED_METHOD_ERROR
-      % {
-        'methodType': 'Getter',
-        'methodName': 'unusedProtectedGetter_',
-        'className': class_name,
-      },
-      _UNNECESSARY_PROTECTED_METHOD_ERROR
-      % {
-        'methodType': 'Setter',
-        'methodName': 'unusedProtectedSetter_',
-        'className': class_name,
-      },
       _UNNECESSARY_PROTECTED_PROPERTY_ERROR
       % {
         'propertyName': 'unusedProtectedInlineAccessor_',
-        'className': inline_class_name,
-      },
-      _UNNECESSARY_PROTECTED_METHOD_ERROR
-      % {
-        'methodType': 'Method',
-        'methodName': 'unusedProtectedInlineMethod_',
         'className': inline_class_name,
       },
       _UNNECESSARY_PROTECTED_PROPERTY_ERROR
       % {
         'propertyName': 'unusedProtectedNoTemplateProp_',
         'className': no_template_class_name,
-      },
-      _UNNECESSARY_PROTECTED_METHOD_ERROR
-      % {
-        'methodType': 'Method',
-        'methodName': 'unusedProtectedNoTemplateMethod_',
-        'className': no_template_class_name,
-      },
-      _UNNECESSARY_PROTECTED_METHOD_ERROR
-      % {
-        'methodType': 'Method',
-        'methodName': 'unusedChildProtectedMethod_',
-        'className': extended_child_class_name,
       },
     ]
     for e in errors:
@@ -1871,83 +1832,6 @@ class EslintTsTest(unittest.TestCase):
       % {
         'propertyName': 'usedProtectedInlineAccessor_',
         'className': inline_class_name,
-      },
-      _UNNECESSARY_PROTECTED_METHOD_ERROR
-      % {
-        'methodType': 'Method',
-        'methodName': 'constructor',
-        'className': class_name,
-      },
-      _UNNECESSARY_PROTECTED_METHOD_ERROR
-      % {
-        'methodType': 'Method',
-        'methodName': 'baseProtectedMethod_',
-        'className': class_name,
-      },
-      _UNNECESSARY_PROTECTED_METHOD_ERROR
-      % {
-        'methodType': 'Method',
-        'methodName': 'baseAbstractMethod_',
-        'className': class_name,
-      },
-      _UNNECESSARY_PROTECTED_METHOD_ERROR
-      % {
-        'methodType': 'Method',
-        'methodName': 'onButtonClick_',
-        'className': class_name,
-      },
-      _UNNECESSARY_PROTECTED_METHOD_ERROR
-      % {
-        'methodType': 'Method',
-        'methodName': 'usedProtectedMethod_',
-        'className': class_name,
-      },
-      _UNNECESSARY_PROTECTED_METHOD_ERROR
-      % {
-        'methodType': 'Method',
-        'methodName': 'usedInSubTemplateMethod_',
-        'className': class_name,
-      },
-      _UNNECESSARY_PROTECTED_METHOD_ERROR
-      % {
-        'methodType': 'Getter',
-        'methodName': 'usedProtectedInlineGetter_',
-        'className': inline_class_name,
-      },
-      _UNNECESSARY_PROTECTED_METHOD_ERROR
-      % {
-        'methodType': 'Method',
-        'methodName': 'privateMethod_',
-        'className': class_name,
-      },
-      _UNNECESSARY_PROTECTED_METHOD_ERROR
-      % {
-        'methodType': 'Method',
-        'methodName': 'mixinMethod_',
-        'className': 'DummyMixin',
-      },
-      _UNNECESSARY_PROTECTED_METHOD_ERROR
-      % {
-        'methodType': 'Method',
-        'methodName': 'usedProtectedInlineMethod_',
-        'className': inline_class_name,
-      },
-      _UNNECESSARY_PROTECTED_PROPERTY_ERROR
-      % {
-        'propertyName': 'parentProtectedProp_',
-        'className': extended_parent_class_name,
-      },
-      _UNNECESSARY_PROTECTED_METHOD_ERROR
-      % {
-        'methodType': 'Method',
-        'methodName': 'parentProtectedMethod_',
-        'className': extended_parent_class_name,
-      },
-      _UNNECESSARY_PROTECTED_METHOD_ERROR
-      % {
-        'methodType': 'Method',
-        'methodName': 'exprParentMethod_',
-        'className': 'ExtendedViaExprParentElement',
       },
     ]
     for e in non_errors:

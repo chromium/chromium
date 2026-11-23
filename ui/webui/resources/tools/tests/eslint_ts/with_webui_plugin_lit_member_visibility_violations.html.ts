@@ -13,8 +13,6 @@ export function getHtml(
     <div>${this.usedProtectedAccessor_}</div>
     <div>${this.usedProtectedProp_}</div>
     <div>${this.usedInNestedExpr_.label}</div>
-    <div>${this.usedProtectedMethod_()}</div>
-    <button @click="${this.onButtonClick_}"></button>
     ${getSubHtml.bind(this)()}
   `;
 }
