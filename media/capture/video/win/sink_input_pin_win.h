@@ -42,7 +42,9 @@ class SinkInputPin : public PinBase {
   // Implement PinBase.
   bool IsMediaTypeValid(const AM_MEDIA_TYPE* media_type) override;
   bool GetValidMediaType(int index, AM_MEDIA_TYPE* media_type) override;
-
+  IFACEMETHODIMP ReceiveConnection(IPin* connector,
+                                   const AM_MEDIA_TYPE* media_type) override;
+  IFACEMETHODIMP Disconnect() override;
   IFACEMETHODIMP Receive(IMediaSample* media_sample) override;
 
  private:
@@ -50,9 +52,10 @@ class SinkInputPin : public PinBase {
 
   // Guards the members below. Receive() holds it for its whole duration,
   // including calls into the IMediaSample and |observer_|, so that Shutdown()
-  // waits for an in-flight call to return. It blocks the calling thread (the
-  // device's STA thread) without pumping messages until then, which includes
-  // any time the upstream filter spends in its sample methods.
+  // and Disconnect() wait for an in-flight call to return. They block the
+  // calling thread (the device's STA thread) without pumping messages until
+  // then, which includes any time the upstream filter spends in its sample
+  // methods.
   //
   // Lock order: |sink_lock_| is acquired before any lock taken by |observer_|
   // (e.g. VideoCaptureDeviceWin::lock_). Never call into this pin while holding

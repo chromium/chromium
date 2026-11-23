@@ -105,7 +105,9 @@ source_set("win_unittests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/libyuv",
+    "//ui/gfx:color_space",
     "//ui/gfx:test_support",
+    "//ui/gfx/geometry",
   ]
 
   libs = [

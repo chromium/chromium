@@ -13,6 +13,7 @@
 #include <stddef.h>
 
 #include "base/memory/scoped_refptr.h"
+#include "media/capture/capture_export.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/win/filter_base_win.h"
 #include "media/capture/video/win/sink_filter_observer_win.h"
@@ -58,8 +59,8 @@ const GUID kMediaSubTypeY16 = {
 
 class SinkInputPin;
 
-class __declspec(uuid("88cdbbdc-a73b-4afa-acbf-15d5e2ce12c3")) SinkFilter
-    : public FilterBase {
+class CAPTURE_EXPORT __declspec(uuid("88cdbbdc-a73b-4afa-acbf-15d5e2ce12c3"))
+SinkFilter : public FilterBase {
  public:
   SinkFilter() = delete;
 

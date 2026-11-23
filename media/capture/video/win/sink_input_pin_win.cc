@@ -5,12 +5,14 @@
 #include "media/capture/video/win/sink_input_pin_win.h"
 
 #include <cstring>
+#include <optional>
 
 // Avoid including strsafe.h via dshow as it will cause build warnings.
 #define NO_DSHOW_STRSAFE
 #include <dshow.h>
 #include <stdint.h>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
@@ -18,6 +20,7 @@
 #include "base/win/win_util.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace media {
 
@@ -26,6 +29,94 @@ const REFERENCE_TIME kSecondsToReferenceTime = 10000000;
 static DWORD GetArea(const BITMAPINFOHEADER& info_header) {
   return info_header.biWidth * info_header.biHeight;
 }
+
+namespace {
+
+struct ParsedMediaType {
+  gfx::Size frame_size;
+  // Unset if the media type doesn't specify a frame rate.
+  std::optional<float> frame_rate;
+  VideoPixelFormat pixel_format = PIXEL_FORMAT_UNKNOWN;
+  bool flip_y = false;
+};
+
+// Returns the format described by |media_type|, or nullopt if it isn't
+// supported.
+std::optional<ParsedMediaType> ParseMediaType(const AM_MEDIA_TYPE* media_type) {
+  if (!media_type) {
+    return std::nullopt;
+  }
+
+  const GUID type = media_type->majortype;
+  if (type != MEDIATYPE_Video) {
+    return std::nullopt;
+  }
+
+  const GUID format_type = media_type->formattype;
+  if (format_type != FORMAT_VideoInfo) {
+    return std::nullopt;
+  }
+
+  // Check for the sub types we support.
+  const GUID sub_type = media_type->subtype;
+  VIDEOINFOHEADER* pvi =
+      reinterpret_cast<VIDEOINFOHEADER*>(media_type->pbFormat);
+  if (!pvi) {
+    return std::nullopt;
+  }
+
+  const gfx::Size frame_size(pvi->bmiHeader.biWidth,
+                             abs(pvi->bmiHeader.biHeight));
+
+  VideoPixelFormat pixel_format = PIXEL_FORMAT_UNKNOWN;
+  bool flip_y = false;
+  if (sub_type == kMediaSubTypeI420 &&
+      pvi->bmiHeader.biCompression == MAKEFOURCC('I', '4', '2', '0')) {
+    pixel_format = PIXEL_FORMAT_I420;
+  } else if (sub_type == MEDIASUBTYPE_YUY2 &&
+             pvi->bmiHeader.biCompression == MAKEFOURCC('Y', 'U', 'Y', '2')) {
+    pixel_format = PIXEL_FORMAT_YUY2;
+  } else if (sub_type == MEDIASUBTYPE_UYVY &&
+             pvi->bmiHeader.biCompression == MAKEFOURCC('U', 'Y', 'V', 'Y')) {
+    // This format is added after http://crbug.com/508413.
+    pixel_format = PIXEL_FORMAT_UYVY;
+  } else if (sub_type == MEDIASUBTYPE_MJPG &&
+             pvi->bmiHeader.biCompression == MAKEFOURCC('M', 'J', 'P', 'G')) {
+    pixel_format = PIXEL_FORMAT_MJPEG;
+  } else if (sub_type == MEDIASUBTYPE_RGB24 &&
+             pvi->bmiHeader.biCompression == BI_RGB) {
+    pixel_format = PIXEL_FORMAT_RGB24;
+  } else if (sub_type == MEDIASUBTYPE_RGB32 &&
+             pvi->bmiHeader.biCompression == BI_RGB) {
+    pixel_format = PIXEL_FORMAT_ARGB;
+    flip_y = true;
+  } else if (sub_type == kMediaSubTypeY16 &&
+             pvi->bmiHeader.biCompression == MAKEFOURCC('Y', '1', '6', ' ')) {
+    pixel_format = PIXEL_FORMAT_Y16;
+  } else if (sub_type == kMediaSubTypeZ16 &&
+             pvi->bmiHeader.biCompression == MAKEFOURCC('Z', '1', '6', ' ')) {
+    pixel_format = PIXEL_FORMAT_Y16;
+  } else if (sub_type == kMediaSubTypeINVZ &&
+             pvi->bmiHeader.biCompression == MAKEFOURCC('I', 'N', 'V', 'Z')) {
+    pixel_format = PIXEL_FORMAT_Y16;
+  } else {
+    DVLOG(2) << __func__ << " unsupported media type: "
+             << base::win::WStringFromGUID(sub_type);
+    return std::nullopt;
+  }
+
+  ParsedMediaType parsed;
+  parsed.frame_size = frame_size;
+  if (pvi->AvgTimePerFrame > 0) {
+    parsed.frame_rate =
+        static_cast<int>(kSecondsToReferenceTime / pvi->AvgTimePerFrame);
+  }
+  parsed.pixel_format = pixel_format;
+  parsed.flip_y = flip_y;
+  return parsed;
+}
+
+}  // namespace
 
 SinkInputPin::SinkInputPin(IBaseFilter* filter, SinkFilterObserver* observer)
     : PinBase(filter),
@@ -52,82 +143,27 @@ void SinkInputPin::Shutdown() {
 }
 
 bool SinkInputPin::IsMediaTypeValid(const AM_MEDIA_TYPE* media_type) {
+  return ParseMediaType(media_type).has_value();
+}
+
+HRESULT SinkInputPin::ReceiveConnection(IPin* connector,
+                                        const AM_MEDIA_TYPE* media_type) {
+  HRESULT hr = PinBase::ReceiveConnection(connector, media_type);
+  if (FAILED(hr)) {
+    return hr;
+  }
+  // Only take the format once the connection is stored, so that a rejected or
+  // failed connection leaves the current format untouched. PinBase has
+  // validated |media_type|.
+  const std::optional<ParsedMediaType> parsed = ParseMediaType(media_type);
+  CHECK(parsed);
   base::AutoLock lock(sink_lock_);
-  const GUID type = media_type->majortype;
-  if (type != MEDIATYPE_Video)
-    return false;
-
-  const GUID format_type = media_type->formattype;
-  if (format_type != FORMAT_VideoInfo)
-    return false;
-
-  // Check for the sub types we support.
-  const GUID sub_type = media_type->subtype;
-  VIDEOINFOHEADER* pvi =
-      reinterpret_cast<VIDEOINFOHEADER*>(media_type->pbFormat);
-  if (pvi == NULL)
-    return false;
-
-  // Store the incoming width and height.
-  resulting_format_.frame_size.SetSize(pvi->bmiHeader.biWidth,
-                                       abs(pvi->bmiHeader.biHeight));
-  if (pvi->AvgTimePerFrame > 0) {
-    resulting_format_.frame_rate =
-        static_cast<int>(kSecondsToReferenceTime / pvi->AvgTimePerFrame);
-  } else {
-    resulting_format_.frame_rate = requested_frame_rate_;
-  }
-  if (sub_type == kMediaSubTypeI420 &&
-      pvi->bmiHeader.biCompression == MAKEFOURCC('I', '4', '2', '0')) {
-    resulting_format_.pixel_format = PIXEL_FORMAT_I420;
-    return true;
-  }
-  if (sub_type == MEDIASUBTYPE_YUY2 &&
-      pvi->bmiHeader.biCompression == MAKEFOURCC('Y', 'U', 'Y', '2')) {
-    resulting_format_.pixel_format = PIXEL_FORMAT_YUY2;
-    return true;
-  }
-  // This format is added after http:/crbug.com/508413.
-  if (sub_type == MEDIASUBTYPE_UYVY &&
-      pvi->bmiHeader.biCompression == MAKEFOURCC('U', 'Y', 'V', 'Y')) {
-    resulting_format_.pixel_format = PIXEL_FORMAT_UYVY;
-    return true;
-  }
-  if (sub_type == MEDIASUBTYPE_MJPG &&
-      pvi->bmiHeader.biCompression == MAKEFOURCC('M', 'J', 'P', 'G')) {
-    resulting_format_.pixel_format = PIXEL_FORMAT_MJPEG;
-    return true;
-  }
-  if (sub_type == MEDIASUBTYPE_RGB24 &&
-      pvi->bmiHeader.biCompression == BI_RGB) {
-    resulting_format_.pixel_format = PIXEL_FORMAT_RGB24;
-    return true;
-  }
-  if (sub_type == MEDIASUBTYPE_RGB32 &&
-      pvi->bmiHeader.biCompression == BI_RGB) {
-    resulting_format_.pixel_format = PIXEL_FORMAT_ARGB;
-    flip_y_ = true;
-    return true;
-  }
-  if (sub_type == kMediaSubTypeY16 &&
-      pvi->bmiHeader.biCompression == MAKEFOURCC('Y', '1', '6', ' ')) {
-    resulting_format_.pixel_format = PIXEL_FORMAT_Y16;
-    return true;
-  }
-  if (sub_type == kMediaSubTypeZ16 &&
-      pvi->bmiHeader.biCompression == MAKEFOURCC('Z', '1', '6', ' ')) {
-    resulting_format_.pixel_format = PIXEL_FORMAT_Y16;
-    return true;
-  }
-  if (sub_type == kMediaSubTypeINVZ &&
-      pvi->bmiHeader.biCompression == MAKEFOURCC('I', 'N', 'V', 'Z')) {
-    resulting_format_.pixel_format = PIXEL_FORMAT_Y16;
-    return true;
-  }
-
-  DVLOG(2) << __func__ << " unsupported media type: "
-           << base::win::WStringFromGUID(sub_type);
-  return false;
+  resulting_format_.frame_size = parsed->frame_size;
+  resulting_format_.frame_rate =
+      parsed->frame_rate ? *parsed->frame_rate : requested_frame_rate_;
+  resulting_format_.pixel_format = parsed->pixel_format;
+  flip_y_ = parsed->flip_y;
+  return S_OK;
 }
 
 bool SinkInputPin::GetValidMediaType(int index, AM_MEDIA_TYPE* media_type) {
@@ -217,13 +253,23 @@ bool SinkInputPin::GetValidMediaType(int index, AM_MEDIA_TYPE* media_type) {
   return true;
 }
 
+HRESULT SinkInputPin::Disconnect() {
+  {
+    base::AutoLock lock(sink_lock_);
+    resulting_format_.frame_size.SetSize(0, 0);
+    resulting_format_.frame_rate = 0;
+    resulting_format_.pixel_format = PIXEL_FORMAT_UNKNOWN;
+  }
+  return PinBase::Disconnect();
+}
+
 HRESULT SinkInputPin::Receive(IMediaSample* sample) {
   // Hold |sink_lock_| for the whole call, including the calls into |sample|,
-  // so that Shutdown() waits for a streaming thread that is anywhere inside
-  // this method. The upstream filter's Stop() doesn't guarantee that no call
-  // is in flight.
+  // so that Shutdown() and Disconnect() wait for a streaming thread that is
+  // anywhere inside this method. The upstream filter's Stop() doesn't
+  // guarantee that no call is in flight.
   base::AutoLock lock(sink_lock_);
-  if (!observer_) {
+  if (!observer_ || resulting_format_.pixel_format == PIXEL_FORMAT_UNKNOWN) {
     return S_FALSE;
   }
 

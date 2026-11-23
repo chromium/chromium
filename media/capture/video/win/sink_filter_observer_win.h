@@ -11,11 +11,12 @@
 #include <stdint.h>
 
 #include "base/containers/span.h"
+#include "media/capture/capture_export.h"
 #include "media/capture/video_capture_types.h"
 
 namespace media {
 
-class SinkFilterObserver {
+class CAPTURE_EXPORT SinkFilterObserver {
  public:
   // SinkFilter will call this function with all frames delivered to it.
   // |buffer| is only valid during this function call.

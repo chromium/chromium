@@ -17,23 +17,32 @@
 #include <algorithm>
 #include <atomic>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/thread_annotations.h"
 #include "base/threading/simple_thread.h"
+#include "base/time/time.h"
 #include "base/win/scoped_com_initializer.h"
+#include "media/base/video_types.h"
 #include "media/capture/video/mock_video_capture_device_client.h"
+#include "media/capture/video/win/pin_base_win.h"
+#include "media/capture/video/win/sink_filter_observer_win.h"
 #include "media/capture/video/win/sink_filter_win.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/color_space.h"
+#include "ui/gfx/geometry/size.h"
 
 using ::Microsoft::WRL::ChainInterfaces;
 using ::Microsoft::WRL::ClassicCom;
@@ -51,6 +60,7 @@ constexpr int kTestWidth = 64;
 constexpr int kTestHeight = 48;
 constexpr float kTestFrameRate = 30.0f;
 constexpr size_t kI420FrameBytes = kTestWidth * kTestHeight * 3 / 2;
+constexpr size_t kRgb32FrameBytes = kTestWidth * kTestHeight * 4;
 constexpr REFERENCE_TIME kReferenceTimePerSecond = 10000000;
 
 void PopulateI420MediaType(AM_MEDIA_TYPE* media_type,
@@ -75,6 +85,16 @@ void PopulateI420MediaType(AM_MEDIA_TYPE* media_type,
   media_type->formattype = FORMAT_VideoInfo;
   media_type->cbFormat = sizeof(VIDEOINFOHEADER);
   media_type->pbFormat = reinterpret_cast<BYTE*>(video_info);
+}
+
+void PopulateRgb32MediaType(AM_MEDIA_TYPE* media_type,
+                            VIDEOINFOHEADER* video_info) {
+  PopulateI420MediaType(media_type, video_info);
+  video_info->bmiHeader.biBitCount = 32;
+  video_info->bmiHeader.biCompression = BI_RGB;
+  video_info->bmiHeader.biSizeImage = static_cast<DWORD>(kRgb32FrameBytes);
+  media_type->subtype = MEDIASUBTYPE_RGB32;
+  media_type->lSampleSize = static_cast<ULONG>(kRgb32FrameBytes);
 }
 
 class FakeMediaSample final
@@ -148,13 +168,14 @@ HRESULT DeliverSampleTo(IPin* pin,
 
 class FakeCaptureFilter;
 
-// Output pin of FakeCaptureFilter. Offers one I420 format.
+// Output pin of FakeCaptureFilter. Offers I420 and RGB32.
 class FakeOutputPin final : public RuntimeClass<RuntimeClassFlags<ClassicCom>,
                                                 IPin,
                                                 IAMStreamConfig,
                                                 IKsPropertySet> {
  public:
   explicit FakeOutputPin(FakeCaptureFilter* filter) : filter_(filter) {
+    base::AutoLock lock(lock_);
     PopulateI420MediaType(&media_type_, &video_info_);
   }
 
@@ -168,7 +189,15 @@ class FakeOutputPin final : public RuntimeClass<RuntimeClassFlags<ClassicCom>,
   // IPin
   IFACEMETHODIMP Connect(IPin* receive_pin,
                          const AM_MEDIA_TYPE* media_type) override {
-    HRESULT hr = receive_pin->ReceiveConnection(this, &media_type_);
+    AM_MEDIA_TYPE type;
+    VIDEOINFOHEADER video_info;
+    {
+      base::AutoLock lock(lock_);
+      type = media_type_;
+      video_info = video_info_;
+    }
+    type.pbFormat = reinterpret_cast<BYTE*>(&video_info);
+    HRESULT hr = receive_pin->ReceiveConnection(this, &type);
     if (SUCCEEDED(hr)) {
       base::AutoLock lock(lock_);
       connected_pin_ = receive_pin;
@@ -217,26 +246,41 @@ class FakeOutputPin final : public RuntimeClass<RuntimeClassFlags<ClassicCom>,
   }
 
   // IAMStreamConfig
-  IFACEMETHODIMP SetFormat(AM_MEDIA_TYPE* media_type) override { return S_OK; }
+  IFACEMETHODIMP SetFormat(AM_MEDIA_TYPE* media_type) override {
+    if (media_type->formattype != FORMAT_VideoInfo ||
+        media_type->cbFormat < sizeof(VIDEOINFOHEADER)) {
+      return E_INVALIDARG;
+    }
+    base::AutoLock lock(lock_);
+    video_info_ = *reinterpret_cast<VIDEOINFOHEADER*>(media_type->pbFormat);
+    media_type_ = *media_type;
+    media_type_.cbFormat = sizeof(VIDEOINFOHEADER);
+    media_type_.pbFormat = reinterpret_cast<BYTE*>(&video_info_);
+    return S_OK;
+  }
   IFACEMETHODIMP GetFormat(AM_MEDIA_TYPE** media_type) override {
     return E_NOTIMPL;
   }
   IFACEMETHODIMP GetNumberOfCapabilities(int* count, int* size) override {
-    *count = 1;
+    *count = 2;
     *size = sizeof(VIDEO_STREAM_CONFIG_CAPS);
     return S_OK;
   }
   IFACEMETHODIMP GetStreamCaps(int index,
                                AM_MEDIA_TYPE** media_type,
                                BYTE* stream_caps) override {
-    if (index != 0) {
+    if (index != 0 && index != 1) {
       return S_FALSE;
     }
     auto* type =
         static_cast<AM_MEDIA_TYPE*>(::CoTaskMemAlloc(sizeof(AM_MEDIA_TYPE)));
     auto* video_info = static_cast<VIDEOINFOHEADER*>(
         ::CoTaskMemAlloc(sizeof(VIDEOINFOHEADER)));
-    PopulateI420MediaType(type, video_info);
+    if (index == 0) {
+      PopulateI420MediaType(type, video_info);
+    } else {
+      PopulateRgb32MediaType(type, video_info);
+    }
     *reinterpret_cast<VIDEO_STREAM_CONFIG_CAPS*>(stream_caps) = {};
     *media_type = type;
     return S_OK;
@@ -277,8 +321,8 @@ class FakeOutputPin final : public RuntimeClass<RuntimeClassFlags<ClassicCom>,
   raw_ptr<FakeCaptureFilter> filter_;
   base::Lock lock_;
   ComPtr<IPin> connected_pin_ GUARDED_BY(lock_);
-  VIDEOINFOHEADER video_info_;
-  AM_MEDIA_TYPE media_type_;
+  VIDEOINFOHEADER video_info_ GUARDED_BY(lock_);
+  AM_MEDIA_TYPE media_type_ GUARDED_BY(lock_);
 };
 
 class FakeEnumPins final
@@ -675,6 +719,28 @@ VideoCaptureParams CreateCaptureParams(VideoPixelFormat pixel_format) {
   return params;
 }
 
+class CountingSinkObserver final : public SinkFilterObserver {
+ public:
+  void FrameReceived(base::span<const uint8_t> buffer,
+                     const VideoCaptureFormat& format,
+                     base::TimeDelta timestamp,
+                     bool flip_y) override {
+    ++frames_received_;
+    last_format_ = format;
+    last_flip_y_ = flip_y;
+  }
+  void FrameDropped(VideoCaptureFrameDropReason reason) override {}
+
+  int frames_received() const { return frames_received_; }
+  const VideoCaptureFormat& last_format() const { return last_format_; }
+  bool last_flip_y() const { return last_flip_y_; }
+
+ private:
+  int frames_received_ = 0;
+  VideoCaptureFormat last_format_;
+  bool last_flip_y_ = false;
+};
+
 }  // namespace
 
 class VideoCaptureDeviceWinTest : public ::testing::Test {
@@ -730,6 +796,50 @@ TEST_F(VideoCaptureDeviceWinTest,
   EXPECT_EQ(results.delivery_hr, S_FALSE);
 }
 
+TEST_F(VideoCaptureDeviceWinTest, AllocateDeliverAndRestartWithOtherFormat) {
+  LateDeliveryResults results;
+  ComPtr<FakeCaptureFilter> capture_filter = Make<FakeCaptureFilter>(&results);
+  std::unique_ptr<VideoCaptureDeviceWin> device = CreateDevice(capture_filter);
+  ASSERT_TRUE(device->Init());
+
+  struct Session {
+    VideoPixelFormat pixel_format;
+    size_t frame_bytes;
+    bool flip_y;
+  };
+  for (const Session& session :
+       {Session{PIXEL_FORMAT_ARGB, kRgb32FrameBytes, true},
+        Session{PIXEL_FORMAT_I420, kI420FrameBytes, false}}) {
+    SCOPED_TRACE(VideoPixelFormatToString(session.pixel_format));
+    auto client = std::make_unique<NiceMock<MockVideoCaptureDeviceClient>>();
+    EXPECT_CALL(*client, OnStarted);
+    EXPECT_CALL(*client, OnIncomingCapturedData)
+        .WillOnce([&](base::span<const uint8_t> data,
+                      const VideoCaptureFormat& format, const gfx::ColorSpace&,
+                      int, bool flip_y, base::TimeTicks, base::TimeDelta,
+                      std::optional<base::TimeTicks>,
+                      const std::optional<VideoFrameMetadata>&, int) {
+          EXPECT_EQ(data.size(), session.frame_bytes);
+          EXPECT_EQ(data[0], 0x21);
+          EXPECT_EQ(format.frame_size, gfx::Size(kTestWidth, kTestHeight));
+          EXPECT_EQ(format.pixel_format, session.pixel_format);
+          EXPECT_EQ(flip_y, session.flip_y);
+        });
+    device->AllocateAndStart(CreateCaptureParams(session.pixel_format),
+                             std::move(client));
+
+    ComPtr<IPin> input_pin = capture_filter->output_pin()->connected_pin();
+    ASSERT_TRUE(input_pin);
+    EXPECT_EQ(DeliverSampleTo(input_pin.Get(), session.frame_bytes, 0x21),
+              S_OK);
+
+    device->StopAndDeAllocate();
+    EXPECT_FALSE(capture_filter->output_pin()->connected_pin());
+    // Samples arriving after disconnection are dropped.
+    EXPECT_EQ(DeliverSampleTo(input_pin.Get(), session.frame_bytes), S_FALSE);
+  }
+}
+
 // A source filter whose Stop() doesn't wait for an in-flight Receive(), and
 // whose streaming thread holds its own reference to the filter, can still be
 // inside SinkInputPin::Receive() while the device is stopped and destroyed.
@@ -778,6 +888,70 @@ TEST_F(VideoCaptureDeviceWinTest, InFlightReceiveDuringStopAndDestruction) {
     EXPECT_HRESULT_SUCCEEDED(delivery.hr);
     EXPECT_TRUE(results.filter_destroyed);
   }
+}
+
+// Validating a media type doesn't change the negotiated format. While
+// connected, further connection attempts are refused, whether or not their
+// media type is acceptable, and don't change it either.
+TEST_F(VideoCaptureDeviceWinTest, ReconnectionAttemptKeepsFormat) {
+  CountingSinkObserver observer;
+  auto sink_filter = base::MakeRefCounted<SinkFilter>(&observer);
+  ComPtr<IPin> input_pin = sink_filter->GetPin(0);
+  PinBase* const pin_base = static_cast<PinBase*>(input_pin.Get());
+  ComPtr<FakeOutputPin> upstream_pin = Make<FakeOutputPin>(nullptr);
+
+  AM_MEDIA_TYPE rgb32_type;
+  VIDEOINFOHEADER rgb32_info;
+  PopulateRgb32MediaType(&rgb32_type, &rgb32_info);
+
+  // Samples are dropped before the first connection, and Connect(), which is
+  // only for output pins, doesn't connect.
+  EXPECT_EQ(DeliverSampleTo(input_pin.Get(), kRgb32FrameBytes), S_FALSE);
+  EXPECT_EQ(input_pin->Connect(upstream_pin.Get(), &rgb32_type), E_UNEXPECTED);
+  ComPtr<IPin> connected;
+  EXPECT_EQ(input_pin->ConnectedTo(&connected), VFW_E_NOT_CONNECTED);
+  EXPECT_EQ(observer.frames_received(), 0);
+
+  // Neither a valid nor a rejected media type is taken before connecting.
+  EXPECT_TRUE(pin_base->IsMediaTypeValid(&rgb32_type));
+  AM_MEDIA_TYPE unsupported_type;
+  VIDEOINFOHEADER unsupported_info;
+  PopulateRgb32MediaType(&unsupported_type, &unsupported_info);
+  unsupported_type.subtype = GUID_NULL;
+  EXPECT_EQ(input_pin->ReceiveConnection(upstream_pin.Get(), &unsupported_type),
+            VFW_E_TYPE_NOT_ACCEPTED);
+  EXPECT_EQ(DeliverSampleTo(input_pin.Get(), kRgb32FrameBytes), S_FALSE);
+  EXPECT_EQ(observer.frames_received(), 0);
+
+  // Null pointers are rejected without connecting.
+  EXPECT_EQ(input_pin->ReceiveConnection(nullptr, &rgb32_type), E_POINTER);
+  EXPECT_EQ(input_pin->ReceiveConnection(upstream_pin.Get(), nullptr),
+            E_POINTER);
+  EXPECT_EQ(input_pin->ConnectedTo(&connected), VFW_E_NOT_CONNECTED);
+  EXPECT_EQ(DeliverSampleTo(input_pin.Get(), kRgb32FrameBytes), S_FALSE);
+  EXPECT_EQ(observer.frames_received(), 0);
+
+  ASSERT_EQ(input_pin->ReceiveConnection(upstream_pin.Get(), &rgb32_type),
+            S_OK);
+
+  AM_MEDIA_TYPE i420_type;
+  VIDEOINFOHEADER i420_info;
+  PopulateI420MediaType(&i420_type, &i420_info);
+  i420_info.bmiHeader.biWidth = kTestWidth / 2;
+  EXPECT_TRUE(pin_base->IsMediaTypeValid(&i420_type));
+  EXPECT_EQ(input_pin->ReceiveConnection(upstream_pin.Get(), &i420_type),
+            VFW_E_ALREADY_CONNECTED);
+  i420_type.majortype = MEDIATYPE_Audio;
+  EXPECT_EQ(input_pin->ReceiveConnection(upstream_pin.Get(), &i420_type),
+            VFW_E_ALREADY_CONNECTED);
+
+  EXPECT_EQ(DeliverSampleTo(input_pin.Get(), kRgb32FrameBytes), S_OK);
+  EXPECT_EQ(observer.frames_received(), 1);
+  EXPECT_EQ(observer.last_format().frame_size,
+            gfx::Size(kTestWidth, kTestHeight));
+  EXPECT_EQ(observer.last_format().pixel_format, PIXEL_FORMAT_ARGB);
+  EXPECT_TRUE(observer.last_flip_y());
+  EXPECT_EQ(input_pin->Disconnect(), S_OK);
 }
 
 }  // namespace media

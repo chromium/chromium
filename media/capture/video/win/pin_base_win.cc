@@ -124,30 +124,25 @@ void PinBase::SetOwner(IBaseFilter* owner) {
   owner_ = owner;
 }
 
-// Called on an output pin to and establish a
-//   connection.
+// Only called on output pins; PinBase implements input pins.
 HRESULT PinBase::Connect(IPin* receive_pin, const AM_MEDIA_TYPE* media_type) {
-  if (!receive_pin || !media_type)
-    return E_POINTER;
-
-  current_media_type_ = *media_type;
-  receive_pin->AddRef();
-  connected_pin_.Attach(receive_pin);
-  HRESULT hr = receive_pin->ReceiveConnection(this, media_type);
-
-  return hr;
+  return E_UNEXPECTED;
 }
 
-// Called from an output pin on an input pin to and establish a
-// connection.
+// Called from an output pin on an input pin to establish a connection.
 HRESULT PinBase::ReceiveConnection(IPin* connector,
                                    const AM_MEDIA_TYPE* media_type) {
-  if (!IsMediaTypeValid(media_type))
+  if (!connector || !media_type) {
+    return E_POINTER;
+  }
+  if (connected_pin_) {
+    return VFW_E_ALREADY_CONNECTED;
+  }
+  if (!IsMediaTypeValid(media_type)) {
     return VFW_E_TYPE_NOT_ACCEPTED;
-
+  }
   current_media_type_ = *media_type;
-  connector->AddRef();
-  connected_pin_.Attach(connector);
+  connected_pin_ = connector;
   return S_OK;
 }
 
