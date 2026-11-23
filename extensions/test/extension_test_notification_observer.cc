@@ -77,6 +77,20 @@ ExtensionTestNotificationObserver::NotificationSet::~NotificationSet() =
     default;
 
 void ExtensionTestNotificationObserver::NotificationSet::
+    OnExtensionFrameRegistered(const ExtensionId& extension_id,
+                               content::RenderFrameHost* render_frame_host) {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+  if (web_contents && !web_contents_observers_.contains(web_contents)) {
+    // A pre-existing WebContents may not have had an extension frame registered
+    // when this NotificationSet was constructed (e.g. a tab created before
+    // WaitForExtensionViewsToLoad() whose navigation only now registered).
+    StartObservingWebContents(web_contents);
+  }
+  closure_list_.Notify();
+}
+
+void ExtensionTestNotificationObserver::NotificationSet::
     OnExtensionFrameUnregistered(const ExtensionId& extension_id,
                                  content::RenderFrameHost* render_frame_host) {
   closure_list_.Notify();

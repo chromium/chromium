@@ -66,6 +66,9 @@ class ExtensionTestNotificationObserver {
     class ForwardingWebContentsObserver;
 
     // extensions::ProcessManagerObserver:
+    void OnExtensionFrameRegistered(
+        const ExtensionId& extension_id,
+        content::RenderFrameHost* render_frame_host) override;
     void OnExtensionFrameUnregistered(
         const ExtensionId& extension_id,
         content::RenderFrameHost* render_frame_host) override;
