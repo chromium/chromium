@@ -205,8 +205,8 @@ void ServiceConnectionCfmAshImpl::ProvideAdaptor(
     ProvideAdaptorCallback callback) {
   // Only in-process callers may register service adaptors with the daemon.
   if (!receiver_set_.current_context()) {
-    LOG(WARNING) << "Refused adaptor registration for " << interface_name;
-    std::move(callback).Run(false);
+    receiver_set_.ReportBadMessage(
+        "Restricted CfmServiceContext cannot register service adaptors.");
     return;
   }
 

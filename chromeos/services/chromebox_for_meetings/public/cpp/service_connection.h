@@ -36,11 +36,11 @@ class COMPONENT_EXPORT(CHROMEOS_CFMSERVICE) ServiceConnection {
       mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext>
           receiver) = 0;
 
-  // Binds a |CfMServiceContext| receiver that may only be used to request
+  // Binds a |CfmServiceContext| receiver that may only be used to request
   // already registered services. Calls to |ProvideAdaptor| made on a receiver
-  // bound by this method are rejected instead of being forwarded to the
-  // underlying daemon. Use this method for receivers requested by callers
-  // outside of the browser process, which only consume services.
+  // bound by this method are rejected as bad Mojo messages instead of being
+  // forwarded to the underlying daemon. Use this method for receivers requested
+  // by callers outside of the browser process, which only consume services.
   // The default implementation resets |receiver|.
   virtual void BindRestrictedServiceContext(
       mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext> receiver);

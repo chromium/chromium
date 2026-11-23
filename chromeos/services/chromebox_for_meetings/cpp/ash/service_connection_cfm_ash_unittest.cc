@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -19,6 +20,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::cfm {
@@ -71,8 +73,10 @@ class ServiceConnectionCfmAshTest : public testing::Test {
 
 // Adaptor registration is only forwarded to the daemon for contexts bound via
 // |BindServiceContext|; contexts bound via |BindRestrictedServiceContext| may
-// still request services but have their registrations rejected locally.
+// still request services, while calls to |ProvideAdaptor| are reported as bad
+// Mojo messages.
 TEST_F(ServiceConnectionCfmAshTest, ProvideAdaptorRequiresFullServiceContext) {
+  mojo::test::BadMessageObserver bad_message_observer;
   auto* service_connection = ::chromeos::cfm::ServiceConnection::GetInstance();
 
   mojo::Remote<mojom::CfmServiceContext> restricted_context;
@@ -83,16 +87,14 @@ TEST_F(ServiceConnectionCfmAshTest, ProvideAdaptorRequiresFullServiceContext) {
   service_connection->BindServiceContext(
       full_context.BindNewPipeAndPassReceiver());
 
-  // Adaptor registration on a restricted context is answered locally with
-  // failure instead of being forwarded to the (stalled) daemon.
-  FakeCfmServiceAdaptor restricted_adaptor;
-  mojo::Receiver<mojom::CfmServiceAdaptor> restricted_adaptor_receiver(
-      &restricted_adaptor);
-  auto restricted_result = std::make_shared<std::optional<bool>>();
-  restricted_context->ProvideAdaptor(
-      "foo.mojom.Foo", restricted_adaptor_receiver.BindNewPipeAndPassRemote(),
+  // Service bind requests on a restricted context are still forwarded to the
+  // daemon, so the response stays pending while the daemon is unavailable.
+  mojo::MessagePipe pipe;
+  auto bind_result = std::make_shared<std::optional<bool>>();
+  restricted_context->RequestBindService(
+      "foo.mojom.Foo", std::move(pipe.handle0),
       base::BindLambdaForTesting(
-          [restricted_result](bool success) { *restricted_result = success; }));
+          [bind_result](bool success) { *bind_result = success; }));
 
   // Adaptor registration on a full context is forwarded to the daemon, so the
   // response stays pending while the daemon is unavailable.
@@ -104,25 +106,42 @@ TEST_F(ServiceConnectionCfmAshTest, ProvideAdaptorRequiresFullServiceContext) {
       base::BindLambdaForTesting(
           [full_result](bool success) { *full_result = success; }));
 
-  // Service bind requests on a restricted context are still forwarded to the
-  // daemon, so the response stays pending while the daemon is unavailable.
-  mojo::MessagePipe pipe;
-  auto bind_result = std::make_shared<std::optional<bool>>();
-  restricted_context->RequestBindService(
-      "foo.mojom.Foo", std::move(pipe.handle0),
-      base::BindLambdaForTesting(
-          [bind_result](bool success) { *bind_result = success; }));
+  // Flush both remotes to verify legitimate requests are dispatched without
+  // reporting a bad message or completing locally.
+  restricted_context.FlushForTesting();
+  full_context.FlushForTesting();
 
-  task_environment_.RunUntilIdle();
-
-  ASSERT_TRUE(restricted_result->has_value());
-  EXPECT_FALSE(restricted_result->value());
-  EXPECT_FALSE(full_result->has_value());
+  EXPECT_FALSE(bad_message_observer.got_bad_message());
   EXPECT_FALSE(bind_result->has_value());
-
-  // The rejected registration leaves both contexts usable.
+  EXPECT_FALSE(full_result->has_value());
   EXPECT_TRUE(restricted_context.is_connected());
   EXPECT_TRUE(full_context.is_connected());
+
+  // Adaptor registration on a restricted context reports a bad Mojo message
+  // and disconnects that receiver instead of forwarding to the daemon.
+  base::RunLoop disconnect_loop;
+  restricted_context.set_disconnect_handler(disconnect_loop.QuitClosure());
+
+  FakeCfmServiceAdaptor restricted_adaptor;
+  mojo::Receiver<mojom::CfmServiceAdaptor> restricted_adaptor_receiver(
+      &restricted_adaptor);
+  auto restricted_result = std::make_shared<std::optional<bool>>();
+  restricted_context->ProvideAdaptor(
+      "foo.mojom.Foo", restricted_adaptor_receiver.BindNewPipeAndPassRemote(),
+      base::BindLambdaForTesting(
+          [restricted_result](bool success) { *restricted_result = success; }));
+
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "Restricted CfmServiceContext cannot register service adaptors.");
+  disconnect_loop.Run();
+
+  EXPECT_FALSE(restricted_result->has_value());
+  EXPECT_FALSE(restricted_context.is_connected());
+
+  // The rejected receiver leaves other connected contexts unaffected.
+  full_context.FlushForTesting();
+  EXPECT_TRUE(full_context.is_connected());
+  EXPECT_FALSE(full_result->has_value());
 }
 
 }  // namespace

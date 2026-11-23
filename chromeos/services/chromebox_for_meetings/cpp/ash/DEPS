@@ -1,5 +1,10 @@
 include_rules = [
-  "+dbus/object_proxy.h",
   # Code in the ash-chrome binary cannot use lacros-chrome code.
   "-chromeos/lacros",
 ]
+
+specific_include_rules = {
+  ".*_unittest\\.cc": [
+    "+dbus/object_proxy.h",
+  ],
+}

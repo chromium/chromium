@@ -71,6 +71,7 @@ source_set("unit_tests") {
       "//chromeos/ash/components/chromebox_for_meetings",
       "//chromeos/ash/components/dbus/chromebox_for_meetings",
       "//dbus",
+      "//mojo/public/cpp/test_support:test_utils",
     ]
   }
 }

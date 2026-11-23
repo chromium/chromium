@@ -4,6 +4,7 @@
 
 #include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <utility>
