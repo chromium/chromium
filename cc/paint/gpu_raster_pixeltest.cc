@@ -18,10 +18,12 @@
 #include "base/test/test_switches.h"
 #include "build/build_config.h"
 #include "cc/base/completion_event.h"
+#include "cc/paint/deferred_property_key.h"
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image_builder.h"
+#include "cc/paint/raster_inducing_values.h"
 #include "cc/raster/playback_image_provider.h"
 #include "cc/test/fake_paint_image_generator.h"
 #include "cc/test/pixel_comparator.h"
@@ -181,11 +183,15 @@ class GpuRasterPixelTest : public testing::Test,
     RAW_PTR_EXCLUSION ImageDecodeCache* image_cache = nullptr;
     std::vector<scoped_refptr<DisplayItemList>> additional_lists;
     raw_ptr<PaintShader> shader_with_animated_images = nullptr;
+    raw_ptr<const RasterInducingValues> raster_inducing_values = nullptr;
   };
 
-  SkBitmap Raster(scoped_refptr<DisplayItemList> display_item_list,
-                  const gfx::Size& playback_size) {
+  SkBitmap Raster(
+      scoped_refptr<DisplayItemList> display_item_list,
+      const gfx::Size& playback_size,
+      const RasterInducingValues* raster_inducing_values = nullptr) {
     RasterOptions options(playback_size);
+    options.raster_inducing_values = raster_inducing_values;
     return Raster(display_item_list, options);
   }
 
@@ -249,16 +255,16 @@ class GpuRasterPixelTest : public testing::Test,
                        options.content_size, options.full_raster_rect,
                        options.playback_rect, options.post_translate,
                        gfx::Vector2dF(options.post_scale, options.post_scale),
-                       options.requires_clear,
-                       /*raster_inducing_values=*/nullptr, &max_op_size_limit,
+                       options.requires_clear, options.raster_inducing_values,
+                       &max_op_size_limit,
                        base::RepeatingCallback<void(SkCanvas*, uint32_t)>());
     for (const auto& list : options.additional_lists) {
       ri->RasterCHROMIUM(list.get(), &image_provider, options.content_size,
                          options.full_raster_rect, options.playback_rect,
                          options.post_translate,
                          gfx::Vector2dF(options.post_scale, options.post_scale),
-                         options.requires_clear,
-                         /*raster_inducing_values=*/nullptr, &max_op_size_limit,
+                         options.requires_clear, options.raster_inducing_values,
+                         &max_op_size_limit,
                          base::RepeatingCallback<void(SkCanvas*, uint32_t)>());
     }
     ri->EndRasterCHROMIUM();
@@ -3174,6 +3180,72 @@ TEST_F(GpuRasterPixelTest, SkSLCommandShader) {
 
   EXPECT_TRUE(MatchesBitmap(actual, expected,
                             ManhattanDistancePixelComparator(/*tolerance=*/5)));
+}
+
+// Swaps a recorded deferred color on each raster without re-recording.
+TEST_F(GpuRasterPixelTest, DeferredColorSwapsWithoutRerecording) {
+  constexpr gfx::Rect kRect(10, 10);
+  constexpr DeferredPropertyKey kKey{ElementId(1),
+                                     DeferredPropertyType::kBackgroundColor};
+  PaintFlags flags;
+  flags.setPaintColor({SkColors::kGreen, kKey});
+
+  auto list = base::MakeRefCounted<DisplayItemList>();
+  list->StartPaint();
+  list->push<DrawRectOp>(gfx::RectToSkRect(kRect), flags);
+  list->EndPaintOfUnpaired(kRect);
+  list->Finalize();
+
+  RasterInducingValues values;
+  values.compositor_animated_values.colors[kKey] = SkColors::kRed;
+  ExpectEquals(Raster(list, kRect.size(), &values),
+               MakeSolidColorBitmap(kRect.size(), SkColors::kRed));
+
+  values.compositor_animated_values.colors[kKey] = SkColors::kBlue;
+  ExpectEquals(Raster(list, kRect.size(), &values),
+               MakeSolidColorBitmap(kRect.size(), SkColors::kBlue));
+}
+
+// Uses the recorded fallback color when no value is mapped for the key.
+TEST_F(GpuRasterPixelTest, DeferredColorFallsBackWhenUnmapped) {
+  constexpr gfx::Rect kRect(10, 10);
+  constexpr DeferredPropertyKey kKey{ElementId(1),
+                                     DeferredPropertyType::kBackgroundColor};
+  PaintFlags flags;
+  flags.setPaintColor({SkColors::kGreen, kKey});
+
+  auto list = base::MakeRefCounted<DisplayItemList>();
+  list->StartPaint();
+  list->push<DrawRectOp>(gfx::RectToSkRect(kRect), flags);
+  list->EndPaintOfUnpaired(kRect);
+  list->Finalize();
+
+  const RasterInducingValues empty_values;
+  ExpectEquals(Raster(list, kRect.size(), &empty_values),
+               MakeSolidColorBitmap(kRect.size(), SkColors::kGreen));
+}
+
+// Swaps deferred colors inside a nested DrawRecordOp.
+TEST_F(GpuRasterPixelTest, DeferredColorInDrawRecord) {
+  constexpr gfx::Rect kRect(10, 10);
+  constexpr DeferredPropertyKey kKey{ElementId(1),
+                                     DeferredPropertyType::kBackgroundColor};
+  PaintFlags flags;
+  flags.setPaintColor({SkColors::kGreen, kKey});
+
+  PaintOpBuffer nested;
+  nested.push<DrawRectOp>(gfx::RectToSkRect(kRect), flags);
+
+  auto list = base::MakeRefCounted<DisplayItemList>();
+  list->StartPaint();
+  list->push<DrawRecordOp>(nested.ReleaseAsRecord());
+  list->EndPaintOfUnpaired(kRect);
+  list->Finalize();
+
+  RasterInducingValues values;
+  values.compositor_animated_values.colors[kKey] = SkColors::kBlue;
+  ExpectEquals(Raster(list, kRect.size(), &values),
+               MakeSolidColorBitmap(kRect.size(), SkColors::kBlue));
 }
 
 }  // namespace

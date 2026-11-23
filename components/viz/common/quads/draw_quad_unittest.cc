@@ -440,9 +440,12 @@ TEST(DrawQuadTest, CopyPictureDrawQuad) {
   auto display_item_list =
       cc::FakeRasterSource::CreateEmpty(gfx::Size(100, 100))
           ->GetDisplayItemList();
+  constexpr cc::DeferredPropertyKey kColorKey{
+      cc::ElementId(321), cc::DeferredPropertyType::kBackgroundColor};
   cc::RasterInducingValues raster_values;
   raster_values.scroll_offsets = {
       {cc::ElementId(123), gfx::PointF(456.f, 789.f)}};
+  raster_values.compositor_animated_values.colors[kColorKey] = SkColors::kBlue;
   CREATE_SHARED_STATE();
 
   CREATE_QUAD_NEW(PictureDrawQuad, visible_rect, blending, tex_coord_rect,

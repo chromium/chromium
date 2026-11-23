@@ -28,6 +28,7 @@
 #include "cc/paint/paint_op_buffer_serializer.h"
 #include "cc/paint/paint_op_reader.h"
 #include "cc/paint/paint_op_writer.h"
+#include "cc/paint/raster_inducing_values.h"
 #include "cc/paint/refcounted_buffer.h"
 #include "cc/paint/shader_transfer_cache_entry.h"
 #include "cc/paint/skottie_resource_metadata.h"
@@ -2509,9 +2510,12 @@ class PaintOpSerializationTest : public ::testing::TestWithParam<uint8_t> {
 
 sk_sp<PaintOpBuffer> SerializeAndDeserialize(
     const PaintOpBuffer& buffer,
-    const PaintOpBufferSerializer::Preamble* preamble = nullptr) {
+    const PaintOpBufferSerializer::Preamble* preamble = nullptr,
+    const RasterInducingValues* raster_inducing_values = nullptr) {
   auto memory = AllocateSerializedBuffer();
   TestOptionsProvider options_provider;
+  options_provider.mutable_serialize_options().raster_inducing_values =
+      raster_inducing_values;
   SimpleBufferSerializer serializer(memory.as_span(),
                                     options_provider.serialize_options());
   if (preamble) {
@@ -2526,6 +2530,13 @@ sk_sp<PaintOpBuffer> SerializeAndDeserialize(
       memory.as_span().first(serializer.written()),
       options_provider.deserialize_options());
   return deserialized_buffer;
+}
+
+sk_sp<PaintOpBuffer> SerializeAndDeserialize(
+    const PaintOpBuffer& buffer,
+    const RasterInducingValues& raster_inducing_values) {
+  return SerializeAndDeserialize(buffer, /*preamble=*/nullptr,
+                                 &raster_inducing_values);
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -5743,6 +5754,46 @@ TEST(PaintOpBufferTest, SkSLShaderPrivilegeEnforcement) {
 
   // SkSL deserialization should always fail for unprivileged processes.
   EXPECT_FALSE(deserialized_buffer);
+}
+
+// Playback swaps in the key's color from RasterInducingValues.
+TEST(PaintOpBufferTest, PlaybackResolvesDeferredColor) {
+  constexpr DeferredPropertyKey kKey{ElementId(1),
+                                     DeferredPropertyType::kBackgroundColor};
+  PaintFlags flags;
+  flags.setPaintColor({SkColors::kGreen, kKey});
+  PaintOpBuffer buffer;
+  buffer.push<DrawRectOp>(SkRect::MakeWH(10, 10), flags);
+
+  RasterInducingValues values;
+  values.compositor_animated_values.colors[kKey] = SkColors::kBlue;
+  PlaybackParams params;
+  params.raster_inducing_values = &values;
+
+  SaveCountingCanvas canvas;
+  buffer.Playback(&canvas, params);
+  EXPECT_EQ(canvas.paint_.getColor4f(), SkColors::kBlue);
+}
+
+// Serializing swaps in the key's color and drops the key.
+TEST(PaintOpBufferTest, SerializationResolvesDeferredColor) {
+  constexpr DeferredPropertyKey kKey{ElementId(1),
+                                     DeferredPropertyType::kBackgroundColor};
+  const SkRect rect = SkRect::MakeWH(10, 10);
+  PaintFlags flags;
+  flags.setAntiAlias(true);  // Exercises the serializer's no-copy guard.
+  flags.setPaintColor({SkColors::kGreen, kKey});
+  PaintOpBuffer buffer;
+  buffer.push<DrawRectOp>(rect, flags);
+
+  RasterInducingValues values;
+  values.compositor_animated_values.colors[kKey] = SkColors::kBlue;
+
+  PaintFlags expected;
+  expected.setAntiAlias(true);
+  expected.setColor(SkColors::kBlue);
+  EXPECT_THAT(SerializeAndDeserialize(buffer, values),
+              Pointee(ElementsAre(PaintOpEq<DrawRectOp>(rect, expected))));
 }
 
 }  // namespace cc

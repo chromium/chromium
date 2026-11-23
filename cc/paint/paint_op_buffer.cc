@@ -21,6 +21,7 @@
 #include "cc/paint/paint_op_reader.h"
 #include "cc/paint/paint_op_writer.h"
 #include "cc/paint/paint_record.h"
+#include "cc/paint/raster_inducing_values.h"
 #include "cc/paint/scoped_raster_flags.h"
 #include "cc/paint/skottie_serialization_history.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
@@ -507,8 +508,9 @@ void PaintOpBuffer::ResetRetainingBuffer() {
 }
 
 void PaintOpBuffer::Playback(SkCanvas* canvas) const {
-  Playback(canvas, PlaybackParams(nullptr), /*local_ctm=*/true,
-           /*offsets=*/nullptr);
+  PlaybackParams params(nullptr);
+  params.raster_inducing_values = &RasterInducingValues::Empty();
+  Playback(canvas, params, /*local_ctm=*/true, /*offsets=*/nullptr);
 }
 
 void PaintOpBuffer::Playback(SkCanvas* canvas,
@@ -597,7 +599,7 @@ void PaintOpBuffer::Playback(SkCanvas* canvas,
       const auto& flags_op = static_cast<const PaintOpWithFlags&>(*op);
       const ScopedRasterFlags scoped_flags(
           &flags_op.flags, new_params.image_provider, canvas->getTotalMatrix(),
-          max_texture_size, iter.alpha());
+          max_texture_size, iter.alpha(), new_params.raster_inducing_values);
       if (const auto* raster_flags = scoped_flags.flags())
         flags_op.RasterWithFlags(canvas, raster_flags, new_params);
     } else {

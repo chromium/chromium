@@ -19,6 +19,7 @@
 #include "cc/paint/paint_image_builder.h"
 #include "cc/paint/paint_op_writer.h"
 #include "cc/paint/paint_record.h"
+#include "cc/paint/raster_inducing_values.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
@@ -40,7 +41,9 @@ sk_sp<SkPicture> ToSkPicture(const PaintRecord& record,
   canvas->translate(-bounds.fLeft, -bounds.fTop);
   if (raster_scale)
     canvas->scale(raster_scale->width(), raster_scale->height());
-  record.Playback(canvas, PlaybackParams(image_provider));
+  PlaybackParams params(image_provider);
+  params.raster_inducing_values = &RasterInducingValues::Empty();
+  record.Playback(canvas, params);
   return recorder.finishRecordingAsPicture();
 }
 

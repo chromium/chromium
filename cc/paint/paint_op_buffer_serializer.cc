@@ -205,22 +205,24 @@ bool PaintOpBufferSerializer::SerializeOpWithFlags<float>(
     const PaintOpWithFlags& flags_op,
     const PlaybackParams& params,
     float alpha) {
-  if (alpha == 1.0f && flags_op.flags.isAntiAlias()) {
+  if (alpha == 1.0f && flags_op.flags.isAntiAlias() &&
+      !flags_op.flags.getPaintColor().has_deferred_color()) {
     // There's no need to spend CPU time on copying and restoring the flags
     // struct below (verified by the DCHECK). Note that this if test depends
     // on the internal logic of ScopedRasterFlags not calling MutableFlags().
     DCHECK_EQ(
         &flags_op.flags,
         ScopedRasterFlags(&flags_op.flags, nullptr, canvas->getTotalMatrix(),
-                          options_.max_texture_size, alpha)
+                          options_.max_texture_size, alpha,
+                          options_.raster_inducing_values)
             .flags());
     return SerializeOp(canvas, flags_op, &flags_op.flags, params);
   }
   // We use a null |image_provider| here because images are decoded during
   // serialization.
-  const ScopedRasterFlags scoped_flags(&flags_op.flags, nullptr,
-                                       canvas->getTotalMatrix(),
-                                       options_.max_texture_size, alpha);
+  const ScopedRasterFlags scoped_flags(
+      &flags_op.flags, nullptr, canvas->getTotalMatrix(),
+      options_.max_texture_size, alpha, options_.raster_inducing_values);
   const PaintFlags* flags_to_serialize = scoped_flags.flags();
   if (!flags_to_serialize) {
     return true;

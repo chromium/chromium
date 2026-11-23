@@ -5,10 +5,12 @@
 #include "cc/paint/scoped_raster_flags.h"
 
 #include <utility>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "cc/paint/paint_op.h"
 #include "cc/paint/paint_shader.h"
+#include "cc/paint/raster_inducing_values.h"
 #include "cc/test/skia_common.h"
 #include "cc/test/test_paint_worklet_input.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -80,7 +82,8 @@ TEST(ScopedRasterFlagsTest, DecodePaintWorkletImageShader) {
   flags.setShader(shader);
 
   MockPaintWorkletImageProvider provider;
-  ScopedRasterFlags scoped_flags(&flags, &provider, SkMatrix::I(), 0, 1.0f);
+  ScopedRasterFlags scoped_flags(&flags, &provider, SkMatrix::I(), 0, 1.0f,
+                                 /*raster_inducing_values=*/nullptr);
   ASSERT_TRUE(scoped_flags.flags());
   EXPECT_TRUE(scoped_flags.flags()->getShader()->shader_type() ==
               PaintShader::Type::kPaintRecord);
@@ -103,7 +106,8 @@ TEST(ScopedRasterFlagsTest, KeepsDecodesAlive) {
   PaintFlags flags;
   flags.setShader(record_shader);
   {
-    ScopedRasterFlags scoped_flags(&flags, &provider, SkMatrix::I(), 0, 1.0f);
+    ScopedRasterFlags scoped_flags(&flags, &provider, SkMatrix::I(), 0, 1.0f,
+                                   /*raster_inducing_values=*/nullptr);
     ASSERT_TRUE(scoped_flags.flags());
     EXPECT_NE(scoped_flags.flags(), &flags);
     SkPaint paint = scoped_flags.flags()->ToSkPaint();
@@ -119,7 +123,8 @@ TEST(ScopedRasterFlagsTest, NoImageProvider) {
   flags.setShader(PaintShader::MakeImage(
       CreateDiscardablePaintImage(gfx::Size(10, 10)), SkTileMode::kClamp,
       SkTileMode::kClamp, &SkMatrix::I()));
-  ScopedRasterFlags scoped_flags(&flags, nullptr, SkMatrix::I(), 0, 0.1f);
+  ScopedRasterFlags scoped_flags(&flags, nullptr, SkMatrix::I(), 0, 0.1f,
+                                 /*raster_inducing_values=*/nullptr);
   EXPECT_NE(scoped_flags.flags(), &flags);
   EXPECT_EQ(scoped_flags.flags()->getAlphaf(), 1.0f * 0.1f);
 }
@@ -150,7 +155,8 @@ TEST(ScopedRasterFlagsTest, ThinAliasedStroke) {
   };
 
   for (const auto& test : tests) {
-    ScopedRasterFlags scoped_flags(&flags, nullptr, test.ctm, 0, test.alpha);
+    ScopedRasterFlags scoped_flags(&flags, nullptr, test.ctm, 0, test.alpha,
+                                   /*raster_inducing_values=*/nullptr);
     ASSERT_TRUE(scoped_flags.flags());
 
     EXPECT_EQ(scoped_flags.flags() == &flags, test.expect_same_flags);
@@ -172,13 +178,41 @@ TEST(ScopedRasterFlagsTest, ThinAliasedStrokeDeferredColor) {
 
   // Scaling a 1px stroke by 0.5 uses anti-aliasing instead of scaling alpha,
   // since the color may still be replaced at raster.
+  RasterInducingValues values;
+  values.compositor_animated_values.colors[kKey] = SkColors::kGreen;
   ScopedRasterFlags scoped(&flags, nullptr, SkMatrix::Scale(0.5f, 0.5f), 0,
-                           1.0f);
+                           1.0f, &values);
   ASSERT_TRUE(scoped.flags());
   EXPECT_TRUE(scoped.flags()->isAntiAlias());
   EXPECT_EQ(scoped.flags()->getStrokeWidth(), 1.0f);
-  EXPECT_EQ(scoped.flags()->getPaintColor(),
-            (PaintColor{SkColors::kRed, kKey}));
+  EXPECT_EQ(scoped.flags()->getPaintColor(), PaintColor(SkColors::kGreen));
+}
+
+TEST(ScopedRasterFlagsTest, DeferredColorSwapsMappedValue) {
+  constexpr DeferredPropertyKey kKey{ElementId(1),
+                                     DeferredPropertyType::kBackgroundColor};
+  PaintFlags flags;
+  flags.setPaintColor({SkColors::kRed, kKey});
+
+  RasterInducingValues values;
+  values.compositor_animated_values.colors[kKey] = SkColors::kGreen;
+
+  ScopedRasterFlags scoped(&flags, nullptr, SkMatrix::I(), 0, 1.0f, &values);
+  ASSERT_TRUE(scoped.flags());
+  EXPECT_EQ(scoped.flags()->getPaintColor(), PaintColor(SkColors::kGreen));
+  EXPECT_EQ(flags.getPaintColor(), PaintColor(SkColors::kRed, kKey));
+}
+
+TEST(ScopedRasterFlagsTest, DeferredColorKeepsFallbackWhenUnmapped) {
+  constexpr DeferredPropertyKey kKey{ElementId(1),
+                                     DeferredPropertyType::kBackgroundColor};
+  PaintFlags flags;
+  flags.setPaintColor({SkColors::kRed, kKey});
+
+  const RasterInducingValues empty;
+  ScopedRasterFlags scoped(&flags, nullptr, SkMatrix::I(), 0, 1.0f, &empty);
+  ASSERT_TRUE(scoped.flags());
+  EXPECT_EQ(scoped.flags()->getPaintColor(), PaintColor(SkColors::kRed));
 }
 
 }  // namespace cc

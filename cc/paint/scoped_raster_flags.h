@@ -14,8 +14,10 @@
 
 namespace cc {
 
-// A helper class to modify the flags for raster. This includes alpha folding
-// from SaveLayers and decoding images.
+struct RasterInducingValues;
+
+// A helper class to modify the flags for raster. This includes resolving
+// deferred colors, alpha folding from SaveLayers and decoding images.
 class CC_PAINT_EXPORT ScopedRasterFlags {
   STACK_ALLOCATED();
 
@@ -27,7 +29,8 @@ class CC_PAINT_EXPORT ScopedRasterFlags {
                     ImageProvider* image_provider,
                     const SkMatrix& ctm,
                     int max_texture_size,
-                    F alpha)
+                    F alpha,
+                    const RasterInducingValues* raster_inducing_values)
       : original_flags_(flags) {
     if (image_provider) {
       decode_stashing_image_provider_.emplace(image_provider);
@@ -50,6 +53,7 @@ class CC_PAINT_EXPORT ScopedRasterFlags {
     }
 
     AdjustStrokeIfNeeded(ctm);
+    ResolveDeferredColor(raster_inducing_values);
   }
   ScopedRasterFlags(const ScopedRasterFlags&) = delete;
   ~ScopedRasterFlags();
@@ -71,6 +75,7 @@ class CC_PAINT_EXPORT ScopedRasterFlags {
   void DecodeFilter();
 
   void AdjustStrokeIfNeeded(const SkMatrix& ctm);
+  void ResolveDeferredColor(const RasterInducingValues* raster_inducing_values);
 
   PaintFlags* MutableFlags() {
     if (!modified_flags_)

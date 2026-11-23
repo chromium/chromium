@@ -6,10 +6,12 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_image_builder.h"
+#include "cc/paint/raster_inducing_values.h"
 
 namespace cc {
 ScopedRasterFlags::~ScopedRasterFlags() = default;
@@ -127,6 +129,25 @@ void ScopedRasterFlags::AdjustStrokeIfNeeded(const SkMatrix& ctm) {
 
   // Fall back to anti-aliasing.
   MutableFlags()->setAntiAlias(true);
+}
+
+void ScopedRasterFlags::ResolveDeferredColor(
+    const RasterInducingValues* raster_inducing_values) {
+  const PaintColor& paint_color = flags()->getPaintColor();
+  if (!paint_color.has_deferred_color()) {
+    return;
+  }
+
+  CHECK(raster_inducing_values);
+  const auto& colors =
+      raster_inducing_values->compositor_animated_values.colors;
+  if (auto it = colors.find(paint_color.deferred_key()); it != colors.end()) {
+    MutableFlags()->setColor(it->second);
+    return;
+  }
+
+  // Fall back to the painted color and clear the deferred key.
+  MutableFlags()->setColor(paint_color.color);
 }
 
 }  // namespace cc

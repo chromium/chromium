@@ -23,6 +23,7 @@
 #include "cc/paint/paint_op_buffer_serializer.h"
 #include "cc/paint/paint_shader.h"
 #include "cc/paint/path_effect.h"
+#include "cc/paint/raster_inducing_values.h"
 #include "cc/paint/skottie_transfer_cache_entry.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "cc/paint/transfer_cache_serialize_helper.h"
@@ -340,6 +341,8 @@ void PaintOpWriter::Write(const SkPath& path, UsePaintCache use_paint_cache) {
 }
 
 void PaintOpWriter::Write(const PaintFlags& flags, const SkM44& current_ctm) {
+  // ScopedRasterFlags resolves deferred colors before serialization.
+  CHECK(!flags.getPaintColor().has_deferred_color());
   if (flags.path_effect_ == nullptr && flags.color_filter_ == nullptr &&
       flags.draw_looper_ == nullptr && flags.image_filter_ == nullptr &&
       flags.shader_ == nullptr) {
@@ -1254,9 +1257,12 @@ void PaintOpWriter::Write(const PaintRecord& record,
   // converted to a fixed scale mode (hence |post_scale|), which means they are
   // first rendered offscreen via SkImages::DeferredFromPicture. This inherently
   // does not support lcd text, so reflect that in the serialization options.
-  PaintOp::SerializeOptions lcd_disabled_options = options_;
-  lcd_disabled_options.can_use_lcd_text = false;
-  SimpleBufferSerializer serializer(remaining_, lcd_disabled_options);
+  PaintOp::SerializeOptions nested_options = options_;
+  nested_options.can_use_lcd_text = false;
+  // Picture shaders and record filters cache across rasters, so always fall
+  // back to painted colors rather than substituting per-frame values.
+  nested_options.raster_inducing_values = &RasterInducingValues::Empty();
+  SimpleBufferSerializer serializer(remaining_, nested_options);
   serializer.Serialize(record.buffer(), playback_rect, post_scale);
 
   if (!serializer.valid()) {

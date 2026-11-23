@@ -9,6 +9,7 @@
 
 #include "base/no_destructor.h"
 #include "cc/paint/paint_op_buffer_iterator.h"
+#include "cc/paint/raster_inducing_values.h"
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "third_party/skia/include/core/SkRect.h"
@@ -94,6 +95,7 @@ sk_sp<SkPicture> PaintRecord::ToSkPicture(
   SkPictureRecorder recorder;
   SkCanvas* canvas = recorder.beginRecording(bounds);
   PlaybackParams params(image_provider, SkM44(), callbacks);
+  params.raster_inducing_values = &RasterInducingValues::Empty();
   Playback(canvas, params);
   return recorder.finishRecordingAsPicture();
 }

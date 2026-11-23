@@ -1237,7 +1237,7 @@ sk_sp<PaintFilter> ShaderPaintFilter::SnapshotWithImagesInternal(
   orig_flags.setDither(dither_ == SkImageFilters::Dither::kYes);
 
   ScopedRasterFlags raster_flags(&orig_flags, image_provider, SkMatrix::I(), 0,
-                                 1.0f);
+                                 1.0f, /*raster_inducing_values=*/nullptr);
   const PaintFlags* snapshot = raster_flags.flags();
   if (snapshot) {
     // Ref the updated paint shader so that it can outlive ScopedRasterFlags
