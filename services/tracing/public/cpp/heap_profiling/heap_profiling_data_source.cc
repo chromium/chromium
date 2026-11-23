@@ -24,6 +24,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/core/data_source_descriptor.h"
 #include "third_party/perfetto/include/perfetto/tracing/internal/tracing_muxer.h"
 #include "third_party/perfetto/include/perfetto/tracing/trace_writer_base.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/sampling_heap_profiler.gen.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pbzero.h"
 
@@ -74,6 +75,16 @@ class HeapProfilingDataSource::HeapSampler {
   void WriteSamples(
       const std::vector<base::SamplingHeapProfiler::Sample>& samples,
       base::ModuleCache& module_cache) {
+    if (samples.empty()) {
+      return;
+    }
+    if (incr_state_.was_cleared) {
+      // Ensure the process track descriptor is written, so that Trace Processor
+      // can resolve process names and types without requiring track_event to
+      // emit events.
+      perfetto::internal::TrackRegistry::Get()->SerializeTrack(
+          perfetto::ProcessTrack::Current(), trace_writer_->NewTracePacket());
+    }
     uint64_t timestamp = base::TimeTicks::Now().since_origin().InNanoseconds();
     TracingHeapProfileBuilder builder(&incr_state_);
     for (const auto& sample : samples) {

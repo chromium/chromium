@@ -14,12 +14,20 @@
 #include "base/test/tracing/trace_test_utils.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_event_impl.h"
+#include "base/tracing/protos/chrome_enums.pbzero.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_data_source_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/tracing.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/sampling_heap_profiler.gen.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace.pb.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pb.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_process_descriptor.gen.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_process_descriptor.pb.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/process_descriptor.gen.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/process_descriptor.pb.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/track_descriptor.gen.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/track_descriptor.pb.h"
 
 namespace tracing {
 namespace {
@@ -94,10 +102,29 @@ TEST_F(HeapProfilingDataSourceTest, EmitSamples) {
   EXPECT_TRUE(
       trace.ParseFromArray(serialized_data.data(), serialized_data.size()));
 
+  const auto process_track = perfetto::ProcessTrack::Current();
   int heap_samples_count = 0;
   int cleared_packets_count = 0;
+  int track_descriptor_count = 0;
+  bool awaiting_cleared_packet = false;
   for (const auto& packet : trace.packet()) {
+    if (packet.has_track_descriptor()) {
+      EXPECT_FALSE(awaiting_cleared_packet);
+      const auto& desc = packet.track_descriptor();
+      EXPECT_EQ(desc.uuid(), process_track.uuid);
+      ASSERT_TRUE(desc.has_process());
+      EXPECT_EQ(desc.process().pid(), static_cast<int32_t>(process_track.pid));
+      track_descriptor_count++;
+      awaiting_cleared_packet = true;
+    }
+    if (packet.sequence_flags() &
+        perfetto::protos::TracePacket::SEQ_INCREMENTAL_STATE_CLEARED) {
+      EXPECT_TRUE(awaiting_cleared_packet);
+      awaiting_cleared_packet = false;
+      cleared_packets_count++;
+    }
     if (packet.has_stack_sample()) {
+      EXPECT_GT(track_descriptor_count, 0);
       heap_samples_count++;
       const auto& sample = packet.stack_sample();
       EXPECT_TRUE(sample.has_callstack_iid());
@@ -106,13 +133,11 @@ TEST_F(HeapProfilingDataSourceTest, EmitSamples) {
       uint64_t object_size = sample.follower_weights(1);
       EXPECT_TRUE(object_size == 1024u || object_size == 2048u) << object_size;
     }
-    if (packet.sequence_flags() &
-        perfetto::protos::TracePacket::SEQ_INCREMENTAL_STATE_CLEARED) {
-      cleared_packets_count++;
-    }
   }
+  EXPECT_FALSE(awaiting_cleared_packet);
   EXPECT_GE(heap_samples_count, 2);
   EXPECT_GE(cleared_packets_count, 2);
+  EXPECT_EQ(track_descriptor_count, cleared_packets_count);
 
   // Cleanup.
   base::allocator::dispatcher::FreeNotificationData free_data(
@@ -331,13 +356,25 @@ TEST_F(HeapProfilingDataSourceTest, CloneTraceDumpsReport) {
   EXPECT_TRUE(
       cloned_trace.ParseFromArray(cloned_data.data(), cloned_data.size()));
 
+  const auto process_track = perfetto::ProcessTrack::Current();
+  int track_descriptor_count = 0;
   int heap_samples_count = 0;
   for (const auto& packet : cloned_trace.packet()) {
+    if (packet.has_track_descriptor()) {
+      EXPECT_EQ(heap_samples_count, 0);
+      const auto& desc = packet.track_descriptor();
+      EXPECT_EQ(desc.uuid(), process_track.uuid);
+      ASSERT_TRUE(desc.has_process());
+      EXPECT_EQ(desc.process().pid(), static_cast<int32_t>(process_track.pid));
+      track_descriptor_count++;
+    }
     if (packet.has_stack_sample()) {
+      EXPECT_EQ(track_descriptor_count, 1);
       heap_samples_count++;
       EXPECT_TRUE(packet.stack_sample().has_callstack_iid());
     }
   }
+  EXPECT_EQ(track_descriptor_count, 1);
   EXPECT_GE(heap_samples_count, 1);
 
   // 5. Stop the original session.
@@ -352,6 +389,104 @@ TEST_F(HeapProfilingDataSourceTest, CloneTraceDumpsReport) {
       reinterpret_cast<void*>(0x1234),
       base::allocator::dispatcher::AllocationSubsystem::kPartitionAllocator);
   base::PoissonAllocationSampler::Get()->OnFree(free_data);
+}
+
+TEST_F(HeapProfilingDataSourceTest, EmitsProcessTrackDescriptor) {
+  const auto process_track = perfetto::ProcessTrack::Current();
+  const int32_t expected_process_type = static_cast<int32_t>(
+      perfetto::protos::chrome_enums::pbzero::PROCESS_BROWSER);
+  auto process_desc = process_track.Serialize();
+  process_desc.mutable_process()->set_process_name("TestBrowser");
+  process_desc.mutable_chrome_process()->set_process_type(
+      expected_process_type);
+  base::TrackEvent::SetTrackDescriptor(process_track, std::move(process_desc));
+
+  perfetto::TraceConfig trace_config;
+  trace_config.add_buffers()->set_size_kb(1024);
+  auto* ds_cfg = trace_config.add_data_sources()->mutable_config();
+  ds_cfg->set_name(kNativeHeapProfilerSourceName);
+
+  perfetto::protos::gen::ChromiumSamplingHeapProfilerConfig config;
+  config.set_sampling_interval_bytes(1);
+  config.set_sampling_interval_ms(0);
+  ds_cfg->set_chromium_sampling_heap_profiler_raw(config.SerializeAsString());
+
+  auto tracing_session =
+      perfetto::Tracing::NewTrace(perfetto::kInProcessBackend);
+  tracing_session->Setup(trace_config);
+  tracing_session->StartBlocking();
+
+  base::PoissonAllocationSampler::ScopedSuppressRandomnessForTesting
+      suppress_randomness;
+
+  base::allocator::dispatcher::AllocationNotificationData alloc_data1(
+      reinterpret_cast<void*>(0x1234), 1024, "test_type",
+      base::allocator::dispatcher::AllocationSubsystem::kPartitionAllocator);
+  base::PoissonAllocationSampler::Get()->OnAllocation(alloc_data1);
+  base::allocator::dispatcher::AllocationNotificationData alloc_data2(
+      reinterpret_cast<void*>(0x5678), 2048, "test_type2",
+      base::allocator::dispatcher::AllocationSubsystem::kPartitionAllocator);
+  base::PoissonAllocationSampler::Get()->OnAllocation(alloc_data2);
+
+  // Flush twice within the same incremental-state generation to verify the
+  // process track descriptor is emitted only once.
+  ASSERT_TRUE(tracing_session->FlushBlocking());
+  ASSERT_TRUE(tracing_session->FlushBlocking());
+
+  base::RunLoop wait_for_stop;
+  tracing_session->SetOnStopCallback(
+      [&wait_for_stop] { wait_for_stop.Quit(); });
+  tracing_session->Stop();
+  wait_for_stop.Run();
+
+  std::vector<char> serialized_data = tracing_session->ReadTraceBlocking();
+  perfetto::protos::Trace trace;
+  ASSERT_TRUE(
+      trace.ParseFromArray(serialized_data.data(), serialized_data.size()));
+
+  int track_descriptor_count = 0;
+  int cleared_packets_count = 0;
+  int heap_samples_count = 0;
+  uint32_t descriptor_seq_id = 0;
+  for (const auto& packet : trace.packet()) {
+    if (packet.has_track_descriptor()) {
+      EXPECT_EQ(cleared_packets_count, 0);
+      EXPECT_EQ(heap_samples_count, 0);
+      const auto& desc = packet.track_descriptor();
+      EXPECT_EQ(desc.uuid(), process_track.uuid);
+      ASSERT_TRUE(desc.has_process());
+      EXPECT_EQ(desc.process().pid(), static_cast<int32_t>(process_track.pid));
+      EXPECT_EQ(desc.process().process_name(), "TestBrowser");
+      ASSERT_TRUE(desc.has_chrome_process());
+      EXPECT_EQ(desc.chrome_process().process_type(), expected_process_type);
+      descriptor_seq_id = packet.trusted_packet_sequence_id();
+      track_descriptor_count++;
+    }
+    if (packet.sequence_flags() &
+        perfetto::protos::TracePacket::SEQ_INCREMENTAL_STATE_CLEARED) {
+      EXPECT_EQ(track_descriptor_count, 1);
+      EXPECT_EQ(packet.trusted_packet_sequence_id(), descriptor_seq_id);
+      cleared_packets_count++;
+    }
+    if (packet.has_stack_sample()) {
+      EXPECT_EQ(track_descriptor_count, 1);
+      EXPECT_EQ(packet.trusted_packet_sequence_id(), descriptor_seq_id);
+      heap_samples_count++;
+    }
+  }
+  EXPECT_EQ(track_descriptor_count, 1);
+  EXPECT_EQ(cleared_packets_count, 1);
+  EXPECT_GE(heap_samples_count, 4);
+
+  // Cleanup.
+  base::allocator::dispatcher::FreeNotificationData free_data1(
+      reinterpret_cast<void*>(0x1234),
+      base::allocator::dispatcher::AllocationSubsystem::kPartitionAllocator);
+  base::PoissonAllocationSampler::Get()->OnFree(free_data1);
+  base::allocator::dispatcher::FreeNotificationData free_data2(
+      reinterpret_cast<void*>(0x5678),
+      base::allocator::dispatcher::AllocationSubsystem::kPartitionAllocator);
+  base::PoissonAllocationSampler::Get()->OnFree(free_data2);
 }
 
 }  // namespace
