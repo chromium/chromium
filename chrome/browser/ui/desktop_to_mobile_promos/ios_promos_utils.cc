@@ -4,7 +4,17 @@
 
 #include "chrome/browser/ui/desktop_to_mobile_promos/ios_promos_utils.h"
 
+#include <optional>
+#include <utility>
+#include <vector>
+
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/values_util.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/desktop_to_mobile_promos/promos_utils.h"
 #include "chrome/browser/feature_engagement/non_iph_promo.h"
@@ -15,17 +25,14 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/browser/ui/views/promos/ios_promo_bubble.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
@@ -111,26 +118,39 @@ void ShowIOSDesktopPromoBubble(PromoType promo_type,
         anchor.anchor_base =
             toolbar_button_provider->GetAppMenuControl()->GetAnchor();
       }
-      IOSPromoBubble::ShowPromoBubble(anchor,
+      IOSPromoBubble::ShowPromoBubble(std::move(anchor),
                                       /*highlighted_button=*/nullptr,
                                       /*highlighted_element=*/std::nullopt,
                                       profile, PromoType::kLens, bubble_type);
       break;
     }
-    case PromoType::kTabGroups: {
-      IOSPromoBubble::ShowPromoBubble(
-          {toolbar_button_provider->GetAvatarToolbarButtonInterface()
-               ->GetBubbleAnchor(*browser_view->browser())},
-          /*highlighted_button=*/nullptr, /*highlighted_element=*/std::nullopt,
-          profile, PromoType::kTabGroups, bubble_type);
-      break;
-    }
+    case PromoType::kTabGroups:
     case PromoType::kPriceTracking: {
-      IOSPromoBubble::ShowPromoBubble(
-          {toolbar_button_provider->GetAvatarToolbarButtonInterface()
-               ->GetBubbleAnchor(*browser_view->browser())},
-          /*highlighted_button=*/nullptr, /*highlighted_element=*/std::nullopt,
-          profile, PromoType::kPriceTracking, bubble_type);
+      if (AvatarToolbarButtonInterface* avatar_button =
+              toolbar_button_provider->GetAvatarToolbarButtonInterface()) {
+        avatar_button->RunWhenVisible(base::BindOnce(
+            [](base::WeakPtr<BrowserView> weak_browser_view,
+               PromoType promo_type, BubbleType bubble_type,
+               views::BubbleAnchor anchor_base,
+               base::ScopedClosureRunner keep_visible) {
+              if (!weak_browser_view || anchor_base.IsNull()) {
+                return;
+              }
+              IOSPromoBubble::ShowPromoBubble(
+                  {.anchor_base = anchor_base,
+                   .keep_anchor_visible = std::move(keep_visible)},
+                  /*highlighted_button=*/nullptr,
+                  /*highlighted_element=*/std::nullopt,
+                  weak_browser_view->GetProfile(), promo_type, bubble_type);
+            },
+            browser_view->GetAsWeakPtr(), promo_type, bubble_type));
+      } else {
+        IOSPromoBubble::ShowPromoBubble(
+            {toolbar_button_provider->GetAppMenuControl()->GetAnchor()},
+            /*highlighted_button=*/nullptr,
+            /*highlighted_element=*/std::nullopt, profile, promo_type,
+            bubble_type);
+      }
       break;
     }
   }

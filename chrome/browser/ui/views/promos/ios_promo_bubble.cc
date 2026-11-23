@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/views/promos/ios_promo_bubble.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/desktop_to_mobile_promos/promos_utils.h"
@@ -317,14 +319,19 @@ desktop_to_mobile_promos::PromoType IOSPromoBubble::current_promo_type_;
 
 class IOSPromoBubble::IOSPromoBubbleDelegate : public ui::DialogModelDelegate {
  public:
-  IOSPromoBubbleDelegate(Profile* profile, PromoType promo_type)
+  IOSPromoBubbleDelegate(Profile* profile,
+                         PromoType promo_type,
+                         base::ScopedClosureRunner keep_anchor_visible)
       : profile_(profile),
         promo_type_(promo_type),
-        ios_promo_prefs_config_(promos_utils::IOSPromoPrefsConfig(promo_type)) {
-  }
+        ios_promo_prefs_config_(promos_utils::IOSPromoPrefsConfig(promo_type)),
+        keep_anchor_visible_(std::move(keep_anchor_visible)) {}
 
   // Handler for when the window closes.
-  void OnWindowClosing() { ios_promo_delegate_ = nullptr; }
+  void OnWindowClosing() {
+    ios_promo_delegate_ = nullptr;
+    keep_anchor_visible_.RunAndReset();
+  }
 
   // Callback for when the bubble is dismissed.
   void OnDismissal() {
@@ -374,6 +381,9 @@ class IOSPromoBubble::IOSPromoBubbleDelegate : public ui::DialogModelDelegate {
 
   // The structure that holds the configurations of the current promo type.
   const promos_utils::IOSPromoPrefsConfig ios_promo_prefs_config_;
+
+  // Holds the bubble anchor visible while the promo bubble is open.
+  base::ScopedClosureRunner keep_anchor_visible_;
 };
 
 // static
@@ -563,8 +573,8 @@ void IOSPromoBubble::ShowPromoBubble(
     return;
   }
 
-  auto bubble_delegate_unique =
-      std::make_unique<IOSPromoBubbleDelegate>(profile, promo_type);
+  auto bubble_delegate_unique = std::make_unique<IOSPromoBubbleDelegate>(
+      profile, promo_type, std::move(anchor.keep_anchor_visible));
   IOSPromoBubbleDelegate* bubble_delegate = bubble_delegate_unique.get();
 
   auto dialog_model_builder =

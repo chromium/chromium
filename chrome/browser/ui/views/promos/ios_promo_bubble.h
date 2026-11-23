@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -45,6 +46,9 @@ class IOSPromoBubble {
   struct Anchor {
     views::BubbleAnchor anchor_base;
     views::BubbleBorder::Arrow arrow = views::BubbleBorder::TOP_RIGHT;
+    // Optional closure held while the bubble is open to keep its anchor visible
+    // (for example, preventing a popped-out toolbar button from overflowing).
+    base::ScopedClosureRunner keep_anchor_visible;
   };
 
   IOSPromoBubble(const IOSPromoBubble&) = delete;
