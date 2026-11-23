@@ -651,6 +651,7 @@ if (is_win || is_mac || is_linux) {
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/toolbar",
       "//chrome/browser/ui/views/frame:toolbar_button_provider",
+      "//chrome/browser/ui/webui/signin:signin_utils",
       "//components/sync/service",
     ]
   }

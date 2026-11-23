@@ -29,6 +29,16 @@ ProfileCustomizationStyle GetProfileCustomizationStyle(const GURL& url) {
   return style;
 }
 
+bool IsProfileCreationStyle(ProfileCustomizationStyle style) {
+  switch (style) {
+    case ProfileCustomizationStyle::kDefault:
+    case ProfileCustomizationStyle::kLocalProfileCreation:
+      return true;
+    case ProfileCustomizationStyle::kEditProfile:
+      return false;
+  }
+}
+
 GURL AppendProfileCustomizationQueryParams(const GURL& url,
                                            ProfileCustomizationStyle style) {
   GURL url_with_params = net::AppendQueryParameter(

@@ -69,6 +69,7 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
        IDS_PROFILE_CUSTOMIZATION_DONE_BUTTON_LABEL},
       {"profileCustomizationSkipLabel",
        IDS_PROFILE_CUSTOMIZATION_SKIP_BUTTON_LABEL},
+      {"profileCustomizationCancelLabel", IDS_CANCEL},
       {"profileCustomizationInputLabel", IDS_PROFILE_CUSTOMIZATION_INPUT_LABEL},
       {"profileCustomizationInputTitle", IDS_PROFILE_CUSTOMIZATION_INPUT_TITLE},
       {"profileCustomizationInputPlaceholder",
@@ -112,9 +113,8 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
   source->AddString("profileName",
                     base::UTF16ToUTF8(entry->GetLocalProfileName()));
   const GURL& url = web_ui->GetWebContents()->GetVisibleURL();
-  source->AddBoolean("isLocalProfileCreation",
-                     GetProfileCustomizationStyle(url) ==
-                         ProfileCustomizationStyle::kLocalProfileCreation);
+  source->AddInteger("profileCustomizationStyle",
+                     static_cast<int>(GetProfileCustomizationStyle(url)));
 
   const bool is_in_search_engine_choice_region =
       CHECK_DEREF(regional_capabilities::RegionalCapabilitiesServiceFactory::

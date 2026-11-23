@@ -259,6 +259,7 @@
 #include "chrome/browser/profiles/profile_test_util.h"  // nogncheck
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"  // nogncheck
 #include "chrome/browser/ui/signin/signin_view_controller.h"  // nogncheck
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_OZONE)
@@ -9674,7 +9675,7 @@ class FullWebUIOmniboxWelcomeDialogInteractiveTest
     new_browser->GetWindow()->Show();
     SigninViewController::From(new_browser)
         ->ShowModalProfileCustomizationDialog(
-            /*is_local_profile_creation=*/true);
+            ProfileCustomizationStyle::kLocalProfileCreation);
     SetBrowser(new_browser);
   }
 

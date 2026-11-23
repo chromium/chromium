@@ -17,14 +17,21 @@ enum class HistorySyncOptinLaunchContext : int {
 };
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// LINT.IfChange(ProfileCustomizationStyle)
 enum class ProfileCustomizationStyle {
   kDefault = 0,
-  kLocalProfileCreation = 1
+  kLocalProfileCreation = 1,
+  kEditProfile = 2,
 };
+// LINT.ThenChange(//chrome/browser/resources/signin/profile_customization/profile_customization_browser_proxy.ts:ProfileCustomizationStyle)
 
-// Returns which style the profile customization page is using, as the default
-// profile customization page or the local profile creation page.
+// Returns which style the profile customization page is using: the default
+// profile customization, the local profile creation or the edit profile page.
 ProfileCustomizationStyle GetProfileCustomizationStyle(const GURL& url);
+
+// Returns whether the profile customization `style` is shown for a newly
+// signed-in or created profile.
+bool IsProfileCreationStyle(ProfileCustomizationStyle style);
 
 // Adds the `style` URL query parameters to `url` for the profile customization.
 GURL AppendProfileCustomizationQueryParams(const GURL& url,

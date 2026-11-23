@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/webui/signin/history_sync_optin_service.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_service_factory.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
@@ -397,8 +398,7 @@ void SigninInterceptFirstRunExperienceDialog::DoProfileCustomization() {
     // pass it to `ProfileCustomizationUI::Initialize()`.
     SetDialogDelegate(
         SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
-            browser_, /*is_local_profile_creation=*/false,
-            /*show_profile_switch_iph=*/true,
+            browser_, ProfileCustomizationStyle::kDefault,
             // TODO(crbug.com/351333491) Clarify if we want the IPH when a new
             // profile is created following a context-signin.
             /*show_supervised_user_iph=*/false));

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/toolbar/avatar_toolbar_iph_controller.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "components/sync/service/sync_service.h"
 
 namespace {
@@ -27,7 +28,8 @@ void ShowBubble(BrowserWindowInterface* bwi,
     case ProfileCustomizationBubbleSyncController::Outcome::kAbort:
       return;
     case ProfileCustomizationBubbleSyncController::Outcome::kShowBubble:
-      SigninViewController::From(bwi)->ShowModalProfileCustomizationDialog();
+      SigninViewController::From(bwi)->ShowModalProfileCustomizationDialog(
+          ProfileCustomizationStyle::kDefault);
       return;
     case ProfileCustomizationBubbleSyncController::Outcome::kSkipBubble:
       // If the customization bubble is not shown, show the IPH now. Otherwise

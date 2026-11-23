@@ -91,10 +91,15 @@
 #include "ui/views/window/dialog_delegate.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/signin/account_preview_utils.h"
 #include "chrome/browser/ui/webui/signin/cross_device_signin_qr_bubble_ui.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
 #include "components/signin/core/browser/test_account_preview_data_service.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -2214,6 +2219,91 @@ IN_PROC_BROWSER_TEST_F(SigninViewControllerWebUIAvatarOverflowBrowserTest,
   // Destroying the handle after browser destruction is a safe no-op.
   intercept_handle.reset();
 }
+
+// Tests the profile customization dialog for the existing (signed-in or
+// signed-out) profile. The default (post sign-in) and edit profile versions of
+// the dialog behave the same: "Done" saves the name and the secondary button
+// ("Skip" or "Cancel") closes the dialog without saving it.
+class SigninViewControllerProfileCustomizationBrowserTest
+    : public SigninViewControllerBrowserTest,
+      public testing::WithParamInterface<ProfileCustomizationStyle> {
+ public:
+  // Shows the profile customization dialog with the style under test and waits
+  // until the page is loaded.
+  content::WebContents* ShowProfileCustomizationDialog() {
+    SigninViewController* controller = SigninViewController::From(browser());
+    controller->ShowModalProfileCustomizationDialog(GetParam());
+    CHECK(controller->ShowsModalDialog());
+    content::WebContents* web_contents =
+        controller->GetModalDialogWebContentsForTesting();
+    CHECK(content::WaitForLoadStop(web_contents));
+    CHECK_EQ(GetProfileCustomizationStyle(web_contents->GetVisibleURL()),
+             GetParam());
+    return web_contents;
+  }
+
+  ProfileAttributesEntry* GetProfileEntry() {
+    return g_browser_process->profile_manager()
+        ->GetProfileAttributesStorage()
+        .GetProfileAttributesWithPath(GetProfile()->GetPath());
+  }
+
+  // Shows the dialog, changes the profile name in the page to `kEditedName`,
+  // clicks the button with `button_id` and waits for the dialog to close.
+  void EditNameAndClick(std::string_view button_id) {
+    content::WebContents* web_contents = ShowProfileCustomizationDialog();
+    // The button must be visible and enabled for the user to click it. A
+    // scripted click would work on a hidden button too.
+    ASSERT_EQ(true,
+              content::EvalJs(
+                  web_contents,
+                  content::JsReplace(
+                      "const button = document"
+                      "    .querySelector('profile-customization-app')"
+                      "    .shadowRoot.querySelector($1);"
+                      "!!button && !button.disabled && button.checkVisibility("
+                      "    {checkOpacity: true, checkVisibilityCSS: true});",
+                      button_id)));
+
+    content::WebContentsDestroyedWatcher watcher(web_contents);
+    // The click closes the dialog, so the script does not wait for a result.
+    content::ExecuteScriptAsync(
+        web_contents,
+        content::JsReplace(
+            "const app = document.querySelector('profile-customization-app');"
+            "app.profileName_ = $1;"
+            "app.shadowRoot.querySelector($2).click();",
+            kEditedName, button_id));
+    watcher.Wait();
+    EXPECT_FALSE(SigninViewController::From(browser())->ShowsModalDialog());
+  }
+
+  static constexpr char16_t kEditedName[] = u"Edited name";
+};
+
+IN_PROC_BROWSER_TEST_P(SigninViewControllerProfileCustomizationBrowserTest,
+                       DoneSavesName) {
+  EditNameAndClick("#doneButton");
+  EXPECT_EQ(GetProfileEntry()->GetLocalProfileName(), kEditedName);
+}
+
+IN_PROC_BROWSER_TEST_P(SigninViewControllerProfileCustomizationBrowserTest,
+                       SecondaryButtonClosesWithoutSaving) {
+  const std::u16string name = GetProfileEntry()->GetLocalProfileName();
+  EditNameAndClick("#secondaryButton");
+  EXPECT_EQ(GetProfileEntry()->GetLocalProfileName(), name);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SigninViewControllerProfileCustomizationBrowserTest,
+    testing::Values(ProfileCustomizationStyle::kDefault,
+                    ProfileCustomizationStyle::kEditProfile),
+    [](const testing::TestParamInfo<ProfileCustomizationStyle>& info) {
+      return info.param == ProfileCustomizationStyle::kEditProfile
+                 ? "EditProfile"
+                 : "Default";
+    });
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/webui/signin/managed_user_profile_notice_ui.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/prefs/pref_service.h"
@@ -125,7 +126,8 @@ void ShowCustomizationBubble(std::optional<SkColor> new_profile_color,
         ->ShowOnSyncFailedOrDefaultTheme(new_profile_color.value());
   } else {
     // For non syncing users, simply show the bubble.
-    SigninViewController::From(browser)->ShowModalProfileCustomizationDialog();
+    SigninViewController::From(browser)->ShowModalProfileCustomizationDialog(
+        ProfileCustomizationStyle::kDefault);
   }
 }
 
@@ -449,7 +451,7 @@ void ShowLocalProfileCustomization(
   }
 
   SigninViewController::From(browser)->ShowModalProfileCustomizationDialog(
-      /*is_local_profile_creation=*/true);
+      ProfileCustomizationStyle::kLocalProfileCreation);
 }
 
 void MaybeOpenPageInBrowser(BrowserWindowInterface* browser,

@@ -66,16 +66,14 @@ class SigninViewControllerDelegate {
   // Returns a platform-specific SigninViewControllerDelegate instance that
   // displays the profile customization modal dialog. The returned object should
   // delete itself when the window it's managing is closed.
-  // If |is_local_profile_creation| is true, the profile customization will
-  // display the local profile creation version of the page.
-  // If |show_profile_switch_iph| is true, shows a profile switch IPH after the
+  // `style` selects the version of the page (see `ProfileCustomizationStyle`).
+  // For the profile creation styles, a profile switch IPH is shown after the
   // user completes the profile customization.
   // If |show_supervised_user_iph| is true, shows to supervised users the
   // Supervised User Profile IPH at the end of the profile customization.
   static SigninViewControllerDelegate* CreateProfileCustomizationDelegate(
       BrowserWindowInterface* browser,
-      bool is_local_profile_creation,
-      bool show_profile_switch_iph = false,
+      ProfileCustomizationStyle style,
       bool show_supervised_user_iph = false);
 
   // Returns a platform-specific SigninViewControllerDelegate instance that

@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/signin/signin_modal_dialog.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/url_constants.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -167,9 +168,8 @@ class SigninViewController {
       base::OnceClosure on_complete);
 
   // Shows the modal profile customization dialog as a browser-modal dialog on
-  // top of the |browser_|'s window.
-  void ShowModalProfileCustomizationDialog(
-      bool is_local_profile_creation = false);
+  // top of the |browser_|'s window. `style` selects the version of the page.
+  void ShowModalProfileCustomizationDialog(ProfileCustomizationStyle style);
 
   // Shows the modal sign-in email confirmation dialog as a tab-modal dialog on
   // top of the currently displayed WebContents in |browser_|.

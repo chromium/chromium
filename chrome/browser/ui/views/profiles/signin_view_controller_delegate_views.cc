@@ -182,13 +182,17 @@ SigninViewControllerDelegateViews::CreateSigninErrorWebView(
 std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateProfileCustomizationWebView(
     BrowserWindowInterface* browser,
-    bool is_local_profile_creation,
-    bool show_profile_switch_iph,
+    ProfileCustomizationStyle style,
     bool show_supervised_user_iph) {
   GURL url = GURL(chrome::kChromeUIProfileCustomizationURL);
-  if (is_local_profile_creation) {
-    url = AppendProfileCustomizationQueryParams(
-        url, ProfileCustomizationStyle::kLocalProfileCreation);
+  switch (style) {
+    case ProfileCustomizationStyle::kDefault:
+      // The default style uses the URL without query parameters.
+      break;
+    case ProfileCustomizationStyle::kLocalProfileCreation:
+    case ProfileCustomizationStyle::kEditProfile:
+      url = AppendProfileCustomizationQueryParams(url, style);
+      break;
   }
   std::unique_ptr<views::WebView> web_view = CreateDialogWebView(
       browser, url, ProfileCustomizationUI::kPreferredHeight,
@@ -199,9 +203,12 @@ SigninViewControllerDelegateViews::CreateProfileCustomizationWebView(
                                        ->GetController()
                                        ->GetAs<ProfileCustomizationUI>();
   DCHECK(web_ui);
+  // The profile switch IPH is about newly signed-in or created profiles, and is
+  // not shown when editing an existing profile.
   web_ui->Initialize(
       base::BindOnce(&CloseModalSigninInBrowser, browser->GetWeakPtr(),
-                     show_profile_switch_iph, show_supervised_user_iph));
+                     /*show_profile_switch_iph=*/IsProfileCreationStyle(style),
+                     show_supervised_user_iph));
   return web_view;
 }
 
@@ -594,15 +601,23 @@ SigninViewControllerDelegate::CreateSigninErrorDelegate(
 SigninViewControllerDelegate*
 SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
     BrowserWindowInterface* browser,
-    bool is_local_profile_creation,
-    bool show_profile_switch_iph,
+    ProfileCustomizationStyle style,
     bool show_supervised_user_iph) {
+  const bool delete_profile_on_cancel = [style] {
+    switch (style) {
+      case ProfileCustomizationStyle::kLocalProfileCreation:
+        // The ephemeral profile being created is deleted on cancel.
+        return true;
+      case ProfileCustomizationStyle::kDefault:
+      case ProfileCustomizationStyle::kEditProfile:
+        return false;
+    }
+  }();
   return new SigninViewControllerDelegateViews(
       SigninViewControllerDelegateViews::CreateProfileCustomizationWebView(
-          browser, is_local_profile_creation, show_profile_switch_iph,
-          show_supervised_user_iph),
+          browser, style, show_supervised_user_iph),
       browser, ui::mojom::ModalType::kWindow, false, false,
-      /*animate_on_resize=*/true, is_local_profile_creation);
+      /*animate_on_resize=*/true, delete_profile_on_cancel);
 }
 
 // static

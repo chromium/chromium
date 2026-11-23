@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -697,12 +698,14 @@ void SigninViewController::MaybeShowChromeSigninDialogForExtensions(
 }
 
 void SigninViewController::ShowModalProfileCustomizationDialog(
-    bool is_local_profile_creation) {
+    ProfileCustomizationStyle style) {
   CloseModalSignin();
+  // The supervised user IPH is about newly signed-in or created profiles, and
+  // is not shown when editing an existing profile.
   dialog_ = std::make_unique<SigninModalDialogImpl>(
       SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
-          &browser_.get(), is_local_profile_creation,
-          /*show_profile_switch_iph=*/true, /*show_supervised_user_iph=*/true),
+          &browser_.get(), style,
+          /*show_supervised_user_iph=*/IsProfileCreationStyle(style)),
       GetOnModalDialogClosedCallback());
 }
 

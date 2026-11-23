@@ -34,5 +34,14 @@ TEST(SigninURLUtilsProfileCustomizationURLTest, GetAndParseURL) {
   EXPECT_EQ(url.GetHost(), chrome::kChromeUIProfileCustomizationHost);
   EXPECT_EQ(ProfileCustomizationStyle::kLocalProfileCreation,
             GetProfileCustomizationStyle(url));
+
+  // Edit profile version.
+  url = AppendProfileCustomizationQueryParams(
+      GURL(chrome::kChromeUIProfileCustomizationURL),
+      ProfileCustomizationStyle::kEditProfile);
+  EXPECT_TRUE(url.is_valid());
+  EXPECT_EQ(url.GetHost(), chrome::kChromeUIProfileCustomizationHost);
+  EXPECT_EQ(ProfileCustomizationStyle::kEditProfile,
+            GetProfileCustomizationStyle(url));
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

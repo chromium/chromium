@@ -138,16 +138,24 @@ void ProfileCustomizationHandler::HandleDone(const base::ListValue& args) {
   CHECK(!profile_name.empty(), base::NotFatalUntil::M162);
 
   const GURL& url = web_ui()->GetWebContents()->GetVisibleURL();
-  if (GetProfileCustomizationStyle(url) ==
-      ProfileCustomizationStyle::kLocalProfileCreation) {
-    // The local profile is created at first as ephemeral and its creation is
-    // finalized when customization is successfully completed.
-    FinalizeNewProfileSetup(profile_, profile_name, /*is_default_name=*/false);
-  } else {
-    // TODO(crbug.com/40264199): Look into whether this branch should be also
-    // covered by calling FinalizeNewProfileSetup().
-    GetProfileEntry()->SetLocalProfileName(profile_name,
-                                           /*is_default_name=*/false);
+  switch (GetProfileCustomizationStyle(url)) {
+    case ProfileCustomizationStyle::kLocalProfileCreation:
+      // The local profile is created at first as ephemeral and its creation is
+      // finalized when customization is successfully completed.
+      FinalizeNewProfileSetup(profile_, profile_name,
+                              /*is_default_name=*/false);
+      break;
+    case ProfileCustomizationStyle::kDefault:
+      // TODO(crbug.com/40264199): Look into whether this branch should be also
+      // covered by calling FinalizeNewProfileSetup().
+      GetProfileEntry()->SetLocalProfileName(profile_name,
+                                             /*is_default_name=*/false);
+      break;
+    case ProfileCustomizationStyle::kEditProfile:
+      // The profile already exists, only its name is updated.
+      GetProfileEntry()->SetLocalProfileName(profile_name,
+                                             /*is_default_name=*/false);
+      break;
   }
 
   if (completion_callback_) {

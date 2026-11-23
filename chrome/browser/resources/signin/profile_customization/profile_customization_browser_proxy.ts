@@ -10,6 +10,15 @@
 import type {AvatarIcon} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 
+// Version of the page, passed by C++ through `loadTimeData`.
+// LINT.IfChange(ProfileCustomizationStyle)
+export enum ProfileCustomizationStyle {
+  DEFAULT = 0,
+  LOCAL_PROFILE_CREATION = 1,
+  EDIT_PROFILE = 2,
+}
+// LINT.ThenChange(//chrome/browser/ui/webui/signin/signin_url_utils.h:ProfileCustomizationStyle)
+
 // Profile info (colors and avatar) sent from C++.
 export interface ProfileInfo {
   backgroundColor: string;
