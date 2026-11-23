@@ -7,5 +7,16 @@ import("//extensions/buildflags/buildflags.gni")
 assert(enable_extensions_core)
 
 source_set("sidebar") {
-  sources = [ "sidebar_api.h" ]
+  sources = [
+    "sidebar_api.cc",
+    "sidebar_api.h",
+  ]
+
+  public_deps = [ "//extensions/browser" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/extensions",
+    "//chrome/common/extensions/api",
+  ]
 }
