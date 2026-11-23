@@ -7,7 +7,6 @@
 #import "base/run_loop.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/scoped_run_loop_timeout.h"
-#import "base/test/task_environment.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
@@ -30,6 +29,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/testing/scoped_block_swizzler.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
@@ -65,6 +65,8 @@ class PushNotificationDelegateTest : public PlatformTest {
   }
 
   void TearDown() override {
+    // Flush pending tasks before tearing down the scene and local state.
+    task_environment_.RunUntilIdle();
     [scene_state_ shutdown];
     profile_state_.profile = nullptr;
   }
@@ -146,7 +148,7 @@ class PushNotificationDelegateTest : public PlatformTest {
     EXPECT_EQ(profile_state_.initStage, ProfileInitStage::kFinal);
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_;
@@ -257,4 +259,5 @@ TEST_F(PushNotificationDelegateTest,
   ASSERT_TRUE(fake_handler.hasContinuation);
   [fake_handler runContinuationForSceneState:scene_state_];
   [fake_handler shutdown];
+  [mock_delegate stopMocking];
 }

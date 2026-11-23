@@ -7,7 +7,6 @@
 #import <memory>
 #import <utility>
 
-#import "base/test/task_environment.h"
 #import "components/device_signals/core/browser/pref_names.h"
 #import "components/device_signals/core/browser/user_permission_service.h"
 #import "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -18,6 +17,7 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/policy/model/profile_policy_connector_mock.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -36,7 +36,7 @@ class IOSUserPermissionServiceFactoryTest : public PlatformTest {
     profile_ = std::move(builder).Build();
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   policy::SchemaRegistry schema_registry_;
   policy::MockCloudPolicyStore policy_store_{
       policy::dm_protocol::GetChromeUserPolicyType()};

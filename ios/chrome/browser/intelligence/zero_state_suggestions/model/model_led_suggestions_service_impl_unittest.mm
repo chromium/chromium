@@ -8,7 +8,6 @@
 #import "base/functional/callback.h"
 #import "base/memory/ptr_util.h"
 #import "base/memory/raw_ptr.h"
-#import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/fake_page_context_wrapper.h"
@@ -20,6 +19,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "mojo/public/cpp/bindings/pending_receiver.h"
 #import "mojo/public/cpp/bindings/remote.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -85,7 +85,7 @@ class ModelLedSuggestionsServiceImplTest : public PlatformTest {
     [wrapper completeWithPageContext:std::move(page_context)];
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::FakeWebState> fake_web_state_;
   FakePageContextWrapperFactory fake_page_context_wrapper_factory_;

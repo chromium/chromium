@@ -91,6 +91,7 @@ source_set("unit_tests") {
     "//ios/chrome/common/ui/reauthentication:fake_reauthentication_module",
     "//ios/chrome/test/providers/signin:device_identifier",
     "//ios/public/provider/chrome/browser/signin:device_identifier_api",
+    "//ios/web/public/test",
     "//services/network:test_support",
     "//testing/gmock",
     "//testing/gtest",

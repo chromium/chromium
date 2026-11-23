@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
 
 #import "base/test/scoped_feature_list.h"
-#import "base/test/task_environment.h"
 #import "base/time/time.h"
 #import "components/contextual_search/pref_names.h"
 #import "components/prefs/pref_registry_simple.h"
@@ -23,6 +22,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "net/base/url_util.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -93,13 +93,16 @@ class CobrowseBrowserAgentTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  base::test::TaskEnvironment task_environment_;
+  // Foundational environment fixtures must precede profile/browser state so
+  // teardown occurs in reverse declaration order (`browser_` before
+  // `scene_state_` and `personal_profile_`).
   base::test::ScopedFeatureList scoped_feature_list_;
+  web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> personal_profile_;
-  std::unique_ptr<TestBrowser> browser_;
   FakeSceneState* scene_state_;
+  std::unique_ptr<TestBrowser> browser_;
 };
 
 // Test that `CobrowseBrowserAgent` restores the conversation URL with `q`,

@@ -68,6 +68,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/model/profile/test:testing_factories",
     "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
     "//mojo/public/cpp/bindings",
     "//services/network:test_support",
     "//services/network/public/cpp",

@@ -6,7 +6,6 @@
 #import <memory>
 
 #import "base/task/single_thread_task_runner.h"
-#import "base/test/task_environment.h"
 #import "components/device_signals/core/browser/signals_aggregator.h"
 #import "components/device_signals/core/browser/signals_types.h"
 #import "components/policy/core/common/cloud/cloud_external_data_manager.h"
@@ -14,6 +13,7 @@
 #import "components/policy/core/common/cloud/mock_user_cloud_policy_store.h"
 #import "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "services/network/test/test_network_connection_tracker.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -37,7 +37,7 @@ class IOSSignalsAggregatorFactoryTest : public PlatformTest {
     builder.SetUserCloudPolicyManager(std::move(cloud_policy_manager));
     profile_ = std::move(builder).Build();
   }
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
 };
 

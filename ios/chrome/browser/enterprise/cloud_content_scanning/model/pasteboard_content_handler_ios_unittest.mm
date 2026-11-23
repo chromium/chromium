@@ -159,14 +159,16 @@ class PasteboardContentHandlerIOSTest : public PlatformTest {
     return IOSReportingEventRouterFactory::GetForProfile(profile_.get());
   }
 
-  raw_ptr<FakeClipboardRequestHandler> text_request_handler_;
-  raw_ptr<FakeClipboardRequestHandler> image_request_handler_;
-  base::test::TaskEnvironment task_environment_;
+  // Foundational test environment and owning objects must precede non-owning
+  // pointers so members are destroyed in reverse declaration order.
+  web::WebTaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::FakeWebState> web_state_;
   RequestHandlerResult text_result_;
   RequestHandlerResult image_result_;
+  raw_ptr<FakeClipboardRequestHandler> text_request_handler_;
+  raw_ptr<FakeClipboardRequestHandler> image_request_handler_;
 };
 
 // Tests when both pasteboard text and image are empty, no requests are created,

@@ -8,7 +8,6 @@
 #import "base/run_loop.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
-#import "base/test/task_environment.h"
 #import "base/time/time.h"
 #import "components/omnibox/browser/autocomplete_classifier.h"
 #import "components/omnibox/browser/autocomplete_controller.h"
@@ -35,6 +34,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/testing_application_context.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "net/base/apple/url_conversions.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -255,7 +255,7 @@ class OmniboxAutocompleteControllerTest : public PlatformTest {
 
  protected:
   // Message loop for the main test thread.
-  base::test::TaskEnvironment environment_;
+  web::WebTaskEnvironment environment_;
   // Application pref service.
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   std::unique_ptr<TestProfileIOS> profile_;

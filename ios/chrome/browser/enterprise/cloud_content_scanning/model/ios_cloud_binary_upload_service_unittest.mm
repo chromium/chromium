@@ -8,7 +8,6 @@
 #import "base/memory/raw_ptr.h"
 #import "base/run_loop.h"
 #import "base/test/bind.h"
-#import "base/test/task_environment.h"
 #import "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #import "components/policy/core/common/management/management_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -23,6 +22,7 @@
 #import "ios/chrome/browser/signin/model/signin_client_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -85,7 +85,7 @@ class IOSCloudBinaryUploadServiceTest : public PlatformTest {
   CloudBinaryUploadServiceBase::Delegate* delegate() { return service_.get(); }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<IOSCloudBinaryUploadService> service_;

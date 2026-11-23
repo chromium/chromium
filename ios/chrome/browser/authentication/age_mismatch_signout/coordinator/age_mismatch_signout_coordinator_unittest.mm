@@ -6,7 +6,6 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
-#import "base/test/task_environment.h"
 #import "ios/chrome/browser/authentication/age_mismatch_signout/coordinator/age_mismatch_signout_constants.h"
 #import "ios/chrome/browser/authentication/age_mismatch_signout/ui/age_mismatch_signout_ui_constants.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -14,6 +13,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
 class AgeMismatchSignoutCoordinatorTest : public PlatformTest {
@@ -25,7 +25,7 @@ class AgeMismatchSignoutCoordinatorTest : public PlatformTest {
         identity_([FakeSystemIdentity fakeIdentity1]) {}
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<ProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   id<SystemIdentity> identity_;

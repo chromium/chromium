@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
 
-#import "base/test/task_environment.h"
 #import "components/omnibox/browser/autocomplete_classifier.h"
 #import "components/omnibox/browser/autocomplete_controller.h"
 #import "components/omnibox/browser/autocomplete_provider_client.h"
@@ -24,6 +23,7 @@
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/test/testing_application_context.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -147,7 +147,7 @@ class OmniboxTextControllerTest : public PlatformTest {
   }
 
  protected:
-  base::test::TaskEnvironment environment_;
+  web::WebTaskEnvironment environment_;
 
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<AutocompleteController> autocomplete_controller_;

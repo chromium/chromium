@@ -8,7 +8,6 @@
 
 #import "base/run_loop.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/task_environment.h"
 #import "components/device_signals/core/browser/signals_types.h"
 #import "components/device_signals/core/browser/user_permission_service.h"
 #import "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
@@ -25,6 +24,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "services/network/test/test_network_connection_tracker.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -93,7 +93,7 @@ class ProfileSignalsCollectorIOSTest : public PlatformTest {
             profile_.get()));
   }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   // Provides fake DM token and client ID for ConnectorsService.
   policy::FakeBrowserDMTokenStorage fake_dm_token_storage_;
   std::unique_ptr<TestProfileIOS> profile_;

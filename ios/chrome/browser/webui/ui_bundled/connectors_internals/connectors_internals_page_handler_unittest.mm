@@ -14,7 +14,6 @@
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "base/test/scoped_feature_list.h"
-#import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "base/time/time.h"
 #import "base/values.h"
@@ -48,6 +47,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/testing_factories.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/testing_application_context.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "mojo/public/cpp/bindings/remote.h"
 #import "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #import "services/network/test/test_url_loader_factory.h"
@@ -213,7 +213,7 @@ class ConnectorsInternalsPageHandlerTest : public PlatformTest {
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<TestProfileIOS> profile_;

@@ -7,7 +7,6 @@
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/utf_string_conversions.h"
-#import "base/test/task_environment.h"
 #import "components/enterprise/connectors/core/analysis_settings.h"
 #import "components/enterprise/connectors/core/analysis_test_utils.h"
 #import "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
@@ -18,6 +17,7 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -70,7 +70,7 @@ class ContentAnalysisInfoTest : public PlatformTest {
 
   web::WebState* web_state() { return web_state_.get(); }
 
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::FakeWebState> web_state_;
 };
