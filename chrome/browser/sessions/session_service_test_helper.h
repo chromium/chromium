@@ -113,6 +113,8 @@ class SessionServiceTestHelper {
 
   void SetSavingEnabled(bool enabled);
 
+  void EraseWindowFromTracking(SessionID window_id);
+
   bool did_save_commands_at_least_once() const;
 
   sessions::CommandStorageManager* command_storage_manager();

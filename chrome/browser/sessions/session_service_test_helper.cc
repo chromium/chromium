@@ -176,6 +176,10 @@ void SessionServiceTestHelper::SetSavingEnabled(bool enabled) {
   service_->SetSavingEnabled(enabled);
 }
 
+void SessionServiceTestHelper::EraseWindowFromTracking(SessionID window_id) {
+  service_->windows_tracking_.erase(window_id);
+}
+
 bool SessionServiceTestHelper::did_save_commands_at_least_once() const {
   return service_->did_save_commands_at_least_once_;
 }

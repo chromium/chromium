@@ -33,6 +33,7 @@
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser_init_state.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/sessions/session_tab_group_utils.h"
@@ -308,8 +309,10 @@ void SessionServiceBase::TabInserted(WebContents* contents) {
   sessions::SessionTabHelper* session_tab_helper =
       sessions::SessionTabHelper::FromWebContents(contents);
   if (!ShouldTrackChangesToWindow(session_tab_helper->window_id())) {
+    RecordUntrackedWindowChange(session_tab_helper->window_id());
     return;
   }
+  RecordTrackedWindowChange(session_tab_helper->window_id());
   if (windows_empty_at_last_rebuild_.erase(session_tab_helper->window_id())) {
     base::UmaHistogramBoolean(
         "Session.Counterfactual.EmptyWindowTabWouldHaveBeenLost", true);
@@ -373,8 +376,10 @@ void SessionServiceBase::TabRestored(WebContents* tab, bool pinned) {
 void SessionServiceBase::SetSelectedTabInWindow(SessionID window_id,
                                                 int index) {
   if (!ShouldTrackChangesToWindow(window_id)) {
+    RecordUntrackedWindowChange(window_id);
     return;
   }
+  RecordTrackedWindowChange(window_id);
 
   auto it = last_selected_tab_in_window_.find(window_id);
   if (it != last_selected_tab_in_window_.end() && it->second == index) {
@@ -509,10 +514,14 @@ void SessionServiceBase::UpdateTabNavigation(
     SessionID window_id,
     SessionID tab_id,
     const SerializedNavigationEntry& navigation) {
-  if (!ShouldTrackURLForRestore(navigation.virtual_url()) ||
-      !ShouldTrackChangesToWindow(window_id)) {
+  if (!ShouldTrackURLForRestore(navigation.virtual_url())) {
     return;
   }
+  if (!ShouldTrackChangesToWindow(window_id)) {
+    RecordUntrackedWindowChange(window_id);
+    return;
+  }
+  RecordTrackedWindowChange(window_id);
 
   auto it = tab_to_available_range_.find(tab_id);
   if (it != tab_to_available_range_.end()) {
@@ -867,6 +876,8 @@ void SessionServiceBase::BuildCommandsFromBrowsers(
     IdToRange* tab_to_available_range,
     std::set<SessionID>* windows_to_track) {
   windows_empty_at_last_rebuild_.clear();
+  tracked_windows_recorded_.clear();
+  untracked_windows_recorded_.clear();
   tabs_past_rebuild_bound_.clear();
   CHECK(is_saving_enabled_, base::NotFatalUntil::M163);
   // The platform session id is only written once, when the platform session is
@@ -926,6 +937,31 @@ void SessionServiceBase::ScheduleCommand(
 
 bool SessionServiceBase::ShouldTrackChangesToWindow(SessionID window_id) const {
   return windows_tracking_.contains(window_id);
+}
+
+void SessionServiceBase::RecordTrackedWindowChange(SessionID window_id) {
+  if (tracked_windows_recorded_.insert(window_id).second) {
+    base::UmaHistogramBoolean(
+        "Session.WindowTracking.UntrackedTrackableWindowChangeDropped", false);
+  }
+}
+
+void SessionServiceBase::RecordUntrackedWindowChange(SessionID window_id) {
+  if (!window_id.is_valid() || !profile()->AllowsBrowserWindows() ||
+      untracked_windows_recorded_.contains(window_id)) {
+    return;
+  }
+  ProfileBrowserCollection* collection =
+      ProfileBrowserCollection::GetForProfile(profile());
+  if (!collection) {
+    return;
+  }
+  BrowserWindowInterface* browser = collection->FindBrowserWithID(window_id);
+  if (browser && ShouldTrackBrowser(browser) && browser->GetWindow()) {
+    untracked_windows_recorded_.insert(window_id);
+    base::UmaHistogramBoolean(
+        "Session.WindowTracking.UntrackedTrackableWindowChangeDropped", true);
+  }
 }
 
 bool SessionServiceBase::ShouldTrackBrowser(

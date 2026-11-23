@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -37,6 +38,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/command_storage_manager.h"
 #include "components/sessions/core/command_storage_manager_test_helper.h"
+#include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/session_command.h"
 #include "components/sessions/core/session_constants.h"
 #include "components/sessions/core/session_id.h"
@@ -551,4 +553,105 @@ IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest,
   EXPECT_FALSE(helper.HasPendingSave());
   EXPECT_TRUE(helper.command_storage_manager()->pending_commands().empty());
   EXPECT_GT(GetSessionFilesSize(sessions_dir), size_before);
+}
+
+IN_PROC_BROWSER_TEST_F(SessionServiceBrowserTest,
+                       UntrackedTrackableWindowChangeDropped) {
+  constexpr char kHistogram[] =
+      "Session.WindowTracking.UntrackedTrackableWindowChangeDropped";
+  base::HistogramTester histogram_tester;
+  SessionServiceTestHelper helper(service());
+
+  // Reset per-rebuild tracking sets so startup events do not suppress the
+  // baseline sample below.
+  service()->ResetFromCurrentBrowsersForTesting();
+
+  // Normal navigation in a tracked window records a single `false` baseline
+  // sample per rebuild; subsequent tracked changes are deduplicated.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("data:text/html,first")));
+  histogram_tester.ExpectUniqueSample(kHistogram, false, 1);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("data:text/html,first_b")));
+  histogram_tester.ExpectUniqueSample(kHistogram, false, 1);
+
+  // Non-trackable open windows (e.g. `omit_from_session_restore = true`) must
+  // not emit the metric on tab insertion, navigation, or tab selection.
+  BrowserWindowCreateParams omit_params(browser()->GetProfile(), true);
+  omit_params.omit_from_session_restore = true;
+  BrowserWindowInterface* omit_browser =
+      CreateBrowserWindow(std::move(omit_params));
+  std::ignore =
+      AddTabAtIndexToBrowser(omit_browser, -1, GURL("data:text/html,omit1"),
+                             ui::PAGE_TRANSITION_TYPED);
+  std::ignore =
+      AddTabAtIndexToBrowser(omit_browser, -1, GURL("data:text/html,omit2"),
+                             ui::PAGE_TRANSITION_TYPED);
+  omit_browser->GetTabStripModel()->ActivateTabAt(0);
+  histogram_tester.ExpectUniqueSample(kHistogram, false, 1);
+  CloseBrowserSynchronously(omit_browser);
+
+  // Simulate the window missing from `windows_tracking_` while remaining open
+  // in `ProfileBrowserCollection` without triggering `WindowClosed()` side
+  // effects.
+  const SessionID window_id = browser()->GetSessionID();
+  helper.EraseWindowFromTracking(window_id);
+
+  // Non-restorable URLs passed to `UpdateTabNavigation()` must not emit the
+  // metric even when the window is untracked.
+  sessions::SessionTabHelper* tab_helper =
+      sessions::SessionTabHelper::FromWebContents(
+          browser()->GetTabStripModel()->GetActiveWebContents());
+  sessions::SerializedNavigationEntry invalid_nav;
+  invalid_nav.set_index(0);
+  invalid_nav.set_virtual_url(GURL());
+  service()->UpdateTabNavigation(window_id, tab_helper->session_id(),
+                                 invalid_nav);
+  sessions::SerializedNavigationEntry quit_nav;
+  quit_nav.set_index(0);
+  quit_nav.set_virtual_url(GURL(chrome::kChromeUIQuitURL));
+  service()->UpdateTabNavigation(window_id, tab_helper->session_id(), quit_nav);
+  histogram_tester.ExpectUniqueSample(kHistogram, false, 1);
+
+  // `UpdateTabNavigation()` with a restorable URL on an untracked trackable
+  // window emits a `true` sample.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("data:text/html,second")));
+  histogram_tester.ExpectBucketCount(kHistogram, false, 1);
+  histogram_tester.ExpectBucketCount(kHistogram, true, 1);
+  histogram_tester.ExpectTotalCount(kHistogram, 2);
+
+  // Subsequent changes on the same untracked window before a rebuild are
+  // deduplicated.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("data:text/html,third")));
+  histogram_tester.ExpectTotalCount(kHistogram, 2);
+
+  // Rebuilding via `ResetFromCurrentBrowsersForTesting()` clears
+  // `tracked_windows_recorded_` and `untracked_windows_recorded_` and
+  // re-tracks open trackable windows, so a tracked change records a new
+  // `false` baseline sample.
+  service()->ResetFromCurrentBrowsersForTesting();
+  std::ignore = AddTabAtIndexToBrowser(
+      browser(), -1, GURL("data:text/html,tab2"), ui::PAGE_TRANSITION_TYPED);
+  histogram_tester.ExpectBucketCount(kHistogram, false, 2);
+  histogram_tester.ExpectBucketCount(kHistogram, true, 1);
+  histogram_tester.ExpectTotalCount(kHistogram, 3);
+
+  // `TabInserted()` on an untracked trackable window after rebuild logs `true`
+  // again.
+  helper.EraseWindowFromTracking(window_id);
+  service()->TabInserted(browser()->GetTabStripModel()->GetActiveWebContents());
+  histogram_tester.ExpectBucketCount(kHistogram, false, 2);
+  histogram_tester.ExpectBucketCount(kHistogram, true, 2);
+  histogram_tester.ExpectTotalCount(kHistogram, 4);
+
+  // Rebuild again and verify `SetSelectedTabInWindow()` on an untracked
+  // trackable window also logs `true`.
+  service()->ResetFromCurrentBrowsersForTesting();
+  helper.EraseWindowFromTracking(window_id);
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+  histogram_tester.ExpectBucketCount(kHistogram, false, 2);
+  histogram_tester.ExpectBucketCount(kHistogram, true, 3);
+  histogram_tester.ExpectTotalCount(kHistogram, 5);
 }

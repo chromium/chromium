@@ -1415,6 +1415,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Session.WindowTracking.UntrackedTrackableWindowChangeDropped"
+    enum="Boolean" expires_after="2027-11-09">
+  <owner>dljames@chromium.org</owner>
+  <owner>musalmaan@chromium.org</owner>
+  <summary>
+    Recorded when SessionServiceBase handles a tab insertion, tab selection, or
+    navigation update for a trackable browser window. Records true when
+    SessionServiceBase drops the update because the browser window is missing
+    from its windows_tracking_ set even though the window is currently open in
+    the browser collection and eligible for session restore tracking; records
+    false when the window is present in windows_tracking_. Each outcome is
+    recorded at most once per window per session file rebuild.
+  </summary>
+</histogram>
+
 <histogram name="Session.ZeroWindowDuration" units="ms"
     expires_after="2027-04-11">
   <owner>victortan@chromium.org</owner>
