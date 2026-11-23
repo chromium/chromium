@@ -39,9 +39,11 @@ PointerEventsHitRules::PointerEventsHitRules(EHitTesting hit_testing,
       can_hit_stroke(false),
       can_hit_fill(false),
       can_hit_bounding_box(false) {
-  if (request.SvgClipContent())
+  if (request.SvgClipContent()) {
     pointer_events = EPointerEvents::kFill;
-
+  } else if (request.IgnorePointerEventsNone()) {
+    pointer_events = EPointerEvents::kAuto;
+  }
   if (hit_testing == kSvgGeometryHitTesting) {
     switch (pointer_events) {
       case EPointerEvents::kBoundingBox:
@@ -127,6 +129,8 @@ PointerEventsHitRules::PointerEventsHitRules(EHitTesting hit_testing,
 bool PointerEventsHitRules::CanHitBoundingBox(const HitTestRequest& request,
                                               EPointerEvents pointer_events) {
   if (request.SvgClipContent()) {
+    return false;
+  } else if (request.IgnorePointerEventsNone()) {
     return false;
   }
   return pointer_events == EPointerEvents::kBoundingBox;

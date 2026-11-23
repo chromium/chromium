@@ -608,6 +608,64 @@ TEST_F(SVGChild3DTransformHitTest, ContainerUnderSVGRootPerspective) {
   EXPECT_NE(rect, HitNode(144, 144));
 }
 
+TEST_F(HitTestingTest, SvgHitTestIgnorePointerEvents) {
+  SetBodyInnerHTML(R"HTML(
+    <svg>
+      <g pointer-events="bounding-box">
+        <rect width="100" height="100" visibility="hidden"
+              pointer-events="auto"/>
+        <rect width="100" height="100" fill="url(#nonexistent)"
+              pointer-events="auto"/>
+        <rect width="100" height="100" fill="url(#nonexistent) blue"
+              pointer-events="auto"/>
+        <rect width="100" height="100" pointer-events="stroke"/>
+      </g>
+      <text x="50" y="50" text-anchor="middle" font-size="25"
+            pointer-events="none">
+         <tspan pointer-events="bounding-box">MMMM</tspan>
+      </text>
+    </svg>
+  )HTML");
+
+  Element* svg_root = GetDocument().body()->firstElementChild();
+  ASSERT_TRUE(svg_root);
+  Element* group = svg_root->firstElementChild();
+  ASSERT_TRUE(group);
+  Element* hidden_rect = group->firstElementChild();
+  ASSERT_TRUE(hidden_rect);
+  Element* unpainted_rect = hidden_rect->nextElementSibling();
+  ASSERT_TRUE(unpainted_rect);
+  Element* fallback_paint_rect = unpainted_rect->nextElementSibling();
+  ASSERT_TRUE(fallback_paint_rect);
+  Element* rect = fallback_paint_rect->nextElementSibling();
+  ASSERT_TRUE(rect);
+  Element* text = group->nextElementSibling();
+  ASSERT_TRUE(text);
+  Element* tspan = text->firstElementChild();
+  ASSERT_TRUE(tspan->firstChild());
+
+  LocalFrame* frame = GetDocument().GetFrame();
+  ASSERT_FALSE(frame->View()->NeedsLayout());
+  const PhysicalRect& rect_bounds =
+      VisualRectInDocument(*rect->GetLayoutObject());
+  HitTestRequest::HitTestRequestType hit_type =
+      HitTestRequest::kIgnorePointerEventsNone | HitTestRequest::kReadOnly |
+      HitTestRequest::kListBased | HitTestRequest::kPenetratingList |
+      HitTestRequest::kAvoidCache;
+  HitTestLocation location(rect_bounds.Center());
+  HitTestResult result =
+      frame->GetEventHandler().HitTestResultAtLocation(location, hit_type);
+
+  EXPECT_FALSE(result.ListBasedTestResult().Contains(group));
+  EXPECT_FALSE(result.ListBasedTestResult().Contains(hidden_rect));
+  EXPECT_FALSE(result.ListBasedTestResult().Contains(unpainted_rect));
+  EXPECT_TRUE(result.ListBasedTestResult().Contains(fallback_paint_rect));
+  EXPECT_TRUE(result.ListBasedTestResult().Contains(rect));
+  EXPECT_FALSE(result.ListBasedTestResult().Contains(text));
+  EXPECT_FALSE(result.ListBasedTestResult().Contains(tspan));
+  EXPECT_TRUE(result.ListBasedTestResult().Contains(tspan->firstChild()));
+}
+
 TEST_F(HitTestingTest, FirstLineBoxDecorationOcclusion) {
   SetBodyInnerHTML(R"HTML(
     <style>
