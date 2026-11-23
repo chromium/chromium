@@ -4,6 +4,8 @@
 
 #include <string>
 
+#include "chrome/browser/translate/chrome_translate_client.h"
+#include "chrome/browser/translate/translate_test_utils.h"
 #include "chrome/browser/ui/actions/actions_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -18,6 +20,7 @@
 #include "chrome/browser/ui/views/translate/partial_translate_bubble_view.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "content/public/test/browser_test.h"
@@ -26,6 +29,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "url/gurl.h"
 
 namespace translate {
 
@@ -52,6 +56,23 @@ class TranslatePageActionInteractiveUiTest : public InteractiveBrowserTest {
   PartialTranslateBubbleView* GetPartialTranslateBubble() {
     return TranslateController::From(browser())->GetPartialTranslateBubble();
   }
+
+  void EnableTranslateIcon() {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(),
+        GURL("data:text/html;charset=utf-8,<html lang=\"fr\"></html>")));
+    auto* web_contents = browser()->GetTabStripModel()->GetActiveWebContents();
+    auto* translate_client =
+        ChromeTranslateClient::FromWebContents(web_contents);
+    while (translate_client->GetLanguageState().source_language() != "fr") {
+      CreateTranslateWaiter(web_contents,
+                            TranslateWaiter::WaitEvent::kLanguageDetermined)
+          ->Wait();
+    }
+    translate_client->GetTranslateManager()
+        ->GetLanguageState()
+        ->SetTranslateEnabled(true);
+  }
 };
 
 // Verifies that clicking the Translate icon closes the Partial Translate bubble
@@ -62,13 +83,7 @@ IN_PROC_BROWSER_TEST_F(TranslatePageActionInteractiveUiTest,
 
   RunTestSequence(
       // Show the Translate icon.
-      Do([&]() {
-        ChromeTranslateClient::FromWebContents(
-            browser()->GetTabStripModel()->GetActiveWebContents())
-            ->GetTranslateManager()
-            ->GetLanguageState()
-            ->SetTranslateEnabled(true);
-      }),
+      Do([&]() { EnableTranslateIcon(); }),
       WaitForShow(kTranslatePageActionElementId), Do([&]() {
         controller->StartPartialTranslate("fr", "en", std::u16string());
       }),
@@ -85,11 +100,7 @@ IN_PROC_BROWSER_TEST_F(TranslatePageActionInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(TranslatePageActionInteractiveUiTest,
                        IconViewAccessibleName) {
   // Show the Translate icon.
-  ChromeTranslateClient::FromWebContents(
-      browser()->GetTabStripModel()->GetActiveWebContents())
-      ->GetTranslateManager()
-      ->GetLanguageState()
-      ->SetTranslateEnabled(true);
+  EnableTranslateIcon();
 
   EXPECT_EQ(
       GetTranslateIcon().GetAccessibleName(),
