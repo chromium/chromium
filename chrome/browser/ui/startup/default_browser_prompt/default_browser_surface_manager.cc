@@ -203,6 +203,12 @@ void DefaultBrowserSurfaceManager::HandleRetry() {
 }
 
 void DefaultBrowserSurfaceManager::HandleDismiss() {
+  // Closing a sticky modal after accepting isn't a decline, so it neither
+  // starts the reprompt cooldown nor records a second interaction.
+  if (has_accepted_) {
+    return;
+  }
+
   PrefService* local_state = g_browser_process->local_state();
 
   int declined_count =
@@ -215,10 +221,6 @@ void DefaultBrowserSurfaceManager::HandleDismiss() {
   if (controller_) {
     controller_->OnDismissed();
     controller_.reset();
-  } else if (has_accepted_) {
-    default_browser::DefaultBrowserManager::CreateControllerFor(
-        GetEntrypointType())
-        ->OnDismissed();
   }
 }
 

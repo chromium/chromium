@@ -132,23 +132,25 @@ TEST_F(DefaultBrowserSurfaceManagerTest, HandleDismissIncrementsDeclinedCount) {
 }
 
 TEST_F(DefaultBrowserSurfaceManagerTest,
-       HandleDismissAfterAcceptIncrementsDeclinedCountAndRecordsDismissed) {
+       HandleDismissAfterAcceptDoesNotDeclineOrRecordDismissed) {
   base::HistogramTester histogram_tester;
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetInteger(prefs::kDefaultBrowserDeclinedCount, 0);
 
-  TestDefaultBrowserSurfaceManager manager;
+  TestDefaultBrowserSurfaceManager manager(
+      default_browser::DefaultBrowserEntrypointType::
+          kStickyModalDialogWithoutSettingsIllustration);
   manager.Show(/*can_pin_to_taskbar=*/false);
   manager.HandleAccept();
   manager.HandleDismiss();
 
-  EXPECT_EQ(local_state->GetInteger(prefs::kDefaultBrowserDeclinedCount), 1);
-  histogram_tester.ExpectBucketCount(
-      "DefaultBrowser.InfoBar.ShellIntegration.Interaction",
+  EXPECT_EQ(local_state->GetInteger(prefs::kDefaultBrowserDeclinedCount), 0);
+  EXPECT_TRUE(
+      local_state->GetTime(prefs::kDefaultBrowserLastDeclinedTime).is_null());
+  histogram_tester.ExpectUniqueSample(
+      "DefaultBrowser.StickyModalDialogWithoutSettingsIllustration."
+      "ShellIntegration.Interaction",
       default_browser::DefaultBrowserInteractionType::kAccepted, 1);
-  histogram_tester.ExpectBucketCount(
-      "DefaultBrowser.InfoBar.ShellIntegration.Interaction",
-      default_browser::DefaultBrowserInteractionType::kDismissed, 1);
 }
 
 TEST_F(DefaultBrowserSurfaceManagerTest, HandleAcceptNotifiesObservers) {
