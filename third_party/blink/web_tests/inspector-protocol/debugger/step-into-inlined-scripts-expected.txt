@@ -1,6 +1,4 @@
 Tests that debugger StepInto will step through inlined scripts.
-
-Script source was shown.
 Call stack:
     0) f1 (debugger-step-into-inlined-scripts.html:7)
     1)  (debugger-step-into-inlined-scripts.html:9)
