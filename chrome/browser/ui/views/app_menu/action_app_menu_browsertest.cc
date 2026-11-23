@@ -50,8 +50,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
-#include "components/enterprise/isolated_mode/prefs.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
@@ -572,33 +571,19 @@ INSTANTIATE_TEST_SUITE_P(
 
 class ActionAppMenuIsolatedModeSynonymSearchBrowserTest
     : public ActionAppMenuWithSearchBrowserTest {
- public:
-  ActionAppMenuIsolatedModeSynonymSearchBrowserTest() {
-    feature_list_.InitAndEnableFeature(
-        enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
-  }
-
  private:
-  base::test::ScopedFeatureList feature_list_;
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_;
 };
 
 IN_PROC_BROWSER_TEST_F(ActionAppMenuIsolatedModeSynonymSearchBrowserTest,
                        SearchMatchesIsolatedWindowSynonym) {
-  browser()->GetProfile()->GetPrefs()->SetInteger(
-      enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
-      static_cast<int>(
-          enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
-
-  BrowserWindowInterface* isolated_browser =
-      CreateBrowser(browser()->GetProfile());
-  ASSERT_TRUE(isolated_browser);
-
-  auto* root_action_item =
-      BrowserActions::From(isolated_browser)->root_action_item();
+  auto* root_action_item = BrowserActions::From(browser())->root_action_item();
   actions::ActionItem* isolated_action =
       actions::ActionManager::Get().FindAction(kActionNewIsolatedWindow,
                                                root_action_item);
   ASSERT_NE(isolated_action, nullptr) << "Isolated window action not found!";
+  EXPECT_TRUE(isolated_action->GetEnabled());
 
   const auto& synonyms = isolated_action->GetSynonyms();
   EXPECT_TRUE(std::find(synonyms.begin(), synonyms.end(),

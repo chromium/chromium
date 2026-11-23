@@ -318,6 +318,7 @@ if (toolkit_views) {
       "//chrome/test:test_support",
       "//components/bookmarks/browser",
       "//components/bookmarks/test",
+      "//components/enterprise/isolated_mode:test_support",
       "//components/history/core/common",
       "//components/prefs",
       "//components/signin/public/base",
