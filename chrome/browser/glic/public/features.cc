@@ -279,7 +279,13 @@ BASE_FEATURE(kGeicProviderChangePrompt,
 #endif
 );
 
-BASE_FEATURE(kGeicProviderSwitchNotice, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGeicProviderSwitchNotice,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 const base::FeatureParam<std::string> kGeicGuestURL{&kGeic, "geic-guest-url",
                                                     ""};
