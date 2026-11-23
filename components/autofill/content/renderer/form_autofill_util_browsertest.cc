@@ -867,7 +867,8 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles) {
   WebFormElement form_target = GetFormElementById(GetDocument(), "target");
   ButtonTitlesCache cache;
 
-  ButtonTitleList actual = GetButtonTitles(form_target, &cache);
+  ButtonTitleList actual = GetButtonTitles(
+      form_target, GetOwnedFormControls(GetDocument(), form_target), &cache);
 
   ButtonTitleList expected = {
       {u"Sign Up", ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE}};
@@ -890,7 +891,8 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles_TooLongTitle) {
   WebFormElement form_target = GetFormElementById(GetDocument(), "target");
   ButtonTitlesCache cache;
 
-  ButtonTitleList actual = GetButtonTitles(form_target, &cache);
+  ButtonTitleList actual = GetButtonTitles(
+      form_target, GetOwnedFormControls(GetDocument(), form_target), &cache);
 
   int total_length = 0;
   for (const auto& [title, title_type] : actual) {
@@ -920,8 +922,9 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles_NoCache) {
 
   ButtonTitleList expected = {
       {u"Sign Up", ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE}};
-  ButtonTitleList actual =
-      GetButtonTitles(form_target, /*button_titles_cache=*/nullptr);
+  ButtonTitleList actual = GetButtonTitles(
+      form_target, GetOwnedFormControls(GetDocument(), form_target),
+      /*button_titles_cache=*/nullptr);
   EXPECT_EQ(expected, actual);
 }
 
@@ -930,7 +933,8 @@ TEST_F(FormAutofillUtilsTest, GetButtonTitles_NoForm) {
   // list and not crash.
   WebFormElement form;
   ASSERT_FALSE(form);
-  EXPECT_EQ(GetButtonTitles(form, /*button_titles_cache=*/nullptr).size(), 0u);
+  EXPECT_EQ(GetButtonTitles(form, {}, /*button_titles_cache=*/nullptr).size(),
+            0u);
 }
 
 TEST_F(FormAutofillUtilsTest,
@@ -948,14 +952,86 @@ TEST_F(FormAutofillUtilsTest,
   LoadHTML(kHtml);
   const WebFormElement form_target =
       GetFormElementById(GetDocument(), "target");
-  const ButtonTitleList actual =
-      GetButtonTitles(form_target, /*button_titles_cache=*/nullptr);
+  const ButtonTitleList actual = GetButtonTitles(
+      form_target, GetOwnedFormControls(GetDocument(), form_target),
+      /*button_titles_cache=*/nullptr);
 
   EXPECT_THAT(actual,
               ElementsAre(Pair(u"Create account", ButtonTitleType::HYPERLINK),
                           Pair(u"Join", ButtonTitleType::DIV),
                           Pair(u"Continue", ButtonTitleType::DIV),
                           Pair(u"Start", ButtonTitleType::SPAN)));
+}
+
+// Tests that <input> and <button> button title extraction follows Autofill's
+// form ownership for `form` attributes and Shadow DOM.
+TEST_F(FormAutofillUtilsTest, ExtractFormData_ButtonTitlesOwnership) {
+  LoadHTML(R"(
+    <form id=f1>
+      <input>
+      <button type=submit form=f2>For f2</button>
+      <div>
+        <template shadowrootmode=open>
+          <button type=submit>Shadow</button>
+        </template>
+      </div>
+    </form>
+    <form id=f2>
+      <input>
+    </form>
+    <input type=submit form=f1 value="External">
+  )");
+  WebDocument doc = GetDocument();
+  EXPECT_THAT(
+      ExtractFormData(GetFormElementById(doc, "f1")),
+      Optional(Property(
+          &FormData::button_titles,
+          ElementsAre(
+              Pair(u"Shadow", ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE),
+              Pair(u"External", ButtonTitleType::INPUT_ELEMENT_SUBMIT_TYPE)))));
+  EXPECT_THAT(
+      ExtractFormData(GetFormElementById(doc, "f2")),
+      Optional(Property(
+          &FormData::button_titles,
+          ElementsAre(
+              Pair(u"For f2", ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE)))));
+}
+
+// Tests that button title extraction uses Blink's normalized form control
+// types (case-insensitive `type`, invalid `<button type>` defaulting to submit,
+// and ignoring `reset` buttons).
+TEST_F(FormAutofillUtilsTest, ExtractFormData_ButtonTitlesNormalizedType) {
+  LoadHTML(R"(
+    <form id=submit_form>
+      <input>
+      <button type=SUBMIT>Uppercase Submit</button>
+      <button type=invalid>Invalid Type Submit</button>
+      <input type=SUBMIT value="Uppercase Input Submit">
+    </form>
+    <form id=moderate_and_reset_form>
+      <input>
+      <button type=BUTTON>Uppercase Button</button>
+      <button type=reset>Reset</button>
+      <input type=reset value="Input Reset">
+    </form>
+  )");
+  WebDocument doc = GetDocument();
+  EXPECT_THAT(
+      ExtractFormData(GetFormElementById(doc, "submit_form")),
+      Optional(Property(
+          &FormData::button_titles,
+          ElementsAre(Pair(u"Uppercase Submit",
+                           ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE),
+                      Pair(u"Invalid Type Submit",
+                           ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE),
+                      Pair(u"Uppercase Input Submit",
+                           ButtonTitleType::INPUT_ELEMENT_SUBMIT_TYPE)))));
+  EXPECT_THAT(
+      ExtractFormData(GetFormElementById(doc, "moderate_and_reset_form")),
+      Optional(Property(
+          &FormData::button_titles,
+          ElementsAre(Pair(u"Uppercase Button",
+                           ButtonTitleType::BUTTON_ELEMENT_BUTTON_TYPE)))));
 }
 
 TEST_F(FormAutofillUtilsTest, IsEnabled) {

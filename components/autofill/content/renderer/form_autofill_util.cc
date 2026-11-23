@@ -20,6 +20,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -140,7 +141,6 @@ constexpr std::string_view kAriaLabel = "aria-label";
 constexpr std::string_view kAriaLabelledBy = "aria-labelledby";
 constexpr std::string_view kBold = "b";
 constexpr std::string_view kBreak = "br";
-constexpr std::string_view kButton = "button";
 constexpr std::string_view kClass = "class";
 constexpr std::string_view kColspan = "colspan";
 constexpr std::string_view kDefinitionDescriptionTag = "dd";
@@ -154,7 +154,6 @@ constexpr std::string_view kFormControlSelector = "input, select, textarea";
 constexpr std::string_view kId = "id";
 constexpr std::string_view kIframe = "iframe";
 constexpr std::string_view kImage = "img";
-constexpr std::string_view kInput = "input";
 constexpr std::string_view kLabel = "label";
 constexpr std::string_view kListItem = "li";
 constexpr std::string_view kMeta = "meta";
@@ -172,13 +171,11 @@ constexpr std::string_view kSrc = "src";
 #endif
 constexpr std::string_view kStrong = "strong";
 constexpr std::string_view kStyle = "style";
-constexpr std::string_view kSubmit = "submit";
 constexpr std::string_view kTable = "table";
 constexpr std::string_view kTableCell = "td";
 constexpr std::string_view kTableHeader = "th";
 constexpr std::string_view kTableRow = "tr";
 constexpr std::string_view kTitle = "title";
-constexpr std::string_view kType = "type";
 constexpr std::string_view kValue = "value";
 
 // Wrapper for frequently used WebString constants.
@@ -1105,8 +1102,12 @@ void RemoveDuplicatesAndLimitTotalLength(ButtonTitleList* result) {
 }
 
 // Return button titles with highest priority based on credibility of their HTML
-// tags and attributes.
-ButtonTitleList InferButtonTitlesForForm(const WebFormElement& web_form) {
+// tags and attributes. `owned_controls` must contain the form controls owned by
+// `web_form` (see `GetOwnedFormControls()`).
+ButtonTitleList InferButtonTitlesForForm(
+    const WebFormElement& web_form,
+    base::span<const WebFormControlElement> owned_controls) {
+  CHECK(web_form);
   // Different button types have different credibility of being the main button.
   // Highest - <input type='submit'>, <button type='submit'>, <button>.
   // Moderate - <input type='button'> <button type='button'>.
@@ -1114,50 +1115,32 @@ ButtonTitleList InferButtonTitlesForForm(const WebFormElement& web_form) {
   ButtonTitleList highest_priority_buttons;
   ButtonTitleList moderate_priority_buttons;
 
-  WebElementCollection input_elements =
-      web_form.GetElementsByHTMLTagName(GetWebString<kInput>());
-  for (WebElement item = input_elements.FirstItem(); item;
-       item = input_elements.NextItem()) {
-    DCHECK(item.IsFormControlElement());
-    WebFormControlElement control_element = item.To<WebFormControlElement>();
-    blink::mojom::FormControlType type =
-        control_element.FormControlTypeForAutofill();
-    bool is_submit_type = type == blink::mojom::FormControlType::kInputSubmit ||
-                          type == blink::mojom::FormControlType::kButtonSubmit;
-    bool is_button_type = type == blink::mojom::FormControlType::kInputButton ||
-                          type == blink::mojom::FormControlType::kButtonButton;
-    if (!is_submit_type && !is_button_type) {
-      continue;
+  for (const WebFormControlElement& control : owned_controls) {
+    using enum blink::mojom::FormControlType;
+    switch (control.FormControlTypeForAutofill()) {
+      case kInputSubmit:
+        AddButtonTitleToList(control.Value().Utf16(),
+                             mojom::ButtonTitleType::INPUT_ELEMENT_SUBMIT_TYPE,
+                             &highest_priority_buttons);
+        break;
+      case kButtonSubmit:
+        AddButtonTitleToList(control.TextContent().Utf16(),
+                             mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE,
+                             &highest_priority_buttons);
+        break;
+      case kInputButton:
+        AddButtonTitleToList(control.Value().Utf16(),
+                             mojom::ButtonTitleType::INPUT_ELEMENT_BUTTON_TYPE,
+                             &moderate_priority_buttons);
+        break;
+      case kButtonButton:
+        AddButtonTitleToList(control.TextContent().Utf16(),
+                             mojom::ButtonTitleType::BUTTON_ELEMENT_BUTTON_TYPE,
+                             &moderate_priority_buttons);
+        break;
+      default:
+        break;
     }
-    std::u16string title = control_element.Value().Utf16();
-    AddButtonTitleToList(
-        std::move(title),
-        is_submit_type ? mojom::ButtonTitleType::INPUT_ELEMENT_SUBMIT_TYPE
-                       : mojom::ButtonTitleType::INPUT_ELEMENT_BUTTON_TYPE,
-        is_submit_type ? &highest_priority_buttons
-                       : &moderate_priority_buttons);
-  }
-
-  WebElementCollection button_elements =
-      web_form.GetElementsByHTMLTagName(GetWebString<kButton>());
-  for (WebElement item = button_elements.FirstItem(); item;
-       item = button_elements.NextItem()) {
-    const WebString& type_attribute = GetAttribute<kType>(item);
-    if (!type_attribute.IsNull() && type_attribute != GetWebString<kButton>() &&
-        type_attribute != GetWebString<kSubmit>()) {
-      // Neither type='submit' nor type='button'. Skip this button.
-      continue;
-    }
-
-    bool is_submit_type =
-        type_attribute.IsNull() || type_attribute == GetWebString<kSubmit>();
-    std::u16string title = item.TextContent().Utf16();
-    AddButtonTitleToList(
-        std::move(title),
-        is_submit_type ? mojom::ButtonTitleType::BUTTON_ELEMENT_SUBMIT_TYPE
-                       : mojom::ButtonTitleType::BUTTON_ELEMENT_BUTTON_TYPE,
-        is_submit_type ? &highest_priority_buttons
-                       : &moderate_priority_buttons);
   }
 
   if (!highest_priority_buttons.empty()) {
@@ -2158,19 +2141,22 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     return std::nullopt;
   }
 
-  std::vector<WebFormControlElement> control_elements =
-      GetOwnedAutofillableFormControls(document, form_element);
-  if (control_elements.size() + custom_controls.size() >
+  std::vector<WebFormControlElement> owned_controls =
+      GetOwnedFormControls(document, form_element);
+  const size_t num_autofillable_controls =
+      std::ranges::count_if(owned_controls, &IsAutofillableElement);
+  if (num_autofillable_controls + custom_controls.size() >
       kMaxExtractableFields) {
     return std::nullopt;
   }
 
-  // Extracts fields from `control_elements` into `fields`.
   std::vector<FormFieldData> fields;
-  fields.reserve(control_elements.size());
-  for (const WebFormControlElement& control_element : control_elements) {
+  fields.reserve(num_autofillable_controls);
+  for (const WebFormControlElement& control_element : owned_controls) {
     DCHECK(IsAccessible(control_element));
-    DCHECK(IsAutofillableElement(control_element));
+    if (!IsAutofillableElement(control_element)) {
+      continue;
+    }
     fields.emplace_back();
     WebFormControlElementToFormField(form_element, control_element,
                                      &field_data_manager, &fields.back());
@@ -2219,10 +2205,11 @@ std::optional<FormData> ExtractFormDataWithFieldsAndFrames(
     }
     form.set_is_action_empty(form_element.Action().IsNull() ||
                              form_element.Action().IsEmpty());
+    form.set_button_titles(
+        GetButtonTitles(form_element, owned_controls, button_titles_cache));
   }
   form.set_fields(std::move(fields));
   form.set_child_frames(std::move(child_frames));
-  form.set_button_titles(GetButtonTitles(form_element, button_titles_cache));
   // `likely_contains_captcha` is only needed for Android for the autosubmission
   // after filling credentials from TTF bottom sheet.
 #if BUILDFLAG(IS_ANDROID)
@@ -2862,8 +2849,10 @@ std::u16string FindChildText(const WebNode& node) {
   return FindChildTextWithIgnoreList(node, std::set<WebNode>());
 }
 
-ButtonTitleList GetButtonTitles(const WebFormElement& web_form,
-                                ButtonTitlesCache* button_titles_cache) {
+ButtonTitleList GetButtonTitles(
+    const WebFormElement& web_form,
+    base::span<const WebFormControlElement> owned_controls,
+    ButtonTitlesCache* button_titles_cache) {
   // It makes no sense to collect button titles for a synthetic forms built
   // from unowned fields, as it's time-consuming and leads to scraping
   // many irrelevant elements.
@@ -2873,7 +2862,7 @@ ButtonTitleList GetButtonTitles(const WebFormElement& web_form,
 
   if (!button_titles_cache) {
     // Button titles scraping is disabled for this form.
-    return InferButtonTitlesForForm(web_form);
+    return InferButtonTitlesForForm(web_form, owned_controls);
   }
 
   FormRendererId form_id = GetFormRendererId(web_form);
@@ -2882,7 +2871,8 @@ ButtonTitleList GetButtonTitles(const WebFormElement& web_form,
     return *titles;
   }
 
-  ButtonTitleList button_titles = InferButtonTitlesForForm(web_form);
+  ButtonTitleList button_titles =
+      InferButtonTitlesForForm(web_form, owned_controls);
   button_titles_cache->insert_or_assign(form_id, button_titles);
   return button_titles;
 }

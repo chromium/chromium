@@ -258,10 +258,14 @@ bool IsWebpageEmpty(const blink::WebLocalFrame* frame);
 // Whitespace is trimmed from text accumulated at descendant nodes.
 std::u16string FindChildText(const blink::WebNode& node);
 
-// Returns the button titles for |web_form|. |button_titles_cache| can be used
-// to spare recomputation if called multiple times for the same form.
-ButtonTitleList GetButtonTitles(const blink::WebFormElement& web_form,
-                                ButtonTitlesCache* button_titles_cache);
+// Returns the button titles for |web_form|. `owned_controls` must contain the
+// form controls owned by |web_form| (see `GetOwnedFormControls()`).
+// |button_titles_cache| can be used to spare recomputation if called multiple
+// times for the same form.
+ButtonTitleList GetButtonTitles(
+    const blink::WebFormElement& web_form,
+    base::span<const blink::WebFormControlElement> owned_controls,
+    ButtonTitlesCache* button_titles_cache);
 
 // Returns the form element by unique renderer id. Returns the null element if
 // there is no form with the |form_renderer_id|.
