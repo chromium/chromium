@@ -12,6 +12,10 @@ import type {PageContent, PageContentAttributes, PageContentFormControlData, Pag
 // TODO(crbug.com/504261632): Report metrics from here down to the native
 // browser side so they can be uma-reported.
 
+// If a corresponding Blink APC change needs to be done as a follow-up, please
+// add a TODO and/or file a bug to track the work.
+// LINT.IfChange(ExtractAnnotatedPageContent)
+
 // Set of DOM Node IDs that are considered interactive (focused, selection
 // start/end). These nodes should be included in the APC tree even if they are
 // generic containers.
@@ -5151,3 +5155,4 @@ function walkTreeAndPopulate(
     }
   }
 }
+// LINT.ThenChange(//third_party/blink/renderer/modules/content_extraction/ai_page_content_agent.cc)

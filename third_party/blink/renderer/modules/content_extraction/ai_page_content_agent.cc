@@ -232,6 +232,9 @@ class AutoBuildHelper final : public NativeEventListener {
 
 namespace {
 
+// If a corresponding iOS APC change needs to be done as a follow-up, please
+// add a TODO and/or file a bug to track the work.
+// LINT.IfChange(AIPageContentExtractionHelpers)
 String ReplaceUnpairedSurrogates(const StringView& node_text) {
   if (!RuntimeEnabledFeatures::AIPageContentConvertNodeTextToUtf8Enabled()) {
     return node_text.ToString();
@@ -2327,6 +2330,7 @@ void OffsetNodeGeometry(mojom::blink::AIPageContentNode& node,
     OffsetNodeGeometry(*child, offset);
   }
 }
+// LINT.ThenChange(//ios/chrome/browser/intelligence/proto_wrappers/resources/annotated_page_content_extraction.ts:ExtractAnnotatedPageContent)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -2654,6 +2658,9 @@ mojom::blink::AIPageContentPtr AIPageContentAgent::GetAIPageContentInternal(
   return builder.Build(*frame);
 }
 
+// If a corresponding iOS APC change needs to be done as a follow-up, please
+// add a TODO and/or file a bug to track the work.
+// LINT.IfChange(AIPageContentBuilder)
 AIPageContentAgent::ContentBuilder::ContentBuilder(
     const mojom::blink::AIPageContentOptions& options)
     : options_(options) {
@@ -4046,5 +4053,6 @@ void AIPageContentAgent::ContentBuilder::AddInteractionDisabledReasons(
 AIPageContentAgent::ContentBuilder::RecursionData::RecursionData(
     const ComputedStyle& document_style)
     : document_style(document_style) {}
+// LINT.ThenChange(//ios/chrome/browser/intelligence/proto_wrappers/resources/annotated_page_content_extraction.ts:ExtractAnnotatedPageContent)
 
 }  // namespace blink

@@ -1264,6 +1264,10 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
   }
 }
 
+// If a corresponding Blink APC change needs to be done as a follow-up, please
+// add a TODO and/or file a bug to track the work.
+// LINT.IfChange(ConvertAIPageContentToProto)
+
 // Helper to populate the Rich Extraction content for both the main frame and
 // iframes.
 - (void)populateForRichExtractionWithValue:(const base::DictValue&)value
@@ -1393,6 +1397,7 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
     }
   }
 }
+// LINT.ThenChange(//components/optimization_guide/content/browser/page_content_proto_util.cc:ConvertAIPageContentToProto)
 
 // Helper to populate the main frame's content for light extraction.
 - (void)populateMainFrameForLightExtractionWithValue:

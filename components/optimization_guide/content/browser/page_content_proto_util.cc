@@ -84,6 +84,10 @@ void RecordPopupValidationStatus(PageContentPopupValidationStatus status) {
       "OptimizationGuide.PageContentExtraction.PopupValidationStatus", status);
 }
 
+// If a corresponding iOS APC change needs to be done as a follow-up, please
+// add a TODO and/or file a bug to track the work.
+// LINT.IfChange(ConvertAIPageContent)
+
 // This is the same as `kInvalidDOMNodeId` defined in blink.
 constexpr int kInvalidDOMNodeId = 0;
 
@@ -1651,6 +1655,7 @@ class Converter {
   raw_ref<AIPageContentResult> page_content_result_;
   ConvertAIPageContentToProtoSession session_;
 };
+// LINT.ThenChange(//ios/chrome/browser/intelligence/proto_wrappers/annotated_page_content_extraction_utils.mm:ConvertAIPageContent)
 
 // Private helper template to handle both mutable and const traversals for
 // VisitContentNodes().
@@ -1692,6 +1697,9 @@ ConvertAIPageContentToProtoSession::ConvertAIPageContentToProtoSession() =
 ConvertAIPageContentToProtoSession::~ConvertAIPageContentToProtoSession() =
     default;
 
+// If a corresponding iOS APC change needs to be done as a follow-up, please
+// add a TODO and/or file a bug to track the work.
+// LINT.IfChange(ConvertAIPageContentToProto)
 base::expected<void, AIPageContentError> ConvertAIPageContentToProto(
     blink::mojom::AIPageContentOptionsPtr main_frame_options,
     content::GlobalRenderFrameHostToken main_frame_token,
@@ -1804,6 +1812,7 @@ base::expected<void, AIPageContentError> ConvertAIPageContentToProto(
 
   return base::ok();
 }
+// LINT.ThenChange(//ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.mm:ConvertAIPageContentToProto)
 
 bool IsCoordinateInNode(
     const gfx::Point& coordinate,

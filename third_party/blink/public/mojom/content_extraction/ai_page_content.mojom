@@ -21,6 +21,10 @@ import "mojo/public/mojom/base/big_buffer.mojom";
 // Note: The proto representation needs to remain backwards compatible with
 // older client versions but there's no such limitation on the mojom
 // representation.
+
+// If a corresponding iOS APC change needs to be done as a follow-up, please
+// add a TODO and/or file a bug to track the work.
+// LINT.IfChange(AIPageContentMojomTypes)
 enum AIPageContentAttributeType {
   kRoot,
   kIframe,
@@ -780,6 +784,7 @@ struct AIPageContentOptions {
   // Whether to include data for detected OTP (one-time pin) fields.
   bool include_otps_for_redaction = false;
 };
+// LINT.ThenChange(//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.ts:AIPageContentMojomTypes)
 
 // Result containing extracted image bytes and associated metadata. Supports
 // normal images (e.g. <img>, <picture>), content images with

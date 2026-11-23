@@ -31,6 +31,10 @@
 
 namespace {
 
+// If a corresponding Blink APC change needs to be done as a follow-up, please
+// add a TODO and/or file a bug to track the work.
+// LINT.IfChange(ConvertAIPageContent)
+
 // APC JSON Keys Used in Extraction.
 constexpr char kAttributeTypeKey[] = "attributeType";
 constexpr char kContentAttributesKey[] = "contentAttributes";
@@ -1418,3 +1422,4 @@ void TranslateIframeNodeGeometries(
   TranslateSubtreeGeometries(apc->mutable_root_node(),
                              /*transform=*/nullptr);
 }
+// LINT.ThenChange(//components/optimization_guide/content/browser/page_content_proto_util.cc:ConvertAIPageContent)
