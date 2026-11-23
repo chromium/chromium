@@ -27,6 +27,7 @@
 #include "base/test/test_file_util.h"
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
@@ -2310,8 +2311,16 @@ TEST_F(FileSystemAccessManagerImplTest,
   }
 }
 
+// TODO(https://crbug.com/589822091): Fails first batched attempt on Android.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_DeserializeHandle_External_SensitiveEntryCheck \
+  DISABLED_DeserializeHandle_External_SensitiveEntryCheck
+#else
+#define MAYBE_DeserializeHandle_External_SensitiveEntryCheck \
+  DeserializeHandle_External_SensitiveEntryCheck
+#endif
 TEST_F(FileSystemAccessManagerImplTest,
-       DeserializeHandle_External_SensitiveEntryCheck) {
+       MAYBE_DeserializeHandle_External_SensitiveEntryCheck) {
   using SensitiveEntryResult =
       FileSystemAccessPermissionContext::SensitiveEntryResult;
   const base::FilePath kExtRoot =
