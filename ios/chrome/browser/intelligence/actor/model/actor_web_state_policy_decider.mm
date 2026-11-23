@@ -32,12 +32,6 @@ void ActorWebStatePolicyDecider::ShouldAllowRequest(
     return;
   }
 
-  // TODO(crbug.com/582302821): Bypass or distinguish user-initiated navigations
-  // (e.g. link clicks, omnibox navigations) in `ShouldAllowRequest` and
-  // `ShouldAllowResponse` while the tab is in
-  // `ActorControlState::kUserControlled` (`ActorTaskState::kPausedByUser`),
-  // before enabling `kActorOriginGating`.
-
   // Only gate primary main frame navigations.
   if (!request_info.target_frame_is_main) {
     std::move(callback).Run(PolicyDecision::Allow());
