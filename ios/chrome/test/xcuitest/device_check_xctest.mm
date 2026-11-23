@@ -7,6 +7,7 @@
 
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/content_suggestions/public/ntp_home_constants.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
 #import "ios/testing/system_alert_handler.h"
 
 using base::test::ios::kWaitForPageLoadTimeout;
@@ -28,12 +29,29 @@ using base::test::ios::kWaitForUIElementTimeout;
 - (void)testNetworkConnection {
   XCUIApplication* app = [[XCUIApplication alloc] init];
 
+  // The legacy NTP exposes the fake omnibox as a button with
+  // `FakeOmniboxAccessibilityID()`, while the redesigned NTP uses a
+  // `FakeLocationBarView` control with
+  // `kNTPFakeOmniboxAccessibilityIdentifier`. Match either identifier on any
+  // element type.
+  NSPredicate* fakeOmniboxPredicate =
+      [NSPredicate predicateWithFormat:@"identifier IN %@", @[
+        ntp_home::FakeOmniboxAccessibilityID(),
+        kNTPFakeOmniboxAccessibilityIdentifier
+      ]];
+  XCUIElement* fakeOmnibox = [[app descendantsMatchingType:XCUIElementTypeAny]
+                                 matchingPredicate:fakeOmniboxPredicate]
+                                 .firstMatch;
+  XCTAssert(
+      [fakeOmnibox
+          waitForExistenceWithTimeout:kWaitForUIElementTimeout.InSecondsF()],
+      @"Fake omnibox didn't appear!");
+
   struct CGVector offset;
   offset.dx = 0.5;
   offset.dy = 0.5;
 
-  [[app.buttons[ntp_home::FakeOmniboxAccessibilityID()].firstMatch
-      coordinateWithNormalizedOffset:offset] tap];
+  [[fakeOmnibox coordinateWithNormalizedOffset:offset] tap];
 
   XCTAssert(
       [app.keyboards.firstMatch
