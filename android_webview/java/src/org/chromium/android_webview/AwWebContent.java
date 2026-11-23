@@ -98,17 +98,18 @@ public class AwWebContent {
      * <p>Must only be called on the UI thread after Chromium startup has completed.
      *
      * <p>TODO(bewise): Replace this destroyed AwWebContent approach with better state management so
-     * that long term we can clean up the default profile when it isn't in use.
+     * that long term we can clean up profiles when they aren't in use.
      */
     public static AwWebContent createDestroyedAwWebContent(
-            StartupController startupController, AwContents.AwContentsClientFactory clientFactory) {
+            StartupController startupController,
+            AwBrowserContext browserContext,
+            AwContents.AwContentsClientFactory clientFactory) {
         ThreadUtils.assertOnUiThread();
         Context appContext = ContextUtils.getApplicationContext();
         AwWebContent destroyedAwWebContent = new AwWebContent(startupController);
         destroyedAwWebContent.mAwContents =
                 new AwContents(
-                        AwBrowserContextStore.getNamedContext(
-                                AwBrowserContext.getDefaultContextName(), true),
+                        browserContext,
                         new FrameLayout(appContext),
                         appContext,
                         new NullInternalAccessDelegate(),

@@ -27,6 +27,8 @@ import org.chromium.android_webview.AwBrowserContextStore;
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwCookieManager;
+import org.chromium.android_webview.AwWebContent;
+import org.chromium.android_webview.StartupController;
 import org.chromium.android_webview.WebMessageListener;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
@@ -509,5 +511,24 @@ public class MultiProfileTest extends AwParameterizedTest {
 
         // Wait for the test to run (see injectedListener above).
         testDoneHelper.waitForOnly("Did not receive post message triggered by injected javascript");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testCreateDestroyedAwWebContentUsesProvidedProfile() {
+        mRule.startBrowserProcess();
+        final AwBrowserContext profile = mRule.getProfileSync("DestroyedAwWebContentProfile", true);
+        StartupController startupController = new StartupController(/* delegate= */ null);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    AwWebContent destroyed =
+                            AwWebContent.createDestroyedAwWebContent(
+                                    startupController,
+                                    profile,
+                                    awContents -> new TestAwContentsClient());
+                    Assert.assertSame(
+                            profile, destroyed.getAwContents().getBrowserContextInternal());
+                });
     }
 }
