@@ -4,9 +4,12 @@
 
 #include "chrome/renderer/password_manager/remote_actor_credential_sharing_extension.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
+#include "base/auto_reset.h"
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "components/password_manager/core/common/remote_actor/remote_actor_credential_sharing_policy.h"
@@ -31,6 +34,14 @@
 
 namespace {
 
+constinit std::optional<bool> g_is_locked_to_site_override;
+
+bool IsProcessLockedToSite() {
+  return g_is_locked_to_site_override.has_value()
+             ? *g_is_locked_to_site_override
+             : blink::Platform::Current()->IsLockedToSite();
+}
+
 bool ShouldExposeRemoteActorCredentialSharingJavascriptApi(
     content::RenderFrame* render_frame) {
   if (!render_frame || !render_frame->IsMainFrame() ||
@@ -40,7 +51,7 @@ bool ShouldExposeRemoteActorCredentialSharingJavascriptApi(
 
   blink::WebLocalFrame* web_frame = render_frame->GetWebFrame();
   // Site isolation verification: Ensure the frame is locked to its site.
-  if (!blink::Platform::Current()->IsLockedToSite()) {
+  if (!IsProcessLockedToSite()) {
     return false;
   }
 
@@ -65,6 +76,15 @@ bool IsSameSiteWithOpener(blink::WebLocalFrame* web_frame) {
 void RemoteActorCredentialSharingExtension::Create(
     content::RenderFrame* render_frame) {
   new RemoteActorCredentialSharingExtension(render_frame);
+}
+
+// static
+base::AutoReset<std::optional<bool>>
+RemoteActorCredentialSharingExtension::SetIsLockedToSiteForTesting(
+    bool is_locked_to_site) {
+  CHECK_IS_TEST();
+  return base::AutoReset<std::optional<bool>>(&g_is_locked_to_site_override,
+                                              is_locked_to_site);
 }
 
 RemoteActorCredentialSharingExtension::RemoteActorCredentialSharingExtension(

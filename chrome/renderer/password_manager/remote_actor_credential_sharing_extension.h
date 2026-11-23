@@ -5,6 +5,9 @@
 #ifndef CHROME_RENDERER_PASSWORD_MANAGER_REMOTE_ACTOR_CREDENTIAL_SHARING_EXTENSION_H_
 #define CHROME_RENDERER_PASSWORD_MANAGER_REMOTE_ACTOR_CREDENTIAL_SHARING_EXTENSION_H_
 
+#include <optional>
+
+#include "base/auto_reset.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/password_manager/remote_actor_credential_sharing.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -21,6 +24,11 @@ class RemoteActorCredentialSharingExtension
     : public content::RenderFrameObserver {
  public:
   static void Create(content::RenderFrame* render_frame);
+
+  // Overrides `blink::Platform::IsLockedToSite()` for renderer tests that run
+  // without a full site-isolated browser process.
+  static base::AutoReset<std::optional<bool>> SetIsLockedToSiteForTesting(
+      bool is_locked_to_site);
 
   explicit RemoteActorCredentialSharingExtension(
       content::RenderFrame* render_frame);

@@ -468,6 +468,7 @@ if (!is_android) {
       "chrome_render_frame_observer_browsertest.cc",
       "commerce/commerce_web_extractor_browsertest.cc",
       "indigo/indigo_agent_browsertest.cc",
+      "password_manager/remote_actor_credential_sharing_extension_browsertest.cc",
       "translate/translate_agent_browsertest.cc",
       "translate/translate_script_browsertest.cc",
     ]
@@ -475,6 +476,7 @@ if (!is_android) {
       ":renderer",
       "//base/test:test_support",
       "//chrome/common",
+      "//chrome/common:mojo_bindings",
       "//chrome/common:non_code_constants",
       "//chrome/common/read_anything:mojo_bindings",
       "//chrome/test/base:chrome_render_view_test",
@@ -485,6 +487,7 @@ if (!is_android) {
       "//components/commerce/core:commerce_constants",
       "//components/no_state_prefetch/renderer",
       "//components/optimization_guide/content/renderer",
+      "//components/password_manager/core/common/remote_actor:features",
       "//components/resources:components_resources",
       "//components/safe_browsing/core/common/phishing_classifier",
       "//components/safe_browsing/core/common/proto:client_model_proto",
