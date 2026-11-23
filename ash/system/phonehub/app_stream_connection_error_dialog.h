@@ -5,10 +5,13 @@
 #ifndef ASH_SYSTEM_PHONEHUB_APP_STREAM_CONNECTION_ERROR_DIALOG_H_
 #define ASH_SYSTEM_PHONEHUB_APP_STREAM_CONNECTION_ERROR_DIALOG_H_
 
+#include <memory>
+
 #include "ash/ash_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "ui/events/event.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
@@ -53,17 +56,19 @@ class ASH_EXPORT AppStreamConnectionErrorDialog : public views::WidgetObserver,
   void OnViewBoundsChanged(views::View* observed_view) override;
   void OnViewPreferredSizeChanged(views::View* observed_view) override;
 
-  views::Widget* widget() { return widget_; }
+  views::Widget* widget() { return widget_.get(); }
 
  private:
-  raw_ptr<views::Widget> widget_ = nullptr;
+  void OnWidgetClosed(views::Widget::ClosedReason reason);
+
+  std::unique_ptr<views::Widget> widget_;
 
   const raw_ptr<views::View> host_view_;
 
   base::OnceClosure on_close_callback_;
 
-  base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
-      widget_observations_{this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      parent_widget_observation_{this};
   base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
       view_observations_{this};
 };

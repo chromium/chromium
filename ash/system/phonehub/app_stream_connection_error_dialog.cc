@@ -15,6 +15,7 @@
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/url_constants.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -242,12 +243,12 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
   }
 
   void OnStartTetheringClicked(const ui::Event& event) {
-    if (start_tethering_callback_) {
-      std::move(start_tethering_callback_).Run(event);
-    }
-
+    StartTetheringCallback callback = std::move(start_tethering_callback_);
     GetWidget()->CloseWithReason(
         views::Widget::ClosedReason::kAcceptButtonClicked);
+    if (callback) {
+      std::move(callback).Run(event);
+    }
   }
 
   void OnCancelClicked() {
@@ -284,19 +285,20 @@ AppStreamConnectionErrorDialog::AppStreamConnectionErrorDialog(
       std::move(button_callback), is_different_network, is_phone_one_cellular);
   views::Widget* const parent = host_view_->GetWidget();
 
-  widget_ = new views::Widget();
+  widget_ = std::make_unique<views::Widget>();
   views::Widget::InitParams params(
-      views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.layer_type = ui::LAYER_NOT_DRAWN;
   params.parent = parent->GetNativeWindow();
   params.delegate = dialog.release();
 
   widget_->Init(std::move(params));
+  widget_->MakeCloseSynchronous(base::BindOnce(
+      &AppStreamConnectionErrorDialog::OnWidgetClosed, base::Unretained(this)));
 
   // The |dialog| ownership is passed to the window hierarchy.
-  widget_observations_.AddObservation(widget_.get());
-  widget_observations_.AddObservation(parent);
+  parent_widget_observation_.Observe(parent);
 
   view_observations_.AddObservation(host_view_.get());
   view_observations_.AddObservation(widget_->GetContentsView());
@@ -304,11 +306,8 @@ AppStreamConnectionErrorDialog::AppStreamConnectionErrorDialog(
 
 AppStreamConnectionErrorDialog::~AppStreamConnectionErrorDialog() {
   view_observations_.RemoveAllObservations();
-  widget_observations_.RemoveAllObservations();
-  if (widget_) {
-    widget_->Close();
-    widget_ = nullptr;
-  }
+  parent_widget_observation_.Reset();
+  widget_.reset();
 }
 
 void AppStreamConnectionErrorDialog::UpdateBounds() {
@@ -329,17 +328,13 @@ void AppStreamConnectionErrorDialog::UpdateBounds() {
 }
 
 void AppStreamConnectionErrorDialog::OnWidgetDestroying(views::Widget* widget) {
-  if (on_close_callback_) {
-    std::move(on_close_callback_).Run();
-  }
+  OnWidgetClosed(views::Widget::ClosedReason::kUnspecified);
 }
 
 void AppStreamConnectionErrorDialog::OnWidgetBoundsChanged(
     views::Widget* widget,
     const gfx::Rect& new_bounds) {
-  if (widget == host_view_->GetWidget()) {
-    UpdateBounds();
-  }
+  UpdateBounds();
 }
 
 void AppStreamConnectionErrorDialog::OnViewBoundsChanged(
@@ -350,6 +345,16 @@ void AppStreamConnectionErrorDialog::OnViewBoundsChanged(
 void AppStreamConnectionErrorDialog::OnViewPreferredSizeChanged(
     views::View* observed_view) {
   UpdateBounds();
+}
+
+void AppStreamConnectionErrorDialog::OnWidgetClosed(
+    views::Widget::ClosedReason reason) {
+  view_observations_.RemoveAllObservations();
+  parent_widget_observation_.Reset();
+  widget_.reset();
+  if (on_close_callback_) {
+    std::move(on_close_callback_).Run();
+  }
 }
 
 }  // namespace ash
