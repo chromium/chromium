@@ -12,6 +12,8 @@ source_set("autofill") {
     "at_memory_suggestion_controller.h",
     "authenticator_selection_dialog_view_android.cc",
     "authenticator_selection_dialog_view_android.h",
+    "autofill_ai_attribution_verification_sheet_bridge.cc",
+    "autofill_ai_attribution_verification_sheet_bridge.h",
     "autofill_ai_save_update_entity_flow_manager.cc",
     "autofill_ai_save_update_entity_flow_manager.h",
     "autofill_ai_save_update_entity_prompt_view_android.cc",
@@ -142,6 +144,7 @@ source_set("unit_tests") {
   sources = [
     "at_memory_bottom_sheet_bridge_unittest.cc",
     "at_memory_suggestion_controller_unittest.cc",
+    "autofill_ai_attribution_verification_sheet_bridge_unittest.cc",
     "autofill_ai_save_update_entity_flow_manager_unittest.cc",
     "autofill_cvc_save_message_delegate_unittest.cc",
     "autofill_dialog_controller_impl_unittest.cc",
@@ -220,6 +223,7 @@ source_set("browser_tests") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "autofill_ai_attribution_verification_sheet_bridge_test_api.h",
     "autofill_keyboard_accessory_controller_impl_test_api.h",
     "autofill_message_controller_test_api.h",
     "autofill_message_model_test_api.h",

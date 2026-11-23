@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -32,6 +33,9 @@ public class AutofillAiAttributionVerificationSheetCoordinator {
 
     private final AutofillAiAttributionVerificationSheetView mView;
     private final AutofillAiAttributionVerificationSheetMediator mMediator;
+    private final PropertyModelChangeProcessor<
+                    PropertyModel, AutofillAiAttributionVerificationSheetView, PropertyKey>
+            mChangeProcessor;
 
     /**
      * Constructs the coordinator and binds the underlying MVC model and view.
@@ -48,10 +52,11 @@ public class AutofillAiAttributionVerificationSheetCoordinator {
         mMediator =
                 new AutofillAiAttributionVerificationSheetMediator(
                         bottomSheetController, mView, delegate);
-        PropertyModelChangeProcessor.create(
-                mMediator.getModel(),
-                mView,
-                AutofillAiAttributionVerificationSheetViewBinder::bind);
+        mChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mMediator.getModel(),
+                        mView,
+                        AutofillAiAttributionVerificationSheetViewBinder::bind);
     }
 
     /**
@@ -61,6 +66,15 @@ public class AutofillAiAttributionVerificationSheetCoordinator {
      */
     public void requestShowContent() {
         mMediator.requestShowContent();
+    }
+
+    /**
+     * Hides and tears down the attribution verification bottom sheet without invoking {@link
+     * Delegate#onDismissed()}.
+     */
+    public void destroy() {
+        mMediator.destroy();
+        mChangeProcessor.destroy();
     }
 
     PropertyModel getPropertyModelForTesting() {

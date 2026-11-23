@@ -54,6 +54,14 @@ import org.chromium.ui.modelutil.PropertyModel;
         mBottomSheetController.expandSheet();
     }
 
+    void destroy() {
+        if (!mIsShowing) {
+            return;
+        }
+        mIsShowing = false;
+        mBottomSheetController.hideContent(mBottomSheetContent, /* animate= */ false);
+    }
+
     private void onDismissed() {
         if (!mIsShowing) {
             return;

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill.autofill_ai;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -120,6 +121,35 @@ public class AutofillAiAttributionVerificationSheetMediatorTest {
     public void testDismissHandler_ignoredWhenNotShowing() {
         mModel.get(DISMISS_HANDLER).run();
 
+        verify(mDelegate, never()).onDismissed();
+    }
+
+    @Test
+    public void testDestroy_whenShowing_hidesContentWithoutNotifyingDelegate() {
+        when(mBottomSheetController.requestShowContent(eq(mBottomSheetContent), eq(true)))
+                .thenReturn(true);
+        doAnswer(
+                        invocation -> {
+                            mModel.get(DISMISS_HANDLER).run();
+                            return null;
+                        })
+                .when(mBottomSheetController)
+                .hideContent(eq(mBottomSheetContent), eq(false));
+        mMediator.requestShowContent();
+
+        mMediator.destroy();
+        mMediator.destroy();
+
+        verify(mBottomSheetController, times(1))
+                .hideContent(eq(mBottomSheetContent), /* animate= */ eq(false));
+        verify(mDelegate, never()).onDismissed();
+    }
+
+    @Test
+    public void testDestroy_whenNotShowing_noOp() {
+        mMediator.destroy();
+
+        verify(mBottomSheetController, never()).hideContent(eq(mBottomSheetContent), anyBoolean());
         verify(mDelegate, never()).onDismissed();
     }
 }

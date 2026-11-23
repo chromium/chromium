@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill.autofill_ai;
 
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -80,5 +81,18 @@ public class AutofillAiAttributionVerificationSheetCoordinatorTest {
         view.destroy();
 
         verify(mDelegate, times(1)).onDismissed();
+    }
+
+    @Test
+    public void testDestroy_hidesSheetWithoutNotifyingDelegate() {
+        AutofillAiAttributionVerificationSheetView view = mCoordinator.getViewForTesting();
+        when(mBottomSheetController.requestShowContent(eq(view), eq(true))).thenReturn(true);
+        mCoordinator.requestShowContent();
+
+        mCoordinator.destroy();
+        view.destroy();
+
+        verify(mBottomSheetController).hideContent(eq(view), /* animate= */ eq(false));
+        verify(mDelegate, never()).onDismissed();
     }
 }
