@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
-#include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
@@ -132,8 +131,6 @@ class PLATFORM_EXPORT CanvasResource final : public gpu::ClientImage {
   ~CanvasResource() override;
 
  private:
-  SkImageInfo CreateSkImageInfo() const;
-
   const base::PlatformThreadRef owning_thread_ref_;
 
   // These members are either only accessed on the owning thread, or are only

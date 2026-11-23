@@ -41,9 +41,7 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkPixmap.h"
-#include "third_party/skia/include/core/SkSize.h"
 #include "third_party/skia/include/core/SkSurface.h"
 #include "third_party/skia/include/gpu/GpuTypes.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
@@ -141,16 +139,6 @@ scoped_refptr<CanvasResource> CanvasResource::CreateForTesting(
   return canvas_resource;
 }
 
-SkImageInfo CanvasResource::CreateSkImageInfo() const {
-  auto size = GetSharedImage()->size();
-  auto format = GetSharedImage()->format();
-  auto color_space = GetSharedImage()->color_space();
-  auto alpha_type = GetSharedImage()->alpha_type();
-  return SkImageInfo::Make(SkISize::Make(size.width(), size.height()),
-                           viz::ToClosestSkColorType(format), alpha_type,
-                           color_space.ToSkColorSpace());
-}
-
 CanvasResource::~CanvasResource() = default;
 
 void CanvasResource::UploadSoftwareRenderingResults(SkSurface* sk_surface) {
@@ -162,8 +150,7 @@ void CanvasResource::UploadSoftwareRenderingResults(SkSurface* sk_surface) {
     return;
   }
 
-  sk_surface->readPixels(
-      scoped_mapping->GetSkPixmapForPlane(0, CreateSkImageInfo()), 0, 0);
+  sk_surface->readPixels(scoped_mapping->GetSkPixmapForPlane(0), 0, 0);
   scoped_mapping.reset();
 
   // If using GPU compositing, inform the service that the SharedImage's backing
