@@ -567,45 +567,43 @@ constexpr CGFloat kBlueDotInset = 1;
 
 // Updates view colors.
 - (void)updateColors {
-  [UIView setAnimationsEnabled:NO];
+  [UIView performWithoutAnimation:^{
+    BOOL isSelected = self.isSelected;
+    if (self.focused) {
+      _selectedBackground.backgroundColor = [UIColor clearColor];
+      _accessibilityContainerView.backgroundColor = [UIColor clearColor];
+    } else if (self.highlighted || self.configurationState.cellDragState !=
+                                       UICellConfigurationDragStateNone) {
+      // Before a cell is dragged, it is highlighted.
+      // The cell's background color must be updated at this moment, otherwise
+      // it will not be applied correctly.
+      _selectedBackground.backgroundColor =
+          [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
+      _accessibilityContainerView.backgroundColor =
+          _selectedBackground.backgroundColor;
+    } else {
+      _selectedBackground.backgroundColor =
+          isSelected ? [UIColor colorNamed:kGroupedSecondaryBackgroundColor]
+                     : TabStripHelper.cellBackgroundColor;
+      _accessibilityContainerView.backgroundColor =
+          _hovered ? [UIColor colorNamed:kGrey50Color]
+                   : _selectedBackground.backgroundColor;
+    }
 
-  BOOL isSelected = self.isSelected;
-  if (self.focused) {
-    _selectedBackground.backgroundColor = [UIColor clearColor];
-    _accessibilityContainerView.backgroundColor = [UIColor clearColor];
-  } else if (self.highlighted || self.configurationState.cellDragState !=
-                                     UICellConfigurationDragStateNone) {
-    // Before a cell is dragged, it is highlighted.
-    // The cell's background color must be updated at this moment, otherwise it
-    // will not be applied correctly.
-    _selectedBackground.backgroundColor =
-        [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
-    _accessibilityContainerView.backgroundColor =
-        _selectedBackground.backgroundColor;
-  } else {
-    _selectedBackground.backgroundColor =
-        isSelected ? [UIColor colorNamed:kGroupedSecondaryBackgroundColor]
-                   : TabStripHelper.cellBackgroundColor;
-    _accessibilityContainerView.backgroundColor =
-        _hovered ? [UIColor colorNamed:kGrey50Color]
-                 : _selectedBackground.backgroundColor;
-  }
+    UIColor* inactiveColor = [UIColor
+        colorWithDynamicProvider:^UIColor*(UITraitCollection* traitCollection) {
+          if (traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+            return [UIColor colorNamed:kTextSecondaryColor];
+          }
+          return [UIColor colorNamed:kTextTertiaryColor];
+        }];
+    _titleLabel.textColor =
+        isSelected ? [UIColor colorNamed:kTextPrimaryColor] : inactiveColor;
 
-  UIColor* inactiveColor = [UIColor
-      colorWithDynamicProvider:^UIColor*(UITraitCollection* traitCollection) {
-        if (traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
-          return [UIColor colorNamed:kTextSecondaryColor];
-        }
-        return [UIColor colorNamed:kTextTertiaryColor];
-      }];
-  _titleLabel.textColor =
-      isSelected ? [UIColor colorNamed:kTextPrimaryColor] : inactiveColor;
-
-  _faviconView.tintColor = self.selected
-                               ? [UIColor colorNamed:kCloseButtonColor]
-                               : [UIColor colorNamed:kGrey500Color];
-
-  [UIView setAnimationsEnabled:YES];
+    _faviconView.tintColor = self.selected
+                                 ? [UIColor colorNamed:kCloseButtonColor]
+                                 : [UIColor colorNamed:kGrey500Color];
+  }];
 }
 
 // Hides the close button view if the cell is collapsed.

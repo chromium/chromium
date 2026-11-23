@@ -88,9 +88,13 @@ source_set("utils") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "tab_strip_item_identifier_unittest.mm" ]
+  sources = [
+    "tab_strip_item_identifier_unittest.mm",
+    "tab_strip_tab_cell_unittest.mm",
+  ]
   deps = [
     ":swift",
+    ":ui",
     "//components/tab_groups",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
