@@ -12,6 +12,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kProfilePickerToolbarBackButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(
     kProfilePickerToolbarEffectsControlButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(

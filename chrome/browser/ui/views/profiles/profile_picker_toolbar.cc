@@ -21,6 +21,8 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/event.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -32,6 +34,7 @@
 #include "ui/views/view_targeter.h"
 #include "ui/views/view_targeter_delegate.h"
 
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kProfilePickerToolbarBackButtonElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(
     kProfilePickerToolbarEffectsControlButtonElementId);
 DEFINE_ELEMENT_IDENTIFIER_VALUE(
@@ -71,6 +74,17 @@ class ProfilePickerToolbarButton : public ToolbarButton {
   ~ProfilePickerToolbarButton() override = default;
 
   // ToolbarButton:
+  KeyClickAction GetKeyClickActionForEvent(const ui::KeyEvent& event) override {
+    if (event.key_code() == ui::VKEY_RETURN) {
+      // Activate on Return on all platforms (ignoring
+      // `PlatformStyle::kReturnClicksFocusedControl`, which might be false on
+      // certain platforms e.g. macOS) to stay consistent with WebUI buttons on
+      // other screens of the flow.
+      return KeyClickAction::kOnKeyPress;
+    }
+    return ToolbarButton::GetKeyClickActionForEvent(event);
+  }
+
   SkColor GetForegroundColor(ButtonState state) const override {
     const auto* color_provider = GetColorProvider();
     if (!color_provider) {
@@ -105,6 +119,8 @@ class SignInBackButton : public ProfilePickerToolbarButton {
                                           : kBackArrowTouchOldIcon);
     SetTooltipText(l10n_util::GetStringUTF16(
         IDS_PROFILE_PICKER_BACK_BUTTON_SIGN_IN_LABEL));
+    SetProperty(views::kElementIdentifierKey,
+                kProfilePickerToolbarBackButtonElementId);
   }
 
   SignInBackButton(const SignInBackButton&) = delete;

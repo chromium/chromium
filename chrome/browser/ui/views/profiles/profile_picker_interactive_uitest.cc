@@ -18,6 +18,7 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_interactive_uitest_base.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_toolbar.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -35,6 +36,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -426,6 +428,47 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
       CheckResult(GetNavState(), Eq(NavState{.entry_count = 2,
                                              .last_committed_entry_index = 0,
                                              .has_pending_entry = false})));
+}
+
+IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
+                       NavigateBackFromDiceSigninWithBackButtonAndEnterKey) {
+  ShowAndFocusPicker(ProfilePicker::EntryPoint::kProfileMenuManageProfiles,
+                     GURL("chrome://profile-picker"));
+
+  RunTestSequenceInContext(
+      views::ElementTrackerViews::GetContextForView(view()),
+
+      WaitForShow(kProfilePickerViewId),
+      InstrumentNonTabWebView(kPickerWebContentsId, web_view()),
+      WaitForWebContentsReady(kPickerWebContentsId,
+                              GURL("chrome://profile-picker")),
+
+      // Advance to the profile type choice screen.
+      WaitForButtonEnabled(kPickerWebContentsId, kAddProfileButton),
+      MoveMouseTo(kPickerWebContentsId, kAddProfileButton), ClickMouse(),
+      WaitForStateChange(
+          kPickerWebContentsId,
+          UrlEntryMatches(GURL("chrome://profile-picker/new-profile"))),
+
+      // Advance to the sign-in page, which displays the native toolbar back
+      // button.
+      WaitForButtonEnabled(kPickerWebContentsId, kSignInButton),
+      MoveMouseTo(kPickerWebContentsId, kSignInButton), ClickMouse(),
+      WaitForWebContentsNavigation(kPickerWebContentsId,
+                                   GetSigninChromeSyncDiceUrl()),
+      WaitForShow(kProfilePickerToolbarBackButtonElementId),
+
+      // Focus the native toolbar back button and activate it with Enter.
+      FocusElement(kProfilePickerToolbarBackButtonElementId),
+      InteractiveBrowserTest::SendKeyPress(
+          kProfilePickerToolbarBackButtonElementId, ui::VKEY_RETURN),
+      WaitForHide(kProfilePickerToolbarBackButtonElementId),
+      WaitForStateChange(
+          kPickerWebContentsId,
+          UrlEntryMatches(GURL("chrome://profile-picker/new-profile"))),
+      CheckResult(
+          GetNavState(),
+          Eq(NavState{.entry_count = 2, .last_committed_entry_index = 1})));
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,

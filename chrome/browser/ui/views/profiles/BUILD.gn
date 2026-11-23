@@ -744,6 +744,7 @@ if (enable_dice_support) {
       "//ui/base:features",
       "//ui/color",
       "//ui/compositor",
+      "//ui/events",
     ]
   }
 }
@@ -817,8 +818,22 @@ source_set("unit_tests") {
   }
 
   if (enable_dice_support) {
-    sources += [ "dice_web_signin_interception_bubble_view_unittest.cc" ]
-    deps += [ ":dice_web_signin_interception_bubble_view" ]
+    sources += [
+      "dice_web_signin_interception_bubble_view_unittest.cc",
+      "profile_picker_toolbar_unittest.cc",
+    ]
+    deps += [
+      ":dice_web_signin_interception_bubble_view",
+      ":profile_picker_toolbar",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/test/views",
+      "//ui/base/interaction",
+      "//ui/events",
+      "//ui/events:test_support",
+      "//ui/views",
+      "//ui/views:test_support",
+    ]
   }
 }
 
