@@ -11,6 +11,7 @@
 #include "base/json/json_reader.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
@@ -19,6 +20,12 @@
 #include "extensions/browser/extension_system.h"
 
 namespace enterprise_commands {
+
+namespace {
+
+constexpr base::TimeDelta kExtensionUpdateCheckExpirationTime = base::Days(7);
+
+}  // namespace
 
 ExtensionUpdateCheckJob::ExtensionUpdateCheckJob(
     ProfileManager* profile_manager)
@@ -51,6 +58,10 @@ bool ExtensionUpdateCheckJob::ParseCommandPayload(
 
   // No command-specific payload to parse, just the target profile.
   return true;
+}
+
+bool ExtensionUpdateCheckJob::IsExpired(base::TimeTicks now) {
+  return now > issued_time() + kExtensionUpdateCheckExpirationTime;
 }
 
 void ExtensionUpdateCheckJob::RunImpl(CallbackWithResult result_callback) {

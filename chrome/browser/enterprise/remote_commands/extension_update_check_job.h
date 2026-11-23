@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/time/time.h"
 #include "chrome/browser/enterprise/remote_commands/job_profile_picker.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "extensions/common/extension_id.h"
@@ -29,6 +30,7 @@ class ExtensionUpdateCheckJob : public policy::RemoteCommandJob {
  protected:
   // RemoteCommandJob:
   bool ParseCommandPayload(const std::string& command_payload) override;
+  bool IsExpired(base::TimeTicks now) override;
   void RunImpl(CallbackWithResult result_callback) override;
 
  private:
