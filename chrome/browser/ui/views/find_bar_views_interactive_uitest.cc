@@ -47,6 +47,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/switches.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -451,6 +453,19 @@ IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, NavigationByKeyEvent) {
       SendKeyPress(ui::VKEY_RETURN, false, false),
       CheckHasFocus(FindBarView::kNextButtonElementId),
       StopObservingState(kFindResultState));
+}
+
+IN_PROC_BROWSER_TEST_F(FindBarViewsUiTest, TextFieldAccessibleRole) {
+  RunTestSequence(
+      ShowFindBar(),
+      CheckView(
+          FindBarView::kTextField,
+          [](views::Textfield* textfield) {
+            ui::AXNodeData data;
+            textfield->GetViewAccessibility().GetAccessibleNodeData(&data);
+            return data.role;
+          },
+          ax::mojom::Role::kSearchBox));
 }
 
 IN_PROC_BROWSER_TEST_F(LegacyFindInPageTest, AccessibleName) {

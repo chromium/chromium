@@ -336,6 +336,7 @@ FindBarView::FindBarView(FindBarHost* host) {
                   .SetProperty(views::kMarginsKey, image_button_margins))
           .Build();
 
+  find_text_->GetViewAccessibility().SetRole(ax::mojom::Role::kSearchBox);
   main_container->SetFlexForView(find_text_, 1, true);
 
   SetOrientation(views::BoxLayout::Orientation::kVertical);
