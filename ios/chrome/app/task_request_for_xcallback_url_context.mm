@@ -151,59 +151,6 @@ std::optional<AppGroupCommandTab> SearchTextTabForAppGroupCommand(
       .target_mode = target_mode};
 }
 
-// Returns the tab to open in `profile` for a command of `type` carrying
-// `external_text`, or `std::nullopt` if the command must be discarded.
-std::optional<AppGroupCommandTab> TabForAppGroupCommand(
-    AppGroupCommandType type,
-    NSString* external_text,
-    ProfileIOS* profile) {
-  switch (type) {
-    case AppGroupCommandType::kOpenURL:
-      return OpenURLTabForAppGroupCommand(
-          external_text, ApplicationModeForTabOpening::UNDETERMINED);
-    case AppGroupCommandType::kOpenURLInIncognito:
-      return OpenURLTabForAppGroupCommand(
-          external_text, ApplicationModeForTabOpening::INCOGNITO);
-    case AppGroupCommandType::kSearchText:
-      return SearchTextTabForAppGroupCommand(
-          external_text, ApplicationModeForTabOpening::UNDETERMINED, profile);
-    case AppGroupCommandType::kIncognitoSearchText:
-      return SearchTextTabForAppGroupCommand(
-          external_text, ApplicationModeForTabOpening::INCOGNITO, profile);
-    case AppGroupCommandType::kSearchImage:
-    case AppGroupCommandType::kIncognitoSearchImage:
-      // TODO(crbug.com/493816082): Search the image sent by the extension,
-      // discarding commands without one, as the legacy startup flow does.
-      return std::nullopt;
-    case AppGroupCommandType::kVoiceSearch:
-      return AppGroupCommandTab{
-          GURL(kChromeUINewTabURL), ApplicationModeForTabOpening::NORMAL,
-          TabOpeningPostOpeningAction::START_VOICE_SEARCH};
-    case AppGroupCommandType::kNewTab:
-      return AppGroupCommandTab{GURL(kChromeUINewTabURL),
-                                ApplicationModeForTabOpening::NORMAL};
-    case AppGroupCommandType::kFocusOmnibox:
-      return AppGroupCommandTab{GURL(kChromeUINewTabURL),
-                                ApplicationModeForTabOpening::NORMAL,
-                                TabOpeningPostOpeningAction::FOCUS_OMNIBOX};
-    case AppGroupCommandType::kIncognitoSearch:
-      return AppGroupCommandTab{GURL(kChromeUINewTabURL),
-                                ApplicationModeForTabOpening::INCOGNITO,
-                                TabOpeningPostOpeningAction::FOCUS_OMNIBOX};
-    case AppGroupCommandType::kQRScanner:
-      return AppGroupCommandTab{
-          GURL(kChromeUINewTabURL), ApplicationModeForTabOpening::NORMAL,
-          TabOpeningPostOpeningAction::START_QR_CODE_SCANNER};
-    case AppGroupCommandType::kLens:
-      return AppGroupCommandTab{
-          GURL(), ApplicationModeForTabOpening::NORMAL,
-          TabOpeningPostOpeningAction::START_LENS_FROM_HOME_SCREEN_WIDGET};
-    case AppGroupCommandType::kSearchPasswords:
-      return AppGroupCommandTab{GURL(), ApplicationModeForTabOpening::NORMAL,
-                                TabOpeningPostOpeningAction::SEARCH_PASSWORDS};
-  }
-}
-
 }  // namespace
 
 @implementation TaskRequestForXCallbackURLContext {
@@ -287,8 +234,66 @@ std::optional<AppGroupCommandTab> TabForAppGroupCommand(
   if (!type) {
     return;
   }
-  std::optional<AppGroupCommandTab> tab = TabForAppGroupCommand(
-      *type, _appGroupCommand.external_text, sceneState.profileState.profile);
+  NSString* externalText = _appGroupCommand.external_text;
+  ProfileIOS* profile = sceneState.profileState.profile;
+  // Opens `tab`, unless it is `std::nullopt` and the command is discarded.
+  std::optional<AppGroupCommandTab> tab;
+  switch (*type) {
+    case AppGroupCommandType::kOpenURL:
+      tab = OpenURLTabForAppGroupCommand(
+          externalText, ApplicationModeForTabOpening::UNDETERMINED);
+      break;
+    case AppGroupCommandType::kOpenURLInIncognito:
+      tab = OpenURLTabForAppGroupCommand(
+          externalText, ApplicationModeForTabOpening::INCOGNITO);
+      break;
+    case AppGroupCommandType::kSearchText:
+      tab = SearchTextTabForAppGroupCommand(
+          externalText, ApplicationModeForTabOpening::UNDETERMINED, profile);
+      break;
+    case AppGroupCommandType::kIncognitoSearchText:
+      tab = SearchTextTabForAppGroupCommand(
+          externalText, ApplicationModeForTabOpening::INCOGNITO, profile);
+      break;
+    case AppGroupCommandType::kSearchImage:
+    case AppGroupCommandType::kIncognitoSearchImage:
+      // TODO(crbug.com/493816082): Search the image sent by the extension,
+      // discarding commands without one, as the legacy startup flow does.
+      return;
+    case AppGroupCommandType::kVoiceSearch:
+      tab = AppGroupCommandTab{GURL(kChromeUINewTabURL),
+                               ApplicationModeForTabOpening::NORMAL,
+                               TabOpeningPostOpeningAction::START_VOICE_SEARCH};
+      break;
+    case AppGroupCommandType::kNewTab:
+      tab = AppGroupCommandTab{GURL(kChromeUINewTabURL),
+                               ApplicationModeForTabOpening::NORMAL};
+      break;
+    case AppGroupCommandType::kFocusOmnibox:
+      tab = AppGroupCommandTab{GURL(kChromeUINewTabURL),
+                               ApplicationModeForTabOpening::NORMAL,
+                               TabOpeningPostOpeningAction::FOCUS_OMNIBOX};
+      break;
+    case AppGroupCommandType::kIncognitoSearch:
+      tab = AppGroupCommandTab{GURL(kChromeUINewTabURL),
+                               ApplicationModeForTabOpening::INCOGNITO,
+                               TabOpeningPostOpeningAction::FOCUS_OMNIBOX};
+      break;
+    case AppGroupCommandType::kQRScanner:
+      tab = AppGroupCommandTab{
+          GURL(kChromeUINewTabURL), ApplicationModeForTabOpening::NORMAL,
+          TabOpeningPostOpeningAction::START_QR_CODE_SCANNER};
+      break;
+    case AppGroupCommandType::kLens:
+      tab = AppGroupCommandTab{
+          GURL(), ApplicationModeForTabOpening::NORMAL,
+          TabOpeningPostOpeningAction::START_LENS_FROM_HOME_SCREEN_WIDGET};
+      break;
+    case AppGroupCommandType::kSearchPasswords:
+      tab = AppGroupCommandTab{GURL(), ApplicationModeForTabOpening::NORMAL,
+                               TabOpeningPostOpeningAction::SEARCH_PASSWORDS};
+      break;
+  }
   if (!tab) {
     return;
   }
