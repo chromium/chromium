@@ -4,8 +4,6 @@
 
 package org.chromium.ui.dragdrop;
 
-import static org.robolectric.Shadows.shadowOf;
-
 import static org.chromium.ui.dragdrop.DropDataProviderImpl.BYTES_PARAM;
 import static org.chromium.ui.dragdrop.DropDataProviderImpl.CACHE_METHOD_NAME;
 import static org.chromium.ui.dragdrop.DropDataProviderImpl.CLEAR_CACHE_PARAM;
@@ -25,7 +23,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Process;
 import android.provider.OpenableColumns;
-import android.webkit.MimeTypeMap;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -67,9 +64,6 @@ public class DropDataProviderImplTest {
     @Before
     public void setUp() {
         mDropDataProviderImpl = new DropDataProviderImpl();
-        shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypeMapping("jpg", "image/jpeg");
-        shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypeMapping("gif", "image/gif");
-        shadowOf(MimeTypeMap.getSingleton()).addExtensionMimeTypeMapping("png", "image/png");
 
         Context context = ContextUtils.getApplicationContext();
         DropDataContentProvider provider = new DropDataContentProvider();

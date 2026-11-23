@@ -28,11 +28,11 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Process;
 import android.view.DragAndDropPermissions;
 import android.view.DragEvent;
 import android.view.View;
-import android.webkit.MimeTypeMap;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -47,9 +47,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
-import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowContentResolver;
-import org.robolectric.shadows.ShadowMimeTypeMap;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -109,12 +107,6 @@ public class LocationBarDragDropHandlerUnitTest {
         lenient().when(mDataProvider.getTab()).thenReturn(mTab);
         lenient().when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
         mHandler = new LocationBarDragDropHandler(mOmniboxStub, mDataProvider);
-
-        ShadowMimeTypeMap shadowMimeTypeMap = Shadows.shadowOf(MimeTypeMap.getSingleton());
-        shadowMimeTypeMap.addExtensionMimeTypeMapping("html", "text/html");
-        shadowMimeTypeMap.addExtensionMimeTypeMapping("png", "image/png");
-        shadowMimeTypeMap.addExtensionMimeTypeMapping("txt", "text/plain");
-        shadowMimeTypeMap.addExtensionMimeTypeMapping("pdf", "application/pdf");
     }
 
     /**
@@ -452,9 +444,14 @@ public class LocationBarDragDropHandlerUnitTest {
         assertEquals("image/jpeg", mHandler.getMimeType(mContext, contentUri));
 
         // File URI
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            assertEquals(
+                    "text/html",
+                    mHandler.getMimeType(mContext, Uri.parse("file:///path/to/file.html")));
+        }
         assertEquals(
-                "text/html",
-                mHandler.getMimeType(mContext, Uri.parse("file:///path/to/file.html")));
+                "text/plain",
+                mHandler.getMimeType(mContext, Uri.parse("file:///path/to/file.txt")));
         assertEquals(
                 "image/png", mHandler.getMimeType(mContext, Uri.parse("file:///path/to/file.PNG")));
         assertNull(mHandler.getMimeType(mContext, Uri.parse("file:///path/to/file.unknown")));

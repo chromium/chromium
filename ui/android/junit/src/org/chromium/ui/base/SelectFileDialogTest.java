@@ -31,7 +31,6 @@ import android.os.Build;
 import android.os.Process;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.webkit.MimeTypeMap;
 
 import androidx.core.content.ContextCompat;
 
@@ -49,7 +48,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowMimeTypeMap;
 import org.robolectric.shadows.ShadowPackageManager;
 import org.robolectric.util.ReflectionHelpers;
 
@@ -297,10 +295,6 @@ public class SelectFileDialogTest {
     }
 
     public void verifyFileSystemAccessIntent(String intentAction) throws Exception {
-        ShadowMimeTypeMap shadowMimeTypeMap = Shadows.shadowOf(MimeTypeMap.getSingleton());
-        shadowMimeTypeMap.addExtensionMimeTypeMapping("jpg", "image/jpeg");
-        shadowMimeTypeMap.addExtensionMimeTypeMapping("png", "image/png");
-
         TestSelectFileDialog selectFileDialog = new TestSelectFileDialog(null);
         WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
         String[] fileTypes = {"image/jpeg", "image/png"};
@@ -411,16 +405,12 @@ public class SelectFileDialogTest {
 
     @Test
     public void testCreateDocumentInfersMimeTypeFromSuggestedName() throws Exception {
-        ShadowMimeTypeMap shadowMimeTypeMap = Shadows.shadowOf(MimeTypeMap.getSingleton());
-        shadowMimeTypeMap.addExtensionMimeTypeMapping("webp", "image/webp");
-        shadowMimeTypeMap.addExtensionMimeTypeMapping("gz", "application/gzip");
-
-        verifyCreateDocumentIntent(new String[] {}, "images.webp", "image/webp", "images.webp");
-        verifyCreateDocumentIntent(new String[] {}, "my photo.webp", "image/webp", "my photo.webp");
+        verifyCreateDocumentIntent(new String[] {}, "images.jpg", "image/jpeg", "images.jpg");
+        verifyCreateDocumentIntent(new String[] {}, "my photo.jpg", "image/jpeg", "my photo.jpg");
         verifyCreateDocumentIntent(
-                new String[] {}, "archive.tar.gz", "application/gzip", "archive.tar.gz");
+                new String[] {}, "archive.tar.zip", "application/zip", "archive.tar.zip");
         verifyCreateDocumentIntent(
-                new String[] {".tar.gz"}, "archive.tar.gz", "application/gzip", "archive.tar.gz");
+                new String[] {".tar.zip"}, "archive.tar.zip", "application/zip", "archive.tar.zip");
         verifyCreateDocumentIntent(
                 new String[] {},
                 "archive.this_is_not_a_real_extension",
@@ -483,11 +473,6 @@ public class SelectFileDialogTest {
     }
 
     public void verifyExternalPickerWithFileExtensions(String intentAction) throws Exception {
-        ShadowMimeTypeMap shadowMimeTypeMap = Shadows.shadowOf(MimeTypeMap.getSingleton());
-        shadowMimeTypeMap.addExtensionMimeTypeMapping("jpg", "image/jpeg");
-        shadowMimeTypeMap.addExtensionMimeTypeMapping("gif", "image/gif");
-        shadowMimeTypeMap.addExtensionMimeTypeMapping("pdf", "application/pdf");
-
         TestSelectFileDialog selectFileDialog = new TestSelectFileDialog(null);
         WindowAndroid windowAndroid = Mockito.mock(WindowAndroid.class);
 
@@ -984,17 +969,10 @@ public class SelectFileDialogTest {
 
     @Test
     public void testPhotoPickerLaunchAndMimeTypes() {
-        ShadowMimeTypeMap shadowMimeTypeMap = Shadows.shadowOf(MimeTypeMap.getSingleton());
-        shadowMimeTypeMap.addExtensionMimeTypeMapping("jpg", "image/jpeg");
-        shadowMimeTypeMap.addExtensionMimeTypeMapping("gif", "image/gif");
-        shadowMimeTypeMap.addExtensionMimeTypeMapping("txt", "text/plain");
-        shadowMimeTypeMap.addExtensionMimeTypeMapping("mpg", "video/mpeg");
-        shadowMimeTypeMap.addExtensionMimeTypeMapping("gz", "application/gzip");
-
         assertEquals("", SelectFileDialog.ensureMimeType(""));
         assertEquals("image/jpeg", SelectFileDialog.ensureMimeType(".jpg"));
         assertEquals("image/jpeg", SelectFileDialog.ensureMimeType("image/jpeg"));
-        assertEquals("application/gzip", SelectFileDialog.ensureMimeType(".tar.gz"));
+        assertEquals("application/zip", SelectFileDialog.ensureMimeType(".tar.zip"));
         // Unknown extension, expect default response:
         assertEquals(
                 "application/octet-stream",
@@ -1455,11 +1433,6 @@ public class SelectFileDialogTest {
 
     @Test
     public void testShowTypes() {
-        ShadowMimeTypeMap shadowMimeTypeMap = Shadows.shadowOf(MimeTypeMap.getSingleton());
-        shadowMimeTypeMap.addExtensionMimeTypeMapping("jpg", "image/jpeg");
-        shadowMimeTypeMap.addExtensionMimeTypeMapping("gif", "image/gif");
-        shadowMimeTypeMap.addExtensionMimeTypeMapping("pdf", "application/pdf");
-
         SelectFileDialog selectFileDialog = new SelectFileDialog(null);
 
         selectFileDialog.setFileTypesForTests(Arrays.asList("image/jpeg"));
@@ -1589,10 +1562,10 @@ public class SelectFileDialogTest {
                 SelectFileDialog.convertToSupportedMimeTypes(Arrays.asList("image/gif", ".", "")),
                 Arrays.asList("image/gif"));
 
-        // Compound extension (.tar.gz) resolves to application/gzip.
+        // Compound extension (.tar.zip) resolves to application/zip.
         assertEquals(
-                SelectFileDialog.convertToSupportedMimeTypes(Arrays.asList(".tar.gz")),
-                Arrays.asList("application/gzip"));
+                SelectFileDialog.convertToSupportedMimeTypes(Arrays.asList(".tar.zip")),
+                Arrays.asList("application/zip"));
     }
 
     ContentResolver getMockContentResolver(String mimeType) {
