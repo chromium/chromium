@@ -2201,6 +2201,27 @@
             ]
         }
     ],
+    "AutofillEnableImportOfUnchangedValuesForCountryAndState": [
+        {
+            "platforms": [
+                "android",
+                "android_desktop",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableImportOfUnchangedValuesForCountryAndState"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableOAuth2TokenFix": [
         {
             "platforms": [
