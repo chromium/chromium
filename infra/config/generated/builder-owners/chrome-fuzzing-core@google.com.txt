@@ -1,6 +1,2 @@
-ci/Centipede Upload Linux ASan
-ci/Libfuzzer Upload Linux ASan
 ci/Libfuzzer Upload Windows ASan
-try/linux-centipede-asan-rel
-try/linux-libfuzzer-asan-rel
 try/win-libfuzzer-asan-rel

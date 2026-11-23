@@ -1,5 +1,1 @@
-ci/ios-simulator
-ci/ios-simulator-full-configs
 try/fuchsia-binary-size
-try/ios-simulator
-try/ios-simulator-full-configs

@@ -1,5 +1,1 @@
-ci/linux-arm64-official
-ci/linux-official
-try/linux-arm64-official
-try/linux-official
 try/linux-presubmit

@@ -1,7 +1,4 @@
 ci/Dawn Chromium Presubmit
-ci/Dawn Linux x64 DEPS Builder
-ci/Dawn Linux x64 DEPS Release (Intel UHD 630)
-ci/Dawn Linux x64 DEPS Release (NVIDIA)
 ci/Dawn Mac arm64 DEPS Builder
 ci/Dawn Mac arm64 DEPS Release (Apple M2)
 ci/Dawn Mac x64 DEPS Builder
@@ -15,19 +12,13 @@ ci/Dawn Win10 x86 DEPS Release (Intel)
 ci/Dawn Win10 x86 DEPS Release (NVIDIA)
 ci/Dawn Win11 arm64 DEPS Builder
 ci/Dawn Win11 arm64 DEPS Release (Qualcomm Snapdragon X Elite)
-ci/GPU FYI Linux Builder
 ci/GPU FYI Mac Builder
 ci/GPU FYI Mac arm64 Builder
 ci/GPU FYI Win arm64 Builder
 ci/GPU FYI Win x64 Builder
-ci/GPU Linux Builder
 ci/GPU Mac Builder
 ci/GPU Mac arm64 Builder
 ci/GPU Win x64 Builder
-ci/Linux FYI Release (AMD RX 5500 XT)
-ci/Linux FYI Release (Intel UHD 630)
-ci/Linux FYI Release (NVIDIA)
-ci/Linux Release (NVIDIA)
 ci/Mac FYI Release (Intel)
 ci/Mac FYI Retina Release (AMD)
 ci/Mac FYI Retina Release (Apple M2)
@@ -39,7 +30,6 @@ ci/Win10 FYI x64 Release (NVIDIA)
 ci/Win10 x64 Release (NVIDIA)
 ci/Win11 FYI arm64 Release (Qualcomm Snapdragon X Elite)
 try/dawn-chromium-presubmit
-try/dawn-linux-x64-deps-rel
 try/dawn-mac-arm64-deps-rel
 try/dawn-mac-x64-deps-rel
 try/dawn-win10-x64-deps-rel
@@ -47,7 +37,6 @@ try/dawn-win10-x86-deps-rel
 try/dawn-win11-arm64-deps-rel
 try/gpu-fyi-cq-mac-arm64
 try/gpu-fyi-cq-win-arm64
-try/linux_optional_gpu_tests_rel
 try/mac-gpu-rel
 try/mac-gpu-rel-compilator
 try/mac_optional_gpu_tests_rel

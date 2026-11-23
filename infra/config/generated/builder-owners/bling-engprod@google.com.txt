@@ -12,7 +12,6 @@ ci/mac15-x64-rel-tests
 ci/mac26-arm64-rel-tests
 ci/mac26-tests-dbg
 ci/mac26-x64-rel-tests
-try/ios-simulator-compilator
 try/mac-official
 try/mac-rel
 try/mac-rel-compilator
