@@ -4,8 +4,6 @@
 
 package org.chromium.components.webapps.pwa_universal_install;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.SystemClock;
@@ -77,6 +75,10 @@ public class PwaUniversalInstallBottomSheetCoordinator {
     // Whether we are yet to show this dialog (the dialog is shown after a brief delay, possibly
     // with a toast while we wait for it to appear).
     private boolean mWaitingToShow = true;
+
+    // Whether the user clicked "Create shortcut" before mAppType became known, so the
+    // DialogAction metric must be recorded once onAppDataFetched() runs.
+    private boolean mWaitingToRecordShortcutAction;
 
     // The toast to show if the dialog opening takes too long.
     private @Nullable Toast mToast;
@@ -213,12 +215,19 @@ public class PwaUniversalInstallBottomSheetCoordinator {
                 DIALOG_RESULT_COUNT);
     }
 
-    private void onAddShortcutClicked() {
-        assumeNonNull(mAppType);
+    private static void recordAddShortcut(@AppType int appType) {
         RecordHistogram.recordEnumeratedHistogram(
                 "WebApk.UniversalInstall.DialogAction",
-                mAppType == AppType.SHORTCUT ? CREATE_SHORTCUT : CREATE_SHORTCUT_TO_APP,
+                appType == AppType.SHORTCUT ? CREATE_SHORTCUT : CREATE_SHORTCUT_TO_APP,
                 DIALOG_RESULT_COUNT);
+    }
+
+    private void onAddShortcutClicked() {
+        if (mAppType != null) {
+            recordAddShortcut(mAppType);
+        } else {
+            mWaitingToRecordShortcutAction = true;
+        }
         mController.hideContent(mContent, /* animate= */ true);
         mAddShortcutCallback.run();
     }
@@ -300,6 +309,10 @@ public class PwaUniversalInstallBottomSheetCoordinator {
                     "WebApk.UniversalInstall.DialogShownForAppType",
                     mAppType,
                     AppType.MAX_VALUE + 1);
+            if (mWaitingToRecordShortcutAction) {
+                mWaitingToRecordShortcutAction = false;
+                recordAddShortcut(appType);
+            }
             return;
         }
 

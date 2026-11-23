@@ -6,8 +6,11 @@ package org.chromium.components.webapps.pwa_universal_install;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -29,6 +32,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.webapps.AppType;
 import org.chromium.components.webapps.R;
@@ -52,6 +56,7 @@ public class PwaUniversalInstallBottomSheetCoordinatorTest {
     @After
     public void tearDown() {
         PwaUniversalInstallBottomSheetCoordinator.sEnableManualIconFetchingForTesting = false;
+        PwaUniversalInstallBottomSheetCoordinator.sShowBeforeAppTypeKnownForTesting = false;
     }
 
     private void onInstallCalled() {}
@@ -235,5 +240,90 @@ public class PwaUniversalInstallBottomSheetCoordinatorTest {
         Assert.assertTrue(installCalled[0]);
         org.mockito.Mockito.verify(mBottomSheetControllerMock, org.mockito.Mockito.never())
                 .requestShowContent(any(), anyBoolean());
+    }
+
+    @Test
+    public void testOnAddShortcutClicked_beforeAppDataFetched_shortcut() {
+        verifyOnAddShortcutClickedBeforeAppDataFetched(
+                /* webAppAlreadyInstalled= */ false,
+                AppType.SHORTCUT,
+                PwaUniversalInstallBottomSheetCoordinator.CREATE_SHORTCUT);
+    }
+
+    @Test
+    public void testOnAddShortcutClicked_beforeAppDataFetched_webApk() {
+        verifyOnAddShortcutClickedBeforeAppDataFetched(
+                /* webAppAlreadyInstalled= */ false,
+                AppType.WEBAPK,
+                PwaUniversalInstallBottomSheetCoordinator.CREATE_SHORTCUT_TO_APP);
+    }
+
+    @Test
+    public void testOnAddShortcutClicked_beforeAppDataFetched_appAlreadyInstalled() {
+        verifyOnAddShortcutClickedBeforeAppDataFetched(
+                /* webAppAlreadyInstalled= */ true,
+                AppType.WEBAPK,
+                PwaUniversalInstallBottomSheetCoordinator.CREATE_SHORTCUT_TO_APP);
+    }
+
+    private void verifyOnAddShortcutClickedBeforeAppDataFetched(
+            boolean webAppAlreadyInstalled, @AppType int fetchedAppType, int expectedAction) {
+        doReturn(true).when(mBottomSheetControllerMock).requestShowContent(any(), anyBoolean());
+        PwaUniversalInstallBottomSheetCoordinator.sShowBeforeAppTypeKnownForTesting = true;
+        final Activity activity = Robolectric.buildActivity(Activity.class).create().get();
+        MockWebContents webContents = mock(MockWebContents.class);
+        GURL url = new GURL("http://www.example.com/");
+        doReturn(url).when(webContents).getLastCommittedUrl();
+
+        HistogramWatcher preFetchWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "WebApk.UniversalInstall.DialogAction",
+                                PwaUniversalInstallBottomSheetCoordinator
+                                        .DIALOG_SHOWN_AFTER_TIMEOUT)
+                        .build();
+
+        boolean[] installCalled = new boolean[1];
+        int[] addShortcutCallCount = new int[1];
+        boolean[] openAppCalled = new boolean[1];
+        PwaUniversalInstallBottomSheetCoordinator coordinator =
+                new PwaUniversalInstallBottomSheetCoordinator(
+                        activity,
+                        webContents,
+                        () -> installCalled[0] = true,
+                        () -> addShortcutCallCount[0]++,
+                        () -> openAppCalled[0] = true,
+                        webAppAlreadyInstalled,
+                        mBottomSheetControllerMock,
+                        /* arrowId= */ 0,
+                        /* installOverlayId= */ 0,
+                        /* shortcutOverlayId= */ 0);
+
+        View view = coordinator.getBottomSheetViewForTesting();
+        view.findViewById(R.id.option_shortcut).performClick();
+
+        Assert.assertEquals(1, addShortcutCallCount[0]);
+        Assert.assertFalse(installCalled[0]);
+        Assert.assertFalse(openAppCalled[0]);
+        verify(mBottomSheetControllerMock).hideContent(any(), eq(true));
+        preFetchWatcher.assertExpected();
+
+        HistogramWatcher postFetchWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("WebApk.UniversalInstall.DialogAction", expectedAction)
+                        .expectIntRecord(
+                                "WebApk.UniversalInstall.TimeoutWithAppType", fetchedAppType)
+                        .expectIntRecord(
+                                "WebApk.UniversalInstall.DialogShownForAppType", fetchedAppType)
+                        .build();
+
+        Bitmap icon = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
+        coordinator.onAppDataFetched(fetchedAppType, icon, /* adaptive= */ false);
+
+        postFetchWatcher.assertExpected();
+        verify(mBottomSheetControllerMock, times(1)).requestShowContent(any(), anyBoolean());
+        Assert.assertFalse(installCalled[0]);
+        Assert.assertFalse(openAppCalled[0]);
+        Assert.assertEquals(1, addShortcutCallCount[0]);
     }
 }

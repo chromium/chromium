@@ -25,6 +25,7 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -472,6 +473,52 @@ public class PwaUniversalInstallBottomSheetIntegrationTest {
         assertDialogShowing(false);
 
         watcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"PwaUniversalInstall"})
+    // Test clicking Create shortcut after timeout before the app type check completes.
+    public void testAddShortcutBeforeAppCheckCompleteAfterTimeout() throws Exception {
+        HistogramWatcher preFetchWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(HISTOGRAM_TIMOUT_WITH_APP_TYPE)
+                        .expectNoRecords(HISTOGRAM_DIALOG_TYPE)
+                        .expectIntRecord(
+                                HISTOGRAM_DIALOG_ACTION,
+                                PwaUniversalInstallBottomSheetCoordinator
+                                        .DIALOG_SHOWN_AFTER_TIMEOUT)
+                        .build();
+
+        showPwaUniversalInstallBottomSheet(
+                /* showBeforeAppTypeKnown= */ true, /* webAppAlreadyInstalled= */ false);
+        assertDialogShowsCheckingApp();
+
+        int initialInstallCount = mOnInstallCallback.getCallCount();
+        int currentCallCount = mOnAddShortcutCallback.getCallCount();
+        onView(withId(R.id.arrow_shortcut)).perform(click());
+        mOnAddShortcutCallback.waitForCallback("Shortcut event not signaled", currentCallCount);
+        assertDialogShowing(false);
+
+        preFetchWatcher.assertExpected();
+
+        HistogramWatcher postFetchWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(HISTOGRAM_TIMOUT_WITH_APP_TYPE, AppType.WEBAPK)
+                        .expectIntRecord(HISTOGRAM_DIALOG_TYPE, AppType.WEBAPK)
+                        .expectIntRecord(
+                                HISTOGRAM_DIALOG_ACTION,
+                                PwaUniversalInstallBottomSheetCoordinator.CREATE_SHORTCUT_TO_APP)
+                        .expectAnyRecord(HISTOGRAM_FETCH_TIME_WEBAPK)
+                        .build();
+
+        Pair<Bitmap, Boolean> testIcon = constructTestIconData();
+        simulateAppCheckComplete(AppType.WEBAPK, testIcon.first, testIcon.second);
+        assertDialogShowing(false);
+        Assert.assertEquals(currentCallCount + 1, mOnAddShortcutCallback.getCallCount());
+        Assert.assertEquals(initialInstallCount, mOnInstallCallback.getCallCount());
+
+        postFetchWatcher.assertExpected();
     }
 
     @Test
