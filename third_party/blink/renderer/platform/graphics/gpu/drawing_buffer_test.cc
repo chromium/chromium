@@ -1417,9 +1417,12 @@ TEST_F(DrawingBufferTest, SoftwareCompositorExportCanvasResource) {
   EXPECT_EQ(nullptr, drawing_buffer_->ExportCanvasResource());
 
   // Dropping the ExportedCanvasResource recycles the software resource for the
-  // next frame.
+  // next frame without overwriting its creation SyncToken with an empty token.
   const gpu::Mailbox first_mailbox =
       exported1->GetSharedImageForTesting()->mailbox();
+  const gpu::SyncToken first_sync_token =
+      exported1->PrepareTransferableResource().sync_token();
+  ASSERT_TRUE(first_sync_token.HasData());
   exported1.reset();
   EXPECT_EQ(1, drawing_buffer_->RecycledSoftwareResourceCount());
 
@@ -1429,6 +1432,8 @@ TEST_F(DrawingBufferTest, SoftwareCompositorExportCanvasResource) {
   ASSERT_NE(exported2, nullptr);
   EXPECT_EQ(1u, sw_sii->shared_image_count());
   EXPECT_EQ(first_mailbox, exported2->GetSharedImageForTesting()->mailbox());
+  EXPECT_EQ(first_sync_token,
+            exported2->PrepareTransferableResource().sync_token());
   exported2.reset();
 
   drawing_buffer_->BeginDestruction();

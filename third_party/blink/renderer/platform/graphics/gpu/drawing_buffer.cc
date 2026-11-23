@@ -692,7 +692,12 @@ void DrawingBuffer::MailboxReleasedSoftware(
     scoped_refptr<gpu::ClientImage> resource,
     const gpu::SyncToken& sync_token,
     bool lost_resource) {
-  resource->SetReleaseSyncToken(sync_token);
+  // Ignore an empty SyncToken so we do not clobber `creation_sync_token` (or a
+  // prior verified SyncToken), e.g., when an ExportedCanvasResource is dropped
+  // before reaching Viz.
+  if (sync_token.HasData()) {
+    resource->SetReleaseSyncToken(sync_token);
+  }
   if (destruction_in_progress_ || lost_resource || is_hidden_ || !pool) {
     return;
   }
