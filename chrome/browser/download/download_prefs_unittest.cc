@@ -6,7 +6,9 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/json/values_util.h"
+#include "base/scoped_environment_variable_override.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_prompt_status.h"
@@ -522,6 +524,18 @@ void ExpectValidDownloadDir(Profile* profile,
 
 TEST(DownloadPrefsTest, DownloadDirSanitization) {
   content::BrowserTaskEnvironment task_environment;
+
+  // Away from a device the removable media mount point lives under /tmp, and
+  // SanitizeDownloadTargetPath() accepts anything under the temp directory,
+  // which would make the removable media root below look like a valid
+  // download directory. Point the temp directory somewhere else so the two
+  // cannot overlap. base::GetTempDir() reads TMPDIR and otherwise answers
+  // /tmp, so this has to go through the environment rather than DIR_TEMP;
+  // bots already set TMPDIR, which is why this only failed locally.
+  base::ScopedTempDir scoped_temp_dir;
+  ASSERT_TRUE(scoped_temp_dir.CreateUniqueTempDir());
+  base::ScopedEnvironmentVariableOverride temp_dir_override(
+      "TMPDIR", scoped_temp_dir.GetPath().value());
 
   TestingProfile profile(base::FilePath("/home/chronos/u-0123456789abcdef"));
   DownloadPrefs prefs(&profile);
