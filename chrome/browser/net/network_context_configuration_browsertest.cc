@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
@@ -42,6 +43,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/embedder_support/switches.h"
 #include "components/embedder_support/user_agent_utils.h"
+#include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -1331,14 +1333,8 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   MakeLongLivedRequestThatHangsUntilShutdown();
 }
 
-// Disabled due to flakiness. See crbug.com/40755205.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-#define MAYBE_UserAgentAndLanguagePrefs DISABLED_UserAgentAndLanguagePrefs
-#else
-#define MAYBE_UserAgentAndLanguagePrefs UserAgentAndLanguagePrefs
-#endif
 IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
-                       MAYBE_UserAgentAndLanguagePrefs) {
+                       UserAgentAndLanguagePrefs) {
   if (IsRestartStateWithInProcessNetworkService())
     return;
   // The system and SafeBrowsing network contexts aren't associated with any
@@ -1357,10 +1353,11 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   ASSERT_TRUE(FetchHeaderEcho("user-agent", &user_agent));
   EXPECT_EQ(embedder_support::GetUserAgent(), user_agent);
 
-  // Change AcceptLanguages preferences, and check that headers are updated.
+  // Change user-selected languages, and check that headers are updated.
   // First, A single language.
-  browser()->GetProfile()->GetPrefs()->SetString(
-      language::prefs::kAcceptLanguages, "zu");
+  using base::i18n::GetKnownLanguageTag;
+  language::LanguagePrefs language_prefs(browser()->GetProfile()->GetPrefs());
+  language_prefs.SetUserSelectedLanguagesList({GetKnownLanguageTag("zu")});
   FlushNetworkInterface();
   std::string accept_language2, user_agent2;
   ASSERT_TRUE(FetchHeaderEcho("accept-language", &accept_language2));
@@ -1369,8 +1366,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   EXPECT_EQ(embedder_support::GetUserAgent(), user_agent2);
 
   // Second, a single language with locale.
-  browser()->GetProfile()->GetPrefs()->SetString(
-      language::prefs::kAcceptLanguages, "zu-ZA");
+  language_prefs.SetUserSelectedLanguagesList({GetKnownLanguageTag("zu-ZA")});
   FlushNetworkInterface();
   std::string accept_language3, user_agent3;
   ASSERT_TRUE(FetchHeaderEcho("accept-language", &accept_language3));
@@ -1380,8 +1376,10 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
 
   // Third, a list with multiple languages. Incognito mode should return only
   // the first language's default set of languages.
-  browser()->GetProfile()->GetPrefs()->SetString(
-      language::prefs::kAcceptLanguages, "ar,am,en-GB,ru,zu");
+  language_prefs.SetUserSelectedLanguagesList(
+      {GetKnownLanguageTag("ar"), GetKnownLanguageTag("am"),
+       GetKnownLanguageTag("en-GB"), GetKnownLanguageTag("ru"),
+       GetKnownLanguageTag("zu")});
   FlushNetworkInterface();
   std::string accept_language4;
   std::string user_agent4;
