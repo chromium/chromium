@@ -17,7 +17,9 @@
 #include "chrome/browser/glic/selection/explain_fulfillment.mojom.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/selection/area_of_interest.h"
 #include "chrome/browser/selection/mojom/action.mojom.h"
+#include "chrome/browser/selection/page_context.h"
 #include "chrome/browser/selection/suggestion.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -132,8 +134,9 @@ TEST_F(QuickAnswersToolTest, ExecutesQuickAnswersModelWithExpectedRequest) {
 
   QuickAnswersTool tool(mock_tab_);
   optimization_guide::proto::SmartSelectionSuggestion server_suggestion;
-  std::unique_ptr<::selection::Suggestion> suggestion =
-      tool.CreateSuggestion(aoi, server_suggestion);
+  std::unique_ptr<::selection::Suggestion> suggestion = tool.CreateSuggestion(
+      ::selection::PageContextWithSelection(::selection::PageContext(), aoi),
+      server_suggestion);
 
   ASSERT_NE(suggestion, nullptr);
   EXPECT_EQ(suggestion->GetLabel(), u"Explain");

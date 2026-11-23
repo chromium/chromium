@@ -322,7 +322,7 @@ class FakePromptSuggestionTool : public ::selection::SuggestionTool {
   }
 
   std::unique_ptr<::selection::Suggestion> CreateSuggestion(
-      const ::selection::AreaOfInterest& processed_area,
+      const ::selection::PageContextWithSelection& context,
       const optimization_guide::proto::SmartSelectionSuggestion&
           server_suggestion) override {
     QueueServerResponse();
@@ -3145,7 +3145,7 @@ class FakeExplainSuggestionTool : public ::selection::SuggestionTool {
   }
 
   std::unique_ptr<::selection::Suggestion> CreateSuggestion(
-      const ::selection::AreaOfInterest& processed_area,
+      const ::selection::PageContextWithSelection& context,
       const optimization_guide::proto::SmartSelectionSuggestion&
           server_suggestion) override {
     QueueServerResponse();

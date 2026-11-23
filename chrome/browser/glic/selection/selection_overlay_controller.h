@@ -23,9 +23,11 @@
 #include "chrome/browser/glic/selection/selection_context.h"
 #include "chrome/browser/glic/selection/selection_overlay.mojom.h"
 #include "chrome/browser/glic/selection/selection_overlay_prewarmer.h"
+#include "chrome/browser/selection/area_of_interest.h"
 #include "chrome/browser/selection/feedback_zip_builder.h"
 #include "chrome/browser/selection/metrics_logger.h"
 #include "chrome/browser/selection/mojom/action.mojom-forward.h"
+#include "chrome/browser/selection/page_context.h"
 #include "chrome/browser/selection/suggestion_service.h"
 #include "chrome/browser/ui/lens/overlay_base_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -316,6 +318,16 @@ class SelectionOverlayController
     // adjusted, and used to invalidate old suggestions.
     uint64_t generation = 0;
   };
+
+  // Builds a `PageContext` snapshot from the current session's redacted
+  // screenshot, APC, metadata, and (when `include_pdf_data` is true) PDF data.
+  ::selection::PageContext BuildPageContext(bool include_pdf_data) const;
+  // Builds an `AreaOfInterest` for `region_data` (may be null). When
+  // `include_region_bounds` is true, validates and converts the region's
+  // normalized bounds to pixel coordinates on the redacted screenshot.
+  ::selection::AreaOfInterest BuildAreaOfInterest(
+      const SelectedRegionData* region_data,
+      bool include_region_bounds) const;
 
   // Shows a usable prewarmed overlay while the screenshot is captured, instead
   // of loading a new one once the screenshot is here. Drops it otherwise.

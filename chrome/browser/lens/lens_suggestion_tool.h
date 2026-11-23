@@ -31,7 +31,7 @@ class LensSuggestionTool : public ::selection::SuggestionTool {
   // ::selection::SuggestionTool:
   ToolId GetToolId() const override;
   std::unique_ptr<::selection::Suggestion> CreateSuggestion(
-      const ::selection::AreaOfInterest& processed_area,
+      const ::selection::PageContextWithSelection& context,
       const optimization_guide::proto::SmartSelectionSuggestion&
           server_suggestion) override;
 

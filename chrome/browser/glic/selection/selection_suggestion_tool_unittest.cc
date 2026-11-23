@@ -14,6 +14,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/selection/selection_suggestion.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_prefs.h"
+#include "chrome/browser/selection/page_context.h"
 #include "chrome/browser/selection/suggestion.h"
 #include "chrome/browser/selection/suggestion_service.h"
 #include "chrome/test/base/testing_profile.h"
@@ -148,12 +149,12 @@ TEST_F(SelectionSuggestionToolTest, RegistersAndUnregistersWithService) {
 // Tests that CreateSuggestion creates a SelectionSuggestion for non-empty
 // labels.
 TEST_F(SelectionSuggestionToolTest, CreateSuggestionWithValidLabel) {
-  const ::selection::AreaOfInterest aoi;
+  const ::selection::PageContextWithSelection context;
   optimization_guide::proto::SmartSelectionSuggestion server_suggestion;
   server_suggestion.set_label("Ask Glic");
 
   const std::unique_ptr<::selection::Suggestion> suggestion =
-      tool().CreateSuggestion(aoi, server_suggestion);
+      tool().CreateSuggestion(context, server_suggestion);
   ASSERT_NE(suggestion, nullptr);
   EXPECT_EQ(suggestion->GetLabel(), u"Ask Glic");
   EXPECT_EQ(suggestion->GetToolId(),
@@ -166,11 +167,11 @@ TEST_F(SelectionSuggestionToolTest, CreateSuggestionWithValidLabel) {
 // Tests that CreateSuggestion returns nullptr when the server label is empty.
 TEST_F(SelectionSuggestionToolTest,
        CreateSuggestionWithEmptyLabelReturnsNullptr) {
-  const ::selection::AreaOfInterest aoi;
+  const ::selection::PageContextWithSelection context;
   optimization_guide::proto::SmartSelectionSuggestion server_suggestion;
   server_suggestion.set_label("");
 
-  EXPECT_EQ(tool().CreateSuggestion(aoi, server_suggestion), nullptr);
+  EXPECT_EQ(tool().CreateSuggestion(context, server_suggestion), nullptr);
 }
 
 }  // namespace

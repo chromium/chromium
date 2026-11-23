@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/selection/mojom/action.mojom.h"
+#include "chrome/browser/selection/page_context.h"
 #include "chrome/browser/selection/suggestion.h"
 #include "chrome/browser/selection/suggestion_service.h"
 #include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
@@ -146,10 +147,10 @@ LensSuggestionTool::ToolId LensSuggestionTool::GetToolId() const {
 }
 
 std::unique_ptr<::selection::Suggestion> LensSuggestionTool::CreateSuggestion(
-    const ::selection::AreaOfInterest& processed_area,
+    const ::selection::PageContextWithSelection& context,
     const optimization_guide::proto::SmartSelectionSuggestion&
         server_suggestion) {
-  const gfx::Rect bounds = GetBoundsRect(processed_area.bounds);
+  const gfx::Rect bounds = GetBoundsRect(context.area_of_interest.bounds);
   if (bounds.IsEmpty()) {
     return nullptr;
   }
@@ -158,7 +159,7 @@ std::unique_ptr<::selection::Suggestion> LensSuggestionTool::CreateSuggestion(
                                    IDS_LENS_SELECTION_SUGGESTION_DEFAULT_LABEL)
                              : base::UTF8ToUTF16(server_suggestion.label());
   return std::make_unique<LensSuggestion>(*tab_, std::move(label), bounds,
-                                          processed_area.screenshot);
+                                          context.page_context.screenshot);
 }
 
 }  // namespace lens

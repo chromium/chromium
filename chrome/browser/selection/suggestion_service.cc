@@ -120,10 +120,11 @@ struct AreaOfInterestWithScreenshot {
   SkBitmap screenshot;
 };
 
-// Converts `aoi` into its proto representation (excluding screenshot data) and
-// returns the (potentially cropped) screenshot to encode.
-AreaOfInterestWithScreenshot ToProtoAreaOfInterest(const AreaOfInterest& aoi) {
-  SkBitmap screenshot = aoi.screenshot;
+// Converts `context` into the proto representation (excluding screenshot data)
+// and returns the (potentially cropped) screenshot to encode.
+AreaOfInterestWithScreenshot ToProtoAreaOfInterest(
+    const PageContextWithSelection& context) {
+  SkBitmap screenshot = context.page_context.screenshot;
   proto::AreaOfInterest proto_aoi;
   std::visit(absl::Overload{
                  [&](gfx::Rect selection_rect) {
@@ -137,9 +138,9 @@ AreaOfInterestWithScreenshot ToProtoAreaOfInterest(const AreaOfInterest& aoi) {
                  },
                  [](base::span<const gfx::Point> coordinates) {},
              },
-             aoi.bounds);
+             context.area_of_interest.bounds);
   if (kSmartSelectionServerAppendApc.Get()) {
-    *proto_aoi.mutable_annotated_page_content() = aoi.apc;
+    *proto_aoi.mutable_annotated_page_content() = context.page_context.apc;
   }
   return {std::move(proto_aoi), std::move(screenshot)};
 }
@@ -149,10 +150,10 @@ struct SuggestionRequestWithScreenshot {
   SkBitmap screenshot;
 };
 
-// Builds a request proto for `aoi` and `tools` (excluding screenshot data) and
-// returns the (potentially cropped) screenshot to encode.
+// Builds a request proto for `context` and `tools` (excluding screenshot data)
+// and returns the (potentially cropped) screenshot to encode.
 SuggestionRequestWithScreenshot BuildServerSuggestionsRequest(
-    const AreaOfInterest& aoi,
+    const PageContextWithSelection& context,
     const base::flat_map<SuggestionTool::ToolId, raw_ptr<SuggestionTool>>&
         tools) {
   proto::SmartSelectionSuggestionsRequest request;
@@ -175,14 +176,14 @@ SuggestionRequestWithScreenshot BuildServerSuggestionsRequest(
   capabilities.set_chrome_version(
       std::string(version_info::GetVersionNumber()));
 
-  auto [proto_aoi, screenshot] = ToProtoAreaOfInterest(aoi);
+  auto [proto_aoi, screenshot] = ToProtoAreaOfInterest(context);
   *request.add_areas_of_interest() = std::move(proto_aoi);
   return {std::move(request), std::move(screenshot)};
 }
 
 // Invokes the corresponding `tools` to create `Suggestion`s from `response`.
 std::vector<std::unique_ptr<Suggestion>> ExtractSuggestionsFromResponse(
-    const AreaOfInterest& aoi,
+    const PageContextWithSelection& context,
     const proto::SmartSelectionSuggestionsResponse& response,
     const base::flat_map<SuggestionTool::ToolId, raw_ptr<SuggestionTool>>&
         tools) {
@@ -193,7 +194,7 @@ std::vector<std::unique_ptr<Suggestion>> ExtractSuggestionsFromResponse(
     if (const raw_ptr<SuggestionTool>* tool =
             base::FindOrNull(tools, server_suggestion.tool())) {
       if (std::unique_ptr<Suggestion> suggestion =
-              (*tool)->CreateSuggestion(aoi, server_suggestion)) {
+              (*tool)->CreateSuggestion(context, server_suggestion)) {
         suggestions.emplace_back(std::move(suggestion));
       }
     }
@@ -461,7 +462,7 @@ void SuggestionService::UpdateScreenContent(
   MaybePrewarmServerRequest();
 }
 
-void SuggestionService::RequestSuggestions(AreaOfInterest processed_area,
+void SuggestionService::RequestSuggestions(PageContextWithSelection context,
                                            SuggestionsCallback callback) {
   const auto request_start_time = base::TimeTicks::Now();
   if (tools_.empty() || !remote_model_executor_ ||
@@ -475,8 +476,7 @@ void SuggestionService::RequestSuggestions(AreaOfInterest processed_area,
 
   MaybePrewarmServerRequest();
 
-  auto [request, screenshot] =
-      BuildServerSuggestionsRequest(processed_area, tools_);
+  auto [request, screenshot] = BuildServerSuggestionsRequest(context, tools_);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -484,7 +484,7 @@ void SuggestionService::RequestSuggestions(AreaOfInterest processed_area,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&EncodedImage::Create, std::move(screenshot)),
       base::BindOnce(&SuggestionService::SendServerSuggestionsRequest,
-                     weak_factory_.GetWeakPtr(), std::move(processed_area),
+                     weak_factory_.GetWeakPtr(), std::move(context),
                      std::move(callback), request_start_time,
                      std::move(request)));
 }
@@ -497,7 +497,7 @@ bool SuggestionService::IsFeatureGroupEnabled(
 }
 
 void SuggestionService::SendServerSuggestionsRequest(
-    AreaOfInterest processed_area,
+    PageContextWithSelection context,
     SuggestionsCallback callback,
     base::TimeTicks request_start_time,
     proto::SmartSelectionSuggestionsRequest request,
@@ -525,10 +525,11 @@ void SuggestionService::SendServerSuggestionsRequest(
   }
   feedback_zip_builder.SetTab(
       tab_.get(), IsFeatureGroupEnabled(kSmartSelectionServerSuggestions));
-  feedback_zip_builder.SetScreenshot(processed_area.screenshot);
-  feedback_zip_builder.SetApc(processed_area.apc);
-  if (processed_area.selected_text.has_value()) {
-    feedback_zip_builder.SetSelectedText(*processed_area.selected_text);
+  feedback_zip_builder.SetScreenshot(context.page_context.screenshot);
+  feedback_zip_builder.SetApc(context.page_context.apc);
+  if (context.area_of_interest.selected_text.has_value()) {
+    feedback_zip_builder.SetSelectedText(
+        *context.area_of_interest.selected_text);
   }
   feedback_zip_builder.SetRequest(request);
 
@@ -537,7 +538,7 @@ void SuggestionService::SendServerSuggestionsRequest(
       optimization_guide::ModelBasedCapabilityKey::kSmartSelectionSuggestions,
       request, {.execution_timeout = kSmartSelectionServerTimeout.Get()},
       base::BindOnce(&SuggestionService::OnServerSuggestions,
-                     weak_factory_.GetWeakPtr(), std::move(processed_area),
+                     weak_factory_.GetWeakPtr(), std::move(context),
                      std::move(callback), std::move(feedback_zip_builder),
                      request_start_time,
                      /*mes_request_start_time=*/base::TimeTicks::Now(),
@@ -545,7 +546,7 @@ void SuggestionService::SendServerSuggestionsRequest(
 }
 
 void SuggestionService::OnServerSuggestions(
-    AreaOfInterest processed_area,
+    PageContextWithSelection context,
     SuggestionsCallback callback,
     FeedbackZipBuilder feedback_zip_builder,
     base::TimeTicks request_start_time,
@@ -564,7 +565,7 @@ void SuggestionService::OnServerSuggestions(
     return;
   }
   std::vector<std::unique_ptr<Suggestion>> suggestions =
-      ExtractSuggestionsFromResponse(processed_area, *response, tools_);
+      ExtractSuggestionsFromResponse(context, *response, tools_);
   LogLatencyMetrics(tab_->GetContents(), request_start_time,
                     mes_request_start_time, num_image_bytes, num_apc_bytes,
                     response->latency_metrics(), suggestions.size());

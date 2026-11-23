@@ -69,7 +69,7 @@ std::vector<std::string> SelectionSuggestionTool::GetCapabilities() const {
 
 std::unique_ptr<::selection::Suggestion>
 SelectionSuggestionTool::CreateSuggestion(
-    const ::selection::AreaOfInterest& processed_area,
+    const ::selection::PageContextWithSelection& context,
     const optimization_guide::proto::SmartSelectionSuggestion&
         server_suggestion) {
   if (server_suggestion.label().empty()) {

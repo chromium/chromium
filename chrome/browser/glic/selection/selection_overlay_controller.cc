@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 
 #include <algorithm>
+#include <cmath>
 #include <utility>
 
 #include "base/check_deref.h"
@@ -161,6 +162,50 @@ gfx::RectF GetRectForRegion(const SkBitmap& image, const gfx::RectF& region) {
   return gfx::RectF((region.x() - 0.5 * region.width()) * x_scale,
                     (region.y() - 0.5 * region.height()) * y_scale,
                     region.width() * x_scale, region.height() * y_scale);
+}
+
+std::optional<gfx::Rect> ConvertRectToPixels(const gfx::RectF& region,
+                                             const SkBitmap& screenshot) {
+  if (screenshot.empty()) {
+    return std::nullopt;
+  }
+  const gfx::RectF gfx_rect = GetRectForRegion(screenshot, region);
+  const SkRect rect_on_canvas = gfx::RectFToSkRect(gfx_rect);
+  if (rect_on_canvas.isEmpty() ||
+      !screenshot.bounds().contains(rect_on_canvas)) {
+    return std::nullopt;
+  }
+  return gfx::ToEnclosingRect(gfx_rect);
+}
+
+std::optional<std::vector<gfx::Point>> ConvertPolylineToPixels(
+    const std::vector<gfx::PointF>& polyline,
+    const SkBitmap& screenshot) {
+  if (polyline.empty() || screenshot.empty()) {
+    return std::nullopt;
+  }
+  const int width = screenshot.width();
+  const int height = screenshot.height();
+  std::vector<gfx::Point> line_points;
+  line_points.reserve(polyline.size());
+  for (const gfx::PointF& pt : polyline) {
+    if (!std::isfinite(pt.x()) || !std::isfinite(pt.y())) {
+      return std::nullopt;
+    }
+    const double scaled_x = std::round(static_cast<double>(pt.x()) * width);
+    const double scaled_y = std::round(static_cast<double>(pt.y()) * height);
+    if (scaled_x < 0.0 || scaled_x > width || scaled_y < 0.0 ||
+        scaled_y > height) {
+      return std::nullopt;
+    }
+    const int x = static_cast<int>(scaled_x);
+    const int y = static_cast<int>(scaled_y);
+    // Map width/height to width-1/height-1 to be valid pixel indices.
+    const int pixel_x = (x == width) ? x - 1 : x;
+    const int pixel_y = (y == height) ? y - 1 : y;
+    line_points.emplace_back(pixel_x, pixel_y);
+  }
+  return line_points;
 }
 
 constexpr int kSelectionPaddingDip = 5;
@@ -1369,6 +1414,64 @@ void SelectionOverlayController::SubmitPrompt(const std::string& prompt) {
   InvokeWithPrompt(prompt);
 }
 
+::selection::PageContext SelectionOverlayController::BuildPageContext(
+    bool include_pdf_data) const {
+  ::selection::PageContext page_context;
+  page_context.screenshot = session_->redacted_screenshot;
+  if (!session_->tab_context) {
+    return page_context;
+  }
+  if (const auto& annotated_page_data =
+          session_->tab_context->annotated_page_data) {
+    if (annotated_page_data->annotated_page_content.has_value()) {
+      if (auto apc =
+              annotated_page_data->annotated_page_content
+                  ->As<optimization_guide::proto::AnnotatedPageContent>()) {
+        page_context.apc = std::move(*apc);
+      }
+    }
+    page_context.metadata = annotated_page_data->metadata.Clone();
+  }
+  if (include_pdf_data && session_->tab_context->pdf_document_data) {
+    ::selection::PageContext::PdfDocumentData pdf;
+    pdf.origin = session_->tab_context->pdf_document_data->origin;
+    pdf.bytes = session_->tab_context->pdf_document_data->pdf_data;
+    pdf.size_limit_exceeded =
+        session_->tab_context->pdf_document_data->pdf_size_limit_exceeded;
+    page_context.pdf_data = std::move(pdf);
+  }
+  return page_context;
+}
+
+::selection::AreaOfInterest SelectionOverlayController::BuildAreaOfInterest(
+    const SelectedRegionData* region_data,
+    bool include_region_bounds) const {
+  ::selection::AreaOfInterest aoi;
+  if (!region_data) {
+    return aoi;
+  }
+  aoi.selected_text = region_data->selected_text;
+  aoi.text_surrounding_selection = region_data->text_surrounding_selection;
+  aoi.is_text_selection = region_data->is_text_selection;
+  if (!include_region_bounds || session_->redacted_screenshot.empty()) {
+    return aoi;
+  }
+  const auto& shape = region_data->region->shape;
+  if (shape->is_rect()) {
+    if (std::optional<gfx::Rect> rect = ConvertRectToPixels(
+            shape->get_rect(), session_->redacted_screenshot)) {
+      aoi.bounds = *rect;
+    }
+  } else if (shape->is_polyline()) {
+    if (std::optional<std::vector<gfx::Point>> line_points =
+            ConvertPolylineToPixels(shape->get_polyline(),
+                                    session_->redacted_screenshot)) {
+      aoi.bounds = std::move(*line_points);
+    }
+  }
+  return aoi;
+}
+
 bool SelectionOverlayController::HasOnlyTextSelection() const {
   return !session_->selected_regions.empty() &&
          std::ranges::all_of(session_->selected_regions, [](const auto& entry) {
@@ -1559,33 +1662,10 @@ void SelectionOverlayController::RequestNewSuggestions(
   uint64_t generation = ++region_data.generation;
   base::UnguessableToken region_id = region_data.region->id;
 
-  ::selection::AreaOfInterest aoi;
-  aoi.screenshot = session_->redacted_screenshot;
-  aoi.selected_text = region_data.selected_text;
-  aoi.text_surrounding_selection = region_data.text_surrounding_selection;
-  const auto& region = region_data.region;
-  if (region->shape->is_rect()) {
-    gfx::RectF gfx_rect = GetRectForRegion(session_->redacted_screenshot,
-                                           region->shape->get_rect());
-    aoi.bounds = gfx::ToEnclosingRect(gfx_rect);
-  } else if (region->shape->is_polyline()) {
-    aoi.bounds = base::ToVector(
-        region->shape->get_polyline(), [&](const gfx::PointF& pt) {
-          return gfx::Point(
-              static_cast<int>(pt.x() * session_->redacted_screenshot.width()),
-              static_cast<int>(pt.y() *
-                               session_->redacted_screenshot.height()));
-        });
-  }
-  if (session_->tab_context && session_->tab_context->annotated_page_data &&
-      session_->tab_context->annotated_page_data->annotated_page_content
-          .has_value()) {
-    if (auto apc =
-            session_->tab_context->annotated_page_data->annotated_page_content
-                ->As<optimization_guide::proto::AnnotatedPageContent>()) {
-      aoi.apc = std::move(*apc);
-    }
-  }
+  ::selection::PageContext page_context =
+      BuildPageContext(/*include_pdf_data=*/false);
+  ::selection::AreaOfInterest aoi =
+      BuildAreaOfInterest(&region_data, /*include_region_bounds=*/true);
 
   if (base::FeatureList::IsEnabled(kStaticSelectionSuggestions)) {
     std::vector<std::unique_ptr<::selection::Suggestion>> static_suggestions;
@@ -1610,7 +1690,8 @@ void SelectionOverlayController::RequestNewSuggestions(
   }
 
   suggestion_service->RequestSuggestions(
-      std::move(aoi),
+      ::selection::PageContextWithSelection(std::move(page_context),
+                                            std::move(aoi)),
       base::BindOnce(&SelectionOverlayController::OnSuggestionsReceived,
                      session_weak_factory_.GetWeakPtr(), region_id, generation,
                      /*complete=*/true));
@@ -1823,14 +1904,10 @@ CapturedRegions SelectionOverlayController::GetCapturedRegions() const {
     }
     const auto& region = region_data.region;
     if (region->shape->is_rect()) {
-      gfx::RectF gfx_rect_on_canvas = GetRectForRegion(
-          session_->redacted_screenshot, region->shape->get_rect());
-      SkRect rect_on_canvas = gfx::RectFToSkRect(gfx_rect_on_canvas);
-      if (!rect_on_canvas.isEmpty() &&
-          session_->redacted_screenshot.bounds().contains(rect_on_canvas)) {
+      if (std::optional<gfx::Rect> rect = ConvertRectToPixels(
+              region->shape->get_rect(), session_->redacted_screenshot)) {
         captured_regions.emplace_back(
-            id, glic::mojom::CapturedRegion::NewRect(
-                    gfx::ToEnclosingRect(gfx_rect_on_canvas)));
+            id, glic::mojom::CapturedRegion::NewRect(*rect));
       } else {
         // TODO(b/485358530): Record proper histograms for the error case.
         LOG(ERROR) << "Invalid region selected "
@@ -1838,30 +1915,12 @@ CapturedRegions SelectionOverlayController::GetCapturedRegions() const {
       }
     } else if (region->shape->is_polyline()) {
       if (base::FeatureList::IsEnabled(features::kGlicRegionSelectionLine)) {
-        std::vector<gfx::Point> line_points;
-        bool all_points_valid = true;
-        for (const auto& point : region->shape->get_polyline()) {
-          int x = std::round(point.x() * session_->redacted_screenshot.width());
-          int y =
-              std::round(point.y() * session_->redacted_screenshot.height());
-
-          if (x >= 0 && x <= session_->redacted_screenshot.width() && y >= 0 &&
-              y <= session_->redacted_screenshot.height()) {
-            // Map width/height to width-1/height-1 to be valid pixel indices.
-            int pixel_x =
-                (x == session_->redacted_screenshot.width()) ? x - 1 : x;
-            int pixel_y =
-                (y == session_->redacted_screenshot.height()) ? y - 1 : y;
-            line_points.emplace_back(pixel_x, pixel_y);
-          } else {
-            all_points_valid = false;
-            break;
-          }
-        }
-        if (all_points_valid && !line_points.empty()) {
+        if (std::optional<std::vector<gfx::Point>> line_points =
+                ConvertPolylineToPixels(region->shape->get_polyline(),
+                                        session_->redacted_screenshot)) {
           captured_regions.emplace_back(
-              id,
-              glic::mojom::CapturedRegion::NewPolyline(std::move(line_points)));
+              id, glic::mojom::CapturedRegion::NewPolyline(
+                      std::move(*line_points)));
         } else {
           LOG(ERROR) << "Invalid polyline selected";
         }

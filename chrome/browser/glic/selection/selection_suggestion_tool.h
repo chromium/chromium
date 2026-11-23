@@ -27,7 +27,7 @@ class SelectionSuggestionTool : public ::selection::SuggestionTool {
   ToolId GetToolId() const override;
   std::vector<std::string> GetCapabilities() const override;
   std::unique_ptr<::selection::Suggestion> CreateSuggestion(
-      const ::selection::AreaOfInterest& processed_area,
+      const ::selection::PageContextWithSelection& context,
       const optimization_guide::proto::SmartSelectionSuggestion&
           server_suggestion) override;
 

@@ -14,6 +14,8 @@
 #include "chrome/browser/glic/selection/explain_suggestion.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/selection/area_of_interest.h"
+#include "chrome/browser/selection/page_context.h"
 #include "chrome/browser/selection/suggestion.h"
 #include "chrome/browser/selection/suggestion_service.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
@@ -113,10 +115,10 @@ QuickAnswersTool::ToolId QuickAnswersTool::GetToolId() const {
 }
 
 std::unique_ptr<::selection::Suggestion> QuickAnswersTool::CreateSuggestion(
-    const ::selection::AreaOfInterest& processed_area,
+    const ::selection::PageContextWithSelection& context,
     const optimization_guide::proto::SmartSelectionSuggestion&
         server_suggestion) {
-  return CreateSuggestion(processed_area);
+  return CreateSuggestion(context.area_of_interest);
 }
 
 void QuickAnswersTool::DidFinishNavigation(

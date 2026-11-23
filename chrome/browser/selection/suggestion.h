@@ -5,45 +5,22 @@
 #ifndef CHROME_BROWSER_SELECTION_SUGGESTION_H_
 #define CHROME_BROWSER_SELECTION_SUGGESTION_H_
 
-#include <optional>
 #include <string>
 #include <string_view>
 #include <type_traits>
 #include <utility>
-#include <variant>
-#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/selection/mojom/action.mojom-forward.h"
-#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
-#include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/gfx/geometry/point.h"
-#include "ui/gfx/geometry/rect.h"
 
 namespace optimization_guide::proto {
 enum SmartSelectionToolId : int;
 }  // namespace optimization_guide::proto
 
 namespace selection {
-
-// Area of interest for the suggested service to examine.
-struct AreaOfInterest {
-  AreaOfInterest();
-  AreaOfInterest(const AreaOfInterest&);
-  AreaOfInterest& operator=(const AreaOfInterest&);
-  AreaOfInterest(AreaOfInterest&&);
-  AreaOfInterest& operator=(AreaOfInterest&&);
-  ~AreaOfInterest();
-
-  optimization_guide::proto::AnnotatedPageContent apc;
-  SkBitmap screenshot;
-  std::variant<gfx::Rect, std::vector<gfx::Point>> bounds;
-  std::optional<std::u16string> selected_text;
-  std::optional<std::u16string> text_surrounding_selection;
-};
 
 class Suggestion {
  public:

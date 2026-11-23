@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
 #include "chrome/browser/selection/mojom/action.mojom.h"
+#include "chrome/browser/selection/page_context.h"
 #include "chrome/browser/selection/suggestion.h"
 #include "chrome/browser/selection/suggestion_service.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
@@ -101,38 +102,38 @@ TEST_F(LensSuggestionToolTest, RegistersAndUnregistersWithService) {
 }
 
 TEST_F(LensSuggestionToolTest, CreateSuggestionWithEmptyLabelUsesFallback) {
-  ::selection::AreaOfInterest aoi;
-  aoi.bounds = gfx::Rect(10, 20, 30, 40);
+  ::selection::PageContextWithSelection context;
+  context.area_of_interest.bounds = gfx::Rect(10, 20, 30, 40);
   optimization_guide::proto::SmartSelectionSuggestion server_suggestion;
   server_suggestion.set_label("");
 
   std::unique_ptr<::selection::Suggestion> suggestion =
-      tool().CreateSuggestion(aoi, server_suggestion);
+      tool().CreateSuggestion(context, server_suggestion);
   ASSERT_NE(suggestion, nullptr);
   EXPECT_EQ(suggestion->GetLabel(), u"Search with Google Lens");
 }
 
 TEST_F(LensSuggestionToolTest, CreateSuggestionWithEmptyBoundsReturnsNullptr) {
-  ::selection::AreaOfInterest aoi;
-  aoi.bounds = gfx::Rect();
+  ::selection::PageContextWithSelection context;
+  context.area_of_interest.bounds = gfx::Rect();
   optimization_guide::proto::SmartSelectionSuggestion server_suggestion;
   server_suggestion.set_label("Search with Google Lens");
 
-  EXPECT_EQ(tool().CreateSuggestion(aoi, server_suggestion), nullptr);
+  EXPECT_EQ(tool().CreateSuggestion(context, server_suggestion), nullptr);
 }
 
 TEST_F(LensSuggestionToolTest,
        ExecuteSuggestionWithRectBoundsOpensLensOverlay) {
-  ::selection::AreaOfInterest aoi;
-  aoi.screenshot.allocN32Pixels(200, 100);
-  aoi.screenshot.eraseColor(SK_ColorBLUE);
-  aoi.bounds = gfx::Rect(20, 10, 60, 40);
+  ::selection::PageContextWithSelection context;
+  context.page_context.screenshot.allocN32Pixels(200, 100);
+  context.page_context.screenshot.eraseColor(SK_ColorBLUE);
+  context.area_of_interest.bounds = gfx::Rect(20, 10, 60, 40);
 
   optimization_guide::proto::SmartSelectionSuggestion server_suggestion;
   server_suggestion.set_label("Search with Google Lens");
 
   std::unique_ptr<::selection::Suggestion> suggestion =
-      tool().CreateSuggestion(aoi, server_suggestion);
+      tool().CreateSuggestion(context, server_suggestion);
   ASSERT_NE(suggestion, nullptr);
   EXPECT_EQ(suggestion->GetLabel(), u"Search with Google Lens");
   EXPECT_EQ(suggestion->GetToolId(),
@@ -167,10 +168,10 @@ TEST_F(LensSuggestionToolTest,
 
 TEST_F(LensSuggestionToolTest,
        ExecuteSuggestionWithPolylineBoundsOpensLensOverlay) {
-  ::selection::AreaOfInterest aoi;
-  aoi.screenshot.allocN32Pixels(100, 100);
-  aoi.screenshot.eraseColor(SK_ColorGREEN);
-  aoi.bounds = std::vector<gfx::Point>{
+  ::selection::PageContextWithSelection context;
+  context.page_context.screenshot.allocN32Pixels(100, 100);
+  context.page_context.screenshot.eraseColor(SK_ColorGREEN);
+  context.area_of_interest.bounds = std::vector<gfx::Point>{
       gfx::Point(10, 20),
       gfx::Point(50, 80),
       gfx::Point(30, 40),
@@ -180,7 +181,7 @@ TEST_F(LensSuggestionToolTest,
   server_suggestion.set_label("Search region");
 
   std::unique_ptr<::selection::Suggestion> suggestion =
-      tool().CreateSuggestion(aoi, server_suggestion);
+      tool().CreateSuggestion(context, server_suggestion);
   ASSERT_NE(suggestion, nullptr);
 
   base::RunLoop run_loop;

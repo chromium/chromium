@@ -6,13 +6,6 @@
 
 namespace selection {
 
-AreaOfInterest::AreaOfInterest() = default;
-AreaOfInterest::AreaOfInterest(const AreaOfInterest&) = default;
-AreaOfInterest& AreaOfInterest::operator=(const AreaOfInterest&) = default;
-AreaOfInterest::AreaOfInterest(AreaOfInterest&&) = default;
-AreaOfInterest& AreaOfInterest::operator=(AreaOfInterest&&) = default;
-AreaOfInterest::~AreaOfInterest() = default;
-
 Suggestion::Suggestion() = default;
 Suggestion::~Suggestion() = default;
 

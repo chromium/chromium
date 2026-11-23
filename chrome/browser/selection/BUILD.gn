@@ -6,12 +6,16 @@ assert(!is_android)
 
 source_set("selection") {
   sources = [
+    "area_of_interest.cc",
+    "area_of_interest.h",
     "features.cc",
     "features.h",
     "feedback_zip_builder.cc",
     "feedback_zip_builder.h",
     "metrics_logger.cc",
     "metrics_logger.h",
+    "page_context.cc",
+    "page_context.h",
     "suggestion.cc",
     "suggestion.h",
     "suggestion_service.cc",
@@ -25,8 +29,10 @@ source_set("selection") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//mojo/public/cpp/bindings",
     "//skia",
+    "//third_party/blink/public/common",
     "//ui/base/unowned_user_data",
     "//ui/gfx/geometry",
+    "//url",
   ]
 
   deps = [
@@ -49,7 +55,6 @@ source_set("selection") {
     "//third_party/zlib/google:zip",
     "//ui/gfx/codec",
     "//ui/gfx/geometry:geometry_skia",
-    "//url",
   ]
 }
 
@@ -57,6 +62,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "metrics_logger_unittest.cc",
+    "page_context_unittest.cc",
     "suggestion_service_unittest.cc",
     "suggestion_unittest.cc",
   ]

@@ -18,6 +18,8 @@ enum SmartSelectionToolId : int;
 
 namespace selection {
 
+struct PageContextWithSelection;
+
 // Interface for Chrome features to register as suggestion tools.
 class SuggestionTool {
  public:
@@ -34,7 +36,7 @@ class SuggestionTool {
   // Turns the `server_suggestion` into a `Suggestion`. That is, it acts as a
   // factory function for suggestions that used this tool.
   virtual std::unique_ptr<Suggestion> CreateSuggestion(
-      const AreaOfInterest& processed_area,
+      const PageContextWithSelection& context,
       const optimization_guide::proto::SmartSelectionSuggestion&
           server_suggestion) = 0;
 };

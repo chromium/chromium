@@ -36,6 +36,7 @@
 #include "chrome/browser/selection/features.h"
 #include "chrome/browser/selection/feedback_zip_builder.h"
 #include "chrome/browser/selection/mojom/action.mojom.h"
+#include "chrome/browser/selection/page_context.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -184,7 +185,7 @@ class CustomTestTool : public SuggestionTool {
   }
 
   std::unique_ptr<Suggestion> CreateSuggestion(
-      const AreaOfInterest& processed_area,
+      const PageContextWithSelection& context,
       const optimization_guide::proto::SmartSelectionSuggestion&
           server_suggestion) override {
     if (server_suggestion.label().empty()) {
@@ -276,9 +277,9 @@ TEST_F(SuggestionServiceUnitTest, ServerSuggestionsDisabledByDefault) {
 
   EXPECT_CALL(mock_model_executor(), ExecuteModel).Times(0);
 
-  AreaOfInterest aoi;
+  PageContextWithSelection context;
   SuggestionsFuture future;
-  service().RequestSuggestions(aoi, future.GetCallback());
+  service().RequestSuggestions(context, future.GetCallback());
 
   EXPECT_THAT(std::get<0>(future.Take()), IsEmpty());
 
@@ -299,9 +300,9 @@ TEST_F(SuggestionServiceUnitTest,
 
   EXPECT_CALL(mock_model_executor(), ExecuteModel).Times(0);
 
-  AreaOfInterest aoi;
+  PageContextWithSelection context;
   SuggestionsFuture future;
-  service().RequestSuggestions(aoi, future.GetCallback());
+  service().RequestSuggestions(context, future.GetCallback());
 
   EXPECT_THAT(std::get<0>(future.Take()), IsEmpty());
 
@@ -339,9 +340,9 @@ TEST_F(SuggestionServiceUnitTest,
               /*execution_info=*/nullptr),
           /*log_entry=*/nullptr));
 
-  AreaOfInterest aoi;
+  PageContextWithSelection context;
   SuggestionsFuture future;
-  service_without_groups.RequestSuggestions(aoi, future.GetCallback());
+  service_without_groups.RequestSuggestions(context, future.GetCallback());
 
   EXPECT_THAT(std::get<0>(future.Take()),
               ElementsAre(SuggestionWithLabel(u"Server Gemini Action")));
@@ -356,9 +357,9 @@ TEST_F(SuggestionServiceUnitTest,
 
   EXPECT_CALL(mock_model_executor(), ExecuteModel).Times(0);
 
-  AreaOfInterest aoi;
+  PageContextWithSelection context;
   SuggestionsFuture future;
-  service().RequestSuggestions(aoi, future.GetCallback());
+  service().RequestSuggestions(context, future.GetCallback());
 
   EXPECT_THAT(std::get<0>(future.Take()), IsEmpty());
 }
@@ -430,13 +431,13 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithServerSuggestions) {
                 /*log_entry=*/nullptr);
           });
 
-  AreaOfInterest aoi;
-  aoi.screenshot.allocN32Pixels(50, 50);
-  aoi.screenshot.eraseColor(SK_ColorRED);
-  aoi.bounds = gfx::Rect(10, 20, 30, 40);
+  PageContextWithSelection context;
+  context.page_context.screenshot.allocN32Pixels(50, 50);
+  context.page_context.screenshot.eraseColor(SK_ColorRED);
+  context.area_of_interest.bounds = gfx::Rect(10, 20, 30, 40);
 
   SuggestionsFuture future;
-  service().RequestSuggestions(aoi, future.GetCallback());
+  service().RequestSuggestions(context, future.GetCallback());
 
   EXPECT_THAT(std::get<0>(future.Take()),
               ElementsAre(SuggestionWithLabel(u"Server Gemini Action")));
@@ -494,13 +495,13 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithJpegScreenshot) {
                 /*log_entry=*/nullptr);
           });
 
-  AreaOfInterest aoi;
-  aoi.screenshot.allocN32Pixels(50, 50);
-  aoi.screenshot.eraseColor(SK_ColorRED);
-  aoi.bounds = gfx::Rect(10, 20, 30, 40);
+  PageContextWithSelection context;
+  context.page_context.screenshot.allocN32Pixels(50, 50);
+  context.page_context.screenshot.eraseColor(SK_ColorRED);
+  context.area_of_interest.bounds = gfx::Rect(10, 20, 30, 40);
 
   SuggestionsFuture future;
-  service().RequestSuggestions(aoi, future.GetCallback());
+  service().RequestSuggestions(context, future.GetCallback());
   EXPECT_THAT(std::get<0>(future.Take()),
               ElementsAre(SuggestionWithLabel(u"Jpeg Action")));
 
@@ -548,13 +549,13 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithoutApc) {
             /*log_entry=*/nullptr);
       });
 
-  AreaOfInterest aoi;
-  aoi.screenshot.allocN32Pixels(50, 50);
-  aoi.screenshot.eraseColor(SK_ColorRED);
-  aoi.bounds = gfx::Rect(10, 20, 30, 40);
+  PageContextWithSelection context;
+  context.page_context.screenshot.allocN32Pixels(50, 50);
+  context.page_context.screenshot.eraseColor(SK_ColorRED);
+  context.area_of_interest.bounds = gfx::Rect(10, 20, 30, 40);
 
   SuggestionsFuture future;
-  service().RequestSuggestions(aoi, future.GetCallback());
+  service().RequestSuggestions(context, future.GetCallback());
 
   EXPECT_THAT(std::get<0>(future.Take()),
               ElementsAre(SuggestionWithLabel(u"Action Without APC")));
@@ -616,13 +617,13 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithCroppedScreenshot) {
                 /*log_entry=*/nullptr);
           });
 
-  AreaOfInterest aoi;
-  aoi.screenshot.allocN32Pixels(100, 100);
-  aoi.screenshot.eraseColor(SK_ColorRED);
-  aoi.bounds = gfx::Rect(10, 20, 30, 40);
+  PageContextWithSelection context;
+  context.page_context.screenshot.allocN32Pixels(100, 100);
+  context.page_context.screenshot.eraseColor(SK_ColorRED);
+  context.area_of_interest.bounds = gfx::Rect(10, 20, 30, 40);
 
   SuggestionsFuture future;
-  service().RequestSuggestions(aoi, future.GetCallback());
+  service().RequestSuggestions(context, future.GetCallback());
 
   EXPECT_THAT(std::get<0>(future.Take()),
               ElementsAre(SuggestionWithLabel(u"Cropped Action")));
@@ -682,13 +683,13 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithDownscaledScreenshot) {
                 /*log_entry=*/nullptr);
           });
 
-  AreaOfInterest aoi;
-  aoi.screenshot.allocN32Pixels(200, 100);
-  aoi.screenshot.eraseColor(SK_ColorRED);
-  aoi.bounds = gfx::Rect(20, 20, 60, 40);
+  PageContextWithSelection context;
+  context.page_context.screenshot.allocN32Pixels(200, 100);
+  context.page_context.screenshot.eraseColor(SK_ColorRED);
+  context.area_of_interest.bounds = gfx::Rect(20, 20, 60, 40);
 
   SuggestionsFuture future;
-  service().RequestSuggestions(aoi, future.GetCallback());
+  service().RequestSuggestions(context, future.GetCallback());
 
   EXPECT_THAT(std::get<0>(future.Take()),
               ElementsAre(SuggestionWithLabel(u"Downscaled Action")));
@@ -748,13 +749,13 @@ TEST_F(SuggestionServiceUnitTest,
                 /*log_entry=*/nullptr);
           });
 
-  AreaOfInterest aoi;
-  aoi.screenshot.allocN32Pixels(100, 80);
-  aoi.screenshot.eraseColor(SK_ColorRED);
-  aoi.bounds = gfx::Rect(10, 10, 20, 20);
+  PageContextWithSelection context;
+  context.page_context.screenshot.allocN32Pixels(100, 80);
+  context.page_context.screenshot.eraseColor(SK_ColorRED);
+  context.area_of_interest.bounds = gfx::Rect(10, 10, 20, 20);
 
   SuggestionsFuture future;
-  service().RequestSuggestions(aoi, future.GetCallback());
+  service().RequestSuggestions(context, future.GetCallback());
 
   EXPECT_THAT(std::get<0>(future.Take()),
               ElementsAre(SuggestionWithLabel(u"Not Downscaled Action")));
@@ -821,13 +822,13 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithCropAndDownscale) {
                 /*log_entry=*/nullptr);
           });
 
-  AreaOfInterest aoi;
-  aoi.screenshot.allocN32Pixels(200, 200);
-  aoi.screenshot.eraseColor(SK_ColorRED);
-  aoi.bounds = gfx::Rect(40, 40, 60, 60);
+  PageContextWithSelection context;
+  context.page_context.screenshot.allocN32Pixels(200, 200);
+  context.page_context.screenshot.eraseColor(SK_ColorRED);
+  context.area_of_interest.bounds = gfx::Rect(40, 40, 60, 60);
 
   SuggestionsFuture future;
-  service().RequestSuggestions(aoi, future.GetCallback());
+  service().RequestSuggestions(context, future.GetCallback());
 
   EXPECT_THAT(
       std::get<0>(future.Take()),
@@ -867,9 +868,9 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsServerError) {
               /*execution_info=*/nullptr),
           /*log_entry=*/nullptr));
 
-  AreaOfInterest aoi;
+  PageContextWithSelection context;
   SuggestionsFuture future;
-  service().RequestSuggestions(aoi, future.GetCallback());
+  service().RequestSuggestions(context, future.GetCallback());
 
   EXPECT_THAT(std::get<0>(future.Take()), IsEmpty());
 
@@ -925,12 +926,12 @@ class SuggestionServiceMetricsTest : public ChromeRenderViewHostTestHarness {
                     /*execution_info=*/nullptr),
                 /*log_entry=*/nullptr)));
 
-    AreaOfInterest aoi;
-    aoi.screenshot.allocN32Pixels(100, 100);
-    aoi.bounds = gfx::Rect(10, 10, 20, 20);
+    PageContextWithSelection context;
+    context.page_context.screenshot.allocN32Pixels(100, 100);
+    context.area_of_interest.bounds = gfx::Rect(10, 10, 20, 20);
 
     SuggestionsFuture future;
-    service_->RequestSuggestions(aoi, future.GetCallback());
+    service_->RequestSuggestions(context, future.GetCallback());
     task_environment()->AdvanceClock(base::Milliseconds(300));
     EXPECT_THAT(std::get<0>(future.Take()),
                 ElementsAre(SuggestionWithLabel(u"Action")));
@@ -1155,16 +1156,18 @@ TEST_F(SuggestionServiceUnitTest, CreateFeedbackZip) {
               /*execution_info=*/nullptr),
           /*log_entry=*/nullptr));
 
-  AreaOfInterest aoi;
-  aoi.screenshot.allocN32Pixels(100, 100);
-  aoi.screenshot.eraseColor(SK_ColorGREEN);
-  aoi.bounds = gfx::Rect(10, 20, 30, 40);
-  aoi.apc.mutable_main_frame_data()->set_title("Feedback Test Page");
-  aoi.apc.mutable_main_frame_data()->set_url("https://example.com/feedback");
-  aoi.selected_text = u"Selected feedback text";
+  PageContextWithSelection context;
+  context.page_context.screenshot.allocN32Pixels(100, 100);
+  context.page_context.screenshot.eraseColor(SK_ColorGREEN);
+  context.area_of_interest.bounds = gfx::Rect(10, 20, 30, 40);
+  context.page_context.apc.mutable_main_frame_data()->set_title(
+      "Feedback Test Page");
+  context.page_context.apc.mutable_main_frame_data()->set_url(
+      "https://example.com/feedback");
+  context.area_of_interest.selected_text = u"Selected feedback text";
 
   SuggestionsFuture suggestions_future;
-  service().RequestSuggestions(aoi, suggestions_future.GetCallback());
+  service().RequestSuggestions(context, suggestions_future.GetCallback());
   auto [suggestions, zip_builder] = suggestions_future.Take();
 
   base::flat_map<std::string, std::string> files = CreateAndUnzip(zip_builder);
@@ -1186,7 +1189,7 @@ TEST_F(SuggestionServiceUnitTest, CreateFeedbackZip) {
 
   optimization_guide::proto::AnnotatedPageContent apc;
   ASSERT_TRUE(apc.ParseFromString(files["apc.pb"]));
-  EXPECT_THAT(apc, EqualsProto(aoi.apc));
+  EXPECT_THAT(apc, EqualsProto(context.page_context.apc));
 
   EXPECT_EQ(files["selection.txt"], "Selected feedback text");
 
@@ -1206,7 +1209,8 @@ TEST_F(SuggestionServiceUnitTest, CreateFeedbackZip) {
   EXPECT_EQ(proto_aoi.selection().y(), 15);
   EXPECT_EQ(proto_aoi.selection().width(), 30);
   EXPECT_EQ(proto_aoi.selection().height(), 40);
-  EXPECT_THAT(proto_aoi.annotated_page_content(), EqualsProto(aoi.apc));
+  EXPECT_THAT(proto_aoi.annotated_page_content(),
+              EqualsProto(context.page_context.apc));
 
   base::DictValue metadata_dict = ParseJsonDict(files["metadata.json"]);
   EXPECT_THAT(metadata_dict, IsSupersetOfValue(R"({
@@ -1264,13 +1268,13 @@ TEST_F(SuggestionServiceUnitTest, CreateFeedbackZipWithJpeg) {
               /*execution_info=*/nullptr),
           /*log_entry=*/nullptr));
 
-  AreaOfInterest aoi;
-  aoi.screenshot.allocN32Pixels(50, 40);
-  aoi.screenshot.eraseColor(SK_ColorBLUE);
-  aoi.bounds = gfx::Rect(10, 15, 20, 25);
+  PageContextWithSelection context;
+  context.page_context.screenshot.allocN32Pixels(50, 40);
+  context.page_context.screenshot.eraseColor(SK_ColorBLUE);
+  context.area_of_interest.bounds = gfx::Rect(10, 15, 20, 25);
 
   SuggestionsFuture suggestions_future;
-  service().RequestSuggestions(aoi, suggestions_future.GetCallback());
+  service().RequestSuggestions(context, suggestions_future.GetCallback());
   auto [suggestions, zip_builder] = suggestions_future.Take();
 
   base::flat_map<std::string, std::string> files = CreateAndUnzip(zip_builder);
@@ -1343,14 +1347,15 @@ TEST_F(SuggestionServiceUnitTest,
 
   EXPECT_CALL(mock_model_executor(), ExecuteModel).Times(0);
 
-  AreaOfInterest aoi;
-  aoi.screenshot.allocN32Pixels(60, 40);
-  aoi.screenshot.eraseColor(SK_ColorRED);
-  aoi.apc.mutable_main_frame_data()->set_title("Disabled Server Test");
-  aoi.selected_text = u"Disabled server selection";
+  PageContextWithSelection context;
+  context.page_context.screenshot.allocN32Pixels(60, 40);
+  context.page_context.screenshot.eraseColor(SK_ColorRED);
+  context.page_context.apc.mutable_main_frame_data()->set_title(
+      "Disabled Server Test");
+  context.area_of_interest.selected_text = u"Disabled server selection";
 
   SuggestionsFuture suggestions_future;
-  service().RequestSuggestions(aoi, suggestions_future.GetCallback());
+  service().RequestSuggestions(context, suggestions_future.GetCallback());
   auto [suggestions, zip_builder] = suggestions_future.Take();
   EXPECT_THAT(suggestions, IsEmpty());
 
@@ -1393,22 +1398,22 @@ TEST_F(SuggestionServiceUnitTest,
       .WillOnce(MoveArg<3>(&mes_callback_1))
       .WillOnce(MoveArg<3>(&mes_callback_2));
 
-  AreaOfInterest aoi_1;
-  aoi_1.screenshot.allocN32Pixels(10, 10);
-  aoi_1.screenshot.eraseColor(SK_ColorBLUE);
-  aoi_1.selected_text = u"Stale selection";
+  PageContextWithSelection context_1;
+  context_1.page_context.screenshot.allocN32Pixels(10, 10);
+  context_1.page_context.screenshot.eraseColor(SK_ColorBLUE);
+  context_1.area_of_interest.selected_text = u"Stale selection";
 
   SuggestionsFuture future_1;
-  service().RequestSuggestions(aoi_1, future_1.GetCallback());
+  service().RequestSuggestions(context_1, future_1.GetCallback());
   ASSERT_TRUE(base::test::RunUntil([&] { return !mes_callback_1.is_null(); }));
 
-  AreaOfInterest aoi_2;
-  aoi_2.screenshot.allocN32Pixels(10, 10);
-  aoi_2.screenshot.eraseColor(SK_ColorGREEN);
-  aoi_2.selected_text = u"Fresh selection";
+  PageContextWithSelection context_2;
+  context_2.page_context.screenshot.allocN32Pixels(10, 10);
+  context_2.page_context.screenshot.eraseColor(SK_ColorGREEN);
+  context_2.area_of_interest.selected_text = u"Fresh selection";
 
   SuggestionsFuture future_2;
-  service().RequestSuggestions(aoi_2, future_2.GetCallback());
+  service().RequestSuggestions(context_2, future_2.GetCallback());
   ASSERT_TRUE(base::test::RunUntil([&] { return !mes_callback_2.is_null(); }));
 
   // Complete Request 2 first with "Fresh Suggestion".
@@ -1492,15 +1497,16 @@ TEST_F(SuggestionServiceUnitTest, CreateFeedbackZipOnServerError) {
               /*execution_info=*/nullptr),
           /*log_entry=*/nullptr));
 
-  AreaOfInterest aoi;
-  aoi.screenshot.allocN32Pixels(40, 30);
-  aoi.screenshot.eraseColor(SK_ColorGREEN);
-  aoi.bounds = gfx::Rect(5, 5, 20, 15);
-  aoi.apc.mutable_main_frame_data()->set_title("Server Error Page");
-  aoi.selected_text = u"Error selection text";
+  PageContextWithSelection context;
+  context.page_context.screenshot.allocN32Pixels(40, 30);
+  context.page_context.screenshot.eraseColor(SK_ColorGREEN);
+  context.area_of_interest.bounds = gfx::Rect(5, 5, 20, 15);
+  context.page_context.apc.mutable_main_frame_data()->set_title(
+      "Server Error Page");
+  context.area_of_interest.selected_text = u"Error selection text";
 
   SuggestionsFuture suggestions_future;
-  service().RequestSuggestions(aoi, suggestions_future.GetCallback());
+  service().RequestSuggestions(context, suggestions_future.GetCallback());
   auto [suggestions, zip_builder] = suggestions_future.Take();
   EXPECT_THAT(suggestions, IsEmpty());
 
@@ -1637,9 +1643,9 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsPrewarmsWhenNotPrewarmed) {
       PrewarmModelExecution(optimization_guide::ModelBasedCapabilityKey::
                                 kSmartSelectionSuggestions));
 
-  AreaOfInterest aoi;
+  PageContextWithSelection context;
   SuggestionsFuture future;
-  service().RequestSuggestions(aoi, future.GetCallback());
+  service().RequestSuggestions(context, future.GetCallback());
 
   service().UnregisterTool(&gemini_tool);
 }
@@ -1660,9 +1666,9 @@ TEST_F(SuggestionServiceUnitTest,
       SkBitmap(), optimization_guide::proto::AnnotatedPageContent());
 
   // Calling RequestSuggestions right after should not trigger a second prewarm.
-  AreaOfInterest aoi;
+  PageContextWithSelection context;
   SuggestionsFuture future;
-  service().RequestSuggestions(aoi, future.GetCallback());
+  service().RequestSuggestions(context, future.GetCallback());
 
   service().UnregisterTool(&gemini_tool);
 }

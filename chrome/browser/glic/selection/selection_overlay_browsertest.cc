@@ -40,6 +40,7 @@
 #include "chrome/browser/selection/features.h"
 #include "chrome/browser/selection/metrics_logger.h"
 #include "chrome/browser/selection/mojom/action.mojom.h"
+#include "chrome/browser/selection/page_context.h"
 #include "chrome/browser/selection/suggestion_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -555,7 +556,7 @@ class FakeSelectionSuggestionTool : public ::selection::SuggestionTool {
   ToolId GetToolId() const override { return tool_id_; }
 
   std::unique_ptr<::selection::Suggestion> CreateSuggestion(
-      const ::selection::AreaOfInterest& processed_area,
+      const ::selection::PageContextWithSelection& context,
       const optimization_guide::proto::SmartSelectionSuggestion&
           server_suggestion) override {
     return std::make_unique<SelectionSuggestion>(
@@ -1550,17 +1551,17 @@ class CountingSelectionSuggestionTool : public ::selection::SuggestionTool {
   }
 
   std::unique_ptr<::selection::Suggestion> CreateSuggestion(
-      const ::selection::AreaOfInterest& processed_area,
+      const ::selection::PageContextWithSelection& context,
       const optimization_guide::proto::SmartSelectionSuggestion&
           server_suggestion) override {
     request_count_++;
-    last_aoi_screenshot_ = processed_area.screenshot;
-    last_aoi_apc_ = processed_area.apc;
-    last_selected_text_ = processed_area.selected_text;
+    last_aoi_screenshot_ = context.page_context.screenshot;
+    last_aoi_apc_ = context.page_context.apc;
+    last_selected_text_ = context.area_of_interest.selected_text;
     last_text_surrounding_selection_ =
-        processed_area.text_surrounding_selection;
-    if (std::holds_alternative<gfx::Rect>(processed_area.bounds)) {
-      last_rect_ = std::get<gfx::Rect>(processed_area.bounds);
+        context.area_of_interest.text_surrounding_selection;
+    if (std::holds_alternative<gfx::Rect>(context.area_of_interest.bounds)) {
+      last_rect_ = std::get<gfx::Rect>(context.area_of_interest.bounds);
     }
     QueueNextResponse();
     std::u16string label = u"Action " + base::NumberToString16(request_count_);
@@ -1823,7 +1824,7 @@ class FakeSuggestionService : public ::selection::SuggestionService {
                                        /*google_groups_manager=*/nullptr) {}
   ~FakeSuggestionService() override = default;
 
-  void RequestSuggestions(::selection::AreaOfInterest processed_area,
+  void RequestSuggestions(::selection::PageContextWithSelection context,
                           ::selection::SuggestionsCallback callback) override {
     pending_callbacks_.push_back(std::move(callback));
   }
@@ -1919,7 +1920,7 @@ class FakePromptSuggestionTool : public ::selection::SuggestionTool {
   }
 
   std::unique_ptr<::selection::Suggestion> CreateSuggestion(
-      const ::selection::AreaOfInterest& processed_area,
+      const ::selection::PageContextWithSelection& context,
       const optimization_guide::proto::SmartSelectionSuggestion&
           server_suggestion) override {
     return std::make_unique<SelectionSuggestion>(
@@ -1982,7 +1983,7 @@ class FakeInlineSuggestionTool : public ::selection::SuggestionTool {
   }
 
   std::unique_ptr<::selection::Suggestion> CreateSuggestion(
-      const ::selection::AreaOfInterest& processed_area,
+      const ::selection::PageContextWithSelection& context,
       const optimization_guide::proto::SmartSelectionSuggestion&
           server_suggestion) override {
     auto suggestion = std::make_unique<InlineSuggestion>();
