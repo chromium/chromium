@@ -1,0 +1,72 @@
+Tests asynchronous call stacks for window.postMessage.
+Set timer for test function.
+Captured call stacks in no particular order:
+Call stack:
+    0) onMessageReceivedInFrame (post-message-listener.html:4)
+    [postMessage]
+    0) postMessageToFrame (async-callstack-post-message.js:30)
+    1) onMessageReceivedInParent (async-callstack-post-message.js:18)
+    [postMessage]
+    0) postMessageToParent (post-message-listener.html:10)
+    1) onMessageReceivedInFrame (post-message-listener.html:5)
+    [postMessage]
+    0) postMessageToFrame (async-callstack-post-message.js:30)
+    1) timeout (async-callstack-post-message.js:11)
+    [setTimeout]
+    0) testFunction (async-callstack-post-message.js:4)
+    [setTimeout]
+    0) (anonymous) (schedule-test-function.js:2)
+
+Call stack:
+    0) onMessageReceivedInFrame (post-message-listener.html:4)
+    [postMessage]
+    0) postMessageToFrame (async-callstack-post-message.js:30)
+    1) timeout (async-callstack-post-message.js:11)
+    [setTimeout]
+    0) testFunction (async-callstack-post-message.js:4)
+    [setTimeout]
+    0) (anonymous) (schedule-test-function.js:2)
+
+Call stack:
+    0) onMessageReceivedInParent (async-callstack-post-message.js:16)
+    [postMessage]
+    0) postMessageToParent (post-message-listener.html:10)
+    1) onMessageReceivedInFrame (post-message-listener.html:5)
+    [postMessage]
+    0) postMessageToFrame (async-callstack-post-message.js:30)
+    1) onMessageReceivedInParent (async-callstack-post-message.js:18)
+    [postMessage]
+    0) postMessageToParent (post-message-listener.html:10)
+    1) onMessageReceivedInFrame (post-message-listener.html:5)
+    [postMessage]
+    0) postMessageToFrame (async-callstack-post-message.js:30)
+    1) timeout (async-callstack-post-message.js:11)
+    [setTimeout]
+    0) testFunction (async-callstack-post-message.js:4)
+    [setTimeout]
+    0) (anonymous) (schedule-test-function.js:2)
+
+Call stack:
+    0) onMessageReceivedInParent (async-callstack-post-message.js:16)
+    [postMessage]
+    0) postMessageToParent (post-message-listener.html:10)
+    1) onMessageReceivedInFrame (post-message-listener.html:5)
+    [postMessage]
+    0) postMessageToFrame (async-callstack-post-message.js:30)
+    1) timeout (async-callstack-post-message.js:11)
+    [setTimeout]
+    0) testFunction (async-callstack-post-message.js:4)
+    [setTimeout]
+    0) (anonymous) (schedule-test-function.js:2)
+
+Call stack:
+    0) onMessageReceivedInParent (async-callstack-post-message.js:16)
+    [postMessage]
+    0) postMessageToSelf (async-callstack-post-message.js:23)
+    1) timeout (async-callstack-post-message.js:10)
+    [setTimeout]
+    0) testFunction (async-callstack-post-message.js:4)
+    [setTimeout]
+    0) (anonymous) (schedule-test-function.js:2)
+
+
