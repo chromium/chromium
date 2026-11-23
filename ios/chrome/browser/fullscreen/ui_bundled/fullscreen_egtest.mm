@@ -605,8 +605,8 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
                 @"Failed to release histogram tester.");
 }
 
-// Tests that opening Find in Page forces fullscreen and records kForcedByCode.
-// TODO(crbug.com/500414020): Implement force fullscreen in refactored code.
+// Tests that opening and closing Find in Page forces fullscreen and records
+// kForcedByCode on enter and exit.
 - (void)testEnterForcedByCodeFindInPage {
   _responses["/tallpage"] =
       base::StringPrintf("<p style='height:%dem'>a</p><p>b</p>", kPageHeightEM);
@@ -659,6 +659,14 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
                                                  @(kFindInPageDoneButtonID))];
   [ChromeEarlGrey waitForKeyboardToDisappear];
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
+
+  // Closing Find in Page exits forced fullscreen, logging kForcedByCode.
+  NSError* exitError = [MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(
+                       FullscreenModeTransitionTrigger::kForcedByCode)
+      forHistogram:@"IOS.Fullscreen.TransitionTrigger.Exit"];
+  GREYAssertNil(exitError, @"Histogram error: %@", exitError);
 
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Failed to release histogram tester.");
@@ -1512,11 +1520,6 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
 // TODO(crbug.com/499969010): Ensure PDFs display properly with new Fullscreen
 // implementation.
 - (void)testLongPDFScroll {
-  EARL_GREY_TEST_SKIPPED(@"Skipped for FullscreenRefactoringTestCase.");
-}
-
-// TODO(crbug.com/500414020): Implement force fullscreen in refactored code.
-- (void)testEnterForcedByCodeFindInPage {
   EARL_GREY_TEST_SKIPPED(@"Skipped for FullscreenRefactoringTestCase.");
 }
 
