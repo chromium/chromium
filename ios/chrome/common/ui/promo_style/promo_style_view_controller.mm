@@ -50,8 +50,8 @@ constexpr CGFloat kShortBannerMultiplier = 0.2;
 constexpr CGFloat kExtraShortBannerMultiplier = 0.15;
 
 constexpr CGFloat kLearnMoreButtonSide = 40;
-constexpr CGFloat kheaderImageSize = 48;
-constexpr CGFloat kFullheaderImageSize = 100;
+constexpr CGFloat kHeaderImageSize = 48;
+constexpr CGFloat kFullHeaderImageSize = 100;
 constexpr CGFloat kButtonPadding = 8;
 constexpr CGFloat kReadMoreImagePadding = 8;
 
@@ -222,8 +222,8 @@ UIImage* ArrowDownImage() {
   }
 
   [NSLayoutConstraint activateConstraints:@[
-    // Labels contraints. Attach them to the top of the scroll content view, and
-    // center them horizontally.
+    // Labels constraints. Attach them to the top of the scroll content view,
+    // and center them horizontally.
     [self.titleLabel.centerXAnchor
         constraintEqualToAnchor:self.contentView.centerXAnchor],
     [self.titleLabel.widthAnchor
@@ -318,17 +318,17 @@ UIImage* ArrowDownImage() {
     if (self.headerImageType == PromoStyleImageType::kAvatar) {
       [NSLayoutConstraint activateConstraints:@[
         [_fullHeaderImageView.widthAnchor
-            constraintEqualToConstant:kFullheaderImageSize],
+            constraintEqualToConstant:kFullHeaderImageSize],
         [_fullHeaderImageView.heightAnchor
-            constraintEqualToConstant:kFullheaderImageSize],
+            constraintEqualToConstant:kFullHeaderImageSize],
         [_headerBackgroundImageView.widthAnchor
-            constraintGreaterThanOrEqualToConstant:kFullheaderImageSize],
+            constraintGreaterThanOrEqualToConstant:kFullHeaderImageSize],
         [_headerBackgroundImageView.heightAnchor
-            constraintGreaterThanOrEqualToConstant:kFullheaderImageSize],
+            constraintGreaterThanOrEqualToConstant:kFullHeaderImageSize],
         [headerImageView.widthAnchor
-            constraintEqualToConstant:kheaderImageSize],
+            constraintEqualToConstant:kHeaderImageSize],
         [headerImageView.heightAnchor
-            constraintEqualToConstant:kheaderImageSize],
+            constraintEqualToConstant:kHeaderImageSize],
       ]];
     }
     if (self.headerImageType == PromoStyleImageType::kImage ||
@@ -578,7 +578,7 @@ UIImage* ArrowDownImage() {
     _headerImageView.clipsToBounds = YES;
     _headerImageView.translatesAutoresizingMaskIntoConstraints = NO;
     if (self.headerImageType == PromoStyleImageType::kAvatar) {
-      _headerImageView.layer.cornerRadius = kheaderImageSize / 2.;
+      _headerImageView.layer.cornerRadius = kHeaderImageSize / 2.;
     }
     _headerImageView.image = _headerImage;
     _headerImageView.accessibilityLabel = _headerAccessibilityLabel;
@@ -593,8 +593,8 @@ UIImage* ArrowDownImage() {
 - (void)setHeaderImage:(UIImage*)headerImage {
   _headerImage = headerImage;
   if (self.headerImageType == PromoStyleImageType::kAvatar) {
-    DCHECK_EQ(headerImage.size.width, kheaderImageSize);
-    DCHECK_EQ(headerImage.size.height, kheaderImageSize);
+    DCHECK_EQ(headerImage.size.width, kHeaderImageSize);
+    DCHECK_EQ(headerImage.size.height, kHeaderImageSize);
   }
   // `self.headerImageView` should not be used to avoid creating the image.
   // The owner might set the image first and then change the value of

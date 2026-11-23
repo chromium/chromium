@@ -201,10 +201,10 @@ NSArray<NSLayoutConstraint*>* AddOptionalVerticalPadding(
       constraintLessThanOrEqualToAnchor:outerView.bottomAnchor
                                constant:-padding];
   bottomPaddingConstraint.priority = UILayoutPriorityDefaultLow;
-  NSArray<NSLayoutConstraint*>* contraints =
+  NSArray<NSLayoutConstraint*>* constraints =
       @[ topPaddingConstraint, bottomPaddingConstraint ];
-  [NSLayoutConstraint activateConstraints:contraints];
-  return contraints;
+  [NSLayoutConstraint activateConstraints:constraints];
+  return constraints;
 }
 
 NSLayoutConstraint* VerticalConstraintsWithInset(UIView* innerView,
