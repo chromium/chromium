@@ -110,14 +110,13 @@ testing::AssertionResult WaitForAndClickLearnMoreLink(
   return result;
 }
 
-testing::AssertionResult WaitForWebContentsLoaded(
+testing::AssertionResult WaitForScreenRendered(
     content::WebContents* web_contents,
     std::string_view app,
     std::string_view screen_selector) {
   if (!content::WaitForLoadStop(web_contents)) {
     return testing::AssertionFailure() << "WebContents failed to load";
   }
-  content::WaitForCopyableViewInWebContents(web_contents);
 
   std::string script = content::JsReplace(R"(
     new Promise((resolve) => {
@@ -140,10 +139,21 @@ testing::AssertionResult WaitForWebContentsLoaded(
   testing::AssertionResult result = content::ExecJs(web_contents, script);
   if (!result) {
     return testing::AssertionFailure()
-           << "WaitForWebContentsLoaded failed for " << app << " -> "
+           << "WaitForScreenRendered failed for " << app << " -> "
            << screen_selector << ": " << result.message();
   }
   return result;
+}
+
+testing::AssertionResult WaitForWebContentsLoaded(
+    content::WebContents* web_contents,
+    std::string_view app,
+    std::string_view screen_selector) {
+  if (!content::WaitForLoadStop(web_contents)) {
+    return testing::AssertionFailure() << "WebContents failed to load";
+  }
+  content::WaitForCopyableViewInWebContents(web_contents);
+  return WaitForScreenRendered(web_contents, app, screen_selector);
 }
 
 }  // namespace managed_user_profile_notice_test

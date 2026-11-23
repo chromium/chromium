@@ -48,6 +48,13 @@ testing::AssertionResult WaitForAndClickLearnMoreLink(
 
 // Waits for `web_contents` to finish loading and for the app and the
 // `screen_selector` element in its shadow root to be rendered.
+testing::AssertionResult WaitForScreenRendered(
+    content::WebContents* web_contents,
+    std::string_view app,
+    std::string_view screen_selector);
+
+// Same as `WaitForScreenRendered()`, but also waits for the view to be
+// copyable. Meant for pixel tests, which take a screenshot afterwards.
 testing::AssertionResult WaitForWebContentsLoaded(
     content::WebContents* web_contents,
     std::string_view app,

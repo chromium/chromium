@@ -48,7 +48,11 @@ export class ManagedUserProfileNoticeStateRefreshElement extends
 
   static override get properties() {
     return {
-      state: {type: Number},
+      // Reflected so that tests can select the element by its current state.
+      state: {
+        type: Number,
+        reflect: true,
+      },
       errorTitle_: {type: String},
       errorSubtitle_: {type: String},
       processingSubtitle_: {type: String},

@@ -692,7 +692,6 @@ if (toolkit_views) {
     public_deps = [ "//testing/gtest" ]
 
     deps = [
-      "//base",
       "//content/public/browser",
       "//content/test:test_support",
     ]
@@ -1372,6 +1371,7 @@ source_set("browser_tests") {
   if (is_win || is_mac || is_linux) {
     sources += [
       "device_signals_disclaimer_browsertest.cc",
+      "managed_user_profile_notice_state_dialog_browsertest.cc",
       "profile_picker_glic_flow_controller_browsertest.cc",
       "profile_picker_sign_in_provider_browsertest.cc",
       "profile_picker_utils_browsertest.cc",
