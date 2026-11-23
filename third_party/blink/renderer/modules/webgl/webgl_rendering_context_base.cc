@@ -3381,7 +3381,12 @@ void WebGLRenderingContextBase::deleteFramebuffer(
 }
 
 void WebGLRenderingContextBase::deleteProgram(WebGLProgram* program) {
-  DeleteObject(program);
+  if (!DeleteObject(program)) {
+    return;
+  }
+  if (!program->HasObject()) {
+    removeProgramCompletionQuery(program);
+  }
   // We don't reset m_currentProgram to 0 here because the deletion of the
   // current program is delayed.
 }
@@ -5210,6 +5215,8 @@ void WebGLRenderingContextBase::linkProgram(WebGLProgram* program) {
         "program being used by one or more active transform feedback objects");
     return;
   }
+
+  removeProgramCompletionQuery(program);
 
   GLuint query = 0u;
   if (ExtensionEnabled(kKHRParallelShaderCompileName)) {
@@ -7635,8 +7642,12 @@ void WebGLRenderingContextBase::useProgram(WebGLProgram* program) {
   }
 
   if (current_program_ != program) {
-    if (current_program_)
+    if (current_program_) {
       current_program_->OnDetached(ContextGL());
+      if (!current_program_->HasObject()) {
+        removeProgramCompletionQuery(current_program_);
+      }
+    }
     current_program_ = program;
     ContextGL()->UseProgram(ObjectOrZero(program));
     if (program)
@@ -9599,16 +9610,7 @@ WebGLRenderingContextBase::getHTMLOrOffscreenCanvas(
 
 void WebGLRenderingContextBase::addProgramCompletionQuery(WebGLProgram* program,
                                                           GLuint query) {
-  auto old_query = program_completion_query_map_.find(program);
-  if (old_query != program_completion_query_map_.end()) {
-    ContextGL()->DeleteQueriesEXT(1, &old_query->value);
-    // If this program's been inserted into the map already, then it
-    // exists in the list, too. Clear it out from there so that its
-    // new addition doesn't introduce a duplicate.
-    wtf_size_t old_index = program_completion_query_list_.Find(program);
-    DCHECK_NE(old_index, kNotFound);
-    program_completion_query_list_.EraseAt(old_index);
-  }
+  removeProgramCompletionQuery(program);
   program_completion_query_map_.Set(program, query);
   program_completion_query_list_.push_back(program);
   if (program_completion_query_map_.size() > kMaxProgramCompletionQueries) {
@@ -9619,6 +9621,21 @@ void WebGLRenderingContextBase::addProgramCompletionQuery(WebGLProgram* program,
     ContextGL()->DeleteQueriesEXT(1, &program_iter->value);
     program_completion_query_map_.erase(program_iter);
     program_completion_query_list_.EraseAt(0);
+  }
+}
+
+void WebGLRenderingContextBase::removeProgramCompletionQuery(
+    WebGLProgram* program) {
+  auto old_query = program_completion_query_map_.find(program);
+  if (old_query != program_completion_query_map_.end()) {
+    ContextGL()->DeleteQueriesEXT(1, &old_query->value);
+    program_completion_query_map_.erase(old_query);
+    // If this program's been inserted into the map already, then it
+    // exists in the list, too. Clear it out from there so that its
+    // new addition doesn't introduce a duplicate.
+    wtf_size_t old_index = program_completion_query_list_.Find(program);
+    DCHECK_NE(old_index, kNotFound);
+    program_completion_query_list_.EraseAt(old_index);
   }
 }
 

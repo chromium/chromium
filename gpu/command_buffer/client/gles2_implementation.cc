@@ -181,10 +181,11 @@ void UpdateProgramInfo(base::span<const uint8_t>& data,
   const cmds::GLES2ReturnProgramInfo* return_program_info =
       reinterpret_cast<const cmds::GLES2ReturnProgramInfo*>(data.data());
   uint32_t program = return_program_info->program_client_id;
+  uint32_t link_count = return_program_info->link_count;
   base::span<const int8_t> UNSAFE_TODO(info(
       reinterpret_cast<const int8_t*>(return_program_info->deserialized_buffer),
       data.size() - sizeof(cmds::GLES2ReturnProgramInfo)));
-  manager->UpdateProgramInfo(program, info, type);
+  manager->UpdateProgramInfo(program, link_count, info, type);
 }
 
 bool CanCopySharedImageToGLTextureViaTextureCopy(

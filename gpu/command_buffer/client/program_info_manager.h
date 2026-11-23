@@ -96,6 +96,7 @@ class GLES2_IMPL_EXPORT ProgramInfoManager {
   };
 
   void UpdateProgramInfo(GLuint program,
+                         uint32_t link_count,
                          base::span<const int8_t> result,
                          ProgramInfoType type);
 
@@ -108,6 +109,8 @@ class GLES2_IMPL_EXPORT ProgramInfoManager {
                            UpdateES3TransformFeedbackVaryings);
   FRIEND_TEST_ALL_PREFIXES(ProgramInfoManagerTest,
                            GetActiveUniformsivCached);
+  FRIEND_TEST_ALL_PREFIXES(ProgramInfoManagerTest,
+                           UpdateProgramInfoIgnoresStaleLinkCount);
 
   // Need GLES2_IMPL_EXPORT for tests.
   class GLES2_IMPL_EXPORT Program {
@@ -164,7 +167,7 @@ class GLES2_IMPL_EXPORT ProgramInfoManager {
       std::string name;
     };
 
-    Program();
+    explicit Program(uint32_t link_count = 0);
     Program(const Program& other);
     ~Program();
 
@@ -213,6 +216,8 @@ class GLES2_IMPL_EXPORT ProgramInfoManager {
 
     bool IsCached(ProgramInfoType type) const;
 
+    uint32_t link_count() const { return link_count_; }
+
    private:
     bool cached_es2_;
 
@@ -252,6 +257,8 @@ class GLES2_IMPL_EXPORT ProgramInfoManager {
 
     std::unordered_map<std::string, GLint> frag_data_locations_;
     std::unordered_map<std::string, GLint> frag_data_indices_;
+
+    uint32_t link_count_ = 0;
   };
 
   Program* GetProgramInfo(GLES2Implementation* gl,

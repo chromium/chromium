@@ -136,7 +136,7 @@ TransformFeedbackVarying()
 ProgramInfoManager::Program::TransformFeedbackVarying::
     ~TransformFeedbackVarying() = default;
 
-ProgramInfoManager::Program::Program()
+ProgramInfoManager::Program::Program(uint32_t link_count)
     : cached_es2_(false),
       max_attrib_name_length_(0),
       max_uniform_name_length_(0),
@@ -146,8 +146,8 @@ ProgramInfoManager::Program::Program()
       cached_es3_transform_feedback_varyings_(false),
       transform_feedback_varying_max_length_(0),
       transform_feedback_buffer_mode_(0),
-      cached_es3_uniformsiv_(false) {
-}
+      cached_es3_uniformsiv_(false),
+      link_count_(link_count) {}
 
 ProgramInfoManager::Program::Program(const Program& other) = default;
 
@@ -621,55 +621,65 @@ ProgramInfoManager::Program* ProgramInfoManager::GetProgramInfo(
   if (info->IsCached(type))
     return info;
 
-  std::vector<int8_t> result;
+  using FetchFunction =
+      void (GLES2Implementation::*)(GLuint, std::vector<int8_t>*);
+  using UpdateFunction = void (Program::*)(base::span<const int8_t>);
+  FetchFunction fetch = nullptr;
+  UpdateFunction update = nullptr;
   switch (type) {
     case kES2:
-      {
-        base::AutoUnlock unlock(lock_);
-        // lock_ can't be held across IPC call or else it may deadlock in
-        // pepper. http://crbug.com/418651
-        gl->GetProgramInfoCHROMIUMHelper(program, &result);
-      }
-      info->UpdateES2(result);
+      fetch = &GLES2Implementation::GetProgramInfoCHROMIUMHelper;
+      update = &Program::UpdateES2;
       break;
     case kES3UniformBlocks:
-      {
-        base::AutoUnlock unlock(lock_);
-        // lock_ can't be held across IPC call or else it may deadlock in
-        // pepper. http://crbug.com/418651
-        gl->GetUniformBlocksCHROMIUMHelper(program, &result);
-      }
-      info->UpdateES3UniformBlocks(result);
+      fetch = &GLES2Implementation::GetUniformBlocksCHROMIUMHelper;
+      update = &Program::UpdateES3UniformBlocks;
       break;
     case kES3TransformFeedbackVaryings:
-      {
-        base::AutoUnlock unlock(lock_);
-        // lock_ can't be held across IPC call or else it may deadlock in
-        // pepper. http://crbug.com/418651
-        gl->GetTransformFeedbackVaryingsCHROMIUMHelper(program, &result);
-      }
-      info->UpdateES3TransformFeedbackVaryings(result);
+      fetch = &GLES2Implementation::GetTransformFeedbackVaryingsCHROMIUMHelper;
+      update = &Program::UpdateES3TransformFeedbackVaryings;
       break;
     case kES3Uniformsiv:
-      {
-        base::AutoUnlock unlock(lock_);
-        // lock_ can't be held across IPC call or else it may deadlock in
-        // pepper. http://crbug.com/418651
-        gl->GetUniformsES3CHROMIUMHelper(program, &result);
-      }
-      info->UpdateES3Uniformsiv(result);
+      fetch = &GLES2Implementation::GetUniformsES3CHROMIUMHelper;
+      update = &Program::UpdateES3Uniformsiv;
       break;
     default:
       NOTREACHED();
   }
+
+  const uint32_t expected_link_count = info->link_count();
+  std::vector<int8_t> result;
+  {
+    base::AutoUnlock unlock(lock_);
+    // lock_ can't be held across IPC call or else it may deadlock in
+    // pepper. http://crbug.com/418651
+    (gl->*fetch)(program, &result);
+  }
+
+  // `lock_` was released during the IPC above, so another context in the share
+  // group may have relinked or deleted `program`, which invalidates `info`.
+  // Look the program up again, and drop `result` if it describes a different
+  // link than the one this call started with.
+  it = program_infos_.find(program);
+  if (it == program_infos_.end() ||
+      it->second.link_count() != expected_link_count) {
+    return nullptr;
+  }
+  info = &it->second;
+  (info->*update)(result);
   return info;
 }
 
 void ProgramInfoManager::CreateInfo(GLuint program) {
   base::AutoLock auto_lock(lock_);
-  program_infos_.erase(program);
+  uint32_t link_count = 1;
+  auto it = program_infos_.find(program);
+  if (it != program_infos_.end()) {
+    link_count = it->second.link_count() + 1;
+    program_infos_.erase(it);
+  }
   std::pair<ProgramInfoMap::iterator, bool> result =
-      program_infos_.insert(std::make_pair(program, Program()));
+      program_infos_.insert(std::make_pair(program, Program(link_count)));
 
   DCHECK(result.second);
 }
@@ -1015,6 +1025,7 @@ bool ProgramInfoManager::GetUniformIndices(GLES2Implementation* gl,
 }
 
 void ProgramInfoManager::UpdateProgramInfo(GLuint program,
+                                           uint32_t link_count,
                                            base::span<const int8_t> data,
                                            ProgramInfoType type) {
   base::AutoLock auto_lock(lock_);
@@ -1028,6 +1039,9 @@ void ProgramInfoManager::UpdateProgramInfo(GLuint program,
   if (it == program_infos_.end())
     return;
   Program* info = &it->second;
+  if (info->link_count() != link_count) {
+    return;
+  }
   switch (type) {
     case kES2:
       info->UpdateES2(data);

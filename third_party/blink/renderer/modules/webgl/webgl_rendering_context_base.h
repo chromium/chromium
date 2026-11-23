@@ -2041,6 +2041,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
   static unsigned max_active_webgl_contexts_on_worker_;
 
   void addProgramCompletionQuery(WebGLProgram* program, GLuint query);
+  void removeProgramCompletionQuery(WebGLProgram* program);
   void clearProgramCompletionQueries();
   bool checkProgramCompletionQueryAvailable(WebGLProgram* program,
                                             bool* completed);

@@ -249,16 +249,19 @@ struct GLES2ReturnProgramInfo {
   GLES2ReturnDataHeader return_data_header = {
       GLES2ReturnDataType::kES2ProgramInfo};
   uint32_t program_client_id = 0;
+  uint32_t link_count = 0;
   char deserialized_buffer[];
 };
-static_assert(sizeof(GLES2ReturnProgramInfo) == 8,
-              "size of GLES2ReturnProgramInfo should be 8");
+static_assert(sizeof(GLES2ReturnProgramInfo) == 12,
+              "size of GLES2ReturnProgramInfo should be 12");
 static_assert(offsetof(GLES2ReturnProgramInfo, return_data_header) == 0,
               "The offset of return_data_header should be 0");
 static_assert(offsetof(GLES2ReturnProgramInfo, program_client_id) == 4,
               "The offset of program_client_id should be 4");
-static_assert(offsetof(GLES2ReturnProgramInfo, deserialized_buffer) == 8,
-              "The offset of deserialized_buffer should be 8");
+static_assert(offsetof(GLES2ReturnProgramInfo, link_count) == 8,
+              "The offset of link_count should be 8");
+static_assert(offsetof(GLES2ReturnProgramInfo, deserialized_buffer) == 12,
+              "The offset of deserialized_buffer should be 12");
 
 #pragma pack(pop)
 

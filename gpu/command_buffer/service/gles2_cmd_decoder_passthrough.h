@@ -102,6 +102,9 @@ struct PassthroughResources {
   ClientServiceMap<GLuint, GLuint> program_id_map;
   ClientServiceMap<GLuint, GLuint> shader_id_map;
 
+  // Mapping of client program IDs to link count.
+  base::flat_map<GLuint, uint32_t> program_link_count_map;
+
   static_assert(sizeof(uintptr_t) == sizeof(GLsync),
                 "GLsync not the same size as uintptr_t");
   ClientServiceMap<GLuint, uintptr_t> sync_id_map;
@@ -696,6 +699,8 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
     std::unique_ptr<gl::GLFence> buffer_shadow_update_fence;
     BufferShadowUpdateMap buffer_shadow_updates;
     GLuint program_service_id = 0u;
+    GLuint program_client_id = 0u;
+    uint32_t program_link_count = 0u;
   };
   base::circular_deque<PendingQuery> pending_queries_;
 
@@ -885,6 +890,8 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
       deschedule_until_finished_fences_;
 
   GLuint linking_program_service_id_ = 0u;
+  GLuint linking_program_client_id_ = 0u;
+  uint32_t linking_program_link_count_ = 0u;
 
   void ScheduleIdleMemoryTrim();
   void PostIdleMemoryTrimTask();

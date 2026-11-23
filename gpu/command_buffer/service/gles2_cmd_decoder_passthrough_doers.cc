@@ -1033,6 +1033,12 @@ error::Error GLES2DecoderPassthroughImpl::DoDeleteFramebuffers(
 }
 
 error::Error GLES2DecoderPassthroughImpl::DoDeleteProgram(GLuint program) {
+  if (linking_program_client_id_ == program) {
+    linking_program_service_id_ = 0u;
+    linking_program_client_id_ = 0u;
+    linking_program_link_count_ = 0u;
+  }
+  resources_->program_link_count_map.erase(program);
   return DeleteHelper(
       program, &resources_->program_id_map,
       [this](GLuint program) { api()->glDeleteProgramFn(program); });
@@ -2211,6 +2217,8 @@ error::Error GLES2DecoderPassthroughImpl::DoLinkProgram(GLuint program) {
   ExitCommandProcessingEarly();
 
   linking_program_service_id_ = program_service_id;
+  linking_program_client_id_ = program;
+  linking_program_link_count_ = ++resources_->program_link_count_map[program];
 
   return error::kNoError;
 }
@@ -3828,6 +3836,8 @@ error::Error GLES2DecoderPassthroughImpl::DoBeginQueryEXT(
 
   if (target == GL_PROGRAM_COMPLETION_QUERY_CHROMIUM) {
     linking_program_service_id_ = 0u;
+    linking_program_client_id_ = 0u;
+    linking_program_link_count_ = 0u;
   }
   if (IsEmulatedQueryTarget(target)) {
     if (active_queries_.contains(target)) {
@@ -3957,6 +3967,8 @@ error::Error GLES2DecoderPassthroughImpl::DoEndQueryEXT(GLenum target,
 
     case GL_PROGRAM_COMPLETION_QUERY_CHROMIUM:
       pending_query.program_service_id = linking_program_service_id_;
+      pending_query.program_client_id = linking_program_client_id_;
+      pending_query.program_link_count = linking_program_link_count_;
       break;
 
     case GL_COMMANDS_ISSUED_CHROMIUM:

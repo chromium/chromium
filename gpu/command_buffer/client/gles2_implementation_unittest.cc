@@ -3971,6 +3971,64 @@ TEST_F(GLES2ImplementationTest, ReadbackARGBImagePixelsINTERNALPadding) {
   EXPECT_EQ(dst_pixels, expected_pixels);
 }
 
+TEST_F(GLES2ImplementationTest, ReturnProgramInfoIgnoresStaleRelink) {
+  const GLuint kProgramId = 1;
+  struct Payload {
+    ProgramInfoHeader header;
+    ProgramInput uniform;
+    int32_t location;
+    char name[4];
+  };
+
+  auto make_program_data = [&](uint32_t link_count, GLenum uniform_type) {
+    Payload payload = {};
+    payload.header.link_status = 1;
+    payload.header.num_attribs = 0;
+    payload.header.num_uniforms = 1;
+    payload.uniform.type = uniform_type;
+    payload.uniform.size = 1;
+    payload.uniform.location_offset = offsetof(Payload, location);
+    payload.uniform.name_offset = offsetof(Payload, name);
+    payload.uniform.name_length = 1;
+    payload.location = 0;
+    payload.name[0] = 'u';
+
+    cmds::GLES2ReturnProgramInfo return_info;
+    return_info.return_data_header.return_data_type =
+        GLES2ReturnDataType::kES2ProgramInfo;
+    return_info.program_client_id = kProgramId;
+    return_info.link_count = link_count;
+
+    std::vector<uint8_t> buffer(sizeof(return_info) + sizeof(payload));
+    auto buffer_span = base::span(buffer);
+    buffer_span.first<sizeof(return_info)>().copy_from(
+        base::byte_span_from_ref(return_info));
+    buffer_span.subspan<sizeof(return_info)>().copy_from(
+        base::byte_span_from_ref(payload));
+    return buffer;
+  };
+
+  gl_->LinkProgram(kProgramId);
+  gl_->LinkProgram(kProgramId);
+
+  GpuControlClient* control_client = gl_.get();
+  std::vector<uint8_t> stale_data = make_program_data(1u, GL_INT);
+  control_client->OnGpuControlReturnData(stale_data);
+
+  std::vector<uint8_t> current_data = make_program_data(2u, GL_FLOAT_MAT4);
+  control_client->OnGpuControlReturnData(current_data);
+
+  GLsizei length = 0;
+  GLint size = 0;
+  GLenum type = 0;
+  char name[8] = {};
+  gl_->GetActiveUniform(kProgramId, 0, sizeof(name), &length, &size, &type,
+                        name);
+  EXPECT_EQ(static_cast<GLenum>(GL_FLOAT_MAT4), type);
+  EXPECT_EQ(1, size);
+  EXPECT_STREQ("u", name);
+}
+
 #include "gpu/command_buffer/client/gles2_implementation_unittest_autogen.h"
 
 }  // namespace gles2

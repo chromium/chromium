@@ -324,5 +324,117 @@ TEST_F(GLES2WebGLDecoderPassthroughIdleTrimTest, ContextLossCancelsIdleTrim) {
   EXPECT_EQ(0, trim_count_);
 }
 
+class GLES2WebGLDecoderPassthroughProgramCompletionTest
+    : public GLES2WebGLDecoderPassthroughTest {
+ public:
+  void SetUp() override {
+    GLES2WebGLDecoderPassthroughTest::SetUp();
+    prev_get_programiv_fn_ = gl::g_current_gl_driver->fn.glGetProgramivFn;
+    gl::g_current_gl_driver->fn.glGetProgramivFn =
+        &GLES2WebGLDecoderPassthroughProgramCompletionTest::OnGetProgramiv;
+  }
+
+  void TearDown() override {
+    gl::g_current_gl_driver->fn.glGetProgramivFn = prev_get_programiv_fn_;
+    prev_get_programiv_fn_ = nullptr;
+    GLES2WebGLDecoderPassthroughTest::TearDown();
+  }
+
+ protected:
+  static void GL_BINDING_CALL OnGetProgramiv(GLuint program,
+                                             GLenum pname,
+                                             GLint* params) {
+    if (pname == GL_COMPLETION_STATUS_KHR) {
+      *params = GL_TRUE;
+      return;
+    }
+    prev_get_programiv_fn_(program, pname, params);
+  }
+
+  void HandleReturnData(base::span<const uint8_t> data) override {
+    ASSERT_GE(data.size(), sizeof(cmds::GLES2ReturnProgramInfo));
+    cmds::GLES2ReturnProgramInfo return_info;
+    base::byte_span_from_ref(return_info)
+        .copy_from(data.first<sizeof(return_info)>());
+    returned_program_infos_.push_back(return_info);
+  }
+
+  inline static gl::glGetProgramivProc prev_get_programiv_fn_ = nullptr;
+  std::vector<cmds::GLES2ReturnProgramInfo> returned_program_infos_;
+};
+
+TEST_F(GLES2WebGLDecoderPassthroughProgramCompletionTest,
+       ProgramCompletionQueryRelinkSkipsStaleReturnData) {
+  constexpr GLuint kProgramClientId = 101;
+  constexpr GLuint kQuery1ClientId = 201;
+  constexpr GLuint kQuery2ClientId = 202;
+
+  {
+    cmds::CreateProgram cmd;
+    cmd.Init(kProgramClientId);
+    EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  }
+  GenHelper<cmds::GenQueriesEXTImmediate>(kQuery1ClientId);
+  GenHelper<cmds::GenQueriesEXTImmediate>(kQuery2ClientId);
+
+  struct TwoQuerySyncs {
+    QuerySync sync1;
+    QuerySync sync2;
+  };
+  TwoQuerySyncs* syncs = GetSharedMemoryAs<TwoQuerySyncs*>();
+  QuerySync* sync1 = &syncs->sync1;
+  QuerySync* sync2 = &syncs->sync2;
+  sync1->Reset();
+  sync2->Reset();
+
+  // Link 1 wrapped in Query 1.
+  {
+    cmds::BeginQueryEXT cmd;
+    cmd.Init(GL_PROGRAM_COMPLETION_QUERY_CHROMIUM, kQuery1ClientId,
+             shared_memory_id_, kSharedMemoryOffset);
+    EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  }
+  {
+    cmds::LinkProgram cmd;
+    cmd.Init(kProgramClientId);
+    EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  }
+  {
+    cmds::EndQueryEXT cmd;
+    cmd.Init(GL_PROGRAM_COMPLETION_QUERY_CHROMIUM, 1);
+    EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  }
+
+  // Relink (Link 2) wrapped in Query 2 before Query 1 is processed.
+  {
+    cmds::BeginQueryEXT cmd;
+    cmd.Init(GL_PROGRAM_COMPLETION_QUERY_CHROMIUM, kQuery2ClientId,
+             shared_memory_id_, kSharedMemoryOffset + sizeof(QuerySync));
+    EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  }
+  {
+    cmds::LinkProgram cmd;
+    cmd.Init(kProgramClientId);
+    EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  }
+  {
+    cmds::EndQueryEXT cmd;
+    cmd.Init(GL_PROGRAM_COMPLETION_QUERY_CHROMIUM, 1);
+    EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  }
+
+  GetDecoder()->ProcessPendingQueries(false);
+
+  EXPECT_EQ(1, base::subtle::Acquire_Load(&sync1->process_count));
+  EXPECT_EQ(1, base::subtle::Acquire_Load(&sync2->process_count));
+
+  // Only Link 2 (link_count == 2) should emit program info return data.
+  ASSERT_EQ(1u, returned_program_infos_.size());
+  EXPECT_EQ(GLES2ReturnDataType::kES2ProgramInfo,
+            returned_program_infos_[0].return_data_header.return_data_type);
+  EXPECT_EQ(kProgramClientId, returned_program_infos_[0].program_client_id);
+  EXPECT_EQ(2u, returned_program_infos_[0].link_count);
+}
+
 }  // namespace gles2
 }  // namespace gpu

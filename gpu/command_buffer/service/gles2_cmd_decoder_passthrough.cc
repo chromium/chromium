@@ -504,7 +504,8 @@ void UpdateBoundTexturePassthroughSize(gl::GLApi* api,
 void ReturnProgramInfoData(DecoderClient* client,
                            const std::vector<uint8_t>& info,
                            GLES2ReturnDataType type,
-                           uint32_t program) {
+                           uint32_t program,
+                           uint32_t link_count) {
   // Limit the data size in order not to block the IO threads too long.
   // https://docs.google.com/document/d/1qEfU0lAkeZ8lU06qtxv7ENGxRxExxztXu1LhIDNGqtU/edit?disco=AAAACksORlU
   constexpr static size_t kMaxDataSize = 8 * 1024 * 1024;
@@ -517,6 +518,7 @@ void ReturnProgramInfoData(DecoderClient* client,
       reinterpret_cast<cmds::GLES2ReturnProgramInfo*>(return_data.data()));
   return_program_info->return_data_header.return_data_type = type;
   return_program_info->program_client_id = program;
+  return_program_info->link_count = link_count;
   UNSAFE_TODO(memcpy(return_program_info->deserialized_buffer, info.data(),
                      info.size()));
   client->HandleReturnData(
@@ -680,6 +682,7 @@ void PassthroughResources::Destroy(gl::GLApi* api,
   texture_object_map.Clear();
   texture_shared_image_map.clear();
   shared_image_client_ids_by_service_id.clear();
+  program_link_count_map.clear();
 }
 
 void PassthroughResources::AddSharedImage(GLuint client_id,
@@ -2580,9 +2583,20 @@ error::Error GLES2DecoderPassthroughImpl::ProcessQueries(bool did_finish) {
         result = PopError();
         break;
 
-      case GL_PROGRAM_COMPLETION_QUERY_CHROMIUM:
+      case GL_PROGRAM_COMPLETION_QUERY_CHROMIUM: {
         GLint status;
-        if (!api()->glIsProgramFn(query.program_service_id)) {
+        GLuint current_program_service_id = 0u;
+        auto link_count_it =
+            resources_->program_link_count_map.find(query.program_client_id);
+        const bool is_valid_current_link =
+            query.program_service_id != 0u &&
+            resources_->program_id_map.GetServiceID(
+                query.program_client_id, &current_program_service_id) &&
+            current_program_service_id == query.program_service_id &&
+            link_count_it != resources_->program_link_count_map.end() &&
+            link_count_it->second == query.program_link_count &&
+            api()->glIsProgramFn(query.program_service_id);
+        if (!is_valid_current_link) {
           status = GL_TRUE;
         } else {
           api()->glGetProgramivFn(query.program_service_id,
@@ -2601,6 +2615,8 @@ error::Error GLES2DecoderPassthroughImpl::ProcessQueries(bool did_finish) {
             program_completion_query_deferred = true;
           }
           result = 0;
+        } else if (!is_valid_current_link) {
+          result = 0;
         } else {
           GLint link_status = 0;
           api()->glGetProgramivFn(query.program_service_id, GL_LINK_STATUS,
@@ -2609,9 +2625,8 @@ error::Error GLES2DecoderPassthroughImpl::ProcessQueries(bool did_finish) {
 
           // Send back all program information as early as possible to be cached
           // at the client side.
-          GLuint program_client_id = 0u;
-          GetClientID(&resources_->program_id_map, query.program_service_id,
-                      &program_client_id);
+          GLuint program_client_id = query.program_client_id;
+          uint32_t program_link_count = query.program_link_count;
 
           // TODO(jie.a.chen@intel.com): Merge the all return data into 1 IPC
           // message if it becomes a concern.
@@ -2621,7 +2636,7 @@ error::Error GLES2DecoderPassthroughImpl::ProcessQueries(bool did_finish) {
           if (error == error::kNoError) {
             ReturnProgramInfoData(client(), program_info,
                                   GLES2ReturnDataType::kES2ProgramInfo,
-                                  program_client_id);
+                                  program_client_id, program_link_count);
           }
 
           if (feature_info_->IsWebGL2OrES3OrHigherContext()) {
@@ -2631,7 +2646,7 @@ error::Error GLES2DecoderPassthroughImpl::ProcessQueries(bool did_finish) {
             if (error == error::kNoError) {
               ReturnProgramInfoData(client(), uniform_blocks,
                                     GLES2ReturnDataType::kES3UniformBlocks,
-                                    program_client_id);
+                                    program_client_id, program_link_count);
             }
 
             std::vector<uint8_t> transform_feedback_varyings;
@@ -2641,7 +2656,7 @@ error::Error GLES2DecoderPassthroughImpl::ProcessQueries(bool did_finish) {
               ReturnProgramInfoData(
                   client(), transform_feedback_varyings,
                   GLES2ReturnDataType::kES3TransformFeedbackVaryings,
-                  program_client_id);
+                  program_client_id, program_link_count);
             }
 
             std::vector<uint8_t> uniforms;
@@ -2649,11 +2664,12 @@ error::Error GLES2DecoderPassthroughImpl::ProcessQueries(bool did_finish) {
             if (error == error::kNoError) {
               ReturnProgramInfoData(client(), uniforms,
                                     GLES2ReturnDataType::kES3Uniforms,
-                                    program_client_id);
+                                    program_client_id, program_link_count);
             }
           }
         }
         break;
+      }
 
       default:
         DCHECK(!IsEmulatedQueryTarget(query.target));
