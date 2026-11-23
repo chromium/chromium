@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <array>
+#include <concepts>
 #include <functional>
 #include <iterator>
 #include <limits>
@@ -219,6 +220,21 @@ bool IsAdmissibleUrl(const blink::WebURL& url) {
     }
   }
   return false;
+}
+
+template <typename WebElementType, typename RendererId>
+  requires(std::derived_from<WebElementType, WebElement> &&
+           (std::same_as<RendererId, FormRendererId> ||
+            std::same_as<RendererId, FieldRendererId>))
+WebElementType GetElementByRendererId(RendererId renderer_id) {
+  if (!renderer_id) {
+    return WebElementType();
+  }
+  WebNode node = WebNode::FromDomNodeId(*renderer_id);
+  WebElementType element = node.DynamicTo<WebElementType>();
+  return element && IsAccessible(element) && element.GetDocument().GetFrame()
+             ? element
+             : WebElementType();
 }
 
 // Returns the form's |name| attribute if non-empty; otherwise the form's |id|
@@ -2878,27 +2894,12 @@ ButtonTitleList GetButtonTitles(
 }
 
 WebFormElement GetFormByRendererId(FormRendererId form_renderer_id) {
-  if (!form_renderer_id) {
-    return WebFormElement();
-  }
-  WebNode node = WebNode::FromDomNodeId(form_renderer_id.value());
-  WebFormElement form = node.DynamicTo<WebFormElement>();
-  return form && IsAccessible(form) && form.GetDocument().GetFrame()
-             ? form
-             : WebFormElement();
+  return GetElementByRendererId<WebFormElement>(form_renderer_id);
 }
 
 WebFormControlElement GetFormControlByRendererId(
     FieldRendererId queried_form_control) {
-  if (!queried_form_control) {
-    return WebFormControlElement();
-  }
-  WebNode node = WebNode::FromDomNodeId(queried_form_control.value());
-  WebFormControlElement form_control = node.DynamicTo<WebFormControlElement>();
-  return form_control && IsAccessible(form_control) &&
-                 form_control.GetDocument().GetFrame()
-             ? form_control
-             : WebFormControlElement();
+  return GetElementByRendererId<WebFormControlElement>(queried_form_control);
 }
 
 WebElement GetContentEditableByRendererId(FieldRendererId field_renderer_id) {
