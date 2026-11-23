@@ -75,6 +75,10 @@ export function getHtml(this: SearchboxMatchElement) {
       @click="${this.onRemoveButtonClick_}"
       @mousedown="${this.onRemoveButtonMousedown_}">
   </cr-icon-button>
+  ${this.getActionIconClass_() ? html`
+    <div id="actionIcon" class="${this.getActionIconClass_()}"
+        aria-hidden="true"></div>
+  ` : ''}
 </div>
 <!--_html_template_end_-->`;
   // clang-format on

@@ -9,7 +9,7 @@ import {createAutocompleteMatch, createFormattedString, createMatchKeywordModelF
 import type {SearchboxMatchElement} from 'chrome://resources/cr_components/searchbox/searchbox_match.js';
 import {NavigationPredictor} from 'chrome://resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import {KeywordActivationMethod, KeywordType, SelectionLineState} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {ColorType} from 'chrome://resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
+import {ActionIconType, ColorType} from 'chrome://resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 import {assertArrayEquals, assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -152,6 +152,34 @@ suite('CrComponentsRealboxMatchTest', () => {
     assertEquals(1, testProxy.handler.getCallCount('deleteAutocompleteMatch'));
     // Clicking the button doesn't accidentally trigger navigation.
     assertEquals(0, testProxy.handler.getCallCount('openAutocompleteMatch'));
+  });
+
+  test('RemoveButtonTakesPrecedenceOverBlueDot', async () => {
+    matchEl.match = createAutocompleteMatch({supportsDeletion: true});
+    await microtasksFinished();
+    assertFalse(!!matchEl.shadowRoot.querySelector('#actionIcon'));
+
+    matchEl.match = createAutocompleteMatch({
+      supportsDeletion: true,
+      suggestTemplate:
+          createSuggestTemplateInfo({actionIcon: ActionIconType.kBlueDot}),
+    });
+    await microtasksFinished();
+    const dot =
+        matchEl.shadowRoot.querySelector<HTMLElement>('#actionIcon.blue-dot');
+    assertTrue(!!dot);
+    assertFalse(matchEl.$.remove.hidden);
+    assertEquals('block', getComputedStyle(dot).display);
+
+    // When the remove button is selected, it replaces the dot.
+    matchEl.selection = {
+      line: 0,
+      state: SelectionLineState.kFocusedButtonRemoveSuggestion,
+      actionIndex: 0,
+    };
+    await microtasksFinished();
+    assertTrue(!!matchEl.shadowRoot.querySelector('#remove.selected'));
+    assertEquals('none', getComputedStyle(dot).display);
   });
 
   test('UpdateSelectionUpdatesClasses', async () => {
