@@ -3501,6 +3501,73 @@ suite('OmniboxComposeboxTest', () => {
           }
         });
 
+    test(
+        'updates input icon based on willFulfillInAim and branding',
+        async () => {
+          const originalIsGoogleChromeBranded =
+              loadTimeData.getBoolean('isGoogleChromeBranded');
+          try {
+            loadTimeData.overrideValues({
+              dynamicAimFulfillmentEnabled: true,
+              isGoogleChromeBranded: true,
+            });
+            testProxy.handler.setPromiseResolveFor('getInputState', {
+              state: {
+                ...createDefaultInputState(),
+                willFulfillInAim: false,
+              },
+            });
+            document.body.innerHTML = window.trustedTypes!.emptyHTML;
+            omniboxComposebox = document.createElement('cr-omnibox-composebox');
+            document.body.appendChild(omniboxComposebox);
+            await microtasksFinished();
+
+            let aimIcon =
+                omniboxComposebox.getInputElement()
+                    .shadowRoot.querySelector<HTMLElement>('#aimIcon')!;
+            assertFalse(omniboxComposebox.hasAttribute('will-fulfill-in-aim'));
+            const brandedSrpStyle = window.getComputedStyle(aimIcon);
+            assertTrue(
+                brandedSrpStyle.getPropertyValue('background-image')
+                    .includes('google_g') ||
+                brandedSrpStyle.getPropertyValue('-webkit-mask-image')
+                    .includes('google_g'));
+
+            const aimInputState = createDefaultInputState();
+            aimInputState.willFulfillInAim = true;
+            omniboxComposebox.inputState = aimInputState;
+            await microtasksFinished();
+
+            assertTrue(omniboxComposebox.hasAttribute('will-fulfill-in-aim'));
+            assertTrue(window.getComputedStyle(aimIcon)
+                           .getPropertyValue('-webkit-mask-image')
+                           .includes('search_spark'));
+
+            // Unbranded builds show the search loupe icon instead of Google G.
+            loadTimeData.overrideValues({
+              isGoogleChromeBranded: false,
+            });
+            document.body.innerHTML = window.trustedTypes!.emptyHTML;
+            omniboxComposebox = document.createElement('cr-omnibox-composebox');
+            document.body.appendChild(omniboxComposebox);
+            await microtasksFinished();
+
+            aimIcon = omniboxComposebox.getInputElement()
+                          .shadowRoot.querySelector<HTMLElement>('#aimIcon')!;
+            assertFalse(omniboxComposebox.hasAttribute('will-fulfill-in-aim'));
+            const unbrandedSrpStyle = window.getComputedStyle(aimIcon);
+            assertEquals(
+                'none', unbrandedSrpStyle.getPropertyValue('background-image'));
+            assertTrue(unbrandedSrpStyle.getPropertyValue('-webkit-mask-image')
+                           .includes('search_cr23'));
+          } finally {
+            loadTimeData.overrideValues({
+              dynamicAimFulfillmentEnabled: false,
+              isGoogleChromeBranded: originalIsGoogleChromeBranded,
+            });
+          }
+        });
+
     test('passes richImageSuggestionsEnabled to matches dropdown', async () => {
       loadTimeData.overrideValues({
         composeboxRichImageSuggestionsEnabled: true,

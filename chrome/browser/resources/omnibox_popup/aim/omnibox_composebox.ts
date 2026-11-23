@@ -124,6 +124,10 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
         type: Boolean,
         reflect: true,
       },
+      isGoogleChromeBranded_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -180,6 +184,8 @@ export class OmniboxComposeboxElement extends ComposeboxEmbedderMixin
   // When true, this element paints the popup's background, rounded corners and
   // drop shadow instead of the Views frame.
   accessor webuiShadowEnabled: boolean = false;
+  protected accessor isGoogleChromeBranded_: boolean =
+      loadTimeData.getBoolean('isGoogleChromeBranded');
 
   protected onLensSearchClick_(e: Event) {
     e.stopPropagation();

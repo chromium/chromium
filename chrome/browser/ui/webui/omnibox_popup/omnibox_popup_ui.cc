@@ -8,6 +8,8 @@
 #include <string_view>
 
 #include "base/strings/strcat.h"
+#include "build/branding_buildflags.h"
+#include "build/buildflag.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -157,6 +159,8 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                              IDS_ACC_OMNIBOX_AUTOCOMPLETE_PLACEHOLDER);
 
   source->AddBoolean("isTopChromeSearchbox", true);
+  source->AddBoolean("isGoogleChromeBranded",
+                     BUILDFLAG(GOOGLE_CHROME_BRANDING));
   FullWebUIOmniboxLayoutHelper::PopulateLoadTimeData(source);
   source->AddBoolean("omniboxAimPopupEnabled",
                      omnibox::IsAimPopupFeatureEnabled());

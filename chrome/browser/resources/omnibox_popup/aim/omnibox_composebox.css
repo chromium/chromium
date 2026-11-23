@@ -429,6 +429,37 @@ cr-composebox-tool-chip {
   min-height: 44px;
 }
 
+:host(:not([is-google-chrome-branded_]):not([will-fulfill-in-aim]))
+    #composeboxInput::part(aim-icon) {
+  -webkit-mask-image: url(chrome://resources/cr_components/searchbox/icons/search_cr23_old.svg);
+}
+
+:host-context([webui-rounded-icons]):host(
+    :not([is-google-chrome-branded_]):not([will-fulfill-in-aim]))
+    #composeboxInput::part(aim-icon) {
+  -webkit-mask-image: url(chrome://resources/cr_components/searchbox/icons/search_cr23.svg);
+}
+
+:host([is-google-chrome-branded_]:not([will-fulfill-in-aim]))
+    #composeboxInput::part(aim-icon) {
+  -webkit-mask-image: none;
+  background-color: transparent;
+  background-image: url(chrome://resources/cr_components/searchbox/icons/google_g_gradient.svg);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host([is-google-chrome-branded_]:not([will-fulfill-in-aim]))
+      #composeboxInput::part(aim-icon) {
+    -webkit-mask-image: url(chrome://resources/cr_components/searchbox/icons/google_g_cr23.svg);
+    -webkit-mask-size: 16px;
+    background-color: var(--color-searchbox-google-g-background, #fff);
+    background-image: none;
+  }
+}
+
 #voiceSearch::part(voice-stop-button) {
   background-color: var(--color-sys-neutral-container);
   --cr-icon-button-fill-color: var(--color-sys-on-surface);

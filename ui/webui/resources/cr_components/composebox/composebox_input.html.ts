@@ -10,7 +10,7 @@ export function getHtml(this: ComposeboxInputElement) {
   return html`<!--_html_template_start_-->
 <div id="textContainer" part="text-container">
   <div id="iconContainer" part="icon-container">
-    <div id="aimIcon"></div>
+    <div id="aimIcon" part="aim-icon"></div>
   </div>
   <div id="inputWrapper">
     ${!this.disableCaretColorAnimation ? html`
