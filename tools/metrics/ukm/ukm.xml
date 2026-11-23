@@ -24926,7 +24926,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="UserPerceivedPageVisit" singular="True">
-  <owner>djw@chromium.org</owner>
+  <owner>mmocny@chromium.org</owner>
+  <owner>johannes@chromium.org</owner>
+  <owner>sullivan@chromium.org</owner>
   <summary>
     Metrics related to a page visit as a user perceives it, regardless of how
     the page was visited. More metrics may be associated with a particular page
