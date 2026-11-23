@@ -56,6 +56,8 @@ TestRenderWidgetHostView::TestRenderWidgetHostView(RenderWidgetHost* rwh)
     : RenderWidgetHostViewBase(rwh),
       is_showing_(!host()->IsHidden()),
       is_occluded_(false),
+      page_visibility_(host()->IsHidden() ? PageVisibilityState::kHidden
+                                          : PageVisibilityState::kVisible),
       cursor_manager_(this) {
 #if BUILDFLAG(IS_ANDROID)
   frame_sink_id_ = AllocateFrameSinkId();

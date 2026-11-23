@@ -50,7 +50,8 @@ RenderViewHostImpl* TestRenderViewHostFactory::CreateRenderViewHost(
     scoped_refptr<BrowsingContextState> main_browsing_context_state,
     CreateRenderViewHostCase create_case,
     std::optional<viz::FrameSinkId> frame_sink_id) {
-  bool hidden = frame_tree && frame_tree->is_prerendering();
+  bool hidden =
+      frame_tree && (frame_tree->is_prerendering() || frame_tree->IsHidden());
   return new TestRenderViewHost(
       frame_tree, group, storage_partition_config,
       TestRenderWidgetHost::Create(
