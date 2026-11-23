@@ -607,7 +607,7 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
 }
 
 // Tests leaving tab grid after entering and exit the tab grid search mode.
-- (void)testLeaveSwitcherAfterEnteringAndExittingSearch {
+- (void)testLeaveSwitcherAfterEnteringAndExitingSearch {
   ExpectIdleHistogramCount(kUMATabSwitcherIdleRegularTabGridPageHistogram, 0);
   ExpectIdleHistogramCount(kUMATabSwitcherIdleIncognitoTabGridPageHistogram, 0);
 
@@ -659,7 +659,7 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
 }
 
 // Tests leaving tab grid after entering and exit inactive tabs grid.
-- (void)testLeaveSwitcherAfterEnteringAndExittingInactiveTabs {
+- (void)testLeaveSwitcherAfterEnteringAndExitingInactiveTabs {
   // Mark the User Education screen as already-seen by default.
   [ChromeEarlGrey setUserDefaultsObject:@YES
                                  forKey:kInactiveTabsUserEducationShownOnceKey];

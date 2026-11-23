@@ -156,10 +156,10 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 }
 
 - (void)setTitle:(NSString*)title {
-  NSTextAlignment titleTextAligment = DetermineBestAlignmentForText(title);
+  NSTextAlignment titleTextAlignment = DetermineBestAlignmentForText(title);
 
   _titleLabel.text = [title copy];
-  _titleLabel.textAlignment = titleTextAligment;
+  _titleLabel.textAlignment = titleTextAlignment;
   self.accessibilityLabel = [self accessibilityLabelWithTitle:title];
 
   [self updateTitleLabelAppearance];
@@ -446,10 +446,10 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 }
 
 - (void)updateTitleLabelAppearance {
-  NSTextAlignment titleTextAligment = _titleLabel.textAlignment;
+  NSTextAlignment titleTextAlignment = _titleLabel.textAlignment;
 
   if (UseRTLLayout()) {
-    if (titleTextAligment == NSTextAlignmentLeft) {
+    if (titleTextAlignment == NSTextAlignmentLeft) {
       _titleLabelLeadingConstraint.active = NO;
       _titleLabelTrailingConstraint.active = YES;
     } else {
@@ -457,7 +457,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
       _titleLabelLeadingConstraint.active = YES;
     }
   } else {
-    if (titleTextAligment == NSTextAlignmentLeft) {
+    if (titleTextAlignment == NSTextAlignmentLeft) {
       _titleLabelTrailingConstraint.active = NO;
       _titleLabelLeadingConstraint.active = YES;
     } else {
@@ -470,10 +470,10 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
 // Updates the position and direction of the gradient view that fades out the
 // title label.
 - (void)updateTitleLabelFaderAppearance {
-  NSTextAlignment titleTextAligment = _titleLabel.textAlignment;
+  NSTextAlignment titleTextAlignment = _titleLabel.textAlignment;
 
   if (UseRTLLayout()) {
-    if (titleTextAligment == NSTextAlignmentLeft) {
+    if (titleTextAlignment == NSTextAlignmentLeft) {
       [_titleLabelFader setTransform:CGAffineTransformMakeScale(1, 1)];
       _titleLabelFaderTrailingConstraint.active = NO;
       _titleLabelFaderLeadingConstraint.active = YES;
@@ -483,7 +483,7 @@ UIColor* GetInterfaceStyleDarkColor(UIColor* dynamicColor) {
       _titleLabelFaderTrailingConstraint.active = YES;
     }
   } else {
-    if (titleTextAligment == NSTextAlignmentLeft) {
+    if (titleTextAlignment == NSTextAlignmentLeft) {
       [_titleLabelFader setTransform:CGAffineTransformMakeScale(1, 1)];
       _titleLabelFaderLeadingConstraint.active = NO;
       _titleLabelFaderTrailingConstraint.active = YES;

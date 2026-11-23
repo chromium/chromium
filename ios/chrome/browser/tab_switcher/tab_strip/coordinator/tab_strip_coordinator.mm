@@ -276,7 +276,7 @@ constexpr CGFloat kFacePileAvatarSize = 16;
                                           IDS_IOS_CONTENT_CONTEXT_DELETEGROUP)
                                action:^(void) {
                                  [weakSelf deleteSavedGroupWithID:savedIDCopy];
-                                 [weakSelf dimissAlertCoordinator];
+                                 [weakSelf dismissAlertCoordinator];
                                }
                                 style:UIAlertActionStyleDestructive];
   [_alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
@@ -290,7 +290,7 @@ constexpr CGFloat kFacePileAvatarSize = 16;
                                                  visualData:visualDataCopy
                                                localGroupID:localIDCopy
                                                     savedID:savedIDCopy];
-                                 [weakSelf dimissAlertCoordinator];
+                                 [weakSelf dismissAlertCoordinator];
                                }
                                 style:UIAlertActionStyleCancel];
   [_alertCoordinator start];
@@ -504,7 +504,7 @@ constexpr CGFloat kFacePileAvatarSize = 16;
 }
 
 // Dismisses the alert coordinator.
-- (void)dimissAlertCoordinator {
+- (void)dismissAlertCoordinator {
   [_alertCoordinator stop];
   _alertCoordinator = nil;
 }

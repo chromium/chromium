@@ -119,7 +119,7 @@ class DownloadManagerMediatorTest : public PlatformTest {
 };
 // Tests starting the download and immediately destroying the task.
 // DownloadManagerMediator should not crash.
-TEST_F(DownloadManagerMediatorTest, DestoryTaskAfterStart) {
+TEST_F(DownloadManagerMediatorTest, DestroyTaskAfterStart) {
   auto task =
       std::make_unique<web::FakeDownloadTask>(GURL(kTestUrl), kTestMimeType);
   task->SetWebState(web_state_.get());
@@ -243,7 +243,7 @@ TEST_F(DownloadManagerMediatorTest, ConsumerFailedStateUpdate) {
 
 // Tests that consumer changes the state to DownloadManagerState::kSucceeded if
 // task competed without an error.
-TEST_F(DownloadManagerMediatorTest, ConsumerSuceededStateUpdate) {
+TEST_F(DownloadManagerMediatorTest, ConsumerSucceededStateUpdate) {
   OCMStub([application_ canOpenURL:GetGoogleDriveAppURL()]).andReturn(YES);
 
   mediator_.SetDownloadTask(task());
@@ -268,7 +268,7 @@ TEST_F(DownloadManagerMediatorTest, ConsumerSuceededStateUpdate) {
 // Tests that consumer changes the state to DownloadManagerState::kSucceeded if
 // task competed without an error and Google Drive app is not installed.
 TEST_F(DownloadManagerMediatorTest,
-       ConsumerSuceededStateUpdateWithoutDriveAppInstalled) {
+       ConsumerSucceededStateUpdateWithoutDriveAppInstalled) {
   OCMStub([application_ canOpenURL:GetGoogleDriveAppURL()]).andReturn(NO);
 
   mediator_.SetDownloadTask(task());

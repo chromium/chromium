@@ -148,7 +148,8 @@ TEST_F(TabGroupSyncUtilTest, TestMoveTabGroupOneTabAcrossRegularBrowsers) {
 
 // Tests that a tab group with multiple tabs is moved from one regular browser
 // to another browser.
-TEST_F(TabGroupSyncUtilTest, TestMoveTabGroupMutipleTabsAcrossRegularBrowsers) {
+TEST_F(TabGroupSyncUtilTest,
+       TestMoveTabGroupMultipleTabsAcrossRegularBrowsers) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateList* other_web_state_list = other_browser_->GetWebStateList();
 

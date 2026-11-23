@@ -576,17 +576,17 @@ class TabStripLayout: UICollectionViewFlowLayout {
     // partially hidden off-screen.
 
     // Check the left side.
-    let minOringin = horizontalOffset + sectionInset.left + horizontalInset
+    let minOrigin = horizontalOffset + sectionInset.left + horizontalInset
     // Show leading static separators when all of the following conditions are
     // satisfied:
     // - The selected cell is on the leading edge.
     // - A cell behind the selected cell is also reaching the leading edge.
     // - The cell is not animated (inserted / deleted).
-    if (minOringin - staticSeparatorHorizontalInset) >= origin.x {
+    if (minOrigin - staticSeparatorHorizontalInset) >= origin.x {
       hideLeadingStaticSeparator = !isScrollable || cellAnimated
     }
-    if origin.x < minOringin {
-      origin.x = minOringin
+    if origin.x < minOrigin {
+      origin.x = minOrigin
       intersectsLeftEdge = true
     }
 

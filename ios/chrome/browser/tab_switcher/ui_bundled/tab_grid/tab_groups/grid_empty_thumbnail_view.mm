@@ -21,7 +21,7 @@ const int kNumberOfBars = 3;
 const CGFloat kShortBarFraction = 2.0f / 3.0f;
 
 // Margin constants.
-const CGFloat kStackViewHorizonalMargin = 8;
+const CGFloat kStackViewHorizontalMargin = 8;
 const CGFloat kStackViewCenteredPortraitAndLandscapeLeadingMargin = 12;
 const CGFloat kStackViewLandscapeTopMargin = 14;
 
@@ -171,10 +171,10 @@ const CGFloat kGridCellBarHeight = 22;
                                          constant:kStackViewLandscapeTopMargin],
     [_stackView.leadingAnchor
         constraintEqualToAnchor:self.leadingAnchor
-                       constant:kStackViewHorizonalMargin],
+                       constant:kStackViewHorizontalMargin],
     [_stackView.trailingAnchor
         constraintEqualToAnchor:self.trailingAnchor
-                       constant:-kStackViewHorizonalMargin],
+                       constant:-kStackViewHorizontalMargin],
   ]];
 
   [_landscapeLeadingConstraints addObjectsFromArray:@[
@@ -208,13 +208,13 @@ const CGFloat kGridCellBarHeight = 22;
   [_portraitConstraints addObjectsFromArray:@[
     [_stackView.bottomAnchor
         constraintEqualToAnchor:self.bottomAnchor
-                       constant:-kStackViewHorizonalMargin],
+                       constant:-kStackViewHorizontalMargin],
     [_stackView.leadingAnchor
         constraintEqualToAnchor:self.leadingAnchor
-                       constant:kStackViewHorizonalMargin],
+                       constant:kStackViewHorizontalMargin],
     [_stackView.trailingAnchor
         constraintEqualToAnchor:self.trailingAnchor
-                       constant:-kStackViewHorizonalMargin],
+                       constant:-kStackViewHorizontalMargin],
   ]];
 }
 

@@ -70,7 +70,7 @@ class ARQuickLookTabHelperTest : public PlatformTest,
 };
 
 // Tests successfully downloading a USDZ file with the appropriate extension.
-TEST_F(ARQuickLookTabHelperTest, SuccessFileExtention) {
+TEST_F(ARQuickLookTabHelperTest, SuccessFileExtension) {
   auto task = std::make_unique<web::FakeDownloadTask>(GURL(kUrl), "other");
   task->SetGeneratedFileName(base::FilePath(kTestUsdzFileName));
   web::FakeDownloadTask* task_ptr = task.get();

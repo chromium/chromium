@@ -166,7 +166,7 @@ constexpr CGFloat kBlueDotInset = 1;
     _faviconView = [self createFaviconView];
     [_accessibilityContainerView addSubview:_faviconView];
 
-    _activityIndicator = [self createActivityIndicatior];
+    _activityIndicator = [self createActivityIndicator];
     [_accessibilityContainerView addSubview:_activityIndicator];
 
     _closeButton = [self createCloseButton];
@@ -255,9 +255,9 @@ constexpr CGFloat kBlueDotInset = 1;
 - (void)setTitle:(NSString*)title {
   [super setTitle:title];
   _accessibilityContainerView.accessibilityLabel = title;
-  NSTextAlignment titleTextAligment = DetermineBestAlignmentForText(title);
+  NSTextAlignment titleTextAlignment = DetermineBestAlignmentForText(title);
   _titleLabel.text = [title copy];
-  _titleLabel.textAlignment = titleTextAligment;
+  _titleLabel.textAlignment = titleTextAlignment;
   [self updateTitleConstraints];
 }
 
@@ -1017,7 +1017,7 @@ constexpr CGFloat kBlueDotInset = 1;
 }
 
 // Returns a new Activity Indicator.
-- (UIActivityIndicatorView*)createActivityIndicatior {
+- (UIActivityIndicatorView*)createActivityIndicator {
   UIActivityIndicatorView* activityIndicator =
       [[UIActivityIndicatorView alloc] init];
   activityIndicator.color = [UIColor colorNamed:kBlueColor];
