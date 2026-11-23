@@ -500,7 +500,14 @@ void AmbientLoginPermissionBubbleView::Show() {
   UpdateAnchorPosition();
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
   widget->SetZOrderSublevel(ChromeWidgetSublevel::kSublevelSecurity);
-  ShowWidget();
+  if (opened_by_user()) {
+    ShowWidget();
+  } else {
+    // This is used rather than `ShowWidget()` so the bubble starts without
+    // focus. Taking focus away from the web contents would be observable by
+    // the page and that leaks information about the existence of credentials.
+    widget->ShowInactive();
+  }
 }
 
 void AmbientLoginPermissionBubbleView::AddedToWidget() {

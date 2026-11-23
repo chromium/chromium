@@ -283,6 +283,44 @@ TEST_F(AmbientLoginPermissionBubbleViewTest,
   EXPECT_TRUE(views::IsViewClass<views::ImageButton>(bubble->children()[3]));
 }
 
+TEST_F(AmbientLoginPermissionBubbleViewTest, ShowDoesNotActivateBubble) {
+  MockAmbientDelegate delegate(GURL("https://example.com"),
+                               u"alice@example.com",
+                               u"Google Password Manager");
+  auto* bubble = new AmbientLoginPermissionBubbleView(
+      web_contents(), delegate.GetWeakPtr(), PermissionPromptStyle::kChip);
+  bubble->Show();
+  views::ViewTracker tracker(bubble);
+
+  views::Widget* widget = bubble->GetWidget();
+  ASSERT_NE(widget, nullptr);
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_FALSE(widget->IsActive());
+
+  widget->CloseNow();
+  EXPECT_FALSE(tracker.view());
+}
+
+TEST_F(AmbientLoginPermissionBubbleViewTest,
+       ShowActivatesBubbleWhenOpenedByUser) {
+  MockAmbientDelegate delegate(GURL("https://example.com"),
+                               u"alice@example.com",
+                               u"Google Password Manager");
+  auto* bubble = new AmbientLoginPermissionBubbleView(
+      web_contents(), delegate.GetWeakPtr(), PermissionPromptStyle::kChip);
+  bubble->set_opened_by_user(true);
+  bubble->Show();
+  views::ViewTracker tracker(bubble);
+
+  views::Widget* widget = bubble->GetWidget();
+  ASSERT_NE(widget, nullptr);
+  EXPECT_TRUE(widget->IsVisible());
+  EXPECT_TRUE(widget->IsActive());
+
+  widget->CloseNow();
+  EXPECT_FALSE(tracker.view());
+}
+
 TEST_F(AmbientLoginPermissionBubbleViewTest, EmptyUsernameAndProviderFallback) {
   MockAmbientDelegate delegate(GURL("https://example.com"));
   AmbientLoginPermissionBubbleView* bubble = CreateBubble(&delegate);

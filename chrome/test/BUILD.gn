@@ -3738,6 +3738,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/views/user_education:interactive_ui_tests",
       "//chrome/browser/ui/views/web_apps:interactive_ui_tests",
       "//chrome/browser/ui/web_applications:interactive_ui_tests",
+      "//chrome/browser/ui/webauthn:interactive_ui_tests",
       "//chrome/browser/ui/webui/access_code_cast:interactive_ui_tests",
       "//chrome/browser/ui/webui/downloads:interactive_ui_tests",
       "//chrome/browser/ui/webui/searchbox:interactive_ui_tests",

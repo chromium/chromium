@@ -228,15 +228,17 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   void ShowPermissionUi(
       base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate);
 
-  // Permission prompt bubble functiontionality.
-  void OpenPermissionPromptBubble();
+  // Permission prompt bubble functionality. `user_initiated` is true when
+  // the bubble is opened because the user pressed the chip, as opposed to it
+  // opening directly as a result of JS API invocation.
+  void OpenPermissionPromptBubble(bool user_initiated);
 
   // Called from `chip_->WaitForAnchor()` once the chip's anchor is ready.
   // For native Views, this is invoked synchronously; for WebUI, this may be
   // invoked asynchronously once the WebUI element registers over Mojo. The
   // loud bubble then looks up the chip anchor itself when it's created, and
   // the quiet bubble anchors to the location bar.
-  void OnPromptBubbleAnchorReady();
+  void OnPromptBubbleAnchorReady(bool user_initiated);
   void ClosePermissionPromptBubbleWithReason(
       views::Widget::ClosedReason reason);
 

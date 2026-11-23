@@ -269,6 +269,11 @@ void PermissionPromptBubbleBaseView::ClosingPermission() {
   }
 }
 
+void PermissionPromptBubbleBaseView::set_opened_by_user(bool opened_by_user) {
+  CHECK(!GetWidget());
+  opened_by_user_ = opened_by_user;
+}
+
 void PermissionPromptBubbleBaseView::RunButtonCallback(int button_id) {
   PermissionDialogButton button = GetPermissionDialogButton(button_id);
   permissions::PermissionUmaUtil::RecordActionBrowserAlwaysActive(

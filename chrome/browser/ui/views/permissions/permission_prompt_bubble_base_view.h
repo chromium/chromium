@@ -74,6 +74,13 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
 
   void ClosingPermission();
 
+  // Records whether the bubble is being opened as a direct result of a user
+  // action (e.g. pressing the permission chip), as opposed to opening
+  // automatically. Must be called before `Show()`. The base class does not use
+  // this; subclasses may use it to decide whether to take focus when shown.
+  void set_opened_by_user(bool opened_by_user);
+  bool opened_by_user() const { return opened_by_user_; }
+
   // views::BubbleDialogDelegateView:
   bool ShouldShowCloseButton() const override;
 
@@ -117,6 +124,8 @@ class PermissionPromptBubbleBaseView : public PermissionPromptBaseView {
   PermissionPromptStyle prompt_style_;
 
   const bool is_one_time_permission_;
+
+  bool opened_by_user_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PERMISSIONS_PERMISSION_PROMPT_BUBBLE_BASE_VIEW_H_

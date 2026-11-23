@@ -196,4 +196,27 @@ if (!is_android) {
       "//testing/gtest",
     ]
   }
+
+  if (!is_chromeos_device) {
+    source_set("interactive_ui_tests") {
+      testonly = true
+      defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+      sources = [ "ambient/ambient_signin_interactive_uitest.cc" ]
+      deps = [
+        "//base",
+        "//base/test:test_support",
+        "//chrome/browser/ui/views/permissions",
+        "//chrome/test:test_support",
+        "//content/public/browser",
+        "//content/public/common",
+        "//content/test:test_support",
+        "//device/fido",
+        "//device/fido:test_support",
+        "//net",
+        "//net:test_support",
+        "//testing/gtest",
+        "//ui/views",
+      ]
+    }
+  }
 }

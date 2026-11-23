@@ -627,7 +627,7 @@ void ChipController::OnExpandAnimationEnded() {
 
   if (permission_prompt_model_->ShouldBubbleStartOpen() &&
       !is_bubble_suppressed_) {
-    OpenPermissionPromptBubble();
+    OpenPermissionPromptBubble(/*user_initiated=*/false);
   } else {
     StartCollapseTimer();
   }
@@ -658,7 +658,7 @@ void ChipController::HideChip() {
   GetLocationBar()->InvalidateLayout();
 }
 
-void ChipController::OpenPermissionPromptBubble() {
+void ChipController::OpenPermissionPromptBubble(bool user_initiated) {
   CHECK(!IsBubbleShowing(), base::NotFatalUntil::M162);
   if (!permission_prompt_model_ || !permission_prompt_model_->GetDelegate() ||
       permission_prompt_model_->GetDelegate()->Requests().empty() ||
@@ -686,10 +686,10 @@ void ChipController::OpenPermissionPromptBubble() {
   is_waiting_for_anchor_ = true;
   chip_->WaitForAnchor(
       base::BindOnce(&ChipController::OnPromptBubbleAnchorReady,
-                     anchor_weak_factory_.GetWeakPtr()));
+                     anchor_weak_factory_.GetWeakPtr(), user_initiated));
 }
 
-void ChipController::OnPromptBubbleAnchorReady() {
+void ChipController::OnPromptBubbleAnchorReady(bool user_initiated) {
   is_waiting_for_anchor_ = false;
 
   if (IsBubbleShowing() || !permission_prompt_model_ ||
@@ -717,6 +717,7 @@ void ChipController::OnPromptBubbleAnchorReady() {
             permission_prompt_model_->GetDelegate(),
             PermissionPromptStyle::kChip);
     bubble_tracker_.SetView(prompt_bubble);
+    prompt_bubble->set_opened_by_user(user_initiated);
     prompt_bubble->Show();
   } else if (permission_prompt_model_->GetPromptStyle() ==
              PermissionPromptStyle::kQuietChip) {
@@ -821,7 +822,7 @@ void ChipController::OnRequestChipButtonPressed() {
     ClosePermissionPromptBubbleWithReason(
         views::Widget::ClosedReason::kCloseButtonClicked);
   } else {
-    OpenPermissionPromptBubble();
+    OpenPermissionPromptBubble(/*user_initiated=*/true);
   }
 }
 
