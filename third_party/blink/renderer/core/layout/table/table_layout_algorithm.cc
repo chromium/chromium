@@ -1235,8 +1235,7 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
     LayoutUnit child_inline_offset;
 
     // Captions allow margins.
-    LayoutUnit child_block_start_margin;
-    LayoutUnit child_block_end_margin;
+    BoxStrut child_margins;
 
     std::optional<TableBoxExtent> new_table_box_extent;
     bool is_repeated_section = false;
@@ -1272,21 +1271,20 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
 
       LogicalSize available_size(container_builder_.InlineSize(),
                                  kIndefiniteSize);
-      BoxStrut margins = ComputeCaptionMargins(constraint_space, child,
-                                               container_builder_.InlineSize(),
-                                               child_break_token);
-      child_block_start_margin = margins.block_start;
-      child_block_end_margin = margins.block_end;
+      const BoxStrut margins = ComputeCaptionMargins(
+          constraint_space, child, container_builder_.InlineSize(),
+          child_break_token);
 
       ConstraintSpace child_space = CreateCaptionConstraintSpace(
           constraint_space, Style(), child, available_size,
-          child_block_offset + child_block_start_margin);
+          child_block_offset + margins.block_start);
       CaptionResult caption = LayoutCaption(
           constraint_space, Style(), container_builder_.InlineSize(),
           child_space, child, margins, fragmentation);
       DCHECK_EQ(caption.layout_result->Status(), LayoutResult::kSuccess);
       child_result = caption.layout_result;
-      child_inline_offset = caption.margins.inline_start;
+      child_margins = caption.margins;
+      child_inline_offset = child_margins.inline_start;
 
       // Captions don't need to worry about repeated sections.
       repeated_header_block_size = LayoutUnit();
@@ -1407,7 +1405,7 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
     if (constraint_space.HasBlockFragmentation() &&
         (!child_break_token || !is_repeated_section)) {
       LayoutUnit fragmentainer_block_offset =
-          FragmentainerOffsetForChildren() + child_block_start_margin +
+          FragmentainerOffsetForChildren() + child_margins.block_start +
           child_block_offset - repeated_header_block_size;
       BreakStatus break_status = BreakBeforeChildIfNeeded(
           child, *child_result, fragmentainer_block_offset,
@@ -1437,10 +1435,11 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
         last_baseline = child_block_offset + *section_last_baseline;
     }
 
-    child_block_offset += child_block_start_margin;
+    child_block_offset += child_margins.block_start;
     container_builder_.AddResult(
-        *child_result, LogicalOffset(child_inline_offset, child_block_offset));
-    child_block_offset += fragment.BlockSize() + child_block_end_margin;
+        *child_result, LogicalOffset(child_inline_offset, child_block_offset),
+        child_margins);
+    child_block_offset += fragment.BlockSize() + child_margins.block_end;
 
     if (child.IsTableSection()) {
       if (offset_before_repeated_header) {
@@ -1566,7 +1565,7 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
           FragmentainerCapacityForChildren(), kBreakAppealLastResort,
           /*is_forced_break=*/false, &container_builder_);
     } else {
-      container_builder_.AddResult(*result, offset);
+      container_builder_.AddResult(*result, offset, /*margins=*/BoxStrut());
     }
   }
 
