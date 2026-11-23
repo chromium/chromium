@@ -12,9 +12,11 @@ import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.MULTI_PROC
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
 import android.content.MutableContextWrapper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -2287,6 +2289,30 @@ public class AwContentsTest extends AwParameterizedTest {
 
         AwTestContainerView newView = mActivityTestRule.reparentAwContents(oldView);
         Assert.assertNotNull(newView);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testAdoptCancelsPendingIntents() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        AwTestContainerView oldView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        AwContents awContents = oldView.getAwContents();
+        List<Integer> results = new ArrayList<>();
+        // AwTestContainerView doesn't actually start an Activity, so the request stays pending.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        Assert.assertTrue(
+                                awContents.startActivityForResult(
+                                        new Intent(),
+                                        (resultCode, data) -> results.add(resultCode))));
+
+        // The result would be delivered to the old container view, so moving the AwContents to
+        // another Activity cancels the request.
+        mActivityTestRule.reparentAwContents(oldView);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> Assert.assertEquals(List.of(Activity.RESULT_CANCELED), results));
     }
 
     @Test

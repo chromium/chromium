@@ -1517,6 +1517,7 @@ public class AwContents implements SmartClipProvider {
         // Cancel any open JS dialogs so that dialogs shown in the previous Activity don't leave the
         // page blocked if that Activity is destroyed.
         mContentsClientBridge.cancelPendingJsDialogs();
+        cancelPendingIntents();
         updateContext(newContainerView.getContext());
         mPrimaryInternalAccessAdapter = internalAccessAdapter;
         setInternalAccessAdapter(internalAccessAdapter);
@@ -3957,6 +3958,12 @@ public class AwContents implements SmartClipProvider {
         }
 
         Log.e(TAG, "Received activity result for an unknown request code %d", requestCode);
+    }
+
+    private void cancelPendingIntents() {
+        for (int i = mOutstandingIntents.size() - 1; i >= 0; i--) {
+            onActivityResult(mOutstandingIntents.keyAt(i), Activity.RESULT_CANCELED, null);
+        }
     }
 
     private static void recordIfAttachedToPopupWindow(View view) {
