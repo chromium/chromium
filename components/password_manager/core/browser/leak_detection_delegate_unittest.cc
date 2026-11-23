@@ -24,6 +24,7 @@
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/leak_detection/mock_leak_detection_check_factory.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
+#include "components/password_manager/core/browser/password_change/mock_password_change_service.h"
 #include "components/password_manager/core/browser/password_change/password_change_service_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -112,24 +113,6 @@ class MockLeakDetectionCheck : public LeakDetectionCheck {
               (LeakDetectionInitiator,
                const PasswordForm&,
                LeakDetectionCallback),
-              (override));
-};
-
-class MockPasswordChangeService : public PasswordChangeServiceInterface {
- public:
-  MOCK_METHOD(bool, IsPasswordChangeAvailable, (), (const, override));
-  MOCK_METHOD(bool,
-              IsPasswordChangeSupported,
-              (const LeakedPasswordDetails&, bool),
-              (const, override));
-  MOCK_METHOD(void,
-              RecordLoginAttemptQuality,
-              (password_manager::LogInWithChangedPasswordOutcome, const GURL&),
-              (const, override));
-  MOCK_METHOD(void, AddChangePasswordUrlOverride, (const GURL&), (override));
-  MOCK_METHOD(PasswordChangeCredentialsProvider*,
-              GetCredentialsProviderForActorSurface,
-              (int32_t),
               (override));
 };
 

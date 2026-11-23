@@ -22,6 +22,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/mock_webauthn_credentials_delegate.h"
+#include "components/password_manager/core/browser/password_change/mock_password_change_service.h"
 #include "components/password_manager/core/browser/password_change/password_change_service_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
@@ -111,24 +112,6 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
               (),
               (const, override));
   MOCK_METHOD(syncer::SyncService*, GetSyncService, (), (const, override));
-};
-
-class MockPasswordChangeService : public PasswordChangeServiceInterface {
- public:
-  MOCK_METHOD(bool, IsPasswordChangeAvailable, (), (const, override));
-  MOCK_METHOD(bool,
-              IsPasswordChangeSupported,
-              (const LeakedPasswordDetails&, bool),
-              (const, override));
-  MOCK_METHOD(void,
-              RecordLoginAttemptQuality,
-              (password_manager::LogInWithChangedPasswordOutcome, const GURL&),
-              (const, override));
-  MOCK_METHOD(void, AddChangePasswordUrlOverride, (const GURL&), (override));
-  MOCK_METHOD(PasswordChangeCredentialsProvider*,
-              GetCredentialsProviderForActorSurface,
-              (int32_t),
-              (override));
 };
 
 PasswordFormFillData::LoginCollection::const_iterator FindPasswordByUsername(
