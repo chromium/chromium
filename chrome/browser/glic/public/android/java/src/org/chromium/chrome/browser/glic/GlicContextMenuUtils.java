@@ -24,6 +24,7 @@ public final class GlicContextMenuUtils {
     private static final String PARAM_SHOW_ASK_GEMINI_ON_PAGE = "show_on_page";
     private static final String PARAM_SHOW_ASK_GEMINI_ON_IMAGE_MOBILE = "show_on_image_mobile";
     private static final String PARAM_SHOW_ASK_GEMINI_ON_SELECTION = "show_on_selection";
+    private static final String PARAM_SHOW_GEMINI_ON_TAB_STRIP = "show_gemini_on_tab_strip";
 
     @VisibleForTesting
     public static final String PARAM_ASK_GEMINI_SELECTION_MENU_POSITION = "selection_menu_position";
@@ -62,17 +63,20 @@ public final class GlicContextMenuUtils {
     private GlicContextMenuUtils() {}
 
     /** Returns true if the profile is eligible for any Glic context menu entry point. */
-    public static boolean isGlicContextMenuEligible(@Nullable Profile profile) {
+    @VisibleForTesting
+    static boolean isGlicContextMenuEligible(@Nullable Profile profile) {
         if (profile == null || profile.isOffTheRecord() || DeviceInfo.isAutomotive()) {
             return false;
         }
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU)
-                && GlicEnabling.isReadyForProfile(profile);
+        return GlicEnabling.isReadyForProfile(profile);
     }
 
-    private static boolean isContextMenuEligible(
-            @Nullable Profile profile, String paramName, boolean defaultValue) {
-        return isGlicContextMenuEligible(profile)
+    /**
+     * Returns whether ClankGlicContextMenu is enabled and {@code paramName} is true. This activates
+     * the Finch study, so check it after the entry point's other conditions.
+     */
+    private static boolean isEntryPointEnabled(String paramName, boolean defaultValue) {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU)
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU, paramName, defaultValue);
     }
@@ -85,8 +89,9 @@ public final class GlicContextMenuUtils {
     /** Whether the "Ask Gemini" item should be shown for text selection. */
     public static boolean shouldShowAskGeminiForSelection(
             @Nullable Profile profile, Context context) {
-        return isContextMenuEligible(profile, PARAM_SHOW_ASK_GEMINI_ON_SELECTION, true)
-                && isContainerAvailable(context);
+        return isGlicContextMenuEligible(profile)
+                && isContainerAvailable(context)
+                && isEntryPointEnabled(PARAM_SHOW_ASK_GEMINI_ON_SELECTION, true);
     }
 
     /**
@@ -94,8 +99,9 @@ public final class GlicContextMenuUtils {
      * panel form factor, and on mobile if the bottom sheet is enabled.
      */
     public static boolean shouldShowAskGeminiForLink(@Nullable Profile profile, Context context) {
-        return isContextMenuEligible(profile, PARAM_SHOW_ASK_GEMINI_ON_LINK, true)
-                && isContainerAvailable(context);
+        return isGlicContextMenuEligible(profile)
+                && isContainerAvailable(context)
+                && isEntryPointEnabled(PARAM_SHOW_ASK_GEMINI_ON_LINK, true);
     }
 
     /**
@@ -103,8 +109,9 @@ public final class GlicContextMenuUtils {
      * entry point is only available on the side panel form factor.
      */
     public static boolean shouldShowAskGeminiForPage(@Nullable Profile profile, Context context) {
-        return isContextMenuEligible(profile, PARAM_SHOW_ASK_GEMINI_ON_PAGE, false)
-                && GlicUtils.isSidePanelFormFactor(context);
+        return isGlicContextMenuEligible(profile)
+                && GlicUtils.isSidePanelFormFactor(context)
+                && isEntryPointEnabled(PARAM_SHOW_ASK_GEMINI_ON_PAGE, false);
     }
 
     /**
@@ -113,9 +120,19 @@ public final class GlicContextMenuUtils {
      * native share-image handler is only constructed when that feature is enabled.
      */
     public static boolean shouldShowAskGeminiForImage(@Nullable Profile profile) {
-        return isContextMenuEligible(profile, PARAM_SHOW_ASK_GEMINI_ON_IMAGE_MOBILE, false)
+        return isGlicContextMenuEligible(profile)
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC_SHARE_IMAGE)
-                && TabBottomSheetUtils.isTabBottomSheetEnabled();
+                && TabBottomSheetUtils.isTabBottomSheetEnabled()
+                && isEntryPointEnabled(PARAM_SHOW_ASK_GEMINI_ON_IMAGE_MOBILE, false);
+    }
+
+    /**
+     * Returns whether the "Share tab with Gemini" item should be shown in the tab strip context
+     * menu.
+     */
+    public static boolean shouldShowGeminiOnTabStrip(@Nullable Profile profile) {
+        return isGlicContextMenuEligible(profile)
+                && isEntryPointEnabled(PARAM_SHOW_GEMINI_ON_TAB_STRIP, true);
     }
 
     /** Returns the configured menu position for the "Ask Gemini" text selection item. */

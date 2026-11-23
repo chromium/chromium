@@ -221,6 +221,7 @@ public class ChromeContextMenuPopulatorTest {
         mAutomotiveRule.setIsAutomotive(false);
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(TriState.FALSE);
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+        GlicEnabling.setEnabledForTesting(false);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtils);
         SendTabToSelfAndroidBridgeJni.setInstanceForTesting(mSendTabToSelfAndroidBridgeNatives);
         when(mSendTabToSelfAndroidBridgeNatives.getEntryPointDisplayReason(any(), anyString()))
@@ -4336,6 +4337,7 @@ public class ChromeContextMenuPopulatorTest {
     @UiThreadTest
     @DisableFeatures(ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU)
     public void testAskGeminiForLinkIneligibleWhenFlagDisabled() {
+        GlicEnabling.setEnabledForTesting(true);
         ContextMenuParams params = getHttpLinkParams();
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
         assertFalse(mPopulator.shouldShowAskGeminiForLink());

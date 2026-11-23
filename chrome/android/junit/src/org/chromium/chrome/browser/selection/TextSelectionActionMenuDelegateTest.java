@@ -104,6 +104,7 @@ public class TextSelectionActionMenuDelegateTest {
         // Disable both by default so existing expectations hold; tests that exercise a specific
         // entry point re-enable the relevant feature explicitly.
         FeatureOverrides.disable(ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU);
+        GlicEnabling.setEnabledForTesting(false);
         FeatureOverrides.disable(ChromeFeatureList.COPY_LINK_TO_HIGHLIGHT);
 
         WebDistillerUrlUtilsJni.setInstanceForTesting(mWebDistillerUrlUtilsJni);
@@ -326,6 +327,8 @@ public class TextSelectionActionMenuDelegateTest {
     @Test
     public void testAskGemini_notShownWhenFeatureDisabled() {
         // CLANK_GLIC_CONTEXT_MENU stays disabled (from setUp).
+        FeatureOverrides.enable(ChromeFeatureList.TAB_BOTTOM_SHEET);
+        GlicEnabling.setEnabledForTesting(true);
         List<SelectionMenuItem> items =
                 mDelegate.getAdditionalMenuItems(
                         MenuType.FLOATING,
@@ -895,6 +898,8 @@ public class TextSelectionActionMenuDelegateTest {
     public void testFilterTextProcessingActivities_keepsGsaAskGeminiWhenAskGeminiDisabled() {
         // setUp() disables CLANK_GLIC_CONTEXT_MENU, so Chrome contributes no "Ask Gemini" item and
         // the Google app's entry must be left alone rather than leaving no Gemini entry point.
+        FeatureOverrides.enable(ChromeFeatureList.TAB_BOTTOM_SHEET);
+        GlicEnabling.setEnabledForTesting(true);
         List<ResolveInfo> activities = List.of(createGsaAskGeminiResolveInfo());
 
         List<ResolveInfo> filtered =

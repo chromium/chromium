@@ -20,6 +20,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -53,12 +54,6 @@ public class GlicContextMenuUtilsUnitTest {
         when(mIncognitoProfileMock.isOffTheRecord()).thenReturn(true);
         when(mGlicEnablingJniMock.isReadyForProfile(mProfileMock)).thenReturn(true);
         when(mGlicEnablingJniMock.isReadyForProfile(mIncognitoProfileMock)).thenReturn(false);
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU)
-    public void testIsGlicContextMenuEligible_featureDisabled() {
-        assertFalse(GlicContextMenuUtils.isGlicContextMenuEligible(mProfileMock));
     }
 
     @Test
@@ -143,5 +138,62 @@ public class GlicContextMenuUtilsUnitTest {
     public void testShouldShowAskGeminiForImage_signedOutOrIneligible() {
         when(mGlicEnablingJniMock.isReadyForProfile(mProfileMock)).thenReturn(false);
         assertFalse(GlicContextMenuUtils.shouldShowAskGeminiForImage(mProfileMock));
+    }
+
+    @Test
+    public void testShouldShowGeminiOnTabStrip_readyProfile() {
+        assertTrue(GlicContextMenuUtils.shouldShowGeminiOnTabStrip(mProfileMock));
+    }
+
+    @Test
+    public void testShouldShowGeminiOnTabStrip_signedOutOrIneligible() {
+        when(mGlicEnablingJniMock.isReadyForProfile(mProfileMock)).thenReturn(false);
+        assertFalse(GlicContextMenuUtils.shouldShowGeminiOnTabStrip(mProfileMock));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU + ":show_gemini_on_tab_strip/false")
+    public void testShouldShowGeminiOnTabStrip_paramDisabled() {
+        assertFalse(GlicContextMenuUtils.shouldShowGeminiOnTabStrip(mProfileMock));
+    }
+
+    @Test
+    public void testIneligibleProfile_doesNotQueryContextMenuFlag() {
+        setOnlyPrerequisiteFlags(/* tabBottomSheet= */ true, /* shareImage= */ true);
+        GlicUtils.setIsSidePanelFormFactorForTesting(true);
+        when(mGlicEnablingJniMock.isReadyForProfile(mProfileMock)).thenReturn(false);
+
+        assertFalse(GlicContextMenuUtils.shouldShowAskGeminiForSelection(mProfileMock, mContext));
+        assertFalse(GlicContextMenuUtils.shouldShowAskGeminiForLink(mProfileMock, mContext));
+        assertFalse(GlicContextMenuUtils.shouldShowAskGeminiForPage(mProfileMock, mContext));
+        assertFalse(GlicContextMenuUtils.shouldShowAskGeminiForImage(mProfileMock));
+        assertFalse(GlicContextMenuUtils.shouldShowGeminiOnTabStrip(mProfileMock));
+    }
+
+    @Test
+    public void testContainerUnavailable_doesNotQueryContextMenuFlag() {
+        setOnlyPrerequisiteFlags(/* tabBottomSheet= */ false, /* shareImage= */ true);
+        GlicUtils.setIsSidePanelFormFactorForTesting(false);
+
+        assertFalse(GlicContextMenuUtils.shouldShowAskGeminiForSelection(mProfileMock, mContext));
+        assertFalse(GlicContextMenuUtils.shouldShowAskGeminiForLink(mProfileMock, mContext));
+        assertFalse(GlicContextMenuUtils.shouldShowAskGeminiForPage(mProfileMock, mContext));
+        assertFalse(GlicContextMenuUtils.shouldShowAskGeminiForImage(mProfileMock));
+    }
+
+    @Test
+    public void testShareImageDisabled_doesNotQueryContextMenuFlag() {
+        setOnlyPrerequisiteFlags(/* tabBottomSheet= */ true, /* shareImage= */ false);
+
+        assertFalse(GlicContextMenuUtils.shouldShowAskGeminiForImage(mProfileMock));
+    }
+
+    /** Clears all other flag values, so that querying ClankGlicContextMenu throws. */
+    private static void setOnlyPrerequisiteFlags(boolean tabBottomSheet, boolean shareImage) {
+        FeatureOverrides.removeAllIncludingAnnotations();
+        FeatureOverrides.newBuilder()
+                .flag(ChromeFeatureList.TAB_BOTTOM_SHEET, tabBottomSheet)
+                .flag(ChromeFeatureList.GLIC_SHARE_IMAGE, shareImage)
+                .apply();
     }
 }

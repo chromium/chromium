@@ -381,6 +381,7 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mServiceStatus.isAllowedToCreate()).thenReturn(true);
         CollaborationServiceFactory.setForTesting(mCollaborationService);
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
+        GlicEnabling.setEnabledForTesting(false);
 
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         mView = new View(mActivity);

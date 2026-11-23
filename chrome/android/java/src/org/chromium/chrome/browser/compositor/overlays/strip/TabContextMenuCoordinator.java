@@ -36,7 +36,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoord
 import org.chromium.chrome.browser.compositor.overlays.strip.TabStripMenuMetricsUtils.TabMenuAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.ConversationInfo;
-import org.chromium.chrome.browser.glic.GlicEnabling;
+import org.chromium.chrome.browser.glic.GlicContextMenuUtils;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.multiwindow.InstanceInfo;
@@ -167,12 +167,6 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     static void setSendTabToSelfCreatorForTesting(SendTabToSelfCoordinatorCreator creator) {
         sSendTabToSelfCreator = creator;
     }
-
-    // Feature param on ClankGlicContextMenu gating the tab strip "Share tab with
-    // Gemini" entry point, so every Glic context-menu entry shares the same feature
-    // (and experiment). Defaults to true and acts as a kill switch.
-    @VisibleForTesting
-    static final String PARAM_SHOW_GEMINI_ON_TAB_STRIP = "show_gemini_on_tab_strip";
 
     // Maximum number of recent Glic conversations shown in the share submenu.
     private static final int MAX_GLIC_RECENT_CONVERSATIONS = 10;
@@ -835,15 +829,10 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
      */
     private void appendGlicItems(ModelList itemList, List<Tab> tabs, boolean isIncognito) {
         if (isIncognito) return;
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU)
-                || !ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU,
-                        PARAM_SHOW_GEMINI_ON_TAB_STRIP,
-                        /* defaultValue= */ true)) {
+        Profile profile = getTabModel().getProfile();
+        if (profile == null || !GlicContextMenuUtils.shouldShowGeminiOnTabStrip(profile)) {
             return;
         }
-        Profile profile = getTabModel().getProfile();
-        if (profile == null || !GlicEnabling.isReadyForProfile(profile)) return;
         GlicKeyedService glicService = GlicKeyedServiceFactory.getForProfile(profile);
         if (glicService == null) return;
 

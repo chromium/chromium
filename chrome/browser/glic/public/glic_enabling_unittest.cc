@@ -238,6 +238,13 @@ TEST_F(GlicEnablingTest, GlicFeatureNotEnabledTest) {
   EXPECT_FALSE(CreateGlobalEnabling().IsEnabledByGlobalCriteria());
 }
 
+TEST_F(GlicEnablingTest, IsReadyForProfile_NullProfile) {
+  EXPECT_FALSE(GlicEnabling::IsReadyForProfile(nullptr));
+
+  GlicEnabling::ScopedBypassEnablementChecksForTesting bypass;
+  EXPECT_FALSE(GlicEnabling::IsReadyForProfile(nullptr));
+}
+
 TEST_F(GlicEnablingTest, IneligibleProfileDoesNotLogIsConsentedMetrics) {
   GlicEnabling::ProfileEnablement enablement;
   enablement.is_regular_profile = false;

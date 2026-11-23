@@ -1198,7 +1198,8 @@ bool GlicEnabling::DidDismissForProfile(Profile* profile) {
 
 // static
 bool GlicEnabling::IsReadyForProfile(Profile* profile) {
-  return GetProfileReadyState(profile) == mojom::ProfileReadyState::kReady;
+  return profile &&
+         GetProfileReadyState(profile) == mojom::ProfileReadyState::kReady;
 }
 
 // static
