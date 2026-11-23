@@ -59,8 +59,11 @@ ChromeIOSTranslateClient::ChromeIOSTranslateClient(
   translate_driver_.Initialize(
       UrlLanguageHistogramFactory::GetForProfile(
           ProfileIOS::FromBrowserState(web_state->GetBrowserState())),
-      translate_manager_.get()),
-      web_state_->AddObserver(this);
+      translate_manager_.get());
+  web_state_->AddObserver(this);
+  if (infobar_manager_) {
+    infobar_manager_observation_.Observe(infobar_manager_);
+  }
 }
 
 ChromeIOSTranslateClient::~ChromeIOSTranslateClient() {
@@ -156,6 +159,13 @@ bool ChromeIOSTranslateClient::IsReadingModeOpen() const {
   return false;
 }
 
+void ChromeIOSTranslateClient::OnManagerWillBeDestroyed(
+    infobars::InfoBarManager* manager) {
+  DCHECK(infobar_manager_observation_.IsObservingSource(manager));
+  infobar_manager_observation_.Reset();
+  infobar_manager_ = nullptr;
+}
+
 void ChromeIOSTranslateClient::DidStartNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
@@ -208,6 +218,7 @@ void ChromeIOSTranslateClient::WasHidden(web::WebState* web_state) {
 
 void ChromeIOSTranslateClient::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
+  infobar_manager_observation_.Reset();
   infobar_manager_ = nullptr;
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;

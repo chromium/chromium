@@ -12,6 +12,7 @@
 
 #include "base/gtest_prod_util.h"
 #import "base/memory/raw_ptr.h"
+#import "base/scoped_observation.h"
 #import "components/infobars/core/infobar_manager.h"
 #include "components/translate/core/browser/translate_client.h"
 #include "components/translate/core/browser/translate_step.h"
@@ -37,7 +38,8 @@ class WebState;
 }  // namespace web
 
 class ChromeIOSTranslateClient
-    : public translate::TranslateClient,
+    : public infobars::InfoBarManager::Observer,
+      public translate::TranslateClient,
       public web::WebStateObserver,
       public web::WebStateUserData<ChromeIOSTranslateClient> {
  public:
@@ -81,6 +83,9 @@ class ChromeIOSTranslateClient
   ChromeIOSTranslateClient(web::WebState* web_state,
                            infobars::InfoBarManager* infobar_manager);
 
+  // `infobars::InfoBarManager::Observer` implementation.
+  void OnManagerWillBeDestroyed(infobars::InfoBarManager* manager) override;
+
   // web::WebStateObserver implementation.
   void DidStartNavigation(web::WebState* web_state,
                           web::NavigationContext* navigation_context) override;
@@ -99,7 +104,10 @@ class ChromeIOSTranslateClient
   // WebStateDestroyed has been called.
   raw_ptr<web::WebState> web_state_ = nullptr;
 
-  raw_ptr<infobars::InfoBarManager, DanglingUntriaged> infobar_manager_;
+  raw_ptr<infobars::InfoBarManager> infobar_manager_ = nullptr;
+  base::ScopedObservation<infobars::InfoBarManager,
+                          infobars::InfoBarManager::Observer>
+      infobar_manager_observation_{this};
   translate::IOSTranslateDriver translate_driver_;
   std::unique_ptr<translate::TranslateManager> translate_manager_;
 
