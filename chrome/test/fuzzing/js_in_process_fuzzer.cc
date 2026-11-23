@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/fuzzing/in_process_fuzzer.h"
 #include "chrome/test/fuzzing/in_process_fuzzer_buildflags.h"
 #include "chrome/test/fuzzing/js_in_process_fuzzer_utils.h"
@@ -24,6 +23,7 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permissions_client.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -136,15 +136,17 @@ void JsInProcessFuzzer::SetUpOnMainThread() {
   embedded_https_test_server().ServeFilesFromDirectory(build_dir);
   ASSERT_TRUE(embedded_https_test_server().Start());
 
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
   // Programs that need MojoJS bindings load their page in `Fuzz()`. Pages are
   // served from https://a.test:<port>/ rather than 127.0.0.1, so that
   // domain-based checks see a registrable host.
   GURL url = embedded_https_test_server().GetURL("a.test", kSimplePagePath);
-  CHECK(ui_test_utils::NavigateToURL(browser(), url));
+  CHECK(content::NavigateToURL(web_contents, url))
+      << "Startup navigation to " << url << " failed";
 
   // Grant all permissions so that fuzzed JS can reach permission-gated APIs.
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
   permissions::PermissionRequestManager::FromWebContents(web_contents)
       ->set_auto_response_for_test(
           permissions::PermissionRequestManager::ACCEPT_ALL);
@@ -222,13 +224,16 @@ int JsInProcessFuzzer::Fuzz(const uint8_t* data, size_t size) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
-  if (contents->GetLastCommittedURL().path() == kSimplePagePath) {
+  // Try navigating if the page is still the default one, or if its is an error
+  // document left by a failed navigation in an earlier iteration.
+  if (contents->GetPrimaryMainFrame()->IsErrorDocument() ||
+      contents->GetLastCommittedURL().path() == kSimplePagePath) {
     // Load the page the program asks for, unless it is already loaded, so that
     // consecutive programs for the same interface don't pay for a navigation.
     if (std::optional<std::string_view> page_path =
             GetMojoScriptsPagePath(js_str)) {
       GURL page_url = embedded_https_test_server().GetURL("a.test", *page_path);
-      if (!ui_test_utils::NavigateToURL(browser(), page_url)) {
+      if (!content::NavigateToURL(contents, page_url)) {
         // Tell Fuzzilli that the program could not run.
         return kIsFuzzilli ? -1 : 0;
       }
