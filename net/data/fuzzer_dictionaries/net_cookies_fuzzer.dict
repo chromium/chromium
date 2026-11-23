@@ -18,7 +18,6 @@
 "Secure"
 "HttpOnly"
 "SameSite"
-"SameParty"
 "Strict"
 "Lax"
 "None"
