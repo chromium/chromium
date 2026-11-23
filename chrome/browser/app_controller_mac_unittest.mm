@@ -13,13 +13,16 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/delete_profile_helper.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -592,4 +595,32 @@ TEST_F(AppControllerSafeProfileTest, SpecificProfileDoesNotExist) {
       }),
       app_controller_mac::kIgnoreOnFailure);
   run_loop.Run();
+}
+
+// Tests that RunInProfileSafely() and RunInLastProfileSafely() return nullptr
+// when a loaded profile is locked by ForceSignin.
+TEST_F(AppControllerSafeProfileTest, LockedProfileReturnsNullptr) {
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetString(prefs::kProfileLastUsed,
+                         profile_->GetPath().BaseName().MaybeAsASCII());
+
+  AppController* app_controller = AppController.sharedController;
+  ASSERT_EQ(profile_, app_controller.lastProfileIfLoaded);
+
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
+  ProfileAttributesEntry* entry =
+      profile_manager_.profile_attributes_storage()
+          ->GetProfileAttributesWithPath(profile_->GetPath());
+  ASSERT_NE(nullptr, entry);
+  entry->LockForceSigninProfile(true);
+
+  base::test::TestFuture<Profile*> future;
+  app_controller_mac::RunInProfileSafely(profile_->GetPath(),
+                                         future.GetCallback(),
+                                         app_controller_mac::kIgnoreOnFailure);
+  EXPECT_EQ(future.Take(), nullptr);
+
+  app_controller_mac::RunInLastProfileSafely(
+      future.GetCallback(), app_controller_mac::kIgnoreOnFailure);
+  EXPECT_EQ(future.Take(), nullptr);
 }
