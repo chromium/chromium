@@ -45,7 +45,7 @@
 #include <limits.h>
 
 #include <algorithm>
-#include <array>
+#include <bit>
 
 #include "base/check_op.h"
 #include "base/numerics/safe_conversions.h"
@@ -61,21 +61,6 @@ static const int kDefaultProbability = 0x80;  // 0x80 / 256 = 0.5
 // loaded as an immediate (on platforms like ARM, for example). Even relatively
 // modest values like 100 would work fine.
 #define VP8_LOTS_OF_BITS (0x40000000)
-
-// The number of leading zeros.
-constexpr std::array<unsigned char, 256> kVp8Norm = {
-    0, 7, 6, 6, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3,
-    3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-};
 
 bool Vp8BoolDecoder::Initialize(base::span<const uint8_t> data) {
   if (data.empty()) {
@@ -124,7 +109,7 @@ int Vp8BoolDecoder::ReadBit(int probability) {
     range_ = split;
   }
 
-  size_t shift = kVp8Norm[range_];
+  size_t shift = std::countl_zero(static_cast<uint8_t>(range_));
   range_ <<= shift;
   value_ <<= shift;
   count_ -= shift;
