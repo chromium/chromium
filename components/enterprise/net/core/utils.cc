@@ -23,6 +23,7 @@
 #include "components/enterprise/net/core/auth_scope_metadata.h"
 #include "components/enterprise/net/core/features.h"
 #include "components/enterprise/net/core/prefs.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/prefs/pref_service.h"
 #include "net/base/auth.h"
 #include "net/base/proxy_chain.h"
@@ -57,6 +58,7 @@ constexpr char kProxyMatchKey[] = "proxy-match";
 constexpr char kDomainsKey[] = "domains";
 constexpr char kSubnetsKey[] = "subnets";
 constexpr char kPortsKey[] = "ports";
+constexpr char kDirectProxyId[] = "DIRECT";
 
 // Prefix of a PvD domain pattern matching all subdomains of a domain.
 constexpr std::string_view kWildcardSubdomainPrefix = "*.";
@@ -260,8 +262,28 @@ ParseProxy(const base::DictValue& proxy_dict) {
   if (const base::DictValue* chrome_dict =
           proxy_dict.FindDict(kGoogleChromeKey)) {
     if (const base::DictValue* auth_dict = chrome_dict->FindDict(kAuthKey)) {
+      // Browser-handled proxy authentication (attaching OAuth bearer tokens
+      // and honoring disguised error realms) requires TLS (`https://`). Plain
+      // HTTP/SOCKS PvD proxies remain allowed only when no browser auth is
+      // configured (no `auth` block or explicit `"type": "none"`), leaving any
+      // 407 challenges to extensions or the login prompt.
+      //
+      // Check the raw `type` string rather than `ParseAuthType()` because
+      // `ParseAuthType()` currently maps unrecognized auth types to
+      // `AuthType::kNone` (see crbug.com/542666426); unrecognized or missing
+      // `type` values must still fail closed on non-HTTPS proxies.
+      const std::string* type = auth_dict->FindString(kTypeKey);
+      const bool has_browser_auth =
+          !type || !base::EqualsCaseInsensitiveASCII(*type, kAuthNone);
+      if (has_browser_auth && !proxy_server.is_https()) {
+        LOG_POLICY(WARNING, ENTERPRISE_PROXY)
+            << "Ignoring non-HTTPS proxy '" << id
+            << "' because browser proxy authentication requires HTTPS.";
+        return std::nullopt;
+      }
+
       ProxyAuthConfig parsed_auth;
-      if (const std::string* type = auth_dict->FindString(kTypeKey)) {
+      if (type) {
         parsed_auth.type = ParseAuthType(*type);
       }
       if (const std::string* scope = auth_dict->FindString(kScopeKey)) {
@@ -364,17 +386,24 @@ std::string_view ProvisioningDomainStateToString(
 std::optional<ProvisioningDomainProxyConfig::RoutingRule> ParseRoutingRule(
     const base::DictValue& match_dict) {
   std::vector<std::string> proxies;
-  if (const base::ListValue* proxies_list = match_dict.FindList(kProxiesKey)) {
+  if (const base::Value* proxies_value = match_dict.Find(kProxiesKey)) {
+    const base::ListValue* proxies_list = proxies_value->GetIfList();
+    if (!proxies_list) {
+      return std::nullopt;
+    }
     for (const auto& proxy_value : *proxies_list) {
       if (proxy_value.is_string()) {
         proxies.push_back(proxy_value.GetString());
       }
     }
+    if (!proxies_list->empty() && proxies.empty()) {
+      return std::nullopt;
+    }
   }
   // In the Provisioning Domain specification, if `proxies` is empty array or
   // omitted, go DIRECT for matching traffic.
   if (proxies.empty()) {
-    proxies.push_back("DIRECT");
+    proxies.push_back(kDirectProxyId);
   }
 
   std::vector<std::string> domains;
@@ -598,16 +627,33 @@ std::optional<ProvisioningDomainProxyConfig> ParseProvisioningDomainConfig(
     }
   }
 
-  // Parse proxy-match routing rules.
+  // Parse proxy-match routing rules, pruning any referenced proxy IDs that were
+  // unrecognized or rejected by `ParseProxy()` (while keeping explicit
+  // `"DIRECT"` entries). If a rule listed proxy IDs and none of them resolved
+  // to a valid endpoint, drop the rule at parse time so it cannot produce an
+  // empty `net::ProxyList` (which `net::ConfiguredProxyResolutionService`
+  // treats as forcing `DIRECT` instead of falling through to lower-priority
+  // rules, PAC scripts, or system proxy settings).
   for (const auto& match_value : *proxy_match_list) {
     if (!match_value.is_dict()) {
       continue;
     }
     std::optional<ProvisioningDomainProxyConfig::RoutingRule> routing_rule =
         ParseRoutingRule(match_value.GetDict());
-    if (routing_rule.has_value()) {
-      config_data.routing_rules.push_back(std::move(*routing_rule));
+    if (!routing_rule.has_value()) {
+      continue;
     }
+    std::erase_if(routing_rule->proxies, [&](const std::string& proxy_id) {
+      return proxy_id != kDirectProxyId &&
+             !config_data.proxy_endpoints.contains(proxy_id);
+    });
+    if (routing_rule->proxies.empty()) {
+      LOG_POLICY(WARNING, ENTERPRISE_PROXY)
+          << "Ignoring proxy-match rule in PvD '" << config_data.pvd_id
+          << "' because none of its referenced proxy endpoints are valid.";
+      continue;
+    }
+    config_data.routing_rules.push_back(std::move(*routing_rule));
   }
 
   return config_data;

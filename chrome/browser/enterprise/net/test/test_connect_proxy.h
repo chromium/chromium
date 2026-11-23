@@ -24,10 +24,11 @@ namespace enterprise::test {
 // challenges, disguised error realms, and multi-proxy failover.
 class TestConnectProxy {
  public:
-  TestConnectProxy(
-      std::string hostname,
-      std::vector<net::HostPortPair> proxied_destinations,
-      std::string default_challenge_realm = "cloud_secure_gateway");
+  TestConnectProxy(std::string hostname,
+                   std::vector<net::HostPortPair> proxied_destinations,
+                   std::string default_challenge_realm = "cloud_secure_gateway",
+                   net::EmbeddedTestServer::Type server_type =
+                       net::EmbeddedTestServer::TYPE_HTTPS);
   TestConnectProxy(const TestConnectProxy&) = delete;
   TestConnectProxy& operator=(const TestConnectProxy&) = delete;
   ~TestConnectProxy();
@@ -80,7 +81,7 @@ class TestConnectProxy {
   // Declared last so `~EmbeddedTestServer()` joins `io_thread_` before `lock_`
   // and `GUARDED_BY(lock_)` fields accessed by `HandleAuthRequest()` are
   // destroyed.
-  net::EmbeddedTestServer server_{net::EmbeddedTestServer::TYPE_HTTPS};
+  net::EmbeddedTestServer server_;
 };
 
 }  // namespace enterprise::test

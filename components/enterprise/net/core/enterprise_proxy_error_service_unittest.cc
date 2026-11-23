@@ -156,10 +156,12 @@ class EnterpriseProxyErrorServiceTest : public testing::Test {
   net::AuthChallengeInfo CreateProxyAuthChallengeInfo(
       std::string_view host,
       std::string_view realm = "",
-      std::string_view challenge = "") {
+      std::string_view challenge = "",
+      std::string_view scheme = "https") {
     net::AuthChallengeInfo auth_info;
     auth_info.is_proxy = true;
-    auth_info.challenger = url::SchemeHostPort("https", std::string(host), 443);
+    auth_info.challenger =
+        url::SchemeHostPort(std::string(scheme), std::string(host), 443);
     auth_info.scheme = "basic";
     if (!realm.empty()) {
       auth_info.realm = std::string(realm);
@@ -170,6 +172,20 @@ class EnterpriseProxyErrorServiceTest : public testing::Test {
     return auth_info;
   }
 
+  std::optional<EnterpriseProxyErrorService::PendingInterception>
+  EvaluateChallenge(
+      std::string_view host = "proxy.example.com",
+      std::string_view realm = "",
+      std::string_view scheme = "https",
+      int64_t navigation_id = kTestNavigationId,
+      const GURL& destination_url = GURL("https://target.example.com/test"),
+      std::string_view challenge = "",
+      scoped_refptr<net::HttpResponseHeaders> response_headers = nullptr) {
+    return error_service_->EvaluateProxyAuthChallenge(
+        CreateProxyAuthChallengeInfo(host, realm, challenge, scheme),
+        destination_url, response_headers, navigation_id);
+  }
+
   // Intercepts a proxy auth challenge and returns the resulting credentials.
   std::optional<net::AuthCredentials> InterceptChallenge(
       std::string_view realm = "",
@@ -177,9 +193,10 @@ class EnterpriseProxyErrorServiceTest : public testing::Test {
       const GURL& destination_url = GURL("https://target.example.com/test"),
       std::string_view challenge = "",
       scoped_refptr<net::HttpResponseHeaders> response_headers = nullptr) {
-    auto interception = error_service_->EvaluateProxyAuthChallenge(
-        CreateProxyAuthChallengeInfo("proxy.example.com", realm, challenge),
-        destination_url, response_headers, navigation_id);
+    std::optional<EnterpriseProxyErrorService::PendingInterception>
+        interception = EvaluateChallenge(
+            "proxy.example.com", realm, "https", navigation_id, destination_url,
+            challenge, std::move(response_headers));
     EXPECT_TRUE(interception.has_value());
     if (!interception) {
       return std::nullopt;
@@ -213,12 +230,29 @@ class EnterpriseProxyErrorServiceTest : public testing::Test {
 TEST_F(EnterpriseProxyErrorServiceTest, NotApplicableWhenNoManagedProxy) {
   // Declining involves no callback at all, so there is nothing the caller
   // could fail to reclaim.
-  EXPECT_FALSE(error_service_
-                   ->EvaluateProxyAuthChallenge(
-                       CreateProxyAuthChallengeInfo("unmanaged.example.com"),
-                       GURL("https://target.example.com/test"), nullptr,
-                       kTestNavigationId)
-                   .has_value());
+  EXPECT_FALSE(EvaluateChallenge("unmanaged.example.com").has_value());
+
+  // Even when a managed HTTPS proxy exists for the same host:port, plain-HTTP
+  // challenges (including disguised-error realms with a static `url=`) are not
+  // applicable and must be declined without fetching tokens, recording
+  // disguised errors, or extracting `redirect_url`.
+  SetupManagedDomainWithProxy("proxy.example.com");
+  EXPECT_FALSE(EvaluateChallenge("proxy.example.com", "", "http").has_value());
+  auto plain_http_headers = net::HttpResponseHeaders::TryToCreate(
+      "HTTP/1.1 407 Proxy Authentication Required\r\n"
+      "Proxy-Authenticate: Basic realm=\"403\","
+      "url=\"https://error.example.com/blocked.html\"\r\n\r\n");
+  ASSERT_TRUE(plain_http_headers);
+  EXPECT_FALSE(
+      EvaluateChallenge("proxy.example.com", "403", "http", kTestNavigationId,
+                        GURL("https://target.example.com/test"),
+                        "Basic realm=\"403\","
+                        "url=\"https://error.example.com/blocked.html\"",
+                        plain_http_headers)
+          .has_value());
+  EXPECT_FALSE(identity_test_env_.IsAccessTokenRequestPending());
+  EXPECT_FALSE(
+      error_service_->TakeDisguisedError(kTestNavigationId).has_value());
 }
 
 TEST_F(EnterpriseProxyErrorServiceTest, NoCredentialsNeeded_ReturnsNullopt) {
@@ -723,8 +757,8 @@ TEST_F(EnterpriseProxyErrorServiceTest,
   }
 
   // 4. Non-HTTPS proxy challenger sharing `host:port` with a managed HTTPS
-  // proxy must never populate `redirect_url` (cleartext `Proxy-Authenticate`
-  // headers are attacker-controlled on the wire).
+  // proxy is declined outright by `EvaluateProxyAuthChallenge()` without
+  // recording a disguised error or populating `redirect_url`.
   {
     base::HistogramTester histogram_tester;
     net::AuthChallengeInfo http_auth_info;
@@ -739,19 +773,11 @@ TEST_F(EnterpriseProxyErrorServiceTest,
         interception = error_service_->EvaluateProxyAuthChallenge(
             http_auth_info, GURL("https://target.example.com/test"), nullptr,
             kTestNavigationId);
-    ASSERT_TRUE(interception.has_value());
-    base::test::TestFuture<const std::optional<net::AuthCredentials>&> future;
-    error_service_->ResolveProxyAuthChallenge(*std::move(interception),
-                                              future.GetCallback());
-    EXPECT_FALSE(future.Get().has_value());
-
-    std::optional<EnterpriseProxyErrorData> error_data =
-        error_service_->TakeDisguisedError(kTestNavigationId);
-    ASSERT_TRUE(error_data.has_value());
-    EXPECT_FALSE(error_data->redirect_url().has_value());
-    histogram_tester.ExpectUniqueSample(
-        "Enterprise.SecureGateway.StaticErrorPageRedirectOutcome",
-        SecureGatewayStaticErrorPageRedirectOutcome::kRejectedInvalidUrl, 1);
+    EXPECT_FALSE(interception.has_value());
+    EXPECT_FALSE(
+        error_service_->TakeDisguisedError(kTestNavigationId).has_value());
+    histogram_tester.ExpectTotalCount(
+        "Enterprise.SecureGateway.StaticErrorPageRedirectOutcome", 0);
   }
 
   // 5. Setting `enable_static_error_page_redirect` to `false` disables `url=`

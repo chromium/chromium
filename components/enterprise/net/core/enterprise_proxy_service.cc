@@ -36,6 +36,7 @@
 #include "net/log/net_log_source_type.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 namespace enterprise_net {
 
@@ -354,6 +355,13 @@ EnterpriseProxyService::ClassifyProxyAuthChallenge(
     return terminal(Decision::kNotApplicable);
   }
 
+  // Enterprise proxy authentication and disguised error handling only apply to
+  // TLS-protected HTTPS proxies. Never attach bearer tokens or honor disguised
+  // error realms over an unencrypted proxy connection.
+  if (auth_info.challenger.scheme() != url::kHttpsScheme) {
+    return terminal(Decision::kNotApplicable, "non_https_challenger");
+  }
+
   net::ProxyChain proxy_chain = net::ProxyChain::FromSchemeHostAndPort(
       net::ProxyServer::SCHEME_HTTPS, auth_info.challenger.host(),
       auth_info.challenger.port());
@@ -428,7 +436,12 @@ void EnterpriseProxyService::FetchProxyAuthCredentials(
     return;
   }
 
-  const auto& challenger = match.endpoint->proxy_chain.First().host_port_pair();
+  // `ClassifyProxyAuthChallenge()` only emits `kNeedsCredentials` for HTTPS
+  // proxies; enforce that invariant here so `proxy_url` below never fabricates
+  // an `https://` scheme for a non-HTTPS proxy endpoint.
+  const net::ProxyServer& proxy_server = match.endpoint->proxy_chain.First();
+  CHECK(proxy_server.is_https());
+  const auto& challenger = proxy_server.host_port_pair();
 
   // Deduplicate concurrent auth requests for the same challenger host/port.
   for (const auto& req : pending_auth_requests_) {

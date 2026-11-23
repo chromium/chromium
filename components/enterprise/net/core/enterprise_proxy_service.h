@@ -180,7 +180,8 @@ class EnterpriseProxyService
   virtual base::DictValue GetDebugInfo() const;
 
   // Classifies a 407 Proxy Authentication challenge against the managed
-  // dynamic routes.
+  // dynamic routes. Non-HTTPS proxy challenges are always classified as
+  // `kNotApplicable`.
   //
   // Emits the ENTERPRISE_PROXY_AUTH_CHALLENGE_RECEIVED NetLog event, and for
   // every terminal decision also emits ENTERPRISE_PROXY_AUTH_CHALLENGE_RESOLVED

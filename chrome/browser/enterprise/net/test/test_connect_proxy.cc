@@ -16,11 +16,15 @@ namespace enterprise::test {
 TestConnectProxy::TestConnectProxy(
     std::string hostname,
     std::vector<net::HostPortPair> proxied_destinations,
-    std::string default_challenge_realm)
+    std::string default_challenge_realm,
+    net::EmbeddedTestServer::Type server_type)
     : hostname_(std::move(hostname)),
       proxied_destinations_(std::move(proxied_destinations)),
-      challenge_realm_(std::move(default_challenge_realm)) {
-  server_.SetCertHostnames({hostname_});
+      challenge_realm_(std::move(default_challenge_realm)),
+      server_(server_type) {
+  if (server_type == net::EmbeddedTestServer::TYPE_HTTPS) {
+    server_.SetCertHostnames({hostname_});
+  }
   server_.RegisterAuthHandler(base::BindRepeating(
       &TestConnectProxy::HandleAuthRequest, base::Unretained(this)));
 }

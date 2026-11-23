@@ -7,8 +7,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/functional/callback.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -34,6 +36,7 @@
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "net/log/net_log.h"
+#include "net/log/net_log_entry.h"
 #include "net/log/test_net_log.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -1343,11 +1346,12 @@ class EnterpriseProxyServiceAuthChallengeTest
   net::AuthChallengeInfo CreateProxyAuthChallengeInfo(
       std::string_view host = "proxy1.example.com",
       uint16_t port = 443,
-      std::string_view realm = "") {
+      std::string_view realm = "",
+      std::string_view scheme = "https") {
     net::AuthChallengeInfo auth_info;
     auth_info.is_proxy = true;
     auth_info.challenger =
-        url::SchemeHostPort("https", std::string(host), port);
+        url::SchemeHostPort(std::string(scheme), std::string(host), port);
     if (!realm.empty()) {
       auth_info.realm = std::string(realm);
     }
@@ -1376,6 +1380,38 @@ class EnterpriseProxyServiceAuthChallengeTest
         1);
   }
 
+  void ExpectNotApplicable(
+      const net::AuthChallengeInfo& auth_info,
+      const GURL& destination_url,
+      std::optional<std::string_view> expected_failure_reason = std::nullopt) {
+    base::HistogramTester histogram_tester;
+    size_t resolved_before =
+        net_log_observer_
+            .GetEntriesWithType(
+                net::NetLogEventType::ENTERPRISE_PROXY_AUTH_CHALLENGE_RESOLVED)
+            .size();
+
+    EnterpriseProxyService::ProxyAuthChallengeMatch match =
+        Classify(auth_info, destination_url);
+    EXPECT_EQ(Decision::kNotApplicable, match.decision);
+    EXPECT_FALSE(match.endpoint.has_value());
+    EXPECT_FALSE(identity_test_env_.IsAccessTokenRequestPending());
+    ExpectDecisionHistogram(histogram_tester, Decision::kNotApplicable);
+
+    std::vector<net::NetLogEntry> resolved_entries =
+        net_log_observer_.GetEntriesWithType(
+            net::NetLogEventType::ENTERPRISE_PROXY_AUTH_CHALLENGE_RESOLVED);
+    ASSERT_EQ(resolved_before + 1, resolved_entries.size());
+    const base::DictValue& params = resolved_entries.back().params;
+    EXPECT_EQ("not_applicable", *params.FindString("decision"));
+    if (expected_failure_reason.has_value()) {
+      ASSERT_TRUE(params.FindString("failure_reason"));
+      EXPECT_EQ(*expected_failure_reason, *params.FindString("failure_reason"));
+    } else {
+      EXPECT_FALSE(params.FindString("failure_reason"));
+    }
+  }
+
   using AuthChallengeFuture =
       base::test::TestFuture<EnterpriseProxyService::CredentialFetchOutcome,
                              const std::optional<net::AuthCredentials>&,
@@ -1383,32 +1419,64 @@ class EnterpriseProxyServiceAuthChallengeTest
 };
 
 TEST_F(EnterpriseProxyServiceAuthChallengeTest, NotProxyChallenge) {
-  base::HistogramTester histogram_tester;
   net::AuthChallengeInfo auth_info = CreateProxyAuthChallengeInfo();
   auth_info.is_proxy = false;
-
-  EXPECT_EQ(Decision::kNotApplicable,
-            Classify(auth_info, GURL("https://foo.example.com/test")).decision);
-  ExpectDecisionHistogram(histogram_tester, Decision::kNotApplicable);
+  ExpectNotApplicable(auth_info, GURL("https://foo.example.com/test"));
 }
 
 TEST_F(EnterpriseProxyServiceAuthChallengeTest, NotManagedProxy) {
-  base::HistogramTester histogram_tester;
+  ExpectNotApplicable(CreateProxyAuthChallengeInfo("unmanaged-proxy.com"),
+                      GURL("https://foo.example.com/test"));
+}
 
-  EXPECT_EQ(Decision::kNotApplicable,
-            Classify(CreateProxyAuthChallengeInfo("unmanaged-proxy.com"),
-                     GURL("https://foo.example.com/test"))
-                .decision);
-  ExpectDecisionHistogram(histogram_tester, Decision::kNotApplicable);
+TEST_F(EnterpriseProxyServiceAuthChallengeTest, NonHttpsChallenger) {
+  const GURL kDestinationUrl("https://foo.example.com/test");
+
+  // Case #1: Plain-HTTP challenger sharing host:port with an active
+  // `https-connect` PvD endpoint.
+  ExpectNotApplicable(
+      CreateProxyAuthChallengeInfo("proxy1.example.com", 443, "", "http"),
+      kDestinationUrl, "non_https_challenger");
+
+  // Case #2: Plain-HTTP challenger carrying a disguised-error realm (even with
+  // forced disguised error code enabled) cannot spoof Enterprise Proxy errors.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        kEnterpriseProxyErrorHandling,
+        {{kForcedDisguisedErrorCodeParamName, "502"}});
+    ExpectNotApplicable(
+        CreateProxyAuthChallengeInfo("proxy1.example.com", 443, "403", "http"),
+        kDestinationUrl, "non_https_challenger");
+  }
+
+  // Case #3: An unauthenticated `http-connect` PvD proxy still forwards
+  // traffic, and its 407 challenges return `kNotApplicable` (not
+  // `kNoCredentialsNeeded`) so extensions or login UI can handle them.
+  std::string unauth_http_pvd_json = kValidPvdJson2;
+  base::ReplaceFirstSubstringAfterOffset(&unauth_http_pvd_json, 0,
+                                         "https-connect", "http-connect");
+  SetUpDomainAndSimulateResponse(kTestDomain2, unauth_http_pvd_json);
+  EXPECT_EQ(1u, service_->GetDynamicRoutingConfig().routing_rules.size());
+  ExpectNotApplicable(
+      CreateProxyAuthChallengeInfo("proxy2.example.com", 443, "", "http"),
+      GURL("https://foo.domain2.com/test"), "non_https_challenger");
+
+  // Case #4: An `http-connect` PvD proxy with a browser auth config is not
+  // applied for traffic forwarding at all.
+  std::string auth_http_pvd_json = kValidPvdJson1;
+  base::ReplaceFirstSubstringAfterOffset(&auth_http_pvd_json, 0,
+                                         "https-connect", "http-connect");
+  SetUpDomainAndSimulateResponse(kTestDomain1, auth_http_pvd_json);
+  EXPECT_TRUE(service_->GetDynamicRoutingConfig().routing_rules.empty());
+  ExpectNotApplicable(
+      CreateProxyAuthChallengeInfo("proxy1.example.com", 443, "", "http"),
+      kDestinationUrl, "non_https_challenger");
 }
 
 TEST_F(EnterpriseProxyServiceAuthChallengeTest, InvalidDestinationUrl) {
-  base::HistogramTester histogram_tester;
-
-  EXPECT_EQ(Decision::kNotApplicable,
-            Classify(CreateProxyAuthChallengeInfo("proxy1.example.com"), GURL())
-                .decision);
-  ExpectDecisionHistogram(histogram_tester, Decision::kNotApplicable);
+  ExpectNotApplicable(CreateProxyAuthChallengeInfo("proxy1.example.com"),
+                      GURL());
 }
 
 TEST_F(EnterpriseProxyServiceAuthChallengeTest, NoCredentialsNeeded) {

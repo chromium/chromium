@@ -6,6 +6,7 @@
 #include <optional>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
@@ -19,6 +20,8 @@
 #include "chrome/browser/enterprise/net/enterprise_proxy_error_service_factory.h"
 #include "chrome/browser/enterprise/net/test/enterprise_proxy_browsertest_base.h"
 #include "chrome/browser/enterprise/test/management_context_mixin.h"
+#include "chrome/browser/net/profile_network_context_service.h"
+#include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -28,6 +31,8 @@
 #include "components/enterprise/net/core/enterprise_proxy_service.h"
 #include "components/error_page/common/net_error_info.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/prefs/pref_service.h"
+#include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/strings/grit/components_strings.h"
@@ -40,6 +45,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/http/http_status_code.h"
+#include "net/log/net_log_entry.h"
 #include "net/log/net_log_event_type.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -690,6 +696,103 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyErrorBrowserTest,
         "Enterprise.SecureGateway.StaticErrorPageRedirectOutcome", 2);
     VerifyAuthorizationErrorPage(web_contents, looping_error_url);
   }
+}
+
+// Verifies end-to-end that if a higher-precedence rule (such as
+// ProxyOverrideRules or an extension override) routes a PvD-matched
+// destination to a plain-HTTP proxy at the exact same host and port as an
+// active `https-connect` PvD endpoint, its HTTP 407 challenge (including a
+// disguised-error realm with a static `url=`) is rejected as
+// `non_https_challenger` without fetching or sending an OAuth2 bearer token,
+// showing a disguised error page, or redirecting the tab.
+IN_PROC_BROWSER_TEST_F(EnterpriseProxyErrorBrowserTest,
+                       PlainHttpProxyOverrideRejected) {
+  GURL destination_url = GetOriginURL(kDestinationHost, "/simple.html");
+  TestConnectProxy plain_http_proxy(
+      kDefaultProxyHost, {net::HostPortPair::FromURL(destination_url)},
+      "cloud_secure_gateway", net::EmbeddedTestServer::TYPE_HTTP);
+  ASSERT_TRUE(plain_http_proxy.Start());
+
+  const std::string shared_proxy_host_port =
+      plain_http_proxy.host_port_pair().ToString();
+  SetPvdResponseOverride(
+      net::HTTP_OK,
+      BuildValidPvdJson(kTestPvdDomain, shared_proxy_host_port,
+                        {"*.example.com"}, /*require_auth=*/true));
+
+  base::ListValue domains;
+  domains.Append(CreateDomainPolicyEntry(kTestPvdDomain));
+  SetUserProxyProvisioningDomains(std::move(domains));
+  WaitForDynamicRoutesReady();
+
+  base::ListValue override_rules;
+  override_rules.Append(
+      base::DictValue()
+          .Set("DestinationMatchers",
+               base::ListValue().Append(kDestinationHost))
+          .Set("ProxyList",
+               base::ListValue().Append("PROXY " + shared_proxy_host_port)));
+  chrome_test_utils::GetProfile(this)->GetPrefs()->SetList(
+      proxy_config::prefs::kProxyOverrideRules, std::move(override_rules));
+  ProfileNetworkContextServiceFactory::GetForContext(
+      chrome_test_utils::GetProfile(this))
+      ->FlushProxyConfigMonitorForTesting();
+
+  // Case #1: Standard 407 challenge over plain HTTP neither fetches nor sends a
+  // bearer token.
+  const size_t token_fetches_before = GetTokenFetchRequestCount();
+  base::HistogramTester histogram_tester;
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  EXPECT_FALSE(chrome_test_utils::NavigateToURL(web_contents, destination_url));
+  EXPECT_TRUE(plain_http_proxy.was_accessed());
+  EXPECT_FALSE(plain_http_proxy.was_auth_header_received());
+  EXPECT_EQ(token_fetches_before, GetTokenFetchRequestCount());
+
+  // Case #2: Disguised-error realm ("403") carrying a valid HTTPS `url=` over
+  // plain HTTP neither shows an Enterprise Proxy error page nor redirects the
+  // tab to `url=`.
+  plain_http_proxy.ResetStats();
+  const GURL static_blocked_url =
+      GetOriginURL(kUnmatchedHost, "/direct.html?txid=plain-http-spoof");
+  plain_http_proxy.SetChallengeHeader(base::StringPrintf(
+      "Basic realm=\"403\",url=\"%s\"", static_blocked_url.spec().c_str()));
+  EXPECT_FALSE(chrome_test_utils::NavigateToURL(web_contents, destination_url));
+  EXPECT_EQ(destination_url, web_contents->GetLastCommittedURL());
+  EXPECT_TRUE(plain_http_proxy.was_accessed());
+  VerifyErrorPageShownHistograms(histogram_tester, std::nullopt);
+  EXPECT_TRUE(
+      net_log_observer()
+          .GetEntriesWithType(
+              net::NetLogEventType::ENTERPRISE_PROXY_DISGUISED_ERROR_SAVED)
+          .empty());
+
+  histogram_tester.ExpectUniqueSample(
+      "Enterprise.SecureGateway.ProxyAuthChallengeDecision",
+      enterprise_net::EnterpriseProxyService::ProxyAuthChallengeMatch::
+          Decision::kNotApplicable,
+      2);
+  histogram_tester.ExpectTotalCount(
+      "Enterprise.SecureGateway.ProxyAuthCredentialFetchOutcome", 0);
+
+  std::vector<net::NetLogEntry> resolved_entries =
+      net_log_observer().GetEntriesWithType(
+          net::NetLogEventType::ENTERPRISE_PROXY_AUTH_CHALLENGE_RESOLVED);
+  ASSERT_EQ(2u, resolved_entries.size());
+  for (const net::NetLogEntry& entry : resolved_entries) {
+    EXPECT_EQ("not_applicable", *entry.params.FindString("decision"));
+    EXPECT_EQ("non_https_challenger",
+              *entry.params.FindString("failure_reason"));
+  }
+
+  // Case #3: POR's plain-HTTP route itself continues to forward traffic
+  // normally without interference from the overlapping `https-connect` PvD.
+  plain_http_proxy.ResetStats();
+  plain_http_proxy.SetRequireAuth(false);
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(web_contents, destination_url));
+  EXPECT_TRUE(plain_http_proxy.was_accessed());
+  EXPECT_FALSE(was_proxy_accessed());
+  EXPECT_EQ(token_fetches_before, GetTokenFetchRequestCount());
 }
 
 }  // namespace enterprise::test

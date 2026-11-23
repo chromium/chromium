@@ -570,23 +570,112 @@ TEST(ParseProvisioningDomainConfigTest, HandlesVariousProtocols) {
         "identifier": "http-proxy"
       },
       {
+        "protocol": "http-connect",
+        "proxy": "proxy-none.example.com:80",
+        "identifier": "http-none-auth-proxy",
+        "google_chrome": {
+          "auth": { "type": "none" }
+        }
+      },
+      {
+        "protocol": "http-connect",
+        "proxy": "proxy-auth.example.com:80",
+        "identifier": "http-bearer-proxy",
+        "google_chrome": {
+          "auth": {
+            "type": "profile_bearer_token",
+            "scope": "cloud_secure_gateway"
+          }
+        }
+      },
+      {
+        "protocol": "http-connect",
+        "proxy": "proxy-empty-auth.example.com:80",
+        "identifier": "http-empty-auth-proxy",
+        "google_chrome": {
+          "auth": {}
+        }
+      },
+      {
+        "protocol": "http-connect",
+        "proxy": "proxy-unknown-auth.example.com:80",
+        "identifier": "http-unknown-auth-proxy",
+        "google_chrome": {
+          "auth": { "type": "unknown" }
+        }
+      },
+      {
         "protocol": "socks5",
         "proxy": "proxy2.example.com:1080",
         "identifier": "socks-proxy"
+      },
+      {
+        "protocol": "socks5",
+        "proxy": "proxy2-auth.example.com:1080",
+        "identifier": "socks-bearer-proxy",
+        "google_chrome": {
+          "auth": {
+            "type": "profile_bearer_token",
+            "scope": "cloud_secure_gateway"
+          }
+        }
       }
     ],
-    "proxy-match": []
+    "proxy-match": [
+      {
+        "domains": ["blocked-auth.example.com"],
+        "proxies": ["http-bearer-proxy", "socks-bearer-proxy"]
+      },
+      {
+        "domains": ["malformed-non-string-proxies.example.com"],
+        "proxies": [123]
+      },
+      {
+        "domains": ["malformed-scalar-proxies.example.com"],
+        "proxies": "http-proxy"
+      },
+      {
+        "domains": ["unauth-http.example.com"],
+        "proxies": ["http-bearer-proxy", "http-proxy"]
+      },
+      {
+        "domains": ["explicit-direct.example.com"],
+        "proxies": []
+      }
+    ]
   })";
 
   std::optional<ProvisioningDomainProxyConfig> config =
       ParseProvisioningDomainConfig(http_json);
   ASSERT_TRUE(config.has_value());
-  EXPECT_EQ(2u, config->proxy_endpoints.size());
+  EXPECT_EQ(3u, config->proxy_endpoints.size());
+  EXPECT_FALSE(config->proxy_endpoints.contains("http-bearer-proxy"));
+  EXPECT_FALSE(config->proxy_endpoints.contains("http-empty-auth-proxy"));
+  EXPECT_FALSE(config->proxy_endpoints.contains("http-unknown-auth-proxy"));
+  EXPECT_FALSE(config->proxy_endpoints.contains("socks-bearer-proxy"));
 
   EXPECT_EQ(MakeHttpProxyChain("proxy1.example.com:80"),
             config->proxy_endpoints["http-proxy"].proxy_chain);
+  EXPECT_EQ(MakeHttpProxyChain("proxy-none.example.com:80"),
+            config->proxy_endpoints["http-none-auth-proxy"].proxy_chain);
   EXPECT_EQ(MakeSocks5ProxyChain("proxy2.example.com:1080"),
             config->proxy_endpoints["socks-proxy"].proxy_chain);
+
+  // Rules whose proxies were all rejected due to non-HTTPS browser auth or had
+  // malformed `proxies` values (`[123]`, `"http-proxy"`) are dropped at parse
+  // time, fallback to an unauthenticated HTTP proxy is pruned down to the valid
+  // endpoint, and explicit DIRECT (`"proxies": []`) rules are preserved.
+  ASSERT_EQ(2u, config->routing_rules.size());
+  EXPECT_THAT(config->routing_rules[0].proxies, ElementsAre("http-proxy"));
+  EXPECT_THAT(config->routing_rules[1].proxies, ElementsAre("DIRECT"));
+
+  net::ProxyConfig::DynamicRoutingConfig dynamic_config =
+      config->ToDynamicRoutingConfig();
+  ASSERT_EQ(2u, dynamic_config.routing_rules.size());
+  EXPECT_EQ(MakeHttpProxyChain("proxy1.example.com:80"),
+            dynamic_config.routing_rules[0].proxy_list.First());
+  EXPECT_EQ(net::ProxyChain::Direct(),
+            dynamic_config.routing_rules[1].proxy_list.First());
 
   std::string invalid_proto_json = R"({
     "identifier": "example.com",
