@@ -27,6 +27,7 @@ try_.defaults.set(
     execution_timeout = try_constants.DEFAULT_EXECUTION_TIMEOUT,
     experiments = {
         "chromium_tests.resultdb_module": 100,
+        "luci.buildbucket.run_in_turboci": 10,
     },
     orchestrator_cores = "2|4",
     orchestrator_siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
@@ -212,7 +213,7 @@ try_.orchestrator_builder(
         "chromium_rts.filter_file_analysis": 100,
         # crbug.com/40280175
         "chromium_checkout.expand_submodules": 100,
-        "luci.buildbucket.run_in_turboci.grpc_client": 50,
+        "luci.buildbucket.run_in_turboci.grpc_client": 100,
         "luci.buildbucket.run_in_turboci": 100,
     },
     main_list_view = "try",
@@ -299,7 +300,7 @@ try_.orchestrator_builder(
         "chromium_rts.filter_file_analysis": 100,
         # crbug.com/40280175
         "chromium_checkout.expand_submodules": 100,
-        "luci.buildbucket.run_in_turboci": 50,
+        "luci.buildbucket.run_in_turboci": 100,
     },
     main_list_view = "try",
     use_clang_coverage = True,
@@ -806,7 +807,7 @@ try_.orchestrator_builder(
         "chromium_rts.filter_file_analysis": 100,
         # crbug.com/40280175
         "chromium_checkout.expand_submodules": 100,
-        "luci.buildbucket.run_in_turboci": 50,
+        "luci.buildbucket.run_in_turboci": 100,
     },
     main_list_view = "try",
     use_clang_coverage = True,
