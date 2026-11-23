@@ -83,6 +83,20 @@ source_set("actuation_worklog_builders") {
   ]
 }
 
+source_set("inline_worklog_view_provider") {
+  sources = [
+    "gemini_inline_worklog_view_provider.h",
+    "gemini_inline_worklog_view_provider.mm",
+  ]
+  public_deps = [ "//ios/chrome/browser/intelligence/bwg/model:custom_ui" ]
+  deps = [
+    ":actuation_worklog_builders",
+    "//base",
+    "//ios/chrome/browser/intelligence/actor/ui",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("actor_task_store") {
   sources = [
     "gemini_actor_task_store.h",
@@ -121,6 +135,7 @@ source_set("coordinator") {
   ]
   deps = [
     ":container_mediator",
+    ":inline_worklog_view_provider",
     "//base",
     "//components/feature_engagement/public",
     "//components/google/core/common",
@@ -191,6 +206,7 @@ source_set("unit_tests") {
     "gemini_container_mediator_unittest.mm",
     "gemini_container_ui_state_manager_unittest.mm",
     "gemini_entry_flow_coordinator_unittest.mm",
+    "gemini_inline_worklog_view_provider_unittest.mm",
     "gemini_web_modal_coordinator_unittest.mm",
   ]
 
@@ -199,6 +215,7 @@ source_set("unit_tests") {
     ":actuation_worklog_builders",
     ":container_mediator",
     ":coordinator",
+    ":inline_worklog_view_provider",
     "//base",
     "//base/test:test_support",
     "//components/actor/core",
@@ -280,6 +297,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/url_loading/model:test_support",
     "//ios/chrome/browser/web/model/web_view_proxy",
     "//ios/chrome/test:test_support",
+    "//ios/chrome/test/app:test_support",
     "//ios/public/provider/chrome/browser/bwg:gemini_api",
     "//ios/web/public",
     "//ios/web/public/test",

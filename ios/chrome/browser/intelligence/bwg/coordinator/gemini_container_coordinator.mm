@@ -24,9 +24,11 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_container_mediator_delegate.h"
+#import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_inline_worklog_view_provider.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_web_modal_coordinator.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_session_metrics_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_custom_ui_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_gateway_manager.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_page_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_session_handler.h"
@@ -65,6 +67,8 @@
   GeminiZeroStateViewController* _geminiZeroStateViewController;
   // Child coordinator managing the actuation worklog.
   ActuationWorklogCoordinator* _actuationWorklogCoordinator;
+  // Renders the worklog of agent tasks inside Gemini responses.
+  GeminiInlineWorklogViewProvider* _inlineWorklogViewProvider;
   // Child coordinator presenting a URL in a web modal over the container.
   GeminiWebModalCoordinator* _webModalCoordinator;
   // Cancelable callback for starting the container once other windows dismiss
@@ -135,6 +139,12 @@
                            kAssistantContainerMinimizedDetentHeight];
     [_actuationWorklogCoordinator stop];
     _actuationWorklogCoordinator = nil;
+    // Nil if stopped before `-startContainer`. Removing a nil provider crashes.
+    if (_inlineWorklogViewProvider) {
+      [_mediator.gatewayManager.customUIHandler
+          removeViewProvider:_inlineWorklogViewProvider];
+      _inlineWorklogViewProvider = nil;
+    }
   }
   [self dismissWebModal];
   [_mediator disconnect];
@@ -235,6 +245,11 @@
                            browser:self.browser];
     [_actuationWorklogCoordinator start];
     worklogViewController = _actuationWorklogCoordinator.viewController;
+    // The SDK decides whether Chrome renders a block when the block is first
+    // shown, so the provider must be in place before the first response.
+    _inlineWorklogViewProvider = [[GeminiInlineWorklogViewProvider alloc] init];
+    [_mediator.gatewayManager.customUIHandler
+        addViewProvider:_inlineWorklogViewProvider];
   }
 
   _viewController = [[GeminiContainerViewController alloc]
