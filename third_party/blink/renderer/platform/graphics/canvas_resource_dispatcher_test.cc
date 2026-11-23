@@ -10,6 +10,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "cc/base/features.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -18,7 +20,6 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/platform/graphics/begin_frame_provider.h"
 #include "third_party/blink/renderer/platform/graphics/begin_frame_provider_params.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/exported_canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_compositor_frame_sink.h"
@@ -240,13 +241,15 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
               CreateCompositorFrameSink_(viz::FrameSinkId(kClientId, kSinkId)));
   platform->RunUntilIdle();
 
-  auto resource = CanvasResource::CreateForTesting(
-      GetSize(), viz::SinglePlaneFormat::kBGRA_8888, kPremul_SkAlphaType,
-      gfx::ColorSpace::CreateSRGB(), gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
-      /*is_software=*/true,
-      /*context_provider_wrapper=*/nullptr, shared_image_interface_provider());
-
-  EXPECT_TRUE(!!resource);
+  auto* sii = shared_image_interface_provider()->SharedImageInterface();
+  auto shared_image = sii->CreateSharedImageForSoftwareCompositor(
+      {viz::SinglePlaneFormat::kBGRA_8888, GetSize(),
+       gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+       kPremul_SkAlphaType, gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+       "CanvasResourceDispatcherTest"});
+  ASSERT_TRUE(shared_image);
+  gpu::SyncToken sync_token = shared_image->creation_sync_token();
+  sii->VerifySyncToken(sync_token);
 
   const bool context_alpha = GetParam().context_alpha;
 
@@ -284,8 +287,7 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
                           gfx::Size(kWidth, kHeight)),
                       gfx::RectF(0.0f, 0.0f, 1.0f, 1.0f));
 
-            // CanvasResource::CreateForTesting() creates a resource
-            // whose origin is top-left.
+            // The test SharedImage is created with a top-left origin.
             EXPECT_EQ(frame->resource_list.front().GetOrigin(),
                       kTopLeft_GrSurfaceOrigin);
             EXPECT_EQ(frame->resource_list.front().GetAlphaType(),
@@ -294,7 +296,7 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
 
   const gfx::Rect damage_rect(kDamageWidth, kDamageHeight);
   auto exported_resource = base::MakeRefCounted<ExportedCanvasResource>(
-      resource->GetSharedImage(), resource->sync_token(),
+      std::move(shared_image), sync_token,
       viz::TransferableResource::ResourceSource::kCanvas, gfx::HDRMetadata(),
       nullptr, false, base::NullCallback(), base::NullCallback(),
       /*use_legacy_external_canvas_resource_bitmap_path=*/false);

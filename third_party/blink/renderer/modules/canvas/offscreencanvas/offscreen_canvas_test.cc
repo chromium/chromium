@@ -6,6 +6,8 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -28,7 +30,7 @@
 #include "third_party/blink/renderer/modules/canvas/htmlcanvas/html_canvas_element_module.h"
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_rendering_context.h"
 #include "third_party/blink/renderer/modules/canvas/offscreencanvas2d/offscreen_canvas_rendering_context_2d.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
+#include "third_party/blink/renderer/platform/graphics/exported_canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/test/fake_gles2_interface.h"
 #include "third_party/blink/renderer/platform/graphics/test/fake_web_graphics_context_3d_provider.h"
@@ -276,13 +278,15 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
 
   const bool context_alpha = GetParam().alpha;
 
-  auto resource = CanvasResource::CreateForTesting(
-      offscreen_canvas().Size(), viz::SinglePlaneFormat::kBGRA_8888,
-      kPremul_SkAlphaType, gfx::ColorSpace::CreateSRGB(),
-      gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
-      /*is_software=*/true,
-      /*context_provider_wrapper=*/nullptr, shared_image_interface_provider());
-  EXPECT_TRUE(!!resource);
+  auto* sii = shared_image_interface_provider()->SharedImageInterface();
+  auto shared_image = sii->CreateSharedImageForSoftwareCompositor(
+      {viz::SinglePlaneFormat::kBGRA_8888, offscreen_canvas().Size(),
+       gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+       kPremul_SkAlphaType, gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+       "OffscreenCanvasTest"});
+  ASSERT_TRUE(shared_image);
+  gpu::SyncToken sync_token = shared_image->creation_sync_token();
+  sii->VerifySyncToken(sync_token);
 
   EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),
               SubmitCompositorFrame_(_))
@@ -302,7 +306,7 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
           }));
 
   offscreen_canvas().PushFrame(base::MakeRefCounted<ExportedCanvasResource>(
-      resource->GetSharedImage(), resource->sync_token(),
+      std::move(shared_image), sync_token,
       viz::TransferableResource::ResourceSource::kCanvas, gfx::HDRMetadata(),
       nullptr, false, base::NullCallback(), base::NullCallback(),
       /*use_legacy_external_canvas_resource_bitmap_path=*/false));

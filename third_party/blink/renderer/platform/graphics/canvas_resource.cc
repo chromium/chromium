@@ -106,36 +106,6 @@ void CanvasResource::Initialize() {
   is_initialized_ = true;
 }
 
-scoped_refptr<CanvasResource> CanvasResource::CreateForTesting(
-    gfx::Size size,
-    viz::SharedImageFormat format,
-    SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space,
-    gpu::SharedImageUsageSet shared_image_usage_flags,
-    bool is_software,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
-        shared_image_interface_provider) {
-  gpu::ImageInfo image_info(size, format, shared_image_usage_flags, color_space,
-                            kTopLeft_GrSurfaceOrigin, alpha_type,
-                            /*buffer_usage=*/std::nullopt, is_software);
-  auto* sii =
-      is_software
-          ? shared_image_interface_provider->SharedImageInterface()
-          : context_provider_wrapper->ContextProvider().SharedImageInterface();
-  auto image_pool = gpu::SharedImagePool<CanvasResource>::Create(
-      image_info, sii, "CanvasResourceSharedImage", /*max_pool_size=*/0);
-
-  auto canvas_resource = image_pool->GetImage();
-  if (is_software) {
-    canvas_resource->InitializeSoftware(
-        std::move(shared_image_interface_provider));
-  } else {
-    canvas_resource->Initialize();
-  }
-  return canvas_resource;
-}
-
 CanvasResource::~CanvasResource() = default;
 
 void CanvasResource::WaitSyncToken(const gpu::SyncToken& sync_token) {

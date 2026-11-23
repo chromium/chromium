@@ -67,22 +67,7 @@ enum class CanvasResourceProviderType {
 // Resource type for SharedImage
 class PLATFORM_EXPORT CanvasResource final : public gpu::ClientImage {
  public:
-  using ReleaseCallback = base::OnceCallback<void(
-      scoped_refptr<blink::CanvasResource> canvas_resource,
-      const gpu::SyncToken& sync_token,
-      bool is_lost)>;
-
   explicit CanvasResource(scoped_refptr<gpu::ClientSharedImage> shared_image);
-
-  static scoped_refptr<CanvasResource> CreateForTesting(
-      gfx::Size size,
-      viz::SharedImageFormat format,
-      SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
-      gpu::SharedImageUsageSet shared_image_usage_flags,
-      bool is_software,
-      base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
-      base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>);
 
   void InitializeSoftware(base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
                               shared_image_interface_provider);
