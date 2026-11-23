@@ -4,31 +4,86 @@
 
 #include "third_party/blink/renderer/core/ad_tracker/monkey_patchable_api.h"
 
+#include "base/containers/span.h"
 #include "base/notreached.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/core/frame/history.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 
 namespace blink {
 
-base::span<const char* const> GetMonkeyPatchableApiPropertyPath(
-    MonkeyPatchableApi api) {
+namespace {
+
+// Returns the `History` object of `context`'s window, i.e., what the native
+// `window.history` getter returns, or an empty handle if there's no window.
+v8::MaybeLocal<v8::Object> GetHistoryObject(v8::Isolate* isolate,
+                                            v8::Local<v8::Context> context) {
+  LocalDOMWindow* window = ToLocalDOMWindow(context);
+  if (!window) {
+    return {};
+  }
+  return window->history()
+      ->ToV8(ScriptState::From(isolate, context))
+      .As<v8::Object>();
+}
+
+// Looks up `property_names` in order, starting from `object`, and returns the
+// value of the last one, or an empty handle if `object` is empty or any lookup
+// fails. Lookups never invoke getters, Proxy traps or interceptors (see
+// `v8::Object::TryGetWithNoSideEffects()`), as they can run functions installed
+// by page script, including native ones (e.g., DOM APIs) that can mutate the
+// DOM.
+v8::MaybeLocal<v8::Value> GetPropertyPath(
+    v8::Isolate* isolate,
+    v8::Local<v8::Context> context,
+    v8::MaybeLocal<v8::Object> object,
+    base::span<const char* const> property_names) {
+  v8::Local<v8::Value> value;
+  if (!object.ToLocal(&value)) {
+    return {};
+  }
+  for (const char* property_name : property_names) {
+    // Each intermediate value in the path must be an object.
+    if (!value->IsObject()) {
+      return {};
+    }
+    if (!value.As<v8::Object>()
+             ->TryGetWithNoSideEffects(context,
+                                       V8AtomicString(isolate, property_name))
+             .ToLocal(&value)) {
+      return {};
+    }
+  }
+  return value;
+}
+
+// Returns the current value of `api` in `context`, or an empty handle if it
+// can't be read (see `GetPropertyPath()`). Since `GetPropertyPath()` never
+// invokes getters, objects that script reaches via accessor properties (e.g.,
+// `window.history`) are resolved natively.
+v8::MaybeLocal<v8::Value> GetMonkeyPatchableApi(v8::Isolate* isolate,
+                                                v8::Local<v8::Context> context,
+                                                MonkeyPatchableApi api) {
   switch (api) {
-    case MonkeyPatchableApi::kHistoryPushState: {
-      static const char* const kPath[] = {"history", "pushState"};
-      return kPath;
-    }
-    case MonkeyPatchableApi::kHistoryReplaceState: {
-      static const char* const kPath[] = {"history", "replaceState"};
-      return kPath;
-    }
-    case MonkeyPatchableApi::kNodeAppendChild: {
-      static const char* const kPath[] = {"Node", "prototype", "appendChild"};
-      return kPath;
-    }
+    case MonkeyPatchableApi::kHistoryPushState:
+      return GetPropertyPath(isolate, context,
+                             GetHistoryObject(isolate, context), {"pushState"});
+    case MonkeyPatchableApi::kHistoryReplaceState:
+      return GetPropertyPath(isolate, context,
+                             GetHistoryObject(isolate, context),
+                             {"replaceState"});
+    case MonkeyPatchableApi::kNodeAppendChild:
+      return GetPropertyPath(isolate, context, context->Global(),
+                             {"Node", "prototype", "appendChild"});
     case MonkeyPatchableApi::kNone:
       NOTREACHED();
   }
   NOTREACHED();
 }
+
+}  // namespace
 
 MonkeyPatchableApiFunctionInfo GetMonkeyPatchableApiFunctionInfo(
     v8::Isolate* isolate,
@@ -41,41 +96,13 @@ MonkeyPatchableApiFunctionInfo GetMonkeyPatchableApiFunctionInfo(
 
   v8::Context::Scope context_scope(context);
 
-  // Start with the global object.
-  v8::Local<v8::Value> current_value = context->Global();
-  const base::span<const char* const> property_path =
-      GetMonkeyPatchableApiPropertyPath(api);
-
-  // Prevent script execution (e.g., via author-defined getters or proxy traps)
-  // during prototype chain traversal to avoid evasion, side effects, or DOM
-  // mutation re-entrancy crashes.
-  v8::Isolate::DisallowJavascriptExecutionScope disallow_js(
-      isolate, v8::Isolate::DisallowJavascriptExecutionScope::THROW_ON_FAILURE);
-  v8::TryCatch try_catch(isolate);
-
-  // Traverse the property path (e.g., global object -> `history` ->
-  // `pushState`).
-  for (const char* property_name : property_path) {
-    // Each intermediate value in the path must be an object.
-    if (!current_value->IsObject()) {
-      return {};
-    }
-
-    v8::Local<v8::Object> current_object = current_value.As<v8::Object>();
-    v8::Local<v8::String> property_key = V8AtomicString(isolate, property_name);
-
-    v8::MaybeLocal<v8::Value> maybe_next_value =
-        current_object->Get(context, property_key);
-
-    // If the property doesn't exist, the chain is broken.
-    if (maybe_next_value.IsEmpty()) {
-      return {};
-    }
-    current_value = maybe_next_value.ToLocalChecked();
+  v8::Local<v8::Value> current_value;
+  if (!GetMonkeyPatchableApi(isolate, context, api).ToLocal(&current_value)) {
+    return {};
   }
 
-  // At the end of the path, we expect a function. If it's not a function,
-  // it has been tampered with, and we can't perform our check.
+  // We expect the API to be a function. If it's not, it has been tampered with,
+  // and we can't perform our check.
   if (!current_value->IsFunction()) {
     return {};
   }
@@ -125,12 +152,6 @@ bool IsFunctionAMonkeyPatch(v8::Isolate* isolate,
     return false;
   }
 
-  // Prevent script execution to avoid evasion, side effects, or DOM mutation
-  // re-entrancy crashes when accessing the proxy's handler properties.
-  v8::Isolate::DisallowJavascriptExecutionScope disallow_js(
-      isolate, v8::Isolate::DisallowJavascriptExecutionScope::THROW_ON_FAILURE);
-  v8::TryCatch try_catch(isolate);
-
   v8::Local<v8::Value> current = api_function;
   while (current->IsProxy()) {
     v8::Local<v8::Proxy> proxy = current.As<v8::Proxy>();
@@ -140,10 +161,12 @@ bool IsFunctionAMonkeyPatch(v8::Isolate* isolate,
 
     v8::Local<v8::Value> handler = proxy->GetHandler();
     if (handler->IsObject()) {
+      // The handler is controlled by page script, so read its `apply` trap
+      // without side effects (see `GetPropertyPath()`).
       v8::Local<v8::Object> handler_obj = handler.As<v8::Object>();
-      v8::Local<v8::String> apply_key = V8AtomicString(isolate, "apply");
       v8::MaybeLocal<v8::Value> maybe_apply_trap =
-          handler_obj->Get(context, apply_key);
+          handler_obj->TryGetWithNoSideEffects(
+              context, V8AtomicString(isolate, "apply"));
 
       v8::Local<v8::Value> apply_trap;
       if (maybe_apply_trap.ToLocal(&apply_trap)) {
