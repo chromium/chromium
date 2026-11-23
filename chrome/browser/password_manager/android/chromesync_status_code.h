@@ -42,7 +42,19 @@ enum class ChromeSyncStatusCode {
   // are called for local accounts, this status code is provided.
   kLocalAccountNotSupported = 11007,
 
-  kMaxValue = kLocalAccountNotSupported,
+  // Key retrieval is required for a trusted vault user.
+  kKeyRetrievalRequired = 11014,
+
+  // The security domain is empty. No SecurityDomainMembers were found for this
+  // domain.
+  kFolsomEmptyDomain = 11019,
+
+  // The security domain is irretrievable. Shared keys are not available
+  // locally, and every SecurityDomainMember in the domain is not usable for
+  // retrieval.
+  kFolsomIrretrievableDomain = 11020,
+
+  kMaxValue = kFolsomIrretrievableDomain,
 };
 
 }  // namespace password_manager

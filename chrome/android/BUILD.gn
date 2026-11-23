@@ -462,6 +462,8 @@ if (_is_default_toolchain) {
       "//chrome/browser/partnercustomizations:delegate_java",
       "//chrome/browser/partnercustomizations:helper_java",
       "//chrome/browser/partnercustomizations:java",
+      "//chrome/browser/password_manager/android:android_backend_java_enums",
+      "//chrome/browser/password_manager/android:backend_interface_java",
       "//chrome/browser/password_manager/android:java",
       "//chrome/browser/password_manager/android:settings_interface_java",
       "//chrome/browser/password_manager/android:utils_java",

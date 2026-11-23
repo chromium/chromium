@@ -5,19 +5,25 @@
 package org.chromium.chrome.browser.password_manager;
 
 import android.app.Activity;
+import android.app.PendingIntent;
+import android.content.ActivityNotFoundException;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResult;
 import androidx.annotation.VisibleForTesting;
 
+import com.google.android.gms.common.api.ResolvableApiException;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
 import org.chromium.base.CallbackUtils;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -26,6 +32,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -37,6 +44,8 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.lang.ref.WeakReference;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -139,57 +148,110 @@ public class PasswordManagerErrorMessageHelperBridge {
             return;
         }
         final Activity activity = windowAndroid.getActivity().get();
-        if (activity == null) {
+        if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
             completionCallback.run();
             return;
         }
         assert activity instanceof ChromeBaseAppCompatActivity;
-        final ChromeBaseAppCompatActivity chromeActivity = (ChromeBaseAppCompatActivity) activity;
+        final WeakReference<ChromeBaseAppCompatActivity> activityRef =
+                new WeakReference<>((ChromeBaseAppCompatActivity) activity);
 
-        TrustedVaultClient trustedVaultClient =
-                TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC);
-        trustedVaultClient
-                .createKeyRetrievalIntent(primaryAccountInfo)
-                .then(
-                        (intent) -> {
-                            var proxyIntent =
-                                    trustedVaultClient
-                                            .getProxyIntentFactory()
-                                            .createKeyRetrievalProxyIntent(
-                                                    intent,
-                                                    trustedVaultUserActionTriggerForUMA,
-                                                    SecurityDomainId.CHROME_SYNC);
-                            ActivityResultTracker tracker =
-                                    chromeActivity.getActivityResultTracker();
-                            ActivityResultTracker.ResultListener listener =
-                                    new ActivityResultTracker.ResultListener() {
-                                        @Override
-                                        public void onActivityResult(
-                                                ActivityResult result,
-                                                @Nullable Bundle savedInstanceData) {
-                                            tracker.unregister(this);
-                                            completionCallback.run();
-                                        }
+        PasswordStoreAndroidBackend backend =
+                ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.PASSWORD_SAVE_IN_CONTEXT_ERROR_RESOLUTION)
+                        ? PasswordStoreAndroidBackendFactory.getInstance().createBackend()
+                        : null;
+        if (backend == null) {
+            TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC)
+                    .createKeyRetrievalIntent(primaryAccountInfo)
+                    .then(
+                            intent ->
+                                    launchKeyRetrievalProxyIntent(
+                                            activityRef,
+                                            intent,
+                                            trustedVaultUserActionTriggerForUMA,
+                                            completionCallback),
+                            e -> completionCallback.run());
+            return;
+        }
 
-                                        @Override
-                                        public String getRestorationKey() {
-                                            return TRUSTED_VAULT_KEY_RETRIEVAL_RESTORATION_KEY_NOT_TO_BE_RESTORED
-                                                    + "_"
-                                                    + UUID.randomUUID();
-                                        }
-                                    };
-                            tracker.register(listener);
-                            try {
-                                tracker.startActivity(
-                                        listener, proxyIntent, /* savedInstanceData= */ null);
-                            } catch (Exception e) {
-                                tracker.unregister(listener);
-                                completionCallback.run();
-                            }
-                        },
-                        // Rejection handler
-                        (e) -> {
-                            completionCallback.run();
-                        });
+        // Query PasswordStoreAndroidBackend so GMS Core's chromesync module checks its vault state
+        // and returns its wrapped recovery PendingIntent, ensuring cached chromesync metadata is
+        // refreshed when the recovery flow finishes.
+        backend.getAllLogins(
+                Optional.of(AccountUtils.createAccountFromEmail(primaryAccountInfo.getEmail())),
+                loginsReply -> {
+                    ThreadUtils.assertOnUiThread();
+                    completionCallback.run();
+                },
+                exception -> {
+                    ThreadUtils.assertOnUiThread();
+                    PendingIntent intent =
+                            exception instanceof ResolvableApiException resolvable
+                                            && isTrustedVaultKeyRetrievalError(
+                                                    resolvable.getStatusCode())
+                                    ? resolvable.getResolution()
+                                    : null;
+                    if (intent == null) {
+                        completionCallback.run();
+                        return;
+                    }
+                    launchKeyRetrievalProxyIntent(
+                            activityRef,
+                            intent,
+                            trustedVaultUserActionTriggerForUMA,
+                            completionCallback);
+                });
+    }
+
+    private static boolean isTrustedVaultKeyRetrievalError(int statusCode) {
+        return statusCode == ChromeSyncStatusCode.KEY_RETRIEVAL_REQUIRED
+                || statusCode == ChromeSyncStatusCode.FOLSOM_EMPTY_DOMAIN
+                || statusCode == ChromeSyncStatusCode.FOLSOM_IRRETRIEVABLE_DOMAIN;
+    }
+
+    private static void launchKeyRetrievalProxyIntent(
+            WeakReference<ChromeBaseAppCompatActivity> activityRef,
+            PendingIntent intent,
+            @TrustedVaultUserActionTriggerForUMA int trustedVaultUserActionTriggerForUMA,
+            Runnable completionCallback) {
+        ChromeBaseAppCompatActivity chromeActivity = activityRef.get();
+        if (chromeActivity == null
+                || chromeActivity.isFinishing()
+                || chromeActivity.isDestroyed()) {
+            completionCallback.run();
+            return;
+        }
+        var proxyIntent =
+                TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC)
+                        .getProxyIntentFactory()
+                        .createKeyRetrievalProxyIntent(
+                                intent,
+                                trustedVaultUserActionTriggerForUMA,
+                                SecurityDomainId.CHROME_SYNC);
+        ActivityResultTracker tracker = chromeActivity.getActivityResultTracker();
+        ActivityResultTracker.ResultListener listener =
+                new ActivityResultTracker.ResultListener() {
+                    @Override
+                    public void onActivityResult(
+                            ActivityResult result, @Nullable Bundle savedInstanceData) {
+                        tracker.unregister(this);
+                        completionCallback.run();
+                    }
+
+                    @Override
+                    public String getRestorationKey() {
+                        return TRUSTED_VAULT_KEY_RETRIEVAL_RESTORATION_KEY_NOT_TO_BE_RESTORED
+                                + "_"
+                                + UUID.randomUUID();
+                    }
+                };
+        tracker.register(listener);
+        try {
+            tracker.startActivity(listener, proxyIntent, /* savedInstanceData= */ null);
+        } catch (ActivityNotFoundException | SecurityException e) {
+            tracker.unregister(listener);
+            completionCallback.run();
+        }
     }
 }

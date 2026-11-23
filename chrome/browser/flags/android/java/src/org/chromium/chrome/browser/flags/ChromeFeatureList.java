@@ -763,6 +763,8 @@ public abstract class ChromeFeatureList {
             "PageInfoAboutThisSiteMoreLangs";
     public static final String PAINT_PREVIEW_DEMO = "PaintPreviewDemo";
     public static final String PARTNER_CUSTOMIZATIONS_UMA = "PartnerCustomizationsUma";
+    public static final String PASSWORD_SAVE_IN_CONTEXT_ERROR_RESOLUTION =
+            "PasswordSaveInContextErrorResolution";
     public static final String PDF_LAUNCHER_ACTIVITY = "PdfLauncherActivity";
     public static final String PDF_REUSE_FRAGMENT = "PdfReuseFragment";
     public static final String PERMISSION_DEDICATED_CPSS_SETTING_ANDROID =

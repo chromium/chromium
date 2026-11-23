@@ -600,6 +600,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &password_manager::features::kActorLoginPermissionsUi,
     &password_manager::features::kBiometricTouchToFill,
     &password_manager::features::kDeviceReauthRefactor,
+    &password_manager::features::kPasswordSaveInContextErrorResolution,
     &payments::facilitated::kEnablePixAccountLinkingNative,
     &permissions::features::kAndroidWindowManagementWebApi,
     &permissions::features::kPermissionDedicatedCpssSettingAndroid,

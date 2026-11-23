@@ -164,6 +164,8 @@ if (is_android) {
       "//chrome/browser/page_load_metrics:java",
       "//chrome/browser/paint_preview/android:java",
       "//chrome/browser/partnercustomizations:java",
+      "//chrome/browser/password_manager/android:android_backend_java_enums",
+      "//chrome/browser/password_manager/android:backend_interface_java",
       "//chrome/browser/password_manager/android:java",
       "//chrome/browser/password_manager/android:settings_interface_java",
       "//chrome/browser/password_manager/android:test_support_java",
