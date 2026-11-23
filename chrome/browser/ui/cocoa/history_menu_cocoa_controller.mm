@@ -33,12 +33,14 @@ namespace {
 // windows, which is confusing.
 //
 // NB: Takes |node| by value, because the HistoryMenuBridge could be destroyed
-// before RunInSafeProfileHelper finishes.
+// before RunInProfileSafely() finishes loading the profile.
 void OpenURLForItem(HistoryMenuBridge::HistoryItem node,
                     ui::mojom::WindowOpenDisposition disposition,
                     Profile* profile) {
   if (!profile) {
-    return;  // Failed to load profile, ignore.
+    // Failed to load profile or profile is not safe to use (e.g. locked by
+    // ForceSignin), ignore.
+    return;
   }
   // If this item can be restored using TabRestoreService, do so. Otherwise,
   // just load the URL.
@@ -90,21 +92,20 @@ void OpenURLForItem(HistoryMenuBridge::HistoryItem node,
   return ![AppController.sharedController keyWindowIsModal];
 }
 
-// Open the URL of the given history item in the current tab.
+// Opens the URL of the given history item in the current tab. Always routes
+// through `RunInProfileSafely()` (even when `_bridge`'s profile is already
+// loaded in memory) so profile-loading, locked-profile, and forced-incognito
+// checks run before opening or restoring a browser window.
 - (void)openURLForItem:(const HistoryMenuBridge::HistoryItem*)node {
   ui::mojom::WindowOpenDisposition disposition =
       ui::WindowOpenDispositionFromNSEvent([NSApp currentEvent]);
-  if (Profile* profile = _bridge->profile()) {
-    OpenURLForItem(*node, disposition, profile);
-  } else {
-    // Both HistoryMenuBridge and HistoryMenuCocoaController could get destroyed
-    // before RunInSafeProfileHelper finishes. The callback needs to be
-    // self-contained.
-    app_controller_mac::RunInProfileSafely(
-        _bridge->profile_dir(),
-        base::BindOnce(&OpenURLForItem, *node, disposition),
-        app_controller_mac::kIgnoreOnFailure);
-  }
+  // Both HistoryMenuBridge and HistoryMenuCocoaController could get destroyed
+  // before RunInProfileSafely() finishes loading the profile, so the callback
+  // needs to be self-contained.
+  app_controller_mac::RunInProfileSafely(
+      _bridge->profile_dir(),
+      base::BindOnce(&OpenURLForItem, *node, disposition),
+      app_controller_mac::kIgnoreOnFailure);
 }
 
 - (IBAction)openHistoryMenuItem:(id)sender {

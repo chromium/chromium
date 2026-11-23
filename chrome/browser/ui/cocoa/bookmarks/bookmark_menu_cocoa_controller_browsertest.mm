@@ -5,6 +5,7 @@
 #import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_cocoa_controller.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -17,9 +18,16 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/bookmark_test_helpers.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #import "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -251,5 +259,76 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuCocoaControllerBrowserTest,
   navigation_observer.WaitForNavigationFinished();
 
   EXPECT_EQ(navigation_observer.last_navigation_url(), kUrl1);
+  EXPECT_EQ(1, user_actions.GetActionCount("TopMenu_Bookmarks_LaunchURL"));
+}
+
+IN_PROC_BROWSER_TEST_F(BookmarkMenuCocoaControllerBrowserTest,
+                       DoesNotOpenBookmarkWhenProfileLocked) {
+  const GURL kUrl("http://site1.com");
+
+  WaitForBookmarkMergedSurfaceServiceToLoad(bookmark_service());
+  ASSERT_TRUE(bookmark_service()->loaded());
+  const BookmarkNode* node =
+      model()->AddURL(model()->bookmark_bar_node(), 0, u"", kUrl);
+
+  InitBridgeAndController();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  content::WebContents* contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_NE(nullptr, contents);
+
+  BookmarkMenuCocoaController* c = controller();
+  [c menuNeedsUpdate:menu()];
+  NSMenuItem* item = bridge()->MenuItemForNodeForTest(node);
+  ASSERT_NE(nullptr, item);
+  ASSERT_NE(nullptr, bridge()->GetProfile());
+
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
+  Profile* test_profile = profile();
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(test_profile->GetPath());
+  ASSERT_NE(nullptr, entry);
+  entry->LockForceSigninProfile(true);
+
+  base::UserActionTester user_actions;
+
+  // Even while the profile is loaded in memory and has an open browser window,
+  // clicking a bookmark menu item routes through `RunInProfileSafely()` and
+  // must not navigate or record a launch when the profile is locked.
+  [c openBookmarkMenuItem:item];
+  EXPECT_EQ(nullptr, contents->GetController().GetPendingEntry());
+  EXPECT_EQ(GURL("about:blank"), contents->GetLastCommittedURL());
+  EXPECT_EQ(0, user_actions.GetActionCount("TopMenu_Bookmarks_LaunchURL"));
+
+  // Close the browser window while keeping `test_profile` loaded in memory so
+  // no window exists, and verify `openBookmarkMenuItem:` does not create a
+  // browser window.
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive =
+      ScopedProfileKeepAlive::TryAcquire(
+          test_profile, ProfileKeepAliveOrigin::kBrowserWindow);
+  ASSERT_TRUE(profile_keep_alive);
+  CloseBrowserSynchronously(browser());
+  ASSERT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
+  ASSERT_NE(nullptr, bridge()->GetProfile());
+
+  [c openBookmarkMenuItem:item];
+  EXPECT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
+  EXPECT_EQ(0, user_actions.GetActionCount("TopMenu_Bookmarks_LaunchURL"));
+
+  // Unlocking the profile allows the menu item to create a browser window and
+  // open the bookmark.
+  entry->LockForceSigninProfile(false);
+  content::TestNavigationObserver navigation_observer(kUrl);
+  navigation_observer.StartWatchingNewWebContents();
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  [c openBookmarkMenuItem:item];
+  BrowserWindowInterface* new_browser = browser_created_observer.Wait();
+  ASSERT_NE(nullptr, new_browser);
+  SetBrowser(new_browser);
+  navigation_observer.WaitForNavigationFinished();
+  EXPECT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
+  EXPECT_EQ(kUrl, navigation_observer.last_navigation_url());
   EXPECT_EQ(1, user_actions.GetActionCount("TopMenu_Bookmarks_LaunchURL"));
 }

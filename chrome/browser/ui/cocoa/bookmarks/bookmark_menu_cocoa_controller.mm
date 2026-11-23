@@ -62,6 +62,10 @@ void DoOpenBookmark(Profile* profile,
       ProfileBrowserCollection::GetForProfile(profile)->FindTabbedBrowser(
           /*match_original_profiles=*/true);
   if (!browser) {
+    if (GetBrowserWindowCreationStatusForProfile(*profile) !=
+        BrowserWindowInterface::CreationStatus::kOk) {
+      return;
+    }
     browser = waap::CreateBrowserWindowAndRecordCreationSource(
         BrowserWindowCreateParams(profile, true),
         waap::NewWindowCreationSource::kNavigation);
@@ -142,7 +146,8 @@ void OpenBookmarkByGUID(ui::mojom::WindowOpenDisposition disposition,
                         base::Uuid guid,
                         Profile* profile) {
   if (!profile) {
-    // Failed to load profile, ignore.
+    // Failed to load profile or profile is not safe to use (e.g. locked by
+    // ForceSignin), ignore.
     return;
   }
 
@@ -287,22 +292,20 @@ void OpenBookmarkByGUID(ui::mojom::WindowOpenDisposition disposition,
   return NO;
 }
 
-// Open the URL of the given BookmarkNode in the current tab. If the Profile
-// is not loaded in memory, load it first.
+// Opens the URL of the given BookmarkNode in the current tab. Always routes
+// through `RunInProfileSafely()` (even when `_bridge`'s profile is already
+// loaded in memory) so profile-loading, locked-profile, and forced-incognito
+// checks run before opening a browser window.
 - (void)openURLForGUID:(base::Uuid)guid {
   ui::mojom::WindowOpenDisposition disposition =
       ui::WindowOpenDispositionFromNSEvent([NSApp currentEvent]);
-  if (Profile* profile = _bridge->GetProfile()) {
-    OpenBookmarkByGUID(disposition, std::move(guid), profile);
-  } else {
-    // Both BookmarkMenuBridge and BookmarkMenuCocoaController could get
-    // destroyed before RunInSafeProfileHelper finishes. The callback needs to
-    // be self-contained.
-    app_controller_mac::RunInProfileSafely(
-        _bridge->GetProfileDir(),
-        base::BindOnce(&OpenBookmarkByGUID, disposition, std::move(guid)),
-        app_controller_mac::kIgnoreOnFailure);
-  }
+  // Both BookmarkMenuBridge and BookmarkMenuCocoaController could get
+  // destroyed before RunInProfileSafely() finishes loading the profile, so the
+  // callback needs to be self-contained.
+  app_controller_mac::RunInProfileSafely(
+      _bridge->GetProfileDir(),
+      base::BindOnce(&OpenBookmarkByGUID, disposition, std::move(guid)),
+      app_controller_mac::kIgnoreOnFailure);
 }
 
 - (IBAction)openBookmarkMenuItem:(id)sender {
