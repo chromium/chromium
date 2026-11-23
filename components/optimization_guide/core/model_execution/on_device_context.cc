@@ -4,9 +4,11 @@
 
 #include "components/optimization_guide/core/model_execution/on_device_context.h"
 
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
+#include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -114,6 +116,8 @@ OnDeviceContext::OnDeviceContext(OnDeviceOptions opts,
                                  mojom::OnDeviceFeature feature)
     : opts_(std::move(opts)), feature_(feature) {
   CHECK(opts_.session_params.sampling_params.has_value());
+  clients_.set_disconnect_handler(base::BindRepeating(
+      &OnDeviceContext::OnDisconnect, base::Unretained(this)));
 }
 OnDeviceContext::~OnDeviceContext() = default;
 
@@ -163,11 +167,14 @@ OnDeviceContext::GetOrCreateSession() {
   params->temperature = opts_.session_params.sampling_params->temperature;
   opts_.model_client->StartSession(session_.BindNewPipeAndPassReceiver(),
                                    std::move(params));
-  session_.reset_on_disconnect();
+  session_.set_disconnect_handler(
+      base::BindOnce(&OnDeviceContext::OnDisconnect, base::Unretained(this)));
   session_->SetPriority(priority_);
   tokens_processed_ = 0;
   if (input_->pieces.size() > 0) {
     Append(input_->Clone());
+  } else if (callback_) {
+    std::move(callback_).Run(0);
   }
   return session_;
 }
@@ -192,7 +199,8 @@ std::unique_ptr<OnDeviceContext> OnDeviceContext::Clone() {
   CloneSession(context->session_.BindNewPipeAndPassReceiver(),
                /*logged_request=*/nullptr, /*ignore_context=*/false);
   context->SetPriority(priority_);
-  context->session_.reset_on_disconnect();
+  context->session_.set_disconnect_handler(base::BindOnce(
+      &OnDeviceContext::OnDisconnect, base::Unretained(context.get())));
   return context;
 }
 
@@ -221,9 +229,23 @@ void OnDeviceContext::Append(on_device_model::mojom::InputPtr input) {
   session_->Append(std::move(options), std::move(pending));
 }
 
+void OnDeviceContext::OnDisconnect() {
+  session_.reset();
+  clients_.Clear();
+  tokens_processed_ = 0;
+  if (callback_) {
+    std::move(callback_).Run(base::unexpected(OnDeviceError::kGenericFailure));
+  }
+}
+
 void OnDeviceContext::OnComplete(uint32_t tokens_processed) {
   tokens_processed_ += tokens_processed;
   clients_.Remove(clients_.current_receiver());
+  base::UmaHistogramCounts10000(
+      base::StrCat({"OptimizationGuide.ModelExecution."
+                    "OnDeviceContextTokensProcessed.",
+                    base::ToString(feature_)}),
+      tokens_processed);
   if (clients_.empty() && callback_) {
     // TODO(crbug.com/406585895): tokens_processed_ will not include tokens that
     // were processed when this OnDeviceContext was created by calling Clone().
@@ -231,11 +253,6 @@ void OnDeviceContext::OnComplete(uint32_t tokens_processed) {
     // instead.
     std::move(callback_).Run(tokens_processed_);
   }
-  base::UmaHistogramCounts10000(
-      base::StrCat({"OptimizationGuide.ModelExecution."
-                    "OnDeviceContextTokensProcessed.",
-                    base::ToString(feature_)}),
-      tokens_processed);
 }
 
 }  // namespace optimization_guide
