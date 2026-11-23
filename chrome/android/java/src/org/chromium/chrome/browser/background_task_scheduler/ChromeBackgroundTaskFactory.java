@@ -105,6 +105,10 @@ public class ChromeBackgroundTaskFactory implements BackgroundTaskFactory {
             case TaskIds.PUMA_UPLOAD_JOB_ID:
             case TaskIds.STRUCTURED_METRICS_UPLOAD_JOB_ID:
                 return new ProxyNativeTask();
+            // Retired task IDs. Returning no task, without the assert in the default case,
+            // lets BackgroundTaskJobService cancel a job that an older Chrome left scheduled.
+            case TaskIds.DEPRECATED_COMPONENT_UPDATE_JOB_ID:
+                return assumeNonNull(null);
             // When adding a new job id with a BackgroundTask, remember to add a specific case
             // for it here.
             // If the job id corresponds to a native task, use {@link ProxyNativeTask} as the

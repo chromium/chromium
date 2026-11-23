@@ -1201,7 +1201,7 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="WebAPK update task"/>
   <int value="13" label="Download resumption task"/>
   <int value="14" label="Feed refresh task"/>
-  <int value="15" label="Component update task"/>
+  <int value="15" label="Deprecated component update task"/>
   <int value="16" label="Deprecated Explore Sites refresh task"/>
   <int value="17" label="Explore Sites refresh task"/>
   <int value="18" label="Download auto-resumption task"/>

@@ -372,7 +372,7 @@ chromium-metrics-reviews@google.com.
   <variant name="BackgroundSyncOneShot" summary="BackgroundSyncOneShot"/>
   <variant name="ChromeMinidumpUploading" summary="ChromeMinidumpUploading"/>
   <variant name="ChromeSignalsReporting" summary="ChromeSignalsReporting"/>
-  <variant name="ComponentUpdate" summary="ComponentUpdate"/>
+  <variant name="ComponentUpdate" summary="ComponentUpdate (deprecated)"/>
   <variant name="DeprecatedDownloadResumption"
       summary="DeprecatedDownloadResumption"/>
   <variant name="DeprecatedExploreSitesRefresh"
