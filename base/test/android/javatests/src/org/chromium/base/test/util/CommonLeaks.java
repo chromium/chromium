@@ -23,8 +23,28 @@ public class CommonLeaks implements LeakCanaryConfigProvider {
     private static final String sInteractionJankMonitorField =
             "com.android.internal.jank.InteractionJankMonitor$Configuration#mContext";
 
+    // Android 17's remote selection toolbar keeps a binder stub alive from native code after the
+    // toolbar is dismissed. Through its client (the toolbar popup) and its provider, the stub
+    // references the destroyed activity. The stub is released only when the system side drops it.
+    private static final String sSelectionToolbarClientWrapperClass =
+            "android.view.selectiontoolbar.SelectionToolbarClientWrapper";
+    private static final String sSelectionToolbarClientWrapperField =
+            "android.view.selectiontoolbar.SelectionToolbarClientWrapper#mClient";
+    private static final String sSelectionToolbarProviderClass =
+            "android.view.selectiontoolbar.SelectionToolbarProviderFactory"
+                    + "$SelectionToolbarProviderImpl";
+    private static final String sSelectionToolbarProviderField =
+            "android.view.selectiontoolbar.SelectionToolbarProviderFactory"
+                    + "$SelectionToolbarProviderImpl#mContext";
+
     @Override
     public Map<String, String> getInstanceFieldLeaks() {
-        return Map.of(sInteractionJankMonitorClass, sInteractionJankMonitorField);
+        return Map.of(
+                sInteractionJankMonitorClass,
+                sInteractionJankMonitorField,
+                sSelectionToolbarClientWrapperClass,
+                sSelectionToolbarClientWrapperField,
+                sSelectionToolbarProviderClass,
+                sSelectionToolbarProviderField);
     }
 }
