@@ -18,6 +18,7 @@ SPECIAL_TOKENS = [
     'Latin1',
     'MathML',
     'PlugIn',
+    'SFrame',
     'SQLite',
     'Uint16',
     'Uint32',

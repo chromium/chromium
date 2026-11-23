@@ -30,6 +30,9 @@ class SmartTokenizerTest(unittest.TestCase):
         self.assertEqual(
             tokenize_name('XMLHttpRequest'), ['XML', 'Http', 'Request']
         )
+        self.assertEqual(
+            tokenize_name('NonHTTPSFrame'), ['Non', 'HTTPS', 'Frame']
+        )
 
         self.assertEqual(tokenize_name('HTMLElement'), ['HTML', 'Element'])
 
@@ -110,6 +113,10 @@ class SmartTokenizerTest(unittest.TestCase):
 
         self.assertEqual(
             tokenize_name('RTCDTMFSender'), ['RTC', 'DTMF', 'Sender']
+        )
+        self.assertEqual(
+            tokenize_name('RTCRtpSFrameEncryptor'),
+            ['RTC', 'Rtp', 'SFrame', 'Encryptor'],
         )
 
         self.assertEqual(
