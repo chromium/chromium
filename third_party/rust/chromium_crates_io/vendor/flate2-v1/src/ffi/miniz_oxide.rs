@@ -5,7 +5,7 @@ use core::convert::TryInto;
 use core::fmt;
 
 use ::miniz_oxide::deflate::core::CompressorOxide;
-use ::miniz_oxide::inflate::stream::InflateState;
+use ::miniz_oxide::inflate::stream::{FullReset, InflateState};
 pub use ::miniz_oxide::*;
 
 pub const MZ_NO_FLUSH: isize = MZFlush::None as isize;
@@ -65,7 +65,11 @@ impl InflateBackend for Inflate {
     fn make(zlib_header: bool, _window_bits: u8) -> Self {
         let format = format_from_bool(zlib_header);
 
-        Inflate { inner: InflateState::new_boxed(format), total_in: 0, total_out: 0 }
+        Inflate {
+            inner: InflateState::new_boxed(format),
+            total_in: 0,
+            total_out: 0,
+        }
     }
 
     fn decompress(
@@ -95,7 +99,8 @@ impl InflateBackend for Inflate {
     }
 
     fn reset(&mut self, zlib_header: bool) {
-        self.inner.reset(format_from_bool(zlib_header));
+        self.inner
+            .reset_as(FullReset(format_from_bool(zlib_header)));
         self.total_in = 0;
         self.total_out = 0;
     }
@@ -151,7 +156,11 @@ impl DeflateBackend for Deflate {
         let format = format_from_bool(zlib_header);
         inner.set_format_and_level(format, level.level().try_into().unwrap_or(1));
 
-        Deflate { inner, total_in: 0, total_out: 0 }
+        Deflate {
+            inner,
+            total_in: 0,
+            total_out: 0,
+        }
     }
 
     fn compress(

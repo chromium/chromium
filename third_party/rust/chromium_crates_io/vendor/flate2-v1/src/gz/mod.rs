@@ -59,23 +59,21 @@ impl GzHeader {
         self.operating_system
     }
 
-    /// This gives the most recent modification time of the original file being
-    /// compressed.
+    /// This gives the most recent modification time of the original file being compressed.
     ///
-    /// The time is in Unix format, i.e., seconds since 00:00:00 GMT, Jan. 1,
-    /// 1970. (Note that this may cause problems for MS-DOS and other
-    /// systems that use local rather than Universal time.) If the
-    /// compressed data did not come from a file, `mtime` is set to the time
-    /// at which compression started. `mtime` = 0 means no time stamp is
-    /// available.
+    /// The time is in Unix format, i.e., seconds since 00:00:00 GMT, Jan. 1, 1970.
+    /// (Note that this may cause problems for MS-DOS and other systems that use local
+    /// rather than Universal time.) If the compressed data did not come from a file,
+    /// `mtime` is set to the time at which compression started.
+    /// `mtime` = 0 means no time stamp is available.
     ///
     /// The usage of `mtime` is discouraged because of Year 2038 problem.
     pub fn mtime(&self) -> u32 {
         self.mtime
     }
 
-    /// Returns the most recent modification time represented by a date-time
-    /// type. Returns `None` if the value of the underlying counter is 0,
+    /// Returns the most recent modification time represented by a date-time type.
+    /// Returns `None` if the value of the underlying counter is 0,
     /// indicating no time stamp is available.
     ///
     ///
@@ -86,9 +84,9 @@ impl GzHeader {
         self.mtime_as_duration().map(|d| std::time::UNIX_EPOCH + d)
     }
 
-    /// Returns the [`Duration`](time::Duration) between the most recent
-    /// modification time and 00:00:00 GMT, Jan. 1 1970, also known as Unix
-    /// epoch. See [`mtime`](#method.mtime) for more detail.
+    /// Returns the [`Duration`](time::Duration) between the most recent modification
+    /// time and 00:00:00 GMT, Jan. 1 1970, also known as Unix epoch.
+    /// See [`mtime`](#method.mtime) for more detail.
     /// Returns `None` if the value of the underlying counter is 0,
     /// indicating no time stamp is available.
     pub fn mtime_as_duration(&self) -> Option<time::Duration> {
@@ -268,7 +266,10 @@ fn read_to_nul<R: BufRead>(r: &mut R, buffer: &mut Vec<u8>) -> Result<()> {
         match bytes.next().transpose()? {
             Some(0) => return Ok(()),
             Some(_) if buffer.len() == MAX_HEADER_BUF => {
-                return Err(Error::new(ErrorKind::InvalidInput, "gzip header field too long"));
+                return Err(Error::new(
+                    ErrorKind::InvalidInput,
+                    "gzip header field too long",
+                ));
             }
             Some(byte) => {
                 buffer.push(byte);
@@ -289,7 +290,10 @@ fn bad_header() -> Error {
 }
 
 fn corrupt() -> Error {
-    Error::new(ErrorKind::InvalidInput, "corrupt gzip stream does not have a matching checksum")
+    Error::new(
+        ErrorKind::InvalidInput,
+        "corrupt gzip stream does not have a matching checksum",
+    )
 }
 
 /// A builder structure to create a new gzip Encoder.
@@ -352,7 +356,10 @@ impl GzBuilder {
     /// Panics if `extra` is longer than [`u16::MAX`].
     pub fn extra<T: Into<Vec<u8>>>(mut self, extra: T) -> GzBuilder {
         let extra = extra.into();
-        assert!(extra.len() <= u16::MAX as usize, "gzip extra field length cannot exceed u16::MAX");
+        assert!(
+            extra.len() <= u16::MAX as usize,
+            "gzip extra field length cannot exceed u16::MAX"
+        );
         self.extra = Some(extra);
         self
     }
@@ -405,7 +412,13 @@ impl GzBuilder {
     }
 
     fn into_header(self, lvl: Compression) -> Vec<u8> {
-        let GzBuilder { extra, filename, comment, operating_system, mtime } = self;
+        let GzBuilder {
+            extra,
+            filename,
+            comment,
+            operating_system,
+            mtime,
+        } = self;
         let mut flg = 0;
         let mut header = vec![0u8; 10];
         if let Some(v) = extra {
@@ -517,7 +530,9 @@ mod tests {
 
     impl Rfc1952Crc {
         fn new() -> Self {
-            let mut crc = Rfc1952Crc { crc_table: [0; 256] };
+            let mut crc = Rfc1952Crc {
+                crc_table: [0; 256],
+            };
             /* Make the table for a fast CRC. */
             for n in 0usize..256 {
                 let mut c = n as u32;
@@ -739,7 +754,9 @@ mod tests {
     fn read_decoder_rejects_incomplete_deflate_stream() {
         let mut compressed = gzip_corrupted_crc();
         compressed.truncate(11);
-        let error = read::GzDecoder::new(&compressed[..]).read_to_end(&mut Vec::new()).unwrap_err();
+        let error = read::GzDecoder::new(&compressed[..])
+            .read_to_end(&mut Vec::new())
+            .unwrap_err();
         assert_eq!(error.kind(), crate::io::ErrorKind::UnexpectedEof);
         assert_eq!(error.to_string(), "incomplete deflate stream");
     }

@@ -15,7 +15,10 @@ struct AlwaysZeroThenError {
 
 impl AlwaysZeroThenError {
     fn new(max_zero_writes: usize) -> Self {
-        AlwaysZeroThenError { writes: 0, max_zero_writes }
+        AlwaysZeroThenError {
+            writes: 0,
+            max_zero_writes,
+        }
     }
 }
 
@@ -27,7 +30,10 @@ impl Write for AlwaysZeroThenError {
 
         self.writes += 1;
         if self.writes > self.max_zero_writes {
-            Err(io::Error::new(io::ErrorKind::Other, "gzip encoder retried a zero-length write"))
+            Err(io::Error::new(
+                io::ErrorKind::Other,
+                "gzip encoder retried a zero-length write",
+            ))
         } else {
             Ok(0)
         }
@@ -46,7 +52,10 @@ struct ZeroOnGzipFooterThenError {
 
 impl ZeroOnGzipFooterThenError {
     fn new(max_zero_footer_writes: usize) -> Self {
-        ZeroOnGzipFooterThenError { footer_writes: 0, max_zero_footer_writes }
+        ZeroOnGzipFooterThenError {
+            footer_writes: 0,
+            max_zero_footer_writes,
+        }
     }
 }
 

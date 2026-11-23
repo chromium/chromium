@@ -8,8 +8,7 @@ use crate::bufreader::BufReader;
 /// A DEFLATE encoder, or compressor.
 ///
 /// This structure implements a [`Read`] interface. When read from, it reads
-/// uncompressed data from the underlying [`Read`] and provides the compressed
-/// data.
+/// uncompressed data from the underlying [`Read`] and provides the compressed data.
 ///
 /// [`Read`]: https://doc.rust-lang.org/std/io/trait.Read.html
 ///
@@ -43,7 +42,9 @@ impl<R: Read> DeflateEncoder<R> {
     /// Creates a new encoder which will read uncompressed data from the given
     /// stream and emit the compressed stream.
     pub fn new(r: R, level: crate::Compression) -> DeflateEncoder<R> {
-        DeflateEncoder { inner: bufread::DeflateEncoder::new(BufReader::new(r), level) }
+        DeflateEncoder {
+            inner: bufread::DeflateEncoder::new(BufReader::new(r), level),
+        }
     }
 }
 
@@ -124,14 +125,13 @@ impl<W: Read + Write> Write for DeflateEncoder<W> {
 /// A DEFLATE decoder, or decompressor.
 ///
 /// This structure implements a [`Read`] interface. When read from, it reads
-/// compressed data from the underlying [`Read`] and provides the uncompressed
-/// data.
+/// compressed data from the underlying [`Read`] and provides the uncompressed data.
 ///
 /// After reading a single member of the DEFLATE data this reader will return
 /// Ok(0) even if there are more bytes available in the underlying reader.
-/// `DeflateDecoder` may have read additional bytes past the end of the DEFLATE
-/// data. If you need the following bytes, wrap the `Reader` in a
-/// `std::io::BufReader` and use `bufread::DeflateDecoder` instead.
+/// `DeflateDecoder` may have read additional bytes past the end of the DEFLATE data.
+/// If you need the following bytes, wrap the `Reader` in a `std::io::BufReader`
+/// and use `bufread::DeflateDecoder` instead.
 ///
 /// [`Read`]: https://doc.rust-lang.org/std/io/trait.Read.html
 ///
@@ -176,7 +176,9 @@ impl<R: Read> DeflateDecoder<R> {
     /// Note that the capacity of the intermediate buffer is never increased,
     /// and it is recommended for it to be large.
     pub fn new_with_buf(r: R, buf: Vec<u8>) -> DeflateDecoder<R> {
-        DeflateDecoder { inner: bufread::DeflateDecoder::new(BufReader::with_buf(buf, r)) }
+        DeflateDecoder {
+            inner: bufread::DeflateDecoder::new(BufReader::with_buf(buf, r)),
+        }
     }
 }
 

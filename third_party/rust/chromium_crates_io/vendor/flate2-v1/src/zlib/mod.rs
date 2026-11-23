@@ -34,7 +34,9 @@ mod tests {
     #[test]
     fn drop_writes() {
         let mut data = Vec::new();
-        write::ZlibEncoder::new(&mut data, Compression::default()).write_all(b"foo").unwrap();
+        write::ZlibEncoder::new(&mut data, Compression::default())
+            .write_all(b"foo")
+            .unwrap();
         let mut r = read::ZlibDecoder::new(&data[..]);
         let mut ret = Vec::new();
         r.read_to_end(&mut ret).unwrap();
@@ -142,6 +144,61 @@ mod tests {
             assert_eq!(error.kind(), io::ErrorKind::UnexpectedEof);
             assert_eq!(error.to_string(), "incomplete deflate stream");
         }
+    }
+
+    #[test]
+    fn write_decoder_rejects_incomplete_stream() {
+        let mut encoder = write::ZlibEncoder::new(Vec::new(), Compression::default());
+        encoder.write_all(b"hello").unwrap();
+        let compressed = encoder.finish().unwrap();
+
+        for end in 0..compressed.len() {
+            let truncated = &compressed[..end];
+
+            let mut decoder = write::ZlibDecoder::new(Vec::new());
+            decoder.write_all(truncated).unwrap();
+            assert_incomplete(decoder.finish().unwrap_err());
+
+            let mut decoder = write::ZlibDecoder::new(Vec::new());
+            decoder.write_all(truncated).unwrap();
+            assert_incomplete(decoder.try_finish().unwrap_err());
+            decoder
+                .reset(Vec::new())
+                .expect("decoder should reset after an incomplete stream");
+        }
+
+        let mut decoder = write::ZlibDecoder::new(Vec::new());
+        decoder.write_all(&compressed).unwrap();
+        decoder.try_finish().unwrap();
+        decoder.try_finish().unwrap();
+        assert_eq!(
+            decoder.finish().unwrap(),
+            b"hello",
+            "finishing an already finished decoder should not change its output"
+        );
+
+        fn assert_incomplete(error: io::Error) {
+            assert_eq!(error.kind(), io::ErrorKind::UnexpectedEof);
+            assert_eq!(error.to_string(), "incomplete deflate stream");
+        }
+    }
+
+    #[test]
+    fn write_decoder_reset_drains_pending_output() {
+        let input = vec![b'a'; 32 * 1024 + 1];
+        let mut encoder = write::ZlibEncoder::new(Vec::new(), Compression::default());
+        encoder.write_all(&input).unwrap();
+
+        let mut decoder = write::ZlibDecoder::new(Vec::new());
+        decoder.write_all(&encoder.finish().unwrap()).unwrap();
+        let output = decoder
+            .reset(Vec::new())
+            .expect("decoder should reset after draining pending output");
+
+        assert!(
+            output == input,
+            "reset should preserve all decoder output byte-for-byte"
+        );
     }
 
     #[test]

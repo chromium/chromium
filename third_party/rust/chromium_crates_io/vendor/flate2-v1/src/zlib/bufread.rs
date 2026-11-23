@@ -8,8 +8,7 @@ use crate::{Compress, Decompress};
 /// A ZLIB encoder, or compressor.
 ///
 /// This structure implements a [`Read`] interface. When read from, it reads
-/// uncompressed data from the underlying [`BufRead`] and provides the
-/// compressed data.
+/// uncompressed data from the underlying [`BufRead`] and provides the compressed data.
 ///
 /// [`Read`]: https://doc.rust-lang.org/std/io/trait.Read.html
 /// [`BufRead`]: https://doc.rust-lang.org/std/io/trait.BufRead.html
@@ -44,14 +43,19 @@ impl<R: BufRead> ZlibEncoder<R> {
     /// Creates a new encoder which will read uncompressed data from the given
     /// stream and emit the compressed stream.
     pub fn new(r: R, level: crate::Compression) -> ZlibEncoder<R> {
-        ZlibEncoder { obj: r, data: Compress::new(level, true) }
+        ZlibEncoder {
+            obj: r,
+            data: Compress::new(level, true),
+        }
     }
 
     /// Creates a new encoder with the given `compression` settings which will
-    /// read uncompressed data from the given stream `r` and emit the compressed
-    /// stream.
+    /// read uncompressed data from the given stream `r` and emit the compressed stream.
     pub fn new_with_compress(r: R, compression: Compress) -> ZlibEncoder<R> {
-        ZlibEncoder { obj: r, data: compression }
+        ZlibEncoder {
+            obj: r,
+            data: compression,
+        }
     }
 }
 
@@ -129,8 +133,7 @@ impl<R: BufRead + Write> Write for ZlibEncoder<R> {
 /// A ZLIB decoder, or decompressor.
 ///
 /// This structure implements a [`Read`] interface. When read from, it reads
-/// compressed data from the underlying [`BufRead`] and provides the
-/// uncompressed data.
+/// compressed data from the underlying [`BufRead`] and provides the uncompressed data.
 ///
 /// After reading a single member of the ZLIB data this reader will return
 /// Ok(0) even if there are more bytes available in the underlying reader.
@@ -176,13 +179,19 @@ impl<R: BufRead> ZlibDecoder<R> {
     /// Creates a new decoder which will decompress data read from the given
     /// stream.
     pub fn new(r: R) -> ZlibDecoder<R> {
-        ZlibDecoder { obj: r, data: Decompress::new(true) }
+        ZlibDecoder {
+            obj: r,
+            data: Decompress::new(true),
+        }
     }
 
     /// Creates a new decoder which will decompress data read from the given
     /// stream, using the given `decompression` settings.
     pub fn new_with_decompress(r: R, decompression: Decompress) -> ZlibDecoder<R> {
-        ZlibDecoder { obj: r, data: decompression }
+        ZlibDecoder {
+            obj: r,
+            data: decompression,
+        }
     }
 }
 
@@ -262,8 +271,8 @@ mod test {
     use crate::Compression;
     use alloc::vec::Vec;
 
-    // ZlibDecoder consumes one zlib archive and then returns 0 for subsequent
-    // reads, allowing any additional data to be consumed by the caller.
+    // ZlibDecoder consumes one zlib archive and then returns 0 for subsequent reads, allowing any
+    // additional data to be consumed by the caller.
     #[test]
     fn decode_extra_data() {
         let expected = "Hello World";
@@ -281,7 +290,10 @@ mod test {
         let decoded_bytes = decoder.read_to_end(&mut output).unwrap();
         assert_eq!(decoded_bytes, output.len());
         let actual = core::str::from_utf8(&output).expect("String parsing error");
-        assert_eq!(actual, expected, "after decompression we obtain the original input");
+        assert_eq!(
+            actual, expected,
+            "after decompression we obtain the original input"
+        );
 
         output.clear();
         assert_eq!(

@@ -140,7 +140,10 @@ pub struct CrcReader<R> {
 impl<R: Read> CrcReader<R> {
     /// Create a new `CrcReader`.
     pub fn new(r: R) -> CrcReader<R> {
-        CrcReader { inner: r, crc: Crc::new() }
+        CrcReader {
+            inner: r,
+            crc: Crc::new(),
+        }
     }
 }
 
@@ -160,8 +163,7 @@ impl<R> CrcReader<R> {
         &self.inner
     }
 
-    /// Get a mutable reference to the reader that is wrapped by this
-    /// `CrcReader`.
+    /// Get a mutable reference to the reader that is wrapped by this `CrcReader`.
     pub fn get_mut(&mut self) -> &mut R {
         &mut self.inner
     }
@@ -217,8 +219,7 @@ impl<W> CrcWriter<W> {
         &self.inner
     }
 
-    /// Get a mutable reference to the writer that is wrapped by this
-    /// `CrcWriter`.
+    /// Get a mutable reference to the writer that is wrapped by this `CrcWriter`.
     pub fn get_mut(&mut self) -> &mut W {
         &mut self.inner
     }
@@ -232,7 +233,10 @@ impl<W> CrcWriter<W> {
 impl<W: Write> CrcWriter<W> {
     /// Create a new `CrcWriter`.
     pub fn new(w: W) -> CrcWriter<W> {
-        CrcWriter { inner: w, crc: Crc::new() }
+        CrcWriter {
+            inner: w,
+            crc: Crc::new(),
+        }
     }
 }
 
@@ -276,7 +280,10 @@ mod tests {
 
     #[test]
     fn known_vector_quick_brown_fox() {
-        assert_eq!(sum_of(b"The quick brown fox jumps over the lazy dog"), 0x414F_A339);
+        assert_eq!(
+            sum_of(b"The quick brown fox jumps over the lazy dog"),
+            0x414F_A339
+        );
     }
 
     #[test]

@@ -13,7 +13,7 @@
 edition = "2018"
 rust-version = "1.67.0"
 name = "flate2"
-version = "1.1.10"
+version = "1.1.11"
 authors = [
     "Alex Crichton <alex@alexcrichton.com>",
     "Josh Triplett <josh@joshtriplett.org>",
@@ -215,8 +215,24 @@ name = "gunzip"
 path = "tests/gunzip.rs"
 
 [[test]]
+name = "gzip-read-errors"
+path = "tests/gzip-read-errors.rs"
+
+[[test]]
+name = "partial-write"
+path = "tests/partial-write.rs"
+
+[[test]]
+name = "write-after-finish"
+path = "tests/write-after-finish.rs"
+
+[[test]]
 name = "zero-write"
 path = "tests/zero-write.rs"
+
+[[test]]
+name = "zlib-rs-uninit"
+path = "tests/zlib-rs-uninit.rs"
 
 [dependencies.crc32fast]
 version = "1.2.0"
@@ -242,7 +258,7 @@ features = ["simd"]
 optional = true
 
 [dependencies.zlib-rs]
-version = "0.6.0"
+version = "0.6.7"
 features = ["rust-allocator"]
 optional = true
 default-features = false

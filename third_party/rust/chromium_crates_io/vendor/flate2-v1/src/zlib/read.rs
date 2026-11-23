@@ -9,8 +9,7 @@ use crate::Decompress;
 /// A ZLIB encoder, or compressor.
 ///
 /// This structure implements a [`Read`] interface. When read from, it reads
-/// uncompressed data from the underlying [`Read`] and provides the compressed
-/// data.
+/// uncompressed data from the underlying [`Read`] and provides the compressed data.
 ///
 /// [`Read`]: https://doc.rust-lang.org/std/io/trait.Read.html
 ///
@@ -41,12 +40,13 @@ impl<R: Read> ZlibEncoder<R> {
     /// Creates a new encoder which will read uncompressed data from the given
     /// stream and emit the compressed stream.
     pub fn new(r: R, level: crate::Compression) -> ZlibEncoder<R> {
-        ZlibEncoder { inner: bufread::ZlibEncoder::new(BufReader::new(r), level) }
+        ZlibEncoder {
+            inner: bufread::ZlibEncoder::new(BufReader::new(r), level),
+        }
     }
 
     /// Creates a new encoder with the given `compression` settings which will
-    /// read uncompressed data from the given stream `r` and emit the compressed
-    /// stream.
+    /// read uncompressed data from the given stream `r` and emit the compressed stream.
     pub fn new_with_compress(r: R, compression: crate::Compress) -> ZlibEncoder<R> {
         ZlibEncoder {
             inner: bufread::ZlibEncoder::new_with_compress(BufReader::new(r), compression),
@@ -131,8 +131,7 @@ impl<W: Read + Write> Write for ZlibEncoder<W> {
 /// A ZLIB decoder, or decompressor.
 ///
 /// This structure implements a [`Read`] interface. When read from, it reads
-/// compressed data from the underlying [`Read`] and provides the uncompressed
-/// data.
+/// compressed data from the underlying [`Read`] and provides the uncompressed data.
 ///
 /// After reading a single member of the ZLIB data this reader will return
 /// Ok(0) even if there are more bytes available in the underlying reader.
@@ -186,7 +185,9 @@ impl<R: Read> ZlibDecoder<R> {
     /// Note that the specified buffer will only be used up to its current
     /// length. The buffer's capacity will also not grow over time.
     pub fn new_with_buf(r: R, buf: Vec<u8>) -> ZlibDecoder<R> {
-        ZlibDecoder { inner: bufread::ZlibDecoder::new(BufReader::with_buf(buf, r)) }
+        ZlibDecoder {
+            inner: bufread::ZlibDecoder::new(BufReader::with_buf(buf, r)),
+        }
     }
 
     /// Creates a new decoder which will decompress data read from the given

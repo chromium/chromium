@@ -9,8 +9,7 @@ use crate::Compression;
 /// A gzip streaming encoder
 ///
 /// This structure implements a [`Read`] interface. When read from, it reads
-/// uncompressed data from the underlying [`Read`] and provides the compressed
-/// data.
+/// uncompressed data from the underlying [`Read`] and provides the compressed data.
 ///
 /// [`Read`]: https://doc.rust-lang.org/std/io/trait.Read.html
 ///
@@ -96,8 +95,7 @@ impl<R: Read + Write> Write for GzEncoder<R> {
 /// A decoder for a single member of a [gzip file].
 ///
 /// This structure implements a [`Read`] interface. When read from, it reads
-/// compressed data from the underlying [`Read`] and provides the uncompressed
-/// data.
+/// compressed data from the underlying [`Read`] and provides the uncompressed data.
 ///
 /// After reading a single member of the gzip data this reader will return
 /// Ok(0) even if there are more bytes available in the underlying reader.
@@ -146,7 +144,9 @@ impl<R: Read> GzDecoder<R> {
     /// Creates a new decoder from the given reader, immediately parsing the
     /// gzip header.
     pub fn new(r: R) -> GzDecoder<R> {
-        GzDecoder { inner: bufread::GzDecoder::new(BufReader::new(r)) }
+        GzDecoder {
+            inner: bufread::GzDecoder::new(BufReader::new(r)),
+        }
     }
 }
 
@@ -219,16 +219,15 @@ impl<R: Read + Write> Write for GzDecoder<R> {
     }
 }
 
-/// A gzip streaming decoder that decodes a [gzip file] that may have multiple
-/// members.
+/// A gzip streaming decoder that decodes a [gzip file] that may have multiple members.
 ///
 /// This structure implements a [`Read`] interface. When read from, it reads
 /// compressed data from the underlying [`Read`] and provides the uncompressed
 /// data.
 ///
-/// A gzip file consists of a series of *members* concatenated one after
-/// another. MultiGzDecoder decodes all members of a file and returns Ok(0) once
-/// the underlying reader does.
+/// A gzip file consists of a series of *members* concatenated one after another.
+/// MultiGzDecoder decodes all members of a file and returns Ok(0) once the
+/// underlying reader does.
 ///
 /// To handle members separately, see [GzDecoder] or read more
 /// [in the introduction](../index.html#about-multi-member-gzip-files).
@@ -268,10 +267,12 @@ pub struct MultiGzDecoder<R> {
 
 impl<R: Read> MultiGzDecoder<R> {
     /// Creates a new decoder from the given reader, immediately parsing the
-    /// (first) gzip header. If the gzip stream contains multiple members all
-    /// will be decoded.
+    /// (first) gzip header. If the gzip stream contains multiple members all will
+    /// be decoded.
     pub fn new(r: R) -> MultiGzDecoder<R> {
-        MultiGzDecoder { inner: bufread::MultiGzDecoder::new(BufReader::new(r)) }
+        MultiGzDecoder {
+            inner: bufread::MultiGzDecoder::new(BufReader::new(r)),
+        }
     }
 }
 
@@ -334,7 +335,9 @@ mod tests {
 
     impl BlockingCursor {
         pub fn new() -> BlockingCursor {
-            BlockingCursor { cursor: Cursor::new(Vec::new()) }
+            BlockingCursor {
+                cursor: Cursor::new(Vec::new()),
+            }
         }
 
         pub fn set_position(&mut self, pos: u64) {

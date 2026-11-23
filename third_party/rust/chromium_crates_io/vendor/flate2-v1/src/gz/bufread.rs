@@ -19,8 +19,7 @@ fn copy(into: &mut [u8], from: &[u8], pos: &mut usize) -> usize {
 /// A gzip streaming encoder
 ///
 /// This structure implements a [`Read`] interface. When read from, it reads
-/// uncompressed data from the underlying [`BufRead`] and provides the
-/// compressed data.
+/// uncompressed data from the underlying [`BufRead`] and provides the compressed data.
 ///
 /// [`Read`]: https://doc.rust-lang.org/std/io/trait.Read.html
 /// [`BufRead`]: https://doc.rust-lang.org/std/io/trait.BufRead.html
@@ -57,7 +56,12 @@ pub struct GzEncoder<R> {
 
 pub fn gz_encoder<R: BufRead>(header: Vec<u8>, r: R, lvl: Compression) -> GzEncoder<R> {
     let crc = CrcReader::new(r);
-    GzEncoder { inner: deflate::bufread::DeflateEncoder::new(crc, lvl), header, pos: 0, eof: false }
+    GzEncoder {
+        inner: deflate::bufread::DeflateEncoder::new(crc, lvl),
+        header,
+        pos: 0,
+        eof: false,
+    }
 }
 
 impl<R: BufRead> GzEncoder<R> {
@@ -129,25 +133,23 @@ fn finish(buf: &[u8; 8]) -> (u32, u32) {
 }
 
 impl<R: BufRead> Read for GzEncoder<R> {
-    fn read(&mut self, mut into: &mut [u8]) -> io::Result<usize> {
-        let mut amt = 0;
+    fn read(&mut self, into: &mut [u8]) -> io::Result<usize> {
+        if into.is_empty() {
+            return Ok(0);
+        }
         if self.eof {
             return self.read_footer(into);
         } else if self.pos < self.header.len() {
-            amt += copy(into, &self.header, &mut self.pos);
-            if amt == into.len() {
-                return Ok(amt);
-            }
-            let tmp = into;
-            into = &mut tmp[amt..];
+            // Report header progress before attempting a fallible input read.
+            return Ok(copy(into, &self.header, &mut self.pos));
         }
-        match self.inner.read(into)? {
-            0 => {
+        match self.inner.read(into) {
+            Ok(0) => {
                 self.eof = true;
                 self.pos = 0;
                 self.read_footer(into)
             }
-            n => Ok(amt + n),
+            res => res,
         }
     }
 }
@@ -165,8 +167,7 @@ impl<R: BufRead + Write> Write for GzEncoder<R> {
 /// A decoder for a single member of a [gzip file].
 ///
 /// This structure implements a [`Read`] interface. When read from, it reads
-/// compressed data from the underlying [`BufRead`] and provides the
-/// uncompressed data.
+/// compressed data from the underlying [`BufRead`] and provides the uncompressed data.
 ///
 /// After reading a single member of the gzip data this reader will return
 /// Ok(0) even if there are more bytes available in the underlying reader.
@@ -371,17 +372,14 @@ impl<R: BufRead + Write> Write for GzDecoder<R> {
     }
 }
 
-/// A gzip streaming decoder that decodes a [gzip file] that may have multiple
-/// members.
+/// A gzip streaming decoder that decodes a [gzip file] that may have multiple members.
 ///
 /// This structure implements a [`Read`] interface. When read from, it reads
-/// compressed data from the underlying [`BufRead`] and provides the
-/// uncompressed data.
+/// compressed data from the underlying [`BufRead`] and provides the uncompressed data.
 ///
-/// A gzip file consists of a series of *members* concatenated one after
-/// another. MultiGzDecoder decodes all members from the data and only returns
-/// Ok(0) when the underlying reader does. For a file, this reads to the end of
-/// the file.
+/// A gzip file consists of a series of *members* concatenated one after another.
+/// MultiGzDecoder decodes all members from the data and only returns Ok(0) when the
+/// underlying reader does. For a file, this reads to the end of the file.
 ///
 /// To handle members separately, see [GzDecoder] or read more
 /// [in the introduction](../index.html#about-multi-member-gzip-files).
@@ -421,8 +419,8 @@ pub struct MultiGzDecoder<R>(GzDecoder<R>);
 
 impl<R: BufRead> MultiGzDecoder<R> {
     /// Creates a new decoder from the given reader, immediately parsing the
-    /// (first) gzip header. If the gzip stream contains multiple members all
-    /// will be decoded.
+    /// (first) gzip header. If the gzip stream contains multiple members all will
+    /// be decoded.
     pub fn new(r: R) -> MultiGzDecoder<R> {
         MultiGzDecoder(GzDecoder::new(r).multi(true))
     }
@@ -470,8 +468,8 @@ mod test {
     use crate::Compression;
     use alloc::vec::Vec;
 
-    // GzDecoder consumes one gzip member and then returns 0 for subsequent reads,
-    // allowing any additional data to be consumed by the caller.
+    // GzDecoder consumes one gzip member and then returns 0 for subsequent reads, allowing any
+    // additional data to be consumed by the caller.
     #[test]
     fn decode_extra_data() {
         let expected = "Hello World";
@@ -489,7 +487,10 @@ mod test {
         let decoded_bytes = decoder.read_to_end(&mut output).unwrap();
         assert_eq!(decoded_bytes, output.len());
         let actual = core::str::from_utf8(&output).expect("String parsing error");
-        assert_eq!(actual, expected, "after decompression we obtain the original input");
+        assert_eq!(
+            actual, expected,
+            "after decompression we obtain the original input"
+        );
 
         output.clear();
         assert_eq!(

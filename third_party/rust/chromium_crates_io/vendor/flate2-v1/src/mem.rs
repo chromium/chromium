@@ -144,7 +144,9 @@ pub(crate) fn decompress_failed<T>(msg: ErrorMessage) -> Result<T, DecompressErr
 
 #[inline]
 pub(crate) fn decompress_need_dict<T>(adler: u32) -> Result<T, DecompressError> {
-    Err(DecompressError(DecompressErrorInner::NeedsDictionary(adler)))
+    Err(DecompressError(DecompressErrorInner::NeedsDictionary(
+        adler,
+    )))
 }
 
 /// Error returned when a compression object is used incorrectly or otherwise
@@ -195,16 +197,18 @@ impl Compress {
     /// to be performed, and the `zlib_header` argument indicates whether the
     /// output data should have a zlib header or not.
     pub fn new(level: Compression, zlib_header: bool) -> Compress {
-        Compress { inner: Deflate::make(level, zlib_header, ffi::MZ_DEFAULT_WINDOW_BITS as u8) }
+        Compress {
+            inner: Deflate::make(level, zlib_header, ffi::MZ_DEFAULT_WINDOW_BITS as u8),
+        }
     }
 
     /// Creates a new object ready for compressing data that it's given.
     ///
     /// The `level` argument here indicates what level of compression is going
     /// to be performed, and the `zlib_header` argument indicates whether the
-    /// output data should have a zlib header or not. The `window_bits`
-    /// parameter indicates the base-2 logarithm of the sliding window size
-    /// and must be between 9 and 15.
+    /// output data should have a zlib header or not. The `window_bits` parameter
+    /// indicates the base-2 logarithm of the sliding window size and must be
+    /// between 9 and 15.
     ///
     /// # Panics
     ///
@@ -216,8 +220,13 @@ impl Compress {
         zlib_header: bool,
         window_bits: u8,
     ) -> Compress {
-        assert!(window_bits > 8 && window_bits < 16, "window_bits must be within 9 ..= 15");
-        Compress { inner: Deflate::make(level, zlib_header, window_bits) }
+        assert!(
+            window_bits > 8 && window_bits < 16,
+            "window_bits must be within 9 ..= 15"
+        );
+        Compress {
+            inner: Deflate::make(level, zlib_header, window_bits),
+        }
     }
 
     /// Creates a new object ready for compressing data that it's given.
@@ -234,8 +243,13 @@ impl Compress {
     /// this function will panic.
     #[cfg(feature = "any_zlib")]
     pub fn new_gzip(level: Compression, window_bits: u8) -> Compress {
-        assert!(window_bits > 8 && window_bits < 16, "window_bits must be within 9 ..= 15");
-        Compress { inner: Deflate::make(level, true, window_bits + 16) }
+        assert!(
+            window_bits > 8 && window_bits < 16,
+            "window_bits must be within 9 ..= 15"
+        );
+        Compress {
+            inner: Deflate::make(level, true, window_bits + 16),
+        }
     }
 
     /// Returns the total number of input bytes which have been processed by
@@ -388,15 +402,16 @@ impl Decompress {
     /// The `zlib_header` argument indicates whether the input data is expected
     /// to have a zlib header or not.
     pub fn new(zlib_header: bool) -> Decompress {
-        Decompress { inner: Inflate::make(zlib_header, ffi::MZ_DEFAULT_WINDOW_BITS as u8) }
+        Decompress {
+            inner: Inflate::make(zlib_header, ffi::MZ_DEFAULT_WINDOW_BITS as u8),
+        }
     }
 
     /// Creates a new object ready for decompressing data that it's given.
     ///
     /// The `zlib_header` argument indicates whether the input data is expected
     /// to have a zlib header or not. The `window_bits` parameter indicates the
-    /// base-2 logarithm of the sliding window size and must be between 9 and
-    /// 15.
+    /// base-2 logarithm of the sliding window size and must be between 9 and 15.
     ///
     /// # Panics
     ///
@@ -404,8 +419,13 @@ impl Decompress {
     /// this function will panic.
     #[cfg(feature = "any_zlib")]
     pub fn new_with_window_bits(zlib_header: bool, window_bits: u8) -> Decompress {
-        assert!(window_bits > 8 && window_bits < 16, "window_bits must be within 9 ..= 15");
-        Decompress { inner: Inflate::make(zlib_header, window_bits) }
+        assert!(
+            window_bits > 8 && window_bits < 16,
+            "window_bits must be within 9 ..= 15"
+        );
+        Decompress {
+            inner: Inflate::make(zlib_header, window_bits),
+        }
     }
 
     /// Creates a new object ready for decompressing data that it's given.
@@ -419,8 +439,13 @@ impl Decompress {
     /// this function will panic.
     #[cfg(feature = "any_zlib")]
     pub fn new_gzip(window_bits: u8) -> Decompress {
-        assert!(window_bits > 8 && window_bits < 16, "window_bits must be within 9 ..= 15");
-        Decompress { inner: Inflate::make(true, window_bits + 16) }
+        assert!(
+            window_bits > 8 && window_bits < 16,
+            "window_bits must be within 9 ..= 15"
+        );
+        Decompress {
+            inner: Inflate::make(true, window_bits + 16),
+        }
     }
 
     /// Returns the total number of input bytes which have been processed by
@@ -438,8 +463,7 @@ impl Decompress {
     /// Decompresses the input data into the output, consuming only as much
     /// input as needed and writing as much output as possible.
     ///
-    /// The flush option can be any of the available `FlushDecompress`
-    /// parameters.
+    /// The flush option can be any of the available `FlushDecompress` parameters.
     ///
     /// If the first call passes `FlushDecompress::Finish` it is assumed that
     /// the input and output buffers are both sized large enough to decompress
@@ -457,8 +481,7 @@ impl Decompress {
     ///
     /// If the input data to this instance of `Decompress` is not a valid
     /// zlib/deflate stream then this function may return an instance of
-    /// `DecompressError` to indicate that the stream of input bytes is
-    /// corrupted.
+    /// `DecompressError` to indicate that the stream of input bytes is corrupted.
     pub fn decompress(
         &mut self,
         input: &[u8],
@@ -495,8 +518,7 @@ impl Decompress {
     ///
     /// If the input data to this instance of `Decompress` is not a valid
     /// zlib/deflate stream then this function may return an instance of
-    /// `DecompressError` to indicate that the stream of input bytes is
-    /// corrupted.
+    /// `DecompressError` to indicate that the stream of input bytes is corrupted.
     pub fn decompress_vec(
         &mut self,
         input: &[u8],
@@ -558,8 +580,7 @@ impl Decompress {
 impl Error for DecompressError {}
 
 impl DecompressError {
-    /// Retrieve the implementation's message about why the operation failed, if
-    /// one exists.
+    /// Retrieve the implementation's message about why the operation failed, if one exists.
     pub fn message(&self) -> Option<&str> {
         match &self.0 {
             DecompressErrorInner::General { msg } => msg.get(),
@@ -590,8 +611,7 @@ impl fmt::Display for DecompressError {
 impl Error for CompressError {}
 
 impl CompressError {
-    /// Retrieve the implementation's message about why the operation failed, if
-    /// one exists.
+    /// Retrieve the implementation's message about why the operation failed, if one exists.
     pub fn message(&self) -> Option<&str> {
         self.msg.get()
     }
@@ -612,9 +632,9 @@ impl fmt::Display for CompressError {
     }
 }
 
-/// Allows `writer` to write data into the spare capacity of the `output`
-/// vector. This will not reallocate the vector provided or attempt to grow it,
-/// so space for the `output` must be reserved by the caller before calling this
+/// Allows `writer` to write data into the spare capacity of the `output` vector.
+/// This will not reallocate the vector provided or attempt to grow it, so space
+/// for the `output` must be reserved by the caller before calling this
 /// function.
 ///
 /// `writer` needs to return the number of bytes written (and can also return
@@ -622,8 +642,8 @@ impl fmt::Display for CompressError {
 ///
 /// # Safety:
 ///
-/// The length returned by the `writer` must be equal to actual number of bytes
-/// written to the uninitialized slice passed in and initialized.
+/// The length returned by the `writer` must be equal to actual number of bytes written
+/// to the uninitialized slice passed in and initialized.
 unsafe fn write_to_spare_capacity_of_vec<T>(
     output: &mut Vec<u8>,
     writer: impl FnOnce(&mut [MaybeUninit<u8>]) -> (usize, T),
@@ -666,7 +686,8 @@ mod tests {
 
         let mut d = Decompress::new(false);
         // decompressed whole deflate stream
-        d.decompress_vec(&data[10..], &mut decoded, FlushDecompress::Finish).unwrap();
+        d.decompress_vec(&data[10..], &mut decoded, FlushDecompress::Finish)
+            .unwrap();
 
         // decompress data that has nothing to do with the deflate stream (this
         // used to panic)
@@ -680,19 +701,122 @@ mod tests {
         let mut deflate = Vec::new();
 
         let comp = Compression::default();
-        write::ZlibEncoder::new(&mut zlib, comp).write_all(string).unwrap();
-        write::DeflateEncoder::new(&mut deflate, comp).write_all(string).unwrap();
+        write::ZlibEncoder::new(&mut zlib, comp)
+            .write_all(string)
+            .unwrap();
+        write::DeflateEncoder::new(&mut deflate, comp)
+            .write_all(string)
+            .unwrap();
 
         let mut dst = [0; 1024];
         let mut decoder = Decompress::new(true);
-        decoder.decompress(&zlib, &mut dst, FlushDecompress::Finish).unwrap();
+        decoder
+            .decompress(&zlib, &mut dst, FlushDecompress::Finish)
+            .unwrap();
         assert_eq!(decoder.total_out(), string.len() as u64);
         assert!(dst.starts_with(string));
 
         decoder.reset(false);
-        decoder.decompress(&deflate, &mut dst, FlushDecompress::Finish).unwrap();
+        decoder
+            .decompress(&deflate, &mut dst, FlushDecompress::Finish)
+            .unwrap();
         assert_eq!(decoder.total_out(), string.len() as u64);
         assert!(dst.starts_with(string));
+    }
+
+    #[cfg(all(not(feature = "any_zlib"), feature = "miniz_oxide"))]
+    #[test]
+    fn reset_clears_miniz_oxide_dictionary() {
+        let secret = [b'A'; 32 * 1024];
+        // A raw DEFLATE stream containing one final, uncompressed (stored) block:
+        // 0x01 sets BFINAL=1 and BTYPE=00, followed by padding to a byte boundary.
+        // LEN is the payload length; NLEN is its one's complement.
+        // The payload fills the entire 32 KiB dictionary with secret bytes.
+        let len = secret.len() as u16;
+        let nlen = !len;
+        let mut victim_stream = Vec::with_capacity(secret.len() + 5);
+        victim_stream.push(0x01);
+        victim_stream.extend_from_slice(&len.to_le_bytes());
+        victim_stream.extend_from_slice(&nlen.to_le_bytes());
+        victim_stream.extend_from_slice(&secret);
+
+        let mut decoder = Decompress::new(false);
+        let mut victim_output = [0; 32 * 1024];
+        decoder
+            .decompress(&victim_stream, &mut victim_output, FlushDecompress::None)
+            .unwrap();
+        assert_eq!(
+            victim_output, secret,
+            "the first stream must fill the 32 KiB dictionary with secret bytes"
+        );
+
+        decoder.reset(false);
+
+        let mut attacker_output = [0; 258];
+        let _ = decoder.decompress(
+            &[0x1b, 0xbd, 0xff, 0x1f, 0x00],
+            &mut attacker_output,
+            FlushDecompress::None,
+        );
+        assert!(
+            !attacker_output.contains(&b'A'),
+            "reset must clear the dictionary: a distance-32768 match leaked bytes \
+             from the previous stream; both FullReset and the current upstream \
+             reset() prevent this, but MinReset does not"
+        );
+    }
+
+    #[test]
+    fn unfinished_compressor_can_be_dropped() {
+        let mut encoder = Compress::new(Compression::default(), false);
+        encoder
+            .compress(b"hello", &mut [0; 1024], FlushCompress::None)
+            .unwrap();
+        assert_eq!(encoder.total_in(), 5);
+    }
+
+    #[cfg(feature = "any_zlib")]
+    #[test]
+    fn reset_preserves_gzip_configuration() {
+        let string = "hello, hello!".as_bytes();
+
+        let mut encoded = Vec::with_capacity(1024);
+        let mut encoder = Compress::new_gzip(Compression::default(), 9);
+        encoder
+            .compress_vec(string, &mut encoded, FlushCompress::Finish)
+            .unwrap();
+
+        let mut decoder = Decompress::new_gzip(9);
+        let mut decoded = [0; 1024];
+        decoder
+            .decompress(&encoded, &mut decoded, FlushDecompress::Finish)
+            .unwrap();
+        assert_eq!(&decoded[..decoder.total_out() as usize], string);
+
+        decoder.reset(true);
+        let mut decoded = [0; 1024];
+        decoder
+            .decompress(&encoded, &mut decoded, FlushDecompress::Finish)
+            .expect("reset must preserve the gzip wrapper selected at construction");
+        assert_eq!(&decoded[..decoder.total_out() as usize], string);
+    }
+
+    #[cfg(feature = "any_zlib")]
+    #[test]
+    fn reset_preserves_window_bits() {
+        // A valid zlib header declaring a 32 KiB (15-bit) window: CMF 0x78, FLG 0x9c.
+        let header_15_bit_window = [0x78, 0x9c];
+        let mut decoded = [0; 64];
+
+        let mut decoder = Decompress::new_with_window_bits(true, 9);
+        decoder
+            .decompress(&header_15_bit_window, &mut decoded, FlushDecompress::None)
+            .expect_err("a 15-bit-window stream must be rejected by a 9-bit-window decoder");
+
+        decoder.reset(true);
+        decoder
+            .decompress(&header_15_bit_window, &mut decoded, FlushDecompress::None)
+            .expect_err("reset must preserve the window size selected at construction");
     }
 
     #[cfg(feature = "any_zlib")]
@@ -704,7 +828,9 @@ mod tests {
 
         let mut encoder = Compress::new_gzip(Compression::default(), 9);
 
-        encoder.compress_vec(string, &mut encoded, FlushCompress::Finish).unwrap();
+        encoder
+            .compress_vec(string, &mut encoded, FlushCompress::Finish)
+            .unwrap();
 
         assert_eq!(encoder.total_in(), string.len() as u64);
         assert_eq!(encoder.total_out(), encoded.len() as u64);
@@ -712,7 +838,9 @@ mod tests {
         let mut decoder = Decompress::new_gzip(9);
 
         let mut decoded = [0; 1024];
-        decoder.decompress(&encoded, &mut decoded, FlushDecompress::Finish).unwrap();
+        decoder
+            .decompress(&encoded, &mut decoded, FlushDecompress::Finish)
+            .unwrap();
 
         assert_eq!(&decoded[..decoder.total_out() as usize], string);
     }
@@ -724,7 +852,9 @@ mod tests {
         let mut decoded = [0; 128];
         let garbage = b"xbvxzi";
 
-        let err = decoder.decompress(garbage, &mut decoded, FlushDecompress::Finish).unwrap_err();
+        let err = decoder
+            .decompress(garbage, &mut decoded, FlushDecompress::Finish)
+            .unwrap_err();
 
         assert_eq!(err.message(), Some("invalid stored block lengths"));
     }
@@ -738,8 +868,7 @@ mod tests {
         w.compress(&incompressible, &mut output, flush).unwrap();
 
         if flush != FlushCompress::None {
-            // The first instance of incompressible input should have been written
-            // uncompressed.
+            // The first instance of incompressible input should have been written uncompressed.
             assert!(w.total_out() >= 261);
             assert_eq!(&output[0..5], &[0, 0, 1, 0xff, !1]);
             assert_eq!(&output[5..261], &incompressible);
@@ -747,11 +876,12 @@ mod tests {
 
         // Feed in the same data again.
         let len = w.total_out() as usize;
-        w.compress(&incompressible, &mut output[len..], FlushCompress::Finish).unwrap();
+        w.compress(&incompressible, &mut output[len..], FlushCompress::Finish)
+            .unwrap();
 
         if flush != FlushCompress::Full {
-            // This time, the data should have been compressed (because it is an exact
-            // duplicate of the earlier block).
+            // This time, the data should have been compressed (because it is an exact duplicate of
+            // the earlier block).
             assert!(w.total_out() < 300);
         }
 
@@ -787,8 +917,7 @@ mod tests {
         // Check for sync flush marker.
         assert_eq!(&output[261..][..5], &[0, 0, 0, 0xff, 0xff]);
 
-        // Check that the second instance of incompressible input was also written
-        // uncompressed.
+        // Check that the second instance of incompressible input was also written uncompressed.
         assert_eq!(&output[266..][..5], &[1, 0, 1, 0xff, !1]);
     }
 }

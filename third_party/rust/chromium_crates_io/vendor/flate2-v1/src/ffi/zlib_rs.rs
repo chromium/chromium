@@ -2,25 +2,20 @@
 //!
 //! Every backend must provide two types:
 //!
-//! - `Deflate` for compression, implements the `Backend` and `DeflateBackend`
-//!   trait
-//! - `Inflate` for decompression, implements the `Backend` and `InflateBackend`
-//!   trait
+//! - `Deflate` for compression, implements the `Backend` and `DeflateBackend` trait
+//! - `Inflate` for decompression, implements the `Backend` and `InflateBackend` trait
 //!
-//! Additionally the backend provides a number of constants, and a
-//! `ErrorMessage` type.
+//! Additionally the backend provides a number of constants, and a `ErrorMessage` type.
 //!
 //! ## Allocation
 //!
-//! The (de)compression state is not boxed. The C implementations require that
-//! the z_stream is pinned in memory (has a fixed address), because their
-//! z_stream is self-referential. The most convenient way in rust to guarantee a
-//! stable address is to `Box` the data, but it does add an additional
-//! allocation.
+//! The (de)compression state is not boxed. The C implementations require that the z_stream is
+//! pinned in memory (has a fixed address), because their z_stream is self-referential. The most
+//! convenient way in rust to guarantee a stable address is to `Box` the data, but it does add an
+//! additional allocation.
 //!
-//! With zlib_rs the state is not self-referential and hence no boxing is
-//! needed. The `new` methods internally do allocate space for the
-//! (de)compression state.
+//! With zlib_rs the state is not self-referential and hence no boxing is needed. The `new` methods
+//! internally do allocate space for the (de)compression state.
 
 use core::fmt;
 
@@ -58,6 +53,7 @@ impl ErrorMessage {
 
 pub struct Inflate {
     pub(crate) inner: ::zlib_rs::Inflate,
+    window_bits: u8,
     // NOTE: these counts do not count the dictionary.
     total_in: u64,
     total_out: u64,
@@ -74,7 +70,7 @@ impl fmt::Debug for Inflate {
     }
 }
 
-impl From<FlushDecompress> for DeflateFlush {
+impl From<FlushDecompress> for InflateFlush {
     fn from(value: FlushDecompress) -> Self {
         match value {
             FlushDecompress::None => Self::NoFlush,
@@ -88,6 +84,7 @@ impl InflateBackend for Inflate {
     fn make(zlib_header: bool, window_bits: u8) -> Self {
         Inflate {
             inner: ::zlib_rs::Inflate::new(zlib_header, window_bits),
+            window_bits,
             total_in: 0,
             total_out: 0,
         }
@@ -99,11 +96,7 @@ impl InflateBackend for Inflate {
         output: &mut [u8],
         flush: FlushDecompress,
     ) -> Result<Status, DecompressError> {
-        let flush = match flush {
-            FlushDecompress::None => InflateFlush::NoFlush,
-            FlushDecompress::Sync => InflateFlush::SyncFlush,
-            FlushDecompress::Finish => InflateFlush::Finish,
-        };
+        let flush = flush.into();
 
         let total_in_start = self.inner.total_in();
         let total_out_start = self.inner.total_out();
@@ -120,10 +113,47 @@ impl InflateBackend for Inflate {
         }
     }
 
+    fn decompress_uninit(
+        &mut self,
+        input: &[u8],
+        output: &mut [MaybeUninit<u8>],
+        flush: FlushDecompress,
+    ) -> Result<Status, DecompressError> {
+        let flush = flush.into();
+
+        let total_in_start = self.inner.total_in();
+        let total_out_start = self.inner.total_out();
+
+        let result = self.inner.decompress_uninit(input, output, flush);
+
+        self.total_in += self.inner.total_in() - total_in_start;
+        self.total_out += self.inner.total_out() - total_out_start;
+
+        match result {
+            Ok(status) => Ok(status.into()),
+            Err(InflateError::NeedDict { dict_id }) => crate::mem::decompress_need_dict(dict_id),
+            Err(_) => self.decompress_error(),
+        }
+    }
+
     fn reset(&mut self, zlib_header: bool) {
         self.total_in = 0;
         self.total_out = 0;
-        self.inner.reset(zlib_header);
+        if self.window_bits == MZ_DEFAULT_WINDOW_BITS as u8 {
+            self.inner.reset(zlib_header);
+        } else {
+            // zlib_rs::Inflate::reset always restores the default
+            // configuration, which would discard the window size and gzip
+            // mode selected at construction, so re-create the state instead.
+            // Keep only the base-2 logarithm of the window size when
+            // resetting a gzip decoder (window_bits + 16) to a raw stream.
+            let window_bits = if zlib_header {
+                self.window_bits
+            } else {
+                self.window_bits & 15
+            };
+            self.inner = ::zlib_rs::Inflate::new(zlib_header, window_bits);
+        }
     }
 }
 
@@ -170,6 +200,18 @@ impl fmt::Debug for Deflate {
     }
 }
 
+impl From<FlushCompress> for DeflateFlush {
+    fn from(value: FlushCompress) -> Self {
+        match value {
+            FlushCompress::None => Self::NoFlush,
+            FlushCompress::Partial => Self::PartialFlush,
+            FlushCompress::Sync => Self::SyncFlush,
+            FlushCompress::Full => Self::FullFlush,
+            FlushCompress::Finish => Self::Finish,
+        }
+    }
+}
+
 impl DeflateBackend for Deflate {
     fn make(level: Compression, zlib_header: bool, window_bits: u8) -> Self {
         // Check in case the integer value changes at some point.
@@ -188,18 +230,34 @@ impl DeflateBackend for Deflate {
         output: &mut [u8],
         flush: FlushCompress,
     ) -> Result<Status, CompressError> {
-        let flush = match flush {
-            FlushCompress::None => DeflateFlush::NoFlush,
-            FlushCompress::Partial => DeflateFlush::PartialFlush,
-            FlushCompress::Sync => DeflateFlush::SyncFlush,
-            FlushCompress::Full => DeflateFlush::FullFlush,
-            FlushCompress::Finish => DeflateFlush::Finish,
-        };
+        let flush = flush.into();
 
         let total_in_start = self.inner.total_in();
         let total_out_start = self.inner.total_out();
 
         let result = self.inner.compress(input, output, flush);
+
+        self.total_in += self.inner.total_in() - total_in_start;
+        self.total_out += self.inner.total_out() - total_out_start;
+
+        match result {
+            Ok(status) => Ok(status.into()),
+            Err(_) => self.compress_error(),
+        }
+    }
+
+    fn compress_uninit(
+        &mut self,
+        input: &[u8],
+        output: &mut [MaybeUninit<u8>],
+        flush: FlushCompress,
+    ) -> Result<Status, CompressError> {
+        let flush = flush.into();
+
+        let total_in_start = self.inner.total_in();
+        let total_out_start = self.inner.total_out();
+
+        let result = self.inner.compress_uninit(input, output, flush);
 
         self.total_in += self.inner.total_in() - total_in_start;
         self.total_out += self.inner.total_out() - total_out_start;

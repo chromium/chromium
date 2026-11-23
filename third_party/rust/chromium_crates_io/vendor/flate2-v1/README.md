@@ -3,7 +3,7 @@
 [![Crates.io](https://img.shields.io/crates/v/flate2.svg?maxAge=2592000)](https://crates.io/crates/flate2)
 [![Documentation](https://docs.rs/flate2/badge.svg)](https://docs.rs/flate2)
 
-A streaming compression/decompression library DEFLATE-based streams in Rust.
+A streaming compression/decompression library for DEFLATE-based streams in Rust.
 
 This crate by default uses the `miniz_oxide` crate, a port of `miniz.c` to pure
 Rust. This crate also supports other [backends](#backends), such as the widely
@@ -69,12 +69,20 @@ fn main() {
 
 The default `miniz_oxide` backend has the advantage of only using safe Rust.
 
+Since version 1.1.10, the default `runtime_detection` feature enables runtime CPU
+feature detection on supported architectures. Setting `default-features = false`
+also disables it, so the examples below explicitly enable it to preserve performance.
+It enables `std` support in `zlib-rs` and `crc32fast` when those dependencies are used.
+For `no_std` builds, omit `runtime_detection`; CPU optimizations in those Rust
+dependencies then depend on features enabled at compile time, which can result in
+slower compression or decompression.
+
 If you want maximum performance while still benefiting from a Rust
 implementation at the cost of some `unsafe`, you can use `zlib-rs`:
 
 ```toml
 [dependencies]
-flate2 = { version = "1.0.17", features = ["zlib-rs"], default-features = false }
+flate2 = { version = "1.1.10", features = ["zlib-rs", "runtime_detection"], default-features = false }
 ```
 
 ### C backends
@@ -84,7 +92,7 @@ the zlib-ng C library can be slightly faster in certain cases:
 
 ```toml
 [dependencies]
-flate2 = { version = "1.0.17", features = ["zlib-ng"], default-features = false }
+flate2 = { version = "1.1.10", features = ["zlib-ng", "runtime_detection"], default-features = false }
 ```
 
 Note that the `"zlib-ng"` feature works even if some other part of your crate
@@ -96,7 +104,7 @@ for Rust code as well:
 
 ```toml
 [dependencies]
-flate2 = { version = "1.0.17", features = ["zlib"], default-features = false }
+flate2 = { version = "1.1.10", features = ["zlib", "runtime_detection"], default-features = false }
 ```
 
 Or, if you have C or Rust code that depends on zlib and you want to use zlib-ng
@@ -104,7 +112,7 @@ via libz-sys in zlib-compat mode, use:
 
 ```toml
 [dependencies]
-flate2 = { version = "1.0.17", features = ["zlib-ng-compat"], default-features = false }
+flate2 = { version = "1.1.10", features = ["zlib-ng-compat", "runtime_detection"], default-features = false }
 ```
 
 Note that when using the `"zlib-ng-compat"` feature, if any crate in your

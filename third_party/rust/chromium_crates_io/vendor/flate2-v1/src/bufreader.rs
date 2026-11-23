@@ -29,7 +29,10 @@ where
     fn fmt(&self, fmt: &mut ::core::fmt::Formatter) -> Result<(), ::core::fmt::Error> {
         fmt.debug_struct("BufReader")
             .field("reader", &self.inner)
-            .field("buffer", &format_args!("{}/{}", self.cap - self.pos, self.buf.len()))
+            .field(
+                "buffer",
+                &format_args!("{}/{}", self.cap - self.pos, self.buf.len()),
+            )
             .finish()
     }
 }
@@ -40,7 +43,12 @@ impl<R: Read> BufReader<R> {
     }
 
     pub fn with_buf(buf: Vec<u8>, inner: R) -> BufReader<R> {
-        BufReader { inner, buf: buf.into_boxed_slice(), pos: 0, cap: 0 }
+        BufReader {
+            inner,
+            buf: buf.into_boxed_slice(),
+            pos: 0,
+            cap: 0,
+        }
     }
 }
 

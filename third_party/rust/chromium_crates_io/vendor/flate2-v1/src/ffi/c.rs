@@ -63,8 +63,8 @@ impl Drop for StreamWrapper {
     fn drop(&mut self) {
         // SAFETY: At this point, every other allocation for struct has been freed by
         // `inflateEnd` or `deflateEnd`, and no copies of `inner` are retained by `C`,
-        // so it is safe to drop the struct as long as the user respects the invariant
-        // that `inner` must never be copied by Rust.
+        // so it is safe to drop the struct as long as the user respects the invariant that
+        // `inner` must never be copied by Rust.
         drop(unsafe { Box::from_raw(self.inner) });
     }
 }
@@ -187,6 +187,7 @@ impl Direction for DirDecompress {
 #[derive(Debug)]
 pub struct Inflate {
     pub inner: Stream<DirDecompress>,
+    window_bits: u8,
 }
 
 impl Inflate {
@@ -241,7 +242,11 @@ impl InflateBackend for Inflate {
             let state = StreamWrapper::default();
             let ret = mz_inflateInit2(
                 state.inner,
-                if zlib_header { window_bits as c_int } else { -(window_bits as c_int) },
+                if zlib_header {
+                    window_bits as c_int
+                } else {
+                    -(window_bits as c_int)
+                },
             );
             assert_eq!(ret, 0);
             Inflate {
@@ -251,6 +256,7 @@ impl InflateBackend for Inflate {
                     total_out: 0,
                     _marker: marker::PhantomData,
                 },
+                window_bits,
             }
         }
     }
@@ -273,10 +279,19 @@ impl InflateBackend for Inflate {
     }
 
     fn reset(&mut self, zlib_header: bool) {
-        let bits = if zlib_header { MZ_DEFAULT_WINDOW_BITS } else { -MZ_DEFAULT_WINDOW_BITS };
-        unsafe {
-            inflateReset2(self.inner.stream_wrapper.inner, bits);
-        }
+        let bits = if zlib_header {
+            self.window_bits as c_int
+        } else {
+            // Keep only the base-2 logarithm of the window size: a decoder
+            // created for gzip (window_bits + 16) resets to a raw deflate
+            // stream with the same window size.
+            -((self.window_bits & 15) as c_int)
+        };
+        let rc = unsafe { inflateReset2(self.inner.stream_wrapper.inner, bits) };
+        assert_eq!(
+            rc, MZ_OK,
+            "inflateReset2 failed despite valid window bits and an initialized stream"
+        );
         self.inner.total_out = 0;
         self.inner.total_in = 0;
     }
@@ -350,7 +365,11 @@ impl DeflateBackend for Deflate {
                 state.inner,
                 level.0 as c_int,
                 MZ_DEFLATED,
-                if zlib_header { window_bits as c_int } else { -(window_bits as c_int) },
+                if zlib_header {
+                    window_bits as c_int
+                } else {
+                    -(window_bits as c_int)
+                },
                 8,
                 MZ_DEFAULT_STRATEGY,
             );
@@ -403,8 +422,7 @@ impl Backend for Deflate {
 
 pub use self::c_backend::*;
 
-/// For backwards compatibility, we provide symbols as `mz_` to mimic the miniz
-/// API
+/// For backwards compatibility, we provide symbols as `mz_` to mimic the miniz API
 #[allow(bad_style)]
 #[allow(unused_imports)]
 mod c_backend {
