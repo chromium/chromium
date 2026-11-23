@@ -1,0 +1,8 @@
+Tests "Bypass for network" (Network.setBypassServiceWorker) with redirection doesn't cause crash.
+request: http://localhost:8000/inspector-protocol/service-worker/resources/bypass-for-network-redirect.php
+redirect (302): http://localhost:8000/inspector-protocol/service-worker/resources/bypass-for-network-redirect.php -> http://127.0.0.1:8000/inspector-protocol/service-worker/resources/bypass-for-network-redirected.html
+response (200): http://127.0.0.1:8000/inspector-protocol/service-worker/resources/bypass-for-network-redirected.html
+loadingFinished
+console.log: getRegistration finished
+Success
+
