@@ -1144,10 +1144,9 @@ void GetPresetNTPBackgroundPreview(
 
   // Show "New" label icon if Reader mode is eligible for triggering and
   // currently available for the page.
-  if (self.engagementTracker &&
+  if (self.isReaderModeEnabled && self.engagementTracker &&
       self.engagementTracker->ShouldTriggerHelpUI(
-          feature_engagement::kIPHBadgedReaderModeFeature) &&
-      self.isReaderModeEnabled) {
+          feature_engagement::kIPHBadgedReaderModeFeature)) {
     action.displayNewLabelIcon = YES;
 
     self.engagementTracker->Dismissed(

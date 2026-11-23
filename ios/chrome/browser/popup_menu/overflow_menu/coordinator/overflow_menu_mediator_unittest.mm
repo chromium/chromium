@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/popup_menu/overflow_menu/coordinator/overflow_menu_mediator.h"
 
+#import <Foundation/Foundation.h>
+
 #import "base/files/scoped_temp_dir.h"
 #import "base/ios/block_types.h"
 #import "base/memory/raw_ptr.h"
@@ -17,6 +19,7 @@
 #import "components/bookmarks/browser/bookmark_utils.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/bookmarks/test/bookmark_test_helpers.h"
+#import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/image_fetcher/core/image_fetcher_service.h"
 #import "components/image_fetcher/core/mock_image_fetcher.h"
@@ -80,6 +83,7 @@
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -127,6 +131,7 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "testing/gmock/include/gmock/gmock.h"
+#import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -134,6 +139,7 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/gfx/image/image.h"
+#import "url/gurl.h"
 
 using sync_preferences::PrefServiceMockFactory;
 using sync_preferences::PrefServiceSyncable;
@@ -1889,4 +1895,66 @@ TEST_F(OverflowMenuMediatorTest,
   sync_service->FireStateChanged();
   EXPECT_TRUE(identity_action.showsAITierRing);
   EXPECT_NSEQ(expected_label, identity_action.customAccessibilityLabel);
+}
+
+// Tests that `ShouldTriggerHelpUI()` for `kIPHBadgedReaderModeFeature` is not
+// called when Reader mode is disabled for the current page (such as a non-HTML
+// page).
+TEST_F(OverflowMenuMediatorTest,
+       TestBadgedReaderModeNotTriggeredWhenReaderModeDisabled) {
+  // Simulate the current page not being an HTML page.
+  web_state_->SetCurrentURL(GURL("https://chromium.test"));
+  web_state_->SetContentIsHTML(false);
+
+  CreateMediator(/*incognito=*/NO);
+  SetUpActiveWebState();
+  SetUpReadingMode(/*active=*/false);
+  mediator_.webStateList = browser_->GetWebStateList();
+  // Expect the Reader mode IPH to never be queried.
+  EXPECT_CALL(tracker_, ShouldTriggerHelpUI(_)).WillRepeatedly(Return(false));
+  EXPECT_CALL(tracker_, ShouldTriggerHelpUI(testing::Ref(
+                            feature_engagement::kIPHBadgedReaderModeFeature)))
+      .Times(0);
+  mediator_.engagementTracker = &tracker_;
+
+  // Simulate the overflow menu being opened, which populates the model.
+  mediator_.model = model_;
+
+  OverflowMenuAction* reader_mode_action = GetAction(kToolsMenuReaderMode);
+  ASSERT_NE(nil, reader_mode_action);
+  EXPECT_FALSE(reader_mode_action.enabled);
+  EXPECT_FALSE(reader_mode_action.displayNewLabelIcon);
+}
+
+// Tests that the Reader mode action displays the "New" badge and calls
+// `Dismissed()` for `kIPHBadgedReaderModeFeature` when Reader mode is enabled
+// for the current page and `ShouldTriggerHelpUI()` returns `true`.
+TEST_F(OverflowMenuMediatorTest,
+       TestBadgedReaderModeTriggeredAndDismissedWhenReaderModeEnabled) {
+  // Simulate the current page being an HTML page.
+  web_state_->SetCurrentURL(GURL("https://chromium.test"));
+  web_state_->SetContentIsHTML(true);
+
+  CreateMediator(/*incognito=*/NO);
+  SetUpActiveWebState();
+  SetUpReadingMode(/*active=*/false);
+  mediator_.webStateList = browser_->GetWebStateList();
+  // Expect the Reader mode IPH to be triggered once and then dismissed.
+  EXPECT_CALL(tracker_, ShouldTriggerHelpUI(_)).WillRepeatedly(Return(false));
+  EXPECT_CALL(tracker_, ShouldTriggerHelpUI(testing::Ref(
+                            feature_engagement::kIPHBadgedReaderModeFeature)))
+      .WillOnce(Return(true));
+  EXPECT_CALL(
+      tracker_,
+      Dismissed(testing::Ref(feature_engagement::kIPHBadgedReaderModeFeature)))
+      .Times(1);
+  mediator_.engagementTracker = &tracker_;
+
+  // Simulate the overflow menu being opened, which populates the model.
+  mediator_.model = model_;
+
+  OverflowMenuAction* reader_mode_action = GetAction(kToolsMenuReaderMode);
+  ASSERT_NE(nil, reader_mode_action);
+  EXPECT_TRUE(reader_mode_action.enabled);
+  EXPECT_TRUE(reader_mode_action.displayNewLabelIcon);
 }
