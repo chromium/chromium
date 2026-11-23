@@ -104,7 +104,6 @@ source_set("openscreen_platform_without_sockets") {
     "network_util.cc",
     "task_runner.cc",
     "time.cc",
-    "trace_logging_platform.cc",
   ]
 
   public_deps = [
