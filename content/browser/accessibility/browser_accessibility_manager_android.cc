@@ -125,6 +125,32 @@ TryReanchorToOriginalAnchor(const ui::AXNode* original_anchor,
   return std::nullopt;
 }
 
+// Returns true if a Chrome tree position with given `lowest_platform_ancestor`
+// should be converted to an Android text position.
+bool ShouldConvertChromeTreePositionToAndroidTextPosition(
+    const ui::AXNodePosition::AXPositionInstance& original_position,
+    const BrowserAccessibilityAndroid* lowest_platform_ancestor) {
+  CHECK(original_position->GetAnchor());
+  CHECK(lowest_platform_ancestor);
+  if (!lowest_platform_ancestor->IsLeaf() ||
+      !lowest_platform_ancestor->IsTextSelectable()) {
+    return false;
+  }
+
+  // Child text nodes are flattened into `lowest_platform_ancestor` on Android,
+  // so represent the position as a character offset.
+  if (lowest_platform_ancestor->HasTextContent()) {
+    return true;
+  }
+
+  // Blink serializes a caret on an empty, childless element (such as
+  // `<p tabindex="0"></p>` or the inner editor `<div>` of an empty `<input>`)
+  // as a tree position because there is no text node child, whereas Android
+  // represents it at text offset 0 on `lowest_platform_ancestor`.
+  return !original_position->IsIgnored() &&
+         original_position->GetAnchor()->GetChildCount() == 0;
+}
+
 }  // namespace
 
 // static
@@ -1082,11 +1108,22 @@ BrowserAccessibilityManagerAndroid::GenerateAccessibilityNodeInfoString(
 std::optional<BrowserAccessibilityManagerAndroid::SelectionRange>
 BrowserAccessibilityManagerAndroid::GetSelectionRange() const {
   ui::AXSelection selection = ax_tree()->GetSelection();
+  if (selection.anchor_object_id == ui::kInvalidAXNodeID ||
+      selection.focus_object_id == ui::kInvalidAXNodeID ||
+      selection.anchor_offset == ax::mojom::kNoSelectionOffset ||
+      selection.focus_offset == ax::mojom::kNoSelectionOffset) {
+    return std::nullopt;
+  }
+  if (features::IsAccessibilitySelectionOffsetTypesEnabled()) {
+    CHECK(selection.anchor_offset_type);
+    CHECK(selection.focus_offset_type);
+  }
 
   std::optional<AndroidPosition> anchor =
       ConvertChromeSelectionPositionToAndroid(
           selection.anchor_object_id, selection.anchor_offset,
-          selection.anchor_affinity, selection.is_backward);
+          selection.anchor_affinity, selection.anchor_offset_type,
+          selection.is_backward);
   if (!anchor.has_value()) {
     return std::nullopt;
   }
@@ -1094,7 +1131,8 @@ BrowserAccessibilityManagerAndroid::GetSelectionRange() const {
   std::optional<AndroidPosition> focus =
       ConvertChromeSelectionPositionToAndroid(
           selection.focus_object_id, selection.focus_offset,
-          selection.focus_affinity, selection.is_backward);
+          selection.focus_affinity, selection.focus_offset_type,
+          selection.is_backward);
   if (!focus.has_value()) {
     return std::nullopt;
   }
@@ -1137,11 +1175,18 @@ void BrowserAccessibilityManagerAndroid::ClearSelection() {
   SetSelection(action_data);
 }
 
+// TODO(crbug.com/527726308): Once `OffsetType` is wired end-to-end, refactor
+// and simplify `ConvertChromeSelectionPositionToAndroid()` and
+// `ConvertAndroidSelectionPositionToChrome()` (e.g. peeling ignored wrappers
+// for tree positions before falling back to `AsUnignoredSelectionPosition()` so
+// `TryReanchorToOriginalAnchor()` and tree/text position ping-ponging can be
+// removed).
 std::optional<BrowserAccessibilityManagerAndroid::AndroidPosition>
 BrowserAccessibilityManagerAndroid::ConvertChromeSelectionPositionToAndroid(
     ui::AXNodeID node_id,
     int offset,
     ax::mojom::TextAffinity affinity,
+    std::optional<ax::mojom::OffsetType> offset_type,
     bool is_backward) const {
   ui::AXNode* node = ax_tree()->GetFromId(node_id);
   if (!node) {
@@ -1149,7 +1194,7 @@ BrowserAccessibilityManagerAndroid::ConvertChromeSelectionPositionToAndroid(
   }
 
   ui::AXNodePosition::AXPositionInstance position =
-      ui::AXNodePosition::CreatePosition(*node, offset, affinity);
+      ui::AXNodePosition::CreatePosition(*node, offset, affinity, offset_type);
   const ui::AXNodePosition::AXPositionInstance original_position =
       position->Clone();
   // Move the position to the nearest unignored node. This node can be a
@@ -1190,13 +1235,9 @@ BrowserAccessibilityManagerAndroid::ConvertChromeSelectionPositionToAndroid(
     return std::nullopt;
   }
 
-  // If a tree position's lowest platform ancestor is a text-selectable leaf on
-  // the platform with text content, convert it to a text position. This will
-  // result in more accurate representation of the position on Android as the
-  // child node are flattened.
-  if (position->IsTreePosition() && lowest_platform_ancestor->IsLeaf() &&
-      lowest_platform_ancestor->HasTextContent() &&
-      lowest_platform_ancestor->IsTextSelectable()) {
+  if (position->IsTreePosition() &&
+      ShouldConvertChromeTreePositionToAndroidTextPosition(
+          original_position, lowest_platform_ancestor)) {
     position = position->AsTextPosition();
   }
 

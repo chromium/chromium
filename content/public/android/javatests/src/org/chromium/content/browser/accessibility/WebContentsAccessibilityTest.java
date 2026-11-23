@@ -4255,10 +4255,7 @@ public class WebContentsAccessibilityTest {
                         rootVvid, paragraph1Vvid, 0, OFFSET_TYPE_TEXT, -1, 1, OFFSET_TYPE_TEXT));
     }
 
-    /** Test extended selection on empty text selectable node. */
-    @Test
-    @SmallTest
-    public void testPerformAction_setExtendedSelection_emptyParagraph() throws Throwable {
+    private void runTestPerformAction_setExtendedSelection_emptyParagraph() throws Throwable {
         setupTestWithHTML(
                 """
                 <p id="empty_p" tabindex="0"></p>
@@ -4272,16 +4269,28 @@ public class WebContentsAccessibilityTest {
         AccessibilityNodeInfoCompat emptyPNode = createAccessibilityNodeInfo(emptyPVvid);
         Assert.assertTrue(emptyPNode.isTextSelectable());
 
-        boolean result =
-                mActivityTestRule.setSelectionOnUiThread(
-                        rootVvid,
-                        emptyPVvid,
-                        0,
-                        OFFSET_TYPE_TEXT,
-                        paragraphVvid,
-                        2,
-                        OFFSET_TYPE_TEXT);
-        Assert.assertTrue(result);
+        setAndAssertExtendedSelection(
+                rootVvid, emptyPVvid, 0, OFFSET_TYPE_TEXT, paragraphVvid, 2, OFFSET_TYPE_TEXT);
+    }
+
+    /** Test extended selection on empty text selectable node. */
+    @Test
+    @SmallTest
+    @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_SELECTION_OFFSET_TYPES)
+    public void testPerformAction_setExtendedSelection_emptyParagraph() throws Throwable {
+        runTestPerformAction_setExtendedSelection_emptyParagraph();
+    }
+
+    /**
+     * Legacy fallback counterpart to {@link #testPerformAction_setExtendedSelection_emptyParagraph}
+     * when {@code kAccessibilitySelectionOffsetTypes} is disabled.
+     */
+    @Test
+    @SmallTest
+    @DisableFeatures(AccessibilityFeatures.ACCESSIBILITY_SELECTION_OFFSET_TYPES)
+    public void testPerformAction_setExtendedSelection_emptyParagraph_flagDisabled()
+            throws Throwable {
+        runTestPerformAction_setExtendedSelection_emptyParagraph();
     }
 
     /** Test extended selection on non-text-selectable nodes. */
@@ -5434,6 +5443,62 @@ public class WebContentsAccessibilityTest {
         // A selection within the text field, whose event is sent to the text field.
         setAndAssertExtendedSelection(
                 rootVvid, inputVvid, 1, OFFSET_TYPE_TEXT, inputVvid, 5, OFFSET_TYPE_TEXT);
+    }
+
+    private void runTestGetExtendedSelection_containerWithAriaHiddenChild(
+            boolean expectChildOffsetOnRoot) throws Throwable {
+        setupTestWithHTML(
+                """
+                <div id="box"><span id="hidden" aria-hidden="true">Hidden</span></div>
+                <p id="p" aria-describedby="hidden">Visible</p>
+                """);
+
+        int rootVvid = waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
+        int boxVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "box");
+        int pVvid = waitForNodeMatching(sViewIdResourceNameMatcher, "p");
+
+        executeJSAndWaitForSelectionEvent(
+                "const box = document.getElementById('box');"
+                        + "const p = document.getElementById('p');"
+                        + "window.getSelection().setBaseAndExtent(box, 1, p.firstChild, 3);");
+
+        if (expectChildOffsetOnRoot) {
+            assertExtendedSelection(
+                    rootVvid, rootVvid, 1, OFFSET_TYPE_CHILD, pVvid, 3, OFFSET_TYPE_TEXT);
+        } else {
+            assertExtendedSelection(
+                    rootVvid, boxVvid, 1, OFFSET_TYPE_TEXT, pVvid, 3, OFFSET_TYPE_TEXT);
+        }
+    }
+
+    /**
+     * Test reading an extended selection anchored at the end of a container whose children are all
+     * ignored (`aria-hidden="true"` referenced by `aria-describedby`, which keeps the hidden child
+     * included in Blink's AXTree as ignored).
+     *
+     * <p>Blink serializes `(box, 1)` as a child-index offset (`OffsetType::kChild`). Android must
+     * report the anchor as a child offset after `box` on `root` (`(root, 1, OFFSET_TYPE_CHILD)`),
+     * rather than misinterpreting child index 1 as an out-of-bounds character offset on `box`.
+     */
+    @Test
+    @SmallTest
+    @EnableFeatures(AccessibilityFeatures.ACCESSIBILITY_SELECTION_OFFSET_TYPES)
+    public void testGetExtendedSelection_containerWithAriaHiddenChild() throws Throwable {
+        runTestGetExtendedSelection_containerWithAriaHiddenChild(
+                /* expectChildOffsetOnRoot= */ true);
+    }
+
+    /**
+     * Legacy fallback counterpart to {@link #testGetExtendedSelection_containerWithAriaHiddenChild}
+     * when {@code kAccessibilitySelectionOffsetTypes} is disabled.
+     */
+    @Test
+    @SmallTest
+    @DisableFeatures(AccessibilityFeatures.ACCESSIBILITY_SELECTION_OFFSET_TYPES)
+    public void testGetExtendedSelection_containerWithAriaHiddenChild_flagDisabled()
+            throws Throwable {
+        runTestGetExtendedSelection_containerWithAriaHiddenChild(
+                /* expectChildOffsetOnRoot= */ false);
     }
 
     /** Test that the performAction for ACTION_CUT works properly with accessibility. */

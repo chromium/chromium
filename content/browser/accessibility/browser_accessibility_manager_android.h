@@ -222,15 +222,17 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAndroid
   // is the node that exposes the selection of the page on Android.
   void FireSelectionChangedOnMainFrameRoot(WebContentsAccessibilityBase* wcax);
 
-  // Given `node_id`, `offset`, and `affinity` which represent a selection
-  // position in Chrome accessibility tree, creates an appropriate selection
-  // position in Android accessibility tree. This is done by ensuring that the
-  // anchor node exists on Android (if not, moves to the highest leaf node which
-  // is ancestor of the node). Returns empty if conversion is not possible.
+  // Given `node_id`, `offset`, `affinity`, and `offset_type` which represent a
+  // selection position in the Chrome accessibility tree, creates an appropriate
+  // selection position in the Android accessibility tree. This is done by
+  // ensuring that the anchor node exists on Android (if not, moves to the
+  // highest leaf node which is an ancestor of the node). Returns empty if
+  // conversion is not possible.
   std::optional<AndroidPosition> ConvertChromeSelectionPositionToAndroid(
       ui::AXNodeID node_id,
       int offset,
       ax::mojom::TextAffinity affinity,
+      std::optional<ax::mojom::OffsetType> offset_type,
       bool is_backward) const;
 
   // A weak reference to WebContentsAccessibility for reaching Java layer.

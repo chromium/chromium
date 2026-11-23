@@ -14,8 +14,10 @@
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_tree_observer.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
@@ -1656,6 +1658,26 @@ TEST_F(BrowserAccessibilityManagerTest, TestOnNodeReparented) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+class BrowserAccessibilityManagerSelectionTest
+    : public BrowserAccessibilityManagerTest,
+      public ::testing::WithParamInterface<bool> {
+ protected:
+  BrowserAccessibilityManagerSelectionTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kAccessibilitySelectionOffsetTypes,
+        IsSelectionOffsetTypesEnabled());
+  }
+
+  bool IsSelectionOffsetTypesEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BrowserAccessibilityManagerSelectionTest,
+                         ::testing::Bool());
+
 // On Android, the Selection API only allows character offsets
 // (`OFFSET_TYPE_TEXT`) on nodes where
 // `BrowserAccessibilityAndroid::IsTextSelectable()` is true (text nodes,
@@ -1666,7 +1688,7 @@ TEST_F(BrowserAccessibilityManagerTest, TestOnNodeReparented) {
 // tree positions (`BEFORE_TEXT` and child index 0 with `anchor_child_count ==
 // 0`) and represents them as child-offset positions (`OFFSET_TYPE_CHILD`)
 // before and after the node on its unignored parent.
-TEST_F(BrowserAccessibilityManagerTest,
+TEST_P(BrowserAccessibilityManagerSelectionTest,
        GetSelectionRangeOnNonTextSelectableLeaf) {
   ui::AXNodeData root;
   root.id = 1;
@@ -1687,6 +1709,10 @@ TEST_F(BrowserAccessibilityManagerTest,
   update.tree_data.sel_focus_object_id = button.id;
   update.tree_data.sel_focus_offset = 6;
   update.tree_data.sel_focus_affinity = ax::mojom::TextAffinity::kDownstream;
+  if (IsSelectionOffsetTypesEnabled()) {
+    update.tree_data.sel_anchor_offset_type = ax::mojom::OffsetType::kText;
+    update.tree_data.sel_focus_offset_type = ax::mojom::OffsetType::kText;
+  }
 
   std::unique_ptr<ui::BrowserAccessibilityManager> manager(
       CreateBrowserAccessibilityManager(
@@ -1716,7 +1742,7 @@ TEST_F(BrowserAccessibilityManagerTest,
 // to child-offset positions before the target child when
 // `child_index < anchor_child_count` and after the last child when
 // `child_index == anchor_child_count`.
-TEST_F(BrowserAccessibilityManagerTest,
+TEST_P(BrowserAccessibilityManagerSelectionTest,
        GetSelectionRangeOnContainerTreePositions) {
   ui::AXNodeData root;
   root.id = 1;
@@ -1735,6 +1761,10 @@ TEST_F(BrowserAccessibilityManagerTest,
   update.tree_data.sel_focus_object_id = root.id;
   update.tree_data.sel_focus_offset = 1;
   update.tree_data.sel_focus_affinity = ax::mojom::TextAffinity::kDownstream;
+  if (IsSelectionOffsetTypesEnabled()) {
+    update.tree_data.sel_anchor_offset_type = ax::mojom::OffsetType::kChild;
+    update.tree_data.sel_focus_offset_type = ax::mojom::OffsetType::kChild;
+  }
 
   std::unique_ptr<ui::BrowserAccessibilityManager> manager(
       CreateBrowserAccessibilityManager(
@@ -1757,6 +1787,227 @@ TEST_F(BrowserAccessibilityManagerTest,
   EXPECT_EQ(root.id, range->focus.node->GetId());
   EXPECT_EQ(1, range->focus.offset);
   EXPECT_EQ(ExtendedSelectionOffsetType::OFFSET_TYPE_CHILD,
+            range->focus.offset_type);
+}
+
+// Verifies that when Blink serializes a tree position (`OffsetType::kChild`) at
+// the start or end of a container whose children are all ignored (e.g.
+// `<div id="box"><span aria-hidden="true">Hidden</span></div>`), Android
+// reports child offsets `0` (before `box`) and `1` (after `box`) on `root`
+// rather than converting `box` to a text position or clamping character
+// offsets. When `kAccessibilitySelectionOffsetTypes` is disabled, Blink leaves
+// the offset types unset (`std::nullopt`) and `GetSelectionRange` falls back to
+// legacy behavior (treating `box` as a text position because all of its
+// children are ignored). Uses `kGenericContainer`, which has
+// `IsTextSelectable() == true` when it has 0 unignored children and therefore
+// also exercises `ShouldConvertChromeTreePositionToAndroidTextPosition()`.
+TEST_P(BrowserAccessibilityManagerSelectionTest,
+       GetSelectionRangeOnContainerWithIgnoredChild) {
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {2, 5};
+
+  ui::AXNodeData box;
+  box.id = 2;
+  box.role = ax::mojom::Role::kGenericContainer;
+  box.child_ids = {3};
+
+  ui::AXNodeData hidden_span;
+  hidden_span.id = 3;
+  hidden_span.role = ax::mojom::Role::kGenericContainer;
+  hidden_span.AddState(ax::mojom::State::kIgnored);
+  hidden_span.child_ids = {4};
+
+  ui::AXNodeData hidden_text;
+  hidden_text.id = 4;
+  hidden_text.role = ax::mojom::Role::kStaticText;
+  hidden_text.SetName("Hidden");
+  hidden_text.AddState(ax::mojom::State::kIgnored);
+
+  ui::AXNodeData paragraph;
+  paragraph.id = 5;
+  paragraph.role = ax::mojom::Role::kParagraph;
+  paragraph.child_ids = {6};
+
+  ui::AXNodeData visible_text;
+  visible_text.id = 6;
+  visible_text.role = ax::mojom::Role::kStaticText;
+  visible_text.SetName("Visible");
+
+  // Case 1: `sel_anchor_offset = 0` (before `hidden_span`, start of `box`).
+  ui::AXTreeUpdate update = MakeAXTreeUpdateForTesting(
+      root, box, hidden_span, hidden_text, paragraph, visible_text);
+  update.tree_data.sel_is_backward = false;
+  update.tree_data.sel_anchor_object_id = box.id;
+  update.tree_data.sel_anchor_offset = 0;
+  update.tree_data.sel_anchor_affinity = ax::mojom::TextAffinity::kDownstream;
+  update.tree_data.sel_focus_object_id = visible_text.id;
+  update.tree_data.sel_focus_offset = 3;
+  update.tree_data.sel_focus_affinity = ax::mojom::TextAffinity::kDownstream;
+  if (IsSelectionOffsetTypesEnabled()) {
+    update.tree_data.sel_anchor_offset_type = ax::mojom::OffsetType::kChild;
+    update.tree_data.sel_focus_offset_type = ax::mojom::OffsetType::kText;
+  }
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      CreateBrowserAccessibilityManager(
+          update, node_id_delegate_,
+          test_browser_accessibility_delegate_.get()));
+  auto* android_manager =
+      static_cast<BrowserAccessibilityManagerAndroid*>(manager.get());
+
+  std::optional<BrowserAccessibilityManagerAndroid::SelectionRange> range =
+      android_manager->GetSelectionRange();
+  ASSERT_TRUE(range.has_value());
+
+  ASSERT_NE(nullptr, range->anchor.node);
+  if (IsSelectionOffsetTypesEnabled()) {
+    EXPECT_EQ(root.id, range->anchor.node->GetId());
+    EXPECT_EQ(0, range->anchor.offset);
+    EXPECT_EQ(ExtendedSelectionOffsetType::OFFSET_TYPE_CHILD,
+              range->anchor.offset_type);
+  } else {
+    EXPECT_EQ(box.id, range->anchor.node->GetId());
+    EXPECT_EQ(0, range->anchor.offset);
+    EXPECT_EQ(ExtendedSelectionOffsetType::OFFSET_TYPE_TEXT,
+              range->anchor.offset_type);
+  }
+
+  ASSERT_NE(nullptr, range->focus.node);
+  EXPECT_EQ(paragraph.id, range->focus.node->GetId());
+  EXPECT_EQ(3, range->focus.offset);
+  EXPECT_EQ(ExtendedSelectionOffsetType::OFFSET_TYPE_TEXT,
+            range->focus.offset_type);
+
+  // Case 2: `sel_anchor_offset = 1` (after `hidden_span`, end of `box`).
+  ui::AXTreeData end_data = manager->GetTreeData();
+  end_data.sel_anchor_offset = 1;
+  manager->ax_tree()->UpdateDataForTesting(end_data);
+
+  range = android_manager->GetSelectionRange();
+  ASSERT_TRUE(range.has_value());
+
+  ASSERT_NE(nullptr, range->anchor.node);
+  if (IsSelectionOffsetTypesEnabled()) {
+    EXPECT_EQ(root.id, range->anchor.node->GetId());
+    EXPECT_EQ(1, range->anchor.offset);
+    EXPECT_EQ(ExtendedSelectionOffsetType::OFFSET_TYPE_CHILD,
+              range->anchor.offset_type);
+  } else {
+    EXPECT_EQ(box.id, range->anchor.node->GetId());
+    EXPECT_EQ(1, range->anchor.offset);
+    EXPECT_EQ(ExtendedSelectionOffsetType::OFFSET_TYPE_TEXT,
+              range->anchor.offset_type);
+  }
+
+  ASSERT_NE(nullptr, range->focus.node);
+  EXPECT_EQ(paragraph.id, range->focus.node->GetId());
+  EXPECT_EQ(3, range->focus.offset);
+  EXPECT_EQ(ExtendedSelectionOffsetType::OFFSET_TYPE_TEXT,
+            range->focus.offset_type);
+}
+
+// Verifies that selection endpoints on empty text-selectable leaves—both
+// directly anchored on `<p id="empty" tabindex="0"></p>` and anchored on the
+// childless inner editor `<div>` of an empty `<input>` (`Role::kTextField`)—
+// round-trip as text offset 0 (`OFFSET_TYPE_TEXT`) on the platform leaf.
+TEST_P(BrowserAccessibilityManagerSelectionTest,
+       GetSelectionRangeOnEmptyTextSelectableLeaf) {
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {2, 3, 5};
+
+  ui::AXNodeData empty_paragraph;
+  empty_paragraph.id = 2;
+  empty_paragraph.role = ax::mojom::Role::kParagraph;
+  empty_paragraph.AddState(ax::mojom::State::kFocusable);
+
+  ui::AXNodeData paragraph;
+  paragraph.id = 3;
+  paragraph.role = ax::mojom::Role::kParagraph;
+  paragraph.child_ids = {4};
+
+  ui::AXNodeData text;
+  text.id = 4;
+  text.role = ax::mojom::Role::kStaticText;
+  text.SetName("Hello");
+
+  ui::AXNodeData text_field;
+  text_field.id = 5;
+  text_field.role = ax::mojom::Role::kTextField;
+  text_field.AddState(ax::mojom::State::kEditable);
+  text_field.child_ids = {6};
+
+  ui::AXNodeData inner_editor;
+  inner_editor.id = 6;
+  inner_editor.role = ax::mojom::Role::kGenericContainer;
+  inner_editor.AddState(ax::mojom::State::kEditable);
+
+  ui::AXTreeUpdate update = MakeAXTreeUpdateForTesting(
+      root, empty_paragraph, paragraph, text, text_field, inner_editor);
+  update.tree_data.sel_is_backward = false;
+  update.tree_data.sel_anchor_object_id = empty_paragraph.id;
+  update.tree_data.sel_anchor_offset = 0;
+  update.tree_data.sel_anchor_affinity = ax::mojom::TextAffinity::kDownstream;
+  update.tree_data.sel_focus_object_id = text.id;
+  update.tree_data.sel_focus_offset = 2;
+  update.tree_data.sel_focus_affinity = ax::mojom::TextAffinity::kDownstream;
+  if (IsSelectionOffsetTypesEnabled()) {
+    update.tree_data.sel_anchor_offset_type = ax::mojom::OffsetType::kChild;
+    update.tree_data.sel_focus_offset_type = ax::mojom::OffsetType::kText;
+  }
+
+  std::unique_ptr<ui::BrowserAccessibilityManager> manager(
+      CreateBrowserAccessibilityManager(
+          update, node_id_delegate_,
+          test_browser_accessibility_delegate_.get()));
+  auto* android_manager =
+      static_cast<BrowserAccessibilityManagerAndroid*>(manager.get());
+
+  std::optional<BrowserAccessibilityManagerAndroid::SelectionRange> range =
+      android_manager->GetSelectionRange();
+  ASSERT_TRUE(range.has_value());
+
+  ASSERT_NE(nullptr, range->anchor.node);
+  EXPECT_EQ(empty_paragraph.id, range->anchor.node->GetId());
+  EXPECT_EQ(0, range->anchor.offset);
+  EXPECT_EQ(ExtendedSelectionOffsetType::OFFSET_TYPE_TEXT,
+            range->anchor.offset_type);
+
+  ASSERT_NE(nullptr, range->focus.node);
+  EXPECT_EQ(paragraph.id, range->focus.node->GetId());
+  EXPECT_EQ(2, range->focus.offset);
+  EXPECT_EQ(ExtendedSelectionOffsetType::OFFSET_TYPE_TEXT,
+            range->focus.offset_type);
+
+  // Caret on the childless inner editor of an empty `Role::kTextField`
+  // (`original_position->GetAnchor() != lowest_platform_ancestor->node()`).
+  ui::AXTreeData inner_editor_data = manager->GetTreeData();
+  inner_editor_data.sel_anchor_object_id = inner_editor.id;
+  inner_editor_data.sel_anchor_offset = 0;
+  inner_editor_data.sel_focus_object_id = inner_editor.id;
+  inner_editor_data.sel_focus_offset = 0;
+  if (IsSelectionOffsetTypesEnabled()) {
+    inner_editor_data.sel_anchor_offset_type = ax::mojom::OffsetType::kChild;
+    inner_editor_data.sel_focus_offset_type = ax::mojom::OffsetType::kChild;
+  }
+  manager->ax_tree()->UpdateDataForTesting(inner_editor_data);
+
+  range = android_manager->GetSelectionRange();
+  ASSERT_TRUE(range.has_value());
+
+  ASSERT_NE(nullptr, range->anchor.node);
+  EXPECT_EQ(text_field.id, range->anchor.node->GetId());
+  EXPECT_EQ(0, range->anchor.offset);
+  EXPECT_EQ(ExtendedSelectionOffsetType::OFFSET_TYPE_TEXT,
+            range->anchor.offset_type);
+
+  ASSERT_NE(nullptr, range->focus.node);
+  EXPECT_EQ(text_field.id, range->focus.node->GetId());
+  EXPECT_EQ(0, range->focus.offset);
+  EXPECT_EQ(ExtendedSelectionOffsetType::OFFSET_TYPE_TEXT,
             range->focus.offset_type);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
