@@ -7,4 +7,4 @@ per-file service_process_host_passkeys.h=file://sandbox/OWNERS
 
 per-file frame_eviction_opt_out_client.*=file://components/viz/OWNERS
 
-per-file browser_accessibility_state.h=grt@chromium.org,dtseng@chromium.org,lucasradaelli@google.com,benjamin.beaudry@microsoft.com
+per-file browser_accessibility_state.h=grt@chromium.org,dtseng@chromium.org,lucasradaelli@google.com
