@@ -19,6 +19,7 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.trusted_vault.SecurityDomainId;
 import org.chromium.components.trusted_vault.TrustedVaultClient;
+import org.chromium.components.trusted_vault.TrustedVaultKeyAndVersion;
 import org.chromium.google_apis.gaia.GaiaId;
 
 import java.util.ArrayList;
@@ -31,17 +32,24 @@ import java.util.Map;
 @JNINamespace("sync_test_utils_android")
 final class SyncTestSigninUtils {
     private static class FakeTrustedVaultClientBackend extends TrustedVaultClient.EmptyBackend {
-        private final Map<GaiaId, List<byte[]>> mKeys = new HashMap<>();
+        private final Map<GaiaId, List<TrustedVaultKeyAndVersion>> mKeys = new HashMap<>();
 
         @Override
-        public Promise<List<byte[]>> fetchKeys(CoreAccountInfo accountInfo) {
+        public Promise<List<TrustedVaultKeyAndVersion>> fetchKeysAndVersions(
+                CoreAccountInfo accountInfo) {
             return Promise.fulfilled(
                     mKeys.getOrDefault(accountInfo.getGaiaId(), Collections.emptyList()));
         }
 
         @Override
         public void storeKeys(GaiaId gaiaId, List<byte[]> keys, int lastKeyVersion) {
-            mKeys.put(gaiaId, new ArrayList<>(keys));
+            int firstKeyVersion = lastKeyVersion - keys.size() + 1;
+            List<TrustedVaultKeyAndVersion> keysAndVersions = new ArrayList<>(keys.size());
+            for (int i = 0; i < keys.size(); i++) {
+                keysAndVersions.add(
+                        new TrustedVaultKeyAndVersion(keys.get(i), firstKeyVersion + i));
+            }
+            mKeys.put(gaiaId, keysAndVersions);
             TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC).notifyKeysChanged(null);
         }
     }

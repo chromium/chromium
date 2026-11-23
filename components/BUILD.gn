@@ -1526,6 +1526,7 @@ if (is_android) {
       "//components/supervised_user/android:junit",
       "//components/tab_groups:junit",
       "//components/thin_webview/internal:junit",
+      "//components/trusted_vault/android:junit",
       "//components/ukm/android:ukm_junit_tests",
       "//components/variations/android:components_variations_junit_tests",
       "//components/webapk/android/libs/client:junit",

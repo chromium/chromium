@@ -12,6 +12,7 @@ android_library("java") {
   ]
   sources = [
     "java/src/org/chromium/components/trusted_vault/TrustedVaultClient.java",
+    "java/src/org/chromium/components/trusted_vault/TrustedVaultKeyAndVersion.java",
   ]
   deps = [
     "//base:base_java",
@@ -25,6 +26,24 @@ android_library("java") {
   ]
 }
 
+robolectric_library("junit") {
+  sources = [
+    "junit/src/org/chromium/components/trusted_vault/TrustedVaultClientTest.java",
+    "junit/src/org/chromium/components/trusted_vault/TrustedVaultKeyAndVersionTest.java",
+  ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_junit_test_support",
+    "//components/signin/public/android:java",
+    "//components/signin/public/android:signin_java_test_support",
+    "//google_apis/gaia/android:java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}
+
 java_cpp_enum("java_enums") {
   sources = [ "//components/trusted_vault/trusted_vault_server_constants.h" ]
 }
@@ -32,6 +51,7 @@ java_cpp_enum("java_enums") {
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/components/trusted_vault/TrustedVaultClient.java",
+    "java/src/org/chromium/components/trusted_vault/TrustedVaultKeyAndVersion.java",
   ]
 }
 
@@ -41,13 +61,17 @@ source_set("android") {
     "trusted_vault_client_android.h",
   ]
 
-  deps = [
-    ":jni_headers",
+  public_deps = [
     "//base",
     "//components/signin/public/identity_manager",
-    "//components/sync/service",
     "//components/trusted_vault",
+  ]
+
+  deps = [
+    ":jni_headers",
+    "//components/sync/service",
     "//content/public/browser",
     "//google_apis",
+    "//third_party/jni_zero",
   ]
 }

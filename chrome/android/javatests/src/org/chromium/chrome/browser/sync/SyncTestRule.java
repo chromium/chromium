@@ -56,8 +56,10 @@ import org.chromium.components.sync.protocol.SyncEntity;
 import org.chromium.components.sync.protocol.WalletMaskedCreditCard;
 import org.chromium.components.trusted_vault.SecurityDomainId;
 import org.chromium.components.trusted_vault.TrustedVaultClient;
+import org.chromium.components.trusted_vault.TrustedVaultKeyAndVersion;
 import org.chromium.components.user_prefs.UserPrefs;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -94,7 +96,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
 
     /**
      * A fake implementation of TrustedVaultClient.Backend. Allows to specify keys to be fetched.
-     * Keys aren't populated through fetchKeys() unless startPopulateKeys() is called.
+     * Keys aren't populated through fetchKeysAndVersions() unless startPopulateKeys() is called.
      * startPopulateKeys() is called by FakeKeyRetrievalActivity before its completion to mimic real
      * TrustedVaultClient.Backend implementation.
      *
@@ -106,7 +108,7 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
         private static FakeTrustedVaultClientBackend sInstance;
         private boolean mPopulateKeys;
         private boolean mRecoverabilityDegraded;
-        private @Nullable List<byte[]> mKeys;
+        private @Nullable List<TrustedVaultKeyAndVersion> mKeys;
 
         public FakeTrustedVaultClientBackend() {
             mPopulateKeys = false;
@@ -121,7 +123,8 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
         }
 
         @Override
-        public Promise<List<byte[]>> fetchKeys(CoreAccountInfo accountInfo) {
+        public Promise<List<TrustedVaultKeyAndVersion>> fetchKeysAndVersions(
+                CoreAccountInfo accountInfo) {
             if (mKeys == null || !mPopulateKeys) {
                 return Promise.rejected();
             }
@@ -185,7 +188,11 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
         }
 
         public void setKeys(List<byte[]> keys) {
-            mKeys = Collections.unmodifiableList(keys);
+            List<TrustedVaultKeyAndVersion> keysAndVersions = new ArrayList<>(keys.size());
+            for (int i = 0; i < keys.size(); i++) {
+                keysAndVersions.add(new TrustedVaultKeyAndVersion(keys.get(i), i + 1));
+            }
+            mKeys = Collections.unmodifiableList(keysAndVersions);
         }
 
         public void startPopulateKeys() {

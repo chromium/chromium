@@ -20,6 +20,10 @@
 #include "components/trusted_vault/trusted_vault_client.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 
+namespace trusted_vault {
+struct TrustedVaultKeyAndVersion;
+}  // namespace trusted_vault
+
 // JNI bridge for a Java implementation of the TrustedVaultClient interface,
 // used on Android.
 //
@@ -43,10 +47,11 @@ class TrustedVaultClientAndroid : public trusted_vault::TrustedVaultClient {
   // Called from Java to notify the completion of a FetchKeys() operation
   // previously initiated from C++ and identified by |request_id|. |gaia_id|
   // must match the user's ID.
-  void FetchKeysCompleted(JNIEnv* env,
-                          int32_t request_id,
-                          const std::string& gaia_id,
-                          const base::android::JavaRef<jobjectArray>& keys);
+  void FetchKeysCompleted(
+      JNIEnv* env,
+      int32_t request_id,
+      const std::string& gaia_id,
+      const std::vector<trusted_vault::TrustedVaultKeyAndVersion>& keys);
 
   // Called from Java to notify the completion of a MarkLocalKeysAsStale()
   // operation previously initiated from C++ and identified by |request_id|.
@@ -119,13 +124,16 @@ class TrustedVaultClientAndroid : public trusted_vault::TrustedVaultClient {
   struct OngoingFetchKeys {
     OngoingFetchKeys(
         const CoreAccountInfo& account_info,
-        base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)>
+        base::OnceCallback<
+            void(const std::vector<trusted_vault::TrustedVaultKeyAndVersion>&)>
             callback);
     OngoingFetchKeys(OngoingFetchKeys&&);
     ~OngoingFetchKeys();
 
     const CoreAccountInfo account_info;
-    base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)> callback;
+    base::OnceCallback<void(
+        const std::vector<trusted_vault::TrustedVaultKeyAndVersion>&)>
+        callback;
   };
 
   // Struct representing an in-flight MarkLocalKeysAsStale() call invoked from
