@@ -1,24 +1,24 @@
 caption: Parameters for suggest URL which uses POST
+deprecated: true
 desc: |-
-  If <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME">DefaultSearchProviderEnabled</ph> is on, then setting <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME">DefaultSearchProviderSuggestURLPostParams</ph> specifies the parameters during suggestion search with POST. It consists of comma-separated, name-value pairs. If a value is a template parameter, such as <ph name="SEARCH_TERM_MARKER">'{searchTerms}'</ph>, real search terms data replaces it.
+  This policy is deprecated and has no effect. Suggestion requests are always sent using the GET method, so the parameters specified by this policy are never applied. Use <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME">DefaultSearchProviderSuggestURL</ph> to configure the suggestion URL, including the <ph name="SEARCH_TERM_MARKER">'{searchTerms}'</ph> placeholder, instead.
 
-        Leaving <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME">DefaultSearchProviderSuggestURLPostParams</ph> unset unset means suggest search requests are sent using the GET method.
+  POST parameters are only supported for image search, through <ph name="DEFAULT_SEARCH_PROVIDER_IMAGE_URL_POST_PARMS_POLICY_NAME">DefaultSearchProviderImageURLPostParams</ph>.
+
+  Previously, if <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME">DefaultSearchProviderEnabled</ph> was on, setting <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME">DefaultSearchProviderSuggestURLPostParams</ph> was intended to specify the parameters during suggestion search with POST, as comma-separated, name-value pairs.
 example_value: q={searchTerms},ie=utf-8,oe=utf-8
 features:
   can_be_recommended: true
   dynamic_refresh: true
   per_profile: true
-future_on:
-- fuchsia
 owners:
-- file://components/policy/OWNERS
-- rsorokin@chromium.org
+- chrome-desktop-search@google.com
 schema:
   type: string
 supported_on:
-- chrome.*:29-
-- chrome_os:29-
-- android:30-
-- ios:88-
+- chrome.*:29-160
+- chrome_os:29-160
+- android:30-160
+- ios:88-160
 tags: []
 type: string
