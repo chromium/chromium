@@ -1,0 +1,110 @@
+Tests console output from PaintWorklet.
+Main thread PaintWorklet console messages: [
+    [0] : [
+        [0] : {
+            columnNumber : 8
+            functionName :
+            lineNumber : 0
+            text : Information
+            type : info
+            url : http://127.0.0.1:8000/inspector-protocol/paint-worklet/resources/console-worklet-script.js
+        }
+        [1] : {
+            columnNumber : 8
+            functionName :
+            lineNumber : 1
+            text : Log
+            type : log
+            url : http://127.0.0.1:8000/inspector-protocol/paint-worklet/resources/console-worklet-script.js
+        }
+        [2] : {
+            columnNumber : 8
+            functionName :
+            lineNumber : 2
+            text : Warning
+            type : warning
+            url : http://127.0.0.1:8000/inspector-protocol/paint-worklet/resources/console-worklet-script.js
+        }
+    ]
+    [1] : [
+        [0] : {
+            columnNumber : 8
+            functionName :
+            lineNumber : 0
+            text : Information
+            type : info
+            url : http://127.0.0.1:8000/inspector-protocol/paint-worklet/resources/console-worklet-script.js
+        }
+        [1] : {
+            columnNumber : 8
+            functionName :
+            lineNumber : 1
+            text : Log
+            type : log
+            url : http://127.0.0.1:8000/inspector-protocol/paint-worklet/resources/console-worklet-script.js
+        }
+        [2] : {
+            columnNumber : 8
+            functionName :
+            lineNumber : 2
+            text : Warning
+            type : warning
+            url : http://127.0.0.1:8000/inspector-protocol/paint-worklet/resources/console-worklet-script.js
+        }
+    ]
+]
+Off-thread PaintWorklet console messages: [
+    [0] : [
+        [0] : {
+            columnNumber : 8
+            functionName :
+            lineNumber : 0
+            text : Information
+            type : info
+            url : http://127.0.0.1:8000/inspector-protocol/paint-worklet/resources/console-worklet-script.js
+        }
+        [1] : {
+            columnNumber : 8
+            functionName :
+            lineNumber : 1
+            text : Log
+            type : log
+            url : http://127.0.0.1:8000/inspector-protocol/paint-worklet/resources/console-worklet-script.js
+        }
+        [2] : {
+            columnNumber : 8
+            functionName :
+            lineNumber : 2
+            text : Warning
+            type : warning
+            url : http://127.0.0.1:8000/inspector-protocol/paint-worklet/resources/console-worklet-script.js
+        }
+    ]
+    [1] : [
+        [0] : {
+            columnNumber : 8
+            functionName :
+            lineNumber : 0
+            text : Information
+            type : info
+            url : http://127.0.0.1:8000/inspector-protocol/paint-worklet/resources/console-worklet-script.js
+        }
+        [1] : {
+            columnNumber : 8
+            functionName :
+            lineNumber : 1
+            text : Log
+            type : log
+            url : http://127.0.0.1:8000/inspector-protocol/paint-worklet/resources/console-worklet-script.js
+        }
+        [2] : {
+            columnNumber : 8
+            functionName :
+            lineNumber : 2
+            text : Warning
+            type : warning
+            url : http://127.0.0.1:8000/inspector-protocol/paint-worklet/resources/console-worklet-script.js
+        }
+    ]
+]
+
