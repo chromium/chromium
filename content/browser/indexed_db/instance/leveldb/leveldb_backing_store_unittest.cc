@@ -273,6 +273,37 @@ class LevelDbBackingStoreTestWithBlobs
   bool IncludesFileSystemAccessHandles() override { return false; }
 };
 
+// Verifies the key comparator used in the external object change maps.
+// Regression test for crbug.com/589433703
+TEST_F(LevelDbBackingStoreTestWithBlobs, ExternalObjectsWithEquivalentKeys) {
+  // Two keys that should be treated as equivalent, even though they don't have
+  // the same byte-wise serialized representation.
+  const std::array<IndexedDBKey, 2> keys = {
+      IndexedDBKey(0.0, blink::mojom::IDBKeyType::Number),
+      IndexedDBKey(-0.0, blink::mojom::IDBKeyType::Number)};
+  const IndexedDBValue first("first", {CreateBlobInfo(u"first", "first")});
+  const IndexedDBValue second("second", {CreateBlobInfo(u"second", "second")});
+
+  BackingStore::Database db(*backing_store(),
+                            BackingStore::DatabaseMetadata{u"name"});
+  db.metadata().id = 1;
+  std::unique_ptr<indexed_db::BackingStore::Transaction> transaction =
+      CreateAndBeginTransaction(db,
+                                blink::mojom::IDBTransactionMode::ReadWrite);
+  ASSERT_TRUE(transaction->PutRecord(1, keys[0], first.Clone()).has_value());
+  ASSERT_TRUE(transaction->PutRecord(1, keys[1], second.Clone()).has_value());
+
+  for (const IndexedDBKey& key : keys) {
+    StatusOr<IndexedDBValue> result = transaction->GetRecord(1, key);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(base::span(result->bits), base::span(second.bits));
+    ASSERT_EQ(result->external_objects.size(), 1u);
+    EXPECT_EQ(result->external_objects[0].type(),
+              second.external_objects[0].type());
+  }
+  transaction->Rollback();
+}
+
 // http://crbug.com/1131151
 // Validate that recovery journal cleanup during a transaction does
 // not delete blobs that were just written.
