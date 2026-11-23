@@ -78,9 +78,9 @@ class CORE_EXPORT [[nodiscard]] SlotAssignmentRecalcInProgressScope final {
   // Reports a violation of `invariant` if `violated` is true, and returns
   // `violated`, so that callers that need a fallback can branch on it. Callers
   // that only report can ignore the result. If the
-  // EnforceSlotAssignmentInvariants feature is enabled, a violation is fatal in
-  // DCHECK builds, and dumps without crashing (with a crash key naming the
-  // rule) in release builds. Until release builds are switched to CHECK, every
+  // EnforceSlotAssignmentInvariants feature is enabled, a violation is fatal
+  // in all builds (with a crash key naming the rule). The feature has a kill
+  // switch: while it is disabled, violations are not reported, so every
   // caller must stay safe after a violation.
   ALWAYS_INLINE static bool ReportViolationIf(
       bool violated,

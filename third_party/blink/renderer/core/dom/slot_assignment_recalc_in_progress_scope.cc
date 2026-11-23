@@ -73,10 +73,8 @@ void SlotAssignmentRecalcInProgressScope::ReportViolation(
   }
   SCOPED_CRASH_KEY_STRING32("SlotAssignment", "invariant",
                             InvariantName(invariant));
-  // TODO(crbug.com/582346913): Switch to CHECK once release crash reports are
-  // clean.
-  DUMP_WILL_BE_NOTREACHED() << "Slot assignment recalc invariant violated: "
-                            << InvariantName(invariant);
+  NOTREACHED() << "Slot assignment recalc invariant violated: "
+               << InvariantName(invariant);
 }
 
 // static

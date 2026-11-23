@@ -291,8 +291,8 @@ void SlotAssignment::RecalcShadowRoots(
   }
   Document& document = roots.front()->GetDocument();
   // Recalc must not run while the tree is unstable (rule R5 in
-  // slot_assignment.h). Until this is a CHECK, recalc anyway, as before this
-  // was enforced.
+  // slot_assignment.h). If reporting is disabled, recalc anyway, as before
+  // this was enforced.
   SlotAssignmentRecalcInProgressScope::ReportViolationIf(
       document.IsSlotAssignmentRecalcForbidden(),
       SlotAssignmentInvariant::kNoRecalcWhileForbidden);
