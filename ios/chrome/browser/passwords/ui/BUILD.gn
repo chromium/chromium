@@ -1,0 +1,21 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("title_view") {
+  sources = [
+    "create_password_manager_title_view.h",
+    "create_password_manager_title_view.mm",
+  ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
+    "//ios/public/provider/chrome/browser/font:font_api",
+    "//ui/base",
+  ]
+  frameworks = [
+    "Foundation.framework",
+    "UIKit.framework",
+  ]
+}

@@ -58,7 +58,7 @@ source_set("ui") {
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/passwords/password_suggestion/ui:password_suggestion_utils",
-    "//ios/chrome/browser/settings/ui_bundled/password:title_view",
+    "//ios/chrome/browser/passwords/ui:title_view",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/list_model",

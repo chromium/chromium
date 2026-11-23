@@ -16,7 +16,7 @@ source_set("ui") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/passwords/password_breach/public",
-    "//ios/chrome/browser/settings/ui_bundled/password:title_view",
+    "//ios/chrome/browser/passwords/ui:title_view",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/button_stack",
     "//ios/chrome/common/ui/confirmation_alert",

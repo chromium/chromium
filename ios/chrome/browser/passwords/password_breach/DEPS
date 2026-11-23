@@ -1,6 +1,7 @@
 include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/autofill/model",
+  "+ios/chrome/browser/passwords/ui",
   "+ios/chrome/browser/settings/password/public",
   "+ios/chrome/browser/settings/ui_bundled/password",
   "+ios/chrome/browser/signin/model/authentication_service.h",

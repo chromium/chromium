@@ -9,7 +9,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/webauthn/ios/passkey_types.h"
-#import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
+#import "ios/chrome/browser/passwords/ui/create_password_manager_title_view.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"

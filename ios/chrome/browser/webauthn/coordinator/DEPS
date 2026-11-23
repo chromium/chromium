@@ -1,6 +1,6 @@
 include_rules = [
   # keep-sorted start
-  "+ios/chrome/browser/settings/ui_bundled/password",
+  "+ios/chrome/browser/passwords/ui",
   "+ios/chrome/browser/signin/model",
   # keep-sorted end
 ]

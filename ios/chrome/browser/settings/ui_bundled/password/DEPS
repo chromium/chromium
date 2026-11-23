@@ -3,6 +3,7 @@ include_rules = [
   "+components/trusted_vault/trusted_vault_server_constants.h",
   "+ios/chrome/browser/device_reauth/model",
   "+ios/chrome/browser/passwords/password_exporter/coordinator",
+  "+ios/chrome/browser/passwords/ui",
   "+ios/chrome/browser/settings/password/public",
   # keep-sorted end
 ]
