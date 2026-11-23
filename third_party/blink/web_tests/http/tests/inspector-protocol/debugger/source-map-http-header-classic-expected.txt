@@ -1,0 +1,8 @@
+Tests that SourceMap and X-SourceMap HTTP headers are propagated on Debugger.scriptParsed events.
+Added script:
+  url: http://127.0.0.1:8000/inspector-protocol/debugger/resources/source-map.php
+  sourceMapUrl: http://localhost/source.map.js
+Added script:
+  url: http://127.0.0.1:8000/inspector-protocol/debugger/resources/x-source-map.php
+  sourceMapUrl: http://localhost/x-source.map.js
+
