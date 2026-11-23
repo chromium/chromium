@@ -1,4 +1,4 @@
-Tests that valid parsed script notifications are received by front-end.
+Tests that Debugger.scriptParsed reports valid start and end offsets for inline scripts.
 script 1:
     start: 1:12
     end: 5:0
