@@ -59,6 +59,9 @@ class SlotRecalcSideEffects final
   // UpdateFlatTreeNodeDataForAssignedNodes()).
   HeapVector<Member<Node>> nodes_needing_parent_slot_changed;
   bool switched_between_assignment_and_fallback = false;
+  // True if the slot's children are inactive fallback content that may have
+  // layout objects, so ApplyRecalcSideEffects() must detach them.
+  bool detach_fallback_children = false;
 };
 
 class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
@@ -221,6 +224,12 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   // Tracks whether the most recent slot assignment was empty, hence the
   // light-DOM children of the slot element (if any) were active fallback.
   bool flat_tree_children_are_fallback_ = true;
+  // Set when the slot's children change (including moveBefore(), which keeps
+  // the moved node's layout object) or when the slot leaves its shadow tree
+  // (outside a shadow tree, the slot renders its children). Cleared by
+  // RecalcFlatTreeChildren(). While false, the children of a slot with
+  // assigned nodes are known to be detached.
+  bool fallback_children_changed_ = true;
 
   bool slotchange_event_enqueued_ = false;
 

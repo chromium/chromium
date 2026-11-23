@@ -359,4 +359,76 @@ TEST_F(HTMLSlotElementInDocumentTest,
   EXPECT_EQ(color_of(slotted2), kAssignedColor);
 }
 
+// A rendered element moved with moveBefore() into a slot that already has
+// assigned nodes keeps its layout object across the move. It is inactive
+// fallback content, so slot assignment recalc must detach it, even though the
+// slot did not switch between assigned nodes and fallback.
+TEST_F(HTMLSlotElementInDocumentTest, MoveBeforeIntoSlotWithAssignedNodes) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <div id="host">
+      <template shadowrootmode="open"><slot id="slot"></slot></template>
+      <span id="assigned">assigned</span>
+    </div>
+    <div id="other"><span id="moved">moved</span></div>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  Element* host = GetDocument().getElementById(AtomicString("host"));
+  auto* slot = To<HTMLSlotElement>(
+      host->GetShadowRoot()->getElementById(AtomicString("slot")));
+  Element* moved = GetDocument().getElementById(AtomicString("moved"));
+  ASSERT_FALSE(slot->AssignedNodes().empty());
+  ASSERT_TRUE(moved->GetLayoutObject());
+
+  slot->moveBefore(moved, nullptr, ASSERT_NO_EXCEPTION);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(slot->AssignedNodes().empty());
+  EXPECT_EQ(FlatTreeTraversal::Parent(*moved), nullptr);
+  EXPECT_FALSE(moved->GetLayoutObject());
+}
+
+// A slot moved with moveBefore() out of a shadow tree renders its children.
+// When it is then moved into another shadow tree where it gets assigned nodes,
+// those children become inactive fallback content and must be detached.
+TEST_F(HTMLSlotElementInDocumentTest, MoveBeforeSlotBetweenTrees) {
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <div id="host1">
+      <template shadowrootmode="open"><div id="container"><slot id="slot"><span
+          id="fallback">fallback</span></slot></div></template>
+      <span>assigned1</span>
+    </div>
+    <div id="other"></div>
+    <div id="host2">
+      <template shadowrootmode="open"><div id="container"></div></template>
+      <span>assigned2</span>
+    </div>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  Element* host1 = GetDocument().getElementById(AtomicString("host1"));
+  Element* host2 = GetDocument().getElementById(AtomicString("host2"));
+  Element* other = GetDocument().getElementById(AtomicString("other"));
+  auto* slot = To<HTMLSlotElement>(
+      host1->GetShadowRoot()->getElementById(AtomicString("slot")));
+  Element* fallback =
+      host1->GetShadowRoot()->getElementById(AtomicString("fallback"));
+  Element* container2 =
+      host2->GetShadowRoot()->getElementById(AtomicString("container"));
+  ASSERT_FALSE(slot->AssignedNodes().empty());
+  ASSERT_FALSE(fallback->GetLayoutObject());
+
+  // Outside a shadow tree, the slot renders its children.
+  other->moveBefore(slot, nullptr, ASSERT_NO_EXCEPTION);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(fallback->GetLayoutObject());
+
+  container2->moveBefore(slot, nullptr, ASSERT_NO_EXCEPTION);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(slot->AssignedNodes().empty());
+  EXPECT_EQ(FlatTreeTraversal::Parent(*fallback), nullptr);
+  EXPECT_FALSE(fallback->GetLayoutObject());
+}
+
 }  // namespace blink

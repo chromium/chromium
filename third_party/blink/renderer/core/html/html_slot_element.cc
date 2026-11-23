@@ -320,6 +320,7 @@ void HTMLSlotElement::ClearAssignedNodes() {
 void HTMLSlotElement::ClearAssignedNodesAndFlatTreeChildren() {
   ClearAssignedNodes();
   flat_tree_children_.clear();
+  fallback_children_changed_ = true;
 }
 
 void HTMLSlotElement::UpdateFlatTreeNodeDataForAssignedNodes(
@@ -398,6 +399,15 @@ void HTMLSlotElement::RecalcFlatTreeChildren(
   side_effects.switched_between_assignment_and_fallback =
       flat_tree_children_are_fallback_ != new_children_are_fallback;
   flat_tree_children_are_fallback_ = new_children_are_fallback;
+  // Children of a slot with assigned nodes are inactive fallback content, and
+  // must not have layout objects. They were detached when the slot switched
+  // to assigned nodes, so they only need to be detached again if they may
+  // have been attached since then (see fallback_children_changed_).
+  side_effects.detach_fallback_children =
+      !new_children_are_fallback &&
+      (side_effects.switched_between_assignment_and_fallback ||
+       fallback_children_changed_);
+  fallback_children_changed_ = false;
 }
 
 SlotRecalcSideEffects* HTMLSlotElement::DidRecalcAssignedNodes() {
@@ -417,7 +427,7 @@ void HTMLSlotElement::ApplyRecalcSideEffects(
   for (Node* node : side_effects.nodes_needing_parent_slot_changed) {
     node->ParentSlotChanged();
   }
-  if (!assigned_nodes_.empty()) {
+  if (side_effects.detach_fallback_children) {
     for (auto& child : NodeTraversal::ChildrenOf(*this)) {
       // Detach fallback nodes. Host children which are no longer slotted are
       // detached by SlotAssignment.
@@ -897,6 +907,7 @@ bool HTMLSlotElement::HasAssignedNodesSlow() const {
 
 void HTMLSlotElement::ChildrenChanged(const ChildrenChange& change) {
   HTMLElement::ChildrenChanged(change);
+  fallback_children_changed_ = true;
   if (SupportsAssignment())
     SetShadowRootNeedsAssignmentRecalc();
 }
