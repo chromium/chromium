@@ -203,8 +203,14 @@ base::HistogramBase::Count32 GetHistogramDeltaTotalCount(
 }
 
 // Verifies that metrics reporting state is correctly written to disk when set.
+// TODO(crbug.com/360562596): Flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ChangeMetricsReportingState DISABLED_ChangeMetricsReportingState
+#else
+#define MAYBE_ChangeMetricsReportingState ChangeMetricsReportingState
+#endif
 IN_PROC_BROWSER_TEST_P(MetricsReportingStateTestParameterized,
-                       ChangeMetricsReportingState) {
+                       MAYBE_ChangeMetricsReportingState) {
   ASSERT_EQ(IsMetricsReportingEnabledInitialValue(),
             MetricsReportingStateTest::IsMetricsAndCrashReportingEnabled());
 
