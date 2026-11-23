@@ -6,6 +6,8 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/omnibox/browser/omnibox_pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/embedder/default_model/default_model_test_base.h"
 #include "components/segmentation_platform/embedder/home_modules/card_selection_info.h"
@@ -76,6 +78,8 @@ class EphemeralHomeModuleBackendTest : public DefaultModelTestBase {
         profile_pref_service_.registry());
     HomeModulesCardRegistry::RegisterLocalStatePrefs(
         local_state_pref_service_.registry());
+    profile_pref_service_.registry()->RegisterBooleanPref(
+        omnibox::kFuseboxAimQuerySubmitted, false);
     registry_ = HomeModulesCardRegistry::Create(&profile_pref_service_,
                                                 &local_state_pref_service_);
     if (!registry_) {

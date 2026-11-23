@@ -13,6 +13,7 @@
 #include "components/segmentation_platform/embedder/home_modules/card_selection_info.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/default_browser_promo.h"
+#include "components/segmentation_platform/embedder/home_modules/fusebox_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/history_sync_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/ntp_theme_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/quick_delete_promo.h"
@@ -69,6 +70,11 @@ HomeModulesCardRegistryAndroid::HomeModulesCardRegistryAndroid(
         std::make_unique<TipsNotificationsPromo>(profile_prefs_));
   }
 
+  if (FuseboxPromo::IsEnabled(profile_prefs_)) {
+    all_cards_by_priority_.push_back(
+        std::make_unique<FuseboxPromo>(profile_prefs_));
+  }
+
   InitializeAfterAddingCards();
 }
 
@@ -91,6 +97,7 @@ void HomeModulesCardRegistryAndroid::RegisterProfilePrefs(
   AuxiliarySearchPromo::RegisterProfilePrefs(registry);
   HistorySyncPromo::RegisterProfilePrefs(registry);
   TipsNotificationsPromo::RegisterProfilePrefs(registry);
+  FuseboxPromo::RegisterProfilePrefs(registry);
 }
 
 void HomeModulesCardRegistryAndroid::NotifyCardShown(

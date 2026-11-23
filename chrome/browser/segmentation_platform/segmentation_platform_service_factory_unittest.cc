@@ -17,6 +17,7 @@
 #include "chrome/browser/segmentation_platform/ukm_data_manager_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/commerce/core/mock_shopping_service.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -124,7 +125,8 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
          {features::kSegmentationPlatformURLVisitResumptionRanker, {}},
          {features::kSegmentationPlatformEphemeralCardRanker, {}},
          {features::kSegmentationSurveyPage, {}},
-         {features::kSegmentationPlatformFedCmUser, {}}},
+         {features::kSegmentationPlatformFedCmUser, {}},
+         {omnibox::kOmniboxFuseboxUserEdGuidedTour, {}}},
         {});
 
     // Creating profile and initialising segmentation service.
@@ -638,7 +640,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest, EphemeralHomeModuleBackend) {
   // Update this test when adding new cards with inputs.
   // Each card's feature flag should be enabled by test framework for this
   // integration test.
-  ASSERT_EQ(8u, registry->get_all_cards_by_priority().size());
+  ASSERT_EQ(9u, registry->get_all_cards_by_priority().size());
 
   PredictionOptions prediction_options;
   prediction_options.on_demand_execution = true;
@@ -674,6 +676,8 @@ TEST_F(SegmentationPlatformServiceFactoryTest, EphemeralHomeModuleBackend) {
       processing::ProcessedValue::FromFloat(0));
   input_context->metadata_args.emplace(
       "is_eligible_to_tips_opt_in", processing::ProcessedValue::FromFloat(0));
+  input_context->metadata_args.emplace(
+      "is_fusebox_eligible", processing::ProcessedValue::FromFloat(0));
 
   // No cards are added, the model fetches no results and fails.
   ExpectGetAnnotatedNumericResult(

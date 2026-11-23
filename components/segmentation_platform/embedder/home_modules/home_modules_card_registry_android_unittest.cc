@@ -9,10 +9,14 @@
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"
+#include "components/omnibox/browser/omnibox_pref_names.h"
+#include "components/omnibox/common/omnibox_features.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/embedder/home_modules/auxiliary_search_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/default_browser_promo.h"
+#include "components/segmentation_platform/embedder/home_modules/fusebox_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/history_sync_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
 #include "components/segmentation_platform/embedder/home_modules/quick_delete_promo.h"
@@ -38,6 +42,8 @@ class HomeModulesCardRegistryAndroidTest : public testing::Test {
         profile_pref_service_.registry());
     HomeModulesCardRegistryAndroid::RegisterLocalStatePrefs(
         local_state_pref_service_.registry());
+    profile_pref_service_.registry()->RegisterBooleanPref(
+        omnibox::kFuseboxAimQuerySubmitted, false);
   }
 
  protected:
@@ -268,6 +274,36 @@ TEST_F(HomeModulesCardRegistryAndroidTest,
   ExpectCardNotRegistered(registry_.get(), kTipsNotificationsPromo,
                           {kTipsNotificationsPromoShownCount,
                            kIsEligibleToTipsOptIn, kEducationalTipShownCount});
+}
+
+// Tests that the Registry registers the FuseboxPromo card when the feature is
+// enabled and the card is under the impression limit.
+TEST_F(HomeModulesCardRegistryAndroidTest, TestFuseboxPromoCardEnabled) {
+  feature_list_.InitAndEnableFeature(omnibox::kOmniboxFuseboxUserEdGuidedTour);
+  registry_ = HomeModulesCardRegistry::Create(&profile_pref_service_,
+                                              &local_state_pref_service_);
+
+  EXPECT_GE(registry_->all_cards_input_size(), 3u);
+  ExpectCardRegistered(
+      registry_.get(), kFuseboxPromo,
+      {kFuseboxPromoShownCount, kEducationalTipShownCount, kIsFuseboxEligible});
+}
+
+// Tests that the Registry won't register the FuseboxPromo card when it is
+// disabled because of user's impression history.
+TEST_F(HomeModulesCardRegistryAndroidTest, TestFuseboxPromoCardDisabled) {
+  feature_list_.InitAndEnableFeature(omnibox::kOmniboxFuseboxUserEdGuidedTour);
+  for (int i = 0; i < kSingleEphemeralCardMaxImpressions; ++i) {
+    auto card = std::make_unique<FuseboxPromo>(&profile_pref_service_);
+    card->OnShow(&profile_pref_service_, &local_state_pref_service_);
+  }
+
+  registry_ = HomeModulesCardRegistry::Create(&profile_pref_service_,
+                                              &local_state_pref_service_);
+
+  ExpectCardNotRegistered(
+      registry_.get(), kFuseboxPromo,
+      {kFuseboxPromoShownCount, kEducationalTipShownCount, kIsFuseboxEligible});
 }
 
 }  // namespace segmentation_platform::home_modules

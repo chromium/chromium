@@ -2491,6 +2491,14 @@ const FeatureEntry::FeatureParam kTipsNotificationsPromoHideArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
      segmentation_platform::kTipsNotificationsPromo},
 };
+const FeatureEntry::FeatureParam kFuseboxPromoShowArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
+     segmentation_platform::kFuseboxPromo},
+};
+const FeatureEntry::FeatureParam kFuseboxPromoHideArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
+     segmentation_platform::kFuseboxPromo},
+};
 
 const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
     {
@@ -2512,6 +2520,8 @@ const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
          kTipsNotificationsPromoShowArm, nullptr},
         {"- Force hide tips notifications promo",
          kTipsNotificationsPromoHideArm, nullptr},
+        {"- Force show fusebox promo", kFuseboxPromoShowArm, nullptr},
+        {"- Force hide fusebox promo", kFuseboxPromoHideArm, nullptr},
 };
 
 const FeatureEntry::FeatureParam kAndroidVerticalTabs_EnableByDefault[] = {

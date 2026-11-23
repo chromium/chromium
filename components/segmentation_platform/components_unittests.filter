@@ -35,6 +35,7 @@
 *FeedUserModelTest.*
 *FieldTrialRecorderTest.*
 *FrequentFeatureUserModelTest.*
+*FuseboxPromoTest.*
 *HistogramSignalHandlerTest.*
 *HistoryDelegateImplTest.*
 *HistorySyncPromoTest.*
