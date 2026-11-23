@@ -373,7 +373,9 @@ void RemoveSharedTab(NSString* title) {
   if ([self
           isRunningTest:@selector(
                             testNavigateInMainBrowserUpdatesCobrowseContext)] ||
-      [self isRunningTest:@selector(testAssistantPersistsOnColdStart)]) {
+      [self isRunningTest:@selector(testAssistantPersistsOnColdStart)] ||
+      [self isRunningTest:@selector(
+                              testEphemeralAssistantClosesOnSheetLinkClick)]) {
     config.features_enabled.push_back(kEnableCobrowseOnAimSrpTap);
   }
 
@@ -386,7 +388,11 @@ void RemoveSharedTab(NSString* title) {
       [self isRunningTest:@selector(
                               testEphemeralAssistantStaysOpenOnPushState)] ||
       [self isRunningTest:@selector(
-                              testEphemeralAssistantStaysOpenOnReplaceState)]) {
+                              testEphemeralAssistantStaysOpenOnReplaceState)] ||
+      [self isRunningTest:@selector(
+                              testEphemeralAssistantClosesOnSheetLinkClick)] ||
+      [self isRunningTest:@selector(
+                              testEphemeralAssistantClosesOnHelpMenuLink)]) {
     config.features_enabled.push_back(kEphemeralBottomSheet);
   }
 
@@ -1937,6 +1943,55 @@ void RemoveSharedTab(NSString* title) {
 
   [[EarlGrey selectElementWithMatcher:CloseButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that clicking a link inside the bottom sheet opens the link in a new
+// tab and closes the assistant when `kEphemeralBottomSheet` is enabled.
+- (void)testEphemeralAssistantClosesOnSheetLinkClick {
+  [ChromeEarlGrey loadURL:[self simulatedAimURLForQuery:"sheet_link"]];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Open the assistant by tapping a link on the simulated AIM page. The sheet
+  // starts minimized and loads the simulated AIM page containing a link to
+  // `/pony.html`.
+  [ChromeEarlGrey tapWebStateElementWithID:@"my_link"];
+  [ChromeEarlGrey waitForMainTabCount:2];
+  WaitForDetent(AssistantContainerDetent::kMinimized);
+  TapGrabberAndWaitForDetent([self defaultExpandedDetent]);
+
+  // Tap the link inside the bottom sheet's web view via XCUITest (EarlGrey
+  // cannot match HTML DOM elements inside a secondary WKWebView directly).
+  XCUIApplication* app = [[XCUIApplication alloc] init];
+  XCUIElement* sheetLink =
+      app.otherElements[kAssistantContainerAccessibilityIdentifier]
+          .links[@"link"];
+  GREYAssertTrue(
+      [sheetLink
+          waitForExistenceWithTimeout:base::test::ios::kWaitForUIElementTimeout
+                                          .InSecondsF()],
+      @"Expected link inside bottom sheet to appear.");
+  [sheetLink tap];
+
+  // Verify the link opens in a new tab and the assistant closes.
+  [ChromeEarlGrey waitForMainTabCount:3];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:CloseButton()];
+}
+
+// Tests that tapping the Help menu item inside the bottom sheet closes the
+// assistant when `kEphemeralBottomSheet` is enabled.
+- (void)testEphemeralAssistantClosesOnHelpMenuLink {
+  OpenCoBrowse(_defaultURL);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CloseButton()];
+
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kAssistantAIMContextMenuButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                     IDS_IOS_TOOLS_MENU_HELP_MOBILE)] performAction:grey_tap()];
+
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:CloseButton()];
 }
 
 @end

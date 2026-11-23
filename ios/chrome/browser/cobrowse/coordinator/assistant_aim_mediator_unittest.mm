@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -681,6 +682,9 @@ TEST_F(AssistantAIMMediatorTest, HandshakeCapabilitiesResetOnNavigation) {
 // Tests that createNewWebStateForURL correctly dispatches the request to open
 // in a new tab via the scene handler, and minimizes the assistant container.
 TEST_F(AssistantAIMMediatorTest, OpensWebStateInNewTabViaDelegate) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kEphemeralBottomSheet);
+
   GURL url("https://example.com");
 
   // Expect the scene handler to be called with a command to open the URL in a
@@ -1202,4 +1206,85 @@ TEST_F(AssistantAIMMediatorTest, LoadsExistingContextFromAgentOnInit) {
             GURL(kAimZeroStateURL));
 
   [mediator disconnect];
+}
+
+// Tests that intercepting a third-party link in `shouldAllowRequest:`
+// terminates the cobrowse session instead of minimizing the container when
+// `kEphemeralBottomSheet` is enabled.
+TEST_F(AssistantAIMMediatorTest,
+       ShouldAllowRequest_ClosesAssistantWhenEphemeralEnabled) {
+  base::test::ScopedFeatureList ephemeral_feature_list(kEphemeralBottomSheet);
+
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:mock_scene_handler_
+                   forProtocol:@protocol(SceneCommands)];
+  CobrowseBrowserAgent* agent =
+      CobrowseBrowserAgent::FromBrowser(browser_.get());
+  agent->SetSessionActive(true);
+
+  [[mock_container_handler_ reject]
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized
+                               duration:kSheetDetentAnimationDuration
+                                  curve:UIViewAnimationCurveEaseInOut];
+  OCMExpect([mock_scene_handler_ closeAssistant]);
+
+  id<CRWWebStatePolicyDecider> policy_decider =
+      static_cast<id<CRWWebStatePolicyDecider>>(mediator_);
+  GURL third_party_url("https://example.com");
+  base::test::TestFuture<web::WebStatePolicyDecider::PolicyDecision> future;
+  [policy_decider
+      shouldAllowRequest:[NSURLRequest
+                             requestWithURL:net::NSURLWithGURL(third_party_url)]
+             requestInfo:web::WebStatePolicyDecider::RequestInfo(
+                             ui::PageTransition::PAGE_TRANSITION_LINK,
+                             /*target_frame_is_main=*/true,
+                             /*target_frame_is_cross_origin=*/true,
+                             /*target_window_is_cross_origin=*/false,
+                             /*is_user_initiated=*/true,
+                             /*user_tapped_recently=*/true)
+         decisionHandler:base::CallbackToBlock(future.GetCallback())];
+
+  EXPECT_TRUE(future.Get().ShouldCancelNavigation());
+  EXPECT_EQ(url_loader_->load_new_tab_call_count, 1);
+  EXPECT_EQ(url_loader_->last_params.web_params.url, third_party_url);
+  EXPECT_FALSE(agent->IsSessionActive());
+  [mock_scene_handler_ verify];
+  [mock_container_handler_ verify];
+}
+
+// Tests that `createNewWebStateForURL:` terminates the cobrowse session
+// instead of minimizing the container when `kEphemeralBottomSheet` is enabled.
+TEST_F(AssistantAIMMediatorTest,
+       CreateNewWebStateForURL_ClosesAssistantWhenEphemeralEnabled) {
+  base::test::ScopedFeatureList ephemeral_feature_list(kEphemeralBottomSheet);
+
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:mock_scene_handler_
+                   forProtocol:@protocol(SceneCommands)];
+  CobrowseBrowserAgent* agent =
+      CobrowseBrowserAgent::FromBrowser(browser_.get());
+  agent->SetSessionActive(true);
+
+  GURL url("https://example.com");
+  OCMExpect([mock_scene_handler_
+      openURLInNewTab:[OCMArg checkWithBlock:^BOOL(OpenNewTabCommand* command) {
+        return command.URL == url && !command.inIncognito;
+      }]]);
+  OCMExpect([mock_scene_handler_ closeAssistant]);
+  [[mock_container_handler_ reject]
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized
+                               duration:kSheetDetentAnimationDuration
+                                  curve:UIViewAnimationCurveEaseInOut];
+
+  id<CRWWebStateDelegate> delegate =
+      static_cast<id<CRWWebStateDelegate>>(mediator_);
+  web::WebState* result = [delegate webState:fake_web_state_
+                     createNewWebStateForURL:url
+                                   openerURL:GURL()
+                             initiatedByUser:YES];
+
+  EXPECT_EQ(result, nullptr);
+  EXPECT_FALSE(agent->IsSessionActive());
+  [mock_scene_handler_ verify];
+  [mock_container_handler_ verify];
 }

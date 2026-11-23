@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
+#import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
 #import "ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_constants.h"
 #import "ios/chrome/browser/cobrowse/shared/metrics/assistant_aim_metrics_recorder.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_view_controller.h"
@@ -485,6 +486,9 @@ TEST_F(AssistantAIMCoordinatorTest,
 // presented again on next keyboard show.
 TEST_F(AssistantAIMCoordinatorTest,
        TabSharingConsentAlert_LearnMoreMinimizesAndOpensHelpInNewTab) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kEphemeralBottomSheet);
+
   UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
   FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
   FakeUrlLoadingBrowserAgent* url_loader =
@@ -560,4 +564,105 @@ TEST_F(AssistantAIMCoordinatorTest,
   EXPECT_EQ(60, fake_container_handler.mediumDetentPercentage.value());
 
   [mock_view_controller stopMocking];
+}
+
+// Tests that tapping "My Activity" terminates the cobrowse session instead of
+// minimizing the container when `kEphemeralBottomSheet` is enabled.
+TEST_F(AssistantAIMCoordinatorTest,
+       DidTapMyActivity_ClosesAssistantWhenEphemeralEnabled) {
+  base::test::ScopedFeatureList ephemeral_feature_list(kEphemeralBottomSheet);
+  CobrowseBrowserAgent::CreateForBrowser(browser_.get());
+  CobrowseBrowserAgent* agent =
+      CobrowseBrowserAgent::FromBrowser(browser_.get());
+  agent->SetSessionActive(true);
+
+  UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
+  FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
+  FakeUrlLoadingBrowserAgent* url_loader =
+      FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
+          UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
+
+  FakeAssistantContainerCommands* fake_container_handler =
+      [[FakeAssistantContainerCommands alloc] init];
+  [coordinator_ setValue:fake_container_handler forKey:@"containerHandler"];
+
+  OCMExpect([mock_scene_handler_ closeAssistant]);
+
+  [static_cast<id<AssistantAIMViewControllerDelegate>>(coordinator_)
+      assistantAIMViewControllerDidTapMyActivity:nil];
+
+  EXPECT_EQ(GURL(kMyActivityURL), url_loader->last_params.web_params.url);
+  EXPECT_EQ(ui::mojom::WindowOpenDisposition::kCurrentTab,
+            url_loader->last_params.disposition);
+  EXPECT_FALSE(fake_container_handler.lastAnimatedDetent.has_value());
+  EXPECT_FALSE(agent->IsSessionActive());
+  EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
+}
+
+// Tests that tapping "Help" terminates the cobrowse session instead of
+// minimizing the container when `kEphemeralBottomSheet` is enabled.
+TEST_F(AssistantAIMCoordinatorTest,
+       DidTapHelp_ClosesAssistantWhenEphemeralEnabled) {
+  base::test::ScopedFeatureList ephemeral_feature_list(kEphemeralBottomSheet);
+  CobrowseBrowserAgent::CreateForBrowser(browser_.get());
+  CobrowseBrowserAgent* agent =
+      CobrowseBrowserAgent::FromBrowser(browser_.get());
+  agent->SetSessionActive(true);
+
+  UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
+  FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
+  FakeUrlLoadingBrowserAgent* url_loader =
+      FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
+          UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
+
+  FakeAssistantContainerCommands* fake_container_handler =
+      [[FakeAssistantContainerCommands alloc] init];
+  [coordinator_ setValue:fake_container_handler forKey:@"containerHandler"];
+
+  OCMExpect([mock_scene_handler_ closeAssistant]);
+
+  [static_cast<id<AssistantAIMViewControllerDelegate>>(coordinator_)
+      assistantAIMViewControllerDidTapHelp:nil];
+
+  EXPECT_EQ(GURL(kAssistantAIMHelpCenterURL),
+            url_loader->last_params.web_params.url);
+  EXPECT_EQ(ui::mojom::WindowOpenDisposition::kCurrentTab,
+            url_loader->last_params.disposition);
+  EXPECT_FALSE(fake_container_handler.lastAnimatedDetent.has_value());
+  EXPECT_FALSE(agent->IsSessionActive());
+  EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
+}
+
+// Tests that tapping "Learn More" on the tab sharing consent alert terminates
+// the cobrowse session instead of minimizing the container when
+// `kEphemeralBottomSheet` is enabled.
+TEST_F(AssistantAIMCoordinatorTest,
+       TabSharingConsentAlert_LearnMoreClosesAssistantWhenEphemeralEnabled) {
+  base::test::ScopedFeatureList ephemeral_feature_list(kEphemeralBottomSheet);
+  CobrowseBrowserAgent::CreateForBrowser(browser_.get());
+  CobrowseBrowserAgent* agent =
+      CobrowseBrowserAgent::FromBrowser(browser_.get());
+  agent->SetSessionActive(true);
+
+  UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
+  FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
+  FakeUrlLoadingBrowserAgent* url_loader =
+      FakeUrlLoadingBrowserAgent::FromUrlLoadingBrowserAgent(
+          UrlLoadingBrowserAgent::FromBrowser(browser_.get()));
+
+  FakeAssistantContainerCommands* fake_container_handler =
+      [[FakeAssistantContainerCommands alloc] init];
+  [coordinator_ setValue:fake_container_handler forKey:@"containerHandler"];
+
+  OCMExpect([mock_scene_handler_ closeAssistant]);
+
+  [coordinator_ didTapTabSharingConsentLearnMore];
+
+  EXPECT_EQ(GURL(kAssistantAIMHelpCenterURL),
+            url_loader->last_params.web_params.url);
+  EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+            url_loader->last_params.disposition);
+  EXPECT_FALSE(fake_container_handler.lastAnimatedDetent.has_value());
+  EXPECT_FALSE(agent->IsSessionActive());
+  EXPECT_OCMOCK_VERIFY(mock_scene_handler_);
 }

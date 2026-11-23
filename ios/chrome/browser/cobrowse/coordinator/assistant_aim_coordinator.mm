@@ -520,7 +520,8 @@ class AssistantAIMUIStateProvider
 }
 
 // Handles the "Learn more" action from the tab sharing consent alert by
-// collapsing the container and opening the help page in a new tab.
+// opening the help page in a new tab and collapsing (or closing in ephemeral
+// mode) the container.
 - (void)didTapTabSharingConsentLearnMore {
   [_metricsRecorder
       recordFRENoticeAction:AssistantAimFRENoticeAction::kLearnMoreTapped];
@@ -528,13 +529,10 @@ class AssistantAIMUIStateProvider
   if (!self.browser) {
     return;
   }
-  [_containerHandler
-      animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized
-                               duration:kSheetDetentAnimationDuration
-                                  curve:UIViewAnimationCurveEaseInOut];
   UrlLoadParams params =
       UrlLoadParams::InNewTab(GURL(kAssistantAIMHelpCenterURL));
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
+  [self minimizeOrCloseAssistant];
 }
 
 // Creates the WebState displayed in the sheet, with its tab helpers attached.
@@ -552,14 +550,33 @@ class AssistantAIMUIStateProvider
   return webState;
 }
 
-// Minimizes the cobrowse container and opens the specified URL.
+// Opens the specified URL and minimizes the cobrowse container (or closes it in
+// ephemeral mode).
 - (void)minimizeAndOpenURL:(const GURL&)URL {
+  if (!self.browser) {
+    return;
+  }
+  UrlLoadParams params = UrlLoadParams::InCurrentTab(URL);
+  UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
+  [self minimizeOrCloseAssistant];
+}
+
+// Minimizes the assistant container, or terminates the session when
+// `kEphemeralBottomSheet` is enabled.
+- (void)minimizeOrCloseAssistant {
+  if (IsEphemeralBottomSheetEnabled()) {
+    if (self.browser) {
+      if (CobrowseBrowserAgent* agent =
+              CobrowseBrowserAgent::FromBrowser(self.browser)) {
+        agent->TerminateSession();
+      }
+    }
+    return;
+  }
   [_containerHandler
       animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized
                                duration:kSheetDetentAnimationDuration
                                   curve:UIViewAnimationCurveEaseInOut];
-  UrlLoadParams params = UrlLoadParams::InCurrentTab(URL);
-  UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(params);
 }
 
 // Returns whether dark mode is currently active.

@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/cobrowse/model/cobrowse_tab_helper.h"
 
 #import "base/no_destructor.h"
+#import "base/run_loop.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/omnibox/browser/mock_aim_eligibility_service.h"
 #import "components/search_engines/template_url_service.h"
@@ -672,4 +674,27 @@ TEST_F(CobrowseTabHelperTest,
 
   [mock_scene_commands_handler() verify];
   EXPECT_TRUE(agent()->IsSessionActive());
+}
+
+// Tests that a pending `ShowAssistant` task posted from `WasShown` does not
+// re-open the assistant if the session was terminated before the task runs.
+TEST_F(CobrowseTabHelperTest, WasShownDoesNotShowAssistantAfterSessionEnded) {
+  web::FakeWebState* web_state =
+      CreateAndInsertWebState(GURL("https://www.example.com"));
+  agent()->SetSessionActive(true);
+
+  [[mock_scene_commands_handler() reject] showAssistant];
+
+  // Showing the WebState posts `ShowAssistant` asynchronously.
+  web_state->WasShown();
+
+  // Terminate the session before the posted task executes.
+  agent()->SetSessionActive(false);
+
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  [mock_scene_commands_handler() verify];
 }

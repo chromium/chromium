@@ -143,6 +143,13 @@ void CobrowseTabHelper::WebStateDestroyed(web::WebState* web_state) {
 #pragma mark - Private helpers
 
 void CobrowseTabHelper::ShowAssistant() {
+  // The session may have been terminated after `WasShown` posted this task
+  // (e.g., when a link clicked inside the bottom sheet opens a new tab and
+  // closes the ephemeral session).
+  if (!delegate_ || !delegate_->IsSessionActive()) {
+    return;
+  }
+
   web::WebState* web_state = observation_.GetSource();
   if (!web_state) {
     return;

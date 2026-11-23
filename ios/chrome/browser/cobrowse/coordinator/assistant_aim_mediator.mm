@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/net/model/network_change_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
@@ -260,10 +261,7 @@
       params.web_params.is_renderer_initiated = true;
       params.web_params.transition_type = ui::PAGE_TRANSITION_LINK;
       _urlLoader->Load(params);
-      [_containerHandler
-          animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized
-                                   duration:kSheetDetentAnimationDuration
-                                      curve:UIViewAnimationCurveEaseInOut];
+      [self minimizeOrCloseAssistant];
     }
   } else {
     decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
@@ -284,10 +282,7 @@
 
   [self.sceneHandler openURLInNewTab:command];
 
-  [_containerHandler
-      animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized
-                               duration:kSheetDetentAnimationDuration
-                                  curve:UIViewAnimationCurveEaseInOut];
+  [self minimizeOrCloseAssistant];
 
   return nullptr;
 }
@@ -319,6 +314,21 @@
 }
 
 #pragma mark - Private helpers
+
+// Minimizes the assistant container, or terminates the session when
+// `kEphemeralBottomSheet` is enabled.
+- (void)minimizeOrCloseAssistant {
+  if (IsEphemeralBottomSheetEnabled()) {
+    if (_cobrowseBrowserAgent) {
+      _cobrowseBrowserAgent->TerminateSession();
+    }
+    return;
+  }
+  [_containerHandler
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized
+                               duration:kSheetDetentAnimationDuration
+                                  curve:UIViewAnimationCurveEaseInOut];
+}
 
 // Loads the URL defined in the cobrowse context.
 - (void)loadAIMURL {
