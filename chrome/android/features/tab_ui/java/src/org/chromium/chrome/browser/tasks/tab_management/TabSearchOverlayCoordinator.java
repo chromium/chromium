@@ -98,7 +98,6 @@ import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.base.KeyNavigationUtil;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -173,7 +172,6 @@ public class TabSearchOverlayCoordinator
     private final NullableObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
-    private final @Nullable EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
     private final BackPressManager mBackPressManager;
     private final MonotonicObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     private final OneshotSupplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
@@ -222,7 +220,6 @@ public class TabSearchOverlayCoordinator
      * @param modalDialogManagerSupplier Supplier for the modal dialog manager.
      * @param lifecycleDispatcher Dispatcher for activity lifecycle events.
      * @param tabModelSelectorSupplier Supplier for the tab model selector.
-     * @param edgeToEdgeSystemBarColorHelper Helper for managing system bar colors in edge-to-edge.
      * @param backPressManager Manager for intercepting and handling system-level back presses.
      * @param compositorViewHolderSupplier Supplier for the compositor view holder.
      * @param tabGroupUiActionHandlerSupplier Supplier for the tab group UI action handler.
@@ -239,7 +236,6 @@ public class TabSearchOverlayCoordinator
             NullableObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
-            @Nullable EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper,
             BackPressManager backPressManager,
             MonotonicObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
             OneshotSupplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
@@ -253,7 +249,6 @@ public class TabSearchOverlayCoordinator
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mLifecycleDispatcher = lifecycleDispatcher;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
-        mEdgeToEdgeSystemBarColorHelper = edgeToEdgeSystemBarColorHelper;
         mBackPressManager = backPressManager;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
         mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
@@ -426,8 +421,7 @@ public class TabSearchOverlayCoordinator
                 this::bringTabGroupToFront,
                 omniboxActionDelegate,
                 /* backPressManager= */ null,
-                embedder,
-                mEdgeToEdgeSystemBarColorHelper);
+                embedder);
         setSearchUiElements();
 
         mSearchUiCoordinator

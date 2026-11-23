@@ -249,7 +249,6 @@ public class TabSearchOverlayCoordinatorUnitTest {
                         ObservableSuppliers.createNonNull(mModalDialogManager),
                         mActivityLifecycleDispatcher,
                         mTabModelSelectorSupplier,
-                        /* edgeToEdgeSystemBarColorHelper= */ null,
                         mBackPressManager,
                         ObservableSuppliers.createNonNull(mCompositorViewHolder),
                         mTabGroupUiActionHandlerSupplier,
@@ -330,7 +329,6 @@ public class TabSearchOverlayCoordinatorUnitTest {
                         ObservableSuppliers.createNonNull(mModalDialogManager),
                         mActivityLifecycleDispatcher,
                         mTabModelSelectorSupplier,
-                        /* edgeToEdgeSystemBarColorHelper= */ null,
                         mBackPressManager,
                         ObservableSuppliers.createNonNull(mCompositorViewHolder),
                         mTabGroupUiActionHandlerSupplier,
@@ -770,7 +768,6 @@ public class TabSearchOverlayCoordinatorUnitTest {
                         any(),
                         mBringTabGroupToFrontCallbackCaptor.capture(),
                         mOmniboxActionDelegateCaptor.capture(),
-                        any(),
                         any(),
                         any());
     }
@@ -1336,7 +1333,6 @@ public class TabSearchOverlayCoordinatorUnitTest {
                         ObservableSuppliers.createNonNull(mModalDialogManager),
                         mActivityLifecycleDispatcher,
                         mTabModelSelectorSupplier,
-                        /* edgeToEdgeSystemBarColorHelper= */ null,
                         mBackPressManager,
                         ObservableSuppliers.createNonNull(mCompositorViewHolder),
                         mTabGroupUiActionHandlerSupplier,

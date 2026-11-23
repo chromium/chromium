@@ -5,15 +5,13 @@
 package org.chromium.chrome.browser.searchwidget;
 
 import static org.chromium.build.NullUtil.assertNonNull;
-import static org.chromium.build.NullUtil.assumeNonNull;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
@@ -41,12 +39,10 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
 import org.chromium.chrome.browser.ui.edge_to_edge.NoOpTopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.omnibox.TextSelection;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.function.Supplier;
@@ -57,11 +53,10 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class SearchUiCoordinator {
-    private final Activity mActivity;
+    private final Context mContext;
     private @Nullable View mControlContainer;
     private @Nullable SearchActivityLocationBarLayout mSearchBox;
     private @Nullable View mAnchorView;
-    private @Nullable EdgeToEdgeSystemBarColorHelper mSystemBarColorHelper;
     private @Nullable BackPressManager mBackPressManager;
     private @Nullable OmniboxResourceProvider mResourceProvider;
     private @Nullable LocationBarCoordinator mLocationBarCoordinator;
@@ -76,11 +71,11 @@ public class SearchUiCoordinator {
     /**
      * Constructs a new {@link SearchUiCoordinator}.
      *
-     * @param activity Hosting activity.
+     * @param context Context for resolving colors.
      * @param locationBarDataProvider The location bar data provider.
      */
-    public SearchUiCoordinator(Activity activity, LocationBarDataProvider locationBarDataProvider) {
-        mActivity = activity;
+    public SearchUiCoordinator(Context context, LocationBarDataProvider locationBarDataProvider) {
+        mContext = context;
         mLocationBarDataProvider = locationBarDataProvider;
         // SearchUiCoordinator contexts (e.g. hub search, tab search, search widgets) are transient
         // overlays and should always use mobile-style layouts rather than desktop-style popovers.
@@ -105,7 +100,6 @@ public class SearchUiCoordinator {
      * @param backPressManager Optional back press manager. If null, an internal instance is
      *     created.
      * @param locationBarEmbedder Location bar embedder.
-     * @param systemBarColorHelper Edge-to-edge system bar color helper.
      */
     public void initialize(
             View contentView,
@@ -121,14 +115,12 @@ public class SearchUiCoordinator {
             Callback<String> bringTabGroupToFrontCallback,
             OmniboxActionDelegateImpl omniboxActionDelegate,
             @Nullable BackPressManager backPressManager,
-            LocationBarEmbedder locationBarEmbedder,
-            @Nullable EdgeToEdgeSystemBarColorHelper systemBarColorHelper) {
+            LocationBarEmbedder locationBarEmbedder) {
         assert mLocationBarCoordinator == null : "initialize() should only be called once";
 
         mControlContainer = controlContainer;
         mSearchBox = contentView.findViewById(R.id.search_location_bar);
         mAnchorView = contentView.findViewById(R.id.toolbar);
-        mSystemBarColorHelper = systemBarColorHelper;
         mBackPressManager = backPressManager != null ? backPressManager : new BackPressManager();
         Context context = mSearchBox.getContext();
         mResourceProvider =
@@ -319,27 +311,42 @@ public class SearchUiCoordinator {
         mSearchBox.beginQuery(session.intentOrigin, session.searchType, windowAndroid);
     }
 
+    /** Returns the background color of the anchor view for the current incognito state. */
+    public @ColorInt int getAnchorBackgroundColor() {
+        return getAnchorBackgroundColor(mLocationBarDataProvider.isIncognitoBranded());
+    }
+
+    private @ColorInt int getAnchorBackgroundColor(boolean isIncognito) {
+        @ColorRes
+        int colorRes =
+                isIncognito
+                        ? R.color.omnibox_dropdown_bg_incognito
+                        : R.color.omnibox_suggestion_dropdown_bg;
+        return mContext.getColor(colorRes);
+    }
+
     /**
      * Sets the color scheme of the search box background and anchor view background based on the
      * current incognito state. In the non incognito state, the color scheme is the same as what is
      * defined on initialize in {@link SearchActivityLocationBarLayout}.
      *
+     * <p>This does not color the system bars: embedders that own their window (e.g. {@link
+     * SearchActivity}) do that themselves, using {@link #getAnchorBackgroundColor()}.
+     *
      * @param isIncognito Whether the current session is incognito.
      */
     public void setColorScheme(boolean isIncognito) {
-        @ColorRes int anchorViewBackgroundColorRes = R.color.omnibox_suggestion_dropdown_bg;
-        @ColorRes int searchBoxColorRes = R.color.search_suggestion_bg_color;
-
-        if (isIncognito) {
-            anchorViewBackgroundColorRes = R.color.omnibox_dropdown_bg_incognito;
-            searchBoxColorRes = R.color.toolbar_text_box_background_incognito;
-        }
+        @ColorRes
+        int searchBoxColorRes =
+                isIncognito
+                        ? R.color.toolbar_text_box_background_incognito
+                        : R.color.search_suggestion_bg_color;
 
         assertNonNull(mSearchBox)
                 .getBackground()
-                .setBackgroundColor(mActivity.getColor(searchBoxColorRes));
+                .setBackgroundColor(mContext.getColor(searchBoxColorRes));
 
-        int anchorViewColor = mActivity.getColor(anchorViewBackgroundColorRes);
+        @ColorInt int anchorViewColor = getAnchorBackgroundColor(isIncognito);
         GradientDrawable anchorViewBackground =
                 (GradientDrawable) assertNonNull(mAnchorView).getBackground();
         anchorViewBackground.setColor(anchorViewColor);
@@ -349,30 +356,6 @@ public class SearchUiCoordinator {
             gradientDrawable.setColor(anchorViewColor);
         } else {
             mControlContainer.setBackgroundColor(anchorViewColor);
-        }
-
-        setStatusAndNavBarColors();
-    }
-
-    /**
-     * Sets the status and navigation bar colors to match the background color of the anchor view.
-     *
-     * <p>Make sure that mAnchorView has the desired background color before you call this method.
-     */
-    public void setStatusAndNavBarColors() {
-        Drawable anchorViewBackground = assertNonNull(mAnchorView).getBackground();
-        if (!(anchorViewBackground instanceof GradientDrawable gradientDrawable)) {
-            assert false : "Unsupported background drawable.";
-            return;
-        }
-
-        ColorStateList color = gradientDrawable.getColor();
-        int anchorViewColor = assumeNonNull(color).getDefaultColor();
-
-        StatusBarColorController.setStatusBarColor(
-                mSystemBarColorHelper, mActivity, anchorViewColor);
-        if (mSystemBarColorHelper != null) {
-            mSystemBarColorHelper.setNavigationBarColor(anchorViewColor);
         }
     }
 }

@@ -17,6 +17,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
@@ -75,6 +76,7 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
+import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.ui.AsyncViewStub;
@@ -82,6 +84,7 @@ import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.KeyNavigationUtil;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
@@ -317,10 +320,6 @@ public class SearchActivity extends AsyncInitializationActivity
         mSnackbarManager =
                 new SnackbarManager(this, contentView, null, null, getModalDialogManager());
 
-        EdgeToEdgeSystemBarColorHelper edgeToEdgeHelper =
-                getEdgeToEdgeManager() != null
-                        ? getEdgeToEdgeManager().getEdgeToEdgeSystemBarColorHelper()
-                        : null;
         // Creates {@link LocationBarCoordinator}, {@link SearchBoxDataProvider}, and {@link
         // LocationBarEmbedderUiOverrides} in addition to handling other UI specific logic.
         mSearchUiCoordinator.initialize(
@@ -337,8 +336,7 @@ public class SearchActivity extends AsyncInitializationActivity
                 this::bringTabGroupToFront,
                 createOmniboxActionDelegate(),
                 /* backPressManager= */ null,
-                getLocationBarEmbedder(),
-                edgeToEdgeHelper);
+                getLocationBarEmbedder());
         mSearchUiCoordinator.addUrlFocusChangeListener(this);
         getOnBackPressedDispatcher()
                 .addCallback(this, mSearchUiCoordinator.getBackPressManager().getCallback());
@@ -590,6 +588,28 @@ public class SearchActivity extends AsyncInitializationActivity
                 HISTOGRAM_LAUNCHED_WITH_QUERY, !TextUtils.isEmpty(mCurrentSession.query));
 
         mSearchUiCoordinator.beginQuery(mCurrentSession, getWindowAndroid());
+        updateSystemBarColors();
+    }
+
+    /**
+     * Sets the status and navigation bar colors to match the background color of the search UI
+     * anchor view.
+     *
+     * <p>This lives here rather than in {@link SearchUiCoordinator} because the coordinator is also
+     * embedded in windows it does not own (e.g. the tab search overlay).
+     */
+    private void updateSystemBarColors() {
+        @ColorInt int anchorViewColor = mSearchUiCoordinator.getAnchorBackgroundColor();
+
+        EdgeToEdgeManager edgeToEdgeManager = getEdgeToEdgeManager();
+        @Nullable EdgeToEdgeSystemBarColorHelper systemBarColorHelper =
+                edgeToEdgeManager != null
+                        ? edgeToEdgeManager.getEdgeToEdgeSystemBarColorHelper()
+                        : null;
+        StatusBarColorController.setStatusBarColor(systemBarColorHelper, this, anchorViewColor);
+        if (systemBarColorHelper != null) {
+            systemBarColorHelper.setNavigationBarColor(anchorViewColor);
+        }
     }
 
     @SuppressWarnings("NullAway")

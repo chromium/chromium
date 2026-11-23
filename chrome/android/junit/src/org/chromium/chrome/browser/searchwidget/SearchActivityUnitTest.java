@@ -28,6 +28,7 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.view.KeyEvent;
@@ -59,6 +60,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.content.WebContentsFactory;
@@ -95,6 +97,8 @@ import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid.IntentCallback;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeManager;
+import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 
@@ -106,10 +110,22 @@ import java.util.Set;
 public class SearchActivityUnitTest {
     private static class TestSearchActivity extends SearchActivity {
         private boolean mFinishedDeferredInitialization;
+        private @Nullable EdgeToEdgeManager mEdgeToEdgeManagerForTesting;
 
         @Override
         void finishDeferredInitialization() {
             mFinishedDeferredInitialization = true;
+        }
+
+        @Override
+        public @Nullable EdgeToEdgeManager getEdgeToEdgeManager() {
+            return mEdgeToEdgeManagerForTesting != null
+                    ? mEdgeToEdgeManagerForTesting
+                    : super.getEdgeToEdgeManager();
+        }
+
+        void setEdgeToEdgeManagerForTesting(@Nullable EdgeToEdgeManager edgeToEdgeManager) {
+            mEdgeToEdgeManagerForTesting = edgeToEdgeManager;
         }
     }
 
@@ -138,6 +154,8 @@ public class SearchActivityUnitTest {
     @Mock private StatusCoordinator mStatusCoordinator;
     @Mock private BackPressManager mBackPressManager;
     @Mock private IntentCallback mIntentCallback;
+    @Mock private EdgeToEdgeManager mEdgeToEdgeManager;
+    @Mock private EdgeToEdgeSystemBarColorHelper mEdgeToEdgeSystemBarColorHelper;
     @Captor private ArgumentCaptor<AutocompleteInput> mAutocompleteInputCaptor;
 
     private MonotonicObservableSupplier<Profile> mProfileSupplier;
@@ -1021,6 +1039,7 @@ public class SearchActivityUnitTest {
         assertEquals(
                 expectedRegularColor,
                 ((ColorDrawable) mControlContainer.getBackground()).getColor());
+        assertEquals(expectedRegularColor, mActivity.getWindow().getStatusBarColor());
 
         // Toggle the incognito state and check that the search box has the correct color scheme.
         mDataProvider.setIsIncognitoForTesting(true);
@@ -1037,6 +1056,7 @@ public class SearchActivityUnitTest {
         assertEquals(
                 expectedIncognitoColor,
                 ((ColorDrawable) mControlContainer.getBackground()).getColor());
+        assertEquals(expectedIncognitoColor, mActivity.getWindow().getStatusBarColor());
 
         // Toggle to non-incognito and check that the search box has the correct color scheme.
         mDataProvider.setIsIncognitoForTesting(false);
@@ -1051,6 +1071,53 @@ public class SearchActivityUnitTest {
         assertEquals(
                 expectedRegularColor,
                 ((ColorDrawable) mControlContainer.getBackground()).getColor());
+        assertEquals(expectedRegularColor, mActivity.getWindow().getStatusBarColor());
+    }
+
+    @Test
+    public void verifySystemBarColors_withEdgeToEdgeHelper() {
+        doReturn(mEdgeToEdgeSystemBarColorHelper)
+                .when(mEdgeToEdgeManager)
+                .getEdgeToEdgeSystemBarColorHelper();
+        doReturn(true).when(mEdgeToEdgeSystemBarColorHelper).canSetStatusBarColor();
+        mActivity.setEdgeToEdgeManagerForTesting(mEdgeToEdgeManager);
+
+        mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.HUB), false);
+
+        int expectedRegularColor = mActivity.getColor(R.color.omnibox_suggestion_dropdown_bg);
+        verify(mEdgeToEdgeSystemBarColorHelper)
+                .setStatusBarColor(expectedRegularColor, /* forceLightIconColor= */ false);
+        verify(mEdgeToEdgeSystemBarColorHelper).setNavigationBarColor(expectedRegularColor);
+
+        mDataProvider.setIsIncognitoForTesting(true);
+        mActivity.handleNewIntent(buildTestServiceIntent(IntentOrigin.HUB), false);
+
+        int expectedIncognitoColor = mActivity.getColor(R.color.omnibox_dropdown_bg_incognito);
+        verify(mEdgeToEdgeSystemBarColorHelper)
+                .setStatusBarColor(expectedIncognitoColor, /* forceLightIconColor= */ false);
+        verify(mEdgeToEdgeSystemBarColorHelper).setNavigationBarColor(expectedIncognitoColor);
+    }
+
+    @Test
+    public void searchUiCoordinator_doesNotColorSystemBars() {
+        // SearchUiCoordinator is embedded in windows it does not own (e.g. the tab search overlay),
+        // so it must leave the system bars of its hosting activity alone.
+        mActivity.getWindow().setStatusBarColor(Color.CYAN);
+        mActivity.getWindow().setNavigationBarColor(Color.MAGENTA);
+
+        SearchUiCoordinator coordinator = new SearchUiCoordinator(mActivity, mDataProvider);
+        coordinator.setSearchBox(mLocationBar);
+        coordinator.setAnchorView(mAnchorView);
+        coordinator.setControlContainer(mControlContainer);
+        coordinator.setLocationBarCoordinator(mLocationBarCoordinator);
+
+        coordinator.setColorScheme(/* isIncognito= */ true);
+        coordinator.setColorScheme(/* isIncognito= */ false);
+        coordinator.beginQuery(
+                SearchActivitySession.forHub(/* query= */ null), /* windowAndroid= */ null);
+
+        assertEquals(Color.CYAN, mActivity.getWindow().getStatusBarColor());
+        assertEquals(Color.MAGENTA, mActivity.getWindow().getNavigationBarColor());
     }
 
     @Test
