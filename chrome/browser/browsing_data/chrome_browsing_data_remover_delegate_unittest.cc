@@ -173,6 +173,7 @@
 #include "components/permissions/request_type.h"
 #include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/prefs/testing_pref_store.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "components/private_verification_tokens/common/private_verification_tokens_database.h"
@@ -187,6 +188,7 @@
 #include "components/skills/mocks/mock_skills_service.h"
 #include "components/strike_database/strike_database.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -260,7 +262,6 @@
 #include "components/search/ntp_features.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
-#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -3274,6 +3275,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearsInitializedTranslations) {
                              ContentSettingsType::INITIALIZED_TRANSLATIONS)
           .is_none());
 
+  ASSERT_FALSE(
+      GetProfile()->GetTestingPrefService()->user_prefs_store()->committed());
+
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 constants::DATA_TYPE_SITE_USAGE_DATA, false);
 
@@ -3281,6 +3285,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearsInitializedTranslations) {
       map->GetWebsiteSetting(kOrigin, GURL(),
                              ContentSettingsType::INITIALIZED_TRANSLATIONS)
           .is_none());
+  EXPECT_TRUE(
+      GetProfile()->GetTestingPrefService()->user_prefs_store()->committed());
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveContentSettings) {

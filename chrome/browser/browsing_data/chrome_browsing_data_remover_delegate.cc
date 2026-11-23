@@ -1617,6 +1617,8 @@ void ChromeBrowsingDataRemoverDelegate::OnTaskComplete(
 
   slow_pending_tasks_closure_.Cancel();
 
+  profile_->GetPrefs()->CommitPendingWrite();
+
   DCHECK(!callback_.is_null());
   std::move(callback_).Run(failed_data_types_);
 }
