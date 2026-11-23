@@ -468,9 +468,9 @@ TEST_F(ClientDiscardableSharedMemoryManagerTest, HugeAllocationFails) {
   }
 }
 
-#if defined(ARCH_CPU_64_BITS)
 // Verifies that allocations larger than the browser process can be asked for
-// fail instead of being truncated.
+// fail instead of being truncated, including on 32-bit where they don't fit
+// in a size_t.
 TEST_F(ClientDiscardableSharedMemoryManagerTest, AllocationAboveIpcLimitFails) {
   auto client =
       base::MakeRefCounted<TestClientDiscardableSharedMemoryManager>();
@@ -479,7 +479,6 @@ TEST_F(ClientDiscardableSharedMemoryManagerTest, AllocationAboveIpcLimitFails) {
   EXPECT_FALSE(mem);
   EXPECT_EQ(client->GetAllocatedSize(), base::ByteSize(0));
 }
-#endif  // defined(ARCH_CPU_64_BITS)
 
 TEST_F(ClientDiscardableSharedMemoryManagerTest, ByteSizeApi) {
   auto client =

@@ -254,6 +254,10 @@ void ClientDiscardableSharedMemoryManager::OnReleaseMemory() {
 std::unique_ptr<base::DiscardableMemory>
 ClientDiscardableSharedMemoryManager::AllocateLockedDiscardableMemory(
     base::ByteSize byte_size) {
+  // Fail instead of truncating sizes that don't fit in a size_t (on 32-bit).
+  if (!base::IsValueInRangeForNumericType<size_t>(byte_size.InBytes())) {
+    return nullptr;
+  }
   const size_t size = static_cast<size_t>(byte_size.InBytes());
   base::AutoLock lock(lock_);
 
