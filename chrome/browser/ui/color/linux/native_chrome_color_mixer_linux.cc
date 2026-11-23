@@ -228,6 +228,7 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorAppMenuZoomButtonHover] = native_if_mismatch(subtle_hover);
   mixer[kColorAppMenuZoomSeparator] =
       native_if_mismatch(ui::kColorMenuSeparator);
+  mixer[kColorAppMenuSeparator] = native_if_mismatch(ui::kColorMenuSeparator);
   mixer[ui::kColorAppMenuProfileRowBackground] =
       native_if_mismatch(card_background);
   mixer[ui::kColorMenuButtonBackground] = native_if_mismatch(card_background);

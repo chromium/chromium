@@ -14,6 +14,7 @@
 #include "base/i18n/test/scoped_icu_locale.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
@@ -31,6 +32,7 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/button_test_api.h"
@@ -59,6 +61,11 @@ class AppMenuSearchBarViewTest : public ChromeViewsTestBase {
     return views::Button::AsButton(search_bar->GetViewByElementId(
         AppMenuSearchBarView::kClearButtonElementId));
   }
+
+  views::Separator* GetSeparator(AppMenuSearchBarView* search_bar) {
+    return views::AsViewClass<views::Separator>(search_bar->GetViewByElementId(
+        AppMenuSearchBarView::kSeparatorElementId));
+  }
 };
 
 TEST_F(AppMenuSearchBarViewTest, InitialProperties) {
@@ -67,6 +74,9 @@ TEST_F(AppMenuSearchBarViewTest, InitialProperties) {
 
   views::View* icon = GetSearchIcon(search_bar.get());
   ASSERT_NE(icon, nullptr);
+  views::Separator* separator = GetSeparator(search_bar.get());
+  ASSERT_NE(separator, nullptr);
+  EXPECT_EQ(separator->GetColorId(), kColorAppMenuSeparator);
 
   EXPECT_TRUE(search_bar->GetText().empty());
   EXPECT_EQ(search_field->GetPlaceholderText(),

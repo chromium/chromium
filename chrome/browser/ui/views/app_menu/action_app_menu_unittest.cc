@@ -1762,7 +1762,7 @@ TEST_F(ActionAppMenuTest, PopulatesFooterElementsWithManagedAction) {
   ASSERT_NE(footer_view->separator_for_testing(), nullptr);
   EXPECT_TRUE(footer_view->separator_for_testing()->GetVisible());
   EXPECT_EQ(footer_view->separator_for_testing()->GetColorId(),
-            ui::kColorMenuSeparator);
+            kColorAppMenuSeparator);
   const gfx::Insets* separator_margins =
       footer_view->separator_for_testing()->GetProperty(views::kMarginsKey);
   ASSERT_TRUE(separator_margins);
@@ -2606,7 +2606,7 @@ TEST_F(ActionAppMenuWithSearchTest, SearchBarEnabledWithFeatureFlag) {
   ASSERT_TRUE(separator);
   EXPECT_EQ(separator->GetOrientation(),
             views::Separator::Orientation::kHorizontal);
-  EXPECT_EQ(separator->GetColorId(), ui::kColorMenuSeparator);
+  EXPECT_EQ(separator->GetColorId(), kColorAppMenuSeparator);
   const gfx::Insets* separator_margins =
       separator->GetProperty(views::kMarginsKey);
   ASSERT_TRUE(separator_margins);
@@ -2681,6 +2681,70 @@ TEST_F(ActionAppMenuWithSearchTest, SearchBarEnabledWithFeatureFlag) {
 
   EXPECT_CALL(on_menu_closed, Run()).Times(1);
   menu.CloseMenu();
+}
+
+TEST_F(ActionAppMenuWithSearchTest,
+       FullWidthDividersMatchTonalOutlineInLightAndDarkModes) {
+#if !BUILDFLAG(IS_CHROMEOS)
+  policy::ScopedManagementServiceOverrideForTesting profile_management(
+      policy::ManagementServiceFactory::GetForProfile(profile_.get()),
+      policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
+#endif
+
+  for (const auto color_mode : {ui::ColorProviderKey::ColorMode::kLight,
+                                ui::ColorProviderKey::ColorMode::kDark}) {
+    SCOPED_TRACE(color_mode == ui::ColorProviderKey::ColorMode::kDark
+                     ? "dark"
+                     : "light");
+    widget_->SetColorModeOverride(color_mode);
+
+    base::MockCallback<base::RepeatingClosure> on_menu_closed;
+    ActionAppMenu menu(&mock_window_interface_, on_menu_closed.Get());
+    menu.RunMenu(button_->button_controller(), views::MenuRunner::NO_FLAGS);
+    ASSERT_TRUE(menu.IsShowing());
+
+    views::MenuItemView* root = menu.root_menu_item_for_testing();
+    ASSERT_TRUE(root);
+    views::SubmenuView* submenu = root->GetSubmenu();
+    ASSERT_TRUE(submenu);
+    const ui::ColorProvider* color_provider = submenu->GetColorProvider();
+    ASSERT_TRUE(color_provider);
+
+    const SkColor tonal_outline =
+        color_provider->GetColor(ui::kColorSysTonalOutline);
+    EXPECT_NE(tonal_outline, gfx::kPlaceholderColor);
+    EXPECT_EQ(color_provider->GetColor(kColorAppMenuBlockButtonBorder),
+              tonal_outline);
+
+    views::Separator* search_separator =
+        GetSeparator(menu.search_bar_for_testing());
+    ASSERT_TRUE(search_separator);
+    EXPECT_EQ(search_separator->GetColorId(), kColorAppMenuSeparator);
+    EXPECT_EQ(color_provider->GetColor(search_separator->GetColorId()),
+              tonal_outline);
+
+#if !BUILDFLAG(IS_CHROMEOS)
+    views::MenuItemView* footer_item =
+        submenu->GetMenuItemAt(submenu->GetMenuItems().size() - 1);
+    ASSERT_TRUE(footer_item);
+    auto* footer_view =
+        views::AsViewClass<AppMenuFooterView>(footer_item->children()[0]);
+    ASSERT_TRUE(footer_view);
+    views::Separator* footer_separator = footer_view->separator_for_testing();
+    ASSERT_TRUE(footer_separator);
+    EXPECT_EQ(footer_separator->GetColorId(), kColorAppMenuSeparator);
+    EXPECT_EQ(color_provider->GetColor(footer_separator->GetColorId()),
+              tonal_outline);
+#endif
+
+    if (color_mode == ui::ColorProviderKey::ColorMode::kDark) {
+      EXPECT_NE(color_provider->GetColor(search_separator->GetColorId()),
+                color_provider->GetColor(ui::kColorMenuSeparator));
+    }
+
+    EXPECT_CALL(on_menu_closed, Run()).Times(1);
+    menu.CloseMenu();
+  }
 }
 
 TEST_F(ActionAppMenuWithSearchTest,

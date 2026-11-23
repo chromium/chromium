@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
@@ -276,7 +277,7 @@ AppMenuSearchBarView::AppMenuSearchBarView() {
   auto* separator = AddChildView(std::make_unique<views::Separator>());
   separator->SetProperty(views::kElementIdentifierKey, kSeparatorElementId);
   separator->SetOrientation(views::Separator::Orientation::kHorizontal);
-  separator->SetColorId(ui::kColorMenuSeparator);
+  separator->SetColorId(kColorAppMenuSeparator);
   separator->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(

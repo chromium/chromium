@@ -70,6 +70,7 @@ constexpr ui::ColorId kAppMenuSurfaceIds[] = {
     kColorAppMenuZoomButtonBackground,
     kColorAppMenuZoomButtonHover,
     kColorAppMenuZoomSeparator,
+    kColorAppMenuSeparator,
     ui::kColorAppMenuProfileRowBackground,
     ui::kColorMenuButtonBackground,
     ui::kColorAppMenuUpgradeRowBackground,
@@ -188,6 +189,10 @@ TEST_F(NativeChromeColorMixerLinuxTest, MismatchDarkToolkitLightModeReadable) {
   // Row hover must be as visible as the block and footer button hover.
   EXPECT_EQ(provider->GetColor(ui::kColorAppMenuRowBackgroundHovered),
             provider->GetColor(kColorAppMenuBlockButtonBackgroundHovered));
+  EXPECT_EQ(provider->GetColor(kColorAppMenuSeparator),
+            kDarkToolkit.menu_separator);
+  EXPECT_EQ(provider->GetColor(kColorAppMenuSeparator),
+            provider->GetColor(kColorAppMenuBlockButtonBorder));
 }
 
 TEST_F(NativeChromeColorMixerLinuxTest, MismatchLightToolkitDarkModeReadable) {
@@ -201,6 +206,10 @@ TEST_F(NativeChromeColorMixerLinuxTest, MismatchLightToolkitDarkModeReadable) {
             kLightToolkit.prominent_background);
   EXPECT_EQ(provider->GetColor(ui::kColorAppMenuRowBackgroundHovered),
             provider->GetColor(kColorAppMenuBlockButtonBackgroundHovered));
+  EXPECT_EQ(provider->GetColor(kColorAppMenuSeparator),
+            kLightToolkit.menu_separator);
+  EXPECT_EQ(provider->GetColor(kColorAppMenuSeparator),
+            provider->GetColor(kColorAppMenuBlockButtonBorder));
 }
 
 // Qt goes through the same mixer, gated on `system_theme != kDefault`.
@@ -261,6 +270,10 @@ TEST_F(NativeChromeColorMixerLinuxTest, DefaultSystemThemeUnchanged) {
             provider->GetColor(ui::kColorSysSurface));
   EXPECT_EQ(provider->GetColor(kColorAppMenuBlockButtonForeground),
             provider->GetColor(ui::kColorSysPrimary));
+  EXPECT_EQ(provider->GetColor(kColorAppMenuSeparator),
+            provider->GetColor(ui::kColorSysTonalOutline));
+  EXPECT_EQ(provider->GetColor(kColorAppMenuSeparator),
+            provider->GetColor(kColorAppMenuBlockButtonBorder));
   EXPECT_EQ(provider->GetColor(kColorAppMenuFooterButtonForeground),
             provider->GetColor(ui::kColorSysPrimary));
   EXPECT_EQ(provider->GetColor(kColorAppMenuChipBackground),

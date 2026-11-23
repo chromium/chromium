@@ -12,12 +12,12 @@
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_manager.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_footer_button.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
@@ -170,7 +170,7 @@ AppMenuFooterView::AppMenuFooterView(
   if (!bottom_container->children().empty()) {
     separator_ = AddChildView(std::make_unique<views::Separator>());
     separator_->SetOrientation(views::Separator::Orientation::kHorizontal);
-    separator_->SetColorId(ui::kColorMenuSeparator);
+    separator_->SetColorId(kColorAppMenuSeparator);
     separator_->SetProperty(
         views::kMarginsKey,
         gfx::Insets::TLBR(
