@@ -606,6 +606,20 @@ public class UrlBarUnitTest {
     }
 
     @Test
+    public void testTruncation_NullLayoutParams() {
+        TestUrlBar detachedUrlBar = new TestUrlBar(mActivity, null);
+        assertNull(detachedUrlBar.getLayoutParams());
+
+        String url = SHORT_DOMAIN + LONG_PATH;
+        detachedUrlBar.setTextWithTruncation(url, ScrollType.SCROLL_TO_TLD, SHORT_DOMAIN.length());
+
+        Editable text = detachedUrlBar.getText();
+        assertEquals(url, text.toString());
+        BoundsEllipsisSpan[] spans = text.getSpans(0, text.length(), BoundsEllipsisSpan.class);
+        assertEquals(0, spans.length);
+    }
+
+    @Test
     public void performClick_emitsTouchEvents() {
         mUrlBar.performClick();
         verify(mUrlBarDelegate).onFocusByTouch();

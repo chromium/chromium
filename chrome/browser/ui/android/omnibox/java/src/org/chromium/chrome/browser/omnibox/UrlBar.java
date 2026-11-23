@@ -1303,10 +1303,12 @@ public class UrlBar extends AutocompleteEditText {
      */
     public void setTextWithTruncation(
             CharSequence text, @ScrollType int scrollType, int scrollToIndex) {
+        LayoutParams layoutParams = getLayoutParams();
         if (mFocused
                 || TextUtils.isEmpty(text)
                 || text.length() < MIN_LENGTH_FOR_TRUNCATION
-                || getLayoutParams().width == LayoutParams.WRAP_CONTENT
+                || layoutParams == null
+                || layoutParams.width == LayoutParams.WRAP_CONTENT
                 || containsRtl(text)) {
             setText(text);
             return;
