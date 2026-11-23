@@ -185,21 +185,13 @@ void SelectFileDialogLinuxPortal::OnPortalAvailable(
     base::FilePath::StringType default_extension,
     std::optional<GURL> caller,
     uint32_t version) {
-  if (version < kXdgPortalRequiredVersion) {
-    gfx::NativeWindow owning_window = host_ ? host_->window() : nullptr;
-    if (auto* linux_ui = ui::LinuxUi::instance()) {
-      fallback_dialog_ = linux_ui->CreateSelectFileDialog(listener_, nullptr);
-    }
-    if (fallback_dialog_) {
-      fallback_dialog_->SelectFile(
-          type(), title, default_path, &file_types(), file_type_index(),
-          default_extension, owning_window, caller ? &caller.value() : nullptr);
-      return;
-    }
+  title_ = title;
+  default_path_ = default_path;
+  default_extension_ = default_extension;
+  caller_ = std::move(caller);
 
-    if (listener_) {
-      listener_->FileSelectionCanceled();
-    }
+  if (version < kXdgPortalRequiredVersion) {
+    ShowFallbackDialog();
     return;
   }
 
@@ -484,6 +476,13 @@ void SelectFileDialogLinuxPortal::OnFileChooserResponse(
   awaiting_response_ = false;
 
   if (!results.has_value()) {
+    // The portal rejected the request without showing a dialog, e.g. when
+    // xdg-desktop-portal denies access to the caller. Use the fallback dialog
+    // so that a file chooser still opens.
+    if (results.error() == dbus_xdg::ResponseError::kMethodCallFailed) {
+      ShowFallbackDialog();
+      return;
+    }
     CancelOpen();
     return;
   }
@@ -586,6 +585,26 @@ void SelectFileDialogLinuxPortal::CompleteOpenOnInvoker(
 void SelectFileDialogLinuxPortal::CancelOpenOnInvoker() {
   CHECK(invoker_task_runner_->RunsTasksInCurrentSequence());
   UnparentOnInvoker();
+
+  if (listener_) {
+    listener_->FileSelectionCanceled();
+  }
+}
+
+void SelectFileDialogLinuxPortal::ShowFallbackDialog() {
+  gfx::NativeWindow owning_window = host_ ? host_->window() : nullptr;
+  UnparentOnInvoker();
+
+  if (auto* linux_ui = ui::LinuxUi::instance()) {
+    fallback_dialog_ = linux_ui->CreateSelectFileDialog(listener_, nullptr);
+  }
+  if (fallback_dialog_) {
+    fallback_dialog_->SelectFile(type(), title_, default_path_, &file_types(),
+                                 file_type_index(), default_extension_,
+                                 owning_window,
+                                 caller_ ? &caller_.value() : nullptr);
+    return;
+  }
 
   if (listener_) {
     listener_->FileSelectionCanceled();

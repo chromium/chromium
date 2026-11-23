@@ -174,6 +174,10 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogLinuxPortal
                          std::optional<GURL> caller,
                          uint32_t version);
 
+  // Shows `fallback_dialog_` instead of the portal dialog, or cancels if there
+  // is no fallback.
+  void ShowFallbackDialog();
+
   // The task runner the SelectFileImpl method was called on.
   scoped_refptr<base::SequencedTaskRunner> invoker_task_runner_;
 
@@ -182,6 +186,12 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogLinuxPortal
 
   // The fallback dialog to use if the portal is not available.
   scoped_refptr<SelectFileDialog> fallback_dialog_;
+
+  // Arguments for `fallback_dialog_`, in case the portal request fails.
+  std::u16string title_;
+  base::FilePath default_path_;
+  base::FilePath::StringType default_extension_;
+  std::optional<GURL> caller_;
 
   std::vector<PortalFilter> filters_;
 

@@ -191,6 +191,7 @@ test("shell_dialogs_unittests") {
       "//dbus:test_support",
       "//ui/aura",
       "//ui/display:test_support",
+      "//ui/linux:test_support",
       "//ui/ozone:ozone_switches",
       "//ui/platform_window",
     ]
