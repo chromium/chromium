@@ -1602,7 +1602,6 @@ if (is_android) {
     sources = [
       "//chrome/android/java/src/org/chromium/chrome/browser/toolbar/ToolbarManagerUnitTest.java",
       "src/org/chromium/chrome/browser/toolbar/AppThemeColorProviderUnitTest.java",
-      "src/org/chromium/chrome/browser/toolbar/LocationBarModelUnitTest.java",
       "src/org/chromium/chrome/browser/toolbar/ToolbarIphControllerUnitTest.java",
       "src/org/chromium/chrome/browser/toolbar/ToolbarTabControllerImplTest.java",
       "src/org/chromium/chrome/browser/toolbar/adaptive/OptionalNewTabButtonControllerActivityTest.java",
@@ -1613,7 +1612,6 @@ if (is_android) {
       "//chrome/browser/context_sharing/tab_bottom_sheet/android:java",
       "//chrome/browser/context_sharing/tab_bottom_sheet/public/android:java",
       "//chrome/browser/subscription_eligibility:java",
-      "//chrome/browser/ui/android/pdf:pdf_utils_java",
       "//chrome/browser/ui/android/toolbar:adaptive_features_java",
       "//chrome/browser/ui/android/toolbar:optional_button_java",
     ]

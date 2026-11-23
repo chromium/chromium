@@ -112,7 +112,7 @@ public class AppThemeColorProvider extends ThemeColorProvider
         mActivityLifecycleDispatcher.register(this);
     }
 
-    void setIncognitoStateProvider(IncognitoStateProvider provider) {
+    public void setIncognitoStateProvider(IncognitoStateProvider provider) {
         mIncognitoStateProvider = provider;
         mIncognitoStateProvider.addIncognitoStateObserverAndTrigger(this);
     }
@@ -123,7 +123,7 @@ public class AppThemeColorProvider extends ThemeColorProvider
         updateTheme();
     }
 
-    void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
+    public void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
         mLayoutStateProvider = layoutStateProvider;
         mLayoutStateProvider.addObserver(mLayoutStateObserver);
     }

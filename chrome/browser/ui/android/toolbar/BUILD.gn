@@ -126,6 +126,7 @@ android_library("optional_button_java") {
 
 android_library("core_java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/toolbar/AppThemeColorProvider.java",
     "java/src/org/chromium/chrome/browser/toolbar/ConstraintsChecker.java",
     "java/src/org/chromium/chrome/browser/toolbar/ControlContainer.java",
     "java/src/org/chromium/chrome/browser/toolbar/FormFieldFocusedSupplier.java",
@@ -490,6 +491,7 @@ robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/toolbar/ConstraintsCheckerTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/FormFieldFocusedSupplierTest.java",
+    "java/src/org/chromium/chrome/browser/toolbar/LocationBarModelUnitTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/MiniOriginBarControllerTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/ToolbarLongPressMenuHandlerUnitTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/ToolbarPositionControllerTest.java",
@@ -569,6 +571,7 @@ robolectric_library("junit") {
     "//chrome/browser/glic/android:jni_headers_java",
     "//chrome/browser/incognito:java",
     "//chrome/browser/language/android:java",
+    "//chrome/browser/paint_preview/android:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/prefs/android:java",
     "//chrome/browser/profiles/android:java",
@@ -599,6 +602,7 @@ robolectric_library("junit") {
     "//chrome/browser/ui/android/omnibox:java",
     "//chrome/browser/ui/android/omnibox:java_resources",
     "//chrome/browser/ui/android/overlay_panel:java",
+    "//chrome/browser/ui/android/pdf:pdf_utils_java",
     "//chrome/browser/ui/android/signin:java",
     "//chrome/browser/ui/android/tabstrip:enums_java",
     "//chrome/browser/ui/android/theme:java",
@@ -624,6 +628,8 @@ robolectric_library("junit") {
     "//components/omnibox/common:features_java",
     "//components/prefs/android:java",
     "//components/search_engines/android:java",
+    "//components/security_state/content/android:java",
+    "//components/security_state/core:security_state_enums_java",
     "//components/segmentation_platform/public/proto:segmentation_platform_proto_java",
     "//components/signin/public/android:java",
     "//components/signin/public/android:signin_java_test_support",
