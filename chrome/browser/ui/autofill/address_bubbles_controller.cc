@@ -17,8 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo_util.h"
@@ -34,7 +32,6 @@
 #include "chrome/browser/ui/desktop_to_mobile_promos/ios_promos_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -105,11 +102,7 @@ AddressBubblesController::AddressBubblesController(
           web_contents,
           PageActionConfig{.action_id = kActionShowAddressesBubbleOrPage,
                            .should_manage_visibility = true}),
-      content::WebContentsUserData<AddressBubblesController>(*web_contents),
-      app_locale_(g_browser_process->GetFeatures()
-                      ->application_locale_storage()
-                      ->GetTag()
-                      .tag_string()) {}
+      content::WebContentsUserData<AddressBubblesController>(*web_contents) {}
 
 AddressBubblesController::~AddressBubblesController() {
   // `address_profile_save_prompt_callback_` must have been invoked before

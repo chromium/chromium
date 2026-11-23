@@ -149,8 +149,6 @@ class AddressBubblesController
 
   std::u16string page_action_icon_tooltip_;
 
-  std::string app_locale_;
-
   base::WeakPtrFactory<AddressBubblesController> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
