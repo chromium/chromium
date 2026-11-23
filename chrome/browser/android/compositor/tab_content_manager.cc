@@ -26,6 +26,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/timer/timer.h"
 #include "cc/slim/layer.h"
 #include "chrome/browser/android/compositor/layer/thumbnail_layer.h"
 #include "chrome/browser/android/compositor/retry_strategy.h"
@@ -34,6 +35,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/thumbnail/cc/thumbnail.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "components/viz/common/frame_timing_details.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -44,6 +46,8 @@
 #include "third_party/jni_zero/jni_zero.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/android/view_android.h"
+#include "ui/android/window_android.h"
+#include "ui/android/window_android_compositor.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -69,6 +73,10 @@ const base::TimeDelta kTabReadbackTimeout = base::Seconds(5);
 
 constexpr int kMaxReadbackRetries = 5;
 constexpr base::TimeDelta kReadbackRetryDelay = base::Milliseconds(100);
+constexpr base::TimeDelta kMaxReadbackDeferralDelay = base::Milliseconds(150);
+
+BASE_FEATURE(kDeferTabSwitchThumbnailCapture,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 content::RenderWidgetHostView* GetRwhv(content::WebContents* web_contents) {
   content::RenderViewHost* rvh = web_contents->GetRenderViewHost();
@@ -86,29 +94,75 @@ class TabContentManager::TabReadbackRequest : public RetryableTask {
  public:
   TabReadbackRequest(content::WebContents* web_contents,
                      float thumbnail_scale,
+                     bool defer_until_next_frame,
                      TabReadbackCallback result_callback)
-      : weak_web_contents_(web_contents->GetWeakPtr()),
+      : weak_web_contents_(web_contents ? web_contents->GetWeakPtr() : nullptr),
         result_callback_(std::move(result_callback)),
-        retry_strategy_(std::make_unique<RetryStrategy>(kMaxReadbackRetries,
-                                                        kReadbackRetryDelay)),
         thumbnail_scale_(thumbnail_scale) {
-    auto* rwhv = GetRwhv(web_contents);
-    if (!rwhv) {
-      std::move(result_callback_).Run(0.f, SkBitmap());
+    if (web_contents) {
+      CHECK(GetRwhv(web_contents));
+      // Cannot increment capturer count for rwhv that is null.
+      decrementor_ = web_contents->IncrementCapturerCount(
+          gfx::Size(), /*stay_hidden=*/true, /*stay_awake=*/false,
+          /*is_activity=*/false);
+    }
+
+    if (defer_until_next_frame) {
+      if (!weak_web_contents_) {
+        deferral_timer_.Start(FROM_HERE, kMaxReadbackDeferralDelay, this,
+                              &TabReadbackRequest::StartReadback);
+        return;
+      }
+      auto* rwhv = GetRwhv(weak_web_contents_.get());
+      gfx::NativeView view = rwhv ? rwhv->GetNativeView() : nullptr;
+      ui::WindowAndroid* window = view ? view->GetWindowAndroid() : nullptr;
+      ui::WindowAndroidCompositor* compositor =
+          window ? window->GetCompositor() : nullptr;
+      if (compositor) {
+        compositor->PostRequestSuccessfulPresentationTimeForNextFrame(
+            base::BindOnce(&TabReadbackRequest::OnNextFramePresented,
+                           weak_factory_.GetWeakPtr()));
+        deferral_timer_.Start(FROM_HERE, kMaxReadbackDeferralDelay, this,
+                              &TabReadbackRequest::StartReadback);
+        return;
+      }
+    }
+
+    StartReadback();
+  }
+
+  TabReadbackRequest(const TabReadbackRequest&) = delete;
+  TabReadbackRequest& operator=(const TabReadbackRequest&) = delete;
+  ~TabReadbackRequest() override = default;
+
+  void StartReadback() {
+    if (retry_strategy_ || drop_after_readback_) {
       return;
     }
-    // Cannot increment capturer count for rwhv that is null.
-    decrementor_ =
-        web_contents->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
-                                             /*stay_awake=*/false,
-                                             /*is_activity=*/false);
+    deferral_timer_.Stop();
+    retry_strategy_ = std::make_unique<RetryStrategy>(kMaxReadbackRetries,
+                                                      kReadbackRetryDelay);
     retry_strategy_->Start(
         this, base::BindOnce(&TabReadbackRequest::OnRetryLoopFinished,
                              weak_factory_.GetWeakPtr()));
   }
-  TabReadbackRequest(const TabReadbackRequest&) = delete;
-  TabReadbackRequest& operator=(const TabReadbackRequest&) = delete;
-  ~TabReadbackRequest() override = default;
+
+  void OnNextFramePresented(const viz::FrameTimingDetails&) { StartReadback(); }
+
+  void SetToDropAfterReadback() {
+    if (drop_after_readback_) {
+      return;
+    }
+    drop_after_readback_ = true;
+    if (!retry_strategy_) {
+      deferral_timer_.Stop();
+      decrementor_.RunAndReset();
+      auto result_callback = std::move(result_callback_);
+      if (result_callback) {
+        std::move(result_callback).Run(0.f, SkBitmap());
+      }
+    }
+  }
 
   void Run(base::OnceCallback<void(bool)> should_retry_callback) override {
     auto* web_contents = weak_web_contents_.get();
@@ -150,10 +204,11 @@ class TabContentManager::TabReadbackRequest : public RetryableTask {
     if (drop_after_readback_) {
       // Release the capturer count as the request is being dropped.
       decrementor_.RunAndReset();
-      if (result_callback_) {
-        std::move(result_callback_).Run(0.f, SkBitmap());
-      }
+      auto result_callback = std::move(result_callback_);
       std::move(should_retry_callback).Run(false);
+      if (result_callback) {
+        std::move(result_callback).Run(0.f, SkBitmap());
+      }
       return;
     }
 
@@ -167,11 +222,11 @@ class TabContentManager::TabReadbackRequest : public RetryableTask {
     SkBitmap result_bitmap = result->bitmap;
     result_bitmap.setImmutable();
     float scale = thumbnail_scale_;
-    if (result_callback_) {
-      std::move(result_callback_).Run(scale, result_bitmap);
-    }
-
+    auto result_callback = std::move(result_callback_);
     std::move(should_retry_callback).Run(false);
+    if (result_callback) {
+      std::move(result_callback).Run(scale, result_bitmap);
+    }
   }
 
   void OnRetryLoopFinished(bool success) {
@@ -189,13 +244,12 @@ class TabContentManager::TabReadbackRequest : public RetryableTask {
     }
   }
 
-  void SetToDropAfterReadback() { drop_after_readback_ = true; }
-
  private:
   base::WeakPtr<content::WebContents> weak_web_contents_;
   TabReadbackCallback result_callback_;
   base::ScopedClosureRunner decrementor_;
   std::unique_ptr<RetryStrategy> retry_strategy_;
+  base::OneShotTimer deferral_timer_;
   const float thumbnail_scale_;
   bool drop_after_readback_{false};
 
@@ -316,17 +370,28 @@ void TabContentManager::CleanupTrackers() {
 void TabContentManager::CaptureThumbnail(TabAndroid* tab_android,
                                          float thumbnail_scale,
                                          bool return_bitmap,
+                                         bool defer_until_next_frame,
                                          JavaBitmapCallback callback) {
   // Ensure capture only happens on UI thread.
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
 
   CHECK(tab_android, base::NotFatalUntil::M161);
   const int tab_id = tab_android->GetAndroidId();
-  bool has_pending_readback = pending_tab_readbacks_.contains(tab_id);
+
+  auto pending_it = pending_tab_readbacks_.find(tab_id);
+  if (pending_it != pending_tab_readbacks_.end()) {
+    if (!defer_until_next_frame || return_bitmap) {
+      pending_it->second->StartReadback();
+    }
+    if (callback) {
+      std::move(callback).Run(nullptr);
+    }
+    return;
+  }
 
   content::WebContents* web_contents = tab_android->GetContents();
-  if (has_pending_readback || !web_contents ||
-      web_contents->IsBeingDestroyed() ||
+  if (!web_contents || web_contents->IsBeingDestroyed() ||
+      !GetRwhv(web_contents) ||
       !thumbnail_cache_.CheckAndUpdateThumbnailMetaData(
           tab_id, tab_android->GetURL(), /*force_update=*/false)) {
     if (callback) {
@@ -335,12 +400,17 @@ void TabContentManager::CaptureThumbnail(TabAndroid* tab_android,
     return;
   }
 
+  const bool should_defer =
+      defer_until_next_frame && !return_bitmap &&
+      base::FeatureList::IsEnabled(kDeferTabSwitchThumbnailCapture);
+
   auto tracker = TrackCapture(tab_id);
   TabReadbackCallback readback_done_callback = base::BindOnce(
       &TabContentManager::OnTabReadback, weak_factory_.GetWeakPtr(), tab_id,
       std::move(tracker), std::move(callback), return_bitmap);
   pending_tab_readbacks_[tab_id] = std::make_unique<TabReadbackRequest>(
-      web_contents, thumbnail_scale, std::move(readback_done_callback));
+      web_contents, thumbnail_scale, should_defer,
+      std::move(readback_done_callback));
 }
 
 void TabContentManager::CacheTabWithBitmap(TabAndroid* tab_android,
@@ -391,6 +461,10 @@ void TabContentManager::RemoveAllTabThumbnailsExceptForIds(
 void TabContentManager::WaitForJpegTabThumbnail(
     int32_t tab_id,
     base::OnceCallback<void(bool)> callback) {
+  auto pending_it = pending_tab_readbacks_.find(tab_id);
+  if (pending_it != pending_tab_readbacks_.end()) {
+    pending_it->second->StartReadback();
+  }
   auto it = in_flight_captures_.find(tab_id);
   if (it != in_flight_captures_.end() && it->second) {
     // A capture is currently ongoing wait till it finishes.
@@ -443,6 +517,18 @@ void TabContentManager::OnTabReadback(int tab_id,
   } else if (tracker) {
     tracker->MarkCaptureFailed();
   }
+}
+
+void TabContentManager::SeedDeferredReadbackForTesting(
+    int tab_id,
+    JavaBitmapCallback callback) {
+  auto tracker = TrackCapture(tab_id);
+  TabReadbackCallback readback_done_callback = base::BindOnce(
+      &TabContentManager::OnTabReadback, weak_factory_.GetWeakPtr(), tab_id,
+      std::move(tracker), std::move(callback), /*return_bitmap=*/false);
+  pending_tab_readbacks_[tab_id] = std::make_unique<TabReadbackRequest>(
+      /*web_contents=*/nullptr, 1.f, /*defer_until_next_frame=*/true,
+      std::move(readback_done_callback));
 }
 
 void TabContentManager::SendThumbnailToJava(JavaBitmapCallback callback,

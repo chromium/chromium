@@ -572,7 +572,9 @@ public class TabContentManager {
      * @param deferUntilNextFrame Whether to defer thumbnail capture until the next frame.
      */
     public void cacheTabThumbnail(final Tab tab, boolean deferUntilNextFrame) {
-        cacheTabThumbnailWithCallback(tab, /* returnBitmap= */ false, null);
+        if (mNativeTabContentManager == null || !mSnapshotsEnabled) return;
+
+        captureThumbnail(tab, /* returnBitmap= */ false, deferUntilNextFrame, /* callback= */ null);
     }
 
     /**
@@ -588,7 +590,7 @@ public class TabContentManager {
             final Tab tab, boolean returnBitmap, @Nullable Callback<@Nullable Bitmap> callback) {
         if (mNativeTabContentManager == null || !mSnapshotsEnabled) return;
 
-        captureThumbnail(tab, returnBitmap, callback);
+        captureThumbnail(tab, returnBitmap, /* deferUntilNextFrame= */ false, callback);
     }
 
     private @Nullable Bitmap cacheNativeTabThumbnail(final Tab tab) {
@@ -606,14 +608,18 @@ public class TabContentManager {
     }
 
     /**
-     * Capture the content of a tab as a thumbnail.
+     * Captures the content of a tab as a thumbnail.
      *
      * @param tab The tab whose content we will capture.
      * @param returnBitmap Whether to return a bitmap to the callback.
+     * @param deferUntilNextFrame Whether to defer thumbnail capture until the next frame.
      * @param callback The callback to send the {@link Bitmap} with.
      */
     private void captureThumbnail(
-            final Tab tab, boolean returnBitmap, @Nullable Callback<@Nullable Bitmap> callback) {
+            final Tab tab,
+            boolean returnBitmap,
+            boolean deferUntilNextFrame,
+            @Nullable Callback<@Nullable Bitmap> callback) {
         JniUniquePtr<NativeTabContentManager> nativePtr = assertNonNull(mNativeTabContentManager);
         assert mSnapshotsEnabled;
 
@@ -667,7 +673,12 @@ public class TabContentManager {
                     };
             TabContentManagerJni.get()
                     .captureThumbnail(
-                            nativePtr, tab, mThumbnailScale, returnBitmap, wrappedCallback);
+                            nativePtr,
+                            tab,
+                            mThumbnailScale,
+                            returnBitmap,
+                            deferUntilNextFrame,
+                            wrappedCallback);
         }
     }
 
@@ -777,6 +788,7 @@ public class TabContentManager {
                 @JniType("TabAndroid*") Tab tab,
                 float thumbnailScale,
                 boolean returnBitmap,
+                boolean deferUntilNextFrame,
                 @JniType("base::OnceCallback<void(const base::android::JavaRef<jobject>&)>")
                         Callback<@Nullable Bitmap> callback);
 

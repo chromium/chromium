@@ -13,7 +13,10 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "cc/resources/ui_resource_client.h"
+#include "chrome/browser/android/tab_android.h"
+#include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -82,7 +85,18 @@ class TabContentManagerTest : public ::testing::Test {
         std::move(callback), need_downsampling, result, bitmap);
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  bool HasPendingReadback(int tab_id) const {
+    return tab_content_manager_->pending_tab_readbacks_.contains(tab_id);
+  }
+
+  void SeedDeferredReadback(int tab_id,
+                            TabContentManager::JavaBitmapCallback callback) {
+    tab_content_manager_->SeedDeferredReadbackForTesting(tab_id,
+                                                         std::move(callback));
+  }
+
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
   MockUIResourceProvider ui_resource_provider_;
@@ -184,6 +198,77 @@ TEST_F(TabContentManagerTest, SendThumbnailToJavaWithDownsamplingHalvesSize) {
           &callback_invoked),
       /*need_downsampling=*/true, /*result=*/true, input);
   EXPECT_TRUE(callback_invoked);
+}
+
+TEST_F(TabContentManagerTest, DeferredReadbackLifecycle) {
+  constexpr int kTabId1 = 101;
+  constexpr int kTabId2 = 102;
+  constexpr int kTabId3 = 103;
+  constexpr int kTabId4 = 104;
+
+  auto make_cb = [](base::test::TestFuture<bool>& future) {
+    return base::BindOnce(
+        [](base::test::TestFuture<bool>* f,
+           const base::android::JavaRef<jobject>&) { f->SetValue(true); },
+        &future);
+  };
+
+  // 1. NativeRemoveTabThumbnail synchronously cancels unstarted request and
+  // invokes callback.
+  base::test::TestFuture<bool> future1;
+  SeedDeferredReadback(kTabId1, make_cb(future1));
+  EXPECT_TRUE(HasPendingReadback(kTabId1));
+  tab_content_manager().NativeRemoveTabThumbnail(kTabId1);
+  EXPECT_TRUE(future1.Get());
+  EXPECT_FALSE(HasPendingReadback(kTabId1));
+
+  // 2. WaitForJpegTabThumbnail flushes unstarted request and resolves JPEG
+  // waiter.
+  base::test::TestFuture<bool> future2;
+  SeedDeferredReadback(kTabId2, make_cb(future2));
+  EXPECT_TRUE(HasPendingReadback(kTabId2));
+  base::test::TestFuture<bool> jpeg_waiter_future;
+  tab_content_manager().WaitForJpegTabThumbnail(
+      kTabId2, jpeg_waiter_future.GetCallback());
+  EXPECT_TRUE(future2.Get());
+  EXPECT_FALSE(jpeg_waiter_future.Get());
+  EXPECT_FALSE(HasPendingReadback(kTabId2));
+
+  // 3. FastForwardBy(base::Milliseconds(150)) triggers 150ms fallback timer.
+  base::test::TestFuture<bool> future3;
+  SeedDeferredReadback(kTabId3, make_cb(future3));
+  EXPECT_TRUE(HasPendingReadback(kTabId3));
+  task_environment_.FastForwardBy(base::Milliseconds(149));
+  EXPECT_FALSE(future3.IsReady());
+  EXPECT_TRUE(HasPendingReadback(kTabId3));
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+  EXPECT_TRUE(future3.Get());
+  EXPECT_FALSE(HasPendingReadback(kTabId3));
+
+  // 4. CaptureThumbnail on pending readback keeps deferral when
+  // defer_until_next_frame=true && !return_bitmap, but flushes when
+  // !defer_until_next_frame.
+  base::test::TestFuture<bool> future4;
+  SeedDeferredReadback(kTabId4, make_cb(future4));
+  EXPECT_TRUE(HasPendingReadback(kTabId4));
+  TestingProfile profile;
+  std::unique_ptr<TabAndroid> tab4 =
+      TabAndroid::CreateForTesting(&profile, kTabId4, nullptr);
+  base::test::TestFuture<bool> cb_defer;
+  tab_content_manager().CaptureThumbnail(
+      tab4.get(), 1.f, /*return_bitmap=*/false, /*defer_until_next_frame=*/true,
+      make_cb(cb_defer));
+  EXPECT_TRUE(cb_defer.Get());
+  EXPECT_FALSE(future4.IsReady());
+  EXPECT_TRUE(HasPendingReadback(kTabId4));
+
+  base::test::TestFuture<bool> cb_flush;
+  tab_content_manager().CaptureThumbnail(
+      tab4.get(), 1.f, /*return_bitmap=*/false,
+      /*defer_until_next_frame=*/false, make_cb(cb_flush));
+  EXPECT_TRUE(cb_flush.Get());
+  EXPECT_TRUE(future4.Get());
+  EXPECT_FALSE(HasPendingReadback(kTabId4));
 }
 
 }  // namespace android

@@ -23,7 +23,6 @@ namespace cc::slim {
 class Layer;
 }
 
-
 namespace ui {
 class UIResourceProvider;
 }
@@ -78,6 +77,7 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
   void CaptureThumbnail(TabAndroid* tab_android,
                         float thumbnail_scale,
                         bool return_bitmap,
+                        bool defer_until_next_frame,
                         JavaBitmapCallback callback);
   void CacheTabWithBitmap(TabAndroid* tab_android,
                           const base::android::JavaRef<jobject>& bitmap,
@@ -118,6 +118,8 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
                      bool return_bitmap,
                      float thumbnail_scale,
                      const SkBitmap& bitmap);
+
+  void SeedDeferredReadbackForTesting(int tab_id, JavaBitmapCallback callback);
 
   void SendThumbnailToJava(JavaBitmapCallback callback,
                            bool need_downsampling,

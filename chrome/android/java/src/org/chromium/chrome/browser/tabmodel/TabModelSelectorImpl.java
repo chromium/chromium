@@ -407,7 +407,11 @@ public class TabModelSelectorImpl extends TabModelSelectorBase {
                 // FROM_EXTERNAL_APP/FROM_NEW.
                 if (!mVisibleTab.isClosing()
                         && (!isFromExternalApp || type != TabSelectionType.FROM_NEW)) {
-                    cacheTabBitmap(mVisibleTab);
+                    assumeNonNull(mTabContentManager);
+                    mTabContentManager.cacheTabThumbnail(
+                            mVisibleTab,
+                            /* deferUntilNextFrame= */ tab != null
+                                    && type != TabSelectionType.FROM_EXIT);
                 }
                 mVisibleTab.hide(TabHidingType.CHANGED_TABS);
             }
@@ -439,13 +443,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase {
         if (type != TabSelectionType.FROM_EXIT && !isIncognitoReauthPending) {
             tab.show(type);
         }
-    }
-
-    private void cacheTabBitmap(Tab tabToCache) {
-        // Trigger a capture of this tab.
-        if (tabToCache == null) return;
-        assumeNonNull(mTabContentManager);
-        mTabContentManager.cacheTabThumbnail(tabToCache, /* deferUntilNextFrame= */ false);
     }
 
     @Override

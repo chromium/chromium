@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -36,9 +37,11 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager.TabFinder;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
+import org.chromium.content_public.browser.WebContents;
 
 import java.util.List;
 
@@ -53,6 +56,8 @@ public class TabContentManagerUnitTest {
     @Mock private TabFinder mTabFinder;
     @Mock private TabWindowManager mTabWindowManager;
     @Mock private TabContentManager.Natives mTabContentManagerJni;
+    @Mock private Tab mTab;
+    @Mock private WebContents mWebContents;
 
     private Context mContext;
     private View mViewToDraw;
@@ -147,5 +152,31 @@ public class TabContentManagerUnitTest {
         mTabContentManager.updateVisibleIds(priority, /* primaryTabId= */ 2);
 
         verify(mTabContentManagerJni).updateVisibleIds(any(), eq(new int[] {}), eq(2));
+    }
+
+    @Test
+    public void testCacheTabThumbnail_forwardsDeferUntilNextFrame() {
+        mTabContentManager.initWithNative();
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+
+        mTabContentManager.cacheTabThumbnail(mTab, /* deferUntilNextFrame= */ true);
+        verify(mTabContentManagerJni)
+                .captureThumbnail(
+                        any(),
+                        eq(mTab),
+                        anyFloat(),
+                        /* returnBitmap= */ eq(false),
+                        /* deferUntilNextFrame= */ eq(true),
+                        any());
+
+        mTabContentManager.cacheTabThumbnail(mTab, /* deferUntilNextFrame= */ false);
+        verify(mTabContentManagerJni)
+                .captureThumbnail(
+                        any(),
+                        eq(mTab),
+                        anyFloat(),
+                        /* returnBitmap= */ eq(false),
+                        /* deferUntilNextFrame= */ eq(false),
+                        any());
     }
 }

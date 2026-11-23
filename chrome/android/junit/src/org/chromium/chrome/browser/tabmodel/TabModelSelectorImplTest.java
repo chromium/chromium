@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
+import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabRestoreEntryId;
@@ -760,6 +761,42 @@ public class TabModelSelectorImplTest {
                 AssertionError.class,
                 () -> mTabModelSelector.restoreForUndo(mIncognitoTabModel, ENTRY_ID, tabs));
         verify(mRecentlyClosedBridge, never()).restoreForUndo(any(), anyInt(), any(), any(), any());
+    }
+
+    @Test
+    public void testRequestToShowTab_defersThumbnailCaptureOnlyForForegroundSwitch() {
+        Tab tab1 = createAttachedTab();
+        Tab tab2 = createAttachedTab();
+        Tab tab3 = createAttachedTab();
+
+        // Show tab1 initially.
+        mTabModelSelector.requestToShowTab(tab1, TabSelectionType.FROM_USER);
+
+        InOrder inOrder = inOrder(mMockTabContentManager, tab1);
+
+        // Switch from tab1 to tab2 in foreground (FROM_USER): defers thumbnail capture.
+        mTabModelSelector.requestToShowTab(tab2, TabSelectionType.FROM_USER);
+        inOrder.verify(mMockTabContentManager)
+                .cacheTabThumbnail(tab1, /* deferUntilNextFrame= */ true);
+        inOrder.verify(tab1).hide(TabHidingType.CHANGED_TABS);
+
+        // Switch away from tab2 on exit (FROM_EXIT): does NOT defer thumbnail capture.
+        mTabModelSelector.requestToShowTab(tab3, TabSelectionType.FROM_EXIT);
+        verify(mMockTabContentManager).cacheTabThumbnail(tab2, /* deferUntilNextFrame= */ false);
+
+        // Switch away from tab3 to null: does NOT defer thumbnail capture.
+        mTabModelSelector.requestToShowTab(/* tab= */ null, TabSelectionType.FROM_USER);
+        verify(mMockTabContentManager).cacheTabThumbnail(tab3, /* deferUntilNextFrame= */ false);
+    }
+
+    private static Tab createAttachedTab() {
+        Tab tab = mock(Tab.class);
+        when(tab.isInitialized()).thenReturn(true);
+        WebContents webContents = mock(WebContents.class);
+        WindowAndroid windowAndroid = mock(WindowAndroid.class);
+        when(webContents.getTopLevelNativeWindow()).thenReturn(windowAndroid);
+        when(tab.getWebContents()).thenReturn(webContents);
+        return tab;
     }
 
     private static List<ClosedTab> createClosedTabs() {
