@@ -199,6 +199,10 @@ ui::mojom::WindowOpenDisposition ComputeOpenDispositionFromModifiersAndLogToUma(
 // Returns the correct VectorIcon for a given TemplateURL (Keyword provider).
 const gfx::VectorIcon& GetKeywordVectorIcon(const TemplateURL& turl);
 
+// Returns the Search Spark vector icon used for AI Mode / Ask Google entry
+// points.
+const gfx::VectorIcon& GetSearchSparkIcon();
+
 // Returns the screen reader label for `selection` within `result`. This is an
 // extended version of AutocompleteMatchType::ToAccessibilityLabel() which also
 // narrates any focused secondary button and the controls available on the

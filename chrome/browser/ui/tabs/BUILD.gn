@@ -196,6 +196,7 @@ if (!is_android) {
       "//components/contextual_tasks/public",
       "//components/contextual_tasks/public:feature_list",
       "//components/feed:feature_list",
+      "//components/omnibox/browser",
       "//third_party/omnibox_proto",
     ]
   }

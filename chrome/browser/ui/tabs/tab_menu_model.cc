@@ -53,6 +53,7 @@
 #include "components/commerce/core/commerce_constants.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/feed/feed_feature_list.h"
+#include "components/omnibox/browser/searchbox_utils.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/tab_context_menu_command.h"
@@ -296,8 +297,7 @@ void TabMenuModel::AppendAiModeItems(tabs::TabHandle context_tab,
   }
 
   const ui::ImageModel ai_mode_icon = ui::ImageModel::FromVectorIcon(
-      glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON),
-      ui::kColorMenuIcon, kTabMenuIconSize);
+      searchbox::GetSearchSparkIcon(), ui::kColorMenuIcon, kTabMenuIconSize);
 
   if (show_share) {
     contextual_tasks_tab_sub_menu_model_ =

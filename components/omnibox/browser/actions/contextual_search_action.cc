@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
+#include "components/omnibox/browser/searchbox_utils.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
@@ -18,9 +19,8 @@
 #endif
 
 #if defined(SUPPORT_PEDALS_VECTOR_ICONS)
-#include "build/branding_buildflags.h"                // nogncheck
-#include "components/omnibox/browser/vector_icons.h"  // nogncheck
-#include "components/vector_icons/vector_icons.h"     // nogncheck
+#include "build/branding_buildflags.h"             // nogncheck
+#include "components/vector_icons/vector_icons.h"  // nogncheck
 #endif
 
 namespace {
@@ -159,9 +159,7 @@ const gfx::VectorIcon& ContextualSearchOpenLensAction::GetVectorIcon() const {
                  .open_lens_action_ui_tweaks
              ? vector_icons::kGoogleLensLogoIcon
              : (omnibox::kAskGSwapIcon.Get()
-                    ? (features::IsRoundedIconsEnabled()
-                           ? omnibox::kSearchSparkIcon
-                           : omnibox::kSearchSparkOldIcon)
+                    ? searchbox::GetSearchSparkIcon()
                     : vector_icons::kGoogleLensMonochromeLogoIcon);
 
 #else

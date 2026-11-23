@@ -574,6 +574,15 @@ KeywordLabelNames GetKeywordLabelNames(const std::u16string& keyword,
   return names;
 }
 
+const gfx::VectorIcon& GetSearchSparkIcon() {
+#if BUILDFLAG(IS_IOS)
+  return gfx::VectorIcon::EmptyIcon();
+#else
+  return features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
+                                           : omnibox::kSearchSparkOldIcon;
+#endif
+}
+
 const gfx::VectorIcon& GetKeywordVectorIcon(const TemplateURL& turl) {
 #if BUILDFLAG(IS_IOS)
   return gfx::VectorIcon::EmptyIcon();
@@ -585,8 +594,7 @@ const gfx::VectorIcon& GetKeywordVectorIcon(const TemplateURL& turl) {
     case StarterPackId::kGemini:
       return omnibox::kSparkIcon;
     case StarterPackId::kAiMode:
-      return features::IsRoundedIconsEnabled() ? omnibox::kSearchSparkIcon
-                                               : omnibox::kSearchSparkOldIcon;
+      return GetSearchSparkIcon();
     case StarterPackId::kBookmarks:
       return features::IsRoundedIconsEnabled()
                  ? omnibox::kStarFilledIcon
