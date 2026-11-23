@@ -1,0 +1,10 @@
+Verifies that the main page request repeated by a service worker appears in the network log.
+Page reloaded.
+
+request.url(): http://127.0.0.1:8000/inspector-protocol/network/resources/service-worker-repeat-fetch.html
+request.target.type(): page
+
+request.url(): http://127.0.0.1:8000/inspector-protocol/network/resources/service-worker-repeat-fetch.html
+request.target.type(): service_worker
+
+
