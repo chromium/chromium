@@ -118,7 +118,7 @@ void UsbDevice::NotifyDeviceRemoved() {
 
 void UsbDevice::OnDisconnect() {
   // Swap out the handle list as HandleClosed() will try to modify it.
-  std::list<raw_ptr<UsbDeviceHandle, CtnExperimental>> handles;
+  std::list<raw_ptr<UsbDeviceHandle>> handles;
   handles.swap(handles_);
   for (UsbDeviceHandle* handle : handles) {
     handle->Close();

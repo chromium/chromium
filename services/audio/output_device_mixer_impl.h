@@ -103,8 +103,8 @@ class OutputDeviceMixerImpl final : public OutputDeviceMixer {
 
   using MixTracks =
       std::set<std::unique_ptr<MixTrack>, base::UniquePtrComparator>;
-  using ActiveTracks = std::set<raw_ptr<MixTrack, SetExperimental>>;
-  using Listeners = std::set<raw_ptr<Listener, SetExperimental>>;
+  using ActiveTracks = std::set<raw_ptr<MixTrack>>;
+  using Listeners = std::set<raw_ptr<Listener>>;
 
   // Operations delegated by MixableOutputStream.
   bool OpenStream(MixTrack* mix_track);

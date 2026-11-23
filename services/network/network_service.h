@@ -560,7 +560,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // including ones it does not own.
   // TODO(mmenke): Once the NetworkService always owns NetworkContexts, merge
   // this with |owned_network_contexts_|.
-  std::set<raw_ptr<NetworkContext, SetExperimental>> network_contexts_;
+  std::set<raw_ptr<NetworkContext>> network_contexts_;
 
   // A per-process_id map of origins that are white-listed to allow
   // them to request raw headers for resources they request.

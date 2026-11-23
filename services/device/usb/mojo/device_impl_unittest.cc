@@ -568,8 +568,7 @@ class USBDeviceImplTest : public testing::Test {
   int open_count_ = 0;
   bool allow_reset_ = false;
 
-  std::map<uint8_t, raw_ptr<const mojom::UsbConfigurationInfo, CtnExperimental>>
-      mock_configs_;
+  std::map<uint8_t, raw_ptr<const mojom::UsbConfigurationInfo>> mock_configs_;
 
   base::queue<std::vector<uint8_t>> mock_inbound_data_;
   base::queue<std::vector<uint8_t>> mock_outbound_data_;

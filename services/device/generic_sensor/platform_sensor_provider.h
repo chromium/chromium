@@ -86,8 +86,7 @@ class PlatformSensorProvider {
 
   void FreeResourcesIfNeeded();
 
-  std::map<mojom::SensorType, raw_ptr<PlatformSensor, CtnExperimental>>
-      sensor_map_;
+  std::map<mojom::SensorType, raw_ptr<PlatformSensor>> sensor_map_;
   std::map<mojom::SensorType, CallbackQueue> requests_map_;
   base::MappedReadOnlyRegion mapped_region_;
 };

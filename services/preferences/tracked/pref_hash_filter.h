@@ -61,7 +61,7 @@ class PrefHashFilter final : public InterceptablePrefFilter {
   // A map from changed paths to their corresponding TrackedPreferences (which
   // aren't owned by this map).
   using ChangedPathsMap =
-      std::map<std::string, raw_ptr<const TrackedPreference, CtnExperimental>>;
+      std::map<std::string, raw_ptr<const TrackedPreference>>;
 
   // Constructs a PrefHashFilter tracking the specified |tracked_preferences|
   // using |pref_hash_store| to check/store hashes. An optional |delegate| is

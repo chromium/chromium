@@ -307,8 +307,7 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_CPP) BackgroundTracingManager
 
   // Note, these sets are not mutated during iteration so it is okay to not use
   // base::ObserverList.
-  std::set<raw_ptr<EnabledStateTestObserver, SetExperimental>>
-      background_tracing_observers_;
+  std::set<raw_ptr<EnabledStateTestObserver>> background_tracing_observers_;
 
   ScenarioCountMap scenario_saved_counts_;
 

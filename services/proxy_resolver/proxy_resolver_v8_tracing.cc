@@ -997,7 +997,7 @@ class ProxyResolverV8TracingFactoryImpl : public ProxyResolverV8TracingFactory {
 
   void RemoveJob(CreateJob* job);
 
-  std::set<raw_ptr<CreateJob, SetExperimental>> jobs_;
+  std::set<raw_ptr<CreateJob>> jobs_;
 };
 
 class ProxyResolverV8TracingFactoryImpl::CreateJob

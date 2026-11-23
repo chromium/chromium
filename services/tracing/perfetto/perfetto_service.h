@@ -91,7 +91,7 @@ class PerfettoService : public mojom::PerfettoService {
   std::unique_ptr<perfetto::TracingService> service_;
   mojo::ReceiverSet<mojom::PerfettoService, uint32_t> receivers_;
   mojo::UniqueReceiverSet<mojom::ProducerHost, uint32_t> producer_receivers_;
-  std::set<raw_ptr<ConsumerHost::TracingSession, SetExperimental>>
+  std::set<raw_ptr<ConsumerHost::TracingSession>>
       tracing_sessions_;  // Not owned.
   // Protects access to |active_service_pids_|. We need this lock because
   // CustomEventRecorder calls active_service_pids() from a possibly different
