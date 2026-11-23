@@ -12,6 +12,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
@@ -754,7 +755,9 @@ public class SearchActivityUnitTest {
         mUrlBar.setHint(null);
         mActivity.onNewIntent(intent);
         assertEquals("Search or type URL", mUrlBar.getHint());
-        verify(mLocationBarCoordinator).setUrlBarFocus(captor.capture());
+        // atLeastOnce: with OneStepAimAccess, endSession() also calls setUrlBarFocus(null)
+        // before the new query; the captor keeps the last (new) input.
+        verify(mLocationBarCoordinator, atLeastOnce()).setUrlBarFocus(captor.capture());
         assertEquals("query1", captor.getValue().getUserText());
         clearInvocations(mLocationBarCoordinator);
 
@@ -763,7 +766,7 @@ public class SearchActivityUnitTest {
         mUrlBar.setHint(null);
         mActivity.onNewIntent(intent);
         assertEquals("Search or type URL", mUrlBar.getHint());
-        verify(mLocationBarCoordinator).setUrlBarFocus(captor.capture());
+        verify(mLocationBarCoordinator, atLeastOnce()).setUrlBarFocus(captor.capture());
         assertEquals("query2", captor.getValue().getUserText());
         clearInvocations(mLocationBarCoordinator);
 
@@ -772,7 +775,7 @@ public class SearchActivityUnitTest {
         mUrlBar.setHint(null);
         mActivity.onNewIntent(intent);
         assertEquals("Search or type URL", mUrlBar.getHint());
-        verify(mLocationBarCoordinator).setUrlBarFocus(captor.capture());
+        verify(mLocationBarCoordinator, atLeastOnce()).setUrlBarFocus(captor.capture());
         assertEquals("", captor.getValue().getUserText());
         clearInvocations(mLocationBarCoordinator);
     }
