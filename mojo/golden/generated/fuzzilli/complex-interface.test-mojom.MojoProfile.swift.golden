@@ -1643,6 +1643,76 @@ private let MojoGoldenReceiverFromBrowserRouterListenerGenerator = CodeGenerator
     b.callMethod("addListener", on: listenerHost, withArgs: [callback])
 }
 
+/// Awaits a call to `method` on `remote` and returns the remote at `path` in
+/// the reply. Replies may hold null structs, unset union fields and null
+/// remotes, so the call and the property retrievals use optional chaining: the
+/// rest of the chain gets `undefined` instead of throwing.
+private func awaitRemoteChain(
+    _ b: ProgramBuilder, _ method: String, on remote: Variable, at path: [String]
+) -> Variable {
+    let signature = b.methodSignatures(of: method, on: remote)[0]
+    let arguments = b.findOrGenerateArguments(
+                        forSignature: signature,
+                        maxNumberOfVariablesToGenerate: 1000)
+    var value = b.await(b.callMethod(
+        method, on: remote, withArgs: arguments, guard: false, isReceiverOptional: true))
+    for property in path {
+        value = b.getProperty(property, of: value, isReceiverOptional: true)
+    }
+    return value
+}
+/// Follows a chain of replies from a remote that culminates in a remote. There
+/// may also be remotes retrieved along the chain, which Fuzzilli can interact
+/// with as well.
+///
+/// Chain1:
+///   Primary.returnRemote().remote
+///   RemoteFromBrowser.returnRemote().remote
+private let MojoReplyChain1Generator = CodeGenerator(
+    "MojoReplyChain1Generator", inContext: .single(.async)
+) { b in
+    var remote = b.callFunction(
+        b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
+    remote = awaitRemoteChain(b, "returnRemote", on: remote, at: ["remote"])
+    remote = awaitRemoteChain(b, "returnRemote", on: remote, at: ["remote"])
+}
+/// Chain2:
+///   Primary.returnMixed().remote
+private let MojoReplyChain2Generator = CodeGenerator(
+    "MojoReplyChain2Generator", inContext: .single(.async)
+) { b in
+    var remote = b.callFunction(
+        b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
+    remote = awaitRemoteChain(b, "returnMixed", on: remote, at: ["remote"])
+}
+/// Chain3:
+///   Primary.returnMixed().associatedRemote
+private let MojoReplyChain3Generator = CodeGenerator(
+    "MojoReplyChain3Generator", inContext: .single(.async)
+) { b in
+    var remote = b.callFunction(
+        b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
+    remote = awaitRemoteChain(b, "returnMixed", on: remote, at: ["associatedRemote"])
+}
+/// Chain4:
+///   Primary.returnMixedAssociated().associatedRemote
+private let MojoReplyChain4Generator = CodeGenerator(
+    "MojoReplyChain4Generator", inContext: .single(.async)
+) { b in
+    var remote = b.callFunction(
+        b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
+    remote = awaitRemoteChain(b, "returnMixedAssociated", on: remote, at: ["associatedRemote"])
+}
+/// Chain5:
+///   ReceiverFromJs.returnRemote().remote
+private let MojoReplyChain5Generator = CodeGenerator(
+    "MojoReplyChain5Generator", inContext: .single(.async),
+    inputs: .required(.jsGoldenReceiverFromJsRemote)
+) { b, root in
+    var remote = root
+    remote = awaitRemoteChain(b, "returnRemote", on: remote, at: ["remote"])
+}
+
 /// Every ObjectGroup registered by this profile. Also used by `isTargetObject`
 /// to decide which variables the Mojo generators operate on.
 private let mojoObjectGroups: [ObjectGroup] = [
@@ -1875,6 +1945,11 @@ let mojoPrimaryProfile = Profile(
         (MojoPropertyRetrievalGenerator, 10000),
         (MojoGoldenRemoteFromJsRouterListenerGenerator, 2500),
         (MojoGoldenReceiverFromBrowserRouterListenerGenerator, 2500),
+        (MojoReplyChain1Generator, 1000),
+        (MojoReplyChain2Generator, 1000),
+        (MojoReplyChain3Generator, 1000),
+        (MojoReplyChain4Generator, 1000),
+        (MojoReplyChain5Generator, 1000),
     ] + commonMojoCodeGenerators,
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,

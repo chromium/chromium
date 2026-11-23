@@ -179,7 +179,66 @@ class Generator(generator.Generator):
       # Union of `js_structs` and `browser_structs`
       "structs": list((self.js_structs | self.browser_structs).values()),
       "response_structs": list(self.response_structs.values()),
+      "remote_chains": self._CollectRemoteChains(),
     }
+
+  # Returns every maximal chain of calls that, starting at any remote, returns a
+  # remote. A chain that is a prefix or a suffix of another is not included in
+  # the output. Each chain is a list of `(method, property path to the remote)`.
+  def _CollectRemoteChains(self):
+    chains = []
+
+    def visit(interface, chain, seen_interfaces):
+      is_maximal = True
+      for method in interface.methods:
+        if not method.response_parameters:
+          continue
+
+        for param in method.response_parameters:
+          for path, remote in self._FindReplyRemotes(param.kind, [param.name]):
+            name = self._FormatUniqueName(remote)
+            if name in seen_interfaces:
+              continue
+            is_maximal = False
+            visit(remote, chain + [(method, path)], seen_interfaces | {name})
+      if is_maximal and chain:
+        chains.append(chain)
+
+    # Chains should never pass through the primary interface. For instance,
+    # if `Foo` --> `Primary` --> `Bar`, then emit only `Primary` --> `Bar`
+    primary_name = self._FormatUniqueName(self.primary_interface)
+    for name, remote in self.js_called_interfaces.items():
+      visit(remote, [], {name, primary_name})
+
+    return [
+      chain
+      for chain in chains
+      # Only return chains that are not suffixes of other chains
+      if not any(
+        len(other) > len(chain) and other[-len(chain) :] == chain
+        for other in chains
+      )
+    ]
+
+  # Yields `(property path, interface)` for every remote reachable from `kind`.
+  def _FindReplyRemotes(self, kind, path, seen_types=set()):
+    if self._IsIgnoredType(kind):
+      return
+    if self._IsAnyPendingRemoteKind(kind):
+      remote = self.js_called_interfaces.get(self._FormatUniqueName(kind.kind))
+      yield path, remote
+    # TODO(crbug.com/479225937): Add support for arrays and maps of remotes
+    if not (mojom.IsStructKind(kind) or mojom.IsUnionKind(kind)):
+      return
+
+    name = self._FormatUniqueName(kind)
+    if name in seen_types:
+      return
+
+    for field in kind.fields:
+      yield from self._FindReplyRemotes(
+        field.kind, path + [field.name], seen_types | {name}
+      )
 
   def _IsIgnoredType(self, kind):
     if not self._IsUserType(kind):

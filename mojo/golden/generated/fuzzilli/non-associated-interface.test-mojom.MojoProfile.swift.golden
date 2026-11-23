@@ -381,6 +381,47 @@ private let MojoPropertyRetrievalGenerator = CodeGenerator(
     b.getProperty(propertyName, of: obj)
 }
 
+/// Awaits a call to `method` on `remote` and returns the remote at `path` in
+/// the reply. Replies may hold null structs, unset union fields and null
+/// remotes, so the call and the property retrievals use optional chaining: the
+/// rest of the chain gets `undefined` instead of throwing.
+private func awaitRemoteChain(
+    _ b: ProgramBuilder, _ method: String, on remote: Variable, at path: [String]
+) -> Variable {
+    let signature = b.methodSignatures(of: method, on: remote)[0]
+    let arguments = b.findOrGenerateArguments(
+                        forSignature: signature,
+                        maxNumberOfVariablesToGenerate: 1000)
+    var value = b.await(b.callMethod(
+        method, on: remote, withArgs: arguments, guard: false, isReceiverOptional: true))
+    for property in path {
+        value = b.getProperty(property, of: value, isReceiverOptional: true)
+    }
+    return value
+}
+/// Follows a chain of replies from a remote that culminates in a remote. There
+/// may also be remotes retrieved along the chain, which Fuzzilli can interact
+/// with as well.
+///
+/// Chain1:
+///   Primary.returnRemote().remote
+private let MojoReplyChain1Generator = CodeGenerator(
+    "MojoReplyChain1Generator", inContext: .single(.async)
+) { b in
+    var remote = b.callFunction(
+        b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
+    remote = awaitRemoteChain(b, "returnRemote", on: remote, at: ["remote"])
+}
+/// Chain2:
+///   Primary.syncReturnRemote().remote
+private let MojoReplyChain2Generator = CodeGenerator(
+    "MojoReplyChain2Generator", inContext: .single(.async)
+) { b in
+    var remote = b.callFunction(
+        b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
+    remote = awaitRemoteChain(b, "syncReturnRemote", on: remote, at: ["remote"])
+}
+
 /// Every ObjectGroup registered by this profile. Also used by `isTargetObject`
 /// to decide which variables the Mojo generators operate on.
 private let mojoObjectGroups: [ObjectGroup] = [
@@ -497,6 +538,8 @@ let mojoPrimaryProfile = Profile(
     additionalCodeGenerators: [
         (MojoMethodCallGenerator, 10000),
         (MojoPropertyRetrievalGenerator, 10000),
+        (MojoReplyChain1Generator, 2500),
+        (MojoReplyChain2Generator, 2500),
     ] + commonMojoCodeGenerators,
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,

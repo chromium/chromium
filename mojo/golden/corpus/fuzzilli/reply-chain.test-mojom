@@ -1,0 +1,28 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+module golden;
+
+// Only maximal chains get a generator: there is none for `GetMiddle` alone,
+// since its chain continues through `Middle.GetLeaf`, and none for
+// `Middle.GetLeaf` alone, since its chain can start at `Primary.GetMiddle`.
+interface Primary {
+  GetMiddle() => (pending_remote<Middle> middle);
+  GetLeafInStruct() => (ReplyStruct reply);
+};
+
+struct ReplyStruct {
+  ReplyUnion? value;
+};
+
+union ReplyUnion {
+  int32 unused;
+  pending_remote<Leaf> leaf;
+};
+
+interface Middle {
+  GetLeaf() => (pending_remote<Leaf> leaf);
+  GetPrimary() => (pending_remote<Primary> primary);
+};
+
+interface Leaf {};

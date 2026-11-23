@@ -104,3 +104,55 @@ private let Mojo{{receiver|format_unique_name}}RouterListenerGenerator = CodeGen
 }
     {%- endif %}
 {%- endfor %}
+{%- if remote_chains %}
+
+/// Awaits a call to `method` on `remote` and returns the remote at `path` in
+/// the reply. Replies may hold null structs, unset union fields and null
+/// remotes, so the call and the property retrievals use optional chaining: the
+/// rest of the chain gets `undefined` instead of throwing.
+private func awaitRemoteChain(
+    _ b: ProgramBuilder, _ method: String, on remote: Variable, at path: [String]
+) -> Variable {
+    let signature = b.methodSignatures(of: method, on: remote)[0]
+    let arguments = b.findOrGenerateArguments(
+                        forSignature: signature,
+                        maxNumberOfVariablesToGenerate: 1000)
+    var value = b.await(b.callMethod(
+        method, on: remote, withArgs: arguments, guard: false, isReceiverOptional: true))
+    for property in path {
+        value = b.getProperty(property, of: value, isReceiverOptional: true)
+    }
+    return value
+}
+{%- endif %}
+{%- for chain in remote_chains %}
+    {%- if loop.first %}
+/// Follows a chain of replies from a remote that culminates in a remote. There
+/// may also be remotes retrieved along the chain, which Fuzzilli can interact
+/// with as well.
+///
+    {%- endif %}
+/// Chain{{loop.index}}:
+    {%- for method, path in chain %}
+///   {{method.interface.name}}.{{method.name}}().{{path|join(".")}}
+    {%- endfor %}
+    {%- set root = chain[0][0].interface %}
+    {%- set from_primary = root|format_unique_name == primary|format_unique_name %}
+    {%- if from_primary %}
+private let MojoReplyChain{{loop.index}}Generator = CodeGenerator(
+    "MojoReplyChain{{loop.index}}Generator", inContext: .single(.async)
+) { b{% if not from_primary %}, root{% endif %} in
+    var remote = b.callFunction(
+        b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
+    {%- else %}
+private let MojoReplyChain{{loop.index}}Generator = CodeGenerator(
+    "MojoReplyChain{{loop.index}}Generator", inContext: .single(.async),
+    inputs: .required(.{{root|format_il_type}})
+) { b{% if not from_primary %}, root{% endif %} in
+    var remote = root
+    {%- endif %}
+    {%- for method, path in chain %}
+    remote = awaitRemoteChain(b, "{{method.name}}", on: remote, at: ["{{path|join('", "')}}"])
+    {%- endfor %}
+}
+{%- endfor %}
