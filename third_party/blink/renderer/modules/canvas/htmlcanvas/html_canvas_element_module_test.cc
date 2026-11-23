@@ -248,7 +248,7 @@ TEST_P(HTMLCanvasElementModuleTest, LowLatencyCanvasCompositorFrameOpacity) {
   constexpr auto format = viz::SinglePlaneFormat::kRGBA_8888;
 #endif
 
-  if (format == viz::SinglePlaneFormat::kBGRA_8888) {
+  if constexpr (format == viz::SinglePlaneFormat::kBGRA_8888) {
     context_provider->UnboundTestRasterInterface()->set_texture_format_bgra8888(
         true);
   }

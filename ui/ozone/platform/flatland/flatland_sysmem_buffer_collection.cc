@@ -9,7 +9,7 @@
 #include <bit>
 #include <tuple>
 
-#include "base/containers/flat_set.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/koid.h"
 #include "base/numerics/checked_math.h"
@@ -251,16 +251,21 @@ std::unique_ptr<ImageConstraintsInfo> InitializeImageConstraintsInfo(
                                                 format_constraints);
 }
 
+constexpr auto kSupportedFormats =
+    base::MakeFixedFlatSet<viz::SharedImageFormat>({
+        viz::SinglePlaneFormat::kRGBA_8888,
+        viz::SinglePlaneFormat::kBGRA_8888,
+        viz::SinglePlaneFormat::kRGBX_8888,
+        viz::SinglePlaneFormat::kBGRX_8888,
+        viz::MultiPlaneFormat::kNV12,
+    });
+
 }  // namespace
 
 // static
 bool FlatlandSysmemBufferCollection::IsNativePixmapConfigSupported(
     viz::SharedImageFormat format,
     gfx::BufferUsage usage) {
-  auto kSupportedFormats = base::flat_set<viz::SharedImageFormat>(
-      {viz::SinglePlaneFormat::kRGBA_8888, viz::SinglePlaneFormat::kBGRA_8888,
-       viz::SinglePlaneFormat::kRGBX_8888, viz::SinglePlaneFormat::kBGRX_8888,
-       viz::MultiPlaneFormat::kNV12});
   if (!kSupportedFormats.contains(format)) {
     return false;
   }
@@ -282,10 +287,6 @@ bool FlatlandSysmemBufferCollection::IsNativePixmapConfigSupported(
 bool FlatlandSysmemBufferCollection::IsNativePixmapConfigSupported(
     viz::SharedImageFormat format,
     NativePixmapUsageSet usage) {
-  auto kSupportedFormats = base::flat_set<viz::SharedImageFormat>(
-      {viz::SinglePlaneFormat::kRGBA_8888, viz::SinglePlaneFormat::kBGRA_8888,
-       viz::SinglePlaneFormat::kRGBX_8888, viz::SinglePlaneFormat::kBGRX_8888,
-       viz::MultiPlaneFormat::kNV12});
   if (!kSupportedFormats.contains(format)) {
     return false;
   }

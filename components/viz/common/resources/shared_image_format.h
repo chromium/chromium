@@ -69,7 +69,7 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat final {
     k16F  // 16 bit float
   };
 
-  SharedImageFormat() = default;
+  constexpr SharedImageFormat() = default;
   static constexpr SharedImageFormat MultiPlane(PlaneConfig plane_config,
                                                 Subsampling subsampling,
                                                 ChannelFormat channel_format) {
@@ -89,10 +89,12 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat final {
     return format_.multiplanar_format.channel_format;
   }
 
-  bool is_single_plane() const {
+  constexpr bool is_single_plane() const {
     return plane_type_ == PlaneType::kSinglePlane;
   }
-  bool is_multi_plane() const { return plane_type_ == PlaneType::kMultiPlane; }
+  constexpr bool is_multi_plane() const {
+    return plane_type_ == PlaneType::kMultiPlane;
+  }
 
   // Returns whether this format needs to be externally sampled. Note that
   // external sampling is supported only on Ozone.
@@ -191,8 +193,35 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat final {
   // function to get optimal 8 bit format for the Skia CPU backend.
   static SharedImageFormat N32Format();
 
-  bool operator==(const SharedImageFormat& o) const;
-  std::weak_ordering operator<=>(const SharedImageFormat& o) const;
+  constexpr bool operator==(const SharedImageFormat& o) const {
+    if (plane_type_ != o.plane_type_) {
+      return false;
+    }
+
+    switch (plane_type_) {
+      case PlaneType::kUnknown:
+        return true;
+      case PlaneType::kSinglePlane:
+        return format_.singleplanar_format == o.format_.singleplanar_format;
+      case PlaneType::kMultiPlane:
+        return format_.multiplanar_format == o.format_.multiplanar_format;
+    }
+  }
+
+  constexpr std::weak_ordering operator<=>(const SharedImageFormat& o) const {
+    if (plane_type_ != o.plane_type_) {
+      return plane_type_ <=> o.plane_type_;
+    }
+
+    switch (plane_type_) {
+      case PlaneType::kUnknown:
+        return std::weak_ordering::equivalent;
+      case PlaneType::kSinglePlane:
+        return format_.singleplanar_format <=> o.format_.singleplanar_format;
+      case PlaneType::kMultiPlane:
+        return format_.multiplanar_format <=> o.format_.multiplanar_format;
+    }
+  }
 
  private:
   enum class PlaneType : uint8_t {
@@ -217,11 +246,25 @@ class COMPONENT_EXPORT(VIZ_SHARED_IMAGE_FORMAT) SharedImageFormat final {
       bool prefers_external_sampler = false;
 #endif
 
-      bool operator==(const MultiplanarFormat& o) const;
-      std::weak_ordering operator<=>(const MultiplanarFormat& o) const;
+      constexpr bool operator==(const MultiplanarFormat& o) const {
+        return plane_config == o.plane_config && subsampling == o.subsampling &&
+               channel_format == o.channel_format;
+      }
+      constexpr std::weak_ordering operator<=>(
+          const MultiplanarFormat& o) const {
+        if (std::strong_ordering cmp = plane_config <=> o.plane_config;
+            cmp != 0) {
+          return cmp;
+        }
+        if (std::strong_ordering cmp = subsampling <=> o.subsampling;
+            cmp != 0) {
+          return cmp;
+        }
+        return channel_format <=> o.channel_format;
+      }
     };
 
-    SharedImageFormatUnion() {}
+    constexpr SharedImageFormatUnion() {}
     explicit constexpr SharedImageFormatUnion(
         mojom::SingleplanarFormat singleplanar_format)
         : singleplanar_format(singleplanar_format) {}
