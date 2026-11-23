@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/i18n/language_tag.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
@@ -43,7 +44,7 @@ bool IsOriginPartOfDeletionInfo(const std::optional<url::Origin>& origin,
 }  // anonymous namespace
 
 MultiStepImportMerger::MultiStepImportMerger(
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     const GeoIpCountryCode& variation_country_code)
     : app_locale_(app_locale),
       variation_country_code_(variation_country_code) {}
@@ -84,7 +85,8 @@ bool MultiStepImportMerger::MergeProfileWithMultiStepCandidates(
   // Merging might fail due to an incorrectly complemented country in one of the
   // merge candidates. In this case, multi-step imports are not offered.
   while (candidate != multistep_candidates_.end() &&
-         completed_profile.MergeDataFrom(candidate->profile, app_locale_) !=
+         completed_profile.MergeDataFrom(candidate->profile,
+                                         app_locale_.tag_string()) !=
              AutofillProfile::ProfileMergeResult::kMergeFailed) {
     MergeImportMetadata(candidate->import_metadata, completed_metadata);
     candidate++;

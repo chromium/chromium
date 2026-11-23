@@ -13,6 +13,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/i18n/language_tag.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -444,15 +445,16 @@ std::optional<std::u16string> PhoneNumber::PhoneCombineHelper::GetRegionCode()
 // static
 bool PhoneNumber::ImportPhoneNumberToProfile(
     const PhoneNumber::PhoneCombineHelper& combined_phone,
-    std::string_view app_locale,
+    const base::i18n::LanguageTag& app_locale,
     AutofillProfile& profile) {
   // If the phone number only consists of a single component, the
   // `PhoneCombineHelper` won't try to parse it. This happens during `SetInfo()`
   // in this case.
   if (std::optional<std::u16string> constructed_number =
-          combined_phone.ParseNumber(GetRegion(profile, app_locale))) {
+          combined_phone.ParseNumber(
+              GetRegion(profile, app_locale.tag_string()))) {
     return profile.SetInfoWithVerificationStatus(
-        PHONE_HOME_WHOLE_NUMBER, *constructed_number, app_locale,
+        PHONE_HOME_WHOLE_NUMBER, *constructed_number, app_locale.tag_string(),
         VerificationStatus::kObserved);
   }
   return false;

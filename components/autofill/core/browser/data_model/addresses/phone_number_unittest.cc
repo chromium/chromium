@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -607,14 +608,10 @@ TEST_P(PhoneImportAndGetTest, TestSettingAndParsing) {
   // The locale currently plays no role in the test because the profile contains
   // a country. This just stays here to be as close as possible to actual user
   // experiences.
-  std::string faked_app_locale;
-  if (test.default_country == u"DE") {
-    faked_app_locale = "de_DE";
-  } else if (test.default_country == u"US") {
-    faked_app_locale = "en_US";
-  } else {
-    ASSERT_TRUE(false);
-  }
+  ASSERT_TRUE(test.default_country == u"DE" || test.default_country == u"US");
+  const base::i18n::LanguageTag faked_app_locale =
+      test.default_country == u"DE" ? base::i18n::GetKnownLanguageTag("de-DE")
+                                    : base::i18n::GetKnownLanguageTag("en-US");
 
   // Gather all data in the PhoneCombineHelper.
   PhoneNumber::PhoneCombineHelper number;
@@ -633,7 +630,8 @@ TEST_P(PhoneImportAndGetTest, TestSettingAndParsing) {
   for (const auto& [field_type, expected_value] : test.expected_values) {
     SCOPED_TRACE(::testing::Message()
                  << "GetInfo(" << FieldTypeToStringView(field_type) << ")");
-    EXPECT_EQ(expected_value, profile.GetInfo(field_type, faked_app_locale));
+    EXPECT_EQ(expected_value,
+              profile.GetInfo(field_type, faked_app_locale.tag_string()));
   }
 }
 

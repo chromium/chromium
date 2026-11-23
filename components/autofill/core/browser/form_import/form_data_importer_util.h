@@ -11,10 +11,10 @@
 #include <limits>
 #include <list>
 #include <optional>
-#include <string>
 #include <utility>
 
 #include "base/check.h"
+#include "base/i18n/language_tag.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
@@ -115,7 +115,7 @@ class TimestampedSameOriginQueue {
 // from multi-step import flows.
 class MultiStepImportMerger {
  public:
-  MultiStepImportMerger(const std::string& app_locale,
+  MultiStepImportMerger(const base::i18n::LanguageTag& app_locale,
                         const GeoIpCountryCode& variation_country_code);
   ~MultiStepImportMerger();
 
@@ -168,7 +168,7 @@ class MultiStepImportMerger {
 
   // Needed to predict the country code of a merged import candidate, to
   // ultimately decide if the profile meets the minimum import requirements.
-  std::string app_locale_;
+  base::i18n::LanguageTag app_locale_;
   GeoIpCountryCode variation_country_code_;
 
   // Represents a submitted form, stored to be considered as a merge candidate

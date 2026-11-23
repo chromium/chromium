@@ -189,7 +189,7 @@ AddressFormDataImporter::ExtractedAddressProfile::~ExtractedAddressProfile() =
 
 AddressFormDataImporter::AddressFormDataImporter(AutofillClient* client)
     : client_(CHECK_DEREF(client)),
-      multistep_importer_(std::string(client_->GetAppLocale().tag_string()),
+      multistep_importer_(client_->GetAppLocale(),
                           client_->GetVariationConfigCountryCode()),
       address_profile_save_manager_(
           std::make_unique<AddressProfileSaveManager>(client)) {
@@ -703,7 +703,7 @@ bool AddressFormDataImporter::SetPhoneNumber(
   }
 
   bool parsed_successfully = PhoneNumber::ImportPhoneNumberToProfile(
-      combined_phone, client_->GetAppLocale().tag_string(), profile);
+      combined_phone, client_->GetAppLocale(), profile);
   autofill_metrics::LogPhoneNumberImportParsingResult(parsed_successfully);
   return parsed_successfully;
 }

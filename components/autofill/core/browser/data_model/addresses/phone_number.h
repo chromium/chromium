@@ -17,6 +17,10 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
 
+namespace base::i18n {
+class LanguageTag;
+}
+
 namespace autofill {
 
 class AutofillProfile;
@@ -122,7 +126,7 @@ class PhoneNumber : public FormGroup {
   // Returns whether the phonenumber was successfully parsed and stored.
   static bool ImportPhoneNumberToProfile(
       const PhoneNumber::PhoneCombineHelper& combined_phone,
-      std::string_view app_locale,
+      const base::i18n::LanguageTag& app_locale,
       AutofillProfile& profile);
 
  private:
