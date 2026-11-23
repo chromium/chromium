@@ -290,6 +290,22 @@ class NativeWidgetMacTest : public WidgetTest {
     return widget;
   }
 
+  // Create a child `Widget` of `parent` backed by the
+  // `NativeWidgetMacTestWindow` `NSWindow` subclass, without showing it.
+  Widget* CreateChildWidgetWithTestWindow(Widget* parent,
+                                          NativeWidgetMacTestWindow** window) {
+    Widget* child = new Widget;
+    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+    params.bounds = gfx::Rect(100, 100, 200, 200);
+    params.parent = parent->GetNativeView();
+    params.native_widget = new TestWindowNativeWidgetMac(child);
+    child->Init(std::move(params));
+    *window = base::apple::ObjCCastStrict<NativeWidgetMacTestWindow>(
+        child->GetNativeWindow().GetNativeNSWindow());
+    EXPECT_TRUE(*window);
+    return child;
+  }
+
   FocusManager* GetFocusManager(NativeWidgetMac* native_widget) const {
     return native_widget->focus_manager_;
   }
@@ -884,6 +900,83 @@ TEST_F(NativeWidgetMacTest, ChildWidgetOnInactiveSpace) {
   // OmniboxPopupFullPresenter relies on this to focus a deferred popup.
   EXPECT_THAT(visibility_observer.on_screen_changes(),
               testing::ElementsAre(true));
+
+  parent->CloseNow();
+}
+
+// Test that stacking a child widget whose attachment to its parent is
+// deferred doesn't order it, unattached, onto the active space. The
+// sublevel manager stacks child widgets right after they are shown.
+TEST_F(NativeWidgetMacTest, StackDeferredChildOnInactiveSpace) {
+  NativeWidgetMacTestWindow* parent_window;
+  Widget::InitParams parent_params =
+      CreateParams(Widget::InitParams::TYPE_WINDOW);
+  parent_params.bounds = gfx::Rect(100, 100, 200, 200);
+  Widget* parent =
+      CreateWidgetWithTestWindow(std::move(parent_params), &parent_window);
+
+  parent_window.fakeOnInactiveSpace = YES;
+
+  NativeWidgetMacTestWindow* child_window;
+  Widget* child = CreateChildWidgetWithTestWindow(parent, &child_window);
+  ASSERT_TRUE(child_window);
+
+  child->ShowInactive();
+  EXPECT_EQ(nil, child_window.parentWindow);
+  EXPECT_FALSE([child_window isVisible]);
+  EXPECT_FALSE(child->IsVisible());
+
+  child->StackAtTop();
+  EXPECT_EQ(nil, child_window.parentWindow);
+  EXPECT_FALSE([child_window isVisible]);
+  EXPECT_FALSE(child->IsVisible());
+
+  child->StackAboveWidget(parent);
+  EXPECT_EQ(nil, child_window.parentWindow);
+  EXPECT_FALSE([child_window isVisible]);
+  EXPECT_FALSE(child->IsVisible());
+
+  parent_window.fakeOnInactiveSpace = NO;
+  [NSWorkspace.sharedWorkspace.notificationCenter
+      postNotificationName:NSWorkspaceActiveSpaceDidChangeNotification
+                    object:NSWorkspace.sharedWorkspace];
+  EXPECT_EQ(parent_window, child_window.parentWindow);
+  EXPECT_TRUE([child_window isVisible]);
+  EXPECT_TRUE(child->IsVisible());
+
+  parent->CloseNow();
+}
+
+// Test that stacking a child widget attached to a parent on the active space
+// still orders it above its siblings, and keeps it attached and visible.
+TEST_F(NativeWidgetMacTest, StackAttachedChildOnActiveSpace) {
+  NativeWidgetMacTestWindow* parent_window;
+  Widget::InitParams parent_params =
+      CreateParams(Widget::InitParams::TYPE_WINDOW);
+  parent_params.bounds = gfx::Rect(100, 100, 200, 200);
+  Widget* parent =
+      CreateWidgetWithTestWindow(std::move(parent_params), &parent_window);
+
+  NativeWidgetMacTestWindow* child_window;
+  Widget* child = CreateChildWidgetWithTestWindow(parent, &child_window);
+  ASSERT_TRUE(child_window);
+  NativeWidgetMacTestWindow* sibling_window;
+  Widget* sibling = CreateChildWidgetWithTestWindow(parent, &sibling_window);
+  ASSERT_TRUE(sibling_window);
+
+  child->ShowInactive();
+  sibling->ShowInactive();
+  EXPECT_EQ(parent_window, child_window.parentWindow);
+  EXPECT_TRUE([child_window isVisible]);
+  EXPECT_TRUE(child->IsVisible());
+  // A lower `orderedIndex` is further to the front.
+  ASSERT_LT([sibling_window orderedIndex], [child_window orderedIndex]);
+
+  child->StackAtTop();
+  EXPECT_EQ(parent_window, child_window.parentWindow);
+  EXPECT_TRUE([child_window isVisible]);
+  EXPECT_TRUE(child->IsVisible());
+  EXPECT_LT([child_window orderedIndex], [sibling_window orderedIndex]);
 
   parent->CloseNow();
 }

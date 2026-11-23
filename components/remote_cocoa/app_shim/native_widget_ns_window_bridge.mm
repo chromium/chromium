@@ -570,6 +570,12 @@ void NativeWidgetNSWindowBridge::ShowCertificateViewer(
 }
 
 void NativeWidgetNSWindowBridge::StackAbove(uint64_t sibling_id) {
+  // `OrderChildren()` orders the window in above its parent once it attaches,
+  // but doesn't keep the order of children stacked while unattached.
+  if (IsUnattachedChildWindow()) {
+    return;
+  }
+
   NativeWidgetNSWindowBridge* sibling_bridge =
       NativeWidgetNSWindowBridge::GetFromId(sibling_id);
   if (!sibling_bridge) {
@@ -585,6 +591,12 @@ void NativeWidgetNSWindowBridge::StackAbove(uint64_t sibling_id) {
 }
 
 void NativeWidgetNSWindowBridge::StackAtTop() {
+  // `OrderChildren()` orders the window in above its parent once it attaches,
+  // but doesn't keep the order of children stacked while unattached.
+  if (IsUnattachedChildWindow()) {
+    return;
+  }
+
   [window_ orderWindowByShuffling:NSWindowAbove relativeTo:0];
 }
 
@@ -1005,7 +1017,7 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
     // parent is not on the active space). Ordering an unattached child window
     // with NSWindowCollectionBehaviorTransient onto the screen causes it to
     // appear detached on the currently active space.
-    if (!parent_ || [window_ parentWindow]) {
+    if (!IsUnattachedChildWindow()) {
       // Activate the app before `makeKeyAndOrderFront:`. If the order is
       // reversed while the app is inactive, AppKit will not send
       // NSWindowDidBecomeKeyNotification, causing Widget::IsActive() to
@@ -2250,6 +2262,10 @@ void NativeWidgetNSWindowBridge::OrderChildren() {
       [window addChildWindow:child_window ordered:NSWindowAbove];
     }
   }
+}
+
+bool NativeWidgetNSWindowBridge::IsUnattachedChildWindow() const {
+  return parent_ && !window_.parentWindow && !IsWindowModalSheet();
 }
 
 void NativeWidgetNSWindowBridge::RemoveOrDestroyChildren() {

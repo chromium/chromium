@@ -420,6 +420,12 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // Attach child windows, if the window is visible (see comment inline).
   void OrderChildren();
 
+  // Returns true if this is a child window, other than a window-modal sheet,
+  // that isn't attached to its parent `NSWindow`, e.g. while it's hidden or
+  // while `OrderChildren()` defers attaching it. Ordering such a window puts it
+  // on the active space.
+  bool IsUnattachedChildWindow() const;
+
   // Closes all child windows. NativeWidgetNSWindowBridge children will be
   // destroyed.
   void RemoveOrDestroyChildren();
