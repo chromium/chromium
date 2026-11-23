@@ -927,6 +927,97 @@ public class IntentHandlerRobolectricTest {
     }
 
     @Test
+    public void testGetUrlFromIntent_Handoff() {
+        String handoffUrl = "https://www.google.com/search#:~:text=hello%20world";
+
+        // Component-targeted Handoff intent (null action, null data, no BROWSABLE).
+        Intent validHandoff = new Intent();
+        validHandoff.putExtra(IntentHandler.EXTRA_INVOKED_FROM_HANDOFF, true);
+        validHandoff.putExtra(IntentHandler.EXTRA_HANDOFF_URL, handoffUrl);
+        assertTrue(IntentHandler.isIntentFromHandoff(validHandoff));
+        assertEquals(handoffUrl, IntentHandler.getUrlFromIntent(validHandoff));
+
+        // Missing EXTRA_INVOKED_FROM_HANDOFF must ignore EXTRA_HANDOFF_URL.
+        Intent missingFlag = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        missingFlag.putExtra(
+                IntentHandler.EXTRA_HANDOFF_URL,
+                "filesystem:http://127.0.0.1:8000/temporary/cached_entry");
+        assertFalse(IntentHandler.isIntentFromHandoff(missingFlag));
+        assertEquals("https://example.com", IntentHandler.getUrlFromIntent(missingFlag));
+
+        // CATEGORY_BROWSABLE with data URI must ignore EXTRA_HANDOFF_URL.
+        Intent browsableWithData = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        browsableWithData.addCategory(Intent.CATEGORY_BROWSABLE);
+        browsableWithData.putExtra(IntentHandler.EXTRA_INVOKED_FROM_HANDOFF, true);
+        browsableWithData.putExtra(IntentHandler.EXTRA_HANDOFF_URL, handoffUrl);
+        assertFalse(IntentHandler.isIntentFromHandoff(browsableWithData));
+        assertEquals("https://example.com", IntentHandler.getUrlFromIntent(browsableWithData));
+
+        // ACTION_MAIN + CATEGORY_BROWSABLE with null data URI must also be rejected.
+        Intent browsableMain = new Intent(Intent.ACTION_MAIN);
+        browsableMain.addCategory(Intent.CATEGORY_BROWSABLE);
+        browsableMain.putExtra(IntentHandler.EXTRA_INVOKED_FROM_HANDOFF, true);
+        browsableMain.putExtra(IntentHandler.EXTRA_HANDOFF_URL, handoffUrl);
+        assertFalse(IntentHandler.isIntentFromHandoff(browsableMain));
+        assertNull(IntentHandler.getUrlFromIntent(browsableMain));
+
+        // Non-null data URI must take precedence over EXTRA_HANDOFF_URL.
+        Intent withData = new Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"));
+        withData.putExtra(IntentHandler.EXTRA_INVOKED_FROM_HANDOFF, true);
+        withData.putExtra(IntentHandler.EXTRA_HANDOFF_URL, handoffUrl);
+        assertFalse(IntentHandler.isIntentFromHandoff(withData));
+        assertEquals("https://example.com", IntentHandler.getUrlFromIntent(withData));
+
+        // Non-HTTP(S) schemes in EXTRA_HANDOFF_URL must be rejected even on valid Handoff shape.
+        String[] disallowedUrls = {
+            "filesystem:http://127.0.0.1:8000/temporary/cached_entry",
+            "file:///sdcard/Download/test.html",
+            "content://media/external/file/1",
+            "blob:https://example.com/1234-5678",
+            "data:text/html,<script>alert(1)</script>",
+            "javascript:alert(1)",
+            "chrome://dino/"
+        };
+        for (String disallowedUrl : disallowedUrls) {
+            Intent disallowedIntent = new Intent();
+            disallowedIntent.putExtra(IntentHandler.EXTRA_INVOKED_FROM_HANDOFF, true);
+            disallowedIntent.putExtra(IntentHandler.EXTRA_HANDOFF_URL, disallowedUrl);
+            assertNull(
+                    "Disallowed Handoff URL should return null: " + disallowedUrl,
+                    IntentHandler.getUrlFromIntent(disallowedIntent));
+        }
+    }
+
+    @Test
+    public void testShouldIgnoreIntent_NestedSchemesUntrustedRejectedTrustedAllowed() {
+        lenient().doReturn(true).when(mExternalIntentUrlCheckerNativeMock).validateUrl(any());
+
+        Intent untrustedFilesystem =
+                new Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("filesystem:https://www.google.com/temporary/cached_entry"));
+        assertTrue(IntentHandler.shouldIgnoreIntent(untrustedFilesystem, null));
+
+        Intent untrustedBlob =
+                new Intent(Intent.ACTION_VIEW, Uri.parse("blob:https://www.google.com/1234-5678"));
+        assertTrue(IntentHandler.shouldIgnoreIntent(untrustedBlob, null));
+
+        Intent trustedFilesystem =
+                new Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse("filesystem:https://www.google.com/temporary/cached_entry"));
+        trustedFilesystem.setPackage(ContextUtils.getApplicationContext().getPackageName());
+        IntentUtils.addTrustedIntentExtras(trustedFilesystem);
+        assertFalse(IntentHandler.shouldIgnoreIntent(trustedFilesystem, null));
+
+        Intent trustedBlob =
+                new Intent(Intent.ACTION_VIEW, Uri.parse("blob:https://www.google.com/1234-5678"));
+        trustedBlob.setPackage(ContextUtils.getApplicationContext().getPackageName());
+        IntentUtils.addTrustedIntentExtras(trustedBlob);
+        assertFalse(IntentHandler.shouldIgnoreIntent(trustedBlob, null));
+    }
+
+    @Test
     public void testGetGlicConversationId() {
         Context context = ContextUtils.getApplicationContext();
 

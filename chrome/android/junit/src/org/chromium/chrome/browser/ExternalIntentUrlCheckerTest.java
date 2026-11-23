@@ -62,6 +62,18 @@ public class ExternalIntentUrlCheckerTest {
     }
 
     @Test
+    public void testIsUnsafeExternalIntentUrl_NestedSchemes() {
+        doReturn(true).when(mNativeMock).validateUrl(any());
+        assertFalse(ExternalIntentUrlChecker.isUnsafeExternalIntentUrl(JUnitTestGURLs.EXAMPLE_URL));
+        assertTrue(
+                ExternalIntentUrlChecker.isUnsafeExternalIntentUrl(
+                        new GURL("filesystem:https://example.com/temporary/cached_entry")));
+        assertTrue(
+                ExternalIntentUrlChecker.isUnsafeExternalIntentUrl(
+                        new GURL("blob:https://example.com/1234-5678")));
+    }
+
+    @Test
     public void testIsUnsafeExternalIntentUrl_LocalFiles() {
         GURL fileUrl = new GURL("file:///sdcard/foo.txt");
         GURL contentUrl = new GURL("content://media/external/images/media/1");

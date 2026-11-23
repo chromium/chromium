@@ -78,6 +78,7 @@ import org.chromium.chrome.browser.webapps.WebappActivity;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalIntentsFeatures;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.externalauth.ExternalAuthUtils;
@@ -1430,13 +1431,17 @@ public class IntentHandler {
     }
 
     private static @Nullable String getUrlForHandoff(@Nullable Intent intent) {
-        if (intent == null) return null;
-        return IntentUtils.safeGetStringExtra(intent, EXTRA_HANDOFF_URL);
+        if (!isIntentFromHandoff(intent)) return null;
+        String url = IntentUtils.safeGetStringExtra(intent, EXTRA_HANDOFF_URL);
+        return url != null && UrlUtilities.isHttpOrHttps(url) ? url : null;
     }
 
+    @Contract("null -> false")
     public static boolean isIntentFromHandoff(@Nullable Intent intent) {
-        if (intent == null) return false;
-        return IntentUtils.safeGetBooleanExtra(intent, EXTRA_INVOKED_FROM_HANDOFF, false);
+        return intent != null
+                && intent.getData() == null
+                && !intent.hasCategory(Intent.CATEGORY_BROWSABLE)
+                && IntentUtils.safeGetBooleanExtra(intent, EXTRA_INVOKED_FROM_HANDOFF, false);
     }
 
     public static @Nullable String maybeAddAdditionalContentHeaders(

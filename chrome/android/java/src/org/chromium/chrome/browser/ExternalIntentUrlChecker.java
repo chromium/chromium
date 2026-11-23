@@ -47,6 +47,11 @@ public class ExternalIntentUrlChecker {
         String scheme = url.getScheme();
         if (isUnsafeExternalScheme(scheme)) return true;
 
+        if (UrlConstants.FILESYSTEM_SCHEME.equals(scheme)
+                || UrlConstants.BLOB_SCHEME.equals(scheme)) {
+            return true;
+        }
+
         if (!allowLocalFiles
                 && (UrlConstants.FILE_SCHEME.equals(scheme)
                         || UrlConstants.CONTENT_SCHEME.equals(scheme))) {
