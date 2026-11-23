@@ -124,6 +124,9 @@ TEST_F(BrowserActuatorUpstreamMessageClientTest, SendMessageSuccess) {
   EXPECT_GT(upstream.capabilities().chrome_major_version_number(), 0);
   EXPECT_EQ(version_info::GetMajorVersionNumberAsInt(),
             upstream.capabilities().chrome_major_version_number());
+  EXPECT_FALSE(upstream.capabilities().chrome_version().empty());
+  EXPECT_EQ(version_info::GetVersionNumber(),
+            upstream.capabilities().chrome_version());
   EXPECT_TRUE(upstream.capabilities().supported_features().empty());
   EXPECT_EQ(returned_upstream.SerializeAsString(),
             upstream.SerializeAsString());

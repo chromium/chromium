@@ -141,9 +141,11 @@ UpstreamMessageClient::SendUpstreamMessage(
   }
   // TODO(b/560670671): Also populate `supported_features` and consider sending
   // `capabilities` only on the session-opening envelope. Populates the Chrome
-  // major version on every envelope for host capability gating.
-  upstream_message.mutable_capabilities()->set_chrome_major_version_number(
+  // version fields on every envelope for host capability gating.
+  auto* capabilities = upstream_message.mutable_capabilities();
+  capabilities->set_chrome_major_version_number(
       version_info::GetMajorVersionNumberAsInt());
+  capabilities->set_chrome_version(version_info::GetVersionNumber());
 
   // Pack payload into Any.
   browser_actuator::ActuatorUpstreamTypedPayload* typed_payload =

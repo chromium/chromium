@@ -128,11 +128,15 @@ message ActuatorUpstreamMessage {
   optional int64 responding_to_sequence_number = 3;
 
   // Describes the capabilities and version of the browser actuator in Chrome.
+  // Next ID: 4
   message BrowserActuatorCapabilities {
     // Chrome major version number.
     int64 chrome_major_version_number = 1;
     // List of active browser actuator features supported by the Chrome client.
     repeated string supported_features = 2;
+    // Full Chrome version string, e.g. "160.0.8168.0"
+    // (MAJOR.MINOR.BUILD.PATCH).
+    string chrome_version = 3;
   }
   // Versioning and browser actuator capabilities of the target client.
   BrowserActuatorCapabilities capabilities = 4;
