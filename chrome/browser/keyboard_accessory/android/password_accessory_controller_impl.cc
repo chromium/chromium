@@ -431,7 +431,6 @@ void PasswordAccessoryControllerImpl::OnOptionSelected(
     case autofill::AccessoryAction::MANAGE_LOYALTY_CARDS:
     case autofill::AccessoryAction::AUTOFILL_SUGGESTION_FROM_ACCESSORY_SHEET:
     case autofill::AccessoryAction::DISMISS:
-    case autofill::AccessoryAction::SHOW_AT_MEMORY_BOTTOMSHEET:
     case autofill::AccessoryAction::COUNT:
       NOTREACHED() << "Unhandled selected action: "
                    << std::to_underlying(selected_action);

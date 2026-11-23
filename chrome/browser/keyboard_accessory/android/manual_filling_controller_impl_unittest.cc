@@ -20,7 +20,6 @@
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_data.h"
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_address_accessory_controller.h"
-#include "chrome/browser/keyboard_accessory/test_utils/android/mock_at_memory_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_password_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_payment_method_accessory_controller.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -88,12 +87,10 @@ class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
         .WillOnce(SaveArg<0>(&cc_source_observer_));
     EXPECT_CALL(mock_address_controller_, RegisterFillingSourceObserver)
         .WillOnce(SaveArg<0>(&address_source_observer_));
-    EXPECT_CALL(mock_at_memory_controller_, RegisterFillingSourceObserver);
     ManualFillingControllerImpl::CreateForWebContentsForTesting(
         web_contents(), mock_pwd_controller_.AsWeakPtr(),
         mock_address_controller_.AsWeakPtr(),
         mock_payment_method_controller_.AsWeakPtr(),
-        mock_at_memory_controller_.AsWeakPtr(),
         std::make_unique<NiceMock<MockManualFillingView>>());
   }
 
@@ -130,7 +127,6 @@ class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
   NiceMock<MockAddressAccessoryController> mock_address_controller_;
   NiceMock<MockPaymentMethodAccessoryController>
       mock_payment_method_controller_;
-  NiceMock<MockAtMemoryAccessoryController> mock_at_memory_controller_;
 
   AccessoryController::FillingSourceObserver pwd_source_observer_;
   AccessoryController::FillingSourceObserver cc_source_observer_;

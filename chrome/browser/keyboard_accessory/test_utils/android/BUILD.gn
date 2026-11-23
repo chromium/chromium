@@ -3,8 +3,6 @@ source_set("android") {
   sources = [
     "mock_address_accessory_controller.cc",
     "mock_address_accessory_controller.h",
-    "mock_at_memory_accessory_controller.cc",
-    "mock_at_memory_accessory_controller.h",
     "mock_manual_filling_controller.cc",
     "mock_manual_filling_controller.h",
     "mock_password_accessory_controller.cc",

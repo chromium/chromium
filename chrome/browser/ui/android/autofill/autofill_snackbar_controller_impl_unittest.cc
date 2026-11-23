@@ -14,7 +14,6 @@
 #include "chrome/browser/autofill/mock_manual_filling_view.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_address_accessory_controller.h"
-#include "chrome/browser/keyboard_accessory/test_utils/android/mock_at_memory_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_password_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_payment_method_accessory_controller.h"
 #include "chrome/browser/ui/android/autofill/autofill_snackbar_view.h"
@@ -41,7 +40,6 @@ class AutofillSnackbarControllerImplTest
         web_contents(), mock_pwd_controller_.AsWeakPtr(),
         mock_address_controller_.AsWeakPtr(),
         mock_payment_method_controller_.AsWeakPtr(),
-        mock_at_memory_controller_.AsWeakPtr(),
         std::make_unique<NiceMock<MockManualFillingView>>());
   }
 
@@ -64,7 +62,6 @@ class AutofillSnackbarControllerImplTest
   NiceMock<MockAddressAccessoryController> mock_address_controller_;
   NiceMock<MockPaymentMethodAccessoryController>
       mock_payment_method_controller_;
-  NiceMock<MockAtMemoryAccessoryController> mock_at_memory_controller_;
 
   base::WeakPtrFactory<AutofillSnackbarControllerImplTest> weak_ptr_factory_{
       this};

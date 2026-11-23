@@ -95,8 +95,8 @@ enum class AccessoryAction {
   RETRIEVE_TRUSTED_VAULT_KEY = 17,
   AUTOFILL_SUGGESTION_FROM_ACCESSORY_SHEET = 18,
   DISMISS = 19,
-  SHOW_AT_MEMORY_BOTTOMSHEET = 20,
-  COUNT,
+  // SHOW_AT_MEMORY_BOTTOMSHEET = 20,  // DEPRECATED
+  COUNT = 21,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml)
 

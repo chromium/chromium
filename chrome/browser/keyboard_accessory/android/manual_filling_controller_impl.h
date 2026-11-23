@@ -25,7 +25,6 @@ class AddressAccessoryController;
 class PaymentMethodAccessoryController;
 }  // namespace autofill
 
-class AtMemoryAccessoryController;
 class PasswordAccessoryController;
 
 // Use ManualFillingController::GetOrCreate to obtain instances of this class.
@@ -82,7 +81,6 @@ class ManualFillingControllerImpl
       base::WeakPtr<autofill::AddressAccessoryController> address_controller,
       base::WeakPtr<autofill::PaymentMethodAccessoryController>
           payment_method_controller,
-      base::WeakPtr<AtMemoryAccessoryController> at_memory_controller,
       std::unique_ptr<ManualFillingViewInterface> test_view);
 
 #if defined(UNIT_TEST)
@@ -113,7 +111,6 @@ class ManualFillingControllerImpl
       base::WeakPtr<autofill::AddressAccessoryController> address_controller,
       base::WeakPtr<autofill::PaymentMethodAccessoryController>
           payment_method_controller,
-      base::WeakPtr<AtMemoryAccessoryController> at_memory_controller,
       std::unique_ptr<ManualFillingViewInterface> view);
 
   // Returns true if the keyboard accessory needs to be shown for last focused
@@ -162,7 +159,6 @@ class ManualFillingControllerImpl
   base::WeakPtr<autofill::AddressAccessoryController> address_controller_;
   base::WeakPtr<autofill::PaymentMethodAccessoryController>
       payment_method_controller_;
-  base::WeakPtr<AtMemoryAccessoryController> at_memory_controller_;
 
   // Hold the native instance of the view. Must be last declared and initialized
   // member so the view can be created in the constructor with a fully set up
