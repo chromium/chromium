@@ -40,6 +40,9 @@ async function initialize() {
   }`;
   addWebUiListener('schema-updated', onSchemaUpdated);
   PolicyTestBrowserProxy.listenPoliciesUpdates();
+  // Signal to browsertests that async initialization and listener registration
+  // have completed.
+  document.body.dataset['initialized'] = 'true';
 }
 
 // Fired from PolicyUIHandler, called when the policy schema changes e.g.

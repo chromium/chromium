@@ -49,6 +49,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_web_ui.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -254,11 +255,11 @@ class PolicyTestHandlerTest : public base::test::WithFeatureOverride,
   content::EvalJsResult GetNumberOfRows() {
     const std::string getNumRowsJs =
         R"(
-          document
-            .querySelector('policy-test-table')
-            .shadowRoot
-            .querySelectorAll('policy-test-row')
-            .length;
+          (async () => {
+            const table = document.querySelector('policy-test-table');
+            await table.updateComplete;
+            return table.shadowRoot.querySelectorAll('policy-test-row').length;
+          })();
         )";
     return content::EvalJs(web_contents(), getNumRowsJs);
   }
@@ -834,11 +835,11 @@ class PolicyTestUITest : public base::test::WithFeatureOverride,
   content::EvalJsResult GetNumberOfRows() {
     const std::string getNumRowsJs =
         R"(
-          document
-            .querySelector('policy-test-table')
-            .shadowRoot
-            .querySelectorAll('policy-test-row')
-            .length;
+          (async () => {
+            const table = document.querySelector('policy-test-table');
+            await table.updateComplete;
+            return table.shadowRoot.querySelectorAll('policy-test-row').length;
+          })();
         )";
     return content::EvalJs(web_contents(), getNumRowsJs);
   }
@@ -855,6 +856,45 @@ class PolicyTestUITest : public base::test::WithFeatureOverride,
     return content::ExecJs(web_contents(), clickAddPolicyJs);
   }
 
+  // Wait for async `initialize()` in `policy_test.ts` to finish and initial
+  // Lit updates on `policy-test-table` and its `policy-test-row` elements to
+  // settle.
+  bool WaitForPolicyTestPageReady() {
+    return content::ExecJs(web_contents(), R"JS(
+      (async () => {
+        if (document.body.dataset['initialized'] !== 'true') {
+          await new Promise((r) => new MutationObserver((_, obs) => {
+            if (document.body.dataset['initialized'] === 'true') {
+              obs.disconnect();
+              r();
+            }
+          }).observe(document.body, {
+            attributes: true,
+            attributeFilter: ['data-initialized'],
+          }));
+        }
+        const table = document.querySelector('policy-test-table');
+        await table.updateComplete;
+        await Promise.all(Array.from(
+            table.shadowRoot.querySelectorAll('policy-test-row'),
+            row => row.updateComplete));
+      })();
+    )JS");
+  }
+
+  testing::AssertionResult NavigateToPolicyTestPage() {
+    if (!content::NavigateToURL(web_contents(),
+                                GURL(chrome::kChromeUIPolicyTestURL))) {
+      return testing::AssertionFailure()
+             << "Failed to navigate to " << chrome::kChromeUIPolicyTestURL;
+    }
+    if (!WaitForPolicyTestPageReady()) {
+      return testing::AssertionFailure()
+             << "Policy test page failed to become ready";
+    }
+    return testing::AssertionSuccess();
+  }
+
  private:
   policy::Schema extension_schema_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
@@ -868,8 +908,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestUITest, TestRowAddedWhenAddPolicyClicked) {
                                              chrome::GetChannel())) {
     GTEST_SKIP() << "chrome://policy/test not allowed on this build.";
   }
-  ASSERT_TRUE(content::NavigateToURL(web_contents(),
-                                     GURL(chrome::kChromeUIPolicyTestURL)));
+  ASSERT_TRUE(NavigateToPolicyTestPage());
   EXPECT_EQ(GetNumberOfRows(), 1);
   EXPECT_TRUE(ClickAddPolicy());
   EXPECT_EQ(GetNumberOfRows(), 2);
@@ -880,8 +919,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestUITest, TestRowDeletedWhenRemoveClicked) {
                                              chrome::GetChannel())) {
     GTEST_SKIP() << "chrome://policy/test not allowed on this build.";
   }
-  ASSERT_TRUE(content::NavigateToURL(web_contents(),
-                                     GURL(chrome::kChromeUIPolicyTestURL)));
+  ASSERT_TRUE(NavigateToPolicyTestPage());
   EXPECT_EQ(GetNumberOfRows(), 1);
   const std::string clickRemoveJs =
       R"(
@@ -902,8 +940,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestUITest, TestPresetAutofill) {
                                              chrome::GetChannel())) {
     GTEST_SKIP() << "chrome://policy/test not allowed on this build.";
   }
-  ASSERT_TRUE(content::NavigateToURL(web_contents(),
-                                     GURL(chrome::kChromeUIPolicyTestURL)));
+  ASSERT_TRUE(NavigateToPolicyTestPage());
   // Async helper to wait for LitElement update before reading preset.
   const std::string getSelectedPresetId =
       R"(
@@ -964,8 +1001,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestUITest, TestExtensionPoliciesIncluded) {
     GTEST_SKIP() << "chrome://policy/test not allowed on this build.";
   }
 
-  ASSERT_TRUE(content::NavigateToURL(web_contents(),
-                                     GURL(chrome::kChromeUIPolicyTestURL)));
+  ASSERT_TRUE(NavigateToPolicyTestPage());
 
   base::Value schema = PolicyUI::GetSchema(GetProfile());
   base::Value chrome_policy_names(base::Value::Type::LIST);
@@ -1039,8 +1075,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestUITest, TestSchemaChangeReflected) {
     GTEST_SKIP() << "chrome://policy/test not allowed on this build.";
   }
 
-  ASSERT_TRUE(content::NavigateToURL(web_contents(),
-                                     GURL(chrome::kChromeUIPolicyTestURL)));
+  ASSERT_TRUE(NavigateToPolicyTestPage());
 
   base::Value schema = PolicyUI::GetSchema(GetProfile());
   base::Value chrome_policy_names(base::Value::Type::LIST);
@@ -1084,17 +1119,15 @@ IN_PROC_BROWSER_TEST_P(PolicyTestUITest, TestPolicyNameChangesInputType) {
                                              chrome::GetChannel())) {
     GTEST_SKIP() << "chrome://policy/test not allowed on this build.";
   }
-  ASSERT_TRUE(content::NavigateToURL(web_contents(),
-                                     GURL(chrome::kChromeUIPolicyTestURL)));
+  ASSERT_TRUE(NavigateToPolicyTestPage());
   const std::string getValueInputType =
       R"(
-        document
-          .querySelector('policy-test-table')
-          .shadowRoot
-          .querySelector('policy-test-row')
-          .shadowRoot
-          .querySelector('.value')
-          .type
+        (async () => {
+          const table = document.querySelector('policy-test-table');
+          const row = table.shadowRoot.querySelector('policy-test-row');
+          await row.updateComplete;
+          return row.shadowRoot.querySelector('.value').type;
+        })();
       )";
   EXPECT_EQ(content::EvalJs(web_contents(), getValueInputType), "text");
 
@@ -1121,8 +1154,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestUITest, TestErrorStateWhenNameNotSelected) {
                                              chrome::GetChannel())) {
     GTEST_SKIP() << "chrome://policy/test not allowed on this build.";
   }
-  ASSERT_TRUE(content::NavigateToURL(web_contents(),
-                                     GURL(chrome::kChromeUIPolicyTestURL)));
+  ASSERT_TRUE(NavigateToPolicyTestPage());
   const std::string getNameDropdownInErrorStateJs =
       R"(
         (async () => {
@@ -1168,19 +1200,16 @@ IN_PROC_BROWSER_TEST_P(PolicyTestUITest, TestIncorrectValueTypeRaisesError) {
                                              chrome::GetChannel())) {
     GTEST_SKIP() << "chrome://policy/test not allowed on this build.";
   }
-  ASSERT_TRUE(content::NavigateToURL(web_contents(),
-                                     GURL(chrome::kChromeUIPolicyTestURL)));
+  ASSERT_TRUE(NavigateToPolicyTestPage());
   EXPECT_TRUE(ClickAddPolicy());
   const std::string getValueCellInErrorStateJs =
       R"(
-        document
-          .querySelector('policy-test-table')
-          .shadowRoot
-          .querySelector('policy-test-row')
-          .shadowRoot
-          .querySelector('.value')
-          .classList
-          .contains('error');
+        (async () => {
+          const table = document.querySelector('policy-test-table');
+          const row = table.shadowRoot.querySelector('policy-test-row');
+          await row.updateComplete;
+          return row.shadowRoot.querySelector('.value').classList.contains('error');
+        })();
       )";
   EXPECT_EQ(content::EvalJs(web_contents(), getValueCellInErrorStateJs), false);
 
@@ -1248,8 +1277,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestUITest, TestClearPoliciesButton) {
                                              chrome::GetChannel())) {
     GTEST_SKIP() << "chrome://policy/test not allowed on this build.";
   }
-  ASSERT_TRUE(content::NavigateToURL(web_contents(),
-                                     GURL(chrome::kChromeUIPolicyTestURL)));
+  ASSERT_TRUE(NavigateToPolicyTestPage());
   for (int i = 0; i < 4; i++) {
     EXPECT_TRUE(ClickAddPolicy());
   }
