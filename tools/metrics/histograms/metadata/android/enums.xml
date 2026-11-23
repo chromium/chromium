@@ -2880,7 +2880,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Success"/>
   <int value="1" label="Failed: AwContents destroyed"/>
   <int value="2" label="Failed: Old container view attached"/>
-  <int value="3" label="Failed: New container view attached"/>
+  <int value="3" label="(Obsolete) Failed: New container view attached"/>
 </enum>
 
 <enum name="WebPageContentProviderEvent">

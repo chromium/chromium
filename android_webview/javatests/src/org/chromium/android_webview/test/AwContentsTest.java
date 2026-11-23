@@ -940,7 +940,7 @@ public class AwContentsTest extends AwParameterizedTest {
     /**
      * Verifies that SharedWorker is not exposed in WebView.
      *
-     * Note: It is OK to delete this test if you are consciously enabling SharedWorker in WebView
+     * <p>Note: It is OK to delete this test if you are consciously enabling SharedWorker in WebView
      * and have fixed related issues. For example, see crbug.com/575037727.
      */
     @Test
@@ -2348,6 +2348,35 @@ public class AwContentsTest extends AwParameterizedTest {
                     laidOutView.layout(0, 0, 300, 200);
                     newView.getAwContents().adopt(laidOutView, newView.getInternalAccessDelegate());
                     Assert.assertEquals(List.of(Pair.create(300, 200)), sizes);
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testAdoptAttachedContainer() throws Throwable {
+        mActivityTestRule.startBrowserProcess();
+        AwTestContainerView oldView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        FrameLayout attachedView =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            FrameLayout view = new FrameLayout(mActivityTestRule.getActivity());
+                            mActivityTestRule.getActivity().addView(view);
+                            return view;
+                        });
+        CriteriaHelper.pollUiThread(attachedView::isAttachedToWindow);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ((ViewGroup) oldView.getParent()).removeView(oldView);
+                    oldView.getAwContents()
+                            .adopt(attachedView, oldView.getInternalAccessDelegate());
+                    Assert.assertSame(
+                            attachedView,
+                            oldView.getAwContents()
+                                    .getViewAndroidDelegateForTesting()
+                                    .getContainerView());
                 });
     }
 
