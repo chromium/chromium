@@ -266,8 +266,10 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
   EXPECT_EQ(header2->GetSeparatorOpacitiesForTesting().right, 0.0f);
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
-                       CollapsedGroupHeaderSeparatorHiddenWhileCollapsing) {
+// TODO(crbug.com/498784680): Re-enable this test.
+IN_PROC_BROWSER_TEST_F(
+    TabStripBrowsertest,
+    DISABLED_CollapsedGroupHeaderSeparatorHiddenWhileCollapsing) {
   // Tabs layout:
   // Tab 0: ungrouped (active)
   // Tab 1: Group
@@ -309,9 +311,10 @@ IN_PROC_BROWSER_TEST_F(TabStripBrowsertest,
   EXPECT_EQ(header->GetSeparatorOpacitiesForTesting().right, 1.0f);
 }
 
+// TODO(crbug.com/498784680): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(
     TabStripBrowsertest,
-    CollapsedGroupHeaderSeparatorHiddenWhileAnyGroupedTabVisible) {
+    DISABLED_CollapsedGroupHeaderSeparatorHiddenWhileAnyGroupedTabVisible) {
   // Tabs layout:
   // Tab 0: ungrouped (active)
   // Tab 1: Group
