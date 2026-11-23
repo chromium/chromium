@@ -21,14 +21,14 @@ export {KeyArrowNavigationService} from './keyboard_arrow_navigation_service.js'
 export {isNtpUrl, OrganizerFaviconElement} from './organizer_favicon.js';
 export type {OrganizerListElement} from './organizer_list.js';
 export {INITIAL_ITEM_COUNT, OrganizerListSectionElement, OrganizerSectionToggleAction} from './organizer_list_section.js';
-export type {OrganizerAction, OrganizerListSectionClient, OrganizerListSectionDelegate} from './organizer_list_section_delegate.js';
+export type {OrganizerListSectionClient, OrganizerListSectionDelegate} from './organizer_list_section_delegate.js';
 export {OrganizerListSectionHeaderElement, OrganizerSectionMenuOption} from './organizer_list_section_header.js';
 export type {OrganizerListSectionItem, OrganizerListSectionItemElement, OrganizerListSectionItemIcon} from './organizer_list_section_item.js';
 export {OrganizerListSectionItemIconType} from './organizer_list_section_item.js';
 export type {OrganizerListSectionItemDescriptionElement} from './organizer_list_section_item_description.js';
 export type {OrganizerListSectionItemTitleElement} from './organizer_list_section_item_title.js';
 export type {PageRemote as OrganizerPanelPageRemote} from './organizer_panel.mojom-webui.js';
-export {browserProxyFactory as organizerPanelBrowserProxyFactory, PageHandlerRemote as OrganizerPanelPageHandlerRemote, SectionId} from './organizer_panel.mojom-webui.js';
+export {Action as OrganizerPanelAction, browserProxyFactory as organizerPanelBrowserProxyFactory, PageHandlerRemote as OrganizerPanelPageHandlerRemote, SectionId} from './organizer_panel.mojom-webui.js';
 export type {SearchOptions} from './search_utils.js';
 export {renderHighlightedText, search, sliceRangesForParts} from './search_utils.js';
 export {Color} from './tab_group_types.mojom-webui.js';

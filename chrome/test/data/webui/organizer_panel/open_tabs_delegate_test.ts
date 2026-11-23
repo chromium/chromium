@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {browserProxyFactory, Color, isActive, isSplitTab, OpenTabsDelegate, OpenTabsItemType, OrganizerListSectionItemIconType, PageHandlerRemote, SectionId, SplitTabLayout, TabAlertState, TabGroupDotSize} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import {browserProxyFactory, Color, isActive, isSplitTab, OpenTabsDelegate, OpenTabsItemType, OrganizerListSectionItemIconType, OrganizerPanelAction, PageHandlerRemote, SectionId, SplitTabLayout, TabAlertState, TabGroupDotSize} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {OrganizerListSectionClient, OrganizerListSectionItem, PageRemote, ProfileData, Tab} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -182,8 +182,10 @@ suite('OpenTabsDelegateTest', () => {
   test('returns id and header', () => {
     assertEquals(SectionId.kOpenTabs, delegate.getId());
     assertEquals('Recently visited', delegate.getHeader());
-    assertEquals('SwitchTab', delegate.getItemClickAction());
-    assertEquals('CloseTab', delegate.getActionButtonClickAction());
+    assertEquals(
+        OrganizerPanelAction.kSwitchTab, delegate.getItemClickAction());
+    assertEquals(
+        OrganizerPanelAction.kCloseTab, delegate.getActionButtonClickAction());
   });
 
   test('returns tabs sorted by MRU across windows', async () => {

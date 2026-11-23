@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -12,6 +13,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
@@ -44,6 +46,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -250,6 +254,25 @@ class OrganizerPanelUiTest : public InteractiveBrowserTest {
               PressButton(kTabSearchButtonElementId), WaitForPanelClose());
     AddDescriptionPrefix(steps, "CloseOrganizerPanel()");
     return steps;
+  }
+
+  auto ClickFirstOpenTabItem() {
+    const DeepQuery kFirstOpenTabItemQuery{
+        "organizer-panel-app",
+        "organizer-list",
+        "organizer-list-section",
+        "organizer-list-section-item",
+    };
+    auto steps =
+        Steps(WaitForElementVisible(kWebContentsId, kFirstOpenTabItemQuery),
+              ClickElement(kWebContentsId, kFirstOpenTabItemQuery));
+    AddDescriptionPrefix(steps, "ClickFirstOpenTabItem()");
+    return steps;
+  }
+
+  static void MergeChildProcessHistograms() {
+    content::FetchHistogramsFromChildProcesses();
+    metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
   }
 
   auto ResizeVerticalTabsRegionToWidth(int width) {
@@ -530,6 +553,74 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest, RecordsTimeToShowPreloaded) {
   histogram_tester.ExpectTotalCount("Tabs.Organizer.TimeToShow", 1);
   histogram_tester.ExpectTotalCount(
       "Tabs.Organizer.TimeToShow.PreloadedWebContents", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest,
+                       PreloadedOpenExcludesPreloadIdleFromTimeToAction) {
+  RunTestSequence(SetVerticalTabsEnabled(false));
+
+  WebUIContentsPreloadManagerTestAPI preload_api;
+  preload_api.PreloadUrl(browser()->GetProfile(),
+                         GURL(chrome::kChromeUIOrganizerPanelURL));
+  content::WebContents* preloaded = preload_api.GetPreloadedWebContents();
+  ASSERT_TRUE(preloaded);
+  ASSERT_TRUE(content::WaitForLoadStop(preloaded));
+
+  auto* preload_state = WebUIContentsPreloadState::FromWebContents(preloaded);
+  ASSERT_TRUE(preload_state);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return preload_state->ready_to_show; }));
+  EXPECT_EQ(content::Visibility::HIDDEN, preloaded->GetVisibility());
+  EXPECT_EQ(std::nullopt, organizer_panel_controller()->GetDisplayedDuration());
+
+  base::HistogramTester histogram_tester;
+  std::optional<base::ElapsedTimer> after_open_trigger;
+  RunTestSequence(
+      Do([&]() { after_open_trigger.emplace(); }), OpenOrganizerPanel(),
+      CheckResult(
+          [this]() { return organizer_panel_controller()->web_contents(); },
+          preloaded),
+      WaitForPanelLoad(), ClickFirstOpenTabItem(), WaitForPanelClose(),
+      CheckControllerState(false));
+
+  MergeChildProcessHistograms();
+  histogram_tester.ExpectUniqueSample(
+      "Tabs.Organizer.WebUI.IndexOfSwitchTabInUnfilteredList", 0, 1);
+  histogram_tester.ExpectTotalCount(
+      "Tabs.Organizer.WebUI.TimeToSwitchTabInUnfilteredList", 1);
+  EXPECT_LE(histogram_tester.GetTotalSum(
+                "Tabs.Organizer.WebUI.TimeToSwitchTabInUnfilteredList"),
+            after_open_trigger->Elapsed().InMilliseconds());
+}
+
+IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest,
+                       ColdOpenCapturesFullLoadTimeInTimeToAction) {
+  WebUIContentsPreloadManagerTestAPI preload_api;
+  base::HistogramTester histogram_tester;
+  std::optional<base::ElapsedTimer> after_open_trigger;
+  RunTestSequence(
+      SetVerticalTabsEnabled(false),
+      Do([&]() { preload_api.SetPreloadedContents(nullptr); }),
+      CheckResult(
+          [this]() { return organizer_panel_controller()->web_contents(); },
+          nullptr),
+      Do([&]() { after_open_trigger.emplace(); }), OpenOrganizerPanel(),
+      WaitForPanelLoad(), ClickFirstOpenTabItem(), WaitForPanelClose(),
+      CheckControllerState(false));
+
+  MergeChildProcessHistograms();
+  histogram_tester.ExpectUniqueSample(
+      "Tabs.Organizer.WebUI.IndexOfSwitchTabInUnfilteredList", 0, 1);
+  histogram_tester.ExpectTotalCount(
+      "Tabs.Organizer.WebUI.TimeToSwitchTabInUnfilteredList", 1);
+  const int64_t time_to_action_ms = histogram_tester.GetTotalSum(
+      "Tabs.Organizer.WebUI.TimeToSwitchTabInUnfilteredList");
+  histogram_tester.ExpectTotalCount("Tabs.Organizer.WebUI.LoadCompletedTime",
+                                    1);
+  const int64_t load_completed_ms =
+      histogram_tester.GetTotalSum("Tabs.Organizer.WebUI.LoadCompletedTime");
+  EXPECT_GE(time_to_action_ms, load_completed_ms);
+  EXPECT_LE(time_to_action_ms, after_open_trigger->Elapsed().InMilliseconds());
 }
 
 // Vertical tab strip with tray or embedded organizer panel.

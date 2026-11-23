@@ -397,6 +397,74 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelPageHandlerBrowserTest,
   EXPECT_TRUE(embedder.ui_shown());
 }
 
+IN_PROC_BROWSER_TEST_F(OrganizerPanelPageHandlerBrowserTest,
+                       RecordTimeToActionIgnoresClosedOrUnattachedPanel) {
+  base::HistogramTester histogram_tester;
+  auto* const controller = OrganizerPanelController::From(browser());
+  ASSERT_TRUE(controller);
+  ASSERT_FALSE(controller->IsOrganizerPanelVisible());
+
+  TestHandlerHarness closed_harness(active_web_contents());
+  closed_harness.handler_remote()->RecordTimeToAction(
+      organizer_panel::mojom::Action::kSwitchTab, /*is_filtered=*/false);
+  closed_harness.handler_remote().FlushForTesting();
+
+  std::unique_ptr<content::WebContents> unattached_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->GetProfile()));
+  TestHandlerHarness unattached_harness(unattached_contents.get());
+  unattached_harness.handler_remote()->RecordTimeToAction(
+      organizer_panel::mojom::Action::kSwitchTab, /*is_filtered=*/true);
+  unattached_harness.handler_remote().FlushForTesting();
+
+  EXPECT_THAT(
+      histogram_tester.GetTotalCountsForPrefix("Tabs.Organizer.WebUI.TimeTo"),
+      testing::IsEmpty());
+}
+
+IN_PROC_BROWSER_TEST_F(OrganizerPanelPageHandlerBrowserTest,
+                       RecordTimeToActionRecordsFilteredAndUnfilteredMetrics) {
+  base::HistogramTester histogram_tester;
+  auto* const controller = OrganizerPanelController::From(browser());
+  ASSERT_TRUE(controller);
+  controller->SetOrganizerVisible(true, /*immediate=*/true);
+
+  TestHandlerHarness harness(active_web_contents());
+  harness.handler_remote()->RecordTimeToAction(
+      organizer_panel::mojom::Action::kCloseTab, /*is_filtered=*/false);
+  harness.handler_remote()->RecordTimeToAction(
+      organizer_panel::mojom::Action::kOpenCrossDeviceTab,
+      /*is_filtered=*/true);
+  harness.handler_remote()->RecordTimeToAction(
+      organizer_panel::mojom::Action::kOpenRecentlyClosedEntry,
+      /*is_filtered=*/false);
+  harness.handler_remote()->RecordTimeToAction(
+      organizer_panel::mojom::Action::kOpenTabGroup, /*is_filtered=*/true);
+  // Queue `RecordTimeToAction()` before `ClosePanel()` on the same Mojo pipe
+  // to ensure it executes before the panel closes and clears
+  // `displayed_timer_`.
+  harness.handler_remote()->RecordTimeToAction(
+      organizer_panel::mojom::Action::kSwitchTab, /*is_filtered=*/false);
+  harness.handler_remote()->ClosePanel();
+  harness.handler_remote()->RecordTimeToAction(
+      organizer_panel::mojom::Action::kSwitchTab, /*is_filtered=*/true);
+  harness.handler_remote().FlushForTesting();
+
+  EXPECT_FALSE(controller->IsOrganizerPanelVisible());
+  histogram_tester.ExpectTotalCount(
+      "Tabs.Organizer.WebUI.TimeToCloseTabInUnfilteredList", 1);
+  histogram_tester.ExpectTotalCount(
+      "Tabs.Organizer.WebUI.TimeToOpenCrossDeviceTabInFilteredList", 1);
+  histogram_tester.ExpectTotalCount(
+      "Tabs.Organizer.WebUI.TimeToOpenRecentlyClosedEntryInUnfilteredList", 1);
+  histogram_tester.ExpectTotalCount(
+      "Tabs.Organizer.WebUI.TimeToOpenTabGroupInFilteredList", 1);
+  histogram_tester.ExpectTotalCount(
+      "Tabs.Organizer.WebUI.TimeToSwitchTabInUnfilteredList", 1);
+  histogram_tester.ExpectTotalCount(
+      "Tabs.Organizer.WebUI.TimeToSwitchTabInFilteredList", 0);
+}
+
 class OrganizerPanelPreloadBrowserTest : public InProcessBrowserTest {
  public:
   OrganizerPanelPreloadBrowserTest() {

@@ -81,6 +81,9 @@ class OrganizerPanelController : public TopChromeWebUIController::Embedder,
 
   void SetCloseAction(OrganizerPanelCloseAction action);
   void IncrementNumTabsClosed(uint32_t count = 1);
+  // Returns the elapsed time since the panel was opened, or `std::nullopt` if
+  // the panel is not currently visible.
+  std::optional<base::TimeDelta> GetDisplayedDuration() const;
 
   OrganizerPanelLocation GetCurrentOrganizerPanelLocation() const;
 

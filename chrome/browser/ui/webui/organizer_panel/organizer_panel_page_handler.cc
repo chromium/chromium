@@ -4,11 +4,16 @@
 
 #include "chrome/browser/ui/webui/organizer_panel/organizer_panel_page_handler.h"
 
+#include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
@@ -19,6 +24,27 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
+
+namespace {
+
+// LINT.IfChange(OrganizerAction)
+std::string_view ActionToString(organizer_panel::mojom::Action action) {
+  switch (action) {
+    case organizer_panel::mojom::Action::kCloseTab:
+      return "CloseTab";
+    case organizer_panel::mojom::Action::kOpenCrossDeviceTab:
+      return "OpenCrossDeviceTab";
+    case organizer_panel::mojom::Action::kOpenRecentlyClosedEntry:
+      return "OpenRecentlyClosedEntry";
+    case organizer_panel::mojom::Action::kOpenTabGroup:
+      return "OpenTabGroup";
+    case organizer_panel::mojom::Action::kSwitchTab:
+      return "SwitchTab";
+  }
+}
+// LINT.ThenChange(//chrome/browser/ui/webui/organizer_panel/organizer_panel.mojom:OrganizerAction)
+
+}  // namespace
 
 OrganizerPanelPageHandler::OrganizerPanelPageHandler(
     mojo::PendingReceiver<organizer_panel::mojom::PageHandler> receiver,
@@ -89,6 +115,29 @@ void OrganizerPanelPageHandler::SetSectionShowAll(
     organizer_panel::mojom::SectionId section_id,
     bool show_all) {
   organizer::SetSectionShowAll(GetPrefs(), section_id, show_all);
+}
+
+void OrganizerPanelPageHandler::RecordTimeToAction(
+    organizer_panel::mojom::Action action,
+    bool is_filtered) {
+  BrowserWindowInterface* const browser =
+      webui::GetBrowserWindowInterface(web_contents_);
+  if (!browser) {
+    return;
+  }
+  auto* const controller = OrganizerPanelController::From(browser);
+  if (!controller) {
+    return;
+  }
+  const std::optional<base::TimeDelta> elapsed =
+      controller->GetDisplayedDuration();
+  if (!elapsed.has_value()) {
+    return;
+  }
+  base::UmaHistogramMediumTimes(
+      base::StrCat({"Tabs.Organizer.WebUI.TimeTo", ActionToString(action), "In",
+                    is_filtered ? "Filtered" : "Unfiltered", "List"}),
+      *elapsed);
 }
 
 void OrganizerPanelPageHandler::OnBrowserWindowInterfaceChanged() {

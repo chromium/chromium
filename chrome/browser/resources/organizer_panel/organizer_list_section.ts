@@ -12,12 +12,12 @@ import {CrLitElement, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './organizer_list_section.css.js';
 import {getHtml} from './organizer_list_section.html.js';
-import type {OrganizerAction, OrganizerListSectionClient, OrganizerListSectionDelegate} from './organizer_list_section_delegate.js';
+import type {OrganizerListSectionClient, OrganizerListSectionDelegate} from './organizer_list_section_delegate.js';
 import type {OrganizerListSectionHeaderElement} from './organizer_list_section_header.js';
 import {OrganizerSectionMenuOption} from './organizer_list_section_header.js';
 import type {HighlightableOrganizerListSectionItem, OrganizerListSectionItem, OrganizerListSectionItemElement} from './organizer_list_section_item.js';
 import type {BrowserProxy, SectionState} from './organizer_panel.mojom-webui.js';
-import {browserProxyFactory, SectionId} from './organizer_panel.mojom-webui.js';
+import {Action, browserProxyFactory, SectionId} from './organizer_panel.mojom-webui.js';
 import type {SearchOptions} from './search_utils.js';
 import {search} from './search_utils.js';
 
@@ -39,6 +39,25 @@ function getHistogramSectionName(sectionId: SectionId): string {
   }
 }
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/histograms.xml:OrganizerSection)
+
+// LINT.IfChange(OrganizerAction)
+function getActionName(action: Action): string {
+  switch (action) {
+    case Action.kCloseTab:
+      return 'CloseTab';
+    case Action.kOpenCrossDeviceTab:
+      return 'OpenCrossDeviceTab';
+    case Action.kOpenRecentlyClosedEntry:
+      return 'OpenRecentlyClosedEntry';
+    case Action.kOpenTabGroup:
+      return 'OpenTabGroup';
+    case Action.kSwitchTab:
+      return 'SwitchTab';
+    default:
+      assertNotReachedCase(action);
+  }
+}
+// LINT.ThenChange(//chrome/browser/ui/webui/organizer_panel/organizer_panel.mojom:OrganizerAction)
 
 // LINT.IfChange(OrganizerSectionToggleAction)
 /**
@@ -113,7 +132,6 @@ export class OrganizerListSectionElement extends CrLitElement implements
   private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
   private sectionStateChangedListenerId_: number|null = null;
   private reducedMotionQuery_: MediaQueryList|null = null;
-  private windowShownTimestamp_: number = performance.now();
   private loadPromise_: Promise<unknown> = Promise.resolve();
   // Generation identifier used to associate async reload results with the
   // current show/hide cycle.
@@ -228,10 +246,9 @@ export class OrganizerListSectionElement extends CrLitElement implements
     await this.updateComplete;
   }
 
-  // Called by the parent list when the panel becomes visible to reset the
-  // action-timing baseline and reload stale section data.
+  // Called by the parent list when the panel is reshown to reload stale section
+  // data.
   reload(): Promise<void> {
-    this.windowShownTimestamp_ = performance.now();
     this.loadSection_();
     return this.waitForLoadComplete();
   }
@@ -361,13 +378,13 @@ export class OrganizerListSectionElement extends CrLitElement implements
     return this.delegate?.getZeroState?.() ?? nothing;
   }
 
-  private recordActionMetrics_(action: OrganizerAction, index: number) {
-    const state = this.isSearching_() ? 'Filtered' : 'Unfiltered';
+  private recordActionMetrics_(action: Action, index: number) {
+    const isFiltered = this.isSearching_();
+    const state = isFiltered ? 'Filtered' : 'Unfiltered';
     chrome.metricsPrivate.recordSmallCount(
-        `Tabs.Organizer.WebUI.IndexOf${action}In${state}List`, index);
-    chrome.metricsPrivate.recordMediumTime(
-        `Tabs.Organizer.WebUI.TimeTo${action}In${state}List`,
-        Math.round(performance.now() - this.windowShownTimestamp_));
+        `Tabs.Organizer.WebUI.IndexOf${getActionName(action)}In${state}List`,
+        index);
+    this.browserProxy_.handler.recordTimeToAction(action, isFiltered);
   }
 
   protected onItemClick_(e: Event) {
@@ -389,7 +406,7 @@ export class OrganizerListSectionElement extends CrLitElement implements
     assert(this.delegate);
     const itemElement = e.currentTarget as OrganizerListSectionItemElement;
     const action = this.delegate.getActionButtonClickAction?.();
-    if (action) {
+    if (action !== undefined) {
       this.recordActionMetrics_(action, Number(itemElement.dataset['index']));
     }
     await this.delegate.onItemActionButtonClicked?.(

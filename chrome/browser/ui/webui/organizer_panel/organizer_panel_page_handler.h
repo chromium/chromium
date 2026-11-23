@@ -47,6 +47,8 @@ class OrganizerPanelPageHandler : public organizer_panel::mojom::PageHandler {
                           bool expanded) override;
   void SetSectionShowAll(organizer_panel::mojom::SectionId section_id,
                          bool show_all) override;
+  void RecordTimeToAction(organizer_panel::mojom::Action action,
+                          bool is_filtered) override;
 
  private:
   void OnBrowserWindowInterfaceChanged();

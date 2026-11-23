@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {foreignTabsBrowserProxyFactory, ForeignTabsDelegate, ForeignTabsPageHandlerRemote, OrganizerListSectionItemIconType, SectionId} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import {foreignTabsBrowserProxyFactory, ForeignTabsDelegate, ForeignTabsPageHandlerRemote, OrganizerListSectionItemIconType, OrganizerPanelAction, SectionId} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {ForeignTab, OrganizerListSectionItemElement} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -60,7 +60,9 @@ suite('ForeignTabsDelegateTest', () => {
   test('returns id and localized header', () => {
     assertEquals(SectionId.kCrossDeviceTabs, delegate.getId());
     assertEquals('Tabs on other devices', delegate.getHeader());
-    assertEquals('OpenCrossDeviceTab', delegate.getItemClickAction());
+    assertEquals(
+        OrganizerPanelAction.kOpenCrossDeviceTab,
+        delegate.getItemClickAction());
   });
 
   test(

@@ -20,6 +20,17 @@ struct SectionState {
   bool show_all = false;
 };
 
+// Actions performed on an item in an organizer panel section list.
+// LINT.IfChange(OrganizerAction)
+enum Action {
+  kCloseTab,
+  kOpenCrossDeviceTab,
+  kOpenRecentlyClosedEntry,
+  kOpenTabGroup,
+  kSwitchTab,
+};
+// LINT.ThenChange(//chrome/browser/resources/organizer_panel/organizer_list_section.ts:OrganizerAction, //chrome/browser/ui/webui/organizer_panel/organizer_panel_page_handler.cc:OrganizerAction, //tools/metrics/histograms/metadata/tab/histograms.xml:OrganizerAction)
+
 // WebUI-side handler for general panel requests from the browser.
 interface Page {
   // Called when whether the panel is in the tray view changes.
@@ -45,6 +56,10 @@ interface PageHandler {
 
   // Sets whether the section with the given ID shows all items.
   SetSectionShowAll(SectionId section_id, bool show_all);
+
+  // Records the time from when the panel was shown until `action` was
+  // performed in a filtered or unfiltered section list.
+  RecordTimeToAction(Action action, bool is_filtered);
 };
 
 // Factory interface to bootstrap communication between WebUI and browser.

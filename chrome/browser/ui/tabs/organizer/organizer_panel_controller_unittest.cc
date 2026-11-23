@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/tabs/organizer/organizer_panel_controller.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/animation/browser_animation_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -93,7 +95,8 @@ class OrganizerPanelControllerTest : public testing::Test {
   OrganizerPanelController* controller() { return controller_.get(); }
 
  protected:
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   TestingProfile profile_;
   std::unique_ptr<BrowserAnimationController> animation_controller_;
   std::unique_ptr<tabs::test::MockVerticalTabStripStateController>
@@ -386,6 +389,26 @@ TEST_F(OrganizerPanelControllerTest,
   histogram_tester.ExpectTotalCount("Tabs.Organizer.CloseAction", 1);
   histogram_tester.ExpectTotalCount("Tabs.Organizer.NumTabsClosedPerInstance",
                                     1);
+}
+
+TEST_F(OrganizerPanelControllerTest, TracksDisplayedDurationPerOpenSession) {
+  EXPECT_EQ(std::nullopt, controller()->GetDisplayedDuration());
+
+  // Idle time before opening (e.g., while preloaded) does not accumulate.
+  task_environment_.FastForwardBy(base::Seconds(30));
+  EXPECT_EQ(std::nullopt, controller()->GetDisplayedDuration());
+
+  controller()->SetOrganizerVisible(true);
+  task_environment_.FastForwardBy(base::Milliseconds(250));
+  EXPECT_EQ(base::Milliseconds(250), controller()->GetDisplayedDuration());
+
+  controller()->SetOrganizerVisible(false);
+  EXPECT_EQ(std::nullopt, controller()->GetDisplayedDuration());
+
+  task_environment_.FastForwardBy(base::Seconds(10));
+  controller()->SetOrganizerVisible(true);
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+  EXPECT_EQ(base::Milliseconds(100), controller()->GetDisplayedDuration());
 }
 
 // Test suite that ensures that the panel gets parented to the tray and the

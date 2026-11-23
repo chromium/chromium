@@ -5,17 +5,12 @@
 import type {TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {OrganizerListSectionItem} from './organizer_list_section_item.js';
-import type {SectionId} from './organizer_panel.mojom-webui.js';
+import type {Action, SectionId} from './organizer_panel.mojom-webui.js';
 
 // Interface implemented by the section element to receive update events.
 export interface OrganizerListSectionClient {
   onItemsChanged(items: Array<OrganizerListSectionItem<unknown>>): void;
 }
-
-// LINT.IfChange(OrganizerAction)
-export type OrganizerAction = 'CloseTab'|'OpenCrossDeviceTab'|
-    'OpenRecentlyClosedEntry'|'OpenTabGroup'|'SwitchTab';
-// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/histograms.xml:OrganizerAction)
 
 // Delegate for a section in the organizer list.
 export interface OrganizerListSectionDelegate<T> {
@@ -37,17 +32,17 @@ export interface OrganizerListSectionDelegate<T> {
   // Called when an item in this section is clicked.
   onItemClick(item: OrganizerListSectionItem<T>): void;
 
-  // Returns the action name used in UMA histograms when an item is clicked.
-  getItemClickAction(): OrganizerAction;
+  // Returns the action used in UMA histograms when an item is clicked.
+  getItemClickAction(): Action;
 
   // Optional: Called when an item's trailing action button is clicked.
   onItemActionButtonClicked?
       (item: OrganizerListSectionItem<T>, buttonElement: HTMLElement):
           Promise<void>|void;
 
-  // Optional: Returns the action name used in UMA histograms when an item's
+  // Optional: Returns the action used in UMA histograms when an item's
   // trailing action button is clicked.
-  getActionButtonClickAction?(): OrganizerAction;
+  getActionButtonClickAction?(): Action;
 
   // Optional: Called when an item's context menu is triggered via right-click.
   onItemContextMenuClicked?

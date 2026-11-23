@@ -380,6 +380,14 @@ void OrganizerPanelController::IncrementNumTabsClosed(uint32_t count) {
   num_tabs_closed_ = base::ClampAdd<int>(num_tabs_closed_, count);
 }
 
+std::optional<base::TimeDelta> OrganizerPanelController::GetDisplayedDuration()
+    const {
+  if (!is_visible_ || !displayed_timer_.has_value()) {
+    return std::nullopt;
+  }
+  return displayed_timer_->Elapsed();
+}
+
 void OrganizerPanelController::RecordCloseMetrics() {
   base::UmaHistogramEnumeration("Tabs.Organizer.CloseAction", close_action_);
   base::UmaHistogramCounts100("Tabs.Organizer.NumTabsClosedPerInstance",

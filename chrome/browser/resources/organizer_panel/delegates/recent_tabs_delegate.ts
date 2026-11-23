@@ -9,10 +9,10 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {TemplateResult} from '//resources/lit/v3_0/lit.rollup.js';
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import type {OrganizerAction, OrganizerListSectionClient, OrganizerListSectionDelegate} from '../organizer_list_section_delegate.js';
+import type {OrganizerListSectionClient, OrganizerListSectionDelegate} from '../organizer_list_section_delegate.js';
 import type {OrganizerListSectionItem} from '../organizer_list_section_item.js';
 import type {OrganizerListSectionItemDescriptionPart} from '../organizer_list_section_item_description.js';
-import {SectionId} from '../organizer_panel.mojom-webui.js';
+import {Action, SectionId} from '../organizer_panel.mojom-webui.js';
 import type {BrowserProxy, ProfileData, RecentlyClosedSplitView, RecentlyClosedTab, RecentlyClosedTabGroup, TabsRemovedInfo} from '../tab_search.mojom-webui.js';
 import {browserProxyFactory} from '../tab_search.mojom-webui.js';
 
@@ -99,8 +99,8 @@ export class RecentTabsDelegate implements
     this.browserProxy_.handler.openRecentlyClosedEntry(id);
   }
 
-  getItemClickAction(): OrganizerAction {
-    return 'OpenRecentlyClosedEntry';
+  getItemClickAction(): Action {
+    return Action.kOpenRecentlyClosedEntry;
   }
 
   private async updateItems_() {
