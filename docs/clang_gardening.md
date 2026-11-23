@@ -538,6 +538,13 @@ being printed.
 If one of the ToT Rust bots fails with an error that looks related to crubit,
 you can file a bug against the current crubit gardener (go/crubit-onduty).
 
+## Abseil `.def` file errors
+
+For `lld-link: error: <root>: undefined symbol` errors in
+`third_party_abseil-cpp_absl.dll` on Windows component builds, run
+`third_party/abseil-cpp/generate_def_files.py` on a linux machine as part of
+the clang roll (see `third_party/abseil-cpp/README.chromium`).
+
 ## Tips and tricks
 
 Finding what object files differ between two directories:
