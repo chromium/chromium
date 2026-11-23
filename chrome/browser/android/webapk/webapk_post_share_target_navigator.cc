@@ -19,6 +19,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversion_utils.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/android/webapk/webapk_features.h"
@@ -308,14 +309,19 @@ class PendingShareTargetPost
                                   ->GetUniqueID();
       }
       if (!handle->HasCommitted() || handle->IsErrorPage()) {
-        // The page will not register a service worker; do not wait for it.
-        SendPostAndDestroy(Outcome::kBootstrapFailed);
+        // The page will not register a service worker; do not wait for it. If
+        // the bootstrap was aborted by a user-gesture renderer navigation, the
+        // posted POST supersedes it on the next task rather than losing the
+        // share (browser-initiated navigations still cancel |this| in
+        // DidStartNavigation() before the task runs, unless delayed by
+        // beforeunload).
+        PostSendPostAndDestroy(Outcome::kBootstrapFailed);
         return;
       }
     }
     if (handle->HasCommitted()) {
       if (service_worker_activated_ && IsOnAppOrigin()) {
-        SendPostAndDestroy(Outcome::kServiceWorkerActivated);
+        PostSendPostAndDestroy(Outcome::kServiceWorkerActivated);
         return;
       }
       UpdateTimeoutTimer(handle->GetURL());
@@ -402,6 +408,16 @@ class PendingShareTargetPost
     content::NavigationEntry* entry =
         GetWebContents().GetController().GetLastCommittedEntry();
     return entry && entry->GetUniqueID() == *bootstrap_entry_id_;
+  }
+
+  // Schedules SendPostAndDestroy() on a new task. DidFinishNavigation() can run
+  // from ~NavigationRequest() inside RenderFrameHostImpl::RenderProcessGone(),
+  // where starting a navigation synchronously could delete the RenderFrameHost
+  // still on the stack. See crbug.com/587056010.
+  void PostSendPostAndDestroy(Outcome outcome) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&PendingShareTargetPost::SendPostAndDestroy,
+                                  weak_factory_.GetWeakPtr(), outcome));
   }
 
   // Sends the POST navigation, recording |outcome|. Deletes |this|.

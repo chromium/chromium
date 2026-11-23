@@ -25,6 +25,9 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -740,6 +743,39 @@ IN_PROC_BROWSER_TEST_F(WebApkPostShareTargetWaitForServiceWorkerBrowserTest,
   ASSERT_TRUE(content::NavigateToURL(web_contents(), AppUrl(kStartPath)));
   EXPECT_EQ(0, RequestCount(kShareTargetPath));
   ExpectOutcome(Outcome::kWebContentsDestroyed);
+}
+
+// Regression test for crbug.com/587056010: if the destination renderer process
+// for a pending-commit bootstrap navigation exits before committing,
+// RenderFrameHostImpl::RenderProcessGone() destroys the NavigationRequest and
+// notifies DidFinishNavigation(). Starting the fallback POST synchronously
+// there would destroy the RenderFrameHostImpl still on the stack.
+IN_PROC_BROWSER_TEST_F(WebApkPostShareTargetWaitForServiceWorkerBrowserTest,
+                       RendererExitDuringPendingCommitBootstrap) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     CrossSiteUrl(kNoServiceWorkerStartPath)));
+
+  content::TestNavigationManager bootstrap(web_contents(), AppUrl(kStartPath));
+  content::TestNavigationManager post(web_contents(), AppUrl(kShareTargetPath));
+  StartShare(AppUrl(kStartPath));
+  ASSERT_TRUE(bootstrap.WaitForResponse());
+  bootstrap.ResumeNavigation();
+  ASSERT_TRUE(bootstrap.GetNavigationHandle()->IsWaitingToCommit());
+
+  content::RenderFrameHost* pending_commit_rfh =
+      bootstrap.GetNavigationHandle()->GetRenderFrameHost();
+  ASSERT_NE(pending_commit_rfh, web_contents()->GetPrimaryMainFrame());
+  ASSERT_TRUE(pending_commit_rfh->GetProcess()->FastShutdownIfPossible(
+      /*page_count=*/0, /*skip_unload_handlers=*/true,
+      /*ignore_workers=*/true, /*ignore_keep_alive=*/true,
+      /*ignore_pending_reuse=*/true));
+  EXPECT_FALSE(post.GetNavigationHandle());
+
+  ASSERT_TRUE(post.WaitForNavigationFinished());
+  EXPECT_TRUE(post.was_committed());
+  EXPECT_EQ(AppUrl(kShareTargetPath), web_contents()->GetLastCommittedURL());
+  EXPECT_EQ(1, RequestCount(kShareTargetPath));
+  ExpectOutcome(Outcome::kBootstrapFailed);
 }
 
 }  // namespace webapk
