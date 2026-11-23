@@ -76,6 +76,7 @@ if (is_win || is_mac || is_linux) {
       "//base",
       "//chrome/browser/enterprise:impl",
       "//chrome/browser/policy:test_support",
+      "//chrome/browser/prefs",
       "//chrome/browser/profiles:misc",
       "//chrome/browser/signin:signin_browser_test_base",
       "//chrome/browser/sync",

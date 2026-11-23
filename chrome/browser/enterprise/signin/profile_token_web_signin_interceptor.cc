@@ -7,12 +7,14 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/signin/profile_token_web_signin_interceptor_factory.h"
 #include "chrome/browser/enterprise/signin/token_managed_profile_creation_delegate.h"
 #include "chrome/browser/new_tab_page/chrome_colors/selected_colors_info.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -194,13 +196,24 @@ void ProfileTokenWebSigninInterceptor::CreateBrowserAfterSigninInterception(
 
   GURL url_to_open = chrome::ChromeUINewTabURLAsGURL();
   if (intercepted_contents) {
+    CHECK_NE(
+        Profile::FromBrowserContext(intercepted_contents->GetBrowserContext()),
+        profile_);
     url_to_open = intercepted_contents->GetLastCommittedURL();
-    intercepted_contents->Close();
   }
 
-  // Open a new browser.
+  // Open a new browser before closing the intercepted web contents so that
+  // closing the last tab of the last open browser window does not trigger
+  // browser shutdown before the new browser window is created.
   NavigateParams params(profile_, url_to_open,
                         ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   Navigate(&params);
-  DVLOG(1) << "New browser created";
+
+  // Only close the intercepted web contents if a browser was opened or reused.
+  if (params.browser) {
+    DVLOG(1) << "New browser created";
+    if (intercepted_contents) {
+      intercepted_contents->Close();
+    }
+  }
 }
