@@ -300,10 +300,14 @@ using feed::FeedUserActionType;
                                 asInteraction:YES];
 }
 
-- (void)recordCommittDismissCard {
+- (void)recordCommitDismissCard {
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
                                                   kEphemeralChangeCommited
                                 asInteraction:YES];
+}
+
+- (void)recordCommittDismissCard {
+  [self recordCommitDismissCard];
 }
 
 - (void)recordShowSnackbar {

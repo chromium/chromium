@@ -275,7 +275,7 @@ TEST_F(ImpressionLimitServiceTest, TestBookmarkDelete) {
 // Test unsubscribing from a product URL deletes the URL corresponding to
 // the product URL in ImpressionLimitService. Both a URL and the same URL
 // with query string ref tag are tested.
-TEST_F(ImpressionLimitServiceTest, TestUnubscribe) {
+TEST_F(ImpressionLimitServiceTest, TestUnsubscribe) {
   LogImpressionForURLAtTime(GURL(kGurl1), kImpressionsPref, kNow);
   LogImpressionForURLAtTime(GURL(kGurl1WithQueryAndRef), kImpressionsPref,
                             kLastMonth);

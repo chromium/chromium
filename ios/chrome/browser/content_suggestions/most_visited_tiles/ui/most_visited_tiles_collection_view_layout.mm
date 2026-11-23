@@ -12,15 +12,15 @@
 namespace {
 
 /// Multiplier for peeking the first off-screen element.
-const CGFloat kPeekInsetMultiplerCompactWidth = 0.6;
-const CGFloat kPeekInsetMultiplerRegularWidth = 0.85;
+const CGFloat kPeekInsetMultiplierCompactWidth = 0.6;
+const CGFloat kPeekInsetMultiplierRegularWidth = 0.85;
 
 /// Peeking inset for the first off-screen element.
 CGFloat PeekInsetForCollectionView(UITraitCollection* trait_collection) {
   CGFloat peek_inset_multiplier =
       trait_collection.horizontalSizeClass == UIUserInterfaceSizeClassCompact
-          ? kPeekInsetMultiplerCompactWidth
-          : kPeekInsetMultiplerRegularWidth;
+          ? kPeekInsetMultiplierCompactWidth
+          : kPeekInsetMultiplierRegularWidth;
   return MostVisitedIconContainerSize() * peek_inset_multiplier;
 }
 

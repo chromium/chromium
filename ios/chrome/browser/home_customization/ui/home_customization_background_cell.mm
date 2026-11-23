@@ -76,7 +76,7 @@ const CGFloat kFeedsWidth = 70.0;
 
 // When the background is an image, the fake views here should be partially
 // transparent.
-const CGFloat kAlphaValueWhenImageBackround = 0.6;
+const CGFloat kAlphaValueWhenImageBackground = 0.6;
 
 // Size of the new feature badge.
 const CGFloat kNewFeatureBadgeSize = 28.0;
@@ -232,12 +232,12 @@ const CGFloat kNewFeatureBadgeCenterXOffset = 6.0;
   _magicStackView =
       [self createContentViewWithBackgroundColor:
                 [[UIColor colorNamed:kBackgroundColor]
-                    colorWithAlphaComponent:kAlphaValueWhenImageBackround]
+                    colorWithAlphaComponent:kAlphaValueWhenImageBackground]
                                     cornerRadius:kSmallCornerRadius];
   _feedsView =
       [self createContentViewWithBackgroundColor:
                 [[UIColor colorNamed:kBackgroundColor]
-                    colorWithAlphaComponent:kAlphaValueWhenImageBackround]
+                    colorWithAlphaComponent:kAlphaValueWhenImageBackground]
                                     cornerRadius:kSmallCornerRadius];
 
   [contentView addArrangedSubview:spacerView];
@@ -366,9 +366,9 @@ const CGFloat kNewFeatureBadgeCenterXOffset = 6.0;
     _omniboxView.backgroundColor =
         [UIColor colorNamed:kMiniFakeOmniboxBackgroundColor];
     _magicStackView.backgroundColor = [[UIColor colorNamed:kBackgroundColor]
-        colorWithAlphaComponent:kAlphaValueWhenImageBackround];
+        colorWithAlphaComponent:kAlphaValueWhenImageBackground];
     _feedsView.backgroundColor = [[UIColor colorNamed:kBackgroundColor]
-        colorWithAlphaComponent:kAlphaValueWhenImageBackround];
+        colorWithAlphaComponent:kAlphaValueWhenImageBackground];
     return;
   }
 

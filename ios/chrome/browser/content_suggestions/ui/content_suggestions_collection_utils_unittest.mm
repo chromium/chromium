@@ -288,7 +288,7 @@ TEST_F(ContentSuggestionsCollectionUtilsTest, pinnedFakeOmniboxHeight) {
   EXPECT_EQ(expectedHeight, PinnedFakeOmniboxHeight());
 }
 
-TEST_F(ContentSuggestionsCollectionUtilsTest, fakeToolbarHeighta) {
+TEST_F(ContentSuggestionsCollectionUtilsTest, fakeToolbarHeight) {
   CGFloat expectedHeight = IsAimEnabledInNtp() ? 62 : 50;
   EXPECT_EQ(expectedHeight, FakeToolbarHeight());
 }

@@ -268,17 +268,17 @@ bool HasPriceDropOnTab(TabResumptionConfig* config) {
 
   CGFloat faviconSize;
   CGFloat faviconCornerRadius;
-  CGFloat faviconBackgoundSize;
+  CGFloat faviconBackgroundSize;
   CGFloat faviconBackgroundCornerRadius;
   if (hasContentImage) {
     faviconSize = kCornerFaviconSize;
     faviconCornerRadius = kCornerFaviconCornerRadius;
-    faviconBackgoundSize = kCornerFaviconBackgroundSize;
+    faviconBackgroundSize = kCornerFaviconBackgroundSize;
     faviconBackgroundCornerRadius = kCornerFaviconBackgroundCornerRadius;
   } else {
     faviconSize = kCenterFaviconSize;
     faviconCornerRadius = kCenterFaviconCornerRadius;
-    faviconBackgoundSize = kCenterFaviconBackgroundSize;
+    faviconBackgroundSize = kCenterFaviconBackgroundSize;
     faviconBackgroundCornerRadius = kCenterFaviconBackgroundCornerRadius;
   }
 
@@ -298,9 +298,9 @@ bool HasPriceDropOnTab(TabResumptionConfig* config) {
   faviconImageView.layer.cornerRadius = faviconCornerRadius;
   [NSLayoutConstraint activateConstraints:@[
     [faviconBackgroundView.widthAnchor
-        constraintEqualToConstant:faviconBackgoundSize],
+        constraintEqualToConstant:faviconBackgroundSize],
     [faviconBackgroundView.heightAnchor
-        constraintEqualToConstant:faviconBackgoundSize],
+        constraintEqualToConstant:faviconBackgroundSize],
     [faviconImageView.widthAnchor constraintEqualToConstant:faviconSize],
     [faviconImageView.heightAnchor constraintEqualToConstant:faviconSize],
   ]];
@@ -316,8 +316,8 @@ bool HasPriceDropOnTab(TabResumptionConfig* config) {
         CGSizeMake(kCornerFaviconBackgroundBottomTrailingCornerRadius,
                    kCornerFaviconBackgroundBottomTrailingCornerRadius);
     UIBezierPath* bezierPath = [UIBezierPath
-        bezierPathWithRoundedRect:CGRectMake(0, 0, faviconBackgoundSize,
-                                             faviconBackgoundSize)
+        bezierPathWithRoundedRect:CGRectMake(0, 0, faviconBackgroundSize,
+                                             faviconBackgroundSize)
                 byRoundingCorners:bottomTrail
                       cornerRadii:cornerRadiusSize];
     CAShapeLayer* mask = [CAShapeLayer layer];

@@ -183,7 +183,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       @selector(testMagicStack),
       @selector(testMagicStackRotationWithChromeNextIA),
       @selector(testSignInSignOutScrolledToTop_AccountMenu),
-      @selector(testToggleModuleVisiblityInCustomizationMenu),
+      @selector(testToggleModuleVisibilityInCustomizationMenu),
       @selector(testNavigateInCustomizationMenu),
   };
 
@@ -243,7 +243,7 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   }
 
   if ([self isRunningTest:@selector(
-                              testToggleModuleVisiblityInCustomizationMenu)] ||
+                              testToggleModuleVisibilityInCustomizationMenu)] ||
       [self isRunningTest:@selector(testNavigateInCustomizationMenu)]) {
     // TODO(crbug.com/537272655): Re-enable once the customization menu
     // coordinator is fully testable in the minimal UI test environment.
@@ -1433,7 +1433,7 @@ TAG_SMOKE_TEST(NTPHomeTestCase, testIncognitoMode);
 
 // Tests that the customization menu can be used to toggle the visibility of
 // Home surface modules.
-- (void)testToggleModuleVisiblityInCustomizationMenu {
+- (void)testToggleModuleVisibilityInCustomizationMenu {
   // Tests most visited tiles visibility separately.
   [self resetCustomizationPrefs];
   [ChromeCoordinatorAppInterface startNewTabPageCoordinator];

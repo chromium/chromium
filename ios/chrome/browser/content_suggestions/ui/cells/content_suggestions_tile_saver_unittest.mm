@@ -192,7 +192,7 @@ class ContentSuggestionsTileSaverControllerTest : public BlockCleanupTest {
   }
 
  protected:
-  base::test::TaskEnvironment scoped_task_evironment_;
+  base::test::TaskEnvironment scoped_task_environment_;
   IOSChromeScopedTestingLocalState local_state;
   TestProfileManagerIOS profile_manager_;
   raw_ptr<TestProfileIOS> profile_ = nullptr;
@@ -222,7 +222,7 @@ TEST_F(ContentSuggestionsTileSaverControllerTest, SaveMostVisitedToDisk) {
       tiles, mock_favicon_fetcher, TestFaviconDirectory(),
       account_manager_service_);
   // Wait for all asynchronous tasks to complete.
-  scoped_task_evironment_.RunUntilIdle();
+  scoped_task_environment_.RunUntilIdle();
 
   // Read most visited from disk.
   NSDictionary<NSURL*, NTPTile*>* saved_tiles =
@@ -266,7 +266,7 @@ TEST_F(ContentSuggestionsTileSaverControllerTest, UpdateSingleFaviconFallback) {
       tiles, mock_favicon_fetcher, TestFaviconDirectory(),
       account_manager_service_);
   // Wait for all asynchronous tasks to complete.
-  scoped_task_evironment_.RunUntilIdle();
+  scoped_task_environment_.RunUntilIdle();
 
   // Read most visited from disk.
   NSDictionary<NSURL*, NTPTile*>* saved_tiles =
@@ -298,7 +298,7 @@ TEST_F(ContentSuggestionsTileSaverControllerTest, UpdateSingleFaviconFallback) {
       image_tile1.url, mock_favicon_fetcher2, TestFaviconDirectory(),
       account_manager_service_);
   // Wait for all asynchronous tasks to complete.
-  scoped_task_evironment_.RunUntilIdle();
+  scoped_task_environment_.RunUntilIdle();
 
   // Read most visited from disk.
   NSDictionary<NSURL*, NTPTile*>* saved_tiles_after_update =
@@ -340,7 +340,7 @@ TEST_F(ContentSuggestionsTileSaverControllerTest, DeleteOutdatedImage) {
       tiles, mock_favicon_fetcher, TestFaviconDirectory(),
       account_manager_service_);
   // Wait for all asynchronous tasks to complete.
-  scoped_task_evironment_.RunUntilIdle();
+  scoped_task_environment_.RunUntilIdle();
 
   NSDictionary<NSURL*, NTPTile*>* saved_tiles =
       content_suggestions_tile_saver::ReadSavedMostVisited(
@@ -358,7 +358,7 @@ TEST_F(ContentSuggestionsTileSaverControllerTest, DeleteOutdatedImage) {
       tiles2, mock_favicon_fetcher, TestFaviconDirectory(),
       account_manager_service_);
   // Wait for all asynchronous tasks to complete.
-  scoped_task_evironment_.RunUntilIdle();
+  scoped_task_environment_.RunUntilIdle();
   NSDictionary<NSURL*, NTPTile*>* saved_tiles2 =
       content_suggestions_tile_saver::ReadSavedMostVisited(
           account_manager_service_);
@@ -400,7 +400,7 @@ TEST_F(ContentSuggestionsTileSaverControllerTest, UpdateEntry) {
       tiles, mock_favicon_image_fetcher, TestFaviconDirectory(),
       account_manager_service_);
   // Wait for all asynchronous tasks to complete.
-  scoped_task_evironment_.RunUntilIdle();
+  scoped_task_environment_.RunUntilIdle();
   NSDictionary<NSURL*, NTPTile*>* saved =
       content_suggestions_tile_saver::ReadSavedMostVisited(
           account_manager_service_);
@@ -415,7 +415,7 @@ TEST_F(ContentSuggestionsTileSaverControllerTest, UpdateEntry) {
       tiles, mock_favicon_image_fetcher, TestFaviconDirectory(),
       account_manager_service_);
   // Wait for all asynchronous tasks to complete.
-  scoped_task_evironment_.RunUntilIdle();
+  scoped_task_environment_.RunUntilIdle();
   saved = content_suggestions_tile_saver::ReadSavedMostVisited(
       account_manager_service_);
   saved_tile = [saved objectForKey:ns_url];
@@ -426,7 +426,7 @@ TEST_F(ContentSuggestionsTileSaverControllerTest, UpdateEntry) {
       tiles, mock_favicon_fallback_fetcher, TestFaviconDirectory(),
       account_manager_service_);
   // Wait for all asynchronous tasks to complete.
-  scoped_task_evironment_.RunUntilIdle();
+  scoped_task_environment_.RunUntilIdle();
   saved = content_suggestions_tile_saver::ReadSavedMostVisited(
       account_manager_service_);
   saved_tile = [saved objectForKey:ns_url];
@@ -440,7 +440,7 @@ TEST_F(ContentSuggestionsTileSaverControllerTest, UpdateEntry) {
       tiles, mock_favicon_image_fetcher, TestFaviconDirectory(),
       account_manager_service_);
   // Wait for all asynchronous tasks to complete.
-  scoped_task_evironment_.RunUntilIdle();
+  scoped_task_environment_.RunUntilIdle();
   saved = content_suggestions_tile_saver::ReadSavedMostVisited(
       account_manager_service_);
   saved_tile = [saved objectForKey:ns_url];
@@ -452,7 +452,7 @@ TEST_F(ContentSuggestionsTileSaverControllerTest, UpdateEntry) {
       ntp_tiles::NTPTilesVector(), mock_favicon_image_fetcher,
       TestFaviconDirectory(), account_manager_service_);
   // Wait for all asynchronous tasks to complete.
-  scoped_task_evironment_.RunUntilIdle();
+  scoped_task_environment_.RunUntilIdle();
   EXPECT_FALSE([[NSFileManager defaultManager]
       fileExistsAtPath:[[TestFaviconDirectory()
                            URLByAppendingPathComponent:saved_tile

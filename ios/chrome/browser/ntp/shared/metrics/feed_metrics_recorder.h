@@ -94,8 +94,12 @@ class PrefService;
 // the Snackbar)
 - (void)recordUndoDismissCard;
 
-// Records metrics for when a user committs to a dismissed card (e.g. Undo
+// Records metrics for when a user commits to a dismissed card (e.g. Undo
 // snackbar was dismissed, so Undo can no longer happen.)
+- (void)recordCommitDismissCard;
+
+// Deprecated, use `-recordCommitDismissCard` instead.
+// Kept until downstream callers are migrated, then it will be removed.
 - (void)recordCommittDismissCard;
 
 // Records metrics for when a Snackbar has been shown.
