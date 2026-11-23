@@ -13,7 +13,7 @@
 namespace {
 
 // The size of the space between text labels in the text stack view.
-const CGFloat kTextStackViewHorizontalSpacings = 8.0;
+const CGFloat kTextStackViewHorizontalSpacing = 8.0;
 // The size of the main background image.
 const CGFloat kMainBackgroundImageSize = 60;
 // The size of the icon background image.
@@ -143,7 +143,7 @@ const CGFloat trailingMargin = -24.0;
     _textStackView = [[UIStackView alloc]
         initWithArrangedSubviews:@[ _textLabel, _detailTextLabel ]];
     _textStackView.axis = UILayoutConstraintAxisVertical;
-    _textStackView.spacing = kTextStackViewHorizontalSpacings;
+    _textStackView.spacing = kTextStackViewHorizontalSpacing;
     _textStackView.distribution = UIStackViewDistributionFill;
     _textStackView.alignment = UIStackViewAlignmentFill;
     _textStackView.translatesAutoresizingMaskIntoConstraints = NO;

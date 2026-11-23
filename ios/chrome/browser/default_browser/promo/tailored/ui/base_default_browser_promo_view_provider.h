@@ -30,20 +30,20 @@
 // sharedApplication]` is used.
 @property(nonatomic, strong) UIApplication* application;
 
-// Should be implemented in subclassses.
+// Should be implemented in subclasses.
 - (UIImage*)promoImage;
 
-// Should be implemented in subclassses.
+// Should be implemented in subclasses.
 - (NSString*)promoTitle;
 
-// Should be implemented in subclassses.
+// Should be implemented in subclasses.
 - (NSString*)promoSubtitle;
 
-// Should be implemented in subclassses.
+// Should be implemented in subclasses.
 - (promos_manager::Promo)promoIdentifier;
 
-// Should be implemented in subclassses.
-- (const base::Feature&)featureEngagmentIdentifier;
+// Should be implemented in subclasses.
+- (const base::Feature&)featureEngagementIdentifier;
 
 // Should be implemented in subclasses.
 - (DefaultPromoType)defaultBrowserPromoType;

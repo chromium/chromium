@@ -56,7 +56,7 @@
 // Creates a WKWebView and load the terms of services html page in it.
 - (WKWebView*)newWebViewDisplayingTOS {
   NSURL* TOSURL =
-      net::NSURLWithGURL(GetUnifiedTermsOfServiceURL(/*embbeded=*/true));
+      net::NSURLWithGURL(GetUnifiedTermsOfServiceURL(/*embedded=*/true));
   DCHECK(TOSURL);
 
   // Create web view.

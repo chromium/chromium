@@ -110,7 +110,7 @@ CGFloat const kSheetCornerRadius = 30;
 // The mediator for the Home customization menu.
 @property(nonatomic, strong) HomeCustomizationMediator* mediator;
 
-// This menu consists of several sheets that can be overlayed on top of each
+// This menu consists of several sheets that can be overlaid on top of each
 // other, each representing a submenu.
 // This property points to the view controller that is at the base of the stack.
 @property(nonatomic, weak) UIViewController* firstPageViewController;

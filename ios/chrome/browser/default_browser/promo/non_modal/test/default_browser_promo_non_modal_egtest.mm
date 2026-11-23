@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import <string>
+
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/stringprintf.h"
@@ -16,6 +18,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/third_party/earl_grey2/src/UILib/GREYScreenshotter.h"
@@ -126,10 +129,10 @@ id<GREYMatcher> NonModalPasteTitleMatcher() {
   return config;
 }
 
-- (void)setupIPHConfig:(std::string)IPHconfigName {
+- (void)setupIPHConfig:(std::string)IPHConfigName {
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.iph_feature_enabled = IPHconfigName;
+  config.iph_feature_enabled = IPHConfigName;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 

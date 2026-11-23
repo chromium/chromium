@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/home_customization/ui/home_cutomization_color_palette_cell.h"
+#import "ios/chrome/browser/home_customization/ui/home_customization_color_palette_cell.h"
 
 #import <UIKit/UIKit.h>
 

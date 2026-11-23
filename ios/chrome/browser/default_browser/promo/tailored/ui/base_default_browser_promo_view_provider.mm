@@ -52,7 +52,7 @@ constexpr CGFloat kHelpSymbolSize = 20;
   NOTREACHED();
 }
 
-- (const base::Feature&)featureEngagmentIdentifier {
+- (const base::Feature&)featureEngagementIdentifier {
   NOTREACHED();
 }
 
@@ -63,7 +63,8 @@ constexpr CGFloat kHelpSymbolSize = 20;
 #pragma mark - PromoProtocol
 
 - (PromoConfig)config {
-  return PromoConfig([self promoIdentifier], [self featureEngagmentIdentifier]);
+  return PromoConfig([self promoIdentifier],
+                     [self featureEngagementIdentifier]);
 }
 
 - (void)promoWasDisplayed {

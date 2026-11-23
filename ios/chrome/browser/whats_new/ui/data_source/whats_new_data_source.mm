@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/whats_new/ui/data_source/whats_new_data_source.h"
 
+#import <Foundation/Foundation.h>
+
 #import "base/apple/bundle_locations.h"
 #import "base/apple/foundation_util.h"
 #import "base/notreached.h"
@@ -24,7 +26,7 @@
 namespace {
 
 // The file names.
-NSString* const kfileName = @"whats_new_entries.plist";
+NSString* const kFileName = @"whats_new_entries.plist";
 
 // Dictionary keys.
 NSString* const kDictionaryFeaturesKey = @"Features";
@@ -309,6 +311,6 @@ WhatsNewItem* ConstructWhatsNewItem(NSDictionary* entry) {
 NSString* WhatsNewFilePath() {
   NSString* bundle_path = [base::apple::FrameworkBundle() bundlePath];
   NSString* entries_file_path =
-      [bundle_path stringByAppendingPathComponent:kfileName];
+      [bundle_path stringByAppendingPathComponent:kFileName];
   return entries_file_path;
 }

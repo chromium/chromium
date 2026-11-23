@@ -272,7 +272,7 @@ struct ShortcutsWidgetEntryView: View {
     static let searchA11yLabel = String(
       localized:
         "IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_SEARCH_A11Y_LABEL")
-    static let openShorcutLabelTemplate = String(
+    static let openShortcutLabelTemplate = String(
       localized: "IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_OPEN_SHORTCUT_LABEL")
     static let noShortcutsAvailableTitle = String(
       localized: "IDS_IOS_WIDGET_KIT_EXTENSION_SHORTCUTS_NO_SHORTCUTS_AVAILABLE_LABEL")
@@ -375,7 +375,7 @@ struct ShortcutsWidgetEntryView: View {
       HStack {
         WebsiteLogo(ntpTile: ntpTile).padding(.leading, 12)
         WebsiteLabel(
-          websiteTitle: Strings.openShorcutLabelTemplate.replacingOccurrences(
+          websiteTitle: Strings.openShortcutLabelTemplate.replacingOccurrences(
             of: "WEBSITE_PLACEHOLDER", with: ntpTile.title ?? "")
         )
         .padding(.leading, 8)

@@ -4,9 +4,12 @@
 
 #import "ios/chrome/browser/whats_new/ui/whats_new_table_view_controller.h"
 
+#import <UIKit/UIKit.h>
+
 #import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_header_footer_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
+#import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/whats_new/ui/cells/whats_new_table_view_item.h"
 #import "ios/chrome/browser/whats_new/ui/data_source/whats_new_item.h"
@@ -23,7 +26,7 @@ namespace {
 NSString* const kWhatsNewListViewID = @"kWhatsNewListViewId";
 const CGFloat kEstimatedTableViewRowHeight = 56;
 const CGFloat kEstimatedSectionHeaderHeight = 56;
-const CGFloat kEstimatedsectionFooterHeight = 0.0;
+const CGFloat kEstimatedSectionFooterHeight = 0.0;
 const CGFloat kCellIconWidth = 64;
 
 // List of sections.
@@ -35,7 +38,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // Identifiers for sections in the What's New list.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionFeaturesIdentifier = kSectionIdentifierEnumZero,
-  SectionChromeTipIdenfitier,
+  SectionChromeTipIdentifier,
   SectionSubtitleIdentifier,
 };
 
@@ -107,7 +110,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
   self.tableView.rowHeight = UITableViewAutomaticDimension;
   self.tableView.estimatedSectionHeaderHeight = kEstimatedSectionHeaderHeight;
   self.tableView.allowsMultipleSelection = YES;
-  self.tableView.sectionFooterHeight = kEstimatedsectionFooterHeight;
+  self.tableView.sectionFooterHeight = kEstimatedSectionFooterHeight;
 }
 
 #pragma mark - UITableViewDelegate
@@ -133,7 +136,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
           openDetailViewControllerForItem:self.featureItems[index]];
       break;
     }
-    case SectionChromeTipIdenfitier: {
+    case SectionChromeTipIdentifier: {
       NSInteger index = indexPath.row;
       [self.actionHandler recordWhatsNewInteraction:self.chromeTipItems[index]];
       [self.delegate detailViewController:self
@@ -200,13 +203,13 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 }
 
 - (void)loadChromeTip:(TableViewModel*)model {
-  [model addSectionWithIdentifier:SectionChromeTipIdenfitier];
-  [model setHeader:[self headerForSectionIndex:SectionChromeTipIdenfitier]
-      forSectionWithIdentifier:SectionChromeTipIdenfitier];
+  [model addSectionWithIdentifier:SectionChromeTipIdentifier];
+  [model setHeader:[self headerForSectionIndex:SectionChromeTipIdentifier]
+      forSectionWithIdentifier:SectionChromeTipIdentifier];
 
   for (WhatsNewItem* item in self.chromeTipItems) {
     [model addItem:[self whatsNewCell:item]
-        toSectionWithIdentifier:SectionChromeTipIdenfitier];
+        toSectionWithIdentifier:SectionChromeTipIdentifier];
   }
 }
 
@@ -219,7 +222,7 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
     case SectionFeaturesIdentifier:
       header.text = l10n_util::GetNSString(IDS_IOS_WHATS_NEW_SECTION_NEW_TITLE);
       break;
-    case SectionChromeTipIdenfitier:
+    case SectionChromeTipIdentifier:
       header.text =
           l10n_util::GetNSString(IDS_IOS_WHATS_NEW_SECTION_CHROME_TIP_TITLE);
       break;

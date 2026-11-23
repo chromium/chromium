@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/first_run/uma/ui/uma_table_view_controller.h"
 
+#import <Foundation/Foundation.h>
+
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_attributed_string_header_footer_item.h"
@@ -32,10 +34,10 @@ typedef NS_ENUM(NSInteger, UMAItemType) {
 
 // Prefix used for bullet points in the UMA descriptions. This prefix is used to
 // compute how many pixels the paragraph lines needs to be aligned with the
-// first line. It is impportant all translations have the exact same prefix.
+// first line. It is important all translations have the exact same prefix.
 NSString* const kBulletPrefix = @"  • ";
 // Begin and end tags to find bullet points paragraphs.
-NSString* const kBegingIndentString = @"BEGIN_INDENT";
+NSString* const kBeginIndentString = @"BEGIN_INDENT";
 NSString* const kEndIndentString = @"END_INDENT";
 
 // Parses a string with an embedded bold part inside, delineated by
@@ -44,7 +46,7 @@ NSString* const kEndIndentString = @"END_INDENT";
 NSMutableAttributedString* AddIndentAttributes(NSString* string,
                                                CGFloat indentSize) {
   StringWithTags parsedString =
-      ParseStringWithTags(string, kBegingIndentString, kEndIndentString);
+      ParseStringWithTags(string, kBeginIndentString, kEndIndentString);
   NSMutableAttributedString* attributedString =
       [[NSMutableAttributedString alloc] initWithString:parsedString.string];
   NSMutableParagraphStyle* paragraphStyle =

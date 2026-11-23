@@ -83,19 +83,19 @@ void ContextualPanelTabHelper::CloseContextualPanel() {
 }
 
 bool ContextualPanelTabHelper::WasLoudMomentEntrypointShown() {
-  return loud_moment_entrypoint_shown_for_curent_page_navigation_;
+  return loud_moment_entrypoint_shown_for_current_page_navigation_;
 }
 
 void ContextualPanelTabHelper::SetLoudMomentEntrypointShown(bool shown) {
-  loud_moment_entrypoint_shown_for_curent_page_navigation_ = shown;
+  loud_moment_entrypoint_shown_for_current_page_navigation_ = shown;
 }
 
 bool ContextualPanelTabHelper::WasLoudMomentEntrypointCanceled() {
-  return loud_moment_entrypoint_canceled_for_curent_page_navigation_;
+  return loud_moment_entrypoint_canceled_for_current_page_navigation_;
 }
 
 void ContextualPanelTabHelper::SetLoudMomentEntrypointCanceled(bool canceled) {
-  loud_moment_entrypoint_canceled_for_curent_page_navigation_ = canceled;
+  loud_moment_entrypoint_canceled_for_current_page_navigation_ = canceled;
 }
 
 std::optional<ContextualPanelTabHelper::EntrypointMetricsData>&
@@ -135,8 +135,8 @@ void ContextualPanelTabHelper::DidStartNavigation(
   }
 
   metrics_data_ = std::nullopt;
-  loud_moment_entrypoint_shown_for_curent_page_navigation_ = false;
-  loud_moment_entrypoint_canceled_for_curent_page_navigation_ = false;
+  loud_moment_entrypoint_shown_for_current_page_navigation_ = false;
+  loud_moment_entrypoint_canceled_for_current_page_navigation_ = false;
 
   // Clear the configs and notify the observers.
   sorted_weak_configurations_.clear();

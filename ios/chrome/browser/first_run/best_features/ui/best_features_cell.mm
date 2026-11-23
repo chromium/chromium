@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/first_run/best_features/ui/best_features_cell.h"
 
+#import <UIKit/UIKit.h>
+
 #import "ios/chrome/browser/first_run/best_features/ui/best_features_constants.h"
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -14,7 +16,7 @@
 namespace {
 
 // The size of the space between text labels in the text stack view.
-const CGFloat kTextStackViewHorizontalSpacings = 4.0;
+const CGFloat kTextStackViewHorizontalSpacing = 4.0;
 // Border width for the icon background.
 const CGFloat kIconBackgroundBorderWidth = 1.0;
 // Corner radius for the icon background.
@@ -86,7 +88,7 @@ const CGFloat kContentViewTrailingMargin = 13.0;
     UIStackView* textStackView = [[UIStackView alloc]
         initWithArrangedSubviews:@[ _textLabel, _detailTextLabel ]];
     textStackView.axis = UILayoutConstraintAxisVertical;
-    textStackView.spacing = kTextStackViewHorizontalSpacings;
+    textStackView.spacing = kTextStackViewHorizontalSpacing;
     textStackView.distribution = UIStackViewDistributionFill;
     textStackView.alignment = UIStackViewAlignmentFill;
     textStackView.translatesAutoresizingMaskIntoConstraints = NO;

@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/first_run/uma/coordinator/uma_coordinator.h"
 
+#import <Foundation/Foundation.h>
+
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "ios/chrome/browser/first_run/uma/ui/uma_table_view_controller.h"
@@ -14,7 +16,7 @@
 
 @property(nonatomic, strong) UMATableViewController* viewController;
 // UMA reporting value when the dialog is opened.
-@property(nonatomic, assign) BOOL initialeUMAReportingValue;
+@property(nonatomic, assign) BOOL initialUMAReportingValue;
 
 @end
 
@@ -25,7 +27,7 @@
                          UMAReportingValue:(BOOL)UMAReportingValue {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    _initialeUMAReportingValue = UMAReportingValue;
+    _initialUMAReportingValue = UMAReportingValue;
   }
   return self;
 }
@@ -36,7 +38,7 @@
   self.viewController =
       [[UMATableViewController alloc] initWithStyle:ChromeTableViewStyle()];
   self.viewController.presentationDelegate = self;
-  self.viewController.UMAReportingUserChoice = self.initialeUMAReportingValue;
+  self.viewController.UMAReportingUserChoice = self.initialUMAReportingValue;
   // Creates the navigation controller and present.
   UINavigationController* navigationController = [[UINavigationController alloc]
       initWithRootViewController:self.viewController];

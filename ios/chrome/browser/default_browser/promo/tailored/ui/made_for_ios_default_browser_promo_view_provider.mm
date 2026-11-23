@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/default_browser/promo/tailored/ui/made_for_ios_default_browser_promo_view_provider.h"
 
+#import "base/feature_list.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -42,7 +43,7 @@ using l10n_util::GetNSString;
   return promos_manager::Promo::MadeForIOSDefaultBrowser;
 }
 
-- (const base::Feature&)featureEngagmentIdentifier {
+- (const base::Feature&)featureEngagementIdentifier {
   return feature_engagement::kIPHiOSPromoMadeForIOSFeature;
 }
 

@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/default_browser/promo/tailored/ui/base_default_browser_promo_view_provider.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
 #import "components/feature_engagement/public/feature_constants.h"
@@ -41,7 +42,7 @@
   return promos_manager::Promo::AllTabsDefaultBrowser;
 }
 
-- (const base::Feature&)featureEngagmentIdentifier {
+- (const base::Feature&)featureEngagementIdentifier {
   return feature_engagement::kIPHiOSPromoAllTabsFeature;
 }
 
