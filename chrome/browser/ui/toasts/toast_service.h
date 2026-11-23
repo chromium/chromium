@@ -10,11 +10,12 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class BrowserWindowInterface;
-class ToastController;
 class ToastRegistry;
 
 // The ToastService serves as the centralized location for all features to
 // register its toast.
+// Owns the registry; BrowserWindowFeatures separately owns the ToastController
+// that uses it.
 class ToastService {
  public:
   DECLARE_USER_DATA(ToastService);
@@ -28,14 +29,11 @@ class ToastService {
 
   const ToastRegistry* toast_registry() { return toast_registry_.get(); }
 
-  ToastController* toast_controller() { return toast_controller_.get(); }
-
  private:
   ui::ScopedUnownedUserData<ToastService> scoped_unowned_user_data_;
 
   void RegisterToasts();
   std::unique_ptr<ToastRegistry> toast_registry_;
-  std::unique_ptr<ToastController> toast_controller_;
 };
 
 #endif  // CHROME_BROWSER_UI_TOASTS_TOAST_SERVICE_H_

@@ -4,7 +4,11 @@
 
 #include "chrome/browser/ui/toasts/toast_service.h"
 
+#include <memory>
+
 #include "base/containers/enum_set.h"
+#include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/ttc/core/features.h"
@@ -13,6 +17,7 @@
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/api/toast_registry.h"
+#include "chrome/browser/ui/toasts/test/mock_toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/common/chrome_features.h"
@@ -22,6 +27,8 @@
 #include "components/multistep_filter/core/features.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 
 namespace {
 
@@ -114,6 +121,63 @@ IN_PROC_BROWSER_TEST_F(ToastServiceBrowserTest, ServiceExistForBrowserTypes) {
   AddBlankTabAndShow(devtools_browser);
   EXPECT_FALSE(ToastService::From(devtools_browser));
   EXPECT_FALSE(ToastController::From(devtools_browser));
+}
+
+class ToastControllerFactoryBrowserTest : public InProcessBrowserTest {
+ public:
+  ToastControllerFactoryBrowserTest() {
+    toast_controller_override_ =
+        BrowserWindowFeatures::GetUserDataFactoryForTesting()
+            .AddOverrideForTesting(base::BindRepeating(
+                &ToastControllerFactoryBrowserTest::CreateToastController,
+                base::Unretained(this)));
+  }
+
+  void TearDownOnMainThread() override {
+    last_created_controller_ = nullptr;
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+ protected:
+  raw_ptr<MockToastController> last_created_controller_ = nullptr;
+
+ private:
+  std::unique_ptr<ToastController> CreateToastController(
+      BrowserWindowInterface& browser) {
+    auto controller = std::make_unique<testing::NiceMock<MockToastController>>(
+        &browser, ToastService::From(&browser)->toast_registry());
+    last_created_controller_ = controller.get();
+    return controller;
+  }
+
+  ui::UserDataFactory::ScopedOverride toast_controller_override_;
+};
+
+IN_PROC_BROWSER_TEST_F(ToastControllerFactoryBrowserTest,
+                       UsesInjectedControllerForNormalAndAppWindows) {
+  auto* normal_controller = last_created_controller_.get();
+  ASSERT_TRUE(normal_controller);
+  ASSERT_EQ(normal_controller, ToastController::From(browser()));
+  EXPECT_CALL(*normal_controller,
+              MaybeShowToast(
+                  testing::Field(&ToastParams::toast_id, ToastId::kLinkCopied)))
+      .WillOnce(testing::Return(false));
+  EXPECT_FALSE(ToastController::From(browser())->MaybeShowToast(
+      ToastParams(ToastId::kLinkCopied)));
+
+  BrowserWindowInterface* app_browser =
+      CreateBrowserForApp("test_app_name", browser()->GetProfile());
+  auto* app_controller = last_created_controller_.get();
+  ASSERT_TRUE(app_controller);
+  ASSERT_NE(normal_controller, app_controller);
+  ASSERT_EQ(app_controller, ToastController::From(app_browser));
+  EXPECT_CALL(*app_controller,
+              MaybeShowToast(
+                  testing::Field(&ToastParams::toast_id, ToastId::kLinkCopied)))
+      .WillOnce(testing::Return(true));
+  EXPECT_TRUE(ToastController::From(app_browser)
+                  ->MaybeShowToast(ToastParams(ToastId::kLinkCopied)));
+  EXPECT_EQ(normal_controller, ToastController::From(browser()));
 }
 
 }  // namespace

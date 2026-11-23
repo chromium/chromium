@@ -4,9 +4,14 @@
 
 #include "chrome/browser/safe_browsing/security_settings_bundle_pref_change_handler.h"
 
+#include <utility>
+
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref_test_base.h"
 #include "chrome/browser/safe_browsing/settings/generated_safe_browsing_pref.h"
+#include "chrome/browser/ui/browser_manager_service.h"
+#include "chrome/browser/ui/browser_manager_service_factory.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/test/mock_toast_controller.h"
 #include "chrome/test/base/testing_profile.h"
@@ -35,10 +40,25 @@ class SecuritySettingsBundlePrefChangeHandlerTest : public testing::Test {
     ON_CALL(toast_controller_, MaybeShowToast(testing::_))
         .WillByDefault(testing::Return(true));
 
-    handler_->SetToastControllerForTesting(&toast_controller_);
+    ON_CALL(mock_browser_, GetProfile())
+        .WillByDefault(testing::Return(profile()));
+    EXPECT_CALL(mock_browser_, RegisterBrowserDidClose(testing::_))
+        .WillOnce([this](BrowserWindowInterface::BrowserDidCloseCallback cb) {
+          close_callback_ = std::move(cb);
+          return base::CallbackListSubscription();
+        });
+    BrowserManagerServiceFactory::GetForProfile(profile())
+        ->AddBrowserForTesting(&mock_browser_);
   }
 
-  void TearDown() override { handler_.reset(); }
+  void TearDown() override {
+    if (close_callback_) {
+      close_callback_.Run(&mock_browser_);
+      close_callback_.Reset();
+    }
+    handler_.reset();
+    profile_.reset();
+  }
 
   TestingProfile* profile() { return profile_.get(); }
   PrefService* prefs() { return profile()->GetTestingPrefService(); }
@@ -48,12 +68,22 @@ class SecuritySettingsBundlePrefChangeHandlerTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
 
  protected:
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_;
+  BrowserWindowInterface::BrowserDidCloseCallback close_callback_;
   std::unique_ptr<SecuritySettingsBundlePrefChangeHandler> handler_;
   base::test::ScopedFeatureList feature_list_;
 
-  // A mock controller to be injected into the production class.
-  testing::NiceMock<MockToastController> toast_controller_;
+  testing::NiceMock<MockToastController> toast_controller_{&mock_browser_};
 };
+
+TEST_F(SecuritySettingsBundlePrefChangeHandlerTest, NoToastWithoutBrowser) {
+  close_callback_.Run(&mock_browser_);
+  close_callback_.Reset();
+  SetSecurityBundleSetting(*prefs(), SecuritySettingsBundleSetting::ENHANCED);
+
+  EXPECT_CALL(toast_controller_, MaybeShowToast(testing::_)).Times(0);
+  handler_->MaybeShowEnhancedBundleSettingChangeNotification();
+}
 
 TEST_F(SecuritySettingsBundlePrefChangeHandlerTest,
        BundledSettingsToastNotShownWhenStandardBundleIsSelected) {

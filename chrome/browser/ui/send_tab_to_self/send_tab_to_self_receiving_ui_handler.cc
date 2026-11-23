@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
-#include "chrome/browser/ui/toasts/toast_service.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
@@ -80,8 +79,7 @@ void SendTabToSelfReceivingUiHandler::DisplayNewEntries(
             l10n_util::GetStringUTF16(IDS_SEND_TAB_RECEIVE_TOAST_FOREGROUND),
             static_cast<int>(new_entries.size()),
             base::UTF8ToUTF16(new_entries[0]->GetDeviceName()));
-    ToastService::From(browser)->toast_controller()->MaybeShowToast(
-        std::move(params));
+    ToastController::From(browser)->MaybeShowToast(std::move(params));
   } else {
     // If no browser is active, wait for a browser window to be activated.
     StartObservingBrowserCollection();
@@ -132,8 +130,7 @@ void SendTabToSelfReceivingUiHandler::OnBrowserActivated(
     params.toast_close_callback = base::ScopedClosureRunner(
         base::BindOnce(&SendTabToSelfReceivingUiHandler::OnToastClosed,
                        weak_ptr_factory_.GetWeakPtr()));
-    ToastService::From(browser)->toast_controller()->MaybeShowToast(
-        std::move(params));
+    ToastController::From(browser)->MaybeShowToast(std::move(params));
   }
 }
 

@@ -4,9 +4,14 @@
 
 #include "chrome/browser/safe_browsing/security_settings_bundle_toast_helper.h"
 
+#include <utility>
+
 #include "base/metrics/histogram_functions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/ui/browser_manager_service.h"
+#include "chrome/browser/ui/browser_manager_service_factory.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/test/mock_toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
@@ -24,10 +29,22 @@ class SecuritySettingsBundleToastHelperTest : public testing::Test {
   void SetUp() override {
     profile_ = std::make_unique<TestingProfile>();
     helper_ = SecuritySettingsBundleToastHelper::GetForProfile(profile_.get());
-    helper_->SetToastControllerForTesting(&toast_controller_);
+    ON_CALL(mock_browser_, GetProfile())
+        .WillByDefault(testing::Return(profile_.get()));
+    EXPECT_CALL(mock_browser_, RegisterBrowserDidClose(testing::_))
+        .WillOnce([this](BrowserWindowInterface::BrowserDidCloseCallback cb) {
+          close_callback_ = std::move(cb);
+          return base::CallbackListSubscription();
+        });
+    BrowserManagerServiceFactory::GetForProfile(profile_.get())
+        ->AddBrowserForTesting(&mock_browser_);
   }
 
   void TearDown() override {
+    if (close_callback_) {
+      close_callback_.Run(&mock_browser_);
+      close_callback_.Reset();
+    }
     helper_ = nullptr;
     profile_.reset();
   }
@@ -37,9 +54,30 @@ class SecuritySettingsBundleToastHelperTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<SecuritySettingsBundleToastHelper> helper_;
-  testing::NiceMock<MockToastController> toast_controller_;
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_;
+  BrowserWindowInterface::BrowserDidCloseCallback close_callback_;
+  testing::NiceMock<MockToastController> toast_controller_{&mock_browser_};
   base::HistogramTester histogram_tester_;
 };
+
+TEST_F(SecuritySettingsBundleToastHelperTest, NoToastWithoutBrowser) {
+  close_callback_.Run(&mock_browser_);
+  close_callback_.Reset();
+  PrefService* prefs = profile_->GetPrefs();
+  prefs->SetInteger(
+      prefs::kSecuritySettingsBundleMigrationToastState,
+      static_cast<int>(SecuritySettingsBundleToastState::kPending));
+  SetSecurityBundleSetting(*prefs, SecuritySettingsBundleSetting::ENHANCED);
+
+  EXPECT_CALL(toast_controller_, MaybeShowToast(testing::_)).Times(0);
+  helper_->TriggerIfNeeded();
+  task_environment_.FastForwardBy(
+      SecuritySettingsBundleToastHelper::kRetryDelay *
+      SecuritySettingsBundleToastHelper::kMaxRetries);
+  EXPECT_EQ(
+      static_cast<int>(SecuritySettingsBundleToastState::kPending),
+      prefs->GetInteger(prefs::kSecuritySettingsBundleMigrationToastState));
+}
 
 TEST_F(SecuritySettingsBundleToastHelperTest, ToastShownIfPending) {
   PrefService* prefs = profile_->GetPrefs();

@@ -116,16 +116,20 @@ void ToastService::RegisterToasts() {
 
 ### 3. Trigger your Toast
 When you want to trigger your toast to show, you will need to retrieve the
-[ToastController](toast_controller.h) through
-[BrowserWindowFeatures](../browser_window/public/browser_window_features.h) and
+[ToastController](toast_controller.h) using
+`ToastController::From(browser_window_interface)` and
 call `ToastController::MaybeShowToast(ToastParams params)`.
 
-Note: the ToastController can be null for certain browser types so you must check
-if the controller exists before attempting to trigger the toast.
+Note: `ToastController::From()` returns null when no controller is registered on
+the window, including before the controller is constructed and after it is
+destroyed. The window must still be alive when calling `From()`. Production code
+creates controllers only for normal and app windows. Check that the controller
+exists before attempting to trigger the toast.
 
 #### Triggering a Toast Without Needing to Replace Placeholder Strings
 ```
-ToastController* const toast_controller = browser_window_features->toast_controller();
+ToastController* const toast_controller =
+    ToastController::From(browser_window_interface);
 if (toast_controller) {
   toast_controller->MaybeShowToast(ToastParams(ToastId));
 }
@@ -133,7 +137,8 @@ if (toast_controller) {
 
 #### Triggering a Toast and Replacing Placeholder Strings
 ```
-ToastController* const toast_controller = browser_window_features->toast_controller();
+ToastController* const toast_controller =
+    ToastController::From(browser_window_interface);
 if (toast_controller) {
   ToastParams params = ToastParams(ToastId);
   params.body_string_replacement_params = {string_1, string_2};
@@ -144,7 +149,8 @@ if (toast_controller) {
 
 #### Triggering a Toast with a Menu
 ```
-ToastController* const toast_controller = browser_window_features->toast_controller();
+ToastController* const toast_controller =
+    ToastController::From(browser_window_interface);
 if (toast_controller) {
   std::unique_ptr<MyCustomMenuModel> menu_model = ...
   ToastParams params = ToastParams(ToastId);
@@ -156,7 +162,8 @@ if (toast_controller) {
 #### Triggering a Toast with a Callback on Close
 When the toast gets destroyed, the callback will be called.
 ```
-ToastController* const toast_controller = browser_window_features->toast_controller();
+ToastController* const toast_controller =
+    ToastController::From(browser_window_interface);
 if (toast_controller) {
   ToastParams params = ToastParams(ToastId);
   params.toast_close_callback = base::ScopedClosureRunner(
@@ -169,3 +176,65 @@ if (toast_controller) {
 Note: even though you have triggered your toast, there is a chance that users
 might not see the toast because another toast immediately triggered after your
 toast, thus preempting your toast from being seen by users.
+
+## Ownership and Testing
+
+In `InitPostWindowConstruction()`, `BrowserWindowFeatures` creates and owns both
+`ToastService` and `ToastController` for normal and app windows. It creates the
+service first, then creates the controller through `UserDataFactory` and calls
+`Init()` on it. `ToastService` registers the toast specifications and owns the
+`ToastRegistry` passed to the controller. In
+`TearDownPreBrowserWindowDestruction()`, the controller is destroyed before the
+service while the browser window is still available.
+Consumers retrieve the controller through its
+[UnownedUserData](../../../../ui/base/unowned_user_data/README.md) registration.
+
+### Unit tests
+
+To test a feature that requests toasts, use
+[MockToastController](test/mock_toast_controller.h) with a
+`MockBrowserWindowInterface`. The mock controller registers itself on the mock
+window, so the feature uses the same `ToastController::From()` lookup as in
+production. The mock overrides `MaybeShowToast()`; other methods retain their
+real implementations. Testing requests through this mocked method does not
+require a real browser window or toast widget.
+
+```cpp
+testing::NiceMock<MockBrowserWindowInterface> browser;
+testing::StrictMock<MockToastController> controller(&browser);
+EXPECT_CALL(controller, MaybeShowToast(testing::_))
+    .WillOnce(testing::Return(true));
+// Exercise the feature using &browser.
+```
+
+The mock window must outlive the controller. Do not register a second controller
+on a window that already has one. A default-constructed `MockToastController`
+does not register itself on a window. Pass the mock window to its constructor
+when testing code that uses `ToastController::From()`. Depend on
+`//chrome/browser/ui/toasts:test_support` and
+`//chrome/browser/ui/browser_window/test:test_support` for these mocks.
+
+### Browser tests
+
+To replace the controller in a real window, install a factory override before
+the browser is created, for example in the test fixture constructor:
+
+```cpp
+toast_controller_override_ =
+    BrowserWindowFeatures::GetUserDataFactoryForTesting()
+        .AddOverrideForTesting(base::BindRepeating(
+            [](BrowserWindowInterface& browser) {
+              return std::make_unique<testing::NiceMock<MockToastController>>(
+                  &browser);
+            }));
+```
+
+Keep the returned `ui::UserDataFactory::ScopedOverride` as a fixture member.
+While the override is installed, each newly created supported window gets its
+own mock, owned and initialized by `BrowserWindowFeatures` and accessible through
+`ToastController::From()`. Existing windows are not modified. This avoids adding
+toast-specific test setters to production classes. If a test also calls
+controller methods that access the registry, pass
+`ToastService::From(&browser)->toast_registry()` as the mock constructor's second
+argument; real UI behavior still requires the corresponding window and view
+dependencies.

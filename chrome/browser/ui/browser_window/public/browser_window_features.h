@@ -116,6 +116,7 @@ class TabMenuModelDelegate;
 class TabStripModel;
 class TabStripServiceFeature;
 class TabsFromOtherDevicesSidePanelCoordinator;
+class ToastController;
 class ToastService;
 class TranslateController;
 class UnloadController;
@@ -462,6 +463,8 @@ class BrowserWindowFeatures {
   std::unique_ptr<TabsFromOtherDevicesSidePanelCoordinator>
       tabs_from_other_devices_side_panel_coordinator_;
   std::unique_ptr<ToastService> toast_service_;
+  // Must be destroyed before toast_service_, which owns its registry.
+  std::unique_ptr<ToastController> toast_controller_;
   std::unique_ptr<TranslateController> translate_bubble_controller_;
   std::unique_ptr<ttc::EntrypointController> ttc_entrypoint_controller_;
   std::unique_ptr<UpgradeNotificationController>

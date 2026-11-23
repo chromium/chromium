@@ -115,6 +115,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/tabs/vertical_tab_iph_controller.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller_impl.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/toasts/toast_service.h"
 #include "chrome/browser/ui/toolbar/avatar_toolbar_iph_controller.h"
@@ -964,6 +965,9 @@ void BrowserWindowFeatures::InitPostWindowConstruction(
       browser->GetType() == BrowserWindowInterface::Type::TYPE_APP) {
     toast_service_ =
         GetUserDataFactory().CreateInstance<ToastService>(*browser, browser);
+    toast_controller_ = GetUserDataFactory().CreateInstance<ToastController>(
+        *browser, browser, toast_service_->toast_registry());
+    toast_controller_->Init();
   }
 
   upgrade_notification_controller_ =
@@ -1234,6 +1238,8 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
     user_education_->TearDown();
   }
   upgrade_notification_controller_.reset();
+  // The controller borrows the registry owned by the service.
+  toast_controller_.reset();
   toast_service_.reset();
   synced_window_delegate_.reset();
   skills_ui_window_controller_.reset();

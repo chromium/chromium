@@ -1108,6 +1108,7 @@ source_set("unit_tests") {
 
     deps += [
       "//chrome/browser/sync",
+      "//chrome/browser/ui/browser_window/test:test_support",
       "//chrome/browser/ui/tabs:test_support",
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/toasts:test_support",

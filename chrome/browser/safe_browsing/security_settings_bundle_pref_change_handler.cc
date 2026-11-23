@@ -13,7 +13,6 @@
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_MAC)
 #include "chrome/browser/safe_browsing/security_settings_bundle_toast_helper.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
@@ -60,15 +59,7 @@ void SecuritySettingsBundlePrefChangeHandler::
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_MAC)
-void SecuritySettingsBundlePrefChangeHandler::SetToastControllerForTesting(
-    ToastController* controller) {
-  toast_controller_for_testing_ = controller;
-}
-
 ToastController* SecuritySettingsBundlePrefChangeHandler::GetToastController() {
-  if (toast_controller_for_testing_) {
-    return toast_controller_for_testing_;
-  }
   ProfileBrowserCollection* const collection =
       ProfileBrowserCollection::GetForProfile(profile_);
   if (!collection) {

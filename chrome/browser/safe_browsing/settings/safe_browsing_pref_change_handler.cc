@@ -116,13 +116,7 @@ void SafeBrowsingPrefChangeHandler::
     return;
   }
 
-  // TODO(crbug.com/447592206): The correct long term solution is to refactor
-  // ToastController to use the UnownedUserData factory pattern for testability,
-  // which will be handled in a follow-up CL.
-  ToastController* const controller =
-      toast_controller_for_testing_
-          ? static_cast<ToastController*>(toast_controller_for_testing_)
-          : ToastController::From(browser);
+  ToastController* const controller = ToastController::From(browser);
   if (!controller) {
     return;
   }
@@ -247,14 +241,6 @@ void SafeBrowsingPrefChangeHandler::
   }
 #endif
 }
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_MAC)
-void SafeBrowsingPrefChangeHandler::SetToastControllerForTesting(
-    ToastController* controller) {
-  toast_controller_for_testing_ = controller;
-}
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
 void SafeBrowsingPrefChangeHandler::RetryStateCallback() {

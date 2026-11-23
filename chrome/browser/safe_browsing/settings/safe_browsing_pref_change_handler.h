@@ -11,6 +11,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/safe_browsing/tailored_security/chrome_tailored_security_service.h"
@@ -18,11 +19,6 @@
 #include "chrome/browser/safe_browsing/tailored_security/unconsented_message_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list_observer.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_observer.h"
-#endif
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/toasts/toast_controller.h"
 #endif
 
 namespace content {
@@ -71,11 +67,6 @@ class SafeBrowsingPrefChangeHandler {
     MaybeShowEnhancedProtectionSettingChangeNotification(nullptr);
   }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_MAC)
-  void SetToastControllerForTesting(ToastController* controller);
-#endif
-
  private:
   // Returns true if the notification should be suppressed for Tailored
   // Security.
@@ -83,11 +74,6 @@ class SafeBrowsingPrefChangeHandler {
 
   // Member variable to store the Profile*.
   raw_ptr<Profile> profile_;
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_MAC)
-  raw_ptr<ToastController> toast_controller_for_testing_ = nullptr;
-#endif
 
 #if BUILDFLAG(IS_ANDROID)
   // Called when the consented modal is dismissed.

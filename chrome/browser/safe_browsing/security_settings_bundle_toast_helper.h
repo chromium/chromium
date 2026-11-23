@@ -28,8 +28,6 @@ class SecuritySettingsBundleToastHelper : public base::SupportsUserData::Data {
   // SecuritySettingsBundleToastState::kPending state.
   void TriggerIfNeeded();
 
-  void SetToastControllerForTesting(ToastController* controller);
-
   static constexpr base::TimeDelta kRetryDelay = base::Seconds(15);
   static constexpr int kMaxRetries = 3;
 
@@ -43,7 +41,6 @@ class SecuritySettingsBundleToastHelper : public base::SupportsUserData::Data {
 
   raw_ptr<Profile> profile_;
   base::OneShotTimer toast_retry_timer_;
-  raw_ptr<ToastController> toast_controller_for_testing_ = nullptr;
   int retry_count_ = 0;
 };
 

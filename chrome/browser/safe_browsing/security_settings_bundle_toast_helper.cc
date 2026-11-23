@@ -61,11 +61,6 @@ void SecuritySettingsBundleToastHelper::TriggerIfNeeded() {
   TryShowToast();
 }
 
-void SecuritySettingsBundleToastHelper::SetToastControllerForTesting(
-    ToastController* controller) {
-  toast_controller_for_testing_ = controller;
-}
-
 void SecuritySettingsBundleToastHelper::TryShowToast() {
   ToastController* controller = GetToastController();
   if (controller && controller->MaybeShowToast(ToastParams(
@@ -89,9 +84,6 @@ void SecuritySettingsBundleToastHelper::TryShowToast() {
 }
 
 ToastController* SecuritySettingsBundleToastHelper::GetToastController() {
-  if (toast_controller_for_testing_) {
-    return toast_controller_for_testing_;
-  }
   ProfileBrowserCollection* const collection =
       ProfileBrowserCollection::GetForProfile(profile_);
   BrowserWindowInterface* browser =

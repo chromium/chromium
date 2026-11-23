@@ -76,6 +76,8 @@ struct ToastParams {
 // Manages the toast that is displayed for a particular browser. Only one toast
 // can be displayed at a time. Subsequent calls to MaybeShowToast() will dismiss
 // the current toast and automatically display the requested one.
+// Owned by BrowserWindowFeatures. The ToastRegistry owned by ToastService must
+// outlive this controller.
 class ToastController : public views::WidgetObserver,
                         public OmniboxTabHelper::Observer,
                         public content::WebContentsObserver {

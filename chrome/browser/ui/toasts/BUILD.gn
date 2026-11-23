@@ -147,6 +147,7 @@ source_set("browser_tests") {
     "toast_view_browsertest.cc",
   ]
   deps = [
+    ":test_support",
     ":toasts",
     "//base",
     "//base/test:test_support",

@@ -70,8 +70,6 @@ class SafeBrowsingPrefChangeHandlerTest : public testing::Test {
     ON_CALL(toast_controller_, MaybeShowToast(testing::_))
         .WillByDefault(testing::Return(true));
 
-    handler_->SetToastControllerForTesting(&toast_controller_);
-
     // Setup mock browser
     EXPECT_CALL(mock_browser_, RegisterDidBecomeActive(testing::_))
         .WillOnce(testing::Return(base::CallbackListSubscription()));
@@ -99,6 +97,7 @@ class SafeBrowsingPrefChangeHandlerTest : public testing::Test {
   void TearDown() override {
     if (close_callback_) {
       close_callback_.Run(&mock_browser_);
+      close_callback_.Reset();
     }
     handler_.reset();
     profile_.reset();
@@ -132,8 +131,7 @@ class SafeBrowsingPrefChangeHandlerTest : public testing::Test {
   std::unique_ptr<SafeBrowsingPrefChangeHandler> handler_;
   base::test::ScopedFeatureList feature_list_;
 
-  // A mock controller to be injected into the production class.
-  testing::NiceMock<MockToastController> toast_controller_;
+  testing::NiceMock<MockToastController> toast_controller_{&mock_browser_};
 };
 
 TEST_F(SafeBrowsingPrefChangeHandlerTest,
