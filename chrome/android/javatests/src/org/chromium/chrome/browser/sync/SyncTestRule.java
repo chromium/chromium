@@ -37,6 +37,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
+import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -65,8 +66,10 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
- * TestRule for common functionality between sync tests. TODO(crbug.com/40743432): Support batching
- * tests with SyncTestRule.
+ * TestRule for common functionality between sync tests.
+ *
+ * <p>Tests should start ChromeTabbedActivity on about:blank (e.g. via {@code startOnBlankPage()}),
+ * which is not synced as a typed URL that could interfere with test data.
  */
 public class SyncTestRule extends ChromeTabbedActivityTestRule {
     /** Simple activity that mimics a trusted vault key retrieval flow that succeeds immediately. */
@@ -204,17 +207,31 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
         }
     }
 
+    private final @Nullable BlankCTATabInitialStateRule mBlankCTATabRule;
     private FakeServerHelper mFakeServerHelper;
     private SyncService mSyncService;
     private final SigninTestRule mSigninTestRule = SigninTestRule.createWithCleanups();
-    private final BlankCTATabInitialStateRule mBlankCTATabRule =
-            new BlankCTATabInitialStateRule(this, false);
+    private boolean mRuleActive;
+    private boolean mSyncInitialized;
 
     public SigninTestRule getSigninTestRule() {
         return mSigninTestRule;
     }
 
-    public SyncTestRule() {}
+    public SyncTestRule() {
+        this(/* launchActivity= */ true);
+    }
+
+    /**
+     * @param launchActivity Whether this rule launches ChromeTabbedActivity on about:blank. Pass
+     *     false when the test uses a Public Transit CTA rule (e.g. {@link
+     *     org.chromium.chrome.test.transit.FreshCtaTransitTestRule}) to start the activity; sync is
+     *     then set up once the full browser has started. TODO(crbug.com/490461435): Remove once all
+     *     callers pass false.
+     */
+    public SyncTestRule(boolean launchActivity) {
+        mBlankCTATabRule = launchActivity ? new BlankCTATabInitialStateRule(this, false) : null;
+    }
 
     /** Getters for Test variables */
     public Context getTargetContext() {
@@ -222,10 +239,16 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
     }
 
     public FakeServerHelper getFakeServerHelper() {
+        assert mSyncInitialized
+                : "Sync not initialized; start ChromeTabbedActivity (e.g. startOnBlankPage())"
+                        + " first";
         return mFakeServerHelper;
     }
 
     public SyncService getSyncService() {
+        assert mSyncInitialized
+                : "Sync not initialized; start ChromeTabbedActivity (e.g. startOnBlankPage())"
+                        + " first";
         return mSyncService;
     }
 
@@ -313,45 +336,80 @@ public class SyncTestRule extends ChromeTabbedActivityTestRule {
                 criteria, reason, SyncTestUtil.TIMEOUT_MS, SyncTestUtil.INTERVAL_MS);
     }
 
+    private void setUpSync() {
+        ThreadUtils.assertOnUiThread();
+        if (!mRuleActive) return;
+        assert !mSyncInitialized : "Sync already initialized";
+        mSyncInitialized = true;
+        SyncService syncService = createSyncServiceImpl();
+        if (syncService != null) {
+            SyncServiceFactory.setInstanceForTesting(syncService);
+        }
+        mSyncService = SyncTestUtil.getSyncServiceForLastUsedProfile();
+        mFakeServerHelper = FakeServerHelper.createInstanceAndGet();
+    }
+
     @Override
     public Statement apply(final Statement base, final Description desc) {
-        final Statement superStatement = super.apply(base, desc);
+        if (mBlankCTATabRule != null) {
+            final Statement superStatement = super.apply(base, desc);
 
-        // Start the activity by opening about:blank. This URL is ideal because it is not synced as
-        // a typed URL. If another URL is used, it could interfere with test data.
-        final Statement blankCTATabStatement = mBlankCTATabRule.apply(superStatement, desc);
-        return mSigninTestRule.apply(
+            // Start the activity by opening about:blank. This URL is ideal because it is not
+            // synced as a typed URL. If another URL is used, it could interfere with test data.
+            final Statement blankCTATabStatement = mBlankCTATabRule.apply(superStatement, desc);
+            return mSigninTestRule.apply(
+                    new Statement() {
+                        @Override
+                        public void evaluate() throws Throwable {
+                            // ChromeActivityTestRule disables IPH only after the activity
+                            // starts.
+                            TrackerFactory.setTrackerForTests(new TestTracker());
+                            blankCTATabStatement.evaluate();
+                        }
+                    },
+                    desc);
+        }
+        Statement transitStatement =
                 new Statement() {
                     @Override
                     public void evaluate() throws Throwable {
-                        // ChromeActivityTestRule disables IPH only after the activity starts.
-                        TrackerFactory.setTrackerForTests(new TestTracker());
-                        blankCTATabStatement.evaluate();
+                        setUpRule();
+                        try {
+                            base.evaluate();
+                        } finally {
+                            tearDownRule();
+                        }
                     }
-                },
-                desc);
+                };
+        return mSigninTestRule.apply(transitStatement, desc);
     }
 
     @Override
     protected void before() throws Throwable {
         super.before();
-        TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC)
-                .setBackendForTesting(FakeTrustedVaultClientBackend.get());
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    SyncService syncService = createSyncServiceImpl();
-                    if (syncService != null) {
-                        SyncServiceFactory.setInstanceForTesting(syncService);
-                    }
-                    mSyncService = SyncTestUtil.getSyncServiceForLastUsedProfile();
-                    mFakeServerHelper = FakeServerHelper.createInstanceAndGet();
-                });
+        setUpRule();
     }
 
     @Override
     protected void after() {
         super.after();
+        tearDownRule();
+    }
+
+    private void setUpRule() {
+        mRuleActive = true;
+        TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC)
+                .setBackendForTesting(FakeTrustedVaultClientBackend.get());
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        ChromeBrowserInitializer.getInstance()
+                                .runNowOrAfterFullBrowserStarted(this::setUpSync));
+    }
+
+    private void tearDownRule() {
+        mRuleActive = false;
+        if (!mSyncInitialized) return;
+        mSyncInitialized = false;
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mSyncService = null;
