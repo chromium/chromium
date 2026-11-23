@@ -112,6 +112,11 @@ id<GREYMatcher> FirstConsentBulletPointTitle() {
 
 // Test suite for Gemini First Run Experience (FRE) UI.
 @interface GeminiFirstRunTestCase : ChromeTestCase
+
+// Returns whether `kIOSGeminiBottomSheetMigration` is enabled for this test
+// case.
+- (BOOL)isBottomSheetMigrationEnabled;
+
 @end
 
 @implementation GeminiFirstRunTestCase
@@ -142,6 +147,12 @@ id<GREYMatcher> FirstConsentBulletPointTitle() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(kPageActionMenu);
+  if ([self isBottomSheetMigrationEnabled]) {
+    config.features_enabled.push_back(kAssistantContainer);
+    config.features_enabled.push_back(kIOSGeminiBottomSheetMigration);
+  } else {
+    config.features_disabled.push_back(kIOSGeminiBottomSheetMigration);
+  }
 
   [self configureFirstRunExperimentForConfiguration:config];
 
@@ -339,6 +350,10 @@ id<GREYMatcher> FirstConsentBulletPointTitle() {
 
 #pragma mark - Helpers
 
+- (BOOL)isBottomSheetMigrationEnabled {
+  return YES;
+}
+
 - (void)invokeGeminiEntryPoint {
   if ([ChromeEarlGrey isChromeNextEnabled]) {
     // With ChromeNext, the entry point is directly the Gemini button in the
@@ -439,6 +454,20 @@ id<GREYMatcher> FirstConsentBulletPointTitle() {
     topController = topController.presentedViewController;
   }
   return topController;
+}
+
+@end
+
+// Test suite for Gemini First Run Experience (FRE) UI with
+// `kIOSGeminiBottomSheetMigration` disabled.
+@interface GeminiFirstRunBottomSheetMigrationDisabledTestCase
+    : GeminiFirstRunTestCase
+@end
+
+@implementation GeminiFirstRunBottomSheetMigrationDisabledTestCase
+
+- (BOOL)isBottomSheetMigrationEnabled {
+  return NO;
 }
 
 @end
