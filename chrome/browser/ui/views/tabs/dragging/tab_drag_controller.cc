@@ -1027,9 +1027,16 @@ TabDragController::Liveness TabDragController::SaveFocus() {
   base::WeakPtr<TabDragController> ref(weak_factory_.GetWeakPtr());
   CHECK(source_context_, base::NotFatalUntil::M162);
 
-  old_focused_view_tracker_->SetView(
-      source_context_->GetWidget()->GetFocusManager()->GetFocusedView());
-  source_context_->GetWidget()->GetFocusManager()->ClearFocus();
+  views::FocusManager* const focus_manager =
+      source_context_->GetWidget()->GetFocusManager();
+  views::View* const focused_view = focus_manager->GetFocusedView();
+  old_focused_view_tracker_->SetView(focused_view);
+  // Only clear focus if there is a focused view. Otherwise, clearing native
+  // focus would activate the window and take activation from another window,
+  // e.g. an omnibox popup that is its own top-level window.
+  if (focused_view) {
+    focus_manager->ClearFocus();
+  }
 
   // WARNING: we may have been deleted.
   return ref ? Liveness::kAlive : Liveness::kDeleted;

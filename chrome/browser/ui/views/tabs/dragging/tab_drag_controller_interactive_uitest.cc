@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/tabs/features.h"
@@ -121,6 +122,9 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
+#include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 #endif
 
 #if defined(USE_AURA)
@@ -152,7 +156,6 @@
 #include "chrome/browser/ash/boca/on_task/on_task_locked_controller.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #include "chrome/browser/ui/chromeos/locked_state/locked_state_controller.h"
-#include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
@@ -1266,6 +1269,113 @@ IN_PROC_BROWSER_TEST_F(TabDragControllerWebUIOmniboxPopupTest,
   EXPECT_FALSE(TabDragController::IsActive());
   EXPECT_EQ("1 0", IDString(browser()->GetTabStripModel()));
 }
+
+// Verifies that dragging a tab in an inactive browser window doesn't activate
+// it.
+IN_PROC_BROWSER_TEST_F(TabDragControllerTest,
+                       DragInInactiveWindowKeepsOtherWindowActive) {
+  AddTabsAndResetBrowser(browser(), 1);
+  TabStrip* tab_strip = GetTabStripForBrowser(browser());
+  views::Widget* browser_widget = tab_strip->GetWidget();
+
+  auto other_widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET,
+      views::Widget::InitParams::TYPE_WINDOW);
+  params.context = browser_widget->GetNativeWindow();
+  params.bounds = gfx::Rect(0, 0, 200, 100);
+  other_widget->Init(std::move(params));
+  other_widget->Show();
+  other_widget->Activate();
+  views::test::WaitForWidgetActive(other_widget.get(), true);
+  views::test::WaitForWidgetActive(browser_widget, false);
+
+  Tab* tab1 = tab_strip->tab_at(1);
+  const gfx::Point tab_0_center =
+      GetCenterInScreenCoordinates(tab_strip->tab_at(0));
+  const gfx::Point tab_1_center = GetCenterInScreenCoordinates(tab1);
+
+  ui::MouseEvent press_event(ui::EventType::kMousePressed,
+                             tab1->GetLocalBounds().CenterPoint(), tab_1_center,
+                             base::TimeTicks::Now(), ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  tab_strip->MaybeStartDrag(tab1, press_event, tab_strip->GetSelectionModel());
+  ASSERT_TRUE(TabDragController::IsActive());
+
+  TabDragController* controller =
+      tab_strip->GetDragContext()->GetDragController();
+  ASSERT_NE(controller, nullptr);
+  SetWindowFinderForTabStrip(tab_strip, std::make_unique<FixedWindowFinder>(
+                                            browser_widget->GetNativeWindow()));
+
+  ASSERT_EQ(controller->Drag(tab_1_center + gfx::Vector2d(20, 0)),
+            TabDragController::Liveness::kAlive);
+  ASSERT_EQ(controller->Drag(tab_0_center),
+            TabDragController::Liveness::kAlive);
+  controller->EndDrag(EndDragReason::kComplete);
+  EXPECT_FALSE(TabDragController::IsActive());
+  EXPECT_EQ("1 0", IDString(browser()->GetTabStripModel()));
+  EXPECT_TRUE(other_widget->IsActive());
+  EXPECT_FALSE(browser_widget->IsActive());
+}
+
+#if BUILDFLAG(IS_MAC)
+// Verifies that dragging a tab in immersive fullscreen clears focus from the
+// omnibox. On Mac, the tab strip lives in a non-activatable child overlay
+// widget that shares the browser window's `FocusManager`. Its `IsActive()` is
+// false even while the omnibox is focused.
+IN_PROC_BROWSER_TEST_F(TabDragControllerTest,
+                       DragClearsFocusInImmersiveFullscreen) {
+  ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen;
+  AddTabsAndResetBrowser(browser(), 1);
+
+  ui_test_utils::ToggleFullscreenModeAndWait(browser());
+  auto* const immersive_controller = ImmersiveModeController::From(browser());
+  ASSERT_TRUE(immersive_controller->IsEnabled());
+  std::unique_ptr<ImmersiveRevealedLock> reveal_lock =
+      immersive_controller->GetRevealedLock(
+          ImmersiveModeController::ANIMATE_REVEAL_NO);
+
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser());
+  views::Widget* const browser_widget = browser_view->GetWidget();
+  TabStrip* const tab_strip = GetTabStripForBrowser(browser());
+  views::Widget* const tab_strip_widget = tab_strip->GetWidget();
+  ASSERT_NE(tab_strip_widget, browser_widget);
+  ASSERT_FALSE(tab_strip_widget->IsActive());
+
+  OmniboxViewViews* const omnibox_view =
+      browser_view->GetLocationBarView()->omnibox_view();
+  omnibox_view->RequestFocus();
+  views::FocusManager* const focus_manager =
+      tab_strip_widget->GetFocusManager();
+  ASSERT_EQ(focus_manager, browser_widget->GetFocusManager());
+  ASSERT_EQ(omnibox_view, focus_manager->GetFocusedView());
+
+  Tab* tab1 = tab_strip->tab_at(1);
+  const gfx::Point tab_1_center = GetCenterInScreenCoordinates(tab1);
+  ui::MouseEvent press_event(ui::EventType::kMousePressed,
+                             tab1->GetLocalBounds().CenterPoint(), tab_1_center,
+                             base::TimeTicks::Now(), ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  tab_strip->MaybeStartDrag(tab1, press_event, tab_strip->GetSelectionModel());
+  ASSERT_TRUE(TabDragController::IsActive());
+
+  TabDragController* controller =
+      tab_strip->GetDragContext()->GetDragController();
+  ASSERT_NE(controller, nullptr);
+  SetWindowFinderForTabStrip(tab_strip, std::make_unique<FixedWindowFinder>(
+                                            browser_widget->GetNativeWindow()));
+
+  ASSERT_EQ(controller->Drag(tab_1_center + gfx::Vector2d(20, 0)),
+            TabDragController::Liveness::kAlive);
+  EXPECT_EQ(nullptr, focus_manager->GetFocusedView());
+
+  controller->EndDrag(EndDragReason::kComplete);
+  EXPECT_FALSE(TabDragController::IsActive());
+  EXPECT_EQ(omnibox_view, focus_manager->GetFocusedView());
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 class DetachToBrowserTabDragControllerTest
     : public TabDragControllerInteractiveTestMixin<TabDragControllerTest>,
@@ -2424,7 +2534,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerInteractiveTest,
 // from source to target before the target browser finishes ending drags.
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
                        MAYBE_DragToSeparateWindowDuringDragEnd) {
-
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
   AddTabsAndResetBrowser(browser(), 1);
@@ -2474,7 +2583,6 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
   ASSERT_FALSE(IsDragSessionActive(tab_strip));
   ASSERT_FALSE(TabDragController::IsActive());
 }
-
 
 // Canceling tab dragging while the detached tab is reattached should
 // not cause dangling ptr. (crbug.com/459242414)
