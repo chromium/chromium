@@ -768,3 +768,8 @@ crbug.com/587893044 [ Simulator ] ContextMenuTestCase/testSaveInvalidImageShowsE
 
 # Gardening suppression 2026-11-23
 crbug.com/589704479 [ Simulator ] OtpInputDialogEgtest [ Pass Failure ]
+
+# CQ flakiness quarantine 2026-11-23
+crbug.com/587566569 [ Simulator ] BookmarksFolderChooserAccountTestCase/testEditFunctionalityOnSingleFolderAccount [ Pass Failure ]
+crbug.com/588485339 [ Simulator ] BookmarksEntriesTestCase/testContextMenuForMultipleURLOpenAllInIncognito [ Pass Failure ]
+crbug.com/578730189 [ iOS26 iOS27 iPad Simulator ] ManageAccountsTableTestCase/testAddAccount [ Pass Failure ]
