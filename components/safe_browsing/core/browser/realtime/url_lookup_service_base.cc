@@ -34,6 +34,7 @@
 #include "net/base/ip_address.h"
 #include "net/base/load_flags.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/request_priority.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "net/http/http_status_code.h"
@@ -45,6 +46,7 @@
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "url/scheme_host_port.h"
 
 namespace safe_browsing {
 
@@ -795,7 +797,8 @@ void RealTimeUrlLookupServiceBase::StartFillingRequestProto(
                                         : network_context_getter_.Run();
 
   bool should_resolve_dns =
-      network_context && url.is_valid() && request->referrer_chain_size() > 0 &&
+      network_context && url.is_valid() && url.SchemeIsHTTPOrHTTPS() &&
+      request->referrer_chain_size() > 0 &&
       request->referrer_chain(0).ip_addresses_size() == 0 &&
       base::FeatureList::IsEnabled(kSafeBrowsingWaitForDnsForRealTimeLookup);
 
@@ -839,10 +842,11 @@ void RealTimeUrlLookupServiceBase::StartFillingRequestProto(
     // privacy leak or inaccurate, so skip these.
     auto optional_parameters = network::mojom::ResolveHostParameters::New();
     optional_parameters->direct_only = true;
+    optional_parameters->initial_priority = net::HIGHEST;
 
     pending_state->simple_host_resolver->ResolveHost(
-        network::mojom::HostResolverHost::NewHostPortPair(
-            net::HostPortPair::FromURL(url)),
+        network::mojom::HostResolverHost::NewSchemeHostPort(
+            url::SchemeHostPort(url)),
         nak, std::move(optional_parameters),
         base::BindOnce(&RealTimeUrlLookupServiceBase::OnDnsResolved,
                        GetWeakPtr(), url, barrier_closure));
