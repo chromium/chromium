@@ -268,6 +268,20 @@ TEST(GlicProviderSpecImplTest, GeminiIndigoFollowsIndigoOpenGlic) {
                                  features::kIndigoOpenGlic);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+TEST(GlicProviderSpecImplTest,
+     GeminiDynamicChromeToolsFollowsGlicDynamicChromeTools) {
+  ExpectGeminiFeatureFollowsFlag(GlicFeature::kDynamicChromeTools,
+                                 features::kGlicDynamicChromeTools);
+}
+#else
+TEST(GlicProviderSpecImplTest, GeminiDoesNotSupportDynamicChromeTools) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicDynamicChromeTools);
+  EXPECT_FALSE(GeminiSupportsFeature(GlicFeature::kDynamicChromeTools));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 TEST(GlicProviderSpecImplTest,
      GeminiMarketingAutoOpenFollowsGlicMarketingAutoOpen) {
   ExpectGeminiFeatureFollowsFlag(GlicFeature::kMarketingAutoOpen,
@@ -312,6 +326,7 @@ TEST(GlicProviderSpecImplTest, GeminiEnterpriseSupportsNoFeatures) {
       features::kGlicLiveMode,
       features::kGlicShareImage,
       features::kGlicExperimentalTriggering,
+      features::kGlicDynamicChromeTools,
       features::kAutoOpenGlicForPdf,
       features::kGlicSelectionPrompt,
       features::kGlicCaptureRegion,

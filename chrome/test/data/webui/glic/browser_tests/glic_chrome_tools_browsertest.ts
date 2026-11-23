@@ -91,6 +91,14 @@ class GlicChromeToolsBrowserTest extends ApiTestFixtureBase {
     assertUndefined(secondResult.errorReason);
     assertEquals(secondResult.result, '{}');
   }
+
+  async testGetChromeToolsUnsupportedOnAndroid() {
+    const getHostCapabilities = checkDefined(this.host.getHostCapabilities);
+    const capabilities: Set<HostCapability> =
+        await getHostCapabilities.call(this.host);
+    assertFalse(capabilities.has(HostCapability.CHROME_TOOLS));
+    assertUndefined(this.host.tools);
+  }
 }
 
 const TEST_FIXTURES = [

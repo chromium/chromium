@@ -47,6 +47,9 @@ class GlicChromeToolsBrowserTest : public GlicApiBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Dynamic Chrome tools via AiOverlayTools are only supported on non-Android
+// platforms.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(GlicChromeToolsBrowserTest, testGetChromeTools) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
@@ -63,8 +66,6 @@ IN_PROC_BROWSER_TEST_F(GlicChromeToolsBrowserTest,
   ExecuteJsTest();
 }
 
-// Tool execution via AiOverlayTools is currently only implemented on desktop.
-#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(GlicChromeToolsBrowserTest, testExecuteToolSuccess) {
   int initial_tab_count = GetTabListInterface()->GetTabCount();
   ASSERT_OK(OpenGlicForActiveTab());
@@ -100,6 +101,12 @@ IN_PROC_BROWSER_TEST_F(GlicChromeToolsBrowserTest,
   EXPECT_EQ(second_tab_list->GetTabCount(), initial_second_tab_count + 1);
   EXPECT_EQ(second_tab_list->GetActiveTab()->GetContents()->GetVisibleURL(),
             GURL("https://example.org"));
+}
+#else
+IN_PROC_BROWSER_TEST_F(GlicChromeToolsBrowserTest,
+                       testGetChromeToolsUnsupportedOnAndroid) {
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
 }
 #endif
 

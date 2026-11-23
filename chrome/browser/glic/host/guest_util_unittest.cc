@@ -1088,8 +1088,13 @@ TEST_F(GuestUtilMultiInstanceTest,
   PopulateGlobalClientInitialState(state.get(), CreateTestingProfile());
 
   EXPECT_TRUE(state->enable_capture_region);
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_THAT(state->host_capabilities,
               Contains(mojom::HostCapability::kChromeTools));
+#else
+  EXPECT_THAT(state->host_capabilities,
+              Not(Contains(mojom::HostCapability::kChromeTools)));
+#endif
 }
 
 // The capture region (selection overlay) and Chrome tools are consumer-only.

@@ -277,7 +277,11 @@ class GeminiGlicProviderSpec final : public GlicProviderSpec {
       case GlicFeature::kIndigoOpenGlic:
         return base::FeatureList::IsEnabled(features::kIndigoOpenGlic);
       case GlicFeature::kDynamicChromeTools:
+#if !BUILDFLAG(IS_ANDROID)
         return base::FeatureList::IsEnabled(features::kGlicDynamicChromeTools);
+#else
+        return false;
+#endif  // !BUILDFLAG(IS_ANDROID)
       case GlicFeature::kDrivePicker:
 #if BUILDFLAG(IS_ANDROID)
         return false;
