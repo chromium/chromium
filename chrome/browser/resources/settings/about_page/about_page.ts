@@ -132,8 +132,10 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase
       loadTimeData.getString('settingsRefresh2026') !== '';
 
   // <if expr="_google_chrome">
-  protected accessor feedbackAllowedPref_:
+  private accessor feedbackAllowedPref_:
       chrome.settingsPrivate.PrefObject<boolean>|undefined;
+  private feedbackDisabledDialogEnabled_: boolean =
+      loadTimeData.getBoolean('feedbackDisabledDialogEnabled');
   // </if>
 
   private aboutBrowserProxy_: AboutPageBrowserProxy =
@@ -149,7 +151,9 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase
     // </if>
 
     // <if expr="_google_chrome">
-    this.mirrorPref('feedback_allowed', 'feedbackAllowedPref_');
+    if (!this.feedbackDisabledDialogEnabled_) {
+      this.mirrorPref('feedback_allowed', 'feedbackAllowedPref_');
+    }
     // </if>
   }
 
@@ -355,6 +359,11 @@ export class SettingsAboutPageElement extends SettingsAboutPageElementBase
   }
 
   // <if expr="_google_chrome">
+  protected shouldShowReportIssue_(): boolean {
+    return this.feedbackDisabledDialogEnabled_ ||
+        Boolean(this.feedbackAllowedPref_?.value);
+  }
+
   protected onReportIssueClick_() {
     this.aboutBrowserProxy_.openFeedbackDialog();
   }

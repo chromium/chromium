@@ -390,6 +390,15 @@ void AddAboutStrings(content::WebUIDataSource* html_source, Profile* profile) {
     BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
   html_source->AddString("aboutTermsURL", chrome::kChromeUITermsURL);
 #endif
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  html_source->AddBoolean(
+      "feedbackDisabledDialogEnabled",
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+      base::FeatureList::IsEnabled(features::kFeedbackDisabledDialog));
+#else
+      false);
+#endif
+#endif
 }
 
 void AddAiStrings(content::WebUIDataSource* html_source) {

@@ -12,8 +12,11 @@ import {TestAboutPageBrowserProxy} from './test_about_page_browser_proxy.js';
 import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
 
 // <if expr="_google_chrome">
-import {ABOUT_PAGE_PRIVACY_POLICY_URL, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
+import {ABOUT_PAGE_PRIVACY_POLICY_URL, OpenWindowProxyImpl, PrefService, PrefsBrowserProxy} from 'chrome://settings/settings.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
+
+import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
+
 // </if>
 
 // <if expr="_google_chrome and is_macosx">
@@ -24,7 +27,10 @@ import type {PromoteUpdaterStatus} from 'chrome://settings/settings.js';
 import {UpdateStatus} from 'chrome://settings/settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {assertNotEquals} from 'chrome://webui-test/chai_assert.js';
-import {isVisible, eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
+// </if>
+// <if expr="not is_chromeos or _google_chrome">
+import {isVisible} from 'chrome://webui-test/test_util.js';
 // </if>
 // clang-format on
 
@@ -421,9 +427,21 @@ suite('OfficialBuild', function() {
   let page: SettingsAboutPageElement;
   let browserProxy: TestAboutPageBrowserProxy;
   let openWindowProxy: TestOpenWindowProxy;
+  let prefsBrowserProxy: TestPrefsBrowserProxy;
 
-  async function initOfficialBuildPage(): Promise<void> {
+  async function initOfficialBuildPage(feedbackAllowed: boolean = true):
+      Promise<void> {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    prefsBrowserProxy = new TestPrefsBrowserProxy([{
+      key: 'feedback_allowed',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: feedbackAllowed,
+    }]);
+    PrefsBrowserProxy.setInstance(prefsBrowserProxy);
+    PrefService.resetInstanceForTesting();
+    await PrefService.getInstance().whenInitialized();
+
     page = document.createElement('settings-about-page');
     Router.getInstance().navigateTo(routes.ABOUT);
     document.body.appendChild(page);
@@ -432,6 +450,7 @@ suite('OfficialBuild', function() {
 
   setup(async function() {
     loadTimeData.overrideValues({
+      feedbackDisabledDialogEnabled: false,
       settingsRefresh2026: '',
     });
     browserProxy = new TestAboutPageBrowserProxy();
@@ -442,8 +461,40 @@ suite('OfficialBuild', function() {
   });
 
   test('ReportAnIssue', async function() {
-    assertTrue(!!page.shadowRoot.querySelector('#reportIssue'));
-    page.shadowRoot.querySelector<HTMLElement>('#reportIssue')!.click();
+    const reportIssue =
+        page.shadowRoot.querySelector<HTMLElement>('#reportIssue');
+    assertTrue(!!reportIssue);
+    assertTrue(isVisible(reportIssue));
+    reportIssue.click();
+    await browserProxy.whenCalled('openFeedbackDialog');
+  });
+
+  test('ReportAnIssue_DisallowedByPref_DialogDisabled', async function() {
+    const reportIssue =
+        page.shadowRoot.querySelector<HTMLElement>('#reportIssue');
+    assertTrue(!!reportIssue);
+    assertTrue(isVisible(reportIssue));
+
+    prefsBrowserProxy.fakeApi.sendPrefChanges(
+        [{key: 'feedback_allowed', value: false}]);
+    await microtasksFinished();
+    assertFalse(!!page.shadowRoot.querySelector('#reportIssue'));
+
+    await initOfficialBuildPage(/*feedbackAllowed=*/ false);
+    assertFalse(!!page.shadowRoot.querySelector('#reportIssue'));
+  });
+
+  test('ReportAnIssue_DisallowedByPref_DialogEnabled', async function() {
+    loadTimeData.overrideValues({
+      feedbackDisabledDialogEnabled: true,
+    });
+    await initOfficialBuildPage(/*feedbackAllowed=*/ false);
+
+    const reportIssue =
+        page.shadowRoot.querySelector<HTMLElement>('#reportIssue');
+    assertTrue(!!reportIssue);
+    assertTrue(isVisible(reportIssue));
+    reportIssue.click();
     await browserProxy.whenCalled('openFeedbackDialog');
   });
 

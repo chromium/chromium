@@ -34,10 +34,11 @@ ${!this.promoteUpdaterStatus_.hidden ? html`
     label="$i18n{aboutGetHelpUsingChrome}" external>
 </cr-link-row>
 <if expr="_google_chrome">
-<cr-link-row class="hr" id="reportIssue" @click="${this.onReportIssueClick_}"
-    ?hidden="${!this.feedbackAllowedPref_?.value}"
-    label="$i18n{aboutReportAnIssue}" external>
-</cr-link-row>
+${this.shouldShowReportIssue_() ? html`
+  <cr-link-row class="hr" id="reportIssue" @click="${this.onReportIssueClick_}"
+      label="$i18n{aboutReportAnIssue}" external>
+  </cr-link-row>
+` : ''}
 ${!this.settingsRefresh2026Enabled_ ? html`
   <cr-link-row class="hr" id="privacyPolicy"
       @click="${this.onPrivacyPolicyClick_}" label="$i18n{aboutPrivacyPolicy}"
