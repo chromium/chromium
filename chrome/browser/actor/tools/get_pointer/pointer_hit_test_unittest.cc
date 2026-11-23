@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ttc/core/pointer_hit_test.h"
+#include "chrome/browser/actor/tools/get_pointer/pointer_hit_test.h"
 
 #include <optional>
 #include <string>
@@ -17,7 +17,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace ttc {
+namespace actor {
 namespace {
 
 using optimization_guide::proto::AnnotatedPageContent;
@@ -316,4 +316,4 @@ TEST(PointerHitTestTest, SameSecurityOriginAgreesWithUrlOrigin) {
 }
 
 }  // namespace
-}  // namespace ttc
+}  // namespace actor

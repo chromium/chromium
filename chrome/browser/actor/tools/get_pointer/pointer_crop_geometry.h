@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TTC_CORE_POINTER_CROP_GEOMETRY_H_
-#define CHROME_BROWSER_TTC_CORE_POINTER_CROP_GEOMETRY_H_
+#ifndef CHROME_BROWSER_ACTOR_TOOLS_GET_POINTER_POINTER_CROP_GEOMETRY_H_
+#define CHROME_BROWSER_ACTOR_TOOLS_GET_POINTER_POINTER_CROP_GEOMETRY_H_
 
 #include "base/containers/span.h"
 
@@ -13,7 +13,7 @@ class Rect;
 class Size;
 }  // namespace gfx
 
-namespace ttc {
+namespace actor {
 
 // Returns the part of the viewport, in DIPs, to show the model around
 // `points`, which are in the viewport's DIP space. The rectangle is the
@@ -30,6 +30,6 @@ namespace ttc {
 gfx::Rect ComputePointerCropRect(base::span<const gfx::PointF> points,
                                  const gfx::Size& viewport_dip);
 
-}  // namespace ttc
+}  // namespace actor
 
-#endif  // CHROME_BROWSER_TTC_CORE_POINTER_CROP_GEOMETRY_H_
+#endif  // CHROME_BROWSER_ACTOR_TOOLS_GET_POINTER_POINTER_CROP_GEOMETRY_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ttc/core/pointer_frame_redaction.h"
+#include "chrome/browser/actor/tools/get_pointer/pointer_frame_redaction.h"
 
 #include <optional>
 #include <string>
@@ -15,7 +15,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace ttc {
+namespace actor {
 namespace {
 
 using optimization_guide::proto::AnnotatedPageContent;
@@ -191,4 +191,4 @@ TEST(PointerFrameRedactionTest, PaintsOverPopupsOfFrames) {
 }
 
 }  // namespace
-}  // namespace ttc
+}  // namespace actor

@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ttc/core/pointer_frame_redaction.h"
+#include "chrome/browser/actor/tools/get_pointer/pointer_frame_redaction.h"
 
 #include <string>
 #include <vector>
 
-#include "chrome/browser/ttc/core/pointer_hit_test.h"
+#include "chrome/browser/actor/tools/get_pointer/pointer_hit_test.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRect.h"
 
-namespace ttc {
+namespace actor {
 
 using optimization_guide::proto::AnnotatedPageContent;
 using optimization_guide::proto::BoundingRect;
@@ -81,4 +81,4 @@ void PaintOverCrossOriginFrames(const AnnotatedPageContent& page_content,
   }
 }
 
-}  // namespace ttc
+}  // namespace actor

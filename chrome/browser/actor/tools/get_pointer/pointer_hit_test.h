@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TTC_CORE_POINTER_HIT_TEST_H_
-#define CHROME_BROWSER_TTC_CORE_POINTER_HIT_TEST_H_
+#ifndef CHROME_BROWSER_ACTOR_TOOLS_GET_POINTER_POINTER_HIT_TEST_H_
+#define CHROME_BROWSER_ACTOR_TOOLS_GET_POINTER_POINTER_HIT_TEST_H_
 
 #include <optional>
 
@@ -19,7 +19,7 @@ class ContentNode;
 class SecurityOrigin;
 }  // namespace optimization_guide::proto
 
-namespace ttc {
+namespace actor {
 
 // Describes, for the model, the page element at `point` according to
 // `page_content`, which must have been extracted with geometry (the
@@ -71,6 +71,6 @@ bool IsCrossOriginFrame(
 bool IsSameSecurityOrigin(const optimization_guide::proto::SecurityOrigin& a,
                           const optimization_guide::proto::SecurityOrigin& b);
 
-}  // namespace ttc
+}  // namespace actor
 
-#endif  // CHROME_BROWSER_TTC_CORE_POINTER_HIT_TEST_H_
+#endif  // CHROME_BROWSER_ACTOR_TOOLS_GET_POINTER_POINTER_HIT_TEST_H_

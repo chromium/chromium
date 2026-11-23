@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ttc/core/pointer_crop_geometry.h"
+#include "chrome/browser/actor/tools/get_pointer/pointer_crop_geometry.h"
 
 #include <algorithm>
 
@@ -13,7 +13,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
 
-namespace ttc {
+namespace actor {
 
 namespace {
 
@@ -62,4 +62,4 @@ gfx::Rect ComputePointerCropRect(base::span<const gfx::PointF> points,
   return crop;
 }
 
-}  // namespace ttc
+}  // namespace actor

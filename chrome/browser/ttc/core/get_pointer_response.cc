@@ -13,11 +13,11 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/actor/tools/get_pointer/pointer_crop_geometry.h"
+#include "chrome/browser/actor/tools/get_pointer/pointer_frame_redaction.h"
+#include "chrome/browser/actor/tools/get_pointer/pointer_hit_test.h"
 #include "chrome/browser/ttc/core/features.h"
 #include "chrome/browser/ttc/core/pointer_context_capturer.h"
-#include "chrome/browser/ttc/core/pointer_crop_geometry.h"
-#include "chrome/browser/ttc/core/pointer_frame_redaction.h"
-#include "chrome/browser/ttc/core/pointer_hit_test.h"
 #include "chrome/browser/ttc/core/pointer_image_annotator.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -37,6 +37,10 @@ namespace ttc {
 
 namespace {
 
+using actor::ComputePointerCropRect;
+using actor::DescribeNode;
+using actor::DescribeNodeAtPoint;
+using actor::PaintOverCrossOriginFrames;
 using optimization_guide::proto::ContentNode;
 
 // Enough to recognize what is selected; the page content has the rest.

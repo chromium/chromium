@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_TTC_CORE_POINTER_FRAME_REDACTION_H_
-#define CHROME_BROWSER_TTC_CORE_POINTER_FRAME_REDACTION_H_
+#ifndef CHROME_BROWSER_ACTOR_TOOLS_GET_POINTER_POINTER_FRAME_REDACTION_H_
+#define CHROME_BROWSER_ACTOR_TOOLS_GET_POINTER_POINTER_FRAME_REDACTION_H_
 
 class SkBitmap;
 
@@ -11,7 +11,7 @@ namespace optimization_guide::proto {
 class AnnotatedPageContent;
 }  // namespace optimization_guide::proto
 
-namespace ttc {
+namespace actor {
 
 // Paints over, in `screenshot`, the frames of `page_content` whose documents
 // have another origin than the page's, so that the model does not see in the
@@ -28,6 +28,6 @@ void PaintOverCrossOriginFrames(
     const optimization_guide::proto::AnnotatedPageContent& page_content,
     SkBitmap& screenshot);
 
-}  // namespace ttc
+}  // namespace actor
 
-#endif  // CHROME_BROWSER_TTC_CORE_POINTER_FRAME_REDACTION_H_
+#endif  // CHROME_BROWSER_ACTOR_TOOLS_GET_POINTER_POINTER_FRAME_REDACTION_H_
