@@ -2283,6 +2283,13 @@ ServiceWorkerAutoPreload 功能會在開始執行 ServiceWorker 啟動程序時�
 <translation id="2467181864598429837">預設瀏覽器行為</translation>
 <translation id="2467896267442150508">最長為期一週的限制時段。如果開始時間設在結束時間之後，限制時段會跨日。</translation>
 <translation id="2476249479201711962">允許存取預設搜尋引擎內容選單</translation>
+<translation id="247659494993692492">這項政策可用於指定允許進行整合驗證的伺服器。只有當 <ph name="PRODUCT_NAME" /> 收到來自 Proxy 或此許可清單中伺服器的驗證要求時，才會啟用整合驗證。
+
+      如果未設定這項政策，<ph name="PRODUCT_NAME" /> 會嘗試偵測伺服器是否位於內部網路，且只會回應內部伺服器傳來的隔離網頁應用程式 (IWA) 要求。如果偵測到伺服器位於網際網路，<ph name="PRODUCT_NAME" /> 就會忽略該伺服器傳來的 IWA 要求。
+
+      注意：每個伺服器名稱須以半形逗號分隔，指定時可使用萬用字元 (<ph name="WILDCARD_VALUE" />)。
+
+      在 <ph name="LINUX_OS_NAME" />、<ph name="MAC_OS_NAME" /> 和 <ph name="PRODUCT_OS_NAME" /> 上，系統的 GSSAPI/Kerberos 程式庫可能會將主機名稱標準化為不同的服務主體主機 (例如透過 DNS CNAME 或反向 DNS PTR 查詢)。除非該主機也名列本政策的許可清單，否則協商驗證將會失敗。</translation>
 <translation id="2478756867046106663">允許具有濫用行為的網站開啟新視窗或新分頁</translation>
 <translation id="2479760962196319822">這項政策可控管 <ph name="PRODUCT_OS_NAME" /> 使用者能否在本機儲存資料。
       如果將這項政策設為 False，<ph name="PRODUCT_OS_NAME" /> 就會封鎖本機儲存空間，使用者將無法在本機儲存資料，也無法存取本機目錄。
@@ -4566,6 +4573,11 @@ Protected Audience API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NA
 
       注意：這項政策必須與 <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" /> 搭配使用。</translation>
 <translation id="3918339829588313389">允許使用者設定低強度 PIN 碼</translation>
+<translation id="3920151704940430728">如果將這項政策設為啟用，系統會略過 CNAME 查詢。系統產生 Kerberos SPN 時，會直接使用輸入的伺服器名稱。
+
+如果將這項政策設為停用或不設定，系統產生 Kerberos SPN 時，會透過 CNAME 查詢來決定伺服器的標準名稱。
+
+注意：在 <ph name="LINUX_OS_NAME" />、<ph name="MAC_OS_NAME" /> 和 <ph name="PRODUCT_OS_NAME" /> 上，啟用這項政策會略過 <ph name="PRODUCT_NAME" /> 本身的 CNAME 查詢，但系統的 GSSAPI/Kerberos 程式庫仍可能會將服務主體主機標準化 (例如透過 <ph name="KRB5_CONFIG" /> DNS 設定)。除非該主機獲得 <ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" /> 許可，否則協商驗證會失敗；除非該主機也獲得 <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> 許可，否則系統將不會進行委派。</translation>
 <translation id="392227823425989489">所有系統快速鍵都一律會正常啟動。</translation>
 <translation id="3924506460382372403">停用裝置圖像狀態回報功能</translation>
 <translation id="3925377537407648234">設定螢幕解析度和縮放比例</translation>
@@ -6610,6 +6622,13 @@ Attribution Reporting API 已淘汰，因此這項政策已在 <ph name="PRODUCT
 這項政策為臨時措施，將在日後的 <ph name="PRODUCT_NAME" /> 版本中移除。</translation>
 <translation id="5212810195096589189">指定 VM CLI 的權限</translation>
 <translation id="5213038356678567351">完全不該觸發瀏覽器切換的網站。</translation>
+<translation id="5213420013031914763">如果將這項政策設為啟用，使用者將無法使用鍵盤快速鍵或擴充功能 API 擷取螢幕截圖；設為停用或不設定，使用者就能擷取螢幕截圖。
+
+在 <ph name="PRODUCT_NAME" /> 155 至 158 版中，啟用這項政策也能禁止擴充功能透過「chrome.debugger.attach()」附加偵錯工具，例如當 <ph name="CHROME_VARIATIONS_POLICY_NAME" /> 政策停用所有變化版本時。
+
+請注意，在 <ph name="MS_WIN_NAME" />、<ph name="MAC_OS_NAME" /> 和 <ph name="LINUX_OS_NAME" /> 上，這項政策無法防止透過作業系統或第三方應用程式擷取螢幕截圖。
+
+在 <ph name="IOS_NAME" /> 上，如果將這項政策設為啟用，系統會在螢幕截圖和螢幕錄影畫面中遮蓋 <ph name="PRODUCT_NAME" /> 視窗，且無法使用全頁螢幕截圖功能。</translation>
 <translation id="5216710229085956333">啟用 Krisp 降噪</translation>
 <translation id="5216815237712190041">設定在沒有任何使用者登入裝置時，登入畫面顯示的裝置層級桌布圖片。如要設定這項政策，請指定可供 Chrome OS 裝置下載桌布圖片的網址，以及用於驗證下載內容完整性的加密編譯雜湊值。圖片必須為 JPEG 格式，且大小不得超過 16 MB。網址必須未設定任何驗證機制，可直接存取。系統會下載並快取桌布圖片。只要網址或雜湊值有任何變更，系統就會重新下載。
 
@@ -11052,6 +11071,11 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 <translation id="8062485064082966327">使用去識別化的 Google 服務，針對無標籤圖片提供自動產生的說明</translation>
 <translation id="8064875716442437829">啟用轉譯器無障礙功能</translation>
 <translation id="8066428282805800713">傳送 ChromeOS Flex 上的其他硬體資料</translation>
+<translation id="8070654368411601340">你可以透過這項政策，指派 <ph name="PRODUCT_NAME" /> 可能會委派的目標伺服器。每個伺服器名稱須以半形逗號分隔，指定時可使用萬用字元 (<ph name="WILDCARD_VALUE" />)。
+
+      如果未設定這項政策，即使 <ph name="PRODUCT_NAME" /> 偵測到內部網路伺服器，也不會委派使用者憑證。
+
+      在 <ph name="LINUX_OS_NAME" />、<ph name="MAC_OS_NAME" /> 和 <ph name="PRODUCT_OS_NAME" /> 上，當此政策允許委派至伺服器時，系統的 GSSAPI/Kerberos 程式庫可能會將其主機名稱標準化為不同的服務主體主機 (例如透過 DNS CNAME 或反向 DNS PTR 查詢)。除非該主機也名列本政策的許可清單，否則 <ph name="PRODUCT_NAME" /> 隨即會對該服務主體停止委派。</translation>
 <translation id="8071371098891664137">如果在 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_BLOCKLIST" />，系統會根據 <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> 的設定指定使用者不能操作的印表機。除了這項政策所列 ID 的印表機外，其他印表機皆可供使用。印表機 ID 必須與 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。</translation>
 <translation id="8076539570602616846">限制符合資格的 Google 帳戶，禁止透過 <ph name="PRODUCT_NAME" /> PDF 檢視器將 PDF 檔案儲存至 Google 雲端硬碟</translation>
 <translation id="8078224178125125527">你可以透過這項政策，指定哪些 Proxy 伺服器允許 <ph name="PRODUCT_NAME" /> 支援的所有 HTTP 驗證配置 (無論 <ph name="AUTH_SCHEMES_POLICY_NAME" /> 政策設定的值為何)。

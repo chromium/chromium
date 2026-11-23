@@ -1788,6 +1788,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6504541289630702018">Könnyen hozzáférhet az asztali lapcsoportokhoz</translation>
 <translation id="6505334220040167806">Lapcsoport összecsukása.</translation>
 <translation id="6506996418997555004">A(z) „<ph name="GROUP_NAME" />” lapcsoport megosztása</translation>
+<translation id="650770261448122895">A Lens segítségével bármire rákereshet, amit meglát</translation>
 <translation id="6507973708545996744">Ha bejelentkezik, az összes eszközén hozzáférhet az olvasólistájához.</translation>
 <translation id="6518133107902771759">Ellenőrzés</translation>
 <translation id="6523575793810663688">Bemutató</translation>
@@ -2430,6 +2431,7 @@ Bármikor újraindíthatja.</translation>
 <translation id="8439758443371991593">A „Hozzáadás az Olvasólistához” művelet elrejtése</translation>
 <translation id="8443986842926457191">Az URL több mint 2048 karakterből áll</translation>
 <translation id="8449869326050867919">Jelszó megosztva</translation>
+<translation id="8473367210869452063">A webhely használatához állítsa le a jelenlegi feladatot, vagy várja meg, amíg a Gemini befejezi a munkát.</translation>
 <translation id="8473815223723723001">Kép szerkesztése a Geminivel</translation>
 <translation id="8473863474539038330">Címek és egyebek</translation>
 <translation id="8474378002946546633">Értesítések engedélyezése</translation>

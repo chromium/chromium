@@ -81,6 +81,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1688214853608504530">Ko vnašate v naslovno vrstico ali iskalno polje, Chrome vaše vnose pošlje v orodja za iskanje, orodja z umetno inteligenco in agentska orodja organizacije zaradi prejemanja predlogov.</translation>
 <translation id="1698376642261615901">Google Chrome je spletni brskalnik, ki bliskovito odpira spletna mesta in izvaja programe. Je hiter, stabilen in preprost za uporabo. V Google Chrome je vgrajena zaščita pred zlonamerno programsko opremo in lažnim predstavljanjem, kar omogoča varnejše brskanje v spletu.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome se bo znova zagnal čez eno uro}one{Chrome se bo znova zagnal čez # uro}two{Chrome se bo znova zagnal čez # uri}few{Chrome se bo znova zagnal čez # ure}other{Chrome se bo znova zagnal čez # ur}}</translation>
+<translation id="1713866023633141719">Umetna inteligenca v napravi je pripravljena</translation>
 <translation id="1722488837206509557">Tako boste lahko izbirali med razpoložljivimi napravami in v njih prikazali vsebino.</translation>
 <translation id="1724094881572874997">Zaradi zaščite vašega dela v Chromu si bo organizacija lahko ogledala nekatere podatke ali jih upravljala, ko boste prijavljeni v Chrome.</translation>
 <translation id="1769661297620183092">Podokno Iskanja Google lahko znova odprete in med brskanjem postavljate vprašanja</translation>
@@ -155,6 +156,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2513154137948333830">Potreben je vnovičen zagon: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="251329670120169391">vaša organizacija</translation>
 <translation id="2521391734665471391">Zapiranje načina umetne inteligence v Iskanju Google</translation>
+<translation id="2523048609826818526">Splošno pisanje</translation>
 <translation id="2523492931736391680">Vaše delo je varno v Chromu</translation>
 <translation id="2534365042754120737">Zaradi zaščite podatkov dovolite Chromu, da odstrani dovoljenja za spletna mesta, ki jih nedavno niste obiskali. Prikazovanje obvestil se ne ustavi.</translation>
 <translation id="2556847002339236023">Vaša organizacija zapre Chrome, če se ne uporablja <ph name="TIMEOUT_DURATION" />. Podatki brskanja so bili izbrisani. To lahko vključuje zgodovino, samodejno izpolnjene podatke in prenose.</translation>
@@ -253,6 +255,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3373752068427117404">Nekatere funkcije in razširitve Chroma imajo bližnjice. Lahko jih znova vklopite.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome se bo zdaj znova zagnal}=1{Chrome se bo znova zagnal čez eno sekundo}one{Chrome se bo znova zagnal čez # sekundo}two{Chrome se bo znova zagnal čez # sekundi}few{Chrome se bo znova zagnal čez # sekunde}other{Chrome se bo znova zagnal čez # sekund}}</translation>
 <translation id="3380249972812870825">Če želite odpreti Geminija v Chromu, pritisnite <ph name="GLOBAL_HOTKEY" /></translation>
+<translation id="3392127217442962664">Chrome je dodal umetno inteligenco, ki se izvaja v vaši napravi. Spletna mesta in Chrome jo lahko uporabljajo za funkcije, kot so:</translation>
 <translation id="3396977131400919238">Med namestitvijo je prišlo do napake v operacijskem sistemu. Ponovno prenesite program Google Chrome.</translation>
 <translation id="3428747202529429621">Skrbi za vašo varnost v Chromu in ga je mogoče uporabiti za okrepitev varnosti v drugih Googlovih aplikacijah, ko ste prijavljeni.</translation>
 <translation id="3438681572027105609">Če želite dostopati do gesel in drugega v vseh napravah, se prijavite v Chrome</translation>
@@ -302,6 +305,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3973161977468201858">Google Chrome želi izbrisati vaše podatke v Googlovem upravitelju gesel. Če želite to omogočiti, vnesite geslo za Windows.</translation>
 <translation id="3984557288004650913">Z gumbom »Iskanje Google v Chromu« v orodni vrstici lahko znova odprete Iskanje Google v Chromu in med brskanjem postavljate vprašanja</translation>
 <translation id="399788104667917863">Pripni v orodno vrstico</translation>
+<translation id="4000385468528550798">Umetna inteligenca v napravi je posodobljena</translation>
 <translation id="400161754580828648">Če želite deliti zaslon, v sistemskih nastavitvah omogočite snemanje zaslona za Chrome.</translation>
 <translation id="4012899077942246412">Ko ste prijavljeni, lahko v Chromu uporabljate gesla in drugo iz računa Google. Če želite to spremeniti, odprite »Vaš račun v Chromu«.</translation>
 <translation id="4022972681110646219">Prevedi zaslon</translation>
@@ -561,6 +565,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6632012506031284914">za iskanje s Chromom.</translation>
 <translation id="6634299872736643004">Spremembe te nastavitve bodo uveljavljene, ko se bo Chrome znova zagnal.</translation>
 <translation id="6644846457769259194">Posodabljanje naprave (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6659177157954429254">Umetna inteligenca v napravi je posodobljena</translation>
 <translation id="6660596345553328257">Ali se želite prijaviti v Chrome?</translation>
 <translation id="6664219008737641504">Če ste pozabili geslo ali želite to nastavitev spremeniti, <ph name="SETTINGS_LINK" /> podatke iz Chroma v računu</translation>
 <translation id="6676384891291319759">Dostop do interneta</translation>
@@ -602,6 +607,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="7024536598735240744">Napaka pri odpakiranju: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Med profili v Chromu lahko preklapljate tukaj</translation>
 <translation id="7026856149118332950">Kliknite <ph name="BEGIN_BOLD" />Da<ph name="END_BOLD" /> v obvestilu sistema Windows, če želite Chrome pripeti v opravilno vrstico za hitri dostop.</translation>
+<translation id="7033785662379319359">Nova, kompaktnejša različica umetne inteligence v napravi je pripravljena za uporabo za opravila, kot so povzetki, lektoriranje in drugo</translation>
 <translation id="7047386856539490735">Ali so ti rezultati uporabni?</translation>
 <translation id="7051685429025310665">Nedavno niste obiskali tega mesta. Chrome je odstranil ta dovoljenja: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Prilagodite si Chrome</translation>

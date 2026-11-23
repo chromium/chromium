@@ -1788,6 +1788,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6504541289630702018">Accede fácilmente a tus grupos de pestañas del ordenador</translation>
 <translation id="6505334220040167806">Contraer grupo de pestañas.</translation>
 <translation id="6506996418997555004">Compartir el grupo de pestañas <ph name="GROUP_NAME" /></translation>
+<translation id="650770261448122895">Busca lo que ves con Lens</translation>
 <translation id="6507973708545996744">Inicia sesión para consultar tu lista de lectura en todos tus dispositivos.</translation>
 <translation id="6518133107902771759">Verificar</translation>
 <translation id="6523575793810663688">Ver cómo</translation>
@@ -2430,6 +2431,7 @@ Puedes reiniciar Level Up en cualquier momento.</translation>
 <translation id="8439758443371991593">Ocultar Añadir a lista de lectura</translation>
 <translation id="8443986842926457191">La URL contiene más de 2048 caracteres</translation>
 <translation id="8449869326050867919">Contraseña compartida</translation>
+<translation id="8473367210869452063">Para interactuar con este sitio, detén la tarea actual o espera a que Gemini termine de trabajar</translation>
 <translation id="8473815223723723001">Editar imagen con Gemini</translation>
 <translation id="8473863474539038330">Direcciones y más</translation>
 <translation id="8474378002946546633">Permitir notificaciones</translation>

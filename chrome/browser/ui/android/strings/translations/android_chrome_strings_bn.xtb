@@ -386,6 +386,7 @@
 <translation id="2496180316473517155">ব্রাউজিং ইতিহাস</translation>
 <translation id="250020030759455918">আপনি Chrome-এ <ph name="SITE_NAME" /> সাইটে নিজের সাইন-ইন স্ট্যাটাস, ব্রাউজিং ডেটা ও সাইট ডেটা দেখতে পাবেন</translation>
 <translation id="2501278716633472235">ফিরে যান</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{#টি ডাউনলোড চলছে}one{#টি ডাউনলোড চলছে}other{#টি ডাউনলোড চলছে}}</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> ইনস্টল করা হচ্ছে…</translation>
 <translation id="2512234228327349533">কেনার বিকল্প খুঁজুন</translation>
 <translation id="2513403576141822879">আপনার গোপনীয়তা, নিরাপত্তা এবং ডেটা সংগ্রহের সাথে সম্পর্কযুক্ত আরও সেটিংসের জন্য <ph name="BEGIN_LINK" />সিঙ্ক এবং Google পরিষেবাগুলি<ph name="END_LINK" /> দেখুন</translation>
@@ -697,6 +698,7 @@
 <translation id="3740290940447881599">নিশ্চিত করুন যে আপনি এই সাইটকে বিশ্বাস করেন</translation>
 <translation id="3740525748616366977">এই ডিভাইসে ভয়েস সার্চ উপলভ্য নেই</translation>
 <translation id="3749289110408117711">ফাইলের নাম</translation>
+<translation id="3751708358601675711">প্রাইস ট্র্যাকিং এডিট করুন</translation>
 <translation id="3756823472711156529">গ্রুপ পুনরুদ্ধার করুন</translation>
 <translation id="3759306015475526475">ব্যবহার ও ক্র্যাশ ডেটা সংক্রান্ত সেটিংস ম্যানেজ করুন</translation>
 <translation id="3763110477555836428">আপনার প্রকৃত বিবরণ সুরক্ষিত রাখতে, এই কার্ড দিয়ে চেক-আউট করার সময় একটি ভার্চুয়াল কার্ড নম্বর পূরণ করা হবে। Google Wallet-এ ম্যানেজ করুন। <ph name="BEGIN_LINK1" />ভার্চুয়াল কার্ড সম্পর্কে আরও জানুন<ph name="END_LINK1" /></translation>

@@ -77,6 +77,7 @@
 <translation id="1688214853608504530">O Chrome envia o que você digitou na barra de endereço ou na caixa de pesquisa para as ferramentas de pesquisa, IA e agente da sua organização e recebe sugestões.</translation>
 <translation id="1698376642261615901">O Google Chrome é um navegador que executa páginas e aplicativos da web em alta velocidade. É rápido, estável e fácil de usar. Navegue pela web de forma segura com proteção contra malware e phishing integrada ao Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{O Chrome será reiniciado em 1 hora}one{O Chrome será reiniciado em # hora}other{O Chrome será reiniciado em # horas}}</translation>
+<translation id="1713866023633141719">A IA no dispositivo está pronta</translation>
 <translation id="1722488837206509557">Assim, você pode selecionar os dispositivos disponíveis e mostrar conteúdo neles.</translation>
 <translation id="1724094881572874997">Para proteger seu trabalho no Chrome, a organização poderá visualizar ou gerenciar algumas informações quando você fizer login neste navegador.</translation>
 <translation id="1769661297620183092">Você pode reabrir o painel da Pesquisa Google para fazer perguntas enquanto navega</translation>
@@ -151,6 +152,7 @@
 <translation id="2513154137948333830">Reinicialização necessária: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="251329670120169391">sua organização</translation>
 <translation id="2521391734665471391">Fechar o Modo IA da Pesquisa Google</translation>
+<translation id="2523048609826818526">Escrita de uso geral</translation>
 <translation id="2523492931736391680">Seu trabalho está seguro no Chrome</translation>
 <translation id="2534365042754120737">Para proteger seus dados, permita que o Chrome remova permissões de sites que você não visitou recentemente. Não interrompe notificações.</translation>
 <translation id="2556847002339236023">Sua organização vai fechar o Chrome se ele não for usado por <ph name="TIMEOUT_DURATION" />. Os dados de navegação foram excluídos. Isso pode incluir o histórico, o preenchimento automático e os downloads.</translation>
@@ -249,6 +251,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="3373752068427117404">Alguns recursos e extensões do Chrome incluem atalhos. Você pode reativá-los.</translation>
 <translation id="3379938682270551431">{0,plural, =0{O Chrome será reiniciado agora}=1{O Chrome será reiniciado em 1 segundo}one{O Chrome será reiniciado em # segundo}other{O Chrome será reiniciado em # segundos}}</translation>
 <translation id="3380249972812870825">Para abrir o Gemini no Chrome, pressione <ph name="GLOBAL_HOTKEY" /></translation>
+<translation id="3392127217442962664">O Chrome adicionou uma IA que é executada no seu dispositivo. Os sites e o Chrome podem usar o modelo para recursos como:</translation>
 <translation id="3396977131400919238">Ocorreu um erro no sistema operacional durante a instalação. Baixe o Google Chrome novamente.</translation>
 <translation id="3428747202529429621">Protege você no Chrome e pode ser usado para melhorar a segurança em outros apps do Google quando sua conta estiver conectada</translation>
 <translation id="3438681572027105609">Para acessar suas senhas e muito mais em todos os seus dispositivos, faça login no Chrome.</translation>
@@ -298,6 +301,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="3973161977468201858">O Chrome quer excluir seus dados do Gerenciador de senhas do Google. Digite sua senha do Windows para conceder essa permissão.</translation>
 <translation id="3984557288004650913">O botão "Pesquisa Google no Chrome" na barra de ferramentas reabre essa função para você fazer perguntas enquanto navega</translation>
 <translation id="399788104667917863">Fixar na barra de ferramentas</translation>
+<translation id="4000385468528550798">IA no dispositivo atualizada</translation>
 <translation id="400161754580828648">Para compartilhar a tela, use os Ajustes do Sistema para permitir a gravação de tela do Chrome.</translation>
 <translation id="4012899077942246412">Com sua Conta do Google conectada, você poderá usar as senhas e outros dados dela no Chrome. Para mudar isso, acesse "Sua conta no Chrome".</translation>
 <translation id="4022972681110646219">Traduzir tela</translation>
@@ -553,6 +557,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="6632012506031284914">para pesquisar com o Chrome.</translation>
 <translation id="6634299872736643004">As mudanças nessa configuração serão aplicadas assim que o Chrome for reiniciado.</translation>
 <translation id="6644846457769259194">Atualizando seu dispositivo (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6659177157954429254">A IA no dispositivo está atualizada</translation>
 <translation id="6660596345553328257">Fazer login no Chrome?</translation>
 <translation id="6664219008737641504">Se você esquecer a senha longa ou quiser mudar essa configuração, <ph name="SETTINGS_LINK" /> os dados do Chrome da sua conta</translation>
 <translation id="6676384891291319759">Acessar a internet</translation>
@@ -594,6 +599,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="7024536598735240744">Erro ao descompactar: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Aqui, você pode alternar entre os perfis do Chrome</translation>
 <translation id="7026856149118332950">Clique em <ph name="BEGIN_BOLD" />Sim<ph name="END_BOLD" /> na notificação do Windows para fixar o Chrome na barra de tarefas e ter acesso rápido.</translation>
+<translation id="7033785662379319359">Uma nova versão mais compacta da IA no dispositivo está pronta para ser usada em tarefas como resumos, revisão e muito mais</translation>
 <translation id="7047386856539490735">Esses resultados ajudaram?</translation>
 <translation id="7051685429025310665">Você não visitou os sites recentemente. O Chrome removeu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Personalize o Chrome</translation>

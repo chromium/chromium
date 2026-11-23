@@ -386,6 +386,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="2496180316473517155">Böngészés előzményei</translation>
 <translation id="250020030759455918">Láthatja a(z) <ph name="SITE_NAME" /> bejelentkezési állapotát, a böngészőadatokat és a webhelyadatokat a Chrome-ban</translation>
 <translation id="2501278716633472235">Visszalépés</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{# letöltés folyamatban}other{# letöltés folyamatban}}</translation>
 <translation id="2510106555128151389">A(z) <ph name="WEBAPK_NAME" /> telepítése…</translation>
 <translation id="2512234228327349533">Vásárlási lehetőségek keresése</translation>
 <translation id="2513403576141822879">A <ph name="BEGIN_LINK" />Szinkronizálás és Google<ph name="END_LINK" /> részben további beállításokat talál az adatvédelemre, biztonságra és adatgyűjtésre vonatkozóan</translation>
@@ -697,6 +698,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3740290940447881599">Bizonyosodjon meg arról, hogy megbízik a webhelyben.</translation>
 <translation id="3740525748616366977">A hangalapú keresés nem áll rendelkezésre ezen az eszközön</translation>
 <translation id="3749289110408117711">Fájlnév</translation>
+<translation id="3751708358601675711">Árfigyelés szerkesztése</translation>
 <translation id="3756823472711156529">Csoport visszaállítása</translation>
 <translation id="3759306015475526475">A használati és összeomlási adatok beállításainak kezelése</translation>
 <translation id="3763110477555836428">A tényleges adatok védelme érdekében a rendszer egy virtuális kártyaszámot ír be, amikor ezzel a kártyával fizet. Ezt a Google Walletben kezelheti. <ph name="BEGIN_LINK1" />További információ a virtuális kártyákról<ph name="END_LINK1" />.</translation>

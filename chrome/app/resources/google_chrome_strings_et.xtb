@@ -79,6 +79,7 @@
 <translation id="1688214853608504530">Kui sisestate midagi aadressiribale või otsingukasti, saadab Chrome teie sisestuse soovituste hankimiseks teie organisatsiooni otsingu-, AI- ja agenditööriistadele.</translation>
 <translation id="1698376642261615901">Google Chrome on veebibrauser, mis käitab veebilehti ja rakendusi välgukiirusel. See on kiire, töökindel ja lihtsalt kasutatav. Veebi sirvimine on turvalisem tänu Google Chrome'i sisseehitatud pahavara- ja andmepüügivastasele kaitsele.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome käivitatakse uuesti tunni aja pärast}other{Chrome käivitatakse uuesti # tunni pärast}}</translation>
+<translation id="1713866023633141719">Seadmes olev AI on valmis.</translation>
 <translation id="1722488837206509557">See võimaldab teil valida saadaolevate seadmete hulgast ja kuvada neis sisu.</translation>
 <translation id="1724094881572874997">Chrome'is töötamise turvalisuse tagamiseks saab teie organisatsioon teatud teavet vaadata või hallata, kui olete Chrome'i sisse logitud.</translation>
 <translation id="1769661297620183092">Saate Google'i otsingu külgpaneelil uuesti avada, et sirvimise ajal küsimusi esitada</translation>
@@ -153,6 +154,7 @@
 <translation id="2513154137948333830">Vajalik on taaskäivitamine: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="251329670120169391">teie organisatsioon</translation>
 <translation id="2521391734665471391">Sule Google'i otsingu AI-režiim</translation>
+<translation id="2523048609826818526">Üldotstarbeline kirjutamine</translation>
 <translation id="2523492931736391680">Teie töö on Chrome'is kaitstud</translation>
 <translation id="2534365042754120737">Andmete kaitsmiseks laske Chrome'il eemaldada load saitidelt, mida te pole hiljuti külastanud. See ei peata märguandeid.</translation>
 <translation id="2556847002339236023">Teie organisatsioon suleb Chrome'i, kui seda ei kasutata <ph name="TIMEOUT_DURATION" /> jooksul. Sirvimisandmed kustutati. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.</translation>
@@ -251,6 +253,7 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="3373752068427117404">Mõned Chrome'i funktsioonid ja laiendused hõlmavad otseteid. Saate need soovi korral uuesti sisse lülitada.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome käivitatakse kohe uuesti}=1{Chrome käivitatakse uuesti 1 sekundi pärast}other{Chrome käivitatakse uuesti # sekundi pärast}}</translation>
 <translation id="3380249972812870825">Gemini avamiseks Chrome'is vajutage klahvikombinatsiooni <ph name="GLOBAL_HOTKEY" />.</translation>
+<translation id="3392127217442962664">Chrome lisas AI, mis töötab teie seadmes. Saidid ja Chrome saavad seda kasutada järgmiste funktsioonide jaoks.</translation>
 <translation id="3396977131400919238">Installimisel ilmnes operatsioonisüsteemi viga. Palun laadige Google Chrome uuesti alla.</translation>
 <translation id="3428747202529429621">Kaitseb teid Chrome'is ja seda võidakse kasutada teie turvalisuse suurendamiseks muudes Google'i rakendustes, kui olete sisse logitud</translation>
 <translation id="3438681572027105609">Kõigis seadmetes paroolide ja muude võimaluste kasutamiseks logige sisse Chrome'i</translation>
@@ -300,6 +303,7 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="3973161977468201858">Google Chrome tahab kustutada teie Google'i paroolihalduri andmed. Selle lubamiseks sisestage oma Windowsi parool.</translation>
 <translation id="3984557288004650913">Tööriistariba nupu „Google'i otsing Chrome'is“ abil saate Google'i otsingu Chrome'is uuesti avada, et sirvimise ajal küsimusi esitada</translation>
 <translation id="399788104667917863">Kinnita tööriistaribale</translation>
+<translation id="4000385468528550798">Seadmes olevat AI-d värskendati.</translation>
 <translation id="400161754580828648">Oma ekraani jagamiseks lubage menüüs System Settings Chrome'i puhul ekraani salvestamine.</translation>
 <translation id="4012899077942246412">Kui olete sisse logitud, siis saate Chrome'is kasutada oma paroole ja oma Google'i konto teisi võimalusi. Selle muutmiseks avage valik „Teie konto Chrome'is“.</translation>
 <translation id="4022972681110646219">Tõlgi kuva</translation>
@@ -557,6 +561,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6632012506031284914">Chrome'iga otsimiseks.</translation>
 <translation id="6634299872736643004">Selle seade muudatused rakendatakse Chrome'i taaskäivitamisel.</translation>
 <translation id="6644846457769259194">Seadme värskendamine (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6659177157954429254">Seadmes olev AI on ajakohane</translation>
 <translation id="6660596345553328257">Kas logida Chrome'i sisse?</translation>
 <translation id="6664219008737641504">Kui unustasite parooli või soovite seda seadet muuta, <ph name="SETTINGS_LINK" /> oma kontol Chrome’i andmed</translation>
 <translation id="6676384891291319759">Pääs Internetti</translation>
@@ -598,6 +603,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="7024536598735240744">Viga lahtipakkimisel: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Chrome'i profiili saate vahetada siin</translation>
 <translation id="7026856149118332950">Kiireks juurdepääsuks klõpsake Windowsi märguandes nupul <ph name="BEGIN_BOLD" />Jah<ph name="END_BOLD" />, et kinnitada Chrome oma tegumiribale.</translation>
+<translation id="7033785662379319359">Seadmesisese AI uus kompaktsem versioon on valmis kasutamiseks selliste ülesannete jaoks nagu kokkuvõtted, korrektuur ja palju muud.</translation>
 <translation id="7047386856539490735">Kas need tulemused on kasulikud?</translation>
 <translation id="7051685429025310665">Te pole hiljuti külastanud. Chrome eemaldas load <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Isikupärastage Chrome'i</translation>

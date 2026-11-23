@@ -386,6 +386,7 @@
 <translation id="2496180316473517155">ታሪክ አሰሳ</translation>
 <translation id="250020030759455918">የእርስዎን <ph name="SITE_NAME" /> በመለያ የመግባት ሁኔታ፣ የአሰሳ ውሂብ እና የጣቢያ ውሂብ በChrome ውስጥ ይመለከታሉ</translation>
 <translation id="2501278716633472235">ወደ ኋላ ተመለስ</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{# ማውረድ በሂደት ላይ}one{# ማውረድ በሂደት ላይ}other{# ማውረዶች በሂደት ላይ}}</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" />ን በመጫን ላይ...</translation>
 <translation id="2512234228327349533">የመግባት አማራጮችን ፈልግ</translation>
 <translation id="2513403576141822879">ከግላዊነት፣ ደህንነት እና የውሂብ ስብስብ ጋር ለሚዛመዱ ተጨማሪ ቅንብሮች <ph name="BEGIN_LINK" />ስምረት እና የGoogle አገልግሎቶች<ph name="END_LINK" /></translation>
@@ -697,6 +698,7 @@
 <translation id="3740290940447881599">ይህን ጣቢያ እንደሚያምኑት ያረጋግጡ</translation>
 <translation id="3740525748616366977">የድምፅ ፍለጋ በዚህ መሣሪያ ላይ አይገኝም</translation>
 <translation id="3749289110408117711">የፋይል ስም</translation>
+<translation id="3751708358601675711">የዋጋ ክትትልን አርትዕ</translation>
 <translation id="3756823472711156529">ቡድንን ወደነበረበት መልስ</translation>
 <translation id="3759306015475526475">የአጠቃቀም እና የብልሽት ውሂብ ቅንብሮችን ያስተዳድሩ</translation>
 <translation id="3763110477555836428">ትክክለኛ ዝርዝሮችዎን ለመጠበቅ በዚህ ካርድ ግዢ ሲያጠናቅቁ የምናባዊ ካርድ ቁጥር ይሞላል። በGoogle Wallet ውስጥ ያስተዳድሩ። <ph name="BEGIN_LINK1" />ስለ ምናባዊ ካርዶች የበለጠ ይወቁ<ph name="END_LINK1" /></translation>

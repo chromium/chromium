@@ -386,6 +386,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="2496180316473517155">Historia ya kuvinjari</translation>
 <translation id="250020030759455918">Utaona hali yako ya kuingia katika akaunti ya <ph name="SITE_NAME" />, data ya kuvinjari na data ya tovuti katika Chrome</translation>
 <translation id="2501278716633472235">Rudi nyuma</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{Tukio # la upakuaji linaendelea}other{Matukio # ya upakuaji yanaendelea}}</translation>
 <translation id="2510106555128151389">Inasakinisha <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2512234228327349533">Tafuta chaguo za kununua</translation>
 <translation id="2513403576141822879">Ili upate mipangilio zaidi inayohusiana na faragha, usalama na ukusanyaji wa data, angalia <ph name="BEGIN_LINK" />Usawazishaji na huduma za Google<ph name="END_LINK" /></translation>
@@ -697,6 +698,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3740290940447881599">Hakikisha kuwa unaiamini tovuti hii</translation>
 <translation id="3740525748616366977">Kipengele cha kutafuta kwa kutamka hakipatikani kwenye kifaa hiki</translation>
 <translation id="3749289110408117711">Jina la faili</translation>
+<translation id="3751708358601675711">Badilisha ufuatiliaji wa bei</translation>
 <translation id="3756823472711156529">Rejesha kikundi</translation>
 <translation id="3759306015475526475">Dhibiti mipangilio ya data ya matumizi na ya programu kuacha kufanya kazi</translation>
 <translation id="3763110477555836428">Namba ya kadi pepe itajazwa unaponunua ukitumia kadi hii ili kulinda maelezo yako halisi. Dhibiti kwenye Pochi ya Google. <ph name="BEGIN_LINK1" />Pata maelezo zaidi kuhusu kadi pepe<ph name="END_LINK1" /></translation>

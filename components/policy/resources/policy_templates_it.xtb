@@ -11429,6 +11429,11 @@ Questa policy esegue l'override del comportamento di <ph name="DEFAULT_SUB_APPS_
           Il valore della policy deve essere specificato in millisecondi. I valori devono essere inferiori o uguali al ritardo di inattività.</translation>
 <translation id="7992613144342460685">Concedere l'autorizzazione per il posizionamento delle finestre su questi siti</translation>
 <translation id="7995610550667275367">Scansione (supportata dalla versione 87)</translation>
+<translation id="7997288303774758253">L'impostazione della policy specifica il periodo in millisecondi durante il quale il servizio di gestione dei dispositivi viene interrogato per informazioni sulle policy per gli utenti. I valori validi vanno da 1.800.000 (30 minuti) a 86.400.000 (1 giorno). I valori al di fuori di questo intervallo verranno clampati al rispettivo limite, tranne su Android e iOS, dove i valori al di sopra di questo intervallo sono clampati a 604.800.000 (1 settimana).
+
+      Se la policy non viene configurata, viene utilizzato il valore predefinito di 3 ore, o di 1 giorno su Android e iOS.
+
+      Nota: le notifiche relative alle policy forzano un aggiornamento quando cambiano le policy, rendendo superflui aggiornamenti più frequenti. Quindi, se la piattaforma supporta queste notifiche, il ritardo dell'aggiornamento verrà impostato su 24 ore (vengono ignorati tutti i valori predefiniti e il valore di questa policy).</translation>
 <translation id="7999023147219236247">Policy per le richieste di concessione delle autorizzazioni delle app. PERMISSION_POLICY_UNSPECIFIED: policy non specificata. Se per un'autorizzazione non viene specificata alcuna policy ad alcun livello, viene usato per impostazione predefinita il comportamento "PROMPT". PROMPT: viene chiesto all'utente di concedere un'autorizzazione. GRANT: viene concessa automaticamente un'autorizzazione. DENY: viene negata automaticamente un'autorizzazione.</translation>
 <translation id="7999336306414770162">Disattiva i report sulle informazioni VPD del dispositivo</translation>
 <translation id="7999818120028621358">Attiva la generazione di rapporti sugli eventi di prevenzione di fughe di dati</translation>

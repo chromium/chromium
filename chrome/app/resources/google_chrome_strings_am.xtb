@@ -81,6 +81,7 @@
 <translation id="1688214853608504530">የአድራሻ አሞሌው ወይም የፍለጋ ሳጥኑ ውስጥ ሲተይቡ ወይም መታ ሲያደርጉ Chrome ጥቆማዎችን ለማግኘት ወደ ድርጅትዎ ፍለጋ፣ ሰው ሠራሽ አስተውሎት እና ወኪል መሣሪያዎች ውስጥ የሚተይቡትን ነገር ይልካል።</translation>
 <translation id="1698376642261615901">Google Chrome ድረ-ገፆችን እና መተግበሪያዎችን በሚገርም ፍጥነት ማሄድ የሚችል የድር አሳሽ ነው። ፈጣን፣ የረጋ እና ለመጠቀም ቀላል ነው። Google Chrome ውስጥ አብሮት በተሰራ የአስጋሪና ተንኮል-አዘል ሶፍትዌር መከላከያ አማካኝነት ደህንነትዎ በበለጠ ሁኔታ ተጠብቆ ድሩን ያስሱ።</translation>
 <translation id="1713301662689114961">{0,plural, =1{በአንድ ሰዓት ውስጥ Chrome ዳግም ይጀመራል}one{በ# ሰዓቶች ውስጥ Chrome ዳግም ይጀመራል}other{በ# ሰዓቶች ውስጥ Chrome ዳግም ይጀመራል}}</translation>
+<translation id="1713866023633141719">በመሣሪያ ላይ ሰው ሠራሽ አስተውሎት ዝግጁ ነው</translation>
 <translation id="1722488837206509557">ይህ ከሚገኙ መሣሪያዎች እንዲመርጡ እና ይዘቶችን እንዲያሳዩ ያስችልዎታል።</translation>
 <translation id="1724094881572874997">በChrome ላይ ሥራዎን ደኅንነት ለመጠበቅ፣ ወደ Chrome ሲገቡ ድርጅትዎ የተወሰነ መረጃን ማየት ወይም ማስተዳደር ይችላል።</translation>
 <translation id="1769661297620183092">በሚያስሱበት ጊዜ ጥያቄዎችን ለመጠየቅ የGoogle ፍለጋ ፓነልን እንደገና መክፈት ይችላሉ</translation>
@@ -155,6 +156,7 @@
 <translation id="2513154137948333830">ዳግም ማስነሳት ያስፈልጋል፦ <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="251329670120169391">የእርስዎ ድርጅት</translation>
 <translation id="2521391734665471391">የGoogle ፍለጋ የሰው ሠራሽ አስተውሎት ሁነታን ዝጋ</translation>
+<translation id="2523048609826818526">የጠቅላላ ዓላማ ጽሑፍ</translation>
 <translation id="2523492931736391680">ሥራዎ በChrome ላይ ደኅንነቱ የተጠበቀ ነው</translation>
 <translation id="2534365042754120737">ውሂብዎን ለመጠበቅ Chrome እርስዎ በቅርቡ ካልጎበኟቸው ጣቢያዎች ፈቃዶችን እንዲያስወግድ ይፍቀዱ። ማሳወቂያዎችን አያቆምም።</translation>
 <translation id="2556847002339236023">ድርጅትዎ Chrome ለ<ph name="TIMEOUT_DURATION" /> ያህል ሥራ ላይ ሳይውል ይዘጋዋል። የአሰሳ ውሂብ ተሰርዟል። ይህ ታሪክን፣ ራስ-ሙላን እና ውርዶችን ሊያካትት ይችላል።</translation>
@@ -253,6 +255,7 @@
 <translation id="3373752068427117404">አንዳንድ የChrome ባህሪያት እና ቅጥያዎች ከአቋራጮች ጋር ይመጣሉ። መልሰው ለማብራት መምረጥ ይችላሉ።</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome አሁን ዳግም ይጀምራል}=1{Chrome በ1 ሰከንድ ውስጥ ዳግም ይጀምራል}one{Chrome በ# ሰከንዶች ውስጥ ዳግም ይጀምራል}other{Chrome በ# ሰከንዶች ውስጥ ዳግም ይጀምራል}}</translation>
 <translation id="3380249972812870825">Gemini በChrome ውስጥ ለመክፈት <ph name="GLOBAL_HOTKEY" />ን ይጫኑ</translation>
+<translation id="3392127217442962664">Chrome በመሣሪያዎ ላይ የሚያሄድ ሰው ሠራሽ አስተውሎት አክሏል። ጣቢያዎች እና Chrome ለሚከተሉት ባህሪያት ሊጠቀሙበት ይችላሉ፦</translation>
 <translation id="3396977131400919238">በመጫን ጊዜ የሥርዓተ ክወና ስህተት ተፈጥሯል። እባክዎ Google Chromeን እንደገና ያውርዱ።</translation>
 <translation id="3428747202529429621">በChrome ላይ ደህንነትዎን ይጠብቃል፣ እና በመለያ በገቡባቸው ሌሎች የGoogle መተግበሪያዎች ላይ ደህንነትዎን ለማሻሻል ሥራ ላይ ሊውል ይችላል።</translation>
 <translation id="3438681572027105609">የይለፍ ቃላትዎን እና ሌሎችንም በሁሉም መሣሪያዎችዎ ላይ ለማግኘት ወደ Chrome ይግቡ</translation>
@@ -302,6 +305,7 @@
 <translation id="3973161977468201858">Google Chrome የGoogle የይለፍ ቃል አስተዳዳሪ ውሂብዎን መሰረዝ ይፈልጋል። ይህን ለመፍቀድ የWindows የይለፍ ቃልዎን ይተይቡ።</translation>
 <translation id="3984557288004650913">በመሣሪያ አሞሌው ላይ ካለው «Google ፍለጋ በChrome ውስጥ» አዝራር ላይ በሚያስሱበት ጊዜ ጥያቄዎችን ለመጠየቅ Google ፍለጋ በChrome ውስጥን እንደገና መክፈት ይችላሉ</translation>
 <translation id="399788104667917863">ወደ የመሣሪያ አሞሌ ፒን አድርግ</translation>
+<translation id="4000385468528550798">የመሣሪያ ላይ ሰው ሠራሽ አስተውሎት ተዘምኗል</translation>
 <translation id="400161754580828648">ማያ ገፅዎን ለማጋራት በሥርዓት ቅንብሮች ውስጥ ለChrome የማያ ገፅ መቅረጽን ይፍቀዱ</translation>
 <translation id="4012899077942246412">በመለያ ገብተው ሳለ በChrome ውስጥ ከGoogle መለያዎ የይለፍ ቃላትዎን እና ሌሎችንም መጠቀም ይችላሉ። ይህን ለመለወጥ ወደ «Chrome ውስጥ የእርስዎ መለያ» ይሂዱ።</translation>
 <translation id="4022972681110646219">ማያ ገፁን ተርጉም</translation>
@@ -561,6 +565,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="6632012506031284914">በChrome ለመፈለግ።</translation>
 <translation id="6634299872736643004">አንዴ Chrome እንደገና ከጀመረ በኋላ በዚህ ቅንብር ላይ ያሉ ለውጦች ይተገበራሉ።</translation>
 <translation id="6644846457769259194">የእርስዎን መሣሪያ በማዘመን ላይ (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6659177157954429254">በመሣሪያ ላይ ሰው ሠራሽ አስተውሎት ወቅታዊ ነው</translation>
 <translation id="6660596345553328257">ወደ Chrome ይግቡ?</translation>
 <translation id="6664219008737641504">የይለፍ ሐረግዎን ከረሱ ወይም ይህን ቅንብር መለወጥ ከፈለጉ በመለያዎ ውስጥ ያለውን የChrome ውሂብ <ph name="SETTINGS_LINK" /></translation>
 <translation id="6676384891291319759">በይነመረብን ተዳረስ</translation>
@@ -602,6 +607,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="7024536598735240744">ተጠናቆ ያለማቅረብ ስህተት፦ <ph name="UNPACK_ERROR" />።</translation>
 <translation id="7025800014283535195">እዚህ በChrome መገለጫዎች መካከል መቀያየር ይችላሉ</translation>
 <translation id="7026856149118332950">ለፈጣን መዳረሻ Chromeን በተግባር አሞሌዎ ላይ ለመሰካት በWindows ማሳወቂያ ውስጥ <ph name="BEGIN_BOLD" />አዎ<ph name="END_BOLD" /> ላይ ጠቅ ያድርጉ</translation>
+<translation id="7033785662379319359">አዲስ፣ ይበልጥ የታመቀ የመሣሪያ ላይ ሰው ሠራሽ አስተውሎት ሥሪት እንደ ማጠቃለያዎች፣ ማረም እና ሌሎች ላሉ ተግባራት ጥቅም ላይ ለመዋል ዝግጁ ነው</translation>
 <translation id="7047386856539490735">እነዚህ ውጤቶች ጠቃሚ ናቸው?</translation>
 <translation id="7051685429025310665">በቅርብ ጊዜ አልጎበኙም። Chrome <ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ <ph name="PERMISSION_3" />ን አስወግዷል።</translation>
 <translation id="7059914902409643750">Chromeን የራስዎ ያድርጉት</translation>

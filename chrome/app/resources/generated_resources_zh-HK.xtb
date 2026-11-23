@@ -5820,7 +5820,7 @@
 <translation id="7396845648024431313"><ph name="APP_NAME" /> 會隨著系統一併啟動，即使在所有 <ph name="PRODUCT_NAME" /> 視窗都關閉後，仍會在背景繼續執行。</translation>
 <translation id="7399045143794278225">自訂同步處理功能</translation>
 <translation id="7399616692258236448">系統會自動封鎖所有網站的位置要求 (你允許的網站除外)</translation>
-<translation id="7399746352569282594">閂分割檢視畫面：<ph name="FIRST_TAB_TITLE" />、<ph name="SECOND_TAB_TITLE" /></translation>
+<translation id="7399746352569282594">關閉分割檢視畫面：<ph name="FIRST_TAB_TITLE" />、<ph name="SECOND_TAB_TITLE" /></translation>
 <translation id="7399802613464275309">安全檢查</translation>
 <translation id="7400059772197434086">已被封鎖，無法在以下位置使用你的資料：</translation>
 <translation id="7400418766976504921">網址</translation>
@@ -6299,7 +6299,7 @@
 <translation id="7953236668995583915">重新載入此頁面，即可將已更新的設定套用至此網站</translation>
 <translation id="7953955868932471628">管理快速鍵</translation>
 <translation id="7955105108888461311">要求存取權</translation>
-<translation id="7955672267519272700">閂「<ph name="TAB_TITLE" />」</translation>
+<translation id="7955672267519272700">關閉「<ph name="TAB_TITLE" />」</translation>
 <translation id="7956918070009672177">裝置上沒有<ph name="LANGUAGE" />語音。請連接互聯網，然後再試一次。</translation>
 <translation id="7957074856830851026">查看裝置資料，例如序號或資產 ID</translation>
 <translation id="7958157896921135832">放大字型</translation>

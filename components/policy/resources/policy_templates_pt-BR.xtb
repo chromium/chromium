@@ -2439,6 +2439,13 @@ Esta política é uma medida temporária para controlar o recurso e será removi
 <translation id="2467181864598429837">Comportamento padrão do navegador</translation>
 <translation id="2467896267442150508">Intervalo de tempo que dura no máximo uma semana. Se o horário de início for posterior ao de término, o intervalo será contínuo.</translation>
 <translation id="2476249479201711962">Ativar o acesso ao menu de contexto do provedor de pesquisa padrão</translation>
+<translation id="247659494993692492">Definir a política especifica quais servidores devem ter permissão para a autenticação integrada, que só é ativada quando o <ph name="PRODUCT_NAME" /> recebe um desafio de autenticação de um proxy ou de um servidor nessa lista permitida.
+
+      Se a política não for definida, o <ph name="PRODUCT_NAME" /> tentará detectar se um servidor está na intranet. Só então ele responderá às solicitações IWA. Se um servidor for detectado como Internet, o <ph name="PRODUCT_NAME" /> ignorará as solicitações IWA dele.
+
+      Observação: separe vários nomes de servidor usando vírgulas. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
+
+      No <ph name="LINUX_OS_NAME" />, <ph name="MAC_OS_NAME" /> e <ph name="PRODUCT_OS_NAME" />, a biblioteca GSSAPI/Kerberos do sistema pode canonizar o nome do host de um servidor em um host principal de serviço diferente (por exemplo, usando pesquisas de CNAME de DNS ou PTR de DNS reverso). A autenticação de negociação falhará, a menos que o host também seja permitido por esta política.</translation>
 <translation id="2478756867046106663">Permitir que sites com experiências abusivas abram novas janelas ou guias</translation>
 <translation id="2479760962196319822">Esta política controla se os usuários do <ph name="PRODUCT_OS_NAME" /> podem armazenar dados localmente.
       Se a política for definida como falsa, o armazenamento local no <ph name="PRODUCT_OS_NAME" /> será bloqueado. Os usuários não poderão armazenar dados localmente nem acessar diretórios locais.
@@ -4857,6 +4864,11 @@ A política pode ser combinada com <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATF
 
       Observação: esta política precisa ser usada com <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />.</translation>
 <translation id="3918339829588313389">Permitir que os usuários definam um PIN fraco</translation>
+<translation id="3920151704940430728">Ativar a política faz com que a pesquisa CNAME seja ignorada. O nome do servidor é usado conforme inserido ao gerar o SPN do Kerberos.
+
+Desativar a política ou deixá-la sem definição faz com que a pesquisa CNAME determine o nome canônico do servidor ao gerar o SPN do Kerberos.
+
+Observação: no <ph name="LINUX_OS_NAME" />, <ph name="MAC_OS_NAME" /> e <ph name="PRODUCT_OS_NAME" />, ativar essa política pula a pesquisa CNAME do <ph name="PRODUCT_NAME" />, mas a biblioteca GSSAPI/Kerberos do sistema ainda pode canonizar o host principal do serviço (por exemplo, usando as configurações de DNS do <ph name="KRB5_CONFIG" />). A autenticação de negociação falha, a menos que o host seja permitido por <ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" />, e a delegação é retida, a menos que também seja permitida por <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="392227823425989489">Todos os atalhos do sistema serão sempre ativados como esperado.</translation>
 <translation id="3924506460382372403">Desativar relatórios sobre o status dos gráficos do dispositivo</translation>
 <translation id="3925377537407648234">Define resolução de tela e fator de escala</translation>
@@ -7004,6 +7016,15 @@ Essa política aceita atualização dinâmica.
 Ela é uma medida temporária e será removida em versões futuras do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="5212810195096589189">Especificar permissão para CLI de VM</translation>
 <translation id="5213038356678567351">Sites que nunca acionarão uma troca de navegador.</translation>
+<translation id="5213420013031914763">Se a política for ativada, não vai ser permitido fazer capturas de tela com os atalhos do teclado
+ou as APIs de extensão. Se ela for desativada ou deixada sem definição, será possível fazer capturas de tela.
+
+Nas versões 155 a 158 do <ph name="PRODUCT_NAME" />, a ativação dessa política também pode impedir que as extensões anexem o depurador usando "chrome.debugger.attach()", por exemplo, quando a política <ph name="CHROME_VARIATIONS_POLICY_NAME" /> desativa todas as variações.
+
+No <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph name="LINUX_OS_NAME" />,
+isso não impede capturas de tela com apps do sistema operacional ou de terceiros.
+
+No <ph name="IOS_NAME" />, se a política for ativada, as janelas do <ph name="PRODUCT_NAME" /> vão ficar ocultas nas capturas e gravações de tela do sistema, e as capturas de tela de página inteira vão ficar indisponíveis.</translation>
 <translation id="5216710229085956333">Ativar o cancelamento de ruído da Krisp</translation>
 <translation id="5216815237712190041">Configure a imagem de plano de fundo que vai aparecer na tela de login do dispositivo quando nenhum usuário tiver feito login. A política é definida especificando o URL do qual o dispositivo ChromeOS pode fazer o download da imagem de plano de fundo e de uma hash criptográfica usada para verificar a integridade do download. A imagem precisa estar no formato JPEG, e o tamanho desse arquivo não pode ultrapassar 16 MB. É necessário que o URL possa ser acessado sem qualquer tipo de autenticação. A imagem do plano de fundo é baixada e armazenada em cache. O download vai ser refeito sempre que o URL ou o hash mudarem.
 
@@ -11700,6 +11721,11 @@ Esta política substitui o comportamento de <ph name="DEFAULT_SUB_APPS_WITHOUT_P
           O valor da política precisa ser especificado em milissegundos. Os valores são ajustados para serem menores ou iguais ao intervalo de inatividade.</translation>
 <translation id="7992613144342460685">Permitir o posicionamento de janelas nesses sites</translation>
 <translation id="7995610550667275367">Digitalização (compatível desde a versão 87)</translation>
+<translation id="7997288303774758253">A definição da política especifica um período em milissegundos em que o serviço de gerenciamento do dispositivo recebe consultas sobre informações de políticas do usuário. O intervalo válido de valores é de 1.800.000 (30 minutos) até 86.400.000 (1 dia). Os valores fora desse intervalo são ajustados para o limite respectivo, exceto no Android e no iOS, em que os valores acima desse intervalo são ajustados para 604.800.000 (1 semana).
+
+      Se a política for deixada sem definição, o valor padrão de 3 horas será usado, ou 1 dia no Android e no iOS.
+
+      Observação: notificações sobre políticas forçam uma atualização quando a política muda, tornando as atualizações frequentes desnecessárias. Por isso, se a plataforma oferecer compatibilidade com essas notificações, o atraso de atualização será de 24 horas, ignorando os padrões e os valores desta política.</translation>
 <translation id="7999023147219236247">Política para conceder solicitações de permissão a apps. PERMISSION_POLICY_UNSPECIFIED: política não especificada. Se nenhuma política for especificada para uma permissão em qualquer nível, o comportamento "PROMPT" será usado por padrão. PROMPT: solicita que o usuário conceda uma permissão. GRANT: concede uma permissão automaticamente. DENY: nega uma permissão automaticamente.</translation>
 <translation id="7999336306414770162">Desativar relatórios de informações de VPD do dispositivo</translation>
 <translation id="7999818120028621358">Ativar relatórios de eventos para prevenção de vazamento de dados</translation>
@@ -11798,6 +11824,11 @@ Várias políticas listam origens que afetam as solicitações enviadas para o d
 <translation id="8062485064082966327">Usar um Serviço do Google anônimo para oferecer descrições automáticas para imagens sem um texto alternativo</translation>
 <translation id="8064875716442437829">Ativar acessibilidade do renderizador</translation>
 <translation id="8066428282805800713">Enviar mais dados de hardware no ChromeOS Flex</translation>
+<translation id="8070654368411601340">A definição da política atribui servidores que podem ser delegados pelo <ph name="PRODUCT_NAME" />. Separe vários nomes de servidor usando vírgulas. Caracteres curinga (<ph name="WILDCARD_VALUE" />) são permitidos.
+
+      Se a política não for definida, o <ph name="PRODUCT_NAME" /> não delegará credenciais de usuário, mesmo que um servidor seja detectado como intranet.
+
+      No <ph name="LINUX_OS_NAME" />, <ph name="MAC_OS_NAME" /> e <ph name="PRODUCT_OS_NAME" />, quando essa política permite a delegação a um servidor, a biblioteca GSSAPI/Kerberos do sistema pode canonizar o nome do host em um host principal de serviço diferente (por exemplo, usando pesquisas de DNS CNAME ou PTR de DNS reverso). <ph name="PRODUCT_NAME" /> retém a delegação desse principal de serviço, a menos que o host também seja permitido por esta política.</translation>
 <translation id="8071371098891664137">Se <ph name="PRINTERS_BLOCKLIST" /> for escolhida para <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, a definição de <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> especificará quais impressoras os usuários não podem usar. Todas as impressoras estão disponíveis para o usuário, com exceção dos IDs listados nesta política. Os IDs precisam corresponder aos campos <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> no arquivo especificado na <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="8076539570602616846">Restringir contas do Google qualificadas para salvar arquivos PDF no Google Drive pelo visualizador de PDF do <ph name="PRODUCT_NAME" /></translation>
 <translation id="8078224178125125527">A definição desta política especifica quais servidores proxy têm permissão para todos os esquemas de autenticação HTTP compatíveis com <ph name="PRODUCT_NAME" />, independentemente da política <ph name="AUTH_SCHEMES_POLICY_NAME" />.

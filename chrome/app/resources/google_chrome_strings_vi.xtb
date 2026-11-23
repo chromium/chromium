@@ -79,6 +79,7 @@
 <translation id="1688214853608504530">Khi bạn nhập vào thanh địa chỉ hoặc hộp tìm kiếm, Chrome sẽ gửi nội dung bạn nhập đến công cụ tìm kiếm, AI và công cụ hỗ trợ của tổ chức bạn để đưa ra đề xuất.</translation>
 <translation id="1698376642261615901">Google Chrome là một trình duyệt web chạy các trang web và ứng dụng với tốc độ cực nhanh. Trình duyệt này nhanh, ổn định và dễ sử dụng. Duyệt web an toàn hơn với tính năng ngăn chặn phần mềm độc hại và lừa đảo được tích hợp trong Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome sẽ khởi động lại sau một giờ}one{Chrome will relaunch in # hours}other{Chrome sẽ khởi động lại sau # giờ}}</translation>
+<translation id="1713866023633141719">AI trên thiết bị đã sẵn sàng</translation>
 <translation id="1722488837206509557">Thao tác này sẽ cho phép bạn chọn trong số các thiết bị có sẵn và hiển thị nội dung trên các thiết bị đó.</translation>
 <translation id="1724094881572874997">Để bảo mật công việc của bạn trên Chrome, tổ chức bạn sẽ có thể xem hoặc quản lý một số thông tin khi bạn đăng nhập vào Chrome.</translation>
 <translation id="1769661297620183092">Bạn có thể mở lại bảng điều khiển Google Tìm kiếm để đặt câu hỏi trong khi duyệt web</translation>
@@ -153,6 +154,7 @@
 <translation id="2513154137948333830">Yêu cầu khởi động lại: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="251329670120169391">tổ chức của bạn</translation>
 <translation id="2521391734665471391">Đóng Chế độ AI của Google Tìm kiếm</translation>
+<translation id="2523048609826818526">Viết nội dung cho nhiều mục đích</translation>
 <translation id="2523492931736391680">Bảo mật công việc của bạn trên Chrome</translation>
 <translation id="2534365042754120737">Để bảo vệ dữ liệu của bạn, hãy cho phép Chrome loại bỏ quyền khỏi các trang web mà gần đây bạn không truy cập. Bạn sẽ vẫn nhận được thông báo.</translation>
 <translation id="2556847002339236023">Tổ chức của bạn sẽ đóng Chrome khi Chrome không được dùng đến trong <ph name="TIMEOUT_DURATION" />. Dữ liệu duyệt web đã bị xoá. Dữ liệu này có thể bao gồm nhật ký, nội dung tự động điền và tệp đã tải xuống.</translation>
@@ -251,6 +253,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="3373752068427117404">Một số tính năng và tiện ích của Chrome đi kèm lối tắt. Bạn có thể chọn bật lại các lối tắt này.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome sẽ khởi động lại ngay bây giờ}=1{Chrome sẽ khởi động lại sau 1 giây}one{Chrome will relaunch in # seconds}other{Chrome sẽ khởi động lại sau # giây}}</translation>
 <translation id="3380249972812870825">Để mở Gemini trong Chrome, hãy nhấn <ph name="GLOBAL_HOTKEY" /></translation>
+<translation id="3392127217442962664">Chrome hiện đã tích hợp AI hoạt động ngay trên thiết bị của bạn. Các trang web và Chrome có thể sử dụng mô hình AI này cho các tính năng như:</translation>
 <translation id="3396977131400919238">Đã xảy ra lỗi hệ điều hành trong quá trình cài đặt. Vui lòng tải xuống lại Google Chrome.</translation>
 <translation id="3428747202529429621">Giúp bạn an toàn trên Chrome và có thể dùng để tăng cường bảo mật cho bạn trong các ứng dụng khác của Google sau khi đăng nhập</translation>
 <translation id="3438681572027105609">Để sử dụng mật khẩu và các dữ liệu khác trên mọi thiết bị của bạn, hãy đăng nhập vào Chrome</translation>
@@ -300,6 +303,7 @@ Nếu trang này không hoạt động như mong đợi, hãy thử cho phép t�
 <translation id="3973161977468201858">Google Chrome muốn xoá dữ liệu của bạn trong Trình quản lý mật khẩu của Google. Nhập mật khẩu Windows của bạn để cho phép việc này.</translation>
 <translation id="3984557288004650913">Từ nút "Google Tìm kiếm trong Chrome" trên thanh công cụ, bạn có thể mở lại Google Tìm kiếm trong Chrome để đặt câu hỏi trong khi duyệt web</translation>
 <translation id="399788104667917863">Ghim vào thanh công cụ</translation>
+<translation id="4000385468528550798">AI trên thiết bị đã được cập nhật</translation>
 <translation id="400161754580828648">Để chia sẻ màn hình, hãy cho phép Chrome ghi màn hình trong phần Cài đặt hệ thống.</translation>
 <translation id="4012899077942246412">Khi đăng nhập, bạn có thể sử dụng mật khẩu và nhiều nội dung khác từ Tài khoản Google của mình trong Chrome. Để thay đổi chế độ cài đặt này, hãy chuyển đến phần "Tài khoản của bạn trong Chrome".</translation>
 <translation id="4022972681110646219">Dịch màn hình</translation>
@@ -557,6 +561,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6632012506031284914">để tìm kiếm bằng Chrome.</translation>
 <translation id="6634299872736643004">Các thay đổi đối với chế độ cài đặt này sẽ được áp dụng sau khi Chrome khởi động lại.</translation>
 <translation id="6644846457769259194">Đang cập nhật thiết bị của bạn (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6659177157954429254">AI trên thiết bị đã được cập nhật</translation>
 <translation id="6660596345553328257">Bạn muốn đăng nhập vào Chrome?</translation>
 <translation id="6664219008737641504">Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="SETTINGS_LINK" /> dữ liệu trên Chrome khỏi tài khoản của bạn</translation>
 <translation id="6676384891291319759">Truy cập Internet</translation>
@@ -598,6 +603,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7024536598735240744">Lỗi khi giải nén: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Bạn có thể chuyển đổi giữa các hồ sơ trên Chrome tại đây</translation>
 <translation id="7026856149118332950">Nhấp vào <ph name="BEGIN_BOLD" />Có<ph name="END_BOLD" /> trong thông báo của Windows để ghim Chrome vào thanh tác vụ giúp truy cập nhanh.</translation>
+<translation id="7033785662379319359">AI trên thiết bị đã được cập nhật lên phiên bản mới và tinh gọn hơn, sẵn sàng giúp bạn làm các việc như tóm tắt, hiệu đính và nhiều việc khác</translation>
 <translation id="7047386856539490735">Những kết quả này có hữu ích không?</translation>
 <translation id="7051685429025310665">Gần đây bạn không truy cập trang web này. Chrome đã xoá <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Biến Chrome thành trình duyệt của riêng bạn</translation>

@@ -386,6 +386,7 @@
 <translation id="2496180316473517155">История на сърфирането</translation>
 <translation id="250020030759455918">В Chrome ще виждате дали сте влезли в профила си в <ph name="SITE_NAME" />, както и съответните данни за сърфирането и сайта</translation>
 <translation id="2501278716633472235">Назад</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{# изтегляне е в ход}other{# изтегляния са в ход}}</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> се инсталира...</translation>
 <translation id="2512234228327349533">Търсене на опции за купуване</translation>
 <translation id="2513403576141822879">За още настройки за поверителността, сигурността и събирането на данни вижте <ph name="BEGIN_LINK" />Синхронизиране и услуги на Google<ph name="END_LINK" /></translation>
@@ -697,6 +698,7 @@
 <translation id="3740290940447881599">Уверете се, че имате доверие на този сайт</translation>
 <translation id="3740525748616366977">На това устройство не може да се търси с глас</translation>
 <translation id="3749289110408117711">Име на файла</translation>
+<translation id="3751708358601675711">Редактиране на просл. на цената</translation>
 <translation id="3756823472711156529">Възстановяване на групата</translation>
 <translation id="3759306015475526475">Управление на настройките за данните за употребата и сривовете</translation>
 <translation id="3763110477555836428">Когато плащате с тази карта, ще бъде попълнен номер на виртуална карта, за да се защитят действителните ви данни. Управлявайте настройките в Google Wallet. <ph name="BEGIN_LINK1" />Научете повече за виртуалните карти<ph name="END_LINK1" /></translation>

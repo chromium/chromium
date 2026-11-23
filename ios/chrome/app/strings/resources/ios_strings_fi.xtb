@@ -1788,6 +1788,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6504541289630702018">Käytä tietokoneen välilehtiryhmiä helposti</translation>
 <translation id="6505334220040167806">Tiivistä välilehtiryhmä.</translation>
 <translation id="6506996418997555004">Jaa välilehtiryhmä "<ph name="GROUP_NAME" />"</translation>
+<translation id="650770261448122895">Hae näkemääsi Lensin avulla</translation>
 <translation id="6507973708545996744">Kirjaudu sisään, niin näet lukulistan kaikilla laitteillasi.</translation>
 <translation id="6518133107902771759">Vahvista</translation>
 <translation id="6523575793810663688">Näytä miten</translation>
@@ -2430,6 +2431,7 @@ Voit aloittaa uudelleen milloin tahansa.</translation>
 <translation id="8439758443371991593">Piilota "Lisää lukulistalle"</translation>
 <translation id="8443986842926457191">URL-osoitteessa on yli 2 048 merkkiä</translation>
 <translation id="8449869326050867919">Salasana jaettu</translation>
+<translation id="8473367210869452063">Jos haluat käyttää tätä sivustoa, lopeta nykyinen tehtävä tai odota, että Gemini on valmis</translation>
 <translation id="8473815223723723001">Muokkaa kuvaa Geminillä</translation>
 <translation id="8473863474539038330">Osoitteet ja muita tietoja</translation>
 <translation id="8474378002946546633">Salli ilmoitukset</translation>

@@ -1788,6 +1788,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6504541289630702018">Easily access your desktop tab groups</translation>
 <translation id="6505334220040167806">Collapse tab group.</translation>
 <translation id="6506996418997555004">Share '<ph name="GROUP_NAME" />' tab group</translation>
+<translation id="650770261448122895">Search what you see with Lens</translation>
 <translation id="6507973708545996744">Sign in to get your reading list on all your devices.</translation>
 <translation id="6518133107902771759">Verify</translation>
 <translation id="6523575793810663688">Show me how</translation>
@@ -2430,6 +2431,7 @@ You can restart at any time.</translation>
 <translation id="8439758443371991593">Hide Add to reading list</translation>
 <translation id="8443986842926457191">URL is more than 2048 characters</translation>
 <translation id="8449869326050867919">Password shared</translation>
+<translation id="8473367210869452063">To interact with this site, stop the current task or wait for Gemini to finish working</translation>
 <translation id="8473815223723723001">Edit image with Gemini</translation>
 <translation id="8473863474539038330">Addresses and more</translation>
 <translation id="8474378002946546633">Allow notifications</translation>

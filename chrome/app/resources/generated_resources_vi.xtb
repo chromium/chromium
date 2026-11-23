@@ -856,6 +856,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1921544956190977703">Biện pháp bảo mật mạnh mẽ nhất của Chrome sẽ bảo vệ bạn khỏi các trang web, nội dung tải xuống và tiện ích nguy hiểm</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1921600948984918136">"<ph name="NAME" />" chỉ được lưu trên thiết bị này. Để sử dụng tiện ích này trên các thiết bị khác, hãy lưu tiện ích vào tài khoản của bạn.</translation>
+<translation id="1924725605995508501"><ph name="PORT_NAME" /> (<ph name="SERVICE_NAME" />)</translation>
 <translation id="192494336144674234">Mở bằng</translation>
 <translation id="1925017091976104802">Nhấn <ph name="MODIFIER_KEY_DESCRIPTION" /> để dán</translation>
 <translation id="1925021887439448749">Nhập địa chỉ web tùy chỉnh</translation>
@@ -1394,6 +1395,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="2519517390894391510">Tên hồ sơ chứng chỉ</translation>
 <translation id="2520644704042891903">Đang chờ cổng kết nối hiện có...</translation>
 <translation id="2522757085249311407">Cho phép các thiết bị Bluetooth lân cận phát hiện và kết nối với thiết bị này.</translation>
+<translation id="2523048609826818526">Viết nội dung cho nhiều mục đích</translation>
 <translation id="2523184218357549926">Gửi cho Google URL của các trang bạn truy cập</translation>
 <translation id="252513908494776481">Hỏi về thẻ này</translation>
 <translation id="2525746158911982776">Không cập nhật được vì hệ thống không có đủ không gian lưu trữ.</translation>
@@ -1404,6 +1406,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="2528487766183344810">Vui lòng mở khoá <ph name="TOKEN_NAME" /> để xuất chứng chỉ máy khách.</translation>
 <translation id="2532198298278778531">Quản lý tính năng DNS bảo mật trong phần cài đặt ChromeOS Flex</translation>
 <translation id="253434972992662860">&amp;Tạm dừng</translation>
+<translation id="2534439599863644240">Cổng nối tiếp</translation>
 <translation id="253498598929009420">Trang web này sẽ có thể xem nội dung trên màn hình của bạn</translation>
 <translation id="253557089021624350">Số lượng giữ kết nối</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> có thể xem và chỉnh sửa các tệp và thư mục sau đây</translation>

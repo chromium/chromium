@@ -77,6 +77,7 @@
 <translation id="1688214853608504530">Amikor beír valamit a címsávba vagy a keresőmezőbe, a Chrome elküldi a beírt szöveget a szervezet keresési, AI- és ügynökeszközeinek javaslatok biztosítása érdekében.</translation>
 <translation id="1698376642261615901">A Google Chrome olyan böngésző, amely villámgyorsan futtatja a weboldalakat és az alkalmazásokat. Gyors, stabil és könnyen használható. A beépített, adathalászat és a kártékony programok elleni védelemmel biztonságosabban böngészhet az interneten.</translation>
 <translation id="1713301662689114961">{0,plural, =1{A Chrome 1 órán belül újraindul}other{A Chrome # órán belül újraindul}}</translation>
+<translation id="1713866023633141719">Az eszközalapú AI készen áll</translation>
 <translation id="1722488837206509557">Ez lehetővé teszi, hogy válasszon a rendelkezésre álló eszközök közül, és tartalmakat jelenítsen meg rajtuk.</translation>
 <translation id="1724094881572874997">A Chrome-ban végzett munka biztonsága érdekében a szervezete képes lehet bizonyos információk megtekintésére vagy kezelésére, amikor Ön be van jelentkezve a Chrome-ba.</translation>
 <translation id="1769661297620183092">Újra megnyithatja a Google Kereső paneljét, hogy kérdéseket tehessen fel böngészés közben.</translation>
@@ -151,6 +152,7 @@
 <translation id="2513154137948333830">Újraindításra van szükség: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="251329670120169391">saját szervezet</translation>
 <translation id="2521391734665471391">A Google Kereső AI-módjának bezárása</translation>
+<translation id="2523048609826818526">Általános célú írás</translation>
 <translation id="2523492931736391680">A munkája biztonságban van a Chrome-ban</translation>
 <translation id="2534365042754120737">Adatainak védelme érdekében engedélyezze, hogy a Chrome eltávolítsa azoknak a webhelyeknek az engedélyeit, amelyeket Ön nem keresett fel mostanában. Ez nem állítja le az értesítéseket.</translation>
 <translation id="2556847002339236023">Szervezete bezárja a Chrome-ot, ha nem használja a böngészőt ennyi ideig:<ph name="TIMEOUT_DURATION" />. A böngészési adatok törlődtek. A böngészési adatok közé tartozhatnak az előzmények, az automatikus kitöltés adatai és a letöltött tartalom is.</translation>
@@ -249,6 +251,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="3373752068427117404">Egyes Chrome-funkciókhoz és -bővítményekhez gyorsparancsok tartoznak. Újra bekapcsolhatja őket.</translation>
 <translation id="3379938682270551431">{0,plural, =0{A Chrome most újraindul}=1{A Chrome 1 másodpercen belül újraindul}other{A Chrome # másodpercen belül újraindul}}</translation>
 <translation id="3380249972812870825">A Gemini a Chrome-ban funkció megnyitásához nyomja meg a következőt: <ph name="GLOBAL_HOTKEY" /></translation>
+<translation id="3392127217442962664">A Chrome hozzáadott egy, az Ön eszközén futó AI-t. A webhelyek és a Chrome többek között a következő funkciókhoz használhatják:</translation>
 <translation id="3396977131400919238">Az operációs rendszer hibát jelzett a telepítés során.</translation>
 <translation id="3428747202529429621">Gondoskodik a biztonságáról a Chrome-ban, és használható a biztonság növelésére más Google-alkalmazásokban olyankor, amikor Ön be van jelentkezve.</translation>
 <translation id="3438681572027105609">Ha az összes eszközén szeretne hozzáférni jelszavaihoz és egyebekhez, jelentkezzen be a Chrome-ba</translation>
@@ -298,6 +301,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="3973161977468201858">A Google Chrome törölni szeretné a Jelszókezelőhöz tartozó adatait. Az engedélyezéshez adja meg Windows-jelszavát.</translation>
 <translation id="3984557288004650913">Az eszköztáron található „Google Kereső a Chrome-ban” gombbal újra megnyithatja a Google Keresőt a Chrome-ban, hogy kérdéseket tehessen fel böngészés közben.</translation>
 <translation id="399788104667917863">Rögzítés az eszköztárra</translation>
+<translation id="4000385468528550798">Eszközalapú AI frissítve</translation>
 <translation id="400161754580828648">A képernyő megosztásához engedélyezze a Chrome számára a képernyőrögzítést a Rendszerbeállításokban.</translation>
 <translation id="4012899077942246412">Amíg be van jelentkezve, használhatja a Google-fiókjában tárolt jelszavait és egyéb tartalmait a Chrome-ban. A módosításhoz lépjen „Az Ön fiókja a Chrome-ban” részhez.</translation>
 <translation id="4022972681110646219">Képernyőtartalom lefordítása</translation>
@@ -553,6 +557,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="6632012506031284914">a Chrome-mal való kereséshez.</translation>
 <translation id="6634299872736643004">A beállítás módosításai a Chrome újraindítása után lépnek érvénybe.</translation>
 <translation id="6644846457769259194">Eszköz frissítése (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6659177157954429254">Az eszközalapú AI naprakész</translation>
 <translation id="6660596345553328257">Bejelentkezik a Chrome-ba?</translation>
 <translation id="6664219008737641504">Ha elfelejtette az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="SETTINGS_LINK" /> törölje a fiókjában lévő Chrome-adatokat.</translation>
 <translation id="6676384891291319759">Internetelérés</translation>
@@ -594,6 +599,7 @@ Ha ez az oldal nem a várt módon működik, próbálkozzon az optimalizálás e
 <translation id="7024536598735240744">Kicsomagolási hiba: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Itt válthat a Chrome-profilok között</translation>
 <translation id="7026856149118332950">Kattintson a Windows értesítésében található <ph name="BEGIN_BOLD" />Igen<ph name="END_BOLD" /> gombra, hogy kitűzhesse a Chrome-ot a tálcára a gyors hozzáférés érdekében.</translation>
+<translation id="7033785662379319359">Az eszközalapú AI új, kompaktabb verziója készen áll az olyan feladatokhoz, mint az összefoglalók, a lektorálás és egyebek.</translation>
 <translation id="7047386856539490735">Hasznosak ezek a találatok?</translation>
 <translation id="7051685429025310665">Nem látogatta meg mostanában. A Chrome eltávolította a következőket: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Tegye személyessé a Chrome-ot</translation>

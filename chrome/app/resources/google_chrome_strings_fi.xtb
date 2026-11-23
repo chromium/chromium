@@ -77,6 +77,7 @@
 <translation id="1688214853608504530">Kun kirjoitat osoitepalkkiin tai hakukenttään, Chrome lähettää kirjoittamasi tekstin organisaatiosi haku-, tekoäly- ja agenttityökaluille, jotta saat ehdotuksia.</translation>
 <translation id="1698376642261615901">Google Chrome on verkkoselain, jolla voit avata verkkosivuja ja sovelluksia salamannopeasti. Se on nopea, vakaa ja helppokäyttöinen. Selaa verkkoa turvallisemmin Google Chromen haittaohjelma- ja tietojenkalastelusuojauksen avulla.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome käynnistetään uudelleen tunnin kuluttua}other{Chrome käynnistetään uudelleen # tunnin kuluttua}}</translation>
+<translation id="1713866023633141719">Laitepohjainen tekoäly on valmis</translation>
 <translation id="1722488837206509557">Näin voit valita käytettävissä olevista laitteista ja näyttää niillä sisältöä.</translation>
 <translation id="1724094881572874997">Organisaatiosi voi nähdä tai ylläpitää tiettyjä tietoja, jotta voit käyttää Chromea turvallisesti, kun olet kirjautuneena Chromeen.</translation>
 <translation id="1769661297620183092">Voit avata Google Haku ‑paneelin uudelleen esittääksesi kysymyksiä selaamisen aikana</translation>
@@ -151,6 +152,7 @@
 <translation id="2513154137948333830">Uudelleenkäynnistys vaaditaan: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="251329670120169391">organisaatiosi</translation>
 <translation id="2521391734665471391">Sulje Google Haun tekoälytila</translation>
+<translation id="2523048609826818526">Yleiskäyttöinen kirjoittaminen</translation>
 <translation id="2523492931736391680">Työsi on turvassa Chromessa</translation>
 <translation id="2534365042754120737">Datasi suojaamiseksi salli Chromen poistaa luvat sivustoilta, joilla et ole käynyt viime aikoina. Tämä ei estä ilmoituksia.</translation>
 <translation id="2556847002339236023">Kun Chrome on ollut käyttämättömänä <ph name="TIMEOUT_DURATION" />, organisaatiosi sulkee sen. Selausdata on poistettu. Data voi sisältää historian, automaattisen täytön ja lataukset.</translation>
@@ -249,6 +251,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="3373752068427117404">Joissakin Chromen ominaisuuksissa ja laajennuksissa on pikanäppäimiä. Voit halutessasi laittaa ne takaisin päälle.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome käynnistetään uudelleen nyt}=1{Chrome käynnistetään uudelleen 1 sekunnin kuluttua}other{Chrome käynnistetään uudelleen # sekunnin kuluttua.}}</translation>
 <translation id="3380249972812870825">Avaa Gemini in Chrome painamalla <ph name="GLOBAL_HOTKEY" /></translation>
+<translation id="3392127217442962664">Chrome on lisännyt laitteella toimivan tekoälyn. Sivustot ja Chrome voivat käyttää sitä esimerkiksi seuraaviin ominaisuuksiin:</translation>
 <translation id="3396977131400919238">Asennuksessa havaittiin käyttöjärjestelmävirhe. Lataa Google Chrome uudelleen.</translation>
 <translation id="3428747202529429621">Pitää sinut turvassa Chromessa ja voi parantaa suojaustasi muissa Google-sovelluksissa, kun olet sisäänkirjautuneena</translation>
 <translation id="3438681572027105609">Kirjaudu sisään Chromeen, niin voit käyttää salasanojasi ja muita tietoja kaikilla laitteillasi</translation>
@@ -298,6 +301,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="3973161977468201858">Google Chrome haluaa poistaa Google Salasanat ‐datasi. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="3984557288004650913">Yläpalkin "Google Haku Chromessa" ‑painikkeella voit avata Google Haun Chromessa uudelleen ja esittää kysymyksiä selaamisen aikana</translation>
 <translation id="399788104667917863">Kiinnitä yläpalkkiin</translation>
+<translation id="4000385468528550798">Laitepohjainen tekoäly on päivitetty</translation>
 <translation id="400161754580828648">Jos haluat jakaa näytön, salli Chromen näytön tallennus järjestelmäasetuksista.</translation>
 <translation id="4012899077942246412">Kun olet kirjautunut sisään, voit käyttää esimerkiksi Google-tilin salasanoja Chromessa. Jos haluat muuttaa tätä, siirry kohtaan "Tilisi Chromessa".</translation>
 <translation id="4022972681110646219">Käännä näyttö</translation>
@@ -553,6 +557,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="6632012506031284914">hakeaksesi Chromella.</translation>
 <translation id="6634299872736643004">Asetukseen tehdyt muutokset tulevat voimaan, kun Chrome käynnistetään uudelleen.</translation>
 <translation id="6644846457769259194">Päivitetään laitetta (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6659177157954429254">Laitepohjainen tekoäly on ajan tasalla</translation>
 <translation id="6660596345553328257">Haluatko kirjautua Chromeen?</translation>
 <translation id="6664219008737641504">Jos unohdit tunnuslauseen tai haluat muuttaa asetusta, <ph name="SETTINGS_LINK" /> tilin Chrome-data</translation>
 <translation id="6676384891291319759">Käytä internetiä</translation>
@@ -594,6 +599,7 @@ Jos tämä sivu ei toimi odotetulla tavalla, kokeile sallia optimointi.</transla
 <translation id="7024536598735240744">Purkamisvirhe: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Voit vaihdella Chrome-profiilien välillä täällä</translation>
 <translation id="7026856149118332950">Klikkaa Windowsin ilmoituksesta <ph name="BEGIN_BOLD" />Kyllä<ph name="END_BOLD" />, niin voit kiinnittää Chromen tehtäväpalkkiin nopeaa käyttöä varten.</translation>
+<translation id="7033785662379319359">Uusi, kompaktimpi versio laitepohjaisesta tekoälystä on valmis käytettäväksi esimerkiksi yhteenvetoihin ja oikolukuun</translation>
 <translation id="7047386856539490735">Ovatko nämä tulokset hyödyllisiä?</translation>
 <translation id="7051685429025310665">Sivustot, joilla et ole käynyt viime aikoina. Chrome poisti nämä luvat: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Tee Chromesta näköisesi</translation>

@@ -447,6 +447,7 @@
 <translation id="2053312383184521053">ತಟಸ್ಥ ಸ್ಥಿತಿಯ ಡೇಟಾ</translation>
 <translation id="2058456167109518507">ಸಾಧನ ಪತ್ತೆಯಾಗಿದೆ</translation>
 <translation id="2064048859448024834">ಕ್ಯಾಮರಾ ಪೂರ್ವವೀಕ್ಷಣೆ ಆನ್ ಆಗಿದೆ</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 ಲಿಂಕ್}one{# ಲಿಂಕ್‌ಗಳು}other{# ಲಿಂಕ್‌ಗಳು}}</translation>
 <translation id="2067220651560163985">ತಾಪಮಾನವನ್ನು ಸೆಲ್ಸಿಯಸ್‌ನಲ್ಲಿ ತೋರಿಸಿ</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> <ph name="PRINTER_NAME" /> ಗೆ ಮುದ್ರಣವನ್ನು ಪೂರ್ಣಗೊಳಿಸಿದೆ</translation>
 <translation id="2075520525463668108"><ph name="CAPTURE_MEDIUM" /> ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="CAPTURE_MEDIUM" /> ಈಗ <ph name="CAPTURE_STATE" /> ಸ್ಥಿತಿಯಲ್ಲಿದೆ</translation>

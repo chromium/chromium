@@ -386,6 +386,7 @@
 <translation id="2496180316473517155">براؤزنگ سرگزشت</translation>
 <translation id="250020030759455918">‏آپ Chrome میں اپنا <ph name="SITE_NAME" /> سائن ان اسٹیٹس، براؤزنگ ڈیٹا اور سائٹ کا ڈیٹا دیکھیں گے</translation>
 <translation id="2501278716633472235">پیچھے جائیں</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{‫# ڈاؤن لوڈ پیش رفت میں ہے}other{‫# ڈاؤن لوڈز پیش رفت میں ہیں}}</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> انسٹال ہو رہی ہے...</translation>
 <translation id="2512234228327349533">خریداری کے اختیارات تلاش کریں</translation>
 <translation id="2513403576141822879">‏راز داری، سیکیورٹی اور ڈیٹا کی جمع آوری سے متعلق مزید ترتیبات کے لیے، <ph name="BEGIN_LINK" />مطابقت پذیری اور Google سروسز<ph name="END_LINK" /> دیکھیں</translation>
@@ -697,6 +698,7 @@
 <translation id="3740290940447881599">یقینی بنائیں کہ آپ اس سائٹ پر بھروسہ کرتے ہیں</translation>
 <translation id="3740525748616366977">اس آلہ پر صوتی تلاش دستیاب نہیں ہے</translation>
 <translation id="3749289110408117711">فائل کا نام</translation>
+<translation id="3751708358601675711">قیمت کی ٹریکنگ میں ترمیم کریں</translation>
 <translation id="3756823472711156529">گروپ کو بحال کریں</translation>
 <translation id="3759306015475526475">استعمال اور کریش ڈیٹا کی ترتیبات کا نظم کریں</translation>
 <translation id="3763110477555836428">‏آپ کی اصل تفصیلات کی حفاظت کیلئے، آپ کے اس کارڈ سے چیک آؤٹ کرنے پر، ایک ورچوئل کارڈ نمبر پُر ہو جائے گا۔ ‫Google والٹ میں نظم کریں۔ <ph name="BEGIN_LINK1" />ورچوئل کارڈز کے بارے میں مزید جانیں<ph name="END_LINK1" /></translation>

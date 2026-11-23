@@ -81,6 +81,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1688214853608504530">Al escribir en la barra de direcciones o en el cuadro de búsqueda, Chrome envía lo que escribes a las herramientas de búsqueda, de IA y de agente de tu organización para obtener sugerencias.</translation>
 <translation id="1698376642261615901">Google Chrome es un navegador web que ejecuta aplicaciones y páginas web a gran velocidad. Es rápido, estable y fácil de utilizar. Navega por la Web de forma más segura gracias a la protección integrada contra suplantación de identidad y malware.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome se reiniciará dentro de 1 hora}other{Chrome se reiniciará dentro de # horas}}</translation>
+<translation id="1713866023633141719">La IA en el dispositivo está lista</translation>
 <translation id="1722488837206509557">Esto te permitirá seleccionar los dispositivos disponibles y mostrar contenido en ellos.</translation>
 <translation id="1724094881572874997">Para proteger tu trabajo en Chrome, tu organización podrá ver o gestionar determinada información cuando tengas la sesión iniciada en Chrome.</translation>
 <translation id="1769661297620183092">Puedes volver a abrir el panel de la Búsqueda de Google para hacer preguntas mientras navegas</translation>
@@ -155,6 +156,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2513154137948333830">Reinicio requerido: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="251329670120169391">tu organización</translation>
 <translation id="2521391734665471391">Cerrar Modo IA de la Búsqueda de Google</translation>
+<translation id="2523048609826818526">Escritura de uso general</translation>
 <translation id="2523492931736391680">Tu trabajo está protegido en Chrome</translation>
 <translation id="2534365042754120737">Para proteger tus datos, permite que Chrome quite los permisos de los sitios que no hayas visitado recientemente. No dejarás de recibir notificaciones.</translation>
 <translation id="2556847002339236023">Tu organización cierra Chrome cuando lleva <ph name="TIMEOUT_DURATION" /> sin usarse. Se han eliminado los datos de navegación. Entre estos datos, podrían incluirse el historial, la función Autocompletar y las descargas.</translation>
@@ -253,6 +255,7 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="3373752068427117404">Algunas funciones y extensiones de Chrome incluyen atajos. Puedes volver a activarlos.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome se reiniciará ahora}=1{Chrome se reiniciará dentro de 1 segundo}other{Chrome se reiniciará dentro de # segundos}}</translation>
 <translation id="3380249972812870825">Para abrir Gemini en Chrome, pulsa <ph name="GLOBAL_HOTKEY" /></translation>
+<translation id="3392127217442962664">Chrome ha añadido IA que se ejecuta en tu dispositivo. Los sitios y Chrome pueden usarla para funciones como:</translation>
 <translation id="3396977131400919238">Se ha producido un error de sistema operativo durante el proceso de instalación. Vuelve a descargar Google Chrome.</translation>
 <translation id="3428747202529429621">Te protege en Chrome y puede usarse para mejorar tu seguridad en otras aplicaciones de Google cuando has iniciado sesión</translation>
 <translation id="3438681572027105609">Para acceder a tus contraseñas y más en todos tus dispositivos, inicia sesión en Chrome</translation>
@@ -302,6 +305,7 @@ Si esta página no funciona correctamente, prueba a permitir la optimización.</
 <translation id="3973161977468201858">Google Chrome quiere eliminar tus datos del Gestor de contraseñas de Google. Introduce tu contraseña de Windows para permitirlo.</translation>
 <translation id="3984557288004650913">Con el botón "Búsqueda de Google en Chrome" de la barra de herramientas, puedes volver a abrirla para hacer preguntas mientras navegas</translation>
 <translation id="399788104667917863">Fijar en la barra de herramientas</translation>
+<translation id="4000385468528550798">IA en el dispositivo actualizada</translation>
 <translation id="400161754580828648">Para compartir tu pantalla, permite la grabación de pantalla de Chrome en Ajustes del sistema.</translation>
 <translation id="4012899077942246412">Mientras tengas la sesión iniciada, puedes usar tus contraseñas y otros elementos de tu cuenta de Google en Chrome. Para cambiarlo, ve a Tu cuenta en Chrome.</translation>
 <translation id="4022972681110646219">Traducir pantalla</translation>
@@ -561,6 +565,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6632012506031284914">para buscar con Chrome.</translation>
 <translation id="6634299872736643004">Los cambios que se hagan en este ajuste se aplicarán cuando se reinicie Chrome.</translation>
 <translation id="6644846457769259194">Actualizando el dispositivo (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6659177157954429254">La IA en el dispositivo está actualizada</translation>
 <translation id="6660596345553328257">¿Iniciar sesión en Chrome?</translation>
 <translation id="6664219008737641504">Si has olvidado tu frase de contraseña o quieres cambiar este ajuste, <ph name="SETTINGS_LINK" /> los datos de Chrome de tu cuenta.</translation>
 <translation id="6676384891291319759">Accede a Internet.</translation>
@@ -602,6 +607,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7024536598735240744">Error al descomprimir: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Puedes cambiar de un perfil de Chrome a otro aquí</translation>
 <translation id="7026856149118332950">Haz clic en <ph name="BEGIN_BOLD" />Sí<ph name="END_BOLD" /> en la notificación de Windows para fijar Chrome a la barra de tareas y que puedas acceder rápidamente.</translation>
+<translation id="7033785662379319359">Ya puedes usar una versión nueva y más compacta de la IA en el dispositivo para resúmenes, revisiones y otras tareas</translation>
 <translation id="7047386856539490735">¿Te han resultado útiles estos resultados?</translation>
 <translation id="7051685429025310665">No has visitado el sitio recientemente. Chrome ha eliminado <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Personaliza Chrome a tu gusto</translation>

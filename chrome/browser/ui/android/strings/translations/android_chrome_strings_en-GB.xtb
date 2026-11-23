@@ -386,6 +386,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2496180316473517155">Browsing history</translation>
 <translation id="250020030759455918">You'll see your <ph name="SITE_NAME" /> sign-in status, browsing data and site data in Chrome</translation>
 <translation id="2501278716633472235">Go back</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{# download in progress}other{# downloads in progress}}</translation>
 <translation id="2510106555128151389">Installing <ph name="WEBAPK_NAME" />…</translation>
 <translation id="2512234228327349533">Search buying options</translation>
 <translation id="2513403576141822879">For more settings that relate to privacy, security and data collection, see <ph name="BEGIN_LINK" />Sync and Google services<ph name="END_LINK" /></translation>
@@ -697,6 +698,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3740290940447881599">Make sure that you trust this site</translation>
 <translation id="3740525748616366977">Voice search is not available on this device</translation>
 <translation id="3749289110408117711">File name</translation>
+<translation id="3751708358601675711">Edit price tracking</translation>
 <translation id="3756823472711156529">Restore group</translation>
 <translation id="3759306015475526475">Manage usage and crash data settings</translation>
 <translation id="3763110477555836428">A virtual card number will be filled when you check out with this card to protect your actual details. Manage in Google Wallet. <ph name="BEGIN_LINK1" />Learn more about virtual cards<ph name="END_LINK1" /></translation>

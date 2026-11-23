@@ -77,6 +77,7 @@
 <translation id="1688214853608504530">在網址列或搜尋框中輸入時，Chrome 會將這些內容傳送給貴機構的搜尋、AI 和代理工具，為你提供建議。</translation>
 <translation id="1698376642261615901">Google Chrome 瀏覽器開啟網頁和執行應用程式的速度奇快無比！除了執行速度迅速、穩定且容易使用之外，內建防護機制還可讓你安心瀏覽網頁，無需擔心受到網路釣魚與惡意軟體的威脅。</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome 將在 1 小時後重新啟動}other{Chrome 將在 # 小時後重新啟動}}</translation>
+<translation id="1713866023633141719">裝置端 AI 已就緒</translation>
 <translation id="1722488837206509557">這樣你就能選取可用裝置，並在這些裝置上顯示內容。</translation>
 <translation id="1724094881572874997">為確保你在 Chrome 上的工作資料安全無虞，當你登入 Chrome 時，貴機構將可查看或管理特定資訊。</translation>
 <translation id="1769661297620183092">你可以重新開啟 Google 搜尋面板，在瀏覽網頁時提問</translation>
@@ -151,6 +152,7 @@
 <translation id="2513154137948333830">必須重新啟動：<ph name="INSTALL_SUCCESS" /></translation>
 <translation id="251329670120169391">貴機構</translation>
 <translation id="2521391734665471391">關閉 Google 搜尋 AI 模式</translation>
+<translation id="2523048609826818526">一般用途寫作</translation>
 <translation id="2523492931736391680">Chrome 可確保工作安全無虞</translation>
 <translation id="2534365042754120737">為保護你的資料，允許 Chrome 從近期未造訪的網站移除權限。這項設定不會關閉通知。</translation>
 <translation id="2556847002339236023">由於 Chrome 閒置超過 <ph name="TIMEOUT_DURATION" />，貴機構已將其關閉。瀏覽資料已刪除，當中可能包含歷史記錄、自動填入的資料和下載內容。</translation>
@@ -247,6 +249,7 @@
 <translation id="3373752068427117404">部分 Chrome 功能和擴充功能設有捷徑。你可以選擇重新啟用。</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome 將立即重新啟動}=1{Chrome 將在 1 秒後重新啟動}other{Chrome 將在 # 秒後重新啟動}}</translation>
 <translation id="3380249972812870825">如要開啟 Chrome 內建 Gemini，請按下 <ph name="GLOBAL_HOTKEY" /> 鍵</translation>
+<translation id="3392127217442962664">Chrome 已加入可在裝置上執行的 AI 模型，網站和 Chrome 可將其用於下列功能：</translation>
 <translation id="3396977131400919238">安裝過程中發生作業系統錯誤，請再次下載 Google Chrome。</translation>
 <translation id="3428747202529429621">在已登入帳戶的狀態下，能確保你持續享有安全無虞的 Chrome 使用體驗，也有助於提升其他 Google 應用程式的安全機制</translation>
 <translation id="3438681572027105609">如要在所有裝置上使用你的密碼和其他資料，請登入 Chrome</translation>
@@ -295,6 +298,7 @@
 <translation id="3973161977468201858">Google Chrome 要刪除 Google 密碼管理工具資料。如果允許，請輸入 Windows 密碼。</translation>
 <translation id="3984557288004650913">你可以透過工具列的相關按鈕重新開啟「Chrome 的 Google 搜尋」，在瀏覽網頁時提問</translation>
 <translation id="399788104667917863">在工具列中固定</translation>
+<translation id="4000385468528550798">裝置端 AI 已更新</translation>
 <translation id="400161754580828648">如要分享螢幕內容，請前往「系統設定」允許 Chrome 螢幕錄影。</translation>
 <translation id="4012899077942246412">登入帳戶就能在 Chrome 使用 Google 帳戶儲存的密碼和其他資訊。如要變更，請前往「你在 Chrome 中的帳戶」。</translation>
 <translation id="4022972681110646219">翻譯這個畫面</translation>
@@ -552,6 +556,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6632012506031284914">即可使用 Chrome 搜尋。</translation>
 <translation id="6634299872736643004">系統會在 Chrome 重新啟動後套用這項設定的變更。</translation>
 <translation id="6644846457769259194">正在更新你的裝置 (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6659177157954429254">裝置端 AI 已是最新版本</translation>
 <translation id="6660596345553328257">要登入 Chrome 嗎？</translation>
 <translation id="6664219008737641504">如果忘記通關密語或想變更這項設定，請<ph name="SETTINGS_LINK" />帳戶中的 Chrome 資料</translation>
 <translation id="6676384891291319759">連線到網際網路</translation>
@@ -593,6 +598,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7024536598735240744">解壓縮錯誤：<ph name="UNPACK_ERROR" />。</translation>
 <translation id="7025800014283535195">你可以在這裡切換不同的 Chrome 設定檔</translation>
 <translation id="7026856149118332950">在 Windows 通知中點選「是<ph name="BEGIN_BOLD" /><ph name="END_BOLD" />」，即可將 Chrome 釘選到工作列以便快速存取。</translation>
+<translation id="7033785662379319359">全新且更精簡的裝置端 AI 版本已就緒，可用於執行摘要和校對等任務</translation>
 <translation id="7047386856539490735">這些結果實用嗎？</translation>
 <translation id="7051685429025310665">由於近期並未造訪，Chrome 已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和<ph name="PERMISSION_3" />權限。</translation>
 <translation id="7059914902409643750">使用你專屬的 Chrome</translation>

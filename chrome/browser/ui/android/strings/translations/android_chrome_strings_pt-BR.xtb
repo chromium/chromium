@@ -386,6 +386,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2496180316473517155">Histórico de navegação</translation>
 <translation id="250020030759455918">Seu status de login, dados de navegação e dados do site para <ph name="SITE_NAME" /> serão exibidos no Chrome</translation>
 <translation id="2501278716633472235">Voltar</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{# download em andamento}one{# download em andamento}other{# downloads em andamento}}</translation>
 <translation id="2510106555128151389">Instalando <ph name="WEBAPK_NAME" />…</translation>
 <translation id="2512234228327349533">Pesquisar opções de compra</translation>
 <translation id="2513403576141822879">Para acessar mais configurações relacionadas à privacidade, segurança e coleta de dados, acesse <ph name="BEGIN_LINK" />Serviços do Google e de sincronização<ph name="END_LINK" /></translation>
@@ -697,6 +698,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3740290940447881599">Confirme se a página é confiável</translation>
 <translation id="3740525748616366977">A pesquisa por voz não está disponível neste dispositivo</translation>
 <translation id="3749289110408117711">Nome do arquivo</translation>
+<translation id="3751708358601675711">Editar monitoramento de preços</translation>
 <translation id="3756823472711156529">Restaurar grupo</translation>
 <translation id="3759306015475526475">Gerenciar configurações de dados de uso e erros</translation>
 <translation id="3763110477555836428">Quando você finalizar uma compra com este cartão, os dados serão preenchidos com um número do cartão virtual para sua proteção. Gerencie pela Carteira do Google. <ph name="BEGIN_LINK1" />Saiba mais sobre os cartões virtuais<ph name="END_LINK1" /></translation>

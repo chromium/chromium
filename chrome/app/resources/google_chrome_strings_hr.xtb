@@ -77,6 +77,7 @@
 <translation id="1688214853608504530">Kad upisujete u adresnu traku ili okvir za pretraživanje, ono što upišete Chrome šalje alatima za pretraživanje, AI alatima i alatima za agente vaše organizacije kako bi vam pružio prijedloge.</translation>
 <translation id="1698376642261615901">Google Chrome jest web-preglednik koji web-stranice i aplikacije pokreće brzinom svjetlosti. Brz je, stabilan i jednostavan za upotrebu. Sigurnije pregledavajte web uz zaštitu protiv zlonamjernog i špijunskog softvera koja je ugrađena u Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome će se ponovo pokrenuti za sat vremena}one{Chrome će se ponovo pokrenuti za # h}few{Chrome će se ponovo pokrenuti za # h}other{Chrome će se ponovo pokrenuti za # h}}</translation>
+<translation id="1713866023633141719">AI na uređaju je spreman</translation>
 <translation id="1722488837206509557">To će vam omogućiti odabir između dostupnih uređaja i prikaz sadržaja na njima.</translation>
 <translation id="1724094881572874997">Da bi se zaštitio vaš rad u Chromeu, vaša će organizacija moći pregledavati određene podatke ili upravljati njima kad ste prijavljeni u Chrome.</translation>
 <translation id="1769661297620183092">Možete ponovno otvoriti ploču Google pretraživanja kako biste postavljali pitanja dok pregledavate</translation>
@@ -151,6 +152,7 @@
 <translation id="2513154137948333830">Potrebno je ponovno pokretanje: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="251329670120169391">vaša organizacija</translation>
 <translation id="2521391734665471391">Zatvorite AI način Google pretraživanja</translation>
+<translation id="2523048609826818526">Pisanje opće namjene</translation>
 <translation id="2523492931736391680">Vaš je rad siguran u Chromeu</translation>
 <translation id="2534365042754120737">Da biste zaštitili svoje podatke, dopustite Chromeu da ukloni dopuštenja s web-lokacija koje niste posjetili u posljednje vrijeme. Obavijesti se ne zaustavljaju.</translation>
 <translation id="2556847002339236023">Vaša organizacija zatvara Chrome kada se ne upotrebljava <ph name="TIMEOUT_DURATION" />. Podaci o pregledavanju su izbrisani. To može uključivati povijest, automatsko popunjavanje i preuzimanja.</translation>
@@ -249,6 +251,7 @@ Ako ova stranica ne funkcionira ispravno, dopustite optimizaciju.</translation>
 <translation id="3373752068427117404">Neke Chromeove značajke i proširenja imaju prečace. Možete ih ponovo uključiti.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome će se sada ponovo pokrenuti}=1{Chrome će se ponovo pokrenuti za jednu sekundu}one{Chrome će se ponovo pokrenuti za # s}few{Chrome će se ponovo pokrenuti za # s}other{Chrome će se ponovo pokrenuti za # s}}</translation>
 <translation id="3380249972812870825">Da biste otvorili Gemini u Chromeu, pritisnite <ph name="GLOBAL_HOTKEY" /></translation>
+<translation id="3392127217442962664">Chrome je dodao AI koji se izvodi na vašem uređaju. Web-lokacije i Chrome mogu ga upotrebljavati za značajke kao što su:</translation>
 <translation id="3396977131400919238">Došlo je do pogreške operacijskog sustava tijekom instalacije. Ponovno preuzmite program Google Chrome.</translation>
 <translation id="3428747202529429621">Štiti vas na Chromeu i može se upotrebljavati za poboljšanje vaše sigurnosti u drugim Googleovim aplikacijama kada ste prijavljeni</translation>
 <translation id="3438681572027105609">Da biste mogli pristupati svojim zaporkama i drugim podacima na svim svojim uređajima, prijavite se na Chrome</translation>
@@ -298,6 +301,7 @@ Ako ova stranica ne funkcionira ispravno, dopustite optimizaciju.</translation>
 <translation id="3973161977468201858">Google Chrome želi izbrisati vaše podatke Google upravitelja zaporki. Upišite svoju zaporku za Windows da biste to dopustili.</translation>
 <translation id="3984557288004650913">Pomoću gumba Google pretraživanje u Chromeu na alatnoj traci možete ponovno otvoriti Google pretraživanje u Chromeu kako biste postavljali pitanja dok pregledavate</translation>
 <translation id="399788104667917863">Prikvači na alatnu traku</translation>
+<translation id="4000385468528550798">AI na uređaju je ažuriran</translation>
 <translation id="400161754580828648">Da biste dijelili zaslon, u postavkama sustava dopustite snimanje zaslona za Chrome.</translation>
 <translation id="4012899077942246412">Dok ste prijavljeni, možete koristiti svoje zaporke i još mnogo toga sa svojeg Google računa u Chromeu. Da biste to promijenili, idite na Vaš račun u Chromeu.</translation>
 <translation id="4022972681110646219">Prevedi zaslon</translation>
@@ -553,6 +557,7 @@ Ako ova stranica ne funkcionira ispravno, dopustite optimizaciju.</translation>
 <translation id="6632012506031284914">za pretraživanje pomoću Chromea.</translation>
 <translation id="6634299872736643004">Promjene ove postavke primijenit će se nakon ponovnog pokretanja Chromea.</translation>
 <translation id="6644846457769259194">Ažuriranje uređaja (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6659177157954429254">AI na uređaju je ažuriran</translation>
 <translation id="6660596345553328257">Prijaviti se u Chrome?</translation>
 <translation id="6664219008737641504">Ako ste zaboravili šifru ili želite promijeniti tu postavku, <ph name="SETTINGS_LINK" />Chromeove podatke na računu.</translation>
 <translation id="6676384891291319759">Pristup Internetu</translation>
@@ -594,6 +599,7 @@ Ako ova stranica ne funkcionira ispravno, dopustite optimizaciju.</translation>
 <translation id="7024536598735240744">Pogreška pri raspakiranju: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Ovdje se možete prebacivati između profila u Chromeu</translation>
 <translation id="7026856149118332950">Kliknite <ph name="BEGIN_BOLD" />Da<ph name="END_BOLD" /> u obavijesti Windowsa da biste prikvačili Chrome na traku sa zadacima radi brzog pristupa.</translation>
+<translation id="7033785662379319359">Nova, kompaktnija verzija AI-ja na uređaju spremna je za upotrebu za zadatke kao što su sažeci, provjera pravopisa i drugo</translation>
 <translation id="7047386856539490735">Jesu li vam ti rezultati korisni?</translation>
 <translation id="7051685429025310665">U posljednje vrijeme niste posjećivali web-lokaciju. Chrome je uklonio dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="7059914902409643750">Prilagodite Chrome sebi</translation>

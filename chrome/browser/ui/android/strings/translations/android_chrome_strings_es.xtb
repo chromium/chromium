@@ -386,6 +386,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="2496180316473517155">Historial de navegación</translation>
 <translation id="250020030759455918">Verás tu estado de inicio de sesión, datos de navegación y datos del sitio de <ph name="SITE_NAME" /> en Chrome.</translation>
 <translation id="2501278716633472235">Volver</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{# descarga en curso}other{# descargas en curso}}</translation>
 <translation id="2510106555128151389">Instalando <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2512234228327349533">Buscar opciones de compra</translation>
 <translation id="2513403576141822879">Para ver más opciones relacionadas con la privacidad, la seguridad y la recogida de datos, accede a <ph name="BEGIN_LINK" />Sincronización y servicios de Google<ph name="END_LINK" /></translation>
@@ -697,6 +698,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="3740290940447881599">Comprueba que este sitio sea de confianza</translation>
 <translation id="3740525748616366977">La búsqueda por voz no está disponible en este dispositivo</translation>
 <translation id="3749289110408117711">Nombre del archivo</translation>
+<translation id="3751708358601675711">Editar seguimiento de precios</translation>
 <translation id="3756823472711156529">Restaurar grupo</translation>
 <translation id="3759306015475526475">Gestionar la configuración de datos de uso y fallos</translation>
 <translation id="3763110477555836428">Se rellenará un número de tarjeta virtual cuando pagues con esta tarjeta para proteger tus datos reales. Puedes gestionar esto en Google Wallet. <ph name="BEGIN_LINK1" />Más información sobre las tarjetas virtuales<ph name="END_LINK1" /></translation>

@@ -386,6 +386,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="2496180316473517155">Nhật ký duyệt web</translation>
 <translation id="250020030759455918">Trong Chrome, bạn sẽ thấy trạng thái đăng nhập, dữ liệu duyệt web và dữ liệu trang web trên <ph name="SITE_NAME" /></translation>
 <translation id="2501278716633472235">Quay lại</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{Đang tải # tệp xuống}one{# downloads in progress}other{Đang tải # tệp xuống}}</translation>
 <translation id="2510106555128151389">Đang cài đặt <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2512234228327349533">Tìm các lựa chọn mua sản phẩm</translation>
 <translation id="2513403576141822879">Bạn có thể xem thêm tùy chọn cài đặt liên quan đến quyền riêng tư, bảo mật và hoạt động thu thập dữ liệu trong phần <ph name="BEGIN_LINK" />Đồng bộ hóa và dịch vụ của Google<ph name="END_LINK" /></translation>
@@ -697,6 +698,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3740290940447881599">Hãy chắc chắn rằng bạn tin tưởng trang web này</translation>
 <translation id="3740525748616366977">Không dùng được tính năng Tìm kiếm bằng giọng nói trên thiết bị này</translation>
 <translation id="3749289110408117711">Tên tệp</translation>
+<translation id="3751708358601675711">Chỉnh sửa tính năng theo dõi giá</translation>
 <translation id="3756823472711156529">Khôi phục nhóm</translation>
 <translation id="3759306015475526475">Quản lý chế độ cài đặt dữ liệu về mức sử dụng và sự cố</translation>
 <translation id="3763110477555836428">Khi bạn thanh toán bằng thẻ này, số thẻ ảo sẽ được điền để bảo vệ thông tin thật của bạn. Quản lý trong Google Wallet. <ph name="BEGIN_LINK1" />Tìm hiểu thêm về thẻ ảo<ph name="END_LINK1" /></translation>

@@ -386,6 +386,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2496180316473517155">Povijest pregledavanja</translation>
 <translation id="250020030759455918">Vidjet ćete svoj status prijave na <ph name="SITE_NAME" />, podatke o pregledavanju i podatke web-lokacije u Chromeu</translation>
 <translation id="2501278716633472235">Natrag</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{# preuzimanje u tijeku}one{# preuzimanje u tijeku}few{# preuzimanja u tijeku}other{# preuzimanja u tijeku}}</translation>
 <translation id="2510106555128151389">Instalira se <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2512234228327349533">Pretražite opcije kupnje</translation>
 <translation id="2513403576141822879">Više postavki koje se odnose na privatnost, sigurnost i prikupljanje podataka dostupno je u odjeljku <ph name="BEGIN_LINK" />Sinkronizacija i prilagodba<ph name="END_LINK" /></translation>
@@ -697,6 +698,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3740290940447881599">Provjerite možete li smatrati ovu web-lokaciju pouzdanom</translation>
 <translation id="3740525748616366977">Na ovom uređaju glasovno pretraživanje nije dostupno</translation>
 <translation id="3749289110408117711">Naziv datoteke</translation>
+<translation id="3751708358601675711">Uređivanje praćenja cijena</translation>
 <translation id="3756823472711156529">Vrati grupu</translation>
 <translation id="3759306015475526475">Upravljanje postavkama podataka o upotrebi i rušenju</translation>
 <translation id="3763110477555836428">Prilikom naplate pomoću ove kartice popunit će se broj virtualne kartice radi zaštite vaših stvarnih podataka. Tom postavkom možete upravljati u Google Walletu. <ph name="BEGIN_LINK1" />Saznajte više o virtualnim karticama<ph name="END_LINK1" /></translation>

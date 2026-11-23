@@ -1788,6 +1788,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6504541289630702018">Hõlbus juurdepääs töölaua vahelehegruppidele</translation>
 <translation id="6505334220040167806">Vahelehegrupi ahendamine.</translation>
 <translation id="6506996418997555004">Jagamine vahelehegrupiga „<ph name="GROUP_NAME" />“</translation>
+<translation id="650770261448122895">Otsige nähtavat Lensiga</translation>
 <translation id="6507973708545996744">Logige sisse, et hankida lugemisloend kõigisse oma seadmetesse.</translation>
 <translation id="6518133107902771759">Kinnita</translation>
 <translation id="6523575793810663688">Näita, kuidas seda teha</translation>
@@ -2430,6 +2431,7 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="8439758443371991593">Peida valik Lisa lugemisloendisse</translation>
 <translation id="8443986842926457191">URL on pikem kui 2048 tähemärki</translation>
 <translation id="8449869326050867919">Parool on jagatud</translation>
+<translation id="8473367210869452063">Selle saidiga interakteerumiseks peatage praegune ülesanne või oodake, kuni Gemini töö lõpetab.</translation>
 <translation id="8473815223723723001">Muuda pilti Geminiga</translation>
 <translation id="8473863474539038330">Aadressid ja muu</translation>
 <translation id="8474378002946546633">Luba märguanded</translation>

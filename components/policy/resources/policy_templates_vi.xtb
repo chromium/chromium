@@ -2372,6 +2372,13 @@ Chính sách này chỉ là biện pháp tạm thời để kiểm soát tính n
 <translation id="2467181864598429837">Hành vi mặc định của trình duyệt</translation>
 <translation id="2467896267442150508">Khoảng thời gian kéo dài tối đa 1 tuần. Nếu thời gian bắt đầu ở sau thời gian kết thúc, thì khoảng thời gian này sẽ kéo dài trong khoảng đó.</translation>
 <translation id="2476249479201711962">Bật quyền truy cập trình đơn theo bối cảnh của nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
+<translation id="247659494993692492">Việc đặt chính sách này sẽ chỉ định những máy chủ được phép dùng cho tính năng xác thực tích hợp. Tính năng xác thực tích hợp chỉ bật khi <ph name="PRODUCT_NAME" /> nhận được yêu cầu xác thực từ một proxy hoặc từ một máy chủ có trong danh sách cho phép này.
+
+      Nếu chính sách này không được thiết lập, <ph name="PRODUCT_NAME" /> sẽ tìm cách phát hiện xem một máy chủ có thuộc mạng nội bộ hay không. Chỉ khi đó, ứng dụng này mới phản hồi yêu cầu IWA. Nếu phát hiện một máy chủ là từ Internet, <ph name="PRODUCT_NAME" /> sẽ bỏ qua yêu cầu IWA từ máy chủ đó.
+
+      Lưu ý: Hãy phân tách tên của các máy chủ bằng dấu phẩy. Cho phép sử dụng ký tự đại diện <ph name="WILDCARD_VALUE" />.
+
+      Trên <ph name="LINUX_OS_NAME" />, <ph name="MAC_OS_NAME" /> và <ph name="PRODUCT_OS_NAME" />, thư viện GSSAPI/Kerberos của hệ thống có thể chuẩn hoá tên của một máy chủ thành một máy chủ lưu trữ khác của chủ thể dịch vụ (ví dụ: thông qua việc tra cứu bản ghi CNAME trong DNS hoặc bản ghi PTR trong DNS phân giải ngược). Khi đó, cơ chế xác thực Negotiate sẽ không thành công trừ phi máy chủ lưu trữ đó cũng được chính sách này cho phép.</translation>
 <translation id="2478756867046106663">Cho phép trang web có trải nghiệm lừa gạt mở cửa sổ hoặc thẻ mới</translation>
 <translation id="2479760962196319822">Chính sách này kiểm soát việc người dùng <ph name="PRODUCT_OS_NAME" /> có thể lưu trữ dữ liệu trên máy hay không.
       Nếu bạn đặt chính sách này thành False thì hệ thống sẽ chặn quyền truy cập vào bộ nhớ cục bộ trên <ph name="PRODUCT_OS_NAME" />, tức là người dùng không thể lưu trữ dữ liệu trên máy và cũng không thể truy cập vào các thư mục trên máy.
@@ -2500,6 +2507,19 @@ Nếu bạn đặt chính sách này thành Tắt, tính năng mã hoá nội du
 <translation id="2521581787935130926">Hiển thị lối tắt ứng dụng trong thanh dấu trang</translation>
 <translation id="2522304491589804974">Định cấu hình danh sách cho phép cài đặt tiện ích</translation>
 <translation id="2523511232831599126">Bật lối tắt hỗ trợ tiếp cận trên màn hình đăng nhập</translation>
+<translation id="2524400223625951315">Chỉ định hành vi cho các tiện ích bị buộc cài đặt trong Chế độ biệt lập.
+
+Chính sách này áp dụng cho các tiện ích được định cấu hình thông qua <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> hoặc có <ph name="INSTALLATION_MODE_FIELD" /> được đặt thành <ph name="FORCE_INSTALLED_VALUE" /> trong <ph name="EXTENSION_SETTINGS_POLICY_NAME" />. Các tiện ích được định cấu hình với <ph name="INSTALLATION_MODE_FIELD" /> được đặt thành <ph name="NORMAL_INSTALLED_VALUE" /> sẽ do <ph name="ISOLATED_MODE_USER_INSTALLED_EXTENSIONS_SETTINGS_POLICY_NAME" /> kiểm soát.
+
+Nếu chính sách này được đặt thành 0 (luôn bật) hoặc không được thiết lập, các tiện ích bị buộc cài đặt sẽ luôn bật trong Chế độ biệt lập và người dùng sẽ không thể tắt.
+
+Nếu chính sách này được đặt thành 1 (bật theo mặc định), các tiện ích bị buộc cài đặt sẽ được bật theo mặc định trong Chế độ biệt lập và người dùng có thể tắt các tiện ích đó. Lựa chọn của người dùng sẽ được ưu tiên miễn là chính sách vẫn được đặt thành 1. Bên ngoài Chế độ biệt lập, người dùng vẫn không thể tắt các tiện ích bị buộc cài đặt.
+
+Những tiện ích đặt <ph name="INCOGNITO_MANIFEST_KEY" /> thành <ph name="INCOGNITO_NOT_ALLOWED_VALUE" /> trong tệp kê khai không thể chạy ở Chế độ biệt lập, bất kể chính sách này được thiết lập như thế nào.
+
+Chính sách này chỉ có hiệu lực khi chính sách <ph name="ISOLATED_MODE_SETTINGS_POLICY_NAME" /> cũng bật.
+
+Chính sách này yêu cầu phải có giấy phép <ph name="CHROME_ENTERPRISE_PREMIUM_NAME" /> thì mới có hiệu lực.</translation>
 <translation id="252742292004421898">Cho phép Direct Sockets API trên các trang web này</translation>
 <translation id="2528762900096510743">Bật dịch vụ tự động đăng xuất</translation>
 <translation id="2529880111512635313">Định cấu hình danh sách các ứng dụng và tiện ích buộc phải cài đặt</translation>
@@ -3971,6 +3991,7 @@ Tính năng này đã bị loại bỏ trong Chrome 145. Bạn nên sử dụng 
 
       Nếu bạn không đặt chính sách này cho một trang web, thì hệ thống sẽ áp dụng chính sách của <ph name="DEFAULT_LOCAL_FONTS_SETTING_POLICY_NAME" /> cho trang web đó (nếu có), còn không thì quyền kiểm soát sẽ tuân theo chế độ mặc định của trình duyệt và cho phép người dùng chọn quyền này trên từng trang web.</translation>
 <translation id="3435796032110614169">Cho phép xóa lịch sử lệnh in</translation>
+<translation id="3435849940943480491">Các tiện ích bị buộc cài đặt sẽ luôn được bật trong Chế độ biệt lập và không tắt được</translation>
 <translation id="3436217793443508863">Khoảng thời gian (tính bằng mili giây) kể từ khi không có hoạt động đầu vào của người dùng cho đến thời điểm màn hình bị khóa khi chạy bằng pin</translation>
 <translation id="3437391374720747482">Ưu tiên các phương thức trao đổi khoá đáp ứng các yêu cầu của CNSA 2.0</translation>
 <translation id="3437924696598384725">Cho phép người dùng quản lý các tùy chọn kết nối VPN</translation>
@@ -4737,6 +4758,11 @@ Bạn có thể kết hợp chính sách này với <ph name="POLICY_CLOUD_POLIC
 
       Lưu ý: Bạn phải sử dụng chính sách này với <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />.</translation>
 <translation id="3918339829588313389">Cho phép người dùng đặt mã PIN yếu</translation>
+<translation id="3920151704940430728">Việc đặt chính sách này thành Enabled (Bật) sẽ bỏ qua quá trình tra cứu bản ghi CNAME. Khi đó, tên máy chủ bạn đã nhập khi tạo SPN Kerberos sẽ được sử dụng.
+
+Nếu chính sách này được đặt thành Disabled (Tắt) hoặc không được thiết lập, quá trình tra cứu bản ghi CNAME sẽ xác định tên chuẩn của máy chủ khi tạo SPN Kerberos.
+
+Lưu ý: Trên <ph name="LINUX_OS_NAME" />, <ph name="MAC_OS_NAME" /> và <ph name="PRODUCT_OS_NAME" />, việc bật chính sách này sẽ bỏ qua bước tự tra cứu bản ghi CNAME của <ph name="PRODUCT_NAME" />, nhưng thư viện GSSAPI/Kerberos của hệ thống vẫn có thể chuẩn hoá máy chủ lưu trữ của chủ thể dịch vụ (ví dụ: thông qua chế độ cài đặt DNS <ph name="KRB5_CONFIG" />). Khi đó, cơ chế xác thực Negotiate sẽ không thành công trừ phi máy chủ lưu trữ đó được <ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" /> cho phép. Đồng thời, việc uỷ quyền sẽ bị từ chối trừ phi cũng được <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> cho phép.</translation>
 <translation id="392227823425989489">Tất cả phím tắt của hệ thống sẽ luôn kích hoạt như dự kiến.</translation>
 <translation id="3924506460382372403">Tắt tính năng báo cáo trạng thái đồ hoạ của thiết bị</translation>
 <translation id="3925377537407648234">Đặt độ phân giải màn hình và hệ số tỷ lệ</translation>
@@ -6362,6 +6388,7 @@ Bạn không nên tắt tính năng giải mã video có tăng tốc phần cứ
 <translation id="4927797103413916381">Nếu bạn không Tắt <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" />, thì khi đặt <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> thành Bật hoặc không đặt, những trang web có trải nghiệm lừa gạt sẽ không thể mở thẻ hoặc cửa sổ mới.
 
        Khi bạn đặt <ph name="SAFE_BROWSING_ENABLED_POLICY_NAME" /> hoặc <ph name="ABUSIVE_EXPERIENCE_INTERVENTION_ENFORCE_POLICY_NAME" /> thành Tắt, những trang web có trải nghiệm lừa gạt có thể mở thẻ hoặc cửa sổ mới.</translation>
+<translation id="4928435626872799127">Kiểm soát hành vi của tiện ích bị buộc cài đặt trong Chế độ biệt lập</translation>
 <translation id="4929721861648439998">Bật tính năng hỗ trợ tiếp cận về đơn âm trên màn hình đăng nhập.
 
           Tính năng này cho phép chuyển đổi chế độ thiết bị từ âm thanh nổi mặc định sang đơn âm.
@@ -6865,6 +6892,13 @@ Chính sách này hỗ trợ tính năng làm mới động.
 Chính sách này chỉ là biện pháp tạm thời và sẽ bị xoá trong phiên bản <ph name="PRODUCT_NAME" /> trong tương lai.</translation>
 <translation id="5212810195096589189">Chỉ định quyền của CLI máy ảo</translation>
 <translation id="5213038356678567351">Các trang web sẽ không bao giờ kích hoạt quá trình chuyển trình duyệt.</translation>
+<translation id="5213420013031914763">Việc đặt chính sách này thành Enabled (Bật) sẽ không cho phép chụp ảnh màn hình bằng phím tắt hoặc API tiện ích. Việc đặt chính sách này thành Disabled (Tắt) hoặc không đặt sẽ cho phép chụp ảnh màn hình.
+
+Trong các phiên bản <ph name="PRODUCT_NAME" /> từ 155 đến 158, việc bật chính sách này cũng có thể ngăn các tiện ích đính kèm trình gỡ lỗi thông qua "chrome.debugger.attach()", chẳng hạn như khi chính sách <ph name="CHROME_VARIATIONS_POLICY_NAME" /> tắt tất cả các biến thể.
+
+Xin lưu ý rằng chính sách này không ngăn việc chụp ảnh màn hình bằng hệ điều hành hoặc các ứng dụng của bên thứ ba trên <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> và <ph name="LINUX_OS_NAME" />.
+
+Trên <ph name="IOS_NAME" />, việc đặt chính sách này thành Enabled (Bật) sẽ che khuất các cửa sổ <ph name="PRODUCT_NAME" /> trong ảnh chụp màn hình và bản ghi màn hình của hệ thống, đồng thời vô hiệu hoá tính năng chụp ảnh màn hình Toàn trang.</translation>
 <translation id="5216710229085956333">Bật tính năng khử tiếng ồn của Krisp</translation>
 <translation id="5216815237712190041">Định cấu hình hình nền cấp thiết bị hiện trên màn hình đăng nhập nếu chưa có người dùng nào đăng nhập vào thiết bị này. Bạn có thể thiết lập chính sách này bằng cách chỉ định URL nơi thiết bị ChromeOS có thể tải hình nền xuống và chỉ định một hàm băm mật mã dùng để xác minh tính toàn vẹn của tệp tải xuống. Định dạng của hình ảnh phải là JPEG, kích thước tệp không được vượt quá 16 MB. URL phải truy cập được mà không có hình thức xác thực nào. Hình nền sẽ được tải xuống và lưu vào bộ nhớ đệm. Tệp này sẽ được tải xuống mỗi khi URL hoặc hàm băm thay đổi.
 
@@ -9950,6 +9984,7 @@ Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên b
 <translation id="7054840304131108563">Tắt bộ tính năng hỗ trợ tiếp cận của trình kết xuất</translation>
 <translation id="7055022222176591388">Không cho phép <ph name="FLASH_PLUGIN_NAME" /> lỗi thời</translation>
 <translation id="7056040036973126753">Dữ liệu về Độ tin cậy của miền có thể được gửi đến Google, tuỳ thuộc vào chính sách Chỉ số người dùng của Chrome (UMA)</translation>
+<translation id="7057522375529097624">Các tiện ích bị buộc cài đặt sẽ được bật theo mặc định trong Chế độ biệt lập và có thể tắt được</translation>
 <translation id="7062803946218028349">Cho phép bật Trung tâm điều khiển điện thoại</translation>
 <translation id="7063646777978847358">Chính sách này kiểm soát việc có hạn chế các yêu cầu tìm nạp ở chế độ nền từ Trình chạy dịch vụ hay không. Nếu một tính năng tải tệp xuống ở chế độ nền bị ảnh hưởng, thì chính sách này có thể phù hợp.
 
@@ -11560,6 +11595,11 @@ Có nhiều chính sách liệt kê những nguồn gốc ảnh hưởng đến 
 <translation id="8062485064082966327">Dùng một dịch vụ ẩn danh của Google để cung cấp nội dung mô tả tự động cho những hình ảnh chưa gắn nhãn</translation>
 <translation id="8064875716442437829">Bật tính năng hỗ trợ tiếp cận của trình kết xuất</translation>
 <translation id="8066428282805800713">Gửi thêm dữ liệu phần cứng trên ChromeOS Flex</translation>
+<translation id="8070654368411601340">Việc đặt chính sách này sẽ chỉ định những máy chủ mà <ph name="PRODUCT_NAME" /> có thể ủy quyền. Hãy phân tách tên của các máy chủ bằng dấu phẩy. Cho phép sử dụng ký tự đại diện <ph name="WILDCARD_VALUE" />.
+
+      Nếu chính sách này không được thiết lập, <ph name="PRODUCT_NAME" /> sẽ không ủy quyền thông tin đăng nhập của người dùng ngay cả khi máy chủ được phát hiện là mạng nội bộ.
+
+      Trên <ph name="LINUX_OS_NAME" />, <ph name="MAC_OS_NAME" /> và <ph name="PRODUCT_OS_NAME" />, khi chính sách này cho phép uỷ quyền cho một máy chủ, thư viện GSSAPI/Kerberos của hệ thống có thể chuẩn hoá tên máy chủ đó thành một máy chủ lưu trữ khác của chủ thể dịch vụ (ví dụ: thông qua việc tra cứu bản ghi CNAME trong DNS hoặc bản ghi PTR trong DNS phân giải ngược). Khi đó, <ph name="PRODUCT_NAME" /> sẽ từ chối uỷ quyền từ chủ thể dịch vụ này, trừ phi máy chủ đó cũng được chính sách này cho phép.</translation>
 <translation id="8071371098891664137">Nếu bạn chọn <ph name="PRINTERS_BLOCKLIST" /> cho <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, thì việc đặt <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> sẽ chỉ định những máy in mà người dùng không thể sử dụng. Tất cả máy in sẽ được cung cấp cho người dùng, ngoại trừ những mã nhận dạng được liệt kê trong chính sách này. Các mã nhận dạng này phải tương ứng với trường <ph name="ID_FIELD" /> hoặc <ph name="GUID_FIELD" /> ở tệp được chỉ định trong <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="8076539570602616846">Hạn chế những Tài khoản Google đủ điều kiện lưu tệp PDF vào Google Drive từ Trình xem PDF <ph name="PRODUCT_NAME" /></translation>
 <translation id="8078224178125125527">Việc đặt chính sách này sẽ chỉ định những máy chủ proxy nào được phép dùng tất cả lược đồ xác thực HTTP mà <ph name="PRODUCT_NAME" /> hỗ trợ, bất kể chính sách <ph name="AUTH_SCHEMES_POLICY_NAME" />.
