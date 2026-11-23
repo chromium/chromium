@@ -523,6 +523,9 @@
     <message name="IDS_SETTINGS_PAYMENTS_SAVED_TO_THIS_DEVICE_ONLY" desc="Shown in the payments section of settings. Descriptive text to inform the user that this credit card will be saved to local device only.">
      This card will be saved to this device only
     </message>
+    <message name="IDS_SETTINGS_PAYMENTS_SAVED_TO_GOOGLE_ACCOUNT" desc="Shown in the payments section of settings when adding or editing a payment card. Informs the user about Google Payments Terms of Service, Privacy Notice, and that the card is saved to their Google Account.">
+      By continuing, you agree to the Google Payments Terms of Service. The Privacy Notice describes how your data is handled. Your card is saved to your Google Account, <ph name="ACCOUNT">$1<ex>elisa.g.beckett@gmail.com</ex></ph>.
+    </message>
     <message name="IDS_SETTINGS_CREDIT_AND_DEBIT_CARD_TITLE" desc="Title of a payment cards chip on Your Saved Info page in settings.">
       Credit &amp; debit cards
     </message>

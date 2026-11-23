@@ -5,15 +5,23 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
+import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import type {CrInputElement, SettingsSimpleConfirmationDialogElement, SettingsCreditCardEditDialogElement, SettingsCreditCardEditDialogV2Element, SettingsVirtualCardUnenrollDialogElement} from 'chrome://settings/lazy_load.js';
 import {PaymentsManagerImpl} from 'chrome://settings/lazy_load.js';
-import {loadTimeData, PrefService} from 'chrome://settings/settings.js';
+import {loadTimeData, PrefService, ProfileInfoBrowserProxyImpl} from 'chrome://settings/settings.js';
+// <if expr="not is_chromeos">
+import {SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+// </if>
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible, microtasksFinished, whenAttributeIs} from 'chrome://webui-test/test_util.js';
 
 import type {TestPaymentsManager} from './autofill_fake_data.js';
 import {createCreditCardEntry, createEmptyCreditCardEntry} from './autofill_fake_data.js';
 import {createPaymentsPage, getDefaultExpectations, getFirstCreditCardEntry, getLocalAndServerCreditCardListItems, setupPaymentsPrefs} from './payments_page_test_utils.js';
+import {TestProfileInfoBrowserProxy} from './test_profile_info_browser_proxy.js';
+// <if expr="not is_chromeos">
+import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
+// </if>
 
 // clang-format on
 
@@ -627,6 +635,10 @@ suite('PaymentsPageCardDialogs', function() {
 
 suite('PaymentsPageCardDialogsV2', function() {
   let prefService: PrefService;
+  let profileInfoBrowserProxy: TestProfileInfoBrowserProxy;
+  // <if expr="not is_chromeos">
+  let syncBrowserProxy: TestSyncBrowserProxy;
+  // </if>
 
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -634,6 +646,12 @@ suite('PaymentsPageCardDialogsV2', function() {
       migrationEnabled: true,
       showIbansSettings: true,
     });
+    profileInfoBrowserProxy = new TestProfileInfoBrowserProxy();
+    ProfileInfoBrowserProxyImpl.setInstance(profileInfoBrowserProxy);
+    // <if expr="not is_chromeos">
+    syncBrowserProxy = new TestSyncBrowserProxy();
+    SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
+    // </if>
     await setupPaymentsPrefs();
     prefService = PrefService.getInstance();
   });
@@ -683,7 +701,7 @@ suite('PaymentsPageCardDialogsV2', function() {
     const oldCreditCardDialog = createCreditCardDialog(oldCreditCard);
 
     function getTitle(dialog: SettingsCreditCardEditDialogV2Element): string {
-      return dialog.shadowRoot.querySelector('[slot=title]')!.textContent;
+      return dialog.shadowRoot.querySelector('#title > span')!.textContent;
     }
 
     const oldTitle = getTitle(oldCreditCardDialog);
@@ -699,71 +717,78 @@ suite('PaymentsPageCardDialogsV2', function() {
     ]);
   });
 
-  test('verifyExpiredCreditCardYear', async function() {
-    const creditCard = createCreditCardEntry();
+  test('verifyAddCreditCardExpirationDate', async function() {
+    const newCreditCard = createEmptyCreditCardEntry();
+    const newDialog = createCreditCardDialog(newCreditCard);
+    await whenAttributeIs(newDialog.$.dialog, 'open', '');
 
-    // 2015 is over unless time goes wobbly.
-    const twentyFifteen = 2015;
-    creditCard.expirationYear = twentyFifteen.toString();
-
-    const creditCardDialog = createCreditCardDialog(creditCard);
-
-    await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
-    const now = new Date();
-    const maxYear = now.getFullYear() + 19;
-    const yearInput = creditCardDialog.$.year;
-    const yearOptions = yearInput.options;
-
-    assertEquals('2015', yearOptions[0]!.textContent.trim());
-    assertEquals(
-        maxYear.toString(),
-        yearOptions[yearOptions.length - 1]!.textContent.trim());
-    assertEquals(creditCard.expirationYear, yearInput.value);
+    // Adding a new card leaves expirationDateInput empty so the MM/YY
+    // placeholder is shown, and saveButton starts disabled.
+    assertEquals('', newDialog.$.expirationDateInput.value);
+    assertFalse(newDialog.$.expirationDateInput.invalid);
+    assertTrue(newDialog.$.saveButton.disabled);
   });
 
-  test('verifyVeryFutureCreditCardYear', async function() {
-    const creditCard = createCreditCardEntry();
+  test('verifyEditCreditCardExpirationDate', async function() {
+    // Editing an existing card pre-populates MM/YY with a leading 0 on single
+    // digit months and enables saveButton when the card is valid.
+    const existingCard = createCreditCardEntry();
+    existingCard.expirationMonth = '5';
+    existingCard.expirationYear = '2099';
+    const editDialog = createCreditCardDialog(existingCard);
+    await whenAttributeIs(editDialog.$.dialog, 'open', '');
 
-    // Expiring 25 years from now is unusual.
-    const now = new Date();
-    const farFutureYear = now.getFullYear() + 25;
-    creditCard.expirationYear = farFutureYear.toString();
-
-    const creditCardDialog = createCreditCardDialog(creditCard);
-
-    await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
-    const yearInput = creditCardDialog.$.year;
-    const yearOptions = yearInput.options;
-
-    assertEquals(
-        now.getFullYear().toString(), yearOptions[0]!.textContent.trim());
-    assertEquals(
-        farFutureYear.toString(),
-        yearOptions[yearOptions.length - 1]!.textContent.trim());
-    assertEquals(creditCard.expirationYear, yearInput.value);
+    assertEquals('05/99', editDialog.$.expirationDateInput.value);
+    assertFalse(editDialog.$.expirationDateInput.invalid);
+    assertFalse(editDialog.$.saveButton.disabled);
   });
 
-  test('verifyVeryNormalCreditCardYear', async function() {
-    const creditCard = createCreditCardEntry();
-
-    // Expiring 2 years from now is not unusual.
-    const now = new Date();
-    const nearFutureYear = now.getFullYear() + 2;
-    creditCard.expirationYear = nearFutureYear.toString();
-    const maxYear = now.getFullYear() + 19;
-
+  test('verifyExpirationDateFormattingAndValidation', async function() {
+    const creditCard = createEmptyCreditCardEntry();
     const creditCardDialog = createCreditCardDialog(creditCard);
-
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
-    const yearInput = creditCardDialog.$.year;
-    const yearOptions = yearInput.options;
 
-    assertEquals(
-        now.getFullYear().toString(), yearOptions[0]!.textContent.trim());
-    assertEquals(
-        maxYear.toString(),
-        yearOptions[yearOptions.length - 1]!.textContent.trim());
-    assertEquals(creditCard.expirationYear, yearInput.value);
+    const numberInput = creditCardDialog.$.numberInput;
+    const expirationInput = creditCardDialog.$.expirationDateInput;
+    const saveButton = creditCardDialog.$.saveButton;
+
+    await simulateInput(numberInput, '4444333322221111');
+    assertTrue(saveButton.disabled);
+
+    // Typing 2 digits automatically appends '/'. While still typing, no error
+    // is shown, but Save remains disabled.
+    await simulateInput(expirationInput, '06');
+    assertEquals('06/', expirationInput.value);
+    assertFalse(expirationInput.invalid);
+    assertTrue(saveButton.disabled);
+
+    // Blurring an incomplete expiration date marks it invalid with error.
+    expirationInput.blur();
+    await microtasksFinished();
+    assertTrue(expirationInput.invalid);
+    assertTrue(saveButton.disabled);
+
+    // Invalid months (< 01 or > 12) immediately show an error even before blur.
+    for (const invalidMonth of ['00', '13', '19/99']) {
+      await simulateInput(expirationInput, invalidMonth);
+      assertTrue(
+          expirationInput.invalid,
+          `Expected ${invalidMonth} to be marked invalid`);
+      assertTrue(saveButton.disabled);
+    }
+
+    // Expired dates in the past are marked invalid.
+    await simulateInput(expirationInput, '0120');
+    assertEquals('01/20', expirationInput.value);
+    assertTrue(expirationInput.invalid);
+    assertTrue(saveButton.disabled);
+
+    // Non-digit characters are stripped and input is capped at 4 digits
+    // (MM/YY).
+    await simulateInput(expirationInput, '12a/9987');
+    assertEquals('12/99', expirationInput.value);
+    assertFalse(expirationInput.invalid);
+    assertFalse(saveButton.disabled);
   });
 
   test('verifySaveNewCreditCard', async function() {
@@ -776,18 +801,18 @@ suite('PaymentsPageCardDialogsV2', function() {
         creditCard, {payment_cvc_storage: {value: true}});
     await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
 
-    // Not expired, but still can't be saved, because there's no card number.
-    const expiredError = creditCardDialog.$.expiredError;
-    assertEquals('hidden', getComputedStyle(expiredError).visibility);
-
+    // Can't be saved yet because there's no card number or expiration date.
     const saveButton = creditCardDialog.$.saveButton;
     assertTrue(saveButton.disabled);
 
-    // Add a card number to enable saving.
+    // Add a card number; still disabled until expiration date is entered.
     creditCardDialog.$.numberInput.value = '4444333322221111';
     await microtasksFinished();
+    assertTrue(saveButton.disabled);
 
-    assertEquals('hidden', getComputedStyle(expiredError).visibility);
+    // Add a valid expiration date to enable saving.
+    creditCardDialog.$.expirationDateInput.value = '12/99';
+    await microtasksFinished();
     assertFalse(saveButton.disabled);
 
     const cvcInput =
@@ -803,6 +828,8 @@ suite('PaymentsPageCardDialogsV2', function() {
     const event = await savedPromise;
 
     assertEquals(creditCard.guid, event.detail.guid);
+    assertEquals('12', event.detail.expirationMonth);
+    assertEquals('2099', event.detail.expirationYear);
     assertEquals(creditCard.cvc, event.detail.cvc);
   });
 
@@ -1101,4 +1128,118 @@ suite('PaymentsPageCardDialogsV2', function() {
     assertEquals(
         loadTimeData.getString('creditCardCvcImageTitle'), cvcInputImage.title);
   });
+
+  test('verifyUpdateOnProfileInfoChanged', async function() {
+    const dialog = createCreditCardDialog(createEmptyCreditCardEntry());
+    await whenAttributeIs(dialog.$.dialog, 'open', '');
+    await profileInfoBrowserProxy.whenCalled('getProfileInfo');
+
+    webUIListenerCallback(
+        'profile-info-changed', {name: 'New Name', iconUrl: ''});
+    await microtasksFinished();
+
+    assertTrue(dialog.$.dialog.open);
+    assertEquals(
+        'New Name',
+        dialog.shadowRoot.querySelector('#profile-name')!.textContent.trim());
+  });
+
+  // <if expr="not is_chromeos">
+  test('verifyUpdateOnStoredAccountsUpdated', async function() {
+    syncBrowserProxy.storedAccounts = [{
+      fullName: 'Elisa Beckett',
+      givenName: 'Elisa',
+      email: 'elisa@gmail.com',
+      avatarImage: '',
+      isPrimaryAccount: true,
+    }];
+    const dialog = createCreditCardDialog(createEmptyCreditCardEntry());
+    await whenAttributeIs(dialog.$.dialog, 'open', '');
+    await syncBrowserProxy.whenCalled('getStoredAccounts');
+    await microtasksFinished();
+
+    assertEquals(
+        'Elisa Beckett',
+        dialog.shadowRoot.querySelector('#profile-name')!.textContent.trim());
+    assertEquals(
+        'elisa@gmail.com',
+        dialog.shadowRoot.querySelector('#profile-email')!.textContent.trim());
+
+    webUIListenerCallback('stored-accounts-updated', [{
+                            fullName: 'Updated Name',
+                            givenName: 'Updated',
+                            email: 'updated@gmail.com',
+                            avatarImage: '',
+                            isPrimaryAccount: true,
+                          }]);
+    await microtasksFinished();
+
+    assertTrue(dialog.$.dialog.open);
+    assertEquals(
+        'Updated Name',
+        dialog.shadowRoot.querySelector('#profile-name')!.textContent.trim());
+    assertEquals(
+        'updated@gmail.com',
+        dialog.shadowRoot.querySelector('#profile-email')!.textContent.trim());
+    assertEquals(
+        loadTimeData.getStringF(
+            'paymentsSavedToGoogleAccount', 'updated@gmail.com'),
+        dialog.shadowRoot.querySelector('#saved-to-google-account-label')!
+            .textContent.trim());
+
+    webUIListenerCallback('stored-accounts-updated', []);
+    await microtasksFinished();
+
+    assertTrue(dialog.$.dialog.open);
+    assertEquals(
+        '',
+        dialog.shadowRoot.querySelector('#profile-email')!.textContent.trim());
+    assertFalse(
+        !!dialog.shadowRoot.querySelector('#saved-to-google-account-label'));
+    assertTrue(
+        !!dialog.shadowRoot.querySelector('#saved-to-this-device-only-label'));
+  });
+
+  test(
+      'verifySavedToGoogleAccountLabelHiddenWithoutPrimaryAccount',
+      async function() {
+        syncBrowserProxy.storedAccounts = [];
+        const dialog = createCreditCardDialog(createEmptyCreditCardEntry());
+        await whenAttributeIs(dialog.$.dialog, 'open', '');
+        await syncBrowserProxy.whenCalled('getStoredAccounts');
+        await microtasksFinished();
+
+        assertFalse(!!dialog.shadowRoot.querySelector(
+            '#saved-to-google-account-label'));
+        assertTrue(isVisible(dialog.shadowRoot.querySelector(
+            '#saved-to-this-device-only-label')));
+      });
+
+  test(
+      'verifySavedToGoogleAccountLabelShownWithPrimaryAccount',
+      async function() {
+        syncBrowserProxy.storedAccounts = [{
+          fullName: 'Elisa Beckett',
+          givenName: 'Elisa',
+          email: 'elisa@gmail.com',
+          avatarImage: '',
+          isPrimaryAccount: true,
+        }];
+        const dialog = createCreditCardDialog(createEmptyCreditCardEntry());
+        await whenAttributeIs(dialog.$.dialog, 'open', '');
+        await syncBrowserProxy.whenCalled('getStoredAccounts');
+        await microtasksFinished();
+
+        assertFalse(!!dialog.shadowRoot.querySelector(
+            '#saved-to-this-device-only-label'));
+        const label = dialog.shadowRoot.querySelector<HTMLElement>(
+            '#saved-to-google-account-label');
+        assertTrue(!!label);
+        assertTrue(isVisible(label));
+        assertEquals(
+            loadTimeData.getStringF(
+                'paymentsSavedToGoogleAccount', 'elisa@gmail.com'),
+            label.textContent.trim());
+      });
+  // </if>
 });

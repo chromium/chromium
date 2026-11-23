@@ -6,58 +6,46 @@
  * #type=style-lit
  * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
- * #import=chrome://resources/cr_elements/md_select_lit.css.js
  * #import=../../settings_shared_lit.css.js
  * #import=../../settings_vars.css.js
- * #include=cr-shared-style-lit settings-shared-lit md-select-lit
+ * #include=cr-shared-style-lit settings-shared-lit
  * #css_wrapper_metadata_end */
 
 cr-input {
   /* Larger cr-input margin (by reserving space for error display). */
   --cr-input-error-display: block;
-  margin-bottom: 0;
-  width: var(--cr-default-input-max-width);
 }
 
-.md-select + .md-select {
-  margin-inline-start: 8px;
+#title {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
 }
 
-#numberInput {
-  /* Add a larger gap between the card input and the 'Expiration date'
-     text, as the default height for cr-input does not leave enough room
-     for the error text when it is visible. */
-  margin-bottom: 10px;
+[slot='body'] {
+  column-gap: 10px;
+  display: flex;
+  flex-wrap: wrap;
 }
 
-#month {
-  width: 70px;
+#numberInput,
+#nameInput,
+#saved-to-google-account-label,
+#saved-to-this-device-only-label {
+  flex: 1 0 100%;
+  width: 100%;
 }
 
-#cvcInput {
-  width: 132px;
+#expirationDateInput,
+#cvcInput,
+#nicknameInput {
+  --cr-input-width: 100%;
+  flex: 1 1 0;
+  width: auto;
 }
 
 #cvcImage {
   margin-inline-start: 10px;
-}
-
-#saved-to-this-device-only-label {
-  /* Overall space between input fields, including space between
-     nicknameInput and saved-to-this-device text, between
-     saved-to-this-device text and button. */
-  margin-bottom: 10px;
-  margin-top: 0;
-}
-
-#year {
-  width: 100px;
-}
-
-/* For nickname input, cr-input-width is the same as other input fields */
-#nicknameInput {
-  --cr-input-width: var(--cr-default-input-max-width);
-  width: fit-content;
 }
 
 #charCount {
@@ -66,28 +54,24 @@ cr-input {
   padding-inline-start: 8px;
 }
 
-/* Same style as cr-input error except margin-top. */
-#expiredError {
-  display: block;
-  font-size: var(--cr-form-field-label-font-size);
-  height: var(--cr-form-field-label-height);
-  line-height: var(--cr-form-field-label-line-height);
-  margin: 8px 0;
-  visibility: hidden;
+#footer {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
 }
 
-:host([expired_]) #expiredError {
-  visibility: visible;
+#profile-info {
+  align-items: center;
+  display: flex;
 }
 
-#expiredError,
-:host([expired_]) #expiration {
-  color: var(--google-red-600);
+#profile-icon {
+  background: center / cover no-repeat;
+  border-radius: 20px;
+  height: 40px;
+  width: 40px;
 }
 
-@media (prefers-color-scheme: dark) {
-  #expiredError,
-  :host([expired_]) #expiration {
-    color: var(--google-red-300);
-  }
+#button-container {
+  display: flex;
 }

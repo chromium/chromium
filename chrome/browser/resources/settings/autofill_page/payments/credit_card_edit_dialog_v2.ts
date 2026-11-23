@@ -11,16 +11,28 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 
+import type {ProfileInfo} from '/shared/settings/people_page/profile_info_browser_proxy.js';
+import {ProfileInfoBrowserProxyImpl} from '/shared/settings/people_page/profile_info_browser_proxy.js';
+// <if expr="not is_chromeos">
+import type {StoredAccount} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
+// </if>
 import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_observer_mixin_lit.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
+import {getImage} from 'chrome://resources/js/icon.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
+// <if expr="is_chromeos">
+import {AccountManagerBrowserProxyImpl} from '../../people_page/account_manager_browser_proxy.js';
+
+// </if>
 
 import {getCss} from './credit_card_edit_dialog_v2.css.js';
 import {getHtml} from './credit_card_edit_dialog_v2.html.js';
@@ -32,12 +44,14 @@ import {getHtml} from './credit_card_edit_dialog_v2.html.js';
 const NICKNAME_INVALID_REGEX: RegExp = new RegExp('.*\\d+.*');
 
 /**
- * Enum of possible states for the credit card number. A card number is valid
- * if it is of a supported length and passes a Luhn check. Otherwise, it is
- * invalid and we may show an error to the user in cases where we are certain
- * they have entered an invalid card (i.e. vs still typing).
+ * Enum of possible states for the credit card number and expiration date. A
+ * card number is valid if it is of a supported length and passes a Luhn
+ * check. An expiration date is valid if it is a complete MM/YY date with a
+ * valid month (01-12) that is not in the past. Otherwise, the input is invalid
+ * and we may show an error to the user in cases where we are certain they have
+ * entered an invalid value (i.e. vs still typing).
  */
-enum CardNumberValidationState {
+enum ValidationState {
   VALID = 'valid',
   INVALID_NO_ERROR = 'invalid-no-error',
   INVALID_WITH_ERROR = 'invalid-with-error',
@@ -53,18 +67,16 @@ export interface SettingsCreditCardEditDialogV2Element {
   $: {
     cancelButton: CrButtonElement,
     dialog: CrDialogElement,
-    expiredError: HTMLElement,
-    month: HTMLSelectElement,
+    expirationDateInput: CrInputElement,
     nameInput: CrInputElement,
     nicknameInput: CrInputElement,
     numberInput: CrInputElement,
     saveButton: CrButtonElement,
-    year: HTMLSelectElement,
   };
 }
 
-const SettingsCreditCardEditDialogV2ElementBase =
-    PrefServiceObserverMixinLit(I18nMixinLit(CrLitElement));
+const SettingsCreditCardEditDialogV2ElementBase = WebUiListenerMixinLit(
+    PrefServiceObserverMixinLit(I18nMixinLit(CrLitElement)));
 
 export class SettingsCreditCardEditDialogV2Element extends
     SettingsCreditCardEditDialogV2ElementBase {
@@ -98,14 +110,6 @@ export class SettingsCreditCardEditDialogV2Element extends
       title_: {type: String},
 
       /**
-       * The list of months to show in the dropdown.
-       */
-      monthList_: {type: Array},
-
-      /** The list of years to show in the dropdown. */
-      yearList_: {type: Array},
-
-      /**
        * Backing data for inputs in the dialog, each bound to the corresponding
        * HTML elements.
        *
@@ -116,6 +120,7 @@ export class SettingsCreditCardEditDialogV2Element extends
       rawCardNumber_: {type: String},
       cvc_: {type: String},
       nickname_: {type: String},
+      expirationDate_: {type: String},
       expirationYear_: {type: String},
       expirationMonth_: {type: String},
 
@@ -131,19 +136,18 @@ export class SettingsCreditCardEditDialogV2Element extends
       /** Whether the current card number field is invalid. */
       cardNumberValidationState_: {type: String},
 
-      /**
-       * Computed property that tracks if the entered credit card is expired -
-       * that is, if its expiration month and year are in the past.
-       */
-      expired_: {
-        type: Boolean,
-        reflect: true,
-      },
+      /** Whether the current expiration date field is invalid. */
+      expirationDateValidationState_: {type: String},
 
       /**
        * Checks if CVC storage is available based on the feature flag.
        */
       cvcStorageAvailable_: {type: Boolean},
+
+      primaryAccountName_: {type: String},
+      primaryAccountEmail_: {type: String},
+      primaryAccountIconUrl_: {type: String},
+      autofillEnableGradientGoogleLogosEnabled_: {type: Boolean},
     };
   }
 
@@ -154,34 +158,26 @@ export class SettingsCreditCardEditDialogV2Element extends
     expirationYear: '2099',
   };
   protected accessor title_: string = '';
-  protected accessor monthList_: string[] = [
-    '01',
-    '02',
-    '03',
-    '04',
-    '05',
-    '06',
-    '07',
-    '08',
-    '09',
-    '10',
-    '11',
-    '12',
-  ];
-  protected accessor yearList_: string[] = [];
   protected accessor name_: string = '';
   protected accessor rawCardNumber_: string = '';
   protected accessor cvc_: string = '';
   protected accessor nickname_: string = '';
-  protected accessor expirationYear_: string = '';
-  protected accessor expirationMonth_: string = '';
+  protected accessor expirationDate_: string = '';
+  private accessor expirationYear_: string = '';
+  private accessor expirationMonth_: string = '';
   private accessor sanitizedCardNumber_: string = '';
   protected accessor nicknameInvalid_: boolean = false;
-  private accessor cardNumberValidationState_: CardNumberValidationState =
-      CardNumberValidationState.INVALID_NO_ERROR;
-  private accessor expired_: boolean = false;
+  private accessor cardNumberValidationState_: ValidationState =
+      ValidationState.INVALID_NO_ERROR;
+  private accessor expirationDateValidationState_: ValidationState =
+      ValidationState.INVALID_NO_ERROR;
   private accessor cvcStorageAvailable_: boolean =
       loadTimeData.getBoolean('cvcStorageAvailable');
+  protected accessor primaryAccountName_: string = '';
+  protected accessor primaryAccountEmail_: string = '';
+  protected accessor primaryAccountIconUrl_: string = '';
+  private accessor autofillEnableGradientGoogleLogosEnabled_: boolean =
+      loadTimeData.getBoolean('autofillEnableGradientGoogleLogos');
 
   override connectedCallback() {
     this.mirrorPref('autofill.payment_cvc_storage', 'cvcStoragePref_');
@@ -190,34 +186,46 @@ export class SettingsCreditCardEditDialogV2Element extends
         this.creditCard.guid ? 'editCreditCardTitle' : 'addCreditCardTitle');
 
     // Add a leading '0' if a month is 1 char.
-    if (this.creditCard.expirationMonth!.length === 1) {
+    if (this.creditCard.expirationMonth &&
+        this.creditCard.expirationMonth.length === 1) {
       this.creditCard.expirationMonth = '0' + this.creditCard.expirationMonth;
     }
 
-    const date = new Date();
-    let firstYear = date.getFullYear();
-    let lastYear = firstYear + 19;  // Show next 19 years (20 total).
-    let selectedYear = parseInt(this.creditCard.expirationYear!, 10);
-
-    // |selectedYear| must be valid and between first and last years.
-    if (!selectedYear) {
-      selectedYear = firstYear;
-    } else if (selectedYear < firstYear) {
-      firstYear = selectedYear;
-    } else if (selectedYear > lastYear) {
-      lastYear = selectedYear;
-    }
-
-    const yearList = [];
-    for (let i = firstYear; i <= lastYear; ++i) {
-      yearList.push(i.toString());
-    }
-    this.yearList_ = yearList;
-
     super.connectedCallback();
 
-    this.expirationYear_ = selectedYear.toString();
-    this.expirationMonth_ = this.creditCard.expirationMonth || '';
+    // Populate the initial profile and account info shown in the dialog footer,
+    // and update it in place if the profile or account info changes while open.
+    ProfileInfoBrowserProxyImpl.getInstance().getProfileInfo().then(
+        this.handleProfileInfo_.bind(this));
+    this.addWebUiListener(
+        'profile-info-changed', this.handleProfileInfo_.bind(this));
+
+    // <if expr="is_chromeos">
+    if (loadTimeData.getBoolean('isAccountManagerEnabled')) {
+      this.addWebUiListener(
+          'accounts-changed', this.updateAccounts_.bind(this));
+      this.updateAccounts_();
+    }
+    // </if>
+
+    // <if expr="not is_chromeos">
+    SyncBrowserProxyImpl.getInstance().getStoredAccounts().then(
+        this.handleStoredAccounts_.bind(this));
+    this.addWebUiListener(
+        'stored-accounts-updated', this.handleStoredAccounts_.bind(this));
+    // </if>
+
+    if (this.creditCard.guid && this.creditCard.expirationMonth &&
+        this.creditCard.expirationYear) {
+      this.expirationMonth_ = this.creditCard.expirationMonth;
+      this.expirationYear_ = this.creditCard.expirationYear;
+      this.expirationDate_ =
+          `${this.expirationMonth_}/${this.expirationYear_.slice(-2)}`;
+    } else {
+      this.expirationMonth_ = '';
+      this.expirationYear_ = '';
+      this.expirationDate_ = '';
+    }
     this.cvc_ = this.creditCard.cvc || '';
     this.name_ = this.creditCard.name || '';
     this.rawCardNumber_ = this.creditCard.cardNumber || '';
@@ -236,30 +244,13 @@ export class SettingsCreditCardEditDialogV2Element extends
     if (changedPrivateProperties.has('sanitizedCardNumber_')) {
       this.onSanitizedCardNumberChanged_();
     }
-    if (changedPrivateProperties.has('expirationMonth_') ||
-        changedPrivateProperties.has('expirationYear_')) {
-      this.expired_ = this.computeExpired_();
+    if (changedPrivateProperties.has('expirationDate_')) {
+      this.updateExpirationDateValidationState_(/*isBlur=*/ false);
     }
     if (changedPrivateProperties.has('nickname_')) {
       // Validate no digits are used in nickname. Display error message and
       // disable the save button when invalid.
       this.nicknameInvalid_ = NICKNAME_INVALID_REGEX.test(this.nickname_);
-    }
-  }
-
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-
-    const changedPrivateProperties =
-        changedProperties as Map<PropertyKey, unknown>;
-    if (changedPrivateProperties.has('expired_')) {
-      this.onExpiredChanged_();
-    }
-    if (changedPrivateProperties.has('monthList_')) {
-      this.$.month.value = this.expirationMonth_;
-    }
-    if (changedPrivateProperties.has('yearList_')) {
-      this.$.year.value = this.expirationYear_;
     }
   }
 
@@ -324,41 +315,37 @@ export class SettingsCreditCardEditDialogV2Element extends
 
   protected showErrorForCardNumber_(): boolean {
     return this.cardNumberValidationState_ ===
-        CardNumberValidationState.INVALID_WITH_ERROR;
+        ValidationState.INVALID_WITH_ERROR;
   }
 
-  protected onMonthChange_() {
-    this.expirationMonth_ = this.monthList_[this.$.month.selectedIndex] || '';
-  }
+  protected onExpirationDateValueChanged_(e: CustomEvent<{value: string}>) {
+    const rawValue = e.detail.value;
+    const previousValue = this.expirationDate_;
+    const digits = rawValue.replace(/\D/g, '').slice(0, 4);
 
-  protected onYearChange_() {
-    this.expirationYear_ = this.yearList_[this.$.year.selectedIndex] || '';
-  }
+    let formatted = digits;
+    if (digits.length > 2) {
+      formatted = `${digits.slice(0, 2)}/${digits.slice(2)}`;
+    } else if (
+        digits.length === 2 &&
+        (rawValue.endsWith('/') || previousValue.length < 2)) {
+      formatted = `${digits}/`;
+    }
 
-  /**
-   * Handles a11y error announcement the same way as in cr-input.
-   */
-  private onExpiredChanged_() {
-    const errorElement = this.$.expiredError;
-    const ERROR_ID = errorElement.id;
-    // Readding attributes is needed for consistent announcement by VoiceOver
-    if (this.expired_) {
-      errorElement.setAttribute('role', 'alert');
-      this.$.month.setAttribute('aria-errormessage', ERROR_ID);
-      this.$.year.setAttribute('aria-errormessage', ERROR_ID);
-    } else {
-      errorElement.removeAttribute('role');
-      this.$.month.removeAttribute('aria-errormessage');
-      this.$.year.removeAttribute('aria-errormessage');
+    this.expirationDate_ = formatted;
+    if (rawValue !== formatted) {
+      this.$.expirationDateInput.value = formatted;
     }
   }
 
-  /**
-   * @return 'true' or 'false' for the aria-invalid attribute
-   *     of expiration selectors.
-   */
-  protected getExpirationAriaInvalid_(): string {
-    return this.expired_ ? 'true' : 'false';
+  protected onExpirationDateInputBlur_(event: Event) {
+    assert(event.type === 'blur');
+    this.updateExpirationDateValidationState_(/*isBlur=*/ true);
+  }
+
+  protected showErrorForExpirationDate_(): boolean {
+    return this.expirationDateValidationState_ ===
+        ValidationState.INVALID_WITH_ERROR;
   }
 
   protected checkIfCvcStorageIsAvailable_(): boolean {
@@ -385,28 +372,57 @@ export class SettingsCreditCardEditDialogV2Element extends
   }
 
   protected saveEnabled_(): boolean {
-    if (this.cardNumberValidationState_ !== CardNumberValidationState.VALID) {
+    if (this.cardNumberValidationState_ !== ValidationState.VALID) {
       return false;
     }
 
-    return !this.expired_ && !this.nicknameInvalid_;
+    return this.expirationDateValidationState_ === ValidationState.VALID &&
+        !this.nicknameInvalid_;
   }
 
-  /**
-   * @return True iff the provided expiration date is passed.
-   */
-  private computeExpired_(): boolean {
-    if (!this.expirationYear_ || !this.expirationMonth_) {
-      return false;
+  private updateExpirationDateValidationState_(isBlur: boolean) {
+    const digits = this.expirationDate_.replace(/\D/g, '');
+
+    if (digits.length >= 2) {
+      const month = parseInt(digits.slice(0, 2), 10);
+      if (month < 1 || month > 12) {
+        this.expirationMonth_ = '';
+        this.expirationYear_ = '';
+        this.expirationDateValidationState_ =
+            ValidationState.INVALID_WITH_ERROR;
+        return;
+      }
     }
+
+    if (digits.length < 4) {
+      this.expirationMonth_ = '';
+      this.expirationYear_ = '';
+      this.expirationDateValidationState_ = isBlur ?
+          ValidationState.INVALID_WITH_ERROR :
+          ValidationState.INVALID_NO_ERROR;
+      return;
+    }
+
+    const monthStr = digits.slice(0, 2);
+    const yearShort = parseInt(digits.slice(2, 4), 10);
     const now = new Date();
-    // Convert string (e.g. '06') to number (e.g. 6) for comparison.
-    const expirationYear = parseInt(this.expirationYear_, 10);
-    const expirationMonth = parseInt(this.expirationMonth_, 10);
-    return (
-        expirationYear < now.getFullYear() ||
-        (expirationYear === now.getFullYear() &&
-         expirationMonth <= now.getMonth()));
+    const currentCentury = Math.floor(now.getFullYear() / 100) * 100;
+    const fullYear = currentCentury + yearShort;
+    const month = parseInt(monthStr, 10);
+
+    const isExpired = fullYear < now.getFullYear() ||
+        (fullYear === now.getFullYear() && month <= now.getMonth());
+
+    if (isExpired) {
+      this.expirationMonth_ = '';
+      this.expirationYear_ = '';
+      this.expirationDateValidationState_ = ValidationState.INVALID_WITH_ERROR;
+      return;
+    }
+
+    this.expirationMonth_ = monthStr;
+    this.expirationYear_ = fullYear.toString();
+    this.expirationDateValidationState_ = ValidationState.VALID;
   }
 
   /**
@@ -446,11 +462,10 @@ export class SettingsCreditCardEditDialogV2Element extends
    * is still considered invalid but no error will be shown.
    */
   private computeCardNumberValidationState_(
-      sanitizedCardNumber: string,
-      isBlur: boolean = false): CardNumberValidationState {
+      sanitizedCardNumber: string, isBlur: boolean = false): ValidationState {
     // The card number field must only contain digits.
     if (/[^\d]/.test(sanitizedCardNumber)) {
-      return CardNumberValidationState.INVALID_WITH_ERROR;
+      return ValidationState.INVALID_WITH_ERROR;
     }
 
     // A credit card number is only valid if it passes a Luhn check. We do not
@@ -484,31 +499,31 @@ export class SettingsCreditCardEditDialogV2Element extends
       return (sanitizedCardNumber.length >= 12 &&
               sanitizedCardNumber.length <= 19 &&
               this.passesLuhnCheck_(sanitizedCardNumber)) ?
-          CardNumberValidationState.VALID :
-          CardNumberValidationState.INVALID_WITH_ERROR;
+          ValidationState.VALID :
+          ValidationState.INVALID_WITH_ERROR;
     }
 
     // Case (4) - the user entered a card number that is too long.
     if (sanitizedCardNumber.length > 19) {
-      return CardNumberValidationState.INVALID_WITH_ERROR;
+      return ValidationState.INVALID_WITH_ERROR;
     }
 
     // Case (3) - the user has entered at least 16 digits.
     if (sanitizedCardNumber.length >= 16) {
       return this.passesLuhnCheck_(sanitizedCardNumber) ?
-          CardNumberValidationState.VALID :
-          CardNumberValidationState.INVALID_WITH_ERROR;
+          ValidationState.VALID :
+          ValidationState.INVALID_WITH_ERROR;
     }
 
     // Case (2) - the user has entered at least 12 digits.
     if (sanitizedCardNumber.length >= 12) {
       return this.passesLuhnCheck_(sanitizedCardNumber) ?
-          CardNumberValidationState.VALID :
-          CardNumberValidationState.INVALID_NO_ERROR;
+          ValidationState.VALID :
+          ValidationState.INVALID_NO_ERROR;
     }
 
     // Case (1) - the user has entered less than 12 digits.
-    return CardNumberValidationState.INVALID_NO_ERROR;
+    return ValidationState.INVALID_NO_ERROR;
   }
 
   /**
@@ -536,6 +551,68 @@ export class SettingsCreditCardEditDialogV2Element extends
     }
 
     return (sum % 10) === 0;
+  }
+
+  private handleProfileInfo_(info: ProfileInfo) {
+    if (!this.primaryAccountEmail_) {
+      this.primaryAccountName_ = info.name;
+      this.primaryAccountIconUrl_ = info.iconUrl;
+    }
+  }
+
+  // <if expr="is_chromeos">
+  private async updateAccounts_() {
+    const accounts =
+        await AccountManagerBrowserProxyImpl.getInstance().getAccounts();
+    if (accounts.length === 0) {
+      this.primaryAccountEmail_ = '';
+      return;
+    }
+    this.primaryAccountName_ = accounts[0].fullName;
+    this.primaryAccountEmail_ = accounts[0].email;
+    this.primaryAccountIconUrl_ = accounts[0].pic;
+  }
+  // </if>
+
+  // <if expr="not is_chromeos">
+  private handleStoredAccounts_(accounts: StoredAccount[]) {
+    if (accounts.length === 0) {
+      this.primaryAccountEmail_ = '';
+      return;
+    }
+    this.primaryAccountName_ = accounts[0].fullName || this.primaryAccountName_;
+    this.primaryAccountEmail_ = accounts[0].email;
+    this.primaryAccountIconUrl_ =
+        accounts[0].avatarImage || this.primaryAccountIconUrl_;
+  }
+  // </if>
+
+  /**
+   * @return A CSS image-set for multiple scale factors.
+   */
+  protected getIconImageSet_(iconUrl?: string): string {
+    if (!iconUrl) {
+      return '';
+    }
+    return getImage(iconUrl);
+  }
+
+  private getScaledSrcSet_(url: string): string {
+    return `${url} 1x, ${url}@2x 2x`;
+  }
+
+  protected getGooglePayLightModeLogoSrcSet_(): string {
+    const logoId = this.autofillEnableGradientGoogleLogosEnabled_ ?
+        'chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT' :
+        'chrome://theme/IDR_AUTOFILL_GOOGLE_PAY';
+    return this.getScaledSrcSet_(logoId);
+  }
+
+  protected getGooglePayDarkModeLogoSrcSet_(): string {
+    const logoId = this.autofillEnableGradientGoogleLogosEnabled_ ?
+        'chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_WITH_GRADIENT_DARK' :
+        'chrome://theme/IDR_AUTOFILL_GOOGLE_PAY_DARK';
+    return this.getScaledSrcSet_(logoId);
   }
 }
 

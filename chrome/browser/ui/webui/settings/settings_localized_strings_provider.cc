@@ -1912,6 +1912,8 @@ constexpr webui::LocalizedString kAutofillLocalizedStrings[] = {
     {"searchResultsSingular", IDS_SEARCH_RESULTS_SINGULAR},
     {"addVirtualCard", IDS_AUTOFILL_ADD_VIRTUAL_CARD},
     {"savedToThisDeviceOnly", IDS_SETTINGS_PAYMENTS_SAVED_TO_THIS_DEVICE_ONLY},
+    {"paymentsSavedToGoogleAccount",
+     IDS_SETTINGS_PAYMENTS_SAVED_TO_GOOGLE_ACCOUNT},
     {"localPasswordManager", IDS_PASSWORD_MANAGER_BRAND_NAME},
     {"removeVirtualCard", IDS_AUTOFILL_REMOVE_VIRTUAL_CARD},
     {"editServerCard", IDS_AUTOFILL_EDIT_SERVER_CREDIT_CARD},
