@@ -78,6 +78,8 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAndroidFrameIntervalContinuousRange);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kCalculateDeadlineDerivedInterval);
 VIZ_COMMON_EXPORT extern const base::FeatureParam<double>
     kCalculateDeadlineDerivedIntervalSnapToleranceParam;
+VIZ_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kCalculateDeadlineDerivedIntervalSnapToOsProvidedParam;
 #endif
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseMultipleOverlays);
 VIZ_COMMON_EXPORT extern const char kMaxOverlaysParam[];

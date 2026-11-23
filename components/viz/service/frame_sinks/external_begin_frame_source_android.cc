@@ -73,7 +73,9 @@ class ExternalBeginFrameSourceAndroid::AChoreographerImpl {
   void SetVsyncPeriod(int64_t vsync_period_nanos);
   void RequestVsyncIfNeeded();
 
-  std::optional<base::TimeDelta> SnapToClosestSupportedVsyncInterval(
+  std::optional<base::TimeDelta> FindClosestSupportedVsyncInterval(
+      base::TimeDelta interval) const;
+  std::optional<base::TimeDelta> FindClosestSnapCandidate(
       base::TimeDelta interval) const;
   std::optional<base::TimeDelta> CalculateDeadlineDerivedInterval(
       const PossibleDeadlines& possible_deadlines) const;
@@ -254,7 +256,7 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::
 }
 
 std::optional<base::TimeDelta> ExternalBeginFrameSourceAndroid::
-    AChoreographerImpl::SnapToClosestSupportedVsyncInterval(
+    AChoreographerImpl::FindClosestSupportedVsyncInterval(
         base::TimeDelta interval) const {
   if (supported_intervals_.empty()) {
     return std::nullopt;
@@ -271,6 +273,27 @@ std::optional<base::TimeDelta> ExternalBeginFrameSourceAndroid::
   const base::TimeDelta prev_interval = *(it - 1);
   return (next_interval - interval < interval - prev_interval) ? next_interval
                                                                : prev_interval;
+}
+
+std::optional<base::TimeDelta>
+ExternalBeginFrameSourceAndroid::AChoreographerImpl::FindClosestSnapCandidate(
+    base::TimeDelta interval) const {
+  const std::optional<base::TimeDelta> closest_supported =
+      FindClosestSupportedVsyncInterval(interval);
+  if (!features::kCalculateDeadlineDerivedIntervalSnapToOsProvidedParam.Get()) {
+    return closest_supported;
+  }
+  if (!closest_supported.has_value()) {
+    return vsync_period_;
+  }
+  // If both `vsync_period_` and `closest_supported` are present, choose the
+  // one that's closer to `interval`. If there's a tie, choose `vsync_period_`.
+  const base::TimeDelta closest_supported_distance =
+      (interval - *closest_supported).magnitude();
+  const base::TimeDelta vsync_period_distance =
+      (interval - vsync_period_).magnitude();
+  return closest_supported_distance < vsync_period_distance ? *closest_supported
+                                                            : vsync_period_;
 }
 
 std::optional<base::TimeDelta> ExternalBeginFrameSourceAndroid::
@@ -291,21 +314,21 @@ std::optional<base::TimeDelta> ExternalBeginFrameSourceAndroid::
     return std::nullopt;
   }
 
-  const std::optional<base::TimeDelta> snapped_supported_interval =
-      SnapToClosestSupportedVsyncInterval(timeline_derived_interval);
-  if (!snapped_supported_interval.has_value()) {
+  const std::optional<base::TimeDelta> snap_candidate =
+      FindClosestSnapCandidate(timeline_derived_interval);
+  if (!snap_candidate.has_value()) {
     return timeline_derived_interval;
   }
 
   const double snap_tolerance =
       features::kCalculateDeadlineDerivedIntervalSnapToleranceParam.Get();
   const base::TimeDelta snap_distance =
-      (timeline_derived_interval - *snapped_supported_interval).magnitude();
+      (timeline_derived_interval - *snap_candidate).magnitude();
   if (snap_distance > snap_tolerance * timeline_derived_interval) {
     return timeline_derived_interval;
   }
 
-  return *snapped_supported_interval;
+  return *snap_candidate;
 }
 
 void ExternalBeginFrameSourceAndroid::AChoreographerImpl::OnVSync(

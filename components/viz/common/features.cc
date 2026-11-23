@@ -86,26 +86,45 @@ BASE_FEATURE(kAndroidFrameIntervalContinuousRange,
 // registered through `AChoreographer_postVsyncCallback` (as long as the OS
 // provided at least two timelines) and populates
 // `BeginFrameArgs::deadline_derived_interval`. `AChoreographerImpl` might snap
-// this timeline-derived interval to the closest display-supported interval in
-// `Display.getSupportedRefreshRates()` depending on
+// this timeline-derived interval to the closest display-supported interval (in
+// `Display.getSupportedRefreshRates()`) or, if
+// `kCalculateDeadlineDerivedIntervalSnapToOsProvidedParam` is true, the
+// OS-provided VSync interval (from
+// `AChoreographer_registerRefreshRateCallback`), depending on
 // `kCalculateDeadlineDerivedIntervalSnapToleranceParam`.
 BASE_FEATURE(kCalculateDeadlineDerivedInterval,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Specifies how far `ExternalBeginFrameSourceAndroid::AChoreographerImpl` can
-// snap from the timeline-derived VSync interval to a display-supported VSync
-// interval, as a fraction of the timeline-derived VSync interval (e.g. 0.1
-// means 10%). Given a timeline-derived interval TDI, display-supported interval
-// DSI and snap tolerance ST, `AChoreographerImpl` will snap TDI to DSI if:
+// snap from the timeline-derived VSync interval to a candidate VSync interval
+// (a display-supported VSync interval or, if
+// `kCalculateDeadlineDerivedIntervalSnapToOsProvidedParam` is true, the
+// OS-provided VSync interval), as a fraction of the timeline-derived VSync
+// interval (e.g. 0.1 means 10%). Given a timeline-derived interval TDI,
+// candidate interval CI and snap tolerance ST, `AChoreographerImpl` will snap
+// TDI to CI if:
 //
-// `|TDI - DSI| <= ST * TDI`
+// `|TDI - CI| <= ST * TDI`
 //
+// (choosing the candidate closest to TDI if multiple satisfy the inequality).
 // If this parameter is zero (`ST = 0`), `AChoreographerImpl` won't snap at all.
 const base::FeatureParam<double>
     kCalculateDeadlineDerivedIntervalSnapToleranceParam = {
         &kCalculateDeadlineDerivedInterval,
         "snap_tolerance",
         0.0,
+};
+
+// If true, `ExternalBeginFrameSourceAndroid::AChoreographerImpl` also considers
+// the OS-provided VSync interval (from
+// `AChoreographer_registerRefreshRateCallback`), in addition to
+// display-supported VSync intervals, when snapping the timeline-derived VSync
+// interval within `kCalculateDeadlineDerivedIntervalSnapToleranceParam`.
+const base::FeatureParam<bool>
+    kCalculateDeadlineDerivedIntervalSnapToOsProvidedParam = {
+        &kCalculateDeadlineDerivedInterval,
+        "snap_to_os_provided",
+        false,
 };
 #endif
 

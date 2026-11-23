@@ -146,6 +146,7 @@ std::optional<base::TimeDelta> ExpectIfAtLeastBaklava(base::TimeDelta delta) {
 struct DeriveFeatureDisabled {};
 struct DeriveFeatureEnabled {
   double snap_tolerance = 0.0;
+  bool snap_to_os_provided = false;
 };
 using DeriveFeatureConfig =
     std::variant<DeriveFeatureDisabled, DeriveFeatureEnabled>;
@@ -202,7 +203,9 @@ TEST_P(AChoreographerImplTest, ExpectedInterval) {
                    scoped_feature_list.InitAndEnableFeatureWithParameters(
                        features::kCalculateDeadlineDerivedInterval,
                        {{"snap_tolerance",
-                         base::NumberToString(config.snap_tolerance)}});
+                         base::NumberToString(config.snap_tolerance)},
+                        {"snap_to_os_provided",
+                         config.snap_to_os_provided ? "true" : "false"}});
                  },
              },
              params.derive_feature_config);
@@ -309,9 +312,12 @@ INSTANTIATE_TEST_SUITE_P(
             .derive_feature_config =
                 DeriveFeatureEnabled{
                     .snap_tolerance = 0.1,
+                    .snap_to_os_provided = false,
                 },
             .compat33_supported = true,
-            .os_provided_vsync_interval_nanos = 16'666'666,
+            // Within 10% tolerance of 12 ms, but ignored because
+            // `snap_to_os_provided` is false.
+            .os_provided_vsync_interval_nanos = 12'500'000,
             .display_supported_refresh_rates = {},
             .callback_data =
                 FrameCallbackData{
@@ -319,7 +325,7 @@ INSTANTIATE_TEST_SUITE_P(
                     .timelines = CreateTimelines({10'000'000, 22'000'000}),
                     .preferred_index = 0,
                 },
-            .expected_interval = base::Milliseconds(16.666),
+            .expected_interval = base::Milliseconds(12.5),
             .expected_deadline_derived_interval =
                 ExpectIfAtLeastBaklava(base::Milliseconds(12)),
         },
@@ -328,9 +334,12 @@ INSTANTIATE_TEST_SUITE_P(
             .derive_feature_config =
                 DeriveFeatureEnabled{
                     .snap_tolerance = 0.1,
+                    .snap_to_os_provided = false,
                 },
             .compat33_supported = true,
-            .os_provided_vsync_interval_nanos = 8'333'333,
+            // Closer to 11.5 ms than 11.111 ms, but ignored because
+            // `snap_to_os_provided` is false.
+            .os_provided_vsync_interval_nanos = 11'400'000,
             .display_supported_refresh_rates = {60.f, 90.f},
             .callback_data =
                 FrameCallbackData{
@@ -340,7 +349,7 @@ INSTANTIATE_TEST_SUITE_P(
                     .timelines = CreateTimelines({10'000'000, 21'500'000}),
                     .preferred_index = 0,
                 },
-            .expected_interval = base::Milliseconds(8.333),
+            .expected_interval = base::Milliseconds(11.4),
             .expected_deadline_derived_interval =
                 ExpectIfAtLeastBaklava(base::Milliseconds(11.111)),
         },
@@ -349,9 +358,12 @@ INSTANTIATE_TEST_SUITE_P(
             .derive_feature_config =
                 DeriveFeatureEnabled{
                     .snap_tolerance = 0.25,
+                    .snap_to_os_provided = false,
                 },
             .compat33_supported = true,
-            .os_provided_vsync_interval_nanos = 8'333'333,
+            // Closer to 13.9 ms than 16.666 ms, but ignored because
+            // `snap_to_os_provided` is false.
+            .os_provided_vsync_interval_nanos = 14'000'000,
             .display_supported_refresh_rates = {60.f, 90.f},
             .callback_data =
                 FrameCallbackData{
@@ -361,7 +373,7 @@ INSTANTIATE_TEST_SUITE_P(
                     .timelines = CreateTimelines({10'000'000, 23'900'000}),
                     .preferred_index = 0,
                 },
-            .expected_interval = base::Milliseconds(8.333),
+            .expected_interval = base::Milliseconds(14),
             .expected_deadline_derived_interval =
                 ExpectIfAtLeastBaklava(base::Milliseconds(16.666)),
         },
@@ -370,9 +382,12 @@ INSTANTIATE_TEST_SUITE_P(
             .derive_feature_config =
                 DeriveFeatureEnabled{
                     .snap_tolerance = 0.1,
+                    .snap_to_os_provided = false,
                 },
             .compat33_supported = true,
-            .os_provided_vsync_interval_nanos = 16'666'666,
+            // Within 10% tolerance of 20 ms, but ignored because
+            // `snap_to_os_provided` is false.
+            .os_provided_vsync_interval_nanos = 20'833'333,
             .display_supported_refresh_rates = {60.f, 90.f},
             .callback_data =
                 FrameCallbackData{
@@ -381,7 +396,7 @@ INSTANTIATE_TEST_SUITE_P(
                     .timelines = CreateTimelines({10'000'000, 30'000'000}),
                     .preferred_index = 0,
                 },
-            .expected_interval = base::Milliseconds(16.666),
+            .expected_interval = base::Milliseconds(20.833),
             .expected_deadline_derived_interval =
                 ExpectIfAtLeastBaklava(base::Milliseconds(20)),
         },
@@ -390,9 +405,12 @@ INSTANTIATE_TEST_SUITE_P(
             .derive_feature_config =
                 DeriveFeatureEnabled{
                     .snap_tolerance = 0.1,
+                    .snap_to_os_provided = false,
                 },
             .compat33_supported = true,
-            .os_provided_vsync_interval_nanos = 16'666'666,
+            // Within 10% tolerance of 9 ms, but ignored because
+            // `snap_to_os_provided` is false.
+            .os_provided_vsync_interval_nanos = 8'333'333,
             .display_supported_refresh_rates = {60.f, 90.f},
             .callback_data =
                 FrameCallbackData{
@@ -401,7 +419,7 @@ INSTANTIATE_TEST_SUITE_P(
                     .timelines = CreateTimelines({10'000'000, 19'000'000}),
                     .preferred_index = 0,
                 },
-            .expected_interval = base::Milliseconds(16.666),
+            .expected_interval = base::Milliseconds(8.333),
             .expected_deadline_derived_interval =
                 ExpectIfAtLeastBaklava(base::Milliseconds(9)),
         },
@@ -410,9 +428,12 @@ INSTANTIATE_TEST_SUITE_P(
             .derive_feature_config =
                 DeriveFeatureEnabled{
                     .snap_tolerance = 0.1,
+                    .snap_to_os_provided = false,
                 },
             .compat33_supported = true,
-            .os_provided_vsync_interval_nanos = 16'666'666,
+            // Within 10% tolerance of 14 ms, but ignored because
+            // `snap_to_os_provided` is false.
+            .os_provided_vsync_interval_nanos = 13'888'888,
             .display_supported_refresh_rates = {60.f, 90.f},
             .callback_data =
                 FrameCallbackData{
@@ -422,7 +443,7 @@ INSTANTIATE_TEST_SUITE_P(
                     .timelines = CreateTimelines({10'000'000, 24'000'000}),
                     .preferred_index = 0,
                 },
-            .expected_interval = base::Milliseconds(16.666),
+            .expected_interval = base::Milliseconds(13.888),
             .expected_deadline_derived_interval =
                 ExpectIfAtLeastBaklava(base::Milliseconds(14)),
         },
@@ -431,6 +452,7 @@ INSTANTIATE_TEST_SUITE_P(
             .derive_feature_config =
                 DeriveFeatureEnabled{
                     .snap_tolerance = 0.0,
+                    .snap_to_os_provided = true,
                 },
             .compat33_supported = true,
             .os_provided_vsync_interval_nanos = 16'666'666,
@@ -445,6 +467,139 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_interval = base::Milliseconds(16.666),
             .expected_deadline_derived_interval =
                 ExpectIfAtLeastBaklava(base::Milliseconds(16.8)),
+        },
+        AChoreographerImplTestParams{
+            .test_name = "SnappedToOsProvided_NoSupportedRates",
+            .derive_feature_config =
+                DeriveFeatureEnabled{
+                    .snap_tolerance = 0.1,
+                    .snap_to_os_provided = true,
+                },
+            .compat33_supported = true,
+            .os_provided_vsync_interval_nanos = 12'500'000,
+            .display_supported_refresh_rates = {},
+            .callback_data =
+                FrameCallbackData{
+                    .frame_time_nanos = 10'000'000,
+                    // Diff 12 ms ⇒ snaps to OS-provided 12.5 ms (80 Hz).
+                    .timelines = CreateTimelines({10'000'000, 22'000'000}),
+                    .preferred_index = 0,
+                },
+            .expected_interval = base::Milliseconds(12.5),
+            .expected_deadline_derived_interval =
+                ExpectIfAtLeastBaklava(base::Milliseconds(12.5)),
+        },
+        AChoreographerImplTestParams{
+            .test_name = "SnappedToOsProvided_SupportedOutsideTolerance",
+            .derive_feature_config =
+                DeriveFeatureEnabled{
+                    .snap_tolerance = 0.1,
+                    .snap_to_os_provided = true,
+                },
+            .compat33_supported = true,
+            .os_provided_vsync_interval_nanos = 12'500'000,
+            .display_supported_refresh_rates = {60.f, 120.f},
+            .callback_data =
+                FrameCallbackData{
+                    .frame_time_nanos = 10'000'000,
+                    // Diff 12 ms ⇒ too far from 8.333 ms and 16.666 ms, snaps
+                    // to OS-provided 12.5 ms (80 Hz).
+                    .timelines = CreateTimelines({10'000'000, 22'000'000}),
+                    .preferred_index = 0,
+                },
+            .expected_interval = base::Milliseconds(12.5),
+            .expected_deadline_derived_interval =
+                ExpectIfAtLeastBaklava(base::Milliseconds(12.5)),
+        },
+        AChoreographerImplTestParams{
+            .test_name =
+                "SnappedToOsProvided_CloserThanSupportedWithinTolerance",
+            .derive_feature_config =
+                DeriveFeatureEnabled{
+                    .snap_tolerance = 0.15,
+                    .snap_to_os_provided = true,
+                },
+            .compat33_supported = true,
+            .os_provided_vsync_interval_nanos = 12'500'000,
+            .display_supported_refresh_rates = {90.f},
+            .callback_data =
+                FrameCallbackData{
+                    .frame_time_nanos = 10'000'000,
+                    // Diff 12 ms ⇒ both 11.111 ms (90 Hz) and 12.5 ms (80 Hz)
+                    // are within 15% tolerance; snaps to closer 12.5 ms.
+                    .timelines = CreateTimelines({10'000'000, 22'000'000}),
+                    .preferred_index = 0,
+                },
+            .expected_interval = base::Milliseconds(12.5),
+            .expected_deadline_derived_interval =
+                ExpectIfAtLeastBaklava(base::Milliseconds(12.5)),
+        },
+        AChoreographerImplTestParams{
+            .test_name =
+                "SnappedToSupported_CloserThanOsProvidedWithinTolerance",
+            .derive_feature_config =
+                DeriveFeatureEnabled{
+                    .snap_tolerance = 0.15,
+                    .snap_to_os_provided = true,
+                },
+            .compat33_supported = true,
+            .os_provided_vsync_interval_nanos = 12'500'000,
+            .display_supported_refresh_rates = {90.f},
+            .callback_data =
+                FrameCallbackData{
+                    .frame_time_nanos = 10'000'000,
+                    // Diff 11.5 ms ⇒ both 11.111 ms (90 Hz) and 12.5 ms (80 Hz)
+                    // are within 15% tolerance; snaps to closer 11.111 ms.
+                    .timelines = CreateTimelines({10'000'000, 21'500'000}),
+                    .preferred_index = 0,
+                },
+            .expected_interval = base::Milliseconds(12.5),
+            .expected_deadline_derived_interval =
+                ExpectIfAtLeastBaklava(base::Milliseconds(11.111)),
+        },
+        AChoreographerImplTestParams{
+            .test_name = "SnappedToOsProvided_ExactDistanceTieWithSupported",
+            .derive_feature_config =
+                DeriveFeatureEnabled{
+                    .snap_tolerance = 0.15,
+                    .snap_to_os_provided = true,
+                },
+            .compat33_supported = true,
+            .os_provided_vsync_interval_nanos = 12'000'000,
+            .display_supported_refresh_rates = {100.f},
+            .callback_data =
+                FrameCallbackData{
+                    .frame_time_nanos = 10'000'000,
+                    // Diff 11 ms ⇒ equidistant (1 ms) from supported 10 ms and
+                    // OS-provided 12 ms; prefers OS-provided 12 ms.
+                    .timelines = CreateTimelines({10'000'000, 21'000'000}),
+                    .preferred_index = 0,
+                },
+            .expected_interval = base::Milliseconds(12),
+            .expected_deadline_derived_interval =
+                ExpectIfAtLeastBaklava(base::Milliseconds(12)),
+        },
+        AChoreographerImplTestParams{
+            .test_name = "Unsnapped_OutsideBothSupportedAndOsProvidedTolerance",
+            .derive_feature_config =
+                DeriveFeatureEnabled{
+                    .snap_tolerance = 0.1,
+                    .snap_to_os_provided = true,
+                },
+            .compat33_supported = true,
+            .os_provided_vsync_interval_nanos = 8'333'333,
+            .display_supported_refresh_rates = {60.f, 90.f},
+            .callback_data =
+                FrameCallbackData{
+                    .frame_time_nanos = 10'000'000,
+                    // Diff 14 ms ⇒ too far from 16.666 ms, 11.111 ms, and
+                    // 8.333 ms.
+                    .timelines = CreateTimelines({10'000'000, 24'000'000}),
+                    .preferred_index = 0,
+                },
+            .expected_interval = base::Milliseconds(8.333),
+            .expected_deadline_derived_interval =
+                ExpectIfAtLeastBaklava(base::Milliseconds(14)),
         }),
     [](const auto& info) { return info.param.test_name; });
 
