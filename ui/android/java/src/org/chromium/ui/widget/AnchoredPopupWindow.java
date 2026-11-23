@@ -193,6 +193,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
                     mHandler.removeCallbacks(mDismissRunnable);
                     for (OnDismissListener listener : mDismissListeners) listener.onDismiss();
 
+                    detachWindowBoundsChangeDetector();
                     mRectProvider.stopObserving();
                     mViewportRectProvider.stopObserving();
                     mContentView = null;
@@ -719,6 +720,7 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
         if (mPopupWindow.isShowing()) return;
 
         if (mDismissOnScreenSizeChange) {
+            detachWindowBoundsChangeDetector();
             mWindowBoundsChangeDetector = new WindowBoundsChangeDetector(mRootView, this::dismiss);
         }
 
@@ -735,13 +737,17 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
      * @see PopupWindow#dismiss()
      */
     public void dismiss() {
-        if (mWindowBoundsChangeDetector != null) {
-            mWindowBoundsChangeDetector.detach();
-            mWindowBoundsChangeDetector = null;
-        }
+        detachWindowBoundsChangeDetector();
         mPopupWindow.dismiss();
         if (!mIgnoreDismissal) {
             mContentView = null;
+        }
+    }
+
+    private void detachWindowBoundsChangeDetector() {
+        if (mWindowBoundsChangeDetector != null) {
+            mWindowBoundsChangeDetector.detach();
+            mWindowBoundsChangeDetector = null;
         }
     }
 

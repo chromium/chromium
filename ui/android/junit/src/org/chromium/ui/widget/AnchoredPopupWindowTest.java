@@ -479,6 +479,23 @@ public final class AnchoredPopupWindowTest {
         assertNotNull(popup.getContentView());
     }
 
+    @Test
+    public void testDismissOnScreenSizeChange_detachesOnExternalDismiss() {
+        View rootView = mView.getRootView();
+        AnchoredPopupWindow popup = createAnchorPopupWindow(/* allowNonTouchableSize= */ true);
+        popup.setDismissOnScreenSizeChange(true);
+
+        popup.show();
+        rootView.layout(0, 0, rootView.getWidth() / 2, rootView.getHeight() / 2);
+        verify(mPopupWindow).dismiss();
+
+        clearInvocations(mPopupWindow);
+        popup.show();
+        popup.onDismissForTesting(/* byInsideTouch= */ false);
+        rootView.layout(0, 0, rootView.getWidth() / 2, rootView.getHeight() / 2);
+        verify(mPopupWindow, never()).dismiss();
+    }
+
     private AnchoredPopupWindow createAnchorPopupWindow() {
         return createAnchorPopupWindow(/* allowNonTouchableSize= */ false);
     }

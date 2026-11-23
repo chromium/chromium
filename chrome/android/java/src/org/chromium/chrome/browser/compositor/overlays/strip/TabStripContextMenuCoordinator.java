@@ -457,6 +457,7 @@ public class TabStripContextMenuCoordinator {
                         context, decorView, background, () -> contentView, anchorViewRectProvider)
                 .setFocusable(true)
                 .setOutsideTouchable(true)
+                .setDismissOnScreenSizeChange(true)
                 .setHorizontalOverlapAnchor(true)
                 .setVerticalOverlapAnchor(true)
                 .setAllowOverlapCaptionBar(true)
