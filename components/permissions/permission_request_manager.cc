@@ -1227,19 +1227,24 @@ void PermissionRequestManager::DequeueRequestIfNeeded() {
       break;
     }
 
+    base::WeakPtr<PermissionRequestManager> weak_this =
+        weak_factory_.GetWeakPtr();
+
     if (!requests_.front()->IsEmbeddedPermissionElementInitiated() &&
         permission_ui_selectors_[selector_index]->IsPermissionRequestSupported(
             requests_.front()->request_type())) {
       permission_ui_selectors_[selector_index]->SelectUiToUse(
           web_contents(), requests_.front().get(),
           base::BindOnce(&PermissionRequestManager::OnPermissionUiSelectorDone,
-                         weak_factory_.GetWeakPtr(), selector_index));
-      continue;
+                         weak_this, selector_index));
+    } else {
+      OnPermissionUiSelectorDone(
+          selector_index,
+          PermissionUiSelector::Decision::UseNormalUiAndShowNoWarning());
     }
-
-    OnPermissionUiSelectorDone(
-        selector_index,
-        PermissionUiSelector::Decision::UseNormalUiAndShowNoWarning());
+    if (!weak_this) {
+      return;
+    }
   }
 }
 
