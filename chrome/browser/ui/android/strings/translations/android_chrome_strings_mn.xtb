@@ -386,6 +386,7 @@
 <translation id="2496180316473517155">Хайлтын түүх</translation>
 <translation id="250020030759455918">Та Chrome-с өөрийн <ph name="SITE_NAME" />-н нэвтрэлтийн төлөв, интернэтээр үзсэн өгөгдөл болон сайтын өгөгдлийг харна</translation>
 <translation id="2501278716633472235">Буцаах</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{#-г татаж авч байна}other{#-г татаж авч байна}}</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" />-г суулгаж байна...</translation>
 <translation id="2512234228327349533">Худалдан авах сонголтоос хайх</translation>
 <translation id="2513403576141822879">Нууцлал, аюулгүй байдал болон өгөгдөл цуглуулахтай холбоотой бусад тохиргоог харахын тулд <ph name="BEGIN_LINK" />Синк болон Google-н үйлчилгээ<ph name="END_LINK" />-г харна уу</translation>
@@ -697,6 +698,7 @@
 <translation id="3740290940447881599">Та энэ сайтад итгэдэг эсэхээ нягтална уу</translation>
 <translation id="3740525748616366977">Энэ төхөөрөмж дээр дуут хайлт боломжгүй</translation>
 <translation id="3749289110408117711">Файлын нэр</translation>
+<translation id="3751708358601675711">Үнэ мөшгөхийг засах</translation>
 <translation id="3756823472711156529">Бүлгийг сэргээх</translation>
 <translation id="3759306015475526475">Ашиглалт, гэмтлийн өгөгдлийн тохиргоог удирдах</translation>
 <translation id="3763110477555836428">Таныг энэ картаар тооцоо хийхэд таны бодит дэлгэрэнгүй мэдээллийг хамгаалахын тулд виртуал картын дугаарыг бөглөнө. Google Wallet-с удирдана уу. <ph name="BEGIN_LINK1" />Виртуал картын талаар нэмэлт мэдээлэл авах<ph name="END_LINK1" /></translation>
