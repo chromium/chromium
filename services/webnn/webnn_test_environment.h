@@ -5,6 +5,8 @@
 #ifndef SERVICES_WEBNN_WEBNN_TEST_ENVIRONMENT_H_
 #define SERVICES_WEBNN_WEBNN_TEST_ENVIRONMENT_H_
 
+#include <memory>
+
 #include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -19,6 +21,11 @@
 #if BUILDFLAG(IS_WIN)
 #include "services/webnn/host/execution_provider_initializer.h"
 #endif
+
+namespace gpu {
+class Scheduler;
+class SyncPointManager;
+}  // namespace gpu
 
 namespace webnn {
 
@@ -115,6 +122,8 @@ class WebNNTestEnvironment {
 
   FakeWebNNBrowserHostForTesting fake_webnn_browser_host_;
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
+  std::unique_ptr<gpu::SyncPointManager> sync_point_manager_;
+  std::unique_ptr<gpu::Scheduler> scheduler_;
   std::unique_ptr<WebNNContextProviderImpl> context_provider_;
   size_t pending_receiver_count_ = 0;
   size_t destroyed_context_count_ = 0;

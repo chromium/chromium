@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
+#include <memory>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -37,7 +38,7 @@ uint64_t GetTaskFlowId(uint32_t sequence_id, uint64_t order_num) {
   return kMask ^ (static_cast<uint64_t>(sequence_id) << 32) ^ order_num;
 }
 
-perfetto::NamedTrack GetSchedulerTraceTrack(const Scheduler* ptr) {
+perfetto::NamedTrack GetSchedulerTraceTrack(const SchedulerImpl* ptr) {
   return perfetto::NamedTrack::FromPointer("gpu::Scheduler", ptr);
 }
 }  // namespace
@@ -90,12 +91,12 @@ Scheduler::ScopedSetSequencePriority::~ScopedSetSequencePriority() {
       sequence_id_, scheduler_->GetSequenceDefaultPriority(sequence_id_));
 }
 
-Scheduler::SchedulingState::SchedulingState() = default;
-Scheduler::SchedulingState::SchedulingState(const SchedulingState& other) =
+SchedulerImpl::SchedulingState::SchedulingState() = default;
+SchedulerImpl::SchedulingState::SchedulingState(const SchedulingState& other) =
     default;
-Scheduler::SchedulingState::~SchedulingState() = default;
+SchedulerImpl::SchedulingState::~SchedulingState() = default;
 
-void Scheduler::SchedulingState::WriteIntoTrace(
+void SchedulerImpl::SchedulingState::WriteIntoTrace(
     perfetto::TracedValue context) const {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("sequence_id", sequence_id.GetUnsafeValue());
@@ -103,20 +104,20 @@ void Scheduler::SchedulingState::WriteIntoTrace(
   dict.Add("order_num", order_num);
 }
 
-bool Scheduler::SchedulingState::operator==(
-    const Scheduler::SchedulingState& rhs) const {
+bool SchedulerImpl::SchedulingState::operator==(
+    const SchedulerImpl::SchedulingState& rhs) const {
   return std::tie(sequence_id, priority, order_num) ==
          std::tie(rhs.sequence_id, rhs.priority, rhs.order_num);
 }
 
-Scheduler::PerThreadState::PerThreadState() = default;
-Scheduler::PerThreadState::PerThreadState(PerThreadState&& other) = default;
-Scheduler::PerThreadState::~PerThreadState() = default;
-Scheduler::PerThreadState& Scheduler::PerThreadState::operator=(
+SchedulerImpl::PerThreadState::PerThreadState() = default;
+SchedulerImpl::PerThreadState::PerThreadState(PerThreadState&& other) = default;
+SchedulerImpl::PerThreadState::~PerThreadState() = default;
+SchedulerImpl::PerThreadState& SchedulerImpl::PerThreadState::operator=(
     PerThreadState&& other) = default;
 
-Scheduler::Sequence::Sequence(
-    Scheduler* scheduler,
+SchedulerImpl::Sequence::Sequence(
+    SchedulerImpl* scheduler,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     SchedulingPriority priority,
     CommandBufferNamespace namespace_id,
@@ -130,7 +131,7 @@ Scheduler::Sequence::Sequence(
       default_priority_(priority),
       current_priority_(priority) {}
 
-Scheduler::Sequence::~Sequence() {
+SchedulerImpl::Sequence::~Sequence() {
   for (const auto& wait_fence : wait_fences_) {
     Sequence* release_sequence =
         scheduler_->GetSequence(wait_fence.release_sequence_id);
@@ -140,7 +141,7 @@ Scheduler::Sequence::~Sequence() {
   }
 }
 
-bool Scheduler::Sequence::ShouldYieldTo(const Sequence* other) const {
+bool SchedulerImpl::Sequence::ShouldYieldTo(const Sequence* other) const {
   if (task_runner() != other->task_runner()) {
     return false;
   }
@@ -151,7 +152,7 @@ bool Scheduler::Sequence::ShouldYieldTo(const Sequence* other) const {
                                      scheduling_state_);
 }
 
-void Scheduler::Sequence::SetEnabled(bool enabled) {
+void SchedulerImpl::Sequence::SetEnabled(bool enabled) {
   if (enabled_ == enabled) {
     return;
   }
@@ -167,7 +168,7 @@ void Scheduler::Sequence::SetEnabled(bool enabled) {
   scheduler_->TryScheduleSequence(this);
 }
 
-Scheduler::SchedulingState Scheduler::Sequence::SetScheduled() {
+SchedulerImpl::SchedulingState SchedulerImpl::Sequence::SetScheduled() {
   DCHECK(HasTasksAndEnabled());
   DCHECK_NE(running_state_, RUNNING);
 
@@ -180,12 +181,12 @@ Scheduler::SchedulingState Scheduler::Sequence::SetScheduled() {
   return scheduling_state_;
 }
 
-void Scheduler::Sequence::UpdateRunningPriority() {
+void SchedulerImpl::Sequence::UpdateRunningPriority() {
   DCHECK_EQ(running_state_, RUNNING);
   scheduling_state_.priority = current_priority();
 }
 
-void Scheduler::Sequence::ContinueTask(base::OnceClosure task_closure) {
+void SchedulerImpl::Sequence::ContinueTask(base::OnceClosure task_closure) {
   DCHECK_EQ(running_state_, RUNNING);
   TRACE_EVENT("gpu,toplevel.flow", "Scheduler::ContinueTask",
               perfetto::Flow::Global(GetTaskFlowId(
@@ -193,29 +194,56 @@ void Scheduler::Sequence::ContinueTask(base::OnceClosure task_closure) {
   TaskGraph::Sequence::ContinueTask(std::move(task_closure));
 }
 
-uint64_t Scheduler::Sequence::BeginTask(base::OnceClosure* task_closure) {
+uint64_t SchedulerImpl::Sequence::BeginTask(base::OnceClosure* task_closure) {
   DCHECK_EQ(running_state_, SCHEDULED);
   running_state_ = RUNNING;
   return TaskGraph::Sequence::BeginTask(task_closure);
 }
 
-void Scheduler::Sequence::FinishTask() {
+void SchedulerImpl::Sequence::FinishTask() {
   DCHECK_EQ(running_state_, RUNNING);
   running_state_ = SCHEDULED;
   TaskGraph::Sequence::FinishTask();
 }
 
-void Scheduler::Sequence::OnFrontTaskUnblocked(uint64_t order_num) {
+void SchedulerImpl::Sequence::OnFrontTaskUnblocked(uint64_t order_num) {
   TRACE_EVENT(
       "gpu,toplevel.flow", "Scheduler::SequenceUnblocked",
       perfetto::Flow::Global(GetTaskFlowId(sequence_id_.value(), order_num)));
   scheduler_->TryScheduleSequence(this);
 }
 
+// static
+std::unique_ptr<Scheduler> Scheduler::Create(
+    SyncPointManager* sync_point_manager) {
+  return std::make_unique<SchedulerImpl>(sync_point_manager);
+}
+
 Scheduler::Scheduler(SyncPointManager* sync_point_manager)
     : task_graph_(sync_point_manager) {}
 
-Scheduler::~Scheduler() {
+Scheduler::~Scheduler() = default;
+
+SequenceId Scheduler::CreateSequence(
+    SchedulingPriority priority,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  return CreateSequence(priority, std::move(task_runner),
+                        CommandBufferNamespace::INVALID,
+                        /*command_buffer_id=*/{});
+}
+
+ScopedSyncPointClientState Scheduler::CreateSyncPointClientState(
+    SequenceId sequence_id,
+    CommandBufferNamespace namespace_id,
+    CommandBufferId command_buffer_id) {
+  return task_graph_.CreateSyncPointClientState(sequence_id, namespace_id,
+                                                command_buffer_id);
+}
+
+SchedulerImpl::SchedulerImpl(SyncPointManager* sync_point_manager)
+    : Scheduler(sync_point_manager) {}
+
+SchedulerImpl::~SchedulerImpl() {
   base::AutoLock auto_lock(lock());
 
   // Sequences as well as tasks posted to the threads have "this" pointer of the
@@ -228,15 +256,7 @@ Scheduler::~Scheduler() {
   }
 }
 
-SequenceId Scheduler::CreateSequence(
-    SchedulingPriority priority,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  return CreateSequence(priority, std::move(task_runner),
-                        CommandBufferNamespace::INVALID,
-                        /*command_buffer_id=*/{});
-}
-
-SequenceId Scheduler::CreateSequence(
+SequenceId SchedulerImpl::CreateSequence(
     SchedulingPriority priority,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     CommandBufferNamespace namespace_id,
@@ -257,7 +277,7 @@ SequenceId Scheduler::CreateSequence(
   return id;
 }
 
-void Scheduler::DestroySequence(SequenceId sequence_id) {
+void SchedulerImpl::DestroySequence(SequenceId sequence_id) {
   {
     base::AutoLock auto_lock(lock());
     auto sequence_it = scheduler_sequence_map_.find(sequence_id);
@@ -294,15 +314,7 @@ void Scheduler::DestroySequence(SequenceId sequence_id) {
   task_graph_.DestroySequence(sequence_id);
 }
 
-ScopedSyncPointClientState Scheduler::CreateSyncPointClientState(
-    SequenceId sequence_id,
-    CommandBufferNamespace namespace_id,
-    CommandBufferId command_buffer_id) {
-  return task_graph_.CreateSyncPointClientState(sequence_id, namespace_id,
-                                                command_buffer_id);
-}
-
-Scheduler::Sequence* Scheduler::GetSequence(SequenceId sequence_id) {
+SchedulerImpl::Sequence* SchedulerImpl::GetSequence(SequenceId sequence_id) {
   auto it = scheduler_sequence_map_.find(sequence_id);
   if (it != scheduler_sequence_map_.end()) {
     return it->second;
@@ -310,28 +322,28 @@ Scheduler::Sequence* Scheduler::GetSequence(SequenceId sequence_id) {
   return nullptr;
 }
 
-Scheduler::PerThreadState& Scheduler::GetThreadState(
+SchedulerImpl::PerThreadState& SchedulerImpl::GetThreadState(
     base::SingleThreadTaskRunner* task_runner) {
   auto it = per_thread_state_map_.find(task_runner);
   CHECK(it != per_thread_state_map_.end());
   return it->second;
 }
 
-void Scheduler::EnableSequence(SequenceId sequence_id) {
+void SchedulerImpl::EnableSequence(SequenceId sequence_id) {
   base::AutoLock auto_lock(lock());
   Sequence* sequence = GetSequence(sequence_id);
   DCHECK(sequence);
   sequence->SetEnabled(true);
 }
 
-void Scheduler::DisableSequence(SequenceId sequence_id) {
+void SchedulerImpl::DisableSequence(SequenceId sequence_id) {
   base::AutoLock auto_lock(lock());
   Sequence* sequence = GetSequence(sequence_id);
   DCHECK(sequence);
   sequence->SetEnabled(false);
 }
 
-SchedulingPriority Scheduler::GetSequenceDefaultPriority(
+SchedulingPriority SchedulerImpl::GetSequenceDefaultPriority(
     SequenceId sequence_id) {
   base::AutoLock auto_lock(lock());
   Sequence* sequence = GetSequence(sequence_id);
@@ -341,7 +353,7 @@ SchedulingPriority Scheduler::GetSequenceDefaultPriority(
   return SchedulingPriority::kNormal;
 }
 
-SchedulingPriority Scheduler::GetSequencePriority(SequenceId sequence_id) {
+SchedulingPriority SchedulerImpl::GetSequencePriority(SequenceId sequence_id) {
   base::AutoLock auto_lock(lock());
   Sequence* sequence = GetSequence(sequence_id);
   if (sequence) {
@@ -350,8 +362,8 @@ SchedulingPriority Scheduler::GetSequencePriority(SequenceId sequence_id) {
   return SchedulingPriority::kNormal;
 }
 
-void Scheduler::SetSequencePriority(SequenceId sequence_id,
-                                    SchedulingPriority priority) {
+void SchedulerImpl::SetSequencePriority(SequenceId sequence_id,
+                                        SchedulingPriority priority) {
   base::AutoLock auto_lock(lock());
   Sequence* sequence = GetSequence(sequence_id);
   if (sequence) {
@@ -359,7 +371,7 @@ void Scheduler::SetSequencePriority(SequenceId sequence_id,
   }
 }
 
-scoped_refptr<base::SequencedTaskRunner> Scheduler::GetTaskRunner(
+scoped_refptr<base::SequencedTaskRunner> SchedulerImpl::GetTaskRunner(
     SequenceId sequence_id) {
   base::AutoLock auto_lock(lock());
   Sequence* sequence = GetSequence(sequence_id);
@@ -371,19 +383,19 @@ scoped_refptr<base::SequencedTaskRunner> Scheduler::GetTaskRunner(
   return sequence->scheduler_task_runner_;
 }
 
-void Scheduler::ScheduleTask(Task task) {
+void SchedulerImpl::ScheduleTask(Task task) {
   base::AutoLock auto_lock(lock());
   ScheduleTaskHelper(std::move(task));
 }
 
-void Scheduler::ScheduleTasks(std::vector<Task> tasks) {
+void SchedulerImpl::ScheduleTasks(std::vector<Task> tasks) {
   base::AutoLock auto_lock(lock());
   for (auto& task : tasks) {
     ScheduleTaskHelper(std::move(task));
   }
 }
 
-void Scheduler::ScheduleTaskHelper(Task task) {
+void SchedulerImpl::ScheduleTaskHelper(Task task) {
   SequenceId sequence_id = task.sequence_id;
   Sequence* sequence = GetSequence(sequence_id);
   DCHECK(sequence);
@@ -406,8 +418,8 @@ void Scheduler::ScheduleTaskHelper(Task task) {
   TryScheduleSequence(sequence);
 }
 
-void Scheduler::ContinueTask(SequenceId sequence_id,
-                             TaskCallback task_callback) {
+void SchedulerImpl::ContinueTask(SequenceId sequence_id,
+                                 TaskCallback task_callback) {
   base::AutoLock auto_lock(lock());
   Sequence* sequence = GetSequence(sequence_id);
   DCHECK(sequence);
@@ -415,8 +427,8 @@ void Scheduler::ContinueTask(SequenceId sequence_id,
   sequence->ContinueTask(std::move(task_callback));
 }
 
-void Scheduler::ContinueTask(SequenceId sequence_id,
-                             base::OnceClosure task_closure) {
+void SchedulerImpl::ContinueTask(SequenceId sequence_id,
+                                 base::OnceClosure task_closure) {
   base::AutoLock auto_lock(lock());
   Sequence* sequence = GetSequence(sequence_id);
   DCHECK(sequence);
@@ -424,7 +436,7 @@ void Scheduler::ContinueTask(SequenceId sequence_id,
   sequence->ContinueTask(std::move(task_closure));
 }
 
-bool Scheduler::ShouldYield(SequenceId sequence_id) {
+bool SchedulerImpl::ShouldYield(SequenceId sequence_id) {
   base::AutoLock auto_lock(lock());
 
   Sequence* running_sequence = GetSequence(sequence_id);
@@ -446,13 +458,7 @@ bool Scheduler::ShouldYield(SequenceId sequence_id) {
   return running_sequence->ShouldYieldTo(next_sequence);
 }
 
-base::SingleThreadTaskRunner* Scheduler::GetTaskRunnerForTesting(
-    SequenceId sequence_id) {
-  base::AutoLock auto_lock(lock());
-  return GetSequence(sequence_id)->task_runner();
-}
-
-void Scheduler::TryScheduleSequence(Sequence* sequence) {
+void SchedulerImpl::TryScheduleSequence(Sequence* sequence) {
   auto* task_runner = sequence->task_runner();
   auto& thread_state = GetThreadState(task_runner);
 
@@ -478,14 +484,15 @@ void Scheduler::TryScheduleSequence(Sequence* sequence) {
       DVLOG(10) << "Waking up thread because there is work to do.";
       thread_state.running = true;
       thread_state.run_next_task_scheduled = base::TimeTicks::Now();
-      task_runner->PostTask(FROM_HERE, base::BindOnce(&Scheduler::RunNextTask,
-                                                      base::Unretained(this)));
+      task_runner->PostTask(
+          FROM_HERE,
+          base::BindOnce(&SchedulerImpl::RunNextTask, base::Unretained(this)));
     }
   }
 }
 
-const std::vector<Scheduler::SchedulingState>&
-Scheduler::GetSortedRunnableSequences(PerThreadState& thread_state) {
+const std::vector<SchedulerImpl::SchedulingState>&
+SchedulerImpl::GetSortedRunnableSequences(PerThreadState& thread_state) {
   std::vector<SchedulingState>& sorted_sequences =
       thread_state.sorted_sequences;
 
@@ -506,7 +513,7 @@ Scheduler::GetSortedRunnableSequences(PerThreadState& thread_state) {
   return sorted_sequences;
 }
 
-bool Scheduler::HasAnyUnblockedTasksOnRunner(
+bool SchedulerImpl::HasAnyUnblockedTasksOnRunner(
     const base::SingleThreadTaskRunner* task_runner) const {
   // Loop over all sequences and check if any of them are unblocked and belong
   // to |task_runner|.
@@ -522,7 +529,8 @@ bool Scheduler::HasAnyUnblockedTasksOnRunner(
   return false;
 }
 
-Scheduler::Sequence* Scheduler::FindNextTaskFromRoot(Sequence* root_sequence) {
+SchedulerImpl::Sequence* SchedulerImpl::FindNextTaskFromRoot(
+    Sequence* root_sequence) {
   if (!root_sequence) {
     return nullptr;
   }
@@ -592,7 +600,7 @@ Scheduler::Sequence* Scheduler::FindNextTaskFromRoot(Sequence* root_sequence) {
   }
 }
 
-Scheduler::Sequence* Scheduler::FindNextTask() {
+SchedulerImpl::Sequence* SchedulerImpl::FindNextTask() {
   auto* task_runner = base::SingleThreadTaskRunner::GetCurrentDefault().get();
   auto& thread_state = GetThreadState(task_runner);
   auto& sorted_sequences = GetSortedRunnableSequences(thread_state);
@@ -615,7 +623,7 @@ Scheduler::Sequence* Scheduler::FindNextTask() {
 }
 
 // See comments in scheduler.h for a high-level overview of the algorithm.
-void Scheduler::RunNextTask() {
+void SchedulerImpl::RunNextTask() {
   SequenceId sequence_id;
   DCHECK(sequence_id.is_null());
 
@@ -693,12 +701,12 @@ void Scheduler::RunNextTask() {
       return;
     }
     thread_state.run_next_task_scheduled = base::TimeTicks::Now();
-    task_runner->PostTask(FROM_HERE, base::BindOnce(&Scheduler::RunNextTask,
+    task_runner->PostTask(FROM_HERE, base::BindOnce(&SchedulerImpl::RunNextTask,
                                                     base::Unretained(this)));
   }
 }
 
-void Scheduler::ExecuteSequence(const SequenceId sequence_id) {
+void SchedulerImpl::ExecuteSequence(const SequenceId sequence_id) {
   base::AutoLock auto_lock(lock());
   auto* task_runner = base::SingleThreadTaskRunner::GetCurrentDefault().get();
   auto& thread_state = GetThreadState(task_runner);

@@ -39,6 +39,7 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
+#include "gpu/command_buffer/service/scheduler.h"
 #include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/compositor/layer.h"
@@ -241,7 +242,8 @@ InProcessContextFactory::InProcessContextFactory(
     viz::HostFrameSinkManager* host_frame_sink_manager,
     viz::FrameSinkManagerImpl* frame_sink_manager,
     bool output_to_window)
-    : frame_sink_id_allocator_(kDefaultClientId),
+    : gpu_scheduler_(gpu::Scheduler::Create(&sync_point_manager_)),
+      frame_sink_id_allocator_(kDefaultClientId),
       output_to_window_(output_to_window),
       disable_vsync_(base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableVsyncForTests)),
@@ -338,7 +340,7 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
       /*hint_session_factory=*/nullptr);
 
   data->SetDisplay(std::make_unique<viz::Display>(
-      &shared_image_manager_, &gpu_scheduler_, renderer_settings_,
+      &shared_image_manager_, gpu_scheduler_.get(), renderer_settings_,
       &debug_settings_, compositor->frame_sink_id(),
       std::move(display_dependency), std::move(output_surface),
       std::move(overlay_processor), std::move(scheduler),

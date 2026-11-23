@@ -12,6 +12,7 @@
 #include "base/test/run_until.h"
 #include "gpu/command_buffer/service/gpu_task_priority.h"
 #include "gpu/command_buffer/service/scheduler.h"
+#include "gpu/command_buffer/service/sync_point_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -232,6 +233,8 @@ WebNNTestEnvironment::WebNNTestEnvironment(
           task_environment
               ? std::move(task_environment)
               : std::make_unique<TaskEnvironmentWithGpuPriorities>()),
+      sync_point_manager_(std::make_unique<gpu::SyncPointManager>()),
+      scheduler_(gpu::Scheduler::Create(sync_point_manager_.get())),
       destruction_callback_(
           base::BindRepeating(&WebNNTestEnvironment::OnContextDestroyed,
                               base::Unretained(this))) {
@@ -252,15 +255,6 @@ WebNNTestEnvironment::WebNNTestEnvironment(
         DISABLE_WEBNN_FOR_GPU);
   }
 
-  // Initialize a Gpu Scheduler so tests can also use a scheduler
-  // runner without the Gpu service. We only need to initialize once for the
-  // whole GPU process and no teardown logic is needed, so use a global
-  // singleton here. The sync point manager must come first since it is
-  // passed to the scheduler as a naked pointer.
-  static base::NoDestructor<gpu::SyncPointManager> g_webnn_sync_point_manager;
-  static base::NoDestructor<gpu::Scheduler> g_webnn_scheduler{
-      g_webnn_sync_point_manager.get()};
-
   mojo::PendingRemote<mojom::WebNNBrowserHost> webnn_browser_host_proxy;
   fake_webnn_browser_host_.Bind(
       webnn_browser_host_proxy.InitWithNewPipeAndPassReceiver());
@@ -268,7 +262,7 @@ WebNNTestEnvironment::WebNNTestEnvironment(
       std::move(gpu_feature_info), std::move(gpu_info),
       /*shared_image_manager=*/nullptr, /*peak_memory_monitor=*/nullptr,
       std::move(lose_all_contexts_callback),
-      task_environment_->GetMainThreadTaskRunner(), g_webnn_scheduler.get(),
+      task_environment_->GetMainThreadTaskRunner(), scheduler_.get(),
       std::move(webnn_browser_host_proxy));
   context_provider_->SetDisconnectHandlerForTesting(base::BindRepeating(
       &WebNNTestEnvironment::OnReceiverDisconnected, base::Unretained(this)));
@@ -342,6 +336,8 @@ void WebNNTestEnvironment::TearDown() {
 }
 
 WebNNTestEnvironment::~WebNNTestEnvironment() {
+  context_provider_.reset();
+  task_environment_->RunUntilIdle();
   WebNNContextImpl::SetDestructionCallbackForTesting(nullptr);
 }
 

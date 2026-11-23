@@ -5,9 +5,10 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SCHEDULER_TASK_RUNNER_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SCHEDULER_TASK_RUNNER_H_
 
-#include "base/memory/raw_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/thread_annotations.h"
 #include "gpu/command_buffer/service/gpu_command_buffer_service_export.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 
@@ -24,11 +25,12 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT SchedulerTaskRunner
     : public base::SequencedTaskRunner {
  public:
   // Constructs a SchedulerTaskRunner that runs tasks on `scheduler`, on the
-  // sequence identified by `sequence_id`. This instance must not outlive
-  // `scheduler`.
+  // sequence identified by `sequence_id`. `ShutDown()` must be called before
+  // `scheduler` is destroyed.
   SchedulerTaskRunner(Scheduler& scheduler, SequenceId sequence_id);
 
-  // Once this is called, all subsequent tasks will be rejected.
+  // Once this is called, all subsequent tasks will be rejected and `scheduler_`
+  // is cleared so refs to this task runner may safely outlive `scheduler`.
   void ShutDown();
 
   // base::SequencedTaskRunner:
@@ -45,11 +47,9 @@ class GPU_COMMAND_BUFFER_SERVICE_EXPORT SchedulerTaskRunner
 
   void RunTask(base::OnceClosure task);
 
-  const raw_ref<Scheduler> scheduler_;
-  const SequenceId sequence_id_;
-
   base::Lock lock_;
-  bool is_running_ GUARDED_BY(lock_) = true;
+  raw_ptr<Scheduler> scheduler_ GUARDED_BY(lock_);
+  const SequenceId sequence_id_;
 };
 
 }  // namespace gpu

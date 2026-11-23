@@ -489,11 +489,12 @@ class SurfaceAggregatorTest : public testing::Test, public DisplayTimeSource {
 
   gpu::SharedImageManager shared_image_manager_;
   gpu::SyncPointManager sync_point_manager_;
-  gpu::Scheduler gpu_scheduler_{&sync_point_manager_};
+  std::unique_ptr<gpu::Scheduler> gpu_scheduler_ =
+      gpu::Scheduler::Create(&sync_point_manager_);
 
   FrameSinkManagerImpl manager_{FrameSinkManagerImpl::InitParams()};
   DisplayResourceProviderSoftware resource_provider_{&shared_image_manager_,
-                                                     &gpu_scheduler_};
+                                                     gpu_scheduler_.get()};
   FakeSurfaceObserver observer_{manager_.surface_manager(), false};
   FakeCompositorFrameSinkClient fake_client_;
   std::unique_ptr<CompositorFrameSinkSupport> root_sink_;

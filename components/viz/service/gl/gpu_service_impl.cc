@@ -1419,7 +1419,7 @@ gpu::SharedImageManager* GpuServiceImpl::CreateSharedImageManager(
 
 gpu::Scheduler* GpuServiceImpl::CreateScheduler(
     gpu::SyncPointManager* sync_point_manager) {
-  owned_scheduler_ = std::make_unique<gpu::Scheduler>(sync_point_manager);
+  owned_scheduler_ = gpu::Scheduler::Create(sync_point_manager);
   return owned_scheduler_.get();
 }
 

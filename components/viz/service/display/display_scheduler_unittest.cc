@@ -231,7 +231,7 @@ class DisplaySchedulerTest : public testing::Test {
         surface_manager_(nullptr,
                          /*activation_deadline_in_frames=*/4u,
                          /*max_uncommitted_frames=*/0),
-        resource_provider_(&shared_image_manager_, &gpu_scheduler_),
+        resource_provider_(&shared_image_manager_, gpu_scheduler_.get()),
         aggregator_(&surface_manager_, &resource_provider_, false),
         damage_tracker_(
             std::make_unique<TestDisplayDamageTracker>(&surface_manager_,
@@ -295,7 +295,8 @@ class DisplaySchedulerTest : public testing::Test {
   SurfaceManager surface_manager_;
   gpu::SharedImageManager shared_image_manager_;
   gpu::SyncPointManager sync_point_manager_;
-  gpu::Scheduler gpu_scheduler_{&sync_point_manager_};
+  std::unique_ptr<gpu::Scheduler> gpu_scheduler_ =
+      gpu::Scheduler::Create(&sync_point_manager_);
   DisplayResourceProviderSoftware resource_provider_;
   SurfaceAggregator aggregator_;
   std::unique_ptr<TestDisplayDamageTracker> damage_tracker_;

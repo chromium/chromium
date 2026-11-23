@@ -245,10 +245,11 @@ class VideoDetectorTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   gpu::SharedImageManager shared_image_manager_;
   gpu::SyncPointManager sync_point_manager_;
-  gpu::Scheduler gpu_scheduler_{&sync_point_manager_};
+  std::unique_ptr<gpu::Scheduler> gpu_scheduler_ =
+      gpu::Scheduler::Create(&sync_point_manager_);
   FrameSinkManagerImpl frame_sink_manager_{FrameSinkManagerImpl::InitParams()};
   DisplayResourceProviderSoftware resource_provider_{&shared_image_manager_,
-                                                     &gpu_scheduler_};
+                                                     gpu_scheduler_.get()};
   FakeCompositorFrameSinkClient frame_sink_client_;
   SurfaceIdAllocatorSet allocators_;
   SurfaceAggregator surface_aggregator_;

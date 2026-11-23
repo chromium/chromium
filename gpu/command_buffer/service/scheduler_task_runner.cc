@@ -23,13 +23,13 @@ constinit thread_local const SchedulerTaskRunner* current_task_runner = nullptr;
 
 SchedulerTaskRunner::SchedulerTaskRunner(Scheduler& scheduler,
                                          SequenceId sequence_id)
-    : scheduler_(scheduler), sequence_id_(sequence_id) {}
+    : scheduler_(&scheduler), sequence_id_(sequence_id) {}
 
 SchedulerTaskRunner::~SchedulerTaskRunner() = default;
 
 void SchedulerTaskRunner::ShutDown() {
   base::AutoLock lock(lock_);
-  is_running_ = false;
+  scheduler_ = nullptr;
 }
 
 bool SchedulerTaskRunner::PostDelayedTask(const base::Location& from_here,
@@ -43,8 +43,9 @@ bool SchedulerTaskRunner::PostNonNestableDelayedTask(
     base::OnceClosure task,
     base::TimeDelta delay) {
   base::AutoLock lock(lock_);
-  if (!is_running_)
+  if (!scheduler_) {
     return false;
+  }
 
   CHECK(delay.is_zero());
   scheduler_->ScheduleTask(Scheduler::Task(
@@ -66,8 +67,9 @@ void SchedulerTaskRunner::RunTask(base::OnceClosure task) {
     // lock while invoking the task below, since a task may reenter this object
     // to e.g. call ShutDown() or post a new task.
     base::AutoLock lock(lock_);
-    if (!is_running_)
+    if (!scheduler_) {
       return;
+    }
   }
 
   // Scheduler doesn't nest tasks, so we don't support nesting.

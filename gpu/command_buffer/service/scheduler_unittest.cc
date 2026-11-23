@@ -5,6 +5,7 @@
 #include "gpu/command_buffer/service/scheduler.h"
 
 #include <algorithm>
+#include <memory>
 
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
@@ -34,15 +35,14 @@ class SchedulerTest : public base::test::WithFeatureOverride,
  public:
   SchedulerTest()
       : base::test::WithFeatureOverride(features::kSyncPointGraphValidation),
-        task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        scheduler_(&sync_point_manager_) {
+        task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     CHECK_EQ(GetParam(), sync_point_manager_.graph_validation_enabled());
   }
 
  protected:
   SyncPointManager* sync_point_manager() { return &sync_point_manager_; }
 
-  Scheduler* scheduler() { return &scheduler_; }
+  Scheduler* scheduler() { return scheduler_.get(); }
 
   const scoped_refptr<base::SingleThreadTaskRunner>& task_runner() {
     return base::SingleThreadTaskRunner::GetCurrentDefault();
@@ -66,7 +66,8 @@ class SchedulerTest : public base::test::WithFeatureOverride,
 
  private:
   SyncPointManager sync_point_manager_;
-  Scheduler scheduler_;
+  std::unique_ptr<Scheduler> scheduler_ =
+      Scheduler::Create(&sync_point_manager_);
 };
 
 TEST_P(SchedulerTest, ScheduledTasksRunInOrder) {
@@ -289,14 +290,6 @@ class SchedulerTaskRunOrderTest : public SchedulerTest {
 
   const std::vector<int>& tasks_executed() { return tasks_executed_; }
 
-  base::SingleThreadTaskRunner* GetTaskRunnerFromSequence(int sequence_key) {
-    auto info_it = sequence_info_.find(sequence_key);
-    if (info_it == sequence_info_.end())
-      return nullptr;
-
-    return scheduler()->GetTaskRunnerForTesting(info_it->second.sequence_id);
-  }
-
  private:
   const CommandBufferNamespace kNamespaceId = CommandBufferNamespace::GPU_IO;
 
@@ -383,9 +376,7 @@ TEST_P(SchedulerTaskRunOrderTest, SequenceWaitsForFenceExternal) {
 
   ScheduleTask(0, 0, -1);  // task 1: seq 0, wait 0, no release
 
-  // task runner for all the sequences created here from same thread is same.
-  // only sequences created on different threads have different task runner.
-  GetTaskRunnerFromSequence(0)->PostTask(FROM_HERE, std::move(external_task));
+  task_runner()->PostTask(FROM_HERE, std::move(external_task));
 
   RunAllPendingTasks();
 
@@ -784,12 +775,13 @@ TEST_P(SchedulerTest, StreamPriorities) {
   CommandBufferId command_buffer_id1 = CommandBufferId::FromUnsafeValue(1);
   CommandBufferId command_buffer_id2 = CommandBufferId::FromUnsafeValue(2);
 
+  auto* scheduler_impl = static_cast<SchedulerImpl*>(scheduler());
   {
-    base::AutoLock auto_lock(scheduler()->lock());
+    base::AutoLock auto_lock(scheduler_impl->lock());
 
-    Scheduler::Sequence* seq1 = scheduler()->GetSequence(seq_id1);
-    Scheduler::Sequence* seq2 = scheduler()->GetSequence(seq_id2);
-    Scheduler::Sequence* seq3 = scheduler()->GetSequence(seq_id3);
+    SchedulerImpl::Sequence* seq1 = scheduler_impl->GetSequence(seq_id1);
+    SchedulerImpl::Sequence* seq2 = scheduler_impl->GetSequence(seq_id2);
+    SchedulerImpl::Sequence* seq3 = scheduler_impl->GetSequence(seq_id3);
 
     // Initial priorities.
     EXPECT_EQ(SchedulingPriority::kLow, seq1->current_priority());

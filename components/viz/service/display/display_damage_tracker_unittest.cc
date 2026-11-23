@@ -34,7 +34,7 @@ class DisplayDamageTrackerTest : public testing::Test {
  public:
   DisplayDamageTrackerTest()
       : manager_(FrameSinkManagerImpl::InitParams()),
-        resource_provider_(&shared_image_manager_, &gpu_scheduler_),
+        resource_provider_(&shared_image_manager_, gpu_scheduler_.get()),
         aggregator_(manager_.surface_manager(), &resource_provider_, false),
         root_client_(&manager_, kRootFrameSinkId),
         task_runner_(base::MakeRefCounted<base::NullTaskRunner>()),
@@ -141,7 +141,8 @@ class DisplayDamageTrackerTest : public testing::Test {
 
   gpu::SharedImageManager shared_image_manager_;
   gpu::SyncPointManager sync_point_manager_;
-  gpu::Scheduler gpu_scheduler_{&sync_point_manager_};
+  std::unique_ptr<gpu::Scheduler> gpu_scheduler_ =
+      gpu::Scheduler::Create(&sync_point_manager_);
   FrameSinkManagerImpl manager_;
   DisplayResourceProviderSoftware resource_provider_;
   SurfaceAggregator aggregator_;

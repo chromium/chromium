@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <map>
+#include <memory>
 #include <optional>
 #include <vector>
 
@@ -441,7 +442,7 @@ class NdkVideoEncoderAcceleratorTest
     auto runner = task_environment_.GetMainThreadTaskRunner();
     return base::WrapUnique<VideoEncodeAccelerator>(
         new NdkVideoEncodeAccelerator(runner, gpu::GpuDriverBugWorkarounds(),
-                                      &gpu_scheduler_));
+                                      gpu_scheduler_.get()));
   }
 
   void SetCommandBufferHelper() {
@@ -562,7 +563,8 @@ class NdkVideoEncoderAcceleratorTest
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::ThreadingMode::MULTIPLE_THREADS};
   gpu::SyncPointManager sync_point_manager_;
-  gpu::Scheduler gpu_scheduler_{&sync_point_manager_};
+  std::unique_ptr<gpu::Scheduler> gpu_scheduler_ =
+      gpu::Scheduler::Create(&sync_point_manager_);
   std::unique_ptr<base::RunLoop> loop_ = std::make_unique<base::RunLoop>();
   std::unique_ptr<VideoEncodeAccelerator> accelerator_;
   size_t output_buffer_size_ = 0;

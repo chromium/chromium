@@ -116,10 +116,11 @@ class ResolvedFrameDataTest : public testing::Test {
 
   gpu::SharedImageManager shared_image_manager_;
   gpu::SyncPointManager sync_point_manager_;
-  gpu::Scheduler gpu_scheduler_{&sync_point_manager_};
+  std::unique_ptr<gpu::Scheduler> gpu_scheduler_ =
+      gpu::Scheduler::Create(&sync_point_manager_);
 
   DisplayResourceProviderSoftware resource_provider_{&shared_image_manager_,
-                                                     &gpu_scheduler_};
+                                                     gpu_scheduler_.get()};
   FrameSinkManagerImpl frame_sink_manager_{FrameSinkManagerImpl::InitParams()};
 
   TestSurfaceIdAllocator surface_id_{FrameSinkId(1, 1)};
