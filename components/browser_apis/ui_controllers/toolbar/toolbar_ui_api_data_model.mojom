@@ -632,6 +632,13 @@ struct PageActionState {
 
   // Whether the trailing icon should currently be shown.
   bool show_trailing_icon;
+
+  // Whether an anchored message bubble is currently visible for this page
+  // action. When true, the frontend renders the icon button with a tonal pill
+  // background and tonal foreground color (matching native
+  // `PageActionView::PaintedOnSolidBackground()`), without expanding the chip
+  // label.
+  bool is_anchored_message_visible;
 };
 
 // Colors used by the omnibox.

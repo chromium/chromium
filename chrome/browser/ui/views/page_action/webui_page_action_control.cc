@@ -8,6 +8,7 @@
 #include <variant>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
@@ -82,7 +83,8 @@ ui::ImageModel ApplyIconColor(ui::ImageModel image,
 // from two theme colors.
 ui::ColorVariant ResolveIconColor(
     const page_actions::PageActionModelInterface& model,
-    const ui::ColorProvider& color_provider) {
+    const ui::ColorProvider& color_provider,
+    bool is_anchored_message_visible) {
   switch (model.GetColorSource()) {
     case page_actions::PageActionColorSource::kCascadingAccent: {
       const SkColor default_color =
@@ -108,13 +110,9 @@ ui::ColorVariant ResolveIconColor(
       }
       // Otherwise, `IconLabelBubbleView::GetForegroundColor()` uses the tonal
       // color while painted on a solid background, which for `PageActionView`
-      // (`PaintedOnSolidBackground()`) means the suggestion chip is showing.
-      // TODO(crbug.com/572793227): Match Views' tonal styling while the
-      // anchored message is visible: render the tonal pill background in the
-      // WebUI, use the tonal icon color, and re-notify when
-      // IsAnchoredMessageVisible() changes (when AnimateOut() starts or from
-      // OnAnchoredMessageWidgetClose()).
-      if (model.ShouldShowSuggestionChip()) {
+      // (`PaintedOnSolidBackground()`) means the suggestion chip or the
+      // anchored message bubble is showing.
+      if (model.ShouldShowSuggestionChip() || is_anchored_message_visible) {
         return kColorOmniboxIconForegroundTonal;
       }
       // Finally, fall back to the surrounding location bar foreground color
@@ -234,12 +232,14 @@ class WebUIPageActionControl::WebUIPageActionDelegate
       const page_actions::PageActionModelInterface& model);
 
   // Callback invoked by ElementTracker when the WebUI anchor element is
-  // displayed, creating or re-anchoring the deferred anchored message bubble.
+  // displayed, creating or re-anchoring the deferred anchored message bubble
+  // and refreshing the pushed WebUI state.
   void OnElementShownForAnchoredMessage(ui::TrackedElement* element);
 
   // Callback invoked when the anchored message bubble widget is closed. Posts
-  // tasks to destroy the widget and delegate asynchronously, and notifies the
-  // controller if the message was not already animating out.
+  // tasks to destroy the widget and delegate asynchronously, notifies the
+  // controller if the message was not already animating out, and refreshes
+  // the pushed WebUI state.
   void OnAnchoredMessageWidgetClose(views::Widget::ClosedReason closed_reason);
 
   // Notifies the controller that the anchored message has closed if the model
@@ -247,6 +247,10 @@ class WebUIPageActionControl::WebUIPageActionDelegate
   void NotifyControllerOfMessageClose();
 
   void CloseWidgetDeferred(base::WeakPtr<views::Widget> widget_to_close);
+
+  // Recomputes `PageActionState` and anchored message ordering state, notifying
+  // `owner_` if either changed.
+  void RefreshStateAndNotify();
 
   // Clears cached icon handles and any active mojo state sent to WebUI,
   // notifying the owner if the state changed.
@@ -376,6 +380,7 @@ void WebUIPageActionControl::WebUIPageActionDelegate::UpdateStateAndNotify() {
 
 void WebUIPageActionControl::WebUIPageActionDelegate::OnPageActionModelChanged(
     const page_actions::PageActionModelInterface& model) {
+  CHECK_EQ(&model, GetObservedModel());
   const bool visible = model.GetVisible();
   const bool is_chip_visible = visible && model.ShouldShowSuggestionChip();
 
@@ -386,7 +391,9 @@ void WebUIPageActionControl::WebUIPageActionDelegate::OnPageActionModelChanged(
 
   const bool should_show_anchored_message =
       visible && model.ShouldShowAnchoredMessage();
-  if (!should_show_anchored_message) {
+  if (should_show_anchored_message) {
+    CreateAndShowAnchoredMessage(model);
+  } else {
     element_shown_subscription_ = {};
     // Animate out before computing state so `IsAnchoredMessageVisible()`
     // reflects `is_closing()` when notifying `owner_` to re-order icons.
@@ -398,6 +405,14 @@ void WebUIPageActionControl::WebUIPageActionDelegate::OnPageActionModelChanged(
     }
   }
 
+  RefreshStateAndNotify();
+}
+
+void WebUIPageActionControl::WebUIPageActionDelegate::RefreshStateAndNotify() {
+  const auto* model = GetObservedModel();
+  const bool visible = model && model->GetVisible();
+  const bool should_show_anchored_message =
+      visible && model->ShouldShowAnchoredMessage();
   const bool anchored_message_changed =
       (was_anchored_message_showing_ != should_show_anchored_message);
   was_anchored_message_showing_ = should_show_anchored_message;
@@ -412,17 +427,13 @@ void WebUIPageActionControl::WebUIPageActionDelegate::OnPageActionModelChanged(
   toolbar_ui_api::mojom::PageActionStatePtr new_state = GetState();
 
   // An anchored message change alters the relative ordering of page action
-  // icons in GetPageActionStates(), even though the individual icon's
-  // PageActionState fields do not change (unlike chips, which update
-  // `should_show_chip`). Therefore, notify the owner when the anchored message
-  // state changes to re-order icons.
+  // icons in GetPageActionStates(), even when `IsAnchoredMessageVisible()` is
+  // still false (for example, while waiting for the WebUI anchor element to be
+  // tracked). Therefore, also notify the owner when `anchored_message_changed`
+  // flips to re-order icons.
   if (!old_state_.Equals(new_state) || anchored_message_changed) {
     old_state_ = std::move(new_state);
     owner_->NotifyPageActionStateChanged();
-  }
-
-  if (should_show_anchored_message) {
-    CreateAndShowAnchoredMessage(model);
   }
 }
 
@@ -457,6 +468,8 @@ WebUIPageActionControl::WebUIPageActionDelegate::GetState(
     return nullptr;
   }
 
+  const bool is_anchored_message_visible = IsAnchoredMessageVisible();
+
   auto state = toolbar_ui_api::mojom::PageActionState::New();
   state->page_action_id =
       webui_toolbar::ActionIdToMojomPageActionId(action_id_);
@@ -475,7 +488,8 @@ WebUIPageActionControl::WebUIPageActionDelegate::GetState(
 
   std::optional<ui::ColorVariant> icon_color;
   if (color_provider) {
-    icon_color = ResolveIconColor(*model, *color_provider);
+    icon_color =
+        ResolveIconColor(*model, *color_provider, is_anchored_message_visible);
   }
 
   image_model = ApplyIconColor(std::move(image_model), icon_color);
@@ -531,6 +545,7 @@ WebUIPageActionControl::WebUIPageActionDelegate::GetState(
   }
 
   state->show_trailing_icon = model->GetShowTrailingIcon();
+  state->is_anchored_message_visible = is_anchored_message_visible;
 
   if (model->GetTrailingImage().has_value()) {
     state->trailing_icon = cached_trailing_icon_ =
@@ -693,6 +708,7 @@ void WebUIPageActionControl::WebUIPageActionDelegate::
       observation_.GetSource()->ShouldShowAnchoredMessage() &&
       observation_.GetSource()->GetVisible()) {
     CreateAndShowAnchoredMessage(*observation_.GetSource());
+    RefreshStateAndNotify();
   }
 }
 
@@ -712,6 +728,7 @@ void WebUIPageActionControl::WebUIPageActionDelegate::
 
   if (!already_closing) {
     NotifyControllerOfMessageClose();
+    RefreshStateAndNotify();
   }
 }
 

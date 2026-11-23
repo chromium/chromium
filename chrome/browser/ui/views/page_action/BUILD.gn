@@ -202,6 +202,7 @@ source_set("unit_tests") {
     ":page_action",
     ":test_support",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/color:color_headers",
     "//chrome/browser/ui/page_action:unit_tests",
     "//chrome/browser/ui/toolbar/pinned_toolbar",
     "//chrome/browser/ui/views/location_bar",
@@ -211,8 +212,12 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/tabs:test_support",
+    "//content/test:test_support",
+    "//ui/color",
     "//ui/events:test_support",
+    "//ui/gfx",
     "//ui/gfx:test_support",
+    "//ui/views",
   ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

@@ -54,6 +54,7 @@ const initialState: PageActionState = {
   animationStyle: PageActionAnimationStyle.kStandard,
   trailingIcon: null,
   showTrailingIcon: false,
+  isAnchoredMessageVisible: false,
 };
 
 const PageActionIconElementBase =
@@ -232,6 +233,8 @@ export class PageActionIconElement extends PageActionIconElementBase {
       this.toggleAttribute(
           'show-trailing-icon',
           this.hasTrailingIcon_() && this.state.showTrailingIcon);
+      this.toggleAttribute(
+          'anchored-message-visible', this.state.isAnchoredMessageVisible);
       const oldState = changedProperties.get('state');
       const isTabSwitch =
           !oldState || this.state.tabSwitchToken !== oldState.tabSwitchToken;

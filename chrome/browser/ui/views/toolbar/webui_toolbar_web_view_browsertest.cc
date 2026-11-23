@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -62,6 +63,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
@@ -94,6 +96,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/page_action/anchored_message_view.h"
+#include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/browser/ui/views/page_action/webui_page_action_control.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view_base.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_bubble_view.h"
@@ -158,6 +161,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_controller_factory.h"
+#include "content/public/common/color_parser.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/drop_data.h"
@@ -198,6 +202,7 @@
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/color/color_provider.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
@@ -5786,6 +5791,150 @@ class WebUIPageActionBrowserTest : public WebUIToolbarWebViewBrowserTest {
              features::kSkipIPCChannelPausingForNonGuests,
              features::kWebUIInProcessResourceLoadingV2},
             {}) {}
+
+ protected:
+  static constexpr char kQueryPageActionIconsJs[] = R"(
+      const app = document.querySelector('toolbar-app');
+      if (app?.updateComplete) {
+        await app.updateComplete;
+      }
+      const locationBar = app?.shadowRoot?.querySelector('location-bar');
+      if (locationBar?.updateComplete) {
+        await locationBar.updateComplete;
+      }
+      const pageActions =
+          locationBar?.shadowRoot?.querySelector('page-action-icons');
+      if (pageActions?.updateComplete) {
+        await pageActions.updateComplete;
+      }
+      const icons = Array.from(
+          pageActions?.shadowRoot?.querySelectorAll('page-action-icon') || []);
+  )";
+
+  void SetUpPageActionTest() {
+    ui::TrackedElement* element = nullptr;
+    WebUIToolbarWebView* toolbar_webview = nullptr;
+    views::WebView* web_view = nullptr;
+    ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
+                                       &toolbar_webview, &web_view, browser()));
+    ASSERT_TRUE(toolbar_webview);
+    ASSERT_TRUE(web_view);
+    web_view_ = web_view;
+
+    const ui::ColorProvider* color_provider =
+        BrowserView::GetBrowserViewForBrowser(browser())->GetColorProvider();
+    ASSERT_TRUE(color_provider);
+    action_icon_color_ = color_provider->GetColor(kColorOmniboxActionIcon);
+    tonal_bg_color_ =
+        color_provider->GetColor(kColorOmniboxIconBackgroundTonal);
+    tonal_fg_color_ =
+        color_provider->GetColor(kColorOmniboxIconForegroundTonal);
+
+    auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+    webui_location_bar_ = toolbar_webview->GetLocationBar();
+    ASSERT_TRUE(webui_location_bar_);
+    webui_location_bar_->Update(web_contents);
+
+    tabs::TabInterface* tab =
+        tabs::TabInterface::MaybeGetFromContents(web_contents);
+    ASSERT_TRUE(tab);
+    controller_ = page_actions::PageActionController::From(tab);
+    ASSERT_TRUE(controller_);
+  }
+
+  void TearDownOnMainThread() override {
+    controller_ = nullptr;
+    webui_location_bar_ = nullptr;
+    web_view_ = nullptr;
+    WebUIToolbarWebViewBrowserTest::TearDownOnMainThread();
+  }
+
+  void EnableAction(actions::ActionId action_id) {
+    auto* action_item = actions::ActionManager::Get().FindAction(
+        action_id, BrowserActions::From(browser())->root_action_item());
+    ASSERT_TRUE(action_item);
+    action_item->SetEnabled(true);
+  }
+
+  std::optional<SkColor> GetRenderedPageActionIconColor(
+      actions::ActionId action_id) {
+    if (!web_view_ || !web_view_->GetWebContents()) {
+      return std::nullopt;
+    }
+    const int mojom_id = std::to_underlying(
+        webui_toolbar::ActionIdToMojomPageActionId(action_id));
+    const std::string script = content::JsReplace(
+        std::string("(async () => {") + kQueryPageActionIconsJs +
+            R"(
+          const icon = icons.find(el => el.state?.pageActionId === $1);
+          if (icon?.updateComplete) {
+            await icon.updateComplete;
+          }
+          const iconFromTable =
+              icon?.shadowRoot?.querySelector('icon-from-table#icon');
+          if (iconFromTable?.updateComplete) {
+            await iconFromTable.updateComplete;
+          }
+          const container =
+              iconFromTable?.shadowRoot?.querySelector('#container');
+          return container ? getComputedStyle(container).color : '';
+        })())",
+        mojom_id);
+    const content::EvalJsResult result =
+        content::EvalJs(web_view_->GetWebContents(), script);
+    if (!result.is_ok() || !result.is_string()) {
+      return std::nullopt;
+    }
+    SkColor color;
+    if (!content::ParseCssColorString(result.ExtractString(), &color)) {
+      return std::nullopt;
+    }
+    return color;
+  }
+
+  std::vector<actions::ActionId> GetRenderedPageActionOrder() {
+    if (!web_view_ || !web_view_->GetWebContents()) {
+      return {};
+    }
+    const std::string script = std::string("(async () => {") +
+                               kQueryPageActionIconsJs +
+                               R"(
+      return icons.map(el => el.state?.pageActionId ?? null);
+    })())";
+    const content::EvalJsResult result =
+        content::EvalJs(web_view_->GetWebContents(), script);
+    if (!result.is_ok() || !result.is_list()) {
+      return {};
+    }
+    std::vector<actions::ActionId> order;
+    for (const base::Value& val : result.ExtractList()) {
+      if (!val.is_int()) {
+        return {};
+      }
+      const auto mojom_id =
+          static_cast<toolbar_ui_api::mojom::PageActionId>(val.GetInt());
+      if (!toolbar_ui_api::mojom::IsKnownEnumValue(mojom_id)) {
+        return {};
+      }
+      order.push_back(webui_toolbar::MojomPageActionIdToActionId(mojom_id));
+    }
+    return order;
+  }
+
+  void ExpectRenderedPageActionOrder(actions::ActionId first,
+                                     actions::ActionId second) {
+    std::vector<actions::ActionId> order = GetRenderedPageActionOrder();
+    ASSERT_GE(order.size(), 2u);
+    EXPECT_EQ(first, order[0]);
+    EXPECT_EQ(second, order[1]);
+  }
+
+  raw_ptr<views::WebView> web_view_ = nullptr;
+  raw_ptr<WebUILocationBar> webui_location_bar_ = nullptr;
+  raw_ptr<page_actions::PageActionController> controller_ = nullptr;
+  SkColor action_icon_color_ = SK_ColorTRANSPARENT;
+  SkColor tonal_bg_color_ = SK_ColorTRANSPARENT;
+  SkColor tonal_fg_color_ = SK_ColorTRANSPARENT;
 };
 
 IN_PROC_BROWSER_TEST_F(WebUIPageActionBrowserTest,
@@ -5795,41 +5944,32 @@ IN_PROC_BROWSER_TEST_F(WebUIPageActionBrowserTest,
   auto rich_animation_mode = gfx::AnimationTestApi::SetRichAnimationRenderMode(
       gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
 
-  ui::TrackedElement* element = nullptr;
-  WebUIToolbarWebView* toolbar_webview = nullptr;
-  views::WebView* web_view = nullptr;
-  ASSERT_NO_FATAL_FAILURE(SetUpWebUI(kWebUIToolbarElementIdentifier, &element,
-                                     &toolbar_webview, &web_view, browser()));
-  ASSERT_TRUE(toolbar_webview);
-
-  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
-  auto* webui_location_bar = toolbar_webview->GetLocationBar();
-  ASSERT_TRUE(webui_location_bar);
-  webui_location_bar->Update(web_contents);
-
-  tabs::TabInterface* tab =
-      tabs::TabInterface::MaybeGetFromContents(web_contents);
-  ASSERT_TRUE(tab);
-  page_actions::PageActionController* controller =
-      page_actions::PageActionController::From(tab);
-  ASSERT_TRUE(controller);
+  ASSERT_NO_FATAL_FAILURE(SetUpPageActionTest());
 
   actions::ActionId target_action_id = kActionShowTranslate;
-  auto* action_item = actions::ActionManager::Get().FindAction(
-      target_action_id, BrowserActions::From(browser())->root_action_item());
-  ASSERT_TRUE(action_item);
-  action_item->SetEnabled(true);
+  ASSERT_NO_FATAL_FAILURE(EnableAction(target_action_id));
+  controller_->Show(target_action_id);
 
-  controller->Show(target_action_id);
+  auto& control = webui_location_bar_->page_action_control();
+  page_actions::PageActionTestAccessor accessor(browser(), target_action_id);
 
-  controller->SetAnchoredMessageText(target_action_id, u"Test Message");
-  controller->ShowAnchoredMessage(target_action_id,
-                                  page_actions::AnchoredMessageConfig{});
+  // Wait for the icon-only button to render in WebUI and verify transparent
+  // background and surrounding action icon color before the anchored message is
+  // shown.
+  ASSERT_TRUE(
+      WaitForTrackedElementVisible(kTranslatePageActionElementId, browser()));
+  EXPECT_EQ(SK_ColorTRANSPARENT, accessor.GetBackgroundColor());
+  EXPECT_EQ(action_icon_color_,
+            GetRenderedPageActionIconColor(target_action_id));
 
-  auto& control = webui_location_bar->page_action_control();
+  controller_->SetAnchoredMessageText(target_action_id, u"Test Message");
+  controller_->ShowAnchoredMessage(target_action_id,
+                                   page_actions::AnchoredMessageConfig{});
 
   ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
-    return control.IsAnchoredMessageShowing(target_action_id);
+    return control.IsAnchoredMessageShowing(target_action_id) &&
+           accessor.GetBackgroundColor() == tonal_bg_color_ &&
+           accessor.GetForegroundColor() == tonal_fg_color_;
   }));
 
   auto* bubble = control.GetAnchoredMessageForTesting(target_action_id);
@@ -5842,9 +5982,13 @@ IN_PROC_BROWSER_TEST_F(WebUIPageActionBrowserTest,
   views::WidgetFadeAnimator* fade_animator =
       bubble->fade_animator_for_testing();
   ASSERT_TRUE(fade_animator);
+  EXPECT_EQ(tonal_fg_color_, GetRenderedPageActionIconColor(target_action_id));
+  EXPECT_FALSE(accessor.ShouldShowSuggestionChip());
+  EXPECT_TRUE(accessor.IsAtMinimumSize());
+  EXPECT_TRUE(accessor.IsIconCentered());
 
   views::test::WidgetDestroyedWaiter destroyed_waiter(bubble->GetWidget());
-  controller->HideAnchoredMessage(target_action_id);
+  controller_->HideAnchoredMessage(target_action_id);
 
   EXPECT_FALSE(control.IsAnchoredMessageShowing(target_action_id));
   ASSERT_EQ(control.GetAnchoredMessageForTesting(target_action_id), bubble);
@@ -5856,6 +6000,92 @@ IN_PROC_BROWSER_TEST_F(WebUIPageActionBrowserTest,
       .IncrementTime(base::Milliseconds(150));
   destroyed_waiter.Wait();
   EXPECT_EQ(control.GetAnchoredMessageForTesting(target_action_id), nullptr);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+    return accessor.GetBackgroundColor() == SK_ColorTRANSPARENT;
+  }));
+  EXPECT_EQ(action_icon_color_,
+            GetRenderedPageActionIconColor(target_action_id));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIPageActionBrowserTest,
+                       AnchoredMessageDirectWidgetCloseRevertsStylingAndOrder) {
+  ASSERT_NO_FATAL_FAILURE(SetUpPageActionTest());
+  ASSERT_NO_FATAL_FAILURE(EnableAction(kActionShowMemorySaverChip));
+  ASSERT_NO_FATAL_FAILURE(EnableAction(kActionShowTranslate));
+
+  // Show `kActionShowMemorySaverChip` as a suggestion chip and
+  // `kActionShowTranslate` as an icon so `kActionShowMemorySaverChip` initially
+  // leads at index 0. Use `kSecurityTrustAndPermissions` so
+  // `PriorityChipSelector` keeps the suggestion chip visible alongside the
+  // `kUserInteraction` anchored message below.
+  controller_->OverrideText(kActionShowMemorySaverChip, u"Memory Saver");
+  controller_->Show(kActionShowMemorySaverChip);
+  controller_->ShowSuggestionChip(
+      kActionShowMemorySaverChip,
+      {.priority = page_actions::PageActionPriorityCategory::
+           kSecurityTrustAndPermissions});
+  controller_->Show(kActionShowTranslate);
+
+  auto& control = webui_location_bar_->page_action_control();
+  page_actions::PageActionTestAccessor memory_saver_accessor(
+      browser(), kActionShowMemorySaverChip);
+  page_actions::PageActionTestAccessor translate_accessor(browser(),
+                                                          kActionShowTranslate);
+
+  ASSERT_TRUE(
+      WaitForTrackedElementVisible(kTranslatePageActionElementId, browser()));
+  EXPECT_TRUE(memory_saver_accessor.ShouldShowSuggestionChip());
+  EXPECT_EQ(0u, memory_saver_accessor.GetIndex());
+  EXPECT_EQ(1u, translate_accessor.GetIndex());
+  ExpectRenderedPageActionOrder(kActionShowMemorySaverChip,
+                                kActionShowTranslate);
+  EXPECT_EQ(SK_ColorTRANSPARENT, translate_accessor.GetBackgroundColor());
+
+  // Showing an anchored message on `kActionShowTranslate` promotes it ahead of
+  // the `kActionShowMemorySaverChip` chip and applies tonal pill colors while
+  // keeping it at icon-only minimum size.
+  controller_->SetAnchoredMessageText(kActionShowTranslate, u"Translate Page?");
+  controller_->ShowAnchoredMessage(
+      kActionShowTranslate,
+      {.priority = page_actions::PageActionPriorityCategory::kUserInteraction});
+
+  ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+    return control.IsAnchoredMessageShowing(kActionShowTranslate) &&
+           translate_accessor.GetBackgroundColor() == tonal_bg_color_ &&
+           translate_accessor.GetForegroundColor() == tonal_fg_color_;
+  }));
+  EXPECT_EQ(tonal_fg_color_,
+            GetRenderedPageActionIconColor(kActionShowTranslate));
+  EXPECT_EQ(0u, translate_accessor.GetIndex());
+  EXPECT_EQ(1u, memory_saver_accessor.GetIndex());
+  ExpectRenderedPageActionOrder(kActionShowTranslate,
+                                kActionShowMemorySaverChip);
+  EXPECT_TRUE(memory_saver_accessor.ShouldShowSuggestionChip());
+  EXPECT_FALSE(translate_accessor.ShouldShowSuggestionChip());
+  EXPECT_TRUE(translate_accessor.IsAtMinimumSize());
+  EXPECT_TRUE(translate_accessor.IsIconCentered());
+
+  // Close the bubble widget directly (simulating Escape / focus loss) and
+  // verify that `OnAnchoredMessageWidgetClose()` notifies WebUI to revert tonal
+  // colors and restore page action ordering.
+  auto* bubble = control.GetAnchoredMessageForTesting(kActionShowTranslate);
+  ASSERT_TRUE(bubble);
+  ASSERT_TRUE(bubble->GetWidget());
+  bubble->GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kEscKeyPressed);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() -> bool {
+    return !control.IsAnchoredMessageShowing(kActionShowTranslate) &&
+           translate_accessor.GetBackgroundColor() == SK_ColorTRANSPARENT;
+  }));
+  EXPECT_EQ(action_icon_color_,
+            GetRenderedPageActionIconColor(kActionShowTranslate));
+  EXPECT_TRUE(memory_saver_accessor.ShouldShowSuggestionChip());
+  EXPECT_EQ(0u, memory_saver_accessor.GetIndex());
+  EXPECT_EQ(1u, translate_accessor.GetIndex());
+  ExpectRenderedPageActionOrder(kActionShowMemorySaverChip,
+                                kActionShowTranslate);
 }
 
 class WebUIToolbarAlreadyExistsForTheSameProfileOnInitTest

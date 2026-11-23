@@ -94,7 +94,14 @@
       var(--location-bar-page-action-icon-padding-end) +
       var(--dynamic-base-padding) + 8px -
       var(--dynamic-rounding-cushion));
+}
 
+/* Matches PageActionView::PaintedOnSolidBackground() and UpdateBackground():
+ * apply tonal pill and solid-background hover colors both when the suggestion
+ * chip label is expanded and when an anchored message bubble is visible (where
+ * the button stays collapsed to icon-only size). */
+#button[has-label],
+:host([anchored-message-visible]) #button {
   --toolbar-chip-bg-color: var(--color-omnibox-icon-background-tonal);
   --toolbar-chip-fg-color: var(--color-omnibox-icon-foreground-tonal);
   --toolbar-chip-ink-drop-hover-color: var(--color-omnibox-icon-hover);

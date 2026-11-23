@@ -54,6 +54,7 @@ suite('PageActionIconTest', function() {
       animationStyle: PageActionAnimationStyle.kStandard,
       trailingIcon: null,
       showTrailingIcon: false,
+      isAnchoredMessageVisible: false,
     };
   }
 
@@ -312,6 +313,115 @@ suite('PageActionIconTest', function() {
 
     container.remove();
   });
+
+  function setUpAnchoredMessageColors() {
+    icon.style.setProperty('--toolbar-chip-height', '28px');
+    icon.style.setProperty(
+        '--color-omnibox-icon-background-tonal', 'rgb(255, 0, 0)');
+    icon.style.setProperty(
+        '--color-omnibox-icon-foreground-tonal', 'rgb(0, 128, 255)');
+    icon.style.setProperty('--color-toolbar-button-icon', 'rgb(1, 2, 3)');
+  }
+
+  test('Tonal styling while anchored message is visible', async function() {
+    const button = icon.$.button;
+    const actualButton = button.$.button;
+    const textEl = icon.shadowRoot.querySelector<HTMLElement>('#text')!;
+    const kActionHoverColor = 'rgb(11, 22, 33)';
+    const kIconHoverColor = 'rgb(77, 88, 99)';
+    setUpAnchoredMessageColors();
+    document.documentElement.style.setProperty(
+        '--color-omnibox-action-icon-hover', kActionHoverColor);
+    document.documentElement.style.setProperty(
+        '--color-omnibox-icon-hover', kIconHoverColor);
+    toolbarUiHandler.resetResolver('onPageActionChipShowingChanged');
+
+    const style = actualButton.computedStyleMap();
+    assertEquals('rgba(0, 0, 0, 0)', style.get('background-color')?.toString());
+    assertEquals('rgb(1, 2, 3)', style.get('color')?.toString());
+    assertEquals(
+        kActionHoverColor,
+        window.getComputedStyle(actualButton, '::before').backgroundColor);
+
+    // Showing an anchored message applies tonal pill and solid-background hover
+    // colors while keeping the button collapsed to icon-only size (no expanded
+    // chip label).
+    icon.state = {
+      ...createBaseState(),
+      text: 'Translate',
+      shouldShowChip: false,
+      isAnchoredMessageVisible: true,
+    };
+    await microtasksFinished();
+
+    assertTrue(icon.hasAttribute('anchored-message-visible'));
+    assertEquals('rgb(255, 0, 0)', style.get('background-color')?.toString());
+    assertEquals('rgb(0, 128, 255)', style.get('color')?.toString());
+    assertEquals(
+        kIconHoverColor,
+        window.getComputedStyle(actualButton, '::before').backgroundColor);
+    assertFalse(button.hasAttribute('has-label'));
+    assertFalse(textEl.hasAttribute('visible'));
+    assertEquals(28, actualButton.offsetHeight);
+    assertEquals(actualButton.offsetHeight, actualButton.offsetWidth);
+    assertEquals(
+        0, toolbarUiHandler.getCallCount('onPageActionChipShowingChanged'));
+
+    // Hiding the anchored message reverts to transparent background, default
+    // toolbar button icon foreground color, and default action hover color
+    // without calling onPageActionChipShowingChanged.
+    icon.state = {
+      ...createBaseState(),
+      text: 'Translate',
+      shouldShowChip: false,
+      isAnchoredMessageVisible: false,
+    };
+    await microtasksFinished();
+
+    assertFalse(icon.hasAttribute('anchored-message-visible'));
+    assertEquals('rgba(0, 0, 0, 0)', style.get('background-color')?.toString());
+    assertEquals('rgb(1, 2, 3)', style.get('color')?.toString());
+    assertEquals(
+        kActionHoverColor,
+        window.getComputedStyle(actualButton, '::before').backgroundColor);
+    assertEquals(
+        0, toolbarUiHandler.getCallCount('onPageActionChipShowingChanged'));
+  });
+
+  test(
+      'Color overrides take precedence over anchored message tonal colors',
+      async function() {
+        setUpAnchoredMessageColors();
+        const style = icon.$.button.$.button.computedStyleMap();
+
+        icon.state = {
+          ...createBaseState(),
+          text: 'Translate',
+          shouldShowChip: false,
+          isAnchoredMessageVisible: true,
+          backgroundColorOverride: hexColorToSkColor('#00ff00'),
+          foregroundColorOverride: hexColorToSkColor('#ff00ff'),
+        };
+        await microtasksFinished();
+
+        assertEquals(
+            'rgb(0, 255, 0)', style.get('background-color')?.toString());
+        assertEquals('rgb(255, 0, 255)', style.get('color')?.toString());
+
+        // Clearing overrides while the anchored message remains visible
+        // restores tonal colors.
+        icon.state = {
+          ...createBaseState(),
+          text: 'Translate',
+          shouldShowChip: false,
+          isAnchoredMessageVisible: true,
+        };
+        await microtasksFinished();
+
+        assertEquals(
+            'rgb(255, 0, 0)', style.get('background-color')?.toString());
+        assertEquals('rgb(0, 128, 255)', style.get('color')?.toString());
+      });
 
   test('Render without accessible name', async function() {
     icon.state = {
@@ -1288,6 +1398,7 @@ suite('PageActionIconsTest', function() {
       animationStyle: PageActionAnimationStyle.kStandard,
       trailingIcon: null,
       showTrailingIcon: false,
+      isAnchoredMessageVisible: false,
     };
   }
 

@@ -1376,6 +1376,7 @@ suite('ToolbarAppTest', () => {
       animationStyle: PageActionAnimationStyle.kStandard,
       trailingIcon: null,
       showTrailingIcon: false,
+      isAnchoredMessageVisible: false,
     }];
     browserProxy.fireToolbarStateListener([], state);
     await microtasksFinished();

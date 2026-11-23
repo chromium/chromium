@@ -174,6 +174,7 @@ suite('ToolbarAppLazyLoadTest', () => {
       animationStyle: PageActionAnimationStyle.kStandard,
       trailingIcon: null,
       showTrailingIcon: false,
+      isAnchoredMessageVisible: false,
     }];
 
     const toolbarState = {

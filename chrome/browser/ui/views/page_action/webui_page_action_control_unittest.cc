@@ -4,10 +4,15 @@
 
 #include "chrome/browser/ui/views/page_action/webui_page_action_control.h"
 
+#include <algorithm>
 #include <memory>
+#include <optional>
+#include <utility>
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
@@ -17,6 +22,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/page_action/action_ids.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
@@ -31,10 +37,13 @@
 #include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/browser/ui/views/page_action/webui_page_action_view.h"
 #include "chrome/browser/ui/views/toolbar/mock_webui_toolbar_control_delegate.h"
+#include "chrome/browser/ui/webui/webui_toolbar/icon_table.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/browser_apis/ui_controllers/toolbar/icon_handle.h"
+#include "components/browser_apis/ui_controllers/toolbar/icon_handle.mojom.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/tabs/public/tab_interface.h"
@@ -43,14 +52,18 @@
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/actions/actions.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/animation/widget_fade_animator.h"
@@ -1264,6 +1277,43 @@ TEST_F(WebUIPageActionControlTest,
   EXPECT_FALSE(states[2]->should_show_chip);
 }
 
+// Subclasses `MockWebUIToolbarControlDelegate` to override `GetColorProvider()`
+// (delegating to `widget_->GetColorProvider()` for `IconTable` color
+// resolution) and route `GetView()` and `GetBrowser()` to the test widget and
+// mock browser.
+class WidgetBackedToolbarControlDelegate
+    : public NiceMock<MockWebUIToolbarControlDelegate> {
+ public:
+  void Init(views::Widget* widget,
+            views::View* view,
+            BrowserWindowInterface* browser) {
+    widget_ = widget;
+    view_ = view;
+    browser_ = browser;
+  }
+
+  void Reset() {
+    widget_ = nullptr;
+    view_ = nullptr;
+    browser_ = nullptr;
+  }
+
+  BrowserWindowInterface* GetBrowser() override { return browser_; }
+  views::View* GetView() override { return view_; }
+
+  const ui::ColorProvider* GetColorProvider() const override {
+    if (widget_) {
+      return widget_->GetColorProvider();
+    }
+    return MockWebUIToolbarControlDelegate::GetColorProvider();
+  }
+
+ private:
+  raw_ptr<views::Widget> widget_ = nullptr;
+  raw_ptr<views::View> view_ = nullptr;
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
+};
+
 class WebUIPageActionControlAnchoredMessageTest : public ChromeViewsTestBase {
  public:
   void SetUp() override {
@@ -1278,15 +1328,15 @@ class WebUIPageActionControlAnchoredMessageTest : public ChromeViewsTestBase {
         CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     anchor_widget_->SetBounds(
         gfx::Rect(/*x=*/0, /*y=*/0, /*width=*/800, /*height=*/600));
-    anchor_widget_->SetContentsView(std::make_unique<views::View>());
+    auto* contents_view =
+        anchor_widget_->SetContentsView(std::make_unique<views::View>());
     anchor_widget_->Show();
 
     const ui::ElementContext context =
         views::ElementTrackerViews::GetContextForWidget(anchor_widget_.get());
     browser_elements_ =
         std::make_unique<TestBrowserElements>(mock_browser_, context);
-    ON_CALL(webui_delegate_, GetBrowser())
-        .WillByDefault(testing::Return(&mock_browser_));
+    webui_delegate_.Init(anchor_widget_.get(), contents_view, &mock_browser_);
 
     location_bar_element_ =
         std::make_unique<ui::test::TestElement>(kLocationBarElementId, context);
@@ -1294,6 +1344,13 @@ class WebUIPageActionControlAnchoredMessageTest : public ChromeViewsTestBase {
     location_bar_element_->SetScreenBounds(
         gfx::Rect(/*x=*/100, /*y=*/10, /*width=*/600, /*height=*/24));
     location_bar_element_->Show();
+
+    ai_mode_element_ = std::make_unique<ui::test::TestElement>(
+        kAiModePageActionIconElementId, context);
+    ai_mode_element_->SetNativeView(anchor_widget_->GetNativeView());
+    ai_mode_element_->SetScreenBounds(
+        gfx::Rect(/*x=*/670, /*y=*/10, /*width=*/24, /*height=*/24));
+    ai_mode_element_->Show();
 
     translate_element_ = std::make_unique<ui::test::TestElement>(
         kTranslatePageActionElementId, context);
@@ -1345,8 +1402,10 @@ class WebUIPageActionControlAnchoredMessageTest : public ChromeViewsTestBase {
     pinned_actions_model_.reset();
     tab_.reset();
     translate_element_.reset();
+    ai_mode_element_.reset();
     location_bar_element_.reset();
     browser_elements_.reset();
+    webui_delegate_.Reset();
     anchor_widget_.reset();
     root_action_item_.reset();
     ChromeViewsTestBase::TearDown();
@@ -1390,6 +1449,43 @@ class WebUIPageActionControlAnchoredMessageTest : public ChromeViewsTestBase {
     views::test::WidgetDestroyedWaiter destroyed_waiter_;
   };
 
+  SkColor GetColor(ui::ColorId color_id) const {
+    const ui::ColorProvider* color_provider =
+        anchor_widget_->GetColorProvider();
+    CHECK(color_provider);
+    return color_provider->GetColor(color_id);
+  }
+
+  template <typename Fn>
+  std::vector<toolbar_ui_api::mojom::PageActionStatePtr>
+  CaptureNextPageActionChange(Fn&& trigger) {
+    std::vector<toolbar_ui_api::mojom::PageActionStatePtr> notified_states;
+    EXPECT_CALL(webui_delegate_, OnPageActionChanged(_))
+        .WillOnce(
+            [&](std::vector<toolbar_ui_api::mojom::PageActionStatePtr> s) {
+              notified_states = std::move(s);
+            });
+    std::forward<Fn>(trigger)();
+    testing::Mock::VerifyAndClearExpectations(&webui_delegate_);
+    return notified_states;
+  }
+
+  std::optional<SkColor> ResolveRegisteredIconColor(
+      const toolbar_ui_api::IconHandle& handle) {
+    if (handle.is_null()) {
+      return std::nullopt;
+    }
+    auto full_state = webui_delegate_.GetIconTable().GetFullState();
+    auto it = std::ranges::find_if(
+        full_state, [&](const toolbar_ui_api::mojom::IconUpdatePtr& update) {
+          return update->handle_id == handle.HandleId().value();
+        });
+    if (it == full_state.end()) {
+      return std::nullopt;
+    }
+    return (*it)->color;
+  }
+
   std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> animation_duration_;
   gfx::AnimationTestApi::RenderModeResetter rich_animation_mode_;
   TestingProfile profile_;
@@ -1397,8 +1493,9 @@ class WebUIPageActionControlAnchoredMessageTest : public ChromeViewsTestBase {
   NiceMock<MockBrowserWindowInterface> mock_browser_;
   std::unique_ptr<TestBrowserElements> browser_elements_;
   std::unique_ptr<ui::test::TestElement> location_bar_element_;
+  std::unique_ptr<ui::test::TestElement> ai_mode_element_;
   std::unique_ptr<ui::test::TestElement> translate_element_;
-  NiceMock<MockWebUIToolbarControlDelegate> webui_delegate_;
+  WidgetBackedToolbarControlDelegate webui_delegate_;
   std::unique_ptr<FakeTabInterface> tab_;
   std::unique_ptr<PinnedToolbarActionsModel> pinned_actions_model_;
   std::unique_ptr<PageActionControllerImpl> controller_;
@@ -1690,6 +1787,224 @@ TEST_F(WebUIPageActionControlAnchoredMessageTest,
   EXPECT_FALSE(closing_widget);
 }
 
+TEST_F(WebUIPageActionControlAnchoredMessageTest,
+       AnchoredMessageTonalStylingOnShowAndHide) {
+  const SkColor action_icon_color = GetColor(kColorOmniboxActionIcon);
+  const SkColor tonal_fg_color = GetColor(kColorOmniboxIconForegroundTonal);
+  ASSERT_NE(action_icon_color, tonal_fg_color);
+
+  controller_->SetTrailingImage(
+      kActionAiMode,
+      ui::ImageModel::FromVectorIcon(vector_icons::kArrowForwardIcon));
+  controller_->SetShowTrailingIcon(kActionAiMode, /*show=*/true);
+  controller_->Show(kActionAiMode);
+
+  auto states = control_->GetPageActionStates();
+  ASSERT_EQ(1u, states.size());
+  EXPECT_FALSE(states[0]->is_anchored_message_visible);
+  EXPECT_FALSE(states[0]->should_show_chip);
+  EXPECT_EQ(action_icon_color, ResolveRegisteredIconColor(states[0]->icon));
+  ASSERT_TRUE(states[0]->trailing_icon.has_value());
+  EXPECT_EQ(action_icon_color,
+            ResolveRegisteredIconColor(*states[0]->trailing_icon));
+
+  // Showing an anchored message notifies WebUI with tonal icon colors while
+  // keeping `should_show_chip` false.
+  auto notified_states = CaptureNextPageActionChange([&] {
+    controller_->ShowAnchoredMessage(kActionAiMode,
+                                     page_actions::AnchoredMessageConfig{});
+  });
+
+  AnchoredMessageBubbleView* bubble = GetAnchoredMessage(kActionAiMode);
+  ASSERT_TRUE(bubble);
+  EXPECT_TRUE(control_->IsAnchoredMessageShowing(kActionAiMode));
+  ASSERT_EQ(1u, notified_states.size());
+  EXPECT_TRUE(notified_states[0]->is_anchored_message_visible);
+  EXPECT_FALSE(notified_states[0]->should_show_chip);
+  EXPECT_EQ(tonal_fg_color,
+            ResolveRegisteredIconColor(notified_states[0]->icon));
+  ASSERT_TRUE(notified_states[0]->trailing_icon.has_value());
+  EXPECT_EQ(tonal_fg_color,
+            ResolveRegisteredIconColor(*notified_states[0]->trailing_icon));
+
+  // Hiding via the controller starts `AnimateOut()` first and immediately
+  // notifies WebUI with non-tonal icon colors restored.
+  ExitAnimationWaiter exit_waiter(bubble);
+  notified_states = CaptureNextPageActionChange(
+      [&] { controller_->HideAnchoredMessage(kActionAiMode); });
+
+  EXPECT_TRUE(bubble->is_closing());
+  EXPECT_FALSE(control_->IsAnchoredMessageShowing(kActionAiMode));
+  ASSERT_EQ(1u, notified_states.size());
+  EXPECT_FALSE(notified_states[0]->is_anchored_message_visible);
+  EXPECT_EQ(action_icon_color,
+            ResolveRegisteredIconColor(notified_states[0]->icon));
+  ASSERT_TRUE(notified_states[0]->trailing_icon.has_value());
+  EXPECT_EQ(action_icon_color,
+            ResolveRegisteredIconColor(*notified_states[0]->trailing_icon));
+
+  exit_waiter.Wait();
+}
+
+TEST_F(WebUIPageActionControlAnchoredMessageTest,
+       AnchoredMessageForegroundColorOverrideTakesPrecedence) {
+  const SkColor tonal_fg_color = GetColor(kColorOmniboxIconForegroundTonal);
+  const ui::ColorId override_fg_color_id = ui::kColorSysPrimary;
+  const SkColor override_fg_color = GetColor(override_fg_color_id);
+  ASSERT_NE(tonal_fg_color, override_fg_color);
+
+  controller_->SetTrailingImage(
+      kActionAiMode,
+      ui::ImageModel::FromVectorIcon(vector_icons::kArrowForwardIcon));
+  controller_->SetShowTrailingIcon(kActionAiMode, /*show=*/true);
+  ASSERT_TRUE(ShowAnchoredMessage(kActionAiMode));
+
+  controller_->OverrideForegroundColor(kActionAiMode, override_fg_color_id);
+  auto states = control_->GetPageActionStates();
+  ASSERT_EQ(1u, states.size());
+  EXPECT_TRUE(states[0]->is_anchored_message_visible);
+  EXPECT_EQ(override_fg_color, states[0]->foreground_color_override);
+  EXPECT_EQ(override_fg_color, ResolveRegisteredIconColor(states[0]->icon));
+  ASSERT_TRUE(states[0]->trailing_icon.has_value());
+  EXPECT_EQ(override_fg_color,
+            ResolveRegisteredIconColor(*states[0]->trailing_icon));
+
+  // Clearing the override while the anchored message remains visible restores
+  // tonal icon colors.
+  controller_->OverrideForegroundColor(kActionAiMode, std::nullopt);
+  states = control_->GetPageActionStates();
+  ASSERT_EQ(1u, states.size());
+  EXPECT_EQ(tonal_fg_color, ResolveRegisteredIconColor(states[0]->icon));
+  ASSERT_TRUE(states[0]->trailing_icon.has_value());
+  EXPECT_EQ(tonal_fg_color,
+            ResolveRegisteredIconColor(*states[0]->trailing_icon));
+}
+
+TEST_F(WebUIPageActionControlAnchoredMessageTest,
+       AnchoredMessagePreservesCascadingAccentIconColor) {
+  const SkColor tonal_fg_color = GetColor(kColorOmniboxIconForegroundTonal);
+  const SkColor expected_accent_color =
+      color_utils::BlendForMinContrast(
+          GetColor(ui::kColorFocusableBorderFocused), GetColor(kColorToolbar),
+          /*high_contrast_foreground=*/std::nullopt,
+          color_utils::kMinimumVisibleContrastRatio)
+          .color;
+
+  ASSERT_TRUE(ShowAnchoredMessage(kActionAiMode));
+
+  controller_->OverrideImage(
+      kActionAiMode, ui::ImageModel::FromVectorIcon(kZoomInIcon),
+      page_actions::PageActionColorSource::kCascadingAccent);
+  auto states = control_->GetPageActionStates();
+  ASSERT_EQ(1u, states.size());
+  EXPECT_TRUE(states[0]->is_anchored_message_visible);
+  EXPECT_EQ(expected_accent_color, ResolveRegisteredIconColor(states[0]->icon));
+
+  // Switching back to `kForeground` restores tonal icon color.
+  controller_->OverrideImage(kActionAiMode,
+                             ui::ImageModel::FromVectorIcon(kZoomInIcon),
+                             page_actions::PageActionColorSource::kForeground);
+  states = control_->GetPageActionStates();
+  ASSERT_EQ(1u, states.size());
+  EXPECT_EQ(tonal_fg_color, ResolveRegisteredIconColor(states[0]->icon));
+}
+
+TEST_F(WebUIPageActionControlAnchoredMessageTest,
+       AnchoredMessageDeferredShowAppliesTonalStylingWhenElementAppears) {
+  const SkColor action_icon_color = GetColor(kColorOmniboxActionIcon);
+  const SkColor tonal_fg_color = GetColor(kColorOmniboxIconForegroundTonal);
+  ASSERT_NE(action_icon_color, tonal_fg_color);
+
+  // Hide the Translate anchor element so bubble creation is deferred until
+  // `ElementTracker` reports the element shown.
+  translate_element_->Hide();
+
+  controller_->Show(kActionAiMode);
+  controller_->ShowSuggestionChip(
+      kActionAiMode, {.priority = page_actions::PageActionPriorityCategory::
+                          kSecurityTrustAndPermissions});
+  controller_->Show(kActionShowTranslate);
+
+  // Request anchored message while the anchor element is not yet tracked:
+  // `kActionShowTranslate` is promoted in order because the model requests an
+  // anchored message, but `is_anchored_message_visible` remains false and the
+  // icon color stays `kColorOmniboxActionIcon` until the bubble actually shows.
+  controller_->ShowAnchoredMessage(
+      kActionShowTranslate,
+      {.priority = page_actions::PageActionPriorityCategory::kUserInteraction});
+  EXPECT_FALSE(control_->IsAnchoredMessageShowing(kActionShowTranslate));
+
+  auto states = control_->GetPageActionStates();
+  ASSERT_EQ(2u, states.size());
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionShowTranslate,
+            states[0]->page_action_id);
+  EXPECT_FALSE(states[0]->is_anchored_message_visible);
+  EXPECT_EQ(action_icon_color, ResolveRegisteredIconColor(states[0]->icon));
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionAiMode,
+            states[1]->page_action_id);
+  EXPECT_TRUE(states[1]->should_show_chip);
+
+  // Showing the anchor element triggers `OnElementShownForAnchoredMessage()`,
+  // spawning the bubble and notifying WebUI with tonal styling.
+  auto notified_states =
+      CaptureNextPageActionChange([&] { translate_element_->Show(); });
+
+  EXPECT_TRUE(control_->IsAnchoredMessageShowing(kActionShowTranslate));
+  ASSERT_EQ(2u, notified_states.size());
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionShowTranslate,
+            notified_states[0]->page_action_id);
+  EXPECT_TRUE(notified_states[0]->is_anchored_message_visible);
+  EXPECT_EQ(tonal_fg_color,
+            ResolveRegisteredIconColor(notified_states[0]->icon));
+}
+
+TEST_F(WebUIPageActionControlAnchoredMessageTest,
+       AnchoredMessageDirectWidgetCloseRevertsStateAndOrder) {
+  const SkColor action_icon_color = GetColor(kColorOmniboxActionIcon);
+  const SkColor tonal_fg_color = GetColor(kColorOmniboxIconForegroundTonal);
+  ASSERT_NE(action_icon_color, tonal_fg_color);
+
+  controller_->Show(kActionAiMode);
+  controller_->ShowSuggestionChip(
+      kActionAiMode, {.priority = page_actions::PageActionPriorityCategory::
+                          kSecurityTrustAndPermissions});
+  controller_->Show(kActionShowTranslate);
+  controller_->ShowAnchoredMessage(
+      kActionShowTranslate,
+      {.priority = page_actions::PageActionPriorityCategory::kUserInteraction});
+
+  AnchoredMessageBubbleView* bubble = GetAnchoredMessage(kActionShowTranslate);
+  ASSERT_TRUE(bubble);
+  ASSERT_TRUE(bubble->GetWidget());
+  auto states = control_->GetPageActionStates();
+  ASSERT_EQ(2u, states.size());
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionShowTranslate,
+            states[0]->page_action_id);
+  EXPECT_TRUE(states[0]->is_anchored_message_visible);
+  EXPECT_EQ(tonal_fg_color, ResolveRegisteredIconColor(states[0]->icon));
+
+  // Closing the bubble widget directly (e.g. Escape / focus loss) notifies
+  // WebUI to revert tonal styling and restore chip-before-icon ordering.
+  views::test::WidgetDestroyedWaiter destroyed_waiter(bubble->GetWidget());
+  auto notified_states = CaptureNextPageActionChange([&] {
+    bubble->GetWidget()->CloseWithReason(
+        views::Widget::ClosedReason::kEscKeyPressed);
+  });
+
+  EXPECT_FALSE(control_->IsAnchoredMessageShowing(kActionShowTranslate));
+  EXPECT_EQ(std::nullopt, controller_->GetActiveAnchoredMessage());
+  ASSERT_EQ(2u, notified_states.size());
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionAiMode,
+            notified_states[0]->page_action_id);
+  EXPECT_TRUE(notified_states[0]->should_show_chip);
+  EXPECT_EQ(toolbar_ui_api::mojom::PageActionId::kActionShowTranslate,
+            notified_states[1]->page_action_id);
+  EXPECT_FALSE(notified_states[1]->is_anchored_message_visible);
+  EXPECT_FALSE(notified_states[1]->should_show_chip);
+  EXPECT_EQ(action_icon_color,
+            ResolveRegisteredIconColor(notified_states[1]->icon));
+  destroyed_waiter.Wait();
+}
 }  // namespace
 
 }  // namespace page_actions
