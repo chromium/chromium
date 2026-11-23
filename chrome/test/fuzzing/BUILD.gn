@@ -102,6 +102,7 @@ if (!is_android) {
       ":in_process_fuzzer_buildflags",
       ":js_in_process_fuzzer_utils",
       "//chrome/browser",
+      "//net:test_support",
       "//services/webnn/public/mojom:features",
     ]
     if (enable_mojom_fuzzer) {
