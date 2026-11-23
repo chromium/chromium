@@ -20,6 +20,17 @@ that activity reporting cannot be accidentally enabled there.
 The [update protocol documentation](//docs/updater/protocol_4.md) describes the
 transmitted information and deduplication algorithm in more detail.
 
+## Ping Freshness
+
+When the `ActivityReporterPingFreshnessRotation` feature is enabled (it is
+disabled by default), the activity reporter replaces the `ping_freshness` value
+before each report's update check if the value has reached its max age, or if
+the time it was written is unknown or in the future. This limits how long one
+value can link the reports of a client whose update checks don't complete. The
+feature's `PingFreshnessRotationMaxAge` parameter sets the max age: 53 hours by
+default (`update_client::kPingFreshnessMaxAge`), clamped to between 24 hours and
+28 days.
+
 ## Incognito Mode and Privacy
 
 ### Interaction with Incognito Browsing
@@ -44,12 +55,16 @@ As a result:
 `activity_reporter` does not touch profile directories or profile preferences
 (`Profile::GetPrefs()`). Instead:
 * All persisted state—specifically the `DateLastActive` and
-  `DateLastRollCall` timestamps managed by `update_client::PersistedData`—is
-  stored exclusively in `Local State` (`g_browser_process->local_state()`),
-  located at the root of the User Data Directory.
+  `DateLastRollCall` dates, the ping freshness value, and the time the value
+  was written, all managed by `update_client::PersistedData`—is stored
+  exclusively in `Local State` (`g_browser_process->local_state()`), located at
+  the root of the User Data Directory.
 * The pending `Local State` write is committed to disk as soon as each update
   check completes, so that the server-provided `DateLastActive` survives the
   browser process terminating before the pref store's scheduled write.
+  The activity reporter also commits it as soon as it replaces the ping
+  freshness value before an update check, so that the next launch reuses the
+  new value instead of replacing it again.
 * Because state is stored at the browser level and no profile-specific data is
   created or retained, browsing in Incognito mode leaves no browsing traces in
   profile storage while still allowing the browser installation to track its

@@ -28,7 +28,9 @@ class ActivityReporter;
 
 // Creates an ActivityReporter that sends its update checks to `update_client`
 // and reads the time from `clock`. `clock` must be non-null and outlive the
-// reporter. See `CreateActivityReporter()`.
+// reporter. The PrefService that `pref_service_provider` returns, if any, must
+// have the prefs from `update_client::RegisterPrefs()`. See
+// `CreateActivityReporter()`.
 std::unique_ptr<ActivityReporter> CreateActivityReporterForTesting(
     base::RepeatingCallback<PrefService*()> pref_service_provider,
     scoped_refptr<update_client::UpdateClient> update_client,

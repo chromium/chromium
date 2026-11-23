@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -35,6 +36,7 @@
 #include "components/activity_reporter/buildflags.h"
 #include "components/activity_reporter/configurator.h"
 #include "components/activity_reporter/constants.h"
+#include "components/activity_reporter/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/activity_data_service.h"
 #include "components/update_client/network.h"
@@ -56,6 +58,14 @@ constexpr int kIncompleteReportsExclusiveMax = 11;
 
 // The minimum time between two reports.
 constexpr base::TimeDelta kMinReportInterval = base::Hours(5);
+
+// The exclusive maximum of the `ActivityReporter.PingFreshnessAge` histogram.
+constexpr base::TimeDelta kPingFreshnessAgeExclusiveMax = base::Days(28);
+
+// The bucket count of the `ActivityReporter.PingFreshnessAge` histogram, which
+// makes its buckets 1 to 3 hours wide up to 3 days, and starts a bucket at 53
+// hours.
+constexpr int kPingFreshnessAgeBucketCount = 100;
 
 InitialDateLastActiveState ToState(int dla) {
   if (dla == update_client::kDateUnknown) {
@@ -103,9 +113,8 @@ class ActivityReporterImpl final : public ActivityReporter {
       base::RepeatingCallback<std::string()> brand_provider,
       base::RepeatingClosure updater_active_callback,
       const base::Clock* clock)
-      :  // Gives `PrepareFirstReport()` the persisted data and
-         // `OnCheckForUpdateComplete()` the pref service. The injected
-         // `update_client` doesn't use this configurator.
+      :  // Provides the persisted data and the pref service that this reporter
+         // uses. The injected `update_client` doesn't use this configurator.
         configurator_(base::MakeRefCounted<ActivityReporterConfigurator>(
             std::move(pref_service_provider),
             /*network_fetcher_factory=*/nullptr,
@@ -154,6 +163,7 @@ class ActivityReporterImpl final : public ActivityReporter {
     // weighted by active use.
     RecordVirtualMachineHistogramsAsync();
 #endif
+    RecordAndRotatePingFreshness(now);
     ++incomplete_reports_;
     update_client_->CheckForUpdate(
         std::string(kChromeActivityId),
@@ -199,6 +209,57 @@ class ActivityReporterImpl final : public ActivityReporter {
       // runs first, commits this write. If the write is lost before then, the
       // next launch finds the date unknown and sends the same first-time ping.
       data->SetDateLastActive(app_id, update_client::kDateFirstTime);
+    }
+  }
+
+  // Records the state of the ping freshness at `now` and, unless its write time
+  // is unknown or in the future, its age. Then, if
+  // `features::kActivityReporterPingFreshnessRotation` is enabled, replaces a
+  // ping freshness that is expired, or whose write time is unknown or in the
+  // future, and commits the prefs.
+  void RecordAndRotatePingFreshness(base::Time now) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    update_client::PersistedData& data = *configurator_->GetPersistedData();
+    const std::string id(kChromeActivityId);
+    const update_client::PingFreshnessState state =
+        update_client::GetPingFreshnessState(
+            data, id, now, features::GetPingFreshnessRotationMaxAge());
+    base::UmaHistogramEnumeration("ActivityReporter.PingFreshnessState", state);
+    bool has_age = false;
+    bool rotate = false;
+    switch (state) {
+      case update_client::PingFreshnessState::kNone:
+        break;
+      case update_client::PingFreshnessState::kFresh:
+        has_age = true;
+        break;
+      case update_client::PingFreshnessState::kExpired:
+        has_age = true;
+        rotate = true;
+        break;
+      case update_client::PingFreshnessState::kUnknownWriteTime:
+      case update_client::PingFreshnessState::kFutureWriteTime:
+        rotate = true;
+        break;
+    }
+    if (has_age) {
+      const base::TimeDelta age = now - data.GetPingFreshnessWriteTime(id);
+      base::UmaHistogramCustomCounts("ActivityReporter.PingFreshnessAge",
+                                     age.InHours(), 1,
+                                     kPingFreshnessAgeExclusiveMax.InHours(),
+                                     kPingFreshnessAgeBucketCount);
+    }
+    if (!rotate || !base::FeatureList::IsEnabled(
+                       features::kActivityReporterPingFreshnessRotation)) {
+      return;
+    }
+    data.RotatePingFreshness(id);
+
+    // Commit the new value now, so that the next session reuses it instead of
+    // replacing it again if the browser exits before the update check
+    // completes.
+    if (PrefService* pref_service = configurator_->GetPrefService()) {
+      pref_service->CommitPendingWrite();
     }
   }
 

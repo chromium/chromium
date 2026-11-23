@@ -175,27 +175,42 @@ std::unique_ptr<PersistedData> CreatePersistedData(
 // Register prefs for a PersistedData returned by CreatePersistedData.
 void RegisterPersistedDataPrefs(PrefRegistrySimple* registry);
 
-// The age at which `GetPingFreshnessState()` considers a PingFreshness expired.
+// The recommended `max_age` for `GetPingFreshnessState()`. A shorter age limits
+// how long one PingFreshness links a client's requests, but inflates active
+// counts more, since the server may count a client again after each rotation.
 inline constexpr base::TimeDelta kPingFreshnessMaxAge = base::Hours(53);
 
 // The state of an app's PingFreshness, as `GetPingFreshnessState()` returns it.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(PingFreshnessState)
 enum class PingFreshnessState {
   // No PingFreshness, for example because no update check has succeeded yet.
-  kNone,
-  // Younger than `kPingFreshnessMaxAge`.
-  kFresh,
-  // At least `kPingFreshnessMaxAge` old.
-  kExpired,
+  kNone = 0,
+
+  // Younger than `max_age`.
+  kFresh = 1,
+
+  // `max_age` old or older.
+  kExpired = 2,
+
   // Written at an unknown time, for example by an older version.
-  kUnknownWriteTime,
+  kUnknownWriteTime = 3,
+
   // Written in the future, for example because the clock was set back.
-  kFutureWriteTime,
+  kFutureWriteTime = 4,
+
+  kMaxValue = kFutureWriteTime,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/others/enums.xml:PingFreshnessState)
 
 // Returns the state of the PingFreshness for `id` in `persisted_data` at `now`.
+// A PingFreshness expires once it is `max_age` old. `max_age` must be positive.
 PingFreshnessState GetPingFreshnessState(const PersistedData& persisted_data,
                                          const std::string& id,
-                                         base::Time now);
+                                         base::Time now,
+                                         base::TimeDelta max_age);
 
 // Sets the write time of the PingFreshness for `id` in `pref_service` to
 // `write_time`, or removes the write time if `write_time` is `std::nullopt`.

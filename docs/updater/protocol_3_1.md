@@ -438,7 +438,7 @@ following members:
      member. See [User Counting](#user-counting).
  *   `ping_freshness`: A random 128-bit number, written into the client's
      storage alongside the next value of rd, and rotated whenever the client
-     stores a new value for rd. See [Ping Freshess](#ping-freshness). A value of
+     stores a new value for rd. See [User Counting](#user-counting). A value of
      "" (empty string) indicates that no value was available. Default: "".
 
 #### `data` Objects (Update Check Request)

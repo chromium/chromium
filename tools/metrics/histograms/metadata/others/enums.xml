@@ -362,6 +362,22 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.ThenChange(//mojo/public/cpp/bindings/direct_receiver.cc:MojoMergePortalsResult)
 -->
 
+<!-- LINT.IfChange(PingFreshnessState) -->
+
+<enum name="PingFreshnessState">
+  <summary>
+    The state of an app's ping freshness value, as
+    update_client::GetPingFreshnessState() returns it.
+  </summary>
+  <int value="0" label="None"/>
+  <int value="1" label="Fresh"/>
+  <int value="2" label="Expired"/>
+  <int value="3" label="Unknown write time"/>
+  <int value="4" label="Written in the future"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/update_client/persisted_data.h:PingFreshnessState) -->
+
 <!-- LINT.IfChange(ProductComponentInstallStep) -->
 
 <enum name="ProductComponentInstallStep">

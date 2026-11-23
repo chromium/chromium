@@ -214,6 +214,44 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ActivityReporter.PingFreshnessAge" units="hours"
+    expires_after="2027-05-12">
+  <owner>sorin@chromium.org</owner>
+  <owner>src/components/activity_reporter/OWNERS</owner>
+  <summary>
+    Records how long ago the ping freshness value was written, when the Chrome
+    Activity Reporter starts an update check for an activity report.
+    update_client writes a new value after each successful update check. When
+    the ActivityReporterPingFreshnessRotation feature is enabled, the reporter
+    also writes a new value right after it records this histogram, if the value
+    has reached the max age (the feature's PingFreshnessRotationMaxAge
+    parameter: 53 hours by default, clamped to between 24 hours and 28 days), or
+    if the time it was written is unknown or in the future. Recorded before that
+    replacement, so samples can exceed the max age. Not recorded when there is
+    no value yet, or when the time the value was written is unknown or in the
+    future (see ActivityReporter.PingFreshnessState). Samples are truncated to
+    whole hours: ages under 1 hour fall in the underflow bucket, and ages of 28
+    days or more in the overflow bucket. Emitted at most once every 5 hours in a
+    browser session.
+  </summary>
+</histogram>
+
+<histogram name="ActivityReporter.PingFreshnessState" enum="PingFreshnessState"
+    expires_after="2027-05-12">
+  <owner>sorin@chromium.org</owner>
+  <owner>src/components/activity_reporter/OWNERS</owner>
+  <summary>
+    Records the state of the ping freshness value when the Chrome Activity
+    Reporter starts an update check for an activity report. A value expires when
+    it reaches the max age, which the PingFreshnessRotationMaxAge parameter of
+    the ActivityReporterPingFreshnessRotation feature sets: 53 hours by default,
+    clamped to between 24 hours and 28 days. When the feature is enabled, the
+    reporter then replaces values that are expired, or whose write time is
+    unknown or in the future. Emitted at most once every 5 hours in a browser
+    session.
+  </summary>
+</histogram>
+
 <histogram name="BlueZ.PerProfile.{BlueZPerProfileResult}ConnectionResult"
     enum="BlueZResultOfPerProfileConnection" expires_after="2023-06-11">
   <owner>mmandlik@google.com</owner>

@@ -494,7 +494,9 @@ void RegisterPersistedDataPrefs(PrefRegistrySimple* registry) {
 
 PingFreshnessState GetPingFreshnessState(const PersistedData& persisted_data,
                                          const std::string& id,
-                                         base::Time now) {
+                                         base::Time now,
+                                         base::TimeDelta max_age) {
+  CHECK(max_age.is_positive());
   if (persisted_data.GetPingFreshness(id).empty()) {
     return PingFreshnessState::kNone;
   }
@@ -505,8 +507,8 @@ PingFreshnessState GetPingFreshnessState(const PersistedData& persisted_data,
   if (write_time > now) {
     return PingFreshnessState::kFutureWriteTime;
   }
-  return now - write_time < kPingFreshnessMaxAge ? PingFreshnessState::kFresh
-                                                 : PingFreshnessState::kExpired;
+  return now - write_time < max_age ? PingFreshnessState::kFresh
+                                    : PingFreshnessState::kExpired;
 }
 
 void SetPingFreshnessWriteTimeForTesting(PrefService& pref_service,

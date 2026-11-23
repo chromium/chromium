@@ -16,12 +16,15 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/clock.h"
+#include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "base/version_info/channel.h"
@@ -30,6 +33,7 @@
 #include "components/activity_reporter/activity_reporter_for_testing.h"
 #include "components/activity_reporter/buildflags.h"
 #include "components/activity_reporter/constants.h"
+#include "components/activity_reporter/features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -55,6 +59,14 @@ using CrxComponents = std::vector<std::optional<update_client::CrxComponent>>;
 // check; the mock writes nothing, so tests dirty this pref to have something
 // to commit.
 constexpr char kTestPref[] = "test_pref";
+
+// The daynum that tests write as if an update check had succeeded.
+constexpr int kTestDaynum = 7100;
+
+constexpr char kPingFreshnessAgeHistogram[] =
+    "ActivityReporter.PingFreshnessAge";
+constexpr char kPingFreshnessStateHistogram[] =
+    "ActivityReporter.PingFreshnessState";
 
 class MockUpdateClient : public update_client::UpdateClient {
  public:
@@ -125,13 +137,15 @@ std::unique_ptr<ActivityReporter> CreateReporterForPrefs(
 class ActivityReporterImplTest : public testing::Test {
  protected:
   ActivityReporterImplTest() {
-    pref_service_.registry()->RegisterIntegerPref(kTestPref, 0);
     update_client::RegisterPrefs(pref_service_.registry());
+    pref_service_.registry()->RegisterIntegerPref(kTestPref, 0);
     persisted_data_ = update_client::CreatePersistedData(
         base::BindRepeating([](PrefService* prefs) { return prefs; },
                             &pref_service_),
         /*activity_data_service=*/nullptr);
-    activity_reporter_ = CreateReporter(task_environment_.GetMockClock());
+    // The default clock reads the mock time that update_client uses to time
+    // the ping freshness. `task_environment_.GetMockClock()` is offset from it.
+    activity_reporter_ = CreateReporter(base::DefaultClock::GetInstance());
   }
 
   // Creates a reporter that uses the prefs and update client of this fixture,
@@ -171,6 +185,36 @@ class ActivityReporterImplTest : public testing::Test {
     activity_reporter_->ReportActive();
     EXPECT_TRUE(completion_callback);
     return completion_callback;
+  }
+
+  // Returns the ping freshness that an update check would send now.
+  std::string GetPingFreshness() const {
+    return persisted_data_->GetPingFreshness(std::string(kChromeActivityId));
+  }
+
+  // Writes a new ping freshness, as the update client does when an update
+  // check succeeds.
+  void WritePingFreshness() {
+    persisted_data_->SetDateLastData({std::string(kChromeActivityId)},
+                                     kTestDaynum, base::DoNothing());
+  }
+
+  // Sets the write time of the ping freshness, or removes it if `write_time` is
+  // `std::nullopt`, to emulate a value that an older version wrote, or a clock
+  // change.
+  void SetPingFreshnessWriteTime(std::optional<base::Time> write_time) {
+    update_client::SetPingFreshnessWriteTimeForTesting(
+        pref_service_, std::string(kChromeActivityId), write_time);
+  }
+
+  // Calls `ReportActive` and returns the ping freshness when the reporter
+  // starts the update check. The update check never completes.
+  std::string ReportActiveAndGetPingFreshness() {
+    std::string ping_freshness;
+    EXPECT_CALL(*mock_update_client_, CheckForUpdate(_, _, _, _, _))
+        .WillOnce([&] { ping_freshness = GetPingFreshness(); });
+    activity_reporter_->ReportActive();
+    return ping_freshness;
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -314,6 +358,205 @@ TEST_F(ActivityReporterImplTest, ReportActiveNoCommitWithoutPrefService) {
   provided_pref_service_ = nullptr;
   std::move(completion_callback).Run(update_client::Error::NONE);
   EXPECT_FALSE(pref_service_.user_prefs_store()->committed());
+}
+
+TEST_F(ActivityReporterImplTest, ReportActiveRecordsPingFreshnessStateNone) {
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(ReportActiveAndGetPingFreshness().empty());
+  histogram_tester.ExpectUniqueSample(kPingFreshnessStateHistogram,
+                                      update_client::PingFreshnessState::kNone,
+                                      1);
+  histogram_tester.ExpectTotalCount(kPingFreshnessAgeHistogram, 0);
+}
+
+TEST_F(ActivityReporterImplTest, ReportActiveKeepsFreshPingFreshness) {
+  base::test::ScopedFeatureList feature_list(
+      features::kActivityReporterPingFreshnessRotation);
+  base::HistogramTester histogram_tester;
+  WritePingFreshness();
+  const std::string ping_freshness = GetPingFreshness();
+  task_environment_.FastForwardBy(update_client::kPingFreshnessMaxAge -
+                                  base::Seconds(1));
+  EXPECT_EQ(ReportActiveAndGetPingFreshness(), ping_freshness);
+  EXPECT_FALSE(pref_service_.user_prefs_store()->committed());
+  histogram_tester.ExpectUniqueSample(kPingFreshnessStateHistogram,
+                                      update_client::PingFreshnessState::kFresh,
+                                      1);
+  histogram_tester.ExpectUniqueSample(
+      kPingFreshnessAgeHistogram,
+      update_client::kPingFreshnessMaxAge.InHours() - 1, 1);
+}
+
+TEST_F(ActivityReporterImplTest, ReportActiveRotatesExpiredPingFreshness) {
+  base::test::ScopedFeatureList feature_list(
+      features::kActivityReporterPingFreshnessRotation);
+  base::HistogramTester histogram_tester;
+  WritePingFreshness();
+  const std::string ping_freshness = GetPingFreshness();
+  task_environment_.FastForwardBy(update_client::kPingFreshnessMaxAge);
+
+  // The reporter replaces the value, and commits it, before the update check.
+  const std::string sent_ping_freshness = ReportActiveAndGetPingFreshness();
+  EXPECT_FALSE(sent_ping_freshness.empty());
+  EXPECT_NE(sent_ping_freshness, ping_freshness);
+  EXPECT_TRUE(pref_service_.user_prefs_store()->committed());
+  histogram_tester.ExpectUniqueSample(
+      kPingFreshnessStateHistogram, update_client::PingFreshnessState::kExpired,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      kPingFreshnessAgeHistogram, update_client::kPingFreshnessMaxAge.InHours(),
+      1);
+}
+
+TEST_F(ActivityReporterImplTest, ReportActiveKeepsRotatedPingFreshness) {
+  base::test::ScopedFeatureList feature_list(
+      features::kActivityReporterPingFreshnessRotation);
+  WritePingFreshness();
+  task_environment_.FastForwardBy(update_client::kPingFreshnessMaxAge);
+  const std::string rotated_ping_freshness = ReportActiveAndGetPingFreshness();
+
+  // The next report sends the value that the previous report rotated in.
+  base::HistogramTester histogram_tester;
+  task_environment_.FastForwardBy(base::Hours(5));
+  EXPECT_EQ(ReportActiveAndGetPingFreshness(), rotated_ping_freshness);
+  histogram_tester.ExpectUniqueSample(kPingFreshnessStateHistogram,
+                                      update_client::PingFreshnessState::kFresh,
+                                      1);
+  histogram_tester.ExpectUniqueSample(kPingFreshnessAgeHistogram, 5, 1);
+}
+
+TEST_F(ActivityReporterImplTest,
+       ReportActiveRotatesPingFreshnessWithUnknownWriteTime) {
+  base::test::ScopedFeatureList feature_list(
+      features::kActivityReporterPingFreshnessRotation);
+  base::HistogramTester histogram_tester;
+  WritePingFreshness();
+  const std::string ping_freshness = GetPingFreshness();
+  SetPingFreshnessWriteTime(std::nullopt);
+  EXPECT_NE(ReportActiveAndGetPingFreshness(), ping_freshness);
+  EXPECT_TRUE(pref_service_.user_prefs_store()->committed());
+  histogram_tester.ExpectUniqueSample(
+      kPingFreshnessStateHistogram,
+      update_client::PingFreshnessState::kUnknownWriteTime, 1);
+  histogram_tester.ExpectTotalCount(kPingFreshnessAgeHistogram, 0);
+}
+
+TEST_F(ActivityReporterImplTest,
+       ReportActiveRotatesPingFreshnessWrittenInTheFuture) {
+  base::test::ScopedFeatureList feature_list(
+      features::kActivityReporterPingFreshnessRotation);
+  base::HistogramTester histogram_tester;
+  WritePingFreshness();
+  const std::string ping_freshness = GetPingFreshness();
+  SetPingFreshnessWriteTime(base::Time::Now() + base::Minutes(1));
+  EXPECT_NE(ReportActiveAndGetPingFreshness(), ping_freshness);
+  EXPECT_TRUE(pref_service_.user_prefs_store()->committed());
+  histogram_tester.ExpectUniqueSample(
+      kPingFreshnessStateHistogram,
+      update_client::PingFreshnessState::kFutureWriteTime, 1);
+  histogram_tester.ExpectTotalCount(kPingFreshnessAgeHistogram, 0);
+}
+
+TEST_F(ActivityReporterImplTest,
+       ReportActiveKeepsExpiredPingFreshnessIfRotationDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kActivityReporterPingFreshnessRotation);
+  base::HistogramTester histogram_tester;
+  WritePingFreshness();
+  const std::string ping_freshness = GetPingFreshness();
+  task_environment_.FastForwardBy(update_client::kPingFreshnessMaxAge);
+  EXPECT_EQ(ReportActiveAndGetPingFreshness(), ping_freshness);
+  EXPECT_FALSE(pref_service_.user_prefs_store()->committed());
+  histogram_tester.ExpectUniqueSample(
+      kPingFreshnessStateHistogram, update_client::PingFreshnessState::kExpired,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      kPingFreshnessAgeHistogram, update_client::kPingFreshnessMaxAge.InHours(),
+      1);
+}
+
+TEST_F(ActivityReporterImplTest,
+       ReportActiveKeepsPingFreshnessYoungerThanMaxAgeParam) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kActivityReporterPingFreshnessRotation,
+      {{features::kPingFreshnessRotationMaxAge.name, "72h"}});
+  base::HistogramTester histogram_tester;
+  WritePingFreshness();
+  const std::string ping_freshness = GetPingFreshness();
+  task_environment_.FastForwardBy(base::Hours(72) - base::Seconds(1));
+  EXPECT_EQ(ReportActiveAndGetPingFreshness(), ping_freshness);
+  histogram_tester.ExpectUniqueSample(kPingFreshnessStateHistogram,
+                                      update_client::PingFreshnessState::kFresh,
+                                      1);
+}
+
+TEST_F(ActivityReporterImplTest,
+       ReportActiveRotatesPingFreshnessAtMaxAgeParam) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kActivityReporterPingFreshnessRotation,
+      {{features::kPingFreshnessRotationMaxAge.name, "72h"}});
+  base::HistogramTester histogram_tester;
+  WritePingFreshness();
+  const std::string ping_freshness = GetPingFreshness();
+  task_environment_.FastForwardBy(base::Hours(72));
+  EXPECT_NE(ReportActiveAndGetPingFreshness(), ping_freshness);
+  histogram_tester.ExpectUniqueSample(
+      kPingFreshnessStateHistogram, update_client::PingFreshnessState::kExpired,
+      1);
+}
+
+TEST(ActivityReporterFeaturesTest, PingFreshnessRotationMaxAgeWithoutParam) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        features::kActivityReporterPingFreshnessRotation);
+    EXPECT_EQ(features::GetPingFreshnessRotationMaxAge(), base::Hours(53));
+  }
+  base::test::ScopedFeatureList feature_list(
+      features::kActivityReporterPingFreshnessRotation);
+  EXPECT_EQ(features::GetPingFreshnessRotationMaxAge(), base::Hours(53));
+}
+
+TEST(ActivityReporterFeaturesTest, PingFreshnessRotationMaxAgeParam) {
+  constexpr struct {
+    const char* param;
+    base::TimeDelta max_age;
+  } kCases[] = {
+      {"72h", base::Hours(72)},
+      // The max age is clamped to between 24 hours and 28 days.
+      {"24h", base::Hours(24)},
+      {"23h", base::Hours(24)},
+      {"28d", base::Days(28)},
+      {"29d", base::Days(28)},
+      // A value that isn't positive falls back to the default.
+      {"0", base::Hours(53)},
+      {"-1h", base::Hours(53)},
+  };
+  for (const auto& test_case : kCases) {
+    SCOPED_TRACE(test_case.param);
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        features::kActivityReporterPingFreshnessRotation,
+        {{features::kPingFreshnessRotationMaxAge.name, test_case.param}});
+    EXPECT_EQ(features::GetPingFreshnessRotationMaxAge(), test_case.max_age);
+  }
+}
+
+TEST_F(ActivityReporterImplTest,
+       ThrottledReportActiveRecordsNoPingFreshnessMetrics) {
+  WritePingFreshness();
+  ReportActiveAndGetPingFreshness();
+  testing::Mock::VerifyAndClearExpectations(mock_update_client_.get());
+
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(*mock_update_client_, CheckForUpdate(_, _, _, _, _)).Times(0);
+  task_environment_.FastForwardBy(base::Hours(1));
+  activity_reporter_->ReportActive();
+  histogram_tester.ExpectTotalCount(kPingFreshnessStateHistogram, 0);
+  histogram_tester.ExpectTotalCount(kPingFreshnessAgeHistogram, 0);
 }
 
 TEST_F(ActivityReporterImplTest, IncompleteReportsNoReports) {

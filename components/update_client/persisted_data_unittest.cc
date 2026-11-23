@@ -437,7 +437,8 @@ TEST_F(PersistedDataPingFreshnessTest, AppDataWithoutPingFreshness) {
   // The app has data, but no update check has succeeded yet.
   metadata_->SetCohort("someappid", "c1");
   EXPECT_TRUE(metadata_->GetPingFreshnessWriteTime("someappid").is_null());
-  EXPECT_EQ(GetPingFreshnessState(*metadata_, "someappid", base::Time::Now()),
+  EXPECT_EQ(GetPingFreshnessState(*metadata_, "someappid", base::Time::Now(),
+                                  kPingFreshnessMaxAge),
             PingFreshnessState::kNone);
 
   metadata_->RotatePingFreshness("someappid");
@@ -446,21 +447,40 @@ TEST_F(PersistedDataPingFreshnessTest, AppDataWithoutPingFreshness) {
 }
 
 TEST_F(PersistedDataPingFreshnessTest, State) {
-  EXPECT_EQ(GetPingFreshnessState(*metadata_, "someappid", base::Time::Now()),
+  EXPECT_EQ(GetPingFreshnessState(*metadata_, "someappid", base::Time::Now(),
+                                  kPingFreshnessMaxAge),
             PingFreshnessState::kNone);
 
   test::SetDateLastData(metadata_.get(), {"someappid"}, 3383);
   const base::Time write_time =
       metadata_->GetPingFreshnessWriteTime("someappid");
   ASSERT_FALSE(write_time.is_null());
-  EXPECT_EQ(GetPingFreshnessState(*metadata_, "someappid", write_time),
+  EXPECT_EQ(GetPingFreshnessState(*metadata_, "someappid", write_time,
+                                  kPingFreshnessMaxAge),
             PingFreshnessState::kFresh);
   EXPECT_EQ(GetPingFreshnessState(
                 *metadata_, "someappid",
-                write_time + kPingFreshnessMaxAge - base::Seconds(1)),
+                write_time + kPingFreshnessMaxAge - base::Seconds(1),
+                kPingFreshnessMaxAge),
             PingFreshnessState::kFresh);
   EXPECT_EQ(GetPingFreshnessState(*metadata_, "someappid",
-                                  write_time + kPingFreshnessMaxAge),
+                                  write_time + kPingFreshnessMaxAge,
+                                  kPingFreshnessMaxAge),
+            PingFreshnessState::kExpired);
+}
+
+TEST_F(PersistedDataPingFreshnessTest, StateWithMaxAge) {
+  test::SetDateLastData(metadata_.get(), {"someappid"}, 3383);
+  const base::Time write_time =
+      metadata_->GetPingFreshnessWriteTime("someappid");
+  ASSERT_FALSE(write_time.is_null());
+  const base::TimeDelta max_age = base::Hours(24);
+  EXPECT_EQ(
+      GetPingFreshnessState(*metadata_, "someappid",
+                            write_time + max_age - base::Seconds(1), max_age),
+      PingFreshnessState::kFresh);
+  EXPECT_EQ(GetPingFreshnessState(*metadata_, "someappid", write_time + max_age,
+                                  max_age),
             PingFreshnessState::kExpired);
 }
 
@@ -470,16 +490,18 @@ TEST_F(PersistedDataPingFreshnessTest, StateOfUnknownOrFutureWriteTime) {
 
   // Older versions don't record the write time.
   SetPingFreshnessWriteTimeForTesting(pref_service_, "someappid", std::nullopt);
-  EXPECT_EQ(GetPingFreshnessState(*metadata_, "someappid", now),
-            PingFreshnessState::kUnknownWriteTime);
+  EXPECT_EQ(
+      GetPingFreshnessState(*metadata_, "someappid", now, kPingFreshnessMaxAge),
+      PingFreshnessState::kUnknownWriteTime);
 
   // The clock was set back after the PingFreshness was written.
   SetPingFreshnessWriteTimeForTesting(pref_service_, "someappid",
                                       now + base::Minutes(1));
   EXPECT_EQ(metadata_->GetPingFreshnessWriteTime("someappid"),
             now + base::Minutes(1));
-  EXPECT_EQ(GetPingFreshnessState(*metadata_, "someappid", now),
-            PingFreshnessState::kFutureWriteTime);
+  EXPECT_EQ(
+      GetPingFreshnessState(*metadata_, "someappid", now, kPingFreshnessMaxAge),
+      PingFreshnessState::kFutureWriteTime);
 }
 
 }  // namespace update_client

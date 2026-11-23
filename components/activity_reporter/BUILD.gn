@@ -65,6 +65,8 @@ source_set("impl") {
     "configurator.cc",
     "configurator.h",
     "constants.h",
+    "features.cc",
+    "features.h",
   ]
 
   public_deps = [ ":interface" ]

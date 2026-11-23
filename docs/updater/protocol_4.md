@@ -141,7 +141,13 @@ server's date. This value is sent along with the date in the next request. If
 the server receives multiple requests with the same ping-freshness, this is a
 signal that a machine's state has been cloned or reset and that the dates in the
 request are not trustworthy. A new ping-freshness value is written any time a
-new date is written.
+new date is written. A client may also write a new ping-freshness value once the
+current one reaches a maximum age that the client chooses, or when the client
+can't tell how old the current one is, to limit how long a single value can link
+requests that fail to complete. Since the dates in the request do not change,
+the server may count such a client more than once. Chrome's
+[activity reporter](../../components/activity_reporter/README.md#ping-freshness)
+can do this.
 
 In addition to counting the total population for each application, the Omaha
 protocol counts the active user population for each application. When an
@@ -498,8 +504,10 @@ following members:
      member. See [User Counting](#user-counting).
  *   `ping_freshness`: A random 128-bit number, written into the client's
      storage alongside the next value of rd, and rotated whenever the client
-     stores a new value for rd. See [Ping Freshess](#ping-freshness). A value of
-     "" (empty string) indicates that no value was available. Default: "".
+     stores a new value for rd, or when the value reaches a client-chosen
+     maximum age or the client can't tell its age. See
+     [User Counting](#user-counting). A value of "" (empty string) indicates
+     that no value was available. Default: "".
 
 #### `data` Objects (Update Check Request)
 A data object represents a request for arbitrary specific application-specific
