@@ -8,14 +8,12 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component_store.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
@@ -123,16 +121,10 @@ void AddressHierarchyConstraints::InitializeIncompatibilities() {
   // (except for address lines 1, 2, 3) the structured street address components
   // like street name, house number, etc.
 
-  // If either kAutofillStructuredFieldsDisableAddressLines is enabled or a
-  // country is explicitly modeled for the i18n address hierarchy, these
+  // If a country is explicitly modeled for the i18n address hierarchy, these
   // structured address components are incompatible with address lines 1, 2, 3.
   // For the legacy model we allow an address line 2 to be paired with a street
   // name and house number.
-  const bool autofill_structured_fields_disable_address_lines =
-      base::FeatureList::IsEnabled(
-          features::kAutofillStructuredFieldsDisableAddressLines) ||
-      is_custom_hierarchy_available_for_country;
-
   // Because address lines 1, 2, 3 are already attached as children of
   // ADDRESS_HOME_STREET_ADDRESS, they need to be removed first to get true set
   // of structured address components.
@@ -140,7 +132,7 @@ void AddressHierarchyConstraints::InitializeIncompatibilities() {
       descendants_and_self_[ADDRESS_HOME_STREET_ADDRESS];
   structured_address_components.erase_all(kAddressLinesFieldTypeSet);
   for (FieldType child_type : structured_address_components) {
-    if (autofill_structured_fields_disable_address_lines) {
+    if (is_custom_hierarchy_available_for_country) {
       for (FieldType address_line : kAddressLines) {
         incompatible_[child_type].insert(address_line);
         incompatible_[address_line].insert(child_type);

@@ -402,13 +402,8 @@ bool AddressFieldParser::ParseAddress(ParsingContext& context,
 
   // Do not inline these calls: After passing an address field sequence, there
   // might be an additional address line 2 to parse afterwards.
-  bool has_field_sequence = ParseAddressFieldSequence(context, scanner);
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillStructuredFieldsDisableAddressLines) &&
-      has_field_sequence) {
-    return true;
-  }
-  bool has_address_lines = ParseAddressLines(context, scanner);
+  const bool has_field_sequence = ParseAddressFieldSequence(context, scanner);
+  const bool has_address_lines = ParseAddressLines(context, scanner);
   return has_field_sequence || has_address_lines;
 }
 

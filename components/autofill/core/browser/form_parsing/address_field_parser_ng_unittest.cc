@@ -16,12 +16,7 @@ namespace autofill {
 namespace {
 
 void InitFeaturesForIN(base::test::ScopedFeatureList& features) {
-  features.InitWithFeatures(
-      {
-          features::kAutofillUseINAddressModel,
-          features::kAutofillStructuredFieldsDisableAddressLines,
-      },
-      {});
+  features.InitAndEnableFeature(features::kAutofillUseINAddressModel);
 }
 
 class AddressFieldParserTestNG : public FormFieldParserTestBase,
@@ -97,22 +92,10 @@ TEST_F(AddressFieldParserTestNG,
 // Tests that an address field after a |ADDRESS_HOME_STREET_NAME|,
 // |ADDRESS_HOME_HOUSE_NUMBER| combination is classified as
 // |ADDRESS_HOME_LINE2| instead of |ADDRESS_HOME_LINE1|.
-TEST_F(AddressFieldParserTestNG, ParseAsAddressLine2AfterStreetNameNotEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAutofillStructuredFieldsDisableAddressLines);
+TEST_F(AddressFieldParserTestNG, ParseAsAddressLine2AfterStreetName) {
   AddTextFormFieldData("street", "Street", ADDRESS_HOME_STREET_NAME);
   AddTextFormFieldData("house-number", "House no.", ADDRESS_HOME_HOUSE_NUMBER);
   AddTextFormFieldData("address", "Address", ADDRESS_HOME_LINE2);
-  ClassifyAndVerify();
-}
-
-TEST_F(AddressFieldParserTestNG, ParseAsAddressLine2AfterStreetNameEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAutofillStructuredFieldsDisableAddressLines);
-  AddTextFormFieldData("street", "Street", ADDRESS_HOME_STREET_NAME);
-  AddTextFormFieldData("house-number", "House no.", ADDRESS_HOME_HOUSE_NUMBER);
-  AddTextFormFieldData("address", "Address", UNKNOWN_TYPE);
   ClassifyAndVerify();
 }
 

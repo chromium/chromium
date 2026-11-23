@@ -201,11 +201,10 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
     case ADDRESS_HOME_LINE1:
       return Match("ADDRESS_LINE_1", 1.0);
     case ADDRESS_HOME_LINE2:
-      // Address lines 2 can follow address lines 1 - and, if
-      // kAutofillStructuredFieldsDisableAddressLines is disabled, a street name
-      // and house number. If kAutofillStructuredFieldsDisableAddressLines is
-      // enabled, `incompatible_` will suppress a combination of street
-      // name/house number and address line 2.
+      // Address lines 2 can follow address lines 1 - and, in the legacy model,
+      // a street name and house number. For countries explicitly modeled for
+      // the i18n address hierarchy, `incompatible_` will suppress a combination
+      // of street name/house number and address line 2.
       if (partial_classification_.contained_types.contains(
               ADDRESS_HOME_LINE1) ||
           partial_classification_.contained_types.contains_all(

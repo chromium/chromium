@@ -590,9 +590,8 @@ void HeuristicClassificationTests::SetUp() {
 
 // Returns a list of work in progress features and whether they should be
 // enabled or disabled.
-std::vector<std::pair<base::test::FeatureRef, bool>> GetWipFeatures(
-    const std::string_view country) {
-  std::vector<std::pair<base::test::FeatureRef, bool>> features = {
+std::vector<std::pair<base::test::FeatureRef, bool>> GetWipFeatures() {
+  return {
       // Support for new field types.
       {features::kAutofillUseINAddressModel, true},
       {features::kAutofillEnableExpirationDateImprovements, true},
@@ -609,11 +608,6 @@ std::vector<std::pair<base::test::FeatureRef, bool>> GetWipFeatures(
       // NAME_LAST_SECOND missclassification fix
       {features::kAutofillImproveClassificationForTwoWordLastNames, true},
   };
-  bool should_disable_address_lines =
-      (country == "BR" || country == "MX" || country == "IN");
-  features.emplace_back(features::kAutofillStructuredFieldsDisableAddressLines,
-                        should_disable_address_lines);
-  return features;
 }
 
 TEST_P(HeuristicClassificationTests, EndToEnd) {
@@ -661,7 +655,7 @@ TEST_P(HeuristicClassificationTests, EndToEnd) {
       variations::switches::kVariationsOverrideCountry, *country);
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatureStates(GetWipFeatures(*country));
+  scoped_feature_list.InitWithFeatureStates(GetWipFeatures());
 
   base::test::ScopedFeatureList ml_scoped_feature_list;
   if (EnableMLClassification()) {

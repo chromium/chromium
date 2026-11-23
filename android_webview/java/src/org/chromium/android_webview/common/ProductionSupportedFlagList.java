@@ -367,10 +367,6 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_GREEK_REGEXES,
                 "When enabled, Greek regexes are used for parsing in branded builds."),
         Flag.baseFeature(
-                AutofillFeatures.AUTOFILL_STRUCTURED_FIELDS_DISABLE_ADDRESS_LINES,
-                "When enabled, Autofill disable address lines on forms with structured address"
-                        + " fields."),
-        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_STRICTER_PHONE_EXTENSION_REGEX,
                 "When enabled, applies a stricter phone extension regex to avoid false"
                         + " positives."),

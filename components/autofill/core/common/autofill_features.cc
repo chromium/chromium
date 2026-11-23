@@ -1145,17 +1145,6 @@ BASE_FEATURE(kAutofillShowGmailOtpSuggestions,
 BASE_FEATURE(kAutofillStricterPhoneExtensionRegex,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If this feature is enabled, the AddressFieldParser does NOT try to parse
-// address lines once it has found a street name and house number or other
-// combinations of fields that indicate that an address form uses structured
-// addresses. This should be the default in all countries with fully supported
-// structured addresses. However, if a country is not sufficiently modeled,
-// autofill may still do the right thing if it recognizes "Street name, house
-// number, address line 2" as a sequence.
-// TODO(crbug.com/40266693) Remove once launched.
-BASE_FEATURE(kAutofillStructuredFieldsDisableAddressLines,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables parsing of fields that combine postal code and city in France,
 // e.g. a single field containing "75008 Paris".
 // TODO(crbug.com/465119085): Clean up when launched.
