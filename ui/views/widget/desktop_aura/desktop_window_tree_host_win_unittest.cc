@@ -27,6 +27,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -50,7 +51,10 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
+#include "ui/display/display.h"
+#include "ui/display/display_switches.h"
 #include "ui/display/screen.h"
+#include "ui/display/win/screen_win.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/pointer_details.h"
@@ -64,6 +68,7 @@
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/desktop_window_tree_host_win_test_api.h"
+#include "ui/views/test/test_views.h"
 #include "ui/views/test/test_views_delegate.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
@@ -2436,6 +2441,53 @@ TEST_F(DesktopWindowTreeHostWinTest,
 
   EXPECT_EQ(expected,
             ::SendMessage(hwnd, WM_NCHITTEST, 0, MAKELPARAM(pt.x, pt.y)));
+}
+
+class DesktopWindowTreeHostWinFractionalScaleTest : public DesktopWidgetTest {
+ public:
+  void SetUp() override {
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+        ::switches::kForceDeviceScaleFactor, "1.5");
+    display::win::ScreenWin::ResetFallbackScreenForTesting();
+    DesktopWidgetTest::SetUp();
+  }
+
+  void TearDown() override {
+    DesktopWidgetTest::TearDown();
+    display::win::ScreenWin::ResetFallbackScreenForTesting();
+    display::Display::ResetForceDeviceScaleFactorForTesting();
+  }
+
+ private:
+  base::test::ScopedCommandLine scoped_command_line_;
+};
+
+// A native frame window is sized by its client area. Clamping its bounds to the
+// minimum size used to round the minimum window size to DIP and back, which
+// left the client area a pixel or two larger than the minimum at fractional
+// scale factors.
+TEST_F(DesktopWindowTreeHostWinFractionalScaleTest,
+       SetBoundsClampsToMinimumSizeInPixels) {
+  // 301.5x151.5 pixels at 1.5x, so the client area cannot be smaller than
+  // 302x152 pixels.
+  constexpr gfx::Size kMinimumSize(201, 101);
+  TestDesktopWidgetDelegate delegate;
+  auto* contents = new StaticSizedView(kMinimumSize);
+  contents->set_minimum_size(kMinimumSize);
+  delegate.set_contents_view(contents);
+  delegate.InitWidget(CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                   Widget::InitParams::TYPE_WINDOW));
+  Widget* widget = delegate.GetWidget();
+  widget->Show();
+  if (!widget->ShouldUseNativeFrame()) {
+    GTEST_SKIP() << "Only a native frame window is sized by its client area.";
+  }
+
+  // Too small, at an origin that is not a whole number of pixels.
+  widget->SetBounds(gfx::Rect(101, 101, 50, 50));
+
+  EXPECT_EQ(gfx::Size(302, 152),
+            widget->GetNativeWindow()->GetHost()->GetBoundsInPixels().size());
 }
 
 }  // namespace test

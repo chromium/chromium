@@ -1716,9 +1716,9 @@ void DesktopWindowTreeHostWin::SetBoundsInDIP(const gfx::Rect& bounds) {
   // details.
   aura::Window* root = nullptr;
   const gfx::Rect bounds_in_pixels =
-      display::Screen::Get()->DIPToScreenRectInWindow(
-          root, AdjustedContentBounds(bounds));
-  AsWindowTreeHost()->SetBoundsInPixels(bounds_in_pixels);
+      display::Screen::Get()->DIPToScreenRectInWindow(root, bounds);
+  AsWindowTreeHost()->SetBoundsInPixels(
+      AdjustedContentBoundsInPixels(bounds_in_pixels));
 }
 
 void DesktopWindowTreeHostWin::SetAllowScreenshots(bool allow) {
@@ -1814,34 +1814,35 @@ void DesktopWindowTreeHostWin::CheckForMonitorChange() {
   OnHostDisplayChanged();
 }
 
-gfx::Rect DesktopWindowTreeHostWin::AdjustedContentBounds(
-    const gfx::Rect& bounds) {
+gfx::Rect DesktopWindowTreeHostWin::AdjustedContentBoundsInPixels(
+    const gfx::Rect& bounds_in_pixels) {
   gfx::Size minimum_size;
   gfx::Size maximum_size;
   GetMinMaxSize(&minimum_size, &maximum_size);
 
+  // Clamp in pixels, the way OnGetMinMaxInfo applies the same constraints.
+  // Rounding the inflated constraints to DIP and back would make the window
+  // up to a few pixels larger than its minimum size.
+  display::win::ScreenWin* screen = display::win::GetScreenWin();
+  gfx::Size min_px = screen->DIPToScreenSize(GetHWND(), minimum_size);
+  gfx::Size max_px = screen->DIPToScreenSize(GetHWND(), maximum_size);
   if (WidgetSizeIsClientSize()) {
     // Constraints are sized to the client area, not the HWND (see
     // OnGetMinMaxInfo), so inflate otherwise the max size will be too small.
-    display::win::ScreenWin* screen = display::win::GetScreenWin();
-    gfx::Size min_px = screen->DIPToScreenSize(GetHWND(), minimum_size);
-    gfx::Size max_px = screen->DIPToScreenSize(GetHWND(), maximum_size);
     InflateClientSizeConstraintsInPixels(GetHWND(), min_px, max_px);
-    minimum_size = screen->ScreenToDIPSize(GetHWND(), min_px);
-    maximum_size = screen->ScreenToDIPSize(GetHWND(), max_px);
   }
 
-  gfx::Size bounds_size = bounds.size();
+  gfx::Size bounds_size = bounds_in_pixels.size();
 
-  if (!maximum_size.IsEmpty()) {
-    bounds_size.SetToMin(maximum_size);
+  if (!max_px.IsEmpty()) {
+    bounds_size.SetToMin(max_px);
   }
 
-  if (!minimum_size.IsEmpty()) {
-    bounds_size.SetToMax(minimum_size);
+  if (!min_px.IsEmpty()) {
+    bounds_size.SetToMax(min_px);
   }
 
-  gfx::Rect adjusted_bounds = bounds;
+  gfx::Rect adjusted_bounds = bounds_in_pixels;
   adjusted_bounds.set_size(bounds_size);
   return adjusted_bounds;
 }
