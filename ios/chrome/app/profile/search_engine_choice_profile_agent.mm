@@ -71,7 +71,7 @@ id<SearchEngineChoiceCommands> GetSearchEngineChoiceHandler(
   std::unique_ptr<ScopedForcePortraitOrientation> _scopedForceOrientation;
 }
 
-#pragma mark - SceneObservingProfileAgent
+#pragma mark - SceneStateObserver
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {

@@ -57,7 +57,7 @@ using ServiceStatus = ::sync_preferences::CrossDevicePrefTracker::ServiceStatus;
   base::CallbackListSubscription _subscription;
 }
 
-#pragma mark - SceneObservingProfileAgent
+#pragma mark - SceneStateObserver
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {

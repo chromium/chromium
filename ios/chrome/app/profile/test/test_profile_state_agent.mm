@@ -6,6 +6,8 @@
 
 @implementation TestProfileStateAgent
 
+#pragma mark - ProfileStateAgent
+
 - (void)setProfileState:(ProfileState*)profileState {
   _profileState = profileState;
 }

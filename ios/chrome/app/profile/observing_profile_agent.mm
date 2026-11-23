@@ -9,6 +9,8 @@
 
 @implementation ObservingProfileAgent
 
+#pragma mark - Public
+
 + (instancetype)agentFromProfile:(ProfileState*)profileState {
   for (id agent in profileState.connectedAgents) {
     if ([agent isMemberOfClass:[self class]]) {
@@ -18,6 +20,8 @@
 
   return nil;
 }
+
+#pragma mark - ProfileStateAgent
 
 // This method is called when -addAgent: and -removeAgent: are called on
 // a ProfileState. Automatically register/unregister self as an observer.

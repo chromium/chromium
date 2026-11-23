@@ -45,7 +45,7 @@
   BOOL _foregroundActiveEventAlreadyHandled;
 }
 
-#pragma mark - SceneObservingProfileAgent
+#pragma mark - SceneStateObserver
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {

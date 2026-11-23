@@ -17,6 +17,8 @@
 
 @implementation SampleSceneObservingProfileAgent
 
+#pragma mark - SceneStateObserver
+
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
   _notifiedSceneTransitioned = YES;
