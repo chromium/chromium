@@ -60,10 +60,11 @@ BrowserAccessibility* GetUiaTextPatternProvider(BrowserAccessibility& node) {
 }
 
 // Used by the JAWS kSelection workaround (see kWindowActivated handling in
-// FireSourceEvent). Must match View::GetClassName() of `BrowserRootView` and
-// `Tab`.
+// FireSourceEvent). Must match View::GetClassName() of `BrowserRootView`,
+// `Tab`, and `TabView`.
 constexpr char kBrowserRootViewClassName[] = "BrowserRootView";
 constexpr char kTabClassName[] = "Tab";
+constexpr char kTabViewClassName[] = "TabView";
 
 BrowserAccessibilityComWin* ToBrowserAccessibilityComWin(AXPlatformNode* node) {
   if (!node) {
@@ -656,17 +657,19 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
 
       // Cache the last selected tab for the JAWS workaround. See
       // kWindowActivated handling in FireSourceEvent for details.
-      if (wrapper->GetData().GetStringAttribute(
-              ax::mojom::StringAttribute::kClassName) == kTabClassName &&
-          wrapper->GetData().GetBoolAttribute(
+      if (wrapper->GetData().GetBoolAttribute(
               ax::mojom::BoolAttribute::kSelected)) {
-        BrowserAccessibility* root = GetBrowserAccessibilityRoot();
-        const std::string& root_class =
-            root ? root->GetData().GetStringAttribute(
-                       ax::mojom::StringAttribute::kClassName)
-                 : "";
-        if (root_class == kBrowserRootViewClassName) {
-          last_selected_tab_id_ = node->id();
+        const std::string& class_name = wrapper->GetData().GetStringAttribute(
+            ax::mojom::StringAttribute::kClassName);
+        if (class_name == kTabClassName || class_name == kTabViewClassName) {
+          BrowserAccessibility* root = GetBrowserAccessibilityRoot();
+          const std::string& root_class =
+              root ? root->GetData().GetStringAttribute(
+                         ax::mojom::StringAttribute::kClassName)
+                   : "";
+          if (root_class == kBrowserRootViewClassName) {
+            last_selected_tab_id_ = node->id();
+          }
         }
       }
       break;

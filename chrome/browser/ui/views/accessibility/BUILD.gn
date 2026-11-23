@@ -169,8 +169,7 @@ if (!is_android) {
       sources += [ "tab_strip_dump_accessibility_events_browsertest.cc" ]
       deps += [
         "//chrome/browser/ui:browser_tabstrip",
-        "//chrome/browser/ui/views/tabs:tab",
-        "//chrome/browser/ui/views/tabs:tab_strip",
+        "//chrome/browser/ui/tabs:features",
       ]
     }
   }
