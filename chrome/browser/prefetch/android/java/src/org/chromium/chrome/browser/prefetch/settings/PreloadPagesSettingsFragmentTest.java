@@ -8,6 +8,8 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
+import static org.chromium.base.test.transit.ViewFinder.waitForView;
+
 import androidx.preference.Preference;
 import androidx.test.filters.SmallTest;
 
@@ -22,6 +24,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
@@ -75,6 +78,9 @@ public class PreloadPagesSettingsFragmentTest {
                 "Preload Pages preference should not be null.", mPreloadPagesPreference);
         Assert.assertNotNull(
                 "Managed disclaimer text preference should not be null.", mManagedDisclaimerText);
+        waitForView(
+                withId(R.id.extended_preloading),
+                ViewElement.newOptions().allowDisabled().displayingAtLeast(1).build());
     }
 
     @Test
