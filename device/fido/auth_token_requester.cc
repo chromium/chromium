@@ -4,12 +4,13 @@
 
 #include "device/fido/auth_token_requester.h"
 
-#include <set>
+#include <algorithm>
 #include <utility>
 
+#include "base/containers/fixed_flat_set.h"
+#include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/authenticator_supported_options.h"
@@ -44,17 +45,21 @@ AuthTokenRequester::AuthTokenRequester(Delegate* delegate,
   DCHECK(authenticator_);
   DCHECK(!options_.token_permissions.empty());
   DCHECK(!options_.rp_id || !options_.rp_id->empty());
+
   // Authenticators with CTAP2.0-style pinToken support only support certain
   // default permissions.
-  DCHECK(
-      authenticator_->Options().supports_pin_uv_auth_token ||
-      base::STLSetDifference<std::set<pin::Permissions>>(
-          options_.token_permissions,
-          std::set<pin::Permissions>{pin::Permissions::kMakeCredential,
-                                     pin::Permissions::kGetAssertion,
-                                     pin::Permissions::kBioEnrollment,
-                                     pin::Permissions::kCredentialManagement})
-          .empty());
+  static constexpr auto kDefaultPermissions =
+      base::MakeFixedFlatSet<pin::Permissions>({
+          pin::Permissions::kMakeCredential,
+          pin::Permissions::kGetAssertion,
+          pin::Permissions::kBioEnrollment,
+          pin::Permissions::kCredentialManagement,
+      });
+  DCHECK(authenticator_->Options().supports_pin_uv_auth_token ||
+         std::ranges::all_of(options_.token_permissions,
+                             [](pin::Permissions permission) {
+                               return kDefaultPermissions.contains(permission);
+                             }));
 }
 
 AuthTokenRequester::~AuthTokenRequester() = default;
@@ -153,12 +158,14 @@ void AuthTokenRequester::OnGetUVRetries(
 void AuthTokenRequester::OnGetUVToken(
     CtapDeviceResponseCode status,
     std::optional<pin::TokenResponse> response) {
-  if (!(std::set<CtapDeviceResponseCode>{
-            CtapDeviceResponseCode::kCtap2ErrUvInvalid,
-            CtapDeviceResponseCode::kCtap2ErrOperationDenied,
-            CtapDeviceResponseCode::kCtap2ErrUvBlocked,
-            CtapDeviceResponseCode::kSuccess})
-           .contains(status)) {
+  static constexpr auto kExpectedStatuses =
+      base::MakeFixedFlatSet<CtapDeviceResponseCode>({
+          CtapDeviceResponseCode::kCtap2ErrUvInvalid,
+          CtapDeviceResponseCode::kCtap2ErrOperationDenied,
+          CtapDeviceResponseCode::kCtap2ErrUvBlocked,
+          CtapDeviceResponseCode::kSuccess,
+      });
+  if (!kExpectedStatuses.contains(status)) {
     // The request was rejected outright, no touch occurred.
     FIDO_LOG(ERROR) << "Ignoring status " << static_cast<int>(status)
                     << " from " << authenticator_->GetDisplayName();
