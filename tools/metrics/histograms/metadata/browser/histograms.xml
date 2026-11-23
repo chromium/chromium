@@ -2190,7 +2190,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InfoBar.Prioritization.QueueSize" units="InfoBars"
-    expires_after="2027-01-03">
+    expires_after="2027-09-01">
   <owner>koretadaniel@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -2200,7 +2200,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InfoBar.Prioritization.Starved" enum="InfoBarIdentifier"
-    expires_after="2027-05-09">
+    expires_after="2027-09-01">
   <owner>koretadaniel@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -2210,7 +2210,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InfoBar.Prioritization.StarvedCount" units="InfoBars"
-    expires_after="2027-03-07">
+    expires_after="2027-09-01">
   <owner>koretadaniel@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
@@ -2220,7 +2220,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="InfoBar.Prioritization.{Priority}WaitTime" units="ms"
-    expires_after="2027-02-07">
+    expires_after="2027-09-01">
   <owner>koretadaniel@chromium.org</owner>
   <owner>top-chrome-desktop-ui@google.com</owner>
   <summary>
