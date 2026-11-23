@@ -15,6 +15,8 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/environment.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/nix/xdg_util.h"
@@ -138,16 +140,74 @@ gfx::FontRenderParams::Hinting QtHintingToGfxHinting(
   }
 }
 
-bool IsGtk4Loaded() {
-  void* handle = dlopen("libgtk-4.so.1", RTLD_LAZY | RTLD_NOLOAD);
+bool IsLibraryLoaded(const char* soname, const char* name) {
+  void* handle = dlopen(soname, RTLD_LAZY | RTLD_NOLOAD);
   if (!handle) {
-    handle = dlopen("libgtk-4.so", RTLD_LAZY | RTLD_NOLOAD);
+    handle = dlopen(name, RTLD_LAZY | RTLD_NOLOAD);
   }
   if (handle) {
     dlclose(handle);
     return true;
   }
   return false;
+}
+
+bool IsGtk4Loaded() {
+  return IsLibraryLoaded("libgtk-4.so.1", "libgtk-4.so");
+}
+
+bool IsGtkLoaded() {
+  return IsGtk4Loaded() || IsLibraryLoaded("libgtk-3.so.0", "libgtk-3.so");
+}
+
+bool IsGtkStyle(std::string_view style) {
+  return base::EqualsCaseInsensitiveASCII(style, "gtk") ||
+         base::EqualsCaseInsensitiveASCII(style, "gtk2") ||
+         base::EqualsCaseInsensitiveASCII(style, "gtk3");
+}
+
+// Returns the value of `key` in `section` of the INI-style file at `path`.
+std::optional<std::string> ReadIniValue(const base::FilePath& path,
+                                        std::string_view section,
+                                        std::string_view key) {
+  std::string contents;
+  if (!base::ReadFileToString(path, &contents)) {
+    return std::nullopt;
+  }
+  const std::string section_header = base::StrCat({"[", section, "]"});
+  bool in_section = false;
+  for (std::string_view line : base::SplitStringPiece(
+           contents, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+    if (line.starts_with('[')) {
+      in_section = line == section_header;
+      continue;
+    }
+    auto key_value = base::SplitStringOnce(line, '=');
+    if (in_section && key_value &&
+        base::TrimWhitespaceASCII(key_value->first, base::TRIM_ALL) == key) {
+      return std::string(
+          base::TrimWhitespaceASCII(key_value->second, base::TRIM_ALL));
+    }
+  }
+  return std::nullopt;
+}
+
+// Returns the QT style configured in the config file of `platform_theme`, for
+// platform themes that choose the style themselves (LXQt, qt5ct and qt6ct).
+std::optional<std::string> GetPlatformThemeStyle(
+    base::Environment* env,
+    std::string_view platform_theme) {
+  const base::FilePath config_dir = base::nix::GetXDGDirectory(
+      env, base::nix::kXdgConfigHomeEnvVar, base::nix::kDotConfigDir);
+  if (platform_theme == "lxqt") {
+    return ReadIniValue(config_dir.Append("lxqt/lxqt.conf"), "Qt", "style");
+  }
+  if (platform_theme == "qt5ct" || platform_theme == "qt6ct") {
+    return ReadIniValue(config_dir.Append(platform_theme)
+                            .Append(base::StrCat({platform_theme, ".conf"})),
+                        "Appearance", "style");
+  }
+  return std::nullopt;
 }
 
 // Determines if running in a GTK-based desktop environment by inspecting the
@@ -212,25 +272,26 @@ bool ShouldPreventQtFromLoadingGtk3(ui::LinuxUiBackend backend) {
 #endif
 }
 
+}  // namespace
+
 std::vector<std::unique_ptr<base::ScopedEnvironmentVariableOverride>>
-GetGtkQtCollisionPreventionOverrides(ui::LinuxUiBackend backend) {
+GetGtkQtCollisionPreventionOverrides(bool gtk_loaded, bool prevent_gtk3) {
   std::vector<std::unique_ptr<base::ScopedEnvironmentVariableOverride>>
       env_overrides;
-  if (!ShouldPreventQtFromLoadingGtk3(backend)) {
+  // GTK2 collides with both GTK3 and GTK4, so it must be blocked whenever GTK
+  // is loaded. GTK3 must only be blocked when `prevent_gtk3` is set.
+  if (!gtk_loaded && !prevent_gtk3) {
     return env_overrides;
   }
 
   auto env = base::Environment::Create();
-  const bool is_gtk_desktop = IsGtkDesktop(env.get());
+  const bool is_gtk_desktop = prevent_gtk3 && IsGtkDesktop(env.get());
 
   auto platform_theme_opt = env->GetVar("QT_QPA_PLATFORMTHEME");
-  bool has_gtk_platform_theme = false;
-  if (platform_theme_opt.has_value()) {
-    const std::string& value = platform_theme_opt.value();
-    if (value == "gnome" || value == "gtk3" || value == "gtk2") {
-      has_gtk_platform_theme = true;
-    }
-  }
+  const std::string platform_theme = platform_theme_opt.value_or("");
+  const bool has_gtk_platform_theme =
+      platform_theme == "gtk2" ||
+      (prevent_gtk3 && (platform_theme == "gnome" || platform_theme == "gtk3"));
 
   // If the platform theme is explicitly set to a clashing GTK-based theme,
   // or if it is unset and the current desktop environment is GTK-based,
@@ -248,7 +309,7 @@ GetGtkQtCollisionPreventionOverrides(ui::LinuxUiBackend backend) {
   // is missing, or if overridden to "chromium-fallback"), unset the
   // desktop environment variables during initialization if running on a
   // GTK-based desktop or if a GTK-based platform theme was requested.
-  if (is_gtk_desktop || has_gtk_platform_theme) {
+  if (prevent_gtk3 && (is_gtk_desktop || has_gtk_platform_theme)) {
     env_overrides.push_back(
         std::make_unique<base::ScopedEnvironmentVariableOverride>(
             "XDG_CURRENT_DESKTOP"));
@@ -263,20 +324,22 @@ GetGtkQtCollisionPreventionOverrides(ui::LinuxUiBackend backend) {
             "KDE_FULL_SESSION"));
   }
 
-  auto style_override_opt = env->GetVar("QT_STYLE_OVERRIDE");
-  if (style_override_opt.has_value()) {
-    const std::string& value = style_override_opt.value();
-    if (value == "gtk3" || value == "gtk2" || value == "gtk") {
-      env_overrides.push_back(
-          std::make_unique<base::ScopedEnvironmentVariableOverride>(
-              "QT_STYLE_OVERRIDE", "chromium-fallback"));
-    }
+  // GTK styles load GTK2 (qt5-style-plugins). The style comes from
+  // QT_STYLE_OVERRIDE, or else from the platform theme, which may read it
+  // from its own config file. Force the built-in Fusion style: an invalid
+  // style would make QT fall back to the platform theme's style.
+  std::optional<std::string> style = env->GetVar("QT_STYLE_OVERRIDE");
+  if (!style.has_value()) {
+    style = GetPlatformThemeStyle(env.get(), platform_theme);
+  }
+  if (style.has_value() && IsGtkStyle(*style)) {
+    env_overrides.push_back(
+        std::make_unique<base::ScopedEnvironmentVariableOverride>(
+            "QT_STYLE_OVERRIDE", "Fusion"));
   }
 
   return env_overrides;
 }
-
-}  // namespace
 
 QtUi::QtUi(ui::LinuxUi* fallback_linux_ui)
     : fallback_linux_ui_(fallback_linux_ui) {}
@@ -325,10 +388,12 @@ bool QtUi::Initialize() {
   const auto backend =
       delegate ? delegate->GetBackend() : ui::LinuxUiBackend::kStub;
 
-  // Prevent QT from loading GTK3 if it would crash the browser process: either
-  // because Chrome is using GTK4 and the symbols from both versions would
-  // collide, or because GDK3 would abort due to invalid GSettings schemas.
-  auto env_overrides = GetGtkQtCollisionPreventionOverrides(backend);
+  // Prevent QT from loading GTK2 or GTK3 if it would crash the browser
+  // process: either because Chrome is using GTK3 or GTK4 and the symbols from
+  // both versions would collide, or because GDK3 would abort due to invalid
+  // GSettings schemas.
+  auto env_overrides = GetGtkQtCollisionPreventionOverrides(
+      IsGtkLoaded(), ShouldPreventQtFromLoadingGtk3(backend));
 
   // Set up command line.
   auto cmd_line = *base::CommandLine::ForCurrentProcess();

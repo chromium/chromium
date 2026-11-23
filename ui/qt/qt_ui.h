@@ -7,9 +7,11 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_environment_variable_override.h"
 #include "printing/buildflags/buildflags.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
@@ -131,9 +133,18 @@ class QtUi : public ui::LinuxUiAndTheme, QtInterface::Delegate {
   base::WeakPtrFactory<QtUi> weak_factory_{this};
 };
 
-// This should be the only symbol exported from this component.
+// This should be the only symbol exported from this component, besides the
+// testing function below.
 COMPONENT_EXPORT(QT)
 std::unique_ptr<ui::LinuxUiAndTheme> CreateQtUi(ui::LinuxUi* fallback_linux_ui);
+
+// Overrides environment variables, while the returned objects are alive, so
+// that QT doesn't load a GTK version that collides with GTK in the browser.
+// `gtk_loaded` blocks GTK2, and `prevent_gtk3` also blocks GTK3. Exposed for
+// testing.
+COMPONENT_EXPORT(QT)
+std::vector<std::unique_ptr<base::ScopedEnvironmentVariableOverride>>
+GetGtkQtCollisionPreventionOverrides(bool gtk_loaded, bool prevent_gtk3);
 
 }  // namespace qt
 
