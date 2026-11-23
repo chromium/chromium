@@ -95,10 +95,19 @@ class CORE_EXPORT SelectionController final
   WebInputEventResult UpdateSelectionForMouseDrag(const HitTestResult&,
                                                   const PhysicalOffset&);
 
-  // Returns |true| if a word was selected.
-  bool SelectClosestWordFromHitTestResult(const HitTestResult&,
-                                          AppendTrailingWhitespace,
-                                          SelectInputEventType);
+  enum class SelectWordResult {
+    // No selectable word was found at the hit-test location (`selectstart` was
+    // not dispatched).
+    kNoWord,
+    // A word was found and `selectstart` was dispatched, but selection was
+    // canceled by JS (`preventDefault()`) or aborted due to DOM/frame mutation.
+    kCanceled,
+    // A word was selected.
+    kSelected,
+  };
+  SelectWordResult SelectClosestWordFromHitTestResult(const HitTestResult&,
+                                                      AppendTrailingWhitespace,
+                                                      SelectInputEventType);
   void SelectClosestMisspellingFromHitTestResult(const HitTestResult&,
                                                  AppendTrailingWhitespace);
   // Returns |true| if a word was selected.

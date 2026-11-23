@@ -618,9 +618,10 @@ bool SelectionController::HandleTapInsideSelection(
     const MouseEventWithHitTestResults& event,
     const SelectionInFlatTree& selection) {
   if (Selection().ShouldShrinkNextTap()) {
-    const bool did_select = SelectClosestWordFromHitTestResult(
-        event.GetHitTestResult(), AppendTrailingWhitespace::kDontAppend,
-        SelectInputEventType::kTouch);
+    const bool did_select =
+        SelectClosestWordFromHitTestResult(
+            event.GetHitTestResult(), AppendTrailingWhitespace::kDontAppend,
+            SelectInputEventType::kTouch) == SelectWordResult::kSelected;
     if (did_select) {
       frame_->GetEventHandler().ShowNonLocatedContextMenu(
           nullptr, ui::mojom::blink::MenuSourceType::kAdjustSelectionReset);
@@ -797,7 +798,8 @@ bool SelectionController::UpdateSelectionForMouseDownDispatchingSelectStart(
   return true;
 }
 
-bool SelectionController::SelectClosestWordFromHitTestResult(
+SelectionController::SelectWordResult
+SelectionController::SelectClosestWordFromHitTestResult(
     const HitTestResult& result,
     AppendTrailingWhitespace append_trailing_whitespace,
     SelectInputEventType select_input_event_type) {
@@ -805,7 +807,7 @@ bool SelectionController::SelectClosestWordFromHitTestResult(
 
   if (!inner_node || !inner_node->GetLayoutObject() ||
       !inner_node->GetLayoutObject()->IsSelectable()) {
-    return false;
+    return SelectWordResult::kNoWord;
   }
 
   // Special-case image local offset to always be zero, to avoid triggering
@@ -835,7 +837,7 @@ bool SelectionController::SelectClosestWordFromHitTestResult(
   // renderer crash when we call PlainText() below (see crbug.com/735774).
   if (new_selection.IsNone() || new_selection.ComputeStartPosition() >
                                     new_selection.ComputeEndPosition()) {
-    return false;
+    return SelectWordResult::kNoWord;
   }
 
   if (select_input_event_type == SelectInputEventType::kTouch) {
@@ -850,10 +852,10 @@ bool SelectionController::SelectClosestWordFromHitTestResult(
     if (word.starts_with('\n')) {
       // We should not select word from end of line, e.g.
       // "(1)|\n(2)" => "(1)^\n(|2)". See http://crbug.com/974569
-      return false;
+      return SelectWordResult::kNoWord;
     }
     if (word.SimplifyWhiteSpace().ContainsOnlyWhitespaceOrEmpty()) {
-      return false;
+      return SelectWordResult::kNoWord;
     }
 
     Element* const editable =
@@ -861,7 +863,7 @@ bool SelectionController::SelectClosestWordFromHitTestResult(
     if (editable && pos.GetPosition() ==
                         VisiblePositionInFlatTree::LastPositionInNode(*editable)
                             .DeepEquivalent()) {
-      return false;
+      return SelectWordResult::kNoWord;
     }
   }
 
@@ -871,13 +873,16 @@ bool SelectionController::SelectClosestWordFromHitTestResult(
           : new_selection;
 
   return UpdateSelectionForMouseDownDispatchingSelectStart(
-      inner_node,
-      ExpandSelectionToRespectUserSelectAll(inner_node, adjusted_selection),
-      SetSelectionOptions::Builder()
-          .SetGranularity(TextGranularity::kWord)
-          .SetShouldShowHandle(select_input_event_type ==
-                               SelectInputEventType::kTouch)
-          .Build());
+             inner_node,
+             ExpandSelectionToRespectUserSelectAll(inner_node,
+                                                   adjusted_selection),
+             SetSelectionOptions::Builder()
+                 .SetGranularity(TextGranularity::kWord)
+                 .SetShouldShowHandle(select_input_event_type ==
+                                      SelectInputEventType::kTouch)
+                 .Build())
+             ? SelectWordResult::kSelected
+             : SelectWordResult::kCanceled;
 }
 
 void SelectionController::SelectClosestMisspellingFromHitTestResult(
@@ -950,10 +955,11 @@ bool SelectionController::SelectClosestWordFromMouseEvent(
 
   DCHECK(!frame_->GetDocument()->NeedsLayoutTreeUpdate());
 
-  return SelectClosestWordFromHitTestResult(result, append_trailing_whitespace,
-                                            mouse_event->FromTouch()
-                                                ? SelectInputEventType::kTouch
-                                                : SelectInputEventType::kMouse);
+  return SelectClosestWordFromHitTestResult(
+             result, append_trailing_whitespace,
+             mouse_event->FromTouch()
+                 ? SelectInputEventType::kTouch
+                 : SelectInputEventType::kMouse) == SelectWordResult::kSelected;
 }
 
 template <typename MouseEventObject>
@@ -1087,12 +1093,6 @@ void SelectionController::SetCaretAtHitTestResult(
     const HitTestResult& hit_test_result) {
   Node* inner_node = hit_test_result.InnerPossiblyPseudoNode();
   DCHECK(inner_node);
-  // TODO(crbug.com/570656468): Compute the position upfront before dispatching
-  // 'selectstart' in HandleGestureLongPress() and avoid re-querying layout here
-  // or falling back to caret placement when 'selectstart' is canceled by JS.
-  if (LocalFrameView* view = inner_node->GetDocument().View()) {
-    view->UpdateAllLifecyclePhasesExceptPaint(DocumentUpdateReason::kSelection);
-  }
   const PositionInFlatTreeWithAffinity visible_hit_pos =
       CreateVisiblePosition(
           PositionWithAffinityOfHitTestResult(hit_test_result))
@@ -1423,8 +1423,14 @@ bool SelectionController::HandleGestureLongPress(
   }
 
   Node* inner_node = hit_test_result.InnerPossiblyPseudoNode();
+  if (!inner_node) {
+    return false;
+  }
   if (LocalFrameView* view = inner_node->GetDocument().View()) {
     view->UpdateAllLifecyclePhasesExceptPaint(DocumentUpdateReason::kSelection);
+  }
+  if (!inner_node->isConnected() || !inner_node->GetLayoutObject()) {
+    return false;
   }
 
   bool inner_node_is_selectable = IsEditable(*inner_node) ||
@@ -1434,15 +1440,25 @@ bool SelectionController::HandleGestureLongPress(
     return false;
   }
 
-  if (SelectClosestWordFromHitTestResult(hit_test_result,
+  const SelectWordResult select_word_result =
+      SelectClosestWordFromHitTestResult(hit_test_result,
                                          AppendTrailingWhitespace::kDontAppend,
-                                         SelectInputEventType::kTouch)) {
+                                         SelectInputEventType::kTouch);
+  if (select_word_result == SelectWordResult::kSelected) {
     return Selection().IsAvailable();
   }
 
-  if (!inner_node->isConnected() || !inner_node->GetLayoutObject()) {
+  // If the web author explicitly canceled selection via 'selectstart'
+  // (e.preventDefault()), respect it and do not fall back to placing a caret.
+  // Per W3C Selection API: "If the event is canceled, the user agent must not
+  // change the selection."
+  if (select_word_result == SelectWordResult::kCanceled) {
     return false;
   }
+
+  // Only fall back to placing a caret if no selectable word was found under the
+  // gesture location (`selectstart` has not been dispatched yet, so layout is
+  // still clean).
   SetCaretAtHitTestResult(hit_test_result);
   return false;
 }
@@ -1451,6 +1467,17 @@ void SelectionController::HandleGestureTwoFingerTap(
     const GestureEventWithHitTestResults& targeted_event) {
   TRACE_EVENT0("blink", "SelectionController::handleGestureTwoFingerTap");
 
+  Node* inner_node =
+      targeted_event.GetHitTestResult().InnerPossiblyPseudoNode();
+  if (!inner_node) {
+    return;
+  }
+  if (LocalFrameView* view = inner_node->GetDocument().View()) {
+    view->UpdateAllLifecyclePhasesExceptPaint(DocumentUpdateReason::kSelection);
+  }
+  if (!inner_node->isConnected() || !inner_node->GetLayoutObject()) {
+    return;
+  }
   SetCaretAtHitTestResult(targeted_event.GetHitTestResult());
 }
 

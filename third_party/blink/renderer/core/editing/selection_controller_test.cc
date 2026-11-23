@@ -72,7 +72,8 @@ bool SelectionControllerTest::SelectClosestWordFromHitTestResult(
     AppendTrailingWhitespace append_trailing_whitespace,
     SelectInputEventType select_input_event_type) {
   return Controller().SelectClosestWordFromHitTestResult(
-      result, append_trailing_whitespace, select_input_event_type);
+             result, append_trailing_whitespace, select_input_event_type) ==
+         SelectionController::SelectWordResult::kSelected;
 }
 
 void SelectionControllerTest::SetCaretAtHitTestResult(
@@ -698,17 +699,96 @@ TEST_F(SelectionControllerTest, HandleGestureLongPressOnNonSelectable) {
                      AtomicString("user-select: none; color: blue;"));
 
   // This should not crash when the fix is applied.
-  Controller().HandleGestureLongPress(hit_test_result);
+  EXPECT_FALSE(Controller().HandleGestureLongPress(hit_test_result));
+  EXPECT_TRUE(Selection().GetSelectionInDomTree().IsNone());
+}
+
+TEST_F(SelectionControllerTest,
+       HandleGestureLongPressWithPendingUserSelectChange) {
+  SetBodyContent(
+      "<div id='sample' style='user-select: none;'>SelectableTarget</div>");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* sample = GetElementById("sample");
+  HitTestLocation location((gfx::Point(8, 8)));
+  HitTestResult hit_test_result =
+      GetFrame().GetEventHandler().HitTestResultAtLocation(location);
+
+  // Pending style change from `user-select: none` to `user-select: text`
+  // after hit-testing should be cleaned before selection, allowing the word
+  // to be selected.
+  sample->setAttribute(html_names::kStyleAttr,
+                       AtomicString("user-select: text;"));
+  EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
+
+  EXPECT_TRUE(Controller().HandleGestureLongPress(hit_test_result));
+  EXPECT_EQ("SelectableTarget", Selection().SelectedText());
+
+  // Conversely, a pending style change from `user-select: text` to
+  // `user-select: none` after hit-testing should prevent selection.
+  Selection().Clear();
+  UpdateAllLifecyclePhasesForTest();
+  hit_test_result =
+      GetFrame().GetEventHandler().HitTestResultAtLocation(location);
+  sample->setAttribute(html_names::kStyleAttr,
+                       AtomicString("user-select: none;"));
+  EXPECT_TRUE(GetDocument().NeedsLayoutTreeUpdate());
+
+  EXPECT_FALSE(Controller().HandleGestureLongPress(hit_test_result));
+  EXPECT_TRUE(Selection().GetSelectionInDomTree().IsNone());
 }
 
 TEST_F(SelectionControllerTest, HandleGestureLongPressWithSelectStartMutation) {
   GetDocument().GetSettings()->SetScriptEnabled(true);
-  SetBodyContent("<span id='sample'>Selectable text</span>");
+  SetBodyContent(
+      "<span id='sample'>Selectable text</span>"
+      "<span id='other'>Other</span>");
+  Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
+  script->SetInnerHTMLWithoutTrustedTypes(
+      "let selectstart_count = 0;"
+      "document.addEventListener('selectstart', (e) => {"
+      "  ++selectstart_count;"
+      "  document.title = String(selectstart_count);"
+      "  document.getElementById('sample').style.fontSize = '20px';"
+      "  e.preventDefault();"
+      "});");
+  GetDocument().body()->AppendChild(script);
+  UpdateAllLifecyclePhasesForTest();
+
+  // Set an initial selection on #other to verify that canceling `selectstart`
+  // leaves the existing selection unchanged.
+  Node* other_text = GetElementById("other")->firstChild();
+  Selection().SetSelection(SelectionInDomTree::Builder()
+                               .Collapse(Position(other_text, 0))
+                               .Extend(Position(other_text, 5))
+                               .Build(),
+                           SetSelectionOptions());
+
+  HitTestLocation location((gfx::Point(8, 8)));
+  HitTestResult hit_test_result =
+      GetFrame().GetEventHandler().HitTestResultAtLocation(location);
+
+  // When selectstart is canceled, HandleGestureLongPress() should not fall back
+  // to placing a caret, should not dispatch a second selectstart, and must
+  // preserve the prior selection.
+  EXPECT_FALSE(Controller().HandleGestureLongPress(hit_test_result));
+  EXPECT_EQ("1", GetDocument().title());
+  EXPECT_EQ(Position(other_text, 0),
+            Selection().GetSelectionInDomTree().Anchor());
+  EXPECT_EQ(Position(other_text, 5),
+            Selection().GetSelectionInDomTree().Focus());
+}
+
+TEST_F(SelectionControllerTest,
+       HandleGestureLongPressWithLayoutShiftDuringSelectStart) {
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  SetBodyContent("<span id='sample'>ShiftTarget</span>");
   Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
   script->SetInnerHTMLWithoutTrustedTypes(
       "document.addEventListener('selectstart', (e) => {"
-      "  document.getElementById('sample').style.fontSize = '20px';"
-      "  e.preventDefault();"
+      "  const sample = document.getElementById('sample');"
+      "  sample.style.marginLeft = '300px';"
+      "  sample.style.fontSize = '50px';"
       "});");
   GetDocument().body()->AppendChild(script);
   UpdateAllLifecyclePhasesForTest();
@@ -717,8 +797,113 @@ TEST_F(SelectionControllerTest, HandleGestureLongPressWithSelectStartMutation) {
   HitTestResult hit_test_result =
       GetFrame().GetEventHandler().HitTestResultAtLocation(location);
 
-  // This should not crash when the fix is applied.
-  Controller().HandleGestureLongPress(hit_test_result);
+  EXPECT_TRUE(Controller().HandleGestureLongPress(hit_test_result));
+  EXPECT_EQ("ShiftTarget", Selection().SelectedText());
+}
+
+TEST_F(SelectionControllerTest,
+       HandleGestureLongPressCaretFallbackOnEmptyEditable) {
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  SetBodyContent(
+      "<div id='editable' contenteditable "
+      "style='width: 100px; height: 100px;'>   </div>");
+  Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
+  script->SetInnerHTMLWithoutTrustedTypes(
+      "let selectstart_count = 0;"
+      "let cancel_selectstart = false;"
+      "document.addEventListener('selectstart', (e) => {"
+      "  ++selectstart_count;"
+      "  document.title = String(selectstart_count);"
+      "  document.getElementById('editable').style.fontSize = '24px';"
+      "  if (cancel_selectstart) {"
+      "    e.preventDefault();"
+      "  }"
+      "});");
+  GetDocument().body()->AppendChild(script);
+  UpdateAllLifecyclePhasesForTest();
+
+  HitTestLocation location((gfx::Point(20, 20)));
+  HitTestResult hit_test_result =
+      GetFrame().GetEventHandler().HitTestResultAtLocation(location);
+
+  // No word to select in whitespace-only editable, so it falls back to caret
+  // and dispatches `selectstart` once.
+  EXPECT_FALSE(Controller().HandleGestureLongPress(hit_test_result));
+  EXPECT_TRUE(Selection().GetSelectionInDomTree().IsCaret());
+  EXPECT_EQ("1", GetDocument().title());
+
+  // Now clear selection and test when `selectstart` is canceled on the caret
+  // fallback path.
+  Selection().Clear();
+  Element* cancel_script =
+      GetDocument().CreateRawElement(html_names::kScriptTag);
+  cancel_script->SetInnerHTMLWithoutTrustedTypes("cancel_selectstart = true;");
+  GetDocument().body()->AppendChild(cancel_script);
+  UpdateAllLifecyclePhasesForTest();
+
+  hit_test_result =
+      GetFrame().GetEventHandler().HitTestResultAtLocation(location);
+  EXPECT_FALSE(Controller().HandleGestureLongPress(hit_test_result));
+  EXPECT_TRUE(Selection().GetSelectionInDomTree().IsNone());
+  EXPECT_EQ("2", GetDocument().title());
+}
+
+TEST_F(SelectionControllerTest, HandleGestureTwoFingerTapWithDirtyStyle) {
+  SetBodyContent(
+      "<div id='editable' contenteditable>Editable text</div>"
+      "<span id='other'>Other</span>");
+  UpdateAllLifecyclePhasesForTest();
+
+  HitTestLocation location((gfx::Point(8, 8)));
+  HitTestResult hit_test_result =
+      GetFrame().GetEventHandler().HitTestResultAtLocation(location);
+
+  // Dirty style/layout after the hit test to verify HandleGestureTwoFingerTap()
+  // updates the lifecycle before querying HitTestResult::GetPosition().
+  Element* editable = GetElementById("editable");
+  editable->setAttribute(html_names::kStyleAttr,
+                         AtomicString("color: blue; font-size: 20px;"));
+
+  WebGestureEvent gesture_event(
+      WebInputEvent::Type::kGestureTwoFingerTap, WebInputEvent::kNoModifiers,
+      base::TimeTicks::Now(), WebGestureDevice::kTouchscreen);
+  Controller().HandleGestureTwoFingerTap(
+      GestureEventWithHitTestResults(gesture_event, location, hit_test_result));
+  EXPECT_TRUE(Selection().GetSelectionInDomTree().IsCaret());
+
+  // Now select #other, re-hit-test #editable, and dirty #editable to
+  // `display: none` so its LayoutObject is destroyed when the lifecycle
+  // updates. HandleGestureTwoFingerTap() should bail out without clobbering the
+  // selection on #other.
+  Node* other_text = GetElementById("other")->firstChild();
+  Selection().SetSelection(SelectionInDomTree::Builder()
+                               .Collapse(Position(other_text, 0))
+                               .Extend(Position(other_text, 5))
+                               .Build(),
+                           SetSelectionOptions());
+
+  hit_test_result =
+      GetFrame().GetEventHandler().HitTestResultAtLocation(location);
+  editable->setAttribute(html_names::kStyleAttr,
+                         AtomicString("display: none;"));
+
+  Controller().HandleGestureTwoFingerTap(
+      GestureEventWithHitTestResults(gesture_event, location, hit_test_result));
+  EXPECT_EQ(Position(other_text, 0),
+            Selection().GetSelectionInDomTree().Anchor());
+  EXPECT_EQ(Position(other_text, 5),
+            Selection().GetSelectionInDomTree().Focus());
+
+  // Also verify that if the hit-tested node is removed from the DOM before
+  // HandleGestureTwoFingerTap(), it returns early without crashing on
+  // `DCHECK(position.IsConnected())`.
+  editable->remove();
+  Controller().HandleGestureTwoFingerTap(
+      GestureEventWithHitTestResults(gesture_event, location, hit_test_result));
+  EXPECT_EQ(Position(other_text, 0),
+            Selection().GetSelectionInDomTree().Anchor());
+  EXPECT_EQ(Position(other_text, 5),
+            Selection().GetSelectionInDomTree().Focus());
 }
 
 }  // namespace blink

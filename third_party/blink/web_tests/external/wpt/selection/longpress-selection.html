@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<!-- Conceptually this is a crashtest, but we need testharness.js so that testdriver works as expected, see https://github.com/web-platform-tests/wpt/issues/31739 -->
+<meta name="timeout" content="long">
 <title>Selection: Gesture long-press with selectstart style mutation</title>
 <link rel="help" href="https://crbug.com/570656468">
 <script src="/resources/testharness.js"></script>
@@ -13,6 +13,7 @@
   .target {
     font-size: 40px;
     display: block;
+    width: fit-content;
     margin: 20px;
   }
   #unselectable {
@@ -20,30 +21,99 @@
   }
 </style>
 
-<span id="selectable" class="target">Selectable target</span>
-<span id="unselectable" class="target">Unselectable target</span>
+<span id="cancel_target" class="target">CancelTarget</span>
+<span id="shift_target" class="target">ShiftTarget</span>
+<span id="unselectable" class="target">UnselectableTarget</span>
+<span id="selectable" class="target">SelectableTarget</span>
 
 <script>
+// Prevent the context menu from transferring to the browser process during
+// long-press gestures in content_shell.
+document.addEventListener('contextmenu', (e) => e.preventDefault());
+
 async function longPress(element) {
   await new test_driver.Actions()
     .addPointer("touchPointer", "touch")
     .pointerMove(0, 0, {origin: element, sourceName: "touchPointer"})
     .pointerDown({sourceName: "touchPointer"})
-    .pause(1000, "pointer", {sourceName: "touchPointer"})
+    .pause(800, "pointer", {sourceName: "touchPointer"})
     .pointerUp({sourceName: "touchPointer"})
     .send();
 }
 
-promise_test(async () => {
-  const selectable = document.getElementById('selectable');
-  selectable.addEventListener('selectstart', (e) => {
-    selectable.style.fontSize = '45px';
+promise_test(async (t) => {
+  window.getSelection().removeAllRanges();
+  const cancel_target = document.getElementById('cancel_target');
+  let selectstart_count = 0;
+  const onSelectStart = (e) => {
+    ++selectstart_count;
+    cancel_target.style.fontSize = '45px';
     e.preventDefault();
+  };
+  cancel_target.addEventListener('selectstart', onSelectStart);
+  t.add_cleanup(() => {
+    cancel_target.removeEventListener('selectstart', onSelectStart);
+    cancel_target.style.fontSize = '';
+  });
+  await longPress(cancel_target);
+  assert_equals(selectstart_count, 1,
+      "selectstart should only be dispatched once");
+  assert_equals(window.getSelection().toString(), "",
+      "Selection should be empty when selectstart is canceled");
+}, "Gesture long-press with canceled selectstart should not change selection");
+
+promise_test(async (t) => {
+  window.getSelection().removeAllRanges();
+  const shift_target = document.getElementById('shift_target');
+  const onSelectStart = (e) => {
+    // Shift the element during selectstart without preventing default.
+    shift_target.style.marginLeft = '300px';
+    shift_target.style.fontSize = '50px';
+  };
+  shift_target.addEventListener('selectstart', onSelectStart);
+  t.add_cleanup(() => {
+    shift_target.removeEventListener('selectstart', onSelectStart);
+    shift_target.style.marginLeft = '';
+    shift_target.style.fontSize = '';
+  });
+  await longPress(shift_target);
+  assert_equals(window.getSelection().toString(), "ShiftTarget",
+      "Selection should select the original target word despite layout shift");
+}, "Gesture long-press with layout shift during selectstart should select target word");
+
+promise_test(async (t) => {
+  window.getSelection().removeAllRanges();
+  const unselectable = document.getElementById('unselectable');
+  assert_equals(getComputedStyle(unselectable).userSelect, "none");
+  // Pending style change makes the element selectable before long-press.
+  unselectable.style.userSelect = 'text';
+  t.add_cleanup(() => {
+    unselectable.style.userSelect = '';
+  });
+  await longPress(unselectable);
+  assert_equals(window.getSelection().toString(), "UnselectableTarget",
+      "Pending user-select: text style change should allow word selection");
+}, "Gesture long-press with pending user-select change to text should select target word");
+
+promise_test(async (t) => {
+  window.getSelection().removeAllRanges();
+  const selectable = document.getElementById('selectable');
+  assert_not_equals(getComputedStyle(selectable).userSelect, "none");
+  let selectstart_count = 0;
+  const onSelectStart = () => {
+    ++selectstart_count;
+  };
+  selectable.addEventListener('selectstart', onSelectStart);
+  // Pending style change makes the element unselectable before long-press.
+  selectable.style.userSelect = 'none';
+  t.add_cleanup(() => {
+    selectable.removeEventListener('selectstart', onSelectStart);
+    selectable.style.userSelect = '';
   });
   await longPress(selectable);
-
-  const unselectable = document.getElementById('unselectable');
-  unselectable.style.color = 'blue';
-  await longPress(unselectable);
-}, "Gesture long-press on selectable and unselectable elements should not crash");
+  assert_equals(selectstart_count, 0,
+      "selectstart should not be dispatched when user-select is none");
+  assert_equals(window.getSelection().toString(), "",
+      "Pending user-select: none style change should prevent text selection");
+}, "Gesture long-press with pending user-select change to none should not select text");
 </script>

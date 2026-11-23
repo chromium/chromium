@@ -347,6 +347,7 @@ external/wpt/html/semantics/popovers/popover-focus-2.html
 external/wpt/html/semantics/interestfor/interestfor-invoker-descendants.tentative.html
 # Touch long-press is disabled in TouchEmulator under headless_shell.
 external/wpt/html/semantics/interestfor/interestfor-pseudo-element.tentative.html
+external/wpt/selection/longpress-selection.html
 
 # These reftests fail on Mac headless_shell when OS overlay scrollbars are
 # enabled because headless_shell runs with --disable-features=ScrollbarAnimations,
