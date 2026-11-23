@@ -1429,9 +1429,10 @@ void ContextualTasksComposeboxHandler::DeleteContext(
 
   auto it = delayed_tabs_.find(file_token);
   bool was_delayed = it != delayed_tabs_.end();
-  if (was_delayed) {                           // Delayed tab:
-    MarkDelayedTabUploadFinished(it->second);  // tab id.
+  if (was_delayed) {  // Delayed tab:
+    const int32_t tab_id = it->second;
     delayed_tabs_.erase(it);
+    MarkDelayedTabUploadFinished(tab_id);
   } else {  // File/normal context:
     ComposeboxHandler::DeleteContext(file_token, from_automatic_chip);
     MarkContextUploadFinished(file_token);

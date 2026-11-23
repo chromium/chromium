@@ -4612,6 +4612,94 @@ IN_PROC_BROWSER_TEST_F(
   mock_ui_->SetSessionHandle(nullptr);
 }
 
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksComposeboxHandlerTestWithContextManagementEnabled,
+    DeleteContext_Delayed_SendsPendingQueryAndRestoresSubmittedTab) {
+  tabs::TabInterface* tab1 =
+      tabs::TabLookupFromWebContents::FromWebContents(web_contents_)->model();
+  ASSERT_NE(tab1, nullptr);
+  const int32_t tab1_id = tab1->GetHandle().raw_value();
+  const SessionID session_id1 =
+      sessions::SessionTabHelper::FromWebContents(tab1->GetContents())
+          ->session_id();
+
+  auto mock_session = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  ON_CALL(*mock_session, GetController())
+      .WillByDefault(testing::Return(mock_controller_.get()));
+  EXPECT_CALL(*mock_session, GetSubmittedContextFileInfos())
+      .WillRepeatedly(
+          testing::Return(std::vector<contextual_search::FileInfo>()));
+  mock_ui_->SetSessionHandle(mock_session.get());
+
+  SetUpHandler();
+  ASSERT_NE(handler_, nullptr);
+
+  EXPECT_CALL(*mock_ui_, GetTaskId())
+      .WillRepeatedly(testing::ReturnRefOfCopy(std::optional<base::Uuid>()));
+  EXPECT_CALL(*mock_controller_, CreateClientToAimRequest(testing::_))
+      .WillOnce(testing::Return(lens::ClientToAimMessage()));
+
+  // Add the tab as a delayed tab context.
+  std::optional<base::UnguessableToken> delayed_token_opt;
+  base::MockCallback<ContextualSearchboxHandler::AddTabContextCallback>
+      add_callback;
+  EXPECT_CALL(add_callback, Run(testing::_)).WillOnce([&](const auto& result) {
+    ASSERT_TRUE(result.has_value());
+    delayed_token_opt = result.value();
+  });
+  handler_->AddTabContext(tab1_id, /*delay_upload=*/true,
+                          searchbox::mojom::TabAttachmentSource::kContextMenu,
+                          add_callback.Get());
+  ASSERT_TRUE(delayed_token_opt.has_value());
+  EXPECT_EQ(handler_->GetNumTabsDelayed(), 1);
+  EXPECT_TRUE(handler_->IsAnyContextUploading());
+
+  // Submit a query while the delayed tab is pending so the query is stashed.
+  handler_->CreateAndSendQueryMessage("pending query",
+                                      /*is_voice_search=*/false);
+  EXPECT_TRUE(handler_->HasPendingQueryForTesting());
+
+  // Configure the session handle to report the same tab in its submitted
+  // context file infos when the pending query is finalized and cached.
+  contextual_search::FileInfo submitted_tab_info;
+  submitted_tab_info.tab_url = GURL("about:blank#1");
+  submitted_tab_info.tab_title = "About Blank 1";
+  submitted_tab_info.tab_session_id = session_id1;
+  submitted_tab_info.mime_type = lens::MimeType::kHtml;
+  submitted_tab_info.selection_time = base::Time::Now();
+  EXPECT_CALL(*mock_session, GetSubmittedContextFileInfos())
+      .WillRepeatedly(testing::Return(
+          std::vector<contextual_search::FileInfo>{submitted_tab_info}));
+
+  // Deleting the delayed tab unblocks the pending query and synchronously
+  // caches submitted tabs via `SetAimThreadRestoredTabs()`. Verify
+  // `delayed_tabs_` is already erased synchronously when `PostAimMessage()`
+  // runs (before `SetAimThreadRestoredTabs()` clears it) so non-ASan builds
+  // also catch the pre-fix ordering bug.
+  EXPECT_CALL(*mock_ui_, PostAimMessage(testing::_)).WillOnce([&](const auto&) {
+    EXPECT_TRUE(handler_->GetSelectedTabIds().empty());
+  });
+  EXPECT_CALL(mock_searchbox_page_, SetAimThreadRestoredTabs(testing::_))
+      .WillOnce([&](const std::vector<searchbox::mojom::TabInfoPtr>& tabs) {
+        EXPECT_TRUE(handler_->GetSelectedTabIds().empty());
+        ASSERT_EQ(tabs.size(), 1u);
+        EXPECT_EQ(tabs[0]->tab_id, tab1_id);
+        EXPECT_EQ(tabs[0]->url, GURL("about:blank#1"));
+        EXPECT_EQ(tabs[0]->title, "About Blank 1");
+      });
+
+  handler_->DeleteContext(*delayed_token_opt, /*from_automatic_chip=*/true);
+  searchbox_page_receiver_.FlushForTesting();
+
+  EXPECT_EQ(handler_->GetNumTabsDelayed(), 0);
+  EXPECT_FALSE(handler_->IsAnyContextUploading());
+  EXPECT_FALSE(handler_->HasPendingQueryForTesting());
+  EXPECT_TRUE(handler_->GetSelectedTabIds().empty());
+
+  mock_ui_->SetSessionHandle(nullptr);
+}
+
 class ContextualTasksComposeboxHandlerSmartTabSharingTest
     : public ContextualTasksComposeboxHandlerTest {
  public:
