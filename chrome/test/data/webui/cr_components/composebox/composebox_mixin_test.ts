@@ -2576,6 +2576,59 @@ suite('ComposeboxMixinTest', () => {
     assertEquals('action hint', element.inputPlaceholder);
   });
 
+  test(
+      'handleFuseboxAction shows a non-empty hint as placeholder', async () => {
+        element.onInputStateChanged(
+            new MockInputState({hintText: 'Ask anything'}));
+        await microtasksFinished();
+        await element.updateComplete;
+        assertEquals('Ask anything', element.inputPlaceholder);
+
+        await element.handleFuseboxAction(createFuseboxActionRequest(
+            {queryActionOverride: QueryActionOverride.kHint},
+            'Describe your task'));
+        await microtasksFinished();
+        await element.updateComplete;
+        assertEquals('', element.state!.text);
+        assertEquals('', element.input);
+        assertEquals('Describe your task', element.inputPlaceholder);
+      });
+
+  test(
+      'handleFuseboxAction keeps default placeholder for empty hint',
+      async () => {
+        element.onInputStateChanged(
+            new MockInputState({hintText: 'Ask anything'}));
+        await microtasksFinished();
+        await element.updateComplete;
+        assertEquals('Ask anything', element.inputPlaceholder);
+
+        await element.handleFuseboxAction(createFuseboxActionRequest(
+            {queryActionOverride: QueryActionOverride.kHint}, ''));
+        await microtasksFinished();
+        await element.updateComplete;
+        assertEquals('', element.input);
+        assertEquals('Ask anything', element.inputPlaceholder);
+      });
+
+  test('handleFuseboxAction keeps the tool hint for tool chips', async () => {
+    element.onInputStateChanged(new MockInputState({hintText: 'Ask anything'}));
+    await microtasksFinished();
+    await element.updateComplete;
+
+    await element.handleFuseboxAction(createFuseboxActionRequest(
+        {
+          queryActionOverride: QueryActionOverride.kPaste,
+          preselectedTool: ToolMode.kImageGen,
+        },
+        ''));
+    element.onInputStateChanged(new MockInputState(
+        {hintText: 'Ask anything', activeTool: ToolMode.kImageGen}));
+    await microtasksFinished();
+    await element.updateComplete;
+    assertEquals('Describe your image', element.inputPlaceholder);
+  });
+
   test('handleFuseboxAction focuses the input for paste actions', async () => {
     const inputComponent = element.getInputElement();
     const isInputFocused = () =>

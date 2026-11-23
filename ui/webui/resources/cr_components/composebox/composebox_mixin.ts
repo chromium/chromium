@@ -1739,7 +1739,9 @@ export const ComposeboxEmbedderMixin =
           if (action?.queryActionOverride) {
             switch (action.queryActionOverride) {
               case QueryActionOverride.kHint:
-                this.fuseboxChipHint_ = request.suggestion;
+                // An empty suggestion keeps the default placeholder instead of
+                // blanking it.
+                this.fuseboxChipHint_ = request.suggestion || null;
                 this.updateInputPlaceholder();
                 text = '';
                 break;
