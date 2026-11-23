@@ -1146,10 +1146,6 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   // chrome layer in the future.
   virtual void ReportInspectorIssue(blink::mojom::InspectorIssueInfoPtr) = 0;
 
-  // Returns whether a document uses WebOTP. Returns true if a WebOTPService is
-  // created on the document.
-  virtual bool DocumentUsedWebOTP() = 0;
-
   using TraceProto = perfetto::protos::pbzero::RenderFrameHost;
   // Write a description of this RenderFrameHost into the provided |context|.
   virtual void WriteIntoTrace(

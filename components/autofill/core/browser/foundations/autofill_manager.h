@@ -439,6 +439,13 @@ class AutofillManager
   // Invoked when the suggestions are actually hidden.
   virtual void OnSuggestionsHidden(SuggestionHidingReason reason);
 
+  // Invoked when the document associated with this manager uses the WebOTP API.
+  void OnDocumentUsedWebOtp();
+
+  // Returns true if the document associated with this manager has used the
+  // WebOTP API since the last `Reset()`.
+  bool DocumentUsedWebOtp() const;
+
   // translate::TranslateDriver::LanguageDetectionObserver:
   void OnTranslateDriverDestroyed(
       translate::TranslateDriver* translate_driver) override;
@@ -709,6 +716,10 @@ class AutofillManager
   // Whether `OnFormsSeen()` has already attempted to load a custom form control
   // script since the last `Reset()`.
   bool attempted_loading_custom_form_control_script_ = false;
+
+  // Whether the current document has used the WebOTP API since the last
+  // `Reset()`.
+  bool document_used_web_otp_ = false;
 
   // Observers that listen to updates of this instance.
   base::ObserverList<Observer> observers_;

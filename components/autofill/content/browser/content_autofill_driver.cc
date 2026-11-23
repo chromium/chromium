@@ -542,10 +542,6 @@ bool ContentAutofillDriver::CanShowAutofillUi() const {
   return render_frame_host_->IsActive();
 }
 
-bool ContentAutofillDriver::DocumentUsedWebOtp() const {
-  return render_frame_host_->DocumentUsedWebOTP();
-}
-
 std::optional<net::IsolationInfo> ContentAutofillDriver::GetIsolationInfo() {
   return render_frame_host_->GetIsolationInfoForSubresources();
 }

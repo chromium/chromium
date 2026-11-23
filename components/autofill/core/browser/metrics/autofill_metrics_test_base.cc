@@ -103,12 +103,7 @@ MockAutofillDriver::MockAutofillDriver(TestAutofillClient* client)
           });
 }
 
-MockAutofillDriver::~MockAutofillDriver() {
-  // Normally, ~AutofillManager() would be run by ~TestAutofillDriver().
-  // That's too late because ~AutofillManager() calls a virtual function of
-  // MockAutofillDriver.
-  set_autofill_manager(nullptr);
-}
+MockAutofillDriver::~MockAutofillDriver() = default;
 
 TestBrowserAutofillManager::TestBrowserAutofillManager(AutofillDriver* driver)
     : autofill::TestBrowserAutofillManager(driver) {

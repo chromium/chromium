@@ -838,7 +838,7 @@ const AutofillField* OtpManagerImpl::GetTargetOtpField() const {
 }
 
 bool OtpManagerImpl::IsOtpDeliveryBlocked() {
-  return owner_->driver().DocumentUsedWebOtp();
+  return owner_->DocumentUsedWebOtp();
 }
 
 bool OtpManagerImpl::IsOtpFieldDetected() const {

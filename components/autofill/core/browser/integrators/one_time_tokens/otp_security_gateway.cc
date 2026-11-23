@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
-#include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
@@ -67,7 +66,7 @@ void LogSuppressedDecision(LogManager* log_manager,
 
 bool DocumentUsedWebOtp(AutofillClient& client) {
   AutofillManager* manager = client.GetAutofillManagerForPrimaryMainFrame();
-  return manager && manager->driver().DocumentUsedWebOtp();
+  return manager && manager->DocumentUsedWebOtp();
 }
 
 }  // namespace

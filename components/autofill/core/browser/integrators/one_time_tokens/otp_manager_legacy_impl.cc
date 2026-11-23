@@ -335,7 +335,7 @@ void OtpManagerLegacyImpl::MaybeShowOtpSuggestionsForSms(
 }
 
 bool OtpManagerLegacyImpl::IsOtpDeliveryBlocked() {
-  return owner_->driver().DocumentUsedWebOtp();
+  return owner_->DocumentUsedWebOtp();
 }
 
 }  // namespace autofill

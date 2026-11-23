@@ -15688,7 +15688,7 @@ void RenderFrameHostImpl::BindWebOTPServiceReceiver(
     mojo::PendingReceiver<blink::mojom::WebOTPService> receiver) {
   auto* fetcher = SmsFetcher::Get(GetProcess()->GetBrowserContext());
   if (WebOTPService::Create(fetcher, this, std::move(receiver))) {
-    document_used_web_otp_ = true;
+    delegate_->OnDocumentUsedWebOtp(this);
   }
 }
 
@@ -17274,10 +17274,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
          navigation_request->TakeDeviceBoundSessionAccessObservers()) {
       device_bound_session_observers_.Add(this, std::move(receiver));
     }
-
-    // Resets when navigating to a new document. This is needed because
-    // RenderFrameHost might be reused for a new document
-    document_used_web_otp_ = false;
 
     // Get the UKM source id sent to the renderer.
     const ukm::SourceId document_ukm_source_id =
@@ -20663,10 +20659,6 @@ void RenderFrameHostImpl::SetEmbeddingToken(
     // Clear the node id mapping on account of having a new tree.
     ax_unique_ids_.clear();
   }
-}
-
-bool RenderFrameHostImpl::DocumentUsedWebOTP() {
-  return document_used_web_otp_;
 }
 
 void RenderFrameHostImpl::SetFrameTreeNode(FrameTreeNode& frame_tree_node) {

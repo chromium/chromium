@@ -399,6 +399,20 @@ void ChromeAutofillClient::AtMemoryCopyPasteObserver::DidGetUserInteraction(
   OnPaste();
 }
 
+ChromeAutofillClient::WebOtpObserver::WebOtpObserver(
+    content::WebContents* web_contents)
+    : content::WebContentsObserver(web_contents) {}
+
+ChromeAutofillClient::WebOtpObserver::~WebOtpObserver() = default;
+
+void ChromeAutofillClient::WebOtpObserver::OnDocumentUsedWebOtp(
+    content::RenderFrameHost* render_frame_host) {
+  if (ContentAutofillDriver* driver =
+          ContentAutofillDriver::GetForRenderFrameHost(render_frame_host)) {
+    driver->GetAutofillManager().OnDocumentUsedWebOtp();
+  }
+}
+
 base::WeakPtr<AutofillClient> ChromeAutofillClient::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

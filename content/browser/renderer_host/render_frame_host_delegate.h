@@ -273,6 +273,9 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void ScriptToolsReadyStateChanged(
       RenderFrameHostImpl* render_frame_host) {}
 
+  // The document in `render_frame_host` used WebOTP.
+  virtual void OnDocumentUsedWebOtp(RenderFrameHostImpl* render_frame_host) {}
+
   // The onload handler in the frame has completed. Only called for the main
   // frames.
   virtual void DocumentOnLoadCompleted(RenderFrameHostImpl* render_frame_host) {

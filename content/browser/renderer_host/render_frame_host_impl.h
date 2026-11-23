@@ -2331,8 +2331,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void ForEachRenderFrameHostImplIncludingSpeculative(
       base::FunctionRef<void(RenderFrameHostImpl*)> on_frame);
 
-  bool DocumentUsedWebOTP() override;
-
   scoped_refptr<WebAuthRequestSecurityCheckerImpl>
   GetWebAuthRequestSecurityCheckerImpl();
 
@@ -5305,14 +5303,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Indicates whether this frame is an outer delegate frame for some other
   // RenderFrameHost. This will be a valid ID if so, and invalid otherwise.
   FrameTreeNodeId inner_tree_main_frame_tree_node_id_;
-
-  // Indicates whether navigator.credentials.get({otp: {transport:"sms"}}) has
-  // been used on a document (regardless of the outcome).
-  // Note that WebOTP is not allowed in iframes for security reasons. i.e. this
-  // will not be set in such case which is expected. In addition, since the
-  // RenderFrameHost may persist across navigations, we need to reset the bit
-  // to make sure that it's used per document.
-  bool document_used_web_otp_ = false;
 
   // The browsing context's required CSP as defined by
   // https://w3c.github.io/webappsec-cspee/#required-csp,

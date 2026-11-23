@@ -2616,8 +2616,9 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(WebOTPPhoneCollectionMetricsTest,
        TestWebOTPPhoneCollectionMetricsState) {
   auto test_case = GetParam();
-  ON_CALL(autofill_driver(), DocumentUsedWebOtp)
-      .WillByDefault(Return(test_case.report_autofill_web_otp_metrics));
+  if (test_case.report_autofill_web_otp_metrics) {
+    autofill_manager().OnDocumentUsedWebOtp();
+  }
 
   if (!test_case.autocomplete_field.empty()) {
     FormData form;
@@ -2640,7 +2641,7 @@ TEST_P(WebOTPPhoneCollectionMetricsTest,
 
 // Verify that proper PhoneCollectionMetricsState is logged to UKM.
 TEST_F(AutofillMetricsTest, WebOTPPhoneCollectionMetricsStateLoggedToUKM) {
-  ON_CALL(autofill_driver(), DocumentUsedWebOtp).WillByDefault(Return(true));
+  autofill_manager().OnDocumentUsedWebOtp();
 
   EXPECT_THAT(GetUkmEvents(test_ukm_recorder(),
                            ukm::builders::WebOTPImpact::kEntryName),

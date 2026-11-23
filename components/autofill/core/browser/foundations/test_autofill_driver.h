@@ -136,7 +136,6 @@ class TestAutofillDriver : public TestAutofillDriverTemplate<AutofillDriver> {
   bool IsPolicyControlledFeatureAutofillEnabled() const override;
   bool IsPolicyControlledFeatureManualTextEnabled() const override;
   bool CanShowAutofillUi() const override;
-  bool DocumentUsedWebOtp() const override;
   std::optional<net::IsolationInfo> GetIsolationInfo() override;
   void TriggerFormExtractionInAllFrames(
       bool force,

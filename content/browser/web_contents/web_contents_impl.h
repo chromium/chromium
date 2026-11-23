@@ -766,6 +766,7 @@ class CONTENT_EXPORT WebContentsImpl
   void DOMContentLoaded(RenderFrameHostImpl* render_frame_host) override;
   void ScriptToolsReadyStateChanged(
       RenderFrameHostImpl* render_frame_host) override;
+  void OnDocumentUsedWebOtp(RenderFrameHostImpl* render_frame_host) override;
   void DocumentOnLoadCompleted(RenderFrameHostImpl* render_frame_host) override;
   void UpdateTitle(RenderFrameHostImpl* render_frame_host,
                    const std::u16string& title) override;

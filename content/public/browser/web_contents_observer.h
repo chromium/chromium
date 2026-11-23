@@ -498,6 +498,14 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   virtual void ScriptToolsReadyStateChanged(
       RenderFrameHost* render_frame_host) {}
 
+  // Invoked when a WebOTPService is bound for the document in
+  // `render_frame_host` (i.e., when
+  // `navigator.credentials.get({otp: {transport: ["sms"]}})` is used,
+  // regardless of the outcome). May be invoked for subframes when permitted by
+  // the `otp-credentials` Permissions Policy, and may be invoked more than once
+  // per document if the renderer rebinds the service.
+  virtual void OnDocumentUsedWebOtp(RenderFrameHost* render_frame_host) {}
+
   // This method is invoked when the load is done for the document represented
   // by `render_frame_host` on the renderer side, e.g. the onload event was
   // dispatched. Note that this function is not related to

@@ -245,10 +245,6 @@ bool AutofillDriverIOS::CanShowAutofillUi() const {
   return true;
 }
 
-bool AutofillDriverIOS::DocumentUsedWebOtp() const {
-  return false;
-}
-
 base::flat_set<FieldGlobalId> AutofillDriverIOS::ApplyFormAction(
     mojom::FormActionType action_type,
     mojom::ActionPersistence action_persistence,

@@ -3668,7 +3668,7 @@ BrowserAutofillManager::GetEventFormLogger(const AutofillField& field) {
 
 void BrowserAutofillManager::ReportAutofillWebOtpMetrics() {
 #if !BUILDFLAG(IS_IOS)
-  const bool used_web_otp = driver().DocumentUsedWebOtp();
+  const bool used_web_otp = DocumentUsedWebOtp();
 
   // It's possible that a frame without any form uses WebOTP. e.g. a server may
   // send the verification code to a phone number that was collected beforehand

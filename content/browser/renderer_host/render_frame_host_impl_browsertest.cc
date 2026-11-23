@@ -47,7 +47,6 @@
 #include "content/browser/renderer_host/origin_trial_state_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/text_input_manager.h"
-#include "content/browser/sms/test/mock_sms_provider.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
@@ -314,8 +313,6 @@ class RenderFrameHostImplBrowserTest : public ContentBrowserTest {
     // is integrated into WebView.
     command_line->AppendSwitchASCII(blink::switches::kJavaScriptFlags,
                                     "--expose_gc");
-
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures, "WebOTP");
 
     // URLLoaderFactoryNotTrusted test could trigger ReportBadMessage and crash
     // network service process. Use kIgnoreBadMessageForTesting switch to
@@ -5907,43 +5904,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // The RenderFrameHost has been replaced after the crash, so get it again.
   current_rfh = root->render_manager()->current_frame_host();
   EXPECT_EQ(LifecycleStateImpl::kActive, current_rfh->lifecycle_state());
-}
-
-// Check that same site navigation correctly resets document_used_web_otp_.
-IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
-                       SameSiteNavigationResetsDocumentUsedWebOTP) {
-  const GURL first_url(embedded_test_server()->GetURL("/title1.html"));
-  ASSERT_TRUE(NavigateToURL(shell(), first_url));
-
-  auto provider = std::make_unique<MockSmsProvider>();
-  MockSmsProvider* mock_provider_ptr = provider.get();
-  BrowserMainLoop::GetInstance()->SetSmsProviderForTesting(std::move(provider));
-
-  std::string script = R"(
-    (async () => {
-      let cred = await navigator.credentials.get({otp: {transport: ["sms"]}});
-      return cred.code;
-    }) ();
-  )";
-
-  EXPECT_CALL(*mock_provider_ptr, Retrieve(testing::_, testing::_))
-      .WillOnce([&]() {
-        mock_provider_ptr->NotifyReceive(
-            std::vector<url::Origin>{url::Origin::Create(first_url)}, "hello",
-            SmsFetcher::UserConsent::kObtained);
-      });
-
-  // EvalJs waits for the promise being resolved. This ensures that the browser
-  // has time to see the otp usage, and records it, before we test for it below.
-  EXPECT_EQ("hello", EvalJs(shell(), script));
-
-  EXPECT_TRUE(web_contents()->GetPrimaryMainFrame()->DocumentUsedWebOTP());
-
-  // Loads a URL that maps to the same SiteInstance as the first URL, to make
-  // sure the navigation will not be cross-process.
-  const GURL second_url(embedded_test_server()->GetURL("/title2.html"));
-  ASSERT_TRUE(NavigateToURL(shell(), second_url));
-  EXPECT_FALSE(web_contents()->GetPrimaryMainFrame()->DocumentUsedWebOTP());
 }
 
 namespace {

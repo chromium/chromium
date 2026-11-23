@@ -19,6 +19,7 @@
 #include "content/browser/sms/webotp_service.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/sms_fetcher.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
@@ -49,6 +50,17 @@ using OriginList = SmsFetcher::OriginList;
 using UserConsent = SmsFetcher::UserConsent;
 
 namespace {
+
+class MockWebOTPWebContentsObserver : public WebContentsObserver {
+ public:
+  explicit MockWebOTPWebContentsObserver(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  MOCK_METHOD(void,
+              OnDocumentUsedWebOtp,
+              (RenderFrameHost * render_frame_host),
+              (override));
+};
 
 class SmsBrowserTest : public ContentBrowserTest {
  public:
@@ -769,7 +781,7 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, SmsFetcherUAF) {
   navigate.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(SmsBrowserTest, UpdateRenderFrameHostWithWebOTPUsage) {
+IN_PROC_BROWSER_TEST_F(SmsBrowserTest, NotifyWebContentsObserverOnWebOTPUsage) {
   base::HistogramTester histogram_tester;
   GURL url = GetTestUrl(nullptr, "simple_page.html");
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -789,9 +801,10 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, UpdateRenderFrameHostWithWebOTPUsage) {
 
   RenderFrameHost* render_frame_host =
       shell()->web_contents()->GetPrimaryMainFrame();
-  EXPECT_FALSE(render_frame_host->DocumentUsedWebOTP());
-  // navigator.credentials.get() creates an WebOTPService which will notify the
-  // RenderFrameHost that WebOTP has been used.
+  MockWebOTPWebContentsObserver observer(shell()->web_contents());
+  EXPECT_CALL(observer, OnDocumentUsedWebOtp(render_frame_host));
+  // navigator.credentials.get() creates a WebOTPService which will notify
+  // WebContentsObservers that WebOTP has been used.
   std::string script = R"(
     (async () => {
       let cred = await navigator.credentials.get({otp: {transport: ["sms"]}});
@@ -799,8 +812,6 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest, UpdateRenderFrameHostWithWebOTPUsage) {
     }) ();
   )";
   EXPECT_EQ("hello", EvalJs(shell(), script));
-
-  EXPECT_TRUE(render_frame_host->DocumentUsedWebOTP());
 }
 
 IN_PROC_BROWSER_TEST_F(SmsBrowserTest, RecordBackendNotAvailableAsOutcome) {
@@ -1228,6 +1239,9 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest,
   ASSERT_FALSE(child_rfh->IsFeatureEnabled(
       network::mojom::PermissionsPolicyFeature::kOTPCredentials));
 
+  MockWebOTPWebContentsObserver observer(shell()->web_contents());
+  EXPECT_CALL(observer, OnDocumentUsedWebOtp(_)).Times(0);
+
   RenderProcessHostBadIpcMessageWaiter kill_waiter(child_rfh->GetProcess());
   mojo::Remote<blink::mojom::WebOTPService> service;
   child_rfh->browser_interface_broker_receiver_for_testing()
@@ -1235,7 +1249,6 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest,
       ->impl()
       ->GetInterface(service.BindNewPipeAndPassReceiver());
 
-  ASSERT_FALSE(child_rfh->DocumentUsedWebOTP());
   EXPECT_EQ(bad_message::BIBI_BIND_WEBOTP_SERVICE_BLOCKED_BY_PERMISSIONS_POLICY,
             kill_waiter.Wait());
 }
@@ -1255,13 +1268,15 @@ IN_PROC_BROWSER_TEST_F(SmsBrowserTest,
   ASSERT_TRUE(child_rfh->IsFeatureEnabled(
       network::mojom::PermissionsPolicyFeature::kOTPCredentials));
 
+  MockWebOTPWebContentsObserver observer(shell()->web_contents());
+  EXPECT_CALL(observer, OnDocumentUsedWebOtp(child_rfh));
+
   mojo::Remote<blink::mojom::WebOTPService> service;
   child_rfh->browser_interface_broker_receiver_for_testing()
       .internal_state()
       ->impl()
       ->GetInterface(service.BindNewPipeAndPassReceiver());
 
-  EXPECT_TRUE(child_rfh->DocumentUsedWebOTP());
   service.FlushForTesting();
   EXPECT_TRUE(service.is_connected());
 }

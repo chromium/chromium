@@ -93,7 +93,6 @@ class MockAutofillDriver : public TestAutofillDriver {
                const url::Origin& triggered_origin,
                (const absl::flat_hash_map<FieldGlobalId, FieldType>&)),
               (override));
-  MOCK_METHOD(bool, DocumentUsedWebOtp, (), (const, override));
 };
 
 class TestBrowserAutofillManager : public autofill::TestBrowserAutofillManager {

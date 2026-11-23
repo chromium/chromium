@@ -190,7 +190,6 @@ class ContentAutofillDriver : public AutofillDriver,
   bool IsPolicyControlledFeatureAutofillEnabled() const final;
   bool IsPolicyControlledFeatureManualTextEnabled() const final;
   bool CanShowAutofillUi() const final;
-  bool DocumentUsedWebOtp() const final;
   std::optional<net::IsolationInfo> GetIsolationInfo() final;
 
  private:

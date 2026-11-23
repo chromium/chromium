@@ -39,6 +39,7 @@
 #include "components/one_time_tokens/core/browser/one_time_token_backend_notification.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -179,6 +180,24 @@ class OtpTestAutofillClient : public TestContentAutofillClient {
   }
 
  private:
+  // `OtpTestAutofillClient` inherits from `TestContentAutofillClient` rather
+  // than `ChromeAutofillClient`, so it observes WebOTP usage directly.
+  class WebOtpObserver final : public content::WebContentsObserver {
+   public:
+    explicit WebOtpObserver(content::WebContents* web_contents)
+        : content::WebContentsObserver(web_contents) {}
+    ~WebOtpObserver() override = default;
+
+    void OnDocumentUsedWebOtp(
+        content::RenderFrameHost* render_frame_host) override {
+      if (ContentAutofillDriver* driver =
+              ContentAutofillDriver::GetForRenderFrameHost(render_frame_host)) {
+        driver->GetAutofillManager().OnDocumentUsedWebOtp();
+      }
+    }
+  };
+
+  WebOtpObserver web_otp_observer_{web_contents()};
   affiliations::FakeAffiliationService affiliation_service_;
 };
 
@@ -266,7 +285,7 @@ IN_PROC_BROWSER_TEST_P(OtpManagerWithWebOtpApiBrowserTest,
                        /*world_id=*/1));
     // As the WebOTP is asynchronous, wait until the use has been propagated.
     ASSERT_TRUE(base::test::RunUntil(
-        [&] { return autofill_manager().driver().DocumentUsedWebOtp(); }));
+        [&] { return autofill_manager().DocumentUsedWebOtp(); }));
     // From this point on, Autofill should not suggest OTPs anymore.
   }
 

@@ -204,6 +204,7 @@ void AutofillManager::OnAutofillDriverLifecycleStateChanged(
 void AutofillManager::Reset() {
   parsing_weak_ptr_factory_.InvalidateWeakPtrs();
   form_structures_.clear();
+  document_used_web_otp_ = false;
   // TODO(crbug.com/581337039): Reset doesn't run on same document navigations.
   // For scripts that apply a url_filter, loading might not be retried properly.
   attempted_loading_custom_form_control_script_ = false;
@@ -540,6 +541,14 @@ void AutofillManager::OnSuggestionsHidden(SuggestionHidingReason reason) {
     driver().RendererShouldClearPreviewedForm();
   }
   NotifyObservers(&Observer::OnSuggestionsHidden, reason);
+}
+
+void AutofillManager::OnDocumentUsedWebOtp() {
+  document_used_web_otp_ = true;
+}
+
+bool AutofillManager::DocumentUsedWebOtp() const {
+  return document_used_web_otp_;
 }
 
 void AutofillManager::OnSelectFieldOptionsDidChange(

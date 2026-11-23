@@ -19,7 +19,6 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/foundations/mock_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
@@ -45,8 +44,6 @@ using one_time_tokens::OneTimeTokenType;
 using ::testing::_;
 using ::testing::Contains;
 using ::testing::HasSubstr;
-using ::testing::NiceMock;
-using ::testing::Return;
 using ::testing::Test;
 
 class RecordingLogReceiver : public LogReceiver {
@@ -69,12 +66,6 @@ class MockOtpPhishGuardDelegate : public OtpPhishGuardDelegate {
               (override));
 };
 
-class MockAutofillDriver : public TestAutofillDriver {
- public:
-  using TestAutofillDriver::TestAutofillDriver;
-  MOCK_METHOD(bool, DocumentUsedWebOtp, (), (const, override));
-};
-
 class SecurityGatewayTestAutofillClient : public TestAutofillClient {
  public:
   test::AutofillTestingPrefService* GetPrefs() override {
@@ -91,9 +82,7 @@ class SecurityGatewayTestAutofillClient : public TestAutofillClient {
 
 class OtpSecurityGatewayTest : public Test,
                                public WithTestAutofillClientDriverManager<
-                                   SecurityGatewayTestAutofillClient,
-                                   NiceMock<MockAutofillDriver>,
-                                   MockAutofillManager> {
+                                   SecurityGatewayTestAutofillClient> {
  public:
   void SetUp() override {
     InitAutofillClient();
@@ -240,7 +229,7 @@ TEST_F(OtpSecurityGatewayTest,
   OtpTarget target = MakeTarget(origin, frame);
 
   // Case 1: WebOTP already used before `ValidateDelivery` -> skips PhishGuard.
-  ON_CALL(autofill_driver(), DocumentUsedWebOtp).WillByDefault(Return(true));
+  autofill_manager().OnDocumentUsedWebOtp();
   EXPECT_CALL(*phish_guard_delegate_, StartOtpPhishGuardCheck).Times(0);
 
   base::test::TestFuture<OtpTarget, OtpCandidate, OtpDeliveryPolicy::Decision>
@@ -253,7 +242,7 @@ TEST_F(OtpSecurityGatewayTest,
             OtpDeliveryPolicy::SkipReason::kWebOtpBlocked);
 
   // Case 2: WebOTP becomes used while PhishGuard check is in flight.
-  ON_CALL(autofill_driver(), DocumentUsedWebOtp).WillByDefault(Return(false));
+  autofill_client().GetAutofillDriverFactory().Reset(autofill_driver());
   OtpPhishGuardDelegate::VerdictCallback phish_guard_cb;
   EXPECT_CALL(*phish_guard_delegate_, StartOtpPhishGuardCheck(frame, _))
       .WillOnce(MoveArg<1>(&phish_guard_cb));
@@ -264,7 +253,7 @@ TEST_F(OtpSecurityGatewayTest,
                            inflight_blocked.GetCallback());
   ASSERT_TRUE(phish_guard_cb);
 
-  ON_CALL(autofill_driver(), DocumentUsedWebOtp).WillByDefault(Return(true));
+  autofill_manager().OnDocumentUsedWebOtp();
   std::move(phish_guard_cb).Run(OneTimeTokensPhishGuardVerdict::kNotPhishing);
 
   ASSERT_TRUE(inflight_blocked.Wait());
@@ -650,7 +639,7 @@ TEST_F(OtpSecurityGatewayTest,
 
   // WebOTP usage blocks reactive serving of a previously verified SMS
   // candidate (and takes precedence over SMS origin mismatch).
-  ON_CALL(autofill_driver(), DocumentUsedWebOtp).WillByDefault(Return(true));
+  autofill_manager().OnDocumentUsedWebOtp();
   EXPECT_EQ(gateway.EvaluateReactiveServing(MakeTarget(other_origin, frame_a),
                                             bound_sms_candidate),
             (OtpDeliveryPolicy::Decision{

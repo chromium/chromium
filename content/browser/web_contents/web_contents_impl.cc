@@ -9152,6 +9152,12 @@ void WebContentsImpl::ScriptToolsReadyStateChanged(
                              render_frame_host);
 }
 
+void WebContentsImpl::OnDocumentUsedWebOtp(
+    RenderFrameHostImpl* render_frame_host) {
+  observers_.NotifyObservers(&WebContentsObserver::OnDocumentUsedWebOtp,
+                             render_frame_host);
+}
+
 void WebContentsImpl::OnDidFinishLoad(RenderFrameHostImpl* render_frame_host,
                                       const GURL& url) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::OnDidFinishLoad",

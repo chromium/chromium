@@ -76,9 +76,7 @@ using ::one_time_tokens::OneTimeTokenRetrievalError;
 using ::one_time_tokens::OneTimeTokenType;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
-using ::testing::NiceMock;
 using ::testing::Property;
-using ::testing::Return;
 using ::testing::Test;
 
 constexpr char kTestUrl[] = "https://example.test";
@@ -189,16 +187,9 @@ class TestFrameObserver : public OtpCoordinator::Observer {
   base::OnceClosure on_otp_available_;
 };
 
-class MockAutofillDriver : public TestAutofillDriver {
- public:
-  using TestAutofillDriver::TestAutofillDriver;
-  MOCK_METHOD(bool, DocumentUsedWebOtp, (), (const, override));
-};
-
 class OtpCoordinatorTest
     : public Test,
-      public WithTestAutofillClientDriverManager<TestAutofillClient,
-                                                 NiceMock<MockAutofillDriver>> {
+      public WithTestAutofillClientDriverManager<TestAutofillClient> {
  protected:
   void SetUp() override {
     InitAutofillClient();
@@ -1046,7 +1037,7 @@ TEST_F(OtpCoordinatorTest,
   histogram_tester_.ExpectTotalCount(kProactiveTriggerOutcomeHistogram, 0);
 
   // WebOTP becomes active before the tab becomes visible again.
-  ON_CALL(autofill_driver(), DocumentUsedWebOtp).WillByDefault(Return(true));
+  autofill_manager().OnDocumentUsedWebOtp();
   coordinator_->OnTabVisibilityChanged(true);
   EXPECT_THAT(frame_observer_->triggered_fields(), IsEmpty());
   histogram_tester_.ExpectUniqueSample(kProactiveTriggerOutcomeHistogram,

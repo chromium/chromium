@@ -73,10 +73,6 @@ bool TestAutofillDriver::CanShowAutofillUi() const {
   return true;
 }
 
-bool TestAutofillDriver::DocumentUsedWebOtp() const {
-  return false;
-}
-
 std::optional<net::IsolationInfo> TestAutofillDriver::GetIsolationInfo() {
   // In AutofillDriverIOS, we always return std::nullopt here. That behavior
   // should be reflected in iOS tests.

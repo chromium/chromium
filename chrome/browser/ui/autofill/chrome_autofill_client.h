@@ -496,6 +496,18 @@ class ChromeAutofillClient : public ContentAutofillClient {
   };
   OtpTabActivityObserver otp_tab_activity_observer_{this};
 
+  // Observes WebOTP API usage and forwards it to the frame's AutofillManager.
+  class WebOtpObserver final : public content::WebContentsObserver {
+   public:
+    explicit WebOtpObserver(content::WebContents* web_contents);
+    ~WebOtpObserver() override;
+
+    // content::WebContentsObserver:
+    void OnDocumentUsedWebOtp(
+        content::RenderFrameHost* render_frame_host) override;
+  };
+  WebOtpObserver web_otp_observer_{web_contents()};
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<ChromeAutofillClient> weak_ptr_factory_{this};
