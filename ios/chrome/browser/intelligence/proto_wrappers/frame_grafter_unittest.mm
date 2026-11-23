@@ -45,6 +45,28 @@ optimization_guide::proto::ContentNode* AddIframePlaceholder(
   return placeholder;
 }
 
+// Returns `local_token` when `requested_remote` matches `remote_token`, or
+// `std::nullopt` otherwise.
+std::optional<autofill::LocalFrameToken> LookupSingleFrameMapping(
+    autofill::RemoteFrameToken remote_token,
+    autofill::LocalFrameToken local_token,
+    autofill::RemoteFrameToken requested_remote) {
+  if (requested_remote == remote_token) {
+    return local_token;
+  }
+
+  return std::nullopt;
+}
+
+// Records `unresolved` as a cross-site iframe placeholder in `grafter`.
+// Assumes `grafter` and `unresolved` are non-null.
+void RecordUnresolvedCrossSiteIframe(
+    FrameGrafter* grafter,
+    const autofill::RemoteFrameToken& remote_token,
+    optimization_guide::proto::ContentNode* unresolved) {
+  grafter->RecordCrossSiteIframePlaceholder(*unresolved);
+}
+
 }  // namespace
 
 using FrameGrafterTest = PlatformTest;
@@ -1194,4 +1216,39 @@ TEST_F(FrameGrafterTest, NestedCrossSiteIframeAccumulatesAncestorOffsets) {
   EXPECT_EQ(info.bounding_box().width(), 100);
   EXPECT_EQ(info.bounding_box().height(), 80);
   EXPECT_TRUE(info.bounding_box().is_screenshot_relative());
+}
+
+// Tests that `PopulateScreenshotInfo` saturates nested cross-site iframe
+// coordinates to `int32` bounds when accumulated offsets overflow.
+TEST_F(FrameGrafterTest, NestedCrossSiteIframeSaturatesOverflowingOffsets) {
+  optimization_guide::proto::AnnotatedPageContent apc;
+  FrameGrafter grafter;
+  autofill::LocalFrameToken parent_local_token = CreateLocalToken();
+  autofill::RemoteFrameToken parent_remote_token = CreateRemoteToken();
+  autofill::RemoteFrameToken nested_remote_token = CreateRemoteToken();
+
+  optimization_guide::proto::ContentNode* parent_placeholder =
+      AddIframePlaceholder(apc.mutable_root_node(), 1500000000, -1500000000,
+                           300, 200);
+  grafter.RegisterPlaceholder(parent_remote_token, parent_placeholder);
+
+  FrameGrafter::FrameContent* parent_content =
+      grafter.DeclareContent(parent_local_token);
+  optimization_guide::proto::ContentNode* nested_placeholder =
+      AddIframePlaceholder(&parent_content->content, 1500000000, -1500000000,
+                           100, 80);
+  grafter.RegisterPlaceholder(nested_remote_token, nested_placeholder);
+
+  grafter.ResolveUnregisteredContent(
+      base::BindRepeating(&LookupSingleFrameMapping, parent_remote_token,
+                          parent_local_token),
+      base::DoNothing(),
+      base::BindRepeating(&RecordUnresolvedCrossSiteIframe, &grafter));
+  grafter.PopulateScreenshotInfo(&apc);
+
+  const optimization_guide::proto::ScreenshotInfo& screenshot_info =
+      apc.gemini_in_chrome_page_metadata().screenshot_info();
+  ASSERT_EQ(screenshot_info.iframe_info_size(), 1);
+  EXPECT_EQ(screenshot_info.iframe_info(0).bounding_box().x(), 2147483647);
+  EXPECT_EQ(screenshot_info.iframe_info(0).bounding_box().y(), -2147483648);
 }

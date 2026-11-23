@@ -17,6 +17,7 @@
 #import "base/containers/extend.h"
 #import "base/containers/span.h"
 #import "base/files/scoped_temp_dir.h"
+#import "base/functional/callback_helpers.h"
 #import "base/no_destructor.h"
 #import "base/run_loop.h"
 #import "base/strings/strcat.h"
@@ -131,11 +132,25 @@
 // verify viewport insetting logic without full WebState realization.
 @interface FakeCRWWebViewScrollViewProxy : CRWWebViewScrollViewProxy
 @property(nonatomic, assign) UIEdgeInsets testContentInset;
+@property(nonatomic, assign) CGFloat testZoomScale;
 @end
 
 @implementation FakeCRWWebViewScrollViewProxy
+- (instancetype)init {
+  self = [super init];
+  if (self) {
+    _testZoomScale = 1.0;
+  }
+
+  return self;
+}
+
 - (UIEdgeInsets)adjustedContentInset {
   return _testContentInset;
+}
+
+- (CGFloat)zoomScale {
+  return self.testZoomScale;
 }
 @end
 
@@ -10240,6 +10255,61 @@ TEST_P(PageContextWrapperTest, ImageRedaction_EmptyArray) {
   ASSERT_TRUE(
       base::Base64Decode(page_context->tab_screenshot(), &screenshot_data));
   EXPECT_GT(screenshot_data.length(), 0u);
+}
+
+// Tests that screenshot encoding ignores non-finite or non-positive `zoomScale`
+// values and saturates overflowing `screenshot_size` and zoomed `iframe_info`
+// bounding boxes to `int32` bounds.
+TEST_P(PageContextWrapperTest,
+       ScreenshotIframeInfoZoomScalingSaturatesAndIgnoresNonFiniteScale) {
+  FakeCRWWebViewProxy* fake_proxy = [[FakeCRWWebViewProxy alloc] init];
+  FakeCRWWebViewScrollViewProxy* fake_scroll_proxy =
+      [[FakeCRWWebViewScrollViewProxy alloc] init];
+  fake_proxy.scrollViewProxy = fake_scroll_proxy;
+  fake_web_state()->SetWebViewProxy((id<CRWWebViewProxy>)fake_proxy);
+
+  PageContextWrapper* wrapper =
+      [[PageContextWrapper alloc] initWithWebState:fake_web_state()
+                                completionCallback:base::DoNothing()];
+  optimization_guide::proto::ScreenshotInfo* screenshot_info =
+      [wrapper pageContextForTesting]
+          ->mutable_annotated_page_content()
+          ->mutable_gemini_in_chrome_page_metadata()
+          ->mutable_screenshot_info();
+  optimization_guide::proto::BoundingRect* box =
+      screenshot_info->add_iframe_info()->mutable_bounding_box();
+  box->set_x(1500000000);
+  box->set_y(-1500000000);
+  box->set_width(1200000000);
+  box->set_height(100);
+
+  UIImage* test_image = CreateTestImage(CGSizeMake(100, 80), 2.0);
+  UIImage* oversized_point_image =
+      [UIImage imageWithCGImage:test_image.CGImage
+                          scale:1.0e-10
+                    orientation:UIImageOrientationUp];
+
+  for (CGFloat invalid_scale : {std::numeric_limits<CGFloat>::infinity(),
+                                std::numeric_limits<CGFloat>::quiet_NaN(),
+                                CGFloat{0.0}, CGFloat{-2.0}}) {
+    fake_scroll_proxy.testZoomScale = invalid_scale;
+    [wrapper encodeImageAndSetTabScreenshotForTesting:oversized_point_image];
+    EXPECT_EQ(screenshot_info->screenshot_size().width(), 2147483647);
+    EXPECT_EQ(screenshot_info->screenshot_size().height(), 2147483647);
+    EXPECT_EQ(box->x(), 1500000000);
+    EXPECT_EQ(box->y(), -1500000000);
+    EXPECT_EQ(box->width(), 1200000000);
+    EXPECT_EQ(box->height(), 100);
+  }
+
+  fake_scroll_proxy.testZoomScale = 2.0;
+  [wrapper encodeImageAndSetTabScreenshotForTesting:test_image];
+  EXPECT_EQ(screenshot_info->screenshot_size().width(), 100);
+  EXPECT_EQ(screenshot_info->screenshot_size().height(), 80);
+  EXPECT_EQ(box->x(), 2147483647);
+  EXPECT_EQ(box->y(), -2147483648);
+  EXPECT_EQ(box->width(), 2147483647);
+  EXPECT_EQ(box->height(), 200);
 }
 
 // Test that redaction bounding boxes extending outside image boundaries do not

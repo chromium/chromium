@@ -4,9 +4,13 @@
 
 #import "ios/chrome/browser/intelligence/proto_wrappers/annotated_page_content_extraction_utils.h"
 
+#import <cstdint>
+#import <string_view>
+
 #import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/numerics/safe_conversions.h"
 #import "base/strings/string_number_conversions.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
@@ -133,20 +137,32 @@ constexpr char kIsFocusedDocumentKey[] = "isFocusedDocument";
 constexpr int kRedactedFrameReasonCrossSite = 1;
 constexpr int kRedactedFrameReasonCrossOrigin = 2;
 
-// Reads a JS number (double) from a `dict` stored under `key`.
-std::optional<int> ReadJsNumber(const base::DictValue& dict, const char* key) {
-  if (std::optional<double> value = dict.FindDouble(key)) {
-    return static_cast<int>(*value);
+// Returns `value` truncated to `T` when `value` is an integer or double within
+// `T`'s representable range, or `std::nullopt` otherwise.
+template <typename T = int>
+std::optional<T> ReadJsNumber(const base::Value& value) {
+  std::optional<double> double_value = value.GetIfDouble();
+  const bool is_in_range = double_value.has_value() &&
+                           base::IsValueInRangeForNumericType<T>(*double_value);
+  if (!is_in_range) {
+    return std::nullopt;
   }
-  return std::nullopt;
+
+  return base::checked_cast<T>(*double_value);
 }
 
-// Reads a JS number (double) from a `value`.
-std::optional<int> ReadJsNumber(const base::Value& value) {
-  if (std::optional<double> double_value = value.GetIfDouble()) {
-    return static_cast<int>(*double_value);
+// Returns the numeric entry at `key` in `dict` truncated to `T` when within
+// `T`'s representable range, or `std::nullopt` if missing, non-numeric, or out
+// of range.
+template <typename T = int>
+std::optional<T> ReadJsNumber(const base::DictValue& dict,
+                              std::string_view key) {
+  const base::Value* value = dict.Find(key);
+  if (!value) {
+    return std::nullopt;
   }
-  return std::nullopt;
+
+  return ReadJsNumber<T>(*value);
 }
 
 // Reads a token value from the `iframe_data` dictionary under the specified
@@ -290,13 +306,13 @@ void PopulateMediaData(
     }
   }
 
-  if (std::optional<int> duration =
-          ReadJsNumber(media_data, kDurationMillisecondsKey)) {
+  if (std::optional<int64_t> duration =
+          ReadJsNumber<int64_t>(media_data, kDurationMillisecondsKey)) {
     media_data_proto->set_duration_milliseconds(*duration);
   }
 
-  if (std::optional<int> position =
-          ReadJsNumber(media_data, kCurrentPositionMillisecondsKey)) {
+  if (std::optional<int64_t> position =
+          ReadJsNumber<int64_t>(media_data, kCurrentPositionMillisecondsKey)) {
     media_data_proto->set_current_position_milliseconds(*position);
   }
 
@@ -771,6 +787,17 @@ void PopulateGeometry(const base::DictValue& geometry_dict,
     }
   }
 
+  // Fall back to the visible box when the unclipped outer box fails to parse
+  // or overflows `int32` bounds, matching Blink's `ComputeNodeGeometry`.
+  const optimization_guide::proto::Geometry& geometry =
+      node->content_attributes().geometry();
+  const bool should_fallback_to_visible =
+      !geometry.has_outer_bounding_box() && geometry.has_visible_bounding_box();
+  if (should_fallback_to_visible) {
+    *mutable_geometry()->mutable_outer_bounding_box() =
+        geometry.visible_bounding_box();
+  }
+
   if (std::optional<int> css_position =
           ReadJsNumber(geometry_dict, kCssPositionKey)) {
     if (optimization_guide::proto::CssPosition_IsValid(*css_position)) {
@@ -885,27 +912,54 @@ void TranslateGeometry(const FrameTransform& transform,
   fragments->DeleteSubrange(kept_count, fragments->size() - kept_count);
 }
 
+// Clears bounding boxes from `node` and its descendants when an ancestor
+// iframe's origin cannot be represented in main frame coordinates.
+void ClearSubtreeBoundingBoxes(optimization_guide::proto::ContentNode& node) {
+  if (node.content_attributes().has_geometry()) {
+    optimization_guide::proto::Geometry* geometry =
+        node.mutable_content_attributes()->mutable_geometry();
+    geometry->clear_outer_bounding_box();
+    geometry->clear_visible_bounding_box();
+    geometry->clear_fragment_visible_bounding_boxes();
+    if (!geometry->has_css_position()) {
+      node.mutable_content_attributes()->clear_geometry();
+    }
+  }
+
+  for (optimization_guide::proto::ContentNode& child :
+       *node.mutable_children_nodes()) {
+    ClearSubtreeBoundingBoxes(child);
+  }
+}
+
 // Converts the geometry of `node` and its descendants to main frame
 // coordinates. `transform` is null for main frame nodes.
-void TranslateSubtreeGeometries(optimization_guide::proto::ContentNode* node,
+void TranslateSubtreeGeometries(optimization_guide::proto::ContentNode& node,
                                 const FrameTransform* transform) {
-  if (transform && node->content_attributes().has_geometry()) {
+  if (transform && node.content_attributes().has_geometry()) {
     TranslateGeometry(*transform,
-                      node->mutable_content_attributes()->mutable_geometry());
+                      node.mutable_content_attributes()->mutable_geometry());
   }
 
   std::optional<FrameTransform> next_transform;
   const FrameTransform* children_transform = transform;
-  if (node->has_content_attributes() &&
-      node->content_attributes().attribute_type() ==
+  if (node.has_content_attributes() &&
+      node.content_attributes().attribute_type() ==
           optimization_guide::proto::CONTENT_ATTRIBUTE_IFRAME) {
     // `node`'s own geometry was already translated and clipped above, so for
     // nested iframes the offsets and visible areas of all ancestor iframes
     // compose.
     const optimization_guide::proto::Geometry& geometry =
-        node->content_attributes().geometry();
-    // Without iframe geometry, its content has no geometry either.
+        node.content_attributes().geometry();
+    // Without an iframe outer box (either non-actionable mode or an offscreen
+    // iframe whose coordinates overflowed `int32`), descendants cannot be
+    // mapped to main frame coordinates, so strip any frame-local bounding
+    // boxes.
     if (!geometry.has_outer_bounding_box()) {
+      for (optimization_guide::proto::ContentNode& child :
+           *node.mutable_children_nodes()) {
+        ClearSubtreeBoundingBoxes(child);
+      }
       return;
     }
     // The outer box origin stays correct when the iframe is scrolled
@@ -926,8 +980,8 @@ void TranslateSubtreeGeometries(optimization_guide::proto::ContentNode* node,
   }
 
   for (optimization_guide::proto::ContentNode& child :
-       *node->mutable_children_nodes()) {
-    TranslateSubtreeGeometries(&child, children_transform);
+       *node.mutable_children_nodes()) {
+    TranslateSubtreeGeometries(child, children_transform);
   }
 }
 
@@ -1415,11 +1469,10 @@ void ResolveFocusedFrame(
 
 void TranslateIframeNodeGeometries(
     optimization_guide::proto::AnnotatedPageContent* apc) {
-  CHECK(apc);
-  if (!apc->has_root_node()) {
+  if (!apc || !apc->has_root_node()) {
     return;
   }
-  TranslateSubtreeGeometries(apc->mutable_root_node(),
+  TranslateSubtreeGeometries(*apc->mutable_root_node(),
                              /*transform=*/nullptr);
 }
 // LINT.ThenChange(//components/optimization_guide/content/browser/page_content_proto_util.cc:ConvertAIPageContent)

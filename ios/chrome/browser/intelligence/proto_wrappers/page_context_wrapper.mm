@@ -6,6 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <cmath>
+#import <cstdint>
 #import <memory>
 #import <optional>
 #import <string>
@@ -22,6 +24,7 @@
 #import "base/logging.h"
 #import "base/memory/weak_ptr.h"
 #import "base/not_fatal_until.h"
+#import "base/numerics/safe_conversions.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -1105,6 +1108,8 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
   }
 }
 
+// Applies form-control redactions to `image`, updates `screenshot_info`, and
+// encodes the PNG into `_pageContext`. Assumes `image` is non-nil.
 - (void)applyRedactionsAndEncodeScreenshot:(UIImage*)image {
   if (_pageContext && _pageContext->has_annotated_page_content()) {
     _grafter.CollectFormControlRedactionBoxesFromTree(
@@ -1115,33 +1120,45 @@ const NSUInteger kMaxPDFByteLimit = 64 * 1024 * 1024;
   // coordinates by zoomScale so that they align 1:1 with the pixels in the
   // screenshot bitmap captured from WKWebView.
   CGFloat zoomScale = 1.0;
-  if (_webState && _webState->GetWebViewProxy() &&
-      _webState->GetWebViewProxy().scrollViewProxy) {
-    zoomScale = _webState->GetWebViewProxy().scrollViewProxy.zoomScale;
+  CRWWebViewScrollViewProxy* scrollViewProxy =
+      _webState ? _webState->GetWebViewProxy().scrollViewProxy : nil;
+  if (scrollViewProxy) {
+    const CGFloat proxyZoomScale = scrollViewProxy.zoomScale;
+    const BOOL isValidZoomScale =
+        std::isfinite(proxyZoomScale) && proxyZoomScale > 0;
+    if (isValidZoomScale) {
+      zoomScale = proxyZoomScale;
+    }
   }
 
-  if (_pageContext && _pageContext->has_annotated_page_content() &&
-      _pageContext->annotated_page_content()
-          .gemini_in_chrome_page_metadata()
-          .has_screenshot_info()) {
-    auto* screenshot_info = _pageContext->mutable_annotated_page_content()
-                                ->mutable_gemini_in_chrome_page_metadata()
-                                ->mutable_screenshot_info();
+  const BOOL hasScreenshotInfo = _pageContext &&
+                                 _pageContext->has_annotated_page_content() &&
+                                 _pageContext->annotated_page_content()
+                                     .gemini_in_chrome_page_metadata()
+                                     .has_screenshot_info();
+  if (hasScreenshotInfo) {
+    optimization_guide::proto::ScreenshotInfo* screenshotInfo =
+        _pageContext->mutable_annotated_page_content()
+            ->mutable_gemini_in_chrome_page_metadata()
+            ->mutable_screenshot_info();
     // Centralize screenshot_size to match the captured screenshot image size.
-    screenshot_info->mutable_screenshot_size()->set_width(
-        static_cast<int32_t>(image.size.width));
-    screenshot_info->mutable_screenshot_size()->set_height(
-        static_cast<int32_t>(image.size.height));
+    screenshotInfo->mutable_screenshot_size()->set_width(
+        base::saturated_cast<int32_t>(image.size.width));
+    screenshotInfo->mutable_screenshot_size()->set_height(
+        base::saturated_cast<int32_t>(image.size.height));
 
     // Scale iframe bounding boxes by zoomScale to align with the screenshot
     // image.
-    if (zoomScale != 1.0 && zoomScale > 0) {
-      for (auto& info : *screenshot_info->mutable_iframe_info()) {
-        auto* box = info.mutable_bounding_box();
-        box->set_x(static_cast<int32_t>(box->x() * zoomScale));
-        box->set_y(static_cast<int32_t>(box->y() * zoomScale));
-        box->set_width(static_cast<int32_t>(box->width() * zoomScale));
-        box->set_height(static_cast<int32_t>(box->height() * zoomScale));
+    if (zoomScale != 1.0) {
+      for (optimization_guide::proto::IframeInfo& info :
+           *screenshotInfo->mutable_iframe_info()) {
+        optimization_guide::proto::BoundingRect* box =
+            info.mutable_bounding_box();
+        box->set_x(base::saturated_cast<int32_t>(box->x() * zoomScale));
+        box->set_y(base::saturated_cast<int32_t>(box->y() * zoomScale));
+        box->set_width(base::saturated_cast<int32_t>(box->width() * zoomScale));
+        box->set_height(
+            base::saturated_cast<int32_t>(box->height() * zoomScale));
       }
     }
   }

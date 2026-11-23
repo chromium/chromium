@@ -5,11 +5,13 @@
 #import "ios/chrome/browser/intelligence/proto_wrappers/frame_grafter.h"
 
 #import <algorithm>
+#import <cstdint>
 #import <vector>
 
 #import "base/check.h"
 #import "base/functional/callback.h"
 #import "base/not_fatal_until.h"
+#import "base/numerics/safe_conversions.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 
@@ -246,17 +248,22 @@ void FrameGrafter::TraverseAndCollectCrossSiteIframes(
     if (!geometry.has_visible_bounding_box()) {
       return;
     }
-    const auto& iframe_box = geometry.visible_bounding_box();
+
+    const optimization_guide::proto::BoundingRect& iframe_box =
+        geometry.visible_bounding_box();
 
     auto it = records_by_node.find(&node);
     if (it != records_by_node.end()) {
-      const auto* record = it->second;
+      const CrossSiteIframeRecord* record = it->second;
 
       optimization_guide::proto::IframeInfo* iframe_info =
           screenshot_info->add_iframe_info();
-      auto* box = iframe_info->mutable_bounding_box();
-      box->set_x(iframe_box.x() + accumulated_offset.x);
-      box->set_y(iframe_box.y() + accumulated_offset.y);
+      optimization_guide::proto::BoundingRect* box =
+          iframe_info->mutable_bounding_box();
+      box->set_x(
+          base::saturated_cast<int32_t>(iframe_box.x() + accumulated_offset.x));
+      box->set_y(
+          base::saturated_cast<int32_t>(iframe_box.y() + accumulated_offset.y));
       box->set_width(iframe_box.width());
       box->set_height(iframe_box.height());
       box->set_is_screenshot_relative(true);

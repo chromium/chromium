@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/proto_wrappers/annotated_page_content_extraction_utils.h"
 
+#import <limits>
+
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
@@ -78,7 +80,8 @@ void RegisterCommittedChildFrame(web::FakeWebFramesManager* frames_manager,
 }  // namespace
 
 // Tests that PopulateAPCNodeFromContentTree does not populate a rectangle
-// if one of its components is missing.
+// if one of its components is missing, and falls back to `visibleBoundingBox`
+// when `outerBoundingBox` is incomplete.
 TEST_F(AnnotatedPageContentExtractionUtilsTest, IncompleteRectangleIgnored) {
   optimization_guide::proto::ContentNode node;
   url::Origin origin = url::Origin::Create(GURL("https://example.com"));
@@ -86,9 +89,10 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest, IncompleteRectangleIgnored) {
   // Dummy grafter.
   FrameGrafter grafter;
 
-  // 1. Missing 'height' in outerBoundingBox.
-  // 2. Complete visibleBoundingBox.
-  // Note: 'attributeType' is mandatory for population to proceed.
+  // Root has complete `outerBoundingBox` and incomplete `visibleBoundingBox`
+  // (missing `height`). Child 0 has incomplete `outerBoundingBox` and complete
+  // `visibleBoundingBox` (falls back to visible). Child 1 has incomplete
+  // `outerBoundingBox` and no `visibleBoundingBox`.
   base::Value node_content = base::test::ParseJson(R"(
     {
       "contentAttributes": {
@@ -97,16 +101,48 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest, IncompleteRectangleIgnored) {
           "outerBoundingBox": {
             "x": 10,
             "y": 20,
-            "width": 100
+            "width": 100,
+            "height": 80
           },
           "visibleBoundingBox": {
             "x": 15,
             "y": 25,
-            "width": 50,
-            "height": 60
+            "width": 50
           }
         }
-      }
+      },
+      "childrenNodes": [
+        {
+          "contentAttributes": {
+            "attributeType": 4,
+            "geometry": {
+              "outerBoundingBox": {
+                "x": 10,
+                "y": 20,
+                "width": 100
+              },
+              "visibleBoundingBox": {
+                "x": 15,
+                "y": 25,
+                "width": 50,
+                "height": 60
+              }
+            }
+          }
+        },
+        {
+          "contentAttributes": {
+            "attributeType": 4,
+            "geometry": {
+              "outerBoundingBox": {
+                "x": 10,
+                "y": 20,
+                "width": 100
+              }
+            }
+          }
+        }
+      ]
     }
   )");
 
@@ -121,16 +157,20 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest, IncompleteRectangleIgnored) {
 
   ASSERT_TRUE(node.has_content_attributes());
   ASSERT_TRUE(node.content_attributes().has_geometry());
-
-  // Outer box should NOT be set because it's missing height.
-  EXPECT_FALSE(node.content_attributes().geometry().has_outer_bounding_box());
-
-  // Visible box SHOULD be set because it's complete.
-  EXPECT_TRUE(node.content_attributes().geometry().has_visible_bounding_box());
-  EXPECT_EQ(node.content_attributes().geometry().visible_bounding_box().x(),
-            15);
   EXPECT_EQ(
-      node.content_attributes().geometry().visible_bounding_box().height(), 60);
+      ToGfxRect(node.content_attributes().geometry().outer_bounding_box()),
+      gfx::Rect(10, 20, 100, 80));
+  EXPECT_FALSE(node.content_attributes().geometry().has_visible_bounding_box());
+
+  ASSERT_EQ(node.children_nodes_size(), 2);
+  const optimization_guide::proto::Geometry& fallback_geometry =
+      node.children_nodes(0).content_attributes().geometry();
+  EXPECT_EQ(ToGfxRect(fallback_geometry.outer_bounding_box()),
+            gfx::Rect(15, 25, 50, 60));
+  EXPECT_EQ(ToGfxRect(fallback_geometry.visible_bounding_box()),
+            gfx::Rect(15, 25, 50, 60));
+
+  EXPECT_FALSE(node.children_nodes(1).content_attributes().has_geometry());
 }
 
 // Tests that PopulateAPCNodeFromContentTree handles redactedFrameMetadata.
@@ -1383,4 +1423,419 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest,
             gfx::Rect(140, 370, 60, 20));
   EXPECT_EQ(ToGfxRect(clipped_by_outer_geometry.visible_bounding_box()),
             gfx::Rect(140, 370, 60, 10));
+}
+
+// Tests that `PopulateAPCNodeFromContentTree` ignores out-of-range JS doubles,
+// falls back to `visibleBoundingBox` when `outerBoundingBox` overflows, and
+// accepts exact `int32` boundaries while truncating Retina sub-pixel
+// dimensions.
+TEST_F(AnnotatedPageContentExtractionUtilsTest,
+       OutOfRangeNodeNumbersIgnoredAndBoundariesAccepted) {
+  optimization_guide::proto::ContentNode node;
+  url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+  FrameGrafter grafter;
+
+  base::Value node_content = base::test::ParseJson(R"(
+    {
+      "contentAttributes": {
+        "attributeType": 26,
+        "domNodeId": 2147483648,
+        "labelForDomNodeId": -2147483649,
+        "annotatedRoles": [1e20, "invalid"],
+        "ariaRole": "button",
+        "canvasData": {
+          "layoutSize": {
+            "width": 1e20,
+            "height": 125.75
+          }
+        },
+        "geometry": {
+          "outerBoundingBox": {
+            "x": 2147483648,
+            "y": 10,
+            "width": 100,
+            "height": 50
+          },
+          "visibleBoundingBox": {
+            "x": -2147483648,
+            "y": 2147483647,
+            "width": 100,
+            "height": 50
+          }
+        },
+        "nodeInteractionInfo": {
+          "documentScopedZOrder": 2147483648,
+          "scrollerInfo": {
+            "scrollingBounds": {
+              "width": 2147483648,
+              "height": 500
+            },
+            "visibleArea": {
+              "x": -2147483649,
+              "y": 10.5,
+              "width": 100,
+              "height": 100
+            }
+          }
+        }
+      },
+      "childrenNodes": [
+        {
+          "contentAttributes": {
+            "attributeType": 4,
+            "geometry": {
+              "outerBoundingBox": {
+                "x": 2147483648,
+                "y": 10,
+                "width": 100,
+                "height": 50
+              },
+              "visibleBoundingBox": {
+                "x": 10,
+                "y": 20,
+                "width": 1e20,
+                "height": 50
+              }
+            }
+          }
+        }
+      ]
+    }
+  )");
+
+  ASSERT_TRUE(node_content.is_dict());
+  base::flat_map<std::string, uint32_t> section_numbers;
+  AutofillExtractionContext context(nullptr, std::nullopt, false, false,
+                                    &section_numbers);
+  PopulateAPCNodeFromContentTree(node_content.GetDict(), origin, grafter,
+                                 &context, &node, base::DoNothing());
+
+  const optimization_guide::proto::ContentAttributes& attributes =
+      node.content_attributes();
+  EXPECT_FALSE(attributes.has_common_ancestor_dom_node_id());
+  EXPECT_FALSE(attributes.has_label_for_dom_node_id());
+  EXPECT_EQ(attributes.annotated_roles_size(), 0);
+  EXPECT_FALSE(attributes.has_aria_role());
+
+  ASSERT_TRUE(attributes.has_canvas_data());
+  EXPECT_FALSE(attributes.canvas_data().has_layout_width());
+  EXPECT_EQ(attributes.canvas_data().layout_height(), 125);
+
+  ASSERT_TRUE(attributes.has_geometry());
+  ASSERT_TRUE(attributes.geometry().has_outer_bounding_box());
+  EXPECT_EQ(attributes.geometry().outer_bounding_box().x(), -2147483648);
+  EXPECT_EQ(attributes.geometry().outer_bounding_box().y(), 2147483647);
+  EXPECT_EQ(attributes.geometry().outer_bounding_box().width(), 100);
+  EXPECT_EQ(attributes.geometry().outer_bounding_box().height(), 50);
+  ASSERT_TRUE(attributes.geometry().has_visible_bounding_box());
+  EXPECT_EQ(attributes.geometry().visible_bounding_box().x(), -2147483648);
+  EXPECT_EQ(attributes.geometry().visible_bounding_box().y(), 2147483647);
+
+  ASSERT_EQ(node.children_nodes_size(), 1);
+  EXPECT_FALSE(node.children_nodes(0).content_attributes().has_geometry());
+
+  ASSERT_TRUE(attributes.has_interaction_info());
+  EXPECT_FALSE(attributes.interaction_info().has_document_scoped_z_order());
+  ASSERT_TRUE(attributes.interaction_info().has_scroller_info());
+  EXPECT_FALSE(attributes.interaction_info()
+                   .scroller_info()
+                   .scrolling_bounds()
+                   .has_width());
+  EXPECT_EQ(
+      attributes.interaction_info().scroller_info().scrolling_bounds().height(),
+      500);
+  EXPECT_FALSE(
+      attributes.interaction_info().scroller_info().visible_area().has_x());
+  EXPECT_EQ(attributes.interaction_info().scroller_info().visible_area().y(),
+            10);
+}
+
+// Tests that `PopulateFrameDataNode` preserves `int64` media timestamps above
+// `INT32_MAX` and ignores timestamps exceeding `int64` range.
+TEST_F(AnnotatedPageContentExtractionUtilsTest,
+       MediaDataSupportsInt64TimestampsAndIgnoresOverflow) {
+  url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+
+  base::Value valid_int64_frame = base::test::ParseJson(R"(
+    {
+      "mediaData": {
+        "mediaDataType": 1,
+        "durationMilliseconds": 3000000000,
+        "currentPositionMilliseconds": 2500000000,
+        "isPlaying": true
+      }
+    }
+  )");
+  ASSERT_TRUE(valid_int64_frame.is_dict());
+
+  optimization_guide::proto::FrameData frame_data;
+  PopulateFrameDataNode(valid_int64_frame.GetDict(), origin, &frame_data);
+
+  ASSERT_TRUE(frame_data.has_media_data());
+  EXPECT_EQ(frame_data.media_data().duration_milliseconds(), 3000000000LL);
+  EXPECT_EQ(frame_data.media_data().current_position_milliseconds(),
+            2500000000LL);
+
+  base::Value boundary_int64_frame = base::test::ParseJson(R"(
+    {
+      "mediaData": {
+        "durationMilliseconds": 9223372036854774784.0,
+        "currentPositionMilliseconds": -9223372036854775808.0
+      }
+    }
+  )");
+  ASSERT_TRUE(boundary_int64_frame.is_dict());
+
+  optimization_guide::proto::FrameData boundary_frame_data;
+  PopulateFrameDataNode(boundary_int64_frame.GetDict(), origin,
+                        &boundary_frame_data);
+
+  ASSERT_TRUE(boundary_frame_data.has_media_data());
+  EXPECT_EQ(boundary_frame_data.media_data().duration_milliseconds(),
+            9223372036854774784LL);
+  EXPECT_EQ(boundary_frame_data.media_data().current_position_milliseconds(),
+            std::numeric_limits<int64_t>::min());
+
+  base::Value overflowing_frame = base::test::ParseJson(R"(
+    {
+      "frameInteractionInfo": {
+        "focusedDomNodeId": 2147483648
+      },
+      "mediaData": {
+        "durationMilliseconds": 9223372036854775808.0,
+        "currentPositionMilliseconds": -9223372036854777856.0
+      }
+    }
+  )");
+  ASSERT_TRUE(overflowing_frame.is_dict());
+
+  optimization_guide::proto::FrameData overflowing_frame_data;
+  PopulateFrameDataNode(overflowing_frame.GetDict(), origin,
+                        &overflowing_frame_data);
+
+  EXPECT_FALSE(
+      overflowing_frame_data.frame_interaction_info().has_focused_node_id());
+  ASSERT_TRUE(overflowing_frame_data.has_media_data());
+  EXPECT_FALSE(overflowing_frame_data.media_data().has_duration_milliseconds());
+  EXPECT_FALSE(
+      overflowing_frame_data.media_data().has_current_position_milliseconds());
+}
+
+// Tests that `PopulatePageInteractionInfoNode` and
+// `PopulateViewportGeometryNode` ignore out-of-range numeric values.
+TEST_F(AnnotatedPageContentExtractionUtilsTest,
+       OutOfRangeInteractionAndViewportNumbersIgnored) {
+  base::Value interaction_json = base::test::ParseJson(R"(
+    {
+      "focusedDomNodeId": 2147483648
+    }
+  )");
+  ASSERT_TRUE(interaction_json.is_dict());
+
+  optimization_guide::proto::PageInteractionInfo interaction_info;
+  PopulatePageInteractionInfoNode(interaction_json.GetDict(),
+                                  &interaction_info);
+  EXPECT_FALSE(interaction_info.has_focused_node_id());
+
+  base::Value viewport_json = base::test::ParseJson(R"(
+    {
+      "x": -2147483649,
+      "y": 2147483648,
+      "width": 1e20,
+      "height": 844
+    }
+  )");
+  ASSERT_TRUE(viewport_json.is_dict());
+
+  optimization_guide::proto::BoundingRect viewport_rect;
+  PopulateViewportGeometryNode(viewport_json.GetDict(), &viewport_rect);
+  EXPECT_FALSE(viewport_rect.has_x());
+  EXPECT_FALSE(viewport_rect.has_y());
+  EXPECT_FALSE(viewport_rect.has_width());
+  EXPECT_EQ(viewport_rect.height(), 844);
+}
+
+// Tests that `PopulateAPCNodeFromContentTree` and
+// `TranslateIframeNodeGeometries` translate and clip children of a visible
+// iframe whose `outerBoundingBox` overflows `int32`, and clear frame-local
+// bounding boxes from children of an offscreen overflowing iframe.
+TEST_F(AnnotatedPageContentExtractionUtilsTest,
+       TranslateIframeNodeGeometriesHandlesOutOfRangeIframeOuterBoxes) {
+  optimization_guide::proto::AnnotatedPageContent apc;
+  url::Origin origin = url::Origin::Create(GURL("https://example.com"));
+  FrameGrafter grafter;
+
+  base::Value root_json = base::test::ParseJson(R"(
+    {
+      "contentAttributes": {
+        "attributeType": 1,
+        "geometry": {
+          "outerBoundingBox": {"x": 0, "y": 0, "width": 400, "height": 800},
+          "visibleBoundingBox": {"x": 0, "y": 0, "width": 400, "height": 800}
+        }
+      },
+      "childrenNodes": [
+        {
+          "contentAttributes": {
+            "attributeType": 3,
+            "geometry": {
+              "outerBoundingBox": {
+                "x": 20, "y": 40, "width": 1e20, "height": 200
+              },
+              "visibleBoundingBox": {
+                "x": 20, "y": 40, "width": 380, "height": 200
+              }
+            }
+          },
+          "childrenNodes": [
+            {
+              "contentAttributes": {
+                "attributeType": 4,
+                "geometry": {
+                  "outerBoundingBox": {
+                    "x": 10, "y": 15, "width": 100, "height": 30
+                  },
+                  "visibleBoundingBox": {
+                    "x": 10, "y": 15, "width": 100, "height": 30
+                  }
+                }
+              }
+            },
+            {
+              "contentAttributes": {
+                "attributeType": 4,
+                "geometry": {
+                  "outerBoundingBox": {
+                    "x": 350, "y": 15, "width": 100, "height": 30
+                  },
+                  "visibleBoundingBox": {
+                    "x": 350, "y": 15, "width": 100, "height": 30
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "contentAttributes": {
+            "attributeType": 3,
+            "geometry": {
+              "cssPosition": 2,
+              "outerBoundingBox": {
+                "x": 1e20, "y": 0, "width": 300, "height": 200
+              }
+            }
+          },
+          "childrenNodes": [
+            {
+              "contentAttributes": {
+                "attributeType": 4,
+                "geometry": {
+                  "cssPosition": 1,
+                  "outerBoundingBox": {
+                    "x": 10, "y": 15, "width": 80, "height": 30
+                  },
+                  "visibleBoundingBox": {
+                    "x": 10, "y": 15, "width": 80, "height": 30
+                  },
+                  "fragmentVisibleBoundingBoxes": [
+                    {"x": 10, "y": 15, "width": 40, "height": 30}
+                  ]
+                }
+              }
+            },
+            {
+              "contentAttributes": {
+                "attributeType": 4,
+                "geometry": {
+                  "outerBoundingBox": {
+                    "x": 5, "y": 5, "width": 20, "height": 20
+                  },
+                  "visibleBoundingBox": {
+                    "x": 5, "y": 5, "width": 20, "height": 20
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  )");
+  ASSERT_TRUE(root_json.is_dict());
+  PopulateAPCNodeFromContentTree(root_json.GetDict(), origin, grafter,
+                                 /*context=*/nullptr, apc.mutable_root_node(),
+                                 base::DoNothing());
+
+  TranslateIframeNodeGeometries(&apc);
+
+  ASSERT_EQ(apc.root_node().children_nodes_size(), 2);
+  const optimization_guide::proto::ContentNode& visible_iframe =
+      apc.root_node().children_nodes(0);
+  EXPECT_EQ(
+      ToGfxRect(
+          visible_iframe.content_attributes().geometry().outer_bounding_box()),
+      gfx::Rect(20, 40, 380, 200));
+  ASSERT_EQ(visible_iframe.children_nodes_size(), 2);
+
+  const optimization_guide::proto::Geometry& unclipped_child_geometry =
+      visible_iframe.children_nodes(0).content_attributes().geometry();
+  EXPECT_EQ(ToGfxRect(unclipped_child_geometry.outer_bounding_box()),
+            gfx::Rect(30, 55, 100, 30));
+  EXPECT_EQ(ToGfxRect(unclipped_child_geometry.visible_bounding_box()),
+            gfx::Rect(30, 55, 100, 30));
+
+  const optimization_guide::proto::Geometry& clipped_child_geometry =
+      visible_iframe.children_nodes(1).content_attributes().geometry();
+  EXPECT_EQ(ToGfxRect(clipped_child_geometry.outer_bounding_box()),
+            gfx::Rect(370, 55, 100, 30));
+  EXPECT_EQ(ToGfxRect(clipped_child_geometry.visible_bounding_box()),
+            gfx::Rect(370, 55, 30, 30));
+
+  const optimization_guide::proto::ContentNode& offscreen_iframe =
+      apc.root_node().children_nodes(1);
+  EXPECT_FALSE(offscreen_iframe.content_attributes()
+                   .geometry()
+                   .has_outer_bounding_box());
+  EXPECT_FALSE(offscreen_iframe.content_attributes()
+                   .geometry()
+                   .has_visible_bounding_box());
+  ASSERT_EQ(offscreen_iframe.children_nodes_size(), 2);
+
+  const optimization_guide::proto::Geometry& styled_offscreen_child_geometry =
+      offscreen_iframe.children_nodes(0).content_attributes().geometry();
+  EXPECT_TRUE(styled_offscreen_child_geometry.has_css_position());
+  EXPECT_FALSE(styled_offscreen_child_geometry.has_outer_bounding_box());
+  EXPECT_FALSE(styled_offscreen_child_geometry.has_visible_bounding_box());
+  EXPECT_EQ(
+      styled_offscreen_child_geometry.fragment_visible_bounding_boxes_size(),
+      0);
+
+  EXPECT_FALSE(
+      offscreen_iframe.children_nodes(1).content_attributes().has_geometry());
+}
+
+// Tests that `PopulateAPCNodeFromContentTree` and
+// `TranslateIframeNodeGeometries` safely ignore null output pointers.
+TEST_F(AnnotatedPageContentExtractionUtilsTest,
+       NullDestinationAndApcPointersIgnored) {
+  base::Value node_content = base::test::ParseJson(R"(
+    {
+      "contentAttributes": {
+        "attributeType": 1,
+        "geometry": {
+          "outerBoundingBox": {"x": 0, "y": 0, "width": 100, "height": 100}
+        }
+      }
+    }
+  )");
+  ASSERT_TRUE(node_content.is_dict());
+
+  FrameGrafter grafter;
+  PopulateAPCNodeFromContentTree(
+      node_content.GetDict(), url::Origin::Create(GURL("https://example.com")),
+      grafter, /*context=*/nullptr, /*destination_node=*/nullptr,
+      base::DoNothing());
+  TranslateIframeNodeGeometries(/*apc=*/nullptr);
+  EXPECT_TRUE(grafter.GetRemoteFrames().empty());
 }
