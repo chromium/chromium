@@ -155,6 +155,17 @@ class FrameQueue : public ThreadSafeRefCounted<FrameQueue<NativeFrameType>> {
     return num_pending_pulls_;
   }
 
+  // Called by the source consuming this queue when it closes. The queue may
+  // still be referenced by another source that pushes frames into it (e.g., the
+  // host of a transferred stream), but nothing will pop frames pushed after the
+  // consumer closed. Producers must check IsClosedLocked() before pushing or
+  // monitoring a frame, and drop the frame if the queue is closed.
+  void CloseLocked() EXCLUSIVE_LOCKS_REQUIRED(GetLock()) { is_closed_ = true; }
+
+  bool IsClosedLocked() const EXCLUSIVE_LOCKS_REQUIRED(GetLock()) {
+    return is_closed_;
+  }
+
  private:
   mutable base::Lock lock_;
   Deque<NativeFrameType> queue_ GUARDED_BY(GetLock());
@@ -162,6 +173,7 @@ class FrameQueue : public ThreadSafeRefCounted<FrameQueue<NativeFrameType>> {
   uint64_t total_frames_ GUARDED_BY(GetLock()) = 0;
   uint64_t discarded_frames_ GUARDED_BY(GetLock()) = 0;
   int num_pending_pulls_ GUARDED_BY(GetLock()) = 0;
+  bool is_closed_ GUARDED_BY(GetLock()) = false;
 };
 
 }  // namespace blink

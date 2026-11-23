@@ -194,4 +194,33 @@ TEST_F(FrameQueueTest, LockedOperations) {
   EXPECT_FALSE(peeked.has_value());
 }
 
+TEST_F(FrameQueueTest, CloseLocked) {
+  const int kMaxSize = 2;
+  scoped_refptr<FrameQueue<int>> queue =
+      base::MakeRefCounted<FrameQueue<int>>(kMaxSize);
+  base::AutoLock locker(queue->GetLock());
+  EXPECT_FALSE(queue->IsClosedLocked());
+
+  queue->PushLocked(1);
+  queue->CloseLocked();
+  EXPECT_TRUE(queue->IsClosedLocked());
+
+  // Closing doesn't drain the queue; the consumer pops what's left.
+  EXPECT_EQ(queue->SizeLocked(), 1u);
+
+  // PushLocked() still accepts frames after CloseLocked(). Checking
+  // IsClosedLocked() and dropping frames is up to the producer.
+  std::optional<int> replaced = queue->PushLocked(2);
+  EXPECT_FALSE(replaced.has_value());
+  EXPECT_EQ(queue->SizeLocked(), 2u);
+
+  std::optional<int> popped = queue->PopLocked();
+  ASSERT_TRUE(popped.has_value());
+  EXPECT_EQ(popped.value(), 1);
+  popped = queue->PopLocked();
+  ASSERT_TRUE(popped.has_value());
+  EXPECT_EQ(popped.value(), 2);
+  EXPECT_TRUE(queue->IsEmptyLocked());
+}
+
 }  // namespace blink
