@@ -15,7 +15,6 @@
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
-#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -203,12 +202,6 @@ struct DbusAppmenu::HistoryItem {
   // restored that way. Otherwise, the URL will be used to open the item and
   // this ID will be invalid.
   SessionID session_id;
-
-  // If the HistoryItem is a window, this will be the vector of tabs. Note
-  // that this is a list of weak references. DbusAppmenu::history_items_
-  // is the owner of all items. If it is not a window, then the entry is a
-  // single page and the vector will be empty.
-  std::vector<raw_ptr<HistoryItem, DanglingUntriaged>> tabs;
 };
 
 DbusAppmenu::DbusAppmenu(BrowserView* browser_view,
@@ -376,7 +369,6 @@ void DbusAppmenu::AddEntryToHistoryMenu(
   int subindex = 2;
   for (const auto& tab : tabs) {
     std::unique_ptr<HistoryItem> tab_item = HistoryItemForTab(*tab);
-    item->tabs.push_back(tab_item.get());
     AddHistoryItemToMenu(std::move(tab_item), parent_menu.get(), subindex++);
   }
 
