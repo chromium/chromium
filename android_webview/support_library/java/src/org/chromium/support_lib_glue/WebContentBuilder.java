@@ -27,6 +27,9 @@ import java.util.function.BiConsumer;
     }
 
     public AwWebContent build(StartupController startupController) {
-        return new AwWebContent(startupController);
+        AwWebContent webContent = new AwWebContent(startupController);
+        // Only turned off for WebContents for now, to limit the compatibility risk.
+        webContent.setClearBfCacheOnHardwareAcceleration(false);
+        return webContent;
     }
 }

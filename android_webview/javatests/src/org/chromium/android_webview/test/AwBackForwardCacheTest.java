@@ -557,6 +557,39 @@ public class AwBackForwardCacheTest extends AwParameterizedTest {
     @Test
     @LargeTest
     @Feature({"AndroidWebView"})
+    public void testPageRestoredWhenHardwareAccelerationToggled() throws Throwable {
+        AwSettings settings = mAwContents.getSettings();
+        settings.setBackForwardCacheEnabled(true);
+        settings.setClearBfCacheOnHardwareAcceleration(false);
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), mInitialUrl);
+        navigateForward();
+        settings.setEnableSupportedHardwareAcceleratedFeatures(false);
+        settings.setEnableSupportedHardwareAcceleratedFeatures(true);
+        navigateBack();
+        Assert.assertEquals("\"null\"", getNotRestoredReasons());
+        Assert.assertTrue(isPageShowPersisted());
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    public void testPageRestoredWhenForceFullscreenUnsupportedToggled() throws Throwable {
+        AwSettings settings = mAwContents.getSettings();
+        settings.setBackForwardCacheEnabled(true);
+        mActivityTestRule.loadUrlSync(
+                mAwContents, mContentsClient.getOnPageFinishedHelper(), mInitialUrl);
+        navigateForward();
+        settings.setForceFullscreenUnsupported(true);
+        settings.setForceFullscreenUnsupported(false);
+        navigateBack();
+        Assert.assertEquals("\"null\"", getNotRestoredReasons());
+        Assert.assertTrue(isPageShowPersisted());
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
     public void testManualFlushCache() throws Exception, Throwable {
         mAwContents.getSettings().setBackForwardCacheEnabled(true);
         mActivityTestRule.loadUrlSync(

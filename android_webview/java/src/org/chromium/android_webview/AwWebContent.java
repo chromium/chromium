@@ -79,9 +79,15 @@ public class AwWebContent {
     private @Nullable ViewHost mCurrentHost;
     private @Nullable SurfaceBindingListener mSurfaceBindingListener;
     private boolean mIsDestroyed;
+    private boolean mClearBfCacheOnHardwareAcceleration = true;
 
     public AwWebContent(StartupController startupController) {
         mStartupController = startupController;
+    }
+
+    /** See {@link AwSettings#setClearBfCacheOnHardwareAcceleration}. */
+    public void setClearBfCacheOnHardwareAcceleration(boolean clear) {
+        mClearBfCacheOnHardwareAcceleration = clear;
     }
 
     /**
@@ -239,6 +245,9 @@ public class AwWebContent {
                             clientFactory,
                             host::initSettings,
                             dependencyFactory);
+            mAwContents
+                    .getSettings()
+                    .setClearBfCacheOnHardwareAcceleration(mClearBfCacheOnHardwareAcceleration);
         } else {
             host.initSettings(mAwContents.getSettings());
             mAwContents.adopt(containerView, internalAccessAdapter);
