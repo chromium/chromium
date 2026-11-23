@@ -2334,6 +2334,114 @@ TEST_P(CSSAnimationsTriggerTest, TimelineTriggerAbsolutePositioned) {
   EXPECT_TRUE(animation->GetTriggers().begin()->Get()->IsTimelineTrigger());
 }
 
+// When @starting-style rules match, the element's style is resolved a second
+// time with the @starting-style style as the old style. The element must still
+// get the trigger declared by timeline-trigger, and the animation must be
+// attached to it. https://crbug.com/579050373
+TEST_P(CSSAnimationsTriggerTest, TimelineTriggerStartingStyle) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes fade {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      #target {
+        animation: fade 1s;
+        animation-trigger: --trigger play-once;
+        timeline-trigger: --trigger view();
+        @starting-style {
+          opacity: 0;
+        }
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  Element* target = GetElementById("target");
+  ASSERT_TRUE(target);
+  EXPECT_TRUE(target->AffectedByStartingStyles());
+
+  AnimationTrigger* trigger = GetTrigger(*target);
+  ASSERT_TRUE(trigger);
+  EXPECT_TRUE(trigger->IsTimelineTrigger());
+
+  ElementAnimations* animations = target->GetElementAnimations();
+  ASSERT_TRUE(animations);
+  ASSERT_EQ(animations->Animations().size(), 1u);
+  CSSAnimation* animation =
+      DynamicTo<CSSAnimation>((*animations->Animations().begin()).key.Get());
+  ASSERT_TRUE(animation);
+  ASSERT_EQ(animation->GetTriggers().size(), 1u);
+  EXPECT_EQ(animation->GetTriggers().begin()->Get(), trigger);
+}
+
+// Like TimelineTriggerStartingStyle, but @starting-style applies because the
+// element stops being display:none rather than because it is inserted.
+TEST_P(CSSAnimationsTriggerTest, TimelineTriggerStartingStyleFromDisplayNone) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes fade {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      #target {
+        display: none;
+        animation: fade 1s;
+        animation-trigger: --trigger play-once;
+        timeline-trigger: --trigger view();
+        @starting-style {
+          opacity: 0;
+        }
+      }
+      #target.shown {
+        display: block;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  Element* target = GetElementById("target");
+  ASSERT_TRUE(target);
+
+  target->setAttribute(html_names::kClassAttr, AtomicString("shown"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(target->AffectedByStartingStyles());
+
+  AnimationTrigger* trigger = GetTrigger(*target);
+  ASSERT_TRUE(trigger);
+  EXPECT_TRUE(trigger->IsTimelineTrigger());
+
+  ElementAnimations* animations = target->GetElementAnimations();
+  ASSERT_TRUE(animations);
+  ASSERT_EQ(animations->Animations().size(), 1u);
+  CSSAnimation* animation =
+      DynamicTo<CSSAnimation>((*animations->Animations().begin()).key.Get());
+  ASSERT_TRUE(animation);
+  ASSERT_EQ(animation->GetTriggers().size(), 1u);
+  EXPECT_EQ(animation->GetTriggers().begin()->Get(), trigger);
+}
+
+// Removing timeline-trigger removes the element's trigger, even when the
+// element is left without any animation-related style.
+TEST_P(CSSAnimationsTriggerTest, TimelineTriggerRemoved) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .trigger {
+        timeline-trigger: --trigger view();
+      }
+    </style>
+    <div id="target" class="trigger"></div>
+  )HTML");
+
+  Element* target = GetElementById("target");
+  ASSERT_TRUE(target);
+  EXPECT_TRUE(GetTrigger(*target));
+
+  target->removeAttribute(html_names::kClassAttr);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(!target->NamedTriggers() || target->NamedTriggers()->empty());
+}
+
 TEST_P(CSSAnimationsTriggerTest, TimelineTriggerViewOnly) {
   SetBodyInnerHTML(R"HTML(
     <style>

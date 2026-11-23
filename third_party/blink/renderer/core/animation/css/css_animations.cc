@@ -35,6 +35,7 @@
 #include <ranges>
 #include <tuple>
 
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_computed_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range_offset.h"
@@ -1675,6 +1676,58 @@ bool TimelineTriggerRangeBoundariesUnchanged(
                                         new_active_range_end);
 }
 
+namespace {
+
+// Holds the range boundaries declared by the timeline-trigger at |index| in
+// |data|, for comparing an existing trigger with its CSS declaration (and for
+// creating a replacement trigger when they differ).
+struct TimelineTriggerBoundaries {
+  STACK_ALLOCATED();
+
+ public:
+  TimelineTriggerBoundaries(const CSSAnimationData& data,
+                            wtf_size_t index,
+                            float zoom)
+      : activation_start(Animation::ToRangeBoundary(
+            CSSAnimationData::GetRepeated(
+                data.TimelineTriggerActivationRangeStartList(),
+                index),
+            zoom)),
+        activation_end(Animation::ToRangeBoundary(
+            CSSAnimationData::GetRepeated(
+                data.TimelineTriggerActivationRangeEndList(),
+                index),
+            zoom)),
+        active_start(Animation::ToRangeBoundary(
+            CSSAnimationData::GetRepeated(
+                data.TimelineTriggerActiveRangeStartList(),
+                index),
+            zoom)),
+        active_end(Animation::ToRangeBoundary(
+            CSSAnimationData::GetRepeated(
+                data.TimelineTriggerActiveRangeEndList(),
+                index),
+            zoom)) {}
+
+  Animation::RangeBoundary* activation_start;
+  Animation::RangeBoundary* activation_end;
+  Animation::RangeBoundary* active_start;
+  Animation::RangeBoundary* active_end;
+};
+
+// Returns true if |trigger| uses |timeline| and |boundaries|, i.e. it still
+// matches its CSS declaration.
+bool TimelineTriggerMatches(TimelineTrigger& trigger,
+                            AnimationTimeline* timeline,
+                            const TimelineTriggerBoundaries& boundaries) {
+  return trigger.GetTimelineInternal() == timeline &&
+         TimelineTriggerRangeBoundariesUnchanged(
+             &trigger, boundaries.activation_start, boundaries.activation_end,
+             boundaries.active_start, boundaries.active_end);
+}
+
+}  // namespace
+
 // TODO(crbug.com/473568234): This function constructs only a single
 // TimelineTriggerRange for a TimelineTrigger object. When we support multiple
 // timelines, it should construct more than one TimelineTriggerRange.
@@ -1690,51 +1743,74 @@ TimelineTrigger* CSSAnimations::ComputeTimelineTrigger(
   AnimationTimeline* new_timeline =
       ComputeTimeline(element, data->GetTimelineTriggerSource(animation_index),
                       update, existing_timeline);
+  TimelineTriggerBoundaries boundaries(*data, animation_index, zoom);
 
-  const std::optional<TimelineOffset>& new_activation_start_offset =
-      CSSAnimationData::GetRepeated(
-          data->TimelineTriggerActivationRangeStartList(), animation_index);
-  const std::optional<TimelineOffset>& new_activation_end_offset =
-      CSSAnimationData::GetRepeated(
-          data->TimelineTriggerActivationRangeEndList(), animation_index);
-  const TimelineOffsetOrAuto& new_active_start_offset =
-      CSSAnimationData::GetRepeated(data->TimelineTriggerActiveRangeStartList(),
-                                    animation_index);
-  const TimelineOffsetOrAuto& new_active_end_offset =
-      CSSAnimationData::GetRepeated(data->TimelineTriggerActiveRangeEndList(),
-                                    animation_index);
-
-  Animation::RangeBoundary* new_activation_range_start =
-      Animation::ToRangeBoundary(new_activation_start_offset, zoom);
-  Animation::RangeBoundary* new_activation_range_end =
-      Animation::ToRangeBoundary(new_activation_end_offset, zoom);
-  Animation::RangeBoundary* new_active_range_start =
-      Animation::ToRangeBoundary(new_active_start_offset, zoom);
-  Animation::RangeBoundary* new_active_range_end =
-      Animation::ToRangeBoundary(new_active_end_offset, zoom);
-
-  bool need_new_trigger = !existing_trigger ||
-                          existing_timeline != new_timeline ||
-                          !TimelineTriggerRangeBoundariesUnchanged(
-                              existing_trigger, new_activation_range_start,
-                              new_activation_range_end, new_active_range_start,
-                              new_active_range_end);
-
-  if (need_new_trigger) {
-    TimelineTriggerRange* range = MakeGarbageCollected<TimelineTriggerRange>(
-        new_timeline, new_activation_range_start, new_activation_range_end,
-        new_active_range_start, new_active_range_end);
-
-    HeapVector<Member<TimelineTriggerRange>> ranges;
-    ranges.push_back(range);
-
-    TimelineTriggerRangeList* range_list =
-        MakeGarbageCollected<TimelineTriggerRangeList>(ranges);
-
-    return MakeGarbageCollected<TimelineTrigger>(range_list);
+  if (existing_trigger &&
+      TimelineTriggerMatches(*existing_trigger, new_timeline, boundaries)) {
+    return existing_trigger;
   }
 
-  return existing_trigger;
+  TimelineTriggerRange* range = MakeGarbageCollected<TimelineTriggerRange>(
+      new_timeline, boundaries.activation_start, boundaries.activation_end,
+      boundaries.active_start, boundaries.active_end);
+
+  HeapVector<Member<TimelineTriggerRange>> ranges;
+  ranges.push_back(range);
+
+  TimelineTriggerRangeList* range_list =
+      MakeGarbageCollected<TimelineTriggerRangeList>(ranges);
+
+  return MakeGarbageCollected<TimelineTrigger>(range_list);
+}
+
+// static
+void CSSAnimations::CalculateNamedTriggerUpdate(
+    CSSAnimationUpdate& update,
+    Element& animating_element,
+    const ComputedStyleBuilder& style_builder) {
+  // Check for declared names that don't have a matching existing trigger.
+  const CSSAnimationData* data = style_builder.Animations();
+  if (data) {
+    const HeapVector<Member<const ScopedCSSName>>& names =
+        data->TimelineTriggerNameList();
+    for (wtf_size_t i = 0; i < names.size(); i++) {
+      if (!names[i]) {
+        continue;
+      }
+      auto* trigger =
+          DynamicTo<TimelineTrigger>(animating_element.NamedTrigger(names[i]));
+      if (trigger &&
+          TimelineTriggerMatches(
+              *trigger,
+              ComputeTimeline(&animating_element,
+                              data->GetTimelineTriggerSource(i), update,
+                              trigger->GetTimelineInternal()),
+              TimelineTriggerBoundaries(*data, i,
+                                        style_builder.EffectiveZoom()))) {
+        continue;
+      }
+      update.SetNeedsNamedTriggerUpdate();
+      return;
+    }
+  }
+
+  // Check for existing triggers that no longer match a declared name.
+  if (const NamedAnimationTriggerMap* existing_triggers =
+          animating_element.NamedTriggers()) {
+    if (!existing_triggers->empty() && !data) {
+      update.SetNeedsNamedTriggerUpdate();
+      return;
+    }
+    for (const auto& entry : *existing_triggers) {
+      if (std::ranges::none_of(data->TimelineTriggerNameList(),
+                               [&](const Member<const ScopedCSSName>& name) {
+                                 return base::ValuesEquivalent(name, entry.key);
+                               })) {
+        update.SetNeedsNamedTriggerUpdate();
+        return;
+      }
+    }
+  }
 }
 
 CSSAnimations::CSSAnimations() = default;
@@ -2144,13 +2220,6 @@ void CSSAnimations::CalculateAnimationUpdate(
   }
 
   CalculateAnimationActiveInterpolations(update, animating_element);
-
-  CSSAnimationData* old_animations =
-      old_style ? old_style->Animations() : nullptr;
-  if (CSSAnimationData::TimelineTriggerDataChanged(old_animations,
-                                                   animation_data)) {
-    update.SetNeedsNamedTriggerUpdate();
-  }
 }
 
 AnimationEffect::EventDelegate* CSSAnimations::CreateEventDelegate(

@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 
+#include <algorithm>
 #include <optional>
 #include <ranges>
 
@@ -39,6 +40,7 @@
 #include "third_party/blink/public/web/web_print_page_description.h"
 #include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_value_factory.h"
+#include "third_party/blink/renderer/core/animation/css/css_animation_data.h"
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 #include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
@@ -94,6 +96,7 @@
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
+#include "third_party/blink/renderer/core/dom/named_animation_trigger_map.h"
 #include "third_party/blink/renderer/core/dom/node-inl.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
@@ -129,6 +132,7 @@
 #include "third_party/blink/renderer/core/page/scrolling/snap_coordinator.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/style/scoped_css_name.h"
 #include "third_party/blink/renderer/core/style/style_initial_data.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
@@ -318,6 +322,22 @@ bool IsAnimationStyleChange(Element& element) {
     return element_animations->IsAnimationStyleChange();
   }
   return false;
+}
+
+// Whether the element declares named triggers (e.g. via timeline-trigger) or
+// still has triggers from a previous style.
+bool HasNamedTriggers(const StyleResolverState& state) {
+  if (const CSSAnimationData* data = state.StyleBuilder().Animations()) {
+    if (std::ranges::any_of(
+            data->TimelineTriggerNameList(),
+            [](const Member<const ScopedCSSName>& name) { return !!name; })) {
+      return true;
+    }
+  }
+  const NamedAnimationTriggerMap* triggers =
+      state.GetAnimatingElement() ? state.GetAnimatingElement()->NamedTriggers()
+                                  : nullptr;
+  return triggers && !triggers->empty();
 }
 
 #if DCHECK_IS_ON()
@@ -2808,6 +2828,15 @@ bool StyleResolver::ApplyAnimatedStyle(
 
   if (HasTimelines(state)) {
     CSSAnimations::CalculateTimelineUpdate(
+        state.AnimationUpdate(), *animating_element, state.StyleBuilder());
+  }
+
+  // Animation style changes reuse the base style, so they can't change the
+  // declared triggers.
+  if (RuntimeEnabledFeatures::AnimationTriggerEnabled() &&
+      state.CanTriggerAnimations() &&
+      !IsAnimationStyleChange(*animating_element) && HasNamedTriggers(state)) {
+    CSSAnimations::CalculateNamedTriggerUpdate(
         state.AnimationUpdate(), *animating_element, state.StyleBuilder());
   }
 
