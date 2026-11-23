@@ -529,6 +529,7 @@ class GeminiContainerMediatorTabHelperObserver
   }
 
   if (IsIOSGeminiBottomSheetMigrationEnabled()) {
+    [self exitFullscreen];
     // Assumes it's minimized.
     [_containerHandler animateAssistantContainerToDetent:kMedium];
   }
@@ -1120,8 +1121,8 @@ class GeminiContainerMediatorTabHelperObserver
   }
 }
 
-// Stores `pageContext` for initial UI setup and notifies the delegate that the
-// mediator is ready for the container to be presented.
+// Stores `pageContext` for initial UI setup, exits fullscreen, and notifies the
+// delegate that the mediator is ready for the container to be presented.
 - (void)notifyReadyForPresentationWithPageContext:
     (GeminiPageContext*)pageContext {
   // Stop the fallback timer if `GeneratePageContext` finished first, and
@@ -1130,6 +1131,7 @@ class GeminiContainerMediatorTabHelperObserver
   // duplicate presentation.
   [self cancelPendingPresentation];
   _initialPageContext = pageContext;
+  [self exitFullscreen];
   [self.delegate geminiContainerMediatorReadyForPresentation:self];
 }
 
