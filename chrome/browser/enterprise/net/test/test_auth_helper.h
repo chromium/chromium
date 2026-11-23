@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 
+struct CoreAccountInfo;
 class GaiaId;
 class Profile;
 
@@ -62,9 +63,21 @@ class TestAuthHelper {
   // `INVALID_GAIA_CREDENTIALS`.
   virtual void SimulateInvalidCredentials(const GaiaId& gaia_id) = 0;
 
+  // Restores valid credentials after `SimulateInvalidCredentials()` so
+  // subsequent token fetches succeed.
+  virtual void RestoreValidCredentials(
+      signin::IdentityManager* identity_manager,
+      const CoreAccountInfo& primary_account) = 0;
+
   // Returns the number of OAuth2 access token fetch requests observed for the
   // `cloud_secure_gateway` scope.
   virtual size_t GetTokenFetchRequestCount() const = 0;
+
+  // Returns how many times the platform OS credential-update flow (e.g.
+  // Android `AccountManagerFacade.updateCredentials`) was invoked. The default
+  // implementation returns `0` on platforms without an OS credential-update
+  // flow (such as Desktop).
+  virtual size_t GetUpdateCredentialsCount() const;
 };
 
 }  // namespace enterprise::test

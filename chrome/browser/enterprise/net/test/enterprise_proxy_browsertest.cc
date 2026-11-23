@@ -26,6 +26,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_prefs.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -1118,6 +1119,45 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyBrowserTest,
   EXPECT_TRUE(proxy2->was_accessed());
   EXPECT_TRUE(proxy2->was_auth_header_received());
   EXPECT_EQ(1u, origin_request_count());
+}
+
+// Verifies that when dynamic proxy routing rules match the Gaia OAuth2 host
+// (`kGaiaHost`) in addition to `kDestinationHost` with no cached access token,
+// Android acquires the OAuth2 token out-of-band via OS `AccountManagerFacade`
+// without looping on a 407 proxy challenge.
+// TODO(crbug.com/532559920): Enable on Desktop once OAuth2 token fetches bypass
+// proxy authentication loops when Gaia matches proxy routing rules.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_AuthenticatesWhenGaiaTokenEndpointMatchesProxyRoute \
+  AuthenticatesWhenGaiaTokenEndpointMatchesProxyRoute
+#else
+#define MAYBE_AuthenticatesWhenGaiaTokenEndpointMatchesProxyRoute \
+  DISABLED_AuthenticatesWhenGaiaTokenEndpointMatchesProxyRoute
+#endif
+IN_PROC_BROWSER_TEST_F(
+    EnterpriseProxyBrowserTest,
+    MAYBE_AuthenticatesWhenGaiaTokenEndpointMatchesProxyRoute) {
+  signin::DisableAccessTokenFetchRetries(GetIdentityManager());
+  SetPvdJsonForDomain(
+      kTestPvdDomain,
+      BuildValidPvdJson(kTestPvdDomain,
+                        default_proxy_server().host_port_pair().ToString(),
+                        {kDestinationHost, kGaiaHost},
+                        /*require_auth=*/true));
+
+  base::ListValue domains;
+  domains.Append(CreateDomainPolicyEntry(kTestPvdDomain, /*use_oauth=*/false));
+  SetUserProxyProvisioningDomains(std::move(domains));
+  WaitForDynamicRoutesReady();
+
+  EvictCachedProxyAccessToken();
+
+  GURL destination_url = GetOriginURL(kDestinationHost, "/simple.html");
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(
+      chrome_test_utils::GetActiveWebContents(this), destination_url));
+  EXPECT_TRUE(was_proxy_accessed());
+  EXPECT_TRUE(was_auth_header_received());
+  EXPECT_GE(GetTokenFetchRequestCount(), 1u);
 }
 
 }  // namespace enterprise::test

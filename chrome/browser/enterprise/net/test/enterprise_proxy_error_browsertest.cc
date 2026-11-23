@@ -48,6 +48,7 @@
 #include "net/log/net_log_entry.h"
 #include "net/log/net_log_event_type.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
@@ -793,6 +794,179 @@ IN_PROC_BROWSER_TEST_F(EnterpriseProxyErrorBrowserTest,
   EXPECT_TRUE(plain_http_proxy.was_accessed());
   EXPECT_FALSE(was_proxy_accessed());
   EXPECT_EQ(token_fetches_before, GetTokenFetchRequestCount());
+}
+
+// Verifies domain allowlist enforcement end-to-end: if a PvD endpoint
+// advertises a proxy on an untrusted domain (`untrusted.evil.com`), HTTP 407
+// challenges from that proxy are rejected with `inapplicable_server` before
+// touching `IdentityManager`, never leaking an OAuth2 token in
+// `Proxy-Authorization`.
+IN_PROC_BROWSER_TEST_F(EnterpriseProxyErrorBrowserTest,
+                       RejectsTokenFetchForDisallowedProxyDomain) {
+  std::unique_ptr<TestConnectProxy> untrusted_proxy =
+      CreateProxyServer("untrusted.evil.com");
+  ASSERT_TRUE(untrusted_proxy);
+
+  SetPvdJsonForDomain(
+      kTestPvdDomain,
+      BuildValidPvdJson(kTestPvdDomain,
+                        untrusted_proxy->host_port_pair().ToString(),
+                        {kDestinationHost}, /*require_auth=*/true));
+
+  base::ListValue domains;
+  domains.Append(CreateDomainPolicyEntry(kTestPvdDomain, /*use_oauth=*/false));
+  SetUserProxyProvisioningDomains(std::move(domains));
+  WaitForDynamicRoutesReady();
+
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  GURL destination_url = GetOriginURL(kDestinationHost, "/simple.html");
+  base::HistogramTester histogram_tester;
+  EXPECT_FALSE(chrome_test_utils::NavigateToURL(web_contents, destination_url));
+
+  EXPECT_TRUE(untrusted_proxy->was_accessed());
+  EXPECT_FALSE(untrusted_proxy->was_auth_header_received());
+  EXPECT_EQ(0u, GetTokenFetchRequestCount());
+  EXPECT_EQ(0u, origin_request_count());
+
+  std::vector<net::NetLogEntry> resolved_entries =
+      net_log_observer().GetEntriesWithType(
+          net::NetLogEventType::ENTERPRISE_PROXY_AUTH_CHALLENGE_RESOLVED);
+  ASSERT_GE(resolved_entries.size(), 1u);
+  const std::string* decision =
+      resolved_entries[0].params.FindString("decision");
+  ASSERT_NE(nullptr, decision);
+  EXPECT_EQ("failed", *decision);
+  const std::string* failure_reason =
+      resolved_entries[0].params.FindString("failure_reason");
+  ASSERT_NE(nullptr, failure_reason);
+  EXPECT_EQ("inapplicable_server", *failure_reason);
+
+  VerifyOtherErrorPage(web_contents);
+  VerifyErrorPageShownHistograms(
+      histogram_tester,
+      enterprise_net::EnterpriseProxyErrorData::ErrorCategory::kOther);
+}
+
+// Verifies that when an enterprise IdP login page (`kIdpHost`) and protected
+// destination (`kDestinationHost`) both match proxy routing rules while primary
+// account credentials are invalid, navigations to the IdP page cannot reach the
+// origin and surface the Authentication error page (`sign_in_required`), and
+// once valid credentials are restored, subsequent navigations acquire a token
+// and succeed through the proxy.
+IN_PROC_BROWSER_TEST_F(EnterpriseProxyErrorBrowserTest,
+                       InvalidCredentialsBlocksIdpAndRecoversAfterRestore) {
+  InvalidatePrimaryAccountCredentials();
+
+  SetPvdJsonForDomain(
+      kTestPvdDomain,
+      BuildValidPvdJson(kTestPvdDomain,
+                        default_proxy_server().host_port_pair().ToString(),
+                        {kDestinationHost, kIdpHost},
+                        /*require_auth=*/true));
+
+  base::ListValue domains;
+  domains.Append(CreateDomainPolicyEntry(kTestPvdDomain, /*use_oauth=*/false));
+  SetUserProxyProvisioningDomains(std::move(domains));
+  WaitForDynamicRoutesReady();
+
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  GURL idp_url = GetIdpURL("/idp/login");
+  EXPECT_FALSE(chrome_test_utils::NavigateToURL(web_contents, idp_url));
+  EXPECT_EQ(0u, idp_page_request_count());
+  EXPECT_TRUE(was_proxy_accessed());
+  EXPECT_FALSE(was_auth_header_received());
+  EXPECT_EQ(true,
+            content::EvalJs(
+                web_contents,
+                "document.body.classList.contains('category-authentication')"));
+
+  std::vector<net::NetLogEntry> resolved_entries =
+      net_log_observer().GetEntriesWithType(
+          net::NetLogEventType::ENTERPRISE_PROXY_AUTH_CHALLENGE_RESOLVED);
+  ASSERT_GE(resolved_entries.size(), 1u);
+  EXPECT_EQ("sign_in_required",
+            *resolved_entries[0].params.FindString("decision"));
+
+  // Restoring primary account credentials allows both IdP and protected
+  // destination navigations to authenticate and succeed through the proxy.
+  default_proxy_server().ResetStats();
+  RestorePrimaryAccountCredentials();
+
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(web_contents, idp_url));
+  EXPECT_EQ(1u, idp_page_request_count());
+  EXPECT_TRUE(was_proxy_accessed());
+  EXPECT_TRUE(was_auth_header_received());
+
+  GURL destination_url = GetOriginURL(kDestinationHost, "/simple.html");
+  EXPECT_TRUE(chrome_test_utils::NavigateToURL(web_contents, destination_url));
+  EXPECT_EQ(1u, origin_request_count());
+}
+
+// Verifies end-to-end `#primary-button` recovery when both Gaia (`kGaiaHost`)
+// and IdP (`kIdpHost`) match the 407 proxy routing rules: clicking Continue
+// invokes `EnterpriseProxyTabHelperDelegate::SignIn` -> OS
+// `AccountManagerFacade.updateCredentials`, restores valid tokens, completes
+// `/ListAccounts` through the authenticated proxy, and redirects the tab to
+// `destination_url`.
+// TODO(crbug.com/532559920): Enable on Desktop once
+// `EnterpriseProxyTabHelperDelegate` implements Desktop re-auth and web
+// sign-in/token flows bypass proxy authentication loops.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ReauthButtonRecoversEvenWhenGaiaRoutedThroughProxy \
+  ReauthButtonRecoversEvenWhenGaiaRoutedThroughProxy
+#else
+#define MAYBE_ReauthButtonRecoversEvenWhenGaiaRoutedThroughProxy \
+  DISABLED_ReauthButtonRecoversEvenWhenGaiaRoutedThroughProxy
+#endif
+IN_PROC_BROWSER_TEST_F(
+    EnterpriseProxyErrorBrowserTest,
+    MAYBE_ReauthButtonRecoversEvenWhenGaiaRoutedThroughProxy) {
+  InvalidatePrimaryAccountCredentials();
+
+  SetPvdJsonForDomain(
+      kTestPvdDomain,
+      BuildValidPvdJson(kTestPvdDomain,
+                        default_proxy_server().host_port_pair().ToString(),
+                        {kDestinationHost, kIdpHost, kGaiaHost},
+                        /*require_auth=*/true));
+
+  base::ListValue domains;
+  domains.Append(CreateDomainPolicyEntry(kTestPvdDomain, /*use_oauth=*/false));
+  SetUserProxyProvisioningDomains(std::move(domains));
+  WaitForDynamicRoutesReady();
+
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  GURL destination_url = GetOriginURL(kDestinationHost, "/simple.html");
+  EXPECT_FALSE(chrome_test_utils::NavigateToURL(web_contents, destination_url));
+  EXPECT_EQ(true,
+            content::EvalJs(
+                web_contents,
+                "document.body.classList.contains('category-authentication')"));
+  EXPECT_EQ(0u, origin_request_count());
+
+  signin::CancelAllOngoingGaiaCookieOperations(GetIdentityManager());
+  signin::SetFreshnessOfAccountsInGaiaCookie(GetIdentityManager(),
+                                             /*accounts_are_fresh=*/false);
+  default_proxy_server().ResetStats();
+
+  content::TestNavigationObserver redirect_observer(destination_url);
+  redirect_observer.WatchExistingWebContents();
+  ASSERT_TRUE(content::ExecJs(
+      web_contents, "document.getElementById('primary-button').click();"));
+  redirect_observer.Wait();
+
+  EXPECT_TRUE(redirect_observer.last_navigation_succeeded());
+  EXPECT_EQ(1u, GetUpdateCredentialsCount());
+  EXPECT_TRUE(was_proxy_accessed());
+  EXPECT_TRUE(was_auth_header_received());
+  EXPECT_THAT(default_proxy_server().tunneled_targets(),
+              testing::Contains(testing::HasSubstr(kGaiaHost)));
+  EXPECT_THAT(default_proxy_server().tunneled_targets(),
+              testing::Contains(testing::HasSubstr(kDestinationHost)));
+  EXPECT_EQ(1u, origin_request_count());
 }
 
 }  // namespace enterprise::test

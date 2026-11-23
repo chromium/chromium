@@ -88,6 +88,14 @@ class DesktopTestAuthHelper
     simulate_invalid_credentials_ = true;
   }
 
+  void RestoreValidCredentials(
+      signin::IdentityManager* /*identity_manager*/,
+      const CoreAccountInfo& /*primary_account*/) override {
+    simulate_invalid_credentials_ = false;
+    identity_test_env_adaptor_->identity_test_env()
+        ->SetRefreshTokenForPrimaryAccount();
+  }
+
   size_t GetTokenFetchRequestCount() const override {
     return proxy_token_request_count_;
   }

@@ -82,9 +82,26 @@ class AndroidTestAuthHelper : public TestAuthHelper {
         static_cast<int>(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
   }
 
+  void RestoreValidCredentials(
+      signin::IdentityManager* identity_manager,
+      const CoreAccountInfo& primary_account) override {
+    Java_EnterpriseProxyAndroidSigninBridge_setAccessTokenError(
+        base::android::AttachCurrentThread(), primary_account.gaia.ToString(),
+        static_cast<int>(GoogleServiceAuthError::NONE));
+    signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+        identity_manager, primary_account.account_id,
+        GoogleServiceAuthError::AuthErrorNone());
+  }
+
   size_t GetTokenFetchRequestCount() const override {
     return static_cast<size_t>(
         Java_EnterpriseProxyAndroidSigninBridge_getTokenRequestCount(
+            base::android::AttachCurrentThread()));
+  }
+
+  size_t GetUpdateCredentialsCount() const override {
+    return static_cast<size_t>(
+        Java_EnterpriseProxyAndroidSigninBridge_getUpdateCredentialsCount(
             base::android::AttachCurrentThread()));
   }
 };

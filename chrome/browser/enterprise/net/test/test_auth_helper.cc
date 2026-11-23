@@ -9,4 +9,8 @@ namespace enterprise::test {
 TestAuthHelper::TestAuthHelper() = default;
 TestAuthHelper::~TestAuthHelper() = default;
 
+size_t TestAuthHelper::GetUpdateCredentialsCount() const {
+  return 0;
+}
+
 }  // namespace enterprise::test

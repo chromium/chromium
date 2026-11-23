@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.enterprise.net.test;
 
+import android.app.Activity;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -40,11 +43,14 @@ final class EnterpriseProxyAndroidSigninBridge {
     private static class TestAccountManagerFacade extends FakeAccountManagerFacade {
         private volatile @Nullable String mOverrideAccessToken;
         private final AtomicInteger mTokenRequestCount = new AtomicInteger(0);
+        private final AtomicInteger mUpdateCredentialsCount = new AtomicInteger(0);
         // Scope simulated token errors to the Secure Gateway OAuth2 scope (matching
         // `DesktopTestAuthHelper::OnAccessTokenRequested()`) so background Chrome non-proxy token
         // fetches (e.g. `AccountInfoFetcherGaia`) do not pre-poison `IdentityManager` with a
         // persistent error before the proxy HTTP 407 challenge occurs.
         private final Map<CoreAccountId, GoogleServiceAuthError> mProxyAccessTokenErrors =
+                Collections.synchronizedMap(new HashMap<>());
+        private final Map<CoreAccountId, AccountInfo> mAddedAccounts =
                 Collections.synchronizedMap(new HashMap<>());
 
         TestAccountManagerFacade(String defaultAccessToken) {
@@ -58,6 +64,15 @@ final class EnterpriseProxyAndroidSigninBridge {
 
         int getTokenRequestCount() {
             return mTokenRequestCount.get();
+        }
+
+        int getUpdateCredentialsCount() {
+            return mUpdateCredentialsCount.get();
+        }
+
+        void registerAddedAccount(AccountInfo accountInfo) {
+            mAddedAccounts.put(accountInfo.getId(), accountInfo);
+            addAccount(accountInfo);
         }
 
         void setOrClearAccessTokenError(CoreAccountId accountId, int authErrorState) {
@@ -100,6 +115,18 @@ final class EnterpriseProxyAndroidSigninBridge {
                         }
                     });
         }
+
+        @Override
+        public void updateCredentials(
+                CoreAccountId accountId, Activity activity, @Nullable Callback<Boolean> callback) {
+            mUpdateCredentialsCount.incrementAndGet();
+            mProxyAccessTokenErrors.remove(accountId);
+            @Nullable AccountInfo accountInfo = mAddedAccounts.get(accountId);
+            if (accountInfo != null) {
+                updateAccount(accountInfo);
+            }
+            super.updateCredentials(accountId, activity, callback);
+        }
     }
 
     private static @Nullable TestAccountManagerFacade sFacade;
@@ -132,7 +159,7 @@ final class EnterpriseProxyAndroidSigninBridge {
                         .givenName("Given Name")
                         .hostedDomain(hostedDomain)
                         .build();
-        facade.addAccount(accountInfo);
+        facade.registerAddedAccount(accountInfo);
     }
 
     @CalledByNative
@@ -153,5 +180,11 @@ final class EnterpriseProxyAndroidSigninBridge {
     static int getTokenRequestCount() {
         TestAccountManagerFacade facade = sFacade;
         return facade != null ? facade.getTokenRequestCount() : 0;
+    }
+
+    @CalledByNative
+    static int getUpdateCredentialsCount() {
+        TestAccountManagerFacade facade = sFacade;
+        return facade != null ? facade.getUpdateCredentialsCount() : 0;
     }
 }

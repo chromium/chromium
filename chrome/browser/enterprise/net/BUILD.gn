@@ -49,6 +49,8 @@ source_set("platform_browser_tests") {
       "test/test_connect_proxy.h",
     ]
 
+    data = [ "//google_apis/test/embedded_setup_chromeos.html" ]
+
     deps += [
       "//chrome/browser/enterprise",
       "//chrome/browser/signin",
@@ -68,6 +70,7 @@ source_set("platform_browser_tests") {
       "//components/sync/base",
       "//components/tabs:public",
       "//google_apis",
+      "//google_apis:test_support",
       "//net:test_support",
       "//testing/gtest",
       "//ui/base",

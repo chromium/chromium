@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
@@ -33,6 +34,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/command_line_switches.h"
+#include "google_apis/gaia/gaia_switches.h"
 #include "net/base/host_port_pair.h"
 #include "net/dns/mock_host_resolver.h"
 
@@ -89,6 +91,8 @@ const std::vector<std::string>& GetOriginCertHostnames() {
       kRemovedDestinationHost,
       kSeparateSiteHost,
       kUnmatchedHost,
+      kGaiaHost,
+      kIdpHost,
   });
   return *kHostnames;
 }
@@ -159,9 +163,18 @@ EnterpriseProxyBrowserTestBase::EnterpriseProxyBrowserTestBase(
   origin_server_.RegisterRequestHandler(
       base::BindRepeating(&EnterpriseProxyBrowserTestBase::HandleOriginRequest,
                           base::Unretained(this)));
+  origin_server_.RegisterRequestHandler(base::BindRepeating(
+      &FakeGaia::HandleRequest, base::Unretained(&fake_gaia_)));
 }
 
 EnterpriseProxyBrowserTestBase::~EnterpriseProxyBrowserTestBase() = default;
+
+void EnterpriseProxyBrowserTestBase::SetUp() {
+  // Bind `origin_server_` before `MixinBasedPlatformBrowserTest::SetUp()` so
+  // its port is available for `switches::kGaiaUrl` in `SetUpCommandLine()`.
+  ASSERT_TRUE(origin_server_.InitializeAndListen());
+  MixinBasedPlatformBrowserTest::SetUp();
+}
 
 void EnterpriseProxyBrowserTestBase::SetUpCommandLine(
     base::CommandLine* command_line) {
@@ -173,10 +186,19 @@ void EnterpriseProxyBrowserTestBase::SetUpCommandLine(
   // races with `SyncEngineBackend::FetchAccessToken()` checking
   // `kSyncUsePropagatedAccessToken`.
   command_line->AppendSwitch(syncer::kDisableSync);
+  const std::string gaia_url = origin_server_.GetURL(kGaiaHost, "/").spec();
+  command_line->AppendSwitchASCII(switches::kGaiaUrl, gaia_url);
+  command_line->AppendSwitchASCII(switches::kLsoUrl, gaia_url);
+  command_line->AppendSwitchASCII(switches::kGoogleApisUrl, gaia_url);
+  command_line->AppendSwitchASCII(switches::kOAuthAccountManagerUrl, gaia_url);
 }
 
 void EnterpriseProxyBrowserTestBase::SetUpInProcessBrowserTestFixture() {
   MixinBasedPlatformBrowserTest::SetUpInProcessBrowserTestFixture();
+  fake_gaia_.Initialize();
+  fake_gaia_.SetConfigurationHelper(kManagedUserEmail, "fake_sid", "fake_lsid");
+  fake_gaia_.MapEmailToGaiaId(kManagedUserEmail,
+                              signin::GetTestGaiaIdForEmail(kManagedUserEmail));
   auth_helper_->SetUpInProcessBrowserTestFixture(kExpectedAccessToken);
 }
 
@@ -189,7 +211,6 @@ void EnterpriseProxyBrowserTestBase::SetUpOnMainThread() {
   auth_helper_->SetUpOnMainThread(profile);
 
   ASSERT_TRUE(pvd_server_.InitializeAndListen());
-  ASSERT_TRUE(origin_server_.InitializeAndListen());
 
   default_proxy_server_ = CreateProxyServer(kDefaultProxyHost);
   ASSERT_TRUE(default_proxy_server_);
@@ -231,6 +252,7 @@ void EnterpriseProxyBrowserTestBase::SignInPrimaryAccount(
   // dialog in the background during routing/error browsertests.
   enterprise_util::SetUserAcceptedAccountManagement(profile,
                                                     !hosted_domain.empty());
+  CHECK_EQ(email, kManagedUserEmail);
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   ASSERT_TRUE(identity_manager);
@@ -252,6 +274,16 @@ void EnterpriseProxyBrowserTestBase::InvalidatePrimaryAccountCredentials() {
   auth_helper_->SimulateInvalidCredentials(primary.gaia);
 }
 
+void EnterpriseProxyBrowserTestBase::RestorePrimaryAccountCredentials() {
+  signin::IdentityManager* identity_manager = GetIdentityManager();
+  ASSERT_TRUE(identity_manager);
+
+  CoreAccountInfo primary =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  ASSERT_FALSE(primary.IsEmpty());
+  auth_helper_->RestoreValidCredentials(identity_manager, primary);
+}
+
 void EnterpriseProxyBrowserTestBase::EvictCachedProxyAccessToken() {
   signin::IdentityManager* identity_manager = GetIdentityManager();
   if (!identity_manager) {
@@ -268,6 +300,10 @@ void EnterpriseProxyBrowserTestBase::EvictCachedProxyAccessToken() {
 
 size_t EnterpriseProxyBrowserTestBase::GetTokenFetchRequestCount() const {
   return auth_helper_->GetTokenFetchRequestCount();
+}
+
+size_t EnterpriseProxyBrowserTestBase::GetUpdateCredentialsCount() const {
+  return auth_helper_->GetUpdateCredentialsCount();
 }
 
 void EnterpriseProxyBrowserTestBase::SetUserProxyProvisioningDomains(
@@ -413,6 +449,10 @@ GURL EnterpriseProxyBrowserTestBase::GetPvdURL(std::string_view host,
   return pvd_server_.GetURL(host, path);
 }
 
+GURL EnterpriseProxyBrowserTestBase::GetIdpURL(std::string_view path) const {
+  return origin_server_.GetURL(kIdpHost, path);
+}
+
 std::vector<net::HostPortPair>
 EnterpriseProxyBrowserTestBase::GetAllProxiedDestinations() const {
   std::vector<net::HostPortPair> destinations;
@@ -515,6 +555,11 @@ size_t EnterpriseProxyBrowserTestBase::GetPvdRequestCountForDomain(
 size_t EnterpriseProxyBrowserTestBase::origin_request_count() const {
   base::AutoLock auto_lock(server_lock_);
   return origin_request_count_;
+}
+
+size_t EnterpriseProxyBrowserTestBase::idp_page_request_count() const {
+  base::AutoLock auto_lock(server_lock_);
+  return idp_page_request_count_;
 }
 
 std::unique_ptr<net::test_server::HttpResponse>
@@ -639,6 +684,20 @@ EnterpriseProxyBrowserTestBase::HandleOriginRequest(
     response->set_content(
         "<html><head><link rel=\"icon\" href=\"data:,\"></head>"
         "<body>Direct Navigation</body></html>");
+    return response;
+  }
+
+  if (path == "/idp/login") {
+    {
+      base::AutoLock auto_lock(server_lock_);
+      ++idp_page_request_count_;
+    }
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_code(net::HttpStatusCode::HTTP_OK);
+    response->set_content_type("text/html");
+    response->set_content(
+        "<html><head><link rel=\"icon\" href=\"data:,\"></head>"
+        "<body>Enterprise IdP Login</body></html>");
     return response;
   }
 

@@ -27,6 +27,7 @@
 #include "components/enterprise/net/core/features.h"
 #include "components/enterprise/net/core/scoped_extra_allowed_domains_for_testing.h"
 #include "components/enterprise/net/core/types.h"
+#include "google_apis/gaia/fake_gaia.h"
 #include "net/base/host_port_pair.h"
 #include "net/http/http_status_code.h"
 #include "net/log/net_log_event_type.h"
@@ -87,7 +88,9 @@ inline constexpr char kDefaultProxyHost[] = "proxy1.example.com";
 inline constexpr char kSecondaryProxyHost[] = "proxy2.example.com";
 inline constexpr char kTertiaryProxyHost[] = "proxy3.example.com";
 
-// Default managed account identity and OAuth2 scope/token constants.
+// FakeGaia / enterprise IdP hosts and default managed account constants.
+inline constexpr char kGaiaHost[] = "gaia.example.com";
+inline constexpr char kIdpHost[] = "idp.example.com";
 inline constexpr char kManagedUserEmail[] = "user@managed.com";
 inline constexpr char kManagedHostedDomain[] = "managed.com";
 inline constexpr char kAuthScope[] = "cloud_secure_gateway";
@@ -102,6 +105,8 @@ class EnterpriseProxyBrowserTestBase : public MixinBasedPlatformBrowserTest {
   explicit EnterpriseProxyBrowserTestBase(const ManagementContext& context);
   ~EnterpriseProxyBrowserTestBase() override;
 
+  // MixinBasedPlatformBrowserTest:
+  void SetUp() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpInProcessBrowserTestFixture() override;
   void SetUpOnMainThread() override;
@@ -119,6 +124,10 @@ class EnterpriseProxyBrowserTestBase : public MixinBasedPlatformBrowserTest {
   // (`TokenFetchError::kInvalidCredentials` -> `"sign_in_required"`).
   void InvalidatePrimaryAccountCredentials();
 
+  // Restores valid primary account credentials after invalidation so subsequent
+  // re-authentication or retry navigations succeed end-to-end.
+  void RestorePrimaryAccountCredentials();
+
   // Evicts any cached OAuth2 access token for `kSecureGatewayService` so the
   // next challenge or authenticated PvD fetch triggers a fresh token request.
   void EvictCachedProxyAccessToken();
@@ -126,6 +135,10 @@ class EnterpriseProxyBrowserTestBase : public MixinBasedPlatformBrowserTest {
   // Returns the number of OAuth2 access token fetch requests issued for
   // `cloud_secure_gateway`.
   size_t GetTokenFetchRequestCount() const;
+
+  // Returns how many times the OS credential-update flow (e.g. Android
+  // `AccountManagerFacade.updateCredentials`) was invoked.
+  size_t GetUpdateCredentialsCount() const;
 
   // Sets the "ProxyProvisioningDomains" policy at the user (cloud) scope.
   void SetUserProxyProvisioningDomains(base::ListValue domains);
@@ -173,6 +186,7 @@ class EnterpriseProxyBrowserTestBase : public MixinBasedPlatformBrowserTest {
   GURL GetOriginURL(std::string_view host, std::string_view path) const;
   GURL GetPvdURL(std::string_view host,
                  std::string_view path = "/.well-known/pvd") const;
+  GURL GetIdpURL(std::string_view path = "/idp/login") const;
 
   // Creates and starts an additional HTTPS forward proxy server configured to
   // tunnel to all `origin_server_` destinations.
@@ -225,6 +239,7 @@ class EnterpriseProxyBrowserTestBase : public MixinBasedPlatformBrowserTest {
   size_t pvd_request_count() const;
   size_t GetPvdRequestCountForDomain(const std::string& domain) const;
   size_t origin_request_count() const;
+  size_t idp_page_request_count() const;
 
  private:
   std::vector<net::HostPortPair> GetAllProxiedDestinations() const;
@@ -288,6 +303,10 @@ class EnterpriseProxyBrowserTestBase : public MixinBasedPlatformBrowserTest {
   size_t origin_request_count_ GUARDED_BY(server_lock_) = 0;
   net::test_server::HttpRequest::HeaderMap last_origin_request_headers_
       GUARDED_BY(server_lock_);
+  // Total `/idp/login` requests handled by `origin_server_`.
+  size_t idp_page_request_count_ GUARDED_BY(server_lock_) = 0;
+
+  FakeGaia fake_gaia_;
 
   // Separated HTTPS test servers for realistic E2E routing isolation.
   std::unique_ptr<TestConnectProxy> default_proxy_server_;
