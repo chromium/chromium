@@ -22,7 +22,7 @@
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/process/process_handle.h"
 #include "base/process/process_metrics.h"
 #include "base/strings/string_number_conversions.h"
@@ -371,8 +371,9 @@ bool OSMetrics::FillOSMemoryDump(base::ProcessHandle handle,
         OSMetrics::GetMappedAndResidentPages(base::android::kStartOfText,
                                              base::android::kEndOfText,
                                              &accessed_pages_bitmap);
-    UMA_HISTOGRAM_ENUMERATION(
-        "Memory.NativeLibrary.MappedAndResidentMemoryFootprintCollectionStatus",
+    base::UmaHistogramEnumeration(
+        "Memory.NativeLibrary."
+        "MappedAndResidentMemoryFootprintCollectionStatus2",
         state);
 
     // MappedAndResidentPagesDumpState |state| can be |kAccessPagemapDenied|

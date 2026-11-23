@@ -2401,19 +2401,17 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Memory.NativeLibrary.MappedAndResidentMemoryFootprintCollectionStatus"
-    enum="MappedAndResidentPagesDumpState" expires_after="2024-02-04">
+    name="Memory.NativeLibrary.MappedAndResidentMemoryFootprintCollectionStatus2"
+    enum="MappedAndResidentPagesDumpState" expires_after="2027-11-20">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
     Result of an attempt to read /proc/self/pagemap when determining the amount
     of resident memory mapped by the current process. Reading the file is
-    performed as part of computing the
-    Memory.NativeLibrary.MappedAndResidentMemoryFootprint2 histogram. Available
-    only on Android.
+    performed as part of computing the MappedAndResidentMemoryFootprint4
+    histogram. Available only on Android.
 
-    Recorded at Poisson sampled time intervals with a mean of 5 minutes on
-    Android and 30 minutes on other platforms.
+    Recorded at Poisson sampled time intervals with a mean of 5 minutes.
   </summary>
 </histogram>
 
