@@ -37,7 +37,7 @@
 #include "components/variations/seed_response.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/variations_switches.h"
-#include "components/webui/flags/pref_service_flags_storage.h"
+#include "components/webui/flags/flags_storage.h"
 #include "content/public/common/content_switch_dependent_feature_overrides.h"
 #include "content/public/common/content_switches.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -47,6 +47,10 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/prefs/android/local_state_prefs_android.h"
 #include "components/variations/android/variations_seed_bridge.h"
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "components/webui/flags/pref_service_flags_storage.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -219,20 +223,8 @@ void ChromeFeatureListCreator::ConvertFlagsToSwitches() {
   CHECK(!ui::ResourceBundle::HasSharedInstance(), base::NotFatalUntil::M161);
   TRACE_EVENT0("startup", "ChromeFeatureListCreator::ConvertFlagsToSwitches");
 
-#if BUILDFLAG(IS_CHROMEOS)
-  // On ChromeOS, flags are passed on the command line when Chrome gets launched
-  // by session_manager. There are separate sets of flags for the login screen
-  // environment and user sessions. session_manager populates the former from
-  // signed device settings, while flags for user session are stored in
-  // preferences and applied via a chrome restart upon user login, see
-  // UserSessionManager::RestartToApplyPerSessionFlagsIfNeed for the latter.
-  ash::about_flags::ReadOnlyFlagsStorage flags_storage(
-      base::CommandLine::ForCurrentProcess());
-#else
-  flags_ui::PrefServiceFlagsStorage flags_storage(local_state_.get());
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-  about_flags::ConvertFlagsToSwitches(&flags_storage,
+  std::unique_ptr<flags_ui::FlagsStorage> flags_storage = CreateFlagsStorage();
+  about_flags::ConvertFlagsToSwitches(flags_storage.get(),
                                       base::CommandLine::ForCurrentProcess(),
                                       flags_ui::kAddSentinels);
   // Also apply command-line switches to local_state_ now so switches added
@@ -241,6 +233,23 @@ void ChromeFeatureListCreator::ConvertFlagsToSwitches() {
   local_state_->UpdateCommandLinePrefStore(
       base::MakeRefCounted<ChromeCommandLinePrefStore>(
           base::CommandLine::ForCurrentProcess()));
+}
+
+std::unique_ptr<flags_ui::FlagsStorage>
+ChromeFeatureListCreator::CreateFlagsStorage() {
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, flags are passed on the command line when Chrome gets launched
+  // by session_manager. There are separate sets of flags for the login screen
+  // environment and user sessions. session_manager populates the former from
+  // signed device settings, while flags for user session are stored in
+  // preferences and applied via a chrome restart upon user login, see
+  // UserSessionManager::RestartToApplyPerSessionFlagsIfNeed for the latter.
+  return std::make_unique<ash::about_flags::ReadOnlyFlagsStorage>(
+      base::CommandLine::ForCurrentProcess());
+#else
+  return std::make_unique<flags_ui::PrefServiceFlagsStorage>(
+      local_state_.get());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void ChromeFeatureListCreator::CreateNetworkTimeTracker() {
@@ -271,9 +280,10 @@ void ChromeFeatureListCreator::SetUpFieldTrials() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Associate parameters chosen in about:flags and create trial/group for them.
-  flags_ui::PrefServiceFlagsStorage flags_storage(local_state_.get());
+  // Read the same flags that ConvertFlagsToSwitches() converted.
+  std::unique_ptr<flags_ui::FlagsStorage> flags_storage = CreateFlagsStorage();
   std::vector<std::string> variation_ids =
-      about_flags::RegisterAllFeatureVariationParameters(&flags_storage,
+      about_flags::RegisterAllFeatureVariationParameters(flags_storage.get(),
                                                          feature_list.get());
 
   variations::VariationsService* variations_service =

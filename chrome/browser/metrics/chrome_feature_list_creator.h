@@ -22,6 +22,10 @@ namespace ash {
 class ChromeBrowserMainPartsAsh;
 }  // namespace ash
 
+namespace flags_ui {
+class FlagsStorage;
+}  // namespace flags_ui
+
 namespace installer {
 class InitialPreferences;
 }  // namespace installer
@@ -123,6 +127,12 @@ class ChromeFeatureListCreator {
   ChromeFeatureListCreator();
 
   void ConvertFlagsToSwitches();
+
+  // Creates the storage for the about:flags state that startup applies. On
+  // ChromeOS, the storage reads the flags that session_manager passes on the
+  // command line. Elsewhere, it reads the flags from `local_state_`.
+  std::unique_ptr<flags_ui::FlagsStorage> CreateFlagsStorage();
+
   void CreateNetworkTimeTracker();
 
   // Sets up the field trials and related initialization. Call only after

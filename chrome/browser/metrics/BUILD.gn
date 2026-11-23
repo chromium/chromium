@@ -828,6 +828,7 @@ if (!is_android) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
     sources = [
+      "chrome_feature_list_creator_browsertest.cc",
       "dwa_browsertest.cc",
       "metrics_consent_migration_browsertest.cc",
       "metrics_reporting_state_browsertest.cc",
@@ -849,6 +850,7 @@ if (!is_android) {
       ":test_support",
       "//base",
       "//chrome/browser:chrome_browser_main",
+      "//chrome/browser:flags",
       "//chrome/browser/metrics/structured:test_support",
       "//chrome/browser/sync",
       "//chrome/browser/sync/test/integration:sync_integration_test_support",
@@ -868,7 +870,9 @@ if (!is_android) {
       "//components/policy/core/browser",
       "//components/policy/core/common",
       "//components/policy/core/common:test_support",
+      "//components/variations",
       "//components/webui/chrome_urls",
+      "//components/webui/flags",
       "//content/test:browsertest_support",
       "//content/test:test_support",
       "//extensions/buildflags",
