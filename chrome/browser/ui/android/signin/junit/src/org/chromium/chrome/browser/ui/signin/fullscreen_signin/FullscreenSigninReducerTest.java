@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
@@ -23,7 +22,12 @@ import org.chromium.components.signin.test.util.TestAccounts;
 
 import java.util.List;
 
-/** Unit tests for {@link FullscreenSigninReducer}. */
+/**
+ * Unit tests for {@link FullscreenSigninReducer}.
+ *
+ * <p>Behaviour visible outside the screen is tested through {@link FullscreenSigninMediatorTest}.
+ * These tests cover only transitions that can't be observed or set up through the mediator.
+ */
 @RunWith(BaseRobolectricTestRunner.class)
 @NullMarked
 public class FullscreenSigninReducerTest {
@@ -42,25 +46,16 @@ public class FullscreenSigninReducerTest {
     }
 
     @Test
-    public void testRepeatedNativeReady_isIgnored() {
-        FullscreenSigninState state =
-                FullscreenSigninReducer.reduce(new FullscreenSigninState(), new NativeReady())
-                        .getState();
-
-        Result result = FullscreenSigninReducer.reduce(state, new NativeReady());
-
-        assertSame(state, result.getState());
-        assertTrue(result.getEffects().isEmpty());
-    }
-
-    @Test
     public void testAccountsUpdated_selectsFirstAccount() {
         Result result =
                 FullscreenSigninReducer.reduce(
                         new FullscreenSigninState(),
-                        new AccountsUpdated(List.of(TestAccounts.ACCOUNT1, TestAccounts.ACCOUNT2)));
+                        new AccountsUpdated(
+                                List.of(
+                                        TestAccounts.ACCOUNT1.getId(),
+                                        TestAccounts.ACCOUNT2.getId())));
 
-        assertEquals(TestAccounts.ACCOUNT1, result.getState().getSelectedAccount());
+        assertEquals(TestAccounts.ACCOUNT1.getId(), result.getState().getSelectedAccountId());
         assertTrue(result.getEffects().isEmpty());
     }
 }

@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.google_apis.gaia.CoreAccountId;
 
 import java.util.List;
 
@@ -18,35 +18,41 @@ sealed interface FullscreenSigninEvent {
 
     /**
      * The {@link org.chromium.chrome.browser.signin.services.ProfileDataCache} was created. Carries
-     * the accounts if they had already finished loading by then, since no {@link AccountsUpdated}
-     * is sent for them.
+     * the account IDs if the accounts had already finished loading by then, since no {@link
+     * AccountsUpdated} is sent for them.
      */
     final class ProfileDataCacheCreated implements FullscreenSigninEvent {
-        private final @Nullable List<AccountInfo> mAccounts;
+        private final @Nullable List<CoreAccountId> mAccountIds;
 
-        ProfileDataCacheCreated(@Nullable List<AccountInfo> accounts) {
-            mAccounts = accounts == null ? null : List.copyOf(accounts);
+        ProfileDataCacheCreated(@Nullable List<CoreAccountId> accountIds) {
+            mAccountIds = accountIds == null ? null : List.copyOf(accountIds);
         }
 
-        /** The already-loaded accounts, or null if they're still loading. */
-        @Nullable List<AccountInfo> getAccounts() {
-            return mAccounts;
+        /** The IDs of the already-loaded accounts, or null if they're still loading. */
+        @Nullable List<CoreAccountId> getAccountIds() {
+            return mAccountIds;
         }
     }
 
+    /** Policy loading has completed. */
+    final class PoliciesLoaded implements FullscreenSigninEvent {}
+
+    /** The host's child account status is available. */
+    final class ChildAccountStatusLoaded implements FullscreenSigninEvent {}
+
     /**
-     * The account list, sent when it finishes loading after the cache is created and again whenever
-     * the accounts or their info change.
+     * The account IDs, sent when the accounts finish loading after the cache is created and again
+     * whenever the accounts or their info change.
      */
     final class AccountsUpdated implements FullscreenSigninEvent {
-        private final List<AccountInfo> mAccounts;
+        private final List<CoreAccountId> mAccountIds;
 
-        AccountsUpdated(List<AccountInfo> accounts) {
-            mAccounts = List.copyOf(accounts);
+        AccountsUpdated(List<CoreAccountId> accountIds) {
+            mAccountIds = List.copyOf(accountIds);
         }
 
-        List<AccountInfo> getAccounts() {
-            return mAccounts;
+        List<CoreAccountId> getAccountIds() {
+            return mAccountIds;
         }
     }
 }

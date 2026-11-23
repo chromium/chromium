@@ -7,11 +7,16 @@ package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.CreateProfileDataCache;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.NotifyInitialLoadCompleted;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.RecordLoadCompleted;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.RecordNativeInitialized;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.AccountsUpdated;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.ChildAccountStatusLoaded;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.NativeReady;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.PoliciesLoaded;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.ProfileDataCacheCreated;
-import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninState.Phase;
+import org.chromium.google_apis.gaia.CoreAccountId;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,36 +52,64 @@ final class FullscreenSigninReducer {
     static Result reduce(FullscreenSigninState state, FullscreenSigninEvent event) {
         FullscreenSigninState.Builder builder = state.buildUpon();
         List<FullscreenSigninEffect> effects = new ArrayList<>();
+        @FullscreenSigninLoadPoint int loadPoint;
         switch (event) {
             case NativeReady _ -> {
-                // Native initialization only completes once, so a repeated event changes nothing.
-                if (state.isNativeLoaded()) return new Result(state, List.of());
+                assert !state.isNativeLoaded();
                 builder.setNativeLoaded();
                 // Record the native-initialized histogram before creating the cache, as the
                 // legacy mediator does, so the timing isn't inflated.
                 effects.add(RecordNativeInitialized.INSTANCE);
                 effects.add(CreateProfileDataCache.INSTANCE);
+                // The accounts can't have loaded yet (they come from the cache), so the gate
+                // can't open here.
+                return new Result(builder.build(), effects);
             }
             case ProfileDataCacheCreated e -> {
-                List<AccountInfo> accounts = e.getAccounts();
-                if (accounts != null) onAccountsLoaded(builder, accounts);
+                List<CoreAccountId> accountIds = e.getAccountIds();
+                if (accountIds != null) onAccountsLoaded(builder, accountIds);
+                // The cache is created as soon as native is ready, so accounts that were already
+                // loaded by then make native the slowest load point.
+                loadPoint = FullscreenSigninLoadPoint.NATIVE_INITIALIZATION;
             }
-            case AccountsUpdated e -> onAccountsLoaded(builder, e.getAccounts());
+            case PoliciesLoaded _ -> {
+                assert !state.arePoliciesLoaded();
+                builder.setPoliciesLoaded();
+                loadPoint = FullscreenSigninLoadPoint.POLICY_LOAD;
+            }
+            case ChildAccountStatusLoaded _ -> {
+                assert !state.isChildStatusLoaded();
+                builder.setChildStatusLoaded();
+                loadPoint = FullscreenSigninLoadPoint.CHILD_STATUS_LOAD;
+            }
+            case AccountsUpdated e -> {
+                onAccountsLoaded(builder, e.getAccountIds());
+                loadPoint = FullscreenSigninLoadPoint.ACCOUNT_FETCHING;
+            }
         }
-        return new Result(builder.build(), effects);
+
+        FullscreenSigninState nextState = builder.build();
+        if (nextState.getPhase() == Phase.LOADING && nextState.isInitialLoadComplete()) {
+            nextState = nextState.buildUpon().setPhase(Phase.READY).build();
+            // Notify the delegate before recording the load histograms: they measure the time
+            // until this point, so they include showing the loaded screen.
+            effects.add(NotifyInitialLoadCompleted.INSTANCE);
+            effects.add(new RecordLoadCompleted(loadPoint));
+        }
+        return new Result(nextState, effects);
     }
 
     /** Updates the state for a newly loaded account list. */
     private static void onAccountsLoaded(
-            FullscreenSigninState.Builder builder, List<AccountInfo> accounts) {
-        builder.setSelectedAccount(selectAccount(accounts));
+            FullscreenSigninState.Builder builder, List<CoreAccountId> accountIds) {
+        builder.setAccountsLoaded().setSelectedAccountId(selectAccount(accountIds));
     }
 
     /** Selects the first account, or none if there are no accounts. */
-    private static @Nullable AccountInfo selectAccount(List<AccountInfo> accounts) {
+    private static @Nullable CoreAccountId selectAccount(List<CoreAccountId> accountIds) {
         // TODO(crbug.com/579875669): As in the legacy mediator, select the preselected (config)
         // or preferred account when there is one, and keep the current selection when the
         // accounts change.
-        return accounts.isEmpty() ? null : accounts.get(0);
+        return accountIds.isEmpty() ? null : accountIds.get(0);
     }
 }

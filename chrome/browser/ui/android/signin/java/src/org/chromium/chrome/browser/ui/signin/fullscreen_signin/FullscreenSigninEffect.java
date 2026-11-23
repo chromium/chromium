@@ -9,8 +9,7 @@ import org.chromium.build.annotations.NullMarked;
 /**
  * Side effects returned by {@link FullscreenSigninReducer} for the mediator to run.
  *
- * <p>Effects without data are singletons ({@code INSTANCE}), so they compare by identity. Effects
- * with data implement {@code equals()} and {@code hashCode()}.
+ * <p>Effects without data are singletons ({@code INSTANCE}), so they compare by identity.
  */
 @NullMarked
 sealed interface FullscreenSigninEffect {
@@ -29,5 +28,26 @@ sealed interface FullscreenSigninEffect {
         static final CreateProfileDataCache INSTANCE = new CreateProfileDataCache();
 
         private CreateProfileDataCache() {}
+    }
+
+    /** Calls {@code Delegate.onInitialLoadCompleted()}. */
+    final class NotifyInitialLoadCompleted implements FullscreenSigninEffect {
+        static final NotifyInitialLoadCompleted INSTANCE = new NotifyInitialLoadCompleted();
+
+        private NotifyInitialLoadCompleted() {}
+    }
+
+    /** Calls {@code Delegate.recordLoadCompletedHistograms(slowestLoadPoint)}. */
+    final class RecordLoadCompleted implements FullscreenSigninEffect {
+        private final @FullscreenSigninLoadPoint int mSlowestLoadPoint;
+
+        RecordLoadCompleted(@FullscreenSigninLoadPoint int slowestLoadPoint) {
+            mSlowestLoadPoint = slowestLoadPoint;
+        }
+
+        @FullscreenSigninLoadPoint
+        int getSlowestLoadPoint() {
+            return mSlowestLoadPoint;
+        }
     }
 }

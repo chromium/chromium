@@ -17,6 +17,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -37,6 +38,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -180,15 +182,10 @@ public class FullscreenSigninMediatorTest {
         mProfileSupplier.set(mProfileProviderMock);
 
         lenient().when(mDelegateMock.getProfileSupplier()).thenReturn(mProfileSupplier);
-        // TODO(crbug.com/579875669): Make these strict once FullscreenSigninMediator subscribes to
-        // all three load inputs.
-        lenient()
-                .when(mDelegateMock.getNativeInitializationPromise())
+        when(mDelegateMock.getNativeInitializationPromise())
                 .thenReturn(mNativeInitializationPromise);
-        lenient().when(mDelegateMock.getPolicyLoadListener()).thenReturn(mPolicyLoadListener);
-        lenient()
-                .when(mDelegateMock.getChildAccountStatusSupplier())
-                .thenReturn(mChildAccountStatusSupplier);
+        when(mDelegateMock.getPolicyLoadListener()).thenReturn(mPolicyLoadListener);
+        when(mDelegateMock.getChildAccountStatusSupplier()).thenReturn(mChildAccountStatusSupplier);
 
         // Policies and child account status are ready, while native initialization is fulfilled in
         // initializeNative().
@@ -219,18 +216,21 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testInitialLoadWaitsForNativeInitialization() {
-        assumeFalse(mIsStateMachineEnabled);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         createMediator();
         assertLoadingSpinnerVisibility(true);
         assertNoAccountIsDisplayed();
+        verify(mDelegateMock, never()).onInitialLoadCompleted();
         verify(mDelegateMock, never()).recordLoadCompletedHistograms(anyInt());
 
         initializeNative();
         assertLoadingSpinnerVisibility(false);
         assertSelectedAccountIsDisplayed(TestAccounts.ACCOUNT1);
-        verify(mDelegateMock)
+        InOrder inOrder = inOrder(mDelegateMock);
+        inOrder.verify(mDelegateMock).recordNativeInitializedHistogram();
+        inOrder.verify(mDelegateMock).onInitialLoadCompleted();
+        inOrder.verify(mDelegateMock)
                 .recordLoadCompletedHistograms(FullscreenSigninLoadPoint.NATIVE_INITIALIZATION);
     }
 
@@ -250,7 +250,6 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testInitialLoadWaitsForAccounts() {
-        assumeFalse(mIsStateMachineEnabled);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         try (var blocker = mAccountManagerTestRule.blockGetAccountsUpdate()) {
@@ -270,7 +269,6 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testInitialLoadWaitsForPolicyLoad() {
-        assumeFalse(mIsStateMachineEnabled);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mPolicyLoadListener = new OneshotSupplierImpl<>();
         when(mDelegateMock.getPolicyLoadListener()).thenReturn(mPolicyLoadListener);
@@ -290,7 +288,6 @@ public class FullscreenSigninMediatorTest {
 
     @Test
     public void testInitialLoadWaitsForChildAccountStatusLoad() {
-        assumeFalse(mIsStateMachineEnabled);
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mChildAccountStatusSupplier = new OneshotSupplierImpl<>();
         when(mDelegateMock.getChildAccountStatusSupplier()).thenReturn(mChildAccountStatusSupplier);
@@ -322,6 +319,8 @@ public class FullscreenSigninMediatorTest {
         RobolectricUtil.runAllBackgroundAndUi();
 
         assertSelectedAccountIsDisplayed(updatedAccount);
+        // The initial load completes only once, even though the accounts changed afterwards.
+        verify(mDelegateMock).onInitialLoadCompleted();
     }
 
     @Test

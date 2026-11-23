@@ -24,7 +24,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -1760,7 +1759,6 @@ public class SigninFirstRunFragmentTest {
         onView(withId(R.id.signin_fre_continue_button)).check(matches(not(isDisplayed())));
         onView(withId(R.id.signin_fre_dismiss_button)).check(matches(not(isDisplayed())));
         onView(withId(R.id.signin_fre_footer)).check(matches(not(isDisplayed())));
-        verify(mPolicyLoadListenerMock, atLeastOnce()).onAvailable(notNull());
     }
 
     private void checkFragmentWithChildAccount(

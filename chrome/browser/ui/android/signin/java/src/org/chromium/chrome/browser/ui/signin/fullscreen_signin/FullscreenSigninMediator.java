@@ -20,11 +20,16 @@ import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninCoordinator.Delegate;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.CreateProfileDataCache;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.NotifyInitialLoadCompleted;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.RecordLoadCompleted;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEffect.RecordNativeInitialized;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.AccountsUpdated;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.ChildAccountStatusLoaded;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.NativeReady;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.PoliciesLoaded;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninEvent.ProfileDataCacheCreated;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninReducer.Result;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninState.Phase;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
@@ -32,10 +37,12 @@ import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityManager.RefreshTokensLoadingState;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -55,16 +62,16 @@ class FullscreenSigninMediator implements FullscreenSigninCoordinator.Mediator {
             new ProfileDataCache.Observer() {
                 @Override
                 public void onAccountsUpdated(List<DisplayableProfileData> accounts) {
-                    List<AccountInfo> loadedAccounts = getAccountsIfLoaded();
-                    if (loadedAccounts != null) dispatch(new AccountsUpdated(loadedAccounts));
+                    List<CoreAccountId> accountIds = getAccountIdsIfLoaded();
+                    if (accountIds != null) dispatch(new AccountsUpdated(accountIds));
                 }
 
                 @Override
                 public void onProfileDataUpdated(DisplayableProfileData profileData) {
                     // The selected account's name or avatar can arrive after its account.
-                    AccountInfo selectedAccount = mState.getSelectedAccount();
-                    if (selectedAccount != null
-                            && selectedAccount.getId().equals(profileData.getAccountId())) {
+                    CoreAccountId selectedAccountId = mState.getSelectedAccountId();
+                    if (selectedAccountId != null
+                            && selectedAccountId.equals(profileData.getAccountId())) {
                         render();
                     }
                 }
@@ -112,6 +119,20 @@ class FullscreenSigninMediator implements FullscreenSigninCoordinator.Mediator {
                         result -> {
                             onNativeLoaded();
                         });
+        // An input that already has a value counts as loaded now (the suppliers post their
+        // callbacks, which could otherwise arrive after other inputs).
+        if (mDelegate.getPolicyLoadListener().get() != null) {
+            onPolicyLoad();
+        } else {
+            mDelegate.getPolicyLoadListener().onAvailable(hasPolicies -> onPolicyLoad());
+        }
+        if (mDelegate.getChildAccountStatusSupplier().get() != null) {
+            onChildAccountStatusAvailable();
+        } else {
+            mDelegate
+                    .getChildAccountStatusSupplier()
+                    .onAvailable(ignored -> onChildAccountStatusAvailable());
+        }
 
         SigninMetricsUtils.logSigninStarted(mAccessPoint);
         render();
@@ -201,6 +222,14 @@ class FullscreenSigninMediator implements FullscreenSigninCoordinator.Mediator {
         dispatch(new NativeReady());
     }
 
+    private void onPolicyLoad() {
+        dispatch(new PoliciesLoaded());
+    }
+
+    private void onChildAccountStatusAvailable() {
+        dispatch(new ChildAccountStatusLoaded());
+    }
+
     /**
      * Reduces {@code event}, renders the new state and runs the resulting effects in order. An
      * event dispatched while another is being handled (from {@link #render()} or an effect) is
@@ -217,6 +246,8 @@ class FullscreenSigninMediator implements FullscreenSigninCoordinator.Mediator {
         while (!mDestroyed && !mPendingEvents.isEmpty()) {
             Result result = FullscreenSigninReducer.reduce(mState, mPendingEvents.remove());
             mState = result.getState();
+            // Render before running effects, so the delegate sees the model for the new state (e.g.
+            // the FRE swaps its layout when told the initial load completed).
             render();
             for (FullscreenSigninEffect effect : result.getEffects()) {
                 if (mDestroyed) break;
@@ -248,35 +279,47 @@ class FullscreenSigninMediator implements FullscreenSigninCoordinator.Mediator {
                 profileDataCache.addObserver(mProfileDataCacheObserver);
                 // The cache doesn't notify its observers about the accounts it already has, so
                 // send them with ProfileDataCacheCreated.
-                dispatch(new ProfileDataCacheCreated(getAccountsIfLoaded()));
+                dispatch(new ProfileDataCacheCreated(getAccountIdsIfLoaded()));
             }
+            case NotifyInitialLoadCompleted _ -> mDelegate.onInitialLoadCompleted();
+            case RecordLoadCompleted e ->
+                    mDelegate.recordLoadCompletedHistograms(e.getSlowestLoadPoint());
         }
     }
 
     private void render() {
+        mModel.set(
+                FullscreenSigninProperties.SHOW_INITIAL_LOAD_PROGRESS_SPINNER,
+                mState.getPhase() == Phase.LOADING);
         // An account can only be selected once the cache has loaded the accounts.
-        @Nullable AccountInfo selectedAccount = mState.getSelectedAccount();
+        @Nullable CoreAccountId selectedAccountId = mState.getSelectedAccountId();
         mModel.set(
                 FullscreenSigninProperties.BOTTOM_GROUP_ACCOUNT_DATA,
-                selectedAccount == null
+                selectedAccountId == null
                         ? null
-                        : assertNonNull(mProfileDataCache).getById(selectedAccount.getId()));
+                        : assertNonNull(mProfileDataCache).getById(selectedAccountId));
     }
 
     /**
-     * Returns the accounts, or null if they haven't finished loading.
+     * Returns the account IDs, or null if the accounts haven't finished loading.
      *
      * <p>Accounts are read only from IdentityManager. This assumes
      * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS is enabled (so {@link ProfileDataCache} also reads
      * from IdentityManager), which must be the default before this mediator launches.
      */
-    private @Nullable List<AccountInfo> getAccountsIfLoaded() {
+    private @Nullable List<CoreAccountId> getAccountIdsIfLoaded() {
         if (!assertNonNull(mProfileDataCache).getAccounts().isFulfilled()) return null;
         IdentityManager identityManager = assertNonNull(mIdentityManager);
         // As in ProfileDataCache, a failed load counts as no accounts.
-        return identityManager.getRefreshTokensLoadingState() == RefreshTokensLoadingState.SUCCEEDED
-                ? identityManager.getExtendedAccountInfoForAccountsWithRefreshToken()
-                : List.of();
+        if (identityManager.getRefreshTokensLoadingState() != RefreshTokensLoadingState.SUCCEEDED) {
+            return List.of();
+        }
+        List<CoreAccountId> accountIds = new ArrayList<>();
+        for (AccountInfo account :
+                identityManager.getExtendedAccountInfoForAccountsWithRefreshToken()) {
+            accountIds.add(account.getId());
+        }
+        return accountIds;
     }
 
     private void onSelectedAccountClicked() {
