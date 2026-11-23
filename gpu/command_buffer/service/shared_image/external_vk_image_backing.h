@@ -80,7 +80,7 @@ class GPU_GLES2_EXPORT ExternalVkImageBacking final
       VulkanCommandPool* command_pool,
       bool use_separate_gl_texture,
       bool enable_webgpu_on_vk_via_gl_interop,
-      gfx::GpuMemoryBufferHandle handle = gfx::GpuMemoryBufferHandle(),
+      scoped_refptr<gfx::NativePixmap> pixmap = nullptr,
       std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
 
   ExternalVkImageBacking(const ExternalVkImageBacking&) = delete;
