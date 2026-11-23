@@ -473,6 +473,36 @@ public final class SafetyHubTest {
     }
 
     @Test
+    @LargeTest
+    @Feature({"SafetyHubPermissions"})
+    public void testAbusiveNotificationPermissionsToSiteSettings() {
+        mUnusedPermissionsBridge.setPermissionsDataForReview(
+                new PermissionsData[] {PERMISSIONS_DATA_3});
+        mPermissionsFragmentTestRule.startSettingsActivity();
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                ABUSIVE_NOTIFICATION_REVOCATION_INTERACTIONS_HISTOGRAM_NAME,
+                                PermissionsModuleInteractions.GO_TO_SETTINGS)
+                        .expectIntRecord(
+                                PERMISSIONS_INTERACTIONS_HISTOGRAM_NAME,
+                                PermissionsModuleInteractions.GO_TO_SETTINGS)
+                        .build();
+
+        onView(withText(PERMISSIONS_DATA_3.getOrigin())).check(matches(isDisplayed()));
+
+        openActionBarOverflowOrOptionsMenu(mPermissionsFragmentTestRule.getActivity());
+        waitForView(withText(R.string.safety_hub_go_to_site_settings_button)).click();
+        waitForView(
+                withText(R.string.prefs_site_settings),
+                anyOf(
+                        withParent(withId(R.id.action_bar)),
+                        withParent(withId(R.id.settings_title_in_detailed_pane))));
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
     @MediumTest
     @Feature({"SafetyHubSafeBrowsing"})
     public void testSafeBrowsingModule() {

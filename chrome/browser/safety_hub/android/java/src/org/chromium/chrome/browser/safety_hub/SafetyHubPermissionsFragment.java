@@ -124,6 +124,9 @@ public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
         if (item.getItemId() == R.id.safety_hub_subpage_menu_item) {
             startSettings(SiteSettings.class);
             recordRevokedPermissionsInteraction(PermissionsModuleInteractions.GO_TO_SETTINGS);
+            maybeRecordAbusiveNotificationRevokedInteraction(
+                    mUnusedSitePermissionsBridge.getRevokedPermissions(),
+                    PermissionsModuleInteractions.GO_TO_SETTINGS);
             return true;
         }
         return false;
