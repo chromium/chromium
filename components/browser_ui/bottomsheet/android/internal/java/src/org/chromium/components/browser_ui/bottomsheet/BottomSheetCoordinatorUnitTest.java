@@ -3849,4 +3849,65 @@ public class BottomSheetCoordinatorUnitTest {
         int expectedHeight = Math.round((2000 - 2 * lffSheet.getContainerBottomMargin()) * 0.5f);
         assertEquals(expectedHeight, lffSheet.getProjectedContentHeightForIme());
     }
+
+    @Test
+    public void testGetProjectedContentHeightForIme_AttachedContainer_NonConsumedTopInset() {
+        int contentTop = setUpAttachedContainerHalfSheet(/* rootPaddingTop= */ 100);
+
+        // Container height = 2000 - contentTop - 100 (root padding) - 800 (IME).
+        int expected = Math.round(0.7f * (2000 - contentTop - 100 - 800));
+        assertEquals(expected, mBottomSheet.getProjectedContentHeightForIme());
+    }
+
+    @Test
+    public void
+            testGetProjectedContentHeightForIme_AttachedContainer_PendingTopInsetBeforeLayout() {
+        int contentTop = setUpAttachedContainerHalfSheet(/* rootPaddingTop= */ 0);
+
+        // Omit a follow-up layout pass so containerLoc[1] - decorLoc[1] stays at contentTop and
+        // Math.max(containerLoc[1] - decorLoc[1], mTopInset) picks the pending mTopInset floor.
+        mBottomSheet.onTopInsetChanged(contentTop + 100);
+
+        int expected = Math.round(0.7f * (2000 - contentTop - 100 - 800));
+        assertEquals(expected, mBottomSheet.getProjectedContentHeightForIme());
+    }
+
+    @Test
+    public void testGetProjectedContentHeightForIme_AttachedContainer_ConsumedTopInsetZeroMargin() {
+        int contentTop = setUpAttachedContainerHalfSheet(/* rootPaddingTop= */ 0);
+
+        // When root padding and topMargin are both 0, statusBars().top is not subtracted.
+        int expected = Math.round(0.7f * (2000 - contentTop - 800));
+        assertEquals(expected, mBottomSheet.getProjectedContentHeightForIme());
+    }
+
+    private int setUpAttachedContainerHalfSheet(int rootPaddingTop) {
+        ((ViewGroup) mSheetContainer.getParent()).removeView(mSheetContainer);
+        FrameLayout root = new FrameLayout(mActivity);
+        root.setPadding(0, rootPaddingTop, 0, 0);
+        mSheetContainer.setLayoutParams(
+                new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        root.addView(mSheetContainer);
+        mActivity.setContentView(root);
+
+        View decorView = mActivity.getWindow().getDecorView();
+        decorView.measure(
+                View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(2000, View.MeasureSpec.EXACTLY));
+        decorView.layout(0, 0, 1080, 2000);
+
+        BottomSheetContent content =
+                buildContent(/* supportsLargeFormFactor= */ false, 0.7f, HeightMode.RESIZE_CONTENT);
+        mBottomSheet.showContent(content);
+        mBottomSheet.setSheetState(SheetState.HALF, false);
+
+        WindowInsetsCompat insets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.statusBars(), Insets.of(0, 100, 0, 0))
+                        .setInsets(WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, 800))
+                        .build();
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insets);
+        return ((View) root.getParent()).getTop();
+    }
 }

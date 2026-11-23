@@ -1623,6 +1623,13 @@ class BottomSheetCoordinator
         @Px
         int topInset =
                 insets != null ? insets.getInsets(WindowInsetsCompat.Type.statusBars()).top : 0;
+        if (mSheetContainer.isAttachedToWindow() && mSheetContainer.isLaidOut()) {
+            int[] containerLoc = new int[2];
+            int[] decorLoc = new int[2];
+            mSheetContainer.getLocationInWindow(containerLoc);
+            decorView.getLocationInWindow(decorLoc);
+            topInset = Math.max(containerLoc[1] - decorLoc[1], mTopInset);
+        }
 
         return mMediator.getProjectedContentHeightForIme(
                 insets, decorHeight, topInset, mAppHeaderHeight, getHandlebarHeight());
