@@ -399,8 +399,10 @@ void RequestContentScript::InstructRenderProcessToInject(
     return;
   }
 
-  ScriptInjectionTracker::WillExecuteCode(base::PassKey<RequestContentScript>(),
-                                          main_frame, *extension);
+  if (!script_.js_scripts().empty()) {
+    ScriptInjectionTracker::WillExecuteCode(
+        base::PassKey<RequestContentScript>(), main_frame, *extension);
+  }
   local_frame->ExecuteDeclarativeScript(
       sessions::SessionTabHelper::IdForTab(contents).id(), extension->id(),
       script_.id(), url);
