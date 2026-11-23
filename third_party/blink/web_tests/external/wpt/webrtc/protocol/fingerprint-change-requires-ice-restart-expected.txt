@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] setRemoteDescription rejects a changed DTLS fingerprint without an ICE restart
+  assert_unreached: Should have rejected: A changed remote fingerprint without an ICE restart must be rejected Reached unreachable code
+[FAIL] setRemoteDescription rejects a changed DTLS fingerprint in a re-offer without an ICE restart
+  assert_unreached: Should have rejected: A changed remote fingerprint in a re-offer without an ICE restart must be rejected Reached unreachable code
+Harness: the test ran to completion.
+
