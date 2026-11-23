@@ -1476,7 +1476,17 @@ class BottomSheetCoordinator
     }
 
     void setBottomMargin(@Px int bottomMargin) {
+        @Px int previousEdgeToEdgeBottomInset = getEdgeToEdgeBottomInset();
         mMediator.setBottomMargin(bottomMargin);
+        if (getCurrentSheetContent() == null
+                || getEdgeToEdgeBottomInset() == previousEdgeToEdgeBottomInset) {
+            return;
+        }
+        // The edge-to-edge bottom inset only applies while the container has no bottom margin.
+        // Apply the content padding that depends on it now, before the layout pass that resizes
+        // the container. Padding changed from a layout callback during that pass would not be laid
+        // out, leaving the bottom of the content clipped (crbug.com/572884371).
+        updateContentContainerHeight();
     }
 
     void onSheetBackgroundColorOverrideChanged() {
@@ -1571,6 +1581,11 @@ class BottomSheetCoordinator
             }
             endAnimations();
         }
+    }
+
+    /** Seeks the running settle animation to {@code fraction} without ending it. */
+    void setSettleAnimationFractionForTesting(float fraction) {
+        assumeNonNull(mSettleAnimator).setCurrentFraction(fraction);
     }
 
     /**

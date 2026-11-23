@@ -641,6 +641,101 @@ public class BottomSheetLayoutTest {
         assertEquals(measuresBeforeDetachedLayout, viewB.mMeasureCount);
     }
 
+    /**
+     * Opening a modal WRAP_CONTENT sheet while it is anchored above bottom controls shows the scrim
+     * partway through the settle animation, which lifts the sheet over the controls and removes the
+     * container's bottom margin. The edge-to-edge inset then applies, and the content must be laid
+     * out above it rather than keep the height it had before the inset was padded.
+     */
+    @Test
+    public void testWrapContent_ModalOpenOverBottomControls_LaysOutContentAboveInset() {
+        mE2eBottomInsetDp = 24;
+        int e2eBottomInsetPx = ViewUtils.dpToPx(mActivity, mE2eBottomInsetDp);
+        mController.runSheetInitializerForTesting();
+        // Bottom controls as tall as the inset, like the edge-to-edge bottom chin.
+        mController.setBottomControlsOffset(e2eBottomInsetPx);
+        layoutOuterRoot(CONTAINER_WIDTH, CONTAINER_HEIGHT);
+
+        ReflowContentView contentView =
+                new ReflowContentView(mActivity, /* narrowWidthCutoff= */ Integer.MAX_VALUE);
+        contentView.setNarrowBaseHeight(CONTAINER_HEIGHT * 2);
+        TestSheetContent content = new TestSheetContent(mActivity);
+        content.setContentView(contentView);
+        content.mFullRatio = HeightMode.WRAP_CONTENT;
+        content.mHalfRatio = HeightMode.DISABLED;
+        content.mShowHandlebar = true;
+
+        assertTrue(mController.requestShowContent(content, /* animate= */ true));
+        layoutContainerOnly(CONTAINER_WIDTH, CONTAINER_HEIGHT);
+        assertEquals(e2eBottomInsetPx, mController.getContainerBottomMargin());
+
+        BottomSheetCoordinator sheet = mController.getBottomSheetForTesting();
+        sheet.setSettleAnimationFractionForTesting(0.2f);
+        assertEquals(SheetState.SCROLLING, mController.getSheetState());
+        assertTrue(mController.isSheetOpen());
+        assertEquals(0, mController.getContainerBottomMargin());
+        assertEquals(e2eBottomInsetPx, mController.getEdgeToEdgeBottomInset());
+
+        layoutContainerOnly(CONTAINER_WIDTH, CONTAINER_HEIGHT);
+        assertContentLaidOutAboveBottomPadding(sheet, contentView, e2eBottomInsetPx);
+
+        sheet.endAnimationsForTesting();
+        layoutContainerOnly(CONTAINER_WIDTH, CONTAINER_HEIGHT);
+        assertEquals(SheetState.FULL, mController.getSheetState());
+        assertContentLaidOutAboveBottomPadding(sheet, contentView, e2eBottomInsetPx);
+    }
+
+    private static void assertContentLaidOutAboveBottomPadding(
+            BottomSheetCoordinator sheet, View contentView, int expectedBottomPadding) {
+        View contentContainer = sheet.getView().findViewById(R.id.bottom_sheet_content);
+        assertEquals(expectedBottomPadding, contentContainer.getPaddingBottom());
+        assertEquals(
+                "The content must be laid out within the content container's bottom padding.",
+                contentContainer.getHeight() - expectedBottomPadding,
+                contentView.getBottom());
+    }
+
+    @Test
+    public void testBottomControlsScroll_UpdatesContentPaddingOnlyWhenMarginReachesOrLeavesZero() {
+        mE2eBottomInsetDp = 24;
+        int e2eBottomInsetPx = ViewUtils.dpToPx(mActivity, mE2eBottomInsetDp);
+        mController.runSheetInitializerForTesting();
+        mController.setBottomControlsOffset(80);
+        layoutOuterRoot(CONTAINER_WIDTH, CONTAINER_HEIGHT);
+
+        TestSheetContent content = new TestSheetContent(mActivity);
+        content.mPeekHeight = 100;
+        content.mHasCustomScrimLifecycle = true;
+        assertTrue(mController.requestShowContent(content, /* animate= */ false));
+        layoutOuterRoot(CONTAINER_WIDTH, CONTAINER_HEIGHT);
+        View contentContainer =
+                mController
+                        .getBottomSheetForTesting()
+                        .getView()
+                        .findViewById(R.id.bottom_sheet_content);
+        assertEquals(80, mController.getContainerBottomMargin());
+        assertEquals(0, contentContainer.getPaddingBottom());
+
+        mController.setBottomControlsOffset(40);
+        assertEquals(40, mController.getContainerBottomMargin());
+        assertTrue(mSheetContainer.isLayoutRequested());
+        assertFalse(
+                "Nothing should ask the content to lay out again while the margin stays non-zero.",
+                contentContainer.isLayoutRequested());
+        assertEquals(0, contentContainer.getPaddingBottom());
+        layoutOuterRoot(CONTAINER_WIDTH, CONTAINER_HEIGHT);
+
+        mController.setBottomControlsOffset(0);
+        assertEquals(e2eBottomInsetPx, contentContainer.getPaddingBottom());
+        layoutOuterRoot(CONTAINER_WIDTH, CONTAINER_HEIGHT);
+        assertEquals(e2eBottomInsetPx, contentContainer.getPaddingBottom());
+        assertFalse(mSheetContainer.isLayoutRequested());
+        assertFalse(contentContainer.isLayoutRequested());
+
+        mController.setBottomControlsOffset(40);
+        assertEquals(0, contentContainer.getPaddingBottom());
+    }
+
     @Test
     public void testCoversBottomControls_AnimatedCollapseAndHideE2eInsetTransitions() {
         mE2eBottomInsetDp = 24;

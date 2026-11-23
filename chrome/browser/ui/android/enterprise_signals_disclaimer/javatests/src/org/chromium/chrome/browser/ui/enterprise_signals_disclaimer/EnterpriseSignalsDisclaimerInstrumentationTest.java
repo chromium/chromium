@@ -40,6 +40,7 @@ import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.HistogramBucket;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
@@ -169,9 +170,10 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
                 .perform(scrollTo())
                 .check(matches(isDisplayed()));
 
-        // The buttons are pinned below the scroll view, so they must be visible without scrolling.
-        onView(withId(R.id.disclaimer_accept_button)).check(matches(isDisplayed()));
-        onView(withId(R.id.disclaimer_cancel_button)).check(matches(isDisplayed()));
+        // The buttons are pinned below the scroll view, so they must be clickable without
+        // scrolling. Espresso only clicks views that are at least 90% displayed.
+        waitForView(withId(R.id.disclaimer_accept_button), ViewElement.displayingAtLeastOption(90));
+        waitForView(withId(R.id.disclaimer_cancel_button), ViewElement.displayingAtLeastOption(90));
     }
 
     private void waitForDisclaimerNotShowing() {
@@ -474,7 +476,6 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
 
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.PHONE) // TODO(crbug.com/572884371): Re-enable.
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
     public void clickingSignOutSignsOutAndHidesDialog() {
         final StartupEnterpriseSignalsDisclaimerController controller =
