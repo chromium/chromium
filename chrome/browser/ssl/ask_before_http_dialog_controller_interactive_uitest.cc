@@ -10,8 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "build/branding_buildflags.h"
-#include "build/build_config.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
@@ -27,7 +25,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/core/features.h"
 #include "components/tabs/public/tab_interface.h"
@@ -58,10 +56,6 @@
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/window/dialog_client_view.h"
 #include "ui/views/window/dialog_delegate.h"
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/test/base/scoped_channel_override.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 
 using security_interstitials::MetricsHelper;
 using security_interstitials::https_only_mode::BlockingResult;
@@ -229,12 +223,6 @@ class AskBeforeHttpDialogControllerUiTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     mock_cert_verifier_.SetUpCommandLine(command_line);
-    if (test_type() ==
-        AskBeforeHttpDialogControllerTestType::kHttpsFirstModeIsolatedMode) {
-      command_line->AppendSwitch(
-          enterprise_isolated_mode::switches::
-              kForceEnterpriseIsolatedModeReplacesIncognito);
-    }
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -307,10 +295,10 @@ class AskBeforeHttpDialogControllerUiTest
   }
 
  private:
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
-  chrome::ScopedChannelOverride channel_override_{
-      chrome::ScopedChannelOverride::Channel::kDev};
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_{
+          test_type() ==
+          AskBeforeHttpDialogControllerTestType::kHttpsFirstModeIsolatedMode};
   // TODO(https://crbug.com/423465927): Explore a better approach to make the
   // existing tests run with the prewarm feature enabled.
   test::ScopedPrewarmFeatureList prewarm_feature_list_{

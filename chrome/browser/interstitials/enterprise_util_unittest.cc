@@ -20,8 +20,7 @@
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_test_utils.h"
-#include "components/enterprise/isolated_mode/isolated_mode_features.h"
-#include "components/enterprise/isolated_mode/prefs.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/prefs/pref_service.h"
@@ -203,13 +202,8 @@ class InterstitialEnterpriseUtilOtrTest
  public:
   void SetUp() override {
     InterstitialEnterpriseUtilTest::SetUp();
-    std::vector<base::test::FeatureRef> enabled_features = {
-        safe_browsing::kEnhancedFieldsForSecOps};
-    if (GetParam() == OtrProfileType::kEnterpriseIsolatedMode) {
-      enabled_features.push_back(
-          enterprise_isolated_mode::kEnableEnterpriseIsolatedMode);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, {});
+    scoped_feature_list_.InitAndEnableFeature(
+        safe_browsing::kEnhancedFieldsForSecOps);
   }
 
   Profile* CreateOtrProfile() {
@@ -217,18 +211,16 @@ class InterstitialEnterpriseUtilOtrTest
       case OtrProfileType::kGuest:
         return profile_manager_.CreateGuestProfile()->GetPrimaryOTRProfile(
             /*create_if_needed=*/true);
-      case OtrProfileType::kEnterpriseIsolatedMode: {
-        TestingProfile* original_profile =
-            profile_manager_.CreateTestingProfile("isolated_mode_parent");
-        original_profile->GetPrefs()->SetInteger(
-            enterprise_isolated_mode::kEnterpriseIsolatedModeSettings,
-            static_cast<int>(
-                enterprise_isolated_mode::IsolatedModeSetting::kEnabled));
-        return original_profile->GetPrimaryOTRProfile(
-            /*create_if_needed=*/true);
-      }
+      case OtrProfileType::kEnterpriseIsolatedMode:
+        return profile_manager_.CreateTestingProfile("isolated_mode_parent")
+            ->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     }
   }
+
+ private:
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_{GetParam() ==
+                            OtrProfileType::kEnterpriseIsolatedMode};
 };
 
 INSTANTIATE_TEST_SUITE_P(
