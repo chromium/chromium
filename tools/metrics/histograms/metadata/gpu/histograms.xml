@@ -1263,6 +1263,7 @@ chromium-metrics-reviews@google.com.
   <owner>magchen@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     The time between the GPU process start and the collection of GPU info during
     the process's startup phase. The time range is between 5ms and 90s. Emitted
@@ -1290,6 +1291,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="GPU.GPUProcessLaunchTime" units="ms"
     expires_after="2027-03-21">
   <owner>vmiura@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
   <summary>
     Startup time of the GPU process as measured by the GPU process host.
   </summary>
