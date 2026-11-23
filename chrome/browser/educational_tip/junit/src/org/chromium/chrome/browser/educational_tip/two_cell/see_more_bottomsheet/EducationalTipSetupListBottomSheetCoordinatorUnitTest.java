@@ -15,6 +15,7 @@ import static org.chromium.chrome.browser.educational_tip.two_cell.see_more_bott
 import static org.chromium.chrome.browser.educational_tip.two_cell.see_more_bottomsheet.EducationalTipSetupListBottomSheetProperties.BOTTOM_SHEET_TITLE;
 
 import android.content.Context;
+import android.widget.ScrollView;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -23,6 +24,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -35,6 +37,7 @@ import org.chromium.chrome.browser.educational_tip.EducationalTipCardProviderFac
 import org.chromium.chrome.browser.educational_tip.R;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
@@ -97,7 +100,16 @@ public class EducationalTipSetupListBottomSheetCoordinatorUnitTest {
                 "Bottom sheet list items should be set",
                 model.get(BOTTOM_SHEET_LIST_ITEMS),
                 mListOfEducationalTipSetupListBottomSheetItem);
-        verify(mBottomSheetController).requestShowContent(any(), /* animate= */ eq(true));
+        ArgumentCaptor<BottomSheetContent> contentCaptor =
+                ArgumentCaptor.forClass(BottomSheetContent.class);
+        verify(mBottomSheetController)
+                .requestShowContent(contentCaptor.capture(), /* animate= */ eq(true));
+        BottomSheetContent content = contentCaptor.getValue();
+        Assert.assertTrue(
+                "Bottom sheet content should use the built-in handlebar", content.showHandlebar());
+        Assert.assertTrue(
+                "Root content view should be a flattened ScrollView",
+                content.getContentView() instanceof ScrollView);
     }
 
     @Test

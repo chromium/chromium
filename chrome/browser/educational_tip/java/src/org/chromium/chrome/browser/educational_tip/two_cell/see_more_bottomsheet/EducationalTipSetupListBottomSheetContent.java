@@ -76,6 +76,11 @@ public class EducationalTipSetupListBottomSheetContent implements BottomSheetCon
     }
 
     @Override
+    public boolean showHandlebar() {
+        return true;
+    }
+
+    @Override
     public @Nullable String getSheetContentDescription(Context context) {
         return mContext.getString(
                 R.string.educational_tip_see_more_bottom_sheet_content_description);
