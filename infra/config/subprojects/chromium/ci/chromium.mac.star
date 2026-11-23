@@ -583,6 +583,9 @@ ci.thin_tester(
                 mixins = [
                     targets.mixin(
                         enable_rts_filtering = True,
+                        swarming = targets.swarming(
+                            shards = 3,
+                        ),
                     ),
                     "mac_26_arm64",
                 ],
