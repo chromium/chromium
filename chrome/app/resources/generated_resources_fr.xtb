@@ -561,7 +561,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1426410128494586442">Oui</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> est bloqué</translation>
 <translation id="1427179946227469514">Ton de la voix de la synthèse vocale</translation>
-<translation id="1428373049397869723">Vous pouvez ouvrir et modifier les fichiers compatibles avec cette appli depuis le Finder ou d'autres applis. Pour contrôler quels fichiers s'ouvrent dans cette appli par défaut, découvrez comment <ph name="BEGIN_LINK" />définir les applis par défaut sur votre appareil<ph name="END_LINK" />.</translation>
+<translation id="1428373049397869723">Vous pouvez ouvrir et modifier les fichiers compatibles avec cette application depuis le Finder ou d'autres applications. Pour contrôler quels fichiers s'ouvrent dans cette application par défaut, découvrez comment <ph name="BEGIN_LINK" />définir les applications par défaut sur votre appareil<ph name="END_LINK" />.</translation>
 <translation id="1428657116642077141">Vous avez enregistré une note concernant un mot de passe sur ce site. Pour l'afficher, sélectionnez "Gérer les mots de passe" dans la barre de recherche ou d'adresse.</translation>
 <translation id="1429300045468813835">Toutes les entrées ont été supprimées</translation>
 <translation id="1430915738399379752">Imprimer</translation>
@@ -855,7 +855,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1644574205037202324">Historique</translation>
 <translation id="1644852018355792105">Saisissez le mot de passe Bluetooth pour l'appareil <ph name="DEVICE" /></translation>
 <translation id="1645004815457365098">Source inconnue</translation>
-<translation id="1647408325348388858">Ouvrir et modifier <ph name="FILE_NAME" /> dans cette appli Web ?</translation>
+<translation id="1647408325348388858">Ouvrir et modifier <ph name="FILE_NAME" /> dans cette application Web ?</translation>
 <translation id="1647986356840967552">Page précédente</translation>
 <translation id="1648401604841225489">Déverrouiller vos clés d'accès</translation>
 <translation id="1648439345221797326">Ctrl+Maj+<ph name="TOP_ROW_KEY" /></translation>
