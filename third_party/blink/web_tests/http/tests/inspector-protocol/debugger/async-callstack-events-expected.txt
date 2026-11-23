@@ -1,0 +1,38 @@
+Tests asynchronous call stacks for various DOM events.
+
+Set timer for test function.
+Captured call stacks in no particular order:
+Call stack:
+    0) onHashChange1 (async-callstack-events.js:47)
+    [hashchange]
+    0) doTestHashChange (async-callstack-events.js:41)
+    1) testFunction (async-callstack-events.js:6)
+    [setTimeout]
+    0) (anonymous) (:1)
+
+Call stack:
+    0) onHashChange2 (async-callstack-events.js:53)
+    [hashchange]
+    0) doTestHashChange (async-callstack-events.js:41)
+    1) testFunction (async-callstack-events.js:6)
+    [setTimeout]
+    0) (anonymous) (:1)
+
+Call stack:
+    0) onSelectionChange (async-callstack-events.js:34)
+    [selectionchange]
+    0) setSelection (async-callstack-events.js:19)
+    1) doTestSelectionChange (async-callstack-events.js:26)
+    2) testFunction (async-callstack-events.js:6)
+    [setTimeout]
+    0) (anonymous) (:1)
+
+Call stack:
+    0) onVideoPlay (async-callstack-events.js:66)
+    [play]
+    0) doTestMediaEvents (async-callstack-events.js:60)
+    1) testFunction (async-callstack-events.js:6)
+    [setTimeout]
+    0) (anonymous) (:1)
+
+
