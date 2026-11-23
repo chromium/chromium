@@ -460,17 +460,12 @@ action("regex_patterns_inl_h") {
          rebase_path(outputs, root_build_dir)
 }
 
-python_binary("transpile_entity_schema") {
-  visibility = [ ":entity_schema_enums_and_functions" ]
-  script = "data_model/autofill_ai/transpile_entity_schema.py"
-}
-
-python_action("entity_schema_enums_and_functions") {
+action_with_pydeps("entity_schema_enums_and_functions") {
   visibility = [ ":*" ]
 
   sources = [ "data_model/autofill_ai/entity_schema.json" ]
 
-  python_binary = ":transpile_entity_schema"
+  script = "data_model/autofill_ai/transpile_entity_schema.py"
   outputs = [
     "$target_gen_dir/data_model/autofill_ai/entity_type_names.h",
     "$target_gen_dir/data_model/autofill_ai/entity_type_funcs.cc",

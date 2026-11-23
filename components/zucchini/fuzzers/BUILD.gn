@@ -72,22 +72,13 @@ proto_library("zucchini_file_pair_proto") {
   sources = [ "file_pair.proto" ]
 }
 
-python_binary("generate_fuzzer_data") {
-  testonly = true
-  visibility = [
-    ":zucchini_raw_apply_seed",
-    ":zucchini_ztf_apply_seed",
-  ]
-  script = "generate_fuzzer_data.py"
-}
-
 # Ensure protoc is available.
 # Disabled on Windows due to crbug/844826.
 if (current_toolchain == host_toolchain && !is_win) {
   # Raw Apply Fuzzer Seed:
-  python_action("zucchini_raw_apply_seed") {
+  action_with_pydeps("zucchini_raw_apply_seed") {
     testonly = true
-    python_binary = ":generate_fuzzer_data"
+    script = "generate_fuzzer_data.py"
 
     args = [
       "--raw",
@@ -116,9 +107,9 @@ if (current_toolchain == host_toolchain && !is_win) {
   }
 
   # ZTF Apply Fuzzer Seed:
-  python_action("zucchini_ztf_apply_seed") {
+  action_with_pydeps("zucchini_ztf_apply_seed") {
     testonly = true
-    python_binary = ":generate_fuzzer_data"
+    script = "generate_fuzzer_data.py"
 
     # *.ztf files are expected to be valid ZTF format.
     args = [
