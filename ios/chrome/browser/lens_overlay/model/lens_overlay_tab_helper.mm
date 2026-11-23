@@ -179,6 +179,10 @@ void LensOverlayTabHelper::WebStateDestroyed(web::WebState* web_state) {
         destroyLensUI:NO
                reason:lens::LensOverlayDismissalSource::kTabClosed];
   }
+  // Destroy `snapshot_controller_` before `~SupportsUserData()` destroys
+  // `SnapshotTabHelper` in arbitrary hash order.
+  ReleaseSnapshotAuxiliaryWindows();
+  snapshot_controller_.reset();
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
 }

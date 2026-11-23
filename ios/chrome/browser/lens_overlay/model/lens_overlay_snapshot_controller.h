@@ -111,7 +111,7 @@ class LensOverlaySnapshotController final
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  raw_ptr<SnapshotTabHelper, DanglingUntriaged> snapshot_tab_helper_ = nullptr;
+  raw_ptr<SnapshotTabHelper> snapshot_tab_helper_ = nullptr;
   raw_ptr<FullscreenController> fullscreen_controller_ = nullptr;
   raw_ptr<FullscreenBrowserAgent> fullscreen_agent_ = nullptr;
   __weak id<FullscreenCommands> fullscreen_handler_ = nil;
