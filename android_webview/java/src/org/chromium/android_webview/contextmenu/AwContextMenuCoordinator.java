@@ -53,6 +53,7 @@ public class AwContextMenuCoordinator {
         int CONTEXT_MENU_ITEM = 2;
     }
 
+    private static final String TAG = "AwContextMenu";
     private static final int INVALID_ITEM_ID = -1;
 
     private ListView mListView;
@@ -111,7 +112,11 @@ public class AwContextMenuCoordinator {
         }
 
         if (mDialog != null) {
-            mDialog.dismiss();
+            try {
+                mDialog.dismiss();
+            } catch (IllegalArgumentException e) {
+                // The old dialog window was removed with the old activity.
+            }
             mDialog = null;
         }
 

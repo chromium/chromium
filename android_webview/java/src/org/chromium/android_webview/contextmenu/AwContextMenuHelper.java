@@ -18,6 +18,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuUtils;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
 
 /** A helper class that handles generating and dismissing context menus for {@link WebContents}. */
@@ -25,12 +26,23 @@ import org.chromium.ui.base.WindowAndroid;
 public class AwContextMenuHelper {
     private static final String TAG = "AwContextMenuHelper";
     private final WebContents mWebContents;
+    private final WebContentsObserver mWebContentsObserver;
 
     public @Nullable AwContextMenuCoordinator mCurrentContextMenu;
 
     @VisibleForTesting
     public AwContextMenuHelper(WebContents webContents) {
         mWebContents = webContents;
+        // The menu belongs to the window it was opened in, so dismiss it if the WebContents moves,
+        // e.g. a WebView WebContent moving to a new Activity.
+        mWebContentsObserver =
+                new WebContentsObserver(webContents) {
+                    @Override
+                    public void onTopLevelNativeWindowChanged(
+                            @Nullable WindowAndroid windowAndroid) {
+                        dismissContextMenu();
+                    }
+                };
     }
 
     @CalledByNative
@@ -40,6 +52,7 @@ public class AwContextMenuHelper {
 
     @CalledByNative
     private void destroy() {
+        mWebContentsObserver.observe(null);
         dismissContextMenu();
     }
 

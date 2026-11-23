@@ -27,6 +27,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.VectorDrawable;
 import android.util.Pair;
+import android.view.Window;
 
 import androidx.activity.ComponentDialog;
 import androidx.core.content.ContextCompat;
@@ -71,6 +72,7 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuSwitches;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentFeatures;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -115,7 +117,11 @@ public class ContextMenuTest extends AwParameterizedTest {
         // fake onReceivedIcon overridden so that the favicon is
         // sent when page is loaded
         mContext = mAwContents.getWebContents().getTopLevelNativeWindow().getContext().get();
-        mHelper = new TestAwContextMenuHelper(mAwContents.getWebContents(), HYPERLINK_MENU_ITEMS);
+        mHelper =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                new TestAwContextMenuHelper(
+                                        mAwContents.getWebContents(), HYPERLINK_MENU_ITEMS));
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
     }
 
@@ -461,7 +467,9 @@ public class ContextMenuTest extends AwParameterizedTest {
     private void doTestCorrectMenuItemsShown(
             @HyperlinkContextMenuItems Integer menuItems, List<Integer> expectedItems)
             throws Exception {
-        mHelper = new TestAwContextMenuHelper(mAwContents.getWebContents(), menuItems);
+        mHelper =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> new TestAwContextMenuHelper(mAwContents.getWebContents(), menuItems));
 
         ContextMenuParams params =
                 createContextMenuParams(
@@ -883,6 +891,65 @@ public class ContextMenuTest extends AwParameterizedTest {
                 "Drawable should update for same host but different icon",
                 firstDrawable.getBitmap(),
                 secondDrawable.getBitmap());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
+    public void testDismissContextMenuOnWindowChange() throws Throwable {
+        ComponentDialog dialog = showLinkContextMenuDialog();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    moveToAnotherWindow();
+                    Assert.assertFalse(dialog.isShowing());
+                    Assert.assertNull(mHelper.getCoordinatorForTesting());
+                });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @DisableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
+    public void testDismissContextMenuOnWindowChangeAfterItsWindowIsRemoved() throws Throwable {
+        ComponentDialog dialog = showLinkContextMenuDialog();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Destroying the Activity that showed the menu removes the dialog's window
+                    // without dismissing the dialog.
+                    Window window = dialog.getWindow();
+                    window.getWindowManager().removeViewImmediate(window.getDecorView());
+
+                    moveToAnotherWindow();
+                    Assert.assertNull(mHelper.getCoordinatorForTesting());
+                });
+    }
+
+    private ComponentDialog showLinkContextMenuDialog() {
+        ContextMenuParams params =
+                createContextMenuParams(
+                        ContextMenuDataMediaType.NONE,
+                        /* linkUrl= */ true,
+                        /* linkText= */ "",
+                        /* unfilteredLinkUrl= */ "http://www.test_link.html/",
+                        /* srcUrl= */ "");
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mHelper.showContextMenu(params, mTestContainerView));
+        mCoordinator = mHelper.getCoordinatorForTesting();
+        Assert.assertNotNull("Context menu should be created for links", mCoordinator);
+        ComponentDialog dialog = mCoordinator.getDialogForTesting();
+        Assert.assertNotNull("Dialog menu should be created for links", dialog);
+        return dialog;
+    }
+
+    /** Points the WebContents at no window and back, like moving to a new Activity does. */
+    private void moveToAnotherWindow() {
+        WebContents webContents = mAwContents.getWebContents();
+        WindowAndroid window = webContents.getTopLevelNativeWindow();
+        webContents.setTopLevelNativeWindow(null);
+        webContents.setTopLevelNativeWindow(window);
     }
 
     private ContextMenuParams createContextMenuParams(
