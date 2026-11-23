@@ -10,30 +10,31 @@
 #include <ostream>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/check_op.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <objbase.h>
 
-#include "base/win/win_util.h"
+#include <array>
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace device {
 
 namespace {
 
-const char kCommonUuidPostfix[] = "-0000-1000-8000-00805f9b34fb";
-const char kCommonUuidPrefix[] = "0000";
+constexpr std::string_view kCommonUuidPostfix = "-0000-1000-8000-00805f9b34fb";
+constexpr std::string_view kCommonUuidPrefix = "0000";
 
 // Returns the canonical, 128-bit canonical, and the format of the UUID
 // in |canonical|, |canonical_128|, and |format| based on |uuid|.
-void GetCanonicalUuid(std::string uuid,
+void GetCanonicalUuid(std::string_view uuid,
                       std::string* canonical,
                       std::string* canonical_128,
                       BluetoothUUID::Format* format) {
@@ -42,89 +43,116 @@ void GetCanonicalUuid(std::string uuid,
   canonical_128->clear();
   *format = BluetoothUUID::kFormatInvalid;
 
-  if (uuid.empty())
+  if (uuid.empty()) {
     return;
-
-  if (uuid.size() < 11 &&
-      base::StartsWith(uuid, "0x", base::CompareCase::SENSITIVE)) {
-    uuid = uuid.substr(2);
   }
 
-  if (!(uuid.size() == 4 || uuid.size() == 8 || uuid.size() == 36))
+  if (uuid.size() < 11 && uuid.starts_with("0x")) {
+    uuid.remove_prefix(2);
+  }
+
+  if (!(uuid.size() == 4 || uuid.size() == 8 || uuid.size() == 36)) {
     return;
+  }
 
   for (size_t i = 0; i < uuid.size(); ++i) {
     if (i == 8 || i == 13 || i == 18 || i == 23) {
-      if (uuid[i] != '-')
+      if (uuid[i] != '-') {
         return;
-    } else {
-      if (!base::IsHexDigit(uuid[i]))
-        return;
-      uuid[i] = base::ToLowerASCII(uuid[i]);
+      }
+    } else if (!base::IsHexDigit(uuid[i])) {
+      return;
     }
   }
 
-  canonical->assign(uuid);
   if (uuid.size() == 4) {
-    canonical_128->assign(kCommonUuidPrefix + uuid + kCommonUuidPostfix);
+    *canonical = base::ToLowerASCII(uuid);
+    *canonical_128 =
+        base::StrCat({kCommonUuidPrefix, *canonical, kCommonUuidPostfix});
     *format = BluetoothUUID::kFormat16Bit;
   } else if (uuid.size() == 8) {
-    canonical_128->assign(uuid + kCommonUuidPostfix);
+    *canonical = base::ToLowerASCII(uuid);
+    *canonical_128 = base::StrCat({*canonical, kCommonUuidPostfix});
     *format = BluetoothUUID::kFormat32Bit;
   } else {
-    canonical_128->assign(uuid);
+    *canonical_128 = base::ToLowerASCII(uuid);
     *format = BluetoothUUID::kFormat128Bit;
   }
 }
 
 }  // namespace
 
-BluetoothUUID::BluetoothUUID(const std::string& uuid) {
+BluetoothUUID::BluetoothUUID(std::string_view uuid) {
   GetCanonicalUuid(uuid, &value_, &canonical_value_, &format_);
 }
 
 BluetoothUUID::BluetoothUUID(base::span<const uint8_t> uuid_in_bytes) {
   if (uuid_in_bytes.size() != 16) {
-    value_.clear();
-    canonical_value_.clear();
-    format_ = BluetoothUUID::kFormatInvalid;
     return;
   }
 
-  canonical_value_.assign(base::StringPrintf(
+  canonical_value_ = absl::StrFormat(
       "%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
       uuid_in_bytes[0], uuid_in_bytes[1], uuid_in_bytes[2], uuid_in_bytes[3],
       uuid_in_bytes[4], uuid_in_bytes[5], uuid_in_bytes[6], uuid_in_bytes[7],
       uuid_in_bytes[8], uuid_in_bytes[9], uuid_in_bytes[10], uuid_in_bytes[11],
       uuid_in_bytes[12], uuid_in_bytes[13], uuid_in_bytes[14],
-      uuid_in_bytes[15]));
-  value_.assign(canonical_value_);
+      uuid_in_bytes[15]);
   format_ = BluetoothUUID::kFormat128Bit;
 }
 
 #if BUILDFLAG(IS_WIN)
-BluetoothUUID::BluetoothUUID(GUID uuid) {
-  auto buffer = base::win::WStringFromGUID(uuid);
-  DCHECK_EQ('{', buffer[0]);
-  DCHECK_EQ('}', buffer[37]);
-
-  GetCanonicalUuid(base::WideToUTF8(buffer.substr(1, 36)), &value_,
-                   &canonical_value_, &format_);
-  DCHECK_EQ(kFormat128Bit, format_);
-}
+BluetoothUUID::BluetoothUUID(const GUID& uuid)
+    : format_(kFormat128Bit),
+      canonical_value_(
+          absl::StrFormat("%08x-%04x-%04x-%02x%02x-%02x%02x%02x%02x%02x%02x",
+                          uuid.Data1,
+                          uuid.Data2,
+                          uuid.Data3,
+                          uuid.Data4[0],
+                          uuid.Data4[1],
+                          uuid.Data4[2],
+                          uuid.Data4[3],
+                          uuid.Data4[4],
+                          uuid.Data4[5],
+                          uuid.Data4[6],
+                          uuid.Data4[7])) {}
 #endif  // BUILDFLAG(IS_WIN)
 
-BluetoothUUID::BluetoothUUID() : format_(kFormatInvalid) {}
+BluetoothUUID::BluetoothUUID() = default;
+BluetoothUUID::BluetoothUUID(const BluetoothUUID&) = default;
+BluetoothUUID& BluetoothUUID::operator=(const BluetoothUUID&) = default;
+
+BluetoothUUID::BluetoothUUID(BluetoothUUID&& other) noexcept
+    : format_(std::exchange(other.format_, kFormatInvalid)),
+      value_(std::exchange(other.value_, std::string())),
+      canonical_value_(std::exchange(other.canonical_value_, std::string())) {}
+
+BluetoothUUID& BluetoothUUID::operator=(BluetoothUUID&& other) noexcept {
+  if (this != &other) {
+    format_ = std::exchange(other.format_, kFormatInvalid);
+    value_ = std::exchange(other.value_, std::string());
+    canonical_value_ = std::exchange(other.canonical_value_, std::string());
+  }
+  return *this;
+}
 
 BluetoothUUID::~BluetoothUUID() = default;
 
 #if BUILDFLAG(IS_WIN)
 // static
 GUID BluetoothUUID::GetCanonicalValueAsGUID(std::string_view uuid) {
-  DCHECK_EQ(36u, uuid.size());
-  std::u16string braced_uuid = u'{' + base::UTF8ToUTF16(uuid) + u'}';
+  CHECK_EQ(36u, uuid.size());
+  std::array<wchar_t, 39> braced_uuid;
+  braced_uuid[0] = L'{';
+  for (size_t i = 0; i < uuid.size(); ++i) {
+    braced_uuid[i + 1] =
+        static_cast<wchar_t>(static_cast<unsigned char>(uuid[i]));
+  }
+  braced_uuid[37] = L'}';
+  braced_uuid[38] = L'\0';
   GUID guid;
-  CHECK_EQ(NOERROR, ::CLSIDFromString(base::as_wcstr(braced_uuid), &guid));
+  CHECK_EQ(NOERROR, ::CLSIDFromString(braced_uuid.data(), &guid));
   return guid;
 }
 #endif  // BUILDFLAG(IS_WIN)
@@ -162,19 +190,19 @@ std::vector<uint8_t> BluetoothUUID::GetBytes() const {
 
 std::optional<uint16_t> BluetoothUUID::Get16BitValue() const {
   std::string_view canonical(canonical_value_);
-  if (!base::StartsWith(canonical, kCommonUuidPrefix) ||
-      !base::EndsWith(canonical, kCommonUuidPostfix)) {
+  if (!canonical.starts_with(kCommonUuidPrefix) ||
+      !canonical.ends_with(kCommonUuidPostfix)) {
     return std::nullopt;
   }
   uint32_t value;
-  if (!base::HexStringToUInt(
-          canonical.substr(std::size(kCommonUuidPrefix) - 1, 4), &value)) {
+  if (!base::HexStringToUInt(canonical.substr(kCommonUuidPrefix.size(), 4),
+                             &value)) {
     return std::nullopt;
   }
   return static_cast<uint16_t>(value);
 }
 
-std::ostream& operator<<(std::ostream& os, BluetoothUUID uuid) {
+std::ostream& operator<<(std::ostream& os, const BluetoothUUID& uuid) {
   return os << uuid.canonical_value();
 }
 

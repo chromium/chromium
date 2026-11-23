@@ -9,14 +9,13 @@
 #include <optional>
 #include <ostream>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
-#include <string_view>
-
 #include "base/win/windows_types.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -46,7 +45,7 @@ class BluetoothUUID {
   // should be provided in the 128-bit format. If |uuid| is in an unsupported
   // format, the result might be invalid. Use IsValid to check for validity
   // after construction.
-  explicit BluetoothUUID(const std::string& uuid);
+  explicit BluetoothUUID(std::string_view uuid);
 
   // Single argument constructor. |uuid_in_bytes| is a vector of 16 bytes
   // represented as a 128 bit UUID.
@@ -55,7 +54,7 @@ class BluetoothUUID {
 #if BUILDFLAG(IS_WIN)
   // Windows exclusive constructor converting a GUID structure to a
   // BluetoothUUID. This will always result in a 128 bit Format.
-  explicit BluetoothUUID(GUID uuid);
+  explicit BluetoothUUID(const GUID& uuid);
 #endif  // BUILDFLAG(IS_WIN)
 
   // Default constructor does nothing. Since BluetoothUUID is copyable, this
@@ -63,6 +62,10 @@ class BluetoothUUID {
   // value to them later. The default constructor will initialize an invalid
   // UUID by definition and the string accessors will return an empty string.
   BluetoothUUID();
+  BluetoothUUID(const BluetoothUUID&);
+  BluetoothUUID& operator=(const BluetoothUUID&);
+  BluetoothUUID(BluetoothUUID&&) noexcept;
+  BluetoothUUID& operator=(BluetoothUUID&&) noexcept;
   ~BluetoothUUID();
 
 #if BUILDFLAG(IS_WIN)
@@ -84,7 +87,9 @@ class BluetoothUUID {
   //   - 32 bit:  xxxxxxxx
   //   - 128 bit: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
   // where x is a lowercase hex digit.
-  const std::string& value() const { return value_; }
+  const std::string& value() const {
+    return format_ == kFormat128Bit ? canonical_value_ : value_;
+  }
 
   // Returns the underlying 128-bit value as a string in the following format:
   //   xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
@@ -115,7 +120,9 @@ class BluetoothUUID {
   //   - 16 bit:  xxxx
   //   - 32 bit:  xxxxxxxx
   //   - 128 bit: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
-  Format format_;
+  Format format_ = kFormatInvalid;
+  // Left empty when `format_` is `kFormat128Bit` since `value()` returns
+  // `canonical_value_` directly in that case.
   std::string value_;
 
   // The 128-bit string representation of the UUID.
@@ -123,7 +130,7 @@ class BluetoothUUID {
 };
 
 // Output the 128-bit canonical string representation of `uuid` to `os`.
-std::ostream& operator<<(std::ostream& os, BluetoothUUID uuid);
+std::ostream& operator<<(std::ostream& os, const BluetoothUUID& uuid);
 
 struct BluetoothUUIDHash {
   size_t operator()(const device::BluetoothUUID& uuid) const {
