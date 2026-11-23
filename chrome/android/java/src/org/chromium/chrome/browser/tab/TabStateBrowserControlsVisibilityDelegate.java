@@ -101,9 +101,9 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
     private final Set<Long> mOutstandingNavigations = new ArraySet<>();
 
     // Outstanding navigations that skipped the load lock (ClankOmniboxMinimization). They take the
-    // lock if they do not finish within the slow-load fallback delay, on tab hide or a WebContents
-    // swap, or at commit when they no longer qualify to stay hidden. Always a subset of
-    // mOutstandingNavigations.
+    // lock if they do not finish within the slow-load fallback delay, on tab hide, detachment from
+    // the activity, or a WebContents swap, or at commit when they no longer qualify to stay hidden.
+    // Always a subset of mOutstandingNavigations.
     private final Set<Long> mKeepHiddenNavigationIds = new ArraySet<>();
 
     @SuppressLint("HandlerLeak")
@@ -149,7 +149,6 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
                         int fallbackShowAfterMs =
                                 BrowserControlsUtils.getSameOriginOmniboxFallbackShowAfterMs();
                         if (shouldKeepControlsHiddenOnStart(navigation, fallbackShowAfterMs)) {
-                            // Keep any existing lock: another navigation may commit cross-origin.
                             mKeepHiddenNavigationIds.add(navigation.getNavigationId());
                             // Keep the deadline of the first kept-hidden navigation while any
                             // kept-hidden navigation is in flight.
@@ -216,7 +215,13 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
                     @Override
                     public void onActivityAttachmentChanged(
                             Tab tab, @Nullable WindowAndroid window) {
-                        if (window != null) updateVisibilityConstraints();
+                        if (window == null) {
+                            // Cancel the slow-load timer and lock this delegate when the tab
+                            // detaches from its activity.
+                            lockKeptHiddenNavigations();
+                        } else {
+                            updateVisibilityConstraints();
+                        }
                     }
 
                     @Override
@@ -253,56 +258,69 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
         updateVisibilityConstraints();
     }
 
-    private boolean enableHidingBrowserControls() {
+    /**
+     * Based on the current tab and {@link WebContents} state, returns whether the browser controls
+     * can be hidden or must stay locked visible.
+     *
+     * @param recordMetrics Whether to record {@code Android.BrowserControls.LockedByTabState} and
+     *     debug flags.
+     */
+    private boolean enableHidingBrowserControlsDueToLockState(boolean recordMetrics) {
         WebContents webContents = mTab.getWebContents();
         if (webContents == null || webContents.isDestroyed()) return false;
 
-        GURL url = mTab.getUrl();
-        boolean enableHidingBrowserControls = true;
         int flags = 0;
-        if (UrlUtilities.isChromeScheme(url)) {
-            enableHidingBrowserControls = false;
+        if (UrlUtilities.isChromeScheme(mTab.getUrl())) {
             flags |= (1 << (int) LockReason.CHROME_URL);
         }
-        if (SecurityStateModel.isContentDangerous(mTab.getWebContents())) {
-            enableHidingBrowserControls = false;
+        if (SecurityStateModel.isContentDangerous(webContents)) {
             flags |= (1 << (int) LockReason.TAB_CONTENT_DANGEROUS);
         }
         if (mIsFocusedNodeEditable) {
-            enableHidingBrowserControls = false;
             flags |= (1 << (int) LockReason.EDITABLE_NODE_FOCUS);
         }
         if (mTab.isShowingErrorPage() || mTab.isRendererUnresponsive()) {
-            enableHidingBrowserControls = false;
             flags |= (1 << (int) LockReason.TAB_ERROR);
         }
         if (mTab.isHidden()) {
-            enableHidingBrowserControls = false;
             flags |= (1 << (int) LockReason.TAB_HIDDEN);
         }
         if (mIsFullscreenWaitingForLoad) {
-            enableHidingBrowserControls = false;
             flags |= (1 << (int) LockReason.FULLSCREEN_LOADING);
         }
         // TODO(tedchoc): AccessibilityUtil and DeviceClassManager checks do not belong in Tab
         //                logic.  They should be moved to application level checks.
         if (ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
-            enableHidingBrowserControls = false;
             flags |= (1 << (int) LockReason.A11Y_ENABLED);
         }
         if (!DeviceClassManager.enableFullscreen()) {
-            enableHidingBrowserControls = false;
             flags |= (1 << (int) LockReason.FULLSCREEN_DISABLED);
         }
 
-        RecordHistogram.recordBooleanHistogram(
-                "Android.BrowserControls.LockedByTabState", !enableHidingBrowserControls);
+        boolean enableHidingBrowserControls = flags == 0;
+        if (recordMetrics) {
+            RecordHistogram.recordBooleanHistogram(
+                    "Android.BrowserControls.LockedByTabState", !enableHidingBrowserControls);
 
-        if (ChromeFeatureList.sBrowserControlsDebugging.isEnabled()) {
-            Log.i(TAG, "Browser controls hiding reason flags: " + Integer.toBinaryString(flags));
+            if (ChromeFeatureList.sBrowserControlsDebugging.isEnabled()) {
+                Log.i(
+                        TAG,
+                        "Browser controls hiding reason flags: " + Integer.toBinaryString(flags));
+            }
         }
-
         return enableHidingBrowserControls;
+    }
+
+    /** Returns whether the browser controls are unlocked and allowed to stay hidden. */
+    private boolean canHideBrowserControls() {
+        // Require that the composed visibility constraints are not forced to SHOWN or HIDDEN (such
+        // as during a transient show or fullscreen) and that no tab state locks the controls.
+        return TabBrowserControlsConstraintsHelper.getConstraints(mTab) == BrowserControlsState.BOTH
+                && enableHidingBrowserControlsDueToLockState(/* recordMetrics= */ false);
+    }
+
+    private boolean enableHidingBrowserControls() {
+        return enableHidingBrowserControlsDueToLockState(/* recordMetrics= */ true);
     }
 
     /**
@@ -316,6 +334,7 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
         return fallbackShowAfterMs > 0
                 && canKeepOmniboxHiddenInTab()
                 && isToolbarScrolledOffScreen()
+                && canHideBrowserControls()
                 && isSameOriginHttpOrHttpsNavigation(navigation)
                 && isEligibleNavigationType(navigation);
     }
@@ -367,10 +386,14 @@ public class TabStateBrowserControlsVisibilityDelegate extends BrowserControlsVi
 
     /** Returns whether the Omnibox can stay hidden across navigations in this tab. */
     private boolean canKeepOmniboxHiddenInTab() {
-        // A hidden tab reads the controls offset of the foreground tab, which does not show
-        // whether the user saw the URL of this tab. Keep the load lock for hidden tabs.
-        if (!mTab.isTabInBrowser() || mTab.isHidden()) return false;
-        if (DeviceInfo.isAutomotive() || DeviceInfo.isTV() || DeviceInfo.isXr()) return false;
+        // A hidden tab reads the controls offset of the foreground tab, and a detached tab retains
+        // its previous WindowAndroid without setting isHidden(). Keep the load lock for both.
+        if (!mTab.isTabInBrowser() || mTab.isHidden() || mTab.isDetachedFromActivity()) {
+            return false;
+        }
+        if (DeviceInfo.isAutomotive() || DeviceInfo.isTV() || DeviceInfo.isXr()) {
+            return false;
+        }
         BrowserControlsStateProvider provider = getBrowserControlsStateProvider();
         // Exp A covers only the top toolbar. With a bottom toolbar, navigations keep the load lock.
         return provider != null && provider.getControlsPosition() == ControlsPosition.TOP;
