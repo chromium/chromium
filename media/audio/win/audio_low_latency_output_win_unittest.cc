@@ -10,7 +10,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/environment.h"
@@ -22,7 +25,9 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
@@ -267,6 +272,198 @@ TEST_F(WASAPIAudioOutputStreamTest, OpenAndClose) {
   AudioOutputStream* aos = CreateDefaultAudioOutputStream(audio_manager_.get());
   EXPECT_TRUE(aos->Open());
   aos->Close();
+}
+
+// Verify that Open() logs the volume state of the Windows audio session.
+TEST_F(WASAPIAudioOutputStreamTest, OpenLogsAudioSessionVolumes) {
+  ABORT_AUDIO_TEST_IF_NOT(HasCoreAudioAndOutputDevices(audio_manager_.get()) &&
+                          !ExclusiveModeIsEnabled());
+  AudioParameters preferred_params;
+  ASSERT_TRUE(SUCCEEDED(CoreAudioUtil::GetPreferredAudioParameters(
+      AudioDeviceDescription::kDefaultDeviceId, true, &preferred_params)));
+  base::HistogramTester histogram_tester;
+  std::vector<std::string> log_messages;
+  AudioOutputStream* aos = audio_manager_->MakeAudioOutputStream(
+      preferred_params, std::string(),
+      base::BindLambdaForTesting([&](const std::string& message) {
+        log_messages.push_back(message);
+      }));
+  ASSERT_TRUE(aos);
+  EXPECT_TRUE(aos->Open());
+  aos->Close();
+
+  auto it = std::ranges::find_if(log_messages, [](const std::string& message) {
+    return message.find("LogAudioSessionVolumes") != std::string::npos;
+  });
+  ASSERT_NE(it, log_messages.end());
+  EXPECT_NE(it->find("session=[default]"), std::string::npos) << *it;
+  EXPECT_NE(it->find("session_volume=["), std::string::npos) << *it;
+  EXPECT_NE(it->find("session_channel_volumes=["), std::string::npos) << *it;
+  EXPECT_NE(it->find("min_channel_session_gain=["), std::string::npos) << *it;
+
+  // The state is recorded once per opened stream. Which bucket depends on the
+  // volume settings of the test machine.
+  histogram_tester.ExpectTotalCount("Media.Audio.Output.Win.SessionVolumeState",
+                                    1);
+}
+
+// Tests for the session volume UMA. These don't need audio hardware: they
+// pass the values that the Windows audio session APIs would return.
+class AudioSessionVolumeHistogramsTest : public ::testing::Test {
+ protected:
+  static constexpr char kState[] = "Media.Audio.Output.Win.SessionVolumeState";
+  static constexpr char kSessionVolume[] =
+      "Media.Audio.Output.Win.SessionAttenuation.SessionVolume";
+  static constexpr char kUniform[] =
+      "Media.Audio.Output.Win.SessionAttenuation.UniformChannelVolume";
+  static constexpr char kUnequal[] =
+      "Media.Audio.Output.Win.SessionAttenuation.UnequalChannelVolume";
+
+  // Values of AudioOutputSessionVolumeState.
+  static constexpr int kDefault = 0;
+  static constexpr int kSessionVolumeReduced = 1;
+  static constexpr int kChannelVolumeReduced = 2;
+  static constexpr int kBothReduced = 3;
+  static constexpr int kMutedDefault = 4;
+  static constexpr int kMutedSessionVolumeReduced = 5;
+  static constexpr int kMutedChannelVolumeReduced = 6;
+  static constexpr int kMutedBothReduced = 7;
+
+  // -18 dB and -36 dB as float32, as written by the dictation helper in
+  // https://crbug.com/584258005.
+  static constexpr float kMinus18Db = 0.12589253f;
+  static constexpr float kMinus36Db = 0.01584893f;
+
+  void Record(float session_volume,
+              bool session_muted,
+              std::vector<float> channel_volumes) {
+    WASAPIAudioOutputStream::RecordAudioSessionVolumeHistograms(
+        session_volume, session_muted, channel_volumes);
+  }
+
+  void ExpectNoAttenuation() {
+    histograms_.ExpectTotalCount(kSessionVolume, 0);
+    histograms_.ExpectTotalCount(kUniform, 0);
+    histograms_.ExpectTotalCount(kUnequal, 0);
+  }
+
+  base::HistogramTester histograms_;
+};
+
+TEST_F(AudioSessionVolumeHistogramsTest, Default) {
+  Record(1.0f, false, {1.0f, 1.0f});
+  histograms_.ExpectUniqueSample(kState, kDefault, 1);
+  ExpectNoAttenuation();
+}
+
+// 254/255 = 0.996 is stored for some Bluetooth devices and is not a reduction.
+TEST_F(AudioSessionVolumeHistogramsTest, NearlyFullVolumeIsDefault) {
+  Record(254.0f / 255.0f, false, {254.0f / 255.0f, 254.0f / 255.0f});
+  histograms_.ExpectUniqueSample(kState, kDefault, 1);
+  ExpectNoAttenuation();
+}
+
+TEST_F(AudioSessionVolumeHistogramsTest, SessionVolumeReduced) {
+  Record(0.5f, false, {1.0f, 1.0f});
+  histograms_.ExpectUniqueSample(kState, kSessionVolumeReduced, 1);
+  histograms_.ExpectUniqueSample(kSessionVolume, 6, 1);
+  histograms_.ExpectTotalCount(kUniform, 0);
+  histograms_.ExpectTotalCount(kUnequal, 0);
+}
+
+TEST_F(AudioSessionVolumeHistogramsTest, SessionVolumeZero) {
+  Record(0.0f, false, {1.0f, 1.0f});
+  histograms_.ExpectUniqueSample(kState, kSessionVolumeReduced, 1);
+  histograms_.ExpectUniqueSample(kSessionVolume, 100, 1);
+}
+
+// The state in https://crbug.com/584258005: all channels at -36 dB, the slider
+// at 100%.
+TEST_F(AudioSessionVolumeHistogramsTest, UniformChannelVolumeReduced) {
+  Record(1.0f, false, {kMinus36Db, kMinus36Db});
+  histograms_.ExpectUniqueSample(kState, kChannelVolumeReduced, 1);
+  histograms_.ExpectUniqueSample(kUniform, 36, 1);
+  histograms_.ExpectTotalCount(kSessionVolume, 0);
+  histograms_.ExpectTotalCount(kUnequal, 0);
+}
+
+TEST_F(AudioSessionVolumeHistogramsTest, UnequalChannelVolumes) {
+  Record(1.0f, false, {1.0f, 0.5f});
+  histograms_.ExpectUniqueSample(kState, kChannelVolumeReduced, 1);
+  histograms_.ExpectUniqueSample(kUnequal, 6, 1);
+  histograms_.ExpectTotalCount(kUniform, 0);
+}
+
+TEST_F(AudioSessionVolumeHistogramsTest, MonoChannelVolumeCountsAsUniform) {
+  Record(1.0f, false, {kMinus18Db});
+  histograms_.ExpectUniqueSample(kState, kChannelVolumeReduced, 1);
+  histograms_.ExpectUniqueSample(kUniform, 18, 1);
+}
+
+// A reduced slider must not change the per-channel value, and vice versa.
+TEST_F(AudioSessionVolumeHistogramsTest, BothReducedAreRecordedSeparately) {
+  Record(0.5f, false, {kMinus18Db, kMinus18Db});
+  histograms_.ExpectUniqueSample(kState, kBothReduced, 1);
+  histograms_.ExpectUniqueSample(kSessionVolume, 6, 1);
+  histograms_.ExpectUniqueSample(kUniform, 18, 1);
+}
+
+TEST_F(AudioSessionVolumeHistogramsTest, MutedDefault) {
+  Record(1.0f, true, {1.0f, 1.0f});
+  histograms_.ExpectUniqueSample(kState, kMutedDefault, 1);
+  ExpectNoAttenuation();
+}
+
+// Windows keeps the volumes while muted, so mute must not hide them.
+TEST_F(AudioSessionVolumeHistogramsTest, MutedChannelVolumeReduced) {
+  Record(1.0f, true, {kMinus18Db, kMinus18Db});
+  histograms_.ExpectUniqueSample(kState, kMutedChannelVolumeReduced, 1);
+  histograms_.ExpectUniqueSample(kUniform, 18, 1);
+}
+
+TEST_F(AudioSessionVolumeHistogramsTest, MutedSessionVolumeReduced) {
+  Record(0.5f, true, {1.0f, 1.0f});
+  histograms_.ExpectUniqueSample(kState, kMutedSessionVolumeReduced, 1);
+  histograms_.ExpectUniqueSample(kSessionVolume, 6, 1);
+  histograms_.ExpectTotalCount(kUniform, 0);
+  histograms_.ExpectTotalCount(kUnequal, 0);
+}
+
+TEST_F(AudioSessionVolumeHistogramsTest, MutedBothReducedWithUnequalChannels) {
+  Record(0.5f, true, {1.0f, kMinus18Db});
+  histograms_.ExpectUniqueSample(kState, kMutedBothReduced, 1);
+  histograms_.ExpectUniqueSample(kSessionVolume, 6, 1);
+  histograms_.ExpectUniqueSample(kUnequal, 18, 1);
+  histograms_.ExpectTotalCount(kUniform, 0);
+}
+
+TEST_F(AudioSessionVolumeHistogramsTest, ReducedVolumeThreshold) {
+  // 0.99 is not a reduction.
+  Record(0.99f, false, {0.99f, 0.99f});
+  histograms_.ExpectUniqueSample(kState, kDefault, 1);
+  ExpectNoAttenuation();
+
+  // Just below 0.99 is a reduction that rounds to 0 dB.
+  Record(1.0f, false, {0.985f, 0.985f});
+  histograms_.ExpectBucketCount(kState, kChannelVolumeReduced, 1);
+  histograms_.ExpectUniqueSample(kUniform, 0, 1);
+}
+
+TEST_F(AudioSessionVolumeHistogramsTest, EqualChannelVolumeTolerance) {
+  // A difference of 0.004 counts as equal.
+  Record(1.0f, false, {0.504f, 0.5f});
+  histograms_.ExpectUniqueSample(kUniform, 6, 1);
+  histograms_.ExpectTotalCount(kUnequal, 0);
+
+  // A difference of 0.006 counts as unequal.
+  Record(1.0f, false, {0.506f, 0.5f});
+  histograms_.ExpectUniqueSample(kUnequal, 6, 1);
+}
+
+TEST_F(AudioSessionVolumeHistogramsTest, AttenuationIsClampedTo100Db) {
+  // 1e-6 is -120 dB.
+  Record(1.0f, false, {1e-6f, 1e-6f});
+  histograms_.ExpectUniqueSample(kUniform, 100, 1);
 }
 
 // Test Open(), Start(), Close() calling sequence.

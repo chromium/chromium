@@ -10,8 +10,13 @@
 #include <audiopolicy.h>
 #include <inttypes.h>
 
+#include <algorithm>
 #include <climits>
+#include <cmath>
 #include <memory>
+#include <string>
+#include <string_view>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/span.h"
@@ -20,6 +25,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
@@ -55,6 +61,95 @@ constexpr char kRenderFailureHistogram[] =
 
 void RecordAudioFailure(const char* histogram, HRESULT hr) {
   base::UmaHistogramSparse(histogram, hr);
+}
+
+// Which parts of the Windows audio session volume reduce the level of an output
+// stream when it is opened. Mute is independent of the volumes: Windows keeps
+// the volumes while a session is muted, so each volume state exists both
+// unmuted and muted. "Below 1.0" means below kReducedVolumeThreshold (0.99).
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(AudioOutputSessionVolumeState)
+enum class AudioOutputSessionVolumeState {
+  // Not muted; the session volume and all channel volumes are 1.0.
+  kDefault = 0,
+  // Not muted; only the session volume (the app's slider in the volume mixer)
+  // is below 1.0.
+  kSessionVolumeReduced = 1,
+  // Not muted; only one or more channel volumes are below 1.0. Not shown in
+  // the volume mixer.
+  kChannelVolumeReduced = 2,
+  // Not muted; both the session volume and one or more channel volumes are
+  // below 1.0.
+  kBothReduced = 3,
+  // Muted; all volumes are 1.0.
+  kMutedDefault = 4,
+  // Muted; only the session volume is below 1.0.
+  kMutedSessionVolumeReduced = 5,
+  // Muted; only one or more channel volumes are below 1.0.
+  kMutedChannelVolumeReduced = 6,
+  // Muted; both the session volume and one or more channel volumes are below
+  // 1.0.
+  kMutedBothReduced = 7,
+  // A Windows API call failed, or returned an invalid channel count or a
+  // non-finite volume.
+  kQueryFailed = 8,
+  kMaxValue = kQueryFailed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:AudioOutputSessionVolumeState)
+
+AudioOutputSessionVolumeState GetSessionVolumeState(
+    bool session_muted,
+    bool session_volume_reduced,
+    bool channel_volume_reduced) {
+  if (session_volume_reduced && channel_volume_reduced) {
+    return session_muted ? AudioOutputSessionVolumeState::kMutedBothReduced
+                         : AudioOutputSessionVolumeState::kBothReduced;
+  }
+  if (session_volume_reduced) {
+    return session_muted
+               ? AudioOutputSessionVolumeState::kMutedSessionVolumeReduced
+               : AudioOutputSessionVolumeState::kSessionVolumeReduced;
+  }
+  if (channel_volume_reduced) {
+    return session_muted
+               ? AudioOutputSessionVolumeState::kMutedChannelVolumeReduced
+               : AudioOutputSessionVolumeState::kChannelVolumeReduced;
+  }
+  return session_muted ? AudioOutputSessionVolumeState::kMutedDefault
+                       : AudioOutputSessionVolumeState::kDefault;
+}
+
+void RecordSessionVolumeState(AudioOutputSessionVolumeState state) {
+  base::UmaHistogramEnumeration("Media.Audio.Output.Win.SessionVolumeState",
+                                state);
+}
+
+// A session or channel volume counts as reduced below this value, so that
+// small rounding steps (e.g. 254/255 = 0.996, stored for some Bluetooth
+// devices) are not reported as reductions.
+constexpr float kReducedVolumeThreshold = 0.99f;
+
+// Channel volumes that differ by at most this much count as equal.
+constexpr float kEqualChannelVolumeTolerance = 0.005f;
+
+// Converts a linear volume into an attenuation in whole dB, clamped to
+// [0, kMaxAttenuationDb]. 0 means less than 0.5 dB; kMaxAttenuationDb means
+// kMaxAttenuationDb or more (including a volume of 0).
+constexpr int kMaxAttenuationDb = 100;
+int VolumeToAttenuationDb(float volume) {
+  // Also catches NaN.
+  if (!(volume > 0.0f)) {
+    return kMaxAttenuationDb;
+  }
+  return std::clamp(static_cast<int>(std::lround(-20.0 * std::log10(volume))),
+                    0, kMaxAttenuationDb);
+}
+
+void RecordSessionAttenuation(std::string_view component, float volume) {
+  base::UmaHistogramExactLinear(
+      base::StrCat({"Media.Audio.Output.Win.SessionAttenuation.", component}),
+      VolumeToAttenuationDb(volume), kMaxAttenuationDb + 1);
 }
 
 // Converts a COM error into a human-readable string.
@@ -326,8 +421,17 @@ WASAPIAudioOutputStream::WASAPIAudioOutputStream(
   DCHECK_NE(device_id_, AudioDeviceDescription::kDefaultDeviceId);
   DCHECK_NE(device_id_, AudioDeviceDescription::kCommunicationsDeviceId);
 
+  // An empty `device_id_` means the default device for `device_role`. Look up
+  // the name with the matching virtual device ID, so that the log shows e.g.
+  // "Communications - <name>" instead of "Default - Unknown".
+  std::string name_lookup_id = device_id_;
+  if (name_lookup_id.empty()) {
+    name_lookup_id = device_role == eCommunications
+                         ? AudioDeviceDescription::kCommunicationsDeviceId
+                         : AudioDeviceDescription::kDefaultDeviceId;
+  }
   std::string device_name =
-      manager_->GetDeviceNameFromCache(device_id_, /*is_input=*/false);
+      manager_->GetDeviceNameFromCache(name_lookup_id, /*is_input=*/false);
   SendLogMessage(base::StrCat({__func__, "({device_name=", device_name,
                                "}, {params=[", params.AsHumanReadableString(),
                                "]}, {role=", RoleToString(device_role), "})"}));
@@ -581,6 +685,10 @@ bool WASAPIAudioOutputStream::Open() {
   }
 
   StartAudioSessionEventListener();
+
+  if (share_mode_ == AUDCLNT_SHAREMODE_SHARED) {
+    LogAudioSessionVolumes(communications_device);
+  }
 
   opened_ = true;
   return true;
@@ -1292,6 +1400,143 @@ void WASAPIAudioOutputStream::OnDeviceChanged() {
   device_changed_ = true;
   if (source_)
     source_->OnError(AudioSourceCallback::ErrorType::kDeviceChange);
+}
+
+void WASAPIAudioOutputStream::LogAudioSessionVolumes(
+    bool communications_session) {
+  TRACE_EVENT("audio", "WASAPIAudioOutputStream::LogAudioSessionVolumes");
+  DCHECK_EQ(GetCurrentThreadId(), creating_thread_id_.raw());
+  DCHECK(audio_client_);
+
+  // Chrome does not set AUDCLNT_STREAMFLAGS_NOPERSIST (see
+  // CoreAudioUtil::SharedModeInitialize()), so Windows restores the session
+  // volume state that was saved for this executable on this endpoint. Other
+  // applications can modify that state, and the per-channel volumes are not
+  // shown in the Windows volume mixer. See https://crbug.com/584258005.
+  //
+  // Total session gain for channel i:
+  //   session_volume * session_channel_volumes[i] * (session_muted ? 0 : 1).
+  // The endpoint (system) volume is applied later, per device, and is not part
+  // of the session.
+  const char* session_name =
+      communications_session ? "communications" : "default";
+
+  // Part 1: the per-app volume and mute (ISimpleAudioVolume). These are the
+  // slider and mute button of the app in the Windows volume mixer.
+  float session_volume = 1.0f;
+  BOOL raw_muted = FALSE;
+  Microsoft::WRL::ComPtr<ISimpleAudioVolume> simple_audio_volume;
+  HRESULT hr = audio_client_->GetService(IID_PPV_ARGS(&simple_audio_volume));
+  if (SUCCEEDED(hr)) {
+    hr = simple_audio_volume->GetMasterVolume(&session_volume);
+  }
+  if (SUCCEEDED(hr)) {
+    hr = simple_audio_volume->GetMute(&raw_muted);
+  }
+  // The volumes come from saved registry data that other applications can
+  // write, so reject values that are not finite.
+  if (SUCCEEDED(hr) && !std::isfinite(session_volume)) {
+    hr = E_UNEXPECTED;
+  }
+  if (FAILED(hr)) {
+    SendLogMessage(
+        base::StringPrintf("%s => (session=[%s], ISimpleAudioVolume=[%s])",
+                           __func__, session_name, ErrorToString(hr).c_str()));
+    RecordSessionVolumeState(AudioOutputSessionVolumeState::kQueryFailed);
+    return;
+  }
+  const bool session_muted = raw_muted != FALSE;
+
+  // Part 2: the per-channel volumes (IChannelAudioVolume), one per session
+  // channel. Not shown in the Windows volume mixer.
+  Microsoft::WRL::ComPtr<IChannelAudioVolume> channel_audio_volume;
+  UINT32 channel_count = 0;
+  hr = audio_client_->GetService(IID_PPV_ARGS(&channel_audio_volume));
+  if (SUCCEEDED(hr)) {
+    hr = channel_audio_volume->GetChannelCount(&channel_count);
+  }
+  if (SUCCEEDED(hr) &&
+      (channel_count == 0 ||
+       channel_count > static_cast<UINT32>(limits::kMaxChannels))) {
+    hr = E_UNEXPECTED;
+  }
+  std::vector<float> channel_volumes;
+  if (SUCCEEDED(hr)) {
+    channel_volumes.resize(channel_count);
+    hr = channel_audio_volume->GetAllVolumes(channel_count,
+                                             channel_volumes.data());
+  }
+  if (SUCCEEDED(hr) && !std::ranges::all_of(channel_volumes, [](float volume) {
+        return std::isfinite(volume);
+      })) {
+    hr = E_UNEXPECTED;
+  }
+  if (FAILED(hr)) {
+    // Keep the values from part 1 in the log.
+    SendLogMessage(base::StringPrintf(
+        "%s => (session=[%s], session_volume=[%.4f], session_muted=[%s], "
+        "IChannelAudioVolume=[%s])",
+        __func__, session_name, session_volume,
+        session_muted ? "true" : "false", ErrorToString(hr).c_str()));
+    RecordSessionVolumeState(AudioOutputSessionVolumeState::kQueryFailed);
+    return;
+  }
+
+  // The lowest session gain over all channels, ignoring mute.
+  const float min_volume_gain =
+      session_volume * std::ranges::min(channel_volumes);
+  std::string min_gain_str = "-inf dB";
+  if (min_volume_gain > 0.0f) {
+    min_gain_str =
+        base::StringPrintf("%.1f dB", 20.0 * std::log10(min_volume_gain));
+  }
+
+  std::string channel_volumes_str;
+  for (size_t i = 0; i < channel_volumes.size(); ++i) {
+    base::StringAppendF(&channel_volumes_str, "%s%.4f", i > 0 ? ", " : "",
+                        channel_volumes[i]);
+  }
+  // The log shows the gain that is heard, so it is -inf dB when muted. UMA
+  // uses the volumes, which Windows keeps while the session is muted.
+  SendLogMessage(base::StringPrintf(
+      "%s => (session=[%s], session_volume=[%.4f], session_muted=[%s], "
+      "session_channel_volumes=[%s], min_channel_session_gain=[%s])",
+      __func__, session_name, session_volume, session_muted ? "true" : "false",
+      channel_volumes_str.c_str(),
+      session_muted ? "-inf dB" : min_gain_str.c_str()));
+
+  RecordAudioSessionVolumeHistograms(session_volume, session_muted,
+                                     channel_volumes);
+}
+
+// static
+void WASAPIAudioOutputStream::RecordAudioSessionVolumeHistograms(
+    float session_volume,
+    bool session_muted,
+    base::span<const float> channel_volumes) {
+  CHECK(!channel_volumes.empty());
+  const auto [min_channel_volume, max_channel_volume] =
+      std::ranges::minmax(channel_volumes);
+  const bool session_volume_reduced = session_volume < kReducedVolumeThreshold;
+  const bool channel_volume_reduced =
+      min_channel_volume < kReducedVolumeThreshold;
+  RecordSessionVolumeState(GetSessionVolumeState(
+      session_muted, session_volume_reduced, channel_volume_reduced));
+
+  // Each part is recorded on its own, whether or not the session is muted, so
+  // that a reduced session volume (the volume mixer slider) does not hide the
+  // exact value of the per-channel volumes, and vice versa.
+  if (session_volume_reduced) {
+    RecordSessionAttenuation("SessionVolume", session_volume);
+  }
+  if (channel_volume_reduced) {
+    // A mono session has nothing to compare with and counts as uniform.
+    const bool unequal =
+        max_channel_volume - min_channel_volume > kEqualChannelVolumeTolerance;
+    RecordSessionAttenuation(
+        unequal ? "UnequalChannelVolume" : "UniformChannelVolume",
+        min_channel_volume);
+  }
 }
 
 void WASAPIAudioOutputStream::SetupWaveFormat() {

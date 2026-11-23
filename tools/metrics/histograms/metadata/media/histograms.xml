@@ -2233,6 +2233,53 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.Output.Win.SessionAttenuation.{Component}"
+    units="dB" expires_after="2027-05-19">
+  <owner>henrika@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <summary>
+    Attenuation in whole dB of one part of the volume of the Windows audio
+    session that a WASAPI output stream belongs to: {Component}. Recorded once
+    each time a shared-mode output stream is opened, only when that part is
+    below 0.99, and whether or not the session is muted (Windows keeps the
+    volumes while muted; mute itself is not included). 0 means less than 0.5 dB;
+    100 means 100 dB or more. A user who opens many streams contributes many
+    samples. See also Media.Audio.Output.Win.SessionVolumeState.
+  </summary>
+  <token key="Component">
+    <variant name="SessionVolume"
+        summary="the session volume (ISimpleAudioVolume, the app's slider in
+                 the Windows volume mixer), -20 * log10(session volume)"/>
+    <variant name="UnequalChannelVolume"
+        summary="the per-channel volumes (IChannelAudioVolume, not shown in
+                 the Windows volume mixer) when they differ by more than
+                 0.005, e.g. a balance setting; -20 * log10(lowest channel
+                 volume)"/>
+    <variant name="UniformChannelVolume"
+        summary="the per-channel volumes (IChannelAudioVolume, not shown in
+                 the Windows volume mixer) when all channels are reduced by
+                 the same amount (within 0.005), or the session is mono; -20
+                 * log10(lowest channel volume)"/>
+  </token>
+</histogram>
+
+<histogram name="Media.Audio.Output.Win.SessionVolumeState"
+    enum="AudioOutputSessionVolumeState" expires_after="2027-05-19">
+  <owner>henrika@chromium.org</owner>
+  <owner>olka@chromium.org</owner>
+  <summary>
+    Which part of the Windows audio session volume reduces the level of a WASAPI
+    output stream: the session volume and mute (ISimpleAudioVolume, shown in the
+    Windows volume mixer) and the per-channel volumes (IChannelAudioVolume, not
+    shown in the mixer). Windows saves these per device, executable path and
+    session, and other applications can change them. Mute is independent of the
+    volumes (Windows keeps the volumes while muted), so each volume state is
+    recorded both unmuted and muted. A volume counts as reduced below 0.99.
+    Recorded once each time a shared-mode output stream is opened, so a user who
+    opens many streams contributes many samples.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Output.Win.{AudioOutputMethod}Error2"
     enum="Hresult" expires_after="2027-05-19">
   <owner>henrika@chromium.org</owner>

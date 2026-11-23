@@ -323,6 +323,22 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//media/audio/audio_output_resampler.cc:OpenStreamResult) -->
 
+<!-- LINT.IfChange(AudioOutputSessionVolumeState) -->
+
+<enum name="AudioOutputSessionVolumeState">
+  <int value="0" label="Default (not muted, all volumes 1.0)"/>
+  <int value="1" label="Session volume reduced (not muted)"/>
+  <int value="2" label="Channel volume reduced (not muted)"/>
+  <int value="3" label="Session and channel volume reduced (not muted)"/>
+  <int value="4" label="Muted, all volumes 1.0"/>
+  <int value="5" label="Muted, session volume reduced"/>
+  <int value="6" label="Muted, channel volume reduced"/>
+  <int value="7" label="Muted, session and channel volume reduced"/>
+  <int value="8" label="Query failed, or invalid channel count or volume"/>
+</enum>
+
+<!-- LINT.ThenChange(//media/audio/win/audio_low_latency_output_win.cc:AudioOutputSessionVolumeState) -->
+
 <!-- LINT.IfChange(AudioOutputStreamCreationResult) -->
 
 <enum name="AudioOutputStreamCreationResult">

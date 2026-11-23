@@ -105,6 +105,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/platform_thread.h"
@@ -161,6 +162,16 @@ class MEDIA_EXPORT WASAPIAudioOutputStream
   static AUDCLNT_SHAREMODE GetShareMode();
 
   bool started() const { return render_thread_ != nullptr; }
+
+  // Records the Media.Audio.Output.Win.SessionVolumeState and
+  // Media.Audio.Output.Win.SessionAttenuation.* UMA histograms for the volume
+  // state of a Windows audio session: the session volume and mute
+  // (ISimpleAudioVolume) and the per-channel volumes (IChannelAudioVolume).
+  // `channel_volumes` must not be empty. Public for unit testing.
+  static void RecordAudioSessionVolumeHistograms(
+      float session_volume,
+      bool session_muted,
+      base::span<const float> channel_volumes);
 
   // Handles glitch detection, buffer underrun checks, recovery grouping,
   // and reporting glitch metrics to UMA and text logs.
@@ -257,6 +268,17 @@ class MEDIA_EXPORT WASAPIAudioOutputStream
 
   // Called by AudioSessionEventListener() when a device change occurs.
   void OnDeviceChanged();
+
+  // Logs the volume state of the Windows audio session that this stream
+  // belongs to: the per-app master volume and mute state (ISimpleAudioVolume)
+  // and the per-channel volumes (IChannelAudioVolume). Windows persists these
+  // per endpoint, executable path and session GUID, and the per-channel
+  // volumes are not visible in the Windows volume mixer. Only valid for
+  // shared-mode streams after `audio_client_` has been initialized.
+  // `communications_session` is true if the stream uses the communications
+  // session (kCommunicationsSessionId). Also records the
+  // Media.Audio.Output.Win.Session* UMA histograms, once per opened stream.
+  void LogAudioSessionVolumes(bool communications_session);
 
   // Set up the desired render format specified by the client.
   void SetupWaveFormat();
