@@ -137,7 +137,9 @@ void BindCfmServiceContext(
     content::RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext> receiver) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M161);
-  chromeos::cfm::ServiceConnection::GetInstance()->BindServiceContext(
+  // Extensions only consume CfM services, so bind a context that cannot
+  // register service adaptors of its own.
+  chromeos::cfm::ServiceConnection::GetInstance()->BindRestrictedServiceContext(
       std::move(receiver));
 #if BUILDFLAG(PLATFORM_CFM)
   ash::cfm::MeetBrowserService::Get()->SetMeetGlobalRenderFrameToken(

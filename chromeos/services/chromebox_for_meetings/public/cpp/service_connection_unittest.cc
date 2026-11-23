@@ -5,6 +5,7 @@
 #include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
 
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -67,6 +68,30 @@ TEST_F(CfmServiceConnectionTest, FakeBindServiceContext) {
 
   ASSERT_TRUE(test_success);
   ASSERT_TRUE(remote.is_bound());
+}
+
+// Connections that do not accept restricted contexts must reset the receiver
+// so that callers observe the service as unavailable.
+TEST_F(CfmServiceConnectionTest, RestrictedServiceContextUnavailableByDefault) {
+  base::RunLoop run_loop;
+
+  std::optional<uint32_t> disconnect_reason;
+  mojo::Remote<::chromeos::cfm::mojom::CfmServiceContext> remote;
+  ServiceConnection::GetInstance()->BindRestrictedServiceContext(
+      remote.BindNewPipeAndPassReceiver());
+  remote.set_disconnect_with_reason_handler(base::BindLambdaForTesting(
+      [&](uint32_t custom_reason, const std::string& description) {
+        disconnect_reason = custom_reason;
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
+
+  ASSERT_TRUE(disconnect_reason.has_value());
+  EXPECT_EQ(
+      static_cast<uint32_t>(mojom::DisconnectReason::kServiceUnavailableCode),
+      disconnect_reason.value());
+  EXPECT_FALSE(remote.is_connected());
 }
 
 }  // namespace

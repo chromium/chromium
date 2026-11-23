@@ -47,8 +47,17 @@ class COMPONENT_EXPORT(CHROMEOS_CFMSERVICE) ServiceConnectionCfmAshImpl
   // forward requests to the underlying daemon connected by a single remote.
   void BindServiceContext(
       mojo::PendingReceiver<mojom::CfmServiceContext> receiver) override;
+  void BindRestrictedServiceContext(
+      mojo::PendingReceiver<mojom::CfmServiceContext> receiver) override;
 
  private:
+  // Binds |receiver| to this implementation. |may_provide_adaptor|
+  // determines whether |ProvideAdaptor| calls made on |receiver| are
+  // forwarded to the underlying daemon.
+  void BindServiceContextInternal(
+      mojo::PendingReceiver<mojom::CfmServiceContext> receiver,
+      bool may_provide_adaptor);
+
   // Binds the primary |CfmServiceContext| remote to the underlying daemon so
   // that the connected reciever set can forward requests only if the remote is
   // not already bound.
@@ -76,7 +85,9 @@ class COMPONENT_EXPORT(CHROMEOS_CFMSERVICE) ServiceConnectionCfmAshImpl
   void OnMojoConnectionError();
 
   mojo::Remote<mojom::CfmServiceContext> remote_;
-  mojo::ReceiverSet<mojom::CfmServiceContext> receiver_set_;
+  // Each receiver's context is true if it was bound for an in-process caller
+  // that may register service adaptors with the underlying daemon.
+  mojo::ReceiverSet<mojom::CfmServiceContext, bool> receiver_set_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -87,6 +98,18 @@ class COMPONENT_EXPORT(CHROMEOS_CFMSERVICE) ServiceConnectionCfmAshImpl
 
 void ServiceConnectionCfmAshImpl::BindServiceContext(
     mojo::PendingReceiver<mojom::CfmServiceContext> receiver) {
+  BindServiceContextInternal(std::move(receiver), /*may_provide_adaptor=*/true);
+}
+
+void ServiceConnectionCfmAshImpl::BindRestrictedServiceContext(
+    mojo::PendingReceiver<mojom::CfmServiceContext> receiver) {
+  BindServiceContextInternal(std::move(receiver),
+                             /*may_provide_adaptor=*/false);
+}
+
+void ServiceConnectionCfmAshImpl::BindServiceContextInternal(
+    mojo::PendingReceiver<mojom::CfmServiceContext> receiver,
+    bool may_provide_adaptor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // If experiment is disabled reset receiver
@@ -102,7 +125,7 @@ void ServiceConnectionCfmAshImpl::BindServiceContext(
 
   BindPlatformServiceContextIfNeeded();
 
-  receiver_set_.Add(this, std::move(receiver));
+  receiver_set_.Add(this, std::move(receiver), may_provide_adaptor);
   VLOG(2) << "Bound |CfmServiceContext| Request";
 }
 
@@ -180,6 +203,13 @@ void ServiceConnectionCfmAshImpl::ProvideAdaptor(
     const std::string& interface_name,
     mojo::PendingRemote<mojom::CfmServiceAdaptor> adaptor_remote,
     ProvideAdaptorCallback callback) {
+  // Only in-process callers may register service adaptors with the daemon.
+  if (!receiver_set_.current_context()) {
+    LOG(WARNING) << "Refused adaptor registration for " << interface_name;
+    std::move(callback).Run(false);
+    return;
+  }
+
   BindPlatformServiceContextIfNeeded();
 
   // Wrap callback with default invoke to correctly report a failure in the

@@ -26,5 +26,14 @@ void ServiceConnection::UseFakeServiceConnectionForTesting(
   g_fake_service_connection_for_testing = fake_service_connection;
 }
 
+void ServiceConnection::BindRestrictedServiceContext(
+    mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext> receiver) {
+  // Connections that do not support restricted contexts report the service
+  // as unavailable.
+  receiver.ResetWithReason(
+      static_cast<uint32_t>(mojom::DisconnectReason::kServiceUnavailableCode),
+      mojom::DisconnectReason::kServiceUnavailableMessage);
+}
+
 }  // namespace cfm
 }  // namespace chromeos
