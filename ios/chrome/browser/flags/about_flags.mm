@@ -983,6 +983,43 @@ constexpr FeatureEntry::FeatureVariation
         {"(Hide Plus button in pre-edit)",
          kComposeboxConditionalPlusButtonHidePreEdit, nullptr}};
 
+// Lets testers pick which attachments go to the Search results page.
+constexpr FeatureEntry::FeatureParam kDynamicAimFulfillmentSrpInputNone[] = {
+    {"srp_input_mode", "none"}};
+constexpr FeatureEntry::FeatureParam
+    kDynamicAimFulfillmentSrpInputSingleImage[] = {
+        {"srp_input_mode", "single_image"}};
+constexpr FeatureEntry::FeatureParam
+    kDynamicAimFulfillmentSrpInputMultiImage[] = {
+        {"srp_input_mode", "multi_image"}};
+constexpr FeatureEntry::FeatureParam
+    kDynamicAimFulfillmentSrpInputAnyCombinationImagesFiles[] = {
+        {"srp_input_mode", "any_combination_images_files"}};
+constexpr FeatureEntry::FeatureParam
+    kDynamicAimFulfillmentSrpInputAnyCombinationImagesFilesTabs[] = {
+        {"srp_input_mode", "any_combination_images_files_tabs"}};
+constexpr FeatureEntry::FeatureParam
+    kDynamicAimFulfillmentSrpInputAnyCombinationImagesFilesDrive[] = {
+        {"srp_input_mode", "any_combination_images_files_drive"}};
+constexpr FeatureEntry::FeatureParam
+    kDynamicAimFulfillmentSrpInputAnyCombinationAllTypes[] = {
+        {"srp_input_mode", "any_combination_all_types"}};
+
+constexpr FeatureEntry::FeatureVariation kDynamicAimFulfillmentVariations[] = {
+    {"- SRP inputs: none", kDynamicAimFulfillmentSrpInputNone, nullptr},
+    {"- SRP inputs: single image", kDynamicAimFulfillmentSrpInputSingleImage,
+     nullptr},
+    {"- SRP inputs: multi image", kDynamicAimFulfillmentSrpInputMultiImage,
+     nullptr},
+    {"- SRP inputs: images and files",
+     kDynamicAimFulfillmentSrpInputAnyCombinationImagesFiles, nullptr},
+    {"- SRP inputs: images, files, and tabs",
+     kDynamicAimFulfillmentSrpInputAnyCombinationImagesFilesTabs, nullptr},
+    {"- SRP inputs: images, files, and Drive files",
+     kDynamicAimFulfillmentSrpInputAnyCombinationImagesFilesDrive, nullptr},
+    {"- SRP inputs: all types",
+     kDynamicAimFulfillmentSrpInputAnyCombinationAllTypes, nullptr}};
+
 constexpr FeatureEntry::FeatureParam kMobilePromoOnDesktopLens[] = {
     {kMobilePromoOnDesktopPromoTypeParam, "1"},
     {kMobilePromoOnDesktopNotificationParam, "false"}};
@@ -2847,6 +2884,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kComposeboxConnectedAppsSettingName,
      flag_descriptions::kComposeboxConnectedAppsSettingDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kComposeboxConnectedAppsSetting)},
+    {"dynamic-aim-fulfillment", flag_descriptions::kDynamicAimFulfillmentName,
+     flag_descriptions::kDynamicAimFulfillmentDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kDynamicAimFulfillment,
+                                    kDynamicAimFulfillmentVariations,
+                                    "DynamicAimFulfillment")},
     {"next-old-design", flag_descriptions::kNextOldDesignName,
      flag_descriptions::kNextOldDesignDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kNextOldDesign)},

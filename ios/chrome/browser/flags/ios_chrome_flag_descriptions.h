@@ -705,6 +705,11 @@ inline constexpr char kDownloadServiceForegroundSessionName[] =
 inline constexpr char kDownloadServiceForegroundSessionDescription[] =
     "Enable download service to download in app foreground only";
 
+inline constexpr char kDynamicAimFulfillmentName[] = "Dynamic AIM Fulfillment";
+inline constexpr char kDynamicAimFulfillmentDescription[] =
+    "Routes Composebox queries to the Search results page unless active "
+    "tools, models, or inputs require AI Mode.";
+
 inline constexpr char kEditPasswordsInSettingsName[] =
     "Edit passwords in settings";
 inline constexpr char kEditPasswordsInSettingsDescription[] =
