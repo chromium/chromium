@@ -1125,10 +1125,10 @@ declare_args() {
         webview_orderfile_path = ""
       } else if (current_cpu == "arm64" || current_cpu == "x64") {
         webview_orderfile_path =
-            "//android_webview/tools/orderfiles/arm64/orderfile.arm64.out"
+            "//android_webview/orderfiles/arm64/orderfile.arm64.out"
       } else if (current_cpu == "arm" || current_cpu == "x86") {
         webview_orderfile_path =
-            "//android_webview/tools/orderfiles/arm/orderfile.arm.out"
+            "//android_webview/orderfiles/arm/orderfile.arm.out"
       }
     }
   }
@@ -1150,9 +1150,9 @@ config("webview_orderfile_config") {
     # GN-analyze recognizes them as dependencies when the version gets rolled.
     if (current_cpu == "arm64" || current_cpu == "x64") {
       inputs +=
-          [ "//android_webview/tools/android-webview-arm64.orderfile.txt" ]
+          [ "//android_webview/build/android-webview-arm64.orderfile.txt" ]
     } else if (current_cpu == "arm" || current_cpu == "x86") {
-      inputs += [ "//android_webview/tools/android-webview-arm.orderfile.txt" ]
+      inputs += [ "//android_webview/build/android-webview-arm.orderfile.txt" ]
     }
   }
 }

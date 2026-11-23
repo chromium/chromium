@@ -1346,22 +1346,22 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/android_webview/tools/orderfiles/arm': {
+  'src/android_webview/orderfiles/arm': {
       'packages': [
           {
               'package': 'chromium/android_webview/tools/orderfiles/arm',
-              'version_file': 'android_webview/tools/android-webview-arm.orderfile.txt',
+              'version_file': 'android_webview/build/android-webview-arm.orderfile.txt',
           },
       ],
       'condition': 'checkout_android and non_git_source',
       'dep_type': 'cipd',
   },
 
-  'src/android_webview/tools/orderfiles/arm64': {
+  'src/android_webview/orderfiles/arm64': {
       'packages': [
           {
               'package': 'chromium/android_webview/tools/orderfiles/arm64_webview_pgo',
-              'version_file': 'android_webview/tools/android-webview-arm64.orderfile.txt',
+              'version_file': 'android_webview/build/android-webview-arm64.orderfile.txt',
           },
       ],
       'condition': 'checkout_android and non_git_source',
