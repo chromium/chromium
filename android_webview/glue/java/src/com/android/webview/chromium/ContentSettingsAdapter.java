@@ -1223,4 +1223,28 @@ public class ContentSettingsAdapter extends WebSettings {
             return getAwSettings().isAlgorithmicDarkeningAllowed();
         }
     }
+
+    // TODO(crbug.com/582296097): Add @Override once the SDK includes this method.
+    public void setWebGraphicsEnabled(boolean enabled) {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_SET_WEB_GRAPHICS_ENABLED")) {
+            ApiCallLogger.recordWebViewApiCall(
+                    ApiCall.WEB_SETTINGS_SET_WEB_GRAPHICS_ENABLED,
+                    ApiCallUserAction.WEB_SETTINGS_SET_WEB_GRAPHICS_ENABLED);
+            mAwSettings.setWebGraphicsEnabled(enabled);
+        }
+    }
+
+    // TODO(crbug.com/582296097): Add @Override once the SDK includes this method.
+    public boolean isWebGraphicsEnabled() {
+        try (TraceEvent event =
+                TraceEvent.scoped(
+                        "WebView.APICall.Framework.WEB_SETTINGS_IS_WEB_GRAPHICS_ENABLED")) {
+            ApiCallLogger.recordWebViewApiCall(
+                    ApiCall.WEB_SETTINGS_IS_WEB_GRAPHICS_ENABLED,
+                    ApiCallUserAction.WEB_SETTINGS_IS_WEB_GRAPHICS_ENABLED);
+            return mAwSettings.isWebGraphicsEnabled();
+        }
+    }
 }

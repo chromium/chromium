@@ -1156,7 +1156,7 @@ chromium-metrics-reviews@google.com.
   <int value="242" label="Profile.configureIsolatedSites"/>
   <int value="243" label="Profile.canConfigureIsolatedSites"/>
   <int value="244" label="WebSettingsCompat.setWebGraphicsEnabled"/>
-  <int value="245" label="WebSettingsCompat.getWebGraphicsEnabled"/>
+  <int value="245" label="WebSettingsCompat.isWebGraphicsEnabled"/>
   <int value="246" label="WebGPU.getWGPUProcGetProcAddress"/>
   <int value="247" label="WebViewCompat.serializeState"/>
   <int value="248" label="WebViewCompat.restoreState"/>
@@ -3194,6 +3194,8 @@ chromium-metrics-reviews@google.com.
   <int value="235" label="WebViewChromium constructor"/>
   <int value="236" label="WebViewChromium init"/>
   <int value="237" label="WebViewChromium initForReal"/>
+  <int value="238" label="WebSettings.setWebGraphicsEnabled"/>
+  <int value="239" label="WebSettings.isWebGraphicsEnabled"/>
 <!-- LINT.ThenChange(/android_webview/glue/java/src/com/android/webview/chromium/ApiCallLogger.java:ApiCall) -->
 
 </enum>

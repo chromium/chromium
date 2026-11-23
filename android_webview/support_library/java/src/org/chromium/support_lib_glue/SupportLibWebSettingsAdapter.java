@@ -631,11 +631,11 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
     }
 
     @Override
-    public boolean getWebGraphicsEnabled() {
+    public boolean isWebGraphicsEnabled() {
         try (TraceEvent ignored =
-                TraceEvent.scoped("WebView.APICall.AndroidX.GET_WEB_GRAPHICS_ENABLED")) {
-            recordApiCall(ApiCall.GET_WEB_GRAPHICS_ENABLED);
-            return mAwSettings.getWebGraphicsEnabled();
+                TraceEvent.scoped("WebView.APICall.AndroidX.IS_WEB_GRAPHICS_ENABLED")) {
+            recordApiCall(ApiCall.IS_WEB_GRAPHICS_ENABLED);
+            return mAwSettings.isWebGraphicsEnabled();
         }
     }
 }

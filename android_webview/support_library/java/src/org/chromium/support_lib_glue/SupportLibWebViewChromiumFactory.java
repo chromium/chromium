@@ -447,7 +447,7 @@ public class SupportLibWebViewChromiumFactory
         ApiCall.CONFIGURE_ISOLATED_SITES,
         ApiCall.CAN_CONFIGURE_ISOLATED_SITES,
         ApiCall.SET_WEB_GRAPHICS_ENABLED,
-        ApiCall.GET_WEB_GRAPHICS_ENABLED,
+        ApiCall.IS_WEB_GRAPHICS_ENABLED,
         ApiCall.GET_WGPU_PROC_GET_PROC_ADDRESS,
         ApiCall.SERIALIZE_STATE,
         ApiCall.RESTORE_SERIALIZED_STATE,
@@ -713,7 +713,7 @@ public class SupportLibWebViewChromiumFactory
         int CONFIGURE_ISOLATED_SITES = 242;
         int CAN_CONFIGURE_ISOLATED_SITES = 243;
         int SET_WEB_GRAPHICS_ENABLED = 244;
-        int GET_WEB_GRAPHICS_ENABLED = 245;
+        int IS_WEB_GRAPHICS_ENABLED = 245;
         int GET_WGPU_PROC_GET_PROC_ADDRESS = 246;
         int SERIALIZE_STATE = 247;
         int RESTORE_SERIALIZED_STATE = 248;

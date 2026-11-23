@@ -4408,7 +4408,7 @@ public class AwSettingsTest {
 
         @Override
         protected Boolean getCurrentValue() {
-            return mAwSettings.getWebGraphicsEnabled();
+            return mAwSettings.isWebGraphicsEnabled();
         }
 
         @Override

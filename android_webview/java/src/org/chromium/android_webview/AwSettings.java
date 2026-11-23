@@ -2479,14 +2479,14 @@ public class AwSettings {
         }
     }
 
-    public boolean getWebGraphicsEnabled() {
+    public boolean isWebGraphicsEnabled() {
         synchronized (mAwSettingsLock) {
-            return getWebGraphicsEnabledLocked();
+            return isWebGraphicsEnabledLocked();
         }
     }
 
     @CalledByNative
-    private boolean getWebGraphicsEnabledLocked() {
+    private boolean isWebGraphicsEnabledLocked() {
         assert Thread.holdsLock(mAwSettingsLock);
         return mWebGraphicsEnabled;
     }

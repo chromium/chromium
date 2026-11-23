@@ -743,7 +743,7 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
   // no more brokenness for user. This makes it easier for apps that want to
   // start running webgl content before webview is first attached.
   bool web_graphics_enabled =
-      Java_AwSettings_getWebGraphicsEnabledLocked(env, obj);
+      Java_AwSettings_isWebGraphicsEnabledLocked(env, obj);
   web_prefs->webgl1_enabled = web_prefs->webgl1_enabled && web_graphics_enabled;
   web_prefs->webgl2_enabled = web_prefs->webgl2_enabled && web_graphics_enabled;
   web_prefs->webgpu_enabled = web_prefs->webgpu_enabled && web_graphics_enabled;

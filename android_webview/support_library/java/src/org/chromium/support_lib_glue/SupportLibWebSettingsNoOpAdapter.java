@@ -291,8 +291,8 @@ class SupportLibWebSettingsNoOpAdapter implements WebSettingsBoundaryInterface {
     }
 
     @Override
-    public boolean getWebGraphicsEnabled() {
-        recordApiCall(ApiCall.GET_WEB_GRAPHICS_ENABLED);
+    public boolean isWebGraphicsEnabled() {
+        recordApiCall(ApiCall.IS_WEB_GRAPHICS_ENABLED);
         return true;
     }
 }

@@ -573,7 +573,7 @@ public class Features {
     public static final String GOOGLE_ACCOUNTS_CALLBACK = "GOOGLE_ACCOUNTS_CALLBACK_V1";
 
     // WebSettingsCompat.setWebGraphicsEnabled
-    // WebSettingsCompat.getWebGraphicsEnabled
+    // WebSettingsCompat.isWebGraphicsEnabled
     public static final String WEB_GRAPHICS_ENABLED = "WEB_GRAPHICS_ENABLED";
 
     // WebGPU.getWGPUProcGetProcAddress

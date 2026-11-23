@@ -261,6 +261,8 @@ public final class ApiCallLogger {
         ApiCall.WEBVIEW_CHROMIUM_CONSTRUCTOR,
         ApiCall.WEBVIEW_CHROMIUM_INIT,
         ApiCall.WEBVIEW_CHROMIUM_INIT_FOR_REAL,
+        ApiCall.WEB_SETTINGS_SET_WEB_GRAPHICS_ENABLED,
+        ApiCall.WEB_SETTINGS_IS_WEB_GRAPHICS_ENABLED,
     })
     public @interface ApiCall {
         int ADD_JAVASCRIPT_INTERFACE = 0;
@@ -501,7 +503,9 @@ public final class ApiCallLogger {
         int WEBVIEW_CHROMIUM_CONSTRUCTOR = 235;
         int WEBVIEW_CHROMIUM_INIT = 236;
         int WEBVIEW_CHROMIUM_INIT_FOR_REAL = 237;
-        int COUNT = 238;
+        int WEB_SETTINGS_SET_WEB_GRAPHICS_ENABLED = 238;
+        int WEB_SETTINGS_IS_WEB_GRAPHICS_ENABLED = 239;
+        int COUNT = 240;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:WebViewApiCall)
@@ -705,6 +709,7 @@ public final class ApiCallLogger {
         ApiCallUserAction.WEB_SETTINGS_GET_USER_AGENT_STRING,
         ApiCallUserAction.WEB_SETTINGS_GET_USE_WIDE_VIEW_PORT,
         ApiCallUserAction.WEB_SETTINGS_IS_ALGORITHMIC_DARKENING_ALLOWED,
+        ApiCallUserAction.WEB_SETTINGS_IS_WEB_GRAPHICS_ENABLED,
         ApiCallUserAction.WEB_SETTINGS_SET_ALGORITHMIC_DARKENING_ALLOWED,
         ApiCallUserAction.WEB_SETTINGS_SET_ALLOW_CONTENT_ACCESS,
         ApiCallUserAction.WEB_SETTINGS_SET_ALLOW_FILE_ACCESS,
@@ -750,6 +755,7 @@ public final class ApiCallLogger {
         ApiCallUserAction.WEB_SETTINGS_SET_USER_AGENT,
         ApiCallUserAction.WEB_SETTINGS_SET_USER_AGENT_STRING,
         ApiCallUserAction.WEB_SETTINGS_SET_USE_WIDE_VIEW_PORT,
+        ApiCallUserAction.WEB_SETTINGS_SET_WEB_GRAPHICS_ENABLED,
         ApiCallUserAction.WEB_SETTINGS_SUPPORT_MULTIPLE_WINDOWS,
         ApiCallUserAction.WEB_SETTINGS_SUPPORT_ZOOM,
         ApiCallUserAction.WEB_STORAGE_DELETE_ALL_DATA,
@@ -1002,6 +1008,7 @@ public final class ApiCallLogger {
         String WEB_SETTINGS_GET_USE_WIDE_VIEW_PORT = "WebSettingsGetUseWideViewPort";
         String WEB_SETTINGS_IS_ALGORITHMIC_DARKENING_ALLOWED =
                 "WebSettingsIsAlgorithmicDarkeningAllowed";
+        String WEB_SETTINGS_IS_WEB_GRAPHICS_ENABLED = "WebSettingsIsWebGraphicsEnabled";
         String WEB_SETTINGS_SET_ALGORITHMIC_DARKENING_ALLOWED =
                 "WebSettingsSetAlgorithmicDarkeningAllowed";
         String WEB_SETTINGS_SET_ALLOW_CONTENT_ACCESS = "WebSettingsSetAllowContentAccess";
@@ -1055,6 +1062,7 @@ public final class ApiCallLogger {
         String WEB_SETTINGS_SET_USER_AGENT = "WebSettingsSetUserAgent";
         String WEB_SETTINGS_SET_USER_AGENT_STRING = "WebSettingsSetUserAgentString";
         String WEB_SETTINGS_SET_USE_WIDE_VIEW_PORT = "WebSettingsSetUseWideViewPort";
+        String WEB_SETTINGS_SET_WEB_GRAPHICS_ENABLED = "WebSettingsSetWebGraphicsEnabled";
         String WEB_SETTINGS_SUPPORT_MULTIPLE_WINDOWS = "WebSettingsSupportMultipleWindows";
         String WEB_SETTINGS_SUPPORT_ZOOM = "WebSettingsSupportZoom";
         String WEB_STORAGE_DELETE_ALL_DATA = "WebStorageDeleteAllData";

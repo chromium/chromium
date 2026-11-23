@@ -5080,6 +5080,8 @@ should be able to be added at any place in this file.
         summary="WebSettings method `getUseWideViewPort`"/>
     <variant name="WebSettingsIsAlgorithmicDarkeningAllowed"
         summary="WebSettings method `isAlgorithmicDarkeningAllowed`"/>
+    <variant name="WebSettingsIsWebGraphicsEnabled"
+        summary="WebSettings method `isWebGraphicsEnabled`"/>
     <variant name="WebSettingsSetAlgorithmicDarkeningAllowed"
         summary="WebSettings method `setAlgorithmicDarkeningAllowed`"/>
     <variant name="WebSettingsSetAllowContentAccess"
@@ -5171,6 +5173,8 @@ should be able to be added at any place in this file.
         summary="WebSettings method `setUserAgentString`"/>
     <variant name="WebSettingsSetUseWideViewPort"
         summary="WebSettings method `setUseWideViewPort`"/>
+    <variant name="WebSettingsSetWebGraphicsEnabled"
+        summary="WebSettings method `setWebGraphicsEnabled`"/>
     <variant name="WebSettingsSupportMultipleWindows"
         summary="WebSettings method `supportMultipleWindows`"/>
     <variant name="WebSettingsSupportZoom"

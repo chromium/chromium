@@ -189,5 +189,5 @@ public interface WebSettingsBoundaryInterface {
 
     void setWebGraphicsEnabled(boolean enabled);
 
-    boolean getWebGraphicsEnabled();
+    boolean isWebGraphicsEnabled();
 }
