@@ -768,11 +768,13 @@ bool WebPageReplayServerWrapper::Start(
     on_connect_complete.Run(connect_result);
   });
 
+  bool connected = false;
   // Called on the IO thread once connection has completed. Destroys the
   // `client_socket`, which may or may not be the object invoking the callback.
   on_connect_complete = base::BindLambdaForTesting([&](int connect_result) {
     client_socket.reset();
-    if (connect_result == net::OK || connect_attempts > 90) {
+    connected = (connect_result == net::OK);
+    if (connected || connect_attempts > 90) {
       wpr_launch_waiter.Quit();
     } else {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -785,6 +787,11 @@ bool WebPageReplayServerWrapper::Start(
 
   if (!web_page_replay_server_.IsValid()) {
     ADD_FAILURE() << "Failed to start the WPR replay server!";
+    return false;
+  }
+  if (!connected) {
+    ADD_FAILURE() << "Timed out waiting for the WPR replay server to accept "
+                     "connections!";
     return false;
   }
 
