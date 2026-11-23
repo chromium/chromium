@@ -5,6 +5,7 @@
 #include "cbor.h"
 
 #include <algorithm>
+#include <bit>
 #include <cassert>
 #include <cmath>
 #include <cstring>
@@ -564,7 +565,7 @@ Status CBORTokenizer::Status() const {
 }
 
 // The following accessor functions ::GetInt32, ::GetDouble,
-// ::GetString8, ::GetString16WireRep, ::GetBinary, ::GetEnvelopeContents
+// ::GetString8, ::GetString16View, ::GetBinary, ::GetEnvelopeContents
 // assume that a particular token was recognized in ::ReadNextToken.
 // That's where all the error checking is done. By design,
 // the accessors (assuming the token was recognized) never produce
@@ -596,10 +597,33 @@ span<uint8_t> CBORTokenizer::GetString8() const {
   return bytes_.subspan(status_.pos + (token_byte_length_ - length), length);
 }
 
-span<uint8_t> CBORTokenizer::GetString16WireRep() const {
+span<uint16_t> CBORTokenizer::GetString16View() const {
   assert(token_tag_ == CBORTokenTag::STRING16);
-  auto length = static_cast<size_t>(token_start_internal_value_);
-  return bytes_.subspan(status_.pos + (token_byte_length_ - length), length);
+  auto byte_length = static_cast<size_t>(token_start_internal_value_);
+  if (byte_length == 0) {
+    return span<uint16_t>();
+  }
+  span<uint8_t> raw = bytes_.subspan(
+      status_.pos + (token_byte_length_ - byte_length), byte_length);
+  if constexpr (std::endian::native == std::endian::little) {
+    if (reinterpret_cast<uintptr_t>(raw.data()) % alignof(uint16_t) == 0) {
+      return span<uint16_t>(reinterpret_cast<const uint16_t*>(raw.data()),
+                            byte_length / 2);
+    }
+  }
+  if (string16_buffer_.empty()) {
+    const size_t char_count = byte_length / 2;
+    string16_buffer_.resize(char_count);
+    if constexpr (std::endian::native == std::endian::little) {
+      std::memcpy(string16_buffer_.data(), raw.data(), byte_length);
+    } else {
+      for (size_t i = 0; i < char_count; ++i) {
+        string16_buffer_[i] = static_cast<uint16_t>(
+            raw[i * 2] | (static_cast<unsigned>(raw[i * 2 + 1]) << 8));
+      }
+    }
+  }
+  return SpanFrom(string16_buffer_);
 }
 
 span<uint8_t> CBORTokenizer::GetBinary() const {
@@ -654,6 +678,7 @@ void CBORTokenizer::ReadNextToken() {
   status_.pos += token_byte_length_;
   status_.error = Error::OK;
   envelope_header_ = EnvelopeHeader();
+  string16_buffer_.clear();
   if (status_.pos >= bytes_.size()) {
     token_tag_ = CBORTokenTag::DONE;
     return;
@@ -830,11 +855,8 @@ bool ParseValue(int32_t stack_depth,
                 ParserHandler* out);
 
 void ParseUTF16String(CBORTokenizer* tokenizer, ParserHandler* out) {
-  std::vector<uint16_t> value;
-  span<uint8_t> rep = tokenizer->GetString16WireRep();
-  for (size_t ii = 0; ii < rep.size(); ii += 2)
-    value.push_back((rep[ii + 1] << 8) | rep[ii]);
-  out->HandleString16(value);
+  assert(tokenizer->TokenTag() == CBORTokenTag::STRING16);
+  out->HandleString16(tokenizer->GetString16View());
   tokenizer->Next();
 }
 
@@ -1142,12 +1164,12 @@ bool IsMatchingMapKey(const CBORTokenizer& tokenizer, span<uint8_t> key) {
   if (tokenizer.TokenTag() != CBORTokenTag::STRING16) {
     return false;
   }
-  span<uint8_t> rep = tokenizer.GetString16WireRep();
-  if (rep.size() != key.size() * 2) {
+  span<uint16_t> rep = tokenizer.GetString16View();
+  if (rep.size() != key.size()) {
     return false;
   }
   for (size_t ii = 0; ii < key.size(); ++ii) {
-    if (key[ii] > 127 || rep[ii * 2] != key[ii] || rep[ii * 2 + 1] != 0) {
+    if (key[ii] > 127 || rep[ii] != key[ii]) {
       return false;
     }
   }

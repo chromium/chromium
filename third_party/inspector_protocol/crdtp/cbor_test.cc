@@ -5,6 +5,7 @@
 #include "cbor.h"
 
 #include <array>
+#include <bit>
 #include <clocale>
 #include <cmath>
 #include <cstdlib>
@@ -332,23 +333,13 @@ TEST(EncodeDecodeString16Test, RoundtripsEmpty) {
   // Reverse direction: decode with CBORTokenizer.
   CBORTokenizer tokenizer(SpanFrom(encoded));
   EXPECT_EQ(CBORTokenTag::STRING16, tokenizer.TokenTag());
-  span<uint8_t> decoded_string16_wirerep = tokenizer.GetString16WireRep();
-  EXPECT_TRUE(decoded_string16_wirerep.empty());
+  span<uint16_t> decoded_string16 = tokenizer.GetString16View();
+  EXPECT_TRUE(decoded_string16.empty());
+  EXPECT_EQ(reinterpret_cast<uintptr_t>(decoded_string16.data()) %
+                alignof(uint16_t),
+            0u);
   tokenizer.Next();
   EXPECT_EQ(CBORTokenTag::DONE, tokenizer.TokenTag());
-}
-
-// On the wire, we STRING16 is encoded as little endian (least
-// significant byte first). The host may or may not be little endian,
-// so this routine follows the advice in
-// https://commandcenter.blogspot.com/2012/04/byte-order-fallacy.html.
-std::vector<uint16_t> String16WireRepToHost(span<uint8_t> in) {
-  // must be even number of bytes.
-  CHECK_EQ(in.size() & 1, 0u);
-  std::vector<uint16_t> host_out;
-  for (size_t ii = 0; ii < in.size(); ii += 2)
-    host_out.push_back(in[ii + 1] << 8 | in[ii]);
-  return host_out;
 }
 
 TEST(EncodeDecodeString16Test, RoundtripsHelloWorld) {
@@ -371,16 +362,16 @@ TEST(EncodeDecodeString16Test, RoundtripsHelloWorld) {
   // Now decode to complete the roundtrip.
   CBORTokenizer tokenizer(SpanFrom(encoded));
   EXPECT_EQ(CBORTokenTag::STRING16, tokenizer.TokenTag());
-  std::vector<uint16_t> decoded =
-      String16WireRepToHost(tokenizer.GetString16WireRep());
+  span<uint16_t> decoded = tokenizer.GetString16View();
+  EXPECT_EQ(reinterpret_cast<uintptr_t>(decoded.data()) % alignof(uint16_t),
+            0u);
   EXPECT_THAT(decoded, ElementsAreArray(msg));
+  // For bonus points, we look at the decoded message in UTF8 as well so we can
+  // easily see it on the terminal screen. Must be consumed before Next().
+  std::string utf8_decoded = UTF16ToUTF8(decoded);
+  EXPECT_EQ("Hello, 🌎.", utf8_decoded);
   tokenizer.Next();
   EXPECT_EQ(CBORTokenTag::DONE, tokenizer.TokenTag());
-
-  // For bonus points, we look at the decoded message in UTF8 as well so we can
-  // easily see it on the terminal screen.
-  std::string utf8_decoded = UTF16ToUTF8(SpanFrom(decoded));
-  EXPECT_EQ("Hello, 🌎.", utf8_decoded);
 }
 
 TEST(EncodeDecodeString16Test, Roundtrips500) {
@@ -406,11 +397,101 @@ TEST(EncodeDecodeString16Test, Roundtrips500) {
   // Now decode to complete the roundtrip.
   CBORTokenizer tokenizer(SpanFrom(encoded));
   EXPECT_EQ(CBORTokenTag::STRING16, tokenizer.TokenTag());
-  std::vector<uint16_t> decoded =
-      String16WireRepToHost(tokenizer.GetString16WireRep());
+  span<uint16_t> decoded = tokenizer.GetString16View();
+  EXPECT_EQ(reinterpret_cast<uintptr_t>(decoded.data()) % alignof(uint16_t),
+            0u);
   EXPECT_THAT(decoded, ElementsAreArray(two_fifty));
   tokenizer.Next();
   EXPECT_EQ(CBORTokenTag::DONE, tokenizer.TokenTag());
+}
+
+TEST(EncodeDecodeString16Test, AlignmentAndFastPath) {
+  // Buffer starts on a 2-byte boundary; a 1-byte CBOR header leaves the
+  // payload misaligned.
+  alignas(uint16_t) const uint8_t misaligned[] = {0x44, 0x3d, 0xd8, 0x00, 0xde};
+  ASSERT_NE(reinterpret_cast<uintptr_t>(misaligned + 1) % alignof(uint16_t),
+            0u);
+  {
+    CBORTokenizer tokenizer(misaligned);
+    ASSERT_EQ(CBORTokenTag::STRING16, tokenizer.TokenTag());
+    span<uint16_t> view1 = tokenizer.GetString16View();
+    EXPECT_EQ(reinterpret_cast<uintptr_t>(view1.data()) % alignof(uint16_t),
+              0u);
+    EXPECT_THAT(view1, ElementsAreArray(std::array<uint16_t, 2>{0xd83d, 0xde00}));
+    // Repeated calls for the same token return the same aligned buffer without
+    // reallocating or invalidating previous views.
+    span<uint16_t> view2 = tokenizer.GetString16View();
+    EXPECT_EQ(view1.data(), view2.data());
+    EXPECT_EQ(view1.size(), view2.size());
+  }
+
+  // Starting the token at an odd address aligns the payload after the 1-byte
+  // CBOR header.
+  alignas(uint16_t) const uint8_t aligned_storage[] = {0x00, 0x44, 0x3d,
+                                                       0xd8, 0x00, 0xde};
+  span<uint8_t> aligned = span<uint8_t>(aligned_storage).subspan(1);
+  ASSERT_EQ(
+      reinterpret_cast<uintptr_t>(aligned.data() + 1) % alignof(uint16_t), 0u);
+  {
+    CBORTokenizer tokenizer(aligned);
+    ASSERT_EQ(CBORTokenTag::STRING16, tokenizer.TokenTag());
+    span<uint16_t> view = tokenizer.GetString16View();
+    EXPECT_EQ(reinterpret_cast<uintptr_t>(view.data()) % alignof(uint16_t), 0u);
+    EXPECT_THAT(view, ElementsAreArray(std::array<uint16_t, 2>{0xd83d, 0xde00}));
+    if constexpr (std::endian::native == std::endian::little) {
+      // Zero-copy fast path: span points directly into the underlying bytes.
+      EXPECT_EQ(reinterpret_cast<const uint8_t*>(view.data()),
+                aligned.data() + 1);
+    }
+  }
+}
+
+TEST(EncodeDecodeString16Test, ConsecutiveString16Tokens) {
+  // Indefinite-length array containing misaligned, aligned, empty, and another
+  // misaligned STRING16 token to verify scratch buffer reuse/clearing across
+  // Next().
+  alignas(uint16_t) const uint8_t bytes[] = {
+      EncodeIndefiniteLengthArrayStart(),  // offset 0 (1 byte)
+      0x42, 0xe9, 0x00,                    // offset 1: payload at 2 (aligned)
+      0x44, 0x3d, 0xd8, 0x00, 0xde,        // offset 4: payload at 5 (misaligned)
+      0x40,                                // offset 9: empty, payload at 10
+      0x42, 0x3c, 0xd8,                    // offset 10: payload at 11 (misaligned)
+      EncodeStop(),
+  };
+  CBORTokenizer tokenizer(bytes);
+  ASSERT_EQ(CBORTokenTag::ARRAY_START, tokenizer.TokenTag());
+
+  tokenizer.Next();
+  ASSERT_EQ(CBORTokenTag::STRING16, tokenizer.TokenTag());
+  span<uint16_t> first = tokenizer.GetString16View();
+  EXPECT_EQ(reinterpret_cast<uintptr_t>(first.data()) % alignof(uint16_t), 0u);
+  EXPECT_THAT(first, ElementsAreArray(std::array<uint16_t, 1>{0x00e9}));
+  if constexpr (std::endian::native == std::endian::little) {
+    EXPECT_EQ(reinterpret_cast<const uint8_t*>(first.data()), bytes + 2);
+  }
+
+  tokenizer.Next();
+  ASSERT_EQ(CBORTokenTag::STRING16, tokenizer.TokenTag());
+  span<uint16_t> second = tokenizer.GetString16View();
+  EXPECT_EQ(reinterpret_cast<uintptr_t>(second.data()) % alignof(uint16_t), 0u);
+  EXPECT_THAT(second, ElementsAreArray(std::array<uint16_t, 2>{0xd83d, 0xde00}));
+
+  tokenizer.Next();
+  ASSERT_EQ(CBORTokenTag::STRING16, tokenizer.TokenTag());
+  span<uint16_t> third = tokenizer.GetString16View();
+  EXPECT_TRUE(third.empty());
+  EXPECT_EQ(reinterpret_cast<uintptr_t>(third.data()) % alignof(uint16_t), 0u);
+
+  tokenizer.Next();
+  ASSERT_EQ(CBORTokenTag::STRING16, tokenizer.TokenTag());
+  span<uint16_t> fourth = tokenizer.GetString16View();
+  EXPECT_EQ(reinterpret_cast<uintptr_t>(fourth.data()) % alignof(uint16_t), 0u);
+  EXPECT_THAT(fourth, ElementsAreArray(std::array<uint16_t, 1>{0xd83c}));
+
+  tokenizer.Next();
+  ASSERT_EQ(CBORTokenTag::STOP, tokenizer.TokenTag());
+  tokenizer.Next();
+  ASSERT_EQ(CBORTokenTag::DONE, tokenizer.TokenTag());
 }
 
 TEST(EncodeDecodeString16Test, ErrorCases) {
@@ -531,9 +612,7 @@ TEST(EncodeFromUTF16Test, EncodesAsString16IfNeeded) {
 
   CBORTokenizer tokenizer(SpanFrom(encoded));
   EXPECT_EQ(CBORTokenTag::STRING16, tokenizer.TokenTag());
-  std::vector<uint16_t> decoded =
-      String16WireRepToHost(tokenizer.GetString16WireRep());
-  std::string utf8_decoded = UTF16ToUTF8(SpanFrom(decoded));
+  std::string utf8_decoded = UTF16ToUTF8(tokenizer.GetString16View());
   EXPECT_EQ("Hello, 🌎.", utf8_decoded);
 }
 

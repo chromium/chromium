@@ -257,10 +257,12 @@ class CRDTP_EXPORT CBORTokenizer {
   // To be called only if ::TokenTag() == CBORTokenTag::STRING8.
   span<uint8_t> GetString8() const;
 
-  // Wire representation for STRING16 is low byte first (little endian).
-  // To be called only if ::TokenTag() == CBORTokenTag::STRING16. The result is
-  // guaranteed to have even length.
-  span<uint8_t> GetString16WireRep() const;
+  // Returns the STRING16 token contents in host byte order, guaranteed to be
+  // aligned to a 2-byte boundary (alignof(uint16_t)).
+  // To be called only if ::TokenTag() == CBORTokenTag::STRING16.
+  // The returned span<> is only valid for the current token (i.e. until
+  // ::Next(), ::EnterEnvelope(), or the tokenizer is destroyed).
+  span<uint16_t> GetString16View() const;
 
   // To be called only if ::TokenTag() == CBORTokenTag::BINARY.
   span<uint8_t> GetBinary() const;
@@ -295,6 +297,9 @@ class CRDTP_EXPORT CBORTokenizer {
   MajorType token_start_type_;
   uint64_t token_start_internal_value_;
   EnvelopeHeader envelope_header_;
+  // Scratch buffer used by GetString16View() when the wire bytes are not
+  // aligned to alignof(uint16_t) or when byte-order conversion is needed.
+  mutable std::vector<uint16_t> string16_buffer_;
 };
 
 // =============================================================================

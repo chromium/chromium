@@ -128,11 +128,16 @@ bool InspectorAgentState::Deserialize(span<uint8_t> in, blink::String* v) {
     return true;
   }
   if (tokenizer.TokenTag() == CBORTokenTag::STRING16) {
-    const crdtp::span<uint8_t> data = tokenizer.GetString16WireRep();
-    // SAFETY: GetString16WireRep guarantees `data` is safe.
+    const crdtp::span<uint16_t> data = tokenizer.GetString16View();
+    if (data.empty()) {
+      *v = blink::g_empty_string;
+      return true;
+    }
+    static_assert(sizeof(uint16_t) == sizeof(UChar));
+    // SAFETY: GetString16View guarantees `data` is safe and aligned.
     *v = blink::String(UNSAFE_BUFFERS(
         base::span(base::unchecked, reinterpret_cast<const UChar*>(data.data()),
-                   data.size() / 2)));
+                   data.size())));
     return true;
   }
   return false;
