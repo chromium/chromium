@@ -479,7 +479,7 @@ StartupProfileInfo CreateInitialProfile(
   base::FilePath last_used_profile;
   if (!last_used_profile_set) {
     last_used_profile = profiles::GetProfileDirFromCommandLine(
-        parsed_command_line, user_data_dir, *g_browser_process->local_state());
+        parsed_command_line, user_data_dir);
   }
   if (!last_used_profile.empty()) {
     profiles::SetLastUsedProfile(last_used_profile);

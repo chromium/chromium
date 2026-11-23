@@ -54,7 +54,7 @@ inline constexpr char kLastUsedProfileBaseNameSharedPreferenceKey[] =
 
 // Writes `base_name` to kLastUsedProfileBaseNameSharedPreferenceKey. Called
 // when Chrome starts with a profile, and, with AndroidMultiprofileStartupData,
-// from SetLastUsedProfile().
+// from SetLastUsedProfile() and when a profile is added.
 void WriteLastUsedProfileBaseName(const base::FilePath& base_name);
 #endif
 
@@ -69,18 +69,20 @@ base::FilePath GetDefaultProfileDir(const base::FilePath& user_data_dir);
 // (prefs::kProfileAttributes in `local_state`).
 base::FilePath GetLastUsedProfileBaseName(const PrefService& local_state);
 
+// Returns whether `base_name` is a valid single profile directory name (non-
+// empty, relative, no path separators, no path traversal, and not "."). Accepts
+// `chrome::kSystemProfileDir` and `chrome::kGuestProfileDir`.
+bool IsValidProfileDirectoryName(const base::FilePath& base_name);
+
 // Returns the profile directory specified with --profile-directory on
 // `command_line`, if multiple profiles are enabled. Returns an empty path if no
-// profile directory is specified, or if
+// profile directory is specified, if the value is invalid (including the system
+// and guest profile directories), or if
 // --ignore-profile-directory-if-not-exists is also specified and the directory
-// doesn't exist in `user_data_dir`. On Android with
-// AndroidMultiprofileStartupData, also returns an empty path unless the profile
-// has an entry in ProfileAttributesStorage (prefs::kProfileAttributes in
-// `local_state`).
+// doesn't exist in `user_data_dir`.
 base::FilePath GetProfileDirFromCommandLine(
     const base::CommandLine& command_line,
-    const base::FilePath& user_data_dir,
-    const PrefService& local_state);
+    const base::FilePath& user_data_dir);
 
 // Register multi-profile related preferences in Local State.
 void RegisterPrefs(PrefRegistrySimple* registry);

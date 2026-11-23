@@ -7,6 +7,10 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/profiles/android/jni_headers/ProfileManager_jni.h"
@@ -20,6 +24,16 @@ ProfileManagerAndroid::ProfileManagerAndroid(ProfileManager* manager) {
 ProfileManagerAndroid::~ProfileManagerAndroid() = default;
 
 void ProfileManagerAndroid::OnProfileAdded(Profile* profile) {
+  // profiles::SetLastUsedProfile() can run before a new profile (e.g. from
+  // --profile-directory) is in ProfileAttributesStorage, writing the initial
+  // profile to SharedPreferences instead. Re-sync here after
+  // AddProfileToStorage() has run if this profile matches kProfileLastUsed.
+  if (profiles::IsAndroidMultiprofileStartupDataEnabled() &&
+      g_browser_process->local_state()->GetFilePath(prefs::kProfileLastUsed) ==
+          profile->GetBaseName()) {
+    profiles::WriteLastUsedProfileBaseName(
+        ProfileManager::GetLastUsedProfileBaseName());
+  }
   Java_ProfileManager_onProfileAdded(jni_zero::AttachCurrentThread(),
                                      profile->GetJavaObject());
 }

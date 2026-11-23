@@ -200,8 +200,8 @@ base::FilePath StartupData::GetProfileBaseNameForStartup(
     return base::FilePath::FromASCII(chrome::kInitialProfile);
   }
 
-  base::FilePath command_line_profile = profiles::GetProfileDirFromCommandLine(
-      command_line, user_data_dir, local_state);
+  base::FilePath command_line_profile =
+      profiles::GetProfileDirFromCommandLine(command_line, user_data_dir);
   if (!command_line_profile.empty()) {
     return command_line_profile;
   }

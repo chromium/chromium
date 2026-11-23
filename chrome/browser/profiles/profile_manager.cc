@@ -948,7 +948,8 @@ Profile* ProfileManager::GetProfileByPathInternal(
 }
 
 bool ProfileManager::IsAllowedProfilePath(const base::FilePath& path) const {
-  return path.DirName() == user_data_dir();
+  return path.DirName() == user_data_dir() && !path.EndsWithSeparator() &&
+         profiles::IsValidProfileDirectoryName(path.BaseName());
 }
 
 bool ProfileManager::CanCreateProfileAtPath(const base::FilePath& path) const {
@@ -1249,7 +1250,7 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
       supervised_user_id = entry->GetSupervisedUserId();
     } else {
       avatar_index = profiles::GetPlaceholderAvatarIndex();
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS)
       profile_name = base::UTF16ToUTF8(storage.ChooseNameForNewProfile());
 #else
       profile_name =

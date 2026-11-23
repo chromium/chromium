@@ -308,11 +308,26 @@ TEST_F(GetLastUsedProfileBaseNameTest, AndroidStartsWithCommandLineProfile) {
                                     /*expected_profile=*/kExistingProfile);
 }
 
-TEST_F(GetLastUsedProfileBaseNameTest,
-       AndroidIgnoresNonexistentCommandLineProfile) {
+TEST_F(GetLastUsedProfileBaseNameTest, AndroidStartsWithNewCommandLineProfile) {
   TestProfileBaseNameForStartupImpl(/*startup_data_enabled=*/true,
                                     /*command_line_profile=*/"Profile 3",
-                                    /*expected_profile=*/kProfile1);
+                                    /*expected_profile=*/"Profile 3");
+}
+
+TEST_F(GetLastUsedProfileBaseNameTest,
+       AndroidIgnoresInvalidCommandLineProfile) {
+  const std::string invalid_profiles[] = {
+      "/abs/path",
+      "..",
+      base::FilePath(chrome::kSystemProfileDir).AsUTF8Unsafe(),
+      base::FilePath(chrome::kGuestProfileDir).AsUTF8Unsafe(),
+  };
+  for (const std::string& profile : invalid_profiles) {
+    SCOPED_TRACE(profile);
+    TestProfileBaseNameForStartupImpl(/*startup_data_enabled=*/true,
+                                      /*command_line_profile=*/profile,
+                                      /*expected_profile=*/kProfile1);
+  }
 }
 
 void GetLastUsedProfileBaseNameTest::TestProfileBaseNameForStartupImpl(
@@ -405,24 +420,17 @@ TEST_F(GetLastUsedProfileBaseNameTest, ReturnsUnknownLastUsedProfile) {
 
 class GetProfileDirFromCommandLineTest : public testing::Test {
  protected:
-  void SetUp() override {
-    ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
-    local_state_.registry()->RegisterDictionaryPref(prefs::kProfileAttributes);
-  }
+  void SetUp() override { ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir()); }
 
   base::FilePath GetProfileDir() {
-    return profiles::GetProfileDirFromCommandLine(
-        command_line_, user_data_dir_.GetPath(), local_state_);
+    return profiles::GetProfileDirFromCommandLine(command_line_,
+                                                  user_data_dir_.GetPath());
   }
 
   void TestIgnoreIfNotExistsImpl(bool directory_exists);
-#if BUILDFLAG(IS_ANDROID)
-  void TestStartupDataRequiresExistingProfileImpl(bool profile_exists);
-#endif
 
   base::ScopedTempDir user_data_dir_;
   base::CommandLine command_line_{base::CommandLine::NO_PROGRAM};
-  TestingPrefServiceSimple local_state_;
 #if BUILDFLAG(IS_ANDROID)
   base::test::ScopedFeatureList feature_list_{
       chrome::android::kAndroidMultiprofile};
@@ -449,32 +457,72 @@ TEST_F(GetProfileDirFromCommandLineTest,
   TestIgnoreIfNotExistsImpl(/*directory_exists=*/false);
 }
 
+TEST_F(GetProfileDirFromCommandLineTest, RejectsInvalidProfileDirectories) {
+  const base::FilePath invalid_dirs[] = {
+      base::FilePath(),
+      user_data_dir_.GetPath(),
+      base::FilePath(base::FilePath::kCurrentDirectory),
+      base::FilePath(base::FilePath::kParentDirectory),
+      base::FilePath(base::FilePath::kParentDirectory).AppendASCII("escape"),
+      base::FilePath::FromASCII("a").AppendASCII("b"),
+      base::FilePath::FromASCII(kProfile1).AsEndingWithSeparator(),
+      base::FilePath(
+          base::FilePath::StringType(1, base::FilePath::kSeparators[0])),
+      base::FilePath(chrome::kSystemProfileDir),
+      base::FilePath(chrome::kGuestProfileDir),
+  };
+
+  for (const base::FilePath& invalid_dir : invalid_dirs) {
+    SCOPED_TRACE(invalid_dir.AsUTF8Unsafe());
+    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+    command_line.AppendSwitchPath(switches::kProfileDirectory, invalid_dir);
+    EXPECT_TRUE(profiles::GetProfileDirFromCommandLine(command_line,
+                                                       user_data_dir_.GetPath())
+                    .empty());
+    command_line.AppendSwitch(switches::kIgnoreProfileDirectoryIfNotExists);
+    EXPECT_TRUE(profiles::GetProfileDirFromCommandLine(command_line,
+                                                       user_data_dir_.GetPath())
+                    .empty());
+  }
+}
+
+TEST(IsValidProfileDirectoryNameTest, AcceptsValidAndRejectsInvalidNames) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  EXPECT_TRUE(profiles::IsValidProfileDirectoryName(
+      base::FilePath::FromASCII(kProfile1)));
+  EXPECT_TRUE(profiles::IsValidProfileDirectoryName(
+      base::FilePath::FromASCII(".hidden")));
+  EXPECT_TRUE(
+      profiles::IsValidProfileDirectoryName(base::FilePath::FromASCII("a..b")));
+  EXPECT_TRUE(profiles::IsValidProfileDirectoryName(
+      base::FilePath(chrome::kSystemProfileDir)));
+  EXPECT_TRUE(profiles::IsValidProfileDirectoryName(
+      base::FilePath(chrome::kGuestProfileDir)));
+
+  EXPECT_FALSE(profiles::IsValidProfileDirectoryName(base::FilePath()));
+  EXPECT_FALSE(profiles::IsValidProfileDirectoryName(temp_dir.GetPath()));
+  EXPECT_FALSE(profiles::IsValidProfileDirectoryName(
+      base::FilePath(base::FilePath::kCurrentDirectory)));
+  EXPECT_FALSE(profiles::IsValidProfileDirectoryName(
+      base::FilePath(base::FilePath::kParentDirectory)));
+  EXPECT_FALSE(profiles::IsValidProfileDirectoryName(
+      base::FilePath(base::FilePath::kParentDirectory).AppendASCII("escape")));
+  EXPECT_FALSE(profiles::IsValidProfileDirectoryName(
+      base::FilePath::FromASCII("a").AppendASCII("b")));
+  EXPECT_FALSE(profiles::IsValidProfileDirectoryName(
+      base::FilePath::FromASCII(kProfile1).AsEndingWithSeparator()));
+  EXPECT_FALSE(profiles::IsValidProfileDirectoryName(base::FilePath(
+      base::FilePath::StringType(1, base::FilePath::kSeparators[0]))));
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(GetProfileDirFromCommandLineTest,
        AndroidReturnsEmptyPathWithoutMultipleProfiles) {
   base::test::ScopedFeatureList disabled;
   disabled.InitAndDisableFeature(chrome::android::kAndroidMultiprofile);
   command_line_.AppendSwitchASCII(switches::kProfileDirectory, kProfile1);
-
-  EXPECT_TRUE(GetProfileDir().empty());
-}
-
-TEST_F(GetProfileDirFromCommandLineTest,
-       AndroidReturnsExistingProfileWithStartupData) {
-  TestStartupDataRequiresExistingProfileImpl(/*profile_exists=*/true);
-}
-
-TEST_F(GetProfileDirFromCommandLineTest,
-       AndroidIgnoresNonexistentProfileWithStartupData) {
-  TestStartupDataRequiresExistingProfileImpl(/*profile_exists=*/false);
-}
-
-TEST_F(GetProfileDirFromCommandLineTest,
-       AndroidRejectsAbsolutePathWithStartupData) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAndroidMultiprofileStartupData);
-  command_line_.AppendSwitchPath(switches::kProfileDirectory,
-                                 user_data_dir_.GetPath());
 
   EXPECT_TRUE(GetProfileDir().empty());
 }
@@ -493,20 +541,3 @@ void GetProfileDirFromCommandLineTest::TestIgnoreIfNotExistsImpl(
                              : base::FilePath(),
             GetProfileDir());
 }
-
-#if BUILDFLAG(IS_ANDROID)
-void GetProfileDirFromCommandLineTest::
-    TestStartupDataRequiresExistingProfileImpl(bool profile_exists) {
-  base::test::ScopedFeatureList feature_list(
-      features::kAndroidMultiprofileStartupData);
-  if (profile_exists) {
-    ScopedDictPrefUpdate(&local_state_, prefs::kProfileAttributes)
-        ->Set(kProfile1, base::DictValue());
-  }
-  command_line_.AppendSwitchASCII(switches::kProfileDirectory, kProfile1);
-
-  EXPECT_EQ(
-      profile_exists ? base::FilePath::FromASCII(kProfile1) : base::FilePath(),
-      GetProfileDir());
-}
-#endif  // BUILDFLAG(IS_ANDROID)

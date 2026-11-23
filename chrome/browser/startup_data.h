@@ -86,9 +86,9 @@ class StartupData {
   // Returns the base name of the profile directory that InitProfileKey()
   // builds the ProfileKey and PrefService for. With
   // AndroidMultiprofileStartupData, it is the profile that
-  // profiles::GetProfileDirFromCommandLine() returns for `command_line`,
-  // `user_data_dir` and `local_state`, if any, and the last used profile
-  // otherwise. Without the flag, it is the initial profile.
+  // profiles::GetProfileDirFromCommandLine() returns for `command_line` and
+  // `user_data_dir`, if any, and the last used profile otherwise. Without the
+  // flag, it is the initial profile.
   static base::FilePath GetProfileBaseNameForStartup(
       const PrefService& local_state,
       const base::CommandLine& command_line,
