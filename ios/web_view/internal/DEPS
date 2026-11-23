@@ -70,7 +70,6 @@ include_rules = [
   "+ios/web/navigation",
   "+ios/web/public",
   "+ios/web/web_state",
-  "+ios/web/webui",
   "+ios/web_view",
   "+net",
   "+services/network/network_change_manager.h",

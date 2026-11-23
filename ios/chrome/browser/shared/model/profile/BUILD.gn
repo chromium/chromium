@@ -46,7 +46,6 @@ source_set("profile") {
     "//ios/components/webui:url_constants",
     "//ios/web/public",
     "//ios/web/public/webui",
-    "//ios/web/webui",
     "//net",
   ]
   public_deps = [ "//base" ]

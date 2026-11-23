@@ -11,8 +11,8 @@
 #include "base/uuid.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
+#include "ios/web/public/webui/web_ui_ios.h"
 #include "ios/web/test/test_url_constants.h"
-#include "ios/web/webui/url_data_manager_ios_backend.h"
 #include "net/cookies/cookie_store.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_builder.h"
@@ -33,8 +33,7 @@ class TestContextURLRequestContextGetter : public net::URLRequestContextGetter {
       context_builder->SetCookieStore(std::move(cookie_store));
     }
     context_builder->SetProtocolHandler(
-        kTestWebUIScheme,
-        web::URLDataManagerIOSBackend::CreateProtocolHandler(browser_state));
+        kTestWebUIScheme, web::CreateWebUIProtocolHandler(browser_state));
     context_ = context_builder->Build();
   }
 

@@ -426,7 +426,6 @@ ios_web_view_deps = [
   "//ios/web/public/web_view_only",
   "//ios/web/public/webui",
   "//ios/web/web_state/ui:wk_web_view_configuration_provider_header",
-  "//ios/web/webui",
   "//ios/web_view/internal/js_messaging:cwv_messaging_js",
   "//ios/web_view/resources",
   "//net",

@@ -17,7 +17,6 @@
 #import "ios/net/cookies/cookie_store_ios.h"
 #import "ios/web/public/browsing_data/system_cookie_store_util.h"
 #import "ios/web/public/web_client.h"
-#import "ios/web/webui/url_data_manager_ios_backend.h"
 #import "net/http/http_network_session.h"
 #import "net/http/transport_security_persister.h"
 #import "net/http/transport_security_state.h"

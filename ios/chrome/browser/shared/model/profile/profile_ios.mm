@@ -16,7 +16,6 @@
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/webui/web_ui_ios.h"
-#import "ios/web/webui/url_data_manager_ios_backend.h"
 #import "net/url_request/url_request_context_getter.h"
 #import "net/url_request/url_request_interceptor.h"
 
@@ -101,8 +100,7 @@ net::URLRequestContextGetter* ProfileIOS::GetRequestContext() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!request_context_getter_) {
     ProtocolHandlerMap protocol_handlers;
-    protocol_handlers[kChromeUIScheme] =
-        web::URLDataManagerIOSBackend::CreateProtocolHandler(this);
+    protocol_handlers[kChromeUIScheme] = web::CreateWebUIProtocolHandler(this);
     request_context_getter_ =
         base::WrapRefCounted(CreateRequestContext(&protocol_handlers));
   }

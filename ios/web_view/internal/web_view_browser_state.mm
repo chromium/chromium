@@ -31,7 +31,6 @@
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/webui/web_ui_ios.h"
-#import "ios/web/webui/url_data_manager_ios_backend.h"
 #import "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/browser_state_prefs.h"
 #import "ios/web_view/internal/web_view_download_manager.h"
@@ -92,7 +91,7 @@ WebViewBrowserState::WebViewBrowserState(
     request_context_getter_ = new WebViewURLRequestContextGetter(
         GetStatePath(), ApplicationContext::GetInstance()->GetNetLog(),
         web::GetIOThreadTaskRunner({}), std::move(pair.first),
-        web::URLDataManagerIOSBackend::CreateProtocolHandler(this));
+        web::CreateWebUIProtocolHandler(this));
 
     // Initialize prefs.
     scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry =

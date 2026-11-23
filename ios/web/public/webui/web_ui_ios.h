@@ -12,10 +12,13 @@
 
 #include "base/functional/callback.h"
 #include "base/values.h"
+#include "net/url_request/url_request_job_factory.h"
 
 class GURL;
 
 namespace web {
+
+class BrowserState;
 
 class WebState;
 class WebUIIOSController;
@@ -90,6 +93,12 @@ class WebUIIOS {
     FireWebUIListenerSpan(args);
   }
 };
+
+// Creates a WebUI protocol handler for the embedder's app-specific URL scheme.
+// The returned `ProtocolHandler` retains `browser_state`, which must be
+// non-null and outlive the handler.
+std::unique_ptr<net::URLRequestJobFactory::ProtocolHandler>
+CreateWebUIProtocolHandler(BrowserState* browser_state);
 
 }  // namespace web
 

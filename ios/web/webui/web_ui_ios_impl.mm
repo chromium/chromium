@@ -20,6 +20,7 @@
 #import "ios/web/public/webui/web_ui_ios_controller_factory.h"
 #import "ios/web/public/webui/web_ui_ios_message_handler.h"
 #import "ios/web/webui/mojo_facade.h"
+#import "ios/web/webui/url_data_manager_ios_backend.h"
 
 using web::WebUIIOSController;
 
@@ -133,6 +134,11 @@ void WebUIIOSImpl::ExecuteJavascript(const std::u16string& javascript) {
   }
 
   main_frame->ExecuteJavaScript(javascript);
+}
+
+std::unique_ptr<net::URLRequestJobFactory::ProtocolHandler>
+CreateWebUIProtocolHandler(BrowserState* browser_state) {
+  return URLDataManagerIOSBackend::CreateProtocolHandler(browser_state);
 }
 
 }  // namespace web
