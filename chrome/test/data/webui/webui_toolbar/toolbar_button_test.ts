@@ -200,8 +200,10 @@ suite('ToolbarButtonTest', function() {
   const TARGET_SIZE = 100;
   const TARGET_MIDDLE = TARGET_SIZE / 2;
 
-  // Creates a mock HTMLElement with a predefined bounding client rect.
-  // This is used to test click coordinates and check if they are within bounds.
+  // Creates a mock HTMLElement with a predefined bounding client rect, and adds
+  // it to the document, since PressHandler ignores presses on disconnected
+  // elements. This is used to test click coordinates and check if they are
+  // within bounds.
   function createMockTarget(): HTMLElement {
     const target = document.createElement('div');
     target.getBoundingClientRect = () => {
@@ -217,6 +219,7 @@ suite('ToolbarButtonTest', function() {
         toJSON: () => {},
       };
     };
+    document.body.appendChild(target);
     return target;
   }
 
@@ -262,7 +265,8 @@ suite('ToolbarButtonTest', function() {
         (_e) => {
           shortPressCount++;
         },
-        /*enableContextMenu=*/ true, () => canLongPress);
+        () => canLongPress);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
     target = createMockTarget();
   });
 
@@ -392,18 +396,23 @@ suite('ToolbarButtonTest', function() {
 
     let mockTimer: MockTimer;
 
+    // Mocks pointer capture on `element`. Synthetic events have no active
+    // pointer to capture, so the real methods can't be used.
+    function mockPointerCapture(element: HTMLElement) {
+      let hasCapture = false;
+      element.setPointerCapture = (_id) => {
+        hasCapture = true;
+      };
+      element.releasePointerCapture = (_id) => {
+        hasCapture = false;
+      };
+      element.hasPointerCapture = (_id) => hasCapture;
+    }
+
     setup(() => {
       mockTimer = new MockTimer();
       mockTimer.install();
-
-      let hasCapture = false;
-      target.setPointerCapture = (_id) => {
-        hasCapture = true;
-      };
-      target.releasePointerCapture = (_id) => {
-        hasCapture = false;
-      };
-      target.hasPointerCapture = (_id) => hasCapture;
+      mockPointerCapture(target);
     });
 
     teardown(() => {
@@ -573,6 +582,76 @@ suite('ToolbarButtonTest', function() {
       handler.onContextmenu(contextMenuEvent);
       // The native context menu should still be suppressed.
       assertTrue(contextMenuEvent.defaultPrevented);
+      assertEquals(0, longPressCount);
+    });
+
+    // Replaces `target` with a new element, as happens when a conditionally
+    // rendered button is hidden and then shown again.
+    function replaceTarget() {
+      target.remove();
+      target = createMockTarget();
+      mockPointerCapture(target);
+    }
+
+    // If the target is removed mid-press, the press ends without a pointerup
+    // or pointercancel event. The timer firing should not trigger a long
+    // press, and subsequent presses should work normally.
+    test('RemovedDuringPress', function() {
+      dispatchPointerEvent(handler, 'pointerdown', target, 1);
+      replaceTarget();
+      mockTimer.tick(LONG_PRESS_MS);
+      assertEquals(0, longPressCount);
+
+      simulateClick();
+      assertEquals(1, shortPressCount);
+      assertEquals(0, longPressCount);
+
+      dispatchPointerEvent(handler, 'pointerdown', target, 1);
+      mockTimer.tick(LONG_PRESS_MS);
+      assertEquals(1, shortPressCount);
+      assertEquals(1, longPressCount);
+    });
+
+    // Same as above, but the target is removed after the long press timer
+    // fires, when long presses aren't allowed, so the timer can't clear the
+    // stale press.
+    test('NotAllowedRemovedAfterTimer', function() {
+      canLongPress = false;
+      dispatchPointerEvent(handler, 'pointerdown', target, 1);
+      mockTimer.tick(LONG_PRESS_MS);
+      replaceTarget();
+
+      simulateClick();
+      assertEquals(1, shortPressCount);
+      assertEquals(0, longPressCount);
+    });
+
+    // If the target loses pointer capture mid-press, without being removed,
+    // neither dragging nor the timer should trigger a long press, and
+    // releasing the pointer should not trigger a short press.
+    test('CaptureLostDuringPress', function() {
+      dispatchPointerEvent(handler, 'pointerdown', target, 1);
+      target.releasePointerCapture(1);
+      dragDown();
+      mockTimer.tick(LONG_PRESS_MS);
+      dispatchPointerEvent(handler, 'pointerup', target, 1);
+      assertEquals(0, shortPressCount);
+      assertEquals(0, longPressCount);
+
+      simulateClick();
+      assertEquals(1, shortPressCount);
+      assertEquals(0, longPressCount);
+    });
+
+    // Presses by other pointers should be ignored while a press is active.
+    test('SecondaryPointerIgnored', function() {
+      dispatchPointerEvent(handler, 'pointerdown', target, 1);
+      dispatchPointerEvent(handler, 'pointerdown', target, 2);
+      dispatchPointerEvent(handler, 'pointerup', target, 2);
+      assertEquals(0, shortPressCount);
+
+      dispatchPointerEvent(handler, 'pointerup', target, 1);
+      assertEquals(1, shortPressCount);
       assertEquals(0, longPressCount);
     });
   });

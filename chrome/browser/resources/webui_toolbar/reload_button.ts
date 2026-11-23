@@ -147,7 +147,7 @@ export class ReloadButtonElement extends ReloadButtonElementBase {
     this.browserProxy_ = BrowserProxyImpl.getInstance();
     this.pressHandler_ = new PressHandler(
         this.onLongPress_.bind(this), this.onShortPress_.bind(this),
-        /*enableContextMenu=*/ true, this.canShowMenu_.bind(this));
+        this.canShowMenu_.bind(this));
     ColorChangeUpdater.forDocument().start();
   }
 

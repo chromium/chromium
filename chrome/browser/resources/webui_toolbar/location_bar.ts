@@ -282,7 +282,7 @@ export class LocationBarElement extends CrLitElement implements
   protected clearPressHandler_: PressHandler = new PressHandler(
       /*onLongPress=*/ () => {},
       /*onShortPress=*/ () => this.clearInput_(),
-      /*enableContextMenu=*/ false,
+      /*canLongPress=*/ () => false,
   );
 
   private clearInput_() {
