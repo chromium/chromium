@@ -162,10 +162,10 @@ public class TabsTest {
     // TODO(crbug.com/457847264): Change to @Restriction(DeviceFormFactor.PHONE) after launch
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testSpawnPopupOnBackgroundTab() {
-        mActivityTestRule.loadUrl(getUrl(TEST_FILE_PATH));
-        final Tab tab = mActivityTestRule.getActivityTab();
+        WebPageStation page = mActivityTestRule.startOnTestServerUrl(TEST_FILE_PATH);
+        final Tab tab = page.getTab();
 
-        mActivityTestRule.newIncognitoTabFromMenu();
+        page.openNewIncognitoTabFast();
 
         runOnUiThreadBlocking(
                 () ->
@@ -193,9 +193,12 @@ public class TabsTest {
     // TODO(crbug.com/457847264): Change to @Restriction(DeviceFormFactor.PHONE) after launch
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testAlertDialogDoesNotChangeActiveModel() {
-        mActivityTestRule.newIncognitoTabFromMenu();
-        mActivityTestRule.loadUrl(getUrl(TEST_FILE_PATH));
-        final Tab tab = mActivityTestRule.getActivityTab();
+        final Tab tab =
+                mActivityTestRule
+                        .startOnBlankPage()
+                        .openNewIncognitoTabFast()
+                        .loadWebPageProgrammatically(getUrl(TEST_FILE_PATH))
+                        .getTab();
         runOnUiThreadBlocking(
                 () ->
                         tab.getWebContents()

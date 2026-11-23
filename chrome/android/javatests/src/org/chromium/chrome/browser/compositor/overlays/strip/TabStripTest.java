@@ -98,8 +98,8 @@ public class TabStripTest {
     }
 
     /** Starts on a blank page and opens {@code numTabs} more blank tabs after it. */
-    private void openBlankTabs(int numTabs) {
-        Journeys.createRegularTabsWithWebPages(
+    private WebPageStation openBlankTabs(int numTabs) {
+        return Journeys.createRegularTabsWithWebPages(
                 mActivityTestRule.startOnBlankPage(), blankUrls(numTabs));
     }
 
@@ -263,7 +263,7 @@ public class TabStripTest {
         Assert.assertFalse(
                 "Expected normal strip to be selected",
                 mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected());
-        mActivityTestRule.newIncognitoTabFromMenu();
+        mActivityTestRule.startOnBlankPage().openNewIncognitoTabFast();
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         compareAllTabStripsWithModel();
         Assert.assertTrue(
@@ -503,7 +503,7 @@ public class TabStripTest {
         Assert.assertFalse(
                 "Expected normal strip to be selected",
                 mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected());
-        mActivityTestRule.newIncognitoTabFromMenu();
+        mActivityTestRule.startOnBlankPage().openNewIncognitoTabFast();
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertTrue(
                 "Expected incognito strip to be selected",
@@ -538,7 +538,7 @@ public class TabStripTest {
         Assert.assertFalse(
                 "Expected normal strip to be selected",
                 mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected());
-        mActivityTestRule.newIncognitoTabFromMenu();
+        mActivityTestRule.startOnBlankPage().openNewIncognitoTabFast();
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertTrue(
                 "Expected incognito strip to be selected",
@@ -663,13 +663,16 @@ public class TabStripTest {
         Assert.assertFalse(
                 "Expected normal strip to be selected",
                 mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected());
-        mActivityTestRule.newIncognitoTabFromMenu();
+        IncognitoNewTabPageStation incognitoNtp =
+                mActivityTestRule.startOnBlankPage().openNewIncognitoTabFast();
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         Assert.assertTrue(
                 "Expected incognito strip to be selected",
                 mActivityTestRule.getActivity().getTabModelSelector().isIncognitoSelected());
-        mActivityTestRule.newIncognitoTabFromMenu();
-        ChromeTriggers.selectTabProgrammatically(mActivityTestRule.getActivity(), 0);
+        Tab firstIncognitoTab = incognitoNtp.getTab();
+        incognitoNtp
+                .openNewIncognitoTabFast()
+                .selectTabFast(firstIncognitoTab, IncognitoNewTabPageStation::newBuilder);
 
         clickIncognitoToggleButton();
 
@@ -695,7 +698,7 @@ public class TabStripTest {
                 mActivityTestRule.startOnBlankPage().openNewIncognitoTabFast();
 
         // Open enough regular tabs to cause the tab strip to scroll.
-        Journeys.createRegularTabsWithWebPages(incognitoNtp, blankUrls(20));
+        WebPageStation page = Journeys.createRegularTabsWithWebPages(incognitoNtp, blankUrls(20));
 
         // Check scrolling tab strip
         checkTabStrips();
@@ -725,7 +728,7 @@ public class TabStripTest {
                 });
 
         // Open another incognito tab to switch to the incognito model.
-        mActivityTestRule.newIncognitoTabFromMenu();
+        page.openNewIncognitoTabFast();
 
         // Switch tab models to switch back to the regular tab strip.
         clickIncognitoToggleButton();
@@ -1167,7 +1170,7 @@ public class TabStripTest {
     @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testHoverOnTabStrip_switchTabModel() throws Exception {
         // Open regular tabs.
-        openBlankTabs(2);
+        WebPageStation page = openBlankTabs(2);
 
         // Select a tab to hover on.
         TabModel model = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
@@ -1205,7 +1208,7 @@ public class TabStripTest {
                 hoverCardView.getBackgroundTintList());
 
         // Open an incognito tab from the menu.
-        Tab tab = mActivityTestRule.newIncognitoTabFromMenu();
+        Tab tab = page.openNewIncognitoTabFast().getTab();
         StripLayoutTab incognitoTab =
                 TabStripUtils.findStripLayoutTab(
                         mActivityTestRule.getActivity(), true, tab.getId());
