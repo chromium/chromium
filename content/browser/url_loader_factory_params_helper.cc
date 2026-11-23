@@ -276,6 +276,11 @@ URLLoaderFactoryParamsHelper::CreateForPrefetch(
   // The factory client |is_trusted| to control the |network_isolation_key| in
   // each separate request (rather than forcing the client to use the key
   // specified in URLLoaderFactoryParams).
+  // Cross-origin restricted and recursive prefetches use a destination-origin
+  // `IsolationInfo` for HTTP cache partitioning, so they must not send or store
+  // partitioned cookies.
+  cookie_setting_overrides.Put(
+      net::CookieSettingOverride::kForceDisablePartitionedCookies);
   const url::Origin& frame_origin = frame->GetLastCommittedOrigin();
   return CreateParams(
       frame->GetProcess(),

@@ -14,6 +14,7 @@
 #include "base/unguessable_token.h"
 #include "content/browser/loader/prefetch_url_loader_service_context.h"
 #include "content/browser/loader/subresource_proxying_url_loader_service.h"
+#include "content/browser/url_loader_factory_params_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/test/navigation_simulator.h"
@@ -309,6 +310,82 @@ TEST_F(PrefetchURLLoaderTest,
   EXPECT_EQ(0, bad_messages.count()) << bad_messages.last_error();
   ASSERT_TRUE(bind_context);
   EXPECT_EQ(bind_context->cross_origin_factory, nullptr);
+}
+
+TEST_F(PrefetchURLLoaderTest,
+       CrossOriginAndRecursivePrefetchDisablesPartitionedCookiesAndDbsc) {
+  NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://a.test/page.html"));
+  TestRenderFrameHost* rfh = static_cast<TestRenderFrameHost*>(main_rfh());
+
+  network::mojom::URLLoaderFactoryParamsPtr params =
+      URLLoaderFactoryParamsHelper::CreateForPrefetch(
+          rfh, rfh->BuildClientSecurityState(), net::CookieSettingOverrides(),
+          base::UnguessableToken::Create());
+  EXPECT_TRUE(params->cookie_setting_overrides.Has(
+      net::CookieSettingOverride::kForceDisablePartitionedCookies));
+
+  SubresourceProxyingURLLoaderService service(browser_context());
+  mojo::Remote<network::mojom::URLLoaderFactory> factory;
+  base::WeakPtr<SubresourceProxyingURLLoaderService::BindContext> bind_context =
+      service.GetFactory(factory.BindNewPipeAndPassReceiver(),
+                         rfh->GetFrameTreeNodeId(),
+                         test_shared_url_loader_factory_, rfh->GetWeakPtr(),
+                         /*prefetched_signed_exchange_cache=*/nullptr);
+  ASSERT_TRUE(bind_context);
+  bind_context->OnDidCommitNavigation(rfh->GetWeakDocumentPtr());
+
+  network::TestURLLoaderFactory cross_origin_factory;
+  bind_context->cross_origin_factory =
+      cross_origin_factory.GetSafeWeakWrapper();
+
+  // 1. Cross-origin restricted main-frame prefetch disables DBSC.
+  network::ResourceRequest restricted_req;
+  restricted_req.url = GURL("https://c.test/doc.html");
+  restricted_req.method = "GET";
+  restricted_req.load_flags =
+      net::LOAD_PREFETCH | net::LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME;
+  restricted_req.request_initiator = rfh->GetLastCommittedOrigin();
+  EXPECT_TRUE(restricted_req.allows_device_bound_sessions);
+
+  network::TestURLLoaderClient client1;
+  mojo::Remote<network::mojom::URLLoader> loader1;
+  factory->CreateLoaderAndStart(
+      loader1.BindNewPipeAndPassReceiver(), /*request_id=*/1,
+      network::mojom::kURLLoadOptionNone, restricted_req,
+      client1.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  factory.FlushForTesting();
+  ASSERT_EQ(1, cross_origin_factory.NumPending());
+  EXPECT_FALSE(cross_origin_factory.GetPendingRequest(0)
+                   ->request.allows_device_bound_sessions);
+
+  // 2. Recursive prefetch disables DBSC.
+  const url::Origin c_origin = url::Origin::Create(GURL("https://c.test"));
+  const base::UnguessableToken token = base::UnguessableToken::Create();
+  bind_context->prefetch_isolation_infos.Put(
+      token,
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                 c_origin, c_origin, net::SiteForCookies()));
+
+  network::ResourceRequest recursive_req;
+  recursive_req.url = GURL("https://d.test/sub.js");
+  recursive_req.method = "GET";
+  recursive_req.load_flags = net::LOAD_PREFETCH;
+  recursive_req.request_initiator = rfh->GetLastCommittedOrigin();
+  recursive_req.recursive_prefetch_token = token;
+  EXPECT_TRUE(recursive_req.allows_device_bound_sessions);
+
+  network::TestURLLoaderClient client2;
+  mojo::Remote<network::mojom::URLLoader> loader2;
+  factory->CreateLoaderAndStart(
+      loader2.BindNewPipeAndPassReceiver(), /*request_id=*/2,
+      network::mojom::kURLLoadOptionNone, recursive_req, client2.CreateRemote(),
+      net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+  factory.FlushForTesting();
+  ASSERT_EQ(2, cross_origin_factory.NumPending());
+  EXPECT_FALSE(cross_origin_factory.GetPendingRequest(1)
+                   ->request.allows_device_bound_sessions);
 }
 
 }  // namespace

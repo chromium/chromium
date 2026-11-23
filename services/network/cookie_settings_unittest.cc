@@ -448,6 +448,66 @@ TEST_F(CookieSettingsTest, ShouldAlwaysAllowCookies) {
       {net::CookieSettingOverride::kForceAllowCookies}));
 }
 
+TEST_F(CookieSettingsTest, ForceDisablePartitionedCookies) {
+  CookieSettings settings;
+  const GURL url(kURL);
+  const url::Origin top_frame_origin = url::Origin::Create(GURL(kOtherURL));
+  std::unique_ptr<net::CanonicalCookie> partitioned_cookie =
+      MakeCanonicalCookie(
+          "__Host-partitioned", kURL,
+          net::CookiePartitionKey::FromURLForTesting(GURL(kOtherURL)));
+  std::unique_ptr<net::CanonicalCookie> unpartitioned_cookie =
+      MakeCanonicalSameSiteNoneCookie("__Host-unpartitioned", kURL);
+  const net::CookieSettingOverrides overrides{
+      net::CookieSettingOverride::kForceDisablePartitionedCookies};
+
+  // With 3PCs allowed, unpartitioned cookies are allowed while partitioned
+  // cookies are blocked with `EXCLUDE_USER_PREFERENCES`.
+  settings.set_block_third_party_cookies(false);
+  net::CookieInclusionStatus status;
+  EXPECT_TRUE(settings.IsCookieAccessible(
+      *unpartitioned_cookie, url, net::SiteForCookies(), top_frame_origin,
+      overrides, &status));
+  status.ResetForTesting();
+  EXPECT_FALSE(settings.IsCookieAccessible(
+      *partitioned_cookie, url, net::SiteForCookies(), top_frame_origin,
+      overrides, &status));
+  EXPECT_TRUE(status.HasOnlyExclusionReason(
+      net::CookieInclusionStatus::ExclusionReason::EXCLUDE_USER_PREFERENCES));
+  EXPECT_EQ(net::NetworkDelegate::PrivacySetting::kStateAllowed,
+            settings.IsPrivacyModeEnabled(url, net::SiteForCookies(),
+                                          top_frame_origin, overrides));
+
+  // With 3PCs blocked, both unpartitioned and partitioned cookies are blocked,
+  // and privacy mode is `kStateDisallowed`.
+  settings.set_block_third_party_cookies(true);
+  status.ResetForTesting();
+  EXPECT_FALSE(settings.IsCookieAccessible(
+      *unpartitioned_cookie, url, net::SiteForCookies(), top_frame_origin,
+      overrides, &status));
+  status.ResetForTesting();
+  EXPECT_FALSE(settings.IsCookieAccessible(
+      *partitioned_cookie, url, net::SiteForCookies(), top_frame_origin,
+      overrides, &status));
+  EXPECT_EQ(net::NetworkDelegate::PrivacySetting::kStateDisallowed,
+            settings.IsPrivacyModeEnabled(url, net::SiteForCookies(),
+                                          top_frame_origin, overrides));
+
+  // `kForceDisablePartitionedCookies` still blocks partitioned cookies even if
+  // `kForceAllowCookies` is also set.
+  const net::CookieSettingOverrides combined{
+      net::CookieSettingOverride::kForceAllowCookies,
+      net::CookieSettingOverride::kForceDisablePartitionedCookies};
+  status.ResetForTesting();
+  EXPECT_TRUE(settings.IsCookieAccessible(*unpartitioned_cookie, url,
+                                          net::SiteForCookies(),
+                                          top_frame_origin, combined, &status));
+  status.ResetForTesting();
+  EXPECT_FALSE(settings.IsCookieAccessible(
+      *partitioned_cookie, url, net::SiteForCookies(), top_frame_origin,
+      combined, &status));
+}
+
 TEST_F(CookieSettingsTest, IsCookieAccessible_AlwaysAllowCookieNotAffected) {
   url::ScopedSchemeRegistryForTests scoped_registry;
   url::AddStandardScheme(kChromeScheme, url::SCHEME_WITH_HOST);

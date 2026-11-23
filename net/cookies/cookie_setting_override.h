@@ -41,10 +41,17 @@ enum class CookieSettingOverride {
   // When specified, cookies and storage access are forced allowed regardless of
   // ContentSettingsType::COOKIES site settings or third-party cookie blocking
   // (e.g. for privileged WebContents whose policy allows the origin). This
-  // override takes precedence over `kForceDisableThirdPartyCookies`.
+  // override takes precedence over `kForceDisableThirdPartyCookies`, but is
+  // secondary to `kForceDisablePartitionedCookies` for partitioned cookies.
   kForceAllowCookies,
+  // When specified, partitioned cookies are forced disabled (neither sent nor
+  // stored, even when unpartitioned cookies are allowed). Used for cross-origin
+  // restricted and recursive prefetches whose `IsolationInfo` uses the
+  // destination origin for HTTP cache partitioning. This override takes
+  // precedence over `kForceAllowCookies`.
+  kForceDisablePartitionedCookies,
 
-  kMaxValue = kForceAllowCookies,
+  kMaxValue = kForceDisablePartitionedCookies,
 };
 
 using CookieSettingOverrides = base::EnumSet<CookieSettingOverride>;

@@ -211,6 +211,10 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
     return response_cookie_partition_key_;
   }
 
+  const network::mojom::OtherPartitionInfoPtr& other_partition_info() const {
+    return other_partition_info_;
+  }
+
   const std::optional<network::URLLoaderCompletionStatus>& preflight_status()
       const {
     return preflight_status_;
@@ -248,6 +252,7 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
   mojo::ReceiverSet<mojom::DevToolsObserver> receivers_;
 
   std::optional<net::CookiePartitionKey> response_cookie_partition_key_;
+  network::mojom::OtherPartitionInfoPtr other_partition_info_;
 
   base::RunLoop wait_for_early_hints_;
   std::vector<network::mojom::HttpRawHeaderPairPtr> early_hints_headers_;

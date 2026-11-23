@@ -152,7 +152,8 @@ class CookieSettingsBase {
     ContentSetting cookie_setting_ = ContentSetting::CONTENT_SETTING_ALLOW;
 
     // When true, partitioned cookies will be allowed, even when the cookie
-    // setting is "not allowed".
+    // setting is "not allowed". When false, partitioned cookies are blocked,
+    // regardless of the cookie setting.
     bool allow_partitioned_cookies_ = true;
 
     // Whether the setting is for a specific pattern.

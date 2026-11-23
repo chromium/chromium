@@ -90,7 +90,8 @@ class URLLoaderFactoryParamsHelper {
           trust_token_redemption_policy,
       net::CookieSettingOverrides cookie_setting_overrides);
 
-  static network::mojom::URLLoaderFactoryParamsPtr CreateForPrefetch(
+  CONTENT_EXPORT static network::mojom::URLLoaderFactoryParamsPtr
+  CreateForPrefetch(
       RenderFrameHostImpl* frame,
       network::mojom::ClientSecurityStatePtr client_security_state,
       net::CookieSettingOverrides cookie_setting_overrides,

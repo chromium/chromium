@@ -2157,6 +2157,15 @@ class NetworkServiceNetworkDelegateTest : public NetworkServiceTest {
   // parameters in the url.
   std::unique_ptr<net::test_server::HttpResponse> HandleHTTPSRequest(
       const net::test_server::HttpRequest& request) {
+    std::string redirect_target;
+    if (net::GetValueForKeyInQuery(request.GetURL(), "redirect",
+                                   &redirect_target)) {
+      auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+      response->set_code(net::HTTP_FOUND);
+      response->AddCustomHeader("Location", redirect_target);
+      return response;
+    }
+
     std::string header;
     if (net::GetValueForKeyInQuery(request.GetURL(), "header", &header)) {
       std::unique_ptr<net::test_server::RawHttpResponse> response(
@@ -2199,6 +2208,7 @@ class ClearSiteDataAuthCertObserver : public TestURLLoaderNetworkObserver {
       OnClearSiteDataCallback callback) override {
     ++on_clear_site_data_counter_;
     last_on_clear_site_data_header_value_ = header_value;
+    last_cookie_partition_key_ = cookie_partition_key;
     last_partitioned_state_allowed_only_ = partitioned_state_allowed_only;
     std::move(callback).Run();
   }
@@ -2209,6 +2219,11 @@ class ClearSiteDataAuthCertObserver : public TestURLLoaderNetworkObserver {
     return last_on_clear_site_data_header_value_;
   }
 
+  const std::optional<net::CookiePartitionKey>& last_cookie_partition_key()
+      const {
+    return last_cookie_partition_key_;
+  }
+
   bool last_partitioned_state_allowed_only() const {
     return last_partitioned_state_allowed_only_;
   }
@@ -2216,12 +2231,14 @@ class ClearSiteDataAuthCertObserver : public TestURLLoaderNetworkObserver {
   void ClearOnClearSiteDataCounter() {
     on_clear_site_data_counter_ = 0;
     last_on_clear_site_data_header_value_.clear();
+    last_cookie_partition_key_.reset();
     last_partitioned_state_allowed_only_ = false;
   }
 
  private:
   int on_clear_site_data_counter_ = 0;
   std::string last_on_clear_site_data_header_value_;
+  std::optional<net::CookiePartitionKey> last_cookie_partition_key_;
   bool last_partitioned_state_allowed_only_ = false;
 };
 
@@ -2410,6 +2427,121 @@ TEST_F(NetworkServiceNetworkDelegateTest,
 
   EXPECT_EQ(1, clear_site_observer.on_clear_site_data_counter());
   EXPECT_TRUE(clear_site_observer.last_partitioned_state_allowed_only());
+}
+
+TEST_F(NetworkServiceNetworkDelegateTest,
+       ClearSiteDataForRestrictedAndRecursivePrefetch) {
+  const char kClearCookiesHeader[] = "Clear-Site-Data: \"cookies\"";
+  const GURL target_url =
+      AddQuery(https_server()->GetURL("/foo"), "header", kClearCookiesHeader);
+  const GURL redirect_url =
+      AddQuery(https_server()->GetURL("/start"), "redirect", target_url.spec());
+  const url::Origin destination_origin = url::Origin::Create(target_url);
+  const url::Origin initiator_origin =
+      url::Origin::Create(GURL("https://initiator.test"));
+
+  struct TestCase {
+    const char* description;
+    bool block_third_party_cookies;
+    bool is_recursive;
+    bool via_redirect;
+    bool has_nonce;
+    bool expected_should_clear_site_data;
+  };
+  const TestCase kTestCases[] = {
+      {"restricted_3pc_allowed", /*block_third_party_cookies=*/false,
+       /*is_recursive=*/false, /*via_redirect=*/false, /*has_nonce=*/false,
+       /*expected_should_clear_site_data=*/true},
+      {"restricted_3pc_blocked", /*block_third_party_cookies=*/true,
+       /*is_recursive=*/false, /*via_redirect=*/false, /*has_nonce=*/false,
+       /*expected_should_clear_site_data=*/false},
+      {"restricted_redirect_3pc_allowed", /*block_third_party_cookies=*/false,
+       /*is_recursive=*/false, /*via_redirect=*/true, /*has_nonce=*/false,
+       /*expected_should_clear_site_data=*/true},
+      // TODO(crbug.com/581608762): On `RequestType::kMainFrame` redirects,
+      // `IsolationInfo::CreateForRedirect` populates
+      // `isolation_info().site_for_cookies()`, bypassing 3PC blocking for
+      // unpartitioned state in `HandleClearSiteDataHeader()`. Partitioned
+      // cookies remain preserved (`cookie_partition_key == std::nullopt`).
+      {"restricted_redirect_3pc_blocked", /*block_third_party_cookies=*/true,
+       /*is_recursive=*/false, /*via_redirect=*/true, /*has_nonce=*/false,
+       /*expected_should_clear_site_data=*/true},
+      {"restricted_nonced_3pc_allowed", /*block_third_party_cookies=*/false,
+       /*is_recursive=*/false, /*via_redirect=*/false, /*has_nonce=*/true,
+       /*expected_should_clear_site_data=*/false},
+      {"recursive_3pc_allowed", /*block_third_party_cookies=*/false,
+       /*is_recursive=*/true, /*via_redirect=*/false, /*has_nonce=*/false,
+       /*expected_should_clear_site_data=*/true},
+      {"recursive_3pc_blocked", /*block_third_party_cookies=*/true,
+       /*is_recursive=*/true, /*via_redirect=*/false, /*has_nonce=*/false,
+       /*expected_should_clear_site_data=*/false},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.description);
+    mojom::NetworkContextParamsPtr context_params =
+        mojom::NetworkContextParams::New();
+    context_params->cookie_manager_params = mojom::CookieManagerParams::New();
+    context_params->cookie_manager_params->block_third_party_cookies =
+        test_case.block_third_party_cookies;
+    network_context_.reset();
+    CreateNetworkContext(std::move(context_params));
+
+    ClearSiteDataAuthCertObserver observer;
+    mojo::Remote<mojom::URLLoaderFactory> loader_factory;
+    mojom::URLLoaderFactoryParamsPtr params =
+        mojom::URLLoaderFactoryParams::New();
+    params->process_id = OriginatingProcessId::browser();
+    params->is_trusted = true;
+    params->is_orb_enabled = false;
+    params->cookie_setting_overrides.Put(
+        net::CookieSettingOverride::kForceDisablePartitionedCookies);
+    params->url_loader_network_observer = observer.Bind();
+    network_context_->CreateURLLoaderFactory(
+        loader_factory.BindNewPipeAndPassReceiver(), std::move(params));
+
+    ResourceRequest request;
+    request.url = test_case.via_redirect ? redirect_url : target_url;
+    request.method = "GET";
+    request.request_initiator = initiator_origin;
+    request.site_for_cookies = net::SiteForCookies();
+    request.update_first_party_url_on_redirect = false;
+    request.load_flags = net::LOAD_PREFETCH;
+    if (test_case.is_recursive) {
+      request.recursive_prefetch_token = base::UnguessableToken::Create();
+    } else {
+      request.load_flags |= net::LOAD_RESTRICTED_PREFETCH_FOR_MAIN_FRAME;
+    }
+    request.trusted_params = ResourceRequest::TrustedParams();
+    request.trusted_params->isolation_info = net::IsolationInfo::Create(
+        test_case.is_recursive ? net::IsolationInfo::RequestType::kOther
+                               : net::IsolationInfo::RequestType::kMainFrame,
+        destination_origin, destination_origin, net::SiteForCookies(),
+        test_case.has_nonce
+            ? std::make_optional(base::UnguessableToken::Create())
+            : std::nullopt);
+
+    client_ = std::make_unique<TestURLLoaderClient>();
+    loader_.reset();
+    loader_factory->CreateLoaderAndStart(
+        loader_.BindNewPipeAndPassReceiver(), 1, mojom::kURLLoadOptionNone,
+        request, client_->CreateRemote(),
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+    if (test_case.via_redirect) {
+      client_->RunUntilRedirectReceived();
+      loader_->FollowRedirect({}, std::nullopt);
+    }
+    client_->RunUntilComplete();
+    EXPECT_EQ(net::OK, client_->completion_status().error_code);
+
+    if (test_case.expected_should_clear_site_data) {
+      EXPECT_EQ(1, observer.on_clear_site_data_counter());
+      EXPECT_FALSE(observer.last_cookie_partition_key());
+      EXPECT_FALSE(observer.last_partitioned_state_allowed_only());
+    } else {
+      EXPECT_EQ(0, observer.on_clear_site_data_counter());
+    }
+  }
 }
 
 class TestNetworkAnnotationMonitor : public mojom::NetworkAnnotationMonitor {

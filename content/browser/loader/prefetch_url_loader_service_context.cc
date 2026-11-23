@@ -157,8 +157,10 @@ void PrefetchURLLoaderServiceContext::CreatePrefetchLoaderAndStart(
     EnsureCrossOriginFactory();
     CHECK(current_context.cross_origin_factory, base::NotFatalUntil::M160);
 
-    // Cross-site prefetches shouldn't include SameSite cookies.
+    // Cross-site prefetches shouldn't include SameSite cookies or interact with
+    // Device Bound Session Credentials.
     resource_request.site_for_cookies = net::SiteForCookies();
+    resource_request.allows_device_bound_sessions = false;
 
     // Attach the fenced frame nonce to the request's IsolationInfo. If the
     // nonce is marked revoked for untrusted network access, the request will
@@ -258,8 +260,10 @@ void PrefetchURLLoaderServiceContext::CreatePrefetchLoaderAndStart(
         "Prefetch.RecursivePrefetch.TokenLookupResult",
         RecursivePrefetchTokenLookupResult::kSuccess);
 
-    // Cross-site prefetches shouldn't include SameSite cookies.
+    // Cross-site prefetches shouldn't include SameSite cookies or interact with
+    // Device Bound Session Credentials.
     resource_request.site_for_cookies = net::SiteForCookies();
+    resource_request.allows_device_bound_sessions = false;
 
     resource_request.trusted_params = network::ResourceRequest::TrustedParams();
     resource_request.trusted_params->isolation_info =

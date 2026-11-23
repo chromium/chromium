@@ -807,9 +807,20 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
 
   CookieOptions options = CreateCookieOptions(same_site_context);
 
+  // When `kForceDisablePartitionedCookies` is set on a non-nonced request,
+  // omit the partition key so `CookieMonster` does not read or update
+  // `LastAccessDate` on partitioned cookies. Keep nonced partition keys intact
+  // so `CookieMonster` continues to withhold unpartitioned cookies in nonced
+  // contexts (any nonced partitioned cookies are excluded by the delegate).
+  const bool omit_partition_key =
+      request_->cookie_setting_overrides().Has(
+          CookieSettingOverride::kForceDisablePartitionedCookies) &&
+      !CookiePartitionKey::HasNonce(request_->cookie_partition_key());
   cookie_store->GetCookieListWithOptionsAsync(
       request_->url(), options,
-      CookiePartitionKeyCollection(request_->cookie_partition_key()),
+      omit_partition_key
+          ? CookiePartitionKeyCollection()
+          : CookiePartitionKeyCollection(request_->cookie_partition_key()),
       base::BindOnce(&URLRequestHttpJob::SetCookieHeaderAndStart,
                      weak_factory_.GetWeakPtr(), options));
 }
@@ -2146,7 +2157,9 @@ bool URLRequestHttpJob::ShouldAddCookieHeader() const {
 }
 
 bool URLRequestHttpJob::ShouldRecordPartitionedCookieUsage() const {
-  return request_->cookie_partition_key().has_value();
+  return request_->cookie_partition_key().has_value() &&
+         !request_->cookie_setting_overrides().Has(
+             CookieSettingOverride::kForceDisablePartitionedCookies);
 }
 
 }  // namespace net

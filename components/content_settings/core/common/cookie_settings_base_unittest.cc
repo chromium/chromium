@@ -238,6 +238,32 @@ TEST_F(CookieSettingsBaseTest,
                                       nullptr));
 }
 
+TEST_F(CookieSettingsBaseTest, ForceDisablePartitionedCookiesOverride) {
+  const GURL kThirdPartyURL("https://3p.com");
+  CallbackCookieSettings settings(CONTENT_SETTING_ALLOW);
+
+  // When 3PCs are blocked and partitioned cookies are force-disabled, neither
+  // full cookie access nor any partitioned storage access is allowed.
+  const net::CookieSettingOverrides block_both{
+      net::CookieSettingOverride::kForceDisableThirdPartyCookies,
+      net::CookieSettingOverride::kForceDisablePartitionedCookies};
+  CookieSettingsBase::CookieSettingWithMetadata metadata;
+  EXPECT_FALSE(settings.IsAnyStorageAccessAllowed(
+      kThirdPartyURL, net::SiteForCookies(), origin_, block_both,
+      /*cookie_partition_key=*/std::nullopt, &metadata));
+  EXPECT_FALSE(metadata.allow_partitioned_cookies());
+  EXPECT_FALSE(metadata.BlockedByThirdPartyCookieBlocking());
+
+  // When 3PCs are allowed, unpartitioned access remains allowed while
+  // `allow_partitioned_cookies()` is false.
+  const net::CookieSettingOverrides allow_unpartitioned_only{
+      net::CookieSettingOverride::kForceDisablePartitionedCookies};
+  EXPECT_TRUE(settings.IsFullCookieAccessAllowed(
+      kThirdPartyURL, net::SiteForCookies(), origin_, allow_unpartitioned_only,
+      /*cookie_partition_key=*/std::nullopt, &metadata));
+  EXPECT_FALSE(metadata.allow_partitioned_cookies());
+}
+
 TEST_F(CookieSettingsBaseTest, CookieAccessAllowedWithAllowSetting) {
   CallbackCookieSettings settings(CONTENT_SETTING_ALLOW);
   EXPECT_TRUE(settings.IsFullCookieAccessAllowed(

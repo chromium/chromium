@@ -41,6 +41,7 @@ void MockDevToolsObserver::OnRawRequest(
   got_raw_request_ = true;
   devtools_request_id_ = devtools_request_id;
   client_security_state_ = std::move(client_security_state);
+  other_partition_info_ = std::move(site_has_cookie_in_other_partition);
 
   if (wait_for_raw_request_ &&
       raw_request_cookies_.size() >= wait_for_raw_request_goal_) {

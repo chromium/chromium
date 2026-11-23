@@ -3374,6 +3374,83 @@ TEST_F(URLRequestHttpJobTest, PartitionedCookiePrivacyMode) {
   }
 }
 
+class URLRequestHttpJobForceDisablePartitionedCookiesTest
+    : public URLRequestHttpJobTest {
+ protected:
+  void SetUp() override {
+    URLRequestHttpJobTest::SetUp();
+    https_test_.AddDefaultHandlers(base::FilePath());
+    ASSERT_TRUE(https_test_.Start());
+
+    auto context_builder = CreateTestURLRequestContextBuilder();
+    context_builder->SetCookieStore(std::make_unique<CookieMonster>(
+        /*store=*/nullptr, /*net_log=*/nullptr));
+    context_ = context_builder->Build();
+
+    origin_ = url::Origin::Create(https_test_.base_url());
+    isolation_info_ =
+        IsolationInfo::Create(IsolationInfo::RequestType::kMainFrame, origin_,
+                              origin_, SiteForCookies());
+
+    // Seed a partitioned cookie and an unpartitioned cookie.
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req(context_->CreateRequest(
+        https_test_.GetURL(
+            "/set-cookie?__Host-part=0;SameSite=None;Secure;Path=/;"
+            "Partitioned&__Host-unpart=1;SameSite=None;Secure;Path=/"),
+        DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS,
+        net::handles::kInvalidNetworkHandle));
+    req->set_isolation_info(isolation_info_);
+    req->Start();
+    delegate.RunUntilComplete();
+  }
+
+  EmbeddedTestServer https_test_{EmbeddedTestServer::TYPE_HTTPS};
+  std::unique_ptr<URLRequestContext> context_;
+  url::Origin origin_;
+  IsolationInfo isolation_info_;
+};
+
+TEST_F(URLRequestHttpJobForceDisablePartitionedCookiesTest,
+       NonNoncedReadOmitsPartitionedCookies) {
+  TestDelegate delegate;
+  std::unique_ptr<URLRequest> req(context_->CreateRequest(
+      https_test_.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
+  req->set_isolation_info(isolation_info_);
+  req->cookie_setting_overrides().Put(
+      CookieSettingOverride::kForceDisablePartitionedCookies);
+  req->Start();
+  delegate.RunUntilComplete();
+  EXPECT_EQ("__Host-unpart=1", delegate.data_received());
+  EXPECT_EQ(1u, req->maybe_sent_cookies().size());
+}
+
+TEST_F(URLRequestHttpJobForceDisablePartitionedCookiesTest,
+       NoncedReadWithholdsUnpartitionedCookies) {
+  const IsolationInfo nonced_isolation_info = IsolationInfo::Create(
+      IsolationInfo::RequestType::kMainFrame, origin_, origin_,
+      SiteForCookies(), base::UnguessableToken::Create());
+  TestDelegate delegate;
+  std::unique_ptr<URLRequest> req(context_->CreateRequest(
+      https_test_.GetURL("/echoheader?Cookie"), DEFAULT_PRIORITY, &delegate,
+      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle));
+  req->set_isolation_info(nonced_isolation_info);
+  req->cookie_setting_overrides().Put(
+      CookieSettingOverride::kForceDisablePartitionedCookies);
+  req->Start();
+  delegate.RunUntilComplete();
+  EXPECT_EQ("None", delegate.data_received());
+  EXPECT_THAT(
+      req->maybe_sent_cookies(),
+      ElementsAre(MatchesCookieWithAccessResult(
+          MatchesCookieWithName("__Host-unpart"),
+          MatchesCookieAccessResult(
+              HasExclusionReason(CookieInclusionStatus::ExclusionReason::
+                                     EXCLUDE_ANONYMOUS_CONTEXT),
+              _, _, _))));
+}
+
 TEST_F(URLRequestHttpJobTest, IgnoreUnsafeMethodForSameSiteLax) {
   EmbeddedTestServer https_test(EmbeddedTestServer::TYPE_HTTPS);
   https_test.AddDefaultHandlers(base::FilePath());

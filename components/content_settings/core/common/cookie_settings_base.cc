@@ -281,7 +281,9 @@ bool CookieSettingsBase::IsAnyStorageAccessAllowed(
          // ensure that only partitioned storage is available. This developer
          // flag is meant to simulate Chrome's behavior when 3P cookies are
          // turned down to help developers test their site.
-         net::cookie_util::IsForceThirdPartyCookieBlockingEnabled();
+         (net::cookie_util::IsForceThirdPartyCookieBlockingEnabled() &&
+          !overrides.Has(
+              net::CookieSettingOverride::kForceDisablePartitionedCookies));
 }
 
 bool CookieSettingsBase::IsCookieSessionOnly(const GURL& origin) const {
@@ -434,13 +436,16 @@ CookieSettingsBase::GetCookieSettingInternal(
     url = websocket_mapped_url;
   }
 
+  const bool allow_partitioned_cookies = !overrides.Has(
+      net::CookieSettingOverride::kForceDisablePartitionedCookies);
+
   // Auto-allow in extensions or for WebUI embedding a secure origin.
   if (ShouldAlwaysAllowCookies(url, first_party_url, overrides)) {
     if (info) {
       *info = SettingInfo{};
     }
     return CookieSettingWithMetadata{/*cookie_setting=*/CONTENT_SETTING_ALLOW,
-                                     /*allow_partitioned_cookies=*/true,
+                                     allow_partitioned_cookies,
                                      /*is_explicit_setting=*/false,
                                      /*third_party_cookie_allow_mechanism=*/
                                      ThirdPartyCookieAllowMechanism::kNone,
@@ -484,13 +489,12 @@ CookieSettingsBase::GetCookieSettingInternal(
     }
     const CookieSettingWithMetadata out{
         cookie_setting,
-        /*allow_partitioned_cookies=*/true,
+        allow_partitioned_cookies,
         is_explicit_setting,
         /*third_party_cookie_allow_mechanism=*/allow_cookies->mechanism,
         is_third_party_request,
     };
     CHECK(!out.BlockedByThirdPartyCookieBlocking());
-    CHECK(out.allow_partitioned_cookies());
     return out;
   }
 
@@ -503,14 +507,10 @@ CookieSettingsBase::GetCookieSettingInternal(
       *info = std::move(setting_info);
     }
     const CookieSettingWithMetadata out{
-        CONTENT_SETTING_BLOCK,
-        /*allow_partitioned_cookies=*/true,
-        is_explicit_setting,
-        ThirdPartyCookieAllowMechanism::kNone,
-        is_third_party_request,
-    };
-    CHECK(out.BlockedByThirdPartyCookieBlocking());
-    CHECK(out.allow_partitioned_cookies());
+        CONTENT_SETTING_BLOCK, allow_partitioned_cookies, is_explicit_setting,
+        ThirdPartyCookieAllowMechanism::kNone, is_third_party_request};
+    CHECK_EQ(out.BlockedByThirdPartyCookieBlocking(),
+             allow_partitioned_cookies);
     return out;
   }
 
@@ -528,7 +528,6 @@ CookieSettingsBase::GetCookieSettingInternal(
       is_third_party_request,
   };
   CHECK(!out.BlockedByThirdPartyCookieBlocking());
-  CHECK(!out.allow_partitioned_cookies());
   return out;
 }
 

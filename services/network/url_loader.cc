@@ -2279,10 +2279,13 @@ void URLLoader::DispatchOnRawRequest(
   // url_request_->isolation_info().site_for_cookies() instead of
   // url_request_->site_for_cookies().
   std::optional<net::CookiePartitionKey> partition_key =
-      net::CookiePartitionKey::FromNetworkIsolationKey(
-          url_request_->isolation_info().network_isolation_key(),
-          url_request_->site_for_cookies(), request_site,
-          is_main_frame_navigation);
+      url_request_->cookie_setting_overrides().Has(
+          net::CookieSettingOverride::kForceDisablePartitionedCookies)
+          ? std::nullopt
+          : net::CookiePartitionKey::FromNetworkIsolationKey(
+                url_request_->isolation_info().network_isolation_key(),
+                url_request_->site_for_cookies(), request_site,
+                is_main_frame_navigation);
   std::optional<bool> site_has_cookie_in_other_partition;
   if (partition_key.has_value()) {
     site_has_cookie_in_other_partition =
@@ -2367,7 +2370,11 @@ void URLLoader::DispatchOnRawResponse() {
       std::move(header_array), raw_response_headers,
       local_network_access_interceptor_.ResponseAddressSpace().value_or(
           mojom::IPAddressSpace::kUnknown),
-      response_headers->response_code(), url_request_->cookie_partition_key());
+      response_headers->response_code(),
+      url_request_->cookie_setting_overrides().Has(
+          net::CookieSettingOverride::kForceDisablePartitionedCookies)
+          ? std::nullopt
+          : url_request_->cookie_partition_key());
 }
 
 void URLLoader::SendUploadProgress(const net::UploadProgress& progress) {

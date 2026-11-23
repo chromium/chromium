@@ -440,6 +440,15 @@ int NetworkServiceNetworkDelegate::HandleClearSiteDataHeader(
           request->url(), request->isolation_info().site_for_cookies(),
           request->isolation_info().top_frame_origin(),
           request->cookie_setting_overrides());
+  const bool allow_partitioned_cookies =
+      !request->cookie_setting_overrides().Has(
+          net::CookieSettingOverride::kForceDisablePartitionedCookies);
+  const bool allow_unpartitioned_cookies =
+      privacy_settings == net::NetworkDelegate::PrivacySetting::kStateAllowed &&
+      !net::CookiePartitionKey::HasNonce(request->cookie_partition_key());
+  if (!allow_partitioned_cookies && !allow_unpartitioned_cookies) {
+    return net::OK;
+  }
   bool partitioned_state_allowed_only =
       privacy_settings ==
       net::NetworkDelegate::PrivacySetting::kPartitionedStateAllowedOnly;
@@ -451,7 +460,9 @@ int NetworkServiceNetworkDelegate::HandleClearSiteDataHeader(
                 *request->isolation_info().top_frame_origin()))
           : std::nullopt,
       request->isolation_info().nonce(), *header_value, request->load_flags(),
-      request->cookie_partition_key(), partitioned_state_allowed_only,
+      allow_partitioned_cookies ? request->cookie_partition_key()
+                                : std::nullopt,
+      partitioned_state_allowed_only,
       base::BindOnce(&NetworkServiceNetworkDelegate::FinishedClearSiteData,
                      weak_ptr_factory_.GetWeakPtr(), request->GetWeakPtr(),
                      std::move(callback)));

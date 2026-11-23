@@ -46,6 +46,7 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "mojo/public/c/system/data_pipe.h"
@@ -6666,6 +6667,81 @@ TEST_F(URLLoaderTest, RawResponseCookies) {
     ASSERT_TRUE(devtools_observer.raw_response_headers());
     EXPECT_NE(devtools_observer.raw_response_headers()->find("Set-Cookie: a=b"),
               std::string::npos);
+  }
+}
+
+class URLLoaderDevToolsPartitionInfoTest
+    : public URLLoaderTest,
+      public testing::WithParamInterface<bool> {};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         URLLoaderDevToolsPartitionInfoTest,
+                         testing::Bool());
+
+TEST_P(URLLoaderDevToolsPartitionInfoTest, RawRequestAndResponsePartitionInfo) {
+  const bool force_disable_partitioned_cookies = GetParam();
+  net::test_server::EmbeddedTestServer https_server(
+      net::test_server::EmbeddedTestServer::TYPE_HTTPS);
+  https_server.SetSSLConfig(
+      net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
+  https_server.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("services/test/data")));
+  ASSERT_TRUE(https_server.Start());
+
+  const GURL cookie_url = https_server.GetURL("a.test", "/");
+  auto other_partition_cookie = net::CanonicalCookie::CreateForTesting(
+      cookie_url, "other_part=1; Secure; SameSite=None; Partitioned",
+      base::Time::Now(), net::CookieSourceType::kOther,
+      /*server_time=*/std::nullopt,
+      net::CookiePartitionKey::FromURLForTesting(
+          GURL("https://b.test"),
+          net::CookiePartitionKey::AncestorChainBit::kCrossSite));
+  base::test::TestFuture<net::CookieAccessResult> set_cookie_future;
+  url_request_context()->cookie_store()->SetCanonicalCookieAsync(
+      std::move(other_partition_cookie), cookie_url,
+      net::CookieOptions::MakeAllInclusive(), set_cookie_future.GetCallback(),
+      /*cookie_access_result=*/std::nullopt);
+  ASSERT_TRUE(set_cookie_future.Get().status.IsInclude());
+
+  if (force_disable_partitioned_cookies) {
+    context().mutable_factory_params().cookie_setting_overrides = {
+        net::CookieSettingOverride::kForceDisablePartitionedCookies};
+  }
+
+  MockDevToolsObserver devtools_observer;
+  TestURLLoaderClient loader_client;
+  ResourceRequest request = CreateResourceRequest(
+      "GET", https_server.GetURL("a.test", "/set-cookie?a=b;Secure"));
+  request.devtools_request_id = "TEST";
+
+  base::RunLoop delete_run_loop;
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  context().mutable_factory_params().process_id = kProcessId;
+  context().mutable_factory_params().is_orb_enabled = false;
+  URLLoaderOptions url_loader_options;
+  url_loader_options.devtools_observer = devtools_observer.Bind();
+  std::unique_ptr<URLLoader> url_loader = url_loader_options.MakeURLLoader(
+      context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), request,
+      loader_client.CreateRemote());
+
+  delete_run_loop.Run();
+  loader_client.RunUntilComplete();
+  EXPECT_EQ(net::OK, loader_client.completion_status().error_code);
+
+  devtools_observer.WaitUntilRawRequest(0u);
+  devtools_observer.WaitUntilRawResponse(1u);
+  if (force_disable_partitioned_cookies) {
+    EXPECT_FALSE(devtools_observer.other_partition_info());
+    EXPECT_FALSE(devtools_observer.response_cookie_partition_key());
+  } else {
+    ASSERT_TRUE(devtools_observer.other_partition_info());
+    EXPECT_TRUE(devtools_observer.other_partition_info()
+                    ->site_has_cookie_in_other_partition);
+    EXPECT_EQ(
+        net::CookiePartitionKey::FromURLForTesting(
+            cookie_url, net::CookiePartitionKey::AncestorChainBit::kSameSite),
+        devtools_observer.response_cookie_partition_key());
   }
 }
 

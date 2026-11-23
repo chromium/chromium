@@ -88,8 +88,10 @@ bool IsOriginOpaqueHttpOrHttps(
 // static
 bool CookieSettings::IsCookieAllowed(const net::CanonicalCookie& cookie,
                                      const CookieSettingWithMetadata& setting) {
-  return IsAllowed(setting.cookie_setting()) ||
-         (cookie.IsPartitioned() && setting.allow_partitioned_cookies());
+  if (cookie.IsPartitioned()) {
+    return setting.allow_partitioned_cookies();
+  }
+  return IsAllowed(setting.cookie_setting());
 }
 
 // static

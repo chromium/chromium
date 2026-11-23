@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <map>
+#include <optional>
 #include <string>
+#include <string_view>
+#include <tuple>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -25,6 +29,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_package/mock_signed_exchange_handler.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -40,16 +45,23 @@
 #include "net/base/filename_util.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/net_buildflags.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/scoped_mutually_exclusive_feature_list.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "third_party/blink/public/common/features.h"
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+#include "components/unexportable_keys/features.h"
+#endif
 
 namespace content {
 
@@ -1692,6 +1704,470 @@ IN_PROC_BROWSER_TEST_F(PrefetchRecursiveBrowserTest,
       "Prefetch.RecursivePrefetch.TokensPerDocument", /*sample=*/3,
       /*expected_bucket_count=*/1);
 }
+
+class PrefetchPartitionedCookiesBrowserTest : public PrefetchBrowserTestBase {
+ public:
+  PrefetchPartitionedCookiesBrowserTest() {
+    // Enable `kRestrictLinkHeaderOnSubresource` (`disable_resource_load=false`)
+    // so recursive prefetch tests exercise `Link: rel=preload` subresource
+    // promotion, matching `PrefetchBrowserTest`.
+    feature_list_.InitWithFeaturesAndParameters(
+        {{blink::features::kRestrictLinkHeaderOnSubresource,
+          {{"disable_resource_load", "false"}}}},
+        {});
+  }
+
+  void SetUpOnMainThread() override {
+    PrefetchBrowserTestBase::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_.RegisterRequestMonitor(base::BindRepeating(
+        &PrefetchPartitionedCookiesBrowserTest::MonitorRequest,
+        base::Unretained(this)));
+    RegisterRequestHandler(&https_server_);
+    https_server_.RegisterRequestHandler(base::BindRepeating(
+        &PrefetchPartitionedCookiesBrowserTest::HandleProbeRequest,
+        base::Unretained(this)));
+    https_server_.AddDefaultHandlers(GetTestDataFilePath());
+    ASSERT_TRUE(https_server_.Start());
+  }
+
+ protected:
+  BrowserContext* browser_context() {
+    return shell()->web_contents()->GetBrowserContext();
+  }
+
+  static net::CookiePartitionKey MakePartitionKey(const GURL& url,
+                                                  bool cross_site) {
+    return net::CookiePartitionKey::FromURLForTesting(
+        url, net::CookiePartitionKey::BoolToAncestorChainBit(cross_site));
+  }
+
+  void SetBlockThirdPartyCookies(bool block) {
+    auto* cookie_manager = browser_context()
+                               ->GetDefaultStoragePartition()
+                               ->GetCookieManagerForBrowserProcess();
+    cookie_manager->BlockThirdPartyCookies(block);
+    base::test::TestFuture<const net::CookieList&> flush;
+    cookie_manager->GetAllCookies(flush.GetCallback());
+    std::ignore = flush.Get();
+  }
+
+  // Seeds `cookie_host` with `1p_part=1` (in `cookie_host`'s first-party
+  // partition), `3p_part=1` (in `top_frame_host`'s cross-site partition), and
+  // `unpart=1` (unpartitioned).
+  void SeedCookies(std::string_view cookie_host,
+                   std::string_view top_frame_host) {
+    const GURL cookie_origin_url = https_server_.GetURL(cookie_host, "/");
+    const GURL top_frame_url = https_server_.GetURL(top_frame_host, "/");
+    const auto inclusive =
+        net::CookieOptions::SameSiteCookieContext::MakeInclusive();
+    ASSERT_TRUE(SetCookie(
+        browser_context(), cookie_origin_url,
+        "1p_part=1; Path=/; Secure; SameSite=None; Partitioned", inclusive,
+        MakePartitionKey(cookie_origin_url, /*cross_site=*/false)));
+    ASSERT_TRUE(SetCookie(
+        browser_context(), cookie_origin_url,
+        "3p_part=1; Path=/; Secure; SameSite=None; "
+        "Partitioned",
+        inclusive, MakePartitionKey(top_frame_url, /*cross_site=*/true)));
+    ASSERT_TRUE(SetCookie(browser_context(), cookie_origin_url,
+                          "unpart=1; Path=/; Secure; SameSite=None"));
+  }
+
+  std::string Prefetch(const GURL& target_url,
+                       bool as_document = true,
+                       std::string_view cross_origin = "") {
+    static constexpr char kScript[] = R"(
+      new Promise(resolve => {
+        const link = document.createElement('link');
+        link.rel = 'prefetch';
+        if ($2) link.as = 'document';
+        if ($3) link.crossOrigin = $3;
+        link.href = $1;
+        link.onload = () => resolve('load');
+        link.onerror = () => resolve('error');
+        document.head.appendChild(link);
+      })
+    )";
+    return EvalJs(shell()->web_contents(),
+                  JsReplace(kScript, target_url, as_document, cross_origin))
+        .ExtractString();
+  }
+
+  std::optional<std::string> TakeObservedCookieHeader(const std::string& path) {
+    base::AutoLock auto_lock(lock_);
+    auto it = observed_cookies_.find(path);
+    if (it == observed_cookies_.end()) {
+      return std::nullopt;
+    }
+    std::string header = std::move(it->second);
+    observed_cookies_.erase(it);
+    return header;
+  }
+
+  void WaitForRequest(const std::string& relative_url) {
+    base::RunLoop run_loop;
+    {
+      base::AutoLock auto_lock(lock_);
+      if (request_counts_[relative_url] > 0) {
+        return;
+      }
+      request_waiters_[relative_url] = run_loop.QuitClosure();
+    }
+    run_loop.Run();
+  }
+
+  int GetRequestCount(const std::string& relative_url) {
+    base::AutoLock auto_lock(lock_);
+    auto it = request_counts_.find(relative_url);
+    return it == request_counts_.end() ? 0 : it->second;
+  }
+
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+
+ private:
+  void MonitorRequest(const net::test_server::HttpRequest& request) {
+    base::AutoLock auto_lock(lock_);
+    auto it = request.headers.find(net::HttpRequestHeaders::kCookie);
+    observed_cookies_[std::string(request.GetURL().path())] =
+        it != request.headers.end() ? it->second : std::string();
+    ++request_counts_[request.relative_url];
+    auto waiter_it = request_waiters_.find(request.relative_url);
+    if (waiter_it != request_waiters_.end()) {
+      std::move(waiter_it->second).Run();
+      request_waiters_.erase(waiter_it);
+    }
+  }
+
+  std::unique_ptr<net::test_server::HttpResponse> HandleProbeRequest(
+      const net::test_server::HttpRequest& request) {
+    if (request.GetURL().path() != "/probe") {
+      return nullptr;
+    }
+    auto it = request.headers.find(net::HttpRequestHeaders::kCookie);
+    const bool has_1p_part = it != request.headers.end() &&
+                             it->second.find("1p_part=1") != std::string::npos;
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_code(has_1p_part ? net::HTTP_OK : net::HTTP_NOT_FOUND);
+    response->set_content_type("text/html");
+    response->AddCustomHeader("Cache-Control", "no-store");
+    response->AddCustomHeader(
+        "Set-Cookie",
+        "probe_set_part=1; Path=/; Secure; SameSite=None; Partitioned");
+    return response;
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+  base::Lock lock_;
+  std::map<std::string, std::string> observed_cookies_ GUARDED_BY(lock_);
+  std::map<std::string, int> request_counts_ GUARDED_BY(lock_);
+  std::map<std::string, base::OnceClosure> request_waiters_ GUARDED_BY(lock_);
+};
+
+class PrefetchPartitionedCookiesWith3pcSettingBrowserTest
+    : public PrefetchPartitionedCookiesBrowserTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  bool block_third_party_cookies() const { return GetParam(); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrefetchPartitionedCookiesWith3pcSettingBrowserTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(
+    PrefetchPartitionedCookiesWith3pcSettingBrowserTest,
+    CrossOriginDocumentPrefetchDoesNotSendPartitionedCookies) {
+  const GURL initiator_page_url = https_server_.GetURL("a.test", "/empty.html");
+  const GURL destination_origin_url = https_server_.GetURL("c.test", "/");
+  const GURL probe_url = https_server_.GetURL("c.test", "/probe");
+  SeedCookies("c.test", "a.test");
+  SetBlockThirdPartyCookies(block_third_party_cookies());
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_page_url));
+
+  EXPECT_EQ("error", Prefetch(probe_url));
+  EXPECT_EQ(block_third_party_cookies() ? "" : "unpart=1",
+            TakeObservedCookieHeader("/probe"));
+  EXPECT_EQ("1p_part=1; 3p_part=1; unpart=1",
+            GetCookies(browser_context(), destination_origin_url));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrefetchPartitionedCookiesBrowserTest,
+    CrossOriginDocumentPrefetchRedirectDoesNotSendPartitionedCookies) {
+  const GURL initiator_page_url = https_server_.GetURL("a.test", "/empty.html");
+  const GURL destination_origin_url = https_server_.GetURL("c.test", "/");
+  const GURL probe_url = https_server_.GetURL("c.test", "/probe");
+  const GURL redirect_to_probe_url =
+      https_server_.GetURL("b.test", "/server-redirect?" + probe_url.spec());
+  SeedCookies("c.test", "a.test");
+  SetBlockThirdPartyCookies(false);
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_page_url));
+
+  EXPECT_EQ("error", Prefetch(redirect_to_probe_url));
+  EXPECT_EQ("unpart=1", TakeObservedCookieHeader("/probe"));
+  EXPECT_EQ("1p_part=1; 3p_part=1; unpart=1",
+            GetCookies(browser_context(), destination_origin_url));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrefetchPartitionedCookiesBrowserTest,
+    CrossOriginSubresourcePrefetchSendsThirdPartyPartitionedCookies) {
+  const GURL initiator_page_url = https_server_.GetURL("a.test", "/empty.html");
+  const GURL probe_url = https_server_.GetURL("c.test", "/probe");
+  SeedCookies("c.test", "a.test");
+  SetBlockThirdPartyCookies(true);
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_page_url));
+
+  EXPECT_EQ("error", Prefetch(probe_url, /*as_document=*/false));
+  EXPECT_EQ("3p_part=1", TakeObservedCookieHeader("/probe"));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrefetchPartitionedCookiesBrowserTest,
+    SameOriginDocumentPrefetchSendsAndSetsFirstPartyPartitionedCookies) {
+  const GURL destination_page_url =
+      https_server_.GetURL("c.test", "/empty.html");
+  const GURL destination_origin_url = https_server_.GetURL("c.test", "/");
+  const GURL probe_url = https_server_.GetURL("c.test", "/probe");
+  SeedCookies("c.test", "a.test");
+  SetBlockThirdPartyCookies(true);
+  ASSERT_TRUE(NavigateToURL(shell(), destination_page_url));
+
+  EXPECT_EQ("load", Prefetch(probe_url));
+  EXPECT_EQ("1p_part=1; unpart=1", TakeObservedCookieHeader("/probe"));
+  EXPECT_EQ(
+      "1p_part=1; unpart=1; probe_set_part=1",
+      GetCookies(browser_context(), destination_origin_url,
+                 net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
+                 net::CookiePartitionKeyCollection(MakePartitionKey(
+                     destination_origin_url, /*cross_site=*/false))));
+}
+
+IN_PROC_BROWSER_TEST_F(PrefetchPartitionedCookiesBrowserTest,
+                       TopLevelNavigationSendsFirstPartyPartitionedCookies) {
+  const GURL initiator_page_url = https_server_.GetURL("a.test", "/empty.html");
+  const GURL probe_url = https_server_.GetURL("c.test", "/probe");
+  SeedCookies("c.test", "a.test");
+  SetBlockThirdPartyCookies(true);
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_page_url));
+
+  ASSERT_TRUE(NavigateToURL(shell(), probe_url));
+  EXPECT_EQ("1p_part=1; unpart=1", TakeObservedCookieHeader("/probe"));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    PrefetchPartitionedCookiesWith3pcSettingBrowserTest,
+    CrossOriginDocumentPrefetchReusedFromHttpCacheOnNavigation) {
+  const GURL initiator_page_url = https_server_.GetURL("a.test", "/empty.html");
+  const GURL cacheable_doc_url =
+      https_server_.GetURL("c.test", "/cacheable_doc");
+  // Empty content-type prevents ORB from blocking the no-cors prefetch body.
+  RegisterResponse("/cacheable_doc",
+                   ResponseEntry("<head><title>Cached Target</title></head>",
+                                 /*content_types=*/"",
+                                 {{"Cache-Control", "public, max-age=3600"}}));
+  SeedCookies("c.test", "a.test");
+  SetBlockThirdPartyCookies(block_third_party_cookies());
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_page_url));
+
+  EXPECT_EQ("load", Prefetch(cacheable_doc_url));
+  EXPECT_EQ(1, GetRequestCount("/cacheable_doc"));
+  EXPECT_EQ(block_third_party_cookies() ? "" : "unpart=1",
+            TakeObservedCookieHeader("/cacheable_doc"));
+
+  NavigateToURLAndWaitTitle(cacheable_doc_url, "Cached Target");
+  EXPECT_EQ(1, GetRequestCount("/cacheable_doc"));
+  EXPECT_FALSE(TakeObservedCookieHeader("/cacheable_doc"));
+}
+
+IN_PROC_BROWSER_TEST_P(PrefetchPartitionedCookiesWith3pcSettingBrowserTest,
+                       CrossOriginDocumentPrefetchIgnoresSetPartitionedCookie) {
+  const GURL initiator_page_url = https_server_.GetURL("a.test", "/empty.html");
+  const GURL destination_origin_url = https_server_.GetURL("c.test", "/");
+  SetBlockThirdPartyCookies(block_third_party_cookies());
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_page_url));
+
+  // Unpartitioned SameSite=None Set-Cookie follows the 3PC setting while
+  // Partitioned Set-Cookie is always ignored (neither stored nor downgraded).
+  const GURL set_cookies_url = https_server_.GetURL(
+      "c.test",
+      "/set-cookie?part=1;Path=/;Secure;SameSite=None;Partitioned&"
+      "unpart=1;Path=/;Secure;SameSite=None");
+  EXPECT_EQ("load", Prefetch(set_cookies_url));
+  const std::string expected = block_third_party_cookies() ? "" : "unpart=1";
+  EXPECT_EQ(expected, GetCookies(browser_context(), destination_origin_url));
+  EXPECT_EQ(
+      expected,
+      GetCookies(browser_context(), destination_origin_url,
+                 net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
+                 net::CookiePartitionKeyCollection()));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PrefetchPartitionedCookiesBrowserTest,
+    CrossOriginDocumentPrefetchClearSiteDataPreservesPartitionedCookies) {
+  const GURL initiator_page_url = https_server_.GetURL("a.test", "/empty.html");
+  const GURL destination_origin_url = https_server_.GetURL("c.test", "/");
+  const GURL clear_cookies_url = https_server_.GetURL(
+      "c.test",
+      "/set-header?Clear-Site-Data: \"cookies\"&Cache-Control: no-store");
+  const GURL redirect_to_clear_cookies_url = https_server_.GetURL(
+      "b.test", "/server-redirect?" + clear_cookies_url.spec());
+  SeedCookies("c.test", "a.test");
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_page_url));
+
+  SetBlockThirdPartyCookies(true);
+  EXPECT_EQ("load", Prefetch(clear_cookies_url));
+  EXPECT_EQ("1p_part=1; 3p_part=1; unpart=1",
+            GetCookies(browser_context(), destination_origin_url));
+
+  // Across a cross-origin redirect, partitioned cookies remain preserved.
+  // TODO(crbug.com/581608762): Also preserve `unpart=1` when 3PCs are blocked
+  // once redirected cross-origin prefetches no longer populate
+  // `isolation_info().site_for_cookies()` in `HandleClearSiteDataHeader()`.
+  EXPECT_EQ("load", Prefetch(redirect_to_clear_cookies_url));
+  EXPECT_EQ("1p_part=1; 3p_part=1",
+            GetCookies(browser_context(), destination_origin_url));
+
+  // Re-seed `unpart`: with 3PC allowed, only unpartitioned cookies are cleared.
+  ASSERT_TRUE(SetCookie(browser_context(), destination_origin_url,
+                        "unpart=1; Path=/; Secure; SameSite=None"));
+  SetBlockThirdPartyCookies(false);
+  EXPECT_EQ("load", Prefetch(clear_cookies_url));
+  EXPECT_EQ("1p_part=1; 3p_part=1",
+            GetCookies(browser_context(), destination_origin_url));
+}
+
+class PrefetchRecursivePartitionedCookiesBrowserTest
+    : public PrefetchPartitionedCookiesBrowserTest,
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
+ protected:
+  bool block_third_party_cookies() const { return std::get<0>(GetParam()); }
+  bool same_origin_subresource() const { return std::get<1>(GetParam()); }
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PrefetchRecursivePartitionedCookiesBrowserTest,
+                         testing::Combine(testing::Bool(), testing::Bool()));
+
+IN_PROC_BROWSER_TEST_P(PrefetchRecursivePartitionedCookiesBrowserTest,
+                       RecursivePrefetchDisallowsPartitionedCookies) {
+  const std::string_view subresource_host =
+      same_origin_subresource() ? "c.test" : "d.test";
+  const std::string_view other_partition_host =
+      same_origin_subresource() ? "a.test" : "c.test";
+  const GURL initiator_page_url = https_server_.GetURL("a.test", "/empty.html");
+  const GURL prefetched_doc_url =
+      https_server_.GetURL("c.test", "/doc_with_preload");
+  const GURL subresource_origin_url =
+      https_server_.GetURL(subresource_host, "/");
+  const GURL preload_script_url =
+      https_server_.GetURL(subresource_host, "/preload_sub.js");
+  RegisterResponse(
+      "/doc_with_preload",
+      ResponseEntry(
+          "<!doctype html>", "text/html",
+          {{"Link", base::StringPrintf("<%s>; rel=\"preload\"; as=\"script\"",
+                                       preload_script_url.spec().c_str())},
+           {"Access-Control-Allow-Origin",
+            url::Origin::Create(initiator_page_url).Serialize()},
+           {"Access-Control-Allow-Credentials", "true"}}));
+  RegisterResponse("/preload_sub.js",
+                   ResponseEntry("// script", "text/javascript",
+                                 {{"Set-Cookie",
+                                   "set_part=1; Path=/; Secure; SameSite=None; "
+                                   "Partitioned"}}));
+
+  SeedCookies(subresource_host, other_partition_host);
+  SetBlockThirdPartyCookies(block_third_party_cookies());
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_page_url));
+
+  EXPECT_EQ("load", Prefetch(prefetched_doc_url, /*as_document=*/true,
+                             "use-credentials"));
+  WaitUntilLoaded(preload_script_url);
+
+  EXPECT_EQ(block_third_party_cookies() ? "" : "unpart=1",
+            TakeObservedCookieHeader("/preload_sub.js"));
+  EXPECT_EQ("1p_part=1; 3p_part=1; unpart=1",
+            GetCookies(browser_context(), subresource_origin_url));
+  EXPECT_EQ(
+      "unpart=1",
+      GetCookies(browser_context(), subresource_origin_url,
+                 net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
+                 net::CookiePartitionKeyCollection()));
+}
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+class PrefetchDeviceBoundSessionsBrowserTest
+    : public PrefetchPartitionedCookiesBrowserTest {
+ public:
+  PrefetchDeviceBoundSessionsBrowserTest() {
+    dbsc_feature_list_.InitWithFeatures(
+        {net::features::kDeviceBoundSessions,
+         unexportable_keys::
+             kEnableBoundSessionCredentialsSoftwareKeysForManualTesting},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList dbsc_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrefetchDeviceBoundSessionsBrowserTest,
+                       SuppressesDeviceBoundSessionRegistration) {
+  const GURL initiator_page_url = https_server_.GetURL("a.test", "/empty.html");
+  const GURL destination_page_url =
+      https_server_.GetURL("c.test", "/empty.html");
+  const GURL cross_origin_doc_url =
+      https_server_.GetURL("c.test", "/dbsc_cross_origin");
+  const GURL recursive_preload_url =
+      https_server_.GetURL("d.test", "/dbsc_recursive.js");
+  const GURL same_origin_doc_url =
+      https_server_.GetURL("c.test", "/dbsc_same_origin");
+
+  RegisterResponse(
+      "/dbsc_cross_origin",
+      ResponseEntry(
+          "<!doctype html>", "text/html",
+          {{"Secure-Session-Registration",
+            "(RS256 ES256);challenge=\"test\";"
+            "path=\"/dbsc_register_cross_origin\""},
+           {"Link", base::StringPrintf("<%s>; rel=\"preload\"; as=\"script\"",
+                                       recursive_preload_url.spec().c_str())},
+           {"Access-Control-Allow-Origin",
+            url::Origin::Create(initiator_page_url).Serialize()},
+           {"Access-Control-Allow-Credentials", "true"}}));
+  RegisterResponse("/dbsc_recursive.js",
+                   ResponseEntry("// script", "text/javascript",
+                                 {{"Secure-Session-Registration",
+                                   "(RS256 ES256);challenge=\"test\";"
+                                   "path=\"/dbsc_register_recursive\""}}));
+  RegisterResponse("/dbsc_same_origin",
+                   ResponseEntry("<!doctype html>", "text/html",
+                                 {{"Secure-Session-Registration",
+                                   "(RS256 ES256);challenge=\"test\";"
+                                   "path=\"/dbsc_register_same_origin\""}}));
+
+  // Cross-origin document prefetch and its recursive subresource preload must
+  // ignore `Secure-Session-Registration`.
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_page_url));
+  EXPECT_EQ("load", Prefetch(cross_origin_doc_url, /*as_document=*/true,
+                             "use-credentials"));
+  WaitUntilLoaded(recursive_preload_url);
+
+  // Control: a same-origin document prefetch honors
+  // `Secure-Session-Registration` and triggers the registration fetch.
+  ASSERT_TRUE(NavigateToURL(shell(), destination_page_url));
+  EXPECT_EQ("load", Prefetch(same_origin_doc_url));
+  WaitForRequest("/dbsc_register_same_origin");
+
+  EXPECT_EQ(1, GetRequestCount("/dbsc_register_same_origin"));
+  EXPECT_EQ(0, GetRequestCount("/dbsc_register_cross_origin"));
+  EXPECT_EQ(0, GetRequestCount("/dbsc_register_recursive"));
+}
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 INSTANTIATE_TEST_SUITE_P(
     All,
