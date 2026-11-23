@@ -651,7 +651,8 @@ void CredentialProviderService::UpdatePasskeyLargeBlobSetting() {
       base::FeatureList::IsEnabled(kCredentialProviderPasskeyLargeBlob);
   [app_group::GetGroupUserDefaults()
       setObject:[NSNumber numberWithBool:is_enabled]
-         forKey:AppGroupUserDefaulsCredentialProviderPasskeyLargeBlobEnabled()];
+         forKey:
+             AppGroupUserDefaultsCredentialProviderPasskeyLargeBlobEnabled()];
 }
 
 void CredentialProviderService::OnGetPasswordStoreResultsOrErrorFrom(

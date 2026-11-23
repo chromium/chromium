@@ -54,7 +54,7 @@ NSString* AppGroupUserDefaulsCredentialProviderAutomaticPasskeyUpgradeEnabled();
 
 // Key for the app group user defaults containing whether passkey Large Blob
 // support is currently enabled.
-NSString* AppGroupUserDefaulsCredentialProviderPasskeyLargeBlobEnabled();
+NSString* AppGroupUserDefaultsCredentialProviderPasskeyLargeBlobEnabled();
 
 // Key for the app group user defaults indicating if the credentials have been
 // synced with iOS via AuthenticationServices.

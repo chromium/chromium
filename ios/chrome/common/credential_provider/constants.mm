@@ -174,8 +174,7 @@ AppGroupUserDefaulsCredentialProviderAutomaticPasskeyUpgradeEnabled() {
           kUserDefaultsCredentialProviderAutomaticPasskeyUpgradeSetting];
 }
 
-
-NSString* AppGroupUserDefaulsCredentialProviderPasskeyLargeBlobEnabled() {
+NSString* AppGroupUserDefaultsCredentialProviderPasskeyLargeBlobEnabled() {
   return [AppGroupPrefix()
       stringByAppendingString:
           kUserDefaultsCredentialProviderPasskeyLargeBlobSetting];

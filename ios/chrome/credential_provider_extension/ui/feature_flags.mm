@@ -18,7 +18,7 @@ BOOL IsAutomaticPasskeyUpgradeEnabled() {
 BOOL IsPasskeyLargeBlobEnabled() {
   return [[app_group::GetGroupUserDefaults()
       objectForKey:
-          AppGroupUserDefaulsCredentialProviderPasskeyLargeBlobEnabled()]
+          AppGroupUserDefaultsCredentialProviderPasskeyLargeBlobEnabled()]
       boolValue];
 }
 

@@ -184,7 +184,7 @@ TEST_F(PasskeyRequestDetailsTest, LargeBlobHelperDetectsRequest) {
   NSUserDefaults* defaults = app_group::GetGroupUserDefaults();
   [defaults
       setBool:YES
-       forKey:AppGroupUserDefaulsCredentialProviderPasskeyLargeBlobEnabled()];
+       forKey:AppGroupUserDefaultsCredentialProviderPasskeyLargeBlobEnabled()];
   [defaults synchronize];
 
   // Large Blob required.
@@ -219,8 +219,9 @@ TEST_F(PasskeyRequestDetailsTest, LargeBlobHelperDetectsRequest) {
       isLargeBlobSupportRequestedFromRegistrationInput:mockInputNil]);
 
   // Clean up flag.
-  [defaults removeObjectForKey:
-                AppGroupUserDefaulsCredentialProviderPasskeyLargeBlobEnabled()];
+  [defaults
+      removeObjectForKey:
+          AppGroupUserDefaultsCredentialProviderPasskeyLargeBlobEnabled()];
 }
 
 // Tests that the 5-minute time constraint works as expected for passwords.

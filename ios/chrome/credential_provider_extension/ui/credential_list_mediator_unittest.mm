@@ -510,7 +510,7 @@ TEST_F(CredentialListMediatorTest,
              serviceIdentifier:@"android://hash@example.com"
                    serviceName:@"android://hash@example.com"
       registryControlledDomain:@""
-                      username:@"uesrname_value"
+                      username:@"username_value"
                           note:@""
                   lastUsedTime:0];
 
