@@ -92,6 +92,8 @@
 
 #define HAVE_MMAP 1
 
+#define HAVE_POSIX_MEMALIGN 1
+
 #define HAVE_PTHREAD 1
 
 #define HAVE_RAND 1
