@@ -28,7 +28,6 @@ group("freetype") {
     "//third_party/pdfium:freetype_common",  # Building Chromium
 
     # Other dependencies that are PDFium-related:
-    "//components/services/font:font_service_unittests",
     "//skia",
   ]
 }

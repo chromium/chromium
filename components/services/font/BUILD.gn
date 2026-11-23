@@ -56,9 +56,6 @@ test("font_service_unittests") {
   ]
 
   if (enable_pdf) {
-    deps += [
-      "//build/config/freetype",
-      "//third_party/pdfium:pdfium_public_headers",
-    ]
+    deps += [ "//third_party/pdfium:pdfium_public_headers" ]
   }
 }

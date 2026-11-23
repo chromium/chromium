@@ -19,10 +19,12 @@
 #include "third_party/skia/include/core/SkFontStyle.h"
 
 #if BUILDFLAG(ENABLE_PDF)
-#include <ft2build.h>
-
-#include <freetype/freetype.h>
+#include "skia/ext/font_utils.h"
 #include "third_party/pdfium/public/fpdf_sysfontinfo.h"
+#include "third_party/skia/include/core/SkData.h"
+#include "third_party/skia/include/core/SkFontMgr.h"
+#include "third_party/skia/include/core/SkString.h"
+#include "third_party/skia/include/core/SkTypeface.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace font_service {
@@ -43,18 +45,12 @@ std::string GetPostscriptNameFromFile(base::File& font_file) {
   std::vector<char> file_contents(file_size);
   CHECK(font_file.ReadAndCheck(0, base::as_writable_byte_span(file_contents)));
 
-  std::string font_family_name;
-  FT_Library library;
-  FT_Init_FreeType(&library);
-  FT_Face font_face;
-  FT_Open_Args open_args = {FT_OPEN_MEMORY,
-                            reinterpret_cast<FT_Byte*>(file_contents.data()),
-                            static_cast<FT_Long>(file_size)};
-  CHECK_EQ(FT_Err_Ok, FT_Open_Face(library, &open_args, 0, &font_face));
-  font_family_name = FT_Get_Postscript_Name(font_face);
-  FT_Done_Face(font_face);
-  FT_Done_FreeType(library);
-  return font_family_name;
+  sk_sp<SkTypeface> typeface = skia::DefaultFontMgr()->makeFromData(
+      SkData::MakeWithCopy(file_contents.data(), file_size));
+  CHECK(typeface);
+  SkString font_family_name;
+  CHECK(typeface->getPostScriptName(&font_family_name));
+  return std::string(font_family_name.c_str());
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
