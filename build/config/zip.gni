@@ -19,7 +19,7 @@ import("python.gni")
 # deps, public_deps, data, data_deps, testonly, visibility
 #     Normal meaning.
 template("zip") {
-  action_with_pydeps(target_name) {
+  python_action(target_name) {
     forward_variables_from(invoker,
                            [
                              "data",
@@ -29,7 +29,7 @@ template("zip") {
                              "testonly",
                              "visibility",
                            ])
-    script = "//build/android/gyp/zip.py"
+    python_binary = "//build:zip"
     inputs = invoker.inputs
     outputs = [ invoker.output ]
 

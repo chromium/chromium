@@ -34,9 +34,9 @@ template("java_flag_generator") {
   assert(defined(invoker.class_name),
          "java_flag_generator() requires class_name")
 
-  action_with_pydeps(target_name) {
+  python_action(target_name) {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
-    script = "//base/android/java_flag_generator/java_flag_generator.py"
+    python_binary = "//base/android/java_flag_generator"
     inputs = invoker.sources
     _srcjar = "$target_gen_dir/$target_name.srcjar"
     outputs = [ _srcjar ]

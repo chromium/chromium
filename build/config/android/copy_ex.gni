@@ -22,7 +22,7 @@
 import("//build/config/python.gni")
 
 template("copy_ex") {
-  action_with_pydeps(target_name) {
+  python_action(target_name) {
     forward_variables_from(invoker,
                            [
                              "data",
@@ -44,7 +44,7 @@ template("copy_ex") {
       inputs = invoker.inputs
     }
 
-    script = "//build/android/gyp/copy_ex.py"
+    python_binary = "//build/android:copy_ex"
 
     args = [
       "--dest",

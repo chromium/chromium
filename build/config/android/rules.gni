@@ -165,7 +165,7 @@ if (!is_robolectric && enable_java_templates) {
   #     ]
   #   }
   template("java_cpp_template") {
-    action_with_pydeps(target_name) {
+    python_action(target_name) {
       forward_variables_from(invoker,
                              [
                                "data_deps",
@@ -176,7 +176,7 @@ if (!is_robolectric && enable_java_templates) {
                                "testonly",
                                "visibility",
                              ])
-      script = "//build/android/gyp/gcc_preprocess.py"
+      python_binary = "//build/android:gcc_preprocess"
       outputs = [ "$target_gen_dir/$target_name.srcjar" ]
 
       _include_dirs = [
@@ -221,7 +221,7 @@ if (!is_robolectric && enable_java_templates) {
   #     ]
   #   }
   template("java_cpp_enum") {
-    action_with_pydeps(target_name) {
+    python_action(target_name) {
       forward_variables_from(invoker,
                              TESTONLY_AND_VISIBILITY + [
                                    "sources",
@@ -230,7 +230,7 @@ if (!is_robolectric && enable_java_templates) {
 
       # The sources aren't compiled so don't check their dependencies.
       check_includes = false
-      script = "//build/android/gyp/java_cpp_enum.py"
+      python_binary = "//build/android:java_cpp_enum"
 
       _srcjar_path = "${target_gen_dir}/${target_name}.srcjar"
       _rebased_srcjar_path = rebase_path(_srcjar_path, root_build_dir)
@@ -290,12 +290,12 @@ if (!is_robolectric && enable_java_templates) {
   #   A FooSwitches.java file, defining a class named FooSwitches in the package
   #   my.java.package.
   template("java_cpp_strings") {
-    action_with_pydeps(target_name) {
+    python_action(target_name) {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "sources" ])
 
       # The sources aren't compiled so don't check their dependencies.
       check_includes = false
-      script = "//build/android/gyp/java_cpp_strings.py"
+      python_binary = "//build/android:java_cpp_strings"
       outputs = [ "${target_gen_dir}/${target_name}.srcjar" ]
 
       args = [
@@ -366,7 +366,7 @@ if (!is_robolectric && enable_java_templates) {
   #   A FooFeatures.java file, defining a class named FooFeatures in the package
   #   my.java.package.
   template("java_cpp_features") {
-    action_with_pydeps(target_name) {
+    python_action(target_name) {
       forward_variables_from(invoker,
                              TESTONLY_AND_VISIBILITY + [
                                    "deps",
@@ -375,7 +375,7 @@ if (!is_robolectric && enable_java_templates) {
 
       # The sources aren't compiled so don't check their dependencies.
       check_includes = false
-      script = "//build/android/gyp/java_cpp_features.py"
+      python_binary = "//build/android:java_cpp_features"
       outputs = [ "${target_gen_dir}/${target_name}.srcjar" ]
 
       args = [
@@ -414,13 +414,13 @@ if (!is_robolectric && enable_java_templates) {
   #     output = "$target_gen_dir/AndroidManifest.xml"
   #   }
   template("jinja_template") {
-    action_with_pydeps(target_name) {
+    python_action(target_name) {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
       inputs = [ invoker.input ]
       if (defined(invoker.includes)) {
         inputs += invoker.includes
       }
-      script = "//build/android/gyp/jinja_template.py"
+      python_binary = "//build/android:jinja_template"
 
       outputs = [ invoker.output ]
 
@@ -475,9 +475,9 @@ if (!is_robolectric && enable_java_templates) {
       assert(false, "Unsupported CPU family")
     }
 
-    action_with_pydeps(target_name) {
+    python_action(target_name) {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
-      script = "//build/android/gyp/write_native_libraries_java.py"
+      python_binary = "//build/android:write_native_libraries_java"
       outputs = [ _native_libraries_file ]
       args = [
         "--output",
@@ -570,7 +570,7 @@ if (!is_robolectric && enable_java_templates) {
       rtxt_path = _rtxt_out_path
     }
 
-    action_with_pydeps(target_name) {
+    python_action(target_name) {
       forward_variables_from(invoker, [ "visibility" ])
       public_deps = [ invoker.generating_target ]
       inputs = [
@@ -581,7 +581,7 @@ if (!is_robolectric && enable_java_templates) {
         _rtxt_out_path,
         _compiled_resources_zip,
       ]
-      script = "//build/android/gyp/prepare_resources.py"
+      python_binary = "//build/android:prepare_resources"
       args = [
         "--aapt2-path",
         rebase_path(android_sdk_tools_bundle_aapt2, root_build_dir),
@@ -620,10 +620,10 @@ if (!is_robolectric && enable_java_templates) {
     _resources_zip = "$target_out_dir/${target_name}.resources.zip"
     _generating_target_name = "${target_name}__template"
 
-    action_with_pydeps(_generating_target_name) {
+    python_action(_generating_target_name) {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
       inputs = invoker.resources
-      script = "//build/android/gyp/jinja_template.py"
+      python_binary = "//build/android:jinja_template"
 
       outputs = [ _resources_zip ]
 
@@ -671,13 +671,13 @@ if (!is_robolectric && enable_java_templates) {
   #     lib_name = "elements.so"
   #   }
   template("android_native_prebuilt") {
-    action_with_pydeps(target_name) {
+    python_action(target_name) {
       forward_variables_from(invoker,
                              [
                                "deps",
                                "testonly",
                              ])
-      script = "//build/android/gyp/process_native_prebuilt.py"
+      python_binary = "//build/android:process_native_prebuilt"
       _lib_path = "${invoker.base_dir}/$android_app_abi/${invoker.lib_name}"
       _stripped_output_path = "$root_out_dir/${invoker.lib_name}"
       _unstripped_output_path =
@@ -1730,9 +1730,9 @@ if (!is_robolectric && enable_java_templates) {
 
     _rebased_build_config = rebase_path(_build_config, root_build_dir)
 
-    action_with_pydeps(_zip_target_name) {
+    python_action(_zip_target_name) {
       forward_variables_from(invoker, [ "data" ])
-      script = "//build/android/gyp/zip.py"
+      python_binary = "//build:zip"
       depfile = "$target_gen_dir/$target_name.d"
       deps = [ _build_config_dep ]
 
@@ -1922,7 +1922,7 @@ if (!is_robolectric && enable_java_templates) {
     _rebased_res_build_config = rebase_path(_res_build_config, root_build_dir)
     _rebased_rtxt_build_config = rebase_path(_rtxt_build_config, root_build_dir)
 
-    action_with_pydeps(target_name) {
+    python_action(target_name) {
       forward_variables_from(invoker,
                              [
                                "data",
@@ -1930,7 +1930,7 @@ if (!is_robolectric && enable_java_templates) {
                              ])
       depfile = "$target_gen_dir/$target_name.d"
       deps = _deps
-      script = "//build/android/gyp/dist_aar.py"
+      python_binary = "//build/android:dist_aar"
 
       inputs = [
         _build_config,
@@ -2162,10 +2162,10 @@ if (!is_robolectric && enable_java_templates) {
       _api_database_path = "$target_gen_dir/$target_name.api_database.ser"
       _r8_path = "//third_party/r8/cipd/lib/r8.jar"
 
-      action_with_pydeps(_api_database_target) {
+      python_action(_api_database_target) {
         forward_variables_from(invoker, [ "testonly" ])
         visibility = [ ":*" ]
-        script = "//build/android/gyp/generate_api_database.py"
+        python_binary = "//build/android:generate_api_database"
         inputs = java_paths_for_inputs + [
                    _r8_path,
                    invoker.jar_path,
@@ -3182,9 +3182,9 @@ if (!is_robolectric && enable_java_templates) {
         (!defined(invoker.create_apk_script) || invoker.create_apk_script)) {
       _apk_operations_target_name = "${target_name}__apk_operations"
 
-      action_with_pydeps(_apk_operations_target_name) {
+      python_action(_apk_operations_target_name) {
         _generated_script = "$root_build_dir/bin/${invoker.target_name}"
-        script = "//build/android/gyp/create_apk_operations_script.py"
+        python_binary = "//build/android:create_apk_operations_script"
         outputs = [ _generated_script ]
         args = [
           "--script-output-path",
@@ -3582,9 +3582,9 @@ if (!is_robolectric && enable_java_templates) {
       _install_artifacts_target_name = "${target_name}__install_artifacts"
     }
 
-    action_with_pydeps(_apk_operations_target_name) {
+    python_action(_apk_operations_target_name) {
       testonly = true
-      script = "//build/android/gyp/create_test_apk_wrapper_script.py"
+      python_binary = "//build/android:create_test_apk_wrapper_script"
       deps = []
       _generated_script = "$root_build_dir/bin/${invoker.target_name}"
       outputs = [ _generated_script ]
@@ -3931,10 +3931,10 @@ if (!is_robolectric && enable_java_templates) {
                  ])
     }
 
-    action_with_pydeps(_aidl_target) {
+    python_action(_aidl_target) {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
-      script = "//build/android/gyp/aidl.py"
+      python_binary = "//build/android:aidl"
       depfile = "$target_gen_dir/$target_name.d"
       sources = invoker.sources
 
@@ -4057,11 +4057,11 @@ if (!is_robolectric && enable_java_templates) {
 
     _template_name = target_name
 
-    action_with_pydeps("${_template_name}__protoc_java") {
+    python_action("${_template_name}__protoc_java") {
       # The suffix "__protoc_java.srcjar" is used by SuperSize to identify
       # protobuf symbols.
       _srcjar_path = "$target_gen_dir/$target_name.srcjar"
-      script = "//build/protoc_java.py"
+      python_binary = "//build:protoc_java"
 
       if (defined(invoker.deps)) {
         # Need to care only about targets that might generate .proto files.
@@ -4178,9 +4178,9 @@ if (!is_robolectric && enable_java_templates) {
     _flatc_out_dir = get_label_info(_flatc_dep, "root_out_dir")
     _flatc_bin = "$_flatc_out_dir/flatc"
 
-    action_with_pydeps("${_template_name}__flatc_java") {
+    python_action("${_template_name}__flatc_java") {
       _srcjar_path = "$target_gen_dir/$target_name.srcjar"
-      script = "//build/android/gyp/flatc_java.py"
+      python_binary = "//build/android:flatc_java"
 
       deps = [ _flatc_dep ]
       if (defined(invoker.deps)) {
@@ -4350,8 +4350,8 @@ if (!is_robolectric && enable_java_templates) {
               "abspath")
     }
 
-    action_with_pydeps(_unpack_target_name) {
-      script = "//build/android/gyp/aar.py"  # Unzips the AAR
+    python_action(_unpack_target_name) {
+      python_binary = "//build/android:aar"  # Unzips the AAR
       args = [
                "extract",
                "--output-dir",
@@ -4796,8 +4796,8 @@ if (!is_robolectric && enable_java_templates) {
         _rewriter_path = root_build_dir + "/bin/helper/trace_event_adder"
         _stamp = "${target_out_dir}/${target_name}.trace_event_rewrite.stamp"
 
-        action_with_pydeps(_rewritten_jar_target_name) {
-          script = "//build/android/gyp/trace_event_bytecode_rewriter.py"
+        python_action(_rewritten_jar_target_name) {
+          python_binary = "//build/android:trace_event_bytecode_rewriter"
           inputs = java_paths_for_inputs + [
                      _rewriter_path,
                      _build_config,
@@ -5014,8 +5014,8 @@ if (!is_robolectric && enable_java_templates) {
 
     _bundle_target_name = "${_target_name}__bundle"
 
-    action_with_pydeps(_bundle_target_name) {
-      script = "//build/android/gyp/create_app_bundle.py"
+    python_action(_bundle_target_name) {
+      python_binary = "//build/android:create_app_bundle"
       inputs = _all_module_zip_paths + _all_module_spec_paths +
                _all_module_build_configs + [ _BUNDLETOOL_JAR_PATH ] +
                signflinger_inputs
@@ -5109,8 +5109,8 @@ if (!is_robolectric && enable_java_templates) {
     _bundle_wrapper_script_dir = "$root_build_dir/bin"
     _bundle_wrapper_script_path = "$_bundle_wrapper_script_dir/$_target_name"
 
-    action_with_pydeps("${_target_name}__wrapper_script") {
-      script = "//build/android/gyp/create_bundle_wrapper_script.py"
+    python_action("${_target_name}__wrapper_script") {
+      python_binary = "//build/android:create_bundle_wrapper_script"
       inputs = [ _base_module_build_config ]
       outputs = [ _bundle_wrapper_script_path ]
 
@@ -5192,8 +5192,8 @@ if (!is_robolectric && enable_java_templates) {
 
     _apks_path = "$root_build_dir/apks/$_bundle_name.apks"
 
-    action_with_pydeps("${_target_name}_apks") {
-      script = "//build/android/gyp/create_app_bundle_apks.py"
+    python_action("${_target_name}_apks") {
+      python_binary = "//build/android:create_app_bundle_apks"
       inputs = java_paths_for_inputs + [
                  _bundle_path,
                  _BUNDLETOOL_JAR_PATH,
@@ -5249,9 +5249,9 @@ if (!is_robolectric && enable_java_templates) {
   #     bundle_path = "$root_build_dir/apks/Bundle.aab"
   #   }
   template("create_app_bundle_minimal_apks") {
-    action_with_pydeps(target_name) {
+    python_action(target_name) {
       forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
-      script = "//build/android/gyp/create_app_bundle_apks.py"
+      python_binary = "//build/android:create_app_bundle_apks"
       _dir = get_path_info(invoker.bundle_path, "dir")
       _name = get_path_info(invoker.bundle_path, "name")
       _output_path = "$_dir/$_name.minimal.apks"
@@ -5303,8 +5303,8 @@ if (!is_robolectric && enable_java_templates) {
     _output_zip = "${root_out_dir}/resource_zips/${_rebased_output_zip_path}/" +
                   "${target_name}.zip"
 
-    action_with_pydeps(_generating_target_name) {
-      script = "//build/android/gyp/create_ui_locale_resources.py"
+    python_action(_generating_target_name) {
+      python_binary = "//build/android:create_ui_locale_resources"
       outputs = [ _output_zip ]
       args = [
         "--locale-list=${invoker.ui_locales}",

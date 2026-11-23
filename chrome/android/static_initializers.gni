@@ -56,9 +56,9 @@ has_static_initializer_checks =
     _verify_32bit_static_initializers || _verify_64bit_static_initializers
 
 template("_assert_static_initializers") {
-  action_with_pydeps(target_name) {
+  python_action(target_name) {
     forward_variables_from(invoker, [ "testonly" ])
-    script = "//build/android/gyp/assert_static_initializers.py"
+    python_binary = "//build/android:assert_static_initializers"
     _lib_out_dir = get_label_info(invoker.library_target, "root_out_dir")
     _lib_name = get_label_info(invoker.library_target, "name")
     deps = [ invoker.library_target ]

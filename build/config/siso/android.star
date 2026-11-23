@@ -233,7 +233,7 @@ def __step_config(ctx, step_config):
         },
         {
             "name": "android/trace_event_bytecode_rewriter",
-            "command_prefix": platform.python_bin + " ../../build/android/gyp/trace_event_bytecode_rewriter.py",
+            "command_prefix": platform.python_bin + " obj/build/android/trace_event_bytecode_rewriter.pyz",
             "handler": "android_trace_event_bytecode_rewriter",
             "remote": remote_all,
             # The GN action declares only an empty .stamp output that
@@ -312,7 +312,7 @@ def __step_config(ctx, step_config):
             # Runs locally to avoid transferring large .aab outputs. The
             # handler ensures the .zipspec inputs are materialized locally.
             "name": "android/create_app_bundle",
-            "command_prefix": platform.python_bin + " ../../build/android/gyp/create_app_bundle.py",
+            "command_prefix": platform.python_bin + " obj/build/android/create_app_bundle.pyz",
             "handler": "android_create_app_bundle",
             "remote": False,
         },

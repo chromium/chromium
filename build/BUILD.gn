@@ -7,6 +7,7 @@ import("//build/config/cast.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/args.gni")
 import("//build/config/features.gni")
+import("//build/config/python.gni")
 import("//build/util/process_version.gni")
 import("//build_overrides/build.gni")
 
@@ -144,4 +145,15 @@ source_set("is_android_web_view") {
     "is_android_web_view.cc",
     "is_android_web_view.h",
   ]
+}
+
+if (is_android && enable_java_templates) {
+  python_binary("protoc_java") {
+    script = "protoc_java.py"
+  }
+}
+
+# Used cross-platform by //build/config/zip.gni.
+python_binary("zip") {
+  script = "android/gyp/zip.py"
 }

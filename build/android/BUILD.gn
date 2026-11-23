@@ -247,8 +247,20 @@ python_library("logdog_wrapper_py") {
   pydeps_file = "test_wrapper/logdog_wrapper.pydeps"
 }
 
+python_binary("aar") {
+  script = "gyp/aar.py"
+}
+
+python_binary("aidl") {
+  script = "gyp/aidl.py"
+}
+
 python_binary("apkbuilder") {
   script = "gyp/apkbuilder.py"
+}
+
+python_binary("assert_static_initializers") {
+  script = "gyp/assert_static_initializers.py"
 }
 
 python_binary("bytecode_rewriter") {
@@ -267,6 +279,26 @@ python_binary("compile_resources") {
   script = "gyp/compile_resources.py"
 }
 
+python_binary("copy_ex") {
+  script = "gyp/copy_ex.py"
+}
+
+python_binary("create_apk_operations_script") {
+  script = "gyp/create_apk_operations_script.py"
+}
+
+python_binary("create_app_bundle") {
+  script = "gyp/create_app_bundle.py"
+}
+
+python_binary("create_app_bundle_apks") {
+  script = "gyp/create_app_bundle_apks.py"
+}
+
+python_binary("create_bundle_wrapper_script") {
+  script = "gyp/create_bundle_wrapper_script.py"
+}
+
 python_binary("create_java_binary_script") {
   script = "gyp/create_java_binary_script.py"
 }
@@ -283,8 +315,20 @@ python_binary("create_stub_manifest") {
   script = "gyp/create_stub_manifest.py"
 }
 
+python_binary("create_test_apk_wrapper_script") {
+  script = "gyp/create_test_apk_wrapper_script.py"
+}
+
+python_binary("create_ui_locale_resources") {
+  script = "gyp/create_ui_locale_resources.py"
+}
+
 python_binary("dex") {
   script = "gyp/dex.py"
+}
+
+python_binary("dist_aar") {
+  script = "gyp/dist_aar.py"
 }
 
 python_binary("errorprone") {
@@ -295,12 +339,51 @@ python_binary("filter_zip") {
   script = "gyp/filter_zip.py"
 }
 
+python_binary("flatc_java") {
+  script = "gyp/flatc_java.py"
+}
+
+python_binary("gcc_preprocess") {
+  script = "gyp/gcc_preprocess.py"
+}
+
+python_binary("generate_api_database") {
+  script = "gyp/generate_api_database.py"
+}
+
+python_binary("generate_linker_version_script") {
+  script = "gyp/generate_linker_version_script.py"
+}
+
 python_binary("ijar") {
   script = "gyp/ijar.py"
 }
 
 python_binary("jacoco_instr") {
   script = "gyp/jacoco_instr.py"
+}
+
+python_binary("java_cpp_enum") {
+  script = "gyp/java_cpp_enum.py"
+}
+
+python_binary("java_cpp_features") {
+  script = "gyp/java_cpp_features.py"
+}
+
+python_binary("java_cpp_strings") {
+  script = "gyp/java_cpp_strings.py"
+}
+
+if (build_with_chromium) {
+  # Requires //google_apis/google_api_keys.py.
+  python_binary("java_google_api_keys") {
+    script = "gyp/java_google_api_keys.py"
+  }
+}
+
+python_binary("jinja_template") {
+  script = "gyp/jinja_template.py"
 }
 
 python_binary("lint") {
@@ -319,6 +402,10 @@ python_binary("prepare_resources") {
   script = "gyp/prepare_resources.py"
 }
 
+python_binary("process_native_prebuilt") {
+  script = "gyp/process_native_prebuilt.py"
+}
+
 python_binary("proguard") {
   script = "gyp/proguard.py"
 }
@@ -331,6 +418,10 @@ python_binary("system_image_apks") {
   script = "gyp/system_image_apks.py"
 }
 
+python_binary("trace_event_bytecode_rewriter") {
+  script = "gyp/trace_event_bytecode_rewriter.py"
+}
+
 python_binary("tracereferences") {
   script = "gyp/tracereferences.py"
 }
@@ -341,6 +432,10 @@ python_binary("turbine") {
 
 python_binary("write_build_config") {
   script = "gyp/write_build_config.py"
+}
+
+python_binary("write_native_libraries_java") {
+  script = "gyp/write_native_libraries_java.py"
 }
 
 python_library("resource_sizes_py") {

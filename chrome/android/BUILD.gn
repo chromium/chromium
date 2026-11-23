@@ -1067,8 +1067,8 @@ if (_is_default_toolchain) {
     }
   }
 
-  action_with_pydeps("chrome_android_java_google_api_keys_srcjar") {
-    script = "//build/android/gyp/java_google_api_keys.py"
+  python_action("chrome_android_java_google_api_keys_srcjar") {
+    python_binary = "//build/android:java_google_api_keys"
     outputs = [ "$target_gen_dir/$target_name.srcjar" ]
     args = [
       "--srcjar",
