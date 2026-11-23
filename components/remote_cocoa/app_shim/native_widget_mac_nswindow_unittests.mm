@@ -7,7 +7,7 @@
 #include <AppKit/AppKit.h>
 
 #import "base/apple/scoped_objc_class_swizzler.h"
-#include "base/mac/mac_util.h"
+#include "base/test/mock_chrome_application_mac.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/remote_cocoa/app_shim/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -62,6 +62,14 @@ TestOptInCursorNSWindow* CreateOptInWindow() {
   return window;
 }
 
+// KeyWindowDelegatesCursorTo() reads [NSApp keyWindow], so the swizzled
+// -keyWindow only runs once an application object exists.
+void EnsureNSApp() {
+  if (!NSApp) {
+    mock_cr_app::RegisterMockCrApp();
+  }
+}
+
 TEST(NativeWidgetMacNSWindowTest, ImmersiveRevealLockDoesNotRequireKey) {
   NativeWidgetMacNSWindow* window = CreateWindow();
   EXPECT_FALSE([window immersiveRevealLockRequiresKey]);
@@ -77,10 +85,7 @@ TEST(NativeWidgetMacNSWindowTest, AncestorsUpdateCursorDefaultsToNo) {
 // The key window delegates cursor handling to its ancestors only if it opted
 // in and the feature is enabled.
 TEST(NativeWidgetMacNSWindowTest, KeyWindowDelegatesCursorTo) {
-  // TODO(https://crbug.com/587821939): Fails on macOS 13.
-  if (base::mac::MacOSMajorVersion() == 13) {
-    GTEST_SKIP();
-  }
+  EnsureNSApp();
 
   g_fake_key_window = nil;
   base::apple::ScopedObjCClassSwizzler key_window_swizzler(
@@ -96,6 +101,10 @@ TEST(NativeWidgetMacNSWindowTest, KeyWindowDelegatesCursorTo) {
   [grandparent addChildWindow:parent ordered:NSWindowAbove];
   [parent addChildWindow:plain_child ordered:NSWindowAbove];
   [parent addChildWindow:opt_in_child ordered:NSWindowAbove];
+
+  ASSERT_EQ(grandparent, parent.parentWindow);
+  ASSERT_EQ(parent, plain_child.parentWindow);
+  ASSERT_EQ(parent, opt_in_child.parentWindow);
 
   // A key child that opted in delegates to every ancestor, but not to itself
   // or to unrelated windows.
@@ -134,10 +143,7 @@ TEST(NativeWidgetMacNSWindowTest, KeyWindowDelegatesCursorTo) {
 // the browser window.
 TEST(NativeWidgetMacNSWindowTest,
      KeyWindowDelegatesCursorThroughNonWidgetWindow) {
-  // TODO(https://crbug.com/587821939): Fails on macOS 13.
-  if (base::mac::MacOSMajorVersion() == 13) {
-    GTEST_SKIP();
-  }
+  EnsureNSApp();
 
   g_fake_key_window = nil;
   base::apple::ScopedObjCClassSwizzler key_window_swizzler(
@@ -158,6 +164,10 @@ TEST(NativeWidgetMacNSWindowTest,
   [browser addChildWindow:toolbar_window ordered:NSWindowAbove];
   [toolbar_window addChildWindow:overlay ordered:NSWindowAbove];
   [overlay addChildWindow:popup ordered:NSWindowAbove];
+
+  ASSERT_EQ(browser, toolbar_window.parentWindow);
+  ASSERT_EQ(toolbar_window, overlay.parentWindow);
+  ASSERT_EQ(overlay, popup.parentWindow);
 
   g_fake_key_window = popup;
   EXPECT_TRUE(remote_cocoa::KeyWindowDelegatesCursorTo(overlay));
