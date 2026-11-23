@@ -143,9 +143,9 @@ class CC_EXPORT TaskGraphWorkQueue {
   }
 
   bool HasReadyToRunTasks() const {
-    return !std::ranges::all_of(ready_to_run_namespaces_,
-                                &TaskNamespace::Vector::empty,
-                                &ReadyNamespaces::value_type::second);
+    return !std::ranges::all_of(
+        ready_to_run_namespaces_, [](const auto& v) { return v.empty(); },
+        &ReadyNamespaces::value_type::second);
   }
 
   bool HasReadyToRunTasksForCategory(uint16_t category) const {
