@@ -3105,7 +3105,7 @@ deps = {
   },
 
   'src/third_party/ruy/src':
-    Var('chromium_git') + '/external/github.com/google/ruy.git' + '@' + '37e43f2054e1a9372994498d7fb4783ac48a5717',
+    Var('chromium_git') + '/external/github.com/google/ruy.git' + '@' + '0face1b4633b877082d26e3d4a75db394ef5fed3',
 
   'src/third_party/safeint/src':
     Var('chromium_git') + '/external/github.com/dcleblanc/safeint.git' + '@' + '72f0745e26091af6d1186fd91426377f16688ba7',

@@ -135,6 +135,7 @@ source_set("ruy_prepacked_cache") {
   ]
   configs += [ ":ruy_shared_config" ]
   deps = [
+    ":ruy_check_macros",
     ":ruy_mat",
     ":ruy_profiler_instrumentation",
     ":ruy_system_aligned_alloc",
