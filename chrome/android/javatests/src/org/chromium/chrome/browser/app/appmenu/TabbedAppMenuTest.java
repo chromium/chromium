@@ -39,7 +39,6 @@ import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
@@ -209,7 +208,6 @@ public class TabbedAppMenuTest {
     @SmallTest
     @Feature({"Browser", "Main", "Bookmark", "RenderTest"})
     @Restriction(DeviceFormFactor.PHONE)
-    @EnableFeatures({ChromeFeatureList.ANDROID_THEME_MODULE})
     public void testBookmarkMenuItem() throws IOException {
         PropertyModel bookmarkStarPropertyModel =
                 AppMenuTestSupport.getMenuItemPropertyModel(

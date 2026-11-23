@@ -81,10 +81,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 /** Instrumentation tests for tab strip group title long-press menu popup */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@DisableFeatures({
-    ChromeFeatureList.ANDROID_THEME_MODULE,
-    TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS
-})
+@DisableFeatures(TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS)
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
 @DisableIf.Device(DeviceFormFactor.AUTOMOTIVE) // crbug.com/462592111
 public class TabStripGroupContextMenuTest {

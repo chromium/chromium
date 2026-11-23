@@ -66,7 +66,6 @@ import java.util.List;
 @DisableFeatures({
     ChromeFeatureList.DATA_SHARING,
     ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT,
-    ChromeFeatureList.ANDROID_THEME_MODULE,
     TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS
 })
 public class TabSwitcherListEditorPTTest {

@@ -27,7 +27,6 @@ import org.chromium.base.test.transit.TransitAsserts;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.ImportantFormFactors;
@@ -55,9 +54,6 @@ import org.chromium.ui.test.util.DeviceRestriction;
  * TabListCoordinator}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Features.DisableFeatures({
-    ChromeFeatureList.ANDROID_THEME_MODULE,
-})
 @Batch(Batch.PER_CLASS)
 @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288348
 public class TabGroupListBottomSheetTest {

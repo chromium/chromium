@@ -47,8 +47,6 @@ import java.io.IOException;
 /** Public Transit tests for the app menu. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-// TODO: Add new tests when the flag is enabled.
-@EnableFeatures(ChromeFeatureList.ANDROID_THEME_MODULE)
 @DisableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR, ChromeFeatureList.GLIC})
 public class TabbedAppMenuPTTest {
     @Rule

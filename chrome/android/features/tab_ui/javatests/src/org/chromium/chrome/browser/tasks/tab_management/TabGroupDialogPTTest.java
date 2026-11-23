@@ -59,7 +59,6 @@ import java.io.IOException;
 // or enable Google Sans (Text) in //chrome/ tests on Android T+.
 @DisableFeatures({
     ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT,
-    ChromeFeatureList.ANDROID_THEME_MODULE,
     TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS
 })
 @EnableFeatures(ChromeFeatureList.DATA_SHARING)

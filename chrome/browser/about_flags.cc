@@ -3271,12 +3271,6 @@ const FeatureEntry::FeatureVariation
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam sAndroidThemeModuleParams[] = {
-    {"force_theme_module_dependencies", "true"}};
-const FeatureEntry::FeatureVariation kAndroidThemeModuleVariations[] = {
-    {"force dependencies", sAndroidThemeModuleParams, nullptr},
-};
-
 const FeatureEntry::FeatureParam sAndroidThemeResourceProviderParams[] = {
     {"force_light_theme", "true"}};
 const FeatureEntry::FeatureVariation kAndroidThemeResourceProviderVariations[] =
@@ -11286,11 +11280,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"android-theme-module", flag_descriptions::kAndroidThemeModuleName,
-     flag_descriptions::kAndroidThemeModuleDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidThemeModule,
-                                    kAndroidThemeModuleVariations,
-                                    "AndroidThemeModule")},
     {"android-theme-resource-provider",
      flag_descriptions::kAndroidThemeResourceProviderName,
      flag_descriptions::kAndroidThemeResourceProviderDescription, kOsAndroid,

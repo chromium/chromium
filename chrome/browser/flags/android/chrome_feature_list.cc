@@ -304,7 +304,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidTabSkipSaveTabsKillswitch,
     &kAndroidTabUiRefactor,
     &kAndroidTabstripStartupCaptureBugFix,
-    &kAndroidThemeModule,
     &kAndroidThemeResourceProvider,
     &kAndroidToolbarCaptureOnDesktop,
     &kAndroidToolbarScrollAblation,
@@ -662,7 +661,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
 // Alphabetical:
 const base::FeatureParam<bool>* const kBooleanParamsExposedToJava[] = {
 // go/keep-sorted start
-    &kAndroidThemeModuleForceDependencies,
     &kAndroidThemeResourceProviderForceLight,
     &kNtpAuroraChangeButtonColor,
 // go/keep-sorted end
@@ -758,7 +756,6 @@ BASE_FEATURE(kAndroidTabPersistentStoreActiveTabPrefs, base::FEATURE_DISABLED_BY
 BASE_FEATURE(kAndroidTabSkipSaveTabsKillswitch,"AndroidTabSkipSaveTabsTaskKillswitch", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidTabUiRefactor, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidTabstripStartupCaptureBugFix, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kAndroidThemeModule, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidThemeResourceProvider, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidToolbarCaptureOnDesktop, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidToolbarScrollAblation, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -1062,11 +1059,6 @@ BASE_RUNTIME_MUTABLE_FEATURE(kAvoidTaskTrampolines, base::FEATURE_ENABLED_BY_DEF
 // FeatureParams exposed to Java through the k*ParamsExposedToJava arrays.
 // Alphabetical:
 // go/keep-sorted start sticky_comments=yes
-BASE_FEATURE_PARAM(bool,
-                   kAndroidThemeModuleForceDependencies,
-                   &kAndroidThemeModule,
-                   "force_theme_module_dependencies",
-                   false);
 BASE_FEATURE_PARAM(bool,
                    kAndroidThemeResourceProviderForceLight,
                    &kAndroidThemeResourceProvider,

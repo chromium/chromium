@@ -5611,10 +5611,6 @@ inline constexpr char kAndroidTabstripStartupCaptureBugFixName[] =
 inline constexpr char kAndroidTabstripStartupCaptureBugFixDescription[] =
     "Enables the Android Tabstrip Startup Capture Bug Fix feature.";
 
-inline constexpr char kAndroidThemeModuleName[] = "Android Theme Module";
-inline constexpr char kAndroidThemeModuleDescription[] =
-    "Enables external theme overlays for Chrome activities when available.";
-
 inline constexpr char kAndroidThemeResourceProviderName[] =
     "Android Theme Resource Provider";
 inline constexpr char kAndroidThemeResourceProviderDescription[] =

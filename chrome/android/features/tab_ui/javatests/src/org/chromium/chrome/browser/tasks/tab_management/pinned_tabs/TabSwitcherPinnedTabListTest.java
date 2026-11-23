@@ -28,10 +28,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
@@ -57,7 +55,6 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Restriction(DeviceFormFactor.PHONE)
 @Batch(Batch.PER_CLASS)
-@DisableFeatures({ChromeFeatureList.ANDROID_THEME_MODULE})
 public class TabSwitcherPinnedTabListTest {
     private static final int SCROLL_DISTANCE_DOWN_PX = 2000;
 

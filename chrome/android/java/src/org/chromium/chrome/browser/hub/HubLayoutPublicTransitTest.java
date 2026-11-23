@@ -44,10 +44,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 
 /** Public transit instrumentation/integration test of Hub. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DisableFeatures({
-    ChromeFeatureList.ANDROID_THEME_MODULE,
-    TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS
-})
+@DisableFeatures(TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_STARTUP_PROMOS})
 @Batch(Batch.PER_CLASS)
 public class HubLayoutPublicTransitTest {

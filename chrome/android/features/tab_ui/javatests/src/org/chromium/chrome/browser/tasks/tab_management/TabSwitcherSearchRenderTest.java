@@ -59,7 +59,6 @@ import java.util.concurrent.ExecutionException;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @DisableFeatures({
-    ChromeFeatureList.ANDROID_THEME_MODULE,
     ChromeFeatureList.HISTORY_PANE_ANDROID,
     TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS
 })

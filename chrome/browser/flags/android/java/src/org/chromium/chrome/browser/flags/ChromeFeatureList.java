@@ -368,7 +368,6 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH =
             "AndroidTabSkipSaveTabsTaskKillswitch";
     public static final String ANDROID_TAB_UI_REFACTOR = "AndroidTabUiRefactor";
-    public static final String ANDROID_THEME_MODULE = "AndroidThemeModule";
     public static final String ANDROID_THEME_RESOURCE_PROVIDER = "AndroidThemeResourceProvider";
     public static final String ANDROID_TIPS_NOTIFICATIONS = "AndroidTipsNotifications";
     public static final String ANDROID_TIPS_NOTIFICATIONS_V2 = "AndroidTipsNotificationsV2";
@@ -985,7 +984,6 @@ public abstract class ChromeFeatureList {
                     ? null
                     : Map.ofEntries(
                             Map.entry(ACCOUNT_FOR_SUPPRESSED_KEYBOARD_INSETS, true),
-                            Map.entry(ANDROID_THEME_MODULE, true),
                             Map.entry(ANDROID_THEME_RESOURCE_PROVIDER, false),
                             Map.entry(AVOID_TASK_TRAMPOLINES, true),
                             Map.entry(DEVICE_REAUTH_REFACTOR, true),
@@ -1974,8 +1972,6 @@ public abstract class ChromeFeatureList {
                     "jump_to_completion_with_fade";
     public static final String ANDROID_DEVICE_SIGNALS_DISCLAIMER_CLEAR_CONSENT =
             "clear_device_signals_permission_on_startup";
-    public static final String ANDROID_THEME_MODULE_FORCE_DEPENDENCIES =
-            "force_theme_module_dependencies";
     public static final String ANDROID_THEME_RESOURCE_PROVIDER_FORCE_LIGHT = "force_light_theme";
     public static final String FRE_STRING_CHANGES_PERSONALIZED = "personalized";
     public static final String FRE_STRING_CHANGES_SAFETY = "safety";
@@ -2046,9 +2042,6 @@ public abstract class ChromeFeatureList {
                                     Map.of(
                                             ANDROID_DEVICE_SIGNALS_DISCLAIMER_CLEAR_CONSENT,
                                             "false")),
-                            Map.entry(
-                                    ANDROID_THEME_MODULE,
-                                    Map.of(ANDROID_THEME_MODULE_FORCE_DEPENDENCIES, "false")),
                             Map.entry(
                                     ANDROID_THEME_RESOURCE_PROVIDER,
                                     Map.of(ANDROID_THEME_RESOURCE_PROVIDER_FORCE_LIGHT, "false")),

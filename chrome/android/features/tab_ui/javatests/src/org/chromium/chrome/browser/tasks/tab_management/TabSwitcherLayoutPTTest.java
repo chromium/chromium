@@ -103,7 +103,6 @@ import java.util.function.Supplier;
 // or enable Google Sans (Text) in //chrome/ tests on Android T+.
 @DisableFeatures({
     ANDROID_ELEGANT_TEXT_HEIGHT,
-    ChromeFeatureList.ANDROID_THEME_MODULE,
     TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS
 })
 public class TabSwitcherLayoutPTTest {

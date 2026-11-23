@@ -47,8 +47,6 @@ import org.robolectric.Robolectric;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler.AppMenuItemType;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
@@ -962,7 +960,6 @@ public class AppMenuItemViewBinderTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_THEME_MODULE)
     public void testIconRowViewBinders_DefaultItem_NotCheckableSelected() {
         Drawable icon =
                 AppCompatResources.getDrawable(mActivity, R.drawable.test_ic_vintage_filter);
@@ -981,7 +978,6 @@ public class AppMenuItemViewBinderTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_THEME_MODULE)
     public void testIconRowViewBinders_ModelCheckableTrue_Ignored() {
         Drawable icon =
                 AppCompatResources.getDrawable(mActivity, R.drawable.test_ic_vintage_filter);
@@ -1001,7 +997,6 @@ public class AppMenuItemViewBinderTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_THEME_MODULE)
     public void testIconRowViewBinders_ModelCheckedTrue_SelectedButNotAccessibilitySelected() {
         Drawable icon =
                 AppCompatResources.getDrawable(mActivity, R.drawable.test_ic_vintage_filter);

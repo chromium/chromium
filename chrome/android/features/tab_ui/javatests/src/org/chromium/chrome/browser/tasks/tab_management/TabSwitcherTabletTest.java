@@ -72,9 +72,6 @@ import java.util.concurrent.ExecutionException;
 /** Tests for the {@link TabSwitcher} on tablet */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-@DisableFeatures({
-    ChromeFeatureList.ANDROID_THEME_MODULE,
-})
 @Batch(Batch.PER_CLASS)
 public class TabSwitcherTabletTest {
     @Rule

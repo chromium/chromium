@@ -65,10 +65,7 @@ import java.util.concurrent.TimeoutException;
 /** Tests for search in the tab switcher. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures({
-    ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_POPUP,
-    ChromeFeatureList.ANDROID_THEME_MODULE
-})
+@DisableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_POPUP)
 @Batch(Batch.PER_CLASS)
 public class TabSwitcherSearchTest {
     private static final int SERVER_PORT = 13245;

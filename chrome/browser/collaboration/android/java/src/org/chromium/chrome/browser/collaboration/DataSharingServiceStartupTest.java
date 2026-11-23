@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
@@ -47,7 +46,6 @@ import java.util.concurrent.TimeoutException;
 @EnableFeatures({ChromeFeatureList.DATA_SHARING})
 @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_20W02)
 @DoNotBatch(reason = "Affects sign-in state, which is global.")
-@Features.DisableFeatures({ChromeFeatureList.ANDROID_THEME_MODULE})
 public class DataSharingServiceStartupTest {
     // Reset to a single blank tab between each test, without restarting the ChromeTabbedActivity.
     @Rule

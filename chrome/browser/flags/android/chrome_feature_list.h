@@ -81,7 +81,6 @@ BASE_DECLARE_FEATURE(kAndroidTabPersistentStoreActiveTabPrefs);
 BASE_DECLARE_FEATURE(kAndroidTabSkipSaveTabsKillswitch);
 BASE_DECLARE_FEATURE(kAndroidTabUiRefactor);
 BASE_DECLARE_FEATURE(kAndroidTabstripStartupCaptureBugFix);
-BASE_DECLARE_FEATURE(kAndroidThemeModule);
 BASE_DECLARE_FEATURE(kAndroidThemeResourceProvider);
 BASE_DECLARE_FEATURE(kAndroidToolbarCaptureOnDesktop);
 BASE_DECLARE_FEATURE(kAndroidToolbarScrollAblation);
@@ -389,7 +388,6 @@ BASE_DECLARE_FEATURE(kXplatSyncedSetupThemes);
 // FeatureParams exposed to Java through the k*ParamsExposedToJava arrays.
 // Alphabetical:
 // go/keep-sorted start
-BASE_DECLARE_FEATURE_PARAM(bool, kAndroidThemeModuleForceDependencies);
 BASE_DECLARE_FEATURE_PARAM(bool, kAndroidThemeResourceProviderForceLight);
 BASE_DECLARE_FEATURE_PARAM(bool, kNtpAuroraChangeButtonColor);
 BASE_DECLARE_FEATURE_PARAM(int, kNtpAuroraPaddingStyle);

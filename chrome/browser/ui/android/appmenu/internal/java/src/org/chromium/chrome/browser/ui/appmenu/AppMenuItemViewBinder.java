@@ -27,7 +27,6 @@ import com.google.android.material.button.MaterialButton;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.theme.ThemeModuleUtils;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
 import org.chromium.components.browser_ui.util.motion.OnPeripheralClickListener;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
@@ -284,20 +283,9 @@ class AppMenuItemViewBinder {
                     button.setIcon(icon);
 
                     boolean isChecked = iconList.get(i).model.get(AppMenuItemProperties.CHECKED);
-
-                    if (!ThemeModuleUtils.isEnabled()) {
-                        @ColorRes
-                        int resId =
-                                isChecked
-                                        ? R.color.default_icon_color_accent1_tint_list
-                                        : R.color.default_icon_color_tint_list;
-                        button.setIconTint(button.getContext().getColorStateList(resId));
-                    } else {
-                        button.setCheckable(false);
-                        button.setSelected(isChecked);
-                        button.setAccessibilityDelegate(sAccessibilityDelegate);
-                    }
-
+                    button.setCheckable(false);
+                    button.setSelected(isChecked);
+                    button.setAccessibilityDelegate(sAccessibilityDelegate);
                     setupMenuButton(button, iconList.get(i).model, appMenuClickHandler);
                 } else {
                     buttonWrapper.setVisibility(View.GONE);
