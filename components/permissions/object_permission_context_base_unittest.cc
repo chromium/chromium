@@ -55,6 +55,34 @@ class TestObjectPermissionContext : public ObjectPermissionContextBase {
   std::string GetKeyForObject(const base::DictValue& object) override {
     return *object.FindString(kRequiredKey1);
   }
+
+  void GrantEphemeralObjectPermission(const url::Origin& origin) {
+    ephemeral_origins_.insert(origin);
+    NotifyPermissionChanged();
+  }
+
+  bool HasEphemeralObjectPermission(const url::Origin& origin) const {
+    return CanRequestObjectPermission(origin) &&
+           ephemeral_origins_.contains(origin);
+  }
+
+  std::vector<url::Origin> RevokeEphemeralPermissions(
+      const ContentSettingsPattern& primary_pattern,
+      bool unconditional) override {
+    std::vector<url::Origin> revoked_origins;
+    std::erase_if(ephemeral_origins_, [&](const url::Origin& origin) {
+      if (primary_pattern.Matches(origin.GetURL()) &&
+          (unconditional || !CanRequestObjectPermission(origin))) {
+        revoked_origins.push_back(origin);
+        return true;
+      }
+      return false;
+    });
+    return revoked_origins;
+  }
+
+ private:
+  std::set<url::Origin> ephemeral_origins_;
 };
 
 }  // namespace
@@ -389,6 +417,142 @@ TEST_F(ObjectPermissionContextBaseTest,
   auto objects = context_.GetGrantedObjects(origin1_);
   ASSERT_EQ(1u, objects.size());
   EXPECT_EQ(object2_, objects[0]->value);
+}
+
+TEST_F(ObjectPermissionContextBaseTest,
+       RevokePersistentObjectPermissionsViaGuardContentSetting) {
+  MockPermissionObserver mock_observer;
+  context_.AddObserver(&mock_observer);
+
+  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(2);
+  context_.GrantObjectPermission(origin1_, object1_.Clone());
+  context_.GrantObjectPermission(origin2_, object2_.Clone());
+  context_.FlushScheduledSaveSettingsCalls();
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  EXPECT_EQ(1u, context_.GetGrantedObjects(origin1_).size());
+  EXPECT_EQ(1u, context_.GetGrantedObjects(origin2_).size());
+
+  HostContentSettingsMap* map =
+      PermissionsClient::Get()->GetSettingsMap(browser_context());
+
+  EXPECT_CALL(mock_observer,
+              OnObjectPermissionChanged(
+                  std::make_optional(ContentSettingsType::USB_GUARD),
+                  ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_CALL(mock_observer, OnPermissionRevoked(origin1_));
+  EXPECT_CALL(mock_observer, OnPermissionRevoked(origin2_)).Times(0);
+
+  map->SetContentSettingDefaultScope(
+      url1_, url1_, ContentSettingsType::USB_GUARD, CONTENT_SETTING_BLOCK);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  EXPECT_TRUE(context_.GetGrantedObjects(origin1_).empty());
+  ASSERT_EQ(1u, context_.GetGrantedObjects(origin2_).size());
+  EXPECT_EQ(object2_, context_.GetGrantedObjects(origin2_)[0]->value);
+
+  // Restoring the guard setting to ASK should restore access to the persistent
+  // object and fire a permission changed notification.
+  EXPECT_CALL(mock_observer,
+              OnObjectPermissionChanged(
+                  std::make_optional(ContentSettingsType::USB_GUARD),
+                  ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_CALL(mock_observer, OnPermissionRevoked(_)).Times(0);
+  map->SetContentSettingDefaultScope(
+      url1_, url1_, ContentSettingsType::USB_GUARD, CONTENT_SETTING_ASK);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  ASSERT_EQ(1u, context_.GetGrantedObjects(origin1_).size());
+  EXPECT_EQ(object1_, context_.GetGrantedObjects(origin1_)[0]->value);
+}
+
+TEST_F(ObjectPermissionContextBaseTest,
+       RevokeEphemeralObjectPermissionsViaGuardContentSetting) {
+  MockPermissionObserver mock_observer;
+  context_.AddObserver(&mock_observer);
+
+  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(2);
+  context_.GrantEphemeralObjectPermission(origin1_);
+  context_.GrantEphemeralObjectPermission(origin2_);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  EXPECT_TRUE(context_.HasEphemeralObjectPermission(origin1_));
+  EXPECT_TRUE(context_.HasEphemeralObjectPermission(origin2_));
+
+  HostContentSettingsMap* map =
+      PermissionsClient::Get()->GetSettingsMap(browser_context());
+
+  EXPECT_CALL(mock_observer,
+              OnObjectPermissionChanged(
+                  std::make_optional(ContentSettingsType::USB_GUARD),
+                  ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_CALL(mock_observer, OnPermissionRevoked(origin1_));
+  EXPECT_CALL(mock_observer, OnPermissionRevoked(origin2_)).Times(0);
+
+  map->SetContentSettingDefaultScope(
+      url1_, url1_, ContentSettingsType::USB_GUARD, CONTENT_SETTING_BLOCK);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  EXPECT_FALSE(context_.HasEphemeralObjectPermission(origin1_));
+  EXPECT_TRUE(context_.HasEphemeralObjectPermission(origin2_));
+
+  // Restoring the guard setting to ASK should not restore the revoked ephemeral
+  // permission.
+  EXPECT_CALL(mock_observer,
+              OnObjectPermissionChanged(
+                  std::make_optional(ContentSettingsType::USB_GUARD),
+                  ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_CALL(mock_observer, OnPermissionRevoked(_)).Times(0);
+  map->SetContentSettingDefaultScope(
+      url1_, url1_, ContentSettingsType::USB_GUARD, CONTENT_SETTING_ASK);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  EXPECT_FALSE(context_.HasEphemeralObjectPermission(origin1_));
+  EXPECT_TRUE(context_.HasEphemeralObjectPermission(origin2_));
+}
+
+TEST_F(ObjectPermissionContextBaseTest,
+       RevokeObjectPermissionsViaDefaultGuardContentSetting) {
+  MockPermissionObserver mock_observer;
+  context_.AddObserver(&mock_observer);
+
+  EXPECT_CALL(mock_observer, OnObjectPermissionChanged(_, _)).Times(4);
+  context_.GrantObjectPermission(origin1_, object1_.Clone());
+  context_.GrantEphemeralObjectPermission(origin1_);
+  context_.GrantObjectPermission(origin2_, object2_.Clone());
+  context_.GrantEphemeralObjectPermission(origin2_);
+  context_.FlushScheduledSaveSettingsCalls();
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  HostContentSettingsMap* map =
+      PermissionsClient::Get()->GetSettingsMap(browser_context());
+  EXPECT_CALL(mock_observer,
+              OnObjectPermissionChanged(
+                  std::make_optional(ContentSettingsType::USB_GUARD),
+                  ContentSettingsType::USB_CHOOSER_DATA));
+  map->SetContentSettingDefaultScope(
+      url2_, url2_, ContentSettingsType::USB_GUARD, CONTENT_SETTING_ASK);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // Blocking the default guard setting should revoke permissions for `origin1_`
+  // (firing a single revocation notification covering both persistent and
+  // ephemeral grants) while sparing `origin2_`, which has an explicit ASK rule.
+  EXPECT_CALL(mock_observer,
+              OnObjectPermissionChanged(
+                  std::make_optional(ContentSettingsType::USB_GUARD),
+                  ContentSettingsType::USB_CHOOSER_DATA));
+  EXPECT_CALL(mock_observer, OnPermissionRevoked(origin1_));
+  EXPECT_CALL(mock_observer, OnPermissionRevoked(origin2_)).Times(0);
+
+  map->SetDefaultContentSetting(ContentSettingsType::USB_GUARD,
+                                CONTENT_SETTING_BLOCK);
+  testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  EXPECT_TRUE(context_.GetGrantedObjects(origin1_).empty());
+  EXPECT_FALSE(context_.HasEphemeralObjectPermission(origin1_));
+  ASSERT_EQ(1u, context_.GetGrantedObjects(origin2_).size());
+  EXPECT_EQ(object2_, context_.GetGrantedObjects(origin2_)[0]->value);
+  EXPECT_TRUE(context_.HasEphemeralObjectPermission(origin2_));
 }
 
 }  // namespace permissions

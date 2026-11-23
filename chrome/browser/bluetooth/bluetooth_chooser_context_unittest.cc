@@ -685,12 +685,13 @@ TEST_F(BluetoothChooserContextTest, ClearBrowsingDataScannedDevices) {
                             foo_origin_, fake_device1_->GetAddress()));
 
   // Simulate Clear Browsing Data.
-  // Clearing BLUETOOTH_CHOOSER_DATA triggers one OnObjectPermissionChanged
-  // call from NotifyPermissionRevoked().
+  // Clearing `BLUETOOTH_CHOOSER_DATA` and `BLUETOOTH_GUARD` each trigger one
+  // `OnObjectPermissionChanged()` call.
   EXPECT_CALL(mock_permission_observer_,
               OnObjectPermissionChanged(
                   std::make_optional(ContentSettingsType::BLUETOOTH_GUARD),
-                  ContentSettingsType::BLUETOOTH_CHOOSER_DATA));
+                  ContentSettingsType::BLUETOOTH_CHOOSER_DATA))
+      .Times(2);
   EXPECT_CALL(mock_permission_observer_, OnPermissionRevoked(foo_origin_));
 
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());

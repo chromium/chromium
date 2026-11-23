@@ -414,8 +414,15 @@ void ObjectPermissionContextBase::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsTypeSet content_type_set) {
-  if (ignore_map_callbacks_ ||
-      !content_type_set.Contains(data_content_settings_type_)) {
+  if (ignore_map_callbacks_) {
+    return;
+  }
+  const bool affects_data =
+      content_type_set.Contains(data_content_settings_type_);
+  const bool affects_guard =
+      guard_content_settings_type_.has_value() &&
+      content_type_set.Contains(*guard_content_settings_type_);
+  if (!affects_data && !affects_guard) {
     return;
   }
   FlushScheduledSaveSettingsCalls();
@@ -424,15 +431,21 @@ void ObjectPermissionContextBase::OnContentSettingChanged(
   // 1. Revoke ephemeral permissions first.
   //
   // During initialization or global resets, `content_type_set` contains all
-  // permission types. Revoke ephemeral permissions only if the origin matches
-  // `primary_pattern` and the guard setting is BLOCK. If the guard setting is
-  // ASK, ephemeral permissions are not revoked.
+  // permission types. In this case, we revoke ephemeral permissions only if the
+  // origin matches `primary_pattern` and the guard setting is BLOCK. If the
+  // guard setting is ASK, ephemeral permissions are not revoked.
   //
-  // OnContentSettingChanged is also called if the user manually revokes a
-  // permission or uses Clear Browsing Data to clear site settings. Ephemeral
-  // permissions that match `primary_pattern` are unconditionally revoked
-  // regardless of the guard setting.
-  bool unconditional = !content_type_set.ContainsAllTypes();
+  // When OnContentSettingChanged is called for the data_content_settings_type_,
+  // it means that the user manually revokes a single object permission, or uses
+  // Clear Browsing Data to clear site settings. In this case, we revoke
+  // ephemeral permissions that match `primary_pattern` regardless of the guard
+  // setting.
+  //
+  // When OnContentSettingChanged is called for the
+  // guard_content_settings_type_, then we revoke ephemeral permissions only if
+  // the guard setting is BLOCK (if it changes from BLOCK to ASK there shouldn't
+  // be any epehemeral permissions anyway).
+  bool unconditional = !affects_guard;
   std::vector<url::Origin> revoked_ephemeral =
       RevokeEphemeralPermissions(primary_pattern, unconditional);
   revoked_origins.insert(revoked_ephemeral.begin(), revoked_ephemeral.end());
@@ -440,13 +453,17 @@ void ObjectPermissionContextBase::OnContentSettingChanged(
   // 2. Invalidate persistent cache and collect revoked origins.
   if (objects_initialized_) {
     std::map<url::Origin, std::set<std::string>> old_objects;
-    for (const auto& entry : objects_) {
-      if (primary_pattern.Matches(entry.first.GetURL())) {
-        std::set<std::string> keys;
-        for (const auto& object_entry : entry.second) {
-          keys.insert(object_entry.first);
+    for (const auto& [origin, objects] : objects_) {
+      if (primary_pattern.Matches(origin.GetURL())) {
+        if (!CanRequestObjectPermission(origin)) {
+          revoked_origins.insert(origin);
+        } else {
+          std::set<std::string> keys;
+          for (const auto& [key, object] : objects) {
+            keys.insert(key);
+          }
+          old_objects[origin] = std::move(keys);
         }
-        old_objects[entry.first] = std::move(keys);
       }
     }
 

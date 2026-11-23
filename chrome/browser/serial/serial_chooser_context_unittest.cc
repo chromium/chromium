@@ -1324,12 +1324,13 @@ TEST_F(SerialChooserContextTest, ClearBrowsingDataEphemeralDevice) {
   EXPECT_TRUE(context()->HasPortPermission(kOrigin, *port));
 
   // Simulate Clear Browsing Data.
-  // Clearing SERIAL_CHOOSER_DATA will trigger one OnObjectPermissionChanged
-  // call from NotifyPermissionRevoked().
+  // Clearing `SERIAL_CHOOSER_DATA` and `SERIAL_GUARD` each trigger one
+  // `OnObjectPermissionChanged()` call.
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
                   std::make_optional(ContentSettingsType::SERIAL_GUARD),
-                  ContentSettingsType::SERIAL_CHOOSER_DATA));
+                  ContentSettingsType::SERIAL_CHOOSER_DATA))
+      .Times(2);
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(kOrigin));
 
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());

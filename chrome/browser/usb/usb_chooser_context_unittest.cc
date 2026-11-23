@@ -1427,12 +1427,13 @@ TEST_F(UsbChooserContextTest, ClearBrowsingDataEphemeralDevice) {
   EXPECT_TRUE(store->HasDevicePermission(origin, *device_info));
 
   // Simulate Clear Browsing Data.
-  // Clearing USB_CHOOSER_DATA will trigger one OnObjectPermissionChanged call
-  // from NotifyPermissionRevoked().
+  // Clearing `USB_CHOOSER_DATA` and `USB_GUARD` each trigger one
+  // `OnObjectPermissionChanged()` call.
   EXPECT_CALL(*mock_permission_observers_[profile()],
               OnObjectPermissionChanged(
                   std::make_optional(ContentSettingsType::USB_GUARD),
-                  ContentSettingsType::USB_CHOOSER_DATA));
+                  ContentSettingsType::USB_CHOOSER_DATA))
+      .Times(2);
   EXPECT_CALL(*mock_permission_observers_[profile()],
               OnPermissionRevoked(origin));
 

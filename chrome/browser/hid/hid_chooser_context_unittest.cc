@@ -1351,12 +1351,13 @@ TEST_F(HidChooserContextTest, ClearBrowsingDataEphemeralDevice) {
   EXPECT_TRUE(context()->HasDevicePermission(kOrigin, *device));
 
   // Simulate Clear Browsing Data.
-  // Clearing HID_CHOOSER_DATA triggers one OnObjectPermissionChanged call
-  // from NotifyPermissionRevoked().
+  // Clearing `HID_CHOOSER_DATA` and `HID_GUARD` each trigger one
+  // `OnObjectPermissionChanged()` call.
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
                   std::make_optional(ContentSettingsType::HID_GUARD),
-                  ContentSettingsType::HID_CHOOSER_DATA));
+                  ContentSettingsType::HID_CHOOSER_DATA))
+      .Times(2);
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(kOrigin));
 
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
@@ -1382,17 +1383,22 @@ TEST_F(HidChooserContextTest, ClearBrowsingDataRegressionFromBlock) {
   EXPECT_TRUE(context()->HasDevicePermission(kOrigin, *device));
 
   // Block the origin via guard setting.
-  SetContentSettingDefaultForOrigin(kOrigin, CONTENT_SETTING_BLOCK);
-  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
-
-  // Simulate Clear Browsing Data.
-  // Clearing HID_CHOOSER_DATA triggers one OnObjectPermissionChanged call
-  // from NotifyPermissionRevoked().
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
                   std::make_optional(ContentSettingsType::HID_GUARD),
                   ContentSettingsType::HID_CHOOSER_DATA));
   EXPECT_CALL(permission_observer(), OnPermissionRevoked(kOrigin));
+  SetContentSettingDefaultForOrigin(kOrigin, CONTENT_SETTING_BLOCK);
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
+
+  // Simulate Clear Browsing Data.
+  // Clearing `HID_CHOOSER_DATA` and `HID_GUARD` each trigger one
+  // `OnObjectPermissionChanged()` call.
+  EXPECT_CALL(permission_observer(),
+              OnObjectPermissionChanged(
+                  std::make_optional(ContentSettingsType::HID_GUARD),
+                  ContentSettingsType::HID_CHOOSER_DATA))
+      .Times(2);
 
   auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
   map->ClearSettingsForOneTypeWithPredicate(
