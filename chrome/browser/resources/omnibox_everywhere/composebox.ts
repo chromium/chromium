@@ -459,7 +459,10 @@ export class OmniboxEverywhereComposeboxElement extends
     }
   }
 
-  playGlowAnimation(timeoutMs: number = 1000) {
+  // Default to 1200ms to cover --glow-animation-delay (150ms),
+  // --gradient-burst-duration (1000ms), and a 50ms buffer so the burst fades
+  // out before resetting animationState to NONE.
+  playGlowAnimation(timeoutMs: number = 1200) {
     if (this.glowAnimationRafId_ !== null) {
       cancelAnimationFrame(this.glowAnimationRafId_);
       this.glowAnimationRafId_ = null;

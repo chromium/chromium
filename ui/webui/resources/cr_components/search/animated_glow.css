@@ -88,6 +88,8 @@
 }
 
 :host([animation-state='expanding'][glow-mode='outer-glow']) {
+  /* Keep playGlowAnimation() default timeout in
+   * omnibox_everywhere/composebox.ts in sync if changed. */
   --glow-animation-delay: 150ms;
 }
 
@@ -606,6 +608,15 @@
 :host([animation-state='listening']) .background,
 :host([animation-state='voice-exited']) .background {
   animation: none;
+}
+
+/* Outer-glow uses ::part(composebox-background) for its border gap; keep the
+ * legacy inner-glow gradient-border-width animation disabled across all
+ * outer-glow states so resetting animation-state to none does not trigger a
+ * transient border flicker. */
+:host([glow-mode='outer-glow']) .background {
+  animation: none;
+  border-width: 0;
 }
 
 :host([glow-mode='none']) .background,

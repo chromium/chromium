@@ -148,6 +148,8 @@ cr-composebox-tool-chip {
 
 search-animated-glow {
   --animated-glow-stroke-width: 2px;
+  /* Keep playGlowAnimation() default timeout in composebox.ts in sync if
+   * changed. */
   --gradient-burst-duration: 1000ms;
   --gradient-angle-start: 160deg;
   --gradient-angle-end: 233.5deg;

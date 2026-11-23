@@ -93,4 +93,25 @@ suite('SearchAnimatedGlowElementTest', () => {
         assertEquals('', element.style.getPropertyValue('--mask-angle'));
         assertEquals('', element.style.getPropertyValue('--gradient-angle'));
       });
+
+  test(
+      'outer-glow suppresses gradient-border-width animation on reset to none',
+      async () => {
+        element.glowMode = GlowMode.OUTER_GLOW;
+        element.animationState = GlowAnimationState.NONE;
+        await microtasksFinished();
+
+        const background = element.shadowRoot.querySelector('.background');
+        assertTrue(!!background);
+        assertEquals('none', getComputedStyle(background).animationName);
+        assertEquals('0px', getComputedStyle(background).borderTopWidth);
+
+        element.animationState = GlowAnimationState.EXPANDING;
+        await microtasksFinished();
+        element.animationState = GlowAnimationState.NONE;
+        await microtasksFinished();
+
+        assertEquals('none', getComputedStyle(background).animationName);
+        assertEquals('0px', getComputedStyle(background).borderTopWidth);
+      });
 });
