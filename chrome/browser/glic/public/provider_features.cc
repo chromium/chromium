@@ -139,6 +139,14 @@ glic::GlicIndigoFeatureParams PopulateIndigoFeatureParams(
   return params;
 }
 
-BASE_FEATURE(kGlicDynamicChromeTools, base::FEATURE_DISABLED_BY_DEFAULT);
+// TODO(crbug.com/588592255): Enable on Android once CreateAiOverlayTools is
+// supported.
+BASE_FEATURE(kGlicDynamicChromeTools,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 }  // namespace features

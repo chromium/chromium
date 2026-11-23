@@ -25,7 +25,13 @@ class GlicChromeToolsDisabledBrowserTest : public GlicApiBrowserTest {
  public:
   GlicChromeToolsDisabledBrowserTest()
       : GlicApiBrowserTest(
-            GlicTestJsPath("./glic_chrome_tools_browsertest.js")) {}
+            GlicTestJsPath("./glic_chrome_tools_browsertest.js")) {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kGlicDynamicChromeTools);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicChromeToolsDisabledBrowserTest,
@@ -39,12 +45,16 @@ class GlicChromeToolsBrowserTest : public GlicApiBrowserTest {
   GlicChromeToolsBrowserTest()
       : GlicApiBrowserTest(
             GlicTestJsPath("./glic_chrome_tools_browsertest.js")) {
+#if BUILDFLAG(IS_ANDROID)
     scoped_feature_list_.InitAndEnableFeature(
         features::kGlicDynamicChromeTools);
+#endif
   }
 
+#if BUILDFLAG(IS_ANDROID)
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+#endif
 };
 
 // Dynamic Chrome tools via AiOverlayTools are only supported on non-Android
