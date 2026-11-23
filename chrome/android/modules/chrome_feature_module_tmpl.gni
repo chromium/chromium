@@ -59,7 +59,6 @@ template("chrome_feature_module") {
 
   module_desc_java("${target_name}__module_desc_java") {
     module_name = _module_desc.name
-    shared_libraries = _shared_libraries
     if (defined(_module_desc.pak_deps)) {
       paks = _module_desc.paks
     }

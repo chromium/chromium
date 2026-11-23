@@ -397,6 +397,14 @@ template("write_build_config") {
     if (defined(invoker.android_manifest)) {
       _inputs += [ invoker.android_manifest ]
     }
+    if (defined(invoker.shared_libraries_runtime_deps_file)) {
+      _inputs += [ invoker.shared_libraries_runtime_deps_file ]
+      _deps += [ invoker.shared_libraries_runtime_deps_target ]
+    }
+    if (defined(invoker.secondary_abi_shared_libraries_runtime_deps_file)) {
+      _inputs += [ invoker.secondary_abi_shared_libraries_runtime_deps_file ]
+      _deps += [ invoker.secondary_abi_shared_libraries_runtime_deps_target ]
+    }
     if (defined(invoker.suffix_apk_assets_used_by)) {
       _dep_label = invoker.suffix_apk_assets_used_by
       _dep_gen_dir = get_label_info(_dep_label, "target_gen_dir")
@@ -599,9 +607,6 @@ template("write_build_config") {
         assets.sources = _rebased_asset_sources
       }
       if (defined(invoker.shared_libraries_runtime_deps_file)) {
-        # Don't list shared_libraries_runtime_deps_file as an input in order to
-        # avoid having to depend on the runtime_deps target. See comment in
-        # rules.gni for why we do this.
         shared_libraries_runtime_deps_file =
             rebase_path(invoker.shared_libraries_runtime_deps_file,
                         root_build_dir)
@@ -3766,7 +3771,11 @@ if (enable_java_templates) {
   #  proguard_mapping_path: Path to .mapping file produced from ProGuard step.
   #  shared_libraries_runtime_deps_file: Optional. Path to a file listing the
   #    native shared libraries required at runtime by the APK.
+  #  shared_libraries_runtime_deps_target: Target that writes
+  #    shared_libraries_runtime_deps_file.
   #  secondary_abi_shared_libraries_runtime_deps_file:
+  #  secondary_abi_shared_libraries_runtime_deps_target: Target that writes
+  #    secondary_abi_shared_libraries_runtime_deps_file.
   #  secondary_native_lib_placeholders: Optional. List of placeholder filenames
   #    to add to the APK for the secondary ABI.
   #  loadable_modules: Optional list of extra native libraries to
@@ -4200,8 +4209,10 @@ if (enable_java_templates) {
               "res_size_info_path",
               "secondary_abi_loadable_modules",
               "secondary_abi_shared_libraries_runtime_deps_file",
+              "secondary_abi_shared_libraries_runtime_deps_target",
               "secondary_native_lib_placeholders",
               "shared_libraries_runtime_deps_file",
+              "shared_libraries_runtime_deps_target",
               "uses_split",
             ])
       }

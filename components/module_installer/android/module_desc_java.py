@@ -47,13 +47,7 @@ public class ModuleDescriptor_{MODULE} implements ModuleDescriptor {{
 
 def main():
     parser = argparse.ArgumentParser()
-    action_helpers.add_depfile_arg(parser)
     parser.add_argument('--module', required=True, help='The module name.')
-    parser.add_argument(
-        '--libraries-file',
-        required=True,
-        help='Path to file with GN list of library paths',
-    )
     parser.add_argument('--paks', help='GN list of PAK file paths')
     parser.add_argument(
         '--output', required=True, help='Path to the generated srcjar file.'
@@ -66,23 +60,10 @@ def main():
     )
     options = parser.parse_args()
     options.paks = action_helpers.parse_gn_list(options.paks)
-
-    with open(options.libraries_file) as f:
-        libraries_list = action_helpers.parse_gn_list(f.read())
-
-    libraries = []
-    for path in libraries_list:
-        path = path.strip()
-        filename = os.path.split(path)[1]
-        assert filename.startswith('lib')
-        assert filename.endswith('.so')
-        # Remove lib prefix and .so suffix.
-        libraries += [filename[3:-3]]
     paks = options.paks if options.paks else []
 
     format_dict = {
         'MODULE': options.module,
-        'LIBRARIES': ','.join(['"%s"' % l for l in libraries]),  # noqa: E741
         'PAKS': ','.join(['"%s"' % os.path.basename(p) for p in paks]),
         'LOAD_NATIVE_ON_GET_IMPL': (
             'true' if options.load_native_on_get_impl else 'false'
@@ -97,11 +78,6 @@ def main():
             zip_helpers.add_to_zip_hermetic(
                 srcjar_file, zip_path, data=_TEMPLATE.format(**format_dict)
             )
-
-    if options.depfile:
-        action_helpers.write_depfile(
-            options.depfile, options.output, inputs=[options.libraries_file]
-        )
 
 
 if __name__ == '__main__':

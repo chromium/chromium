@@ -486,16 +486,12 @@ if (!is_robolectric && enable_java_templates) {
         _cpu_family,
       ]
       if (invoker.use_final_fields) {
-        # Write native_libraries_list_file via depfile rather than specifyin it
-        # as a dep in order allow R8 to run in parallel with native compilation.
         args += [ "--final" ]
         if (defined(invoker.native_libraries_list_file)) {
-          depfile = "$target_gen_dir/$target_name.d"
+          inputs = [ invoker.native_libraries_list_file ]
           args += [
             "--native-libraries-list",
             rebase_path(invoker.native_libraries_list_file, root_build_dir),
-            "--depfile",
-            rebase_path(depfile, root_build_dir),
           ]
         }
         if (defined(invoker.enable_chromium_linker) &&
@@ -1383,12 +1379,14 @@ if (!is_robolectric && enable_java_templates) {
               [ "${_dep_no_toolchain}__jni_registration($default_toolchain)" ]
         }
 
-        # Write shared library output files of all dependencies to a file. Those
-        # will be the shared libraries packaged into the APK.
         _shared_library_list_file = "$target_gen_dir/$target_name.native_libs"
+        _shared_library_list_target = "${target_name}__shared_library_list"
 
-        generated_file("${target_name}__shared_library_list") {
-          deps = invoker.shared_libraries
+        # Lists the transitive shared libraries loaded by this Robolectric
+        # binary for write_native_libraries_java(). Uses walk_deps rather than
+        # deps so targets needing only library names do not wait for linking.
+        generated_file(_shared_library_list_target) {
+          walk_deps = invoker.shared_libraries
           outputs = [ _shared_library_list_file ]
           data_keys = [ "shared_libraries" ]
           walk_keys = [ "shared_libraries_barrier" ]
@@ -1414,6 +1412,7 @@ if (!is_robolectric && enable_java_templates) {
         use_final_fields = true
         if (defined(_shared_library_list_file)) {
           native_libraries_list_file = _shared_library_list_file
+          deps = [ ":$_shared_library_list_target" ]
         }
       }
     }
@@ -2507,21 +2506,19 @@ if (!is_robolectric && enable_java_templates) {
     if (_shared_libraries_is_valid) {
       _native_libs_deps += invoker.shared_libraries
 
-      # Write shared library output files of all dependencies to a file. Those
-      # will be the shared libraries packaged into the APK.
       _shared_library_list_file =
           "$target_gen_dir/${_template_name}.native_libs"
 
+      # Lists the transitive shared libraries packaged into the APK for
+      # write_native_libraries_java() and write_build_config(). Uses walk_deps
+      # rather than deps so targets needing only library names do not wait for
+      # them to be linked.
       generated_file("${_template_name}__shared_library_list") {
-        deps = _native_libs_deps
+        walk_deps = _native_libs_deps
         outputs = [ _shared_library_list_file ]
         data_keys = [ "shared_libraries" ]
         walk_keys = [ "shared_libraries_barrier" ]
         rebase = root_build_dir
-      }
-    } else {
-      # Must exist for instrumentation_test_apk() to depend on.
-      group("${_template_name}__shared_library_list") {
       }
     }
 
@@ -2531,21 +2528,19 @@ if (!is_robolectric && enable_java_templates) {
         invoker.secondary_abi_shared_libraries != []) {
       _secondary_abi_native_libs_deps = invoker.secondary_abi_shared_libraries
 
-      # Write shared library output files of all dependencies to a file. Those
-      # will be the shared libraries packaged into the APK.
       _secondary_abi_shared_library_list_file =
           "$target_gen_dir/${_template_name}.secondary_abi_native_libs"
 
+      # Lists the secondary-ABI transitive shared libraries packaged into the
+      # APK for write_native_libraries_java() and write_build_config(). Uses
+      # walk_deps rather than deps so targets needing only library names do not
+      # wait for them to be linked.
       generated_file("${_template_name}__secondary_abi_shared_library_list") {
-        deps = _secondary_abi_native_libs_deps
+        walk_deps = _secondary_abi_native_libs_deps
         outputs = [ _secondary_abi_shared_library_list_file ]
         data_keys = [ "shared_libraries" ]
         walk_keys = [ "shared_libraries_barrier" ]
         rebase = root_build_dir
-      }
-    } else {
-      # Must exist for instrumentation_test_apk() to depend on.
-      group("${_template_name}__secondary_abi_shared_library_list") {
       }
     }
 
@@ -2759,6 +2754,7 @@ if (!is_robolectric && enable_java_templates) {
       write_native_libraries_java("${_template_name}__native_libraries") {
         if (defined(_shared_library_list_file)) {
           native_libraries_list_file = _shared_library_list_file
+          deps = [ ":${_template_name}__shared_library_list" ]
           if (android_64bit_target_cpu) {
             native_lib_64_bit = true
           } else {
@@ -2766,15 +2762,12 @@ if (!is_robolectric && enable_java_templates) {
           }
         } else if (defined(_secondary_abi_shared_library_list_file)) {
           native_libraries_list_file = _secondary_abi_shared_library_list_file
+          deps = [ ":${_template_name}__secondary_abi_shared_library_list" ]
           native_lib_32_bit = true
         }
 
         enable_chromium_linker = _use_chromium_linker
         use_final_fields = true
-
-        # Do not add a dep on the generated_file target in order to avoid having
-        # to build the native libraries before this target. The dependency is
-        # instead captured via a depfile.
       }
       _srcjar_deps += [ ":${_template_name}__native_libraries" ]
     }
@@ -2917,15 +2910,16 @@ if (!is_robolectric && enable_java_templates) {
         }
       }
 
-      # Do not add a dep on the generated_file target in order to avoid having
-      # to build the native libraries before this target. The dependency is
-      # instead captured via a depfile.
       if (_native_libs_deps != []) {
         shared_libraries_runtime_deps_file = _shared_library_list_file
+        shared_libraries_runtime_deps_target =
+            ":${_template_name}__shared_library_list"
       }
       if (defined(_secondary_abi_shared_library_list_file)) {
         secondary_abi_shared_libraries_runtime_deps_file =
             _secondary_abi_shared_library_list_file
+        secondary_abi_shared_libraries_runtime_deps_target =
+            ":${_template_name}__secondary_abi_shared_library_list"
       }
 
       if (!defined(deps)) {
@@ -3720,24 +3714,12 @@ if (!is_robolectric && enable_java_templates) {
       if (defined(invoker.deps)) {
         deps += invoker.deps
       }
-      data_deps = [
-        # Ensure unstripped libraries are included in runtime deps so that
-        # symbolization can be done.
-        ":${target_name}__secondary_abi_shared_library_list",
-        ":${target_name}__shared_library_list",
-      ]
+      data_deps = []
       if (defined(invoker.data_deps)) {
         data_deps += invoker.data_deps
       }
       if (defined(invoker.apk_under_test)) {
         data_deps += [ invoker.apk_under_test ]
-
-        _under_test_label =
-            get_label_info(invoker.apk_under_test, "label_no_toolchain")
-        data_deps += [
-          "${_under_test_label}__secondary_abi_shared_library_list",
-          "${_under_test_label}__shared_library_list",
-        ]
       }
 
       if (defined(invoker.additional_apks)) {
@@ -3899,10 +3881,6 @@ if (!is_robolectric && enable_java_templates) {
         ]
       }
       shared_libraries = [ invoker.shared_library ]
-      deps += [
-        ":${target_name}__secondary_abi_shared_library_list",
-        ":${target_name}__shared_library_list",
-      ]
       if (_allow_cleartext_traffic) {
         deps += [ "//testing/android/native_test:cleartext_traffic_resources" ]
       }

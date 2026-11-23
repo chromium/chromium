@@ -1123,14 +1123,6 @@ def main():
 
     if options.depfile:
         all_inputs = params_json_util.all_read_file_paths()
-        if path := params.get('shared_libraries_runtime_deps_file'):
-            # Path must be added to depfile because the GN template does not add this
-            # input to avoid having to depend on the generated_file() target.
-            all_inputs.append(path)
-        if path := params.get(
-            'secondary_abi_shared_libraries_runtime_deps_file'
-        ):
-            all_inputs.append(path)
         action_helpers.write_depfile(options.depfile, first_output, all_inputs)
 
 

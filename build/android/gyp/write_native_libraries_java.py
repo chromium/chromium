@@ -57,7 +57,6 @@ def _FormatLibraryName(library_name):
 def main():
     parser = argparse.ArgumentParser()
 
-    action_helpers.add_depfile_arg(parser)
     parser.add_argument(
         '--final', action='store_true', help='Use final fields.'
     )
@@ -138,14 +137,6 @@ def main():
                 zip_path='org/chromium/build/NativeLibraries.java',
                 data=_NATIVE_LIBRARIES_TEMPLATE.format(**format_dict),
             )
-
-    if options.depfile:
-        assert options.native_libraries_list
-        action_helpers.write_depfile(
-            options.depfile,
-            options.output,
-            inputs=[options.native_libraries_list],
-        )
 
 
 if __name__ == '__main__':

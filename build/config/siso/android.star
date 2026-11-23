@@ -622,12 +622,6 @@ def __android_write_build_config_handler(ctx, cmd):
         if arg == "--output":
             params_path = ctx.fs.canonpath(cmd.args[i + 1].replace(".build_config.json", ".params.json"))
             v = json.decode(str(ctx.fs.read(params_path)))
-            path = v.get("shared_libraries_runtime_deps_file")
-            if path:
-                inputs.append(ctx.fs.canonpath(path))
-            path = v.get("secondary_abi_shared_libraries_runtime_deps_file")
-            if path:
-                inputs.append(ctx.fs.canonpath(path))
             for k in ["deps_configs", "public_deps_configs", "processor_configs"]:
                 for path in v.get(k, []):
                     path = ctx.fs.canonpath(path)
