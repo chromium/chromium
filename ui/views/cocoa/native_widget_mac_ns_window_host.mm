@@ -732,7 +732,7 @@ void NativeWidgetMacNSWindowHost::CreateCompositor(
   // as a callback to CreateWindow) so that we can associate the CGWindowID with
   // the (now existing) compositor.
   auto lambda = [](NativeWidgetMacNSWindowHost* host, uint32_t cg_window_id) {
-    if (!host->compositor_) {
+    if (!host->compositor_ || cg_window_id == kCGNullWindowID) {
       return;
     }
     host->scoped_cg_window_id_ =
@@ -768,6 +768,7 @@ void NativeWidgetMacNSWindowHost::DestroyCompositor() {
     layer()->CompleteAllAnimations();
   }
   DestroyLayer();
+  scoped_cg_window_id_.reset();
   if (!compositor_) {
     return;
   }

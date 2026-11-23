@@ -28,6 +28,7 @@
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #import "components/remote_cocoa/app_shim/views_nswindow_delegate.h"
+#include "components/remote_cocoa/browser/scoped_cg_window_id.h"
 #import "testing/gtest_mac.h"
 #include "ui/base/cocoa/find_pasteboard.h"
 #import "ui/base/cocoa/window_size_constants.h"
@@ -2578,6 +2579,80 @@ TEST_F(BridgedNativeWidgetTest, TextInput_MenuTextfieldUsesMacKeyBindings) {
   }
 
   g_update_windows_closure = nullptr;
+}
+
+}  // namespace views::test
+
+@interface InvalidWindowNumberDonorForNSWindow : NSObject
+@end
+
+@implementation InvalidWindowNumberDonorForNSWindow
+- (NSInteger)windowNumber {
+  return -1;
+}
+@end
+
+namespace views::test {
+
+// Regression test for crbug.com/587969380: duplicate or null `CGWindowID`
+// values in `ScopedCGWindowID` must not erase another instance's entry or
+// invoke `std::map::erase(end())` on destruction.
+TEST_F(BridgedNativeWidgetTest,
+       ScopedCGWindowIDDuplicateAndInvalidIdDoesNotCrash) {
+  {
+    remote_cocoa::ScopedCGWindowID null_first(kCGNullWindowID,
+                                              viz::FrameSinkId(1, 1));
+    remote_cocoa::ScopedCGWindowID null_second(kCGNullWindowID,
+                                               viz::FrameSinkId(1, 2));
+    EXPECT_FALSE(remote_cocoa::ScopedCGWindowID::Get(kCGNullWindowID));
+  }
+
+  constexpr uint32_t kTestWindowId = 0x7fffffff;
+  const viz::FrameSinkId sink_first(2, 1);
+  const viz::FrameSinkId sink_second(2, 2);
+  auto first = std::make_unique<remote_cocoa::ScopedCGWindowID>(kTestWindowId,
+                                                                sink_first);
+  auto second = std::make_unique<remote_cocoa::ScopedCGWindowID>(kTestWindowId,
+                                                                 sink_second);
+
+  // Destroying `first` must not remove `second`'s active mapping, and
+  // subsequently destroying `second` must not call `erase(end())`.
+  first.reset();
+  ASSERT_TRUE(remote_cocoa::ScopedCGWindowID::Get(kTestWindowId));
+  EXPECT_EQ(
+      sink_second,
+      remote_cocoa::ScopedCGWindowID::Get(kTestWindowId)->GetFrameSinkId());
+
+  second.reset();
+  EXPECT_FALSE(remote_cocoa::ScopedCGWindowID::Get(kTestWindowId));
+}
+
+// Regression test for crbug.com/587969380: when `-[NSWindow windowNumber]`
+// returns <= 0 (e.g. -1 when the window has no WindowServer window device),
+// initializing and closing multiple Widgets must not collide on `0xffffffff` in
+// `ScopedCGWindowID` and crash during teardown.
+TEST_F(BridgedNativeWidgetTest,
+       InvalidNSWindowNumberDoesNotRegisterScopedCGWindowID) {
+  base::apple::ScopedObjCClassSwizzler window_number_swizzler(
+      [NSWindow class], [InvalidWindowNumberDonorForNSWindow class],
+      @selector(windowNumber));
+
+  auto create_widget = []() {
+    auto widget = std::make_unique<Widget>();
+    Widget::InitParams params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                              Widget::InitParams::TYPE_POPUP);
+    params.bounds = gfx::Rect(10, 10, 50, 50);
+    widget->Init(std::move(params));
+    return widget;
+  };
+
+  std::unique_ptr<Widget> first_widget = create_widget();
+  std::unique_ptr<Widget> second_widget = create_widget();
+  EXPECT_FALSE(remote_cocoa::ScopedCGWindowID::Get(kCGNullWindowID));
+  EXPECT_FALSE(remote_cocoa::ScopedCGWindowID::Get(static_cast<uint32_t>(-1)));
+
+  first_widget.reset();
+  second_widget.reset();
 }
 
 }  // namespace views::test

@@ -1569,6 +1569,8 @@ test("views_unittests") {
       "//components/remote_cocoa/app_shim:features",
       "//ui/accelerated_widget_mac",
     ]
+
+    deps += [ "//components/remote_cocoa/browser" ]
   }
 
   if (is_mac || enable_desktop_aura) {

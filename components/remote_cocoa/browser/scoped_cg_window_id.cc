@@ -26,17 +26,26 @@ ScopedCGWindowID::ScopedCGWindowID(uint32_t cg_window_id,
     : cg_window_id_(cg_window_id),
       frame_sink_id_(frame_sink_id),
       weak_factory_(this) {
-  DCHECK_EQ(GetMap().count(cg_window_id), 0u);
-  GetMap()[cg_window_id] = this;
+  // `0` (`kCGNullWindowID`) indicates the NSWindow has no WindowServer window
+  // device. Also tolerate transient ID reuse (e.g. when a remote app-shim
+  // window closes and WindowServer recycles its CGWindowID before the async
+  // teardown IPC destroys the previous instance) by verifying ownership in
+  // `~ScopedCGWindowID()`.
+  if (cg_window_id_ != 0u) {
+    GetMap()[cg_window_id_] = this;
+  }
 }
 
 ScopedCGWindowID::~ScopedCGWindowID() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   weak_factory_.InvalidateWeakPtrs();
 
-  auto found = GetMap().find(cg_window_id_);
-  DCHECK_EQ(found->second, this);
-  GetMap().erase(found);
+  if (cg_window_id_ != 0u) {
+    auto found = GetMap().find(cg_window_id_);
+    if (found != GetMap().end() && found->second == this) {
+      GetMap().erase(found);
+    }
+  }
 
   for (auto& observer : observer_list_)
     observer.OnScopedCGWindowIDDestroyed(cg_window_id_);

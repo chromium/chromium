@@ -1663,8 +1663,14 @@ void NativeWidgetNSWindowBridge::InitCompositorView(
   UpdateWindowDisplay();
   UpdateWindowGeometry();
 
-  // Inform the browser of the CGWindowID for this NSWindow.
-  std::move(callback).Run([window_ windowNumber]);
+  // Inform the browser of the CGWindowID for this NSWindow. `-[NSWindow
+  // windowNumber]` returns <= 0 (e.g. -1) when the window does not have a
+  // WindowServer window device; normalize that to `kCGNullWindowID` (0) instead
+  // of truncating -1 to `0xffffffff`.
+  const NSInteger window_number = [window_ windowNumber];
+  std::move(callback).Run(window_number > 0
+                              ? static_cast<uint32_t>(window_number)
+                              : kCGNullWindowID);
 }
 
 void NativeWidgetNSWindowBridge::SortSubviews(
