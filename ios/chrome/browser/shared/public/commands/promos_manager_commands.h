@@ -45,6 +45,9 @@ enum class CredentialProviderPromoTrigger;
 - (void)showCredentialProviderPromoWithTrigger:
     (CredentialProviderPromoTrigger)trigger;
 
+// Shows the smart account switching startup promo.
+- (void)showAccountSwitchingPromo;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_PROMOS_MANAGER_COMMANDS_H_

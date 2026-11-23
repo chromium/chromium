@@ -11,6 +11,7 @@
 
 class GURL;
 @class ShowSigninCommand;
+@protocol SystemIdentity;
 @class UIViewController;
 
 // Commands related to scene-level sign-in workflows and UI.
@@ -36,6 +37,13 @@ class GURL;
 // when the promo is dismissed.
 - (void)showFullscreenSigninPromoWithCompletion:
     (SigninCoordinatorCompletionCallback)dismissalCompletion;
+
+// Shows the Account Switching promo, proposing to switch to `identity`, with a
+// completion block that is called when the promo is dismissed.
+- (void)showAccountSwitchingPromoWithIdentity:(id<SystemIdentity>)identity
+                                   completion:
+                                       (SigninCoordinatorCompletionCallback)
+                                           dismissalCompletion;
 
 // Stops the sign-in coordinator actions and dismisses its views either with or
 // without animation. Executes its signinCompletion.

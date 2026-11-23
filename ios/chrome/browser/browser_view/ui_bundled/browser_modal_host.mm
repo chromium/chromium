@@ -24,10 +24,12 @@
 #import "components/trusted_vault/trusted_vault_server_constants.h"
 #import "components/webauthn/ios/ios_passkey_client_commands.h"
 #import "ios/chrome/browser/app_store_rating/model/features.h"
+#import "ios/chrome/browser/authentication/account_switching_promo/model/account_switching_promo_scene_agent.h"
 #import "ios/chrome/browser/authentication/signin/non_modal_promo/coordinator/non_modal_signin_promo_coordinator.h"
 #import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator.h"
 #import "ios/chrome/browser/authentication/trusted_vault_reauthentication/coordinator/trusted_vault_reauthentication_coordinator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/autofill/authentication/coordinator/card_unmask_authentication_coordinator.h"
 #import "ios/chrome/browser/autofill/autofill_ai/coordinator/ambient_autofill_notice_coordinator.h"
@@ -178,6 +180,7 @@
 #import "ios/chrome/browser/sharing/ui_bundled/sharing_params.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator.h"
 #import "ios/chrome/browser/store_kit/model/store_kit_coordinator_delegate.h"
 #import "ios/chrome/browser/supervised_user/coordinator/parent_access_coordinator.h"
@@ -2188,6 +2191,27 @@ const char kContextPanelDismissedHistogram[] =
           SigninCoordinatorResultOrIdentity result) {
         [weakPromosManagerCoordinator promoWasDismissed];
       }];
+}
+
+- (void)showAccountSwitchingPromo {
+  id<SystemIdentity> targetIdentity =
+      [AccountSwitchingPromoSceneAgent agentFromScene:_browser->GetSceneState()]
+          .targetIdentity;
+  if (!targetIdentity) {
+    [_promosManagerCoordinator promoWasDismissed];
+    return;
+  }
+
+  __weak __typeof(_promosManagerCoordinator) weakPromosManagerCoordinator =
+      _promosManagerCoordinator;
+  [HandlerForProtocol(self.dispatcher, SceneSignInCommands)
+      showAccountSwitchingPromoWithIdentity:targetIdentity
+                                 completion:^(
+                                     SigninCoordinator* coordinator,
+                                     SigninCoordinatorResultOrIdentity result) {
+                                   [weakPromosManagerCoordinator
+                                       promoWasDismissed];
+                                 }];
 }
 
 - (void)showHomeBackgroundCustomizationPromo {

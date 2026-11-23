@@ -12,16 +12,19 @@
 #import "base/check.h"
 #import "base/containers/small_map.h"
 #import "base/debug/dump_without_crashing.h"
+#import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/crash/core/common/crash_key.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/app_store_rating/coordinator/app_store_rating_display_handler.h"
 #import "ios/chrome/browser/app_store_rating/model/features.h"
+#import "ios/chrome/browser/authentication/account_switching_promo/coordinator/account_switching_promo_display_handler.h"
 #import "ios/chrome/browser/authentication/signin/fullscreen_promo/coordinator/fullscreen_signin_promo_display_handler.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/features.h"
 #import "ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_display_handler.h"
@@ -50,6 +53,7 @@
 #import "ios/chrome/browser/promos_manager/coordinator/standard_promo_alert_provider.h"
 #import "ios/chrome/browser/promos_manager/coordinator/standard_promo_display_handler.h"
 #import "ios/chrome/browser/promos_manager/coordinator/standard_promo_view_provider.h"
+#import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager_factory.h"
@@ -599,6 +603,13 @@
   if (IsFullscreenSigninPromoManagerMigrationEnabled()) {
     _displayHandlerPromos[promos_manager::Promo::FullscreenSignin] =
         [[FullscreenSigninPromoDisplayHandler alloc] init];
+  }
+
+  // Smart account switching startup promo handler.
+  if (base::FeatureList::IsEnabled(
+          switches::kEnableAccountPreviewSwitchingAccount)) {
+    _displayHandlerPromos[promos_manager::Promo::AccountSwitching] =
+        [[AccountSwitchingPromoDisplayHandler alloc] init];
   }
 
   // Safari Import remind me later handler.

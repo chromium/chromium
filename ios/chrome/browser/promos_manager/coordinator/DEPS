@@ -2,6 +2,7 @@ include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/app_store_rating/coordinator",
   "+ios/chrome/browser/app_store_rating/model",
+  "+ios/chrome/browser/authentication/account_switching_promo/coordinator",
   "+ios/chrome/browser/authentication/signin/fullscreen_promo/coordinator",
   "+ios/chrome/browser/authentication/ui_bundled/signin/features.h",
   "+ios/chrome/browser/credential_provider_promo/ui_bundled",

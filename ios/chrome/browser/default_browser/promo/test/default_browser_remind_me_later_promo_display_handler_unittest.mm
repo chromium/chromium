@@ -62,6 +62,9 @@
     (CredentialProviderPromoTrigger)trigger {
 }
 
+- (void)showAccountSwitchingPromo {
+}
+
 @end
 
 class DefaultBrowserRemindMeLaterPromoDisplayHandlerTest : public PlatformTest {

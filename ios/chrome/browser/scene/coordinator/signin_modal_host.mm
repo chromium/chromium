@@ -17,9 +17,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "base/types/expected.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/authentication/ui_bundled/change_profile/change_profile_load_url.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_context_style.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent.h"
@@ -34,6 +36,7 @@
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "url/gurl.h"
@@ -193,6 +196,51 @@ void RecordIfNeededSigninFullscreenPromoEvent(
                                                     SigninContextStyle::kDefault
                            changeProfileContinuationProvider:
                                DoNothingContinuationProvider()];
+  [self startSigninCoordinatorWithCompletion:dismissalCompletion];
+}
+
+- (void)showAccountSwitchingPromoWithIdentity:(id<SystemIdentity>)identity
+                                   completion:
+                                       (SigninCoordinatorCompletionCallback)
+                                           dismissalCompletion {
+  CHECK(identity);
+  UIViewController* baseViewController = [self activeViewController];
+  const signin_metrics::AccessPoint accessPoint =
+      signin_metrics::AccessPoint::kAccountSwitchingPromo;
+  if (![self canPresentSigninCoordinatorOrCompletion:dismissalCompletion
+                                  baseViewController:baseViewController
+                                         accessPoint:accessPoint]) {
+    return;
+  }
+  AuthenticationService* authenticationService =
+      AuthenticationServiceFactory::GetForProfile(
+          _regularBrowser->GetProfile());
+  if (!authenticationService->SigninEnabled()) {
+    // `SigninCoordinator`'s initializer requires sign-in to be enabled.
+    if (dismissalCompletion) {
+      dismissalCompletion(nil,
+                          base::unexpected(SigninCoordinatorResultDisabled));
+    }
+    return;
+  }
+  if (_regularBrowser->GetSceneState().isUIBlocked) {
+    // `SigninCoordinator`'s initializer acquires a `ScopedUIBlocker`, which
+    // hits a `CHECK()` if another scene is already showing a blocking UI.
+    if (dismissalCompletion) {
+      dismissalCompletion(nil,
+                          base::unexpected(SigninCoordinatorResultInterrupted));
+    }
+    return;
+  }
+  [self stopSigninCoordinatorWithCompletionAnimated:NO];
+  _signinCoordinator = [SigninCoordinator
+      accountSwitchingPromoCoordinatorWithBaseViewController:baseViewController
+                                                     browser:_regularBrowser
+                                                                 .get()
+                                                contextStyle:
+                                                    SigninContextStyle::
+                                                        kAccountSwitchingPromo
+                                         preselectedIdentity:identity];
   [self startSigninCoordinatorWithCompletion:dismissalCompletion];
 }
 

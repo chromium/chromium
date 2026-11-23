@@ -114,6 +114,23 @@ class PrefRegistrySyncable;
                              (const ChangeProfileContinuationProvider&)
                                  changeProfileContinuationProvider;
 
+// Returns a coordinator for the account switching promo workflow with
+// `preselectedIdentity`.
+// `viewController` presents the sign-in.
+// `browser` is the browser used to present the sign-in.
+// `contextStyle` is used to customize content on screens.
+// `preselectedIdentity` is the identity preselected in the promo and must not
+// be nil.
++ (SigninCoordinator*)
+    accountSwitchingPromoCoordinatorWithBaseViewController:
+        (UIViewController*)viewController
+                                                   browser:(Browser*)browser
+                                              contextStyle:(SigninContextStyle)
+                                                               contextStyle
+                                       preselectedIdentity:
+                                           (id<SystemIdentity>)
+                                               preselectedIdentity;
+
 // Returns a coordinator to add an account.
 // `viewController` presents the sign-in.
 // `contextStyle` is used to customize content on screens.

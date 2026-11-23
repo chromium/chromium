@@ -28,9 +28,11 @@ source_set("coordinator") {
   ]
   deps = [
     "//components/crash/core/common:crash_key",
+    "//components/signin/public/base:signin_switches",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/app_store_rating/coordinator",
     "//ios/chrome/browser/app_store_rating/model:features",
+    "//ios/chrome/browser/authentication/account_switching_promo/coordinator",
     "//ios/chrome/browser/authentication/signin/fullscreen_promo/coordinator",
     "//ios/chrome/browser/credential_provider_promo/ui_bundled:coordinator",
     "//ios/chrome/browser/default_browser/model:utils",

@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/authentication/add_account_signin/coordinator/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/consistency_promo_signin/coordinator/consistency_promo_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/two_screens_signin/coordinator/two_screens_signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/not_reached_continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/deeplink_signin/deeplink_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/history_sync/history_sync_signin_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/instant_signin/instant_signin_coordinator.h"
@@ -210,6 +211,28 @@ using signin_metrics::PromoAction;
                      accessPoint:accessPoint
                      promoAction:promoAction
             continuationProvider:changeProfileContinuationProvider];
+}
+
++ (SigninCoordinator*)
+    accountSwitchingPromoCoordinatorWithBaseViewController:
+        (UIViewController*)viewController
+                                                   browser:(Browser*)browser
+                                              contextStyle:(SigninContextStyle)
+                                                               contextStyle
+                                       preselectedIdentity:
+                                           (id<SystemIdentity>)
+                                               preselectedIdentity {
+  CHECK(preselectedIdentity);
+  return [[SignInAndHistorySyncCoordinator alloc]
+      initWithBaseViewController:viewController
+                         browser:browser
+                    contextStyle:contextStyle
+                     accessPoint:AccessPoint::kAccountSwitchingPromo
+                     promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
+             optionalHistorySync:YES
+                 fullscreenPromo:YES
+             preselectedIdentity:preselectedIdentity
+            continuationProvider:NotReachedContinuationProvider()];
 }
 
 + (SigninCoordinator*)
