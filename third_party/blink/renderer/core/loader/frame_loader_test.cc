@@ -484,6 +484,7 @@ TEST_F(FrameLoaderSimTest, AutoplayFlagsMergeAndNavigationLifecycle) {
           mojom::blink::SameDocumentNavigationType::kFragment,
           /*data=*/nullptr, WebFrameLoadType::kStandard, FirePopstate::kYes,
           /*should_skip_screenshot=*/true, UserNavigationInvolvement::kNone,
+          /*has_transient_user_activation=*/false,
           PerformanceTimelineEntryIdInfo::kNone,
           /*is_browser_initiated=*/false);
   EXPECT_EQ(GetDocument().GetPage()->AutoplayFlags(),

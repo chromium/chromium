@@ -964,6 +964,7 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
     auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
         url, NavigateEventType::kCrossDocument, frame_load_type);
     params->source_element = request.GetSourceElement();
+    params->has_transient_user_activation = resource_request.HasUserGesture();
     if (request.GetTriggeringEventInfo() ==
         mojom::blink::TriggeringEventInfo::kFromTrustedEvent) {
       params->involvement = UserNavigationInvolvement::kActivation;

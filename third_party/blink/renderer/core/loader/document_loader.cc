@@ -1079,25 +1079,23 @@ void DocumentLoader::RunURLAndHistoryUpdateSteps(
     FirePopstate fire_popstate,
     bool should_skip_screenshot,
     UserNavigationInvolvement involvement,
+    bool has_transient_user_activation,
     PerformanceTimelineEntryIdInfo interaction_id,
     bool is_browser_initiated,
     bool is_synchronously_committed,
     const SecurityOrigin* initiator_origin) {
-  // Unless the caller has explicitly provided an initiator (e.g. when
+  // Unless the caller has explicitly provided an initiator origin (e.g. when
   // committing an intercepted navigate event that was started by a different
-  // frame), use the security origin of this frame since callers of this
-  // method must already have performed same origin checks.
-  // is_browser_initiated is false and is_synchronously_committed is true
-  // because anything invoking this algorithm is a renderer-initiated navigation
-  // in this process.
+  // frame), use the security origin of this frame since direct callers of this
+  // method are same-origin synchronous updates in this frame.
   UpdateForSameDocumentNavigation(
       new_url, history_item, same_document_navigation_type, std::move(data),
       type, fire_popstate,
       initiator_origin ? initiator_origin
                        : frame_->DomWindow()->GetSecurityOrigin(),
       is_browser_initiated, is_synchronously_committed,
-      LocalFrame::HasTransientUserActivation(frame_), involvement,
-      /*has_ua_visual_transition*/ false, should_skip_screenshot,
+      has_transient_user_activation, involvement,
+      /*has_ua_visual_transition=*/false, should_skip_screenshot,
       interaction_id);
 }
 
@@ -1878,6 +1876,7 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
     params->source_element = source_element;
     params->destination_item = history_item;
     params->initiator_origin = initiator_origin;
+    params->has_transient_user_activation = has_transient_user_activation;
     params->is_browser_initiated = is_browser_initiated;
     params->has_ua_visual_transition = has_ua_visual_transition;
     params->is_synchronously_committed_same_document =

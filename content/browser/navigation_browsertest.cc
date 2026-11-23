@@ -10398,4 +10398,353 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, InitiatorNavigationStateUpdate) {
                 ->referrer_policy());
 }
 
+namespace {
+
+class SameDocumentGestureObserver : public WebContentsObserver {
+ public:
+  SameDocumentGestureObserver(WebContents* web_contents,
+                              const GURL& expected_url)
+      : WebContentsObserver(web_contents), expected_url_(expected_url) {}
+  ~SameDocumentGestureObserver() override = default;
+
+  void Wait() {
+    if (!did_finish_) {
+      run_loop_.Run();
+    }
+  }
+
+  bool did_start() const { return did_start_; }
+  bool did_finish() const { return did_finish_; }
+  bool has_user_gesture_at_start() const { return has_user_gesture_at_start_; }
+  bool has_user_gesture_at_finish() const {
+    return has_user_gesture_at_finish_;
+  }
+  bool is_same_document_at_start() const { return is_same_document_at_start_; }
+  bool is_same_document_at_finish() const {
+    return is_same_document_at_finish_;
+  }
+  bool is_renderer_initiated() const { return is_renderer_initiated_; }
+  bool has_committed() const { return has_committed_; }
+  const GURL& url() const { return url_; }
+
+ private:
+  void DidStartNavigation(NavigationHandle* navigation_handle) override {
+    if (navigation_handle->GetURL() != expected_url_) {
+      return;
+    }
+    did_start_ = true;
+    has_user_gesture_at_start_ = navigation_handle->HasUserGesture();
+    is_same_document_at_start_ = navigation_handle->IsSameDocument();
+  }
+
+  void DidFinishNavigation(NavigationHandle* navigation_handle) override {
+    if (navigation_handle->GetURL() != expected_url_) {
+      return;
+    }
+    did_finish_ = true;
+    has_user_gesture_at_finish_ = navigation_handle->HasUserGesture();
+    is_same_document_at_finish_ = navigation_handle->IsSameDocument();
+    is_renderer_initiated_ = navigation_handle->IsRendererInitiated();
+    has_committed_ = navigation_handle->HasCommitted();
+    url_ = navigation_handle->GetURL();
+    run_loop_.Quit();
+  }
+
+  const GURL expected_url_;
+  base::RunLoop run_loop_;
+  bool did_start_ = false;
+  bool did_finish_ = false;
+  bool has_user_gesture_at_start_ = false;
+  bool has_user_gesture_at_finish_ = false;
+  bool is_same_document_at_start_ = false;
+  bool is_same_document_at_finish_ = false;
+  bool is_renderer_initiated_ = false;
+  bool has_committed_ = false;
+  GURL url_;
+};
+
+}  // namespace
+
+class NavigationApiUserActivationBrowserTest : public NavigationBrowserTest {
+ public:
+  NavigationApiUserActivationBrowserTest() {
+    // Ensure same-site cross-origin frames (`a.com` and `sub.a.com`) share a
+    // single renderer process across all build configurations.
+    feature_list_.InitAndDisableFeature(
+        features::kOriginKeyedProcessesByDefault);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    NavigationApiUserActivationBrowserTest,
+    InterceptedCrossOriginSameDocumentNavigationDoesNotMisattributeTargetActivation) {
+  // Scenario A: Embedded same-site cross-origin attacker iframe (`sub.a.com`)
+  // navigates top-level victim SPA (`a.com`) that has transient user
+  // activation.
+  GURL victim_top_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), victim_top_url));
+
+  RenderFrameHostImpl* main_rfh = current_frame_host();
+  ASSERT_TRUE(ExecJs(main_rfh,
+                     "navigation.addEventListener('navigate', e => {"
+                     "  if (e.canIntercept) {"
+                     "    e.intercept({ handler() {} });"
+                     "  }"
+                     "});",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  GURL attacker_subframe_url =
+      embedded_test_server()->GetURL("sub.a.com", "/title1.html");
+  {
+    TestNavigationObserver subframe_observer(web_contents());
+    ASSERT_TRUE(
+        ExecJs(main_rfh,
+               JsReplace("const iframe = document.createElement('iframe');"
+                         "iframe.src = $1;"
+                         "document.body.appendChild(iframe);",
+                         attacker_subframe_url),
+               EXECUTE_SCRIPT_NO_USER_GESTURE));
+    subframe_observer.Wait();
+  }
+
+  ASSERT_EQ(1u, main_frame()->child_count());
+  RenderFrameHostImpl* child_rfh =
+      main_frame()->child_at(0)->current_frame_host();
+  ASSERT_EQ(main_rfh->GetProcess(), child_rfh->GetProcess());
+
+  // Activate only `main_rfh` (`ExecJs` runs with a user gesture by default).
+  ASSERT_TRUE(ExecJs(main_rfh, "true;"));
+  ASSERT_TRUE(main_rfh->HasTransientUserActivation());
+  ASSERT_FALSE(child_rfh->HasTransientUserActivation());
+
+  GURL probe1_url =
+      embedded_test_server()->GetURL("a.com", "/title1.html#probe1");
+  {
+    SameDocumentGestureObserver observer(web_contents(), probe1_url);
+    ASSERT_TRUE(ExecJs(child_rfh,
+                       JsReplace("window.top.location = $1;", probe1_url),
+                       EXECUTE_SCRIPT_NO_USER_GESTURE));
+    observer.Wait();
+
+    EXPECT_TRUE(observer.did_start());
+    EXPECT_TRUE(observer.did_finish());
+    EXPECT_TRUE(observer.is_same_document_at_start());
+    EXPECT_TRUE(observer.is_same_document_at_finish());
+    EXPECT_TRUE(observer.is_renderer_initiated());
+    EXPECT_TRUE(observer.has_committed());
+    EXPECT_EQ(probe1_url, observer.url());
+    EXPECT_FALSE(observer.has_user_gesture_at_start());
+    EXPECT_FALSE(observer.has_user_gesture_at_finish());
+  }
+
+  // Scenario B: Attacker frame (`sub.a.com`) embeds a victim SPA iframe
+  // (`a.com`) and navigates it without a user gesture while the victim iframe
+  // has transient user activation. Using an A -> B -> A frame tree allows
+  // activating `a.com` via same-origin visibility without propagating user
+  // activation up to the `sub.a.com` parent frame.
+  GURL root_a_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), root_a_url));
+  RenderFrameHostImpl* root_a_rfh = current_frame_host();
+
+  GURL attacker_parent_url =
+      embedded_test_server()->GetURL("sub.a.com", "/title1.html");
+  {
+    TestNavigationObserver attacker_observer(web_contents());
+    ASSERT_TRUE(
+        ExecJs(root_a_rfh,
+               JsReplace("const iframe = document.createElement('iframe');"
+                         "iframe.src = $1;"
+                         "document.body.appendChild(iframe);",
+                         attacker_parent_url),
+               EXECUTE_SCRIPT_NO_USER_GESTURE));
+    attacker_observer.Wait();
+  }
+
+  ASSERT_EQ(1u, main_frame()->child_count());
+  FrameTreeNode* attacker_parent_node = main_frame()->child_at(0);
+  RenderFrameHostImpl* attacker_parent_rfh =
+      attacker_parent_node->current_frame_host();
+
+  GURL victim_child_url =
+      embedded_test_server()->GetURL("a.com", "/title1.html");
+  {
+    TestNavigationObserver victim_observer(web_contents());
+    ASSERT_TRUE(
+        ExecJs(attacker_parent_rfh,
+               JsReplace("const iframe = document.createElement('iframe');"
+                         "iframe.src = $1;"
+                         "document.body.appendChild(iframe);",
+                         victim_child_url),
+               EXECUTE_SCRIPT_NO_USER_GESTURE));
+    victim_observer.Wait();
+  }
+
+  ASSERT_EQ(1u, attacker_parent_node->child_count());
+  RenderFrameHostImpl* victim_child_rfh =
+      attacker_parent_node->child_at(0)->current_frame_host();
+  ASSERT_EQ(attacker_parent_rfh->GetProcess(), victim_child_rfh->GetProcess());
+
+  ASSERT_TRUE(ExecJs(victim_child_rfh,
+                     "navigation.addEventListener('navigate', e => {"
+                     "  if (e.canIntercept) {"
+                     "    e.intercept({ handler() {} });"
+                     "  }"
+                     "});",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // Activating `root_a_rfh` (`a.com`) activates `victim_child_rfh` (`a.com`)
+  // via same-origin visibility while leaving `attacker_parent_rfh`
+  // (`sub.a.com`) without user activation.
+  ASSERT_TRUE(ExecJs(root_a_rfh, "true;"));
+  ASSERT_TRUE(victim_child_rfh->HasTransientUserActivation());
+  ASSERT_FALSE(attacker_parent_rfh->HasTransientUserActivation());
+
+  GURL probe2_url =
+      embedded_test_server()->GetURL("a.com", "/title1.html#probe2");
+  {
+    SameDocumentGestureObserver observer(web_contents(), probe2_url);
+    ASSERT_TRUE(ExecJs(attacker_parent_rfh,
+                       JsReplace("frames[0].location = $1;", probe2_url),
+                       EXECUTE_SCRIPT_NO_USER_GESTURE));
+    observer.Wait();
+
+    EXPECT_TRUE(observer.did_start());
+    EXPECT_TRUE(observer.did_finish());
+    EXPECT_TRUE(observer.is_same_document_at_start());
+    EXPECT_TRUE(observer.is_same_document_at_finish());
+    EXPECT_TRUE(observer.is_renderer_initiated());
+    EXPECT_TRUE(observer.has_committed());
+    EXPECT_EQ(probe2_url, observer.url());
+    EXPECT_FALSE(observer.has_user_gesture_at_start());
+    EXPECT_FALSE(observer.has_user_gesture_at_finish());
+  }
+
+  // Scenario C: Positive controls — genuine initiator user activation is
+  // preserved across intercepted navigations.
+  GURL with_parent_gesture_url =
+      embedded_test_server()->GetURL("a.com", "/title1.html#with_top_gesture");
+  {
+    SameDocumentGestureObserver observer(web_contents(),
+                                         with_parent_gesture_url);
+    // Default `ExecJs` executes WITH a user gesture on `attacker_parent_rfh`.
+    ASSERT_TRUE(
+        ExecJs(attacker_parent_rfh,
+               JsReplace("frames[0].location = $1;", with_parent_gesture_url)));
+    observer.Wait();
+
+    EXPECT_TRUE(observer.did_start());
+    EXPECT_TRUE(observer.did_finish());
+    EXPECT_TRUE(observer.is_same_document_at_start());
+    EXPECT_TRUE(observer.is_same_document_at_finish());
+    EXPECT_TRUE(observer.is_renderer_initiated());
+    EXPECT_TRUE(observer.has_committed());
+    EXPECT_TRUE(observer.has_user_gesture_at_start());
+    EXPECT_TRUE(observer.has_user_gesture_at_finish());
+  }
+
+  GURL cross_doc_intercepted_url =
+      embedded_test_server()->GetURL("a.com", "/title2.html");
+  {
+    SameDocumentGestureObserver observer(web_contents(),
+                                         cross_doc_intercepted_url);
+    // Navigate to a cross-document URL with a user gesture on
+    // `victim_child_rfh`; `e.intercept()` converts it into a same-document
+    // navigation that preserves `HasUserGesture() == true`.
+    ASSERT_TRUE(ExecJs(victim_child_rfh, JsReplace("location.href = $1;",
+                                                   cross_doc_intercepted_url)));
+    observer.Wait();
+
+    EXPECT_TRUE(observer.did_start());
+    EXPECT_TRUE(observer.did_finish());
+    EXPECT_TRUE(observer.is_same_document_at_start());
+    EXPECT_TRUE(observer.is_same_document_at_finish());
+    EXPECT_TRUE(observer.is_renderer_initiated());
+    EXPECT_TRUE(observer.has_committed());
+    EXPECT_TRUE(observer.has_user_gesture_at_start());
+    EXPECT_TRUE(observer.has_user_gesture_at_finish());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(
+    NavigationApiUserActivationBrowserTest,
+    InterceptedPrecommitDeferredNavigationDoesNotCaptureLateTargetActivation) {
+  GURL victim_top_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), victim_top_url));
+
+  RenderFrameHostImpl* main_rfh = current_frame_host();
+  ASSERT_TRUE(ExecJs(main_rfh,
+                     "window.precommitEntered = new Promise(resolve => {"
+                     "  window.notifyPrecommitEntered = resolve;"
+                     "});"
+                     "navigation.addEventListener('navigate', e => {"
+                     "  if (!e.canIntercept) {"
+                     "    return;"
+                     "  }"
+                     "  e.intercept({"
+                     "    precommitHandler() {"
+                     "      window.notifyPrecommitEntered();"
+                     "      return new Promise(resolve => {"
+                     "        window.continueCommit = resolve;"
+                     "      });"
+                     "    }"
+                     "  });"
+                     "});",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  GURL attacker_subframe_url =
+      embedded_test_server()->GetURL("sub.a.com", "/title1.html");
+  {
+    TestNavigationObserver subframe_observer(web_contents());
+    ASSERT_TRUE(
+        ExecJs(main_rfh,
+               JsReplace("const iframe = document.createElement('iframe');"
+                         "iframe.src = $1;"
+                         "document.body.appendChild(iframe);",
+                         attacker_subframe_url),
+               EXECUTE_SCRIPT_NO_USER_GESTURE));
+    subframe_observer.Wait();
+  }
+
+  ASSERT_EQ(1u, main_frame()->child_count());
+  RenderFrameHostImpl* child_rfh =
+      main_frame()->child_at(0)->current_frame_host();
+  ASSERT_EQ(main_rfh->GetProcess(), child_rfh->GetProcess());
+  ASSERT_FALSE(main_rfh->HasTransientUserActivation());
+  ASSERT_FALSE(child_rfh->HasTransientUserActivation());
+
+  GURL deferred_url =
+      embedded_test_server()->GetURL("a.com", "/title1.html#deferred");
+  SameDocumentGestureObserver observer(web_contents(), deferred_url);
+
+  // Trigger a gesture-less navigation from the cross-origin subframe.
+  ASSERT_TRUE(ExecJs(child_rfh,
+                     JsReplace("window.top.location = $1;", deferred_url),
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // Ensure `precommitHandler` has been entered without granting user
+  // activation, and confirm the same-document commit has not happened yet.
+  EXPECT_EQ(true, EvalJs(main_rfh, "window.precommitEntered.then(() => true);",
+                         EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_FALSE(observer.did_finish());
+
+  // Deliver a genuine user gesture to `main_rfh` as `continueCommit()` runs
+  // right before `NavigateEvent::CommitNow()` commits the deferred navigation.
+  ASSERT_TRUE(ExecJs(main_rfh, "window.continueCommit();"));
+  ASSERT_TRUE(main_rfh->HasTransientUserActivation());
+
+  observer.Wait();
+  EXPECT_TRUE(observer.did_start());
+  EXPECT_TRUE(observer.did_finish());
+  EXPECT_TRUE(observer.is_same_document_at_start());
+  EXPECT_TRUE(observer.is_same_document_at_finish());
+  EXPECT_TRUE(observer.is_renderer_initiated());
+  EXPECT_TRUE(observer.has_committed());
+  EXPECT_EQ(deferred_url, observer.url());
+  EXPECT_FALSE(observer.has_user_gesture_at_start());
+  EXPECT_FALSE(observer.has_user_gesture_at_finish());
+}
+
 }  // namespace content

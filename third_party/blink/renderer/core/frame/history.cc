@@ -343,6 +343,8 @@ void History::StateObjectAdded(scoped_refptr<SerializedScriptValue> data,
   auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
       full_url, NavigateEventType::kHistoryApi, type);
   params->state_object = data.get();
+  params->has_transient_user_activation =
+      LocalFrame::HasTransientUserActivation(window->GetFrame());
   if (window->navigation()->DispatchNavigateEvent(params) !=
       NavigationApi::DispatchResult::kContinue) {
     return;
@@ -353,7 +355,8 @@ void History::StateObjectAdded(scoped_refptr<SerializedScriptValue> data,
   window->document()->Loader()->RunURLAndHistoryUpdateSteps(
       full_url, nullptr, mojom::blink::SameDocumentNavigationType::kHistoryApi,
       std::move(data), type, FirePopstate::kNo, should_skip_screenshot,
-      params->involvement, params->interaction_id);
+      params->involvement, params->has_transient_user_activation,
+      params->interaction_id);
 }
 
 }  // namespace blink

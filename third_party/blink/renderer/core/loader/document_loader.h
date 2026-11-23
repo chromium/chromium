@@ -250,6 +250,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       FirePopstate,
       bool should_skip_screenshot,
       UserNavigationInvolvement involvement,
+      bool has_transient_user_activation,
       PerformanceTimelineEntryIdInfo interaction_id =
           PerformanceTimelineEntryIdInfo::kNone,
       bool is_browser_initiated = false,

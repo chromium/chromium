@@ -8,12 +8,15 @@
 #include "third_party/blink/public/mojom/commit_result/commit_result.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
@@ -298,6 +301,197 @@ TEST_F(
   EXPECT_EQ(result2, mojom::blink::CommitResult::Ok);
   document->GetAgent().PerformMicrotaskCheckpoint();
   EXPECT_EQ(document->FocusedElement(), geo);
+}
+
+TEST_F(NavigationApiTest,
+       InterceptedSameDocumentNavigationPreservesInitiatorUserActivation) {
+  url_test_helpers::RegisterMockedURLLoad(
+      url_test_helpers::ToKURL("https://example.com/foo.html"),
+      test::CoreTestDataPath("foo.html"));
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad("https://example.com/foo.html");
+
+  LocalFrame* frame = web_view_helper.LocalMainFrame()->GetFrame();
+  Document* document = frame->GetDocument();
+  DocumentLoader* document_loader = frame->Loader().GetDocumentLoader();
+
+  ClassicScript::CreateUnspecifiedScript(
+      "navigation.addEventListener('navigate', e => e.intercept());")
+      ->RunScript(frame->DomWindow());
+
+  // Grant transient user activation to the target frame, then commit a
+  // cross-origin-initiated same-document navigation that started WITHOUT user
+  // activation. The committed navigation must not inherit the target frame's
+  // transient user activation.
+  LocalFrame::NotifyUserActivation(
+      frame, mojom::blink::UserActivationNotificationType::kTest);
+  ASSERT_TRUE(LocalFrame::HasTransientUserActivation(frame));
+
+  scoped_refptr<const SecurityOrigin> cross_origin_initiator =
+      SecurityOrigin::CreateFromString("https://attacker.example.com");
+  KURL bar1_url = url_test_helpers::ToKURL("https://example.com/foo.html#bar1");
+  auto result1 = document_loader->CommitSameDocumentNavigation(
+      bar1_url, WebFrameLoadType::kStandard, /*history_item=*/nullptr,
+      ClientRedirectPolicy::kNotClientRedirect,
+      /*has_transient_user_activation=*/false, cross_origin_initiator.get(),
+      /*is_synchronously_committed=*/true, /*source_element=*/nullptr,
+      mojom::blink::TriggeringEventInfo::kNotFromEvent,
+      /*is_browser_initiated=*/false, /*has_ua_visual_transition=*/false,
+      /*task_state_id=*/std::nullopt, /*should_skip_screenshot=*/false);
+  EXPECT_EQ(result1, mojom::blink::CommitResult::Ok);
+  document->GetAgent().PerformMicrotaskCheckpoint();
+  EXPECT_EQ(document_loader->Url(), bar1_url);
+  EXPECT_TRUE(LocalFrame::HasTransientUserActivation(frame));
+  EXPECT_FALSE(document_loader->LastNavigationHadTransientUserActivation());
+  EXPECT_FALSE(document_loader->LastNavigationHadTrustedInitiator());
+
+  // Conversely, when the target frame has NO transient user activation, a
+  // cross-origin-initiated same-document navigation that started WITH user
+  // activation must preserve `has_transient_user_activation = true`.
+  LocalFrame::ConsumeTransientUserActivation(frame);
+  ASSERT_FALSE(LocalFrame::HasTransientUserActivation(frame));
+
+  KURL bar2_url = url_test_helpers::ToKURL("https://example.com/foo.html#bar2");
+  auto result2 = document_loader->CommitSameDocumentNavigation(
+      bar2_url, WebFrameLoadType::kStandard, /*history_item=*/nullptr,
+      ClientRedirectPolicy::kNotClientRedirect,
+      /*has_transient_user_activation=*/true, cross_origin_initiator.get(),
+      /*is_synchronously_committed=*/true, /*source_element=*/nullptr,
+      mojom::blink::TriggeringEventInfo::kNotFromEvent,
+      /*is_browser_initiated=*/false, /*has_ua_visual_transition=*/false,
+      /*task_state_id=*/std::nullopt, /*should_skip_screenshot=*/false);
+  EXPECT_EQ(result2, mojom::blink::CommitResult::Ok);
+  document->GetAgent().PerformMicrotaskCheckpoint();
+  EXPECT_EQ(document_loader->Url(), bar2_url);
+  EXPECT_TRUE(document_loader->LastNavigationHadTransientUserActivation());
+}
+
+TEST_F(NavigationApiTest,
+       InterceptedDeferredPrecommitNavigationPreservesInitialUserActivation) {
+  url_test_helpers::RegisterMockedURLLoad(
+      url_test_helpers::ToKURL("https://example.com/foo.html"),
+      test::CoreTestDataPath("foo.html"));
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad("https://example.com/foo.html");
+
+  LocalFrame* frame = web_view_helper.LocalMainFrame()->GetFrame();
+  Document* document = frame->GetDocument();
+  DocumentLoader* document_loader = frame->Loader().GetDocumentLoader();
+
+  ClassicScript::CreateUnspecifiedScript(R"(
+    navigation.addEventListener('navigate', e => {
+      e.intercept({
+        precommitHandler() {
+          return new Promise(resolve => {
+            window.resolvePrecommit = resolve;
+          });
+        }
+      });
+    });
+  )")
+      ->RunScript(frame->DomWindow());
+
+  ASSERT_FALSE(LocalFrame::HasTransientUserActivation(frame));
+
+  scoped_refptr<const SecurityOrigin> cross_origin_initiator =
+      SecurityOrigin::CreateFromString("https://attacker.example.com");
+  KURL deferred_url =
+      url_test_helpers::ToKURL("https://example.com/foo.html#deferred");
+  auto result = document_loader->CommitSameDocumentNavigation(
+      deferred_url, WebFrameLoadType::kStandard, /*history_item=*/nullptr,
+      ClientRedirectPolicy::kNotClientRedirect,
+      /*has_transient_user_activation=*/false, cross_origin_initiator.get(),
+      /*is_synchronously_committed=*/true, /*source_element=*/nullptr,
+      mojom::blink::TriggeringEventInfo::kNotFromEvent,
+      /*is_browser_initiated=*/false, /*has_ua_visual_transition=*/false,
+      /*task_state_id=*/std::nullopt, /*should_skip_screenshot=*/false);
+  EXPECT_EQ(result, mojom::blink::CommitResult::Ok);
+  // Precommit handler is still pending, so the URL has not yet updated.
+  EXPECT_EQ(document_loader->Url(),
+            url_test_helpers::ToKURL("https://example.com/foo.html"));
+
+  // Grant transient user activation to the target frame while precommitHandler
+  // is pending before CommitNow() runs.
+  LocalFrame::NotifyUserActivation(
+      frame, mojom::blink::UserActivationNotificationType::kTest);
+  ASSERT_TRUE(LocalFrame::HasTransientUserActivation(frame));
+
+  ClassicScript::CreateUnspecifiedScript("window.resolvePrecommit();")
+      ->RunScript(frame->DomWindow());
+  document->GetAgent().PerformMicrotaskCheckpoint();
+
+  EXPECT_EQ(document_loader->Url(), deferred_url);
+  EXPECT_FALSE(document_loader->LastNavigationHadTransientUserActivation());
+}
+
+TEST_F(NavigationApiTest,
+       InterceptedCrossDocumentAndHistoryApiPreserveUserActivation) {
+  url_test_helpers::RegisterMockedURLLoad(
+      url_test_helpers::ToKURL("https://example.com/foo.html"),
+      test::CoreTestDataPath("foo.html"));
+
+  frame_test_helpers::WebViewHelper web_view_helper;
+  web_view_helper.InitializeAndLoad("https://example.com/foo.html");
+
+  LocalFrame* frame = web_view_helper.LocalMainFrame()->GetFrame();
+  Document* document = frame->GetDocument();
+  DocumentLoader* document_loader = frame->Loader().GetDocumentLoader();
+
+  ClassicScript::CreateUnspecifiedScript(
+      "navigation.addEventListener('navigate', e => e.intercept());")
+      ->RunScript(frame->DomWindow());
+
+  // 1. Intercepted same-origin cross-document FrameLoadRequest with and without
+  // transient user activation.
+  LocalFrame::NotifyUserActivation(
+      frame, mojom::blink::UserActivationNotificationType::kTest);
+  ASSERT_TRUE(LocalFrame::HasTransientUserActivation(frame));
+
+  KURL next1_url = url_test_helpers::ToKURL("https://example.com/next1.html");
+  FrameLoadRequest request_with_gesture(frame->DomWindow(),
+                                        ResourceRequest(next1_url));
+  frame->Loader().StartNavigation(request_with_gesture);
+  document->GetAgent().PerformMicrotaskCheckpoint();
+  EXPECT_EQ(document_loader->Url(), next1_url);
+  EXPECT_TRUE(document_loader->LastNavigationHadTransientUserActivation());
+
+  LocalFrame::ConsumeTransientUserActivation(frame);
+  ASSERT_FALSE(LocalFrame::HasTransientUserActivation(frame));
+
+  KURL next2_url = url_test_helpers::ToKURL("https://example.com/next2.html");
+  FrameLoadRequest request_without_gesture(frame->DomWindow(),
+                                           ResourceRequest(next2_url));
+  frame->Loader().StartNavigation(request_without_gesture);
+  document->GetAgent().PerformMicrotaskCheckpoint();
+  EXPECT_EQ(document_loader->Url(), next2_url);
+  EXPECT_FALSE(document_loader->LastNavigationHadTransientUserActivation());
+
+  // 2. Intercepted history.pushState() with and without transient user
+  // activation.
+  LocalFrame::NotifyUserActivation(
+      frame, mojom::blink::UserActivationNotificationType::kTest);
+  ASSERT_TRUE(LocalFrame::HasTransientUserActivation(frame));
+
+  ClassicScript::CreateUnspecifiedScript(
+      "history.pushState(null, '', '/pushed1.html');")
+      ->RunScript(frame->DomWindow());
+  document->GetAgent().PerformMicrotaskCheckpoint();
+  EXPECT_EQ(document_loader->Url(),
+            url_test_helpers::ToKURL("https://example.com/pushed1.html"));
+  EXPECT_TRUE(document_loader->LastNavigationHadTransientUserActivation());
+
+  LocalFrame::ConsumeTransientUserActivation(frame);
+  ASSERT_FALSE(LocalFrame::HasTransientUserActivation(frame));
+
+  ClassicScript::CreateUnspecifiedScript(
+      "history.pushState(null, '', '/pushed2.html');")
+      ->RunScript(frame->DomWindow());
+  document->GetAgent().PerformMicrotaskCheckpoint();
+  EXPECT_EQ(document_loader->Url(),
+            url_test_helpers::ToKURL("https://example.com/pushed2.html"));
+  EXPECT_FALSE(document_loader->LastNavigationHadTransientUserActivation());
 }
 
 }  // namespace blink

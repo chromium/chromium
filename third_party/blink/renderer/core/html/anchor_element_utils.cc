@@ -137,6 +137,8 @@ void AnchorElementUtils::HandleDownloadAttribute(Element* element,
   }
   params->download_filename = download_attr;
   params->source_element = element;
+  params->has_transient_user_activation =
+      request.HasUserGesture() || LocalFrame::HasTransientUserActivation(frame);
 
   if (window->navigation()->DispatchNavigateEvent(params) !=
       NavigationApi::DispatchResult::kContinue) {

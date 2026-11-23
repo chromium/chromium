@@ -39,7 +39,8 @@ void FragmentDirectiveUtils::RemoveSelectorsFromUrl(LocalFrame* frame) {
       url, nullptr, mojom::blink::SameDocumentNavigationType::kFragment,
       /*data=*/nullptr, WebFrameLoadType::kReplaceCurrentItem,
       FirePopstate::kYes, /*should_skip_screenshot=*/true,
-      UserNavigationInvolvement::kNone);
+      UserNavigationInvolvement::kNone,
+      LocalFrame::HasTransientUserActivation(frame));
 }
 
 }  // namespace blink
