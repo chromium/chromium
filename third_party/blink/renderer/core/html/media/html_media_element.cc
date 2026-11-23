@@ -61,6 +61,7 @@
 #include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -3538,6 +3539,17 @@ void HTMLMediaElement::PlaybackProgressTimerFired() {
 
   if (!seeking_)
     ScheduleTimeupdateEvent(true);
+
+  // Counts media that css-contain-2 would mute and whose events it would
+  // defer: playing while its contents are skipped by
+  // 'content-visibility: hidden'.
+  if (!paused_ && DisplayLockUtilities::
+                      IsKnownInContentVisibilityHiddenSubtreeCrossingFrames(
+                          *this, kIncludeSelf)) {
+    UseCounter::Count(
+        GetDocument(),
+        WebFeature::kMediaElementPlayingWhileContentVisibilityHidden);
+  }
 
   // Playback progress is chosen here for simplicity as a proxy for a good
   // periodic time to also update the attached MediaSource, if any, with our

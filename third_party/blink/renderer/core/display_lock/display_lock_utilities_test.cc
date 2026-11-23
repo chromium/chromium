@@ -262,6 +262,88 @@ TEST_F(DisplayLockUtilitiesTest, LockedSubtreeCrossingFrames) {
   EXPECT_FALSE(DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(*child));
 }
 
+TEST_F(DisplayLockUtilitiesTest, ContentVisibilityHiddenSubtreeCrossingFrames) {
+  GetDocument().SetBaseURLOverride(KURL("http://test.com"));
+  SetBodyInnerHTML(R"HTML(
+    <div id="grandparent">
+      <iframe id="frame" src="http://test.com"></iframe>
+    </div>
+  )HTML");
+  SetChildFrameHTML(R"HTML(
+    <div id="parent">
+      <div id="child"></div>
+    </div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* grandparent = GetElementById("grandparent");
+  Element* parent = ChildDocument().getElementById(AtomicString("parent"));
+  Element* child = ChildDocument().getElementById(AtomicString("child"));
+
+  ASSERT_TRUE(grandparent);
+  ASSERT_TRUE(parent);
+  ASSERT_TRUE(child);
+
+  LockElement(*parent, false);
+  EXPECT_FALSE(
+      DisplayLockUtilities::
+          IsKnownInContentVisibilityHiddenSubtreeCrossingFrames(*parent));
+  EXPECT_TRUE(DisplayLockUtilities::
+                  IsKnownInContentVisibilityHiddenSubtreeCrossingFrames(
+                      *parent, kIncludeSelf));
+  EXPECT_TRUE(
+      DisplayLockUtilities::
+          IsKnownInContentVisibilityHiddenSubtreeCrossingFrames(*child));
+
+  LockElement(*grandparent, false);
+  EXPECT_TRUE(
+      DisplayLockUtilities::
+          IsKnownInContentVisibilityHiddenSubtreeCrossingFrames(*parent));
+
+  CommitElement(*parent);
+  EXPECT_TRUE(
+      DisplayLockUtilities::
+          IsKnownInContentVisibilityHiddenSubtreeCrossingFrames(*child));
+
+  CommitElement(*grandparent);
+  // The iframe document was still throttled during the lifecycle update run by
+  // CommitElement(), so it takes one more update to resolve style in it.
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(
+      DisplayLockUtilities::
+          IsKnownInContentVisibilityHiddenSubtreeCrossingFrames(*child));
+}
+
+TEST_F(DisplayLockUtilitiesTest, ContentVisibilityAutoIsNotHiddenSubtree) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .spacer { height: 10000px; }
+      #target {
+        content-visibility: auto;
+        contain-intrinsic-size: 100px;
+      }
+    </style>
+    <div class="spacer"></div>
+    <div id="target"><div id="child"></div></div>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target = GetElementById("target");
+  Element* child = GetElementById("child");
+  ASSERT_TRUE(target);
+  ASSERT_TRUE(child);
+  ASSERT_TRUE(target->GetDisplayLockContext());
+  EXPECT_TRUE(target->GetDisplayLockContext()->IsLocked());
+
+  EXPECT_TRUE(DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(*child));
+  EXPECT_FALSE(
+      DisplayLockUtilities::
+          IsKnownInContentVisibilityHiddenSubtreeCrossingFrames(*child));
+}
+
 TEST_F(DisplayLockUtilitiesTest, InteractionWithIntersectionObserver) {
   SetHtmlInnerHTML(R"HTML(
     <div id="container"><iframe id="frame"></iframe></div>

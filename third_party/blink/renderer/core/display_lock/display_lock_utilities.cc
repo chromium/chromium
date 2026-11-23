@@ -241,6 +241,42 @@ Element* LockedInclusiveAncestorPreventingUpdate(const LayoutObject& object,
   return nullptr;
 }
 
+// Walks the flat-tree ancestor chain from |source_node|, crossing frame
+// boundaries via the frame owner node, and returns true as soon as |matches|
+// accepts a DisplayLockContext on a locked ancestor. When the walk reaches
+// the highest local ancestor without a match, |out_highest_local_node|
+// receives that ancestor so callers can inspect a remote embedder.
+template <typename LockPredicate>
+bool WalkLockedAncestorsCrossingFrames(
+    const Node& source_node,
+    IncludeSelfOrNot self,
+    LockPredicate matches,
+    const Node** out_highest_local_node = nullptr) {
+  const Node* node = &source_node;
+  if (self == kExcludeSelf) {
+    node = FlatTreeTraversal::Parent(*node);
+  }
+  if (!node) {
+    node = GetFrameOwnerNode(&source_node);
+  }
+
+  const Node* highest_local_node = node;
+  while (node) {
+    for (const Element* locked = NearestLockedInclusiveAncestor(*node); locked;
+         locked = NearestLockedExclusiveAncestor(*locked)) {
+      if (matches(*locked->GetDisplayLockContext())) {
+        return true;
+      }
+    }
+    highest_local_node = node;
+    node = GetFrameOwnerNode(node);
+  }
+  if (out_highest_local_node) {
+    *out_highest_local_node = highest_local_node;
+  }
+  return false;
+}
+
 }  // namespace
 
 bool DisplayLockUtilities::ActivateFindInPageMatchRangeIfNeeded(
@@ -676,21 +712,31 @@ bool DisplayLockUtilities::IsInLockedSubtreeCrossingFrames(
       return true;
     }
   }
-  const Node* node = &source_node;
+  return WalkLockedAncestorsCrossingFrames(
+      source_node, self, [](DisplayLockContext&) { return true; });
+}
 
-  // If we don't need to check self, skip to the parent immediately.
-  if (self == kExcludeSelf)
-    node = FlatTreeTraversal::Parent(*node);
-
-  // If we don't have a flat-tree parent, get the |source_node|'s owner node
-  // instead.
-  if (!node)
-    node = GetFrameOwnerNode(&source_node);
-
-  while (node) {
-    if (NearestLockedInclusiveAncestor(*node))
-      return true;
-    node = GetFrameOwnerNode(node);
+bool DisplayLockUtilities::
+    IsKnownInContentVisibilityHiddenSubtreeCrossingFrames(
+        const Node& source_node,
+        IncludeSelfOrNot self) {
+  // No IsDisplayLockThrottled short-circuit on the source document: that bit
+  // is hidden/auto coarse, and this helper must not match auto locks.
+  const Node* highest_local_node = nullptr;
+  if (WalkLockedAncestorsCrossingFrames(
+          source_node, self,
+          [](DisplayLockContext& ctx) {
+            return ctx.GetState() == EContentVisibility::kHidden;
+          },
+          &highest_local_node)) {
+    return true;
+  }
+  // Walk ended at the highest local ancestor; a remote embedder replicates
+  // only the coarse display-locked bit, so treat any lock there as hidden.
+  if (highest_local_node) {
+    if (LocalFrameView* view = highest_local_node->GetDocument().View()) {
+      return view->IsDisplayLockThrottled();
+    }
   }
   return false;
 }

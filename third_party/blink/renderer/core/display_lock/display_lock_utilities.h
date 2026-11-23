@@ -292,6 +292,23 @@ class CORE_EXPORT DisplayLockUtilities {
       const Node& node,
       IncludeSelfOrNot self = kExcludeSelf);
 
+  // Like IsInLockedSubtreeCrossingFrames, but only considers locks whose
+  // state is 'content-visibility: hidden'; subtrees skipped due to
+  // 'content-visibility: auto' do not count. A remote ancestor frame
+  // replicates only a coarse display-locked bit with no hidden/auto
+  // distinction, so any lock in a remote embedder counts as hidden.
+  //
+  // The result reflects the current style tree, so a true answer is
+  // authoritative but a false answer is not: a 'content-visibility: auto'
+  // ancestor can skip style for its subtree, and a nested
+  // 'content-visibility: hidden' lock inside that subtree is not observable
+  // until style runs. Callers that need an authoritative answer must flush
+  // style first; callers using this for measurement can accept the false
+  // negative.
+  static bool IsKnownInContentVisibilityHiddenSubtreeCrossingFrames(
+      const Node& node,
+      IncludeSelfOrNot self = kExcludeSelf);
+
   // Called when the focused element changes. These functions update locks to
   // ensure that focused element ancestors remain unlocked for 'auto' state.
   static void ElementLostFocus(Element*);
