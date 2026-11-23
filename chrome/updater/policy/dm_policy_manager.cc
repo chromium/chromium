@@ -128,11 +128,11 @@ DMPolicyManager::GetUpdatesSuppressedTimes() const {
     return std::nullopt;
   }
 
-  UpdatesSuppressedTimes suppressed_times;
-  suppressed_times.start_hour_ = updates_suppressed.start_hour();
-  suppressed_times.start_minute_ = updates_suppressed.start_minute();
-  suppressed_times.duration_minute_ = updates_suppressed.duration_min();
-  return suppressed_times;
+  return UpdatesSuppressedTimes{
+      .start_hour_ = static_cast<int>(updates_suppressed.start_hour()),
+      .start_minute_ = static_cast<int>(updates_suppressed.start_minute()),
+      .duration_minute_ = static_cast<int>(updates_suppressed.duration_min()),
+  };
 }
 
 std::optional<std::string> DMPolicyManager::GetDownloadPreference() const {

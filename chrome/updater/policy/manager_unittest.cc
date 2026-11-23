@@ -16,10 +16,8 @@ TEST(PolicyManager, GetDefaultValuesPolicyManager) {
 }
 
 TEST(PolicyManager, UpdateSuppressedTimes) {
-  UpdatesSuppressedTimes suppression;
-  suppression.start_hour_ = 13;
-  suppression.start_minute_ = 35;
-  suppression.duration_minute_ = 22;
+  UpdatesSuppressedTimes suppression = {
+      .start_hour_ = 13, .start_minute_ = 35, .duration_minute_ = 22};
   ASSERT_FALSE(suppression.contains(12, 45));
   ASSERT_TRUE(suppression.contains(13, 35));
   ASSERT_TRUE(suppression.contains(13, 45));
@@ -27,9 +25,8 @@ TEST(PolicyManager, UpdateSuppressedTimes) {
   ASSERT_FALSE(suppression.contains(13, 59));
   ASSERT_FALSE(suppression.contains(14, 45));
 
-  suppression.start_hour_ = 21;
-  suppression.start_minute_ = 0;
-  suppression.duration_minute_ = 360;
+  suppression = {
+      .start_hour_ = 21, .start_minute_ = 0, .duration_minute_ = 360};
   ASSERT_FALSE(suppression.contains(20, 30));
   ASSERT_TRUE(suppression.contains(21, 30));
   ASSERT_TRUE(suppression.contains(22, 30));

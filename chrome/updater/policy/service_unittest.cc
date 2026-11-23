@@ -454,10 +454,8 @@ TEST_F(PolicyServiceTest, MultiplePolicyManagers) {
 
   auto manager = base::MakeRefCounted<FakePolicyManager>(true, "Group Policy");
   manager->SetCloudPolicyOverridesPlatformPolicy(false);
-  UpdatesSuppressedTimes updates_suppressed_times;
-  updates_suppressed_times.start_hour_ = 5;
-  updates_suppressed_times.start_minute_ = 10;
-  updates_suppressed_times.duration_minute_ = 30;
+  UpdatesSuppressedTimes updates_suppressed_times = {
+      .start_hour_ = 5, .start_minute_ = 10, .duration_minute_ = 30};
   manager->SetUpdatesSuppressedTimes(updates_suppressed_times);
   manager->SetPackageCacheSizeLimitMBytes(1000);
   manager->SetInstallPolicy("app1", 0);
@@ -479,9 +477,8 @@ TEST_F(PolicyServiceTest, MultiplePolicyManagers) {
   manager->SetProxyPacUrl("url://proxyurl");
   manager->SetProxyServer("test-server");
   manager->SetDownloadPreference("cacheable");
-  updates_suppressed_times.start_hour_ = 1;
-  updates_suppressed_times.start_minute_ = 1;
-  updates_suppressed_times.duration_minute_ = 20;
+  updates_suppressed_times = {
+      .start_hour_ = 1, .start_minute_ = 1, .duration_minute_ = 20};
   manager->SetInstallPolicy(enterprise_companion::kCompanionAppId, 0);
   manager->SetUpdatesSuppressedTimes(updates_suppressed_times);
   manager->SetChannel("app1", "channel_DictValuePolicy");
@@ -779,20 +776,15 @@ TEST_F(PolicyServiceTest, MultiplePolicyManagers_WithUnmanagedOnes) {
 
   auto manager =
       base::MakeRefCounted<FakePolicyManager>(true, "Device Management");
-  UpdatesSuppressedTimes updates_suppressed_times;
-  updates_suppressed_times.start_hour_ = 5;
-  updates_suppressed_times.start_minute_ = 10;
-  updates_suppressed_times.duration_minute_ = 30;
-  manager->SetUpdatesSuppressedTimes(updates_suppressed_times);
+  manager->SetUpdatesSuppressedTimes(
+      {.start_hour_ = 5, .start_minute_ = 10, .duration_minute_ = 30});
   manager->SetChannel("app1", "channel_dm");
   manager->SetUpdatePolicy("app1", 3);
   managers.push_back(std::move(manager));
 
   manager = base::MakeRefCounted<FakePolicyManager>(true, "DictValuePolicy");
-  updates_suppressed_times.start_hour_ = 1;
-  updates_suppressed_times.start_minute_ = 1;
-  updates_suppressed_times.duration_minute_ = 20;
-  manager->SetUpdatesSuppressedTimes(updates_suppressed_times);
+  manager->SetUpdatesSuppressedTimes(
+      {.start_hour_ = 1, .start_minute_ = 1, .duration_minute_ = 20});
   manager->SetChannel("app1", "channel_DictValuePolicy");
   manager->SetUpdatePolicy("app1", 2);
   manager->SetDownloadPreference("cacheable");
@@ -801,10 +793,8 @@ TEST_F(PolicyServiceTest, MultiplePolicyManagers_WithUnmanagedOnes) {
   managers.push_back(GetDefaultValuesPolicyManager());
 
   manager = base::MakeRefCounted<FakePolicyManager>(false, "Group Policy");
-  updates_suppressed_times.start_hour_ = 5;
-  updates_suppressed_times.start_minute_ = 10;
-  updates_suppressed_times.duration_minute_ = 30;
-  manager->SetUpdatesSuppressedTimes(updates_suppressed_times);
+  manager->SetUpdatesSuppressedTimes(
+      {.start_hour_ = 5, .start_minute_ = 10, .duration_minute_ = 30});
   manager->SetChannel("app1", "channel_gp");
   manager->SetUpdatePolicy("app2", 1);
   managers.push_back(std::move(manager));
@@ -904,22 +894,46 @@ INSTANTIATE_TEST_SUITE_P(
     PolicyServiceAreUpdatesSuppressedTest,
     ValuesIn(std::vector<PolicyServiceAreUpdatesSuppressedTestCase>{
         // Suppress starting 12:00 for 959 minutes.
-        {{12, 00, 959}, "Sat, 01 July 2023 01:15:00", true},
+        {.updates_suppressed_times = {.start_hour_ = 12,
+                                      .start_minute_ = 0,
+                                      .duration_minute_ = 959},
+         .time_string = "Sat, 01 July 2023 01:15:00",
+         .expect_updates_suppressed = true},
 
         // Suppress starting 12:00 for 959 minutes.
-        {{12, 00, 959}, "Sat, 01 July 2023 04:15:00", false},
+        {.updates_suppressed_times = {.start_hour_ = 12,
+                                      .start_minute_ = 0,
+                                      .duration_minute_ = 959},
+         .time_string = "Sat, 01 July 2023 04:15:00",
+         .expect_updates_suppressed = false},
 
         // Suppress starting 00:00 for 959 minutes.
-        {{00, 00, 959}, "Sat, 01 July 2023 04:15:00", true},
+        {.updates_suppressed_times = {.start_hour_ = 0,
+                                      .start_minute_ = 0,
+                                      .duration_minute_ = 959},
+         .time_string = "Sat, 01 July 2023 04:15:00",
+         .expect_updates_suppressed = true},
 
         // Suppress starting 00:00 for 959 minutes.
-        {{00, 00, 959}, "Sat, 01 July 2023 16:15:00", false},
+        {.updates_suppressed_times = {.start_hour_ = 0,
+                                      .start_minute_ = 0,
+                                      .duration_minute_ = 959},
+         .time_string = "Sat, 01 July 2023 16:15:00",
+         .expect_updates_suppressed = false},
 
         // Suppress starting 18:00 for 12 hours.
-        {{18, 00, 12 * 60}, "Sat, 01 July 2023 05:15:00", true},
+        {.updates_suppressed_times = {.start_hour_ = 18,
+                                      .start_minute_ = 0,
+                                      .duration_minute_ = 12 * 60},
+         .time_string = "Sat, 01 July 2023 05:15:00",
+         .expect_updates_suppressed = true},
 
         // Suppress starting 18:00 for 12 hours.
-        {{18, 00, 12 * 60}, "Sat, 01 July 2023 06:15:00", false},
+        {.updates_suppressed_times = {.start_hour_ = 18,
+                                      .start_minute_ = 0,
+                                      .duration_minute_ = 12 * 60},
+         .time_string = "Sat, 01 July 2023 06:15:00",
+         .expect_updates_suppressed = false},
     }));
 
 TEST_P(PolicyServiceAreUpdatesSuppressedTest, TestCases) {

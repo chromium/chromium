@@ -133,11 +133,11 @@ std::optional<UpdatesSuppressedTimes> PolicyManager::GetUpdatesSuppressedTimes()
     return std::nullopt;
   }
 
-  UpdatesSuppressedTimes supressed_times;
-  supressed_times.start_hour_ = start_hour.value();
-  supressed_times.start_minute_ = start_min.value();
-  supressed_times.duration_minute_ = duration_min.value();
-  return supressed_times;
+  return UpdatesSuppressedTimes{
+      .start_hour_ = start_hour.value(),
+      .start_minute_ = start_min.value(),
+      .duration_minute_ = duration_min.value(),
+  };
 }
 
 std::optional<std::string> PolicyManager::GetDownloadPreference() const {

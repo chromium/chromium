@@ -76,7 +76,8 @@ class PolicyStatus {
   }
 
   PolicyValue ToPolicyValue() const {
-    return {effective_policy()->ToString(), effective_policy()->source};
+    return {.policy_value = effective_policy()->ToString(),
+            .policy_source = effective_policy()->source};
   }
 
   // Creates a base::DictValue representation of an individual policy adhering
