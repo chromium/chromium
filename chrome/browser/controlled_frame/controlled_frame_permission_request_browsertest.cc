@@ -1616,8 +1616,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_ControlledFrameClipboardPermissionBrowserTest,
   EXPECT_EQ(1, content::EvalJs(app_frame, "window.guest2RequestCount"));
 }
 
+// TODO(crbug.com/584160399): Flaky waiting for document focus.
 IN_PROC_BROWSER_TEST_F(MAYBE_ControlledFrameClipboardPermissionBrowserTest,
-                       ConcurrentSameOriginGuestsAreIsolated) {
+                       DISABLED_ConcurrentSameOriginGuestsAreIsolated) {
   GURL guest_url =
       embedded_https_test_server().GetURL("guest.com", "/empty.html");
   url::Origin guest_origin = url::Origin::Create(guest_url);
