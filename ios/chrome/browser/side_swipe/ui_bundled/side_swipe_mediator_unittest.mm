@@ -22,19 +22,13 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
-#import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
-#import "ios/web/public/ui/crw_web_view_proxy.h"
-#import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "testing/platform_test.h"
-#import "third_party/ocmock/OCMock/OCMock.h"
-#import "third_party/ocmock/gtest_support.h"
-#import "third_party/ocmock/ocmock_extensions.h"
 
 @interface FakeSideSwipeUIController : NSObject <SideSwipeConsumer>
 
@@ -67,29 +61,15 @@ namespace {
 
 class SideSwipeMediatorTest : public ReaderModeTest {
  public:
-  SideSwipeMediatorTest() : content_view_([[UIView alloc] init]) {}
-
   void SetUp() override {
     ReaderModeTest::SetUp();
-    auto original_web_state(std::make_unique<web::FakeWebState>());
-    original_web_state->SetView(content_view_);
-    CRWWebViewScrollViewProxy* scroll_view_proxy =
-        [[CRWWebViewScrollViewProxy alloc] init];
-    UIScrollView* scroll_view = [[UIScrollView alloc] init];
-    [scroll_view_proxy setScrollView:scroll_view];
-    id web_view_proxy_mock = OCMProtocolMock(@protocol(CRWWebViewProxy));
-    [[[web_view_proxy_mock stub] andReturn:scroll_view_proxy] scrollViewProxy];
-    original_web_state->SetWebViewProxy(web_view_proxy_mock);
-
     browser_ = std::make_unique<TestBrowser>(profile());
 
+    auto original_web_state = std::make_unique<web::FakeWebState>();
     original_web_state->SetBrowserState(profile());
-    original_web_state_ = original_web_state.get();
-
-    active_web_state_index_ = browser_->GetWebStateList()->InsertWebState(
-        std::move(original_web_state));
-    browser_->GetWebStateList()->ActivateWebStateAt(
-        active_web_state_index_.value());
+    browser_->GetWebStateList()->InsertWebState(
+        std::move(original_web_state),
+        WebStateList::InsertionParams::Automatic().Activate());
 
     side_swipe_mediator_ = [[SideSwipeMediator alloc]
         initWithWebStateList:browser_->GetWebStateList()];
@@ -102,18 +82,18 @@ class SideSwipeMediatorTest : public ReaderModeTest {
 
   void CloseActiveWebState() {
     browser_->GetWebStateList()->CloseWebStateAt(
-        active_web_state_index_.value(), WebStateList::ClosingReason::kDefault);
-    active_web_state_index_.reset();
+        browser_->GetWebStateList()->active_index(),
+        WebStateList::ClosingReason::kDefault);
+  }
+
+  web::FakeWebState* active_web_state() {
+    return static_cast<web::FakeWebState*>(
+        browser_->GetWebStateList()->GetActiveWebState());
   }
 
   std::unique_ptr<Browser> browser_;
-  UIView* view_;
   SideSwipeMediator* side_swipe_mediator_;
   FakeSideSwipeUIController* fake_swipe_ui_controller_;
-  ScopedKeyWindow scoped_window_;
-  UIView* content_view_ = nil;
-  raw_ptr<web::WebState, DanglingUntriaged> original_web_state_ = nil;
-  std::optional<int> active_web_state_index_;
 };
 
 TEST_F(SideSwipeMediatorTest, TestConstructor) {
@@ -206,14 +186,6 @@ TEST_F(SideSwipeMediatorTest, ObserversTriggerStateUpdate) {
 
   auto fake_web_state = std::make_unique<web::FakeWebState>();
   fake_web_state->SetBrowserState(profile());
-  fake_web_state->SetView(content_view_);
-  CRWWebViewScrollViewProxy* scroll_view_proxy =
-      [[CRWWebViewScrollViewProxy alloc] init];
-  UIScrollView* scroll_view = [[UIScrollView alloc] init];
-  [scroll_view_proxy setScrollView:scroll_view];
-  id web_view_proxy_mock = OCMProtocolMock(@protocol(CRWWebViewProxy));
-  [[[web_view_proxy_mock stub] andReturn:scroll_view_proxy] scrollViewProxy];
-  fake_web_state->SetWebViewProxy(web_view_proxy_mock);
   web::FakeWebState* fake_web_state_ptr = fake_web_state.get();
   auto fake_navigation_manager = std::make_unique<web::FakeNavigationManager>();
   std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
@@ -275,8 +247,8 @@ TEST_F(SideSwipeMediatorTest, SnapshotUpdatedWithoutActiveWebState) {
 // Tests that the snapshot update runs the provided callback that updates
 // the snapshot state only once on completion.
 TEST_F(SideSwipeMediatorTest, SnapshotUpdatedOnceOnCallback) {
-  SnapshotTabHelper::CreateForWebState(original_web_state_);
-  SnapshotSourceTabHelper::CreateForWebState(original_web_state_);
+  SnapshotTabHelper::CreateForWebState(active_web_state());
+  SnapshotSourceTabHelper::CreateForWebState(active_web_state());
   base::RunLoop run_loop;
   int snapshot_updated = 0;
   [side_swipe_mediator_
@@ -295,8 +267,7 @@ TEST_F(SideSwipeMediatorTest, SnapshotUpdatedOnceOnCallback) {
 // Tests that custom Chromium edge swipes record the expected user actions.
 TEST_F(SideSwipeMediatorTest, CustomEdgeSwipeRecordsUserActions) {
   auto fake_navigation_manager = std::make_unique<web::FakeNavigationManager>();
-  static_cast<web::FakeWebState*>(original_web_state_.get())
-      ->SetNavigationManager(std::move(fake_navigation_manager));
+  active_web_state()->SetNavigationManager(std::move(fake_navigation_manager));
   testing::NiceMock<feature_engagement::test::MockTracker> mock_tracker;
   side_swipe_mediator_.engagementTracker = &mock_tracker;
 
@@ -319,8 +290,7 @@ TEST_F(SideSwipeMediatorTest, CustomEdgeSwipeRecordsUserActions) {
 // only when an edge swipe gesture started and was not cancelled.
 TEST_F(SideSwipeMediatorTest, WebViewEdgeSwipeRecordsUserActions) {
   auto fake_navigation_manager = std::make_unique<web::FakeNavigationManager>();
-  static_cast<web::FakeWebState*>(original_web_state_.get())
-      ->SetNavigationManager(std::move(fake_navigation_manager));
+  active_web_state()->SetNavigationManager(std::move(fake_navigation_manager));
 
   base::UserActionTester user_action_tester;
 
@@ -332,8 +302,7 @@ TEST_F(SideSwipeMediatorTest, WebViewEdgeSwipeRecordsUserActions) {
 
   // Back/forward navigation without an edge swipe (e.g., JS history.back())
   // should not record edge swipe actions.
-  static_cast<web::FakeWebState*>(original_web_state_.get())
-      ->OnNavigationFinished(&context);
+  active_web_state()->OnNavigationFinished(&context);
   EXPECT_EQ(0, user_action_tester.GetActionCount("Back"));
   EXPECT_EQ(0, user_action_tester.GetActionCount("MobileEdgeSwipeBack"));
   EXPECT_EQ(0, user_action_tester.GetActionCount("Forward"));
@@ -342,8 +311,7 @@ TEST_F(SideSwipeMediatorTest, WebViewEdgeSwipeRecordsUserActions) {
   // Back edge swipe followed by committed back/forward navigation.
   [side_swipe_mediator_
       webViewEdgeSwipeDidStartInDirection:NavigationDirectionBack];
-  static_cast<web::FakeWebState*>(original_web_state_.get())
-      ->OnNavigationFinished(&context);
+  active_web_state()->OnNavigationFinished(&context);
   EXPECT_EQ(1, user_action_tester.GetActionCount("Back"));
   EXPECT_EQ(1, user_action_tester.GetActionCount("MobileEdgeSwipeBack"));
   EXPECT_EQ(0, user_action_tester.GetActionCount("Forward"));
@@ -352,8 +320,7 @@ TEST_F(SideSwipeMediatorTest, WebViewEdgeSwipeRecordsUserActions) {
   // Forward edge swipe followed by committed back/forward navigation.
   [side_swipe_mediator_
       webViewEdgeSwipeDidStartInDirection:NavigationDirectionForward];
-  static_cast<web::FakeWebState*>(original_web_state_.get())
-      ->OnNavigationFinished(&context);
+  active_web_state()->OnNavigationFinished(&context);
   EXPECT_EQ(1, user_action_tester.GetActionCount("Back"));
   EXPECT_EQ(1, user_action_tester.GetActionCount("MobileEdgeSwipeBack"));
   EXPECT_EQ(1, user_action_tester.GetActionCount("Forward"));
@@ -363,8 +330,7 @@ TEST_F(SideSwipeMediatorTest, WebViewEdgeSwipeRecordsUserActions) {
   [side_swipe_mediator_
       webViewEdgeSwipeDidStartInDirection:NavigationDirectionBack];
   [side_swipe_mediator_ webViewEdgeSwipeDidCancel];
-  static_cast<web::FakeWebState*>(original_web_state_.get())
-      ->OnNavigationFinished(&context);
+  active_web_state()->OnNavigationFinished(&context);
   EXPECT_EQ(1, user_action_tester.GetActionCount("Back"));
   EXPECT_EQ(1, user_action_tester.GetActionCount("MobileEdgeSwipeBack"));
 }
