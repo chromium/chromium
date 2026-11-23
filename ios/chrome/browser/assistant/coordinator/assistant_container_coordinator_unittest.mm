@@ -20,10 +20,13 @@
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer.h"
 #import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_scene_agent.h"
+#import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -231,6 +234,57 @@ TEST_F(AssistantContainerCoordinatorTest, FollowsFullscreenProgressChanges) {
                        animated:NO];
   EXPECT_TRUE(CGAffineTransformIsIdentity(
       container_view_controller.assistantContainerView.transform));
+}
+
+// Tests that when the container is anchored above a collapsed bottom toolbar
+// (e.g. bottom omnibox in fullscreen), entering fullscreen clips subviews to
+// the wrapper bounds and translates the minimized container completely below
+// the window.
+TEST_F(AssistantContainerCoordinatorTest,
+       TranslatesMinimizedContainerOffscreenAboveBottomToolbar) {
+  UIView* bottom_toolbar_view = [[UIView alloc] init];
+  bottom_toolbar_view.translatesAutoresizingMaskIntoConstraints = NO;
+  [base_view_controller_.view addSubview:bottom_toolbar_view];
+  [NSLayoutConstraint activateConstraints:@[
+    [bottom_toolbar_view.leadingAnchor
+        constraintEqualToAnchor:base_view_controller_.view.leadingAnchor],
+    [bottom_toolbar_view.trailingAnchor
+        constraintEqualToAnchor:base_view_controller_.view.trailingAnchor],
+    [bottom_toolbar_view.bottomAnchor
+        constraintEqualToAnchor:base_view_controller_.view.bottomAnchor],
+    [bottom_toolbar_view.heightAnchor
+        constraintEqualToConstant:kBottomToolbarHeight],
+  ]];
+  [LayoutGuideCenterForBrowser(browser_.get())
+      referenceView:bottom_toolbar_view
+          underName:kSecondaryToolbarGuide];
+  [window_ layoutIfNeeded];
+
+  [coordinator_ setAssistantContainerMinimizedDetentHeight:72];
+  UIViewController* content_view_controller = [[UIViewController alloc] init];
+  [coordinator_ showAssistantContainerWithContent:content_view_controller
+                                         delegate:delegate_];
+  [coordinator_
+      animateAssistantContainerToDetent:AssistantContainerDetent::kMinimized
+                               duration:0
+                                  curve:UIViewAnimationCurveEaseInOut];
+  [window_ layoutIfNeeded];
+
+  AssistantContainerViewController* container_view_controller =
+      GetPresentedContainerViewController();
+  ASSERT_TRUE(container_view_controller);
+  EXPECT_TRUE(container_view_controller.view.clipsToBounds);
+
+  [fullscreen_mediator_
+      enterFullscreenWithTrigger:FullscreenModeTransitionTrigger::kForcedByCode
+                        animated:NO];
+
+  CGRect container_frame_in_window =
+      [container_view_controller.assistantContainerView
+          convertRect:container_view_controller.assistantContainerView.bounds
+               toView:nil];
+  EXPECT_GE(CGRectGetMinY(container_frame_in_window),
+            CGRectGetMaxY(window_.bounds));
 }
 
 // Tests that `setAssistantContainerMediumDetentPercentage:` configures the

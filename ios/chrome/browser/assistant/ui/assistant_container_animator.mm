@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/assistant/ui/assistant_container_animator.h"
 
+#import <algorithm>
+
 #import "ios/chrome/browser/assistant/ui/assistant_container_animatable.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_layout_utils.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_presenter.h"
@@ -269,10 +271,20 @@ inline LayoutStateAssistantPassKey PassKey() {
     return;
   }
 
-  // Move the container off screen as progress goes to 0.
-  CGFloat bottomInset = superview.safeAreaInsets.bottom;
+  // Move the container off screen as progress goes to 0. When `superview` is
+  // anchored above a collapsed bottom toolbar, `superview.safeAreaInsets` has
+  // a 0 bottom inset even though space remains below `superview` in the
+  // window.
+  CGFloat bottomOffset = superview.safeAreaInsets.bottom;
+  if (superview.window) {
+    CGRect superviewFrameInWindow = [superview convertRect:superview.bounds
+                                                    toView:nil];
+    CGFloat distanceToWindowBottom = CGRectGetMaxY(superview.window.bounds) -
+                                     CGRectGetMaxY(superviewFrameInWindow);
+    bottomOffset = std::max(bottomOffset, distanceToWindowBottom);
+  }
   CGFloat totalDistance =
-      containerView.bounds.size.height + bottomInset + kMorphingBaseMargin;
+      containerView.bounds.size.height + bottomOffset + kMorphingBaseMargin;
   CGFloat translationY = (1.0 - progress) * totalDistance;
   containerView.transform = CGAffineTransformMakeTranslation(0, translationY);
 }

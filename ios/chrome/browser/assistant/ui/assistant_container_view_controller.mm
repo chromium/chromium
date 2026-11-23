@@ -157,8 +157,10 @@ AccessibilityNotificationPoster DefaultAccessibilityNotificationPoster() {
 - (void)loadView {
   // Use a ChromeOverlayContainerView as the root view. Its bounds are static,
   // which prevents excessive layout passes in the parent view when resizing
-  // the Assistant container.
+  // the Assistant container. Clip subviews so the sheet slides behind an
+  // anchored bottom toolbar rather than drawing over it.
   self.view = [[ChromeOverlayContainerView alloc] init];
+  self.view.clipsToBounds = YES;
   [self setupDimmingView];
 
   _assistantContainerView = [[AssistantContainerView alloc] init];
