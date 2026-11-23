@@ -279,6 +279,24 @@ static_library("browser") {
   }
 }
 
+source_set("change_password_filling_helper") {
+  sources = [
+    "password_change/change_password_filling_helper.cc",
+    "password_change/change_password_filling_helper.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/actor/public/mojom:mojo_bindings_shared",
+    "//components/autofill/core/common",
+  ]
+  deps = [
+    ":browser",
+    ":password_string",
+    "//mojo/public/cpp/bindings",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
 if (is_android) {
   source_set("split_stores_and_local_upm") {
     sources = [
@@ -536,6 +554,7 @@ source_set("unit_tests") {
     "origin_credential_store_unittest.cc",
     "passkey_credential_unittest.cc",
     "password_autofill_manager_unittest.cc",
+    "password_change/change_password_filling_helper_unittest.cc",
     "password_change/change_password_generation_util_unittest.cc",
     "password_change_backup_password_cleaner_unittest.cc",
     "password_counter_unittest.cc",
@@ -600,6 +619,7 @@ source_set("unit_tests") {
   }
 
   deps = [
+    ":change_password_filling_helper",
     ":test_support",
     "//build:branding_buildflags",
     "//build:chromecast_buildflags",

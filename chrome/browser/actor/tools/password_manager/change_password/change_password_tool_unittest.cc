@@ -117,27 +117,19 @@ class ChangePasswordToolTest : public testing::Test {
         GetForRenderFrameHost(web_contents_->GetPrimaryMainFrame());
   }
 
-  autofill::FormFieldData MakeFormField(
-      int renderer_id,
-      autofill::FormControlType control_type =
-          autofill::FormControlType::kInputPassword) {
+  autofill::FormFieldData MakeFormField(int renderer_id) {
     autofill::FormFieldData field;
     field.set_renderer_id(autofill::FieldRendererId(renderer_id));
-    field.set_form_control_type(control_type);
+    field.set_form_control_type(autofill::FormControlType::kInputPassword);
     return field;
   }
 
   password_manager::PasswordFormManager* AddFormManager(
-      std::vector<autofill::FormFieldData> fields,
-      password_manager::ContentPasswordManagerDriver* driver = nullptr,
-      autofill::FormRendererId form_id = autofill::FormRendererId(1)) {
-    if (!driver) {
-      driver = MainFrameDriver();
-    }
+      std::vector<autofill::FormFieldData> fields) {
     autofill::FormData form_data;
     form_data.set_url(GURL("https://example.com"));
     form_data.set_action(GURL("https://example.com/submit"));
-    form_data.set_renderer_id(form_id);
+    form_data.set_renderer_id(autofill::FormRendererId(1));
     form_data.set_fields(std::move(fields));
 
     auto fetcher = std::make_unique<password_manager::FakeFormFetcher>();
@@ -146,8 +138,8 @@ class ChangePasswordToolTest : public testing::Test {
             std::make_unique<password_manager::StubFormSaver>(),
             /*account_form_saver=*/nullptr);
     auto manager = std::make_unique<password_manager::PasswordFormManager>(
-        &password_client_, driver->AsWeakPtr(), form_data, fetcher.get(),
-        std::move(save_manager), /*metrics_recorder=*/nullptr);
+        &password_client_, MainFrameDriver()->AsWeakPtr(), form_data,
+        fetcher.get(), std::move(save_manager), /*metrics_recorder=*/nullptr);
     fetcher->NotifyFetchCompleted();
 
     password_manager::PasswordFormManager* raw_manager = manager.get();
@@ -224,6 +216,7 @@ TEST_F(ChangePasswordToolTest, Validate_CoordinatePasswordField_Fails) {
   TestFuture<mojom::ActionResultPtr> future;
   tool.Validate(future.GetCallback());
   EXPECT_EQ(future.Get()->code, mojom::ActionResultCode::kArgumentsInvalid);
+  EXPECT_EQ(future.Get()->message, "Password field targets must be DOM nodes.");
 }
 
 TEST_F(ChangePasswordToolTest, Validate_NoPasswordFieldsProvided_Fails) {
@@ -236,6 +229,8 @@ TEST_F(ChangePasswordToolTest, Validate_NoPasswordFieldsProvided_Fails) {
   TestFuture<mojom::ActionResultPtr> future;
   tool.Validate(future.GetCallback());
   EXPECT_EQ(future.Get()->code, mojom::ActionResultCode::kArgumentsInvalid);
+  EXPECT_EQ(future.Get()->message,
+            "At least one password field must be provided.");
 }
 
 TEST_F(ChangePasswordToolTest, Properties) {
@@ -356,6 +351,8 @@ TEST_F(ChangePasswordToolTest, TimeOfUseValidation_FieldsInDifferentFrames) {
 
   mojom::ActionResultPtr result = tool.TimeOfUseValidation(&observation);
   EXPECT_EQ(result->code, mojom::ActionResultCode::kArgumentsInvalid);
+  EXPECT_EQ(result->message,
+            "All password fields must belong to the same frame.");
 }
 
 TEST_F(ChangePasswordToolTest, TimeOfUseValidation_DuplicateFieldIds) {
@@ -371,6 +368,7 @@ TEST_F(ChangePasswordToolTest, TimeOfUseValidation_DuplicateFieldIds) {
 
   mojom::ActionResultPtr result = tool.TimeOfUseValidation(&observation);
   EXPECT_EQ(result->code, mojom::ActionResultCode::kArgumentsInvalid);
+  EXPECT_EQ(result->message, "Password field targets must be distinct.");
 }
 
 TEST_F(ChangePasswordToolTest, TimeOfUseValidation_FrameWentAway) {
@@ -389,162 +387,8 @@ TEST_F(ChangePasswordToolTest, TimeOfUseValidation_FrameWentAway) {
 
   mojom::ActionResultPtr result = tool.TimeOfUseValidation(&observation);
   EXPECT_EQ(result->code, mojom::ActionResultCode::kFrameWentAway);
-}
-
-TEST_F(ChangePasswordToolTest, TimeOfUseValidation_NullPasswordManager_Fails) {
-  EXPECT_CALL(password_client_, GetPasswordManager()).WillOnce(Return(nullptr));
-  std::string doc_token = GetMainFrameDocToken();
-  ChangePasswordTool tool(
-      TaskId(1), delegate(), actor_surface(),
-      /*current_password_field=*/std::nullopt,
-      PageTarget(DomNode{.node_id = 20, .document_identifier = doc_token}),
-      /*confirm_new_password_field=*/std::nullopt,
-      /*confirm_button=*/std::nullopt);
-  AnnotatedPageContent observation =
-      CreateObservationWithFieldIds(doc_token, {20});
-
-  mojom::ActionResultPtr result = tool.TimeOfUseValidation(&observation);
-  EXPECT_EQ(result->code,
-            mojom::ActionResultCode::kFormFillingUnknownAutofillError);
   EXPECT_EQ(result->message,
-            "Target field is not a valid password field: "
-            "new_password_field (id 20).");
-}
-
-TEST_F(ChangePasswordToolTest, TimeOfUseValidation_NullFormCache_Fails) {
-  EXPECT_CALL(password_manager_, GetPasswordFormCache())
-      .WillOnce(Return(nullptr));
-  std::string doc_token = GetMainFrameDocToken();
-  ChangePasswordTool tool(
-      TaskId(1), delegate(), actor_surface(),
-      /*current_password_field=*/std::nullopt,
-      PageTarget(DomNode{.node_id = 20, .document_identifier = doc_token}),
-      /*confirm_new_password_field=*/std::nullopt,
-      /*confirm_button=*/std::nullopt);
-  AnnotatedPageContent observation =
-      CreateObservationWithFieldIds(doc_token, {20});
-
-  mojom::ActionResultPtr result = tool.TimeOfUseValidation(&observation);
-  EXPECT_EQ(result->code,
-            mojom::ActionResultCode::kFormFillingUnknownAutofillError);
-  EXPECT_EQ(result->message,
-            "Target field is not a valid password field: "
-            "new_password_field (id 20).");
-}
-
-TEST_F(ChangePasswordToolTest, TimeOfUseValidation_EmptyFormCache_Fails) {
-  std::string doc_token = GetMainFrameDocToken();
-  ChangePasswordTool tool(
-      TaskId(1), delegate(), actor_surface(),
-      /*current_password_field=*/std::nullopt,
-      PageTarget(DomNode{.node_id = 20, .document_identifier = doc_token}),
-      /*confirm_new_password_field=*/std::nullopt,
-      /*confirm_button=*/std::nullopt);
-  AnnotatedPageContent observation =
-      CreateObservationWithFieldIds(doc_token, {20});
-
-  mojom::ActionResultPtr result = tool.TimeOfUseValidation(&observation);
-  EXPECT_EQ(result->code,
-            mojom::ActionResultCode::kFormFillingUnknownAutofillError);
-  EXPECT_EQ(result->message,
-            "Target field is not a valid password field: "
-            "new_password_field (id 20).");
-}
-
-TEST_F(ChangePasswordToolTest,
-       TimeOfUseValidation_MultipleManagersInCache_MatchesTargetForm) {
-  AddFormManager({MakeFormField(99)}, MainFrameDriver(),
-                 autofill::FormRendererId(1));
-  AddFormManager({MakeFormField(10), MakeFormField(20), MakeFormField(30)},
-                 MainFrameDriver(), autofill::FormRendererId(2));
-
-  std::string doc_token = GetMainFrameDocToken();
-  ChangePasswordTool tool(
-      TaskId(1), delegate(), actor_surface(),
-      PageTarget(DomNode{.node_id = 10, .document_identifier = doc_token}),
-      PageTarget(DomNode{.node_id = 20, .document_identifier = doc_token}),
-      PageTarget(DomNode{.node_id = 30, .document_identifier = doc_token}),
-      /*confirm_button=*/std::nullopt);
-  AnnotatedPageContent observation =
-      CreateObservationWithFieldIds(doc_token, {10, 20, 30});
-
-  mojom::ActionResultPtr result = tool.TimeOfUseValidation(&observation);
-  ExpectOkResult(*result);
-}
-
-TEST_F(ChangePasswordToolTest,
-       TimeOfUseValidation_ManagerForDifferentDriver_Fails) {
-  content::RenderFrameHost* main_rfh = web_contents_->GetPrimaryMainFrame();
-  content::RenderFrameHost* child_rfh =
-      content::RenderFrameHostTester::For(main_rfh)->AppendChild("subframe");
-  std::unique_ptr<content::NavigationSimulator> nav_simulator =
-      content::NavigationSimulator::CreateRendererInitiated(
-          GURL("https://example.com/subframe"), child_rfh);
-  nav_simulator->Commit();
-  child_rfh = nav_simulator->GetFinalRenderFrameHost();
-  password_manager::ContentPasswordManagerDriver* child_driver =
-      password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
-          child_rfh);
-  ASSERT_TRUE(child_driver);
-
-  AddFormManager({MakeFormField(20)}, child_driver);
-
-  std::string main_doc_token = GetMainFrameDocToken();
-  ChangePasswordTool tool(
-      TaskId(1), delegate(), actor_surface(),
-      /*current_password_field=*/std::nullopt,
-      PageTarget(DomNode{.node_id = 20, .document_identifier = main_doc_token}),
-      /*confirm_new_password_field=*/std::nullopt,
-      /*confirm_button=*/std::nullopt);
-  AnnotatedPageContent observation =
-      CreateObservationWithFieldIds(main_doc_token, {20});
-
-  mojom::ActionResultPtr result = tool.TimeOfUseValidation(&observation);
-  EXPECT_EQ(result->code,
-            mojom::ActionResultCode::kFormFillingUnknownAutofillError);
-  EXPECT_EQ(result->message,
-            "Target field is not a valid password field: "
-            "new_password_field (id 20).");
-}
-
-TEST_F(ChangePasswordToolTest,
-       TimeOfUseValidation_UnownedPasswordFields_Succeeds) {
-  AddFormManager({MakeFormField(10), MakeFormField(20), MakeFormField(30)},
-                 MainFrameDriver(), autofill::FormRendererId());
-
-  std::string doc_token = GetMainFrameDocToken();
-  ChangePasswordTool tool(
-      TaskId(1), delegate(), actor_surface(),
-      PageTarget(DomNode{.node_id = 10, .document_identifier = doc_token}),
-      PageTarget(DomNode{.node_id = 20, .document_identifier = doc_token}),
-      PageTarget(DomNode{.node_id = 30, .document_identifier = doc_token}),
-      /*confirm_button=*/std::nullopt);
-  AnnotatedPageContent observation =
-      CreateObservationWithFieldIds(doc_token, {10, 20, 30});
-
-  mojom::ActionResultPtr result = tool.TimeOfUseValidation(&observation);
-  ExpectOkResult(*result);
-}
-
-TEST_F(ChangePasswordToolTest,
-       TimeOfUseValidation_FieldsSplitAcrossManagers_Succeeds) {
-  AddFormManager({MakeFormField(10)}, MainFrameDriver(),
-                 autofill::FormRendererId(1));
-  AddFormManager({MakeFormField(20)}, MainFrameDriver(),
-                 autofill::FormRendererId(2));
-
-  std::string doc_token = GetMainFrameDocToken();
-  ChangePasswordTool tool(
-      TaskId(1), delegate(), actor_surface(),
-      PageTarget(DomNode{.node_id = 10, .document_identifier = doc_token}),
-      PageTarget(DomNode{.node_id = 20, .document_identifier = doc_token}),
-      /*confirm_new_password_field=*/std::nullopt,
-      /*confirm_button=*/std::nullopt);
-  AnnotatedPageContent observation =
-      CreateObservationWithFieldIds(doc_token, {10, 20});
-
-  mojom::ActionResultPtr result = tool.TimeOfUseValidation(&observation);
-  ExpectOkResult(*result);
+            "Target frame or password manager driver is unavailable.");
 }
 
 TEST_F(ChangePasswordToolTest,
@@ -569,28 +413,32 @@ TEST_F(ChangePasswordToolTest,
             "new_password_field (id 20).");
 }
 
-TEST_F(ChangePasswordToolTest,
-       TimeOfUseValidation_NonPasswordFieldInManagedForm_Fails) {
-  AddFormManager(
-      {MakeFormField(10, autofill::FormControlType::kInputText),
-       MakeFormField(20, autofill::FormControlType::kInputPassword)});
-
+TEST_F(ChangePasswordToolTest, Invoke_DriverInvalidated_Fails) {
+  AddFormManager({MakeFormField(20)});
   std::string doc_token = GetMainFrameDocToken();
   ChangePasswordTool tool(
       TaskId(1), delegate(), actor_surface(),
-      PageTarget(DomNode{.node_id = 10, .document_identifier = doc_token}),
+      /*current_password_field=*/std::nullopt,
       PageTarget(DomNode{.node_id = 20, .document_identifier = doc_token}),
       /*confirm_new_password_field=*/std::nullopt,
-      /*confirm_button=*/std::nullopt);
+      /*confirm_button=*/PageTarget(gfx::Point(50, 60)));
   AnnotatedPageContent observation =
-      CreateObservationWithFieldIds(doc_token, {10, 20});
+      CreateObservationWithFieldIds(doc_token, {20});
 
-  mojom::ActionResultPtr result = tool.TimeOfUseValidation(&observation);
-  EXPECT_EQ(result->code,
-            mojom::ActionResultCode::kFormFillingUnknownAutofillError);
-  EXPECT_EQ(result->message,
-            "Target field is not a valid password field: "
-            "current_password_field (id 10).");
+  ExpectOkResult(*tool.TimeOfUseValidation(&observation));
+
+  form_managers_.clear();
+  web_contents_->RemoveUserData(
+      password_manager::ContentPasswordManagerDriverFactory::UserDataKey());
+
+  EXPECT_CALL(delegate(), EnqueueFollowupAction).Times(0);
+
+  TestFuture<mojom::ActionResultPtr> future;
+  tool.Invoke(future.GetCallback());
+  EXPECT_EQ(future.Get()->code, mojom::ActionResultCode::kFrameWentAway);
+  EXPECT_FALSE(future.Get()->requires_page_stabilization);
+  EXPECT_EQ(future.Get()->message,
+            "Target frame or password manager driver is unavailable.");
 }
 
 }  // namespace

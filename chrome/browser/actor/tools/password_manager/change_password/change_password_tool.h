@@ -16,12 +16,7 @@
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "components/actor/core/shared_types.h"
-#include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/unique_ids.h"
-
-namespace password_manager {
-class ContentPasswordManagerDriver;
-}  // namespace password_manager
+#include "components/password_manager/core/browser/password_change/change_password_filling_helper.h"
 
 namespace actor {
 
@@ -51,12 +46,9 @@ class ChangePasswordTool : public Tool {
   ActorSurfaceHandle GetTargetActorSurface() const override;
 
  private:
-  mojom::ActionResultPtr ExtractFieldIds(
-      const optimization_guide::proto::AnnotatedPageContent* last_observation,
-      autofill::LocalFrameToken& target_frame_token);
   void OnChangePasswordFormFilled(
       DeprecatedToolCallback callback,
-      const std::optional<autofill::FormData>& form_data);
+      password_manager::ChangePasswordActionResult result);
 
   ActorSurfaceHandle actor_surface_handle_;
   std::optional<PageTarget> current_password_field_;
@@ -64,10 +56,7 @@ class ChangePasswordTool : public Tool {
   std::optional<PageTarget> confirm_new_password_field_;
   std::optional<PageTarget> confirm_button_;
 
-  base::WeakPtr<password_manager::ContentPasswordManagerDriver> driver_;
-  autofill::FieldGlobalId current_password_field_id_;
-  autofill::FieldGlobalId new_password_field_id_;
-  autofill::FieldGlobalId confirm_new_password_field_id_;
+  password_manager::ChangePasswordFillingHelper filling_helper_;
 
   base::WeakPtrFactory<ChangePasswordTool> weak_factory_{this};
 };
