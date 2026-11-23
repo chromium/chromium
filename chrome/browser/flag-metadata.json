@@ -3479,6 +3479,14 @@
     "expiry_milestone": 160
   },
   {
+    "name": "enable-account-menu",
+    "owners": [
+      "bsazonov@chromium.org",
+      "chrome-signin-mobile-team@google.com"
+    ],
+    "expiry_milestone": 180
+  },
+  {
     "name": "enable-account-preview-data",
     "owners": [ "rsult@google.com", "chrome-signin-team@google.com" ],
     "expiry_milestone": 170

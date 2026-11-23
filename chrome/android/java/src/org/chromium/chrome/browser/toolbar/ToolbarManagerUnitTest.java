@@ -232,7 +232,10 @@ import java.util.function.Supplier;
     ChromeFeatureList.GLIC,
     SigninFeatures.ENABLE_AI_SUBSCRIPTION_AVATAR_RING
 })
-@DisableFeatures({SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS})
+@DisableFeatures({
+    SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
+    SigninFeatures.ENABLE_ACCOUNT_MENU
+})
 public class ToolbarManagerUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

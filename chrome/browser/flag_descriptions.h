@@ -2175,6 +2175,12 @@ inline constexpr char kImageDescriptionsAlternateRoutingDescription[] =
     "When adding automatic captions to images, use a different route to "
     "acquire descriptions.";
 
+inline constexpr char kEnableAccountMenuName[] = "Enable Account Menu";
+inline constexpr char kEnableAccountMenuDescription[] =
+    "For testing purposes only. Opens the desktop-like account menu when "
+    "tapping the toolbar sign-in button on all form factors, not only on "
+    "Desktop Android. Requires #signin-button-profile-menu.";
+
 inline constexpr char kEnableAccountPreviewDataName[] =
     "Enable Account Preview Data";
 inline constexpr char kEnableAccountPreviewDataDescription[] =

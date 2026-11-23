@@ -13634,6 +13634,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSigninButtonProfileMenuDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(switches::kSigninButtonProfileMenu)},
 
+    // For testing purposes only.
+    {"enable-account-menu", flag_descriptions::kEnableAccountMenuName,
+     flag_descriptions::kEnableAccountMenuDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(switches::kEnableAccountMenu)},
+
     {"google-pay-via-android-intents",
      flag_descriptions::kGooglePayViaAndroidIntentsName,
      flag_descriptions::kGooglePayViaAndroidIntentsDescription, kOsAndroid,

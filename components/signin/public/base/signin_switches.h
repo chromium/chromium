@@ -274,6 +274,15 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kDisableFirstRunAnimationsForTesting);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_ANDROID)
+// Opens the desktop-like profile menu from the toolbar sign-in button on all
+// form factors, not only on Desktop Android. Requires
+// `kSigninButtonProfileMenu`. For testing purposes only (exposed as
+// chrome://flags/#enable-account-menu).
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kEnableAccountMenu);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Enables fetching and storing preview data for signed-in accounts.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableAccountPreviewData);

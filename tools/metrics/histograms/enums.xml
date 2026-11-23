@@ -13549,6 +13549,7 @@ from previous Chrome versions.
   <int value="-439778992" label="VisualGuidedSetterDocking:enabled"/>
   <int value="-439728770" label="VidsAppExistingConsumerPreinstall:disabled"/>
   <int value="-439110184" label="AndroidWebAppLaunchHandler:disabled"/>
+  <int value="-438799997" label="EnableAccountMenu:enabled"/>
   <int value="-438529902" label="CaptivePortalErrorPage:enabled"/>
   <int value="-438495497" label="enable-unsafe-swiftshader"/>
   <int value="-438379844" label="SwapSideVolumeButtonsForOrientation:enabled"/>
@@ -20325,6 +20326,7 @@ from previous Chrome versions.
   <int value="1568919717"
       label="AutofillEnableWalletReminderNoticePublicPass:disabled"/>
   <int value="1569327162" label="ButterOnDesktopFollowup:enabled"/>
+  <int value="1569478955" label="EnableAccountMenu:disabled"/>
   <int value="1570051274" label="ProductSpecifications:disabled"/>
   <int value="1570067571"
       label="AutofillEnablePaymentSettingsCardPromoAndScanCard:disabled"/>
