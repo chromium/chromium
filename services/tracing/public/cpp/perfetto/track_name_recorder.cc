@@ -200,18 +200,22 @@ void TrackNameRecorder::UpdateProcessLabel(int label_id,
     return RemoveProcessLabel(label_id);
   }
 
-  auto track = perfetto::ProcessTrack::Current();
-  auto desc = track.Serialize();
-  desc.mutable_process()->add_process_labels(current_label);
-  base::TrackEvent::SetTrackDescriptor(track, std::move(desc));
-
-  base::AutoLock lock(lock_);
-  process_labels_[label_id] = current_label;
+  {
+    base::AutoLock lock(lock_);
+    process_labels_[label_id] = current_label;
+  }
+  SetProcessTrackDescriptor();
 }
 
 void TrackNameRecorder::RemoveProcessLabel(int label_id) {
-  base::AutoLock lock(lock_);
-  process_labels_.erase(label_id);
+  bool erased = false;
+  {
+    base::AutoLock lock(lock_);
+    erased = process_labels_.erase(label_id) > 0;
+  }
+  if (erased) {
+    SetProcessTrackDescriptor();
+  }
 }
 
 void TrackNameRecorder::SetProcessTrackDescriptor() {
@@ -229,6 +233,7 @@ void TrackNameRecorder::StartRecording() {
   base::ThreadIdNameManager::GetInstance()->AddObserver(this);
   base::CurrentProcess::GetInstance().SetDelegate(this, {});
   base::TrackEvent::AddSessionObserver(this);
+  SetProcessTrackDescriptor();
   SetThreadTrackDescriptors();
 }
 

@@ -7,15 +7,22 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback_helpers.h"
+#include "base/process/current_process.h"
 #include "base/process/process_handle.h"
+#include "base/test/task_environment.h"
+#include "base/test/tracing/trace_test_utils.h"
 #include "base/tracing/protos/chrome_enums.pbzero.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/perfetto/include/perfetto/protozero/proto_decoder.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_process_descriptor.pb.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_process_descriptor.pbzero.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/process_descriptor.pb.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/track_descriptor.gen.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/track_descriptor.pb.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/track_descriptor.pbzero.h"
 
 namespace tracing {
@@ -66,6 +73,139 @@ TEST(TrackNameRecorderTest, GenerateProcessTrackDescriptor) {
   EXPECT_EQ(chrome_process_descriptor.crash_trace_id(), crash_trace_id);
   EXPECT_EQ(chrome_process_descriptor.host_app_package_name().ToStdString(),
             host_app_package_name);
+}
+
+namespace {
+
+std::optional<perfetto::protos::TrackDescriptor>
+ReadProcessTrackDescriptorFromRegistry() {
+  auto track_info = perfetto::internal::TrackRegistry::Get()->FindTrackInfo(
+      perfetto::ProcessTrack::Current().uuid);
+  if (!track_info) {
+    return std::nullopt;
+  }
+  perfetto::protos::TrackDescriptor desc;
+  if (!desc.ParseFromString(track_info->desc)) {
+    return std::nullopt;
+  }
+  return desc;
+}
+
+}  // namespace
+
+TEST(TrackNameRecorderTest, UpdateProcessLabelPreservesProcessDescriptor) {
+  base::test::TaskEnvironment task_environment;
+  base::test::TracingEnvironment tracing_environment;
+
+  auto* recorder = TrackNameRecorder::GetInstance();
+  recorder->StartRecording();
+  base::ScopedClosureRunner stop_recording(base::BindOnce(
+      &TrackNameRecorder::StopRecording, base::Unretained(recorder)));
+  base::CurrentProcess::GetInstance().SetProcessType(
+      pbzero_enums::PROCESS_RENDERER_TOP_WEBUI);
+
+  const int label_id_1 = recorder->GetNewProcessLabelId();
+  const int label_id_2 = recorder->GetNewProcessLabelId();
+  base::ScopedClosureRunner remove_labels(base::BindOnce(
+      [](TrackNameRecorder* r, int id1, int id2) {
+        r->RemoveProcessLabel(id1);
+        r->RemoveProcessLabel(id2);
+      },
+      recorder, label_id_1, label_id_2));
+
+  recorder->UpdateProcessLabel(label_id_1, "initial-label-1");
+  recorder->UpdateProcessLabel(label_id_2, "label-2");
+  recorder->UpdateProcessLabel(label_id_1, "updated-label-1");
+
+  auto desc = ReadProcessTrackDescriptorFromRegistry();
+  ASSERT_TRUE(desc.has_value());
+  const auto process_track = perfetto::ProcessTrack::Current();
+  EXPECT_EQ(desc->uuid(), process_track.uuid);
+  ASSERT_TRUE(desc->has_process());
+  EXPECT_EQ(desc->process().pid(), static_cast<int32_t>(process_track.pid));
+  EXPECT_EQ(desc->process().process_name(), "WebUI Top Renderer");
+  EXPECT_GT(desc->process().start_timestamp_ns(), 0);
+  EXPECT_THAT(desc->process().process_labels(),
+              ::testing::UnorderedElementsAre("updated-label-1", "label-2"));
+  ASSERT_TRUE(desc->has_chrome_process());
+  EXPECT_EQ(desc->chrome_process().process_type(),
+            static_cast<int32_t>(pbzero_enums::PROCESS_RENDERER_TOP_WEBUI));
+}
+
+TEST(TrackNameRecorderTest, RemoveProcessLabelUpdatesProcessDescriptor) {
+  base::test::TaskEnvironment task_environment;
+  base::test::TracingEnvironment tracing_environment;
+
+  auto* recorder = TrackNameRecorder::GetInstance();
+  recorder->StartRecording();
+  base::ScopedClosureRunner stop_recording(base::BindOnce(
+      &TrackNameRecorder::StopRecording, base::Unretained(recorder)));
+  base::CurrentProcess::GetInstance().SetProcessType(
+      pbzero_enums::PROCESS_RENDERER);
+
+  const int label_id_1 = recorder->GetNewProcessLabelId();
+  const int label_id_2 = recorder->GetNewProcessLabelId();
+  const int unused_label_id = recorder->GetNewProcessLabelId();
+  base::ScopedClosureRunner remove_labels(base::BindOnce(
+      [](TrackNameRecorder* r, int id1, int id2) {
+        r->RemoveProcessLabel(id1);
+        r->RemoveProcessLabel(id2);
+      },
+      recorder, label_id_1, label_id_2));
+
+  recorder->UpdateProcessLabel(label_id_1, "page-1");
+  recorder->UpdateProcessLabel(label_id_2, "page-2");
+
+  // Removing an unset label should be a no-op.
+  recorder->RemoveProcessLabel(unused_label_id);
+
+  recorder->RemoveProcessLabel(label_id_1);
+  auto desc = ReadProcessTrackDescriptorFromRegistry();
+  ASSERT_TRUE(desc.has_value());
+  ASSERT_TRUE(desc->has_process());
+  EXPECT_EQ(desc->process().process_name(), "Renderer");
+  EXPECT_THAT(desc->process().process_labels(),
+              ::testing::UnorderedElementsAre("page-2"));
+  ASSERT_TRUE(desc->has_chrome_process());
+  EXPECT_EQ(desc->chrome_process().process_type(),
+            static_cast<int32_t>(pbzero_enums::PROCESS_RENDERER));
+
+  // Passing an empty label delegates to RemoveProcessLabel.
+  recorder->UpdateProcessLabel(label_id_2, "");
+  desc = ReadProcessTrackDescriptorFromRegistry();
+  ASSERT_TRUE(desc.has_value());
+  ASSERT_TRUE(desc->has_process());
+  EXPECT_EQ(desc->process().process_name(), "Renderer");
+  EXPECT_THAT(desc->process().process_labels(), ::testing::IsEmpty());
+  ASSERT_TRUE(desc->has_chrome_process());
+  EXPECT_EQ(desc->chrome_process().process_type(),
+            static_cast<int32_t>(pbzero_enums::PROCESS_RENDERER));
+}
+
+TEST(TrackNameRecorderTest, StartRecordingSetsProcessTrackDescriptor) {
+  base::test::TaskEnvironment task_environment;
+  base::test::TracingEnvironment tracing_environment;
+
+  // Simulate Linux RendererMain calling SetProcessType() before
+  // TrackNameRecorder::StartRecording() runs, without any track_event OnSetup.
+  base::CurrentProcess::GetInstance().SetProcessType(
+      pbzero_enums::PROCESS_RENDERER);
+
+  auto* recorder = TrackNameRecorder::GetInstance();
+  recorder->StartRecording();
+  base::ScopedClosureRunner stop_recording(base::BindOnce(
+      &TrackNameRecorder::StopRecording, base::Unretained(recorder)));
+
+  auto desc = ReadProcessTrackDescriptorFromRegistry();
+  ASSERT_TRUE(desc.has_value());
+  const auto process_track = perfetto::ProcessTrack::Current();
+  EXPECT_EQ(desc->uuid(), process_track.uuid);
+  ASSERT_TRUE(desc->has_process());
+  EXPECT_EQ(desc->process().pid(), static_cast<int32_t>(process_track.pid));
+  EXPECT_EQ(desc->process().process_name(), "Renderer");
+  ASSERT_TRUE(desc->has_chrome_process());
+  EXPECT_EQ(desc->chrome_process().process_type(),
+            static_cast<int32_t>(pbzero_enums::PROCESS_RENDERER));
 }
 
 }  // namespace tracing
