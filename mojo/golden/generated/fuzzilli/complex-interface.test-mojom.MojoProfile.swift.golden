@@ -1552,6 +1552,13 @@ private func findTargetVariable(
     }
 }
 
+/// Whether `type` is an interface endpoint: a remote or a pending endpoint.
+private func isTransferableEndpoint(type: ILType) -> Bool {
+    guard let group = type.group else { return false }
+    return group.hasSuffix("Remote") || group.hasSuffix("PendingReceiver")
+        || group.hasSuffix("PendingAssociatedReceiver")
+}
+
 /// Mojo variant of the builtin `MethodCallGenerator` that operates only on
 /// "Mojo" objects instead of all the objects in the JavaScript environment,
 /// most of which are unrelated to the interface. This generator emits random
@@ -1569,6 +1576,11 @@ private let MojoMethodCallGenerator = CodeGenerator("MojoMethodCallGenerator") {
     let signatures = b.methodSignatures(of: methodName, on: obj)
     let signature = chooseUniform(from: signatures)
     let arguments = b.findOrGenerateArguments(forSignature: signature, maxNumberOfVariablesToGenerate: 1000)
+    // Sending an endpoint moves its pipe to the other side. Hide the sent
+    // endpoints, so that Fuzzilli does not send or call them again.
+    for argument in Set(arguments) where isTransferableEndpoint(type: b.type(of: argument)) {
+        b.hide(argument)
+    }
     b.callMethod(methodName, on: obj, withArgs: arguments, guard: false)
 }
 
