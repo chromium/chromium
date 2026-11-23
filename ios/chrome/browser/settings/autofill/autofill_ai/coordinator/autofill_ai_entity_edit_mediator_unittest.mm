@@ -5,10 +5,12 @@
 #import "ios/chrome/browser/settings/autofill/autofill_ai/coordinator/autofill_ai_entity_edit_mediator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/i18n/language_tag.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "components/autofill/core/browser/country_type.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
@@ -110,7 +112,9 @@ class AutofillAIEntityEditMediatorTest : public PlatformTest {
                 consentAuditor:&fake_consent_auditor_
                identityManager:identity_test_env_.identity_manager()
                   reauthModule:mockReauthModule_
-                     userEmail:@"test@example.com"];
+                     userEmail:@"test@example.com"
+                     appLocale:base::i18n::GetKnownLanguageTag("en-US")
+              geoIpCountryCode:autofill::GeoIpCountryCode("US")];
     mediator_.consumer = consumer_;
     mediator_.delegate = fake_delegate_;
   }

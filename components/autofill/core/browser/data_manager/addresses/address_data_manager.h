@@ -287,6 +287,10 @@ class AddressDataManager : public AutofillWebDataServiceObserverOnUISequence {
 
   const base::i18n::LanguageTag& app_locale() const { return app_locale_; }
 
+  const GeoIpCountryCode& variation_country_code() const {
+    return variation_country_code_;
+  }
+
   void SetSyncServiceForTest(syncer::SyncService* sync_service) {
     sync_service_ = sync_service;
   }

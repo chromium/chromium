@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#import "components/autofill/core/browser/country_type.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_mutator.h"
 #import "url/gurl.h"
 
@@ -16,6 +17,10 @@ class EntityDataManager;
 class EntityInstance;
 class WalletPassAccessManager;
 }  // namespace autofill
+
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
 
 namespace consent_auditor {
 class ConsentAuditor;
@@ -64,7 +69,10 @@ enum class AutofillAIEntityEditMode;
             consentAuditor:(consent_auditor::ConsentAuditor*)consentAuditor
            identityManager:(signin::IdentityManager*)identityManager
               reauthModule:(id<ReauthenticationProtocol>)reauthModule
-                 userEmail:(NSString*)userEmail NS_DESIGNATED_INITIALIZER;
+                 userEmail:(NSString*)userEmail
+                 appLocale:(const base::i18n::LanguageTag&)appLocale
+          geoIpCountryCode:(autofill::GeoIpCountryCode)geoIpCountryCode
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

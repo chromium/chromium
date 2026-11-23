@@ -8,11 +8,14 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/uuid.h"
+#import "components/application_locale_storage/application_locale_storage.h"
+#import "components/autofill/core/browser/country_type.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/autofill/autofill_ai/error_dialog/model/autofill_ai_error_dialog_context.h"
 #import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
@@ -29,6 +32,7 @@
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_table_view_controller.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_table_view_controller_delegate.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/utils/autofill_ai_entity_instance_builder.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -153,6 +157,8 @@ autofill::EntityInstance GetEmptyEntityInstanceForType(
   ReauthenticationService* reauthService =
       ReauthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
 
+  const variations::VariationsService* variations_service =
+      GetApplicationContext()->GetVariationsService();
   _mediator = [[AutofillAIEntityEditMediator alloc]
       initWithEntityInstance:std::move(*instance)
                         mode:_editMode
@@ -163,7 +169,14 @@ autofill::EntityInstance GetEmptyEntityInstanceForType(
              identityManager:IdentityManagerFactory::GetForProfile(
                                  self.browser->GetProfile())
                 reauthModule:reauthService->GetReauthModule()
-                   userEmail:[self userEmail]];
+                   userEmail:[self userEmail]
+                   appLocale:GetApplicationContext()
+                                 ->GetApplicationLocaleStorage()
+                                 ->GetTag()
+            geoIpCountryCode:autofill::GeoIpCountryCode(
+                                 variations_service
+                                     ? variations_service->GetLatestCountry()
+                                     : std::string())];
 
   _viewController = [[AutofillAIEntityEditTableViewController alloc]
       initWithStyle:ChromeTableViewStyle()];

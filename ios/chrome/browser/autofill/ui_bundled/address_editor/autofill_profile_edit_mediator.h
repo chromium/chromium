@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "components/autofill/core/browser/country_type.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_helper_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_profile_edit_table_view_controller_delegate.h"
 
@@ -14,6 +15,10 @@ namespace autofill {
 class AutofillProfile;
 class PersonalDataManager;
 }  // namespace autofill
+
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
 
 @protocol AutofillProfileEditConsumer;
 @protocol AutofillProfileEditMediatorDelegate;
@@ -24,8 +29,12 @@ class PersonalDataManager;
     : NSObject <AutofillProfileEditTableViewHelperDelegate,
                 AutofillSettingsProfileEditTableViewControllerDelegate>
 
-// Loads the country codes and names.
-+ (NSArray<CountryItem*>*)loadCountries;
+// Loads the country codes and names for the given `geoIpCountryCode` and
+// `appLocale`.
++ (NSArray<CountryItem*>*)
+    loadCountriesWithGeoIpCountryCode:
+        (const autofill::GeoIpCountryCode&)geoIpCountryCode
+                            appLocale:(const base::i18n::LanguageTag&)appLocale;
 
 // Designated initializer. `AutofillProfileEditMediatorDelegate` and
 // `dataManager` should not be nil.
