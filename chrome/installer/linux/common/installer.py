@@ -390,7 +390,7 @@ class InstallerConfig:
 
     # Runtime/Installer
     appstream_screenshot_url: str = (
-        "https://www.gstatic.com/chrome/appstream/chrome-2.png"
+        "https://www.gstatic.com/chrome/appstream/chrome-3.png"
     )
     desktop_exec: str = ""
     desktop_icon: str = ""
