@@ -5,19 +5,14 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_METRICS_PAGE_RESOURCE_MONITOR_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_METRICS_PAGE_RESOURCE_MONITOR_H_
 
-#include <map>
-#include <memory>
-#include <optional>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/resource_attribution/cpu_proportion_tracker.h"
 #include "components/performance_manager/public/resource_attribution/queries.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
-#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
-#include "components/system_cpu/cpu_sample.h"
 
 namespace performance_manager::metrics {
 
@@ -46,9 +41,7 @@ class PageResourceMonitor : public resource_attribution::QueryResultObserver,
     kMaxValue = kMixedForegroundBackground,
   };
 
-  // If `enable_system_cpu_probe` is false, `system_cpu_probe_` will be left
-  // null. This is mainly intended for tests.
-  explicit PageResourceMonitor(bool enable_system_cpu_probe = true);
+  PageResourceMonitor();
 
   ~PageResourceMonitor() override;
   PageResourceMonitor(const PageResourceMonitor& other) = delete;
@@ -63,25 +56,9 @@ class PageResourceMonitor : public resource_attribution::QueryResultObserver,
   base::TimeDelta GetCollectionDelayForTesting() const;
 
  private:
-  // The percent CPU usage for each PageNode that was measured. This stores a
-  // ResourceContext instead of a node pointer in case the PageNode is deleted
-  // while taking asynchronous system CPU measurements.
-  using PageCPUUsageMap =
-      std::map<resource_attribution::ResourceContext, double>;
-
-  // Helper class that converts CPUTimeResult to proportion of CPU used over a
-  // fixed interval, and adds system CPU to the result.
-  class CPUResultConverter;
-
-  // Invoked asynchronously from OnResourceUsageUpdate() when both page and
-  // system CPU measurements are ready. `results` contains the original query
-  // results, with both CPU and memory measurements. `page_cpu_usage` is the
-  // proportion of CPU usage calculated for each page from the original results,
-  // and `system_cpu` is the overall system CPU usage.
-  void OnPageResourceUsageResult(
-      const resource_attribution::QueryResultMap& results,
-      const PageCPUUsageMap& page_cpu_usage,
-      std::optional<system_cpu::CpuSample> system_cpu);
+  void StartFirstCPUInterval(
+      base::TimeTicks time,
+      const resource_attribution::QueryResultMap& results);
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -96,10 +73,8 @@ class PageResourceMonitor : public resource_attribution::QueryResultObserver,
   base::TimeTicks time_of_last_resource_usage_
       GUARDED_BY_CONTEXT(sequence_checker_) = base::TimeTicks::Now();
 
-  // Helpers to convert CPU measurements for UMA.
-  std::unique_ptr<CPUResultConverter> cpu_result_converter_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-  std::unique_ptr<CPUResultConverter> delayed_cpu_result_converter_
+  // Tracks per-tab CPU proportion between collection intervals.
+  resource_attribution::CPUProportionTracker cpu_proportion_tracker_
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Graph being monitored.

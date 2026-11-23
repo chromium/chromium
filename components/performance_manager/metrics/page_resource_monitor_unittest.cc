@@ -24,7 +24,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
-#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/performance_manager/embedder/graph_features.h"
@@ -84,7 +83,7 @@ class PageResourceMonitorUnitTest : public GraphTestHarness {
         graph(), &memory_delegate_factory_);
 
     std::unique_ptr<PageResourceMonitor> monitor =
-        std::make_unique<PageResourceMonitor>(enable_system_cpu_probe_);
+        std::make_unique<PageResourceMonitor>();
     monitor_ = monitor.get();
     graph()->PassToGraph(std::move(monitor));
     ResetUkmRecorder();
@@ -112,10 +111,8 @@ class PageResourceMonitorUnitTest : public GraphTestHarness {
   void TriggerCollectPageResourceUsage();
 
   // Advances the mock clock slightly to give enough time to make asynchronous
-  // measurements after TriggerCollectPageResourceUsage(). If
-  // `include_system_cpu` is true, also waits for some real time to let the
-  // system CpuProbe collect data.
-  void WaitForMetrics(bool include_system_cpu = false);
+  // measurements after TriggerCollectPageResourceUsage().
+  void WaitForMetrics();
 
   void ResetUkmRecorder() {
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
@@ -126,11 +123,6 @@ class PageResourceMonitorUnitTest : public GraphTestHarness {
   // collected UKM's for the next slice.
   void WaitForMetricsAndTestBackgroundStates(
       std::map<ukm::SourceId, PageMeasurementBackgroundState> expected_states);
-
-  // Subclasses can override this before calling
-  // PageResourceMonitorUnitTest::SetUp() to simulate an environment where
-  // CPUProbe::Create() returns nullptr.
-  bool enable_system_cpu_probe_ = true;
 
   raw_ptr<PageResourceMonitor> monitor_ = nullptr;
 
@@ -157,15 +149,9 @@ void PageResourceMonitorUnitTest::TriggerCollectPageResourceUsage() {
   last_collection_time_ = base::TimeTicks::Now();
 }
 
-void PageResourceMonitorUnitTest::WaitForMetrics(bool include_system_cpu) {
-  if (include_system_cpu) {
-    // Page CPU can use the mock clock, but CPUProbe needs real time to pass.
-    base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
-  }
-  // GraphTestHarness uses ThreadPoolExecutionMode::QUEUED, so RunLoop only
-  // pumps the main thread. FastForwardBy also pumps ThreadPool threads. With
-  // the mock clock, any timeout will pump the threads enough to post the tasks
-  // that gather and record metrics.
+void PageResourceMonitorUnitTest::WaitForMetrics() {
+  // Advance the mock clock slightly to let asynchronous measurement queries
+  // post and record their results.
   task_env().FastForwardBy(TestTimeouts::tiny_timeout());
 }
 

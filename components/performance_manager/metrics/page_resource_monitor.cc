@@ -6,16 +6,10 @@
 
 #include <stdint.h>
 
-#include <optional>
-#include <utility>
-
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/scoped_observation.h"
 #include "components/performance_manager/public/graph/page_node.h"
-#include "components/performance_manager/public/resource_attribution/cpu_proportion_tracker.h"
+#include "components/performance_manager/public/resource_attribution/resource_contexts.h"
 #include "components/performance_manager/public/resource_attribution/resource_types.h"
-#include "components/system_cpu/cpu_probe.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -24,8 +18,6 @@ namespace performance_manager::metrics {
 
 namespace {
 
-using system_cpu::CpuProbe;
-using system_cpu::CpuSample;
 using PageMeasurementBackgroundState =
     PageResourceMonitor::PageMeasurementBackgroundState;
 
@@ -88,43 +80,17 @@ bool ContextIsTab(const ResourceContext& context) {
 
 }  // namespace
 
-class PageResourceMonitor::CPUResultConverter {
- public:
-  // A callback that's invoked with the converted results.
-  using ResultCallback = base::OnceCallback<void(const PageCPUUsageMap&,
-                                                 std::optional<CpuSample>)>;
-
-  explicit CPUResultConverter(std::unique_ptr<CpuProbe> system_cpu_probe);
-  ~CPUResultConverter() = default;
-
-  base::WeakPtr<CPUResultConverter> GetWeakPtr();
-
-  bool HasSystemCPUProbe() const;
-
-  // Invokes `result_callback_` with the converted `results`.
-  void OnResourceUsageUpdated(ResultCallback result_callback,
-                              const QueryResultMap& results);
-
- private:
-  void StartFirstInterval(base::TimeTicks time, const QueryResultMap& results);
-  void StartNextInterval(ResultCallback result_callback,
-                         base::TimeTicks time,
-                         const QueryResultMap& results,
-                         std::optional<CpuSample> system_cpu);
-
-  std::unique_ptr<CpuProbe> system_cpu_probe_;
-  resource_attribution::CPUProportionTracker proportion_tracker_;
-  base::WeakPtrFactory<CPUResultConverter> weak_factory_{this};
-};
-
-PageResourceMonitor::PageResourceMonitor(bool enable_system_cpu_probe)
+PageResourceMonitor::PageResourceMonitor()
     : resource_query_(CPUQueryBuilder()
                           .AddResourceType(ResourceType::kMemorySummary)
-                          .CreateScopedQuery()) {
+                          .CreateScopedQuery()),
+      // Only calculate results for tabs, not extensions.
+      cpu_proportion_tracker_(base::BindRepeating(&ContextIsTab)) {
   query_observation_.Observe(&resource_query_);
   resource_query_.Start(kCollectionDelay);
-  cpu_result_converter_ = std::make_unique<CPUResultConverter>(
-      enable_system_cpu_probe ? CpuProbe::Create() : nullptr);
+  CPUQueryBuilder().QueryOnce(
+      base::BindOnce(&PageResourceMonitor::StartFirstCPUInterval,
+                     weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
 PageResourceMonitor::~PageResourceMonitor() = default;
@@ -132,21 +98,10 @@ PageResourceMonitor::~PageResourceMonitor() = default;
 void PageResourceMonitor::OnResourceUsageUpdated(
     const QueryResultMap& results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  cpu_result_converter_->OnResourceUsageUpdated(
-      base::BindOnce(&PageResourceMonitor::OnPageResourceUsageResult,
-                     weak_factory_.GetWeakPtr(), results),
-      results);
-}
 
-base::TimeDelta PageResourceMonitor::GetCollectionDelayForTesting() const {
-  return kCollectionDelay;
-}
-
-void PageResourceMonitor::OnPageResourceUsageResult(
-    const QueryResultMap& results,
-    const PageCPUUsageMap& page_cpu_usage,
-    std::optional<CpuSample> system_cpu) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const auto now = base::TimeTicks::Now();
+  const auto page_cpu_usage =
+      cpu_proportion_tracker_.StartNextInterval(now, results);
 
   // Calculate the overall CPU usage.
   double total_cpu_usage = 0;
@@ -155,11 +110,10 @@ void PageResourceMonitor::OnPageResourceUsageResult(
   }
 
   // Contexts in `page_cpu_usage` are a subset of contexts in `results`.
-  const auto now = base::TimeTicks::Now();
   for (const auto& [page_context, result] : results) {
     const PageNode* page_node = PageNodeFromContext(page_context);
     if (!page_node) {
-      // Page was deleted while waiting for system CPU. Nothing to log.
+      // Page was deleted before measurement completed. Nothing to log.
       continue;
     }
     if (page_node->GetType() != PageType::kTab) {
@@ -191,55 +145,14 @@ void PageResourceMonitor::OnPageResourceUsageResult(
   time_of_last_resource_usage_ = now;
 }
 
-PageResourceMonitor::CPUResultConverter::CPUResultConverter(
-    std::unique_ptr<CpuProbe> system_cpu_probe)
-    : system_cpu_probe_(std::move(system_cpu_probe)),
-      // Only calculate results for tabs, not extensions.
-      proportion_tracker_(base::BindRepeating(&ContextIsTab)) {
-  CPUQueryBuilder().QueryOnce(
-      base::BindOnce(&CPUResultConverter::StartFirstInterval, GetWeakPtr(),
-                     base::TimeTicks::Now()));
-  if (system_cpu_probe_) {
-    system_cpu_probe_->StartSampling();
-  }
+base::TimeDelta PageResourceMonitor::GetCollectionDelayForTesting() const {
+  return kCollectionDelay;
 }
 
-base::WeakPtr<PageResourceMonitor::CPUResultConverter>
-PageResourceMonitor::CPUResultConverter::GetWeakPtr() {
-  return weak_factory_.GetWeakPtr();
-}
-
-bool PageResourceMonitor::CPUResultConverter::HasSystemCPUProbe() const {
-  return static_cast<bool>(system_cpu_probe_);
-}
-
-void PageResourceMonitor::CPUResultConverter::OnResourceUsageUpdated(
-    CPUResultConverter::ResultCallback result_callback,
-    const QueryResultMap& results) {
-  auto next_update_callback = base::BindOnce(
-      &CPUResultConverter::StartNextInterval, GetWeakPtr(),
-      std::move(result_callback), base::TimeTicks::Now(), results);
-  if (system_cpu_probe_) {
-    system_cpu_probe_->RequestSample(std::move(next_update_callback));
-  } else {
-    std::move(next_update_callback).Run(std::nullopt);
-  }
-}
-
-void PageResourceMonitor::CPUResultConverter::StartFirstInterval(
-    base::TimeTicks time,
-    const QueryResultMap& results) {
-  proportion_tracker_.StartFirstInterval(time, results);
-}
-
-void PageResourceMonitor::CPUResultConverter::StartNextInterval(
-    CPUResultConverter::ResultCallback result_callback,
-    base::TimeTicks time,
-    const QueryResultMap& results,
-    std::optional<CpuSample> system_cpu) {
-  std::move(result_callback)
-      .Run(proportion_tracker_.StartNextInterval(time, results),
-           std::move(system_cpu));
+void PageResourceMonitor::StartFirstCPUInterval(base::TimeTicks time,
+                                                const QueryResultMap& results) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  cpu_proportion_tracker_.StartFirstInterval(time, results);
 }
 
 }  // namespace performance_manager::metrics
