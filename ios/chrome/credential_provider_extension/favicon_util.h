@@ -12,10 +12,11 @@
 typedef void (^BlockWithFaviconAttributes)(FaviconAttributes*);
 
 // Fetches the favicon attributes of the provided favicon and calls the
-// completion block with the favicon attributes, or nil if they couldn't be
-// read. The completion block is called asynchronously on a background queue;
-// callers must hop to the main queue before touching UI. Successfully read
-// favicons are cached in memory.
+// completion block with the favicon attributes, or nil if `favicon` isn't a
+// valid favicon file key or the attributes couldn't be read. The completion
+// block is called asynchronously on a background queue; callers must hop to the
+// main queue before touching UI. Successfully read favicons are cached in
+// memory.
 void FetchFaviconAsync(NSString* favicon,
                        BlockWithFaviconAttributes completion);
 

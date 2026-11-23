@@ -19,7 +19,9 @@
 
 namespace {
 
-NSString* const kFaviconKey = @"favicon_key";
+// A valid favicon file key (64 hex characters).
+NSString* const kFaviconKey =
+    @"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 NSString* const kMonogram = @"E";
 
 // Returns the monogram currently displayed by `favicon_view`, if any.
@@ -231,10 +233,13 @@ TEST_F(CredentialListViewControllerTest, ReusedCellDropsCachedFavicon) {
           [controller_.tableView cellForRowAtIndexPath:first_row_]);
   ASSERT_NSEQ(DisplayedMonogram(cached_cell.faviconView), kMonogram);
 
+  // A valid favicon file key (64 hex characters) not cached in memory.
+  NSString* const kUncachedFaviconKey =
+      @"BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB";
   [controller_
       presentSuggestedCredentials:@[]
                    allCredentials:@[ MakeCredential(@"other.com", @"user",
-                                                    @"uncached_favicon_key") ]
+                                                    kUncachedFaviconKey) ]
                     showSearchBar:NO
             showNewPasswordOption:NO];
   FaviconTableViewCell* reused_cell =

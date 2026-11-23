@@ -6,6 +6,7 @@
 
 #import "base/check_is_test.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/credential_provider/favicon_file_key.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 
 namespace {
@@ -94,7 +95,10 @@ void FetchFaviconAsync(NSString* favicon,
   // Capture the test override before hopping to the background queue.
   NSURL* const folder_for_testing = g_favicon_folder_for_testing;
   dispatch_async(FaviconQueue(), ^{
-    if (!favicon.length) {
+    // The key is used as a file name in the shared favicon folder. Reject
+    // anything that isn't a favicon file key so that malformed keys (e.g.
+    // containing "../") can't read files outside of that folder.
+    if (!IsValidFaviconFileKey(favicon)) {
       completion(nil);
       return;
     }

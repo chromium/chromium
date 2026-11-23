@@ -15,7 +15,9 @@
 
 namespace {
 
-NSString* const kFaviconKey = @"favicon_key";
+// A valid favicon file key (64 hex characters).
+NSString* const kFaviconKey =
+    @"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
 
 class FaviconUtilTest : public PlatformTest {
  public:
@@ -108,6 +110,24 @@ TEST_F(FaviconUtilTest, MissingFaviconIsNotCached) {
 TEST_F(FaviconUtilTest, EmptyKeyReturnsNil) {
   EXPECT_FALSE(FetchAndWait(@""));
   EXPECT_FALSE(CachedFaviconAttributes(@""));
+}
+
+// Tests that keys that aren't favicon file keys are not read, even if they
+// resolve to an existing favicon file.
+TEST_F(FaviconUtilTest, InvalidKeyIsNotRead) {
+  ASSERT_NO_FATAL_FAILURE(WriteFavicon(kFaviconKey, @"A"));
+  NSString* folder_name = FileURLForKey(kFaviconKey)
+                              .URLByDeletingLastPathComponent.lastPathComponent;
+
+  // A path escaping the favicon folder and resolving back to the file.
+  NSString* traversal_key =
+      [NSString stringWithFormat:@"../%@/%@", folder_name, kFaviconKey];
+  EXPECT_FALSE(FetchAndWait(traversal_key));
+
+  // An existing file whose name isn't a favicon file key.
+  NSString* non_key = @"not_a_favicon_key";
+  ASSERT_NO_FATAL_FAILURE(WriteFavicon(non_key, @"B"));
+  EXPECT_FALSE(FetchAndWait(non_key));
 }
 
 // Tests that resetting the favicon folder clears the cache.

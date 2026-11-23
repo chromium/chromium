@@ -231,6 +231,7 @@ source_set("favicon_util") {
   deps = [
     "//base",
     "//ios/chrome/common/app_group",
+    "//ios/chrome/common/credential_provider:favicon_file_key",
     "//ios/chrome/common/ui/favicon",
   ]
   frameworks = [ "Foundation.framework" ]
