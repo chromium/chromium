@@ -49,10 +49,12 @@
 #pragma mark - ActuationSuggestionsConsumer
 
 - (void)setSuggestions:(NSArray<ActorFormSuggestion*>*)suggestions
-    forActiveWorklogItem:(ActuationWorklogItem*)worklogItem {
+    selectedSuggestionIndex:(NSInteger)selectedSuggestionIndex
+       forActiveWorklogItem:(ActuationWorklogItem*)worklogItem {
   // The presented `suggestions` are matched by their elements, since a data
   // source may resend them in a different array.
   if ([suggestions isEqualToArray:_presentedSuggestions]) {
+    _suggestionsCoordinator.activeIndex = selectedSuggestionIndex;
     _suggestionsCoordinator.worklogItem = worklogItem;
     return;
   }
@@ -65,6 +67,7 @@
       initWithBaseViewController:_viewController
                          browser:self.browser
                      suggestions:suggestions
+                     activeIndex:selectedSuggestionIndex
                      worklogItem:worklogItem];
   _suggestionsCoordinator.delegate = _mediator;
   [_suggestionsCoordinator start];

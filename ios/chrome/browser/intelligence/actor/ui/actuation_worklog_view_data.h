@@ -304,15 +304,21 @@ enum class ActuationHeaderPrimaryAction {
 
 // Suggestions selectable for `suggestionsEntry`, if any.
 // TODO(crbug.com/584701116): Replace `ActorFormSuggestion` with a UI-layer
-// view data type so this header doesn't depend on `actor/tools/model/`.
+// view data type so this header doesn't depend on `actor/tools/model/`. Also
+// consolidate with `selectedSuggestionIndex`.
 @property(nonatomic, copy, readonly) NSArray<ActorFormSuggestion*>* suggestions;
+
+// Index of the currently selected suggestion in `suggestions`, or `NSNotFound`
+// if `suggestions` is `nil`.
+@property(nonatomic, assign, readonly) NSInteger selectedSuggestionIndex;
 
 // Entry for which `suggestions` are selectable. `nil` if `suggestions` is.
 @property(nonatomic, strong, readonly) ActuationWorklogEntry* suggestionsEntry;
 
 // Designated initializer. `headerContent` and `entries` must be set.
-// `suggestions` and `suggestionsEntry` must both be `nil` or both be set, and
-// `suggestions` must not be empty.
+// `suggestions` and `suggestionsEntry` must both be `nil` or both be set,
+// `suggestions` must not be empty, and `selectedSuggestionIndex` must be a
+// valid index in `suggestions` when set or `NSNotFound` when `nil`.
 - (instancetype)
     initWithActuationActive:(BOOL)actuationActive
         headerPrimaryAction:(ActuationHeaderPrimaryAction)headerPrimaryAction
@@ -320,6 +326,7 @@ enum class ActuationHeaderPrimaryAction {
                     entries:(NSArray<ActuationWorklogEntry*>*)entries
                intervention:(ActuationInterventionData*)intervention
                 suggestions:(NSArray<ActorFormSuggestion*>*)suggestions
+    selectedSuggestionIndex:(NSInteger)selectedSuggestionIndex
            suggestionsEntry:(ActuationWorklogEntry*)suggestionsEntry
     NS_DESIGNATED_INITIALIZER;
 

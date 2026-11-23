@@ -28,19 +28,18 @@
 
   // Temporary view controller displaying non-credential suggestions.
   UIAlertController* _paymentAlert;
-
-  // The index of the suggestion that is currently selected.
-  NSInteger _activeIndex;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                suggestions:
                                    (NSArray<ActorFormSuggestion*>*)suggestions
+                               activeIndex:(NSInteger)activeIndex
                                worklogItem:(ActuationWorklogItem*)worklogItem {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _suggestions = [suggestions copy];
+    _activeIndex = activeIndex;
     _worklogItem = worklogItem;
   }
   return self;
@@ -58,7 +57,7 @@
   _paymentAlert = nil;
   _suggestions = nil;
   _worklogItem = nil;
-  _activeIndex = 0;
+  self.activeIndex = NSNotFound;
 }
 
 #pragma mark - ActuationSuggestionsPresenter
@@ -91,13 +90,10 @@
                                didSelectSuggestion:
                                    (FormSuggestion*)formSuggestion
                                            atIndex:(NSInteger)index {
-  if (index >= 0 && static_cast<NSUInteger>(index) < _suggestions.count) {
-    ActorFormSuggestion* selectedSuggestion = _suggestions[index];
-    if (selectedSuggestion.formSuggestion == formSuggestion) {
-      _activeIndex = index;
-      [self.delegate suggestionsCoordinator:self
-                        didSelectSuggestion:selectedSuggestion];
-    }
+  if (index >= 0 && static_cast<NSUInteger>(index) < _suggestions.count &&
+      _suggestions[index].formSuggestion == formSuggestion) {
+    [self.delegate suggestionsCoordinator:self
+               didSelectSuggestionAtIndex:index];
   }
 }
 
@@ -127,7 +123,7 @@
           initWithBaseViewController:self.baseViewController
                              browser:self.browser
                          suggestions:formSuggestions
-                         activeIndex:_activeIndex];
+                         activeIndex:self.activeIndex];
   _credentialSuggestionBottomSheetCoordinator.delegate = self;
   [_credentialSuggestionBottomSheetCoordinator start];
 }

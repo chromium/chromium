@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-@class ActorFormSuggestion;
 @class ActuationInterventionAction;
 @class ActuationWorklogState;
 @protocol ActorTaskDataSource;
@@ -46,10 +45,10 @@
 // Resolves the pending intervention with `action`. No-op if none is pending.
 - (void)resolveInterventionWithAction:(ActuationInterventionAction*)action;
 
-// Selects `suggestion` for the pending suggestions intervention, replacing the
-// card of the previously selected suggestion. No-op if no suggestions are
-// selectable.
-- (void)selectSuggestion:(ActorFormSuggestion*)suggestion;
+// Selects the suggestion at `index` for the pending suggestions intervention,
+// replacing the card of the previously selected suggestion. No-op if no
+// suggestions are selectable.
+- (void)selectSuggestionAtIndex:(NSInteger)index;
 
 // Stops the task at the user's request.
 - (void)stopTask;

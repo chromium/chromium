@@ -52,7 +52,9 @@
   _state = nil;
   [self.consumer setActuationActive:NO];
   [self.consumer reset];
-  [self.suggestionsConsumer setSuggestions:nil forActiveWorklogItem:nil];
+  [self.suggestionsConsumer setSuggestions:nil
+                   selectedSuggestionIndex:NSNotFound
+                      forActiveWorklogItem:nil];
 }
 
 - (void)disconnect {
@@ -85,6 +87,7 @@
                      animated:animated];
   [self.consumer setIntervention:state.intervention];
   [self.suggestionsConsumer setSuggestions:state.suggestions
+                   selectedSuggestionIndex:state.selectedSuggestionIndex
                       forActiveWorklogItem:state.suggestionsEntry.item];
 }
 
@@ -132,8 +135,8 @@
 #pragma mark - ActuationSuggestionsDelegate
 
 - (void)suggestionsCoordinator:(ActuationSuggestionsCoordinator*)coordinator
-           didSelectSuggestion:(ActorFormSuggestion*)suggestion {
-  [_actionHandler selectSuggestion:suggestion];
+    didSelectSuggestionAtIndex:(NSInteger)index {
+  [_actionHandler selectSuggestionAtIndex:index];
 }
 
 @end

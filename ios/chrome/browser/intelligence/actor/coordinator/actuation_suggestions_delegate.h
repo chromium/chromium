@@ -7,15 +7,15 @@
 
 #import <Foundation/Foundation.h>
 
-@class ActorFormSuggestion;
 @class ActuationSuggestionsCoordinator;
 
 // Delegate protocol for handling suggestion selection events.
 @protocol ActuationSuggestionsDelegate <NSObject>
 
-// Notifies the delegate that `suggestion` was selected in `coordinator`.
+// Notifies the delegate that the suggestion at `index` was selected in
+// `coordinator`.
 - (void)suggestionsCoordinator:(ActuationSuggestionsCoordinator*)coordinator
-           didSelectSuggestion:(ActorFormSuggestion*)suggestion;
+    didSelectSuggestionAtIndex:(NSInteger)index;
 
 @end
 

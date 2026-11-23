@@ -19,6 +19,9 @@
 // Delegate for handling suggestion selection events.
 @property(nonatomic, weak) id<ActuationSuggestionsDelegate> delegate;
 
+// The index of the suggestion that is currently selected.
+@property(nonatomic, assign) NSInteger activeIndex;
+
 // The worklog item triggering the actuation suggestions.
 @property(nonatomic, strong) ActuationWorklogItem* worklogItem;
 
@@ -26,6 +29,7 @@
                                    browser:(Browser*)browser
                                suggestions:
                                    (NSArray<ActorFormSuggestion*>*)suggestions
+                               activeIndex:(NSInteger)activeIndex
                                worklogItem:(ActuationWorklogItem*)worklogItem
     NS_DESIGNATED_INITIALIZER;
 

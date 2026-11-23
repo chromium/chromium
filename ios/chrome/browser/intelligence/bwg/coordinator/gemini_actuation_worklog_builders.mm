@@ -72,5 +72,6 @@ ActuationWorklogState* ActuationWorklogStateForBrowserActuationsBlock(
                       entries:entries
                  intervention:nil
                   suggestions:nil
+      selectedSuggestionIndex:NSNotFound
              suggestionsEntry:nil];
 }

@@ -44,6 +44,7 @@
 // Shortcuts to the intervention and suggestions of `state`.
 @property(nonatomic, readonly) ActuationInterventionData* intervention;
 @property(nonatomic, readonly) NSArray<ActorFormSuggestion*>* suggestions;
+@property(nonatomic, readonly) NSInteger selectedSuggestionIndex;
 @property(nonatomic, readonly) ActuationWorklogItem* suggestionsItem;
 @end
 
@@ -65,6 +66,10 @@
 
 - (NSArray<ActorFormSuggestion*>*)suggestions {
   return _state.suggestions;
+}
+
+- (NSInteger)selectedSuggestionIndex {
+  return _state.selectedSuggestionIndex;
 }
 
 - (ActuationWorklogItem*)suggestionsItem {
@@ -451,6 +456,7 @@ TEST_F(GeminiActorTaskStoreTest, UserInterventionCancellation) {
                      }];
   EXPECT_FALSE(suggestions_completion_called);
   EXPECT_EQ(observer_.suggestions, nil);
+  EXPECT_EQ(observer_.selectedSuggestionIndex, NSNotFound);
   EXPECT_EQ(observer_.suggestionsItem, nil);
   EXPECT_NSEQ(observer_.intervention.title, @"Title");
 
@@ -458,21 +464,27 @@ TEST_F(GeminiActorTaskStoreTest, UserInterventionCancellation) {
   EXPECT_FALSE(intervention_completion_called);
 }
 
-// Tests that the intervention and its suggestions are cleared before the
-// completion runs.
+// Tests that the intervention and its suggestions are cleared in the published
+// state before the completion runs, while the completion still receives the
+// selected suggestion.
 TEST_F(GeminiActorTaskStoreTest, ResolvingClearsInterventionBeforeCompletion) {
   AttachAndRegister();
+  ActorFormSuggestion* suggestion = CreateCredentialSuggestion();
   GeminiActorTaskStore* store = store_;
+  __block ActorFormSuggestion* resolved_suggestion = nil;
   __block BOOL cleared_in_completion = NO;
   [store_ actorTask:task_id_
-      selectFromSuggestions:@[ CreateCredentialSuggestion() ]
+      selectFromSuggestions:@[ suggestion ]
           completionHandler:^(ActorFormSuggestion* s, BOOL storePermission) {
+            resolved_suggestion = s;
             cleared_in_completion =
-                !store.state.intervention && !store.state.suggestions;
+                !store.state.intervention && !store.state.suggestions &&
+                store.state.selectedSuggestionIndex == NSNotFound;
           }];
 
   [store_ resolveInterventionWithAction:observer_.intervention.actions[1]];
 
+  EXPECT_EQ(resolved_suggestion, suggestion);
   EXPECT_TRUE(cleared_in_completion);
 }
 
@@ -480,6 +492,7 @@ TEST_F(GeminiActorTaskStoreTest, ResolvingClearsInterventionBeforeCompletion) {
 // the intervention each publish a single state.
 TEST_F(GeminiActorTaskStoreTest, SelectFromCredentialsAllow) {
   AttachAndRegister();
+  EXPECT_EQ(observer_.selectedSuggestionIndex, NSNotFound);
   const NSUInteger initialUpdateCount = observer_.updateCount;
 
   ActorFormSuggestion* suggestion = CreateCredentialSuggestion();
@@ -509,6 +522,7 @@ TEST_F(GeminiActorTaskStoreTest, SelectFromCredentialsAllow) {
 
   EXPECT_EQ(observer_.suggestions.count, 1u);
   EXPECT_EQ(observer_.suggestions.firstObject, suggestion);
+  EXPECT_EQ(observer_.selectedSuggestionIndex, 0);
   EXPECT_EQ(observer_.suggestionsItem, item);
 
   ASSERT_NE(observer_.intervention, nil);
@@ -528,6 +542,7 @@ TEST_F(GeminiActorTaskStoreTest, SelectFromCredentialsAllow) {
   EXPECT_FALSE(stored);
   EXPECT_EQ(observer_.intervention, nil);
   EXPECT_EQ(observer_.suggestions, nil);
+  EXPECT_EQ(observer_.selectedSuggestionIndex, NSNotFound);
   EXPECT_EQ(observer_.suggestionsItem, nil);
 }
 
@@ -657,8 +672,9 @@ TEST_F(GeminiActorTaskStoreTest, SelectSuggestionReplacesCard) {
   NSArray<ActorFormSuggestion*>* suggestions = observer_.suggestions;
   EXPECT_NSEQ(observer_.items.lastObject.accessoryItem.title,
               @"user1@example.com");
+  EXPECT_EQ(observer_.selectedSuggestionIndex, 0);
 
-  [store_ selectSuggestion:suggestion2];
+  [store_ selectSuggestionAtIndex:1];
 
   EXPECT_EQ(observer_.updateCount, update_count + 1);
   ASSERT_EQ(observer_.items.count, item_count);
@@ -669,10 +685,12 @@ TEST_F(GeminiActorTaskStoreTest, SelectSuggestionReplacesCard) {
   EXPECT_EQ(observer_.state.entries.lastObject.chip, nil);
   EXPECT_EQ(observer_.suggestionsItem, observer_.items.lastObject);
   EXPECT_EQ(observer_.suggestions, suggestions);
+  EXPECT_EQ(observer_.selectedSuggestionIndex, 1);
 
   [store_ resolveInterventionWithAction:observer_.intervention.actions[1]];
   EXPECT_EQ(selected, suggestion2);
   EXPECT_EQ(observer_.suggestions, nil);
+  EXPECT_EQ(observer_.selectedSuggestionIndex, NSNotFound);
 }
 
 // Tests that selecting a suggestion while none are selectable is a no-op,
@@ -682,7 +700,7 @@ TEST_F(GeminiActorTaskStoreTest, SelectSuggestionWithoutSuggestionsIsNoOp) {
   NSArray<ActuationWorklogItem*>* items = observer_.items;
   const NSUInteger update_count = observer_.updateCount;
 
-  [store_ selectSuggestion:CreateCredentialSuggestion()];
+  [store_ selectSuggestionAtIndex:0];
 
   EXPECT_NSEQ(observer_.items, items);
   EXPECT_EQ(observer_.updateCount, update_count);
@@ -839,7 +857,7 @@ TEST_F(GeminiActorTaskStoreTest,
           completionHandler:^(ActorFormSuggestion*, BOOL){
           }];
 
-  [store_ selectSuggestion:suggestion2];
+  [store_ selectSuggestionAtIndex:1];
   const NSUInteger update_count_after_select = observer_.updateCount;
   ActuationWorklogItem* second_item = observer_.items.lastObject;
   EXPECT_NSEQ(second_item.accessoryItem.title, @"user2@example.com");

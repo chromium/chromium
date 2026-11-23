@@ -88,6 +88,7 @@ TEST_F(GeminiActuationWorklogBuildersTest, TaskWithoutActuations) {
   EXPECT_FALSE(state.actuationActive);
   EXPECT_EQ(nil, state.intervention);
   EXPECT_EQ(nil, state.suggestions);
+  EXPECT_EQ(NSNotFound, state.selectedSuggestionIndex);
   EXPECT_EQ(nil, state.suggestionsEntry);
   NSArray<ActuationWorklogItem*>* items = Items(state);
   ASSERT_EQ(2u, items.count);
