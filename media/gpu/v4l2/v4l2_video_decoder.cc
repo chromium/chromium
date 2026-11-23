@@ -1284,6 +1284,16 @@ void V4L2VideoDecoder::ServiceDeviceTask(bool event) {
     if (!dequeued_buffer)
       break;
 
+    // Stateless backends manage the DPB in userspace and cannot recover if a
+    // reference frame fails to decode, whereas stateful drivers (e.g. Qualcomm
+    // Venus) may emit non-fatal V4L2_BUF_FLAG_ERROR buffers as flush/DRC
+    // discard markers.
+    if (!backend_is_stateful_ && dequeued_buffer->IsError()) {
+      VLOGF(1) << "Dequeued V4L2 output buffer with error flag set.";
+      SetState(State::kError);
+      return;
+    }
+
     if (backend_)
       backend_->OnOutputBufferDequeued(std::move(dequeued_buffer));
   }

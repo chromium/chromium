@@ -193,6 +193,7 @@ void V4L2StatelessVideoDecoderBackend::ReuseOutputBuffer(
 void V4L2StatelessVideoDecoderBackend::OnOutputBufferDequeued(
     V4L2ReadableBufferRef dequeued_buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!dequeued_buffer->IsError());
 
   // Mark the output buffer decoded, and try to output surface.
   DCHECK(!surfaces_at_device_.empty());
