@@ -108,7 +108,8 @@ public class PwaInstallBottomSheetIntegrationTest {
         onView(withText("Test App")).check(matches(isDisplayed()));
         onView(withText("https://example.com")).check(matches(isDisplayed()));
         onView(withId(R.id.button_install)).check(matches(isDisplayed()));
-        onView(withId(R.id.drag_handlebar)).check(matches(isDisplayed()));
+        onView(withId(org.chromium.components.browser_ui.bottomsheet.R.id.handlebar))
+                .check(matches(isDisplayed()));
     }
 
     @Test
@@ -152,6 +153,7 @@ public class PwaInstallBottomSheetIntegrationTest {
         assertNotNull(content);
 
         assertTrue(content.swipeToDismissEnabled());
+        assertTrue(content.showHandlebar());
         assertEquals(
                 R.string.pwa_install_bottom_sheet_accessibility,
                 content.getSheetFullHeightAccessibilityStringId());

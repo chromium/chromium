@@ -48,6 +48,7 @@ public final class PwaInstallBottomSheetContentTest {
         Assert.assertEquals(
                 BottomSheetContent.HeightMode.WRAP_CONTENT, content.getFullHeightRatio(), 0.0001);
         Assert.assertTrue(content.swipeToDismissEnabled());
+        Assert.assertTrue(content.showHandlebar());
 
         int accessibilityId = R.string.pwa_install_bottom_sheet_accessibility;
         Assert.assertEquals(accessibilityId, content.getSheetHalfHeightAccessibilityStringId());
@@ -92,5 +93,22 @@ public final class PwaInstallBottomSheetContentTest {
         scrollView.scrollTo(0, 0);
         Assert.assertEquals(0, view.getVerticalScrollOffset());
         Assert.assertEquals(0, content.getVerticalScrollOffset());
+    }
+
+    @Test
+    public void testSetOnClickListenerTriggersInstallButton() {
+        PwaBottomSheetController.ScreenshotsAdapter adapter =
+                new PwaBottomSheetController.ScreenshotsAdapter(
+                        mActivity, /* shouldPadForDialogContent= */ false);
+        PwaInstallBottomSheetView view = new PwaInstallBottomSheetView(mActivity, adapter);
+        View.OnClickListener listener = Mockito.mock(View.OnClickListener.class);
+        view.setOnClickListener(listener);
+        view.setCanSubmit(true);
+
+        View installButton = view.getContentView().findViewById(R.id.button_install);
+        Assert.assertNotNull(installButton);
+        installButton.performClick();
+
+        Mockito.verify(listener).onClick(installButton);
     }
 }

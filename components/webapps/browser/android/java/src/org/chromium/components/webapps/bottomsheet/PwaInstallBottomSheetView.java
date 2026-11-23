@@ -108,9 +108,9 @@ public class PwaInstallBottomSheetView {
         return scrollView != null ? scrollView.getScrollY() : 0;
     }
 
+    /** Sets the click listener for the install button. */
     void setOnClickListener(View.OnClickListener listener) {
         mContentView.findViewById(R.id.button_install).setOnClickListener(listener);
-        mContentView.findViewById(R.id.drag_handlebar).setOnClickListener(listener);
     }
 
     // Testing functions:

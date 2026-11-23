@@ -50,7 +50,7 @@ import java.util.ArrayList;
 /** This class controls the Bottom Sheet PWA install functionality. */
 @JNINamespace("webapps")
 @NullMarked
-public class PwaBottomSheetController implements View.OnClickListener {
+public class PwaBottomSheetController {
     @JniType("::webapps::PwaBottomSheetController")
     interface NativePwaBottomSheetController extends JniTypeToken {}
 
@@ -247,7 +247,9 @@ public class PwaBottomSheetController implements View.OnClickListener {
                         .with(AddToHomescreenProperties.URL, origin)
                         .with(AddToHomescreenProperties.DESCRIPTION, description)
                         .with(AddToHomescreenProperties.CAN_SUBMIT, true)
-                        .with(AddToHomescreenProperties.CLICK_LISTENER, this)
+                        .with(
+                                AddToHomescreenProperties.CLICK_LISTENER,
+                                v -> onInstallButtonClicked())
                         .build();
         PropertyModelChangeProcessor.create(
                 mModel, view, AddToHomescreenBottomSheetViewBinder::bind);
@@ -284,23 +286,11 @@ public class PwaBottomSheetController implements View.OnClickListener {
                         == mPwaBottomSheetContent);
     }
 
-    // onClickListener:
-
-    @Override
-    public void onClick(View view) {
-        int id = view.getId();
+    private void onInstallButtonClicked() {
         assumeNonNull(mBottomSheetController);
-        if (id == R.id.button_install) {
-            assumeNonNull(mPwaBottomSheetContent);
-            onAddToHomescreen();
-            mBottomSheetController.hideContent(mPwaBottomSheetContent, false);
-        } else if (id == R.id.drag_handlebar) {
-            if (mBottomSheetController.isSheetOpen()) {
-                mBottomSheetController.collapseSheet(true);
-            } else {
-                mBottomSheetController.expandSheet();
-            }
-        }
+        assumeNonNull(mPwaBottomSheetContent);
+        onAddToHomescreen();
+        mBottomSheetController.hideContent(mPwaBottomSheetContent, false);
     }
 
     /**

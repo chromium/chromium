@@ -104,4 +104,9 @@ public class PwaInstallBottomSheetContent implements BottomSheetContent {
     public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.pwa_install_bottom_sheet_accessibility;
     }
+
+    @Override
+    public boolean showHandlebar() {
+        return true;
+    }
 }

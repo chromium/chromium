@@ -16,7 +16,6 @@ import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -410,6 +409,21 @@ public class AppBannerManagerTest {
                 });
     }
 
+    private void clickBottomSheetHandlebar() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    View handlebar =
+                            mTabbedActivityTestRule
+                                    .getActivity()
+                                    .findViewById(
+                                            org.chromium.components.browser_ui.bottomsheet.R.id
+                                                    .handlebar);
+                    Assert.assertNotNull(
+                            "Expected bottom sheet handlebar view to exist.", handlebar);
+                    TouchCommon.singleClickView(handlebar);
+                });
+    }
+
     /**
      * Loads a page with a Play app manifest, then changes the manifest link of the same page to a
      * web app manifest. This restarts the banner pipeline on the loaded page. The web app run must
@@ -786,11 +800,7 @@ public class AppBannerManagerTest {
         View content = mBottomSheetController.getCurrentSheetContent().getContentView();
 
         // Expand the bottom sheet via drag handle.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ImageView dragHandle = content.findViewById(R.id.drag_handlebar);
-                    TouchCommon.singleClickView(dragHandle);
-                });
+        clickBottomSheetHandlebar();
 
         waitUntilBottomSheetStatus(BottomSheetController.SheetState.FULL);
 
@@ -809,11 +819,7 @@ public class AppBannerManagerTest {
                 description.getText());
 
         // Collapse the bottom sheet.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ImageView dragHandle = content.findViewById(R.id.drag_handlebar);
-                    TouchCommon.singleClickView(dragHandle);
-                });
+        clickBottomSheetHandlebar();
 
         waitUntilBottomSheetStatus(BottomSheetController.SheetState.PEEK);
 
