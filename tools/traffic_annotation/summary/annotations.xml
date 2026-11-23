@@ -97,7 +97,7 @@ Refer to README.md for content description and update process.
  <item id="http_server_error_response" added_in_milestone="66" content_hash_code="03a40a76" os_list="linux,windows,chromeos,android" file_path="net/server/http_server.cc" />
  <item id="icon_cacher" added_in_milestone="62" content_hash_code="06efa3dc" os_list="linux,windows,chromeos,android" file_path="components/ntp_tiles/icon_cacher_impl.cc" />
  <item id="icon_catcher_get_large_icon" added_in_milestone="62" content_hash_code="05db5c15" os_list="linux,windows,chromeos,android" file_path="components/ntp_tiles/icon_cacher_impl.cc" />
- <item id="image_annotation" added_in_milestone="73" content_hash_code="07895660" os_list="linux,windows,chromeos,android" file_path="services/image_annotation/annotator.cc" />
+ <item id="image_annotation" added_in_milestone="73" content_hash_code="06e38b94" os_list="linux,windows,chromeos,android" file_path="services/image_annotation/annotator.cc" />
  <item id="indexed_db_internals_handler" added_in_milestone="62" content_hash_code="0384abe6" os_list="linux,windows,chromeos,android" file_path="content/browser/indexed_db/indexed_db_internals_ui.cc" />
  <item id="interest_feedv2_image_send" added_in_milestone="86" content_hash_code="06e021c4" os_list="linux,windows,chromeos,android" file_path="components/feed/core/v2/image_fetcher.cc" />
  <item id="interest_feedv2_send" added_in_milestone="83" content_hash_code="076de9a7" os_list="linux,windows,chromeos,android" file_path="components/feed/core/v2/feed_network_impl.cc" />
@@ -565,4 +565,5 @@ Refer to README.md for content description and update process.
  <item id="ntp_animated_logo_android" added_in_milestone="160" content_hash_code="05511db6" os_list="android" file_path="chrome/browser/ui/android/logo/java/src/org/chromium/chrome/browser/logo/LogoMediator.java" />
  <item id="omnibox_search_engine_android_icon" added_in_milestone="160" content_hash_code="0143eaa1" os_list="android" file_path="chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/SearchEngineService.java" />
  <item id="omnibox_suggestion_android_images" added_in_milestone="160" content_hash_code="0056be34" os_list="android" file_path="chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/styles/OmniboxImageSupplier.java" />
+ <item id="image_annotation_manta" added_in_milestone="160" content_hash_code="05d4225b" os_list="linux,windows,chromeos,android" file_path="services/image_annotation/annotator.cc" />
 </annotations>

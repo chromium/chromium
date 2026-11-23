@@ -56,10 +56,8 @@ constexpr auto kAnnotationTypes =
         {manta::anchovy::kTypeLabel, mojom::AnnotationType::kLabel},
     });
 
-// TODO(crbug.com/340320912): Update or split this traffic annotation for
-// Anchovy/Manta before rolling out `kImageDescriptionsAlternateRouting` (under
-// alternate routing, Chrome sends only image pixels and language context to
-// Manta without image URLs or daily `/langs` requests).
+// Traffic annotation for legacy image annotation requests when
+// `features::kImageDescriptionsAlternateRouting` is disabled.
 net::NetworkTrafficAnnotationTag GetTrafficAnnotation() {
   return net::DefineNetworkTrafficAnnotation("image_annotation", R"(
         semantics {
@@ -83,6 +81,83 @@ net::NetworkTrafficAnnotationTag GetTrafficAnnotation() {
                 "the data."
           destination: GOOGLE_OWNED_SERVICE
           api_service_name: "ckintersect-pa.googleapis.com"
+          internal {
+            contacts {
+              email: "chrome-a11y-core@google.com"
+            }
+            contacts {
+              owners: "//services/image_annotation/OWNERS"
+            }
+            contacts {
+              owners: "//ui/accessibility/OWNERS"
+            }
+          }
+          user_data {
+            type: IMAGE
+            type: SENSITIVE_URL
+            type: WEB_CONTENT
+          }
+          last_reviewed: "2026-11-18"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "You can enable or disable this feature via the context menu "
+            "for images, or via 'Get Image Descriptions' in Chrome's "
+            "settings under Accessibility. This feature is disabled by default."
+          chrome_policy {
+            AccessibilityImageLabelsEnabled {
+              AccessibilityImageLabelsEnabled: false
+            }
+          }
+        })");
+}
+
+// Traffic annotation for Manta image description requests when
+// `features::kImageDescriptionsAlternateRouting` is enabled.
+net::NetworkTrafficAnnotationTag GetMantaTrafficAnnotation() {
+  return net::DefineNetworkTrafficAnnotation("image_annotation_manta", R"(
+        semantics {
+          sender: "Get Image Descriptions from Google"
+          description:
+            "Chrome can provide image descriptions (including generated "
+            "captions, detected objects, and extracted text) to screen "
+            "readers for visually-impaired users by sending images to "
+            "Google's servers. When image labeling is enabled for a page, "
+            "Chrome sends the pixels of eligible images on the page along "
+            "with the requested description language to Google's servers, "
+            "and makes the returned descriptions accessible to screen "
+            "reading software."
+          trigger:
+            "A page containing unlabeled images is loaded for a user who has "
+            "image descriptions enabled (automatically via Accessibility "
+            "settings or once via the context menu)."
+          data:
+            "Image pixels, the requested description language code, and "
+            "Chrome client metadata (version, channel, and application "
+            "locale). Image URLs, page URLs, cookies, and user identifiers "
+            "are not sent."
+          destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "aratea-pa.googleapis.com"
+          internal {
+            contacts {
+              email: "chrome-a11y-core@google.com"
+            }
+            contacts {
+              owners: "//services/image_annotation/OWNERS"
+            }
+            contacts {
+              owners: "//components/manta/anchovy/OWNERS"
+            }
+            contacts {
+              owners: "//ui/accessibility/OWNERS"
+            }
+          }
+          user_data {
+            type: IMAGE
+            type: WEB_CONTENT
+          }
+          last_reviewed: "2026-11-18"
         }
         policy {
           cookies_allowed: NO
@@ -917,7 +992,7 @@ void Annotator::SendRequestBatchToServer() {
 
       const base::Time now = base::Time::Now();
       anchovy_provider_->GetImageDescriptions(
-          batch_request, GetTrafficAnnotation(),
+          batch_request, GetMantaTrafficAnnotation(),
           base::BindOnce(&Annotator::OnMantaBatchResponseReceived,
                          weak_factory_.GetWeakPtr(), std::move(group_keys),
                          now));

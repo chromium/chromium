@@ -653,6 +653,7 @@ after discussions on the right group.
     </sender>
     <sender name="Images">
       <annotation id="image_annotation"/>
+      <annotation id="image_annotation_manta"/>
     </sender>
     <sender name="Early Hints">
       <annotation id="early_hints_preload"/>
