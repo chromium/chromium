@@ -63,6 +63,23 @@ promise_test(function(t) {
   return promise_rejects_dom(t, "EncodingError", promise);
 }, document.title + " Adopted active image into inactive document fails decode.");
 
+promise_test(function(t) {
+  var inactive_doc = document.implementation.createHTMLDocument();
+  var img = document.createElement("img");
+  img.src = "/images/green.png?adopted-inactive-uncached-" + Math.random();
+  var promise = img.decode();
+  inactive_doc.body.appendChild(img);
+  return promise_rejects_dom(t, "EncodingError", promise);
+}, document.title + " Adopted active image with uncached src into inactive document fails decode.");
+
+promise_test(function(t) {
+  var img = document.createElement("img");
+  img.src = "/images/green.png?removed-src-uncached-" + Math.random();
+  var promise = img.decode();
+  img.removeAttribute("src");
+  return promise_rejects_dom(t, "EncodingError", promise);
+}, document.title + " Removing uncached src before decode microtask fails decode.");
+
 promise_test(function() {
   var inactive_doc = document.implementation.createHTMLDocument();
   var img = inactive_doc.createElement("img");

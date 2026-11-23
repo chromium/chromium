@@ -312,17 +312,27 @@ bool ImageLoader::ImageIsPotentiallyAvailable() const {
 
 void ImageLoader::ClearImage() {
   SetImageWithoutConsideringPendingLoadEvent(nullptr);
+  DispatchDecodeRequestsIfComplete();
 }
 
 void ImageLoader::SetImageWithoutConsideringPendingLoadEvent(
     ImageResourceContent* new_image_content) {
   DCHECK(failed_load_url_.empty());
   ImageResourceContent* old_image_content = image_content_.Get();
-  if (new_image_content != old_image_content) {
-    if (pending_load_event_.IsActive())
+  // Even when `old_image_content` is already null, resetting to null must
+  // still cancel pending events and run `UpdateImageState(nullptr)`:
+  // `UpdateFromElement()` sets `image_complete_ = false` before
+  // `image_content_` is assigned, so `UpdateImageState(nullptr)` is needed to
+  // restore `image_complete_ = true` and clear
+  // `delay_until_image_notify_finished_`, and `QueuePendingErrorEvent()` can
+  // arm `pending_error_event_` while `image_content_` is null.
+  if (new_image_content != old_image_content || !new_image_content) {
+    if (pending_load_event_.IsActive()) {
       pending_load_event_.Cancel();
-    if (pending_error_event_.IsActive())
+    }
+    if (pending_error_event_.IsActive()) {
       pending_error_event_.Cancel();
+    }
     UpdateImageState(new_image_content);
     if (new_image_content) {
       new_image_content->AddObserver(this);
