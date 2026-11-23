@@ -23,6 +23,10 @@
 #include "components/autofill/core/browser/payments/payments_network_interface_base.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace signin {
 class IdentityManager;
 }  // namespace signin
@@ -75,7 +79,7 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
   virtual void GetUnmaskDetails(
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               UnmaskDetails&)> callback,
-      const std::string& app_locale);
+      const base::i18n::LanguageTag& app_locale);
 
   // The user has attempted to unmask a card with the given cvc.
   virtual void UnmaskCard(
@@ -114,7 +118,7 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
       const std::vector<AutofillProfile>& addresses,
       const int detected_values,
       const std::vector<ClientBehaviorConstants>& client_behavior_signals,
-      const std::string& app_locale,
+      const base::i18n::LanguageTag& app_locale,
       GetCardUploadDetailsCallback callback,
       const int billable_service_number,
       const int64_t billing_customer_number,
@@ -142,7 +146,7 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
   // the legal message and use it to decide if IBAN upload save should be
   // offered.
   virtual void GetIbanUploadDetails(
-      const std::string& app_locale,
+      const base::i18n::LanguageTag& app_locale,
       const std::vector<ClientBehaviorConstants>& client_behavior_signals,
       int64_t billing_customer_number,
       const std::string& country_code,

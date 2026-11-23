@@ -247,8 +247,7 @@ bool IbanSaveManager::AttemptToOfferUploadSave(const Iban& import_candidate) {
   client_->GetPaymentsAutofillClient()
       ->GetPaymentsNetworkInterface()
       ->GetIbanUploadDetails(
-          std::string(payments_data_manager().app_locale().tag_string()),
-          client_behavior_signals,
+          payments_data_manager().app_locale(), client_behavior_signals,
           payments::GetBillingCustomerId(payments_data_manager()),
           import_candidate.GetCountryCode(),
           base::BindOnce(&IbanSaveManager::OnDidGetUploadDetails,

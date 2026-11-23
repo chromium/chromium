@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/payments/iban_save_manager.h"
 
+#include "base/i18n/language_tag.h"
 #include "base/json/json_reader.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -92,7 +93,7 @@ class IbanSaveManagerTest : public testing::Test {
     ON_CALL(*payments_network_interface(), GetIbanUploadDetails)
         .WillByDefault(
             [is_successful, regex, includes_invalid_legal_message](
-                const std::string& app_locale,
+                const base::i18n::LanguageTag& app_locale,
                 const std::vector<ClientBehaviorConstants>&
                     client_behavior_signals,
                 int64_t billing_customer_number,

@@ -13,6 +13,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
@@ -276,7 +277,7 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
     payments_network_interface_->GetUnmaskDetails(
         base::BindOnce(&PaymentsNetworkInterfaceTest::OnDidGetUnmaskDetails,
                        GetWeakPtr()),
-        "language-LOCALE");
+        base::i18n::GetKnownLanguageTag("en-US"));
   }
 
   // Issue an UnmaskCard request. This requires an OAuth token before starting
@@ -341,7 +342,8 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
   void StartGettingUploadDetails() {
     payments_network_interface_->GetCardUploadDetails(
         BuildTestProfiles(), /*detected_values=*/0,
-        /*client_behavior_signals=*/{}, "language-LOCALE",
+        /*client_behavior_signals=*/{},
+        base::i18n::GetKnownLanguageTag("en-US"),
         base::BindOnce(&PaymentsNetworkInterfaceTest::OnDidGetUploadDetails,
                        GetWeakPtr()),
         /*billable_service_number=*/12345,

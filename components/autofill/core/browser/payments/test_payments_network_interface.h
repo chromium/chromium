@@ -19,6 +19,10 @@
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_requests/update_virtual_card_enrollment_request.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
@@ -40,7 +44,7 @@ class TestPaymentsNetworkInterface : public PaymentsNetworkInterface {
   void GetUnmaskDetails(
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               UnmaskDetails&)> callback,
-      const std::string& app_locale) override;
+      const base::i18n::LanguageTag& app_locale) override;
 
   void UnmaskCard(
       const UnmaskRequestDetails& unmask_request_,
@@ -51,7 +55,7 @@ class TestPaymentsNetworkInterface : public PaymentsNetworkInterface {
       const std::vector<AutofillProfile>& addresses,
       const int detected_values,
       const std::vector<ClientBehaviorConstants>& client_behavior_signals,
-      const std::string& app_locale,
+      const base::i18n::LanguageTag& app_locale,
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               const std::u16string&,
                               std::unique_ptr<base::DictValue>,

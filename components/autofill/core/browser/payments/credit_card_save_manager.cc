@@ -671,8 +671,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
 
   payments_network_interface->GetCardUploadDetails(
       country_only_profiles, upload_request_.detected_values,
-      upload_request_.client_behavior_signals,
-      std::string(client_->GetAppLocale().tag_string()),
+      upload_request_.client_behavior_signals, client_->GetAppLocale(),
       base::BindOnce(&CreditCardSaveManager::OnDidGetUploadDetails,
                      weak_ptr_factory_.GetWeakPtr(), ukm_source_id),
       payments::kUploadPaymentMethodBillableServiceNumber,

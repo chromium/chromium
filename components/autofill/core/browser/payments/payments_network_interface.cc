@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -81,9 +82,9 @@ void PaymentsNetworkInterface::Prepare() {
 
 void PaymentsNetworkInterface::GetUnmaskDetails(
     base::OnceCallback<void(PaymentsRpcResult, UnmaskDetails&)> callback,
-    const std::string& app_locale) {
+    const base::i18n::LanguageTag& app_locale) {
   IssueRequest(std::make_unique<GetUnmaskDetailsRequest>(
-      std::move(callback), app_locale,
+      std::move(callback), std::string(app_locale.tag_string()),
       account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics()));
 }
 
@@ -120,7 +121,7 @@ void PaymentsNetworkInterface::GetCardUploadDetails(
     const std::vector<AutofillProfile>& addresses,
     const int detected_values,
     const std::vector<ClientBehaviorConstants>& client_behavior_signals,
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     GetCardUploadDetailsCallback callback,
     const int billable_service_number,
     const int64_t billing_customer_number,
@@ -143,8 +144,9 @@ void PaymentsNetworkInterface::GetCardUploadDetails(
   IssueRequest(std::make_unique<GetCardUploadDetailsRequest>(
       addresses, detected_values, client_behavior_signals,
       account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
-      app_locale, std::move(callback_with_latency_metrics),
-      billable_service_number, billing_customer_number, upload_card_source));
+      std::string(app_locale.tag_string()),
+      std::move(callback_with_latency_metrics), billable_service_number,
+      billing_customer_number, upload_card_source));
 }
 
 void PaymentsNetworkInterface::UploadCard(
@@ -158,7 +160,7 @@ void PaymentsNetworkInterface::UploadCard(
 }
 
 void PaymentsNetworkInterface::GetIbanUploadDetails(
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     const std::vector<ClientBehaviorConstants>& client_behavior_signals,
     int64_t billing_customer_number,
     const std::string& country_code,
@@ -168,8 +170,8 @@ void PaymentsNetworkInterface::GetIbanUploadDetails(
                             std::unique_ptr<base::DictValue>)> callback) {
   IssueRequest(std::make_unique<GetIbanUploadDetailsRequest>(
       account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
-      app_locale, client_behavior_signals, billing_customer_number,
-      country_code, std::move(callback)));
+      std::string(app_locale.tag_string()), client_behavior_signals,
+      billing_customer_number, country_code, std::move(callback)));
 }
 
 void PaymentsNetworkInterface::UploadIban(

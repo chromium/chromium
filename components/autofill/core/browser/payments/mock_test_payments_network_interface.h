@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_MOCK_TEST_PAYMENTS_NETWORK_INTERFACE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_MOCK_TEST_PAYMENTS_NETWORK_INTERFACE_H_
 
+#include "base/i18n/language_tag.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -19,7 +20,7 @@ class MockTestPaymentsNetworkInterface : public payments::TestPaymentsNetworkInt
 
   MOCK_METHOD(void,
               GetIbanUploadDetails,
-              (const std::string&,
+              (const base::i18n::LanguageTag&,
                const std::vector<ClientBehaviorConstants>&,
                int64_t,
                const std::string&,

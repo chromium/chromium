@@ -285,7 +285,7 @@ void CreditCardAccessManager::GetUnmaskDetailsIfUserIsVerifiable(
     payments_autofill_client().GetPaymentsNetworkInterface()->GetUnmaskDetails(
         base::BindOnce(&CreditCardAccessManager::OnDidGetUnmaskDetails,
                        GetWeakPtr()),
-        std::string(payments_data_manager().app_locale().tag_string()));
+        payments_data_manager().app_locale());
     autofill_metrics::LogCardUnmaskPreflightCalled(
         GetOrCreateFidoAuthenticator()->IsUserOptedIn());
   }
