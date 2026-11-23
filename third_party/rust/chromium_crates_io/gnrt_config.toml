@@ -18,12 +18,6 @@
 #
 # The following options are available:
 #
-# allow_first_party_usage: If false, the crate should not be visible to first
-#   party code even though it is present in the Cargo.toml file. It defaults to
-#   true. Use this if you need to control features for a crate that is only
-#   meant for use as a transitive dependency of third-party crates.
-#   e.g. allow_first_party_usage = false
-#
 # ban_features: A list of crate features that are disallowed in Chromium.
 #   Typically `ban_features` is used when a crate-feature-gated code failed or
 #   hasn't gone through a security audit.
@@ -106,6 +100,10 @@
 #       crate will be built as `--crate-type=dylib` if `is_component_build`.
 #
 #     visibility: A list of targets that the crate should be visible to.
+#       For crates listed in Cargo.toml, this replaces the default public
+#       visibility (e.g. `visibility = [ "//third_party/rust/*" ]` hides
+#       the crate from first-party code). For transitive crates, this
+#       appends to `[ "//third_party/rust/*" ]`.
 #
 # Additional, less commonly needed options can also be discovered by reading
 # the doc comments in `//tools/crates/gnrt/lib/config.rs` (e.g. `CrateConfig`'s
@@ -122,7 +120,6 @@ remove_crates = []
 root = "chromium"
 
 [crate.addr2line]
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
 [crate.adler2.extra_kv]
@@ -130,12 +127,10 @@ allow_unsafe = false
 
 [crate.ahash]
 group = 'test'
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
 [crate.aho-corasick]
 group = 'safe'
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
 [crate.alloc-no-stdlib]
@@ -159,7 +154,6 @@ allow_unsafe = true
 
 [crate.arbitrary-int]
 group = 'test'
-allow_first_party_usage = false
 
 [crate.arbitrary-int.extra_kv]
 allow_unsafe = true
@@ -172,7 +166,6 @@ allow_unsafe = false
 
 [crate.backtrace]
 group = 'test'
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
 [crate.base64.extra_kv]
@@ -183,11 +176,9 @@ extra_kv = { allow_unsafe = true }
 
 [crate.bincode]
 group = 'test'
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
 [crate.bincode_derive]
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = false }
 
 [crate.bit-set]
@@ -238,7 +229,6 @@ allow_unsafe = false
 allow_unsafe = false
 
 [crate.cfg_aliases]
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = false }
 
 [crate.chrono]
@@ -258,7 +248,6 @@ extra_kv = { allow_unsafe = false }
 allow_unsafe = true
 
 [crate.cobs]
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = false }
 
 [crate.codespan-reporting.extra_kv]
@@ -266,16 +255,13 @@ allow_unsafe = false
 
 [crate.const_format]
 group = 'test'
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
 [crate.const_format_proc_macros]
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = false }
 
 [crate.const_panic]
 group = 'test'
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
 [crate.core-foundation-sys]
@@ -323,7 +309,6 @@ allow_unsafe = false
 # diplomat@0.16.1, diplomat@0.17.0
 [crate.diplomat]
 group = 'safe'
-allow_first_party_usage = true
 
 [crate.diplomat.extra_kv]
 allow_unsafe = false
@@ -331,14 +316,12 @@ multiversion_cleanup_bug = "https://crbug.com/482994758"
 
 [crate.diplomat-runtime]
 group = 'safe'
-allow_first_party_usage = true
 extra_kv = { allow_unsafe = true }
 
 # TODO: Remove multiple versions of the `diplomat_core` crate:
 # diplomat_core@0.16.1, diplomat_core@0.17.0
 [crate.diplomat_core]
 group = 'safe'
-allow_first_party_usage = true
 
 [crate.diplomat_core.extra_kv]
 allow_unsafe = false
@@ -355,7 +338,6 @@ allow_unsafe = false
 
 [crate.erased-serde]
 group = 'test'
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
 [crate.exceptional]
@@ -418,20 +400,17 @@ allow_unsafe = true
 
 [crate.fs2]
 group = 'test'
-allow_first_party_usage = false
 remove_deps = ['winapi']
 extra_kv = { allow_unsafe = true }
 
 [crate.getrandom]
 group = 'safe'
-allow_first_party_usage = false
 extra_input_roots = ["../README.md"]
 
 [crate.getrandom.extra_kv]
 allow_unsafe = true
 
 [crate.gimli]
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
 [crate.harfrust]
@@ -464,7 +443,6 @@ visibility = [
 
 [crate.hostname]
 group = 'test'
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
 [crate.iana-time-zone]
@@ -479,7 +457,6 @@ replace_with = "//third_party/rust/icu4x_data:lib"
 
 [crate.icu_capi]
 group = 'safe'
-allow_first_party_usage = true
 
 [crate.icu_capi.extra_kv]
 allow_unsafe = true
@@ -572,7 +549,6 @@ allow_unsafe = true
 
 [crate.icu_provider_adapters]
 group = 'safe'
-allow_first_party_usage = true
 extra_kv = { allow_unsafe = false }
 
 [crate.image]
@@ -744,7 +720,6 @@ extra_kv = { allow_unsafe = false }
 
 [crate.nix]
 group = 'test'
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
 [crate.no_std_time]
@@ -777,16 +752,13 @@ extra_kv = { allow_unsafe = true }
 
 [crate.num_enum]
 group = 'test'
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
 [crate.num_enum_derive]
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = false }
 remove_deps = ["proc-macro-crate"] #num_enum_derive is vendored with a copy of proc-macro-crate, which is optional and not needed
 
 [crate.object]
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
 [crate.once_cell]
@@ -824,7 +796,6 @@ extra_kv = { allow_unsafe = true }
 
 [crate.postcard]
 group = 'test'
-allow_first_party_usage = false
 extra_input_roots = ["../README.md"]
 extra_kv = { allow_unsafe = true }
 
@@ -872,7 +843,6 @@ extra_kv = { allow_unsafe = false }
 
 [crate.regex]
 group = 'test'
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
 [crate.regex-automata.extra_kv]
@@ -907,7 +877,6 @@ allow_unsafe = true
 
 [crate.safe_arch]
 group = 'test'
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
 [crate.scopeguard]
@@ -960,7 +929,6 @@ allow_unstable_features = ["stdarch_arm_neon_intrinsics"]
 
 [crate.siphasher]
 group = 'test'
-allow_first_party_usage = false
 extra_input_roots = ["../README.md"]
 extra_kv = { allow_unsafe = true }
 
@@ -1106,17 +1074,14 @@ extra_input_roots = ['../README.md']
 extra_kv = { allow_unsafe = true }
 
 [crate.typeid]
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
 [crate.typewit]
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
 [crate.uds]
 group = 'test'
 extra_input_roots = ["../README.md"]
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
 [crate.unicode-ident.extra_kv]
@@ -1126,11 +1091,9 @@ allow_unsafe = true
 allow_unsafe = false
 
 [crate.unicode-xid]
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = false }
 
 [crate.unty]
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
 [crate.utf16_iter]
@@ -1150,21 +1113,17 @@ allow_unsafe = true
 extra_kv = { allow_unsafe = true }
 
 [crate.version_check]
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = false }
 
 [crate.virtue]
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = false }
 
 [crate.wait-timeout]
 group = 'test'
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
 [crate.wide]
 group = 'test'
-allow_first_party_usage = false
 license = "Zlib"
 license_files = ["LICENSE-ZLIB.txt"]
 extra_kv = { allow_unsafe = true }
@@ -1214,7 +1173,6 @@ allow_unsafe = false
 
 [crate.xxhash-rust]
 group = "test"
-allow_first_party_usage = false
 extra_kv = { allow_unsafe = true }
 
 [crate.yoke.extra_kv]
@@ -1224,7 +1182,6 @@ allow_unsafe = true
 allow_unsafe = false
 
 [crate.zerocopy]
-allow_first_party_usage = false
 extra_input_roots = ["../benches"]
 extra_kv = { allow_unsafe = true }
 

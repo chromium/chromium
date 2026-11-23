@@ -93,8 +93,8 @@ If the new crate is non-trivial, it's possible to split the
 additional crate into its own CL, however then it will default to global
 visibility and allowing non-test use.
 * `gnrt add` and `gnrt vendor` can add the dependency to a fresh checkout.
-* Mark the crate as being for third-party code only by setting
-  `allow_first_party_usage` to `false` for the crate in
+* Mark the crate as being for third-party code only by adding
+  `visibility = [ "//third_party/rust/*" ]` to the crate's `extra_kv` in
   `third_party/rust/chromium_crates_io/gnrt_config.toml`.
 * If the crates making use of the transitive dependency are only allowed
   in tests, then set `group = 'test'` for the crate in

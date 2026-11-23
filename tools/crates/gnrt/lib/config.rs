@@ -241,8 +241,6 @@ pub struct CrateConfig {
 
     // Third-party crate settings.
     #[serde(default)]
-    pub allow_first_party_usage: bool,
-    #[serde(default)]
     pub build_script_outputs: Vec<std::path::PathBuf>,
     #[serde(default)]
     pub group: Option<Group>,

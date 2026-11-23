@@ -175,11 +175,6 @@ pub fn build_rule_from_dep(
     let extra_kv =
         extra_config.get_combined_map_cloned(&dep.package_name, &dep.version, |c| &c.extra_kv);
 
-    let allow_first_party_usage = match extra_kv.get("allow_first_party_usage") {
-        Some(serde_json::Value::Bool(b)) => *b,
-        _ => dep.is_toplevel_dep,
-    };
-
     let cond = dep
         .dependency_kinds
         .values()
@@ -404,7 +399,7 @@ pub fn build_rule_from_dep(
                 name: lib_rule_name.clone(),
                 gn_visibility: GnVisibility {
                     testonly: dep.group == Group::Test,
-                    public: allow_first_party_usage,
+                    public: dep.is_toplevel_dep,
                 },
                 detail: lib_detail,
             });
