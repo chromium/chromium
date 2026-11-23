@@ -45,7 +45,8 @@ class GCMProfileService : public KeyedService {
 #if BUILDFLAG(USE_GCM_FROM_PLATFORM)
   GCMProfileService(
       base::FilePath path,
-      scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner);
+      scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner,
+      bool enabled);
 #else
   GCMProfileService(
       base::FilePath path,

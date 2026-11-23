@@ -15,6 +15,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/common/chrome_constants.h"
 #include "components/gcm_driver/features.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 #include "components/offline_pages/buildflags/buildflags.h"
@@ -154,8 +156,13 @@ GCMProfileServiceFactory::BuildServiceInstanceForBrowserContext(
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
   std::unique_ptr<GCMProfileService> service;
 #if BUILDFLAG(IS_ANDROID)
+  // On Android, the Java GCMDriver is a process-wide singleton. Only enable
+  // GCMDriver for the default profile.
+  const bool enabled =
+      !profiles::IsMultipleProfilesEnabled() ||
+      profile->GetBaseName().value() == chrome::kInitialProfile;
   service = std::make_unique<GCMProfileService>(profile->GetPath(),
-                                                blocking_task_runner);
+                                                blocking_task_runner, enabled);
 #else
   service = std::make_unique<GCMProfileService>(
       profile->GetPath(),

@@ -10,6 +10,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
@@ -27,15 +29,21 @@ namespace gcm {
 
 GCMDriverAndroid::GCMDriverAndroid(
     const base::FilePath& store_path,
-    const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner)
+    const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner,
+    bool enabled)
     : GCMDriver(store_path, blocking_task_runner), recorder_(this) {
-  JNIEnv* env = AttachCurrentThread();
-  java_ref_.Reset(Java_GCMDriver_create(env, reinterpret_cast<intptr_t>(this)));
+  if (enabled) {
+    JNIEnv* env = AttachCurrentThread();
+    java_ref_.Reset(
+        Java_GCMDriver_create(env, reinterpret_cast<intptr_t>(this)));
+  }
 }
 
 GCMDriverAndroid::~GCMDriverAndroid() {
-  JNIEnv* env = AttachCurrentThread();
-  Java_GCMDriver_destroy(env, java_ref_);
+  if (java_ref_) {
+    JNIEnv* env = AttachCurrentThread();
+    Java_GCMDriver_destroy(env, java_ref_);
+  }
 }
 
 void GCMDriverAndroid::OnRegisterFinished(JNIEnv* env,
@@ -114,6 +122,9 @@ void GCMDriverAndroid::ValidateRegistration(
 void GCMDriverAndroid::AddAppHandler(const std::string& app_id,
                                      GCMAppHandler* handler) {
   GCMDriver::AddAppHandler(app_id, handler);
+  if (!java_ref_) {
+    return;
+  }
   JNIEnv* env = AttachCurrentThread();
   // TODO(melandory, mamir): check if messages were persisted
   // and only then go to java.
@@ -175,6 +186,9 @@ void GCMDriverAndroid::OnActivityRecorded() {
 
 GCMClient::Result GCMDriverAndroid::EnsureStarted(
     GCMClient::StartMode start_mode) {
+  if (!java_ref_) {
+    return GCMClient::GCM_DISABLED;
+  }
   // TODO(johnme): Maybe we should check if GMS is available?
   return GCMClient::SUCCESS;
 }
@@ -183,6 +197,7 @@ void GCMDriverAndroid::RegisterImpl(
     const std::string& app_id,
     const std::vector<std::string>& sender_ids) {
   DCHECK_EQ(1u, sender_ids.size());
+  CHECK(java_ref_);
   JNIEnv* env = AttachCurrentThread();
 
   recorder_.RecordRegistrationSent(app_id);
@@ -197,6 +212,7 @@ void GCMDriverAndroid::UnregisterImpl(const std::string& app_id) {
 void GCMDriverAndroid::UnregisterWithSenderIdImpl(
     const std::string& app_id,
     const std::string& sender_id) {
+  CHECK(java_ref_);
   JNIEnv* env = AttachCurrentThread();
 
   recorder_.RecordUnregistrationSent(app_id);

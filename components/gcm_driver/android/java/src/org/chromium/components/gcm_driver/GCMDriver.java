@@ -151,7 +151,9 @@ public class GCMDriver {
         ThreadUtils.assertOnUiThread();
 
         if (sInstance == null) {
-            throw new RuntimeException("Failed to instantiate GCMDriver.");
+            // sInstance can be null when multi-profile is enabled and a secondary profile has been
+            // loaded.
+            return;
         }
 
         GCMDriverJni.get()

@@ -186,7 +186,9 @@ source_set("unit_tests") {
     sources += [ "gcm_stats_recorder_android_unittest.cc" ]
   }
 
-  if (!use_gcm_from_platform) {
+  if (use_gcm_from_platform) {
+    sources += [ "gcm_driver_android_unittest.cc" ]
+  } else {
     sources += [
       "gcm_client_impl_unittest.cc",
       "gcm_driver_desktop_integration_unittest.cc",

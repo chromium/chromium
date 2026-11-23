@@ -31,9 +31,10 @@ namespace gcm {
 #if BUILDFLAG(USE_GCM_FROM_PLATFORM)
 GCMProfileService::GCMProfileService(
     base::FilePath path,
-    scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner) {
+    scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner,
+    bool enabled) {
   driver_ = std::make_unique<GCMDriverAndroid>(
-      path.Append(gcm_driver::kGCMStoreDirname), blocking_task_runner);
+      path.Append(gcm_driver::kGCMStoreDirname), blocking_task_runner, enabled);
 }
 #else
 GCMProfileService::GCMProfileService(
