@@ -75,8 +75,7 @@ using RenderFrameHostToWeakGlobalRefType =
     map<content::GlobalRenderFrameHostToken, JavaObjectWeakGlobalRef>;
 
 using HostsAndWeakGlobalRefPair =
-    pair<base::flat_set<raw_ptr<RenderFrameHost, CtnExperimental>>,
-         JavaObjectWeakGlobalRef>;
+    pair<base::flat_set<raw_ptr<RenderFrameHost>>, JavaObjectWeakGlobalRef>;
 
 // When browser side navigation is enabled, RenderFrameIDs do not have
 // valid render process host and render frame ids for frame navigations.

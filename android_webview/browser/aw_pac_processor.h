@@ -77,7 +77,7 @@ class AwPacProcessor {
   std::unique_ptr<proxy_resolver::ProxyResolverV8Tracing> proxy_resolver_;
   std::unique_ptr<HostResolver> host_resolver_;
 
-  std::set<raw_ptr<Job, SetExperimental>> jobs_;
+  std::set<raw_ptr<Job>> jobs_;
   bool jobs_cancelled_ = false;
 };
 }  // namespace android_webview
