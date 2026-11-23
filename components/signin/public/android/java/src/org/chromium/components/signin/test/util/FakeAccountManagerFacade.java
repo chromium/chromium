@@ -147,6 +147,9 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     /** Used as the result of {@link #didAccountFetchSucceed()}. */
     private boolean mDidAccountFetchingSucceed = true;
 
+    /** Used as the result of {@link #isAddingAccountsAllowed()}. */
+    private boolean mIsAddingAccountsAllowed = true;
+
     private final boolean mSerializeToPrefs;
 
     /**
@@ -315,8 +318,28 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     @Override
     public void createAddAccountIntent(
             @Nullable String prefilledEmail, Callback<@Nullable Intent> callback) {
+        if (!isAddingAccountsAllowed()) {
+            // Like Android, which returns no intent when adding accounts isn't allowed. Android
+            // also shows its own message in that case, which this fake doesn't emulate.
+            callback.onResult(null);
+            return;
+        }
         callback.onResult(
                 new Intent(ContextUtils.getApplicationContext(), AddAccountActivityStub.class));
+    }
+
+    @Override
+    public boolean isAddingAccountsAllowed() {
+        return mIsAddingAccountsAllowed;
+    }
+
+    /**
+     * Sets the result of {@link #isAddingAccountsAllowed()}. When false, {@link
+     * #createAddAccountIntent} returns no intent, like Android, while {@link #addAccount} still
+     * works, so that tests can seed accounts.
+     */
+    public void setAddingAccountsAllowed(boolean isAddingAccountsAllowed) {
+        mIsAddingAccountsAllowed = isAddingAccountsAllowed;
     }
 
     @Override
@@ -535,6 +558,7 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     public void resetForTesting() {
         ThreadUtils.checkUiThread();
         mDidAccountFetchingSucceed = true;
+        mIsAddingAccountsAllowed = true;
         mGetAccessTokenError.clear();
         mAccountToAdd = null;
         removeAllAccounts();

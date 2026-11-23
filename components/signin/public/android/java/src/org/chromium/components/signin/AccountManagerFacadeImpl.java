@@ -584,6 +584,14 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     }
 
     @Override
+    public boolean isAddingAccountsAllowed() {
+        final @Nullable UserManager userManager =
+                ContextUtils.getApplicationContext().getSystemService(UserManager.class);
+        return userManager == null
+                || !userManager.hasUserRestriction(UserManager.DISALLOW_MODIFY_ACCOUNTS);
+    }
+
+    @Override
     public void updateCredentials(
             CoreAccountId accountId, Activity activity, @Nullable Callback<Boolean> callback) {
         ThreadUtils.assertOnUiThread();
@@ -937,7 +945,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
      *
      * @param intentCreated Whether Android returned an add-account intent.
      */
-    private static void recordCreateAddAccountIntentResult(boolean intentCreated) {
+    private void recordCreateAddAccountIntentResult(boolean intentCreated) {
         final @CreateAddAccountIntentResult int result;
         if (intentCreated) {
             result = CreateAddAccountIntentResult.INTENT_CREATED;
@@ -952,14 +960,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                 "Signin.Android.CreateAddAccountIntentResult",
                 result,
                 CreateAddAccountIntentResult.NUM_ENTRIES);
-    }
-
-    /** Returns whether the current Android user profile allows adding accounts. */
-    private static boolean isAddingAccountsAllowed() {
-        final @Nullable UserManager userManager =
-                ContextUtils.getApplicationContext().getSystemService(UserManager.class);
-        return userManager == null
-                || !userManager.hasUserRestriction(UserManager.DISALLOW_MODIFY_ACCOUNTS);
     }
 
     /**

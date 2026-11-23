@@ -146,6 +146,13 @@ public interface AccountManagerFacade {
             @Nullable String prefilledEmail, Callback<@Nullable Intent> callback);
 
     /**
+     * Returns whether the current Android user profile allows adding accounts to the device.
+     * Returns false if the DISALLOW_MODIFY_ACCOUNTS user restriction is set.
+     */
+    @AnyThread
+    boolean isAddingAccountsAllowed();
+
+    /**
      * Asks the user to enter a new password for an account, updating the saved credentials for the
      * account.
      */

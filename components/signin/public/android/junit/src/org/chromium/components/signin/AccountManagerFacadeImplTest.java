@@ -351,6 +351,18 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
+    public void testIsAddingAccountsAllowed_allowed() {
+        assertTrue(mFacade.isAddingAccountsAllowed());
+    }
+
+    @Test
+    public void testIsAddingAccountsAllowed_blocked() {
+        setModifyAccountsRestriction();
+
+        assertFalse(mFacade.isAddingAccountsAllowed());
+    }
+
+    @Test
     public void testCanonicalAccount() throws Exception {
         addTestAccount("test@gmail.com");
         var coreAccountInfos = mFacade.getAccounts().getResult();
