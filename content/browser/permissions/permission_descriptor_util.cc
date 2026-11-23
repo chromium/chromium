@@ -177,6 +177,10 @@ content::PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
     case blink::PermissionType::LOOPBACK_NETWORK:
       return CreatePermissionDescriptor(
           blink::mojom::PermissionName::LOOPBACK_NETWORK);
+    case blink::PermissionType::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON:
+      return CreatePermissionDescriptor(
+          blink::mojom::PermissionName::
+              PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON);
     case blink::PermissionType::NUM:
       NOTREACHED();
   }

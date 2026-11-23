@@ -31,7 +31,7 @@ using testing::SizeIs;
 using testing::UnorderedElementsAre;
 using url::Origin;
 
-constexpr size_t kPermissionsCount = 39;
+constexpr size_t kPermissionsCount = 40;
 
 // Collects all permission statuses for the given input.
 base::flat_map<blink::PermissionType, PermissionStatus> GetAll(

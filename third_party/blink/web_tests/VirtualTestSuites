@@ -2990,8 +2990,8 @@
     ],
     "expires": "never"
   },
-  "Runs the remoteClientDataJSON Permissions Policy tests with its runtime",
-  "feature enabled. Requests use invalid client data so policy behavior is",
+  "Runs the remoteClientDataJSON web tests with its runtime feature enabled.",
+  "Permissions Policy requests use invalid client data so policy behavior is",
   "tested without invoking an authenticator.",
   {
     "prefix": "remote-client-data-json-policy",
@@ -3004,10 +3004,12 @@
       "Win"
     ],
     "bases": [
+      "external/wpt/webauthn/remote-client-data-json-permission.tentative.https.html",
       "webexposed/feature-policy-features.html",
       "wpt_internal/permissions-policy/remote-client-data-json/"
     ],
     "exclusive_tests": [
+      "external/wpt/webauthn/remote-client-data-json-permission.tentative.https.html",
       "wpt_internal/permissions-policy/remote-client-data-json/"
     ],
     "args": [

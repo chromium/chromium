@@ -156,6 +156,15 @@ PermissionManager::PermissionContextMap CreatePermissionContexts(
       std::make_unique<FakePermissionContext>(
           browser_context, ContentSettingsType::LOCAL_NETWORK_ACCESS,
           network::mojom::PermissionsPolicyFeature::kNotFound);
+#if !BUILDFLAG(IS_ANDROID)
+  permission_contexts[ContentSettingsType::
+                          PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON] =
+      std::make_unique<FakePermissionContext>(
+          browser_context,
+          ContentSettingsType::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON,
+          network::mojom::PermissionsPolicyFeature::
+              kPublicKeyCredentialsRemoteClientDataJson);
+#endif  // !BUILDFLAG(IS_ANDROID)
   return permission_contexts;
 }
 

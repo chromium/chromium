@@ -78,6 +78,7 @@ bool IsAllowlistedPermissionType(PermissionType permission) {
     case PermissionType::LOCAL_NETWORK_ACCESS:
     case PermissionType::LOCAL_NETWORK:
     case PermissionType::LOOPBACK_NETWORK:
+    case PermissionType::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON:
       return false;
   }
 

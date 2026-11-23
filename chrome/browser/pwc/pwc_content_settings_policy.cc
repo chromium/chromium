@@ -55,6 +55,7 @@ PwcContentSettingPolicy GetPwcContentSettingPolicy(ContentSettingsType type) {
     case ContentSettingsType::LOCAL_NETWORK_ACCESS:
     case ContentSettingsType::LOCAL_NETWORK:
     case ContentSettingsType::LOOPBACK_NETWORK:
+    case ContentSettingsType::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON:
       return PwcContentSettingPolicy::kDelegated;
 
     // Site settings that are not web permissions and are never queried through

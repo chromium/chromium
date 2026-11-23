@@ -417,6 +417,44 @@ TEST_F(PermissionManagerTest, GetPermissionStatusAfterSet) {
 #endif
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(PermissionManagerTest, RemoteClientDataJsonDefaultDenied) {
+  // `publickey-credentials-remote-client-data-json` is registered with a
+  // default content setting of BLOCK, so its default permission status is
+  // DENIED until an origin is authorized via enterprise policy.
+  CheckPermissionStatus(
+      PermissionType::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON,
+      PermissionStatus::DENIED);
+}
+
+TEST_F(PermissionManagerTest, RemoteClientDataJsonIsUndelegated) {
+  const GURL kTopOrigin("https://example.com");
+  const GURL kChildOrigin("https://example-child.com");
+  constexpr PermissionType kType =
+      PermissionType::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON;
+  NavigateAndCommit(kTopOrigin);
+  content::RenderFrameHost* parent = main_rfh();
+  content::RenderFrameHost* child = AddChildRFH(
+      parent, kChildOrigin,
+      PermissionsPolicyFeature::kPublicKeyCredentialsRemoteClientDataJson);
+
+  // A grant to the top-level origin is not delegated to the child frame.
+  SetPermission(kTopOrigin, kType, PermissionStatus::GRANTED);
+  EXPECT_EQ(PermissionStatus::GRANTED,
+            GetPermissionStatusForCurrentDocument(kType, parent));
+  EXPECT_EQ(PermissionStatus::DENIED,
+            GetPermissionStatusForCurrentDocument(kType, child));
+
+  // The child frame uses its own origin's grant.
+  ResetPermission(kType, kTopOrigin, kTopOrigin);
+  SetPermission(kChildOrigin, kType, PermissionStatus::GRANTED);
+  EXPECT_EQ(PermissionStatus::DENIED,
+            GetPermissionStatusForCurrentDocument(kType, parent));
+  EXPECT_EQ(PermissionStatus::GRANTED,
+            GetPermissionStatusForCurrentDocument(kType, child));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(PermissionManagerTest, AndroidWindowManagementPermissionDenied) {
   SetPermission(PermissionType::WINDOW_MANAGEMENT, PermissionStatus::GRANTED);
@@ -706,6 +744,11 @@ TEST_F(PermissionManagerTest, GetCanonicalOrigin) {
   EXPECT_EQ(requesting,
             permissions::PermissionUtil::GetCanonicalOrigin(
                 ContentSettingsType::STORAGE_ACCESS, requesting, embedding));
+  EXPECT_EQ(
+      requesting,
+      permissions::PermissionUtil::GetCanonicalOrigin(
+          ContentSettingsType::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON,
+          requesting, embedding));
 }
 
 TEST_F(PermissionManagerTest, RequestPermissionInDifferentStoragePartition) {

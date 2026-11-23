@@ -168,6 +168,8 @@ inline constexpr auto kContentSettingsTypeToHistogramValue =
         {ContentSettingsType::INLINE_CUE_MENU, 146},
         {ContentSettingsType::SUSPICIOUS_SITE_WARNING_DATA, 147},
         {ContentSettingsType::WEBAUTHN_AMBIENT_SIGNIN_DATA, 148},
+        {ContentSettingsType::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON,
+         149},
 
         // As mentioned at the top, please don't forget to update ContentType in
         // enums.xml when you add entries here!

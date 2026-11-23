@@ -623,6 +623,53 @@ TEST_F(WebAuthRequestSecurityCheckerSingleFrameTest,
   SetBrowserClientForTesting(old_client);
 }
 
+// In a cross-origin iframe, remoteClientDataJSON is authorized by the calling
+// frame's origin, not the top-level origin.
+TEST_F(WebAuthRequestSecurityCheckerTest,
+       RemoteClientDataJsonAuthorizationInCrossOriginIframe) {
+  const url::Origin kTopOrigin = url::Origin::Create(GURL("https://top.com"));
+  const url::Origin kCallerOrigin =
+      url::Origin::Create(GURL("https://caller.com"));
+  RenderFrameHost* main_frame =
+      NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
+                                                        kTopOrigin.GetURL());
+  RenderFrameHost* caller_frame =
+      RenderFrameHostTester::For(main_frame)->AppendChild("caller_frame");
+  caller_frame = NavigationSimulator::NavigateAndCommitFromDocument(
+      kCallerOrigin.GetURL(), caller_frame);
+  scoped_refptr<WebAuthRequestSecurityCheckerImpl> checker =
+      static_cast<RenderFrameHostImpl*>(caller_frame)
+          ->GetWebAuthRequestSecurityCheckerImpl();
+
+  MockWebAuthnContentBrowserClient mock_client;
+  ContentBrowserClient* old_client = SetBrowserClientForTesting(&mock_client);
+
+  const auto validate = [&] {
+    std::optional<blink::mojom::AuthenticatorStatus> result;
+    EXPECT_EQ(checker->ValidateDomainAndRelyingPartyID(
+                  kCallerOrigin, "remote.com",
+                  WebAuthRequestSecurityChecker::RequestType::kGetAssertion,
+                  WebAuthRequestSecurityChecker::RemoteDesktopParams{
+                      .origin = url::Origin::Create(GURL("https://remote.com")),
+                      .skip_rp_id_validation = true},
+                  base::BindLambdaForTesting(
+                      [&](blink::mojom::AuthenticatorStatus status) {
+                        result = status;
+                      })),
+              nullptr);
+    return result;
+  };
+
+  mock_client.web_authentication_delegate.authorized_origin = kCallerOrigin;
+  EXPECT_EQ(validate(), blink::mojom::AuthenticatorStatus::SUCCESS);
+
+  mock_client.web_authentication_delegate.authorized_origin = kTopOrigin;
+  EXPECT_EQ(validate(), blink::mojom::AuthenticatorStatus::
+                            REMOTE_DESKTOP_CLIENT_OVERRIDE_NOT_AUTHORIZED);
+
+  SetBrowserClientForTesting(old_client);
+}
+
 TEST_F(WebAuthRequestSecurityCheckerSingleFrameTest,
        ValidateCrossDeviceFallbackUrl) {
   base::test::ScopedFeatureList feature_list(

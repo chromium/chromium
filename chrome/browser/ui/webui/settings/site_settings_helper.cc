@@ -255,6 +255,8 @@ constexpr auto kContentSettingsTypeGroupNames = std::to_array<
     {ContentSettingsType::SUB_APPS_WITHOUT_PROMPTS, nullptr},
     {ContentSettingsType::SUSPICIOUS_SITE_WARNING_DATA, nullptr},
     {ContentSettingsType::WEBAUTHN_AMBIENT_SIGNIN_DATA, nullptr},
+    {ContentSettingsType::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON,
+     nullptr},
 });
 
 static_assert(

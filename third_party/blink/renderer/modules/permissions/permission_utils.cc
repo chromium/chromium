@@ -162,6 +162,8 @@ String PermissionNameToString(PermissionName name) {
       return "web-printing";
     case PermissionName::SMART_CARD:
       return "smart-card";
+    case PermissionName::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON:
+      return "publickey-credentials-remote-client-data-json";
   }
 }
 
@@ -482,6 +484,16 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
 
     case V8PermissionName::Enum::kLoopbackNetwork:
       return CreatePermissionDescriptor(PermissionName::LOOPBACK_NETWORK);
+
+    case V8PermissionName::Enum::kPublickeyCredentialsRemoteClientDataJson:
+      if (!RuntimeEnabledFeatures::WebAuthenticationRemoteClientDataJsonEnabled(
+              ExecutionContext::From(script_state))) {
+        exception_state.ThrowTypeError(
+            "The remoteClientDataJSON permission is not enabled.");
+        return nullptr;
+      }
+      return CreatePermissionDescriptor(
+          PermissionName::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON);
   }
 
   return nullptr;

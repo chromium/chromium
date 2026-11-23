@@ -197,6 +197,7 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
       case ContentSettingsType::INLINE_CUE_MENU:
       case ContentSettingsType::SUSPICIOUS_SITE_WARNING_DATA:
       case ContentSettingsType::WEBAUTHN_AMBIENT_SIGNIN_DATA:
+      case ContentSettingsType::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON:
         break;
 
       default:
@@ -258,6 +259,8 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
       case blink::PermissionType::LOCAL_NETWORK_ACCESS:
       case blink::PermissionType::LOCAL_NETWORK:
       case blink::PermissionType::LOOPBACK_NETWORK:
+      case blink::PermissionType::
+          PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON:
         break;
 
       default:

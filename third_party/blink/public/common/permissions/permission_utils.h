@@ -69,6 +69,7 @@ enum class PermissionType {
   LOCAL_NETWORK = 44,
   LOOPBACK_NETWORK = 45,
   GEOLOCATION_APPROXIMATE = 46,
+  PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON = 47,
 
   // Always keep this at the end.
   NUM,

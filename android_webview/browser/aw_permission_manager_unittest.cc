@@ -313,6 +313,24 @@ TEST_F(AwPermissionManagerTest,
   EXPECT_EQ(PermissionStatus::GRANTED, resolved_permission_status[0]);
 }
 
+TEST_F(AwPermissionManagerTest,
+       RemoteClientDataJsonPermissionIsDeniedSynchronously) {
+  const auto descriptor = content::PermissionDescriptorUtil::
+      CreatePermissionDescriptorForPermissionType(
+          PermissionType::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON);
+  EXPECT_EQ(PermissionStatus::DENIED,
+            manager->GetPermissionStatus(descriptor, GURL(kRequestingOrigin1),
+                                         GURL(kEmbeddingOrigin)));
+
+  RequestPermissions(
+      {PermissionType::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON},
+      render_frame_host, GURL(kRequestingOrigin1), true,
+      base::BindOnce(&AwPermissionManagerTest::PermissionRequestResponse,
+                     base::Unretained(this), 0));
+  ASSERT_EQ(1u, resolved_permission_status.size());
+  EXPECT_EQ(PermissionStatus::DENIED, resolved_permission_status[0]);
+}
+
 // Test the case a delegate is called, and it resolves the permission
 // synchronously.
 TEST_F(AwPermissionManagerTest, SinglePermissionRequestIsGrantedSynchronously) {

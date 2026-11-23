@@ -561,6 +561,7 @@ test("headless_unittests") {
     "lib/browser/headless_bluetooth_delegate_unittest.cc",
     "lib/browser/headless_browser_impl_unittest.cc",
     "lib/browser/headless_client_hints_controller_delegate_unittest.cc",
+    "lib/browser/headless_permission_manager_unittest.cc",
     "lib/renderer/allowlist_unittest.cc",
   ]
 
@@ -574,6 +575,7 @@ test("headless_unittests") {
     "//components/embedder_support:user_agent",
     "//components/security_state/content",
     "//content/public/app",
+    "//content/public/browser",
     "//content/public/child",
     "//content/public/common",
     "//device/bluetooth/public/cpp",

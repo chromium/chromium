@@ -71,6 +71,11 @@ PermissionDelegationMode GetPermissionDelegationMode(
   if (permission == ContentSettingsType::NOTIFICATIONS) {
     return PermissionDelegationMode::kUndelegated;
   }
+  // WebAuthn authorizes remoteClientDataJSON by the calling frame's origin.
+  if (permission ==
+      ContentSettingsType::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON) {
+    return PermissionDelegationMode::kUndelegated;
+  }
   if (permission == ContentSettingsType::STORAGE_ACCESS) {
     return PermissionDelegationMode::kDoubleKeyed;
   }
@@ -397,6 +402,9 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
     case ContentSettingsType::LOOPBACK_NETWORK:
       *out = PermissionType::LOOPBACK_NETWORK;
       break;
+    case ContentSettingsType::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON:
+      *out = PermissionType::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON;
+      break;
     default:
       return false;
   }
@@ -603,6 +611,9 @@ ContentSettingsType PermissionUtil::PermissionTypeToContentSettingsTypeSafe(
       return ContentSettingsType::LOCAL_NETWORK;
     case PermissionType::LOOPBACK_NETWORK:
       return ContentSettingsType::LOOPBACK_NETWORK;
+    case PermissionType::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON:
+      return ContentSettingsType::
+          PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON;
     case PermissionType::NUM:
       break;
   }

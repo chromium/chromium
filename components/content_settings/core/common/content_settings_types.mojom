@@ -457,5 +457,11 @@ enum ContentSettingsType {
   // Website setting which stores per-site dismissal metadata for the WebAuthn
   // ambient sign-in prompt.
   WEBAUTHN_AMBIENT_SIGNIN_DATA,
+
+  // Setting for the WebAuthn remoteClientDataJSON extension. Permission status
+  // is derived from per-origin enterprise policy, without a user-facing setting
+  // or prompt.
+  // https://w3c.github.io/webauthn/#sctn-remote-client-data-json-extension
+  PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON,
 };
 // LINT.ThenChange(//components/content_settings/core/common/content_settings_uma_constants.h:kContentSettingsTypeToHistogramValue)

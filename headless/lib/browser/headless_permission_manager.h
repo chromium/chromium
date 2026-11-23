@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/browser/permission_result.h"
+#include "headless/public/headless_export.h"
 
 namespace blink {
 enum class PermissionType;
@@ -19,7 +20,8 @@ struct PermissionResult;
 
 namespace headless {
 
-class HeadlessPermissionManager : public content::PermissionControllerDelegate {
+class HEADLESS_EXPORT HeadlessPermissionManager
+    : public content::PermissionControllerDelegate {
  public:
   HeadlessPermissionManager();
 

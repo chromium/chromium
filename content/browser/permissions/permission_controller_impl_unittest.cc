@@ -221,6 +221,45 @@ class PermissionControllerImplTestWithApproxLocation
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PermissionControllerImplTestWithApproxLocation);
 
+TEST_F(PermissionControllerImplTest, RemoteClientDataJsonRequestDelegates) {
+  RenderViewHostTestEnabler enabler;
+  std::unique_ptr<WebContents> web_contents(
+      WebContentsTester::CreateTestWebContents(
+          WebContents::CreateParams(browser_context())));
+  WebContentsTester::For(web_contents.get())->NavigateAndCommit(GURL(kTestUrl));
+  RenderFrameHost* render_frame_host = web_contents->GetPrimaryMainFrame();
+  auto permissions =
+      PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionTypes(
+          {PermissionType::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON});
+
+  EXPECT_CALL(
+      *mock_manager(),
+      RequestPermissionsFromCurrentDocument(
+          render_frame_host,
+          PermissionRequestDescription(
+              PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionTypes(
+                      {PermissionType::
+                           PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON}),
+              /*user_gesture=*/true),
+          testing::_))
+      .WillOnce(testing::WithArg<2>(
+          [](base::OnceCallback<void(const std::vector<PermissionResult>&)>
+                 callback) {
+            std::move(callback).Run({PermissionResult(PermissionStatus::ASK)});
+          }));
+
+  base::MockCallback<RequestsCallback> callback;
+  EXPECT_CALL(
+      callback,
+      Run(testing::ElementsAre(PermissionResult(PermissionStatus::ASK))));
+  PermissionControllerRequestPermissionsFromCurrentDocument(
+      render_frame_host,
+      PermissionRequestDescription(std::move(permissions),
+                                   /*user_gesture=*/true),
+      callback.Get());
+}
+
 TEST_P(PermissionControllerImplTestWithApproxLocation,
        RequestPermissionsFromCurrentDocumentDelegatesIffMissingOverrides) {
   url::Origin kTestOrigin = url::Origin::Create(GURL(kTestUrl));
@@ -933,6 +972,50 @@ TEST_F(PermissionControllerImplWithDelegateTest,
   EXPECT_EQ(PermissionStatus::DENIED,
             permission_controller->GetPermissionStatusForCurrentDocument(
                 ptz_descriptor, child_without_policy));
+}
+
+TEST_F(PermissionControllerImplWithDelegateTest,
+       RemoteClientDataJsonPermissionPolicyTest) {
+  const GURL kTopOrigin("https://example.com");
+  const GURL kChildOrigin("https://example-child.com");
+  NavigateAndCommit(kTopOrigin);
+  PermissionController* permission_controller =
+      GetBrowserContext()->GetPermissionController();
+  RenderFrameHost* parent = main_rfh();
+  ASSERT_TRUE(parent);
+
+  const auto permission_descriptor =
+      PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
+          PermissionType::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON);
+
+  // ASK comes from TestPermissionManager's default for an origin without a
+  // set status; in production this permission is only ever GRANTED or DENIED.
+  // This test covers the Permissions Policy check in PermissionControllerImpl.
+  EXPECT_EQ(PermissionStatus::ASK,
+            permission_controller->GetPermissionStatusForCurrentDocument(
+                permission_descriptor, parent));
+
+  RenderFrameHost* child_without_policy = AddChildRFH(parent, kChildOrigin);
+  ASSERT_TRUE(child_without_policy);
+  EXPECT_EQ(PermissionStatus::DENIED,
+            permission_controller->GetPermissionStatusForCurrentDocument(
+                permission_descriptor, child_without_policy));
+
+  RenderFrameHost* child_with_policy =
+      AddChildRFH(parent, kChildOrigin,
+                  network::mojom::PermissionsPolicyFeature::
+                      kPublicKeyCredentialsRemoteClientDataJson);
+  ASSERT_TRUE(child_with_policy);
+  EXPECT_EQ(PermissionStatus::ASK,
+            permission_controller->GetPermissionStatusForCurrentDocument(
+                permission_descriptor, child_with_policy));
+
+  // The delegation mode is tested in components/permissions.
+  permission_manager()->SetPermissionStatus(kTopOrigin,
+                                            PermissionStatus::GRANTED);
+  EXPECT_EQ(PermissionStatus::DENIED,
+            permission_controller->GetPermissionStatusForCurrentDocument(
+                permission_descriptor, child_without_policy));
 }
 #endif
 

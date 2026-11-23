@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>remoteClientDataJSON Permissions API descriptor</title>
+<link rel="help" href="https://w3c.github.io/webauthn/#sctn-remote-client-data-json-extension">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body></body>
+<script>
+"use strict";
+
+promise_test(async t => {
+  const descriptor = {
+    name: "publickey-credentials-remote-client-data-json",
+  };
+  const status = await navigator.permissions.query(descriptor);
+  assert_equals(status.name, "publickey-credentials-remote-client-data-json");
+  assert_equals(status.state, "denied");
+}, "The remoteClientDataJSON permission is denied by default");
+</script>

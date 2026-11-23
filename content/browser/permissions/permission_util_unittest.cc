@@ -19,6 +19,7 @@
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-forward.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/gurl.h"
@@ -136,6 +137,21 @@ TEST_F(PermissionUtilTest,
                 blink::mojom::PermissionName::GEOLOCATION_APPROXIMATE, result),
             blink::mojom::PermissionStatusWithDetails::New(
                 blink::mojom::PermissionStatus::ASK, nullptr));
+}
+
+// The PermissionType <-> PermissionName mappings for the new permission must
+// be inverses; a mismatch would resolve queries against the wrong permission.
+TEST_F(PermissionUtilTest, RemoteClientDataJsonDescriptorRoundTrip) {
+  blink::mojom::PermissionDescriptorPtr descriptor =
+      PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
+          blink::PermissionType::
+              PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON);
+  EXPECT_EQ(descriptor->name,
+            blink::mojom::PermissionName::
+                PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON);
+  EXPECT_EQ(
+      blink::PermissionDescriptorToPermissionType(descriptor),
+      blink::PermissionType::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON);
 }
 
 class PermissionUtilGetLastCommittedOriginAsURLTest

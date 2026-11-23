@@ -2389,6 +2389,7 @@ Called by update_net_error_codes.py.-->
   <int value="146" label="Inline cue menu"/>
   <int value="147" label="Suspicious site warning data"/>
   <int value="148" label="WebAuthn ambient sign-in data"/>
+  <int value="149" label="WebAuthn remoteClientDataJSON extension"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/content_settings/core/common/content_settings_uma_constants.h:kContentSettingsTypeToHistogramValue) -->
@@ -24481,6 +24482,8 @@ Called by update_net_error_codes.py.-->
   <int value="44" label="PERMISSION_LOCAL_NETWORK"/>
   <int value="45" label="PERMISSION_LOOPBACK_NETWORK"/>
   <int value="46" label="PERMISSION_GEOLOCATION_APPROXIMATE"/>
+  <int value="47"
+      label="PERMISSION_PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/common/permissions/permission_utils.h:PermissionType) -->

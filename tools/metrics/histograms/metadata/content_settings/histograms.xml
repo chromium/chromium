@@ -293,6 +293,8 @@ chromium-metrics-reviews@google.com.
     <variant name="protected-media-identifier"
         summary="Protected media exceptions"/>
     <variant name="protocol-handler" summary="Protocol handler exceptions"/>
+    <variant name="publickey-credentials-remote-client-data-json"
+        summary="WebAuthn remoteClientDataJSON exceptions"/>
     <variant name="push-messaging" summary="Push messaging exceptions"/>
     <variant name="request-desktop-site"
         summary="Request desktop site exceptions"/>

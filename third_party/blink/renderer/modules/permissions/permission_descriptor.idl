@@ -45,6 +45,7 @@ enum PermissionName {
     "local-network",
     "loopback-network",
     "geolocation-approximate",
+    "publickey-credentials-remote-client-data-json",
 };
 
 // The PermissionDescriptor dictionary is a base to describe permissions. Some

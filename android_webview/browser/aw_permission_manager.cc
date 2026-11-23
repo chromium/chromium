@@ -446,6 +446,14 @@ void AwPermissionManager::RequestPermissionsFromCurrentDocument(
             permissions[i],
             content::PermissionResult(PermissionStatus::GRANTED));
         break;
+      case PermissionType::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON:
+        // WebView doesn't support WebAuthenticationRemoteDesktopAllowedOrigins,
+        // and the default content::WebAuthenticationDelegate never allows the
+        // remote desktop client override, so this permission is always denied.
+        pending_request_raw->SetPermissionResult(
+            permissions[i],
+            content::PermissionResult(PermissionStatus::DENIED));
+        break;
       case PermissionType::NUM:
         NOTREACHED() << "PermissionType::NUM was not expected here.";
     }
@@ -587,6 +595,7 @@ PermissionStatus AwPermissionManager::GetPermissionStatusInternal(
     case blink::PermissionType::PAYMENT_HANDLER:
     case blink::PermissionType::PERIODIC_BACKGROUND_SYNC:
     case blink::PermissionType::POINTER_LOCK:
+    case blink::PermissionType::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON:
     case blink::PermissionType::SMART_CARD:
     case blink::PermissionType::SPEAKER_SELECTION:
     case blink::PermissionType::VR:
@@ -744,6 +753,7 @@ void AwPermissionManager::CancelPermissionRequest(int request_id) {
       case PermissionType::POINTER_LOCK:
       case PermissionType::AUTOMATIC_FULLSCREEN:
       case PermissionType::WEB_APP_INSTALLATION:
+      case PermissionType::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON:
         NOTIMPLEMENTED() << "CancelPermission not implemented for "
                          << static_cast<int>(permission);
         break;

@@ -108,6 +108,8 @@ std::string GetPermissionString(PermissionType permission) {
       return "LocalNetwork";
     case PermissionType::LOOPBACK_NETWORK:
       return "LoopbackNetwork";
+    case PermissionType::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON:
+      return "PublicKeyCredentialsRemoteClientDataJson";
     case PermissionType::NUM:
       NOTREACHED();
   }
@@ -173,6 +175,9 @@ PermissionTypeToPermissionsPolicyFeature(PermissionType permission) {
       return network::mojom::PermissionsPolicyFeature::kLocalNetwork;
     case PermissionType::LOOPBACK_NETWORK:
       return network::mojom::PermissionsPolicyFeature::kLoopbackNetwork;
+    case PermissionType::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON:
+      return network::mojom::PermissionsPolicyFeature::
+          kPublicKeyCredentialsRemoteClientDataJson;
 
     case PermissionType::PERIODIC_BACKGROUND_SYNC:
     case PermissionType::PERSISTENT_STORAGE:
@@ -362,6 +367,8 @@ std::optional<PermissionType> PermissionDescriptorInfoToPermissionType(
       return PermissionType::WEB_PRINTING;
     case PermissionName::SMART_CARD:
       return PermissionType::SMART_CARD;
+    case PermissionName::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON:
+      return PermissionType::PUBLIC_KEY_CREDENTIALS_REMOTE_CLIENT_DATA_JSON;
   }
 }
 
