@@ -18,7 +18,7 @@ repository. A typical `WATCHLISTS` file looks like:
       'filepath': 'tools/valgrind/',
     },
     'mac': {
-      'filepath': 'cocoa|\.mm$|(_mac|_posix)\.(cc|h)$',
+      'filepath': 'cocoa|\\.mm$|(_mac|_posix)\\.(cc|h)$',
     },
   },
   'WATCHLISTS': {
@@ -36,7 +36,9 @@ file in `tools/valgrind/`, the `'valgrind'` watchlist will be triggered and
 `nirnimesh@chromium.org` & `dank@chromium.org` will be cc-ed to the changeset
 for review. A regular expression can be used as the matching pattern. Matches
 are determined using python's `re.search()` function call, so matching `A_WORD`
-is the same as matching `.*A_WORD.*`.
+is the same as matching `.*A_WORD.*`. Because `WATCHLISTS` is parsed as a Python
+literal, escape backslashes in regexes (e.g. `'\\.'`) or use raw strings (e.g.
+`r'\.'`).
 
 Each name in `WATCHLISTS` must be defined first in `WATCHLIST_DEFINITIONS`.
 
@@ -54,5 +56,5 @@ It's advisable to run `watchlists.py` to verify that your new rules work.
 Example (from src):
 
 ```
-python third_party/depot_tools/watchlists.py PATH/TO/FILE1 PATH/TO/FILE2 ....
+python3 third_party/depot_tools/watchlists.py PATH/TO/FILE1 PATH/TO/FILE2 ....
 ```
