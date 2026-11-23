@@ -1,4 +1,5 @@
-# crbug.com/411727705
+# crbug.com/411727705, crbug.com/503250160
+# OMX.android.goldfish.h264.decoder stalls on Android 10/11 x86 emulators.
 -MediaSourceTest.Playback_AudioVideo_Mp2t
 -MediaSourceTest.Playback_Video_MP4_Audio_WEBM
 -Default/MediaTest.HLSMultivariantBitrateBear/1

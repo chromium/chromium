@@ -235,7 +235,10 @@ ci.builder(
                 ),
             ),
             "content_browsertests": targets.mixin(
-                # TODO(crbug.com/40210655) Move to CI builder once stable
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10_11.content_browsertests.filter",
+                ],
+                # TODO(crbug.com/589341225): Move to CI builder once stable.
                 swarming = targets.swarming(
                     dimensions = {
                         # use 8-core to shorten runtime

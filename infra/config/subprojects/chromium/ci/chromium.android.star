@@ -2387,7 +2387,7 @@ ci.builder(
             # If you change this, make similar changes in android-x86-code-coverage
             "content_browsertests": targets.mixin(
                 args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.content_browsertests.filter",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10_11.content_browsertests.filter",
                 ],
                 swarming = targets.swarming(
                     dimensions = {
@@ -2610,7 +2610,7 @@ ci.builder(
             ),
             "content_browsertests": targets.mixin(
                 args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10.content_browsertests.filter",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_10_11.content_browsertests.filter",
                 ],
                 enable_rts_filtering = True,
                 swarming = targets.swarming(
