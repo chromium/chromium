@@ -13,15 +13,20 @@ import org.chromium.content_public.browser.WebContents;
 /**
  * A {@link Facility} representing DOM elements inside a loaded web page.
  *
- * <p>Subclasses declare {@link HtmlElement}s as fields using {@link #declareHtmlElement(String)}.
- * The host Station must implement {@link WebContentsElementProvider}.
+ * <p>Subclasses declare {@link HtmlElement}s as fields using {@link #declareHtmlElement(String)} or
+ * {@link #declareHtmlElement(HtmlElementSpec)}. The host Station must implement {@link
+ * WebContentsElementProvider}.
  */
 @NullMarked
 public abstract class WebPageFacility extends Facility<Station<?>> {
     /** Declares an {@link HtmlElement} matching {@code cssSelector}. */
     protected HtmlElement declareHtmlElement(String cssSelector) {
-        return declareElement(
-                new HtmlElement(new HtmlElementSpec(cssSelector), this::getWebContents));
+        return declareHtmlElement(new HtmlElementSpec(cssSelector));
+    }
+
+    /** Declares an {@link HtmlElement} matching {@code spec}. */
+    protected HtmlElement declareHtmlElement(HtmlElementSpec spec) {
+        return declareElement(new HtmlElement(spec, this::getWebContents));
     }
 
     private @Nullable WebContents getWebContents() {

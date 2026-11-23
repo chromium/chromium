@@ -14,7 +14,6 @@ import android.text.TextUtils;
 
 import androidx.test.filters.MediumTest;
 
-import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -29,9 +28,6 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Criteria;
-import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -48,11 +44,14 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.JavaScriptUtils;
+import org.chromium.content_public.browser.test.transit.HtmlElement;
+import org.chromium.content_public.browser.test.transit.HtmlElementSpec;
+import org.chromium.content_public.browser.test.transit.WebPageFacility;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
@@ -74,7 +73,6 @@ import java.util.concurrent.atomic.AtomicReference;
 @Restriction(DeviceFormFactor.DESKTOP)
 public class HistoryWebUiRenderTest {
     private static final int TEST_TIMEOUT_SECONDS = 10;
-    private static final long TEST_TIMEOUT_MS = TimeUnit.SECONDS.toMillis(TEST_TIMEOUT_SECONDS);
 
     // Fixed date far enough in the past to avoid relative recency labels ("Today",
     // "Yesterday", "two days ago") and keep rendered date headers deterministic.
@@ -102,6 +100,20 @@ public class HistoryWebUiRenderTest {
 
     private ViewportTestUtils mViewportTestUtils;
 
+    /**
+     * chrome://history/ after its first history query finished and its toolbar search field, three
+     * shadow roots deep, has rendered, so the screenshot includes the toolbar.
+     */
+    private static class HistoryWebUiPageFacility extends WebPageFacility {
+        public final HtmlElement loadedBody = declareHtmlElement("body:not(.loading)");
+        public final HtmlElement searchField =
+                declareHtmlElement(
+                        new HtmlElementSpec("history-app")
+                                .shadow("#toolbar")
+                                .shadow("#mainToolbar")
+                                .shadow("#search"));
+    }
+
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
         ChromeNightModeTestUtils.setUpNightModeBeforeChromeActivityLaunched();
@@ -123,11 +135,11 @@ public class HistoryWebUiRenderTest {
     @Feature({"RenderTest"})
     @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testRenderEmptyHistory(boolean nightModeEnabled) throws Throwable {
-        mActivityTestRule.startOnBlankPage();
+        WebPageStation page = mActivityTestRule.startOnBlankPage();
         clearHistory();
 
-        WebContents webContents = openHistoryWebUiAndWaitForLoad();
-        Bitmap bitmap = takeWebContentsScreenshot(webContents);
+        WebPageStation historyPage = openHistoryWebUi(page);
+        Bitmap bitmap = takeWebContentsScreenshot(historyPage.webContentsElement.value());
         mRenderTestRule.compareForResult(bitmap, "history_webui_empty");
     }
 
@@ -136,7 +148,7 @@ public class HistoryWebUiRenderTest {
     @Feature({"RenderTest"})
     @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testRenderPopulatedHistory(boolean nightModeEnabled) throws Throwable {
-        mActivityTestRule.startOnBlankPage();
+        WebPageStation page = mActivityTestRule.startOnBlankPage();
         clearHistory();
 
         long visitOneTimeMs = toEpochMillis(FIXED_PAST_DATE_ANCHOR);
@@ -156,8 +168,8 @@ public class HistoryWebUiRenderTest {
                             visitTwoTimeMs);
                 });
 
-        WebContents webContents = openHistoryWebUiAndWaitForLoad();
-        Bitmap bitmap = takeWebContentsScreenshot(webContents);
+        WebPageStation historyPage = openHistoryWebUi(page);
+        Bitmap bitmap = takeWebContentsScreenshot(historyPage.webContentsElement.value());
         mRenderTestRule.compareForResult(bitmap, "history_webui_populated");
     }
 
@@ -165,40 +177,24 @@ public class HistoryWebUiRenderTest {
         return dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
-    private WebContents openHistoryWebUiAndWaitForLoad() throws Throwable {
-        mActivityTestRule.loadUrl(UrlConstants.HISTORY_URL);
+    /** Loads chrome://history/ in {@code page}'s tab, finishing {@code page}. */
+    private WebPageStation openHistoryWebUi(WebPageStation page) throws Throwable {
+        WebPageStation historyPage =
+                page.loadPageProgrammatically(
+                        UrlConstants.HISTORY_URL,
+                        WebPageStation.newBuilder().withFacility(new HistoryWebUiPageFacility()));
 
-        WebContents webContents =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> {
-                            Tab tab = mActivityTestRule.getActivityTab();
-                            assertNotNull(tab);
-                            assertNull(
-                                    "chrome://history/ should render as WebUI, not a NativePage",
-                                    tab.getNativePage());
-                            WebContents contents = tab.getWebContents();
-                            assertNotNull(contents);
-                            return contents;
-                        });
-
-        CriteriaHelper.pollInstrumentationThread(
+        WebContents webContents = historyPage.webContentsElement.value();
+        ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    try {
-                        String loaded =
-                                JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                                        webContents,
-                                        "!document.body.classList.contains('loading')");
-                        Criteria.checkThat(loaded, Matchers.is("true"));
-                    } catch (TimeoutException e) {
-                        throw new CriteriaNotSatisfiedException(e);
-                    }
-                },
-                TEST_TIMEOUT_MS,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-
-        ThreadUtils.runOnUiThreadBlocking(() -> webContents.setFocus(/* hasFocus= */ false));
+                    Tab tab = historyPage.getTab();
+                    assertNull(
+                            "chrome://history/ should render as WebUI, not a NativePage",
+                            tab.getNativePage());
+                    webContents.setFocus(/* hasFocus= */ false);
+                });
         mViewportTestUtils.waitForFramePresented();
-        return webContents;
+        return historyPage;
     }
 
     private void clearHistory() throws TimeoutException {
