@@ -49,6 +49,10 @@ constexpr wchar_t kRegistryPath[] =
     L"Software\\Microsoft\\Windows\\Shell\\Associations\\UrlAssociations\\h"
     L"ttp\\UserChoice";
 
+constexpr wchar_t kUserChoiceLatestProgIdRegistryPath[] =
+    L"Software\\Microsoft\\Windows\\Shell\\Associations\\UrlAssociations\\h"
+    L"ttp\\UserChoiceLatest\\ProgId";
+
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
@@ -57,8 +61,13 @@ constexpr wchar_t kRegistryPath[] =
 class DefaultBrowserManagerWinBrowserTest : public InProcessBrowserTest {
  protected:
   DefaultBrowserManagerWinBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        kDefaultBrowserChangedOsNotification);
+    // Use a 0ms monitor debounce delay so back-to-back setup and test registry
+    // writes in this fixture are not coalesced into a single event.
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{kDefaultBrowserChangedOsNotification, {}},
+         {kDefaultBrowserMonitorUrlAssociations,
+          {{kMonitorDebounceDelay.name, "0ms"}}}},
+        {});
   }
   ~DefaultBrowserManagerWinBrowserTest() override = default;
 
@@ -442,6 +451,24 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserManagerWinBrowserTest,
   auto notification = display_service_tester_->GetNotification(
       DefaultBrowserManager::kNotificationId);
   EXPECT_TRUE(notification.has_value());
+}
+
+IN_PROC_BROWSER_TEST_F(DefaultBrowserManagerWinBrowserTest,
+                       UserChoiceLatestChangeIsDetected) {
+  DefaultBrowserManager* manager =
+      DefaultBrowserManager::From(g_browser_process);
+  ASSERT_TRUE(manager);
+
+  base::test::TestFuture<DefaultBrowserState> future;
+  base::CallbackListSubscription subscription =
+      manager->RegisterDefaultBrowserChanged(future.GetRepeatingCallback());
+
+  base::win::RegKey key;
+  ASSERT_EQ(ERROR_SUCCESS,
+            key.Create(HKEY_CURRENT_USER, kUserChoiceLatestProgIdRegistryPath,
+                       KEY_WRITE));
+  ASSERT_EQ(ERROR_SUCCESS, key.WriteValue(kProgIdValue, L"VanadiumHTML"));
+  EXPECT_TRUE(future.Wait());
 }
 
 #endif  // BUILDFLAG(IS_WIN)

@@ -174,6 +174,21 @@ TEST(DefaultBrowserFeaturesTest, IsDefaultBrowserChangedOsNotificationEnabled) {
 }
 
 TEST(DefaultBrowserFeaturesTest,
+     IsDefaultBrowserMonitorUrlAssociationsEnabled) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(kDefaultBrowserMonitorUrlAssociations);
+    EXPECT_EQ(IsDefaultBrowserMonitorUrlAssociationsEnabled(),
+              static_cast<bool>(BUILDFLAG(IS_WIN)));
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(kDefaultBrowserMonitorUrlAssociations);
+    EXPECT_FALSE(IsDefaultBrowserMonitorUrlAssociationsEnabled());
+  }
+}
+
+TEST(DefaultBrowserFeaturesTest,
      IsPerformDefaultBrowserCheckValidationsEnabled) {
 #if BUILDFLAG(IS_WIN)
   base::test::ScopedOSInfoOverride win11_os(

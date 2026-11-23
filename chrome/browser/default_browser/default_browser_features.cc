@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/common/webui_url_constants.h"
 #include "url/gurl.h"
@@ -84,6 +85,14 @@ bool IsDefaultBrowserModalSticky() {
 bool IsVisualGuidedSetterDockingEnabled() {
 #if BUILDFLAG(IS_WIN)
   return base::FeatureList::IsEnabled(kVisualGuidedSetterDocking);
+#else
+  return false;
+#endif
+}
+
+bool IsDefaultBrowserMonitorUrlAssociationsEnabled() {
+#if BUILDFLAG(IS_WIN)
+  return base::FeatureList::IsEnabled(kDefaultBrowserMonitorUrlAssociations);
 #else
   return false;
 #endif
@@ -233,5 +242,13 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    kFindSettingsTimeout,
                    &kDefaultBrowserSetterSelection,
                    base::Seconds(5));
+
+BASE_FEATURE(kDefaultBrowserMonitorUrlAssociations,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kMonitorDebounceDelay,
+                   &kDefaultBrowserMonitorUrlAssociations,
+                   base::Milliseconds(400));
 
 }  // namespace default_browser

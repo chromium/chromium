@@ -122,6 +122,7 @@ source_set("unit_tests") {
 
   if (is_win) {
     sources += [
+      "default_browser_monitor_win_unittest.cc",
       "default_browser_notification_observer_unittest.cc",
       "default_browser_startup_metrics_unittest.cc",
     ]
@@ -150,6 +151,7 @@ source_set("unit_tests") {
   if (is_win) {
     deps += [
       ":startup_metrics",
+      "//chrome/browser/win:registry_watcher",
       "//chrome/install_static:install_static_util",
       "//chrome/install_static/test:test_support",
       "//chrome/installer/util:with_no_strings",

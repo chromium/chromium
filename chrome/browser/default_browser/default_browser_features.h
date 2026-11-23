@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/default_browser/default_browser_setter.h"
 #include "url/gurl.h"
@@ -40,6 +41,10 @@ bool IsDefaultBrowserModalSticky();
 
 // Returns whether the visual guided setter docking feature flag is enabled.
 bool IsVisualGuidedSetterDockingEnabled();
+
+// Returns whether the Windows default browser monitor should watch parent
+// UrlAssociations keys with trailing-edge debouncing.
+bool IsDefaultBrowserMonitorUrlAssociationsEnabled();
 
 // Returns the UI surface to use for Default Browser Prompt. Defaults to Infobar
 // when the `kDefaultBrowserPromptSurfaces` feature is disabled.
@@ -99,6 +104,14 @@ BASE_DECLARE_FEATURE_PARAM(std::string, kDefaultBrowserVisualGuideUrlParam);
 // Parameter for the maximum amount of time we should wait for the Settings
 // window.
 BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kFindSettingsTimeout);
+
+// Enables watching parent UrlAssociations registry keys on Windows with
+// trailing-edge debouncing.
+BASE_DECLARE_FEATURE(kDefaultBrowserMonitorUrlAssociations);
+
+// Trailing-edge debounce delay for coalescing bursts of registry writes under
+// UrlAssociations before notifying default browser monitor observers.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kMonitorDebounceDelay);
 
 }  // namespace default_browser
 
