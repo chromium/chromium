@@ -399,23 +399,52 @@ private func awaitRemoteChain(
     }
     return value
 }
-/// Follows a chain of replies from a remote that culminates in a remote. There
-/// may also be remotes retrieved along the chain, which Fuzzilli can interact
-/// with as well.
+
+/// Calls `method` on `remote`, passing at `index` a receiver for a new remote
+/// built with `constructor`, and returns the new remote.
+private func passReceiver(
+    _ b: ProgramBuilder, _ method: String, on remote: Variable, at index: Int,
+    constructor: String, bind: String
+) -> Variable {
+    let newRemote = b.construct(b.createNamedVariable(forBuiltin: constructor), withArgs: [])
+    let receiver = b.callMethod(bind, on: b.getProperty("$", of: newRemote), withArgs: [])
+    let signature = b.methodSignatures(of: method, on: remote)[0]
+    var arguments = b.findOrGenerateArguments(
+                        forSignature: signature,
+                        maxNumberOfVariablesToGenerate: 1000)
+    arguments[index] = receiver
+    b.callMethod(method, on: remote, withArgs: arguments, guard: false)
+    return newRemote
+}
+/// Follows a chain of calls from a remote that culminates in a remote. Each call
+/// either returns a remote in its reply, or takes a receiver for a new remote.
+/// There may also be remotes retrieved along the chain, which Fuzzilli can
+/// interact with as well.
 ///
 /// Chain1:
-///   Primary.returnRemote().remote
+///   Primary.passReceiver(ReceiverFromJs receiver)
 private let MojoReplyChain1Generator = CodeGenerator(
     "MojoReplyChain1Generator", inContext: .single(.async)
 ) { b in
     var remote = b.callFunction(
         b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
-    remote = awaitRemoteChain(b, "returnRemote", on: remote, at: ["remote"])
+    remote = passReceiver(
+        b, "passReceiver", on: remote, at: 0,
+        constructor: "golden.ReceiverFromJsRemote", bind: "associateAndPassReceiver")
 }
 /// Chain2:
-///   Primary.syncReturnRemote().remote
+///   Primary.returnRemote().remote
 private let MojoReplyChain2Generator = CodeGenerator(
     "MojoReplyChain2Generator", inContext: .single(.async)
+) { b in
+    var remote = b.callFunction(
+        b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
+    remote = awaitRemoteChain(b, "returnRemote", on: remote, at: ["remote"])
+}
+/// Chain3:
+///   Primary.syncReturnRemote().remote
+private let MojoReplyChain3Generator = CodeGenerator(
+    "MojoReplyChain3Generator", inContext: .single(.async)
 ) { b in
     var remote = b.callFunction(
         b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
@@ -538,8 +567,9 @@ let mojoPrimaryProfile = Profile(
     additionalCodeGenerators: [
         (MojoMethodCallGenerator, 10000),
         (MojoPropertyRetrievalGenerator, 10000),
-        (MojoReplyChain1Generator, 2500),
-        (MojoReplyChain2Generator, 2500),
+        (MojoReplyChain1Generator, 1666),
+        (MojoReplyChain2Generator, 1666),
+        (MojoReplyChain3Generator, 1666),
     ] + commonMojoCodeGenerators,
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,

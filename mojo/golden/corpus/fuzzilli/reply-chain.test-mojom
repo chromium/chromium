@@ -9,6 +9,8 @@ module golden;
 interface Primary {
   GetMiddle() => (pending_remote<Middle> middle);
   GetLeafInStruct() => (ReplyStruct reply);
+  BindMiddle(int32 unused, pending_associated_receiver<Middle> middle);
+  PassObserver(pending_remote<Observer> remote);
 };
 
 struct ReplyStruct {
@@ -23,6 +25,16 @@ union ReplyUnion {
 interface Middle {
   GetLeaf() => (pending_remote<Leaf> leaf);
   GetPrimary() => (pending_remote<Primary> primary);
+  BindLeaf(pending_receiver<Leaf> leaf);
+  BindPrimary(pending_receiver<Primary> primary);
+};
+
+interface Observer {
+  PassNonPrimaryRoot(pending_remote<NonPrimaryRoot> remote);
+};
+
+interface NonPrimaryRoot {
+  BindLeaf(pending_receiver<Leaf> leaf);
 };
 
 interface Leaf {};

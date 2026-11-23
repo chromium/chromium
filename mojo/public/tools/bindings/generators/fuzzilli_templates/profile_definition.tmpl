@@ -175,8 +175,8 @@ let mojo{{primary.name}}Profile = Profile(
 {%- endfor %}
 {#- The chains share one weight, so profiles with many chains do not spend
     most of their programs following them. #}
-{%- for chain in remote_chains %}
-        (MojoReplyChain{{loop.index}}Generator, {{5000 // remote_chains|length}}),
+{%- for chain in mojo_response_chains %}
+        (MojoReplyChain{{loop.index}}Generator, {{5000 // mojo_response_chains|length}}),
 {%- endfor %}
     ] + commonMojoCodeGenerators,
     additionalProgramTemplates: WeightedList([]),

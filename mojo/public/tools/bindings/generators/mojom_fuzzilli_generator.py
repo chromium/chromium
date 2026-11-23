@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import argparse
+import dataclasses
 from enum import Enum
 
 import mojom.generate.generator as generator
@@ -84,6 +85,24 @@ class Endpoint(Enum):
   RECEIVER = 1
 
 
+@dataclasses.dataclass(frozen=True)
+class ReplyStep:
+  method: mojom.Method
+  path: tuple[str, ...]
+
+
+@dataclasses.dataclass(frozen=True)
+class ReceiverStep:
+  method: mojom.Method
+  param_index: int
+  remote: mojom.Interface
+  bind_function: str
+
+
+# Data classes for steps in remote chains.
+ChainStep = ReplyStep | ReceiverStep
+
+
 class Generator(generator.Generator):
   def __init__(self, *args, **kwargs):
     super(Generator, self).__init__(*args, **kwargs)
@@ -135,6 +154,7 @@ class Generator(generator.Generator):
       "format_unique_name": self._FormatUniqueName,
       "fully_qualified_name": self._FullyQualifiedName,
       "is_array_kind": mojom.IsArrayKind,
+      "is_reply_step": lambda step: isinstance(step, ReplyStep),
       "namespace_as_array": self._NamespaceAsArray,
       "to_camel": generator.ToCamel,
     }
@@ -179,28 +199,24 @@ class Generator(generator.Generator):
       # Union of `js_structs` and `browser_structs`
       "structs": list((self.js_structs | self.browser_structs).values()),
       "response_structs": list(self.response_structs.values()),
-      "remote_chains": self._CollectRemoteChains(),
+      "mojo_response_chains": self._CollectMojoResponseChains(),
     }
 
-  # Returns every maximal chain of calls that, starting at any remote, returns a
-  # remote. A chain that is a prefix or a suffix of another is not included in
-  # the output. Each chain is a list of `(method, property path to the remote)`.
-  def _CollectRemoteChains(self):
+  # Returns every maximal chain of calls that, starting at any remote, gives JS
+  # a remote, either as a response to a call, or as a result of passing a
+  # receiver. A chain that is a prefix or a suffix of another is not included
+  # in the output. Each chain is a list of steps yielded by `_FindChainSteps`.
+  def _CollectMojoResponseChains(self):
     chains = []
 
     def visit(interface, chain, seen_interfaces):
       is_maximal = True
-      for method in interface.methods:
-        if not method.response_parameters:
+      for step, remote in self._FindChainSteps(interface):
+        name = self._FormatUniqueName(remote)
+        if name in seen_interfaces:
           continue
-
-        for param in method.response_parameters:
-          for path, remote in self._FindReplyRemotes(param.kind, [param.name]):
-            name = self._FormatUniqueName(remote)
-            if name in seen_interfaces:
-              continue
-            is_maximal = False
-            visit(remote, chain + [(method, path)], seen_interfaces | {name})
+        is_maximal = False
+        visit(remote, chain + [step], seen_interfaces | {name})
       if is_maximal and chain:
         chains.append(chain)
 
@@ -219,6 +235,30 @@ class Generator(generator.Generator):
         for other in chains
       )
     ]
+
+  # Yields `(ChainStep, interface)` for every call on `interface` that gives JS
+  # a remote to another interface, either in the reply or by passing a receiver
+  # for a new remote.
+  def _FindChainSteps(self, interface):
+    for method in interface.methods:
+      for param in method.response_parameters or []:
+        for path, remote in self._FindReplyRemotes(param.kind, [param.name]):
+          yield ReplyStep(method, tuple(path)), remote
+
+      for param_index, param in enumerate(method.parameters):
+        if not self._IsAnyPendingReceiverKind(param.kind):
+          continue
+        name = self._FormatUniqueName(param.kind.kind)
+        remote = self.js_called_interfaces.get(name)
+        # The primary interface has no constructor in `mojoBuiltins`.
+        if not remote or remote == self.primary_interface:
+          continue
+        bind_function = (
+          "associateAndPassReceiver"
+          if mojom.IsPendingAssociatedReceiverKind(param.kind)
+          else "bindNewPipeAndPassReceiver"
+        )
+        yield ReceiverStep(method, param_index, remote, bind_function), remote
 
   # Yields `(property path, interface)` for every remote reachable from `kind`.
   def _FindReplyRemotes(self, kind, path, seen_types=set()):

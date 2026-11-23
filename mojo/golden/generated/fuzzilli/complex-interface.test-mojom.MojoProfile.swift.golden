@@ -1661,56 +1661,106 @@ private func awaitRemoteChain(
     }
     return value
 }
-/// Follows a chain of replies from a remote that culminates in a remote. There
-/// may also be remotes retrieved along the chain, which Fuzzilli can interact
-/// with as well.
+
+/// Calls `method` on `remote`, passing at `index` a receiver for a new remote
+/// built with `constructor`, and returns the new remote.
+private func passReceiver(
+    _ b: ProgramBuilder, _ method: String, on remote: Variable, at index: Int,
+    constructor: String, bind: String
+) -> Variable {
+    let newRemote = b.construct(b.createNamedVariable(forBuiltin: constructor), withArgs: [])
+    let receiver = b.callMethod(bind, on: b.getProperty("$", of: newRemote), withArgs: [])
+    let signature = b.methodSignatures(of: method, on: remote)[0]
+    var arguments = b.findOrGenerateArguments(
+                        forSignature: signature,
+                        maxNumberOfVariablesToGenerate: 1000)
+    arguments[index] = receiver
+    b.callMethod(method, on: remote, withArgs: arguments, guard: false)
+    return newRemote
+}
+/// Follows a chain of calls from a remote that culminates in a remote. Each call
+/// either returns a remote in its reply, or takes a receiver for a new remote.
+/// There may also be remotes retrieved along the chain, which Fuzzilli can
+/// interact with as well.
 ///
 /// Chain1:
-///   Primary.returnRemote().remote
-///   RemoteFromBrowser.returnRemote().remote
+///   Primary.passReceiver(ReceiverFromJs receiver)
+///   ReceiverFromJs.passReceiver(ReceiverFromJsViaReceiverFromJs receiver)
 private let MojoReplyChain1Generator = CodeGenerator(
     "MojoReplyChain1Generator", inContext: .single(.async)
 ) { b in
     var remote = b.callFunction(
         b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
-    remote = awaitRemoteChain(b, "returnRemote", on: remote, at: ["remote"])
-    remote = awaitRemoteChain(b, "returnRemote", on: remote, at: ["remote"])
+    remote = passReceiver(
+        b, "passReceiver", on: remote, at: 0,
+        constructor: "golden.ReceiverFromJsRemote", bind: "bindNewPipeAndPassReceiver")
+    remote = passReceiver(
+        b, "passReceiver", on: remote, at: 0,
+        constructor: "golden.ReceiverFromJsViaReceiverFromJsRemote", bind: "bindNewPipeAndPassReceiver")
 }
 /// Chain2:
-///   Primary.returnMixed().remote
+///   Primary.passReceiver(ReceiverFromJs receiver)
+///   ReceiverFromJs.returnRemote().remote
 private let MojoReplyChain2Generator = CodeGenerator(
     "MojoReplyChain2Generator", inContext: .single(.async)
 ) { b in
     var remote = b.callFunction(
         b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
-    remote = awaitRemoteChain(b, "returnMixed", on: remote, at: ["remote"])
+    remote = passReceiver(
+        b, "passReceiver", on: remote, at: 0,
+        constructor: "golden.ReceiverFromJsRemote", bind: "bindNewPipeAndPassReceiver")
+    remote = awaitRemoteChain(b, "returnRemote", on: remote, at: ["remote"])
 }
 /// Chain3:
-///   Primary.returnMixed().associatedRemote
+///   Primary.returnRemote().remote
+///   RemoteFromBrowser.passReceiver(ReceiverFromJsViaRemoteFromBrowser receiver)
 private let MojoReplyChain3Generator = CodeGenerator(
     "MojoReplyChain3Generator", inContext: .single(.async)
 ) { b in
     var remote = b.callFunction(
         b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
-    remote = awaitRemoteChain(b, "returnMixed", on: remote, at: ["associatedRemote"])
+    remote = awaitRemoteChain(b, "returnRemote", on: remote, at: ["remote"])
+    remote = passReceiver(
+        b, "passReceiver", on: remote, at: 0,
+        constructor: "golden.ReceiverFromJsViaRemoteFromBrowserRemote", bind: "bindNewPipeAndPassReceiver")
 }
 /// Chain4:
-///   Primary.returnMixedAssociated().associatedRemote
+///   Primary.returnRemote().remote
+///   RemoteFromBrowser.returnRemote().remote
 private let MojoReplyChain4Generator = CodeGenerator(
     "MojoReplyChain4Generator", inContext: .single(.async)
 ) { b in
     var remote = b.callFunction(
         b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
-    remote = awaitRemoteChain(b, "returnMixedAssociated", on: remote, at: ["associatedRemote"])
+    remote = awaitRemoteChain(b, "returnRemote", on: remote, at: ["remote"])
+    remote = awaitRemoteChain(b, "returnRemote", on: remote, at: ["remote"])
 }
 /// Chain5:
-///   ReceiverFromJs.returnRemote().remote
+///   Primary.returnMixed().remote
 private let MojoReplyChain5Generator = CodeGenerator(
-    "MojoReplyChain5Generator", inContext: .single(.async),
-    inputs: .required(.jsGoldenReceiverFromJsRemote)
-) { b, root in
-    var remote = root
-    remote = awaitRemoteChain(b, "returnRemote", on: remote, at: ["remote"])
+    "MojoReplyChain5Generator", inContext: .single(.async)
+) { b in
+    var remote = b.callFunction(
+        b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
+    remote = awaitRemoteChain(b, "returnMixed", on: remote, at: ["remote"])
+}
+/// Chain6:
+///   Primary.returnMixed().associatedRemote
+private let MojoReplyChain6Generator = CodeGenerator(
+    "MojoReplyChain6Generator", inContext: .single(.async)
+) { b in
+    var remote = b.callFunction(
+        b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
+    remote = awaitRemoteChain(b, "returnMixed", on: remote, at: ["associatedRemote"])
+}
+/// Chain7:
+///   Primary.returnMixedAssociated().associatedRemote
+private let MojoReplyChain7Generator = CodeGenerator(
+    "MojoReplyChain7Generator", inContext: .single(.async)
+) { b in
+    var remote = b.callFunction(
+        b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
+    remote = awaitRemoteChain(b, "returnMixedAssociated", on: remote, at: ["associatedRemote"])
 }
 
 /// Every ObjectGroup registered by this profile. Also used by `isTargetObject`
@@ -1945,11 +1995,13 @@ let mojoPrimaryProfile = Profile(
         (MojoPropertyRetrievalGenerator, 10000),
         (MojoGoldenRemoteFromJsRouterListenerGenerator, 2500),
         (MojoGoldenReceiverFromBrowserRouterListenerGenerator, 2500),
-        (MojoReplyChain1Generator, 1000),
-        (MojoReplyChain2Generator, 1000),
-        (MojoReplyChain3Generator, 1000),
-        (MojoReplyChain4Generator, 1000),
-        (MojoReplyChain5Generator, 1000),
+        (MojoReplyChain1Generator, 714),
+        (MojoReplyChain2Generator, 714),
+        (MojoReplyChain3Generator, 714),
+        (MojoReplyChain4Generator, 714),
+        (MojoReplyChain5Generator, 714),
+        (MojoReplyChain6Generator, 714),
+        (MojoReplyChain7Generator, 714),
     ] + commonMojoCodeGenerators,
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,

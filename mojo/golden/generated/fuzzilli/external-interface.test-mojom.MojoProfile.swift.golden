@@ -162,6 +162,58 @@ private let MojoPropertyRetrievalGenerator = CodeGenerator(
     b.getProperty(propertyName, of: obj)
 }
 
+/// Awaits a call to `method` on `remote` and returns the remote at `path` in
+/// the reply. Replies may hold null structs, unset union fields and null
+/// remotes, so the call and the property retrievals use optional chaining: the
+/// rest of the chain gets `undefined` instead of throwing.
+private func awaitRemoteChain(
+    _ b: ProgramBuilder, _ method: String, on remote: Variable, at path: [String]
+) -> Variable {
+    let signature = b.methodSignatures(of: method, on: remote)[0]
+    let arguments = b.findOrGenerateArguments(
+                        forSignature: signature,
+                        maxNumberOfVariablesToGenerate: 1000)
+    var value = b.await(b.callMethod(
+        method, on: remote, withArgs: arguments, guard: false, isReceiverOptional: true))
+    for property in path {
+        value = b.getProperty(property, of: value, isReceiverOptional: true)
+    }
+    return value
+}
+
+/// Calls `method` on `remote`, passing at `index` a receiver for a new remote
+/// built with `constructor`, and returns the new remote.
+private func passReceiver(
+    _ b: ProgramBuilder, _ method: String, on remote: Variable, at index: Int,
+    constructor: String, bind: String
+) -> Variable {
+    let newRemote = b.construct(b.createNamedVariable(forBuiltin: constructor), withArgs: [])
+    let receiver = b.callMethod(bind, on: b.getProperty("$", of: newRemote), withArgs: [])
+    let signature = b.methodSignatures(of: method, on: remote)[0]
+    var arguments = b.findOrGenerateArguments(
+                        forSignature: signature,
+                        maxNumberOfVariablesToGenerate: 1000)
+    arguments[index] = receiver
+    b.callMethod(method, on: remote, withArgs: arguments, guard: false)
+    return newRemote
+}
+/// Follows a chain of calls from a remote that culminates in a remote. Each call
+/// either returns a remote in its reply, or takes a receiver for a new remote.
+/// There may also be remotes retrieved along the chain, which Fuzzilli can
+/// interact with as well.
+///
+/// Chain1:
+///   Primary.passNestedReceiver(Primary receiver)
+private let MojoReplyChain1Generator = CodeGenerator(
+    "MojoReplyChain1Generator", inContext: .single(.async)
+) { b in
+    var remote = b.callFunction(
+        b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
+    remote = passReceiver(
+        b, "passNestedReceiver", on: remote, at: 0,
+        constructor: "nestedExternal.PrimaryRemote", bind: "bindNewPipeAndPassReceiver")
+}
+
 /// Every ObjectGroup registered by this profile. Also used by `isTargetObject`
 /// to decide which variables the Mojo generators operate on.
 private let mojoObjectGroups: [ObjectGroup] = [
@@ -259,6 +311,7 @@ let mojoPrimaryProfile = Profile(
     additionalCodeGenerators: [
         (MojoMethodCallGenerator, 10000),
         (MojoPropertyRetrievalGenerator, 10000),
+        (MojoReplyChain1Generator, 5000),
     ] + commonMojoCodeGenerators,
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,

@@ -104,7 +104,7 @@ private let Mojo{{receiver|format_unique_name}}RouterListenerGenerator = CodeGen
 }
     {%- endif %}
 {%- endfor %}
-{%- if remote_chains %}
+{%- if mojo_response_chains %}
 
 /// Awaits a call to `method` on `remote` and returns the remote at `path` in
 /// the reply. Replies may hold null structs, unset union fields and null
@@ -124,19 +124,41 @@ private func awaitRemoteChain(
     }
     return value
 }
+
+/// Calls `method` on `remote`, passing at `index` a receiver for a new remote
+/// built with `constructor`, and returns the new remote.
+private func passReceiver(
+    _ b: ProgramBuilder, _ method: String, on remote: Variable, at index: Int,
+    constructor: String, bind: String
+) -> Variable {
+    let newRemote = b.construct(b.createNamedVariable(forBuiltin: constructor), withArgs: [])
+    let receiver = b.callMethod(bind, on: b.getProperty("$", of: newRemote), withArgs: [])
+    let signature = b.methodSignatures(of: method, on: remote)[0]
+    var arguments = b.findOrGenerateArguments(
+                        forSignature: signature,
+                        maxNumberOfVariablesToGenerate: 1000)
+    arguments[index] = receiver
+    b.callMethod(method, on: remote, withArgs: arguments, guard: false)
+    return newRemote
+}
 {%- endif %}
-{%- for chain in remote_chains %}
+{%- for chain in mojo_response_chains %}
     {%- if loop.first %}
-/// Follows a chain of replies from a remote that culminates in a remote. There
-/// may also be remotes retrieved along the chain, which Fuzzilli can interact
-/// with as well.
+/// Follows a chain of calls from a remote that culminates in a remote. Each call
+/// either returns a remote in its reply, or takes a receiver for a new remote.
+/// There may also be remotes retrieved along the chain, which Fuzzilli can
+/// interact with as well.
 ///
     {%- endif %}
 /// Chain{{loop.index}}:
-    {%- for method, path in chain %}
-///   {{method.interface.name}}.{{method.name}}().{{path|join(".")}}
+    {%- for step in chain %}
+        {%- if step|is_reply_step %}
+///   {{step.method.interface.name}}.{{step.method.name}}().{{step.path|join(".")}}
+        {%- else %}
+///   {{step.method.interface.name}}.{{step.method.name}}({{step.remote.name}} receiver)
+        {%- endif %}
     {%- endfor %}
-    {%- set root = chain[0][0].interface %}
+    {%- set root = chain[0].method.interface %}
     {%- set from_primary = root|format_unique_name == primary|format_unique_name %}
     {%- if from_primary %}
 private let MojoReplyChain{{loop.index}}Generator = CodeGenerator(
@@ -151,8 +173,14 @@ private let MojoReplyChain{{loop.index}}Generator = CodeGenerator(
 ) { b{% if not from_primary %}, root{% endif %} in
     var remote = root
     {%- endif %}
-    {%- for method, path in chain %}
-    remote = awaitRemoteChain(b, "{{method.name}}", on: remote, at: ["{{path|join('", "')}}"])
+    {%- for step in chain %}
+        {%- if step|is_reply_step %}
+    remote = awaitRemoteChain(b, "{{step.method.name}}", on: remote, at: ["{{step.path|join('", "')}}"])
+        {%- else %}
+    remote = passReceiver(
+        b, "{{step.method.name}}", on: remote, at: {{step.param_index}},
+        constructor: "{{step.remote|fully_qualified_name}}Remote", bind: "{{step.bind_function}}")
+        {%- endif %}
     {%- endfor %}
 }
 {%- endfor %}

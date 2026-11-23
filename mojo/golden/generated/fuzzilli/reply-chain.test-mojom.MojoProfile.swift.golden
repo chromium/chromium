@@ -21,13 +21,18 @@ extension ILType {
         withMethods: [
             "getMiddle",
             "getLeafInStruct",
+            "bindMiddle",
+            "passObserver",
         ])
     fileprivate static let jsGoldenPrimaryRemoteWrapper: ILType = .object(
         ofGroup: "golden.PrimaryRemoteWrapper",
         withMethods: [
           "close",
           "isBound",
+          "bindNewPipeAndPassReceiver",
         ])
+    fileprivate static let jsGoldenPrimaryPendingReceiver: ILType = .object(
+        ofGroup: "golden.PrimaryPendingReceiver")
 
     // Middle
     fileprivate static let jsGoldenMiddleRemote: ILType = .object(
@@ -36,13 +41,18 @@ extension ILType {
         withMethods: [
             "getLeaf",
             "getPrimary",
+            "bindLeaf",
+            "bindPrimary",
         ])
     fileprivate static let jsGoldenMiddleRemoteWrapper: ILType = .object(
         ofGroup: "golden.MiddleRemoteWrapper",
         withMethods: [
           "close",
           "isBound",
+          "associateAndPassReceiver",
         ])
+    fileprivate static let jsGoldenMiddlePendingAssociatedReceiver: ILType = .object(
+        ofGroup: "golden.MiddlePendingAssociatedReceiver")
 
     // Leaf
     fileprivate static let jsGoldenLeafRemote: ILType = .object(
@@ -55,7 +65,53 @@ extension ILType {
         withMethods: [
           "close",
           "isBound",
+          "bindNewPipeAndPassReceiver",
         ])
+    fileprivate static let jsGoldenLeafPendingReceiver: ILType = .object(
+        ofGroup: "golden.LeafPendingReceiver")
+
+    // NonPrimaryRoot
+    fileprivate static let jsGoldenNonPrimaryRootRemote: ILType = .object(
+        ofGroup: "golden.NonPrimaryRootRemote",
+        withProperties: ["$"],
+        withMethods: [
+            "bindLeaf",
+        ])
+    fileprivate static let jsGoldenNonPrimaryRootRemoteWrapper: ILType = .object(
+        ofGroup: "golden.NonPrimaryRootRemoteWrapper",
+        withMethods: [
+          "close",
+          "isBound",
+        ])
+
+    // Observer
+    fileprivate static let jsGoldenObserverCallbackRouter: ILType = .object(
+        ofGroup: "golden.ObserverCallbackRouter",
+        withProperties: [
+            "$",
+            "passNonPrimaryRoot",
+        ])
+    fileprivate static let jsGoldenObserverCallbackRouterReceiverHelper: ILType = .object(
+        ofGroup: "golden.ObserverCallbackRouterReceiverHelper",
+        withMethods: [
+          "close",
+          "bindNewPipeAndPassRemote",
+        ])
+    fileprivate static let jsGoldenObserverPendingReceiver: ILType = .object(
+        ofGroup: "golden.ObserverPendingReceiver")
+    fileprivate static let jsGoldenObserverPendingRemote: ILType = .object(
+        ofGroup: "golden.ObserverPendingRemote",
+        withProperties: ["$"])
+    fileprivate static let jsGoldenObserverRemoteWrapper: ILType = .object(
+        ofGroup: "golden.ObserverRemoteWrapper",
+        withMethods: [
+          "close",
+          "isBound",
+          "bindNewPipeAndPassReceiver",
+        ])
+    fileprivate static let jsGoldenObserverPassNonPrimaryRootCallbackReceiver: ILType = .object(
+        ofGroup: "GoldenObserverPassNonPrimaryRootCallbackReceiver",
+        withMethods: ["addListener"])
 }
 
 extension ObjectGroup {
@@ -69,6 +125,13 @@ extension ObjectGroup {
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetMiddle_ResponseParams),
             "getLeafInStruct": [
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetLeafInStruct_ResponseParams),
+            "bindMiddle": [
+                .plain(.jsInt32),
+                .plain(.jsGoldenMiddlePendingAssociatedReceiver),
+            ] => .undefined,
+            "passObserver": [
+                .plain(.jsGoldenObserverPendingRemote),
+            ] => .undefined,
         ]
     )
 
@@ -79,7 +142,14 @@ extension ObjectGroup {
         methods: [
             "close": [] => .undefined,
             "isBound": [] => .boolean,
+            "bindNewPipeAndPassReceiver": [] => .jsGoldenPrimaryPendingReceiver,
         ])
+    fileprivate static let goldenPrimaryPendingReceiver = ObjectGroup(
+        name: "golden.PrimaryPendingReceiver",
+        instanceType: .jsGoldenPrimaryPendingReceiver,
+        properties: [:],
+        methods: [:]
+    )
 
     // Middle
     fileprivate static let goldenMiddleRemote = ObjectGroup(
@@ -91,6 +161,12 @@ extension ObjectGroup {
             ] => .jsPromise(resolvingTo: .jsGoldenMiddle_GetLeaf_ResponseParams),
             "getPrimary": [
             ] => .jsPromise(resolvingTo: .jsGoldenMiddle_GetPrimary_ResponseParams),
+            "bindLeaf": [
+                .plain(.jsGoldenLeafPendingReceiver),
+            ] => .undefined,
+            "bindPrimary": [
+                .plain(.jsGoldenPrimaryPendingReceiver),
+            ] => .undefined,
         ]
     )
 
@@ -101,7 +177,14 @@ extension ObjectGroup {
         methods: [
             "close": [] => .undefined,
             "isBound": [] => .boolean,
+            "associateAndPassReceiver": [] => .jsGoldenMiddlePendingAssociatedReceiver,
         ])
+    fileprivate static let goldenMiddlePendingAssociatedReceiver = ObjectGroup(
+        name: "golden.MiddlePendingAssociatedReceiver",
+        instanceType: .jsGoldenMiddlePendingAssociatedReceiver,
+        properties: [:],
+        methods: [:]
+    )
 
     // Leaf
     fileprivate static let goldenLeafRemote = ObjectGroup(
@@ -118,6 +201,88 @@ extension ObjectGroup {
         methods: [
             "close": [] => .undefined,
             "isBound": [] => .boolean,
+            "bindNewPipeAndPassReceiver": [] => .jsGoldenLeafPendingReceiver,
+        ])
+    fileprivate static let goldenLeafPendingReceiver = ObjectGroup(
+        name: "golden.LeafPendingReceiver",
+        instanceType: .jsGoldenLeafPendingReceiver,
+        properties: [:],
+        methods: [:]
+    )
+
+    // NonPrimaryRoot
+    fileprivate static let goldenNonPrimaryRootRemote = ObjectGroup(
+        name: "golden.NonPrimaryRootRemote",
+        instanceType: .jsGoldenNonPrimaryRootRemote,
+        properties: ["$": .jsGoldenNonPrimaryRootRemoteWrapper],
+        methods: [
+            "bindLeaf": [
+                .plain(.jsGoldenLeafPendingReceiver),
+            ] => .undefined,
+        ]
+    )
+
+    fileprivate static let goldenNonPrimaryRootRemoteWrapper = ObjectGroup(
+        name: "golden.NonPrimaryRootRemoteWrapper",
+        instanceType: .jsGoldenNonPrimaryRootRemoteWrapper,
+        properties: [:],
+        methods: [
+            "close": [] => .undefined,
+            "isBound": [] => .boolean,
+        ])
+
+    // Observer
+    fileprivate static let goldenObserverCallbackRouter = ObjectGroup(
+        name: "golden.ObserverCallbackRouter",
+        instanceType: .jsGoldenObserverCallbackRouter,
+        properties: [
+            "$": .jsGoldenObserverCallbackRouterReceiverHelper,
+            "passNonPrimaryRoot": .jsGoldenObserverPassNonPrimaryRootCallbackReceiver,
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenObserverCallbackRouterReceiverHelper = ObjectGroup(
+        name: "golden.ObserverCallbackRouterReceiverHelper",
+        instanceType: .jsGoldenObserverCallbackRouterReceiverHelper,
+        properties: [:],
+        methods: [
+            "close": [] => .undefined,
+            "bindNewPipeAndPassRemote": [] => .jsGoldenObserverPendingRemote,
+        ])
+
+    fileprivate static let goldenObserverPassNonPrimaryRootCallbackReceiver = ObjectGroup(
+        name: "GoldenObserverPassNonPrimaryRootCallbackReceiver",
+        instanceType: .jsGoldenObserverPassNonPrimaryRootCallbackReceiver,
+        properties: [:],
+        methods: [
+            "addListener": [
+                .plain(
+                    .function(
+                        [
+                            .plain(.jsGoldenNonPrimaryRootRemote),
+                        ] => .undefined))
+            ] => .integer,
+        ])
+    fileprivate static let goldenObserverPendingReceiver = ObjectGroup(
+        name: "golden.ObserverPendingReceiver",
+        instanceType: .jsGoldenObserverPendingReceiver,
+        properties: [:],
+        methods: [:]
+    )
+    fileprivate static let goldenObserverPendingRemote = ObjectGroup(
+        name: "golden.ObserverPendingRemote",
+        instanceType: .jsGoldenObserverPendingRemote,
+        properties: ["$": .jsGoldenObserverRemoteWrapper],
+        methods: [:]
+    )
+    fileprivate static let goldenObserverRemoteWrapper = ObjectGroup(
+        name: "golden.ObserverRemoteWrapper",
+        instanceType: .jsGoldenObserverRemoteWrapper,
+        properties: [:],
+        methods: [
+            "close": [] => .undefined,
+            "isBound": [] => .boolean,
+            "bindNewPipeAndPassReceiver": [] => .jsGoldenObserverPendingReceiver,
         ])
 }
 
@@ -225,6 +390,7 @@ extension ObjectGroup {
 /// Names of the ObjectGroups whose `addListener` method registers a listener
 /// on a CallbackRouter.
 private let mojoCallbackReceiverGroups: Set<String> = [
+    ObjectGroup.goldenObserverPassNonPrimaryRootCallbackReceiver.name,
 ]
 
 /// Names of the ObjectGroups registered by this profile that the Mojo
@@ -289,6 +455,35 @@ private let MojoPropertyRetrievalGenerator = CodeGenerator(
     b.getProperty(propertyName, of: obj)
 }
 
+/// Generates a call to add a callback to the goldenObserverCallbackRouter.
+///
+/// The callback has one parameter, specified with `.parameters(n: 1)`. `build(n: 5)`
+/// then tells Fuzzilli to populate the callback body with five random expressions.
+private let MojoGoldenObserverRouterListenerGenerator = CodeGenerator(
+    "MojoGoldenObserverRouterListenerGenerator",
+    inputs: .required(.jsGoldenObserverCallbackRouter)
+) { b, router in
+    guard
+        let eventName = ILType.jsGoldenObserverCallbackRouter.properties
+            .subtracting(["$"])
+            .randomElement()
+    else {
+        return
+    }
+
+    let listenerHost = b.getProperty(eventName, of: router)
+    let callback = b.buildPlainFunction(with: .parameters(n: 1)) { args in
+        if probability(0.2) {
+            b.buildIf(args[0]) {
+                let wrapper = b.getProperty("$", of: args[0])
+                b.callMethod("close", on: wrapper, withArgs: [])
+            }
+        }
+        b.build(n: 5)
+    }
+    b.callMethod("addListener", on: listenerHost, withArgs: [callback])
+}
+
 /// Awaits a call to `method` on `remote` and returns the remote at `path` in
 /// the reply. Replies may hold null structs, unset union fields and null
 /// remotes, so the call and the property retrievals use optional chaining: the
@@ -307,9 +502,27 @@ private func awaitRemoteChain(
     }
     return value
 }
-/// Follows a chain of replies from a remote that culminates in a remote. There
-/// may also be remotes retrieved along the chain, which Fuzzilli can interact
-/// with as well.
+
+/// Calls `method` on `remote`, passing at `index` a receiver for a new remote
+/// built with `constructor`, and returns the new remote.
+private func passReceiver(
+    _ b: ProgramBuilder, _ method: String, on remote: Variable, at index: Int,
+    constructor: String, bind: String
+) -> Variable {
+    let newRemote = b.construct(b.createNamedVariable(forBuiltin: constructor), withArgs: [])
+    let receiver = b.callMethod(bind, on: b.getProperty("$", of: newRemote), withArgs: [])
+    let signature = b.methodSignatures(of: method, on: remote)[0]
+    var arguments = b.findOrGenerateArguments(
+                        forSignature: signature,
+                        maxNumberOfVariablesToGenerate: 1000)
+    arguments[index] = receiver
+    b.callMethod(method, on: remote, withArgs: arguments, guard: false)
+    return newRemote
+}
+/// Follows a chain of calls from a remote that culminates in a remote. Each call
+/// either returns a remote in its reply, or takes a receiver for a new remote.
+/// There may also be remotes retrieved along the chain, which Fuzzilli can
+/// interact with as well.
 ///
 /// Chain1:
 ///   Primary.getMiddle().middle
@@ -323,13 +536,65 @@ private let MojoReplyChain1Generator = CodeGenerator(
     remote = awaitRemoteChain(b, "getLeaf", on: remote, at: ["leaf"])
 }
 /// Chain2:
-///   Primary.getLeafInStruct().reply.value.leaf
+///   Primary.getMiddle().middle
+///   Middle.bindLeaf(Leaf receiver)
 private let MojoReplyChain2Generator = CodeGenerator(
     "MojoReplyChain2Generator", inContext: .single(.async)
 ) { b in
     var remote = b.callFunction(
         b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
+    remote = awaitRemoteChain(b, "getMiddle", on: remote, at: ["middle"])
+    remote = passReceiver(
+        b, "bindLeaf", on: remote, at: 0,
+        constructor: "golden.LeafRemote", bind: "bindNewPipeAndPassReceiver")
+}
+/// Chain3:
+///   Primary.getLeafInStruct().reply.value.leaf
+private let MojoReplyChain3Generator = CodeGenerator(
+    "MojoReplyChain3Generator", inContext: .single(.async)
+) { b in
+    var remote = b.callFunction(
+        b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
     remote = awaitRemoteChain(b, "getLeafInStruct", on: remote, at: ["reply", "value", "leaf"])
+}
+/// Chain4:
+///   Primary.bindMiddle(Middle receiver)
+///   Middle.getLeaf().leaf
+private let MojoReplyChain4Generator = CodeGenerator(
+    "MojoReplyChain4Generator", inContext: .single(.async)
+) { b in
+    var remote = b.callFunction(
+        b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
+    remote = passReceiver(
+        b, "bindMiddle", on: remote, at: 1,
+        constructor: "golden.MiddleRemote", bind: "associateAndPassReceiver")
+    remote = awaitRemoteChain(b, "getLeaf", on: remote, at: ["leaf"])
+}
+/// Chain5:
+///   Primary.bindMiddle(Middle receiver)
+///   Middle.bindLeaf(Leaf receiver)
+private let MojoReplyChain5Generator = CodeGenerator(
+    "MojoReplyChain5Generator", inContext: .single(.async)
+) { b in
+    var remote = b.callFunction(
+        b.createNamedVariable(forBuiltin: "getOrCreatePrimaryRemote"), withArgs: [])
+    remote = passReceiver(
+        b, "bindMiddle", on: remote, at: 1,
+        constructor: "golden.MiddleRemote", bind: "associateAndPassReceiver")
+    remote = passReceiver(
+        b, "bindLeaf", on: remote, at: 0,
+        constructor: "golden.LeafRemote", bind: "bindNewPipeAndPassReceiver")
+}
+/// Chain6:
+///   NonPrimaryRoot.bindLeaf(Leaf receiver)
+private let MojoReplyChain6Generator = CodeGenerator(
+    "MojoReplyChain6Generator", inContext: .single(.async),
+    inputs: .required(.jsGoldenNonPrimaryRootRemote)
+) { b, root in
+    var remote = root
+    remote = passReceiver(
+        b, "bindLeaf", on: remote, at: 0,
+        constructor: "golden.LeafRemote", bind: "bindNewPipeAndPassReceiver")
 }
 
 /// Every ObjectGroup registered by this profile. Also used by `isTargetObject`
@@ -337,10 +602,21 @@ private let MojoReplyChain2Generator = CodeGenerator(
 private let mojoObjectGroups: [ObjectGroup] = [
     .goldenPrimaryRemote,
     .goldenPrimaryRemoteWrapper,
+    .goldenPrimaryPendingReceiver,
     .goldenMiddleRemote,
     .goldenMiddleRemoteWrapper,
+    .goldenMiddlePendingAssociatedReceiver,
     .goldenLeafRemote,
     .goldenLeafRemoteWrapper,
+    .goldenLeafPendingReceiver,
+    .goldenNonPrimaryRootRemote,
+    .goldenNonPrimaryRootRemoteWrapper,
+    .goldenObserverCallbackRouter,
+    .goldenObserverCallbackRouterReceiverHelper,
+    .goldenObserverPendingReceiver,
+    .goldenObserverPendingRemote,
+    .goldenObserverRemoteWrapper,
+    .goldenObserverPassNonPrimaryRootCallbackReceiver,
     .goldenReplyStruct,
     .goldenPrimaryGetMiddleResponseParams,
     .goldenMiddleGetLeafResponseParams,
@@ -359,6 +635,12 @@ private let mojoBuiltins: [String: ILType] = [
     /// of every async function it emits, and `codeSuffix` awaits them all. Typed
     /// as an opaque object Fuzzilli does not use it as a general-purpose array.
     "mojoAsyncFunctionPromises": .object(withMethods: ["push"]),
+    "golden.MiddleRemote":
+       .constructor([] => .jsGoldenMiddleRemote),
+    "golden.LeafRemote":
+       .constructor([] => .jsGoldenLeafRemote),
+    "golden.ObserverCallbackRouter":
+       .constructor([] => .jsGoldenObserverCallbackRouter),
 ]
 
 private let keepGenerators = [
@@ -434,8 +716,13 @@ let mojoPrimaryProfile = Profile(
     additionalCodeGenerators: [
         (MojoMethodCallGenerator, 10000),
         (MojoPropertyRetrievalGenerator, 10000),
-        (MojoReplyChain1Generator, 2500),
-        (MojoReplyChain2Generator, 2500),
+        (MojoGoldenObserverRouterListenerGenerator, 5000),
+        (MojoReplyChain1Generator, 833),
+        (MojoReplyChain2Generator, 833),
+        (MojoReplyChain3Generator, 833),
+        (MojoReplyChain4Generator, 833),
+        (MojoReplyChain5Generator, 833),
+        (MojoReplyChain6Generator, 833),
     ] + commonMojoCodeGenerators,
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,
