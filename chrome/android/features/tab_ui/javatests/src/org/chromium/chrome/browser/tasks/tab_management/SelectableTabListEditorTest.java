@@ -94,10 +94,10 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.Journeys;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -172,8 +172,9 @@ public class SelectableTabListEditorTest {
                             return cta.getTabSwitcherSupplierForTesting().get() != null;
                         });
         if (!isTabSwitcherReady) {
-            TabUiTestHelper.enterTabSwitcher(cta);
-            TabUiTestHelper.leaveTabSwitcher(cta);
+            mPage =
+                    mPage.openRegularTabSwitcher()
+                            .leaveHubToPreviousTabViaBack(WebPageStation.newBuilder());
         }
 
         mTabModelSelector = cta.getTabModelSelector();
@@ -261,15 +262,14 @@ public class SelectableTabListEditorTest {
         BookmarkModel.clearLastUsedParent();
     }
 
-    private void prepareBlankTab(int num, boolean isIncognito) {
-        for (int i = 0; i < num - 1; i++) {
-            ChromeTabUtils.newTabFromMenu(
-                    InstrumentationRegistry.getInstrumentation(),
-                    mActivityTestRule.getActivity(),
-                    isIncognito,
-                    true);
-            mActivityTestRule.loadUrl("about:blank");
-        }
+    private void prepareBlankTab(int num) {
+        if (num <= 1) return;
+        mPage =
+                Journeys.createTabsFast(
+                        mPage,
+                        Collections.nCopies(num - 1, "about:blank"),
+                        /* isIncognito= */ false,
+                        WebPageStation::newBuilder);
     }
 
     private void createNewTab(@TabLaunchType int launchType, boolean isIncognito) {
@@ -292,22 +292,19 @@ public class SelectableTabListEditorTest {
         }
     }
 
-    private void prepareBlankTabGroup(int num, boolean isIncognito) {
+    private void prepareBlankTabGroup(int num) {
         ArrayList<String> urls = new ArrayList<>(Collections.nCopies(num, "about:blank"));
 
-        prepareTabGroupWithUrls(urls, isIncognito);
+        prepareTabGroupWithUrls(urls);
     }
 
-    private void prepareTabGroupWithUrls(ArrayList<String> urls, boolean isIncognito) {
-        for (String url : urls) {
-            ChromeTabUtils.newTabFromMenu(
-                    InstrumentationRegistry.getInstrumentation(),
-                    mActivityTestRule.getActivity(),
-                    isIncognito,
-                    true);
-            mActivityTestRule.loadUrl(url);
-        }
+    private void prepareTabGroupWithUrls(ArrayList<String> urls) {
+        mPage =
+                Journeys.createTabsFast(
+                        mPage, urls, /* isIncognito= */ false, WebPageStation::newBuilder);
 
+        // TODO(crbug.com/428030649): Wait for the group to exist, e.g. with a
+        // Journeys.mergeTabsToGroupProgrammatically() variant that takes the notification type.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ArrayList<Tab> tabs = new ArrayList<>();
@@ -326,7 +323,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     public void testShowTabs() {
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -377,7 +374,7 @@ public class SelectableTabListEditorTest {
                             /* isInDesktopWindow= */ true, state, /* isFocused= */ true);
                 });
 
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
         showSelectionEditor(tabs, null);
 
@@ -398,7 +395,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     public void testToggleItem() {
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
         showSelectionEditor(tabs, null);
@@ -420,7 +417,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     public void testSelectItemsThroughActionButton() {
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
         showSelectionEditor(tabs, null);
@@ -452,7 +449,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     public void testToolbarNavigationButtonHideTabListEditor() {
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
         showSelectionEditor(tabs, null);
@@ -468,7 +465,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     public void testHideOnNewTab() {
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
         showSelectionEditor(tabs, null);
         mRobot.resultRobot.verifyTabListEditorIsVisible();
@@ -488,7 +485,7 @@ public class SelectableTabListEditorTest {
     @MediumTest
     @Restriction({DeviceFormFactor.PHONE})
     public void testConfigureToolbarMenuItems() {
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -542,7 +539,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     public void testToolbarMenuItem_CloseActionView() {
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -571,10 +568,10 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     public void testToolbarMenuItem_CloseActionView_WithGroups() {
-        prepareBlankTab(2, false);
-        prepareBlankTabGroup(3, false);
-        prepareBlankTabGroup(1, false);
-        prepareBlankTabGroup(2, false);
+        prepareBlankTab(2);
+        prepareBlankTabGroup(3);
+        prepareBlankTabGroup(1);
+        prepareBlankTabGroup(2);
         List<Tab> tabs = getRepresentativeTabsInCurrentTabModel();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -613,7 +610,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     public void testToolbarMenuItem_CloseMenuItem() {
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -647,12 +644,11 @@ public class SelectableTabListEditorTest {
     @RequiresRestart("Share sheet is sometimes persistent when calling pressBack to retract")
     public void testToolbarMenuItem_ShareActionView() {
         Intents.init();
-        prepareBlankTab(1, false);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
         final String httpsCanonicalUrl =
                 mActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTPS_CANONICAL_URL);
-        mActivityTestRule.loadUrl(httpsCanonicalUrl);
+        mPage = mPage.loadWebPageProgrammatically(httpsCanonicalUrl);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -708,12 +704,12 @@ public class SelectableTabListEditorTest {
     @MediumTest
     @RequiresRestart("Share sheet is sometimes persistent when calling pressBack to retract")
     public void testToolbarMenuItem_ShareActionTabsOnly() {
-        prepareBlankTab(3, false);
+        prepareBlankTab(3);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
         final String httpsCanonicalUrl =
                 mActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTPS_CANONICAL_URL);
-        mActivityTestRule.loadUrl(httpsCanonicalUrl);
+        mPage = mPage.loadWebPageProgrammatically(httpsCanonicalUrl);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -752,8 +748,8 @@ public class SelectableTabListEditorTest {
         urls.add(mActivityTestRule.getTestServer().getURL(PAGE_WITH_NO_CANONICAL_URL));
         urls.add(mActivityTestRule.getTestServer().getURL(PAGE_WITH_NO_CANONICAL_URL));
 
-        prepareTabGroupWithUrls(urls, false);
-        prepareBlankTabGroup(2, false);
+        prepareTabGroupWithUrls(urls);
+        prepareBlankTabGroup(2);
 
         List<Tab> tabs = getRepresentativeTabsInCurrentTabModel();
 
@@ -794,18 +790,18 @@ public class SelectableTabListEditorTest {
     @MediumTest
     @RequiresRestart("Share sheet is sometimes persistent when calling pressBack to retract")
     public void testToolbarMenuItem_ShareActionTabsWithGroups() {
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
 
         final String httpsCanonicalUrl =
                 mActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTPS_CANONICAL_URL);
-        mActivityTestRule.loadUrl(httpsCanonicalUrl);
+        mPage = mPage.loadWebPageProgrammatically(httpsCanonicalUrl);
 
-        prepareBlankTabGroup(2, false);
+        prepareBlankTabGroup(2);
 
         ArrayList<String> urls = new ArrayList<>();
         urls.add(mActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTP_CANONICAL_URL));
         urls.add(mActivityTestRule.getTestServer().getURL(PAGE_WITH_NO_CANONICAL_URL));
-        prepareTabGroupWithUrls(urls, false);
+        prepareTabGroupWithUrls(urls);
 
         List<Tab> tabs = getRepresentativeTabsInCurrentTabModel();
 
@@ -850,7 +846,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     public void testToolbarMenuItem_ShareActionAllFilterableTabs() {
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -878,11 +874,9 @@ public class SelectableTabListEditorTest {
     @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.R, message = "crbug.com/41484386")
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testToolbarMenuItem_BookmarkActionSingleTab() {
-        prepareBlankTab(1, false);
-
         final String httpsCanonicalUrl =
                 mActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTPS_CANONICAL_URL);
-        mActivityTestRule.loadUrl(httpsCanonicalUrl);
+        mPage = mPage.loadWebPageProgrammatically(httpsCanonicalUrl);
 
         List<Tab> tabs = getTabsInCurrentTabModel();
 
@@ -927,7 +921,7 @@ public class SelectableTabListEditorTest {
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO}) // crbug.com/391655333
     public void testToolbarMenuItem_BookmarkActionGroupsOnly() {
-        prepareBlankTabGroup(2, false);
+        prepareBlankTabGroup(2);
         List<Tab> tabs = getRepresentativeTabsInCurrentTabModel();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -979,13 +973,13 @@ public class SelectableTabListEditorTest {
     public void testToolbarMenuItem_BookmarkActionTabsWithGroups() {
         final String httpsCanonicalUrl =
                 mActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTPS_CANONICAL_URL);
-        mActivityTestRule.loadUrl(httpsCanonicalUrl);
+        mPage = mPage.loadWebPageProgrammatically(httpsCanonicalUrl);
 
         ArrayList<String> urls = new ArrayList<>();
         urls.add(mActivityTestRule.getTestServer().getURL(PAGE_WITH_HTTP_CANONICAL_URL));
         urls.add(mActivityTestRule.getTestServer().getURL(PAGE_WITH_NO_CANONICAL_URL));
 
-        prepareTabGroupWithUrls(urls, false);
+        prepareTabGroupWithUrls(urls);
         List<Tab> tabs = getRepresentativeTabsInCurrentTabModel();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -1036,7 +1030,7 @@ public class SelectableTabListEditorTest {
     @MediumTest
     @Restriction({DeviceFormFactor.PHONE})
     public void testSelectionAction_IndividualTabSelection() {
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -1221,7 +1215,7 @@ public class SelectableTabListEditorTest {
     @Feature({"RenderTest"})
     @Restriction(DeviceFormFactor.PHONE)
     public void testListViewAppearance() throws IOException {
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -1248,7 +1242,7 @@ public class SelectableTabListEditorTest {
     @Feature({"RenderTest"})
     @Restriction(DeviceFormFactor.PHONE)
     public void testListViewV2Shows() {
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
         showSelectionEditor(tabs, null);
@@ -1261,7 +1255,7 @@ public class SelectableTabListEditorTest {
     @Feature({"RenderTest"})
     @Restriction(DeviceFormFactor.PHONE)
     public void testListViewAppearance_oneSelectedTab() throws IOException {
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -1289,7 +1283,7 @@ public class SelectableTabListEditorTest {
     @MediumTest
     @Restriction(DeviceFormFactor.PHONE)
     public void testListView_select() {
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -1331,7 +1325,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     public void testSelectionTabAccessibilityChecked() {
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
         showSelectionEditor(tabs, null);
@@ -1353,7 +1347,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     public void testEdgeToEdgePadAdjuster() {
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
         showSelectionEditor(tabs, null);
 
@@ -1400,7 +1394,7 @@ public class SelectableTabListEditorTest {
     @MediumTest
     @Restriction({DeviceFormFactor.PHONE})
     public void testToolbarMenuItem_SelectAllMenu() {
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -1440,7 +1434,7 @@ public class SelectableTabListEditorTest {
     @MediumTest
     @Restriction({DeviceFormFactor.PHONE})
     public void testToolbarActionViewAndMenuItemContentDescription() {
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -1489,7 +1483,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     public void testTabListEditorContentDescription() {
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
         showSelectionEditor(tabs, null);
         mRobot.resultRobot.verifyTabListEditorIsVisible();
@@ -1500,7 +1494,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     public void testToolbarNavigationButtonContentDescription() {
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
         showSelectionEditor(tabs, null);
         mRobot.resultRobot.verifyTabListEditorIsVisible();
@@ -1513,7 +1507,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     public void testEditorHideCorrectly() {
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
         showSelectionEditor(tabs, null);
         mRobot.resultRobot.verifyTabListEditorIsVisible();
@@ -1527,7 +1521,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     public void testBackgroundViewAccessibilityImportance() {
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
         Map<View, Integer> initialValues = getParentViewAccessibilityImportanceMap();
@@ -1545,7 +1539,7 @@ public class SelectableTabListEditorTest {
     @Test
     @MediumTest
     public void testMoveToClosableState() {
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
         showSelectionEditor(tabs, null);
@@ -1586,7 +1580,7 @@ public class SelectableTabListEditorTest {
     @MediumTest
     public void testAddToGroupAction_noExistingGroups() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        prepareBlankTab(4, false);
+        prepareBlankTab(4);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -1620,8 +1614,8 @@ public class SelectableTabListEditorTest {
     @MediumTest
     public void testAddToGroupAction_existingGroups() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        prepareBlankTab(4, false);
-        prepareBlankTabGroup(2, false);
+        prepareBlankTab(4);
+        prepareBlankTabGroup(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

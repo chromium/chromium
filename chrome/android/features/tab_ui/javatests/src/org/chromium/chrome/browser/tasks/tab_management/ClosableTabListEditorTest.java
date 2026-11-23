@@ -10,7 +10,6 @@ import android.view.ViewGroup;
 
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Before;
@@ -38,11 +37,12 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.Journeys;
 import org.chromium.chrome.test.transit.page.WebPageStation;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -67,11 +67,11 @@ public class ClosableTabListEditorTest {
 
     private ViewGroup mParentView;
     private SnackbarManager mSnackbarManager;
-    private WebPageStation mInitialPage;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() throws Exception {
-        mInitialPage = mActivityTestRule.startOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         mTabModelSelector = mActivityTestRule.getActivity().getTabModelSelector();
         mParentView = (ViewGroup) mActivityTestRule.getActivity().findViewById(R.id.coordinator);
         mSnackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
@@ -142,22 +142,21 @@ public class ClosableTabListEditorTest {
                 });
     }
 
-    private void prepareBlankTab(int num, boolean isIncognito) {
-        for (int i = 0; i < num - 1; i++) {
-            ChromeTabUtils.newTabFromMenu(
-                    InstrumentationRegistry.getInstrumentation(),
-                    mActivityTestRule.getActivity(),
-                    isIncognito,
-                    true);
-            mActivityTestRule.loadUrl("about:blank");
-        }
+    private void prepareBlankTab(int num) {
+        if (num <= 1) return;
+        mPage =
+                Journeys.createTabsFast(
+                        mPage,
+                        Collections.nCopies(num - 1, "about:blank"),
+                        /* isIncognito= */ false,
+                        WebPageStation::newBuilder);
     }
 
     @Test
     @MediumTest
     public void testClosableTabListEditor_openTab() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
         TabUiTestHelper.enterTabSwitcher(cta);
 
@@ -170,7 +169,7 @@ public class ClosableTabListEditorTest {
     @MediumTest
     public void testClosableTabListEditor_closeTab() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
         TabUiTestHelper.enterTabSwitcher(cta);
 
@@ -183,7 +182,7 @@ public class ClosableTabListEditorTest {
     @Test
     @MediumTest
     public void testCustomToolbarTitle() {
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -199,7 +198,7 @@ public class ClosableTabListEditorTest {
     @Test
     @MediumTest
     public void testCustomNavigationProvider() throws TimeoutException {
-        prepareBlankTab(2, false);
+        prepareBlankTab(2);
         List<Tab> tabs = getTabsInCurrentTabModel();
 
         ThreadUtils.runOnUiThreadBlocking(
