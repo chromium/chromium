@@ -23,6 +23,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -86,19 +87,20 @@ namespace {
 
 // Given an `entity`, returns the string to use as a strike key for each entry
 // in `entity.type().strike_keys()`.
-std::vector<std::string> GetAttributeStrikeKeys(const EntityInstance& entity,
-                                                const std::string& app_locale) {
+std::vector<std::string> GetAttributeStrikeKeys(
+    const EntityInstance& entity,
+    const base::i18n::LanguageTag& app_locale) {
   auto value_for_strike_key = [&](DenseSet<AttributeType> types) {
     // A list of (attribute_type_name, attribute_value) pairs.
     std::vector<std::pair<std::string, std::string>> key_value_pairs =
         base::ToVector(types, [&](AttributeType attribute_type) {
           base::optional_ref<const AttributeInstance> attribute =
               entity.attribute(attribute_type);
-          return std::pair(
-              std::string(attribute_type.name_as_string()),
-              attribute
-                  ? base::UTF16ToUTF8(attribute->GetCompleteInfo(app_locale))
-                  : std::string());
+          return std::pair(std::string(attribute_type.name_as_string()),
+                           attribute
+                               ? base::UTF16ToUTF8(attribute->GetCompleteInfo(
+                                     app_locale.tag_string()))
+                               : std::string());
         });
 
     // We sort the keys to ensure they remain stable even if the ordering in
@@ -801,8 +803,8 @@ void AutofillAiManager::AddStrikeForSaveAttempt(const GURL& url,
             entity.type().name_as_string(), url.GetHost()));
   }
   if (save_strike_db_by_attribute_) {
-    for (const std::string& key : GetAttributeStrikeKeys(
-             entity, std::string(client_->GetAppLocale().tag_string()))) {
+    for (const std::string& key :
+         GetAttributeStrikeKeys(entity, client_->GetAppLocale())) {
       save_strike_db_by_attribute_->AddStrike(key);
     }
   }
@@ -823,8 +825,8 @@ void AutofillAiManager::ClearStrikesForSave(const GURL& url,
             entity.type().name_as_string(), url.GetHost()));
   }
   if (save_strike_db_by_attribute_) {
-    for (const std::string& key : GetAttributeStrikeKeys(
-             entity, std::string(client_->GetAppLocale().tag_string()))) {
+    for (const std::string& key :
+         GetAttributeStrikeKeys(entity, client_->GetAppLocale())) {
       save_strike_db_by_attribute_->ClearStrikes(key);
     }
   }
@@ -849,8 +851,7 @@ bool AutofillAiManager::IsSaveBlockedByStrikeDatabase(
 
   if (!save_strike_db_by_attribute_ ||
       std::ranges::any_of(
-          GetAttributeStrikeKeys(
-              entity, std::string(client_->GetAppLocale().tag_string())),
+          GetAttributeStrikeKeys(entity, client_->GetAppLocale()),
           [&](const std::string& key) {
             return save_strike_db_by_attribute_->ShouldBlockFeature(key);
           })) {

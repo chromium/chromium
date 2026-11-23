@@ -123,10 +123,10 @@ std::vector<T> CalculateMinimalIncompatibleTypeSetsImpl(
 
 // Deduplicates mergeable profiles in `profiles_with_action` and marks profiles
 // for DB update or removal in accordance with `profiles_with_action`.
-void DeduplicateProfiles(const std::string& app_locale,
+void DeduplicateProfiles(const base::i18n::LanguageTag& app_locale,
                          std::vector<ProfileWithAction>& profiles_with_action) {
   SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.DeduplicateProfiles");
-  const AutofillProfileComparator comparator(app_locale);
+  const AutofillProfileComparator comparator(app_locale.tag_string());
   size_t removed_profiles_count = 0;
   for (auto& [profile, profile_action] : profiles_with_action) {
     // Returns true if `profile` is a subset of `superset`. Note that due to
@@ -190,7 +190,7 @@ void DeduplicateProfiles(const std::string& app_locale,
       }
       const AutofillProfile::ProfileMergeResult merge_result =
           merge_candidate.profile.MergeDataFrom(profile_it->profile,
-                                                app_locale);
+                                                app_locale.tag_string());
       if (merge_result != AutofillProfile::ProfileMergeResult::kMergeFailed) {
         profile_it->action = ProfileAction::kRemove;
         merge_candidate.action = ProfileAction::kUpdate;
@@ -237,7 +237,7 @@ void ApplyProfileActions(
 
 // Applies the deduplication routine to the given `profiles_with_action`.
 void ApplyDeduplicationRoutine(
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     std::vector<ProfileWithAction>& profiles_with_action) {
   const size_t profiles_to_deduplicate_count =
       profiles_with_action.size() -
@@ -281,7 +281,7 @@ void MarkDisusedProfilesForDeletion(
 // including the deduplication routine if it hasn't been run in the current
 // major version or if skipping requirements is enabled.
 std::vector<ProfileWithAction> CleanupAddressData(
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     bool should_run_deduplication,
     std::vector<ProfileWithAction> profiles_with_action) {
   // Disused profiles are marked for cleanup on every browser start.
@@ -358,10 +358,8 @@ void AddressDataCleaner::MaybeCleanupAddressData() {
   // expensive operation, known to cause ANRs and shutdown hangs.
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(
-          &CleanupAddressData,
-          std::string(address_data_manager_->app_locale().tag_string()),
-          should_run_deduplication, std::move(profiles_with_action)),
+      base::BindOnce(&CleanupAddressData, address_data_manager_->app_locale(),
+                     should_run_deduplication, std::move(profiles_with_action)),
       base::BindOnce(&ApplyProfileActions,
                      address_data_manager_->GetWeakPtr()));
 }
