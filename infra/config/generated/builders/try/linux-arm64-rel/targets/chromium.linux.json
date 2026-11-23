@@ -1,5 +1,5 @@
 {
-  "linux-arm64-rel-fyi": {
+  "linux-arm64-rel": {
     "gtest_tests": [
       {
         "merge": {
@@ -14,7 +14,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "absl_hardening_tests",
@@ -33,7 +32,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "accessibility_unittests",
@@ -52,7 +50,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "angle_unittests",
@@ -72,7 +69,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "aura_unittests",
@@ -91,7 +87,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "base_unittests",
@@ -110,7 +105,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_common_unittests",
@@ -129,7 +123,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_fuzzer_unittests",
@@ -148,7 +141,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_heap_unittests",
@@ -175,7 +167,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "blink_platform_unittests",
@@ -194,7 +185,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -214,7 +204,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "boringssl_crypto_tests",
@@ -233,7 +222,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "boringssl_ssl_tests",
@@ -241,7 +229,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-arm64-rel-fyi.browser_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-arm64-rel.browser_tests.filter"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -255,7 +243,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 15
         },
@@ -278,7 +265,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "capture_unittests",
@@ -297,7 +283,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "cast_unittests",
@@ -316,7 +301,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "cc_unittests",
@@ -335,7 +319,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chrome_app_unittests",
@@ -354,7 +337,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "chromedriver_unittests",
@@ -373,7 +355,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "components_browsertests",
@@ -392,7 +373,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
@@ -412,7 +392,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "compositor_unittests",
@@ -420,7 +399,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-arm64-rel-fyi.content_browsertests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-arm64-rel.content_browsertests.filter"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -434,7 +413,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
@@ -454,7 +432,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "content_unittests",
@@ -473,7 +450,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "crashpad_tests",
@@ -492,7 +468,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "crypto_unittests",
@@ -511,7 +486,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "dbus_unittests",
@@ -530,7 +504,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "device_unittests",
@@ -549,7 +522,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "display_unittests",
@@ -569,7 +541,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "env_chromium_unittests",
@@ -588,7 +559,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "events_unittests",
@@ -607,7 +577,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "extensions_unittests",
@@ -626,7 +595,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "filesystem_service_unittests",
@@ -645,7 +613,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "fuzzing_unittests",
@@ -664,7 +631,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gcm_unit_tests",
@@ -683,7 +649,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gfx_unittests",
@@ -702,7 +667,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gin_unittests",
@@ -721,7 +685,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "google_apis_unittests",
@@ -740,7 +703,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gpu_unittests",
@@ -760,7 +722,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gtk_unittests",
@@ -779,7 +740,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "gwp_asan_unittests",
@@ -798,7 +758,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "headless_browsertests",
@@ -817,7 +776,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "headless_unittests",
@@ -825,7 +783,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-arm64-rel-fyi.interactive_ui_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-arm64-rel.interactive_ui_tests.filter"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -839,7 +797,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 5
         },
@@ -859,7 +816,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ipc_tests",
@@ -878,7 +834,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "latency_unittests",
@@ -898,7 +853,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "leveldb_unittests",
@@ -917,7 +871,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "libjingle_xmpp_unittests",
@@ -936,7 +889,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "liburlpattern_unittests",
@@ -955,7 +907,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "media_unittests",
@@ -974,7 +925,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "message_center_unittests",
@@ -993,7 +943,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "midi_unittests",
@@ -1012,7 +961,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "mojo_unittests",
@@ -1031,7 +979,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "native_theme_unittests",
@@ -1050,7 +997,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "net_unittests",
@@ -1069,7 +1015,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "openscreen_unittests",
@@ -1088,7 +1033,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ozone_unittests",
@@ -1107,7 +1051,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ozone_x11_unittests",
@@ -1126,7 +1069,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "pdf_unittests",
@@ -1145,7 +1087,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "perfetto_unittests",
@@ -1164,7 +1105,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "printing_unittests",
@@ -1184,7 +1124,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "pthreadpool_unittests",
@@ -1203,7 +1142,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "puffin_unittests",
@@ -1222,7 +1160,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "remoting_unittests",
@@ -1241,7 +1178,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "sandbox_linux_unittests",
@@ -1260,7 +1196,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "services_unittests",
@@ -1279,7 +1214,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "shell_dialogs_unittests",
@@ -1298,7 +1232,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "skia_unittests",
@@ -1317,7 +1250,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "snapshot_unittests",
@@ -1336,7 +1268,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "sql_unittests",
@@ -1355,7 +1286,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "storage_unittests",
@@ -1363,7 +1293,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-arm64-rel-fyi.sync_integration_tests.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/linux-arm64-rel.sync_integration_tests.filter"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1377,7 +1307,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
@@ -1397,7 +1326,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ui_base_unittests",
@@ -1416,7 +1344,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ui_touch_selection_unittests",
@@ -1435,7 +1362,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "ui_unittests",
@@ -1454,7 +1380,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
@@ -1474,7 +1399,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "url_unittests",
@@ -1493,7 +1417,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "views_unittests",
@@ -1512,7 +1435,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "viz_unittests",
@@ -1531,7 +1453,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "vr_common_unittests",
@@ -1550,7 +1471,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "wm_unittests",
@@ -1569,7 +1489,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "wtf_unittests",
@@ -1588,7 +1507,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "xr_browser_tests",
@@ -1607,7 +1525,6 @@
             "gce": "1",
             "os": "Ubuntu-22.04"
           },
-          "expiration": 43200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "zlib_unittests",

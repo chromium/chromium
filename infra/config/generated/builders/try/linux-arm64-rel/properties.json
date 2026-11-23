@@ -2,18 +2,18 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/try/linux-arm64-rel-fyi/gn-args.json"
+        "infra/config/generated/builders/try/linux-arm64-rel/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "linux-arm64-rel-fyi",
+              "builder": "linux-arm64-rel",
               "project": "chromium"
             },
             "builder_spec": {
-              "builder_group": "chromium.fyi",
+              "builder_group": "chromium.linux",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -38,11 +38,11 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "linux-arm64-rel-fyi",
+          "builder": "linux-arm64-rel",
           "project": "chromium"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/try/linux-arm64-rel-fyi/targets"
+      "targets_spec_directory": "infra/config/generated/builders/try/linux-arm64-rel/targets"
     }
   },
   "$build/siso": {

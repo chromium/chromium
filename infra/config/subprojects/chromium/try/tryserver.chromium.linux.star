@@ -102,11 +102,11 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-arm64-rel-fyi",
-    mirrors = ["ci/linux-arm64-rel-fyi"],
+    name = "linux-arm64-rel",
+    mirrors = ["ci/linux-arm64-rel"],
     gn_args = gn_args.config(
         configs = [
-            "ci/linux-arm64-rel-fyi",
+            "ci/linux-arm64-rel",
             "release_try_builder",
         ],
     ),

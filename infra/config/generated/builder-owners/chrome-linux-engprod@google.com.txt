@@ -7,7 +7,7 @@ ci/Linux Tests (dbg)(1)
 ci/Network Service Linux
 ci/linux-arm64-dbg
 ci/linux-arm64-dbg-tests
-ci/linux-arm64-rel-fyi
+ci/linux-arm64-rel
 ci/linux-arm64-wayland-rel-fyi
 ci/linux-bfcache-rel
 ci/linux-extended-tracing-rel
@@ -15,7 +15,7 @@ ci/linux-wayland-mutter-rel-tests
 ci/linux-wayland-weston-rel-tests
 try/3pp-linux-arm64-packager
 try/linux-arm64-dbg
-try/linux-arm64-rel-fyi
+try/linux-arm64-rel
 try/linux-arm64-wayland-rel-fyi
 try/linux-bfcache-rel
 try/linux-dcheck-off-rel

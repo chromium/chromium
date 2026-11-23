@@ -2,18 +2,18 @@
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
-        "infra/config/generated/builders/ci/linux-arm64-rel-fyi/gn-args.json"
+        "infra/config/generated/builders/ci/linux-arm64-rel/gn-args.json"
       ],
       "builder_db": {
         "entries": [
           {
             "builder_id": {
               "bucket": "ci",
-              "builder": "linux-arm64-rel-fyi",
+              "builder": "linux-arm64-rel",
               "project": "chromium"
             },
             "builder_spec": {
-              "builder_group": "chromium.fyi",
+              "builder_group": "chromium.linux",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
@@ -38,29 +38,32 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "linux-arm64-rel-fyi",
+          "builder": "linux-arm64-rel",
           "project": "chromium"
         }
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "linux-arm64-rel-fyi",
+          "builder": "linux-arm64-rel",
           "group": "tryserver.chromium.linux"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/ci/linux-arm64-rel-fyi/targets"
+      "retry_failed_shards": true,
+      "targets_spec_directory": "infra/config/generated/builders/ci/linux-arm64-rel/targets"
     }
   },
   "$build/siso": {
     "configs": [
-      "builder"
+      "builder",
+      "remote-link"
     ],
     "enable_cloud_monitoring": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "output_local_strategy": "minimum",
     "profile_mode": "cloud",
     "project": "rbe-chromium-trusted",
-    "remote_jobs": 250
+    "remote_jobs": 500
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -69,6 +72,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.fyi",
+  "builder_group": "chromium.linux",
   "recipe": "chromium"
 }

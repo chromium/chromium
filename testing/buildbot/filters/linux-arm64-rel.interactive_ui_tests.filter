@@ -1,4 +1,4 @@
-# TODO(https://crbug.com/493612000): Tests are flaky on linux-arm64-rel-fyi.
+# TODO(https://crbug.com/493612000): Tests are flaky on linux-arm64-rel.
 -All/ForwardButtonAccessibilityTest.ContextMenu/*
 -All/ForwardButtonAccessibilityTest.MiddleClickForward/1
 -SidePanelBookmarksTest.ShoppingList
