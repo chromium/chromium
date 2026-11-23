@@ -118,6 +118,7 @@ source_set("browser_tests") {
     "//components/subresource_filter/core/browser",
     "//components/tabs:public",
     "//ui/events:test_support",
+    "//ui/views:test_support",
   ]
 }
 

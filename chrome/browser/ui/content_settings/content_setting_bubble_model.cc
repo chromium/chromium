@@ -942,8 +942,10 @@ class ContentSettingPopupBubbleModel
   // ContentSettingBubbleModel:
   void CommitChanges() override;
 
-  // PopupBlockerTabHelper::Observer:
+  // UrlListManager::Observer:
   void BlockedUrlAdded(int32_t id, const GURL& url) override;
+  void OnUrlListManagerDestroying(
+      blocked_content::UrlListManager* manager) override;
 
  private:
   void OnListItemClicked(int index, const ui::Event& event) override;
@@ -983,10 +985,18 @@ void ContentSettingPopupBubbleModel::BlockedUrlAdded(int32_t id,
   AddListItem(CreateUrlListItem(id, url));
 }
 
+void ContentSettingPopupBubbleModel::OnUrlListManagerDestroying(
+    blocked_content::UrlListManager* manager) {
+  url_list_observation_.Reset();
+}
+
 void ContentSettingPopupBubbleModel::OnListItemClicked(int index,
                                                        const ui::Event& event) {
   auto* helper =
       blocked_content::PopupBlockerTabHelper::FromWebContents(web_contents());
+  if (!helper) {
+    return;
+  }
   helper->ShowBlockedPopup(item_id_from_item_index(index),
                            ui::DispositionFromEventFlags(event.flags()));
   RemoveListItem(index);
@@ -1782,9 +1792,17 @@ ContentSettingFramebustBlockBubbleModel::
 void ContentSettingFramebustBlockBubbleModel::OnListItemClicked(
     int index,
     const ui::Event& event) {
-  FramebustBlockTabHelper::From(
-      tabs::TabInterface::GetFromContents(web_contents()))
-      ->OnBlockedUrlClicked(index);
+  auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents());
+  auto* helper = tab ? FramebustBlockTabHelper::From(tab) : nullptr;
+  if (!helper) {
+    return;
+  }
+  helper->OnBlockedUrlClicked(index);
+}
+
+void ContentSettingFramebustBlockBubbleModel::OnUrlListManagerDestroying(
+    blocked_content::UrlListManager* manager) {
+  url_list_observation_.Reset();
 }
 
 ContentSettingFramebustBlockBubbleModel*

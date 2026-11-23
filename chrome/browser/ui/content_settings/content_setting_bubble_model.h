@@ -696,6 +696,8 @@ class ContentSettingFramebustBlockBubbleModel
 
   // UrlListManager::Observer:
   void BlockedUrlAdded(int32_t id, const GURL& blocked_url) override;
+  void OnUrlListManagerDestroying(
+      blocked_content::UrlListManager* manager) override;
 
  private:
   ListItem CreateListItem(const GURL& url);
