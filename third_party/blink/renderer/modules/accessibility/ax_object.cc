@@ -51,7 +51,9 @@
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/accessibility/ax_utilities_generated.h"
 #include "third_party/blink/renderer/core/accessibility/axid.h"
+#include "third_party/blink/renderer/core/css/css_value_id_mappings.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -347,6 +349,50 @@ const AtomicString& AriaTokenAttributeFromValue(const QualifiedName& attribute,
   DCHECK(false) << "Not a token attribute. Use AriaFloatAttribute(), "
                    "AriaIntAttribute(), AriaStringAttribute(), etc. instead.";
   return value;
+}
+
+void SerializeDisplayStyle(const ComputedStyle& computed_style,
+                           ui::AXNodeData* node_data) {
+  if (computed_style.IsDisplayLayoutCustom()) [[unlikely]] {
+    String display_style =
+        CSSProperty::Get(CSSPropertyID::kDisplay)
+            .CSSValueFromComputedStyle(
+                computed_style, /*layout_object=*/nullptr,
+                /*allow_visited_style=*/false, CSSValuePhase::kComputedValue)
+            ->CssText();
+    if (!display_style.empty()) {
+      TruncateAndAddStringAttribute(node_data,
+                                    ax::mojom::blink::StringAttribute::kDisplay,
+                                    display_style);
+    }
+    return;
+  }
+  std::string_view display_name;
+  switch (computed_style.Display()) {
+    case EDisplay::kBlockMath:
+      display_name = "block math";
+      break;
+    case EDisplay::kBlockRuby:
+      display_name = "block ruby";
+      break;
+    case EDisplay::kInlineListItem:
+      display_name = "inline list-item";
+      break;
+    case EDisplay::kFlowRootListItem:
+      display_name = "flow-root list-item";
+      break;
+    case EDisplay::kInlineFlowRootListItem:
+      display_name = "inline flow-root list-item";
+      break;
+    default:
+      display_name =
+          GetCSSValueName(PlatformEnumToCSSValueID(computed_style.Display()));
+      break;
+  }
+  if (!display_name.empty()) {
+    node_data->AddStringAttribute(ax::mojom::blink::StringAttribute::kDisplay,
+                                  std::string(display_name));
+  }
 }
 
 bool IsGenericWrapper(const Element& element, const AtomicString& role_str) {
@@ -1606,7 +1652,7 @@ void AXObject::SerializeHTMLTagAndClass(ui::AXNodeData* node_data) const {
 
   TruncateAndAddStringAttribute(node_data,
                                 ax::mojom::blink::StringAttribute::kHtmlTag,
-                                element->tagName().ToAsciiLower());
+                                element->TagQName().ToString().ToAsciiLower());
 
   if (const AtomicString& class_name = element->GetClassAttribute()) {
     TruncateAndAddStringAttribute(
@@ -1907,20 +1953,9 @@ void AXObject::SerializeScreenReaderAttributes(ui::AXNodeData* node_data) const 
   }
   SerializeHTMLTagAndClass(node_data);
 
-  String display_style;
   if (Element* element = GetElement()) {
     if (const ComputedStyle* computed_style = element->GetComputedStyle()) {
-      display_style = CSSProperty::Get(CSSPropertyID::kDisplay)
-                          .CSSValueFromComputedStyle(
-                              *computed_style, /* layout_object */ nullptr,
-                              /* allow_visited_style */ false,
-                              CSSValuePhase::kComputedValue)
-                          ->CssText();
-      if (!display_style.empty()) {
-        TruncateAndAddStringAttribute(
-            node_data, ax::mojom::blink::StringAttribute::kDisplay,
-            display_style);
-      }
+      SerializeDisplayStyle(*computed_style, node_data);
     }
 
     // Whether it has ARIA attributes at all.
@@ -1930,12 +1965,13 @@ void AXObject::SerializeScreenReaderAttributes(ui::AXNodeData* node_data) const 
     }
   }
 
-  if (KeyboardShortcut().length() &&
+  String keyboard_shortcut = KeyboardShortcut();
+  if (keyboard_shortcut.length() &&
       !node_data->HasStringAttribute(
           ax::mojom::blink::StringAttribute::kKeyShortcuts)) {
     TruncateAndAddStringAttribute(
         node_data, ax::mojom::blink::StringAttribute::kKeyShortcuts,
-        KeyboardShortcut());
+        keyboard_shortcut);
   }
 
   if (AXObject* active_descendant = ActiveDescendant()) {
@@ -1944,8 +1980,9 @@ void AXObject::SerializeScreenReaderAttributes(ui::AXNodeData* node_data) const 
         active_descendant->AXObjectID());
   }
 
-  if (CheckedState() != ax::mojom::blink::CheckedState::kNone) {
-    node_data->SetCheckedState(CheckedState());
+  const ax::mojom::blink::CheckedState checked_state = CheckedState();
+  if (checked_state != ax::mojom::blink::CheckedState::kNone) {
+    node_data->SetCheckedState(checked_state);
   }
 
   SerializeTextChangeTypesAttributes(node_data);
@@ -1980,6 +2017,19 @@ String AXObject::KeyboardShortcut() const {
 void AXObject::SerializeOtherScreenReaderAttributes(
     ui::AXNodeData* node_data) const {
   DCHECK_NE(node_data->role, ax::mojom::blink::Role::kUnknown);
+
+  // Text nodes without an associated `Element` cannot have HTML/ARIA attributes
+  // or role-specific properties handled below (such as links, form controls,
+  // or dialogs). They only need line attributes and their default action verb
+  // (e.g., `kClickAncestor` when inside a clickable element).
+  if (node_data->role == ax::mojom::blink::Role::kStaticText && !GetElement()) {
+    SerializeLineAttributes(node_data);
+    if (const ax::mojom::blink::DefaultActionVerb action = Action();
+        action != ax::mojom::blink::DefaultActionVerb::kNone) {
+      node_data->SetDefaultActionVerb(action);
+    }
+    return;
+  }
 
   if (IsA<Document>(GetNode())) {
     // The busy attribute is only relevant for actual Documents, not popups.
@@ -2024,14 +2074,17 @@ void AXObject::SerializeOtherScreenReaderAttributes(
         RadioButtonsInGroup(), node_data);
   }
 
-  if (GetAriaCurrentState() != ax::mojom::blink::AriaCurrentState::kNone) {
+  const ax::mojom::blink::AriaCurrentState aria_current = GetAriaCurrentState();
+  if (aria_current != ax::mojom::blink::AriaCurrentState::kNone) {
     node_data->AddIntAttribute(
         ax::mojom::blink::IntAttribute::kAriaCurrentState,
-        static_cast<int32_t>(GetAriaCurrentState()));
+        static_cast<int32_t>(aria_current));
   }
 
-  if (GetInvalidState() != ax::mojom::blink::InvalidState::kNone)
-    node_data->SetInvalidState(GetInvalidState());
+  const ax::mojom::blink::InvalidState invalid_state = GetInvalidState();
+  if (invalid_state != ax::mojom::blink::InvalidState::kNone) {
+    node_data->SetInvalidState(invalid_state);
+  }
 
   if (node_data->role == ax::mojom::blink::Role::kListMarker) {
     SerializeListMarkerAttributes(node_data);
@@ -2044,15 +2097,18 @@ void AXObject::SerializeOtherScreenReaderAttributes(
       node_data, ax::mojom::blink::StringAttribute::kAutoComplete,
       AutoComplete());
 
-  if (Action() != ax::mojom::blink::DefaultActionVerb::kNone) {
-    node_data->SetDefaultActionVerb(Action());
+  const ax::mojom::blink::DefaultActionVerb action = Action();
+  if (action != ax::mojom::blink::DefaultActionVerb::kNone) {
+    node_data->SetDefaultActionVerb(action);
   }
 
-  AXObjectVector error_messages = ErrorMessage();
-  if (error_messages.size() > 0) {
-    AddIntListAttributeFromObjects(
-        ax::mojom::blink::IntListAttribute::kErrormessageIds, error_messages,
-        node_data);
+  if (invalid_state != ax::mojom::blink::InvalidState::kFalse) {
+    AXObjectVector error_messages = ErrorMessage();
+    if (error_messages.size() > 0) {
+      AddIntListAttributeFromObjects(
+          ax::mojom::blink::IntListAttribute::kErrormessageIds, error_messages,
+          node_data);
+    }
   }
 
   if (ui::SupportsHierarchicalLevel(node_data->role) && HierarchicalLevel()) {
@@ -9261,15 +9317,16 @@ const AXObject* AXObject::LowestCommonAncestor(const AXObject& first,
 }
 
 // Extra checks that only occur during serialization.
-void AXObject::PreSerializationConsistencyCheck() const{
-  int reason_val = cached_values_dirty_reason_.has_value()
-                       ? static_cast<int>(cached_values_dirty_reason_.value())
-                       : -1;
-  SCOPED_CRASH_KEY_NUMBER("AXObject", "DirtyReason", reason_val);
-
+void AXObject::PreSerializationConsistencyCheck() const {
   CHECK(!IsDetached()) << "Do not serialize detached nodes: " << this;
   CHECK(AXObjectCache().IsFrozen());
-  CHECK(!NeedsToUpdateCachedValues()) << "Stale values on: " << this;
+  if (NeedsToUpdateCachedValues()) [[unlikely]] {
+    int reason_val = cached_values_dirty_reason_.has_value()
+                         ? static_cast<int>(cached_values_dirty_reason_.value())
+                         : -1;
+    SCOPED_CRASH_KEY_NUMBER("AXObject", "DirtyReason", reason_val);
+    NOTREACHED() << "Stale values on: " << this;
+  }
   CHECK(!IsMissingParent());
   if (!IsIncludedInTree()) {
     AXObject* included_parent = ParentObjectIncludedInTree();

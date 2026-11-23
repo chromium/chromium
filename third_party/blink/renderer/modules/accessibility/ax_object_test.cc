@@ -14,6 +14,10 @@
 #include "base/containers/to_vector.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/core/css/properties/css_property.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
@@ -22,6 +26,7 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object-inl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
@@ -4225,6 +4230,143 @@ TEST_F(AccessibilityTest, LayoutlessTextHiddenViaStyleUpdatesDynamically) {
   ASSERT_NE(nullptr, text);
   EXPECT_FALSE(text->IsHiddenViaStyle());
   EXPECT_TRUE(text->IsVisible());
+}
+
+TEST_F(AccessibilityTest, SerializeOtherScreenReaderAttributes) {
+  GetDocument().SetURL(KURL("http://test.com"));
+  SetBodyInnerHTML(R"HTML(
+      <p id="plain-p">Plain text</p>
+      <a id="link-valid" href="#target" aria-current="page">Jump to target</a>
+      <a id="link-encoded" href="#encoded%20target">Jump to encoded</a>
+      <a id="link-missing" href="#missing">Missing target</a>
+      <a id="link-route" href="#/route">Route link</a>
+      <div id="target">Target section</div>
+      <a id="named-anchor" name="encoded target">Named anchor</a>
+      <input id="invalid-input" aria-invalid="true" aria-errormessage="err">
+      <input id="valid-input" aria-invalid="false" aria-errormessage="err">
+      <div id="err">Error message text</div>
+      )HTML");
+
+  GetAXObjectCache().UpdateAXForAllDocuments();
+  ScopedFreezeAXCache freeze(GetAXObjectCache());
+
+  auto serialize_node = [](const AXObject* object) {
+    ui::AXNodeData node_data;
+    object->Serialize(&node_data, ui::kAXModeComplete);
+    return node_data;
+  };
+
+  // Standalone `Role::kStaticText` has no default action verb.
+  const AXObject* plain_p = GetAXObjectByElementId("plain-p");
+  ASSERT_NE(nullptr, plain_p);
+  const AXObject* plain_text = plain_p->FirstChildIncludingIgnored();
+  ASSERT_NE(nullptr, plain_text);
+  ASSERT_EQ(ax::mojom::blink::Role::kStaticText, plain_text->RoleValue());
+  ui::AXNodeData plain_text_data = serialize_node(plain_text);
+  EXPECT_EQ(ax::mojom::blink::DefaultActionVerb::kNone,
+            plain_text_data.GetDefaultActionVerb());
+
+  // `Role::kStaticText` inside an `<a href="#target">` link serializes
+  // `kClickAncestor`, while the link itself serializes `kJump`,
+  // `kInPageLinkTargetId`, and `kAriaCurrentState`.
+  const AXObject* link_valid = GetAXObjectByElementId("link-valid");
+  const AXObject* target = GetAXObjectByElementId("target");
+  ASSERT_NE(nullptr, link_valid);
+  ASSERT_NE(nullptr, target);
+  ui::AXNodeData link_valid_data = serialize_node(link_valid);
+  EXPECT_EQ(ax::mojom::blink::DefaultActionVerb::kJump,
+            link_valid_data.GetDefaultActionVerb());
+  EXPECT_EQ(static_cast<int32_t>(target->AXObjectID()),
+            link_valid_data.GetIntAttribute(
+                ax::mojom::blink::IntAttribute::kInPageLinkTargetId));
+  EXPECT_EQ(static_cast<int32_t>(ax::mojom::blink::AriaCurrentState::kPage),
+            link_valid_data.GetIntAttribute(
+                ax::mojom::blink::IntAttribute::kAriaCurrentState));
+
+  const AXObject* link_text = link_valid->FirstChildIncludingIgnored();
+  ASSERT_NE(nullptr, link_text);
+  ASSERT_EQ(ax::mojom::blink::Role::kStaticText, link_text->RoleValue());
+  ui::AXNodeData link_text_data = serialize_node(link_text);
+  EXPECT_EQ(ax::mojom::blink::DefaultActionVerb::kClickAncestor,
+            link_text_data.GetDefaultActionVerb());
+
+  // Percent-encoded fragment resolves to the decoded `<a name="...">` anchor.
+  const AXObject* link_encoded = GetAXObjectByElementId("link-encoded");
+  const AXObject* named_anchor = GetAXObjectByElementId("named-anchor");
+  ASSERT_NE(nullptr, link_encoded);
+  ASSERT_NE(nullptr, named_anchor);
+  ui::AXNodeData link_encoded_data = serialize_node(link_encoded);
+  EXPECT_EQ(static_cast<int32_t>(named_anchor->AXObjectID()),
+            link_encoded_data.GetIntAttribute(
+                ax::mojom::blink::IntAttribute::kInPageLinkTargetId));
+
+  // Unmatched fragments do not serialize `kInPageLinkTargetId`.
+  const AXObject* link_missing = GetAXObjectByElementId("link-missing");
+  const AXObject* link_route = GetAXObjectByElementId("link-route");
+  ASSERT_NE(nullptr, link_missing);
+  ASSERT_NE(nullptr, link_route);
+  EXPECT_FALSE(serialize_node(link_missing)
+                   .HasIntAttribute(
+                       ax::mojom::blink::IntAttribute::kInPageLinkTargetId));
+  EXPECT_FALSE(serialize_node(link_route)
+                   .HasIntAttribute(
+                       ax::mojom::blink::IntAttribute::kInPageLinkTargetId));
+
+  // `aria-errormessage` is serialized when invalid, and omitted when valid.
+  const AXObject* invalid_input = GetAXObjectByElementId("invalid-input");
+  const AXObject* valid_input = GetAXObjectByElementId("valid-input");
+  const AXObject* err = GetAXObjectByElementId("err");
+  ASSERT_NE(nullptr, invalid_input);
+  ASSERT_NE(nullptr, valid_input);
+  ASSERT_NE(nullptr, err);
+
+  ui::AXNodeData invalid_data = serialize_node(invalid_input);
+  EXPECT_EQ(ax::mojom::blink::InvalidState::kTrue,
+            invalid_data.GetInvalidState());
+  EXPECT_THAT(invalid_data.GetIntListAttribute(
+                  ax::mojom::blink::IntListAttribute::kErrormessageIds),
+              testing::ElementsAre(static_cast<int32_t>(err->AXObjectID())));
+
+  ui::AXNodeData valid_data = serialize_node(valid_input);
+  EXPECT_EQ(ax::mojom::blink::InvalidState::kFalse,
+            valid_data.GetInvalidState());
+  EXPECT_FALSE(valid_data.HasIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kErrormessageIds));
+}
+
+TEST_F(AccessibilityTest, SerializeDisplayStyleMatchesCSSValue) {
+  SetBodyInnerHTML(
+      R"HTML(<div id="target" style="display: contents">x</div>)HTML");
+  GetAXObjectCache().UpdateAXForAllDocuments();
+  ScopedFreezeAXCache freeze(GetAXObjectCache());
+
+  Element* element = GetElementById("target");
+  const AXObject* ax_object = GetAXObjectByElementId("target");
+  ASSERT_NE(nullptr, element);
+  ASSERT_NE(nullptr, ax_object);
+  const ComputedStyle* original_style = element->GetComputedStyle();
+
+  for (uint8_t i = 0; i <= static_cast<uint8_t>(EDisplay::kMaxEnumValue); ++i) {
+    ComputedStyleBuilder builder =
+        GetDocument().GetStyleResolver().CreateComputedStyleBuilder();
+    builder.SetDisplay(static_cast<EDisplay>(i));
+    builder.SetDisplayLayoutCustomName(AtomicString("foo"));
+    const ComputedStyle* style = builder.TakeStyle();
+    element->SetComputedStyle(style);
+
+    ui::AXNodeData node_data;
+    ax_object->Serialize(&node_data, ui::kAXModeComplete);
+    String expected =
+        CSSProperty::Get(CSSPropertyID::kDisplay)
+            .CSSValueFromComputedStyle(*style, /*layout_object=*/nullptr,
+                                       /*allow_visited_style=*/false,
+                                       CSSValuePhase::kComputedValue)
+            ->CssText();
+    EXPECT_EQ(expected.Utf8(),
+              node_data.GetStringAttribute(
+                  ax::mojom::blink::StringAttribute::kDisplay));
+  }
+  element->SetComputedStyle(original_style);
 }
 
 }  // namespace test

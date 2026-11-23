@@ -3260,44 +3260,47 @@ bool AXNodeObject::IsClickable() const {
   // Determine whether the element is clickable either because there is a
   // mouse button handler or because it has a native element where click
   // performs an action. Disabled nodes are never considered clickable.
-  // Note: we can't call |node->WillRespondToMouseClickEvents()| because that
+  // Note: we can't call `node->WillRespondToMouseClickEvents()` because that
   // triggers a style recalc and can delete this.
 
-  // Treat mouse button listeners on the |window|, |document| as if they're on
-  // the |documentElement|.
-  if (GetNode() == GetDocument()->documentElement()) {
-    return GetNode()->HasAnyEventListeners(
-               event_util::MouseButtonEventTypes()) ||
+  // Look for mouse listeners only on element nodes, e.g. skip text nodes.
+  const Element* element = GetElement();
+  if (!element) {
+    return false;
+  }
+
+  // Treat mouse button listeners on the `window`, `document` as if they're on
+  // the `documentElement`.
+  if (element == GetDocument()->documentElement()) [[unlikely]] {
+    return element->HasAnyEventListeners(event_util::MouseButtonEventTypes()) ||
            GetDocument()->HasAnyEventListeners(
                event_util::MouseButtonEventTypes()) ||
            GetDocument()->domWindow()->HasAnyEventListeners(
                event_util::MouseButtonEventTypes());
   }
 
-  // Look for mouse listeners only on element nodes, e.g. skip text nodes.
-  const Element* element = GetElement();
-  if (!element)
+  if (IsDisabled()) {
     return false;
+  }
 
-  if (IsDisabled())
-    return false;
-
-  if (element->HasAnyEventListeners(event_util::MouseButtonEventTypes()))
+  // Only use native roles. For ARIA elements, require a click listener.
+  if (ui::IsClickable(native_role_)) {
     return true;
+  }
 
-  if (HasContentEditableAttributeSet())
+  if (element->HasAnyEventListeners(event_util::MouseButtonEventTypes())) {
     return true;
+  }
+
+  if (HasContentEditableAttributeSet()) {
+    return true;
+  }
 
   // Certain user-agent shadow DOM elements are expected to be clickable but
   // they do not have event listeners attached or a clickable native role. We
   // whitelist them here.
-  if (element->ShadowPseudoId() ==
-      shadow_element_names::kPseudoCalendarPickerIndicator) {
-    return true;
-  }
-
-  // Only use native roles. For ARIA elements, require a click listener.
-  return ui::IsClickable(native_role_);
+  return element->ShadowPseudoId() ==
+         shadow_element_names::kPseudoCalendarPickerIndicator;
 }
 
 bool AXNodeObject::IsFocused() const {
@@ -4601,6 +4604,9 @@ float AXNodeObject::FontWeight() const {
 }
 
 ax::mojom::blink::AriaCurrentState AXNodeObject::GetAriaCurrentState() const {
+  if (!GetElement()) {
+    return ax::mojom::blink::AriaCurrentState::kNone;
+  }
   const AtomicString& attribute_value =
       AriaTokenAttribute(html_names::kAriaCurrentAttr);
   if (attribute_value.IsNull()) {
@@ -4643,6 +4649,10 @@ ax::mojom::blink::AriaCurrentState AXNodeObject::GetAriaCurrentState() const {
 }
 
 ax::mojom::blink::InvalidState AXNodeObject::GetInvalidState() const {
+  Element* element = GetElement();
+  if (!element) {
+    return AXObject::GetInvalidState();
+  }
   // First check aria-invalid.
   if (const AtomicString& attribute_value =
           AriaTokenAttribute(html_names::kAriaInvalidAttr)) {
@@ -4669,13 +4679,10 @@ ax::mojom::blink::InvalidState AXNodeObject::GetInvalidState() const {
   }
 
   // Next check for native the invalid state.
-  if (GetElement()) {
-    ListedElement* form_control = ListedElement::From(*GetElement());
-    if (form_control) {
-      return IsValidFormControl(form_control)
-                 ? ax::mojom::blink::InvalidState::kFalse
-                 : ax::mojom::blink::InvalidState::kTrue;
-    }
+  if (ListedElement* form_control = ListedElement::From(*element)) {
+    return IsValidFormControl(form_control)
+               ? ax::mojom::blink::InvalidState::kFalse
+               : ax::mojom::blink::InvalidState::kTrue;
   }
 
   return AXObject::GetInvalidState();
@@ -6855,8 +6862,9 @@ Element* AXNodeObject::ActionElement() const {
       DCHECK(click_element) << "Only elements are clickable";
       // Only return if the click element is a DOM ancestor as well, because
       // the click handler won't propagate down via aria-owns.
-      if (!GetNode() || click_element->contains(GetNode()))
+      if (current == this || !GetNode() || click_element->contains(GetNode())) {
         return click_element;
+      }
       return nullptr;
     }
     current = current->ParentObject();
@@ -7121,18 +7129,23 @@ void AXNodeObject::HandleActiveDescendantChanged() {
 }
 
 AXObject::AXObjectVector AXNodeObject::ErrorMessage() const {
-  if (GetInvalidState() == ax::mojom::blink::InvalidState::kFalse)
+  if (!GetElement()) {
     return AXObjectVector();
+  }
 
   AXObjectVector aria_error_messages =
       RelationVectorFromAria(html_names::kAriaErrormessageAttr);
-  if (aria_error_messages.size() > 0) {
-    return aria_error_messages;
+  if (!aria_error_messages.empty()) {
+    return GetInvalidState() != ax::mojom::blink::InvalidState::kFalse
+               ? aria_error_messages
+               : AXObjectVector();
   }
 
-  AXObjectVector html_error_messages = ErrorMessageFromHTML();
-  if (html_error_messages.size() > 0) {
-    return html_error_messages;
+  if (GetNode() == GetDocument()->FocusedElement()) [[unlikely]] {
+    if (GetInvalidState() == ax::mojom::blink::InvalidState::kFalse) {
+      return AXObjectVector();
+    }
+    return ErrorMessageFromHTML();
   }
 
   return AXObjectVector();

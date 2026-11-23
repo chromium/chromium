@@ -610,11 +610,14 @@ Node* TreeScope::FindAnchor(const String& fragment) {
   // 1. Let fragment be the document's URL's fragment.
 
   // 2. If fragment is "", top of the document.
-  // TODO(1117212) Move empty check to here.
+  if (fragment.empty()) {
+    return &GetDocument();
+  }
 
   // 3. Try the raw fragment (for HTML documents; skip it for `svgView()`).
   // TODO(1117212) Remove this 'raw' check, or make it actually 'raw'
-  if (!GetDocument().IsSVGDocument()) {
+  const bool is_svg_document = GetDocument().IsSVGDocument();
+  if (!is_svg_document) {
     anchor = FindAnchorWithName(fragment);
     if (anchor)
       return anchor;
@@ -624,13 +627,15 @@ Node* TreeScope::FindAnchor(const String& fragment) {
   // 5. Let decodedFragment be the UTF-8 decode without BOM of fragmentBytes.
   String name = DecodeUrlEscapeSequences(fragment, DecodeUrlMode::kUtf8);
   // 6. Try decodedFragment.
-  anchor = FindAnchorWithName(name);
-  if (anchor)
-    return anchor;
+  if (is_svg_document || name != fragment) {
+    anchor = FindAnchorWithName(name);
+    if (anchor) {
+      return anchor;
+    }
+  }
 
   // 7. If decodedFragment is "top", top of the document.
-  // TODO(1117212) Move the IsEmpty check to step 2.
-  if (fragment.empty() || EqualIgnoringAsciiCase(name, "top")) {
+  if (EqualIgnoringAsciiCase(name, "top")) {
     anchor = &GetDocument();
   }
 
