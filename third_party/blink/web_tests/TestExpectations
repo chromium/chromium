@@ -8765,3 +8765,4 @@ crbug.com/589040167 [ Mac ] external/wpt/html/interaction/focus/the-autofocus-at
 # Gardener 2026-11-23
 crbug.com/589614517 [ Win11-arm64 ] external/wpt/webnn/conformance_tests/resample2d-gather-shape-divergence.https.any.html?gpu [ Failure Pass ]
 crbug.com/589626372 [ Debug Linux ] external/wpt/html/user-activation/traverse-aborted-by-204.https.html [ Failure Pass ]
+crbug.com/588928170 [ Linux ] external/wpt/css/css-writing-modes/text-combine-upright-generated-content-001.html [ Failure Pass ]
