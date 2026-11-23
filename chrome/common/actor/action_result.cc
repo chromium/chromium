@@ -15,8 +15,14 @@ namespace actor {
 ActionResultWithLatencyInfo::ActionResultWithLatencyInfo(
     base::TimeTicks start_time,
     base::TimeTicks end_time,
-    mojom::ActionResultPtr result)
-    : start_time(start_time), end_time(end_time), result(std::move(result)) {
+    mojom::ActionResultPtr result,
+    std::string_view tool_name,
+    std::vector<InterceptedJavaScriptDialog> javascript_dialogs)
+    : start_time(start_time),
+      end_time(end_time),
+      result(std::move(result)),
+      tool_name(tool_name),
+      javascript_dialogs(std::move(javascript_dialogs)) {
   DCHECK(!start_time.is_null());
   DCHECK(!end_time.is_null());
   DCHECK_LE(start_time, end_time);
@@ -25,9 +31,13 @@ ActionResultWithLatencyInfo::ActionResultWithLatencyInfo(
     const ActionResultWithLatencyInfo& other)
     : start_time(other.start_time),
       end_time(other.end_time),
-      result(other.result.Clone()) {}
+      result(other.result.Clone()),
+      tool_name(other.tool_name),
+      javascript_dialogs(other.javascript_dialogs) {}
 ActionResultWithLatencyInfo::~ActionResultWithLatencyInfo() = default;
 ActionResultWithLatencyInfo::ActionResultWithLatencyInfo(
+    ActionResultWithLatencyInfo&&) = default;
+ActionResultWithLatencyInfo& ActionResultWithLatencyInfo::operator=(
     ActionResultWithLatencyInfo&&) = default;
 
 bool IsOk(const mojom::ActionResult& result) {

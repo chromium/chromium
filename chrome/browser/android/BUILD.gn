@@ -702,6 +702,7 @@ if (is_android) {
       "//chrome/app:command_ids",
       "//chrome/browser:global_features",
       "//chrome/browser/accessibility/settings",
+      "//chrome/browser/actor",
       "//chrome/browser/android/content:jni_headers",
       "//chrome/browser/android/discards",
       "//chrome/browser/android/extensions:android",

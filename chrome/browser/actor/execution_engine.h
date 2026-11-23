@@ -82,6 +82,7 @@ struct ActionResultWithLatencyInfo;
 class ActorSurface;
 class ActorTask;
 class AutofillSelectionDialogEventHandler;
+struct InterceptedJavaScriptDialog;
 class ToolRequest;
 namespace ui {
 class UiEventDispatcher;
@@ -392,10 +393,17 @@ class ExecutionEngine : public ToolDelegate,
   void PostToolCreate(mojom::ActionResultPtr result);
   void FinishedUiPreInvoke(mojom::ActionResultPtr result);
   void FinishedToolInvoke(mojom::ActionResultPtr result);
+  void FinishToolInvokeWithDialogs(
+      mojom::ActionResultPtr result,
+      std::vector<InterceptedJavaScriptDialog> javascript_dialogs);
   void FinishedUiPostInvoke(mojom::ActionResultPtr result);
 
   void CompleteActions(mojom::ActionResultPtr result,
                        std::optional<size_t> action_index);
+  void CompleteActions(
+      mojom::ActionResultPtr result,
+      std::optional<size_t> action_index,
+      std::vector<InterceptedJavaScriptDialog> javascript_dialogs);
 
   // Returns the next action that will be started when ExecuteNextAction is
   // reached.
@@ -422,6 +430,17 @@ class ExecutionEngine : public ToolDelegate,
   // `ActorSurfaceHandle::Get()` is profile-agnostic, so it must not be used to
   // resolve a handle from the client before the target has been validated.
   ActorSurface* GetSurfaceForValidation(const ToolRequest& request);
+
+  // Returns the WebContents whose JavaScriptDialogInterceptor corresponds to
+  // `action` (its explicit validation surface, or the task's most recently
+  // actuated surface when `action` has no target surface).
+  content::WebContents* GetWebContentsForDialogAttachment(
+      const ToolRequest& action);
+
+  // Drains and returns any JavaScript dialogs intercepted on `action`'s
+  // WebContents during this action.
+  std::vector<InterceptedJavaScriptDialog> TakeInterceptedJavaScriptDialogs(
+      const ToolRequest& action);
 
   void LogNavigationGating(const url::Origin& source,
                            base::optional_ref<const url::Origin> initiator,

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "chrome/browser/actor/javascript_dialog_interceptor.h"
 #include "content/public/browser/web_contents.h"
 
 namespace actor {
@@ -55,5 +56,11 @@ void HeadlessWebContentsManager::RemoveObserver(Observer* observer) {
 }
 
 void HeadlessWebContentsManager::CloseContents(content::WebContents* source) {}
+
+content::JavaScriptDialogManager*
+HeadlessWebContentsManager::GetJavaScriptDialogManager(
+    content::WebContents* source) {
+  return JavaScriptDialogInterceptor::MaybeGetForWebContents(source);
+}
 
 }  // namespace actor

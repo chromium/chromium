@@ -22,7 +22,13 @@ class GlicInstance;
 
 namespace actor {
 
+class ActorSurface;
 class ActorTask;
+
+// Resolves the current WebContents for `actor_surface` without CHECK-failing if
+// a tab-backed surface's TabInterface has already been destroyed.
+content::WebContents* GetWebContentsIfSurfaceAlive(
+    const ActorSurface* actor_surface);
 
 // Returns the GlicInstance associated with `task`, or nullptr if `task` is not
 // associated with a Glic instance.

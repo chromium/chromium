@@ -18,6 +18,24 @@
 
 namespace actor {
 
+// The type of a JavaScript dialog intercepted during actor execution.
+enum class JavaScriptDialogType {
+  kAlert = 0,
+  kConfirm = 1,
+  kPrompt = 2,
+};
+
+// Details of a JavaScript dialog (`window.alert`, `window.confirm`, or
+// `window.prompt`) intercepted and auto-dismissed at the browser layer while
+// an actor task is controlling a WebContents. Mirrors
+// ExecuteJsResult.JavaScriptDialog in actions_data.proto.
+struct InterceptedJavaScriptDialog {
+  JavaScriptDialogType type = JavaScriptDialogType::kAlert;
+  std::string dialog_message;
+
+  bool operator==(const InterceptedJavaScriptDialog&) const = default;
+};
+
 // The result of each action with latency information.
 // TODO(crbug.com/490381613): Create an object to wrap
 // std::vector<ActionResultWithLatencyInfo> that can replace several of the free
@@ -26,11 +44,28 @@ struct ActionResultWithLatencyInfo {
   base::TimeTicks start_time;
   base::TimeTicks end_time;
   mojom::ActionResultPtr result;
+  // The `ToolRequest::Name()` of the action that produced `result` (e.g.
+  // `ExecuteJsToolRequest::kName`), populated by `ExecutionEngine`. May be
+  // empty for general/sequence-level errors or synthetic results not tied to a
+  // specific tool, in which case `CopyExecuteJsResults()` falls back to
+  // checking whether `result->execute_js_response` is present.
+  std::string tool_name;
+  // JavaScript dialogs intercepted on the target WebContents during this
+  // action's execution (in chronological order, capped at
+  // `JavaScriptDialogInterceptor::kMaxInterceptedDialogs`). Populated for all
+  // actions, though `CopyExecuteJsResults()` currently only serializes dialogs
+  // for `ExecuteJsTool` actions into `ActionsResult.execute_js_results`.
+  // TODO(b/586645337): Export dialogs for non-ExecuteJs actions as well.
+  std::vector<InterceptedJavaScriptDialog> javascript_dialogs;
 
-  ActionResultWithLatencyInfo(base::TimeTicks start_time,
-                              base::TimeTicks end_time,
-                              mojom::ActionResultPtr result);
+  ActionResultWithLatencyInfo(
+      base::TimeTicks start_time,
+      base::TimeTicks end_time,
+      mojom::ActionResultPtr result,
+      std::string_view tool_name = {},
+      std::vector<InterceptedJavaScriptDialog> javascript_dialogs = {});
   ActionResultWithLatencyInfo(ActionResultWithLatencyInfo&&);
+  ActionResultWithLatencyInfo& operator=(ActionResultWithLatencyInfo&&);
   ActionResultWithLatencyInfo(const ActionResultWithLatencyInfo&);
   ActionResultWithLatencyInfo& operator=(const ActionResultWithLatencyInfo&) =
       delete;

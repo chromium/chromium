@@ -171,6 +171,11 @@ BASE_DECLARE_FEATURE(kActorScriptToolTransientUserActivation);
 BASE_DECLARE_FEATURE(kActorScriptToolIdValidation);
 
 BASE_DECLARE_FEATURE(kActorExecuteJsTool);
+// When enabled, JavaScript dialogs (`alert`, `confirm`, `prompt`) triggered on
+// WebContents controlled by an active actor task are intercepted and
+// auto-dismissed at the browser layer, and their type and message are recorded
+// on the action result.
+BASE_DECLARE_FEATURE(kActorInterceptJavaScriptDialogs);
 
 // Guards the new Actor Task invocation source completion metrics.
 BASE_DECLARE_FEATURE(kActorRecordInvocationSourceCompletionMetrics);

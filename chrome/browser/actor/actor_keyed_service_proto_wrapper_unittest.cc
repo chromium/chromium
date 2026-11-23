@@ -13,6 +13,8 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/tab_observation_controller.h"
+#include "chrome/browser/actor/tools/click_tool_request.h"
+#include "chrome/browser/actor/tools/execute_js_tool_request.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/test/base/testing_profile.h"
@@ -191,6 +193,101 @@ TEST_F(ActorKeyedServiceProtoWrapperTest,
   EXPECT_EQ(result.error_message(), "tab closed");
   ASSERT_EQ(result.extra_information_size(), 1);
   EXPECT_TRUE(result.extra_information(0).empty());
+}
+
+TEST_F(ActorKeyedServiceProtoWrapperTest,
+       BuildActionsResultPropagatesJavaScriptDialogs) {
+  using ProtoDialog =
+      optimization_guide::proto::ExecuteJsResult::JavaScriptDialog;
+  base::TimeTicks start_time = base::TimeTicks::Now();
+  mojom::ActionResultPtr ok_result = MakeOkResult();
+  ok_result->execute_js_response =
+      mojom::ExecuteJsResponse::New("null", /*truncated=*/false,
+                                    /*js_error_message=*/std::nullopt,
+                                    /*console_logs=*/"");
+
+  mojom::ActionResultPtr err_result =
+      MakeResult(mojom::ActionResultCode::kExecuteJsScriptFailed,
+                 /*requires_page_stabilization=*/false, "boom");
+  err_result->execute_js_response = mojom::ExecuteJsResponse::New(
+      /*result=*/"", /*truncated=*/false, "Error: boom",
+      /*console_logs=*/"");
+
+  mojom::ActionResultPtr click_result = MakeOkResult();
+
+  mojom::ActionResultPtr nav_err_result =
+      MakeResult(mojom::ActionResultCode::kExecuteJsNavigated,
+                 /*requires_page_stabilization=*/false, "navigated");
+
+  std::vector<ActionResultWithLatencyInfo> action_results;
+  action_results.emplace_back(
+      start_time, start_time + base::Milliseconds(5), std::move(ok_result),
+      ExecuteJsToolRequest::kName,
+      std::vector<InterceptedJavaScriptDialog>{
+          {JavaScriptDialogType::kAlert, "Waitlist confirmed"},
+      });
+  action_results.emplace_back(
+      start_time + base::Milliseconds(5), start_time + base::Milliseconds(10),
+      std::move(click_result), ClickToolRequest::kName,
+      std::vector<InterceptedJavaScriptDialog>{
+          {JavaScriptDialogType::kAlert, "click dialog ignored"},
+      });
+  action_results.emplace_back(
+      start_time + base::Milliseconds(10), start_time + base::Milliseconds(15),
+      std::move(err_result), ExecuteJsToolRequest::kName,
+      std::vector<InterceptedJavaScriptDialog>{
+          {JavaScriptDialogType::kConfirm, "Proceed?"},
+      });
+
+  ObservationResult observation_result;
+  optimization_guide::proto::ActionsResult result =
+      BuildActionsResult(start_time, action_results, observation_result);
+
+  ASSERT_EQ(result.execute_js_results_size(), 2);
+  EXPECT_EQ(result.execute_js_results(0).index_of_execute_js_action(), 0);
+  ASSERT_EQ(result.execute_js_results(0).javascript_dialogs_size(), 1);
+  EXPECT_EQ(result.execute_js_results(0).javascript_dialogs(0).type(),
+            ProtoDialog::TYPE_ALERT);
+  EXPECT_EQ(result.execute_js_results(0).javascript_dialogs(0).dialog_message(),
+            "Waitlist confirmed");
+
+  EXPECT_EQ(result.execute_js_results(1).index_of_execute_js_action(), 2);
+  EXPECT_EQ(result.execute_js_results(1).js_error_message(), "Error: boom");
+  ASSERT_EQ(result.execute_js_results(1).javascript_dialogs_size(), 1);
+  EXPECT_EQ(result.execute_js_results(1).javascript_dialogs(0).type(),
+            ProtoDialog::TYPE_CONFIRM);
+  EXPECT_EQ(result.execute_js_results(1).javascript_dialogs(0).dialog_message(),
+            "Proceed?");
+
+  ASSERT_EQ(result.extra_information_size(), 3);
+  EXPECT_TRUE(result.extra_information(0).empty());
+  EXPECT_TRUE(result.extra_information(1).empty());
+  EXPECT_TRUE(result.extra_information(2).empty());
+  EXPECT_EQ(result.error_message(), "boom");
+
+  // An ExecuteJS failure without an execute_js_response (e.g. due to
+  // navigation) still propagates dialogs via `tool_name`.
+  std::vector<ActionResultWithLatencyInfo> nav_results;
+  nav_results.emplace_back(start_time, start_time + base::Milliseconds(5),
+                           std::move(nav_err_result),
+                           ExecuteJsToolRequest::kName,
+                           std::vector<InterceptedJavaScriptDialog>{
+                               {JavaScriptDialogType::kPrompt, "Before nav?"},
+                           });
+  ObservationResult nav_observation;
+  optimization_guide::proto::ActionsResult nav_proto =
+      BuildActionsResult(start_time, nav_results, nav_observation);
+
+  ASSERT_EQ(nav_proto.execute_js_results_size(), 1);
+  EXPECT_EQ(nav_proto.execute_js_results(0).index_of_execute_js_action(), 0);
+  EXPECT_FALSE(nav_proto.execute_js_results(0).has_result());
+  EXPECT_FALSE(nav_proto.execute_js_results(0).has_js_error_message());
+  ASSERT_EQ(nav_proto.execute_js_results(0).javascript_dialogs_size(), 1);
+  EXPECT_EQ(nav_proto.execute_js_results(0).javascript_dialogs(0).type(),
+            ProtoDialog::TYPE_PROMPT);
+  EXPECT_EQ(
+      nav_proto.execute_js_results(0).javascript_dialogs(0).dialog_message(),
+      "Before nav?");
 }
 
 }  // namespace

@@ -22,8 +22,10 @@
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_surface_registry.h"
+#include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/javascript_dialog_interceptor.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/glic/public/glic_perf_traits_tracker.h"
@@ -582,9 +584,27 @@ void ActorTask::Uninterrupt(State resumed_state) {
   if (GetState() != State::kWaitingOnUser) {
     return;
   }
+  const bool was_under_user_control = interrupted_task_needs_user_control_;
   interrupt_reason_ = std::nullopt;
   interrupted_task_needs_user_control_ = false;
   SetState(resumed_state);
+  if (was_under_user_control && IsUnderActorControl()) {
+    for (const auto& [actor_surface_handle, controlled_state] :
+         controlled_tabs_) {
+      content::WebContents* contents = controlled_state->web_contents();
+      if (!contents) {
+        // If the user navigated while interrupted with user control,
+        // PrimaryPageChanged() detached `controlled_state` from its
+        // WebContents. Resolve the current contents from the surface handle so
+        // any modal dialog opened on the post-navigation page is still
+        // dismissed.
+        contents = GetWebContentsIfSurfaceAlive(actor_surface_handle.Get());
+      }
+      if (contents) {
+        JavaScriptDialogInterceptor::DismissExistingTabModalDialog(*contents);
+      }
+    }
+  }
   execution_engine_->DidUninterruptTask();
 }
 
@@ -743,6 +763,19 @@ void ActorTask::RemoveActorSurface(ActorSurfaceHandle actor_surface_handle) {
     // Record the tab visibility duration.
     UpdateVisibilityTimes();
     DidTabExitActorControl(actor_surface_handle);
+  } else if (auto it = controlled_tabs_.find(actor_surface_handle);
+             it != controlled_tabs_.end() && IsStateActorControlled(state_)) {
+    // When interrupted with user control, `state_` is still `kWaitingOnUser`
+    // (so `DidTabExitActorControl()` did not run on `Interrupt()`), while
+    // `IsActingOnActorSurface()` is false. Ensure any attached interceptor
+    // UserData is removed before dropping the surface from `controlled_tabs_`.
+    content::WebContents* contents = it->second->web_contents();
+    if (!contents) {
+      contents = GetWebContentsIfSurfaceAlive(actor_surface_handle.Get());
+    }
+    if (contents) {
+      MaybeRemoveJavaScriptDialogInterceptor(actor_surface_handle, *contents);
+    }
   }
   auto num_removed = controlled_tabs_.erase(actor_surface_handle);
   RecomputeHasVisibleTab();
@@ -990,6 +1023,7 @@ void ActorTask::DidTabEnterActorControl(
         tab->RegisterWillDiscardContents(base::BindRepeating(
             &ActorTask::HandleDiscardContents, weak_ptr_factory_.GetWeakPtr()));
   }
+  JavaScriptDialogInterceptor::DismissExistingTabModalDialog(*contents);
   DidContentsEnterActorControl(state, contents);
 
   RecomputeHasVisibleTab();
@@ -1029,14 +1063,35 @@ void ActorTask::DidTabExitActorControl(
   // the state observes. It follows the tab's contents across discards.
   content::WebContents* contents = state->web_contents();
   if (!contents) {
+    // If `state` stopped observing its WebContents during an interruption with
+    // user control and was later reused after Uninterrupt(), still detach any
+    // interceptor attached to the surface's current WebContents.
+    if (content::WebContents* surface_contents =
+            GetWebContentsIfSurfaceAlive(actor_surface_handle.Get())) {
+      MaybeRemoveJavaScriptDialogInterceptor(actor_surface_handle,
+                                             *surface_contents);
+    }
     return;
   }
 
   // Reset focus and remove observers.
+  MaybeRemoveJavaScriptDialogInterceptor(actor_surface_handle, *contents);
   SetFocusState(contents, std::nullopt);
   state->SetContents(nullptr);
   state->content_discarded_subscription = {};
   DidContentsExitActorControl(state, contents);
+}
+
+void ActorTask::MaybeRemoveJavaScriptDialogInterceptor(
+    ActorSurfaceHandle actor_surface_handle,
+    content::WebContents& contents) {
+  for (const auto& [task_id, actor_task] : service_->GetActiveTasks()) {
+    if (actor_task != this &&
+        actor_task->IsActingOnActorSurface(actor_surface_handle)) {
+      return;
+    }
+  }
+  JavaScriptDialogInterceptor::RemoveForWebContents(contents);
 }
 
 void ActorTask::DidContentsExitActorControl(

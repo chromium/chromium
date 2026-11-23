@@ -19,6 +19,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
+#include "base/containers/extend.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -45,7 +46,9 @@
 #include "chrome/browser/actor/actor_surface.h"
 #include "chrome/browser/actor/actor_surface_registry.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/actor_util.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
+#include "chrome/browser/actor/javascript_dialog_interceptor.h"
 #include "chrome/browser/actor/site_policy.h"
 #include "chrome/browser/actor/tools/password_manager/attempt_login/attempt_login_tool.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
@@ -577,6 +580,20 @@ void MergeActionResult(mojom::ActionResult& target,
   if (followup->attempt_login_status.has_value()) {
     target.attempt_login_status = followup->attempt_login_status;
   }
+}
+
+void MergeInterceptedDialogs(
+    std::vector<InterceptedJavaScriptDialog>& target,
+    std::vector<InterceptedJavaScriptDialog> followup) {
+  if (target.size() >= JavaScriptDialogInterceptor::kMaxInterceptedDialogs) {
+    return;
+  }
+  const size_t remaining =
+      JavaScriptDialogInterceptor::kMaxInterceptedDialogs - target.size();
+  if (followup.size() > remaining) {
+    followup.resize(remaining);
+  }
+  base::Extend(target, std::move(followup));
 }
 
 // When operating on an opaque site, we choose to use the precursor's origin
@@ -1704,6 +1721,14 @@ void ExecutionEngine::FinishedUiPreInvoke(mojom::ActionResultPtr result) {
         contents->GetPrimaryMainFrame()->GetNavigationId();
   }
 
+  // Discard any dialogs buffered between actions (for example while reflecting
+  // or during an earlier action that failed validation) so this action only
+  // reports dialogs fired during its own invocation.
+  if (content::WebContents* dialog_contents =
+          GetWebContentsForDialogAttachment(current_action)) {
+    JavaScriptDialogInterceptor::ClearInterceptedDialogs(*dialog_contents);
+  }
+
   SetState(State::kToolInvoke);
   tool_controller_->Invoke(base::BindOnce(&ExecutionEngine::FinishedToolInvoke,
                                           GetActionSequenceWeakPtr()));
@@ -1713,9 +1738,23 @@ void ExecutionEngine::FinishedToolInvoke(mojom::ActionResultPtr result) {
   TRACE_EVENT0("actor", "ExecutionEngine::FinishedToolInvoke");
   CHECK_EQ(state_, State::kToolInvoke, base::NotFatalUntil::M161);
 
+  // Drain dialogs intercepted during this tool invocation before any deferral
+  // so dialogs fired while waiting on the user are not attributed to the
+  // already-finished tool.
+  std::vector<InterceptedJavaScriptDialog> javascript_dialogs =
+      TakeInterceptedJavaScriptDialogs(GetInProgressAction());
+
   if (tool_invoke_complete_callback_for_testing_) {
     std::move(tool_invoke_complete_callback_for_testing_).Run();
   }
+
+  FinishToolInvokeWithDialogs(std::move(result), std::move(javascript_dialogs));
+}
+
+void ExecutionEngine::FinishToolInvokeWithDialogs(
+    mojom::ActionResultPtr result,
+    std::vector<InterceptedJavaScriptDialog> javascript_dialogs) {
+  CHECK_EQ(state_, State::kToolInvoke, base::NotFatalUntil::M161);
 
   // If the task is waiting on user input, defer returning a result for it. This
   // prevents the actor state from proceeding and also allows UI to insert an
@@ -1723,27 +1762,28 @@ void ExecutionEngine::FinishedToolInvoke(mojom::ActionResultPtr result) {
   if (base::FeatureList::IsEnabled(kGlicDeferActUntilUninterrupted) &&
       task_->GetState() == ActorTask::State::kWaitingOnUser) {
     CHECK(deferred_finish_tool_invoke_.is_null());
-    deferred_finish_tool_invoke_ =
-        base::BindOnce(&ExecutionEngine::FinishedToolInvoke,
-                       base::Unretained(this), std::move(result));
+    deferred_finish_tool_invoke_ = base::BindOnce(
+        &ExecutionEngine::FinishToolInvokeWithDialogs, base::Unretained(this),
+        std::move(result), std::move(javascript_dialogs));
     return;
   }
+
+  const ToolRequest& current_action = GetInProgressAction();
 
   // The current action errored out. Stop the chain.
   std::optional<mojom::ActionResultCode> external_tool_failure_reason;
   std::swap(external_tool_failure_reason, external_tool_failure_reason_);
   if (external_tool_failure_reason) {
     CompleteActions(MakeResult(*external_tool_failure_reason),
-                    InProgressActionIndex());
+                    InProgressActionIndex(), std::move(javascript_dialogs));
     return;
   }
 
   if (!IsOk(*result)) {
-    CompleteActions(std::move(result), InProgressActionIndex());
+    CompleteActions(std::move(result), InProgressActionIndex(),
+                    std::move(javascript_dialogs));
     return;
   }
-
-  const ToolRequest& current_action = GetInProgressAction();
 
   ActorCriticalActionLogger::MaybeLogAction(*task_, &GetProfile(),
                                             current_action, *result,
@@ -1777,10 +1817,13 @@ void ExecutionEngine::FinishedToolInvoke(mojom::ActionResultPtr result) {
     CHECK(!action_results_.empty());
     ActionResultWithLatencyInfo& action_result = action_results_.back();
     MergeActionResult(*action_result.result, std::move(result));
+    MergeInterceptedDialogs(action_result.javascript_dialogs,
+                            std::move(javascript_dialogs));
     action_result.end_time = end_time;
   } else {
     action_results_.emplace_back(action_start_time_, end_time,
-                                 std::move(result));
+                                 std::move(result), current_action.Name(),
+                                 std::move(javascript_dialogs));
   }
 
   SetState(State::kUiPostInvoke);
@@ -1811,6 +1854,13 @@ void ExecutionEngine::FinishedUiPostInvoke(mojom::ActionResultPtr result) {
 
 void ExecutionEngine::CompleteActions(mojom::ActionResultPtr result,
                                       std::optional<size_t> action_index) {
+  CompleteActions(std::move(result), action_index, /*javascript_dialogs=*/{});
+}
+
+void ExecutionEngine::CompleteActions(
+    mojom::ActionResultPtr result,
+    std::optional<size_t> action_index,
+    std::vector<InterceptedJavaScriptDialog> javascript_dialogs) {
   TRACE_EVENT0("actor", "ExecutionEngine::CompleteActions");
   CHECK(!action_sequence_.empty());
   CHECK(act_callback_);
@@ -1821,7 +1871,9 @@ void ExecutionEngine::CompleteActions(mojom::ActionResultPtr result,
     size_t result_index = GetResultIndexForAction(*action_index);
     if (action_results_.size() == result_index) {
       action_results_.emplace_back(action_start_time_, base::TimeTicks::Now(),
-                                   result->Clone());
+                                   result->Clone(),
+                                   action_sequence_[*action_index]->Name(),
+                                   std::move(javascript_dialogs));
     } else if (action_results_.size() > result_index &&
                (!IsOk(*result) ||
                 action_sequence_[*action_index]->IsFollowup())) {
@@ -1832,6 +1884,8 @@ void ExecutionEngine::CompleteActions(mojom::ActionResultPtr result,
       ActionResultWithLatencyInfo& action_result =
           action_results_[result_index];
       MergeActionResult(*action_result.result, result->Clone());
+      MergeInterceptedDialogs(action_result.javascript_dialogs,
+                              std::move(javascript_dialogs));
       action_result.end_time = base::TimeTicks::Now();
     }
   } else if (!IsOk(*result)) {
@@ -2243,6 +2297,26 @@ ActorSurface* ExecutionEngine::GetSurfaceForValidation(
     const ToolRequest& request) {
   return task_->actor_keyed_service().GetSurfaceRegistry().Get(
       request.GetActorSurfaceForValidation());
+}
+
+content::WebContents* ExecutionEngine::GetWebContentsForDialogAttachment(
+    const ToolRequest& action) {
+  ActorSurfaceHandle surface_handle = action.GetActorSurfaceForValidation();
+  if (surface_handle.is_null()) {
+    surface_handle = task_->GetLastActuatedActorSurface();
+  }
+  return GetWebContentsIfSurfaceAlive(
+      task_->actor_keyed_service().GetSurfaceRegistry().Get(surface_handle));
+}
+
+std::vector<InterceptedJavaScriptDialog>
+ExecutionEngine::TakeInterceptedJavaScriptDialogs(const ToolRequest& action) {
+  content::WebContents* web_contents =
+      GetWebContentsForDialogAttachment(action);
+  if (!web_contents) {
+    return {};
+  }
+  return JavaScriptDialogInterceptor::TakeInterceptedDialogs(*web_contents);
 }
 
 size_t ExecutionEngine::GetResultIndexForAction(size_t action_index) const {
