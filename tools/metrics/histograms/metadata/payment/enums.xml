@@ -115,6 +115,21 @@ uploading your change for review.  These are checked by presubmit scripts.
 
 <!-- LINT.ThenChange(//components/payments/content/payment_request_display_manager.h:PaymentRequestTryShowOutcome) -->
 
+<!-- LINT.IfChange(SecurePaymentConfirmationBrowserBoundKeyAndroidCreateKeyResult) -->
+
+<enum name="SecurePaymentConfirmationBrowserBoundKeyAndroidCreateKeyResult">
+  <int value="0" label="Created in StrongBox"/>
+  <int value="1" label="Created in Trusted Execution Environment"/>
+  <int value="2" label="Created in unknown secure hardware"/>
+  <int value="3" label="Created in software (key rejected)"/>
+  <int value="4" label="KeyInfo unavailable (key rejected)"/>
+  <int value="5" label="Unexpected security level (key rejected)"/>
+  <int value="6" label="StrongBox creation failed"/>
+  <int value="7" label="Non-StrongBox creation failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/payments/content/android/spc/java/src/org/chromium/components/payments/browser_binding/BrowserBoundKeyStore.java:SecurePaymentConfirmationBrowserBoundKeyAndroidCreateKeyResult) -->
+
 <!-- LINT.IfChange(BrowserBoundKeys) -->
 
 <enum name="SecurePaymentConfirmationBrowserBoundKeyDeviceResult">

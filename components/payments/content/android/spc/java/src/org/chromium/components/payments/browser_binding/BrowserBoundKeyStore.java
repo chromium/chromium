@@ -12,6 +12,9 @@ import android.security.keystore.KeyInfo;
 import android.security.keystore.KeyProperties;
 import android.util.Base64;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.RequiresApi;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JNINamespace;
@@ -20,6 +23,7 @@ import org.jni_zero.JniType;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.PublicKeyCredentialParameters;
 import org.chromium.blink.mojom.PublicKeyCredentialType;
 import org.chromium.build.BuildConfig;
@@ -28,6 +32,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.payments.PaymentFeatureList;
 
 import java.io.IOException;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -61,6 +67,38 @@ public final class BrowserBoundKeyStore {
 
     public static final String ANDROID_KEY_STORE = "AndroidKeyStore";
     public static final String KEYSTORE_ALIAS_PREFIX = "spcbbk_sha256ecdsa_";
+
+    // The outcome of a browser bound key creation attempt, including the storage used for the key.
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    // LINT.IfChange(SecurePaymentConfirmationBrowserBoundKeyAndroidCreateKeyResult)
+    @IntDef({
+        CreateKeyResult.STRONG_BOX,
+        CreateKeyResult.TRUSTED_ENVIRONMENT,
+        CreateKeyResult.UNKNOWN_SECURE,
+        CreateKeyResult.SOFTWARE,
+        CreateKeyResult.KEY_INFO_UNAVAILABLE,
+        CreateKeyResult.UNEXPECTED_SECURITY_LEVEL,
+        CreateKeyResult.STRONG_BOX_CREATION_FAILED,
+        CreateKeyResult.NON_STRONG_BOX_CREATION_FAILED,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @interface CreateKeyResult {
+        int STRONG_BOX = 0;
+        int TRUSTED_ENVIRONMENT = 1;
+        int UNKNOWN_SECURE = 2;
+        int SOFTWARE = 3;
+        int KEY_INFO_UNAVAILABLE = 4;
+        int UNEXPECTED_SECURITY_LEVEL = 5;
+        int STRONG_BOX_CREATION_FAILED = 6;
+        int NON_STRONG_BOX_CREATION_FAILED = 7;
+        int NUM_ENTRIES = 8;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/payment/enums.xml:SecurePaymentConfirmationBrowserBoundKeyAndroidCreateKeyResult)
+
+    private static final String CREATE_KEY_RESULT_HISTOGRAM =
+            "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore.Android.CreateKeyResult";
 
     private static boolean sAllowSoftwareKeysForTesting;
 
@@ -268,13 +306,31 @@ public final class BrowserBoundKeyStore {
             // StrongBoxUnavailableException is a ProviderException.
             // TODO(crbug.com/377278827): Return a reason for the failure.
             Log.e(TAG, "Could not create a browser bound key (StrongBox: %s).", useStrongBox, e);
+            recordCreateKeyResult(
+                    useStrongBox
+                            ? CreateKeyResult.STRONG_BOX_CREATION_FAILED
+                            : CreateKeyResult.NON_STRONG_BOX_CREATION_FAILED);
             return null;
         }
 
-        // StrongBox requests fail rather than silently producing a software key, but non-StrongBox
-        // requests can silently produce a software key on devices that misdeclare
+        if (useStrongBox) {
+            // StrongBox requests fail rather than silently producing a non-StrongBox key, so there
+            // is no need to read the key's security level.
+            recordCreateKeyResult(CreateKeyResult.STRONG_BOX);
+            return new BrowserBoundKey(identifier, keyPair);
+        }
+
+        // Non-StrongBox requests can silently produce a software key on devices that misdeclare
         // FEATURE_HARDWARE_KEYSTORE, such as software emulators.
-        if (!useStrongBox && !isTeeBacked(keyPair.getPrivate())) {
+        @CreateKeyResult int result = getNonStrongBoxCreateKeyResult(keyPair.getPrivate());
+        recordCreateKeyResult(result);
+        boolean isAcceptable =
+                result == CreateKeyResult.TRUSTED_ENVIRONMENT
+                        || result == CreateKeyResult.UNKNOWN_SECURE
+                        || (result == CreateKeyResult.SOFTWARE
+                                && BuildConfig.IS_FOR_TEST
+                                && sAllowSoftwareKeysForTesting);
+        if (!isAcceptable) {
             Log.e(TAG, "The browser bound key is not backed by a hardware TEE.");
             deleteBrowserBoundKey(identifier);
             return null;
@@ -283,14 +339,19 @@ public final class BrowserBoundKeyStore {
         return new BrowserBoundKey(identifier, keyPair);
     }
 
+    private static void recordCreateKeyResult(@CreateKeyResult int result) {
+        RecordHistogram.recordEnumeratedHistogram(
+                CREATE_KEY_RESULT_HISTOGRAM, result, CreateKeyResult.NUM_ENTRIES);
+    }
+
     /**
-     * Returns whether {@code privateKey} is backed by a hardware TEE (or software when {@link
-     * #setAllowSoftwareKeysForTesting} is enabled).
+     * Returns the creation result for a {@code privateKey} that was requested without StrongBox,
+     * based on the key's reported security level.
      */
-    private static boolean isTeeBacked(PrivateKey privateKey) {
+    private static @CreateKeyResult int getNonStrongBoxCreateKeyResult(PrivateKey privateKey) {
         // The TEE path requires Android S (see hasHardwareKeyStore()); this check is for lint.
         if (Build.VERSION.SDK_INT < VERSION_CODES.S) {
-            return false;
+            return CreateKeyResult.KEY_INFO_UNAVAILABLE;
         }
 
         int securityLevel;
@@ -304,20 +365,34 @@ public final class BrowserBoundKeyStore {
                 | InvalidKeySpecException
                 | ProviderException e) {
             Log.e(TAG, "Could not read the browser bound key's security level.", e);
-            return false;
+            return CreateKeyResult.KEY_INFO_UNAVAILABLE;
         }
+        @CreateKeyResult int result = toCreateKeyResult(securityLevel);
+        // Android never places a key requested without StrongBox in StrongBox.
+        assert result != CreateKeyResult.STRONG_BOX;
+        return result;
+    }
+
+    /**
+     * Maps the {@link KeyInfo#getSecurityLevel()} of a key that was requested without StrongBox to
+     * its creation result.
+     */
+    @RequiresApi(VERSION_CODES.S)
+    static @CreateKeyResult int toCreateKeyResult(int securityLevel) {
         switch (securityLevel) {
+            case KeyProperties.SECURITY_LEVEL_STRONGBOX:
+                return CreateKeyResult.STRONG_BOX;
             case KeyProperties.SECURITY_LEVEL_TRUSTED_ENVIRONMENT:
-                return true;
+                return CreateKeyResult.TRUSTED_ENVIRONMENT;
             case KeyProperties.SECURITY_LEVEL_UNKNOWN_SECURE:
                 // KeyStore reports UNKNOWN_SECURE when it knows the key is in secure hardware (e.g.
                 // from a legacy Keymaster HAL or a key upgraded from pre-Android S) but cannot
                 // distinguish TEE from StrongBox, which still satisfies our hardware requirement.
-                return true;
+                return CreateKeyResult.UNKNOWN_SECURE;
             case KeyProperties.SECURITY_LEVEL_SOFTWARE:
-                return BuildConfig.IS_FOR_TEST && sAllowSoftwareKeysForTesting;
+                return CreateKeyResult.SOFTWARE;
             default:
-                return false;
+                return CreateKeyResult.UNEXPECTED_SECURITY_LEVEL;
         }
     }
 

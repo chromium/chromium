@@ -442,6 +442,28 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore.Android.CreateKeyResult"
+    enum="SecurePaymentConfirmationBrowserBoundKeyAndroidCreateKeyResult"
+    expires_after="2027-09-01">
+  <owner>smcgruer@chromium.org</owner>
+  <owner>darwinyang@chromium.org</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    The outcome of creating a browser bound key in the Android KeyStore,
+    including whether the key was stored in StrongBox or in a Trusted Execution
+    Environment (TEE). Recorded each time AndroidKeyStore key generation is
+    attempted.
+
+    This complements
+    PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStoreCreate by
+    splitting creation outcomes per store. Totals can differ, since that
+    histogram also counts failures before key generation is attempted.
+
+    Android only.
+  </summary>
+</histogram>
+
+<histogram
     name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore.CreateKeyLatency"
     units="ms" expires_after="2027-09-01">
   <owner>darwinyang@chromium.org</owner>

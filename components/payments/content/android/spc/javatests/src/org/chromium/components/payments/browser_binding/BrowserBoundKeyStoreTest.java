@@ -32,6 +32,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.PublicKeyCredentialParameters;
 import org.chromium.blink.mojom.PublicKeyCredentialType;
 import org.chromium.build.annotations.Nullable;
@@ -186,6 +187,131 @@ public class BrowserBoundKeyStoreTest {
         assertNull(
                 browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
                         BBK_ID, Arrays.asList()));
+    }
+
+    @Test
+    @RequiresApi(Build.VERSION_CODES.P)
+    public void testRecordsStrongBoxCreateKeyResult() {
+        assumeTrue(isStrongBoxAvailable());
+        BrowserBoundKeyStore browserBoundKeyStore = BrowserBoundKeyStore.getInstance();
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore"
+                                + ".Android.CreateKeyResult",
+                        BrowserBoundKeyStore.CreateKeyResult.STRONG_BOX);
+
+        BrowserBoundKey bbk =
+                browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
+                        BBK_ID, ALLOWED_ALGORITHMS);
+
+        assertNotNull(bbk);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @RequiresApi(Build.VERSION_CODES.S)
+    public void testRecordsTeeCreateKeyResult() throws Exception {
+        assumeFalse(isStrongBoxAvailable());
+        assumeTrue(isHardwareKeyStoreAvailable());
+        assumeTrue(isTeeKeystoreHardwareBacked());
+        BrowserBoundKeyStore browserBoundKeyStore = BrowserBoundKeyStore.getInstance();
+        // A TEE key may report either security level, so watch for both and check the one that
+        // matches the created key.
+        HistogramWatcher trustedEnvironmentHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore"
+                                + ".Android.CreateKeyResult",
+                        BrowserBoundKeyStore.CreateKeyResult.TRUSTED_ENVIRONMENT);
+        HistogramWatcher unknownSecureHistogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore"
+                                + ".Android.CreateKeyResult",
+                        BrowserBoundKeyStore.CreateKeyResult.UNKNOWN_SECURE);
+
+        BrowserBoundKey bbk =
+                browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
+                        BBK_ID, ALLOWED_ALGORITHMS);
+
+        assertNotNull(bbk);
+        KeyPair keyPair = bbk.getKeyPairForTesting();
+        KeyFactory keyFactory =
+                KeyFactory.getInstance(
+                        keyPair.getPrivate().getAlgorithm(),
+                        BrowserBoundKeyStore.ANDROID_KEY_STORE);
+        KeyInfo keyInfo = keyFactory.getKeySpec(keyPair.getPrivate(), KeyInfo.class);
+        if (keyInfo.getSecurityLevel() == KeyProperties.SECURITY_LEVEL_TRUSTED_ENVIRONMENT) {
+            trustedEnvironmentHistogramWatcher.assertExpected();
+        } else {
+            assertEquals(KeyProperties.SECURITY_LEVEL_UNKNOWN_SECURE, keyInfo.getSecurityLevel());
+            unknownSecureHistogramWatcher.assertExpected();
+        }
+    }
+
+    @Test
+    @RequiresApi(Build.VERSION_CODES.S)
+    public void testRecordsSoftwareCreateKeyResultWhenRejected() throws Exception {
+        assumeFalse(isStrongBoxAvailable());
+        assumeTrue(isHardwareKeyStoreAvailable());
+        assumeFalse(isTeeKeystoreHardwareBacked());
+        BrowserBoundKeyStore browserBoundKeyStore = BrowserBoundKeyStore.getInstance();
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore"
+                                + ".Android.CreateKeyResult",
+                        BrowserBoundKeyStore.CreateKeyResult.SOFTWARE);
+
+        BrowserBoundKey bbk =
+                browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
+                        BBK_ID, ALLOWED_ALGORITHMS);
+
+        assertNull(bbk);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @RequiresApi(Build.VERSION_CODES.S)
+    public void testRecordsSoftwareCreateKeyResultWhenAllowedForTesting() throws Exception {
+        assumeFalse(isStrongBoxAvailable());
+        assumeTrue(isHardwareKeyStoreAvailable());
+        assumeFalse(isTeeKeystoreHardwareBacked());
+        BrowserBoundKeyStore.setAllowSoftwareKeysForTesting(true);
+        BrowserBoundKeyStore browserBoundKeyStore = BrowserBoundKeyStore.getInstance();
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore"
+                                + ".Android.CreateKeyResult",
+                        BrowserBoundKeyStore.CreateKeyResult.SOFTWARE);
+
+        BrowserBoundKey bbk =
+                browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
+                        BBK_ID, ALLOWED_ALGORITHMS);
+
+        assertNotNull(bbk);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @RequiresApi(Build.VERSION_CODES.P)
+    public void testDoesNotRecordCreateKeyResultWhenRetrievingExistingKey() {
+        assumeTrue(isHardwareBackedKeyAvailable());
+        BrowserBoundKeyStore.setAllowSoftwareKeysForTesting(true);
+        BrowserBoundKeyStore browserBoundKeyStore = BrowserBoundKeyStore.getInstance();
+        assertNotNull(
+                browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
+                        BBK_ID, ALLOWED_ALGORITHMS));
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore"
+                                        + ".Android.CreateKeyResult")
+                        .build();
+
+        BrowserBoundKey bbk =
+                browserBoundKeyStore.getOrCreateBrowserBoundKeyForCredentialId(
+                        BBK_ID, ALLOWED_ALGORITHMS);
+
+        assertNotNull(bbk);
+        histogramWatcher.assertExpected();
     }
 
     @Test

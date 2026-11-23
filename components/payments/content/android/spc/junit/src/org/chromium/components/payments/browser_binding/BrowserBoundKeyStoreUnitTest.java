@@ -4,11 +4,13 @@
 
 package org.chromium.components.payments.browser_binding;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.security.keystore.KeyProperties;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -91,5 +93,55 @@ public class BrowserBoundKeyStoreUnitTest {
         shadowPackageManager.setSystemFeature(PackageManager.FEATURE_HARDWARE_KEYSTORE, true);
 
         assertFalse(BrowserBoundKeyStore.getDeviceSupportsHardwareKeys());
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testToCreateKeyResult_TrustedEnvironment() {
+        assertEquals(
+                BrowserBoundKeyStore.CreateKeyResult.TRUSTED_ENVIRONMENT,
+                BrowserBoundKeyStore.toCreateKeyResult(
+                        KeyProperties.SECURITY_LEVEL_TRUSTED_ENVIRONMENT));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testToCreateKeyResult_UnknownSecure() {
+        assertEquals(
+                BrowserBoundKeyStore.CreateKeyResult.UNKNOWN_SECURE,
+                BrowserBoundKeyStore.toCreateKeyResult(
+                        KeyProperties.SECURITY_LEVEL_UNKNOWN_SECURE));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testToCreateKeyResult_Software() {
+        assertEquals(
+                BrowserBoundKeyStore.CreateKeyResult.SOFTWARE,
+                BrowserBoundKeyStore.toCreateKeyResult(KeyProperties.SECURITY_LEVEL_SOFTWARE));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testToCreateKeyResult_StrongBox() {
+        assertEquals(
+                BrowserBoundKeyStore.CreateKeyResult.STRONG_BOX,
+                BrowserBoundKeyStore.toCreateKeyResult(KeyProperties.SECURITY_LEVEL_STRONGBOX));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testToCreateKeyResult_UnknownIsUnexpected() {
+        assertEquals(
+                BrowserBoundKeyStore.CreateKeyResult.UNEXPECTED_SECURITY_LEVEL,
+                BrowserBoundKeyStore.toCreateKeyResult(KeyProperties.SECURITY_LEVEL_UNKNOWN));
+    }
+
+    @Test
+    @Config(sdk = Build.VERSION_CODES.S)
+    public void testToCreateKeyResult_UndefinedValueIsUnexpected() {
+        assertEquals(
+                BrowserBoundKeyStore.CreateKeyResult.UNEXPECTED_SECURITY_LEVEL,
+                BrowserBoundKeyStore.toCreateKeyResult(12345));
     }
 }
