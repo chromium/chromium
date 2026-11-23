@@ -20,6 +20,7 @@
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/i18n/bcp47_extensions.h"
@@ -1301,6 +1302,13 @@ std::u16string ResourceBundle::GetLocalizedStringImpl(int resource_id) const {
   // string (better than crashing).
   if (locale_resources_data_.empty()) {
     LOG(WARNING) << "locale resources are not loaded";
+    // Upload a dump so crash reports can tell whether this branch is where
+    // callers get an empty string; see b/585076655.
+    SCOPED_CRASH_KEY_NUMBER("ResourceBundle", "missing_locale_res_id",
+                            resource_id);
+    SCOPED_CRASH_KEY_STRING32("ResourceBundle", "loaded_locale",
+                              loaded_locale_);
+    base::debug::DumpWithoutCrashing();
     return std::u16string();
   }
 
@@ -1313,6 +1321,17 @@ std::u16string ResourceBundle::GetLocalizedStringImpl(int resource_id) const {
       encoding = locale_data->GetTextEncodingType();
       break;
     }
+  }
+  if (data.has_value() && data->empty()) {
+    // The locale pak has an entry for `resource_id`, but it is empty (e.g. a
+    // zero-length entry in a truncated or corrupt pak). Upload a dump so crash
+    // reports can tell whether this is where callers get an empty string; see
+    // b/585076655.
+    SCOPED_CRASH_KEY_NUMBER("ResourceBundle", "empty_locale_res_id",
+                            resource_id);
+    SCOPED_CRASH_KEY_STRING32("ResourceBundle", "loaded_locale",
+                              loaded_locale_);
+    base::debug::DumpWithoutCrashing();
   }
   if (!data.has_value()) {
     // Fall back on the main data pack (shouldn't be any strings here except

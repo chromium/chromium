@@ -79,6 +79,9 @@ std::u16string FormatString(const std::u16string& format_string,
   // offsets in ReplaceStringPlaceholders(). Otherwise, offsets might be wrong.
   std::u16string formatted = format_string;
   AdjustParagraphDirectionality(&formatted);
+  // If there is at least one replacement, the formatted string must not be
+  // empty.
+  CHECK(replacements.empty() || !formatted.empty());
   return base::ReplaceStringPlaceholders(formatted, replacements, offsets);
 }
 
