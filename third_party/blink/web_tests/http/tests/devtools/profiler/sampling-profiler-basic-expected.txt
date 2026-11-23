@@ -1,5 +1,0 @@
-Tests that the sampling heap profiler works.
-
-profile size is ok: true
-Expected error: Error: Sampling profiler is not running.
-
