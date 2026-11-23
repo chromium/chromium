@@ -6,7 +6,11 @@
 
 #import <Cocoa/Cocoa.h>
 #include <mach/message.h>
+#include <sys/proc.h>
+#include <sys/sysctl.h>
+#include <sys/types.h>
 
+#include <iterator>
 #include <utility>
 
 #include "base/allocator/partition_alloc_support.h"
@@ -183,6 +187,33 @@ class ScopedSynchronizeThreads {
 
 AppShimController::TestDelegate* g_test_delegate = nullptr;
 bool g_disable_notification_service_for_testing = false;
+
+// Returns true if the process with `pid` is known to have exited (no longer in
+// the process table, a zombie, or currently exiting). Returns false if the
+// process is still alive or its state cannot be determined.
+bool IsProcessDeadOrExiting(pid_t pid) {
+  if (pid <= 0) {
+    return false;
+  }
+  struct kinfo_proc info = {};
+  size_t length = sizeof(info);
+  int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, pid};
+  if (sysctl(mib, std::size(mib), &info, &length, nullptr, 0) < 0) {
+    static bool logged_failure = false;
+    if (!logged_failure) {
+      logged_failure = true;
+      PLOG(WARNING) << "sysctl(KERN_PROC_PID) failed for PID " << pid;
+    }
+    return false;
+  }
+  if (length == 0) {
+    return true;
+  }
+  if (length < sizeof(info)) {
+    return false;
+  }
+  return info.kp_proc.p_stat == SZOMB || (info.kp_proc.p_flag & P_WEXIT);
+}
 
 }  // namespace
 
@@ -400,9 +431,10 @@ bool AppShimController::FindOrLaunchChrome() {
         app_mode::kLaunchedByChromeProcessId);
 
     int chrome_pid;
-    if (!base::StringToInt(chrome_pid_string, &chrome_pid)) {
+    if (!base::StringToInt(chrome_pid_string, &chrome_pid) || chrome_pid <= 0) {
       LOG(FATAL) << "Invalid PID: " << chrome_pid_string;
     }
+    launched_by_chrome_pid_ = chrome_pid;
 
     chrome_to_connect_to_ = [NSRunningApplication
         runningApplicationWithProcessIdentifier:chrome_pid];
@@ -419,12 +451,25 @@ bool AppShimController::FindOrLaunchChrome() {
         }
       }
       if (!chrome_to_connect_to_) {
+        // If the launching Chrome process has already exited (or is exiting),
+        // exit cleanly rather than crashing. Keep LOG(FATAL) if the process
+        // still exists so AppKit lookup failures (crbug.com/40261534) are not
+        // masked.
+        if (IsProcessDeadOrExiting(chrome_pid)) {
+          LOG(WARNING) << "Chrome instance with PID " << chrome_pid
+                       << " exited before connecting.";
+          [NSApp terminate:nil];
+          return false;
+        }
         LOG(FATAL) << "Failed to open process with PID: " << chrome_pid;
       }
     }
-    if (chrome_to_connect_to_.terminated) {
-      LOG(FATAL) << "Process with PID " << chrome_pid
-                 << " has already terminated.";
+    if (chrome_to_connect_to_.terminated ||
+        IsProcessDeadOrExiting(chrome_pid)) {
+      LOG(WARNING) << "Process with PID " << chrome_pid
+                   << " has already terminated.";
+      [NSApp terminate:nil];
+      return false;
     }
 
     return true;
@@ -539,18 +584,20 @@ void AppShimController::PollForChromeReady(
     const base::TimeDelta& time_until_timeout) {
   // If the Chrome process we planned to connect to is not running anymore,
   // quit.
-  if (chrome_to_connect_to_ && chrome_to_connect_to_.terminated) {
+  if (chrome_to_connect_to_ &&
+      (chrome_to_connect_to_.terminated ||
+       (launched_by_chrome_pid_ &&
+        IsProcessDeadOrExiting(*launched_by_chrome_pid_)))) {
     if (chrome_launched_by_app_) {
       LOG(FATAL) << "Running chrome instance launched by shim terminated "
                     "before connecting.";
-    } else if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-                   app_mode::kLaunchedByChromeProcessId)) {
+    } else if (launched_by_chrome_pid_) {
       // This shim was launched by Chrome, and that Chrome terminated before
       // the shim could connect to it (e.g. because Chrome was shutting down).
-      // Kept separate from the case below so the two can be told apart in
-      // crash reports.
-      LOG(FATAL) << "Chrome instance that launched this shim terminated "
-                    "before connecting.";
+      LOG(WARNING) << "Chrome instance that launched this shim terminated "
+                      "before connecting.";
+      [NSApp terminate:nil];
+      return;
     } else {
       LOG(FATAL) << "Running chrome instance terminated before connecting.";
     }
@@ -596,6 +643,9 @@ void AppShimController::PollForChromeReady(
   // Otherwise, try again after a brief delay.
   if (time_until_timeout < kPollPeriodMsec)
     LOG(FATAL) << "Timed out waiting for running chrome instance to be ready.";
+  if (g_test_delegate) {
+    g_test_delegate->OnPollForChromeReady();
+  }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&AppShimController::PollForChromeReady,
