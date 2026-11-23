@@ -7,6 +7,7 @@
 #include "base/time/time.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_environment_blend_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_handedness.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_target_ray_mode.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -156,6 +157,13 @@ V8XRHandedness XRInputSource::handedness() const {
   }
 
   NOTREACHED();
+}
+
+bool XRInputSource::skipRendering() const {
+  // On an additive display the user always sees their real controllers and
+  // hands. Passthrough does not count: the page may draw over them.
+  return session_->environmentBlendMode().AsEnum() ==
+         V8XREnvironmentBlendMode::Enum::kAdditive;
 }
 
 V8XRTargetRayMode XRInputSource::targetRayMode() const {

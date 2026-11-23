@@ -13231,6 +13231,7 @@ interface XRInputSource
     getter hand
     getter handedness
     getter profiles
+    getter skipRendering
     getter targetRayMode
     getter targetRaySpace
     method constructor

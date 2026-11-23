@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/webxr/resources/webxr_util.js"></script>
+<script src="/webxr/resources/webxr_test_constants.js"></script>
+
+<script>
+// skipRendering follows whether the user always sees the real input sources,
+// which is up to the user agent, so this test is chromium specific.
+
+function connectedSource(session, fakeDeviceController) {
+  // Input sources are only updated while the page asks for frames.
+  const onFrame = () => session.requestAnimationFrame(onFrame);
+  session.requestAnimationFrame(onFrame);
+  fakeDeviceController.simulateInputSourceConnection(RIGHT_CONTROLLER);
+  return new Promise(resolve => session.addEventListener(
+      'inputsourceschange', e => resolve(e.added[0]), {once: true}));
+}
+
+xr_session_promise_test(
+    'Input sources must be rendered on an opaque display',
+    async (session, fakeDeviceController) => {
+      assert_equals(session.environmentBlendMode, 'opaque');
+      const source = await connectedSource(session, fakeDeviceController);
+      assert_false(source.skipRendering);
+    }, TRACKED_IMMERSIVE_DEVICE, 'immersive-vr');
+
+xr_session_promise_test(
+    'Input sources need not be rendered on a see-through display',
+    async (session, fakeDeviceController) => {
+      assert_equals(session.environmentBlendMode, 'additive');
+      const source = await connectedSource(session, fakeDeviceController);
+      assert_true(source.skipRendering);
+    }, IMMERSIVE_AR_DEVICE, 'immersive-ar');
+
+xr_session_promise_test(
+    'Input sources must be rendered on passthrough, where the page may ' +
+        'cover them',
+    async (session, fakeDeviceController) => {
+      assert_equals(session.environmentBlendMode, 'alpha-blend');
+      const source = await connectedSource(session, fakeDeviceController);
+      assert_false(source.skipRendering);
+    }, {...IMMERSIVE_AR_DEVICE, environmentBlendMode: 'alpha-blend'},
+    'immersive-ar');
+</script>

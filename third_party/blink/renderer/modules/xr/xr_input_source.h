@@ -70,6 +70,7 @@ class XRInputSource : public ScriptWrappable, public Gamepad::Client {
   Gamepad* gamepad() const { return gamepad_.Get(); }
   XRHand* hand() const { return hand_.Get(); }
   const FrozenArray<IDLString>& profiles() const { return *profiles_.Get(); }
+  bool skipRendering() const;
 
   uint32_t source_id() const { return state_.source_id; }
 
