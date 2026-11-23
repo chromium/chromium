@@ -15259,25 +15259,6 @@
             ]
         }
     ],
-    "PageActionsOptimizations": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AiModePageActionOptimization",
-                        "LensOverlayHomeworkPageActionFocusOptimization"
-                    ]
-                }
-            ]
-        }
-    ],
     "PageActionsPrioritySelector": [
         {
             "platforms": [

@@ -429,7 +429,7 @@ BASE_FEATURE(kPageSpecificDataDialogRelatedInstalledAppsSection,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensOverlayHomeworkPageActionFocusOptimization,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPageActionAnchoredMessageEasyDismiss,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -437,7 +437,7 @@ BASE_FEATURE(kPageActionAnchoredMessageEasyDismiss,
 BASE_FEATURE(kPageActionAnchoredMessageActiveTabOnly,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAiModePageActionOptimization, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAiModePageActionOptimization, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPageActionsFocusChangeOptimizations,
              base::FEATURE_DISABLED_BY_DEFAULT);
