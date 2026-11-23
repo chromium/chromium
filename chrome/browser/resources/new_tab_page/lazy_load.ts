@@ -47,7 +47,7 @@ export {MojoPluralStringProxy as NTPPluralStringProxyImpl} from 'chrome://resour
 export {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 export {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 export type {ActionChipClickDetail} from './action_chips/action_chips.js';
-export {ActionChipsElement} from './action_chips/action_chips.js';
+export {ActionChipsElement, resetRequestTimingRecordedForTesting} from './action_chips/action_chips.js';
 export {DoodleShareDialogElement} from './doodle_share_dialog.js';
 export {IframeElement} from './iframe.js';
 export {LensErrorType, LensFormElement, LensSubmitType} from './lens_form.js';

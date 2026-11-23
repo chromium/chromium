@@ -4,7 +4,7 @@
 
 import 'chrome://new-tab-page/lazy_load.js';
 
-import {ActionChipsRetrievalState} from 'chrome://new-tab-page/lazy_load.js';
+import {ActionChipsRetrievalState, resetRequestTimingRecordedForTesting} from 'chrome://new-tab-page/lazy_load.js';
 import type {ActionChipClickDetail, ActionChipsElement} from 'chrome://new-tab-page/lazy_load.js';
 import {ActionChipsHandlerRemote, actionChipsProxyFactory, IconType, InputSource, QueryActionOverride, SearchboxOverride, SuggestInventory} from 'chrome://new-tab-page/new_tab_page.js';
 import type {ActionChip, ActionChipsPageRemote as PageRemote, TabInfo} from 'chrome://new-tab-page/new_tab_page.js';
@@ -576,6 +576,87 @@ suite('NewTabPageActionChipsTest', () => {
         metrics.count(
             'NewTabPage.ActionChips.WebUI.InitialLoadLatency',
             expectedLatency));
+  });
+
+  suite('request timing', () => {
+    setup(() => {
+      resetRequestTimingRecordedForTesting();
+    });
+
+    test('records timing when the prefetch is triggered first', async () => {
+      // Setup.
+      const metrics: MetricsTracker = fakeMetricsPrivate();
+      loadTimeData.overrideValues({ntpLoadDuringStartup: false});
+      windowProxy.setResultFor('waitForLoadEventEnd', Promise.resolve(300));
+
+      // Act. `now()` returns `windowTimestampEnd` when chips are requested.
+      await initializeChips({windowTimestampStart: 0, windowTimestampEnd: 400});
+      await microtasksFinished();
+
+      // Assert.
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.RequestTiming.ActionChipsRetrievalStart.NonStartup',
+              400));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.RequestTiming.ZeroSuggestPrefetchTrigger.NonStartup',
+              300));
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.RequestTiming.ZeroSuggestPrefetchTriggerLead' +
+                  '.NonStartup',
+              100));
+      assertEquals(
+          0,
+          metrics.count(
+              'NewTabPage.RequestTiming.ZeroSuggestPrefetchTriggerLag' +
+              '.NonStartup'));
+    });
+
+    test('records timing when chips are requested first', async () => {
+      // Setup.
+      const metrics: MetricsTracker = fakeMetricsPrivate();
+      loadTimeData.overrideValues({ntpLoadDuringStartup: true});
+      windowProxy.setResultFor('waitForLoadEventEnd', Promise.resolve(500));
+
+      // Act.
+      await initializeChips({windowTimestampStart: 0, windowTimestampEnd: 400});
+      await microtasksFinished();
+
+      // Assert.
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.RequestTiming.ZeroSuggestPrefetchTriggerLag.Startup',
+              100));
+      assertEquals(
+          0,
+          metrics.count(
+              'NewTabPage.RequestTiming.ZeroSuggestPrefetchTriggerLead' +
+              '.Startup'));
+    });
+
+    test('records timing at most once per NTP load', async () => {
+      // Setup.
+      const metrics: MetricsTracker = fakeMetricsPrivate();
+      loadTimeData.overrideValues({ntpLoadDuringStartup: false});
+      windowProxy.setResultFor('waitForLoadEventEnd', Promise.resolve(300));
+
+      // Act.
+      await initializeChips({windowTimestampStart: 0, windowTimestampEnd: 400});
+      await initializeChips({windowTimestampStart: 0, windowTimestampEnd: 400});
+      await microtasksFinished();
+
+      // Assert.
+      assertEquals(
+          1,
+          metrics.count(
+              'NewTabPage.RequestTiming.ActionChipsRetrievalStart.NonStartup'));
+    });
   });
 
   test('latency is not recorded for empty action chips', async () => {

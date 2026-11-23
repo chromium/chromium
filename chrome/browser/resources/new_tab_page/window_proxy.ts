@@ -52,6 +52,31 @@ export class WindowProxy {
     return performance.now();
   }
 
+  /**
+   * Returns a promise that resolves with the milliseconds elapsed since
+   * navigation start at which the document's load event completed. This is
+   * when the browser starts the NTP zero-prefix suggest prefetch.
+   */
+  waitForLoadEventEnd(): Promise<number> {
+    const getLoadEventEnd = () => {
+      const entry = performance.getEntriesByType('navigation')[0] as
+              PerformanceNavigationTiming |
+          undefined;
+      return entry ? entry.loadEventEnd : 0;
+    };
+    return new Promise<number>(resolve => {
+      // `loadEventEnd` is only set once all load event handlers have run, so
+      // read it in a task posted after the load event.
+      const resolveAfterLoadEvent = () =>
+          setTimeout(() => resolve(getLoadEventEnd()));
+      if (document.readyState === 'complete') {
+        resolveAfterLoadEvent();
+      } else {
+        window.addEventListener('load', resolveAfterLoadEvent, {once: true});
+      }
+    });
+  }
+
   /** Returns milliseconds elapsed since the Unix epoch (`Date.now()`). */
   currentTimeMs(): number {
     return Date.now();

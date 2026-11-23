@@ -29,6 +29,15 @@ import {WindowProxy} from '../window_proxy.js';
 import {getCss} from './action_chips.css.js';
 import {getHtml} from './action_chips.html.js';
 
+// Whether NTP request timing metrics have been recorded for this NTP load. Kept
+// at module level so that they are recorded at most once per NTP load, even if
+// the element is re-created.
+let requestTimingRecorded: boolean = false;
+
+export function resetRequestTimingRecordedForTesting() {
+  requestTimingRecorded = false;
+}
+
 export interface ActionChipClickDetail {
   suggestion: string;
   files: TabUpload[];
@@ -214,6 +223,38 @@ export class ActionChipsElement extends ActionChipsElementBase {
     this.fire(
         kActionChipsRetrievalStateChangedEvent,
         {state: ActionChipsRetrievalState.REQUESTED});
+    this.maybeRecordRequestTiming_();
+  }
+
+  // Records when action chips were first requested on this NTP load relative to
+  // when the NTP zero-prefix suggest prefetch was triggered (on load event
+  // end).
+  private async maybeRecordRequestTiming_() {
+    if (requestTimingRecorded) {
+      return;
+    }
+    requestTimingRecorded = true;
+    const windowProxy = WindowProxy.getInstance();
+    const chipsRetrievalStart = windowProxy.now();
+    const loadEventEnd = await windowProxy.waitForLoadEventEnd();
+    if (!loadEventEnd) {
+      return;
+    }
+    const startupSuffix = loadTimeData.valueExists('ntpLoadDuringStartup') &&
+            loadTimeData.getBoolean('ntpLoadDuringStartup') ?
+        '.Startup' :
+        '.NonStartup';
+    recordDuration(
+        `NewTabPage.RequestTiming.ActionChipsRetrievalStart${startupSuffix}`,
+        chipsRetrievalStart);
+    recordDuration(
+        `NewTabPage.RequestTiming.ZeroSuggestPrefetchTrigger${startupSuffix}`,
+        loadEventEnd);
+    const gap = chipsRetrievalStart - loadEventEnd;
+    recordDuration(
+        `NewTabPage.RequestTiming.ZeroSuggestPrefetchTrigger${
+            gap < 0 ? 'Lag' : 'Lead'}${startupSuffix}`,
+        Math.abs(gap));
   }
 
   override disconnectedCallback() {

@@ -116,6 +116,11 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/ntp_tiles/metrics.cc:NewTabPageProviders) -->
 
+<variants name="NtpRequestTimingStartup">
+  <variant name=".NonStartup" summary="after browser startup completed"/>
+  <variant name=".Startup" summary="during browser startup"/>
+</variants>
+
 <!-- LINT.IfChange(PlatformType) -->
 
 <variants name="PlatformType">
@@ -2398,6 +2403,59 @@ chromium-metrics-reviews@google.com.
     Counts the number of paste actions performed in the New Tab Page realbox.
     Recorded every time the user pastes into the realbox.
   </summary>
+</histogram>
+
+<histogram name="NewTabPage.RequestTiming.ActionChipsRetrievalStart{Startup}"
+    units="ms" expires_after="2027-05-10">
+  <owner>niharm@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Time from NTP navigation start until the NTP page first asks the browser for
+    action chips, for NTP loads that started {Startup}. Chips are requested when
+    the lazily rendered action chips element is attached, and times are measured
+    with the page's performance.now(), whose time origin is NTP navigation
+    start. Recorded by the NTP page at most once per NTP load, only on NTPs
+    where action chips are enabled. Compare with
+    NewTabPage.RequestTiming.ZeroSuggestPrefetchTrigger{Startup} to evaluate
+    serving action chips from the NTP zero-prefix suggest prefetch response.
+  </summary>
+  <token key="Startup" variants="NtpRequestTimingStartup"/>
+</histogram>
+
+<histogram
+    name="NewTabPage.RequestTiming.ZeroSuggestPrefetchTrigger{Direction}{Startup}"
+    units="ms" expires_after="2027-05-10">
+  <owner>niharm@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    How much {Direction} than the first action chips request the NTP zero-prefix
+    suggest prefetch was triggered (approximated by the NTP document's load
+    event end), for NTP loads that started {Startup}. Recorded by the NTP page
+    at most once per NTP load, only on NTPs where action chips are enabled, once
+    both events have happened. Exactly one of the Lead and Lag histograms is
+    recorded for each such NTP load.
+  </summary>
+  <token key="Direction">
+    <variant name="Lag" summary="later"/>
+    <variant name="Lead" summary="earlier (or at the same time)"/>
+  </token>
+  <token key="Startup" variants="NtpRequestTimingStartup"/>
+</histogram>
+
+<histogram name="NewTabPage.RequestTiming.ZeroSuggestPrefetchTrigger{Startup}"
+    units="ms" expires_after="2027-05-10">
+  <owner>niharm@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Time from NTP navigation start until the NTP document's load event ends, for
+    NTP loads that started {Startup}. The browser triggers the NTP zero-prefix
+    suggest prefetch when the NTP's main frame finishes loading, so this
+    approximates when the prefetch is triggered. Measured with the page's
+    performance.now(), whose time origin is NTP navigation start. Recorded by
+    the NTP page at most once per NTP load, only on NTPs where action chips are
+    enabled.
+  </summary>
+  <token key="Startup" variants="NtpRequestTimingStartup"/>
 </histogram>
 
 <histogram name="NewTabPage.SuggestTiles.DeletedTileType"

@@ -18,6 +18,7 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
@@ -816,6 +817,11 @@ base::DictValue BuildNavigationLoadTimeData(
   update.Set("modulesEnabled",
              HasModulesEnabled(module_id_details,
                                IdentityManagerFactory::GetForProfile(profile)));
+
+  // Used to split NTP request timing metrics by startup and non-startup loads.
+  update.Set("ntpLoadDuringStartup",
+             !AfterStartupTaskUtils::IsBrowserStartupComplete());
+
   return update;
 }
 
