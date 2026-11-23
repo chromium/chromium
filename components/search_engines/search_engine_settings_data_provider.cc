@@ -418,7 +418,6 @@ SearchEngineSettingsDataProvider::GetDisabledStarterPackIdsForAndroid() {
   if (!base::FeatureList::IsEnabled(omnibox::kStarterPackExpansion)) {
     disabled_ids.Put(template_url_starter_pack_data::StarterPackId::kGemini);
   }
-  disabled_ids.Put(template_url_starter_pack_data::StarterPackId::kBookmarks);
   return disabled_ids;
 }
 

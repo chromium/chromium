@@ -1056,10 +1056,6 @@ TEST_F(SearchEngineSettingsDataProviderTest,
         disabled_ids.Has(template_url_starter_pack_data::StarterPackId::kPage));
     EXPECT_FALSE(disabled_ids.Has(
         template_url_starter_pack_data::StarterPackId::kGemini));
-
-    // @bookmarks is disabled by default.
-    EXPECT_TRUE(disabled_ids.Has(
-        template_url_starter_pack_data::StarterPackId::kBookmarks));
   }
 
   // Disable features
@@ -1077,10 +1073,6 @@ TEST_F(SearchEngineSettingsDataProviderTest,
         disabled_ids.Has(template_url_starter_pack_data::StarterPackId::kPage));
     EXPECT_TRUE(disabled_ids.Has(
         template_url_starter_pack_data::StarterPackId::kGemini));
-
-    // @bookmarks is disabled by default.
-    EXPECT_TRUE(disabled_ids.Has(
-        template_url_starter_pack_data::StarterPackId::kBookmarks));
   }
 }
 TEST_F(SearchEngineSettingsDataProviderSplitRegionTest,
