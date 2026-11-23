@@ -1,0 +1,82 @@
+Tests that read-only geometry methods are side-effect-free.
+Expression `div.getClientRects().item(0)`
+has side effect: false, expected: false
+Expression `DOMRect.fromRect({width: 10}).toJSON()`
+has side effect: false, expected: false
+Expression `DOMRectReadOnly.fromRect({width: 10}).toJSON()`
+has side effect: false, expected: false
+Expression `DOMPoint.fromPoint({x: 1}).toJSON()`
+has side effect: false, expected: false
+Expression `DOMPointReadOnly.fromPoint({x: 1}).toJSON()`
+has side effect: false, expected: false
+Expression `JSON.stringify(DOMPointReadOnly.fromPoint({x: 1, y: 2}))`
+has side effect: false, expected: false
+Expression `point.matrixTransform({a: 2, e: 10})`
+has side effect: false, expected: false
+Expression `DOMMatrix.fromMatrix({a: 2, e: 10}).toJSON()`
+has side effect: false, expected: false
+Expression `DOMMatrixReadOnly.fromMatrix({a: 2, e: 10}).toJSON()`
+has side effect: false, expected: false
+Expression `JSON.stringify(DOMMatrixReadOnly.fromMatrix({a: 2, e: 10}))`
+has side effect: false, expected: false
+Expression `DOMMatrix.fromFloat32Array(f32)`
+has side effect: false, expected: false
+Expression `DOMMatrix.fromFloat64Array(f64)`
+has side effect: false, expected: false
+Expression `DOMMatrixReadOnly.fromFloat32Array(f32)`
+has side effect: false, expected: false
+Expression `DOMMatrixReadOnly.fromFloat64Array(f64)`
+has side effect: false, expected: false
+Expression `matrix.translate(1, 2)`
+has side effect: false, expected: false
+Expression `matrix.scale(2)`
+has side effect: false, expected: false
+Expression `matrix.scaleNonUniform(2, 3)`
+has side effect: false, expected: false
+Expression `matrix.scale3d(2)`
+has side effect: false, expected: false
+Expression `matrix.rotate(45)`
+has side effect: false, expected: false
+Expression `matrix.rotateFromVector(1, 1)`
+has side effect: false, expected: false
+Expression `matrix.rotateAxisAngle(0, 0, 1, 45)`
+has side effect: false, expected: false
+Expression `matrix.skewX(10)`
+has side effect: false, expected: false
+Expression `matrix.skewY(10)`
+has side effect: false, expected: false
+Expression `matrix.multiply({a: 2, e: 5})`
+has side effect: false, expected: false
+Expression `matrix.flipX()`
+has side effect: false, expected: false
+Expression `matrix.flipY()`
+has side effect: false, expected: false
+Expression `matrix.inverse()`
+has side effect: false, expected: false
+Expression `matrix.transformPoint({x: 1, y: 2})`
+has side effect: false, expected: false
+Expression `matrix.toFloat32Array()`
+has side effect: false, expected: false
+Expression `matrix.toFloat64Array()`
+has side effect: false, expected: false
+Expression `matrix.toJSON()`
+has side effect: false, expected: false
+Expression `DOMQuad.fromRect({width: 5}).getBounds()`
+has side effect: false, expected: false
+Expression `DOMQuad.fromQuad({p1: {x: 1, y: 2}}).toJSON()`
+has side effect: false, expected: false
+Expression `JSON.stringify(DOMQuad.fromQuad({p1: {x: 1, y: 2}}))`
+has side effect: false, expected: false
+Expression `quad.getBounds()`
+has side effect: false, expected: false
+Expression `quad.toJSON()`
+has side effect: false, expected: false
+Expression `JSON.stringify(quad)`
+has side effect: false, expected: false
+Expression `matrix.translateSelf(1, 2)`
+has side effect: true, expected: true
+Expression `matrix.setMatrixValue('translate(1px, 2px)')`
+has side effect: true, expected: true
+Expression `DOMRect.fromRect({ get width() { window.pwned = 1; return 10; } })`
+has side effect: true, expected: true
+

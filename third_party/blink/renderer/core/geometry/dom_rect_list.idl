@@ -12,5 +12,5 @@
     Exposed=Window
 ] interface DOMRectList {
     readonly attribute unsigned long length;
-    [MeasureAs=ClientRectListItem] getter DOMRect? item(unsigned long index);
+    [Affects=Nothing, MeasureAs=ClientRectListItem] getter DOMRect? item(unsigned long index);
 };
