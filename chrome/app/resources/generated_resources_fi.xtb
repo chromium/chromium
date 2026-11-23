@@ -5551,7 +5551,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="710224247908684995">Laajennus poisti Selaussuojan käytöstä</translation>
 <translation id="7102832101143475489">Pyyntö aikakatkaistiin</translation>
 <translation id="7103944802169726298">PC ja striimauslaite samassa Wi-Fi-verkossa</translation>
-<translation id="7104134653119992646">Keskustelut tarkastetaan ja niitä käytetään generatiivisten tekoälymallien kouluttamiseen. Gemini on tekoäly ja voi tehdä virheitä. Voit <ph name="BEGIN_LINK_MANAGE_HISTORY" />ylläpitää historiaa<ph name="END_LINK_MANAGE_HISTORY" />, mukaan lukien sijaintitietoja. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää vaihtoehdoista<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Google-jäsenyys</translation>
 <translation id="7108338896283013870">Piilota</translation>
 <translation id="7108419148561505648">Täytä vähintään yksi kenttä ennen tallentamista</translation>
@@ -6250,7 +6249,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="7903925330883316394">Apuohjelma: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">Sulje sivupalkki</translation>
 <translation id="7904492297081735975">&amp;Avaa kirjanmerkkien hallinta</translation>
-<translation id="7904508617992122201">Keskustelut tarkastetaan ja niitä käytetään generatiivisten tekoälymallien kouluttamiseen. Gemini on tekoäly ja voi tehdä virheitä. Osa sisällöstä ei välttämättä sovi kaikille. Voit <ph name="BEGIN_LINK_MANAGE_HISTORY" />ylläpitää historiaa<ph name="END_LINK_MANAGE_HISTORY" />, mukaan lukien sijaintitietoja. <ph name="BEGIN_LINK_LEARN_MORE" />Lue lisää vaihtoehdoista<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">Vahvista henkilöllisyytesi ja synkronoi historia ja välilehdet, jotta voit käyttää välilehtiä muilta laitteilta. Voit lopettaa synkronoinnin milloin tahansa asetuksista. Google voi personoida Hakua ja muita palveluita historiasi perusteella.</translation>
 <translation id="7907837847548254634">Korosta hetkeksi kohdistettu kohde</translation>
 <translation id="7908835530772972485">Poista dataa, kun kaikki ikkunat suljetaan</translation>

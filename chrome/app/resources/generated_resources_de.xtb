@@ -5501,7 +5501,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="710224247908684995">Safe Browsing wurde durch eine Erweiterung deaktiviert</translation>
 <translation id="7102832101143475489">Zeitüberschreitung bei der Anfrage</translation>
 <translation id="7103944802169726298">PC und Übertragungsgerät im selben WLAN</translation>
-<translation id="7104134653119992646">Chats werden geprüft und zum Trainieren von generativen KI-Modellen verwendet. Gemini ist eine KI und kann Fehler machen. Du kannst deinen <ph name="BEGIN_LINK_MANAGE_HISTORY" />Verlauf verwalten<ph name="END_LINK_MANAGE_HISTORY" />, einschließlich Informationen zu deinem Standort. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen zu möglichen Einstellungen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Google-Abo</translation>
 <translation id="7108338896283013870">Ausblenden</translation>
 <translation id="7108419148561505648">Du musst mindestens ein Feld ausfüllen, um eine Änderung speichern zu können</translation>
@@ -6196,7 +6195,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="7903925330883316394">Dienstprogramm: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">Seitenleiste schließen</translation>
 <translation id="7904492297081735975">&amp;Lesezeichenmanager öffnen</translation>
-<translation id="7904508617992122201">Chats werden geprüft und zum Trainieren von generativen KI-Modellen verwendet. Gemini ist eine KI und kann Fehler machen. Einige Inhalte sind möglicherweise nicht für alle Nutzer geeignet. Du kannst deinen <ph name="BEGIN_LINK_MANAGE_HISTORY" />Verlauf verwalten<ph name="END_LINK_MANAGE_HISTORY" />, einschließlich Informationen zu deinem Standort. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen zu möglichen Einstellungen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">Wenn du deine Tabs von deinen anderen Geräten abrufen möchtest, bestätige deine Identität und synchronisiere deinen Verlauf und deine Tabs. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste anhand deines Verlaufs personalisieren.</translation>
 <translation id="7907837847548254634">Fokussiertes Element kurz hervorheben</translation>
 <translation id="7908835530772972485">Daten löschen, wenn alle Fenster geschlossen werden</translation>

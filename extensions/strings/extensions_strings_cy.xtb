@@ -34,6 +34,7 @@
 <translation id="2150661552845026580">Ychwanegu "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2159915644201199628">Methu â dadgodio'r llun: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2193567467390483943">Ni chymeradwyodd dy riant yr estyniad hwn</translation>
+<translation id="2207866393056347613">Yn caniatáu mynediad parhaol i'ch data ar bob gwefan</translation>
 <translation id="23030561267973084">Mae "<ph name="EXTENSION_NAME" />" wedi gofyn am ganiatadau ychwanegol.</translation>
 <translation id="2327492829706409234">Galluogi ap</translation>
 <translation id="2350172092385603347">Defnyddiwyd lleoleiddio, ond ni nodwyd default_locale yn y maniffest.</translation>
@@ -42,6 +43,7 @@
 <translation id="2678063897982469759">Ail-alluogi</translation>
 <translation id="2743583586211388067">Mae mynediad at yr estyniad hwn wedi'i rwystro o dan bolisi risg estyniad eich sefydliad.</translation>
 <translation id="2766161002040448006">Gofyn i riant</translation>
+<translation id="2775557057525247505">Dangos pob gwefan</translation>
 <translation id="2785530881066938471">Ni ellid llwytho'r ffeil '<ph name="RELATIVE_PATH" />' ar gyfer sgript cynnwys. Nid yw wedi'i hencodio gan UTF-8.</translation>
 <translation id="2850541429955027218">Ychwanegu thema</translation>
 <translation id="2883143988769190738">Mae'r estyniad hwn yn gofyn am y caniatadau canlynol:</translation>
@@ -60,6 +62,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (rhif cyfresol <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> o'r gwerthwr <ph name="VENDOR_ID" /> (rhif cyfresol <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">Rhaid i werth mewnbwn allwedd breifat fod yn llwybr dilys.</translation>
+<translation id="3769470010314114481">Yn caniatáu mynediad dros dro i'ch data ar y wefan</translation>
 <translation id="3788401245189148511">Gallai:</translation>
 <translation id="3834775135533257713">Ni ellid ychwanegu'r ap "<ph name="TO_INSTALL_APP_NAME" />" oherwydd ei fod yn gwrthdaro â "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="388442998277590542">Methu â llwytho'r dudalen dewisiadau '<ph name="OPTIONS_PAGE" />'.</translation>
@@ -67,6 +70,7 @@
 <translation id="3908501907586732282">Galluogi estyniad</translation>
 <translation id="3927932062596804919">Gwrthod</translation>
 <translation id="3984413272403535372">Bu gwall wrth lofnodi estyniad.</translation>
+<translation id="3990894032742690314">Bob amser ar y gwefannau rhestredig</translation>
 <translation id="4014432863917027322">Trwsio "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4061696872429826774">Ychwanegodd rhaglen arall ar eich cyfrifiadur estyniad a allai newid y ffordd y mae Chromium yn gweithio.
 
@@ -75,6 +79,7 @@
 <translation id="4233778200880751280">Methu â llwytho'r dudalen ynghylch '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="424963718355121712">Rhaid cyflwyno apiau gan y gwesteiwr y maent effeithio arno</translation>
 <translation id="4306119971288449206">Rhaid cyflwyno apiau gyda'r math o gynnwys "<ph name="CONTENT_TYPE" />"</translation>
+<translation id="4307774243840254737">Yn caniatáu mynediad parhaol i'ch data ar y gwefannau a restrir isod</translation>
 <translation id="4349181963619779233">Ni ellir ychwanegu estyniadau ac apiau o'r wefan hon</translation>
 <translation id="4625078469366263107">Galluogi Ap</translation>
 <translation id="4633003931260532286">Mae'r estyniad yn gofyn "<ph name="IMPORT_NAME" />" gydag o leiaf y fersiwn"<ph name="IMPORT_VERSION" />", ond yr unig fersiwn sydd wedi'i gosod yw "<ph name="INSTALLED_VERSION" />"</translation>
@@ -92,6 +97,7 @@
 <translation id="5185386675596372454">Mae'r fersiwn fwyaf newydd o "<ph name="EXTENSION_NAME" />" wedi'i analluogi oherwydd bod angen rhagor o ganiatadau arno.</translation>
 <translation id="5242724311594467048">Galluogi "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5356315618422219272">Gwedd ap: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">Dim ond pan fyddwch yn clicio ar yr estyniad</translation>
 <translation id="5405650547142096840">Tynnu o Chromium</translation>
 <translation id="5456409301717116725">Mae'r estyniad hwn yn cynnwys y ffeil allwedd '<ph name="KEY_PATH" />'. Mae'n debyg nad ydych eisiau gwneud hynny.</translation>
 <translation id="5485102783864353244">Ychwanegu ap</translation>
@@ -120,6 +126,7 @@
 <translation id="677806580227005219">Triniwr meimiau: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Gwnaeth yr estyniad hwn ail-lwytho ei hun yn rhy aml.</translation>
 <translation id="7003844668372540529">Cynnyrch anhysbys <ph name="PRODUCT_ID" /> gan <ph name="VENDOR_NAME" /></translation>
+<translation id="7017635639223148413">Gwefannau rhestredig</translation>
 <translation id="7068383018033524534">Mae'r ffeil maniffest yn annilys</translation>
 <translation id="7217838517480956708">Mae gweinyddwr y peiriant hwn yn ei gwneud yn ofynnol i osod <ph name="EXTENSION_NAME" />. Ni ellir ei dynnu na'i addasu.</translation>
 <translation id="7287143125007575591">Gwrthodwyd mynediad.</translation>
@@ -137,6 +144,7 @@
 <translation id="8035920974645200807">Yn wynebu'r defnyddiwr</translation>
 <translation id="8047248493720652249">Gwnaeth yr estyniad hwn fethu ag enwi'r lawrlwythiad "<ph name="ATTEMPTED_FILENAME" />" oherwydd bod estyniad arall (<ph name="EXTENSION_NAME" />) wedi pennu enw ffeil gwahanol "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8049705080247101012">Mae Google wedi fflagio "<ph name="EXTENSION_NAME" />" fel maleisus ac mae'r gosodiad wedi'i atal</translation>
+<translation id="823691536304079791">Darllen a newid eich data</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> gan <ph name="VENDOR_NAME" /></translation>
 <translation id="8353683614194668312">Mae'n gallu:</translation>
 <translation id="8517576857589387417">Mae'r ffeil maniffest ar goll neu'n annarllenadwy</translation>

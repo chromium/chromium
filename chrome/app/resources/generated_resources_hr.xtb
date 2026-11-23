@@ -5541,7 +5541,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="710224247908684995">Proširenje je isključilo sigurno pregledavanje</translation>
 <translation id="7102832101143475489">Zahtjev je istekao</translation>
 <translation id="7103944802169726298">PC i uređaj za emitiranje na istoj Wi-Fi mreži</translation>
-<translation id="7104134653119992646">Razgovori se pregledavaju i upotrebljavaju za obuku modela generativnog AI-ja. Gemini je AI i može pogriješiti. Možete <ph name="BEGIN_LINK_MANAGE_HISTORY" />upravljati svojom poviješću<ph name="END_LINK_MANAGE_HISTORY" />, uključujući podatke o svojoj lokaciji. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više o svojim odabirima<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="7105387152460258846">Pretplata na Google<ph name="PROFILE_NAME" /></translation>
 <translation id="7108338896283013870">Sakrij preglednik</translation>
 <translation id="7108419148561505648">Ispunite barem jedno polje prije spremanja</translation>
@@ -6240,7 +6239,6 @@ To može uključivati informacije o instaliranom softveru, datotekama, vašem pr
 <translation id="7903925330883316394">Uslužni proces: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">Zatvori bočnu traku</translation>
 <translation id="7904492297081735975">&amp;Otvori upravitelj oznaka</translation>
-<translation id="7904508617992122201">Razgovori se pregledavaju i upotrebljavaju za obuku modela generativnog AI-ja. Gemini je AI i može pogriješiti. Neki sadržaji možda nisu prikladni za svakoga. Možete <ph name="BEGIN_LINK_MANAGE_HISTORY" />upravljati svojom poviješću<ph name="END_LINK_MANAGE_HISTORY" />, uključujući podatke o svojoj lokaciji. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više o svojim odabirima<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="7907312522152480478">Da bi se prikazale kartice s drugih uređaja, potvrdite svoj identitet te sinkronizirajte povijest i kartice. Sinkronizaciju možete uvijek zaustaviti u postavkama. Google može personalizirati Pretraživanje i druge usluge na temelju vaše povijesti.</translation>
 <translation id="7907837847548254634">Prikaz kratkog isticanja fokusiranog objekta</translation>
 <translation id="7908835530772972485">Brisanje podataka nakon zatvaranja svih prozora</translation>

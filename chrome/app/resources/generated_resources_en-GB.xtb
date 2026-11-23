@@ -5555,7 +5555,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="710224247908684995">An extension turned off Safe Browsing</translation>
 <translation id="7102832101143475489">The request timed out</translation>
 <translation id="7103944802169726298">PC and casting device on the same Wi-Fi network</translation>
-<translation id="7104134653119992646">Chats are reviewed and used to train generative AI models. Gemini is AI and can make mistakes. You can <ph name="BEGIN_LINK_MANAGE_HISTORY" />manage your history<ph name="END_LINK_MANAGE_HISTORY" />, including info about your location. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more about your choices<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Google membership</translation>
 <translation id="7108338896283013870">Hide</translation>
 <translation id="7108419148561505648">Fill at least one field before saving</translation>
@@ -6254,7 +6253,6 @@ This can include information about installed software, files, your browser, the 
 <translation id="7903925330883316394">Utility: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">Close sidebar</translation>
 <translation id="7904492297081735975">&amp;Open Bookmark Manager</translation>
-<translation id="7904508617992122201">Chats are reviewed and used to train generative AI models. Gemini is AI and can make mistakes. Some content may not be suitable for everyone. You can <ph name="BEGIN_LINK_MANAGE_HISTORY" />manage your history<ph name="END_LINK_MANAGE_HISTORY" />, including info about your location. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more about your choices<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">To get your tabs from your other devices, verify that it's you and sync your history and tabs. You can stop syncing at any time in settings. Google may personalise Search and other services based on your history.</translation>
 <translation id="7907837847548254634">Show a quick highlight on the focused object</translation>
 <translation id="7908835530772972485">Delete data when you close all windows</translation>

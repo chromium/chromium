@@ -5532,7 +5532,6 @@
 <translation id="710224247908684995">某个扩展程序关闭了安全浏览功能</translation>
 <translation id="7102832101143475489">此请求已超时</translation>
 <translation id="7103944802169726298">PC 和投放设备使用的是同一个 Wi-Fi 网络</translation>
-<translation id="7104134653119992646">对话内容会经过审核，并用于训练生成式 AI 模型。Gemini 是一款 AI 工具，可能会出错。您可以<ph name="BEGIN_LINK_MANAGE_HISTORY" />管理历史记录<ph name="END_LINK_MANAGE_HISTORY" />，包括您的位置信息。<ph name="BEGIN_LINK_LEARN_MORE" />详细了解您有哪些选择<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />（Google 会员）</translation>
 <translation id="7108338896283013870">隐藏</translation>
 <translation id="7108419148561505648">请先填写至少一个字段，然后再保存</translation>
@@ -6231,7 +6230,6 @@
 <translation id="7903925330883316394">实用程序：<ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">关闭边栏</translation>
 <translation id="7904492297081735975">打开书签管理器(&amp;O)</translation>
-<translation id="7904508617992122201">对话内容会经过审核，并用于训练生成式 AI 模型。Gemini 是一款 AI 工具，可能会出错。部分内容可能并不适合所有人。您可以<ph name="BEGIN_LINK_MANAGE_HISTORY" />管理历史记录<ph name="END_LINK_MANAGE_HISTORY" />，包括您的位置信息。<ph name="BEGIN_LINK_LEARN_MORE" />详细了解您有哪些选择<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">要访问您从其他设备打开的标签页，请验证身份并同步历史记录和标签页。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
 <translation id="7907837847548254634">短暂地突出显示焦点对象</translation>
 <translation id="7908835530772972485">关闭所有窗口时删除数据</translation>

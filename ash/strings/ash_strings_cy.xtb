@@ -447,6 +447,7 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2053312383184521053">Data Cyflwr Segur</translation>
 <translation id="2058456167109518507">Mae dyfais wedi'i chanfod</translation>
 <translation id="2064048859448024834">Rhagolwg camera ymlaen</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 ddolen}zero{# dolen}two{# ddolen}few{# dolen}many{# dolen}other{# dolen}}</translation>
 <translation id="2067220651560163985">Dangos tymheredd mewn Celsius</translation>
 <translation id="206960706005837784">Mae <ph name="APP_NAME" /> wedi gorffen argraffu i <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">Toglo <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> yw <ph name="CAPTURE_STATE" /></translation>

@@ -916,7 +916,7 @@
 <translation id="3868495844258915202">显示完整网址</translation>
 <translation id="3870931306085184145">尚未保存任何用于登录 <ph name="DOMAIN" /> 的密码</translation>
 <translation id="3875783148670536197">操作步骤</translation>
-<translation id="3878657761594430423">面板拖拽条</translation>
+<translation id="3878657761594430423">底栏拖拽条</translation>
 <translation id="3884810423191119660">安全保存密码，轻松登录网站和应用</translation>
 <translation id="3885587018298784481">加入家人群组</translation>
 <translation id="3888230626190453136">试试无痕浏览</translation>
@@ -1395,7 +1395,6 @@
 <translation id="5282340693022193851">若要接收价格跟踪通知，请在 iOS 设置中开启通知功能。</translation>
 <translation id="528857768909044842">标签页分组会保存在此处</translation>
 <translation id="5294624619177114121">移动设备通知</translation>
-<translation id="5295239312320826323">移除账号 <ph name="USER_EMAIL" />？</translation>
 <translation id="5300589172476337783">显示</translation>
 <translation id="5311061401280561833">已授予摄像头和麦克风使用权</translation>
 <translation id="5313967007315987356">添加网站</translation>
@@ -2147,7 +2146,6 @@
 <translation id="7603852183842204213">拦截了弹出式窗口（<ph name="NUMBER_OF_BLOCKED_POPUPS" /> 个）</translation>
 <translation id="7605594153474022051">同步功能无法正常运行</translation>
 <translation id="760667371114328991">关闭安全检查通知</translation>
-<translation id="7612619742409846846">已使用以下账号登录 Google：</translation>
 <translation id="7612849887607288481">打开 AI 原型设计菜单</translation>
 <translation id="7618220760967055820">选择要显示在工具栏中的按钮</translation>
 <translation id="7620522820075868385">取消</translation>

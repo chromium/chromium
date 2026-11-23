@@ -1395,7 +1395,6 @@
 <translation id="5282340693022193851">For å få varsler om prissporing, slå på varsler i iOS-innstillingene.</translation>
 <translation id="528857768909044842">Her lagres fanegrupper</translation>
 <translation id="5294624619177114121">Mobilvarsler</translation>
-<translation id="5295239312320826323">Vil du fjerne kontoen <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5311061401280561833">Kamera- og mikrofontilgang er tillatt</translation>
 <translation id="5313967007315987356">Legg til et nettsted</translation>
@@ -1788,6 +1787,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6504541289630702018">Få enkel tilgang til fanegruppene dine på datamaskinen</translation>
 <translation id="6505334220040167806">Skjul fanegruppen.</translation>
 <translation id="6506996418997555004">Del fanegruppen «<ph name="GROUP_NAME" />»</translation>
+<translation id="650770261448122895">Søk visuelt med Lens</translation>
 <translation id="6507973708545996744">Logg på for å få leselisten din på alle enhetene dine.</translation>
 <translation id="6518133107902771759">Bekreft</translation>
 <translation id="6523575793810663688">Vis meg hvordan</translation>
@@ -2147,7 +2147,6 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="7603852183842204213">Blokkerte forgrunnsvinduer (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Synkronisering fungerer ikke</translation>
 <translation id="760667371114328991">Slå av varsler fra sikkerhetssjekk</translation>
-<translation id="7612619742409846846">Logget på Google som</translation>
 <translation id="7612849887607288481">Åpne menyen for AI-prototyping</translation>
 <translation id="7618220760967055820">Velg hvilken knapp som skal vises på verktøylinjen</translation>
 <translation id="7620522820075868385">Avbryt</translation>
@@ -2430,6 +2429,7 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="8439758443371991593">Skjul Legg til på leselisten</translation>
 <translation id="8443986842926457191">Nettadressen er lengre enn 2048 tegn</translation>
 <translation id="8449869326050867919">Passordet er delt</translation>
+<translation id="8473367210869452063">Stopp oppgaven eller vent til Gemini er ferdig for å bruke siden</translation>
 <translation id="8473815223723723001">Rediger bilde med Gemini</translation>
 <translation id="8473863474539038330">Adresser med mer</translation>
 <translation id="8474378002946546633">Tillat varsler</translation>

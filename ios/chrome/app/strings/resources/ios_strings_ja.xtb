@@ -1395,7 +1395,6 @@
 <translation id="5282340693022193851">価格トラッキングの通知を受け取るには、iOS の設定で通知をオンにしてください。</translation>
 <translation id="528857768909044842">タブグループはここに保存されます</translation>
 <translation id="5294624619177114121">モバイル通知</translation>
-<translation id="5295239312320826323">アカウント（<ph name="USER_EMAIL" />）を削除しますか？</translation>
 <translation id="5300589172476337783">表示</translation>
 <translation id="5311061401280561833">カメラとマイクへのアクセスが許可されています</translation>
 <translation id="5313967007315987356">サイトを追加</translation>
@@ -2148,7 +2147,6 @@ Level Up はいつでも再開できます。</translation>
 <translation id="7603852183842204213">ブロックしたポップアップ: <ph name="NUMBER_OF_BLOCKED_POPUPS" /></translation>
 <translation id="7605594153474022051">同期が機能していません</translation>
 <translation id="760667371114328991">安全チェックの通知をオフにする</translation>
-<translation id="7612619742409846846">Google にログイン済みのユーザー</translation>
 <translation id="7612849887607288481">AI プロトタイプのメニューを開く</translation>
 <translation id="7618220760967055820">ツールバーに表示するボタンを選択してください</translation>
 <translation id="7620522820075868385">キャンセル</translation>

@@ -1380,6 +1380,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="2519517390894391510">Nome profilo di certificato</translation>
 <translation id="2520644704042891903">In attesa di socket disponibile...</translation>
 <translation id="2522757085249311407">Consenti ai dispositivi Bluetooth nelle vicinanze di rilevare questo dispositivo e connettersi.</translation>
+<translation id="2523048609826818526">Scrittura per uso generico</translation>
 <translation id="2523184218357549926">Invia a Google gli URL delle pagine che visiti</translation>
 <translation id="252513908494776481">Chiedi informazioni su questa scheda</translation>
 <translation id="2525746158911982776">Aggiornamento non riuscito perché lo spazio di archiviazione del sistema non è sufficiente.</translation>
@@ -5536,7 +5537,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="710224247908684995">Un'estensione ha disattivato Navigazione sicura</translation>
 <translation id="7102832101143475489">La richiesta è scaduta</translation>
 <translation id="7103944802169726298">PC e dispositivo di trasmissione sulla stessa rete Wi-Fi</translation>
-<translation id="7104134653119992646">Le chat vengono esaminate e utilizzate per addestrare i modelli di AI generativa. Gemini è un'AI e può commettere errori. Puoi <ph name="BEGIN_LINK_MANAGE_HISTORY" />gestire la tua cronologia<ph name="END_LINK_MANAGE_HISTORY" />, incluse le informazioni sulla tua posizione. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più sulle tue scelte<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Abbonamento Google</translation>
 <translation id="7108338896283013870">Nascondi</translation>
 <translation id="7108419148561505648">Compila almeno un campo prima di salvare</translation>
@@ -6235,7 +6235,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="7903925330883316394">Utility: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">Chiudi barra laterale</translation>
 <translation id="7904492297081735975">&amp;Apri Gestione preferiti</translation>
-<translation id="7904508617992122201">Le chat vengono esaminate e utilizzate per addestrare i modelli di AI generativa. Gemini è un'AI e può commettere errori. Alcuni contenuti potrebbero non essere adatti a tutti. Puoi <ph name="BEGIN_LINK_MANAGE_HISTORY" />gestire la tua cronologia<ph name="END_LINK_MANAGE_HISTORY" />, incluse le informazioni sulla tua posizione. <ph name="BEGIN_LINK_LEARN_MORE" />Scopri di più sulle tue scelte<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">Per recuperare le schede dagli altri tuoi dispositivi, esegui la verifica della tua identità e sincronizza la cronologia e le schede. Puoi interrompere la sincronizzazione in qualsiasi momento nelle impostazioni. Google potrebbe personalizzare la Ricerca e altri servizi in base alla tua cronologia.</translation>
 <translation id="7907837847548254634">Evidenzia brevemente l'oggetto attivo</translation>
 <translation id="7908835530772972485">Elimina i dati alla chiusura di tutte le finestre</translation>

@@ -386,6 +386,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2496180316473517155">Istoricul de navigare</translation>
 <translation id="250020030759455918">Vei vedea starea de conectare la <ph name="SITE_NAME" />, datele de navigare și datele privind site-ul în Chrome</translation>
 <translation id="2501278716633472235">Înapoi</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{O descărcare în desfășurare}few{# descărcări în desfășurare}other{# de descărcări în desfășurare}}</translation>
 <translation id="2510106555128151389">Se instalează <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2512234228327349533">Caută opțiuni de cumpărare</translation>
 <translation id="2513403576141822879">Pentru mai multe setări privind confidențialitatea, securitatea și colectarea datelor, consultă <ph name="BEGIN_LINK" />Sincronizare și servicii Google<ph name="END_LINK" /></translation>
@@ -697,6 +698,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3740290940447881599">Asigură-te că ai încredere în acest site</translation>
 <translation id="3740525748616366977">Căutarea vocală nu este disponibilă pe acest dispozitiv</translation>
 <translation id="3749289110408117711">Nume de fișier</translation>
+<translation id="3751708358601675711">Editează urmărirea prețurilor</translation>
 <translation id="3756823472711156529">Restabilește grupul</translation>
 <translation id="3759306015475526475">Gestionează setările pentru datele de utilizare și despre blocări</translation>
 <translation id="3763110477555836428">Un număr de card virtual va fi completat când finalizezi achiziția cu acest card pentru a-ți proteja detaliile reale. Gestionează în Portofelul Google. <ph name="BEGIN_LINK1" />Află mai multe despre cardurile virtuale<ph name="END_LINK1" /></translation>

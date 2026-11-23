@@ -5558,7 +5558,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="710224247908684995">Uma extensão desativou o recurso Navegação segura</translation>
 <translation id="7102832101143475489">A solicitação expirou</translation>
 <translation id="7103944802169726298">PC e dispositivo de transmissão na mesma rede Wi-Fi</translation>
-<translation id="7104134653119992646">As conversas são analisadas e usadas para treinar modelos de IA generativa. O Gemini é uma IA e pode cometer erros. Você pode <ph name="BEGIN_LINK_MANAGE_HISTORY" />gerenciar seu histórico<ph name="END_LINK_MANAGE_HISTORY" />, incluindo informações sobre sua localização. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais sobre suas escolhas<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Assinatura do Google</translation>
 <translation id="7108338896283013870">Ocultar</translation>
 <translation id="7108419148561505648">Preencha pelo menos um campo antes de salvar</translation>
@@ -6257,7 +6256,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="7903925330883316394">Utilitário: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">Fechar barra lateral</translation>
 <translation id="7904492297081735975">&amp;Abrir gerenciador de favoritos</translation>
-<translation id="7904508617992122201">As conversas são analisadas e usadas para treinar modelos de IA generativa. O Gemini é uma IA e pode cometer erros. Alguns conteúdos podem não ser adequados para todos. Você pode <ph name="BEGIN_LINK_MANAGE_HISTORY" />gerenciar seu histórico<ph name="END_LINK_MANAGE_HISTORY" />, incluindo informações sobre sua localização. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais sobre suas escolhas<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="7907312522152480478">Para acessar as guias dos seus outros dispositivos, confirme sua identidade e sincronize o histórico e as guias. É possível parar a sincronização a qualquer momento nas configurações. O Google pode personalizar a Pesquisa e outros serviços com base no seu histórico.</translation>
 <translation id="7907837847548254634">Mostrar um destaque rápido no objeto focalizado</translation>
 <translation id="7908835530772972485">Excluir dados ao fechar todas as janelas</translation>

@@ -5538,7 +5538,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="710224247908684995">Një shtesë e ka çaktivizuar "Shfletimin e sigurt"</translation>
 <translation id="7102832101143475489">Kërkesa skadoi</translation>
 <translation id="7103944802169726298">Kompjuteri dhe pajisja e transmetimit në të njëjtin rrjet Wi-Fi</translation>
-<translation id="7104134653119992646">Bisedat shqyrtohen dhe përdoren për të trajnuar modelet e IA-së gjeneruese. Gemini është IA dhe mund të bëjë gabime. Mund të <ph name="BEGIN_LINK_MANAGE_HISTORY" />menaxhosh historikun tënd<ph name="END_LINK_MANAGE_HISTORY" />, duke përfshirë informacionet rreth vendndodhjes sate. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë rreth zgjedhjeve të tua<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Anëtarësimi në Google</translation>
 <translation id="7108338896283013870">Fshih</translation>
 <translation id="7108419148561505648">Plotëso të paktën një fushë para se ta ruash</translation>
@@ -6237,7 +6236,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="7903925330883316394">Softueri ndihmës: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">Mbyll shiritin anësor</translation>
 <translation id="7904492297081735975">&amp;Hap menaxherin e faqeshënuesve</translation>
-<translation id="7904508617992122201">Bisedat shqyrtohen dhe përdoren për të trajnuar modelet e IA-së gjeneruese. Gemini është IA dhe mund të bëjë gabime. Disa përmbajtje mund të mos jenë të përshtatshme për të gjithë. Mund të <ph name="BEGIN_LINK_MANAGE_HISTORY" />menaxhosh historikun tënd<ph name="END_LINK_MANAGE_HISTORY" />, duke përfshirë informacionet rreth vendndodhjes sate. <ph name="BEGIN_LINK_LEARN_MORE" />Mëso më shumë rreth zgjedhjeve të tua<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">Për të marrë skedat nga pajisjet e tua të tjera, verifiko që je ti dhe sinkronizo historikun dhe skedat e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="7907837847548254634">Shfaq një theksim të shpejtë të objektit të fokusuar</translation>
 <translation id="7908835530772972485">Fshiji të dhënat kur mbyll të gjitha dritaret</translation>

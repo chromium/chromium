@@ -1395,7 +1395,6 @@
 <translation id="5282340693022193851">Per ricevere notifiche per il monitoraggio del prezzo, attiva le notifiche nelle Impostazioni di iOS.</translation>
 <translation id="528857768909044842">I gruppi di schede vengono salvati qui</translation>
 <translation id="5294624619177114121">Notifiche mobile</translation>
-<translation id="5295239312320826323">Vuoi rimuovere l'account <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5311061401280561833">Accesso a fotocamera e microfono consentito</translation>
 <translation id="5313967007315987356">Aggiungi sito</translation>
@@ -1788,6 +1787,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="6504541289630702018">Accedi facilmente ai gruppi di schede del desktop</translation>
 <translation id="6505334220040167806">Comprimi il gruppo di schede.</translation>
 <translation id="6506996418997555004">Condividi il gruppo di schede "<ph name="GROUP_NAME" />"</translation>
+<translation id="650770261448122895">Cerca quello che vedi con Lens</translation>
 <translation id="6507973708545996744">Accedi per visualizzare il tuo elenco di lettura su tutti i tuoi dispositivi.</translation>
 <translation id="6518133107902771759">Verifica</translation>
 <translation id="6523575793810663688">Mostrami come fare</translation>
@@ -2147,7 +2147,6 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="7603852183842204213">Popup bloccati (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">La sincronizzazione non funziona</translation>
 <translation id="760667371114328991">Disattiva le notifiche del controllo di sicurezza</translation>
-<translation id="7612619742409846846">Accesso effettuato a Google come</translation>
 <translation id="7612849887607288481">Apri il menu di prototipazione AI</translation>
 <translation id="7618220760967055820">Scegli il pulsante da mostrare nella barra degli strumenti</translation>
 <translation id="7620522820075868385">Annulla</translation>
@@ -2430,6 +2429,7 @@ Puoi ricominciare in qualsiasi momento.</translation>
 <translation id="8439758443371991593">Nascondi Aggiungi all'elenco di lettura</translation>
 <translation id="8443986842926457191">L'URL contiene più di 2048 caratteri</translation>
 <translation id="8449869326050867919">Password condivisa</translation>
+<translation id="8473367210869452063">Interrompi l'attività corrente o attendi che Gemini finisca per interagire con questo sito</translation>
 <translation id="8473815223723723001">Modifica immagine con Gemini</translation>
 <translation id="8473863474539038330">Indirizzi e altro</translation>
 <translation id="8474378002946546633">Consenti notifiche</translation>

@@ -386,6 +386,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="2496180316473517155">Nettleserlogg</translation>
 <translation id="250020030759455918">Du kommer til å se påloggingsstatus, nettlesingsdata og nettstedsdata for <ph name="SITE_NAME" /> i Chrome</translation>
 <translation id="2501278716633472235">Gå tilbake</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{# nedlasting pågår}other{# nedlastinger pågår}}</translation>
 <translation id="2510106555128151389">Installerer <ph name="WEBAPK_NAME" /> …</translation>
 <translation id="2512234228327349533">Søk etter kjøpsalternativer</translation>
 <translation id="2513403576141822879">Se <ph name="BEGIN_LINK" />Synkronisering og Google tjenester<ph name="END_LINK" /> for flere innstillinger knyttet til personvern, sikkerhet og datainnsamling.</translation>
@@ -697,6 +698,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3740290940447881599">Sørg for at du stoler på dette nettstedet</translation>
 <translation id="3740525748616366977">Talesøk er ikke tilgjengelig på denne enheten</translation>
 <translation id="3749289110408117711">Filnavn</translation>
+<translation id="3751708358601675711">Endre prissporing</translation>
 <translation id="3756823472711156529">Gjenopprett gruppe</translation>
 <translation id="3759306015475526475">Administrer innstillinger for bruks- og krasjdata</translation>
 <translation id="3763110477555836428">Når du betaler med dette kortet, fylles et virtuelt kortnummer inn for å beskytte kortopplysningene dine. Administrer dette i Google Wallet.  <ph name="BEGIN_LINK1" />Finn ut mer om virtuelle kort<ph name="END_LINK1" /></translation>

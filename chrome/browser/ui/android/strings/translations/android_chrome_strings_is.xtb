@@ -386,6 +386,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2496180316473517155">Vafraferill</translation>
 <translation id="250020030759455918">Þú sérð innskráningarstöðu þína, vafragögn og vefsvæðagögn fyrir <ph name="SITE_NAME" /> í Chrome.</translation>
 <translation id="2501278716633472235">Fara til baka</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{# niðurhal í gangi}one{# niðurhal í gangi}other{# niðurhöl í gangi}}</translation>
 <translation id="2510106555128151389">Setur upp <ph name="WEBAPK_NAME" />…</translation>
 <translation id="2512234228327349533">Leita að kaupvalkostum</translation>
 <translation id="2513403576141822879">Frekari upplýsingar sem tengjast persónuvernd, öryggi og gagnasöfnun má finna í <ph name="BEGIN_LINK" />Samstilling og sérstillingar<ph name="END_LINK" /></translation>
@@ -697,6 +698,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="3740290940447881599">Gakktu úr skugga um að þú treystir þessu vefsvæði</translation>
 <translation id="3740525748616366977">Raddleit er ekki í boði í þessu tæki</translation>
 <translation id="3749289110408117711">Skráarheiti</translation>
+<translation id="3751708358601675711">Breyta verðrakningu</translation>
 <translation id="3756823472711156529">Endurheimta hóp</translation>
 <translation id="3759306015475526475">Stjórnaðu stillingum notkunar- og hrungagna</translation>
 <translation id="3763110477555836428">Númer sýndarkorts verður notað þegar þú gengur frá kaupum með þessu korti til að vernda raunverulegar upplýsingar þínar. Stjórna í Google Wallet. <ph name="BEGIN_LINK1" />Nánar um sýndarkort<ph name="END_LINK1" /></translation>

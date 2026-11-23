@@ -81,6 +81,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1688214853608504530">Þegar þú skrifar í veffangastikuna eða leitarreitinn sendir Chrome það sem þú skrifar til leitarforrits fyrirtækisins þíns, gervigreindar og verkfæra hjá fulltrúum til að fá tillögur.</translation>
 <translation id="1698376642261615901">Google Chrome er vafri sem keyrir vefsíður og forrit með ótrúlegum hraða. Hann er hraðvirkur, stöðugur og einfaldur í notkun. Notaðu vefinn á öruggari hátt með innbyggðri vernd Google Chrome gegn spilliforritum og vefveiðum.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome verður endurræst eftir klukkustund}one{Chrome verður endurræst eftir # klukkustund}other{Chrome verður endurræst eftir # klukkustundir}}</translation>
+<translation id="1713866023633141719">Gervigreind í tæki er tilbúin</translation>
 <translation id="1722488837206509557">Þetta gerir þér kleift að velja á milli tiltækra tækja og efnis á skjá þeirra.</translation>
 <translation id="1724094881572874997">Til að tryggja öryggi vinnu þinnar í Chrome mun fyrirtækið þitt geta skoðað eða stjórnað tilteknum upplýsingum þegar þú ert skráð(ur) inn á Chrome.</translation>
 <translation id="1769661297620183092">Þú getur opnað Google-leitargluggann aftur til að spyrja spurninga á meðan þú vafrar</translation>
@@ -155,6 +156,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2513154137948333830">Endurræsingar er krafist: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="251329670120169391">fyrirtækið þitt</translation>
 <translation id="2521391734665471391">Loka gervigreindarstillingu Google-leitar</translation>
+<translation id="2523048609826818526">Almenn skrif</translation>
 <translation id="2523492931736391680">Vinnan þín er örugg í Chrome</translation>
 <translation id="2534365042754120737">Til að vernda gögnin þín skaltu leyfa Chrome að fjarlægja heimildir vefsvæða sem þú hefur ekki opnað nýlega. Stöðvar ekki tilkynningar.</translation>
 <translation id="2556847002339236023">Fyrirtækið þitt lokar Chrome eftir aðgerðaleysi í <ph name="TIMEOUT_DURATION" />. Vefskoðunargögnum var eytt. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal.</translation>
@@ -253,6 +255,7 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="3373752068427117404">Sumir eiginleikar og viðbætur Chrome eru með flýtileiðir. Þú getur valið að kveikja aftur á þeim.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome verður endurræst núna}=1{Chrome verður endurræst eftir 1 sekúndu}one{Chrome verður endurræst eftir # sekúndu}other{Chrome verður endurræst eftir # sekúndur}}</translation>
 <translation id="3380249972812870825">Ýttu á <ph name="GLOBAL_HOTKEY" /> til að opna Gemini í Chrome</translation>
+<translation id="3392127217442962664">Chrome bætti við gervigreind sem keyrir í tækinu þínu. Vefsvæði og Chrome geta notað hana fyrir eiginleika á borð við:</translation>
 <translation id="3396977131400919238">Stýrikerfisvilla kom upp við uppsetningu. Sæktu Google Chrome aftur.</translation>
 <translation id="3428747202529429621">Tryggir öryggi þitt í Chrome og kann að vera notað til að auka öryggi þitt í öðrum Google-forritum þegar þú ert skráð(ur) inn</translation>
 <translation id="3438681572027105609">Skráðu þig inn á Chromium til að fá aðgang að aðgangsorðum og fleiru í öllum tækjunum þínum</translation>
@@ -302,6 +305,7 @@ Ef þessi síða virkar ekki sem skyldi skaltu prófa að leyfa fínstillingu.</
 <translation id="3973161977468201858">Google Chrome vill eyða gögnum Google-aðgangsorðastjórnunar. Sláðu inn Windows-aðgangsorðið þitt til að leyfa það.</translation>
 <translation id="3984557288004650913">Með því að ýta á hnappinn „Google-leit í Chrome“ á tækjastikunni getur þú opnað Google-leit í Chrome aftur til að spyrja spurninga á meðan þú vafrar</translation>
 <translation id="399788104667917863">Festa á tækjastiku</translation>
+<translation id="4000385468528550798">Gervigreind í tæki uppfærð</translation>
 <translation id="400161754580828648">Leyfðu skjáupptöku í Chrome í kerfisstillingunum til að deila skjánum þínum.</translation>
 <translation id="4012899077942246412">Á meðan þú ert innskráð(ur) geturðu notað aðgangsorðin þín og fleira af Google-reikningnum þínum í Chrome. Til að breyta þessu skaltu fara í „Reikningurinn þinn í Chrome“.</translation>
 <translation id="4022972681110646219">Þýða skjá</translation>
@@ -561,6 +565,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6632012506031284914">til að leita með Chrome.</translation>
 <translation id="6634299872736643004">Breytingar á þessari stillingu taka gildi þegar Chrome endurræsist.</translation>
 <translation id="6644846457769259194">Uppfærir tækið (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6659177157954429254">Gervigreind í tæki er uppfærð</translation>
 <translation id="6660596345553328257">Skrá þig inn í Chrome?</translation>
 <translation id="6664219008737641504">Ef þú gleymdir aðgangsorðinu þínu eða vilt breyta þessari stillingu skaltu <ph name="SETTINGS_LINK" /> Chrome-gögnunum á reikningnum þínum.</translation>
 <translation id="6676384891291319759">Aðgangur að internetinu</translation>
@@ -602,6 +607,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7024536598735240744">Villa við afpökkun: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Hér geturðu skipt á milli Chrome prófíla</translation>
 <translation id="7026856149118332950">Smelltu á <ph name="BEGIN_BOLD" />Já<ph name="END_BOLD" /> í Windows-tilkynningunni til að festa Chrome við forritastikuna þína til að auðvelda aðgang.</translation>
+<translation id="7033785662379319359">Ný og umfangsminni útgáfa af gervigreind í tæki er tilbúin til notkunar fyrir verkefni á borð við samantektir, yfirlestur og fleira</translation>
 <translation id="7047386856539490735">Eru þessar niðurstöður gagnlegar?</translation>
 <translation id="7051685429025310665">Þú hefur ekki skoðað vefsvæðið nýlega. Chrome fjarlægði <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Lagaðu Chrome að þínum þörfum</translation>

@@ -1381,6 +1381,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="2519517390894391510">Nom de profil du certificat</translation>
 <translation id="2520644704042891903">En attente d'une interface de connexion disponible…</translation>
 <translation id="2522757085249311407">autoriser les appareils Bluetooth à proximité à détecter cet appareil et à s'y connecter.</translation>
+<translation id="2523048609826818526">Rédaction à usage général</translation>
 <translation id="2523184218357549926">Envoie les URL des pages que vous consultez à Google</translation>
 <translation id="252513908494776481">Posez une question sur cet onglet</translation>
 <translation id="2525746158911982776">La mise à jour a échoué, car le système manque d'espace de stockage.</translation>
@@ -5541,7 +5542,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="710224247908684995">Une extension a désactivé la Navigation sécurisée</translation>
 <translation id="7102832101143475489">Le délai de traitement de la demande a expiré</translation>
 <translation id="7103944802169726298">Le PC et l'appareil de diffusion sont connectés au même réseau Wi-Fi</translation>
-<translation id="7104134653119992646">Les clavardages sont examinés et utilisés pour entraîner des modèles d'IA générative. Gemini est une IA et peut se tromper. Vous pouvez <ph name="BEGIN_LINK_MANAGE_HISTORY" />gérer votre historique<ph name="END_LINK_MANAGE_HISTORY" />, y compris les informations sur votre position. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus sur les choix qui s'offrent à vous<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Abonnement à Google</translation>
 <translation id="7108338896283013870">Masquer</translation>
 <translation id="7108419148561505648">Remplissez au moins un champ avant d'enregistrer</translation>
@@ -6240,7 +6240,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="7903925330883316394">Utilitaire : <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">Fermer la barre latérale</translation>
 <translation id="7904492297081735975">&amp;Ouvrir le gestionnaire de favoris</translation>
-<translation id="7904508617992122201">Les clavardages sont examinés et utilisés pour entraîner des modèles d'IA générative. Gemini est une IA et peut se tromper. Certains contenus peuvent ne pas convenir à tout le monde. Vous pouvez <ph name="BEGIN_LINK_MANAGE_HISTORY" />gérer votre historique<ph name="END_LINK_MANAGE_HISTORY" />, y compris les informations sur votre position. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus sur les choix qui s'offrent à vous<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">Pour obtenir vos onglets à partir de vos autres appareils, confirmez qu'il s'agit bien de vous et synchronisez votre historique et vos onglets. Vous pouvez arrêter la synchronisation en tout temps dans les paramètres. Google peut personnaliser la recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="7907837847548254634">Mettre brièvement en évidence l'objet à l'écran</translation>
 <translation id="7908835530772972485">Supprimer les données lorsque vous fermez toutes les fenêtres</translation>

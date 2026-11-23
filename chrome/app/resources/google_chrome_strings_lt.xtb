@@ -81,6 +81,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1688214853608504530">Kai vedate tekstą adreso juostoje ar paieškos laukelyje, „Chrome“ siunčia tai, ką įvedate, organizacijos paieškai, DI ir tarpininko įrankiams, kad gautų pasiūlymų.</translation>
 <translation id="1698376642261615901">„Google Chrome“ yra žiniatinklio naršyklė, kuri akimirksniu paleidžia tinklalapius ir programas. Ji greita, stabili ir lengvai naudojama. Naršykite žiniatinklį saugiau – „Google Chrome“ įdiegta apsauga nuo kenkėjiškų programų ir sukčiavimo.</translation>
 <translation id="1713301662689114961">{0,plural, =1{„Chrome“ bus paleista iš naujo po valandos}one{„Chrome“ bus paleista iš naujo po # valandos}few{„Chrome“ bus paleista iš naujo po # valandų}many{„Chrome“ bus paleista iš naujo po # valandos}other{„Chrome“ bus paleista iš naujo po # valandų}}</translation>
+<translation id="1713866023633141719">DI įrenginyje paruoštas</translation>
 <translation id="1722488837206509557">Galėsite pasirinkti iš pasiekiamų įrenginių ir pateikti turinį juose.</translation>
 <translation id="1724094881572874997">Kad apsaugotų jūsų darbą sistemoje „Chrome“, jūsų organizacija galės peržiūrėti arba tvarkyti tam tikrą informaciją, kai būsite prisijungę prie „Chrome“.</translation>
 <translation id="1769661297620183092">Galite iš naujo atidaryti „Google“ paieškos skydelį, kad naršydami galėtumėte užduoti klausimų</translation>
@@ -155,6 +156,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2513154137948333830">Būtina paleisti iš naujo: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="251329670120169391">jūsų organizacija</translation>
 <translation id="2521391734665471391">Uždaryti „Google“ paieškos DI režimą</translation>
+<translation id="2523048609826818526">Bendrosios paskirties rašymas</translation>
 <translation id="2523492931736391680">Jūsų darbas apsaugotas sistemoje „Chrome“</translation>
 <translation id="2534365042754120737">Kad apsaugotumėte duomenis, leiskite „Chrome“ pašalinti svetainių, kuriose pastaruoju metu nesilankėte, leidimus. Pranešimai nesustabdomi.</translation>
 <translation id="2556847002339236023">Organizacija uždaro „Chrome“, kai ji nenaudojama <ph name="TIMEOUT_DURATION" />. Naršymo duomenys ištrinti. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai.</translation>
@@ -253,6 +255,7 @@ Jei šis puslapis neveikia taip, kaip tikimasi, pabandykite leisti naudoti optim
 <translation id="3373752068427117404">Kai kurioms „Chrome“ funkcijoms ir plėtiniams priskirti šaukiniai. Galite pasirinkti vėl juos įjungti.</translation>
 <translation id="3379938682270551431">{0,plural, =0{„Chrome“ bus paleista iš naujo dabar}=1{„Chrome“ bus paleista iš naujo po 1 sekundės}one{„Chrome“ bus paleista iš naujo po # sekundės}few{„Chrome“ bus paleista iš naujo po # sekundžių}many{„Chrome“ bus paleista iš naujo po # sekundės}other{„Chrome“ bus paleista iš naujo po # sekundžių}}</translation>
 <translation id="3380249972812870825">Jei norite atidaryti „Gemini“ naršyklėje „Chrome“, paspauskite <ph name="GLOBAL_HOTKEY" /></translation>
+<translation id="3392127217442962664">„Chrome“ pridėjo DI, kuris veikia jūsų įrenginyje. Svetainės ir „Chrome“ gali jį naudoti toliau nurodytoms funkcijoms.</translation>
 <translation id="3396977131400919238">Diegimo metu įvyko operacinės sistemos klaida. Atsisiųskite „Google Chrome“ dar kartą.</translation>
 <translation id="3428747202529429621">Apsaugo jus naršyklėje „Chrome“ ir gali būti naudojama apsaugai kitose „Google“ programose pagerinti, kai esate prisijungę</translation>
 <translation id="3438681572027105609">Jei norite pasiekti slaptažodžius ir kitas funkcijas visuose įrenginiuose, prisijunkite prie „Chrome“</translation>
@@ -302,6 +305,7 @@ Jei šis puslapis neveikia taip, kaip tikimasi, pabandykite leisti naudoti optim
 <translation id="3973161977468201858">„Google Chrome“ nori ištrinti jūsų „Google“ slaptažodžių tvarkyklės duomenis. Įveskite „Windows“ slaptažodį, kad tai leistumėte.</translation>
 <translation id="3984557288004650913">Naudodami įrankių juostos mygtuką „Google“ paieška naršyklėje „Chrome“ galite iš naujo atidaryti „Google“ paiešką naršyklėje „Chrome“, kad naršydami galėtumėte užduoti klausimų</translation>
 <translation id="399788104667917863">Prisegti prie įrankių juostos</translation>
+<translation id="4000385468528550798">DI įrenginyje atnaujintas</translation>
 <translation id="400161754580828648">Jei norite bendrinti ekraną, sistemos nustatymuose leiskite įrašyti „Chrome“ ekrano vaizdą</translation>
 <translation id="4012899077942246412">Prisijungus galima naudoti slaptažodžius ir daugiau iš „Google“ paskyros „Chrome“ įrenginyje. Jei norite tai pakeisti, eikite į skiltį „Jūsų paskyra naršyklėje „Chrome“.</translation>
 <translation id="4022972681110646219">Išversti ekrano turinį</translation>
@@ -561,6 +565,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="6632012506031284914">, kad galėtumėte ieškoti naudodami „Chrome“.</translation>
 <translation id="6634299872736643004">Šio nustatymo pakeitimai bus pritaikyti iš naujo paleidus „Chrome“.</translation>
 <translation id="6644846457769259194">Atnaujinamas įrenginys (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6659177157954429254">DI įrenginyje atnaujintas</translation>
 <translation id="6660596345553328257">Prisijungti prie „Chrome“?</translation>
 <translation id="6664219008737641504">Jei pamiršote slaptafrazę ar norite pakeisti šį nustatymą, <ph name="SETTINGS_LINK" /> „Chrome“ duomenis paskyroje.</translation>
 <translation id="6676384891291319759">Interneto prieiga</translation>
@@ -602,6 +607,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="7024536598735240744">Išpakavimo klaida: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Čia galite perjungti „Chrome“ profilius</translation>
 <translation id="7026856149118332950">Spustelėkite <ph name="BEGIN_BOLD" />Taip<ph name="END_BOLD" /> „Windows“ pranešime, kad prisegtumėte „Chrome“ prie užduočių juostos ir galėtumėte sparčiai ją pasiekti.</translation>
+<translation id="7033785662379319359">Nauja, kompaktiškesnė DI įrenginyje versija paruošta naudoti tokioms užduotims kaip apibendrinimai, korektūra ir kt.</translation>
 <translation id="7047386856539490735">Ar šie rezultatai naudingi?</translation>
 <translation id="7051685429025310665">Pastaruoju metu nesilankėte. „Chrome“ pašalino <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Suasmeninkite „Chrome“</translation>

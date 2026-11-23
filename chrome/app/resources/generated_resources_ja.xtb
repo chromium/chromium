@@ -5536,7 +5536,6 @@
 <translation id="710224247908684995">セーフ ブラウジングは拡張機能によってオフにされています</translation>
 <translation id="7102832101143475489">リクエストがタイムアウトになりました</translation>
 <translation id="7103944802169726298">PC とキャスト デバイスが同じ Wi-Fi ネットワークに接続されている</translation>
-<translation id="7104134653119992646">チャットはレビューされ、生成 AI モデルのトレーニングに使用されます。Gemini は AI であり、不正確な情報を表示することがあります。ユーザーは、位置情報などの<ph name="BEGIN_LINK_MANAGE_HISTORY" />履歴を管理<ph name="END_LINK_MANAGE_HISTORY" />できます。<ph name="BEGIN_LINK_LEARN_MORE" />ユーザーが選択できる設定の詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />。Google メンバーシップ</translation>
 <translation id="7108338896283013870">非表示</translation>
 <translation id="7108419148561505648">保存する前に 1 つ以上の項目に入力してください</translation>
@@ -6235,7 +6234,6 @@
 <translation id="7903925330883316394">ユーティリティ: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">サイドバーを閉じる</translation>
 <translation id="7904492297081735975">ブックマーク マネージャーを開く(&amp;O)</translation>
-<translation id="7904508617992122201">チャットはレビューされ、生成 AI モデルのトレーニングに使用されます。Gemini は AI であり、不正確な情報を表示することがあります。一部のユーザーには適していない可能性のあるコンテンツを提供することがあります。ユーザーは、位置情報などの<ph name="BEGIN_LINK_MANAGE_HISTORY" />履歴を管理<ph name="END_LINK_MANAGE_HISTORY" />できます。<ph name="BEGIN_LINK_LEARN_MORE" />ユーザーが選択できる設定の詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">他のデバイスと同じタブを使用するには、本人確認を行って、履歴とタブを同期します。同期は [設定] でいつでも停止できます。Google では、履歴に基づいて検索やその他のサービスをカスタマイズすることがあります。</translation>
 <translation id="7907837847548254634">フォーカス中の項目をハイライト表示する</translation>
 <translation id="7908835530772972485">すべてのウィンドウを閉じるとデータが削除されます</translation>

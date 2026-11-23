@@ -1395,7 +1395,6 @@
 <translation id="5282340693022193851">Pokud chcete dostávat oznámení o sledování cen, zapněte v nastavení systému iOS oznámení.</translation>
 <translation id="528857768909044842">Skupiny karet se ukládají sem</translation>
 <translation id="5294624619177114121">Oznámení na mobilní zařízení</translation>
-<translation id="5295239312320826323">Odstranit účet <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Zobrazit</translation>
 <translation id="5311061401280561833">Přístup k fotoaparátu a mikrofonu je povolen</translation>
 <translation id="5313967007315987356">Přidat web</translation>
@@ -1788,6 +1787,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6504541289630702018">Snadný přístup ke skupinám karet na počítači</translation>
 <translation id="6505334220040167806">Sbalit skupinu karet.</translation>
 <translation id="6506996418997555004">Sdílení skupiny karet <ph name="GROUP_NAME" /></translation>
+<translation id="650770261448122895">Pomocí Lens můžete zjistit více o tom, co vidíte</translation>
 <translation id="6507973708545996744">Pokud seznam četby chcete mít na všech svých zařízeních, přihlaste se.</translation>
 <translation id="6518133107902771759">Ověřit</translation>
 <translation id="6523575793810663688">Ukázat postup</translation>
@@ -2147,7 +2147,6 @@ Kdykoli můžete začít znovu.</translation>
 <translation id="7603852183842204213">Blokována vyskakovací okna (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Synchronizace nefunguje</translation>
 <translation id="760667371114328991">Vypnout oznámení bezpečnostní kontroly</translation>
-<translation id="7612619742409846846">Jste přihlášeni do Googlu jako</translation>
 <translation id="7612849887607288481">Otevřete nabídku prototypování s AI</translation>
 <translation id="7618220760967055820">Vyberte, které tlačítko se má zobrazit na liště</translation>
 <translation id="7620522820075868385">Zrušit</translation>
@@ -2430,6 +2429,7 @@ Kdykoli můžete začít znovu.</translation>
 <translation id="8439758443371991593">Skrýt možnost Přidat do seznamu četby</translation>
 <translation id="8443986842926457191">Adresa URL je delší než 2048 znaků.</translation>
 <translation id="8449869326050867919">Heslo bylo sdíleno</translation>
+<translation id="8473367210869452063">Pokud chcete s tímto webem interagovat, zastavte aktuální úkol nebo počkejte, až Gemini dokončí práci</translation>
 <translation id="8473815223723723001">Upravit obrázek pomocí Gemini</translation>
 <translation id="8473863474539038330">Adresy a další</translation>
 <translation id="8474378002946546633">Povolit oznámení</translation>

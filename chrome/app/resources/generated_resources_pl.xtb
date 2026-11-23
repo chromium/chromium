@@ -5531,7 +5531,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="710224247908684995">Bezpieczne przeglądanie zostało wyłączone przez rozszerzenie</translation>
 <translation id="7102832101143475489">Żądanie przekroczyło limit czasu</translation>
 <translation id="7103944802169726298">Komputer i urządzenie przesyłające w tej samej sieci Wi-Fi</translation>
-<translation id="7104134653119992646">Czaty są sprawdzane i wykorzystywane do trenowania modeli generatywnej AI. Gemini to AI i może popełniać błędy. Możesz <ph name="BEGIN_LINK_MANAGE_HISTORY" />zarządzać swoją historią<ph name="END_LINK_MANAGE_HISTORY" />, w tym informacjami o lokalizacji. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji o wybranych opcjach<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Subskrypcja Google</translation>
 <translation id="7108338896283013870">Ukryj</translation>
 <translation id="7108419148561505648">Przed zapisaniem wypełnij co najmniej 1 pole</translation>
@@ -6230,7 +6229,6 @@ Mogą one obejmować informacje o zainstalowanym oprogramowaniu, plikach, przeg
 <translation id="7903925330883316394">Narzędzie: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">Zamknij pasek boczny</translation>
 <translation id="7904492297081735975">&amp;Otwórz menedżera zakładek</translation>
-<translation id="7904508617992122201">Czaty są sprawdzane i wykorzystywane do trenowania modeli generatywnej AI. Gemini to AI i może popełniać błędy. Niektóre treści mogą nie być odpowiednie dla wszystkich osób. Możesz <ph name="BEGIN_LINK_MANAGE_HISTORY" />zarządzać swoją historią<ph name="END_LINK_MANAGE_HISTORY" />, w tym informacjami o lokalizacji. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji o wybranych opcjach<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">Aby zobaczyć karty z innych urządzeń, potwierdź swoją tożsamość i zsynchronizuj historię oraz karty. Synchronizację możesz wyłączyć w każdej chwili w ustawieniach. Google może korzystać z Twojej historii, aby dostosowywać działanie wyszukiwarki i innych usług.</translation>
 <translation id="7907837847548254634">Podświetlaj zaznaczony obiekt</translation>
 <translation id="7908835530772972485">Usuń dane w momencie zamknięcia wszystkich okien</translation>

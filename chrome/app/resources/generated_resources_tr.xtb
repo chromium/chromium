@@ -793,7 +793,7 @@
 <translation id="1863374797460198869">Sohbet gizlendi</translation>
 <translation id="1864111464094315414">Giriş</translation>
 <translation id="1869433484041798909">Yer işareti düğmesi</translation>
-<translation id="1871098866036088250">Chrome tarayıcıda aç</translation>
+<translation id="1871098866036088250">Chrome Tarayıcı'da aç</translation>
 <translation id="1871131409931646355">Tüm İndirme Geçmişi</translation>
 <translation id="1872846000961079826">Şifre değiştirme işlemi sırasında, şifre sayfalarındaki içerikler ve ilgili bilgiler Google'a gönderilir ve bu özelliğin kalitesini artırmak için gerçek kişiler tarafından incelenebilir</translation>
 <translation id="1873513359268939357">Outlook Takvim</translation>
@@ -4228,6 +4228,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5633149627228920745">Sistem gereksinimleri hakkında daha fazla bilgi</translation>
 <translation id="5633597859549257840">Google AI'ın en iyi özelliklerinden yararlanın. Kolay erişim için Gemini'ı araç çubuğunuza sabitleyin veya istediğiniz zaman Chrome menüsünden açın.</translation>
 <translation id="5635312199252507107">Belirli sitelerde izin ver</translation>
+<translation id="5636363757061959967">avatar, resim, ad, hesap, profil</translation>
 <translation id="5638202526629811571">Bu uzantıyı eklemenin uygun olup olmadığına karar verebilmeleri için bu ekranı anne veya babanıza ya da velinize gösterin.</translation>
 <translation id="563821631542362636">Sitenin veri kaydetmesine izin ver</translation>
 <translation id="5638309510554459422"><ph name="BEGIN_LINK" />Chrome Web Mağazası<ph name="END_LINK" />'nda uzantılar ve temalar bulun</translation>
@@ -5538,7 +5539,6 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="710224247908684995">Bir uzantı, Güvenli Tarama'yı devre dışı bıraktı</translation>
 <translation id="7102832101143475489">İstek zaman aşımına uğradı</translation>
 <translation id="7103944802169726298">PC ve yayın cihazı aynı kablosuz ağa bağlı</translation>
-<translation id="7104134653119992646">Sohbetler incelenir ve üretken yapay zeka modellerini eğitmek için kullanılır. Gemini bir yapay zeka modeli olduğu için hata yapabilir. Konumunuzla ilgili bilgiler de dahil olmak üzere <ph name="BEGIN_LINK_MANAGE_HISTORY" />geçmişinizi yönetebilirsiniz<ph name="END_LINK_MANAGE_HISTORY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Seçenekleriniz hakkında daha fazla bilgi edinin<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Google üyeliği</translation>
 <translation id="7108338896283013870">Gizle</translation>
 <translation id="7108419148561505648">Kaydetmeden önce en az bir alanı doldurun</translation>
@@ -5664,7 +5664,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="7246230585855757313">Güvenlik anahtarınızı yeniden takıp tekrar deneyin</translation>
 <translation id="7248671827512403053">Uygulama</translation>
 <translation id="7249197363678284330">Bu ayarı adres çubuğundan değiştirin.</translation>
-<translation id="7249764475759804559">Bu uygulamayı, dosyaları açarken kullanılacak bir seçenek olarak ekleyin</translation>
+<translation id="7249764475759804559">Dosya açarken bu uygulamayı seçenekler arasına ekle</translation>
 <translation id="7251635775446614726">Yöneticinizin mesajı: "<ph name="CUSTOM_MESSAGE" />"</translation>
 <translation id="725310308981256997">Bu sayfa hakkında soru sorulsun mu?</translation>
 <translation id="7253521419891527137">&amp;Daha Fazla Bilgi Edinin</translation>
@@ -6237,7 +6237,6 @@ Yüklü yazılımlar, dosyalar, tarayıcınız, cihazın işletim sistemi ve IP 
 <translation id="7903925330883316394">Yardımcı Program: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">Kenar çubuğunu kapat</translation>
 <translation id="7904492297081735975">&amp;Yer işareti yöneticisini aç</translation>
-<translation id="7904508617992122201">Sohbetler incelenir ve üretken yapay zeka modellerini eğitmek için kullanılır. Gemini bir yapay zeka modeli olduğu için hata yapabilir. Bazı içerikler herkese uygun olmayabilir. Konumunuzla ilgili bilgiler de dahil olmak üzere <ph name="BEGIN_LINK_MANAGE_HISTORY" />geçmişinizi yönetebilirsiniz<ph name="END_LINK_MANAGE_HISTORY" />. <ph name="BEGIN_LINK_LEARN_MORE" />Seçenekleriniz hakkında daha fazla bilgi edinin<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="7907312522152480478">Diğer cihazlarınızdaki sekmeleri görmek için kimliğinizi doğrulayıp geçmişinizi ve sekmelerinizi senkronize edin. Senkronizasyonu istediğiniz zaman Ayarlar'dan durdurabilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
 <translation id="7907837847548254634">Odaklanılmış nesnede kısa bir vurgulama göster</translation>
 <translation id="7908835530772972485">Tüm pencereleri kapattığınızda veriler silinir</translation>

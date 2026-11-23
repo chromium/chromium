@@ -1395,7 +1395,6 @@
 <translation id="5282340693022193851">Lai saņemtu cenu izsekošanas paziņojumus, ieslēdziet paziņojumus iOS iestatījumos.</translation>
 <translation id="528857768909044842">Ciļņu grupas tiek saglabātas šeit</translation>
 <translation id="5294624619177114121">Paziņojumi mobilajās ierīcēs</translation>
-<translation id="5295239312320826323">Vai noņemt kontu <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Rādīt</translation>
 <translation id="5311061401280561833">Piekļuve kamerai un mikrofonam ir atļauta.</translation>
 <translation id="5313967007315987356">Pievienot vietni</translation>
@@ -1788,6 +1787,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6504541289630702018">Ērti piekļūstiet galddatorā izveidotajām ciļņu grupām</translation>
 <translation id="6505334220040167806">Sakļaut ciļņu grupu.</translation>
 <translation id="6506996418997555004">Ciļņu grupas “<ph name="GROUP_NAME" />” kopīgošana</translation>
+<translation id="650770261448122895">Meklējiet redzamos objektus, izmantojot Lens</translation>
 <translation id="6507973708545996744">Pierakstieties, lai lasīšanas saraksts būtu pieejams visās jūsu ierīcēs.</translation>
 <translation id="6518133107902771759">Verificēt</translation>
 <translation id="6523575793810663688">Parādīt, kā</translation>
@@ -2147,7 +2147,6 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="7603852183842204213">Bloķ. uznir. logi (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Sinhronizācija nedarbojas</translation>
 <translation id="760667371114328991">Izslēgt drošības pārbaudes paziņojumus</translation>
-<translation id="7612619742409846846">Pierakstījies Google kontā kā</translation>
 <translation id="7612849887607288481">Atvērt MI prototipu izvēlni</translation>
 <translation id="7618220760967055820">Izvēlieties, kuru pogu rādīt rīkjoslā</translation>
 <translation id="7620522820075868385">Atcelt</translation>
@@ -2430,6 +2429,7 @@ Varat jebkurā laikā atkal iespējot Level Up.</translation>
 <translation id="8439758443371991593">Paslēpt vienumu “Pievienot lasīšanas sarakstam”</translation>
 <translation id="8443986842926457191">URL garums pārsniedz 2048 rakstzīmes</translation>
 <translation id="8449869326050867919">Parole ir kopīgota</translation>
+<translation id="8473367210869452063">Lai mijiedarbotos ar šo vietni, apturiet pašreizējā uzdevuma izpildi vai uzgaidiet, līdz Gemini pabeidz darbu.</translation>
 <translation id="8473815223723723001">Rediģēt attēlu, izmantojot Gemini</translation>
 <translation id="8473863474539038330">Adreses un citi dati</translation>
 <translation id="8474378002946546633">Atļaut paziņojumus</translation>

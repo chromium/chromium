@@ -4246,6 +4246,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="5633149627228920745">Tìm hiểu thêm về yêu cầu hệ thống</translation>
 <translation id="5633597859549257840">Khai thác tối đa AI của Google. Ghim Gemini vào thanh công cụ để dễ dàng truy cập hoặc mở Gemini bất cứ lúc nào từ trình đơn Chrome.</translation>
 <translation id="5635312199252507107">Cho phép trên một số trang web cụ thể</translation>
+<translation id="5636363757061959967">đổi hình đại diện, đổi ảnh hồ sơ, đổi tên, tuỳ chỉnh tài khoản, tuỳ chỉnh Chrome, tuỳ chỉnh hồ sơ</translation>
 <translation id="5638202526629811571">Hãy cho cha mẹ hoặc người giám hộ xem màn hình này để họ cho phép bạn thêm tiện ích này</translation>
 <translation id="563821631542362636">Cho phép trang web lưu dữ liệu</translation>
 <translation id="5638309510554459422">Tìm tiện ích và chủ đề trong <ph name="BEGIN_LINK" />Cửa hàng Chrome trực tuyến<ph name="END_LINK" /></translation>
@@ -5558,7 +5559,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="710224247908684995">Một tiện ích đã tắt tính năng Duyệt web an toàn</translation>
 <translation id="7102832101143475489">Yêu cầu đã hết giờ</translation>
 <translation id="7103944802169726298">Máy tính và thiết bị truyền sử dụng cùng một mạng Wi-Fi</translation>
-<translation id="7104134653119992646">Các cuộc trò chuyện sẽ được xem xét và dùng để huấn luyện các mô hình AI tạo sinh. Gemini là một AI và có thể mắc sai sót. Bạn có thể <ph name="BEGIN_LINK_MANAGE_HISTORY" />quản lý nhật ký<ph name="END_LINK_MANAGE_HISTORY" />, bao gồm cả thông tin về vị trí của bạn. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm về những lựa chọn dành cho bạn<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Gói thành viên Google</translation>
 <translation id="7108338896283013870">Ẩn</translation>
 <translation id="7108419148561505648">Điền ít nhất một trường trước khi lưu</translation>
@@ -6257,7 +6257,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="7903925330883316394">Tiện ích: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">Đóng thanh bên</translation>
 <translation id="7904492297081735975">&amp;Mở trình quản lý dấu trang</translation>
-<translation id="7904508617992122201">Các cuộc trò chuyện sẽ được xem xét và dùng để huấn luyện các mô hình AI tạo sinh. Gemini là một AI và có thể mắc sai sót. Một số nội dung có thể không phù hợp với một số người. Bạn có thể <ph name="BEGIN_LINK_MANAGE_HISTORY" />quản lý nhật ký<ph name="END_LINK_MANAGE_HISTORY" />, bao gồm cả thông tin về vị trí của bạn. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm về những lựa chọn dành cho bạn<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">Để truy cập các thẻ mà bạn mở trên những thiết bị khác, hãy xác minh danh tính của bạn cũng như đồng bộ hoá thẻ và nhật ký. Bạn có thể dừng đồng bộ hoá bất cứ lúc nào trong phần cài đặt. Google có thể cá nhân hoá dịch vụ Tìm kiếm và các dịch vụ khác dựa trên nhật ký của bạn.</translation>
 <translation id="7907837847548254634">Làm nổi bật đối tượng được đặt tiêu điểm trong giây lát</translation>
 <translation id="7908835530772972485">Xoá dữ liệu khi bạn đóng tất cả cửa sổ</translation>

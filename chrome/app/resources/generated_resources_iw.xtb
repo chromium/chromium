@@ -851,6 +851,7 @@
 <translation id="1921544956190977703">‏בחשבון פועלת האבטחה החזקה ביותר של Chrome מפני אתרים, הורדות ותוספים מסוכנים</translation>
 <translation id="1921584744613111023">‏dpi‏ <ph name="DPI" /></translation>
 <translation id="1921600948984918136">התיקייה "<ph name="NAME" />" שמורה רק במכשיר הזה. כדי להשתמש בה במכשירים אחרים, צריך לשמור אותה בחשבון.</translation>
+<translation id="1924725605995508501">‫<ph name="PORT_NAME" /> ‏(<ph name="SERVICE_NAME" />)</translation>
 <translation id="192494336144674234">פתיחה באמצעות</translation>
 <translation id="1925017091976104802">יש ללחוץ על <ph name="MODIFIER_KEY_DESCRIPTION" /> כדי להדביק</translation>
 <translation id="1925021887439448749">יש להזין כתובת אינטרנט מותאמת אישית</translation>
@@ -1398,6 +1399,7 @@
 <translation id="2528487766183344810">כדי לייצא את אישור הלקוח צריך לפתוח את הנעילה של <ph name="TOKEN_NAME" />.</translation>
 <translation id="2532198298278778531">‏ניהול ה-DNS המאובטח בהגדרות של ChromeOS Flex</translation>
 <translation id="253434972992662860">&amp;השהיה</translation>
+<translation id="2534439599863644240">יציאה טורית</translation>
 <translation id="253498598929009420">האתר יוכל לראות את תוכן המסך שלך</translation>
 <translation id="253557089021624350">‏ספירת Keepalive</translation>
 <translation id="2537395079978992874">ל-<ph name="ORIGIN" /> יש הרשאה להציג ולערוך את הקבצים והתיקיות הבאים</translation>
@@ -5534,7 +5536,6 @@
 <translation id="710224247908684995">תוסף השבית את הגלישה הבטוחה</translation>
 <translation id="7102832101143475489">תם פרק הזמן שהוקצב לבקשה</translation>
 <translation id="7103944802169726298">‏מחשב ומכשיר Cast שמחוברים לאותה רשת Wi-Fi</translation>
-<translation id="7104134653119992646">‏השיחות נבדקות ומשמשות לאימון מודלים של AI גנרטיבי. ‫Gemini מבוסס על AI ויכול לטעות. אפשר <ph name="BEGIN_LINK_MANAGE_HISTORY" />לשנות את הגדרות ההיסטוריה<ph name="END_LINK_MANAGE_HISTORY" />, כולל מידע על המיקום שלך. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף על הגדרות הפרטיות<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846">‏‫<ph name="PROFILE_NAME" />. מינוי לשירות של Google</translation>
 <translation id="7108338896283013870">הסתרה</translation>
 <translation id="7108419148561505648">צריך למלא לפחות שדה אחד לפני השמירה</translation>
@@ -6230,7 +6231,6 @@
 <translation id="7903925330883316394">תוכנית שירות: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">סגירת סרגל הצד</translation>
 <translation id="7904492297081735975">&amp;פתיחת ניהול הסימניות</translation>
-<translation id="7904508617992122201">‏השיחות נבדקות ומשמשות לאימון מודלים של AI גנרטיבי. ‫Gemini מבוסס על AI ויכול לטעות. יכול להיות שחלק מהתוכן לא מתאים לכולם. אפשר <ph name="BEGIN_LINK_MANAGE_HISTORY" />לשנות את הגדרות ההיסטוריה<ph name="END_LINK_MANAGE_HISTORY" />, כולל מידע על המיקום שלך. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף על הגדרות הפרטיות<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">‏כדי לקבל את הכרטיסיות מהמכשירים האחרים שלך, עליך לאמת את הזהות ולסנכרן את ההיסטוריה ואת הכרטיסיות. בהגדרות אפשר תמיד להפסיק את הסנכרון. ‫Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="7907837847548254634">הדגשה מהירה של אובייקטים שמתמקדים בהם</translation>
 <translation id="7908835530772972485">כשכל החלונות נסגרים, הנתונים נמחקים</translation>

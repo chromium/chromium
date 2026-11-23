@@ -77,6 +77,7 @@
 <translation id="1688214853608504530">Când introduci text în bara de adrese sau în caseta de căutare, Chrome trimite ceea ce introduci către instrumentele de căutare, AI și de agent ale organizației tale pentru a primi sugestii.</translation>
 <translation id="1698376642261615901">Google Chrome este un browser web care rulează pagini web și aplicații cu o viteză extraordinară. Este rapid, stabil și ușor de utilizat. Navigați pe web beneficiind de mai multă siguranță datorită protecției împotriva programelor malware și a phishingului, care este încorporată în Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome se va relansa într-o oră}few{Chrome se va relansa în # ore}other{Chrome se va relansa în # de ore}}</translation>
+<translation id="1713866023633141719">AI-ul de pe dispozitiv este gata</translation>
 <translation id="1722488837206509557">Astfel, vei putea să selectezi dintre dispozitivele disponibile și să afișezi conținut pe acestea.</translation>
 <translation id="1724094881572874997">Pentru a-ți proteja activitatea în Chrome, organizația ta va putea să vadă sau să gestioneze anumite informații când te conectezi la Chrome.</translation>
 <translation id="1769661297620183092">Poți să redeschizi panoul Căutare Google pentru a pune întrebări în timp ce navighezi</translation>
@@ -151,6 +152,7 @@
 <translation id="2513154137948333830">Este necesară repornirea: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="251329670120169391">organizația ta</translation>
 <translation id="2521391734665471391">Închide Modul AI în Căutarea Google</translation>
+<translation id="2523048609826818526">Scriere cu scop general</translation>
 <translation id="2523492931736391680">Lucrul tău este în siguranță în Chrome</translation>
 <translation id="2534365042754120737">Pentru a-ți proteja datele, permite browserului Chrome să elimine permisiunile de pe site-urile pe care nu le-ai accesat recent. Nu oprește notificările.</translation>
 <translation id="2556847002339236023">Organizația ta închide Chrome dacă nu este folosit timp de <ph name="TIMEOUT_DURATION" />. Datele de navigare au fost șterse. Aici pot fi incluse istoricul, completările automate și descărcările.</translation>
@@ -249,6 +251,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="3373752068427117404">Unele funcții și extensii Chrome au comenzi rapide. Poți alege să le reactivezi.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome se va relansa acum}=1{Chrome se va relansa într-o secundă}few{Chrome se va relansa în # secunde}other{Chrome se va relansa în # de secunde}}</translation>
 <translation id="3380249972812870825">Pentru a deschide Gemini în Chrome, apasă pe <ph name="GLOBAL_HOTKEY" /></translation>
+<translation id="3392127217442962664">Chrome a adăugat AI care rulează pe dispozitiv. Site-urile și Chrome îl pot folosi pentru funcții precum:</translation>
 <translation id="3396977131400919238">S-a produs o eroare de sistem de operare în timpul instalării. Descarcă din nou Google Chrome.</translation>
 <translation id="3428747202529429621">Te protejează în Chrome și poate fi folosită pentru a spori securitatea în alte aplicații Google dacă te-ai conectat</translation>
 <translation id="3438681572027105609">Pentru a accesa parolele și alte date pe toate dispozitivele, conectează-te la Chrome</translation>
@@ -298,6 +301,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="3973161977468201858">Google Chrome dorește să șteargă datele din Managerul de parole Google. Introdu parola Windows pentru a permite acest lucru.</translation>
 <translation id="3984557288004650913">Folosind butonul Căutare Google în Chrome din bara de instrumente, poți să redeschizi Căutarea Google în Chrome pentru a pune întrebări în timp ce navighezi</translation>
 <translation id="399788104667917863">Fixează în bara de instrumente</translation>
+<translation id="4000385468528550798">AI-ul de pe dispozitiv a fost actualizat</translation>
 <translation id="400161754580828648">Pentru a permite accesul la ecran, permite înregistrarea ecranului pentru Chrome din Setări de sistem.</translation>
 <translation id="4012899077942246412">Când te conectezi, poți folosi parolele și multe altele din Contul tău Google în Chrome. Pentru a modifica această setare, accesează Contul tău în Chrome.</translation>
 <translation id="4022972681110646219">Tradu ecranul</translation>
@@ -553,6 +557,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="6632012506031284914">pentru a căuta cu Chrome.</translation>
 <translation id="6634299872736643004">Modificările acestei setări se vor aplica după ce Chrome repornește.</translation>
 <translation id="6644846457769259194">Se actualizează dispozitivul (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="6659177157954429254">AI-ul de pe dispozitiv este actualizat</translation>
 <translation id="6660596345553328257">Te conectezi la Chrome?</translation>
 <translation id="6664219008737641504">Dacă uiți expresia de acces sau dorești să modifici această setare, <ph name="SETTINGS_LINK" /> datele Chrome din cont</translation>
 <translation id="6676384891291319759">Accesează internetul</translation>
@@ -594,6 +599,7 @@ Dacă această pagină nu funcționează conform așteptărilor, încearcă să 
 <translation id="7024536598735240744">Eroare la despachetare: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025800014283535195">Aici poți comuta între profilurile Chrome</translation>
 <translation id="7026856149118332950">Dă clic pe <ph name="BEGIN_BOLD" />Da<ph name="END_BOLD" /> în notificarea Windows ca să fixezi Chrome în bara de activități pentru acces rapid.</translation>
+<translation id="7033785662379319359">O versiune nouă, mai compactă, a AI-ului pe dispozitiv este gata de folosire pentru activități precum rezumate, corectură și altele</translation>
 <translation id="7047386856539490735">Sunt utile aceste rezultate?</translation>
 <translation id="7051685429025310665">Nu ai accesat recent site-ul. Chrome a eliminat <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Personalizează Chrome</translation>

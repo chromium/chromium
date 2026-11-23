@@ -1393,6 +1393,7 @@
 <translation id="2519517390894391510">ຊື່ໂປຣໄຟລ໌ໃບຮັບຮອງ</translation>
 <translation id="2520644704042891903">ກໍາລັງລໍຖ້າເຕົ້າຮັບທີ່ມີຢູ່...</translation>
 <translation id="2522757085249311407">ອະນຸຍາດໃຫ້ອຸປະກອນ Bluetooth ທີ່ຢູ່ໃກ້ຄຽງຄົ້ນພົບ ແລະ ເຊື່ອມຕໍ່ກັບອຸປະກອນນີ້.</translation>
+<translation id="2523048609826818526">ການຂຽນອະເນກປະສົງ</translation>
 <translation id="2523184218357549926">ສົ່ງ URL ຂອງໜ້າຕ່າງໆທີ່ທ່ານເຂົ້າເບິ່ງໃຫ້ Google</translation>
 <translation id="252513908494776481">ຖາມກ່ຽວກັບແຖບນີ້</translation>
 <translation id="2525746158911982776">ການອັບເດດບໍ່ສຳເລັດເນື່ອງຈາກລະບົບມີພື້ນທີ່ຈັດເກັບຂໍ້ມູນບໍ່ພຽງພໍ.</translation>
@@ -5552,7 +5553,6 @@
 <translation id="710224247908684995">ສ່ວນຂະຫຍາຍໜຶ່ງໄດ້ປິດ Safe Browsing</translation>
 <translation id="7102832101143475489">ຄຳຂໍໝົດເວລາແລ້ວ</translation>
 <translation id="7103944802169726298">PC ແລະ ອຸປະກອນ Chromecast ໃຊ້ເຄືອຂ່າຍ Wi-Fi ດຽວກັນ</translation>
-<translation id="7104134653119992646">ລະບົບຈະກວດສອບການສົນທະນາ ແລະ ນຳເອົາໄປໃຊ້ເພື່ອເຝິກໂມເດວ AI ສ້າງເນື້ອຫາ. Gemini ເປັນ AI ແລະ ອາດເຮັດຜິດພາດໄດ້. ທ່ານສາມາດ <ph name="BEGIN_LINK_MANAGE_HISTORY" />ຈັດການປະຫວັດຂອງທ່ານ<ph name="END_LINK_MANAGE_HISTORY" />, ເຊິ່ງຮວມທັງຂໍ້ມູນກ່ຽວກັບສະຖານທີ່ຂອງທ່ານໄດ້. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຕົວເລືອກຂອງທ່ານ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. ການເປັນສະມາຊິກ Google</translation>
 <translation id="7108338896283013870">ເຊື່ອງ</translation>
 <translation id="7108419148561505648">ກະລຸນາຕື່ມຂໍ້ມູນຢ່າງໜ້ອຍ 1 ຊ່ອງກ່ອນບັນທຶກ</translation>
@@ -6251,7 +6251,6 @@
 <translation id="7903925330883316394">ການ​ໃຊ້ປະ​ໂຫຍດ​: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">ປິດແຖບດ້ານຂ້າງ</translation>
 <translation id="7904492297081735975">&amp;ເປີດຕົວຈັດການບຸກມາກ</translation>
-<translation id="7904508617992122201">ລະບົບຈະກວດສອບການສົນທະນາ ແລະ ນຳເອົາໄປໃຊ້ເພື່ອເຝິກໂມເດວ AI ສ້າງເນື້ອຫາ. Gemini ເປັນ AI ແລະ ອາດເຮັດຜິດພາດໄດ້. ເນື້ອຫາບາງຢ່າງອາດບໍ່ເໝາະສົມສຳລັບທຸກຄົນ. ທ່ານສາມາດ <ph name="BEGIN_LINK_MANAGE_HISTORY" />ຈັດການປະຫວັດຂອງທ່ານ<ph name="END_LINK_MANAGE_HISTORY" />, ເຊິ່ງຮວມທັງຂໍ້ມູນກ່ຽວກັບສະຖານທີ່ຂອງທ່ານໄດ້. <ph name="BEGIN_LINK_LEARN_MORE" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບຕົວເລືອກຂອງທ່ານ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">ເພື່ອຮັບແຖບຂອງທ່ານຈາກອຸປະກອນອື່ນໆ, ໃຫ້ຢັ້ງຢືນຕົວຕົນ ຮວມທັງຊິ້ງປະຫວັດ ແລະ ແຖບຂອງທ່ານ. ທ່ານສາມາດຢຸດການຊິ້ງໄດ້ທຸກເວລາໃນການຕັ້ງຄ່າ. Google ອາດປັບແຕ່ງການຊອກຫາ ແລະ ບໍລິການອື່ນໆໃຫ້ເປັນແບບສ່ວນຕົວໂດຍອີງຕາມປະຫວັດຂອງທ່ານ.</translation>
 <translation id="7907837847548254634">ສະແດງໄຮໄລ້ດ່ວນໃນວັດຖຸທີ່ໂຟກັສ</translation>
 <translation id="7908835530772972485">ລຶບຂໍ້ມູນເມື່ອທ່ານປິດທຸກໜ້າຈໍ</translation>

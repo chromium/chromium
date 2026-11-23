@@ -5546,7 +5546,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="710224247908684995">Laiendus lülitas Google'i ohutu sirvimise välja</translation>
 <translation id="7102832101143475489">Taotlus aegus</translation>
 <translation id="7103944802169726298">Arvuti ja ülekandeseade on samas WiFi-võrgus</translation>
-<translation id="7104134653119992646">Vestlused vaadatakse üle ja neid kasutatakse generatiivse AI mudelite treenimiseks. Gemini on AI ja võib teha vigu. Saate <ph name="BEGIN_LINK_MANAGE_HISTORY" />hallata oma ajalugu<ph name="END_LINK_MANAGE_HISTORY" />, sh teavet oma asukoha kohta. <ph name="BEGIN_LINK_LEARN_MORE" />Lisateave valikute kohta<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Google'i liikmesus</translation>
 <translation id="7108338896283013870">Peida</translation>
 <translation id="7108419148561505648">Enne salvestamist täitke vähemalt üks väli</translation>
@@ -6245,7 +6244,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="7903925330883316394">Utiliit: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">Sule küljeriba</translation>
 <translation id="7904492297081735975">&amp;Ava järjehoidjate haldur</translation>
-<translation id="7904508617992122201">Vestlused vaadatakse üle ja neid kasutatakse generatiivse AI mudelite treenimiseks. Gemini on AI ja võib teha vigu. Osa sisust ei pruugi kõigile sobida. Saate <ph name="BEGIN_LINK_MANAGE_HISTORY" />hallata oma ajalugu<ph name="END_LINK_MANAGE_HISTORY" />, sh teavet oma asukoha kohta. <ph name="BEGIN_LINK_LEARN_MORE" />Lisateave valikute kohta<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">Vahelehtede hankimiseks teistest seadmetest kinnitage oma isik ning sünkroonige oma ajalugu ja vahelehed. Sünkroonimise võite seadetes igal ajal lõpetada. Google võib Otsingut ja muid teenuseid teie ajaloo alusel isikupärastada.</translation>
 <translation id="7907837847548254634">Tõsta fookuses olev objekt korraks esile</translation>
 <translation id="7908835530772972485">Andmed kustutatakse, kui kõik aknad sulgete</translation>

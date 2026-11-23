@@ -1394,6 +1394,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="2519517390894391510">Heiti vottorðsprófíls</translation>
 <translation id="2520644704042891903">Bíður eftir lausum tengli...</translation>
 <translation id="2522757085249311407">Leyfðu nálægum Bluetooth-tækjum að finna og tengjast þessu tæki.</translation>
+<translation id="2523048609826818526">Almenn skrif</translation>
 <translation id="2523184218357549926">Sendir vefslóðir síðna sem þú skoðar til Google</translation>
 <translation id="252513908494776481">Spyrðu um þennan flipa</translation>
 <translation id="2525746158911982776">Uppfærslan tókst ekki vegna þess að kerfið er ekki með nægt geymslurými.</translation>
@@ -5555,7 +5556,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="710224247908684995">Viðbót slökkti á öruggri vefskoðun</translation>
 <translation id="7102832101143475489">Beiðnin rann út á tíma</translation>
 <translation id="7103944802169726298">Tölva og vörpunartæki eru tengd við sama WiFi-net</translation>
-<translation id="7104134653119992646">Spjall er yfirfarið og notað til að þjálfa skapandi gervigreindarlíkön. Gemini er gervigreind og getur gert mistök. Þú getur <ph name="BEGIN_LINK_MANAGE_HISTORY" />stjórnað ferli þínum<ph name="END_LINK_MANAGE_HISTORY" />, þar á meðal upplýsingum um staðsetningu þína. <ph name="BEGIN_LINK_LEARN_MORE" />Nánar um valkosti þína<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Google-aðild</translation>
 <translation id="7108338896283013870">Fela</translation>
 <translation id="7108419148561505648">Fylltu út í minnst einn reit áður en þú vistar</translation>
@@ -6254,7 +6254,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="7903925330883316394">Hjálparferli: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">Loka hliðarstiku</translation>
 <translation id="7904492297081735975">&amp;Opna bókamerkjastjórnun</translation>
-<translation id="7904508617992122201">Spjall er yfirfarið og notað til að þjálfa skapandi gervigreindarlíkön. Gemini er gervigreind og getur gert mistök. Sumt efni er hugsanlega ekki við hæfi allra. Þú getur <ph name="BEGIN_LINK_MANAGE_HISTORY" />stjórnað ferli þínum<ph name="END_LINK_MANAGE_HISTORY" />, þar á meðal upplýsingum um staðsetningu þína. <ph name="BEGIN_LINK_LEARN_MORE" />Nánar um valkosti þína<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">Til að sækja flipana þína úr öðrum tækjum skaltu staðfesta að þetta sért þú og samstilla feril þinn og flipa. Þú getur stöðvað samstillingu hvenær sem er í stillingunum. Google kann að sérsníða Leit og aðrar þjónustur í samræmi við ferilinn þinn.</translation>
 <translation id="7907837847548254634">Auðkenna hlut í fókus í stutta stund</translation>
 <translation id="7908835530772972485">Eyða gögnum þegar þú lokar öllum gluggum</translation>

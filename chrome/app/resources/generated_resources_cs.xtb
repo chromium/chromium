@@ -1381,6 +1381,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="2519517390894391510">Název profilu certifikátu</translation>
 <translation id="2520644704042891903">Čeká se na dostupný soket...</translation>
 <translation id="2522757085249311407">Povolit zařízením Bluetooth v okolí vyhledat toto zařízení a připojit se k němu.</translation>
+<translation id="2523048609826818526">Obecné psaní</translation>
 <translation id="2523184218357549926">Odesílá do Googlu adresy URL stránek, které navštěvujete</translation>
 <translation id="252513908494776481">Zeptejte se na tuhle kartu</translation>
 <translation id="2525746158911982776">Aktualizace se nezdařila, protože v systému není dost úložného prostoru.</translation>
@@ -4223,6 +4224,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="5633149627228920745">Další informace o systémových požadavcích</translation>
 <translation id="5633597859549257840">Získejte to nejlepší z Google AI. Připněte si Gemini na lištu prohlížeče, ať ho máte pořád snadno k dispozici. Gemini můžete taky kdykoli otevřít z nabídky Chromu.</translation>
 <translation id="5635312199252507107">Povolit na konkrétních webech</translation>
+<translation id="5636363757061959967">avatar, obrázek, jméno, účet, profil</translation>
 <translation id="5638202526629811571">Ukaž tuhle obrazovku rodiči nebo zákonnému zástupci, aby mohl rozhodnout, jestli tohle rozšíření můžeš přidat</translation>
 <translation id="563821631542362636">Povolit webu ukládat data</translation>
 <translation id="5638309510554459422">Rozšíření a motivy najdete v <ph name="BEGIN_LINK" />Internetovém obchodě Chrome<ph name="END_LINK" /></translation>
@@ -5536,7 +5538,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="710224247908684995">Bezpečné prohlížení bylo vypnuto rozšířením</translation>
 <translation id="7102832101143475489">Časový limit požadavku vypršel</translation>
 <translation id="7103944802169726298">Počítač a streamovací zařízení ve stejné síti Wi-Fi</translation>
-<translation id="7104134653119992646">Chaty jsou kontrolovány a používají se k trénování modelů generativní umělé inteligence. Gemini je umělá inteligence a může se mýlit. Můžete <ph name="BEGIN_LINK_MANAGE_HISTORY" />spravovat svou historii<ph name="END_LINK_MANAGE_HISTORY" />, včetně informací o poloze. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace o vašich volbách<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Členství Google</translation>
 <translation id="7108338896283013870">Skrýt</translation>
 <translation id="7108419148561505648">Před uložením vyplňte alespoň jedno pole</translation>
@@ -6235,7 +6236,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="7903925330883316394">Nástroj: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">Zavřete postranní panel</translation>
 <translation id="7904492297081735975">&amp;Otevřít správce záložek</translation>
-<translation id="7904508617992122201">Chaty jsou kontrolovány a používají se k trénování modelů generativní umělé inteligence. Gemini je umělá inteligence a může se mýlit. Některý obsah nemusí být vhodný pro každého. Můžete <ph name="BEGIN_LINK_MANAGE_HISTORY" />spravovat svou historii<ph name="END_LINK_MANAGE_HISTORY" />, včetně informací o poloze. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace o vašich volbách<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">Pokud chcete mít k dispozici karty ze svých ostatních zařízení, ověřte svou totožnost a synchronizujte historii a karty. Synchronizaci můžete v nastavení kdykoli zastavit. Google může personalizovat Vyhledávání a další služby na základě vaší historie.</translation>
 <translation id="7907837847548254634">Zaměřený objekt krátce zvýraznit</translation>
 <translation id="7908835530772972485">Po zavření všech oken smazat data</translation>

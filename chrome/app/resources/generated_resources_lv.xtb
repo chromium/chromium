@@ -1381,6 +1381,7 @@ Jebkurā laikā varat pārbaudīt paroles pakalpojumā <ph name="GOOGLE_PASSWORD
 <translation id="2519517390894391510">Sertifikāta profila nosaukums</translation>
 <translation id="2520644704042891903">Notiek pieejamas ligzdas gaidīšana...</translation>
 <translation id="2522757085249311407">Atļaut tuvumā esošām Bluetooth ierīcēm atrast šo ierīci un izveidot savienojumu ar to.</translation>
+<translation id="2523048609826818526">Vispārīga rakstīšana</translation>
 <translation id="2523184218357549926">Nosūta Google serveriem apmeklēto lapu vietrāžus URL</translation>
 <translation id="252513908494776481">Uzdodiet jautājumus šo cilni</translation>
 <translation id="2525746158911982776">Atjaunināšana neizdevās, jo sistēmā nepietiek vietas krātuvē.</translation>
@@ -5539,7 +5540,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="710224247908684995">Paplašinājums izslēdza funkciju Droša pārlūkošana.</translation>
 <translation id="7102832101143475489">Iestājās pieprasījuma noildze.</translation>
 <translation id="7103944802169726298">Dators un apraides ierīce ir vienā Wi-Fi tīklā</translation>
-<translation id="7104134653119992646">Tērzēšanas sarunas tiek pārskatītas un izmantotas ģeneratīvo MI modeļu apmācībai. Gemini ir MI un var pieļaut kļūdas. Varat <ph name="BEGIN_LINK_MANAGE_HISTORY" />pārvaldīt savu vēsturi<ph name="END_LINK_MANAGE_HISTORY" />, tostarp informāciju par savu atrašanās vietu. <ph name="BEGIN_LINK_LEARN_MORE" />Uzziniet vairāk par savām iespējām<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Google abonements</translation>
 <translation id="7108338896283013870">Slēpt</translation>
 <translation id="7108419148561505648">Pirms saglabāšanas aizpildiet vismaz vienu lauku</translation>
@@ -6238,7 +6238,6 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="7903925330883316394">Utilīta: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">Aizvērt sānjoslu</translation>
 <translation id="7904492297081735975">&amp;Atvērt grāmatzīmju pārvaldnieku</translation>
-<translation id="7904508617992122201">Tērzēšanas sarunas tiek pārskatītas un izmantotas ģeneratīvo MI modeļu apmācībai. Gemini ir MI un var pieļaut kļūdas. Noteikts saturs var nebūt piemērots visiem. Varat <ph name="BEGIN_LINK_MANAGE_HISTORY" />pārvaldīt savu vēsturi<ph name="END_LINK_MANAGE_HISTORY" />, tostarp informāciju par savu atrašanās vietu. <ph name="BEGIN_LINK_LEARN_MORE" />Uzziniet vairāk par savām iespējām<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="7907312522152480478">Lai iegūtu cilnes no citām savām ierīcēm, verificējiet savu identitāti un sinhronizējiet vēsturi un cilnes. Jebkurā brīdī iestatījumos varat pārtraukt sinhronizēšanu. Google var personalizēt pakalpojumu Meklēšana un citus pakalpojumus, ņemot vērā jūsu vēsturi.</translation>
 <translation id="7907837847548254634">Ātri izcelt fokusēto objektu</translation>
 <translation id="7908835530772972485">Aizverot visus logus, dati tiek izdzēsti</translation>

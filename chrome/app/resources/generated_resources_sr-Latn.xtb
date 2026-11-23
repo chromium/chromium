@@ -4231,6 +4231,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5633149627228920745">Saznajte više o sistemskim zahtevima</translation>
 <translation id="5633597859549257840">Koristite Google AI na najbolji način. Zakačite Gemini na traku s alatkama radi lakšeg pristupa ili ga otvorite u svakom trenutku iz Chrome menija.</translation>
 <translation id="5635312199252507107">Dozvoli na određenim sajtovima</translation>
+<translation id="5636363757061959967">avatar, slika, ime, nalog, profil</translation>
 <translation id="5638202526629811571">Pokaži roditelju ili staratelju ovaj ekran da bi mogao da odluči da li je u redu da dodaš ovaj dodatak</translation>
 <translation id="563821631542362636">Dozvoli sajtu da čuva podatke</translation>
 <translation id="5638309510554459422">Pronađite dodatke i teme u <ph name="BEGIN_LINK" />Chrome veb-prodavnici<ph name="END_LINK" /></translation>
@@ -5545,7 +5546,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="710224247908684995">Dodatak je isključio Bezbedno pregledanje</translation>
 <translation id="7102832101143475489">Zahtev je istekao</translation>
 <translation id="7103944802169726298">Računar i uređaj za prebacivanje na istoj WiFi mreži</translation>
-<translation id="7104134653119992646">Četovi se pregledaju i koriste za obučavanje modela generativne veštačke inteligencije. Gemini je veštačka inteligencija i može da pogreši. Možete da <ph name="BEGIN_LINK_MANAGE_HISTORY" />upravljate istorijom<ph name="END_LINK_MANAGE_HISTORY" />, uključujući informacije o lokaciji. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više o izborima<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Google pretplata</translation>
 <translation id="7108338896283013870">Sakrij</translation>
 <translation id="7108419148561505648">Popunite bar jedno polje pre čuvanja</translation>
@@ -6244,7 +6244,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="7903925330883316394">Pomoćni proces: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">Zatvori bočnu traku</translation>
 <translation id="7904492297081735975">&amp;Otvori menadžer obeleživača</translation>
-<translation id="7904508617992122201">Četovi se pregledaju i koriste za obučavanje modela generativne veštačke inteligencije. Gemini je veštačka inteligencija i može da pogreši. Neki sadržaj možda nije prikladan za svakoga. Možete da <ph name="BEGIN_LINK_MANAGE_HISTORY" />upravljate istorijom<ph name="END_LINK_MANAGE_HISTORY" />, uključujući informacije o lokaciji. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više o izborima<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">Da biste preuzeli kartice sa drugih uređaja, potvrdite identitet i sinhronizujte istoriju i kartice. Uvek možete da zaustavite sinhronizaciju u podešavanjima. Google može da personalizuje Pretragu i druge usluge na osnovu istorije.</translation>
 <translation id="7907837847548254634">Prikaži kratko isticanje fokusiranog objekta</translation>
 <translation id="7908835530772972485">Izbrišite podatke kada zatvorite sve prozore</translation>

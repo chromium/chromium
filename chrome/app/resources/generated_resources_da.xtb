@@ -5558,7 +5558,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="710224247908684995">En udvidelse har deaktiveret Beskyttet browsing</translation>
 <translation id="7102832101143475489">Der opstod timeout for anmodningen</translation>
 <translation id="7103944802169726298">Pc'en og Cast-enheden har forbindelse til det samme Wi-Fi-netværk</translation>
-<translation id="7104134653119992646">Chatsamtaler gennemgås og bruges til at træne generative AI-modeller. Gemini er et AI-produkt og kan begå fejl. Du kan <ph name="BEGIN_LINK_MANAGE_HISTORY" />administrere din historik<ph name="END_LINK_MANAGE_HISTORY" />, herunder oplysninger om din lokation. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger om dine valgmuligheder<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Google-medlemskab</translation>
 <translation id="7108338896283013870">Skjul</translation>
 <translation id="7108419148561505648">Udfyld mindst ét felt, før du gemmer</translation>
@@ -6257,7 +6256,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="7903925330883316394">Værktøj: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">Luk sidebjælke</translation>
 <translation id="7904492297081735975">&amp;Åbn bogmærkeadministrator</translation>
-<translation id="7904508617992122201">Chatsamtaler gennemgås og bruges til at træne generative AI-modeller. Gemini er et AI-produkt og kan begå fejl. Noget indhold er muligvis ikke egnet for alle. Du kan <ph name="BEGIN_LINK_MANAGE_HISTORY" />administrere din historik<ph name="END_LINK_MANAGE_HISTORY" />, herunder oplysninger om din lokation. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger om dine valgmuligheder<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">Hvis du vil have dine faner fra dine andre enheder, skal du verificere din identitet og synkronisere din historik og dine faner. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="7907837847548254634">Vis en kort fremhævning på det element, der fokuseres på</translation>
 <translation id="7908835530772972485">Slet data, når du lukker alle vinduer</translation>

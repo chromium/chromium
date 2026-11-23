@@ -2397,6 +2397,13 @@ Questa policy è una misura temporanea per controllare la funzionalità e verrà
 <translation id="2467181864598429837">Comportamento predefinito del browser</translation>
 <translation id="2467896267442150508">L'intervallo di tempo (massimo una settimana). Se l'ora di inizio è successiva all'ora di fine, l'intervallo verrà chiuso il giorno successivo.</translation>
 <translation id="2476249479201711962">Attiva l'accesso al menu contestuale del provider di ricerca predefinito</translation>
+<translation id="247659494993692492">La configurazione della policy consente di specificare i server consentiti per l'autenticazione integrata. L'autenticazione integrata viene attivata soltanto quando <ph name="PRODUCT_NAME" /> riceve una richiesta di autenticazione da un proxy o da un server presente nell'elenco dei server consentiti.
+
+      Se la policy non viene configurata, <ph name="PRODUCT_NAME" /> prova a rilevare se un server è presente sulla Intranet. Solo allora risponderà alle richieste IWA. Se viene rilevato un server su internet, <ph name="PRODUCT_NAME" /> ignora le richieste IWA provenienti da questo server.
+
+      Nota: se ci sono più server, separane i nomi utilizzando virgole. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.
+
+      Su <ph name="LINUX_OS_NAME" />, <ph name="MAC_OS_NAME" /> e <ph name="PRODUCT_OS_NAME" />, la libreria GSSAPI/Kerberos di sistema può canonicalizzare un nome host del server in un host dell'entità del servizio diverso (ad esempio tramite ricerche CNAME DNS o PTR DNS inverso). In questo caso, l'autenticazione Negotiate non va a buon fine, a meno che l'host non sia consentito anche da questa policy.</translation>
 <translation id="2478756867046106663">Consenti ai siti con esperienze intrusive di aprirsi in nuove finestre o schede</translation>
 <translation id="2479760962196319822">Questa policy consente di stabilire se gli utenti di <ph name="PRODUCT_OS_NAME" /> possono archiviare i dati localmente o meno.
       Se questa policy viene impostata su False, l'archiviazione locale su <ph name="PRODUCT_OS_NAME" /> viene bloccata: gli utenti non possono archiviare i dati localmente e non possono accedere alle directory locali.
@@ -4758,6 +4765,11 @@ La policy può essere combinata con <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLAT
 
       Nota: questa policy deve essere usata insieme alla policy <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" />.</translation>
 <translation id="3918339829588313389">Consenti agli utenti di impostare un PIN inefficace</translation>
+<translation id="3920151704940430728">Se la policy viene impostata su Attivata, la ricerca CNAME viene saltata. Il nome del server viene utilizzato come valore inserito durante la generazione del Kerberos SPN.
+
+Se la policy viene impostata su Disattivata o se non viene configurata, la ricerca CNAME determina il nome canonico del server durante la generazione del Kerberos SPN.
+
+Nota: su <ph name="LINUX_OS_NAME" />, <ph name="MAC_OS_NAME" /> e <ph name="PRODUCT_OS_NAME" />, l'attivazione di questa policy salta la ricerca CNAME di <ph name="PRODUCT_NAME" />, ma la libreria GSSAPI/Kerberos di sistema potrebbe comunque canonicalizzare l'host dell'entità del servizio (ad esempio tramite le impostazioni DNS di <ph name="KRB5_CONFIG" />). In questo caso, l'autenticazione Negotiate non va a buon fine, a meno che l'host non sia consentito da <ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" /> e la delega viene trattenuta a meno che non sia consentita anche da <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" />.</translation>
 <translation id="392227823425989489">Tutte le scorciatoie di sistema verranno sempre attivate come previsto.</translation>
 <translation id="3924506460382372403">Disattiva i report sullo stato della scheda grafica del dispositivo</translation>
 <translation id="3925377537407648234">Imposta fattore di scala e risoluzione del display</translation>
@@ -6858,6 +6870,15 @@ Questa policy supporta l'aggiornamento dinamico.
 Si tratta di una misura temporanea e verrà rimossa nelle future versioni di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="5212810195096589189">Specifica l'autorizzazione per l'interfaccia a riga di comando delle macchine virtuali</translation>
 <translation id="5213038356678567351">Siti web che non devono mai attivare il cambio di browser.</translation>
+<translation id="5213420013031914763">Se la policy viene impostata su Attivata, gli screenshot acquisiti con scorciatoie da tastiera
+o API di estensioni non sono consentiti. Se la policy viene impostata su Disattivata o se non viene configurata, gli screenshot sono consentiti.
+
+Nelle versioni di <ph name="PRODUCT_NAME" /> dalla 155 alla 158, l'attivazione di questa policy può anche impedire alle estensioni di collegare il debugger tramite 'chrome.debugger.attach()', ad esempio quando la policy <ph name="CHROME_VARIATIONS_POLICY_NAME" /> disattiva tutte le varianti.
+
+Tieni presente che su <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> e <ph name="LINUX_OS_NAME" />,
+questa impostazione non blocca gli screenshot acquisiti tramite il sistema operativo o applicazioni di terze parti.
+
+Su <ph name="IOS_NAME" />, se la policy viene impostata su Attivata, le finestre di <ph name="PRODUCT_NAME" /> vengono oscurate negli screenshot di sistema e nelle registrazioni dello schermo e gli screenshot di pagine intere non sono disponibili.</translation>
 <translation id="5216710229085956333">Attiva la cancellazione del rumore di Krisp</translation>
 <translation id="5216815237712190041">Configura l'immagine di sfondo a livello di dispositivo da mostrare nella schermata di accesso se ancora nessun utente ha effettuato l'accesso al dispositivo. La policy viene impostata specificando l'URL da cui il dispositivo ChromeOS può scaricare l'immagine di sfondo e un hash crittografico utilizzato per verificare l'integrità del download. L'immagine deve essere in formato JPEG e avere dimensioni non superiori a 16 MB. L'URL deve essere accessibile senza autenticazione. L'immagine di sfondo viene scaricata e memorizzata nella cache. Verrà scaricata nuovamente ogni volta che l'URL o l'hash cambiano.
 
@@ -11517,6 +11538,11 @@ Esistono più policy che elencano le origini che influiscono sulle richieste al 
 <translation id="8062485064082966327">Usa un servizio Google anonimo per fornire descrizioni automatiche alle immagini senza etichetta</translation>
 <translation id="8064875716442437829">Abilita l'accessibilità del renderer</translation>
 <translation id="8066428282805800713">Invia dati hardware aggiuntivi su ChromeOS Flex</translation>
+<translation id="8070654368411601340">La configurazione della policy consente di assegnare i server a cui <ph name="PRODUCT_NAME" /> può delegare le credenziali utente. Se ci sono più server, separane i nomi utilizzando virgole. I caratteri jolly (<ph name="WILDCARD_VALUE" />) sono consentiti.
+
+      Se la policy non viene configurata, <ph name="PRODUCT_NAME" /> non delega le credenziali utente, anche se un server viene rilevato come Intranet.
+
+      Su <ph name="LINUX_OS_NAME" />, <ph name="MAC_OS_NAME" /> e <ph name="PRODUCT_OS_NAME" />, quando questa policy consente la delega a un server, la libreria GSSAPI/Kerberos di sistema può canonicalizzare il relativo nome host in un host dell'entità del servizio diverso (ad esempio tramite ricerche DNS CNAME o DNS PTR inverso). <ph name="PRODUCT_NAME" /> quindi non delega l'entità del servizio, a meno che l'host non sia consentito anche da questa policy</translation>
 <translation id="8071371098891664137">Se per la policy <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> viene scelta l'opzione <ph name="PRINTERS_BLOCKLIST" />, la configurazione della policy <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> consente di specificare le stampanti che gli utenti non possono usare. L'utente avrà a disposizione tutte le stampanti, tranne quelle i cui ID sono elencati in questa policy. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nella policy <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="8076539570602616846">Limita gli Account Google idonei per il salvataggio di file PDF su Google Drive dal visualizzatore PDF <ph name="PRODUCT_NAME" /></translation>
 <translation id="8078224178125125527">La configurazione della policy consente di specificare per quali server proxy consentire tutti gli schemi di autenticazione HTTP supportati da <ph name="PRODUCT_NAME" />, indipendentemente dalla policy <ph name="AUTH_SCHEMES_POLICY_NAME" />.

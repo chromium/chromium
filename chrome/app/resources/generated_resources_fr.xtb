@@ -4227,6 +4227,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5633149627228920745">En savoir plus sur la configuration système requise</translation>
 <translation id="5633597859549257840">Profitez du meilleur de l'IA de Google. Épinglez Gemini à votre barre d'outils pour y accéder facilement, ou ouvrez-le à tout moment depuis le menu Chrome.</translation>
 <translation id="5635312199252507107">Autoriser sur des sites spécifiques</translation>
+<translation id="5636363757061959967">avatar, photo, nom, compte, profil</translation>
 <translation id="5638202526629811571">Montre cet écran à ton parent ou représentant légal pour qu'il puisse approuver l'ajout de cette extension</translation>
 <translation id="563821631542362636">Autoriser le site à enregistrer des données</translation>
 <translation id="5638309510554459422">Découvrez des extensions et des thèmes sur le <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" /></translation>
@@ -5539,7 +5540,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="710224247908684995">Une extension a désactivé la navigation sécurisée</translation>
 <translation id="7102832101143475489">Le délai imparti à la demande est dépassé</translation>
 <translation id="7103944802169726298">PC et appareil Cast sur le même réseau Wi-Fi</translation>
-<translation id="7104134653119992646">Les discussions sont examinées et utilisées pour entraîner les modèles d'IA générative. Gemini est une IA et peut se tromper. Vous pouvez <ph name="BEGIN_LINK_MANAGE_HISTORY" />gérer votre historique<ph name="END_LINK_MANAGE_HISTORY" />, y compris les informations sur votre position. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus sur les options qui s'offrent à vous<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Abonnement Google</translation>
 <translation id="7108338896283013870">Masquer</translation>
 <translation id="7108419148561505648">Remplissez au moins un champ avant d'enregistrer</translation>
@@ -6238,7 +6238,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="7903925330883316394">Utilitaire : <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">Fermer la barre latérale</translation>
 <translation id="7904492297081735975">&amp;Ouvrir le gestionnaire de favoris</translation>
-<translation id="7904508617992122201">Les discussions sont examinées et utilisées pour entraîner les modèles d'IA générative. Gemini est une IA et peut se tromper. Certains contenus ne sont peut-être pas adaptés à tous les publics. Vous pouvez <ph name="BEGIN_LINK_MANAGE_HISTORY" />gérer votre historique<ph name="END_LINK_MANAGE_HISTORY" />, y compris les informations sur votre position. <ph name="BEGIN_LINK_LEARN_MORE" />En savoir plus sur les options qui s'offrent à vous<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">Pour accédez à vos onglets sur vos autres appareils, validez votre identité et synchronisez votre historique et vos onglets. Vous pouvez arrêter la synchronisation à tout moment dans les paramètres. Google peut personnaliser la Recherche et d'autres services en fonction de votre historique.</translation>
 <translation id="7907837847548254634">Entourer brièvement l'objet sélectionné</translation>
 <translation id="7908835530772972485">Supprimer les données lorsque vous fermez toutes les fenêtres</translation>

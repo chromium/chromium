@@ -1395,7 +1395,6 @@
 <translation id="5282340693022193851">To get price tracking notifications, turn on notifications in your iOS Settings.</translation>
 <translation id="528857768909044842">Tab groups are saved here</translation>
 <translation id="5294624619177114121">Mobile notifications</translation>
-<translation id="5295239312320826323">Remove account <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Show</translation>
 <translation id="5311061401280561833">Camera and microphone access allowed</translation>
 <translation id="5313967007315987356">Add site</translation>
@@ -2148,7 +2147,6 @@ You can restart at any time.</translation>
 <translation id="7603852183842204213">Pop-ups blocked (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Sync isn't working</translation>
 <translation id="760667371114328991">Turn off notifications for Safety Check</translation>
-<translation id="7612619742409846846">Signed in to Google as</translation>
 <translation id="7612849887607288481">Open AI prototyping menu</translation>
 <translation id="7618220760967055820">Choose what button to show in the toolbar</translation>
 <translation id="7620522820075868385">Cancel</translation>

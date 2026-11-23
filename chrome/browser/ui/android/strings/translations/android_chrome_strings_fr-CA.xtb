@@ -386,6 +386,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="2496180316473517155">Historique de navigation</translation>
 <translation id="250020030759455918">Vous verrez votre état de connexion à <ph name="SITE_NAME" />, vos données de navigation et vos données de site dans Chrome</translation>
 <translation id="2501278716633472235">Retour</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{# téléchargement en cours…}one{# téléchargement en cours…}other{# téléchargements en cours…}}</translation>
 <translation id="2510106555128151389">Installation de <ph name="WEBAPK_NAME" /> en cours…</translation>
 <translation id="2512234228327349533">Rechercher des options d'achat</translation>
 <translation id="2513403576141822879">Pour plus de paramètres relatifs à la confidentialité, à la sécurité et à la collecte de données, voir <ph name="BEGIN_LINK" />Synchronisation et services Google<ph name="END_LINK" /></translation>
@@ -697,6 +698,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3740290940447881599">Assurez-vous de faire confiance à ce site</translation>
 <translation id="3740525748616366977">Cet appareil ne prend pas en charge la recherche vocale</translation>
 <translation id="3749289110408117711">Nom du fichier</translation>
+<translation id="3751708358601675711">Modifier le suivi des prix</translation>
 <translation id="3756823472711156529">Restaurer le groupe</translation>
 <translation id="3759306015475526475">Gérer les paramètres des données d'utilisation et de plantage</translation>
 <translation id="3763110477555836428">Un numéro de carte virtuelle sera rempli lorsque vous paierez avec cette carte pour protéger vos informations. Gérez cela dans Google Portefeuille. <ph name="BEGIN_LINK1" />En savoir plus sur les cartes virtuelles<ph name="END_LINK1" /></translation>

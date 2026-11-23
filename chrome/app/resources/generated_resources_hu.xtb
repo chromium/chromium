@@ -4242,6 +4242,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5633149627228920745">További információ a rendszerkövetelményekről</translation>
 <translation id="5633597859549257840">A Google AI legjava. Az egyszerű hozzáférés érdekében tűzze ki a Geminit az eszköztárra, de a Chrome-menüből is bármikor megnyithatja.</translation>
 <translation id="5635312199252507107">Engedélyezés bizonyos webhelyeken</translation>
+<translation id="5636363757061959967">avatar, kép, név, fiók, profil</translation>
 <translation id="5638202526629811571">Mutasd meg ezt a képernyőt a szülődnek vagy gyámodnak, hogy jóváhagyhassa a bővítmény hozzáadását</translation>
 <translation id="563821631542362636">Adatmentés engedélyezése a webhely számára</translation>
 <translation id="5638309510554459422">Bővítményeket és témákat a <ph name="BEGIN_LINK" />Chrome Internetes áruházban<ph name="END_LINK" /> kereshet</translation>
@@ -5552,7 +5553,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="710224247908684995">Az egyik bővítmény kikapcsolta a Biztonságos Böngészést</translation>
 <translation id="7102832101143475489">A kérelem lejárt</translation>
 <translation id="7103944802169726298">A PC és az átküldő eszköz ugyanazon a Wi-Fi-hálózaton van</translation>
-<translation id="7104134653119992646">A csevegéseket átnézzük és felhasználjuk a generatív AI-modellek betanításához. A Gemini egy mesterséges intelligencia, amely hibázhat. <ph name="BEGIN_LINK_MANAGE_HISTORY" />Kezelheti az előzményeit<ph name="END_LINK_MANAGE_HISTORY" />, beleértve a tartózkodási helyére vonatkozó adatokat is. <ph name="BEGIN_LINK_LEARN_MORE" />További információ a választási lehetőségekről<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Google-tagság</translation>
 <translation id="7108338896283013870">Elrejtés</translation>
 <translation id="7108419148561505648">Mentés előtt töltsön ki legalább egy mezőt</translation>
@@ -6251,7 +6251,6 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="7903925330883316394">Segédprogram: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">Oldalsáv bezárása</translation>
 <translation id="7904492297081735975">&amp;Könyvjelzőkezelő megnyitása</translation>
-<translation id="7904508617992122201">A csevegéseket átnézzük és felhasználjuk a generatív AI-modellek betanításához. A Gemini egy mesterséges intelligencia, amely hibázhat. Előfordulhat, hogy egyes tartalmak nem mindenki számára megfelelők. <ph name="BEGIN_LINK_MANAGE_HISTORY" />Kezelheti az előzményeit<ph name="END_LINK_MANAGE_HISTORY" />, beleértve a tartózkodási helyére vonatkozó adatokat is. <ph name="BEGIN_LINK_LEARN_MORE" />További információ a választási lehetőségekről<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="7907312522152480478">Ha a többi eszközén lévő lapokhoz is szeretne hozzáférni, igazolja személyazonosságát, majd szinkronizálja az előzményeit és a lapjait. A beállítások között bármikor leállíthatja a szinkronizálást. A Google az Ön előzményei alapján személyre szabhatja a Keresőt és más szolgáltatásokat.</translation>
 <translation id="7907837847548254634">A fókuszba kerülő elemek rövid kiemelése</translation>
 <translation id="7908835530772972485">Adatok törlése az összes ablak bezárásakor</translation>

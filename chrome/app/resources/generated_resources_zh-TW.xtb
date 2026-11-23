@@ -5530,7 +5530,6 @@
 <translation id="710224247908684995">某個擴充功能已將安全瀏覽功能關閉</translation>
 <translation id="7102832101143475489">要求逾時</translation>
 <translation id="7103944802169726298">電腦和投放裝置連上同一個 Wi-Fi 網路</translation>
-<translation id="7104134653119992646">我們會查看及使用對話內容來訓練生成式 AI 模型。Gemini 是 AI，有時可能會出錯。您可以<ph name="BEGIN_LINK_MANAGE_HISTORY" />管理記錄<ph name="END_LINK_MANAGE_HISTORY" />，包括位置資訊。<ph name="BEGIN_LINK_LEARN_MORE" />進一步瞭解可用選項<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />。Google 會員</translation>
 <translation id="7108338896283013870">隱藏</translation>
 <translation id="7108419148561505648">至少須填寫一個欄位，才能儲存</translation>
@@ -6229,7 +6228,6 @@
 <translation id="7903925330883316394">公用程式：<ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">關閉側欄</translation>
 <translation id="7904492297081735975">開啟書籤管理員(&amp;O)</translation>
-<translation id="7904508617992122201">我們會查看及使用對話內容來訓練生成式 AI 模型。Gemini 是 AI，有時可能會出錯。部分內容可能不適合所有人。您可以<ph name="BEGIN_LINK_MANAGE_HISTORY" />管理記錄<ph name="END_LINK_MANAGE_HISTORY" />，包括位置資訊。<ph name="BEGIN_LINK_LEARN_MORE" />進一步瞭解可用選項<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">如要取得其他裝置上的分頁，請驗證身分並同步處理歷史記錄和分頁。你隨時可以前往設定頁面停止同步。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
 <translation id="7907837847548254634">在聚焦的物件上顯示短暫的醒目效果</translation>
 <translation id="7908835530772972485">在關閉所有視窗後刪除資料</translation>

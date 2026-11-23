@@ -11512,6 +11512,11 @@ Chính sách này ghi đè hành vi của <ph name="DEFAULT_SUB_APPS_WITHOUT_PRO
           Bạn phải chỉ định giá trị của chính sách bằng mili giây. Các giá trị được giới hạn ở mức nhỏ hơn hoặc bằng thời gian chờ khi ở chế độ tạm vắng.</translation>
 <translation id="7992613144342460685">Cho phép quyền kiểm soát Vị trí cửa sổ trên những trang web này</translation>
 <translation id="7995610550667275367">Quét (được hỗ trợ kể từ phiên bản 87)</translation>
+<translation id="7997288303774758253">Việc đặt chính sách này sẽ chỉ định khoảng thời gian (tính bằng mili giây) để thực hiện truy vấn thông tin chính sách người dùng từ dịch vụ quản lý thiết bị. Phạm vi giá trị hợp lệ là từ 1.800.000 (30 phút) đến 86.400.000 (1 ngày). Các giá trị nằm ngoài phạm vi này sẽ được giới hạn ở ngưỡng tương ứng. Riêng trên Android và iOS, các giá trị vượt quá phạm vi này sẽ được giới hạn ở mức 604.800.000 (1 tuần).
+
+      Nếu chính sách này không được thiết lập, giá trị mặc định là 3 giờ, hoặc 1 ngày trên Android và iOS, sẽ được sử dụng.
+
+      Lưu ý: Các thông báo chính sách sẽ buộc làm mới khi chính sách này thay đổi nên không cần làm mới thường xuyên. Do đó, nếu nền tảng hỗ trợ các thông báo này, thời gian chờ làm mới sẽ là 24 giờ (bỏ qua chế độ cài đặt mặc định và giá trị của chính sách này).</translation>
 <translation id="7999023147219236247">Chính sách yêu cầu cấp quyền truy cập vào ứng dụng. PERMISSION_POLICY_UNSPECIFIED: Bạn chưa chỉ định chính sách. Nếu bạn không chỉ định chính sách nào cho một quyền ở cấp bất kỳ, thì hành vi "PROMPT" sẽ được dùng theo mặc định. PROMPT: Nhắc người dùng cấp quyền. GRANT: Tự động cấp quyền. DENY: Tự động từ chối quyền.</translation>
 <translation id="7999336306414770162">Tắt tính năng báo cáo thông tin về VPD của thiết bị</translation>
 <translation id="7999818120028621358">Bật tùy chọn báo cáo về các sự kiện ngăn rò rỉ dữ liệu</translation>

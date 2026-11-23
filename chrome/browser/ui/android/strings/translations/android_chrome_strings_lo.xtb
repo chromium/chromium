@@ -386,6 +386,7 @@
 <translation id="2496180316473517155">ປະຫວັດການທ່ອງເວັບ</translation>
 <translation id="250020030759455918">ທ່ານຈະເຫັນສະຖານະການເຂົ້າສູ່ລະບົບ <ph name="SITE_NAME" />, ຂໍ້ມູນການທ່ອງເວັບ ແລະ ຂໍ້ມູນເວັບໄຊຂອງທ່ານໃນ Chrome</translation>
 <translation id="2501278716633472235">ກັບ​ຄືນ​ໄປ</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{ກຳລັງດຳເນີນການດາວໂຫຼດ # ລາຍການ}other{ກຳລັງດຳເນີນການດາວໂຫຼດ # ລາຍການ}}</translation>
 <translation id="2510106555128151389">ກຳລັງຕິດຕັ້ງ <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2512234228327349533">ຊອກຫາຕົວເລືອກການຊື້</translation>
 <translation id="2513403576141822879">ສຳລັບການຕັ້ງຄ່າເພີ່ມເຕີມທີ່ກ່ຽວຂ້ອງກັບຄວາມເປັນສ່ວນຕົວ, ຄວາມປອດໄພ ແລະ ການເກັບຂໍ້ມູນ, ກະລຸນາເບິ່ງ <ph name="BEGIN_LINK" />ການຊິ້ງຂໍ້ມູນ ແລະ ການບໍລິການຂອງ Google<ph name="END_LINK" /></translation>
@@ -697,6 +698,7 @@
 <translation id="3740290940447881599">ກວດສອບໃຫ້ໝັ້ນໃຈວ່າທ່ານເຊື່ອຖືເວັບໄຊນີ້</translation>
 <translation id="3740525748616366977">ບໍ່ສາມາດໃຊ້ການຊອກຫາດ້ວຍສຽງຢູ່ອຸປະກອນນີ້ໄດ້</translation>
 <translation id="3749289110408117711">ຊື່​ໄຟລ​໌</translation>
+<translation id="3751708358601675711">ແກ້ໄຂການຕິດຕາມລາຄາ</translation>
 <translation id="3756823472711156529">ກູ້ຄືນກຸ່ມ</translation>
 <translation id="3759306015475526475">ຈັດການການຕັ້ງຄ່າຂໍ້ມູນການນຳໃຊ້ ແລະ ຂໍ້ມູນການຂັດຂ້ອງ</translation>
 <translation id="3763110477555836428">ລະບົບຈະຕື່ມໝາຍເລກບັດສະເໝືອນເມື່ອທ່ານຈ່າຍເງິນດ້ວຍບັດນີ້ເພື່ອປົກປ້ອງລາຍລະອຽດບັດແທ້ຂອງທ່ານ. ຈັດການໃນ Google Wallet. <ph name="BEGIN_LINK1" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບບັດສະເໝືອນ<ph name="END_LINK1" /></translation>

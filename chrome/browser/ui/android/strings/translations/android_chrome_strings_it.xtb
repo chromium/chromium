@@ -386,6 +386,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2496180316473517155">Cronologia di navigazione</translation>
 <translation id="250020030759455918">Troverai lo stato di accesso a <ph name="SITE_NAME" />, i dati di navigazione e i dati relativi al sito in Chrome</translation>
 <translation id="2501278716633472235">Indietro</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{# download in corso}other{# download in corso}}</translation>
 <translation id="2510106555128151389">Installazione di <ph name="WEBAPK_NAME" /> in corso…</translation>
 <translation id="2512234228327349533">Cerca opzioni di acquisto</translation>
 <translation id="2513403576141822879">Per altre impostazioni relative a privacy, sicurezza e raccolta dei dati, consulta la sezione <ph name="BEGIN_LINK" />Sincronizzazione e servizi Google<ph name="END_LINK" /></translation>
@@ -697,6 +698,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3740290940447881599">Assicurati che il sito sia attendibile</translation>
 <translation id="3740525748616366977">Ricerca vocale non disponibile su questo dispositivo</translation>
 <translation id="3749289110408117711">Nome file</translation>
+<translation id="3751708358601675711">Modifica monitoraggio del prezzo</translation>
 <translation id="3756823472711156529">Ripristina gruppo</translation>
 <translation id="3759306015475526475">Gestisci le impostazioni dei dati sull'utilizzo e sugli arresti anomali</translation>
 <translation id="3763110477555836428">Quando effettui un pagamento con questa carta, verrà inserito un numero di carta virtuale per proteggere i tuoi dati effettivi. Gestisci in Google Wallet. <ph name="BEGIN_LINK1" />Scopri di più sulle carte virtuali<ph name="END_LINK1" /></translation>

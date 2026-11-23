@@ -447,6 +447,7 @@
 <translation id="2053312383184521053">ទិន្នន័យក្នុងស្ថានភាពទុកចោល</translation>
 <translation id="2058456167109518507">បាន​រកឃើញ​ឧបករណ៍</translation>
 <translation id="2064048859448024834">ការមើលកាមេរ៉ា​សាកល្បង​ត្រូវបានបើក</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{តំណ 1}other{តំណ #}}</translation>
 <translation id="2067220651560163985">បង្ហាញ​សីតុណ្ហភាព​ជាអង្សាសេ</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" /> បានបញ្ចប់​ការបោះពុម្ព​ទៅ <ph name="PRINTER_NAME" /></translation>
 <translation id="2075520525463668108">បិទ/បើក<ph name="CAPTURE_MEDIUM" />។ <ph name="CAPTURE_MEDIUM" />គឺ<ph name="CAPTURE_STATE" /></translation>

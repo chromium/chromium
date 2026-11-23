@@ -1391,6 +1391,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="2519517390894391510">Navn på sertifikatprofil</translation>
 <translation id="2520644704042891903">Venter på tilgjengelig socket ...</translation>
 <translation id="2522757085249311407">Tillat at Bluetooth-enheter i nærheten kan oppdage og koble til denne enheten.</translation>
+<translation id="2523048609826818526">Skriving til generelle formål</translation>
 <translation id="2523184218357549926">Sender Google nettadressene til sider du besøker</translation>
 <translation id="252513908494776481">Spør om denne fanen</translation>
 <translation id="2525746158911982776">Oppdateringen mislyktes fordi systemet ikke har nok lagringsplass.</translation>
@@ -4236,6 +4237,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="5633149627228920745">Finn ut mer om systemkrav</translation>
 <translation id="5633597859549257840">Få det beste av AI fra Google. Fest Gemini på verktøylinjen for å få enkel tilgang, eller åpne den når som helst fra Chrome-menyen.</translation>
 <translation id="5635312199252507107">Tillat på bestemte nettsteder</translation>
+<translation id="5636363757061959967">brukerbilde, bilde, navn, konto, profil</translation>
 <translation id="5638202526629811571">Vis forelderen din eller en annen foresatt denne skjermen, slik at den kan si om det er greit at du legger til denne utvidelsen</translation>
 <translation id="563821631542362636">Tillat nettstedet å lagre data</translation>
 <translation id="5638309510554459422">Finn utvidelser og temaer i <ph name="BEGIN_LINK" />Chrome Nettmarked<ph name="END_LINK" /></translation>
@@ -5546,7 +5548,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="710224247908684995">En utvidelse har slått av Safe Browsing</translation>
 <translation id="7102832101143475489">Forespørselen ble tidsavbrutt</translation>
 <translation id="7103944802169726298">PC og Cast-enhet på samme wifi-nettverk</translation>
-<translation id="7104134653119992646">Chatter blir gjennomgått og brukt til å lære opp generative AI-modeller. Gemini er AI og kan gjøre feil. Du kan <ph name="BEGIN_LINK_MANAGE_HISTORY" />administrere loggen<ph name="END_LINK_MANAGE_HISTORY" />, inkludert informasjon om posisjonen din. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer om valgmulighetene dine.<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Google-abonnement</translation>
 <translation id="7108338896283013870">Skjul</translation>
 <translation id="7108419148561505648">Fyll ut minst ett felt før du lagrer</translation>
@@ -6245,7 +6246,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren, enh
 <translation id="7903925330883316394">Verktøy: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">Lukk sidefeltet</translation>
 <translation id="7904492297081735975">&amp;Åpne bokmerkebehandlingen</translation>
-<translation id="7904508617992122201">Chatter blir gjennomgått og brukt til å lære opp generative AI-modeller. Gemini er AI og kan gjøre feil. Noe innhold er kanskje ikke egnet for alle. Du kan <ph name="BEGIN_LINK_MANAGE_HISTORY" />administrere loggen<ph name="END_LINK_MANAGE_HISTORY" />, inkludert informasjon om posisjonen din. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer om valgmulighetene dine.<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">For å få fanene dine fra de andre enhetene dine, bekreft at det er deg, og synkroniser loggen og fanene dine. Du kan når som helst stoppe synkroniseringen i innstillingene. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
 <translation id="7907837847548254634">Vis en rask fremheving av objektet i fokus</translation>
 <translation id="7908835530772972485">Slett data når du lukker alle vinduer</translation>

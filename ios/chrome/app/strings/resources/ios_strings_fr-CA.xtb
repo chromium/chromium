@@ -1395,7 +1395,6 @@
 <translation id="5282340693022193851">Pour recevoir des notifications de suivi de prix, activez les notifications dans vos paramètres iOS.</translation>
 <translation id="528857768909044842">Les groupes d'onglets sont enregistrés ici</translation>
 <translation id="5294624619177114121">Notifications sur appareil mobile</translation>
-<translation id="5295239312320826323">Supprimer le compte <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Afficher</translation>
 <translation id="5311061401280561833">Accès à l'appareil photo et au microphone autorisé</translation>
 <translation id="5313967007315987356">Ajouter un site</translation>
@@ -1788,6 +1787,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="6504541289630702018">Accéder facilement à vos groupes d'onglets de bureau</translation>
 <translation id="6505334220040167806">Réduire le groupe d'onglets.</translation>
 <translation id="6506996418997555004">Partager le groupe d'onglets « <ph name="GROUP_NAME" /> »</translation>
+<translation id="650770261448122895">Rechercher ce que vous voyez avec Lentille</translation>
 <translation id="6507973708545996744">Connectez-vous pour obtenir votre liste de lecture sur tous vos appareils.</translation>
 <translation id="6518133107902771759">Vérifier</translation>
 <translation id="6523575793810663688">Afficher la marche à suivre</translation>
@@ -2147,7 +2147,6 @@ Vous pouvez le redémarrer à tout moment.</translation>
 <translation id="7603852183842204213">Fen context bloq (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">La synchronisation ne fonctionne pas</translation>
 <translation id="760667371114328991">Désactiver les notifications de Vérification de sécurité</translation>
-<translation id="7612619742409846846">Connecté(e) à Google en tant que</translation>
 <translation id="7612849887607288481">Ouvrir le menu de prototypage d'IA</translation>
 <translation id="7618220760967055820">Choisir le bouton à afficher dans la barre d'outils</translation>
 <translation id="7620522820075868385">Annuler</translation>
@@ -2430,6 +2429,7 @@ Vous pouvez le redémarrer à tout moment.</translation>
 <translation id="8439758443371991593">Masquer Ajouter à la Liste de lecture</translation>
 <translation id="8443986842926457191">L'URL contient plus de 2 048 caractères</translation>
 <translation id="8449869326050867919">Mot de passe partagé</translation>
+<translation id="8473367210869452063">Pour interagir avec ce site, arrêtez la tâche en cours ou attendez que Gemini ait terminé son travail</translation>
 <translation id="8473815223723723001">Modifiez l'image avec Gemini</translation>
 <translation id="8473863474539038330">Adresses et plus</translation>
 <translation id="8474378002946546633">Autoriser les notifications</translation>

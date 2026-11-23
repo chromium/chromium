@@ -5557,7 +5557,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="710224247908684995">Ett tillägg har inaktiverat Säker webbsökning</translation>
 <translation id="7102832101143475489">Begäran tog för lång tid</translation>
 <translation id="7103944802169726298">Datorn och Cast-enheten är på samma wifi-nätverk</translation>
-<translation id="7104134653119992646">Chattar granskas och används för att träna generativa AI-modeller. Gemini är AI och den kan göra misstag. Du kan <ph name="BEGIN_LINK_MANAGE_HISTORY" />hantera din historik<ph name="END_LINK_MANAGE_HISTORY" />, inklusive information om din plats. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer om dina val<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Google-medlemskap</translation>
 <translation id="7108338896283013870">Dölj</translation>
 <translation id="7108419148561505648">Fyll i minst ett fält innan du sparar</translation>
@@ -6256,7 +6255,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="7903925330883316394">Verktyg: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">Stäng sidofält</translation>
 <translation id="7904492297081735975">&amp;Öppna bokmärkeshanteraren</translation>
-<translation id="7904508617992122201">Chattar granskas och används för att träna generativa AI-modeller. Gemini är AI och den kan göra misstag. Visst innehåll kanske inte är lämpligt för alla. Du kan <ph name="BEGIN_LINK_MANAGE_HISTORY" />hantera din historik<ph name="END_LINK_MANAGE_HISTORY" />, inklusive information om din plats. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer om dina val<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">Om du vill få tillgång till flikar från dina andra enheter måste du verifiera din identitet och synkronisera din historik och dina flikar. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="7907837847548254634">Visa en snabb markering av objektet i fokus</translation>
 <translation id="7908835530772972485">Radera data när du stänger alla fönster</translation>

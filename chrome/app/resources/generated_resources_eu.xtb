@@ -5531,7 +5531,6 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="710224247908684995">Luzapen batek Arakatze segurua desaktibatu du</translation>
 <translation id="7102832101143475489">Gainditu egin da eskaeraren denbora-muga</translation>
 <translation id="7103944802169726298">PCa eta igorpen-gailua wifi-sare berean daude</translation>
-<translation id="7104134653119992646">Txatak berrikusi egiten dira, eta AA generatiboko ereduak trebatzeko erabiltzen. Gemini AA da, eta baliteke akatsak egitea. <ph name="BEGIN_LINK_MANAGE_HISTORY" />Zure historia kudea<ph name="END_LINK_MANAGE_HISTORY" /> dezakezu, kokapenari buruzko informazioa barne. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu zure aukerei buruzko informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Google-ko kidetza.</translation>
 <translation id="7108338896283013870">Ezkutatu</translation>
 <translation id="7108419148561505648">Gorde baino lehen, bete eremu bat gutxienez</translation>
@@ -6230,7 +6229,6 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari, sistema e
 <translation id="7903925330883316394">Zerbitzu-aplikazioaren prozesua: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">Itxi alboko barra</translation>
 <translation id="7904492297081735975">&amp;Ireki Laster-marken kudeatzailea</translation>
-<translation id="7904508617992122201">Txatak berrikusi egiten dira, eta AA generatiboko ereduak trebatzeko erabiltzen. Gemini AA da, eta baliteke akatsak egitea. Baliteke eduki batzuk guztientzat egokiak ez izatea. <ph name="BEGIN_LINK_MANAGE_HISTORY" />Zure historia kudea<ph name="END_LINK_MANAGE_HISTORY" /> dezakezu, kokapenari buruzko informazioa barne. <ph name="BEGIN_LINK_LEARN_MORE" />Lortu zure aukerei buruzko informazio gehiago<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">Beste gailuetako fitxak lortzeko, egiaztatu zeu zarela eta sinkronizatu historia eta fitxak. Sinkronizatzeari uzteko, joan ezarpenetara. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="7907837847548254634">Erakutsi puntu argi bizkor bat fokuratutako objektuan</translation>
 <translation id="7908835530772972485">Ezabatu datuak leiho guztiak ixtean</translation>

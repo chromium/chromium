@@ -34,6 +34,7 @@
 <translation id="2150661552845026580">Adicionar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="2159915644201199628">Não foi possível descodificar a imagem: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2193567467390483943">Os teus pais não aprovaram esta extensão</translation>
+<translation id="2207866393056347613">Concede acesso permanente aos seus dados em todos os sites</translation>
 <translation id="23030561267973084">"<ph name="EXTENSION_NAME" />" solicitou permissões adicionais.</translation>
 <translation id="2327492829706409234">Ativar aplicação</translation>
 <translation id="2350172092385603347">Localização utilizada, mas não foi especificado default_locale no manifesto.</translation>
@@ -42,6 +43,7 @@
 <translation id="2678063897982469759">Reativar</translation>
 <translation id="2743583586211388067">O acesso a esta extensão está bloqueado ao abrigo da política de risco de extensões da sua organização.</translation>
 <translation id="2766161002040448006">Pedir aos pais</translation>
+<translation id="2775557057525247505">Mostrar todos os sites</translation>
 <translation id="2785530881066938471">Não foi possível carregar o ficheiro "<ph name="RELATIVE_PATH" />" para script de conteúdo. Não está codificado em UTF-8.</translation>
 <translation id="2850541429955027218">Adicionar tema</translation>
 <translation id="2883143988769190738">Esta extensão pede as seguintes autorizações:</translation>
@@ -60,6 +62,7 @@
 <translation id="3393440416772303020"><ph name="PRODUCT_NAME" /> (número de série <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3466070586188012397"><ph name="PRODUCT_NAME" /> do fornecedor <ph name="VENDOR_ID" /> (número de série <ph name="SERIAL_NUMBER" />)</translation>
 <translation id="3561217442734750519">O valor de entrada para uma chave privada tem de ser um caminho válido.</translation>
+<translation id="3769470010314114481">Concede acesso temporário aos seus dados no site</translation>
 <translation id="3788401245189148511">Esta poderia:</translation>
 <translation id="3834775135533257713">Não foi possível adicionar a aplicação "<ph name="TO_INSTALL_APP_NAME" />" porque entra em conflito com "<ph name="INSTALLED_APP_NAME" />".</translation>
 <translation id="388442998277590542">Não foi possível carregar a página de opções "<ph name="OPTIONS_PAGE" />".</translation>
@@ -67,6 +70,7 @@
 <translation id="3908501907586732282">Ativar extensão</translation>
 <translation id="3927932062596804919">Recusar</translation>
 <translation id="3984413272403535372">Erro durante a assinatura da extensão.</translation>
+<translation id="3990894032742690314">Sempre nos sites listados</translation>
 <translation id="4014432863917027322">Reparar "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="4061696872429826774">Outro programa no computador adicionou uma extensão que pode alterar o funcionamento do Chromium.
 
@@ -75,6 +79,7 @@
 <translation id="4233778200880751280">Não foi possível carregar a página acerca de "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="424963718355121712">As aplicações têm de ser publicadas a partir do anfitrião que afetam.</translation>
 <translation id="4306119971288449206">As aplicações têm de ser publicadas com o tipo de conteúdo "<ph name="CONTENT_TYPE" />".</translation>
+<translation id="4307774243840254737">Concede acesso permanente aos seus dados nos sites listados abaixo</translation>
 <translation id="4349181963619779233">Não é possível adicionar apps e extensões a partir deste Website</translation>
 <translation id="4625078469366263107">Ativar aplicação</translation>
 <translation id="4633003931260532286">A extensão requer "<ph name="IMPORT_NAME" />" com, pelo menos, a versão "<ph name="IMPORT_VERSION" />", mas apenas está instalada a versão "<ph name="INSTALLED_VERSION" />".</translation>
@@ -92,6 +97,7 @@
 <translation id="5185386675596372454">A versão mais recente de "<ph name="EXTENSION_NAME" />" foi desativada porque necessita de mais permissões.</translation>
 <translation id="5242724311594467048">Ativar a extensão "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5356315618422219272">Vista de aplicação: <ph name="APPVIEW_TAG_NAME" /></translation>
+<translation id="5397410123303080884">Apenas quando clica na extensão</translation>
 <translation id="5405650547142096840">Remover do Chromium</translation>
 <translation id="5456409301717116725">Esta extensão inclui o ficheiro-chave "<ph name="KEY_PATH" />". Provavelmente não quer fazer isso.</translation>
 <translation id="5485102783864353244">Adicionar app</translation>
@@ -120,6 +126,7 @@
 <translation id="677806580227005219">Controlador MIME: <ph name="MIMEHANDLERVIEW_TAG_NAME" /></translation>
 <translation id="6840444547062817500">Esta extensão foi recarregada demasiado frequentemente.</translation>
 <translation id="7003844668372540529">Produto desconhecido <ph name="PRODUCT_ID" /> de <ph name="VENDOR_NAME" /></translation>
+<translation id="7017635639223148413">Sites listados</translation>
 <translation id="7068383018033524534">O ficheiro de manifesto é inválido.</translation>
 <translation id="7217838517480956708">O gestor desta máquina exige que o <ph name="EXTENSION_NAME" /> seja instalado. Este não pode ser removido ou modificado.</translation>
 <translation id="7287143125007575591">Acesso negado.</translation>
@@ -137,6 +144,7 @@
 <translation id="8035920974645200807">Virada para o utilizador</translation>
 <translation id="8047248493720652249">Esta extensão não conseguiu atribuir o nome "<ph name="ATTEMPTED_FILENAME" />" à transferência, porque outra extensão (<ph name="EXTENSION_NAME" />) determinou um nome de ficheiro diferente: "<ph name="ACTUAL_FILENAME" />".</translation>
 <translation id="8049705080247101012">A Google sinalizou a extensão "<ph name="EXTENSION_NAME" />" como sendo maliciosa e a instalação foi impedida.</translation>
+<translation id="823691536304079791">Ler e alterar os seus dados</translation>
 <translation id="8284835137979141223"><ph name="PRODUCT_NAME" /> de <ph name="VENDOR_NAME" /></translation>
 <translation id="8353683614194668312">Esta pode:</translation>
 <translation id="8517576857589387417">O ficheiro de manifesto está em falta ou é ilegível.</translation>

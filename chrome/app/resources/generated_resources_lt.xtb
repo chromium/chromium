@@ -1394,6 +1394,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="2519517390894391510">Sertifikuojamo profilio pavadinimas</translation>
 <translation id="2520644704042891903">Laukiama pasiekiamo lizdo...</translation>
 <translation id="2522757085249311407">Leisti netoliese esantiems „Bluetooth“ įrenginiams aptikti šį įrenginį ir prisijungti prie jo.</translation>
+<translation id="2523048609826818526">Bendrosios paskirties rašymas</translation>
 <translation id="2523184218357549926">Siunčiami „Google“ puslapių, kuriuose lankotės, URL</translation>
 <translation id="252513908494776481">Klauskite apie šį skirtuką</translation>
 <translation id="2525746158911982776">Atnaujinti nepavyko, nes sistemoje nepakanka saugyklos vietos.</translation>
@@ -4244,6 +4245,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5633149627228920745">Sužinokite daugiau apie sistemos reikalavimus</translation>
 <translation id="5633597859549257840">Gaukite geriausias „Google“ DI funkcijas. Prisekite „Gemini“ prie įrankių juostos, kad galėtumėte lengvai pasiekti, arba bet kada atidarykite iš „Chrome“ meniu.</translation>
 <translation id="5635312199252507107">Leisti konkrečiose svetainėse</translation>
+<translation id="5636363757061959967">avataras, nuotrauka, vardas, paskyra, profilis</translation>
 <translation id="5638202526629811571">Parodykite vienam iš tėvų ar globėjų šį ekraną, kad jis (ji) galėtų pasakyti, ar galite pridėti šį plėtinį</translation>
 <translation id="563821631542362636">Leisti svetainei išsaugoti duomenis</translation>
 <translation id="5638309510554459422">Raskite plėtinių ir temų <ph name="BEGIN_LINK" />„Chrome“ internetinėje parduotuvėje<ph name="END_LINK" /></translation>
@@ -5560,7 +5562,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="710224247908684995">Plėtinys išjungė Saugaus naršymo funkciją</translation>
 <translation id="7102832101143475489">Baigėsi skirtasis užklausos laikas</translation>
 <translation id="7103944802169726298">Asmeninis kompiuteris ir perdavimo įrenginys prijungti prie to paties „Wi-Fi“ tinklo</translation>
-<translation id="7104134653119992646">Pokalbiai peržiūrimi ir naudojami generatyviniams DI modeliams mokyti. „Gemini“ yra DI ir gali klysti. Galite <ph name="BEGIN_LINK_MANAGE_HISTORY" />tvarkyti istoriją<ph name="END_LINK_MANAGE_HISTORY" />, įskaitant informaciją apie vietovę. <ph name="BEGIN_LINK_LEARN_MORE" />Sužinokite daugiau apie pasirinkimus<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. „Google“ narystė</translation>
 <translation id="7108338896283013870">Slėpti</translation>
 <translation id="7108419148561505648">Prieš išsaugodami užpildykite bent vieną lauką</translation>
@@ -6259,7 +6260,6 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="7903925330883316394">Paslaugų programa: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">Uždaryti šoninę juostą</translation>
 <translation id="7904492297081735975">&amp;Atidaryti žymių tvarkytuvę</translation>
-<translation id="7904508617992122201">Pokalbiai peržiūrimi ir naudojami generatyviniams DI modeliams mokyti. „Gemini“ yra DI ir gali klysti. Tam tikras turinys gali būti tinkamas ne visiems. Galite <ph name="BEGIN_LINK_MANAGE_HISTORY" />tvarkyti istoriją<ph name="END_LINK_MANAGE_HISTORY" />, įskaitant informaciją apie vietovę. <ph name="BEGIN_LINK_LEARN_MORE" />Sužinokite daugiau apie pasirinkimus<ph name="END_LINK_LEARN_MORE" />.</translation>
 <translation id="7907312522152480478">Jei norite gauti skirtukus iš kitų įrenginių, patvirtinkite savo tapatybę ir sinchronizuokite istoriją bei skirtukus. Galite bet kada sustabdyti sinchronizavimą skiltyje „Nustatymai“. „Google“ gali suasmeninti Paiešką ir kitas paslaugas pagal jūsų istoriją.</translation>
 <translation id="7907837847548254634">Greitai paryškinti akcentuojamą objektą</translation>
 <translation id="7908835530772972485">Ištrinti duomenis uždarius visus langus</translation>

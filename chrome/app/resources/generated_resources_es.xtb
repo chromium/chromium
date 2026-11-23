@@ -5540,7 +5540,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="710224247908684995">Una extensión ha desactivado Navegación segura</translation>
 <translation id="7102832101143475489">Se ha agotado el tiempo de espera de la solicitud</translation>
 <translation id="7103944802169726298">PC y dispositivo de emisión en la misma red Wi-Fi</translation>
-<translation id="7104134653119992646">Las conversaciones se revisan y se usan para entrenar modelos de IA generativa. Gemini es una IA y puede cometer errores. Puedes <ph name="BEGIN_LINK_MANAGE_HISTORY" />gestionar tu historial<ph name="END_LINK_MANAGE_HISTORY" />, incluida la información sobre tu ubicación. <ph name="BEGIN_LINK_LEARN_MORE" />Más información sobre tus opciones<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Suscripción de Google.</translation>
 <translation id="7108338896283013870">Ocultar</translation>
 <translation id="7108419148561505648">Rellena al menos un campo antes de guardar</translation>
@@ -6239,7 +6238,6 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="7903925330883316394">Utilidad: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">Cerrar barra lateral</translation>
 <translation id="7904492297081735975">&amp;Abrir administrador de marcadores</translation>
-<translation id="7904508617992122201">Las conversaciones se revisan y se usan para entrenar modelos de IA generativa. Gemini es una IA y puede cometer errores. Es posible que parte del contenido no sea adecuado para todos los usuarios. Puedes <ph name="BEGIN_LINK_MANAGE_HISTORY" />gestionar tu historial<ph name="END_LINK_MANAGE_HISTORY" />, incluida la información sobre tu ubicación. <ph name="BEGIN_LINK_LEARN_MORE" />Más información sobre tus opciones<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">Para ver las pestañas de tus otros dispositivos, verifica que eres tú y sincroniza tu historial y tus pestañas. Puedes detener la sincronización en cualquier momento desde la configuración. Google puede personalizar la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="7907837847548254634">Destacar brevemente el objeto enfocado</translation>
 <translation id="7908835530772972485">Eliminar los datos al cerrar todas las ventanas</translation>

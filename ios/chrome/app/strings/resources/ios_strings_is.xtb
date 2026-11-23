@@ -1395,7 +1395,6 @@
 <translation id="5282340693022193851">Kveiktu á tilkynningum í iOS-stillingunum til að fá tilkynningar fyrir verðrakningu.</translation>
 <translation id="528857768909044842">Flipahópar eru vistaðir hér</translation>
 <translation id="5294624619177114121">Tilkynningar í farsíma</translation>
-<translation id="5295239312320826323">Viltu fjarlægja reikning <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Sýna</translation>
 <translation id="5311061401280561833">Aðgangur að myndavél og hljóðnema veittur</translation>
 <translation id="5313967007315987356">Bæta vefsvæði við</translation>
@@ -1788,6 +1787,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6504541289630702018">Hafðu greiðan aðgang að flipahópum í tölvu</translation>
 <translation id="6505334220040167806">Draga saman flipahóp.</translation>
 <translation id="6506996418997555004">Deildu flipahópnum „<ph name="GROUP_NAME" />“</translation>
+<translation id="650770261448122895">Leitaðu að því sem þú sérð með „Linsa“</translation>
 <translation id="6507973708545996744">Skráðu þig inn til að fá leslistann þinn í öllum tækjunum þínum.</translation>
 <translation id="6518133107902771759">Staðfesta</translation>
 <translation id="6523575793810663688">Fá leiðbeiningar</translation>
@@ -2147,7 +2147,6 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="7603852183842204213">Sprettigluggar útilokaðir (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">Samstilling virkar ekki</translation>
 <translation id="760667371114328991">Slökkva á tilkynningum fyrir öryggisathugun</translation>
-<translation id="7612619742409846846">Innskráð(ur) á Google sem</translation>
 <translation id="7612849887607288481">Opna valmynd gervigreindarfrumsmíðar</translation>
 <translation id="7618220760967055820">Veldu hvaða hnapp á að hafa á tækjastikunni</translation>
 <translation id="7620522820075868385">Hætta við</translation>
@@ -2430,6 +2429,7 @@ Til að halda áfram í tölvunni skaltu skipta í <ph name="OTHER_EMAIL" />. Þ
 <translation id="8439758443371991593">Fela „Bæta við leslista“</translation>
 <translation id="8443986842926457191">Vefslóð er lengri en 2048 stafir</translation>
 <translation id="8449869326050867919">Aðgangsorði deilt</translation>
+<translation id="8473367210869452063">Til að eiga samskipti við þetta vefsvæði skaltu stöðva núverandi verkefni eða bíða eftir að Gemini ljúki vinnu</translation>
 <translation id="8473815223723723001">Breyta mynd með Gemini</translation>
 <translation id="8473863474539038330">Heimilisföng og fleira</translation>
 <translation id="8474378002946546633">Leyfa tilkynningar</translation>

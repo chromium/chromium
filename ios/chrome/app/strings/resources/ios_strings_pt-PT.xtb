@@ -1395,7 +1395,6 @@
 <translation id="5282340693022193851">Para receber notificações de acompanhamento de preço, ative-as nas definições do iOS.</translation>
 <translation id="528857768909044842">Os grupos de separadores são guardados aqui</translation>
 <translation id="5294624619177114121">Notificações para dispositivos móveis</translation>
-<translation id="5295239312320826323">Quer remover a conta <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5311061401280561833">Acesso à câmara e ao microfone permitido</translation>
 <translation id="5313967007315987356">Adicionar site</translation>
@@ -1788,6 +1787,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6504541289630702018">Aceda facilmente aos grupos de separadores do computador</translation>
 <translation id="6505334220040167806">Reduzir grupo de separadores.</translation>
 <translation id="6506996418997555004">Partilhe o grupo de separadores "<ph name="GROUP_NAME" />"</translation>
+<translation id="650770261448122895">Pesquise o que vê com o Lens</translation>
 <translation id="6507973708545996744">Inicie sessão para obter a sua Lista de leitura em todos os dispositivos.</translation>
 <translation id="6518133107902771759">Rever</translation>
 <translation id="6523575793810663688">Mostrar-me como</translation>
@@ -2147,7 +2147,6 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="7603852183842204213">Pop-ups bloqueados (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7605594153474022051">A sincronização não está a funcionar</translation>
 <translation id="760667371114328991">Desative as notificações da verificação de segurança</translation>
-<translation id="7612619742409846846">Iniciou sessão no Google como</translation>
 <translation id="7612849887607288481">Abrir menu Criar protótipo de IA</translation>
 <translation id="7618220760967055820">Escolha o botão que é apresentado na barra de ferramentas</translation>
 <translation id="7620522820075868385">Cancelar</translation>
@@ -2430,6 +2429,7 @@ Pode reiniciar em qualquer altura.</translation>
 <translation id="8439758443371991593">Ocultar Adicionar à Lista de leitura</translation>
 <translation id="8443986842926457191">O URL contém mais de 2048 carateres</translation>
 <translation id="8449869326050867919">Palavra-passe partilhada</translation>
+<translation id="8473367210869452063">Para interagir com este site, pare a tarefa atual ou aguarde que o Gemini termine de trabalhar</translation>
 <translation id="8473815223723723001">Editar imagem com o Gemini</translation>
 <translation id="8473863474539038330">Moradas e muito mais</translation>
 <translation id="8474378002946546633">Permitir notificações</translation>

@@ -846,6 +846,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1921544956190977703">Tens la seguretat més efectiva de Chrome contra llocs web, baixades i extensions perillosos</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> ppp</translation>
 <translation id="1921600948984918136">"<ph name="NAME" />" només es desa en aquest dispositiu. Per utilitzar-la als altres dispositius que fas servir, desa-la al teu compte.</translation>
+<translation id="1924725605995508501"><ph name="PORT_NAME" /> (<ph name="SERVICE_NAME" />)</translation>
 <translation id="192494336144674234">Obre amb</translation>
 <translation id="1925017091976104802">Prem <ph name="MODIFIER_KEY_DESCRIPTION" /> per enganxar-ho</translation>
 <translation id="1925021887439448749">Introdueix l'adreça web personalitzada</translation>
@@ -1392,6 +1393,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="2528487766183344810">Desbloqueja <ph name="TOKEN_NAME" /> per exportar el certificat de client.</translation>
 <translation id="2532198298278778531">Gestiona el DNS segur a la configuració de ChromeOS Flex</translation>
 <translation id="253434972992662860">P&amp;ausa</translation>
+<translation id="2534439599863644240">Port en sèrie</translation>
 <translation id="253498598929009420">El lloc web podrà veure el contingut de la teva pantalla</translation>
 <translation id="253557089021624350">Nombre de processos actius</translation>
 <translation id="2537395079978992874"><ph name="ORIGIN" /> pot veure i editar els fitxers i les carpetes següents</translation>
@@ -5536,7 +5538,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="710224247908684995">Una extensió ha desactivat Navegació segura</translation>
 <translation id="7102832101143475489">S'ha esgotat el temps d'espera de la sol·licitud</translation>
 <translation id="7103944802169726298">PC i dispositiu d'emissió a la mateixa xarxa Wi-Fi</translation>
-<translation id="7104134653119992646">Els xats es revisen i s'utilitzen per entrenar els models d'IA generativa. Gemini és una IA i pot cometre errors. Pots <ph name="BEGIN_LINK_MANAGE_HISTORY" />gestionar el teu historial<ph name="END_LINK_MANAGE_HISTORY" />, inclosa la informació sobre la teva ubicació. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació sobre les opcions<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Subscripció a Google.</translation>
 <translation id="7108338896283013870">Amaga</translation>
 <translation id="7108419148561505648">Emplena com a mínim un camp abans de desar</translation>
@@ -6235,7 +6236,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador, de
 <translation id="7903925330883316394">Utilitat: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">Tanca la barra lateral</translation>
 <translation id="7904492297081735975">&amp;Obre el gestor d'adreces d'interès</translation>
-<translation id="7904508617992122201">Els xats es revisen i s'utilitzen per entrenar els models d'IA generativa. Gemini és una IA i pot cometre errors. És possible que alguns continguts no siguin adequats per a tothom. Pots <ph name="BEGIN_LINK_MANAGE_HISTORY" />gestionar el teu historial<ph name="END_LINK_MANAGE_HISTORY" />, inclosa la informació sobre la teva ubicació. <ph name="BEGIN_LINK_LEARN_MORE" />Més informació sobre les opcions<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">Per accedir a les pestanyes dels teus altres dispositius, verifica la teva identitat i sincronitza l'historial i les pestanyes. Pots aturar la sincronització en qualsevol moment a la configuració. És possible que Google personalitzi la Cerca i altres serveis en funció del teu historial.</translation>
 <translation id="7907837847548254634">Marca breument l'objecte que té el focus posat</translation>
 <translation id="7908835530772972485">Suprimeix les dades en tancar totes les finestres.</translation>

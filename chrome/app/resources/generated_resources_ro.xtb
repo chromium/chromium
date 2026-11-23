@@ -1381,6 +1381,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="2519517390894391510">Numele profilului cu certificat</translation>
 <translation id="2520644704042891903">Se așteaptă un socket disponibil...</translation>
 <translation id="2522757085249311407">Permite dispozitivelor Bluetooth din apropiere să descopere și să se conecteze la acest dispozitiv.</translation>
+<translation id="2523048609826818526">Scriere cu scop general</translation>
 <translation id="2523184218357549926">Trimite la Google adresele URL ale paginilor pe care le accesezi</translation>
 <translation id="252513908494776481">Întreabă despre această filă</translation>
 <translation id="2525746158911982776">Actualizarea nu a reușit deoarece sistemul nu are suficient spațiu de stocare.</translation>
@@ -4227,6 +4228,7 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="5633149627228920745">Află mai multe despre cerințele de sistem</translation>
 <translation id="5633597859549257840">Profită la maximum de Google AI. Fixează Gemini în bara de instrumente pentru acces ușor sau deschide serviciul oricând din meniul Chrome.</translation>
 <translation id="5635312199252507107">Permite pe anumite site-uri</translation>
+<translation id="5636363757061959967">avatar, imagine, nume, cont, profil</translation>
 <translation id="5638202526629811571">Arată-i părintelui sau tutorelui acest ecran ca să-ți spună dacă poți adăuga extensia.</translation>
 <translation id="563821631542362636">Permite site-ului să salveze date</translation>
 <translation id="5638309510554459422">Găsește extensii și teme în <ph name="BEGIN_LINK" />Magazinul web Chrome<ph name="END_LINK" /></translation>
@@ -5539,7 +5541,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="710224247908684995">O extensie a dezactivat Navigarea sigură</translation>
 <translation id="7102832101143475489">Solicitarea a expirat</translation>
 <translation id="7103944802169726298">PC și dispozitiv de proiecție în aceeași rețea Wi-Fi</translation>
-<translation id="7104134653119992646">Chaturile sunt examinate și folosite pentru a instrui modelele de AI generativ. Gemini este un AI și poate să facă greșeli. Poți să <ph name="BEGIN_LINK_MANAGE_HISTORY" />gestionezi istoricul<ph name="END_LINK_MANAGE_HISTORY" />, inclusiv informațiile despre locație. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe despre alegerile tale<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Abonament Google</translation>
 <translation id="7108338896283013870">Ascunde</translation>
 <translation id="7108419148561505648">Completează cel puțin un câmp înainte de a salva</translation>
@@ -6238,7 +6239,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="7903925330883316394">Utilitar: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">Închide bara laterală</translation>
 <translation id="7904492297081735975">&amp;Deschide managerul de marcaje</translation>
-<translation id="7904508617992122201">Chaturile sunt examinate și folosite pentru a instrui modelele de AI generativ. Gemini este un AI și poate să facă greșeli. Este posibil ca unele tipuri de conținut să nu fie adecvate pentru toată lumea. Poți să <ph name="BEGIN_LINK_MANAGE_HISTORY" />gestionezi istoricul<ph name="END_LINK_MANAGE_HISTORY" />, inclusiv informațiile despre locație. <ph name="BEGIN_LINK_LEARN_MORE" />Află mai multe despre alegerile tale<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">Pentru a accesa filele de pe celelalte dispozitive, confirmă-ți identitatea și sincronizează istoricul și filele. Poți opri sincronizarea oricând din setări. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="7907837847548254634">Afișează o evidențiere rapidă a obiectului selectat</translation>
 <translation id="7908835530772972485">Șterge datele când închizi toate ferestrele</translation>

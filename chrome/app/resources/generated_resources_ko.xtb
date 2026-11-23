@@ -5553,7 +5553,6 @@
 <translation id="710224247908684995">확장 프로그램에서 세이프 브라우징을 사용 중지했습니다</translation>
 <translation id="7102832101143475489">요청 제한 시간 초과</translation>
 <translation id="7103944802169726298">PC와 전송 기기가 동일한 Wi-Fi 네트워크에 연결되어 있음</translation>
-<translation id="7104134653119992646">채팅은 생성형 AI 모델을 학습시키기 위해 검토되고 사용됩니다. Gemini는 AI이며 실수를 할 수 있습니다. 사용자는 위치 정보 등의 <ph name="BEGIN_LINK_MANAGE_HISTORY" />기록을 관리<ph name="END_LINK_MANAGE_HISTORY" />할 수 있습니다. <ph name="BEGIN_LINK_LEARN_MORE" />선택사항에 대해 자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846"><ph name="PROFILE_NAME" />. Google 멤버십</translation>
 <translation id="7108338896283013870">숨기기</translation>
 <translation id="7108419148561505648">저장하기 전에 하나 이상의 필드를 채우세요.</translation>
@@ -6252,7 +6251,6 @@
 <translation id="7903925330883316394">유틸리티: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">사이드바 닫기</translation>
 <translation id="7904492297081735975">북마크 관리자 열기(&amp;O)</translation>
-<translation id="7904508617992122201">채팅은 생성형 AI 모델을 학습시키기 위해 검토되고 사용됩니다. Gemini는 AI이며 실수를 할 수 있습니다. 일부 콘텐츠는 일부 사용자에게 적합하지 않을 수 있습니다. 사용자는 위치 정보 등의 <ph name="BEGIN_LINK_MANAGE_HISTORY" />기록을 관리<ph name="END_LINK_MANAGE_HISTORY" />할 수 있습니다. <ph name="BEGIN_LINK_LEARN_MORE" />선택사항에 대해 자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">다른 기기에서 탭을 가져오려면 본인 인증을 하고 방문 기록 및 탭을 동기화하세요. 언제든지 설정에서 동기화를 중지할 수 있습니다. Google에서는 사용자의 방문 기록을 기반으로 Google 검색 및 기타 서비스를 맞춤설정할 수 있습니다.</translation>
 <translation id="7907837847548254634">포커스된 객체를 빠르게 강조 표시</translation>
 <translation id="7908835530772972485">모든 창을 닫으면 데이터 삭제</translation>

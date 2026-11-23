@@ -5548,7 +5548,6 @@
 <translation id="710224247908684995">أوقفت إحدى الإضافات ميزة "التصفُّح الآمن".</translation>
 <translation id="7102832101143475489">انتهت مهلة الطلب</translation>
 <translation id="7103944802169726298">‏جهاز الكمبيوتر الشخصي وجهاز البث متصلان بشبكة Wi-Fi واحدة</translation>
-<translation id="7104134653119992646">‏تتم مراجعة المحادثات واستخدامها لتدريب نماذج الذكاء الاصطناعي التوليدي. ‫Gemini هو نموذج ذكاء اصطناعي وقد يرتكب أخطاءً. يمكنك <ph name="BEGIN_LINK_MANAGE_HISTORY" />إدارة سجلّك<ph name="END_LINK_MANAGE_HISTORY" />، بما في ذلك المعلومات المتعلقة بموقعك الجغرافي. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات حول خياراتك<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7105387152460258846">‏‫"<ph name="PROFILE_NAME" />". اشتراك Google</translation>
 <translation id="7108338896283013870">إخفاء</translation>
 <translation id="7108419148561505648">يجب ملء حقل واحد على الأقل قبل الحفظ</translation>
@@ -6248,7 +6247,6 @@
 <translation id="7903925330883316394">الأداة: <ph name="UTILITY_TYPE" /></translation>
 <translation id="790436879532554973">إغلاق الشريط الجانبي</translation>
 <translation id="7904492297081735975">فتح "مدير الإشارات"</translation>
-<translation id="7904508617992122201">‏تتم مراجعة المحادثات واستخدامها لتدريب نماذج الذكاء الاصطناعي التوليدي. ‫Gemini هو نموذج ذكاء اصطناعي وقد يرتكب أخطاءً. وقد يكون بعض المحتوى غير مناسب للجميع. يمكنك <ph name="BEGIN_LINK_MANAGE_HISTORY" />إدارة سجلّك<ph name="END_LINK_MANAGE_HISTORY" />، بما في ذلك المعلومات المتعلقة بموقعك الجغرافي. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات حول خياراتك<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="7907312522152480478">‏للحصول على علامات التبويب من أجهزتك الأخرى، يجب تأكيد هويتك ومزامنة السجلّ وعلامات التبويب. ويمكنك إيقاف المزامنة في أي وقت من خلال الإعدادات. وقد تستخدم Google السجلّ لتخصيص "بحث Google" والخدمات الأخرى.</translation>
 <translation id="7907837847548254634">تمييز سريع للعنصر الذي يتم التركيز عليه</translation>
 <translation id="7908835530772972485">حذف البيانات عند إغلاق جميع النوافذ</translation>

@@ -78,6 +78,7 @@
 <translation id="112840717907525620">Mae'r storfa polisïau yn iawn</translation>
 <translation id="1131264053432022307">Llun y gwnaethoch ei gopïo</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" /> – I adael y sgrîn lawn, llusgwch o'r brig a chyffwrdd â'r botwm yn ôl</translation>
+<translation id="11370190534773372">Manylion cerdyn wedi'u llenwi</translation>
 <translation id="1138458427267715730">Cael rhybuddion pan fydd y pris yn gostwng ar unrhyw wefan ar draws y we</translation>
 <translation id="1142713751288681188">Math o bapur</translation>
 <translation id="1142965388643537393">Gwybodaeth teithio</translation>
@@ -4548,6 +4549,7 @@ Manylion ychwanegol:
 <translation id="8577348305244205642">Nid yw'r cerdyn rhithwir ar gael</translation>
 <translation id="8579000896558714521">Diystyru bysellfwrdd</translation>
 <translation id="8579561564816585231">Wedi mewngofnodi gan ddefnyddio gwasanaeth Google megis Rheolwr Cyfrineiriau</translation>
+<translation id="8580478010934016252">Mynd i ddulliau talu</translation>
 <translation id="8581064022803799721">Mae'r dudalen hon wedi'i chadw yn <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="858637041960032120">Ychwanegu rhif ffôn</translation>
 <translation id="8587100480629037893">Ni chaniateir olrhain dwylo</translation>
@@ -4761,6 +4763,7 @@ Manylion ychwanegol:
 <translation id="8975263830901772334">Enwau ffeiliau rydych yn eu hargraffu</translation>
 <translation id="8982884016487650216">Wedi gorffen llwytho PDF</translation>
 <translation id="8983369100812962543">Gallwch bellach newid maint yr ap</translation>
+<translation id="8984453891367472218">Trefnu yn ôl grwpiau</translation>
 <translation id="8984785270737450103">Mae rhannu wedi'i ddiffodd ar hyn o bryd</translation>
 <translation id="8985112471026018799">Cadw cerdyn ar gyfer talu'n cyflymach</translation>
 <translation id="8987245424886630962"><ph name="VIEW_CHROME_HISTORY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pwyswch Tab yna Enter i weld eich hanes pori yn Chrome</translation>
