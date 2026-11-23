@@ -67,9 +67,9 @@ cr-input {
 
 #profile-icon {
   background: center / cover no-repeat;
-  border-radius: 20px;
-  height: 40px;
-  width: 40px;
+  border-radius: var(--profile-icon-border-radius);
+  height: var(--shown-avatar-size);
+  width: var(--shown-avatar-size);
 }
 
 #button-container {

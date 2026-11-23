@@ -22,6 +22,9 @@ html {
   --iron-icon-width: var(--cr-icon-size);
 
   --cr-radio-group-item-padding: 0;
+
+  --profile-icon-border-radius: 50%;
+  --shown-avatar-size: 40px;
 }
 
 @media (prefers-color-scheme: dark) {

@@ -12,10 +12,10 @@
 
 #profile-icon {
   background: center / cover no-repeat;
-  border-radius: 20px;
+  border-radius: var(--profile-icon-border-radius);
   flex-shrink: 0;
-  height: 40px;
-  width: 40px;
+  height: var(--shown-avatar-size);
+  width: var(--shown-avatar-size);
 }
 
 cr-link-row {
