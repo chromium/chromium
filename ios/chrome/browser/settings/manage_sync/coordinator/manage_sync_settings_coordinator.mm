@@ -523,13 +523,12 @@ enum class ActionAfterReauth {
   // crbug.com/383373460
   [self stopManageAccountsNavigationController];
   _manageAccountsNavigationController = [SettingsNavigationController
-             accountsControllerForBrowser:self.browser
-                       baseViewController:self.viewController
-                                 delegate:self
-                closeSettingsOnAddAccount:NO
-                        showSignoutButton:NO
-                           showDoneButton:YES
-      signoutDismissalByParentCoordinator:YES];
+      accountsControllerForBrowser:self.browser
+                baseViewController:self.viewController
+                          delegate:self
+         closeSettingsOnAddAccount:NO
+                 showSignoutButton:NO
+                    showDoneButton:YES];
 }
 
 - (void)showManageYourGoogleAccount {

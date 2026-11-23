@@ -319,13 +319,12 @@ typedef NS_ENUM(NSUInteger, AccountMenuReauthAction) {
   // Account Menu’s Add Account and reauth account coordinator are stopped.
   [self stopChildrenCoordinators];
   _manageAccountsNavigationController = [SettingsNavigationController
-             accountsControllerForBrowser:self.browser
-                       baseViewController:_navigationController
-                                 delegate:self
-                closeSettingsOnAddAccount:NO
-                        showSignoutButton:NO
-                           showDoneButton:YES
-      signoutDismissalByParentCoordinator:YES];
+      accountsControllerForBrowser:self.browser
+                baseViewController:_navigationController
+                          delegate:self
+         closeSettingsOnAddAccount:NO
+                 showSignoutButton:NO
+                    showDoneButton:YES];
 }
 
 - (void)signOutFromTargetRect:(CGRect)targetRect

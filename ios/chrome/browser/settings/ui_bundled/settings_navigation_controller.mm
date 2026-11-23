@@ -257,16 +257,13 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 + (instancetype)
-           accountsControllerForBrowser:(Browser*)browser
-                     baseViewController:(UIViewController*)baseViewController
-                               delegate:
-                                   (id<SettingsNavigationControllerDelegate>)
-                                       delegate
-              closeSettingsOnAddAccount:(BOOL)closeSettingsOnAddAccount
-                      showSignoutButton:(BOOL)showSignoutButton
-                         showDoneButton:(BOOL)showDoneButton
-    signoutDismissalByParentCoordinator:
-        (BOOL)signoutDismissalByParentCoordinator {
+    accountsControllerForBrowser:(Browser*)browser
+              baseViewController:(UIViewController*)baseViewController
+                        delegate:
+                            (id<SettingsNavigationControllerDelegate>)delegate
+       closeSettingsOnAddAccount:(BOOL)closeSettingsOnAddAccount
+               showSignoutButton:(BOOL)showSignoutButton
+                  showDoneButton:(BOOL)showDoneButton {
   SettingsNavigationController* navigationController =
       [[SettingsNavigationController alloc]
           initWithRootViewController:nil

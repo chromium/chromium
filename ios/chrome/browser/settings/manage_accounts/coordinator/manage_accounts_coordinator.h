@@ -15,11 +15,6 @@ class Browser;
 // `prefs::kRestrictAccountsToPatterns`.
 @interface ManageAccountsCoordinator : ChromeCoordinator
 
-// If YES, ManageAccountsTableViewController should not dismiss itself only for
-// a sign-out reason. The parent coordinator is responsible to dismiss this
-// coordinator when a sign-out happens.
-@property(nonatomic, assign) BOOL signoutDismissalByParentCoordinator;
-
 // If YES, the view will offer a sign-out button.
 @property(nonatomic, assign) BOOL showSignoutButton;
 
