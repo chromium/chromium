@@ -65,6 +65,7 @@
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_controller_impl.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_view.h"
 #include "components/autofill/core/browser/ui/payments/payments_churned_users_ui_delegate.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_controller_impl.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -1277,6 +1278,16 @@ ChromePaymentsAutofillClient::GetPaymentsChurnedUsersUiDelegate() {
 #endif
   }
   return payments_churned_users_ui_delegate_.get();
+}
+
+void ChromePaymentsAutofillClient::ShowPaymentsChurnedUsersUI(
+    AccountInfo account_info,
+    base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback) {
+  if (PaymentsChurnedUsersUiDelegate* ui_delegate =
+          GetPaymentsChurnedUsersUiDelegate()) {
+    ui_delegate->ShowPaymentsChurnedUsersUI(std::move(account_info),
+                                            std::move(closed_callback));
+  }
 }
 
 #if !BUILDFLAG(IS_ANDROID)

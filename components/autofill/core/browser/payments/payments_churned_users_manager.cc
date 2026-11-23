@@ -15,7 +15,6 @@
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_churned_users_metrics.h"
-#include "components/autofill/core/browser/ui/payments/payments_churned_users_ui_delegate.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/prefs/pref_service.h"
@@ -118,13 +117,10 @@ void PaymentsChurnedUsersManager::OnFieldTypesDetermined(
 
       if (payments::PaymentsAutofillClient* payments_client =
               client_->GetPaymentsAutofillClient()) {
-        if (PaymentsChurnedUsersUiDelegate* ui_delegate =
-                payments_client->GetPaymentsChurnedUsersUiDelegate()) {
-          ui_delegate->ShowPaymentsChurnedUsersUI(
-              std::move(account_info),
-              base::BindOnce(&PaymentsChurnedUsersManager::OnUiClosed,
-                             weak_factory_.GetWeakPtr()));
-        }
+        payments_client->ShowPaymentsChurnedUsersUI(
+            std::move(account_info),
+            base::BindOnce(&PaymentsChurnedUsersManager::OnUiClosed,
+                           weak_factory_.GetWeakPtr()));
       }
     }
   }

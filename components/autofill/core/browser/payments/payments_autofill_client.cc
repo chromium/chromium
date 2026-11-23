@@ -6,6 +6,8 @@
 
 #include "build/buildflag.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
+#include "components/signin/public/identity_manager/account_info.h"
 
 #if !BUILDFLAG(IS_IOS)
 #endif  // !BUILDFLAG(IS_IOS)
@@ -75,5 +77,9 @@ PaymentsChurnedUsersUiDelegate*
 PaymentsAutofillClient::GetPaymentsChurnedUsersUiDelegate() {
   return nullptr;
 }
+
+void PaymentsAutofillClient::ShowPaymentsChurnedUsersUI(
+    AccountInfo account_info,
+    base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback) {}
 
 }  // namespace autofill::payments

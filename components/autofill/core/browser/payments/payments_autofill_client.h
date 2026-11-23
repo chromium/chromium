@@ -32,6 +32,8 @@ class InternalAuthenticator;
 }
 #endif
 
+class AccountInfo;
+
 namespace autofill {
 
 class AutofillDriver;
@@ -65,6 +67,7 @@ class OmniboxAutofillDelegate;
 class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
 class PaymentsDataManager;
+enum class PaymentsUiClosedReason;
 enum class SuggestionHidingReason;
 class TouchToFillPaymentMethodDelegate;
 struct VirtualCardEnrollmentFields;
@@ -832,6 +835,13 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // Gets the `PaymentsChurnedUsersUiDelegate` instance associated with the
   // client. Handles the resurrection UI for the Payments Churned Users flow.
   virtual PaymentsChurnedUsersUiDelegate* GetPaymentsChurnedUsersUiDelegate();
+
+  // Requests the platform UI layer to show the Payments Churned Users
+  // resurrection UI, prompting churned users who turned off Autofill payment
+  // methods to resurrect and re-enable Autofill.
+  virtual void ShowPaymentsChurnedUsersUI(
+      AccountInfo account_info,
+      base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Gets the `OmniboxAutofillDelegate` instance associated with the client, or

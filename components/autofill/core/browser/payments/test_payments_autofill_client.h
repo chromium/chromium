@@ -32,7 +32,6 @@
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_ui_type.h"
 #include "components/autofill/core/browser/ui/payments/bnpl_ui_delegate.h"
-#include "components/autofill/core/browser/ui/payments/payments_churned_users_ui_delegate.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 
 #if !BUILDFLAG(IS_IOS)
@@ -238,12 +237,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   BnplStrategy* GetBnplStrategy() override;
   BnplUiDelegate* GetBnplUiDelegate() override;
   WalletReminderNoticeManager* GetWalletReminderNoticeManager() override;
-  PaymentsChurnedUsersUiDelegate* GetPaymentsChurnedUsersUiDelegate() override;
 
-  void set_payments_churned_users_ui_delegate(
-      std::unique_ptr<PaymentsChurnedUsersUiDelegate> ui_delegate) {
-    payments_churned_users_ui_delegate_ = std::move(ui_delegate);
-  }
 
   void set_wallet_reminder_notice_manager(
       std::unique_ptr<WalletReminderNoticeManager>
@@ -522,8 +516,6 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   std::unique_ptr<BnplUiDelegate> bnpl_ui_delegate_;
 
   std::unique_ptr<WalletReminderNoticeManager> wallet_reminder_notice_manager_;
-  std::unique_ptr<PaymentsChurnedUsersUiDelegate>
-      payments_churned_users_ui_delegate_;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // The OmniboxAutofillDelegate used to handle the logic flow and user

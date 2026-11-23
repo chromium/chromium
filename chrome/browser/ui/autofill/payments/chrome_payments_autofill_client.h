@@ -33,6 +33,8 @@ namespace webauthn {
 class InternalAuthenticator;
 }
 
+class AccountInfo;
+
 namespace autofill {
 
 #if BUILDFLAG(IS_ANDROID)
@@ -64,6 +66,7 @@ struct OfferNotificationOptions;
 class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
 class PaymentsDataManager;
+enum class PaymentsUiClosedReason;
 class SaveAndFillDialogControllerImpl;
 class SaveAndFillManager;
 class TouchToFillPaymentMethodDelegate;
@@ -259,6 +262,10 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   BnplUiDelegate* GetBnplUiDelegate() override;
   WalletReminderNoticeManager* GetWalletReminderNoticeManager() override;
   PaymentsChurnedUsersUiDelegate* GetPaymentsChurnedUsersUiDelegate() override;
+  void ShowPaymentsChurnedUsersUI(
+      AccountInfo account_info,
+      base::OnceCallback<void(PaymentsUiClosedReason)> closed_callback)
+      override;
 #if !BUILDFLAG(IS_ANDROID)
   OmniboxAutofillDelegate* GetOmniboxAutofillDelegate() override;
   void ShowExpandedOmniboxAutofillChip(
