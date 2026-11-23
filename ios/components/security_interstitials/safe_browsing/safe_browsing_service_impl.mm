@@ -4,6 +4,9 @@
 
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_service_impl.h"
 
+#import <string>
+#import <vector>
+
 #import "base/files/file_path.h"
 #import "base/functional/bind.h"
 #import "base/path_service.h"
@@ -18,6 +21,7 @@
 #import "components/safe_browsing/core/browser/url_checker/url_checker_delegate.h"
 #import "components/safe_browsing/core/browser/utils/url_loader_factory_params.h"
 #import "components/safe_browsing/core/common/features.h"
+#import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/safe_browsing/core/common/safebrowsing_constants.h"
 #import "components/sessions/core/session_id.h"
 #import "ios/components/cookie_util/cookie_util.h"
@@ -48,6 +52,24 @@ inline constexpr std::string_view kClientName = "chromium";
 std::string GetProfileModeSuffix(web::WebState* web_state) {
   return web_state->GetBrowserState()->IsOffTheRecord() ? "Incognito"
                                                         : "Regular";
+}
+
+// Creates a `UrlCheckerDelegateImpl` and configures allowlist domains from the
+// client's preferences if available.
+scoped_refptr<safe_browsing::UrlCheckerDelegate> CreateUrlCheckerDelegate(
+    scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager,
+    SafeBrowsingClient* client) {
+  scoped_refptr<safe_browsing::UrlCheckerDelegate> delegate =
+      base::MakeRefCounted<UrlCheckerDelegateImpl>(
+          std::move(database_manager), client ? client->AsWeakPtr() : nullptr);
+  PrefService* prefs = client ? client->GetPrefs() : nullptr;
+  if (prefs) {
+    std::vector<std::string> allowlist_domains;
+    safe_browsing::GetSafeBrowsingAllowlistDomainsPref(*prefs,
+                                                       &allowlist_domains);
+    delegate->SetPolicyAllowlistDomains(allowlist_domains);
+  }
+  return delegate;
 }
 
 }  // namespace
@@ -169,8 +191,7 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
   bool can_perform_full_url_lookup =
       url_lookup_service && url_lookup_service->CanPerformFullURLLookup();
   scoped_refptr<safe_browsing::UrlCheckerDelegate> url_checker_delegate =
-      base::MakeRefCounted<UrlCheckerDelegateImpl>(safe_browsing_db_manager_,
-                                                   client->AsWeakPtr());
+      CreateUrlCheckerDelegate(safe_browsing_db_manager_, client);
   safe_browsing::HashRealTimeService* hash_real_time_service =
       client->GetHashRealTimeService();
 
@@ -235,8 +256,7 @@ SafeBrowsingServiceImpl::CreateAsyncChecker(
   bool can_perform_full_url_lookup =
       url_lookup_service && url_lookup_service->CanPerformFullURLLookup();
   scoped_refptr<safe_browsing::UrlCheckerDelegate> url_checker_delegate =
-      base::MakeRefCounted<UrlCheckerDelegateImpl>(safe_browsing_db_manager_,
-                                                   client->AsWeakPtr());
+      CreateUrlCheckerDelegate(safe_browsing_db_manager_, client);
   safe_browsing::HashRealTimeService* hash_real_time_service =
       client->GetHashRealTimeService();
 
@@ -297,8 +317,7 @@ SafeBrowsingServiceImpl::CreateSyncChecker(
     web::WebState* web_state,
     SafeBrowsingClient* client) {
   scoped_refptr<safe_browsing::UrlCheckerDelegate> url_checker_delegate =
-      base::MakeRefCounted<UrlCheckerDelegateImpl>(safe_browsing_db_manager_,
-                                                   client->AsWeakPtr());
+      CreateUrlCheckerDelegate(safe_browsing_db_manager_, client);
 
   safe_browsing::V5GetHashProtocolManager* v5_get_hash_protocol_manager =
       client ? client->GetV5GetHashProtocolManager() : nullptr;

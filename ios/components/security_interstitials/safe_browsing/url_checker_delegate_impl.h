@@ -5,6 +5,9 @@
 #ifndef IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_URL_CHECKER_DELEGATE_IMPL_H_
 #define IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_URL_CHECKER_DELEGATE_IMPL_H_
 
+#include <string>
+#include <vector>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/safe_browsing/core/browser/url_checker/url_checker_delegate.h"
@@ -81,6 +84,10 @@ class UrlCheckerDelegateImpl : public safe_browsing::UrlCheckerDelegate {
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
   base::WeakPtr<SafeBrowsingClient> client_;
   safe_browsing::SBThreatTypeSet threat_types_;
+  // Canonicalized domains from the `SafeBrowsingAllowlistDomains` policy,
+  // captured when the delegate is created. URLs on these domains or their
+  // subdomains skip Safe Browsing checks.
+  std::vector<std::string> allowlist_domains_;
 };
 
 #endif  // IOS_COMPONENTS_SECURITY_INTERSTITIALS_SAFE_BROWSING_URL_CHECKER_DELEGATE_IMPL_H_

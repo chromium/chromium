@@ -1,6 +1,6 @@
 caption: Configure the list of domains on which Safe Browsing will not trigger warnings.
 desc: |-
-  Setting the policy to Enabled means Safe Browsing will trust the domains you designate. It won't check them for dangerous resources such as phishing, malware, or unwanted software. Safe Browsing's download protection service won't check downloads hosted on these domains. Its password protection service won't check for password reuse.
+  Setting the policy to Enabled means Safe Browsing will trust the domains you designate. It won't check them for dangerous resources such as phishing, malware, or unwanted software. Safe Browsing's download protection (not supported on iOS) service won't check downloads hosted on these domains. Its password protection service won't check for password reuse.
 
   Leaving the policy unset means default Safe Browsing protection applies to all resources.
 
@@ -25,5 +25,6 @@ supported_on:
 - chrome.*:86-
 - chrome_os:86-
 - android:133-
+- ios:160-
 tags: []
 type: list

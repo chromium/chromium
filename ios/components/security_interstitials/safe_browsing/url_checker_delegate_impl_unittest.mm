@@ -4,6 +4,10 @@
 
 #import "ios/components/security_interstitials/safe_browsing/url_checker_delegate_impl.h"
 
+#import <optional>
+#import <string>
+#import <vector>
+
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
@@ -323,4 +327,28 @@ TEST_F(UrlCheckerDelegateImplTest,
   delegate_->ShowSuspiciousSiteWarning(resource, base::NullCallback());
   FlushUIThreadTasks();
   EXPECT_FALSE(client_.on_suspicious_site_warning_triggered_called());
+}
+
+// Tests that setting policy allowlist domains properly matches domains and
+// subdomains and skips request checks.
+TEST_F(UrlCheckerDelegateImplTest,
+       SkipsChecksForAllowlistedDomainsAndSubdomains) {
+  ASSERT_FALSE(delegate_->IsUrlAllowlisted(GURL("http://example.com")));
+
+  std::vector<std::string> allowlist_domains = {"example.com", "foo.test"};
+  delegate_->SetPolicyAllowlistDomains(allowlist_domains);
+
+  EXPECT_TRUE(delegate_->IsUrlAllowlisted(GURL("http://example.com/path")));
+  EXPECT_TRUE(delegate_->IsUrlAllowlisted(GURL("http://sub.example.com/path")));
+  EXPECT_FALSE(delegate_->IsUrlAllowlisted(GURL("http://notexample.com/path")));
+  EXPECT_FALSE(delegate_->IsUrlAllowlisted(GURL("http://other.test/path")));
+
+  EXPECT_TRUE(delegate_->ShouldSkipRequestCheck(
+      GURL("http://example.com/path"), /*frame_tree_node_id=*/-1,
+      /*render_process_id=*/-1, /*render_frame_token=*/std::nullopt,
+      /*originated_from_service_worker=*/false));
+  EXPECT_FALSE(delegate_->ShouldSkipRequestCheck(
+      GURL("http://notexample.com/path"), /*frame_tree_node_id=*/-1,
+      /*render_process_id=*/-1, /*render_frame_token=*/std::nullopt,
+      /*originated_from_service_worker=*/false));
 }

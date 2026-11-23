@@ -4,6 +4,8 @@
 
 #import "ios/components/security_interstitials/safe_browsing/url_checker_delegate_impl.h"
 
+#import <algorithm>
+
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "components/prefs/pref_service.h"
@@ -102,12 +104,15 @@ void UrlCheckerDelegateImpl::
         const security_interstitials::UnsafeResource& resource) {}
 
 bool UrlCheckerDelegateImpl::IsUrlAllowlisted(const GURL& url) {
-  return false;
+  return std::ranges::any_of(allowlist_domains_,
+                             [&url](const std::string& domain) {
+                               return !domain.empty() && url.DomainIs(domain);
+                             });
 }
 
 void UrlCheckerDelegateImpl::SetPolicyAllowlistDomains(
     const std::vector<std::string>& allowlist_domains) {
-  // The SafeBrowsingAllowlistDomains policy is not supported on iOS.
+  allowlist_domains_ = allowlist_domains;
 }
 
 bool UrlCheckerDelegateImpl::ShouldSkipRequestCheck(
@@ -116,7 +121,7 @@ bool UrlCheckerDelegateImpl::ShouldSkipRequestCheck(
     int render_process_id,
     base::optional_ref<const base::UnguessableToken> render_frame_token,
     bool originated_from_service_worker) {
-  return false;
+  return IsUrlAllowlisted(original_url);
 }
 
 void UrlCheckerDelegateImpl::NotifySuspiciousSiteDetected(

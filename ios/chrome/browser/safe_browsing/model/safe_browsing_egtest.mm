@@ -13,6 +13,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
+#import "base/values.h"
 #import "components/enterprise/common/proto/synced/browser_events.pb.h"
 #import "components/enterprise/common/proto/synced_from_google3/chrome_reporting_entity.pb.h"
 #import "components/enterprise/common/proto/upload_request_response.pb.h"
@@ -21,6 +22,7 @@
 #import "components/enterprise/connectors/core/realtime_reporting_test_environment.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/core/common/policy_types.h"
+#import "components/policy/policy_constants.h"
 #import "components/safe_browsing/core/common/client_side_detection_enums.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -31,6 +33,7 @@
 #import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/safe_browsing/model/safe_browsing_app_interface.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/privacy_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -447,6 +450,9 @@ void EnableEnterpriseUrlFilteringPrefs() {
   // value.
   [ChromeEarlGrey setURLKeyedAnonymizedDataCollectionEnabled:NO];
 
+  // Clear any enterprise policies set during the test.
+  policy_test_utils::ClearPolicies();
+
   // Clear browsing history (which also clears Safe Browsing verdict caches)
   // for good test hygiene.
   [ChromeEarlGrey clearBrowsingHistory];
@@ -574,6 +580,13 @@ void EnableEnterpriseUrlFilteringPrefs() {
                   @"Wrong interstitial event reason.");
 }
 
+// Sets the `SafeBrowsingAllowlistDomains` policy to the phishing page's host.
+- (void)allowlistPhishingDomainWithPolicy {
+  policy_test_utils::SetPolicy(
+      base::Value(base::ListValue().Append(_phishingURL.host())),
+      policy::key::kSafeBrowsingAllowlistDomains);
+}
+
 #pragma mark - Tests
 // Tests that safe pages are not blocked.
 - (void)testSafePage {
@@ -597,6 +610,37 @@ TAG_SMOKE_TEST(SafeBrowsingTestCase, testPhishingPage);
   // contents are loaded.
   [ChromeEarlGrey tapWebStateElementWithID:kPrimaryButtonID];
   [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
+}
+
+// Tests that unsafe pages on a domain configured in the
+// `SafeBrowsingAllowlistDomains` enterprise policy are not blocked.
+- (void)testUnsafePagesNotBlockedWhenDomainAllowlistedByPolicy {
+  [self allowlistPhishingDomainWithPolicy];
+
+  [ChromeEarlGrey loadURL:_phishingURL];
+  [ChromeEarlGrey waitForWebStateContainingText:_phishingContent];
+  [ChromeEarlGrey loadURL:_malwareURL];
+  [ChromeEarlGrey waitForWebStateContainingText:_malwareContent];
+  [ChromeEarlGrey goBack];
+  [ChromeEarlGrey waitForWebStateContainingText:_phishingContent];
+}
+
+// Tests that clearing the `SafeBrowsingAllowlistDomains` enterprise policy
+// restores the warning for a previously allowlisted phishing page.
+- (void)testWarningRestoredWhenAllowlistPolicyCleared {
+  [self allowlistPhishingDomainWithPolicy];
+  [ChromeEarlGrey loadURL:_phishingURL];
+  [ChromeEarlGrey waitForWebStateContainingText:_phishingContent];
+
+  policy_test_utils::ClearPolicies();
+
+  // Navigate away to a safe page first to avoid EarlGrey reload timeouts.
+  [ChromeEarlGrey loadURL:_safeURL1];
+  [ChromeEarlGrey waitForWebStateContainingText:_safeContent1];
+
+  [ChromeEarlGrey loadURL:_phishingURL];
+  [ChromeEarlGrey waitForWebStateContainingText:l10n_util::GetStringUTF8(
+                                                    IDS_SAFEBROWSING_HEADING)];
 }
 
 // Tests expanding the details on a phishing warning, and proceeding past the

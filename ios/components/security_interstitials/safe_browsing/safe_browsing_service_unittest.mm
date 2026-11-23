@@ -14,6 +14,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/run_until.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/values.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/testing_pref_service.h"
@@ -563,6 +564,94 @@ TEST_P(SafeBrowsingServiceTest, SafeAndUnsafePagesWithAsyncChecker) {
   client.CheckUrlWithAsyncChecker(unsafe_url);
   EXPECT_FALSE(client.result_pending());
   EXPECT_FALSE(client.url_is_unsafe());
+}
+
+// Tests that URLs belonging to domains configured in the
+// `SafeBrowsingAllowlistDomains` pref bypass Safe Browsing checks across sync
+// and async checkers.
+TEST_P(SafeBrowsingServiceTest, AllowlistDomainsBypassesChecks) {
+  // Check a safe URL first to wait for the background database initialization
+  // to complete before calling `MarkUrlAsMalware()`.
+  {
+    TestUrlCheckerClient client(safe_browsing_service_.get(),
+                                browser_state_.get(),
+                                safe_browsing_client_.get());
+    client.CheckUrl(GURL(kSafePage));
+    client.WaitForResult();
+    ASSERT_FALSE(client.url_is_unsafe());
+  }
+
+  GURL unsafe_url = GURL(kMalwarePage);
+  MarkUrlAsMalware(unsafe_url);
+
+  // Without allowlist, unsafe URL is flagged.
+  {
+    TestUrlCheckerClient client(safe_browsing_service_.get(),
+                                browser_state_.get(),
+                                safe_browsing_client_.get());
+    client.CheckUrl(unsafe_url);
+    ASSERT_TRUE(client.result_pending());
+    client.WaitForResult();
+    ASSERT_FALSE(client.result_pending());
+    ASSERT_TRUE(client.url_is_unsafe());
+  }
+
+  // Set allowlist pref to include the host of `unsafe_url`.
+  pref_service_.SetList(prefs::kSafeBrowsingAllowlistDomains,
+                        base::ListValue().Append(unsafe_url.host()));
+
+  // `CheckUrl()` should now skip the check for the allowlisted domain.
+  {
+    TestUrlCheckerClient client(safe_browsing_service_.get(),
+                                browser_state_.get(),
+                                safe_browsing_client_.get());
+    client.CheckUrl(unsafe_url);
+    EXPECT_FALSE(client.result_pending());
+    EXPECT_FALSE(client.url_is_unsafe());
+    EXPECT_EQ(safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck::
+                  kCheckSkipped,
+              client.performed_check());
+  }
+
+  // `CheckUrlWithSyncChecker()` should also skip the check.
+  {
+    TestUrlCheckerClient client(safe_browsing_service_.get(),
+                                browser_state_.get(),
+                                safe_browsing_client_.get());
+    client.CheckUrlWithSyncChecker(unsafe_url);
+    EXPECT_FALSE(client.result_pending());
+    EXPECT_FALSE(client.url_is_unsafe());
+    EXPECT_EQ(safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck::
+                  kCheckSkipped,
+              client.performed_check());
+  }
+
+  // `CheckUrlWithAsyncChecker()` should also skip the check.
+  {
+    TestUrlCheckerClient client(safe_browsing_service_.get(),
+                                browser_state_.get(),
+                                safe_browsing_client_.get());
+    client.CheckUrlWithAsyncChecker(unsafe_url);
+    EXPECT_FALSE(client.result_pending());
+    EXPECT_FALSE(client.url_is_unsafe());
+    EXPECT_EQ(safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck::
+                  kCheckSkipped,
+              client.performed_check());
+  }
+
+  // Clearing the allowlist pref should reinstate unsafe URL flagging.
+  pref_service_.SetList(prefs::kSafeBrowsingAllowlistDomains,
+                        base::ListValue());
+  {
+    TestUrlCheckerClient client(safe_browsing_service_.get(),
+                                browser_state_.get(),
+                                safe_browsing_client_.get());
+    client.CheckUrl(unsafe_url);
+    EXPECT_TRUE(client.result_pending());
+    client.WaitForResult();
+    EXPECT_FALSE(client.result_pending());
+    EXPECT_TRUE(client.url_is_unsafe());
+  }
 }
 
 // Verifies that safe and unsafe URLs are identified correctly when real-time
