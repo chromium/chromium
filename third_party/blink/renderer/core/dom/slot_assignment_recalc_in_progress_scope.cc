@@ -5,9 +5,36 @@
 #include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 
 #include "base/check_op.h"
+#include "base/debug/crash_logging.h"
+#include "base/notreached.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
+
+namespace {
+
+const char* InvariantName(SlotAssignmentInvariant invariant) {
+  switch (invariant) {
+    case SlotAssignmentInvariant::kNoScriptOrEventDispatch:
+      return "script-or-event";
+    case SlotAssignmentInvariant::kNoDOMMutation:
+      return "dom-mutation";
+    case SlotAssignmentInvariant::kNoFocusChange:
+      return "focus-change";
+    case SlotAssignmentInvariant::kNoAssignmentDirtying:
+      return "dirtying";
+    case SlotAssignmentInvariant::kNoReentrantRecalc:
+      return "reentrant-recalc";
+    case SlotAssignmentInvariant::kNoRecalcWhileForbidden:
+      return "recalc-forbidden";
+    case SlotAssignmentInvariant::kNoFlatTreeAccessWhileForbidden:
+      return "flat-tree-forbidden";
+  }
+  NOTREACHED();
+}
+
+}  // namespace
 
 unsigned SlotAssignmentRecalcInProgressScope::depth_ = 0;
 unsigned
@@ -40,9 +67,16 @@ SlotAssignmentRecalcInProgressScope::ForbidFlatTreeTraversal::
 
 // static
 void SlotAssignmentRecalcInProgressScope::ReportViolation(
-    SlotAssignmentInvariant) {
-  // TODO(crbug.com/582346913): Report violations once the known violators are
-  // fixed.
+    SlotAssignmentInvariant invariant) {
+  if (!RuntimeEnabledFeatures::EnforceSlotAssignmentInvariantsEnabled()) {
+    return;
+  }
+  SCOPED_CRASH_KEY_STRING32("SlotAssignment", "invariant",
+                            InvariantName(invariant));
+  // TODO(crbug.com/582346913): Switch to CHECK once release crash reports are
+  // clean.
+  DUMP_WILL_BE_NOTREACHED() << "Slot assignment recalc invariant violated: "
+                            << InvariantName(invariant);
 }
 
 // static

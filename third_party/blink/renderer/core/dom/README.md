@@ -726,8 +726,9 @@ of rules (R1-R7). In short, for authors of new flat tree consumers:
 - `*NoRecalc` and `*WithoutRecalc` accessors may return stale data. Use them
   only where documented.
 
-These rules are checked by
-[`SlotAssignmentRecalcInProgressScope`](./slot_assignment_recalc_in_progress_scope.h).
+These rules are checked in release builds by
+[`SlotAssignmentRecalcInProgressScope`](./slot_assignment_recalc_in_progress_scope.h),
+behind the `EnforceSlotAssignmentInvariants` feature.
 
 # FlatTreeTraversal
 

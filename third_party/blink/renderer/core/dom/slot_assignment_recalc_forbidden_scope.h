@@ -14,7 +14,7 @@ namespace blink {
 // Marks a region where the tree is unstable (in the middle of a DOM mutation,
 // during layout-tree detach, or during style, layout, or paint), so slot
 // assignment recalc must not run (rule R5 in slot_assignment.h). This is
-// checked by SlotAssignment::RecalcAssignment().
+// enforced in release builds by SlotAssignment::RecalcAssignment().
 class [[nodiscard]] SlotAssignmentRecalcForbiddenScope {
   STACK_ALLOCATED();
 

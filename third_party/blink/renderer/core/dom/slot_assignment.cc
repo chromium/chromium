@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
-#include "third_party/blink/renderer/core/dom/slot_assignment_recalc_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_recalc_in_progress_scope.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
@@ -292,14 +291,13 @@ void SlotAssignment::RecalcShadowRoots(
   }
   Document& document = roots.front()->GetDocument();
   // Recalc must not run while the tree is unstable (rule R5 in
-  // slot_assignment.h). Until reporting is enabled, keep the existing DCHECK.
+  // slot_assignment.h). Until this is a CHECK, recalc anyway, as before this
+  // was enforced.
   SlotAssignmentRecalcInProgressScope::ReportViolationIf(
       document.IsSlotAssignmentRecalcForbidden(),
       SlotAssignmentInvariant::kNoRecalcWhileForbidden);
-  DCHECK(!document.IsSlotAssignmentRecalcForbidden());
 
   SlotAssignmentRecalcInProgressScope recalc_scope;
-  SlotAssignmentRecalcForbiddenScope forbid_slot_recalc(document);
 
   // The accessibility cache must be invalidated before pass 1, because the
   // process of invalidation accesses the old flat tree children in order to
