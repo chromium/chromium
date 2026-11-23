@@ -6,6 +6,7 @@
 
 #include <array>
 
+#include "base/bit_cast.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -236,10 +237,14 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
               base::NotFatalUntil::M163);
         CHECK(attrs_plane < std::size(kPlaneHiModifierAttrs),
               base::NotFatalUntil::M163);
+        // EGL takes the raw bits of each 32-bit half of the modifier, which
+        // may have the sign bit set (e.g. AMD modifiers).
         attrs.push_back(kPlaneLoModifierAttrs[attrs_plane]);
-        PushEGLintOrDie(modifier & 0xffffffff, attrs);
+        attrs.push_back(
+            base::bit_cast<EGLint>(static_cast<uint32_t>(modifier)));
         attrs.push_back(kPlaneHiModifierAttrs[attrs_plane]);
-        PushEGLintOrDie(static_cast<uint32_t>(modifier >> 32), attrs);
+        attrs.push_back(
+            base::bit_cast<EGLint>(static_cast<uint32_t>(modifier >> 32)));
       }
     }
     attrs.push_back(EGL_NONE);
