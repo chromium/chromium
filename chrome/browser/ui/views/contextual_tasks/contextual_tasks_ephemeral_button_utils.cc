@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
-#include "base/i18n/rtl.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -17,10 +16,8 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/immersive/immersive_mode_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_prefs.h"
-#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_ephemeral_button_controller.h"
 #include "components/contextual_tasks/public/features.h"
@@ -40,39 +37,6 @@ bool IsContextualTasksSidePanelRightAligned(BrowserWindowInterface* browser) {
   }
   return side_panel_prefs::IsSidePanelRightAligned(
       *pref_service, SidePanelEntryId::kContextualTasks);
-}
-
-bool IsEphemeralButtonTrailing(BrowserWindowInterface* browser) {
-  return IsContextualTasksSidePanelRightAligned(browser) != base::i18n::IsRTL();
-}
-
-bool ShouldPlaceCircularButtonBeforeProfile(BrowserWindowInterface* browser) {
-  return IsContextualTasksPinningV2Enabled() ||
-         (kEnableCircularEphemeralButtonNextToBatterySaver.Get() &&
-          IsContextualTasksSidePanelRightAligned(browser));
-}
-
-EphemeralButtonShape GetEphemeralButtonShape(BrowserWindowInterface* browser) {
-  ImmersiveModeController* const immersive_mode_controller =
-      ImmersiveModeController::From(browser);
-  if (immersive_mode_controller && immersive_mode_controller->IsEnabled()) {
-    return EphemeralButtonShape::kCircle;
-  }
-
-  auto* const vertical_tabs_controller =
-      tabs::VerticalTabStripStateController::From(browser);
-  if (vertical_tabs_controller &&
-      vertical_tabs_controller->ShouldDisplayVerticalTabs()) {
-    return EphemeralButtonShape::kCircle;
-  }
-
-  if (ShouldPlaceCircularButtonBeforeProfile(browser)) {
-    return EphemeralButtonShape::kCircle;
-  }
-
-  return IsContextualTasksSidePanelRightAligned(browser)
-             ? EphemeralButtonShape::kFlatEdgeRight
-             : EphemeralButtonShape::kFlatEdgeLeft;
 }
 
 void RecordEphemeralButtonShown(bool is_panel_open) {

@@ -9,34 +9,13 @@
 
 class BrowserWindowInterface;
 
-// UI-agnostic logic for the contextual tasks ephemeral toolbar button, shared
-// by the Views (`ContextualTasksButton`) and WebUI toolbar implementations so
-// that they only need to render the button and forward input.
+// UI-agnostic logic for the contextual tasks ephemeral toolbar button.
 namespace contextual_tasks {
-
-// Visual shape of the ephemeral button. The flat edge sides are physical (not
-// mirrored in RTL), since they follow the physical side of the side panel.
-enum class EphemeralButtonShape {
-  kCircle,
-  kFlatEdgeLeft,
-  kFlatEdgeRight,
-};
 
 // Returns whether the contextual tasks side panel is aligned to the right side
 // of the browser window, taking its per-entry alignment override into account.
 // Returns false if `browser` is null or has no profile.
 bool IsContextualTasksSidePanelRightAligned(BrowserWindowInterface* browser);
-
-// Returns whether the ephemeral button is at the trailing edge when it is
-// docked at one of the toolbar edges.
-bool IsEphemeralButtonTrailing(BrowserWindowInterface* browser);
-
-// Returns whether the ephemeral button should be a circle placed before the
-// Glic, avatar and app menu buttons, rather than docked at a toolbar edge.
-bool ShouldPlaceCircularButtonBeforeProfile(BrowserWindowInterface* browser);
-
-// Returns the shape the ephemeral button should currently have.
-EphemeralButtonShape GetEphemeralButtonShape(BrowserWindowInterface* browser);
 
 // Records metrics for the ephemeral button being shown in either the active
 // panel-open state (`is_panel_open` = true) or the collapsed ephemeral state
