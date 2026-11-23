@@ -386,6 +386,7 @@
 <translation id="2496180316473517155">બ્રાઉઝિંગ ઇતિહાસ</translation>
 <translation id="250020030759455918">તમને Chromeમાં તમારું <ph name="SITE_NAME" />નું સાઇન ઇન સ્ટેટસ, બ્રાઉઝિંગ ડેટા અને સાઇટ ડેટા દેખાશે</translation>
 <translation id="2501278716633472235">પાછા જાઓ</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{# ડાઉનલોડની પ્રક્રિયા ચાલુ છે}one{# ડાઉનલોડની પ્રક્રિયા ચાલુ છે}other{# ડાઉનલોડની પ્રક્રિયા ચાલુ છે}}</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> ઇન્સ્ટૉલ કરી રહ્યાં છીએ...</translation>
 <translation id="2512234228327349533">ખરીદી કરવાના વિકલ્પો શોધો</translation>
 <translation id="2513403576141822879">ગોપનીયતા, સુરક્ષા, અને ડેટા સંગ્રહથી સંબંધિત વધુ સેટિંગ માટે, <ph name="BEGIN_LINK" />સિંક અને Google સેવાઓ<ph name="END_LINK" /> જુઓ</translation>
@@ -697,6 +698,7 @@
 <translation id="3740290940447881599">ખાતરી કરો કે તમે આ સાઇટ પર વિશ્વાસ કરો છો</translation>
 <translation id="3740525748616366977">આ ડિવાઇસ પર વૉઇસ શોધ ઉપલબ્ધ નથી</translation>
 <translation id="3749289110408117711">ફાઇલનું નામ</translation>
+<translation id="3751708358601675711">કિંમતને ટ્રૅક કરવાની સુવિધામાં ફેરફાર કરો</translation>
 <translation id="3756823472711156529">ગ્રૂપ રિસ્ટોર કરો</translation>
 <translation id="3759306015475526475">વપરાશ અને ક્રૅશ ડેટાના સેટિંગ મેનેજ કરો</translation>
 <translation id="3763110477555836428">તમારી વાસ્તવિક વિગતોનું રક્ષણ કરવા માટે, જ્યારે તમે આ કાર્ડ વડે ચેકઆઉટ કરશો ત્યારે વર્ચ્યુઅલ કાર્ડ નંબર ભરવામાં આવશે. Google Walletમાં મેનેજ કરો. <ph name="BEGIN_LINK1" />વર્ચ્યુઅલ કાર્ડ વિશે વધુ જાણો<ph name="END_LINK1" /></translation>

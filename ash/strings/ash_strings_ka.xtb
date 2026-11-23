@@ -447,6 +447,7 @@
 <translation id="2053312383184521053">უმოქმედო მდგომარეობის მონაცემები</translation>
 <translation id="2058456167109518507">აღმოჩენილია მოწყობილობა</translation>
 <translation id="2064048859448024834">კამერის გადახედვა ჩართულია</translation>
+<translation id="2065569506469674977">{NUM_LINKS,plural, =1{1 ბმული}other{# ბმული}}</translation>
 <translation id="2067220651560163985">ტემპერატურის ჩვენება ცელსიუსით</translation>
 <translation id="206960706005837784"><ph name="APP_NAME" />-მა დაასრულა <ph name="PRINTER_NAME" />-ზე ბეჭდვა</translation>
 <translation id="2075520525463668108">გადაირთოს <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> არის <ph name="CAPTURE_STATE" />.</translation>

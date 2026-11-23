@@ -77,6 +77,7 @@
 <translation id="1688214853608504530">Chrome でアドレスバーや検索ボックスに入力を始めると、入力内容が組織の検索ツール、AI ツール、エージェント ツールに送信され、検索候補が表示されます。</translation>
 <translation id="1698376642261615901">Google Chrome は、ウェブページやアプリケーションを高速に実行できるスピードと、高い安定性を兼ね備えた非常に使いやすいウェブブラウザです。不正なソフトウェアやフィッシングに対する保護機能が組み込まれており、ウェブを安全にブラウジングできます。</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome は 1 時間後に再起動されます}other{Chrome は # 時間後に再起動されます}}</translation>
+<translation id="1713866023633141719">オンデバイス AI の準備ができました</translation>
 <translation id="1722488837206509557">これにより、利用可能なデバイスから選択してコンテンツを表示できるようになります。</translation>
 <translation id="1724094881572874997">Chrome での作業を保護するため、Chrome へのログイン中、組織は特定の情報を表示または管理できます。</translation>
 <translation id="1769661297620183092">Google 検索パネルを再度開いて、ブラウジング中に質問できます</translation>
@@ -149,6 +150,7 @@
 <translation id="2513154137948333830">再起動が必要です: <ph name="INSTALL_SUCCESS" /></translation>
 <translation id="251329670120169391">あなたの組織</translation>
 <translation id="2521391734665471391">Google 検索の AI モードを閉じる</translation>
+<translation id="2523048609826818526">汎用文章の作成</translation>
 <translation id="2523492931736391680">Chrome で作業データを保護</translation>
 <translation id="2534365042754120737">データを保護するため、最近アクセスしていないサイトから権限を自動で削除します。通知は停止されません。</translation>
 <translation id="2556847002339236023"><ph name="TIMEOUT_DURATION" /> 使用しなかったため、Chrome は組織によって終了されます。閲覧データは削除されました。これには、履歴、自動入力、ダウンロードが含まれます。</translation>
@@ -245,6 +247,7 @@
 <translation id="3373752068427117404">Chrome の一部の機能と拡張機能にはショートカットが用意されており、有効にするよう選択できます。</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome は今すぐ再起動されます}=1{Chrome は 1 秒後に再起動されます}other{Chrome は # 秒後に再起動されます}}</translation>
 <translation id="3380249972812870825">Gemini in Chrome を開くには、<ph name="GLOBAL_HOTKEY" /> キーを押します</translation>
+<translation id="3392127217442962664">デバイス上で動作する AI が Chrome に追加されました。サイトや Chrome で、次のような機能に使用できます。</translation>
 <translation id="3396977131400919238">インストール中にオペレーティング システム エラーが発生しました。Google Chrome をダウンロード直してください。</translation>
 <translation id="3428747202529429621">ログイン時に、Chrome を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります</translation>
 <translation id="3438681572027105609">すべてのデバイスでパスワードやその他の設定を使用するには、Chrome にログインしてください</translation>
@@ -293,6 +296,7 @@
 <translation id="3973161977468201858">Google Chrome が Google パスワード マネージャーのデータの削除をリクエストしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="3984557288004650913">ツールバーの [Chrome で Google 検索] ボタンから、Chrome で Google 検索を再度開いて、ブラウジング中に質問できます</translation>
 <translation id="399788104667917863">ツールバーに固定する</translation>
+<translation id="4000385468528550798">オンデバイス AI が更新されました</translation>
 <translation id="400161754580828648">画面を共有するには、[システム設定] で Chrome に画面の録画を許可してください。</translation>
 <translation id="4012899077942246412">Chrome にログイン中は、Google アカウントのパスワードやその他の設定を使用できます。この設定を変更するには、[Chrome のアカウント設定] に移動してください。</translation>
 <translation id="4022972681110646219">画面を翻訳</translation>
@@ -548,6 +552,7 @@
 <translation id="6632012506031284914">Chrome で検索します。</translation>
 <translation id="6634299872736643004">この設定の変更内容は、Chrome を再起動すると適用されます。</translation>
 <translation id="6644846457769259194">デバイスを更新しています（<ph name="PROGRESS_PERCENT" />）</translation>
+<translation id="6659177157954429254">オンデバイス AI は最新の状態です</translation>
 <translation id="6660596345553328257">Chrome にログインしますか？</translation>
 <translation id="6664219008737641504">パスフレーズを忘れた場合や、この設定を変更する場合は、アカウントの Chrome データを<ph name="SETTINGS_LINK" />してください</translation>
 <translation id="6676384891291319759">インターネットにアクセス</translation>
@@ -589,6 +594,7 @@
 <translation id="7024536598735240744">解凍エラー: <ph name="UNPACK_ERROR" />。</translation>
 <translation id="7025800014283535195">こちらで Chrome プロファイルを切り替えることができます</translation>
 <translation id="7026856149118332950">Windows の通知で [<ph name="BEGIN_BOLD" />はい<ph name="END_BOLD" />] をクリックすると、Chrome がタスクバーに固定され、すばやくアクセスできるようになります。</translation>
+<translation id="7033785662379319359">要約や校正などのタスクに使用できる、よりコンパクトな新しいバージョンのオンデバイス AI が利用可能になりました</translation>
 <translation id="7047386856539490735">この結果は役に立ちましたか？</translation>
 <translation id="7051685429025310665">最近アクセスしていないため、Chrome で <ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、<ph name="PERMISSION_3" /> の権限を削除しました。</translation>
 <translation id="7059914902409643750">Chrome を自分用にカスタマイズ</translation>

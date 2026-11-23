@@ -386,6 +386,7 @@
 <translation id="2496180316473517155">瀏覽記錄</translation>
 <translation id="250020030759455918">您可在 Chrome 中查看 <ph name="SITE_NAME" /> 登入狀態、瀏覽資料和網站資料</translation>
 <translation id="2501278716633472235">返回</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{正在進行 # 項下載}other{正在進行 # 項下載}}</translation>
 <translation id="2510106555128151389">正在安裝「<ph name="WEBAPK_NAME" />」…</translation>
 <translation id="2512234228327349533">搜尋購買選項</translation>
 <translation id="2513403576141822879">如需更多與私隱權、安全性和資料收集相關的設定，請參閱<ph name="BEGIN_LINK" />同步處理和 Google 服務<ph name="END_LINK" /></translation>
@@ -697,6 +698,7 @@
 <translation id="3740290940447881599">請確保你信任此網站</translation>
 <translation id="3740525748616366977">這部裝置不支援語音搜尋功能</translation>
 <translation id="3749289110408117711">檔案名稱</translation>
+<translation id="3751708358601675711">編輯價格追蹤</translation>
 <translation id="3756823472711156529">還原群組</translation>
 <translation id="3759306015475526475">管理使用情況和當機資料設定</translation>
 <translation id="3763110477555836428">使用此卡結帳時，系統會填入虛擬卡號以保護你的真實資料。你可以在「Google 錢包」中管理資料。<ph name="BEGIN_LINK1" />進一步瞭解虛擬卡<ph name="END_LINK1" /></translation>

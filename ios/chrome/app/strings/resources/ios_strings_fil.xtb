@@ -1788,6 +1788,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6504541289630702018">Madaling i-access ang iyong mga grupo ng tab sa desktop</translation>
 <translation id="6505334220040167806">I-collapse ang grupo ng tab.</translation>
 <translation id="6506996418997555004">I-share ang Grupo ng Tab na "<ph name="GROUP_NAME" />"</translation>
+<translation id="650770261448122895">Hanapin ang nakikita mo gamit ang Lens</translation>
 <translation id="6507973708545996744">Mag-sign in para makuha ang iyong listahan ng babasahin sa lahat ng device mo.</translation>
 <translation id="6518133107902771759">I-verify</translation>
 <translation id="6523575793810663688">Ipakita sa akin kung paano</translation>
@@ -2430,6 +2431,7 @@ Puwede kang mag-restart anumang oras.</translation>
 <translation id="8439758443371991593">I-hide ang Idagdag sa Listahan ng Babasahin</translation>
 <translation id="8443986842926457191">Mahigit 2048 character ang URL</translation>
 <translation id="8449869326050867919">Na-share ang password</translation>
+<translation id="8473367210869452063">Para makipag-interact sa site na ito, ihinto ang kasalukuyang gawain o hintaying matapos ang Gemini sa paggawa</translation>
 <translation id="8473815223723723001">I-edit ang Larawan gamit ang Gemini</translation>
 <translation id="8473863474539038330">Mga address at higit pa</translation>
 <translation id="8474378002946546633">Payagan ang mga notification</translation>

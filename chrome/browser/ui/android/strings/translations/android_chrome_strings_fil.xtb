@@ -386,6 +386,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="2496180316473517155">History ng Pag-browse</translation>
 <translation id="250020030759455918">Makikita mo sa Chrome ang iyong status ng pag-sign in sa <ph name="SITE_NAME" />, data mula sa pag-browse, at data ng site</translation>
 <translation id="2501278716633472235">Bumalik</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{# download ang isinasagawa}one{# download ang isinasagawa}other{# na download ang isinasagawa}}</translation>
 <translation id="2510106555128151389">Ini-install ang <ph name="WEBAPK_NAME" />...</translation>
 <translation id="2512234228327349533">Maghanap ng mga opsyon sa pagbili</translation>
 <translation id="2513403576141822879">Para sa higit pang setting na nauugnay sa privacy, seguridad, at pangongolekta ng data, tingnan ang <ph name="BEGIN_LINK" />Pag-sync at mga serbisyo ng Google<ph name="END_LINK" /></translation>
@@ -697,6 +698,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="3740290940447881599">Tiyaking pinagkakatiwalaan mo ang site na ito</translation>
 <translation id="3740525748616366977">Hindi available ang Paghahanap gamit ang boses sa device na ito</translation>
 <translation id="3749289110408117711">File name</translation>
+<translation id="3751708358601675711">I-edit ang pagsubaybay sa presyo</translation>
 <translation id="3756823472711156529">I-restore ang grupo</translation>
 <translation id="3759306015475526475">Pamahalaan ang mga setting ng data ng paggamit at pag-crash</translation>
 <translation id="3763110477555836428">May numero ng virtual card na ilalagay kapag nag-check out ka gamit ang card na ito para maprotektahan ang iyong mga aktwal na detalye. Pamahalaan sa Google Wallet. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa mga virtual card<ph name="END_LINK1" /></translation>

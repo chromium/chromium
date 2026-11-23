@@ -856,6 +856,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1921544956190977703">Nasa iyo ang pinakamaigting na seguridad ng Chrome laban sa mga mapanganib na website, download, at extension</translation>
 <translation id="1921584744613111023"><ph name="DPI" /> dpi</translation>
 <translation id="1921600948984918136">Mase-save ang "<ph name="NAME" />" sa device lang na ito. Para magamit ito sa iba mo pang device, i-save ito sa iyong account.</translation>
+<translation id="1924725605995508501"><ph name="PORT_NAME" /> (<ph name="SERVICE_NAME" />)</translation>
 <translation id="192494336144674234">Buksan gamit ang</translation>
 <translation id="1925017091976104802">Pindutin ang <ph name="MODIFIER_KEY_DESCRIPTION" /> para i-paste</translation>
 <translation id="1925021887439448749">Maglagay ng custom na address sa web</translation>
@@ -1394,6 +1395,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="2519517390894391510">Pangalan ng Profile ng Certificate</translation>
 <translation id="2520644704042891903">Naghihintay ng available na socket...</translation>
 <translation id="2522757085249311407">Payagan ang mga kalapit na Bluetooth device na matuklasan ang device na ito at makakonekta rito.</translation>
+<translation id="2523048609826818526">Pangkalahatang pagsusulat</translation>
 <translation id="2523184218357549926">Ipinapadala sa Google ang mga URL ng mga page na binibisita mo</translation>
 <translation id="252513908494776481">Magtanong tungkol sa tab na ito</translation>
 <translation id="2525746158911982776">Hindi na-update dahil kulang ang storage space ng system.</translation>
@@ -1404,6 +1406,7 @@ Suriin ang iyong mga password anumang oras sa <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="2528487766183344810">Paki-unlock ang <ph name="TOKEN_NAME" /> para ma-export ang certificate ng client.</translation>
 <translation id="2532198298278778531">Pamahalaan ang secure na DNS sa mga setting ng ChromeOS Flex</translation>
 <translation id="253434972992662860">I-&amp;pause</translation>
+<translation id="2534439599863644240">Serial Port</translation>
 <translation id="253498598929009420">Makikita ng site ang mga content ng iyong screen</translation>
 <translation id="253557089021624350">Bilang ng keepalive</translation>
 <translation id="2537395079978992874">Puwedeng tingnan at i-edit ng <ph name="ORIGIN" /> ang mga sumusunod na file at folder</translation>

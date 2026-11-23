@@ -2238,6 +2238,13 @@ ServiceWorkerAutoPreload 機能では、ServiceWorker ブートストラップ �
 <translation id="2467181864598429837">デフォルトのブラウザの動作</translation>
 <translation id="2467896267442150508">1 週間を上限とする時間間隔です。開始時間を終了時間よりも遅い時間に指定すると、時間間隔は日をまたいで適用されます。</translation>
 <translation id="2476249479201711962">デフォルトの検索プロバイダのコンテキスト メニューへのアクセスを有効にする</translation>
+<translation id="247659494993692492">このポリシーでは、統合認証を許可するサーバーを指定できます。統合認証は、<ph name="PRODUCT_NAME" /> がこの許可されたリストに含まれているプロキシやサーバーから認証チャレンジを取得するときにのみ有効になります。
+
+      このポリシーを未設定のままにした場合、<ph name="PRODUCT_NAME" /> では、サーバーがイントラネット上にあるかどうかの検出を試みます。IWA リクエストへの応答はその結果に基づいて行われます。サーバーがインターネット上のものとして検出された場合は、<ph name="PRODUCT_NAME" /> ではそのサーバーからの IWA リクエストを無視します。
+
+      注: 複数のサーバー名を入力するときはカンマで区切ります。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。
+
+      <ph name="LINUX_OS_NAME" />、<ph name="MAC_OS_NAME" />、<ph name="PRODUCT_OS_NAME" /> では、システムの GSSAPI / Kerberos ライブラリによってサーバーのホスト名が（DNS CNAME や逆引き DNS PTR 検索などを通じて）別のサービス プリンシパル ホストに正規化されることがあります。その場合、該当のホストがこのポリシーで許可されていなければ、ネゴシエート認証は失敗します。</translation>
 <translation id="2478756867046106663">不正なコンテンツを提供するサイトが新しいウィンドウやタブで開くことを許可する</translation>
 <translation id="2479760962196319822">このポリシーでは、<ph name="PRODUCT_OS_NAME" /> ユーザーがデータをローカルに保存できるかどうかを管理します。
       このポリシーを False に設定した場合、<ph name="PRODUCT_OS_NAME" /> でローカル ストレージがブロックされます。ユーザーはデータをローカルに保存できず、ローカル ディレクトリにもアクセスできません。
@@ -4544,6 +4551,11 @@ Protected Audience API のサポート終了により、このポリシーは <p
 
       注: このポリシーは <ph name="REMOTE_ACCESS_HOST_TOKEN_VALIDATION_URL_POLICY_NAME" /> と一緒に使用する必要があります。</translation>
 <translation id="3918339829588313389">ユーザーに安全性の低い PIN の設定を許可する</translation>
+<translation id="3920151704940430728">このポリシーを有効に設定した場合、CNAME 検索はスキップされます。Kerberos SPN の生成時には、入力されたサーバー名が使用されます。
+
+このポリシーを無効に設定するか未設定のままにした場合、Kerberos SPN の生成時には、CNAME 検索によりサーバーの標準名が決まります。
+
+注: <ph name="LINUX_OS_NAME" />、<ph name="MAC_OS_NAME" />、<ph name="PRODUCT_OS_NAME" /> では、このポリシーを有効にすると <ph name="PRODUCT_NAME" /> 独自の CNAME 検索はスキップされますが、システムの GSSAPI / Kerberos ライブラリによって（<ph name="KRB5_CONFIG" /> の DNS 設定などを通じて）サービス プリンシパル ホストが正規化されることがあります。その場合、該当のホストが <ph name="AUTH_SERVER_ALLOWLIST_POLICY_NAME" /> で許可されていなければ、ネゴシエート認証は失敗します。また、<ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> でも許可されていなければ、委任は保留されます。</translation>
 <translation id="392227823425989489">すべてのシステム ショートカットを常に想定どおりに実行する。</translation>
 <translation id="3924506460382372403">デバイスのグラフィックス ステータスの報告を無効にする</translation>
 <translation id="3925377537407648234">ディスプレイの解像度と倍率を設定する</translation>
@@ -6528,6 +6540,13 @@ Attribution Reporting API のサポート終了により、このポリシーは
 このポリシーは一時的なもので、今後リリースされるバージョン <ph name="PRODUCT_NAME" /> で削除される予定です。</translation>
 <translation id="5212810195096589189">VM CLI に対する権限を指定する</translation>
 <translation id="5213038356678567351">ブラウザの切り替えを行わないウェブサイト。</translation>
+<translation id="5213420013031914763">このポリシーを有効に設定した場合、キーボード ショートカットまたは拡張機能 API を使用したスクリーンショットは許可されません。このポリシーを無効に設定するか未設定のままにした場合は、スクリーンショットが許可されます。
+
+<ph name="PRODUCT_NAME" /> バージョン 155～158 では、このポリシーを有効にすると、拡張機能が「chrome.debugger.attach()」を介してデバッガをアタッチできなくなる場合もあります（<ph name="CHROME_VARIATIONS_POLICY_NAME" /> ポリシーですべてのバリエーションを無効にしている場合など）。
+
+なお、<ph name="MS_WIN_NAME" />、<ph name="MAC_OS_NAME" />、<ph name="LINUX_OS_NAME" /> では、オペレーティング システムやサードパーティのアプリケーションによるスクリーンショットの撮影をブロックできません。
+
+<ph name="IOS_NAME" /> でこのポリシーを有効に設定すると、システムのスクリーンショットや画面録画で <ph name="PRODUCT_NAME" /> のウィンドウが隠され、ページ全体のスクリーンショットも利用できなくなります。</translation>
 <translation id="5216710229085956333">Krisp ノイズ キャンセリングをオンにする</translation>
 <translation id="5216815237712190041">どのユーザーもデバイスにログインしていない場合にログイン画面に表示するデバイスレベルの壁紙画像を設定します。このポリシーを設定するには、ChromeOS デバイスにダウンロードできる壁紙画像の URL と、ダウンロードの整合性の確認に使用する暗号ハッシュを指定します。画像の形式は JPEG、サイズは 16 MB 以下とし、URL には認証なしでアクセスできる必要があります。壁紙画像は、ダウンロードされた後でキャッシュされます。壁紙画像の URL またはハッシュに変更があったときは、再度ダウンロードされます。デバイスの壁紙ポリシーを設定した場合、ChromeOS デバイスは、どのユーザーもデバイスにログインしていないときは壁紙画像をダウンロードしてログイン画面に使用します。ユーザーがログインすると、そのユーザーの壁紙ポリシーが適用されます。デバイスの壁紙ポリシーを未設定のままにした場合は、ユーザーの壁紙ポリシーが設定されていれば、ユーザーの壁紙ポリシーによって表示される壁紙が決まります。</translation>
 <translation id="5219844027738217407">Android アプリに対しては、このポリシーはマイクにのみ適用されます。このポリシーを true に設定した場合、すべての Android アプリでは例外なくマイクがミュートされます。</translation>
@@ -10909,6 +10928,11 @@ Topics API のサポート終了により、このポリシーは <ph name="PROD
 <translation id="8062485064082966327">匿名の Google サービスを使用して、ラベル付けがない画像の説明を自動的に取得する</translation>
 <translation id="8064875716442437829">レンダラのユーザー補助を有効にする</translation>
 <translation id="8066428282805800713">ChromeOS Flex で追加のハードウェア データを送信する</translation>
+<translation id="8070654368411601340">このポリシーでは、<ph name="PRODUCT_NAME" /> が委任できるサーバーを割り当てることができます。複数のサーバー名を入力するときはカンマで区切ります。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。
+
+      このポリシーを未設定のままにした場合、サーバーがイントラネット上で検出されたとしても、<ph name="PRODUCT_NAME" /> はユーザーの認証情報を委任しません。
+
+      <ph name="LINUX_OS_NAME" />、<ph name="MAC_OS_NAME" />、<ph name="PRODUCT_OS_NAME" /> では、このポリシーでサーバーへの委任が許可されている場合、システムの GSSAPI / Kerberos ライブラリによってホスト名が（DNS CNAME や逆引き DNS PTR 検索などを通じて）別のサービス プリンシパル ホストに正規化されることがあります。その場合 <ph name="PRODUCT_NAME" /> は、該当のホストがこのポリシーで許可されていなければ、委任を保留します。</translation>
 <translation id="8071371098891664137"><ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> の値に <ph name="PRINTERS_BLOCKLIST" /> が選択されている場合、<ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> でユーザーが使用できないプリンタを指定できます。ユーザーは、このポリシーで指定されている ID 以外のすべてのプリンタを使用できます。この ID は、<ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> で指定されたファイル内の「<ph name="ID_FIELD" />」または「<ph name="GUID_FIELD" />」フィールドに対応している必要があります。</translation>
 <translation id="8076539570602616846"><ph name="PRODUCT_NAME" /> PDF ビューアから Google ドライブに PDF ファイルを保存できる Google アカウントを制限する</translation>
 <translation id="8078224178125125527">このポリシーでは、<ph name="AUTH_SCHEMES_POLICY_NAME" /> ポリシーの設定にかかわらず、<ph name="PRODUCT_NAME" /> がサポートする HTTP 認証スキームをすべて許可するプロキシ サーバーを指定します。プロキシ サーバーのパターンは、URL 拒否リストのフィルタ形式（<ph name="URL_SCHEME_FORMAT_LINK" />）に沿って指定します。最大 1,000 件の例外を定義できます。ホスト コンポーネントではワイルドカードを使用できます（例: 「*:8080」は、ポート 8080 のすべてのプロキシに一致します）。ホスト名（例: 「proxy.example.com」）は、そのサブドメインにも一致します。ホストのみを指定し、そのサブドメインを除外するには、ホスト名の前にドットを付けます（例: 「.proxy.example.com」）。このポリシーを設定しなかった場合、<ph name="AUTH_SCHEMES_POLICY_NAME" /> で指定された HTTP 認証スキーム（未設定の場合のデフォルトのスキーム）のみがプロキシ認証でサポートされます。</translation>

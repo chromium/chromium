@@ -11736,6 +11736,11 @@ Kebijakan ini menggantikan perilaku <ph name="DEFAULT_SUB_APPS_WITHOUT_PROMPTS_S
           Nilai kebijakan harus ditentukan dalam milidetik. Nilai dikunci ke kurang dari atau sama dengan penundaan waktu tidak ada aktivitas.</translation>
 <translation id="7992613144342460685">Memberikan izin Penempatan Jendela di situs ini</translation>
 <translation id="7995610550667275367">Pemindaian (didukung sejak versi 87)</translation>
+<translation id="7997288303774758253">Jika kebijakan ini disetel, periode dalam milidetik akan ditentukan untuk membuat kueri layanan pengelolaan perangkat guna mendapatkan informasi kebijakan pengguna. Nilai yang valid berkisar antara 1.800.000 (30 menit) hingga 86.400.000 (1 hari). Nilai di luar rentang ini akan dibatasi ke batas masing-masing, kecuali di Android dan iOS, yang nilai di atas rentang ini akan dibatasi menjadi 604.800.000 (1 minggu).
+
+      Jika kebijakan ini tidak disetel, nilai default yang digunakan adalah 3 jam, atau 1 hari di Android dan iOS.
+
+      Catatan: Notifikasi kebijakan akan memicu pemuatan ulang saat kebijakan berubah, sehingga Anda tidak perlu sering melakukan pemuatan ulang. Jadi, jika platform mendukung notifikasi ini, jeda muat ulang adalah 24 jam (mengabaikan nilai default dan nilai kebijakan ini).</translation>
 <translation id="7999023147219236247">Kebijakan untuk memberikan izin permintaan ke aplikasi. PERMISSION_POLICY_UNSPECIFIED: Kebijakan tidak ditentukan. Jika tidak ada kebijakan yang ditentukan untuk izin di tingkat mana pun, perilaku `PROMPT` akan digunakan secara default. PROMPT: Meminta pengguna memberikan izin. GRANT: Otomatis memberikan izin. DENY: Otomatis menolak izin.</translation>
 <translation id="7999336306414770162">Nonaktifkan pelaporan info VPD perangkat</translation>
 <translation id="7999818120028621358">Aktifkan pelaporan peristiwa pencegahan kebocoran data</translation>

@@ -1788,6 +1788,7 @@
 <translation id="6504541289630702018">パソコンのタブグループに簡単にアクセス</translation>
 <translation id="6505334220040167806">タブグループを閉じる。</translation>
 <translation id="6506996418997555004">「<ph name="GROUP_NAME" />」タブグループを共有</translation>
+<translation id="650770261448122895">レンズで見たものをそのまま検索</translation>
 <translation id="6507973708545996744">ログインすると、どのデバイスでもリーディング リストを利用できます。</translation>
 <translation id="6518133107902771759">確認</translation>
 <translation id="6523575793810663688">手順を見る</translation>
@@ -2430,6 +2431,7 @@ Level Up はいつでも再開できます。</translation>
 <translation id="8439758443371991593">[リーディング リストに追加] を非表示</translation>
 <translation id="8443986842926457191">URL が 2048 文字を超えています</translation>
 <translation id="8449869326050867919">パスワードを共有しました</translation>
+<translation id="8473367210869452063">このサイトを操作するには、現在のタスクを停止するか、Gemini の処理完了までお待ちください</translation>
 <translation id="8473815223723723001">Gemini を使用して画像を編集</translation>
 <translation id="8473863474539038330">住所やその他の情報</translation>
 <translation id="8474378002946546633">通知を許可する</translation>

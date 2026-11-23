@@ -386,6 +386,7 @@
 <translation id="2496180316473517155">ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ</translation>
 <translation id="250020030759455918">ਤੁਸੀਂ Chrome ਵਿੱਚ ਆਪਣੀ <ph name="SITE_NAME" /> ਸਾਈਨ-ਇਨ ਸਥਿਤੀ, ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟਾ ਅਤੇ ਸਾਈਟ ਡਾਟਾ ਦੇਖੋਗੇ</translation>
 <translation id="2501278716633472235">ਪਿੱਛੇ ਜਾਓ</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{# ਡਾਊਨਲੋਡ ਜਾਰੀ ਹੈ}one{# ਡਾਊਨਲੋਡ ਜਾਰੀ ਹੈ}other{# ਡਾਊਨਲੋਡ ਜਾਰੀ ਹਨ}}</translation>
 <translation id="2510106555128151389"><ph name="WEBAPK_NAME" /> ਨੂੰ ਸਥਾਪਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...</translation>
 <translation id="2512234228327349533">ਖਰੀਦਦਾਰੀ ਦੇ ਵਿਕਲਪ ਖੋਜੋ</translation>
 <translation id="2513403576141822879">ਪਰਦੇਦਾਰੀ, ਸੁਰੱਖਿਆ ਅਤੇ ਡਾਟਾ ਇਕੱਤਰ ਕਰਨ ਸੰਬੰਧੀ ਹੋਰ ਸੈਟਿੰਗਾਂ ਲਈ, <ph name="BEGIN_LINK" />ਸਿੰਕ ਅਤੇ Google ਸੇਵਾਵਾਂ<ph name="END_LINK" /> ਦੇਖੋ</translation>
@@ -697,6 +698,7 @@
 <translation id="3740290940447881599">ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਨੂੰ ਇਸ ਸਾਈਟ 'ਤੇ ਭਰੋਸਾ ਹੈ</translation>
 <translation id="3740525748616366977">ਅਵਾਜ਼ੀ ਖੋਜ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="3749289110408117711">ਫਾਈਲ ਨਾਮ</translation>
+<translation id="3751708358601675711">ਕੀਮਤ ਸੰਬੰਧੀ ਟਰੈਕਿੰਗ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="3756823472711156529">ਗਰੁੱਪ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
 <translation id="3759306015475526475">ਵਰਤੋਂ ਅਤੇ ਕ੍ਰੈਸ਼ ਡਾਟਾ ਸੈਟਿੰਗਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="3763110477555836428">ਤੁਹਾਡੇ ਅਸਲ ਵੇਰਵਿਆਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਣ ਲਈ, ਇਸ ਕਾਰਡ ਨਾਲ ਚੈੱਕ-ਆਊਟ ਕਰਨ ਵੇਲੇ ਆਭਾਸੀ ਕਾਰਡ ਨੰਬਰ ਭਰਿਆ ਜਾਵੇਗਾ। Google Wallet ਵਿੱਚ ਪ੍ਰਬੰਧਨ ਕਰੋ। <ph name="BEGIN_LINK1" />ਆਭਾਸੀ ਕਾਰਡਾਂ ਬਾਰੇ ਹੋਰ ਜਾਣੋ<ph name="END_LINK1" /></translation>

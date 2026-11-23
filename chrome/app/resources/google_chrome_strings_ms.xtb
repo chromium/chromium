@@ -135,6 +135,7 @@
 <translation id="2295218613066132598">Tunjukkan pintasan laman Chrome</translation>
 <translation id="2301513536169703857">Untuk mendapatkan kata laluan dan penanda halaman anda serta pelbagai lagi pada semua peranti anda, log masuk ke Chrome</translation>
 <translation id="2307973900865360088">Kekalkan dalam Dok</translation>
+<translation id="2308558013860776484">Kongsi tangkapan skrin kandungan di luar Chrome, seperti apl atau fail lain</translation>
 <translation id="2309047409763057870">Ini adalah pemasangan kedua Google Chrome dan tidak boleh dijadikan penyemak imbas lalai anda.</translation>
 <translation id="2345992953227471816">Chrome mendapati bahawa item ini mengandungi perisian hasad:</translation>
 <translation id="2350411688004301551">Beralih kepada Gemini Enterprise</translation>
@@ -246,6 +247,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="3294686910656423119">Perangkaan penggunaan dan laporan ranap sistem</translation>
 <translation id="3327226547491422998">Kemudian, Chrome boleh bertanya sama ada anda mahu menggunakan maklumat yang disimpan bagi mengisi borang untuk anda secara automatik atau tidak</translation>
 <translation id="3352986031709923790">penjuru atas sebelah kanan kawasan carian: kanan <ph name="RIGHT" />%, atas <ph name="TOP" />%</translation>
+<translation id="3370239327277137701">Laman dan Chrome boleh menggunakan AI yang dijalankan terus pada peranti anda untuk ciri seperti ringkasan, pembacaan pruf, sari kata dan pelbagai lagi. Ciri ini berasingan daripada Gemini dalam Chrome. <ph name="BEGIN_LINK" />Ketahui perihal AI pada peranti dengan lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="3373752068427117404">Sesetengah ciri dan sambungan Chrome disertakan dengan pintasan. Anda boleh memilih untuk menghidupkan semula tetapan tersebut.</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome akan dilancarkan semula sekarang}=1{Chrome akan dilancarkan semula dalam masa sesaat}other{Chrome akan dilancarkan semula dalam masa # saat}}</translation>
 <translation id="3380249972812870825">Untuk membuka Gemini dalam Chrome, tekan <ph name="GLOBAL_HOTKEY" /></translation>
@@ -345,6 +347,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="4427306783828095590">Perlindungan yang dipertingkatkan melakukan pelbagai lagi perkara untuk menyekat pancingan data dan perisian hasad</translation>
 <translation id="4434353761996769206">Ralat pemasang: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4437295824090654417">Kongsi dokumen ini dengan Gemini dalam Chrome untuk mendapatkan ikhtisar pantas dan mengemukakan pertanyaan susulan</translation>
+<translation id="4440999670272408191">Anda boleh mengalih keluar model tersebut pada bila-bila masa. Chrome mungkin memuat turun model AI tersebut secara automatik sekali lagi apabila laman atau ciri memerlukan model AI tersebut.</translation>
 <translation id="4450664632294415862">Chrome - Log Masuk Rangkaian - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Terdapat operasi lain sedang dijalankan pada Google Chrome. Sila cuba sebentar lagi.</translation>
 <translation id="4493028449971051158">Ralat permulaan: sila jalankan pemasang sebagai pentadbir.</translation>
@@ -352,6 +355,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="4501839397124711198">Anda boleh menyematkan Google Search dalam panel sisi untuk mengemukakan pertanyaan semasa anda menyemak imbas</translation>
 <translation id="4571503333518166079">Pergi ke tetapan pemberitahuan Chrome</translation>
 <translation id="4580939929828762295">Kekal selamat dengan Google Password Manager</translation>
+<translation id="4589544932092381064">Tunjukkan carian dengan Chrome dalam bar tugas Windows dan hidupkan pintasan papan kekunci</translation>
 <translation id="459622048091363950">Sebaik sahaja Chrome mendapat akses, laman web akan dapat meminta akses daripada anda.</translation>
 <translation id="4598116752460667024">Cari sebarang proses daripada senarai.</translation>
 <translation id="4600710005438004015">Chrome tidak dapat dikemas kini kepada versi terkini, maka anda terlepas ciri baharu dan penyelesaian keselamatan.</translation>
@@ -367,6 +371,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4756182432527369254">Mempercepat laman dengan enjin V8 Chrome tetapi Chrome menjadi kurang tahan sedikit terhadap serangan</translation>
 <translation id="4768676935374695498">Cari Video Ini dengan Google Lens</translation>
+<translation id="4783580253728290203">Apabila dimatikan, Chrome mengalih keluar model AI pada peranti dan tidak akan memuat turun model tersebut lagi. Sesetengah laman dan ciri Chrome mungkin tidak berfungsi.</translation>
 <translation id="479167709087336770">Ini menggunakan penyemak ejaan yang sama seperti yang digunakan dalam carian Google. Teks yang anda taip dalam penyemak imbas akan dihantar kepada Google. Anda boleh menukar gelagat ini dalam tetapan pada bila-bila masa.</translation>
 <translation id="4793679854893018356">Ketahui cara Chrome memastikan anda selamat</translation>
 <translation id="4803313124144656665">Tutup Google Search dalam Chrome</translation>
@@ -449,6 +454,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="569897634095159764">Tidak dapat disambungkan kepada Internet. Pelayan proksi memerlukan pengesahan.</translation>
 <translation id="5709557627224531708">Tetapkan Chrome sebagai penyemak imbas lalai anda</translation>
+<translation id="5715427327524421317">Chrome memuat turun dan mengemaskinikan model AI ini secara automatik</translation>
 <translation id="5717779012650642443">{COUNT,plural, =1{Perlindungan Lanjutan memerlukan anda melancarkan semula Chrome untuk menggunakan kemaskinian. Tetingkap Terasing anda tidak akan dibuka semula.}other{Perlindungan Lanjutan memerlukan anda melancarkan semula Chrome untuk menggunakan kemaskinian. # tetingkap Terasing anda tidak akan dibuka semula.}}</translation>
 <translation id="5719246646468301581">Syarat Perkhidmatan Tambahan Google Chrome dan ChromeOS</translation>
 <translation id="5736850870166430177">Jika tapak cuba mencuri kata laluan anda atau apabila anda memuat turun fail yang berbahaya, Chrome juga mungkin menghantar URL, termasuk sedikit kandungan halaman, kepada Penyemakan Imbas Selamat</translation>
@@ -541,6 +547,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="6491330562720922580">Kod QR untuk memuat turun penyemak imbas Chrome pada peranti mudah alih</translation>
 <translation id="6493527311031785448">Google Chrome cuba <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome ditutup secara automatik</translation>
+<translation id="650039555447046671">Chrome akan mengalih keluar model AI daripada peranti ini. Sesetengah laman dan ciri Chrome mungkin tidak berfungsi.</translation>
 <translation id="6506909944137591434">Chrome memerlukan kebenaran kamera untuk membuat peta 3D bagi persekitaran anda</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome Dev</translation>
 <translation id="6520670145826811516">Untuk menggunakan lokasi anda, berikan akses kepada Chrome dalam <ph name="BEGIN_LINK" />tetapan sistem<ph name="END_LINK" /></translation>
@@ -579,6 +586,7 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="6877155553248388166">penjuru bawah sebelah kanan kawasan carian: kanan <ph name="RIGHT" />%, bawah <ph name="BOTTOM" />%</translation>
 <translation id="6879791154455204815">Buka Carian dengan Chrome</translation>
 <translation id="6881299373831449287">Mengemas kini Chrome</translation>
+<translation id="6881997500528805781">Menggunakan storan peranti. Chrome mengalih keluar model AI yang tidak digunakan selepas 45 hari atau apabila storan rendah</translation>
 <translation id="6885412569789873916">Apl Chrome Beta</translation>
 <translation id="6893363893008038481">Alih keluar Akaun daripada Chrome</translation>
 <translation id="6896758677409633944">Salin</translation>

@@ -386,6 +386,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="2496180316473517155">閲覧履歴</translation>
 <translation id="250020030759455918">Chrome での <ph name="SITE_NAME" /> のログイン ステータス、閲覧データ、サイトデータが表示されます。</translation>
 <translation id="2501278716633472235">戻る</translation>
+<translation id="2505742559092758182">{COUNT,plural, =1{# 件のダウンロードが進行中です}other{# 件のダウンロードが進行中です}}</translation>
 <translation id="2510106555128151389">「<ph name="WEBAPK_NAME" />」をインストールしています...</translation>
 <translation id="2512234228327349533">購入オプションを検索</translation>
 <translation id="2513403576141822879">プライバシー、セキュリティ、データ収集に関連するその他の設定については、<ph name="BEGIN_LINK" />同期と Google サービス<ph name="END_LINK" />をご覧ください</translation>
@@ -697,6 +698,7 @@ Chrome を使いやすくするためにデータを使用するその他の設�
 <translation id="3740290940447881599">このサイトを信頼できるかどうかをご確認ください</translation>
 <translation id="3740525748616366977">音声検索はこのデバイスではご利用いただけません</translation>
 <translation id="3749289110408117711">ファイル名</translation>
+<translation id="3751708358601675711">価格トラッキングを編集</translation>
 <translation id="3756823472711156529">グループを復元</translation>
 <translation id="3759306015475526475">使用状況とクラッシュに関するデータの設定を管理する</translation>
 <translation id="3763110477555836428">このカードでご購入手続きを行う際に仮想カード番号が入力され、実際のカード情報が保護されます。管理は Google ウォレットで行います。<ph name="BEGIN_LINK1" />仮想カードの詳細<ph name="END_LINK1" /></translation>
