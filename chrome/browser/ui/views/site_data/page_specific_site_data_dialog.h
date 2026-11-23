@@ -52,6 +52,8 @@ class PageSpecificSiteDataDialogTestApi {
   std::vector<PageSpecificSiteDataDialogSite> GetAllSites();
   std::vector<webapps::AppId> GetInstalledRelatedApps();
   void DeleteStoredObjects(const url::Origin& origin);
+  void OnManageOnDeviceSiteDataClicked();
+  void OnRelatedApplicationLinkToAppSettings(const webapps::AppId& app_id);
 
  private:
   std::unique_ptr<PageSpecificSiteDataDialogModelDelegate> delegate_;

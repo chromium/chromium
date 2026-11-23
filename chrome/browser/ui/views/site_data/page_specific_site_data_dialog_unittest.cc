@@ -539,6 +539,18 @@ TEST_F(PageSpecificSiteDataDialogUnitTest, RemoveBrowsingData) {
   }
 }
 
+TEST_F(PageSpecificSiteDataDialogUnitTest, HandlesDestroyedWebContents) {
+  auto delegate =
+      std::make_unique<test::PageSpecificSiteDataDialogTestApi>(web_contents());
+  DeleteContents();
+
+  EXPECT_TRUE(delegate->GetAllSites().empty());
+  EXPECT_TRUE(delegate->GetInstalledRelatedApps().empty());
+  delegate->DeleteStoredObjects(url::Origin::Create(GURL(kCurrentUrl)));
+  delegate->OnManageOnDeviceSiteDataClicked();
+  delegate->OnRelatedApplicationLinkToAppSettings("dummy_app_id");
+}
+
 class PageSpecificSiteDataDialogWithWebAppsUnitTest
     : public PageSpecificSiteDataDialogUnitTest {
  public:

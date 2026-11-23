@@ -186,10 +186,18 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   }
 
   std::vector<PageSpecificSiteDataDialogSite> GetAllSites() {
+    if (!web_contents_) {
+      return {};
+    }
+    BrowsingDataModel* allowed = allowed_browsing_data_model();
+    BrowsingDataModel* blocked = blocked_browsing_data_model();
+    if (!allowed || !blocked) {
+      return {};
+    }
+
     std::map<BrowsingDataModel::DataOwner, PageSpecificSiteDataDialogSite>
         sites_map;
-    for (const BrowsingDataModel::BrowsingDataEntryView& entry :
-         *allowed_browsing_data_model()) {
+    for (const BrowsingDataModel::BrowsingDataEntryView& entry : *allowed) {
       const BrowsingDataModel::DataOwner& owner = *entry.data_owner;
       auto existing_site = sites_map.find(owner);
       if (existing_site == sites_map.end()) {
@@ -202,8 +210,7 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
             IsBrowsingDataEntryViewFullyPartitioned(entry);
       }
     }
-    for (const BrowsingDataModel::BrowsingDataEntryView& entry :
-         *blocked_browsing_data_model()) {
+    for (const BrowsingDataModel::BrowsingDataEntryView& entry : *blocked) {
       const BrowsingDataModel::DataOwner& owner = *entry.data_owner;
       auto existing_site = sites_map.find(owner);
       if (existing_site == sites_map.end()) {
@@ -238,6 +245,10 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   }
 
   std::vector<webapps::AppId> GetInstalledRelatedApps() {
+    if (!web_contents_) {
+      return {};
+    }
+
     // There will be no installed related apps in off the record mode, because
     // apps are not installable there.
     if (web_contents_->GetBrowserContext()->IsOffTheRecord()) {
@@ -269,6 +280,15 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   FaviconCache* favicon_cache() { return favicon_cache_.get(); }
 
   void DeleteStoredObjects(const url::Origin& origin) {
+    if (!web_contents_) {
+      return;
+    }
+    BrowsingDataModel* allowed = allowed_browsing_data_model();
+    BrowsingDataModel* blocked = blocked_browsing_data_model();
+    if (!allowed || !blocked) {
+      return;
+    }
+
     status_changed_ = true;
 
     // The both models have to be checked, as the site might be in the blocked
@@ -279,13 +299,11 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     // `base::DoNothing` callback.
     // TODO(crbug.com/40248546): Future tests will need to know when the
     // deletion is completed, this will require a callback to be passed here.
-    allowed_browsing_data_model()->RemoveBrowsingData(origin.host(),
-                                                      base::DoNothing());
-    allowed_browsing_data_model()->RemovePartitionedBrowsingData(
+    allowed->RemoveBrowsingData(origin.host(), base::DoNothing());
+    allowed->RemovePartitionedBrowsingData(
         origin.host(), net::SchemefulSite(origin), base::DoNothing());
-    blocked_browsing_data_model()->RemoveBrowsingData(origin.host(),
-                                                      base::DoNothing());
-    blocked_browsing_data_model()->RemovePartitionedBrowsingData(
+    blocked->RemoveBrowsingData(origin.host(), base::DoNothing());
+    blocked->RemovePartitionedBrowsingData(
         origin.host(), net::SchemefulSite(origin), base::DoNothing());
 
     RecordPageSpecificSiteDataDialogRemoveButtonClickedAction();
@@ -317,6 +335,9 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   }
 
   void OnRelatedApplicationLinkToAppSettings(const webapps::AppId& app_id) {
+    if (!web_contents_) {
+      return;
+    }
     web_app::OpenAppSettingsForInstalledRelatedApp(
         app_id,
         Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
@@ -335,6 +356,9 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     // host names or BDM should return origins.
     url::Origin entry_origin = std::visit(
         absl::Overload{[&](const std::string& host) {
+                         if (!web_contents_) {
+                           return url::Origin();
+                         }
                          GURL current_url = web_contents_->GetVisibleURL();
                          GURL site_url = net::cookie_util::CookieOriginToURL(
                              host, current_url.SchemeIsCryptographic());
@@ -374,6 +398,9 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   }
 
   bool IsOnlyPartitionedStorageAccessAllowed(url::Origin site_origin) {
+    if (!web_contents_) {
+      return false;
+    }
     GURL current_url = web_contents_->GetVisibleURL();
 
     const bool block_third_party_cookies =
@@ -411,22 +438,30 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
     if (allowed_browsing_data_model_for_testing_) {
       return allowed_browsing_data_model_for_testing_;
     }
+    if (!web_contents_) {
+      return nullptr;
+    }
 
     auto* content_settings =
         content_settings::PageSpecificContentSettings::GetForFrame(
             web_contents_->GetPrimaryMainFrame());
-    return content_settings->allowed_browsing_data_model();
+    return content_settings ? content_settings->allowed_browsing_data_model()
+                            : nullptr;
   }
 
   BrowsingDataModel* blocked_browsing_data_model() {
     if (blocked_browsing_data_model_for_testing_) {
       return blocked_browsing_data_model_for_testing_;
     }
+    if (!web_contents_) {
+      return nullptr;
+    }
 
     auto* content_settings =
         content_settings::PageSpecificContentSettings::GetForFrame(
             web_contents_->GetPrimaryMainFrame());
-    return content_settings->blocked_browsing_data_model();
+    return content_settings ? content_settings->blocked_browsing_data_model()
+                            : nullptr;
   }
 
   base::WeakPtr<content::WebContents> web_contents_;
@@ -563,6 +598,15 @@ PageSpecificSiteDataDialogTestApi::GetInstalledRelatedApps() {
 void PageSpecificSiteDataDialogTestApi::DeleteStoredObjects(
     const url::Origin& origin) {
   delegate_->DeleteStoredObjects(origin);
+}
+
+void PageSpecificSiteDataDialogTestApi::OnManageOnDeviceSiteDataClicked() {
+  delegate_->OnManageOnDeviceSiteDataClicked();
+}
+
+void PageSpecificSiteDataDialogTestApi::OnRelatedApplicationLinkToAppSettings(
+    const webapps::AppId& app_id) {
+  delegate_->OnRelatedApplicationLinkToAppSettings(app_id);
 }
 
 }  // namespace test
