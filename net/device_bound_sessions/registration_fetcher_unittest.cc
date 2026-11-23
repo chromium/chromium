@@ -6,6 +6,7 @@
 
 #include <atomic>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -16,6 +17,7 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
@@ -29,7 +31,9 @@
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "components/unexportable_keys/background_task_origin.h"
+#include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/mock_unexportable_key_service.h"
+#include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
@@ -46,6 +50,9 @@
 #include "net/device_bound_sessions/mock_session_service.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
 #include "net/device_bound_sessions/registration_request_param.h"
+#include "net/device_bound_sessions/registration_result.h"
+#include "net/device_bound_sessions/session_error.h"
+#include "net/device_bound_sessions/session_key.h"
 #include "net/device_bound_sessions/session_params.h"
 #include "net/device_bound_sessions/session_service.h"
 #include "net/device_bound_sessions/test_support.h"
@@ -2746,6 +2753,143 @@ TEST_F(RegistrationTest,
                                      callback.callback());
   callback.WaitForCall();
   callback.outcome().SessionForTesting();
+}
+
+class PendingKeyRefreshTest : public RegistrationTest {
+ protected:
+  std::unique_ptr<RegistrationFetcher> StartRefreshWithPendingKey(
+      const Session& session,
+      RegistrationFetcher::RegistrationCompleteCallback callback) {
+    auto request_param = RegistrationRequestParam::CreateForRefresh(session);
+    auto isolation_info =
+        IsolationInfo::CreateTransient(/*nonce=*/std::nullopt);
+    std::unique_ptr<RegistrationFetcher> fetcher =
+        RegistrationFetcher::CreateFetcher(
+            request_param, session_service(), unexportable_key_service(),
+            context_.get(), isolation_info, isolation_info.site_for_cookies(),
+            /*net_log_source=*/std::nullopt,
+            /*original_request_initiator=*/std::nullopt,
+            unexportable_keys::BackgroundTaskPriority::kBestEffort);
+    fetcher->StartFetchWithPendingKey(request_param, std::move(callback));
+    return fetcher;
+  }
+
+  // Starts a server that answers a refresh request with a 403, unless the
+  // request is signed with the challenge that the returned session gets once
+  // the fetcher has received the 403. `on_challenge_needed` is run at that
+  // point.
+  std::unique_ptr<Session> StartChallengeRefreshServer(
+      base::OnceClosure on_challenge_needed = base::DoNothing()) {
+    EXPECT_TRUE(server_.InitializeAndListen());
+    std::unique_ptr<Session> session = CreateTestSession(kSessionIdentifier);
+    Session* session_ptr = session.get();
+    EXPECT_CALL(
+        session_service(),
+        GetSession(SessionKey{SchemefulSite(GetBaseURL()), session->id()}))
+        .WillOnce(
+            [session_ptr, on_challenge_needed = std::move(on_challenge_needed)](
+                const SessionKey&) mutable {
+              session_ptr->set_cached_challenge("new_challenge");
+              std::move(on_challenge_needed).Run();
+              return session_ptr;
+            });
+    server_.RegisterRequestHandler(
+        base::BindRepeating([](const test_server::HttpRequest& request)
+                                -> std::unique_ptr<test_server::HttpResponse> {
+          if (GetJwtClaim(request, "jti") == "new_challenge") {
+            return ReturnResponse(HTTP_OK, kSiteScopedValidJson, request);
+          }
+          return ReturnResponse(HTTP_FORBIDDEN, "", request);
+        }));
+    server_.StartAcceptingConnections();
+    return session;
+  }
+
+  RegistrationResult RunRefreshWithPendingKey(HttpStatusCode code,
+                                              std::string_view content) {
+    server_.RegisterRequestHandler(
+        base::BindRepeating(&ReturnResponse, code, std::string(content)));
+    EXPECT_TRUE(server_.Start());
+    std::unique_ptr<Session> session = CreateTestSession(kSessionIdentifier);
+    base::test::TestFuture<RegistrationFetcher*, RegistrationResult> future;
+    std::unique_ptr<RegistrationFetcher> fetcher =
+        StartRefreshWithPendingKey(*session, future.GetCallback());
+    return std::get<1>(future.Take());
+  }
+};
+
+// A refresh started before its key is available sends the unsigned request
+// right away, and signs the challenge from the 403 once the key arrives.
+TEST_F(PendingKeyRefreshTest, SignsChallengeWhenKeyArrives) {
+  base::test::TestFuture<void> challenge_needed;
+  std::unique_ptr<Session> session =
+      StartChallengeRefreshServer(challenge_needed.GetCallback());
+
+  UnexportableSigningKeyId key = CreateSigningKey();
+  TestRegistrationCallback callback;
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      StartRefreshWithPendingKey(*session, callback.callback());
+
+  // The unsigned request gets a 403, and the fetcher waits for the key.
+  ASSERT_TRUE(challenge_needed.Wait());
+  EXPECT_FALSE(callback.has_called());
+
+  fetcher->ProvideSessionKey(key);
+  callback.WaitForCall();
+  EXPECT_EQ(callback.outcome().SessionForTesting().unexportable_key_id(), key);
+}
+
+// If the key arrives before the 403 response, the challenge is signed right
+// away.
+TEST_F(PendingKeyRefreshTest, KeyArrivesBeforeResponse) {
+  std::unique_ptr<Session> session = StartChallengeRefreshServer();
+
+  UnexportableSigningKeyId key = CreateSigningKey();
+  TestRegistrationCallback callback;
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      StartRefreshWithPendingKey(*session, callback.callback());
+  fetcher->ProvideSessionKey(key);
+  EXPECT_FALSE(callback.has_called());
+
+  callback.WaitForCall();
+  EXPECT_EQ(callback.outcome().SessionForTesting().unexportable_key_id(), key);
+}
+
+TEST_F(PendingKeyRefreshTest, UnsignedSuccessDoesNotWaitForKey) {
+  RegistrationResult result =
+      RunRefreshWithPendingKey(HTTP_OK, kSiteScopedValidJson);
+  EXPECT_THAT(
+      result.SessionForTesting().unexportable_key_id(),
+      base::test::ErrorIs(unexportable_keys::ServiceError::kKeyNotReady));
+}
+
+TEST_F(PendingKeyRefreshTest, NoConfigChangeDoesNotWaitForKey) {
+  RegistrationResult result = RunRefreshWithPendingKey(HTTP_OK, "");
+  result.NoSessionConfigChangeForTesting();
+}
+
+TEST_F(PendingKeyRefreshTest, ErrorDoesNotWaitForKey) {
+  RegistrationResult result =
+      RunRefreshWithPendingKey(HTTP_INTERNAL_SERVER_ERROR, "");
+  ASSERT_NE(result.SessionErrorForTesting(), nullptr);
+  EXPECT_EQ(result.SessionErrorForTesting()->type,
+            SessionError::kTransientHttpError);
+}
+
+TEST_F(PendingKeyRefreshTest, ContinueFalseDoesNotWaitForKey) {
+  static constexpr char kTestingJson[] =
+      R"({"session_identifier": "session_id", "continue": false})";
+  RegistrationResult result = RunRefreshWithPendingKey(HTTP_OK, kTestingJson);
+  ASSERT_NE(result.SessionErrorForTesting(), nullptr);
+  EXPECT_EQ(result.SessionErrorForTesting()->type,
+            SessionError::kServerRequestedTermination);
+}
+
+TEST_F(PendingKeyRefreshTest, InvalidJsonDoesNotWaitForKey) {
+  RegistrationResult result = RunRefreshWithPendingKey(HTTP_OK, "not json");
+  ASSERT_NE(result.SessionErrorForTesting(), nullptr);
+  EXPECT_EQ(result.SessionErrorForTesting()->type,
+            SessionError::kInvalidConfigJson);
 }
 
 TEST_F(RegistrationTest, ContinueFalse) {

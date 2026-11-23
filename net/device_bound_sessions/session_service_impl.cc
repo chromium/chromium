@@ -19,6 +19,7 @@
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
@@ -38,8 +39,10 @@
 #include "net/cookies/cookie_store.h"
 #include "net/device_bound_sessions/challenge_result.h"
 #include "net/device_bound_sessions/dbsc_request.h"
+#include "net/device_bound_sessions/deletion_reason.h"
 #include "net/device_bound_sessions/generate_key_param.h"
 #include "net/device_bound_sessions/jwk_utils.h"
+#include "net/device_bound_sessions/refresh_result.h"
 #include "net/device_bound_sessions/registration_fetcher.h"
 #include "net/device_bound_sessions/registration_request_param.h"
 #include "net/device_bound_sessions/session_binding_utils.h"
@@ -1725,6 +1728,28 @@ void SessionServiceImpl::StartSessionRefresh(const SessionKey& session_key,
       SessionService::OnAccessCallback access_callback = params.access_callback;
       const unexportable_keys::BackgroundTaskPriority priority =
           params.priority;
+      // Without a cached challenge, the first refresh request is unsigned and
+      // doesn't need the key, so send it while the key is being restored.
+      // This needs `kDeviceBoundSessionsRequireSameSiteRefresh`: a session
+      // refreshed without its key gets the key by site and session ID, which
+      // on another site is the key of an unrelated session.
+      if (!session->cached_challenge() &&
+          base::FeatureList::IsEnabled(
+              features::kDeviceBoundSessionsConcurrentKeyRestore) &&
+          base::FeatureList::IsEnabled(
+              kDeviceBoundSessionsRequireSameSiteRefresh)) {
+        // Start the fetcher first: if restoring the key fails synchronously,
+        // it unblocks the deferred requests that the fetcher relies on.
+        base::WeakPtr<RegistrationFetcher> fetcher = RefreshSessionInternal(
+            std::move(params), session_key, /*key_id=*/std::nullopt);
+        RestoreSessionKey(
+            session_key, access_callback, priority,
+            base::BindOnce(
+                &SessionServiceImpl::OnSessionKeyRestoredForPendingRefresh,
+                weak_factory_.GetWeakPtr(), session_key, std::move(fetcher)));
+        return;
+      }
+
       RestoreSessionKey(
           session_key, access_callback, priority,
           base::BindOnce(&SessionServiceImpl::OnSessionKeyRestoredForRefresh,
@@ -1758,10 +1783,38 @@ void SessionServiceImpl::OnSessionKeyRestoredForRefresh(
   RefreshSessionInternal(std::move(params), session_key, *key_id);
 }
 
-void SessionServiceImpl::RefreshSessionInternal(
+void SessionServiceImpl::OnSessionKeyRestoredForPendingRefresh(
+    const SessionKey& session_key,
+    base::WeakPtr<RegistrationFetcher> fetcher,
+    std::optional<unexportable_keys::UnexportableSigningKeyId> key_id) {
+  if (!fetcher) {
+    // The refresh finished without needing the key.
+    return;
+  }
+
+  if (!key_id) {
+    // Drop the fetcher without letting it report a result.
+    // TODO(crbug.com/562888709): After a transient failure, consider telling
+    // the fetcher that the key is unavailable instead. The unsigned request
+    // can still succeed if the server doesn't ask for a signature.
+    RemoveFetcher(fetcher.get());
+    // If the session still exists, the restore failed with a transient error.
+    // Otherwise, deleting the session already unblocked the waiting requests.
+    if (GetSession(session_key)) {
+      UnblockWaitingRequests(session_key,
+                             RefreshResult::kTransientSigningError);
+    }
+    return;
+  }
+
+  fetcher->ProvideSessionKey(*key_id);
+  // `fetcher` may be deleted.
+}
+
+base::WeakPtr<RegistrationFetcher> SessionServiceImpl::RefreshSessionInternal(
     RefreshParams params,
     const SessionKey& session_key,
-    unexportable_keys::UnexportableSigningKeyId key_id) {
+    std::optional<unexportable_keys::UnexportableSigningKeyId> key_id) {
   Session* session = GetSession(session_key);
   // `session` must exist because this is either called synchronously from
   // `StartSessionRefresh` (which checks `session`), or from
@@ -1796,7 +1849,7 @@ void SessionServiceImpl::RefreshSessionInternal(
                 features::kDeviceBoundSessionsDrainDeferredOnAllCanceled)) {
           UnblockWaitingRequests(session_key, RefreshResult::kCanceled);
         }
-        return;
+        return nullptr;
       }
 
       req_it->triggered_refresh = true;
@@ -1828,11 +1881,17 @@ void SessionServiceImpl::RefreshSessionInternal(
           registration_param, *this, key_service_.get(), context_.get(),
           params.isolation_info, params.site_for_cookies,
           net_log_source_for_refresh, params.initiator, params.priority);
-  RegistrationFetcher* fetcher_raw = fetcher.get();
+  base::WeakPtr<RegistrationFetcher> weak_fetcher = fetcher->AsWeakPtr();
   registration_fetchers_.insert(std::move(fetcher));
-  fetcher_raw->StartFetchWithExistingKey(registration_param, key_id,
-                                         std::move(callback));
-  // `fetcher_raw` may be deleted.
+  if (key_id) {
+    weak_fetcher->StartFetchWithExistingKey(registration_param, *key_id,
+                                            std::move(callback));
+  } else {
+    weak_fetcher->StartFetchWithPendingKey(registration_param,
+                                           std::move(callback));
+  }
+  // The fetcher may be deleted, in which case `weak_fetcher` is null.
+  return weak_fetcher;
 }
 
 bool SessionServiceImpl::TryConsumeSigningQuota(

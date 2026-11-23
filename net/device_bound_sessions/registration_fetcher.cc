@@ -6,17 +6,20 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/barrier_closure.h"
-#include "base/check_deref.h"
+#include "base/check.h"
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_split.h"
@@ -501,14 +504,21 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
 
   void StartFetch(std::optional<std::string> challenge,
                   std::optional<std::string> authorization) {
-    CHECK(key_id_.has_value());
+    // Only a refresh can start before its key is available, see
+    // `StartFetchWithPendingKey()`.
+    CHECK(key_id_.has_value() || IsForRefreshRequest());
 
     current_challenge_ = std::move(challenge);
     current_authorization_ = std::move(authorization);
 
     if (current_challenge_.has_value() || current_authorization_.has_value()) {
-      AttemptChallengeSigning();
-      // `this` may be deleted.
+      if (key_id_) {
+        AttemptChallengeSigning();
+        // `this` may be deleted.
+      } else {
+        CHECK(!waiting_for_key_);
+        waiting_for_key_ = true;
+      }
       return;
     }
 
@@ -614,6 +624,40 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       RegistrationRequestParam& request_params,
       unexportable_keys::UnexportableSigningKeyId key_id,
       RegistrationCompleteCallback callback) override {
+    StartFetchWithOptionalKey(request_params, key_id, std::move(callback));
+  }
+
+  void StartFetchWithPendingKey(
+      RegistrationRequestParam& request_params,
+      RegistrationCompleteCallback callback) override {
+    CHECK(IsForRefreshRequest());
+    // The session of a refresh without its key gets the key by site and session
+    // ID, which on another site is the key of an unrelated session.
+    CHECK(base::FeatureList::IsEnabled(
+        kDeviceBoundSessionsRequireSameSiteRefresh));
+    StartFetchWithOptionalKey(request_params, /*key_id=*/std::nullopt,
+                              std::move(callback));
+  }
+
+  void ProvideSessionKey(
+      unexportable_keys::UnexportableSigningKeyId key_id) override {
+    CHECK(!key_id_.has_value());
+    key_id_ = key_id;
+    if (std::exchange(waiting_for_key_, false)) {
+      AttemptChallengeSigning();
+      // `this` may be deleted.
+    }
+  }
+
+  base::WeakPtr<RegistrationFetcher> AsWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  void StartFetchWithOptionalKey(
+      RegistrationRequestParam& request_params,
+      std::optional<unexportable_keys::UnexportableSigningKeyId> key_id,
+      RegistrationCompleteCallback callback) {
     // Using mock fetcher for testing.
     if (g_mock_fetcher) {
       g_mock_fetcher->Run(std::move(callback));
@@ -624,7 +668,6 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     CHECK(callback_.is_null());
     callback_ = std::move(callback);
     had_initial_challenge_ = request_params.challenge().has_value();
-
     key_id_ = key_id;
 
     StartFetch(request_params.TakeChallenge(),
@@ -632,7 +675,6 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     // `this` may be deleted.
   }
 
- private:
   base::TimeDelta GetTimeout() const {
     return priority_ == unexportable_keys::BackgroundTaskPriority::kUserBlocking
                ? kInteractiveFetchTimeout
@@ -1070,7 +1112,10 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
       return;
     }
 
-    params.key_id = CHECK_DEREF(key_id_);
+    // A refresh started before its key was restored may still not have one.
+    // The session is then created without a key, and the session service sets
+    // the key once the restore is done.
+    params.key_id = key_id_;
     params.attestation_key_id = attestation_key_id_;
     // Returns early on error, which runs the callback and may delete `this`.
     ASSIGN_OR_RETURN(
@@ -1292,6 +1337,8 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   const raw_ref<SessionService> session_service_;
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
   std::optional<unexportable_keys::UnexportableSigningKeyId> key_id_;
+  // Whether `AttemptChallengeSigning()` is waiting for `ProvideSessionKey()`.
+  bool waiting_for_key_ = false;
   std::optional<unexportable_keys::UnexportableAttestationKeyId>
       attestation_key_id_;
   raw_ptr<const URLRequestContext> context_;

@@ -63,9 +63,10 @@ struct NET_EXPORT SessionParams final {
   std::string refresh_url;
   Scope scope;
   std::vector<Credential> credentials;
-  // TODO(crbug.com/501306421): Consider making this a std::optional, so that
-  // forgetting to set it won't result in a random key id.
-  unexportable_keys::UnexportableSigningKeyId key_id;
+  // The session binding key. If it is `std::nullopt`, the session is created
+  // without a key (`ServiceError::kKeyNotReady`) and the caller has to supply
+  // it, see `RegistrationFetcher::StartFetchWithPendingKey()`.
+  std::optional<unexportable_keys::UnexportableSigningKeyId> key_id;
   // Only present for sessions that require attestation keys, e.g. when
   // `aik_required` is true in the registration payload. For registrations
   // without this payload or sessions created via OAML this will not be set.

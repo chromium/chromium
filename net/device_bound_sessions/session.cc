@@ -213,7 +213,9 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
 
   session->set_creation_date(base::Time::Now());
   session->set_expiry_date(base::Time::Now() + kSessionTtl);
-  session->set_unexportable_key_id(std::move(params.key_id));
+  if (params.key_id) {
+    session->set_unexportable_key_id(*params.key_id);
+  }
   session->set_unexportable_attestation_key_id(
       std::move(params.attestation_key_id));
 

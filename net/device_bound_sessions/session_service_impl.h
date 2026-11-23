@@ -411,10 +411,23 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       const SessionKey& session_key,
       std::optional<unexportable_keys::UnexportableSigningKeyId> key_id);
 
-  void RefreshSessionInternal(
+  // Hands the restored session binding key to `fetcher`, which started its
+  // refresh before the key was available. If the key wasn't restored, drops
+  // `fetcher` and unblocks the requests waiting on the refresh, unless deleting
+  // the session already did.
+  void OnSessionKeyRestoredForPendingRefresh(
+      const SessionKey& session_key,
+      base::WeakPtr<RegistrationFetcher> fetcher,
+      std::optional<unexportable_keys::UnexportableSigningKeyId> key_id);
+
+  // Creates and starts the refresh fetcher. If `key_id` is std::nullopt, the
+  // session binding key is still being restored and must be passed to the
+  // returned fetcher once available. Returns null if no fetcher was started or
+  // if it has already finished.
+  base::WeakPtr<RegistrationFetcher> RefreshSessionInternal(
       RefreshParams params,
       const SessionKey& session_key,
-      unexportable_keys::UnexportableSigningKeyId key_id);
+      std::optional<unexportable_keys::UnexportableSigningKeyId> key_id);
 
   // Add a header to `request` indicating which sessions should have
   // applied, but did not due to error conditions.

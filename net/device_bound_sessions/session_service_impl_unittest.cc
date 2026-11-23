@@ -22,6 +22,7 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
@@ -58,6 +59,7 @@
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
+#include "net/base/net_errors.h"
 #include "net/base/network_handle.h"
 #include "net/base/request_priority.h"
 #include "net/cookies/site_for_cookies.h"
@@ -66,6 +68,7 @@
 #include "net/device_bound_sessions/jwk_utils.h"
 #include "net/device_bound_sessions/mock_session_store.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
+#include "net/device_bound_sessions/refresh_result.h"
 #include "net/device_bound_sessions/registration_fetcher.h"
 #include "net/device_bound_sessions/registration_fetcher_param.h"
 #include "net/device_bound_sessions/registration_result.h"
@@ -78,6 +81,7 @@
 #include "net/device_bound_sessions/single_sign_on_key_manager.h"
 #include "net/device_bound_sessions/test_support.h"
 #include "net/device_bound_sessions/unexportable_key_service_factory.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log.h"
@@ -106,6 +110,7 @@ using ::testing::Invoke;
 using ::testing::IsEmpty;
 using ::testing::Not;
 using ::testing::Pair;
+using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::Return;
 using ::testing::SaveArgByMove;
@@ -396,6 +401,32 @@ void ExhaustProviderSigningQuota(SessionServiceImpl& service,
   EXPECT_FALSE(
       service.TryConsumeSigningQuota(site, SigningQuotaOperation::kRefresh));
 }
+
+// Stands in for a refresh endpoint that wants a signed challenge: answers a
+// request without a `Secure-Session-Response` header with a 403, and a request
+// with one with an empty 200. Runs `on_unsigned_request` for each request of
+// the first kind.
+class SignedRefreshInterceptor : public URLRequestInterceptor {
+ public:
+  explicit SignedRefreshInterceptor(base::RepeatingClosure on_unsigned_request)
+      : on_unsigned_request_(std::move(on_unsigned_request)) {}
+
+  std::unique_ptr<URLRequestJob> MaybeInterceptRequest(
+      URLRequest* request) const override {
+    const bool is_signed =
+        request->extra_request_headers().HasHeader("Secure-Session-Response");
+    if (!is_signed) {
+      on_unsigned_request_.Run();
+    }
+    return std::make_unique<URLRequestTestJob>(
+        request,
+        is_signed ? "HTTP/1.1 200 OK\n\n" : "HTTP/1.1 403 Forbidden\n\n",
+        /*response_data=*/"", /*auto_advance=*/true);
+  }
+
+ private:
+  const base::RepeatingClosure on_unsigned_request_;
+};
 
 class SessionServiceImplTest : public ::testing::Test,
                                public WithTaskEnvironment {
@@ -1645,6 +1676,7 @@ TEST_F(SessionServiceImplTest, RefreshedSessionKeepsAttestationKey) {
                       .name = "test_cookie",
                       .attributes = "secure",
                   }},
+                  .key_id = unexportable_keys::UnexportableSigningKeyId(),
                   .attestation_key_id = attestation_key_id,
               })));
         },
@@ -3300,19 +3332,25 @@ class SessionServiceImplWithStoreTest : public TestWithTaskEnvironment {
   }
 
   // Loads a session for `kTestUrl` whose binding key has not been restored, so
-  // that refreshing it first restores the key asynchronously. The key restore
-  // is expected once, and its callback is saved to `restore_key_callback`.
+  // that refreshing it triggers a key restore. If `restore_key_callback` is
+  // set, the key restore is expected once, and its callback is saved there.
+  // Otherwise the test sets up its own expectations for the key restore.
   void LoadSessionWithUnrestoredKey(
-      SessionStore::RestoreSessionBindingKeyCallback* restore_key_callback) {
+      SessionStore::RestoreSessionBindingKeyCallback* restore_key_callback =
+          nullptr,
+      std::string_view refresh_url = kUrlString) {
     EXPECT_CALL(store(), LoadSessions);
     service().LoadSessionsAsync();
-    ASSERT_OK_AND_ASSIGN(
-        std::unique_ptr<Session> session,
-        Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString)));
+    ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> session,
+                         Session::CreateFromProto(CreateSessionProto(
+                             kSessionId, std::string(refresh_url))));
     SessionStore::SessionsMap session_map;
     session_map.insert({SessionKey{SchemefulSite(kTestUrl), session->id()},
                         std::move(session)});
     FinishLoadingSessions(std::move(session_map));
+    if (!restore_key_callback) {
+      return;
+    }
 
     EXPECT_CALL(
         store(),
@@ -4146,6 +4184,319 @@ TEST_F(SessionServiceImplWithStoreTest, RefreshDurationWithKeyRestoration) {
   histograms.ExpectUniqueTimeSample(
       "Net.DeviceBoundSessions.RefreshDuration.MissingCookie.Success",
       kTotalExpectedDuration, 1);
+}
+
+class ConcurrentKeyRestoreTest : public SessionServiceImplWithStoreTest {
+ protected:
+  ScopedTestRegistrationFetcher CaptureRefreshCallback(
+      RegistrationFetcher::RegistrationCompleteCallback* out_callback) {
+    return ScopedTestRegistrationFetcher::CreateWithDynamicCallback(
+        base::BindLambdaForTesting(
+            [out_callback](
+                RegistrationFetcher::RegistrationCompleteCallback callback) {
+              *out_callback = std::move(callback);
+            }));
+  }
+
+  void DeferRefreshRequest(base::test::TestFuture<RefreshResult>& future) {
+    requests_.push_back(CreateRequestWithContext(
+        context(), kTestUrl, url::Origin::Create(kTestUrl), &delegate_));
+    DbscRequest dbsc_request(requests_.back().get());
+    service().DeferRequestForRefresh(
+        dbsc_request, SessionService::DeferralParams(Session::Id(kSessionId)),
+        future.GetCallback());
+  }
+
+  const SessionKey session_key_{SchemefulSite(kTestUrl),
+                                Session::Id(kSessionId)};
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kDeviceBoundSessionsConcurrentKeyRestore};
+  net::TestDelegate delegate_;
+  std::vector<std::unique_ptr<URLRequest>> requests_;
+};
+
+TEST_F(ConcurrentKeyRestoreTest, RefreshStartsBeforeKeyIsRestored) {
+  SessionStore::RestoreSessionBindingKeyCallback restore_key_callback;
+  LoadSessionWithUnrestoredKey(&restore_key_callback);
+
+  // The test fetcher finishes synchronously with an error while key restoration
+  // is still pending.
+  auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithFailure(
+      SessionError::kNetError, kUrlString);
+  base::test::TestFuture<RefreshResult> future;
+  DeferRefreshRequest(future);
+
+  ASSERT_TRUE(restore_key_callback);
+  EXPECT_EQ(future.Take(), RefreshResult::kUnreachable);
+
+  // Finishing the restore after the refresh is done must be harmless.
+  std::move(restore_key_callback)
+      .Run(unexportable_keys::UnexportableSigningKeyId());
+}
+
+TEST_F(ConcurrentKeyRestoreTest, KeyRestoreFailsWhileRefreshInFlight) {
+  SessionStore::RestoreSessionBindingKeyCallback restore_key_callback;
+  LoadSessionWithUnrestoredKey(&restore_key_callback);
+
+  RegistrationFetcher::RegistrationCompleteCallback fetch_callback;
+  ScopedTestRegistrationFetcher scoped_test_fetcher =
+      CaptureRefreshCallback(&fetch_callback);
+  base::test::TestFuture<RefreshResult> future;
+  DeferRefreshRequest(future);
+  ASSERT_TRUE(fetch_callback);
+  ASSERT_TRUE(restore_key_callback);
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_EQ(GetOngoingRegistrationFetchesCount(), 1u);
+
+  // A transient restore failure unblocks the request without waiting for the
+  // in-flight refresh, and drops its fetcher.
+  std::move(restore_key_callback)
+      .Run(base::unexpected(unexportable_keys::ServiceError::kKeyNotReady));
+  EXPECT_EQ(future.Take(), RefreshResult::kTransientSigningError);
+  EXPECT_EQ(GetOngoingRegistrationFetchesCount(), 0u);
+}
+
+TEST_F(ConcurrentKeyRestoreTest,
+       KeyRestoreFailsPersistentlyWhileRefreshInFlight) {
+  SessionStore::RestoreSessionBindingKeyCallback restore_key_callback;
+  LoadSessionWithUnrestoredKey(&restore_key_callback);
+
+  RegistrationFetcher::RegistrationCompleteCallback fetch_callback;
+  ScopedTestRegistrationFetcher scoped_test_fetcher =
+      CaptureRefreshCallback(&fetch_callback);
+  base::test::TestFuture<RefreshResult> future;
+  DeferRefreshRequest(future);
+  ASSERT_TRUE(fetch_callback);
+  ASSERT_TRUE(restore_key_callback);
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_EQ(GetOngoingRegistrationFetchesCount(), 1u);
+
+  // A persistent restore failure deletes the session, unblocks the request, and
+  // drops the in-flight fetcher.
+  EXPECT_CALL(store(), DeleteSession(session_key_));
+  std::move(restore_key_callback)
+      .Run(base::unexpected(unexportable_keys::ServiceError::kKeyNotFound));
+  EXPECT_EQ(future.Take(), RefreshResult::kFatalError);
+  EXPECT_EQ(service().GetSession(session_key_), nullptr);
+  EXPECT_EQ(GetOngoingRegistrationFetchesCount(), 0u);
+}
+
+// The key restore can fail before `RestoreSessionKey()` returns. The refresh
+// fetcher was started first and is dropped again.
+TEST_F(ConcurrentKeyRestoreTest, KeyRestoreFailsSynchronously) {
+  LoadSessionWithUnrestoredKey();
+  EXPECT_CALL(store(), RestoreSessionBindingKey(session_key_, _, _))
+      .WillOnce(RunOnceCallback<2>(
+          base::unexpected(unexportable_keys::ServiceError::kKeyNotFound)));
+  EXPECT_CALL(store(), DeleteSession(session_key_));
+
+  RegistrationFetcher::RegistrationCompleteCallback fetch_callback;
+  ScopedTestRegistrationFetcher scoped_test_fetcher =
+      CaptureRefreshCallback(&fetch_callback);
+  base::test::TestFuture<RefreshResult> future;
+  DeferRefreshRequest(future);
+  EXPECT_TRUE(fetch_callback);
+  EXPECT_EQ(future.Take(), RefreshResult::kFatalError);
+  EXPECT_EQ(service().GetSession(session_key_), nullptr);
+  EXPECT_EQ(GetOngoingRegistrationFetchesCount(), 0u);
+}
+
+// Uses the real fetcher. The refresh endpoint answers the unsigned request with
+// 200 and an empty body, which means that the session config is unchanged.
+TEST_F(ConcurrentKeyRestoreTest, RefreshSucceedsBeforeKeyIsRestored) {
+  SessionStore::RestoreSessionBindingKeyCallback restore_key_callback;
+  LoadSessionWithUnrestoredKey(&restore_key_callback, kRefreshUrlString);
+
+  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
+      kTestRefreshUrl,
+      std::make_unique<RequestContextCapturingInterceptor>(base::DoNothing()));
+  EXPECT_CALL(
+      store(),
+      SaveSession(session_key_.site,
+                  Property(&Session::unexportable_key_id,
+                           base::test::ErrorIs(
+                               unexportable_keys::ServiceError::kKeyNotReady)),
+                  SessionStore::SaveSessionMode::kRefresh));
+
+  base::test::TestFuture<RefreshResult> future;
+  DeferRefreshRequest(future);
+  EXPECT_EQ(future.Take(), RefreshResult::kRefreshed);
+  EXPECT_EQ(GetOngoingRegistrationFetchesCount(), 0u);
+  ASSERT_TRUE(restore_key_callback);
+
+  const unexportable_keys::UnexportableSigningKeyId key;
+  std::move(restore_key_callback).Run(key);
+  EXPECT_THAT(service().GetSession(session_key_),
+              Pointee(Property(&Session::unexportable_key_id,
+                               base::test::ValueIs(key))));
+}
+
+// Uses the real fetcher. The refresh endpoint answers the unsigned request with
+// a 403. The fetcher signs the challenge once the restored key is handed over.
+TEST_F(ConcurrentKeyRestoreTest, RestoredKeySignsChallenge) {
+  base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+      unexportable_keys::UnexportableSigningKeyId>>
+      key_future;
+  key_service()->GenerateSigningKeySlowlyAsync(
+      {crypto::sign::ECDSA_SHA256},
+      unexportable_keys::BackgroundTaskPriority::kBestEffort,
+      key_future.GetCallback());
+  ASSERT_OK_AND_ASSIGN(const unexportable_keys::UnexportableSigningKeyId key,
+                       key_future.Take());
+
+  SessionStore::RestoreSessionBindingKeyCallback restore_key_callback;
+  LoadSessionWithUnrestoredKey(&restore_key_callback, kRefreshUrlString);
+  Session* loaded_session = service().GetSession(session_key_);
+  ASSERT_TRUE(loaded_session);
+
+  base::test::TestFuture<void> unsigned_request;
+  net::URLRequestFilter::GetInstance()->AddUrlInterceptor(
+      kTestRefreshUrl, std::make_unique<SignedRefreshInterceptor>(
+                           unsigned_request.GetRepeatingCallback()));
+  base::test::TestFuture<RefreshResult> future;
+  DeferRefreshRequest(future);
+  ASSERT_TRUE(restore_key_callback);
+
+  // `URLRequestTestJob` skips storing the 403 challenge header on the session.
+  loaded_session->set_cached_challenge("challenge");
+  // The unsigned request is sent before the key is there. Let the fetcher
+  // handle the 403: `URLRequestTestJob` answers on this sequence, so the
+  // fetcher is waiting for the key afterwards.
+  ASSERT_TRUE(unsigned_request.Wait());
+  RunUntilIdle();
+  EXPECT_FALSE(future.IsReady());
+  EXPECT_EQ(GetOngoingRegistrationFetchesCount(), 1u);
+
+  EXPECT_CALL(store(), SaveSession(session_key_.site,
+                                   Property(&Session::unexportable_key_id,
+                                            base::test::ValueIs(key)),
+                                   SessionStore::SaveSessionMode::kRefresh));
+  std::move(restore_key_callback).Run(key);
+  EXPECT_EQ(future.Take(), RefreshResult::kRefreshed);
+}
+
+TEST_F(ConcurrentKeyRestoreTest, RefreshedSessionGetsKeyRestoredLater) {
+  SessionStore::RestoreSessionBindingKeyCallback restore_key_callback;
+  LoadSessionWithUnrestoredKey(&restore_key_callback);
+
+  RegistrationFetcher::RegistrationCompleteCallback fetch_callback;
+  ScopedTestRegistrationFetcher scoped_test_fetcher =
+      CaptureRefreshCallback(&fetch_callback);
+  base::test::TestFuture<RefreshResult> future;
+  DeferRefreshRequest(future);
+  ASSERT_TRUE(fetch_callback);
+  ASSERT_TRUE(restore_key_callback);
+
+  ASSERT_OK_AND_ASSIGN(
+      std::unique_ptr<Session> refreshed_session,
+      Session::CreateFromProto(CreateSessionProto(kSessionId, kUrlString)));
+  const Session* refreshed_session_ptr = refreshed_session.get();
+  EXPECT_CALL(
+      store(),
+      SaveSession(session_key_.site,
+                  Property(&Session::unexportable_key_id,
+                           base::test::ErrorIs(
+                               unexportable_keys::ServiceError::kKeyNotReady)),
+                  SessionStore::SaveSessionMode::kRefresh));
+  std::move(fetch_callback)
+      .Run(nullptr, RegistrationResult(std::move(refreshed_session)));
+  EXPECT_EQ(future.Take(), RefreshResult::kRefreshed);
+  ASSERT_EQ(service().GetSession(session_key_), refreshed_session_ptr);
+
+  const unexportable_keys::UnexportableSigningKeyId key;
+  std::move(restore_key_callback).Run(key);
+  EXPECT_EQ(refreshed_session_ptr->unexportable_key_id(), key);
+}
+
+// The first refresh fails while its key restore is still pending, and a second
+// refresh starts its own key restore. The first restore then belongs to a
+// fetcher that is gone, so its failure must not unblock the request that waits
+// for the second refresh.
+TEST_F(ConcurrentKeyRestoreTest, StaleKeyRestoreFailureKeepsNextRefresh) {
+  URLRequestFailedJob::AddUrlHandlerForHostname("example.com");
+  LoadSessionWithUnrestoredKey(
+      /*restore_key_callback=*/nullptr,
+      URLRequestFailedJob::GetMockHttpsUrlForHostname(ERR_CONNECTION_FAILED,
+                                                      "example.com")
+          .spec());
+  SessionStore::RestoreSessionBindingKeyCallback restore_key_callback_1;
+  SessionStore::RestoreSessionBindingKeyCallback restore_key_callback_2;
+  EXPECT_CALL(store(), RestoreSessionBindingKey(session_key_, _, _))
+      .WillOnce(SaveArgByMove<2>(&restore_key_callback_1))
+      .WillOnce(SaveArgByMove<2>(&restore_key_callback_2));
+
+  // The first refresh uses the real fetcher, so that the service drops it
+  // when it fails.
+  base::test::TestFuture<RefreshResult> future_1;
+  DeferRefreshRequest(future_1);
+  EXPECT_EQ(future_1.Take(), RefreshResult::kUnreachable);
+  EXPECT_EQ(GetOngoingRegistrationFetchesCount(), 0u);
+  ASSERT_TRUE(restore_key_callback_1);
+
+  RegistrationFetcher::RegistrationCompleteCallback fetch_callback;
+  ScopedTestRegistrationFetcher scoped_test_fetcher =
+      CaptureRefreshCallback(&fetch_callback);
+  base::test::TestFuture<RefreshResult> future_2;
+  DeferRefreshRequest(future_2);
+  ASSERT_TRUE(fetch_callback);
+  ASSERT_TRUE(restore_key_callback_2);
+  EXPECT_EQ(GetOngoingRegistrationFetchesCount(), 1u);
+
+  std::move(restore_key_callback_1)
+      .Run(base::unexpected(unexportable_keys::ServiceError::kKeyNotReady));
+  EXPECT_FALSE(future_2.IsReady());
+  EXPECT_EQ(GetOngoingRegistrationFetchesCount(), 1u);
+
+  std::move(restore_key_callback_2)
+      .Run(base::unexpected(unexportable_keys::ServiceError::kKeyNotReady));
+  EXPECT_EQ(future_2.Take(), RefreshResult::kTransientSigningError);
+  EXPECT_EQ(GetOngoingRegistrationFetchesCount(), 0u);
+}
+
+TEST_F(ConcurrentKeyRestoreTest, CachedChallengeRestoresKeyFirst) {
+  SessionStore::RestoreSessionBindingKeyCallback restore_key_callback;
+  LoadSessionWithUnrestoredKey(&restore_key_callback);
+  Session* session = service().GetSession(session_key_);
+  ASSERT_TRUE(session);
+  session->set_cached_challenge("challenge");
+
+  RegistrationFetcher::RegistrationCompleteCallback fetch_callback;
+  ScopedTestRegistrationFetcher scoped_test_fetcher =
+      CaptureRefreshCallback(&fetch_callback);
+  base::test::TestFuture<RefreshResult> future;
+  DeferRefreshRequest(future);
+
+  ASSERT_TRUE(restore_key_callback);
+  EXPECT_FALSE(fetch_callback);
+
+  std::move(restore_key_callback)
+      .Run(unexportable_keys::UnexportableSigningKeyId());
+  EXPECT_TRUE(fetch_callback);
+}
+
+// If `kDeviceBoundSessionsRequireSameSiteRefresh` is disabled, a refresh can
+// move the session to another site, so it must not start without its key.
+TEST_F(ConcurrentKeyRestoreTest, CrossSiteRefreshAllowedRestoresKeyFirst) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      kDeviceBoundSessionsRequireSameSiteRefresh);
+  SessionStore::RestoreSessionBindingKeyCallback restore_key_callback;
+  LoadSessionWithUnrestoredKey(&restore_key_callback);
+
+  RegistrationFetcher::RegistrationCompleteCallback fetch_callback;
+  ScopedTestRegistrationFetcher scoped_test_fetcher =
+      CaptureRefreshCallback(&fetch_callback);
+  base::test::TestFuture<RefreshResult> future;
+  DeferRefreshRequest(future);
+
+  ASSERT_TRUE(restore_key_callback);
+  EXPECT_FALSE(fetch_callback);
+
+  std::move(restore_key_callback)
+      .Run(unexportable_keys::UnexportableSigningKeyId());
+  EXPECT_TRUE(fetch_callback);
 }
 
 TEST_F(SessionServiceImplWithStoreTest, RecoveryFromTransientSigningError) {
@@ -5750,6 +6101,7 @@ TEST_F(SessionServiceImplTest, PrewarmSessionsForUrl_DifferingResults) {
                                   .attributes = "secure",
                               },
                           },
+                      .key_id = unexportable_keys::UnexportableSigningKeyId(),
                   })));
             }));
     service().RegisterBoundSession(
@@ -6002,6 +6354,7 @@ TEST_F(
                                   .attributes = "secure",
                               },
                           },
+                      .key_id = unexportable_keys::UnexportableSigningKeyId(),
                   })));
             }));
     service().RegisterBoundSession(

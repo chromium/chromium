@@ -471,6 +471,7 @@ ScopedTestRegistrationFetcher ScopedTestRegistrationFetcher::CreateWithSuccess(
                     .name = "test_cookie",
                     .attributes = "secure",
                 }},
+                .key_id = unexportable_keys::UnexportableSigningKeyId(),
             })));
       },
       std::string(session_id), std::string(refresh_url_string),

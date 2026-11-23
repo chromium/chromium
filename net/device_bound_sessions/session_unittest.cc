@@ -4,6 +4,7 @@
 
 #include "net/device_bound_sessions/session.h"
 
+#include <memory>
 #include <optional>
 #include <string_view>
 
@@ -11,6 +12,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "net/base/features.h"
 #include "net/cookies/cookie_constants.h"
@@ -20,6 +22,7 @@
 #include "net/device_bound_sessions/proto/storage.pb.h"
 #include "net/device_bound_sessions/session_display.h"
 #include "net/device_bound_sessions/session_error.h"
+#include "net/device_bound_sessions/session_params.h"
 #include "net/log/test_net_log.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/url_request/url_request_context.h"
@@ -244,6 +247,27 @@ TEST_F(SessionTest, CreateWithInvalidCredential) {
   EXPECT_THAT(
       Session::CreateIfValid(params),
       ErrorIs(MatchesErrorType(SessionError::kInvalidCredentialsCookie)));
+}
+
+TEST_F(SessionTest, CreateWithKeyId) {
+  SessionParams params = CreateValidParams();
+  params.key_id = unexportable_keys::UnexportableSigningKeyId();
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> session,
+                       Session::CreateIfValid(params));
+
+  EXPECT_THAT(session->unexportable_key_id(), ValueIs(*params.key_id));
+}
+
+TEST_F(SessionTest, CreateWithoutKeyId) {
+  SessionParams params = CreateValidParams();
+  params.key_id.reset();
+
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> session,
+                       Session::CreateIfValid(params));
+
+  EXPECT_THAT(session->unexportable_key_id(),
+              ErrorIs(unexportable_keys::ServiceError::kKeyNotReady));
 }
 
 TEST_F(SessionTest, CreateWithAttestationKey) {

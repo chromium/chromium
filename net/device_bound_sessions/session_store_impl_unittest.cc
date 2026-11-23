@@ -21,10 +21,13 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/unexportable_keys/background_task_origin.h"
 #include "components/unexportable_keys/features.h"
 #include "components/unexportable_keys/mock_unexportable_key_service.h"
+#include "components/unexportable_keys/service_error.h"
+#include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 #include "components/unexportable_keys/unexportable_key_task_manager.h"
@@ -61,6 +64,7 @@ using ::testing::NotNull;
 using ::testing::Pair;
 using ::testing::Property;
 using ::testing::Return;
+using ::testing::SizeIs;
 
 using AttestationKeySaveOutcome = SessionStoreImpl::AttestationKeySaveOutcome;
 
@@ -355,6 +359,59 @@ TEST_F(SessionStoreImplTest, RequireValidBindingKeyForSave) {
   store().SaveSession(net::SchemefulSite(GURL("https://foo.test")), *session,
                       SessionStore::SaveSessionMode::kNewSession);
   EXPECT_EQ(store().GetAllSessions().size(), 0u);
+}
+
+// A refresh can finish before the binding key has been restored. Saving the
+// refreshed session then keeps the wrapped key that is already in the store.
+TEST_F(SessionStoreImplTest, SaveRefreshedSessionWithUnrestoredKey) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kDeviceBoundSessionsConcurrentKeyRestore);
+  CreateStoreAndLoadSessions();
+  const unexportable_keys::UnexportableSigningKeyId key_id =
+      GenerateNewSigningKey(unexportable_key_service());
+  std::unique_ptr<Session> session = CreateSessionHelper(key_id, kSite);
+  const auto site = SchemefulSite(GURL(kSite));
+  store().SaveSession(site, *session,
+                      SessionStore::SaveSessionMode::kNewSession);
+
+  MimicRestart();
+  SessionStore::SessionsMap loaded_sessions = LoadSessions();
+  ASSERT_THAT(loaded_sessions, SizeIs(1));
+  Session* loaded_session = loaded_sessions.begin()->second.get();
+  ASSERT_THAT(loaded_session->unexportable_key_id(),
+              ErrorIs(unexportable_keys::ServiceError::kKeyNotReady));
+
+  const base::Time new_expiry = base::Time::Now() + base::Days(1);
+  loaded_session->set_expiry_date(new_expiry);
+  store().SaveSession(site, *loaded_session,
+                      SessionStore::SaveSessionMode::kRefresh);
+
+  // The stored session has the new expiry date and the same wrapped key.
+  SessionStore::SessionsMap store_sessions = store().GetAllSessions();
+  ASSERT_THAT(store_sessions, SizeIs(1));
+  Session* store_session = store_sessions.begin()->second.get();
+  EXPECT_EQ(store_session->expiry_date(), new_expiry);
+  RestoreSessionBindingKey(site, store_session);
+  ASSERT_OK_AND_ASSIGN(
+      const unexportable_keys::UnexportableSigningKeyId restored_key_id,
+      store_session->unexportable_key_id());
+  EXPECT_EQ(GetWrappedKey(unexportable_key_service(), restored_key_id),
+            GetWrappedKey(unexportable_key_service(), key_id));
+}
+
+// Without an entry to take the wrapped key from, a session whose key has not
+// been restored is not saved.
+TEST_F(SessionStoreImplTest, SaveRefreshedSessionWithUnrestoredKeyNotInStore) {
+  AddScopedFeatureList().InitAndEnableFeature(
+      features::kDeviceBoundSessionsConcurrentKeyRestore);
+  CreateStoreAndLoadSessions();
+  std::unique_ptr<Session> session =
+      CreateSessionHelper(unexportable_key_service(), kSite, kSessionId);
+  session->set_unexportable_key_id(
+      base::unexpected(unexportable_keys::ServiceError::kKeyNotReady));
+  store().SaveSession(SchemefulSite(GURL(kSite)), *session,
+                      SessionStore::SaveSessionMode::kRefresh);
+  EXPECT_THAT(store().GetAllSessions(), IsEmpty());
 }
 
 TEST_F(SessionStoreImplTest, SaveNewSessions) {

@@ -5,11 +5,17 @@
 #include "net/device_bound_sessions/session_store_impl.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <optional>
+#include <string>
+#include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/process/process.h"
 #include "base/sequence_checker.h"
@@ -27,6 +33,8 @@
 #include "net/base/schemeful_site.h"
 #include "net/device_bound_sessions/deletion_reason.h"
 #include "net/device_bound_sessions/proto/storage.pb.h"
+#include "net/device_bound_sessions/session.h"
+#include "net/device_bound_sessions/session_store.h"
 
 namespace net::device_bound_sessions {
 
@@ -56,6 +64,44 @@ constexpr base::TimeDelta kGarbageCollectionDelay = base::Minutes(2);
 // Histogram name for the garbage collection of unexportable keys.
 constexpr std::string_view kGarbageCollectionHistogramPrefix =
     "Crypto.UnexportableKeys.GarbageCollection.DeviceBoundSessions.";
+
+// Sets the wrapped binding key of `session_proto` from `key_id`. `site_proto`
+// is the stored entry of the session's site. Returns false if the key can't be
+// wrapped or there is no stored wrapped key to keep. The session must then not
+// be persisted, because all persisted data is thrown away if the wrapped key
+// is missing for any session.
+bool SetWrappedSigningKey(const UnexportableKeyService& key_service,
+                          const proto::SiteSessions& site_proto,
+                          const Session::KeyIdOrError& key_id,
+                          SessionStore::SaveSessionMode mode,
+                          proto::Session& session_proto) {
+  if (key_id) {
+    // Wrap the unexportable key into a persistable form.
+    ServiceErrorOr<std::vector<uint8_t>> wrapped_key =
+        key_service.GetWrappedKey(*key_id);
+    if (!wrapped_key) {
+      return false;
+    }
+    session_proto.set_wrapped_key(base::as_string_view(*wrapped_key));
+    return true;
+  }
+
+  // A refresh can finish before the session's binding key has been restored.
+  // The refreshed session is bound to the same key, so keep the wrapped key
+  // from the database entry of the old session. A new session always has its
+  // key.
+  CHECK(base::FeatureList::IsEnabled(
+      features::kDeviceBoundSessionsConcurrentKeyRestore));
+  CHECK_EQ(mode, SessionStore::SaveSessionMode::kRefresh);
+  CHECK_EQ(key_id.error(), ServiceError::kKeyNotReady);
+  const proto::Session* old_session =
+      base::FindOrNull(site_proto.sessions(), session_proto.id());
+  if (!old_session || old_session->wrapped_key().empty()) {
+    return false;
+  }
+  session_proto.set_wrapped_key(old_session->wrapped_key());
+  return true;
+}
 
 SessionStoreImpl::DBStatus InitializeOnDbSequence(
     sql::Database* db,
@@ -250,20 +296,16 @@ void SessionStoreImpl::SaveSession(const SchemefulSite& site,
     return;
   }
 
-  CHECK(session.unexportable_key_id().has_value());
-
-  // Wrap the unexportable key into a persistable form.
-  ServiceErrorOr<std::vector<uint8_t>> wrapped_key =
-      key_service_->GetWrappedKey(*session.unexportable_key_id());
-  // Don't bother persisting the session if wrapping fails because we will throw
-  // away all persisted data if the wrapped key is missing for any session.
-  if (!wrapped_key.has_value()) {
-    return;
-  }
+  proto::SiteSessions site_proto;
+  std::string site_str = site.Serialize();
+  session_data_->TryGetData(site_str, &site_proto);
 
   proto::Session session_proto = session.ToProto();
-  session_proto.set_wrapped_key(
-      std::string(wrapped_key->begin(), wrapped_key->end()));
+  if (!SetWrappedSigningKey(*key_service_, site_proto,
+                            session.unexportable_key_id(), mode,
+                            session_proto)) {
+    return;
+  }
 
   // Handle attestation key if present.
   AttestationKeySaveOutcome outcome =
@@ -271,9 +313,6 @@ void SessionStoreImpl::SaveSession(const SchemefulSite& site,
   base::UmaHistogramEnumeration(
       "Net.DeviceBoundSessions.AttestationKeySaveOutcome", outcome);
 
-  proto::SiteSessions site_proto;
-  std::string site_str = site.Serialize();
-  session_data_->TryGetData(site_str, &site_proto);
   (*site_proto.mutable_sessions())[session_proto.id()] =
       std::move(session_proto);
 

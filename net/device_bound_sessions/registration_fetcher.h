@@ -10,6 +10,8 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
+#include "components/unexportable_keys/unexportable_key_id.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "crypto/sign.h"
 #include "net/base/isolation_info.h"
@@ -91,6 +93,17 @@ class NET_EXPORT RegistrationFetcher {
       unexportable_keys::UnexportableSigningKeyId key_id,
       RegistrationCompleteCallback callback) = 0;
 
+  // Starts a refresh request before the session binding key is restored.
+  // Unsigned requests are sent right away; signing a challenge waits until
+  // `ProvideSessionKey()` is called, and a refresh that finishes before then
+  // reports the refreshed session without a key (`ServiceError::kKeyNotReady`).
+  // If the key cannot be restored, the caller must destroy the fetcher.
+  // Requires `kDeviceBoundSessionsRequireSameSiteRefresh` to be enabled,
+  // because the refreshed session gets its key by site and session ID.
+  virtual void StartFetchWithPendingKey(
+      RegistrationRequestParam& request_params,
+      RegistrationCompleteCallback callback) = 0;
+
   // Starts the network request to the DBSC registration endpoint for a
   // federated session. `callback` is called with the fetch results upon
   // completion.
@@ -99,6 +112,14 @@ class NET_EXPORT RegistrationFetcher {
       unexportable_keys::UnexportableSigningKeyId key_id,
       const GURL& provider_url,
       RegistrationCompleteCallback callback) = 0;
+
+  // Supplies the session binding key to a refresh started with
+  // `StartFetchWithPendingKey()`. This may run the completion callback, which
+  // may destroy `this`.
+  virtual void ProvideSessionKey(
+      unexportable_keys::UnexportableSigningKeyId key_id) = 0;
+
+  virtual base::WeakPtr<RegistrationFetcher> AsWeakPtr() = 0;
 
   // Helper function for generating a new binding key and a registration token
   // to bind the key on the server. unexportable_key_service must outlive the
