@@ -10,6 +10,10 @@
 #import <mach/mach.h>
 #import <mach/message.h>
 
+#include <optional>
+#include <string>
+#include <string_view>
+
 #include "base/apple/scoped_cftyperef.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/alias.h"
@@ -18,8 +22,10 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/display/mac/screen_utils_mac.h"
@@ -221,32 +227,60 @@ void CADisplayLinkMac::GetRefreshIntervalRange(
 }
 
 // static
-// This function is called from both the GPU and the Browser process.
-void CADisplayLinkMac::TryRecordDisplayLinkCreation(
+void CADisplayLinkMac::RecordDisplayLinkCreationMetrics(
     CGDirectDisplayID display_id,
+    std::optional<base::TimeDelta> creation_time,
     bool success) {
-  auto& globals = CADisplayLinkGlobals::Get();
-  base::AutoLock lock(globals.lock);
-
-  auto [it, inserted] = globals.recorded_displays.insert(display_id);
-  if (inserted) {
-    UMA_HISTOGRAM_BOOLEAN("Viz.DisplayLink.Create.GPU.CADisplayLinkV2",
-                          success);
-    RecordDisplayLinkCreation(success);
+  bool is_new_display = false;
+  bool skylight_init = false;
+  {
+    auto& globals = CADisplayLinkGlobals::Get();
+    base::AutoLock lock(globals.lock);
+    skylight_init = globals.recorded_displays.empty();
+    auto [it, inserted] = globals.recorded_displays.insert(display_id);
+    is_new_display = inserted;
   }
+
+  if (!is_new_display) {
+    return;
+  }
+
+  UMA_HISTOGRAM_BOOLEAN("Viz.DisplayLink.Create.GPU.CADisplayLinkV2", success);
+  RecordDisplayLinkCreation(success);
+
+  if (!creation_time.has_value()) {
+    return;
+  }
+
+  constexpr std::string_view kPrefix =
+      "Viz.DisplayLink.CADisplayLink.CreationTimeUs.";
+  const std::string_view order = skylight_init ? "First" : "Subsequent";
+  const std::string_view result = success ? ".Success" : ".Failure";
+  constexpr base::TimeDelta kMin = base::Microseconds(1);
+  constexpr base::TimeDelta kMax = base::Seconds(25);
+  constexpr size_t kBucketCount = 50;
+
+  base::UmaHistogramCustomMicrosecondsTimes(
+      base::StrCat({kPrefix, order}), *creation_time, kMin, kMax, kBucketCount);
+  base::UmaHistogramCustomMicrosecondsTimes(
+      base::StrCat({kPrefix, order, result}), *creation_time, kMin, kMax,
+      kBucketCount);
 }
 
 // static
 scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplay(
     CGDirectDisplayID display_id) {
   if (@available(macos 14.0, *)) {
-    TRACE_EVENT("gpu", "CADisplayLinkMac::GetForDisplay");
+    TRACE_EVENT("gpu", "CADisplayLinkMac::GetForDisplay", "display_id",
+                display_id);
 
     // Without a working WindowServer event pump, CADisplayLink may stop firing
     // after display reconfiguration or power resume. Refuse to create one so
     // the caller falls back to a timer.
     if (!CADisplayLinkGlobals::Get().IsEventPumpReady()) {
-      TryRecordDisplayLinkCreation(display_id, /*success=*/false);
+      RecordDisplayLinkCreationMetrics(display_id,
+                                       /*creation_time=*/std::nullopt,
+                                       /*success=*/false);
       return nullptr;
     }
 
@@ -254,16 +288,17 @@ scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplay(
         new CADisplayLinkMac(display_id));
     auto* objc_state = display_link->objc_state_.get();
 
+    base::TimeTicks creation_start = base::TimeTicks::Now();
     objc_state->target = [[CADisplayLinkTarget alloc] init];
     objc_state->display_link =
         SLSGetDisplayLink(display_id, objc_state->target, @selector(step:));
 
     if (!objc_state->display_link) {
-      TryRecordDisplayLinkCreation(display_id, /*success=*/false);
+      RecordDisplayLinkCreationMetrics(display_id,
+                                       base::TimeTicks::Now() - creation_start,
+                                       /*success=*/false);
       return nullptr;
     }
-
-    TryRecordDisplayLinkCreation(display_id, /*success=*/true);
 
     // Pause CADisplaylink callback until a request for start.
     objc_state->display_link.paused = YES;
@@ -282,6 +317,10 @@ scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplay(
         setCallback:base::BindRepeating(
                         &CADisplayLinkMac::Step,
                         display_link->weak_factory_.GetWeakPtr())];
+
+    RecordDisplayLinkCreationMetrics(display_id,
+                                     base::TimeTicks::Now() - creation_start,
+                                     /*success=*/true);
 
     return display_link;
   }

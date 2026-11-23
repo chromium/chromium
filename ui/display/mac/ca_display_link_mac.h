@@ -8,6 +8,7 @@
 
 #include <atomic>
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/threading/thread.h"
@@ -121,11 +122,12 @@ class DISPLAY_EXPORT CADisplayLinkMac : public DisplayLinkMac {
   // CADisplayLink callback from ObjCState.display_link.
   void Step();
 
-  // Ensures that the Viz.ExternalBeginFrameSourceMac.DisplayLink.Create2
-  // histogram is recorded only once per display within
-  // CADisplayLinkMac::GetForDisplay().
-  static void TryRecordDisplayLinkCreation(CGDirectDisplayID display_id,
-                                           bool success);
+  // Records CADisplayLink creation status (once per display) and creation
+  // duration within CADisplayLinkMac::GetForDisplay().
+  static void RecordDisplayLinkCreationMetrics(
+      CGDirectDisplayID display_id,
+      std::optional<base::TimeDelta> creation_time,
+      bool success);
 
   const CGDirectDisplayID display_id_;
   std::unique_ptr<ObjCState> objc_state_;

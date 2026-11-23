@@ -83,10 +83,10 @@ class CVDisplayLinkMac : public DisplayLinkMac {
   // This is called by VSyncCallbackMac's destructor.
   void UnregisterCallback(VSyncCallbackMac* callback);
 
-  // Ensures that the Viz.ExternalBeginFrameSourceMac.DisplayLink.Create2
-  // histogram is recorded only once per display within
-  // CVDisplayLinkMac::GetForDisplay().
+  // Ensures that creation status and creation duration histograms are
+  // recorded only once per display within CVDisplayLinkMac::GetForDisplay().
   static void TryRecordDisplayLinkCreation(CGDirectDisplayID display_id,
+                                           base::TimeDelta creation_time,
                                            bool success);
 
   // The display that this display link is attached to.
