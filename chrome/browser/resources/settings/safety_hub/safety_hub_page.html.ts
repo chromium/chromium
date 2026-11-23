@@ -4,8 +4,6 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {RestartType} from '../relaunch_mixin_lit.js';
-
 import type {SettingsSafetyHubPageElement} from './safety_hub_page.js';
 
 export function getHtml(this: SettingsSafetyHubPageElement) {
@@ -61,7 +59,7 @@ export function getHtml(this: SettingsSafetyHubPageElement) {
   ` : ''}
 <if expr="not is_chromeos">
   ${this.shouldShowRelaunchDialog ? html`
-    <relaunch-confirmation-dialog .restartType="${RestartType.RELAUNCH}"
+    <relaunch-confirmation-dialog
         @close="${this.onRelaunchDialogClose}" is-version-update>
     </relaunch-confirmation-dialog>
   ` : ''}

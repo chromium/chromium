@@ -4,8 +4,6 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {RestartType} from '../relaunch_mixin_lit.js';
-
 import type {SettingsGlicSubpageElement} from './glic_subpage.js';
 
 export function getHtml(this: SettingsGlicSubpageElement) {
@@ -619,8 +617,7 @@ export function getHtml(this: SettingsGlicSubpageElement) {
   ` : ''}
 <if expr="not is_chromeos">
   ${this.shouldShowRelaunchDialog ? html`
-    <relaunch-confirmation-dialog .restartType="${RestartType.RESTART}"
-        @close="${this.onRelaunchDialogClose}">
+    <relaunch-confirmation-dialog @close="${this.onRelaunchDialogClose}">
     </relaunch-confirmation-dialog>
   ` : ''}
 </if>

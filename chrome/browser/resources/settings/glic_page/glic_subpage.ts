@@ -704,15 +704,19 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
   }
 
   override onRelaunchDialogClose(event: Event) {
-    super.onRelaunchDialogClose(event);
     this.devicePolicyButtonDisabled_ = false;
+    super.onRelaunchDialogClose(event);
   }
 
   protected onDevicePolicyButtonClick_() {
     this.devicePolicyButtonDisabled_ = true;
-    this.browserProxy_.switchAssistantSelection(
-        GlicAssistantSelection.ENTERPRISE);
-    this.performRestart(RestartType.RESTART);
+    this.performRestart(
+        RestartType.RESTART, /*alwaysShowDialog=*/ false, () => {
+          // The restart is going ahead, so keep the button disabled.
+          this.devicePolicyButtonDisabled_ = true;
+          this.browserProxy_.switchAssistantSelection(
+              GlicAssistantSelection.ENTERPRISE);
+        });
   }
 
   protected onMediaUnderstandingToggleSubLabelLinkClicked_() {

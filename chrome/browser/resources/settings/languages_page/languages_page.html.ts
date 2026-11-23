@@ -122,8 +122,7 @@ export function getHtml(this: SettingsLanguagesPageElement) {
     </managed-dialog>
   ` : ''}
   ${this.shouldShowRelaunchDialog ? html`
-    <relaunch-confirmation-dialog .restartType="${this.restartTypeEnum.RESTART}"
-        @close="${this.onRelaunchDialogClose}">
+    <relaunch-confirmation-dialog @close="${this.onRelaunchDialogClose}">
     </relaunch-confirmation-dialog>
   ` : ''}
 </settings-section>

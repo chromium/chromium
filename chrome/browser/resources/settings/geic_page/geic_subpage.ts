@@ -60,15 +60,19 @@ export class SettingsGeicSubpageElement extends SettingsGeicSubpageElementBase {
       loadTimeData.getBoolean('showGeicDevicePolicyToggle');
 
   override onRelaunchDialogClose(event: Event) {
-    super.onRelaunchDialogClose(event);
     this.devicePolicyButtonDisabled_ = false;
+    super.onRelaunchDialogClose(event);
   }
 
   protected onDevicePolicyButtonClick_() {
     this.devicePolicyButtonDisabled_ = true;
-    GlicBrowserProxyImpl.getInstance().switchAssistantSelection(
-        GlicAssistantSelection.CONSUMER);
-    this.performRestart(RestartType.RESTART);
+    this.performRestart(
+        RestartType.RESTART, /*alwaysShowDialog=*/ false, () => {
+          // The restart is going ahead, so keep the button disabled.
+          this.devicePolicyButtonDisabled_ = true;
+          GlicBrowserProxyImpl.getInstance().switchAssistantSelection(
+              GlicAssistantSelection.CONSUMER);
+        });
   }
 
   protected onDefaultTabAccessExpandClick_() {

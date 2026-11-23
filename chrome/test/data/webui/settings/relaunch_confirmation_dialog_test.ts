@@ -22,8 +22,7 @@ class TestRelaunchMixinElement extends RelaunchMixinLit
     // clang-format off
     return html`
       ${this.shouldShowRelaunchDialog ? html`
-        <relaunch-confirmation-dialog .restartType="${RestartType.RELAUNCH}"
-            @close="${this.onRelaunchDialogClose}">
+        <relaunch-confirmation-dialog @close="${this.onRelaunchDialogClose}">
         </relaunch-confirmation-dialog>
       ` : ''}`;
     // clang-format on
@@ -104,5 +103,62 @@ suite('RelaunchConfirmationDialogTestSuite', function() {
     // The dialog should be removed from the dom.
     assertFalse(!!testRelaunchMixin.shadowRoot.querySelector(
         'relaunch-confirmation-dialog'));
+  });
+
+  test('onBeforeRestart_WithoutDialog', async function() {
+    lifetimeBrowserProxy.setShouldShowRelaunchConfirmationDialog(false);
+    let onBeforeRestartCount = 0;
+    testRelaunchMixin.performRestart(
+        RestartType.RESTART, /*alwaysShowDialog=*/ false, () => {
+          // Runs before the restart.
+          assertEquals(0, lifetimeBrowserProxy.getCallCount('restart'));
+          onBeforeRestartCount++;
+        });
+    await lifetimeBrowserProxy.whenCalled('restart');
+    assertEquals(1, onBeforeRestartCount);
+  });
+
+  test('onBeforeRestart_withDialog', async function() {
+    lifetimeBrowserProxy.setShouldShowRelaunchConfirmationDialog(true);
+    lifetimeBrowserProxy.setRelaunchConfirmationDialogDescription(
+        'Relaunch dialog body.');
+    let onBeforeRestartCount = 0;
+    testRelaunchMixin.performRestart(
+        RestartType.RELAUNCH, /*alwaysShowDialog=*/ false, () => {
+          // Runs before the relaunch.
+          assertEquals(0, lifetimeBrowserProxy.getCallCount('relaunch'));
+          onBeforeRestartCount++;
+        });
+
+    await eventToPromise('cr-dialog-open', testRelaunchMixin);
+    const dialog = testRelaunchMixin.shadowRoot.querySelector(
+        'relaunch-confirmation-dialog');
+    assertTrue(!!dialog);
+    assertEquals(0, onBeforeRestartCount);
+
+    dialog.$.confirm.click();
+    await lifetimeBrowserProxy.whenCalled('relaunch');
+    assertEquals(1, onBeforeRestartCount);
+  });
+
+  test('onBeforeRestart_withDialog_AndCancel', async function() {
+    lifetimeBrowserProxy.setShouldShowRelaunchConfirmationDialog(true);
+    lifetimeBrowserProxy.setRelaunchConfirmationDialogDescription(
+        'Relaunch dialog body.');
+    let onBeforeRestartCount = 0;
+    testRelaunchMixin.performRestart(
+        RestartType.RELAUNCH, /*alwaysShowDialog=*/ false,
+        () => onBeforeRestartCount++);
+
+    await eventToPromise('cr-dialog-open', testRelaunchMixin);
+    const dialog = testRelaunchMixin.shadowRoot.querySelector(
+        'relaunch-confirmation-dialog');
+    assertTrue(!!dialog);
+    dialog.$.cancel.click();
+    await eventToPromise('close', testRelaunchMixin);
+    await microtasksFinished();
+
+    assertEquals(0, onBeforeRestartCount);
+    assertEquals(0, lifetimeBrowserProxy.getCallCount('relaunch'));
   });
 });

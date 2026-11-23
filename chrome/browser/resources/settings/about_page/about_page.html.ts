@@ -4,8 +4,6 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {RestartType} from '../relaunch_mixin_lit.js';
-
 import {getHtml as getActionRowsHtml} from './about_page_action_rows.html.js';
 // clang-format off
 // <if expr="_google_chrome">
@@ -125,8 +123,7 @@ ${this.settingsRefresh2026Enabled_ ? html`
 </if>
 <if expr="not is_chromeos">
     ${this.shouldShowRelaunchDialog ? html`
-      <relaunch-confirmation-dialog .restartType="${RestartType.RELAUNCH}"
-          @close="${this.onRelaunchDialogClose}">
+      <relaunch-confirmation-dialog @close="${this.onRelaunchDialogClose}">
       </relaunch-confirmation-dialog>
     ` : ''}
 </if>

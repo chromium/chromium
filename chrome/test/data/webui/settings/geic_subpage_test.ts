@@ -10,6 +10,9 @@ import type {CrButtonElement, SettingsGeicSubpageElement, SettingsToggleButtonEl
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+// <if expr="not is_chromeos">
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
+// </if>
 
 import {TestGlicBrowserProxy} from './test_glic_browser_proxy.js';
 import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
@@ -210,10 +213,7 @@ suite('GeicSubpage', function() {
       assertDeepEquals(['switchAssistantSelection', 'restart'], calls);
       assertEquals(0, lifetimeBrowserProxy.getCallCount('relaunch'));
       assertEquals(GlicAssistantSelection.CONSUMER, selection);
-
-      page.onRelaunchDialogClose(new Event('close'));
-      await microtasksFinished();
-      assertFalse(button.disabled);
+      assertTrue(button.disabled);
     });
 
     // <if expr="not is_chromeos">
@@ -231,9 +231,42 @@ suite('GeicSubpage', function() {
       const dialog =
           page.shadowRoot.querySelector('relaunch-confirmation-dialog');
       assertTrue(!!dialog);
+      // Not switched until the restart is confirmed.
+      assertEquals(
+          0, glicBrowserProxy.getCallCount('switchAssistantSelection'));
+
       dialog.$.confirm.click();
+      assertEquals(
+          GlicAssistantSelection.CONSUMER,
+          await glicBrowserProxy.whenCalled('switchAssistantSelection'));
       await lifetimeBrowserProxy.whenCalled('restart');
       assertEquals(0, lifetimeBrowserProxy.getCallCount('relaunch'));
+      await microtasksFinished();
+      assertTrue(button.disabled);
+    });
+
+    test('DevicePolicyButtonCancelDialogKeepsSelection', async () => {
+      lifetimeBrowserProxy.setShouldShowRelaunchConfirmationDialog(true);
+      await createPage(/*showDevicePolicyToggle=*/ true);
+
+      const button =
+          page.shadowRoot.querySelector<CrButtonElement>('#devicePolicyButton');
+      assertTrue(!!button);
+      button.click();
+      await lifetimeBrowserProxy.whenCalled('shouldShowRelaunchDialog');
+      await microtasksFinished();
+
+      const dialog =
+          page.shadowRoot.querySelector('relaunch-confirmation-dialog');
+      assertTrue(!!dialog);
+      dialog.$.cancel.click();
+      await eventToPromise('close', dialog);
+      await microtasksFinished();
+
+      assertEquals(
+          0, glicBrowserProxy.getCallCount('switchAssistantSelection'));
+      assertEquals(0, lifetimeBrowserProxy.getCallCount('restart'));
+      assertFalse(button.disabled);
     });
     // </if>
   });

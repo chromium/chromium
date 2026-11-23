@@ -30,7 +30,10 @@ import {isWindows} from 'chrome://resources/js/platform.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../i18n_setup.js';
-import {RelaunchMixinLit, RestartType} from '../relaunch_mixin_lit.js';
+import {RelaunchMixinLit} from '../relaunch_mixin_lit.js';
+// <if expr="is_win">
+import {RestartType} from '../relaunch_mixin_lit.js';
+// </if>
 import {routes} from '../route.js';
 import {RouteObserverMixinLit} from '../router.js';
 import type {Route} from '../router.js';
@@ -93,7 +96,6 @@ export class SettingsLanguagesPageElement extends
       addLanguagesDialogLanguages_: {type: Array},
 
       showManagedLanguageDialog_: {type: Boolean},
-      restartTypeEnum: {type: Object},
       settingsRefresh2026Enabled_: {type: Boolean},
     };
   }
@@ -111,7 +113,6 @@ export class SettingsLanguagesPageElement extends
   protected accessor addLanguagesDialogLanguages_:
       chrome.languageSettingsPrivate.Language[] = [];
   protected accessor showManagedLanguageDialog_: boolean = false;
-  protected accessor restartTypeEnum = RestartType;
   protected accessor settingsRefresh2026Enabled_: boolean =
       loadTimeData.getString('settingsRefresh2026') !== '';
 

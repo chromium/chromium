@@ -5,9 +5,6 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 // <if expr="not is_chromeos">
 import {ChromeSigninUserChoice} from '/shared/settings/people_page/sync_browser_proxy.js';
-
-import {RestartType} from '../relaunch_mixin_lit.js';
-
 // </if>
 
 import type {SettingsPersonalizationOptionsElement} from './personalization_options.js';
@@ -159,8 +156,7 @@ ${this.showSignoutDialog_ ? html`
 </cr-toast>
 
 ${this.shouldShowRelaunchDialog ? html`
-  <relaunch-confirmation-dialog .restartType="${RestartType.RESTART}"
-      @close="${this.onRelaunchDialogClose}">
+  <relaunch-confirmation-dialog @close="${this.onRelaunchDialogClose}">
   </relaunch-confirmation-dialog>
 ` : ''}
 <cr-toast id="chromeSigninUserChoiceToast" duration="5000">
