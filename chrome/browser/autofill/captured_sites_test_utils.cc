@@ -772,7 +772,7 @@ bool WebPageReplayServerWrapper::Start(
   // `client_socket`, which may or may not be the object invoking the callback.
   on_connect_complete = base::BindLambdaForTesting([&](int connect_result) {
     client_socket.reset();
-    if (connect_result == net::OK || connect_attempts > 30) {
+    if (connect_result == net::OK || connect_attempts > 90) {
       wpr_launch_waiter.Quit();
     } else {
       base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
