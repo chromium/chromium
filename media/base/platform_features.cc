@@ -8,6 +8,10 @@
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace media {
 
 bool IsVp9kSVCHWDecodingEnabled() {
@@ -20,6 +24,23 @@ bool IsVp9kSVCHWDecodingEnabled() {
 #elif BUILDFLAG(IS_WIN)
   // TODO(crbug.com/40286220): Experiment to enable on Windows.
   return base::FeatureList::IsEnabled(media::kD3D11Vp9kSVCHWDecoding);
+#else
+  return false;
+#endif
+}
+
+bool IsAV1SpatialLayerHWDecodingEnabled() {
+#if BUILDFLAG(IS_MAC)
+  // This only restricts VideoToolbox's AV1 hardware decoder where one exists;
+  // Macs without AV1 hardware decode (before M3) never use VideoToolbox for
+  // AV1, spatial layers or not. VideoToolbox decodes AV1 spatial layers; other
+  // hardware decoders are driven per frame and are not known to. VideoToolbox
+  // was reported once to corrupt spatial-layer prediction, on an unrecorded
+  // macOS version. macOS 26 is the oldest version verified bit-exact against
+  // libdav1d, so older versions stay on the per-frame path
+  // (crbug.com/573939397).
+  return base::mac::MacOSMajorVersion() >= 26 &&
+         base::FeatureList::IsEnabled(kVideoToolboxAV1SpatialLayerDecoding);
 #else
   return false;
 #endif

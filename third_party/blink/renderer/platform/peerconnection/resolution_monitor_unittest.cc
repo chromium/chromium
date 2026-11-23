@@ -11,7 +11,11 @@
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/media_switches.h"
+#include "media/base/platform_features.h"
 #include "media/base/test_data_util.h"
 #include "media/base/video_codecs.h"
 #include "media/parsers/ivf_parser.h"
@@ -200,7 +204,23 @@ TEST(ResolutionMonitorTestWithTruncatedH264, IncompleteSps) {
   EXPECT_EQ(resolution_monitor->GetResolution(*invalid_buffer), std::nullopt);
 }
 
-TEST(ResolutionMonitorTestAv1OperatingPoints, RtpWildcardSingleLayerAccepted) {
+// Spatial layers are only accepted when hardware decoding of them is enabled,
+// so these tests pin the feature off and enable it explicitly where needed.
+class ResolutionMonitorTestAv1OperatingPoints : public ::testing::Test {
+ public:
+  ResolutionMonitorTestAv1OperatingPoints() {
+#if BUILDFLAG(IS_MAC)
+    feature_list_.InitAndDisableFeature(
+        media::kVideoToolboxAV1SpatialLayerDecoding);
+#endif
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ResolutionMonitorTestAv1OperatingPoints,
+       RtpWildcardSingleLayerAccepted) {
   constexpr uint16_t kRtpWildcardOperatingPointIdc = 0b1111'1111'1111;
   std::vector<scoped_refptr<media::DecoderBuffer>> buffers =
       ReadIVF("av1-svc-L1T2.ivf");
@@ -217,8 +237,8 @@ TEST(ResolutionMonitorTestAv1OperatingPoints, RtpWildcardSingleLayerAccepted) {
   }
 }
 
-TEST(ResolutionMonitorTestAv1OperatingPoints,
-     NonWildcardLevel20ExceedingMaxPicSizeRejected) {
+TEST_F(ResolutionMonitorTestAv1OperatingPoints,
+       NonWildcardLevel20ExceedingMaxPicSizeRejected) {
   constexpr uint16_t kL1T2OperatingPointIdc = 0b0001'0000'0011;
   std::vector<scoped_refptr<media::DecoderBuffer>> buffers =
       ReadIVF("av1-svc-L1T2.ivf");
@@ -234,8 +254,30 @@ TEST(ResolutionMonitorTestAv1OperatingPoints,
   EXPECT_EQ(resolution_monitor->GetResolution(*buffer), std::nullopt);
 }
 
-TEST(ResolutionMonitorTestAv1OperatingPoints,
-     RejectsExplicitSpatialLayerOperatingPoint) {
+#if BUILDFLAG(IS_MAC)
+TEST_F(ResolutionMonitorTestAv1OperatingPoints,
+       ReturnsTopLayerResolutionWithSpatialLayerDecoding) {
+  base::test::ScopedFeatureList feature_list(
+      media::kVideoToolboxAV1SpatialLayerDecoding);
+  if (!media::IsAV1SpatialLayerHWDecodingEnabled()) {
+    GTEST_SKIP() << "AV1 spatial-layer hardware decoding requires macOS 26 or "
+                    "later";
+  }
+  std::vector<scoped_refptr<media::DecoderBuffer>> svc_buffers =
+      ReadIVF("av1-svc-L2T2.ivf");
+  ASSERT_FALSE(svc_buffers.empty());
+
+  std::unique_ptr<ResolutionMonitor> monitor =
+      ResolutionMonitor::Create(media::VideoCodec::kAV1);
+  ASSERT_TRUE(monitor);
+  for (const scoped_refptr<media::DecoderBuffer>& buffer : svc_buffers) {
+    EXPECT_EQ(monitor->GetResolution(*buffer), gfx::Size(1280, 720));
+  }
+}
+#endif  // BUILDFLAG(IS_MAC)
+
+TEST_F(ResolutionMonitorTestAv1OperatingPoints,
+       RejectsExplicitSpatialLayerOperatingPoint) {
   std::vector<scoped_refptr<media::DecoderBuffer>> svc_buffers =
       ReadIVF("av1-svc-L2T2.ivf");
   ASSERT_FALSE(svc_buffers.empty());
@@ -245,8 +287,8 @@ TEST(ResolutionMonitorTestAv1OperatingPoints,
   EXPECT_EQ(monitor->GetResolution(*svc_buffers[0]), std::nullopt);
 }
 
-TEST(ResolutionMonitorTestAv1OperatingPoints,
-     RejectsSvcWithRtpWildcardOperatingPoint) {
+TEST_F(ResolutionMonitorTestAv1OperatingPoints,
+       RejectsSvcWithRtpWildcardOperatingPoint) {
   constexpr uint16_t kRtpWildcardOperatingPointIdc = 0b1111'1111'1111;
   std::vector<scoped_refptr<media::DecoderBuffer>> svc_buffers =
       ReadIVF("av1-svc-L2T2.ivf");
@@ -260,8 +302,8 @@ TEST(ResolutionMonitorTestAv1OperatingPoints,
   EXPECT_EQ(monitor->GetResolution(*buffer), std::nullopt);
 }
 
-TEST(ResolutionMonitorTestAv1OperatingPoints,
-     RejectsSvcWithZeroOperatingPointIdc) {
+TEST_F(ResolutionMonitorTestAv1OperatingPoints,
+       RejectsSvcWithZeroOperatingPointIdc) {
   std::vector<scoped_refptr<media::DecoderBuffer>> svc_buffers =
       ReadIVF("av1-svc-L2T2.ivf");
   ASSERT_FALSE(svc_buffers.empty());
@@ -274,8 +316,8 @@ TEST(ResolutionMonitorTestAv1OperatingPoints,
   EXPECT_EQ(monitor->GetResolution(*buffer), std::nullopt);
 }
 
-TEST(ResolutionMonitorTestAv1OperatingPoints,
-     RejectsMultipleSpatialLayersInSideData) {
+TEST_F(ResolutionMonitorTestAv1OperatingPoints,
+       RejectsMultipleSpatialLayersInSideData) {
   std::unique_ptr<ResolutionMonitor> monitor =
       ResolutionMonitor::Create(media::VideoCodec::kAV1);
   scoped_refptr<media::DecoderBuffer> buffer =

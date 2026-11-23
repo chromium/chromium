@@ -50,11 +50,18 @@ class MEDIA_GPU_EXPORT VideoToolboxAV1Accelerator
   bool OutputPicture(const AV1Picture& pic) override;
   Status SetStream(base::span<const uint8_t> stream,
                    const DecryptConfig* decrypt_config) override;
+  bool SupportsSpatialLayers() const override;
 
  private:
   bool ProcessFormat(const AV1Picture& pic,
                      const libgav1::ObuSequenceHeader& sequence_header,
                      base::span<const uint8_t> data);
+  // Tracks whether the coded video sequence has spatial layers, if
+  // SupportsSpatialLayers() returns true.
+  // Called for each submitted frame.
+  void UpdateSequenceHasSpatialLayers(
+      const AV1Picture& pic,
+      const libgav1::ObuSequenceHeader& sequence_header);
 
   std::unique_ptr<MediaLog> media_log_;
 
@@ -71,6 +78,15 @@ class MEDIA_GPU_EXPORT VideoToolboxAV1Accelerator
 
   base::apple::ScopedCFTypeRef<CMFormatDescriptionRef> active_format_;
   VideoToolboxDecompressionSessionMetadata session_metadata_;
+
+  // The sequence header of the current coded video sequence, and whether that
+  // sequence has spatial layers: it says so explicitly, or a temporal unit
+  // with more than one shown frame has been seen. Only tracked if
+  // SupportsSpatialLayers() returns true.
+  std::optional<libgav1::ObuSequenceHeader> sequence_header_;
+  bool sequence_has_spatial_layers_ = false;
+  // Shown frames submitted from the current temporal unit.
+  int temporal_unit_shown_frames_ = 0;
 
   // Data for the current frame.
   base::apple::ScopedCFTypeRef<CMBlockBufferRef> temporal_unit_data_;

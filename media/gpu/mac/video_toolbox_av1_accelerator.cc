@@ -7,8 +7,10 @@
 #include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/media_log.h"
+#include "media/base/platform_features.h"
 #include "media/base/video_types.h"
 #include "media/gpu/mac/vt_config_util.h"
+#include "media/parsers/av1_svc_utils.h"
 #include "third_party/libgav1/src/src/obu_parser.h"
 
 namespace media {
@@ -37,6 +39,7 @@ AV1Decoder::AV1Accelerator::Status VideoToolboxAV1Accelerator::SetStream(
 
   temporal_unit_data_.reset();
   format_processed_ = false;
+  temporal_unit_shown_frames_ = 0;
 
   // Create block buffer.
   OSStatus status = CMBlockBufferCreateEmpty(
@@ -103,6 +106,8 @@ VideoToolboxAV1Accelerator::Status VideoToolboxAV1Accelerator::SubmitDecode(
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  UpdateSequenceHasSpatialLayers(pic, sequence_header);
+
   // It's only necessary to process format the once per temporal unit.
   if (format_processed_) {
     return Status::kOk;
@@ -125,6 +130,15 @@ bool VideoToolboxAV1Accelerator::OutputPicture(const AV1Picture& pic) {
   if (!temporal_unit_data_ || !active_format_) {
     return false;
   }
+
+  // Concurrent asynchronous decodes of spatial-layer temporal units can output
+  // the wrong layer, so keep at most one in flight. Decodes are not serialized
+  // for single-layer sequences, including temporal-only scalability (L1Tx).
+  session_metadata_.serialize_decodes =
+      SupportsSpatialLayers() && sequence_has_spatial_layers_;
+  // VideoToolbox outputs the highest spatial layer of the temporal unit, which
+  // is the picture being output, not the first frame the format was made from.
+  session_metadata_.visible_rect = pic.visible_rect();
 
   // Wrap the temporal unit in a sample.
   size_t data_size = CMBlockBufferGetDataLength(temporal_unit_data_.get());
@@ -161,6 +175,12 @@ bool VideoToolboxAV1Accelerator::OutputPicture(const AV1Picture& pic) {
   return true;
 }
 
+bool VideoToolboxAV1Accelerator::SupportsSpatialLayers() const {
+  // VideoToolbox is handed the whole temporal unit in OutputPicture() and
+  // decodes every spatial layer in it.
+  return IsAV1SpatialLayerHWDecodingEnabled();
+}
+
 bool VideoToolboxAV1Accelerator::ProcessFormat(
     const AV1Picture& pic,
     const libgav1::ObuSequenceHeader& sequence_header,
@@ -193,6 +213,18 @@ bool VideoToolboxAV1Accelerator::ProcessFormat(
   gfx::Size max_coded_size(
       base::strict_cast<int>(sequence_header.max_frame_width),
       base::strict_cast<int>(sequence_header.max_frame_height));
+
+  // With spatial layers, the first frame of a temporal unit changes size from
+  // one temporal unit to the next whenever the set of forwarded layers changes,
+  // and a temporal unit without a sequence header cannot produce an av1C.
+  // Whether a stream has spatial layers may only show after its first temporal
+  // units (e.g. with the RTP wildcard operating point), so whenever spatial
+  // layers are supported, describe the format by the sequence maximum. It then
+  // only changes with the sequence header; a smaller actual size still
+  // decodes.
+  if (SupportsSpatialLayers()) {
+    coded_size = max_coded_size;
+  }
 
   int bit_depth = sequence_header.color_config.bitdepth;
 
@@ -257,6 +289,29 @@ bool VideoToolboxAV1Accelerator::ProcessFormat(
   }
 
   return true;
+}
+
+void VideoToolboxAV1Accelerator::UpdateSequenceHasSpatialLayers(
+    const AV1Picture& pic,
+    const libgav1::ObuSequenceHeader& sequence_header) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!SupportsSpatialLayers()) {
+    return;
+  }
+  if (!sequence_header_.has_value() ||
+      sequence_header.ParametersChanged(*sequence_header_)) {
+    // A new coded video sequence. Neither the RTP wildcard operating point nor
+    // an operating_point_idc of 0 says whether it has spatial layers; for
+    // those, spatial layers are detected lazily below.
+    sequence_header_ = sequence_header;
+    sequence_has_spatial_layers_ = IsAV1SpatialLayerSequence(sequence_header);
+  }
+  // A temporal unit has one shown frame per spatial layer it carries (Spec
+  // 7.5), so a second one means spatial layers. An upper layer sent only as a
+  // show_existing_frame header is not submitted and goes unnoticed here.
+  if (pic.frame_header.show_frame && ++temporal_unit_shown_frames_ > 1) {
+    sequence_has_spatial_layers_ = true;
+  }
 }
 
 }  // namespace media

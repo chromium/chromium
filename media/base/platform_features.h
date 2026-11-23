@@ -57,6 +57,11 @@ namespace media {
 
 MEDIA_EXPORT bool IsVp9kSVCHWDecodingEnabled();
 
+// Whether a hardware decoder may be given AV1 streams with spatial layers.
+// Only VideoToolbox on macOS 26 or later, behind
+// kVideoToolboxAV1SpatialLayerDecoding.
+MEDIA_EXPORT bool IsAV1SpatialLayerHWDecodingEnabled();
+
 MEDIA_EXPORT constexpr bool IsVp9kSVCHWEncodingEnabled() {
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
   return true;

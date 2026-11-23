@@ -203,8 +203,12 @@ std::optional<RTCVideoDecoderFallbackReason> NeedSoftwareFallback(
     return RTCVideoDecoderFallbackReason::kSpatialLayers;
   }
 
-  if (codec == media::VideoCodec::kAV1 && is_spatial_layer_buffer) {
-    // No hardware decoder supports AV1 SVC stream.
+  // Only VideoToolbox decodes AV1 spatial layers, and only with the feature.
+  const bool av1_spatial_layers_supported =
+      decoder_type == media::VideoDecoderType::kVideoToolbox &&
+      media::IsAV1SpatialLayerHWDecodingEnabled();
+  if (codec == media::VideoCodec::kAV1 && is_spatial_layer_buffer &&
+      !av1_spatial_layers_supported) {
     LOG(ERROR) << "No AV1 spatial layers support";
     return RTCVideoDecoderFallbackReason::kSpatialLayers;
   }

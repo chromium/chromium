@@ -1529,6 +1529,11 @@ BASE_FEATURE(kMacAVFoundationPlayback, base::FEATURE_DISABLED_BY_DEFAULT);
 // issues in earlier versions.
 BASE_FEATURE(kUseSCContentSharingPicker, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Lets VideoToolbox decode AV1 streams with multiple spatial layers (WebRTC
+// SVC, e.g. L2T2 or L3T3) instead of falling back to software decoding.
+BASE_FEATURE(kVideoToolboxAV1SpatialLayerDecoding,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #endif  // BUILDFLAG(IS_MAC)
 
 #if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN))

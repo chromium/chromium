@@ -39,6 +39,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/overlay_info.h"
+#include "media/base/platform_features.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
@@ -946,6 +947,58 @@ TEST_F(RTCVideoDecoderAdapterTest, FallbackToSWInAV1SVC) {
 
   media_thread_.FlushForTesting();
 }
+
+#if BUILDFLAG(IS_MAC)
+TEST_F(RTCVideoDecoderAdapterTest,
+       DecodesAV1SVCWithVideoToolboxSpatialLayerDecoding) {
+  base::test::ScopedFeatureList feature_list(
+      media::kVideoToolboxAV1SpatialLayerDecoding);
+  if (!media::IsAV1SpatialLayerHWDecodingEnabled()) {
+    GTEST_SKIP() << "AV1 spatial-layer hardware decoding requires macOS 26 or "
+                    "later";
+  }
+  video_decoder_->SetDecoderType(media::VideoDecoderType::kVideoToolbox);
+  SetSdpFormat(webrtc::SdpVideoFormat(
+      webrtc::CodecTypeToPayloadString(webrtc::kVideoCodecAV1)));
+  ASSERT_TRUE(CreateAndInitialize());
+  webrtc::VideoDecoder::Settings settings;
+  settings.set_codec_type(webrtc::kVideoCodecAV1);
+  ASSERT_TRUE(adapter_wrapper_->Configure(settings));
+  ASSERT_EQ(RegisterDecodeCompleteCallback(), WEBRTC_VIDEO_CODEC_OK);
+
+  SetSpatialIndex(2);
+  EXPECT_CALL(*video_decoder_, Decode_(_, _))
+      .WillOnce(
+          base::test::RunOnceCallback<1>(media::DecoderStatus::Codes::kOk));
+
+  ASSERT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_OK);
+
+  EXPECT_CALL(decoded_cb_, Run(_));
+  FinishDecode(0);
+  media_thread_.FlushForTesting();
+}
+
+TEST_F(RTCVideoDecoderAdapterTest,
+       FallbackToSWInAV1SVCWithSpatialLayerDecodingOnOtherDecoder) {
+  base::test::ScopedFeatureList feature_list(
+      media::kVideoToolboxAV1SpatialLayerDecoding);
+  // kTesting stands for any hardware decoder other than VideoToolbox.
+  SetSdpFormat(webrtc::SdpVideoFormat(
+      webrtc::CodecTypeToPayloadString(webrtc::kVideoCodecAV1)));
+  ASSERT_TRUE(CreateAndInitialize());
+  webrtc::VideoDecoder::Settings settings;
+  settings.set_codec_type(webrtc::kVideoCodecAV1);
+  ASSERT_TRUE(adapter_wrapper_->Configure(settings));
+  ASSERT_EQ(RegisterDecodeCompleteCallback(), WEBRTC_VIDEO_CODEC_OK);
+
+  SetSpatialIndex(2);
+  EXPECT_CALL(*video_decoder_, Decode_(_, _)).Times(0);
+
+  ASSERT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
+
+  media_thread_.FlushForTesting();
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 TEST_F(RTCVideoDecoderAdapterTest, CanReadSharedFrameBuffer) {
   ASSERT_TRUE(BasicSetup());

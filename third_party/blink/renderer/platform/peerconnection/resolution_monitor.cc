@@ -18,6 +18,7 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/platform_features.h"
 #include "media/base/video_codecs.h"
 #include "media/parsers/av1_svc_utils.h"
 #include "media/parsers/vp8_parser.h"
@@ -133,7 +134,8 @@ class Av1ResolutionMonitor : public ResolutionMonitor {
 
   std::optional<gfx::Size> GetResolution(
       const media::DecoderBuffer& buffer) override {
-    if (buffer.side_data() && buffer.side_data()->spatial_layers.size() > 1) {
+    if (buffer.side_data() && buffer.side_data()->spatial_layers.size() > 1 &&
+        !spatial_layers_supported_) {
       DVLOG(1) << "Spatial layer decoding is not supported";
       return std::nullopt;
     }
@@ -166,7 +168,8 @@ class Av1ResolutionMonitor : public ResolutionMonitor {
         return std::nullopt;
       }
 
-      if (media::HasAV1SpatialLayerObu(parser->obu_headers())) {
+      if (media::HasAV1SpatialLayerObu(parser->obu_headers()) &&
+          !spatial_layers_supported_) {
         DVLOG(1) << "Spatial layer decoding is not supported";
         return std::nullopt;
       }
@@ -199,7 +202,8 @@ class Av1ResolutionMonitor : public ResolutionMonitor {
  private:
   bool UpdateCurrentSequenceHeader(
       const libgav1::ObuSequenceHeader& sequence_header) {
-    if (media::IsAV1SpatialLayerSequence(sequence_header)) {
+    if (media::IsAV1SpatialLayerSequence(sequence_header) &&
+        !spatial_layers_supported_) {
       constexpr size_t kOperatingPointIdcBits = 12;
       DVLOG(1)
           << "Spatial layer decoding is not supported: "
@@ -231,6 +235,10 @@ class Av1ResolutionMonitor : public ResolutionMonitor {
     return gfx::Size(show_frame->frame_width(), show_frame->frame_height());
   }
 
+  // Whether streams with spatial layers may be decoded in hardware, in which
+  // case their resolution is that of the highest spatial layer received.
+  const bool spatial_layers_supported_ =
+      media::IsAV1SpatialLayerHWDecodingEnabled();
   std::optional<libgav1::ObuSequenceHeader> current_sequence_header_;
   libgav1::BufferPool buffer_pool_;
   libgav1::DecoderState decoder_state_;
