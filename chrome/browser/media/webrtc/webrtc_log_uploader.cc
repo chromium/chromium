@@ -14,11 +14,9 @@
 #include <utility>
 
 #include "base/containers/span.h"
-#include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
-#include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -72,34 +70,6 @@ bool IsValidReportId(std::string_view report_id) {
     if (!base::IsAsciiPrintable(c) || c == ' ' || c == ',') {
       return false;
     }
-  }
-  return true;
-}
-
-// Reads |upload_list_path| into |contents| without following symlinks.
-// FLAG_NO_FOLLOW only has an effect on POSIX; on Windows (where symlink
-// creation is normally privileged) the IsLink() pre-check is a best-effort,
-// racy guard. Returns false on a read error of an existing non-symlink file,
-// and true if the file was read or did not exist / was a symlink (leaving
-// |contents| empty so that the caller replaces it atomically).
-bool ReadUploadListFileNoFollow(const base::FilePath& upload_list_path,
-                                std::string* contents) {
-  if (base::IsLink(upload_list_path)) {
-    return true;
-  }
-  base::File file(upload_list_path, base::File::FLAG_OPEN |
-                                        base::File::FLAG_READ |
-                                        base::File::FLAG_NO_FOLLOW);
-  if (!file.IsValid()) {
-    return file.error_details() == base::File::FILE_ERROR_NOT_FOUND ||
-           base::IsLink(upload_list_path);
-  }
-  base::ScopedFILE stream(base::FileToFILE(std::move(file), "rb"));
-  if (!stream ||
-      !base::ReadStreamToStringWithMaxSize(
-          stream.get(), webrtc_logging::kMaxLogListFileSizeBytes, contents)) {
-    contents->clear();
-    return false;
   }
   return true;
 }
@@ -650,9 +620,9 @@ void WebRtcLogUploader::AddLocallyStoredLogInfoToUploadListFile(
   CHECK(!local_log_id.empty(), base::NotFatalUntil::M161);
 
   std::string contents;
-  // No IsLink(upload_list_path.DirName()) re-check here: callers invoke this
-  // synchronously right after checking the directory in the same task.
-  if (!ReadUploadListFileNoFollow(upload_list_path, &contents)) {
+  if (webrtc_logging::TextLogList::ReadLogListFile(upload_list_path,
+                                                   &contents) ==
+      webrtc_logging::LogListReadResult::kError) {
     DVLOG(1) << "Could not read WebRTC log list file.";
     return;
   }
@@ -680,8 +650,8 @@ void WebRtcLogUploader::AddLocallyStoredLogInfoToUploadListFile(
       ",," + local_log_id + "," +
       base::NumberToString(base::Time::Now().InSecondsFSinceUnixEpoch()) + '\n';
 
-  if (!base::ImportantFileWriter::WriteFileAtomically(upload_list_path,
-                                                      contents)) {
+  if (!webrtc_logging::TextLogList::WriteLogListFile(upload_list_path,
+                                                     contents)) {
     DVLOG(1) << "Could not write data to WebRTC log list file.";
   }
 }
@@ -701,15 +671,12 @@ void WebRtcLogUploader::AddUploadedLogInfoToUploadListFile(
   }
 
   std::string contents;
-  // This runs after the upload completes, which can be long after the
-  // directory was checked in OnLoggingStopped(). Re-check right before reading
-  // and writing so that a directory swapped for a symlink in the meantime is
-  // not followed.
-  if (base::IsLink(upload_list_path.DirName())) {
-    DVLOG(1) << "WebRTC log directory is a symbolic link.";
-    return;
-  }
-  if (!ReadUploadListFileNoFollow(upload_list_path, &contents)) {
+  // ReadLogListFile() and WriteLogListFile() refuse to operate when the
+  // directory is a symbolic link. This runs after the upload completes, which
+  // can be long after the directory was checked in OnLoggingStopped().
+  if (webrtc_logging::TextLogList::ReadLogListFile(upload_list_path,
+                                                   &contents) ==
+      webrtc_logging::LogListReadResult::kError) {
     DVLOG(1) << "Could not read WebRTC log list file.";
     return;
   }
@@ -728,8 +695,8 @@ void WebRtcLogUploader::AddUploadedLogInfoToUploadListFile(
     contents += time_now_str + "," + report_id + ",," + time_now_str + "\n";
   }
 
-  if (!base::ImportantFileWriter::WriteFileAtomically(upload_list_path,
-                                                      contents)) {
+  if (!webrtc_logging::TextLogList::WriteLogListFile(upload_list_path,
+                                                     contents)) {
     DVLOG(1) << "Could not write data to WebRTC log list file.";
   }
 }

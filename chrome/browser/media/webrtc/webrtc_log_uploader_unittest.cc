@@ -35,8 +35,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_POSIX)
+#include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#include "base/files/scoped_file.h"
+#include "base/posix/eintr_wrapper.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -660,6 +664,30 @@ TEST_F(WebRtcLogUploaderTest, RejectsInvalidReportIds) {
   FlushRunLoop();
 }
 
+TEST_F(WebRtcLogUploaderTest, LeavesOversizedUploadListFileUntouched) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  test_list_path_ = temp_dir.GetPath().AppendASCII("Log List");
+  const std::string oversized_contents(
+      webrtc_logging::kMaxLogListFileSizeBytes + 1, 'a');
+  ASSERT_TRUE(base::WriteFile(test_list_path_, oversized_contents));
+
+  auto webrtc_log_uploader = std::make_unique<WebRtcLogUploader>();
+
+  AddLocallyStoredLogInfoToUploadListFile(webrtc_log_uploader.get(),
+                                          test_list_path_, kTestLocalId);
+  AddUploadedLogInfoToUploadListFile(test_list_path_, kTestLocalId,
+                                     kTestReportId);
+
+  std::string actual_contents;
+  ASSERT_TRUE(base::ReadFileToString(test_list_path_, &actual_contents));
+  EXPECT_EQ(oversized_contents.size(), actual_contents.size());
+  EXPECT_EQ(oversized_contents, actual_contents);
+
+  webrtc_log_uploader->Shutdown();
+  FlushRunLoop();
+}
+
 #if BUILDFLAG(IS_POSIX)
 TEST_F(WebRtcLogUploaderTest, LeavesUnreadableUploadListFileUntouched) {
   if (geteuid() == 0) {
@@ -684,6 +712,50 @@ TEST_F(WebRtcLogUploaderTest, LeavesUnreadableUploadListFileUntouched) {
   std::string actual_contents;
   ASSERT_TRUE(base::ReadFileToString(test_list_path_, &actual_contents));
   EXPECT_EQ(initial_contents, actual_contents);
+
+  webrtc_log_uploader->Shutdown();
+  FlushRunLoop();
+}
+
+TEST_F(WebRtcLogUploaderTest, ReplacesFifoAndIgnoresDirectoryAtUploadListPath) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  test_list_path_ = temp_dir.GetPath().AppendASCII("Log List");
+
+  auto webrtc_log_uploader = std::make_unique<WebRtcLogUploader>();
+
+  // A FIFO at Log List must not hang open() and should be atomically replaced.
+  ASSERT_EQ(0, mkfifo(test_list_path_.value().c_str(), 0600));
+  AddLocallyStoredLogInfoToUploadListFile(webrtc_log_uploader.get(),
+                                          test_list_path_, kTestLocalId);
+  struct stat st;
+  ASSERT_EQ(0, lstat(test_list_path_.value().c_str(), &st));
+  EXPECT_TRUE(S_ISREG(st.st_mode));
+  ASSERT_TRUE(VerifyNumberOfLines(1));
+  ASSERT_TRUE(VerifyLastLineHasLocalStorageInfoOnly());
+
+  ASSERT_TRUE(base::DeleteFile(test_list_path_));
+  ASSERT_EQ(0, mkfifo(test_list_path_.value().c_str(), 0600));
+  // Hold a writer open so a non-blocking read would fail with EAGAIN without
+  // the S_ISFIFO check.
+  base::ScopedFD writer(
+      HANDLE_EINTR(open(test_list_path_.value().c_str(), O_RDWR | O_NONBLOCK)));
+  ASSERT_TRUE(writer.is_valid());
+  AddUploadedLogInfoToUploadListFile(test_list_path_, kTestLocalId,
+                                     kTestReportId);
+  ASSERT_EQ(0, lstat(test_list_path_.value().c_str(), &st));
+  EXPECT_TRUE(S_ISREG(st.st_mode));
+  ASSERT_TRUE(VerifyNumberOfLines(1));
+  ASSERT_TRUE(VerifyLastLineHasUploadInfoOnly());
+
+  // A directory at Log List must be left untouched without crashing.
+  ASSERT_TRUE(base::DeleteFile(test_list_path_));
+  ASSERT_TRUE(base::CreateDirectory(test_list_path_));
+  AddLocallyStoredLogInfoToUploadListFile(webrtc_log_uploader.get(),
+                                          test_list_path_, kTestLocalId);
+  AddUploadedLogInfoToUploadListFile(test_list_path_, kTestLocalId,
+                                     kTestReportId);
+  EXPECT_TRUE(base::DirectoryExists(test_list_path_));
 
   webrtc_log_uploader->Shutdown();
   FlushRunLoop();

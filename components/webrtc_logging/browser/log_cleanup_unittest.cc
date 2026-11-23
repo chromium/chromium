@@ -16,8 +16,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_POSIX)
+#include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
+
+#include "base/files/scoped_file.h"
+#include "base/posix/eintr_wrapper.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -438,6 +442,23 @@ TEST_F(WebRtcTextLogIndexCleanupTest,
   ExpectContents(expected_contents);
 }
 
+TEST_F(WebRtcTextLogIndexCleanupTest, LeavesOversizedLogListUntouched) {
+  const std::string oversized_contents(kMaxLogListFileSizeBytes + 1, 'a');
+  CreateLogListFileWithContents(oversized_contents);
+  const base::FilePath log_file = dir_.GetPath().AppendASCII("123.gz");
+  ASSERT_TRUE(base::WriteFile(log_file, "log"));
+
+  const base::Time delete_begin_time =
+      base::Time::FromSecondsSinceUnixEpoch(150);
+  DeleteOldAndRecentWebRtcLogFiles({dir_.GetPath()}, delete_begin_time);
+
+  EXPECT_FALSE(base::PathExists(log_file));
+  std::string actual_contents;
+  ASSERT_TRUE(base::ReadFileToString(log_list_path_, &actual_contents));
+  EXPECT_EQ(oversized_contents.size(), actual_contents.size());
+  EXPECT_EQ(oversized_contents, actual_contents);
+}
+
 #if BUILDFLAG(IS_POSIX)
 TEST_F(WebRtcTextLogIndexCleanupTest, LeavesUnreadableLogListUntouched) {
   if (geteuid() == 0) {
@@ -447,13 +468,53 @@ TEST_F(WebRtcTextLogIndexCleanupTest, LeavesUnreadableLogListUntouched) {
   const std::string contents = "200.1,report_id_1,local_id_1,201.1\n";
   CreateLogListFileWithContents(contents);
   ASSERT_EQ(0, chmod(log_list_path_.value().c_str(), 0000));
+  const base::FilePath log_file = dir_.GetPath().AppendASCII("123.gz");
+  ASSERT_TRUE(base::WriteFile(log_file, "log"));
 
   const base::Time delete_begin_time =
       base::Time::FromSecondsSinceUnixEpoch(150);
   DeleteOldAndRecentWebRtcLogFiles({dir_.GetPath()}, delete_begin_time);
 
+  EXPECT_FALSE(base::PathExists(log_file));
   ASSERT_EQ(0, chmod(log_list_path_.value().c_str(), 0600));
   ExpectContents(contents);
+}
+
+TEST_F(WebRtcTextLogIndexCleanupTest, ReplacesFifoAtLogListPathWithoutHanging) {
+  ASSERT_EQ(0, mkfifo(log_list_path_.value().c_str(), 0600));
+
+  DeleteOldWebRtcLogFiles({dir_.GetPath()});
+
+  struct stat st;
+  ASSERT_EQ(0, lstat(log_list_path_.value().c_str(), &st));
+  EXPECT_TRUE(S_ISREG(st.st_mode));
+  ExpectContents("");
+
+  // Also test with a writer held open on the FIFO so that a non-blocking read
+  // would fail with EAGAIN without the S_ISFIFO check.
+  ASSERT_TRUE(base::DeleteFile(log_list_path_));
+  ASSERT_EQ(0, mkfifo(log_list_path_.value().c_str(), 0600));
+  base::ScopedFD writer(
+      HANDLE_EINTR(open(log_list_path_.value().c_str(), O_RDWR | O_NONBLOCK)));
+  ASSERT_TRUE(writer.is_valid());
+
+  DeleteOldWebRtcLogFiles({dir_.GetPath()});
+
+  ASSERT_EQ(0, lstat(log_list_path_.value().c_str(), &st));
+  EXPECT_TRUE(S_ISREG(st.st_mode));
+  ExpectContents("");
+}
+
+TEST_F(WebRtcTextLogIndexCleanupTest, IgnoresDirectoryAtLogListPath) {
+  ASSERT_TRUE(base::CreateDirectory(log_list_path_));
+
+  std::string contents;
+  EXPECT_EQ(LogListReadResult::kError,
+            TextLogList::ReadLogListFile(log_list_path_, &contents));
+
+  DeleteOldWebRtcLogFiles({dir_.GetPath()});
+
+  EXPECT_TRUE(base::DirectoryExists(log_list_path_));
 }
 
 TEST_F(WebRtcTextLogIndexCleanupTest, DoesNotFollowSymlinkForLogList) {
