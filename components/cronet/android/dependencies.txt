@@ -144,4 +144,5 @@
 //third_party/simdutf
 //third_party/zlib
 //third_party/zstd
+//tools/metrics
 //url

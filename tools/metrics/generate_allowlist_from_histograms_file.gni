@@ -26,11 +26,10 @@ import("//build/config/python.gni")
 #     Name of the generated file to be used for checking if a value exists in the list.
 #
 template("generate_allowlist_from_histograms_file") {
-  action_with_pydeps(target_name) {
+  python_action(target_name) {
     output_file = "$target_gen_dir/" + invoker.output_file
 
-    script =
-        "//tools/metrics/histograms/generate_allowlist_from_histograms_file.py"
+    python_binary = "//tools/metrics:generate_allowlist_from_histograms_file"
     outputs = [ output_file ]
     sources = [ invoker.input_xml_file ]
 

@@ -3,8 +3,13 @@
 # found in the LICENSE file.
 
 import("//build/config/gclient_args.gni")
+import("//build/config/python.gni")
 import("//tools/json_to_struct/json_to_struct.gni")
 import("//tools/metrics/histograms/histograms_xml_files.gni")
+
+python_binary("generate_allowlist_from_histograms_file") {
+  script = "histograms/generate_allowlist_from_histograms_file.py"
+}
 
 # Only include histograms_xml if we have access to dirmd data, which
 # is used to populate ownership information.
