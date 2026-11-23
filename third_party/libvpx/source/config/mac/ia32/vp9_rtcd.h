@@ -81,7 +81,8 @@ void vp9_fwht4x4_sse2(const int16_t *input, tran_low_t *output, int stride);
 
 int64_t vp9_highbd_block_error_c(const tran_low_t *coeff, const tran_low_t *dqcoeff, intptr_t block_size, int64_t *ssz, int bd);
 int64_t vp9_highbd_block_error_sse2(const tran_low_t *coeff, const tran_low_t *dqcoeff, intptr_t block_size, int64_t *ssz, int bd);
-#define vp9_highbd_block_error vp9_highbd_block_error_sse2
+int64_t vp9_highbd_block_error_avx2(const tran_low_t *coeff, const tran_low_t *dqcoeff, intptr_t block_size, int64_t *ssz, int bd);
+RTCD_EXTERN int64_t (*vp9_highbd_block_error)(const tran_low_t *coeff, const tran_low_t *dqcoeff, intptr_t block_size, int64_t *ssz, int bd);
 
 void vp9_highbd_fht16x16_c(const int16_t *input, tran_low_t *output, int stride, int tx_type);
 #define vp9_highbd_fht16x16 vp9_highbd_fht16x16_c
@@ -159,6 +160,8 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_AVX2) vp9_block_error = vp9_block_error_avx2;
     vp9_block_error_fp = vp9_block_error_fp_sse2;
     if (flags & HAS_AVX2) vp9_block_error_fp = vp9_block_error_fp_avx2;
+    vp9_highbd_block_error = vp9_highbd_block_error_sse2;
+    if (flags & HAS_AVX2) vp9_highbd_block_error = vp9_highbd_block_error_avx2;
     vp9_highbd_iht16x16_256_add = vp9_highbd_iht16x16_256_add_c;
     if (flags & HAS_SSE4_1) vp9_highbd_iht16x16_256_add = vp9_highbd_iht16x16_256_add_sse4_1;
     vp9_highbd_iht4x4_16_add = vp9_highbd_iht4x4_16_add_c;

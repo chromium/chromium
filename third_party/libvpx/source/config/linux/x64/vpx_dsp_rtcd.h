@@ -859,7 +859,8 @@ unsigned int vpx_highbd_avg_8x8_sse2(const uint8_t *s8, int p);
 
 void vpx_highbd_comp_avg_pred_c(uint16_t *comp_pred, const uint16_t *pred, int width, int height, const uint16_t *ref, int ref_stride);
 void vpx_highbd_comp_avg_pred_sse2(uint16_t *comp_pred, const uint16_t *pred, int width, int height, const uint16_t *ref, int ref_stride);
-#define vpx_highbd_comp_avg_pred vpx_highbd_comp_avg_pred_sse2
+void vpx_highbd_comp_avg_pred_avx2(uint16_t *comp_pred, const uint16_t *pred, int width, int height, const uint16_t *ref, int ref_stride);
+RTCD_EXTERN void (*vpx_highbd_comp_avg_pred)(uint16_t *comp_pred, const uint16_t *pred, int width, int height, const uint16_t *ref, int ref_stride);
 
 void vpx_highbd_convolve8_c(const uint16_t *src, ptrdiff_t src_stride, uint16_t *dst, ptrdiff_t dst_stride, const InterpKernel *filter, int x0_q4, int x_step_q4, int y0_q4, int y_step_q4, int w, int h, int bd);
 void vpx_highbd_convolve8_sse2(const uint16_t *src, ptrdiff_t src_stride, uint16_t *dst, ptrdiff_t dst_stride, const InterpKernel *filter, int x0_q4, int x_step_q4, int y0_q4, int y_step_q4, int w, int h, int bd);
@@ -2220,7 +2221,8 @@ RTCD_EXTERN void (*vpx_subtract_block)(int rows, int cols, int16_t *diff_ptr, pt
 
 uint64_t vpx_sum_squares_2d_i16_c(const int16_t *src, int stride, int size);
 uint64_t vpx_sum_squares_2d_i16_sse2(const int16_t *src, int stride, int size);
-#define vpx_sum_squares_2d_i16 vpx_sum_squares_2d_i16_sse2
+uint64_t vpx_sum_squares_2d_i16_avx2(const int16_t *src, int stride, int size);
+RTCD_EXTERN uint64_t (*vpx_sum_squares_2d_i16)(const int16_t *src, int stride, int size);
 
 void vpx_tm_predictor_16x16_c(uint8_t *dst, ptrdiff_t stride, const uint8_t *above, const uint8_t *left);
 void vpx_tm_predictor_16x16_sse2(uint8_t *dst, ptrdiff_t stride, const uint8_t *above, const uint8_t *left);
@@ -2388,6 +2390,8 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_AVX2) vpx_hadamard_32x32 = vpx_hadamard_32x32_avx2;
     vpx_hadamard_8x8 = vpx_hadamard_8x8_sse2;
     if (flags & HAS_SSSE3) vpx_hadamard_8x8 = vpx_hadamard_8x8_ssse3;
+    vpx_highbd_comp_avg_pred = vpx_highbd_comp_avg_pred_sse2;
+    if (flags & HAS_AVX2) vpx_highbd_comp_avg_pred = vpx_highbd_comp_avg_pred_avx2;
     vpx_highbd_convolve8 = vpx_highbd_convolve8_sse2;
     if (flags & HAS_AVX2) vpx_highbd_convolve8 = vpx_highbd_convolve8_avx2;
     vpx_highbd_convolve8_avg = vpx_highbd_convolve8_avg_sse2;
@@ -2709,6 +2713,8 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_SSSE3) vpx_sub_pixel_variance8x8 = vpx_sub_pixel_variance8x8_ssse3;
     vpx_subtract_block = vpx_subtract_block_sse2;
     if (flags & HAS_AVX2) vpx_subtract_block = vpx_subtract_block_avx2;
+    vpx_sum_squares_2d_i16 = vpx_sum_squares_2d_i16_sse2;
+    if (flags & HAS_AVX2) vpx_sum_squares_2d_i16 = vpx_sum_squares_2d_i16_avx2;
     vpx_variance16x16 = vpx_variance16x16_sse2;
     if (flags & HAS_AVX2) vpx_variance16x16 = vpx_variance16x16_avx2;
     vpx_variance16x32 = vpx_variance16x32_sse2;

@@ -469,6 +469,7 @@ libvpx_srcs_x86_avx =
     [ "//third_party/libvpx/source/libvpx/vpx_dsp/x86/quantize_avx.c" ]
 libvpx_srcs_x86_avx2 = [
   "//third_party/libvpx/source/libvpx/vp9/encoder/x86/vp9_error_avx2.c",
+  "//third_party/libvpx/source/libvpx/vp9/encoder/x86/vp9_highbd_error_avx2.c",
   "//third_party/libvpx/source/libvpx/vp9/encoder/x86/vp9_quantize_avx2.c",
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/avg_intrin_avx2.c",
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/avg_pred_avx2.c",
@@ -484,6 +485,7 @@ libvpx_srcs_x86_avx2 = [
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/sad_avx2.c",
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/sse_avx2.c",
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/subtract_avx2.c",
+  "//third_party/libvpx/source/libvpx/vpx_dsp/x86/sum_squares_avx2.c",
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/variance_avx2.c",
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/vpx_subpixel_8t_intrin_avx2.c",
 ]
@@ -961,6 +963,7 @@ libvpx_srcs_x86_64_avx =
     [ "//third_party/libvpx/source/libvpx/vpx_dsp/x86/quantize_avx.c" ]
 libvpx_srcs_x86_64_avx2 = [
   "//third_party/libvpx/source/libvpx/vp9/encoder/x86/vp9_error_avx2.c",
+  "//third_party/libvpx/source/libvpx/vp9/encoder/x86/vp9_highbd_error_avx2.c",
   "//third_party/libvpx/source/libvpx/vp9/encoder/x86/vp9_quantize_avx2.c",
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/avg_intrin_avx2.c",
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/avg_pred_avx2.c",
@@ -976,6 +979,7 @@ libvpx_srcs_x86_64_avx2 = [
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/sad_avx2.c",
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/sse_avx2.c",
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/subtract_avx2.c",
+  "//third_party/libvpx/source/libvpx/vpx_dsp/x86/sum_squares_avx2.c",
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/variance_avx2.c",
   "//third_party/libvpx/source/libvpx/vpx_dsp/x86/vpx_subpixel_8t_intrin_avx2.c",
 ]
