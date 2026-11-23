@@ -11,6 +11,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
@@ -21,7 +22,9 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
+#include "base/version.h"
 #include "chrome/browser/web_applications/os_integration/mac/apps_folder_support.h"
+#import "chrome/browser/web_applications/os_integration/mac/bundle_info_plist.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_auto_login_util.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
@@ -52,7 +55,7 @@ class WebAppShortcutCreatorMock : public WebAppShortcutCreator {
   WebAppShortcutCreatorMock(const base::FilePath& app_data_dir,
                             const ShortcutInfo* shortcut_info)
       : WebAppShortcutCreator(app_data_dir,
-                              GetChromeAppsFolder(),
+                              GetOrCreateChromeAppsFolder(),
                               shortcut_info) {}
 
   MOCK_CONST_METHOD0(GetAppBundlesByIdUnsorted, std::vector<base::FilePath>());
@@ -125,6 +128,15 @@ std::unique_ptr<ShortcutInfo> GetShortcutInfo() {
   info->version_for_display = "stable 1.0";
   info->is_multi_profile = true;
   return info;
+}
+
+bool WriteTestBundlePlist(const base::FilePath& bundle_path,
+                          NSDictionary* plist_dict) {
+  if (!base::CreateDirectory(bundle_path.Append("Contents"))) {
+    return false;
+  }
+  return [plist_dict writeToURL:BundleInfoPlist::GetPlistURL(bundle_path)
+                          error:nil];
 }
 
 class WebAppShortcutCreatorTest : public testing::Test {
@@ -898,6 +910,52 @@ TEST_F(WebAppShortcutCreatorTest, DeleteAllShortcutsForProfile) {
   EXPECT_FALSE(base::PathExists(shim_path_));
 }
 
+TEST_F(WebAppShortcutCreatorTest, DeleteAllShortcutsForProfileNestedShim) {
+  info_->is_multi_profile = false;
+
+  NiceMock<WebAppShortcutCreatorMock> shortcut_creator(app_data_dir_,
+                                                       info_.get());
+  EXPECT_TRUE(shortcut_creator.CreateShortcuts(SHORTCUT_CREATION_AUTOMATED,
+                                               ShortcutLocations()));
+  // Move the shim into a subfolder, as a user can do in Finder.
+  const base::FilePath nested_shim_path =
+      destination_dir_.Append("Folder").Append(shim_base_name_);
+  ASSERT_TRUE(base::CreateDirectory(nested_shim_path.DirName()));
+  ASSERT_TRUE(base::Move(shim_path_, nested_shim_path));
+  EXPECT_FALSE(base::PathExists(shim_path_));
+
+  auto_login_util_mock_->ResetCounts();
+  internals::DeleteAllShortcutsForProfile(info_->profile_path);
+  EXPECT_EQ(auto_login_util_mock_->GetRemoveFromLoginItemsCalledCount(), 1);
+  EXPECT_FALSE(base::PathExists(nested_shim_path));
+}
+
+TEST_F(WebAppShortcutCreatorTest,
+       BundleInfoPlistGetAllInPathOnlyReturnsAppBundles) {
+  const base::FilePath upper_case_bundle = destination_dir_.Append("Upper.APP");
+  const base::FilePath nested_bundle =
+      destination_dir_.Append("Folder").Append("Nested.app");
+  ASSERT_TRUE(WriteTestBundlePlist(upper_case_bundle, @{}));
+  ASSERT_TRUE(WriteTestBundlePlist(nested_bundle, @{}));
+  ASSERT_TRUE(base::CreateDirectory(
+      upper_case_bundle.Append("Contents").Append("Resources")));
+  ASSERT_TRUE(base::CreateDirectory(destination_dir_.Append(".localized")));
+
+  auto get_paths = [&](bool recursive) {
+    std::vector<base::FilePath> paths;
+    for (const BundleInfoPlist& info :
+         BundleInfoPlist::GetAllInPath(destination_dir_, recursive)) {
+      paths.push_back(info.bundle_path());
+    }
+    return paths;
+  };
+  EXPECT_THAT(get_paths(/*recursive=*/false),
+              ::testing::UnorderedElementsAre(upper_case_bundle));
+  EXPECT_THAT(
+      get_paths(/*recursive=*/true),
+      ::testing::UnorderedElementsAre(upper_case_bundle, nested_bundle));
+}
+
 TEST_F(WebAppShortcutCreatorTest, RunShortcut) {
   NiceMock<WebAppShortcutCreatorMock> shortcut_creator(app_data_dir_,
                                                        info_.get());
@@ -1005,6 +1063,177 @@ TEST_F(WebAppShortcutCreatorTest, RemoveAppShimFromLoginItems) {
   EXPECT_EQ(auto_login_util_mock_->GetRemoveFromLoginItemsCalledCount(), 1);
 
   EXPECT_TRUE(base::DeletePathRecursively(shim_path_));
+}
+
+TEST_F(WebAppShortcutCreatorTest, GetChromeAppsFolderNeverWrites) {
+  const base::FilePath localized_dir = destination_dir_.Append(".localized");
+
+  // An existing folder is returned, and no localization is written.
+  EXPECT_EQ(GetChromeAppsFolder(), destination_dir_);
+  EXPECT_FALSE(base::PathExists(localized_dir));
+
+  // Lookup and delete paths must not localize an existing folder. The
+  // once-per-process localization flag (reset in `SetUp()`) is still false, so
+  // a call to `GetOrCreateChromeAppsFolder()` here would write `.localized`.
+  EXPECT_EQ(internals::GetAppExistingShortCutLocationImpl(*info_)
+                .applications_menu_location,
+            APP_MENU_LOCATION_NONE);
+  internals::DeletePlatformShortcuts(
+      app_data_dir_, *info_, task_environment_.GetMainThreadTaskRunner(),
+      base::DoNothing());
+  internals::DeleteMultiProfileShortcutsForApp(info_->app_id);
+  internals::DeleteAllShortcutsForProfile(info_->profile_path);
+  RemoveAppShimFromLoginItems(info_->app_id);
+  EXPECT_FALSE(base::PathExists(localized_dir));
+
+  // A missing folder is reported as empty. The test override treats a deleted
+  // folder as invalid, so this part only checks that the update path handles
+  // an empty folder path.
+  ASSERT_TRUE(base::DeletePathRecursively(destination_dir_));
+  EXPECT_TRUE(GetChromeAppsFolder().empty());
+  internals::UpdatePlatformShortcuts(app_data_dir_, info_->title,
+                                     /*user_specified_locations=*/std::nullopt,
+                                     base::DoNothing(), *info_);
+  EXPECT_FALSE(base::PathExists(destination_dir_));
+}
+
+TEST_F(WebAppShortcutCreatorTest, UpdatePlatformShortcutsLocalizesFolder) {
+  const base::FilePath strings_file =
+      destination_dir_.Append(".localized").Append("en_US.strings");
+  EXPECT_EQ(GetChromeAppsFolder(), destination_dir_);
+  EXPECT_FALSE(base::PathExists(strings_file));
+
+  // The update path refreshes the localized name of an existing folder.
+  internals::UpdatePlatformShortcuts(app_data_dir_, info_->title,
+                                     /*user_specified_locations=*/std::nullopt,
+                                     base::DoNothing(), *info_);
+  EXPECT_TRUE(base::PathExists(strings_file));
+
+  // The name is set only once in each process.
+  ASSERT_TRUE(base::DeleteFile(strings_file));
+  internals::UpdatePlatformShortcuts(app_data_dir_, info_->title,
+                                     /*user_specified_locations=*/std::nullopt,
+                                     base::DoNothing(), *info_);
+  EXPECT_FALSE(base::PathExists(strings_file));
+}
+
+TEST_F(WebAppShortcutCreatorTest, BundleInfoPlistIsForCurrentUserDataDir) {
+  base::ScopedTempDir bundle_temp_dir;
+  ASSERT_TRUE(bundle_temp_dir.CreateUniqueTempDir());
+  const base::FilePath root = bundle_temp_dir.GetPath();
+
+  EXPECT_FALSE(
+      BundleInfoPlist(root.Append("Missing.app")).IsForCurrentUserDataDir());
+
+  const base::FilePath empty_key_bundle = root.Append("EmptyKey.app");
+  ASSERT_TRUE(WriteTestBundlePlist(empty_key_bundle, @{
+    app_mode::kCrAppModeUserDataDirKey : @"",
+  }));
+  EXPECT_FALSE(BundleInfoPlist(empty_key_bundle).IsForCurrentUserDataDir());
+
+  const base::FilePath exact_bundle = root.Append("Exact.app");
+  ASSERT_TRUE(WriteTestBundlePlist(exact_bundle, @{
+    app_mode::
+    kCrAppModeUserDataDirKey : base::apple::FilePathToNSString(user_data_dir_),
+  }));
+  EXPECT_TRUE(BundleInfoPlist(exact_bundle).IsForCurrentUserDataDir());
+
+  const base::FilePath subpath_bundle = root.Append("Subpath.app");
+  ASSERT_TRUE(WriteTestBundlePlist(subpath_bundle, @{
+    app_mode::
+    kCrAppModeUserDataDirKey : base::apple::FilePathToNSString(app_data_dir_),
+  }));
+  EXPECT_TRUE(BundleInfoPlist(subpath_bundle).IsForCurrentUserDataDir());
+
+  const base::FilePath beta_sibling =
+      base::FilePath(user_data_dir_.value() + " Beta");
+  const base::FilePath beta_bundle = root.Append("BetaSibling.app");
+  ASSERT_TRUE(WriteTestBundlePlist(beta_bundle, @{
+    app_mode::
+    kCrAppModeUserDataDirKey : base::apple::FilePathToNSString(beta_sibling),
+  }));
+  EXPECT_FALSE(BundleInfoPlist(beta_bundle).IsForCurrentUserDataDir());
+
+  const base::FilePath suffix_sibling =
+      base::FilePath(user_data_dir_.value() + "bar");
+  const base::FilePath suffix_bundle = root.Append("SuffixSibling.app");
+  ASSERT_TRUE(WriteTestBundlePlist(suffix_bundle, @{
+    app_mode::
+    kCrAppModeUserDataDirKey : base::apple::FilePathToNSString(suffix_sibling),
+  }));
+  EXPECT_FALSE(BundleInfoPlist(suffix_bundle).IsForCurrentUserDataDir());
+
+  const base::FilePath beta_subpath_bundle = root.Append("BetaSubpath.app");
+  ASSERT_TRUE(WriteTestBundlePlist(beta_subpath_bundle, @{
+    app_mode::kCrAppModeUserDataDirKey :
+        base::apple::FilePathToNSString(beta_sibling.Append("Profile 1")),
+  }));
+  EXPECT_FALSE(BundleInfoPlist(beta_subpath_bundle).IsForCurrentUserDataDir());
+
+  const base::FilePath trailing_slash_bundle = root.Append("TrailingSlash.app");
+  ASSERT_TRUE(WriteTestBundlePlist(trailing_slash_bundle, @{
+    app_mode::kCrAppModeUserDataDirKey :
+        base::apple::FilePathToNSString(user_data_dir_.AsEndingWithSeparator()),
+  }));
+  EXPECT_TRUE(BundleInfoPlist(trailing_slash_bundle).IsForCurrentUserDataDir());
+
+  const base::FilePath parent_ref_bundle = root.Append("ParentRef.app");
+  ASSERT_TRUE(WriteTestBundlePlist(parent_ref_bundle, @{
+    app_mode::kCrAppModeUserDataDirKey : base::apple::FilePathToNSString(
+        user_data_dir_.Append("..").Append("Chrome Beta")),
+  }));
+  EXPECT_FALSE(BundleInfoPlist(parent_ref_bundle).IsForCurrentUserDataDir());
+
+  const base::FilePath non_string_bundle = root.Append("NonString.app");
+  ASSERT_TRUE(WriteTestBundlePlist(
+      non_string_bundle, @{
+        app_mode::kCrAppModeUserDataDirKey : @123,
+      }));
+  EXPECT_FALSE(BundleInfoPlist(non_string_bundle).IsForCurrentUserDataDir());
+}
+
+TEST_F(WebAppShortcutCreatorTest, BundleInfoPlistNonStringValues) {
+  base::ScopedTempDir bundle_temp_dir;
+  ASSERT_TRUE(bundle_temp_dir.CreateUniqueTempDir());
+  const base::FilePath bundle = bundle_temp_dir.GetPath().Append("Bad.app");
+  ASSERT_TRUE(WriteTestBundlePlist(
+      bundle, @{
+        base::apple::CFToNSPtrCast(kCFBundleIdentifierKey) : @1,
+        app_mode::kCrAppModeUserDataDirKey : @2,
+        app_mode::kCrAppModeProfileDirKey : @3,
+        app_mode::kCrAppModeShortcutIDKey : @4,
+        app_mode::kCrAppModeProfileNameKey : @5,
+        app_mode::kCrAppModeShortcutURLKey : @6,
+        app_mode::kCrAppModeShortcutNameKey : @7,
+        app_mode::kCrBundleVersionKey : @8,
+      }));
+
+  BundleInfoPlist info(bundle);
+  EXPECT_TRUE(info.GetBundleId().empty());
+  EXPECT_FALSE(info.IsForCurrentUserDataDir());
+  EXPECT_FALSE(info.IsForProfile(user_data_dir_.Append("Profile 1")));
+  EXPECT_TRUE(info.GetExtensionId().empty());
+  EXPECT_TRUE(info.GetProfileName().empty());
+  EXPECT_FALSE(info.GetURL().is_valid());
+  EXPECT_TRUE(info.GetTitle().empty());
+  EXPECT_FALSE(info.GetVersion().IsValid());
+}
+
+TEST_F(WebAppShortcutCreatorTest, BundleInfoPlistIsPathInTrash) {
+  EXPECT_TRUE(
+      BundleInfoPlist::GetAllInPath(base::FilePath(), /*recursive=*/false)
+          .empty());
+
+  // The component check does not need the bundle to exist on disk.
+  EXPECT_TRUE(BundleInfoPlist::IsPathInTrash(
+      destination_dir_.Append(".Trash").Append("Trashed.app")));
+  EXPECT_TRUE(BundleInfoPlist::IsPathInTrash(
+      destination_dir_.Append(".Trashes").Append("VolumeTrashed.app")));
+  EXPECT_FALSE(BundleInfoPlist::IsPathInTrash(base::FilePath()));
+
+  const base::FilePath active_bundle = destination_dir_.Append("Active.app");
+  ASSERT_TRUE(base::CreateDirectory(active_bundle));
+  EXPECT_FALSE(BundleInfoPlist::IsPathInTrash(active_bundle));
 }
 
 }  // namespace web_app

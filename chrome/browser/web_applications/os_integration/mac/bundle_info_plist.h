@@ -25,16 +25,24 @@ namespace web_app {
 // Data and helpers for an Info.plist under a given bundle path.
 class BundleInfoPlist {
  public:
-  // Retrieve info from all app shims found in `apps_path`.
+  // Retrieve info from all `.app` bundles found in `apps_path`. Other
+  // directories are skipped. If `recursive` is true, this also searches
+  // subdirectories.
   static std::list<BundleInfoPlist> GetAllInPath(
       const base::FilePath& apps_path,
       bool recursive);
 
   // Return all bundles with the specified `bundle_id` which are for the current
   // user data dir, also including all app shims found in `apps_path`.
+  // LaunchServices matches inside macOS Trash are skipped before their
+  // `Info.plist` is read.
   static std::list<BundleInfoPlist> SearchForBundlesById(
       const std::string& bundle_id,
       const base::FilePath& apps_path);
+
+  // Returns true if `bundle_path` is located inside macOS Trash. Does not read
+  // any file inside the bundle.
+  static bool IsPathInTrash(const base::FilePath& bundle_path);
 
   // Retrieve info from the specified app shim in `bundle_path`.
   explicit BundleInfoPlist(const base::FilePath& bundle_path);
@@ -44,18 +52,14 @@ class BundleInfoPlist {
 
   const base::FilePath& bundle_path() const { return bundle_path_; }
 
-  // Checks that the CrAppModeUserDataDir in the Info.plist is, or is a subpath
-  // of the current user_data_dir. This uses starts with instead of equals
-  // because the CrAppModeUserDataDir could be the user_data_dir or the
-  // app data dir (which would be a subdirectory of the user_data_dir).
+  // Checks that the `CrAppModeUserDataDir` in the `Info.plist` is equal to or a
+  // subdirectory of the current `user_data_dir`. Returns false if the value
+  // references a parent directory.
   bool IsForCurrentUserDataDir() const;
 
   // Checks if kCrAppModeProfileDirKey corresponds to the specified profile
   // path.
   bool IsForProfile(const base::FilePath& test_profile_path) const;
-
-  // Return the full profile path (as a subpath of the user_data_dir).
-  base::FilePath GetFullProfilePath() const;
 
   std::string GetExtensionId() const;
   std::string GetProfileName() const;

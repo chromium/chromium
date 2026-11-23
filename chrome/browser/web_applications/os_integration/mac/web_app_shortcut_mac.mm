@@ -19,6 +19,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/strcat.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/task/task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/web_applications/os_integration/mac/apps_folder_support.h"
@@ -45,12 +46,37 @@ bool AppShimCreationAndLaunchDisabledForTest() {
 void RemoveAppShimFromLoginItems(const std::string& app_id) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
+  // If this is set, then keeping this as a local variable ensures it is not
+  // destroyed while we use state from it (retrieved in
+  // `GetChromeAppsFolder()`).
+  scoped_refptr<OsIntegrationTestOverride> test_override =
+      web_app::OsIntegrationTestOverride::Get();
   const std::string bundle_id = GetBundleIdentifierForShim(app_id);
   auto bundle_infos =
       BundleInfoPlist::SearchForBundlesById(bundle_id, GetChromeAppsFolder());
   for (const auto& bundle_info : bundle_infos) {
     WebAppAutoLoginUtil::GetInstance()->RemoveFromLoginItems(
         bundle_info.bundle_path());
+  }
+
+  // LaunchServices is global to the host, and this loop cannot filter by user
+  // data dir. Skip it in tests so that they do not depend on host state.
+  if (test_override) {
+    CHECK_IS_TEST();
+    return;
+  }
+
+  // `SearchForBundlesById()` skips bundles in macOS Trash, and macOS can deny
+  // reads of their `Info.plist`. Remove Login Items that point into Trash by
+  // path only, without reading any file inside the bundle.
+  NSArray<NSURL*>* bundle_urls = [NSWorkspace.sharedWorkspace
+      URLsForApplicationsWithBundleIdentifier:base::SysUTF8ToNSString(
+                                                  bundle_id)];
+  for (NSURL* url in bundle_urls) {
+    base::FilePath bundle_path = base::apple::NSURLToFilePath(url);
+    if (BundleInfoPlist::IsPathInTrash(bundle_path)) {
+      WebAppAutoLoginUtil::GetInstance()->RemoveFromLoginItems(bundle_path);
+    }
   }
 }
 
@@ -73,6 +99,11 @@ namespace {
 base::FilePath FindInstalledAppPath(const std::string& app_id) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
+  // If this is set, then keeping this as a local variable ensures it is not
+  // destroyed while we use state from it (retrieved in
+  // `GetChromeAppsFolder()`).
+  scoped_refptr<OsIntegrationTestOverride> test_override =
+      web_app::OsIntegrationTestOverride::Get();
   std::string bundle_id = GetBundleIdentifierForShim(app_id);
   auto bundles =
       BundleInfoPlist::SearchForBundlesById(bundle_id, GetChromeAppsFolder());
@@ -133,7 +164,7 @@ void CreatePlatformShortcuts(const base::FilePath& app_data_path,
                                                 base::BlockingType::MAY_BLOCK);
   // If this is set, then keeping this as a local variable ensures it is not
   // destroyed while we use state from it (retrieved in
-  // `GetChromeAppsFolder()`).
+  // `GetOrCreateChromeAppsFolder()`).
   scoped_refptr<OsIntegrationTestOverride> test_override =
       web_app::OsIntegrationTestOverride::Get();
   if (AppShimCreationAndLaunchDisabledForTest()) {
@@ -143,8 +174,8 @@ void CreatePlatformShortcuts(const base::FilePath& app_data_path,
 
   bool created_shortcuts = false;
   {
-    WebAppShortcutCreator shortcut_creator(app_data_path, GetChromeAppsFolder(),
-                                           &shortcut_info);
+    WebAppShortcutCreator shortcut_creator(
+        app_data_path, GetOrCreateChromeAppsFolder(), &shortcut_info);
     created_shortcuts =
         shortcut_creator.CreateShortcuts(creation_reason, creation_locations);
 
@@ -166,12 +197,12 @@ ShortcutLocations GetAppExistingShortCutLocationImpl(
       web_app::OsIntegrationTestOverride::Get();
 
   bool has_shortcuts = false;
+  const base::FilePath apps_folder = GetChromeAppsFolder();
   const std::string bundle_id = GetBundleIdentifierForShim(
       shortcut_info.app_id, shortcut_info.is_multi_profile
                                 ? base::FilePath()
                                 : shortcut_info.profile_path);
-  if (!BundleInfoPlist::SearchForBundlesById(bundle_id, GetChromeAppsFolder())
-           .empty()) {
+  if (!BundleInfoPlist::SearchForBundlesById(bundle_id, apps_folder).empty()) {
     has_shortcuts = true;
   } else if (shortcut_info.is_multi_profile) {
     // If in multi-profile mode, search using the profile-scoped bundle id, in
@@ -179,7 +210,7 @@ ShortcutLocations GetAppExistingShortCutLocationImpl(
     const std::string profile_scoped_bundle_id = GetBundleIdentifierForShim(
         shortcut_info.app_id, shortcut_info.profile_path);
     has_shortcuts = !BundleInfoPlist::SearchForBundlesById(
-                         profile_scoped_bundle_id, GetChromeAppsFolder())
+                         profile_scoped_bundle_id, apps_folder)
                          .empty();
   }
 
@@ -259,7 +290,14 @@ void UpdatePlatformShortcuts(
     return;
   }
 
-  WebAppShortcutCreator shortcut_creator(app_data_path, GetChromeAppsFolder(),
+  // Updates never create a new shim, so do not create an empty Chrome Apps
+  // folder either. Refresh the localized name and icon of an existing folder.
+  // If the user deletes the folder between these two calls, the refresh can
+  // create it again (only before the first successful localization in a
+  // process), which is acceptable.
+  const base::FilePath chrome_apps_folder = GetChromeAppsFolder();
+  UpdateChromeAppsFolderLocalizationIfNeeded(chrome_apps_folder);
+  WebAppShortcutCreator shortcut_creator(app_data_path, chrome_apps_folder,
                                          &shortcut_info);
   std::vector<base::FilePath> updated_shim_paths;
   Result result = (shortcut_creator.UpdateShortcuts(/*create_if_needed=*/false,

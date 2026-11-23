@@ -209,8 +209,14 @@ void LaunchShimOnFileThread(LaunchShimUpdateBehavior update_behavior,
   {
     // Nested scope ensures that `shortcut_creator` is destroyed before the
     // `shortcut_info` it references.
+    // Only `kRecreateUnconditionally` can create a new shim, so only that case
+    // can create the Chrome Apps folder.
+    const base::FilePath chrome_apps_folder =
+        update_behavior == LaunchShimUpdateBehavior::kRecreateUnconditionally
+            ? GetOrCreateChromeAppsFolder()
+            : GetChromeAppsFolder();
     WebAppShortcutCreator shortcut_creator(
-        internals::GetShortcutDataDir(*shortcut_info), GetChromeAppsFolder(),
+        internals::GetShortcutDataDir(*shortcut_info), chrome_apps_folder,
         shortcut_info.get());
 
     // Recreate shims if requested, and populate |shim_paths| with the paths

@@ -9,14 +9,29 @@
 
 namespace web_app {
 
-// Returns a path to the Chrome Apps folder in ~/Applications. If the folder
-// does not already exist it is created. Also makes sure the icon and localized
-// name of this folder are set correctly the first time this method is called.
+// Returns the path to the Chrome Apps folder in `~/Applications` if the folder
+// exists, or an empty path otherwise. Never writes to disk. Use this for
+// lookup, update, launch, and delete.
 base::FilePath GetChromeAppsFolder();
 
-// Normally GetChromeAppsFolder only updates localized folder name and icon the
-// first time it is called. Tests can call this method to cause the name and
-// icon logic to trigger again.
+// Returns the path to the Chrome Apps folder in `~/Applications`. Creates
+// `~/Applications` and the Chrome Apps folder if they are missing. Returns an
+// empty path if `~/Applications` is not writable. If creating the Chrome Apps
+// folder fails, this still returns the path so callers can update shims in
+// other locations and report the copy error. Use this only on paths that can
+// create a new app shim.
+base::FilePath GetOrCreateChromeAppsFolder();
+
+// Sets the localized name and icon of `chrome_apps_folder` the first time it is
+// called in a process. Does nothing if `chrome_apps_folder` is empty. The first
+// successful call creates the folder if it is missing, so pass only a folder
+// that exists or that the caller is allowed to create.
+void UpdateChromeAppsFolderLocalizationIfNeeded(
+    const base::FilePath& chrome_apps_folder);
+
+// Normally the localized folder name and icon are updated only once in each
+// process. Tests can call this method to cause the name and icon logic to
+// trigger again.
 void ResetHaveLocalizedAppDirNameForTesting();
 
 }  // namespace web_app

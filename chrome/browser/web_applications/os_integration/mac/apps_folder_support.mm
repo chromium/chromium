@@ -54,40 +54,27 @@ base::FilePath GetLocalizableAppShortcutsSubdirName() {
   }
 }
 
-base::FilePath GetWritableApplicationsDirectory() {
+// Returns `~/Applications`, or an empty path on failure. If `create_if_missing`
+// is true, creates the folder if it is missing and requires it to be writable.
+// Otherwise, creates nothing and does not check that the folder is writable.
+base::FilePath GetApplicationsDirectory(bool create_if_missing) {
   base::FilePath path;
-  if (base::apple::GetUserDirectory(NSApplicationDirectory, &path)) {
-    if (!base::DirectoryExists(path)) {
-      if (!base::CreateDirectory(path)) {
-        return base::FilePath();
-      }
-
-      // Create a zero-byte ".localized" file to inherit localizations from
-      // macOS for folders that have special meaning.
-      base::WriteFile(path.Append(".localized"), "");
-    }
-    return base::PathIsWritable(path) ? path : base::FilePath();
-  }
-  return base::FilePath();
-}
-
-base::FilePath GetChromeAppsFolderImpl() {
-  scoped_refptr<OsIntegrationTestOverride> os_override =
-      OsIntegrationTestOverride::Get();
-  if (os_override) {
-    CHECK_IS_TEST();
-    if (os_override->IsChromeAppsValid()) {
-      return os_override->chrome_apps_folder();
-    }
+  if (!base::apple::GetUserDirectory(NSApplicationDirectory, &path)) {
     return base::FilePath();
   }
-
-  base::FilePath path = GetWritableApplicationsDirectory();
-  if (path.empty()) {
+  if (!create_if_missing) {
     return path;
   }
+  if (!base::DirectoryExists(path)) {
+    if (!base::CreateDirectory(path)) {
+      return base::FilePath();
+    }
 
-  return path.Append(GetLocalizableAppShortcutsSubdirName());
+    // Create a zero-byte ".localized" file to inherit localizations from
+    // macOS for folders that have special meaning.
+    base::WriteFile(path.Append(".localized"), "");
+  }
+  return base::PathIsWritable(path) ? path : base::FilePath();
 }
 
 void SetWorkspaceIconOnWorkerThread(const base::FilePath& apps_directory,
@@ -136,26 +123,65 @@ bool UpdateAppShortcutsSubdirLocalizedName(
   return true;
 }
 
+// The shared implementation of `GetChromeAppsFolder()` and
+// `GetOrCreateChromeAppsFolder()`.
+base::FilePath GetChromeAppsFolderImpl(bool create_if_missing) {
+  base::FilePath path;
+  scoped_refptr<OsIntegrationTestOverride> os_override =
+      OsIntegrationTestOverride::Get();
+  if (os_override) {
+    CHECK_IS_TEST();
+    if (!os_override->IsChromeAppsValid()) {
+      return base::FilePath();
+    }
+    path = os_override->chrome_apps_folder();
+  } else {
+    base::FilePath applications_dir =
+        GetApplicationsDirectory(create_if_missing);
+    if (applications_dir.empty()) {
+      return base::FilePath();
+    }
+    path = applications_dir.Append(GetLocalizableAppShortcutsSubdirName());
+  }
+
+  if (!create_if_missing) {
+    return base::DirectoryExists(path) ? path : base::FilePath();
+  }
+
+  // Create the folder here, because the localization below creates it only
+  // until it succeeds once in a process. On failure, still return the path,
+  // so that `WebAppShortcutCreator` can update shims in other locations and
+  // report the error when it copies a new shim.
+  if (!base::CreateDirectory(path)) {
+    LOG(ERROR) << "Failed to create " << path;
+  }
+  UpdateChromeAppsFolderLocalizationIfNeeded(path);
+  return path;
+}
+
 }  // namespace
 
 base::FilePath GetChromeAppsFolder() {
-  base::FilePath path = GetChromeAppsFolderImpl();
+  return GetChromeAppsFolderImpl(/*create_if_missing=*/false);
+}
 
-  if (path.empty()) {
-    return path;
+base::FilePath GetOrCreateChromeAppsFolder() {
+  return GetChromeAppsFolderImpl(/*create_if_missing=*/true);
+}
+
+void UpdateChromeAppsFolderLocalizationIfNeeded(
+    const base::FilePath& chrome_apps_folder) {
+  if (chrome_apps_folder.empty()) {
+    return;
   }
-
   // Only set folder icons and a localized name once, as nothing should be
   // changing the folder icon and name.
   if (!g_have_localized_app_dir_name.load()) {
     g_have_localized_app_dir_name.store(
-        UpdateAppShortcutsSubdirLocalizedName(path));
+        UpdateAppShortcutsSubdirLocalizedName(chrome_apps_folder));
   }
-  if (!g_have_localized_app_dir_name.load()) {
-    LOG(ERROR) << "Failed to localize " << path;
-  }
-
-  return path;
+  LOG_IF(ERROR, !g_have_localized_app_dir_name.load())
+      << "Failed to localize " << chrome_apps_folder;
 }
 
 void ResetHaveLocalizedAppDirNameForTesting() {
