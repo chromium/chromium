@@ -6,8 +6,11 @@ package org.chromium.chrome.browser.history;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 
 import static org.chromium.chrome.browser.history.FilterSheetCoordinator.MAX_SHEET_HEIGHT_RATIO;
 import static org.chromium.chrome.browser.history.FilterSheetCoordinator.MAX_VISIBLE_ITEM_COUNT;
@@ -15,7 +18,9 @@ import static org.chromium.chrome.browser.history.FilterSheetCoordinator.MAX_VIS
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -23,12 +28,15 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.history.FilterSheetCoordinator.FilterItem;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -66,6 +74,7 @@ public class FilterSheetCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BottomSheetController mBottomSheetController;
+    @Captor private ArgumentCaptor<BottomSheetContent> mContentCaptor;
     private TestActivity mActivity;
     private FilterSheetCoordinator<String> mFilterSheet;
     private FilterItem<String> mCurrentItem;
@@ -274,5 +283,24 @@ public class FilterSheetCoordinatorTest {
         model.set(FilterSheetProperties.SELECTED, false);
         assertEquals(View.INVISIBLE, checkMark.getVisibility());
         assertFalse(rowView.isSelected());
+    }
+
+    @Test
+    public void testBuiltInHandlebar() {
+        mFilterSheet.openSheet(null);
+        verify(mBottomSheetController).requestShowContent(mContentCaptor.capture(), eq(true));
+
+        BottomSheetContent sheetContent = mContentCaptor.getValue();
+        assertTrue(sheetContent.showHandlebar());
+
+        ViewGroup toolbarView = (ViewGroup) sheetContent.getToolbarView();
+        assertNotNull(toolbarView);
+        assertEquals(1, toolbarView.getChildCount());
+        TextView titleView = toolbarView.findViewById(R.id.filter_header_title);
+        assertNotNull(titleView);
+        assertEquals(titleView, toolbarView.getChildAt(0));
+        assertEquals(
+                mActivity.getString(R.string.history_filter_by_app),
+                titleView.getText().toString());
     }
 }

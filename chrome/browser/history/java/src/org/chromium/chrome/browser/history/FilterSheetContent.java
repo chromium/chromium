@@ -80,6 +80,11 @@ class FilterSheetContent implements BottomSheetContent {
     }
 
     @Override
+    public boolean showHandlebar() {
+        return true;
+    }
+
+    @Override
     public float getHalfHeightRatio() {
         return BottomSheetContent.HeightMode.DISABLED;
     }

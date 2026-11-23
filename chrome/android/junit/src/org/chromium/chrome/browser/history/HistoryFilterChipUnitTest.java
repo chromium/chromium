@@ -280,7 +280,10 @@ public class HistoryFilterChipUnitTest {
         chipView.performClick();
         verify(mBottomSheetController).requestShowContent(sheetCaptor.capture(), eq(true));
         TextView sheetHeader =
-                (TextView) ((ViewGroup) sheetCaptor.getValue().getToolbarView()).getChildAt(1);
+                sheetCaptor
+                        .getValue()
+                        .getToolbarView()
+                        .findViewById(org.chromium.chrome.browser.history.R.id.filter_header_title);
         assertEquals(
                 mActivity.getString(R.string.history_actor_filter_sheet_header),
                 sheetHeader.getText().toString());
