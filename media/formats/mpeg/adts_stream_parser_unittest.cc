@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "media/base/test_data_util.h"
 #include "media/formats/common/stream_parser_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -92,6 +93,20 @@ TEST_F(ADTSStreamParserTest, ChannelLayoutMapping) {
     EXPECT_EQ(header->channel_layout, test_case.expected_layout)
         << "Mismatch for channel_config " << test_case.channel_config;
   }
+}
+
+TEST_F(ADTSStreamParserTest, HasUnparsedData) {
+  scoped_refptr<DecoderBuffer> adts = ReadTestDataFile("sfx.adts");
+  base::span<const uint8_t> adts_bytes(*adts);
+
+  ParseData(adts_bytes);
+  EXPECT_FALSE(HasUnparsedData());
+
+  ParseData(adts_bytes.first(20u));
+  EXPECT_TRUE(HasUnparsedData());
+
+  FlushParser();
+  EXPECT_FALSE(HasUnparsedData());
 }
 
 }  // namespace media

@@ -56,6 +56,9 @@ class StreamParserTestBase {
     return last_audio_config_;
   }
 
+  bool HasUnparsedData() const { return parser_->HasUnparsedData(); }
+  void FlushParser() { parser_->Flush(); }
+
  private:
   bool AppendAllDataThenParseInPieces(base::span<const uint8_t> data,
                                       size_t piece_size);

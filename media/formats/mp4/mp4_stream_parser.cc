@@ -328,6 +328,19 @@ StreamParser::ParseStatus MP4StreamParser::Parse(
   return ParseStatus::kSuccess;
 }
 
+bool MP4StreamParser::HasUnparsedData() const {
+  switch (state_) {
+    case kWaitingForInit:
+    case kError:
+      return false;
+    case kParsingBoxes:
+      return !queue_.Data().empty();
+    case kWaitingForSampleData:
+    case kEmittingSamples:
+      return true;
+  }
+}
+
 base::span<const uint8_t> MP4StreamParser::ModulatedPeek() {
   auto result = queue_.Data();
   if (result.empty()) {

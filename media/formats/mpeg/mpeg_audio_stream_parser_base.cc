@@ -219,6 +219,10 @@ StreamParser::ParseStatus MPEGAudioStreamParserBase::Parse(
   return ParseStatus::kFailed;
 }
 
+bool MPEGAudioStreamParserBase::HasUnparsedData() const {
+  return state_ == INITIALIZED && !queue_.Data().empty();
+}
+
 void MPEGAudioStreamParserBase::ChangeState(State state) {
   DVLOG(1) << __func__ << "() : " << state_ << " -> " << state;
   state_ = state;

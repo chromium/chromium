@@ -71,6 +71,7 @@ class MEDIA_EXPORT MPEGAudioStreamParserBase : public StreamParser {
   [[nodiscard]] bool AppendToParseBuffer(
       base::span<const uint8_t> buf) override;
   [[nodiscard]] ParseStatus Parse(int max_pending_bytes_to_inspect) override;
+  bool HasUnparsedData() const override;
 
  protected:
   // Converts a Rust FFI header info struct into the C++ parser Header struct.

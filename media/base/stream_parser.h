@@ -184,6 +184,11 @@ class MEDIA_EXPORT StreamParser {
   [[nodiscard]] virtual ParseStatus Parse(int max_pending_bytes_to_inspect) = 0;
   [[nodiscard]] virtual bool ProcessChunks(
       std::unique_ptr<BufferQueue> buffer_queue);
+
+  // Returns true if the parser still holds unparsed or incomplete container
+  // units (such as a partial MP4 box, partial TS packet/header, or partial
+  // audio frame) after Parse() has finished inspecting all appended bytes.
+  virtual bool HasUnparsedData() const;
 };
 
 // Appends to |merged_buffers| the provided buffers in decode-timestamp order.

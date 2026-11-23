@@ -123,4 +123,26 @@ TEST_F(MPEG1AudioStreamParserTest, MetadataParsing) {
   EXPECT_TRUE(last_audio_config().IsValidConfig());
 }
 
+TEST_F(MPEG1AudioStreamParserTest, HasUnparsedData) {
+  scoped_refptr<DecoderBuffer> mp3 = ReadTestDataFile("sfx.mp3");
+  base::span<const uint8_t> mp3_bytes(*mp3);
+
+  ParseData(mp3_bytes);
+  EXPECT_FALSE(HasUnparsedData());
+
+  // Partial ID3v2 tag (first 16 bytes of the 32-byte tag).
+  ParseData(mp3_bytes.first(16u));
+  EXPECT_TRUE(HasUnparsedData());
+
+  FlushParser();
+  EXPECT_FALSE(HasUnparsedData());
+
+  // Partial MP3 frame (skip 32-byte ID3v2 tag, append truncated Xing frame).
+  ParseData(mp3_bytes.subspan(32u, 20u));
+  EXPECT_TRUE(HasUnparsedData());
+
+  FlushParser();
+  EXPECT_FALSE(HasUnparsedData());
+}
+
 }  // namespace media

@@ -1564,5 +1564,26 @@ TEST_F(MP4StreamParserTest, IamfChannelLayout) {
 }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO) || ...
 
+TEST_F(MP4StreamParserTest, HasUnparsedData) {
+  EXPECT_FALSE(parser_->HasUnparsedData());
+  InitializeParser();
+  scoped_refptr<DecoderBuffer> buffer =
+      ReadTestDataFile("bear-1280x720-av_frag.mp4");
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(*buffer, 512));
+  EXPECT_FALSE(parser_->HasUnparsedData());
+
+  constexpr uint8_t kTruncatedMoof[] = {
+      0x00, 0x00, 0x01, 0x00,  // box size = 256
+      'm',  'o',  'o',  'f',   // box type = moof
+      0x00, 0x00, 0x00, 0x10,  // partial mfhd
+      'm',  'f',  'h',  'd',
+  };
+  EXPECT_TRUE(AppendAllDataThenParseInPieces(kTruncatedMoof, 512));
+  EXPECT_TRUE(parser_->HasUnparsedData());
+
+  parser_->Flush();
+  EXPECT_FALSE(parser_->HasUnparsedData());
+}
+
 }  // namespace mp4
 }  // namespace media

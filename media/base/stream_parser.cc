@@ -22,6 +22,10 @@ bool StreamParser::ProcessChunks(std::unique_ptr<BufferQueue> buffer_queue) {
   return false;
 }
 
+bool StreamParser::HasUnparsedData() const {
+  return false;
+}
+
 static bool MergeBufferQueuesInternal(
     const std::vector<const StreamParser::BufferQueue*>& buffer_queues,
     StreamParser::BufferQueue* merged_buffers) {
