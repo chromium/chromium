@@ -1,0 +1,12 @@
+Test that parallel fetches in worker should not cause crash.
+Parallel fetch in worker result: ["<!DOCTYPE html>\n<body>\n  <h1>hello world</h1>\n</body>\n","<!DOCTYPE html>\n<body>\n  <h1>hello world</h1>\n</body>\n"]
+http://127.0.0.1:8000/inspector-protocol/network/resources/fetch-parallel-worker.js
+resource.type: Script
+request.failed: false
+http://127.0.0.1:8000/inspector-protocol/network/resources/hello-world.html?1
+resource.type: Fetch
+request.failed: false
+http://127.0.0.1:8000/inspector-protocol/network/resources/hello-world.html?2
+resource.type: Fetch
+request.failed: false
+
