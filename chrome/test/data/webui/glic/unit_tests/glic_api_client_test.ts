@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {DrivePickerErrorReason as DrivePickerErrorReasonMojo} from '//webui-test/glic/glic.mojom-webui.js';
-import {DrivePickerErrorReason} from '//webui-test/glic/glic_api/glic_api.js';
+import {DrivePickerErrorReason as DrivePickerErrorReasonMojo, HostCapability as HostCapabilityMojo} from '//webui-test/glic/glic.mojom-webui.js';
+import type {WebClientHandlerRemote, WebClientInitialState} from '//webui-test/glic/glic.mojom-webui.js';
+import {DrivePickerErrorReason, ExecuteToolErrorReason} from '//webui-test/glic/glic_api/glic_api.js';
 import {driveFileSelectionToClient, drivePickerOptionsFromClient, drivePickerResultToClient, numberToClient} from '//webui-test/glic/glic_api_impl/conversions.js';
 import {GlicBrowserHostImpl, GlicClientStorageImpl} from '//webui-test/glic/glic_api_impl/glic_api_client.js';
 import type {ClientStorageHandler} from '//webui-test/glic/glic_api_impl/glic_api_client.js';
 import {TabObservable, TabObservableSet} from '//webui-test/glic/glic_api_impl/observable_set_by_tab_id.js';
+import {GlicBrowserHostTools} from '//webui-test/glic/glic_api_impl/tools/tools_client.js';
+import {AiOverlayToolsReceiver} from '//webui-test/glic/tools.mojom-webui.js';
+import type {AiOverlayToolsInterface, AiOverlayToolsPendingReceiver} from '//webui-test/glic/tools.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertNotEquals, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {sleep, waitUntilEqual} from './test_helpers.js';
@@ -715,4 +719,112 @@ suite('DrivePickerApiClient', () => {
     assertDeepEquals(
         result, {errorReason: DrivePickerErrorReason.ACCOUNT_MISMATCH});
   });
+});
+
+suite('GlicBrowserHostTools', () => {
+  function makeInitialState(enableTools: boolean): WebClientInitialState {
+    return {
+      hostCapabilities: enableTools ? [HostCapabilityMojo.kChromeTools] : [],
+    } as unknown as WebClientInitialState;
+  }
+
+  function createFakeToolsEnv() {
+    let createCalls = 0;
+    let goBackCalls = 0;
+    let goForwardCalls = 0;
+    const receivers: AiOverlayToolsReceiver[] = [];
+
+    const stub = new Proxy({}, {
+                   get(_target, prop) {
+                     return () => {
+                       if (prop === 'goBack') {
+                         goBackCalls++;
+                       } else if (prop === 'goForward') {
+                         goForwardCalls++;
+                       }
+                       return Promise.resolve({});
+                     };
+                   },
+                 }) as unknown as AiOverlayToolsInterface;
+
+    const handler = {
+      createAiOverlayTools(receiver: AiOverlayToolsPendingReceiver) {
+        createCalls++;
+        const bound = new AiOverlayToolsReceiver(stub);
+        bound.$.bindHandle(receiver.handle);
+        receivers.push(bound);
+      },
+    } as unknown as WebClientHandlerRemote;
+
+    return {
+      handler,
+      getCreateCalls: () => createCalls,
+      getGoBackCalls: () => goBackCalls,
+      getGoForwardCalls: () => goForwardCalls,
+      closeAllReceivers: () => {
+        for (const r of receivers) {
+          r.$.close();
+        }
+      },
+    };
+  }
+
+  test('defers Mojo pipe binding until first valid executeTool', async () => {
+    const env = createFakeToolsEnv();
+    const hostTools = new GlicBrowserHostTools();
+    hostTools.initialize(makeInitialState(true), env.handler);
+
+    assertTrue(Boolean(hostTools.tools));
+    const toolsHost = hostTools.tools!();
+    const tools = await toolsHost.getChromeTools!();
+    assertTrue(Boolean(tools && tools.length > 0));
+    assertEquals(0, env.getCreateCalls());
+
+    const unknownRes = await toolsHost.executeTool!('nonexistent_tool', '{}');
+    assertEquals(ExecuteToolErrorReason.TOOL_NOT_FOUND, unknownRes.errorReason);
+    assertEquals(0, env.getCreateCalls());
+
+    const badJsonRes = await toolsHost.executeTool!('go_back', '{invalid');
+    assertEquals(
+        ExecuteToolErrorReason.INVALID_ARGUMENTS, badJsonRes.errorReason);
+    assertEquals(0, env.getCreateCalls());
+
+    const nullJsonRes = await toolsHost.executeTool!('go_back', 'null');
+    assertEquals(
+        ExecuteToolErrorReason.INVALID_ARGUMENTS, nullJsonRes.errorReason);
+    assertEquals(0, env.getCreateCalls());
+
+    const missingArgRes = await toolsHost.executeTool!('perform_search', '{}');
+    assertEquals(
+        ExecuteToolErrorReason.INVALID_ARGUMENTS, missingArgRes.errorReason);
+    assertEquals(0, env.getCreateCalls());
+
+    const [res1, res2] = await Promise.all([
+      toolsHost.executeTool!('go_back', '{}'),
+      toolsHost.executeTool!('go_forward', '{}'),
+    ]);
+    assertEquals('{}', res1.result);
+    assertEquals('{}', res2.result);
+    assertEquals(1, env.getCreateCalls());
+    assertEquals(1, env.getGoBackCalls());
+    assertEquals(1, env.getGoForwardCalls());
+
+    env.closeAllReceivers();
+  });
+
+  test(
+      'returns undefined and disables tools when capability is absent',
+      async () => {
+        const env = createFakeToolsEnv();
+        const hostTools = new GlicBrowserHostTools();
+        const preInitToolsHost = hostTools.tools!();
+
+        hostTools.initialize(makeInitialState(false), env.handler);
+        assertEquals(undefined, hostTools.tools);
+        assertEquals(undefined, await preInitToolsHost.getChromeTools!());
+
+        const res = await preInitToolsHost.executeTool!('go_back', '{}');
+        assertEquals(ExecuteToolErrorReason.EXECUTION_FAILED, res.errorReason);
+        assertEquals(0, env.getCreateCalls());
+      });
 });

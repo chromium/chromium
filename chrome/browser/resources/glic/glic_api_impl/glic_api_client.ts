@@ -313,7 +313,6 @@ export class GlicBrowserHostImpl implements GlicBrowserHost,
     this.pinCandidates?.setObsolete();
     this.actorClient.destroyActor();
     this.skillsClient.destroySkills();
-    this.toolsClient.destroyTools();
     this.annotationClient.destroyAnnotation();
     this.geicClient.destroy();
     this.suggestionsClient.destroySuggestions();

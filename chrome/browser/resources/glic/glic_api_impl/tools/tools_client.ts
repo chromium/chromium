@@ -58,9 +58,14 @@ function requireBoolean(args: Record<string, unknown>, key: string): boolean {
 }
 
 class GlicToolsHostImpl implements GlicToolsHost {
-  constructor(private toolsRemote: AiOverlayToolsRemote) {}
+  constructor(
+      private isAvailable: () => boolean,
+      private getToolsRemote: () => AiOverlayToolsRemote) {}
 
   async getChromeTools(): Promise<ChromeTool[]|undefined> {
+    if (!this.isAvailable()) {
+      return undefined;
+    }
     const parsedDefs = JSON.parse(kBuiltInToolDefinitions) as Array<{
                          functionDeclarations?: Array<{
                                                name: string,
@@ -94,7 +99,15 @@ class GlicToolsHostImpl implements GlicToolsHost {
     let args: Record<string, unknown> = {};
     if (jsonArguments && jsonArguments.trim() !== '') {
       try {
-        args = JSON.parse(jsonArguments) as Record<string, unknown>;
+        const parsed: unknown = JSON.parse(jsonArguments);
+        if (typeof parsed !== 'object' || parsed === null ||
+            Array.isArray(parsed)) {
+          return {
+            errorReason: ExecuteToolErrorReason.INVALID_ARGUMENTS,
+            scheduling: ChromeToolResponseScheduling.UNSPECIFIED,
+          };
+        }
+        args = parsed as Record<string, unknown>;
       } catch {
         return {
           errorReason: ExecuteToolErrorReason.INVALID_ARGUMENTS,
@@ -105,23 +118,29 @@ class GlicToolsHostImpl implements GlicToolsHost {
 
     try {
       switch (toolName) {
-        case 'open_url':
-          await this.toolsRemote.openUrl(
-              requireString(args, 'url'), requireBoolean(args, 'new_tab'));
+        case 'open_url': {
+          const url = requireString(args, 'url');
+          const newTab = requireBoolean(args, 'new_tab');
+          await this.getToolsRemote().openUrl(url, newTab);
           return SILENT_SUCCESS;
+        }
 
-        case 'follow_link':
-          await this.toolsRemote.followLink(requireString(args, 'id'));
+        case 'follow_link': {
+          const id = requireString(args, 'id');
+          await this.getToolsRemote().followLink(id);
           return SILENT_SUCCESS;
+        }
 
-        case 'perform_search':
-          await this.toolsRemote.performSearch(
-              requireString(args, 'query'), requireBoolean(args, 'new_tab'));
+        case 'perform_search': {
+          const query = requireString(args, 'query');
+          const newTab = requireBoolean(args, 'new_tab');
+          await this.getToolsRemote().performSearch(query, newTab);
           return SILENT_SUCCESS;
+        }
 
         case 'switch_tab': {
-          const resp =
-              await this.toolsRemote.switchTab(requireString(args, 'query'));
+          const query = requireString(args, 'query');
+          const resp = await this.getToolsRemote().switchTab(query);
           return {
             result: JSON.stringify(resp ?? {}),
             scheduling: ChromeToolResponseScheduling.SILENT,
@@ -129,84 +148,91 @@ class GlicToolsHostImpl implements GlicToolsHost {
         }
 
         case 'close_current_tab':
-          await this.toolsRemote.closeCurrentTab();
+          await this.getToolsRemote().closeCurrentTab();
           return SILENT_SUCCESS;
 
         case 'go_back':
-          await this.toolsRemote.goBack();
+          await this.getToolsRemote().goBack();
           return SILENT_SUCCESS;
 
         case 'go_forward':
-          await this.toolsRemote.goForward();
+          await this.getToolsRemote().goForward();
           return SILENT_SUCCESS;
 
         case 'reload_page':
-          await this.toolsRemote.reloadPage();
+          await this.getToolsRemote().reloadPage();
           return SILENT_SUCCESS;
 
-        case 'find_and_highlight':
-          await this.toolsRemote.findAndHighlight(requireString(args, 'query'));
+        case 'find_and_highlight': {
+          const query = requireString(args, 'query');
+          await this.getToolsRemote().findAndHighlight(query);
           return SILENT_SUCCESS;
+        }
 
         case 'scroll': {
           const granularity = args['granularity'] === 'document' ?
               ScrollGranularity.kDocument :
               ScrollGranularity.kPage;
-          await this.toolsRemote.scroll(
-              granularity, requireNumber(args, 'magnitude'));
+          const magnitude = requireNumber(args, 'magnitude');
+          await this.getToolsRemote().scroll(granularity, magnitude);
           return SILENT_SUCCESS;
         }
 
         case 'play_video':
-          await this.toolsRemote.playVideo();
+          await this.getToolsRemote().playVideo();
           return SILENT_SUCCESS;
 
         case 'pause_video':
-          await this.toolsRemote.pauseVideo();
+          await this.getToolsRemote().pauseVideo();
           return SILENT_SUCCESS;
 
-        case 'seek_to_timestamp':
-          await this.toolsRemote.seekToTimestamp(
-              requireString(args, 'timecode'));
+        case 'seek_to_timestamp': {
+          const timecode = requireString(args, 'timecode');
+          await this.getToolsRemote().seekToTimestamp(timecode);
           return SILENT_SUCCESS;
+        }
 
-        case 'translate_page':
-          await this.toolsRemote.translatePage(
-              optionalString(args, 'target_language'));
+        case 'translate_page': {
+          const targetLanguage = optionalString(args, 'target_language');
+          await this.getToolsRemote().translatePage(targetLanguage);
           return SILENT_SUCCESS;
+        }
 
         case 'add_bookmark':
-          await this.toolsRemote.addBookmark();
+          await this.getToolsRemote().addBookmark();
           return SILENT_SUCCESS;
 
         case 'remove_bookmark':
-          await this.toolsRemote.removeBookmark();
+          await this.getToolsRemote().removeBookmark();
           return SILENT_SUCCESS;
 
         case 'open_page': {
-          const resp =
-              await this.toolsRemote.openPage(requireString(args, 'query'));
+          const query = requireString(args, 'query');
+          const resp = await this.getToolsRemote().openPage(query);
           return {
             result: resp,
             scheduling: ChromeToolResponseScheduling.SILENT,
           };
         }
 
-        case 'set_text':
-          await this.toolsRemote.setText(
-              {value: requireNumber(args, 'dom_node_id')},
-              requireString(args, 'text'));
+        case 'set_text': {
+          const domNodeId = requireNumber(args, 'dom_node_id');
+          const text = requireString(args, 'text');
+          await this.getToolsRemote().setText({value: domNodeId}, text);
           return SILENT_SUCCESS;
+        }
 
-        case 'click_element':
-          await this.toolsRemote.clickElement(
-              {value: requireNumber(args, 'dom_node_id')});
+        case 'click_element': {
+          const domNodeId = requireNumber(args, 'dom_node_id');
+          await this.getToolsRemote().clickElement({value: domNodeId});
           return SILENT_SUCCESS;
+        }
 
-        case 'set_fullscreen':
-          await this.toolsRemote.setFullscreen(
-              requireBoolean(args, 'fullscreen'));
+        case 'set_fullscreen': {
+          const fullscreen = requireBoolean(args, 'fullscreen');
+          await this.getToolsRemote().setFullscreen(fullscreen);
           return SILENT_SUCCESS;
+        }
 
         default:
           return {
@@ -231,35 +257,39 @@ class GlicToolsHostImpl implements GlicToolsHost {
 }
 
 export class GlicBrowserHostTools implements Partial<GlicBrowserHost> {
+  private handler?: WebClientHandlerRemote;
   private toolsRemote?: AiOverlayToolsRemote;
-  private toolsInstance?: GlicToolsHost;
+  private readonly toolsInstance: GlicToolsHost = new GlicToolsHostImpl(
+      () => Boolean(this.handler), () => this.getOrCreateToolsRemote());
 
   initialize(
       initialState: WebClientInitialState, handler?: WebClientHandlerRemote) {
-    if (hostCapabilitiesToClient(initialState.hostCapabilities)
-            .includes(HostCapability.CHROME_TOOLS) &&
-        handler) {
-      const toolsRemote = new AiOverlayToolsRemote();
-      this.toolsRemote =
-          maybeWrapWithLogging(toolsRemote, {prefix: 'AiOverlayToolsRemote'});
-      handler.createAiOverlayTools(toolsRemote.$.bindNewPipeAndPassReceiver());
-      this.toolsInstance = new GlicToolsHostImpl(this.toolsRemote);
-    } else {
+    if (!hostCapabilitiesToClient(initialState.hostCapabilities)
+             .includes(HostCapability.CHROME_TOOLS) ||
+        !handler) {
       this.tools = undefined;
+      return;
     }
-  }
-
-  destroyTools(): void {
-    if (this.toolsRemote) {
-      this.toolsRemote.$.close();
-      this.toolsRemote = undefined;
-    }
-    this.toolsInstance = undefined;
-    this.tools = undefined;
+    this.handler = handler;
   }
 
   tools?(): GlicToolsHost {
-    assert(this.toolsInstance);
     return this.toolsInstance;
+  }
+
+  private getOrCreateToolsRemote(): AiOverlayToolsRemote {
+    if (this.toolsRemote) {
+      return this.toolsRemote;
+    }
+    assert(this.handler);
+    const toolsRemote = new AiOverlayToolsRemote();
+    toolsRemote.onConnectionError.addListener(() => {
+      toolsRemote.$.close();
+    });
+    this.toolsRemote =
+        maybeWrapWithLogging(toolsRemote, {prefix: 'AiOverlayToolsRemote'});
+    this.handler.createAiOverlayTools(
+        toolsRemote.$.bindNewPipeAndPassReceiver());
+    return this.toolsRemote;
   }
 }
