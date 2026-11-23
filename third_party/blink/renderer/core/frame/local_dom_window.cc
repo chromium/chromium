@@ -270,6 +270,7 @@ void LocalDOMWindow::Initialize() {
 
 void LocalDOMWindow::ClearForReuse() {
   is_dom_window_reused_ = true;
+  storage_access_api_status_ = net::StorageAccessApiStatus::kNone;
   // update event listener counts before clearing document_
   if (document_ && HasEventListeners()) {
     GetEventTargetData()->event_listener_map.ForAllEventListenerTypes(

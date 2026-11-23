@@ -900,7 +900,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       fenced_frame_properties_;
 
   // The StorageAccessApiStatus that the document should be loaded with.
-  const net::StorageAccessApiStatus storage_access_api_status_;
+  net::StorageAccessApiStatus storage_access_api_status_;
 
   // Only container-initiated navigations (e.g. iframe change src) report
   // their resource timing to the parent.

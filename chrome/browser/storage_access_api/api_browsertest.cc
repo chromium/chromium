@@ -3359,8 +3359,7 @@ IN_PROC_BROWSER_TEST_P(StorageAccessHeadersBrowserTest,
   NavigateFrameTo(GetURL(kHostB, "/set-header?Activate-Storage-Access: load"),
                   nullptr, "child-0");
   // No storage access was activated because permissions policy blocked it.
-  EXPECT_NE(storage::test::HasStorageAccessForFrame(GetFrame()),
-            enable_experimental_features());
+  EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 }
 
 IN_PROC_BROWSER_TEST_P(StorageAccessHeadersBrowserTest,

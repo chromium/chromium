@@ -54,10 +54,12 @@
 #include "net/storage_access_api/status.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/client_hints.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/no_vary_search_header_parser.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "services/network/public/mojom/timing_allow_origin.mojom-blink.h"
 #include "services/network/public/mojom/url_response_head.mojom-shared.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
@@ -2957,7 +2959,6 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
         owner_document->domWindow()->GetAgent()->GetAgentClusterKey();
   }
 
-  bool inherited_has_storage_access = false;
   // In some rare cases, we'll re-use a LocalDOMWindow for a new Document. For
   // example, when a script calls window.open("..."), the browser gives
   // JavaScript a window synchronously but kicks off the load in the window
@@ -2971,17 +2972,6 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
     auto* agent =
         GetWindowAgentForAgentClusterKey(frame_.Get(), agent_cluster_key);
     frame_->SetDOMWindow(MakeGarbageCollected<LocalDOMWindow>(*frame_, agent));
-
-    frame_->DomWindow()->SetStorageAccessApiStatus(storage_access_api_status_);
-    inherited_has_storage_access = [this]() -> bool {
-      switch (storage_access_api_status_) {
-        case net::StorageAccessApiStatus::kNone:
-          return false;
-        case net::StorageAccessApiStatus::kAccessViaAPI:
-          return true;
-      }
-      NOTREACHED();
-    }();
   } else {
     if (frame_->GetSettings()->GetShouldReuseGlobalForUnownedMainFrame() &&
         frame_->IsMainFrame()) {
@@ -3050,9 +3040,6 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   content_security_notifier_ =
       HeapMojoRemote<mojom::blink::ContentSecurityNotifier>(
           frame_->DomWindow());
-
-  base::UmaHistogramBoolean("API.StorageAccess.DocumentInheritedStorageAccess",
-                            inherited_has_storage_access);
 
   frame_->DomWindow()->SetInitiatorStateToken(initiator_state_token_);
 
@@ -3289,6 +3276,25 @@ void DocumentLoader::CommitNavigation() {
         document_policy_,
         response_.HttpHeaderField(http_names::kDocumentPolicyReportOnly));
   }
+
+  if (base::FeatureList::IsEnabled(
+          network::features::kEnforceStorageAccessApiRestrictions) &&
+      !frame_->DomWindow()->IsFeatureEnabled(
+          network::mojom::blink::PermissionsPolicyFeature::kStorageAccessAPI)) {
+    storage_access_api_status_ = net::StorageAccessApiStatus::kNone;
+  }
+  frame_->DomWindow()->SetStorageAccessApiStatus(storage_access_api_status_);
+  bool inherited_has_storage_access = false;
+  switch (storage_access_api_status_) {
+    case net::StorageAccessApiStatus::kNone:
+      inherited_has_storage_access = false;
+      break;
+    case net::StorageAccessApiStatus::kAccessViaAPI:
+      inherited_has_storage_access = true;
+      break;
+  }
+  base::UmaHistogramBoolean("API.StorageAccess.DocumentInheritedStorageAccess",
+                            inherited_has_storage_access);
 
   navigation_scroll_allowed_ = !frame_->DomWindow()->IsFeatureEnabled(
       mojom::blink::DocumentPolicyFeature::kForceLoadAtTop);

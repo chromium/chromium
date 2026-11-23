@@ -616,6 +616,83 @@ TEST_F(DocumentLoaderSimTest, CanUseDeviceBoundSessionJsApiOnReusedWindow) {
   child_resource.Complete("");
 }
 
+// When a same-origin navigation from an initial empty document reuses the
+// LocalDOMWindow, any StorageAccessApiStatus from the previous document must be
+// cleared if the new document does not load with storage access.
+TEST_F(DocumentLoaderSimTest, StorageAccessApiStatusClearedOnReusedWindow) {
+  SimRequest main_resource("https://example.com", "text/html");
+  SimRequest child_resource("https://example.com/child.html", "text/html");
+  LoadURL("https://example.com");
+  main_resource.Complete("<iframe src='child.html'></iframe>");
+
+  LocalFrame* child =
+      To<WebLocalFrameImpl>(MainFrame().FirstChild())->GetFrame();
+  ASSERT_TRUE(child->GetDocument()->IsInitialEmptyDocument());
+  LocalDOMWindow* initial_window = child->DomWindow();
+  initial_window->SetStorageAccessApiStatus(
+      net::StorageAccessApiStatus::kAccessViaAPI);
+
+  const KURL url("https://example.com/child.html");
+  std::unique_ptr<WebNavigationParams> params =
+      WebNavigationParams::CreateWithEmptyHTMLForTesting(url);
+  params->storage_key =
+      BlinkStorageKey::CreateFirstParty(SecurityOrigin::Create(url));
+  MockPolicyContainerHost mock_policy_container_host;
+  params->policy_container = std::make_unique<WebPolicyContainer>(
+      WebPolicyContainerPolicies(),
+      mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
+  params->load_with_storage_access = net::StorageAccessApiStatus::kNone;
+  base::HistogramTester histogram_tester;
+  child->Loader().CommitNavigation(std::move(params), nullptr);
+
+  EXPECT_EQ(initial_window, child->DomWindow());
+  EXPECT_EQ(child->DomWindow()->GetStorageAccessApiStatus(),
+            net::StorageAccessApiStatus::kNone);
+  histogram_tester.ExpectUniqueSample(
+      "API.StorageAccess.DocumentInheritedStorageAccess", /*sample=*/false,
+      /*expected_bucket_count=*/1);
+
+  test::RunPendingTasks();
+  child_resource.Complete("");
+}
+
+// Conversely, a same-origin commit from an initial empty document that reuses
+// the LocalDOMWindow must apply `load_with_storage_access` to the kept window.
+TEST_F(DocumentLoaderSimTest, StorageAccessApiStatusSetOnReusedWindow) {
+  SimRequest main_resource("https://example.com", "text/html");
+  SimRequest child_resource("https://example.com/child.html", "text/html");
+  LoadURL("https://example.com");
+  main_resource.Complete("<iframe src='child.html'></iframe>");
+
+  LocalFrame* child =
+      To<WebLocalFrameImpl>(MainFrame().FirstChild())->GetFrame();
+  ASSERT_TRUE(child->GetDocument()->IsInitialEmptyDocument());
+  LocalDOMWindow* initial_window = child->DomWindow();
+
+  const KURL url("https://example.com/child.html");
+  std::unique_ptr<WebNavigationParams> params =
+      WebNavigationParams::CreateWithEmptyHTMLForTesting(url);
+  params->storage_key =
+      BlinkStorageKey::CreateFirstParty(SecurityOrigin::Create(url));
+  MockPolicyContainerHost mock_policy_container_host;
+  params->policy_container = std::make_unique<WebPolicyContainer>(
+      WebPolicyContainerPolicies(),
+      mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
+  params->load_with_storage_access = net::StorageAccessApiStatus::kAccessViaAPI;
+  base::HistogramTester histogram_tester;
+  child->Loader().CommitNavigation(std::move(params), nullptr);
+
+  EXPECT_EQ(initial_window, child->DomWindow());
+  EXPECT_EQ(child->DomWindow()->GetStorageAccessApiStatus(),
+            net::StorageAccessApiStatus::kAccessViaAPI);
+  histogram_tester.ExpectUniqueSample(
+      "API.StorageAccess.DocumentInheritedStorageAccess", /*sample=*/true,
+      /*expected_bucket_count=*/1);
+
+  test::RunPendingTasks();
+  child_resource.Complete("");
+}
+
 TEST_F(DocumentLoaderSimTest, FramePolicyIntegrityOnNavigationCommit) {
   SimRequest main_resource("https://example.com", "text/html");
   SimRequest iframe_resource("https://example.com/foo.html", "text/html");
@@ -789,6 +866,34 @@ TEST_P(DocumentLoaderTest, SameOriginNavigation_WithStorageAccess) {
   histogram_tester.ExpectUniqueSample(
       "API.StorageAccess.DocumentInheritedStorageAccess", /*sample=*/true,
       /*expected_bucket_count=*/1);
+}
+
+TEST_P(DocumentLoaderTest,
+       SameOriginNavigation_WithStorageAccess_BlockedByPermissionsPolicy) {
+  const KURL requestor_url(NullUrl(), "https://www.example.com/foo.html");
+  const KURL same_origin_url(NullUrl(), "https://www.example.com/bar.html");
+  std::unique_ptr<WebNavigationParams> params =
+      WebNavigationParams::CreateWithEmptyHTMLForTesting(same_origin_url);
+  params->requestor_origin = WebSecurityOrigin::Create(WebURL(requestor_url));
+  params->load_with_storage_access = net::StorageAccessApiStatus::kAccessViaAPI;
+  params->response.SetHttpHeaderField(WebString::FromUtf8("Permissions-Policy"),
+                                      WebString::FromUtf8("storage-access=()"));
+  LocalFrame* local_frame = MainFrame()->GetFrame();
+  base::HistogramTester histogram_tester;
+  local_frame->Loader().CommitNavigation(std::move(params), nullptr);
+
+  EXPECT_EQ(local_frame->DomWindow()->GetStorageAccessApiStatus(),
+            net::StorageAccessApiStatus::kNone);
+  histogram_tester.ExpectUniqueSample(
+      "API.StorageAccess.DocumentInheritedStorageAccess", /*sample=*/false,
+      /*expected_bucket_count=*/1);
+
+  // Discarding the frame clones the document via
+  // `CreateWebNavigationParamsToCloneDocument`, which must also preserve the
+  // clamped `kNone` status.
+  local_frame->Discard();
+  EXPECT_EQ(local_frame->DomWindow()->GetStorageAccessApiStatus(),
+            net::StorageAccessApiStatus::kNone);
 }
 
 TEST_P(DocumentLoaderTest, CanUseDeviceBoundSessionJsApiFromCommitParams) {
