@@ -813,9 +813,6 @@ def main():
     # Separate to prevent .java changes invalidating compile_resources.py, and
     # new resource targets from invalidating java compiles.
     res_config = {}
-    # Separate to prevent .java changes invalidating create_r_java.py, and new
-    # resource targets from invalidating java compiles.
-    rtxt_config = {}
     # Separate to save targets that don't need it from having to parse it.
     targets_config = {}
 
@@ -851,11 +848,6 @@ def main():
 
         if params.collects_dex_paths():
             main_config['all_dex_files'] = list(tv.all_dex_files)
-
-        if params.needs_transitive_rtxt():
-            rtxt_config['dependency_rtxt_files'] = (
-                params.resource_deps().collect('rtxt_path')
-            )
 
         if proguard_enabled or target_type == 'dist_aar':
             main_config['proguard_all_configs'] = sorted(tv.proguard_configs)
@@ -924,6 +916,11 @@ def main():
         # overlays we need dependents to come after dependencies in AAPT2's -R list
         overlay_list = list(reversed(tv.dependency_zip_overlays))
         res_config['dependency_zip_overlays'] = overlay_list
+
+        if target_type == 'dist_aar':
+            res_config['dependency_rtxt_files'] = (
+                params.resource_deps().collect('rtxt_path')
+            )
 
         if params.compiles_resources():
             res_config['extra_package_names'] = sorted(tv.extra_package_names)
@@ -1110,7 +1107,6 @@ def main():
         (lint_config, '.lint.build_config.json'),
         (manifest_config, '.manifest.build_config.json'),
         (res_config, '.res.build_config.json'),
-        (rtxt_config, '.rtxt.build_config.json'),
         (targets_config, '.targets.build_config.json'),
     ]
 

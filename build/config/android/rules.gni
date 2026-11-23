@@ -573,6 +573,25 @@ if (!is_robolectric && enable_java_templates) {
     python_action(target_name) {
       forward_variables_from(invoker, [ "visibility" ])
       public_deps = [ invoker.generating_target ]
+      deps = []
+      if (defined(invoker.deps)) {
+        foreach(_dep, invoker.deps) {
+          _dep_label = get_label_info(_dep, "label_no_toolchain")
+          if (filter_include([ _dep_label ], java_resource_patterns) != []) {
+            deps += [ _dep ]
+          } else if (filter_include([ _dep_label ], java_library_patterns) !=
+                     []) {
+            deps += [ "${_dep_label}__assetres" ]
+          }
+        }
+      }
+      metadata = {
+        # Consumed by generate_r_java() to collect this target's R.txt, depend
+        # on this action, and walk only its resource/library deps.
+        android_resources_rtxt = [ rebase_path(_rtxt_out_path, root_build_dir) ]
+        android_resources_rtxt_deps = [ ":$target_name" ]
+        android_resources_walk_keys = deps
+      }
       inputs = [
         android_sdk_tools_bundle_aapt2,
         invoker.generated_resources_zip,
@@ -834,8 +853,20 @@ if (!is_robolectric && enable_java_templates) {
       }
     }
 
+    _assetres_deps = []
+    _non_java_deps = []
+    foreach(_dep, _deps) {
+      _dep_label = get_label_info(_dep, "label_no_toolchain")
+      if (filter_include([ _dep_label ], java_resource_patterns) != []) {
+        _assetres_deps += [ _dep ]
+      } else if (filter_include([ _dep_label ], java_library_patterns) != []) {
+        _assetres_deps += [ "${_dep_label}__assetres" ]
+      } else {
+        _non_java_deps += [ _dep ]
+      }
+    }
+
     _prepare_target_name = "${target_name}__prepare"
-    _non_java_deps = filter_exclude(_deps, java_target_patterns)
 
     prepare_resources(_prepare_target_name) {
       forward_variables_from(invoker,
@@ -865,8 +896,6 @@ if (!is_robolectric && enable_java_templates) {
                                "public_deps",
                                "visibility",
                              ])
-      _lib_deps = filter_exclude(filter_include(_deps, java_library_patterns),
-                                 java_resource_patterns)
       if (defined(public_deps)) {
         # Since java library targets depend directly on sub-targets rather than
         # top-level targets, public_deps are not properly propagated, at least
@@ -878,31 +907,31 @@ if (!is_robolectric && enable_java_templates) {
       }
 
       # Depend on non-library deps and on __assetres subtargets of library deps
-      # so that downstream generate_r_java and compile_resources steps wait for
-      # transitive resource targets without making prepare_resources.py wait for
-      # them.
+      # so that downstream compile_resources steps wait for transitive resource
+      # targets without making prepare_resources.py wait for them.
       deps = [
                ":$_prepare_target_name",
                _android_sdk_dep,
-             ] + filter_exclude(_deps, _lib_deps)
-      foreach(_lib_dep, _lib_deps) {
-        # Expand //foo/java -> //foo/java:java
-        _lib_dep = get_label_info(_lib_dep, "label_no_toolchain")
-        deps += [ "${_lib_dep}__assetres" ]
-      }
+             ] + _assetres_deps + _non_java_deps
+
       _manifest_deps = _non_java_deps
       if (defined(public_deps)) {
         _manifest_deps += public_deps
       }
+      metadata = {
+        # Consumed by generate_r_java() to collect this target's R.txt, depend
+        # on its __prepare action, and walk only its resource/library deps.
+        android_resources_rtxt = [ rebase_path(_rtxt_out_path, root_build_dir) ]
+        android_resources_rtxt_deps = [ ":$_prepare_target_name" ]
+        android_resources_walk_keys = _assetres_deps
 
-      # Emit deps only if any mergeable manifest is generated (under
-      # root_build_dir).
-      if (_manifest_deps != [] &&
-          defined(invoker.mergeable_android_manifests) &&
-          filter_exclude(
-              rebase_path(invoker.mergeable_android_manifests, root_build_dir),
-              [ "../*" ]) != []) {
-        metadata = {
+        # Emit deps only if any mergeable manifest is generated (under
+        # root_build_dir).
+        if (_manifest_deps != [] &&
+            defined(invoker.mergeable_android_manifests) &&
+            filter_exclude(rebase_path(invoker.mergeable_android_manifests,
+                                       root_build_dir),
+                           [ "../*" ]) != []) {
           # Consumed by merge_manifests() so it depends on targets generating
           # mergeable_android_manifests.
           mergeable_android_manifest_deps = _manifest_deps
@@ -1001,6 +1030,11 @@ if (!is_robolectric && enable_java_templates) {
     if (_all_sources != []) {
       action(target_name) {
         forward_variables_from(invoker, [ "deps" ])
+        metadata = {
+          # Consumed by generate_r_java() to stop its R.txt metadata walk from
+          # descending into asset deps.
+          android_resources_walk_keys = []
+        }
 
         script = "//build/android/gyp/validate_inputs.py"
         inputs = _all_sources
@@ -1013,6 +1047,11 @@ if (!is_robolectric && enable_java_templates) {
     } else {
       group(target_name) {
         forward_variables_from(invoker, [ "deps" ])
+        metadata = {
+          # Consumed by generate_r_java() to stop its R.txt metadata walk from
+          # descending into asset deps.
+          android_resources_walk_keys = []
+        }
       }
     }
   }
@@ -1103,15 +1142,18 @@ if (!is_robolectric && enable_java_templates) {
       possible_config_deps = _invoker_deps
     }
 
-    _assetres_deps = filter_include(_invoker_deps, java_resource_patterns)
-    _invoker_deps_minus_assetres = filter_exclude(_invoker_deps, _assetres_deps)
-    _lib_deps =
-        filter_include(_invoker_deps_minus_assetres, java_library_patterns)
-    _other_deps = _invoker_deps_minus_assetres - _lib_deps
-
+    _assetres_deps = []
     _expanded_lib_deps = []
-    foreach(_lib_dep, _lib_deps) {
-      _expanded_lib_deps += [ get_label_info(_lib_dep, "label_no_toolchain") ]
+    _other_deps = []
+    foreach(_dep, _invoker_deps) {
+      _dep_label = get_label_info(_dep, "label_no_toolchain")
+      if (filter_include([ _dep_label ], java_resource_patterns) != []) {
+        _assetres_deps += [ _dep ]
+      } else if (filter_include([ _dep_label ], java_library_patterns) != []) {
+        _expanded_lib_deps += [ _dep_label ]
+      } else {
+        _other_deps += [ _dep ]
+      }
     }
     _group_names = [
       "assetres",
@@ -1132,24 +1174,38 @@ if (!is_robolectric && enable_java_templates) {
         filter_exclude(
             rebase_path(invoker.mergeable_android_manifests, root_build_dir),
             [ "../*" ]) != []
+    _main_target_name = target_name
+    _is_resource_group =
+        filter_include([ get_label_info(":$_main_target_name",
+                                        "label_no_toolchain") ],
+                       java_resource_patterns) != []
 
     foreach(_group_name, _group_names) {
-      group("${target_name}__$_group_name") {
+      group("${_main_target_name}__$_group_name") {
         deps = []
         foreach(_lib_dep, _expanded_lib_deps) {
           deps += [ "${_lib_dep}__${_group_name}" ]
         }
         if (_group_name == "assetres") {
-          # _other_deps are necessary when generating
-          # mergeable_android_manifests.
-          deps += _assetres_deps + _other_deps
-          if (_has_generated_manifest_deps) {
-            metadata = {
+          if (_is_resource_group) {
+            visibility = []
+            visibility = [ ":$_main_target_name" ]
+          }
+          deps += _assetres_deps
+          metadata = {
+            # Consumed by generate_r_java(). Must precede `deps += _other_deps`
+            # so non-Java targets without walk barriers are not walked.
+            android_resources_walk_keys = deps
+            if (_has_generated_manifest_deps) {
               # Consumed by merge_manifests() so it depends on targets
               # generating mergeable_android_manifests.
               mergeable_android_manifest_deps = _other_deps
             }
           }
+
+          # _other_deps are necessary when generating
+          # mergeable_android_manifests.
+          deps += _other_deps
         } else if ((_group_name == "host" || _group_name == "header") &&
                    defined(invoker.jar_deps)) {
           deps += invoker.jar_deps
@@ -1161,8 +1217,19 @@ if (!is_robolectric && enable_java_templates) {
       forward_variables_from(invoker,
                              "*",
                              _build_config_vars + TESTONLY_AND_VISIBILITY)
-      if (is_cronet_for_aosp_build || _has_generated_manifest_deps) {
+      if (_is_resource_group) {
+        if (!defined(deps)) {
+          deps = []
+        }
+        deps += [ ":${target_name}__assetres" ]
+      }
+      if (is_cronet_for_aosp_build || _is_resource_group) {
         metadata = {
+          if (_is_resource_group) {
+            # Consumed by generate_r_java() when this resource-named
+            # java_group() is walked directly rather than via __assetres.
+            android_resources_walk_keys = [ ":${target_name}__assetres" ]
+          }
           if (is_cronet_for_aosp_build) {
             java_library_deps = []
             if (defined(invoker.deps)) {
@@ -1171,11 +1238,6 @@ if (!is_robolectric && enable_java_templates) {
                     [ get_label_info(dep, "label_no_toolchain") ]
               }
             }
-          }
-          if (_has_generated_manifest_deps) {
-            # Consumed by merge_manifests() when this resource-named
-            # java_group() is walked directly instead of via __assetres.
-            mergeable_android_manifest_deps = _other_deps
           }
         }
       }
@@ -1900,7 +1962,6 @@ if (!is_robolectric && enable_java_templates) {
 
     _build_config = "$target_gen_dir/$target_name.build_config.json"
     _res_build_config = "$target_gen_dir/$target_name.res.build_config.json"
-    _rtxt_build_config = "$target_gen_dir/$target_name.rtxt.build_config.json"
     _build_config_target_name = "$target_name$build_config_target_suffix"
 
     write_build_config(_build_config_target_name) {
@@ -1920,7 +1981,6 @@ if (!is_robolectric && enable_java_templates) {
 
     _rebased_build_config = rebase_path(_build_config, root_build_dir)
     _rebased_res_build_config = rebase_path(_res_build_config, root_build_dir)
-    _rebased_rtxt_build_config = rebase_path(_rtxt_build_config, root_build_dir)
 
     python_action(target_name) {
       forward_variables_from(invoker,
@@ -1935,7 +1995,6 @@ if (!is_robolectric && enable_java_templates) {
       inputs = [
         _build_config,
         _res_build_config,
-        _rtxt_build_config,
       ]
 
       # Although these will be listed as deps in the depfile, they must also
@@ -1954,7 +2013,7 @@ if (!is_robolectric && enable_java_templates) {
         rebase_path(invoker.output, root_build_dir),
         "--dependencies-res-zips=@FileArg($_rebased_res_build_config:dependency_zips)",
         "--dependencies-res-zips=@FileArg($_rebased_res_build_config:dependency_zip_overlays)",
-        "--r-text-files=@FileArg($_rebased_rtxt_build_config:dependency_rtxt_files)",
+        "--r-text-files=@FileArg($_rebased_res_build_config:dependency_rtxt_files)",
         "--proguard-configs=@FileArg($_rebased_build_config:proguard_all_configs)",
         "--jars=@FileArg($_rebased_build_config:dist_classpath)",
       ]

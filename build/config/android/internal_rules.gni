@@ -238,14 +238,6 @@ template("write_build_config") {
                                  ".res.build_config.json") ]
   }
 
-  # ParamsJson.needs_transitive_rtxt()
-  if (_type == "dist_aar" || (_type == "java_library" && !invoker.is_prebuilt &&
-                              defined(invoker.custom_package))) {
-    _outputs += [ string_replace(invoker.build_config,
-                                 ".build_config.json",
-                                 ".rtxt.build_config.json") ]
-  }
-
   if (defined(invoker.enable_bytecode_checks) &&
       invoker.enable_bytecode_checks) {
     _outputs += [ string_replace(invoker.build_config,
@@ -712,20 +704,37 @@ template("generate_android_wrapper") {
 }
 
 template("generate_r_java") {
+  # Lists the R.txt files of android_resources() visible to this target: direct
+  # deps, their resource deps, and those exposed via public_deps of java deps.
+  # Uses walk_deps so that this does not depend on the targets that it walks,
+  # and dep_keys so that it depends on only the prepare_resources() actions.
+  _rtxts_target_name = "${target_name}__rtxts"
+  _rtxts_file = "$target_gen_dir/$target_name.rtxts.json"
+
+  generated_file(_rtxts_target_name) {
+    forward_variables_from(invoker, [ "testonly" ])
+    walk_deps = invoker.walk_deps
+    outputs = [ _rtxts_file ]
+    data_keys = [ "android_resources_rtxt" ]
+    dep_keys = [ "android_resources_rtxt_deps" ]
+    walk_keys = [ "android_resources_walk_keys" ]
+    output_conversion = "json"
+  }
+
   python_action(target_name) {
-    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    deps = [ ":$_rtxts_target_name" ]
     depfile = "$target_gen_dir/${invoker.target_name}.d"
-    inputs = [ invoker.rtxt_build_config ]
+    inputs = [ _rtxts_file ]
     outputs = [ invoker.srcjar_path ]
-    _rebased_rtxt_build_config =
-        rebase_path(invoker.rtxt_build_config, root_build_dir)
+    _rebased_rtxts_file = rebase_path(_rtxts_file, root_build_dir)
     python_binary = "//build/android:create_r_java"
     args = [
       "--depfile",
       rebase_path(depfile, root_build_dir),
       "--srcjar-out",
       rebase_path(invoker.srcjar_path, root_build_dir),
-      "--deps-rtxts=@FileArg($_rebased_rtxt_build_config:dependency_rtxt_files)",
+      "--deps-rtxts=@FileArg($_rebased_rtxts_file)",
       "--r-package=${invoker.package}",
     ]
   }
@@ -3987,28 +3996,30 @@ if (enable_java_templates) {
       }
     }
 
-    _java_assetres_deps = filter_include(_invoker_deps, java_resource_patterns)
-
-    # Cannot use minus operator because it does not work when the operand has
-    # repeated entries.
-    _invoker_deps_minus_assetres =
-        filter_exclude(_invoker_deps, _java_assetres_deps)
-    _lib_deps =
-        filter_include(_invoker_deps_minus_assetres, java_library_patterns)
-    _non_java_deps = filter_exclude(_invoker_deps_minus_assetres, _lib_deps)
-
+    _java_assetres_deps = []
     _java_header_deps = []  # Turbine / ijar
 
     # It would be more ideal to split this into __host and __javac, but we
     # combine the two concepts to save on a group() target.
     _java_host_deps = []  # Processed host .jar + javac .jar.
-
-    foreach(_lib_dep, _lib_deps) {
-      # Expand //foo/java -> //foo/java:java
-      _lib_dep = get_label_info(_lib_dep, "label_no_toolchain")
-      _java_assetres_deps += [ "${_lib_dep}__assetres" ]
-      _java_header_deps += [ "${_lib_dep}__header" ]
-      _java_host_deps += [ "${_lib_dep}__host" ]
+    _lib_deps = []
+    _non_java_deps = []
+    foreach(_dep, _invoker_deps) {
+      # Expand labels before matching patterns like "*android*:resources"
+      # (e.g., ":resources" in //android_webview) and "//foo/java" ->
+      # "//foo/java:java". Keep original _dep for non-Java deps to preserve
+      # toolchains.
+      _dep_label = get_label_info(_dep, "label_no_toolchain")
+      if (filter_include([ _dep_label ], java_resource_patterns) != []) {
+        _java_assetres_deps += [ _dep ]
+      } else if (filter_include([ _dep_label ], java_library_patterns) != []) {
+        _lib_deps += [ _dep_label ]
+        _java_assetres_deps += [ "${_dep_label}__assetres" ]
+        _java_header_deps += [ "${_dep_label}__header" ]
+        _java_host_deps += [ "${_dep_label}__host" ]
+      } else {
+        _non_java_deps += [ _dep ]
+      }
     }
 
     # APK and base module targets are special because:
@@ -4069,7 +4080,9 @@ if (enable_java_templates) {
     # Often needed, but too hard to figure out when ahead of time.
     not_needed([
                  "_header_classpath_deps",
+                 "_java_assetres_deps",
                  "_javac_classpath_deps",
+                 "_lib_deps",
                  "_non_java_deps",
                  "_rjava_srcjar_deps",
                  "_supports_host",
@@ -4307,11 +4320,7 @@ if (enable_java_templates) {
         _rjava_target = "${target_name}__rjava"
 
         generate_r_java(_rjava_target) {
-          deps = [ ":$_build_config_target_name" ] + _java_assetres_deps +
-                 _non_java_deps
-          _rtxt_build_config =
-              "$target_gen_dir/$_main_target_name.rtxt.build_config.json"
-          rtxt_build_config = _rtxt_build_config
+          walk_deps = _java_assetres_deps
 
           # Filepath has to be exactly this because compile_java looks for the
           # srcjar of srcjar_deps at $target_gen_dir/$_rjava_target.srcjar.
@@ -4844,13 +4853,36 @@ if (enable_java_templates) {
 
           # Emit deps only if any mergeable manifest is generated (under
           # root_build_dir).
-          if (_non_java_deps != [] &&
+          _has_generated_manifest_deps =
+              _non_java_deps != [] &&
               defined(invoker.mergeable_android_manifests) &&
               filter_exclude(rebase_path(invoker.mergeable_android_manifests,
                                          root_build_dir),
-                             [ "../*" ]) != []) {
+                             [ "../*" ]) != []
+          if (_has_generated_manifest_deps) {
             deps += _non_java_deps
-            metadata = {
+          }
+
+          # Only android_resources() reachable through public_deps are visible
+          # to targets that depend on this one.
+          _walk_keys = []
+          if (defined(invoker.public_deps)) {
+            foreach(_dep, invoker.public_deps) {
+              _dep_label = get_label_info(_dep, "label_no_toolchain")
+              if (filter_include([ _dep_label ], java_resource_patterns) !=
+                  []) {
+                _walk_keys += [ _dep ]
+              } else if (filter_include([ _dep_label ],
+                                        java_library_patterns) != []) {
+                _walk_keys += [ "${_dep_label}__assetres" ]
+              }
+            }
+          }
+          metadata = {
+            # Consumed by generate_r_java() to restrict its R.txt metadata walk
+            # to public_deps.
+            android_resources_walk_keys = _walk_keys
+            if (_has_generated_manifest_deps) {
               # Consumed by merge_manifests() so it depends on targets
               # generating mergeable_android_manifests.
               mergeable_android_manifest_deps = _non_java_deps
@@ -4867,7 +4899,6 @@ if (enable_java_templates) {
       group("${target_name}__lint_partials") {
         deps = []
         foreach(_lib_dep, _lib_deps) {
-          _lib_dep = get_label_info(_lib_dep, "label_no_toolchain")
           deps += [ "${_lib_dep}__lint_partials" ]
         }
         if (_enable_lint_analysis) {
@@ -4880,7 +4911,6 @@ if (enable_java_templates) {
       group("${target_name}__lint_annotations") {
         deps = []
         foreach(_lib_dep, _lib_deps) {
-          _lib_dep = get_label_info(_lib_dep, "label_no_toolchain")
           deps += [ "${_lib_dep}__lint_annotations" ]
         }
         if (_enable_lint_analysis) {
