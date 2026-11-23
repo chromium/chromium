@@ -131,6 +131,15 @@ X11Window* X11WindowManager::GetWindow(gfx::AcceleratedWidget widget) const {
   return it != windows_.end() ? it->second : nullptr;
 }
 
+X11Window* X11WindowManager::GetCurrentActiveWindow() const {
+  for (const auto& [_, window] : windows_) {
+    if (window->IsActive()) {
+      return window;
+    }
+  }
+  return nullptr;
+}
+
 bool X11WindowManager::IsTrackingPointer() const {
   return ui::HasActivePointerGrab() ||
          std::ranges::any_of(windows_, [](const auto& pair) {

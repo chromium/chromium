@@ -92,6 +92,7 @@ class X11Window : public PlatformWindow,
   void SetTransientWindow(x11::Window window);
 
   bool has_pointer() const { return has_pointer_; }
+  bool IsActive() const;
 
   // Returns true if the window has been requested to map but the server has
   // not yet responded with a MapNotify (or UnmapNotify).  During this period
@@ -280,7 +281,6 @@ class X11Window : public PlatformWindow,
   void Map(bool inactive = false);
   void SetWMStateFullscreen(bool fullscreen);
   void SetWMStateMaximize(bool maximize);
-  bool IsActive() const;
   bool IsTargetedBy(const x11::Event& xev) const;
   // Returns the XI2 touch event being dispatched, if any.
   const x11::Input::DeviceEvent* GetDispatchingTouchEvent() const;

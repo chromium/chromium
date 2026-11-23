@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/x/x11_pointer_grab.h"
@@ -420,6 +421,123 @@ TEST_F(X11WindowOzoneTest, NoFrameExtentsWhenDecorationInsetsUnsupported) {
   EXPECT_FALSE(GetRawBytesOfProperty(
       static_cast<x11::Window>(widget),
       x11::Connection::Get()->GetAtom("_GTK_FRAME_EXTENTS"), &data, &type));
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(X11WindowOzoneTest, ActivateSetsRequestorCurrentlyActiveWindow) {
+  auto* connection = x11::Connection::Get();
+  ASSERT_TRUE(
+      connection->WmSupportsHint(connection->GetAtom("_NET_ACTIVE_WINDOW")));
+  ASSERT_NE(GuessWindowManager(), WM_WMII);
+
+  x11::Connection observer;
+  ASSERT_TRUE(observer.Ready());
+  auto root_events = observer.ScopedSelectEvent(
+      observer.default_root(), x11::EventMask::SubstructureNotify);
+  observer.Sync();
+
+  auto take_active_window_message =
+      [&](x11::Window target_window) -> std::optional<x11::ClientMessageEvent> {
+    connection->Sync();
+    observer.Sync();
+    observer.ReadResponses();
+    const x11::Atom net_active_window = observer.GetAtom("_NET_ACTIVE_WINDOW");
+    std::optional<x11::ClientMessageEvent> found;
+    for (const auto& ev : observer.events()) {
+      if (const auto* msg = ev.As<x11::ClientMessageEvent>();
+          msg && msg->type == net_active_window &&
+          msg->window == target_window) {
+        found = *msg;
+      }
+    }
+    observer.events().clear();
+    return found;
+  };
+
+  auto dispatch_focus = [&](x11::Window target_window, bool focus_in) {
+    x11::FocusEvent focus_event{
+        .opcode = focus_in ? x11::FocusEvent::In : x11::FocusEvent::Out,
+        .detail = x11::NotifyDetail::Nonlinear,
+        .event = target_window,
+        .mode = x11::NotifyMode::Normal,
+    };
+    connection->DispatchEvent(x11::Event(false, focus_event));
+  };
+
+  testing::NiceMock<MockPlatformWindowDelegate> delegate_1;
+  gfx::AcceleratedWidget widget_1;
+  auto window_1 = CreatePlatformWindow(&delegate_1, gfx::Rect(0, 0, 100, 100),
+                                       &widget_1, nullptr);
+  const auto xwindow_1 = static_cast<x11::Window>(widget_1);
+
+  testing::NiceMock<MockPlatformWindowDelegate> delegate_2;
+  gfx::AcceleratedWidget widget_2;
+  auto window_2 = CreatePlatformWindow(&delegate_2, gfx::Rect(200, 0, 100, 100),
+                                       &widget_2, nullptr);
+  const auto xwindow_2 = static_cast<x11::Window>(widget_2);
+
+  window_1->Show(/*inactive=*/true);
+  window_2->Show(/*inactive=*/true);
+  connection->DispatchAll();
+  dispatch_focus(xwindow_1, false);
+  dispatch_focus(xwindow_2, false);
+  observer.events().clear();
+
+  // With no active window, data[2] must be 0 (x11::Window::None).
+  window_2->Activate();
+  auto msg = take_active_window_message(xwindow_2);
+  ASSERT_TRUE(msg.has_value());
+  EXPECT_EQ(msg->data.data32[0], 1u);
+  EXPECT_EQ(msg->data.data32[2], 0u);
+
+  // With `window_1` active, activating `window_2` must pass `window_1` in
+  // data[2].
+  connection->DispatchAll();
+  dispatch_focus(xwindow_2, false);
+  dispatch_focus(xwindow_1, true);
+  ASSERT_TRUE(static_cast<X11Window*>(window_1.get())->IsActive());
+  ASSERT_FALSE(static_cast<X11Window*>(window_2.get())->IsActive());
+  observer.events().clear();
+
+  window_2->Activate();
+  msg = take_active_window_message(xwindow_2);
+  ASSERT_TRUE(msg.has_value());
+  EXPECT_EQ(msg->data.data32[0], 1u);
+  EXPECT_EQ(msg->data.data32[2], static_cast<uint32_t>(xwindow_1));
+
+  // Deactivating `window_1` before re-activating it must not report `window_1`
+  // as already active even while `has_window_focus_` has not yet cleared.
+  connection->DispatchAll();
+  dispatch_focus(xwindow_2, false);
+  dispatch_focus(xwindow_1, true);
+  window_1->Deactivate();
+  ASSERT_FALSE(static_cast<X11Window*>(window_1.get())->IsActive());
+  observer.events().clear();
+
+  window_1->Activate();
+  msg = take_active_window_message(xwindow_1);
+  ASSERT_TRUE(msg.has_value());
+  EXPECT_EQ(msg->data.data32[0], 1u);
+  EXPECT_EQ(msg->data.data32[2], 0u);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(X11WindowOzoneTest, ShowMapsWindowWithoutExplicitSync) {
+  testing::NiceMock<MockPlatformWindowDelegate> delegate;
+  gfx::AcceleratedWidget widget;
+  auto window = CreatePlatformWindow(&delegate, gfx::Rect(0, 0, 100, 100),
+                                     &widget, nullptr);
+  auto* x11_window = static_cast<X11Window*>(window.get());
+  auto* connection = x11::Connection::Get();
+  connection->Sync();
+  connection->DispatchAll();
+  connection->Sync();
+  connection->DispatchAll();
+
+  window->Show(/*inactive=*/true);
+  EXPECT_TRUE(x11_window->IsMapPending());
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return !x11_window->IsMapPending(); }));
 }
 
 namespace {

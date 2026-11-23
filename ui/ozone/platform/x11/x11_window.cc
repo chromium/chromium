@@ -895,9 +895,15 @@ void X11Window::Activate() {
 
   auto weak_this = weak_ptr_factory_.GetWeakPtr();
 
+  // Capture the currently active window before clearing
+  // `ignore_keyboard_input_`, which could otherwise make `this` appear active
+  // after a prior `Deactivate()`.
+  X11Window* active_window =
+      X11WindowManager::GetInstance()->GetCurrentActiveWindow();
+
   // wmii says that it supports _NET_ACTIVE_WINDOW but does not.
   // https://code.google.com/p/wmii/issues/detail?id=266
-  static bool wm_supports_active_window =
+  bool wm_supports_active_window =
       GuessWindowManager() != WM_WMII &&
       connection_->WmSupportsHint(connection_->GetAtom("_NET_ACTIVE_WINDOW"));
 
@@ -910,13 +916,10 @@ void X11Window::Activate() {
     ignore_keyboard_input_ = false;
 
     std::array<uint32_t, 5> data = {
-        // We're an app.
+        // Source indication: 1 = normal application.
         1,
         static_cast<uint32_t>(timestamp),
-        // TODO(thomasanderson): if another chrome window is active, specify
-        // that here.  The EWMH spec claims this may make the WM more likely to
-        // service our _NET_ACTIVE_WINDOW request.
-        0,
+        active_window ? static_cast<uint32_t>(active_window->window()) : 0,
         0,
         0,
     };
@@ -2248,7 +2251,10 @@ void X11Window::Map(bool inactive) {
   window_mapped_in_client_ = true;
   OnMapPending();
 
-  // TODO(thomasanderson): Find out why this flush is necessary.
+  // Non-GLib builds (e.g. CastOS and Linux-ChromeOS, see crbug.com/988915) use
+  // X11EventWatcherFdWatch, which only flushes after reading from the X11
+  // socket and has no pre-poll hook before MessagePumpEpoll sleeps. Flush here
+  // so MapWindow is not left buffered when going idle.
   connection_->Flush();
 }
 

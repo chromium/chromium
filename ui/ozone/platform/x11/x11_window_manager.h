@@ -61,6 +61,7 @@ class X11WindowManager {
   void AddWindow(X11Window* window);
   void RemoveWindow(X11Window* window);
   X11Window* GetWindow(gfx::AcceleratedWidget widget) const;
+  X11Window* GetCurrentActiveWindow() const;
 
   // Returns true if pointer events are currently being delivered to Chrome,
   // i.e. the pointer is inside one of the windows or Chrome holds an active

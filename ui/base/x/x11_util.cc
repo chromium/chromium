@@ -563,36 +563,6 @@ UMALinuxWindowManager GetWindowManagerUMA() {
   NOTREACHED();
 }
 
-bool IsX11WindowFullScreen(x11::Window window) {
-  // If _NET_WM_STATE_FULLSCREEN is in _NET_SUPPORTED, use the presence or
-  // absence of _NET_WM_STATE_FULLSCREEN in _NET_WM_STATE to determine
-  // whether we're fullscreen.
-  auto* connection = x11::Connection::Get();
-  x11::Atom fullscreen_atom = connection->GetAtom("_NET_WM_STATE_FULLSCREEN");
-  if (connection->WmSupportsHint(fullscreen_atom)) {
-    std::vector<x11::Atom> atom_properties;
-    if (connection->GetArrayProperty(
-            window, connection->GetAtom("_NET_WM_STATE"), &atom_properties)) {
-      return std::ranges::contains(atom_properties, fullscreen_atom);
-    }
-  }
-
-  gfx::Rect window_rect;
-  if (auto geometry = connection->GetGeometry(window).Sync()) {
-    window_rect =
-        gfx::Rect(geometry->x, geometry->y, geometry->width, geometry->height);
-  } else {
-    return false;
-  }
-
-  // TODO(thomasanderson): We should use
-  // display::Screen::GetDisplayNearestWindow() instead of using the
-  // connection screen size, which encompasses all displays.
-  int width = connection->default_screen().width_in_pixels;
-  int height = connection->default_screen().height_in_pixels;
-  return window_rect.size() == gfx::Size(width, height);
-}
-
 bool SuspendX11ScreenSaver(bool suspend) {
   static const bool kScreenSaverAvailable = IsX11ScreenSaverAvailable();
   if (!kScreenSaverAvailable) {

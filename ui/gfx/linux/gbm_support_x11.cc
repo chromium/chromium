@@ -98,9 +98,9 @@ GBMSupportX11::CreateSupportedConfigList(ui::GbmDevice* device) {
              viz::SinglePlaneFormat::kBGRX_8888,
              viz::SinglePlaneFormat::kBGRA_1010102,
 
-             // On some Intel setups calling gbm_bo_create() with this format
-             // results in a crash caused by an integer-divide-by-zero.
-             // TODO(thomasanderson): Enable this format.
+             // Disabled because calling gbm_bo_create() with kRGBA_1010102
+             // triggers an integer-divide-by-zero crash on some Intel Mesa
+             // setups during GPU-process startup probing.
              // viz::SinglePlaneFormat::kRGBA_1010102,
              viz::SinglePlaneFormat::kBGR_565,
              viz::MultiPlaneFormat::kNV12,

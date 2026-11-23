@@ -152,8 +152,9 @@ X11SoftwareBitmapPresenter::X11SoftwareBitmapPresenter(
       &connection_.get(), widget_, visual_, depth_, MaxFramesPending(),
       enable_multibuffering_);
 
-  // TODO(thomasanderson): Avoid going through the X11 server to plumb this
-  // property in.
+  // CHROMIUM_COMPOSITE_WINDOW is set on status-icon windows in the browser
+  // process and read here in the GPU process to carry per-window compositing
+  // state across processes without extra Mojo plumbing.
   connection_->GetPropertyAs(
       widget_, connection_->GetAtom("CHROMIUM_COMPOSITE_WINDOW"), &composite_);
 }
@@ -216,8 +217,6 @@ void X11SoftwareBitmapPresenter::EndPaint(const gfx::Rect& damage_rect) {
   SkPixmap skia_pixmap;
 
   if (ShmPoolReady()) {
-    // TODO(thomasanderson): Investigate direct rendering with DRI3 to avoid any
-    // unnecessary X11 IPC or buffer copying.
     x11::Shm::PutImageRequest put_image_request{
         .drawable = widget_,
         .gc = gc_,
