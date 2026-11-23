@@ -4,6 +4,10 @@
 
 #include "components/critical_actions/core/browser/critical_action_types.h"
 
+#include <string>
+
+#include "base/json/json_writer.h"
+#include "base/values.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -169,6 +173,95 @@ TEST(CriticalActionTypesTest, BuilderSetsConversationAnchorId) {
   // Entries that differ only in `conversation_anchor_id` must not compare
   // equal.
   EXPECT_NE(with_anchor, without_anchor);
+}
+
+TEST(CriticalActionTypesTest, IsGranularFormFill) {
+  EXPECT_TRUE(IsGranularFormFill(ActionType::kFormFillContactInfo));
+  EXPECT_TRUE(IsGranularFormFill(ActionType::kFormFillPayments));
+  EXPECT_FALSE(IsGranularFormFill(ActionType::kFormFill));
+  EXPECT_FALSE(IsGranularFormFill(ActionType::kDownload));
+  EXPECT_FALSE(IsGranularFormFill(ActionType::kUnknown));
+}
+
+TEST(CriticalActionTypesTest, FormFillTypesRoundTrip) {
+  // Every `FormFillType` survives a write and read.
+  base::DictValue all_types_dict;
+  SetFormFillTypes(all_types_dict, FormFillTypes::All());
+  CriticalActionEntry all_types;
+  all_types.metadata = base::WriteJson(all_types_dict).value();
+  EXPECT_EQ(all_types.GetFormFillTypes(), FormFillTypes::All());
+
+  // The stored strings are stable.
+  base::DictValue metadata_dict;
+  SetFormFillTypes(metadata_dict, {FormFillType::kAddress, FormFillType::kPhone,
+                                   FormFillType::kCreditCard});
+  CriticalActionEntry entry;
+  entry.metadata = base::WriteJson(metadata_dict).value();
+  EXPECT_EQ(entry.metadata,
+            R"({"form_fill_types":["ADDRESS","PHONE","CREDIT_CARD"]})");
+  EXPECT_EQ(entry.GetFormFillTypes(),
+            FormFillTypes({FormFillType::kAddress, FormFillType::kPhone,
+                           FormFillType::kCreditCard}));
+}
+
+TEST(CriticalActionTypesTest, FormFillTypesIgnoresUnknownAndLegacyMetadata) {
+  CriticalActionEntry entry;
+  // "PASSPORT" stands in for a string written by a newer version.
+  entry.metadata = R"({"form_fill_types":["NAME","PASSPORT",42]})";
+  EXPECT_EQ(entry.GetFormFillTypes(), FormFillTypes({FormFillType::kName}));
+
+  // A legacy kFormFill row.
+  entry.metadata = R"({"filled_types":["NAME_FULL"]})";
+  EXPECT_TRUE(entry.GetFormFillTypes().empty());
+
+  entry.metadata = R"({"form_fill_types":"ADDRESS"})";
+  EXPECT_TRUE(entry.GetFormFillTypes().empty());
+
+  entry.metadata = "not json";
+  EXPECT_TRUE(entry.GetFormFillTypes().empty());
+
+  entry.metadata = "";
+  EXPECT_TRUE(entry.GetFormFillTypes().empty());
+}
+
+TEST(CriticalActionTypesTest, AddFormFillTypesMergesWithoutDuplicates) {
+  CriticalActionEntry entry;
+  entry.metadata = R"({"form_fill_types":["ADDRESS"],"other":1})";
+  entry.AddFormFillTypes({FormFillType::kAddress, FormFillType::kName});
+  EXPECT_EQ(entry.metadata,
+            R"({"form_fill_types":["ADDRESS","NAME"],"other":1})");
+}
+
+TEST(CriticalActionTypesTest, AddFormFillTypesToEmptyMetadata) {
+  CriticalActionEntry entry;
+  entry.AddFormFillTypes({FormFillType::kEmail});
+  EXPECT_EQ(entry.metadata, R"({"form_fill_types":["EMAIL"]})");
+
+  // Adding nothing leaves the metadata unchanged.
+  entry.AddFormFillTypes({});
+  EXPECT_EQ(entry.metadata, R"({"form_fill_types":["EMAIL"]})");
+}
+
+TEST(CriticalActionTypesTest, AddFormFillTypesDropsUnknownStrings) {
+  CriticalActionEntry entry;
+  // "PASSPORT" stands in for a string written by a newer version.
+  entry.metadata = R"({"form_fill_types":["NAME","PASSPORT",42]})";
+  entry.AddFormFillTypes({FormFillType::kEmail});
+  EXPECT_EQ(entry.metadata, R"({"form_fill_types":["NAME","EMAIL"]})");
+}
+
+TEST(CriticalActionTypesTest, AddFormFillTypesToMalformedMetadata) {
+  CriticalActionEntry entry;
+  // Metadata that isn't a JSON object is replaced.
+  entry.metadata = "not json";
+  entry.AddFormFillTypes({FormFillType::kPhone});
+  EXPECT_EQ(entry.metadata, R"({"form_fill_types":["PHONE"]})");
+
+  // A "form_fill_types" value that isn't a list is replaced; other keys are
+  // kept.
+  entry.metadata = R"({"form_fill_types":"ADDRESS","other":1})";
+  entry.AddFormFillTypes({FormFillType::kPhone});
+  EXPECT_EQ(entry.metadata, R"({"form_fill_types":["PHONE"],"other":1})");
 }
 
 }  // namespace

@@ -11,7 +11,12 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/enum_set.h"
 #include "base/time/time.h"
+
+namespace base {
+class DictValue;
+}  // namespace base
 
 namespace critical_actions {
 
@@ -63,6 +68,31 @@ enum class OpenConversationResult {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/critical_actions/enums.xml:OpenConversationResult)
 
+// Attribute filled by a form fill critical action, e.g. an address or card
+// details. Stored in CriticalActionEntry::metadata as stable strings under
+// "form_fill_types". Append-only; do not renumber.
+enum class FormFillType {
+  kUnknown = 0,
+  // Contact info.
+  kAddress = 1,
+  kName = 2,
+  kEmail = 3,
+  kPhone = 4,
+  // Payments.
+  kCreditCard = 5,
+  kMaxValue = kCreditCard,
+};
+
+using FormFillTypes = base::
+    EnumSet<FormFillType, FormFillType::kAddress, FormFillType::kMaxValue>;
+
+// Returns true for the granular form fill groups, whose records store
+// FormFillTypes in their metadata.
+bool IsGranularFormFill(ActionType type);
+
+// Writes `types` into `metadata_dict` under the "form_fill_types" key.
+void SetFormFillTypes(base::DictValue& metadata_dict, FormFillTypes types);
+
 // Maximum allowed byte length for
 // `CriticalActionEntry::conversation_anchor_id`. Generous enough for
 // agent-agnostic identifiers (e.g., Glic turn IDs, UUIDs, or opaque 3P agent
@@ -83,6 +113,16 @@ struct CriticalActionEntry {
 
   // Returns the user-facing localized tooltip / description for the action.
   std::string GetTooltip() const;
+
+  // Returns the form fill attributes stored in `metadata`. Empty for legacy
+  // rows, malformed JSON and entries without attributes. Unknown strings are
+  // ignored.
+  FormFillTypes GetFormFillTypes() const;
+
+  // Adds `types` to the "form_fill_types" list in `metadata`, keeping all
+  // other keys. Unknown strings are dropped. Changes only this in-memory
+  // entry, not the database. Used when merging duplicate entries for display.
+  void AddFormFillTypes(FormFillTypes types);
 
   class Builder;
 
