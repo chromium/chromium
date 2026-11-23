@@ -27,6 +27,8 @@
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/test/test_fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/actor/coordinator/actor_overlay_coordinator.h"
+#import "ios/chrome/browser/picture_in_picture/coordinator/picture_in_picture_coordinator.h"
+#import "ios/chrome/browser/picture_in_picture/public/picture_in_picture_configuration.h"
 #import "ios/chrome/browser/promos_manager/coordinator/promos_manager_coordinator.h"
 #import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_coordinator.h"
 #import "ios/chrome/browser/send_tab_to_self/coordinator/send_tab_to_self_coordinator.h"
@@ -45,6 +47,7 @@
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/download_list_commands.h"
 #import "ios/chrome/browser/shared/public/commands/non_modal_signin_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/save_image_to_photos_command.h"
@@ -64,11 +67,82 @@
 #import "ios/chrome/browser/tab_picker/public/tab_picker_snackbar_presenter.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "ios/web/public/thread/web_task_traits.h"
+#import "ios/web/public/thread/web_thread.h"
 #import "testing/platform_test.h"
+#import "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "url/gurl.h"
 #import "url/origin.h"
+
+// View controller test double exposing a controllable `transitionCoordinator`
+// to simulate an active UIKit presentation or dismissal transition.
+@interface FakeTransitioningViewController : UIViewController
+
+// Active transition coordinator returned by `-transitionCoordinator`.
+@property(nonatomic) id<UIViewControllerTransitionCoordinator>
+    fakeTransitionCoordinator;
+
+// Number of transition completion blocks registered on the active transition.
+@property(nonatomic, readonly) NSUInteger registeredCompletionCount;
+
+// Installs a mock `transitionCoordinator` that records completion blocks
+// registered via `-animateAlongsideTransition:completion:`.
+- (void)beginFakeTransition;
+
+// Clears `fakeTransitionCoordinator` and invokes all recorded completion
+// blocks.
+- (void)completeFakeTransition;
+
+@end
+
+@implementation FakeTransitioningViewController {
+  NSMutableArray<void (^)(id<UIViewControllerTransitionCoordinatorContext>)>*
+      _transitionCompletions;
+}
+
+- (NSUInteger)registeredCompletionCount {
+  return _transitionCompletions.count;
+}
+
+- (void)beginFakeTransition {
+  _transitionCompletions = [[NSMutableArray alloc] init];
+  NSMutableArray<void (^)(id<UIViewControllerTransitionCoordinatorContext>)>*
+      completions = _transitionCompletions;
+  id mockTransitionCoordinator =
+      OCMProtocolMock(@protocol(UIViewControllerTransitionCoordinator));
+  OCMStub(
+      [mockTransitionCoordinator
+          animateAlongsideTransition:nil
+                          completion:[OCMArg checkWithBlock:^BOOL(id block) {
+                            if (block) {
+                              [completions addObject:[block copy]];
+                            }
+                            return YES;
+                          }]])
+      .andReturn(YES);
+  self.fakeTransitionCoordinator = mockTransitionCoordinator;
+}
+
+- (void)completeFakeTransition {
+  NSArray<void (^)(id<UIViewControllerTransitionCoordinatorContext>)>*
+      completions = [_transitionCompletions copy];
+  _transitionCompletions = nil;
+  self.fakeTransitionCoordinator = nil;
+  for (void (^completion)(id<UIViewControllerTransitionCoordinatorContext>)
+           in completions) {
+    completion(nil);
+  }
+}
+
+#pragma mark - UIViewController
+
+- (id<UIViewControllerTransitionCoordinator>)transitionCoordinator {
+  return self.fakeTransitionCoordinator;
+}
+
+@end
 
 // Test fixture for BrowserModalHost testing.
 class BrowserModalHostTest : public PlatformTest {
@@ -103,6 +177,14 @@ class BrowserModalHostTest : public PlatformTest {
 
   web::WebState* GetActiveWebState() {
     return browser_->GetWebStateList()->GetActiveWebState();
+  }
+
+  // Flushes tasks already queued on the UI thread task runner.
+  void FlushUITaskRunner() {
+    base::test::TestFuture<void> flush_future;
+    web::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                             flush_future.GetCallback());
+    EXPECT_TRUE(flush_future.Wait());
   }
 
   web::WebTaskEnvironment task_environment_;
@@ -648,6 +730,200 @@ TEST_F(BrowserModalHostTest, StopQuickDeleteForAnimationWithCompletion) {
 
   EXPECT_OCMOCK_VERIFY(mockBrowserCoordinatorCommands);
   EXPECT_OCMOCK_VERIFY(mockSceneCommands);
+}
+
+// Tests that `-showPictureInPictureWithConfig:` starts
+// `PictureInPictureCoordinator` synchronously when no transition is active.
+TEST_F(BrowserModalHostTest,
+       ShowPictureInPictureStartsImmediatelyWithoutActiveTransition) {
+  PictureInPictureConfiguration* config =
+      [[PictureInPictureConfiguration alloc] init];
+  id class_mock = OCMStrictClassMock([PictureInPictureCoordinator class]);
+  PictureInPictureCoordinator* mock_coordinator = class_mock;
+  // Detaches strict mocks before fixture teardown, even if an `ASSERT_*` exits
+  // the test early.
+  absl::Cleanup cleanup = [&] {
+    OCMStub([mock_coordinator stop]);
+    [modal_host_ clearPresentedState];
+    [class_mock stopMocking];
+  };
+
+  OCMExpect([class_mock alloc]).andReturn(class_mock);
+  OCMExpect([class_mock initWithConfiguration:config
+                           baseViewController:base_view_controller_
+                                      browser:browser_.get()])
+      .andReturn(mock_coordinator);
+  OCMExpect([mock_coordinator start]);
+
+  id<PictureInPictureCommands> handler = HandlerForProtocol(
+      browser_->GetCommandDispatcher(), PictureInPictureCommands);
+  [handler showPictureInPictureWithConfig:config];
+  EXPECT_OCMOCK_VERIFY(class_mock);
+
+  OCMExpect([mock_coordinator stop]);
+  [handler dismissPictureInPicture];
+  EXPECT_OCMOCK_VERIFY(class_mock);
+}
+
+// Tests that `-showPictureInPictureWithConfig:` waits for an active dismissal
+// or presentation transition on the base view controller to finish before
+// starting `PictureInPictureCoordinator`.
+TEST_F(BrowserModalHostTest,
+       ShowPictureInPictureWaitsForActiveTransitionToComplete) {
+  FakeTransitioningViewController* transitioning_view_controller =
+      [[FakeTransitioningViewController alloc] init];
+  [modal_host_ setBaseViewControllerForModals:transitioning_view_controller];
+  [transitioning_view_controller beginFakeTransition];
+
+  PictureInPictureConfiguration* config =
+      [[PictureInPictureConfiguration alloc] init];
+  id class_mock = OCMStrictClassMock([PictureInPictureCoordinator class]);
+  PictureInPictureCoordinator* mock_coordinator = class_mock;
+  // Detaches strict mocks before fixture teardown, even if an `ASSERT_*` exits
+  // the test early.
+  absl::Cleanup cleanup = [&] {
+    OCMStub([mock_coordinator stop]);
+    [modal_host_ clearPresentedState];
+    [class_mock stopMocking];
+  };
+
+  OCMExpect([class_mock alloc]).andReturn(class_mock);
+  OCMExpect([class_mock initWithConfiguration:config
+                           baseViewController:transitioning_view_controller
+                                      browser:browser_.get()])
+      .andReturn(mock_coordinator);
+
+  id<PictureInPictureCommands> handler = HandlerForProtocol(
+      browser_->GetCommandDispatcher(), PictureInPictureCommands);
+  [handler showPictureInPictureWithConfig:config];
+  FlushUITaskRunner();
+
+  EXPECT_OCMOCK_VERIFY(class_mock);
+  ASSERT_EQ(1u, transitioning_view_controller.registeredCompletionCount);
+
+  // Completing the transition starts `PictureInPictureCoordinator`.
+  __block base::test::TestFuture<void> start_future;
+  OCMExpect([mock_coordinator start]).andDo(^(NSInvocation* invocation) {
+    start_future.SetValue();
+  });
+  [transitioning_view_controller completeFakeTransition];
+
+  EXPECT_TRUE(start_future.Wait());
+  EXPECT_OCMOCK_VERIFY(class_mock);
+
+  OCMExpect([mock_coordinator stop]);
+  [handler dismissPictureInPicture];
+  EXPECT_OCMOCK_VERIFY(class_mock);
+}
+
+// Tests that `-dismissPictureInPicture` while waiting for an active transition
+// cancels the deferred `PictureInPictureCoordinator` `-start`.
+TEST_F(BrowserModalHostTest,
+       DismissPictureInPictureDuringActiveTransitionCancelsDeferredStart) {
+  FakeTransitioningViewController* transitioning_view_controller =
+      [[FakeTransitioningViewController alloc] init];
+  [modal_host_ setBaseViewControllerForModals:transitioning_view_controller];
+  [transitioning_view_controller beginFakeTransition];
+
+  PictureInPictureConfiguration* config =
+      [[PictureInPictureConfiguration alloc] init];
+  id class_mock = OCMStrictClassMock([PictureInPictureCoordinator class]);
+  PictureInPictureCoordinator* mock_coordinator = class_mock;
+  // Detaches strict mocks before fixture teardown, even if an `ASSERT_*` exits
+  // the test early.
+  absl::Cleanup cleanup = [&] {
+    OCMStub([mock_coordinator stop]);
+    [modal_host_ clearPresentedState];
+    [class_mock stopMocking];
+  };
+
+  OCMExpect([class_mock alloc]).andReturn(class_mock);
+  OCMExpect([class_mock initWithConfiguration:config
+                           baseViewController:transitioning_view_controller
+                                      browser:browser_.get()])
+      .andReturn(mock_coordinator);
+
+  id<PictureInPictureCommands> handler = HandlerForProtocol(
+      browser_->GetCommandDispatcher(), PictureInPictureCommands);
+  [handler showPictureInPictureWithConfig:config];
+  ASSERT_EQ(1u, transitioning_view_controller.registeredCompletionCount);
+
+  OCMExpect([mock_coordinator stop]);
+  [handler dismissPictureInPicture];
+
+  [transitioning_view_controller completeFakeTransition];
+  FlushUITaskRunner();
+
+  EXPECT_OCMOCK_VERIFY(class_mock);
+}
+
+// Tests that calling `-showPictureInPictureWithConfig:` a second time during an
+// active transition stops the superseded coordinator and starts only the latest
+// coordinator when the transition completes.
+TEST_F(BrowserModalHostTest,
+       ShowPictureInPictureDuringActiveTransitionSupersedesPendingCoordinator) {
+  FakeTransitioningViewController* transitioning_view_controller =
+      [[FakeTransitioningViewController alloc] init];
+  [modal_host_ setBaseViewControllerForModals:transitioning_view_controller];
+  [transitioning_view_controller beginFakeTransition];
+
+  PictureInPictureConfiguration* first_config =
+      [[PictureInPictureConfiguration alloc] init];
+  PictureInPictureConfiguration* second_config =
+      [[PictureInPictureConfiguration alloc] init];
+  id first_mock = OCMStrictClassMock([PictureInPictureCoordinator class]);
+  id class_mock = OCMStrictClassMock([PictureInPictureCoordinator class]);
+  PictureInPictureCoordinator* first_coordinator = first_mock;
+  PictureInPictureCoordinator* second_coordinator = class_mock;
+  // Detaches strict mocks before fixture teardown, even if an `ASSERT_*` exits
+  // the test early.
+  absl::Cleanup cleanup = [&] {
+    OCMStub([first_coordinator stop]);
+    OCMStub([second_coordinator stop]);
+    [modal_host_ clearPresentedState];
+    [first_mock stopMocking];
+    [class_mock stopMocking];
+  };
+
+  OCMExpect([class_mock alloc]).andReturn(first_mock);
+  OCMExpect([first_mock initWithConfiguration:first_config
+                           baseViewController:transitioning_view_controller
+                                      browser:browser_.get()])
+      .andReturn(first_coordinator);
+
+  id<PictureInPictureCommands> handler = HandlerForProtocol(
+      browser_->GetCommandDispatcher(), PictureInPictureCommands);
+  [handler showPictureInPictureWithConfig:first_config];
+  ASSERT_EQ(1u, transitioning_view_controller.registeredCompletionCount);
+
+  // Second request stops `first_coordinator` and replaces it with
+  // `second_coordinator`.
+  OCMExpect([first_coordinator stop]);
+  OCMExpect([class_mock alloc]).andReturn(class_mock);
+  OCMExpect([class_mock initWithConfiguration:second_config
+                           baseViewController:transitioning_view_controller
+                                      browser:browser_.get()])
+      .andReturn(second_coordinator);
+  [handler showPictureInPictureWithConfig:second_config];
+  ASSERT_EQ(2u, transitioning_view_controller.registeredCompletionCount);
+  EXPECT_OCMOCK_VERIFY(first_mock);
+  EXPECT_OCMOCK_VERIFY(class_mock);
+
+  // Completing the transition starts only `second_coordinator`.
+  __block base::test::TestFuture<void> start_future;
+  OCMExpect([second_coordinator start]).andDo(^(NSInvocation* invocation) {
+    start_future.SetValue();
+  });
+  [transitioning_view_controller completeFakeTransition];
+  EXPECT_TRUE(start_future.Wait());
+  FlushUITaskRunner();
+
+  EXPECT_OCMOCK_VERIFY(first_mock);
+  EXPECT_OCMOCK_VERIFY(class_mock);
+
+  OCMExpect([second_coordinator stop]);
+  [handler dismissPictureInPicture];
+  EXPECT_OCMOCK_VERIFY(class_mock);
 }
 
 // Tests that `-dismissCurrentPromo` stops PromosManagerCoordinator.

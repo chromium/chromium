@@ -498,6 +498,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/ntp/ui_bundled:coordinator",
     "//ios/chrome/browser/ntp/ui_bundled:logo",
     "//ios/chrome/browser/omnibox/model/omnibox_focus",
+    "//ios/chrome/browser/picture_in_picture/coordinator",
+    "//ios/chrome/browser/picture_in_picture/public",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/popup_menu/coordinator",
     "//ios/chrome/browser/prerender/model",

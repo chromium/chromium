@@ -596,6 +596,15 @@ const char kContextPanelDismissedHistogram[] =
   _storeKitCoordinator = nil;
 }
 
+// Starts `coordinator` if it is still the active Picture-in-Picture
+// coordinator.
+- (void)startPictureInPictureCoordinatorIfCurrent:
+    (PictureInPictureCoordinator*)coordinator {
+  if (coordinator && _pictureInPictureCoordinator == coordinator) {
+    [_pictureInPictureCoordinator start];
+  }
+}
+
 // Handles cleanup and metric logging when the Contextual Panel Entrypoint IPH
 // is dismissed.
 // TODO(crbug.com/555640717): Investigate if this can be moved to an
@@ -1988,14 +1997,25 @@ const char kContextPanelDismissedHistogram[] =
 - (void)showPictureInPictureWithConfig:(PictureInPictureConfiguration*)config {
   CHECK(!_browser->GetProfile()->IsOffTheRecord());
 
-  [_pictureInPictureCoordinator stop];
+  [self dismissPictureInPicture];
 
   UIViewController* baseViewController = [self activeBaseViewController];
+  if (!baseViewController) {
+    return;
+  }
   _pictureInPictureCoordinator = [[PictureInPictureCoordinator alloc]
       initWithConfiguration:config
          baseViewController:baseViewController
                     browser:_browser];
-  [_pictureInPictureCoordinator start];
+  __weak __typeof(self) weakSelf = self;
+  __weak PictureInPictureCoordinator* weakPictureInPictureCoordinator =
+      _pictureInPictureCoordinator;
+  ExecuteWhenTransitionsComplete(
+      ^{
+        [weakSelf startPictureInPictureCoordinatorIfCurrent:
+                      weakPictureInPictureCoordinator];
+      },
+      baseViewController);
 }
 
 - (void)dismissPictureInPicture {
