@@ -209,8 +209,14 @@ export class ProfileCustomizationAppElement extends
   protected onSelectAvatarConfirmClick_() {
     assert(this.isStyle_(ProfileCustomizationStyle.LOCAL_PROFILE_CREATION));
     assert(this.selectedAvatar_);
-    this.profileCustomizationBrowserProxy_.setAvatarIcon(
-        this.selectedAvatar_.index);
+    if (this.selectedAvatar_.isGaiaAvatar) {
+      // The Google Account picture (offered to signed-in profiles) is not a
+      // default avatar index.
+      this.profileCustomizationBrowserProxy_.setGaiaPictureAsAvatar();
+    } else {
+      this.profileCustomizationBrowserProxy_.setAvatarIcon(
+          this.selectedAvatar_.index);
+    }
     this.confirmedAvatar_ = this.selectedAvatar_;
     this.closeSelectAvatar_();
   }

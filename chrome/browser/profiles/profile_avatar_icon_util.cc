@@ -1126,6 +1126,17 @@ void SetDefaultProfileAvatarIndex(Profile* profile, size_t avatar_icon_index) {
   ProfileMetrics::LogProfileAvatarSelection(avatar_icon_index);
 }
 
+void SetGaiaPictureAsAvatar(PrefService* pref_service) {
+  const bool previously_using_gaia_picture =
+      pref_service->GetBoolean(prefs::kProfileUsingGAIAAvatar);
+  pref_service->SetBoolean(prefs::kProfileUsingDefaultAvatar, false);
+  pref_service->SetBoolean(prefs::kProfileUsingGAIAAvatar, true);
+  if (!previously_using_gaia_picture) {
+    // Only log if the avatar changed to the GAIA picture.
+    ProfileMetrics::LogProfileAvatarSelection(SIZE_MAX);
+  }
+}
+
 #if BUILDFLAG(IS_WIN)
 SkBitmap GetWin2xAvatarImage(ProfileAttributesEntry* entry) {
   // Request just one size large enough for all uses.

@@ -17,6 +17,7 @@ export class TestProfileCustomizationBrowserProxy extends TestBrowserProxy
       'skip',
       'deleteProfile',
       'setAvatarIcon',
+      'setGaiaPictureAsAvatar',
     ]);
 
     this.profileInfo_ = {
@@ -61,6 +62,13 @@ export class TestProfileCustomizationBrowserProxy extends TestBrowserProxy
         selected: false,
         isGaiaAvatar: false,
       },
+      {
+        url: 'fake-gaia-icon.png',
+        label: 'fake-gaia-icon',
+        index: 3,
+        selected: false,
+        isGaiaAvatar: true,
+      },
     ]);
   }
 
@@ -78,5 +86,9 @@ export class TestProfileCustomizationBrowserProxy extends TestBrowserProxy
 
   setAvatarIcon(avatarIndex: number) {
     this.methodCalled('setAvatarIcon', avatarIndex);
+  }
+
+  setGaiaPictureAsAvatar() {
+    this.methodCalled('setGaiaPictureAsAvatar');
   }
 }

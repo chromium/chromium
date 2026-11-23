@@ -19,15 +19,12 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/webui/theme_source.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/url_data_source.h"
@@ -143,19 +140,7 @@ void ManageProfileHandler::HandleGetAvailableIcons(
 void ManageProfileHandler::HandleSetProfileIconToGaiaAvatar(
     const base::ListValue& args) {
   CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M162);
-
-  PrefService* pref_service = profile_->GetPrefs();
-  bool previously_using_gaia_icon =
-      pref_service->GetBoolean(prefs::kProfileUsingGAIAAvatar);
-
-  pref_service->SetBoolean(prefs::kProfileUsingDefaultAvatar, false);
-  pref_service->SetBoolean(prefs::kProfileUsingGAIAAvatar, true);
-  if (!previously_using_gaia_icon) {
-    // Only log if they changed to the GAIA photo.
-    // Selection of GAIA photo as avatar is logged as part of the function
-    // below.
-    ProfileMetrics::LogProfileAvatarSelection(SIZE_MAX);
-  }
+  profiles::SetGaiaPictureAsAvatar(profile_->GetPrefs());
 }
 
 void ManageProfileHandler::HandleSetProfileIconToDefaultAvatar(

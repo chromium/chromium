@@ -32,6 +32,7 @@ class Image;
 class ImageSkia;
 }
 
+class PrefService;
 class Profile;
 class ProfileAttributesEntry;
 class SkBitmap;
@@ -243,6 +244,10 @@ base::ListValue GetIconsAndLabelsForProfileAvatarSelector(
 // Set the default profile avatar icon index to |avatar_icon_index| for a
 // specific |profile|.
 void SetDefaultProfileAvatarIndex(Profile* profile, size_t avatar_icon_index);
+
+// Uses the existing GAIA (Google Account) picture as the avatar of the profile
+// owning `pref_service`. This does not change the GAIA picture itself.
+void SetGaiaPictureAsAvatar(PrefService* pref_service);
 
 #if BUILDFLAG(IS_WIN)
 // Get the 2x avatar image for a ProfileAttributesEntry.

@@ -99,7 +99,10 @@
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/signin/account_preview_utils.h"
 #include "chrome/browser/ui/webui/signin/cross_device_signin_qr_bubble_ui.h"
+#include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
+#include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
+#include "chrome/common/pref_names.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
 #include "components/signin/core/browser/test_account_preview_data_service.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -2304,6 +2307,69 @@ INSTANTIATE_TEST_SUITE_P(
                  ? "EditProfile"
                  : "Default";
     });
+
+// Selecting the Google Account picture in the edit profile dialog uses the
+// existing GAIA picture as the profile avatar.
+IN_PROC_BROWSER_TEST_F(SigninViewControllerBrowserTest,
+                       EditProfileDialogSetGaiaPictureAsAvatar) {
+  PrefService* prefs = GetProfile()->GetPrefs();
+  prefs->SetBoolean(prefs::kProfileUsingDefaultAvatar, true);
+  prefs->SetBoolean(prefs::kProfileUsingGAIAAvatar, false);
+  SigninViewController* controller = SigninViewController::From(browser());
+  controller->ShowModalProfileCustomizationDialog(
+      ProfileCustomizationStyle::kEditProfile);
+  content::WebContents* web_contents =
+      controller->GetModalDialogWebContentsForTesting();
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+
+  ASSERT_TRUE(
+      content::ExecJs(web_contents, "chrome.send('setGaiaPictureAsAvatar');"));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&] { return prefs->GetBoolean(prefs::kProfileUsingGAIAAvatar); }));
+  EXPECT_FALSE(prefs->GetBoolean(prefs::kProfileUsingDefaultAvatar));
+  controller->CloseModalSignin();
+}
+
+// The GAIA picture is loaded asynchronously and is only listed in the avatar
+// selector once loaded, so the list is refreshed when the picture of the
+// profile is loaded (and not for other profiles).
+class SigninViewControllerManageProfileDialogBrowserTest
+    : public SigninViewControllerBrowserTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      switches::kReplaceManageProfileWithDialog};
+};
+
+IN_PROC_BROWSER_TEST_F(SigninViewControllerManageProfileDialogBrowserTest,
+                       EditProfileDialogRefreshesIconsWhenGaiaPictureLoaded) {
+  SigninViewController* controller = SigninViewController::From(browser());
+  controller->ShowModalProfileCustomizationDialog(
+      ProfileCustomizationStyle::kEditProfile);
+  content::WebContents* web_contents =
+      controller->GetModalDialogWebContentsForTesting();
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+  // Clear the list of avatars shown in the avatar selector of the page.
+  const std::string available_icons =
+      "document.querySelector('profile-customization-app').availableIcons_";
+  ASSERT_TRUE(content::ExecJs(web_contents, available_icons + " = [];"));
+
+  ProfileCustomizationHandler* handler =
+      web_contents->GetWebUI()
+          ->GetController()
+          ->GetAs<ProfileCustomizationUI>()
+          ->GetProfileCustomizationHandlerForTesting();
+  // The GAIA picture of another profile does not refresh the icons.
+  handler->OnProfileHighResAvatarLoaded(
+      GetProfile()->GetPath().DirName().AppendASCII("Profile 2"));
+  EXPECT_EQ(0, content::EvalJs(web_contents, available_icons + ".length"));
+
+  // The Gaia picture of the current profile updates the list of avatars.
+  handler->OnProfileHighResAvatarLoaded(GetProfile()->GetPath());
+  EXPECT_GT(
+      content::EvalJs(web_contents, available_icons + ".length").ExtractInt(),
+      0);
+  controller->CloseModalSignin();
+}
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

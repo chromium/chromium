@@ -45,6 +45,9 @@ export interface ProfileCustomizationBrowserProxy {
   deleteProfile(): void;
 
   setAvatarIcon(avatarIndex: number): void;
+
+  // Selects the Google Account picture as the profile avatar.
+  setGaiaPictureAsAvatar(): void;
 }
 
 export class ProfileCustomizationBrowserProxyImpl implements
@@ -71,6 +74,10 @@ export class ProfileCustomizationBrowserProxyImpl implements
 
   setAvatarIcon(avatarIndex: number) {
     chrome.send('setAvatarIcon', [avatarIndex]);
+  }
+
+  setGaiaPictureAsAvatar() {
+    chrome.send('setGaiaPictureAsAvatar');
   }
 
   static getInstance(): ProfileCustomizationBrowserProxy {

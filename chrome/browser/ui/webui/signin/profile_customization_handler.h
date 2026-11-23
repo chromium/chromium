@@ -59,6 +59,7 @@ class ProfileCustomizationHandler : public content::WebUIMessageHandler,
   void HandleSkip(const base::ListValue& args);
   void HandleDeleteProfile(const base::ListValue& args);
   void HandleSetAvatarIcon(const base::ListValue& args);
+  void HandleSetGaiaPictureAsAvatar(const base::ListValue& args);
 
   // Sends an updated profile info (avatar and colors) to the WebUI.
   // `profile_path` is the path of the profile being updated, this function does

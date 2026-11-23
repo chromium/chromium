@@ -252,6 +252,40 @@ suite('LocalProfileCreationTest', function() {
     deleteProfileButton.click();
     return browserProxy.whenCalled('deleteProfile');
   });
+
+  // Opens the avatar selection view, clicks the avatar at `index` and confirms.
+  async function selectAvatar(index: number) {
+    await browserProxy.whenCalled('getAvailableIcons');
+    await microtasksFinished();
+    app.shadowRoot.querySelector<CrIconButtonElement>(
+                      '#customizeAvatarIcon')!.click();
+    await microtasksFinished();
+
+    const selector =
+        app.shadowRoot.querySelector('cr-profile-avatar-selector')!;
+    const avatars =
+        selector.shadowRoot.querySelectorAll<CrButtonElement>('.avatar');
+    assertEquals(4, avatars.length);
+    avatars[index]!.click();
+    await microtasksFinished();
+
+    app.shadowRoot.querySelector<CrButtonElement>(
+                      '#selectAvatarConfirmButton')!.click();
+    await microtasksFinished();
+  }
+
+  test('SelectDefaultAvatar', async function() {
+    await selectAvatar(1);
+    assertEquals(1, await browserProxy.whenCalled('setAvatarIcon'));
+    assertEquals(0, browserProxy.getCallCount('setGaiaPictureAsAvatar'));
+  });
+
+  // The Google Account picture is not a default avatar index.
+  test('SelectGaiaAvatar', async function() {
+    await selectAvatar(3);
+    await browserProxy.whenCalled('setGaiaPictureAsAvatar');
+    assertEquals(0, browserProxy.getCallCount('setAvatarIcon'));
+  });
 });
 
 suite('EditProfileTest', function() {
