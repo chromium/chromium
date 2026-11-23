@@ -70,14 +70,6 @@ ExtensionFunction::ResponseAction FileManagerPrivateSelectFileFunction::Run() {
     return RespondNow(Error("Path not supported"));
   }
 
-  file_manager::util::GetSelectedFileInfoLocalPathOption option =
-      file_manager::util::NO_LOCAL_PATH_RESOLUTION;
-  if (params->should_return_local_path) {
-    option = params->for_opening
-                 ? file_manager::util::NEED_LOCAL_PATH_FOR_OPENING
-                 : file_manager::util::NEED_LOCAL_PATH_FOR_SAVING;
-  }
-
   if (file_manager::util::IsDriveLocalPath(profile, local_path) &&
       file_manager::file_tasks::IsOfficeFile(local_path) &&
       params->for_opening) {
@@ -91,7 +83,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateSelectFileFunction::Run() {
           local_path,
           base::BindOnce(
               &file_manager::util::GetSelectedFileInfo, profile,
-              std::vector({local_path}), option,
+              std::vector({local_path}),
               base::BindOnce(&FileManagerPrivateSelectFileFunction::
                                  GetSelectedFileInfoResponse,
                              this, params->for_opening, params->index)));
@@ -100,7 +92,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateSelectFileFunction::Run() {
   }
 
   file_manager::util::GetSelectedFileInfo(
-      profile, {local_path}, option,
+      profile, {local_path},
       base::BindOnce(
           &FileManagerPrivateSelectFileFunction::GetSelectedFileInfoResponse,
           this, params->for_opening, params->index));
@@ -136,8 +128,6 @@ ExtensionFunction::ResponseAction FileManagerPrivateSelectFilesFunction::Run() {
   using extensions::api::file_manager_private::SelectFiles::Params;
   const std::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-
-  should_return_local_path_ = params->should_return_local_path;
 
   Profile* const profile = Profile::FromBrowserContext(browser_context());
 
@@ -176,9 +166,6 @@ ExtensionFunction::ResponseAction FileManagerPrivateSelectFilesFunction::Run() {
 
   file_manager::util::GetSelectedFileInfo(
       Profile::FromBrowserContext(browser_context()), std::move(local_paths),
-      params->should_return_local_path
-          ? file_manager::util::NEED_LOCAL_PATH_FOR_OPENING
-          : file_manager::util::NO_LOCAL_PATH_RESOLUTION,
       base::BindOnce(
           &FileManagerPrivateSelectFilesFunction::GetSelectedFileInfoResponse,
           this, true));
@@ -193,9 +180,6 @@ void FileManagerPrivateSelectFilesFunction::OnReSyncFile() {
   file_manager::util::GetSelectedFileInfo(
       Profile::FromBrowserContext(browser_context()),
       std::move(local_paths_for_resync_callback_),
-      should_return_local_path_
-          ? file_manager::util::NEED_LOCAL_PATH_FOR_OPENING
-          : file_manager::util::NO_LOCAL_PATH_RESOLUTION,
       base::BindOnce(
           &FileManagerPrivateSelectFilesFunction::GetSelectedFileInfoResponse,
           this, true));

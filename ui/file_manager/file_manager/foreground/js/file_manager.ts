@@ -18,7 +18,6 @@ import type {ProgressCenter} from '../../background/js/progress_center.js';
 import {getBulkPinProgress, getDialogCaller, getDlpBlockedComponents, getDriveConnectionState, getPreferences} from '../../common/js/api.js';
 import type {ArrayDataModel} from '../../common/js/array_data_model.js';
 import {crInjectTypeAndInit} from '../../common/js/cr_ui.js';
-import {isFolderDialogType} from '../../common/js/dialog_type.js';
 import {getKeyModifiers, queryDecoratedElement, queryRequiredElement} from '../../common/js/dom_utils.js';
 import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
@@ -839,7 +838,6 @@ export class FileManager {
    * Initializes the VolumeManager instance.
    */
   private async initVolumeManager_() {
-    const allowedPaths = this.getAllowedPaths_();
     assert(this.launchParams_);
     assert(this.fileBrowserBackground_);
     const writableOnly =
@@ -856,7 +854,7 @@ export class FileManager {
     // Note that the Drive enabling preference change is listened by
     // DriveIntegrationService, so here we don't need to take care about it.
     this.volumeManager_ = new FilteredVolumeManager(
-        allowedPaths, writableOnly,
+        this.launchParams_.allowedPaths, writableOnly,
         this.fileBrowserBackground_.getVolumeManager(),
         this.launchParams_.volumeFilter, disabledVolumes);
 
@@ -1481,36 +1479,12 @@ export class FileManager {
   }
 
   /**
-   * Returns allowed path for the dialog by considering:
-   * 1) The launch parameter which specifies generic category of valid files
-   * paths.
-   * 2) Files app's unique capabilities and restrictions.
-   */
-  private getAllowedPaths_(): AllowedPaths {
-    assert(this.launchParams_);
-    let allowedPaths = this.launchParams_.allowedPaths;
-    // The native implementation of the Files app creates snapshot files for
-    // non-native files. But it does not work for folders (e.g., dialog for
-    // loading unpacked extensions).
-    if (allowedPaths === AllowedPaths.NATIVE_PATH &&
-        !isFolderDialogType(this.launchParams_.type)) {
-      if (this.launchParams_.type === DialogType.SELECT_SAVEAS_FILE) {
-        allowedPaths = AllowedPaths.NATIVE_PATH;
-      } else {
-        allowedPaths = AllowedPaths.ANY_PATH;
-      }
-    }
-
-    return allowedPaths;
-  }
-
-  /**
    * Returns SourceRestriction which is used to communicate restrictions about
    * sources to chrome.fileManagerPrivate.getRecentFiles API.
    */
   private getSourceRestriction_(): chrome.fileManagerPrivate.SourceRestriction {
-    const allowedPaths = this.getAllowedPaths_();
-    if (allowedPaths === AllowedPaths.NATIVE_PATH) {
+    assert(this.launchParams_);
+    if (this.launchParams_.allowedPaths === AllowedPaths.NATIVE_PATH) {
       return chrome.fileManagerPrivate.SourceRestriction.NATIVE_SOURCE;
     }
     return chrome.fileManagerPrivate.SourceRestriction.ANY_SOURCE;

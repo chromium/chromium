@@ -28,7 +28,6 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/ash/file_manager/snapshot_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/fileapi/external_file_url_util.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
@@ -65,38 +64,12 @@ namespace fmp = extensions::api::file_manager_private;
 
 // The struct is used for GetSelectedFileInfo().
 struct GetSelectedFileInfoParams {
-  GetSelectedFileInfoLocalPathOption local_path_option;
   GetSelectedFileInfoCallback callback;
   std::vector<base::FilePath> file_paths;
   std::vector<ui::SelectedFileInfo> selected_files;
 };
 
-// The callback type for GetFileNativeLocalPathFor{Opening,Saving}. It receives
-// the resolved local path when successful, and receives empty path for failure.
-using LocalPathCallback = base::OnceCallback<void(const base::FilePath&)>;
-
-// Gets a resolved local file path of a non native |path| for file opening.
-void GetFileNativeLocalPathForOpening(Profile* profile,
-                                      const base::FilePath& path,
-                                      LocalPathCallback callback) {
-  VolumeManager::Get(profile)->snapshot_manager()->CreateManagedSnapshot(
-      path, std::move(callback));
-}
-
-// Gets a resolved local file path of a non native |path| for file saving.
-void GetFileNativeLocalPathForSaving(Profile* profile,
-                                     const base::FilePath& path,
-                                     LocalPathCallback callback) {
-  // TODO(kinaba): For now, there are no writable non-local volumes.
-  NOTREACHED();
-}
-
-// Forward declarations of helper functions for GetSelectedFileInfo().
-void ContinueGetSelectedFileInfo(
-    Profile* profile,
-    std::unique_ptr<GetSelectedFileInfoParams> params,
-    const base::FilePath& local_file_path);
-
+// Forward declaration of helper function for GetSelectedFileInfo().
 void ContinueGetSelectedFileInfoWithDriveFsMetadata(
     Profile* profile,
     std::unique_ptr<GetSelectedFileInfoParams> params,
@@ -114,36 +87,15 @@ void GetSelectedFileInfoInternal(
     const base::FilePath& file_path = params->file_paths[i];
 
     if (file_manager::util::IsUnderNonNativeLocalPath(profile, file_path)) {
-      // When the caller of the select file dialog wants local file paths, and
-      // the selected path does not point to a native local path (e.g., Drive,
-      // MTP, or provided file system), we should resolve the path.
-      switch (params->local_path_option) {
-        case NO_LOCAL_PATH_RESOLUTION: {
-          // Pass empty local path.
-          params->selected_files.emplace_back(file_path, base::FilePath());
+      // This file is under an FSF (foreign-sans-fusebox) volume and uses a URL
+      // instead of a local path.
+      params->selected_files.emplace_back(file_path,
+                                          /*in_local_path=*/base::FilePath());
 
-          GURL external_file_url =
-              ash::CreateExternalFileURLFromPath(profile, file_path);
-          if (!external_file_url.is_empty()) {
-            params->selected_files.back().url.emplace(
-                std::move(external_file_url));
-          }
-          break;
-        }
-        case NEED_LOCAL_PATH_FOR_OPENING: {
-          GetFileNativeLocalPathForOpening(
-              profile, file_path,
-              base::BindOnce(&ContinueGetSelectedFileInfo, profile,
-                             std::move(params)));
-          return;  // Remaining work is done in ContinueGetSelectedFileInfo.
-        }
-        case NEED_LOCAL_PATH_FOR_SAVING: {
-          GetFileNativeLocalPathForSaving(
-              profile, file_path,
-              base::BindOnce(&ContinueGetSelectedFileInfo, profile,
-                             std::move(params)));
-          return;  // Remaining work is done in ContinueGetSelectedFileInfo.
-        }
+      GURL external_file_url =
+          ash::CreateExternalFileURLFromPath(profile, file_path);
+      if (!external_file_url.is_empty()) {
+        params->selected_files.back().url.emplace(std::move(external_file_url));
       }
     } else {
       // Hosted docs and encrypted files can only accessed by navigating
@@ -182,21 +134,6 @@ void GetSelectedFileInfoInternal(
   }
 
   std::move(params->callback).Run(params->selected_files);
-}
-
-// Part of GetSelectedFileInfo().
-void ContinueGetSelectedFileInfo(
-    Profile* profile,
-    std::unique_ptr<GetSelectedFileInfoParams> params,
-    const base::FilePath& local_path) {
-  if (local_path.empty()) {
-    std::move(params->callback).Run(std::vector<ui::SelectedFileInfo>());
-    return;
-  }
-  const int index = params->selected_files.size();
-  const base::FilePath& file_path = params->file_paths[index];
-  params->selected_files.emplace_back(file_path, local_path);
-  GetSelectedFileInfoInternal(profile, std::move(params));
 }
 
 // Part of GetSelectedFileInfo().
@@ -751,11 +688,9 @@ base::FilePath GetLocalPathFromURL(
 
 void GetSelectedFileInfo(Profile* profile,
                          std::vector<base::FilePath> local_paths,
-                         GetSelectedFileInfoLocalPathOption local_path_option,
                          GetSelectedFileInfoCallback callback) {
   std::unique_ptr<GetSelectedFileInfoParams> params =
       std::make_unique<GetSelectedFileInfoParams>();
-  params->local_path_option = local_path_option;
   params->callback = std::move(callback);
   params->file_paths = std::move(local_paths);
 

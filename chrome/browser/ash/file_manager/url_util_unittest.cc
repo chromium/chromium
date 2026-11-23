@@ -87,7 +87,6 @@ TEST(FileManagerUrlUtilTest,
       {{FILE_PATH_LITERAL("htm"), FILE_PATH_LITERAL("html")},
        {FILE_PATH_LITERAL("txt")}},
       {u"HTML", u"TEXT"}};
-  // "shouldReturnLocalPath" will be false if drive is supported.
   file_types.allowed_paths = ui::SelectFileDialog::FileTypeInfo::ANY_PATH;
 
   const GURL url = GetFileManagerMainPageUrlWithParams(

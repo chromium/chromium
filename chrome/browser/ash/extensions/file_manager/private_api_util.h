@@ -129,25 +129,9 @@ base::FilePath GetLocalPathFromURL(
 typedef base::OnceCallback<void(const std::vector<ui::SelectedFileInfo>&)>
     GetSelectedFileInfoCallback;
 
-// Option enum to control how to set the ui::SelectedFileInfo::local_path
-// fields in GetSelectedFileInfo() for Drive files.
-// NO_LOCAL_PATH_RESOLUTION:
-//   Does nothing. Set the Drive path as-is.
-// NEED_LOCAL_PATH_FOR_OPENING:
-//   Sets the path to a local cache file.
-// NEED_LOCAL_PATH_FOR_SAVING:
-//   Sets the path to a local cache file. Modification to the file is monitored
-//   and automatically synced to the Drive server.
-enum GetSelectedFileInfoLocalPathOption {
-  NO_LOCAL_PATH_RESOLUTION,
-  NEED_LOCAL_PATH_FOR_OPENING,
-  NEED_LOCAL_PATH_FOR_SAVING,
-};
-
 // Gets the information for |local_paths|.
 void GetSelectedFileInfo(Profile* profile,
                          std::vector<base::FilePath> local_paths,
-                         GetSelectedFileInfoLocalPathOption local_path_option,
                          GetSelectedFileInfoCallback callback);
 
 // Get event logger to chrome://drive-internals page for the |profile|.

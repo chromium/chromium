@@ -1592,24 +1592,20 @@ interface Functions {
 
   // Selects multiple files.
   // |selectedPaths| Array of selected paths
-  // |shouldReturnLocalPath| true if paths need to be resolved to local paths.
   // |callback|
   [doesNotSupportPromises]
   static void selectFiles(DOMString[] selectedPaths,
-                          boolean shouldReturnLocalPath,
                           SimpleCallback callback);
 
   // Selects a file.
   // |selectedPath| A selected path
   // |index| Index of Filter
   // |forOpening| true if paths are selected for opening. false if for saving.
-  // |shouldReturnLocalPath| true if paths need to be resolved to local paths.
   // |callback|
   [doesNotSupportPromises]
   static void selectFile(DOMString selectedPath,
                          long index,
                          boolean forOpening,
-                         boolean shouldReturnLocalPath,
                          SimpleCallback callback);
 
   // Requests additional properties for files.

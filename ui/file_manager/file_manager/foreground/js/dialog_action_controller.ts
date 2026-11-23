@@ -11,7 +11,7 @@ import {recordEnum} from '../../common/js/metrics.js';
 import {str} from '../../common/js/translations.js';
 import {recordViewingNavigationSurfaceUma, recordViewingVolumeTypeUma} from '../../common/js/uma.js';
 import {testSendMessage, UserCanceledError} from '../../common/js/util.js';
-import {AllowedPaths, RootTypesForUMA} from '../../common/js/volume_manager_types.js';
+import {RootTypesForUMA} from '../../common/js/volume_manager_types.js';
 import {DialogType} from '../../state/state.js';
 import {getStore} from '../../state/store.js';
 
@@ -35,7 +35,6 @@ interface SelectFilesAndCloseParams {
  */
 export class DialogActionController {
   private fileTypes_: LaunchParam['typeList'];
-  private allowedPaths_: AllowedPaths;
   /**
    * Bound function for onCancel_.
    */
@@ -64,7 +63,6 @@ export class DialogActionController {
      * List of acceptable file types for open dialog.
      */
     this.fileTypes_ = launchParam.typeList || [];
-    this.allowedPaths_ = launchParam.allowedPaths;
 
     this.dialogFooter_.okButton.addEventListener(
         'click', this.processOkAction_.bind(this));
@@ -269,14 +267,12 @@ export class DialogActionController {
     }
 
     if (selection.multiple) {
-      chrome.fileManagerPrivate.selectFiles(
-          selection.urls, this.allowedPaths_ === AllowedPaths.NATIVE_PATH,
-          onFileSelected);
+      chrome.fileManagerPrivate.selectFiles(selection.urls, onFileSelected);
     } else {
       chrome.fileManagerPrivate.selectFile(
           selection.urls[0]!, selection.filterIndex!,
           this.dialogType_ !== DialogType.SELECT_SAVEAS_FILE /* for opening */,
-          this.allowedPaths_ === AllowedPaths.NATIVE_PATH, onFileSelected);
+          onFileSelected);
     }
   }
 

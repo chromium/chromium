@@ -831,12 +831,11 @@ declare global {
           callback: () => void): void;
 
       export function selectFiles(
-          selectedPaths: string[], shouldReturnLocalPath: boolean,
-          callback: () => void): void;
+          selectedPaths: string[], callback: () => void): void;
 
       export function selectFile(
           selectedPath: string, index: number, forOpening: boolean,
-          shouldReturnLocalPath: boolean, callback: () => void): void;
+          callback: () => void): void;
 
       export function getEntryProperties(
           entries: Entry[], names: EntryPropertyName[],

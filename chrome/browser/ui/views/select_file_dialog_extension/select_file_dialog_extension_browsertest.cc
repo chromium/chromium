@@ -62,7 +62,6 @@
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/process_manager.h"
@@ -127,33 +126,24 @@ class MockSelectFileDialogListener : public ui::SelectFileDialog::Listener {
   void FileSelected(const ui::SelectedFileInfo& file, int index) override {
     file_selected_ = true;
     path_ = file.path();
-    QuitMessageLoop();
+    run_loop_.Quit();
   }
   void MultiFilesSelected(
       const std::vector<ui::SelectedFileInfo>& files) override {
-    QuitMessageLoop();
+    run_loop_.Quit();
   }
   void FileSelectionCanceled() override {
     canceled_ = true;
-    QuitMessageLoop();
+    run_loop_.Quit();
   }
 
-  void WaitForCalled() {
-    message_loop_runner_ = new content::MessageLoopRunner();
-    message_loop_runner_->Run();
-  }
+  void WaitForCalled() { run_loop_.Run(); }
 
  private:
-  void QuitMessageLoop() {
-    if (message_loop_runner_.get()) {
-      message_loop_runner_->Quit();
-    }
-  }
-
   bool file_selected_ = false;
   bool canceled_ = false;
   base::FilePath path_;
-  scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
+  base::RunLoop run_loop_;
 };
 
 // Parametrization of tests. We run tests with and
@@ -183,10 +173,6 @@ class BaseSelectFileDialogExtensionBrowserTest
   enum DialogButtonType { kDialogBtnOk, kDialogBtnCancel };
 
   void SetUp() override {
-    // Create the dialog wrapper and listener objects.
-    listener_ = std::make_unique<MockSelectFileDialogListener>();
-    dialog_ = new SelectFileDialogExtension(listener_.get(), nullptr);
-
     // One mount point will be needed. Files app looks for the "Downloads"
     // volume mount point by default, so use that.
     base::FilePath tmp_path;
@@ -203,6 +189,10 @@ class BaseSelectFileDialogExtensionBrowserTest
   void SetUpOnMainThread() override {
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
     CHECK(profile());
+
+    // Create the dialog wrapper and listener objects.
+    listener_ = std::make_unique<MockSelectFileDialogListener>();
+    dialog_ = new SelectFileDialogExtension(listener_.get(), nullptr);
 
     // Create a file system mount point for the "Downloads" directory.
     EXPECT_TRUE(

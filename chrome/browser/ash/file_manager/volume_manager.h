@@ -52,7 +52,6 @@ class BrowserContext;
 
 namespace file_manager {
 
-class SnapshotManager;
 class VolumeManagerObserver;
 
 // Manages Volumes for file manager. Example of Volumes:
@@ -276,8 +275,6 @@ class VolumeManager
   // policy::local_user_files::Observer:
   void OnLocalUserFilesPolicyChanged() override;
 
-  SnapshotManager* snapshot_manager() { return snapshot_manager_.get(); }
-
   io_task::IOTaskController* io_task_controller() {
     return &io_task_controller_;
   }
@@ -409,7 +406,6 @@ class VolumeManager
   GetMtpStorageInfoCallback get_mtp_storage_info_callback_;
   Volumes mounted_volumes_;
   scoped_refptr<file_manager::FuseBoxDaemon> fusebox_daemon_;
-  std::unique_ptr<SnapshotManager> snapshot_manager_;
   std::unique_ptr<DocumentsProviderRootManager>
       documents_provider_root_manager_;
   io_task::IOTaskController io_task_controller_;

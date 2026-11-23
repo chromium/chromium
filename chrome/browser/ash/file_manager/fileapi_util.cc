@@ -293,17 +293,8 @@ class ConvertSelectedFileInfoListToFileChooserFileInfoListImpl {
         continue;
       }
 
-      // Non-native file, but it has a native snapshot file.
-      if (!selected_info_list[i].local_path.empty()) {
-        chooser_info_list_.push_back(
-            FileChooserFileInfo::NewNativeFile(NativeFileInfo::New(
-                selected_info_list[i].local_path,
-                base::UTF8ToUTF16(selected_info_list[i].display_name),
-                std::vector<std::u16string>())));
-        continue;
-      }
-
-      // Non-native file without a snapshot file.
+      // Non-native file.
+      CHECK(selected_info_list[i].local_path.empty());
       base::FilePath virtual_path;
       if (!ash::FileSystemBackend::Get(*context)->GetVirtualPath(
               selected_info_list[i].file_path, &virtual_path)) {
@@ -335,8 +326,8 @@ class ConvertSelectedFileInfoListToFileChooserFileInfoListImpl {
       need_fill_metadata = true;
     }
 
-    // If the list includes at least one non-native file (wihtout a snapshot
-    // file), move to IO thread to obtian metadata for the non-native file.
+    // If the list includes at least one non-native file, move to IO thread to
+    // obtain metadata for the non-native file.
     if (need_fill_metadata) {
       content::GetIOThreadTaskRunner({})->PostTask(
           FROM_HERE,

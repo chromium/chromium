@@ -184,12 +184,12 @@ export class FilteredVolumeManager extends VolumeManager {
     // we'd therefore want to hide FSP, MTP, etc. volumes and an easy way to do
     // that might have been to hide non-native volumes.
     //
-    // However, "Save As" passes NATIVE_PATH and combining that with FSF
-    // volumes currently crashes here:
-    // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/extensions/file_manager/private_api_util.cc;l=83;drc=ccce03e75fc4822e12fb63e60021e0a5e5e9f5b0
-    // Its 'unreachable' comment is from 2014
-    // (https://codereview.chromium.org/339503003 and
-    // https://crrev.com/c/1868529) but things have changed since then.
+    // However, callers like "Save As" and folder-upload dialogs pass
+    // NATIVE_PATH because their C++ implementations perform POSIX file I/O
+    // directly on the returned SelectedFileInfo::local_path. Combining
+    // NATIVE_PATH with FSF volumes would yield an empty local_path (or a
+    // virtual path unusable by POSIX I/O), so NATIVE_PATH must continue to
+    // expose FWF (FuseBox) rather than FSF volumes.
 
     const nat = isNative(volumeInfo.volumeType);
     const fsf = !nat && (volumeInfo.diskFileSystemType !== 'fusebox');

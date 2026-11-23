@@ -7,6 +7,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
@@ -20,6 +21,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -32,6 +34,7 @@
 #include "chrome/browser/ash/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/ash/extensions/file_manager/private_api_misc.h"
 #include "chrome/browser/ash/extensions/file_manager/select_file_dialog_extension_user_data.h"
+#include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/file_watcher.h"
 #include "chrome/browser/ash/file_manager/mount_test_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -39,6 +42,7 @@
 #include "chrome/browser/ash/file_system_provider/icon_set.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
+#include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
@@ -61,6 +65,7 @@
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/extension.h"
@@ -526,6 +531,51 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Recent) {
 
   ASSERT_TRUE(RunExtensionTest("file_browser/recent_test", {},
                                {.load_as_component = true}));
+}
+
+class FileManagerPrivateRecentApiTest : public FileManagerPrivateApiTest {
+ public:
+  void SetUpInProcessBrowserTestFixture() override {
+    FileManagerPrivateApiTest::SetUpInProcessBrowserTestFixture();
+    // Complete the mount without a real FuseBox daemon.
+    ON_CALL(*disk_mount_manager_mock_,
+            MountPath("fusebox://fusebox", _, _, _, _, _, _))
+        .WillByDefault(base::test::RunOnceCallback<6>(
+            ash::MountError::kSuccess,
+            DiskMountManager::MountPoint{"fusebox://fusebox",
+                                         "/media/fuse/fusebox",
+                                         ash::MountType::kNetworkStorage}));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(FileManagerPrivateRecentApiTest,
+                       RecentNativeSourceIncludesFuseBoxFiles) {
+  fusebox::Server server(/*delegate=*/nullptr);
+  ash::file_system_provider::FakeProvidedFileSystem* fsp =
+      file_manager::test::MountFakeProvidedFileSystemOneDrive(profile());
+  ASSERT_TRUE(fsp);
+  fsp->AddEntry(base::FilePath("/hello.html"), /*is_directory=*/false,
+                "hello.html", /*size=*/5, base::Time::Now(), "text/html",
+                "hello");
+
+  scoped_refptr<extensions::FileManagerPrivateInternalGetRecentFilesFunction>
+      function = base::MakeRefCounted<
+          extensions::FileManagerPrivateInternalGetRecentFilesFunction>();
+  function->SetRenderFrameHost(GetActiveWebContents()->GetPrimaryMainFrame());
+  function->set_source_url(file_manager::util::GetFilesAppOrigin().GetURL());
+  std::optional<base::Value> result =
+      extensions::api_test_utils::RunFunctionAndReturnSingleResult(
+          function, R"(["native_source", "", 30, "all", true])", profile());
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->is_list());
+  ASSERT_EQ(1u, result->GetList().size()) << *result;
+  const base::DictValue& entry = result->GetList().front().GetDict();
+  const std::string* path = entry.FindString("fileFullPath");
+  ASSERT_TRUE(path);
+  EXPECT_EQ("/hello.html", *path);
+  const std::string* root = entry.FindString("fileSystemRoot");
+  ASSERT_TRUE(root);
+  EXPECT_THAT(*root, testing::HasSubstr("/external/fubomona%3Afsp."));
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, MediaMetadata) {

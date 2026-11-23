@@ -45,6 +45,7 @@
 #include "chrome/browser/ash/fileapi/recent_file.h"
 #include "chrome/browser/ash/fileapi/recent_model.h"
 #include "chrome/browser/ash/fileapi/recent_model_factory.h"
+#include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
@@ -192,17 +193,19 @@ bool ConvertURLsToProvidedInfo(
   return true;
 }
 
-bool IsAllowedSource(storage::FileSystemType type,
-                     fmp::SourceRestriction restriction) {
+base::FilePath ResolveRecentFilePath(const storage::FileSystemURL& url,
+                                     fmp::SourceRestriction restriction) {
   switch (restriction) {
     case fmp::SourceRestriction::kNone:
       NOTREACHED();
 
     case fmp::SourceRestriction::kAnySource:
-      return true;
+      return url.path();
 
     case fmp::SourceRestriction::kNativeSource:
-      return type == storage::kFileSystemTypeLocal;
+      return url.TypeImpliesPathIsReal()
+                 ? url.path()
+                 : fusebox::Server::SubstituteFuseboxFilePath(url);
   }
 }
 
@@ -1024,12 +1027,15 @@ void FileManagerPrivateInternalGetRecentFilesFunction::OnGetRecentFiles(
   Profile* profile = Profile::FromBrowserContext(browser_context());
   file_manager::util::FileDefinitionList file_definition_list;
   for (const auto& file : files) {
-    // Filter out files from non-allowed sources.
-    // We do this filtering here rather than in RecentModel so that the set of
-    // files returned with some restriction is a subset of what would be
-    // returned without restriction. Anyway, the maximum number of files
-    // returned from RecentModel is large enough.
-    if (!IsAllowedSource(file.url().type(), restriction)) {
+    // Filter out or map files from non-native sources when kNativeSource is
+    // requested. RecentModel intentionally scans only the non-FuseBox (FSF)
+    // mounts to avoid duplicate entries, so remap FSF URLs to their FuseBox
+    // (FWF) counterparts when native paths are required.
+    // We do this here rather than in RecentModel so that the set of files
+    // returned with some restriction is a subset of what would be returned
+    // without restriction.
+    base::FilePath path = ResolveRecentFilePath(file.url(), restriction);
+    if (path.empty()) {
       continue;
     }
 
@@ -1037,8 +1043,7 @@ void FileManagerPrivateInternalGetRecentFilesFunction::OnGetRecentFiles(
     // Recent file system only lists regular files, not directories.
     file_definition.is_directory = false;
     if (file_manager::util::ConvertAbsoluteFilePathToRelativeFileSystemPath(
-            profile, source_url(), file.url().path(),
-            &file_definition.virtual_path)) {
+            profile, source_url(), path, &file_definition.virtual_path)) {
       file_definition_list.emplace_back(std::move(file_definition));
     }
   }

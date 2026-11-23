@@ -237,16 +237,7 @@ TEST_F(FileManagerFileAPIUtilTest,
 
   const std::string path = FILE_PATH_LITERAL(base::StrCat(
       {"/provided/", extension_id, ":", file_system_id_, ":/hello.txt"}));
-  // Non-native file with cache.
-  {
-    ui::SelectedFileInfo info;
-    info.file_path = base::FilePath(path);
-    info.local_path = base::FilePath(FILE_PATH_LITERAL("/native/cache/xxx"));
-    info.display_name = "display_name";
-    selected_info_list.push_back(info);
-  }
-
-  // Non-native file without.
+  // Non-native file.
   {
     ui::SelectedFileInfo info;
     info.file_path = base::FilePath(path);
@@ -262,26 +253,21 @@ TEST_F(FileManagerFileAPIUtilTest,
   content::RunAllTasksUntilIdle();
 
   // Check the result.
-  ASSERT_EQ(3u, result.size());
+  ASSERT_EQ(2u, result.size());
 
   EXPECT_TRUE(result[0]->is_native_file());
   EXPECT_EQ(FILE_PATH_LITERAL("/native/File 1.txt"),
             result[0]->get_native_file()->file_path.value());
   EXPECT_EQ(u"display_name", result[0]->get_native_file()->display_name);
 
-  EXPECT_TRUE(result[1]->is_native_file());
-  EXPECT_EQ(FILE_PATH_LITERAL("/native/cache/xxx"),
-            result[1]->get_native_file()->file_path.value());
-  EXPECT_EQ(u"display_name", result[1]->get_native_file()->display_name);
-
-  EXPECT_TRUE(result[2]->is_file_system());
-  EXPECT_TRUE(result[2]->get_file_system()->url.is_valid());
+  EXPECT_TRUE(result[1]->is_file_system());
+  EXPECT_TRUE(result[1]->get_file_system()->url.is_valid());
   const storage::FileSystemURL url =
-      context->CrackURLInFirstPartyContext(result[2]->get_file_system()->url);
+      context->CrackURLInFirstPartyContext(result[1]->get_file_system()->url);
   EXPECT_EQ(GURL("http://example.com"), url.origin().GetURL());
   EXPECT_EQ(storage::kFileSystemTypeIsolated, url.mount_type());
   EXPECT_EQ(storage::kFileSystemTypeProvided, url.type());
-  EXPECT_EQ(55u, result[2]->get_file_system()->length);
+  EXPECT_EQ(55u, result[1]->get_file_system()->length);
 }
 
 TEST_F(FileManagerFileAPIUtilTest,

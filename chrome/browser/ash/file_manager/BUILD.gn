@@ -76,8 +76,6 @@ static_library("file_manager") {
     "restore_to_destination_io_task.h",
     "select_file_dialog_util.cc",
     "select_file_dialog_util.h",
-    "snapshot_manager.cc",
-    "snapshot_manager.h",
     "trash_auto_cleanup.cc",
     "trash_auto_cleanup.h",
     "trash_common_util.cc",
