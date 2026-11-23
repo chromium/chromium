@@ -426,7 +426,6 @@ void RenderWidgetHostInputEventRouter::OnRenderWidgetHostViewInputDestroyed(
 
   if (view == touch_target_) {
     touch_target_ = nullptr;
-    active_touches_ = 0;
   }
 
   // If the target that's being destroyed is in the gesture target map, we
@@ -509,7 +508,6 @@ RenderWidgetHostInputEventRouter::RenderWidgetHostInputEventRouter(
       last_mouse_move_root_view_(nullptr),
       last_emulated_event_root_view_(nullptr),
       last_device_scale_factor_(1.f),
-      active_touches_(0),
       hit_test_provider_(provider),
       event_targeter_(std::make_unique<RenderWidgetTargeter>(this)),
       delegate_(delegate),
@@ -906,40 +904,6 @@ void RenderWidgetHostInputEventRouter::RouteGestureEvent(
   };
 }
 
-namespace {
-
-unsigned CountChangedTouchPoints(const blink::WebTouchEvent& event) {
-  unsigned changed_count = 0;
-
-  blink::WebTouchPoint::State required_state =
-      blink::WebTouchPoint::State::kStateUndefined;
-  switch (event.GetType()) {
-    case blink::WebInputEvent::Type::kTouchStart:
-      required_state = blink::WebTouchPoint::State::kStatePressed;
-      break;
-    case blink::WebInputEvent::Type::kTouchEnd:
-      required_state = blink::WebTouchPoint::State::kStateReleased;
-      break;
-    case blink::WebInputEvent::Type::kTouchCancel:
-      required_state = blink::WebTouchPoint::State::kStateCancelled;
-      break;
-    default:
-      // We'll only ever call this method for TouchStart, TouchEnd
-      // and TounchCancel events, so mark the rest as not-reached.
-      NOTREACHED();
-  }
-  for (unsigned i = 0; i < event.touches_length; ++i) {
-    if (event.touches[i].state == required_state)
-      ++changed_count;
-  }
-
-  DCHECK(event.GetType() == blink::WebInputEvent::Type::kTouchCancel ||
-         changed_count == 1);
-  return changed_count;
-}
-
-}  // namespace
-
 // Any time a touch start event is handled/consumed/default prevented it is
 // removed from the gesture map, because it will never create a gesture.
 void RenderWidgetHostInputEventRouter::OnHandledTouchStartOrFirstTouchMove(
@@ -952,14 +916,12 @@ void RenderWidgetHostInputEventRouter::OnHandledTouchStartOrFirstTouchMove(
 RenderWidgetTargetResult RenderWidgetHostInputEventRouter::FindTouchEventTarget(
     RenderWidgetHostViewInput* root_view,
     const blink::WebTouchEvent& event) {
-  // Tests may call this without an initial TouchStart, so check event type
-  // explicitly here.
-  if (active_touches_ ||
-      event.GetType() != blink::WebInputEvent::Type::kTouchStart) {
+  // Only the event that starts a touch sequence is hit tested. The rest of the
+  // sequence is routed to |touch_target_|.
+  if (!event.IsTouchSequenceStart()) {
     return {nullptr, /*should_query_view=*/false, std::nullopt};
   }
 
-  active_touches_ += CountChangedTouchPoints(event);
   gfx::PointF original_point = gfx::PointF(event.touches[0].PositionInWidget());
   gfx::PointF transformed_point;
 
@@ -978,7 +940,7 @@ void RenderWidgetHostInputEventRouter::DispatchTouchEvent(
          touch_event.GetType() !=
              blink::WebInputEvent::Type::kTouchScrollStarted);
 
-  bool is_sequence_start = !touch_target_ && target;
+  bool is_sequence_start = target && touch_event.IsTouchSequenceStart();
   if (is_sequence_start) {
     touch_target_ = target;
     DCHECK(touchscreen_gesture_target_map_.find(
@@ -986,26 +948,6 @@ void RenderWidgetHostInputEventRouter::DispatchTouchEvent(
            touchscreen_gesture_target_map_.end());
     touchscreen_gesture_target_map_[touch_event.unique_touch_event_id] =
         touch_target_->GetInputWeakPtr();
-  } else if (touch_event.GetType() == blink::WebInputEvent::Type::kTouchStart) {
-    active_touches_ += CountChangedTouchPoints(touch_event);
-  }
-
-  // Test active_touches_ before decrementing, since its value can be
-  // reset to 0 in OnRenderWidgetHostViewInputDestroyed, and this can
-  // happen between the TouchStart and a subsequent TouchMove/End/Cancel.
-  if ((touch_event.GetType() == blink::WebInputEvent::Type::kTouchEnd ||
-       touch_event.GetType() == blink::WebInputEvent::Type::kTouchCancel) &&
-      active_touches_) {
-    // A TouchCancel can report more cancelled points than were routed as
-    // pressed, e.g. when the platform turns the ACTION_POINTER_DOWN of a new
-    // finger into an ACTION_CANCEL that carries that finger too. Clamp at 0 so
-    // the sequence still ends and |touch_target_| is released below. A
-    // negative count would keep a stale target alive and make the next
-    // sequence drop its target right after its TouchStart
-    // (crbug.com/515367462).
-    active_touches_ =
-        std::max(0, active_touches_ -
-                        static_cast<int>(CountChangedTouchPoints(touch_event)));
   }
 
   // Debugging for crbug.com/814674.
@@ -1065,8 +1007,9 @@ void RenderWidgetHostInputEventRouter::DispatchTouchEvent(
   TransformEventTouchPositions(&event, transform);
   touch_target_->ProcessTouchEvent(event, latency);
 
-  if (!active_touches_)
+  if (touch_event.IsTouchSequenceEnd()) {
     touch_target_ = nullptr;
+  }
 }
 
 void RenderWidgetHostInputEventRouter::ProcessAckedTouchEvent(
@@ -2272,8 +2215,6 @@ void RenderWidgetHostInputEventRouter::ForwardEmulatedTouchEvent(
   RenderWidgetHostViewInput* root_view = target->GetRootView();
   last_emulated_event_root_view_ = root_view ? root_view : target;
 
-  if (event.GetType() == blink::WebInputEvent::Type::kTouchStart)
-    active_touches_ += CountChangedTouchPoints(event);
   gfx::PointF transformed_point = target->TransformRootPointToViewCoordSpace(
       event.touches[0].PositionInWidget());
   DispatchTouchEvent(last_emulated_event_root_view_, target, event,

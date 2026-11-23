@@ -557,6 +557,63 @@ TEST_F(RenderWidgetHostInputEventRouterTest, EmulatedTouchUsesTargetRootView) {
   EXPECT_EQ(view_root_.get(), last_emulated_event_root_view());
 }
 
+// Emulated multi-touch sequences must keep |touch_target_| alive until all
+// fingers are released, and then clear it so subsequent touch sequences route
+// to their new target view.
+TEST_F(RenderWidgetHostInputEventRouterTest,
+       EmulatedMultiTouchReleasesTargetAfterAllTouchesEnd) {
+  ChildViewState child = MakeChildView(view_root_.get());
+
+  // First finger down on root view.
+  blink::WebTouchEvent touch_event(
+      blink::WebInputEvent::Type::kTouchStart,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  touch_event.touches_length = 1;
+  touch_event.touches[0].state = blink::WebTouchPoint::State::kStatePressed;
+  touch_event.unique_touch_event_id = 1;
+  rwhier()->ForwardEmulatedTouchEvent(touch_event, view_root_.get());
+  EXPECT_EQ(view_root_.get(), touch_target());
+
+  // Second finger down on root view.
+  touch_event.touches_length = 2;
+  touch_event.touches[0].state = blink::WebTouchPoint::State::kStateStationary;
+  touch_event.touches[1].state = blink::WebTouchPoint::State::kStatePressed;
+  touch_event.unique_touch_event_id = 2;
+  rwhier()->ForwardEmulatedTouchEvent(touch_event, view_root_.get());
+  EXPECT_EQ(view_root_.get(), touch_target());
+
+  // First finger up keeps |touch_target_| alive.
+  touch_event.SetType(blink::WebInputEvent::Type::kTouchEnd);
+  touch_event.touches[0].state = blink::WebTouchPoint::State::kStateReleased;
+  touch_event.touches[1].state = blink::WebTouchPoint::State::kStateStationary;
+  touch_event.unique_touch_event_id = 3;
+  rwhier()->ForwardEmulatedTouchEvent(touch_event, view_root_.get());
+  EXPECT_EQ(view_root_.get(), touch_target());
+
+  // Second finger up ends the sequence and releases |touch_target_|.
+  touch_event.touches_length = 1;
+  touch_event.touches[0].state = blink::WebTouchPoint::State::kStateReleased;
+  touch_event.unique_touch_event_id = 4;
+  rwhier()->ForwardEmulatedTouchEvent(touch_event, view_root_.get());
+  EXPECT_EQ(nullptr, touch_target());
+
+  // A subsequent emulated touch sequence targeting another view must route to
+  // the new view instead of the previous target.
+  touch_event.SetType(blink::WebInputEvent::Type::kTouchStart);
+  touch_event.touches_length = 1;
+  touch_event.touches[0].state = blink::WebTouchPoint::State::kStatePressed;
+  touch_event.unique_touch_event_id = 5;
+  rwhier()->ForwardEmulatedTouchEvent(touch_event, child.view.get());
+  EXPECT_EQ(child.view.get(), touch_target());
+
+  touch_event.SetType(blink::WebInputEvent::Type::kTouchEnd);
+  touch_event.touches[0].state = blink::WebTouchPoint::State::kStateReleased;
+  touch_event.unique_touch_event_id = 6;
+  rwhier()->ForwardEmulatedTouchEvent(touch_event, child.view.get());
+  EXPECT_EQ(nullptr, touch_target());
+}
+
 TEST_F(RenderWidgetHostInputEventRouterTest,
        TouchscreenPinchCanTargetEmbeddedView) {
   ChildViewState child = MakeChildView(view_root_.get());

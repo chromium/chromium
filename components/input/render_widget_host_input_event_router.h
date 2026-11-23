@@ -465,8 +465,6 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostInputEventRouter final
 
   float last_device_scale_factor_;
 
-  int active_touches_;
-
   // Route all input events into the root view while devtools is showing a full
   // page overlay.
   bool route_to_root_for_devtools_ = false;
