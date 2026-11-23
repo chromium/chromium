@@ -1009,8 +1009,15 @@ public class SiteSettingsTest {
     public void testOsBlocksJavascriptOptimizer() {
         String pageOrigin = mPermissionTestRule.getOrigin();
 
-        SiteSettingsTestHelper.setContentSettingForOrigin(
-                ContentSettingsType.JAVASCRIPT_OPTIMIZER, pageOrigin, ContentSetting.ALLOW);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WebsitePreferenceBridge.setContentSettingDefaultScope(
+                            SiteSettingsTestHelper.getBrowserContextHandle(),
+                            ContentSettingsType.JAVASCRIPT_OPTIMIZER,
+                            new GURL(pageOrigin),
+                            new GURL(pageOrigin),
+                            ContentSetting.ALLOW);
+                });
 
         mAdvancedProtectionRule.setIsAdvancedProtectionRequestedByOs(true);
 
@@ -1179,8 +1186,15 @@ public class SiteSettingsTest {
         final String pageUrl = mPermissionTestRule.getURL("/chrome/test/data/android/simple.html");
         String pageOrigin = mPermissionTestRule.getOrigin();
 
-        SiteSettingsTestHelper.setContentSettingForOrigin(
-                ContentSettingsType.JAVASCRIPT_OPTIMIZER, pageOrigin, ContentSetting.ALLOW);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    WebsitePreferenceBridge.setContentSettingDefaultScope(
+                            SiteSettingsTestHelper.getBrowserContextHandle(),
+                            ContentSettingsType.JAVASCRIPT_OPTIMIZER,
+                            new GURL(pageOrigin),
+                            new GURL(pageOrigin),
+                            ContentSetting.ALLOW);
+                });
 
         mAdvancedProtectionRule.setIsAdvancedProtectionRequestedByOs(true);
 
@@ -1206,7 +1220,7 @@ public class SiteSettingsTest {
                             websitePreferences.findPreference("javascript_optimizer");
                     Assert.assertTrue(javascriptOptimizerPreference.isEnabled());
                 });
-        ApplicationTestUtils.finishActivity(settingsActivity);
+        settingsActivity.finish();
     }
 
     @Test
@@ -1261,7 +1275,7 @@ public class SiteSettingsTest {
                 });
         // Close the OS notification settings UI.
         UiAutomatorUtils.getInstance().pressBack();
-        ApplicationTestUtils.finishActivity(settingsActivity);
+        settingsActivity.finish();
     }
 
     @Test
@@ -1332,7 +1346,7 @@ public class SiteSettingsTest {
                     // Blocked origin should has no summary.
                     assertNull(blockedGroup.getPreference(1).getSummary());
                 });
-        ApplicationTestUtils.finishActivity(settingsActivity);
+        settingsActivity.finish();
     }
 
     /**
@@ -1378,7 +1392,7 @@ public class SiteSettingsTest {
                             context.getString(R.string.automatically_blocked),
                             fedCmPreference.getSummary());
                 });
-        ApplicationTestUtils.finishActivity(settingsActivity);
+        settingsActivity.finish();
     }
 
     @Test
@@ -1447,6 +1461,8 @@ public class SiteSettingsTest {
     @Test
     @MediumTest
     @Feature({"Preferences"})
+    @DisabledTest(
+            message = "https://crbug.com/40804306,https://crbug.com/40256198,crbug.com/40781540")
     public void testProtectedContentAllowThenBlock() throws Exception {
         initializeUpdateWaiter(/* expectGranted= */ true);
         mPermissionTestRule.runNoPromptTest(
@@ -1458,12 +1474,6 @@ public class SiteSettingsTest {
 
         SiteSettingsTestHelper.setGlobalTriStateToggleForCategory(
                 SiteSettingsCategory.Type.PROTECTED_MEDIA, ContentSetting.BLOCK);
-
-        String pageOrigin = mPermissionTestRule.getOrigin();
-        SiteSettingsTestHelper.setContentSettingForOrigin(
-                ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER, pageOrigin, ContentSetting.DEFAULT);
-
-        mActivityTestRule.loadUrl("about:blank");
 
         initializeUpdateWaiter(/* expectGranted= */ false);
         mPermissionTestRule.runNoPromptTest(
@@ -1512,7 +1522,7 @@ public class SiteSettingsTest {
                             "Window setting should be OFF.",
                             prefService.getBoolean(DESKTOP_SITE_WINDOW_SETTING_ENABLED));
                 });
-        ApplicationTestUtils.finishActivity(settingsActivity);
+        settingsActivity.finish();
     }
 
     @Test
@@ -1552,7 +1562,7 @@ public class SiteSettingsTest {
                 });
         histogramExpectation.assertExpected();
 
-        ApplicationTestUtils.finishActivity(settingsActivity);
+        settingsActivity.finish();
     }
 
     /** Test case for checking that settings with binary toggles are disabled by policy. */

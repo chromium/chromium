@@ -52,7 +52,6 @@ import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.content_settings.ProviderType;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.BrowserContextHandle;
-import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -199,19 +198,6 @@ public class SiteSettingsTestHelper {
         return helper.getOnlyPayloadBlocking();
     }
 
-    public static void setContentSettingForOrigin(
-            @ContentSettingsType.EnumType int type, String origin, int setting) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    WebsitePreferenceBridge.setContentSettingDefaultScope(
-                            getBrowserContextHandle(),
-                            type,
-                            new GURL(origin),
-                            GURL.emptyGURL(),
-                            setting);
-                });
-    }
-
     public static void setGlobalTriStateToggleForCategory(
             final @SiteSettingsCategory.Type int type, final int newValue) {
         final SettingsActivity settingsActivity =
@@ -225,7 +211,7 @@ public class SiteSettingsTestHelper {
                             preferences.findPreference(SingleCategorySettings.TRI_STATE_TOGGLE_KEY);
                     preferences.onPreferenceChange(triStateToggle, newValue);
                 });
-        ApplicationTestUtils.finishActivity(settingsActivity);
+        settingsActivity.finish();
     }
 
     /**
@@ -245,7 +231,7 @@ public class SiteSettingsTestHelper {
         }
 
         checkPreferencesForSettingsActivity(settingsActivity, expectedKeys);
-        ApplicationTestUtils.finishActivity(settingsActivity);
+        settingsActivity.finish();
     }
 
     public static void checkPreferencesForSettingsActivity(
@@ -332,7 +318,7 @@ public class SiteSettingsTestHelper {
 
                         doTest(singleCategorySettings);
                     });
-            ApplicationTestUtils.finishActivity(mSettingsActivity);
+            mSettingsActivity.finish();
         }
 
         protected void doTest(SingleCategorySettings singleCategorySettings) {
@@ -459,7 +445,7 @@ public class SiteSettingsTestHelper {
             int id = R.string.website_settings_site_data_page_block_confirm_dialog_confirm_button;
             waitForView(withText(id)).click();
         }
-        ApplicationTestUtils.finishActivity(settingsActivity);
+        settingsActivity.finish();
     }
 
     public static final String[] BINARY_RADIO_BUTTON_AND_INFO_TEXT =
