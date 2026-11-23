@@ -20,6 +20,8 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
@@ -186,6 +188,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     private final boolean mIsAim3pEntrypointEnabled;
     private final boolean mIsAiModeButtonRedirectEnabled;
     private final boolean mIsBesideMvtModuleEnabled;
+    private final @ActionChips int mMerchandisingChipsType;
 
     private @Nullable LogoCoordinator mLogoCoordinator;
     private @Nullable NtpSearchBox mNtpSearchBox;
@@ -341,6 +344,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         mIsAiModeButtonRedirectEnabled = NewTabPageUtils.isAiModeButtonRedirectEnabled();
         mIsIncognitoModeEnabled = IncognitoUtils.isIncognitoModeEnabled(mProfile);
         mIsBesideMvtModuleEnabled = NewTabPageUtils.isBesideMvtModuleEnabled();
+        mMerchandisingChipsType = NewTabPageUtils.getMerchandisingChipsType();
 
         Resources resources = mActivity.getResources();
         mNtpSearchBoxTopMarginWithoutLogo =
@@ -637,16 +641,15 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
     /** Returns whether the AI Mode button can be shown on NTPs. */
     private boolean canShowAiModeButtonOnNtp() {
-        // Returning false here disables the entire composeplate row, hiding both the AI Mode
-        // and Incognito buttons.
+        // Returning false here disables the entire composeplate row, hiding all of its buttons.
         if (NewTabPageUtils.isComposeplateRemovedInAuroraV2()) return false;
 
-        // In the default layout (when not placed beside the MVT), the AI Mode button
-        // shares a row with the Incognito button. Consequently, it is hidden when
-        // Incognito mode is disabled. However, in the layout where the AI Mode section is
-        // positioned beside the MVT, the AI Mode button must remain visible even if Incognito mode
-        // is disabled.
-        if (!mIsBesideMvtModuleEnabled && !mIsIncognitoModeEnabled) {
+        // In the default layout (when not placed beside the MVT), the AI Mode button shares a row
+        // with the Incognito chip, unless the add image chip takes its place. Consequently, the
+        // row is hidden when Incognito mode is disabled and the Incognito chip would be part of
+        // it. However, in the layout where the AI Mode section is positioned beside the MVT, the
+        // AI Mode button must remain visible even if Incognito mode is disabled.
+        if (!mIsBesideMvtModuleEnabled && !mIsIncognitoModeEnabled && shouldShowIncognitoButton()) {
             return false;
         }
 
@@ -677,40 +680,10 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         mComposeplateCoordinator =
                 new ComposeplateCoordinator(
                         composeplateView, mIsLff, assertNonNull(mUiConfig).getHorizontalInset());
-        mComposeplateCoordinator.setTrailingButtonClickListener(
-                this::onIncognitoButtonClicked, ComposeplateViewButtonType.INCOGNITO);
         // Don't log click metrics in this listener, since the mComposeplateCoordinator will
         // log.
         mComposeplateCoordinator.setComposeplateButtonClickListener(
                 this::onComposeplateButtonClicked);
-        @ActionChips int merchandisingChipType = NewTabPageUtils.getMerchandisingChipsType();
-        if (merchandisingChipType == ActionChips.CREATE_IMAGE
-                || merchandisingChipType == ActionChips.ADD_IMAGE) {
-            mComposeboxInputState = fetchComposeboxInputState();
-        }
-        @ActionChips int chipType = getOptionalButtonChipType(mComposeboxInputState);
-        if (chipType == NewTabPageUtils.ActionChips.CREATE_IMAGE) {
-            mComposeplateCoordinator.setOptionalButtonClickListener(
-                    this::onCreateButtonClicked, ComposeplateViewButtonType.CREATE_IMAGE);
-            mComposeplateCoordinator.setOptionalButtonIcon(
-                    InputStateUtils.resolveToolIconRes(
-                            mComposeboxInputState,
-                            ToolMode.TOOL_MODE_IMAGE_GEN,
-                            R.drawable.image_create_24dp));
-            mComposeplateCoordinator.setOptionalButtonText(
-                    mActivity.getString(R.string.ntp_action_chip_create_image));
-            mComposeplateCoordinator.setOptionalButtonContentDescription(
-                    mActivity.getString(R.string.ntp_action_chip_create_image_accessibility));
-        } else if (chipType == NewTabPageUtils.ActionChips.ADD_IMAGE) {
-            mComposeplateCoordinator.setOptionalButtonClickListener(
-                    this::onAddImageButtonClicked, ComposeplateViewButtonType.ADD_IMAGE);
-            mComposeplateCoordinator.setOptionalButtonIcon(
-                    InputStateUtils.resolveInputIconRes(
-                            mComposeboxInputState,
-                            InputSource.INPUT_SOURCE_GALLERY,
-                            R.drawable.add_photo_alternate_24dp,
-                            /* shouldRecordFallback= */ false));
-        }
 
         updateComposeplateBackground();
 
@@ -721,7 +694,7 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
             onAiModeButtonIconChanged(mAiModeButtonIconSupplier.get());
         }
 
-        updateComposeplateOptionalButtonVisibility();
+        updateComposeplateButtons();
     }
 
     /**
@@ -998,15 +971,10 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         // visibility of Logo is handled by LogoCoordinator.
         setSearchBoxTextAppearance();
 
-        if (!mIsAim3pEntrypointEnabled) {
-            updateComposeplate(isSearchProviderIsGoogleChanged);
-        }
-
-        if (isSearchProviderIsGoogleChanged) {
-            // The optional button is only shown for Google, so update it even if the
-            // composeplate's visibility doesn't change.
-            updateComposeplateOptionalButtonVisibility();
-        }
+        // Whether the composeplate can be shown depends on whether the search provider is Google
+        // even when the third party AI Mode entry point is enabled, since the add image chip,
+        // which takes the place of the incognito chip, is only shown for Google.
+        updateComposeplate(isSearchProviderIsGoogleChanged);
 
         onUrlFocusAnimationChanged();
 
@@ -1034,9 +1002,11 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
             // If the composeplate view is enabled while mComposeplateCoordinator hasn't
             // been initialized yet, initialize it now.
             initializeComposeplate();
+        } else if (mCanShowComposeplateButton == TriState.TRUE) {
+            // The add image and create image chips are only shown for Google, so update the
+            // buttons even if the composeplate's visibility doesn't change.
+            updateComposeplateButtons();
         }
-
-        maybeUpdateAiModeButton();
 
         if (previousCanShowComposeplateButton != mCanShowComposeplateButton) {
             // When the AI mode button's visibility is changed, the height of search box might be
@@ -1063,11 +1033,16 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
         int previousCanShowComposeplateButton = mCanShowComposeplateButton;
         initializeComposeplateFlags(mProfile);
         if (previousCanShowComposeplateButton != TriState.TRUE
-                && mCanShowComposeplateButton == TriState.TRUE
-                && mComposeplateCoordinator == null) {
-            // If the composeplate view is enabled while mComposeplateCoordinator hasn't
-            // been initialized yet, initialize it now.
-            initializeComposeplate();
+                && mCanShowComposeplateButton == TriState.TRUE) {
+            if (mComposeplateCoordinator == null) {
+                // If the composeplate view is enabled while mComposeplateCoordinator hasn't
+                // been initialized yet, initialize it now.
+                initializeComposeplate();
+            } else {
+                // Updates the buttons in case #setSearchProviderInfo() ran while the
+                // composeplate was hidden (e.g., before Google's AiModeButtonUiConfig arrived).
+                updateComposeplateButtons();
+            }
         }
 
         maybeUpdateAiModeButton();
@@ -1083,12 +1058,15 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
 
     /**
      * Updates the icon and text for AI Mode button, if the third party AI Mode entry point is
-     * enabled, the button can be shown and the default search engine offers an AI Mode entry point.
+     * enabled and the default search engine offers an AI Mode entry point.
      */
     private void maybeUpdateAiModeButton() {
+        // The config is applied even while the AI Mode button is hidden. Whether the button can be
+        // shown also depends on the search provider info, which is updated separately, and the
+        // supplier doesn't notify observers of an unchanged config. An update dropped here
+        // wouldn't be sent again when the button is shown later, leaving stale strings.
         if (!mIsAim3pEntrypointEnabled
                 || mComposeplateCoordinator == null
-                || mCanShowComposeplateButton != TriState.TRUE
                 || !mSearchProviderInfoDelegate.hasAiModeEntryPoint()) {
             return;
         }
@@ -1387,38 +1365,147 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
     }
 
     /**
-     * Updates the visibility of the composeplate's optional button. It is visible only when the
-     * default search engine is Google and the action chip type is either create image or add image.
-     * The composeplate's own visibility doesn't need to be checked, since hiding the composeplate
-     * also hides the optional button.
+     * Updates the chips shown on the composeplate's optional and trailing buttons. The trailing
+     * button is always visible. It shows the incognito chip, the add image chip when only the add
+     * image chip is shown, or the create image chip when both image chips are shown. The optional
+     * button is visible only when the create image chip is shown: it shows the create image chip
+     * before the incognito chip, or the add image chip before the create image chip.
      */
-    private void updateComposeplateOptionalButtonVisibility() {
+    private void updateComposeplateButtons() {
         if (mComposeplateCoordinator == null) return;
 
-        @ActionChips int chipType = getOptionalButtonChipType(mComposeboxInputState);
-        boolean isOptionalButtonVisible =
-                mSearchProviderInfoDelegate.getSearchProviderIsGoogle()
-                        && (chipType == NewTabPageUtils.ActionChips.CREATE_IMAGE
-                                || chipType == NewTabPageUtils.ActionChips.ADD_IMAGE);
-        mComposeplateCoordinator.setOptionalButtonVisibility(isOptionalButtonVisible);
+        boolean hasAddImageChip = hasAddImageChip(mMerchandisingChipsType);
+        boolean hasCreateImageChip = hasCreateImageChip(mMerchandisingChipsType);
+        // For a 3p DSE, canShowImageChips is false, so the incognito button is shown instead.
+        boolean canShowImageChips = canShowImageChips();
+        // Fetched lazily, and only for Google, since no Composebox session can be created with
+        // another default search engine.
+        if (mComposeboxInputState == null
+                && canShowImageChips
+                && (hasAddImageChip || hasCreateImageChip)) {
+            mComposeboxInputState = fetchComposeboxInputState();
+        }
+
+        boolean isAddImageChipVisible = hasAddImageChip && canShowImageChips;
+        boolean isCreateImageChipVisible =
+                hasCreateImageChip
+                        && canShowImageChips
+                        && isImageGenToolAllowed(mComposeboxInputState);
+        if (isAddImageChipVisible && isCreateImageChipVisible) {
+            setComposeplateButton(
+                    /* isTrailingButton= */ false, ComposeplateViewButtonType.ADD_IMAGE);
+            setComposeplateButton(
+                    /* isTrailingButton= */ true, ComposeplateViewButtonType.CREATE_IMAGE);
+        } else if (isCreateImageChipVisible) {
+            setComposeplateButton(
+                    /* isTrailingButton= */ false, ComposeplateViewButtonType.CREATE_IMAGE);
+            setComposeplateButton(
+                    /* isTrailingButton= */ true, ComposeplateViewButtonType.INCOGNITO);
+        } else {
+            // For a 3p DSE, isAddImageChipVisible is false, so the incognito button will replace
+            // the add image button.
+            setComposeplateButton(
+                    /* isTrailingButton= */ true,
+                    isAddImageChipVisible
+                            ? ComposeplateViewButtonType.ADD_IMAGE
+                            : ComposeplateViewButtonType.INCOGNITO);
+        }
+
+        mComposeplateCoordinator.setOptionalButtonVisibility(isCreateImageChipVisible);
     }
 
     /**
-     * Returns the {@link NewTabPageUtils.ActionChips} type to show on the composeplate's optional
-     * button. The create image and add image chips fall back to the default chip on devices that
-     * don't support the fusebox, since both rely on it. The create image chip falls back to the add
-     * image chip when image generation isn't an allowed tool for the current profile.
+     * Shows a chip on the composeplate's optional or trailing button, by setting the button's click
+     * listener, icon, text and content description.
+     *
+     * @param isTrailingButton Whether to show the chip on the trailing button, rather than on the
+     *     optional button.
+     * @param buttonType The {@link ComposeplateViewButtonType} of the chip to show.
      */
-    private static @ActionChips int getOptionalButtonChipType(@Nullable InputState inputState) {
-        @ActionChips int chipType = NewTabPageUtils.getMerchandisingChipsType();
-        if ((chipType == ActionChips.CREATE_IMAGE || chipType == ActionChips.ADD_IMAGE)
-                && !OmniboxCapabilities.isFuseboxSupportedDeviceType()) {
-            return ActionChips.DEFAULT;
+    private void setComposeplateButton(
+            boolean isTrailingButton, @ComposeplateViewButtonType int buttonType) {
+        View.OnClickListener clickListener;
+        @DrawableRes int iconResId;
+        @StringRes int textResId;
+        @StringRes int contentDescriptionResId;
+        switch (buttonType) {
+            case ComposeplateViewButtonType.INCOGNITO -> {
+                clickListener = this::onIncognitoButtonClicked;
+                iconResId = R.drawable.ic_incognito;
+                textResId = R.string.notification_category_incognito;
+                contentDescriptionResId = R.string.accessibility_new_incognito_tab_page;
+            }
+            case ComposeplateViewButtonType.CREATE_IMAGE -> {
+                clickListener = this::onCreateButtonClicked;
+                iconResId =
+                        InputStateUtils.resolveToolIconRes(
+                                mComposeboxInputState,
+                                ToolMode.TOOL_MODE_IMAGE_GEN,
+                                R.drawable.image_create_24dp);
+                textResId = R.string.ntp_action_chip_create_image;
+                contentDescriptionResId = R.string.ntp_action_chip_create_image_accessibility;
+            }
+            case ComposeplateViewButtonType.ADD_IMAGE -> {
+                clickListener = this::onAddImageButtonClicked;
+                iconResId =
+                        InputStateUtils.resolveInputIconRes(
+                                mComposeboxInputState,
+                                InputSource.INPUT_SOURCE_GALLERY,
+                                R.drawable.add_photo_alternate_24dp,
+                                /* shouldRecordFallback= */ false);
+                textResId = R.string.omnibox_navattach_add_images;
+                contentDescriptionResId = R.string.ntp_action_chip_add_image_accessibility;
+            }
+            default -> throw new IllegalArgumentException("Unsupported button type: " + buttonType);
         }
-        if (chipType == ActionChips.CREATE_IMAGE && !isImageGenToolAllowed(inputState)) {
-            return ActionChips.ADD_IMAGE;
+
+        ComposeplateCoordinator composeplateCoordinator = assumeNonNull(mComposeplateCoordinator);
+        String text = mActivity.getString(textResId);
+        String contentDescription = mActivity.getString(contentDescriptionResId);
+        if (isTrailingButton) {
+            composeplateCoordinator.setTrailingButtonClickListener(clickListener, buttonType);
+            composeplateCoordinator.setTrailingButtonIcon(iconResId);
+            composeplateCoordinator.setTrailingButtonText(text);
+            composeplateCoordinator.setTrailingButtonContentDescription(contentDescription);
+        } else {
+            composeplateCoordinator.setOptionalButtonClickListener(clickListener, buttonType);
+            composeplateCoordinator.setOptionalButtonIcon(iconResId);
+            composeplateCoordinator.setOptionalButtonText(text);
+            composeplateCoordinator.setOptionalButtonContentDescription(contentDescription);
         }
-        return chipType;
+    }
+
+    /**
+     * Returns whether the add image and create image chips can be shown on the composeplate, i.e.,
+     * the DSE is Google and the device supports the fusebox. The create image chip also requires
+     * image generation to be an allowed tool for the current profile, see {@link
+     * #isImageGenToolAllowed(InputState)}.
+     */
+    private boolean canShowImageChips() {
+        return mSearchProviderInfoDelegate.getSearchProviderIsGoogle()
+                && OmniboxCapabilities.isFuseboxSupportedDeviceType();
+    }
+
+    /**
+     * Returns whether the incognito chip should be shown on the composeplate. It is shown when: 1)
+     * the configured {@link ActionChips} doesn't include the add image chip (i.e., DEFAULT,
+     * INCOGNITO, or CREATE_IMAGE), or 2) the image chips cannot be shown (e.g., for a non-Google
+     * DSE or on a device that doesn't support the fusebox).
+     */
+    private boolean shouldShowIncognitoButton() {
+        return !hasAddImageChip(mMerchandisingChipsType) || !canShowImageChips();
+    }
+
+    /** Returns whether {@code chipType} includes the add image chip. */
+    private static boolean hasAddImageChip(@ActionChips int chipType) {
+        return chipType == ActionChips.ADD_IMAGE
+                || chipType == ActionChips.ADD_IMAGE_AND_CREATE_IMAGE;
+    }
+
+    /** Returns whether {@code chipType} includes the create image chip. */
+    private static boolean hasCreateImageChip(@ActionChips int chipType) {
+        return chipType == ActionChips.CREATE_IMAGE
+                || chipType == ActionChips.ADD_IMAGE_AND_CREATE_IMAGE;
     }
 
     /** Returns whether the image generation tool is allowed in {@code inputState}. */

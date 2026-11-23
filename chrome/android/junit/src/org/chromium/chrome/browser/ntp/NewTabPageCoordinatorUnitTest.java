@@ -19,6 +19,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.content.Context;
@@ -35,7 +36,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
+import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.After;
@@ -67,12 +70,15 @@ import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.composeplate.ComposeplateCoordinator;
+import org.chromium.chrome.browser.composeplate.ComposeplateMetricsUtils;
+import org.chromium.chrome.browser.composeplate.ComposeplateMetricsUtils.ComposeplateViewButtonType;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtils;
 import org.chromium.chrome.browser.composeplate.ComposeplateUtilsJni;
 import org.chromium.chrome.browser.feed.FeedStreamViewResizerUtils;
@@ -1116,19 +1122,15 @@ public class NewTabPageCoordinatorUnitTest {
                 /* hasTargetConfig= */ true);
     }
 
-    /**
-     * Verifies that the optional button is shown on an existing NTP when switching back to Google
-     * from a third party search engine without an AI Mode entry point, even though Google's
-     * AiModeButtonUiConfig arrives after the search provider info is updated.
-     */
     @Test
     @EnableFeatures({
         OmniboxFeatureList.AIM3P_ENTRYPOINT,
         ChromeFeatureList.NTP_AURORA,
         ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/2"
     })
-    public void testOptionalButtonVisibility_SwitchBackToGoogle_CreateImage() {
-        testOptionalButtonVisibilitySwitchBackToGoogleImpl();
+    public void testComposeplateButtons_SwitchBackToGoogle_CreateImageChip() {
+        testComposeplateButtonsSwitchBackToGoogleImpl(
+                ComposeplateViewButtonType.CREATE_IMAGE, ComposeplateViewButtonType.INCOGNITO);
     }
 
     @Test
@@ -1137,74 +1139,187 @@ public class NewTabPageCoordinatorUnitTest {
         ChromeFeatureList.NTP_AURORA,
         ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/3"
     })
-    public void testOptionalButtonVisibility_SwitchBackToGoogle_AddImage() {
-        testOptionalButtonVisibilitySwitchBackToGoogleImpl();
+    public void testComposeplateButtons_SwitchBackToGoogle_AddImageChip() {
+        testComposeplateButtonsSwitchBackToGoogleImpl(
+                /* expectedOptionalButtonType= */ null, ComposeplateViewButtonType.ADD_IMAGE);
     }
 
-    /**
-     * Verifies that the Create image chip falls back to the add image chip when image generation
-     * isn't allowed.
-     */
+    @Test
+    @EnableFeatures({
+        OmniboxFeatureList.AIM3P_ENTRYPOINT,
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/4"
+    })
+    public void testComposeplateButtons_SwitchBackToGoogle_AddImageAndCreateImageChips() {
+        testComposeplateButtonsSwitchBackToGoogleImpl(
+                ComposeplateViewButtonType.ADD_IMAGE, ComposeplateViewButtonType.CREATE_IMAGE);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/1"
+    })
+    public void testComposeplateButtons_IncognitoChip() {
+        verifyComposeplateButtons(
+                /* expectedOptionalButtonType= */ null, ComposeplateViewButtonType.INCOGNITO);
+    }
+
     @Test
     @EnableFeatures({
         ChromeFeatureList.NTP_AURORA,
         ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/2"
     })
-    public void testOptionalButton_CreateImage_ImageGenNotAllowed_FallsBackToAddImage() {
-        mInputStateSupplier.set(new InputStateBuilder().withAllowedTools().build());
-        // Tool availability is checked when the composeplate is created, so recreate the
-        // coordinator.
-        mCoordinator.destroy();
-        clearInvocations(mComposeboxQueryControllerBridge);
-        createCoordinator();
+    public void testComposeplateButtons_CreateImageChip() {
+        verifyComposeplateButtons(
+                ComposeplateViewButtonType.CREATE_IMAGE, ComposeplateViewButtonType.INCOGNITO);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/3"
+    })
+    public void testComposeplateButtons_AddImageChip() {
+        verifyComposeplateButtons(
+                /* expectedOptionalButtonType= */ null, ComposeplateViewButtonType.ADD_IMAGE);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/4"
+    })
+    public void testComposeplateButtons_AddImageAndCreateImageChips() {
+        verifyComposeplateButtons(
+                ComposeplateViewButtonType.ADD_IMAGE, ComposeplateViewButtonType.CREATE_IMAGE);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/2"
+    })
+    public void testComposeplateButtons_CreateImageChip_ImageGenNotAllowed() {
+        recreateCoordinatorWithoutImageGenTool();
+
+        // Trigger a second button update via a DSE switch to verify the input state is cached.
+        mCoordinator.setSearchProviderInfo(/* hasLogo= */ false, /* isGoogle= */ false);
+        mCoordinator.setSearchProviderInfo(/* hasLogo= */ true, /* isGoogle= */ true);
 
         // The session used to determine the allowed tools is closed right away, and only one is
-        // created even though the chip type is queried multiple times during initialization.
+        // created even though the composeplate buttons are updated multiple times.
         verify(mComposeboxQueryControllerBridge).destroy();
-        verifyOptionalButtonFellBackToAddImage();
+        // The create image chip is hidden, so only the incognito chip is left.
+        verifyComposeplateButtons(
+                /* expectedOptionalButtonType= */ null, ComposeplateViewButtonType.INCOGNITO);
     }
 
-    /**
-     * Verifies that the Create image chip falls back to the add image chip when no Composebox
-     * session can be created.
-     */
     @Test
     @EnableFeatures({
         ChromeFeatureList.NTP_AURORA,
         ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/2"
     })
-    public void testOptionalButton_CreateImage_NoComposeboxSession_FallsBackToAddImage() {
-        ComposeboxQueryControllerBridge.setInstanceForTesting(null);
-        // Tool availability is checked when the composeplate is created, so recreate the
-        // coordinator.
-        mCoordinator.destroy();
-        createCoordinator();
+    public void testComposeplateButtons_CreateImageChip_NoComposeboxSession() {
+        recreateCoordinatorWithoutComposeboxSession();
 
-        verifyOptionalButtonFellBackToAddImage();
+        verifyComposeplateButtons(
+                /* expectedOptionalButtonType= */ null, ComposeplateViewButtonType.INCOGNITO);
     }
 
-    private void verifyOptionalButtonFellBackToAddImage() {
-        assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
-        View optionalButton = mNewTabPageLayout.findViewById(R.id.optional_button);
-        assertEquals(View.VISIBLE, optionalButton.getVisibility());
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/3"
+    })
+    public void testComposeplateButtons_AddImageChip_NoComposeboxSession() {
+        recreateCoordinatorWithoutComposeboxSession();
 
-        // The Create image strings aren't applied, so the layout's default strings are kept.
-        assertEquals(
-                mActivity.getString(R.string.ntp_action_chip_add_image_accessibility),
-                optionalButton.getContentDescription());
-        TextView optionalButtonText = mNewTabPageLayout.findViewById(R.id.optional_button_text);
-        assertEquals(
-                mActivity.getString(R.string.omnibox_navattach_add_images),
-                optionalButtonText.getText().toString());
+        // The add image chip doesn't depend on the allowed tools.
+        verifyComposeplateButtons(
+                /* expectedOptionalButtonType= */ null, ComposeplateViewButtonType.ADD_IMAGE);
+    }
 
-        // Clicking doesn't enter image generation mode.
-        optionalButton.performClick();
-        verify(mManager, never())
-                .focusSearchBox(
-                        anyBoolean(),
-                        eq(AutocompleteRequestType.IMAGE_GENERATION),
-                        eq(OmniboxFocusReason.NTP_AI_MODE),
-                        any());
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/4"
+    })
+    public void testComposeplateButtons_AddImageAndCreateImageChips_NoComposeboxSession() {
+        recreateCoordinatorWithoutComposeboxSession();
+
+        verifyComposeplateButtons(
+                /* expectedOptionalButtonType= */ null, ComposeplateViewButtonType.ADD_IMAGE);
+    }
+
+    @Test
+    @EnableFeatures({
+        OmniboxFeatureList.AIM3P_ENTRYPOINT,
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/4"
+    })
+    public void
+            testComposeplateButtons_AddImageAndCreateImageChips_ComposeboxSessionCreatedLater() {
+        recreateCoordinatorWithoutComposeboxSession();
+        verifyComposeplateButtons(
+                /* expectedOptionalButtonType= */ null, ComposeplateViewButtonType.ADD_IMAGE);
+
+        ComposeboxQueryControllerBridge.setInstanceForTesting(mComposeboxQueryControllerBridge);
+        clearInvocations(mComposeboxQueryControllerBridge);
+
+        // No Composebox session can be created while the default search engine isn't Google, so
+        // none is requested.
+        changeSearchEngine(/* isGoogle= */ false, /* hasAiModeButtonUiConfig= */ true);
+        verify(mComposeboxQueryControllerBridge, never()).getInputStateSupplier();
+
+        // The allowed tools are checked again once the default search engine is Google.
+        changeSearchEngine(/* isGoogle= */ true, /* hasAiModeButtonUiConfig= */ true);
+        verifyComposeplateButtons(
+                ComposeplateViewButtonType.ADD_IMAGE, ComposeplateViewButtonType.CREATE_IMAGE);
+    }
+
+    @Test
+    @EnableFeatures({
+        OmniboxFeatureList.AIM3P_ENTRYPOINT,
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/4"
+    })
+    public void
+            testComposeplateButtons_AddImageAndCreateImageChips_SwitchToGoogleBeforeConfigArrives() {
+        recreateCoordinatorWithoutComposeboxSession();
+        // Hide the composeplate by switching to a 3P DSE without an AI Mode entry point while
+        // keeping mComposeplateCoordinator initialized and mComposeboxInputState null.
+        changeSearchEngine(/* isGoogle= */ false, /* hasAiModeButtonUiConfig= */ false);
+        assertEquals(TriState.FALSE, mCoordinator.getIsComposeplateEnabledForTesting());
+
+        ComposeboxQueryControllerBridge.setInstanceForTesting(mComposeboxQueryControllerBridge);
+        clearInvocations(mComposeboxQueryControllerBridge);
+
+        // Switching to Google before its AiModeButtonUiConfig arrives keeps the composeplate
+        // hidden and avoids fetching mComposeboxInputState prematurely.
+        mCoordinator.setSearchProviderInfo(/* hasLogo= */ true, /* isGoogle= */ true);
+        assertEquals(TriState.FALSE, mCoordinator.getIsComposeplateEnabledForTesting());
+        verify(mComposeboxQueryControllerBridge, never()).getInputStateSupplier();
+
+        // Once Google's config arrives, the composeplate becomes visible and updates its buttons.
+        mAiModeButtonUiConfigSupplier.set(createAiModeButtonUiConfig(/* isGoogle= */ true));
+        assertEquals(TriState.TRUE, mCoordinator.getIsComposeplateEnabledForTesting());
+        verifyComposeplateButtons(
+                ComposeplateViewButtonType.ADD_IMAGE, ComposeplateViewButtonType.CREATE_IMAGE);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/4"
+    })
+    public void testComposeplateButtons_AddImageAndCreateImageChips_ImageGenNotAllowed() {
+        recreateCoordinatorWithoutImageGenTool();
+
+        // Only the create image chip is hidden. The incognito chip doesn't come back, since the
+        // add image chip is still shown.
+        verifyComposeplateButtons(
+                /* expectedOptionalButtonType= */ null, ComposeplateViewButtonType.ADD_IMAGE);
     }
 
     /**
@@ -1226,10 +1341,6 @@ public class NewTabPageCoordinatorUnitTest {
         ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/4"
     })
     public void testComposeplateButtonClicked_AddImageAndCreateImageChips() {
-        // The add image and create image chips aren't shown yet.
-        assertEquals(
-                View.GONE, mNewTabPageLayout.findViewById(R.id.optional_button).getVisibility());
-
         testComposeplateButtonClickedImpl(/* expectedFocusSearchBox= */ true);
     }
 
@@ -1262,41 +1373,41 @@ public class NewTabPageCoordinatorUnitTest {
         verify(mManager).loadUrl(any(LoadUrlParams.class), eq(false));
     }
 
-    /**
-     * Verifies that the Create image chip falls back to the default chip on devices that don't
-     * support the fusebox.
-     */
     @Test
     @EnableFeatures({
         ChromeFeatureList.NTP_AURORA,
         ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/2"
     })
-    public void testOptionalButton_CreateImage_NonFuseboxDevice_FallsBackToDefault() {
-        testOptionalButtonNonFuseboxDeviceImpl();
+    public void testComposeplateButtons_CreateImageChip_NonFuseboxDevice() {
+        testComposeplateButtonsNonFuseboxDeviceImpl();
     }
 
-    /**
-     * Verifies that the add image chip falls back to the default chip on devices that don't support
-     * the fusebox.
-     */
     @Test
     @EnableFeatures({
         ChromeFeatureList.NTP_AURORA,
         ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/3"
     })
-    public void testOptionalButton_AddImage_NonFuseboxDevice_FallsBackToDefault() {
-        testOptionalButtonNonFuseboxDeviceImpl();
+    public void testComposeplateButtons_AddImageChip_NonFuseboxDevice() {
+        testComposeplateButtonsNonFuseboxDeviceImpl();
     }
 
-    private void testOptionalButtonNonFuseboxDeviceImpl() {
-        // The chip type is resolved when the composeplate is created, so recreate the coordinator.
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/4"
+    })
+    public void testComposeplateButtons_AddImageAndCreateImageChips_NonFuseboxDevice() {
+        testComposeplateButtonsNonFuseboxDeviceImpl();
+    }
+
+    private void testComposeplateButtonsNonFuseboxDeviceImpl() {
+        // The buttons are set up when the composeplate is created, so recreate the coordinator.
         mCoordinator.destroy();
         DeviceInfo.setIsAutomotiveForTesting(true);
         createCoordinator();
 
-        assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
-        View optionalButton = mNewTabPageLayout.findViewById(R.id.optional_button);
-        assertEquals(View.GONE, optionalButton.getVisibility());
+        verifyComposeplateButtons(
+                /* expectedOptionalButtonType= */ null, ComposeplateViewButtonType.INCOGNITO);
     }
 
     @Test
@@ -1305,40 +1416,43 @@ public class NewTabPageCoordinatorUnitTest {
         ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/1"
     })
     public void testIncognitoButtonClicked() {
-        // The composeplate is created in setUp() since the default search engine is Google.
-        assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
-        View trailingButton = mNewTabPageLayout.findViewById(R.id.trailing_button);
-        assertEquals(View.VISIBLE, trailingButton.getVisibility());
-        String expectedContentDescription =
-                mActivity.getString(R.string.accessibility_new_incognito_tab_page);
-        assertEquals(expectedContentDescription, trailingButton.getContentDescription());
-        assertEquals(expectedContentDescription, trailingButton.getTooltipText());
-        TextView trailingButtonText = mNewTabPageLayout.findViewById(R.id.trailing_button_text);
-        assertEquals(
-                mActivity.getString(R.string.notification_category_incognito),
-                trailingButtonText.getText().toString());
-
         clickButtonAndVerifyClickMetric(
                 R.id.trailing_button, ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_INCOGNITO_BUTTON);
 
         verify(mManager).loadUrl(any(LoadUrlParams.class), /* incognito= */ eq(true));
     }
 
-    /**
-     * Verifies that clicking the Create image chip focuses the search box in image generation mode
-     * and records the click.
-     */
     @Test
     @EnableFeatures({
         ChromeFeatureList.NTP_AURORA,
         ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/2"
     })
     public void testCreateImageButtonClicked() {
-        // The composeplate is created in setUp() since the default search engine is Google.
-        assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
+        testCreateImageButtonClickedImpl(R.id.optional_button);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/3"
+    })
+    public void testAddImageButtonClicked_focusesSearchBoxForGallery() {
+        testAddImageButtonClickedImpl(R.id.trailing_button);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/4"
+    })
+    public void testImageButtonsClicked_AddImageAndCreateImageChips() {
+        testAddImageButtonClickedImpl(R.id.optional_button);
+        testCreateImageButtonClickedImpl(R.id.trailing_button);
+    }
+
+    private void testCreateImageButtonClickedImpl(@IdRes int buttonId) {
         clickButtonAndVerifyClickMetric(
-                R.id.optional_button,
-                ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_CREATE_IMAGE_BUTTON);
+                buttonId, ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_CREATE_IMAGE_BUTTON);
 
         verify(mManager)
                 .focusSearchBox(
@@ -1348,20 +1462,9 @@ public class NewTabPageCoordinatorUnitTest {
                         /* pastedText= */ null);
     }
 
-    /**
-     * Verifies that clicking the add image chip focuses the search box to open the gallery and
-     * records the click.
-     */
-    @Test
-    @EnableFeatures({
-        ChromeFeatureList.NTP_AURORA,
-        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/3"
-    })
-    public void testAddImageButtonClicked_focusesSearchBoxForGallery() {
-        // The composeplate is created in setUp() since the default search engine is Google.
-        assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
+    private void testAddImageButtonClickedImpl(@IdRes int buttonId) {
         clickButtonAndVerifyClickMetric(
-                R.id.optional_button, ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_ADD_IMAGE_BUTTON);
+                buttonId, ModuleTypeOnStartAndNtp.COMPOSEPLATE_VIEW_ADD_IMAGE_BUTTON);
 
         verify(mManager)
                 .focusSearchBox(
@@ -1373,13 +1476,111 @@ public class NewTabPageCoordinatorUnitTest {
 
     @Test
     public void testComposeplateDisabledWhenIncognitoDisabled() {
-        // Incognito availability is read when the coordinator is created, so recreate it after
-        // disabling incognito mode.
-        mCoordinator.destroy();
-        IncognitoUtils.setEnabledForTesting(false);
-        createCoordinator();
+        recreateCoordinatorWithIncognitoDisabled();
 
         verifyComposeplateDisabledAndUninflatedBetweenDseChanges();
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/2"
+    })
+    public void testComposeplateDisabledWhenIncognitoDisabled_CreateImageChip() {
+        recreateCoordinatorWithIncognitoDisabled();
+
+        // The create image chip is shown along with the incognito chip, so the composeplate is
+        // still disabled.
+        verifyComposeplateDisabledAndUninflatedBetweenDseChanges();
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/3"
+    })
+    public void testComposeplateEnabledWhenIncognitoDisabled_AddImageChip() {
+        recreateCoordinatorWithIncognitoDisabled();
+
+        // The add image chip takes the place of the incognito chip, so the composeplate doesn't
+        // depend on incognito mode.
+        assertEquals(TriState.TRUE, mCoordinator.getIsComposeplateEnabledForTesting());
+        verifyComposeplateButtons(
+                /* expectedOptionalButtonType= */ null, ComposeplateViewButtonType.ADD_IMAGE);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/4"
+    })
+    public void testComposeplateEnabledWhenIncognitoDisabled_AddImageAndCreateImageChips() {
+        recreateCoordinatorWithIncognitoDisabled();
+
+        assertEquals(TriState.TRUE, mCoordinator.getIsComposeplateEnabledForTesting());
+        verifyComposeplateButtons(
+                ComposeplateViewButtonType.ADD_IMAGE, ComposeplateViewButtonType.CREATE_IMAGE);
+    }
+
+    @Test
+    @EnableFeatures({
+        OmniboxFeatureList.AIM3P_ENTRYPOINT,
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/3"
+    })
+    public void testComposeplateWhenIncognitoDisabled_AddImageChip_SwitchSearchEngine() {
+        testComposeplateWhenIncognitoDisabledSwitchSearchEngineImpl(
+                /* isAiModeButtonUiConfigUpdatedFirst= */ false);
+    }
+
+    @Test
+    @EnableFeatures({
+        OmniboxFeatureList.AIM3P_ENTRYPOINT,
+        ChromeFeatureList.NTP_AURORA,
+        ChromeFeatureList.NTP_AURORA_V2 + ":action_chips/3"
+    })
+    public void
+            testComposeplateWhenIncognitoDisabled_AddImageChip_SwitchSearchEngine_ConfigFirst() {
+        testComposeplateWhenIncognitoDisabledSwitchSearchEngineImpl(
+                /* isAiModeButtonUiConfigUpdatedFirst= */ true);
+    }
+
+    private void testComposeplateWhenIncognitoDisabledSwitchSearchEngineImpl(
+            boolean isAiModeButtonUiConfigUpdatedFirst) {
+        recreateCoordinatorWithIncognitoDisabled();
+        assertEquals(TriState.TRUE, mCoordinator.getIsComposeplateEnabledForTesting());
+        View composeplateView = mNewTabPageLayout.findViewById(R.id.composeplate_view);
+        assertEquals(View.VISIBLE, composeplateView.getVisibility());
+
+        // The add image chip is only shown for Google. With a third party search engine, the
+        // incognito chip would be part of the row, so the composeplate is disabled.
+        changeSearchEngineAndAiModeButtonUiConfig(
+                /* isGoogle= */ false, isAiModeButtonUiConfigUpdatedFirst);
+        assertEquals(TriState.FALSE, mCoordinator.getIsComposeplateEnabledForTesting());
+        assertEquals(View.GONE, composeplateView.getVisibility());
+
+        AiModeButtonUiConfig googleConfig =
+                changeSearchEngineAndAiModeButtonUiConfig(
+                        /* isGoogle= */ true, isAiModeButtonUiConfigUpdatedFirst);
+        assertEquals(TriState.TRUE, mCoordinator.getIsComposeplateEnabledForTesting());
+        assertEquals(View.VISIBLE, composeplateView.getVisibility());
+        verifyComposeplateButtons(
+                /* expectedOptionalButtonType= */ null, ComposeplateViewButtonType.ADD_IMAGE);
+        // Google's config is applied even if it arrived while the composeplate was disabled.
+        TextView aiModeButtonText = mNewTabPageLayout.findViewById(R.id.composeplate_button_text);
+        assertEquals(googleConfig.text, aiModeButtonText.getText().toString());
+    }
+
+    private AiModeButtonUiConfig changeSearchEngineAndAiModeButtonUiConfig(
+            boolean isGoogle, boolean isAiModeButtonUiConfigUpdatedFirst) {
+        if (!isAiModeButtonUiConfigUpdatedFirst) {
+            return changeSearchEngine(isGoogle, /* hasAiModeButtonUiConfig= */ true);
+        }
+
+        AiModeButtonUiConfig aiModeButtonUiConfig = createAiModeButtonUiConfig(isGoogle);
+        mAiModeButtonUiConfigSupplier.set(aiModeButtonUiConfig);
+        mCoordinator.setSearchProviderInfo(/* hasLogo= */ isGoogle, isGoogle);
+        return aiModeButtonUiConfig;
     }
 
     @Test
@@ -1429,9 +1630,7 @@ public class NewTabPageCoordinatorUnitTest {
         ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/1"
     })
     public void testComposeplateEnabledWhenIncognitoDisabled_BesideMvtEnabled() {
-        mCoordinator.destroy();
-        IncognitoUtils.setEnabledForTesting(/* enabled= */ false);
-        createCoordinator();
+        recreateCoordinatorWithIncognitoDisabled();
 
         assertEquals(TriState.TRUE, mCoordinator.getIsComposeplateEnabledForTesting());
         assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
@@ -1451,6 +1650,14 @@ public class NewTabPageCoordinatorUnitTest {
         View aiModeButton = composeplateView.findViewById(R.id.composeplate_button);
         assertEquals(
                 0, ((ViewGroup.MarginLayoutParams) aiModeButton.getLayoutParams()).getMarginEnd());
+    }
+
+    private void recreateCoordinatorWithIncognitoDisabled() {
+        // Incognito availability is read when the coordinator is created, so recreate it after
+        // disabling incognito mode.
+        mCoordinator.destroy();
+        IncognitoUtils.setEnabledForTesting(/* enabled= */ false);
+        createCoordinator();
     }
 
     @Test
@@ -1585,27 +1792,105 @@ public class NewTabPageCoordinatorUnitTest {
         assertEquals(config.text, buttonText.getText().toString());
     }
 
-    private void testOptionalButtonVisibilitySwitchBackToGoogleImpl() {
+    private void testComposeplateButtonsSwitchBackToGoogleImpl(
+            @Nullable @ComposeplateViewButtonType Integer expectedOptionalButtonType,
+            @ComposeplateViewButtonType int expectedTrailingButtonType) {
         // The composeplate is created in setUp() since the default search engine is Google.
-        assertNotNull(mCoordinator.getComposeplateCoordinatorForTesting());
-        View optionalButton = mNewTabPageLayout.findViewById(R.id.optional_button);
-        assertEquals(View.VISIBLE, optionalButton.getVisibility());
+        verifyComposeplateButtons(expectedOptionalButtonType, expectedTrailingButtonType);
 
-        // Third party search engine A offers an AI Mode entry point.
+        // Third party search engine A offers an AI Mode entry point. The add image and create
+        // image chips are only shown for Google, so the incognito chip is shown instead.
         changeSearchEngine(/* isGoogle= */ false, /* hasAiModeButtonUiConfig= */ true);
-        assertEquals(View.GONE, optionalButton.getVisibility());
+        verifyComposeplateButtons(
+                /* expectedOptionalButtonType= */ null, ComposeplateViewButtonType.INCOGNITO);
 
         // Third party search engine B doesn't offer an AI Mode entry point, so the composeplate is
         // hidden.
         changeSearchEngine(/* isGoogle= */ false, /* hasAiModeButtonUiConfig= */ false);
         assertEquals(TriState.FALSE, mCoordinator.getIsComposeplateEnabledForTesting());
-        assertEquals(View.GONE, optionalButton.getVisibility());
 
-        // Switches back to Google. The optional button must be shown, even though the composeplate
+        // Switches back to Google. The chips must be shown again, even though the composeplate
         // isn't enabled yet when the search provider info is updated.
         changeSearchEngine(/* isGoogle= */ true, /* hasAiModeButtonUiConfig= */ true);
         assertEquals(TriState.TRUE, mCoordinator.getIsComposeplateEnabledForTesting());
-        assertEquals(View.VISIBLE, optionalButton.getVisibility());
+        verifyComposeplateButtons(expectedOptionalButtonType, expectedTrailingButtonType);
+    }
+
+    private void verifyComposeplateButtons(
+            @Nullable @ComposeplateViewButtonType Integer expectedOptionalButtonType,
+            @ComposeplateViewButtonType int expectedTrailingButtonType) {
+        ComposeplateCoordinator composeplateCoordinator =
+                mCoordinator.getComposeplateCoordinatorForTesting();
+        assertNotNull(composeplateCoordinator);
+        assertEquals(
+                View.VISIBLE,
+                mNewTabPageLayout.findViewById(R.id.composeplate_button).getVisibility());
+        String histogramName = ComposeplateMetricsUtils.HISTOGRAM_COMPOSEPLATE_BUTTONS_IMPRESSION;
+        HistogramWatcher.Builder builder =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                histogramName,
+                                ComposeplateViewButtonType.AI_MODE,
+                                expectedTrailingButtonType);
+        View optionalButton = mNewTabPageLayout.findViewById(R.id.optional_button);
+        if (expectedOptionalButtonType == null) {
+            assertEquals(View.GONE, optionalButton.getVisibility());
+        } else {
+            verifyComposeplateButton(
+                    optionalButton,
+                    R.id.optional_button_icon,
+                    R.id.optional_button_text,
+                    expectedOptionalButtonType);
+            builder.expectIntRecord(histogramName, expectedOptionalButtonType);
+        }
+        verifyComposeplateButton(
+                mNewTabPageLayout.findViewById(R.id.trailing_button),
+                R.id.trailing_button_icon,
+                R.id.trailing_button_text,
+                expectedTrailingButtonType);
+
+        // Each button is recorded with the type of the chip that it shows.
+        HistogramWatcher histogramWatcher = builder.build();
+        composeplateCoordinator.recordButtonsImpression();
+        histogramWatcher.assertExpected();
+    }
+
+    private void verifyComposeplateButton(
+            View button,
+            @IdRes int buttonIconId,
+            @IdRes int buttonTextId,
+            @ComposeplateViewButtonType int expectedButtonType) {
+        @DrawableRes int expectedIconResId;
+        @StringRes int expectedTextResId;
+        @StringRes int expectedContentDescriptionResId;
+        switch (expectedButtonType) {
+            case ComposeplateViewButtonType.INCOGNITO -> {
+                expectedIconResId = R.drawable.ic_incognito;
+                expectedTextResId = R.string.notification_category_incognito;
+                expectedContentDescriptionResId = R.string.accessibility_new_incognito_tab_page;
+            }
+            case ComposeplateViewButtonType.CREATE_IMAGE -> {
+                expectedIconResId = R.drawable.image_create_24dp;
+                expectedTextResId = R.string.ntp_action_chip_create_image;
+                expectedContentDescriptionResId =
+                        R.string.ntp_action_chip_create_image_accessibility;
+            }
+            case ComposeplateViewButtonType.ADD_IMAGE -> {
+                expectedIconResId = R.drawable.add_photo_alternate_24dp;
+                expectedTextResId = R.string.omnibox_navattach_add_images;
+                expectedContentDescriptionResId = R.string.ntp_action_chip_add_image_accessibility;
+            }
+            default -> throw new IllegalArgumentException("Unsupported: " + expectedButtonType);
+        }
+
+        assertEquals(View.VISIBLE, button.getVisibility());
+        ImageView buttonIcon = button.findViewById(buttonIconId);
+        assertEquals(expectedIconResId, shadowOf(buttonIcon.getDrawable()).getCreatedFromResId());
+        TextView buttonText = button.findViewById(buttonTextId);
+        assertEquals(mActivity.getString(expectedTextResId), buttonText.getText().toString());
+        String expectedContentDescription = mActivity.getString(expectedContentDescriptionResId);
+        assertEquals(expectedContentDescription, button.getContentDescription());
+        assertEquals(expectedContentDescription, button.getTooltipText());
     }
 
     private void testComposeplateButtonClickedImpl(boolean expectedFocusSearchBox) {
@@ -2660,5 +2945,20 @@ public class NewTabPageCoordinatorUnitTest {
         mNewTabPageLayout.findViewById(buttonId).performClick();
 
         histogramWatcher.assertExpected();
+    }
+
+    private void recreateCoordinatorWithoutComposeboxSession() {
+        ComposeboxQueryControllerBridge.setInstanceForTesting(null);
+        // The input state is cached once it is fetched, so recreate the coordinator.
+        mCoordinator.destroy();
+        createCoordinator();
+    }
+
+    private void recreateCoordinatorWithoutImageGenTool() {
+        mInputStateSupplier.set(new InputStateBuilder().withAllowedTools().build());
+        // The input state is cached once it is fetched, so recreate the coordinator.
+        mCoordinator.destroy();
+        clearInvocations(mComposeboxQueryControllerBridge);
+        createCoordinator();
     }
 }

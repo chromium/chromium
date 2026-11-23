@@ -2676,6 +2676,8 @@ const FeatureEntry::FeatureParam kNtpAuroraV2_CreateImageChip[] = {
     {"action_chips", "2"}};
 const FeatureEntry::FeatureParam kNtpAuroraV2_AddImageChip[] = {
     {"action_chips", "3"}};
+const FeatureEntry::FeatureParam kNtpAuroraV2_AddImageAndCreateImageChips[] = {
+    {"action_chips", "4"}};
 const FeatureEntry::FeatureParam kNtpAuroraV2_BesideMvtModule[] = {
     {"layout_type", "1"}};
 const FeatureEntry::FeatureParam kNtpAuroraV2_InsideMvtModule[] = {
@@ -2686,6 +2688,8 @@ const FeatureEntry::FeatureVariation kNtpAuroraV2Variations[] = {
     {"Incognito chip", kNtpAuroraV2_IncognitoChip, nullptr},
     {"Create image chip", kNtpAuroraV2_CreateImageChip, nullptr},
     {"Add image chip", kNtpAuroraV2_AddImageChip, nullptr},
+    {"Add image and create image chips",
+     kNtpAuroraV2_AddImageAndCreateImageChips, nullptr},
     {"Beside MVT module", kNtpAuroraV2_BesideMvtModule, nullptr},
     {"Inside MVT module", kNtpAuroraV2_InsideMvtModule, nullptr},
     {"Remove composeplate button", kNtpAuroraV2_RemoveComposeplateButton,

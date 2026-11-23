@@ -61,7 +61,6 @@ public class NewTabPageUtils {
         int INCOGNITO = 1;
         int CREATE_IMAGE = 2;
         int ADD_IMAGE = 3;
-        // TODO(crbug.com/568005713): Show both chips. Only the incognito chip is shown for now.
         int ADD_IMAGE_AND_CREATE_IMAGE = 4;
         int NUM_ENTRIES = 5;
     }
