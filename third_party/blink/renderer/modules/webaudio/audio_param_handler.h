@@ -221,7 +221,7 @@ class MODULES_EXPORT AudioParamHandler final
     // the possible parameters because we're mostly copying an
     // existing event.
     static std::unique_ptr<ParamEvent> CreateGeneralEvent(
-        Type,
+        Type type,
         float value,
         double time,
         float initial_value,
@@ -255,7 +255,7 @@ class MODULES_EXPORT AudioParamHandler final
     // For CancelValues events. Not valid for any other event.
     ParamEvent* SavedEvent() const;
     bool HasDefaultCancelledValue() const;
-    void SetCancelledValue(float);
+    void SetCancelledValue(float value);
 
    private:
     // General event
@@ -273,22 +273,22 @@ class MODULES_EXPORT AudioParamHandler final
 
     // Create simplest event needing just a value and time, like
     // setValueAtTime.
-    ParamEvent(Type, float value, double time);
+    ParamEvent(Type type, float value, double time);
 
     // Create a linear or exponential ramp that requires an initial
     // value and time in case there is no actual event that precedes
     // this event.
-    ParamEvent(Type,
+    ParamEvent(Type type,
                float value,
                double time,
                float initial_value,
                double call_time);
 
     // Create an event needing a time constant (setTargetAtTime)
-    ParamEvent(Type, float value, double time, double time_constant);
+    ParamEvent(Type type, float value, double time, double time_constant);
 
     // Create a setValueCurve event
-    ParamEvent(Type,
+    ParamEvent(Type type,
                double time,
                double duration,
                const Vector<float>& curve,
@@ -296,7 +296,7 @@ class MODULES_EXPORT AudioParamHandler final
                float curve_end_value);
 
     // Create CancelValues event
-    ParamEvent(Type, double time, std::unique_ptr<ParamEvent> saved_event);
+    ParamEvent(Type type, double time, std::unique_ptr<ParamEvent> saved_event);
 
     const Type type_;
 
@@ -353,13 +353,13 @@ class MODULES_EXPORT AudioParamHandler final
   FRIEND_TEST_ALL_PREFIXES(AudioParamHandlerTest,
                            SetTargetFollowedByRampAtSameTime);
 
-  AudioParamHandler(BaseAudioContext&,
-                    AudioParamType,
+  AudioParamHandler(BaseAudioContext& context,
+                    AudioParamType param_type,
                     double default_value,
                     V8AutomationRate::Enum rate,
                     AutomationRateMode rate_mode,
-                    float min,
-                    float max);
+                    float min_value,
+                    float max_value);
 
   // Compute the value from this AudioParamHandler at the current context
   // frame. Returns two values:
@@ -368,11 +368,12 @@ class MODULES_EXPORT AudioParamHandler final
   //                    timeline
   //   float value    - the timeline value if `has_value` is true; otherwise
   //                    `default_value` is returned.
-  std::tuple<bool, float> ValueForContextTime(AudioDestinationHandler&,
-                                              float default_value,
-                                              float min_value,
-                                              float max_value,
-                                              unsigned render_quantum_frames);
+  std::tuple<bool, float> ValueForContextTime(
+      AudioDestinationHandler& audio_destination,
+      float default_value,
+      float min_value,
+      float max_value,
+      unsigned render_quantum_frames);
 
   // Given the time range in frames, calculates parameter values into the
   // values buffer and returns the last parameter value calculated for
@@ -393,7 +394,8 @@ class MODULES_EXPORT AudioParamHandler final
 
   // Returns true if the event was inserted, false if an exception occurred and
   // the event was not inserted.
-  bool InsertEvent(std::unique_ptr<ParamEvent>, ExceptionState&)
+  bool InsertEvent(std::unique_ptr<ParamEvent> event,
+                   ExceptionState& exception_state)
       EXCLUSIVE_LOCKS_REQUIRED(events_lock_);
   void ValuesForFrameRangeImpl(const size_t start_frame,
                                const size_t end_frame,
@@ -405,7 +407,7 @@ class MODULES_EXPORT AudioParamHandler final
       EXCLUSIVE_LOCKS_REQUIRED(events_lock_);
 
   // Produce a nice string describing the event in human-readable form.
-  String EventToString(const ParamEvent&) const;
+  String EventToString(const ParamEvent& event) const;
 
   // Handles the special case where the first event in the timeline
   // starts after `start_frame`.  These initial values are filled using
@@ -420,9 +422,9 @@ class MODULES_EXPORT AudioParamHandler final
                                               size_t write_index)
       EXCLUSIVE_LOCKS_REQUIRED(events_lock_);
 
-  // Return true if `current_event` starts after `current_frame`, but
+  // Return true if `event` starts after `current_frame`, but
   // also takes into account the `next_event` if any.
-  bool IsEventCurrent(const ParamEvent* current_event,
+  bool IsEventCurrent(const ParamEvent* event,
                       const ParamEvent* next_event,
                       size_t current_frame,
                       double sample_rate) const;
@@ -459,7 +461,7 @@ class MODULES_EXPORT AudioParamHandler final
   // the SetTarget event has reached at this time, instead of using
   // the value of the SetTarget event.  `next_event` may be null.
   void ProcessSetTargetFollowedByRamp(wtf_size_t event_index,
-                                      ParamEvent*& current_event,
+                                      ParamEvent*& event,
                                       const ParamEvent* next_event,
                                       size_t current_frame,
                                       double sample_rate,
@@ -553,7 +555,7 @@ class MODULES_EXPORT AudioParamHandler final
   // Remove old events, but always leave at least one event in the timeline.
   // This is needed in case a new event is added (like linearRamp) that
   // would use a previous event to compute the automation.
-  void RemoveOldEvents(wtf_size_t n_events)
+  void RemoveOldEvents(wtf_size_t event_count)
       EXCLUSIVE_LOCKS_REQUIRED(events_lock_);
 
   // sampleAccurate corresponds to a-rate (audio rate) vs. k-rate in the Web
