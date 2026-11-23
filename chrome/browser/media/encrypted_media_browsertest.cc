@@ -1397,6 +1397,34 @@ class MediaFoundationEncryptedMediaTest : public EncryptedMediaTestBase {
           .ExtractInt();
     };
 
+    // Rewind to t=0 before each track switch so OnTracksChanged runs during
+    // active playback rather than colliding with EOS on the 2.74s clip.
+    auto rewind_for_track_switch = [&]() {
+      return content::ExecJs(web_contents, R"(
+        new Promise((resolve, reject) => {
+          const video = document.querySelector('video');
+          if (!video) {
+            reject('video element not found');
+            return;
+          }
+          if (video.error) {
+            reject(video.error.message || 'video error');
+            return;
+          }
+          const controller = new AbortController();
+          video.addEventListener('seeked', () => {
+            controller.abort();
+            resolve();
+          }, {signal: controller.signal});
+          video.addEventListener('error', () => {
+            controller.abort();
+            reject(video.error?.message || 'video error');
+          }, {signal: controller.signal});
+          video.currentTime = 0;
+        })
+      )");
+    };
+
     // 1. Wait for initial playback to decode frames on video track 0
     // (640x360).
     int frames_on_track_0 = wait_for_track_decoding(0, video_size_0);
@@ -1424,6 +1452,7 @@ class MediaFoundationEncryptedMediaTest : public EncryptedMediaTestBase {
     // only enables video track 0). Clear videoTracks[1].selected to false first
     // so that setting it to true transitions its state and triggers
     // HTMLMediaElement::SelectedVideoTrackChanged.
+    ASSERT_TRUE(rewind_for_track_switch());
     ASSERT_TRUE(content::ExecJs(web_contents,
                                 "const video = document.querySelector('video');"
                                 "video.videoTracks[1].selected = false;"
@@ -1449,6 +1478,7 @@ class MediaFoundationEncryptedMediaTest : public EncryptedMediaTestBase {
 
     // 3. Switch back to video track 0 (640x360) and verify that the decoded
     // video resolution returns to 640x360 and decoded frames keep increasing.
+    ASSERT_TRUE(rewind_for_track_switch());
     ASSERT_TRUE(content::ExecJs(
         web_contents,
         "document.querySelector('video').videoTracks[0].selected = true;"));
@@ -1708,17 +1738,6 @@ IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
                        Playback_EncryptedCencVideoAudio_TrackSwitch) {
   if (!IsMediaFoundationEncryptedPlaybackSupported()) {
     GTEST_SKIP() << "MediaFoundationEncryptedPlayback not supported on device.";
-  }
-
-  // TODO(crbug.com/575560149): Re-enable once flakiness on these GPUs is
-  // resolved.
-  const auto& active_gpu =
-      content::GpuDataManager::GetInstance()->GetGPUInfo().active_gpu();
-  if (active_gpu.device_id == 0x2783 || active_gpu.device_id == 0x7480 ||
-      active_gpu.device_id == 0x4680 || active_gpu.device_id == 0x9bc5) {
-    GTEST_SKIP() << "Skipped on NVIDIA RTX 4070 Super (0x2783), AMD RX 7600 "
-                    "(0x7480), Intel UHD 770 (0x4680), and Intel UHD 630 "
-                    "(0x9bc5).";
   }
 
   TestMediaFoundationTrackSwitchPlayback(
