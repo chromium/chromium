@@ -149,6 +149,7 @@ if (!is_android) {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/webid",
       "//chrome/test:test_support",
+      "//components/page_load_metrics/browser:test_support",
       "//content/test:test_support",
       "//testing/gtest",
     ]

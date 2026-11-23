@@ -49,7 +49,7 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/request_type.h"
@@ -1116,6 +1116,12 @@ IN_PROC_BROWSER_TEST_F(
     ThirdPartyCookiesIFrameRequestsAccess_CrossSiteIframe_UnrelatedSites) {
   SetBlockThirdPartyCookies(true);
   base::HistogramTester histogram_tester;
+  page_load_metrics::PageLoadMetricsTestWaiter metrics_waiter(
+      browser()->GetTabStripModel()->GetActiveWebContents());
+  metrics_waiter.AddWebFeatureExpectation(
+      blink::mojom::WebFeature::kStorageAccessAPI_HasStorageAccess_Method);
+  metrics_waiter.AddWebFeatureExpectation(
+      blink::mojom::WebFeature::kStorageAccessAPI_requestStorageAccess_Method);
 
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(EchoCookiesURL(kHostB));
@@ -1127,7 +1133,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(ReadCookiesAndContent(GetFrame(), kHostC), kNoCookiesWithContent);
   EXPECT_FALSE(storage::test::HasStorageAccessForFrame(GetFrame()));
 
-  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  metrics_waiter.Wait();
 
   EXPECT_THAT(
       histogram_tester.GetBucketCount(
