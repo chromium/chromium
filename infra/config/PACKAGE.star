@@ -32,7 +32,9 @@ pkg.depend(
         # Take revision from https://chromium.googlesource.com/infra/chromium/.
         # The @chromium-luci revision in targets/PACKAGE.star should also be
         # kept in sync with the revision here.
-        revision = "566c1ef12737b532e32d2bda8bd24678f49c210e",
+        # LINT.IfChange(chromium_luci_revision)
+        revision = "0c94eca41017b13a587598dcf9db7d378477304d",
+        # LINT.ThenChange(//infra/config/targets/PACKAGE.star:chromium_luci_revision)
     ),
 )
 

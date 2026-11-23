@@ -28,6 +28,8 @@ pkg.depend(
         repo = "infra/chromium",
         ref = "refs/heads/main",
         path = "starlark-libs/chromium-luci",
-        revision = "566c1ef12737b532e32d2bda8bd24678f49c210e",
+        # LINT.IfChange(chromium_luci_revision)
+        revision = "0c94eca41017b13a587598dcf9db7d378477304d",
+        # LINT.ThenChange(//infra/config/PACKAGE.star:chromium_luci_revision)
     ),
 )

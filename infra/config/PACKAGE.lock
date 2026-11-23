@@ -33,7 +33,7 @@
 			"name": "@chromium-luci",
 			"source": {
 				"repo": "https://chromium.googlesource.com/infra/chromium/+/refs/heads/main",
-				"revision": "566c1ef12737b532e32d2bda8bd24678f49c210e",
+				"revision": "0c94eca41017b13a587598dcf9db7d378477304d",
 				"path": "starlark-libs/chromium-luci"
 			},
 			"lucicfg": "1.46.1"
