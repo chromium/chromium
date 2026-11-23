@@ -8,7 +8,6 @@
 #import <vector>
 
 #import "base/apple/foundation_util.h"
-#import "base/ios/ios_util.h"
 #import "base/memory/ptr_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool/thread_pool_instance.h"
@@ -509,13 +508,36 @@ void AutofillControllerTest::WaitForCondition(ConditionBlock condition) {
 }
 
 void AutofillControllerTest::FocusElement(NSString* field_id) {
+  // In a headless WKWebView, `el.focus()` does not fire a `focus` event on
+  // iOS 27+, requiring an explicit `dispatchEvent`, whereas on earlier iOS
+  // versions `el.focus()` fires an asynchronous `focus` event on a subsequent
+  // runloop turn. Deduplicate on `window` in the capture phase (before
+  // `form_handlers.ts`'s `document` capture listener) so each `FocusElement`
+  // call delivers exactly one `focus` event to `formActivity`.
   web::test::ExecuteJavaScript(
       [NSString
           stringWithFormat:
-              @"var el = document.getElementById('%@') || "
-              @"document.forms[0]['%@'];"
-              @"if (el) { el.focus(); el.dispatchEvent(new Event('focus', "
-              @"{bubbles: true})); }",
+              @"(function() {"
+              @"  var el = document.getElementById('%@') || "
+              @"      document.forms[0]['%@'];"
+              @"  if (el) {"
+              @"    if (window.__autofillFocusDedup) {"
+              @"      window.removeEventListener('focus', "
+              @"          window.__autofillFocusDedup, true);"
+              @"    }"
+              @"    var focusHandled = false;"
+              @"    window.__autofillFocusDedup = function(e) {"
+              @"      if (e.target === el) {"
+              @"        if (focusHandled) { e.stopImmediatePropagation(); }"
+              @"        focusHandled = true;"
+              @"      }"
+              @"    };"
+              @"    window.addEventListener('focus', "
+              @"        window.__autofillFocusDedup, true);"
+              @"    el.focus();"
+              @"    el.dispatchEvent(new Event('focus', {bubbles: true}));"
+              @"  }"
+              @"})();",
               field_id, field_id],
       web_state());
 }
@@ -944,15 +966,10 @@ void AutofillControllerTest::SetUpForSuggestions(
 // suggestions being sent to the AutofillAgent, once data has been loaded into a
 // test data manager.
 TEST_F(AutofillControllerTest, ProfileSuggestions) {
-  if (@available(iOS 16.3, *)) {
-    // TODO(crbug.com/40064372): Re-enable when fixed on iOS16.3+.
-    return;
-  }
-
   SetUpForSuggestions(kProfileFormHtml, 1);
   ForceViewRendering(web_state()->GetView());
   ResetWaitForSuggestionRetrieval();
-  web::test::ExecuteJavaScript(@"document.forms[0].name.focus()", web_state());
+  FocusElement(@"name");
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
   ExpectMetric("Autofill.SuggestionsCount.Address", 1);
   EXPECT_EQ(1U, [suggestion_controller() suggestions].count);
@@ -963,17 +980,12 @@ TEST_F(AutofillControllerTest, ProfileSuggestions) {
 // Tests that the system is able to offer suggestions for an anonymous form when
 // there is another anonymous form on the page.
 TEST_F(AutofillControllerTest, ProfileSuggestionsTwoAnonymousForms) {
-  if (@available(iOS 16.3, *)) {
-    // TODO(crbug.com/40064372): Re-enable when fixed on iOS16.3+.
-    return;
-  }
-
   SetUpForSuggestions(
       [NSString stringWithFormat:@"%@%@", kProfileFormHtml, kProfileFormHtml],
       2);
   ForceViewRendering(web_state()->GetView());
   ResetWaitForSuggestionRetrieval();
-  web::test::ExecuteJavaScript(@"document.forms[0].name.focus()", web_state());
+  FocusElement(@"name");
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
   ExpectMetric("Autofill.SuggestionsCount.Address", 1);
   EXPECT_EQ(1U, [suggestion_controller() suggestions].count);
@@ -985,15 +997,10 @@ TEST_F(AutofillControllerTest, ProfileSuggestionsTwoAnonymousForms) {
 // in suggestions being sent to the AutofillAgent, once data has been loaded
 // into a test data manager.
 TEST_F(AutofillControllerTest, ProfileSuggestionsFromSelectField) {
-  if (@available(iOS 16.3, *)) {
-    // TODO(crbug.com/40064372): Re-enable when fixed on iOS16.3+.
-    return;
-  }
-
   SetUpForSuggestions(kProfileFormHtml, 1);
   ForceViewRendering(web_state()->GetView());
   ResetWaitForSuggestionRetrieval();
-  web::test::ExecuteJavaScript(@"document.forms[0].state.focus()", web_state());
+  FocusElement(@"state");
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
   ExpectMetric("Autofill.SuggestionsCount.Address", 1);
   EXPECT_EQ(1U, [suggestion_controller() suggestions].count);
@@ -1003,11 +1010,6 @@ TEST_F(AutofillControllerTest, ProfileSuggestionsFromSelectField) {
 
 // Checks that multiple profiles will offer a matching number of suggestions.
 TEST_F(AutofillControllerTest, MultipleProfileSuggestions) {
-  if (@available(iOS 16.3, *)) {
-    // TODO(crbug.com/40064372): Re-enable when fixed on iOS16.3+.
-    return;
-  }
-
   PersonalDataManager* personal_data_manager =
       PersonalDataManagerFactory::GetForProfile(profile_.get());
   personal_data_manager->SetSyncServiceForTest(nullptr);
@@ -1038,7 +1040,7 @@ TEST_F(AutofillControllerTest, MultipleProfileSuggestions) {
   EXPECT_TRUE(LoadHtmlAndWaitForFormFetched(kProfileFormHtml, 1));
   ForceViewRendering(web_state()->GetView());
   ResetWaitForSuggestionRetrieval();
-  web::test::ExecuteJavaScript(@"document.forms[0].name.focus()", web_state());
+  FocusElement(@"name");
   WaitForSuggestionRetrieval(/*wait_for_trigger=*/YES);
   ExpectMetric("Autofill.SuggestionsCount.Address", 2);
   EXPECT_EQ(2U, [suggestion_controller() suggestions].count);
