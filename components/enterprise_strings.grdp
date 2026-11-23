@@ -98,6 +98,14 @@
   </message>
 
   <!-- Enterprise Content Analysis dialog strings -->
+  <message name="IDS_ENTERPRISE_CONTENT_ANALYSIS_COPY_WARN_TITLE" desc="Text displayed at the top of a dialog telling the user that copying the content is not recommended.">
+    Copying not recommended
+  </message>
+
+  <message name="IDS_ENTERPRISE_CONTENT_ANALYSIS_DOWNLOAD_WARN_TITLE" desc="Text displayed at the top of a dialog telling the user that downloading the content is not recommended.">
+    Downloading not recommended
+  </message>
+
   <message name="IDS_ENTERPRISE_CONTENT_ANALYSIS_PASTE_BLOCKED_MESSAGE" desc="The text displayed in a dialog telling users that their paste action is blocked by their administrator.">
     Content couldn't be pasted due to your organization's policies
   </message>
@@ -112,6 +120,18 @@
 
   <message name="IDS_ENTERPRISE_CONTENT_ANALYSIS_PASTE_WARN_TITLE" desc="Text displayed at the top of a dialog telling the user that pasting the content is not recommended.">
     Pasting not recommended
+  </message>
+
+  <message name="IDS_ENTERPRISE_CONTENT_ANALYSIS_PENDING_MESSAGE" desc="The text displayed in a dialog while content is being scanned for sensitive information.">
+    Scanning content...
+  </message>
+
+  <message name="IDS_ENTERPRISE_CONTENT_ANALYSIS_PRINT_WARN_TITLE" desc="Text displayed at the top of a dialog telling the user that printing the content is not recommended.">
+    Printing not recommended
+  </message>
+
+  <message name="IDS_ENTERPRISE_CONTENT_ANALYSIS_UPLOAD_WARN_TITLE" desc="Text displayed at the top of a dialog telling the user that uploading the content is not recommended.">
+    Uploading not recommended
   </message>
 
   <!-- Enterprise Proxy Error Page strings -->
