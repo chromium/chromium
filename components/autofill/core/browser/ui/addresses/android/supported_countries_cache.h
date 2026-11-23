@@ -5,12 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_ADDRESSES_ANDROID_SUPPORTED_COUNTRIES_CACHE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_ADDRESSES_ANDROID_SUPPORTED_COUNTRIES_CACHE_H_
 
-#include <string>
-#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/i18n/language_tag.h"
 #include "base/sequence_checker.h"
 #include "components/autofill/core/browser/ui/addresses/android/dropdown_key_value_android.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -32,7 +31,7 @@ class COMPONENT_EXPORT(AUTOFILL) SupportedCountriesCache {
   // Builds the supported-country list for `locale`. Invoked at most once per
   // distinct locale.
   using Builder = base::RepeatingCallback<std::vector<DropdownKeyValueAndroid>(
-      std::string_view locale)>;
+      const base::i18n::LanguageTag& locale)>;
 
   explicit SupportedCountriesCache(Builder builder);
   SupportedCountriesCache(const SupportedCountriesCache&) = delete;
@@ -44,15 +43,17 @@ class COMPONENT_EXPORT(AUTOFILL) SupportedCountriesCache {
   // copies afterwards. Must be called on the same sequence for the lifetime
   // of the instance; the UI-thread contract is inherited from the sole caller
   // (JNI_AutofillProfileBridge_GetSupportedCountries), which reads the locale
-  // from g_browser_process->GetApplicationLocale() -- itself guarded by a
-  // SEQUENCE_CHECKER on the browser process UI sequence.
-  std::vector<DropdownKeyValueAndroid> GetForLocale(std::string_view locale);
+  // from ApplicationLocaleStorage -- itself guarded by a SEQUENCE_CHECKER on
+  // the browser process UI sequence.
+  std::vector<DropdownKeyValueAndroid> GetForLocale(
+      const base::i18n::LanguageTag& locale);
 
  private:
   const Builder builder_;
 
-  absl::flat_hash_map<std::string, std::vector<DropdownKeyValueAndroid>> cache_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  absl::flat_hash_map<base::i18n::LanguageTag,
+                      std::vector<DropdownKeyValueAndroid>>
+      cache_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -11,10 +11,11 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/i18n/language_tag.h"
-#include "base/i18n/tag_converters.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/ui/addresses/android/autofill_address_editor_ui_info_android.h"
@@ -46,13 +47,10 @@ using ::i18n::addressinput::RECIPIENT;
 namespace {
 
 std::vector<DropdownKeyValueAndroid> BuildSupportedCountries(
-    std::string_view locale) {
+    const base::i18n::LanguageTag& display_locale) {
   std::vector<std::string> country_codes = GetRegionCodes();
   std::vector<DropdownKeyValueAndroid> display_countries;
   display_countries.reserve(country_codes.size());
-  const base::i18n::LanguageTag display_locale =
-      base::i18n::GetLanguageTagFromString(locale).value_or(
-          base::i18n::GetKnownLanguageTag("und"));
   for (std::string& country_code : country_codes) {
     std::u16string country_name =
         l10n_util::GetDisplayNameForCountry(country_code, display_locale);
@@ -76,7 +74,8 @@ static std::vector<DropdownKeyValueAndroid>
 JNI_AutofillProfileBridge_GetSupportedCountries() {
   static base::NoDestructor<SupportedCountriesCache> cache(
       base::BindRepeating(&BuildSupportedCountries));
-  return cache->GetForLocale(g_browser_process->GetApplicationLocale());
+  return cache->GetForLocale(
+      g_browser_process->GetFeatures()->application_locale_storage()->GetTag());
 }
 
 static std::vector<int32_t> JNI_AutofillProfileBridge_GetRequiredFields(
