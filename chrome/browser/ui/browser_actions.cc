@@ -4682,6 +4682,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               features::IsRoundedIconsEnabled()
                   ? vector_icons::kInfoIcon
                   : vector_icons::kInfoRefreshOldIcon))
+          .AddSynonyms(GetSynonymsForAction(IDS_ACTION_SYNONYMS_ABOUT))
           .Build());
 
   root_action_item_->AddChild(

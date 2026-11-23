@@ -557,7 +557,8 @@ INSTANTIATE_TEST_SUITE_P(
         SynonymSearchCase{u"zoom in", kActionZoomPlus},
         SynonymSearchCase{u"shrink", kActionZoomMinus},
         SynonymSearchCase{u"zoom out", kActionZoomMinus},
-        SynonymSearchCase{u"maximize", kActionFullscreen}));
+        SynonymSearchCase{u"maximize", kActionFullscreen},
+        SynonymSearchCase{u"update", kActionAbout}));
 
 #if !BUILDFLAG(IS_CHROMEOS)
 // Profile-management and import actions are not shown in the app menu on

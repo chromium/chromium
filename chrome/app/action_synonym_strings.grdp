@@ -11,7 +11,7 @@
 <grit-part>
   <!-- kActionShowPasswordManager: "Google Password Manager". -->
   <message name="IDS_ACTION_SYNONYMS_SHOW_PASSWORD_MANAGER" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Google Password Manager') that users might type in the Chrome menu search bar to find the 'Google Password Manager' action. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
-    credentials, sign-in, passkey, lock, vault, keys
+    credentials, sign-in, passkey, lock, vault, keys, login, log in, sign in
   </message>
   <!-- kActionShowPaymentMethods: "Payments". -->
   <message name="IDS_ACTION_SYNONYMS_SHOW_PAYMENT_METHODS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Payments') that users might type in the Chrome menu search bar to find the 'Payments' action, which manages saved payment methods. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
@@ -147,7 +147,7 @@
   </message>
   <!-- kActionPerformance: "Performance". -->
   <message name="IDS_ACTION_SYNONYMS_PERFORMANCE" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Performance') that users might type in the Chrome menu search bar to find the 'Performance' action, which opens settings for memory, power, and speed optimizations. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
-    speed, RAM, lag, freeze, crash, resource, usage, battery, optimizer, slow
+    speed, RAM, lag, freeze, crash, resource, usage, battery, optimizer, slow, memory, memory saver
   </message>
   <!-- kActionTaskManagerAppMenu: "Task Manager". -->
   <message name="IDS_ACTION_SYNONYMS_TASK_MANAGER" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Task Manager') that users might type in the Chrome menu search bar to find the 'Task Manager' action, which shows the processes Chrome is running and their resource usage. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
@@ -171,11 +171,15 @@
   </message>
   <!-- kActionClearBrowsingData: "Delete browsing data". -->
   <message name="IDS_ACTION_SYNONYMS_CLEAR_BROWSING_DATA" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Delete browsing data') that users might type in the Chrome menu search bar to find the 'Delete browsing data' action, which deletes history, cookies, cached files, and other browsing data. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
-    delete, remove, security, privacy, cleanup, storage, reset, cache, cookies, slow, speed
+    delete, remove, security, privacy, cleanup, storage, reset, cache, cookies, slow, speed, history
   </message>
   <!-- kActionOptions: "Settings". -->
   <message name="IDS_ACTION_SYNONYMS_OPTIONS" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Settings') that users might type in the Chrome menu search bar to find the 'Settings' action, which opens the Chrome settings page. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
     controls, customization, language, privacy, defaults, advanced
+  </message>
+  <!-- kActionAbout: "About Chrome". -->
+  <message name="IDS_ACTION_SYNONYMS_ABOUT" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'About Chrome') that users might type in the Chrome menu search bar to find the 'About Chrome' action, which shows the current Chrome version and checks for updates. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
+    update, updates, upgrade, version, build, info, check for updates
   </message>
   <!-- kActionExit: "Exit". -->
   <message name="IDS_ACTION_SYNONYMS_EXIT" is_accessibility_with_no_ui="true" desc="Comma-separated list of search terms (other than the title 'Exit') that users might type in the Chrome menu search bar to find the 'Exit' action, which closes all Chrome windows and quits the browser. Do not translate the list 1:1; list the terms users typing in the target language might search for, delimited by commas.">
