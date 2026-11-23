@@ -1,0 +1,18 @@
+Tests that XHR redirects preserve request body.
+POST http://127.0.0.1:8000/inspector-protocol/network/resources/redirect-body.cgi?status=301&ttl=1
+  actual http method was: POST
+  request body: [LOST]
+
+GET http://127.0.0.1:8000/inspector-protocol/network/resources/redirect-body.cgi?status=301&ttl=0
+  actual http method was: GET
+  request body: []
+
+POST http://127.0.0.1:8000/inspector-protocol/network/resources/redirect-body.cgi?status=307&ttl=1
+  actual http method was: POST
+  request body: [PRESERVED]
+
+POST http://127.0.0.1:8000/inspector-protocol/network/resources/redirect-body.cgi?status=307&ttl=0
+  actual http method was: POST
+  request body: [PRESERVED]
+
+
