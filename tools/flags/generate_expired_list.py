@@ -23,7 +23,9 @@ import os
 import sys
 
 
-ROOT_PATH = os.path.join(os.path.dirname(__file__), '..', '..')
+ROOT_PATH = os.path.normpath(
+  os.path.join(os.path.dirname(__file__), '..', '..')
+)
 
 
 def get_chromium_version():

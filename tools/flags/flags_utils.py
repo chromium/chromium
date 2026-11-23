@@ -6,7 +6,9 @@
 import os
 import sys
 
-ROOT_PATH = os.path.join(os.path.dirname(__file__), '..', '..')
+ROOT_PATH = os.path.normpath(
+  os.path.join(os.path.dirname(__file__), '..', '..')
+)
 PYJSON5_PATH = os.path.join(ROOT_PATH, 'third_party', 'pyjson5', 'src')
 
 sys.path.append(PYJSON5_PATH)
