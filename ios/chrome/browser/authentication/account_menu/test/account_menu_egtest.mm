@@ -638,6 +638,9 @@ TAG_SMOKE_TEST(AccountMenuTestCase, testSignOut);
 
   // Set the AI subscription tier user preference to 1.
   [ChromeEarlGrey setIntegerValue:1 forUserPref:"sync.ai_subscription_tier"];
+  [self addTeardownBlock:^{
+    [ChromeEarlGrey setIntegerValue:0 forUserPref:"sync.ai_subscription_tier"];
+  }];
 
   // Open the account menu.
   [self selectIdentityDiscAndVerify];
@@ -677,6 +680,11 @@ TAG_SMOKE_TEST(AccountMenuTestCase, testSignOut);
   NSError* error = [MetricsAppInterface setupUserActionTester];
   chrome_test_util::GREYAssertErrorNil(error,
                                        @"Failed to setup user action tester");
+  [self addTeardownBlock:^{
+    NSError* releaseError = [MetricsAppInterface releaseUserActionTester];
+    chrome_test_util::GREYAssertErrorNil(
+        releaseError, @"Failed to release user action tester");
+  }];
 
   // Match the subscription chip view and tap it.
   id<GREYMatcher> chipMatcher =
@@ -690,11 +698,6 @@ TAG_SMOKE_TEST(AccountMenuTestCase, testSignOut);
                          forUserAction:@"Signin_AccountMenu_SubscriptionChip"];
   chrome_test_util::GREYAssertErrorNil(
       error, @"Failed to log Signin_AccountMenu_SubscriptionChip user action");
-
-  // Clean up.
-  error = [MetricsAppInterface releaseUserActionTester];
-  chrome_test_util::GREYAssertErrorNil(error,
-                                       @"Failed to release user action tester");
 
   // Set the AI subscription tier user preference to 0 (losing the tier).
   [ChromeEarlGrey setIntegerValue:0 forUserPref:"sync.ai_subscription_tier"];
