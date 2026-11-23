@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
@@ -78,6 +79,9 @@ class GCMClient {
     kMaxValue = UNKNOWN_ERROR
   };
 
+  using GetTokenCallback =
+      base::OnceCallback<void(const std::string& token, Result result)>;
+
   // Detailed information of the Send Error event.
   struct SendErrorDetails {
     SendErrorDetails();
@@ -116,13 +120,14 @@ class GCMClient {
   // GCMClient events and messages.
   class Observer : public base::CheckedObserver {
    public:
-    // Called when the registration completed successfully or an error occurs.
-    // |registration_info|: the specific information required for the
-    //                      registration.
-    // |registration_id|: non-empty if the registration completed successfully.
-    // |result|: the type of the error if an error occured, success otherwise.
+    // Called when a legacy GCM registration completed successfully or an error
+    // occurs.
+    // `gcm_registration_info`: registration info containing app ID and sender
+    // IDs.
+    // `registration_id`: non-empty if the registration completed successfully.
+    // `result`: the type of the error if an error occurred, success otherwise.
     virtual void OnRegisterFinished(
-        scoped_refptr<RegistrationInfo> registration_info,
+        scoped_refptr<GCMRegistrationInfo> gcm_registration_info,
         const std::string& registration_id,
         Result result) {}
 
@@ -214,13 +219,14 @@ class GCMClient {
   // Stops using the GCM service. This will not erase the persisted data.
   virtual void Stop() = 0;
 
-  // Registers with the server to access the provided service.
-  // Observer::OnRegisterFinished will be called asynchronously upon completion.
-  // |registration_info|: the specific information required for the
-  //                      registration. For GCM, it will contain app id and
-  //                      sender IDs. For InstanceID, it will contain app_id,
-  //                      authorized entity and scope.
-  virtual void Register(scoped_refptr<RegistrationInfo> registration_info) = 0;
+  // Registers with the server to access the provided service (used for legacy
+  // GCM registrations only; Instance ID callers should use `GetToken()`).
+  // `Observer::OnRegisterFinished()` will be called asynchronously upon
+  // completion.
+  // `gcm_registration_info`: registration info containing app ID and sender
+  // IDs.
+  virtual void Register(
+      scoped_refptr<GCMRegistrationInfo> gcm_registration_info) = 0;
 
   // Checks that the provided |registration_id| (aka token for Instance ID
   // registrations) matches the stored registration info. Also checks sender IDs
@@ -274,6 +280,11 @@ class GCMClient {
   virtual void GetInstanceIDData(const std::string& app_id,
                                  std::string* instance_id,
                                  std::string* extra_data) = 0;
+
+  // Obtains an Instance ID token for `token_info`, invoking `callback`
+  // synchronously (on a cache hit) or asynchronously.
+  virtual void GetToken(scoped_refptr<InstanceIDTokenInfo> token_info,
+                        GetTokenCallback callback) = 0;
 };
 
 }  // namespace gcm

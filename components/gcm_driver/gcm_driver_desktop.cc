@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -46,9 +47,10 @@ class GCMDriverDesktop::IOWorker : public GCMClient::Observer {
 
   // Overridden from GCMClient::Observer:
   // Called on IO thread.
-  void OnRegisterFinished(scoped_refptr<RegistrationInfo> registration_info,
-                          const std::string& registration_id,
-                          GCMClient::Result result) override;
+  void OnRegisterFinished(
+      scoped_refptr<GCMRegistrationInfo> gcm_registration_info,
+      const std::string& registration_id,
+      GCMClient::Result result) override;
   void OnUnregisterFinished(scoped_refptr<RegistrationInfo> registration_info,
                             GCMClient::Result result) override;
   void OnSendFinished(const std::string& app_id,
@@ -173,30 +175,16 @@ void GCMDriverDesktop::IOWorker::Initialize(
 }
 
 void GCMDriverDesktop::IOWorker::OnRegisterFinished(
-    scoped_refptr<RegistrationInfo> registration_info,
+    scoped_refptr<GCMRegistrationInfo> gcm_registration_info,
     const std::string& registration_id,
     GCMClient::Result result) {
   DCHECK(io_thread_->RunsTasksInCurrentSequence());
+  CHECK(gcm_registration_info);
 
-  const GCMRegistrationInfo* gcm_registration_info =
-      GCMRegistrationInfo::FromRegistrationInfo(registration_info.get());
-  if (gcm_registration_info) {
-    ui_thread_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&GCMDriverDesktop::RegisterFinished, service_,
-                       gcm_registration_info->app_id, registration_id, result));
-  }
-
-  const InstanceIDTokenInfo* instance_id_token_info =
-      InstanceIDTokenInfo::FromRegistrationInfo(registration_info.get());
-  if (instance_id_token_info) {
-    ui_thread_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&GCMDriverDesktop::GetTokenFinished, service_,
-                       instance_id_token_info->app_id,
-                       instance_id_token_info->authorized_entity,
-                       instance_id_token_info->scope, registration_id, result));
-  }
+  ui_thread_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&GCMDriverDesktop::RegisterFinished, service_,
+                     gcm_registration_info->app_id, registration_id, result));
 }
 
 void GCMDriverDesktop::IOWorker::OnUnregisterFinished(
@@ -424,7 +412,12 @@ void GCMDriverDesktop::IOWorker::GetToken(const std::string& app_id,
   instance_id_token_info->authorized_entity = authorized_entity;
   instance_id_token_info->scope = scope;
   instance_id_token_info->time_to_live = time_to_live;
-  gcm_client_->Register(std::move(instance_id_token_info));
+  gcm_client_->GetToken(
+      std::move(instance_id_token_info),
+      base::BindPostTask(
+          ui_thread_,
+          base::BindOnce(&GCMDriverDesktop::GetTokenFinished, service_, app_id,
+                         authorized_entity, scope)));
 }
 
 void GCMDriverDesktop::IOWorker::DeleteToken(
@@ -1096,6 +1089,9 @@ void GCMDriverDesktop::GCMClientReady() {
 }
 
 void GCMDriverDesktop::OnStoreReset() {
+  // TODO(crbug.com/589587357): Re-gate `delayed_task_controller_` until store
+  // reload and initial checkin reach `GCMClientReady()` again.
+  //
   // Defensive copy in case OnStoreReset calls Add/RemoveAppHandler.
   std::vector<GCMAppHandler*> app_handler_values;
   for (const auto& key_value : app_handlers()) {

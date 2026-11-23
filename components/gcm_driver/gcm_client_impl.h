@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -112,7 +113,8 @@ class GCMClientImpl : public GCMClient,
   void RemoveObserver(Observer* observer) override;
   void Start(StartMode start_mode) override;
   void Stop() override;
-  void Register(scoped_refptr<RegistrationInfo> registration_info) override;
+  void Register(
+      scoped_refptr<GCMRegistrationInfo> gcm_registration_info) override;
   bool ValidateRegistration(scoped_refptr<RegistrationInfo> registration_info,
                             const std::string& registration_id) override;
   void Unregister(scoped_refptr<RegistrationInfo> registration_info) override;
@@ -131,6 +133,8 @@ class GCMClientImpl : public GCMClient,
   void GetInstanceIDData(const std::string& app_id,
                          std::string* instance_id,
                          std::string* extra_data) override;
+  void GetToken(scoped_refptr<InstanceIDTokenInfo> token_info,
+                GetTokenCallback callback) override;
 
   // GCMStatsRecorder::Delegate implemenation.
   void OnActivityRecorded() override;
@@ -212,10 +216,23 @@ class GCMClientImpl : public GCMClient,
   // Callback for resetting the GCM store. The store will be reloaded.
   void ResetStoreCallback(bool success);
 
-  // Notifies observers that a registration request has finished.
-  void OnRegisterFinished(scoped_refptr<RegistrationInfo> registration_info,
-                          const std::string& registration_id,
-                          Result result);
+  // Starts a registration request for `registration_info` and tracks it as
+  // pending, invoking `callback` upon completion.
+  void StartRegistrationRequest(
+      scoped_refptr<RegistrationInfo> registration_info,
+      const std::string& category,
+      const std::string& subtype,
+      std::unique_ptr<RegistrationRequest::CustomRequestHandler>
+          request_handler,
+      const std::string& source_to_record,
+      base::OnceCallback<void(const std::string& registration_id,
+                              Result result)> callback);
+
+  // Notifies observers that a legacy GCM registration request has finished.
+  void OnRegisterFinished(
+      scoped_refptr<GCMRegistrationInfo> gcm_registration_info,
+      const std::string& registration_id,
+      Result result);
 
   // Completes the unregistration request.
   void OnUnregisterCompleted(scoped_refptr<RegistrationInfo> registration_info,
