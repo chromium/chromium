@@ -45,9 +45,14 @@ PerContextData* PerContextData::From(v8::Local<v8::Context> context) {
   if (context->GetNumberOfEmbedderDataFields() <= kGinPerContextDataIndex) {
     return nullptr;
   }
-  return context->GetAlignedPointerFromEmbedderData<PerContextData>(
-      v8::Isolate::GetCurrent(), kGinPerContextDataIndex,
-      static_cast<v8::CppHeapPointerTag>(gin::kGinPerContextData));
+  PerContextData* data =
+      context->GetAlignedPointerFromEmbedderData<PerContextData>(
+          v8::Isolate::GetCurrent(), kGinPerContextDataIndex,
+          static_cast<v8::CppHeapPointerTag>(gin::kGinPerContextData));
+  if (data) {
+    data->context_holder_->CheckContext(context);
+  }
+  return data;
 }
 
 }  // namespace gin
