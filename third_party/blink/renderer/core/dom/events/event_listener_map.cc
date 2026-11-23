@@ -32,9 +32,9 @@
 
 #include "third_party/blink/renderer/core/dom/events/event_listener_map.h"
 
+#include <bit>
 #include <utility>
 
-#include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_listener_options.h"
@@ -140,7 +140,7 @@ bool EventListenerMap::Add(const AtomicString& event_type,
                                    registered_listener);
       }
       SCOPED_CRASH_KEY_NUMBER("events", "listener_count_log2",
-                              base::bits::Log2Floor(entry.second->size()));
+                              std::bit_width(entry.second->size()) - 1);
       return AddListenerToVector(entry.second.Get(), listener, options,
                                  registered_listener);
     }
