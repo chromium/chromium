@@ -479,6 +479,8 @@ optimization_guide_cq_settings = try_.cq_settings(
         "components/optimization_guide/.+",
         "services/on_device_model/.+",
         "testing/buildbot/internal.optimization_guide.json",
+        "third_party/blink/public/mojom/ai/.+",
+        "third_party/blink/renderer/modules/ai/.+",
         "third_party/blink/web_tests/external/wpt/ai/.+",
         "third_party/blink/web_tests/AIExpectations.*",
     ],

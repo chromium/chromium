@@ -115,6 +115,8 @@ builder.
   * [`//components/optimization_guide/.+`](https://cs.chromium.org/chromium/src/components/optimization_guide/)
   * [`//services/on_device_model/.+`](https://cs.chromium.org/chromium/src/services/on_device_model/)
   * [`//testing/buildbot/internal.optimization_guide.json`](https://cs.chromium.org/search?q=+file:testing/buildbot/internal.optimization_guide.json)
+  * [`//third_party/blink/public/mojom/ai/.+`](https://cs.chromium.org/chromium/src/third_party/blink/public/mojom/ai/)
+  * [`//third_party/blink/renderer/modules/ai/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/ai/)
   * [`//third_party/blink/web_tests/external/wpt/ai/.+`](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/ai/)
   * [`//third_party/blink/web_tests/AIExpectations.*`](https://cs.chromium.org/search?q=+file:third_party/blink/web_tests/AIExpectations.*)
 
@@ -129,6 +131,8 @@ builder.
   * [`//components/optimization_guide/.+`](https://cs.chromium.org/chromium/src/components/optimization_guide/)
   * [`//services/on_device_model/.+`](https://cs.chromium.org/chromium/src/services/on_device_model/)
   * [`//testing/buildbot/internal.optimization_guide.json`](https://cs.chromium.org/search?q=+file:testing/buildbot/internal.optimization_guide.json)
+  * [`//third_party/blink/public/mojom/ai/.+`](https://cs.chromium.org/chromium/src/third_party/blink/public/mojom/ai/)
+  * [`//third_party/blink/renderer/modules/ai/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/ai/)
   * [`//third_party/blink/web_tests/external/wpt/ai/.+`](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/ai/)
   * [`//third_party/blink/web_tests/AIExpectations.*`](https://cs.chromium.org/search?q=+file:third_party/blink/web_tests/AIExpectations.*)
 
@@ -143,6 +147,8 @@ builder.
   * [`//components/optimization_guide/.+`](https://cs.chromium.org/chromium/src/components/optimization_guide/)
   * [`//services/on_device_model/.+`](https://cs.chromium.org/chromium/src/services/on_device_model/)
   * [`//testing/buildbot/internal.optimization_guide.json`](https://cs.chromium.org/search?q=+file:testing/buildbot/internal.optimization_guide.json)
+  * [`//third_party/blink/public/mojom/ai/.+`](https://cs.chromium.org/chromium/src/third_party/blink/public/mojom/ai/)
+  * [`//third_party/blink/renderer/modules/ai/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/ai/)
   * [`//third_party/blink/web_tests/external/wpt/ai/.+`](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/ai/)
   * [`//third_party/blink/web_tests/AIExpectations.*`](https://cs.chromium.org/search?q=+file:third_party/blink/web_tests/AIExpectations.*)
 
@@ -157,6 +163,8 @@ builder.
   * [`//components/optimization_guide/.+`](https://cs.chromium.org/chromium/src/components/optimization_guide/)
   * [`//services/on_device_model/.+`](https://cs.chromium.org/chromium/src/services/on_device_model/)
   * [`//testing/buildbot/internal.optimization_guide.json`](https://cs.chromium.org/search?q=+file:testing/buildbot/internal.optimization_guide.json)
+  * [`//third_party/blink/public/mojom/ai/.+`](https://cs.chromium.org/chromium/src/third_party/blink/public/mojom/ai/)
+  * [`//third_party/blink/renderer/modules/ai/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/ai/)
   * [`//third_party/blink/web_tests/external/wpt/ai/.+`](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/ai/)
   * [`//third_party/blink/web_tests/AIExpectations.*`](https://cs.chromium.org/search?q=+file:third_party/blink/web_tests/AIExpectations.*)
 
@@ -171,6 +179,8 @@ builder.
   * [`//components/optimization_guide/.+`](https://cs.chromium.org/chromium/src/components/optimization_guide/)
   * [`//services/on_device_model/.+`](https://cs.chromium.org/chromium/src/services/on_device_model/)
   * [`//testing/buildbot/internal.optimization_guide.json`](https://cs.chromium.org/search?q=+file:testing/buildbot/internal.optimization_guide.json)
+  * [`//third_party/blink/public/mojom/ai/.+`](https://cs.chromium.org/chromium/src/third_party/blink/public/mojom/ai/)
+  * [`//third_party/blink/renderer/modules/ai/.+`](https://cs.chromium.org/chromium/src/third_party/blink/renderer/modules/ai/)
   * [`//third_party/blink/web_tests/external/wpt/ai/.+`](https://cs.chromium.org/chromium/src/third_party/blink/web_tests/external/wpt/ai/)
   * [`//third_party/blink/web_tests/AIExpectations.*`](https://cs.chromium.org/search?q=+file:third_party/blink/web_tests/AIExpectations.*)
 
