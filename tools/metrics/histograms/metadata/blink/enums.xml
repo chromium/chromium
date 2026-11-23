@@ -4505,8 +4505,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3951" label="TextShadowInHighlightPseudo"/>
   <int value="3952" label="TextShadowNotNoneInHighlightPseudo"/>
   <int value="3953" label="SameSiteNoneRequired"/>
-  <int value="3954" label="SameSiteNoneIncludedBySamePartyTopResource"/>
-  <int value="3955" label="SameSiteNoneIncludedBySamePartyAncestors"/>
+  <int value="3954"
+      label="OBSOLETE_SameSiteNoneIncludedBySamePartyTopResource"/>
+  <int value="3955" label="OBSOLETE_SameSiteNoneIncludedBySamePartyAncestors"/>
   <int value="3956" label="SameSiteNoneIncludedBySameSiteLax"/>
   <int value="3957" label="SameSiteNoneIncludedBySameSiteStrict"/>
   <int value="3958"

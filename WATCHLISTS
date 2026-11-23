@@ -2152,11 +2152,6 @@
                   '|chrome/browser/renderer_context_menu/quick_answers'\
                   '|chromeos/components/quick_answers/'
     },
-    'related_website_sets': {
-      'filepath': 'first_party_sets|' \
-                  'storage_access_api|' \
-                  'storage-access-api'
-    },
     'relaunch_notification': {
       'filepath': 'chrome/browser/ui/views/relaunch_notification'
     },
@@ -3473,7 +3468,6 @@
     'psm_libs': ['amraboelkher+watch@chromium.org'],
     'push_messaging': ['peter@chromium.org', 'dibyapal+watch-webapps@chromium.org'],
     'quick_answers': ['croissant-eng+reviews@chromium.org'],
-    'related_website_sets': ['cfredric+watch@chromium.org'],
     'relaunch_notification': ['grt+watch@chromium.org'],
     'remoteplayback': ['mfoltz+watch-media@chromium.org'],
     'remoting': ['chromoting-reviews@chromium.org'],

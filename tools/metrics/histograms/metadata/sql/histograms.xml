@@ -58,7 +58,6 @@ chromium-metrics-reviews@google.com.
   <variant name="DownloadRecord" summary="DownloadRecord"/>
   <variant name="FileIndexService" summary="FileIndexService"/>
   <variant name="FirefoxImporter" summary="FirefoxImporter"/>
-  <variant name="FirstPartySets" summary="FirstPartySets"/>
   <variant name="FSPContextDatabase" summary="FSPContextDatabase"/>
   <variant name="History" summary="History"/>
   <variant name="HistoryEmbeddings" summary="HistoryEmbeddings"/>
