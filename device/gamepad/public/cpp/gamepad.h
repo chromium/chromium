@@ -51,7 +51,12 @@ enum class GamepadHapticActuatorType {
   kTriggerRumble = 2
 };
 
-enum class GamepadHapticEffectType { kDualRumble = 0, kTriggerRumble = 1 };
+enum class GamepadHapticEffectType {
+  kDualRumble = 0,
+  kMinValue = kDualRumble,
+  kTriggerRumble = 1,
+  kMaxValue = kTriggerRumble,
+};
 
 enum class GamepadHapticsResult {
   kError = 0,

@@ -8,10 +8,10 @@
 #include <stdint.h>
 
 #include <optional>
-#include <set>
 #include <string>
 #include <vector>
 
+#include "base/containers/enum_set.h"
 #include "device/gamepad/gamepad_export.h"
 #include "device/gamepad/normalization.h"
 #include "device/gamepad/public/cpp/gamepad.h"
@@ -62,7 +62,7 @@ struct DEVICE_GAMEPAD_EXPORT SimulatedGamepadParams {
   std::vector<std::optional<TouchSurfaceBounds>> touch_surface_bounds;
 
   // The set of haptic effect types supported by the simulated gamepad.
-  std::set<GamepadHapticEffectType> vibration;
+  base::EnumSet<GamepadHapticEffectType> vibration;
 };
 
 }  // namespace device

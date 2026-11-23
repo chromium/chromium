@@ -32,10 +32,10 @@ void InitializeGamepadState(const SimulatedGamepadParams& params,
   // Initialize Gamepad.vibrationActuator.
   // TODO(crbug.com/439630593): Represent effect types as a set so that an
   // actuator can support (for example) kTriggerRumble but not kDualRumble.
-  if (params.vibration.contains(GamepadHapticEffectType::kTriggerRumble)) {
+  if (params.vibration.Has(GamepadHapticEffectType::kTriggerRumble)) {
     pad.vibration_actuator.type = GamepadHapticActuatorType::kTriggerRumble;
     pad.vibration_actuator.not_null = true;
-  } else if (params.vibration.contains(GamepadHapticEffectType::kDualRumble)) {
+  } else if (params.vibration.Has(GamepadHapticEffectType::kDualRumble)) {
     pad.vibration_actuator.type = GamepadHapticActuatorType::kDualRumble;
     pad.vibration_actuator.not_null = true;
   } else {
