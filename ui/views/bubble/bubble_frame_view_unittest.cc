@@ -41,6 +41,7 @@
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/footnote_container_view.h"
+#include "ui/views/buildflags.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/metrics.h"
@@ -56,6 +57,10 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/window/dialog_client_view.h"
+
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+#include "ui/aura/window.h"
+#endif
 
 namespace views {
 
@@ -1691,5 +1696,99 @@ TEST_F(BubbleFrameViewTest,
   EXPECT_FALSE(display_list->GetColorIfSolidInRect(
       gfx::Rect(0, 128, 536, 128), &solid_color, /*max_ops_to_analyze=*/5));
 }
+
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+using BubbleFrameViewDesktopWidgetTest = ViewsTestWithDesktopNativeWidget;
+
+// Regression test for crbug.com/40247899: a bubble hosted as a child
+// NativeWidgetAura inside another widget's DesktopNativeWidgetAura root window
+// must clamp and mirror against that root window's bounds, whereas a bubble
+// that owns its own DesktopNativeWidgetAura root window must not be clamped to
+// its own initial root bounds.
+TEST_F(BubbleFrameViewDesktopWidgetTest, HostedBubbleClampedToRootWindow) {
+  test::TestLayoutProvider provider;
+
+  std::unique_ptr<Widget> host_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  host_widget->SetBounds(gfx::Rect(100, 100, 400, 400));
+  host_widget->Show();
+  const gfx::Rect host_bounds =
+      host_widget->GetNativeWindow()->GetRootWindow()->GetBoundsInScreen();
+  // On Windows, the Aura root window covers the HWND's client area (excluding
+  // native non-client frame borders and caption), so `host_bounds` may be
+  // smaller than the outer 400x400 widget bounds.
+  ASSERT_GE(host_bounds.width(), 350);
+  ASSERT_GE(host_bounds.height(), 300);
+  ASSERT_LE(host_bounds.width(), 400);
+  ASSERT_LE(host_bounds.height(), 400);
+
+  Widget hosted_bubble;
+  Widget::InitParams hosted_params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                   Widget::InitParams::TYPE_BUBBLE);
+  hosted_params.parent = host_widget->GetNativeView();
+  hosted_bubble.Init(std::move(hosted_params));
+  ASSERT_EQ(hosted_bubble.GetNativeWindow()->GetRootWindow(),
+            host_widget->GetNativeWindow()->GetRootWindow());
+
+  TestBubbleFrameView hosted_frame(&hosted_bubble);
+  hosted_frame.SetBubbleBorder(
+      std::make_unique<BubbleBorder>(kArrow, BubbleBorder::NO_SHADOW));
+  hosted_frame.set_use_anchor_window_bounds(false);
+
+  // When mirroring cannot make the bubble fit, final clamping shifts the bubble
+  // inside `host_bounds` even though it already fits in screen bounds.
+  gfx::Rect bounds = hosted_frame.GetUpdatedWindowBounds(
+      gfx::Rect(host_bounds.x() + 150, host_bounds.y() + 50, 0, 0),
+      BubbleBorder::TOP_LEFT, gfx::Size(300, 200), true);
+  EXPECT_TRUE(host_bounds.Contains(bounds));
+  EXPECT_EQ(bounds.right(), host_bounds.right());
+
+  // Mirroring also respects `host_bounds` even without anchor window bounds.
+  bounds = hosted_frame.GetUpdatedWindowBounds(
+      gfx::Rect(host_bounds.right() - 50, host_bounds.y() + 50, 0, 0),
+      BubbleBorder::TOP_LEFT, gfx::Size(200, 150), true);
+  EXPECT_EQ(BubbleBorder::TOP_RIGHT, hosted_frame.GetBorderArrow());
+  EXPECT_TRUE(host_bounds.Contains(bounds));
+
+  hosted_bubble.CloseNow();
+
+  // End-to-end via BubbleDialogDelegate: default `adjust_if_offscreen_` still
+  // clamps a hosted bubble to `host_bounds` (including on Linux where
+  // `PlatformStyle::kAdjustBubbleIfOffscreen` is false), while explicit
+  // `set_adjust_if_offscreen(false)` disables clamping.
+  BubbleDialogDelegate delegate(BubbleAnchor(), BubbleBorder::TOP_RIGHT,
+                                BubbleBorder::NO_SHADOW, /*autosize=*/true);
+  delegate.set_parent_window(host_widget->GetNativeView());
+  delegate.SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  delegate.SetContentsView(
+      std::make_unique<StaticSizedView>(gfx::Size(300, 150)));
+  delegate.SetAnchorRect(
+      gfx::Rect(host_bounds.x() + 150, host_bounds.y() + 50, 10, 10));
+  std::unique_ptr<Widget> delegate_widget =
+      BubbleDialogDelegate::CreateBubble(&delegate);
+  EXPECT_TRUE(host_bounds.Contains(delegate.GetBubbleBounds()));
+  delegate.set_adjust_if_offscreen(false);
+  EXPECT_FALSE(host_bounds.Contains(delegate.GetBubbleBounds()));
+  delegate_widget->CloseNow();
+
+  // A bubble that owns its own DesktopNativeWidgetAura root is not clamped to
+  // its own initial root window bounds.
+  Widget toplevel_bubble;
+  Widget::InitParams toplevel_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_BUBBLE);
+  toplevel_params.bounds = gfx::Rect(100, 100, 100, 100);
+  toplevel_bubble.Init(std::move(toplevel_params));
+
+  TestBubbleFrameView toplevel_frame(&toplevel_bubble);
+  toplevel_frame.SetBubbleBorder(
+      std::make_unique<BubbleBorder>(kArrow, BubbleBorder::NO_SHADOW));
+  bounds = toplevel_frame.GetUpdatedWindowBounds(
+      gfx::Rect(host_bounds.x() + 150, host_bounds.y() + 50, 0, 0),
+      BubbleBorder::TOP_LEFT, gfx::Size(300, 200), true);
+  EXPECT_GT(bounds.right(), host_bounds.right());
+
+  toplevel_bubble.CloseNow();
+}
+#endif  // BUILDFLAG(ENABLE_DESKTOP_AURA)
 
 }  // namespace views

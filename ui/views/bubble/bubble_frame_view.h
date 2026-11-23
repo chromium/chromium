@@ -6,6 +6,7 @@
 #define UI_VIEWS_BUBBLE_BUBBLE_FRAME_VIEW_H_
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -186,6 +187,9 @@ class VIEWS_EXPORT BubbleFrameView : public FrameView {
 
   virtual gfx::Rect GetAvailableScreenBounds(const gfx::Rect& rect) const;
   gfx::Rect GetDefaultAvailableScreenBounds(const gfx::Rect& rect) const;
+  // If the bubble is hosted as a child widget inside another widget's root
+  // window (such as on X11), returns that hosting root window's screen bounds.
+  std::optional<gfx::Rect> GetHostedRootWindowBounds() const;
   void set_available_screen_bounds_callback(
       GetAvailableScreenBoundsCallback callback) {
     available_screen_bounds_callback_ = std::move(callback);

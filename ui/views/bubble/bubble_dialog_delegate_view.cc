@@ -1075,8 +1075,15 @@ gfx::Rect BubbleDialogDelegate::GetBubbleBounds() {
   gfx::Rect anchor_rect = GetAnchorRect();
   bool has_anchor = GetAnchorView() || anchor_rect != gfx::Rect();
 
+  // Even on platforms where `PlatformStyle::kAdjustBubbleIfOffscreen` is false
+  // (Linux), a bubble hosted inside another widget's root window (e.g. X11) is
+  // clipped to that window and should adjust unless explicitly disabled.
+  const bool adjust_hosted_bubble =
+      !adjust_if_offscreen_explicitly_set_ &&
+      GetBubbleFrameView()->GetHostedRootWindowBounds().has_value();
   bool adjust_to_fix_available_bounds =
-      adjust_if_offscreen_ && !anchor_minimized && has_anchor;
+      (adjust_if_offscreen_ || adjust_hosted_bubble) && !anchor_minimized &&
+      has_anchor;
 
   return GetBubbleFrameView()->GetUpdatedWindowBounds(
       anchor_rect, arrow(), GetWidget()->client_view()->GetPreferredSize({}),

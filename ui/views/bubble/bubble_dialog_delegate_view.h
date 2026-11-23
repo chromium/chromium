@@ -376,7 +376,10 @@ class VIEWS_EXPORT BubbleDialogDelegate
   // clamped if needed to fit the bubble within the available screen bounds
   // (work area).
   bool adjust_if_offscreen() const { return adjust_if_offscreen_; }
-  void set_adjust_if_offscreen(bool adjust) { adjust_if_offscreen_ = adjust; }
+  void set_adjust_if_offscreen(bool adjust) {
+    adjust_if_offscreen_ = adjust;
+    adjust_if_offscreen_explicitly_set_ = true;
+  }
 
   //////////////////////////////////////////////////////////////////////////////
   // Shadows:
@@ -774,6 +777,7 @@ class VIEWS_EXPORT BubbleDialogDelegate
   std::unique_ptr<AnchorWidgetObserver> anchor_widget_observer_;
   std::unique_ptr<BubbleWidgetObserver> bubble_widget_observer_;
   bool adjust_if_offscreen_ = true;
+  bool adjust_if_offscreen_explicitly_set_ = false;
   bool focus_traversable_from_anchor_view_ = true;
   bool use_anchor_window_bounds_ = true;
   std::optional<ui::ElementTracker::Subscription>

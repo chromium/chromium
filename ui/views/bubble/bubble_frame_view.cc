@@ -41,6 +41,7 @@
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/footnote_container_view.h"
+#include "ui/views/buildflags.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -59,6 +60,11 @@
 #include "ui/views/window/client_view.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/views/window/vector_icons/vector_icons.h"
+
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+#include "ui/aura/window.h"
+#include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
+#endif
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -952,8 +958,15 @@ gfx::Rect BubbleFrameView::GetUpdatedWindowBounds(
   const auto old_arrow = bubble_border_->arrow();
   const auto old_offset = bubble_border_->arrow_offset();
 
+  gfx::Rect available_bounds;
   if (adjust_to_fit_available_bounds &&
       BubbleBorder::has_arrow(delegate_arrow)) {
+    available_bounds = GetAvailableScreenBounds(anchor_rect);
+    if (const std::optional<gfx::Rect> host_bounds =
+            GetHostedRootWindowBounds()) {
+      available_bounds.Intersect(*host_bounds);
+    }
+
     // Get the desired bubble bounds without adjustment.
     bubble_border_->set_arrow_offset(0);
     bubble_border_->set_arrow(delegate_arrow);
@@ -968,26 +981,23 @@ gfx::Rect BubbleFrameView::GetUpdatedWindowBounds(
                                  GetAvailableAnchorWindowBounds());
       }
       MirrorArrowIfOutOfBounds(mirror_vertical, anchor_rect, size,
-                               GetAvailableScreenBounds(anchor_rect));
+                               available_bounds);
       if (use_anchor_window_bounds_) {
         OffsetArrowIfOutOfBounds(anchor_rect, size,
                                  GetAvailableAnchorWindowBounds());
       }
-      OffsetArrowIfOutOfBounds(anchor_rect, size,
-                               GetAvailableScreenBounds(anchor_rect));
+      OffsetArrowIfOutOfBounds(anchor_rect, size, available_bounds);
     } else {
       if (use_anchor_window_bounds_) {
         MirrorArrowIfOutOfBounds(true, anchor_rect, size,
                                  GetAvailableAnchorWindowBounds());
       }
-      MirrorArrowIfOutOfBounds(true, anchor_rect, size,
-                               GetAvailableScreenBounds(anchor_rect));
+      MirrorArrowIfOutOfBounds(true, anchor_rect, size, available_bounds);
       if (use_anchor_window_bounds_) {
         MirrorArrowIfOutOfBounds(false, anchor_rect, size,
                                  GetAvailableAnchorWindowBounds());
       }
-      MirrorArrowIfOutOfBounds(false, anchor_rect, size,
-                               GetAvailableScreenBounds(anchor_rect));
+      MirrorArrowIfOutOfBounds(false, anchor_rect, size, available_bounds);
     }
   }
 
@@ -1000,12 +1010,8 @@ gfx::Rect BubbleFrameView::GetUpdatedWindowBounds(
 
   gfx::Rect bounds = bubble_border_->GetBounds(anchor_rect, size);
   if (adjust_to_fit_available_bounds &&
-      BubbleBorder::has_arrow(delegate_arrow)) {
-    const gfx::Rect available_bounds = GetAvailableScreenBounds(anchor_rect);
-    if (!available_bounds.IsEmpty()) {
-      bubble_border_->AdjustBoundsToFitAvailableBounds(bounds,
-                                                       available_bounds);
-    }
+      BubbleBorder::has_arrow(delegate_arrow) && !available_bounds.IsEmpty()) {
+    bubble_border_->AdjustBoundsToFitAvailableBounds(bounds, available_bounds);
   }
   return bounds;
 }
@@ -1025,6 +1031,27 @@ gfx::Insets BubbleFrameView::GetClientViewInsets() const {
 gfx::Rect BubbleFrameView::GetAvailableScreenBounds(
     const gfx::Rect& rect) const {
   return available_screen_bounds_callback_.Run(rect);
+}
+
+std::optional<gfx::Rect> BubbleFrameView::GetHostedRootWindowBounds() const {
+#if BUILDFLAG(ENABLE_DESKTOP_AURA)
+  if (const Widget* widget = GetWidget()) {
+    if (aura::Window* window = widget->GetNativeWindow()) {
+      if (aura::Window* root = window->GetRootWindow()) {
+        if (DesktopNativeWidgetAura* desktop_native_widget =
+                DesktopNativeWidgetAura::ForWindow(root);
+            desktop_native_widget &&
+            desktop_native_widget->GetNativeWindow() != window) {
+          if (const gfx::Rect root_bounds = root->GetBoundsInScreen();
+              !root_bounds.IsEmpty()) {
+            return root_bounds;
+          }
+        }
+      }
+    }
+  }
+#endif
+  return std::nullopt;
 }
 
 gfx::Rect BubbleFrameView::GetDefaultAvailableScreenBounds(
