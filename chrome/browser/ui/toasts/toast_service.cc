@@ -847,6 +847,26 @@ void ToastService::RegisterToasts() {
             .AddCloseButton()
             .AddGlobalScoped()
             .Build());
+    toast_registry_->RegisterToast(
+        ToastId::kTtcSpeakerMuted,
+        ToastSpecification::Builder(
+            features::IsRoundedIconsEnabled()
+                ? vector_icons::kVolumeOffIcon
+                : vector_icons::kVolumeOffChromeRefreshOldIcon,
+            IDS_TTC_SPEAKER_MUTED_TOAST)
+            .AddCloseButton()
+            .AddGlobalScoped()
+            .Build());
+    toast_registry_->RegisterToast(
+        ToastId::kTtcSpeakerVolumeLow,
+        ToastSpecification::Builder(
+            features::IsRoundedIconsEnabled()
+                ? vector_icons::kVolumeUpIcon
+                : vector_icons::kVolumeUpChromeRefreshOldIcon,
+            IDS_TTC_SPEAKER_VOLUME_LOW_TOAST)
+            .AddCloseButton()
+            .AddGlobalScoped()
+            .Build());
   }
 
   toast_registry_->RegisterToast(

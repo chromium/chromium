@@ -1125,6 +1125,8 @@ should be able to be added at any place in this file.
   <variant name=".TtcMicrophoneMuted" summary="TTC microphone muted"/>
   <variant name=".TtcNoMicrophoneError" summary="TTC no microphone error"/>
   <variant name=".TtcPermissionDenied" summary="TTC permission denied"/>
+  <variant name=".TtcSpeakerMuted" summary="TTC speaker muted"/>
+  <variant name=".TtcSpeakerVolumeLow" summary="TTC speaker volume low"/>
 </variants>
 
 <variants name="UserEducation_WhatsNew_Module_Type">

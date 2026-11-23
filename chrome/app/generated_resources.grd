@@ -14338,6 +14338,12 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_TTC_PERMISSION_DENIED_TOAST" translateable="false" desc="Text shown in a toast notification when the user's Google Account does not have access to use TTC.">
         Permission denied
       </message>
+      <message name="IDS_TTC_SPEAKER_MUTED_TOAST" translateable="false" desc="Text shown in a toast notification when the system's audio output is muted during a TTC session, so the user can't hear the spoken replies.">
+        Your speaker is muted
+      </message>
+      <message name="IDS_TTC_SPEAKER_VOLUME_LOW_TOAST" translateable="false" desc="Text shown in a toast notification when the system's audio output volume is very low while TTC speaks a reply, so the user may not hear it.">
+        Your speaker volume is low
+      </message>
       <message name="IDS_TTC_VOICE_PLATE_INITIALIZING_ACCNAME" translateable="false" desc="Accessible status name for the TTC voice plate waveform while initializing.">
         Initializing
       </message>

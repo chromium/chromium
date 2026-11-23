@@ -128,6 +128,8 @@ chromium-metrics-reviews@google.com.
   <int value="66" label="Glic toast"/>
   <int value="67" label="TTC microphone muted"/>
   <int value="68" label="TTC permission denied"/>
+  <int value="69" label="TTC speaker muted"/>
+  <int value="70" label="TTC speaker volume low"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->

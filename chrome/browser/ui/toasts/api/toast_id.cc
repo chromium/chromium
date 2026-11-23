@@ -143,6 +143,10 @@ std::string_view GetToastName(ToastId toast_id) {
       return "TtcMicrophoneMuted";
     case ToastId::kTtcPermissionDenied:
       return "TtcPermissionDenied";
+    case ToastId::kTtcSpeakerMuted:
+      return "TtcSpeakerMuted";
+    case ToastId::kTtcSpeakerVolumeLow:
+      return "TtcSpeakerVolumeLow";
   }
 
   NOTREACHED();

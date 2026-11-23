@@ -82,6 +82,8 @@ found in the LICENSE file.
     <variant name="TtcMicrophoneMuted" summary="TTC microphone muted"/>
     <variant name="TtcNoMicrophoneError" summary="TTC no microphone error"/>
     <variant name="TtcPermissionDenied" summary="TTC permission denied"/>
+    <variant name="TtcSpeakerMuted" summary="TTC speaker muted"/>
+    <variant name="TtcSpeakerVolumeLow" summary="TTC speaker volume low"/>
   </token>
 </histogram>
 
