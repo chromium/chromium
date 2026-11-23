@@ -67,7 +67,7 @@ def __step_config(ctx, step_config):
         },
         {
             "name": "android/ijar",
-            "command_prefix": platform.python_bin + " ../../build/android/gyp/ijar.py",
+            "command_prefix": platform.python_bin + " obj/build/android/ijar.pyz",
             "remote": remote_run,
             "restat_content": True,
             "timeout": "2m",
@@ -104,7 +104,7 @@ def __step_config(ctx, step_config):
         },
         {
             "name": "android/compile_resources",
-            "command_prefix": platform.python_bin + " ../../build/android/gyp/compile_resources.py",
+            "command_prefix": platform.python_bin + " obj/build/android/compile_resources.pyz",
             "handler": "android_compile_resources",
             "exclude_input_patterns": [
                 "*.a",
@@ -214,7 +214,7 @@ def __step_config(ctx, step_config):
         },
         {
             "name": "android/filter_zip",
-            "command_prefix": platform.python_bin + " ../../build/android/gyp/filter_zip.py",
+            "command_prefix": platform.python_bin + " obj/build/android/filter_zip.pyz",
             "remote": remote_run,
             "restat_content": True,
             "timeout": "2m",
@@ -245,7 +245,7 @@ def __step_config(ctx, step_config):
         },
         {
             "name": "android/proguard/local",
-            "command_prefix": platform.python_bin + " ../../build/android/gyp/proguard.py",
+            "command_prefix": platform.python_bin + " obj/build/android/proguard.pyz",
             "action_outs": [
                 # http://crbug.com/396004680#comment15: It slows down CQ build.
                 # It's better to run it locally.
@@ -256,7 +256,7 @@ def __step_config(ctx, step_config):
         },
         {
             "name": "android/proguard",
-            "command_prefix": platform.python_bin + " ../../build/android/gyp/proguard.py",
+            "command_prefix": platform.python_bin + " obj/build/android/proguard.pyz",
             "handler": "android_proguard",
             "exclude_input_patterns": [
                 "*.a",
@@ -276,7 +276,7 @@ def __step_config(ctx, step_config):
         },
         {
             "name": "android/trace_references",
-            "command_prefix": platform.python_bin + " ../../build/android/gyp/tracereferences.py",
+            "command_prefix": platform.python_bin + " obj/build/android/tracereferences.pyz",
             "handler": "android_trace_references",
             "exclude_input_patterns": [
                 "*.a",
@@ -295,7 +295,7 @@ def __step_config(ctx, step_config):
         },
         {
             "name": "android/apkbuilder",
-            "command_prefix": platform.python_bin + " ../../build/android/gyp/apkbuilder.py",
+            "command_prefix": platform.python_bin + " obj/build/android/apkbuilder.pyz",
             "handler": "android_apkbuilder",
             "remote": config.get(ctx, "remote-link") or config.get(ctx, "default-remote") or config.get(ctx, "builder"),
             "restat_content": True,
@@ -318,7 +318,7 @@ def __step_config(ctx, step_config):
         },
         {
             "name": "android/create_size_info_files",
-            "command_prefix": platform.python_bin + " ../../build/android/gyp/create_size_info_files.py",
+            "command_prefix": platform.python_bin + " obj/build/android/create_size_info_files.pyz",
             "handler": "android_create_size_info_files",
             "remote": remote_run,
             "restat_content": True,

@@ -247,12 +247,40 @@ python_library("logdog_wrapper_py") {
   pydeps_file = "test_wrapper/logdog_wrapper.pydeps"
 }
 
+python_binary("apkbuilder") {
+  script = "gyp/apkbuilder.py"
+}
+
+python_binary("bytecode_rewriter") {
+  script = "gyp/bytecode_rewriter.py"
+}
+
+python_binary("check_for_missing_direct_deps") {
+  script = "gyp/check_for_missing_direct_deps.py"
+}
+
 python_binary("compile_kt") {
   script = "gyp/compile_kt.py"
 }
 
+python_binary("compile_resources") {
+  script = "gyp/compile_resources.py"
+}
+
+python_binary("create_java_binary_script") {
+  script = "gyp/create_java_binary_script.py"
+}
+
 python_binary("create_r_java") {
   script = "gyp/create_r_java.py"
+}
+
+python_binary("create_size_info_files") {
+  script = "gyp/create_size_info_files.py"
+}
+
+python_binary("create_stub_manifest") {
+  script = "gyp/create_stub_manifest.py"
 }
 
 python_binary("dex") {
@@ -261,6 +289,50 @@ python_binary("dex") {
 
 python_binary("errorprone") {
   script = "gyp/errorprone.py"
+}
+
+python_binary("filter_zip") {
+  script = "gyp/filter_zip.py"
+}
+
+python_binary("ijar") {
+  script = "gyp/ijar.py"
+}
+
+python_binary("jacoco_instr") {
+  script = "gyp/jacoco_instr.py"
+}
+
+python_binary("lint") {
+  script = "gyp/lint.py"
+}
+
+python_binary("merge_manifest") {
+  script = "gyp/merge_manifest.py"
+}
+
+python_binary("optimize_resources") {
+  script = "gyp/optimize_resources.py"
+}
+
+python_binary("prepare_resources") {
+  script = "gyp/prepare_resources.py"
+}
+
+python_binary("proguard") {
+  script = "gyp/proguard.py"
+}
+
+python_binary("rename_java_classes") {
+  script = "gyp/rename_java_classes.py"
+}
+
+python_binary("system_image_apks") {
+  script = "gyp/system_image_apks.py"
+}
+
+python_binary("tracereferences") {
+  script = "gyp/tracereferences.py"
 }
 
 python_binary("turbine") {
