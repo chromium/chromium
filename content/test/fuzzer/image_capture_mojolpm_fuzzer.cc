@@ -78,8 +78,8 @@ class ImageCaptureTestcase
   // Prerequisite state.
   content::mojolpm::RenderViewHostTestHarnessAdapter test_adapter_;
   std::unique_ptr<media::AudioManager> audio_manager_;
-  std::unique_ptr<content::MediaStreamManager> media_stream_manager_;
   std::unique_ptr<media::AudioSystem> audio_system_;
+  std::unique_ptr<content::MediaStreamManager> media_stream_manager_;
   raw_ptr<content::TestRenderFrameHost> render_frame_host_ = nullptr;
 };
 
@@ -89,7 +89,9 @@ ImageCaptureTestcase::ImageCaptureTestcase(const ProtoTestcase& testcase)
 }
 
 ImageCaptureTestcase::~ImageCaptureTestcase() {
+  render_frame_host_ = nullptr;
   test_adapter_.TearDown();
+  audio_manager_->Shutdown();
 }
 
 void ImageCaptureTestcase::RunAction(const ProtoAction& action,
@@ -136,6 +138,7 @@ void ImageCaptureTestcase::RunAction(const ProtoAction& action,
 
 void ImageCaptureTestcase::SetUp(base::OnceClosure done_closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  mojolpm::GetContext()->StartTestcase();
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -168,15 +171,7 @@ void ImageCaptureTestcase::SetUpOnUIThread(base::OnceClosure done_closure) {
 
 void ImageCaptureTestcase::TearDown(base::OnceClosure done_closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ImageCaptureTestcase::TearDownOnIOThread,
-                     base::Unretained(this), std::move(done_closure)));
-}
-
-void ImageCaptureTestcase::TearDownOnIOThread(base::OnceClosure done_closure) {
-  media_stream_manager_->WillDestroyCurrentMessageLoop();
+  mojolpm::GetContext()->EndTestcase();
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -185,8 +180,13 @@ void ImageCaptureTestcase::TearDownOnIOThread(base::OnceClosure done_closure) {
 }
 
 void ImageCaptureTestcase::TearDownOnUIThread(base::OnceClosure done_closure) {
-  audio_manager_->Shutdown();
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ImageCaptureTestcase::TearDownOnIOThread,
+                     base::Unretained(this), std::move(done_closure)));
+}
 
+void ImageCaptureTestcase::TearDownOnIOThread(base::OnceClosure done_closure) {
   GetFuzzerTaskRunner()->PostTask(FROM_HERE, std::move(done_closure));
 }
 
