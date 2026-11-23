@@ -1717,11 +1717,11 @@ void ProcessMemoryMetricsEmitter::ReceivedMemoryDump(
     // |native_resident_kb| is only calculated for android devices that support
     // code ordering.
     if (native_resident_kb != metrics.kInvalid) {
-      // Size of the native library on android is ~40MB.
-      // More precision is needed in the middle buckets, hence the range.
+      // Keep high precision in the middle buckets for the resident native
+      // library code size on Android: range [2 MiB, 256 MiB) in KiB.
       base::UmaHistogramCustomCounts(
-          "Memory.NativeLibrary.MappedAndResidentMemoryFootprint3",
-          native_resident_kb, 1000, 100000, 100);
+          "Memory.NativeLibrary.MappedAndResidentMemoryFootprint4",
+          native_resident_kb, 2 * kKiB, 256 * kKiB, 100);
       if (native_library_resident_not_ordered_kb != metrics.kInvalid) {
         base::UmaHistogramCustomCounts(
             "Memory.NativeLibrary.ResidentNotOrderedCodeMemoryFootprint",

@@ -2385,18 +2385,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.NativeLibrary.MappedAndResidentMemoryFootprint3"
-    units="KB" expires_after="2026-10-11">
+<histogram name="Memory.NativeLibrary.MappedAndResidentMemoryFootprint4"
+    units="KB" expires_after="2027-11-20">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
     The size of the resident memory for the native library code across all
-    processes. This metric is computed by parsing proc/self/pagemap and counting
-    native library pages that are mapped and present in RAM for at least one
-    Chrome process.
+    processes. This metric is computed by parsing /proc/self/pagemap and
+    counting native library pages that are mapped and present in RAM for at
+    least one Chrome process. Available only on Android.
 
     Recorded at Poisson sampled time intervals with a mean of 5 minutes on
-    Android and 30 minutes on other platforms.
+    Android.
   </summary>
 </histogram>
 

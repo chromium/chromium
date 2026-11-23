@@ -1146,7 +1146,7 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
   histograms.ExpectTotalCount("Memory.Total.SharedMemoryFootprint", 0);
   histograms.ExpectTotalCount("Memory.Total.ResidentSet", 0);
   histograms.ExpectTotalCount(
-      "Memory.NativeLibrary.MappedAndResidentMemoryFootprint3", 0);
+      "Memory.NativeLibrary.MappedAndResidentMemoryFootprint4", 0);
   histograms.ExpectTotalCount(
       "Memory.NativeLibrary.ResidentNotOrderedCodeMemoryFootprint", 0);
 #if BUILDFLAG(IS_ANDROID)
@@ -1215,7 +1215,7 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
   histograms.ExpectUniqueSample("Memory.Total.TileMemory", 12 + 22, 1);
 
   histograms.ExpectUniqueSample(
-      "Memory.NativeLibrary.MappedAndResidentMemoryFootprint3",
+      "Memory.NativeLibrary.MappedAndResidentMemoryFootprint4",
       kNativeLibraryResidentMemoryFootprint, 1);
   histograms.ExpectUniqueSample(
       "Memory.NativeLibrary.ResidentNotOrderedCodeMemoryFootprint",
