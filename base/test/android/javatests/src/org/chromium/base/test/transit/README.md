@@ -7,6 +7,10 @@ states and transitions between them.
 
 ## How to Use Public Transit?
 
+* This README: concepts and framework features.
+* [Best Practices](best_practices.md): guidance for writing and reviewing tests
+  and Transit Layer code.
+
 ### Write Your First Test {#first-test}
 
 Public Transit tests can be in any instrumentation test target. Targets other
@@ -218,6 +222,7 @@ machinery used by `ViewElement` (defaulting to `RootSpec.focusedRoot()` when no
 `waitForView()` and `expectView()` accept varargs `Matcher<View>...` and return
 a `ViewPresence` with `.click()` (via `ForgivingClickAction`), `.longPress()`,
 `.typeText(...)`, `.performViewAction(...)`, `.check(...)`, and `.getView()`.
+See [ViewFinder Best Practices](best_practices.md#viewfinder).
 
 [`ViewFinder`]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.ViewFinder&ss=chromium
 
@@ -329,7 +334,8 @@ public void testOpenTabSwitcher() {
 Transition methods, such as `WebPageStation#openRegularTabAppMenu()`, should be
 in the Transit Layer for sharing with other tests. A transition that is truly
 specific to one test may be written in the Test Layer, but should still use the
-transition APIs rather than explicit waits.
+transition APIs rather than explicit waits. See
+[Best Practices](best_practices.md#layers).
 
 #### Transit Layer
 
@@ -625,12 +631,12 @@ Conditions not tied to Conditional States can be checked with `waitFor()`.
 Multiple expectations can be chained by the methods ending with `And()`, e.g.
 `clickTo().waitForAnd(c1, c2).exitFacilityAnd(e).enterFacility(f)`, or packaged
 as a reusable [`Outcome`] and joined with `trip.reach(outcome)` /
-`outcome.after(trip)`.
+`outcome.after(trip)` (see [Outcomes](best_practices.md#outcomes)).
 
 Transitions that open a new window or task use `inNewTask()`, e.g.
 `clickTo().inNewTask().arriveAt(station)`. Its `ActivityElement` checks
 `TrafficControl.getActiveStations()` live on every poll and skips tasks owned by
-other active `Station`s.
+other active `Station`s. See [New Windows and Tasks](best_practices.md#new-task).
 
 [`Outcome`]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.Outcome&ss=chromium
 
@@ -710,4 +716,5 @@ legacy test util, can "hop on" without an origin `Station`:
 
 Both abandon any previously active `Station`s first via
 `TrafficControl.hopOffPublicTransit()` and match the `Activity` by instance.
-This is how shared test utils are converted to Public Transit incrementally.
+This is how shared test utils are converted to Public Transit incrementally. See
+[Converting Legacy Test Utils](best_practices.md#hop-on).
