@@ -105,9 +105,10 @@ bool IsSavingBlockedByRecoverableError(
     const password_manager::PasswordFormManagerForUI* form_manager);
 
 // Returns whether the trusted vault error suggestion should be shown in
-// autofill dropdowns.
+// autofill dropdowns for `driver` (if non-null) on `client`.
 bool ShouldShowTrustedVaultErrorInAutofill(
-    const password_manager::PasswordManagerClient* client);
+    const password_manager::PasswordManagerClient* client,
+    const password_manager::PasswordManagerDriver* driver = nullptr);
 
 // Excluding protocol from a signon_realm means to remove from the signon_realm
 // what is before the web origin (with the protocol excluded as well). For

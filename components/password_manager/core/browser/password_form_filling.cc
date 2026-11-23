@@ -185,7 +185,7 @@ LikelyFormFilling SendFillInformationToRenderer(
                                    observed_form.IsSingleUsername();
       if (is_sign_in_form &&
           password_manager_util::ShouldShowTrustedVaultErrorInAutofill(
-              client)) {
+              client, driver)) {
         should_show_popup_without_passwords = true;
       } else {
         const url::Origin origin =

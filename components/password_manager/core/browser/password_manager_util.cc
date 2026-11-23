@@ -335,7 +335,8 @@ bool IsSavingBlockedByRecoverableError(
 }
 
 bool ShouldShowTrustedVaultErrorInAutofill(
-    const password_manager::PasswordManagerClient* client) {
+    const password_manager::PasswordManagerClient* client,
+    const password_manager::PasswordManagerDriver* driver) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
   if (!base::FeatureList::IsEnabled(
@@ -353,12 +354,16 @@ bool ShouldShowTrustedVaultErrorInAutofill(
     return false;
   }
 
-  const GURL& url = client->GetLastCommittedURL();
-  if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
+  auto is_eligible_url = [](const GURL& url) {
+    return url.is_valid() && url.SchemeIsHTTPOrHTTPS() &&
+           !google_util::IsGoogleDomainUrl(
+               url, google_util::ALLOW_SUBDOMAIN,
+               google_util::ALLOW_NON_STANDARD_PORTS);
+  };
+  if (!is_eligible_url(client->GetLastCommittedURL())) {
     return false;
   }
-  if (google_util::IsGoogleDomainUrl(url, google_util::ALLOW_SUBDOMAIN,
-                                     google_util::ALLOW_NON_STANDARD_PORTS)) {
+  if (driver && !is_eligible_url(driver->GetLastCommittedOrigin().GetURL())) {
     return false;
   }
 

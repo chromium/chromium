@@ -655,6 +655,7 @@ TEST_F(PasswordFormFillingTest,
   observed_form_.url = test_url;
   observed_form_.action = GURL("https://example.com/login_action");
   observed_form_.signon_realm = "https://example.com/";
+  driver_origin_ = Origin::Create(test_url);
   EXPECT_CALL(client_, GetLastCommittedURL).WillRepeatedly(ReturnRef(test_url));
 
   auto mock_account_store = base::MakeRefCounted<MockPasswordStoreInterface>();
@@ -690,6 +691,7 @@ TEST_F(PasswordFormFillingTest,
   single_username_form.action = GURL("https://example.com/login_action");
   single_username_form.signon_realm = "https://example.com/";
   single_username_form.password_element_renderer_id = FieldRendererId();
+  driver_origin_ = Origin::Create(test_url);
   EXPECT_CALL(client_, GetLastCommittedURL).WillRepeatedly(ReturnRef(test_url));
 
   auto mock_account_store = base::MakeRefCounted<MockPasswordStoreInterface>();
@@ -726,6 +728,7 @@ TEST_F(PasswordFormFillingTest,
   signup_form.password_element_renderer_id = FieldRendererId();
   signup_form.new_password_element_renderer_id = FieldRendererId(102);
   signup_form.confirmation_password_element_renderer_id = FieldRendererId(103);
+  driver_origin_ = Origin::Create(test_url);
   EXPECT_CALL(client_, GetLastCommittedURL).WillRepeatedly(ReturnRef(test_url));
 
   auto mock_account_store = base::MakeRefCounted<MockPasswordStoreInterface>();

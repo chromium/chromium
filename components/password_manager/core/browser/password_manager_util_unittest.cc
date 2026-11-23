@@ -46,6 +46,7 @@
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_string.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
+#include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -55,6 +56,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
@@ -117,6 +119,23 @@ class MockPasswordManagerClient
   MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const, override));
   MOCK_METHOD(bool, IsOffTheRecord, (), (const, override));
 };
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+class TestPasswordManagerDriver
+    : public password_manager::StubPasswordManagerDriver {
+ public:
+  TestPasswordManagerDriver(const GURL& url, const url::Origin& origin)
+      : url_(url), origin_(origin) {}
+
+  const GURL& GetLastCommittedURL() const override { return url_; }
+  const url::Origin& GetLastCommittedOrigin() const override { return origin_; }
+
+ private:
+  GURL url_;
+  url::Origin origin_;
+};
+#endif
 
 PasswordForm GetTestAndroidCredential() {
   PasswordForm form;
@@ -1235,6 +1254,39 @@ TEST_F(ShouldShowTrustedVaultErrorInAutofillTest, ExcludedUrls) {
   }
 }
 
+TEST_F(ShouldShowTrustedVaultErrorInAutofillTest,
+       SuppressedOnEmbeddedGoogleSubframe) {
+  EXPECT_CALL(*mock_account_store_, GetError())
+      .WillRepeatedly(
+          Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
+
+  TestPasswordManagerDriver driver(
+      GURL("https://accounts.google.com/signin"),
+      url::Origin::Create(GURL("https://accounts.google.com")));
+  EXPECT_FALSE(ShouldShowTrustedVaultErrorInAutofill(&client_, &driver));
+}
+
+TEST_F(ShouldShowTrustedVaultErrorInAutofillTest,
+       SuppressedOnOpaqueSubframeOrigin) {
+  EXPECT_CALL(*mock_account_store_, GetError())
+      .WillRepeatedly(
+          Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
+
+  TestPasswordManagerDriver driver(GURL("about:blank"), url::Origin());
+  EXPECT_FALSE(ShouldShowTrustedVaultErrorInAutofill(&client_, &driver));
+}
+
+TEST_F(ShouldShowTrustedVaultErrorInAutofillTest,
+       AllowedOnSameOriginAboutBlankSubframe) {
+  EXPECT_CALL(*mock_account_store_, GetError())
+      .WillRepeatedly(
+          Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
+
+  TestPasswordManagerDriver driver(
+      GURL("about:blank"), url::Origin::Create(GURL("https://example.com")));
+  EXPECT_TRUE(ShouldShowTrustedVaultErrorInAutofill(&client_, &driver));
+}
+
 TEST_F(ShouldShowTrustedVaultErrorInAutofillTest, AccountStoreError) {
   EXPECT_CALL(*mock_account_store_, GetError())
       .WillRepeatedly(
@@ -1285,8 +1337,7 @@ TEST_F(ShouldShowTrustedVaultErrorInAutofillTest, PasswordSyncDisabled) {
 
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_LINUX) && \
     !BUILDFLAG(IS_CHROMEOS)
-TEST(ShouldShowTrustedVaultErrorInAutofillTest,
-     DisabledOnNonDesktopPlatforms) {
+TEST(ShouldShowTrustedVaultErrorInAutofillTest, DisabledOnNonDesktopPlatforms) {
   MockPasswordManagerClient client;
   EXPECT_FALSE(ShouldShowTrustedVaultErrorInAutofill(&client));
 }
