@@ -42,9 +42,8 @@ bool ShouldExtractImagesForQrCode(const mojom::HeuristicSignals& signals) {
   if (!signals.has_square_candidate) {
     return false;
   }
-  // A square image alone is not enough (logos, avatars or icons), so a keyword
-  // is also required to suggest that the page is about paying, unless an
-  // exploration arm drops the requirement to measure what it misses.
+  // A square image can also be a logo, avatar or icon, so a Finch arm can also
+  // require a keyword that suggests that the page is about paying.
   return signals.url_keyword_match || signals.text_keyword_match ||
          !kQrCodeDetectionRequireKeywordMatch.Get();
 }

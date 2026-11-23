@@ -763,13 +763,10 @@ TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
   histogram_tester.ExpectTotalCount(kUnknownValidationResultHistogram, 0);
 }
 
-// Tests that the exploration arm extracts images for a square candidate even
+// Tests that, by default, images are extracted for a square candidate even
 // without a keyword match.
 TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
-       OnHeuristicSignalsReported_KeywordNotRequired_EvaluatesSquareOnly) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kEnableDesktopQrCodeDetection, {{"require_keyword_match", "false"}});
+       OnHeuristicSignalsReported_ByDefault_EvaluatesSquareOnly) {
   NavigateAndCommit(GURL("https://merchant.example/checkout"));
   mojom::HeuristicSignalsPtr signals = mojom::HeuristicSignals::New();
   signals->has_square_candidate = true;
@@ -779,13 +776,10 @@ TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
   EXPECT_EQ(barcode_detector_->detect_count(), 1);
 }
 
-// Tests that the exploration arm still requires a square candidate and still
-// skips pages handled by the payment link flow.
+// Tests that, by default, a square candidate is still required and pages
+// handled by the payment link flow are still skipped.
 TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
-       OnHeuristicSignalsReported_KeywordNotRequired_StillNeedsSquareNoLink) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kEnableDesktopQrCodeDetection, {{"require_keyword_match", "false"}});
+       OnHeuristicSignalsReported_ByDefault_StillNeedsSquareNoLink) {
   NavigateAndCommit(GURL("https://merchant.example/checkout"));
   mojom::HeuristicSignalsPtr link_signals = mojom::HeuristicSignals::New();
   link_signals->has_facilitated_payment_link = true;
@@ -801,10 +795,20 @@ TEST_F(ContentFacilitatedPaymentsDriverFactoryTest,
 // `url_keyword_match`, `text_keyword_match`.
 class ContentFacilitatedPaymentsDriverFactorySignalsTest
     : public ContentFacilitatedPaymentsDriverFactoryTest,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {};
+      public testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
+ public:
+  ContentFacilitatedPaymentsDriverFactorySignalsTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kEnableDesktopQrCodeDetection, {{"require_keyword_match", "true"}});
+  }
 
-// Test that an evaluation starts only for pages without a facilitated payment
-// link that have a square image and at least one keyword match.
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Tests that, when a keyword match is required, an evaluation starts only for
+// pages without a facilitated payment link that have a square image and at
+// least one keyword match.
 TEST_P(ContentFacilitatedPaymentsDriverFactorySignalsTest,
        OnHeuristicSignalsReported_EvaluatesOnlyQualifyingSignals) {
   const auto [has_link, has_square, url_match, text_match] = GetParam();

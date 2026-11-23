@@ -34,11 +34,11 @@ const base::FeatureParam<int> kQrCodeDetectionMinImageSize{
 const base::FeatureParam<double> kQrCodeDetectionMaxAspectRatio{
     &kEnableDesktopQrCodeDetection, "max_aspect_ratio", 1.2};
 
-// Turned off only by an exploration arm, so that pages the default rule skips
-// are also decoded, and `FacilitatedPayments.QrCode.HeuristicSignals` shows how
-// many QR codes the keyword requirement misses.
+// Off by default, so that any square candidate on a page without a facilitated
+// payment link is decoded. A Finch arm can turn it on to compare the stricter
+// rule, using `FacilitatedPayments.QrCode.HeuristicSignals`.
 const base::FeatureParam<bool> kQrCodeDetectionRequireKeywordMatch{
-    &kEnableDesktopQrCodeDetection, "require_keyword_match", true};
+    &kEnableDesktopQrCodeDetection, "require_keyword_match", false};
 
 // When enabled, Chrome will receive and cache eWallet creation options from
 // Chrome Sync.
