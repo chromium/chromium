@@ -129,6 +129,10 @@ BASE_DECLARE_FEATURE(kPaymentRequestResetActivationlessShowOnReload);
 // follows the HTML head <meta name="theme-color">.
 BASE_DECLARE_FEATURE(kPaymentHandlerPageInfoThemeColor);
 
+// Used to control whether checkout and order confirmation telemetry is
+// collected on allowlisted merchant navigations.
+BASE_DECLARE_FEATURE(kCheckoutTelemetry);
+
 }  // namespace features
 }  // namespace payments
 

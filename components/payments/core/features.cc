@@ -4,6 +4,7 @@
 
 #include "components/payments/core/features.h"
 
+#include "base/feature.h"
 #include "build/build_config.h"
 
 namespace payments {
@@ -106,6 +107,8 @@ BASE_FEATURE(kPaymentRequestResetActivationlessShowOnReload,
 
 BASE_FEATURE(kPaymentHandlerPageInfoThemeColor,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCheckoutTelemetry, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features
 }  // namespace payments
