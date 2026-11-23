@@ -260,7 +260,7 @@ class CupsPrintersHandlerTest : public testing::Test {
         DownloadPrefs::FromDownloadManager(profile_->GetDownloadManager())
             ->DownloadPath();
     const base::FilePath filepath =
-        downloads_path.Append(printer_name).AddExtension("ppd");
+        downloads_path.Append(printer_name + " PPD").AddExtension("txt");
     return base::ReadFileToString(filepath, &contents);
   }
 

@@ -577,10 +577,10 @@ void CupsPrintersHandler::WriteAndDisplayPpdFile(
   // To make sure an appropriate filename is created, remove any dir separators
   // and characters that are significant in URL syntax (the path is later turned
   // into a file:// URL).
-  std::string sanitized_name = printer_name;
+  std::string sanitized_name = printer_name + " PPD";
   base::ReplaceChars(sanitized_name, "/\\#?%", "_", &sanitized_name);
   const base::FilePath ppd_file_path_base =
-      downloads_path.Append(sanitized_name).AddExtension("ppd");
+      downloads_path.Append(sanitized_name).AddExtension("txt");
 
   // Use USER_BLOCKING here since the user is expecting a new web page to load
   // after clicking the View PPD link.
