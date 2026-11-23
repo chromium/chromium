@@ -224,9 +224,8 @@ import java.util.concurrent.atomic.AtomicReference;
         mInputProtector = new InputProtector(mClock);
     }
 
-    // TODO(crbug.com/490460408): Move test observers to before(), migrate
-    // PaymentRequestContactDetailsTest#testPaymentRequestIncognitoMode to Public Transit, and check
-    // whether WebPageStation's enter conditions let us drop the scale-factor wait.
+    // TODO(crbug.com/490460408): Move test observers to before(), and check whether
+    // WebPageStation's enter conditions let us drop the scale-factor wait.
     /* package */ void setObserversAndWaitForInitialPageLoad(ChromeActivity activity) {
         boolean useDesktopUserAgent =
                 ThreadUtils.runOnUiThreadBlocking(

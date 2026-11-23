@@ -25,12 +25,12 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils.RuntimePromptResponse;
 import org.chromium.chrome.browser.permissions.RuntimePermissionTestUtils.TestAndroidPermissionDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.components.permissions.DismissalType;
 import org.chromium.content_public.common.ContentSwitches;
@@ -57,10 +57,11 @@ public class RuntimePermissionTest {
             "Permissions.Prompt.GeolocationApproximateOrPrecise.ModalDialog.Dismissed.Method";
 
     private TestAndroidPermissionDelegate mTestAndroidPermissionDelegate;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
     }
 
     @After
@@ -398,40 +399,27 @@ public class RuntimePermissionTest {
     @Feature({"RuntimePermissions", "Location"})
     public void testAllowRuntimeLocationIncognito() throws Exception {
         RuntimePermissionTestUtils.setupGeolocationSystemMock();
-        ChromeActivity incognitoActivity = null;
-        try {
-            if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-                incognitoActivity =
-                        mActivityTestRule.getActivityTestRule().newIncognitoWindowFromMenu();
-            } else {
-                mActivityTestRule.newIncognitoTabFromMenu();
-                incognitoActivity = mActivityTestRule.getActivity();
-            }
+        ChromeActivity incognitoActivity = mPage.openNewIncognitoTabOrWindowFast().getActivity();
 
-            String[] requestablePermission =
-                    new String[] {
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    };
-            mTestAndroidPermissionDelegate =
-                    new TestAndroidPermissionDelegate(
-                            requestablePermission, RuntimePromptResponse.GRANT);
-            RuntimePermissionTestUtils.runTest(
-                    incognitoActivity,
-                    mPermissionTestRule,
-                    mTestAndroidPermissionDelegate,
-                    GEOLOCATION_TEST,
-                    /* expectPermissionAllowed= */ true,
-                    /* promptDecision= */ PermissionTestRule.PromptDecision.ALLOW,
-                    /* waitForMissingPermissionPrompt= */ false,
-                    /* waitForUpdater= */ true,
-                    "initiate_geolocation()",
-                    /* missingPermissionPromptTextId= */ 0);
-        } finally {
-            if (incognitoActivity != null && incognitoActivity != mActivityTestRule.getActivity()) {
-                incognitoActivity.finish();
-            }
-        }
+        String[] requestablePermission =
+                new String[] {
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                };
+        mTestAndroidPermissionDelegate =
+                new TestAndroidPermissionDelegate(
+                        requestablePermission, RuntimePromptResponse.GRANT);
+        RuntimePermissionTestUtils.runTest(
+                incognitoActivity,
+                mPermissionTestRule,
+                mTestAndroidPermissionDelegate,
+                GEOLOCATION_TEST,
+                /* expectPermissionAllowed= */ true,
+                /* promptDecision= */ PermissionTestRule.PromptDecision.ALLOW,
+                /* waitForMissingPermissionPrompt= */ false,
+                /* waitForUpdater= */ true,
+                "initiate_geolocation()",
+                /* missingPermissionPromptTextId= */ 0);
     }
 
     @Test
@@ -439,14 +427,14 @@ public class RuntimePermissionTest {
     @Feature({"RuntimePermissions", "MediaPermissions"})
     @DisabledTest(message = "crbug.com/325085976")
     public void testAllowRuntimeCameraIncognito() throws Exception {
-        mActivityTestRule.newIncognitoTabFromMenu();
+        ChromeActivity incognitoActivity = mPage.openNewIncognitoTabOrWindowFast().getActivity();
 
         String[] requestablePermission = new String[] {Manifest.permission.CAMERA};
         mTestAndroidPermissionDelegate =
                 new TestAndroidPermissionDelegate(
                         requestablePermission, RuntimePromptResponse.GRANT);
         RuntimePermissionTestUtils.runTest(
-                mActivityTestRule.getActivity(),
+                incognitoActivity,
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 MEDIA_TEST,
@@ -463,13 +451,13 @@ public class RuntimePermissionTest {
     @Feature({"RuntimePermissions", "MediaPermissions"})
     @DisabledTest(message = "crbug.com/325085976")
     public void testAllowRuntimeMicrophoneIncognito() throws Exception {
-        mActivityTestRule.newIncognitoTabFromMenu();
+        ChromeActivity incognitoActivity = mPage.openNewIncognitoTabOrWindowFast().getActivity();
         String[] requestablePermission = new String[] {Manifest.permission.RECORD_AUDIO};
         mTestAndroidPermissionDelegate =
                 new TestAndroidPermissionDelegate(
                         requestablePermission, RuntimePromptResponse.GRANT);
         RuntimePermissionTestUtils.runTest(
-                mActivityTestRule.getActivity(),
+                incognitoActivity,
                 mPermissionTestRule,
                 mTestAndroidPermissionDelegate,
                 MEDIA_TEST,

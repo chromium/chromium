@@ -101,7 +101,7 @@ public class CloseAllTabsDialogTest {
         TabModelSelector selector =
                 mActivityTestRule.getActivity().getTabModelSelectorSupplier().get();
 
-        if (mIsIncognito) mActivityTestRule.newIncognitoTabFromMenu();
+        if (mIsIncognito) mInitialPage.openNewIncognitoTabFast();
         navigateToCloseAllTabsDialog(selector);
         waitForView(withId(R.id.positive_button)).click();
 
@@ -120,7 +120,7 @@ public class CloseAllTabsDialogTest {
         TabModelSelector selector =
                 mActivityTestRule.getActivity().getTabModelSelectorSupplier().get();
 
-        if (mIsIncognito) mActivityTestRule.newIncognitoTabFromMenu();
+        if (mIsIncognito) mInitialPage.openNewIncognitoTabFast();
         navigateToCloseAllTabsDialog(selector);
 
         waitForView(withId(R.id.negative_button)).click();

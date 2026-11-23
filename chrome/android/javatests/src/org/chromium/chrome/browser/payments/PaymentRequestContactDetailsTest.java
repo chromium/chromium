@@ -20,19 +20,16 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
-import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.payments.Event2;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.base.PageTransition;
 
 import java.util.concurrent.TimeoutException;
 
@@ -51,9 +48,11 @@ public class PaymentRequestContactDetailsTest {
     public final RuleChain mRuleChain =
             RuleChain.outerRule(mCtaTestRule).around(mPaymentRequestTestRule);
 
+    private WebPageStation mPage;
+
     @Before
     public void setUp() throws TimeoutException, InterruptedException {
-        mPaymentRequestTestRule.startOnTestPage();
+        mPage = mPaymentRequestTestRule.startOnTestPage();
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has valid payer name, phone number and email address on disk.
         helper.setProfile(
@@ -419,23 +418,13 @@ public class PaymentRequestContactDetailsTest {
     @MediumTest
     @Feature({"Payments"})
     public void testPaymentRequestIncognitoMode() throws Exception {
-        ChromeTabbedActivity chromeTabbedActivity;
-        Tab incognitoTab;
-        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
-            chromeTabbedActivity = mCtaTestRule.getActivityTestRule().newIncognitoWindowFromMenu();
-            incognitoTab = chromeTabbedActivity.getActivityTabProvider().get();
-        } else {
-            incognitoTab = mCtaTestRule.newIncognitoTabFromMenu();
-            chromeTabbedActivity = mCtaTestRule.getActivity();
-        }
-
         String relativeTestUrl =
                 "/components/test/data/payments/payment_request_contact_details_test.html";
-        mCtaTestRule.loadUrlInTab(
-                mCtaTestRule.getTestServer().getURL(relativeTestUrl),
-                PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
-                incognitoTab);
-        mPaymentRequestTestRule.setObserversAndWaitForInitialPageLoad(chromeTabbedActivity);
+        WebPageStation incognitoPage =
+                mPage.openNewIncognitoTabOrWindowFast()
+                        .loadWebPageProgrammatically(
+                                mCtaTestRule.getTestServer().getURL(relativeTestUrl));
+        mPaymentRequestTestRule.setObserversAndWaitForInitialPageLoad(incognitoPage.getActivity());
 
         // Trigger the PaymentRequest, and expand the contact info section to show the text.
         // This is where the code would previously crash.
