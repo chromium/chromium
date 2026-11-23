@@ -1,4 +1,4 @@
-Tests layer compositing reasons in Layers Panel
+Tests layer compositing reasons
 Compositing reason ids for div#transform3d: 3DTransform
 Compositing reason ids for div#scale3d: 3DScale
 Compositing reason ids for div#rotate3d: 3DRotate
