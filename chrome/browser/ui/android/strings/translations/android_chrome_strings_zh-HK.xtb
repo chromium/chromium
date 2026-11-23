@@ -129,7 +129,7 @@
 <translation id="1460751212339734034">節省時間，減少輸入操作</translation>
 <translation id="146522654774760805">密碼和自動填入</translation>
 <translation id="1466383950273130737">選取 Chrome 的語言</translation>
-<translation id="1473344277210704336">Gemini 和常用功能盡在新版底部工具列</translation>
+<translation id="1473344277210704336">Gemini 和常用功能盡在全新頁底工具列</translation>
 <translation id="1477626028522505441">伺服器發生問題，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="147982357559798527">已變更</translation>
 <translation id="1480287803138246127">部分記錄可能不會在此顯示。如要查看所有 Chrome 記錄，請開啟完整 Chrome 記錄。</translation>
@@ -916,7 +916,7 @@
 <translation id="4585751637295612750">開啟新分頁以加入查詢</translation>
 <translation id="4585793705637313973">編輯頁面</translation>
 <translation id="4587589328781138893">網站</translation>
-<translation id="4587590257937792551">Chrome 新版底部工具列登場，方便又易用。你可隨時在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中切換回去。</translation>
+<translation id="4587590257937792551">Chrome 全新頁底工具列登場，瀏覽更方便。你可隨時在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中重設。</translation>
 <translation id="4592634244097223647">問　Google 關於此圖片的問題</translation>
 <translation id="4594952190837476234">此離線網頁在 <ph name="CREATION_TIME" />建立，且可能與網上版本不同。</translation>
 <translation id="4595237294768457124">開啟新分頁</translation>
@@ -1453,7 +1453,7 @@
 <translation id="6633067410344541938">解鎖無痕模式</translation>
 <translation id="6636623428211296678">探索下方更多設定或立即結束審核</translation>
 <translation id="6637100877383020115">Chrome 會向 Google 傳送使用情況和當機資料，以協助改善應用程式。<ph name="BEGIN_UMA_LINK" />管理<ph name="END_UMA_LINK" /></translation>
-<translation id="6640259500074236510">常用功能會直接顯示在底部工具列上。你可隨時在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中切換回去。</translation>
+<translation id="6640259500074236510">常用功能盡在頁底工具列。你可隨時在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中重設。</translation>
 <translation id="6642299196749785472">附加分頁</translation>
 <translation id="6647441008198474441">系統會將您瀏覽的網址傳送至 Google，以便預測您接下來可能會瀏覽的網站</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 個聯絡人}other{<ph name="CONTACT_PREVIEW" />\u2026 和另外 <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> 個聯絡人}}</translation>
@@ -1652,7 +1652,7 @@
 <translation id="7298319215489933099"><ph name="TAB_TITLE" />，揀咗分享緊內容嘅固定分頁</translation>
 <translation id="7311244614769792472">找不到任何結果</translation>
 <translation id="7314734791127433392">無法檢查密碼</translation>
-<translation id="7324177883197548771">Chrome 新外觀登場，方便又易用。你可隨時在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中切換回去。</translation>
+<translation id="7324177883197548771">Chrome 新外觀登場，瀏覽更方便。你可隨時在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中重設。</translation>
 <translation id="7324354302972299151">傳送「Do Not Track」要求</translation>
 <translation id="7333041109965360609">已取消訂閱通知</translation>
 <translation id="7335766481146072567">按一下 [繼續]</translation>
