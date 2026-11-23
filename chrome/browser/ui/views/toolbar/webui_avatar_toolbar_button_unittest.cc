@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/views/toolbar/mock_webui_toolbar_control_delegate.h"
@@ -192,6 +193,98 @@ TEST_F(WebUIAvatarToolbarButtonTest, DisabledWhenCannotShowForProfile) {
   devtools_button.ButtonPressed(/*is_source_accelerator=*/true);
 
   devtools_button.RemoveObserver(&observer);
+}
+
+TEST_F(WebUIAvatarToolbarButtonTest, GetWidthAndPreferredSizeChanged) {
+  TestingProfile* normal_profile = CreateTestingProfile("normal");
+  TestingProfile::Builder devtools_builder;
+  devtools_builder.SetPath(normal_profile->GetPath());
+  TestingProfile* devtools_profile = devtools_builder.BuildOffTheRecord(
+      normal_profile, Profile::OTRProfileID::CreateUniqueForDevTools());
+  ASSERT_FALSE(
+      AvatarToolbarButtonInterface::CanShowForProfile(devtools_profile));
+
+  TestBrowserEnvironment devtools_env(devtools_profile, widget_.get(), view_);
+  ON_CALL(devtools_env.delegate, OnAvatarControlStateChanged)
+      .WillByDefault(
+          [&](toolbar_ui_api::mojom::AvatarControlStatePtr new_state) {
+            devtools_env.toolbar_state.avatar_control_state =
+                std::move(new_state);
+          });
+  WebUIAvatarToolbarButton devtools_button(&devtools_env.delegate);
+  EXPECT_EQ(devtools_button.GetWidth(), 0);
+  EXPECT_CALL(devtools_env.delegate, OnPreferredSizeChanged()).Times(0);
+  devtools_button.Initialize();
+  EXPECT_EQ(devtools_button.GetWidth(), 0);
+
+  const int button_height =
+      GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  TestBrowserEnvironment regular_env(normal_profile, widget_.get(), view_);
+  ON_CALL(regular_env.delegate, OnAvatarControlStateChanged)
+      .WillByDefault(
+          [&](toolbar_ui_api::mojom::AvatarControlStatePtr new_state) {
+            regular_env.toolbar_state.avatar_control_state =
+                std::move(new_state);
+          });
+  WebUIAvatarToolbarButton regular_button(&regular_env.delegate);
+  EXPECT_EQ(regular_button.GetWidth(), button_height);
+
+  // Initial icon-only state matches the default `button_height` width.
+  EXPECT_CALL(regular_env.delegate, OnPreferredSizeChanged()).Times(0);
+  regular_button.Initialize();
+  EXPECT_EQ(regular_button.GetWidth(), button_height);
+
+  // Setting an explicit label widens the button and notifies the delegate.
+  EXPECT_CALL(regular_env.delegate, OnPreferredSizeChanged()).Times(1);
+  base::ScopedClosureRunner reset_explicit =
+      regular_button.SetExplicitButtonState(u"Work", std::nullopt, std::nullopt,
+                                            /*should_announce=*/false);
+  const int labeled_width = regular_button.GetWidth();
+  EXPECT_GT(labeled_width, button_height);
+  testing::Mock::VerifyAndClearExpectations(&regular_env.delegate);
+
+  // Updating another state field without changing the width pushes a new
+  // `AvatarControlState` without firing `OnPreferredSizeChanged()`.
+  regular_env.toolbar_state.controls_appear_inactive = true;
+  EXPECT_CALL(regular_env.delegate, OnAvatarControlStateChanged).Times(1);
+  EXPECT_CALL(regular_env.delegate, OnPreferredSizeChanged()).Times(0);
+  regular_button.OnControlsAppearInactiveChanged();
+  EXPECT_EQ(regular_button.GetWidth(), labeled_width);
+  testing::Mock::VerifyAndClearExpectations(&regular_env.delegate);
+
+  // Clearing the explicit label shrinks back and notifies the delegate again.
+  EXPECT_CALL(regular_env.delegate, OnPreferredSizeChanged()).Times(1);
+  reset_explicit.RunAndReset();
+  EXPECT_EQ(regular_button.GetWidth(), button_height);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+  // Across all platforms (including ChromeOS), initializing an Incognito avatar
+  // button transitions from the default unlabeled width to the labeled chip
+  // width and notifies `OnPreferredSizeChanged()`.
+  TestingProfile* incognito_profile =
+      TestingProfile::Builder().BuildIncognito(normal_profile);
+  TestBrowserEnvironment incognito_env(incognito_profile, widget_.get(), view_);
+  ON_CALL(incognito_env.delegate, OnAvatarControlStateChanged)
+      .WillByDefault(
+          [&](toolbar_ui_api::mojom::AvatarControlStatePtr new_state) {
+            incognito_env.toolbar_state.avatar_control_state =
+                std::move(new_state);
+          });
+  WebUIAvatarToolbarButton incognito_button(&incognito_env.delegate);
+  EXPECT_EQ(incognito_button.GetWidth(), button_height);
+  EXPECT_CALL(incognito_env.delegate, OnPreferredSizeChanged()).Times(1);
+  incognito_button.Initialize();
+  const int incognito_width = incognito_button.GetWidth();
+  EXPECT_GT(incognito_width, button_height);
+  testing::Mock::VerifyAndClearExpectations(&incognito_env.delegate);
+
+  incognito_env.toolbar_state.controls_appear_inactive = true;
+  EXPECT_CALL(incognito_env.delegate, OnAvatarControlStateChanged).Times(1);
+  EXPECT_CALL(incognito_env.delegate, OnPreferredSizeChanged()).Times(0);
+  incognito_button.OnControlsAppearInactiveChanged();
+  EXPECT_EQ(incognito_button.GetWidth(), incognito_width);
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

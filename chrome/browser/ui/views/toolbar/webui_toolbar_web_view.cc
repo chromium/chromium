@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <optional>
@@ -2261,16 +2262,20 @@ gfx::Size WebUIToolbarWebView::ComputeLayout(
 
   // Add everything that cannot overflow.
 
+  const int button_size =
+      GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
   int button_count = 0;
+  int avatar_extra_width = 0;
   // Back button
   button_count += features::IsWebUIBackForwardButtonEnabled();
   button_count += features::IsWebUIReloadButtonEnabled();
   if (!exclude_overflowable_elements) {
     button_count += features::IsWebUISplitTabsButtonEnabled() &&
                     split_tabs_control_.IsVisible();
-    button_count +=
-        features::IsWebUIAvatarButtonEnabled() &&
-        AvatarToolbarButtonInterface::CanShowForProfile(browser_->GetProfile());
+    if (const int avatar_width = avatar_control_.GetWidth(); avatar_width > 0) {
+      ++button_count;
+      avatar_extra_width = std::max(0, avatar_width - button_size);
+    }
     button_count += features::IsWebUIBatterySaverButtonEnabled() &&
                     battery_saver_control_.IsVisible();
     button_count += features::IsWebUIPerformanceInterventionButtonEnabled() &&
@@ -2287,7 +2292,6 @@ gfx::Size WebUIToolbarWebView::ComputeLayout(
   }
   button_count += features::IsWebUIAppMenuButtonEnabled();
 
-  const int size = GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
   const int gap = GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin);
   const gfx::Insets default_insets =
       ::GetLayoutInsets(LayoutInset::TOOLBAR_INTERIOR_MARGIN);
@@ -2297,18 +2301,19 @@ gfx::Size WebUIToolbarWebView::ComputeLayout(
   // leaves room for things drawn just outside a control, like outset focus
   // rings, which the viewport would clip if the WebUI toolbar were only as tall
   // as the controls.
-  const int height = size + default_insets.height();
-  int width = button_count * size;
+  const int height = button_size + default_insets.height();
+  int width = button_count * button_size;
   if (button_count > 0) {
     width += (button_count - 1) * gap;
   }
+  width += avatar_extra_width;
   if (features::IsWebUIGlicButtonEnabled() && glic_control_.IsVisible()) {
     // The split Glic half spans Views' collapsed GlicButton width, including
     // its 2px unpainted kSpaceBetweenButtons padding (toolbar_glic_button.cc),
     // and the actor task icon follows it with no gap. Kept in sync with
     // glic_button.css.
     if (glic_control_.GetIsSplit()) {
-      width += glic::kCollapsedWidth - (size + gap);
+      width += glic::kCollapsedWidth - (button_size + gap);
     }
     // The actor task icon is never narrower than the button height plus the
     // nudge label margin, matching ToolbarGlicActorTaskIcon::GetMinimumSize().
@@ -2385,7 +2390,7 @@ gfx::Size WebUIToolbarWebView::ComputeLayout(
     bool allow_overflow = !ToolbarControllerUtil::PreventOverflow();
     if (features::IsWebUIBackForwardButtonEnabled() &&
         forward_control_.IsPinned()) {
-      int next_button_width = NextButtonWidth(size, gap, button_count);
+      int next_button_width = NextButtonWidth(button_size, gap, button_count);
       bool is_forward_button_overflowed =
           !force_navigation_buttons && allow_overflow &&
           available_width.is_bounded() &&
@@ -2403,7 +2408,7 @@ gfx::Size WebUIToolbarWebView::ComputeLayout(
     // Figure out if the home button should be overflowed, and update width if
     // it's visible.
     if (features::IsWebUIHomeButtonEnabled() && home_control_.IsPinned()) {
-      int next_button_width = NextButtonWidth(size, gap, button_count);
+      int next_button_width = NextButtonWidth(button_size, gap, button_count);
       bool is_home_button_overflowed =
           !force_navigation_buttons && allow_overflow &&
           available_width.is_bounded() &&

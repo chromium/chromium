@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/toolbar/webui_avatar_toolbar_button.h"
 
+#include <algorithm>
 #include <utility>
 #include <vector>
 
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button_state_manager.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
@@ -32,8 +34,12 @@
 #include "ui/base/models/image_model_utils.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/text_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_anchor.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/style/typography_provider.h"
 #include "ui/views/view.h"
 
 namespace {
@@ -342,8 +348,67 @@ void WebUIAvatarToolbarButton::UpdateState() {
   state->prevent_overflow = prevent_overflow_count_ > 0;
 
   if (delegate_) {
+    const int old_width = GetWidth();
     delegate_->OnAvatarControlStateChanged(std::move(state));
+    if (GetWidth() != old_width) {
+      delegate_->OnPreferredSizeChanged();
+    }
   }
+}
+
+int WebUIAvatarToolbarButton::GetWidth() const {
+  if (!features::IsWebUIAvatarButtonEnabled() || !delegate_ ||
+      !delegate_->GetBrowser() ||
+      !AvatarToolbarButtonInterface::CanShowForProfile(
+          delegate_->GetBrowser()->GetProfile())) {
+    return 0;
+  }
+
+  const int button_height =
+      GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
+  const toolbar_ui_api::mojom::AvatarControlStatePtr& state =
+      delegate_->GetState().avatar_control_state;
+  if (!state || state->text.empty()) {
+    return button_height;
+  }
+
+  // Matches avatar_button.css and toolbar_chip_button.css when `has-label` and
+  // `has-prefix-icon` are set:
+  // - Inner button width (`min-width: var(--toolbar-chip-height)`):
+  //   padding-inline-start (`AVATAR_CHIP_PADDING.left()`) +
+  //   icon (`kToolbarButtonIconSize`) +
+  //   icon-label spacing (`kAvatarChipIconLabelSpacing`) +
+  //   text width (`CONTEXT_TOOLBAR_BUTTON`) +
+  //   padding-inline-end (`AVATAR_CHIP_PADDING.right() + button_height / 4`).
+  //   `has_linear_gradient_ring` subtracts `ring_delta` from both side paddings
+  //   while adding `2 * ring_delta` to `#icon`, leaving the sum unchanged.
+  // - Guest session border (`#button[has-border]`): 1px on each side (+2px).
+  // - Expanded inline margins on `#button`:
+  //   `2 * (kToolbarButtonRefreshExpandedMargin - kToolbarIconDefaultMargin)`.
+  constexpr int kAvatarChipIconLabelSpacing = 6;
+  constexpr int kGuestBorderWidth = 2;
+  const gfx::Insets chip_padding =
+      ::GetLayoutInsets(LayoutInset::AVATAR_CHIP_PADDING);
+  const int icon_size =
+      GetLayoutConstant(LayoutConstant::kToolbarButtonIconSize);
+  const int label_side_spacing = button_height / 4;
+  const int text_width = gfx::GetStringWidth(
+      state->text, views::TypographyProvider::Get().GetFont(
+                       CONTEXT_TOOLBAR_BUTTON, views::style::STYLE_PRIMARY));
+  const int inner_button_width =
+      std::max(button_height, chip_padding.width() + icon_size +
+                                  kAvatarChipIconLabelSpacing + text_width +
+                                  label_side_spacing);
+  const int border_width =
+      state->state ==
+              toolbar_ui_api::mojom::AvatarToolbarButtonState::kGuestSession
+          ? kGuestBorderWidth
+          : 0;
+  const int expanded_margins =
+      2 *
+      (GetLayoutConstant(LayoutConstant::kToolbarButtonRefreshExpandedMargin) -
+       GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin));
+  return inner_button_width + border_width + expanded_margins;
 }
 
 void WebUIAvatarToolbarButton::UpdateAccessibilityLabel() {

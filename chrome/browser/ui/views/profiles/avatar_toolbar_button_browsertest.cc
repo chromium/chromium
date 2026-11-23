@@ -71,6 +71,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
+#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_toolbar_button_container.h"
@@ -126,6 +127,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_launcher.h"
 #include "device/fido/public/features.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -940,9 +942,273 @@ class AvatarToolbarButtonBrowserTest
     }
   }
 
+  // Verifies partial-WebUI avatar layout invariants on `target_browser` (whose
+  // profile must satisfy `AvatarToolbarButtonInterface::CanShowForProfile()`):
+  // 1. `WebUIToolbarWebView`'s laid-out width equals its C++ preferred width.
+  // 2. `WebUIAvatarToolbarButton::GetWidth()` in C++ is at least the rendered
+  //    floating-point width of `<avatar-button>` in JavaScript (and within a
+  //    small subpixel ceiling tolerance, since `gfx::GetStringWidth()` rounds
+  //    text width up to the next integer DIP).
+  // 3. `<avatar-button>` is unclipped: in partial WebUI mode, JavaScript
+  //    responsive layout (`app.ts`) is inactive, so `<avatar-button>` never
+  //    shrinks or elides its label when `WebUIToolbarWebView` is too narrow and
+  //    would instead overflow past `window.innerWidth` (clipping at the WebView
+  //    viewport edge). Checking `rect.right <= window.innerWidth` and
+  //    `scrollWidth <= clientWidth` confirms both the viewport and inner label
+  //    fit the full chip.
+  void VerifyPartialWebUIAvatarLayout(BrowserWindowInterface* target_browser) {
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(target_browser);
+    ASSERT_TRUE(browser_view);
+    WebUIToolbarWebView* web_view =
+        browser_view->toolbar()->GetWebUIToolbarViewForTesting();
+    ASSERT_TRUE(web_view);
+    auto* webui_avatar = static_cast<WebUIAvatarToolbarButton*>(
+        GetAvatarToolbarButtonInterface(target_browser));
+    ASSERT_TRUE(webui_avatar);
+
+    views::test::RunScheduledLayout(browser_view);
+    EXPECT_EQ(web_view->width(), web_view->GetPreferredSize().width());
+
+    ASSERT_TRUE(content::WaitForLoadStop(web_view->web_contents()));
+    ASSERT_TRUE(base::test::RunUntil([web_view]() {
+      return content::EvalJs(web_view->web_contents(), "window.innerWidth") ==
+             web_view->width();
+    }));
+
+    content::EvalJsResult result = content::EvalJs(web_view->web_contents(), R"(
+          (async () => {
+            await customElements.whenDefined('toolbar-app');
+            const app = document.querySelector('toolbar-app');
+            await app?.updateComplete;
+            const avatar = app?.shadowRoot?.querySelector('#avatar');
+            if (!avatar) {
+              return null;
+            }
+            for (const root of [
+                     avatar, avatar.shadowRoot, avatar.$.button?.shadowRoot]) {
+              for (const anim of root?.getAnimations() ?? []) {
+                try {
+                  anim.finish();
+                } catch (e) {
+                }
+              }
+            }
+            await avatar.updateComplete;
+            await avatar.$.button?.updateComplete;
+            const rect = avatar.getBoundingClientRect();
+            return {
+              width: rect.width,
+              left: rect.left,
+              right: rect.right,
+              viewportWidth: window.innerWidth,
+              textScrollWidth: avatar.$.text.scrollWidth,
+              textClientWidth: avatar.$.text.clientWidth,
+            };
+          })()
+        )");
+    ASSERT_TRUE(result.is_ok()) << result.ExtractError();
+    const base::DictValue& dict = result.ExtractDict();
+
+    const std::optional<double> js_width = dict.FindDouble("width");
+    const std::optional<double> js_left = dict.FindDouble("left");
+    const std::optional<double> js_right = dict.FindDouble("right");
+    const std::optional<double> viewport_width =
+        dict.FindDouble("viewportWidth");
+    const std::optional<double> text_scroll_width =
+        dict.FindDouble("textScrollWidth");
+    const std::optional<double> text_client_width =
+        dict.FindDouble("textClientWidth");
+    ASSERT_TRUE(js_width.has_value());
+    ASSERT_TRUE(js_left.has_value());
+    ASSERT_TRUE(js_right.has_value());
+    ASSERT_TRUE(viewport_width.has_value());
+    ASSERT_TRUE(text_scroll_width.has_value());
+    ASSERT_TRUE(text_client_width.has_value());
+
+    const int cpp_avatar_width = webui_avatar->GetWidth();
+    EXPECT_GT(*js_width, 0.0);
+    // C++ `GetWidth()` rounds text width up via `gfx::GetStringWidth()`, so it
+    // should be >= the floating-point CSS width of `<avatar-button>` (which
+    // includes `#button`'s inline margins since `:host` is `display: flex`),
+    // within subpixel rounding tolerance.
+    constexpr double kMaxCppOverestimatePx = 2.0;
+    EXPECT_GE(static_cast<double>(cpp_avatar_width), *js_width);
+    EXPECT_LE(static_cast<double>(cpp_avatar_width) - *js_width,
+              kMaxCppOverestimatePx);
+
+    // Verify `<avatar-button>` stays within the WebView viewport and `#text` is
+    // not elided.
+    EXPECT_GE(*js_left, 0.0);
+    EXPECT_LE(*js_right, *viewport_width);
+    EXPECT_LE(*text_scroll_width, *text_client_width + 1);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+#if !BUILDFLAG(IS_CHROMEOS)
+// Verifies that in partial WebUI mode, setting and clearing an explicit label
+// on `WebUIAvatarToolbarButton` dynamically expands and shrinks
+// `WebUIToolbarWebView` to match `<avatar-button>`'s rendered width.
+// Guarded to non-ChromeOS because ChromeOS hides the avatar button on regular
+// profiles and Incognito/Guest states outrank `SetExplicitButtonState()`.
+IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTest,
+                       PartialWebUIExplicitTextResizesToolbar) {
+  if (!IsWebUIToolbarEnabled()) {
+    return;
+  }
+  ASSERT_FALSE(features::IsWebUIToolbarFullyEnabled());
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  WebUIToolbarWebView* web_view =
+      browser_view->toolbar()->GetWebUIToolbarViewForTesting();
+  ASSERT_TRUE(web_view);
+  AvatarToolbarButtonInterface* avatar_button =
+      GetAvatarToolbarButtonInterface(browser());
+  ASSERT_TRUE(avatar_button);
+
+  AvatarToolbarButtonTestAccessor avatar_accessor(browser());
+  avatar_accessor.WaitForAvatarButton();
+  ASSERT_TRUE(avatar_accessor.GetText().empty());
+
+  VerifyPartialWebUIAvatarLayout(browser());
+  const int icon_only_width = web_view->width();
+
+  // Setting an explicit label should expand both the C++ avatar width and the
+  // laid-out `WebUIToolbarWebView` width to fit the chip.
+  const std::u16string test_text = u"Extended Test User Label";
+  base::ScopedClosureRunner keep_visible =
+      avatar_button->SetExplicitButtonState(
+          test_text, /*accessibility_label=*/std::nullopt,
+          /*explicit_action=*/std::nullopt, /*should_announce=*/false);
+  ASSERT_TRUE(avatar_accessor.WaitForText(test_text));
+
+  VerifyPartialWebUIAvatarLayout(browser());
+  EXPECT_GT(web_view->width(), icon_only_width);
+
+  // Clearing the explicit label should shrink `WebUIToolbarWebView` back to its
+  // original icon-only width.
+  keep_visible.RunAndReset();
+  ASSERT_TRUE(avatar_accessor.WaitForText(std::u16string()));
+
+  VerifyPartialWebUIAvatarLayout(browser());
+  EXPECT_EQ(web_view->width(), icon_only_width);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+// Verifies across all platforms (including ChromeOS, where regular profiles
+// hide the avatar button) that an Incognito browser with a labeled avatar chip
+// reserves the full chip width in partial WebUI mode.
+IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTest,
+                       PartialWebUILabeledAvatarReservesSpace) {
+  if (!IsWebUIToolbarEnabled()) {
+    return;
+  }
+  ASSERT_FALSE(features::IsWebUIToolbarFullyEnabled());
+
+  BrowserWindowInterface* incognito_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
+  AvatarToolbarButtonTestAccessor incognito_accessor(incognito_browser);
+  ASSERT_TRUE(incognito_accessor.WaitForTextNotEqual(std::u16string()));
+
+  auto* webui_avatar = static_cast<WebUIAvatarToolbarButton*>(
+      GetAvatarToolbarButtonInterface(incognito_browser));
+  ASSERT_TRUE(webui_avatar);
+  EXPECT_GT(webui_avatar->GetWidth(),
+            GetLayoutConstant(LayoutConstant::kToolbarButtonHeight));
+
+  VerifyPartialWebUIAvatarLayout(incognito_browser);
+}
+
+// Verifies that when `AvatarToolbarButtonInterface::CanShowForProfile()` is
+// false (regular profiles on ChromeOS, or DevTools OTR profiles on other
+// platforms), `WebUIAvatarToolbarButton::GetWidth()` returns 0,
+// `WebUIToolbarWebView` reserves no avatar slot, and `<avatar-button>` is
+// omitted from the DOM.
+IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTest,
+                       PartialWebUIHiddenAvatarReservesZeroWidth) {
+  if (!IsWebUIToolbarEnabled()) {
+    return;
+  }
+  ASSERT_FALSE(features::IsWebUIToolbarFullyEnabled());
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // On ChromeOS, the fixture's regular `browser()` hides the avatar button, and
+  // an Incognito browser shows one.
+  BrowserWindowInterface* hidden_avatar_browser = browser();
+  BrowserWindowInterface* visible_avatar_browser =
+      CreateIncognitoBrowser(browser()->GetProfile());
+#else
+  // On non-ChromeOS, the fixture's regular `browser()` shows the avatar button,
+  // and a DevTools OTR browser hides it.
+  BrowserWindowInterface* visible_avatar_browser = browser();
+  Profile* devtools_profile = browser()->GetProfile()->GetOffTheRecordProfile(
+      Profile::OTRProfileID::CreateUniqueForDevTools(),
+      /*create_if_needed=*/true);
+  BrowserWindowInterface* hidden_avatar_browser =
+      CreateBrowser(devtools_profile);
+#endif
+  ASSERT_FALSE(AvatarToolbarButtonInterface::CanShowForProfile(
+      hidden_avatar_browser->GetProfile()));
+  ASSERT_TRUE(AvatarToolbarButtonInterface::CanShowForProfile(
+      visible_avatar_browser->GetProfile()));
+
+  AvatarToolbarButtonTestAccessor visible_accessor(visible_avatar_browser);
+  visible_accessor.WaitForAvatarButton();
+
+  auto* hidden_avatar = static_cast<WebUIAvatarToolbarButton*>(
+      GetAvatarToolbarButtonInterface(hidden_avatar_browser));
+  auto* visible_avatar = static_cast<WebUIAvatarToolbarButton*>(
+      GetAvatarToolbarButtonInterface(visible_avatar_browser));
+  ASSERT_TRUE(hidden_avatar);
+  ASSERT_TRUE(visible_avatar);
+  EXPECT_EQ(hidden_avatar->GetWidth(), 0);
+  EXPECT_GT(visible_avatar->GetWidth(), 0);
+
+  BrowserView* hidden_browser_view =
+      BrowserView::GetBrowserViewForBrowser(hidden_avatar_browser);
+  BrowserView* visible_browser_view =
+      BrowserView::GetBrowserViewForBrowser(visible_avatar_browser);
+  WebUIToolbarWebView* hidden_web_view =
+      hidden_browser_view->toolbar()->GetWebUIToolbarViewForTesting();
+  WebUIToolbarWebView* visible_web_view =
+      visible_browser_view->toolbar()->GetWebUIToolbarViewForTesting();
+  ASSERT_TRUE(hidden_web_view);
+  ASSERT_TRUE(visible_web_view);
+
+  views::test::RunScheduledLayout(hidden_browser_view);
+  views::test::RunScheduledLayout(visible_browser_view);
+
+  const int width_without_avatar = hidden_web_view->GetPreferredSize().width();
+  EXPECT_EQ(hidden_web_view->width(), width_without_avatar);
+
+  // `visible_web_view` has the exact same non-avatar WebUI buttons enabled as
+  // `hidden_web_view`, plus `visible_avatar->GetWidth()` (and one inter-button
+  // `kToolbarIconDefaultMargin` gap if `hidden_web_view` already had at least
+  // one other WebUI button).
+  const int gap = GetLayoutConstant(LayoutConstant::kToolbarIconDefaultMargin);
+  const int expected_avatar_contribution =
+      visible_avatar->GetWidth() + (width_without_avatar > 0 ? gap : 0);
+  EXPECT_EQ(visible_web_view->GetPreferredSize().width() - width_without_avatar,
+            expected_avatar_contribution);
+
+  // Confirm `<toolbar-app>` does not stamp `<avatar-button>` in DOM when
+  // `!CanShowForProfile()`.
+  ASSERT_TRUE(content::WaitForLoadStop(hidden_web_view->web_contents()));
+  EXPECT_EQ(true, content::EvalJs(hidden_web_view->web_contents(), R"(
+        (async () => {
+          await customElements.whenDefined('toolbar-app');
+          const app = document.querySelector('toolbar-app');
+          if (!app || !app.shadowRoot) {
+            return false;
+          }
+          await app.updateComplete;
+          return app.shadowRoot.querySelector('#avatar') === null;
+        })()
+      )"));
+}
 
 IN_PROC_BROWSER_TEST_P(AvatarToolbarButtonBrowserTest, IncognitoWindowCount) {
   Profile* profile = browser()->GetProfile();

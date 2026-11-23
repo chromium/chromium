@@ -84,6 +84,16 @@ class WebUIAvatarToolbarButton : public AvatarToolbarButtonInterface {
   // icon can be updated.
   void OnControlsAppearInactiveChanged();
 
+  // Returns the horizontal width in DIPs to reserve for `<avatar-button>` in
+  // the toolbar (including expanded inline margins when labeled), or 0 if the
+  // avatar button is disabled or hidden for the current profile.
+  //
+  // Label text width is measured via `gfx::GetStringWidth()`, which rounds up
+  // to the nearest integer DIP, so when a label is shown the returned width is
+  // an approximation that may be slightly larger than `<avatar-button>`'s
+  // rendered floating-point CSS width.
+  int GetWidth() const;
+
  private:
   // Used by tests to access the private state_manager_ for verification and
   // fallback queries when the button is hidden.
