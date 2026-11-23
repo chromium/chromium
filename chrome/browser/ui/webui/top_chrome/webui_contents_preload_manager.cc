@@ -706,12 +706,10 @@ void WebUIContentsPreloadManager::OnWebContentsPrimaryPageChanged(
     static crash_reporter::CrashKeyString<1024> visible_url(
         "webui-preload-visible-url");
     visible_url.Set(web_contents->GetVisibleURL().possibly_invalid_spec());
-    static crash_reporter::CrashKeyString<1024> site_instance_url(
-        "webui-preload-site-instance-url");
-    site_instance_url.Set(web_contents->GetSiteInstance()
-                              ->GetSecurityPrincipal()
-                              .GetDeprecatedSiteURL()
-                              .possibly_invalid_spec());
+    static crash_reporter::CrashKeyString<1024> site_instance_host(
+        "webui-preload-site-instance-host");
+    site_instance_host.Set(
+        web_contents->GetSiteInstance()->GetSecurityPrincipal().GetHost());
 
     const bool should_auto_reisze_host =
         TopChromeWebUIConfig::From(webui::GetUserProfile(web_contents),
