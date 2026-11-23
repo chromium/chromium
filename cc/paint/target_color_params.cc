@@ -18,6 +18,7 @@ size_t TargetColorParams::GetHash() const {
     const uint32_t* i = reinterpret_cast<const uint32_t*>(&f);
     hash = base::HashInts(hash, *i);
   }
+  hash = base::HashInts(hash, preserve_image_precision);
   return hash;
 }
 
@@ -30,6 +31,7 @@ std::string TargetColorParams::ToString() const {
   } else {
     str << "(deferred)";
   }
+  str << "preserve_image_precision: " << preserve_image_precision;
   return str.str();
 }
 

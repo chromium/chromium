@@ -2403,6 +2403,126 @@ TEST_F(SoftwareImageDecodeCacheTest, HdrDecodeToHdr) {
   cache_.DrawWithImageFinished(draw_image, decoded_image);
 }
 
+TEST_F(SoftwareImageDecodeCacheTest, PreserveImagePrecision) {
+  // Create a high bit depth image and a low bit depth image, both with sRGB
+  // content.
+  auto size = SkISize::Make(100, 100);
+  auto create_image = [&](SkColorType color_type) {
+    auto info =
+        SkImageInfo::Make(size.width(), size.height(), color_type,
+                          kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
+    SkBitmap bitmap;
+    bitmap.allocPixels(info);
+    return PaintImageBuilder::WithDefault()
+        .set_id(PaintImage::kInvalidId)
+        .set_image(SkImages::RasterFromBitmap(bitmap),
+                   PaintImage::GetNextContentId())
+        .TakePaintImage();
+  };
+  PaintImage f16_image = create_image(kRGBA_F16_SkColorType);
+  PaintImage n32_image = create_image(kN32_SkColorType);
+
+  TargetColorParams reduce_params(gfx::ColorSpace::CreateDisplayP3D65());
+  TargetColorParams preserve_params = reduce_params;
+  preserve_params.preserve_image_precision = true;
+
+  auto create_draw_image = [&](const PaintImage& image,
+                               const TargetColorParams& params) {
+    return DrawImage(image, false,
+                     SkIRect::MakeWH(image.width(), image.height()),
+                     PaintFlags::FilterQuality::kMedium,
+                     CreateMatrix(SkSize::Make(0.5, 0.5), true),
+                     PaintImage::kDefaultFrameIndex, params);
+  };
+  auto get_decoded_color_type = [&](SoftwareImageDecodeCache& cache,
+                                    const DrawImage& draw_image) {
+    DecodedDrawImage decoded_image = cache.GetDecodedImageForDraw(draw_image);
+    SkColorType color_type = decoded_image.image()->colorType();
+    cache.DrawWithImageFinished(draw_image, decoded_image);
+    return color_type;
+  };
+
+  DrawImage f16_reduce = create_draw_image(f16_image, reduce_params);
+  DrawImage f16_preserve = create_draw_image(f16_image, preserve_params);
+  DrawImage n32_reduce = create_draw_image(n32_image, reduce_params);
+  DrawImage n32_preserve = create_draw_image(n32_image, preserve_params);
+
+  // The precision is part of the cache key, so that the same cache may store
+  // the same image with different SkColorTypes.
+  EXPECT_NE(SoftwareImageDecodeCache::CacheKey::FromDrawImage(f16_reduce,
+                                                              kN32_SkColorType),
+            SoftwareImageDecodeCache::CacheKey::FromDrawImage(
+                f16_preserve, kN32_SkColorType));
+
+  // The cache used by the test fixture specifies N32. High bit depth images
+  // are reduced to N32 unless the target requests that precision be preserved.
+  EXPECT_EQ(get_decoded_color_type(cache_, f16_reduce), kN32_SkColorType);
+  EXPECT_EQ(get_decoded_color_type(cache_, f16_preserve),
+            kRGBA_F16_SkColorType);
+  EXPECT_EQ(get_decoded_color_type(cache_, n32_reduce), kN32_SkColorType);
+  EXPECT_EQ(get_decoded_color_type(cache_, n32_preserve), kN32_SkColorType);
+
+  // A cache that specifies 4444 will reduce all images to 4444 unless the
+  // target requests that precision be preserved.
+  SoftwareImageDecodeCache cache_4444(kARGB_4444_SkColorType,
+                                      kLockedMemoryLimitBytes);
+  EXPECT_EQ(get_decoded_color_type(cache_4444, f16_reduce),
+            kARGB_4444_SkColorType);
+  EXPECT_EQ(get_decoded_color_type(cache_4444, f16_preserve),
+            kRGBA_F16_SkColorType);
+  EXPECT_EQ(get_decoded_color_type(cache_4444, n32_reduce),
+            kARGB_4444_SkColorType);
+  EXPECT_EQ(get_decoded_color_type(cache_4444, n32_preserve), kN32_SkColorType);
+}
+
+TEST_F(SoftwareImageDecodeCacheTest,
+       PreserveImagePrecisionDoesNotUseReducedCandidate) {
+  // Create a high bit depth sRGB image, with a pixel value that cannot be
+  // represented at low bit depth.
+  auto info = SkImageInfo::Make(100, 100, kRGBA_F16_SkColorType,
+                                kPremul_SkAlphaType, SkColorSpace::MakeSRGB());
+  SkBitmap bitmap;
+  bitmap.allocPixels(info);
+  bitmap.eraseColor(SkColor4f{2.f, 0.f, 0.f, 1.f});
+  PaintImage image = PaintImageBuilder::WithDefault()
+                         .set_id(PaintImage::kInvalidId)
+                         .set_image(SkImages::RasterFromBitmap(bitmap),
+                                    PaintImage::GetNextContentId())
+                         .TakePaintImage();
+
+  TargetColorParams reduce_params(gfx::ColorSpace::CreateDisplayP3D65());
+  TargetColorParams preserve_params = reduce_params;
+  preserve_params.preserve_image_precision = true;
+
+  auto create_draw_image = [&](float scale, const TargetColorParams& params) {
+    return DrawImage(image, false,
+                     SkIRect::MakeWH(image.width(), image.height()),
+                     PaintFlags::FilterQuality::kMedium,
+                     CreateMatrix(SkSize::Make(scale, scale), true),
+                     PaintImage::kDefaultFrameIndex, params);
+  };
+
+  // Decode the image at reduced precision, and keep the decode locked, so
+  // that it is available to be scaled to create other decodes.
+  DrawImage reduce_draw_image = create_draw_image(0.5f, reduce_params);
+  DecodedDrawImage reduce_decoded_image =
+      cache_.GetDecodedImageForDraw(reduce_draw_image);
+  EXPECT_EQ(reduce_decoded_image.image()->colorType(), kN32_SkColorType);
+
+  // Decode the image at a smaller scale, with its precision preserved. This
+  // should not be created by scaling the reduced precision decode.
+  DrawImage preserve_draw_image = create_draw_image(0.25f, preserve_params);
+  DecodedDrawImage preserve_decoded_image =
+      cache_.GetDecodedImageForDraw(preserve_draw_image);
+  EXPECT_EQ(preserve_decoded_image.image()->colorType(), kRGBA_F16_SkColorType);
+  SkPixmap pixmap;
+  ASSERT_TRUE(preserve_decoded_image.image()->peekPixels(&pixmap));
+  EXPECT_GT(pixmap.getColor4f(0, 0).fR, 1.f);
+
+  cache_.DrawWithImageFinished(reduce_draw_image, reduce_decoded_image);
+  cache_.DrawWithImageFinished(preserve_draw_image, preserve_decoded_image);
+}
+
 TEST_F(SoftwareImageDecodeCacheTest, HdrDecodeToSdr) {
   auto image_color_space = gfx::ColorSpace::CreateHDR10();
   auto size = SkISize::Make(100, 100);

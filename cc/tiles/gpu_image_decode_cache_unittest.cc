@@ -1447,6 +1447,125 @@ TEST_P(GpuImageDecodeCacheTest, GetHdrDecodedImageForDrawToHdr) {
   cache->UnrefImage(draw_image);
 }
 
+TEST_P(GpuImageDecodeCacheTest, PreserveImagePrecision) {
+  auto cache = CreateCache();
+  const uint32_t client_id = cache->GenerateClientId();
+
+  // Create a high bit depth image and a low bit depth image, both with sRGB
+  // content.
+  PaintImage f16_image = CreateDiscardablePaintImage(
+      GetNormalImageSize(), SkColorSpace::MakeSRGB(),
+      /*allocate_encoded_memory=*/true, PaintImage::kInvalidId,
+      kRGBA_F16_SkColorType);
+  PaintImage n32_image = CreateDiscardablePaintImage(
+      GetNormalImageSize(), SkColorSpace::MakeSRGB(),
+      /*allocate_encoded_memory=*/true, PaintImage::kInvalidId,
+      kN32_SkColorType);
+
+  auto create_draw_image = [&](const PaintImage& image,
+                               bool preserve_image_precision) {
+    TargetColorParams target_color_params = DefaultTargetColorParams();
+    target_color_params.preserve_image_precision = preserve_image_precision;
+    return DrawImage(image, false,
+                     SkIRect::MakeWH(image.width(), image.height()),
+                     PaintFlags::FilterQuality::kMedium,
+                     CreateMatrix(SkSize::Make(1.f, 1.f)),
+                     PaintImage::kDefaultFrameIndex, target_color_params);
+  };
+  DrawImage f16_reduce =
+      create_draw_image(f16_image, /*preserve_image_precision=*/false);
+  DrawImage f16_preserve =
+      create_draw_image(f16_image, /*preserve_image_precision=*/true);
+  DrawImage n32_reduce =
+      create_draw_image(n32_image, /*preserve_image_precision=*/false);
+  DrawImage n32_preserve =
+      create_draw_image(n32_image, /*preserve_image_precision=*/true);
+
+  // Images are stored using the cache's SkColorType, unless the target
+  // requests that precision be preserved. In that case, images are not stored
+  // at a lower precision than the SkColorType that most naturally represents
+  // them. Images are never stored at a higher precision than the SkColorType
+  // that most naturally represents them.
+  const size_t pixel_count = GetNormalImageSize().GetArea();
+  const size_t cache_bpp = SkColorTypeBytesPerPixel(color_type_);
+  const size_t n32_bpp = SkColorTypeBytesPerPixel(kN32_SkColorType);
+  const size_t f16_bpp = SkColorTypeBytesPerPixel(kRGBA_F16_SkColorType);
+  EXPECT_EQ(cache->GetDrawImageSizeForTesting(f16_reduce),
+            pixel_count * cache_bpp);
+  EXPECT_EQ(cache->GetDrawImageSizeForTesting(n32_reduce),
+            pixel_count * std::min(cache_bpp, n32_bpp));
+  EXPECT_EQ(cache->GetDrawImageSizeForTesting(f16_preserve),
+            pixel_count * f16_bpp);
+  EXPECT_EQ(cache->GetDrawImageSizeForTesting(n32_preserve),
+            pixel_count * n32_bpp);
+
+  // The rest of this test requires that the high bit depth image be stored
+  // differently when reduced and when preserved.
+  if (color_type_ == kRGBA_F16_SkColorType) {
+    return;
+  }
+
+  // Decode the high bit depth image at reduced precision.
+  ImageDecodeCache::TaskResult reduce_result = cache->GetTaskForImageAndRef(
+      client_id, f16_reduce, ImageDecodeCache::TracingInfo());
+  EXPECT_TRUE(reduce_result.need_unref);
+  ASSERT_TRUE(reduce_result.task);
+  TestTileTaskRunner::ProcessTask(reduce_result.task->dependencies()[0].get());
+  TestTileTaskRunner::ProcessTask(reduce_result.task.get());
+
+  // The reduced precision decode is not used when precision is to be
+  // preserved.
+  ImageDecodeCache::TaskResult preserve_result = cache->GetTaskForImageAndRef(
+      client_id, f16_preserve, ImageDecodeCache::TracingInfo());
+  EXPECT_TRUE(preserve_result.need_unref);
+  ASSERT_TRUE(preserve_result.task);
+  EXPECT_NE(reduce_result.task.get(), preserve_result.task.get());
+  TestTileTaskRunner::ProcessTask(
+      preserve_result.task->dependencies()[0].get());
+  TestTileTaskRunner::ProcessTask(preserve_result.task.get());
+
+  // Both decodes are in use, and are re-used for subsequent requests.
+  ImageDecodeCache::TaskResult reduce_result_again =
+      cache->GetTaskForImageAndRef(client_id, f16_reduce,
+                                   ImageDecodeCache::TracingInfo());
+  EXPECT_TRUE(reduce_result_again.need_unref);
+  EXPECT_FALSE(reduce_result_again.task);
+  ImageDecodeCache::TaskResult preserve_result_again =
+      cache->GetTaskForImageAndRef(client_id, f16_preserve,
+                                   ImageDecodeCache::TracingInfo());
+  EXPECT_TRUE(preserve_result_again.need_unref);
+  EXPECT_FALSE(preserve_result_again.task);
+
+  cache->UnrefImage(f16_reduce);
+  cache->UnrefImage(f16_reduce);
+  cache->UnrefImage(f16_preserve);
+  cache->UnrefImage(f16_preserve);
+
+  // In a new cache, decode the high bit depth image with its precision
+  // preserved.
+  auto other_cache = CreateCache();
+  const uint32_t other_client_id = other_cache->GenerateClientId();
+  ImageDecodeCache::TaskResult other_preserve_result =
+      other_cache->GetTaskForImageAndRef(other_client_id, f16_preserve,
+                                         ImageDecodeCache::TracingInfo());
+  EXPECT_TRUE(other_preserve_result.need_unref);
+  ASSERT_TRUE(other_preserve_result.task);
+  TestTileTaskRunner::ProcessTask(
+      other_preserve_result.task->dependencies()[0].get());
+  TestTileTaskRunner::ProcessTask(other_preserve_result.task.get());
+
+  // The decode that preserved precision is used when precision does not need
+  // to be preserved.
+  ImageDecodeCache::TaskResult other_reduce_result =
+      other_cache->GetTaskForImageAndRef(other_client_id, f16_reduce,
+                                         ImageDecodeCache::TracingInfo());
+  EXPECT_TRUE(other_reduce_result.need_unref);
+  EXPECT_FALSE(other_reduce_result.task);
+
+  other_cache->UnrefImage(f16_preserve);
+  other_cache->UnrefImage(f16_reduce);
+}
+
 TEST_P(GpuImageDecodeCacheTest, GetHdrDecodedImageForDrawToSdr) {
   auto cache = CreateCache();
   const uint32_t client_id = cache->GenerateClientId();

@@ -30,6 +30,7 @@
 #include "base/trace_event/memory_dump_provider.h"
 #include "cc/cc_export.h"
 #include "cc/paint/image_transfer_cache_entry.h"
+#include "cc/paint/target_color_params.h"
 #include "cc/tiles/image_decode_cache.h"
 
 namespace viz {
@@ -492,6 +493,7 @@ class CC_EXPORT GpuImageDecodeCache
     int upload_scale_mip_level;
     PaintFlags::FilterQuality filter_quality;
     gfx::ColorSpace target_color_space;
+    bool preserve_image_precision;
   };
   struct InUseCacheKeyHash {
     size_t operator()(const InUseCacheKey&) const;

@@ -31,9 +31,18 @@ struct CC_PAINT_EXPORT TargetColorParams {
   float GetHdrHeadroom() const { return hdr_headroom.value_or(0); }
   std::optional<float> hdr_headroom;
 
+  // If false, then an ImageDecodeCache will store the images that it decodes
+  // for this target using the SkColorType that the cache was constructed with,
+  // even if that reduces the precision of the image. If true, then it will not
+  // store an image at a lower precision than the SkColorType that most
+  // naturally represents it (e.g, high bit depth images will be stored as
+  // kRGBA_F16_SkColorType).
+  bool preserve_image_precision = false;
+
   bool operator==(const TargetColorParams& other) const {
     return color_space == other.color_space &&
-           hdr_headroom == other.hdr_headroom;
+           hdr_headroom == other.hdr_headroom &&
+           preserve_image_precision == other.preserve_image_precision;
   }
   bool operator!=(const TargetColorParams& other) const {
     return !(*this == other);

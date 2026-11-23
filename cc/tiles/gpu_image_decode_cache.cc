@@ -359,14 +359,17 @@ GpuImageDecodeCache::InUseCacheKey::InUseCacheKey(const DrawImage& draw_image,
     : frame_key(draw_image.frame_key()),
       upload_scale_mip_level(mip_level),
       filter_quality(CalculateDesiredFilterQuality(draw_image)),
-      target_color_space(draw_image.target_color_space()) {}
+      target_color_space(draw_image.target_color_space()),
+      preserve_image_precision(
+          draw_image.target_color_params().preserve_image_precision) {}
 
 bool GpuImageDecodeCache::InUseCacheKey::operator==(
     const InUseCacheKey& other) const {
   return frame_key == other.frame_key &&
          upload_scale_mip_level == other.upload_scale_mip_level &&
          filter_quality == other.filter_quality &&
-         target_color_space == other.target_color_space;
+         target_color_space == other.target_color_space &&
+         preserve_image_precision == other.preserve_image_precision;
 }
 
 size_t GpuImageDecodeCache::InUseCacheKeyHash::operator()(
@@ -2436,20 +2439,42 @@ std::tuple<SkImageInfo, int> GpuImageDecodeCache::CreateImageInfoForDrawImage(
   // decode into. Default to using the cache's color type.
   SkColorType color_type = color_type_;
 
+  // Do not reduce the precision of the image if the target requests that
+  // precision be preserved, or if reducing the precision of the image would be
+  // destructive.
+  bool preserve_precision =
+      draw_image.target_color_params().preserve_image_precision ||
+      draw_image.paint_image().DecodeCacheColorConversionIsDestructive();
+
   // The PaintImage will identify that its content is high bit depth by setting
   // its SkColorType to kRGBA_F16_SkColorType. Always decode high bit depth WCG
   // and HDR content as high bit depth, to avoid quantization artifacts.
   // https://crbug.com/1363056: See effects of tone mapping applied to dithered
   // low bit depth images.
-  // https://crbug.com/1266456: Do not attempt to decode non high bit depth
-  // images as high bit depth or they might not appear.
   // https://crbug.com/1076568: See historical discussions.
   const auto image_color_type =
       draw_image.paint_image().GetSkImageInfo(aux_image).colorType();
   if (image_color_type == kRGBA_F16_SkColorType &&
       draw_image.paint_image().GetContentColorUsage() !=
           gfx::ContentColorUsage::kSRGB) {
-    color_type = kRGBA_F16_SkColorType;
+    preserve_precision = true;
+  }
+
+  // The color type that most naturally represents the image.
+  const SkColorType natural_color_type =
+      image_color_type == kRGBA_F16_SkColorType ? kRGBA_F16_SkColorType
+                                                : kN32_SkColorType;
+  const int natural_bpp = SkColorTypeBytesPerPixel(natural_color_type);
+  const int cache_bpp = SkColorTypeBytesPerPixel(color_type_);
+
+  // Never store the image at a higher precision than its natural color type.
+  // https://crbug.com/1266456: Do not attempt to decode non high bit depth
+  // images as high bit depth or they might not appear.
+  // If precision is to be preserved, do not store the image at a lower
+  // precision than its natural color type.
+  if (cache_bpp > natural_bpp ||
+      (preserve_precision && cache_bpp < natural_bpp)) {
+    color_type = natural_color_type;
   }
 
   return {SkImageInfo::Make(mip_size.width(), mip_size.height(), color_type,
@@ -2570,6 +2595,18 @@ bool GpuImageDecodeCache::IsCompatible(const ImageData* image_data,
       image_data->target_color_space == draw_image.target_color_space();
   if (!color_is_compatible)
     return false;
+
+  // The image must not be stored at a lower precision than this draw would
+  // use.
+  const auto& rgba_info = image_data->GetImageInfo(AuxImage::kDefault).rgba;
+  if (rgba_info.has_value()) {
+    const SkImageInfo draw_image_info = std::get<0>(
+        CreateImageInfoForDrawImage(draw_image, AuxImage::kDefault));
+    if (SkColorTypeBytesPerPixel(rgba_info->colorType()) <
+        SkColorTypeBytesPerPixel(draw_image_info.colorType())) {
+      return false;
+    }
+  }
 
   return true;
 }
