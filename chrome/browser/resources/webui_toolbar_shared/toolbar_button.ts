@@ -157,8 +157,9 @@ export class HighlightTracker {
 //
 // A press may be determined to be long based on either press duration or
 // vertical mouse movement. If long presses are not allowed at that point, long
-// press detection stops, but the press continues to be tracked, so releasing
-// the pointer results in a short press.
+// press detection stops, but mouse presses continue to be tracked, so releasing
+// the pointer results in a short press. Touch and pen presses are not tracked
+// any further, so they never result in a short press, matching Views.
 interface ContextMenuState {
   // True as long as the pointer is down, and the interaction has not been
   // passed along as a long or short press. May remain true after the press
@@ -166,6 +167,7 @@ interface ContextMenuState {
   // `resetStalePress_()`.
   isListening: boolean;
   activePointerId: number;
+  activePointerType: string;
   activeElement: HTMLElement|null;
 
   longPressTimer: TimerHelper;
@@ -196,8 +198,8 @@ function isMouseEventOverTarget(e: MouseEvent, target: HTMLElement) {
  *
  * Consumers that can't always show a context menu should pass a `canLongPress`
  * predicate to the constructor, rather than ignoring calls to `onLongPress`, so
- * that holding or dragging the pointer still results in a short press on
- * release when a menu can't be shown.
+ * that holding or dragging the mouse still results in a short press on release
+ * when a menu can't be shown.
  *
  * Safe usage of this class requires the caller to route all relevant pointer
  * events (pointerdown, pointerup, pointercancel) and the contextmenu event
@@ -244,6 +246,7 @@ export class PressHandler {
   private contextMenuState_: ContextMenuState = {
     isListening: false,
     activePointerId: PressHandler.NO_ACTIVE_POINTER_ID,
+    activePointerType: '',
     activeElement: null,
     longPressTimer: new TimerHelper(),
     initialY: 0,
@@ -254,9 +257,10 @@ export class PressHandler {
   private expectPointerCapture_: boolean = true;
 
   // `canLongPress` is queried whenever a long press would otherwise be
-  // triggered. If it returns false, `onLongPress` is not called. Long presses
-  // detected from a held or dragged pointer are then treated as short presses
-  // if the pointer is released over the button.
+  // triggered. If it returns false, `onLongPress` is not called. Mouse presses
+  // held or dragged long enough to be long presses are then treated as short
+  // presses if the pointer is released over the button, while touch and pen
+  // presses are ignored, matching Views.
   constructor(
       onLongPress: (source: MenuSourceType) => void,
       onShortPress: (e: PointerEvent) => void,
@@ -279,8 +283,10 @@ export class PressHandler {
 
   // Called when the tracked press is held or dragged long enough to become a
   // long press. If long presses are allowed, stops tracking the press and
-  // invokes `onLongPress_`. Otherwise, stops long press detection, but keeps
-  // tracking the press, so it will be treated as a short press on release.
+  // invokes `onLongPress_`. Otherwise, for touch and pen presses, stops
+  // tracking the press, so it will be ignored on release, matching Views. For
+  // other presses, stops long press detection, but keeps tracking the press,
+  // so it will be treated as a short press on release.
   private onLongPressDetected_(source: MenuSourceType) {
     assert(this.contextMenuState_.isListening);
     this.resetStalePress_();
@@ -291,6 +297,12 @@ export class PressHandler {
       // Have to release capture so that a short press will not be triggered.
       this.resetContextMenuState_();
       this.onLongPress_(source);
+      return;
+    }
+    const pointerType = this.contextMenuState_.activePointerType;
+    if (pointerType === 'touch' || pointerType === 'pen') {
+      // Releasing capture means the press will be ignored on release.
+      this.resetContextMenuState_();
       return;
     }
     this.contextMenuState_.longPressTimer.clearTimeout();
@@ -388,6 +400,7 @@ export class PressHandler {
     // element (like an icon).
     this.contextMenuState_.activeElement = target;
     this.contextMenuState_.activePointerId = e.pointerId;
+    this.contextMenuState_.activePointerType = e.pointerType;
 
     this.contextMenuState_.longPressTimer.setTimeout(() => {
       this.onLongPressDetected_(MenuSourceType.kLongPress);

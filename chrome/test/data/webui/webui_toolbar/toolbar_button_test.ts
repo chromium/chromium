@@ -229,11 +229,12 @@ suite('ToolbarButtonTest', function() {
   function dispatchPointerEvent(
       handler: PressHandler, eventType: 'pointerdown'|'pointerup',
       target: HTMLElement, pointerId: number, ctrlKey: boolean = false,
-      clientY: number = TARGET_MIDDLE) {
+      clientY: number = TARGET_MIDDLE, pointerType: string = '') {
     const event = new PointerEvent(eventType, {
       bubbles: true,
       cancelable: true,
       pointerId,
+      pointerType,
       button: 0,
       ctrlKey,
       clientX: TARGET_MIDDLE,
@@ -556,6 +557,67 @@ suite('ToolbarButtonTest', function() {
       assertEquals(1, shortPressCount);
       assertEquals(0, longPressCount);
     });
+
+    // Matching Views, touch and pen presses that are held long enough to be
+    // long presses should never result in short presses, even if long presses
+    // aren't allowed.
+    for (const pointerType of ['touch', 'pen']) {
+      test(`TimerNotAllowed_${pointerType}`, function() {
+        canLongPress = false;
+        dispatchPointerEvent(
+            handler, 'pointerdown', target, 1, /*ctrlKey=*/ false,
+            TARGET_MIDDLE, pointerType);
+        mockTimer.tick(LONG_PRESS_MS);
+        dispatchPointerEvent(
+            handler, 'pointerup', target, 1, /*ctrlKey=*/ false, TARGET_MIDDLE,
+            pointerType);
+        assertEquals(0, shortPressCount);
+        assertEquals(0, longPressCount);
+
+        // Subsequent presses should work normally.
+        simulateClick();
+        assertEquals(1, shortPressCount);
+      });
+
+      test(`DragNotAllowed_${pointerType}`, function() {
+        canLongPress = false;
+        dispatchPointerEvent(
+            handler, 'pointerdown', target, 1, /*ctrlKey=*/ false,
+            TARGET_MIDDLE, pointerType);
+        dragDown();
+        dispatchPointerEvent(
+            handler, 'pointerup', target, 1, /*ctrlKey=*/ false, TARGET_MIDDLE,
+            pointerType);
+        assertEquals(0, shortPressCount);
+        assertEquals(0, longPressCount);
+      });
+
+      test(`TimerAllowed_${pointerType}`, function() {
+        dispatchPointerEvent(
+            handler, 'pointerdown', target, 1, /*ctrlKey=*/ false,
+            TARGET_MIDDLE, pointerType);
+        mockTimer.tick(LONG_PRESS_MS);
+        assertEquals(1, longPressCount);
+        dispatchPointerEvent(
+            handler, 'pointerup', target, 1, /*ctrlKey=*/ false, TARGET_MIDDLE,
+            pointerType);
+        assertEquals(0, shortPressCount);
+      });
+
+      // Short touch and pen presses should still work.
+      test(`ShortPress_${pointerType}`, function() {
+        canLongPress = false;
+        dispatchPointerEvent(
+            handler, 'pointerdown', target, 1, /*ctrlKey=*/ false,
+            TARGET_MIDDLE, pointerType);
+        mockTimer.tick(LONG_PRESS_MS - 1);
+        dispatchPointerEvent(
+            handler, 'pointerup', target, 1, /*ctrlKey=*/ false, TARGET_MIDDLE,
+            pointerType);
+        assertEquals(1, shortPressCount);
+        assertEquals(0, longPressCount);
+      });
+    }
 
     test('ContextmenuAllowed', function() {
       const contextMenuEvent = new PointerEvent('contextmenu', {
