@@ -1,5 +1,4 @@
-Tests that DOM Mutation Observers do not attempt to deliver mutation records while the debugger is paused.Bug 105810
-
+Tests that DOM Mutation Observers do not attempt to deliver mutation records while the debugger is paused.
 DIV and observer setup.
 deliveryCount = 0
 setAttribute should have triggered delivery.
