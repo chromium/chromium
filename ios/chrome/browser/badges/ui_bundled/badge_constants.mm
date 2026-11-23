@@ -13,7 +13,7 @@ NSString* const kBadgeButtonSavePasswordAcceptedAccessibilityIdentifier =
 NSString* const kBadgeButtonUpdatePasswordAccessibilityIdentifier =
     @"badgeButtonUpdatePasswordAXID";
 
-NSString* const kBadgeButtonUpdatePasswordAccpetedAccessibilityIdentifier =
+NSString* const kBadgeButtonUpdatePasswordAcceptedAccessibilityIdentifier =
     @"badgeButtonUpdatePasswordAcceptedAXID";
 
 NSString* const kBadgeButtonIncognitoAccessibilityIdentifier =

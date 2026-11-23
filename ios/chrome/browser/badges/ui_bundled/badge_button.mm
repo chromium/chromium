@@ -103,7 +103,7 @@ const CGFloat kButtonCircularCornerRadiusDivisor = 2.0;
                       : kBadgeButtonSavePasswordAccessibilityIdentifier;
     case kBadgeTypePasswordUpdate:
       return accepted
-                 ? kBadgeButtonUpdatePasswordAccpetedAccessibilityIdentifier
+                 ? kBadgeButtonUpdatePasswordAcceptedAccessibilityIdentifier
                  : kBadgeButtonUpdatePasswordAccessibilityIdentifier;
     case kBadgeTypeIncognito:
       return kBadgeButtonIncognitoAccessibilityIdentifier;
