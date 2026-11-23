@@ -108,8 +108,12 @@ SimplifiedLayoutAlgorithm::SimplifiedLayoutAlgorithm(
     if (physical_fragment.IsFieldsetContainer())
       container_builder_.SetIsFieldsetContainer();
 
-    if (physical_fragment.IsMathMLFraction())
+    if (physical_fragment.IsMathMLFraction()) {
       container_builder_.SetIsMathMLFraction();
+    } else if (physical_fragment.HasExtraMathMLPainting()) {
+      container_builder_.SetMathMLPaintInfo(
+          &physical_fragment.GetMathMLPaintInfo());
+    }
 
     container_builder_.SetCustomLayoutData(result.CustomLayoutData());
   }
