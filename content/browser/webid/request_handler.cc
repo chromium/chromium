@@ -1466,14 +1466,27 @@ void RequestHandler::OnDialogDismissed(
     return;
   }
 
-  // Clicking the close active and swiping away the account chooser are more
-  // intentional than other ways of dismissing the account chooser such as
-  // the virtual keyboard showing on Android.
-  bool should_embargo =
+  const bool is_passive_scrim_tap =
+      dismiss_reason ==
+          IdentityRequestDialogController::DismissReason::kTapScrim &&
+      !CanBypassPermissionStatusCheck(req_->rp_mode(),
+                                      req_->mediation_requirement());
+  // Clicking the close button and swiping away the account chooser are more
+  // intentional than other ways of dismissing the account chooser such as the
+  // virtual keyboard showing on Android. For passive requests (excluding
+  // conditional mediation, which opens the active mode sheet directly),
+  // `kTapScrim` only occurs on Android after switching from the passive mode
+  // sheet to the active mode sheet with `kFedCmIdpLinks` enabled. `content/`
+  // cannot check that UI feature flag directly and relies on passive requests
+  // only receiving `kTapScrim` after that switch, where tapping the scrim is
+  // also an intentional dismissal.
+  const bool should_record_cancel_time =
       dismiss_reason ==
           IdentityRequestDialogController::DismissReason::kCloseButton ||
-      dismiss_reason == IdentityRequestDialogController::DismissReason::kSwipe;
-  if (should_embargo) {
+      dismiss_reason ==
+          IdentityRequestDialogController::DismissReason::kSwipe ||
+      is_passive_scrim_tap;
+  if (should_record_cancel_time) {
     base::TimeTicks dismiss_dialog_time = base::TimeTicks::Now();
     fedcm_metrics_->RecordCancelOnDialogTime(
         idp_data_for_display_,
@@ -1481,7 +1494,9 @@ void RequestHandler::OnDialogDismissed(
   }
   fedcm_metrics_->RecordCancelReason(dismiss_reason);
 
-  should_embargo &= req_->rp_mode() == RpMode::kPassive && !IsUsingAmbient();
+  const bool should_embargo = should_record_cancel_time &&
+                              req_->rp_mode() == RpMode::kPassive &&
+                              !IsUsingAmbient();
   if (should_embargo) {
     api_permission_delegate()->RecordDismissAndEmbargo(GetEmbeddingOrigin());
   }

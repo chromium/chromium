@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/survey_config.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -688,6 +689,90 @@ TEST_F(IdentityDialogControllerTest,
         IdentityDialogController::DismissReason::kCloseButton);
   }
   CheckForSampleAndReset(IdentityDialogController::UserAction::kClosed);
+
+  {
+    // User taps the scrim in passive mode with `kFedCmIdpLinks` enabled (after
+    // switching to the active mode sheet on Android).
+    base::test::ScopedFeatureList idp_links_feature_list;
+    idp_links_feature_list.InitAndEnableFeature(features::kFedCmIdpLinks);
+
+    base::RunLoop run_loop;
+    auto controller = std::make_unique<IdentityDialogController>(
+        web_contents(),
+        CreateMockSegmentationPlatformService("FedCmUserLoud", run_loop),
+        CreateMockOptimizationGuideDecider());
+
+    auto mock_view = std::make_unique<MockAccountSelectionView>();
+    EXPECT_CALL(*mock_view, Show).WillOnce(Return(true));
+    controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+
+    EXPECT_CALL(*segmentation_platform_service_,
+                CollectTrainingData(_, _, _, _, _))
+        .Times(1);
+
+    controller->GetPassiveDialogVolume(base::DoNothing());
+    run_loop.Run();
+    std::vector<IdentityRequestAccountPtr> accounts = CreateAccount();
+    accounts[0]->idp_claimed_login_state =
+        content::IdentityRequestAccount::LoginState::kSignUp;
+    accounts[0]->fields = kDefaultPermissions;
+    ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive,
+                       accounts);
+
+    controller->OnDismiss(IdentityDialogController::DismissReason::kTapScrim);
+  }
+  CheckForSampleAndReset(IdentityDialogController::UserAction::kClosed);
+
+  {
+    // Without `kFedCmIdpLinks`, passive `kTapScrim` is treated as ignored.
+    base::RunLoop run_loop;
+    auto controller = std::make_unique<IdentityDialogController>(
+        web_contents(),
+        CreateMockSegmentationPlatformService("FedCmUserLoud", run_loop),
+        CreateMockOptimizationGuideDecider());
+
+    auto mock_view = std::make_unique<MockAccountSelectionView>();
+    EXPECT_CALL(*mock_view, Show).WillOnce(Return(true));
+    controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+
+    EXPECT_CALL(*segmentation_platform_service_,
+                CollectTrainingData(_, _, _, _, _))
+        .Times(1);
+
+    controller->GetPassiveDialogVolume(base::DoNothing());
+    run_loop.Run();
+    ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
+
+    controller->OnDismiss(IdentityDialogController::DismissReason::kTapScrim);
+  }
+  CheckForSampleAndReset(IdentityDialogController::UserAction::kIgnored);
+
+  {
+    // In active mode, tapping the scrim is treated as ignored even with
+    // `kFedCmIdpLinks` enabled.
+    base::test::ScopedFeatureList idp_links_feature_list;
+    idp_links_feature_list.InitAndEnableFeature(features::kFedCmIdpLinks);
+
+    base::RunLoop run_loop;
+    auto controller = std::make_unique<IdentityDialogController>(
+        web_contents(),
+        CreateMockSegmentationPlatformService("FedCmUserLoud", run_loop),
+        CreateMockOptimizationGuideDecider());
+
+    auto mock_view = std::make_unique<MockAccountSelectionView>();
+    EXPECT_CALL(*mock_view, Show).WillOnce(Return(true));
+    controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+
+    EXPECT_CALL(*segmentation_platform_service_,
+                CollectTrainingData(_, _, _, _, _))
+        .Times(1);
+
+    run_loop.Run();
+    ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kActive);
+
+    controller->OnDismiss(IdentityDialogController::DismissReason::kTapScrim);
+  }
+  CheckForSampleAndReset(IdentityDialogController::UserAction::kIgnored);
 
   {
     // User ignores the UI.
@@ -1792,6 +1877,83 @@ TEST_F(IdentityDialogControllerTest,
 
   EXPECT_CALL(*mock_hats_service, LaunchDelayedSurveyForWebContents).Times(0);
   controller->OnDismiss(IdentityDialogController::DismissReason::kOther);
+}
+
+// Tests that with `kFedCmIdpLinks` enabled, tapping the scrim in passive mode
+// (after switching to the active mode sheet on Android) launches the dismissed
+// HaTS survey.
+TEST_F(IdentityDialogControllerTest,
+       PersonalizationAndTrustSurvey_Dismiss_TapScrim) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kFedCmIdpLinks);
+
+  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating(&BuildMockHatsService)));
+
+  auto controller = std::make_unique<IdentityDialogController>(web_contents());
+  auto mock_view = std::make_unique<NiceMock<MockAccountSelectionView>>();
+  ON_CALL(*mock_view, Show).WillByDefault(Return(true));
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+  std::vector<IdentityRequestAccountPtr> accounts = CreateAccount();
+  accounts[0]->idp_claimed_login_state =
+      content::IdentityRequestAccount::LoginState::kSignUp;
+  accounts[0]->fields = kDefaultPermissions;
+  ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive,
+                     accounts);
+
+  EXPECT_CALL(
+      *mock_hats_service,
+      LaunchDelayedSurveyForWebContents(
+          kHatsSurveyTriggerAutofillPersonalizationAndTrustFedCmDismissed,
+          web_contents(), 0, _,
+          SurveyStringData{
+              {"FedCM UI mode", "passive"},
+              {"FedCM interaction type", "sign-up"},
+              {"Number of accounts shown", "1"},
+              {"Origin of the website (eTLD+1)", "google.com"},
+          },
+          _, _, _, _, _));
+  controller->OnDismiss(IdentityDialogController::DismissReason::kTapScrim);
+}
+
+// Tests that passive `kTapScrim` does not launch the dismissed HaTS survey when
+// `kFedCmIdpLinks` is disabled.
+TEST_F(IdentityDialogControllerTest,
+       PersonalizationAndTrustSurvey_DoNotTrigger_PassiveTapScrimFlagDisabled) {
+  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating(&BuildMockHatsService)));
+
+  auto controller = std::make_unique<IdentityDialogController>(web_contents());
+  auto mock_view = std::make_unique<NiceMock<MockAccountSelectionView>>();
+  ON_CALL(*mock_view, Show).WillByDefault(Return(true));
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+  ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
+
+  EXPECT_CALL(*mock_hats_service, LaunchDelayedSurveyForWebContents).Times(0);
+  controller->OnDismiss(IdentityDialogController::DismissReason::kTapScrim);
+}
+
+// Tests that tapping the scrim in active mode does not launch the dismissed
+// HaTS survey even with `kFedCmIdpLinks` enabled.
+TEST_F(IdentityDialogControllerTest,
+       PersonalizationAndTrustSurvey_DoNotTrigger_ActiveModeTapScrim) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kFedCmIdpLinks);
+
+  MockHatsService* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+          profile(), base::BindRepeating(&BuildMockHatsService)));
+
+  auto controller = std::make_unique<IdentityDialogController>(web_contents());
+  auto mock_view = std::make_unique<NiceMock<MockAccountSelectionView>>();
+  ON_CALL(*mock_view, Show).WillByDefault(Return(true));
+  controller->SetAccountSelectionViewForTesting(std::move(mock_view));
+  ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kActive);
+
+  EXPECT_CALL(*mock_hats_service, LaunchDelayedSurveyForWebContents).Times(0);
+  controller->OnDismiss(IdentityDialogController::DismissReason::kTapScrim);
 }
 
 // Tests that no HaT survey is launched when the user closes FedCM error

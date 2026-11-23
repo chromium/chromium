@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/hats/hats_service.h"
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "chrome/browser/webid/identity_provider_permission_request.h"
 #include "components/autofill/core/browser/studies/hats_surveys_util.h"
@@ -670,8 +671,14 @@ void IdentityDialogController::OnDismiss(DismissReason dismiss_reason) {
   }
 
   if (did_show_ui_) {
+    // With `kFedCmIdpLinks` enabled in passive mode, `kTapScrim` occurs on
+    // Android after switching to the active mode sheet, where tapping the scrim
+    // explicitly closes the dialog like `kSwipe` or desktop's Cancel button.
     if (dismiss_reason == DismissReason::kCloseButton ||
-        dismiss_reason == DismissReason::kSwipe) {
+        dismiss_reason == DismissReason::kSwipe ||
+        (dismiss_reason == DismissReason::kTapScrim &&
+         rp_mode_ == blink::mojom::RpMode::kPassive &&
+         base::FeatureList::IsEnabled(features::kFedCmIdpLinks))) {
       CollectTrainingData(UserAction::kClosed);
       if (on_account_selection_ && chooser_survey_data_) {
         // Only trigger if the user dismissed the account selection dialog

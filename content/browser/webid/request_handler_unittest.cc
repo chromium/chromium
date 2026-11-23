@@ -242,6 +242,7 @@ struct MockIdpInfo {
 enum class AccountsDialogAction {
   kNone,
   kClose,
+  kTapScrim,
   kSelectFirstAccount,
   kAddAccount,
 };
@@ -758,6 +759,11 @@ class TestDialogController
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE, base::BindOnce(std::move(dismiss_callback),
                                       DismissReason::kCloseButton));
+        break;
+      case AccountsDialogAction::kTapScrim:
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(dismiss_callback),
+                                      DismissReason::kTapScrim));
         break;
       case AccountsDialogAction::kAddAccount:
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -8994,6 +9000,126 @@ TEST_F(RequestHandlerTest, ActiveFlowNotAffectEmbargo) {
   EXPECT_FALSE(DidFetch(FetchedEndpoint::TOKEN));
   EXPECT_FALSE(test_api_permission_delegate_->embargoed_origins_.count(
       main_test_rfh()->GetLastCommittedOrigin()));
+}
+
+// Regression test for crbug.com/587040679: in passive mode on Android,
+// dismissing the active mode sheet (shown to request sign-up permission) by
+// tapping its scrim triggers cooldown and records cancel timing.
+TEST_F(RequestHandlerTest, PassiveFlowTapScrimCausesEmbargo) {
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedRequestResult::kShouldEmbargo,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.accounts_dialog_action = AccountsDialogAction::kTapScrim;
+
+  RunTest(kDefaultRequestParameters, expectations, configuration);
+
+  ukm_loop.Run();
+
+  EXPECT_TRUE(did_show_accounts_dialog());
+  EXPECT_FALSE(DidFetch(FetchedEndpoint::TOKEN));
+  EXPECT_TRUE(test_api_permission_delegate_->embargoed_origins_.count(
+      main_test_rfh()->GetLastCommittedOrigin()));
+
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.CancelReason", static_cast<int>(DismissReason::kTapScrim),
+      1);
+  ExpectUkmValueInEntry("CancelReason", FedCmEntry::kEntryName,
+                        static_cast<int>(DismissReason::kTapScrim));
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.CancelOnDialog", 1);
+  ExpectUKMPresence("Timing.CancelOnDialog");
+  ExpectStatusMetrics(TokenStatus::kShouldEmbargo);
+}
+
+// Test that tapping the scrim in active mode does not trigger embargo or record
+// cancel timing.
+TEST_F(RequestHandlerTest, ActiveFlowTapScrimDoesNotAffectEmbargo) {
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
+  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
+      ->SimulateUserActivation();
+
+  RequestParameters parameters = kDefaultRequestParameters;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedRequestResult::kUiDismissedNoEmbargo,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.accounts_dialog_action = AccountsDialogAction::kTapScrim;
+
+  RunTest(parameters, expectations, configuration);
+
+  ukm_loop.Run();
+
+  EXPECT_TRUE(did_show_accounts_dialog());
+  EXPECT_FALSE(DidFetch(FetchedEndpoint::TOKEN));
+  EXPECT_FALSE(test_api_permission_delegate_->embargoed_origins_.count(
+      main_test_rfh()->GetLastCommittedOrigin()));
+
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.CancelReason", static_cast<int>(DismissReason::kTapScrim),
+      1);
+  ExpectUkmValueInEntry("CancelReason", FedCmEntry::kEntryName,
+                        static_cast<int>(DismissReason::kTapScrim));
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.CancelOnDialog", 0);
+  ExpectNoUKMPresence("Timing.CancelOnDialog");
+  ExpectStatusMetrics(TokenStatus::kNotSelectAccount);
+}
+
+// Test that tapping the scrim on the modal opened for a conditional mediation
+// request does not trigger embargo or record cancel timing.
+TEST_F(RequestHandlerTest, ConditionalFlowTapScrimDoesNotAffectEmbargo) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmAutofill);
+
+  base::RunLoop ukm_loop;
+  ukm_recorder()->SetOnAddEntryCallback(FedCmEntry::kEntryName,
+                                        ukm_loop.QuitClosure());
+
+  MockConfiguration configuration = kConfigurationValid;
+  configuration.mediation_requirement = MediationRequirement::kConditional;
+  configuration.accounts_dialog_action = AccountsDialogAction::kTapScrim;
+
+  RunDontWaitForCallback(kDefaultRequestParameters, configuration);
+  request_handler_->NotifyAutofillSuggestionAccepted(
+      GURL(kProviderUrlFull), kAccountId, /*show_modal=*/true,
+      base::DoNothing());
+  WaitForCurrentRequest();
+
+  RequestExpectations expectations = {
+      RequestTokenStatus::kError, FederatedRequestResult::kUiDismissedNoEmbargo,
+      /*standalone_console_message=*/std::nullopt,
+      /*selected_idp_config_url=*/std::nullopt};
+  CheckExpectations(configuration, expectations);
+
+  ukm_loop.Run();
+
+  EXPECT_TRUE(dialog_controller_state_.did_show_loading_dialog);
+  EXPECT_TRUE(did_show_accounts_dialog());
+  EXPECT_FALSE(DidFetch(FetchedEndpoint::TOKEN));
+  EXPECT_FALSE(test_api_permission_delegate_->embargoed_origins_.count(
+      main_test_rfh()->GetLastCommittedOrigin()));
+
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.CancelReason", static_cast<int>(DismissReason::kTapScrim),
+      1);
+  ExpectUkmValueInEntry("CancelReason", FedCmEntry::kEntryName,
+                        static_cast<int>(DismissReason::kTapScrim));
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.CancelOnDialog", 0);
+  ExpectNoUKMPresence("Timing.CancelOnDialog");
+  ExpectStatusMetrics(TokenStatus::kNotSelectAccount,
+                      MediationRequirement::kConditional);
 }
 
 // Test ambient UI is NOT exempt from the cooldown embargo.
