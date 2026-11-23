@@ -503,36 +503,48 @@ public final class Website implements WebsiteEntry {
                         model.removeBrowsingData(
                                 host,
                                 () -> {
-                                    callback.onStoredDataCleared();
+                                    mCookiesInfo = null;
+                                    mLocalStorageInfo = null;
                                     mStorageInfo.clear();
+                                    mSharedDictionaryInfo.clear();
+                                    callback.onStoredDataCleared();
                                     model.releaseModel();
                                 });
                     });
         } else {
             // Here we need to delete localstorage e cookie info.
+            mCookiesInfo = null;
+
+            LocalStorageInfo localStorageInfoToClear = mLocalStorageInfo;
+            mLocalStorageInfo = null;
+
+            List<StorageInfo> storageInfoToClear = new ArrayList<>(mStorageInfo);
+            mStorageInfo.clear();
+
+            List<SharedDictionaryInfo> sharedDictionaryInfoToClear =
+                    new ArrayList<>(mSharedDictionaryInfo);
+            mSharedDictionaryInfo.clear();
 
             // Wait for callbacks from each mStorageInfo and mSharedDictionaryInfo
             // and a callback from mLocalStorageInfo.
             int[] storageInfoCallbacksLeft = {
-                mStorageInfo.size() + mSharedDictionaryInfo.size() + 1
+                storageInfoToClear.size() + sharedDictionaryInfoToClear.size() + 1
             };
             StorageInfoClearedCallback clearedCallback =
                     () -> {
                         if (--storageInfoCallbacksLeft[0] == 0) callback.onStoredDataCleared();
                     };
-            if (mLocalStorageInfo != null) {
-                mLocalStorageInfo.clear(browserContextHandle, clearedCallback);
-                mLocalStorageInfo = null;
+            if (localStorageInfoToClear != null) {
+                localStorageInfoToClear.clear(browserContextHandle, clearedCallback);
             } else {
                 clearedCallback.onStorageInfoCleared();
             }
-            for (StorageInfo info : mStorageInfo) info.clear(browserContextHandle, clearedCallback);
-            mStorageInfo.clear();
-
-            for (SharedDictionaryInfo info : mSharedDictionaryInfo) {
+            for (StorageInfo info : storageInfoToClear) {
                 info.clear(browserContextHandle, clearedCallback);
             }
-            mSharedDictionaryInfo.clear();
+            for (SharedDictionaryInfo info : sharedDictionaryInfoToClear) {
+                info.clear(browserContextHandle, clearedCallback);
+            }
         }
     }
 

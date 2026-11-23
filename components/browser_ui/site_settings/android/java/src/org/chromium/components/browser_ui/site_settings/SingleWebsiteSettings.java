@@ -553,6 +553,14 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                     merged.addStorageInfo(storageInfo);
                 }
             }
+            CookiesInfo otherCookiesInfo = other.getCookiesInfo();
+            if (otherCookiesInfo != null
+                    && other.getEmbedder() == null
+                    && host.equals(other.getAddress().getHost())) {
+                int mergedCookies =
+                        merged.getNumberOfCookies() + otherCookiesInfo.getCount();
+                merged.setCookiesInfo(new CookiesInfo(mergedCookies));
+            }
             for (SharedDictionaryInfo sharedDictionaryInfo : other.getSharedDictionaryInfo()) {
                 if (origin.equals(sharedDictionaryInfo.getOrigin())) {
                     merged.addSharedDictionaryInfo(sharedDictionaryInfo);

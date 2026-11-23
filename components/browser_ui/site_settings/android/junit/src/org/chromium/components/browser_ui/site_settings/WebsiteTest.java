@@ -12,6 +12,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 
+import java.util.List;
+
 /** Unit tests for {@link Website}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class WebsiteTest {
@@ -58,5 +60,36 @@ public class WebsiteTest {
                 website.createContentSettingException(
                         ContentSettingsType.SOUND, ContentSetting.DEFAULT);
         Assert.assertEquals(CHROME_EXTENSION_ORIGIN, soundException.getPrimaryPattern());
+    }
+
+    @Test
+    public void testMergePermissionAndStorageInfoForTopLevelOrigin_mergesCookiesInfo() {
+        WebsiteAddress targetAddress = WebsiteAddress.create("https://example.com");
+
+        Website httpsEntry = new Website(WebsiteAddress.create("https://example.com"), null);
+        httpsEntry.setCookiesInfo(new CookiesInfo(2));
+
+        Website httpEntry = new Website(WebsiteAddress.create("http://example.com"), null);
+        httpEntry.setCookiesInfo(new CookiesInfo(3));
+
+        Website embeddedEntry =
+                new Website(
+                        WebsiteAddress.create("https://example.com"),
+                        WebsiteAddress.create("https://embedder.com"));
+        embeddedEntry.setCookiesInfo(new CookiesInfo(10));
+
+        Website otherHostEntry = new Website(WebsiteAddress.create("https://other.com"), null);
+        otherHostEntry.setCookiesInfo(new CookiesInfo(7));
+
+        Website emptyMerged =
+                SingleWebsiteSettings.mergePermissionAndStorageInfoForTopLevelOrigin(
+                        targetAddress, List.of(otherHostEntry, embeddedEntry));
+        Assert.assertEquals(0, emptyMerged.getNumberOfCookies());
+
+        Website merged =
+                SingleWebsiteSettings.mergePermissionAndStorageInfoForTopLevelOrigin(
+                        targetAddress,
+                        List.of(httpsEntry, httpEntry, embeddedEntry, otherHostEntry));
+        Assert.assertEquals(5, merged.getNumberOfCookies());
     }
 }

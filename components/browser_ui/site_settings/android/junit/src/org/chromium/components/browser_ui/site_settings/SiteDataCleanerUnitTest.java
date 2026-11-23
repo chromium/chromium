@@ -115,6 +115,85 @@ public class SiteDataCleanerUnitTest {
                 .clearMediaLicenses(mContextHandle, ORIGIN_1.getAddress().getOrigin());
     }
 
+    @Test
+    public void testClearDataClearsCookiesAndStorageInfoBeforeCallback() {
+        Website site = new Website(WebsiteAddress.create("https://example.com"), null);
+        site.setCookiesInfo(new CookiesInfo(3));
+        site.addStorageInfo(new StorageInfo("example.com", 512));
+        Assert.assertEquals(3, site.getNumberOfCookies());
+        Assert.assertEquals(512, site.getTotalUsage());
+
+        doAnswer(
+                        invocation -> {
+                            WebsitePreferenceBridge.StorageInfoClearedCallback clearedCallback =
+                                    invocation.getArgument(2);
+                            clearedCallback.onStorageInfoCleared();
+                            return null;
+                        })
+                .when(mBridgeMock)
+                .clearStorageData(any(), anyString(), any());
+
+        final AtomicInteger cookiesInsideCallback = new AtomicInteger(-1);
+        final AtomicInteger usageInsideCallback = new AtomicInteger(-1);
+        SiteDataCleaner.clearData(
+                mSiteSettingsDelegate,
+                site,
+                () -> {
+                    cookiesInsideCallback.set(site.getNumberOfCookies());
+                    usageInsideCallback.set((int) site.getTotalUsage());
+                });
+
+        Assert.assertEquals(0, cookiesInsideCallback.get());
+        Assert.assertEquals(0, usageInsideCallback.get());
+        Assert.assertEquals(0, site.getNumberOfCookies());
+        Assert.assertEquals(0, site.getTotalUsage());
+
+        Website cookiesOnlySite = new Website(WebsiteAddress.create("https://cookies.com"), null);
+        cookiesOnlySite.setCookiesInfo(new CookiesInfo(2));
+        final AtomicInteger cookiesOnlyInsideCallback = new AtomicInteger(-1);
+        SiteDataCleaner.clearData(
+                mSiteSettingsDelegate,
+                cookiesOnlySite,
+                () -> cookiesOnlyInsideCallback.set(cookiesOnlySite.getNumberOfCookies()));
+        Assert.assertEquals(0, cookiesOnlyInsideCallback.get());
+        Assert.assertEquals(0, cookiesOnlySite.getNumberOfCookies());
+    }
+
+    @Test
+    public void testClearDataWithBDMClearsCookiesAndStorageInfoBeforeCallback() {
+        Website site = new Website(WebsiteAddress.create("https://google.com"), null);
+        site.setCookiesInfo(new CookiesInfo(4));
+        site.setLocalStorageInfo(new LocalStorageInfo("https://google.com", 256, false));
+        site.addStorageInfo(new StorageInfo("google.com", 1024));
+        site.addSharedDictionaryInfo(
+                new SharedDictionaryInfo("https://google.com", "https://google.com", 128));
+        Assert.assertEquals(4, site.getNumberOfCookies());
+        Assert.assertEquals(1408, site.getTotalUsage());
+
+        doReturn(true).when(mSiteSettingsDelegate).isBrowsingDataModelFeatureEnabled();
+        doAnswer(this::mockBDMCallback)
+                .when(mSiteSettingsDelegate)
+                .getBrowsingDataModel(MockitoHelper.anyCallback());
+        doAnswer(this::mockBDMRemoveCallback)
+                .when(mBrowsingDataModel)
+                .removeBrowsingData(anyString(), any(Runnable.class));
+
+        final AtomicInteger cookiesInsideCallback = new AtomicInteger(-1);
+        final AtomicInteger usageInsideCallback = new AtomicInteger(-1);
+        SiteDataCleaner.clearData(
+                mSiteSettingsDelegate,
+                site,
+                () -> {
+                    cookiesInsideCallback.set(site.getNumberOfCookies());
+                    usageInsideCallback.set((int) site.getTotalUsage());
+                });
+
+        Assert.assertEquals(0, cookiesInsideCallback.get());
+        Assert.assertEquals(0, usageInsideCallback.get());
+        Assert.assertEquals(0, site.getNumberOfCookies());
+        Assert.assertEquals(0, site.getTotalUsage());
+    }
+
     private static HashMap<Origin, BrowsingDataInfo> buildBrowsingDataModelInfo() {
         var map = new HashMap<Origin, BrowsingDataInfo>();
         var origin = Origin.create(new GURL(ORIGIN_1.getAddress().getOrigin()));
