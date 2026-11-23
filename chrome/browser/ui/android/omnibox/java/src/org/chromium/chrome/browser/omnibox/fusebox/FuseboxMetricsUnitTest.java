@@ -22,6 +22,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AttachmentsPopupSource;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.DrivePermissionDeniedReason;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentSizeLimitCheck;
@@ -49,6 +50,14 @@ public class FuseboxMetricsUnitTest {
             FuseboxMetrics.getPickerOutcomeHistogram(MobileFuseboxPickerAttachmentType.DRIVE);
     private static final String HISTOGRAM_PICKER_OUTCOME_TABS =
             FuseboxMetrics.getPickerOutcomeHistogram(MobileFuseboxPickerAttachmentType.TABS);
+    private static final String HISTOGRAM_POPUP_ITEM_SELECTED =
+            FuseboxMetrics.ATTACHMENTS_POPUP_ITEM_SELECTED_HISTOGRAM;
+    private static final String HISTOGRAM_POPUP_ITEM_SELECTED_NTP_PLUS_BUTTON =
+            FuseboxMetrics.getAttachmentsPopupItemSelectedHistogram(
+                    AttachmentsPopupSource.NTP_PLUS_BUTTON);
+    private static final String HISTOGRAM_POPUP_ITEM_SELECTED_OMNIBOX_PLUS_BUTTON =
+            FuseboxMetrics.getAttachmentsPopupItemSelectedHistogram(
+                    AttachmentsPopupSource.OMNIBOX_PLUS_BUTTON);
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -378,18 +387,47 @@ public class FuseboxMetricsUnitTest {
     @Test
     public void testNotifyAttachmentsPopupClosed_ItemSelected() {
         var histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Omnibox.MobileFusebox.AttachmentsPopupItemSelected", true);
-        FuseboxMetrics.notifyAttachmentsPopupClosed(/* itemSelected= */ true);
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(HISTOGRAM_POPUP_ITEM_SELECTED, true)
+                        .expectBooleanRecord(
+                                HISTOGRAM_POPUP_ITEM_SELECTED_OMNIBOX_PLUS_BUTTON, true)
+                        .expectNoRecords(HISTOGRAM_POPUP_ITEM_SELECTED_NTP_PLUS_BUTTON)
+                        .build();
+
+        FuseboxMetrics.notifyAttachmentsPopupClosed(
+                /* itemSelected= */ true, AttachmentsPopupSource.OMNIBOX_PLUS_BUTTON);
+
         histogramWatcher.assertExpected();
     }
 
     @Test
     public void testNotifyAttachmentsPopupClosed_NoItemSelected() {
         var histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Omnibox.MobileFusebox.AttachmentsPopupItemSelected", false);
-        FuseboxMetrics.notifyAttachmentsPopupClosed(/* itemSelected= */ false);
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(HISTOGRAM_POPUP_ITEM_SELECTED, false)
+                        .expectBooleanRecord(
+                                HISTOGRAM_POPUP_ITEM_SELECTED_OMNIBOX_PLUS_BUTTON, false)
+                        .expectNoRecords(HISTOGRAM_POPUP_ITEM_SELECTED_NTP_PLUS_BUTTON)
+                        .build();
+
+        FuseboxMetrics.notifyAttachmentsPopupClosed(
+                /* itemSelected= */ false, AttachmentsPopupSource.OMNIBOX_PLUS_BUTTON);
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testNotifyAttachmentsPopupClosed_NtpPlusButton() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(HISTOGRAM_POPUP_ITEM_SELECTED, true)
+                        .expectBooleanRecord(HISTOGRAM_POPUP_ITEM_SELECTED_NTP_PLUS_BUTTON, true)
+                        .expectNoRecords(HISTOGRAM_POPUP_ITEM_SELECTED_OMNIBOX_PLUS_BUTTON)
+                        .build();
+
+        FuseboxMetrics.notifyAttachmentsPopupClosed(
+                /* itemSelected= */ true, AttachmentsPopupSource.NTP_PLUS_BUTTON);
+
         histogramWatcher.assertExpected();
     }
 

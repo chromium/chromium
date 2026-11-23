@@ -82,6 +82,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.PopupState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AttachmentsPopupSource;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.DrivePermissionDeniedReason;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.MobileFuseboxPickerAttachmentType;
@@ -160,6 +161,14 @@ import java.util.function.Function;
 public class FuseboxMediatorUnitTest {
     private static final String HISTOGRAM_PICKER_OUTCOME_TABS =
             FuseboxMetrics.getPickerOutcomeHistogram(MobileFuseboxPickerAttachmentType.TABS);
+    private static final String HISTOGRAM_POPUP_ITEM_SELECTED =
+            FuseboxMetrics.ATTACHMENTS_POPUP_ITEM_SELECTED_HISTOGRAM;
+    private static final String HISTOGRAM_POPUP_ITEM_SELECTED_NTP_PLUS_BUTTON =
+            FuseboxMetrics.getAttachmentsPopupItemSelectedHistogram(
+                    AttachmentsPopupSource.NTP_PLUS_BUTTON);
+    private static final String HISTOGRAM_POPUP_ITEM_SELECTED_OMNIBOX_PLUS_BUTTON =
+            FuseboxMetrics.getAttachmentsPopupItemSelectedHistogram(
+                    AttachmentsPopupSource.OMNIBOX_PLUS_BUTTON);
     private static final String ITEM_PICKER_ERROR_MESSAGE = "error message";
     private static final String SERVER_SUBTEXT = "Server subtext";
     private static final Bitmap BITMAP = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
@@ -1305,7 +1314,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void handleHidePopup_popupShowing_hidesAndReturnsTrue() {
-        mModel.set(FuseboxProperties.POPUP_STATE, PopupState.FLOATING);
+        mMediator.onPlusButtonClicked();
 
         assertTrue(mMediator.handleHidePopup());
         assertEquals(PopupState.HIDDEN, (int) mModel.get(FuseboxProperties.POPUP_STATE));
@@ -1321,7 +1330,7 @@ public class FuseboxMediatorUnitTest {
 
     @Test
     public void testOnPopupDismissed_noItemSelected_notifiesInteractionCompletedFalse() {
-        mModel.set(FuseboxProperties.POPUP_STATE, PopupState.FLOATING);
+        mMediator.onPlusButtonClicked();
         mMediator.onPopupDismissed();
 
         assertEquals(PopupState.HIDDEN, mModel.get(FuseboxProperties.POPUP_STATE));
@@ -1444,8 +1453,11 @@ public class FuseboxMediatorUnitTest {
     @Test
     public void popupItemSelectedMetric_closedWithoutSelection_recordsFalse() {
         var histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Omnibox.MobileFusebox.AttachmentsPopupItemSelected", false);
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(HISTOGRAM_POPUP_ITEM_SELECTED, false)
+                        .expectBooleanRecord(
+                                HISTOGRAM_POPUP_ITEM_SELECTED_OMNIBOX_PLUS_BUTTON, false)
+                        .build();
 
         // Opens the popup.
         mMediator.onPlusButtonClicked();
@@ -1462,8 +1474,11 @@ public class FuseboxMediatorUnitTest {
         mMediator.onPlusButtonClicked();
 
         var histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Omnibox.MobileFusebox.AttachmentsPopupItemSelected", true);
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(HISTOGRAM_POPUP_ITEM_SELECTED, true)
+                        .expectBooleanRecord(
+                                HISTOGRAM_POPUP_ITEM_SELECTED_OMNIBOX_PLUS_BUTTON, true)
+                        .build();
         mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_CLICKED).run();
 
         histogramWatcher.assertExpected();
@@ -1476,8 +1491,11 @@ public class FuseboxMediatorUnitTest {
         mMediator.onPlusButtonClicked();
 
         var histogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        "Omnibox.MobileFusebox.AttachmentsPopupItemSelected", false);
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(HISTOGRAM_POPUP_ITEM_SELECTED, false)
+                        .expectBooleanRecord(
+                                HISTOGRAM_POPUP_ITEM_SELECTED_OMNIBOX_PLUS_BUTTON, false)
+                        .build();
         mModel.get(FuseboxProperties.POPUP_MORE_OPTIONS_CLICKED).run();
         assertEquals(BackPressResult.SUCCESS, mMediator.handleBackPress());
 
@@ -1489,10 +1507,12 @@ public class FuseboxMediatorUnitTest {
         doReturn(true).when(mWindowAndroid).hasPermission(any());
         var histogramWatcher =
                 HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(HISTOGRAM_POPUP_ITEM_SELECTED, true)
                         .expectBooleanRecord(
-                                "Omnibox.MobileFusebox.AttachmentsPopupItemSelected", true)
+                                HISTOGRAM_POPUP_ITEM_SELECTED_OMNIBOX_PLUS_BUTTON, true)
+                        .expectBooleanRecord(HISTOGRAM_POPUP_ITEM_SELECTED, false)
                         .expectBooleanRecord(
-                                "Omnibox.MobileFusebox.AttachmentsPopupItemSelected", false)
+                                HISTOGRAM_POPUP_ITEM_SELECTED_OMNIBOX_PLUS_BUTTON, false)
                         .build();
 
         // First open: select an item.
@@ -1504,6 +1524,42 @@ public class FuseboxMediatorUnitTest {
 
         histogramWatcher.assertExpected();
         assertFalse(mMediator.wasPopupItemSelected());
+    }
+
+    @Test
+    public void popupItemSelectedMetric_ntpFocus_omniboxPlusButtonTap_recordsOmniboxSlice() {
+        mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_TAP);
+        recreateMediator();
+        mMediator.onPlusButtonClicked();
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(HISTOGRAM_POPUP_ITEM_SELECTED, false)
+                        .expectBooleanRecord(
+                                HISTOGRAM_POPUP_ITEM_SELECTED_OMNIBOX_PLUS_BUTTON, false)
+                        .expectNoRecords(HISTOGRAM_POPUP_ITEM_SELECTED_NTP_PLUS_BUTTON)
+                        .build();
+
+        // Dismiss popup.
+        mMediator.onPlusButtonClicked();
+
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void popupItemSelectedMetric_ntpPlusButtonTap_recordsNtpPlusButtonSlice() {
+        mInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP);
+        recreateMediator();
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(HISTOGRAM_POPUP_ITEM_SELECTED, false)
+                        .expectBooleanRecord(HISTOGRAM_POPUP_ITEM_SELECTED_NTP_PLUS_BUTTON, false)
+                        .expectNoRecords(HISTOGRAM_POPUP_ITEM_SELECTED_OMNIBOX_PLUS_BUTTON)
+                        .build();
+
+        // Dismiss popup.
+        mMediator.endInput();
+
+        histogramWatcher.assertExpected();
     }
 
     @Test

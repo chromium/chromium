@@ -109,6 +109,10 @@ public class FuseboxMetrics {
     static final String ATTACHMENT_LABEL_FALLBACK_HISTOGRAM =
             "Omnibox.MobileFusebox.AttachmentLabelFallback";
 
+    @VisibleForTesting
+    static final String ATTACHMENTS_POPUP_ITEM_SELECTED_HISTOGRAM =
+            "Omnibox.MobileFusebox.AttachmentsPopupItemSelected";
+
     // LINT.IfChange(ToolMode)
     @VisibleForTesting /* package */ static final int TOOL_MODE_HISTOGRAM_BOUND = 13;
     // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/enums.xml:OmniboxToolMode)
@@ -267,6 +271,25 @@ public class FuseboxMetrics {
     public @interface MobileFuseboxPickerAttachmentType {
         int DRIVE = 0;
         int TABS = 1;
+    }
+
+    /**
+     * Which UI affordance opened the attachments popup for {@code
+     * Omnibox.MobileFusebox.AttachmentsPopupItemSelected{Source}}.
+     */
+    @IntDef({
+        AttachmentsPopupSource.OMNIBOX_PLUS_BUTTON,
+        AttachmentsPopupSource.NTP_PLUS_BUTTON,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @Target({ElementType.TYPE_USE})
+    @NullMarked
+    @interface AttachmentsPopupSource {
+        /** Opened via the '+' button inside the focused Omnibox / Fusebox. */
+        int OMNIBOX_PLUS_BUTTON = 0;
+
+        /** Auto-opened directly from an unfocused NTP '+' button. */
+        int NTP_PLUS_BUTTON = 1;
     }
 
     // LINT.IfChange(MobileFuseboxDriveDocumentType)
@@ -477,9 +500,19 @@ public class FuseboxMetrics {
                 ATTACHMENT_LABEL_FALLBACK_HISTOGRAM, inputSource, INPUT_SOURCE_HISTOGRAM_BOUND);
     }
 
-    static void notifyAttachmentsPopupClosed(boolean itemSelected) {
+    /**
+     * Records whether an item was selected in the attachments popup before it closed, both to the
+     * unsliced aggregate histogram and to the source-specific slice.
+     *
+     * @param itemSelected Whether the user tapped an item in the popup before it closed.
+     * @param source Which UI affordance opened the popup.
+     */
+    static void notifyAttachmentsPopupClosed(
+            boolean itemSelected, @AttachmentsPopupSource int source) {
         RecordHistogram.recordBooleanHistogram(
-                "Omnibox.MobileFusebox.AttachmentsPopupItemSelected", itemSelected);
+                ATTACHMENTS_POPUP_ITEM_SELECTED_HISTOGRAM, itemSelected);
+        RecordHistogram.recordBooleanHistogram(
+                getAttachmentsPopupItemSelectedHistogram(source), itemSelected);
     }
 
     void notifyOmniboxSessionStarted() {
@@ -816,4 +849,24 @@ public class FuseboxMetrics {
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/histograms.xml:MobileFuseboxSurface)
+
+    @VisibleForTesting
+    static String getAttachmentsPopupItemSelectedHistogram(@AttachmentsPopupSource int source) {
+        return ATTACHMENTS_POPUP_ITEM_SELECTED_HISTOGRAM
+                + TOKEN_SEPARATOR
+                + getStringForAttachmentsPopupSource(source);
+    }
+
+    // LINT.IfChange(getStringForAttachmentsPopupSource)
+    private static String getStringForAttachmentsPopupSource(@AttachmentsPopupSource int source) {
+        return switch (source) {
+            case AttachmentsPopupSource.OMNIBOX_PLUS_BUTTON -> "OmniboxPlusButton";
+            case AttachmentsPopupSource.NTP_PLUS_BUTTON -> "NTPPlusButton";
+            default ->
+                    throw new IllegalArgumentException(
+                            "Unsupported attachments popup source: " + source);
+        };
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/omnibox/histograms.xml:MobileFuseboxAttachmentsPopupSource)
 }

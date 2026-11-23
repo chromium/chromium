@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxLayoutMode;
 import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxState;
 import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.PopupState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AiModeActivationSource;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.AttachmentsPopupSource;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.DrivePermissionDeniedReason;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.MobileFuseboxPickerOutcome;
@@ -159,6 +160,7 @@ class FuseboxMediator implements BackPressHandler {
     private @Nullable FuseboxMetrics mMetrics;
     private @Nullable PropertyModel mScrimModel;
     private boolean mPopupItemSelected;
+    private @Nullable @AttachmentsPopupSource Integer mPopupSource;
     private boolean mNeedUnfocusOnCancel;
     private boolean mIsPickerPending;
     private @Nullable DriveConsentDialog mDriveConsentDialog;
@@ -448,7 +450,8 @@ class FuseboxMediator implements BackPressHandler {
         }
 
         if (mInput != null) {
-            boolean shouldShowPopup = false;
+            // Non-null when the popup should auto-open; null means do not show.
+            @AttachmentsPopupSource Integer showPopupSource = null;
             boolean shouldOpenGalleryPicker = false;
             // TODO(crbug.com/481365131): there must be a better way to do that.
             if (mInput.getRequestType() == AutocompleteRequestType.AI_MODE
@@ -460,7 +463,7 @@ class FuseboxMediator implements BackPressHandler {
                         AiModeActivationSource.NTP_CREATE_IMAGE_BUTTON);
             } else if (mInput.getFocusReason() == OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP) {
                 mNeedUnfocusOnCancel = true;
-                shouldShowPopup = true;
+                showPopupSource = AttachmentsPopupSource.NTP_PLUS_BUTTON;
             } else if (mInput.getFocusReason() == OmniboxFocusReason.NTP_GALLERY_CHIP_CLICKED) {
                 FuseboxMetrics.notifyAiModeActivated(AiModeActivationSource.NTP_GALLERY_BUTTON);
                 mNeedUnfocusOnCancel = true;
@@ -476,8 +479,8 @@ class FuseboxMediator implements BackPressHandler {
 
             // Open the popup or gallery picker after observers are registered so the session state
             // is fully set up and initial callbacks run while POPUP_STATE is still HIDDEN.
-            if (shouldShowPopup) {
-                showPopup();
+            if (showPopupSource != null) {
+                showPopup(showPopupSource);
             } else if (shouldOpenGalleryPicker) {
                 onImagePickerClicked();
             }
@@ -670,7 +673,7 @@ class FuseboxMediator implements BackPressHandler {
      * Toggles the visibility of the attachments popup.
      *
      * <p>Omnibox.MobileFusebox.AttachmentsPopupToggled counts deliberate user toggles only. Every
-     * open is deliberate, so the {@code true} record lives in {@link #showPopup()} where it also
+     * open is deliberate, so the {@code true} record lives in {@link #showPopup(int)} where it also
      * covers the NTP plus button. Closing is different: {@link #dismissPopup()} runs on every close
      * (item selected, picker launched, scrim tap, back press, session end), and those are
      * intentionally excluded from this histogram, so the {@code false} record stays here with the
@@ -680,7 +683,9 @@ class FuseboxMediator implements BackPressHandler {
         if (!isInInputSession()) return;
 
         if (mModel.get(FuseboxProperties.POPUP_STATE) == PopupState.HIDDEN) {
-            showPopup();
+            // TODO(crbug.com/587918152): Consider passing an AttachmentsPopupSource parameter into
+            // onPlusButtonClicked to disambiguate the caller.
+            showPopup(AttachmentsPopupSource.OMNIBOX_PLUS_BUTTON);
             return;
         }
 
@@ -697,12 +702,15 @@ class FuseboxMediator implements BackPressHandler {
      * Shows the attachments popup. Records the popup impression (histograms, per-session flags and
      * the feature engagement event) regardless of whether the popup was opened from the Omnibox
      * plus button or from the NTP fakebox plus button.
+     *
+     * @param source Which UI affordance opened the popup.
      */
-    private void showPopup() {
+    private void showPopup(@AttachmentsPopupSource int source) {
         if (!isInInputSession()) return;
         // Prevent rapid clicks from "showing" the popup more than once.
         if (mModel.get(FuseboxProperties.POPUP_STATE) != PopupState.HIDDEN) return;
         mPopupItemSelected = false;
+        mPopupSource = source;
         mInput.setFuseboxPopupUsed();
 
         boolean shouldShowBottomSheetPopup = OmniboxFeatures.shouldShowBottomSheetPopup();
@@ -801,8 +809,10 @@ class FuseboxMediator implements BackPressHandler {
      */
     private void dismissPopup() {
         if (mModel.get(FuseboxProperties.POPUP_STATE) != PopupState.HIDDEN) {
-            FuseboxMetrics.notifyAttachmentsPopupClosed(mPopupItemSelected);
+            FuseboxMetrics.notifyAttachmentsPopupClosed(
+                    mPopupItemSelected, assertNonNull(mPopupSource));
         }
+        mPopupSource = null;
         if (OmniboxFeatures.hasAccordion()) {
             mModel.set(FuseboxProperties.POPUP_ACCORDION_EXPANDED, false);
         }
