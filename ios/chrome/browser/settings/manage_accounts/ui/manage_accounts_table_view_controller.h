@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_SETTINGS_MANAGE_ACCOUNTS_UI_MANAGE_ACCOUNTS_TABLE_VIEW_CONTROLLER_H_
 
 #import "ios/chrome/browser/settings/manage_accounts/ui/manage_accounts_consumer.h"
-#import "ios/chrome/browser/settings/manage_accounts/ui/with_overridable_model_identity_data_source.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_controller_protocol.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 
@@ -18,8 +17,7 @@
 // to Chrome.
 @interface ManageAccountsTableViewController
     : SettingsRootTableViewController <ManageAccountsConsumer,
-                                       SettingsControllerProtocol,
-                                       WithOverridableModelIdentityDataSource>
+                                       SettingsControllerProtocol>
 
 // Model delegate.
 @property(nonatomic, weak) id<ManageAccountsModelIdentityDataSource>

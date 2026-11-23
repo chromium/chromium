@@ -11,7 +11,6 @@ source_set("ui") {
     "manage_accounts_table_view_controller.mm",
   ]
   public_deps = [
-    ":protocols",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/shared/ui/table_view",
   ]
@@ -37,11 +36,6 @@ source_set("data") {
     "identity_view_data.mm",
   ]
   deps = [ "//google_apis" ]
-}
-
-source_set("protocols") {
-  sources = [ "with_overridable_model_identity_data_source.h" ]
-  frameworks = [ "Foundation.framework" ]
 }
 
 source_set("unit_tests") {

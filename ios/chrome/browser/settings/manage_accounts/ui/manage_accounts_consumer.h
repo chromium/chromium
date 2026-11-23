@@ -18,9 +18,6 @@
 // Reloads all items. Does nothing if the model is not loaded yet.
 - (void)reloadAllItems;
 
-// Pops the view.
-- (void)popView;
-
 // Updates identity view item.
 - (void)updateIdentityViewItem:(IdentityViewData*)identityViewData;
 

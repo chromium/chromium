@@ -164,9 +164,6 @@
   }
 
   [self.consumer reloadAllItems];
-  // Only attempt to pop the top-most view controller once the account list
-  // has been dismissed.
-  [self.consumer popView];
 }
 
 - (void)batchOfPrimaryAccountChangesDidEnd {

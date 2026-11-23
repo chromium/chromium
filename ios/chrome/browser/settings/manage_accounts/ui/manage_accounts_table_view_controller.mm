@@ -251,12 +251,6 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
                         withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
-- (void)popView {
-  // No need to implement this here as the coordinator is handling this. Once
-  // LegacyAccountsTableViewController is deleted, this method can be remove
-  // from ManageAccountsConsumer
-}
-
 #pragma mark - Private
 
 - (GaiaId)gaiaIDWithAccountItem:(TableViewItem*)accountItem {

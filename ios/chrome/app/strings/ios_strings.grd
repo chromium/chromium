@@ -3887,9 +3887,6 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_GEOLOCATION_SYSTEM_PERMISSION_INFOBAR_BANNER_TITLE" desc="Title for the banner infobar shown when a website requests location permissions while system location access is denied. [iOS only]">
         Allow Geolocation?
       </message>
-      <message name="IDS_IOS_GOOGLE_ACCOUNTS_MANAGEMENT_FROM_ACCOUNT_SETTINGS_TITLE" desc="Title of a page that shows all accounts on the user's device and lets them add, remove and otherwise manage their accounts. Avoid long strings given the limited space between surrounding buttons.">
-        Accounts on this device
-      </message>
       <message name="IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_BATCH_UPLOAD_BUTTON_ITEM" desc="Title shown on the batch upload button item. [iOS only]">
         Save in account…
       </message>
@@ -5269,9 +5266,6 @@ You can restart anytime.
       <message name="IDS_IOS_MANAGE_SYNC_PERSONALIZE_GOOGLE_SERVICES_TITLE_EEA" desc="This is the title of a setting that directs users to other settings where they can control how Chrome history can be used to personalize other Google services. It appears in Chrome’s Advanced Sync settings and is before the “Control how browsing history is used with your other data across Google services” string. “Linking” refers to the ability to link Google services; this verb should align with the verb for the branded term “linked Google services” in Glossary Manager: https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=517bace2. [CHAR_LIMIT=30]">
         Personalization &amp; linking
       </message>
-      <message name="IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE" desc="Title for the view in the Settings to open 'Google Account' web page.">
-        Manage your Google Account
-      </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_ADDRESS_CELL_INDEX" desc="Accessibility label for the address suggestions in the manual fallback view to indicate the position of the address suggestion in the list of address suggestions.">
         {count, plural,
              =1 {{position} of {count} address}
@@ -5761,9 +5755,6 @@ You can restart anytime.
       </message>
       <message name="IDS_IOS_OPTIONS_ACCOUNTS_ADD_ACCOUNT_BUTTON" desc="The title of the Add account button on the accounts settings screen [iOS only] [30em]">
         Add account…
-      </message>
-      <message name="IDS_IOS_OPTIONS_ACCOUNTS_DESCRIPTION" desc="Text informing the user of the accounts they are signed in to Chrome with [iOS only] [150em]">
-        Signed in to Google as
       </message>
       <message name="IDS_IOS_OPTIONS_ACCOUNTS_RESTRICTED_IDENTITIES" desc="Message shown in the settings account switcher when enterprise policy has restricted some unseen identities. [iOS only]">
         Your organization allows you to sign in only with certain accounts. Accounts that aren't allowed are hidden. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
@@ -7192,9 +7183,6 @@ Handoff must also be enabled in the General section of Settings, and your device
       </message>
       <message name="IDS_IOS_REMOTE_ACTOR_NO_PASSWORD_DIALOG_TITLE" desc="Title of the remote actor credential sharing bottom sheet, shown when there is no saved password for the site. [iOS only]">
         No saved passwords for <ph name="DOMAIN">$1<ex>example.com</ex></ph>
-      </message>
-      <message name="IDS_IOS_REMOVE_ACCOUNT_ALERT_TITLE" desc="Title of the alert view when the remove account button is clicked.">
-        Remove account <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>?
       </message>
       <message name="IDS_IOS_REMOVE_ACCOUNT_LABEL" desc="Button label for removing an account.">
         Remove

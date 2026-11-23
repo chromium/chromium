@@ -10,7 +10,6 @@
 class GaiaId;
 enum class IdentityAvatarSize;
 @class IdentityViewData;
-@class LegacyAccountsTableViewController;
 @protocol SystemIdentity;
 
 // Identity data source for ManageAccountsTableViewController instance, to
