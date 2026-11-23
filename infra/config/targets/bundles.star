@@ -3706,10 +3706,16 @@ targets.bundle(
 targets.bundle(
     name = "gpu_dawn_isolated_scripts",
     targets = [
-        "gpu_dawn_common_isolated_scripts",
+        "gpu_dawn_isolated_scripts_hardware",
+        "dawn_chromium_isolated_scripts_software",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_dawn_isolated_scripts_hardware",
+    targets = [
+        "dawn_chromium_isolated_scripts_hardware",
         "gpu_dawn_perf_smoke_isolated_scripts",
-        "gpu_dawn_webgpu_blink_web_tests",
-        "gpu_dawn_webgpu_blink_web_tests_force_swiftshader",
     ],
 )
 
