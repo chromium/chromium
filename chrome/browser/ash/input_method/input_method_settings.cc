@@ -38,7 +38,7 @@ bool IsUsEnglishEngine(const std::string& engine_id) {
   return engine_id == "xkb:us::eng";
 }
 
-bool IsFstEngine(const std::string& engine_id) {
+bool HasXkbPrefix(const std::string& engine_id) {
   return base::StartsWith(engine_id, "xkb:", base::CompareCase::SENSITIVE);
 }
 
@@ -340,7 +340,7 @@ mojom::InputMethodSettingsPtr CreateSettingsFromPrefs(
   const base::DictValue& input_method_specific_pref =
       ime_prefs_ptr == nullptr ? default_dict : *ime_prefs_ptr;
 
-  if (IsFstEngine(engine_id)) {
+  if (HasXkbPrefix(engine_id)) {
     return mojom::InputMethodSettings::NewLatinSettings(
         CreateLatinSettings(input_method_specific_pref, prefs, engine_id));
   }

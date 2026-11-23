@@ -72,7 +72,7 @@ bool IsRuleBasedEngine(std::string_view engine_id) {
   return base::StartsWith(engine_id, "vkd_", base::CompareCase::SENSITIVE);
 }
 
-bool IsFstEngine(std::string_view engine_id) {
+bool HasXkbPrefix(std::string_view engine_id) {
   return base::StartsWith(engine_id, "xkb:", base::CompareCase::SENSITIVE);
 }
 
@@ -697,7 +697,7 @@ bool CanRouteToNativeMojoEngine(std::string_view engine_id) {
   }
 
   return IsJapaneseEngine(engine_id) || IsTransliterationEngine(engine_id) ||
-         IsKoreanEngine(engine_id) || IsFstEngine(engine_id) ||
+         IsKoreanEngine(engine_id) || HasXkbPrefix(engine_id) ||
          IsChineseEngine(engine_id);
 }
 
@@ -804,7 +804,7 @@ void NativeInputMethodEngineObserver::OnActivate(const std::string& engine_id) {
 
   // TODO(b/181077907): Always launch the IME service and let IME service
   // decide whether it should shutdown or not.
-  if (IsFstEngine(engine_id) && ShouldRouteToNativeMojoEngine(engine_id) &&
+  if (HasXkbPrefix(engine_id) && ShouldRouteToNativeMojoEngine(engine_id) &&
       // The FST Mojo engine is only needed if autocorrect is enabled ...
       !IsPhysicalKeyboardAutocorrectEnabled(prefs_, engine_id) &&
       // ... or if predictive writing is enabled.
@@ -1019,7 +1019,7 @@ void NativeInputMethodEngineObserver::OnKeyEvent(
       }
 
       // Hot switches to turn on/off certain IME features.
-      if (IsFstEngine(engine_id) && autocorrect_manager_->DisabledByRule()) {
+      if (HasXkbPrefix(engine_id) && autocorrect_manager_->DisabledByRule()) {
         std::move(callback).Run(ui::ime::KeyEventHandledState::kNotHandled);
         return;
       }
