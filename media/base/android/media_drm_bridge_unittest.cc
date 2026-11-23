@@ -12,8 +12,10 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/unguessable_token.h"
 #include "media/base/media_switches.h"
 #include "media/base/mock_filters.h"
 #include "media/base/provision_fetcher.h"
@@ -289,6 +291,62 @@ TEST_F(MediaDrmBridgeTest, Provision_Widevine) {
 
   // Provisioning is executed asynchronously.
   base::RunLoop().RunUntilIdle();
+}
+
+// Provisioning for MediaCrypto creation is serialized across all
+// MediaDrmBridge instances in the process: while one instance provisions,
+// others that need provisioning wait for it. Destroying the provisioning
+// instance before its request completes must wake the waiting instances, and
+// waiting instances that were destroyed in the meantime must be skipped.
+TEST_F(MediaDrmBridgeTest, ProvisionAfterDestroyedWhileProvisioning_Widevine) {
+  if (!MediaDrmBridge::IsKeySystemSupported(kWidevineKeySystem)) {
+    GTEST_SKIP() << "Widevine not supported on device.";
+  }
+
+  // Each MediaDrmBridge uses a new origin ID, so creating its MediaCrypto
+  // requires provisioning. Retrieve() drops the request, so provisioning never
+  // completes. Only `bridge1` and `bridge3` should send a request.
+  int retrieve_count = 0;
+  EXPECT_CALL(*this, CreateProvisionFetcher())
+      .Times(2)
+      .WillRepeatedly([this]() -> std::unique_ptr<ProvisionFetcher> {
+        return std::make_unique<ProvisionFetcherWrapper>(this);
+      });
+  EXPECT_CALL(*this, Retrieve(_, _, _)).Times(2).WillRepeatedly([&]() {
+    ++retrieve_count;
+  });
+
+  auto create_with_media_crypto = [this]() {
+    return MediaDrmBridge::CreateInternal(
+        MediaDrmBridge::GetUUID(kWidevineKeySystem),
+        base::UnguessableToken::Create().ToString(), kL3, "Test",
+        /*requires_media_crypto=*/true,
+        std::make_unique<MediaDrmStorageBridge>(),
+        base::BindRepeating(&MediaDrmBridgeTest::CreateProvisionFetcher,
+                            base::Unretained(this)),
+        SessionMessageCB(), SessionClosedCB(), SessionKeysChangeCB(),
+        SessionExpirationUpdateCB());
+  };
+
+  // `bridge1` starts provisioning.
+  MediaDrmBridge::CdmCreationResult bridge1 = create_with_media_crypto();
+  ASSERT_TRUE(bridge1.has_value());
+  ASSERT_TRUE(base::test::RunUntil([&]() { return retrieve_count == 1; }));
+
+  // `bridge2` and `bridge3` also need provisioning, so they wait for `bridge1`.
+  MediaDrmBridge::CdmCreationResult bridge2 = create_with_media_crypto();
+  ASSERT_TRUE(bridge2.has_value());
+  MediaDrmBridge::CdmCreationResult bridge3 = create_with_media_crypto();
+  ASSERT_TRUE(bridge3.has_value());
+
+  // Destroy `bridge2` while it is waiting.
+  bridge2 = base::unexpected(CreateCdmStatus::kUnknownError);
+
+  // Destroy `bridge1` while its provisioning is pending. The destroyed
+  // `bridge2` must be skipped, and `bridge3` must send its own provisioning
+  // request.
+  bridge1 = base::unexpected(CreateCdmStatus::kUnknownError);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return retrieve_count == 2; }));
 }
 
 TEST_F(MediaDrmBridgeTest, Provision_Widevine_NoOrigin) {

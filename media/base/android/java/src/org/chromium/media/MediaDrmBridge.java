@@ -127,6 +127,10 @@ public class MediaDrmBridge {
     // Whether the current MediaDrmBridge instance is waiting for provisioning response.
     private boolean mProvisioningPending;
 
+    // Whether this instance called sMediaCryptoDeferrer.onProvisionStarted() and has not called
+    // sMediaCryptoDeferrer.onProvisionDone() yet.
+    private boolean mStartedMediaCryptoDeferrerProvisioning;
+
     // Current 'ORIGIN" setting.
     private @Nullable String mOrigin;
 
@@ -342,7 +346,13 @@ public class MediaDrmBridge {
 
             // Cannot provision. Defer MediaCrypto creation and try again later.
             Log.d(TAG, "defer CreateMediaCrypto() calls");
-            sMediaCryptoDeferrer.defer(() -> createMediaCrypto());
+            sMediaCryptoDeferrer.defer(
+                    () -> {
+                        // This instance may have been released or destroyed while waiting.
+                        if (mMediaDrm != null && isNativeMediaDrmBridgeValid()) {
+                            createMediaCrypto();
+                        }
+                    });
 
             return true;
         }
@@ -747,6 +757,11 @@ public class MediaDrmBridge {
                 Log.e(TAG, "Failed to destroy MediaDrmBridge properly", e);
             }
         }
+
+        // The provisioning response will never arrive once the native object is gone. Make sure
+        // other instances waiting on provisioning started by this one are not blocked forever,
+        // even if release() above failed.
+        finishMediaCryptoDeferrerProvisioning();
     }
 
     /** Release all allocated resources and finish all pending operations. */
@@ -798,6 +813,11 @@ public class MediaDrmBridge {
 
             mMediaDrm = null;
         }
+
+        // 6. If this instance was released while provisioning (e.g. the page was closed before
+        // the provisioning response arrived, or the provisioning request could not be
+        // generated), unblock MediaCrypto creation on other instances.
+        finishMediaCryptoDeferrerProvisioning();
     }
 
     /**
@@ -1411,9 +1431,23 @@ public class MediaDrmBridge {
 
         if (mRequiresMediaCrypto) {
             sMediaCryptoDeferrer.onProvisionStarted();
+            mStartedMediaCryptoDeferrerProvisioning = true;
         }
 
         return startProvisioning(/* retryAllowed= */ true);
+    }
+
+    /**
+     * Notifies sMediaCryptoDeferrer that provisioning started by this instance has finished, so
+     * that deferred MediaCrypto creation on other instances can proceed. No-op if this instance did
+     * not start provisioning, or has already notified.
+     */
+    private void finishMediaCryptoDeferrerProvisioning() {
+        if (!mStartedMediaCryptoDeferrerProvisioning) {
+            return;
+        }
+        mStartedMediaCryptoDeferrerProvisioning = false;
+        sMediaCryptoDeferrer.onProvisionDone();
     }
 
     /**
@@ -1502,14 +1536,12 @@ public class MediaDrmBridge {
             success = isResponseReceived ? provideProvisionResponse(response) : false;
         }
 
-        // This may call release() internally. However, sMediaCryptoDeferrer.onProvisionDone() will
-        // still be called below to ensure provisioning failure here doesn't block other
-        // MediaDrmBridge instances from proceeding.
+        // On failure this calls release(), which notifies sMediaCryptoDeferrer. On success,
+        // release() isn't called, so notify it here to let other MediaDrmBridge instances waiting
+        // for provisioning proceed.
         onProvisioned(success);
 
-        if (mRequiresMediaCrypto) {
-            sMediaCryptoDeferrer.onProvisionDone();
-        }
+        finishMediaCryptoDeferrerProvisioning();
     }
 
     /**

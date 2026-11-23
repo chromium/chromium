@@ -339,6 +339,8 @@ class MEDIA_EXPORT MediaDrmBridge : public ContentDecryptionModule,
  private:
   friend class MediaDrmBridgeFactory;
   FRIEND_TEST_ALL_PREFIXES(MediaDrmBridgeTest, MaybeParseCdmVersion);
+  FRIEND_TEST_ALL_PREFIXES(MediaDrmBridgeTest,
+                           ProvisionAfterDestroyedWhileProvisioning_Widevine);
   // For DeleteSoon() in DeleteOnCorrectThread().
   friend class base::DeleteHelper<MediaDrmBridge>;
 
