@@ -72,7 +72,6 @@ source_set("model") {
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen",
     "//ios/chrome/browser/translate/model",
     "//ios/chrome/browser/url_loading/model",
-    "//ios/chrome/browser/view_source/model",
     "//ios/chrome/browser/web/model",
     "//ios/chrome/browser/web/model:delegate",
     "//ios/chrome/browser/web/model:page_placeholder",

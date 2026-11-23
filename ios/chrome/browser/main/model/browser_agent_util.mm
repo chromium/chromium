@@ -62,7 +62,6 @@
 #import "ios/chrome/browser/translate/model/translate_pdf_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
-#import "ios/chrome/browser/view_source/model/view_source_browser_agent.h"
 #import "ios/chrome/browser/web/model/page_placeholder_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
@@ -164,12 +163,6 @@ void AttachBrowserAgentsForActiveBrowser(Browser* browser) {
   }
 
   WebStateDelegateBrowserAgent::CreateForBrowser(browser);
-
-  // ViewSourceBrowserAgent requires TabInsertionBrowserAgent, and is only used
-  // in debug builds.
-#if !defined(NDEBUG)
-  ViewSourceBrowserAgent::CreateForBrowser(browser);
-#endif  // !defined(NDEBUG)
 
   // UrlLoadingBrowserAgent requires UrlLoadingNotifierBrowserAgent.
   UrlLoadingBrowserAgent::CreateForBrowser(browser);

@@ -59,7 +59,6 @@ specific_include_rules = {
     "+ios/chrome/browser/translate/model/translate_pdf_browser_agent.h",
     "+ios/chrome/browser/url_loading/model/url_loading_browser_agent.h",
     "+ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h",
-    "+ios/chrome/browser/view_source/model",
     "+ios/chrome/browser/web/model/page_placeholder_browser_agent.h",
     "+ios/chrome/browser/web/model/web_navigation_browser_agent.h",
     "+ios/chrome/browser/web/model/web_state_delegate_browser_agent.h",

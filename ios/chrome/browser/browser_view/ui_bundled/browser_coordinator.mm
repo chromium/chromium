@@ -253,7 +253,6 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
-#import "ios/chrome/browser/view_source/model/view_source_browser_agent.h"
 #import "ios/chrome/browser/voice/model/voice_search_navigations_tab_helper.h"
 #import "ios/chrome/browser/voice/ui_bundled/text_to_speech_playback_controller.h"
 #import "ios/chrome/browser/voice/ui_bundled/text_to_speech_playback_controller_factory.h"
@@ -1687,14 +1686,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   self.addCreditCardCoordinator.delegate = self;
   [self.addCreditCardCoordinator start];
 }
-
-#if !defined(NDEBUG)
-- (void)viewSource {
-  ViewSourceBrowserAgent* viewSourceAgent =
-      ViewSourceBrowserAgent::FromBrowser(self.browser);
-  viewSourceAgent->ViewSourceForActiveWebState();
-}
-#endif  // !defined(NDEBUG)
 
 - (void)focusFakebox {
   if ([self isNTPActiveForCurrentWebState]) {

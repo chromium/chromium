@@ -85,11 +85,6 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // Shows the AddCreditCard UI.
 - (void)showAddCreditCard;
 
-#if !defined(NDEBUG)
-// Inserts a new tab showing the HTML source of the current page.
-- (void)viewSource;
-#endif
-
 // Animates the NTP fakebox to the focused position and focuses the real
 // omnibox.
 - (void)focusFakebox;
