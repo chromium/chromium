@@ -1,0 +1,43 @@
+Tests that stepping out of an event listener will lead to a pause in the next event listener.
+Set timer for test function.
+Call stack (reason: other):
+    0) inner (test.js:20:9)
+    1) testFunction (test.js:26:5)
+    [setTimeout]
+Executing StepInto...
+Executing StepInto...
+Executing StepInto...
+Call stack (reason: step):
+    0) fooEventHandler1 (test.js:9:9)
+    1) inner (test.js:21:13)
+    2) testFunction (test.js:26:5)
+    [setTimeout]
+Executing StepOut...
+Call stack (reason: step):
+    0) fooEventHandler2 (test.js:13:13)
+    1) inner (test.js:21:13)
+    2) testFunction (test.js:26:5)
+    [setTimeout]
+Executing StepOut...
+Call stack (reason: step):
+    0) inner (test.js:23:9)
+    1) testFunction (test.js:26:5)
+    [setTimeout]
+myDiv.textContent:
+Recieved foo event(1)!
+Recieved foo event(2)!
+Set timer for test function.
+Call stack (reason: other):
+    0) inner (test.js:20:9)
+    1) testFunction (test.js:26:5)
+    [setTimeout]
+Executing StepOut...
+Call stack (reason: step):
+    0) testFunction (test.js:27:1)
+    [setTimeout]
+myDiv.textContent:
+Recieved foo event(1)!
+Recieved foo event(2)!
+Recieved foo event(1)!
+Recieved foo event(2)!
+
