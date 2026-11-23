@@ -25,14 +25,16 @@ Some example targets that have lint enabled are:
  - Other targets with `enable_lint` enabled: https://source.chromium.org/search?q=lang:gn%20enable_lint%5C%20%3D%5C%20true&ss=chromium
 
 If you think lint is not running and already verified your GN
-target has `enable_lint = true`, then you can double check that
-`android_static_analysis` is set to `"on"` (this is the default value):
+target has `enable_lint = true`, then check that `android_static_analysis` is
+set to `"on"` (the default is `"no-lint"`, which disables Android Lint locally):
 
 ```shell
 $ gn args out/Default --list=android_static_analysis
 android_static_analysis
-    Current value (from the default) = "on"
-      From //build/config/android/config.gni:85
+    Current value = "on"
+      From //out/Default/args.gn:1
+    Overridden from the default = "default"
+      From //build/config/android/config.gni:84
 ```
 
 ## My code has a lint error

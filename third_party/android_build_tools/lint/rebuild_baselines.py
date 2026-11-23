@@ -106,10 +106,6 @@ def _remove_redundant_lint_error(path: pathlib.Path):
 
 
 def main():
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(levelname).1s %(relativeCreated)7d %(message)s')
-
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument('-v',
@@ -154,12 +150,16 @@ def main():
             logging.info(f'> Deleting: {path}')
             path.unlink()
 
-    out_dir = _OUTPUT_DIR_ROOT / 'Lint-Default'
-    gn_args = [
+    common_gn_args = [
         'use_remoteexec=true',
         'target_os="android"',
         'treat_warnings_as_errors=false',
         'is_component_build=false',
+        'android_static_analysis="on"',
+    ]
+
+    out_dir = _OUTPUT_DIR_ROOT / 'Lint-Default'
+    gn_args = common_gn_args + [
         'enable_chrome_android_internal=false',
     ]
     built_targets = build_all_lint_targets(out_dir,
@@ -168,23 +168,13 @@ def main():
 
     if include_clank:
         out_dir = _OUTPUT_DIR_ROOT / 'Lint-Clank'
-        gn_args = [
-            'use_remoteexec=true',
-            'target_os="android"',
-            'treat_warnings_as_errors=false',
-            'is_component_build=false',
-        ]
         built_targets = build_all_lint_targets(out_dir,
-                                               gn_args,
+                                               common_gn_args,
                                                verbose=args.verbose,
                                                built_targets=built_targets)
 
     out_dir = _OUTPUT_DIR_ROOT / 'Lint-Cast'
-    gn_args = [
-        'use_remoteexec=true',
-        'target_os="android"',
-        'treat_warnings_as_errors=false',
-        'is_component_build=false',
+    gn_args = common_gn_args + [
         'enable_chrome_android_internal=false',
         'is_cast_android=true',
         'enable_cast_receiver=true',
@@ -195,13 +185,9 @@ def main():
                                            built_targets=built_targets)
 
     out_dir = _OUTPUT_DIR_ROOT / 'Lint-Cronet'
-    gn_args = [
-        'use_remoteexec=true',
-        'target_os="android"',
-        'treat_warnings_as_errors=false',
-        'is_component_build=false',
+    gn_args = common_gn_args + [
         'enable_chrome_android_internal=false',
-        'is_cronet_build = true',
+        'is_cronet_build=true',
     ]
     built_targets = build_all_lint_targets(out_dir,
                                            gn_args,
@@ -211,7 +197,7 @@ def main():
     logging.info('Cleaning up new lint-baseline.xml files.')
     for git_root, repo_path in repo_file_paths:
         path = git_root / repo_path
-        if path.name == 'lint-baseline.xml':
+        if path.name == 'lint-baseline.xml' and path.exists():
             logging.info(f'> Removing redundant LintError: {path}')
             _remove_redundant_lint_error(path)
 
