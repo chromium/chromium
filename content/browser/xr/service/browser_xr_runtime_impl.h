@@ -134,7 +134,7 @@ class CONTENT_EXPORT BrowserXRRuntimeImpl
       immersive_session_controller_;
   bool immersive_session_has_camera_access_ = false;
 
-  std::set<raw_ptr<VRServiceImpl, SetExperimental>> services_;
+  std::set<raw_ptr<VRServiceImpl>> services_;
 
   raw_ptr<VRServiceImpl> presenting_service_ = nullptr;
 

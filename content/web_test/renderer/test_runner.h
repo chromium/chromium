@@ -586,13 +586,13 @@ class TestRunner {
   // WAV audio data is stored here.
   std::vector<uint8_t> audio_data_;
 
-  base::flat_set<raw_ptr<WebFrameTestProxy, CtnExperimental>> main_frames_;
+  base::flat_set<raw_ptr<WebFrameTestProxy>> main_frames_;
 
   // Keeps track of which WebViews that are main windows.
   std::vector<std::unique_ptr<MainWindowTracker>> main_windows_;
 
   // This is non empty when a load is in progress.
-  std::vector<raw_ptr<blink::WebFrame, VectorExperimental>> loading_frames_;
+  std::vector<raw_ptr<blink::WebFrame>> loading_frames_;
   // We do not want the test to end until the main frame finishes loading. This
   // starts as true at the beginning of the test, and will be set to false once
   // we run out of frames to load at any time.

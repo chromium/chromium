@@ -111,8 +111,7 @@ class CONTENT_EXPORT AgentSchedulingGroup
   RenderFrameImpl* GetListener(const blink::LocalFrameToken& frame_token);
 
   // Map of registered RenderFrames.
-  absl::flat_hash_map<blink::LocalFrameToken,
-                      raw_ptr<RenderFrameImpl, CtnExperimental>>
+  absl::flat_hash_map<blink::LocalFrameToken, raw_ptr<RenderFrameImpl>>
       listener_map_;
 
   // A dedicated scheduler for this AgentSchedulingGroup.

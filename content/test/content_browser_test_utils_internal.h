@@ -627,7 +627,7 @@ class InactiveRenderFrameHostDeletionObserver : public WebContentsObserver {
   void CheckCondition();
 
   std::unique_ptr<base::RunLoop> loop_;
-  std::set<raw_ptr<RenderFrameHost, SetExperimental>> inactive_rfhs_;
+  std::set<raw_ptr<RenderFrameHost>> inactive_rfhs_;
 };
 
 class TestNavigationObserverInternal : public TestNavigationObserver {

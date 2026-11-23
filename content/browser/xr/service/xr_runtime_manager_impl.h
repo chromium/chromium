@@ -164,7 +164,7 @@ class CONTENT_EXPORT XRRuntimeManagerImpl
 #endif
 
   content::WebXrLoggerManager logger_manager_;
-  std::set<raw_ptr<VRServiceImpl, SetExperimental>> services_;
+  std::set<raw_ptr<VRServiceImpl>> services_;
 
   THREAD_CHECKER(thread_checker_);
 };

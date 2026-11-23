@@ -61,7 +61,7 @@ class TracingProcessSetMonitor : public DevToolsSession::ChildObserver,
   const ProcessAddedCallback process_added_callback_;
 
   bool in_init_{false};
-  std::unordered_set<raw_ptr<const DevToolsAgentHost, CtnExperimental>> hosts_;
+  std::unordered_set<raw_ptr<const DevToolsAgentHost>> hosts_;
   std::unordered_set<base::ProcessId> known_pids_;
 };
 

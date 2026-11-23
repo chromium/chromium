@@ -351,8 +351,7 @@ class PageHandler : public DevToolsDomainHandler,
   // Maps DevTools navigation tokens to pending NavigateCallbacks.
   base::flat_map<base::UnguessableToken, std::unique_ptr<NavigateCallback>>
       navigate_callbacks_;
-  base::flat_set<raw_ptr<download::DownloadItem, CtnExperimental>>
-      pending_downloads_;
+  base::flat_set<raw_ptr<download::DownloadItem>> pending_downloads_;
 
   bool is_prerendering_allowed_ = true;
   base::RepeatingCallback<void(std::string)> prepare_for_reload_callback_;

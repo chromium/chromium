@@ -215,8 +215,7 @@ class TargetHandler : public DevToolsDomainHandler,
   // !auto_attach_related_targets_.empty())
   std::unique_ptr<TargetFilter> auto_attach_target_filter_;
   bool wait_for_debugger_on_start_ = false;
-  std::map<DevToolsAgentHost*, raw_ptr<Session, CtnExperimental>>
-      auto_attached_sessions_;
+  std::map<DevToolsAgentHost*, raw_ptr<Session>> auto_attached_sessions_;
   base::flat_map<TargetAutoAttacher*, bool /* wait_for_debugger_on_start */>
       auto_attach_related_targets_;
   bool auto_attach_service_workers_ = true;
@@ -224,10 +223,10 @@ class TargetHandler : public DevToolsDomainHandler,
   std::unique_ptr<TargetFilter> discover_target_filter_;
   bool observing_agent_hosts_ = false;
   std::map<std::string, std::unique_ptr<Session>> attached_sessions_;
-  std::set<raw_ptr<DevToolsAgentHost, SetExperimental>> reported_hosts_;
+  std::set<raw_ptr<DevToolsAgentHost>> reported_hosts_;
   base::flat_set<std::string> dispose_on_detach_context_ids_;
   base::flat_map<std::string, net::ProxyConfig> contexts_with_overridden_proxy_;
-  base::flat_set<raw_ptr<Throttle, CtnExperimental>> throttles_;
+  base::flat_set<raw_ptr<Throttle>> throttles_;
   std::optional<net::ProxyConfig> pending_proxy_config_;
   HiddenTargetManager hidden_target_manager_;
 

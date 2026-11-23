@@ -1246,8 +1246,7 @@ void Transaction::CloseOpenCursors() {
 
   // Cursor::Close() indirectly mutates |open_cursors_|, when it calls
   // Transaction::UnregisterOpenCursor().
-  std::set<raw_ptr<Cursor, SetExperimental>> open_cursors =
-      std::move(open_cursors_);
+  std::set<raw_ptr<Cursor>> open_cursors = std::move(open_cursors_);
   open_cursors_.clear();
   for (Cursor* cursor : open_cursors) {
     cursor->Close();

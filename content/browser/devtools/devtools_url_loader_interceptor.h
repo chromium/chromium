@@ -295,12 +295,11 @@ class CONTENT_EXPORT DevToolsURLLoaderInterceptor {
   std::vector<Pattern> patterns_;
   bool handle_auth_ = false;
   // Maps DevTools protocol interception IDs to active jobs.
-  std::map<std::string, raw_ptr<InterceptionJob, CtnExperimental>> jobs_;
+  std::map<std::string, raw_ptr<InterceptionJob>> jobs_;
   // Maps originating (process_id, request_id) to active jobs for collision
   // checks and routing network service callbacks where only request_id is
   // known.
-  std::map<GlobalRequestID, raw_ptr<InterceptionJob, CtnExperimental>>
-      jobs_by_global_req_id_;
+  std::map<GlobalRequestID, raw_ptr<InterceptionJob>> jobs_by_global_req_id_;
 
   base::WeakPtrFactory<DevToolsURLLoaderInterceptor> weak_factory_;
 };

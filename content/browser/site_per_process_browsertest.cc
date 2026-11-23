@@ -7834,7 +7834,7 @@ class SitePerProcessAndroidImeTest : public SitePerProcessBrowserTest {
     ime_adapter()->CommitText(env, caller, jtext, jtext, 0);
   }
 
-  std::vector<raw_ptr<RenderFrameHostImpl, VectorExperimental>> frames_;
+  std::vector<raw_ptr<RenderFrameHostImpl>> frames_;
 };
 
 // This test verifies that committing text will be applied on the focused

@@ -180,8 +180,7 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   // while the Profile wasn't destructed. This map allows the restored session
   // to re-use the SessionStorageNamespaceHandleImpl objects that are still
   // alive thanks to the sessions component.
-  std::map<std::string,
-           raw_ptr<SessionStorageNamespaceHandleImpl, CtnExperimental>>
+  std::map<std::string, raw_ptr<SessionStorageNamespaceHandleImpl>>
       alive_namespaces_ GUARDED_BY(alive_namespaces_lock_);
   mutable base::Lock alive_namespaces_lock_;
 

@@ -182,7 +182,7 @@ class PerProcessRenderViewHostSet : public base::SupportsUserData::Data {
 
   static const int kUserDataKey = 0;
 
-  std::unordered_set<raw_ptr<const RenderViewHostImpl, CtnExperimental>>
+  std::unordered_set<raw_ptr<const RenderViewHostImpl>>
       render_view_host_instances_;
 };
 

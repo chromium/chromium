@@ -69,7 +69,7 @@ class CONTENT_EXPORT CompositorDependenciesAndroid {
   base::OnceClosure pending_connect_viz_on_main_thread_;
 
   // The set of visible CompositorImpls.
-  base::flat_set<raw_ptr<CompositorImpl, CtnExperimental>> visible_compositors_;
+  base::flat_set<raw_ptr<CompositorImpl>> visible_compositors_;
   size_t visible_synchronous_compositors_ = 0u;
 };
 

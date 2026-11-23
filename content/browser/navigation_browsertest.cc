@@ -141,8 +141,8 @@ class InterceptAndCancelDidCommitProvisionalLoad
     }
   }
 
-  const std::vector<raw_ptr<NavigationRequest, VectorExperimental>>&
-  intercepted_navigations() const {
+  const std::vector<raw_ptr<NavigationRequest>>& intercepted_navigations()
+      const {
     return intercepted_navigations_;
   }
 
@@ -169,8 +169,7 @@ class InterceptAndCancelDidCommitProvisionalLoad
 
   // Note: Do not dereference the intercepted_navigations_, they are used as
   // indices in the RenderFrameHostImpl and not for themselves.
-  std::vector<raw_ptr<NavigationRequest, VectorExperimental>>
-      intercepted_navigations_;
+  std::vector<raw_ptr<NavigationRequest>> intercepted_navigations_;
   std::vector<mojom::DidCommitProvisionalLoadParamsPtr> intercepted_messages_;
   std::unique_ptr<base::RunLoop> loop_;
 };

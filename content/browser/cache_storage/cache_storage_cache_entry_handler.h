@@ -161,7 +161,7 @@ class CacheStorageCacheEntryHandler {
   // them if the cache has to be deleted while there are still references to
   // data in it.  DiskCacheBlobEntries are owned by EntryReaderImpl, which
   // are owned by their mojo remote (which indirectly is is owned by some blob).
-  std::set<raw_ptr<DiskCacheBlobEntry, SetExperimental>> blob_entries_;
+  std::set<raw_ptr<DiskCacheBlobEntry>> blob_entries_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

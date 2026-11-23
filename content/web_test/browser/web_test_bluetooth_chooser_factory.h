@@ -36,7 +36,7 @@ class WebTestBluetoothChooserFactory {
   std::vector<std::string> events_;
 
   // Contains the set of live choosers, in order to send them events.
-  std::set<raw_ptr<Chooser, SetExperimental>> choosers_;
+  std::set<raw_ptr<Chooser>> choosers_;
 
   base::WeakPtrFactory<WebTestBluetoothChooserFactory> weak_this_{this};
 };

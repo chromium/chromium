@@ -361,8 +361,7 @@ void CacheStorageCacheEntryHandler::InvalidateDiskCacheBlobEntrys() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Calling Invalidate() can cause the CacheStorageCacheEntryHandler to be
   // destroyed. Be careful not to touch |this| after calling Invalidate().
-  std::set<raw_ptr<DiskCacheBlobEntry, SetExperimental>> entries =
-      std::move(blob_entries_);
+  std::set<raw_ptr<DiskCacheBlobEntry>> entries = std::move(blob_entries_);
   for (DiskCacheBlobEntry* entry : entries) {
     entry->Invalidate();
   }

@@ -1426,8 +1426,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
 #endif
 
   // Clients that contribute priority to this process.
-  base::flat_set<raw_ptr<RenderProcessHostPriorityClient, CtnExperimental>>
-      priority_clients_;
+  base::flat_set<raw_ptr<RenderProcessHostPriorityClient>> priority_clients_;
 
   // The calculated priority of this process, which is exposed through
   // GetPriority() and to observers.

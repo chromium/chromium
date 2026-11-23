@@ -160,7 +160,7 @@ class FindTestWebContentsDelegate : public WebContentsDelegate,
 // FindRequestManager could be owned by an outer WebContents of |web_contents|
 // and the returned RenderFrameHosts are not necessarily part of |web_contents|
 // frame tree.
-std::unordered_set<raw_ptr<RenderFrameHost, CtnExperimental>>
+std::unordered_set<raw_ptr<RenderFrameHost>>
 GetRenderFrameHostsWithPendingFindResults(WebContents* web_contents);
 
 }  // namespace content

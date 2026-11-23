@@ -75,8 +75,7 @@ class TestSynchronousCompositorClient : public SynchronousCompositorClient {
   }
 
  private:
-  std::map<viz::FrameSinkId, raw_ptr<SynchronousCompositor, CtnExperimental>>
-      compositor_map_;
+  std::map<viz::FrameSinkId, raw_ptr<SynchronousCompositor>> compositor_map_;
 };
 
 class SynchronousCompositorBrowserTest : public ContentBrowserTest {

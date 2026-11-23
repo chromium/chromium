@@ -248,8 +248,7 @@ class CONTENT_EXPORT SaveFileManager
 
   // Tracks which SavePackage to send data to, called only on UI thread.
   // SavePackageMap maps save item ids to their SavePackage.
-  absl::flat_hash_map<SaveItemId, raw_ptr<SavePackage, CtnExperimental>>
-      packages_;
+  absl::flat_hash_map<SaveItemId, raw_ptr<SavePackage>> packages_;
 
   // The helper object doing the actual download. Should be accessed on the UI
   // thread.

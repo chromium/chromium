@@ -67,7 +67,7 @@ class VirtualFidoDiscoveryFactory
   base::WeakPtr<VirtualAuthenticatorManagerImpl> weak_authenticator_manager_;
 
   // Individual discoveries are owned by the FidoRequestHandler.
-  std::set<raw_ptr<VirtualFidoDiscovery, SetExperimental>> discoveries_;
+  std::set<raw_ptr<VirtualFidoDiscovery>> discoveries_;
 };
 
 }  // namespace content

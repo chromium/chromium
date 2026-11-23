@@ -356,7 +356,7 @@ class CONTENT_EXPORT Transaction : public blink::mojom::IDBTransaction {
   // See crbug.com/1493696 for discussion of how this should be improved.
   base::ByteSizeDelta preliminary_size_estimate_;
 
-  std::set<raw_ptr<Cursor, SetExperimental>> open_cursors_;
+  std::set<raw_ptr<Cursor>> open_cursors_;
 
   // This timer is started after requests have been processed. If no subsequent
   // requests are processed before the timer fires, assume the script is

@@ -54,8 +54,7 @@ class CONTENT_EXPORT DedicatedWorkerServiceImpl
 
  private:
   base::ObserverList<Observer> observers_;
-  base::flat_map<blink::DedicatedWorkerToken,
-                 raw_ptr<DedicatedWorkerHost, CtnExperimental>>
+  base::flat_map<blink::DedicatedWorkerToken, raw_ptr<DedicatedWorkerHost>>
       dedicated_worker_hosts_;
 };
 

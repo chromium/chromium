@@ -98,8 +98,7 @@ class DevToolsRendererChannel : public blink::mojom::DevToolsAgentHost {
   mojo::AssociatedRemote<blink::mojom::DevToolsAgent> associated_agent_remote_;
   int process_id_;
   raw_ptr<RenderFrameHostImpl> frame_host_ = nullptr;
-  base::flat_set<raw_ptr<WorkerOrWorkletDevToolsAgentHost, CtnExperimental>>
-      child_targets_;
+  base::flat_set<raw_ptr<WorkerOrWorkletDevToolsAgentHost>> child_targets_;
   ChildTargetCreatedCallback child_target_created_callback_;
   bool wait_for_debugger_ = false;
   base::OnceClosure set_report_completion_callback_;

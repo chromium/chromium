@@ -688,8 +688,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
     // Preprocessed maps used in PopulateKeySet(), mapping frame names
     // to their respective FrameTreeNodes, and FrameTreeNode ids to their
     // current document sequences numbers.
-    std::map<std::string, raw_ptr<FrameTreeNode, CtnExperimental>>
-        names_to_nodes_;
+    std::map<std::string, raw_ptr<FrameTreeNode>> names_to_nodes_;
     std::map<FrameTreeNodeId, int64_t> frame_tree_node_id_to_doc_seq_nos_;
 
     // The output of PopulateKeySet(), which maps FrameTreeNode ids to the keys
@@ -1224,7 +1223,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   //
   // This is meant to avoid a class of URL spoofs where the navigation is
   // canceled, but the stale pending NavigationEntry is left in place.
-  std::set<raw_ptr<PendingEntryRef, SetExperimental>> pending_entry_refs_;
+  std::set<raw_ptr<PendingEntryRef>> pending_entry_refs_;
 
   // If a new entry fails loading, details about it are temporarily held here
   // until the error page is shown (or 0 otherwise).

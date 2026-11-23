@@ -904,7 +904,7 @@ TargetHandler::Session* TargetHandler::FindWaitingSession(
 }
 
 void TargetHandler::ClearThrottles() {
-  base::flat_set<raw_ptr<Throttle, CtnExperimental>> copy(throttles_);
+  base::flat_set<raw_ptr<Throttle>> copy(throttles_);
   for (Throttle* throttle : copy) {
     throttle->Clear();
   }

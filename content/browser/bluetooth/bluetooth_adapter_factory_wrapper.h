@@ -96,8 +96,7 @@ class CONTENT_EXPORT BluetoothAdapterFactoryWrapper {
   // We keep a list of all observers so that when the adapter gets swapped,
   // we can remove all observers from the old adapter and add them to the
   // new adapter.
-  std::unordered_set<raw_ptr<WebBluetoothServiceImpl, CtnExperimental>>
-      adapter_observers_;
+  std::unordered_set<raw_ptr<WebBluetoothServiceImpl>> adapter_observers_;
 
   // Should only be called on the UI thread.
   THREAD_CHECKER(thread_checker_);

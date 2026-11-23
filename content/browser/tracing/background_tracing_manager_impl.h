@@ -90,10 +90,8 @@ class BackgroundTracingManagerImpl
   std::unique_ptr<TracingDelegate> delegate_;
   std::unique_ptr<tracing::BackgroundTracingStateManager> state_manager_;
 
-  std::set<raw_ptr<tracing::mojom::BackgroundTracingAgent, SetExperimental>>
-      agents_;
-  std::set<raw_ptr<tracing::TracingAgentObserverManager::AgentObserver,
-                   SetExperimental>>
+  std::set<raw_ptr<tracing::mojom::BackgroundTracingAgent>> agents_;
+  std::set<raw_ptr<tracing::TracingAgentObserverManager::AgentObserver>>
       agent_observers_;
 
   std::map<content::ChildProcessId,

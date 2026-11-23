@@ -1001,7 +1001,7 @@ class CONTENT_EXPORT WebContentsDelegate {
   void Detach(WebContents* source);
 
   // The WebContents that this is currently a delegate for.
-  std::set<raw_ptr<WebContents, SetExperimental>> attached_contents_;
+  std::set<raw_ptr<WebContents>> attached_contents_;
 };
 
 }  // namespace content

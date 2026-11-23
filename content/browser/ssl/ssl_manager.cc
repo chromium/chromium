@@ -96,10 +96,10 @@ class SSLManagerSet : public base::SupportsUserData::Data {
   SSLManagerSet(const SSLManagerSet&) = delete;
   SSLManagerSet& operator=(const SSLManagerSet&) = delete;
 
-  std::set<raw_ptr<SSLManager, SetExperimental>>& get() { return set_; }
+  std::set<raw_ptr<SSLManager>>& get() { return set_; }
 
  private:
-  std::set<raw_ptr<SSLManager, SetExperimental>> set_;
+  std::set<raw_ptr<SSLManager>> set_;
 };
 
 }  // namespace
