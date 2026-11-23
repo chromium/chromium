@@ -54,11 +54,6 @@ constexpr char kHatsSurveyProbabilityName[] = "probability";
 // keep-sorted start allow_yaml_lists=yes case=no group_prefixes=["#if", "#else", "#endif", "const", "};", "}", ");", "//", "bool", "base::", "BASE_FEATURE", "BASE_FEATURE_PARAM"] by_regex=["BASE_FEATURE\\(.*\\);"] skip_lines=2
 // clang-format on
 
-#if BUILDFLAG(IS_IOS)
-BASE_FEATURE(kAccountRetrievalWaitsForRestoration,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, an ADDSESSION Mirror header without an email is handled for the
 // primary account if the primary account is not in the Gaia cookies: Chrome

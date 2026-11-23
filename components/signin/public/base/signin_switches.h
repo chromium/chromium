@@ -49,13 +49,6 @@ extern const char kForceFreFeatureShowcaseSteps[];
 // keep-sorted start allow_yaml_lists=yes case=no group_prefixes=["#if", "#else", "#endif", "extern const", "enum class", "};", "//", "bool", "base::", "BASE_DECLARE_FEATURE", "BASE_DECLARE_FEATURE_PARAM", "COMPONENT_EXPORT(SIGNIN_SWITCHES)"] by_regex=["BASE_DECLARE_FEATURE\\(.*\\);"] skip_lines=2
 // clang-format on
 
-#if BUILDFLAG(IS_IOS)
-// When enabled, the account retrieval waits for accounts to become available on
-// the first run after a restore operation.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kAccountRetrievalWaitsForRestoration);
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kAddSessionFallbackToPrimaryAccount);
