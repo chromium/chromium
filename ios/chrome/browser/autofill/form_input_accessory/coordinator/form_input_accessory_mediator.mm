@@ -135,12 +135,6 @@ bool IsSuggestionRefreshAllowed() {
              : true;
 }
 
-// Returns true if the FormSuggestionController (the provider for this KA
-// mediator) is in stateless mode.
-bool IsStateless() {
-  return base::FeatureList::IsEnabled(kStatelessFormSuggestionController);
-}
-
 }  // namespace
 
 @interface FormInputAccessoryMediator () <
@@ -238,7 +232,7 @@ bool IsStateless() {
   BOOL _keyboardHeightChangeNotificationsEnabled;
 
   // The current FormSuggestionProvider that matches the current suggestions.
-  // Set to nil if there are no current suggestions. Only used when Stateless.
+  // Set to nil if there are no current suggestions.
   __weak id<FormSuggestionProvider> _currentSuggestionProvider;
 
   // Whether the mediator has been disconnected.
@@ -405,8 +399,7 @@ bool IsStateless() {
 }
 
 - (autofill::FillingProduct)currentProviderMainFillingProduct {
-  return IsStateless() ? _currentSuggestionProvider.mainFillingProduct
-                       : self.currentProvider.mainFillingProduct;
+  return _currentSuggestionProvider.mainFillingProduct;
 }
 
 - (void)reloadFirstResponderInputViews {
@@ -816,14 +809,10 @@ bool IsStateless() {
                suggestions:(NSArray<FormSuggestion*>*)suggestions {
   FormSuggestion* firstSuggestion = suggestions.firstObject;
 
-  // Set the `mainFillingProduct` from the `suggestions` when stateless.
-  // Defaults to autofill::FillingProduct::kNone by default if there are no
-  // suggestions available in which case `provider.mainFillingProduct` is also
-  // likely to give back autofill::FillingProduct::kNone since suggestions
-  // aren't available.
+  // Defaults to autofill::FillingProduct::kNone if there are no suggestions
+  // available.
   autofill::FillingProduct mainFillingProduct =
-      IsStateless() ? firstSuggestion.provider.mainFillingProduct
-                    : provider.mainFillingProduct;
+      firstSuggestion.provider.mainFillingProduct;
 
   if (!self.suggestionsEnabled) {
     if (self.formInputInteractionDelegate) {
@@ -844,16 +833,13 @@ bool IsStateless() {
   self.consumer.currentFieldId = _lastSeenParams.field_renderer_id;
   _suggestionsHaveBeenShown = suggestions.count > 0;
   [self.consumer showAccessorySuggestions:suggestions];
-  if (firstSuggestion) {
-    SuggestionProviderType providerType =
-        [self getProviderTypeFromSuggestion:firstSuggestion];
-    if (providerType == SuggestionProviderTypeAutofill) {
-      default_browser::NotifyAutofillSuggestionsShown(self.engagementTracker);
+  if (firstSuggestion &&
+      firstSuggestion.provider.type == SuggestionProviderTypeAutofill) {
+    default_browser::NotifyAutofillSuggestionsShown(self.engagementTracker);
 
-      if (firstSuggestion.featureForIPH != SuggestionFeatureForIPH::kUnknown) {
-        [self.handler
-            showAutofillSuggestionIPHIfNeededFor:firstSuggestion.featureForIPH];
-      }
+    if (firstSuggestion.featureForIPH != SuggestionFeatureForIPH::kUnknown) {
+      [self.handler
+          showAutofillSuggestionIPHIfNeededFor:firstSuggestion.featureForIPH];
     }
   }
 }
@@ -861,8 +847,7 @@ bool IsStateless() {
 // Logs information about what type of suggestion the user selected.
 - (void)logReauthenticationEvent:(ReauthenticationEvent)reauthenticationEvent
                    forSuggestion:(FormSuggestion*)suggestion {
-  if ([self getProviderTypeFromSuggestion:suggestion] ==
-      SuggestionProviderTypePassword) {
+  if (suggestion.provider.type == SuggestionProviderTypePassword) {
     UmaHistogramEnumeration("IOS.Reauth.Password.Autofill",
                             reauthenticationEvent);
   }
@@ -873,8 +858,7 @@ bool IsStateless() {
 - (void)handleSuggestion:(FormSuggestion*)formSuggestion
                  atIndex:(NSInteger)index
               completion:(ProceduralBlock)completion {
-  if ([self getProviderTypeFromSuggestion:formSuggestion] ==
-      SuggestionProviderTypePassword) {
+  if (formSuggestion.provider.type == SuggestionProviderTypePassword) {
     default_browser::NotifyPasswordAutofillSuggestionUsed(
         self.engagementTracker);
   } else if (formSuggestion.featureForIPH !=
@@ -911,16 +895,13 @@ bool IsStateless() {
   if (_isDisconnected) {
     return;
   }
-  if (IsStateless()) {
-    // When using the stateless FormSuggestionsController, ensure the params
-    // attached to the suggestion are the same as the ones held by this mediator
-    // to keep the status quo as this mediator should be the source of truth
-    // when it is used instead of directly using the suggestions provider for
-    // accepting the suggestions.
-    formSuggestion = [FormSuggestion copy:formSuggestion
-                             andSetParams:_lastSeenParams
-                                 provider:formSuggestion.provider];
-  }
+  // Ensure the params attached to the suggestion are the same as the ones held
+  // by this mediator to keep the status quo, as this mediator is the source of
+  // truth when it is used instead of directly using the suggestions provider
+  // for accepting the suggestions.
+  formSuggestion = [FormSuggestion copy:formSuggestion
+                           andSetParams:_lastSeenParams
+                               provider:formSuggestion.provider];
 
   // Close the popover view.
   [self.handler dismissPopover];
@@ -1109,13 +1090,6 @@ bool IsStateless() {
   return webauthn::IOSWebAuthnCredentialsDelegateFactory::GetFactory(
              self.webState)
       ->GetDelegateForFrameId(_lastSeenParams.frame_id);
-}
-
-// Returns the SuggestionProviderType for the `suggestion` based on whether or
-// not the FormSuggestionController is stateless.
-- (SuggestionProviderType)getProviderTypeFromSuggestion:
-    (FormSuggestion*)suggestion {
-  return IsStateless() ? suggestion.provider.type : self.currentProvider.type;
 }
 
 - (void)openCreditCardEditForSuggestion:(FormSuggestion*)suggestion {

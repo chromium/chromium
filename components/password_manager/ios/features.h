@@ -13,14 +13,6 @@ namespace password_manager::features {
 // Features that are exclusive to ios and doesn't touch any cross-platform
 // module go here.
 
-// Enables the stateless FillData flow on iOS. When enabled,
-// the AccountSelectFillData doesn't rely on intermediate steps anymore to
-// handle the different steps in the FillData flow (i.e. you don't need to
-// retrieve suggestions before filling them). This allow handling concurrent
-// form suggestions retrieval smoothly, hence fully supporting the stateless
-// FormSuggestionController, end to end.
-BASE_DECLARE_FEATURE(kIOSStatelessFillDataFlow);
-
 // Enables automatic submission of password forms when the user selects a
 // suggestion that fills all the required fields.
 BASE_DECLARE_FEATURE(kIOSPasswordAutoSubmission);

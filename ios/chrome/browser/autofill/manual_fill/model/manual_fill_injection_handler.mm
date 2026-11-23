@@ -32,7 +32,6 @@
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate_factory.h"
 #import "ios/chrome/browser/autofill/manual_fill/model/form_observer_helper.h"
 #import "ios/chrome/browser/autofill/manual_fill/model/manual_fill_credential.h"
-#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_accessory_view_handler.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_client.h"
 #import "ios/chrome/browser/autofill/model/manual_fill_virtual_card_cache.h"
@@ -67,11 +66,6 @@ struct AutofillTargetContext {
   autofill::FieldRendererId field_id;
   autofill::FormRendererId form_id;
 };
-
-// Returns true if the FormSuggestionClient is stateless.
-bool IsStateless() {
-  return base::FeatureList::IsEnabled(kStatelessFormSuggestionController);
-}
 
 // Returns true if the `suggestion` is supported by the injection handler.
 bool IsSupportedSuggestion(FormSuggestion* suggestion) {
@@ -282,27 +276,20 @@ void RecordPasswordAutofilledStat(web::WebState* webState) {
 
 - (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion
                            atIndex:(NSInteger)index {
-  if (IsStateless()) {
-    // It is really odd to not have params here as getting a suggestion for the
-    // manual fallback should correlate with a form activity. Only
-    // crash when stateless is enabled so we don't perturbate the current flow.
-    CHECK(_lastFocusedElementParams);
+  // It is really odd to not have params here as getting a suggestion for the
+  // manual fallback should correlate with a form activity.
+  CHECK(_lastFocusedElementParams);
 
-    // Do not pass the params yet as the client will wrap its own params around
-    // the suggestion. This is to keep the status quo of how params are handled
-    // when doing a manual fill.
-    FormSuggestion* decoratedSuggestion =
-        [FormSuggestion copy:formSuggestion
-                andSetParams:std::nullopt
-                    provider:[self providerForSuggestion:formSuggestion]];
-    [self.formSuggestionClient didSelectSuggestion:decoratedSuggestion
-                                           atIndex:index
-                                        completion:nil];
-  } else {
-    [self.formSuggestionClient didSelectSuggestion:formSuggestion
-                                           atIndex:index
-                                        completion:nil];
-  }
+  // Do not pass the params yet as the client will wrap its own params around
+  // the suggestion. This is to keep the status quo of how params are handled
+  // when doing a manual fill.
+  FormSuggestion* decoratedSuggestion =
+      [FormSuggestion copy:formSuggestion
+              andSetParams:std::nullopt
+                  provider:[self providerForSuggestion:formSuggestion]];
+  [self.formSuggestionClient didSelectSuggestion:decoratedSuggestion
+                                         atIndex:index
+                                      completion:nil];
 }
 
 - (BOOL)isActiveFormAPasswordForm {

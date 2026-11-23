@@ -300,10 +300,8 @@ class AutofillBottomSheetTabHelper
   // `params`.
   void MaybeShowPaymentsBottomSheet(const autofill::FormActivityParams& params);
 
-  // Send command to show the Payments Bottom Sheet. Detach all listeners if
-  // `detach`.
-  void ShowPaymentsBottomSheet(const autofill::FormActivityParams& params,
-                               bool detach);
+  // Send command to show the Payments Bottom Sheet.
+  void ShowPaymentsBottomSheet(const autofill::FormActivityParams& params);
 
   // Send command to show the scan save and fill Bottom Sheet.
   void ShowScanCardSaveAndFillBottomSheet(

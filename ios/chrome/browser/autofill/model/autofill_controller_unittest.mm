@@ -55,7 +55,6 @@
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
-#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_controller.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
@@ -109,8 +108,6 @@ using base::test::ScopedFeatureList;
   FormSuggestionsReadyCompletion wrappedBlock =
       ^(NSArray<FormSuggestion*>* suggestions,
         id<FormInputSuggestionsProvider> provider) {
-        // This is the key change: update the test's state regardless of whether
-        // the controller is stateful or stateless.
         weakSelf.suggestions = suggestions;
         weakSelf.suggestionRetrievalComplete = YES;
 
@@ -124,18 +121,6 @@ using base::test::ScopedFeatureList;
   [super retrieveSuggestionsForForm:params
                            webState:webState
            accessoryViewUpdateBlock:wrappedBlock];
-}
-
-// -updateKeyboardWithSuggestions: is only called in the stateful path.
-// The new wrapped block above handles the stateless path.
-- (void)updateKeyboardWithSuggestions:(NSArray*)suggestions {
-  self.suggestions = suggestions;
-  self.suggestionRetrievalComplete = YES;
-}
-
-// -onNoSuggestionsAvailable is only called in the stateful path.
-- (void)onNoSuggestionsAvailable {
-  self.suggestionRetrievalComplete = YES;
 }
 
 - (void)resetSuggestionAvailable {
@@ -269,10 +254,8 @@ class AutofillControllerTest : public PlatformTest {
     // TODO(crbug.com/533826510): Remove this override when
     // kAutofillEnableBottomSheetScanCardAndFill is cleaned up. These credit
     // card import tests need to be updated to support the save-and-fill flow.
-    scoped_feature_list_2_.InitWithFeatures(
-        /*enabled_features=*/{kStatelessFormSuggestionController},
-        /*disabled_features=*/{
-            autofill::features::kAutofillEnableBottomSheetScanCardAndFill});
+    scoped_feature_list_2_.InitAndDisableFeature(
+        autofill::features::kAutofillEnableBottomSheetScanCardAndFill);
 
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),

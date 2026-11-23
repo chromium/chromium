@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator_handler.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/ui/form_input_accessory_consumer.h"
-#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
@@ -244,9 +243,7 @@ using FieldType = autofill::FormActivityParams::FieldType;
 namespace {
 
 // Test fixture for FormSuggestionController testing.
-class FormSuggestionControllerTest
-    : public PlatformTest,
-      public ::testing::WithParamInterface<bool> {
+class FormSuggestionControllerTest : public PlatformTest {
  public:
   FormSuggestionControllerTest()
       : test_form_activity_tab_helper_(&fake_web_state_) {}
@@ -257,12 +254,6 @@ class FormSuggestionControllerTest
 
   void SetUp() override {
     PlatformTest::SetUp();
-
-    if (!IsStateless()) {
-      scoped_feature_list_.InitAndDisableFeature(
-
-          kStatelessFormSuggestionController);
-    }
 
     fake_web_state_.SetWebViewProxy(mock_web_view_proxy_);
   }
@@ -317,15 +308,8 @@ class FormSuggestionControllerTest
     [accessory_mediator_ injectProvider:suggestion_controller_];
   }
 
-  bool IsStateless() { return GetParam(); }
-
   // Returns true if suggestions were actually received by the consumer.
   bool SuggestionsReceived() { return received_suggestions_; }
-
-  // The scoped feature list to enable/disable features. This needs to be placed
-  // before task_environment_, as per
-  // https://source.chromium.org/chromium/chromium/src/+/main:base/test/scoped_feature_list.h;l=37-41;drc=fe05104cfedb627fa99f218d7d1af6862871566c.
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   // The associated test Web Threads.
   web::WebTaskEnvironment task_environment_;
@@ -356,7 +340,7 @@ class FormSuggestionControllerTest
 };
 
 // Tests that no suggestions are displayed when no providers are registered.
-TEST_P(FormSuggestionControllerTest,
+TEST_F(FormSuggestionControllerTest,
        FormActivityShouldRetrieveSuggestions_NoProvidersAvailable) {
   // Set up the controller without any providers.
   SetUpController(@[]);
@@ -381,7 +365,7 @@ TEST_P(FormSuggestionControllerTest,
 
 // Tests that, when no providers have suggestions to offer for a form/field,
 // they aren't asked and no suggestions are displayed.
-TEST_P(FormSuggestionControllerTest,
+TEST_F(FormSuggestionControllerTest,
        FormActivityShouldRetrieveSuggestions_NoSuggestionsAvailable) {
   // Set up the controller with some providers, but none of them will
   // have suggestions available.
@@ -425,7 +409,7 @@ TEST_P(FormSuggestionControllerTest,
 
 // Tests that concurrent requests can be handled when no suggestions are
 // offered.
-TEST_P(
+TEST_F(
     FormSuggestionControllerTest,
     FormActivityShouldRetrieveSuggestions_NoSuggestionsAvailable_Concurrency) {
   // Set up the controller with some providers, but none of them will
@@ -469,7 +453,7 @@ TEST_P(
 
 // Tests that, once a provider is asked if it has suggestions for a form/field,
 // it and only it is asked to provide them, and that suggestions are then sent.
-TEST_P(FormSuggestionControllerTest,
+TEST_F(FormSuggestionControllerTest,
        FormActivityShouldRetrieveSuggestions_SuggestionsAddedToAccessoryView) {
   autofill::FormActivityParams params;
   params.form_name = "form";
@@ -539,7 +523,7 @@ TEST_P(FormSuggestionControllerTest,
 }
 
 // Tests that concurrent requests can be handled when suggestions are offered.
-TEST_P(
+TEST_F(
     FormSuggestionControllerTest,
     FormActivityShouldRetrieveSuggestions_SuggestionsAddedToAccessoryView_Concurrency) {
   autofill::FormActivityParams params;
@@ -594,74 +578,9 @@ TEST_P(
   EXPECT_NSEQ(@"foo", suggestion.value);
 }
 
-// Tests that with dedupping disabled, concurrent requests can be handled when
-// suggestions are offered.
-TEST_P(
-    FormSuggestionControllerTest,
-    FormActivityShouldRetrieveSuggestions_SuggestionsAddedToAccessoryView_Concurrency_WithoutDedupping) {
-  base::test::ScopedFeatureList scoped_featurelist;
-  scoped_featurelist.InitAndDisableFeature(
-      kStatelessFormSuggestionControllerWithRequestDeduping);
-
-  autofill::FormActivityParams params;
-  params.form_name = "form";
-  params.field_identifier = "field_id";
-  params.field_type = FieldType::kText;
-  params.type = ActivityType::kFocus;
-  params.value = "value";
-  params.input_missing = false;
-
-  AsyncTestSuggestionProvider* provider =
-      [[AsyncTestSuggestionProvider alloc] initWithSuggestions:@[]];
-
-  NSArray* suggestions = @[ [FormSuggestion
-              copy:[FormSuggestion
-                       suggestionWithValue:@"foo"
-                        displayDescription:nil
-                                      icon:nil
-                                      type:autofill::SuggestionType::
-                                               kAutocompleteEntry
-                                   payload:autofill::Suggestion::Payload()
-                            requiresReauth:NO]
-      andSetParams:params
-          provider:provider] ];
-  [provider setSuggestions:suggestions];
-
-  SetUpController(@[ provider ]);
-  GURL url("http://foo.com");
-  fake_web_state_.SetCurrentURL(url);
-  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(url);
-
-  // Start 2 concurrent suggestions retrieval requests.
-  test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
-                                                        params);
-  test_form_activity_tab_helper_.FormActivityRegistered(main_frame.get(),
-                                                        params);
-  ASSERT_EQ(2, provider.pendingRequestsCount);
-
-  // Run the async requests that were dispatched.
-  base::RunLoop().RunUntilIdle();
-
-  ASSERT_EQ(0, provider.pendingRequestsCount);
-  ASSERT_EQ(1u, received_suggestions_.count);
-
-  if (IsStateless()) {
-    EXPECT_EQ(2, provider.askForSuggestionsCount);
-  } else {
-    // Verify that when not stateless, only the latest concurrent request is
-    // handled, so one request.
-    EXPECT_EQ(1, provider.askForSuggestionsCount);
-  }
-
-  // Briefly verify that the returned suggestion corresponds to what the
-  // provider provides.
-  FormSuggestion* suggestion = [received_suggestions_ objectAtIndex:0];
-  EXPECT_NSEQ(@"foo", suggestion.value);
-}
-
 // Tests that selecting a suggestion informs the specified delegate for that
 // suggestion.
-TEST_P(FormSuggestionControllerTest, SelectingSuggestionShouldNotifyDelegate) {
+TEST_F(FormSuggestionControllerTest, SelectingSuggestionShouldNotifyDelegate) {
   GURL url("http://foo.com");
   fake_web_state_.SetCurrentURL(url);
   auto main_frame = web::FakeWebFrame::CreateMainWebFrame(url);
@@ -710,7 +629,7 @@ TEST_P(FormSuggestionControllerTest, SelectingSuggestionShouldNotifyDelegate) {
 }
 
 // Tests that password generation suggestions always have an icon.
-TEST_P(FormSuggestionControllerTest, CopyAndAdjustSuggestions) {
+TEST_F(FormSuggestionControllerTest, CopyAndAdjustSuggestions) {
   SetUpController(@[ [TestSuggestionProvider providerWithSuggestions] ]);
 
   NSMutableArray<FormSuggestion*>* suggestions = [NSMutableArray array];
@@ -731,7 +650,7 @@ TEST_P(FormSuggestionControllerTest, CopyAndAdjustSuggestions) {
 
 // Tests that Ambient Autofill (`SuggestionType::kFillAutofillAi`) suggestions
 // backed by a `RecordType::kPersonalContext` entity receive a default icon.
-TEST_P(FormSuggestionControllerTest,
+TEST_F(FormSuggestionControllerTest,
        CopyAndAdjustSuggestions_AmbientAutofillIcon) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -778,7 +697,7 @@ TEST_P(FormSuggestionControllerTest,
 
 // Tests that metadata and suggestion_delegate are preserved when suggestions
 // are adjusted (e.g. for icons).
-TEST_P(FormSuggestionControllerTest,
+TEST_F(FormSuggestionControllerTest,
        PreservesMetadataAndDelegateOnSuggestionCopy) {
   SetUpController(@[ [TestSuggestionProvider providerWithSuggestions] ]);
 
@@ -803,14 +722,5 @@ TEST_P(FormSuggestionControllerTest,
   EXPECT_EQ(adjusted_suggestions[0].metadata.suggestion_delegate.get(),
             &mock_delegate);
 }
-
-std::string ParamToString(const testing::TestParamInfo<bool>& params_info) {
-  return params_info.param ? "Stateless" : "Stateful";
-}
-
-INSTANTIATE_TEST_SUITE_P(,
-                         FormSuggestionControllerTest,
-                         ::testing::Bool(),
-                         ParamToString);
 
 }  // namespace

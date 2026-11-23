@@ -581,43 +581,6 @@ void VerifyManualFillShowsSignInActionButton(
   [self verifyPasswordFieldsHaveBeenFilled:@"user"];
 }
 
-// Tests that accepting suggestions from the sheet works when the stateless
-// fill data flow feature is enabled.
-- (void)testOpenCredentialBottomSheetUsePassword_StatelessFillDataFlow {
-  [self saveGenericPasswordAndLoadLoginPage];
-
-  // Wait a bit to let things settle. Waiting on content to be loaded on the
-  // page isn't 100% reliable as trying to interact with that content at that
-  // moment doesn't always work.
-  base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(1));
-
-  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kFormPasswordId1)];
-
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:grey_accessibilityID(@"user")];
-
-  // Verify that the subtitle string appears.
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:SubtitleString([self loginPageURL])];
-
-  [[EarlGrey selectElementWithMatcher:UsePasswordButton()]
-      performAction:grey_tap()];
-
-  // No histogram logged because there is only 1 credential shown to the user.
-  GREYAssertNil(
-      [MetricsAppInterface
-          expectTotalCount:0
-              forHistogram:@"PasswordManager.TouchToFill.CredentialIndex"],
-      @"Unexpected histogram error for touch to fill credential index");
-
-  // Verify that the acceptance of the password suggestion at index 0 was
-  // correctly recorded.
-  CheckAutofillSuggestionAcceptedIndexMetricsCount(/*suggestion_index=*/0);
-
-  [self verifyPasswordFieldsHaveBeenFilled:@"user"];
-}
-
 // Tests that the bottom sheet can be used with the new blur.
 - (void)testOpenCredentialBottomSheetUsePasswordWithNewBlur {
   GURL URL = [self loginPageURL];

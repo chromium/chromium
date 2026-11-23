@@ -44,7 +44,6 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_observer.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_pending_prompt_manager.h"
-#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -123,9 +122,8 @@ void RecordPaymentsOrScanCardBottomSheetTriggerOutcome(
 }
 
 bool UseListenersInvalidation() {
-  return base::FeatureList::IsEnabled(kStatelessFormSuggestionController) &&
-         base::FeatureList::IsEnabled(
-             kAutofillPaymentsSheetDetachInvalidatedListenersIos);
+  return base::FeatureList::IsEnabled(
+      kAutofillPaymentsSheetDetachInvalidatedListenersIos);
 }
 
 // Returns true if the `renderer_id` is registered in `map` for `frame_id`.
@@ -359,14 +357,6 @@ void AutofillBottomSheetTabHelper::ShowAmbientAutofillNotice(
 
 void AutofillBottomSheetTabHelper::MaybeShowPaymentsBottomSheet(
     const autofill::FormActivityParams& params) {
-  if (!base::FeatureList::IsEnabled(kStatelessFormSuggestionController)) {
-    // Fall back to showing the payments bottom sheet directly when the
-    // stateless FormSuggestionController is disabled, as querying suggestions
-    // asynchronously via its completion block requires stateless mode.
-    ShowPaymentsBottomSheet(params, /*detach=*/true);
-    return;
-  }
-
   // First try to retrieve credit card suggestions before considering triggering
   // the payments bottom sheet. Credit card suggestions are a good proxy for
   // knowing that the type of the field is "settled" since we know that PWM was
@@ -419,7 +409,7 @@ void AutofillBottomSheetTabHelper::OnSuggestionsRetrievedForPaymentsBottomSheet(
   if (is_scan_card_flow) {
     ShowScanCardSaveAndFillBottomSheet(params);
   } else if (has_cc_suggestions) {
-    ShowPaymentsBottomSheet(params, /*detach=*/false);
+    ShowPaymentsBottomSheet(params);
   } else {
     // Give back the preempted focus to the keyboard if the sheet cannot be
     // triggered.
@@ -428,19 +418,11 @@ void AutofillBottomSheetTabHelper::OnSuggestionsRetrievedForPaymentsBottomSheet(
 }
 
 void AutofillBottomSheetTabHelper::ShowPaymentsBottomSheet(
-    const autofill::FormActivityParams& params,
-    bool detach) {
+    const autofill::FormActivityParams& params) {
   for (auto& observer : observers_) {
     observer.WillShowPaymentsBottomSheet(params);
   }
   [commands_handler_ showPaymentsBottomSheet:params];
-  if (detach) {
-    // Detach the listeners right away to make sure they're always cleaned up to
-    // avoid issues with rogue listeners, see the documentation in
-    // `ShowCredentialBottomSheet()` for more details. Postpone refocus for
-    // later once the bottom sheet is dismissed.
-    DetachPaymentsListenersForAllFrames();
-  }
 }
 
 void AutofillBottomSheetTabHelper::ShowScanCardSaveAndFillBottomSheet(

@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/credential_suggestion_bottom_sheet_mediator.h"
 
-#import "base/feature_list.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
@@ -252,13 +251,8 @@ NSArray<FormSuggestion*>* FilterDuplicateSuggestions(
                         webState:webState
                completionHandler:^(NSArray<FormSuggestion*>* suggestions,
                                    id<FormSuggestionProvider> delegate) {
-                 bool stateless = base::FeatureList::IsEnabled(
-                     password_manager::features::kIOSStatelessFillDataFlow);
-                 NSArray<FormSuggestion*>* wrappedSuggestions =
-                     stateless ? SetParamsAndProviderInSuggestions(
-                                     suggestions, params, delegate)
-                               : suggestions;
-                 completion(wrappedSuggestions);
+                 completion(SetParamsAndProviderInSuggestions(
+                     suggestions, params, delegate));
                }];
 }
 

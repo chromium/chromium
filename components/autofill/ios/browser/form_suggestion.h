@@ -137,12 +137,11 @@ enum class SuggestionIconType {
 
 // Parameters giving the context surrounding the form activity for which that
 // suggestion was generated. Must be set before the suggestion is filled when
-// using the stateless FormSuggestionController.
+// params are not passed directly to the suggestion client.
 @property(assign, nonatomic) std::optional<autofill::FormActivityParams> params;
 
 // The FormSuggestionProvider that provided this suggestion. This allows
-// knowing which provider to use for filling the suggestion. Must be set before
-// the suggestion is filled when kStatelessFormSuggestionController is enabled.
+// knowing which provider to use for filling the suggestion.
 @property(nonatomic, weak) id<FormSuggestionProvider> provider;
 
 // Returns FormSuggestion (immutable) with given values.

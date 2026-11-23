@@ -52,7 +52,6 @@
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/coordinator/form_input_accessory_mediator.h"
-#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_controller.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
@@ -266,11 +265,6 @@ struct TestPasswordFormData {
   [super retrieveSuggestionsForForm:params
                            webState:webState
            accessoryViewUpdateBlock:wrappedBlock];
-}
-
-// This method is kept for the stateful path.
-- (void)updateKeyboardWithSuggestions:(NSArray*)suggestions {
-  self.suggestions = suggestions;
 }
 
 @end
@@ -650,18 +644,16 @@ void PasswordControllerTest::FillFormAndValidate(TestPasswordFormData test_data,
                   payload:autofill::Suggestion::Payload()
            requiresReauth:NO];
 
-  if (base::FeatureList::IsEnabled(kStatelessFormSuggestionController)) {
-    autofill::FormActivityParams params;
-    params.form_name = test_data.form_name;
-    params.form_renderer_id = FormRendererId(test_data.form_renderer_id);
-    params.field_identifier = test_data.username_element;
-    params.field_renderer_id = FieldRendererId(test_data.username_renderer_id);
-    params.frame_id = frame->GetFrameId();
-    suggestion =
-        [FormSuggestion copy:suggestion
-                andSetParams:params
-                    provider:passwordController_.sharedPasswordController];
-  }
+  autofill::FormActivityParams params;
+  params.form_name = test_data.form_name;
+  params.form_renderer_id = FormRendererId(test_data.form_renderer_id);
+  params.field_identifier = test_data.username_element;
+  params.field_renderer_id = FieldRendererId(test_data.username_renderer_id);
+  params.frame_id = frame->GetFrameId();
+  suggestion =
+      [FormSuggestion copy:suggestion
+              andSetParams:params
+                  provider:passwordController_.sharedPasswordController];
 
   SuggestionHandledCompletion completion = ^{
     block_was_called = YES;

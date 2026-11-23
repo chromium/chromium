@@ -46,9 +46,6 @@ class WebState;
 // Overrides the web view proxy.
 - (void)setWebViewProxy:(id<CRWWebViewProxy>)webViewProxy;
 
-// Invoked when an attempt to retrieve suggestions yields no results.
-- (void)onNoSuggestionsAvailable;
-
 // Copies the incoming suggestions, making adjustments if necessary.
 - (NSArray<FormSuggestion*>*)copyAndAdjustSuggestions:
     (NSArray<FormSuggestion*>*)suggestions;

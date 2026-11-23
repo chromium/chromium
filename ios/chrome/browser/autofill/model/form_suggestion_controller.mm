@@ -7,10 +7,8 @@
 #import <memory>
 
 #import "base/apple/foundation_util.h"
-#import "base/feature_list.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
-#import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
@@ -20,7 +18,6 @@
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_navigator.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_default_icons.h"
@@ -32,41 +29,11 @@
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
 
-using autofill::FieldRendererId;
-using autofill::FormRendererId;
 // Block types for `RunSearchPipeline`.
 using PipelineBlock = void (^)(void (^completion)(BOOL));
 using PipelineCompletionBlock = void (^)(NSUInteger index);
 
 namespace {
-
-// Struct that describes suggestion state.
-struct AutofillSuggestionState {
-  AutofillSuggestionState(const autofill::FormActivityParams& params);
-  // The name of the form for autofill.
-  std::string form_name;
-  // The numeric identifier of the form for autofill.
-  FormRendererId form_renderer_id;
-  // The identifier of the field for autofill.
-  std::string field_identifier;
-  // The numeric identifier of the field for autofill.
-  FieldRendererId field_renderer_id;
-  // The identifier of the frame for autofill.
-  std::string frame_identifier;
-  // The user-typed value in the field.
-  std::string typed_value;
-  // The suggestions for the form field. An array of `FormSuggestion`.
-  NSArray* suggestions;
-};
-
-AutofillSuggestionState::AutofillSuggestionState(
-    const autofill::FormActivityParams& params)
-    : form_name(params.form_name),
-      form_renderer_id(params.form_renderer_id),
-      field_identifier(params.field_identifier),
-      field_renderer_id(params.field_renderer_id),
-      frame_identifier(params.frame_id),
-      typed_value(params.value) {}
 
 // Executes each PipelineBlock in `blocks` in order until one invokes its
 // completion with YES, in which case `on_complete` will be invoked with the
@@ -104,27 +71,9 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
   return suggestionsCopy;
 }
 
-// Returns true if the form suggestion controller is stateless.
-bool IsStateless() {
-  return base::FeatureList::IsEnabled(kStatelessFormSuggestionController);
-}
-
-// Returns true if deduping requests is allowed.
-bool IsRequestDedupingAllowed() {
-  return !IsStateless() ||
-         base::FeatureList::IsEnabled(
-             kStatelessFormSuggestionControllerWithRequestDeduping);
-}
-
 }  // namespace
 
 @interface FormSuggestionController () {
-  // Callback to update the accessory view.
-  FormSuggestionsReadyCompletion _accessoryViewUpdateBlock;
-
-  // Autofill suggestion state.
-  std::unique_ptr<AutofillSuggestionState> _suggestionState;
-
   // Providers for suggestions, sorted according to the order in which
   // they should be asked for suggestions, with highest priority in front.
   NSArray* _suggestionProviders;
@@ -135,12 +84,6 @@ bool IsRequestDedupingAllowed() {
 
 // Unique id of the last request.
 @property(nonatomic, assign) NSUInteger requestIdentifier;
-
-// Updates keyboard for `suggestionState`.
-- (void)updateKeyboard:(AutofillSuggestionState*)suggestionState;
-
-// Updates keyboard with `suggestions`.
-- (void)updateKeyboardWithSuggestions:(NSArray*)suggestions;
 
 // Clears state in between page loads.
 - (void)resetSuggestionState;
@@ -217,8 +160,6 @@ bool IsRequestDedupingAllowed() {
           accessoryViewUpdateBlock:
               (FormSuggestionsReadyCompletion)accessoryViewUpdateBlock {
   [self processPage:webState];
-  _suggestionState = std::make_unique<AutofillSuggestionState>(params);
-  _accessoryViewUpdateBlock = [accessoryViewUpdateBlock copy];
 
   self.requestIdentifier += 1;
   NSUInteger requestIdentifier = self.requestIdentifier;
@@ -277,16 +218,13 @@ bool IsRequestDedupingAllowed() {
 
   // Once a provider is found, use it to retrieve suggestions.
   PipelineCompletionBlock completion = ^(NSUInteger providerIndex) {
-    // Ignore outdated results if allowed.
-    if (weakSelf.requestIdentifier != requestIdentifier &&
-        IsRequestDedupingAllowed()) {
+    // Ignore outdated results.
+    if (weakSelf.requestIdentifier != requestIdentifier) {
       return;
     }
     if (providerIndex == NSNotFound) {
-      if (IsStateless() && accessoryViewUpdateBlock) {
+      if (accessoryViewUpdateBlock) {
         accessoryViewUpdateBlock(@[], weakSelf);
-      } else if (!IsStateless()) {
-        [weakSelf onNoSuggestionsAvailable];
       }
       return;
     }
@@ -307,79 +245,23 @@ bool IsRequestDedupingAllowed() {
   RunSearchPipeline(findProviderBlocks, completion);
 }
 
-- (void)onNoSuggestionsAvailable {
-  // Do not call this no suggestions handler when stateless.
-  CHECK(!IsStateless());
-
-  // Check the update block hasn't been reset while waiting for suggestions.
-  if (!_accessoryViewUpdateBlock) {
-    return;
-  }
-  _accessoryViewUpdateBlock(@[], self);
-}
-
 - (void)onSuggestionsReady:(NSArray<FormSuggestion*>*)suggestions
                   provider:(id<FormSuggestionProvider>)provider
                     params:(const autofill::FormActivityParams&)params
                 completion:(FormSuggestionsReadyCompletion)completion {
-  // TODO(ios): crbug.com/249916. If we can also pass in the form/field for
-  // which `suggestions` are, we should check here if `suggestions` are for
-  // the current active element. If not, reset `_suggestionState`.
-  if (!_suggestionState && !IsStateless()) {
-    // The suggestion state was reset in between the call to Autofill API (e.g.
-    // OnAskForValuesToFill) and this method being called back. Results are
-    // therefore no longer relevant.
-    return;
-  }
-
-  NSArray<FormSuggestion*>* suggestionsCopy =
-      [self copyAndAdjustSuggestions:suggestions];
-
-  // Cache the provider and state for the stateful controller. Those should not
-  // be used when the provider is stateless.
   _provider = provider;
-  if (_suggestionState) {
-    // This case is only reached when using the stateless suggestion controller
-    // where the `_suggestionState` isn't required, so updating the suggestions
-    // can be skipped when no `_suggestionState`.
-    _suggestionState->suggestions = [self copyAndAdjustSuggestions:suggestions];
-  }
 
-  if (IsStateless()) {
-    // Use the stateless way for passing suggestions when the feature is
-    // enabled.
-    if (completion) {
-      suggestionsCopy =
-          SetParamsAndProviderInSuggestions(suggestionsCopy, params, provider);
-      completion(suggestionsCopy, self);
-    }
-  } else {
-    // Call the accessory view update block.
-    [self updateKeyboard:_suggestionState.get()];
+  if (completion) {
+    NSArray<FormSuggestion*>* suggestionsCopy =
+        [self copyAndAdjustSuggestions:suggestions];
+    suggestionsCopy =
+        SetParamsAndProviderInSuggestions(suggestionsCopy, params, provider);
+    completion(suggestionsCopy, self);
   }
 }
 
 - (void)resetSuggestionState {
   _provider = nil;
-  _suggestionState.reset();
-}
-
-- (void)updateKeyboard:(AutofillSuggestionState*)suggestionState {
-  CHECK(!IsStateless());
-  if (!suggestionState) {
-    if (_accessoryViewUpdateBlock) {
-      _accessoryViewUpdateBlock(nil, self);
-    }
-  } else {
-    [self updateKeyboardWithSuggestions:suggestionState->suggestions];
-  }
-}
-
-- (void)updateKeyboardWithSuggestions:(NSArray<FormSuggestion*>*)suggestions {
-  CHECK(!IsStateless());
-  if (_accessoryViewUpdateBlock) {
-    _accessoryViewUpdateBlock(suggestions, self);
-  }
 }
 
 #pragma mark - FormSuggestionClient
@@ -387,48 +269,57 @@ bool IsRequestDedupingAllowed() {
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
                     atIndex:(NSInteger)index
                  completion:(ProceduralBlock)completion {
-  if (IsStateless()) {
-    // Check that there are always params attached to the suggestion when no
-    // params are provided by the -didSelectSuggestion caller itself.
-    CHECK(suggestion.params);
-    if (!suggestion.params) {
-      // Just skip if the check isn't triggered. This is to handle the absence
-      // of params when the CHECK isn't fatal.
-      if (completion) {
-        completion();
-      }
-      return;
+  // Check that there are always params attached to the suggestion when no
+  // params are provided by the -didSelectSuggestion caller itself.
+  CHECK(suggestion.params);
+  if (!suggestion.params) {
+    // Just skip if the check isn't triggered. This is to handle the absence
+    // of params when the CHECK isn't fatal.
+    if (completion) {
+      completion();
     }
-
-    [self didSelectSuggestion:suggestion
-                      atIndex:index
-                        state:AutofillSuggestionState(*suggestion.params)
-                   completion:completion];
-  } else if (_suggestionState) {
-    [self didSelectSuggestion:suggestion
-                      atIndex:index
-                        state:*_suggestionState
-                   completion:completion];
-  } else if (completion) {
-    completion();
+    return;
   }
+
+  [self didSelectSuggestion:suggestion
+                    atIndex:index
+                     params:*suggestion.params
+                 completion:completion];
 }
 
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion
                     atIndex:(NSInteger)index
                      params:(const autofill::FormActivityParams&)params
                  completion:(ProceduralBlock)completion {
-  AutofillSuggestionState suggestionState(params);
-  [self didSelectSuggestion:suggestion
-                    atIndex:index
-                      state:suggestionState
-                 completion:completion];
+  id<FormSuggestionProvider> provider = suggestion.provider ?: _provider;
+
+  // If a password related suggestion was selected, reset the credential bottom
+  // sheet dismiss count to 0.
+  if (provider.type == SuggestionProviderTypePassword) {
+    [self resetCredentialBottomSheetDismissCount];
+  }
+
+  // Send the suggestion to the provider. Upon completion advance the cursor
+  // for single-field Autofill, or close the keyboard for full-form Autofill.
+  __weak FormSuggestionController* weakSelf = self;
+  [provider didSelectSuggestion:suggestion
+                        atIndex:index
+                           form:base::SysUTF8ToNSString(params.form_name)
+                 formRendererID:params.form_renderer_id
+                fieldIdentifier:base::SysUTF8ToNSString(params.field_identifier)
+                fieldRendererID:params.field_renderer_id
+                        frameID:base::SysUTF8ToNSString(params.frame_id)
+              completionHandler:^{
+                [[weakSelf formInputNavigator] closeKeyboardWithoutButtonPress];
+                if (completion) {
+                  completion();
+                }
+              }];
 }
 
 #pragma mark - FormInputSuggestionsProvider
 
 - (void)inputAccessoryViewControllerDidReset {
-  _accessoryViewUpdateBlock = nil;
   [self resetSuggestionState];
 }
 
@@ -447,41 +338,6 @@ bool IsRequestDedupingAllowed() {
 - (NSArray<FormSuggestion*>*)copyAndAdjustSuggestions:
     (NSArray<FormSuggestion*>*)suggestions {
   return CopyFormSuggestionsWithDefaultIcons(suggestions, _webState);
-}
-
-// Performs the selection of the suggestion at the provided `index` based on the
-// provided `suggestionState`.
-- (void)didSelectSuggestion:(FormSuggestion*)suggestion
-                    atIndex:(NSInteger)index
-                      state:(const AutofillSuggestionState&)suggestionState
-                 completion:(ProceduralBlock)completion {
-  id<FormSuggestionProvider> provider = suggestion.provider ?: _provider;
-
-  // If a password related suggestion was selected, reset the credential bottom
-  // sheet dismiss count to 0.
-  if (provider.type == SuggestionProviderTypePassword) {
-    [self resetCredentialBottomSheetDismissCount];
-  }
-
-  // Send the suggestion to the provider. Upon completion advance the cursor
-  // for single-field Autofill, or close the keyboard for full-form Autofill.
-  __weak FormSuggestionController* weakSelf = self;
-  [provider
-      didSelectSuggestion:suggestion
-                  atIndex:index
-                     form:base::SysUTF8ToNSString(suggestionState.form_name)
-           formRendererID:suggestionState.form_renderer_id
-          fieldIdentifier:base::SysUTF8ToNSString(
-                              suggestionState.field_identifier)
-          fieldRendererID:suggestionState.field_renderer_id
-                  frameID:base::SysUTF8ToNSString(
-                              suggestionState.frame_identifier)
-        completionHandler:^{
-          [[weakSelf formInputNavigator] closeKeyboardWithoutButtonPress];
-          if (completion) {
-            completion();
-          }
-        }];
 }
 
 // Resets the credential bottom sheet dismiss count to 0.

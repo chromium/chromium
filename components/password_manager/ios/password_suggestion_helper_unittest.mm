@@ -898,10 +898,6 @@ TEST_F(PasswordSuggestionHelperTest,
 // FillData yet available for the frame.
 TEST_F(PasswordSuggestionHelperTest,
        GetPasswordFillData_Stateful_NoFillDataForFrame) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      password_manager::features::kIOSStatelessFillDataFlow);
-
   // Retrieves password form fill data while there isn't any fill data yet
   // available for the frame.
   password_manager::FillDataRetrievalResult result =
@@ -960,10 +956,6 @@ TEST_F(PasswordSuggestionHelperTest, GetBackupPasswordFillData_Stateless) {
 
 // Tests getting fill data for a backup credential when in stateful mode.
 TEST_F(PasswordSuggestionHelperTest, GetBackupPasswordFillData_Stateful) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      password_manager::features::kIOSStatelessFillDataFlow);
-
   FormSuggestionProviderQuery* query =
       BuildQuery(@"username1", FieldType::kText, NSFrameId(main_frame_));
   FormRendererId form_renderer_id = query.formRendererID;

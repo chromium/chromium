@@ -12,7 +12,6 @@
 #import "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/common/features.h"
-#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_controller.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
@@ -235,10 +234,7 @@ TEST_F(CreditCardSuggestionBottomSheetMediatorTest, FillingDelay) {
 TEST_F(CreditCardSuggestionBottomSheetMediatorTest,
        Stateless_AbortWhenNoSuggestions) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{kStatelessFormSuggestionController,
-                            kAutofillPaymentsSheetStateless},
-      /*disabled_features=*/{});
+  scoped_feature_list.InitAndEnableFeature(kAutofillPaymentsSheetStateless);
 
   // Mock -retrieveSuggestionsForForm via swizzling.
   id swizzle_block = ^void(id self, const autofill::FormActivityParams& params,
@@ -417,10 +413,7 @@ TEST_F(CreditCardSuggestionBottomSheetMediatorTest,
 TEST_F(CreditCardSuggestionBottomSheetMediatorTest,
        NavigationInvalidationTakesPrecedenceOverEmptySuggestions) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{kStatelessFormSuggestionController,
-                            kAutofillPaymentsSheetStateless},
-      /*disabled_features=*/{});
+  scoped_feature_list.InitAndEnableFeature(kAutofillPaymentsSheetStateless);
   base::HistogramTester histogram_tester;
   CreateMediatorWithSuggestions();
   ASSERT_TRUE(mediator_);

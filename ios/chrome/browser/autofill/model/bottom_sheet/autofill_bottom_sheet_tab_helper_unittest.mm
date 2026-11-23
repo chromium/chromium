@@ -875,9 +875,6 @@ TEST_F(AutofillBottomSheetTabHelperTest,
 // navigation, while same-document navigation preserves them.
 TEST_F(AutofillBottomSheetTabHelperTest,
        DidStartNavigationCancelsPendingCallbacks) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kStatelessFormSuggestionController);
-
   FormSuggestionTabHelper::CreateForWebState(web_state_.get(), @[]);
 
   __block FormSuggestionsReadyCompletion captured_completion = nil;
@@ -942,9 +939,6 @@ TEST_F(AutofillBottomSheetTabHelperTest,
 // Test that RenderProcessGone cancels pending suggestion retrieval callbacks
 // and clears registered renderer IDs.
 TEST_F(AutofillBottomSheetTabHelperTest, RenderProcessGoneClearsState) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kStatelessFormSuggestionController);
-
   FormSuggestionTabHelper::CreateForWebState(web_state_.get(), @[]);
 
   web::WebFrame* frame = nullptr;
@@ -1181,10 +1175,8 @@ TEST_F(
     AutofillBottomSheetTabHelperTest,
     UpdateListenersForPaymentsForm_ListenersInvalidation_SkipsEmptyDetaches) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {kStatelessFormSuggestionController,
-       kAutofillPaymentsSheetDetachInvalidatedListenersIos},
-      {});
+  feature_list.InitAndEnableFeature(
+      kAutofillPaymentsSheetDetachInvalidatedListenersIos);
 
   web::WebFrame* frame = nullptr;
   autofill::AutofillManager* manager = nullptr;

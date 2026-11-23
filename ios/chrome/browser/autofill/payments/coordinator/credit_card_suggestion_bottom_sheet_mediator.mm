@@ -25,7 +25,6 @@
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
-#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/autofill/payments/ui/credit_card_suggestion_bottom_sheet_consumer.h"
@@ -46,8 +45,7 @@ namespace {
 
 // Returns true if the payments bottom sheet is stateless.
 bool IsStateless() {
-  return base::FeatureList::IsEnabled(kStatelessFormSuggestionController) &&
-         base::FeatureList::IsEnabled(kAutofillPaymentsSheetStateless);
+  return base::FeatureList::IsEnabled(kAutofillPaymentsSheetStateless);
 }
 
 // Status of the form fill context for the payments bottom sheet.

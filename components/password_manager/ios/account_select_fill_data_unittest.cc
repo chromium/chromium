@@ -5,12 +5,9 @@
 #include "components/password_manager/ios/account_select_fill_data.h"
 
 #include "base/compiler_specific.h"
-#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/password_manager/ios/features.h"
 #include "components/password_manager/ios/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -526,10 +523,6 @@ TEST_P(AccountSelectFillDataFieldTypeTest, RetrieveSuggestionsOneForm) {
 }
 
 TEST_P(AccountSelectFillDataFieldTypeTest, GetFillData_WhenNotStateless) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      password_manager::features::kIOSStatelessFillDataFlow);
-
   AccountSelectFillData account_select_fill_data;
   account_select_fill_data.Add(form_data_[0],
                                /*always_populate_realm=*/false);

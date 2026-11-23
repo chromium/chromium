@@ -55,7 +55,6 @@ source_set("model") {
     "validation_rules_storage_factory.h",
   ]
   deps = [
-    ":features",
     ":model_shared",
     "//base",
     "//base:i18n",
@@ -256,7 +255,6 @@ source_set("unit_tests") {
     "suggestion_controller_java_script_feature_unittest.mm",
   ]
   deps = [
-    ":features",
     ":model",
     ":model_internal",
     ":model_shared",

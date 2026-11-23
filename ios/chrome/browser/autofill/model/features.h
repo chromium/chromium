@@ -10,14 +10,6 @@
 // Enables a new blur method for the autofill bottom sheet.
 BASE_DECLARE_FEATURE(kAutofillBottomSheetNewBlur);
 
-// Enables the stateless form suggestion controller.
-BASE_DECLARE_FEATURE(kStatelessFormSuggestionController);
-
-// Enables deduping concurrent requests even when using the stateless
-// FormSuggestionController. This feature is only effective if
-// `kStatelessFormSuggestionController` is enabled.
-BASE_DECLARE_FEATURE(kStatelessFormSuggestionControllerWithRequestDeduping);
-
 // Enables the throttling of form suggestion refresh in the form input keyboard
 // accessory.
 BASE_DECLARE_FEATURE(kThrottleFormInputAccessorySuggestionRefresh);

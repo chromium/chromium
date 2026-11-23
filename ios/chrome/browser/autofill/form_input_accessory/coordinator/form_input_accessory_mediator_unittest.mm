@@ -418,54 +418,7 @@ TEST_F(FormInputAccessoryMediatorTest, FormActivityBlurShouldBeIgnored) {
   EXPECT_OCMOCK_VERIFY(provider_);
 }
 
-// Tests that suggestions are updated and shown.
-TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions_NotStateless) {
-  base::test::ScopedFeatureList scoped_featurelist;
-  scoped_featurelist.InitAndDisableFeature(kStatelessFormSuggestionController);
-
-  id providerMock = OCMProtocolMock(@protocol(FormInputSuggestionsProvider));
-  [mediator_ injectProvider:providerMock];
-
-  FormActivityParams params =
-      CreateFormActivityParams(FormActivityParams::FieldType::kText);
-
-  __block FormSuggestionsReadyCompletion suggestionsQueryCompletion;
-
-  OCMStub([providerMock
-      retrieveSuggestionsForForm:params
-                        webState:web_state_list_.GetActiveWebState()
-        accessoryViewUpdateBlock:CopyValueToVariable(
-                                     suggestionsQueryCompletion)]);
-  OCMStub([providerMock mainFillingProduct])
-      .andReturn(autofill::FillingProduct::kAutocomplete);
-
-  // Emit a form registration event to trigger the show suggestions code path.
-  test_form_activity_tab_helper_.FormActivityRegistered(main_frame_.get(),
-                                                        params);
-
-  FormSuggestion* suggestion = [FormSuggestion
-      suggestionWithValue:@"value"
-       displayDescription:@"display-description"
-                     icon:nil
-                     type:autofill::SuggestionType::kAutocompleteEntry
-                  payload:autofill::Suggestion::Payload()
-           requiresReauth:NO];
-  NSArray<FormSuggestion*>* suggestions = [NSArray arrayWithObject:suggestion];
-
-  // Expect to update the view model with the suggestions from the query.
-  OCMExpect([consumer_ showAccessorySuggestions:suggestions]);
-
-  // Run the completion block to trigger the code path that updates suggestion
-  // in the view model.
-  suggestionsQueryCompletion(suggestions, providerMock);
-
-  EXPECT_EQ(autofill::FillingProduct::kAutocomplete,
-            mediator_.currentProviderMainFillingProduct);
-
-  EXPECT_OCMOCK_VERIFY(providerMock);
-}
-
-// Tests showing suggestions when Stateless is enabled.
+// Tests showing suggestions.
 TEST_F(FormInputAccessoryMediatorTest, ShowSuggestions) {
   id providerMock = OCMProtocolMock(@protocol(FormInputSuggestionsProvider));
   [mediator_ injectProvider:providerMock];
@@ -626,15 +579,14 @@ TEST_F(FormInputAccessoryMediatorTest,
   EXPECT_OCMOCK_VERIFY(provider_);
 }
 
-// Tests that selecting a suggestion when Stateless is enabled is correctly
-// handled when no reauthentication is needed.
+// Tests that selecting a suggestion is correctly handled when no
+// reauthentication is needed.
 TEST_F(FormInputAccessoryMediatorTest, DidSelectSuggestion_NoReauth) {
   id formInputSuggestionProviderMock =
       OCMProtocolMock(@protocol(FormInputSuggestionsProvider));
   [mediator_ injectCurrentProvider:formInputSuggestionProviderMock];
 
-  // Make a credit card suggestion that wraps all the information needed by
-  // Stateless.
+  // Make a credit card suggestion with its form params and provider attached.
   FormActivityParams params =
       CreateFormActivityParams(FormActivityParams::FieldType::kText);
   TestFormSuggestionProvider* testSuggestionProvider =
