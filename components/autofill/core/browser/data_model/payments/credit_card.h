@@ -27,6 +27,10 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "url/gurl.h"
 
+namespace base::i18n {
+class LanguageTag;
+}
+
 namespace autofill {
 
 // Unicode characters used in card number obfuscation:
@@ -233,8 +237,9 @@ class CreditCard : public FormGroup {
   // two wouldn't result in unverified data overwriting verified data,
   // overwrites `this` card's data with the data in `imported_card`. Returns
   // true if the card numbers match, false otherwise.
-  [[nodiscard]] bool UpdateFromImportedCard(const CreditCard& imported_card,
-                                            const std::string& app_locale);
+  [[nodiscard]] bool UpdateFromImportedCard(
+      const CreditCard& imported_card,
+      const base::i18n::LanguageTag& app_locale);
 
   // Comparison for Sync.  Returns 0 if the card is the same as `this`, or < 0,
   // or > 0 if it is different.  The implied ordering can be used for culling
@@ -402,7 +407,7 @@ class CreditCard : public FormGroup {
   // This label is used as a second line label when the cardholder
   // name/expiration date field is selected.
   std::u16string CardIdentifierStringAndDescriptiveExpiration(
-      const std::string& app_locale,
+      const base::i18n::LanguageTag& app_locale,
       std::u16string customized_nickname = std::u16string()) const;
 
   // A name to identify this card. It is the nickname if available, or the
@@ -413,7 +418,8 @@ class CreditCard : public FormGroup {
   // A label for this card formatted as 'Expires on MM/YY'.
   // This label is used as a second line label when the autofill dropdown
   // uses a two line layout and the credit card number is selected.
-  std::u16string DescriptiveExpiration(const std::string& app_locale) const;
+  std::u16string DescriptiveExpiration(
+      const base::i18n::LanguageTag& app_locale) const;
 
   // Localized expiration for this card formatted as 'Exp: 06/17' if with_prefix
   // is true or as '06/17' otherwise.

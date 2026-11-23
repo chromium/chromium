@@ -2295,9 +2295,8 @@ size_t PaymentsDataManager::GetServerCardWithArtImageCount() const {
 std::string PaymentsDataManager::SaveImportedCreditCard(
     const CreditCard& imported_card) {
   // Potentially merge the card with an existing card.
-  const std::string app_locale(app_locale_.tag_string());
   for (std::unique_ptr<CreditCard>& card : local_credit_cards_) {
-    if (card->UpdateFromImportedCard(imported_card, app_locale)) {
+    if (card->UpdateFromImportedCard(imported_card, app_locale_)) {
       GetProfileDatabase()->UpdateCreditCard(*card);
       Refresh();
       return card->guid();

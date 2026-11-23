@@ -18,6 +18,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/i18n/language_tag.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_macros.h"
@@ -680,10 +681,11 @@ void CreditCard::SetNickname(const std::u16string& nickname) {
   base::TrimString(nickname_, u" ", &nickname_);
 }
 
-bool CreditCard::UpdateFromImportedCard(const CreditCard& imported_card,
-                                        const std::string& app_locale) {
-  if (this->GetInfo(CREDIT_CARD_NUMBER, app_locale) !=
-      imported_card.GetInfo(CREDIT_CARD_NUMBER, app_locale)) {
+bool CreditCard::UpdateFromImportedCard(
+    const CreditCard& imported_card,
+    const base::i18n::LanguageTag& app_locale) {
+  if (this->GetInfo(CREDIT_CARD_NUMBER, app_locale.tag_string()) !=
+      imported_card.GetInfo(CREDIT_CARD_NUMBER, app_locale.tag_string())) {
     return false;
   }
 
@@ -1087,12 +1089,12 @@ std::u16string CreditCard::CardIdentifierStringForManualFilling() const {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 std::u16string CreditCard::CardIdentifierStringAndDescriptiveExpiration(
-    const std::string& app_locale,
+    const base::i18n::LanguageTag& app_locale,
     std::u16string customized_nickname) const {
   return l10n_util::GetStringFUTF16(
       IDS_AUTOFILL_CREDIT_CARD_TWO_LINE_LABEL_FROM_NAME,
       CardNameAndLastFourDigits(customized_nickname),
-      GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale));
+      GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale.tag_string()));
 }
 
 std::optional<std::u16string> CreditCard::CardIdentifierForAutofillDisplay(
@@ -1110,10 +1112,10 @@ std::optional<std::u16string> CreditCard::CardIdentifierForAutofillDisplay(
 }
 
 std::u16string CreditCard::DescriptiveExpiration(
-    const std::string& app_locale) const {
+    const base::i18n::LanguageTag& app_locale) const {
   return l10n_util::GetStringFUTF16(
       IDS_AUTOFILL_CREDIT_CARD_TWO_LINE_LABEL_FROM_CARD_NUMBER,
-      GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale));
+      GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale.tag_string()));
 }
 
 std::u16string CreditCard::AbbreviatedExpirationDateForDisplay(

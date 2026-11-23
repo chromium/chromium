@@ -331,8 +331,8 @@ std::optional<CreditCard> PaymentsFormDataImporter::ExtractCreditCard(
     // Make a local copy so that the data in `local_credit_cards_` isn't
     // modified directly by the UpdateFromImportedCard() call.
     CreditCard maybe_updated_card = *local_card;
-    if (maybe_updated_card.UpdateFromImportedCard(
-            candidate, std::string(client_->GetAppLocale().tag_string()))) {
+    if (maybe_updated_card.UpdateFromImportedCard(candidate,
+                                                  client_->GetAppLocale())) {
       payments_data_manager().UpdateCreditCard(maybe_updated_card);
       credit_card_import_type_ = CreditCardImportType::kLocalCard;
       // Update `candidate` to reflect all the details of the updated card.

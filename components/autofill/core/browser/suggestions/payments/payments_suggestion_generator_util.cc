@@ -25,6 +25,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
+#include "base/i18n/language_tag.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -269,17 +270,16 @@ void SetSuggestionLabelsForCard(
     FieldType trigger_field_type,
     autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
     Suggestion& suggestion) {
-  const std::string app_locale(client.GetPersonalDataManager()
-                                   .payments_data_manager()
-                                   .app_locale()
-                                   .tag_string());
+  const base::i18n::LanguageTag& app_locale =
+      client.GetPersonalDataManager().payments_data_manager().app_locale();
 
   if (credit_card.record_type() == CreditCard::RecordType::kVirtualCard &&
       client.ShouldFormatForLargeKeyboardAccessory()) {
     suggestion.labels = {{Suggestion::Text(
         l10n_util::GetStringUTF16(
             IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE) +
-        u" • " + credit_card.GetInfo(CREDIT_CARD_TYPE, app_locale) + u" " +
+        u" • " +
+        credit_card.GetInfo(CREDIT_CARD_TYPE, app_locale.tag_string()) + u" " +
         credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
             GetCreditCardObfuscationLength()))}};
     return;
@@ -288,8 +288,8 @@ void SetSuggestionLabelsForCard(
   // If the focused field is a card number field.
   if (trigger_field_type == CREDIT_CARD_NUMBER) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    suggestion.labels = {{Suggestion::Text(
-        credit_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale))}};
+    suggestion.labels = {{Suggestion::Text(credit_card.GetInfo(
+        CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale.tag_string()))}};
 #else
     std::vector<std::vector<Suggestion::Text>> labels;
 
@@ -298,11 +298,12 @@ void SetSuggestionLabelsForCard(
     // separately in another row.
     if (ShouldUseNewFopDisplay() && !suggestion.main_text.value.empty() &&
         suggestion.minor_texts.empty()) {
-      labels.push_back({Suggestion::Text(credit_card.NetworkAndLastFourDigits(
-                            GetCreditCardObfuscationLength())),
-                        Suggestion::Text(kEllipsisDotSeparator),
-                        Suggestion::Text(credit_card.GetInfo(
-                            CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale))});
+      labels.push_back(
+          {Suggestion::Text(credit_card.NetworkAndLastFourDigits(
+               GetCreditCardObfuscationLength())),
+           Suggestion::Text(kEllipsisDotSeparator),
+           Suggestion::Text(credit_card.GetInfo(
+               CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale.tag_string()))});
     }
     std::optional<Suggestion::Text> benefit_label =
         GetCreditCardBenefitSuggestionLabel(credit_card, client,
@@ -326,7 +327,7 @@ void SetSuggestionLabelsForCard(
       labels.push_back({Suggestion::Text(
           ShouldSplitCardNameAndLastFourDigits()
               ? credit_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
-                                    app_locale)
+                                    app_locale.tag_string())
               : credit_card.DescriptiveExpiration(app_locale))});
     }
     suggestion.labels = std::move(labels);
@@ -344,8 +345,8 @@ void SetSuggestionLabelsForCard(
     if (credit_card.HasNonEmptyValidNickname()) {
       suggestion.labels = {{Suggestion::Text(nickname)}};
     } else if (trigger_field_type != CREDIT_CARD_NAME_FULL) {
-      suggestion.labels = {{Suggestion::Text(
-          credit_card.GetInfo(CREDIT_CARD_NAME_FULL, app_locale))}};
+      suggestion.labels = {{Suggestion::Text(credit_card.GetInfo(
+          CREDIT_CARD_NAME_FULL, app_locale.tag_string()))}};
     }
     return;
   }
@@ -368,11 +369,12 @@ void SetSuggestionLabelsForCard(
   }
 
   if (ShouldUseNewFopDisplay()) {
-    suggestion.labels = {{Suggestion::Text(credit_card.NetworkAndLastFourDigits(
-                              GetCreditCardObfuscationLength())),
-                          Suggestion::Text(kEllipsisDotSeparator),
-                          Suggestion::Text(credit_card.GetInfo(
-                              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale))}};
+    suggestion.labels = {
+        {Suggestion::Text(credit_card.NetworkAndLastFourDigits(
+             GetCreditCardObfuscationLength())),
+         Suggestion::Text(kEllipsisDotSeparator),
+         Suggestion::Text(credit_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
+                                              app_locale.tag_string()))}};
     return;
   }
 

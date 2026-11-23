@@ -8,6 +8,7 @@
 
 #include <string>
 
+#include "base/i18n/language_tag.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1201,7 +1202,8 @@ TEST(CreditCardTest, UpdateFromImportedCard_UpdatedWithNameAndExpirationDate) {
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, kYearInFuture);
 
   // |a| should be updated with the information from |b|.
-  EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
+  EXPECT_TRUE(
+      a.UpdateFromImportedCard(b, base::i18n::GetKnownLanguageTag("en-US")));
   EXPECT_FALSE(a.is_user_confirmed());
   EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_NAME_FULL), u"J. Dillinger");
   EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"08");
@@ -1227,7 +1229,8 @@ TEST(CreditCardTest,
   b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"0");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, kYearInFuture);
 
-  EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
+  EXPECT_TRUE(
+      a.UpdateFromImportedCard(b, base::i18n::GetKnownLanguageTag("en-US")));
   EXPECT_FALSE(a.is_user_confirmed());
   EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_NAME_FULL), u"J. Dillinger");
   EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"09");
@@ -1253,7 +1256,8 @@ TEST(CreditCardTest,
   b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"09");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"");
 
-  EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
+  EXPECT_TRUE(
+      a.UpdateFromImportedCard(b, base::i18n::GetKnownLanguageTag("en-US")));
   EXPECT_FALSE(a.is_user_confirmed());
   EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_NAME_FULL), u"J. Dillinger");
   EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"09");
@@ -1278,7 +1282,8 @@ TEST(CreditCardTest,
   b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"08");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, kYearInFuture);
 
-  EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
+  EXPECT_TRUE(
+      a.UpdateFromImportedCard(b, base::i18n::GetKnownLanguageTag("en-US")));
   EXPECT_FALSE(a.is_user_confirmed());
   EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_NAME_FULL), u"John Dillinger");
   EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"08");
@@ -1306,7 +1311,8 @@ TEST(
   b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"0");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, kYearInFuture);
 
-  EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
+  EXPECT_TRUE(
+      a.UpdateFromImportedCard(b, base::i18n::GetKnownLanguageTag("en-US")));
   EXPECT_TRUE(a.is_user_confirmed());
   EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_NAME_FULL), u"John Dillinger");
   EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"09");
@@ -1330,7 +1336,8 @@ TEST(CreditCardTest,
   b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"09");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"0");
 
-  EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
+  EXPECT_TRUE(
+      a.UpdateFromImportedCard(b, base::i18n::GetKnownLanguageTag("en-US")));
   EXPECT_TRUE(a.is_user_confirmed());
   EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_NAME_FULL), u"John Dillinger");
   EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"09");
@@ -1354,7 +1361,8 @@ TEST(CreditCardTest,
   b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"08");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2017");
 
-  EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
+  EXPECT_TRUE(
+      a.UpdateFromImportedCard(b, base::i18n::GetKnownLanguageTag("en-US")));
   EXPECT_TRUE(a.is_user_confirmed());
   EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_NAME_FULL), u"John Dillinger");
   EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"09");
@@ -1382,7 +1390,8 @@ TEST(CreditCardTest,
   b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"08");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, kYearInFuture);
 
-  EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
+  EXPECT_TRUE(
+      a.UpdateFromImportedCard(b, base::i18n::GetKnownLanguageTag("en-US")));
   EXPECT_TRUE(a.is_user_confirmed());
   EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_NAME_FULL), u"John Dillinger");
   EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"09");
@@ -1409,7 +1418,8 @@ TEST(CreditCardTest,
   b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"08");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, kYearInFuture);
 
-  EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
+  EXPECT_TRUE(
+      a.UpdateFromImportedCard(b, base::i18n::GetKnownLanguageTag("en-US")));
   EXPECT_TRUE(a.is_user_confirmed());
   EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_NAME_FULL), u"John Dillinger");
   EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"08");
@@ -1434,7 +1444,8 @@ TEST(CreditCardTest,
   b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"08");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2009");
 
-  EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
+  EXPECT_TRUE(
+      a.UpdateFromImportedCard(b, base::i18n::GetKnownLanguageTag("en-US")));
   EXPECT_TRUE(a.is_user_confirmed());
   EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_NAME_FULL), u"John Dillinger");
   EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"09");
@@ -1460,7 +1471,8 @@ TEST(CreditCardTest,
   b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"08");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, kYearInFuture);
 
-  EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
+  EXPECT_TRUE(
+      a.UpdateFromImportedCard(b, base::i18n::GetKnownLanguageTag("en-US")));
   EXPECT_TRUE(a.is_user_confirmed());
   EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_NAME_FULL), u"John Dillinger");
   EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"08");
@@ -1487,7 +1499,8 @@ TEST(CreditCardTest,
   b.SetRawInfo(CREDIT_CARD_EXP_MONTH, u"08");
   b.SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, kYearInFuture);
 
-  EXPECT_FALSE(a.UpdateFromImportedCard(b, "en-US"));
+  EXPECT_FALSE(
+      a.UpdateFromImportedCard(b, base::i18n::GetKnownLanguageTag("en-US")));
   EXPECT_TRUE(a.is_user_confirmed());
   EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_NAME_FULL), u"John Dillinger");
   EXPECT_EQ(a.GetRawInfo(CREDIT_CARD_EXP_MONTH), u"09");
@@ -1508,7 +1521,8 @@ TEST(CreditCardTest, UpdateFromImportedCard_UpdateEmptyCvc) {
   b.set_cvc(u"123");
 
   // |a| should be updated with the information from |b|.
-  EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
+  EXPECT_TRUE(
+      a.UpdateFromImportedCard(b, base::i18n::GetKnownLanguageTag("en-US")));
   EXPECT_EQ(u"John Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
   EXPECT_EQ(u"09", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
   EXPECT_EQ(u"2017", a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
@@ -1529,7 +1543,8 @@ TEST(CreditCardTest, UpdateFromImportedCard_UpdateExistingCvc) {
   b.set_cvc(u"456");
 
   // |a| should be updated with the information from |b|.
-  EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
+  EXPECT_TRUE(
+      a.UpdateFromImportedCard(b, base::i18n::GetKnownLanguageTag("en-US")));
   EXPECT_EQ(u"John Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
   EXPECT_EQ(u"09", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
   EXPECT_EQ(u"2017", a.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR));
@@ -1550,7 +1565,8 @@ TEST(CreditCardTest, UpdateFromImportedCard_VerifiedCardNotUpdatedWithCvc) {
   b.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
   b.set_cvc(u"789");
 
-  EXPECT_TRUE(a.UpdateFromImportedCard(b, "en-US"));
+  EXPECT_TRUE(
+      a.UpdateFromImportedCard(b, base::i18n::GetKnownLanguageTag("en-US")));
   EXPECT_TRUE(a.is_user_confirmed());
   EXPECT_EQ(u"John Dillinger", a.GetRawInfo(CREDIT_CARD_NAME_FULL));
   EXPECT_EQ(u"09", a.GetRawInfo(CREDIT_CARD_EXP_MONTH));
