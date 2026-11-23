@@ -187,12 +187,10 @@ class MIDI_EXPORT MidiManager {
   mojom::Result result_ = mojom::Result::NOT_INITIALIZED;
 
   // Keeps track of all clients who are waiting for CompleteStartSession().
-  std::set<raw_ptr<MidiManagerClient, SetExperimental>> pending_clients_
-      GUARDED_BY(lock_);
+  std::set<raw_ptr<MidiManagerClient>> pending_clients_ GUARDED_BY(lock_);
 
   // Keeps track of all clients who wish to receive MIDI data.
-  std::set<raw_ptr<MidiManagerClient, SetExperimental>> clients_
-      GUARDED_BY(lock_);
+  std::set<raw_ptr<MidiManagerClient>> clients_ GUARDED_BY(lock_);
 
   // Keeps a SingleThreadTaskRunner of the thread that calls StartSession in
   // order to invoke CompleteStartSession() on the thread. This is touched only

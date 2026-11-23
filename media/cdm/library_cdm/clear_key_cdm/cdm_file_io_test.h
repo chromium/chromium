@@ -156,7 +156,7 @@ class FileIOTest : public cdm::FileIOClient {
   // so that we can test multiple cdm::FileIO objects accessing the same file.
   // In the current implementation, all ACTION_* are performed on the latest
   // opened cdm::FileIO object, hence the stack.
-  base::stack<raw_ptr<cdm::FileIO, CtnExperimental>> file_io_stack_;
+  base::stack<raw_ptr<cdm::FileIO, DanglingUntriaged>> file_io_stack_;
 };
 
 // Tests cdm::FileIO implementation.

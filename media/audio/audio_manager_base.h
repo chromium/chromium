@@ -221,8 +221,7 @@ class MEDIA_EXPORT AudioManagerBase : public AudioManager {
   base::ObserverList<AudioDeviceListener> output_listeners_;
 
   // Contains currently open input streams.
-  absl::flat_hash_set<raw_ptr<AudioInputStream, CtnExperimental>>
-      input_streams_;
+  absl::flat_hash_set<raw_ptr<AudioInputStream>> input_streams_;
 
   // Map of cached AudioOutputDispatcher instances.  Must only be touched
   // from the audio thread (no locking).

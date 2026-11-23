@@ -68,7 +68,7 @@ class MEDIA_GPU_EXPORT CodecImageGroup
   scoped_refptr<CodecSurfaceBundle> surface_bundle_;
 
   // All the images that use |surface_bundle_|.
-  absl::flat_hash_set<raw_ptr<CodecImage, CtnExperimental>> images_;
+  absl::flat_hash_set<raw_ptr<CodecImage>> images_;
 
   // Task runner for everything.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

@@ -30,7 +30,7 @@ class MockDeviceFactory : public media::VideoCaptureDeviceFactory {
 
  private:
   std::map<media::VideoCaptureDeviceDescriptor,
-           raw_ptr<media::VideoCaptureDevice, CtnExperimental>>
+           raw_ptr<media::VideoCaptureDevice>>
       devices_;
 };
 

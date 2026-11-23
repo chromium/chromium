@@ -268,7 +268,7 @@ class MappableSharedImageVideoFramePool::PoolImpl
   const raw_ptr<GpuVideoAcceleratorFactories> gpu_factories_;
 
   // Pool of resources.
-  std::list<raw_ptr<FrameResource, CtnExperimental>> resources_pool_;
+  std::list<raw_ptr<FrameResource>> resources_pool_;
 
   GpuVideoAcceleratorFactories::OutputFormat output_format_;
 

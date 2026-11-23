@@ -67,13 +67,12 @@ class MEDIA_MOJO_EXPORT MojoCdmServiceContext {
   // different threads.
   base::Lock cdm_services_lock_;
   // A map between CDM ID and MojoCdmService.
-  std::map<base::UnguessableToken, raw_ptr<MojoCdmService, CtnExperimental>>
-      cdm_services_ GUARDED_BY(cdm_services_lock_);
+  std::map<base::UnguessableToken, raw_ptr<MojoCdmService>> cdm_services_
+      GUARDED_BY(cdm_services_lock_);
 
 #if BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
   // A map between CDM ID and RemoteCdmContext.
-  std::map<base::UnguessableToken,
-           raw_ptr<chromeos::RemoteCdmContext, CtnExperimental>>
+  std::map<base::UnguessableToken, raw_ptr<chromeos::RemoteCdmContext>>
       remote_cdm_contexts_;
 #endif  // BUILDFLAG(ENABLE_OOP_VIDEO_DECODER)
 };
