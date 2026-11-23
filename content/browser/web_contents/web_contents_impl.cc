@@ -486,14 +486,12 @@ class FullscreenUserData : public base::SupportsUserData::Data {
   FullscreenUserData(const FullscreenUserData&) = delete;
   FullscreenUserData& operator=(const FullscreenUserData&) = delete;
 
-  base::flat_set<raw_ptr<WebContentsImpl, DanglingUntriaged>>* set() {
-    return &set_;
-  }
+  base::flat_set<raw_ptr<WebContentsImpl>>* set() { return &set_; }
 
   std::map<url::Origin, base::TimeTicks>* last_exits() { return &last_exits_; }
 
  private:
-  base::flat_set<raw_ptr<WebContentsImpl, DanglingUntriaged>> set_;
+  base::flat_set<raw_ptr<WebContentsImpl>> set_;
   // Track latest exits by origin to briefly block re-entry without a gesture.
   std::map<url::Origin, base::TimeTicks> last_exits_;
 };
@@ -511,8 +509,8 @@ FullscreenUserData* GetFullscreenUserData(BrowserContext* browser_context) {
   return set_holder;
 }
 
-base::flat_set<raw_ptr<WebContentsImpl, DanglingUntriaged>>*
-FullscreenContentsSet(BrowserContext* browser_context) {
+base::flat_set<raw_ptr<WebContentsImpl>>* FullscreenContentsSet(
+    BrowserContext* browser_context) {
   return GetFullscreenUserData(browser_context)->set();
 }
 

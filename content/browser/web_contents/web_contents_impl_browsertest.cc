@@ -4457,7 +4457,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, NotifyFullscreenAcquired) {
   RenderFrameHostImpl* child_frame =
       static_cast<RenderFrameHostImpl*>(ChildFrameAt(main_frame, 0));
 
-  std::set<raw_ptr<RenderFrameHostImpl, DanglingUntriaged>> fullscreen_frames;
+  std::set<raw_ptr<RenderFrameHostImpl>> fullscreen_frames;
   EXPECT_EQ(fullscreen_frames, web_contents->fullscreen_frames_for_testing());
   EXPECT_FALSE(IsInFullscreen());
 
@@ -4718,7 +4718,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   RenderFrameHostImpl* child_frame =
       static_cast<RenderFrameHostImpl*>(ChildFrameAt(main_frame, 0));
 
-  std::set<raw_ptr<RenderFrameHostImpl, DanglingUntriaged>> nodes;
+  std::set<raw_ptr<RenderFrameHostImpl>> nodes;
   EXPECT_EQ(nodes, web_contents->fullscreen_frames_for_testing());
   EXPECT_FALSE(IsInFullscreen());
 
@@ -4748,6 +4748,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
             web_contents->current_fullscreen_frame_id_for_testing());
 
   // Perform a cross origin navigation on the main frame.
+  nodes.clear();
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL(
                                  "c.com", "/cross_site_iframe_factory.html")));
@@ -4897,7 +4898,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   RenderFrameHostImpl* main_frame = web_contents->GetPrimaryMainFrame();
   RenderFrameHostImpl* child_frame =
       static_cast<RenderFrameHostImpl*>(ChildFrameAt(main_frame, 0));
-  std::set<raw_ptr<RenderFrameHostImpl, DanglingUntriaged>> fullscreen_frames;
+  std::set<raw_ptr<RenderFrameHostImpl>> fullscreen_frames;
   EXPECT_TRUE(web_contents->fullscreen_frames_for_testing().empty());
   EXPECT_FALSE(IsInFullscreen());
 

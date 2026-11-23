@@ -1679,8 +1679,8 @@ class CONTENT_EXPORT WebContentsImpl
     return pointer_lock_widget_;
   }
 
-  const std::set<raw_ptr<RenderFrameHostImpl, DanglingUntriaged>>&
-  fullscreen_frames_for_testing() const {
+  const std::set<raw_ptr<RenderFrameHostImpl>>& fullscreen_frames_for_testing()
+      const {
     return fullscreen_frames_;
   }
 
@@ -2416,8 +2416,7 @@ class CONTENT_EXPORT WebContentsImpl
 
   // This map holds widgets that were created on behalf of the renderer but
   // haven't been shown yet.
-  std::map<GlobalRoutingID, raw_ptr<RenderWidgetHost, DanglingUntriaged>>
-      pending_widgets_;
+  std::map<GlobalRoutingID, raw_ptr<RenderWidgetHost>> pending_widgets_;
 
   // Watches for the destruction of items in `pending_widgets_`.
   std::map<RenderWidgetHost*,
@@ -2652,8 +2651,7 @@ class CONTENT_EXPORT WebContentsImpl
 
   // All live RenderWidgetHostImpls that are created by this object and may
   // outlive it.
-  base::flat_map<viz::FrameSinkId,
-                 raw_ptr<RenderWidgetHostImpl, DanglingUntriaged>>
+  base::flat_map<viz::FrameSinkId, raw_ptr<RenderWidgetHostImpl>>
       created_widgets_;
 
   // Process id of the shown fullscreen widget, or kInvalidUniqueID if there is
@@ -2829,7 +2827,7 @@ class CONTENT_EXPORT WebContentsImpl
 
   // Stores a set of frames that are fullscreen.
   // See https://fullscreen.spec.whatwg.org.
-  std::set<raw_ptr<RenderFrameHostImpl, DanglingUntriaged>> fullscreen_frames_;
+  std::set<raw_ptr<RenderFrameHostImpl>> fullscreen_frames_;
 
   // Store an ID for the frame that is currently fullscreen, or an invalid ID if
   // there is none.
