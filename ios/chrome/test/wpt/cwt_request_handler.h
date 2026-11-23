@@ -43,7 +43,7 @@ class CWTRequestHandler {
  public:
   // `session_completion_handler` is a block to be called when a session is
   // closed.
-  CWTRequestHandler(ProceduralBlock sesssion_completion_handler);
+  CWTRequestHandler(ProceduralBlock session_completion_handler);
 
   CWTRequestHandler(const CWTRequestHandler&) = delete;
   CWTRequestHandler& operator=(const CWTRequestHandler&) = delete;

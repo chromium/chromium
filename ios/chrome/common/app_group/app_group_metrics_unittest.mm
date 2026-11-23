@@ -74,7 +74,7 @@ TEST_F(AppGroupMetricsTest, TestOutcomeTypeFromKey) {
 TEST_F(AppGroupMetricsTest, TestLogOpenExtensionMetrics) {
   base::HistogramTester histogram_tester;
 
-  NSDictionary<NSString*, NSNumber*>* open_extension_test_dictionnary = @{
+  NSDictionary<NSString*, NSNumber*>* open_extension_test_dictionary = @{
     kOpenExtensionOutcomeSuccess : @1,
     kOpenExtensionOutcomeFailureInvalidURL : @2,
     kOpenExtensionOutcomeFailureURLNotFound : @3,
@@ -85,7 +85,7 @@ TEST_F(AppGroupMetricsTest, TestLogOpenExtensionMetrics) {
 
   NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
 
-  [shared_defaults setObject:open_extension_test_dictionnary
+  [shared_defaults setObject:open_extension_test_dictionary
                       forKey:kOpenExtensionOutcomes];
 
   LogOpenExtensionMetrics();
@@ -122,7 +122,7 @@ TEST_F(AppGroupMetricsTest, TestValuesCasesForLogOpenExtensionMetrics) {
   // 1 bucket with decimal value
   // 1 bucket with [NSDecimalNumber notANumber]
   // 1 bucket with something that is not a number (string)*/
-  NSDictionary* open_extension_test_dictionnary = @{
+  NSDictionary* open_extension_test_dictionary = @{
     kOpenExtensionOutcomeSuccess : @100,
     kOpenExtensionOutcomeFailureInvalidURL : @-6,
     kOpenExtensionOutcomeFailureURLNotFound : @3.2,
@@ -133,7 +133,7 @@ TEST_F(AppGroupMetricsTest, TestValuesCasesForLogOpenExtensionMetrics) {
 
   NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
 
-  [shared_defaults setObject:open_extension_test_dictionnary
+  [shared_defaults setObject:open_extension_test_dictionary
                       forKey:kOpenExtensionOutcomes];
 
   LogOpenExtensionMetrics();
@@ -174,7 +174,7 @@ TEST_F(AppGroupMetricsTest, TestLogOpenExtensionMetricsMissingDictionary) {
 TEST_F(AppGroupMetricsTest, TestLogOpenExtensionMetricsWithMissingBuckets) {
   base::HistogramTester histogram_tester;
 
-  NSDictionary<NSString*, NSNumber*>* open_extension_test_dictionnary = @{
+  NSDictionary<NSString*, NSNumber*>* open_extension_test_dictionary = @{
     kOpenExtensionOutcomeSuccess : @5,
     kOpenExtensionOutcomeFailureInvalidURL : @10,
     kOpenExtensionOutcomeFailureURLNotFound : @3,
@@ -182,7 +182,7 @@ TEST_F(AppGroupMetricsTest, TestLogOpenExtensionMetricsWithMissingBuckets) {
 
   NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
 
-  [shared_defaults setObject:open_extension_test_dictionnary
+  [shared_defaults setObject:open_extension_test_dictionary
                       forKey:kOpenExtensionOutcomes];
 
   LogOpenExtensionMetrics();

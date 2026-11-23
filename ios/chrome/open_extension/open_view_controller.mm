@@ -25,24 +25,24 @@ namespace {
 void LogOutcome(app_group::OpenExtensionOutcome outcome_type) {
   NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
 
-  NSMutableDictionary<NSString*, NSNumber*>*
-      open_extension_outcome_dictionnary = [[shared_defaults
-          dictionaryForKey:app_group::kOpenExtensionOutcomes] mutableCopy];
+  NSMutableDictionary<NSString*, NSNumber*>* open_extension_outcome_dictionary =
+      [[shared_defaults dictionaryForKey:app_group::kOpenExtensionOutcomes]
+          mutableCopy];
 
-  if (!open_extension_outcome_dictionnary) {
-    open_extension_outcome_dictionnary = [NSMutableDictionary dictionary];
+  if (!open_extension_outcome_dictionary) {
+    open_extension_outcome_dictionary = [NSMutableDictionary dictionary];
   }
 
   NSString* key_for_outcome_type = KeyForOpenExtensionOutcomeType(outcome_type);
 
   NSInteger old_value_for_open_in_outcome =
-      open_extension_outcome_dictionnary[key_for_outcome_type].integerValue;
+      open_extension_outcome_dictionary[key_for_outcome_type].integerValue;
 
-  [open_extension_outcome_dictionnary
+  [open_extension_outcome_dictionary
       setValue:@(old_value_for_open_in_outcome + 1)
         forKey:key_for_outcome_type];
 
-  [shared_defaults setObject:open_extension_outcome_dictionnary
+  [shared_defaults setObject:open_extension_outcome_dictionary
                       forKey:app_group::kOpenExtensionOutcomes];
   [shared_defaults synchronize];
 }
