@@ -32,7 +32,10 @@ PKIMetadataFastpushComponentInstallerPolicy::
 
 bool PKIMetadataFastpushComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return true;
+  // Returning `false` prevents the `ComponentUpdatesEnabled` enterprise policy
+  // from disabling updates. PKI Metadata Fastpush is data-only (no executable
+  // code) and is security critical.
+  return false;
 }
 
 bool PKIMetadataFastpushComponentInstallerPolicy::RequiresNetworkEncryption()

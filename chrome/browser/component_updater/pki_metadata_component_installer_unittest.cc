@@ -24,6 +24,7 @@
 #include "components/certificate_transparency/certificate_transparency_config.pb.h"
 #include "components/certificate_transparency/ct_known_logs.h"
 #include "components/component_updater/component_installer.h"
+#include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_task_environment.h"
@@ -45,6 +46,10 @@
 #include "net/cert/key_pinning_state.h"
 #include "net/cert/key_pinning_state_chrome_test_util.h"
 #include "net/http/transport_security_state.h"
+#endif
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#include "chrome/browser/component_updater/pki_metadata_fastpush_component_installer_policy.h"
 #endif
 
 namespace component_updater {
@@ -340,12 +345,56 @@ TEST_F(PKIMetadataComponentInstallerTest, VerifyInstallation) {
 // Tests that the PKI Metadata component is registered if the features are
 // enabled.
 TEST_F(PKIMetadataComponentInstallerTest, RegisterComponent) {
-  EXPECT_CALL(mock_component_update_, RegisterComponent)
-
+  base::test::ScopedFeatureList feature_list(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{net::features::kVerifyMTCs});
+  EXPECT_CALL(
+      mock_component_update_,
+      RegisterComponent(testing::AllOf(
+          testing::Field(&ComponentRegistration::name, "PKI Metadata"),
+          testing::Field(&ComponentRegistration::
+                             supports_group_policy_enable_component_updates,
+                         false))))
       .WillOnce(testing::Return(true));
   component_updater::MaybeRegisterPKIMetadataComponent(&mock_component_update_);
   task_environment_.RunUntilIdle();
 }
+
+TEST_F(PKIMetadataComponentInstallerTest,
+       SupportsGroupPolicyEnabledComponentUpdates) {
+  EXPECT_FALSE(policy_->SupportsGroupPolicyEnabledComponentUpdates());
+}
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+TEST_F(PKIMetadataComponentInstallerTest, RegisterFastpushComponent) {
+  base::test::ScopedFeatureList feature_list(net::features::kVerifyMTCs);
+  EXPECT_CALL(
+      mock_component_update_,
+      RegisterComponent(testing::AllOf(
+          testing::Field(&ComponentRegistration::name, "PKI Metadata"),
+          testing::Field(&ComponentRegistration::
+                             supports_group_policy_enable_component_updates,
+                         false))))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(
+      mock_component_update_,
+      RegisterComponent(testing::AllOf(
+          testing::Field(&ComponentRegistration::name, "PKI Metadata Fastpush"),
+          testing::Field(&ComponentRegistration::
+                             supports_group_policy_enable_component_updates,
+                         false))))
+      .WillOnce(testing::Return(true));
+  component_updater::MaybeRegisterPKIMetadataComponent(&mock_component_update_);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(PKIMetadataComponentInstallerTest,
+       FastpushSupportsGroupPolicyEnabledComponentUpdates) {
+  std::unique_ptr<ComponentInstallerPolicy> fastpush_policy =
+      std::make_unique<PKIMetadataFastpushComponentInstallerPolicy>();
+  EXPECT_FALSE(fastpush_policy->SupportsGroupPolicyEnabledComponentUpdates());
+}
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 // Tests that setting the CT enforcement kill switch successfully disables CT
 // enforcement.

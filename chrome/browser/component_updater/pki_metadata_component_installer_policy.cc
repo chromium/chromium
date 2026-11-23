@@ -34,7 +34,10 @@ PKIMetadataComponentInstallerPolicy::~PKIMetadataComponentInstallerPolicy() =
 
 bool PKIMetadataComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return true;
+  // Returning `false` prevents the `ComponentUpdatesEnabled` enterprise policy
+  // from disabling updates. PKI Metadata is data-only (no executable code) and
+  // is security critical.
+  return false;
 }
 
 bool PKIMetadataComponentInstallerPolicy::RequiresNetworkEncryption() const {

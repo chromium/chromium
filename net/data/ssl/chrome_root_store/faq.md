@@ -104,8 +104,8 @@ Store, the component updater will automatically propagate these changes to
 user endpoints without user action.
 
 If your enterprise has [disabled](https://chromeenterprise.google/policies/?policy=ComponentUpdatesEnabled)
-component updates, endpoints will only receive updated versions of the
-Chrome Root Store during Chrome browser application updates.
+component updates, Chrome 159 and earlier will only receive updated versions of
+the Chrome Root Store during Chrome browser application updates.
 
 During routine operating conditions, the Chrome Root Store is updated
 approximately quarterly. However, aperiodic updates may take place to
@@ -125,10 +125,6 @@ Chrome Root Store and capable of [receiving component updates](#how-is-the-chrom
 typically receive updated versions of the Chrome Root Store within 24-hours of
 the component's release. Upon receiving the updated component, Chrome will rely
 on the contents of the updated root store.
-
-Existing versions of Chrome *not* relying on the Chrome Root Store and/or that
-have disabled component updates will *not* become aware of the change(s) until
-installing a binary update following the publication of the updated root store.
 
 ### How does the Chrome Certificate Verifier consider local trust decisions?
 
