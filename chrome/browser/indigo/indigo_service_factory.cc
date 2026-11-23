@@ -5,6 +5,7 @@
 #include "chrome/browser/indigo/indigo_service_factory.h"
 
 #include "chrome/browser/indigo/indigo_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 
@@ -26,6 +27,7 @@ IndigoServiceFactory::IndigoServiceFactory()
     : ProfileKeyedServiceFactory("IndigoService",
                                  ProfileSelections::BuildForRegularProfile()) {
   DependsOn(IdentityManagerFactory::GetInstance());
+  DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
 }
 
 IndigoServiceFactory::~IndigoServiceFactory() = default;

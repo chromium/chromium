@@ -120,7 +120,9 @@ chromium-metrics-reviews@google.com.
   <owner>adithyas@chromium.org</owner>
   <summary>
     Records the decision returned by keyword heuristics. Helps track how often
-    pages are identified as eligible for Indigo by the heuristics.
+    pages are identified as eligible for Indigo by the heuristics. Only recorded
+    while the profile is locally eligible for Indigo; before M160, it was also
+    recorded for ineligible profiles (e.g., signed-out users).
   </summary>
 </histogram>
 

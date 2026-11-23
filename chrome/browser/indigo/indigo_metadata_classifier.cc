@@ -23,7 +23,13 @@ IndigoMetadataClassifier::IndigoMetadataClassifier(
     IndigoService* indigo_service,
     base::RepeatingClosure on_result_updated)
     : indigo_service_(indigo_service),
-      on_result_updated_(std::move(on_result_updated)) {}
+      on_result_updated_(std::move(on_result_updated)) {
+  if (indigo_service_) {
+    config_loaded_subscription_ =
+        indigo_service_->RegisterConfigLoadedCallback(base::BindRepeating(
+            &IndigoMetadataClassifier::OnConfigLoaded, base::Unretained(this)));
+  }
+}
 
 IndigoMetadataClassifier::~IndigoMetadataClassifier() = default;
 
@@ -40,12 +46,48 @@ void IndigoMetadataClassifier::OnNavigationCommitted(
   state_ = State::kUnknown;
   document_onload_completed_ = false;
   retry_completed_ = false;
+  skipped_for_ineligibility_ = false;
 
   if (!base::FeatureList::IsEnabled(
           features::kIndigoMetadataKeywordHeuristic)) {
     return;
   }
 
+  // Don't spend effort classifying pages for users who can't use the feature.
+  // If they become eligible later, OnLocalEligibilityChanged() picks up from
+  // here.
+  if (indigo_service_ && !indigo_service_->IsLocallyEligible()) {
+    skipped_for_ineligibility_ = true;
+    return;
+  }
+
+  StartPendingClassification(is_same_document);
+}
+
+void IndigoMetadataClassifier::OnLocalEligibilityChanged() {
+  if (!skipped_for_ineligibility_ || !web_contents_ || !indigo_service_ ||
+      !indigo_service_->IsLocallyEligible()) {
+    return;
+  }
+  skipped_for_ineligibility_ = false;
+
+  // Start as for a cross-document navigation, and then catch up on any
+  // lifecycle milestones the document has already passed.
+  StartPendingClassification(/*is_same_document=*/false);
+  if (state_ != State::kPending) {
+    return;
+  }
+  if (web_contents_->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
+    document_onload_completed_ = true;
+  }
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+  if (rfh && rfh->IsDOMContentLoaded()) {
+    OnDOMContentLoaded(rfh);
+  }
+}
+
+void IndigoMetadataClassifier::StartPendingClassification(
+    bool is_same_document) {
   if (!web_contents_ || !indigo_service_ ||
       (indigo_service_->IsConfigLoaded() &&
        !indigo_service_->IsOriginAllowed(
@@ -89,6 +131,21 @@ void IndigoMetadataClassifier::OnDocumentOnLoadCompletedInPrimaryMainFrame() {
   TriggerClassification(/*is_final_check=*/retry_completed_);
 }
 
+void IndigoMetadataClassifier::OnConfigLoaded() {
+  // Checks made before the config loaded were deferred. If the document has
+  // reached DOMContentLoaded, check now rather than waiting for the next
+  // scheduled check; otherwise, the DOMContentLoaded handler will.
+  if (state_ != State::kPending || !web_contents_) {
+    return;
+  }
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+  if (!rfh || !rfh->IsDOMContentLoaded()) {
+    return;
+  }
+  TriggerClassification(
+      /*is_final_check=*/document_onload_completed_ && retry_completed_);
+}
+
 void IndigoMetadataClassifier::Reset() {
   CancelPendingClassification();
   metadata_remote_.reset();
@@ -96,12 +153,16 @@ void IndigoMetadataClassifier::Reset() {
   state_ = State::kUnknown;
   document_onload_completed_ = false;
   retry_completed_ = false;
+  skipped_for_ineligibility_ = false;
 }
 
 void IndigoMetadataClassifier::CancelPendingClassification() {
   if (state_ == State::kPending) {
     state_ = State::kUnknown;
   }
+  // Classification is no longer needed for this document, even if the profile
+  // becomes eligible later.
+  skipped_for_ineligibility_ = false;
   retry_timer_.Stop();
   max_wait_timer_.Stop();
   pending_request_.Cancel();

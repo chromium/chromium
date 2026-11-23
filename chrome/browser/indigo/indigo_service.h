@@ -147,8 +147,19 @@ class IndigoService : public KeyedService,
   }
   bool IsModelImprovementAllowed() const;
 
+  // Whether the Indigo optimization type has been registered with Optimization
+  // Guide, which happens once the client is in a supported region.
+  bool IsOptimizationTypeRegistered() const {
+    return optimization_type_registered_;
+  }
+
   base::CallbackListSubscription RegisterLocalEligibilityChangedCallback(
       LocalEligibilityChangedCallback callback);
+
+  // Registers a callback to run when the Indigo config (e.g., the allowed
+  // origins and keywords) finishes loading.
+  base::CallbackListSubscription RegisterConfigLoadedCallback(
+      base::RepeatingClosure callback);
 
   base::CallbackListSubscription RegisterPhotoChangedCallback(
       base::RepeatingClosure callback);
@@ -229,6 +240,9 @@ class IndigoService : public KeyedService,
   static IndigoRegionFilterResult EvaluateRegion();
   LocalEligibility ComputeLocalEligibility() const;
   void UpdateLocalEligibilityAndNotify();
+  // Registers the Indigo optimization type with Optimization Guide the first
+  // time the profile is in a supported region.
+  void MaybeRegisterOptimizationType();
   void OnRemoteEligibilityReceived(
       base::TimeTicks start_time,
       base::expected<RemoteEligibility, std::string> eligibility_or_error);
@@ -243,6 +257,7 @@ class IndigoService : public KeyedService,
   LocalEligibility last_known_local_eligibility_;
   base::RepeatingCallbackList<void(LocalEligibility)>
       local_eligibility_callback_list_;
+  base::RepeatingClosureList config_loaded_callback_list_;
   base::RepeatingClosureList photo_changed_callback_list_;
 
   void OnIndigoComponentReady();
@@ -262,6 +277,9 @@ class IndigoService : public KeyedService,
 
   // True if a fetch for remote eligibility is currently in flight.
   bool remote_eligibility_fetch_in_progress_ = false;
+
+  // True once the Indigo optimization type has been registered.
+  bool optimization_type_registered_ = false;
 
   // Overrides the server fetch for testing purposes.
   RemoteEligibilityFetcher remote_eligibility_fetcher_;

@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/i18n/language_tag.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -407,6 +408,16 @@ class IndigoPageActionControllerTestBase : public testing::Test {
                 optimization_guide::OptimizationGuideDecisionCallback>()))
         .WillOnce(base::test::RunOnceCallback<2>(
             decision, optimization_guide::OptimizationMetadata()));
+  }
+
+  void ExpectNoOptimizationGuideQuery() {
+    EXPECT_CALL(
+        *mock_optimization_guide_,
+        CanApplyOptimization(
+            _, optimization_guide::proto::OptimizationType::INDIGO,
+            testing::An<
+                optimization_guide::OptimizationGuideDecisionCallback>()))
+        .Times(0);
   }
 
   // Like `ExpectOptimizationGuideDecision()`, but leaves the answer to the
@@ -823,6 +834,7 @@ TEST_P(IndigoPageActionControllerTest,
       optimization_guide::features::kOptimizationHints);
 
   CreateController({.expect_register_optimization_types = false});
+  SetupHeuristicConfig();
 
   EXPECT_CALL(*page_action_controller_, Show(_)).Times(0);
   GURL url("https://example.com");
@@ -830,8 +842,62 @@ TEST_P(IndigoPageActionControllerTest,
       url, tab_interface_->GetContents());
   navigation->Commit();
 
-  // Without an optimization guide decision, the eligibility check times out.
-  EXPECT_FALSE(GetEligibilityForCueing());
+  // Without Optimization Guide, there's no decision to wait for, so once the
+  // heuristic has ruled out the page (it isn't on an allowed origin), the page
+  // is found ineligible right away.
+  base::test::TestFuture<bool> future;
+  const base::TimeTicks check_time = base::TimeTicks::Now();
+  controller_->CheckEligibilityForCueing(future.GetCallback());
+  EXPECT_FALSE(future.Get());
+  EXPECT_EQ(base::TimeTicks::Now(), check_time);
+}
+
+TEST_P(IndigoPageActionControllerTest,
+       RegistersOptimizationTypeOnlyInSupportedRegion) {
+  base::test::ScopedFeatureList region_filtering(
+      features::kIndigoRegionFiltering);
+  region_override_.Set({"ca", "", base::i18n::GetKnownLanguageTag("en-GB")});
+  CreateController({.expect_register_optimization_types = false});
+
+  // Outside a supported region, Optimization Guide isn't queried either.
+  ExpectNoOptimizationGuideQuery();
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example.com"), tab_interface_->GetContents());
+  navigation->Commit();
+  testing::Mock::VerifyAndClearExpectations(mock_optimization_guide_);
+
+  EXPECT_CALL(*mock_optimization_guide_,
+              RegisterOptimizationTypes(testing::ElementsAre(
+                  optimization_guide::proto::OptimizationType::INDIGO)));
+  region_override_.Set({"us", "", base::i18n::GetKnownLanguageTag("en-US")});
+  IndigoServiceFactory::GetForProfile(profile_.get())
+      ->OnCountryOrAdminAreaChanged();
+}
+
+TEST_P(IndigoPageActionControllerTest,
+       DoesNotWaitForOptimizationGuideSkippedOutsideSupportedRegion) {
+  base::test::ScopedFeatureList region_filtering(
+      features::kIndigoRegionFiltering);
+  region_override_.Set({"ca", "", base::i18n::GetKnownLanguageTag("en-GB")});
+  CreateController({.expect_register_optimization_types = false});
+  SetupHeuristicConfig();
+  ExpectNoOptimizationGuideQuery();
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example.com"), tab_interface_->GetContents());
+  navigation->Commit();
+  testing::Mock::VerifyAndClearExpectations(mock_optimization_guide_);
+
+  // Once the region is supported, the page doesn't wait for an Optimization
+  // Guide decision that will never arrive.
+  EXPECT_CALL(*mock_optimization_guide_, RegisterOptimizationTypes(_));
+  region_override_.Set({"us", "", base::i18n::GetKnownLanguageTag("en-US")});
+  IndigoServiceFactory::GetForProfile(profile_.get())
+      ->OnCountryOrAdminAreaChanged();
+  base::test::TestFuture<bool> future;
+  const base::TimeTicks check_time = base::TimeTicks::Now();
+  controller_->CheckEligibilityForCueing(future.GetCallback());
+  EXPECT_FALSE(future.Get());
+  EXPECT_EQ(base::TimeTicks::Now(), check_time);
 }
 
 TEST_P(IndigoPageActionControllerTest, HidesWhenNotSignedIn) {
@@ -862,7 +928,6 @@ TEST_P(IndigoPageActionControllerTest, HidesWhenCapabilityIsFalse) {
 
   GURL url("https://example.com");
   ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
-
   auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
       url, tab_interface_->GetContents());
   navigation->Commit();
@@ -2259,23 +2324,21 @@ TEST_P(IndigoPageActionControllerTest, TriggerSource_Both_PriorityToOptGuide) {
           },
           base::Unretained(&receiver)));
 
-  base::RunLoop run_loop;
-  fake_metadata.SetQuitClosure(run_loop.QuitClosure());
-
-  // Navigate. This will trigger both but not show because signed out.
+  // Navigate. While signed out, OptGuide is queried, but the heuristic isn't
+  // run.
   auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
       url, tab_interface_->GetContents());
   navigation->Commit();
-
-  // Wait for heuristic to complete.
-  run_loop.Run();
+  ASSERT_TRUE(opt_guide_callback);
+  EXPECT_TRUE(fake_metadata.last_allowed_keywords().empty());
 
   // Now we make OptGuide return True.
   std::move(opt_guide_callback)
       .Run(OptimizationGuideDecision::kTrue,
            optimization_guide::OptimizationMetadata());
 
-  // Now we sign in. This should trigger Show.
+  // Now we sign in. Optimization Guide has already decided, so this should
+  // trigger Show without running the heuristic.
   ExpectEntryPointShown();
 
   // Make sure we are eligible.
@@ -2283,6 +2346,11 @@ TEST_P(IndigoPageActionControllerTest, TriggerSource_Both_PriorityToOptGuide) {
 
   identity_test_env_adaptor_->identity_test_env()->MakePrimaryAccountAvailable(
       "user@example.com", signin::ConsentLevel::kSignin);
+  task_environment_.FastForwardBy(
+      features::kIndigoMetadataKeywordHeuristicMaxWaitTime.Get());
+  EXPECT_TRUE(fake_metadata.last_allowed_keywords().empty());
+  histogram_tester.ExpectTotalCount("Indigo.Discovery.MetadataKeywordHeuristic",
+                                    0);
 
   // In contextual cues mode, generating the cue records the trigger source.
   ShowCueIfDelegatedToContextualCueing();
@@ -3132,4 +3200,3 @@ TEST_P(IndigoPageActionControllerGeicTest,
 
 }  // namespace
 }  // namespace indigo
-

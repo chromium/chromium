@@ -107,6 +107,7 @@ class IndigoMetadataClassifierTest : public ChromeRenderViewHostTestHarness {
     auto* service = IndigoServiceFactory::GetForProfile(profile());
     ASSERT_TRUE(service);
     service->SetConfigForTesting(MakeConfig());
+    service->SetLocalEligibilityForTesting(LocalEligibility::kEligible);
 
     classifier_ = std::make_unique<IndigoMetadataClassifier>(
         service,
@@ -151,9 +152,12 @@ class IndigoMetadataClassifierTest : public ChromeRenderViewHostTestHarness {
             base::Unretained(receiver_.get())));
   }
 
-  void NavigateTo(const GURL& url) {
+  // Navigates to `url`. Unless `keep_loading` is true, the document finishes
+  // loading (reaching DOMContentLoaded and onload) as part of the commit.
+  void NavigateTo(const GURL& url, bool keep_loading = false) {
     auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
         url, web_contents());
+    navigation->SetKeepLoading(keep_loading);
     navigation->Start();
     navigation->ReadyToCommit();
     BindFakeMetadata(navigation->GetFinalRenderFrameHost());
@@ -181,6 +185,23 @@ class IndigoMetadataClassifierTest : public ChromeRenderViewHostTestHarness {
     bool success = result_updated_.WaitAndClear();
     fake_metadata_.ClearClassifyCalled();
     return success;
+  }
+
+  IndigoService* service() {
+    return IndigoServiceFactory::GetForProfile(profile());
+  }
+
+  void SetLocallyEligible(bool eligible) {
+    service()->SetLocalEligibilityForTesting(
+        eligible ? LocalEligibility::kEligible
+                 : LocalEligibility::kNotSignedIn);
+  }
+
+  static blink::mojom::ProductClassificationResultPtr MatchingResult() {
+    auto result = blink::mojom::ProductClassificationResult::New();
+    result->allowed_keyword_found = true;
+    result->blocked_keyword_found = false;
+    return result;
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -411,19 +432,52 @@ TEST_F(IndigoMetadataClassifierTest,
   EXPECT_EQ(update_count_, 0);
   EXPECT_EQ(fake_metadata_.classify_call_count(), 0);
 
-  // Config finishes loading before window.onload.
-  service->SetConfigForTesting(MakeConfig());
+  // Config finishes loading before window.onload. Since the document has
+  // already reached DOMContentLoaded, classification runs right away.
   auto result = blink::mojom::ProductClassificationResult::New();
   result->allowed_keyword_found = true;
   result->blocked_keyword_found = false;
   fake_metadata_.SetResult(std::move(result));
+  const base::TimeTicks config_loaded_time = base::TimeTicks::Now();
+  service->SetConfigForTesting(MakeConfig());
 
-  classifier_->OnDocumentOnLoadCompletedInPrimaryMainFrame();
   ASSERT_TRUE(WaitForResultUpdate());
+  EXPECT_EQ(base::TimeTicks::Now(), config_loaded_time);
   EXPECT_FALSE(classifier_->is_pending());
   EXPECT_TRUE(classifier_->matches());
   EXPECT_EQ(update_count_, 1);
   EXPECT_EQ(fake_metadata_.classify_call_count(), 1);
+}
+
+TEST_F(IndigoMetadataClassifierTest,
+       WaitsForDOMContentLoadedWhenConfigLoadsFirst) {
+  auto* service = IndigoServiceFactory::GetForProfile(profile());
+  service->ResetConfigForTesting();
+  NavigateTo(GURL("https://allowed.com/product"), /*keep_loading=*/true);
+
+  service->SetConfigForTesting(MakeConfig());
+  EXPECT_TRUE(classifier_->is_pending());
+
+  fake_metadata_.SetResult(MatchingResult());
+  classifier_->OnDOMContentLoaded(main_rfh());
+  ASSERT_TRUE(WaitForResultUpdate());
+  EXPECT_TRUE(classifier_->matches());
+  EXPECT_EQ(fake_metadata_.classify_call_count(), 1);
+}
+
+TEST_F(IndigoMetadataClassifierTest,
+       ResolvesFalseWhenConfigLoadsForDisallowedOrigin) {
+  auto* service = IndigoServiceFactory::GetForProfile(profile());
+  service->ResetConfigForTesting();
+  NavigateTo(GURL("https://disallowed.com/product"));
+  classifier_->OnDOMContentLoaded(main_rfh());
+  EXPECT_TRUE(classifier_->is_pending());
+
+  service->SetConfigForTesting(MakeConfig());
+  EXPECT_FALSE(classifier_->is_pending());
+  EXPECT_FALSE(classifier_->matches());
+  EXPECT_EQ(update_count_, 1);
+  EXPECT_EQ(fake_metadata_.classify_call_count(), 0);
 }
 
 TEST_F(IndigoMetadataClassifierTest,
@@ -461,6 +515,168 @@ TEST_F(IndigoMetadataClassifierTest,
   EXPECT_FALSE(classifier_->is_pending());
   EXPECT_TRUE(classifier_->matches());
   EXPECT_EQ(update_count_, 1);
+}
+
+TEST_F(IndigoMetadataClassifierTest, SkipsClassificationWhenIneligible) {
+  SetLocallyEligible(false);
+  fake_metadata_.SetResult(MatchingResult());
+  NavigateTo(GURL("https://allowed.com/product"));
+  EXPECT_FALSE(classifier_->is_pending());
+
+  classifier_->OnDOMContentLoaded(main_rfh());
+  classifier_->OnDocumentOnLoadCompletedInPrimaryMainFrame();
+  task_environment()->FastForwardBy(
+      features::kIndigoMetadataKeywordHeuristicMaxWaitTime.Get());
+  EXPECT_EQ(fake_metadata_.classify_call_count(), 0);
+  EXPECT_FALSE(classifier_->is_pending());
+  EXPECT_FALSE(classifier_->matches());
+  EXPECT_EQ(update_count_, 0);
+}
+
+TEST_F(IndigoMetadataClassifierTest, BecomesEligibleAndMatches) {
+  SetLocallyEligible(false);
+  NavigateTo(GURL("https://allowed.com/product"));
+  classifier_->OnDOMContentLoaded(main_rfh());
+  EXPECT_EQ(fake_metadata_.classify_call_count(), 0);
+
+  // The document has already loaded, so classification runs immediately.
+  fake_metadata_.SetResult(MatchingResult());
+  SetLocallyEligible(true);
+  classifier_->OnLocalEligibilityChanged();
+  ASSERT_TRUE(WaitForResultUpdate());
+  EXPECT_TRUE(classifier_->matches());
+  EXPECT_EQ(fake_metadata_.classify_call_count(), 1);
+}
+
+TEST_F(IndigoMetadataClassifierTest, BecomesEligibleBeforeDOMContentLoaded) {
+  SetLocallyEligible(false);
+  NavigateTo(GURL("https://allowed.com/product"), /*keep_loading=*/true);
+
+  // The document hasn't reached DOMContentLoaded, so classification waits for
+  // it as usual.
+  SetLocallyEligible(true);
+  classifier_->OnLocalEligibilityChanged();
+  EXPECT_TRUE(classifier_->is_pending());
+
+  // Exactly one classification (below) shows that none was started early.
+  fake_metadata_.SetResult(MatchingResult());
+  classifier_->OnDOMContentLoaded(main_rfh());
+  ASSERT_TRUE(WaitForResultUpdate());
+  EXPECT_TRUE(classifier_->matches());
+  EXPECT_EQ(fake_metadata_.classify_call_count(), 1);
+}
+
+TEST_F(IndigoMetadataClassifierTest, CancelledSkippedDocumentStaysSkipped) {
+  SetLocallyEligible(false);
+  NavigateTo(GURL("https://allowed.com/product"));
+
+  // Once classification is no longer needed (e.g., because Optimization Guide
+  // already decided), becoming eligible doesn't start it.
+  classifier_->CancelPendingClassification();
+  SetLocallyEligible(true);
+  classifier_->OnLocalEligibilityChanged();
+  task_environment()->FastForwardBy(
+      features::kIndigoMetadataKeywordHeuristicMaxWaitTime.Get());
+  EXPECT_FALSE(classifier_->is_pending());
+  EXPECT_EQ(fake_metadata_.classify_call_count(), 0);
+  EXPECT_EQ(update_count_, 0);
+}
+
+TEST_F(IndigoMetadataClassifierTest, BecomesEligibleBeforeConfigLoads) {
+  // As on session restore, the profile becomes eligible (when the component is
+  // ready) before the config has loaded.
+  auto* service = IndigoServiceFactory::GetForProfile(profile());
+  service->ResetConfigForTesting();
+  SetLocallyEligible(false);
+  NavigateTo(GURL("https://allowed.com/product"));
+  SetLocallyEligible(true);
+  classifier_->OnLocalEligibilityChanged();
+  EXPECT_TRUE(classifier_->is_pending());
+
+  // Classification runs as soon as the config loads, without waiting for the
+  // next scheduled check. Exactly one classification shows that none was sent
+  // before the config loaded.
+  fake_metadata_.SetResult(MatchingResult());
+  const base::TimeTicks config_loaded_time = base::TimeTicks::Now();
+  service->SetConfigForTesting(MakeConfig());
+  ASSERT_TRUE(WaitForResultUpdate());
+  EXPECT_EQ(base::TimeTicks::Now(), config_loaded_time);
+  EXPECT_TRUE(classifier_->matches());
+  EXPECT_EQ(fake_metadata_.classify_call_count(), 1);
+}
+
+TEST_F(IndigoMetadataClassifierTest, EligibleNavigationClearsSkippedDocument) {
+  SetLocallyEligible(false);
+  NavigateTo(GURL("https://allowed.com/product"));
+
+  // A navigation while eligible classifies as usual.
+  SetLocallyEligible(true);
+  fake_metadata_.SetResult(MatchingResult());
+  NavigateTo(GURL("https://allowed.com/other-product"));
+  classifier_->OnDOMContentLoaded(main_rfh());
+  ASSERT_TRUE(WaitForResultUpdate());
+  EXPECT_EQ(fake_metadata_.classify_call_count(), 1);
+
+  // An eligibility notification doesn't restart classification.
+  classifier_->OnLocalEligibilityChanged();
+  task_environment()->FastForwardBy(
+      features::kIndigoMetadataKeywordHeuristicMaxWaitTime.Get());
+  EXPECT_TRUE(classifier_->matches());
+  EXPECT_EQ(fake_metadata_.classify_call_count(), 1);
+  EXPECT_EQ(update_count_, 1);
+}
+
+TEST_F(IndigoMetadataClassifierTest, BecomesEligibleAfterOnload) {
+  base::HistogramTester histogram_tester;
+  SetLocallyEligible(false);
+  NavigateTo(GURL("https://allowed.com/category-page"));
+  classifier_->OnDOMContentLoaded(main_rfh());
+  classifier_->OnDocumentOnLoadCompletedInPrimaryMainFrame();
+  EXPECT_EQ(fake_metadata_.classify_call_count(), 0);
+
+  fake_metadata_.SetResult(nullptr);
+  SetLocallyEligible(true);
+  classifier_->OnLocalEligibilityChanged();
+  ASSERT_TRUE(fake_metadata_.WaitForClassifyCall());
+  EXPECT_TRUE(classifier_->is_pending());
+
+  // Since onload already completed, the post-DCL retry is the final check.
+  task_environment()->FastForwardBy(
+      features::kIndigoMetadataKeywordHeuristicPostDclDelay.Get());
+  EXPECT_FALSE(classifier_->is_pending());
+  EXPECT_FALSE(classifier_->matches());
+  EXPECT_EQ(update_count_, 1);
+  EXPECT_EQ(fake_metadata_.classify_call_count(), 2);
+  histogram_tester.ExpectUniqueSample(
+      "Indigo.Discovery.MetadataKeywordHeuristic", false, 1);
+}
+
+TEST_F(IndigoMetadataClassifierTest, EligibilityChangeAfterResultIsNoOp) {
+  fake_metadata_.SetResult(MatchingResult());
+  NavigateTo(GURL("https://allowed.com/product"));
+  classifier_->OnDOMContentLoaded(main_rfh());
+  ASSERT_TRUE(WaitForResultUpdate());
+  EXPECT_TRUE(classifier_->matches());
+
+  SetLocallyEligible(false);
+  classifier_->OnLocalEligibilityChanged();
+  SetLocallyEligible(true);
+  classifier_->OnLocalEligibilityChanged();
+  EXPECT_TRUE(classifier_->matches());
+  EXPECT_EQ(fake_metadata_.classify_call_count(), 1);
+  EXPECT_EQ(update_count_, 1);
+}
+
+TEST_F(IndigoMetadataClassifierTest, BecomesEligibleOnDisallowedOrigin) {
+  SetLocallyEligible(false);
+  NavigateTo(GURL("https://disallowed.com/product"));
+  classifier_->OnDOMContentLoaded(main_rfh());
+
+  SetLocallyEligible(true);
+  classifier_->OnLocalEligibilityChanged();
+  EXPECT_FALSE(classifier_->is_pending());
+  EXPECT_FALSE(classifier_->matches());
+  EXPECT_EQ(fake_metadata_.classify_call_count(), 0);
 }
 
 }  // namespace

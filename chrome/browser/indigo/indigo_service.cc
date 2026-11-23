@@ -32,6 +32,8 @@
 #include "chrome/browser/indigo/indigo_prefs.h"
 #include "chrome/browser/indigo/proto/indigo_config.pb.h"
 #include "chrome/browser/indigo/proto/indigo_prompts.pb.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "components/application_locale_storage/application_locale_storage.h"
@@ -301,6 +303,7 @@ IndigoService::IndigoService(Profile* profile,
   last_known_local_eligibility_ = ComputeLocalEligibility();
   // Recorded even if region filtering isn't enforced, to estimate its effect.
   RecordRegionFilterResultOncePerSession(EvaluateRegion());
+  MaybeRegisterOptimizationType();
   api_client_ = std::make_unique<ApiClient>(
       identity_manager, profile->GetDefaultStoragePartition()
                             ->GetURLLoaderFactoryForBrowserProcess());
@@ -337,6 +340,7 @@ void IndigoService::EnsureComponentExtensionRegistered() {
 }
 
 void IndigoService::Shutdown() {
+  indigo_component_ready_subscription_ = {};
   identity_manager_observation_.Reset();
   variations_service_observation_.Reset();
   pref_change_registrar_.reset();
@@ -378,6 +382,11 @@ base::CallbackListSubscription
 IndigoService::RegisterLocalEligibilityChangedCallback(
     LocalEligibilityChangedCallback callback) {
   return local_eligibility_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription IndigoService::RegisterConfigLoadedCallback(
+    base::RepeatingClosure callback) {
+  return config_loaded_callback_list_.Add(std::move(callback));
 }
 
 base::CallbackListSubscription IndigoService::RegisterPhotoChangedCallback(
@@ -535,8 +544,31 @@ void IndigoService::UpdateLocalEligibilityAndNotify() {
   LocalEligibility new_eligibility = ComputeLocalEligibility();
   if (new_eligibility != last_known_local_eligibility_) {
     last_known_local_eligibility_ = new_eligibility;
+    MaybeRegisterOptimizationType();
     local_eligibility_callback_list_.Notify(new_eligibility);
   }
+}
+
+void IndigoService::MaybeRegisterOptimizationType() {
+  // Registration is pointless outside supported regions. Otherwise, register
+  // even if the profile is not yet locally eligible: transient conditions
+  // (e.g., the component not being ready at startup) may resolve during a page
+  // load, and hints fetched for that navigation should already include Indigo
+  // so that a decision is available when it's queried. Once registered, the
+  // type stays registered for the rest of the session.
+  if (optimization_type_registered_ ||
+      last_known_local_eligibility_ == LocalEligibility::kCountryNotAllowed ||
+      last_known_local_eligibility_ == LocalEligibility::kLocaleNotAllowed) {
+    return;
+  }
+  OptimizationGuideKeyedService* optimization_guide =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
+  if (!optimization_guide) {
+    return;
+  }
+  optimization_guide->RegisterOptimizationTypes(
+      {optimization_guide::proto::OptimizationType::INDIGO});
+  optimization_type_registered_ = true;
 }
 
 void IndigoService::OnIndigoComponentReady() {
@@ -681,6 +713,7 @@ IndigoService::ConfigData::~ConfigData() = default;
 void IndigoService::OnConfigLoaded(ConfigData config) {
   config_ = std::move(config);
   config_loaded_ = true;
+  config_loaded_callback_list_.Notify();
 }
 
 const std::vector<std::string>& IndigoService::GetAllowedKeywords() const {
@@ -701,6 +734,7 @@ bool IndigoService::IsOriginAllowed(const url::Origin& origin) const {
 void IndigoService::SetConfigForTesting(ConfigData config) {
   config_ = std::move(config);
   config_loaded_ = true;
+  config_loaded_callback_list_.Notify();
 }
 
 void IndigoService::ResetConfigForTesting() {

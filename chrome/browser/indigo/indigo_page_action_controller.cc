@@ -132,11 +132,6 @@ IndigoPageActionController::IndigoPageActionController(
 
   RegisterAsPageActionObserver(page_action_controller);
 
-  if (optimization_guide_) {
-    optimization_guide_->RegisterOptimizationTypes(
-        {optimization_guide::proto::OptimizationType::INDIGO});
-  }
-
   if (indigo_service_) {
     indigo_service_subscription_ =
         indigo_service_->RegisterLocalEligibilityChangedCallback(
@@ -614,9 +609,21 @@ void IndigoPageActionController::DidFinishNavigation(
     AbortContextMenuSnoozeIph();
   }
 
+  // The Indigo optimization type is only registered in supported regions (see
+  // IndigoService). There, query even if the profile isn't locally eligible
+  // yet, since hints are fetched during navigation and the decision can be
+  // used if the profile becomes eligible later (e.g., once the component is
+  // ready, or the user signs in). Otherwise, there won't be a decision to wait
+  // for.
+  const bool query_optimization_guide =
+      optimization_guide_ && indigo_service_ &&
+      indigo_service_->IsOptimizationTypeRegistered();
+
   last_evaluated_url_ = navigation_handle->GetURL();
   optimization_guide_decision_ =
-      optimization_guide::OptimizationGuideDecision::kUnknown;
+      query_optimization_guide
+          ? optimization_guide::OptimizationGuideDecision::kUnknown
+          : optimization_guide::OptimizationGuideDecision::kFalse;
   metadata_classifier_.OnNavigationCommitted(
       tab().GetContents(), navigation_handle->IsSameDocument());
   last_anchored_message_priority_ = std::nullopt;
@@ -646,7 +653,7 @@ void IndigoPageActionController::DidFinishNavigation(
   context_menu_snooze_iph_attempted_on_current_page_ = false;
   UpdateEntryPointsState();
 
-  if (optimization_guide_) {
+  if (query_optimization_guide) {
     const GURL& url = navigation_handle->GetURL();
     optimization_guide_->CanApplyOptimization(
         url, optimization_guide::proto::OptimizationType::INDIGO,
@@ -952,6 +959,9 @@ void IndigoPageActionController::OnOnboardingDialogClosed(
 
 void IndigoPageActionController::OnLocalEligibilityChanged(
     LocalEligibility state) {
+  // If the current page was skipped while the profile was ineligible, it may
+  // be worth evaluating now.
+  metadata_classifier_.OnLocalEligibilityChanged();
   UpdateEntryPointsState();
 }
 

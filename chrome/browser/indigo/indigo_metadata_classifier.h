@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_INDIGO_INDIGO_METADATA_CLASSIFIER_H_
 #define CHROME_BROWSER_INDIGO_INDIGO_METADATA_CLASSIFIER_H_
 
+#include "base/callback_list.h"
 #include "base/cancelable_callback.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -55,6 +56,12 @@ class IndigoMetadataClassifier {
   // Called when window.onload completes in the primary main frame.
   void OnDocumentOnLoadCompletedInPrimaryMainFrame();
 
+  // Called when the profile's local eligibility may have changed. If the
+  // current document was not classified because the profile was ineligible,
+  // and it is now eligible, classification starts, taking into account the
+  // lifecycle milestones that the document has already reached.
+  void OnLocalEligibilityChanged();
+
   // Resets all state and cancels any pending timers or in-flight requests.
   void Reset();
 
@@ -80,6 +87,10 @@ class IndigoMetadataClassifier {
                // check.
   };
 
+  // Moves to `kPending` (or `kNoMatch`, if the origin is known to be
+  // ineligible) and schedules timers for the current document.
+  void StartPendingClassification(bool is_same_document);
+
   // Queries the renderer for product metadata. `is_final_check` is true when
   // this will be the final check (either after all relevant events and retries,
   // or when the max wait deadline has expired), causing an empty (nullptr)
@@ -90,6 +101,8 @@ class IndigoMetadataClassifier {
   void LockInResult(bool matches, bool record_uma);
   void OnRetryTimeout();
   void OnMaxWaitTimeout();
+  // Called when the Indigo config finishes loading.
+  void OnConfigLoaded();
 
   const raw_ptr<IndigoService> indigo_service_;
   base::RepeatingClosure on_result_updated_;
@@ -100,6 +113,10 @@ class IndigoMetadataClassifier {
   bool document_onload_completed_ = false;
   bool retry_completed_ = false;
 
+  // True if classification of the current document was skipped because the
+  // profile was not locally eligible.
+  bool skipped_for_ineligibility_ = false;
+
   base::OneShotTimer retry_timer_;
   base::OneShotTimer max_wait_timer_;
 
@@ -107,6 +124,8 @@ class IndigoMetadataClassifier {
   base::CancelableOnceCallback<void(
       blink::mojom::ProductClassificationResultPtr)>
       pending_request_;
+
+  base::CallbackListSubscription config_loaded_subscription_;
 };
 
 }  // namespace indigo
