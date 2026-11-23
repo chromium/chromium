@@ -9,6 +9,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands/key_rotation_command.h"
@@ -22,6 +23,11 @@ namespace {
 
 const char kNoncePathField[] = "nonce";
 const char kResultFieldName[] = "result";
+
+// Match the server-side expiration duration for rotate attestation credential
+// commands.
+constexpr base::TimeDelta kRotateAttestationCredentialExpirationTime =
+    base::Days(365 * 2);
 
 std::string ResultToString(KeyRotationResult result) {
   switch (result) {
@@ -82,6 +88,10 @@ bool RotateAttestationCredentialJob::ParseCommandPayload(
     return true;
   }
   return false;
+}
+
+bool RotateAttestationCredentialJob::IsExpired(base::TimeTicks now) {
+  return now > issued_time() + kRotateAttestationCredentialExpirationTime;
 }
 
 void RotateAttestationCredentialJob::RunImpl(

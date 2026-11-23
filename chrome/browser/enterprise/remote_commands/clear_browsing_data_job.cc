@@ -10,6 +10,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -24,6 +25,9 @@ const char kFailedTypesPath[] = "failed_data_types";
 
 const char kClearCacheField[] = "clear_cache";
 const char kClearCookiesField[] = "clear_cookies";
+
+// Match the server-side expiration duration for clear browsing data commands.
+constexpr base::TimeDelta kClearBrowsingDataExpirationTime = base::Hours(24);
 
 // Define the possibly failed data types here for 2 reasons:
 //
@@ -88,6 +92,10 @@ bool ClearBrowsingDataJob::ParseCommandPayload(
   clear_cookies_ = root->FindBool(kClearCookiesField).value_or(false);
 
   return true;
+}
+
+bool ClearBrowsingDataJob::IsExpired(base::TimeTicks now) {
+  return now > issued_time() + kClearBrowsingDataExpirationTime;
 }
 
 void ClearBrowsingDataJob::RunImpl(CallbackWithResult result_callback) {

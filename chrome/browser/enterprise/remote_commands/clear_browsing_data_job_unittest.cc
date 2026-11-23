@@ -7,6 +7,7 @@
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -347,6 +348,40 @@ TEST_F(ClearBrowsingDataJobTest, HandleProfilPathCaseSensitivity) {
                        })));
   run_loop.Run();
   EXPECT_TRUE(done);
+}
+
+TEST_F(ClearBrowsingDataJobTest, NotExpiredAtTwentyFourHours) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  auto command_proto = CreateCommandProto(GetTestProfilePath().AsUTF8Unsafe(),
+                                          /* clear_cache= */ false,
+                                          /* clear_cookies= */ false);
+  command_proto.set_age_of_command(base::Hours(24).InMilliseconds());
+
+  auto job = std::make_unique<ClearBrowsingDataJob>(AddTestingProfile());
+  ASSERT_TRUE(
+      job->Init(now, command_proto, enterprise_management::SignedData{}));
+
+  base::RunLoop run_loop;
+  EXPECT_TRUE(job->Run(base::Time::Now(), now, run_loop.QuitClosure()));
+  run_loop.Run();
+  EXPECT_EQ(policy::RemoteCommandJob::SUCCEEDED, job->status());
+}
+
+TEST_F(ClearBrowsingDataJobTest, ExpiredAfterTwentyFourHours) {
+  base::TimeTicks now = base::TimeTicks::Now();
+  auto command_proto = CreateCommandProto(GetTestProfilePath().AsUTF8Unsafe(),
+                                          /* clear_cache= */ false,
+                                          /* clear_cookies= */ false);
+  command_proto.set_age_of_command(
+      (base::Hours(24) + base::Milliseconds(1)).InMilliseconds());
+
+  auto job = std::make_unique<ClearBrowsingDataJob>(AddTestingProfile());
+  ASSERT_TRUE(
+      job->Init(now, command_proto, enterprise_management::SignedData{}));
+
+  base::RunLoop run_loop;
+  EXPECT_FALSE(job->Run(base::Time::Now(), now, run_loop.QuitClosure()));
+  EXPECT_EQ(policy::RemoteCommandJob::EXPIRED, job->status());
 }
 
 }  // namespace enterprise_commands

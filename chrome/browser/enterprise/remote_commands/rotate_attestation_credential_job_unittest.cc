@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_features.h"
 #include "components/enterprise/device_trust/core/device_trust_key_manager.h"
@@ -167,6 +168,49 @@ TEST_P(RotateAttestationCredentialJobTest, BadPayload) {
       std::make_unique<RotateAttestationCredentialJob>(&mock_key_manager_);
   EXPECT_FALSE(job->Init(base::TimeTicks::Now(), command_proto,
                          enterprise_management::SignedData{}));
+}
+
+TEST_P(RotateAttestationCredentialJobTest, NotExpiredAtTwoYears) {
+  if (is_key_rotation_enabled()) {
+    MockKeyRotationWith(KeyRotationResult::SUCCESS);
+  }
+
+  auto command_proto = CreateCommand();
+  command_proto.set_payload(GetPayloadWithNonce());
+  command_proto.set_age_of_command(base::Days(365 * 2).InMilliseconds());
+
+  base::TimeTicks now = base::TimeTicks::Now();
+  auto job =
+      std::make_unique<RotateAttestationCredentialJob>(&mock_key_manager_);
+  ASSERT_TRUE(
+      job->Init(now, command_proto, enterprise_management::SignedData{}));
+
+  base::RunLoop run_loop;
+  EXPECT_TRUE(job->Run(base::Time::Now(), now, run_loop.QuitClosure()));
+  run_loop.Run();
+
+  if (is_key_rotation_enabled()) {
+    EXPECT_EQ(job->status(), policy::RemoteCommandJob::SUCCEEDED);
+  } else {
+    EXPECT_EQ(job->status(), policy::RemoteCommandJob::FAILED);
+  }
+}
+
+TEST_P(RotateAttestationCredentialJobTest, ExpiredAfterTwoYears) {
+  auto command_proto = CreateCommand();
+  command_proto.set_payload(GetPayloadWithNonce());
+  command_proto.set_age_of_command(
+      (base::Days(365 * 2) + base::Milliseconds(1)).InMilliseconds());
+
+  base::TimeTicks now = base::TimeTicks::Now();
+  auto job =
+      std::make_unique<RotateAttestationCredentialJob>(&mock_key_manager_);
+  ASSERT_TRUE(
+      job->Init(now, command_proto, enterprise_management::SignedData{}));
+
+  base::RunLoop run_loop;
+  EXPECT_FALSE(job->Run(base::Time::Now(), now, run_loop.QuitClosure()));
+  EXPECT_EQ(job->status(), policy::RemoteCommandJob::EXPIRED);
 }
 
 INSTANTIATE_TEST_SUITE_P(, RotateAttestationCredentialJobTest, testing::Bool());
