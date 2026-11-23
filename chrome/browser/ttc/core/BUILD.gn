@@ -273,6 +273,7 @@ source_set("impl") {
         "hotl/hotl_sound_player_chromeos.cc",
         "mic_privacy_indicator_chromeos.cc",
         "mic_privacy_indicator_chromeos.h",
+        "output_volume_monitor_chromeos.cc",
       ]
       deps += [
         "//ash",
@@ -408,7 +409,10 @@ source_set("unit_tests") {
     ]
     deps += [ "//chrome/browser/ui/toasts/api:toasts" ]
     if (is_chromeos) {
+      sources += [ "output_volume_monitor_chromeos_unittest.cc" ]
       deps += [
+        "//chromeos/ash/components/audio",
+        "//chromeos/ash/components/dbus/audio",
         "//components/session_manager:base",
         "//components/session_manager/core",
         "//components/session_manager/test:test_support",

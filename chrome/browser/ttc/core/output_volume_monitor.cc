@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 
 namespace ttc {
 
@@ -35,11 +36,14 @@ std::unique_ptr<OutputVolumeMonitor> OutputVolumeMonitor::Create(
   return CreateForPlatform(std::move(callback));
 }
 
-// TODO(migueloruiz): Read the output volume on each platform.
+#if !BUILDFLAG(IS_CHROMEOS)
+// TODO(migueloruiz): Read the output volume on Windows, macOS, Linux and
+// Android too.
 // static
 std::unique_ptr<OutputVolumeMonitor> OutputVolumeMonitor::CreateForPlatform(
     StateChangedCallback callback) {
   return nullptr;
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace ttc
