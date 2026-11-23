@@ -819,6 +819,12 @@ IN_PROC_BROWSER_TEST_F(CaptureHandleBrowserTestPrerender,
   // The capture handle set by the captured tab is observable by the capturer.
   EXPECT_EQ(capturing_tab.ReadCaptureHandle(), captured_tab.capture_handle);
 
+  // Ensure the captured tab is active before prerendering so the test does not
+  // depend on MediaStreamFocusDelegate::SetFocus() winning an OS window-focus
+  // race against parallel browser_tests.
+  captured_tab.browser->GetTabStripModel()->ActivateTabAt(
+      captured_tab.tab_strip_index);
+
   // Pre-render a document in the captured tab.
   const auto host_id = prerender_helper_->AddPrerender(
       servers_[kCapturedServer]->GetURL(kCapturedPageOther));
