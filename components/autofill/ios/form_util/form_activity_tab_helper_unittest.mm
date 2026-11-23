@@ -637,8 +637,8 @@ class FormMutationTest : public base::test::WithFeatureOverride,
     __block TestFormRemovalInfo* info = nil;
 
     // Wait for form removal message delivery.
-    bool form_removal_info_received = WaitUntilConditionOrTimeout(
-        base::Milliseconds(kTrackFormMutationsDelayInMs * 2), ^{
+    bool form_removal_info_received =
+        WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^{
           info = block_observer->form_removal_info();
           return info != nil;
         });
@@ -697,40 +697,69 @@ TEST_P(FormMutationTest, PasswordFormRemovalRegistered) {
               ElementsAre(FormRendererId(1)));
   EXPECT_THAT(form_removal_params.value().removed_unowned_fields, IsEmpty());
 
-  if (IsParamFeatureEnabled()) {
-    // Wait for the second event (form_changed) to be received.
-    ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
-      return observer_->form_activity_info() != nullptr;
-    }));
-    ValidateParamsAfterFormChangedEvent(
-        observer_->form_activity_info()->form_activity);
+  histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.DropCount",
+                                       /*sample=*/0,
+                                       /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendCount",
+                                       /*sample=*/1,
+                                       /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendRatio",
+                                       /*sample=*/100,
+                                       /*expected_bucket_count=*/1);
 
-    histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.DropCount",
-                                         /*sample=*/0,
-                                         /*expected_bucket_count=*/1);
-    histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendCount",
-                                         /*sample=*/2,
-                                         /*expected_bucket_count=*/1);
-    histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendRatio",
-                                         /*sample=*/100,
-                                         /*expected_bucket_count=*/1);
-  } else {
-    histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.DropCount",
-                                         /*sample=*/0,
-                                         /*expected_bucket_count=*/1);
-    histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendCount",
-                                         /*sample=*/1,
-                                         /*expected_bucket_count=*/1);
-    histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendRatio",
-                                         /*sample=*/100,
-                                         /*expected_bucket_count=*/1);
+  // Validates that only the removal event is received, since `form.removal`
+  // already covers the fields removed with the form.
+  ASSERT_FALSE(WaitUntilConditionOrTimeout(
+      base::Milliseconds(kTrackFormMutationsDelayInMs * 2), ^bool {
+        return observer_->number_of_events_received() > 1;
+      }));
+  EXPECT_FALSE(observer_->form_activity_info());
+}
 
-    // Validate that only one removal event is received.
-    ASSERT_FALSE(WaitUntilConditionOrTimeout(
-        base::Milliseconds(kTrackFormMutationsDelayInMs * 2), ^bool {
-          return observer_->number_of_events_received() > 1;
-        }));
-  }
+// Tests that removing a form whose field was registered before the form
+// sends only `form.removal` and no `form_changed`.
+TEST_P(FormMutationTest, RemoveFormWithFieldRegisteredFirst) {
+  LoadHtml(@"<input id='field'>");
+  ASSERT_TRUE(SetUpUniqueIDs());
+
+  ExecuteJavaScript(@"const form = document.createElement('form');"
+                    @"form.id = 'form1';"
+                    @"form.appendChild(document.getElementById('field'));"
+                    @"document.body.appendChild(form);"
+                    @"true;");
+  ASSERT_TRUE(SetUpUniqueIDs());
+  TrackFormMutations(WaitForMainFrame());
+
+  ASSERT_TRUE(RemoveElement(/*element_id=*/@"form1"));
+  histogram_tester_.ExpectUniqueSample("Autofill.iOS.FormActivity.SendCount",
+                                       /*sample=*/1,
+                                       /*expected_bucket_count=*/1);
+  EXPECT_FALSE(observer_->form_activity_info());
+}
+
+// Tests that removing a registered field into an unregistered detached form
+// falls back to `form_changed` rather than sending `form.removal`.
+TEST_P(FormMutationTest, RemoveFieldIntoUnregisteredForm) {
+  LoadHtmlForMutationTest(@"<input id='field'>");
+
+  ExecuteJavaScript(@"document.createElement('form').appendChild("
+                    @"    document.getElementById('field')); true;");
+
+  ExpectFormChangedEvent();
+  EXPECT_FALSE(observer_->form_removal_info());
+}
+
+// Tests that removing an unowned control that is no longer autofillable
+// triggers `form_changed`, since `form.removal` doesn't report it.
+TEST_P(FormMutationTest, RemoveRegisteredControlTurnedHidden) {
+  LoadHtmlForMutationTest(@"<input id='field' type='text'>");
+
+  ExecuteJavaScript(@"const field = document.getElementById('field');"
+                    @"field.type = 'hidden';"
+                    @"field.remove();");
+
+  ExpectFormChangedEvent();
+  EXPECT_FALSE(observer_->form_removal_info());
 }
 
 // Tests that removing non-password form triggers

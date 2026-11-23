@@ -9,7 +9,7 @@
  */
 
 import {processChildFrameMessage} from '//components/autofill/ios/form_util/resources/child_frame_registration_lib.js';
-import {HAS_BEEN_PASSWORD_SYMBOL} from '//components/autofill/ios/form_util/resources/fill_constants.js';
+import {type FormControlElement, HAS_BEEN_PASSWORD_SYMBOL} from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {isAutofillableElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {formSubmitted, reportFormSubmissionError, wasEditedByUser} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
@@ -728,70 +728,87 @@ function resetDebounceWindowState(): void {
  * found, sends a single generic `form_changed` message.
  */
 function processFormMutationsOptimized(): void {
-  const removedFormIDs: string[] = [];
+  const removedForms = new Map<Element, string>();
   const removedFieldIDs: string[] = [];
-  let removedFormControlCount = 0;
+  // Forms owning removed controls that haven't been seen in `removedForms` yet.
+  const formsPendingCheck = new Set<HTMLFormElement>();
+  let needsFormChanged = formControlAdded;
 
   // Process form and formless field removals
   // Check if any tracked elements in the global elements map have
   // been disconnected from the DOM.
   const elementMap = getElementMap()!;
-  elementMap.forEach((ref, id) => {
+  for (const [id, ref] of elementMap) {
     const element = ref.deref() as Element | null;
     if (!element) {
       // Element was garbage-collected before this mutation batch started
       // (tracked elements are held strongly while a batch is pending). Clean
       // up the map entry without reporting removal.
       elementMap.delete(id);
-      return;
+      continue;
     }
 
     if (element.isConnected) {
-      return;
+      continue;
     }
 
     const idStr = id.toString();
-    if (element.tagName === 'FORM') {
-      removedFormIDs.push(idStr);
-    } else if (
-        isAutofillableElement(element) && !(element as HTMLInputElement).form) {
-      // Handles unowned fields deletion in formless forms.
-      removedFieldIDs.push(idStr);
-    }
+    const tagName = element.tagName;
+    if (tagName === 'FORM') {
+      removedForms.set(element, idStr);
+    } else if (FORM_CONTROL_TAGS.includes(tagName)) {
+      const form = (element as FormControlElement).form;
 
-    // Counts removed form controls, including those owned by a form.
-    if (FORM_CONTROL_TAGS.includes(element.tagName)) {
-      removedFormControlCount++;
+      // Unowned form controls.
+      if (!form) {
+        if (isAutofillableElement(element)) {
+          // Reports removed unowned autofillable fields.
+          removedFieldIDs.push(idStr);
+        } else {
+          // Falls back to `form_changed` for non-autofillable controls not
+          // covered by `form.removal` (e.g. an `<input>` whose type changed to
+          // "hidden").
+          needsFormChanged = true;
+        }
+      } else if (!needsFormChanged && !removedForms.has(form)) {
+        // The control's form may appear later in `elementMap`, so defer
+        // checking until after the loop.
+        formsPendingCheck.add(form);
+      }
     }
-
     // Delete the detached element from our active tracking map.
     elementMap.delete(id);
-  });
+  }
+
+  if (!needsFormChanged) {
+    for (const form of formsPendingCheck) {
+      if (!removedForms.has(form)) {
+        needsFormChanged = true;
+        break;
+      }
+    }
+  }
 
   let removedFormMessage: object|null = null;
   let addedFormMessage: object|null = null;
 
-  if (removedFormIDs.length > 0 || removedFieldIDs.length > 0) {
+  if (removedForms.size > 0 || removedFieldIDs.length > 0) {
     removedFormMessage = {
       'command': 'form.removal',
       'frameID': gCrWeb.getFrameId(),
-      'removedFormIDs': fillUtil.stringify(removedFormIDs),
+      'removedFormIDs': fillUtil.stringify([...removedForms.values()]),
       'removedFieldIDs': fillUtil.stringify(removedFieldIDs),
     };
   }
 
   // Reports `form_changed` when the forms may have changed beyond what
   // `form.removal` covers:
-  // - `formControlAdded`: an observer callback saw an added form control.
-  // - `hasUnreportedRemoval`: removed form controls outnumber the reported
-  //   forms and unowned fields (e.g. fields removed with a form, or a
-  //   registered control that is no longer autofillable).
+  // - `needsFormChanged`: an observer callback saw an added form control, or a
+  //   removed control isn't covered by `form.removal`.
   // - `hasControlInEmptyTarget()`: a later callback added a control to a target
   //   cached as empty by an earlier one, so its `addedNodes` were skipped.
   //   Checked last since it queries the DOM.
-  const hasUnreportedRemoval =
-      removedFormControlCount > removedFormIDs.length + removedFieldIDs.length;
-  if (formControlAdded || hasUnreportedRemoval || hasControlInEmptyTarget()) {
+  if (needsFormChanged || hasControlInEmptyTarget()) {
     addedFormMessage = {
       'command': 'form.activity',
       'frameID': gCrWeb.getFrameId(),
