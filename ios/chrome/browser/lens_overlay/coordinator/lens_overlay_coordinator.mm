@@ -66,7 +66,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
@@ -1470,13 +1469,18 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 
 // Enters the fullscreen state.
 - (void)enterFullscreen {
+  CHECK(IsFullscreenRefactoringEnabled());
   Browser* browser = self.browser;
   if (!browser) {
     return;
   }
-  id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
-      browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
-  [handler forceFullscreenMode:FullscreenModeTransitionTrigger::kForcedByCode];
+  // TODO(crbug.com/500414020): Force fullscreen with
+  // `ForceFullscreenFeature::kLensOverlay` instead of simply entering it.
+  id<FullscreenCommands> fullscreenHandler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), FullscreenCommands);
+  [fullscreenHandler
+      enterFullscreenWithTrigger:FullscreenModeTransitionTrigger::kForcedByCode
+                        animated:YES];
 }
 
 // Ends the lifecycle of the presented result bottom sheet.

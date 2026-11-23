@@ -9,7 +9,6 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
-#import "ios/chrome/browser/fullscreen/public/fullscreen_metrics.h"
 
 enum class ComposeboxEntrypoint;
 namespace send_tab_to_self {
@@ -152,9 +151,6 @@ enum class TrustedVaultUserActionTriggerForUMA;
 
 // Dismisses the multimodal actions menu.
 - (void)dismissMultimodalActionsMenu;
-
-// Forces fullscreen mode which means that toolbars are collapsed.
-- (void)forceFullscreenMode:(FullscreenModeTransitionTrigger)trigger;
 
 // Clears any presented state on BVC.
 - (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion

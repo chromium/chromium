@@ -1880,20 +1880,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
   _notificationsOptInCoordinator = nil;
 }
 
-- (void)forceFullscreenMode:(FullscreenModeTransitionTrigger)trigger {
-  if (IsFullscreenRefactoringEnabled()) {
-    // TODO(crbug.com/500414020): Implement force fullscreen in refactored code.
-    // For now, we will simply enter Fullscreen.
-    [HandlerForProtocol(_dispatcher, FullscreenCommands)
-        enterFullscreenWithTrigger:FullscreenModeTransitionTrigger::
-                                       kForcedByCode
-                          animated:YES];
-    return;
-  }
-  _fullscreenController->EnterForceFullscreenMode(
-      /*insets_update_enabled=*/true, trigger);
-}
-
 - (void)showAddAccountWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
                        prefilledEmail:(NSString*)email {
   if (_signinCoordinator.viewWillPersist ||
@@ -2239,7 +2225,9 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
     // currently focused. The mode is force to avoid the bottom Omnibox
     // appearing above the find in page collapsed toolbar when scrolling.
     if (!IsFullscreenRefactoringEnabled()) {
-      [self forceFullscreenMode:FullscreenModeTransitionTrigger::kForcedByCode];
+      _fullscreenController->EnterForceFullscreenMode(
+          /*insets_update_enabled=*/true,
+          FullscreenModeTransitionTrigger::kForcedByCode);
     }
     helper->SetFindUIActive(true);
   }
