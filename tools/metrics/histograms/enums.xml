@@ -9658,6 +9658,7 @@ from previous Chrome versions.
   <int value="-1581724231" label="ModalPermissionPrompts:enabled"/>
   <int value="-1581536170"
       label="TabSwitcherGroupSuggestionsTestModeAndroid:disabled"/>
+  <int value="-1581484975" label="EnableBulkDataEntryAndroid:disabled"/>
   <int value="-1581226384" label="ThreeDotMenuBackButton:disabled"/>
   <int value="-1580378359" label="AndroidBookmarkBarDragDrop:enabled"/>
   <int value="-1580376019" label="ShowAllDialogsWithViewsToolkit:enabled"/>
@@ -19800,6 +19801,7 @@ from previous Chrome versions.
   <int value="1410697724" label="mediadrm-enable-non-compositing"/>
   <int value="1410846840"
       label="PrefetchMainResourceNetworkIsolationKey:disabled"/>
+  <int value="1411669911" label="EnableBulkDataEntryAndroid:enabled"/>
   <int value="1411679884"
       label="AutofillLocalCardMigrationUsesStrikeSystemV2:enabled"/>
   <int value="1411915938" label="AccessibilitySequentialFocus:disabled"/>

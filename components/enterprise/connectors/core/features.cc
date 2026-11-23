@@ -39,6 +39,10 @@ BASE_FEATURE(kDlpScanPastedImages, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicBulkDataEntrySupport, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
+// Controls whether pasted text is scanned by enterprise content analysis on
+// Android when the OnBulkDataEntryEnterpriseConnector policy is set.
+BASE_FEATURE(kEnableBulkDataEntryAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls whether files attached to web pages (file picker, drag-and-drop)
 // are scanned by enterprise content analysis on Clank.
 BASE_FEATURE(kEnableFileAttachedEnterpriseScanOnClank,

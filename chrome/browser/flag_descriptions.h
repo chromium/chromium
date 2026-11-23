@@ -6213,6 +6213,12 @@ inline constexpr char kEnableCommandLineOnNonRootedName[] =
 inline constexpr char kEnableCommandLineOnNoRootedDescription[] =
     "Enable reading command line file on non-rooted devices (DANGEROUS).";
 
+inline constexpr char kEnableBulkDataEntryAndroidName[] =
+    "Enterprise content analysis for bulk data entry";
+inline constexpr char kEnableBulkDataEntryAndroidDescription[] =
+    "Scans pasted text with enterprise content analysis on Android when the "
+    "OnBulkDataEntryEnterpriseConnector policy is set.";
+
 inline constexpr char kEnableFileAttachedEnterpriseScanOnClankName[] =
     "Enterprise content analysis for file uploads";
 inline constexpr char kEnableFileAttachedEnterpriseScanOnClankDescription[] =

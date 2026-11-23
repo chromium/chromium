@@ -13888,6 +13888,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          enterprise_connectors::kDeviceTrustConnectorDesktopFormFactors)},
+    {"enable-bulk-data-entry-android",
+     flag_descriptions::kEnableBulkDataEntryAndroidName,
+     flag_descriptions::kEnableBulkDataEntryAndroidDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(enterprise_connectors::kEnableBulkDataEntryAndroid)},
     {"enable-file-attached-enterprise-scan-on-clank",
      flag_descriptions::kEnableFileAttachedEnterpriseScanOnClankName,
      flag_descriptions::kEnableFileAttachedEnterpriseScanOnClankDescription,

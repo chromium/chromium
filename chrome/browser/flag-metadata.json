@@ -3726,6 +3726,11 @@
     "expiry_milestone": 170
   },
   {
+    "name": "enable-bulk-data-entry-android",
+    "owners": [ "alxchn@google.com", "cbe-cep-eng@google.com" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "enable-bulk-data-entry-connector-ios",
     "owners": [ "yixiwu@google.com", "bling-enterprise@google.com" ],
     "expiry_milestone": 165
