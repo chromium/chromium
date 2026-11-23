@@ -43,6 +43,7 @@
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/icu/source/i18n/unicode/listformatter.h"
+#include "ui/base/l10n/chromium_language_matcher.h"
 #include "ui/base/l10n/l10n_util_collator.h"
 #include "ui/base/l10n/test/scoped_application_locale.h"
 #include "ui/base/ui_base_paths.h"
@@ -65,6 +66,11 @@ using ::base::i18n::GetKnownLanguageTag;
 using ::base::i18n::GetLanguageTagFromString;
 using ::base::i18n::LanguageTag;
 using ::testing::ElementsAre;
+
+bool IsAcceptLanguage(std::string_view locale) {
+  std::optional<LanguageTag> tag = GetLanguageTagFromString(locale);
+  return tag && ui_l10n::GetAcceptLanguageMatcher().Match(*tag).has_value();
+}
 
 class StringWrapper {
  public:
@@ -760,19 +766,19 @@ TEST_F(L10nUtilTest, PlatformLocalesIsSorted) {
   EXPECT_EQ(std::ranges::adjacent_find(locales), locales.end());
 }
 
-TEST_F(L10nUtilTest, IsPossibleAcceptLanguage) {
-  EXPECT_TRUE(l10n_util::IsPossibleAcceptLanguage("en"));
-  EXPECT_TRUE(l10n_util::IsPossibleAcceptLanguage("en-CA"));
-  EXPECT_TRUE(l10n_util::IsPossibleAcceptLanguage("fil"));
-  EXPECT_TRUE(l10n_util::IsPossibleAcceptLanguage("zu"));
+TEST_F(L10nUtilTest, AcceptLanguageMatcher) {
+  EXPECT_TRUE(IsAcceptLanguage("en"));
+  EXPECT_TRUE(IsAcceptLanguage("en-CA"));
+  EXPECT_TRUE(IsAcceptLanguage("fil"));
+  EXPECT_TRUE(IsAcceptLanguage("zu"));
   // These now match via LanguageTagMatcher:
   // tl -> fil
   // fr-CO -> fr
   // iw -> he
-  EXPECT_TRUE(l10n_util::IsPossibleAcceptLanguage("tl"));
-  EXPECT_TRUE(l10n_util::IsPossibleAcceptLanguage("fr-CO"));
-  EXPECT_TRUE(l10n_util::IsPossibleAcceptLanguage("iw"));
-  EXPECT_FALSE(l10n_util::IsPossibleAcceptLanguage("dne"));
+  EXPECT_TRUE(IsAcceptLanguage("tl"));
+  EXPECT_TRUE(IsAcceptLanguage("fr-CO"));
+  EXPECT_TRUE(IsAcceptLanguage("iw"));
+  EXPECT_FALSE(IsAcceptLanguage("dne"));
 }
 
 TEST_F(L10nUtilTest, IsAcceptLanguageDisplayable) {
@@ -882,7 +888,7 @@ TEST_F(L10nUtilTest, AllLegacyAcceptLanguagesWork) {
       "yo",       "zh",    "zh-CN",
       "zh-HK",    "zh-TW", "zu"};
   for (std::string_view locale : kLegacyAcceptLanguages) {
-    EXPECT_TRUE(l10n_util::IsPossibleAcceptLanguage(locale)) << locale;
+    EXPECT_TRUE(IsAcceptLanguage(locale)) << locale;
   }
 }
 

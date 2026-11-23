@@ -394,15 +394,6 @@ void GetAcceptLanguages(std::vector<std::string>* locale_codes) {
   }
 }
 
-bool IsPossibleAcceptLanguage(std::string_view locale) {
-  std::optional<LanguageTag> tag = GetLanguageTagFromString(locale);
-  if (!tag) {
-    return false;
-  }
-
-  return GetAcceptLanguageMatcher().Match(*tag).has_value();
-}
-
 bool IsAcceptLanguageDisplayable(const LanguageTag& display_locale,
                                  const LanguageTag& locale) {
   return GetAcceptLanguageMatcher().Match(locale).has_value() &&

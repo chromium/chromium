@@ -133,10 +133,6 @@ std::vector<base::i18n::LanguageTag> GetAcceptLanguageTagsForLocale(
 COMPONENT_EXPORT(UI_BASE)
 void GetAcceptLanguages(std::vector<std::string>* locale_codes);
 
-// Returns true if `locale` is in a predefined `kAcceptLanguageList`.
-COMPONENT_EXPORT(UI_BASE)
-bool IsPossibleAcceptLanguage(std::string_view locale);
-
 // Returns true if `locale` is in a predefined `kAcceptLanguageList` and
 // a display name for the `locale` is available in the locale `display_locale`.
 COMPONENT_EXPORT(UI_BASE)

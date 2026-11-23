@@ -282,7 +282,7 @@ void TranslatePrefs::BlockLanguage(std::string_view input_language) {
 
   // If neither the translate or Chrome language is a possible accept
   // language skip adding to blocked language list.
-  if (!l10n_util::IsPossibleAcceptLanguage(translate_lang.tag_string())) {
+  if (!ui_l10n::GetAcceptLanguageMatcher().Match(translate_lang).has_value()) {
     return;
   }
 
