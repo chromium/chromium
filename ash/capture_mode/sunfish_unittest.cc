@@ -155,15 +155,21 @@ constexpr base::TimeDelta kImageSearchRequestStartDelay = base::Seconds(1);
 // button cannot fit inside.
 constexpr int kSmallRegionEdgeLength = 20;
 
+// Waits until an image has been captured for `expected_capture_type`. The
+// callback the test API takes is a OnceCallback that the controller consumes
+// on the next capture of *any* type, so rearm it until the expected type
+// arrives: a capture still in flight - the kTextDetection one that selecting
+// a region starts, say - would otherwise consume it and leave the wait
+// hanging until the RunLoop times out.
 void WaitForImageCapturedForSearch(PerformCaptureType expected_capture_type) {
-  base::test::TestFuture<void> image_captured_future;
-  CaptureModeTestApi().SetOnImageCapturedForSearchCallback(
-      base::BindLambdaForTesting([&](PerformCaptureType capture_type) {
-        if (capture_type == expected_capture_type) {
-          image_captured_future.SetValue();
-        }
-      }));
-  EXPECT_TRUE(image_captured_future.Wait());
+  while (true) {
+    base::test::TestFuture<PerformCaptureType> image_captured_future;
+    CaptureModeTestApi().SetOnImageCapturedForSearchCallback(
+        image_captured_future.GetCallback());
+    if (image_captured_future.Get() == expected_capture_type) {
+      return;
+    }
+  }
 }
 
 // Waits for capture mode widgets to become visible. This is necessary in some
