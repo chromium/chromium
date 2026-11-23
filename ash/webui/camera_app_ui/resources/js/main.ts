@@ -242,23 +242,28 @@ function preloadImages() {
  */
 async function setupDynamicColor(): Promise<void> {
   function loadCSS(url: string): Promise<void> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const link = document.createElement('link');
       link.rel = 'stylesheet';
       link.href = url;
-      link.addEventListener('load', () => resolve());
+      link.addEventListener('load', () => resolve(), {once: true});
+      link.addEventListener(
+          'error', () => reject(new Error(`Failed to load ${url}`)),
+          {once: true});
       document.head.appendChild(link);
     });
   }
-  ColorChangeUpdater.forDocument().start();
-  // Note that this has to be loaded after
-  // ColorChangeUpdater.forDocument.start() is called, since we override the
-  // force dark theme on the color_change_listener BindInterface in
-  // camera_app_ui.cc
-  // TODO(pihsun): Check if there's way to override color scheme earlier before
-  // HTML load, so the CSS can be put into .html file instead of being injected
-  // by JS.
+  // Wait for the initial stylesheet load before starting ColorChangeUpdater.
+  // CameraAppUI's constructor already sets the dark mode override on the
+  // widget, and ColorChangeHandler::SetPage() immediately fires
+  // OnColorProviderChanged(), which calls refreshColorsCss() and removes any
+  // existing colors.css <link> from the DOM (stranding an in-flight load
+  // listener).
+  // TODO(pihsun): Check if colors.css can now be moved into views/main.html
+  // instead of being injected by JS, since CameraAppUI's constructor already
+  // sets the dark mode override.
   await loadCSS('chrome://theme/colors.css?sets=ref,sys');
+  ColorChangeUpdater.forDocument().start();
 }
 
 async function setupMultiWindowHandling(
