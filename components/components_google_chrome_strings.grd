@@ -320,6 +320,12 @@
         <message name="IDS_IOS_DESKTOP_LENS_PROMO_NOTIFICATION_TITLE" desc="The title for the iOS desktop Lens promo notification.">
           Chrome Tip: Search With Lens
         </message>
+        <message name="IDS_IOS_DESKTOP_SAFETY_PROMO_NOTIFICATION_BODY" desc="The body for the iOS desktop Safety promo notification.">
+          Use the Chrome app to take the safety of Google on the go
+        </message>
+        <message name="IDS_IOS_DESKTOP_SAFETY_PROMO_NOTIFICATION_TITLE" desc="The title for the iOS desktop Safety promo notification.">
+          Reminder: Google’s best safety features in your pocket
+        </message>
       </if>
     </messages>
   </release>

@@ -3344,6 +3344,18 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_IOS_DESKTOP_TAB_GROUPS_REMINDER_CONFIRMATION" desc="Body text of the promo bubble that appears after the user chooses to be reminded of tab groups on their iOS device.">
           Next time you open Chrome on your <ph name="DEVICE_TYPE">$1<ex>iPhone</ex></ph>, you'll see a prompt to use tab groups.
         </message>
+        <message name="IDS_IOS_DESKTOP_SAFETY_PROMO_BUBBLE_DESCRIPTION_QR" desc="The description for the iOS desktop Safety promo bubble with a QR code.">
+          Scan the QR code with your phone to download Chrome and sign in to your Google Account.
+        </message>
+        <message name="IDS_IOS_DESKTOP_SAFETY_PROMO_BUBBLE_TITLE_QR" desc="The title for the iOS desktop Safety promo bubble with a QR code.">
+          Get Google’s best safety features on the go, with the Chrome app on your phone
+        </message>
+        <message name="IDS_IOS_DESKTOP_SAFETY_PROMO_BUBBLE_DESCRIPTION_REMINDER" desc="The description for the iOS desktop Safety promo bubble with a reminder.">
+          Get Google’s best safety features on the go with Chrome
+        </message>
+        <message name="IDS_IOS_DESKTOP_SAFETY_PROMO_BUBBLE_TITLE_REMINDER" desc="The title for the iOS desktop Safety promo bubble with a reminder.">
+          Take the safety of Google on the go with the Chrome app on your <ph name="DEVICE_TYPE">$1<ex>iPhone</ex></ph>
+        </message>
       </if>
 
       <!--Default Search Engine Reset Notification-->
