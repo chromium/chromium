@@ -60,6 +60,7 @@
 #if BUILDFLAG(ENABLE_DESKTOP_AURA)
 #include "ui/aura/env.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -1234,20 +1235,17 @@ TEST_F(DesktopWidgetTestInteractive, WindowModalWindowDestroyedActivationTest) {
 #if BUILDFLAG(ENABLE_DESKTOP_AURA)
 namespace {
 
-// Focuses `view` when its widget is first notified that it's active, like a
-// browser window restoring its initial focus (see
-// `BrowserView::OnWidgetActivationChanged()`).
-class FocusOnFirstActivationObserver : public WidgetObserver {
+// Records whether a widget has reported becoming active.
+class FirstActivationObserver : public WidgetObserver {
  public:
-  explicit FocusOnFirstActivationObserver(View* view) : view_(view) {
-    widget_observation_.Observe(view->GetWidget());
+  explicit FirstActivationObserver(Widget* widget) {
+    widget_observation_.Observe(widget);
   }
 
   // WidgetObserver:
   void OnWidgetActivationChanged(Widget* widget, bool active) override {
-    if (active && !activation_observed_) {
+    if (active) {
       activation_observed_ = true;
-      widget->GetFocusManager()->SetFocusedView(view_);
     }
   }
   void OnWidgetDestroying(Widget* widget) override {
@@ -1257,7 +1255,6 @@ class FocusOnFirstActivationObserver : public WidgetObserver {
   bool activation_observed() const { return activation_observed_; }
 
  private:
-  raw_ptr<View> view_;
   bool activation_observed_ = false;
   base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };
@@ -1265,9 +1262,9 @@ class FocusOnFirstActivationObserver : public WidgetObserver {
 }  // namespace
 
 // Tests that if a window-modal dialog is shown before its owner is first
-// activated, so that the dialog takes activation from the owner, a view that
-// the owner focuses when it's first activated gets focus once the dialog
-// closes.
+// activated, so that the dialog takes activation from the owner, a view focused
+// on the inactive owner gets focus via `restore_focus_on_activate_` once the
+// dialog closes.
 TEST_F(DesktopWidgetTestInteractive,
        FocusRestoredWhenModalShownBeforeFirstActivationCloses) {
   auto top_level_widget = std::make_unique<Widget>();
@@ -1279,10 +1276,10 @@ TEST_F(DesktopWidgetTestInteractive,
       top_level_widget->GetContentsView()->AddChildView(
           std::make_unique<View>());
   focusable_view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
-  FocusOnFirstActivationObserver observer(focusable_view);
+  FirstActivationObserver observer(top_level_widget.get());
 
-  // Show the owner and, in the same task, before the platform activates it,
-  // a window-modal dialog.
+  // Show the owner and, in the same task, before the platform activates it on
+  // async platforms, a window-modal dialog.
   top_level_widget->Show();
   // Declared here so that it outlives the dialog widget, which doesn't own it.
   auto dialog_delegate = std::make_unique<DialogDelegate>();
@@ -1293,14 +1290,30 @@ TEST_F(DesktopWidgetTestInteractive,
   modal_dialog_widget->SetBounds(gfx::Rect(100, 100, 200, 200));
   modal_dialog_widget->Show();
   views::test::WaitForWidgetActive(modal_dialog_widget, true);
+  auto* const desktop_native_widget = DesktopNativeWidgetAura::ForWindow(
+      top_level_widget->GetNativeWindow()->GetRootWindow());
+  ASSERT_TRUE(desktop_native_widget);
+  DesktopWindowTreeHost* const top_level_host =
+      desktop_native_widget->desktop_window_tree_host_for_testing();
+  ASSERT_TRUE(top_level_host);
   ASSERT_TRUE(base::test::RunUntil(
-      [&observer]() { return observer.activation_observed(); }));
+      [top_level_host]() { return top_level_host->IsActive(); }));
+  // While the modal dialog holds activation, `top_level_widget` itself must not
+  // be active (on Windows, `Show()` activates synchronously before the dialog
+  // exists). Focus requested on `top_level_widget` stays deferred until the
+  // modal dialog closes.
+  EXPECT_FALSE(top_level_widget->IsActive());
+#if !BUILDFLAG(IS_WIN)
+  EXPECT_FALSE(observer.activation_observed());
+#endif
+  top_level_widget->GetFocusManager()->SetFocusedView(focusable_view);
   EXPECT_FALSE(focusable_view->HasFocus());
 
   views::test::WidgetDestroyedWaiter waiter(modal_dialog_widget);
   modal_dialog_widget->Close();
   waiter.Wait();
   views::test::WaitForWidgetActive(top_level_widget.get(), true);
+  EXPECT_TRUE(observer.activation_observed());
   EXPECT_TRUE(focusable_view->HasFocus());
 
   top_level_widget->CloseNow();
@@ -1842,13 +1855,16 @@ TEST_F(DesktopWidgetTestInteractive,
   EXPECT_TRUE(dialog_textfield_ptr->HasFocus());
   EXPECT_FALSE(textfield_ptr->HasFocus());
 
-  DeactivateSync(top_level.get());
+  top_level->Deactivate();
+  views::test::WaitForWidgetActive(modal_dialog_widget, false);
   EXPECT_FALSE(dialog_textfield_ptr->HasFocus());
   EXPECT_FALSE(textfield_ptr->HasFocus());
 
   // After deactivation and activation of top level widget, only modal dialog
-  // should restore focused view.
-  ActivateSync(top_level.get());
+  // should become active and restore focused view.
+  top_level->Activate();
+  views::test::WaitForWidgetActive(modal_dialog_widget, true);
+  EXPECT_FALSE(top_level->IsActive());
   EXPECT_TRUE(dialog_textfield_ptr->HasFocus());
   EXPECT_FALSE(textfield_ptr->HasFocus());
 }

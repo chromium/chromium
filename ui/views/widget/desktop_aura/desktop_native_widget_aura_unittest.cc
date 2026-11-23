@@ -188,6 +188,74 @@ TEST_F(DesktopNativeWidgetAuraTest, HostDeactivationDoesNotActivateChild) {
   top_level.CloseNow();
 }
 
+// Verifies that synchronously destroying a CLIENT_OWNS_WIDGET Widget during
+// HandleActivationChanged() (leaving `weak_this` alive while clearing
+// `native_widget_delegate_`) does not dereference a null Widget, and that
+// Activate() moves activation from an active non-modal sibling to the widget.
+// `MockActivationController` activates the host synchronously, so this covers
+// the synchronous branch of `DesktopNativeWidgetAura::Activate()`.
+TEST_F(DesktopNativeWidgetAuraTest,
+       HandleActivationChangedClientOwnsWidgetAndSiblingActivate) {
+  MockActivationController activation_controller;
+
+  auto top_level = std::make_unique<Widget>();
+  top_level->Init(CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                               Widget::InitParams::TYPE_WINDOW));
+  top_level->ShowInactive();
+
+  Widget child;
+  Widget::InitParams child_params =
+      CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                   Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  child_params.parent = top_level->GetNativeView();
+  child_params.context = top_level->GetNativeWindow();
+  child_params.native_widget = new NativeWidgetAura(&child);
+  child.Init(std::move(child_params));
+  child.Show();
+  ASSERT_TRUE(wm::IsActiveWindow(child.GetNativeView()));
+
+  // Activating `top_level` moves Aura activation back to `content_window_` and
+  // activates the widget.
+  top_level->Activate();
+  EXPECT_TRUE(top_level->IsActive());
+  EXPECT_FALSE(child.IsActive());
+  child.CloseNow();
+
+  // Synchronously resetting `top_level` when `content_window_` loses Aura
+  // activation inside `HandleActivationChanged(false)` must return cleanly.
+  class ResetOnDeactivateObserver : public wm::ActivationChangeObserver {
+   public:
+    ResetOnDeactivateObserver(aura::Window* content,
+                              std::unique_ptr<Widget>* target)
+        : content_(content), target_(target) {
+      wm::GetActivationClient(content->GetRootWindow())->AddObserver(this);
+    }
+    ~ResetOnDeactivateObserver() override {
+      if (root_) {
+        wm::GetActivationClient(root_)->RemoveObserver(this);
+      }
+    }
+    void OnWindowActivated(ActivationReason reason,
+                           aura::Window* gained_active,
+                           aura::Window* lost_active) override {
+      if (lost_active == content_) {
+        wm::GetActivationClient(root_)->RemoveObserver(this);
+        root_ = nullptr;
+        content_ = nullptr;
+        target_->reset();
+      }
+    }
+
+   private:
+    raw_ptr<aura::Window> content_;
+    raw_ptr<aura::Window> root_ = content_->GetRootWindow();
+    raw_ptr<std::unique_ptr<Widget>> target_;
+  } observer(top_level->GetNativeView(), &top_level);
+
+  top_level->Deactivate();
+  EXPECT_FALSE(top_level);
+}
+
 #if BUILDFLAG(IS_WIN)
 // Verifies that if the DesktopWindowTreeHost is already shown, the native view
 // still reports not visible as we haven't shown the content window.

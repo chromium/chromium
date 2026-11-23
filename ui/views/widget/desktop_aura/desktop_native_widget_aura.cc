@@ -515,13 +515,19 @@ void DesktopNativeWidgetAura::HandleActivationChanged(bool active) {
                                &DesktopNativeWidgetAura::should_activate_,
                                std::make_optional(active));
 
+  // A re-entrant observer may destroy or close the widget, e.g. `CloseNow()`
+  // on a WIDGET_OWNS_NATIVE_WIDGET widget clears `host_` and `content_window_`
+  // in `OnHostClosed()` without deleting `this`.
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
+  auto is_alive = [&weak_this, this] {
+    return weak_this && native_widget_delegate_ && content_window_ && host_;
+  };
+  aura::Window* active_window = activation_client->GetActiveWindow();
   if (active) {
-    // TODO(nektar): We need to harmonize the firing of accessibility
-    // events between platforms.
-    // https://crbug.com/897177
-    NotifyAccessibilityEvent(ax::mojom::Event::kWindowActivated);
-
-    if (GetWidget()->HasFocusManager()) {
+    // Keep another window in the root (e.g. a browser-modal dialog) active.
+    const bool other_window_active =
+        active_window && !content_window_->Contains(active_window);
+    if (GetWidget()->HasFocusManager() && !other_window_active) {
       // This function can be called before the focus manager has had a
       // chance to set the focused view. In which case we should get the
       // last focused view.
@@ -532,6 +538,9 @@ void DesktopNativeWidgetAura::HandleActivationChanged(bool active) {
       if (!view_for_activation || !view_for_activation->GetWidget()) {
         view_for_activation = GetWidget()->GetRootView();
         activation_client->ActivateWindow(content_window_);
+        if (is_alive() && wm::IsActiveWindow(content_window_)) {
+          restore_focus_on_activate_ = false;
+        }
       } else if (view_for_activation == focus_manager->GetStoredFocusView()) {
         // Update activation before restoring focus to prevent race condition.
         // RestoreFocusedView() will activate the widget if Widget::IsActive()
@@ -548,15 +557,23 @@ void DesktopNativeWidgetAura::HandleActivationChanged(bool active) {
         // get activated and focused. Thus, we are not left with multiple
         // focuses. For aura child widgets, since their views are managed by
         // |focus_manager|, we then allow restoring focused view.
-        if (!wm::GetModalTransient(GetWidget()->GetNativeView())) {
+        if (is_alive() &&
+            !wm::GetModalTransient(GetWidget()->GetNativeView())) {
           focus_manager->RestoreFocusedView();
           // Set to false if desktop native widget has activated activation
           // change, so that aura window activation change focus restore
           // operation can be ignored.
-          restore_focus_on_activate_ = false;
+          if (is_alive()) {
+            restore_focus_on_activate_ = false;
+          }
         }
       }
+      if (!is_alive()) {
+        return;
+      }
+    }
 
+    if (GetWidget()->HasFocusManager()) {
       // A modal transient child, e.g. a window-modal dialog shown before this
       // widget was first activated, takes activation instead of
       // `content_window_`, so focus wasn't restored above. As `content_window_`
@@ -565,30 +582,57 @@ void DesktopNativeWidgetAura::HandleActivationChanged(bool active) {
       // `content_window_` is activated, e.g. when the modal closes, so that a
       // view focused while the widget is inactive (see
       // `FocusManager::SetFocusedViewWithReason()`) gets focus then.
-      if (wm::GetModalTransient(GetWidget()->GetNativeView()) &&
-          !wm::IsActiveWindow(content_window_)) {
+      // The same applies when another window keeps activation above.
+      if (!wm::IsActiveWindow(content_window_)) {
         restore_focus_on_activate_ = true;
       }
 
       // Refreshes the focus info to IMF in case that IMF cached the old info
       // about focused text input client when it was "inactive".
       GetInputMethod()->OnFocus();
+      if (!is_alive()) {
+        return;
+      }
     }
-  } else {
+
+    if (!wm::IsActiveWindow(content_window_)) {
+      return;
+    }
+
     // TODO(nektar): We need to harmonize the firing of accessibility
     // events between platforms.
     // https://crbug.com/897177
-    NotifyAccessibilityEvent(ax::mojom::Event::kWindowDeactivated);
+    NotifyAccessibilityEvent(ax::mojom::Event::kWindowActivated);
+  } else {
+    const bool was_content_window_active = wm::IsActiveWindow(content_window_);
 
     // If we're not active we need to deactivate the corresponding
     // aura::Window. This way if a child widget is active it gets correctly
     // deactivated (child widgets don't get native desktop activation changes,
     // only aura activation changes).
-    aura::Window* active_window = activation_client->GetActiveWindow();
     if (active_window) {
       activation_client->DeactivateWindow(active_window);
+      if (!is_alive()) {
+        return;
+      }
       GetInputMethod()->OnBlur();
+      if (!is_alive()) {
+        return;
+      }
     }
+
+    if (!was_content_window_active) {
+      return;
+    }
+
+    // TODO(nektar): We need to harmonize the firing of accessibility
+    // events between platforms.
+    // https://crbug.com/897177
+    NotifyAccessibilityEvent(ax::mojom::Event::kWindowDeactivated);
+  }
+
+  if (!is_alive()) {
+    return;
   }
 
   // At this point the FocusController's state should have been appropriately
@@ -1124,19 +1168,33 @@ bool DesktopNativeWidgetAura::IsVisibleOnScreen() const {
 
 void DesktopNativeWidgetAura::Activate() {
   if (desktop_window_tree_host_ && content_window_) {
-    bool was_tree_active = desktop_window_tree_host_->IsActive();
+    const bool was_tree_active = desktop_window_tree_host_->IsActive();
+    auto weak_this = weak_ptr_factory_.GetWeakPtr();
     desktop_window_tree_host_->Activate();
+    if (!weak_this || !desktop_window_tree_host_ || !content_window_) {
+      return;
+    }
 
-    // If the whole window tree host was already active,
-    // treat this as a request to focus |content_window_|.
-    //
-    // Note: it might make sense to always focus |content_window_|,
-    // since if client code is calling Widget::Activate() they probably
-    // want that particular widget to be activated, not just something
-    // within that widget hierarchy.
-    if (was_tree_active &&
-        focus_client_->GetFocusedWindow() != content_window_) {
-      focus_client_->FocusWindow(content_window_);
+    if (desktop_window_tree_host_->IsActive()) {
+      // If the window tree host was already active, treat this as a request to
+      // focus `content_window_`. If it just activated synchronously while
+      // another window in the root held activation, `HandleActivationChanged()`
+      // kept that window active, so move focus to `content_window_` now.
+      if ((was_tree_active &&
+           focus_client_->GetFocusedWindow() != content_window_) ||
+          !content_window_->Contains(focus_client_->GetFocusedWindow())) {
+        focus_client_->FocusWindow(content_window_);
+      }
+    } else if (wm::ActivationClient* activation_client =
+                   wm::GetActivationClient(host_->window())) {
+      // Host activation is asynchronous. Clear any active non-modal sibling now
+      // (`BaseFocusRules` preserves modal transients) so
+      // `HandleActivationChanged(true)` activates `content_window_` when host
+      // activation arrives.
+      aura::Window* active_window = activation_client->GetActiveWindow();
+      if (active_window && !content_window_->Contains(active_window)) {
+        activation_client->ActivateWindow(content_window_);
+      }
     }
   }
 }
@@ -1625,20 +1683,18 @@ void DesktopNativeWidgetAura::OnWindowActivated(
   CHECK(content_window_ == gained_active || content_window_ == lost_active,
         base::NotFatalUntil::M163);
   if (gained_active == content_window_ && restore_focus_on_activate_) {
-    restore_focus_on_activate_ = false;
     // For OS_LINUX, desktop native widget may not be activated when child
     // widgets gets aura activation changes. Only when desktop native widget is
     // active, we can rely on aura activation to restore focused view.
     if (GetWidget() && GetWidget()->IsActive()) {
+      restore_focus_on_activate_ = false;
       GetWidget()->GetFocusManager()->RestoreFocusedView();
     }
-  } else if (lost_active == content_window_ && GetWidget()->HasFocusManager()) {
-    CHECK(!restore_focus_on_activate_, base::NotFatalUntil::M163);
+  } else if (lost_active == content_window_ && !restore_focus_on_activate_ &&
+             GetWidget() && GetWidget()->HasFocusManager()) {
     restore_focus_on_activate_ = true;
     // Pass in false so that ClearNativeFocus() isn't invoked.
-    if (GetWidget()) {
-      GetWidget()->GetFocusManager()->StoreFocusedView(false);
-    }
+    GetWidget()->GetFocusManager()->StoreFocusedView(false);
   }
 
   // This widget is considered active when both its window tree host and its
