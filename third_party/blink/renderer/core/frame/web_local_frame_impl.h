@@ -79,6 +79,7 @@
 #include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
@@ -87,6 +88,8 @@ class ChromePrintContext;
 class FindInPage;
 class LocalFrameClientImpl;
 class ResourceError;
+class ResourceRequest;
+class ResourceResponse;
 class ScrollableArea;
 class StorageKey;
 class TextFinder;
@@ -601,7 +604,11 @@ class CORE_EXPORT WebLocalFrameImpl final
   void WasHidden();
   void WasShown();
   void DidSetPageLifecycleState(BFCacheStateChange bfcache_change);
+  void OnMainFrameRectangleChanged(const gfx::Rect& main_frame_rect);
+  void OnMainFrameViewportRectangleChanged(
+      const gfx::Rect& main_frame_viewport_rect);
   void OnMainFrameAdRectangleChanged(int element_id, const gfx::Rect& ad_rect);
+  void ResetMainFrameRects();
   void DidChangePerformanceTiming();
   void DidObserveUserInteraction(base::TimeTicks max_event_start,
                                  base::TimeTicks max_event_queued_main_thread,
@@ -617,6 +624,8 @@ class CORE_EXPORT WebLocalFrameImpl final
   void DidObserveSubresourceLoad(
       const SubresourceLoadMetrics& subresource_load_metrics);
   void DidObserveNewFeatureUsage(const UseCounterFeature& feature);
+  void DidLoadResourceFromMemoryCache(const ResourceRequest& request,
+                                      const ResourceResponse& response);
   void DidObserveSoftNavigation(SoftNavigationMetricsForReporting metrics);
   void DidObserveSoftNavigationFirstContentfulPaint(
       uint64_t performance_timeline_navigation_id,
@@ -783,6 +792,11 @@ class CORE_EXPORT WebLocalFrameImpl final
   bool has_scrolled_focused_editable_node_into_rect_ = false;
 
   Member<HistoryItem> current_history_item_;
+
+  // Used for tracking a frame's main frame document rectangle and viewport
+  // rectangle and notifying metrics observers when they change.
+  std::optional<gfx::Rect> main_frame_rect_;
+  std::optional<gfx::Rect> main_frame_viewport_rect_;
 
   // All the registered observers. Reentrancy is allowed because an observer
   // callback (e.g. WillSendSubmitEvent) can trigger Blink operations that log

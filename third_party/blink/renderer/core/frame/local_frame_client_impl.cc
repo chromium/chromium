@@ -108,7 +108,6 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
-#include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -418,10 +417,7 @@ void LocalFrameClientImpl::DispatchDidDispatchDOMContentLoadedEvent() {
 void LocalFrameClientImpl::DispatchDidLoadResourceFromMemoryCache(
     const ResourceRequest& request,
     const ResourceResponse& response) {
-  if (web_frame_->Client()) {
-    web_frame_->Client()->DidLoadResourceFromMemoryCache(
-        WrappedResourceRequest(request), WrappedResourceResponse(response));
-  }
+  web_frame_->DidLoadResourceFromMemoryCache(request, response);
 }
 
 void LocalFrameClientImpl::DispatchDidHandleOnloadEvents() {
@@ -512,6 +508,10 @@ void LocalFrameClientImpl::DidFinishSameDocumentNavigation(
     web_frame_->Client()->DidFinishSameDocumentNavigation(
         commit_type, is_synchronously_committed, same_document_navigation_type,
         is_client_redirect, token, same_document_metrics_token, caused_by_ad);
+  }
+
+  if (web_frame_->GetFrame() && !web_frame_->Parent()) {
+    web_frame_->ResetMainFrameRects();
   }
 
   // Set the layout shift exclusion window for the browser initiated same
@@ -1166,17 +1166,14 @@ void LocalFrameClientImpl::FocusedElementChanged(Element* element) {
 
 void LocalFrameClientImpl::OnMainFrameRectangleChanged(
     const gfx::Rect& main_frame_rect) {
-  DCHECK(web_frame_->Client());
   DCHECK(web_frame_->GetFrame()->IsOutermostMainFrame());
-  web_frame_->Client()->OnMainFrameRectangleChanged(main_frame_rect);
+  web_frame_->OnMainFrameRectangleChanged(main_frame_rect);
 }
 
 void LocalFrameClientImpl::OnMainFrameViewportRectangleChanged(
     const gfx::Rect& main_frame_viewport_rect) {
-  DCHECK(web_frame_->Client());
   DCHECK(web_frame_->GetFrame()->IsOutermostMainFrame());
-  web_frame_->Client()->OnMainFrameViewportRectangleChanged(
-      main_frame_viewport_rect);
+  web_frame_->OnMainFrameViewportRectangleChanged(main_frame_viewport_rect);
 }
 
 void LocalFrameClientImpl::OnMainFrameAdRectangleChanged(

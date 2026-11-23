@@ -6,7 +6,7 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/web/web_local_frame_observer.h"
+#include "third_party/blink/public/web/web_local_frame_metrics_observer.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
@@ -23,6 +23,14 @@ namespace {
 
 class MockFrameClient : public frame_test_helpers::TestWebFrameClient {
  public:
+  MOCK_METHOD(void, OnLargeStickyAdDetected, (), (override));
+};
+
+class MockFrameObserver : public WebLocalFrameMetricsObserver {
+ public:
+  explicit MockFrameObserver(WebLocalFrame* frame)
+      : WebLocalFrameMetricsObserver(frame) {}
+
   void OnMainFrameRectangleChanged(const gfx::Rect& main_frame_rect) override {
     last_main_frame_rect_ = main_frame_rect;
   }
@@ -30,7 +38,10 @@ class MockFrameClient : public frame_test_helpers::TestWebFrameClient {
       const gfx::Rect& main_frame_viewport_rect) override {
     last_main_frame_viewport_rect_ = main_frame_viewport_rect;
   }
-  MOCK_METHOD(void, OnLargeStickyAdDetected, (), (override));
+  MOCK_METHOD(void,
+              OnMainFrameAdRectangleChanged,
+              (int element_dom_node_id, const gfx::Rect& content_rect),
+              (override));
 
   const gfx::Rect& last_main_frame_rect() const {
     return last_main_frame_rect_;
@@ -42,18 +53,6 @@ class MockFrameClient : public frame_test_helpers::TestWebFrameClient {
  private:
   gfx::Rect last_main_frame_rect_;
   gfx::Rect last_main_frame_viewport_rect_;
-};
-
-class MockFrameObserver : public WebLocalFrameObserver {
- public:
-  explicit MockFrameObserver(WebLocalFrame* frame)
-      : WebLocalFrameObserver(frame) {}
-
-  void OnFrameDetached() override {}
-  MOCK_METHOD(void,
-              OnMainFrameAdRectangleChanged,
-              (int element_dom_node_id, const gfx::Rect& content_rect),
-              (override));
 };
 
 // A video player displayed inline near the top of the page, with the ad
@@ -1780,8 +1779,8 @@ TEST_F(DisplayAdElementMonitorTest, ReportingUnscalesByZoomFactor) {
   in_flow_ad_element->SetIsAdRelated(NoProvenance{});
   pixel_element->SetIsAdRelated(NoProvenance{});
   UpdateLifecycle();
-  EXPECT_EQ(MockClient().last_main_frame_rect(), gfx::Rect(0, 0, 400, 1000));
-  EXPECT_EQ(MockClient().last_main_frame_viewport_rect(),
+  EXPECT_EQ(MockObserver().last_main_frame_rect(), gfx::Rect(0, 0, 400, 1000));
+  EXPECT_EQ(MockObserver().last_main_frame_viewport_rect(),
             gfx::Rect(0, 0, 400, 300));
   testing::Mock::VerifyAndClearExpectations(&MockObserver());
 
@@ -1803,8 +1802,8 @@ TEST_F(DisplayAdElementMonitorTest, ReportingUnscalesByZoomFactor) {
                                   pixel_element->GetDomNodeId(), testing::_))
       .Times(0);
   UpdateLifecycle();
-  EXPECT_EQ(MockClient().last_main_frame_rect(), gfx::Rect(0, 0, 400, 1000));
-  EXPECT_EQ(MockClient().last_main_frame_viewport_rect(),
+  EXPECT_EQ(MockObserver().last_main_frame_rect(), gfx::Rect(0, 0, 400, 1000));
+  EXPECT_EQ(MockObserver().last_main_frame_viewport_rect(),
             gfx::Rect(0, 50, 400, 300));
   testing::Mock::VerifyAndClearExpectations(&MockObserver());
 
@@ -1830,8 +1829,8 @@ TEST_F(DisplayAdElementMonitorTest, ReportingUnscalesByZoomFactor) {
                                   pixel_element->GetDomNodeId(), testing::_))
       .Times(0);
   UpdateLifecycle();
-  EXPECT_EQ(MockClient().last_main_frame_rect(), gfx::Rect(0, 0, 533, 1000));
-  EXPECT_EQ(MockClient().last_main_frame_viewport_rect(),
+  EXPECT_EQ(MockObserver().last_main_frame_rect(), gfx::Rect(0, 0, 533, 1000));
+  EXPECT_EQ(MockObserver().last_main_frame_viewport_rect(),
             gfx::Rect(0, 1, 533, 400));
   testing::Mock::VerifyAndClearExpectations(&MockObserver());
 
@@ -1845,8 +1844,8 @@ TEST_F(DisplayAdElementMonitorTest, ReportingUnscalesByZoomFactor) {
               OnMainFrameAdRectangleChanged(testing::_, testing::_))
       .Times(0);
   UpdateLifecycle();
-  EXPECT_EQ(MockClient().last_main_frame_rect(), gfx::Rect(0, 0, 533, 1000));
-  EXPECT_EQ(MockClient().last_main_frame_viewport_rect(),
+  EXPECT_EQ(MockObserver().last_main_frame_rect(), gfx::Rect(0, 0, 533, 1000));
+  EXPECT_EQ(MockObserver().last_main_frame_viewport_rect(),
             gfx::Rect(0, 1, 533, 400));
   testing::Mock::VerifyAndClearExpectations(&MockObserver());
 

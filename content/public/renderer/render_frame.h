@@ -190,15 +190,6 @@ class CONTENT_EXPORT RenderFrame : public base::SupportsUserData {
   virtual blink::scheduler::WebAgentGroupScheduler&
   GetAgentGroupScheduler() = 0;
 
-  using LoadFromMemoryCacheCallback =
-      base::RepeatingCallback<void(const GURL& response_url,
-                                   int request_id,
-                                   base::ByteSize encoded_body_length,
-                                   const std::string& mime_type,
-                                   bool from_archive)>;
-  virtual void SetLoadFromMemoryCacheCallback(
-      LoadFromMemoryCacheCallback callback) = 0;
-
   // Sets the callback which is called when the renderer observes a new response
   // start, completion, and cancellation.
   using DidStartResponseCallback = base::RepeatingCallback<void(

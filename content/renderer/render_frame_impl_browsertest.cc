@@ -264,20 +264,12 @@ class RenderFrameTestObserver : public RenderFrameObserver,
   explicit RenderFrameTestObserver(RenderFrame* render_frame)
       : RenderFrameObserver(render_frame),
         blink::WebLocalFrameObserver(render_frame->GetWebFrame()),
-        visible_(false),
-        last_main_frame_rect_(-1, -1, -1, -1) {}
+        visible_(false) {}
 
   ~RenderFrameTestObserver() override {}
 
   // RenderFrameObserver implementation.
   void OnDestruct() override { delete this; }
-  void OnMainFrameRectangleChanged(const gfx::Rect& main_frame_rect) override {
-    last_main_frame_rect_ = main_frame_rect;
-  }
-  void OnMainFrameViewportRectangleChanged(
-      const gfx::Rect& main_frame_viewport_rect) override {
-    last_main_frame_viewport_rect_ = main_frame_viewport_rect;
-  }
 
   // blink::WebLocalFrameObserver implementation.
   void OnFrameDetached() override {}
@@ -285,15 +277,9 @@ class RenderFrameTestObserver : public RenderFrameObserver,
   void WasHidden() override { visible_ = false; }
 
   bool visible() const { return visible_; }
-  gfx::Rect last_main_frame_rect() const { return last_main_frame_rect_; }
-  gfx::Rect last_main_frame_viewport_rect() const {
-    return last_main_frame_viewport_rect_;
-  }
 
  private:
   bool visible_;
-  gfx::Rect last_main_frame_rect_;
-  gfx::Rect last_main_frame_viewport_rect_;
 };
 
 // Verify that a frame with a WebRemoteFrame as a parent has its own
@@ -557,37 +543,6 @@ TEST_F(RenderFrameImplTest, FileUrlPathAlias) {
                                          ? updated->GetString().Utf8()
                                          : request.Url().GetString().Utf8());
   }
-}
-
-TEST_F(RenderFrameImplTest, MainFrameRectRecorded) {
-  RenderFrameTestObserver observer(GetMainRenderFrame());
-  gfx::Rect main_frame_rect(0, 0, 200, 140);
-  GetMainRenderFrame()->OnMainFrameRectangleChanged(main_frame_rect);
-  EXPECT_EQ(observer.last_main_frame_rect(), main_frame_rect);
-
-  // After a navigation, the notification of `main_frame_rect` should be
-  // propagated to `RenderFrameTestObserver` again for the new document.
-  LoadHTML(kParentFrameHTML);
-  RenderFrameTestObserver observer2(GetMainRenderFrame());
-  GetMainRenderFrame()->OnMainFrameRectangleChanged(main_frame_rect);
-  EXPECT_EQ(observer2.last_main_frame_rect(), main_frame_rect);
-}
-
-TEST_F(RenderFrameImplTest, MainFrameViewportRectRecorded) {
-  RenderFrameTestObserver observer(GetMainRenderFrame());
-  gfx::Rect main_frame_viewport_rect(0, 0, 200, 140);
-  GetMainRenderFrame()->OnMainFrameViewportRectangleChanged(
-      main_frame_viewport_rect);
-  EXPECT_EQ(observer.last_main_frame_viewport_rect(), main_frame_viewport_rect);
-
-  // After a navigation, the notification of `main_frame_viewport_rect` should
-  // be propagated to `RenderFrameTestObserver` again for the new document.
-  LoadHTML(kParentFrameHTML);
-  RenderFrameTestObserver observer2(GetMainRenderFrame());
-  GetMainRenderFrame()->OnMainFrameViewportRectangleChanged(
-      main_frame_viewport_rect);
-  EXPECT_EQ(observer2.last_main_frame_viewport_rect(),
-            main_frame_viewport_rect);
 }
 
 // Used to annotate the source of an interface request.

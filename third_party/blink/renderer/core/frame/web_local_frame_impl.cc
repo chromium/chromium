@@ -265,6 +265,8 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
+#include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
+#include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -2787,6 +2789,11 @@ void WebLocalFrameImpl::DidCommitLoad() {
   if (frame_widget_ && ShouldWarmUpCompositor()) {
     frame_widget_->WarmUpCompositor();
   }
+  // Ensure we will propagate the main frame and viewport rect when the main
+  // frame commits even if the rect does not change across navigations.
+  if (!Parent()) {
+    ResetMainFrameRects();
+  }
 }
 
 void WebLocalFrameImpl::DidFailLoad(const ResourceError& error,
@@ -3707,12 +3714,37 @@ void WebLocalFrameImpl::DidSetPageLifecycleState(
   }
 }
 
+void WebLocalFrameImpl::OnMainFrameRectangleChanged(
+    const gfx::Rect& main_frame_rect) {
+  if (main_frame_rect != main_frame_rect_) {
+    main_frame_rect_ = main_frame_rect;
+    for (auto& observer : metrics_observers_) {
+      observer.OnMainFrameRectangleChanged(main_frame_rect);
+    }
+  }
+}
+
+void WebLocalFrameImpl::OnMainFrameViewportRectangleChanged(
+    const gfx::Rect& main_frame_viewport_rect) {
+  if (main_frame_viewport_rect != main_frame_viewport_rect_) {
+    main_frame_viewport_rect_ = main_frame_viewport_rect;
+    for (auto& observer : metrics_observers_) {
+      observer.OnMainFrameViewportRectangleChanged(main_frame_viewport_rect);
+    }
+  }
+}
+
 void WebLocalFrameImpl::OnMainFrameAdRectangleChanged(
     int element_id,
     const gfx::Rect& ad_rect) {
-  for (auto& observer : observers_) {
+  for (auto& observer : metrics_observers_) {
     observer.OnMainFrameAdRectangleChanged(element_id, ad_rect);
   }
+}
+
+void WebLocalFrameImpl::ResetMainFrameRects() {
+  main_frame_rect_.reset();
+  main_frame_viewport_rect_.reset();
 }
 
 void WebLocalFrameImpl::DidChangePerformanceTiming() {
@@ -3769,6 +3801,19 @@ void WebLocalFrameImpl::DidObserveNewFeatureUsage(
     const UseCounterFeature& feature) {
   for (auto& observer : metrics_observers_) {
     observer.DidObserveNewFeatureUsage(feature);
+  }
+}
+
+void WebLocalFrameImpl::DidLoadResourceFromMemoryCache(
+    const ResourceRequest& request,
+    const ResourceResponse& response) {
+  if (metrics_observers_.empty()) {
+    return;
+  }
+  WrappedResourceRequest wrapped_request(request);
+  WrappedResourceResponse wrapped_response(response);
+  for (auto& observer : metrics_observers_) {
+    observer.DidLoadResourceFromMemoryCache(wrapped_request, wrapped_response);
   }
 }
 

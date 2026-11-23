@@ -14,10 +14,6 @@
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/public/web/web_performance_metrics_for_reporting.h"
 
-namespace gfx {
-class Rect;
-}  // namespace gfx
-
 namespace blink {
 class WebFormElement;
 class WebLocalFrame;
@@ -48,12 +44,6 @@ class BLINK_EXPORT WebLocalFrameObserver : public base::CheckedObserver {
 
   // Called when a frame's page lifecycle state gets updated.
   virtual void DidSetPageLifecycleState(BFCacheStateChange bfcache_change) {}
-
-  // Called when an ad element's geometry changed. An empty `ad_rect` is used to
-  // signal the removal of the element. Only invoked on the outermost main
-  // frame.
-  virtual void OnMainFrameAdRectangleChanged(int element_id,
-                                             const gfx::Rect& ad_rect) {}
 
   // A performance timing event (e.g. first paint) occurred.
   virtual void DidChangePerformanceTiming() {}

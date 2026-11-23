@@ -4464,26 +4464,6 @@ void RenderFrameImpl::DidChangeSelection(bool is_empty_selection,
   SyncSelectionIfRequired(force_sync);
 }
 
-void RenderFrameImpl::OnMainFrameRectangleChanged(
-    const gfx::Rect& main_frame_rect) {
-  if (main_frame_rect != main_frame_rect_) {
-    main_frame_rect_ = main_frame_rect;
-    for (auto& observer : observers_) {
-      observer.OnMainFrameRectangleChanged(main_frame_rect);
-    }
-  }
-}
-
-void RenderFrameImpl::OnMainFrameViewportRectangleChanged(
-    const gfx::Rect& main_frame_viewport_rect) {
-  if (main_frame_viewport_rect != main_frame_viewport_rect_) {
-    main_frame_viewport_rect_ = main_frame_viewport_rect;
-    for (auto& observer : observers_) {
-      observer.OnMainFrameViewportRectangleChanged(main_frame_viewport_rect);
-    }
-  }
-}
-
 void RenderFrameImpl::OnOverlayPopupAdDetected() {
   for (auto& observer : observers_) {
     observer.OnOverlayPopupAdDetected();
@@ -4599,24 +4579,6 @@ void RenderFrameImpl::FinalizeRequestInternal(
   }
 }
 
-void RenderFrameImpl::DidLoadResourceFromMemoryCache(
-    const blink::WebURLRequest& request,
-    const blink::WebURLResponse& response) {
-  if (load_from_memory_cache_callback_) {
-    load_from_memory_cache_callback_.Run(
-        request.Url(), response.RequestId(),
-        base::ByteSize(response.EncodedBodyLength()),
-        response.MimeType().Utf8(), response.FromArchive());
-  } else {
-    for (auto& observer : observers_) {
-      observer.DidLoadResourceFromMemoryCache(
-          request.Url(), response.RequestId(),
-          base::ByteSize(response.EncodedBodyLength()),
-          response.MimeType().Utf8(), response.FromArchive());
-    }
-  }
-}
-
 void RenderFrameImpl::DidStartResponse(
     const url::SchemeHostPort& final_response_url,
     int request_id,
@@ -4663,11 +4625,6 @@ void RenderFrameImpl::DidReceiveTransferSizeUpdate(
   for (auto& observer : observers_) {
     observer.DidReceiveTransferSizeUpdate(resource_id, received_data_length);
   }
-}
-
-void RenderFrameImpl::SetLoadFromMemoryCacheCallback(
-    LoadFromMemoryCacheCallback callback) {
-  load_from_memory_cache_callback_ = std::move(callback);
 }
 
 void RenderFrameImpl::SetDidStartResponseCallback(
@@ -5224,13 +5181,6 @@ void RenderFrameImpl::DidCommitNavigationInternal(
       GetFrameHost()->DidCommitProvisionalLoad(std::move(params),
                                                std::move(interface_params));
     }
-  }
-
-  // Ensure we will propagate the main frame and viewport rect when the main
-  // frame commits even if the rect does not change across navigations.
-  if (IsMainFrame()) {
-    main_frame_rect_.reset();
-    main_frame_viewport_rect_.reset();
   }
 
   // Record metrics and trace events for the navigation that was just committed.

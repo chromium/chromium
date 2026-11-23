@@ -144,7 +144,6 @@ class WebString;
 class WebURL;
 class URLLoader;
 class WebURLRequest;
-class WebURLResponse;
 class WebView;
 struct FramePolicy;
 struct ContextMenuData;
@@ -512,19 +511,6 @@ class BLINK_EXPORT WebLocalFrameClient {
   // focused element, |to_element| is the newly focused one. Either can be null.
   virtual void FocusedElementChanged(const WebElement& element) {}
 
-  // Called when the main frame's document rectangle changed, e.g. resizing a
-  // tab causes the document width to change, or loading additional content
-  // causes the document height to increase. Only invoked on the outermost main
-  // frame.
-  virtual void OnMainFrameRectangleChanged(const gfx::Rect& main_frame_rect) {}
-
-  // Called when the main frame's viewport rectangle (the viewport dimensions
-  // and the scroll position) changed, e.g. the user scrolled the main frame or
-  // the viewport dimensions themselves changed. Only invoked on the outermost
-  // main frame.
-  virtual void OnMainFrameViewportRectangleChanged(
-      const gfx::Rect& main_frame_viewport_rect) {}
-
   // Called when an overlay interstitial pop up ad is detected.
   virtual void OnOverlayPopupAdDetected() {}
 
@@ -551,20 +537,8 @@ class BLINK_EXPORT WebLocalFrameClient {
   // OverrideRequestUrl(). Other changes are allowed to the request.
   virtual void FinalizeRequest(WebURLRequest&) {}
 
-  // The specified request was satified from WebCore's memory cache.
-  virtual void DidLoadResourceFromMemoryCache(const WebURLRequest&,
-                                              const WebURLResponse&) {}
-
   // A PingLoader was created, and a request dispatched to a URL.
   virtual void DidDispatchPingLoader(const WebURL&) {}
-
-  // The first scroll delay, which measures the time between the user's first
-  // scrolling and the resultant display update, has been observed.
-  // The first scroll timestamp is when the first scroll event was created which
-  // is the hardware timestamp provided by the host OS.
-  virtual void DidObserveFirstScrollDelay(
-      base::TimeDelta first_scroll_delay,
-      base::TimeTicks first_scroll_timestamp) {}
 
   // Script notifications ------------------------------------------------
 

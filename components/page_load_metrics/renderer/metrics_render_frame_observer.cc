@@ -21,6 +21,8 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
+#include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_document_loader.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -147,12 +149,6 @@ MetricsRenderFrameObserver::MetricsRenderFrameObserver(
   if (base::FeatureList::IsEnabled(
           features::kMetricsRenderFrameObserverImprovement) &&
       render_frame) {
-    // If the optimization is enabled, `DidLoadResourceFromMemoryCache()` will
-    // be called as a callback instead of the observer interface.
-    render_frame->SetLoadFromMemoryCacheCallback(base::BindRepeating(
-        &MetricsRenderFrameObserver::DidLoadResourceFromMemoryCache,
-        weak_factory_.GetWeakPtr()));
-
     render_frame->SetDidStartResponseCallback(
         base::BindRepeating(&MetricsRenderFrameObserver::DidStartResponse,
                             weak_factory_.GetWeakPtr()));
@@ -404,14 +400,11 @@ void MetricsRenderFrameObserver::DidReceiveTransferSizeUpdate(
 }
 
 void MetricsRenderFrameObserver::DidLoadResourceFromMemoryCache(
-    const GURL& response_url,
-    int request_id,
-    base::ByteSize encoded_body_length,
-    const std::string& mime_type,
-    bool from_archive) {
+    const blink::WebURLRequest& request,
+    const blink::WebURLResponse& response) {
   // Resources from archives, such as subresources from a MHTML archive, do not
   // have valid request ids and should not be reported to PLM.
-  if (from_archive) {
+  if (response.FromArchive()) {
     return;
   }
 
@@ -419,8 +412,10 @@ void MetricsRenderFrameObserver::DidLoadResourceFromMemoryCache(
   // we do not need to check |provisional_frame_resource_data_use_|.
   if (page_timing_metrics_sender_) {
     page_timing_metrics_sender_->DidLoadResourceFromMemoryCache(
-        response_url, request_id, encoded_body_length, mime_type);
-    UpdateResourceMetadata(request_id);
+        request.Url(), response.RequestId(),
+        base::ByteSize(response.EncodedBodyLength()),
+        response.MimeType().Utf8());
+    UpdateResourceMetadata(response.RequestId());
   }
 }
 

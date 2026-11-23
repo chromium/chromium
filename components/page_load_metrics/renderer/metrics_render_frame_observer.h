@@ -62,11 +62,6 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
       int request_id,
       const network::URLLoaderCompletionStatus& status) override;
   void DidCancelResponse(int request_id) override;
-  void DidLoadResourceFromMemoryCache(const GURL& response_url,
-                                      int request_id,
-                                      base::ByteSize encoded_body_length,
-                                      const std::string& mime_type,
-                                      bool from_archive) override;
   void DidStartNavigation(
       const GURL& url,
       std::optional<blink::WebNavigationType> navigation_type) override;
@@ -82,10 +77,6 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
   // before being destroyed.
   void WillDetach(blink::DetachReason detach_reason) override;
 
-  void OnMainFrameRectangleChanged(const gfx::Rect& main_frame_rect) override;
-  void OnMainFrameViewportRectangleChanged(
-      const gfx::Rect& main_frame_viewport_rect) override;
-
   // blink::WebLocalFrameObserver implementation
   void OnFrameDetached() override;
   void DidChangePerformanceTiming() override;
@@ -94,8 +85,6 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
       blink::SoftNavigationMetricsForReporting metrics) override;
   void DidSetPageLifecycleState(
       blink::BFCacheStateChange bfcache_change) override;
-  void OnMainFrameAdRectangleChanged(int element_id,
-                                     const gfx::Rect& ad_rect) override;
 
   // blink::WebLocalFrameMetricsObserver implementation
   void DidObserveUserInteraction(
@@ -123,6 +112,14 @@ class MetricsRenderFrameObserver : public content::RenderFrameObserver,
       double score,
       bool after_input_or_scroll,
       uint64_t performance_timeline_navigation_id) override;
+  void OnMainFrameRectangleChanged(const gfx::Rect& main_frame_rect) override;
+  void OnMainFrameViewportRectangleChanged(
+      const gfx::Rect& main_frame_viewport_rect) override;
+  void OnMainFrameAdRectangleChanged(int element_id,
+                                     const gfx::Rect& ad_rect) override;
+  void DidLoadResourceFromMemoryCache(
+      const blink::WebURLRequest& request,
+      const blink::WebURLResponse& response) override;
 
  protected:
   // The relative and monotonic page load timings.
