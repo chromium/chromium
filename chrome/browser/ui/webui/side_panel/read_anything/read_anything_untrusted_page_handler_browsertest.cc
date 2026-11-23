@@ -570,6 +570,16 @@ class ReadAnythingUntrustedPageHandlerTest : public InProcessBrowserTest {
     return pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents);
   }
 
+  // Returns the PDF content frame, unlike LoadPdf() which returns the PDF
+  // extension host. Returns nullptr if the PDF fails to load.
+  content::RenderFrameHost* LoadPdfAndGetContentFrame(const GURL& url) {
+    if (!LoadPdf(url)) {
+      return nullptr;
+    }
+    return pdf_extension_test_util::GetOnlyPdfPluginFrame(
+        browser()->tab_strip_model()->GetActiveWebContents());
+  }
+
  protected:
 #if BUILDFLAG(IS_CHROMEOS)
   raw_ptr<MockChromeOsExtensionWrapper> extension_wrapper_ptr_ = nullptr;
@@ -707,38 +717,27 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        NavigateToPdfAfterHandlerCreated_NotifiesOfPdfChange) {
   ASSERT_TRUE(embedded_test_server()->Start());
   handler_ = CreateHandler();
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
 
   EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/false)).Times(1);
   ui::AXTreeID notified_pdf_tree_id;
   EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/true))
       .WillOnce(testing::SaveArg<0>(&notified_pdf_tree_id));
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
-  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
+  content::RenderFrameHost* pdf_rfh = LoadPdfAndGetContentFrame(
+      embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(pdf_rfh);
   handler_->DidStopLoading();
 
-  content::RenderFrameHost* pdf_rfh =
-      pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
-  ASSERT_TRUE(pdf_rfh);
   EXPECT_EQ(notified_pdf_tree_id, pdf_rfh->GetAXTreeID());
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        NavigateToPdfBeforeHandlerCreated_NotifiesOfPdfChange) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
-  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
-
-  content::RenderFrameHost* pdf_rfh =
-      pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
+  content::RenderFrameHost* pdf_rfh = LoadPdfAndGetContentFrame(
+      embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(pdf_rfh);
+
   EXPECT_CALL(page_, OnActiveAXTreeIDChanged(pdf_rfh->GetAXTreeID(), _,
                                              /*is_pdf=*/true))
       .Times(1);
@@ -750,15 +749,10 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        OnActiveAXTreeIDChanged_NotifiesOfPdfChange) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
-  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
-
-  content::RenderFrameHost* pdf_rfh =
-      pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
+  content::RenderFrameHost* pdf_rfh = LoadPdfAndGetContentFrame(
+      embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(pdf_rfh);
+
   EXPECT_CALL(page_, OnActiveAXTreeIDChanged(pdf_rfh->GetAXTreeID(), _,
                                              /*is_pdf=*/true))
       .Times(2);
@@ -775,14 +769,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        PdfContentFrameDeleted_ChecksForPdfContentAgain) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
-  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
-
-  content::RenderFrameHost* pdf_rfh =
-      pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
+  content::RenderFrameHost* pdf_rfh = LoadPdfAndGetContentFrame(
+      embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(pdf_rfh);
   // Once on construction, then again after the content frame is deleted.
   EXPECT_CALL(page_, OnActiveAXTreeIDChanged(pdf_rfh->GetAXTreeID(), _,
@@ -1624,18 +1612,11 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        AccessibilityEventReceived_PdfFramesForwarded) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
-  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
+  content::RenderFrameHost* pdf_plugin_frame = LoadPdfAndGetContentFrame(
+      embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(pdf_plugin_frame);
 
   handler_ = CreateHandler();
-
-  content::RenderFrameHost* pdf_plugin_frame =
-      pdf_extension_test_util::GetOnlyPdfPluginFrame(web_contents);
-  ASSERT_TRUE(pdf_plugin_frame);
 
   // The observed tab also sends its own accessibility events while the test
   // runs; allow those so only the expectations below are checked.
@@ -1650,7 +1631,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   page_.receiver_.FlushForTesting();
 
   content::RenderFrameHost* pdf_extension_host =
-      pdf_frame_util::FindFullPagePdfExtensionHost(web_contents);
+      pdf_frame_util::FindFullPagePdfExtensionHost(
+          browser()->tab_strip_model()->GetActiveWebContents());
   ASSERT_TRUE(pdf_extension_host);
 
   ui::AXUpdatesAndEvents extension_details;
@@ -3217,8 +3199,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerTest,
                        NavigateToPdfAfterHandlerCreated_NotifiesOfPdfChange) {
   ASSERT_TRUE(embedded_test_server()->Start());
   handler_ = CreateHandler();
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
 
   // Regression test for crbug.com/487308693. RM receives 3 sequential signals
   // about the current page when it's a pdf.
@@ -3235,9 +3215,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerTest,
   // kDistillationInProgress, once for kDistillationEmpty).
   EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(2);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
-  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
   handler_->DidStopLoading();
 }
 
@@ -4084,16 +4062,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerRefactorTest,
                        NavigateToPdfAfterHandlerCreated_NotifiesOfPdfChange) {
   ASSERT_TRUE(embedded_test_server()->Start());
   handler_ = CreateHandler();
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
 
   // The renderer starts Readability distillation, so the browser never
   // sends distillation state changes on its own.
   EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(0);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
-  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
   handler_->DidStopLoading();
   page_.receiver_.FlushForTesting();
 }
@@ -4695,13 +4669,10 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
   base::HistogramTester histogram_tester;
 
   ASSERT_TRUE(embedded_test_server()->Start());
-  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
-  SetUpHandler();
-
-  content::RenderFrameHost* pdf_content_rfh =
-      pdf_extension_test_util::GetOnlyPdfPluginFrame(
-          browser()->tab_strip_model()->GetActiveWebContents());
+  content::RenderFrameHost* pdf_content_rfh = LoadPdfAndGetContentFrame(
+      embedded_test_server()->GetURL("/pdf/test.pdf"));
   ASSERT_TRUE(pdf_content_rfh);
+  SetUpHandler();
 
   content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
   GrantUserActivation(rfh);
@@ -4749,15 +4720,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
                        LocalPdfContentFrame_AllowsActions) {
   base::HistogramTester histogram_tester;
 
-  ASSERT_TRUE(LoadPdf(chrome_test_utils::GetTestUrl(
-      base::FilePath(FILE_PATH_LITERAL("pdf")),
-      base::FilePath(FILE_PATH_LITERAL("test.pdf")))));
-  SetUpHandler();
-
   content::RenderFrameHost* pdf_content_rfh =
-      pdf_extension_test_util::GetOnlyPdfPluginFrame(
-          browser()->tab_strip_model()->GetActiveWebContents());
+      LoadPdfAndGetContentFrame(chrome_test_utils::GetTestUrl(
+          base::FilePath(FILE_PATH_LITERAL("pdf")),
+          base::FilePath(FILE_PATH_LITERAL("test.pdf"))));
   ASSERT_TRUE(pdf_content_rfh);
+  SetUpHandler();
 
   content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
   GrantUserActivation(rfh);
