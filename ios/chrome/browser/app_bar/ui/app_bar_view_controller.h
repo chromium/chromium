@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 
+@protocol ActorOverlayCommands;
 @protocol AppBarMutator;
 @protocol GeminiCommands;
 @class LayoutGuideCenter;
@@ -41,6 +42,9 @@
 
 // Handler for Gemini commands.
 @property(nonatomic, weak) id<GeminiCommands> geminiHandler;
+
+// Handler for Actor Overlay commands.
+@property(nonatomic, weak) id<ActorOverlayCommands> actorOverlayHandler;
 
 // Dynamically updates the corner radius of the app bar.
 - (void)updateCornerRadius:(CGFloat)cornerRadius;

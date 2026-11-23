@@ -61,6 +61,9 @@ typedef NS_ENUM(NSUInteger, AppBarButtonType) {
 - (void)setCanNavigateBack:(BOOL)canNavigateBack
                    forward:(BOOL)canNavigateForward;
 
+// Sets whether the active tab is currently controlled by the actor.
+- (void)setActorControlled:(BOOL)actorControlled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_APP_BAR_UI_APP_BAR_CONSUMER_H_

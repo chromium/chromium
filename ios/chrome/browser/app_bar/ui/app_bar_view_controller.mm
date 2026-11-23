@@ -24,11 +24,13 @@
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
+#import "ios/chrome/browser/shared/public/commands/actor_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/disabled_buttons_tap_gesture_recognizer.h"
 #import "ios/chrome/browser/shared/ui/util/layout_constants.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -226,6 +228,10 @@ UIImage* CircularAvatarImageMatchingSize(UIImage* avatar,
   // Whether forward/backward navigations are currently allowed.
   BOOL _canNavigateBack;
   BOOL _canNavigateForward;
+  // Whether the active tab is currently controlled by the actor.
+  BOOL _actorControlled;
+  // Tap recognizer for disabled back/forward buttons while actor-controlled.
+  DisabledButtonsTapGestureRecognizer* _disabledNavigationTapRecognizer;
   // Context menus for the App Bar buttons.
   UIMenu* _backButtonMenu;
   UIMenu* _forwardButtonMenu;
@@ -542,6 +548,15 @@ UIImage* CircularAvatarImageMatchingSize(UIImage* avatar,
       _trailingSpacer
     ]];
   }
+  if (IsActorEnabled() && _backButton && _forwardButton) {
+    _disabledNavigationTapRecognizer =
+        [[DisabledButtonsTapGestureRecognizer alloc]
+            initWithTarget:self
+                    action:@selector(didTapDisabledNavigationButton)
+                   buttons:@[ _backButton, _forwardButton ]];
+    _disabledNavigationTapRecognizer.enabled = _actorControlled;
+    [_stackView addGestureRecognizer:_disabledNavigationTapRecognizer];
+  }
   _stackView.translatesAutoresizingMaskIntoConstraints = NO;
   _stackView.distribution = UIStackViewDistributionFillEqually;
   _stackView.spacing = kStackViewSpacing;
@@ -727,6 +742,17 @@ UIImage* CircularAvatarImageMatchingSize(UIImage* avatar,
   _canNavigateBack = canNavigateBack;
   _canNavigateForward = canNavigateForward;
   [self updateNavigationButtons];
+}
+
+- (void)setActorControlled:(BOOL)actorControlled {
+  if (_actorControlled == actorControlled) {
+    return;
+  }
+  _actorControlled = actorControlled;
+  _disabledNavigationTapRecognizer.enabled = _actorControlled;
+  // TODO(crbug.com/580006251): Set a VoiceOver `accessibilityHint` on
+  // `_backButton` and `_forwardButton` while `_actorControlled` is `YES` so
+  // VoiceOver users can discover why navigation is disabled.
 }
 
 - (void)setAssistantButtonState:(AppBarAssistantButtonState)state
@@ -1633,6 +1659,14 @@ UIImage* CircularAvatarImageMatchingSize(UIImage* avatar,
   }
   base::RecordAction(base::UserMetricsAction("MobileToolbarForward"));
   [self.mutator navigateForward];
+}
+
+// Called when a disabled back or forward navigation button is tapped.
+- (void)didTapDisabledNavigationButton {
+  if (!_actorControlled) {
+    return;
+  }
+  [self.actorOverlayHandler showActorInteractionLimitedSnackbar];
 }
 
 // Called when the Assistant button is tapped.

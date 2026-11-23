@@ -16,6 +16,7 @@
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
 #import "ios/chrome/browser/ntp/shared/metrics/home_metrics.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
@@ -24,10 +25,12 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
+#import "ios/chrome/browser/shared/public/commands/actor_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/disabled_buttons_tap_gesture_recognizer.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -249,6 +252,10 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
   UIView<ToolbarElementWithBackground>* _navigationButtonsContainer;
   // The stack views that hold the buttons on the leading side.
   UIStackView* _leadingStackView;
+  // Whether the active tab is currently controlled by the actor.
+  BOOL _actorControlled;
+  // Tap recognizer for disabled back/forward buttons while actor-controlled.
+  DisabledButtonsTapGestureRecognizer* _disabledNavigationTapRecognizer;
   // The container for the location bar, which is transparent.
   UIView* _locationBarContainer;
   // The background for the location bar, which is a pill-shaped view.
@@ -659,6 +666,17 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
   if (self.isViewLoaded) {
     [self updateLayoutGuides];
   }
+}
+
+- (void)setActorControlled:(BOOL)actorControlled {
+  if (_actorControlled == actorControlled) {
+    return;
+  }
+  _actorControlled = actorControlled;
+  _disabledNavigationTapRecognizer.enabled = _actorControlled;
+  // TODO(crbug.com/580006251): Set a VoiceOver `accessibilityHint` on
+  // `_backButton` and `_forwardButton` while `_actorControlled` is `YES` so
+  // VoiceOver users can discover why navigation is disabled.
 }
 
 - (void)setCanGoBack:(BOOL)canGoBack {
@@ -2016,6 +2034,15 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
       _stopButton,
     ]];
   }
+  if (IsActorEnabled()) {
+    _disabledNavigationTapRecognizer =
+        [[DisabledButtonsTapGestureRecognizer alloc]
+            initWithTarget:self
+                    action:@selector(disabledNavigationButtonTapped)
+                   buttons:@[ _backButton, _forwardButton ]];
+    _disabledNavigationTapRecognizer.enabled = _actorControlled;
+    [_leadingStackView addGestureRecognizer:_disabledNavigationTapRecognizer];
+  }
   _trailingStackView = [self makeStackViewWithButtons:@[
     _assistantButton, _trailingShareButton, _tabGridButton, _toolsMenuButton
   ]];
@@ -2308,6 +2335,14 @@ CGFloat ButtonAlphaForProgress(CGFloat progress) {
   base::RecordAction(base::UserMetricsAction("MobileToolbarForward"));
 
   [self.buttonsMutator goForward];
+}
+
+// Handles taps on disabled back or forward navigation buttons.
+- (void)disabledNavigationButtonTapped {
+  if (!_actorControlled) {
+    return;
+  }
+  [self.actorOverlayHandler showActorInteractionLimitedSnackbar];
 }
 
 // Handles reload button tap.

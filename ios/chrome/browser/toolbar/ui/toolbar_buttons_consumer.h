@@ -52,6 +52,9 @@ typedef NS_ENUM(NSUInteger, ToolbarButtonType) {
 // Sets the state of the assistant button.
 - (void)setAssistantButtonVisible:(BOOL)visible enabled:(BOOL)enabled;
 
+// Sets whether the active tab is currently controlled by the actor.
+- (void)setActorControlled:(BOOL)actorControlled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_UI_TOOLBAR_BUTTONS_CONSUMER_H_

@@ -18,6 +18,8 @@ source_set("util") {
     "custom_ui_trait_accessor.mm",
     "date_localized_util.h",
     "date_localized_util.mm",
+    "disabled_buttons_tap_gesture_recognizer.h",
+    "disabled_buttons_tap_gesture_recognizer.mm",
     "file_size_util.h",
     "file_size_util.mm",
     "layout_constants.h",
@@ -167,6 +169,7 @@ source_set("vertical_bar_util") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "disabled_buttons_tap_gesture_recognizer_unittest.mm",
     "frame_layout_guide_unittest.mm",
     "layout_guide_center_unittest.mm",
     "named_guide_unittest.mm",

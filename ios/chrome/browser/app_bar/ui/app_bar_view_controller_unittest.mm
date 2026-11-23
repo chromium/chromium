@@ -10,10 +10,13 @@
 #import "ios/chrome/browser/app_bar/ui/app_bar_background_view.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/layout_state_test_passkey_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
+#import "ios/chrome/browser/shared/public/commands/actor_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/disabled_buttons_tap_gesture_recognizer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -23,6 +26,7 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 @interface AppBarViewController (Testing) <UIContextMenuInteractionDelegate>
+- (void)didTapDisabledNavigationButton;
 @end
 
 namespace {
@@ -1047,6 +1051,66 @@ TEST_F(AppBarViewControllerTestManual,
   [light_back_button setNeedsUpdateConfiguration];
   [light_back_button layoutIfNeeded];
   EXPECT_EQ(light_back_button.configuration.imageColorTransformer, nil);
+}
+
+// Tests that `setActorControlled:` enables
+// `DisabledButtonsTapGestureRecognizer` and forwards disabled navigation taps
+// to `actorOverlayHandler` only while actor-controlled.
+TEST_F(AppBarViewControllerTestManual,
+       TestActorControlledEnablesDisabledNavigationTapAndShowsSnackbar) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kChromeNextIa, kNextOldDesign, kFiveButtonAppBarLayout, kActorTools},
+      {});
+
+  AppBarViewController* vc = [[AppBarViewController alloc] init];
+  id mock_actor_overlay_handler =
+      OCMStrictProtocolMock(@protocol(ActorOverlayCommands));
+  vc.actorOverlayHandler = mock_actor_overlay_handler;
+  [vc loadViewIfNeeded];
+
+  DisabledButtonsTapGestureRecognizer* recognizer =
+      [vc valueForKey:@"_disabledNavigationTapRecognizer"];
+  ASSERT_NE(recognizer, nil);
+  EXPECT_FALSE(recognizer.enabled);
+
+  // Taps while not actor-controlled do not show the snackbar.
+  [vc didTapDisabledNavigationButton];
+  EXPECT_OCMOCK_VERIFY(mock_actor_overlay_handler);
+
+  // Entering actor-controlled mode enables the recognizer and shows the
+  // snackbar on tap.
+  [vc setActorControlled:YES];
+  EXPECT_TRUE(recognizer.enabled);
+  OCMExpect([mock_actor_overlay_handler showActorInteractionLimitedSnackbar]);
+  [vc didTapDisabledNavigationButton];
+  EXPECT_OCMOCK_VERIFY(mock_actor_overlay_handler);
+
+  // Leaving actor-controlled mode disables the recognizer again.
+  [vc setActorControlled:NO];
+  EXPECT_FALSE(recognizer.enabled);
+  [vc didTapDisabledNavigationButton];
+  EXPECT_OCMOCK_VERIFY(mock_actor_overlay_handler);
+}
+
+// Tests that `DisabledButtonsTapGestureRecognizer` is not installed on the
+// stack view when `kActorTools` is disabled.
+TEST_F(AppBarViewControllerTestManual,
+       TestDisabledNavigationTapRecognizerNotInstalledWhenActorDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kChromeNextIa, kNextOldDesign, kFiveButtonAppBarLayout}, {kActorTools});
+
+  AppBarViewController* vc = [[AppBarViewController alloc] init];
+  [vc loadViewIfNeeded];
+
+  EXPECT_EQ([vc valueForKey:@"_disabledNavigationTapRecognizer"], nil);
+  UIStackView* stack_view = [vc valueForKey:@"_stackView"];
+  ASSERT_NE(stack_view, nil);
+  for (UIGestureRecognizer* recognizer in stack_view.gestureRecognizers) {
+    EXPECT_FALSE(
+        [recognizer isKindOfClass:[DisabledButtonsTapGestureRecognizer class]]);
+  }
 }
 
 }  // namespace

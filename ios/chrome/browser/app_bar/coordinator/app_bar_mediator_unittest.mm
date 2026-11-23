@@ -3691,6 +3691,57 @@ TEST_F(AppBarMediatorTest,
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 
+// Tests that `AppBarMediator` pushes `setActorControlled:` to the consumer
+// based on the active tab's actor control state, resetting to `NO` while the
+// Tab Grid or Incognito is visible.
+TEST_F(AppBarMediatorTest, TestActorControlledUpdatesConsumer) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kNextOldDesign, kFiveButtonAppBarLayout}, {});
+  RecreateMediator();
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetBrowserState(regular_profile_);
+  web_state->SetNavigationManager(std::make_unique<TestNavigationManager>());
+  ActorTabHelper::CreateForWebState(web_state.get());
+  ActorTabHelper* actor_tab_helper =
+      ActorTabHelper::FromWebState(web_state.get());
+  ASSERT_NE(nullptr, actor_tab_helper);
+
+  OCMExpect([consumer_ setActorControlled:NO]);
+  regular_browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  OCMExpect([consumer_ setActorControlled:YES]);
+  actor_tab_helper->SetControlState(actor::ActorControlState::kActorControlled);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  // Entering Tab Grid clears `actorControlled` on the consumer; exiting
+  // restores it.
+  OCMExpect([consumer_ setActorControlled:NO]);
+  tab_grid_state_.tabGridVisible = YES;
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  OCMExpect([consumer_ setActorControlled:YES]);
+  tab_grid_state_.tabGridVisible = NO;
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  // Switching to Incognito clears `actorControlled`; returning restores it.
+  OCMExpect([consumer_ setActorControlled:NO]);
+  incognito_state_.incognitoContentVisible = YES;
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  OCMExpect([consumer_ setActorControlled:YES]);
+  incognito_state_.incognitoContentVisible = NO;
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  OCMExpect([consumer_ setActorControlled:NO]);
+  actor_tab_helper->SetControlState(actor::ActorControlState::kInactive);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
 INSTANTIATE_TEST_SUITE_P(AppBarMediatorTest,
                          AppBarMediatorTest,
                          testing::Bool());

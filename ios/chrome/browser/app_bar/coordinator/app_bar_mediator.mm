@@ -1088,6 +1088,9 @@ inline LayoutStateAssistantPassKey PassKey() {
   [self.consumer setTabGroupVisible:isTabGroupVisible];
   [self.consumer
       setInTabGroup:GetGroupForActiveWebState(self.currentWebStateList)];
+  BOOL actorControlled = !_tabGridState.tabGridVisible && !incognito &&
+                         ActorTabHelper::IsActorControlled(activeWebState);
+  [self.consumer setActorControlled:actorControlled];
   if (IsFiveButtonAppBarLayoutEnabled()) {
     WebNavigationBrowserAgent* navigationBrowserAgent =
         [self currentNavigationBrowserAgent];

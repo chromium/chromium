@@ -24,6 +24,10 @@ class WebState;
 // Hides the Actor Overlay UI.
 - (void)hideActorOverlay;
 
+// Shows a snackbar explaining that interaction with the tab is limited while an
+// actor controls it. No-op when the actor overlay scrim is not shown.
+- (void)showActorInteractionLimitedSnackbar;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_ACTOR_OVERLAY_COMMANDS_H_

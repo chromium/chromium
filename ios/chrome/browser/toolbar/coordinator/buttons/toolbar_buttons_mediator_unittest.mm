@@ -643,9 +643,46 @@ TEST_F(ToolbarButtonsMediatorTest, TestActorControlDoesNotUpdateInactive) {
       WebStateList::InsertionParams::AtIndex(0).Activate());
   [mediator_ removeConsumer:consumer_];
 
+  OCMReject([consumer_ setActorControlled:OCMOCK_ANY]);
   OCMReject([consumer_ setCanGoBack:OCMOCK_ANY]);
   OCMReject([consumer_ setCanGoForward:OCMOCK_ANY animated:OCMOCK_ANY]);
   actor_tab_helper->SetControlState(actor::ActorControlState::kActorControlled);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that `ToolbarButtonsMediator` pushes `setActorControlled:` to active
+// consumers when the active tab's actor control state changes and resets it to
+// `NO` when the active tab is closed.
+TEST_F(ToolbarButtonsMediatorTest, TestActorControlledUpdatesConsumer) {
+  std::unique_ptr<web::FakeWebState> web_state = CreateWebState();
+  ActorTabHelper::CreateForWebState(web_state.get());
+  ActorTabHelper* actor_tab_helper =
+      ActorTabHelper::FromWebState(web_state.get());
+  ASSERT_NE(nullptr, actor_tab_helper);
+
+  OCMExpect([consumer_ setActorControlled:NO]);
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  OCMExpect([consumer_ setActorControlled:YES]);
+  actor_tab_helper->SetControlState(actor::ActorControlState::kActorControlled);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  OCMExpect([consumer_ setActorControlled:NO]);
+  actor_tab_helper->SetControlState(actor::ActorControlState::kInactive);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  OCMExpect([consumer_ setActorControlled:YES]);
+  actor_tab_helper->SetControlState(actor::ActorControlState::kActorControlled);
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  // Closing the active tab clears `actorControlled` on the consumer.
+  fake_navigation_manager_ = nullptr;
+  OCMExpect([consumer_ setActorControlled:NO]);
+  browser_->GetWebStateList()->CloseWebStateAt(
+      0, WebStateList::ClosingReason::kDefault);
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
 

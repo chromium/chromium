@@ -51,6 +51,11 @@ class Browser;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
+// Presents a snackbar explaining that interaction with the tab is limited while
+// an actor controls it. No-op before `start`, after `stop`, when the scrim is
+// hidden, or while the snackbar is already visible.
+- (void)showInteractionLimitedSnackbar;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_COORDINATOR_ACTOR_OVERLAY_COORDINATOR_H_

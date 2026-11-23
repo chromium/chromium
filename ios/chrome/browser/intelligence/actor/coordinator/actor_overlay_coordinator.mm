@@ -64,6 +64,26 @@
                              glowColor:[UIColor colorNamed:kStaticBlueColor]];
 }
 
+- (void)showInteractionLimitedSnackbar {
+  // No-op before `start`, after `stop`, when the scrim is hidden, or while the
+  // snackbar is already visible.
+  if (!_viewController || !self.scrimVisible || _interactionLimitedSnackbar) {
+    return;
+  }
+
+  SnackbarMessage* message = [[SnackbarMessage alloc]
+      initWithTitle:l10n_util::GetNSString(
+                        IDS_IOS_ACTOR_OVERLAY_INTERACTION_LIMITED_SNACKBAR)];
+  _interactionLimitedSnackbar = message;
+  __weak __typeof(self) weakSelf = self;
+  __weak SnackbarMessage* weakMessage = message;
+  message.completionHandler = ^(BOOL) {
+    [weakSelf clearInteractionLimitedSnackbarForMessage:weakMessage];
+  };
+
+  [_snackbarCommandsHandler showSnackbarMessage:message];
+}
+
 #pragma mark - Properties
 
 - (void)setScrimVisible:(BOOL)scrimVisible {
@@ -120,21 +140,7 @@
 - (void)actorOverlayViewControllerDidTapScrim:
     (ActorOverlayViewController*)viewController {
   CHECK_EQ(_viewController, viewController);
-  if (!self.scrimVisible || _interactionLimitedSnackbar) {
-    return;
-  }
-
-  SnackbarMessage* message = [[SnackbarMessage alloc]
-      initWithTitle:l10n_util::GetNSString(
-                        IDS_IOS_ACTOR_OVERLAY_INTERACTION_LIMITED_SNACKBAR)];
-  _interactionLimitedSnackbar = message;
-  __weak __typeof(self) weakSelf = self;
-  __weak SnackbarMessage* weakMessage = message;
-  message.completionHandler = ^(BOOL) {
-    [weakSelf clearInteractionLimitedSnackbarForMessage:weakMessage];
-  };
-
-  [_snackbarCommandsHandler showSnackbarMessage:message];
+  [self showInteractionLimitedSnackbar];
 }
 
 #pragma mark - Private

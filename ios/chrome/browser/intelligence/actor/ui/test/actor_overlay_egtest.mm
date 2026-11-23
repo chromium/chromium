@@ -390,13 +390,28 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 }
 
 // Tests that on the five-button app bar layout on iPhone, back and forward
-// buttons are disabled and do not navigate while the active tab is
-// actor-controlled, then re-enable once inactive.
+// buttons are disabled, show the interaction-limited snackbar when tapped, and
+// do not navigate while the active tab is actor-controlled, then re-enable once
+// inactive.
 - (void)testAppBarBackForwardDisabledDuringActuation {
   if ([ChromeEarlGrey isRegularXRegularSizeClass]) {
     EARL_GREY_TEST_SKIPPED(
         @"Five-button app bar is only shown in compact size classes.");
   }
+
+  id<GREYMatcher> backButton =
+      grey_accessibilityID(kAppBarBackButtonIdentifier);
+  id<GREYMatcher> forwardButton =
+      grey_accessibilityID(kAppBarForwardButtonIdentifier);
+
+  // On the initial NTP (`kInactive`), back is disabled due to empty history;
+  // tapping it must not show the actor snackbar.
+  [[EarlGrey selectElementWithMatcher:backButton]
+      assertWithMatcher:grey_allOf(grey_not(grey_enabled()),
+                                   grey_sufficientlyVisible(), nil)];
+  [[EarlGrey selectElementWithMatcher:backButton] performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SnackbarViewMatcher()]
+      assertWithMatcher:grey_nil()];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageAPath)];
   [ChromeEarlGrey waitForWebStateContainingText:kPageAText];
@@ -404,11 +419,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   [ChromeEarlGrey waitForWebStateContainingText:kPageBText];
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageCPath)];
   [ChromeEarlGrey waitForWebStateContainingText:kPageCText];
-
-  id<GREYMatcher> backButton =
-      grey_accessibilityID(kAppBarBackButtonIdentifier);
-  id<GREYMatcher> forwardButton =
-      grey_accessibilityID(kAppBarForwardButtonIdentifier);
 
   // Navigate back to Page B so both back and forward history exist.
   [[EarlGrey selectElementWithMatcher:backButton] performAction:grey_tap()];
@@ -420,8 +430,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       assertWithMatcher:grey_allOf(grey_enabled(), grey_sufficientlyVisible(),
                                    nil)];
 
-  // Enter actor-controlled state; both buttons should become disabled and
-  // tapping them must not navigate.
+  // Enter actor-controlled state; both buttons should become disabled, tapping
+  // them must show the snackbar and not navigate.
   [ActorAppInterface setControlState:actor::ActorControlState::kActorControlled
                   forWebStateAtIndex:0];
   [self assertOverlayVisible:YES];
@@ -433,14 +443,24 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
                                    grey_sufficientlyVisible(), nil)];
 
   [[EarlGrey selectElementWithMatcher:backButton] performAction:grey_tap()];
+  [self assertInteractionLimitedSnackbarVisible:YES];
+
+  // Dismiss the snackbar before tapping forward so forward's disabled-tap
+  // handling is independently verified.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SnackbarViewMatcher()]
+      performAction:grey_tap()];
+  [self assertInteractionLimitedSnackbarVisible:NO];
+
   [[EarlGrey selectElementWithMatcher:forwardButton] performAction:grey_tap()];
+  [self assertInteractionLimitedSnackbarVisible:YES];
   [ChromeEarlGrey waitForWebStateContainingText:kPageBText];
 
-  // Return to inactive; buttons re-enable and tapping back lands on Page A
-  // (confirming neither tap during actuation navigated).
+  // Return to inactive; snackbar dismisses, buttons re-enable, and tapping back
+  // lands on Page A (confirming neither tap during actuation navigated).
   [ActorAppInterface setControlState:actor::ActorControlState::kInactive
                   forWebStateAtIndex:0];
   [self assertOverlayVisible:NO];
+  [self assertInteractionLimitedSnackbarVisible:NO];
   [[EarlGrey selectElementWithMatcher:backButton]
       assertWithMatcher:grey_allOf(grey_enabled(), grey_sufficientlyVisible(),
                                    nil)];
@@ -453,13 +473,22 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 }
 
 // Tests that on regular x regular toolbars (iPad and unfolded Duo), back and
-// forward controls are disabled while the active tab is actor-controlled and
-// restored once inactive.
+// forward controls are disabled while the active tab is actor-controlled,
+// tapping disabled back shows the snackbar, and controls restore once inactive.
 - (void)testToolbarBackForwardDisabledDuringActuation {
   if (![ChromeEarlGrey isRegularXRegularSizeClass]) {
     EARL_GREY_TEST_SKIPPED(
         @"Primary toolbar back/forward buttons require regular x regular.");
   }
+
+  // On the initial NTP (`kInactive`), back is disabled due to empty history;
+  // tapping it must not show the actor snackbar.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SnackbarViewMatcher()]
+      assertWithMatcher:grey_nil()];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageAPath)];
   [ChromeEarlGrey waitForWebStateContainingText:kPageAText];
@@ -478,7 +507,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
       assertWithMatcher:grey_enabled()];
 
   // Enter actor-controlled state; back greys out, forward hides on default
-  // Next IA, and tapping back does not navigate.
+  // Next IA, and tapping back shows the snackbar without navigating.
   [ActorAppInterface setControlState:actor::ActorControlState::kActorControlled
                   forWebStateAtIndex:0];
   [self assertOverlayVisible:YES];
@@ -489,13 +518,15 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
       performAction:grey_tap()];
+  [self assertInteractionLimitedSnackbarVisible:YES];
   [ChromeEarlGrey waitForWebStateContainingText:kPageBText];
 
-  // Return to inactive; back and forward re-appear enabled and back lands on
-  // Page A.
+  // Return to inactive; snackbar dismisses, back and forward re-appear enabled,
+  // and back lands on Page A.
   [ActorAppInterface setControlState:actor::ActorControlState::kInactive
                   forWebStateAtIndex:0];
   [self assertOverlayVisible:NO];
+  [self assertInteractionLimitedSnackbarVisible:NO];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
       assertWithMatcher:grey_enabled()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ForwardButton()]

@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
+#import "ios/chrome/browser/shared/public/commands/actor_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_commands.h"
@@ -1463,6 +1464,10 @@ inline LayoutStateToolbarPassKey PassKey() {
       HandlerForProtocol(dispatcher, ActivityServiceCommands);
   toolbarViewController.sceneHandler =
       HandlerForProtocol(dispatcher, SceneCommands);
+  if (!incognito && IsActorEnabled()) {
+    toolbarViewController.actorOverlayHandler =
+        HandlerForProtocol(dispatcher, ActorOverlayCommands);
+  }
   toolbarViewController.toolbarHeightDelegate = self.toolbarHeightDelegate;
   [toolbarViewController
       setLocationBarViewController:locationBar.locationBarViewController

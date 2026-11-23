@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/actor_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
@@ -174,6 +175,11 @@ class AppBarCoordinatorTest : public PlatformTest {
     [incognito_browser_->GetCommandDispatcher()
         startDispatchingToTarget:snackbar_handler_
                      forProtocol:@protocol(SnackbarCommands)];
+
+    actor_overlay_handler_ = OCMProtocolMock(@protocol(ActorOverlayCommands));
+    [regular_browser_->GetCommandDispatcher()
+        startDispatchingToTarget:actor_overlay_handler_
+                     forProtocol:@protocol(ActorOverlayCommands)];
   }
 
   ~AppBarCoordinatorTest() override { [coordinator_ stop]; }
@@ -197,6 +203,7 @@ class AppBarCoordinatorTest : public PlatformTest {
   id lens_handler_;
   id fullscreen_handler_;
   id snackbar_handler_;
+  id actor_overlay_handler_;
 };
 
 // Tests that the coordinator creates a view controller when started.

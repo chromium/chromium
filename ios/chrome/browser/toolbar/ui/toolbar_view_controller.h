@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/toolbar/ui/toolbar_consumer.h"
 
 @protocol ActivityServiceCommands;
+@protocol ActorOverlayCommands;
 @protocol BannerPromoViewDelegate;
 @protocol BrowserCoordinatorCommands;
 @class LayoutGuideCenter;
@@ -44,6 +45,9 @@
 
 // Handler for the scene commands.
 @property(nonatomic, weak) id<SceneCommands> sceneHandler;
+
+// Handler for the Actor Overlay commands.
+@property(nonatomic, weak) id<ActorOverlayCommands> actorOverlayHandler;
 
 // Mutator to handle toolbar actions.
 @property(nonatomic, weak) id<ToolbarMutator> mutator;

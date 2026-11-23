@@ -318,6 +318,9 @@
                                animated:NO];
       return;
     }
+    for (id<ToolbarButtonsConsumer> consumer in _activeConsumers.allObjects) {
+      [consumer setActorControlled:NO];
+    }
   }
   [self updateConsumersTabCountAndGroupState:_activeConsumers.allObjects];
 }
@@ -382,6 +385,9 @@
   if (web::WebState* activeWebState = _webStateList->GetActiveWebState()) {
     [self updateConsumers:consumers withWebState:activeWebState animated:NO];
   } else {
+    for (id<ToolbarButtonsConsumer> consumer in consumers) {
+      [consumer setActorControlled:NO];
+    }
     [self updateConsumersTabCountAndGroupState:consumers];
     [self updateConsumersAssistantButton:consumers];
   }
@@ -395,6 +401,8 @@
   if (!webState || consumers.count == 0) {
     return;
   }
+  BOOL actorControlled =
+      !_isIncognito && ActorTabHelper::IsActorControlled(webState);
   BOOL canGoBack = self.navigationBrowserAgent &&
                    self.navigationBrowserAgent->CanGoBack(webState);
   BOOL canGoForward = self.navigationBrowserAgent &&
@@ -418,6 +426,7 @@
   UIMenu* tabGridMenu = [_buttonMenuFactory menuForTabGridButton];
 
   for (id<ToolbarButtonsConsumer> consumer in consumers) {
+    [consumer setActorControlled:actorControlled];
     [consumer setCanGoBack:canGoBack];
     [consumer setCanGoForward:canGoForward animated:animated];
     [consumer setShareEnabled:shareEnabled];

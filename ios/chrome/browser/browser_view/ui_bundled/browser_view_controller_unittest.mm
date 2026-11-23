@@ -64,6 +64,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
+#import "ios/chrome/browser/shared/public/commands/actor_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_panel_entrypoint_iph_commands.h"
@@ -316,6 +317,11 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     id mock_level_up_handler = OCMProtocolMock(@protocol(LevelUpCommands));
     [dispatcher startDispatchingToTarget:mock_level_up_handler
                              forProtocol:@protocol(LevelUpCommands)];
+
+    id mock_actor_overlay_handler =
+        OCMProtocolMock(@protocol(ActorOverlayCommands));
+    [dispatcher startDispatchingToTarget:mock_actor_overlay_handler
+                             forProtocol:@protocol(ActorOverlayCommands)];
 
     // Create three web states.
     for (int i = 0; i < 3; i++) {

@@ -828,6 +828,10 @@ const char kContextPanelDismissedHistogram[] =
   _actorOverlayCoordinator = nil;
 }
 
+- (void)showActorInteractionLimitedSnackbar {
+  [_actorOverlayCoordinator showInteractionLimitedSnackbar];
+}
+
 #pragma mark - AddContactsCommands
 
 - (void)presentAddContactsForPhoneNumber:(NSString*)phoneNumber {

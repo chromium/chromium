@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
@@ -30,6 +31,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/actor_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/app_bar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
@@ -104,6 +106,10 @@
   _viewController.sceneHandler = sceneHandler;
   _viewController.tabGridHandler = tabGridHandler;
   _viewController.geminiHandler = geminiHandler;
+  if (IsActorEnabled()) {
+    _viewController.actorOverlayHandler =
+        HandlerForProtocol(regularDispatcher, ActorOverlayCommands);
+  }
   _viewController.layoutGuideCenter = LayoutGuideCenterForScene(sceneState);
   _viewController.layoutState = sceneState.layoutState;
   ProfileIOS* profile = _regularBrowser->GetProfile();
