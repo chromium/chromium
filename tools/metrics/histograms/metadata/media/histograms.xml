@@ -3570,7 +3570,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Media.AutoPictureInPicture.EnterPictureInPicture.AutomaticReasonV2.{AutomaticReason}.TotalTimeForSession"
-    units="ms" expires_after="2027-01-03">
+    units="ms" expires_after="2028-01-03">
   <owner>bkeen@google.com</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
