@@ -39,8 +39,6 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.ui.base.WindowAndroid;
 
-import java.util.Collections;
-
 /** Tests for {@link ExclusiveAccessContext} and {@link ExclusiveAccessManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ExclusiveAccessContextTest {
@@ -159,7 +157,6 @@ public class ExclusiveAccessContextTest {
                 .thenReturn(nativePtr);
 
         TabModelSelector tabModelSelector = mock(TabModelSelector.class);
-        when(tabModelSelector.getModels()).thenReturn(Collections.emptyList());
 
         ExclusiveAccessManager manager =
                 new ExclusiveAccessManager(

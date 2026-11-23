@@ -26,7 +26,6 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -93,9 +92,7 @@ public class ExclusiveAccessManager
                     @Override
                     public void willCloseTabs(
                             List<Tab> tabs, boolean isAllTabs, boolean allowUndo) {
-                        if (mExclusiveAccessManagerAndroidNativePointer == null) {
-                            return;
-                        }
+                        assert mExclusiveAccessManagerAndroidNativePointer != null;
                         mLatestFullscreenOptions = null;
                         for (Tab tab : tabs) {
                             ExclusiveAccessManagerJni.get()
@@ -124,9 +121,7 @@ public class ExclusiveAccessManager
                 ExclusiveAccessManagerJni.get()
                         .init(this, windowAndroid, mFullscreenManager, activityTabProvider);
 
-        for (TabModel model : modelSelector.getModels()) {
-            model.addObserver(mTabModelObserver);
-        }
+        modelSelector.addObserverToAllModels(mTabModelObserver);
 
         if (mPendingFullscreen) {
             // Fullscreen options are always available if mPendingFullscreen is on.
@@ -479,15 +474,14 @@ public class ExclusiveAccessManager
     /** Cleanup function which should be called when owning object is destroyed. */
     @Override
     public void destroy() {
+        if (mTabModelSelector != null) {
+            mTabModelSelector.removeObserverFromAllModels(mTabModelObserver);
+            mTabModelSelector = null;
+        }
+        if (mDesktopWindowStateManager != null) mDesktopWindowStateManager.removeObserver(this);
         if (mExclusiveAccessManagerAndroidNativePointer != null) {
             mExclusiveAccessManagerAndroidNativePointer.destroy();
             mExclusiveAccessManagerAndroidNativePointer = null;
-        }
-        if (mDesktopWindowStateManager != null) mDesktopWindowStateManager.removeObserver(this);
-        if (mTabModelSelector != null) {
-            for (TabModel model : mTabModelSelector.getModels()) {
-                model.removeObserver(mTabModelObserver);
-            }
         }
     }
 
