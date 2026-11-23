@@ -836,10 +836,10 @@ void ScrollView::UpdateGradientMask() {
         CurrentOffset().x() < horiz_sb_->GetMaxPosition();
   }
 
-  // Nothing to do if the state of leading and trailing gradients hasn't
-  // changed.
-  if (is_leading_gradient_visible_ == should_show_leading &&
-      is_trailing_gradient_visible_ == should_show_trailing) {
+  // Nothing to do if neither gradient was or will be shown. A gradient that
+  // stays shown is still updated, as its steps depend on the current size.
+  if (!is_leading_gradient_visible_ && !is_trailing_gradient_visible_ &&
+      !should_show_leading && !should_show_trailing) {
     return;
   }
 

@@ -3000,6 +3000,48 @@ TEST_F(ScrollViewTest, TestOpacityGradientSmallView) {
   EXPECT_GT(gradient.step_count(), 0u);
 }
 
+// The gradient keeps fading out 16 DIPs when the scroll view is resized and
+// the same edges still overflow.
+TEST_F(ScrollViewTest, TestOpacityGradientUpdatedOnResize) {
+  ScrollViewTestApi test_api(scroll_view_.get());
+
+  // Set up with vertical scrollbar.
+  auto contents = std::make_unique<FixedView>();
+  contents->SetPreferredSize(gfx::Size(kWidth, kMaxHeight * 5));
+  scroll_view_->SetOverflowGradientMask(
+      ScrollView::GradientDirection::kVertical);
+  scroll_view_->SetContents(std::move(contents));
+  scroll_view_->ClipHeightTo(0, kMaxHeight * 2);
+
+  // Make sure the size is set such that no horizontal scrollbar gets shown.
+  const int width = kWidth + test_api.GetScrollBar(VERTICAL)->GetThickness();
+  scroll_view_->SetSize(gfx::Size(width, kMaxHeight));
+
+  // Only the bottom edge overflows.
+  gfx::LinearGradient gradient = scroll_view_->layer()->gradient_mask();
+  EXPECT_EQ(4u, gradient.step_count());
+  EXPECT_EQ(gradient.steps()[0].alpha, 255);
+  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .16);
+  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .84);
+  EXPECT_EQ(gradient.steps()[3].alpha, 0);
+
+  // Grow the scroll view.
+  scroll_view_->SetSize(gfx::Size(width, kMaxHeight * 2));
+  gradient = scroll_view_->layer()->gradient_mask();
+  EXPECT_EQ(4u, gradient.step_count());
+  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .08);
+  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .92);
+  EXPECT_EQ(gradient.steps()[3].alpha, 0);
+
+  // Shrink the scroll view.
+  scroll_view_->SetSize(gfx::Size(width, kMaxHeight / 2));
+  gradient = scroll_view_->layer()->gradient_mask();
+  EXPECT_EQ(4u, gradient.step_count());
+  EXPECT_FLOAT_EQ(gradient.steps()[1].fraction, .32);
+  EXPECT_FLOAT_EQ(gradient.steps()[2].fraction, .68);
+  EXPECT_EQ(gradient.steps()[3].alpha, 0);
+}
+
 // Test scrolling behavior when clicking on the scroll track.
 TEST_F(WidgetScrollViewTest, ScrollTrackScrolling) {
   // Set up with a vertical scroller.
