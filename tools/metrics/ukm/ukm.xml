@@ -15176,7 +15176,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="MobileMenu.DirectShare">
-  <owner>sayman@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>jhimawan@google.com</owner>
   <summary>
     User pressed 'Share' in the app menu. The intent most recently used to share
     was invoked directly. See also MobileMenu.Share.
@@ -15203,7 +15204,8 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="MobileMenu.Share">
-  <owner>sayman@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>jhimawan@google.com</owner>
   <summary>
     User pressed 'Share' in the app menu. A picker was shown. See also
     MobileMenu.DirectShare.
