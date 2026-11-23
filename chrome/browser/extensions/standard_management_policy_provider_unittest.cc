@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/standard_management_policy_provider.h"
 
 #include <memory>
+#include <utility>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -29,6 +30,7 @@
 #include "extensions/browser/blocklist.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/isolated_mode_extension_settings.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
@@ -603,6 +605,32 @@ TEST_P(StandardManagementPolicyProviderIsolatedModeTest,
       internal_extension.get(), nullptr));
   EXPECT_FALSE(provider_.MustRemainIsolatedModeEnabled(
       not_allowed_forced_extension.get(), nullptr));
+}
+
+// Tests that when `IsolatedModeForceInstalledExtensionsSettings` is set to
+// `kEnabledByDefault`, force-installed extensions do not have to remain enabled
+// in Isolated Mode.
+TEST_P(StandardManagementPolicyProviderIsolatedModeTest,
+       MustRemainIsolatedModeEnabled_EnabledByDefault) {
+  auto forced_extension =
+      ExtensionBuilder("forced")
+          .SetLocation(ManifestLocation::kExternalPolicyDownload)
+          .Build();
+
+  {
+    ExtensionManagementPrefUpdater<sync_preferences::TestingPrefServiceSyncable>
+        pref_updater(profile_.GetTestingPrefService());
+    pref_updater.SetIndividualExtensionAutoInstalled(
+        forced_extension->id(), extension_urls::kChromeWebstoreUpdateURL,
+        /*forced=*/true);
+  }
+
+  profile_.GetTestingPrefService()->SetManagedPref(
+      pref_names::kIsolatedModeForceInstalledExtensionsSettings,
+      base::Value(std::to_underlying(
+          IsolatedModeForceInstalledExtensionsSetting::kEnabledByDefault)));
+  EXPECT_FALSE(
+      provider_.MustRemainIsolatedModeEnabled(forced_extension.get(), nullptr));
 }
 
 }  // namespace extensions

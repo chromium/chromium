@@ -17,6 +17,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/isolated_mode_extension_settings.h"
 #include "extensions/browser/managed_installation_mode.h"
 #include "extensions/browser/manifest_v2_handler.h"
 #include "extensions/buildflags/buildflags.h"
@@ -344,10 +345,10 @@ bool StandardManagementPolicyProvider::MustRemainIsolatedModeEnabled(
   if (!enterprise_isolated_mode::IsolatedModeReplacesIncognito(profile_)) {
     return false;
   }
-
-  // TODO(crbug.com/576672136): Return false when the
-  // IsolatedModeForceInstalledExtensionsSettings policy allows users to
-  // disable force-installed extensions in Isolated Mode.
+  if (GetIsolatedModeForceInstalledExtensionsSetting(profile_) !=
+      IsolatedModeForceInstalledExtensionsSetting::kAlwaysEnabled) {
+    return false;
+  }
   return settings_->GetInstallationMode(extension) ==
          ManagedInstallationMode::kForced;
 }

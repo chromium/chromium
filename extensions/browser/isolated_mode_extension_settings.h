@@ -5,6 +5,10 @@
 #ifndef EXTENSIONS_BROWSER_ISOLATED_MODE_EXTENSION_SETTINGS_H_
 #define EXTENSIONS_BROWSER_ISOLATED_MODE_EXTENSION_SETTINGS_H_
 
+namespace content {
+class BrowserContext;
+}  // namespace content
+
 namespace extensions {
 
 // Values for the `pref_names::kIsolatedModeUserInstalledExtensionsSettings`
@@ -29,6 +33,13 @@ enum class IsolatedModeForceInstalledExtensionsSetting {
   kEnabledByDefault = 1,
   kMaxValue = kEnabledByDefault,
 };
+
+// Returns the policy setting controlling force-installed extension behavior in
+// Enterprise Isolated Mode. Returns `kAlwaysEnabled` if the preference is unset
+// or not managed by policy.
+IsolatedModeForceInstalledExtensionsSetting
+GetIsolatedModeForceInstalledExtensionsSetting(
+    content::BrowserContext* context);
 
 }  // namespace extensions
 

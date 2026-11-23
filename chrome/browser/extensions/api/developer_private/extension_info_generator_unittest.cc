@@ -55,6 +55,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/isolated_mode_extension_settings.h"
 #include "extensions/browser/permissions/permissions_test_util.h"
 #include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/permissions/scripting_permissions_modifier.h"
@@ -1867,6 +1868,43 @@ TEST_P(ExtensionInfoGeneratorIsolatedModeUnitTest,
   ASSERT_TRUE(info);
   EXPECT_TRUE(info->incognito_access.is_active);
   EXPECT_FALSE(info->isolated_mode_access_controlled_by_policy);
+}
+
+// Tests that when `IsolatedModeForceInstalledExtensionsSettings` is set to
+// `kEnabledByDefault`, force-installed extensions are active by default in
+// Enterprise Isolated Mode, can be disabled by the user, and do not report
+// `isolated_mode_access_controlled_by_policy`.
+TEST_P(ExtensionInfoGeneratorIsolatedModeUnitTest,
+       IsolatedModeForceInstalledExtensionsSettingsEnabledByDefault) {
+  testing_pref_service()->SetManagedPref(
+      pref_names::kIsolatedModeForceInstalledExtensionsSettings,
+      base::Value(std::to_underlying(
+          IsolatedModeForceInstalledExtensionsSetting::kEnabledByDefault)));
+
+  const scoped_refptr<const Extension> forced_extension =
+      ExtensionBuilder("forced")
+          .SetLocation(ManifestLocation::kExternalPolicyDownload)
+          .AddFlags(Extension::FROM_WEBSTORE)
+          .Build();
+  registrar()->AddExtension(forced_extension.get());
+  SetExtensionForceInstalled(forced_extension->id());
+
+  // With `kEnabledByDefault`, force-installed extensions are active by default
+  // in Isolated Mode, but not locked by policy.
+  std::unique_ptr<developer::ExtensionInfo> forced_info =
+      GenerateExtensionInfo(forced_extension->id());
+  ASSERT_TRUE(forced_info);
+  EXPECT_EQ(forced_info->incognito_access.is_active, IsIsolatedMode());
+  EXPECT_FALSE(forced_info->isolated_mode_access_controlled_by_policy);
+
+  // When the user disables Isolated Mode access for the force-installed
+  // extension, `incognito_access.is_active` reflects `false`.
+  ExtensionPrefs::Get(profile())->SetIsIsolatedModeEnabled(
+      forced_extension->id(), false);
+  forced_info = GenerateExtensionInfo(forced_extension->id());
+  ASSERT_TRUE(forced_info);
+  EXPECT_FALSE(forced_info->incognito_access.is_active);
+  EXPECT_FALSE(forced_info->isolated_mode_access_controlled_by_policy);
 }
 
 }  // namespace extensions

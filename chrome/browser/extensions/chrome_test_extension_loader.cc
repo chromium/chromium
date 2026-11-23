@@ -411,7 +411,7 @@ void ChromeTestExtensionLoader::CheckPermissions(const Extension& extension) {
       *allow_incognito_access_ !=
           util::IsIncognitoEnabled(id, browser_context_)) {
     TestExtensionRegistryObserver registry_observer(extension_registry_, id);
-    util::SetIsIncognitoEnabled(id, browser_context_, true);
+    util::SetIsIncognitoEnabled(id, browser_context_, *allow_incognito_access_);
     registry_observer.WaitForExtensionLoaded();
   }
 }
@@ -426,7 +426,7 @@ bool ChromeTestExtensionLoader::VerifyPermissions(const Extension* extension) {
     const bool incognito_enabled =
         ExtensionsBrowserClient::Get()->IsolatedModeReplacesIncognito(
             browser_context_)
-            ? prefs->IsIsolatedModeEnabled(extension->id())
+            ? util::IsIsolatedModePrefEnabled(extension->id(), browser_context_)
             : prefs->IsIncognitoEnabled(extension->id());
     if (incognito_enabled != *allow_incognito_access_) {
       return false;

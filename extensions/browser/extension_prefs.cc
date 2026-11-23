@@ -1439,9 +1439,13 @@ void ExtensionPrefs::SetIsIncognitoEnabled(const ExtensionId& extension_id,
   }
 }
 
-bool ExtensionPrefs::IsIsolatedModeEnabled(
+std::optional<bool> ExtensionPrefs::GetIsolatedModeEnabledPref(
     const ExtensionId& extension_id) const {
-  return ReadPrefAsBooleanAndReturn(extension_id, kPrefIsolatedModeEnabled);
+  bool enabled = false;
+  if (ReadPrefAsBoolean(extension_id, kPrefIsolatedModeEnabled, &enabled)) {
+    return enabled;
+  }
+  return std::nullopt;
 }
 
 void ExtensionPrefs::SetIsIsolatedModeEnabled(const ExtensionId& extension_id,
@@ -2511,9 +2515,13 @@ void ExtensionPrefs::InitExtensionControlledPrefs(
     bool is_enabled =
         !IsExtensionDisabled(extension_id) &&
         !blocklist_prefs::IsExtensionBlocklisted(extension_id, this);
-    bool is_incognito_enabled = IsolatedModeReplacesIncognito()
-                                    ? IsIsolatedModeEnabled(extension_id)
-                                    : IsIncognitoEnabled(extension_id);
+    // Only the stored pref is available here.
+    // `ExtensionPrefValueMap::OnExtensionLoaded()` overwrites this with
+    // `util::IsIncognitoEnabled()`.
+    bool is_incognito_enabled =
+        IsolatedModeReplacesIncognito()
+            ? GetIsolatedModeEnabledPref(extension_id).value_or(false)
+            : IsIncognitoEnabled(extension_id);
     extension_pref_value_map_->RegisterExtension(
         extension_id, install_time, is_enabled, is_incognito_enabled);
 
@@ -2619,9 +2627,13 @@ void ExtensionPrefs::FinishExtensionInfoPrefs(
     is_enabled = is_enabled && disable_reasons->empty();
   }
 
-  bool is_incognito_enabled = IsolatedModeReplacesIncognito()
-                                  ? IsIsolatedModeEnabled(extension_id)
-                                  : IsIncognitoEnabled(extension_id);
+  // Only the stored pref is available here.
+  // `ExtensionPrefValueMap::OnExtensionLoaded()` overwrites this with
+  // `util::IsIncognitoEnabled()`.
+  bool is_incognito_enabled =
+      IsolatedModeReplacesIncognito()
+          ? GetIsolatedModeEnabledPref(extension_id).value_or(false)
+          : IsIncognitoEnabled(extension_id);
 
   extension_pref_value_map_->RegisterExtension(
       extension_id, install_time, is_enabled, is_incognito_enabled);

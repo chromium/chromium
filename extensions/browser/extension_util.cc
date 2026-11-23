@@ -5,6 +5,7 @@
 #include "extensions/browser/extension_util.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
@@ -23,10 +24,12 @@
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_management_client.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extensions_browser_client.h"
+#include "extensions/browser/managed_installation_mode.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
@@ -82,6 +85,27 @@ bool ExtensionIsFromWebstore(const Extension& extension) {
          extension.location() == mojom::ManifestLocation::kInternal;
 }
 
+// Returns the fallback enabled state for `extension_id` in Enterprise Isolated
+// Mode when no user preference is stored in `ExtensionPrefs`.
+bool IsEnabledInIsolatedModeByDefault(const ExtensionId& extension_id,
+                                      content::BrowserContext* context) {
+  // No need to check `IsolatedModeForceInstalledExtensionsSettings` here:
+  // `kAlwaysEnabled` is already handled by `MustRemainIsolatedModeEnabled()`,
+  // and `kEnabledByDefault` enables force-installed extensions by default.
+  ExtensionManagementClient* management_client =
+      ExtensionsBrowserClient::Get()->GetExtensionManagementClient(context);
+  if (management_client &&
+      management_client->GetInstallationMode(extension_id,
+                                             /*update_url=*/std::string()) ==
+          ManagedInstallationMode::kForced) {
+    return true;
+  }
+  // TODO(crbug.com/572802941): Respect the
+  // IsolatedModeUserInstalledExtensionsSettings policy for non-force-installed
+  // extensions.
+  return false;
+}
+
 // Handles logic that only requires the ExtensionId and the BrowserContext.
 // This is safe to call even when the extension is completely unloaded.
 bool IsIncognitoEnabledForIdAndContext(const ExtensionId& extension_id,
@@ -104,11 +128,10 @@ bool IsIncognitoEnabledForIdAndContext(const ExtensionId& extension_id,
 #endif
 
   // The ultimate fallback database check.
-  ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(context);
   if (isolated_mode) {
-    return extension_prefs->IsIsolatedModeEnabled(extension_id);
+    return IsIsolatedModePrefEnabled(extension_id, context);
   }
-  return extension_prefs->IsIncognitoEnabled(extension_id);
+  return ExtensionPrefs::Get(context)->IsIncognitoEnabled(extension_id);
 }
 
 bool IsIncognitoEnabledImpl(const Extension* extension,
@@ -194,6 +217,17 @@ bool MustRemainIsolatedModeEnabled(const Extension* extension,
 
   return extension_system->management_policy()->MustRemainIsolatedModeEnabled(
       extension);
+}
+
+bool IsIsolatedModePrefEnabled(const ExtensionId& extension_id,
+                               content::BrowserContext* context) {
+  if (std::optional<bool> enabled =
+          ExtensionPrefs::Get(context)->GetIsolatedModeEnabledPref(
+              extension_id);
+      enabled.has_value()) {
+    return *enabled;
+  }
+  return IsEnabledInIsolatedModeByDefault(extension_id, context);
 }
 
 bool CanCrossIncognito(const Extension* extension,

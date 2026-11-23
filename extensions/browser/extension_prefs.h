@@ -653,13 +653,15 @@ class ExtensionPrefs : public KeyedService {
   bool IsIncognitoEnabled(const ExtensionId& extension_id) const;
   void SetIsIncognitoEnabled(const ExtensionId& extension_id, bool enabled);
 
-  // Returns true if the user enabled this extension to be loaded in Enterprise
-  // Isolated Mode. This always reads the isolated_mode pref, regardless of
-  // whether Enterprise Isolated Mode replaces Incognito.
+  // Returns whether the user enabled this extension to be loaded in Enterprise
+  // Isolated Mode, or `std::nullopt` if the preference is unset. This always
+  // reads the isolated_mode pref, regardless of whether Enterprise Isolated
+  // Mode replaces Incognito.
   //
   // IMPORTANT: you probably want to use extensions::util::IsIncognitoEnabled
   // instead of this method.
-  bool IsIsolatedModeEnabled(const ExtensionId& extension_id) const;
+  std::optional<bool> GetIsolatedModeEnabledPref(
+      const ExtensionId& extension_id) const;
   void SetIsIsolatedModeEnabled(const ExtensionId& extension_id, bool enabled);
 #if BUILDFLAG(IS_CHROMEOS)
   void SetIsIncognitoEnabledDelayed(const ExtensionId& extension_id,

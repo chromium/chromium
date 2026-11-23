@@ -67,6 +67,14 @@ bool IsIncognitoEnabledForSync(const ExtensionId& extension_id,
 bool MustRemainIsolatedModeEnabled(const Extension* extension,
                                    content::BrowserContext* context);
 
+// Returns the stored Enterprise Isolated Mode enabled preference for
+// `extension_id`, or the default enabled state if the preference is unset.
+//
+// IMPORTANT: you probably want to use `IsIncognitoEnabled` instead of this
+// method, as this only checks the preference and its default value.
+bool IsIsolatedModePrefEnabled(const ExtensionId& extension_id,
+                               content::BrowserContext* context);
+
 // Returns true if `extension` can see events and data from another sub-profile
 // (incognito to original profile, or vice versa).
 bool CanCrossIncognito(const Extension* extension,

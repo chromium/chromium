@@ -202,7 +202,7 @@ void SetIsIncognitoEnabledImpl(const ExtensionId& extension_id,
   // if the value changed and the extension is actually enabled, since there is
   // no UI otherwise.
   const bool old_enabled =
-      isolated_mode ? extension_prefs->IsIsolatedModeEnabled(extension_id)
+      isolated_mode ? IsIsolatedModePrefEnabled(extension_id, context)
                     : extension_prefs->IsIncognitoEnabled(extension_id);
   if (enabled == old_enabled) {
     return;

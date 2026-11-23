@@ -4,6 +4,9 @@
 
 #include "chrome/browser/extensions/extension_util.h"
 
+#include <optional>
+#include <utility>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
@@ -12,6 +15,7 @@
 #include "base/test/gtest_util.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/external_provider_impl.h"
@@ -33,6 +37,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/isolated_mode_extension_settings.h"
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -456,7 +461,7 @@ class ExtensionUtilIsolatedModeUnittest : public ExtensionServiceTestBase {
  public:
   void SetUp() override {
     ExtensionServiceTestBase::SetUp();
-    InitializeEmptyExtensionService();
+    InitializeExtensionService(ExtensionServiceInitParams());
     RegisterPolicyProviders();
 
     constexpr char kManifest[] =
@@ -500,8 +505,9 @@ TEST_F(ExtensionUtilIsolatedModeUnittest, SetIsIncognitoEnabledForSync) {
   EXPECT_FALSE(util::IsIncognitoEnabled(extension_id(), profile()));
   EXPECT_TRUE(
       ExtensionPrefs::Get(profile())->IsIncognitoEnabled(extension_id()));
-  EXPECT_FALSE(
-      ExtensionPrefs::Get(profile())->IsIsolatedModeEnabled(extension_id()));
+  EXPECT_EQ(ExtensionPrefs::Get(profile())->GetIsolatedModeEnabledPref(
+                extension_id()),
+            std::nullopt);
   // Pointer identity confirms the extension was not reloaded.
   EXPECT_EQ(extension(),
             registry()->enabled_extensions().GetByID(extension_id()));
@@ -519,13 +525,77 @@ TEST_F(ExtensionUtilIsolatedModeUnittest, SetIsIncognitoEnabled) {
   // Only the isolated mode pref should be updated.
   EXPECT_TRUE(util::IsIncognitoEnabled(extension_id(), profile()));
   EXPECT_FALSE(util::IsIncognitoEnabledForSync(extension_id(), profile()));
-  EXPECT_TRUE(
-      ExtensionPrefs::Get(profile())->IsIsolatedModeEnabled(extension_id()));
+  EXPECT_EQ(ExtensionPrefs::Get(profile())->GetIsolatedModeEnabledPref(
+                extension_id()),
+            true);
   EXPECT_FALSE(
       ExtensionPrefs::Get(profile())->IsIncognitoEnabled(extension_id()));
   // Pointers should differ as the extension was reloaded.
   EXPECT_NE(extension(),
             registry()->enabled_extensions().GetByID(extension_id()));
+}
+
+// Verifies that `util::IsIsolatedModePrefEnabled()` falls back to the default
+// (true for force-installed extensions, false otherwise) when the preference is
+// unset, and returns the stored preference once set.
+TEST_F(ExtensionUtilIsolatedModeUnittest, IsIsolatedModePrefEnabled) {
+  // User-installed extensions are not enabled by default.
+  EXPECT_FALSE(util::IsIsolatedModePrefEnabled(extension_id(), profile()));
+
+  // Policy-recommended extensions are not enabled by default.
+  {
+    ExtensionManagementPrefUpdater<sync_preferences::TestingPrefServiceSyncable>
+        pref_updater(testing_pref_service());
+    pref_updater.SetIndividualExtensionAutoInstalled(
+        extension_id(), extension_urls::kChromeWebstoreUpdateURL,
+        /*forced=*/false);
+  }
+  EXPECT_FALSE(util::IsIsolatedModePrefEnabled(extension_id(), profile()));
+
+  // Force-installed extensions are enabled by default.
+  {
+    ExtensionManagementPrefUpdater<sync_preferences::TestingPrefServiceSyncable>
+        pref_updater(testing_pref_service());
+    pref_updater.SetIndividualExtensionAutoInstalled(
+        extension_id(), extension_urls::kChromeWebstoreUpdateURL,
+        /*forced=*/true);
+  }
+  EXPECT_TRUE(util::IsIsolatedModePrefEnabled(extension_id(), profile()));
+
+  // Stored preferences take precedence over the default.
+  ExtensionPrefs::Get(profile())->SetIsIsolatedModeEnabled(extension_id(),
+                                                           false);
+  EXPECT_FALSE(util::IsIsolatedModePrefEnabled(extension_id(), profile()));
+
+  ExtensionPrefs::Get(profile())->SetIsIsolatedModeEnabled(extension_id(),
+                                                           true);
+  EXPECT_TRUE(util::IsIsolatedModePrefEnabled(extension_id(), profile()));
+}
+
+// Verifies that when `IsolatedModeForceInstalledExtensionsSettings` is
+// `kEnabledByDefault`, a force-installed extension is enabled in Isolated Mode
+// by default when the per-extension preference is unset and can be disabled by
+// the user, while `IsIncognitoEnabledForSync` remains unaffected.
+TEST_F(ExtensionUtilIsolatedModeUnittest,
+       IsolatedModeForceInstalledExtensionsSettings_EnabledByDefault) {
+  {
+    ExtensionManagementPrefUpdater<sync_preferences::TestingPrefServiceSyncable>
+        pref_updater(testing_pref_service());
+    pref_updater.SetIndividualExtensionAutoInstalled(
+        extension_id(), extension_urls::kChromeWebstoreUpdateURL,
+        /*forced=*/true);
+  }
+
+  testing_pref_service()->SetManagedPref(
+      pref_names::kIsolatedModeForceInstalledExtensionsSettings,
+      base::Value(std::to_underlying(
+          IsolatedModeForceInstalledExtensionsSetting::kEnabledByDefault)));
+  EXPECT_TRUE(util::IsIncognitoEnabled(extension_id(), profile()));
+  EXPECT_FALSE(util::IsIncognitoEnabledForSync(extension_id(), profile()));
+
+  util::SetIsIncognitoEnabled(extension_id(), profile(), false);
+  EXPECT_FALSE(util::IsIncognitoEnabled(extension_id(), profile()));
+  EXPECT_FALSE(util::IsIncognitoEnabledForSync(extension_id(), profile()));
 }
 
 class ExtensionUtilMustRemainIsolatedModeEnabledUnittest
@@ -551,10 +621,11 @@ class ExtensionUtilMustRemainIsolatedModeEnabledUnittest
 // Verifies that when Enterprise Isolated Mode is enabled and the extension must
 // remain enabled in Isolated Mode, IsIncognitoEnabled returns true and
 // ExtensionPrefValueMap is updated even when the stored isolated_mode pref is
-// false, while IsIncognitoEnabledForSync still reflects the incognito pref.
+// unset, while IsIncognitoEnabledForSync still reflects the incognito pref.
 TEST_F(ExtensionUtilMustRemainIsolatedModeEnabledUnittest, IsIncognitoEnabled) {
-  ASSERT_FALSE(
-      ExtensionPrefs::Get(profile())->IsIsolatedModeEnabled(extension_id()));
+  ASSERT_EQ(ExtensionPrefs::Get(profile())->GetIsolatedModeEnabledPref(
+                extension_id()),
+            std::nullopt);
 
   // Query whether the extension is enabled in Isolated Mode.
   bool is_enabled = util::IsIncognitoEnabled(extension_id(), profile());
@@ -575,15 +646,15 @@ TEST_F(ExtensionUtilMustRemainIsolatedModeEnabledUnittest, IsIncognitoEnabled) {
 TEST_F(ExtensionUtilMustRemainIsolatedModeEnabledUnittest,
        SetIsIncognitoEnabled) {
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
-  ASSERT_FALSE(prefs->IsIsolatedModeEnabled(extension_id()));
+  ASSERT_EQ(prefs->GetIsolatedModeEnabledPref(extension_id()), std::nullopt);
 
   // Attempt to enable the extension in Isolated Mode when the stored pref is
-  // false.
+  // unset.
   util::SetIsIncognitoEnabled(extension_id(), profile(), true);
 
-  // The stored isolated_mode pref should remain false and the extension should
+  // The stored isolated_mode pref should remain unset and the extension should
   // not be reloaded.
-  EXPECT_FALSE(prefs->IsIsolatedModeEnabled(extension_id()));
+  EXPECT_EQ(prefs->GetIsolatedModeEnabledPref(extension_id()), std::nullopt);
   EXPECT_EQ(extension(),
             registry()->enabled_extensions().GetByID(extension_id()));
 
@@ -596,7 +667,7 @@ TEST_F(ExtensionUtilMustRemainIsolatedModeEnabledUnittest,
   // isolated_mode pref should remain true, and the extension should not be
   // reloaded.
   EXPECT_TRUE(util::IsIncognitoEnabled(extension_id(), profile()));
-  EXPECT_TRUE(prefs->IsIsolatedModeEnabled(extension_id()));
+  EXPECT_EQ(prefs->GetIsolatedModeEnabledPref(extension_id()), true);
   EXPECT_EQ(extension(),
             registry()->enabled_extensions().GetByID(extension_id()));
 }
@@ -618,7 +689,7 @@ TEST_F(ExtensionUtilMustRemainIsolatedModeEnabledUnittest,
   EXPECT_TRUE(util::IsIncognitoEnabled(extension_id(), profile()));
   EXPECT_TRUE(util::IsIncognitoEnabledForSync(extension_id(), profile()));
   EXPECT_TRUE(prefs->IsIncognitoEnabled(extension_id()));
-  EXPECT_FALSE(prefs->IsIsolatedModeEnabled(extension_id()));
+  EXPECT_EQ(prefs->GetIsolatedModeEnabledPref(extension_id()), std::nullopt);
 
   // Simulate disabling the incognito pref via sync.
   util::SetIsIncognitoEnabledForSync(extension_id(), profile(), false);
@@ -628,7 +699,7 @@ TEST_F(ExtensionUtilMustRemainIsolatedModeEnabledUnittest,
   EXPECT_TRUE(util::IsIncognitoEnabled(extension_id(), profile()));
   EXPECT_FALSE(util::IsIncognitoEnabledForSync(extension_id(), profile()));
   EXPECT_FALSE(prefs->IsIncognitoEnabled(extension_id()));
-  EXPECT_FALSE(prefs->IsIsolatedModeEnabled(extension_id()));
+  EXPECT_EQ(prefs->GetIsolatedModeEnabledPref(extension_id()), std::nullopt);
 }
 
 }  // namespace extensions

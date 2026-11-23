@@ -1759,13 +1759,15 @@ TEST_F(ExtensionPrefsSimpleTest, IncognitoSettingStoredInIncognitoPref) {
   std::string extension_id = prefs.AddExtension("Test Extension")->id();
 
   EXPECT_FALSE(prefs.prefs()->IsIncognitoEnabled(extension_id));
-  EXPECT_FALSE(prefs.prefs()->IsIsolatedModeEnabled(extension_id));
+  EXPECT_EQ(prefs.prefs()->GetIsolatedModeEnabledPref(extension_id),
+            std::nullopt);
   EXPECT_FALSE(prefs.extension_pref_value_map()->CanExtensionControlPref(
       extension_id, "a_pref", /*incognito=*/true));
 
   prefs.prefs()->SetIsIncognitoEnabled(extension_id, true);
   EXPECT_TRUE(prefs.prefs()->IsIncognitoEnabled(extension_id));
-  EXPECT_FALSE(prefs.prefs()->IsIsolatedModeEnabled(extension_id));
+  EXPECT_EQ(prefs.prefs()->GetIsolatedModeEnabledPref(extension_id),
+            std::nullopt);
   EXPECT_TRUE(prefs.extension_pref_value_map()->CanExtensionControlPref(
       extension_id, "a_pref", /*incognito=*/true));
 
@@ -1779,12 +1781,12 @@ TEST_F(ExtensionPrefsSimpleTest, IncognitoSettingStoredInIncognitoPref) {
   prefs.prefs()->SetIsIncognitoEnabled(extension_id, false);
   prefs.prefs()->SetIsIsolatedModeEnabled(extension_id, true);
   EXPECT_FALSE(prefs.prefs()->IsIncognitoEnabled(extension_id));
-  EXPECT_TRUE(prefs.prefs()->IsIsolatedModeEnabled(extension_id));
+  EXPECT_EQ(prefs.prefs()->GetIsolatedModeEnabledPref(extension_id), true);
   EXPECT_FALSE(prefs.extension_pref_value_map()->CanExtensionControlPref(
       extension_id, "a_pref", /*incognito=*/true));
 }
 
-// Tests that IsIsolatedModeEnabled/SetIsIsolatedModeEnabled read and write
+// Tests that GetIsolatedModeEnabledPref/SetIsIsolatedModeEnabled read and write
 // the "isolated_mode" pref, and that ExtensionPrefValueMap uses the Isolated
 // Mode setting when Enterprise Isolated Mode replaces Incognito.
 TEST_F(ExtensionPrefsSimpleTest, IsolatedModeSettingStoredInIsolatedModePref) {
@@ -1801,12 +1803,13 @@ TEST_F(ExtensionPrefsSimpleTest, IsolatedModeSettingStoredInIsolatedModePref) {
   std::string extension_id = prefs.AddExtension("Test Extension")->id();
 
   EXPECT_FALSE(prefs.prefs()->IsIncognitoEnabled(extension_id));
-  EXPECT_FALSE(prefs.prefs()->IsIsolatedModeEnabled(extension_id));
+  EXPECT_EQ(prefs.prefs()->GetIsolatedModeEnabledPref(extension_id),
+            std::nullopt);
   EXPECT_FALSE(prefs.extension_pref_value_map()->CanExtensionControlPref(
       extension_id, "a_pref", /*incognito=*/true));
 
   prefs.prefs()->SetIsIsolatedModeEnabled(extension_id, true);
-  EXPECT_TRUE(prefs.prefs()->IsIsolatedModeEnabled(extension_id));
+  EXPECT_EQ(prefs.prefs()->GetIsolatedModeEnabledPref(extension_id), true);
   EXPECT_FALSE(prefs.prefs()->IsIncognitoEnabled(extension_id));
   EXPECT_TRUE(prefs.extension_pref_value_map()->CanExtensionControlPref(
       extension_id, "a_pref", /*incognito=*/true));
@@ -1820,10 +1823,28 @@ TEST_F(ExtensionPrefsSimpleTest, IsolatedModeSettingStoredInIsolatedModePref) {
   // Isolated Mode is active.
   prefs.prefs()->SetIsIsolatedModeEnabled(extension_id, false);
   prefs.prefs()->SetIsIncognitoEnabled(extension_id, true);
-  EXPECT_FALSE(prefs.prefs()->IsIsolatedModeEnabled(extension_id));
+  EXPECT_EQ(prefs.prefs()->GetIsolatedModeEnabledPref(extension_id), false);
   EXPECT_TRUE(prefs.prefs()->IsIncognitoEnabled(extension_id));
   EXPECT_FALSE(prefs.extension_pref_value_map()->CanExtensionControlPref(
       extension_id, "a_pref", /*incognito=*/true));
+}
+
+// Tests that `GetIsolatedModeEnabledPref` returns `std::nullopt` when the
+// "isolated_mode" pref is unset, and returns the stored value once set.
+TEST_F(ExtensionPrefsSimpleTest, GetIsolatedModeEnabledPref) {
+  content::BrowserTaskEnvironment task_environment;
+  TestExtensionPrefs prefs(base::SingleThreadTaskRunner::GetCurrentDefault(),
+                           std::make_unique<TestingProfile>());
+  std::string extension_id = prefs.AddExtension("Test Extension")->id();
+
+  EXPECT_EQ(prefs.prefs()->GetIsolatedModeEnabledPref(extension_id),
+            std::nullopt);
+
+  prefs.prefs()->SetIsIsolatedModeEnabled(extension_id, true);
+  EXPECT_EQ(prefs.prefs()->GetIsolatedModeEnabledPref(extension_id), true);
+
+  prefs.prefs()->SetIsIsolatedModeEnabled(extension_id, false);
+  EXPECT_EQ(prefs.prefs()->GetIsolatedModeEnabledPref(extension_id), false);
 }
 
 }  // namespace extensions
