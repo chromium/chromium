@@ -705,11 +705,11 @@ TEST_P(SchedulerTest, SendEarlyFinalBeginMainFrame_DuringIdle) {
   EXPECT_ACTIONS("WillBeginImplFrame", "RemoveObserver(this)");
   client_->Reset();
 
-  // Send immediate last frame synthetically.
+  // Request an immediate begin main frame
   scheduler_->SendEarlyFinalBeginMainFrame();
 
-  EXPECT_TRUE(client_->IsInsideBeginImplFrame());
-  EXPECT_ACTIONS("WillBeginImplFrame", "ScheduledActionSendBeginMainFrame");
+  EXPECT_FALSE(client_->IsInsideBeginImplFrame());
+  EXPECT_NO_ACTION();
 }
 
 TEST_P(SchedulerTest, SendEarlyFinalBeginMainFrame_HalfInterval) {

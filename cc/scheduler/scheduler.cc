@@ -197,6 +197,14 @@ void Scheduler::SetNeedsOneBeginImplFrame() {
 // in the last renderer frame of a cross-document view transition.
 void Scheduler::SendEarlyFinalBeginMainFrame() {
   TRACE_EVENT0("cc", "Scheduler::SendEarlyFinalBeginMainFrame");
+
+  // If we are no longer observing a begin_frame_source that means that
+  // we either destroyed the LayerTreeFrameSink or ran the scheduler
+  // destructor already. No BeginMainFrame should be sent.
+  if (!observing_begin_frame_source_) {
+    return;
+  }
+
   // Start from the latest BeginFrameArgs that the scheduler knows about. The
   // new frame time must not be earlier than the frame time of a BeginFrame
   // that the scheduler already used, even if that BeginFrame never started an
