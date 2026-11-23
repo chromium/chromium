@@ -263,6 +263,36 @@ message ContextUpdate {
 
   // Optional on-demand or proactive page DOM tree representation.
   AnnotatedPageContent annotated_page_content = 2;
+
+  // Broad category explaining why the browser withheld page context for the
+  // active tab. Recorded for diagnostics only and never included in model
+  // prompts.
+  enum PageRestrictionReason {
+    // Default value used when normal page context (tab metadata and
+    // AnnotatedPageContent) may be shared, or when sent by older clients.
+    PAGE_RESTRICTION_REASON_UNSPECIFIED = 0;
+
+    // Page context is withheld for an uncategorized reason.
+    PAGE_RESTRICTION_REASON_OTHER = 1;
+
+    // Active tab uses a non-web protocol or privileged internal browser page
+    // (such as internal browser schemes, local files, or extension pages).
+    PAGE_RESTRICTION_REASON_UNSUPPORTED_SCHEME = 2;
+
+    // Active tab URL is blocked by an enterprise administrator policy.
+    PAGE_RESTRICTION_REASON_ENTERPRISE_POLICY = 3;
+
+    // Active tab URL is blocked by client safety or page-eligibility checks.
+    PAGE_RESTRICTION_REASON_SAFETY_POLICY = 4;
+
+    // Active tab content cannot be read because the main frame is unavailable
+    // (such as when the renderer process has crashed).
+    PAGE_RESTRICTION_REASON_RENDERER_UNAVAILABLE = 5;
+  }
+
+  // Reason why page context was withheld for the active tab. Populated by the
+  // browser process, never from page content.
+  PageRestrictionReason restriction_reason = 3;
 }
 
 // Context for active browser tab navigation.
