@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(
       WasParsedScriptElementLoaded(web_contents->GetPrimaryMainFrame()));
 
-  EXPECT_EQ(messages_test_helper.GetMessageCount(
+  ASSERT_EQ(messages_test_helper.GetMessageCount(
                 web_contents->GetTopLevelNativeWindow()),
             1);
   EXPECT_EQ(messages_test_helper.GetMessageIdentifier(
@@ -116,10 +116,9 @@ IN_PROC_BROWSER_TEST_F(
       1);
 }
 
-// TODO(crbug.com/449908513): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(
     AdDensityViolationBrowserTestMessagesUi,
-    DISABLED_MobilePageAdDensityByHeightBelow30_AdInterventionNotTriggered_MessagesUi) {
+    MobilePageAdDensityByHeightBelow30_AdInterventionNotTriggered_MessagesUi) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
@@ -196,10 +195,9 @@ class AdDensityViolationBrowserTestWithoutEnforcement
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/494121676): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(
     AdDensityViolationBrowserTestWithoutEnforcement,
-    DISABLED_MobilePageAdDensityByHeightAbove30_NoAdInterventionTriggered) {
+    MobilePageAdDensityByHeightAbove30_NoAdInterventionTriggered) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 

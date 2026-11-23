@@ -54,11 +54,29 @@ void AddTextAndWaitForFirstContentfulPaint(content::WebContents* web_contents,
   waiter->AddPageExpectation(
       PageLoadMetricsTestWaiter::TimingField::kFirstContentfulPaint);
 
+  // Append text to trigger First Contentful Paint, then keep producing frame
+  // damage via requestAnimationFrame until the 'first-contentful-paint'
+  // PerformanceEntry is populated. PaintTiming only emits FCP after Viz
+  // presentation feedback arrives; on virtualized CI emulators (e.g. Android
+  // x64), if no subsequent frame damage occurs, the GPU surface may never swap
+  // and FCP presentation feedback can stall until timeout.
   ASSERT_TRUE(ExecJs(web_contents, R"(
-          const p = document.createElement('p');
-          p.textContent = 'Trigger First Contentful Paint';
-          p.style.position = 'fixed';
-          document.body.appendChild(p);
+          new Promise((resolve) => {
+            const p = document.createElement('p');
+            p.textContent = 'Trigger First Contentful Paint';
+            p.style.position = 'fixed';
+            document.body.appendChild(p);
+            (function waitForFcp() {
+              if (performance.getEntriesByName('first-contentful-paint')
+                      .length > 0) {
+                p.style.opacity = '1';
+                resolve();
+                return;
+              }
+              p.style.opacity = (p.style.opacity === '0.99') ? '1' : '0.99';
+              requestAnimationFrame(waitForFcp);
+            })();
+          });
         )"));
 
   waiter->Wait();
