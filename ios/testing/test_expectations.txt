@@ -769,3 +769,6 @@ crbug.com/588447001 [ iOS26 iOS27 iPad Simulator ] SharedTabGroupsTestCase/testC
 
 # CQ flakiness quarantine 2026-11-22
 crbug.com/587893044 [ Simulator ] ContextMenuTestCase/testSaveInvalidImageShowsErrorAlert [ Pass Failure ]
+
+# Gardening suppression 2026-11-23
+crbug.com/589704479 [ Simulator ] OtpInputDialogEgtest [ Pass Failure ]
