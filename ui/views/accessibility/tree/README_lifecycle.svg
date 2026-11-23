@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2026 The Chromium Authors
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="220"
+     viewBox="0 0 680 220" role="img" aria-labelledby="title description">
+  <title id="title">ViewsAX full-tree processing</title>
+  <desc id="description">
+    Full-tree processing starts disabled. Enable builds the current tree when
+    native accessibility is requested, the root is included, and the Widget is
+    ready. Disable releases full-tree resources when native accessibility is no
+    longer requested or the root is excluded. Excluded Widgets do not expose
+    discovery roots. Enable and Disable are operations, not additional states.
+  </desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#526779"/>
+    </marker>
+  </defs>
+  <rect width="680" height="220" fill="#ffffff"/>
+  <g font-family="Arial, sans-serif" fill="#203547">
+    <g text-anchor="middle" font-size="15">
+      <text x="340" y="20">
+        Start disabled; enable only when native APIs are requested,
+      </text>
+      <text x="340" y="40">
+        the root is included, and the Widget is ready.
+      </text>
+    </g>
+    <g fill="#edf4fb" stroke="#7793ac" stroke-width="1.5">
+      <rect x="25" y="70" width="190" height="70" rx="8"/>
+      <rect x="465" y="70" width="190" height="70" rx="8"/>
+    </g>
+    <g text-anchor="middle" font-size="16">
+      <text x="120" y="98">Disabled</text>
+      <text x="560" y="98">Enabled</text>
+    </g>
+    <g text-anchor="middle" font-size="13" fill="#526779">
+      <text x="120" y="122">Discovery only if included</text>
+      <text x="560" y="122">Process updates and events</text>
+      <text x="340" y="73">Enable(): build current tree</text>
+      <text x="340" y="165">Disable(): disconnect and release</text>
+    </g>
+    <g fill="none" stroke="#526779" stroke-width="2" marker-end="url(#arrow)">
+      <path d="M 215 88 H 463"/>
+      <path d="M 465 125 H 217"/>
+    </g>
+    <g text-anchor="middle" font-size="13" fill="#526779">
+      <text x="340" y="185">
+        Disable when native APIs are no longer requested or the root is excluded.
+      </text>
+      <text x="340" y="207">
+        Enable() and Disable() are operations, not additional processing states.
+      </text>
+    </g>
+  </g>
+</svg>

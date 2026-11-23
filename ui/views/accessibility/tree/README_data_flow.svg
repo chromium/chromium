@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2026 The Chromium Authors
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="520"
+     viewBox="0 0 680 520" role="img" aria-labelledby="title description">
+  <title id="title">ViewsAX data flow and ownership</title>
+  <desc id="description">
+    Views provide data to WidgetAXManager, which owns the cache, tree source,
+    serializer, and BrowserAccessibilityManager. The serializer produces tree
+    updates; WidgetAXManager sends them with events to
+    BrowserAccessibilityManager, which provides native accessibility objects and
+    notifications.
+  </desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#526779"/>
+    </marker>
+  </defs>
+  <rect width="680" height="520" fill="#ffffff"/>
+  <g font-family="Arial, sans-serif" fill="#203547">
+    <rect x="50" y="120" width="580" height="300" rx="10"
+          fill="#f7f9fc" stroke="#9aabba" stroke-width="1.5"/>
+    <text x="74" y="147" font-size="16" font-weight="bold">
+      WidgetAXManager (owned by Widget)
+    </text>
+
+    <g fill="#edf4fb" stroke="#7793ac" stroke-width="1.5">
+      <rect x="150" y="12" width="380" height="54" rx="6"/>
+      <rect x="150" y="170" width="380" height="50" rx="6"/>
+      <rect x="150" y="255" width="380" height="44" rx="6"/>
+      <rect x="150" y="340" width="380" height="54" rx="6"/>
+      <rect x="150" y="466" width="380" height="44" rx="6"/>
+    </g>
+    <g text-anchor="middle" font-size="16">
+      <text x="340" y="34" font-weight="bold">Views and virtual nodes</text>
+      <text x="340" y="55" font-size="14">ViewAccessibility data</text>
+      <text x="340" y="201" font-weight="bold">Cache + tree source</text>
+      <text x="340" y="282" font-weight="bold">AXTreeSerializer</text>
+      <text x="340" y="362" font-weight="bold">
+        BrowserAccessibilityManager
+      </text>
+      <text x="340" y="383" font-size="14">Consumer tree + native objects</text>
+      <text x="340" y="493" font-weight="bold">Native accessibility APIs</text>
+    </g>
+    <g fill="none" stroke="#526779" stroke-width="2" marker-end="url(#arrow)">
+      <path d="M 340 66 V 118"/>
+      <path d="M 340 220 V 253"/>
+      <path d="M 340 299 V 338"/>
+      <path d="M 340 394 V 464"/>
+    </g>
+    <g font-size="14" fill="#526779">
+      <text x="360" y="98">Data + notifications</text>
+      <text x="360" y="316">AXTreeUpdate</text>
+      <text x="360" y="333">+ AXEvent from manager</text>
+      <text x="360" y="447">Native objects + notifications</text>
+    </g>
+  </g>
+</svg>
