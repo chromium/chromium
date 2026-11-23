@@ -30,6 +30,7 @@ import static org.chromium.base.test.transit.ViewFinder.waitForView;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.drawable.ColorDrawable;
+import android.os.Build.VERSION_CODES;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -682,6 +683,9 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
     @MediumTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/376528174
+    @DisableIf.Build(
+            sdk_is_greater_than = VERSION_CODES.TIRAMISU,
+            message = "https://crbug.com/581754549")
     public void testScreenRotation() {
         when(mHistorySyncHelperMock.shouldDisplayHistorySync()).thenReturn(true);
 
