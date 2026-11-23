@@ -18,6 +18,8 @@
 
 namespace autofill {
 
+class AddressHierarchyConstraints;
+
 // A partial or final interpretation of fields.
 // A `ClassifiedFieldSequence` assigns field types to fields such that
 // - no field type can be assigned to two different fields.
@@ -51,11 +53,6 @@ struct ClassifiedFieldSequence {
 // types may occur, ...).
 class AddressFieldParserNG : public FormFieldParser {
  public:
-  // This class stores precalculated work for the address hierarchy of a
-  // specific country which should be precalculated to prevent repetitive work
-  // during form parsing.
-  class FieldTypeInformation;
-
   static std::unique_ptr<FormFieldParser> Parse(ParsingContext& context,
                                                 AutofillScanner& scanner);
 
@@ -82,9 +79,9 @@ class AddressFieldParserNG : public FormFieldParser {
 
   // Function to block certain combinations of field types that cannot be
   // expressed by the type-incompatibility detection mechanism of
-  // `FieldTypeInformation`. E.g. we should not assign ADDRESS_HOME_HOUSE_NUMBER
-  // to a field unless we have more evidence that the field is part of a
-  // structured address form.
+  // `AddressHierarchyConstraints`. E.g. we should not assign
+  // ADDRESS_HOME_HOUSE_NUMBER to a field unless we have more evidence that the
+  // field is part of a structured address form.
   bool IsClassificationPlausible() const;
 
   // The core backtracking algorithm.
@@ -104,7 +101,7 @@ class AddressFieldParserNG : public FormFieldParser {
 
   // Prepared work for the address hierarchy corresponding to the country of the
   // client.
-  std::unique_ptr<FieldTypeInformation> field_types_;
+  std::unique_ptr<AddressHierarchyConstraints> constraints_;
 
   // The best classification encountered so far.
   ClassifiedFieldSequence best_classification_;

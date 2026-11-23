@@ -7,27 +7,19 @@
 #include <initializer_list>
 #include <memory>
 #include <optional>
-#include <ostream>
 #include <string>
 #include <string_view>
-#include <utility>
 
-#include "base/check.h"
 #include "base/check_op.h"
-#include "base/containers/flat_map.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/country_type.h"
-#include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
-#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
-#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component_store.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/address_hierarchy_constraints.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_util.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/browser/form_parsing/form_field_parser.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_field_data.h"
 
 namespace autofill {
@@ -37,12 +29,6 @@ namespace {
 // Specify `--vmodule=address_field_parser_ng=1` to get insights into the
 // classification process. It will produce output describing the recursive
 // exploration of field type assignments.
-
-constexpr FieldType kAddressLines[] = {ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2,
-                                       ADDRESS_HOME_LINE3};
-constexpr FieldTypeSet kAddressLinesFieldTypeSet({ADDRESS_HOME_LINE1,
-                                                  ADDRESS_HOME_LINE2,
-                                                  ADDRESS_HOME_LINE3});
 
 // Adds a FormControlType to MatchParams.
 MatchParams MatchParamsWithFieldType(MatchParams p,
@@ -65,241 +51,6 @@ std::string SequenceToScoreString(const ClassifiedFieldSequence& sequence) {
 
 }  // namespace
 
-// This class stores precalculated work for the address hierarchy of a
-// specific country which should be precalculated to prevent repetitive work
-// during form parsing.
-class AddressFieldParserNG::FieldTypeInformation {
- public:
-  explicit FieldTypeInformation(AddressCountryCode country_code);
-  ~FieldTypeInformation();
-
-  // Returns the set of field types supported by the address hierarchy of
-  // the country passed in the constructor.
-  FieldTypeSet supported_field_types() const { return supported_field_types_; }
-
-  // Returns the set of field types that must not occur if `type` is already
-  // assigned to a field:
-  // - If a type T was assigned to a field, no ancestor or descendant of T
-  //   should be assigned to one of the following fields in the parsing run
-  //   because one would contain the other.
-  //   E.g. a street name and a street address are incompatible because a
-  //   a street name is contained in the street address.
-  // - Each type T is incompatible with itself (we want to classify only one
-  //   field as a type in a single parse run).
-  //   E.g. we don't want to classify two postal code fields.
-  // - For synthesized field types, we also consider two types T and T2 as
-  //   incompatible if T and T2 share any descendants.
-  //   E.g. a landmark+street-location is incompatible to a landmark+locality
-  //   because they share a landmark.
-  // - Structured address details (street name, house number, ...) are
-  //   incompatible with address lines.
-  // The function must only be called on `FieldType`s that exist in
-  // `supported_field_types()`.
-  FieldTypeSet incompatible_field_types(FieldType type) const {
-    return incompatible_.at(type);
-  }
-
- private:
-  void InitializeFieldTypesAndDescendants(AddressComponent* node);
-  void InitializeIncompatibilities();
-
-  const bool is_custom_hierarchy_available_for_country = false;
-
-  // All field types existing in the address model of the specified country.
-  FieldTypeSet supported_field_types_;
-
-  // All descendants of each field type, including the key field type itself.
-  base::flat_map<FieldType, FieldTypeSet> descendants_and_self_;
-
-  // All field types that are incompatible with the key field type meaning that
-  // those field types must not be produced by the same execution of
-  // `AddressFieldParserNG::Parse()` (e.g. because a ClassifiedFieldSequence
-  // should not contain multiple instances of the same field type or because
-  // address lines 1, 2, 3 should not co-exist with a landmark; see
-  // `incompatible_field_types()`).
-  base::flat_map<FieldType, FieldTypeSet> incompatible_;
-
-  friend std::ostream& operator<<(std::ostream& os,
-                                  const FieldTypeInformation& field_types);
-};
-
-AddressFieldParserNG::FieldTypeInformation::FieldTypeInformation(
-    AddressCountryCode country_code)
-    : is_custom_hierarchy_available_for_country(
-          i18n_model_definition::IsCustomHierarchyAvailableForCountry(
-              country_code)) {
-  AddressComponentsStore model =
-      i18n_model_definition::CreateAddressComponentModel(country_code);
-
-  InitializeFieldTypesAndDescendants(model.Root());
-
-  // Address lines 1, 2, 3 are not part of the `model` (they are derived from a
-  // ADDRESS_HOME_STREET_ADDRESS). Therefore, they are not considered by
-  // `InitializeFieldTypesAndDescendants()`. For the purpose of classifying
-  // fields in an address form, they should still be listed in
-  // `supported_field_types_` and `descendants_and_self_`.
-  for (FieldType child_type : kAddressLines) {
-    supported_field_types_.insert(child_type);
-    descendants_and_self_[child_type].insert(child_type);
-    descendants_and_self_[ADDRESS_HOME_STREET_ADDRESS].insert(child_type);
-  }
-
-  // The COMPANY_NAME is not part of the address model but classified by the
-  // AddressFieldParser.
-  supported_field_types_.insert(COMPANY_NAME);
-  descendants_and_self_[COMPANY_NAME].insert(COMPANY_NAME);
-  incompatible_[COMPANY_NAME] = FieldTypeSet({COMPANY_NAME});
-
-  // UNKNOWN_TYPE is a non-standard field type that is repurposed for internal
-  // logic. It is used to skip certain fields in the classification that may
-  // occur at arbitrary locations in the address form but don't belong to the
-  // address hierarchy. For example an email field belongs into this category.
-  // UNKNOWN_TYPE is only used internally by the `AddressFieldParserNG` and
-  // never returned to the caller of the parse function.
-  supported_field_types_.insert(UNKNOWN_TYPE);
-  descendants_and_self_[UNKNOWN_TYPE].insert(UNKNOWN_TYPE);
-
-  for (FieldType t : supported_field_types_) {
-    CHECK(descendants_and_self_.contains(t)) << FieldTypeToStringView(t);
-  }
-
-  InitializeIncompatibilities();
-
-  DVLOG(1) << "FieldTypeInformation for " << country_code.value();
-  DVLOG(1) << *this;
-}
-
-AddressFieldParserNG::FieldTypeInformation::~FieldTypeInformation() = default;
-
-void AddressFieldParserNG::FieldTypeInformation::
-    InitializeFieldTypesAndDescendants(AddressComponent* node) {
-  // This function is a recursive descend through the address model tree for a
-  // specific country to collect all field types that occur in the address model
-  // in `supported_field_types_` and determine for each node which descendants
-  // exist.
-  FieldType field_type = node->GetStorageType();
-
-  if (descendants_and_self_.contains(field_type)) {
-    return;
-  }
-  descendants_and_self_[field_type].insert(field_type);
-  supported_field_types_.insert(field_type);
-
-  auto InitializeChild = [&](AddressComponent* child) {
-    InitializeFieldTypesAndDescendants(child);
-    // Invariant: All children have already updated their
-    // `descendants_and_self_`.
-    // Note: Don't inline the following line because two operator[]() calls lead
-    // to undefined behavior. Each one may modify the underlying map and return
-    // invalid references.
-    FieldTypeSet values_of_child =
-        descendants_and_self_[child->GetStorageType()];
-    descendants_and_self_[field_type].insert_all(values_of_child);
-  };
-
-  for (AddressComponent* child : node->Subcomponents()) {
-    InitializeChild(child);
-  }
-
-  for (AddressComponent* child : node->SynthesizedSubcomponents()) {
-    InitializeChild(child);
-  }
-}
-
-void AddressFieldParserNG::FieldTypeInformation::InitializeIncompatibilities() {
-  // Each field type may be assigned only once and is therefore incompatible to
-  // itself.
-  for (FieldType field_type : supported_field_types_) {
-    incompatible_[field_type] = FieldTypeSet();
-  }
-
-  // The descendants of a ADDRESS_HOME_STREET_ADDRESS in the address model are
-  // (except for address lines 1, 2, 3) the structured street address components
-  // like street name, house number, etc.
-
-  // If either kAutofillStructuredFieldsDisableAddressLines is enabled or a
-  // country is explicitly modeled for the i18n address hierarchy, these
-  // structured address components are incompatible with address lines 1, 2, 3.
-  // For the legacy model we allow an address line 2 to be paired with a street
-  // name and house number.
-  const bool autofill_structured_fields_disable_address_lines =
-      base::FeatureList::IsEnabled(
-          features::kAutofillStructuredFieldsDisableAddressLines) ||
-      is_custom_hierarchy_available_for_country;
-
-  // Because address lines 1, 2, 3 are already attached as children of
-  // ADDRESS_HOME_STREET_ADDRESS, they need to be removed first to get true set
-  // of structured address components.
-  FieldTypeSet structured_address_components =
-      descendants_and_self_[ADDRESS_HOME_STREET_ADDRESS];
-  structured_address_components.erase_all(kAddressLinesFieldTypeSet);
-  for (FieldType child_type : structured_address_components) {
-    if (autofill_structured_fields_disable_address_lines) {
-      for (FieldType address_line : kAddressLines) {
-        incompatible_[child_type].insert(address_line);
-        incompatible_[address_line].insert(child_type);
-      }
-    } else {
-      if (supported_field_types_.contains(ADDRESS_HOME_STREET_NAME)) {
-        incompatible_[ADDRESS_HOME_LINE1].insert(ADDRESS_HOME_STREET_NAME);
-        incompatible_[ADDRESS_HOME_STREET_NAME].insert(ADDRESS_HOME_LINE1);
-      }
-      if (supported_field_types_.contains(ADDRESS_HOME_HOUSE_NUMBER)) {
-        incompatible_[ADDRESS_HOME_LINE1].insert(ADDRESS_HOME_HOUSE_NUMBER);
-        incompatible_[ADDRESS_HOME_HOUSE_NUMBER].insert(ADDRESS_HOME_LINE1);
-      }
-    }
-  }
-
-  // A field type T is incompatible with its ancestors and descendants. For
-  // synthesized nodes it's also possible that a field type T is incompatible
-  // with a type T2 that is neither an ancestor nor a descendant but shares
-  // some descendants.
-  for (FieldType c1 : supported_field_types_) {
-    for (FieldType c2 : supported_field_types_) {
-      // Comparing the underlying integer values of c1 and c2 is a speed
-      // optimization to avoid redundant work that would happen due to symmetry.
-      if (std::to_underlying(c1) > std::to_underlying(c2)) {
-        continue;
-      }
-      // Note: Don't inline the following line because two operator[]() calls
-      // lead to undefined behavior. Each one may modify the underlying map and
-      // return invalid references.
-      FieldTypeSet c2_values = descendants_and_self_[c2];
-      if (descendants_and_self_[c1].contains_any(c2_values)) {
-        incompatible_[c1].insert(c2);
-        incompatible_[c2].insert(c1);
-      }
-    }
-  }
-}
-
-std::ostream& operator<<(
-    std::ostream& os,
-    const AddressFieldParserNG::FieldTypeInformation& field_types) {
-  os << "FieldTypeInformation::descendants_and_self_:\n";
-  for (FieldType child_type : field_types.supported_field_types_) {
-    if (!field_types.descendants_and_self_.at(child_type).empty()) {
-      os << FieldTypeToStringView(child_type) << ":";
-      for (FieldType desc : field_types.descendants_and_self_.at(child_type)) {
-        os << " " << FieldTypeToStringView(desc);
-      }
-      os << "\n";
-    }
-  }
-  os << "FieldTypeInformation::incompatible_:\n";
-  for (FieldType child_type : field_types.supported_field_types_) {
-    if (!field_types.incompatible_.at(child_type).empty()) {
-      os << FieldTypeToStringView(child_type) << ":";
-      for (FieldType incompatible : field_types.incompatible_.at(child_type)) {
-        os << " " << FieldTypeToStringView(incompatible);
-      }
-      os << "\n";
-    }
-  }
-  return os;
-}
-
 ClassifiedFieldSequence::ClassifiedFieldSequence() = default;
 ClassifiedFieldSequence::~ClassifiedFieldSequence() = default;
 
@@ -314,7 +65,8 @@ bool ClassifiedFieldSequence::BetterThan(
 // TODO(crbug.com/328954153): This initialization of prepared work could be
 // cached in a registry to prevent the repetitive creation effort.
 AddressFieldParserNG::AddressFieldParserNG(AddressCountryCode client_country)
-    : field_types_(std::make_unique<FieldTypeInformation>(client_country)) {}
+    : constraints_(
+          std::make_unique<AddressHierarchyConstraints>(client_country)) {}
 
 AddressFieldParserNG::~AddressFieldParserNG() = default;
 
@@ -461,7 +213,7 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
         // If the country model does not contain support for an apartment
         // number, we treat a match for the apartment number regex as an
         // address line 2.
-        if (!field_types_->supported_field_types().contains(
+        if (!constraints_->supported_field_types().contains(
                 ADDRESS_HOME_APT_NUM)) {
           if (auto r = Match("ADDRESS_HOME_APT_NUM", 1.0)) {
             return r;
@@ -732,14 +484,14 @@ void AddressFieldParserNG::ParseRecursively() {
 
   // UNKNOWN_TYPE should always be the first element. If we have a match,
   // we skip all other field types.
-  CHECK_EQ(*field_types_->supported_field_types().begin(), UNKNOWN_TYPE);
+  CHECK_EQ(*constraints_->supported_field_types().begin(), UNKNOWN_TYPE);
 
   // Whether any field type could be assigned for the current scanner position.
   bool found_extra_assignment = false;
-  for (FieldType field_type : field_types_->supported_field_types()) {
+  for (FieldType field_type : constraints_->supported_field_types()) {
     // Skip trying field_type if it's incompatible with already assigned types.
     if (partial_classification_.contained_types.contains_any(
-            field_types_->incompatible_field_types(field_type))) {
+            constraints_->incompatible_field_types(field_type))) {
       DVLOG(1) << log_prefix() << "---- " << FieldTypeToStringView(field_type)
                << " conflict.";
       continue;

@@ -718,6 +718,8 @@ static_library("browser") {
     "form_parsing/address_field_parser.h",
     "form_parsing/address_field_parser_ng.cc",
     "form_parsing/address_field_parser_ng.h",
+    "form_parsing/address_hierarchy_constraints.cc",
+    "form_parsing/address_hierarchy_constraints.h",
     "form_parsing/alternative_name_field_parser.cc",
     "form_parsing/alternative_name_field_parser.h",
     "form_parsing/autofill_parsing_util.cc",
