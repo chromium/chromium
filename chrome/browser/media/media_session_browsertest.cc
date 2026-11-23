@@ -7,10 +7,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/enterprise/isolated_mode/scoped_isolated_mode_override_for_testing.h"
 #include "content/public/browser/media_session_client.h"
 #include "content/public/browser/media_session_service.h"
 #include "content/public/test/browser_test.h"
@@ -84,12 +86,9 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest,
 }
 
 class MediaSessionIsolatedBrowserTest : public MediaSessionBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    MediaSessionBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(
-        "force-enterprise-isolated-mode-replaces-incognito");
-  }
+ private:
+  enterprise_isolated_mode::ScopedIsolatedModeOverrideForTesting
+      scoped_isolated_mode_;
 };
 
 IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest,
@@ -108,6 +107,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest,
 IN_PROC_BROWSER_TEST_F(MediaSessionIsolatedBrowserTest,
                        MediaSessionInfoHideMetadataIfInIsolatedMode) {
   BrowserWindowInterface* browser = CreateIncognitoBrowser();
+  ASSERT_TRUE(browser->GetProfile()->IsEnterpriseIsolatedModeProfile());
 
   media_session::test::MockMediaSessionMojoObserver observer(
       *content::MediaSession::Get(
@@ -139,6 +139,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest,
 IN_PROC_BROWSER_TEST_F(MediaSessionIsolatedBrowserTest,
                        MediaSessionInfoIsHiddenInCrOSIsolatedMode) {
   BrowserWindowInterface* browser = CreateIncognitoBrowser();
+  ASSERT_TRUE(browser->GetProfile()->IsEnterpriseIsolatedModeProfile());
 
   media_session::test::MockMediaSessionMojoObserver observer(
       *content::MediaSession::Get(
@@ -165,6 +166,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest,
 IN_PROC_BROWSER_TEST_F(MediaSessionIsolatedBrowserTest,
                        MediaSessionInfoIsNotHiddenInNonCrOSIsolatedMode) {
   BrowserWindowInterface* browser = CreateIncognitoBrowser();
+  ASSERT_TRUE(browser->GetProfile()->IsEnterpriseIsolatedModeProfile());
 
   media_session::test::MockMediaSessionMojoObserver observer(
       *content::MediaSession::Get(
