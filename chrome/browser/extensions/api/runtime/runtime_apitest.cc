@@ -993,7 +993,8 @@ class RuntimeGetContextsApiTest : public ExtensionApiTest {
                            </html>)");
     test_dir_.WriteFile(FILE_PATH_LITERAL("devtools.js"),
                         "chrome.test.sendMessage('devtools page opened');");
-    extension_ = LoadExtension(test_dir_.UnpackedPath());
+    extension_ = LoadExtension(test_dir_.UnpackedPath(),
+                               {.wait_for_registration_stored = true});
     ASSERT_TRUE(extension_);
   }
 
