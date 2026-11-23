@@ -1,6 +1,6 @@
 Name: WorkManager Runtime
 Short Name: work-runtime
-URL: https://androidx.dev/snapshots/builds/16985262/artifacts/repository/androidx/work/work-runtime/2.13.0-SNAPSHOT/work-runtime-2.13.0-20261119.211745-1.aar
+URL: https://androidx.dev/snapshots/latest/artifacts/repository/androidx/work/work-runtime/2.13.0-SNAPSHOT/maven-metadata.xml
 Version: 2.13.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0

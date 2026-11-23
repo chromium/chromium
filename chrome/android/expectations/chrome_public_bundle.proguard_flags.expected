@@ -464,6 +464,7 @@
   public static java.util.Map getGlobalMap();
 }
 -keep,allowoptimization class ** implements androidx.appsearch.app.AppSearchDocumentClassMap {
+  public <init>();
   public java.util.Map getMap();
 }
 

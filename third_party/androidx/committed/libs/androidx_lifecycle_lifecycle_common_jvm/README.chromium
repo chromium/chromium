@@ -1,6 +1,6 @@
 Name: Lifecycle-Common
 Short Name: lifecycle-common-jvm
-URL: https://androidx.dev/snapshots/builds/16985262/artifacts/repository/androidx/lifecycle/lifecycle-common-jvm/2.12.0-SNAPSHOT/lifecycle-common-jvm-2.12.0-20261119.211745-1.jar
+URL: https://androidx.dev/snapshots/latest/artifacts/repository/androidx/lifecycle/lifecycle-common-jvm/2.12.0-SNAPSHOT/maven-metadata.xml
 Version: 2.12.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0

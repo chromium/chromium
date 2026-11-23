@@ -1,6 +1,6 @@
 Name: androidx.credentials.registry:registry-provider-play-services
 Short Name: registry-provider-play-services
-URL: https://androidx.dev/snapshots/builds/16985262/artifacts/repository/androidx/credentials/registry/registry-provider-play-services/1.0.0-SNAPSHOT/registry-provider-play-services-1.0.0-20261119.211745-1.aar
+URL: https://androidx.dev/snapshots/latest/artifacts/repository/androidx/credentials/registry/registry-provider-play-services/1.0.0-SNAPSHOT/maven-metadata.xml
 Version: 1.0.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0

@@ -1,6 +1,6 @@
 Name: Preferences External Protobuf
 Short Name: datastore-preferences-external-protobuf
-URL: https://androidx.dev/snapshots/builds/16985262/artifacts/repository/androidx/datastore/datastore-preferences-external-protobuf/1.4.0-SNAPSHOT/datastore-preferences-external-protobuf-1.4.0-20261119.211745-1.jar
+URL: https://androidx.dev/snapshots/latest/artifacts/repository/androidx/datastore/datastore-preferences-external-protobuf/1.4.0-SNAPSHOT/maven-metadata.xml
 Version: 1.4.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: BSD-3-Clause

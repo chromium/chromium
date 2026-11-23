@@ -1,6 +1,6 @@
 Name: Android for Cars App
 Short Name: app
-URL: https://androidx.dev/snapshots/builds/16985262/artifacts/repository/androidx/car/app/app/1.9.0-SNAPSHOT/app-1.9.0-20261119.211745-1.aar
+URL: https://androidx.dev/snapshots/latest/artifacts/repository/androidx/car/app/app/1.9.0-SNAPSHOT/maven-metadata.xml
 Version: 1.9.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
