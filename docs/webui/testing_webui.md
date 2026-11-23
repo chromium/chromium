@@ -431,16 +431,28 @@ To disable an entire suite, use `suite.skip()` instead of `suite()`:
 suite.skip('MySuite', function() {...});
 ```
 
-To disable a test for a specific platform, use `<if expr>`:
+To disable a test for a specific platform, use `<if expr>` to choose between
+`test.skip()` and `test()` on a shared test function rather than wrapping
+`test(...)` in `// <if expr="not is_...">`. Keeping the test body outside
+`<if expr>` ensures TypeScript continues to type-check it on all platforms (and
+avoids unused-import errors):
 
 ```ts
-// TODO(crbug.com/511960512): Flaky test.
-// <if expr="not is_macosx">
-test('LogsBookmarkCountMetric', async () => {
+async function logsBookmarkCountMetricTest() {
   ...
 }
+
+// <if expr="is_macosx">
+// TODO(crbug.com/511960512): Flaky on Mac.
+test.skip('LogsBookmarkCountMetric', logsBookmarkCountMetricTest);
+// </if>
+// <if expr="not is_macosx">
+test('LogsBookmarkCountMetric', logsBookmarkCountMetricTest);
 // </if>
 ```
+
+Common `<if expr>` expressions: `is_linux`, `is_win`, `is_macosx`,
+`is_chromeos`, `is_android`, `is_ios`.
 
 #### Disabling in GTest (Discouraged)
 

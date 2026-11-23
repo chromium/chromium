@@ -106,36 +106,12 @@ Common BUILDFLAGs:
 
 #### WebUI Tests (Mocha)
 
-WebUI tests should preferably be disabled at the Mocha (TypeScript) level. If it
-can't be disabled at the Mocha level because the entire suite is flaky or
-failing then the C++ suite can be disabled.
-
-Use `test.skip()` or `suite.skip()`.
-
-##### All Platforms
-
-```ts
-// TODO(crbug.com/123456): Flaky on all platforms.
-test.skip('MyTestcase', function() {
-  ...
-});
-```
-
-##### Platform Specific
-
-Use `<if expr>` in the `.ts` file.
-
-```ts
-// TODO(crbug.com/123456): Flaky on Mac.
-// <if expr="not is_macosx">
-test('MyTestCase', async () => {
-  ...
-});
-// </if>
-```
-
-Common expressions: `is_linux`, `is_win`, `is_macosx`, `is_chromeos`,
-`is_android`, `is_ios`.
+Follow the "Disabling tests" section in `docs/webui/testing_webui.md`
+(https://chromium.googlesource.com/chromium/src/+/main/docs/webui/testing_webui.md#disabling-tests).
+Prefer disabling individual Mocha test cases with `test.skip()` (or
+`suite.skip()`) rather than disabling the C++ GTest suite, and for
+platform-specific skips use `<if expr>` to choose between `test.skip()` and
+`test()` on a shared function so the test stays type-checked on all platforms.
 
 ### Step 4: Documentation Requirement
 
