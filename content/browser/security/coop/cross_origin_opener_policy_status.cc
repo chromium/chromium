@@ -363,18 +363,16 @@ void CrossOriginOpenerPolicyStatus::SetReportingEndpoints(
     return;
   if (!navigation_request_->response())
     return;
-  if (!navigation_request_->response()->parsed_headers->reporting_endpoints)
+  const base::flat_map<std::string, std::string>& reporting_endpoints =
+      navigation_request_->response()->parsed_headers->reporting_endpoints;
+  if (reporting_endpoints.empty()) {
     return;
+  }
+
   // Process Reporting-Endpoints header immediately before the document is
   // loaded so COOP reports can be sent to response origin's configured
   // endpoint. The configured endpoints should only be used to send COOP reports
   // for this navigation and will be removed when the navigation finishes.
-  base::flat_map<std::string, std::string>& reporting_endpoints =
-      *(navigation_request_->response()->parsed_headers->reporting_endpoints);
-
-  if (reporting_endpoints.empty())
-    return;
-
   storage_partition->GetNetworkContext()->SetDocumentReportingEndpoints(
       reporting_source, response_origin, isolation_info, reporting_endpoints);
   // Record the new reporting source.

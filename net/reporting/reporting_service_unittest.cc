@@ -236,9 +236,8 @@ TEST_P(ReportingServiceTest, ProcessReportToHeader) {
 TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeader) {
   auto parsed_header =
       ParseReportingEndpoints(kGroup_ + "=\"" + kEndpoint_.spec() + "\"");
-  ASSERT_TRUE(parsed_header.has_value());
   service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_,
-                                           kIsolationInfo_, *parsed_header);
+                                           kIsolationInfo_, parsed_header);
   FinishLoading(true /* load_success */);
 
   // Endpoint should not be part of the persistent store.
@@ -262,9 +261,8 @@ TEST_P(ReportingServiceTest,
 
   auto parsed_header =
       ParseReportingEndpoints(kGroup_ + "=\"" + kEndpoint_.spec() + "\"");
-  ASSERT_TRUE(parsed_header.has_value());
   service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_,
-                                           kIsolationInfo_, *parsed_header);
+                                           kIsolationInfo_, parsed_header);
   FinishLoading(true /* load_success */);
 
   // Endpoint should not be part of the persistent store.
@@ -282,9 +280,8 @@ TEST_P(ReportingServiceTest, SendReportsAndRemoveSource) {
   auto parsed_header =
       ParseReportingEndpoints(kGroup_ + "=\"" + kEndpoint_.spec() + "\", " +
                               kGroup2_ + "=\"" + kEndpoint2_.spec() + "\"");
-  ASSERT_TRUE(parsed_header.has_value());
   service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_,
-                                           kIsolationInfo_, *parsed_header);
+                                           kIsolationInfo_, parsed_header);
   // This report should be sent immediately, starting the delivery agent timer.
   service()->QueueReport(kUrl_, kReportingSource_, kNak_, kUserAgent_, kGroup_,
                          kType_, base::DictValue(), 0,
@@ -316,9 +313,8 @@ TEST_P(ReportingServiceTest, SendReportsForSource) {
   auto parsed_header =
       ParseReportingEndpoints(kGroup_ + "=\"" + kEndpoint_.spec() + "\", " +
                               kGroup2_ + "=\"" + kEndpoint2_.spec() + "\"");
-  ASSERT_TRUE(parsed_header.has_value());
   service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_,
-                                           kIsolationInfo_, *parsed_header);
+                                           kIsolationInfo_, parsed_header);
 
   // 1st report: sent immediately and starts the delivery agent timer.
   service()->QueueReport(kUrl_, kReportingSource_, kNak_, kUserAgent_, kGroup_,
@@ -396,9 +392,8 @@ TEST_P(ReportingServiceTest,
   }
   auto parsed_header =
       ParseReportingEndpoints(kGroup_ + "=\"" + kEndpoint_.spec() + "\"");
-  ASSERT_TRUE(parsed_header.has_value());
   service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_,
-                                           kIsolationInfo_, *parsed_header);
+                                           kIsolationInfo_, parsed_header);
   // Add a "create report" task to the backlog (service not initialized yet).
   service()->QueueReport(kUrl_, kReportingSource_, kNak_, kUserAgent_, kGroup_,
                          kType_, base::DictValue(), 0,
@@ -436,9 +431,8 @@ TEST_P(ReportingServiceTest,
   }
   auto parsed_header =
       ParseReportingEndpoints(kGroup_ + "=\"" + kEndpoint_.spec() + "\"");
-  ASSERT_TRUE(parsed_header.has_value());
   service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_,
-                                           kIsolationInfo_, *parsed_header);
+                                           kIsolationInfo_, parsed_header);
   // Add a "create report" task to the backlog (service not initialized yet).
   service()->QueueReport(kUrl_, kReportingSource_, kNak_, kUserAgent_, kGroup_,
                          kType_, base::DictValue(), 0,
@@ -479,9 +473,8 @@ TEST_P(ReportingServiceTest,
   auto parsed_header =
       ParseReportingEndpoints(kGroup_ + "=\"" + kEndpoint_.spec() + "\", " +
                               kGroup2_ + "=\"" + kEndpoint2_.spec() + "\"");
-  ASSERT_TRUE(parsed_header.has_value());
   service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_,
-                                           kIsolationInfo_, *parsed_header);
+                                           kIsolationInfo_, parsed_header);
   // This report should be sent immediately, starting the delivery agent timer.
   service()->QueueReport(kUrl_, kReportingSource_, kNak_, kUserAgent_, kGroup_,
                          kType_, base::DictValue(), 0,
@@ -531,9 +524,8 @@ TEST_P(ReportingServiceTest,
 
 TEST_P(ReportingServiceTest, ProcessReportingEndpointsHeaderPathAbsolute) {
   auto parsed_header = ParseReportingEndpoints(kGroup_ + "=\"/path-absolute\"");
-  ASSERT_TRUE(parsed_header.has_value());
   service()->SetDocumentReportingEndpoints(*kReportingSource_, kOrigin_,
-                                           kIsolationInfo_, *parsed_header);
+                                           kIsolationInfo_, parsed_header);
   FinishLoading(true /* load_success */);
 
   // Endpoint should not be part of the persistent store.

@@ -17688,13 +17688,13 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   // configure the endpoints in the reporting cache.
   if (GURL::SchemeIsCryptographic(origin.scheme()) &&
       navigation_request->response() &&
-      navigation_request->response()->parsed_headers->reporting_endpoints) {
-    base::flat_map<std::string, std::string> endpoints =
-        navigation_request->response()
-            ->parsed_headers->reporting_endpoints.value();
+      !navigation_request->response()
+           ->parsed_headers->reporting_endpoints.empty()) {
+    const base::flat_map<std::string, std::string>& endpoints =
+        navigation_request->response()->parsed_headers->reporting_endpoints;
     if (base::FeatureList::IsEnabled(
             blink::features::kOverrideCrashReportingEndpoint) &&
-        endpoints.find(kCrashReportingGroupName) != endpoints.end()) {
+        endpoints.contains(kCrashReportingGroupName)) {
       crash_reporting_group_ = kCrashReportingGroupName;
     }
     GetStoragePartition()->GetNetworkContext()->SetDocumentReportingEndpoints(

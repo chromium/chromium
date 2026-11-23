@@ -268,22 +268,18 @@ bool ProcessV1Endpoint(ReportingDelegate* delegate,
 
 }  // namespace
 
-std::optional<base::flat_map<std::string, std::string>> ParseReportingEndpoints(
+base::flat_map<std::string, std::string> ParseReportingEndpoints(
     const std::string& header) {
-  // Ignore empty header values.
-  if (header.empty()) {
-    return std::nullopt;
-  }
   std::optional<structured_headers::Dictionary> header_dict =
       structured_headers::ParseDictionary(header);
   if (!header_dict) {
-    return std::nullopt;
+    return {};
   }
   for (const structured_headers::DictionaryMember& entry : *header_dict) {
     const structured_headers::ParameterizedItem* item =
         entry.second.GetIfItem();
     if (!item || !item->item.is_string()) {
-      return std::nullopt;
+      return {};
     }
   }
   return base::ToVector(

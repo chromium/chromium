@@ -1780,52 +1780,39 @@ class ReportingHeaderParserStructuredHeaderTest
     return header;
   }
 
-  void ParseHeader(const base::UnguessableToken& reporting_source,
-                   const IsolationInfo& isolation_info,
-                   const url::Origin& origin,
-                   const std::string& header_string) {
-    std::optional<base::flat_map<std::string, std::string>> header_map =
-        ParseReportingEndpoints(header_string);
-
-    if (header_map) {
-      ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
-          context(), reporting_source, isolation_info,
-          isolation_info.network_anonymization_key(), origin, *header_map);
-    }
-  }
   void ProcessParsedHeader(
       const base::UnguessableToken& reporting_source,
       const IsolationInfo& isolation_info,
       const url::Origin& origin,
-      const std::optional<base::flat_map<std::string, std::string>>&
-          header_map) {
+      const base::flat_map<std::string, std::string>& header_map) {
     ReportingHeaderParser::ProcessParsedReportingEndpointsHeader(
         context(), reporting_source, isolation_info,
-        isolation_info.network_anonymization_key(), origin, *header_map);
+        isolation_info.network_anonymization_key(), origin, header_map);
   }
 
   const base::UnguessableToken kReportingSource_ =
       base::UnguessableToken::Create();
 };
 
-TEST_P(ReportingHeaderParserStructuredHeaderTest, ParseInvalid) {
+TEST_P(ReportingHeaderParserStructuredHeaderTest, ParseEmpty) {
   static const struct {
     const char* header_value;
     const char* description;
-  } kInvalidHeaderTestCases[] = {
+  } kHeaderTestCases[] = {
       {"", "empty"},
+      {"   ", "whitespace only"},
       {"default=", "missing url"},
       {"default=1", "non-string url"},
       {"default=(\"https://endpoint.test/\")", "inner list"},
       {"a=\"https://endpoint.test/\", b=1", "valid followed by non-string"},
   };
 
-  for (auto& test_case : kInvalidHeaderTestCases) {
+  for (auto& test_case : kHeaderTestCases) {
     auto parsed_result = ParseReportingEndpoints(test_case.header_value);
 
-    EXPECT_FALSE(parsed_result.has_value())
-        << "Invalid Reporting-Endpoints header (" << test_case.description
-        << ": \"" << test_case.header_value << "\") parsed as valid.";
+    EXPECT_TRUE(parsed_result.empty())
+        << "Reporting-Endpoints header (" << test_case.description << ": \""
+        << test_case.header_value << "\") parsed as non-empty.";
   }
 }
 
@@ -1841,10 +1828,10 @@ TEST_P(ReportingHeaderParserStructuredHeaderTest, ProcessInvalid) {
   for (auto& test_case : kInvalidHeaderTestCases) {
     auto parsed_result = ParseReportingEndpoints(test_case.header_value);
 
-    EXPECT_TRUE(parsed_result.has_value())
-        << "Syntactically valid Reporting-Endpoints header (\""
+    EXPECT_FALSE(parsed_result.empty())
+        << "Syntactically valid, non-empty Reporting-Endpoints header ("
         << test_case.description << ": \"" << test_case.header_value
-        << "\") parsed as invalid.";
+        << "\") parsed as empty.";
     ProcessParsedHeader(kReportingSource_, kIsolationInfo_, kOrigin1_,
                         parsed_result);
 
@@ -1862,11 +1849,8 @@ TEST_P(ReportingHeaderParserStructuredHeaderTest, ParseBasic) {
       ConstructHeaderGroupString(MakeEndpointGroup(kGroup1_, endpoints));
   auto parsed_result = ParseReportingEndpoints(header);
 
-  EXPECT_TRUE(parsed_result.has_value())
-      << "Valid Reporting-Endpoints header (\"" << header
-      << "\") parsed as invalid.";
-  EXPECT_EQ(1u, parsed_result->size());
-  EXPECT_EQ(parsed_result->at(kGroup1_), kEndpoint1_.spec());
+  EXPECT_THAT(parsed_result, testing::ElementsAre(
+                                 testing::Pair(kGroup1_, kEndpoint1_.spec())));
 }
 
 TEST_P(ReportingHeaderParserStructuredHeaderTest, ParseMultipleAndDuplicate) {
@@ -1875,9 +1859,8 @@ TEST_P(ReportingHeaderParserStructuredHeaderTest, ParseMultipleAndDuplicate) {
       "a=\"https://endpoint-a-old.example.test/report-collector\", "
       "a=\"https://endpoint-a.example.test/report-collector\"");
 
-  ASSERT_TRUE(parsed_result.has_value());
   EXPECT_THAT(
-      *parsed_result,
+      parsed_result,
       testing::ElementsAre(
           testing::Pair("a",
                         "https://endpoint-a.example.test/report-collector"),

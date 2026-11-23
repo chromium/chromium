@@ -117,9 +117,8 @@ struct ParsedHeaders {
   array<LoadingMode> supports_loading_mode;
 
   // Parsed mapping of endpoint names to URLs from the Reporting-Endpoints
-  // header. Will be null if that header was not present in the response.
-  // URLs are represented here as strings, and have not been validated.
-  map<string,string>? reporting_endpoints;
+  // header. URLs are represented here as strings, and have not been validated.
+  map<string, string> reporting_endpoints;
 
   // The parsed Cookie-Indices response header.
   //

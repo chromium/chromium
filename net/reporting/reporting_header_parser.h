@@ -6,7 +6,7 @@
 #define NET_REPORTING_REPORTING_HEADER_PARSER_H_
 
 #include <memory>
-#include <optional>
+#include <string>
 
 #include "base/containers/flat_map.h"
 #include "base/values.h"
@@ -20,11 +20,11 @@ class IsolationInfo;
 class NetworkAnonymizationKey;
 class ReportingContext;
 
-// Tries to parse a Reporting-Endpoints header. Returns base::nullopt if parsing
+// Tries to parse a Reporting-Endpoints header. Returns an empty map if parsing
 // failed and the header should be ignored; otherwise returns a (possibly
 // empty) mapping of endpoint names to URLs.
 NET_EXPORT
-std::optional<base::flat_map<std::string, std::string>> ParseReportingEndpoints(
+base::flat_map<std::string, std::string> ParseReportingEndpoints(
     const std::string& header);
 
 class NET_EXPORT ReportingHeaderParser {
