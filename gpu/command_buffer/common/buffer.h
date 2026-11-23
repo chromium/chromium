@@ -136,7 +136,8 @@ inline scoped_refptr<Buffer> MakeMemoryBuffer(uint32_t size,
 }
 
 // Generates a process unique buffer ID which can be safely used with
-// GetBufferGUIDForTracing.
+// GetBufferGUIDForTracing. The return ID will be a positive non-zero integer.
+// The process will terminate if the positive ID space is exhausted.
 GPU_COMMAND_BUFFER_COMMON_EXPORT int32_t GetNextBufferId();
 
 // Generates GUID which can be used to trace buffer using an Id.
