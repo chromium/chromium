@@ -313,7 +313,8 @@ network::mojom::NetworkContext* SafeBrowsingServiceImpl::GetNetworkContext(
     content::BrowserContext* browser_context) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M162);
   NetworkContextService* service =
-      NetworkContextServiceFactory::GetForBrowserContext(browser_context);
+      NetworkContextServiceFactory::GetForBrowserContext(
+          browser_context, /*use_same_instance_in_off_the_record=*/true);
   if (!service) {
     return nullptr;
   }
@@ -330,7 +331,8 @@ SafeBrowsingServiceImpl::GetURLLoaderFactory(
   }
 
   NetworkContextService* service =
-      NetworkContextServiceFactory::GetForBrowserContext(browser_context);
+      NetworkContextServiceFactory::GetForBrowserContext(
+          browser_context, /*use_same_instance_in_off_the_record=*/true);
   if (!service) {
     return nullptr;
   }
@@ -341,7 +343,8 @@ SafeBrowsingServiceImpl::GetURLLoaderFactory(
 void SafeBrowsingServiceImpl::FlushNetworkInterfaceForTesting(
     content::BrowserContext* browser_context) {
   NetworkContextService* service =
-      NetworkContextServiceFactory::GetForBrowserContext(browser_context);
+      NetworkContextServiceFactory::GetForBrowserContext(
+          browser_context, /*use_same_instance_in_off_the_record=*/true);
   if (!service) {
     return;
   }

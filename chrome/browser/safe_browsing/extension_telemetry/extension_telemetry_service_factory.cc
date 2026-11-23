@@ -105,7 +105,8 @@ ExtensionTelemetryServiceFactory::BuildServiceInstanceForBrowserContext(
   }
 
   NetworkContextService* network_service =
-      NetworkContextServiceFactory::GetForBrowserContext(context);
+      NetworkContextServiceFactory::GetForBrowserContext(
+          context, /*use_same_instance_in_off_the_record=*/true);
   if (!network_service) {
     return nullptr;
   }
