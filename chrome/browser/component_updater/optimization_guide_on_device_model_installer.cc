@@ -16,7 +16,6 @@
 
 #include "base/byte_size.h"
 #include "base/callback_list.h"
-#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -35,8 +34,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/task/updateable_sequenced_task_runner.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/branding_buildflags.h"
@@ -208,38 +209,14 @@ FindInstalledAssetsOnDisk(const base::FilePath& component_install_dir) {
   return installed_assets;
 }
 
-void GetComponentFreeDiskSpace(
-    const base::FilePath& path,
-    base::OnceCallback<void(std::optional<base::ByteSize>)> callback) {
-#if BUILDFLAG(CHROME_FOR_TESTING)
-  // In Chrome for Testing, the components we will use are explicitly specified
-  // in configuration and are already on disk. Reporting max free space here
-  // will suppress attempts to save space by uninstalling or preventing
-  // installation of model components.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), base::ByteSize::Max()));
-#else
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(),
-       base::CommandLine::ForCurrentProcess()->HasSwitch(
-           optimization_guide::
-               kGetFreeDiskSpaceWithUserVisiblePriorityTaskSwitch)
-           ? base::TaskPriority::USER_VISIBLE
-           : base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(
-          [](const base::FilePath& path) -> std::optional<base::ByteSize> {
-            std::optional<base::SysInfo::DiskSpaceInfo> disk_space =
-                base::SysInfo::AmountOfDiskSpace(path);
-            if (!disk_space) {
-              return std::nullopt;
-            }
-            return disk_space->available;
-          },
-          path),
-      std::move(callback));
-#endif
+#if !BUILDFLAG(CHROME_FOR_TESTING)
+std::optional<base::ByteSize> GetFreeDiskSpaceFromSystem(
+    const base::FilePath& path) {
+  std::optional<base::SysInfo::DiskSpaceInfo> disk_space =
+      base::SysInfo::AmountOfDiskSpace(path);
+  return disk_space ? std::make_optional(disk_space->available) : std::nullopt;
 }
+#endif
 
 // A generic installer policy for components listed as Assets in the On-Device
 // Model Manifest.
@@ -716,8 +693,26 @@ class ManifestAssetManagerDelegateImpl final
 
   void GetFreeDiskSpace(base::OnceCallback<void(std::optional<base::ByteSize>)>
                             callback) const override {
-    GetComponentFreeDiskSpace(GetComponentInstallDirectory(),
-                              std::move(callback));
+#if BUILDFLAG(CHROME_FOR_TESTING)
+    // In Chrome for Testing, the components we will use are explicitly
+    // specified in configuration and are already on disk. Reporting max free
+    // space here will suppress attempts to save space by uninstalling or
+    // preventing installation of model components.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), base::ByteSize::Max()));
+#else
+    disk_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&GetFreeDiskSpaceFromSystem,
+                       GetComponentInstallDirectory()),
+        std::move(callback));
+#endif
+  }
+
+  void UpdateDiskSpaceCheckPriority(bool user_visible) override {
+    disk_task_runner_->UpdatePriority(user_visible
+                                          ? base::TaskPriority::USER_VISIBLE
+                                          : base::TaskPriority::BEST_EFFORT);
   }
 
   void GetInstalledAssets(base::OnceCallback<void(std::vector<InstalledAsset>)>
@@ -838,6 +833,10 @@ class ManifestAssetManagerDelegateImpl final
   // Maps component IDs to public key hex strings. When non-empty, `this`
   // monitors updates for the mapped components for logging.
   base::flat_map<std::string, std::string> registered_components_;
+  const scoped_refptr<base::UpdateableSequencedTaskRunner> disk_task_runner_ =
+      base::ThreadPool::CreateUpdateableSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::ThreadPolicy::PREFER_BACKGROUND});
 };
 
 }  // namespace

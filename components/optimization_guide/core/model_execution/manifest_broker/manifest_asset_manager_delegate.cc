@@ -20,6 +20,22 @@
 
 namespace optimization_guide {
 
+void ManifestMonitorDelegate::SetDiskSpaceCheckPriority(
+    DiskSpaceCheckReason reason,
+    bool user_visible) {
+  const bool was_user_visible = !disk_space_priority_reasons_.empty();
+  if (user_visible) {
+    disk_space_priority_reasons_.Put(reason);
+  } else {
+    disk_space_priority_reasons_.Remove(reason);
+  }
+  if (was_user_visible != !disk_space_priority_reasons_.empty()) {
+    UpdateDiskSpaceCheckPriority(!disk_space_priority_reasons_.empty());
+  }
+}
+
+void ManifestMonitorDelegate::UpdateDiskSpaceCheckPriority(bool user_visible) {}
+
 std::optional<std::string> GetCrxIdFromPublicKeyHex(
     std::string_view public_key_hex) {
   std::vector<uint8_t> public_key_hash;

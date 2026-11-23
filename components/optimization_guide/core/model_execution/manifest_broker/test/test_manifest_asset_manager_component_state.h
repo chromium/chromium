@@ -5,14 +5,18 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MANIFEST_BROKER_TEST_TEST_MANIFEST_ASSET_MANAGER_COMPONENT_STATE_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MANIFEST_BROKER_TEST_TEST_MANIFEST_ASSET_MANAGER_COMPONENT_STATE_H_
 
+#include <stddef.h>
+
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/byte_size.h"
 #include "base/callback_list.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/run_until.h"
@@ -111,6 +115,19 @@ class TestManifestAssetManagerComponentState final {
   void SetFreeDiskSpace(base::ByteSize free_space_bytes) {
     free_disk_space_ = free_space_bytes;
   }
+
+  const std::vector<bool>& disk_space_priority_changes() const {
+    return disk_space_priority_changes_;
+  }
+  void ClearDiskSpacePriorityChanges() { disk_space_priority_changes_.clear(); }
+
+  void SetDeferDiskSpaceCallbacks(bool defer) {
+    defer_disk_space_callbacks_ = defer;
+  }
+  size_t pending_disk_space_checks() const {
+    return pending_disk_space_callbacks_.size();
+  }
+  void RunPendingDiskSpaceCallbacks();
 
   // If true, OnInstallerRegistered and OnAssetUninstalled will be deferred
   // instead of called immediately on registration/uninstallation.
@@ -228,6 +245,11 @@ class TestManifestAssetManagerComponentState final {
 
   // The amount of free disk space we are pretending is available.
   base::ByteSize free_disk_space_ = base::GiB(30);
+  // Effective disk-check priority changes, in order.
+  std::vector<bool> disk_space_priority_changes_;
+  bool defer_disk_space_callbacks_ = false;
+  std::vector<base::OnceCallback<void(std::optional<base::ByteSize>)>>
+      pending_disk_space_callbacks_;
   // The directories that we are pretending that the component updater has
   // installed, keyed by public key.
   absl::flat_hash_map<std::string, InstallableComponent> installed_components_;

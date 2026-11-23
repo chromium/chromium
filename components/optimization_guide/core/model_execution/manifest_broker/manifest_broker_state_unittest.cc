@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/model_execution/manifest_broker/manifest_broker_state.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -515,31 +516,175 @@ TEST_F(ManifestBrokerStateTest,
 }
 
 TEST_F(ManifestBrokerStateTest, EnsureInitializationBypassesBestEffortFence) {
-  base::ScopedBestEffortExecutionFence best_effort_fence;
   ScenarioBuilder::MinimalTestScenario(fake_.component_state());
-  // Pre-seed the performance class so that ManifestMonitor::OnInputsChanged
-  // posts Manifest::Load during startup while the best-effort execution fence
-  // is active.
-  UpdatePerformanceClassPref(&fake_.local_state(),
-                             OnDeviceModelPerformanceClass::kHigh);
-  fake_.Startup();
-  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(fake_.WarmupPrefsAndAssets());
+  fake_.SimulateShutdown();
 
-  // Before EnsureInitialization is called, the manifest load is queued at
-  // BEST_EFFORT priority and blocked by the execution fence.
+  fake_.component_state().ClearDiskSpacePriorityChanges();
+  base::ScopedBestEffortExecutionFence best_effort_fence;
+  fake_.Startup();
+
+  // An availability request must promote initialization disk checks and
+  // manifest loading so initialization can finish while BEST_EFFORT work is
+  // fenced.
   EXPECT_EQ(
       fake_.state().GetOnDeviceModelEligibility(mojom::OnDeviceFeature::kTest),
       OnDeviceModelEligibilityReason::kUnknown);
 
-  // Triggering EnsureInitialization should raise the manifest load priority to
-  // USER_VISIBLE and complete even while the best-effort execution fence is
-  // active.
-  fake_.client().RequestAssetsFor("test");
-  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> session_future;
+  base::test::TestFuture<std::optional<mojom::ModelUnavailableReason>,
+                         std::optional<mojom::ModelNotSupportedDetailedReason>>
+      can_create_future;
+  fake_.client()
+      .GetSubscriber(mojom::OnDeviceFeature::kTest)
+      .CanCreateSession({}, can_create_future.GetCallback());
+  EXPECT_EQ(can_create_future.Get<0>(), std::nullopt);
+  EXPECT_EQ(can_create_future.Get<1>(), std::nullopt);
+  EXPECT_EQ(
+      fake_.state().GetOnDeviceModelEligibility(mojom::OnDeviceFeature::kTest),
+      OnDeviceModelEligibilityReason::kSuccess);
+
+  EXPECT_EQ(fake_.component_state().disk_space_priority_changes(),
+            (std::vector<bool>{true, false}));
+  fake_.component_state().ClearDiskSpacePriorityChanges();
+  EXPECT_TRUE(fake_.CreateSession());
+  EXPECT_TRUE(fake_.component_state().disk_space_priority_changes().empty());
+}
+
+TEST_F(ManifestBrokerStateTest, PromotesDiskChecksForReplacementManifest) {
+  ScenarioBuilder::MinimalTestScenario(fake_.component_state());
+  ASSERT_TRUE(fake_.WarmupPrefsAndAssets());
+  fake_.Startup();
+  base::test::TestFuture<std::optional<mojo_base::ProtoWrapper>> initial_config;
+  fake_.client().GetConfig(mojom::OnDeviceFeature::kTest,
+                           initial_config.GetCallback());
+  ASSERT_TRUE(initial_config.Wait());
+
+  task_environment_.FastForwardBy(base::Seconds(11));
+  fake_.component_state().ClearDiskSpacePriorityChanges();
+  fake_.component_state().SetDeferDiskSpaceCallbacks(true);
+  ScenarioBuilder::MinimalTestScenario(fake_.component_state());
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return fake_.component_state().pending_disk_space_checks() == 1;
+  }));
+  EXPECT_TRUE(fake_.component_state().disk_space_priority_changes().empty());
+
+  // The one-shot broker initialization is complete, but this request must
+  // still promote disk checks needed by the replacement manifest.
+  base::test::TestFuture<std::optional<mojo_base::ProtoWrapper>> config;
+  fake_.client().GetConfig(mojom::OnDeviceFeature::kTest, config.GetCallback());
+  ASSERT_TRUE(config.Wait());
+  EXPECT_EQ(fake_.component_state().disk_space_priority_changes(),
+            (std::vector<bool>{true}));
+
+  fake_.component_state().RunPendingDiskSpaceCallbacks();
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return fake_.component_state().disk_space_priority_changes().size() == 2;
+  }));
+  EXPECT_EQ(fake_.component_state().disk_space_priority_changes(),
+            (std::vector<bool>{true, false}));
+}
+
+TEST_F(ManifestBrokerStateTest, LaterAssetRequestPromotesDiskEvaluation) {
+  ScenarioBuilder::MinimalTestScenario(fake_.component_state());
+  fake_.component_state().SetDownloadScenario(
+      TestManifestAssetManagerComponentState::DownloadScenario::kOffline);
+  fake_.Startup();
+  base::test::TestFuture<std::optional<mojo_base::ProtoWrapper>> config;
+  fake_.client().GetConfig(mojom::OnDeviceFeature::kTest, config.GetCallback());
+  ASSERT_TRUE(config.Wait());
+
+  task_environment_.FastForwardBy(base::Seconds(11));
+  fake_.component_state().ClearDiskSpacePriorityChanges();
+  fake_.component_state().SetDeferDiskSpaceCallbacks(true);
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> session;
   fake_.client().CreateSession(mojom::OnDeviceFeature::kTest,
-                               SessionConfigParams{},
-                               session_future.GetCallback());
-  EXPECT_TRUE(session_future.Take());
+                               SessionConfigParams{}, session.GetCallback());
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return fake_.component_state().pending_disk_space_checks() == 1;
+  }));
+  EXPECT_EQ(fake_.component_state().disk_space_priority_changes(),
+            (std::vector<bool>{true}));
+
+  fake_.component_state().RunPendingDiskSpaceCallbacks();
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return fake_.component_state().WasOnDemandUpdateRequested("model_A_key");
+  }));
+  // The disk evaluation is no longer foreground work, even though the model
+  // download and the session request are still pending.
+  EXPECT_EQ(fake_.component_state().disk_space_priority_changes(),
+            (std::vector<bool>{true, false}));
+  EXPECT_FALSE(session.IsReady());
+  fake_.component_state().SetDownloadScenario(
+      TestManifestAssetManagerComponentState::DownloadScenario::kHealthy);
+  EXPECT_TRUE(session.Take());
+}
+
+TEST_F(ManifestBrokerStateTest, ReadyAssetsDoNotNeedForegroundDiskEvaluation) {
+  ScenarioBuilder::MinimalTestScenario(fake_.component_state());
+  ASSERT_TRUE(fake_.WarmupPrefsAndAssets());
+  base::test::TestFuture<std::optional<mojo_base::ProtoWrapper>> config;
+  fake_.client().GetConfig(mojom::OnDeviceFeature::kTest, config.GetCallback());
+  ASSERT_TRUE(config.Wait());
+
+  task_environment_.FastForwardBy(base::Seconds(11));
+  fake_.component_state().ClearDiskSpacePriorityChanges();
+  fake_.component_state().SetDeferDiskSpaceCallbacks(true);
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> session;
+  fake_.client().CreateSession(mojom::OnDeviceFeature::kTest,
+                               SessionConfigParams{}, session.GetCallback());
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return fake_.component_state().pending_disk_space_checks() == 1;
+  }));
+  // An unrelated disk refresh must neither delay a ready model nor become
+  // foreground work just because its use case was requested.
+  EXPECT_TRUE(session.Take());
+  EXPECT_EQ(fake_.component_state().pending_disk_space_checks(), 1u);
+  EXPECT_TRUE(fake_.component_state().disk_space_priority_changes().empty());
+  fake_.component_state().RunPendingDiskSpaceCallbacks();
+}
+
+TEST_F(ManifestBrokerStateTest,
+       ForegroundRequestPromotesPendingCheckWithoutEarlyDemotion) {
+  ScenarioBuilder::MinimalTestScenario(fake_.component_state());
+  fake_.component_state().SetDownloadScenario(
+      TestManifestAssetManagerComponentState::DownloadScenario::kOffline);
+  fake_.Startup();
+  base::test::TestFuture<std::optional<mojo_base::ProtoWrapper>> initial_config;
+  fake_.client().GetConfig(mojom::OnDeviceFeature::kTest,
+                           initial_config.GetCallback());
+  ASSERT_TRUE(initial_config.Wait());
+
+  task_environment_.FastForwardBy(base::Seconds(11));
+  fake_.component_state().ClearDiskSpacePriorityChanges();
+  fake_.component_state().SetDeferDiskSpaceCallbacks(true);
+  fake_.component_state().SetDeferRegistrationCallbacks(true);
+  ScenarioBuilder::MinimalTestScenario(fake_.component_state());
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return fake_.component_state().pending_disk_space_checks() == 1;
+  }));
+  EXPECT_TRUE(fake_.component_state().disk_space_priority_changes().empty());
+
+  fake_.client().RequestAssetsFor("test");
+  base::test::TestFuture<std::optional<mojo_base::ProtoWrapper>> config;
+  fake_.client().GetConfig(mojom::OnDeviceFeature::kTest, config.GetCallback());
+  ASSERT_TRUE(config.Wait());
+  EXPECT_EQ(fake_.component_state().pending_disk_space_checks(), 1u);
+  EXPECT_EQ(fake_.component_state().disk_space_priority_changes(),
+            (std::vector<bool>{true}));
+
+  fake_.component_state().RunPendingDiskSpaceCallbacks();
+  ASSERT_TRUE(fake_.component_state().WaitForRegistration(
+      {"model_A_key", base::Version("1.0.0.0")}));
+  // Finishing the disk evaluation must not demote checks while the requested
+  // manifest initialization is still waiting for registration callbacks.
+  EXPECT_EQ(fake_.component_state().disk_space_priority_changes(),
+            (std::vector<bool>{true}));
+  fake_.component_state().RunPendingRegistrations();
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return fake_.component_state().disk_space_priority_changes().size() == 2;
+  }));
+  EXPECT_EQ(fake_.component_state().disk_space_priority_changes(),
+            (std::vector<bool>{true, false}));
 }
 
 TEST_F(ManifestBrokerStateTest,

@@ -131,6 +131,8 @@ class ManifestBrokerState final : public OnDeviceCapability,
   ModelBrokerImpl model_broker_impl_;
   PerformanceClassifier performance_classifier_;
   BrokerInit broker_init_;
+  // Unlike `broker_init_`, this resets for each replacement manifest.
+  bool manifest_initialization_complete_ = false;
   ManifestMonitor manifest_monitor_;
   ManifestValidator manifest_validator_;
   base::ObserverList<OnDeviceModelControl::Observer> model_observers_;

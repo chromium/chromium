@@ -533,6 +533,9 @@ ManifestAssetManager::~ManifestAssetManager() {
   TRACE_EVENT("optimization_guide",
               "ManifestAssetManager::~ManifestAssetManager",
               perfetto::TerminatingFlow::FromPointer(this));
+  delegate_->SetDiskSpaceCheckPriority(
+      ManifestMonitorDelegate::DiskSpaceCheckReason::kAssetRegistration,
+      /*user_visible=*/false);
 }
 
 void ManifestAssetManager::RecordRegistrationMode(const std::string& asset_id,
@@ -951,7 +954,27 @@ void ManifestAssetManager::UpdateRegistrations() {
   TRACE_EVENT("optimization_guide", "ManifestAssetManager::UpdateRegistrations",
               perfetto::Flow::FromPointer(this));
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!disk_space_status_.IsFresh()) {
+  const bool needs_disk_evaluation = !disk_space_status_.IsFresh();
+  bool needs_foreground_evaluation = false;
+  if (needs_disk_evaluation) {
+    for (const auto& [asset_id, component] :
+         factory_->manifest().GetAssets().on_demand_components()) {
+      if (!asset_priorities_.IsAtLeast(AssetPriority::kUserBlocking,
+                                       asset_id)) {
+        continue;
+      }
+      const auto* context = ledger_.GetContext(component.public_key());
+      CHECK(context);
+      if (!context->IsReadyFor(component.target_version())) {
+        needs_foreground_evaluation = true;
+        break;
+      }
+    }
+  }
+  delegate_->SetDiskSpaceCheckPriority(
+      ManifestMonitorDelegate::DiskSpaceCheckReason::kAssetRegistration,
+      needs_foreground_evaluation);
+  if (needs_disk_evaluation) {
     // Don't do anything yet, just refresh the disk space status.
     if (!disk_space_status_.IsEvaluationPending()) {
       disk_space_status_.EnsureEvaluated(

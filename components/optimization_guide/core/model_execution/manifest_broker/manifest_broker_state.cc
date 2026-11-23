@@ -200,7 +200,12 @@ void ManifestBrokerState::GetOnDeviceModelEligibilityAsync(
 
 void ManifestBrokerState::EnsureInitialization(
     BrokerInit::TaskCallback callback) {
-  // Hurry the performance classifier and manifest loading.
+  // Hurry initialization disk checks, manifest loading, and performance class.
+  if (!manifest_initialization_complete_) {
+    delegate_->SetDiskSpaceCheckPriority(
+        ManifestMonitorDelegate::DiskSpaceCheckReason::kInitialization,
+        /*user_visible=*/true);
+  }
   performance_classifier_.EnsurePerformanceClassAvailable(base::DoNothing());
   manifest_monitor_.RaiseLoadPriority();
   broker_init_.QueueTask(std::move(callback));
@@ -209,6 +214,7 @@ void ManifestBrokerState::EnsureInitialization(
 void ManifestBrokerState::OnManifestUpdated() {
   TRACE_EVENT("optimization_guide", "ManifestBrokerState::OnManifestUpdated");
   CHECK(manifest_monitor_.manifest().has_value());
+  manifest_initialization_complete_ = false;
 
   model_broker_impl_.SetFeatureConfigs(
       GetFeatureConfigs(*manifest_monitor_.manifest()));
@@ -236,6 +242,10 @@ void ManifestBrokerState::OnManifestUpdated() {
 void ManifestBrokerState::OnSolutionFactoryInit() {
   TRACE_EVENT("optimization_guide",
               "ManifestBrokerState::OnSolutionFactoryInit");
+  manifest_initialization_complete_ = true;
+  delegate_->SetDiskSpaceCheckPriority(
+      ManifestMonitorDelegate::DiskSpaceCheckReason::kInitialization,
+      /*user_visible=*/false);
   broker_init_.Complete(GetPossibleOnDeviceCapabilities());
 
   if (manifest_monitor_.manifest().has_value()) {

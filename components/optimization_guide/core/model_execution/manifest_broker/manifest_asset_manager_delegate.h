@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/byte_size.h"
+#include "base/containers/enum_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -32,13 +33,34 @@ std::optional<std::string> GetCrxIdFromPublicKeyHex(
 // directly.
 class ManifestMonitorDelegate : public ManifestProvider {
  public:
+  enum class DiskSpaceCheckReason {
+    kInitialization,
+    kAssetRegistration,
+  };
+
   ~ManifestMonitorDelegate() override = default;
 
-  // Gets the available free disk space in the install directory on a
-  // background thread.
+  // Gets the free disk space in the install directory, or `std::nullopt` if
+  // unknown. The callback may run synchronously.
   virtual void GetFreeDiskSpace(
       base::OnceCallback<void(std::optional<base::ByteSize>)> callback)
       const = 0;
+
+  // Promotes queued and subsequent disk checks while any reason needs them.
+  // Each caller must clear its reason when its disk-dependent work completes.
+  void SetDiskSpaceCheckPriority(DiskSpaceCheckReason reason,
+                                 bool user_visible);
+
+ protected:
+  // Applies the combined priority. Delegates without background disk work need
+  // not override this.
+  virtual void UpdateDiskSpaceCheckPriority(bool user_visible);
+
+ private:
+  base::EnumSet<DiskSpaceCheckReason,
+                DiskSpaceCheckReason::kInitialization,
+                DiskSpaceCheckReason::kAssetRegistration>
+      disk_space_priority_reasons_;
 };
 
 // Delegate to bridge the gap to the platform-specific download mechanism

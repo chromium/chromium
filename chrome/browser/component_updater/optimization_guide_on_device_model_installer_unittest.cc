@@ -11,12 +11,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/task/execution_fence.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/test_future.h"
@@ -26,6 +28,7 @@
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/component_updater/mock_component_updater_service.h"
+#include "components/optimization_guide/core/model_execution/manifest_broker/manifest_asset_manager_delegate.h"
 #include "components/update_client/crx_update_item.h"
 #include "components/update_client/update_client.h"
 #include "components/update_client/update_client_errors.h"
@@ -42,6 +45,8 @@ using AssetManager =
     optimization_guide::ManifestAssetManagerDelegate::AssetManager;
 using InstalledAsset =
     optimization_guide::ManifestAssetManagerDelegate::InstalledAsset;
+using DiskSpaceCheckReason =
+    optimization_guide::ManifestMonitorDelegate::DiskSpaceCheckReason;
 using ::testing::_;
 using ::testing::Return;
 using ::testing::ReturnRef;
@@ -112,6 +117,40 @@ class OptimizationGuideOnDeviceModelInstallerTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
 };
+TEST_F(OptimizationGuideOnDeviceModelInstallerTest,
+       GetFreeDiskSpacePromotesQueuedAndSubsequentChecks) {
+  base::ScopedPathOverride path_override(DIR_COMPONENT_USER);
+  auto delegate = CreateManifestAssetManagerDelegate();
+  base::ScopedBestEffortExecutionFence fence;
+
+  base::test::TestFuture<std::optional<base::ByteSize>> queued;
+  delegate->GetFreeDiskSpace(queued.GetCallback());
+  delegate->SetDiskSpaceCheckPriority(DiskSpaceCheckReason::kInitialization,
+                                      /*user_visible=*/true);
+  EXPECT_TRUE(queued.Get().has_value());
+
+  base::test::TestFuture<std::optional<base::ByteSize>> subsequent;
+  delegate->GetFreeDiskSpace(subsequent.GetCallback());
+  EXPECT_TRUE(subsequent.Get().has_value());
+
+  delegate->SetDiskSpaceCheckPriority(DiskSpaceCheckReason::kAssetRegistration,
+                                      /*user_visible=*/true);
+  delegate->SetDiskSpaceCheckPriority(DiskSpaceCheckReason::kInitialization,
+                                      /*user_visible=*/false);
+  base::test::TestFuture<std::optional<base::ByteSize>> foreground;
+  delegate->GetFreeDiskSpace(foreground.GetCallback());
+  EXPECT_TRUE(foreground.Get().has_value());
+
+  delegate->SetDiskSpaceCheckPriority(DiskSpaceCheckReason::kInitialization,
+                                      /*user_visible=*/true);
+  delegate->SetDiskSpaceCheckPriority(DiskSpaceCheckReason::kAssetRegistration,
+                                      /*user_visible=*/false);
+  base::test::TestFuture<std::optional<base::ByteSize>> initializing;
+  delegate->GetFreeDiskSpace(initializing.GetCallback());
+  EXPECT_TRUE(initializing.Get().has_value());
+  delegate->SetDiskSpaceCheckPriority(DiskSpaceCheckReason::kInitialization,
+                                      /*user_visible=*/false);
+}
 
 TEST_F(OptimizationGuideOnDeviceModelInstallerTest, GetInstalledAssets) {
   base::ScopedPathOverride path_override(DIR_COMPONENT_USER);

@@ -10,7 +10,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/component_updater/optimization_guide_on_device_model_installer.h"
 #include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -90,10 +89,6 @@ class OnDeviceAssets {
 class OnDeviceModelBrowserTestBase : public InProcessBrowserTest {
  public:
   void SetUpCommandLine(base::CommandLine* cmd) override {
-    // This test depends on the disk information being available in a timely
-    // manner (see crbug.com/346579988). Use this flag to have the information
-    // retrieved with higher priority which reduces the chances of flakiness.
-    cmd->AppendSwitch(kGetFreeDiskSpaceWithUserVisiblePriorityTaskSwitch);
     cmd->AppendSwitchPath("optimization-guide-manifest-override",
                           assets_.manifest_override().path());
   }
