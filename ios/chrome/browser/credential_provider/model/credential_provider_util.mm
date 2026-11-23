@@ -6,7 +6,6 @@
 
 #import <CommonCrypto/CommonDigest.h>
 
-#import <array>
 #import <string>
 #import <string_view>
 #import <utility>
@@ -20,7 +19,6 @@
 #import "base/no_destructor.h"
 #import "base/strings/strcat.h"
 #import "base/strings/string_number_conversions.h"
-#import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/synchronization/lock.h"
@@ -36,6 +34,7 @@
 #import "ios/chrome/common/credential_provider/archivable_credential_store.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/credential_provider/credential.h"
+#import "ios/chrome/common/credential_provider/favicon_file_key.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
 #import "net/base/apple/url_conversions.h"
@@ -136,22 +135,6 @@ std::string GetFaviconFileKey(const GURL& url) {
   unsigned char result[CC_SHA256_DIGEST_LENGTH];
   CC_SHA256(url.spec().data(), url.spec().length(), result);
   return base::HexEncode(result);
-}
-
-bool IsValidFaviconFileKey(NSString* key) {
-  constexpr NSUInteger kFaviconKeyLength = CC_SHA256_DIGEST_LENGTH * 2;
-  if (!key || key.length != kFaviconKeyLength) {
-    return false;
-  }
-  std::array<unichar, kFaviconKeyLength> buffer;
-  [key getCharacters:buffer.data() range:NSMakeRange(0, kFaviconKeyLength)];
-
-  for (NSUInteger i = 0; i < kFaviconKeyLength; ++i) {
-    if (!base::IsHexDigit(buffer[i])) {
-      return false;
-    }
-  }
-  return true;
 }
 
 void SaveFaviconToSharedAppContainer(FaviconAttributes* attributes,
