@@ -5,7 +5,7 @@ Subject: [PATCH] [rust jpeg] Backport AVX2 IDCT and scan-resume improvements
  (PR526)
 
 Backport https://github.com/etemesi254/zune-image/pull/526 at published
-head b5ad1d9cffac891868e9c86b6fe1aa0a56afbcc9, after PR525.
+head a2a2f4684166c8815bcff5b0df6c2031677e4966, after PR525.
 
 Keep the Chromium stack native recovery and i32 coefficient support
 while reducing repeated header-table clones and coefficient clears.
@@ -14,19 +14,22 @@ Adapt marker-state tests to the existing equivalent insufficient-data
 state. Scan-resume tests cover configured options; no-SIMD feature
 builds provide scalar execution without changing zune-core.
 
+Include the optional scan-resume snapshot boxing follow-up at
+a2a2f4684166c8815bcff5b0df6c2031677e4966.
+
 Bug: 584016785
 Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
 ---
- .../vendor/zune-jpeg-v0_5/src/bitstream.rs    |  96 +++-
- .../vendor/zune-jpeg-v0_5/src/decoder.rs      | 215 ++++++--
- .../vendor/zune-jpeg-v0_5/src/idct.rs         |  95 +++-
- .../vendor/zune-jpeg-v0_5/src/idct/avx2.rs    | 497 ++++++++++--------
- .../vendor/zune-jpeg-v0_5/src/mcu.rs          |  65 ++-
- .../zune-jpeg-v0_5/src/unsafe_utils_avx2.rs   |  92 +---
- 6 files changed, 721 insertions(+), 339 deletions(-)
+ .../vendor/zune-jpeg-v0_5/src/bitstream.rs         |  96 +++-
+ .../vendor/zune-jpeg-v0_5/src/decoder.rs           | 218 +++++++--
+ .../vendor/zune-jpeg-v0_5/src/idct.rs              |  95 +++-
+ .../vendor/zune-jpeg-v0_5/src/idct/avx2.rs         | 497 ++++++++++++---------
+ .../vendor/zune-jpeg-v0_5/src/mcu.rs               |  65 ++-
+ .../vendor/zune-jpeg-v0_5/src/unsafe_utils_avx2.rs |  92 ++--
+ 6 files changed, 723 insertions(+), 340 deletions(-)
 
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs
-index 2adab10de0f3c..9abe0be522e37 100644
+index 2adab10..9abe0be 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/bitstream.rs
 @@ -940,20 +940,22 @@ impl BitStream for BitStreamHuffman {
@@ -151,20 +154,25 @@ index 2adab10de0f3c..9abe0be522e37 100644
  //     use zune_core::bytestream::ZCursor;
  //     use zune_core::colorspace::ColorSpace;
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
-index e91f5574e6dd9..c4e82ae32e013 100644
+index e91f557..25ef879 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/decoder.rs
-@@ -3451,7 +3451,8 @@ where
+@@ -3451,11 +3451,12 @@ where
              scan_start_expects_dnl: bool,
              outer_append_snapshot:  HeaderAppendStateSnapshot,
              outer_sos_snapshot:     SosParamsSnapshot,
 -            outer_header_snapshot:  ScanHeaderStateSnapshot,
 +            outer_qt_tables:        [Option<[i32; 64]>; MAX_COMPONENTS],
-+            outer_header_snapshot:  Option<ScanHeaderStateSnapshot>,
++            outer_header_snapshot:  Option<Box<ScanHeaderStateSnapshot>>,
              /// Snapshots taken from the checkpoint (if any) so the seek and
              /// SOS-restore steps below do not need to touch `scan_state`.
              checkpoint_view:        Option<CheckpointView>,
-@@ -3485,43 +3486,51 @@ where
+-            progressive_view:       Option<ProgressiveCheckpointView>,
++            progressive_view:       Option<Box<ProgressiveCheckpointView>>,
+             progressive_fine_view:  Option<ProgressiveFineCheckpointView>
+         }
+         #[derive(Clone, Copy)]
+@@ -3485,43 +3486,52 @@ where
              todo:            usize,
              dc_predictions:  [(i32, i32); MAX_COMPONENTS]
          }
@@ -218,7 +226,8 @@ index e91f5574e6dd9..c4e82ae32e013 100644
 +                outer_append_snapshot:  state.append_snapshot,
 +                outer_sos_snapshot:     state.sos_snapshot,
 +                outer_qt_tables:        state.header_snapshot.qt_tables,
-+                outer_header_snapshot:  needs_outer_header.then(|| state.header_snapshot.clone()),
++                outer_header_snapshot:  needs_outer_header
++                    .then(|| Box::new(state.header_snapshot.clone())),
 +                checkpoint_view:        state.scan_checkpoint.as_deref().map(|checkpoint| {
 +                    CheckpointView {
 +                        append_snapshot: checkpoint.append_snapshot,
@@ -230,13 +239,13 @@ index e91f5574e6dd9..c4e82ae32e013 100644
 +                    }
 +                }),
 +                progressive_view:       state.progressive_checkpoint.as_deref().map(|checkpoint| {
-+                    ProgressiveCheckpointView {
++                    Box::new(ProgressiveCheckpointView {
 +                        append_snapshot: checkpoint.append_snapshot,
 +                        sos_snapshot:    checkpoint.sos_snapshot,
 +                        header_snapshot: checkpoint.header_snapshot.clone(),
 +                        stream_position: checkpoint.stream_position,
 +                        completed_scans: checkpoint.completed_scans
-+                    }
++                    })
 +                }),
 +                progressive_fine_view:  state.progressive_fine_checkpoint.as_deref().map(
 +                    |checkpoint| ProgressiveFineCheckpointView {
@@ -253,7 +262,7 @@ index e91f5574e6dd9..c4e82ae32e013 100644
          });
          if let Some(plan) = scan_plan {
              let ScanPlan {
-@@ -3530,6 +3539,7 @@ where
+@@ -3530,6 +3540,7 @@ where
                  scan_start_expects_dnl,
                  outer_append_snapshot,
                  outer_sos_snapshot,
@@ -261,25 +270,25 @@ index e91f5574e6dd9..c4e82ae32e013 100644
                  outer_header_snapshot,
                  checkpoint_view,
                  progressive_view,
-@@ -3585,7 +3595,7 @@ where
+@@ -3585,7 +3596,7 @@ where
              if let Some(view) = progressive_fine_view {
                  let header_snapshot = progressive_view
                      .as_ref()
 -                    .map_or(&outer_header_snapshot, |view| &view.header_snapshot);
-+                    .map_or_else(|| outer_header_snapshot.as_ref().unwrap(), |view| &view.header_snapshot);
++                    .map_or_else(|| outer_header_snapshot.as_deref().unwrap(), |view| &view.header_snapshot);
                  self.restore_scan_header_state(header_snapshot);
                  self.stream.set_position(view.stream_position)?;
                  self.progressive_completed_scans = view.completed_scans;
-@@ -3620,7 +3630,7 @@ where
+@@ -3620,7 +3631,7 @@ where
                      comp.dc_diff = dc_diff;
                  }
              } else {
 -                self.restore_scan_header_state(&outer_header_snapshot);
-+                self.restore_scan_header_state(outer_header_snapshot.as_ref().unwrap());
++                self.restore_scan_header_state(outer_header_snapshot.as_deref().unwrap());
                  self.stream.set_position(scan_start_position)?;
                  self.pixels_decoded = 0;
                  if self.is_progressive {
-@@ -3642,7 +3652,7 @@ where
+@@ -3642,7 +3653,7 @@ where
              // Components take their quantization tables once, from the tables in
              // effect at the first SOS (`setup_component_params`). A DQT between
              // later scans must not change them when resuming from a later checkpoint.
@@ -288,7 +297,7 @@ index e91f5574e6dd9..c4e82ae32e013 100644
              if checkpoint_view.is_none() && !had_progressive_view {
                  // First-SOS replay restarts progressive coefficient assembly;
                  // scan-boundary retries restore `todo` in `parse_entropy_coded_data`.
-@@ -4177,6 +4187,8 @@ impl ImageInfo {
+@@ -4177,6 +4188,8 @@ impl ImageInfo {
  
  #[cfg(test)]
  mod extended_xmp_tests {
@@ -297,7 +306,7 @@ index e91f5574e6dd9..c4e82ae32e013 100644
      use zune_core::bytestream::ZCursor;
  
      use super::{ExtendedXmpSegment, HeaderAppendStateSnapshot, JpegDecoder};
-@@ -4274,6 +4286,9 @@ mod extended_xmp_tests {
+@@ -4274,6 +4287,9 @@ mod extended_xmp_tests {
  
  #[cfg(test)]
  mod planar_layout_helpers {
@@ -307,7 +316,7 @@ index e91f5574e6dd9..c4e82ae32e013 100644
      use zune_core::bytestream::ZCursor;
      use zune_core::colorspace::ColorSpace;
      use zune_core::options::DecoderOptions;
-@@ -4565,6 +4580,124 @@ mod planar_layout_helpers {
+@@ -4565,6 +4581,124 @@ mod planar_layout_helpers {
          }
      }
  
@@ -433,7 +442,7 @@ index e91f5574e6dd9..c4e82ae32e013 100644
      fn baseline_scanline_memory_is_stripe_bounded() {
          let data = include_bytes!("../../../test-images/jpeg/2029.jpg");
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct.rs
-index 8dcd73c71d26a..95fce496b02f4 100644
+index 8dcd73c..95fce49 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct.rs
 @@ -107,8 +107,18 @@ pub fn choose_idct_4x4_func(_options: &DecoderOptions) -> IDCTPtr {
@@ -567,7 +576,7 @@ index 8dcd73c71d26a..95fce496b02f4 100644
      fn idct_test0() {
          let stride = 8;
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/avx2.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/avx2.rs
-index b432819462d2a..a8c149fc2cbda 100644
+index b432819..a8c149f 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/avx2.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/idct/avx2.rs
 @@ -39,40 +39,97 @@ use core::arch::x86_64::*;
@@ -1169,7 +1178,7 @@ index b432819462d2a..a8c149fc2cbda 100644
  
  #[inline]
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
-index bb8f70bc3115e..e6ae44fc39ebf 100644
+index bb8f70b..e6ae44f 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/mcu.rs
 @@ -413,8 +413,9 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
@@ -1289,7 +1298,7 @@ index bb8f70bc3115e..e6ae44fc39ebf 100644
                          }
                      }
 diff --git a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/unsafe_utils_avx2.rs b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/unsafe_utils_avx2.rs
-index eb34b633ba521..7bf1ee6d37b9e 100644
+index eb34b63..7bf1ee6 100644
 --- a/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/unsafe_utils_avx2.rs
 +++ b/third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/src/unsafe_utils_avx2.rs
 @@ -16,13 +16,6 @@ use core::arch::x86::*;
@@ -1396,6 +1405,3 @@ index eb34b633ba521..7bf1ee6d37b9e 100644
 +    v6.mm256 = _mm256_permute2x128_si256::<0x31>(x2, x6);
 +    v7.mm256 = _mm256_permute2x128_si256::<0x31>(x3, x7);
  }
--- 
-2.56.1
-

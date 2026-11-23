@@ -44,7 +44,9 @@ Local Modifications:
 - Patch 0011 backports PR525 at
   5dbe923c726ded1405960ecf5ed924034b8412cf, including configured row dispatch.
   Patch 0012 backports PR526 at
-  b5ad1d9cffac891868e9c86b6fe1aa0a56afbcc9 on top of it.
+  a2a2f4684166c8815bcff5b0df6c2031677e4966 on top of it, including the
+  optional scan-resume snapshot boxing follow-up. Full and progressive
+  retries use additional short-lived heap allocations for these snapshots.
   Both are rebased onto the existing stack rather than replacing it.
   Preserve PR505's single-rounding chroma filter in fused AVX2 upsampling,
   i32 sequential coefficient storage and native recovery behavior. Adapt

@@ -3538,11 +3538,11 @@ where
             outer_append_snapshot:  HeaderAppendStateSnapshot,
             outer_sos_snapshot:     SosParamsSnapshot,
             outer_qt_tables:        [Option<[i32; 64]>; MAX_COMPONENTS],
-            outer_header_snapshot:  Option<ScanHeaderStateSnapshot>,
+            outer_header_snapshot:  Option<Box<ScanHeaderStateSnapshot>>,
             /// Snapshots taken from the checkpoint (if any) so the seek and
             /// SOS-restore steps below do not need to touch `scan_state`.
             checkpoint_view:        Option<CheckpointView>,
-            progressive_view:       Option<ProgressiveCheckpointView>,
+            progressive_view:       Option<Box<ProgressiveCheckpointView>>,
             progressive_fine_view:  Option<ProgressiveFineCheckpointView>
         }
         #[derive(Clone, Copy)]
@@ -3585,7 +3585,8 @@ where
                 outer_append_snapshot:  state.append_snapshot,
                 outer_sos_snapshot:     state.sos_snapshot,
                 outer_qt_tables:        state.header_snapshot.qt_tables,
-                outer_header_snapshot:  needs_outer_header.then(|| state.header_snapshot.clone()),
+                outer_header_snapshot:  needs_outer_header
+                    .then(|| Box::new(state.header_snapshot.clone())),
                 checkpoint_view:        state.scan_checkpoint.as_deref().map(|checkpoint| {
                     CheckpointView {
                         append_snapshot: checkpoint.append_snapshot,
@@ -3597,13 +3598,13 @@ where
                     }
                 }),
                 progressive_view:       state.progressive_checkpoint.as_deref().map(|checkpoint| {
-                    ProgressiveCheckpointView {
+                    Box::new(ProgressiveCheckpointView {
                         append_snapshot: checkpoint.append_snapshot,
                         sos_snapshot:    checkpoint.sos_snapshot,
                         header_snapshot: checkpoint.header_snapshot.clone(),
                         stream_position: checkpoint.stream_position,
                         completed_scans: checkpoint.completed_scans
-                    }
+                    })
                 }),
                 progressive_fine_view:  state.progressive_fine_checkpoint.as_deref().map(
                     |checkpoint| ProgressiveFineCheckpointView {
@@ -3681,7 +3682,7 @@ where
             if let Some(view) = progressive_fine_view {
                 let header_snapshot = progressive_view
                     .as_ref()
-                    .map_or_else(|| outer_header_snapshot.as_ref().unwrap(), |view| &view.header_snapshot);
+                    .map_or_else(|| outer_header_snapshot.as_deref().unwrap(), |view| &view.header_snapshot);
                 self.restore_scan_header_state(header_snapshot);
                 self.stream.set_position(view.stream_position)?;
                 self.progressive_completed_scans = view.completed_scans;
@@ -3716,7 +3717,7 @@ where
                     comp.dc_diff = dc_diff;
                 }
             } else {
-                self.restore_scan_header_state(outer_header_snapshot.as_ref().unwrap());
+                self.restore_scan_header_state(outer_header_snapshot.as_deref().unwrap());
                 self.stream.set_position(scan_start_position)?;
                 self.pixels_decoded = 0;
                 if self.is_progressive {
