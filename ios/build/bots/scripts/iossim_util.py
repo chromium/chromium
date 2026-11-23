@@ -641,6 +641,35 @@ def shutdown_simulator_by_udid(udid: str, path: str = None):
         LOGGER.error('Shutdown failed %s ', ex)
 
 
+def uninstall_app(udid: str, bundle_id: str, path: str | None = None) -> None:
+  """Uninstalls an app from a simulator by UDID and bundle ID.
+
+  Failures are logged as warnings and do not interrupt test execution.
+
+  Args:
+    udid: UDID of the simulator.
+    bundle_id: Bundle identifier of the app to uninstall.
+    path: Optional path to the simulator directory for `xcrun simctl --set`.
+  """
+  LOGGER.info('Uninstalling %s from simulator %s', bundle_id, udid)
+  try:
+    subprocess.check_output(
+      _compose_simctl_cmd(['uninstall', udid, bundle_id], path=path),
+      stderr=subprocess.STDOUT,
+    )
+  except subprocess.CalledProcessError as e:
+    output = (
+      e.output.decode('utf-8', errors='replace')
+      if isinstance(e.output, bytes)
+      else e.output
+    )
+    if isinstance(output, str):
+      output = output.strip()
+    LOGGER.warning(
+      'Failed to uninstall %s from simulator %s: %s', bundle_id, udid, output
+    )
+
+
 def delete_simulator_by_udid(udid, path: str = None):
   """Deletes simulator by its udid.
 

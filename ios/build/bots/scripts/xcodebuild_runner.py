@@ -57,6 +57,14 @@ def _tests_decided_at_runtime(app_name):
   return any(fragment in app_name for fragment in suite_name_fragments)
 
 
+def _is_ios_26_version(version: str | None) -> bool:
+  """Returns whether `version` represents an iOS 26.x runtime."""
+  if not isinstance(version, str):
+    return False
+  major = version.strip().split('.', 1)[0].split('-', 1)[0]
+  return major == '26'
+
+
 def terminate_process(proc):
   """Terminates the process.
 
@@ -161,6 +169,14 @@ class LaunchCommand(object):
     if getattr(self.test_runner, 'benchmark_name', None):
       self.test_runner.save_perf_samples()
 
+  def _should_reset_base_simulator_for_clones(self, clones: int) -> bool:
+    """Returns whether to clear the runner app and shut down the base sim."""
+    return (
+      clones > 1
+      and self.egtests_app.platform_type == constants.IOSPlatformType.IPHONEOS
+      and _is_ios_26_version(getattr(self.test_runner, 'version', None))
+    )
+
   def launch(self):
     """Launches tests using xcodebuild."""
     overall_launch_command_result = ResultCollection()
@@ -194,6 +210,20 @@ class LaunchCommand(object):
         # ideally this should be the last step before running tests, because
         # it boots the simulator.
         iossim_util.disable_simulator_keyboard_tutorial(self.udid)
+
+        if self._should_reset_base_simulator_for_clones(clones):
+          # On iOS 26.x, `backboardd` kills and restarts `SpringBoard` ~1s into
+          # clone boot, triggering a 4-5s launchd respawn throttle. When
+          # `-enumerate-tests` leaves the test runner installed on the booted
+          # base simulator, Clone 2 runs a fast Patch Update that overlaps
+          # `SpringBoard`'s delayed respawn and fails preflight with
+          # `SBMainWorkspace: Busy`. Uninstalling the runner app and shutting
+          # down the base simulator flushes `lsd` state cleanly so clones run a
+          # fresh install after `SpringBoard` is ready.
+          bundle_id = test_apps.get_bundle_id(self.egtests_app.test_app_path)
+          if bundle_id:
+            iossim_util.uninstall_app(self.udid, bundle_id)
+          iossim_util.shutdown_simulator_by_udid(self.udid)
       elif attempt > 0 and isinstance(self.test_runner, DeviceXcodeTestRunner):
         # Uninstall apps on physical devices before retrying to terminate any
         # orphaned runner or host app processes left behind by a previous hung

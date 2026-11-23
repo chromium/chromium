@@ -493,6 +493,283 @@ class XcodebuildRunnerTest(test_runner_test.TestCase):
     mock_watch.assert_not_called()
     mock_disable_kb.assert_called_once_with(_DESTINATION)
 
+  def testIsIos26Version(self):
+    """Tests major-version matching for iOS 26.x runtime strings."""
+    for version in ('26', '26.0', '26.5', '26.5.1', '26.5-beta', ' 26.5 '):
+      with self.subTest(version=version):
+        self.assertTrue(xcodebuild_runner._is_ios_26_version(version))
+    for version in (
+      '18.5',
+      '27.0',
+      '260.0',
+      '126.5',
+      '',
+      None,
+      mock.MagicMock(),
+    ):
+      with self.subTest(version=version):
+        self.assertFalse(xcodebuild_runner._is_ios_26_version(version))
+
+  @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
+  @mock.patch.object(iossim_util, 'watch_simulator_clones_for_daemon_disabling')
+  def testLaunchCommand_resetsBaseSimulatorOnIos26WithClones(
+    self, mock_watch, mock_collect_results
+  ):
+    """Tests that iOS 26.x parallel runs uninstall the runner and shut down."""
+    self.mock(iossim_util, 'is_device_with_udid_simulator', lambda _: True)
+    egtests = test_apps.EgtestsApp(
+      _EGTESTS_APP_PATH, _ALL_EG_TEST_NAMES, constants.IOSPlatformType.IPHONEOS
+    )
+    mock_collect_results.return_value = ResultCollection(
+      test_results=[
+        TestResult('Class1/passedTest1', TestStatus.PASS),
+        TestResult('Class1/passedTest2', TestStatus.PASS),
+      ]
+    )
+    mock_watch.return_value = contextlib.nullcontext()
+    mock_runner = mock.MagicMock(version='26.5')
+    events = []
+
+    launch_command = xcodebuild_runner.LaunchCommand(
+      egtests,
+      _DESTINATION,
+      clones=2,
+      retries=0,
+      readline_timeout=180,
+      exception_checker=None,
+      test_runner=mock_runner,
+    )
+
+    with (
+      mock.patch.object(
+        iossim_util,
+        'disable_simulator_keyboard_tutorial',
+        side_effect=lambda udid: events.append(('disable_kb', udid)),
+      ),
+      mock.patch.object(
+        iossim_util,
+        'uninstall_app',
+        side_effect=lambda udid, bid: events.append(('uninstall', udid, bid)),
+      ),
+      mock.patch.object(
+        iossim_util,
+        'shutdown_simulator_by_udid',
+        side_effect=lambda udid: events.append(('shutdown', udid)),
+      ),
+      mock.patch.object(
+        launch_command,
+        'launch_attempt',
+        side_effect=lambda _cmd: events.append(('launch_attempt',)) or [],
+      ),
+    ):
+      launch_command.launch()
+
+    self.assertEqual(
+      events,
+      [
+        ('disable_kb', _DESTINATION),
+        ('uninstall', _DESTINATION, 'fake-bundle-id'),
+        ('shutdown', _DESTINATION),
+        ('launch_attempt',),
+      ],
+    )
+
+  @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
+  @mock.patch.object(iossim_util, 'disable_simulator_keyboard_tutorial')
+  @mock.patch.object(iossim_util, 'uninstall_app')
+  @mock.patch.object(iossim_util, 'shutdown_simulator_by_udid')
+  @mock.patch.object(iossim_util, 'watch_simulator_clones_for_daemon_disabling')
+  def testLaunchCommand_skipsBaseSimulatorResetOutsideIos26Clones(
+    self,
+    mock_watch,
+    mock_shutdown,
+    mock_uninstall,
+    mock_disable_kb,
+    mock_collect_results,
+  ):
+    """Tests that non-26.x, single-clone, and tvOS runs skip base sim reset."""
+    self.mock(iossim_util, 'is_device_with_udid_simulator', lambda _: True)
+    mock_watch.return_value = contextlib.nullcontext()
+    cases = [
+      ('27.0', 2, constants.IOSPlatformType.IPHONEOS),
+      ('18.5', 2, constants.IOSPlatformType.IPHONEOS),
+      ('26.5', 1, constants.IOSPlatformType.IPHONEOS),
+      ('26.5', 2, constants.IOSPlatformType.TVOS),
+    ]
+    for version, clones, platform_type in cases:
+      with self.subTest(
+        version=version, clones=clones, platform_type=platform_type
+      ):
+        mock_uninstall.reset_mock()
+        mock_shutdown.reset_mock()
+        egtests = test_apps.EgtestsApp(
+          _EGTESTS_APP_PATH, _ALL_EG_TEST_NAMES, platform_type
+        )
+        mock_collect_results.return_value = ResultCollection(
+          test_results=[
+            TestResult('Class1/passedTest1', TestStatus.PASS),
+            TestResult('Class1/passedTest2', TestStatus.PASS),
+          ]
+        )
+        launch_command = xcodebuild_runner.LaunchCommand(
+          egtests,
+          _DESTINATION,
+          clones=clones,
+          retries=0,
+          readline_timeout=180,
+          exception_checker=None,
+          test_runner=mock.MagicMock(version=version),
+        )
+        launch_command.launch()
+        mock_uninstall.assert_not_called()
+        mock_shutdown.assert_not_called()
+
+  @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
+  @mock.patch.object(iossim_util, 'disable_simulator_keyboard_tutorial')
+  @mock.patch.object(iossim_util, 'uninstall_app')
+  @mock.patch.object(iossim_util, 'shutdown_simulator_by_udid')
+  @mock.patch.object(iossim_util, 'watch_simulator_clones_for_daemon_disabling')
+  @mock.patch.object(test_runner.SimulatorTestRunner, 'kill_simulators')
+  def testLaunchCommand_ios26RetryDropsToSingleCloneSkipsReset(
+    self,
+    mock_kill_sims,
+    mock_watch,
+    mock_shutdown,
+    mock_uninstall,
+    mock_disable_kb,
+    mock_collect_results,
+  ):
+    """Tests that retries dropping from clones=2 to clones=1 skip base reset."""
+    self.mock(iossim_util, 'is_device_with_udid_simulator', lambda _: True)
+    mock_watch.return_value = contextlib.nullcontext()
+    egtests = test_apps.EgtestsApp(
+      _EGTESTS_APP_PATH, _ALL_EG_TEST_NAMES, constants.IOSPlatformType.IPHONEOS
+    )
+    mock_collect_results.side_effect = [
+      ResultCollection(
+        test_results=[
+          TestResult('Class1/passedTest1', TestStatus.FAIL),
+          TestResult('Class1/passedTest2', TestStatus.PASS),
+        ]
+      ),
+      ResultCollection(
+        test_results=[
+          TestResult('Class1/passedTest1', TestStatus.PASS),
+        ]
+      ),
+    ]
+    mock_runner = mock.MagicMock(version='26.5', benchmark_name=None)
+    mock_runner.ensure_fresh_simulator_state.return_value = _DESTINATION
+    launch_command = xcodebuild_runner.LaunchCommand(
+      egtests,
+      _DESTINATION,
+      clones=2,
+      retries=1,
+      readline_timeout=180,
+      exception_checker=None,
+      test_runner=mock_runner,
+    )
+    launch_command.launch()
+    # Attempt 0 ran with clones=2 (reset called); attempt 1 dropped to clones=1.
+    self.assertEqual(mock_collect_results.call_count, 2)
+    self.assertEqual(mock_disable_kb.call_count, 2)
+    mock_uninstall.assert_called_once_with(_DESTINATION, 'fake-bundle-id')
+    mock_shutdown.assert_called_once_with(_DESTINATION)
+
+  @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
+  @mock.patch.object(iossim_util, 'disable_simulator_keyboard_tutorial')
+  @mock.patch.object(iossim_util, 'uninstall_app')
+  @mock.patch.object(iossim_util, 'shutdown_simulator_by_udid')
+  @mock.patch.object(iossim_util, 'watch_simulator_clones_for_daemon_disabling')
+  @mock.patch.object(test_runner.SimulatorTestRunner, 'kill_simulators')
+  def testLaunchCommand_ios26RetryWithClonesResetsFreshUdid(
+    self,
+    mock_kill_sims,
+    mock_watch,
+    mock_shutdown,
+    mock_uninstall,
+    mock_disable_kb,
+    mock_collect_results,
+  ):
+    """Tests that a parallel retry on iOS 26.x resets the fresh sim UDID."""
+    self.mock(iossim_util, 'is_device_with_udid_simulator', lambda _: True)
+    many_tests = [f'Class1/test{i}' for i in range(25)]
+    self.mock(test_apps.EgtestsApp, 'get_all_tests', lambda _: many_tests)
+    mock_watch.return_value = contextlib.nullcontext()
+    egtests = test_apps.EgtestsApp(
+      _EGTESTS_APP_PATH, _ALL_EG_TEST_NAMES, constants.IOSPlatformType.IPHONEOS
+    )
+    crashed = ResultCollection()
+    crashed.crashed = True
+    passed = ResultCollection(
+      test_results=[TestResult(t, TestStatus.PASS) for t in many_tests]
+    )
+    mock_collect_results.side_effect = [crashed, passed]
+    mock_runner = mock.MagicMock(version='26.5', benchmark_name=None)
+    fresh_udid = 'FRESH-SIM-UDID'
+    mock_runner.ensure_fresh_simulator_state.return_value = fresh_udid
+    launch_command = xcodebuild_runner.LaunchCommand(
+      egtests,
+      _DESTINATION,
+      clones=2,
+      retries=1,
+      readline_timeout=180,
+      exception_checker=None,
+      test_runner=mock_runner,
+    )
+    launch_command.launch()
+    self.assertEqual(mock_collect_results.call_count, 2)
+    self.assertEqual(
+      mock_uninstall.call_args_list,
+      [
+        mock.call(_DESTINATION, 'fake-bundle-id'),
+        mock.call(fresh_udid, 'fake-bundle-id'),
+      ],
+    )
+    self.assertEqual(
+      mock_shutdown.call_args_list,
+      [mock.call(_DESTINATION), mock.call(fresh_udid)],
+    )
+
+  @mock.patch('xcode_log_parser.XcodeLogParser.collect_test_results')
+  @mock.patch.object(iossim_util, 'disable_simulator_keyboard_tutorial')
+  @mock.patch.object(iossim_util, 'uninstall_app')
+  @mock.patch.object(iossim_util, 'shutdown_simulator_by_udid')
+  @mock.patch.object(iossim_util, 'watch_simulator_clones_for_daemon_disabling')
+  def testLaunchCommand_ios26EmptyBundleIdSkipsUninstallStillShutsDown(
+    self,
+    mock_watch,
+    mock_shutdown,
+    mock_uninstall,
+    mock_disable_kb,
+    mock_collect_results,
+  ):
+    """Tests that an empty bundle ID skips uninstall but still shuts down."""
+    self.mock(iossim_util, 'is_device_with_udid_simulator', lambda _: True)
+    self.mock(test_apps, 'get_bundle_id', lambda _: '')
+    mock_watch.return_value = contextlib.nullcontext()
+    egtests = test_apps.EgtestsApp(
+      _EGTESTS_APP_PATH, _ALL_EG_TEST_NAMES, constants.IOSPlatformType.IPHONEOS
+    )
+    mock_collect_results.return_value = ResultCollection(
+      test_results=[
+        TestResult('Class1/passedTest1', TestStatus.PASS),
+        TestResult('Class1/passedTest2', TestStatus.PASS),
+      ]
+    )
+    launch_command = xcodebuild_runner.LaunchCommand(
+      egtests,
+      _DESTINATION,
+      clones=2,
+      retries=0,
+      readline_timeout=180,
+      exception_checker=None,
+      test_runner=mock.MagicMock(version='26.5'),
+    )
+    launch_command.launch()
+    mock_uninstall.assert_not_called()
+    mock_shutdown.assert_called_once_with(_DESTINATION)
+
 
 class DeviceXcodeTestRunnerTest(test_runner_test.TestCase):
   """Test case to test xcodebuild_runner.DeviceXcodeTestRunner."""

@@ -755,6 +755,42 @@ class GetiOSSimUtil(test_runner_test.TestCase):
     )
     is_simulator_mock.cache_clear.assert_called_with()
 
+  @mock.patch('subprocess.check_output', autospec=True)
+  def test_uninstall_app(self, subprocess_mock, _, _2):
+    """Tests that uninstall_app invokes `xcrun simctl uninstall`."""
+    iossim_util.uninstall_app('UDID', 'org.chromium.runner')
+    subprocess_mock.assert_called_once_with(
+      ['xcrun', 'simctl', 'uninstall', 'UDID', 'org.chromium.runner'],
+      stderr=subprocess.STDOUT,
+    )
+
+  @mock.patch('subprocess.check_output', autospec=True)
+  def test_uninstall_app_with_path(self, subprocess_mock, _, _2):
+    """Tests that uninstall_app passes `--set` when `path` is provided."""
+    iossim_util.uninstall_app('UDID', 'org.chromium.runner', path='/simset')
+    subprocess_mock.assert_called_once_with(
+      [
+        'xcrun',
+        'simctl',
+        '--set',
+        '/simset',
+        'uninstall',
+        'UDID',
+        'org.chromium.runner',
+      ],
+      stderr=subprocess.STDOUT,
+    )
+
+  @mock.patch('subprocess.check_output', autospec=True)
+  def test_uninstall_app_ignores_error(self, subprocess_mock, _, _2):
+    """Tests that uninstall_app logs a warning instead of raising on error."""
+    subprocess_mock.side_effect = subprocess.CalledProcessError(
+      1, ['xcrun', 'simctl', 'uninstall'], output=b'not installed'
+    )
+    with self.assertLogs(iossim_util.LOGGER, level='WARNING') as logs:
+      iossim_util.uninstall_app('UDID', 'org.chromium.runner')
+    self.assertTrue(any('not installed' in msg for msg in logs.output))
+
   @mock.patch('subprocess.check_call', autospec=True)
   @mock.patch.object(iossim_util, 'shutdown_simulator_by_udid', autospec=True)
   def test_wipe_simulator_by_platform_and_version(
