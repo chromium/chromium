@@ -24,7 +24,7 @@ import chrome_device_policy_pb2 as chrome__device__policy__pb2
 
 
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(
-  b'\n\x18traffic_annotation.proto\x12\x12traffic_annotation\x1a\x15\x63hrome_settings.proto\x1a\x1a\x63hrome_device_policy.proto"\xe2\x10\n\x18NetworkTrafficAnnotation\x12\x11\n\tunique_id\x18\x01 \x01(\t\x12J\n\x06source\x18\x02 \x01(\x0b\x32:.traffic_annotation.NetworkTrafficAnnotation.TrafficSource\x12P\n\tsemantics\x18\x03 \x01(\x0b\x32=.traffic_annotation.NetworkTrafficAnnotation.TrafficSemantics\x12J\n\x06policy\x18\x04 \x01(\x0b\x32:.traffic_annotation.NetworkTrafficAnnotation.TrafficPolicy\x12\x10\n\x08\x63omments\x18\x05 \x01(\t\x1a@\n\rTrafficSource\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t\x12\x0c\n\x04line\x18\x03 \x01(\x05\x12\x13\n\x0b\x63\x61ll_number\x18\x04 \x01(\x05\x1a\xca\n\n\x10TrafficSemantics\x12\x0e\n\x06sender\x18\x01 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x0f\n\x07trigger\x18\x03 \x01(\t\x12\x0c\n\x04\x64\x61ta\x18\x04 \x01(\t\x12^\n\x0b\x64\x65stination\x18\x05 \x01(\x0e\x32I.traffic_annotation.NetworkTrafficAnnotation.TrafficSemantics.Destination\x12\x19\n\x11\x64\x65stination_other\x18\x06 \x01(\t\x12X\n\x08internal\x18\x07 \x01(\x0b\x32\x46.traffic_annotation.NetworkTrafficAnnotation.TrafficSemantics.Internal\x12Y\n\tuser_data\x18\x08 \x01(\x0b\x32\x46.traffic_annotation.NetworkTrafficAnnotation.TrafficSemantics.UserData\x12\x15\n\rlast_reviewed\x18\t \x01(\t\x12\x1a\n\x10\x61pi_service_name\x18\n \x01(\tH\x00\x12\x18\n\x0elegacy_api_url\x18\x0b \x01(\tH\x00\x1a\xaa\x01\n\x08Internal\x12`\n\x08\x63ontacts\x18\x01 \x03(\x0b\x32N.traffic_annotation.NetworkTrafficAnnotation.TrafficSemantics.Internal.Contact\x1a<\n\x07\x43ontact\x12\x0f\n\x05\x65mail\x18\x01 \x01(\tH\x00\x12\x10\n\x06owners\x18\x02 \x01(\tH\x00\x42\x0e\n\x0c\x63ontact_type\x1a\xb5\x04\n\x08UserData\x12\x61\n\x04type\x18\x01 \x03(\x0e\x32S.traffic_annotation.NetworkTrafficAnnotation.TrafficSemantics.UserData.UserDataType"\xc5\x03\n\x0cUserDataType\x12\x0f\n\x0bUNSPECIFIED\x10\x00\x12\x10\n\x0c\x41\x43\x43\x45SS_TOKEN\x10\x01\x12\x0b\n\x07\x41\x44\x44RESS\x10\x02\x12\x0e\n\nANDROID_ID\x10\x03\x12\x07\n\x03\x41GE\x10\x04\x12\x12\n\x0e\x41RBITRARY_DATA\x10\x05\x12\x0e\n\nBIRTH_DATE\x10\x06\x12\x0f\n\x0b\x43REDENTIALS\x10\x07\x12\x14\n\x10\x43REDIT_CARD_DATA\x10\x08\x12\r\n\tDEVICE_ID\x10\t\x12\t\n\x05\x45MAIL\x10\n\x12\r\n\tFILE_DATA\x10\x0b\x12\x0b\n\x07GAIA_ID\x10\x0c\x12\n\n\x06GENDER\x10\r\x12\x11\n\rGOVERNMENT_ID\x10\x0e\x12\t\n\x05IMAGE\x10\x0f\x12\x0c\n\x08LOCATION\x10\x11\x12\x08\n\x04NAME\x10\x13\x12\t\n\x05PHONE\x10\x14\x12\x10\n\x0cPROFILE_DATA\x10\x15\x12\x11\n\rSENSITIVE_URL\x10\x16\x12\x10\n\x0cUSER_CONTENT\x10\x1a\x12\x0c\n\x08USERNAME\x10\x1b\x12\x0f\n\x0bWEB_CONTENT\x10\x1c\x12\x0e\n\nHW_OS_INFO\x10\x1d\x12!\n\x1dUSAGE_AND_PERFORMANCE_METRICS\x10\x1e\x12\n\n\x05OTHER\x10\xe7\x07\x12\t\n\x04NONE\x10\xe8\x07"~\n\x0b\x44\x65stination\x12\x0f\n\x0bUNSPECIFIED\x10\x00\x12\x0b\n\x07WEBSITE\x10\x01\x12\x18\n\x14GOOGLE_OWNED_SERVICE\x10\x02\x12\t\n\x05LOCAL\x10\x03\x12 \n\x1cPROXIED_GOOGLE_OWNED_SERVICE\x10\x04\x12\n\n\x05OTHER\x10\xe8\x07\x42\x10\n\x0e\x61pi_identifier\x1a\xa7\x03\n\rTrafficPolicy\x12\x62\n\x0f\x63ookies_allowed\x18\x01 \x01(\x0e\x32I.traffic_annotation.NetworkTrafficAnnotation.TrafficPolicy.CookiesAllowed\x12\x15\n\rcookies_store\x18\x02 \x01(\t\x12\x0f\n\x07setting\x18\x03 \x01(\t\x12\x41\n\rchrome_policy\x18\x04 \x03(\x0b\x32*.enterprise_management.ChromeSettingsProto\x12N\n\x14\x63hrome_device_policy\x18\x07 \x03(\x0b\x32\x30.enterprise_management.ChromeDeviceSettingsProto\x12&\n\x1epolicy_exception_justification\x18\x05 \x01(\t\x12\x1b\n\x13\x64\x65precated_policies\x18\x06 \x03(\t"2\n\x0e\x43ookiesAllowed\x12\x0f\n\x0bUNSPECIFIED\x10\x00\x12\x06\n\x02NO\x10\x01\x12\x07\n\x03YES\x10\x02"u\n!ExtractedNetworkTrafficAnnotation\x12P\n\x1anetwork_traffic_annotation\x18\x01 \x03(\x0b\x32,.traffic_annotation.NetworkTrafficAnnotation"x\n$WhitelistedNetworkTrafficAnnotations\x12P\n\x1anetwork_traffic_annotation\x18\x01 \x03(\x0b\x32,.traffic_annotation.NetworkTrafficAnnotation"\xec\x01\n\x19NetworkTrafficAnnotations\x12\x64\n%extracted_network_traffic_annotations\x18\x01 \x01(\x0b\x32\x35.traffic_annotation.ExtractedNetworkTrafficAnnotation\x12i\n\'whitelisted_network_traffic_annotations\x18\x02 \x01(\x0b\x32\x38.traffic_annotation.WhitelistedNetworkTrafficAnnotationsB\x02H\x03\x62\x06proto3'
+  b'\n\x18traffic_annotation.proto\x12\x12traffic_annotation\x1a\x15\x63hrome_settings.proto\x1a\x1a\x63hrome_device_policy.proto"\xfc\x10\n\x18NetworkTrafficAnnotation\x12\x11\n\tunique_id\x18\x01 \x01(\t\x12J\n\x06source\x18\x02 \x01(\x0b\x32:.traffic_annotation.NetworkTrafficAnnotation.TrafficSource\x12P\n\tsemantics\x18\x03 \x01(\x0b\x32=.traffic_annotation.NetworkTrafficAnnotation.TrafficSemantics\x12J\n\x06policy\x18\x04 \x01(\x0b\x32:.traffic_annotation.NetworkTrafficAnnotation.TrafficPolicy\x12\x10\n\x08\x63omments\x18\x05 \x01(\t\x1a@\n\rTrafficSource\x12\x0c\n\x04\x66ile\x18\x01 \x01(\t\x12\x0c\n\x04line\x18\x03 \x01(\x05\x12\x13\n\x0b\x63\x61ll_number\x18\x04 \x01(\x05\x1a\xe4\n\n\x10TrafficSemantics\x12\x0e\n\x06sender\x18\x01 \x01(\t\x12\x13\n\x0b\x64\x65scription\x18\x02 \x01(\t\x12\x0f\n\x07trigger\x18\x03 \x01(\t\x12\x0c\n\x04\x64\x61ta\x18\x04 \x01(\t\x12^\n\x0b\x64\x65stination\x18\x05 \x01(\x0e\x32I.traffic_annotation.NetworkTrafficAnnotation.TrafficSemantics.Destination\x12\x19\n\x11\x64\x65stination_other\x18\x06 \x01(\t\x12X\n\x08internal\x18\x07 \x01(\x0b\x32\x46.traffic_annotation.NetworkTrafficAnnotation.TrafficSemantics.Internal\x12Y\n\tuser_data\x18\x08 \x01(\x0b\x32\x46.traffic_annotation.NetworkTrafficAnnotation.TrafficSemantics.UserData\x12\x15\n\rlast_reviewed\x18\t \x01(\t\x12\x1a\n\x10\x61pi_service_name\x18\n \x01(\tH\x00\x12\x18\n\x0elegacy_api_url\x18\x0b \x01(\tH\x00\x12\x18\n\x0estatic_content\x18\x0c \x01(\x08H\x00\x1a\xaa\x01\n\x08Internal\x12`\n\x08\x63ontacts\x18\x01 \x03(\x0b\x32N.traffic_annotation.NetworkTrafficAnnotation.TrafficSemantics.Internal.Contact\x1a<\n\x07\x43ontact\x12\x0f\n\x05\x65mail\x18\x01 \x01(\tH\x00\x12\x10\n\x06owners\x18\x02 \x01(\tH\x00\x42\x0e\n\x0c\x63ontact_type\x1a\xb5\x04\n\x08UserData\x12\x61\n\x04type\x18\x01 \x03(\x0e\x32S.traffic_annotation.NetworkTrafficAnnotation.TrafficSemantics.UserData.UserDataType"\xc5\x03\n\x0cUserDataType\x12\x0f\n\x0bUNSPECIFIED\x10\x00\x12\x10\n\x0c\x41\x43\x43\x45SS_TOKEN\x10\x01\x12\x0b\n\x07\x41\x44\x44RESS\x10\x02\x12\x0e\n\nANDROID_ID\x10\x03\x12\x07\n\x03\x41GE\x10\x04\x12\x12\n\x0e\x41RBITRARY_DATA\x10\x05\x12\x0e\n\nBIRTH_DATE\x10\x06\x12\x0f\n\x0b\x43REDENTIALS\x10\x07\x12\x14\n\x10\x43REDIT_CARD_DATA\x10\x08\x12\r\n\tDEVICE_ID\x10\t\x12\t\n\x05\x45MAIL\x10\n\x12\r\n\tFILE_DATA\x10\x0b\x12\x0b\n\x07GAIA_ID\x10\x0c\x12\n\n\x06GENDER\x10\r\x12\x11\n\rGOVERNMENT_ID\x10\x0e\x12\t\n\x05IMAGE\x10\x0f\x12\x0c\n\x08LOCATION\x10\x11\x12\x08\n\x04NAME\x10\x13\x12\t\n\x05PHONE\x10\x14\x12\x10\n\x0cPROFILE_DATA\x10\x15\x12\x11\n\rSENSITIVE_URL\x10\x16\x12\x10\n\x0cUSER_CONTENT\x10\x1a\x12\x0c\n\x08USERNAME\x10\x1b\x12\x0f\n\x0bWEB_CONTENT\x10\x1c\x12\x0e\n\nHW_OS_INFO\x10\x1d\x12!\n\x1dUSAGE_AND_PERFORMANCE_METRICS\x10\x1e\x12\n\n\x05OTHER\x10\xe7\x07\x12\t\n\x04NONE\x10\xe8\x07"~\n\x0b\x44\x65stination\x12\x0f\n\x0bUNSPECIFIED\x10\x00\x12\x0b\n\x07WEBSITE\x10\x01\x12\x18\n\x14GOOGLE_OWNED_SERVICE\x10\x02\x12\t\n\x05LOCAL\x10\x03\x12 \n\x1cPROXIED_GOOGLE_OWNED_SERVICE\x10\x04\x12\n\n\x05OTHER\x10\xe8\x07\x42\x10\n\x0e\x61pi_identifier\x1a\xa7\x03\n\rTrafficPolicy\x12\x62\n\x0f\x63ookies_allowed\x18\x01 \x01(\x0e\x32I.traffic_annotation.NetworkTrafficAnnotation.TrafficPolicy.CookiesAllowed\x12\x15\n\rcookies_store\x18\x02 \x01(\t\x12\x0f\n\x07setting\x18\x03 \x01(\t\x12\x41\n\rchrome_policy\x18\x04 \x03(\x0b\x32*.enterprise_management.ChromeSettingsProto\x12N\n\x14\x63hrome_device_policy\x18\x07 \x03(\x0b\x32\x30.enterprise_management.ChromeDeviceSettingsProto\x12&\n\x1epolicy_exception_justification\x18\x05 \x01(\t\x12\x1b\n\x13\x64\x65precated_policies\x18\x06 \x03(\t"2\n\x0e\x43ookiesAllowed\x12\x0f\n\x0bUNSPECIFIED\x10\x00\x12\x06\n\x02NO\x10\x01\x12\x07\n\x03YES\x10\x02"u\n!ExtractedNetworkTrafficAnnotation\x12P\n\x1anetwork_traffic_annotation\x18\x01 \x03(\x0b\x32,.traffic_annotation.NetworkTrafficAnnotation"x\n$WhitelistedNetworkTrafficAnnotations\x12P\n\x1anetwork_traffic_annotation\x18\x01 \x03(\x0b\x32,.traffic_annotation.NetworkTrafficAnnotation"\xec\x01\n\x19NetworkTrafficAnnotations\x12\x64\n%extracted_network_traffic_annotations\x18\x01 \x01(\x0b\x32\x35.traffic_annotation.ExtractedNetworkTrafficAnnotation\x12i\n\'whitelisted_network_traffic_annotations\x18\x02 \x01(\x0b\x32\x38.traffic_annotation.WhitelistedNetworkTrafficAnnotationsB\x02H\x03\x62\x06proto3'
 )
 
 _globals = globals()
@@ -36,53 +36,53 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'H\003'
   _globals['_NETWORKTRAFFICANNOTATION']._serialized_start = 100
-  _globals['_NETWORKTRAFFICANNOTATION']._serialized_end = 2246
+  _globals['_NETWORKTRAFFICANNOTATION']._serialized_end = 2272
   _globals['_NETWORKTRAFFICANNOTATION_TRAFFICSOURCE']._serialized_start = 399
   _globals['_NETWORKTRAFFICANNOTATION_TRAFFICSOURCE']._serialized_end = 463
   _globals['_NETWORKTRAFFICANNOTATION_TRAFFICSEMANTICS']._serialized_start = 466
-  _globals['_NETWORKTRAFFICANNOTATION_TRAFFICSEMANTICS']._serialized_end = 1820
+  _globals['_NETWORKTRAFFICANNOTATION_TRAFFICSEMANTICS']._serialized_end = 1846
   _globals[
     '_NETWORKTRAFFICANNOTATION_TRAFFICSEMANTICS_INTERNAL'
-  ]._serialized_start = 936
+  ]._serialized_start = 962
   _globals[
     '_NETWORKTRAFFICANNOTATION_TRAFFICSEMANTICS_INTERNAL'
-  ]._serialized_end = 1106
+  ]._serialized_end = 1132
   _globals[
     '_NETWORKTRAFFICANNOTATION_TRAFFICSEMANTICS_INTERNAL_CONTACT'
-  ]._serialized_start = 1046
+  ]._serialized_start = 1072
   _globals[
     '_NETWORKTRAFFICANNOTATION_TRAFFICSEMANTICS_INTERNAL_CONTACT'
-  ]._serialized_end = 1106
+  ]._serialized_end = 1132
   _globals[
     '_NETWORKTRAFFICANNOTATION_TRAFFICSEMANTICS_USERDATA'
-  ]._serialized_start = 1109
+  ]._serialized_start = 1135
   _globals[
     '_NETWORKTRAFFICANNOTATION_TRAFFICSEMANTICS_USERDATA'
-  ]._serialized_end = 1674
+  ]._serialized_end = 1700
   _globals[
     '_NETWORKTRAFFICANNOTATION_TRAFFICSEMANTICS_USERDATA_USERDATATYPE'
-  ]._serialized_start = 1221
+  ]._serialized_start = 1247
   _globals[
     '_NETWORKTRAFFICANNOTATION_TRAFFICSEMANTICS_USERDATA_USERDATATYPE'
-  ]._serialized_end = 1674
+  ]._serialized_end = 1700
   _globals[
     '_NETWORKTRAFFICANNOTATION_TRAFFICSEMANTICS_DESTINATION'
-  ]._serialized_start = 1676
+  ]._serialized_start = 1702
   _globals[
     '_NETWORKTRAFFICANNOTATION_TRAFFICSEMANTICS_DESTINATION'
-  ]._serialized_end = 1802
-  _globals['_NETWORKTRAFFICANNOTATION_TRAFFICPOLICY']._serialized_start = 1823
-  _globals['_NETWORKTRAFFICANNOTATION_TRAFFICPOLICY']._serialized_end = 2246
+  ]._serialized_end = 1828
+  _globals['_NETWORKTRAFFICANNOTATION_TRAFFICPOLICY']._serialized_start = 1849
+  _globals['_NETWORKTRAFFICANNOTATION_TRAFFICPOLICY']._serialized_end = 2272
   _globals[
     '_NETWORKTRAFFICANNOTATION_TRAFFICPOLICY_COOKIESALLOWED'
-  ]._serialized_start = 2196
+  ]._serialized_start = 2222
   _globals[
     '_NETWORKTRAFFICANNOTATION_TRAFFICPOLICY_COOKIESALLOWED'
-  ]._serialized_end = 2246
-  _globals['_EXTRACTEDNETWORKTRAFFICANNOTATION']._serialized_start = 2248
-  _globals['_EXTRACTEDNETWORKTRAFFICANNOTATION']._serialized_end = 2365
-  _globals['_WHITELISTEDNETWORKTRAFFICANNOTATIONS']._serialized_start = 2367
-  _globals['_WHITELISTEDNETWORKTRAFFICANNOTATIONS']._serialized_end = 2487
-  _globals['_NETWORKTRAFFICANNOTATIONS']._serialized_start = 2490
-  _globals['_NETWORKTRAFFICANNOTATIONS']._serialized_end = 2726
+  ]._serialized_end = 2272
+  _globals['_EXTRACTEDNETWORKTRAFFICANNOTATION']._serialized_start = 2274
+  _globals['_EXTRACTEDNETWORKTRAFFICANNOTATION']._serialized_end = 2391
+  _globals['_WHITELISTEDNETWORKTRAFFICANNOTATIONS']._serialized_start = 2393
+  _globals['_WHITELISTEDNETWORKTRAFFICANNOTATIONS']._serialized_end = 2513
+  _globals['_NETWORKTRAFFICANNOTATIONS']._serialized_start = 2516
+  _globals['_NETWORKTRAFFICANNOTATIONS']._serialized_end = 2752
 # @@protoc_insertion_point(module_scope)

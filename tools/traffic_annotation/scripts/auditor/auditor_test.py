@@ -1082,6 +1082,69 @@ class AuditorTest(unittest.TestCase):
     self.assertEqual(ErrorType.INVALID_LEGACY_API_URL, errors[0].type)
     self.assertIn("is not a valid URL", str(errors[0]))
 
+  def test_check_static_content_format(self) -> None:
+    """Tests static_content validation, oneof exclusivity, and archive load."""
+    # Unset is valid.
+    annotation = self.create_annotation_sample()
+    self.assertEqual([], annotation.check_static_content_format())
+
+    # static_content: true is valid.
+    annotation.proto.semantics.static_content = True
+    self.assertEqual([], annotation.check_static_content_format())
+    self.assertEqual([], self.auditor._check_complete_annotation(annotation))
+
+    # static_content: false is rejected.
+    annotation.proto.semantics.static_content = False
+    errors = self.auditor._check_complete_annotation(annotation)
+    self.assertEqual(1, len(errors))
+    self.assertEqual(ErrorType.INVALID_STATIC_CONTENT, errors[0].type)
+    self.assertIn("static_content must be true", str(errors[0]))
+
+    # Oneof rejects setting static_content alongside api_service_name.
+    conflict = extractor.Annotation(
+      language=extractor.CPP_LANGUAGE,
+      file_path=Path("chrome/browser/foobar.cc"),
+      line_number=1,
+      type_name=extractor.AnnotationType.COMPLETE,
+      unique_id="test_oneof_conflict",
+      text=(
+        'semantics { api_service_name: "foo.googleapis.com" '
+        'static_content: true }'
+      ),
+    )
+    errors = Annotation().deserialize(conflict)
+    self.assertEqual(1, len(errors))
+    self.assertEqual(ErrorType.SYNTAX, errors[0].type)
+
+    # Non-boolean literal in textproto is rejected as syntax error.
+    bad_type = extractor.Annotation(
+      language=extractor.CPP_LANGUAGE,
+      file_path=Path("chrome/browser/foobar.cc"),
+      line_number=1,
+      type_name=extractor.AnnotationType.COMPLETE,
+      unique_id="test_bad_static_content_type",
+      text='semantics { static_content: "yes" }',
+    )
+    errors = Annotation().deserialize(bad_type)
+    self.assertEqual(1, len(errors))
+    self.assertEqual(ErrorType.SYNTAX, errors[0].type)
+
+    # Archiving/reloading a partial annotation with static_content (tag 12).
+    archived = ArchivedAnnotation(
+      type=Annotation.Type.PARTIAL,
+      id=UniqueId("static_partial"),
+      second_id=UniqueId("static_completing"),
+      content_hash_code=HashCode(1),
+      os_list=["linux"],
+      added_in_milestone=153,
+      semantics_fields=[12],
+      policy_fields=[],
+      file_path=Path("foobar.cc"),
+    )
+    loaded = Annotation.load_from_archive(archived)
+    self.assertTrue(loaded.proto.semantics.static_content)
+    self.assertEqual([], loaded.check_static_content_format())
+
   def test_missing_new_fields_safe_listed_file(self) -> None:
     """Check annotation without new fields, related class is
     in safe_list.txt. Annotation Check does not return

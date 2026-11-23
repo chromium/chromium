@@ -68,6 +68,8 @@ class ErrorType(Enum):
   INVALID_API_SERVICE_NAME = auto()
   # Legacy API URL is invalid or uses a googleapis.com subdomain.
   INVALID_LEGACY_API_URL = auto()
+  # static_content must be true if specified.
+  INVALID_STATIC_CONTENT = auto()
 
 
 class AuditorError:
@@ -97,6 +99,7 @@ class AuditorError:
       ErrorType.HEADER_ANNOTATION,
       ErrorType.INVALID_API_SERVICE_NAME,
       ErrorType.INVALID_LEGACY_API_URL,
+      ErrorType.INVALID_STATIC_CONTENT,
     ]
 
     if message:
@@ -315,6 +318,14 @@ class AuditorError:
       return (
         "Invalid value of legacy_api_url in annotation at {}:{}: {}".format(
           self.file_path, self.line, self._details[0]
+        )
+      )
+
+    if self.type == ErrorType.INVALID_STATIC_CONTENT:
+      return (
+        "Invalid value of static_content in annotation at {}:{}. "
+        "If specified, static_content must be true.".format(
+          self.file_path, self.line
         )
       )
 

@@ -226,17 +226,22 @@ message NetworkTrafficAnnotation {
     // in YYYY-MM-DD format.
     string last_reviewed = 9;
 
-    // Unique identifier for API endpoint. This field should be populated
-    // when destination is GOOGLE_OWNED_SERVICE.
+    // Unique identifier for service endpoint, used for dependency mapping
+    // only. This field must be populated when destination is
+    // GOOGLE_OWNED_SERVICE.
     oneof api_identifier {
       // The official API Service Name
       // (https://google.aip.dev/9#api-service-name) This is the identifier of
-      // the backend service (e.g., "pubsub.googleapis.com").
+      // the backend service (e.g., "pubsub.googleapis.com"), not an actual network
+      // endpoint URL fetched by Chrome.
       string api_service_name = 10;
-      // Endpoint URL for legacy APIs that do not support API service names.
+      // Endpoint URL for APIs that do not support API service names.
       // The string should be long enough to uniquely identify the service,
       // but no longer (e.g. "https://clients4.google.com/chrome-sync").
       string legacy_api_url = 11;
+      // Set to true if the request fetches static content rather than calling
+      // a backend API.
+      bool static_content = 12;
     };
   }
 

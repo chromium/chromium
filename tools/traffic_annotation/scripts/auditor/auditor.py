@@ -736,6 +736,22 @@ class Annotation:
 
     return []
 
+  def check_static_content_format(self) -> List[AuditorError]:
+    """If static_content field is populated, checks that its value is true."""
+    if (
+      self.proto.semantics.WhichOneof("api_identifier") == "static_content"
+      and not self.proto.semantics.static_content
+    ):
+      return [
+        AuditorError(
+          ErrorType.INVALID_STATIC_CONTENT,
+          "",
+          self.file,
+          self.line,
+        )
+      ]
+    return []
+
   def has_policy(self) -> bool:
     """Return true if any policy field is set"""
     return (
@@ -2184,6 +2200,9 @@ class Auditor:
 
     if not errors:
       errors = annotation.check_legacy_api_url_format()
+
+    if not errors:
+      errors = annotation.check_static_content_format()
 
     return errors
 
