@@ -5,6 +5,7 @@
 #include "chrome/browser/password_manager/password_change/glic_password_change_actuator.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <string_view>
@@ -114,32 +115,69 @@ std::string GetReachFormPrompt(const std::string& domain,
 #endif
 }
 
-std::optional<GlicPasswordChangeActuator::TaskResult> ParseTaskResult(
-    const std::string& response_text) {
+void LogTriggeringUpdate(
+    content::WebContents* originator,
+    const glic::mojom::ExperimentalTriggeringUpdate* update,
+    glic::mojom::SubscriberObservationType observation) {
+  std::unique_ptr<Logger> logger = GetLoggerIfAvailable(originator);
+  if (!logger) {
+    return;
+  }
+  logger->LogNumber(Logger::STRING_PASSWORD_CHANGE_STATUS_UPDATE,
+                    static_cast<int>(observation));
+  if (update &&
+      update->type == glic::mojom::ExperimentalTriggeringUpdateType::kWorklog) {
+    logger->LogString(Logger::STRING_PASSWORD_CHANGE_WORKLOG, update->data);
+  }
+}
+
+std::optional<PasswordChangeActuator::State> ParseStateFromUpdateData(
+    std::string_view response_text) {
+  using State = PasswordChangeActuator::State;
+  static constexpr std::pair<std::string_view, State> kResponseStates[] = {
+      {"PASSWORD_CHANGE_FINISHED_SUCCESSFULLY",
+       State::kPasswordSuccessfullyChanged},
+      {"FAILED_TO_FIND_CHANGE_PASSWORD_FORM",
+       State::kChangePasswordFormNotFound},
+      {"FAILED_TO_CHANGE_PASSWORD", State::kPasswordChangeFailed},
+      {"USER_INTERVENTION_REQUIRED", State::kOtpDetected},
+      {"UNKNOWN_FAILURE", State::kPasswordChangeFailed},
+  };
+
   std::string clean_text = base::CollapseWhitespaceASCII(
       response_text, /*trim_sequences_with_line_breaks=*/true);
-
-  if (clean_text.find("PASSWORD_CHANGE_FINISHED_SUCCESSFULLY") !=
-      std::string::npos) {
-    return GlicPasswordChangeActuator::TaskResult::
-        kPasswordChangeFinishedSuccessfully;
+  for (const auto& [token, state] : kResponseStates) {
+    if (clean_text.contains(token)) {
+      return state;
+    }
   }
-  if (clean_text.find("FAILED_TO_FIND_CHANGE_PASSWORD_FORM") !=
-      std::string::npos) {
-    return GlicPasswordChangeActuator::TaskResult::
-        kFailedToFindChangePasswordForm;
-  }
-  if (clean_text.find("FAILED_TO_CHANGE_PASSWORD") != std::string::npos) {
-    return GlicPasswordChangeActuator::TaskResult::kFailedToChangePassword;
-  }
-  if (clean_text.find("USER_INTERVENTION_REQUIRED") != std::string::npos) {
-    return GlicPasswordChangeActuator::TaskResult::kUserInterventionRequired;
-  }
-  if (clean_text.find("UNKNOWN_FAILURE") != std::string::npos) {
-    return GlicPasswordChangeActuator::TaskResult::kUnknownFailure;
-  }
-
   return std::nullopt;
+}
+
+std::optional<PasswordChangeActuator::State> GetTerminalState(
+    const glic::mojom::ExperimentalTriggeringUpdate* update,
+    glic::mojom::SubscriberObservationType observation) {
+  using State = PasswordChangeActuator::State;
+  if (observation == glic::mojom::SubscriberObservationType::kError) {
+    return State::kPasswordChangeFailed;
+  }
+  if (!update) {
+    return std::nullopt;
+  }
+
+  switch (update->type) {
+    case glic::mojom::ExperimentalTriggeringUpdateType::kTerminalFailed:
+    case glic::mojom::ExperimentalTriggeringUpdateType::kTerminalStopped:
+      return State::kPasswordChangeFailed;
+    case glic::mojom::ExperimentalTriggeringUpdateType::kYieldToUser:
+    case glic::mojom::ExperimentalTriggeringUpdateType::kPaused:
+      return State::kOtpDetected;
+    case glic::mojom::ExperimentalTriggeringUpdateType::kUnknown:
+    case glic::mojom::ExperimentalTriggeringUpdateType::kWorklog:
+    case glic::mojom::ExperimentalTriggeringUpdateType::kTerminalCompletion:
+    case glic::mojom::ExperimentalTriggeringUpdateType::kResumed:
+      return ParseStateFromUpdateData(update->data);
+  }
 }
 
 origin_gating::TaskPolicyConfig BuildPasswordChangeContainerConfig(
@@ -365,9 +403,9 @@ GlicPasswordChangeActuator::GetOrGenerateNewPassword(
   return *generated_password_;
 }
 
-void GlicPasswordChangeActuator::SaveGeneratedPassword() {
+bool GlicPasswordChangeActuator::SaveGeneratedPassword() {
   if (!form_manager_) {
-    return;
+    return false;
   }
   CHECK(parsed_form_);
   // TODO(crbug.com/581337075): Figure out if waiting for `OnFetchCompleted()`
@@ -379,6 +417,7 @@ void GlicPasswordChangeActuator::SaveGeneratedPassword() {
   // `OnFetchCompleted()` is not dropped, so resetting `parsed_form_` enforces
   // that `SaveGeneratedPassword()` is called at most once.
   parsed_form_.reset();
+  return true;
 }
 
 void GlicPasswordChangeActuator::AddObserver(
@@ -545,63 +584,20 @@ void GlicPasswordChangeActuator::OnUpdatesReceiverDisconnected() {
 void GlicPasswordChangeActuator::OnUpdate(
     glic::mojom::ExperimentalTriggeringUpdatePtr update,
     glic::mojom::SubscriberObservationType observation) {
-  if (auto logger = GetLoggerIfAvailable(originator_.get())) {
-    logger->LogNumber(Logger::STRING_PASSWORD_CHANGE_STATUS_UPDATE,
-                      static_cast<int>(observation));
-    if (update && update->type ==
-                      glic::mojom::ExperimentalTriggeringUpdateType::kWorklog) {
-      logger->LogString(Logger::STRING_PASSWORD_CHANGE_WORKLOG, update->data);
+  LogTriggeringUpdate(originator_.get(), update.get(), observation);
+
+  std::optional<State> terminal_state =
+      GetTerminalState(update.get(), observation);
+  if (!terminal_state.has_value()) {
+    return;
+  }
+
+  CloseGlicSession();
+  if (*terminal_state == State::kPasswordSuccessfullyChanged) {
+    // Flow completed; try saving the new password as the main password.
+    if (!SaveGeneratedPassword()) {
+      terminal_state = State::kPasswordChangeFailed;
     }
   }
-
-  if (observation == glic::mojom::SubscriberObservationType::kError) {
-    CloseGlicSession();
-    NotifyStateChanged(PasswordChangeActuator::State::kPasswordChangeFailed);
-    return;
-  }
-
-  if (!update) {
-    return;
-  }
-
-  switch (update->type) {
-    case glic::mojom::ExperimentalTriggeringUpdateType::kTerminalFailed:
-    case glic::mojom::ExperimentalTriggeringUpdateType::kTerminalStopped:
-      CloseGlicSession();
-      NotifyStateChanged(PasswordChangeActuator::State::kPasswordChangeFailed);
-      return;
-    case glic::mojom::ExperimentalTriggeringUpdateType::kYieldToUser:
-    case glic::mojom::ExperimentalTriggeringUpdateType::kPaused:
-      CloseGlicSession();
-      NotifyStateChanged(PasswordChangeActuator::State::kOtpDetected);
-      return;
-    case glic::mojom::ExperimentalTriggeringUpdateType::kUnknown:
-    case glic::mojom::ExperimentalTriggeringUpdateType::kWorklog:
-    case glic::mojom::ExperimentalTriggeringUpdateType::kTerminalCompletion:
-    case glic::mojom::ExperimentalTriggeringUpdateType::kResumed:
-      std::optional<TaskResult> parsed = ParseTaskResult(update->data);
-      if (!parsed.has_value()) {
-        return;
-      }
-      CloseGlicSession();
-      switch (*parsed) {
-        case TaskResult::kPasswordChangeFinishedSuccessfully:
-          SaveGeneratedPassword();
-          NotifyStateChanged(
-              PasswordChangeActuator::State::kPasswordSuccessfullyChanged);
-          return;
-        case TaskResult::kFailedToFindChangePasswordForm:
-          NotifyStateChanged(
-              PasswordChangeActuator::State::kChangePasswordFormNotFound);
-          return;
-        case TaskResult::kFailedToChangePassword:
-        case TaskResult::kUnknownFailure:
-          NotifyStateChanged(
-              PasswordChangeActuator::State::kPasswordChangeFailed);
-          return;
-        case TaskResult::kUserInterventionRequired:
-          NotifyStateChanged(PasswordChangeActuator::State::kOtpDetected);
-          return;
-      }
-  }
+  NotifyStateChanged(*terminal_state);
 }

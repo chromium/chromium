@@ -23,6 +23,7 @@
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/password_change/features.h"
 #include "chrome/browser/password_manager/password_change/glic_password_change_actuator.h"
 #include "chrome/browser/password_manager/password_change/password_change_from_checkup_delegate.h"
@@ -40,6 +41,9 @@
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_form_cache.h"
+#include "components/password_manager/core/browser/password_form_manager.h"
+#include "components/password_manager/core/browser/password_manager_interface.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/password_string.h"
@@ -186,6 +190,20 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeFromCheckupDelegateBrowserTest,
   auto* actuator = static_cast<GlicPasswordChangeActuator*>(
       delegate->get_actuator_for_testing());
   ASSERT_TRUE(actuator);
+
+  ChromePasswordManagerClient* client =
+      ChromePasswordManagerClient::FromWebContents(
+          actuator->GetExecutorWebContents());
+  ASSERT_TRUE(client);
+  password_manager::PasswordFormCache* form_cache =
+      client->GetPasswordManager()->GetPasswordFormCache();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !form_cache->GetFormManagers().empty() &&
+           form_cache->GetFormManagers()[0]->GetParsedObservedForm() != nullptr;
+  }));
+  ASSERT_TRUE(
+      actuator->GetOrGenerateNewPassword(form_cache->GetFormManagers()[0].get())
+          .has_value());
 
   auto update = glic::mojom::ExperimentalTriggeringUpdate::New();
   update->data = "PASSWORD_CHANGE_FINISHED_SUCCESSFULLY";

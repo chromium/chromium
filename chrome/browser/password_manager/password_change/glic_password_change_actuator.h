@@ -40,15 +40,6 @@ class GlicPasswordChangeActuator
     : public PasswordChangeActuator,
       public glic::mojom::ExperimentalTriggeringUpdatesHandler {
  public:
-  // Enumerates the task outcome returned by Glic.
-  enum class TaskResult {
-    kPasswordChangeFinishedSuccessfully,
-    kFailedToFindChangePasswordForm,
-    kFailedToChangePassword,
-    kUserInterventionRequired,
-    kUnknownFailure,
-  };
-
   GlicPasswordChangeActuator(
       password_manager::LeakedPasswordDetails leak_details,
       content::WebContents* originator);
@@ -87,7 +78,9 @@ class GlicPasswordChangeActuator
   void NotifyStateChanged(PasswordChangeActuator::State new_state);
   // Saves the generated password, keeping the old password as a backup. Must be
   // called at most once, when the password change finishes successfully.
-  void SaveGeneratedPassword();
+  // Returns true if the password save was initiated, or false if no new
+  // password was generated.
+  [[nodiscard]] bool SaveGeneratedPassword();
 
   void SubscribeForTriggeringUpdates(
       base::WeakPtr<glic::GlicInstance> instance);

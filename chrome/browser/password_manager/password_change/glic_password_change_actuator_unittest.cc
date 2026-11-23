@@ -338,15 +338,21 @@ class GlicPasswordChangeActuatorTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<GlicPasswordChangeActuator> custom_actuator_;
 };
 
-// 1. PasswordChangeSuccessNotifiesObserver:
+// 1. PasswordChangeSuccessWithoutGeneratedPasswordFails:
 // Simulates the flow and OnUpdate with kTerminalCompletion /
-// PASSWORD_CHANGE_FINISHED_SUCCESSFULLY, verifying state transitions to
-// kPasswordSuccessfullyChanged and actor login service configuration.
-TEST_F(GlicPasswordChangeActuatorTest, PasswordChangeSuccessNotifiesObserver) {
+// PASSWORD_CHANGE_FINISHED_SUCCESSFULLY without generating a new password,
+// verifying actor login service configuration and transition to
+// kPasswordChangeFailed.
+TEST_F(GlicPasswordChangeActuatorTest,
+       PasswordChangeSuccessWithoutGeneratedPasswordFails) {
+  testing::InSequence s;
   EXPECT_CALL(
       observer(),
       OnActuationStateChanged(
           PasswordChangeActuator::State::kWaitingForChangePasswordForm));
+  EXPECT_CALL(observer(),
+              OnActuationStateChanged(
+                  PasswordChangeActuator::State::kPasswordChangeFailed));
 
   // Start the actuator.
   actuator()->Start();
@@ -363,11 +369,8 @@ TEST_F(GlicPasswordChangeActuatorTest, PasswordChangeSuccessNotifiesObserver) {
           &task->GetExecutionEngine().GetActorLoginService()),
       nullptr);
 
-  // Deliver successful completion update via public OnUpdate.
-  EXPECT_CALL(observer(),
-              OnActuationStateChanged(
-                  PasswordChangeActuator::State::kPasswordSuccessfullyChanged));
-
+  // `GetOrGenerateNewPassword()` is not called, so `form_manager_` is not set
+  // up and `SaveGeneratedPassword()` fails at the end of the flow.
   auto update = glic::mojom::ExperimentalTriggeringUpdate::New();
   update->type =
       glic::mojom::ExperimentalTriggeringUpdateType::kTerminalCompletion;
@@ -438,6 +441,58 @@ TEST_F(GlicPasswordChangeActuatorTest,
       glic::mojom::ExperimentalTriggeringUpdateType::kTerminalCompletion;
   update->data =
       "FAILED_TO_FIND_CHANGE_PASSWORD_FORM: could not locate password form";
+  actuator()->OnUpdate(std::move(update),
+                       glic::mojom::SubscriberObservationType::kUpdate);
+}
+
+TEST_F(GlicPasswordChangeActuatorTest,
+       ObservationErrorNotifiesPasswordChangeFailed) {
+  testing::InSequence s;
+  EXPECT_CALL(
+      observer(),
+      OnActuationStateChanged(
+          PasswordChangeActuator::State::kWaitingForChangePasswordForm));
+  EXPECT_CALL(observer(),
+              OnActuationStateChanged(
+                  PasswordChangeActuator::State::kPasswordChangeFailed));
+
+  actuator()->Start();
+  actuator()->OnUpdate(/*update=*/nullptr,
+                       glic::mojom::SubscriberObservationType::kError);
+}
+
+TEST_F(GlicPasswordChangeActuatorTest,
+       NonTerminalWorklogDoesNotNotifyObserver) {
+  EXPECT_CALL(
+      observer(),
+      OnActuationStateChanged(
+          PasswordChangeActuator::State::kWaitingForChangePasswordForm));
+  actuator()->Start();
+  testing::Mock::VerifyAndClearExpectations(&observer());
+
+  EXPECT_CALL(observer(), OnActuationStateChanged).Times(0);
+  auto update = glic::mojom::ExperimentalTriggeringUpdate::New();
+  update->type = glic::mojom::ExperimentalTriggeringUpdateType::kWorklog;
+  update->data = "Navigating to account security settings...";
+  actuator()->OnUpdate(std::move(update),
+                       glic::mojom::SubscriberObservationType::kUpdate);
+}
+
+TEST_F(GlicPasswordChangeActuatorTest,
+       UserInterventionRequiredNotifiesOtpDetected) {
+  testing::InSequence s;
+  EXPECT_CALL(
+      observer(),
+      OnActuationStateChanged(
+          PasswordChangeActuator::State::kWaitingForChangePasswordForm));
+  EXPECT_CALL(observer(), OnActuationStateChanged(
+                              PasswordChangeActuator::State::kOtpDetected));
+
+  actuator()->Start();
+  auto update = glic::mojom::ExperimentalTriggeringUpdate::New();
+  update->type =
+      glic::mojom::ExperimentalTriggeringUpdateType::kTerminalCompletion;
+  update->data = "USER_INTERVENTION_REQUIRED: waiting for 2FA code";
   actuator()->OnUpdate(std::move(update),
                        glic::mojom::SubscriberObservationType::kUpdate);
 }
@@ -802,6 +857,9 @@ TEST_F(GlicPasswordChangeActuatorNewPasswordTest,
   ASSERT_TRUE(new_password.has_value());
   ASSERT_EQ(GetStoredCredentials().size(), 1u);
 
+  EXPECT_CALL(observer(),
+              OnActuationStateChanged(
+                  PasswordChangeActuator::State::kPasswordSuccessfullyChanged));
   auto update = glic::mojom::ExperimentalTriggeringUpdate::New();
   update->type =
       glic::mojom::ExperimentalTriggeringUpdateType::kTerminalCompletion;
@@ -827,6 +885,9 @@ TEST_F(GlicPasswordChangeActuatorNewPasswordTest,
   ASSERT_TRUE(new_password.has_value());
   ASSERT_EQ(GetStoredCredentials().size(), 1u);
 
+  EXPECT_CALL(observer(),
+              OnActuationStateChanged(
+                  PasswordChangeActuator::State::kPasswordSuccessfullyChanged));
   auto update = glic::mojom::ExperimentalTriggeringUpdate::New();
   update->type =
       glic::mojom::ExperimentalTriggeringUpdateType::kTerminalCompletion;
@@ -850,6 +911,9 @@ TEST_F(GlicPasswordChangeActuatorNewPasswordTest,
   ASSERT_TRUE(new_password.has_value());
   ASSERT_EQ(GetStoredCredentials().size(), 1u);
 
+  EXPECT_CALL(observer(),
+              OnActuationStateChanged(
+                  PasswordChangeActuator::State::kPasswordSuccessfullyChanged));
   auto update = glic::mojom::ExperimentalTriggeringUpdate::New();
   update->type =
       glic::mojom::ExperimentalTriggeringUpdateType::kTerminalCompletion;
@@ -874,6 +938,9 @@ TEST_F(GlicPasswordChangeActuatorNewPasswordTest,
 
   // `TestPasswordStore` services `Fetch()` via a posted task, so without
   // spinning a `RunLoop` the refetch is still in flight when `OnUpdate()` runs.
+  EXPECT_CALL(observer(),
+              OnActuationStateChanged(
+                  PasswordChangeActuator::State::kPasswordSuccessfullyChanged));
   auto update = glic::mojom::ExperimentalTriggeringUpdate::New();
   update->type =
       glic::mojom::ExperimentalTriggeringUpdateType::kTerminalCompletion;
