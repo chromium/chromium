@@ -553,6 +553,7 @@ class CORE_EXPORT HTMLSelectElement final
   void UpdateMutationObserver();
 
   void DidChangeIsInCanvasSubtree(CanvasSubtreePropagation) final;
+  bool ClearSuggestedValueForCanvas() final;
 
   // last_on_change_option_ is the currently selected option. It provides faster
   // access to the currently selected option than iterating through each option

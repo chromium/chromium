@@ -69,6 +69,11 @@ class CORE_EXPORT HTMLFormControlElementWithState
   void DispatchChangeEvent();
   void DispatchCancelEvent();
 
+  // Calls ClearSuggestedValueForCanvas() if this control is still in a canvas
+  // subtree. Can run script. Returns true if that changed anything. Called
+  // from the document lifecycle; see ScheduleClearSuggestedValueForCanvas().
+  bool RunScheduledClearSuggestedValueForCanvas();
+
  protected:
   HTMLFormControlElementWithState(const QualifiedName& tag_name, Document&);
 
@@ -76,6 +81,20 @@ class CORE_EXPORT HTMLFormControlElementWithState
   bool IsFormControlElementWithState() const final;
 
   void ResetImpl() override;
+  void DidMoveToNewDocument(Document& old_document) override;
+
+  // Clearing a suggested value rebuilds the control's user-agent shadow tree,
+  // which can move focus and run script. DidChangeIsInCanvasSubtree() is
+  // reachable from slot assignment recalc, where that is not allowed (rules
+  // R1-R3 in slot_assignment.h), so it calls this instead. This queues the
+  // control on its document, and LocalFrameView::
+  // UpdateLifecyclePhasesInternal() calls
+  // RunScheduledClearSuggestedValueForCanvas() before paint, so the
+  // suggested value is never painted into the canvas.
+  void ScheduleClearSuggestedValueForCanvas();
+  // Clears the suggested value. Returns true if the suggested value or the
+  // autofill state actually changed.
+  virtual bool ClearSuggestedValueForCanvas() { return false; }
 
   // State machine that denotes whether the user made some manual modifications
   // to the field since page load or form reset. Used for autofill and for

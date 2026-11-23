@@ -939,11 +939,21 @@ void HTMLSelectElement::DidChangeIsInCanvasSubtree(
     CanvasSubtreePropagation propagation_behavior) {
   HTMLFormControlElementWithState::DidChangeIsInCanvasSubtree(
       propagation_behavior);
-  if (IsInCanvasSubtree()) {
+  if (IsInCanvasSubtree() && suggested_option_) {
     // Hide suggested values when under canvas, to prevent leaking this
-    // information to javascript.
-    SetSuggestedOption(nullptr);
+    // information to javascript. SetSuggestedOption() updates the user-agent
+    // shadow tree, which is not allowed during slot assignment recalc, so it
+    // runs later in the document lifecycle, before paint.
+    ScheduleClearSuggestedValueForCanvas();
   }
+}
+
+bool HTMLSelectElement::ClearSuggestedValueForCanvas() {
+  if (!suggested_option_) {
+    return false;
+  }
+  SetSuggestedOption(nullptr);
+  return true;
 }
 
 void HTMLSelectElement::OptionSelectionStateChanged(HTMLOptionElement* option,

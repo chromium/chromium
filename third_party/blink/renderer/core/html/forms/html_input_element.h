@@ -549,6 +549,7 @@ class CORE_EXPORT HTMLInputElement
   void AdjustStyle(ComputedStyleBuilder&) override;
 
   void DidChangeIsInCanvasSubtree(CanvasSubtreePropagation) final;
+  bool ClearSuggestedValueForCanvas() final;
 
   static constexpr int kDefaultSize = 20;
 

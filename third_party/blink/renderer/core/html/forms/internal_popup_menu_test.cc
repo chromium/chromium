@@ -1149,18 +1149,12 @@ TEST_F(InternalPopupMenuTest, DisconnectDuringPopupInitialization) {
   test::RunPendingTasks();
 }
 
-// Regression test for crbug.com/586391223: a forced opener layout during popup
-// creation can run script (via slot recalc moving an iframe with a previewed
-// temporal input into a <canvas> subtree) that spins a nested run loop and
-// delivers the browser's PopupWidgetHost disconnect.
+// Regression test for crbug.com/586391223 and crbug.com/574469802: a forced
+// opener layout during popup creation must not run script during slot
+// assignment recalc when moving an iframe with a previewed temporal input into
+// a <canvas> subtree. Clearing the suggested value (which rebuilds fields and
+// fires blur) is deferred to the document lifecycle before paint.
 TEST_F(InternalPopupMenuTest, DisconnectDuringPopupConstruction) {
-#if DCHECK_IS_ON()
-  // Reaching this path trips a separate, pre-existing DCHECK:
-  // SlotAssignment::RecalcAssignment() holds a FlatTreeTraversalForbiddenScope
-  // while DateTimeEditElement::GetLayout() focuses a rebuilt sub-field.
-  // See crbug.com/574469802.
-  GTEST_SKIP() << "Blocked by a pre-existing DCHECK in Element::Focus()";
-#else
   if (!RuntimeEnabledFeatures::PagePopupEnabled()) {
     return;
   }
@@ -1228,12 +1222,18 @@ TEST_F(InternalPopupMenuTest, DisconnectDuringPopupConstruction) {
       mojom::blink::UserActivationNotificationType::kTest);
   month->showPicker(ASSERT_NO_EXCEPTION);
 
+  // Slot assignment recalc during forced layout defers clearing the suggested
+  // value, so blur must not fire synchronously during popup construction.
+  EXPECT_EQ(0, blur_listener->BlurCount());
+  EXPECT_FALSE(month->SuggestedValue().IsNull());
+
+  top_document.View()->UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(1, blur_listener->BlurCount());
+  EXPECT_TRUE(month->SuggestedValue().IsNull());
 
   test::RunPendingTasks();
   EXPECT_FALSE(month->IsPickerVisible());
   EXPECT_FALSE(web_view->GetPagePopup());
-#endif
 }
 
 namespace {
