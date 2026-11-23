@@ -310,15 +310,20 @@ enum class UserAgentStringType {
   kMaxValue = kOverriden
 };
 
-// Load flags that may be present in BeginNavigationParams. These are all
-// cache-related flags, which Blink derives from the request's FetchCacheMode.
-// For renderer-initiated navigations, BeginNavigationParams come from the
-// renderer, so can't be trusted, and other load flags may have security
-// implications (e.g., net::LOAD_BYPASS_PROXY), so are cleared.
+// Load flags that may be present in BeginNavigationParams. For
+// renderer-initiated navigations, BeginNavigationParams come from the renderer,
+// so can't be trusted, and other load flags may have security implications
+// (e.g., net::LOAD_BYPASS_PROXY), so are cleared.
+//
+// Most of these are cache-related flags, which Blink derives from the
+// request's FetchCacheMode. net::LOAD_PREFETCH is set by NoStatePrefetch
+// renderers on all their requests, including renderer-initiated navigations.
+// TODO(crbug.com/578128190): Have the browser calculate whether to set
+// net::LOAD_PREFETCH, and remove it from this list.
 constexpr int kAllowedBeginParamsLoadFlags =
     net::LOAD_VALIDATE_CACHE | net::LOAD_BYPASS_CACHE |
     net::LOAD_SKIP_CACHE_VALIDATION | net::LOAD_ONLY_FROM_CACHE |
-    net::LOAD_DISABLE_CACHE;
+    net::LOAD_DISABLE_CACHE | net::LOAD_PREFETCH;
 
 // Returns the net load flags to use based on the navigation type.
 // TODO(crbug.com/578128190): Remove the blink code that sets the caching flags.
@@ -2106,9 +2111,13 @@ NavigationRequest::NavigationRequest(
   // The flags in `begin_params_` are expected to be a subset of those
   // calculated above. Report any cases where that's not true, to make sure it's
   // safe to stop relying on them.
+  //
+  // LOAD_PREFETCH is excluded, as NoStatePrefetch renderers set it on all their
+  // requests, including renderer-initiated navigations. See
+  // kAllowedBeginParamsLoadFlags.
   // TODO(crbug.com/578128190): Remove load flags from BeginNavigationParams,
   // and only use the flags calculated here.
-  if (begin_params_->load_flags & ~load_flags) {
+  if (begin_params_->load_flags & ~(load_flags | net::LOAD_PREFETCH)) {
     SCOPED_CRASH_KEY_NUMBER("NavReq", "begin_params_load_flags",
                             begin_params_->load_flags);
     SCOPED_CRASH_KEY_NUMBER("NavReq", "calculated_load_flags", load_flags);
