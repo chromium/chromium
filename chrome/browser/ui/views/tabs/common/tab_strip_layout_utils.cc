@@ -178,6 +178,10 @@ int GetChildOverlap(const views::View* prev_child,
   const int tab_overlap = TabStyle::Get()->GetTabOverlap();
   const int header_overlap = TabGroupStyle::GetTabGroupOverlapAdjustment();
 
+  if (views::IsViewClass<TabGroupHeaderView>(prev_child)) {
+    return header_overlap;
+  }
+
   const auto* prev_group = views::AsViewClass<TabGroupView>(prev_child);
   const auto* next_group = views::AsViewClass<TabGroupView>(next_child);
   // When the previous group is collapsed and the next child is a tab group,
