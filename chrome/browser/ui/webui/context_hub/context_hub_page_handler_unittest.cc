@@ -114,6 +114,9 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"  // nogncheck
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
+#include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"  // nogncheck
 #include "components/tabs/public/mock_tab_interface.h"  // nogncheck
 #include "components/tabs/public/tab_interface.h"       // nogncheck
@@ -145,6 +148,8 @@ using ::testing::Not;
 using ::testing::VariantWith;
 
 #if !BUILDFLAG(IS_ANDROID)
+using ::testing::WithArg;
+
 class MockTabProvider : public ContextHubPageHandler::TabProvider {
  public:
   MOCK_METHOD(std::vector<content::WebContents*>, GetTabs, (), (override));
@@ -5570,6 +5575,81 @@ TEST_F(ContextHubPageHandlerTest, StartAndStopSkillRecording_ServiceDisabled) {
   auto session_data = future.Take();
   ASSERT_TRUE(session_data);
   EXPECT_TRUE(session_data->actions.empty());
+
+  base::test::TestFuture<const std::string&> generate_future;
+  disabled_handler.GenerateSkillFromRecording(generate_future.GetCallback());
+  EXPECT_EQ(generate_future.Get(), "");
+}
+
+TEST_F(ContextHubPageHandlerTest,
+       GenerateSkillFromRecording_DelegatesToService) {
+  SkillRecordingService* service =
+      SkillRecordingServiceFactory::GetForProfile(&profile_);
+  ASSERT_NE(service, nullptr);
+  service->StartRecording();
+  service->CaptureAction(
+      browser::context_hub::mojom::SkillRecordingActionType::kLeftClick,
+      "Step 1: Click Submit");
+  service->StopRecording();
+
+  optimization_guide::proto::ContextHubResponse response;
+  response.mutable_memory_bank_chat_response()->set_text_response(
+      "Compiled Skill: 1. Click Submit");
+
+  EXPECT_CALL(*GetMockOptimizationGuideService(), ExecuteModel(_, _, _, _))
+      .WillOnce(RunOnceCallback<3>(
+          optimization_guide::OptimizationGuideModelExecutionResult(
+              base::ok(optimization_guide::AnyWrapProto(response)), nullptr),
+          nullptr));
+
+  base::test::TestFuture<const std::string&> future;
+  handler_->GenerateSkillFromRecording(future.GetCallback());
+  EXPECT_EQ(future.Get(), "Compiled Skill: 1. Click Submit");
+}
+
+TEST_F(ContextHubPageHandlerTest,
+       GenerateSkillFromRecording_ShutdownWhileMojoCallInFlight) {
+  SkillRecordingService* service =
+      SkillRecordingServiceFactory::GetForProfile(&profile_);
+  ASSERT_NE(service, nullptr);
+  service->StartRecording();
+  service->CaptureAction(
+      browser::context_hub::mojom::SkillRecordingActionType::kLeftClick,
+      "Step 1: Click Submit");
+  service->StopRecording();
+
+  MockPage connected_page;
+  mojo::Remote<browser::context_hub::mojom::PageHandler> handler_remote;
+  ContextHubPageHandler connected_handler(
+      connected_page.BindAndGetRemote(),
+      handler_remote.BindNewPipeAndPassReceiver(), &profile_, nullptr,
+      std::make_unique<MockTabProvider>());
+
+  base::test::TestFuture<
+      optimization_guide::OptimizationGuideModelExecutionResultCallback>
+      execute_called_future;
+  EXPECT_CALL(*GetMockOptimizationGuideService(), ExecuteModel(_, _, _, _))
+      .WillOnce(WithArg<3>(
+          [&](optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            execute_called_future.SetValue(std::move(callback));
+          }));
+
+  base::test::TestFuture<const std::string&> future;
+  handler_remote->GenerateSkillFromRecording(future.GetCallback());
+  optimization_guide::OptimizationGuideModelExecutionResultCallback
+      held_callback = execute_called_future.Take();
+  EXPECT_FALSE(future.IsReady());
+
+  // Shutting down `SkillRecordingService` while the Mojo pipe is still bound
+  // must resolve the pending Mojo callback with an empty string instead of
+  // dropping it uninvoked.
+  service->Shutdown();
+  EXPECT_EQ(future.Get(), "");
+
+  std::move(held_callback)
+      .Run(optimization_guide::OptimizationGuideModelExecutionResult(),
+           nullptr);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

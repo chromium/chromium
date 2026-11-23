@@ -49,6 +49,23 @@
   font-weight: normal;
 }
 
+.compiled-data {
+  margin-bottom: 24px;
+}
+
+.compiled-data cr-button {
+  margin-bottom: 8px;
+}
+
+.mes-response {
+  background-color: var(--cr-card-background-color);
+  border: 1px solid var(--cr-separator-color);
+  border-radius: var(--cr-card-border-radius);
+  overflow-wrap: break-word;
+  padding: 12px;
+  white-space: pre-wrap;
+}
+
 .results {
   max-height: 600px;
   overflow-y: auto;

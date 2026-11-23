@@ -232,6 +232,7 @@ source_set("unit_tests") {
     sources += [ "context_hub_tab_provider_desktop_unittest.cc" ]
     deps += [
       "//chrome/browser/context_hub:memory_banks_shortcut",
+      "//chrome/browser/context_hub/record_replay",
       "//chrome/browser/glic",
       "//chrome/browser/glic/test_support",
       "//chrome/browser/speech",

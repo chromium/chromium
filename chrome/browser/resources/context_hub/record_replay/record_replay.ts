@@ -42,20 +42,26 @@ export class RecordReplayElement extends CrLitElement {
 
   static override get properties() {
     return {
-      recordReplayEnabled_: {type: Boolean},
+      isCompiling_: {type: Boolean, state: true},
       isRecording_: {type: Boolean},
+      mesResponse_: {type: String, state: true},
+      recordReplayEnabled_: {type: Boolean},
       sessionData_: {type: Object},
       transcripts_: {type: Array},
     };
   }
 
+  protected accessor isCompiling_: boolean = false;
+  protected accessor isRecording_: boolean = false;
+  protected accessor mesResponse_: string = '';
   protected accessor recordReplayEnabled_: boolean =
       loadTimeData.getBoolean('kRecordReplay');
-  protected accessor isRecording_: boolean = false;
   protected accessor sessionData_: SkillRecordingSessionData|null = null;
   protected accessor transcripts_: TranscriptEntry[] = [];
 
+  private compileRequestId_: number = 0;
   private listenerIds_: number[] = [];
+  private recordingSessionId_: number = 0;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -65,6 +71,9 @@ export class RecordReplayElement extends CrLitElement {
     const callbackRouter = browserProxyFactory.getInstance().callbackRouter;
     this.listenerIds_.push(callbackRouter.onTranscriptUpdate.addListener(
         (text: string, timestamp: TimeDelta, isFinal: boolean) => {
+          if (!this.isRecording_) {
+            return;
+          }
           const tsStr = `[${this.formatTimestamp_(timestamp)}]`;
           // If last transcript is not final, overwrite it, otherwise
           // append.
@@ -100,9 +109,13 @@ export class RecordReplayElement extends CrLitElement {
       return;
     }
 
+    ++this.recordingSessionId_;
+    ++this.compileRequestId_;
+    this.isCompiling_ = false;
     this.isRecording_ = true;
     this.sessionData_ = null;
     this.transcripts_ = [];
+    this.mesResponse_ = '';
     browserProxyFactory.getInstance().handler.startSkillRecording();
   }
 
@@ -111,9 +124,13 @@ export class RecordReplayElement extends CrLitElement {
       return;
     }
 
+    const sessionId = ++this.recordingSessionId_;
     this.isRecording_ = false;
     const {data} =
         await browserProxyFactory.getInstance().handler.stopSkillRecording();
+    if (sessionId !== this.recordingSessionId_) {
+      return;
+    }
     this.sessionData_ = data;
   }
 
@@ -132,6 +149,41 @@ export class RecordReplayElement extends CrLitElement {
                        .toString()
                        .padStart(MS_PAD_LENGTH, '0');
     return `${minutes}:${seconds}.${millis}`;
+  }
+
+  protected hasRecordedArtifacts_(): boolean {
+    return !this.isRecording_ && this.sessionData_ !== null &&
+        (this.sessionData_.actions.length > 0 ||
+         this.transcripts_.some(
+             item => item.isFinal && item.text.trim().length > 0));
+  }
+
+  protected async onGenerateSkillClick_() {
+    if (!this.hasRecordedArtifacts_() || this.isCompiling_) {
+      return;
+    }
+
+    const requestId = ++this.compileRequestId_;
+    this.isCompiling_ = true;
+    this.mesResponse_ = '';
+    try {
+      const {skillInstructions} = await browserProxyFactory.getInstance()
+                                      .handler.generateSkillFromRecording();
+      if (requestId !== this.compileRequestId_) {
+        return;
+      }
+      this.mesResponse_ = skillInstructions || 'No response returned from MES.';
+    } catch (e) {
+      if (requestId !== this.compileRequestId_) {
+        return;
+      }
+      console.error('Failed to generate skill from recording:', e);
+      this.mesResponse_ = 'No response returned from MES.';
+    } finally {
+      if (requestId === this.compileRequestId_) {
+        this.isCompiling_ = false;
+      }
+    }
   }
 }
 

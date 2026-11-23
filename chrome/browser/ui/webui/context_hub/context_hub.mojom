@@ -941,6 +941,16 @@ interface PageHandler {
   [RuntimeFeature=kRecordReplay]
   StopSkillRecording() => (SkillRecordingSessionData data);
 
+  // Generates skill instructions from the most recently stopped recording
+  // session via MES. Requires that no recording session is currently active and
+  // that the most recent session captured at least one action or transcript.
+  // Returns an empty string if a recording is in progress, if the recorded
+  // session is empty, if another skill generation request is already in flight,
+  // or if MES model execution fails, is cancelled, or returns an empty
+  // response.
+  [RuntimeFeature=kRecordReplay]
+  GenerateSkillFromRecording() => (string skill_instructions);
+
   // Generates Launchpad tasks and returns them, or null on failure.
   // Guarded by `launchpad::features::kLaunchpad` flag as the LaunchpadService
   // is not available otherwise.

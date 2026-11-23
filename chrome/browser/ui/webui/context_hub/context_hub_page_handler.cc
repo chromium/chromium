@@ -86,6 +86,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/context_hub/memory_banks_shortcut.h"
 #include "chrome/browser/context_hub/record_replay/recording_artifacts.h"
+#include "chrome/browser/context_hub/record_replay/skill_recording_service.h"  // nogncheck
 #include "chrome/browser/context_hub/record_replay/skill_recording_service_factory.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"  // nogncheck
 #include "chrome/browser/glic/host/glic.mojom.h"                  // nogncheck
@@ -1976,6 +1977,28 @@ void ContextHubPageHandler::StopSkillRecording(
   std::move(callback).Run(
       browser::context_hub::mojom::SkillRecordingSessionData::New());
 #endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+void ContextHubPageHandler::GenerateSkillFromRecording(
+    GenerateSkillFromRecordingCallback callback) {
+#if BUILDFLAG(IS_ANDROID)
+  std::move(callback).Run(std::string());
+#else
+  context_hub::SkillRecordingService* service =
+      SkillRecordingServiceFactory::GetForProfile(profile_);
+  if (!service) {
+    std::move(callback).Run(std::string());
+    return;
+  }
+
+  service->GenerateSkillFromRecording(base::BindOnce(
+      [](GenerateSkillFromRecordingCallback callback,
+         std::optional<std::string> skill_instructions) {
+        std::move(callback).Run(
+            std::move(skill_instructions).value_or(std::string()));
+      },
+      std::move(callback)));
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ContextHubPageHandler::GenerateTasks(GenerateTasksCallback callback) {

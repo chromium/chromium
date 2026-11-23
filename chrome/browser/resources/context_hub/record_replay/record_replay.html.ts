@@ -47,6 +47,23 @@ ${this.recordReplayEnabled_ ? html`
       </div>
     ` : ''}
 
+    ${this.hasRecordedArtifacts_() ? html`
+      <div class="compiled-data">
+        <!-- TODO(crbug.com/581992107): Use internationalized strings once GRD
+             strings are added. -->
+        <h3>MES Skill Generation</h3>
+        <cr-button class="action-button" ?disabled="${this.isCompiling_}"
+            @click="${this.onGenerateSkillClick_}">
+          ${this.isCompiling_ ? 'Generating Skill via MES...' :
+                              'Generate Skill via MES'}
+        </cr-button>
+        ${this.mesResponse_ ? html`
+          <h4>MES Response</h4>
+          <pre class="mes-response">${this.mesResponse_}</pre>
+        ` : ''}
+      </div>
+    ` : ''}
+
     ${this.sessionData_ && this.sessionData_.actions.length > 0 ? html`
       <div class="results">
         <h3>Recorded Actions</h3>
