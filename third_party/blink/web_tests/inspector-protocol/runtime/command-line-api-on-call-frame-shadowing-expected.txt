@@ -1,0 +1,16 @@
+Tests that command line API does not mask values of scope variables while evaluating on a call frame.
+dir + clear + inspect:
+{
+    result : {
+        type : string
+        value : dirclearinspect
+    }
+}
+typeof $$:
+{
+    result : {
+        type : string
+        value : function
+    }
+}
+
