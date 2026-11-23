@@ -4336,27 +4336,32 @@ ci.builder(
     ),
     targets = targets.bundle(
         targets = [
-            "android_emulator_fyi_gtests",
-            "android_fyi_isolated_scripts",
+            "android_16_emulator_gtests",
+            "android_rel_isolated_scripts",
+            "content_shell_freeze_test",
+            "gtests_once",
         ],
         mixins = [
             "17-x64-emulator",
             "emulator-8-cores",
             "has_native_resultdb_integration",
+            "isolate_profile_data",
             "linux-jammy",
         ],
         per_test_modifications = {
             "android_browsertests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.phone.android_browsertests.filter",
+                ],
+                enable_rts_filtering = True,
                 swarming = targets.swarming(
-                    shards = 10,
+                    shards = 25,
                 ),
             ),
-            "chrome_public_test_apk": targets.mixin(
-                args = [
-                    "--emulator-debug-tags=all",
-                ],
+            "android_sync_integration_tests": targets.mixin(
+                enable_rts_filtering = True,
                 swarming = targets.swarming(
-                    shards = 30,
+                    shards = 4,
                 ),
             ),
             "base_unittests": targets.mixin(
@@ -4364,24 +4369,62 @@ ci.builder(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.base_unittests.filter;../../testing/buildbot/filters/android.emulator_17.base_unittests.filter",
                 ],
             ),
+            "base_unittests_android_death_tests": targets.mixin(
+                ci_only = True,
+            ),
+            "blink_unittests": targets.mixin(
+                enable_rts_filtering = True,
+            ),
             "cc_unittests": targets.mixin(
                 args = [
-                    # TODO(crbug.com/558813685): Remove once emulator is updated past 37.1.11
+                    # TODO(crbug.com/558813685): Remove once the emulator binary (not the
+                    # system image, already 37.2) is updated past 37.1.11
                     # with the Gfxstream VK_EXT_host_image_copy fix.
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_17.cc_unittests.filter",
                 ],
             ),
-            "content_browsertests": targets.mixin(
+            "components_browsertests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 30,
+                    shards = 3,
                 ),
             ),
-            "content_shell_crash_test": targets.remove(
-                reason = "crbug.com/40131701",
+            "components_unittests": targets.mixin(
+                enable_rts_filtering = True,
+            ),
+            "content_shell_freeze_test": targets.mixin(
+                # TODO (b/511219429): Remove once stability is established and also add to android_rel_isolated_scripts
+                ci_only = True,
+            ),
+            "chrome_public_test_apk": targets.mixin(
+                args = [
+                    "--emulator-debug-tags=all",
+                    "--enable-leak-checks",
+                ],
+                enable_rts_filtering = True,
+                swarming = targets.swarming(
+                    shards = 47,
+                ),
+            ),
+            "chrome_public_unit_test_apk": targets.mixin(
+                enable_rts_filtering = True,
+            ),
+            "content_browsertests": targets.mixin(
+                ci_only = True,
+                swarming = targets.swarming(
+                    shards = 40,
+                ),
+            ),
+            "content_shell_test_apk": targets.mixin(
+                ci_only = True,
             ),
             "content_unittests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_16.content_unittests.filter",
+                ],
+            ),
+            "crashpad_tests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.crashpad_tests.filter",
                 ],
             ),
             "gl_tests_validating": targets.mixin(
@@ -4392,6 +4435,14 @@ ci.builder(
             "gwp_asan_unittests": targets.mixin(
                 args = [
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_16.gwp_asan_unittests.filter",
+                ],
+            ),
+            "layer_list_mode_cc_unittests": targets.mixin(
+                args = [
+                    # TODO(crbug.com/558813685): Remove once the emulator binary (not the
+                    # system image, already 37.2) is updated past 37.1.11
+                    # with the Gfxstream VK_EXT_host_image_copy fix.
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_17.cc_unittests.filter",
                 ],
             ),
             "media_unittests": targets.mixin(
@@ -4406,12 +4457,39 @@ ci.builder(
                     "--gtest_filter=-ScopedDirTest.CloseOutOfScope:PosixSharedMemoryTest.CreateAndMap",
                 ],
             ),
+            "services_unittests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
+            "trees_in_viz_cc_unittests": targets.mixin(
+                args = [
+                    # TODO(crbug.com/558813685): Remove once the emulator binary (not the
+                    # system image, already 37.2) is updated past 37.1.11
+                    # with the Gfxstream VK_EXT_host_image_copy fix.
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_17.cc_unittests.filter",
+                ],
+            ),
+            "unit_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
             "viz_unittests": targets.mixin(
                 args = [
-                    # TODO(crbug.com/558813685): Remove once emulator is updated past 37.1.11
+                    # TODO(crbug.com/558813685): Remove once the emulator binary (not the
+                    # system image, already 37.2) is updated past 37.1.11
                     # with the Gfxstream VK_EXT_host_image_copy fix.
                     "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_17.viz_unittests.filter",
                 ],
+            ),
+            "webview_ui_test_app_test_apk_no_field_trial": targets.mixin(
+                ci_only = True,
+            ),
+            "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 12,
+                ),
             ),
         },
     ),
