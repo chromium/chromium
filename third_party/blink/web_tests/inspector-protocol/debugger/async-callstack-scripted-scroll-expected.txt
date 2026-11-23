@@ -1,0 +1,25 @@
+Tests asynchronous call stacks for scripted scroll events.
+
+Set timer for test function.
+Captured call stacks in no particular order:
+Call stack:
+    0) onScroll1 (async-callstack-scripted-scroll.js:21)
+    [scroll]
+    0) timeout (async-callstack-scripted-scroll.js:13)
+    [setTimeout]
+    0) testFunction (async-callstack-scripted-scroll.js:4)
+    [setTimeout]
+    0) scheduleTestFunction (schedule-test-function.js:4)
+    <... skipped remaining frames ...>
+
+Call stack:
+    0) onScroll2 (async-callstack-scripted-scroll.js:28)
+    [scroll]
+    0) timeout (async-callstack-scripted-scroll.js:13)
+    [setTimeout]
+    0) testFunction (async-callstack-scripted-scroll.js:4)
+    [setTimeout]
+    0) scheduleTestFunction (schedule-test-function.js:4)
+    <... skipped remaining frames ...>
+
+
