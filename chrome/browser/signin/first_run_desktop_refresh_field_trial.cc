@@ -63,9 +63,9 @@ void CreateFirstRunDesktopRefreshFieldTrial(
       default_percent = 0;
       break;
     case version_info::Channel::STABLE:
-      enabled_percent = 1;
-      disabled_percent = 1;
-      default_percent = 98;
+      enabled_percent = 20;
+      disabled_percent = 20;
+      default_percent = 60;
       break;
   }
   constexpr base::FieldTrial::Probability total_probablility = 100;
